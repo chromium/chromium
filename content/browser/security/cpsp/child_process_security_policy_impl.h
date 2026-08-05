@@ -755,6 +755,12 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
       const BrowsingInstanceId& browsing_instance_id,
       const url::Origin& origin);
 
+  // For legacy isolated origin tests, this helper returns the number of
+  // `IsolatedOriginEntry` entries that match the provided `origin`. An origin
+  // can have multiple entries when it's isolated in several BrowserContexts.
+  // Only counts precise origin matches, without subdomain matching.
+  int GetIsolatedOriginEntryCountForTesting(const url::Origin& origin);
+
  private:
   friend class ChildProcessSecurityPolicyInProcessBrowserTest;
   friend class ChildProcessSecurityPolicyTest;
@@ -762,18 +768,6 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   FRIEND_TEST_ALL_PREFIXES(ChildProcessSecurityPolicyInProcessBrowserTest,
                            NoLeak);
   FRIEND_TEST_ALL_PREFIXES(ChildProcessSecurityPolicyTest, FilePermissions);
-  FRIEND_TEST_ALL_PREFIXES(ChildProcessSecurityPolicyTest,
-                           AddFutureIsolatedOrigins);
-  FRIEND_TEST_ALL_PREFIXES(ChildProcessSecurityPolicyTest,
-                           DynamicIsolatedOrigins);
-  FRIEND_TEST_ALL_PREFIXES(ChildProcessSecurityPolicyTest,
-                           IsolatedOriginsForSpecificBrowserContexts);
-  FRIEND_TEST_ALL_PREFIXES(ChildProcessSecurityPolicyTest,
-                           IsolatedOriginsForSpecificBrowsingInstances);
-  FRIEND_TEST_ALL_PREFIXES(ChildProcessSecurityPolicyTest,
-                           IsolatedOriginsForCurrentAndFutureBrowsingInstances);
-  FRIEND_TEST_ALL_PREFIXES(ChildProcessSecurityPolicyTest,
-                           IsolatedOriginsRemovedWhenBrowserContextDestroyed);
   FRIEND_TEST_ALL_PREFIXES(ChildProcessSecurityPolicyTest,
                            IsolateAllSuborigins);
   FRIEND_TEST_ALL_PREFIXES(ChildProcessSecurityPolicyTest,

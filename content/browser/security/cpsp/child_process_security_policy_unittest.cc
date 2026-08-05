@@ -229,81 +229,6 @@ class ChildProcessSecurityPolicyTest
     SetBrowserClientForTesting(old_browser_client_);
   }
 
-  // Helpers to construct (key, value) entries used to validate the
-  // isolated_origins_ map.  The key is a site URL, calculated from the
-  // provided origin, and the value is a list of IsolatedOriginEntries. These
-  // helpers are members of ChildProcessSecurityPolicyTest so they can access
-  // the private IsolatedOriginEntry struct.
-  using IsolatedOriginEntry =
-      ChildProcessSecurityPolicyImpl::IsolatedOriginEntry;
-  // Converts |browsing_instance_id|, |origin| -> (site_url, {entry}) where
-  // site_url is created from |origin|, and {entry} contains |origin|
-  // and |browsing_instance_id|.
-  auto GetIsolatedOriginEntry(BrowsingInstanceId browsing_instance_id,
-                              const url::Origin& origin,
-                              bool isolate_all_subdomains = false) {
-    return std::pair<GURL, std::vector<IsolatedOriginEntry>>(
-        SiteInfo::GetSiteForOrigin(origin),
-        {IsolatedOriginEntry(
-            origin, true /* applies_to_future_browsing_instances */,
-            browsing_instance_id, /*browser_context=*/nullptr,
-            isolate_all_subdomains, IsolatedOriginSource::TEST)});
-  }
-  auto GetIsolatedOriginEntry(int browsing_instance_id,
-                              const url::Origin& origin,
-                              bool isolate_all_subdomains = false) {
-    return GetIsolatedOriginEntry(BrowsingInstanceId(browsing_instance_id),
-                                  origin, isolate_all_subdomains);
-  }
-  // Converts the provided params into a (site_url, {entry}) tuple, where
-  // site_url is created from |origin| and {entry} contains |origin| and
-  // matches the provided BrowserContext, BrowsingInstance ID, and whether the
-  // isolation applies to future BrowsingInstances.
-  auto GetIsolatedOriginEntry(BrowserContext* browser_context,
-                              bool applies_to_future_browsing_instances,
-                              BrowsingInstanceId browsing_instance_id,
-                              const url::Origin& origin) {
-    return std::pair<GURL, std::vector<IsolatedOriginEntry>>(
-        SiteInfo::GetSiteForOrigin(origin),
-        {IsolatedOriginEntry(origin, applies_to_future_browsing_instances,
-                             browsing_instance_id, browser_context,
-                             false /* isolate_all_subdomains */,
-                             IsolatedOriginSource::TEST)});
-  }
-  // Converts |origin| -> (site_url, {entry})
-  //     where site_url is created from |origin| and
-  //           entry contains |origin| and the latest BrowsingInstance ID.
-  auto GetIsolatedOriginEntry(const url::Origin& origin,
-                              bool isolate_all_subdomains = false) {
-    return GetIsolatedOriginEntry(SiteInstanceImpl::NextBrowsingInstanceId(),
-                                  origin, isolate_all_subdomains);
-  }
-  // Converts |origin1|, |origin2| -> (site_url, {entry1, entry2})
-  //     where |site_url| is created from |origin1|, but is assumed to be the
-  //               same for |origin2| (i.e., |origin1| and |origin2| are
-  //               same-site),
-  //           entry1 contains |origin1| and the latest BrowsingInstance ID,
-  //           entry2 contains |origin2| and the latest BrowsingInstance ID.
-  auto GetIsolatedOriginEntry(const url::Origin& origin1,
-                              const url::Origin& origin2,
-                              bool origin1_isolate_all_subdomains = false,
-                              bool origin2_isolate_all_subdomains = false) {
-    EXPECT_EQ(SiteInfo::GetSiteForOrigin(origin1),
-              SiteInfo::GetSiteForOrigin(origin2));
-    return std::pair<GURL, std::vector<IsolatedOriginEntry>>(
-        SiteInfo::GetSiteForOrigin(origin1),
-        {IsolatedOriginEntry(
-             origin1, true /* applies_to_future_browsing_contexts */,
-             SiteInstanceImpl::NextBrowsingInstanceId(),
-             /*browser_context=*/nullptr, origin1_isolate_all_subdomains,
-             IsolatedOriginSource::TEST),
-         IsolatedOriginEntry(
-             origin2, true /* applies_to_future_browsing_contexts */,
-             SiteInstanceImpl::NextBrowsingInstanceId(),
-             /*browser_context=*/nullptr, origin2_isolate_all_subdomains,
-             IsolatedOriginSource::TEST)});
-  }
-
   bool IsIsolatedOrigin(BrowserContext* context,
                         int browsing_instance_id,
                         const url::Origin& origin) {
@@ -323,19 +248,6 @@ class ChildProcessSecurityPolicyTest
             OriginAgentClusterIsolationState::CreateForDefaultIsolation(
                 &browser_context_)),
         origin, false /* origin_requests_isolation */);
-  }
-
-  // Returns the number of isolated origin entries for a particular origin.
-  // There may be more than one such entry if each is associated with a
-  // different profile.
-  int GetIsolatedOriginEntryCount(const url::Origin& origin) {
-    ChildProcessSecurityPolicyImpl* p =
-        ChildProcessSecurityPolicyImpl::GetInstance();
-    GURL key(SiteInfo::GetSiteForOrigin(origin));
-    base::AutoLock isolated_origins_lock(p->isolated_origins_lock_);
-    auto origins_for_key = p->isolated_origins_[key];
-    return std::ranges::count(origins_for_key, origin,
-                              &IsolatedOriginEntry::origin);
   }
 
   void CheckGetSiteForURL(BrowserContext* context,
@@ -1991,12 +1903,6 @@ TEST_P(ChildProcessSecurityPolicyTest, OriginGranting) {
   EXPECT_FALSE(p->CanCommitURL(kRendererID, url_bar));
 }
 
-#define LOCKED_EXPECT_THAT(lock, value, matcher) \
-  do {                                           \
-    base::AutoLock auto_lock(lock);              \
-    EXPECT_THAT(value, matcher);                 \
-  } while (0);
-
 // Verifies ChildProcessSecurityPolicyImpl::AddFutureIsolatedOrigins method.
 TEST_P(ChildProcessSecurityPolicyTest, AddFutureIsolatedOrigins) {
   url::Origin foo = url::Origin::Create(GURL("https://foo.com/"));
@@ -2013,41 +1919,28 @@ TEST_P(ChildProcessSecurityPolicyTest, AddFutureIsolatedOrigins) {
       ChildProcessSecurityPolicyImpl::GetInstance();
 
   // Initially there should be no isolated origins.
-  LOCKED_EXPECT_THAT(p->isolated_origins_lock_, p->isolated_origins_,
-                     testing::IsEmpty());
+  EXPECT_THAT(p->GetIsolatedOrigins(), testing::IsEmpty());
 
   // Verify deduplication of the argument.
   p->AddFutureIsolatedOrigins({foo, bar, bar}, IsolatedOriginSource::TEST);
-  LOCKED_EXPECT_THAT(
-      p->isolated_origins_lock_, p->isolated_origins_,
-      testing::UnorderedElementsAre(GetIsolatedOriginEntry(foo),
-                                    GetIsolatedOriginEntry(bar)));
+  EXPECT_THAT(p->GetIsolatedOrigins(), testing::UnorderedElementsAre(foo, bar));
 
   // Verify that the old set is extended (not replaced).
   p->AddFutureIsolatedOrigins({baz}, IsolatedOriginSource::TEST);
-  LOCKED_EXPECT_THAT(
-      p->isolated_origins_lock_, p->isolated_origins_,
-      testing::UnorderedElementsAre(GetIsolatedOriginEntry(foo),
-                                    GetIsolatedOriginEntry(bar),
-                                    GetIsolatedOriginEntry(baz)));
+  EXPECT_THAT(p->GetIsolatedOrigins(),
+              testing::UnorderedElementsAre(foo, bar, baz));
 
   // Verify deduplication against the old set.
   p->AddFutureIsolatedOrigins({foo}, IsolatedOriginSource::TEST);
-  LOCKED_EXPECT_THAT(
-      p->isolated_origins_lock_, p->isolated_origins_,
-      testing::UnorderedElementsAre(GetIsolatedOriginEntry(foo),
-                                    GetIsolatedOriginEntry(bar),
-                                    GetIsolatedOriginEntry(baz)));
+  EXPECT_THAT(p->GetIsolatedOrigins(),
+              testing::UnorderedElementsAre(foo, bar, baz));
 
   // Verify deduplication considers scheme and port differences.  Note that
   // origins that differ only in ports map to the same key.
   p->AddFutureIsolatedOrigins({baz, baz_http_8000, baz_https_8000},
                               IsolatedOriginSource::TEST);
-  LOCKED_EXPECT_THAT(
-      p->isolated_origins_lock_, p->isolated_origins_,
-      testing::UnorderedElementsAre(
-          GetIsolatedOriginEntry(foo), GetIsolatedOriginEntry(bar),
-          GetIsolatedOriginEntry(baz), GetIsolatedOriginEntry(baz_http)));
+  EXPECT_THAT(p->GetIsolatedOrigins(),
+              testing::UnorderedElementsAre(foo, bar, baz, baz_http));
 
   // Verify that adding an origin that is invalid for isolation will 1) log a
   // warning and 2) won't CHECK or crash the browser process, 3) will not add
@@ -2065,11 +1958,8 @@ TEST_P(ChildProcessSecurityPolicyTest, AddFutureIsolatedOrigins) {
     mock_log.StartCapturingLogs();
     p->AddFutureIsolatedOrigins({quxfoo, invalid_etld},
                                 IsolatedOriginSource::TEST);
-    LOCKED_EXPECT_THAT(
-        p->isolated_origins_lock_, p->isolated_origins_,
-        testing::UnorderedElementsAre(
-            GetIsolatedOriginEntry(foo, quxfoo), GetIsolatedOriginEntry(bar),
-            GetIsolatedOriginEntry(baz), GetIsolatedOriginEntry(baz_http)));
+    EXPECT_THAT(p->GetIsolatedOrigins(),
+                testing::UnorderedElementsAre(foo, quxfoo, bar, baz, baz_http));
   }
 
   // Verify that adding invalid origins via the string variant of
@@ -2091,12 +1981,11 @@ TEST_P(ChildProcessSecurityPolicyTest, AddFutureIsolatedOrigins) {
   p->RemoveIsolatedOriginForTesting(baz_http);
 
   // We should have removed all isolated origins at this point.
-  LOCKED_EXPECT_THAT(p->isolated_origins_lock_, p->isolated_origins_,
-                     testing::IsEmpty());
+  EXPECT_THAT(p->GetIsolatedOrigins(), testing::IsEmpty());
 }
 
 TEST_P(ChildProcessSecurityPolicyTest, IsolateAllSuborigins) {
-  url::Origin qux = url::Origin::Create(GURL("https://qux.com/"));
+  IsolatedOriginPattern qux("https://qux.com");
   IsolatedOriginPattern etld1_wild("https://[*.]foo.com");
   IsolatedOriginPattern etld2_wild("https://[*.]bar.foo.com");
   url::Origin etld1 = url::Origin::Create(GURL("https://foo.com"));
@@ -2105,42 +1994,69 @@ TEST_P(ChildProcessSecurityPolicyTest, IsolateAllSuborigins) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
 
+  TestBrowserContext context;
+  IsolationContext isolation_context(&context);
+
   // Check we can add a single wildcard origin.
   p->AddFutureIsolatedOrigins({etld1_wild}, IsolatedOriginSource::TEST);
 
-  LOCKED_EXPECT_THAT(
-      p->isolated_origins_lock_, p->isolated_origins_,
-      testing::UnorderedElementsAre(GetIsolatedOriginEntry(etld1, true)));
+  EXPECT_THAT(p->GetIsolatedOrigins(), testing::UnorderedElementsAre(etld1));
+
+  // Verify it behaves as a wildcard origin: a subdomain resolves to its own
+  // site URL.
+  EXPECT_EQ(
+      GURL("https://sub.foo.com"),
+      SiteInfo::CreateForTesting(isolation_context, GURL("https://sub.foo.com"))
+          .site_url());
 
   // Add a conventional origin and check they can live side by side.
   p->AddFutureIsolatedOrigins({qux}, IsolatedOriginSource::TEST);
-  LOCKED_EXPECT_THAT(
-      p->isolated_origins_lock_, p->isolated_origins_,
-      testing::UnorderedElementsAre(GetIsolatedOriginEntry(etld1, true),
-                                    GetIsolatedOriginEntry(qux, false)));
+  EXPECT_THAT(p->GetIsolatedOrigins(),
+              testing::UnorderedElementsAre(etld1, qux.origin()));
+
+  // Verify it behaves as a conventional origin: a subdomain resolves to the
+  // eTLD+1 site URL.
+  EXPECT_EQ(
+      GURL("https://qux.com"),
+      SiteInfo::CreateForTesting(isolation_context, GURL("https://sub.qux.com"))
+          .site_url());
 
   // Check that a wildcard domain within another wildcard domain can be added.
   p->AddFutureIsolatedOrigins({etld2_wild}, IsolatedOriginSource::TEST);
-  LOCKED_EXPECT_THAT(p->isolated_origins_lock_, p->isolated_origins_,
-                     testing::UnorderedElementsAre(
-                         GetIsolatedOriginEntry(etld1, etld2, true, true),
-                         GetIsolatedOriginEntry(qux, false)));
+  EXPECT_THAT(p->GetIsolatedOrigins(),
+              testing::UnorderedElementsAre(etld1, etld2, qux.origin()));
+
+  // Verify nested wildcard behavior.
+  EXPECT_EQ(GURL("https://sub.bar.foo.com"),
+            SiteInfo::CreateForTesting(isolation_context,
+                                       GURL("https://sub.bar.foo.com"))
+                .site_url());
 
   // Check that removing a single wildcard domain, that contains another
   // wildcard domain, doesn't affect the isolating behavior of the original
   // wildcard domain.
   p->RemoveIsolatedOriginForTesting(etld1);
-  LOCKED_EXPECT_THAT(
-      p->isolated_origins_lock_, p->isolated_origins_,
-      testing::UnorderedElementsAre(GetIsolatedOriginEntry(etld2, true),
-                                    GetIsolatedOriginEntry(qux, false)));
+  EXPECT_THAT(p->GetIsolatedOrigins(),
+              testing::UnorderedElementsAre(etld2, qux.origin()));
+
+  // The outer wildcard is removed, so sub.foo.com resolves to the eTLD+1 site
+  // URL again.
+  EXPECT_EQ(
+      GURL("https://foo.com"),
+      SiteInfo::CreateForTesting(isolation_context, GURL("https://sub.foo.com"))
+          .site_url());
+  // But the inner wildcard is still present, so its subdomain resolves to its
+  // own site URL.
+  EXPECT_EQ(GURL("https://sub.bar.foo.com"),
+            SiteInfo::CreateForTesting(isolation_context,
+                                       GURL("https://sub.bar.foo.com"))
+                .site_url());
 
   // Removing remaining domains.
-  p->RemoveIsolatedOriginForTesting(qux);
+  p->RemoveIsolatedOriginForTesting(qux.origin());
   p->RemoveIsolatedOriginForTesting(etld2);
 
-  LOCKED_EXPECT_THAT(p->isolated_origins_lock_, p->isolated_origins_,
-                     testing::IsEmpty());
+  EXPECT_THAT(p->GetIsolatedOrigins(), testing::IsEmpty());
 }
 
 // Verify that the isolation behavior for wildcard and non-wildcard origins,
@@ -2151,8 +2067,7 @@ TEST_P(ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault,
       ChildProcessSecurityPolicyImpl::GetInstance();
 
   // There should be no isolated origins before this test starts.
-  LOCKED_EXPECT_THAT(p->isolated_origins_lock_, p->isolated_origins_,
-                     testing::IsEmpty());
+  EXPECT_THAT(p->GetIsolatedOrigins(), testing::IsEmpty());
 
   // Also ensure that the web-safe schemes are in a proper initialized state.
   EXPECT_TRUE(p->IsWebSafeScheme(url::kHttpsScheme));
@@ -2211,8 +2126,7 @@ TEST_P(ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault,
   p->RemoveIsolatedOriginForTesting(inner_isolated.origin());
   p->RemoveIsolatedOriginForTesting(inner_wildcard.origin());
 
-  LOCKED_EXPECT_THAT(p->isolated_origins_lock_, p->isolated_origins_,
-                     testing::IsEmpty());
+  EXPECT_THAT(p->GetIsolatedOrigins(), testing::IsEmpty());
 }
 
 TEST_P(ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault,
@@ -2221,8 +2135,7 @@ TEST_P(ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault,
       ChildProcessSecurityPolicyImpl::GetInstance();
 
   // There should be no isolated origins before this test starts.
-  LOCKED_EXPECT_THAT(p->isolated_origins_lock_, p->isolated_origins_,
-                     testing::IsEmpty());
+  EXPECT_THAT(p->GetIsolatedOrigins(), testing::IsEmpty());
 
   {
     // Test the behavior of a wildcard origin contained within a single
@@ -2253,8 +2166,7 @@ TEST_P(ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault,
   }
 
   // No isolated origins should persist between tests.
-  LOCKED_EXPECT_THAT(p->isolated_origins_lock_, p->isolated_origins_,
-                     testing::IsEmpty());
+  EXPECT_THAT(p->GetIsolatedOrigins(), testing::IsEmpty());
 
   {
     // A single isolated origin is nested within a wildcard origin. In this
@@ -2282,8 +2194,7 @@ TEST_P(ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault,
     p->RemoveIsolatedOriginForTesting(isolated_wildcard.origin());
   }
 
-  LOCKED_EXPECT_THAT(p->isolated_origins_lock_, p->isolated_origins_,
-                     testing::IsEmpty());
+  EXPECT_THAT(p->GetIsolatedOrigins(), testing::IsEmpty());
 
   {
     // Nest wildcard isolated origins within each other. Verify that removing
@@ -2310,8 +2221,7 @@ TEST_P(ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault,
     p->RemoveIsolatedOriginForTesting(inner.origin());
   }
 
-  LOCKED_EXPECT_THAT(p->isolated_origins_lock_, p->isolated_origins_,
-                     testing::IsEmpty());
+  EXPECT_THAT(p->GetIsolatedOrigins(), testing::IsEmpty());
 
   // Verify that adding a wildcard domain then a then a conventional domain
   // doesn't affect the isolating behavior of the wildcard, i.e. whichever
@@ -2337,8 +2247,7 @@ TEST_P(ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault,
     p->RemoveIsolatedOriginForTesting(single.origin());
   }
 
-  LOCKED_EXPECT_THAT(p->isolated_origins_lock_, p->isolated_origins_,
-                     testing::IsEmpty());
+  EXPECT_THAT(p->GetIsolatedOrigins(), testing::IsEmpty());
 
   // Verify the first domain added remains dominant in the case of differing
   // wildcard and non-wildcard statuses.
@@ -2364,8 +2273,7 @@ TEST_P(ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault,
     p->RemoveIsolatedOriginForTesting(single.origin());
   }
 
-  LOCKED_EXPECT_THAT(p->isolated_origins_lock_, p->isolated_origins_,
-                     testing::IsEmpty());
+  EXPECT_THAT(p->GetIsolatedOrigins(), testing::IsEmpty());
 }
 
 // Verifies that isolated origins only apply to future BrowsingInstances.
@@ -2378,8 +2286,7 @@ TEST_P(ChildProcessSecurityPolicyTest, DynamicIsolatedOrigins) {
       ChildProcessSecurityPolicyImpl::GetInstance();
 
   // Initially there should be no isolated origins.
-  LOCKED_EXPECT_THAT(p->isolated_origins_lock_, p->isolated_origins_,
-                     testing::IsEmpty());
+  EXPECT_THAT(p->GetIsolatedOrigins(), testing::IsEmpty());
 
   // Save the next BrowsingInstance ID to be created.  Because unit tests run
   // in batches, this isn't guaranteed to always be 1, for example if a
@@ -2389,17 +2296,11 @@ TEST_P(ChildProcessSecurityPolicyTest, DynamicIsolatedOrigins) {
 
   // Isolate foo.com and bar.com.
   p->AddFutureIsolatedOrigins({foo, bar}, IsolatedOriginSource::TEST);
-  LOCKED_EXPECT_THAT(
-      p->isolated_origins_lock_, p->isolated_origins_,
-      testing::UnorderedElementsAre(GetIsolatedOriginEntry(initial_id, foo),
-                                    GetIsolatedOriginEntry(initial_id, bar)));
+  EXPECT_THAT(p->GetIsolatedOrigins(), testing::UnorderedElementsAre(foo, bar));
 
   // Isolating bar.com again should have no effect.
   p->AddFutureIsolatedOrigins({bar}, IsolatedOriginSource::TEST);
-  LOCKED_EXPECT_THAT(
-      p->isolated_origins_lock_, p->isolated_origins_,
-      testing::UnorderedElementsAre(GetIsolatedOriginEntry(initial_id, foo),
-                                    GetIsolatedOriginEntry(initial_id, bar)));
+  EXPECT_THAT(p->GetIsolatedOrigins(), testing::UnorderedElementsAre(foo, bar));
 
   // Create a new BrowsingInstance.  Its ID will be |initial_id|.
   TestBrowserContext context;
@@ -2413,19 +2314,13 @@ TEST_P(ChildProcessSecurityPolicyTest, DynamicIsolatedOrigins) {
   // Isolate baz.com.  This will apply to BrowsingInstances with IDs
   // |initial_id + 1| and above.
   p->AddFutureIsolatedOrigins({baz}, IsolatedOriginSource::TEST);
-  LOCKED_EXPECT_THAT(p->isolated_origins_lock_, p->isolated_origins_,
-                     testing::UnorderedElementsAre(
-                         GetIsolatedOriginEntry(initial_id, foo),
-                         GetIsolatedOriginEntry(initial_id, bar),
-                         GetIsolatedOriginEntry(initial_id.value() + 1, baz)));
+  EXPECT_THAT(p->GetIsolatedOrigins(),
+              testing::UnorderedElementsAre(foo, bar, baz));
 
   // Isolating bar.com again should not update the old BrowsingInstance ID.
   p->AddFutureIsolatedOrigins({bar}, IsolatedOriginSource::TEST);
-  LOCKED_EXPECT_THAT(p->isolated_origins_lock_, p->isolated_origins_,
-                     testing::UnorderedElementsAre(
-                         GetIsolatedOriginEntry(initial_id, foo),
-                         GetIsolatedOriginEntry(initial_id, bar),
-                         GetIsolatedOriginEntry(initial_id.value() + 1, baz)));
+  EXPECT_THAT(p->GetIsolatedOrigins(),
+              testing::UnorderedElementsAre(foo, bar, baz));
 
   // Create another BrowsingInstance.
   scoped_refptr<SiteInstanceImpl> bar_instance =
@@ -2437,12 +2332,8 @@ TEST_P(ChildProcessSecurityPolicyTest, DynamicIsolatedOrigins) {
 
   // Isolate qux.com.
   p->AddFutureIsolatedOrigins({qux}, IsolatedOriginSource::TEST);
-  LOCKED_EXPECT_THAT(p->isolated_origins_lock_, p->isolated_origins_,
-                     testing::UnorderedElementsAre(
-                         GetIsolatedOriginEntry(initial_id, foo),
-                         GetIsolatedOriginEntry(initial_id, bar),
-                         GetIsolatedOriginEntry(initial_id.value() + 1, baz),
-                         GetIsolatedOriginEntry(initial_id.value() + 2, qux)));
+  EXPECT_THAT(p->GetIsolatedOrigins(),
+              testing::UnorderedElementsAre(foo, bar, baz, qux));
 
   // Check IsIsolatedOrigin() only returns isolated origins if they apply to
   // the provided BrowsingInstance. foo and bar should apply in
@@ -2513,8 +2404,7 @@ TEST_P(ChildProcessSecurityPolicyTest,
       ChildProcessSecurityPolicyImpl::GetInstance();
 
   // Initially there should be no isolated origins.
-  LOCKED_EXPECT_THAT(p->isolated_origins_lock_, p->isolated_origins_,
-                     testing::IsEmpty());
+  EXPECT_THAT(p->GetIsolatedOrigins(), testing::IsEmpty());
 
   // Save the next BrowsingInstance ID to be created.  Because unit tests run
   // in batches, this isn't guaranteed to always be 1, for example if a
@@ -2551,16 +2441,16 @@ TEST_P(ChildProcessSecurityPolicyTest,
   // since foo.com is already isolated globally, but the new entry is
   // important, e.g. for persisting profile-specific isolated origins across
   // restarts.
-  EXPECT_EQ(1, GetIsolatedOriginEntryCount(foo));
+  EXPECT_EQ(1, p->GetIsolatedOriginEntryCountForTesting(foo));
   p->AddFutureIsolatedOrigins({foo}, IsolatedOriginSource::TEST, &context1);
-  EXPECT_EQ(2, GetIsolatedOriginEntryCount(foo));
+  EXPECT_EQ(2, p->GetIsolatedOriginEntryCountForTesting(foo));
   EXPECT_TRUE(IsIsolatedOrigin(&context1, initial_id, foo));
   EXPECT_TRUE(IsIsolatedOrigin(&context2, initial_id, foo));
 
   // Isolating bar.com in |context1| again should have no effect.
-  EXPECT_EQ(1, GetIsolatedOriginEntryCount(bar));
+  EXPECT_EQ(1, p->GetIsolatedOriginEntryCountForTesting(bar));
   p->AddFutureIsolatedOrigins({bar}, IsolatedOriginSource::TEST, &context1);
-  EXPECT_EQ(1, GetIsolatedOriginEntryCount(bar));
+  EXPECT_EQ(1, p->GetIsolatedOriginEntryCountForTesting(bar));
   EXPECT_TRUE(IsIsolatedOrigin(&context1, initial_id, bar));
   EXPECT_FALSE(IsIsolatedOrigin(&context2, initial_id, bar));
 
@@ -2568,7 +2458,7 @@ TEST_P(ChildProcessSecurityPolicyTest,
   // IsolatedOriginEntry.  Verify that the isolation took effect for
   // |initial_id + 1| (the current BrowsingInstance ID cutoff) only.
   p->AddFutureIsolatedOrigins({bar}, IsolatedOriginSource::TEST, &context2);
-  EXPECT_EQ(2, GetIsolatedOriginEntryCount(bar));
+  EXPECT_EQ(2, p->GetIsolatedOriginEntryCountForTesting(bar));
   EXPECT_FALSE(IsIsolatedOrigin(&context2, initial_id, bar));
   EXPECT_TRUE(IsIsolatedOrigin(&context2, initial_id.value() + 1, bar));
 
@@ -2588,7 +2478,7 @@ TEST_P(ChildProcessSecurityPolicyTest,
   // to context3 as well, but only in initial_id + 1 (the current
   // BrowsingInstance ID cutoff).
   p->AddFutureIsolatedOrigins({bar}, IsolatedOriginSource::TEST);
-  EXPECT_EQ(3, GetIsolatedOriginEntryCount(bar));
+  EXPECT_EQ(3, p->GetIsolatedOriginEntryCountForTesting(bar));
   EXPECT_FALSE(IsIsolatedOrigin(&context3, initial_id, bar));
   EXPECT_TRUE(IsIsolatedOrigin(&context3, initial_id.value() + 1, bar));
 
@@ -2597,7 +2487,7 @@ TEST_P(ChildProcessSecurityPolicyTest,
   // since bar.com is already isolated globally.
   TestBrowserContext context4;
   p->AddFutureIsolatedOrigins({bar}, IsolatedOriginSource::TEST, &context4);
-  EXPECT_EQ(4, GetIsolatedOriginEntryCount(bar));
+  EXPECT_EQ(4, p->GetIsolatedOriginEntryCountForTesting(bar));
 
   p->RemoveIsolatedOriginForTesting(foo);
   p->RemoveIsolatedOriginForTesting(bar);
@@ -2615,8 +2505,7 @@ TEST_P(ChildProcessSecurityPolicyTest,
       ChildProcessSecurityPolicyImpl::GetInstance();
 
   // Initially there should be no isolated origins.
-  LOCKED_EXPECT_THAT(p->isolated_origins_lock_, p->isolated_origins_,
-                     testing::IsEmpty());
+  EXPECT_THAT(p->GetIsolatedOrigins(), testing::IsEmpty());
 
   // Save the next BrowsingInstance ID to be created.  Because unit tests run
   // in batches, this isn't guaranteed to always be 1, for example if a
@@ -2631,7 +2520,7 @@ TEST_P(ChildProcessSecurityPolicyTest,
   // considered isolated in |context1|, since it's a subdomain of foo.com.
   p->AddFutureIsolatedOrigins({foo}, IsolatedOriginSource::TEST,
                               context1.get());
-  EXPECT_EQ(1, GetIsolatedOriginEntryCount(foo));
+  EXPECT_EQ(1, p->GetIsolatedOriginEntryCountForTesting(foo));
   EXPECT_TRUE(IsIsolatedOrigin(context1.get(), initial_id, foo));
   EXPECT_TRUE(IsIsolatedOrigin(context1.get(), initial_id, sub_foo));
   EXPECT_FALSE(IsIsolatedOrigin(context2.get(), initial_id, foo));
@@ -2640,8 +2529,8 @@ TEST_P(ChildProcessSecurityPolicyTest,
   // Isolate sub.foo.com and bar.com in |context2|.
   p->AddFutureIsolatedOrigins({sub_foo, bar}, IsolatedOriginSource::TEST,
                               context2.get());
-  EXPECT_EQ(1, GetIsolatedOriginEntryCount(sub_foo));
-  EXPECT_EQ(1, GetIsolatedOriginEntryCount(bar));
+  EXPECT_EQ(1, p->GetIsolatedOriginEntryCountForTesting(sub_foo));
+  EXPECT_EQ(1, p->GetIsolatedOriginEntryCountForTesting(bar));
   EXPECT_TRUE(IsIsolatedOrigin(context2.get(), initial_id, sub_foo));
   EXPECT_TRUE(IsIsolatedOrigin(context2.get(), initial_id, bar));
   EXPECT_FALSE(IsIsolatedOrigin(context2.get(), initial_id, foo));
@@ -2652,7 +2541,7 @@ TEST_P(ChildProcessSecurityPolicyTest,
   p->AddFutureIsolatedOrigins({baz}, IsolatedOriginSource::TEST,
                               context2.get());
 
-  EXPECT_EQ(2, GetIsolatedOriginEntryCount(baz));
+  EXPECT_EQ(2, p->GetIsolatedOriginEntryCountForTesting(baz));
   EXPECT_TRUE(IsIsolatedOrigin(context1.get(), initial_id, baz));
   EXPECT_TRUE(IsIsolatedOrigin(context2.get(), initial_id, baz));
 
@@ -2660,18 +2549,17 @@ TEST_P(ChildProcessSecurityPolicyTest,
   // map, and the other origins should be isolated only in |context2|.
   context1.reset();
 
-  EXPECT_EQ(0, GetIsolatedOriginEntryCount(foo));
-  EXPECT_EQ(1, GetIsolatedOriginEntryCount(sub_foo));
-  EXPECT_EQ(1, GetIsolatedOriginEntryCount(bar));
-  EXPECT_EQ(1, GetIsolatedOriginEntryCount(baz));
+  EXPECT_EQ(0, p->GetIsolatedOriginEntryCountForTesting(foo));
+  EXPECT_EQ(1, p->GetIsolatedOriginEntryCountForTesting(sub_foo));
+  EXPECT_EQ(1, p->GetIsolatedOriginEntryCountForTesting(bar));
+  EXPECT_EQ(1, p->GetIsolatedOriginEntryCountForTesting(baz));
   EXPECT_TRUE(IsIsolatedOrigin(context2.get(), initial_id, sub_foo));
   EXPECT_TRUE(IsIsolatedOrigin(context2.get(), initial_id, bar));
   EXPECT_TRUE(IsIsolatedOrigin(context2.get(), initial_id, baz));
 
   // Remove |context2| and ensure the remaining entries are removed.
   context2.reset();
-  LOCKED_EXPECT_THAT(p->isolated_origins_lock_, p->isolated_origins_,
-                     testing::IsEmpty());
+  EXPECT_THAT(p->GetIsolatedOrigins(), testing::IsEmpty());
 }
 
 TEST_P(ChildProcessSecurityPolicyTest, IsolatedOriginPattern) {
@@ -2980,8 +2868,7 @@ TEST_P(ChildProcessSecurityPolicyTest,
       ChildProcessSecurityPolicyImpl::GetInstance();
 
   // Initially there should be no isolated origins.
-  LOCKED_EXPECT_THAT(p->isolated_origins_lock_, p->isolated_origins_,
-                     testing::IsEmpty());
+  EXPECT_THAT(p->GetIsolatedOrigins(), testing::IsEmpty());
 
   // Create SiteInstances for foo.com, bar.com, and baz.com, with each
   // SiteInstance in a new BrowsingInstance.
@@ -3002,11 +2889,7 @@ TEST_P(ChildProcessSecurityPolicyTest,
   // Isolate foo.com for `foo_instance`'s BrowsingInstance only.
   p->AddCoopIsolatedOriginForBrowsingInstance(
       foo_instance->GetIsolationContext(), foo, IsolatedOriginSource::TEST);
-  LOCKED_EXPECT_THAT(
-      p->isolated_origins_lock_, p->isolated_origins_,
-      testing::UnorderedElementsAre(GetIsolatedOriginEntry(
-          &context, false /* applies_to_future_browsing_instances */,
-          foo_browsing_instance_id, foo)));
+  EXPECT_EQ(1, p->GetIsolatedOriginEntryCountForTesting(foo));
 
   // Verify that foo.com is isolated only in the `foo_instance`'s
   // BrowsingInstance, and no other origins are isolated in any other
@@ -3034,25 +2917,13 @@ TEST_P(ChildProcessSecurityPolicyTest,
   // effect.
   p->AddCoopIsolatedOriginForBrowsingInstance(
       foo_instance->GetIsolationContext(), foo, IsolatedOriginSource::TEST);
-  EXPECT_EQ(1, GetIsolatedOriginEntryCount(foo));
-  LOCKED_EXPECT_THAT(
-      p->isolated_origins_lock_, p->isolated_origins_,
-      testing::UnorderedElementsAre(GetIsolatedOriginEntry(
-          &context, false /* applies_to_future_browsing_instances */,
-          foo_browsing_instance_id, foo)));
+  EXPECT_EQ(1, p->GetIsolatedOriginEntryCountForTesting(foo));
 
   // Isolate baz.com in `baz_browsing_instance`'s BrowsingInstance.
   p->AddCoopIsolatedOriginForBrowsingInstance(
       baz_instance->GetIsolationContext(), baz, IsolatedOriginSource::TEST);
-  LOCKED_EXPECT_THAT(
-      p->isolated_origins_lock_, p->isolated_origins_,
-      testing::UnorderedElementsAre(
-          GetIsolatedOriginEntry(
-              &context, false /* applies_to_future_browsing_instances */,
-              foo_browsing_instance_id, foo),
-          GetIsolatedOriginEntry(
-              &context, false /* applies_to_future_browsing_instances */,
-              baz_browsing_instance_id, baz)));
+  EXPECT_EQ(1, p->GetIsolatedOriginEntryCountForTesting(foo));
+  EXPECT_EQ(1, p->GetIsolatedOriginEntryCountForTesting(baz));
 
   // Verify that foo.com is isolated in the `foo_instance`'s BrowsingInstance,
   // and baz.com is isolated in `baz_instance`'s BrowsingInstance.
@@ -3099,7 +2970,7 @@ TEST_P(ChildProcessSecurityPolicyTest,
   EXPECT_TRUE(IsIsolatedOrigin(&context, baz_browsing_instance_id, foo));
   EXPECT_FALSE(IsIsolatedOrigin(&context, baz_browsing_instance_id, bar));
   EXPECT_TRUE(IsIsolatedOrigin(&context, baz_browsing_instance_id, baz));
-  EXPECT_EQ(3, GetIsolatedOriginEntryCount(foo));
+  EXPECT_EQ(3, p->GetIsolatedOriginEntryCountForTesting(foo));
 
   // Simulate foo_instance and its BrowsingInstance going away.  This should
   // remove the corresponding BrowsingInstance-specific entries in
@@ -3131,8 +3002,7 @@ TEST_P(ChildProcessSecurityPolicyTest,
       ChildProcessSecurityPolicyImpl::GetInstance();
 
   // Initially there should be no isolated origins.
-  LOCKED_EXPECT_THAT(p->isolated_origins_lock_, p->isolated_origins_,
-                     testing::IsEmpty());
+  EXPECT_THAT(p->GetIsolatedOrigins(), testing::IsEmpty());
 
   // Create a SiteInstance for foo.com in a new BrowsingInstance.
   TestBrowserContext context;
@@ -3144,7 +3014,7 @@ TEST_P(ChildProcessSecurityPolicyTest,
   // Isolate foo.com for `foo_instance`'s BrowsingInstance only.
   p->AddCoopIsolatedOriginForBrowsingInstance(
       foo_instance->GetIsolationContext(), foo, IsolatedOriginSource::TEST);
-  EXPECT_EQ(1, GetIsolatedOriginEntryCount(foo));
+  EXPECT_EQ(1, p->GetIsolatedOriginEntryCountForTesting(foo));
 
   // Create a SiteInstance for bar.com in a new BrowsingInstance.
   scoped_refptr<SiteInstanceImpl> bar_instance =
@@ -3160,7 +3030,7 @@ TEST_P(ChildProcessSecurityPolicyTest,
 
   // We should now have two entries for foo.com, one for
   // foo_browsing_instance_id, and one for future_id.
-  EXPECT_EQ(2, GetIsolatedOriginEntryCount(foo));
+  EXPECT_EQ(2, p->GetIsolatedOriginEntryCountForTesting(foo));
 
   // Verify that foo.com is isolated in the `foo_instance`'s BrowsingInstance,
   // as well as future BrowsingInstance IDs.
@@ -3183,12 +3053,12 @@ TEST_P(ChildProcessSecurityPolicyTest,
             future_instance->GetIsolationContext().browsing_instance_id());
   p->AddCoopIsolatedOriginForBrowsingInstance(
       future_instance->GetIsolationContext(), foo, IsolatedOriginSource::TEST);
-  EXPECT_EQ(2, GetIsolatedOriginEntryCount(foo));
+  EXPECT_EQ(2, p->GetIsolatedOriginEntryCountForTesting(foo));
 
   // Likewise, an attempt to re-add foo.com for future BrowsingInstances should
   // be ignored.
   p->AddFutureIsolatedOrigins({foo}, IsolatedOriginSource::TEST, &context);
-  EXPECT_EQ(2, GetIsolatedOriginEntryCount(foo));
+  EXPECT_EQ(2, p->GetIsolatedOriginEntryCountForTesting(foo));
 
   // However, we can still add foo.com isolation to a BrowsingInstance that
   // precedes `future_id` and doesn't match `foo_browsing_instance_id`.  Check
@@ -3196,7 +3066,7 @@ TEST_P(ChildProcessSecurityPolicyTest,
   EXPECT_LT(bar_browsing_instance_id, future_id);
   p->AddCoopIsolatedOriginForBrowsingInstance(
       bar_instance->GetIsolationContext(), foo, IsolatedOriginSource::TEST);
-  EXPECT_EQ(3, GetIsolatedOriginEntryCount(foo));
+  EXPECT_EQ(3, p->GetIsolatedOriginEntryCountForTesting(foo));
   EXPECT_TRUE(IsIsolatedOrigin(&context, foo_browsing_instance_id, foo));
   EXPECT_TRUE(IsIsolatedOrigin(&context, bar_browsing_instance_id, foo));
   EXPECT_TRUE(IsIsolatedOrigin(&context, future_id, foo));
@@ -3207,7 +3077,7 @@ TEST_P(ChildProcessSecurityPolicyTest,
   // entries should remain.
   p->SetBrowsingInstanceCleanupDelayForTesting(0);
   foo_instance.reset();
-  EXPECT_EQ(2, GetIsolatedOriginEntryCount(foo));
+  EXPECT_EQ(2, p->GetIsolatedOriginEntryCountForTesting(foo));
   EXPECT_FALSE(IsIsolatedOrigin(&context, foo_browsing_instance_id, foo));
   EXPECT_TRUE(IsIsolatedOrigin(&context, bar_browsing_instance_id, foo));
   EXPECT_TRUE(IsIsolatedOrigin(&context, future_id, foo));
@@ -3216,7 +3086,7 @@ TEST_P(ChildProcessSecurityPolicyTest,
   // Destroying a BrowsingInstance with ID `future_id` shouldn't affect the
   // entry that applies to future BrowsingInstances.
   future_instance.reset();
-  EXPECT_EQ(2, GetIsolatedOriginEntryCount(foo));
+  EXPECT_EQ(2, p->GetIsolatedOriginEntryCountForTesting(foo));
   EXPECT_FALSE(IsIsolatedOrigin(&context, foo_browsing_instance_id, foo));
   EXPECT_TRUE(IsIsolatedOrigin(&context, bar_browsing_instance_id, foo));
   EXPECT_TRUE(IsIsolatedOrigin(&context, future_id, foo));

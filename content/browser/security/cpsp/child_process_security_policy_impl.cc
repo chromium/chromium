@@ -3797,6 +3797,15 @@ void ChildProcessSecurityPolicyImpl::ClearIsolatedOriginsForTesting() {
   isolated_origins_.clear();
 }
 
+int ChildProcessSecurityPolicyImpl::GetIsolatedOriginEntryCountForTesting(
+    const url::Origin& origin) {
+  GURL key(SiteInfo::GetSiteForOrigin(origin));
+  base::AutoLock isolated_origins_lock(isolated_origins_lock_);
+  auto origins_for_key = isolated_origins_[key];
+  return std::ranges::count(origins_for_key, origin,
+                            &IsolatedOriginEntry::origin);
+}
+
 void ChildProcessSecurityPolicyImpl::
     AddV8OptimizationDisabledStateForOriginIfNotCached(
         const BrowsingInstanceId& browsing_instance_id,
