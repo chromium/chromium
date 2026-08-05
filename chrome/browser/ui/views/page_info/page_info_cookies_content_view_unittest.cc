@@ -11,22 +11,29 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/views/chrome_views_test_base.h"
 #include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/page_info/page_info.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/vector_icon_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/vector_icons.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
@@ -60,42 +67,52 @@ const int kDaysToExpiration = 30;
 
 }  // namespace
 
-class PageInfoCookiesContentViewBaseTestClass : public TestWithBrowserView {
+class PageInfoCookiesContentViewBaseTestClass : public ChromeViewsTestBase {
  public:
-  PageInfoCookiesContentViewBaseTestClass()
-      : TestWithBrowserView(
-            base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME) {}
+  PageInfoCookiesContentViewBaseTestClass() = default;
 
   void SetUp() override {
     feature_list_.InitWithFeaturesAndParameters(EnabledFeatures(), {});
-    TestWithBrowserView::SetUp();
+    ChromeViewsTestBase::SetUp();
+
+#if BUILDFLAG(IS_CHROMEOS)
+    auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
+    auto* fake_user_manager_ptr = fake_user_manager.get();
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::move(fake_user_manager));
+
+    const GaiaId kTestUserGaiaId("1111111111");
+    auto account_id =
+        AccountId::FromUserEmailGaiaId("test@example.com", kTestUserGaiaId);
+    fake_user_manager_ptr->AddUserWithAffiliation(account_id,
+                                                  /*is_affiliated=*/true);
+    fake_user_manager_ptr->LoginUser(account_id);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     const GURL url("http://a.com");
-    AddTab(browser(), url);
-    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    profile_ = std::make_unique<TestingProfile>();
+    web_contents_ =
+        content::WebContentsTester::CreateTestWebContents(profile_.get(), nullptr);
+    content::WebContentsTester::For(web_contents_.get())
+        ->NavigateAndCommit(url);
 
     presenter_ = std::make_unique<PageInfo>(
-        std::make_unique<ChromePageInfoDelegate>(web_contents), web_contents,
-        url);
+        std::make_unique<ChromePageInfoDelegate>(web_contents_.get()),
+        web_contents_.get(), url);
     content_view_ =
         std::make_unique<PageInfoCookiesContentView>(presenter_.get());
   }
 
   void TearDown() override {
-    presenter_.reset();
     content_view_.reset();
-    TestWithBrowserView::TearDown();
-  }
-
+    presenter_.reset();
+    web_contents_.reset();
+    profile_.reset();
 #if BUILDFLAG(IS_CHROMEOS)
-  void LogIn(std::string_view email, const GaiaId& gaia_id) override {
-    BrowserWithTestWindowTest::LogIn(email, gaia_id);
-    user_manager()->SetUserPolicyStatus(
-        AccountId::FromUserEmailGaiaId(email, gaia_id),
-        /*is_managed=*/true,
-        /*is_affiliated=*/true);
+    scoped_user_manager_.reset();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+    ChromeViewsTestBase::TearDown();
   }
-#endif
 
   PageInfoCookiesContentView* content_view() { return content_view_.get(); }
 
@@ -149,6 +166,13 @@ class PageInfoCookiesContentViewBaseTestClass : public TestWithBrowserView {
     return {};
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
+  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<content::WebContents> web_contents_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<PageInfo> presenter_;
   std::unique_ptr<PageInfoCookiesContentView> content_view_;
