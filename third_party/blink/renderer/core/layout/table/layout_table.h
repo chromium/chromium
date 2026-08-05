@@ -91,7 +91,7 @@ class TableBorders;
 // Cached column constraints:
 // Column constraints are used in layout. They must be regenerated
 // whenever table geometry changes.
-// The validation state is a IsTableColumnsConstraintsDirty flag
+// The validation state is a IsTableColumnConstraintsDirty flag
 // on LayoutObject. They are invalidated inside
 // LayoutObject::SetNeeds*Layout.
 class CORE_EXPORT LayoutTable : public LayoutBlock {

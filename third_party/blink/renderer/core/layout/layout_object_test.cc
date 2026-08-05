@@ -596,7 +596,7 @@ TEST_F(LayoutObjectTest, MutableForPaintingClearPaintFlags) {
   object->SetNeedsPaintPropertyUpdate();
   EXPECT_TRUE(object->NeedsPaintPropertyUpdate());
   EXPECT_TRUE(object->Parent()->DescendantNeedsPaintPropertyUpdate());
-  object->bitfields_.SetDescendantNeedsPaintPropertyUpdate(true);
+  object->descendant_needs_paint_property_update_ = true;
   EXPECT_TRUE(object->DescendantNeedsPaintPropertyUpdate());
 
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInPrePaint);

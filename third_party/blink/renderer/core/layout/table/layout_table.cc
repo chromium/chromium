@@ -158,8 +158,9 @@ void LayoutTable::InvalidateCachedTableBorders() {
 
 const TableTypes::Columns* LayoutTable::GetCachedTableColumnConstraints() {
   NOT_DESTROYED();
-  if (IsTableColumnsConstraintsDirty())
+  if (IsTableColumnConstraintsDirty()) {
     cached_table_columns_.reset();
+  }
   return cached_table_columns_.get();
 }
 
@@ -167,7 +168,7 @@ void LayoutTable::SetCachedTableColumnConstraints(
     scoped_refptr<const TableTypes::Columns> columns) {
   NOT_DESTROYED();
   cached_table_columns_ = std::move(columns);
-  SetTableColumnConstraintDirty(false);
+  SetTableColumnConstraintsDirty(false);
 }
 
 void LayoutTable::GridBordersChanged() {

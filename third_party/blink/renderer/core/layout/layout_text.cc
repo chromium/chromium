@@ -242,7 +242,7 @@ void LayoutText::StyleDidChange(
     }
   }
 
-  SetHorizontalWritingMode(new_style.IsHorizontalWritingMode());
+  SetIsHorizontalWritingMode(new_style.IsHorizontalWritingMode());
 }
 
 void LayoutText::RemoveAndDestroyTextBoxes() {
