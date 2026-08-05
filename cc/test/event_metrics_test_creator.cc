@@ -87,6 +87,14 @@ EventMetricsTestCreator::ScrollEventBuilderBase<Derived>::SetDispatchArgs(
 
 template <typename Derived>
 Derived& EventMetricsTestCreator::ScrollEventBuilderBase<Derived>::
+    SetScrollBeginGeneratedTimestamp(
+        base::TimeTicks scroll_begin_generated_timestamp) {
+  scroll_begin_generated_timestamp_ = scroll_begin_generated_timestamp;
+  return static_cast<Derived&>(*this);
+}
+
+template <typename Derived>
+Derived& EventMetricsTestCreator::ScrollEventBuilderBase<Derived>::
     SetScrollBeginArrivalTimestamp(
         base::TimeTicks scroll_begin_arrival_timestamp) {
   scroll_begin_arrival_timestamp_ = scroll_begin_arrival_timestamp;
@@ -200,7 +208,9 @@ EventMetricsTestCreator::ScrollEventBuilder::Build() {
       type_, ui::ScrollInputType::kTouchscreen, is_inertial_, timestamp_,
       /* arrived_in_browser_main_timestamp= */ timestamp_ +
           base::Microseconds(1),
-      &*clock_,
+      &*clock_, /* scroll_begin_generated_timestamp= */
+      scroll_begin_generated_timestamp_.value_or(timestamp_ -
+                                                 base::Microseconds(2)),
       /* scroll_begin_arrival_timestamp= */
       scroll_begin_arrival_timestamp_.value_or(timestamp_ -
                                                base::Microseconds(1)));
@@ -255,7 +265,9 @@ EventMetricsTestCreator::ScrollUpdateEventBuilder::Build() {
       is_inertial_, scroll_update_type_, delta_, timestamp_,
       /* arrived_in_browser_main_timestamp= */ timestamp_ +
           base::Microseconds(1),
-      &*clock_, trace_id_,
+      &*clock_, trace_id_, /* scroll_begin_generated_timestamp= */
+      scroll_begin_generated_timestamp_.value_or(timestamp_ -
+                                                 base::Microseconds(2)),
       /* scroll_begin_arrival_timestamp= */
       scroll_begin_arrival_timestamp_.value_or(timestamp_ -
                                                base::Microseconds(1)));

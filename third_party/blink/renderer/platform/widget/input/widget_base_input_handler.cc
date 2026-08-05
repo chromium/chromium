@@ -584,14 +584,16 @@ void WidgetBaseInputHandler::HandleInjectedScrollGestures(
               : cc::ScrollUpdateEventMetrics::ScrollUpdateType::kStarted,
           params.scroll_delta.y(),
           cc::EventMetrics::DispatchStage::kRendererCompositorFinished,
-          original_metrics, scroll_tracker_.scroll_begin_arrival_timestamp());
+          original_metrics, scroll_tracker_.scroll_begin_generated_timestamp(),
+          scroll_tracker_.scroll_begin_arrival_timestamp());
       scroll_tracker_.OnScrollUpdate();
     } else {
       metrics = cc::ScrollEventMetrics::CreateFromExisting(
           gesture_event->GetTypeAsUiEventType(),
           ui::ScrollInputType::kScrollbar, /*is_inertial=*/false,
           cc::EventMetrics::DispatchStage::kRendererCompositorFinished,
-          original_metrics, scroll_tracker_.scroll_begin_arrival_timestamp());
+          original_metrics, scroll_tracker_.scroll_begin_generated_timestamp(),
+          scroll_tracker_.scroll_begin_arrival_timestamp());
       if (gesture_event->GetType() ==
           WebInputEvent::Type::kGestureScrollBegin) {
         gesture_event->data.scroll_begin.scrollable_area_element_id =

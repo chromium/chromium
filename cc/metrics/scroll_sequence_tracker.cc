@@ -10,14 +10,20 @@
 namespace cc {
 
 void ScrollSequenceTracker::OnScrollBegin(const EventMetrics* metrics) {
-  scroll_begin_arrival_timestamp_ = [&] {
-    if (!metrics) {
-      return base::TimeTicks::Now();
-    }
+  if (metrics) {
     CHECK_EQ(metrics->type(), EventMetrics::EventType::kGestureScrollBegin);
-    return metrics->GetDispatchStageTimestamp(
+    scroll_begin_generated_timestamp_ = metrics->GetDispatchStageTimestamp(
+        EventMetrics::DispatchStage::kGenerated);
+    scroll_begin_arrival_timestamp_ = metrics->GetDispatchStageTimestamp(
         EventMetrics::DispatchStage::kArrivedInRendererCompositor);
-  }();
+  } else {
+    // Nothing can stand in for the generated timestamp; see
+    // `ScrollEventMetrics::scroll_begin_generated_timestamp()`.
+    scroll_begin_generated_timestamp_ = base::TimeTicks();
+    // In contrast, `Now()` is an accurate arrival timestamp because this code
+    // runs when the scroll begin arrives.
+    scroll_begin_arrival_timestamp_ = base::TimeTicks::Now();
+  }
   has_seen_scroll_update_after_begin_ = false;
 }
 

@@ -731,6 +731,7 @@ void WidgetInputHandlerManager::DispatchEvent(
           blocking_touch_dispatched_to_renderer_timestamp,
           base::IdType64<class ui::LatencyInfo>(
               event->latency_info().trace_id()),
+          scroll_tracker_.scroll_begin_generated_timestamp(),
           scroll_tracker_.scroll_begin_arrival_timestamp());
       scroll_tracker_.OnScrollUpdate();
     } else {
@@ -741,6 +742,7 @@ void WidgetInputHandlerManager::DispatchEvent(
           blocking_touch_dispatched_to_renderer_timestamp,
           base::IdType64<class ui::LatencyInfo>(
               event->latency_info().trace_id()),
+          scroll_tracker_.scroll_begin_generated_timestamp(),
           scroll_tracker_.scroll_begin_arrival_timestamp());
       if (gesture_event.GetType() == WebInputEvent::Type::kGestureScrollBegin) {
         scroll_tracker_.OnScrollBegin(metrics.get());

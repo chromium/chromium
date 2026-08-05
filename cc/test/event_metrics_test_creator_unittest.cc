@@ -197,6 +197,22 @@ TEST_P(EventMetricsTestCreatorScrollEventTest, SetDispatchArgs) {
   EXPECT_EQ(event->dispatch_args(), args);
 }
 
+TEST_P(EventMetricsTestCreatorScrollEventTest,
+       SetScrollBeginGeneratedTimestamp) {
+  std::unique_ptr<ScrollEventMetrics> event =
+      CreateEventBuilder()
+          .SetTimestamp(MillisecondsTicks(99))
+          .SetScrollBeginGeneratedTimestamp(MillisecondsTicks(31))
+          .Build();
+  EXPECT_EQ(event->type(), GetParam().expected_type);
+  if (GetParam().expected_type ==
+      EventMetrics::EventType::kGestureScrollBegin) {
+    EXPECT_EQ(event->scroll_begin_generated_timestamp(), MillisecondsTicks(99));
+  } else {
+    EXPECT_EQ(event->scroll_begin_generated_timestamp(), MillisecondsTicks(31));
+  }
+}
+
 TEST_P(EventMetricsTestCreatorScrollEventTest, SetScrollBeginArrivalTimestamp) {
   std::unique_ptr<ScrollEventMetrics> event =
       CreateEventBuilder()
@@ -225,6 +241,7 @@ TEST_P(EventMetricsTestCreatorScrollEventTest, AllParams) {
           .SetArrivedInRendererCompositorTimestamp(MillisecondsTicks(101))
           .SetCausedFrameUpdate(false)
           .SetDispatchArgs(args)
+          .SetScrollBeginGeneratedTimestamp(MillisecondsTicks(14))
           .SetScrollBeginArrivalTimestamp(MillisecondsTicks(15))
           .Build();
   EXPECT_EQ(event->type(), GetParam().expected_type);
@@ -238,8 +255,10 @@ TEST_P(EventMetricsTestCreatorScrollEventTest, AllParams) {
   EXPECT_EQ(event->dispatch_args(), args);
   if (GetParam().expected_type ==
       EventMetrics::EventType::kGestureScrollBegin) {
+    EXPECT_EQ(event->scroll_begin_generated_timestamp(), MillisecondsTicks(99));
     EXPECT_EQ(event->scroll_begin_arrival_timestamp(), MillisecondsTicks(101));
   } else {
+    EXPECT_EQ(event->scroll_begin_generated_timestamp(), MillisecondsTicks(14));
     EXPECT_EQ(event->scroll_begin_arrival_timestamp(), MillisecondsTicks(15));
   }
 }
@@ -372,6 +391,16 @@ TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, SetDispatchArgs) {
 }
 
 TEST_P(EventMetricsTestCreatorScrollUpdateEventTest,
+       SetScrollBeginGeneratedTimestamp) {
+  std::unique_ptr<ScrollUpdateEventMetrics> event =
+      CreateEventBuilder()
+          .SetScrollBeginGeneratedTimestamp(MillisecondsTicks(270))
+          .Build();
+  EXPECT_EQ(event->type(), GetParam().expected_type);
+  EXPECT_EQ(event->scroll_begin_generated_timestamp(), MillisecondsTicks(270));
+}
+
+TEST_P(EventMetricsTestCreatorScrollUpdateEventTest,
        SetScrollBeginArrivalTimestamp) {
   std::unique_ptr<ScrollUpdateEventMetrics> event =
       CreateEventBuilder()
@@ -398,6 +427,7 @@ TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, AllParams) {
           .SetIsSynthetic(true)
           .SetTraceId(EventMetrics::TraceId(456))
           .SetDispatchArgs(args)
+          .SetScrollBeginGeneratedTimestamp(MillisecondsTicks(80))
           .SetScrollBeginArrivalTimestamp(MillisecondsTicks(81))
           .Build();
   EXPECT_EQ(event->type(), GetParam().expected_type);
@@ -414,6 +444,7 @@ TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, AllParams) {
   EXPECT_TRUE(event->is_synthetic());
   EXPECT_EQ(event->trace_id()->value(), 456);
   EXPECT_EQ(event->dispatch_args(), args);
+  EXPECT_EQ(event->scroll_begin_generated_timestamp(), MillisecondsTicks(80));
   EXPECT_EQ(event->scroll_begin_arrival_timestamp(), MillisecondsTicks(81));
 }
 

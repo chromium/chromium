@@ -1131,6 +1131,7 @@ WindowEventDispatcher::CreateScropedMetricsMonitorForEvent(
               : cc::ScrollUpdateEventMetrics::ScrollUpdateType::kStarted,
           gesture->details().scroll_y(), gesture->time_stamp(),
           base::IdType64<class ui::LatencyInfo>(event.latency()->trace_id()),
+          scroll_tracker_.scroll_begin_generated_timestamp(),
           scroll_tracker_.scroll_begin_arrival_timestamp());
       scroll_tracker_.OnScrollUpdate();
     } else if (gesture->IsScrollGestureEvent()) {
@@ -1138,6 +1139,7 @@ WindowEventDispatcher::CreateScropedMetricsMonitorForEvent(
           gesture->type(), input_type,
           /*is_inertial=*/false, gesture->time_stamp(),
           base::IdType64<class ui::LatencyInfo>(event.latency()->trace_id()),
+          scroll_tracker_.scroll_begin_generated_timestamp(),
           scroll_tracker_.scroll_begin_arrival_timestamp());
       if (gesture->type() == ui::EventType::kGestureScrollBegin) {
         scroll_tracker_.OnScrollBegin(metrics.get());

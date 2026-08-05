@@ -798,6 +798,7 @@ void InputHandlerProxy::InjectScrollbarGestureScroll(
         synthetic_gesture_event->data.scroll_update.delta_y,
         cc::EventMetrics::DispatchStage::kArrivedInRendererCompositor,
         original_metrics,
+        injected_scroll_tracker_.scroll_begin_generated_timestamp(),
         injected_scroll_tracker_.scroll_begin_arrival_timestamp());
     injected_scroll_tracker_.OnScrollUpdate();
   } else {
@@ -807,6 +808,7 @@ void InputHandlerProxy::InjectScrollbarGestureScroll(
         /*is_inertial=*/false,
         cc::EventMetrics::DispatchStage::kArrivedInRendererCompositor,
         original_metrics,
+        injected_scroll_tracker_.scroll_begin_generated_timestamp(),
         injected_scroll_tracker_.scroll_begin_arrival_timestamp());
     if (type == WebInputEvent::Type::kGestureScrollBegin) {
       injected_scroll_tracker_.OnScrollBegin(metrics.get());

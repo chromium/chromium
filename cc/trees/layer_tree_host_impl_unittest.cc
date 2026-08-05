@@ -11130,6 +11130,8 @@ TEST_P(LayerTreeHostImplTest,
   SetupViewportLayersOuterScrolls(viewport_size, content_size);
   DrawFrame();
 
+  base::TimeTicks scroll_begin_generated_timestamp =
+      base::TimeTicks::Now() - base::Milliseconds(1);
   base::TimeTicks scroll_begin_arrival_timestamp = base::TimeTicks::Now();
   GetInputHandler().ScrollBegin(
       BeginState(gfx::Point(250, 250), gfx::Vector2dF(),
@@ -11158,7 +11160,7 @@ TEST_P(LayerTreeHostImplTest,
         /*arrived_in_browser_main_timestamp=*/now + base::Milliseconds(1),
         /*blocking_touch_dispatched_to_renderer=*/base::TimeTicks(),
         /*trace_id=*/base::IdType64<class ui::LatencyInfo>(123),
-        scroll_begin_arrival_timestamp));
+        scroll_begin_generated_timestamp, scroll_begin_arrival_timestamp));
     host_impl_->active_tree()->AppendEventsMetricsFromMainThread(
         std::move(events_metrics));
 
@@ -14926,6 +14928,8 @@ TEST_P(LayerTreeHostImplEventMetricPreservationTest, PreserveMetrics) {
                  base::Milliseconds(14),
              &tick_clock,
              /* trace_id= */ std::nullopt,
+             /* scroll_begin_generated_timestamp= */ base::TimeTicks() +
+                 base::Milliseconds(9),
              /* scroll_begin_arrival_timestamp= */ base::TimeTicks() +
                  base::Milliseconds(10)),
          EventMetrics::CreateForTesting(
@@ -14943,6 +14947,8 @@ TEST_P(LayerTreeHostImplEventMetricPreservationTest, PreserveMetrics) {
              /* arrived_in_browser_main_timestamp= */ base::TimeTicks() +
                  base::Milliseconds(18),
              &tick_clock,
+             /* scroll_begin_generated_timestamp= */ base::TimeTicks() +
+                 base::Milliseconds(9),
              /* scroll_begin_arrival_timestamp= */ base::TimeTicks() +
                  base::Milliseconds(10))});
     switch (GetParam().should_preserve) {

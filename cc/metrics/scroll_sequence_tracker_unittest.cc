@@ -26,11 +26,13 @@ class ScrollSequenceTrackerTest : public testing::Test {
 };
 
 TEST_F(ScrollSequenceTrackerTest, InitialState) {
+  EXPECT_EQ(tracker_.scroll_begin_generated_timestamp(), base::TimeTicks());
   EXPECT_EQ(tracker_.scroll_begin_arrival_timestamp(), base::TimeTicks());
   EXPECT_FALSE(tracker_.has_seen_scroll_update_after_begin());
 }
 
 TEST_F(ScrollSequenceTrackerTest, ScrollBegin) {
+  base::TimeTicks scroll_begin_generated_timestamp = MillisecondsTicks(10);
   base::TimeTicks scroll_begin_arrival_timestamp = MillisecondsTicks(30);
   {
     base::SimpleTestTickClock tick_clock;
@@ -39,9 +41,11 @@ TEST_F(ScrollSequenceTrackerTest, ScrollBegin) {
         ScrollEventMetrics::CreateForTesting(
             ui::EventType::kGestureScrollBegin,
             ui::ScrollInputType::kTouchscreen,
-            /*is_inertial=*/false, /*timestamp=*/MillisecondsTicks(10),
+            /*is_inertial=*/false,
+            /*timestamp=*/scroll_begin_generated_timestamp,
             /*arrived_in_browser_main_timestamp=*/MillisecondsTicks(20),
-            &tick_clock, /*scroll_begin_arrival_timestamp=*/base::TimeTicks());
+            &tick_clock, /*scroll_begin_generated_timestamp=*/base::TimeTicks(),
+            /*scroll_begin_arrival_timestamp=*/base::TimeTicks());
     ASSERT_NE(metrics, nullptr);
 
     // We advance the clock here to verify that `OnScrollBegin()` call below
@@ -52,16 +56,22 @@ TEST_F(ScrollSequenceTrackerTest, ScrollBegin) {
     tracker_.OnScrollBegin(metrics.get());
   }
 
+  EXPECT_EQ(tracker_.scroll_begin_generated_timestamp(),
+            scroll_begin_generated_timestamp);
   EXPECT_EQ(tracker_.scroll_begin_arrival_timestamp(),
             scroll_begin_arrival_timestamp);
   EXPECT_FALSE(tracker_.has_seen_scroll_update_after_begin());
 
   tracker_.OnScrollUpdate();
+  EXPECT_EQ(tracker_.scroll_begin_generated_timestamp(),
+            scroll_begin_generated_timestamp);
   EXPECT_EQ(tracker_.scroll_begin_arrival_timestamp(),
             scroll_begin_arrival_timestamp);
   EXPECT_TRUE(tracker_.has_seen_scroll_update_after_begin());
 
   tracker_.OnScrollUpdate();
+  EXPECT_EQ(tracker_.scroll_begin_generated_timestamp(),
+            scroll_begin_generated_timestamp);
   EXPECT_EQ(tracker_.scroll_begin_arrival_timestamp(),
             scroll_begin_arrival_timestamp);
   EXPECT_TRUE(tracker_.has_seen_scroll_update_after_begin());
@@ -72,6 +82,7 @@ TEST_F(ScrollSequenceTrackerTest, ScrollBeginWithNullMetrics) {
   tracker_.OnScrollBegin(nullptr);
   base::TimeTicks after = base::TimeTicks::Now();
 
+  EXPECT_EQ(tracker_.scroll_begin_generated_timestamp(), base::TimeTicks());
   base::TimeTicks scroll_begin_arrival_timestamp =
       tracker_.scroll_begin_arrival_timestamp();
   EXPECT_THAT(scroll_begin_arrival_timestamp,
@@ -79,11 +90,13 @@ TEST_F(ScrollSequenceTrackerTest, ScrollBeginWithNullMetrics) {
   EXPECT_FALSE(tracker_.has_seen_scroll_update_after_begin());
 
   tracker_.OnScrollUpdate();
+  EXPECT_EQ(tracker_.scroll_begin_generated_timestamp(), base::TimeTicks());
   EXPECT_EQ(tracker_.scroll_begin_arrival_timestamp(),
             scroll_begin_arrival_timestamp);
   EXPECT_TRUE(tracker_.has_seen_scroll_update_after_begin());
 
   tracker_.OnScrollUpdate();
+  EXPECT_EQ(tracker_.scroll_begin_generated_timestamp(), base::TimeTicks());
   EXPECT_EQ(tracker_.scroll_begin_arrival_timestamp(),
             scroll_begin_arrival_timestamp);
   EXPECT_TRUE(tracker_.has_seen_scroll_update_after_begin());
@@ -91,10 +104,12 @@ TEST_F(ScrollSequenceTrackerTest, ScrollBeginWithNullMetrics) {
 
 TEST_F(ScrollSequenceTrackerTest, ScrollUpdateWithoutScrollBegin) {
   tracker_.OnScrollUpdate();
+  EXPECT_EQ(tracker_.scroll_begin_generated_timestamp(), base::TimeTicks());
   EXPECT_EQ(tracker_.scroll_begin_arrival_timestamp(), base::TimeTicks());
   EXPECT_TRUE(tracker_.has_seen_scroll_update_after_begin());
 
   tracker_.OnScrollUpdate();
+  EXPECT_EQ(tracker_.scroll_begin_generated_timestamp(), base::TimeTicks());
   EXPECT_EQ(tracker_.scroll_begin_arrival_timestamp(), base::TimeTicks());
   EXPECT_TRUE(tracker_.has_seen_scroll_update_after_begin());
 }
@@ -102,13 +117,16 @@ TEST_F(ScrollSequenceTrackerTest, ScrollUpdateWithoutScrollBegin) {
 TEST_F(ScrollSequenceTrackerTest, SequenceBeginUpdateBeginUpdate) {
   tracker_.OnScrollBegin(nullptr);
   tracker_.OnScrollUpdate();
+  EXPECT_EQ(tracker_.scroll_begin_generated_timestamp(), base::TimeTicks());
   EXPECT_TRUE(tracker_.has_seen_scroll_update_after_begin());
 
   // New begin should reset it!
   tracker_.OnScrollBegin(nullptr);
+  EXPECT_EQ(tracker_.scroll_begin_generated_timestamp(), base::TimeTicks());
   EXPECT_FALSE(tracker_.has_seen_scroll_update_after_begin());
 
   tracker_.OnScrollUpdate();
+  EXPECT_EQ(tracker_.scroll_begin_generated_timestamp(), base::TimeTicks());
   EXPECT_TRUE(tracker_.has_seen_scroll_update_after_begin());
 }
 
@@ -123,7 +141,8 @@ TEST_F(ScrollSequenceTrackerTest, MultipleScrollBegins) {
             ui::ScrollInputType::kTouchscreen,
             /*is_inertial=*/false, /*timestamp=*/MillisecondsTicks(10),
             /*arrived_in_browser_main_timestamp=*/MillisecondsTicks(20),
-            &tick_clock, /*scroll_begin_arrival_timestamp=*/base::TimeTicks());
+            &tick_clock, /*scroll_begin_generated_timestamp=*/base::TimeTicks(),
+            /*scroll_begin_arrival_timestamp=*/base::TimeTicks());
     ASSERT_NE(metrics, nullptr);
 
     tracker_.OnScrollBegin(metrics.get());
@@ -132,6 +151,7 @@ TEST_F(ScrollSequenceTrackerTest, MultipleScrollBegins) {
   tracker_.OnScrollUpdate();
   tracker_.OnScrollUpdate();
 
+  base::TimeTicks scroll_begin_generated_timestamp2 = MillisecondsTicks(110);
   base::TimeTicks scroll_begin_arrival_timestamp2 = MillisecondsTicks(130);
   {
     base::SimpleTestTickClock tick_clock2;
@@ -140,25 +160,34 @@ TEST_F(ScrollSequenceTrackerTest, MultipleScrollBegins) {
         ScrollEventMetrics::CreateForTesting(
             ui::EventType::kGestureScrollBegin,
             ui::ScrollInputType::kTouchscreen,
-            /*is_inertial=*/false, /*timestamp=*/MillisecondsTicks(110),
+            /*is_inertial=*/false,
+            /*timestamp=*/scroll_begin_generated_timestamp2,
             /*arrived_in_browser_main_timestamp=*/MillisecondsTicks(120),
-            &tick_clock2, /*scroll_begin_arrival_timestamp=*/base::TimeTicks());
+            &tick_clock2,
+            /*scroll_begin_generated_timestamp=*/base::TimeTicks(),
+            /*scroll_begin_arrival_timestamp=*/base::TimeTicks());
     ASSERT_NE(metrics2, nullptr);
     tick_clock2.Advance(base::Milliseconds(10));
 
     tracker_.OnScrollBegin(metrics2.get());
   }
 
+  EXPECT_EQ(tracker_.scroll_begin_generated_timestamp(),
+            scroll_begin_generated_timestamp2);
   EXPECT_EQ(tracker_.scroll_begin_arrival_timestamp(),
             scroll_begin_arrival_timestamp2);
   EXPECT_FALSE(tracker_.has_seen_scroll_update_after_begin());
 
   tracker_.OnScrollUpdate();
+  EXPECT_EQ(tracker_.scroll_begin_generated_timestamp(),
+            scroll_begin_generated_timestamp2);
   EXPECT_EQ(tracker_.scroll_begin_arrival_timestamp(),
             scroll_begin_arrival_timestamp2);
   EXPECT_TRUE(tracker_.has_seen_scroll_update_after_begin());
 
   tracker_.OnScrollUpdate();
+  EXPECT_EQ(tracker_.scroll_begin_generated_timestamp(),
+            scroll_begin_generated_timestamp2);
   EXPECT_EQ(tracker_.scroll_begin_arrival_timestamp(),
             scroll_begin_arrival_timestamp2);
   EXPECT_TRUE(tracker_.has_seen_scroll_update_after_begin());

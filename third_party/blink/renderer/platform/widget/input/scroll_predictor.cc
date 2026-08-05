@@ -209,6 +209,7 @@ ScrollPredictor::GenerateSyntheticScrollUpdate(
           /*blocking_touch_dispatched_to_renderer=*/gesture_event.TimeStamp(),
           /*trace_id=*/
           base::IdType64<class ui::LatencyInfo>(latency_info.trace_id()),
+          last_scroll_begin_generated_timestamp_,
           last_scroll_begin_arrival_timestamp_);
   if (!is_scroll_inertial) {
     metrics->set_predicted_delta(gesture_event.data.scroll_update.delta_y);
@@ -275,6 +276,7 @@ void ScrollPredictor::Reset() {
   last_inertial_phase_ = WebGestureEvent::InertialPhaseState::kUnknownMomentum;
   metrics_handler_.Reset();
   fling_metrics_handler_.Reset();
+  last_scroll_begin_generated_timestamp_ = base::TimeTicks();
   last_scroll_begin_arrival_timestamp_ = base::TimeTicks();
 }
 
@@ -309,6 +311,8 @@ void ScrollPredictor::UpdatePredictionForEventAfterSampleTime(
     last_prediction_update_timestamp_ = gesture_event.TimeStamp();
     if (metrics) {
       if (const cc::ScrollEventMetrics* scroll_metrics = metrics->AsScroll()) {
+        last_scroll_begin_generated_timestamp_ =
+            scroll_metrics->scroll_begin_generated_timestamp();
         last_scroll_begin_arrival_timestamp_ =
             scroll_metrics->scroll_begin_arrival_timestamp();
       }
@@ -354,6 +358,8 @@ void ScrollPredictor::UpdatePrediction(const WebInputEvent& event,
     last_prediction_update_timestamp_ = gesture_event.TimeStamp();
     if (metrics) {
       if (const cc::ScrollEventMetrics* scroll_metrics = metrics->AsScroll()) {
+        last_scroll_begin_generated_timestamp_ =
+            scroll_metrics->scroll_begin_generated_timestamp();
         last_scroll_begin_arrival_timestamp_ =
             scroll_metrics->scroll_begin_arrival_timestamp();
       }

@@ -144,6 +144,11 @@ class PLATFORM_EXPORT ScrollPredictor {
   WebGestureEvent::InertialPhaseState last_inertial_phase_ =
       WebGestureEvent::InertialPhaseState::kUnknownMomentum;
 
+  // The original input timestamp of the scroll begin event which started the
+  // last scroll update's scroll. See
+  // `cc::ScrollEventMetrics::scroll_begin_generated_timestamp()`.
+  base::TimeTicks last_scroll_begin_generated_timestamp_;
+
   // The timestamp of when the scroll begin event which started the last scroll
   // update's scroll arrived in the renderer compositor.
   base::TimeTicks last_scroll_begin_arrival_timestamp_;

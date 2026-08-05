@@ -11,8 +11,8 @@
 
 namespace cc {
 
-// Class for tracking the timestamp of the arrival of the most recent scroll
-// begin event and whether any scroll updates have arrived since then.
+// Class for tracking the timestamps of the most recent scroll begin event and
+// whether any scroll updates have arrived since then.
 //
 // This tracker is intended to be used by classes which process chronologically
 // arriving scroll events. It allows them to group scroll events belonging to
@@ -26,6 +26,12 @@ class CC_EXPORT ScrollSequenceTracker {
 
   void OnScrollUpdate();
 
+  // See `ScrollEventMetrics::scroll_begin_generated_timestamp()`.
+  base::TimeTicks scroll_begin_generated_timestamp() const {
+    return scroll_begin_generated_timestamp_;
+  }
+
+  // See `ScrollEventMetrics::scroll_begin_arrival_timestamp()`.
   base::TimeTicks scroll_begin_arrival_timestamp() const {
     return scroll_begin_arrival_timestamp_;
   }
@@ -35,6 +41,7 @@ class CC_EXPORT ScrollSequenceTracker {
   }
 
  private:
+  base::TimeTicks scroll_begin_generated_timestamp_;
   base::TimeTicks scroll_begin_arrival_timestamp_;
   bool has_seen_scroll_update_after_begin_ = false;
 };
