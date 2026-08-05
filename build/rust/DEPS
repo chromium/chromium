@@ -1,0 +1,8 @@
+include_rules = [
+  # We want to keep `build/rust` as self-contained and hermetic as possible.
+  # This means avoiding depending on other parts of Chromium like `//base`, etc.
+  "-base",
+  "-ipc",
+  '-third_party/abseil-cpp',
+  "-url",
+]

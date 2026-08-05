@@ -4127,6 +4127,23 @@ test("base_unittests") {
     "allocator/partition_allocator/src/partition_alloc:test_support",
   ]
 
+  # TODO(https://crbug.com/532647976): Add test coverage to ChromeOS and Fuchsia
+  # after fixing linking errors found by
+  # https://ci.chromium.org/ui/p/chrome/builders/try/chromeos-betty-chrome-gtest/80753/overview
+  # (can be fixed by disabling remote linking in `build/config/siso/rust.star`
+  # and by
+  # https://ci.chromium.org/ui/p/chromium/builders/try/fuchsia-x64-cast-receiver-rel/1591660/overview
+  # (not diagnosed yet).
+  if (!is_chromeos && !is_fuchsia) {
+    deps += [ "//build/rust/tests" ]
+  }
+
+  # TODO(https://crbug.com/405379314): This fails to build on some iOS ASAN
+  # builders.
+  if (!is_ios || !is_asan) {
+    deps += [ "//testing/rust_gtest_interop:unittests" ]
+  }
+
   # TODO(crbug.com/40158212): Move partition_alloc tests into its repository.
   #
   # Note: This requires checking `build_with_chromium` because partition_alloc

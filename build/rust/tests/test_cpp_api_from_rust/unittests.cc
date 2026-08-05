@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "build/rust/tests/test_cpp_api_from_rust/rust_lib.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/crubit/support/rs_std/char.h"
