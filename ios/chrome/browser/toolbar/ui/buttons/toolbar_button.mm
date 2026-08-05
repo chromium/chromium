@@ -42,6 +42,7 @@ UIColor* NormalTintColor() {
   UIView* _backgroundView;
   UIView* _blueDotView;
   UIView* _gradientView;
+  BOOL _incognito;
 }
 
 @synthesize image = _image;
@@ -51,6 +52,7 @@ UIColor* NormalTintColor() {
   if ((self = [super initWithFrame:CGRectMake(0, 0, kToolbarButtonSize,
                                               kToolbarButtonSize)])) {
     _imageLoader = [imageLoader copy];
+    _incognito = incognito;
 
     [NSLayoutConstraint activateConstraints:@[
       [self.widthAnchor constraintEqualToConstant:kToolbarButtonSize],
@@ -159,18 +161,14 @@ UIColor* NormalTintColor() {
     return;
   }
   _shadowAndBackgroundRemoved = shadowAndBackgroundRemoved;
-  BOOL isDarkMode =
-      self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
   if (_shadowAndBackgroundRemoved) {
-    _backgroundView.backgroundColor =
-        IsGlassToolbarEnabled() ? UIColor.clearColor
-                                : ToolbarElementBackgroundColor(isDarkMode);
+    _backgroundView.backgroundColor = UIColor.clearColor;
     self.layer.shadowColor = nil;
     self.layer.shadowOpacity = 0.0;
     self.layer.shadowOffset = CGSizeZero;
     self.layer.shadowRadius = 0;
   } else {
-    _backgroundView.backgroundColor = ToolbarElementBackgroundColor(isDarkMode);
+    _backgroundView.backgroundColor = ToolbarElementBackgroundColor(_incognito);
     ConfigureShadowForToolbarElement(self);
   }
 }
