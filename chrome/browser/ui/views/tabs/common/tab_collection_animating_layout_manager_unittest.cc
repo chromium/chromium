@@ -5,10 +5,12 @@
 #include "chrome/browser/ui/views/tabs/common/tab_collection_animating_layout_manager.h"
 
 #include <memory>
+#include <tuple>
 #include <vector>
 
 #include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,7 +36,9 @@ class MockAnimatingLayoutManagerDelegate
 
 class TestLayoutManager : public views::LayoutManagerBase {
  public:
-  TestLayoutManager() = default;
+  explicit TestLayoutManager(
+      TabCollectionAnimatingLayoutManager::AnimationAxis axis)
+      : axis_(axis) {}
   ~TestLayoutManager() override = default;
 
  protected:
@@ -42,25 +46,44 @@ class TestLayoutManager : public views::LayoutManagerBase {
       const views::SizeBounds& size_bounds) const override {
     views::ProposedLayout layout;
 
-    // Place children at full width, starting from the top of the parent.
-    int y = 0;
-    for (const auto& child : host_view()->children()) {
-      layout.child_layouts.emplace_back(child, child->GetVisible(),
-                                        gfx::Rect(0, y, 100, 20));
-      y += 20;
-    }
+    if (axis_ ==
+        TabCollectionAnimatingLayoutManager::AnimationAxis::kVertical) {
+      // Place children at full width, starting from the top of the parent.
+      int y = 0;
+      for (const auto& child : host_view()->children()) {
+        layout.child_layouts.emplace_back(child, child->GetVisible(),
+                                          gfx::Rect(0, y, 100, 20));
+        y += 20;
+      }
 
-    // Calculate the total height based on all child layouts.
-    layout.host_size = gfx::Size(size_bounds.width().value_or(100), y);
+      // Calculate the total height based on all child layouts.
+      layout.host_size = gfx::Size(size_bounds.width().value_or(100), y);
+    } else {
+      // Place children at full height, starting from the left of the parent.
+      int x = 0;
+      for (const auto& child : host_view()->children()) {
+        layout.child_layouts.emplace_back(child, child->GetVisible(),
+                                          gfx::Rect(x, 0, 20, 100));
+        x += 20;
+      }
+
+      // Calculate the total width based on all child layouts.
+      layout.host_size = gfx::Size(x, size_bounds.height().value_or(100));
+    }
     return layout;
   }
+
+ private:
+  TabCollectionAnimatingLayoutManager::AnimationAxis axis_;
 };
 
 }  // namespace
 
 class TabCollectionAnimatingLayoutManagerTest
     : public views::ViewsTestBase,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<
+          std::tuple<bool,
+                     TabCollectionAnimatingLayoutManager::AnimationAxis>> {
  public:
   TabCollectionAnimatingLayoutManagerTest()
       : views::ViewsTestBase(
@@ -88,8 +111,8 @@ class TabCollectionAnimatingLayoutManagerTest
         testing::NiceMock<MockAnimatingLayoutManagerDelegate>>();
     layout_manager_ = host_view_->SetLayoutManager(
         std::make_unique<TabCollectionAnimatingLayoutManager>(
-            std::make_unique<TestLayoutManager>(),
-            *layout_manager_delegate_.get()));
+            std::make_unique<TestLayoutManager>(animation_axis()),
+            *layout_manager_delegate_.get(), animation_axis()));
     widget_->Show();
   }
   void TearDown() override {
@@ -101,7 +124,10 @@ class TabCollectionAnimatingLayoutManagerTest
     views::ViewsTestBase::TearDown();
   }
 
-  bool IsAnimationDurationEnabled() const { return GetParam(); }
+  bool IsAnimationDurationEnabled() const { return std::get<0>(GetParam()); }
+  TabCollectionAnimatingLayoutManager::AnimationAxis animation_axis() const {
+    return std::get<1>(GetParam());
+  }
 
   TabCollectionAnimatingLayoutManager* layout_manager() {
     return layout_manager_;
@@ -135,6 +161,10 @@ class TabCollectionAnimatingLayoutManagerTest
 };
 
 TEST_P(TabCollectionAnimatingLayoutManagerTest, AddChild) {
+  const bool is_vertical =
+      animation_axis() ==
+      TabCollectionAnimatingLayoutManager::AnimationAxis::kVertical;
+
   // Setup the Widget's container view bounds.
   widget()->SetBounds(gfx::Rect(0, 0, 100, 100));
   widget()->LayoutRootViewIfNecessary();
@@ -148,8 +178,12 @@ TEST_P(TabCollectionAnimatingLayoutManagerTest, AddChild) {
     host_view()->InvalidateLayout();
     widget()->LayoutRootViewIfNecessary();
 
-    // Height should start at 0 with empty bounds.
-    EXPECT_EQ(child->height(), 0);
+    // Size along animation axis should start at 0 with empty bounds.
+    if (is_vertical) {
+      EXPECT_EQ(child->height(), 0);
+    } else {
+      EXPECT_EQ(child->width(), 0);
+    }
     EXPECT_TRUE(child->bounds().IsEmpty());
 
     // Expect callback when animation ends.
@@ -166,11 +200,13 @@ TEST_P(TabCollectionAnimatingLayoutManagerTest, AddChild) {
 
   // Add the first child, verify it animates to target bounds.
   const auto* child1 = add_child_and_animate_to_target();
-  EXPECT_EQ(child1->bounds(), gfx::Rect(0, 0, 100, 20));
+  EXPECT_EQ(child1->bounds(),
+            is_vertical ? gfx::Rect(0, 0, 100, 20) : gfx::Rect(0, 0, 20, 100));
 
   // Add another child, verify it also animates to target bounds.
   const auto* child2 = add_child_and_animate_to_target();
-  EXPECT_EQ(child2->bounds(), gfx::Rect(0, 20, 100, 20));
+  EXPECT_EQ(child2->bounds(), is_vertical ? gfx::Rect(0, 20, 100, 20)
+                                          : gfx::Rect(20, 0, 20, 100));
 }
 
 TEST_P(TabCollectionAnimatingLayoutManagerTest,
@@ -179,10 +215,14 @@ TEST_P(TabCollectionAnimatingLayoutManagerTest,
   gfx::ScopedAnimationDurationScaleMode normal_duration_mode(
       gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
+  const bool is_vertical =
+      animation_axis() ==
+      TabCollectionAnimatingLayoutManager::AnimationAxis::kVertical;
+
   // Setup the layout manager and initial child views.
   SetLayoutManager(std::make_unique<TabCollectionAnimatingLayoutManager>(
-      std::make_unique<TestLayoutManager>(), *layout_manager_delegate(),
-      TabCollectionAnimatingLayoutManager::AnimationAxis::kVertical,
+      std::make_unique<TestLayoutManager>(animation_axis()),
+      *layout_manager_delegate(), animation_axis(),
       /*animate_host_size=*/true));
 
   widget()->SetBounds(gfx::Rect(0, 0, 100, 100));
@@ -195,7 +235,7 @@ TEST_P(TabCollectionAnimatingLayoutManagerTest,
   // Advance time such that the initial add animation has time to complete.
   task_environment()->FastForwardBy(base::Seconds(1));
 
-  const int expected_height = 40;
+  const int expected_size = 40;
 
   // Swap tabs.
   host_view()->ReorderChildView(child2, 0);
@@ -211,9 +251,14 @@ TEST_P(TabCollectionAnimatingLayoutManagerTest,
 
     ASSERT_TRUE(layout_manager()->is_animating());
 
-    // Verify stability at every frame.
-    EXPECT_EQ(layout_manager()->GetPreferredSize(host_view()).height(),
-              expected_height);
+    // Verify stability at every frame along the animation axis.
+    if (is_vertical) {
+      EXPECT_EQ(layout_manager()->GetPreferredSize(host_view()).height(),
+                expected_size);
+    } else {
+      EXPECT_EQ(layout_manager()->GetPreferredSize(host_view()).width(),
+                expected_size);
+    }
   }
 
   // Advance time to allow the swap animation to reach its final state.
@@ -221,18 +266,37 @@ TEST_P(TabCollectionAnimatingLayoutManagerTest,
 
   // Verify final state.
   EXPECT_FALSE(layout_manager()->is_animating());
-  EXPECT_EQ(layout_manager()->GetPreferredSize(host_view()).height(),
-            expected_height);
-  EXPECT_EQ(child2->bounds(), gfx::Rect(0, 0, 100, 20));
-  EXPECT_EQ(child1->bounds(), gfx::Rect(0, 20, 100, 20));
+  if (is_vertical) {
+    EXPECT_EQ(layout_manager()->GetPreferredSize(host_view()).height(),
+              expected_size);
+    EXPECT_EQ(child2->bounds(), gfx::Rect(0, 0, 100, 20));
+    EXPECT_EQ(child1->bounds(), gfx::Rect(0, 20, 100, 20));
+  } else {
+    EXPECT_EQ(layout_manager()->GetPreferredSize(host_view()).width(),
+              expected_size);
+    EXPECT_EQ(child2->bounds(), gfx::Rect(0, 0, 20, 100));
+    EXPECT_EQ(child1->bounds(), gfx::Rect(20, 0, 20, 100));
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     TabCollectionAnimatingLayoutManagerTest,
-    testing::Bool(),
+    testing::Combine(
+        testing::Bool(),
+        testing::Values(
+            TabCollectionAnimatingLayoutManager::AnimationAxis::kVertical,
+            TabCollectionAnimatingLayoutManager::AnimationAxis::kHorizontal)),
     [](const testing::TestParamInfo<
         TabCollectionAnimatingLayoutManagerTest::ParamType>& info) {
-      return info.param ? "AnimationDurationEnabled"
-                        : "AnimationDurationDisabled";
+      const bool duration_enabled = std::get<0>(info.param);
+      const auto axis = std::get<1>(info.param);
+      return base::StrCat({
+          duration_enabled ? "AnimationDurationEnabled"
+                           : "AnimationDurationDisabled",
+          "_",
+          axis == TabCollectionAnimatingLayoutManager::AnimationAxis::kVertical
+              ? "Vertical"
+              : "Horizontal",
+      });
     });

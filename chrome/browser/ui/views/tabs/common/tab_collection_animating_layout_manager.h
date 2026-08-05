@@ -181,10 +181,11 @@ class TabCollectionAnimatingLayoutManager
   // interpolated.
   AnimationAxis animation_axis_;
 
-  // Stores the height of the `current_layout_`. Recomputed on each call to
-  // `InterpolateLayout()`. Mutable since this is a cached artifact of
-  // calculating `current_layout_` and does not affect logical constness.
-  mutable int current_layout_content_height_ = 0;
+  // Stores the content size (height for vertical, width for horizontal) of the
+  // `current_layout_`. Recomputed on each call to `InterpolateLayout()`.
+  // Mutable since this is a cached artifact of calculating `current_layout_`
+  // and does not affect logical constness.
+  mutable int current_layout_content_size_ = 0;
 
   // True if the manager should animate its preferred size, i.e. the manager
   // will update the host's preferred size to match the layout calculated in
