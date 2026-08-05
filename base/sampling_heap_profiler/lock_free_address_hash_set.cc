@@ -13,14 +13,10 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/sampling_heap_profiler/lock_free_bloom_filter.h"
 #include "base/synchronization/lock.h"
 
 namespace base {
-
-BASE_FEATURE(kUseLockFreeBloomFilter, base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -122,11 +118,7 @@ double ChiSquared(const std::vector<size_t>& bucket_key_counts) {
 }  // namespace
 
 LockFreeAddressHashSet::LockFreeAddressHashSet(size_t buckets_count, Lock& lock)
-    : lock_(lock),
-      buckets_(buckets_count),
-      bucket_mask_(buckets_count - 1),
-      bloom_filters_enabled_(
-          base::FeatureList::IsEnabled(kUseLockFreeBloomFilter)) {
+    : lock_(lock), buckets_(buckets_count), bucket_mask_(buckets_count - 1) {
   CHECK(std::has_single_bit(buckets_count));
   CHECK_LE(bucket_mask_, std::numeric_limits<uint32_t>::max());
 }
@@ -227,9 +219,7 @@ void LockFreeAddressHashSet::Insert(void* key) {
   // of `filter_` and `buckets_` could already be seen by T1 if the updates were
   // sequentially consistent.
   Bucket& bucket = buckets_[Hash(key) & bucket_mask_];
-  if (bloom_filters_enabled_) {
-    bucket.filter.Add(key);
-  }
+  bucket.filter.Add(key);
 
   ++size_;
   // Note: There's no need to use std::atomic_compare_exchange here,
@@ -269,7 +259,7 @@ void LockFreeAddressHashSet::Remove(void* key) {
       break;
     }
     // Rebuild the bloom filter as we go, without the removed key.
-    if (bloom_filters_enabled_ && node_key != nullptr) {
+    if (node_key != nullptr) {
       bits |= bucket.filter.GetBitsForKey(node_key);
     }
   }
@@ -281,18 +271,16 @@ void LockFreeAddressHashSet::Remove(void* key) {
   node->key.store(nullptr, std::memory_order_relaxed);
   --size_;
 
-  // Finish rebuilding the bloom filter if needed.
-  if (bloom_filters_enabled_) {
-    for (node = node->next; node != nullptr; node = node->next) {
-      void* node_key = node->key.load(std::memory_order_relaxed);
-      CHECK_NE(node_key, key);
-      if (node_key != nullptr) {
-        bits |= bucket.filter.GetBitsForKey(node_key);
-      }
+  // Finish rebuilding the bloom filter.
+  for (node = node->next; node != nullptr; node = node->next) {
+    void* node_key = node->key.load(std::memory_order_relaxed);
+    CHECK_NE(node_key, key);
+    if (node_key != nullptr) {
+      bits |= bucket.filter.GetBitsForKey(node_key);
     }
-
-    bucket.filter.AtomicSetBits(bits);
   }
+
+  bucket.filter.AtomicSetBits(bits);
 }
 
 void LockFreeAddressHashSet::Copy(const LockFreeAddressHashSet& other) {
@@ -336,7 +324,6 @@ LockFreeAddressHashSet::BucketStats LockFreeAddressHashSet::GetBucketStats()
 }
 
 size_t LockFreeAddressHashSet::MaxBloomFilterSaturation() const {
-  CHECK(bloom_filters_enabled_);
   lock_->AssertAcquired();
   size_t max_bits = 0;
   for (const Bucket& bucket : buckets_) {

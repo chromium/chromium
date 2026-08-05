@@ -391,11 +391,7 @@ ALWAYS_INLINE void PoissonAllocationSampler::OnFree(
   const LockFreeAddressHashSet& address_cache = sampled_addresses_set();
   switch (address_cache.Contains(address)) {
     [[likely]] case LockFreeAddressHashSet::ContainsResult::kNotFound:
-      if (address_cache.HasBloomFilter()) {
-        bloom_filter_misses_.fetch_add(1, std::memory_order_relaxed);
-      } else {
-        address_cache_misses_.fetch_add(1, std::memory_order_relaxed);
-      }
+      bloom_filter_misses_.fetch_add(1, std::memory_order_relaxed);
       return;
     case LockFreeAddressHashSet::ContainsResult::
         kNotFoundButMatchedInBloomFilter:
@@ -403,9 +399,7 @@ ALWAYS_INLINE void PoissonAllocationSampler::OnFree(
       address_cache_misses_.fetch_add(1, std::memory_order_relaxed);
       return;
     [[unlikely]] case LockFreeAddressHashSet::ContainsResult::kFound:
-      if (address_cache.HasBloomFilter()) {
-        bloom_filter_hits_.fetch_add(1, std::memory_order_relaxed);
-      }
+      bloom_filter_hits_.fetch_add(1, std::memory_order_relaxed);
       address_cache_hits_.fetch_add(1, std::memory_order_relaxed);
       // Continue after switch.
       break;

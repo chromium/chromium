@@ -12,7 +12,6 @@
 #include "base/base_export.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/raw_ref.h"
 #include "base/sampling_heap_profiler/lock_free_bloom_filter.h"
@@ -20,9 +19,6 @@
 #include "base/thread_annotations.h"
 
 namespace base {
-
-// If enabled, LockFreeAddressHashSet will use the bloom filter.
-BASE_EXPORT BASE_DECLARE_FEATURE(kUseLockFreeBloomFilter);
 
 // A hash set container that provides lock-free version of |Contains| operation.
 // It does not support concurrent write operations |Insert| and |Remove|.
@@ -83,16 +79,14 @@ class BASE_EXPORT LockFreeAddressHashSet {
   ~LockFreeAddressHashSet();
 
   enum class ContainsResult {
-    // The key is in the hash set. If the kUseLockFreeBloomFilter feature is
-    // enabled, it's also in the supplemental Bloom filter.
+    // The key is in the hash set and the supplemental Bloom filter.
     kFound,
-    // The key is not in the hash set. If the kUseLockFreeBloomFilter feature is
-    // enabled, it's also not in the supplemental Bloom filter.
+    // The key is not in the hash set or the supplemental Bloom filter.
     kNotFound,
     // The key was matched in the supplemental Bloom filter, but not the hash
-    // set. (A Bloom filter false positive.) This is only returned if the
-    // kUseLockFreeBloomFilter feature is enabled, and is mainly useful for
-    // tracking statistics of the Bloom filter usage.
+    // set. (A Bloom filter false positive.)
+    // TODO(crbug.com/487747381): This is mainly useful for tracking statistics
+    // of the Bloom filter usage, and could be removed.
     kNotFoundButMatchedInBloomFilter,
   };
 
@@ -137,9 +131,6 @@ class BASE_EXPORT LockFreeAddressHashSet {
   // Returns stats about the buckets. Must not be called concurrently with
   // |Insert|, |Remove| or |Copy|.
   BucketStats GetBucketStats() const;
-
-  // Returns true if bloom filters are enabled.
-  bool HasBloomFilter() const { return bloom_filters_enabled_; }
 
   // Returns the highest number of bits set in any bloom filter, for metrics.
   size_t MaxBloomFilterSaturation() const;
@@ -188,16 +179,11 @@ class BASE_EXPORT LockFreeAddressHashSet {
   std::vector<Bucket> buckets_;
   size_t size_ GUARDED_BY(lock_) = 0;
   const size_t bucket_mask_;
-  const bool bloom_filters_enabled_;
 };
 
 ALWAYS_INLINE LockFreeAddressHashSet::ContainsResult
 LockFreeAddressHashSet::Contains(void* key) const {
   const Bucket& bucket = buckets_[Hash(key) & bucket_mask_];
-  if (!bloom_filters_enabled_) {
-    return FindNode(bucket, key) ? ContainsResult::kFound
-                                 : ContainsResult::kNotFound;
-  }
   if (bucket.filter.MaybeContains(key)) {
     // The filter may have false positives, so need to check the hash set.
     return FindNode(bucket, key)

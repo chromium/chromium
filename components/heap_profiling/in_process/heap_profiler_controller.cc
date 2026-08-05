@@ -177,16 +177,29 @@ void LogProfilerStats(std::optional<ProcessType> process_type,
                       const base::PoissonAllocationSamplerStats& profiler_stats,
                       size_t num_samples,
                       base::ByteSize expected_sampling_interval) {
+  base::UmaHistogramCounts100000(
+      ProcessHistogramName("HeapProfiling.InProcess.SamplesPerSnapshot",
+                           process_type),
+      num_samples);
+
+  CHECK(expected_sampling_interval.is_positive());
+  const size_t actual_interval =
+      base::PoissonAllocationSampler::Get()->SamplingInterval();
+  const int ratio_pct = std::round(actual_interval * 100.0 /
+                                   expected_sampling_interval.InBytesF());
+  base::UmaHistogramCounts10000(
+      ProcessHistogramName("HeapProfiling.InProcess.SamplingIntervalVariance",
+                           process_type),
+      ratio_pct);
+
+  // Log SampledAddressCache metrics.
+  // TODO(crbug.com/487747381): Remove these.
   const double hit_rate =
       profiler_stats.address_cache_hits
           ? (static_cast<double>(profiler_stats.address_cache_hits) /
              (profiler_stats.address_cache_hits +
               profiler_stats.address_cache_misses))
           : 0.0;
-  base::UmaHistogramCounts100000(
-      ProcessHistogramName("HeapProfiling.InProcess.SamplesPerSnapshot",
-                           process_type),
-      num_samples);
   base::UmaHistogramCounts1M(
       ProcessHistogramName(
           "HeapProfiling.InProcess.SampledAddressCacheHitCount", process_type),
@@ -219,49 +232,39 @@ void LogProfilerStats(std::optional<ProcessType> process_type,
           process_type),
       100 * profiler_stats.address_cache_bucket_stats.chi_squared, 0, 200, 50);
 
-  if (base::FeatureList::IsEnabled(base::kUseLockFreeBloomFilter)) {
-    const size_t kMaxSaturationSize = 65;
-    static_assert(kMaxSaturationSize == base::kMaxLockFreeBloomFilterBits + 1,
-                  "LockFreeBloomFilter's max bits has changed. Need to update "
-                  "the metric.");
+  // Log LockFreeBloomFilter metrics.
+  // TODO(crbug.com/487747381): Remove these.
+  const size_t kMaxSaturationSize = 65;
+  static_assert(kMaxSaturationSize == base::kMaxLockFreeBloomFilterBits + 1,
+                "LockFreeBloomFilter's max bits has changed. Need to update "
+                "the metric.");
 
-    const double bloom_filter_hit_rate =
-        profiler_stats.bloom_filter_hits
-            ? (static_cast<double>(profiler_stats.bloom_filter_hits) /
-               (profiler_stats.bloom_filter_hits +
-                profiler_stats.bloom_filter_misses))
-            : 0.0;
-    base::UmaHistogramCounts1M(
-        ProcessHistogramName("HeapProfiling.InProcess.BloomFilterHitCount",
-                             process_type),
-        profiler_stats.bloom_filter_hits);
-    base::UmaHistogramCounts10000(
-        ProcessHistogramName("HeapProfiling.InProcess.BloomFilterHitRate",
-                             process_type),
-        bloom_filter_hit_rate * 10000);
-    base::UmaHistogramExactLinear(
-        ProcessHistogramName("HeapProfiling.InProcess.BloomFilterMaxSaturation",
-                             process_type),
-        profiler_stats.bloom_filter_max_saturation, kMaxSaturationSize);
-
-    base::UmaHistogramCounts1M("HeapProfiling.InProcess.BloomFilterHitCount",
-                               profiler_stats.bloom_filter_hits);
-    base::UmaHistogramCounts10000("HeapProfiling.InProcess.BloomFilterHitRate",
-                                  bloom_filter_hit_rate * 10000);
-    base::UmaHistogramExactLinear(
-        "HeapProfiling.InProcess.BloomFilterMaxSaturation",
-        profiler_stats.bloom_filter_max_saturation, kMaxSaturationSize);
-  }
-
-  CHECK(expected_sampling_interval.is_positive());
-  const size_t actual_interval =
-      base::PoissonAllocationSampler::Get()->SamplingInterval();
-  const int ratio_pct = std::round(actual_interval * 100.0 /
-                                   expected_sampling_interval.InBytesF());
-  base::UmaHistogramCounts10000(
-      ProcessHistogramName("HeapProfiling.InProcess.SamplingIntervalVariance",
+  const double bloom_filter_hit_rate =
+      profiler_stats.bloom_filter_hits
+          ? (static_cast<double>(profiler_stats.bloom_filter_hits) /
+             (profiler_stats.bloom_filter_hits +
+              profiler_stats.bloom_filter_misses))
+          : 0.0;
+  base::UmaHistogramCounts1M(
+      ProcessHistogramName("HeapProfiling.InProcess.BloomFilterHitCount",
                            process_type),
-      ratio_pct);
+      profiler_stats.bloom_filter_hits);
+  base::UmaHistogramCounts10000(
+      ProcessHistogramName("HeapProfiling.InProcess.BloomFilterHitRate",
+                           process_type),
+      bloom_filter_hit_rate * 10000);
+  base::UmaHistogramExactLinear(
+      ProcessHistogramName("HeapProfiling.InProcess.BloomFilterMaxSaturation",
+                           process_type),
+      profiler_stats.bloom_filter_max_saturation, kMaxSaturationSize);
+
+  base::UmaHistogramCounts1M("HeapProfiling.InProcess.BloomFilterHitCount",
+                             profiler_stats.bloom_filter_hits);
+  base::UmaHistogramCounts10000("HeapProfiling.InProcess.BloomFilterHitRate",
+                                bloom_filter_hit_rate * 10000);
+  base::UmaHistogramExactLinear(
+      "HeapProfiling.InProcess.BloomFilterMaxSaturation",
+      profiler_stats.bloom_filter_max_saturation, kMaxSaturationSize);
 }
 
 // Retrieves a snapshot from the SamplingHeapProfiler and logs metrics about

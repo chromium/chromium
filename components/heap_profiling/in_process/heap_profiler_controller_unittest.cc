@@ -29,7 +29,6 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
-#include "base/sampling_heap_profiler/lock_free_address_hash_set.h"
 #include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
 #include "base/sampling_heap_profiler/sampling_heap_profiler.h"
 #include "base/strings/string_number_conversions.h"
@@ -681,8 +680,6 @@ struct FeatureTestParams {
   int network_snapshot_prob = 100;
   int renderer_snapshot_prob = 100;
   int utility_snapshot_prob = 100;
-  // Whether the UseLockFreeBloomFilter optimization is enabled.
-  bool bloom_filter_enabled = false;
 
   base::FieldTrialParams ToFieldTrialParams() const;
 
@@ -728,10 +725,6 @@ std::vector<FeatureRefAndParams> FeatureTestParams::GetEnabledFeatures() const {
   if (feature_enabled) {
     enabled_features.emplace_back(kHeapProfilerReporting, ToFieldTrialParams());
   }
-  if (bloom_filter_enabled) {
-    enabled_features.emplace_back(base::kUseLockFreeBloomFilter,
-                                  base::FieldTrialParams());
-  }
   return enabled_features;
 }
 
@@ -739,9 +732,6 @@ std::vector<FeatureRef> FeatureTestParams::GetDisabledFeatures() const {
   std::vector<FeatureRef> disabled_features;
   if (!feature_enabled) {
     disabled_features.emplace_back(kHeapProfilerReporting);
-  }
-  if (!bloom_filter_enabled) {
-    disabled_features.emplace_back(base::kUseLockFreeBloomFilter);
   }
   return disabled_features;
 }
@@ -1089,14 +1079,6 @@ constexpr FeatureTestParams kChannelConfigs[] = {
         .feature_enabled = true,
         .stable = {.probability = 0.0, .expect_browser_sample = false},
         .nonstable = {.probability = 1.0, .expect_browser_sample = true},
-    },
-    // Enabled on all channels, with the LockFreeBloomFilter optimization.
-    // Ensures test coverage of the code that calculates bloom filter metrics.
-    {
-        .feature_enabled = true,
-        .stable = {.probability = 1.0, .expect_browser_sample = true},
-        .nonstable = {.probability = 1.0, .expect_browser_sample = true},
-        .bloom_filter_enabled = true,
     },
 };
 

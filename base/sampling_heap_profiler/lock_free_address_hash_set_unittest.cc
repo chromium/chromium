@@ -14,7 +14,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/synchronization/lock.h"
 #include "base/test/gtest_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/simple_thread.h"
 #include "partition_alloc/shim/allocator_shim.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,13 +22,8 @@ namespace base {
 
 using ContainsResult = LockFreeAddressHashSet::ContainsResult;
 
-class LockFreeAddressHashSetTest : public ::testing::TestWithParam<bool> {
+class LockFreeAddressHashSetTest : public ::testing::Test {
  public:
-  LockFreeAddressHashSetTest() {
-    scoped_feature_list_.InitWithFeatureState(kUseLockFreeBloomFilter,
-                                              GetParam());
-  }
-
   static bool IsSubset(const LockFreeAddressHashSet& superset,
                        const LockFreeAddressHashSet& subset) {
     for (const LockFreeAddressHashSet::Bucket& bucket : subset.buckets_) {
@@ -62,21 +56,11 @@ class LockFreeAddressHashSetTest : public ::testing::TestWithParam<bool> {
     }
     return count;
   }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 using LockFreeAddressHashSetDeathTest = LockFreeAddressHashSetTest;
 
-INSTANTIATE_TEST_SUITE_P(EnableBloomFilter,
-                         LockFreeAddressHashSetTest,
-                         ::testing::Bool());
-INSTANTIATE_TEST_SUITE_P(EnableBloomFilter,
-                         LockFreeAddressHashSetDeathTest,
-                         ::testing::Bool());
-
-TEST_P(LockFreeAddressHashSetTest, EmptySet) {
+TEST_F(LockFreeAddressHashSetTest, EmptySet) {
   Lock lock;
   LockFreeAddressHashSet set(8, lock);
 
@@ -87,7 +71,7 @@ TEST_P(LockFreeAddressHashSetTest, EmptySet) {
   EXPECT_NE(set.Contains(&set), ContainsResult::kFound);
 }
 
-TEST_P(LockFreeAddressHashSetTest, BasicOperations) {
+TEST_F(LockFreeAddressHashSetTest, BasicOperations) {
   Lock lock;
   LockFreeAddressHashSet set(8, lock);
 
@@ -119,7 +103,7 @@ TEST_P(LockFreeAddressHashSetTest, BasicOperations) {
   }
 }
 
-TEST_P(LockFreeAddressHashSetTest, Copy) {
+TEST_F(LockFreeAddressHashSetTest, Copy) {
   Lock lock;
   LockFreeAddressHashSet set(16, lock);
 
@@ -181,7 +165,7 @@ class WriterThread : public SimpleThread {
   raw_ref<std::atomic_bool> cancel_;
 };
 
-TEST_P(LockFreeAddressHashSetTest, ConcurrentAccess) {
+TEST_F(LockFreeAddressHashSetTest, ConcurrentAccess) {
   // The purpose of this test is to make sure adding/removing keys concurrently
   // does not disrupt the state of other keys.
   Lock lock;
@@ -217,7 +201,7 @@ TEST_P(LockFreeAddressHashSetTest, ConcurrentAccess) {
             ContainsResult::kFound);
 }
 
-TEST_P(LockFreeAddressHashSetTest, BucketsUsage) {
+TEST_F(LockFreeAddressHashSetTest, BucketsUsage) {
   // Test the uniformity of buckets usage.
   size_t count = 10000;
   Lock lock;
@@ -240,7 +224,7 @@ TEST_P(LockFreeAddressHashSetTest, BucketsUsage) {
   EXPECT_LE(set.GetBucketStats().chi_squared, 1.05);
 }
 
-TEST_P(LockFreeAddressHashSetDeathTest, LockAsserts) {
+TEST_F(LockFreeAddressHashSetDeathTest, LockAsserts) {
   Lock lock;
   LockFreeAddressHashSet set(8, lock);
   LockFreeAddressHashSet set2(8, lock);
