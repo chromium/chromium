@@ -9,12 +9,10 @@
 #include <memory>
 #include <optional>
 
-#include "ash/constants/ash_features.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/rgb_keyboard/histogram_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/dbus/rgbkbd/fake_rgbkbd_client.h"
 #include "chromeos/ash/components/dbus/rgbkbd/rgbkbd_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,9 +22,6 @@ namespace ash {
 class RgbKeyboardManagerTest : public testing::Test {
  public:
   RgbKeyboardManagerTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kExperimentalRgbKeyboardPatterns},
-        /*disabled_features=*/{});
     // ImeControllerImpl must be initialized before RgbKeyboardManager.
     ime_controller_ = std::make_unique<ImeControllerImpl>();
     // This is instantiating a global instance that will be deallocated in
@@ -62,8 +57,6 @@ class RgbKeyboardManagerTest : public testing::Test {
   std::unique_ptr<RgbKeyboardManager> manager_;
   raw_ptr<FakeRgbkbdClient> client_;
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(RgbKeyboardManagerTest, GetKeyboardCapabilities) {

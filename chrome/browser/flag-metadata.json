@@ -3694,15 +3694,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-experimental-rgb-keyboard-patterns",
-    "owners": [
-      "jimmyxgong@chromium.org",
-      "michaelcheco@chromium.org",
-      "cros-device-enablement@google.com"
-    ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "enable-experimental-web-platform-features",
     "owners": [ "//third_party/blink/renderer/OWNERS" ],
     // Used by developers to activate experimental features in blink.

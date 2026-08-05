@@ -12490,7 +12490,6 @@ from previous Chrome versions.
   <int value="-652635658" label="OmniboxSquareIcons:enabled"/>
   <int value="-652470387" label="AIProofreadingAPI:enabled"/>
   <int value="-652144124" label="BorealisBigGl:enabled"/>
-  <int value="-650731862" label="ExperimentalRgbKeyboardPatterns:enabled"/>
   <int value="-650504533" label="enable-speculative-launch-service-worker"/>
   <int value="-650388312" label="ClipboardHistoryScreenshotNudge:enabled"/>
   <int value="-650213879" label="OmniboxZeroSuggestionsOnNTP:disabled"/>
@@ -14770,7 +14769,6 @@ from previous Chrome versions.
   <int value="68263546" label="EnableExtensionsForCorpDesktopAndroid:disabled"/>
   <int value="68448361" label="SplitViewTabRestore:disabled"/>
   <int value="68506319" label="TabStripGroupCollapseAndroid:disabled"/>
-  <int value="69571279" label="ExperimentalRgbKeyboardPatterns:disabled"/>
   <int value="69778786" label="NotificationPermissionVariant:disabled"/>
   <int value="69812526" label="PrivateMetricsPumaRc:disabled"/>
   <int value="71290103" label="ArcNearbySharing:enabled"/>

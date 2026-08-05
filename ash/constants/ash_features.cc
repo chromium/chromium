@@ -645,10 +645,6 @@ BASE_FEATURE(kESimEmptyActivationCodeSupported,
 // Enable or disable use of ordinal (unaccelerated) motion by Exo clients.
 BASE_FEATURE(kExoOrdinalMotion, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Allows RGB Keyboard to test new animations/patterns.
-BASE_FEATURE(kExperimentalRgbKeyboardPatterns,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables extended updates opt-in functionality.
 BASE_FEATURE(kExtendedUpdatesOptInFeature, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -2546,10 +2542,6 @@ bool IsEcheSWAMeasureLatencyEnabled() {
 
 bool IsESimEmptyActivationCodeSupportEnabled() {
   return base::FeatureList::IsEnabled(kESimEmptyActivationCodeSupported);
-}
-
-bool IsExperimentalRgbKeyboardPatternsEnabled() {
-  return base::FeatureList::IsEnabled(kExperimentalRgbKeyboardPatterns);
 }
 
 bool IsExtendedUpdatesOptInFeatureEnabled() {
