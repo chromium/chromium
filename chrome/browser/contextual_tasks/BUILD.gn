@@ -291,6 +291,8 @@ source_set("ui") {
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/views/page_info",
+      "//chrome/browser/ui/views/permissions/chip",
+      "//chrome/browser/ui/views/permissions/chip:impl",
       "//chrome/browser/ui/views/side_panel",
     ]
   }

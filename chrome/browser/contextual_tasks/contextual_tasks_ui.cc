@@ -108,6 +108,7 @@
 #else
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_layout_css_helper.h"
 #include "chrome/grit/webui_toolbar_shared_resources.h"
@@ -426,14 +427,20 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
 
   contextual_tasks_service_observation_.Observe(contextual_tasks_service_);
 
+  std::vector<ui::ElementIdentifier> tracked_element_ids = {
+      kSmartTabSharingMenuItemElementId,
+      kContextualTasksWebUIPinButtonElementId,
+      kContextualTasksWebUIToolbarElementId,
+      kContextualTasksWebUIOverflowMenuElementId,
+      kContextualTasksWebUIOverflowMenuPinButtonElementId,
+      kContextualTasksSuperGButtonElementId};
+#if !BUILDFLAG(IS_ANDROID)
+  tracked_element_ids.push_back(
+      PermissionChipView::kPermissionRequestChipElementId);
+  tracked_element_ids.push_back(PermissionChipView::kIndicatorChipElementId);
+#endif
   ui::TrackedElementHandlerDocumentSingleton::Register(
-      this, std::vector<ui::ElementIdentifier>{
-                kSmartTabSharingMenuItemElementId,
-                kContextualTasksWebUIPinButtonElementId,
-                kContextualTasksWebUIToolbarElementId,
-                kContextualTasksWebUIOverflowMenuElementId,
-                kContextualTasksWebUIOverflowMenuPinButtonElementId,
-                kContextualTasksSuperGButtonElementId});
+      this, std::move(tracked_element_ids));
 }
 
 ContextualTasksUI::~ContextualTasksUI() {

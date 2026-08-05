@@ -71,6 +71,13 @@ build_webui_tests("build") {
     "//ui/webui/resources/mojo:build_ts",
   ]
 
+  if (!is_android) {
+    ts_deps += [ "//chrome/browser/resources/webui_toolbar_shared:build_ts" ]
+    ts_path_mappings += [ "chrome://resources/webui_toolbar_shared/*|" + rebase_path(
+                              "$root_gen_dir/chrome/browser/resources/webui_toolbar_shared/tsc/*",
+                              target_gen_dir) ]
+  }
+
   if (!is_android || is_desktop_android) {
     ts_deps += [ "//chrome/test/data/webui/cr_components/searchbox:build_ts" ]
   }
