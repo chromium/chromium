@@ -2192,6 +2192,68 @@ TEST_P(PageContextExtractorJavaScriptFeatureTest,
   EXPECT_EQ(*precedence_placeholder, "Primary placeholder");
 }
 
+// Test that interactive elements clipped completely offscreen inside an
+// overflow container (such as offscreen carousel slides) do not retain
+// nodeInteractionInfo.
+TEST_P(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_CarouselOffscreenPruning) {
+  const std::string html = R"(
+    <html>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      </head>
+      <body style="margin: 0; padding: 0;">
+        <div style="overflow: hidden; width: 300px; height: 100px; position: relative;">
+          <button style="position: absolute; left: 10px; top: 10px; width: 100px; height: 50px;">
+            Visible Button
+          </button>
+          <button style="position: absolute; left: 1000px; top: 10px; width: 100px; height: 50px;">
+            Offscreen Cloned Button
+          </button>
+        </div>
+      </body>
+    </html>
+  )";
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/true,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1));
+
+  ASSERT_TRUE(result_value.has_value());
+  EXPECT_FALSE(result_value->is_none());
+
+  const base::DictValue& dict = result_value->GetDict();
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+  const base::ListValue* root_children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(root_children);
+  ASSERT_GE(root_children->size(), 1u);
+
+  const base::DictValue& container_node = (*root_children)[0].GetDict();
+  const base::ListValue* container_children =
+      container_node.FindList("childrenNodes");
+  ASSERT_TRUE(container_children);
+  ASSERT_GE(container_children->size(), 2u);
+
+  const base::DictValue& visible_button = (*container_children)[0].GetDict();
+  const base::DictValue* visible_interaction_info =
+      visible_button.FindDictByDottedPath(
+          "contentAttributes.nodeInteractionInfo");
+  ASSERT_TRUE(visible_interaction_info);
+
+  const base::DictValue& offscreen_button = (*container_children)[1].GetDict();
+  const base::DictValue* offscreen_interaction_info =
+      offscreen_button.FindDictByDottedPath(
+          "contentAttributes.nodeInteractionInfo");
+  EXPECT_FALSE(offscreen_interaction_info);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          PageContextExtractorJavaScriptFeatureTest,
                          ::testing::Values(IPCExtractionMethod::kNative,
