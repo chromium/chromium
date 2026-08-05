@@ -1650,19 +1650,27 @@ chromium-metrics-reviews@google.com.
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
+    Deprecated. Replaced by
+    HttpCache.TotalDiskCacheTimePerTransaction.{AccessType}2.
+  </summary>
+  <token key="AccessType">
+    <variant name="Read"/>
+    <variant name="Write"/>
+  </token>
+</histogram>
+
+<histogram name="HttpCache.TotalDiskCacheTimePerTransaction.{AccessType}2"
+    units="ms" expires_after="2026-09-27">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
     For each HTTP cache transaction, record total time spent {AccessType} the
     disk cache. Recorded when a transaction finished. This histogram does not
     record partial requests.
   </summary>
   <token key="AccessType">
-    <variant name="Read"
-        summary="reading from (this might be inaccurate because zero values
-                 are not recorded)"/>
-    <variant name="Read2" summary="reading from"/>
-    <variant name="Write"
-        summary="writing to (this might be inaccurate because zero values are
-                 not recorded)"/>
-    <variant name="Write2" summary="writing to"/>
+    <variant name="Read" summary="reading from"/>
+    <variant name="Write" summary="writing to"/>
   </token>
 </histogram>
 

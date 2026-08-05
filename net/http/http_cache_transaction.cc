@@ -4264,21 +4264,10 @@ void HttpCache::Transaction::RecordHistograms() {
   if (total_disk_cache_read_time_.has_value()) {
     base::UmaHistogramTimes("HttpCache.TotalDiskCacheTimePerTransaction.Read2",
                             *total_disk_cache_read_time_);
-    if (!total_disk_cache_read_time_->is_zero()) {
-      // TODO(crbug.com/511894605): Remove this after M151 branch cut.
-      base::UmaHistogramTimes("HttpCache.TotalDiskCacheTimePerTransaction.Read",
-                              *total_disk_cache_read_time_);
-    }
   }
   if (total_disk_cache_write_time_.has_value()) {
     base::UmaHistogramTimes("HttpCache.TotalDiskCacheTimePerTransaction.Write2",
                             *total_disk_cache_write_time_);
-    if (!total_disk_cache_write_time_->is_zero()) {
-      // TODO(crbug.com/511894605): Remove this after M151 branch cut.
-      base::UmaHistogramTimes(
-          "HttpCache.TotalDiskCacheTimePerTransaction.Write",
-          *total_disk_cache_write_time_);
-    }
   }
 }
 
