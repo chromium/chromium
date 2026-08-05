@@ -569,11 +569,12 @@ TEST_F(CorsTest, CheckCorsRangeSafelist) {
   EXPECT_FALSE(IsCorsSafelistedHeader("range", ""));
   EXPECT_FALSE(IsCorsSafelistedHeader("range", "500"));
 
-  // Case
+  // Case of header name is insensitive, but value unit must be exact lowercase.
   EXPECT_TRUE(IsCorsSafelistedHeader("range", "bytes=100-200"));
   EXPECT_TRUE(IsCorsSafelistedHeader("Range", "bytes=100-200"));
   EXPECT_TRUE(IsCorsSafelistedHeader("RANGE", "bytes=100-200"));
-  EXPECT_TRUE(IsCorsSafelistedHeader("range", "BYTES=100-200"));
+  EXPECT_FALSE(IsCorsSafelistedHeader("range", "BYTES=100-200"));
+  EXPECT_FALSE(IsCorsSafelistedHeader("range", "Bytes=100-200"));
 
   // Valid values
   EXPECT_TRUE(IsCorsSafelistedHeader("range", "bytes=100-"));
@@ -585,12 +586,24 @@ TEST_F(CorsTest, CheckCorsRangeSafelist) {
   EXPECT_FALSE(IsCorsSafelistedHeader("range", "bytes=100-200,400-"));
   EXPECT_FALSE(IsCorsSafelistedHeader("range", "bytes=-50,100-"));
 
-  // Invalid ranges
+  // Invalid ranges and formatting variations
   EXPECT_FALSE(IsCorsSafelistedHeader("range", "bytes=200-100"));
   EXPECT_FALSE(IsCorsSafelistedHeader("range", "bytes=-200--100"));
   EXPECT_FALSE(IsCorsSafelistedHeader("range", "bytes=-50-50"));
   EXPECT_FALSE(IsCorsSafelistedHeader("range", "bytes=-200"));
   EXPECT_FALSE(IsCorsSafelistedHeader("range", "bytes=100"));
+  EXPECT_FALSE(IsCorsSafelistedHeader("range", "bytes=+0-100"));
+  EXPECT_FALSE(IsCorsSafelistedHeader("range", "bytes=0-+100"));
+  EXPECT_FALSE(IsCorsSafelistedHeader("range", "bytes=+100-200"));
+  EXPECT_FALSE(IsCorsSafelistedHeader("range", "bytes=100-+200"));
+  EXPECT_FALSE(IsCorsSafelistedHeader("range", "bytes=+100-"));
+  EXPECT_FALSE(IsCorsSafelistedHeader("range", "bytes=+5-"));
+  EXPECT_FALSE(IsCorsSafelistedHeader("range", "bytes=100--1"));
+  EXPECT_FALSE(IsCorsSafelistedHeader("range", "bytes=0--1"));
+  EXPECT_FALSE(IsCorsSafelistedHeader(
+      "range", "bytes=999999999999999999999-999999999999999999999"));
+  EXPECT_FALSE(
+      IsCorsSafelistedHeader("range", "bytes=5-999999999999999999999"));
 
   // Invalid charset.
   EXPECT_FALSE(IsCorsSafelistedHeader("range", "bytes = 100-200"));

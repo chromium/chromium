@@ -6,6 +6,7 @@
 #include "services/network/public/cpp/cors/cors.h"
 
 #include <algorithm>
+#include <limits>
 #include <set>
 #include <string_view>
 #include <vector>
@@ -391,22 +392,24 @@ bool IsCorsSafelistedHeader(const std::string& name,
     return IsCorsSafelistedLowerCaseContentType(
         lower_value, is_ad_auction_trusted_signals_request);
   } else if (lower_name == "range") {
-    // A 'simple' range value is of the following form: 'bytes=\d+-(\d+)?'.
-    // We can use the regular range header parser with the following caveats:
-    // - No space characters or trailing commas
-    // - Only one range is provided
-    // - No suffix (bytes=-x) ranges
-
-    if (std::ranges::any_of(lower_value, [](char c) {
-          return net::HttpUtil::IsLWS(c) || c == ',';
-        })) {
+    // A 'simple' range value is defined in the Fetch specification:
+    // https://fetch.spec.whatwg.org/#simple-range-header-value
+    // It must have an exact case-sensitive "bytes=" prefix. We also impose
+    // extra restrictions:
+    //  - No whitespace (e.g. space or trailing comma).
+    //  - No suffix ranges (e.g. bytes=-500).
+    std::optional<net::HttpByteRange> range =
+        net::HttpUtil::ParseFetchSingleRange(value,
+                                             /*allow_whitespace=*/false);
+    if (!range || range->IsSuffixByteRange() || !range->IsValid()) {
       return false;
     }
-    std::vector<net::HttpByteRange> ranges;
-    if (!net::HttpUtil::ParseRangeHeader(lower_value, &ranges))
+    // `ParseFetchSingleRange()` will saturate values too high to represent as
+    // `int64_t` to `std::numeric_limits<int64_t>::max()`.
+    if (range->first_byte_position() == std::numeric_limits<int64_t>::max() ||
+        range->last_byte_position() == std::numeric_limits<int64_t>::max()) {
       return false;
-    if (ranges.size() != 1 || ranges[0].IsSuffixByteRange())
-      return false;
+    }
     return true;
   } else if (lower_name == "device-memory" || lower_name == "dpr" ||
              lower_name == "downlink") {
