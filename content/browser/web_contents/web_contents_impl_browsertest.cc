@@ -2386,6 +2386,46 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   }
 }
 
+// Two privileged WebContents of the same feature coalesce into a single shared
+// renderer process (process-per-site), while a privileged WebContents of a
+// different feature and an ordinary WebContents at the same URL each stay in
+// their own process.
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       PrivilegedWebContentsCoalesceIntoSharedProcess) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url = embedded_test_server()->GetURL("/title1.html");
+  BrowserContext* browser_context =
+      shell()->web_contents()->GetBrowserContext();
+
+  auto make_privileged = [&](int32_t feature_id) {
+    WebContents::CreateParams params(browser_context);
+    WebContents::PrivilegedParams privileged_params;
+    privileged_params.feature_id = feature_id;
+    params.privileged_params = privileged_params;
+    std::unique_ptr<WebContents> web_contents = WebContents::Create(params);
+    EXPECT_TRUE(NavigateToURL(web_contents.get(), url));
+    return web_contents;
+  };
+
+  std::unique_ptr<WebContents> privileged1 = make_privileged(42);
+  std::unique_ptr<WebContents> privileged2 = make_privileged(42);
+  std::unique_ptr<WebContents> other_feature = make_privileged(99);
+
+  // Same feature -> shared process.
+  EXPECT_EQ(privileged1->GetPrimaryMainFrame()->GetProcess(),
+            privileged2->GetPrimaryMainFrame()->GetProcess());
+
+  // A different feature id produces a distinct SiteInfo, so it does not join
+  // the shared process.
+  EXPECT_NE(privileged1->GetPrimaryMainFrame()->GetProcess(),
+            other_feature->GetPrimaryMainFrame()->GetProcess());
+
+  // An ordinary WebContents at the same URL stays in its own process.
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+  EXPECT_NE(privileged1->GetPrimaryMainFrame()->GetProcess(),
+            shell()->web_contents()->GetPrimaryMainFrame()->GetProcess());
+}
+
 namespace {
 
 class DownloadImageObserver {

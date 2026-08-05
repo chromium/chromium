@@ -803,6 +803,15 @@ bool SiteInfo::ShouldUseProcessPerSite(BrowserContext* browser_context) const {
     return true;
   }
 
+  // Privileged content (see //chrome's PrivilegedWebContents) uses the
+  // process-per-site model so that privileged WebContents of the same feature
+  // coalesce into a shared process instead of each getting its own. Distinct
+  // features carry distinct feature ids in their SiteInfo, so they still land
+  // in separate processes.
+  if (embedder_isolation_info_.is_privileged()) {
+    return true;
+  }
+
   // Otherwise let the content client decide, defaulting to false.
   return GetContentClient()->browser()->ShouldUseProcessPerSite(browser_context,
                                                                 *this);
