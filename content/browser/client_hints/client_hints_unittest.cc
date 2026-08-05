@@ -12,6 +12,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "content/browser/client_hints/critical_client_hints_throttle.h"
 #include "content/public/test/mock_client_hints_controller_delegate.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/test_render_frame_host.h"
@@ -32,6 +33,14 @@ namespace {
 
 using ClientHintsVector = std::vector<network::mojom::WebClientHintsType>;
 using network::mojom::WebClientHintsType;
+
+class MockThrottleDelegate : public blink::URLLoaderThrottle::Delegate {
+ public:
+  void CancelWithError(int error_code,
+                       std::string_view custom_reason) override {}
+  void Resume() override {}
+  void DidRestartForCriticalClientHint() override {}
+};
 
 }  // namespace
 
@@ -712,6 +721,44 @@ TEST_F(ClientHintsTest, GetEnabledClientHintsNotAllowedHintsLogic) {
         GetEnabledClientHints(sub_origin, sub_frame_node, &delegate);
     EXPECT_FALSE(actual_hints.not_allowed_hints.empty());
   }
+}
+
+TEST_F(ClientHintsTest, NullNavigationRequest) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kCriticalClientHint);
+
+  GURL url("https://example.com");
+  contents()->NavigateAndCommit(url);
+
+  FrameTree& frame_tree = contents()->GetPrimaryFrameTree();
+  FrameTreeNode* main_frame_node = frame_tree.root();
+  ASSERT_FALSE(main_frame_node->navigation_request());
+
+  blink::UserAgentMetadata ua_metadata;
+  MockClientHintsControllerDelegate delegate(ua_metadata);
+
+  CriticalClientHintsThrottle throttle(browser_context(), &delegate,
+                                       main_frame_node->frame_tree_node_id());
+  MockThrottleDelegate throttle_delegate;
+  throttle.set_delegate(&throttle_delegate);
+
+  network::ResourceRequest request;
+  request.url = GURL("https://example.com");
+  bool defer = false;
+  throttle.WillStartRequest(&request, &defer);
+
+  auto response_head = network::mojom::URLResponseHead::New();
+  response_head->parsed_headers = network::mojom::ParsedHeaders::New();
+  response_head->parsed_headers->accept_ch = {
+      network::mojom::WebClientHintsType::kDeviceMemory};
+  response_head->parsed_headers->critical_ch = {
+      network::mojom::WebClientHintsType::kDeviceMemory};
+
+  blink::URLLoaderThrottle::RestartWithURLReset restart_with_url_reset(false);
+  throttle.BeforeWillProcessResponse(request.url, *response_head,
+                                     &restart_with_url_reset);
+
+  EXPECT_TRUE(restart_with_url_reset.value());
 }
 
 }  // namespace content
