@@ -153,8 +153,9 @@ void GlicSidePanelCoordinatorDesktopAndroid::Close(
     return;
   }
   if (state_ == State::kBackgrounded) {
-    CHECK(IsGlicSidePanelActive());
-    side_panel_registry_->ResetActiveEntry();
+    if (IsGlicSidePanelActive()) {
+      side_panel_registry_->ResetActiveEntry();
+    }
     SetState(State::kClosed);
   }
 }
