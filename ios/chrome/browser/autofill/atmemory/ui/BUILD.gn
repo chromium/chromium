@@ -12,8 +12,11 @@ source_set("ui") {
     "at_memory_search_view_controller.mm",
   ]
   deps = [
-    "//components/strings:components_strings_grit",
+    "//base",
+    "//components/strings",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/atmemory/public",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/common:string_util",

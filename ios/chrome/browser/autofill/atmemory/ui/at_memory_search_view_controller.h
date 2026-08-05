@@ -7,6 +7,7 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 
+@protocol AtMemoryCommands;
 @protocol AtMemorySearchResultCommands;
 
 // View controller for AtMemory search.
@@ -14,6 +15,9 @@
 
 // Handler for actions related to the AtMemory search results.
 @property(nonatomic, weak) id<AtMemorySearchResultCommands> searchResultHandler;
+
+// Handler for AtMemory commands.
+@property(nonatomic, weak) id<AtMemoryCommands> atMemoryHandler;
 
 @end
 

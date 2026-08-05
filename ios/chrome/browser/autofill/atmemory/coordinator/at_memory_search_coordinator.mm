@@ -6,10 +6,12 @@
 
 #import "ios/chrome/browser/autofill/atmemory/coordinator/at_memory_search_mediator.h"
 #import "ios/chrome/browser/autofill/atmemory/model/ios_at_memory_query_service_factory.h"
+#import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/web/public/web_state.h"
 
@@ -37,6 +39,8 @@
   _atMemorySearchViewController = [[AtMemorySearchViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
   _atMemorySearchViewController.searchResultHandler = self.searchResultHandler;
+  _atMemorySearchViewController.atMemoryHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), AtMemoryCommands);
 
   autofill::AtMemoryQueryService* atMemoryQueryService =
       IOSAtMemoryQueryServiceFactory::GetForProfile(self.browser->GetProfile());
