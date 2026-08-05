@@ -99,9 +99,14 @@ promise_test(async function() {
   assert_equals(timeOnScrollEventOnAnotherScroller, null,
     "The new scroll event is not dispatched right after the transitionrun event");
 
-  // Await two requestAnimationFrame callbacks.
-  await new Promise(resolve =>
-        requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  // Await a requestAnimationFrame callback.
+  await new Promise(resolve => requestAnimationFrame(resolve));
+
+  assert_equals(timeOnScrollEventOnAnotherScroller, null,
+    "The new scroll event is not dispatched one frame after the transitionrun event");
+
+  // Await one more requestAnimationFrame callback.
+  await new Promise(resolve => requestAnimationFrame(resolve));
 
   assert_not_equals(timeOnScrollEventOnAnotherScroller, null,
     "The new scroll event is dispatched two frames after the transitionrun event");
