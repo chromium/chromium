@@ -723,10 +723,7 @@ Status ParseTimeouts(const base::Value& option, Capabilities* capabilities) {
     base::TimeDelta timeout;
     const std::string& type = it.first;
     if (it.second.is_none()) {
-      if (type == "script")
-        timeout = base::TimeDelta::Max();
-      else
-        return Status(kInvalidArgument, "timeout can not be null");
+      timeout = base::TimeDelta::Max();
     } else {
       if (!GetOptionalSafeInt(*timeouts, it.first, &timeout_ms_int64) ||
           timeout_ms_int64 < 0)

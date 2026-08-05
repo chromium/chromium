@@ -47,6 +47,31 @@ TEST(SessionCommandsTest, ExecuteGetTimeouts) {
   ASSERT_EQ(implicit, 0);
 }
 
+TEST(SessionCommandsTest, ExecuteGetTimeouts_Nulls) {
+  Session session("id");
+  session.script_timeout = base::TimeDelta::Max();
+  session.page_load_timeout = base::TimeDelta::Max();
+  session.implicit_wait = base::TimeDelta::Max();
+
+  base::DictValue params;
+  std::unique_ptr<base::Value> value;
+
+  Status status = ExecuteGetTimeouts(&session, params, &value);
+  ASSERT_EQ(kOk, status.code());
+  base::DictValue* response = value->GetIfDict();
+  ASSERT_TRUE(response);
+
+  const base::Value* script = response->Find("script");
+  ASSERT_TRUE(script);
+  ASSERT_TRUE(script->is_none());
+  const base::Value* page_load = response->Find("pageLoad");
+  ASSERT_TRUE(page_load);
+  ASSERT_TRUE(page_load->is_none());
+  const base::Value* implicit = response->Find("implicit");
+  ASSERT_TRUE(implicit);
+  ASSERT_TRUE(implicit->is_none());
+}
+
 TEST(SessionCommandsTest, ExecuteSetTimeouts) {
   Session session("id");
   base::DictValue params;
@@ -68,6 +93,16 @@ TEST(SessionCommandsTest, ExecuteSetTimeouts) {
   params.Set("implicit", -5000);
   status = ExecuteSetTimeouts(&session, params, &value);
   ASSERT_EQ(kInvalidArgument, status.code());
+
+  params.clear();
+  params.Set("implicit", base::Value());
+  params.Set("pageLoad", base::Value());
+  params.Set("script", base::Value());
+  status = ExecuteSetTimeouts(&session, params, &value);
+  ASSERT_EQ(kOk, status.code());
+  ASSERT_EQ(base::TimeDelta::Max(), session.implicit_wait);
+  ASSERT_EQ(base::TimeDelta::Max(), session.page_load_timeout);
+  ASSERT_EQ(base::TimeDelta::Max(), session.script_timeout);
 
   params.clear();
   params.Set("unknown", 5000);
@@ -647,6 +682,40 @@ TEST(SessionCommandsTest, ConfigureSession_defaults) {
   // w3c values:
   ASSERT_EQ(::prompt_behavior::kDismissAndNotify,
             session.unhandled_prompt_behavior.CapabilityView().GetString());
+}
+
+TEST(SessionCommandsTest, ConfigureSession_nullTimeouts) {
+  BrowserInfo binfo;
+  MockChrome* chrome = new MockChrome(binfo);
+  Session session("id", std::unique_ptr<Chrome>(chrome));
+
+  base::DictValue params_in = base::test::ParseJsonDict(
+      R"({
+        "capabilities": {
+          "alwaysMatch": {
+            "timeouts": {
+              "implicit": null,
+              "pageLoad": null,
+              "script": null
+            }
+          },
+          "firstMatch": [ { } ]
+        }
+      })");
+  const base::DictValue* desired_caps_out = nullptr;
+  base::DictValue merged_out;
+  Capabilities capabilities_out;
+
+  Status status = internal::ConfigureSession(
+      &session, params_in, desired_caps_out, merged_out, &capabilities_out);
+  ASSERT_EQ(kOk, status.code()) << status.message();
+  ASSERT_NE(desired_caps_out, nullptr);
+  ASSERT_EQ(base::TimeDelta::Max(), session.implicit_wait);
+  ASSERT_EQ(base::TimeDelta::Max(), session.page_load_timeout);
+  ASSERT_EQ(base::TimeDelta::Max(), session.script_timeout);
+  ASSERT_EQ(base::TimeDelta::Max(), capabilities_out.implicit_wait_timeout);
+  ASSERT_EQ(base::TimeDelta::Max(), capabilities_out.page_load_timeout);
+  ASSERT_EQ(base::TimeDelta::Max(), capabilities_out.script_timeout);
 }
 
 TEST(SessionCommandsTest, ConfigureSession_legacyDefault) {
