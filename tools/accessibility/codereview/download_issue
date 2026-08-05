@@ -5,4 +5,4 @@
 
 base_dir=$(dirname "$0")
 
-PYTHONDONTWRITEBYTECODE=1 exec python3 "$base_dir/download_issue.py" "$@" 2> /dev/null
+PYTHONDONTWRITEBYTECODE=1 exec vpython3 "$base_dir/download_issue.py" "$@" 2> /dev/null

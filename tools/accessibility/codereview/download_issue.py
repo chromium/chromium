@@ -7,6 +7,34 @@
 Prints the patch of the most recent patchset to stdout.
 """
 
+import os
+import shutil
+import sys
+
+
+def _ensure_depot_tools():
+  try:
+    import gerrit_util
+    import git_cl
+    return
+  except ImportError:
+    pass
+
+  script_dir = os.path.dirname(os.path.abspath(__file__))
+  src_dir = os.path.abspath(os.path.join(script_dir, '..', '..', '..'))
+  depot_tools_src = os.path.join(src_dir, 'third_party', 'depot_tools')
+  if os.path.isdir(depot_tools_src) and depot_tools_src not in sys.path:
+    sys.path.insert(0, depot_tools_src)
+
+  gclient_bin = shutil.which('gclient')
+  if gclient_bin:
+    depot_tools_path = os.path.dirname(os.path.abspath(gclient_bin))
+    if os.path.isdir(depot_tools_path) and depot_tools_path not in sys.path:
+      sys.path.insert(0, depot_tools_path)
+
+
+_ensure_depot_tools()
+
 try:
   import base64
 
@@ -14,16 +42,13 @@ try:
   import git_cl
   import optparse
   import os.path
-  #  import StringIO
   import sys
   import tarfile
-  #import urllib2
 
   from third_party import colorama
 except ImportError as e:
   print(e)
   print('Perhaps you\'re missing depot_tools in your PYTHONPATH.')
-  import sys
   sys.exit(1)
 
 

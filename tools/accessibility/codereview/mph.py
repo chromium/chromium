@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env vpython3
 # Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -9,9 +9,35 @@
   Previously called mch ("make Casey happy").
 """
 
+import os
 import optparse
 import re
+import shutil
 import sys
+
+
+def _ensure_depot_tools():
+  try:
+    import gerrit_util
+    import git_cl
+    return
+  except ImportError:
+    pass
+
+  script_dir = os.path.dirname(os.path.abspath(__file__))
+  src_dir = os.path.abspath(os.path.join(script_dir, '..', '..', '..'))
+  depot_tools_src = os.path.join(src_dir, 'third_party', 'depot_tools')
+  if os.path.isdir(depot_tools_src) and depot_tools_src not in sys.path:
+    sys.path.insert(0, depot_tools_src)
+
+  gclient_bin = shutil.which('gclient')
+  if gclient_bin:
+    depot_tools_path = os.path.dirname(os.path.abspath(gclient_bin))
+    if os.path.isdir(depot_tools_path) and depot_tools_path not in sys.path:
+      sys.path.insert(0, depot_tools_path)
+
+
+_ensure_depot_tools()
 
 import codereview_parser
 
