@@ -521,6 +521,66 @@ resources_out_dir = "$blink_public_output_dir/resources"
 grit("resources") {
   output_dir = resources_out_dir
   source = "blink_resources.grd"
+  inputs = [
+    "//third_party/blink/renderer/core/css/fullscreen.css",
+    "//third_party/blink/renderer/core/css/fullscreenAndroid.css",
+    "//third_party/blink/renderer/core/css/json-document.css",
+    "//third_party/blink/renderer/core/css/marker.css",
+    "//third_party/blink/renderer/core/css/mathml.css",
+    "//third_party/blink/renderer/core/css/overscroll.css",
+    "//third_party/blink/renderer/core/css/scroll_button.css",
+    "//third_party/blink/renderer/core/css/scroll_marker.css",
+    "//third_party/blink/renderer/core/css/svg.css",
+    "//third_party/blink/renderer/core/css/transition.css",
+    "//third_party/blink/renderer/core/css/view-source.css",
+    "//third_party/blink/renderer/core/html/forms/resources/input_alert.svg",
+    "//third_party/blink/renderer/core/html/forms/resources/validation_bubble.css",
+    "//third_party/blink/renderer/core/html/resources/android.css",
+    "//third_party/blink/renderer/core/html/resources/capability_element.css",
+    "//third_party/blink/renderer/core/html/resources/forced_colors.css",
+    "//third_party/blink/renderer/core/html/resources/html.css",
+    "//third_party/blink/renderer/core/html/resources/images/calendar_icon.svg",
+    "//third_party/blink/renderer/core/html/resources/images/calendar_icon_white.svg",
+    "//third_party/blink/renderer/core/html/resources/images/email_verification_loading.svg",
+    "//third_party/blink/renderer/core/html/resources/images/email_verification_verified.svg",
+    "//third_party/blink/renderer/core/html/resources/images/password_reveal_off.svg",
+    "//third_party/blink/renderer/core/html/resources/images/password_reveal_on.svg",
+    "//third_party/blink/renderer/core/html/resources/images/permission_icon_camera.svg",
+    "//third_party/blink/renderer/core/html/resources/images/permission_icon_install.svg",
+    "//third_party/blink/renderer/core/html/resources/images/permission_icon_install_launch.svg",
+    "//third_party/blink/renderer/core/html/resources/images/permission_icon_location.svg",
+    "//third_party/blink/renderer/core/html/resources/images/permission_icon_location_precise.svg",
+    "//third_party/blink/renderer/core/html/resources/images/permission_icon_microphone.svg",
+    "//third_party/blink/renderer/core/html/resources/images/time_icon.svg",
+    "//third_party/blink/renderer/core/html/resources/images/time_icon_white.svg",
+    "//third_party/blink/renderer/core/html/resources/input_multiple_fields.css",
+    "//third_party/blink/renderer/core/html/resources/linux.css",
+    "//third_party/blink/renderer/core/html/resources/quirks.css",
+    "//third_party/blink/renderer/core/xml/DocumentXMLTreeViewer.css",
+    "//third_party/blink/renderer/core/xml/DocumentXMLTreeViewer.js",
+    "//third_party/blink/renderer/platform/audio/resources/Composite.flac",
+  ]
+  if (!is_android) {
+    inputs += [
+      "//third_party/blink/renderer/core/html/forms/resources/calendar_picker.css",
+      "//third_party/blink/renderer/core/html/forms/resources/calendar_picker.js",
+      "//third_party/blink/renderer/core/html/forms/resources/color_picker.css",
+      "//third_party/blink/renderer/core/html/forms/resources/color_picker.js",
+      "//third_party/blink/renderer/core/html/forms/resources/color_picker_common.js",
+      "//third_party/blink/renderer/core/html/forms/resources/color_suggestion_picker.css",
+      "//third_party/blink/renderer/core/html/forms/resources/color_suggestion_picker.js",
+      "//third_party/blink/renderer/core/html/forms/resources/datetimelocal_picker.js",
+      "//third_party/blink/renderer/core/html/forms/resources/list_picker.css",
+      "//third_party/blink/renderer/core/html/forms/resources/list_picker.js",
+      "//third_party/blink/renderer/core/html/forms/resources/month_picker.js",
+      "//third_party/blink/renderer/core/html/forms/resources/picker_common.css",
+      "//third_party/blink/renderer/core/html/forms/resources/picker_common.js",
+      "//third_party/blink/renderer/core/html/forms/resources/suggestion_picker.css",
+      "//third_party/blink/renderer/core/html/forms/resources/suggestion_picker.js",
+      "//third_party/blink/renderer/core/html/forms/resources/time_picker.css",
+      "//third_party/blink/renderer/core/html/forms/resources/time_picker.js",
+    ]
+  }
   outputs = [
     "grit/blink_resources.h",
     "blink_resources.pak",
@@ -533,6 +593,7 @@ grit("devtools_inspector_resources") {
   enable_input_discovery_for_gn_analyze = false
 
   source = "$root_out_dir/resources/inspector_overlay/inspector_overlay_resources.grd"
+  inputs = [ "$root_out_dir/resources/inspector_overlay/main.js" ]
   output_dir = resources_out_dir
   outputs = [
     "grit/inspector_overlay_resources_map.h",
@@ -557,6 +618,18 @@ grit("devtools_inspector_resources") {
 grit("image_resources") {
   output_dir = resources_out_dir
   source = "blink_image_resources.grd"
+  inputs = [
+    "default_100_percent/blink/broken_canvas.png",
+    "default_100_percent/blink/broken_image.png",
+    "default_100_percent/blink/search_cancel.png",
+    "default_100_percent/blink/search_cancel_dark_mode.png",
+    "default_100_percent/blink/search_cancel_hc_light.png",
+    "default_100_percent/blink/search_cancel_pressed.png",
+    "default_100_percent/blink/search_cancel_pressed_dark_mode.png",
+    "default_100_percent/blink/search_cancel_pressed_hc_light.png",
+    "default_200_percent/blink/broken_canvas.png",
+    "default_200_percent/blink/broken_image.png",
+  ]
   outputs = [
     "grit/blink_image_resources.h",
     "blink_image_resources_100_percent.pak",
