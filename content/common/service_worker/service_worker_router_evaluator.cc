@@ -11,6 +11,7 @@
 
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notimplemented.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -660,6 +661,10 @@ bool NotCondition::Match(
 
 namespace content {
 
+std::string SafeURLPatternToJsonString(const blink::SafeUrlPattern& pattern) {
+  return base::WriteJson(SafeURLPatternToValue(pattern)).value_or("");
+}
+
 class ServiceWorkerRouterEvaluator::RouterRule {
  public:
   ServiceWorkerRouterEvaluatorErrorEnums SetRule(
@@ -848,6 +853,13 @@ base::Value ServiceWorkerRouterEvaluator::ToValue() const {
 
 std::string ServiceWorkerRouterEvaluator::ToString() const {
   return base::WriteJson(ToValue()).value_or("");
+}
+
+std::vector<ServiceWorkerRouterRule>
+ServiceWorkerRouterEvaluator::CalculateRouterRulesForDevTools() const {
+  // TODO(crbug.com/540469610): Implement this.
+  NOTIMPLEMENTED();
+  return {};
 }
 
 void ServiceWorkerRouterEvaluator::RecordRouterRuleInfo() const {

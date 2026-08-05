@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/common/content_export.h"
+#include "content/common/service_worker/service_worker_router_evaluator.h"
 #include "content/public/browser/service_worker_client_info.h"
 #include "content/public/browser/service_worker_version_base_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -47,7 +48,8 @@ struct CONTENT_EXPORT ServiceWorkerVersionInfo
       int devtools_agent_route_id,
       ukm::SourceId ukm_source_id,
       blink::mojom::AncestorFrameType ancestor_frame_type,
-      std::optional<std::string> router_rules);
+      std::optional<std::string> router_rules,
+      std::vector<ServiceWorkerRouterRule> typed_router_rules);
   ServiceWorkerVersionInfo(const ServiceWorkerVersionInfo& other);
   ~ServiceWorkerVersionInfo() override;
 
@@ -58,7 +60,13 @@ struct CONTENT_EXPORT ServiceWorkerVersionInfo
   int thread_id;
   int devtools_agent_route_id;
   ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;
+  // TODO(crbug.com/540469610): Replace this field with `typed_router_rules`
+  // after `kServiceWorkerStaticRouterTypedRulesForDevTools` is launched, and
+  // chrome://serviceworker-internals/ migration is also completed.
   std::optional<std::string> router_rules;
+  // Non-empty only if `kServiceWorkerStaticRouterTypedRulesForDevTools` is
+  // enabled.
+  std::vector<ServiceWorkerRouterRule> typed_router_rules;
   base::Time script_response_time;
   base::Time script_last_modified;
   std::map<std::string, ServiceWorkerClientInfo> clients;

@@ -55,8 +55,9 @@ class ServiceWorkerContextCoreObserver {
                                      const GURL& scope,
                                      const blink::StorageKey& key,
                                      ServiceWorkerVersion::Status status) {}
-  virtual void OnVersionRouterRulesChanged(int64_t version_id,
-                                           const std::string& router_rules) {}
+  virtual void OnVersionRouterRulesChanged(
+      int64_t version_id,
+      const ServiceWorkerVersion::RouterRulesForDevTools& router_rules) {}
   virtual void OnVersionDevToolsRoutingIdChanged(int64_t version_id,
                                                  ChildProcessId process_id,
                                                  int devtools_agent_route_id) {}

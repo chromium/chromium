@@ -6,6 +6,7 @@
 #define CONTENT_COMMON_FEATURES_H_
 
 #include "base/compiler_specific.h"
+#include "base/feature.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "content/common/content_export.h"
@@ -240,6 +241,8 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kServiceWorkerStaticRouterConsolidateMainScriptResponse);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kServiceWorkerStaticRouterStartServiceWorker);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kServiceWorkerStaticRouterTypedRulesForDevTools);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kServiceWorkerSuppressTimeoutWhenPaymentWindowOpen);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kServiceWorkerClientUrlIsCreationUrl);

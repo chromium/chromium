@@ -23,6 +23,7 @@
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "content/browser/service_worker/service_worker_info.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -293,7 +294,9 @@ class ServiceWorkerInternalsHandler::PartitionObserver
       handler_->OnVersionStateChanged(partition_id_, version_id);
     }
   }
-  void OnVersionRouterRulesChanged(int64_t, const std::string&) override {
+  void OnVersionRouterRulesChanged(
+      int64_t,
+      const ServiceWorkerVersion::RouterRulesForDevTools&) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     if (handler_) {
       handler_->OnVersionRouterRulesChanged();

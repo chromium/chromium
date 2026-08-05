@@ -13,6 +13,7 @@
 #include "base/barrier_closure.h"
 #include "base/byte_size.h"
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -44,6 +45,7 @@
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_host.h"
@@ -1335,10 +1337,12 @@ void ServiceWorkerContextCore::OnVersionStateChanged(
   DCHECK_EQ(this, version->context().get());
   if (version->status() == ServiceWorkerVersion::INSTALLED &&
       version->router_evaluator()) {
+    ServiceWorkerVersion::RouterRulesForDevTools rules =
+        version->CalculateRouterRulesForDevTools();
     observer_list_->Notify(
         FROM_HERE,
         &ServiceWorkerContextCoreObserver::OnVersionRouterRulesChanged,
-        version->version_id(), version->router_evaluator()->ToString());
+        version->version_id(), std::move(rules));
   }
   observer_list_->Notify(
       FROM_HERE, &ServiceWorkerContextCoreObserver::OnVersionStateChanged,

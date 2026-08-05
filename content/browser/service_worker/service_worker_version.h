@@ -807,6 +807,12 @@ class CONTENT_EXPORT ServiceWorkerVersion
 
   void OnPaymentHandlerDisconnect();
 
+  struct RouterRulesForDevTools {
+    std::optional<std::string> legacy_rules;
+    std::vector<ServiceWorkerRouterRule> typed_rules;
+  };
+  RouterRulesForDevTools CalculateRouterRulesForDevTools() const;
+
   // Timeout for a request to be handled.
   static constexpr base::TimeDelta kRequestTimeout = base::Minutes(5);
 
