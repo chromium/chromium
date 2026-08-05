@@ -91,11 +91,18 @@ public class TabGroupColorPickerItemViewBinderUnitTest {
         assertThat(colorButton, instanceOf(MaterialButton.class));
         MaterialButton button = (MaterialButton) colorButton;
 
+        int blueColor =
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
+                        mActivity, TabGroupColorId.BLUE, false);
+        ColorStateList expectedList =
+                TabGroupColorPickerUtils.buildTabGroupColorPickerBackgroundTintList(
+                        mActivity, blueColor, false);
+        ColorStateList actualList = button.getBackgroundTintList();
+        Assert.assertNotNull(actualList);
+        assertEquals(expectedList.getDefaultColor(), actualList.getDefaultColor());
         assertEquals(
-                ColorStateList.valueOf(
-                        TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
-                                mActivity, TabGroupColorId.BLUE, false)),
-                button.getBackgroundTintList());
+                expectedList.getColorForState(new int[] {android.R.attr.state_hovered}, 0),
+                actualList.getColorForState(new int[] {android.R.attr.state_hovered}, 0));
     }
 
     @Test

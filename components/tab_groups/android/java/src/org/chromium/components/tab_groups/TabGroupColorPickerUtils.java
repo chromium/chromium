@@ -53,6 +53,34 @@ public class TabGroupColorPickerUtils {
     }
 
     /**
+     * Builds a {@link ColorStateList} for the background tint in the tab group color picker.
+     * Applies a theme-appropriate highlight color on hover so that vibrant swatches illuminate
+     * cleanly when hovered with a mouse pointer.
+     *
+     * @param context The {@link Context} used to retrieve colors and dimensions.
+     * @param baseColor The base swatch color for the button.
+     * @param isIncognito A boolean indicating whether the current mode is incognito.
+     * @return A {@link ColorStateList} configured for the button's background tint.
+     */
+    public static ColorStateList buildTabGroupColorPickerBackgroundTintList(
+            Context context, @ColorInt int baseColor, boolean isIncognito) {
+        @DimenRes int hoveredAlpha = R.dimen.tab_group_color_picker_hovered_alpha;
+        @ColorRes
+        int hoverOverlayRes =
+                isIncognito
+                        ? R.color.tab_group_color_picker_hover_color_incognito
+                        : R.color.tab_group_color_picker_hover_color;
+        @ColorInt int hoverOverlayBase = ContextCompat.getColor(context, hoverOverlayRes);
+
+        int hoverOverlayWithAlpha =
+                getColorWithAlphaApplied(context, hoverOverlayBase, hoveredAlpha);
+        int hoveredColor = ColorUtils.overlayColor(baseColor, hoverOverlayWithAlpha);
+
+        int[] colors = new int[] {hoveredColor, baseColor, baseColor, baseColor};
+        return new ColorStateList(HOVERED_FOCUSED_PRESSED_AND_NORMAL_STATES, colors);
+    }
+
+    /**
      * Builds a {@link ColorStateList} for the ripple effect in the tab group color picker. The
      * ripple color adapts based on whether the current context is incognito or not, and applies
      * different alpha values for hovered, focused, and pressed states.
@@ -66,6 +94,14 @@ public class TabGroupColorPickerUtils {
         @DimenRes int hoveredAlpha = R.dimen.tab_group_color_picker_hovered_alpha;
         @DimenRes int focusedAlpha = R.dimen.tab_group_color_picker_focused_alpha;
         @DimenRes int pressedAlpha = R.dimen.tab_group_color_picker_pressed_alpha;
+
+        @ColorRes
+        int hoverOverlayRes =
+                isIncognito
+                        ? R.color.tab_group_color_picker_hover_color_incognito
+                        : R.color.tab_group_color_picker_hover_color;
+        @ColorInt int hoverOverlayBase = ContextCompat.getColor(context, hoverOverlayRes);
+
         @ColorInt
         int onSurfaceColor =
                 isIncognito
@@ -73,7 +109,7 @@ public class TabGroupColorPickerUtils {
                                 context, R.color.tab_group_color_picker_incognito_ripple_color)
                         : SemanticColorUtils.getColorOnSurface(context);
 
-        int hoveredColor = getColorWithAlphaApplied(context, onSurfaceColor, hoveredAlpha);
+        int hoveredColor = getColorWithAlphaApplied(context, hoverOverlayBase, hoveredAlpha);
         int focusedColor = getColorWithAlphaApplied(context, onSurfaceColor, focusedAlpha);
         int pressedColor = getColorWithAlphaApplied(context, onSurfaceColor, pressedAlpha);
 
