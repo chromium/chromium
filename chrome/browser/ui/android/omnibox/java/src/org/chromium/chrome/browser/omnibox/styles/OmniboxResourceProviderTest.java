@@ -7,10 +7,13 @@ package org.chromium.chrome.browser.omnibox.styles;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Drawable.ConstantState;
@@ -559,5 +562,26 @@ public class OmniboxResourceProviderTest {
                 SemanticColorUtils.getColorSurfaceContainer(mContext),
                 OmniboxResourceProvider.getPopoverSuggestionBackgroundColor(
                         mContext, BrandedColorScheme.APP_DEFAULT));
+    }
+
+    @Test
+    public void testInstanceCachingAndConfigurationChange() {
+        OmniboxResourceProvider provider =
+                new OmniboxResourceProvider(mContext, BrandedColorScheme.APP_DEFAULT);
+
+        ResourceCache cache1 = provider.getCacheForTesting();
+        assertNotNull(cache1);
+
+        // 1. Verify changing branded color scheme updates scheme but does NOT invalidate cache.
+        provider.setBrandedColorScheme(BrandedColorScheme.INCOGNITO);
+        assertEquals(BrandedColorScheme.INCOGNITO, provider.getBrandedColorScheme());
+        assertSame(cache1, provider.getCacheForTesting());
+
+        // 2. Verify onConfigurationChanged invalidates cache when system night mode changes.
+        Configuration config = new Configuration(mContext.getResources().getConfiguration());
+        config.uiMode = Configuration.UI_MODE_NIGHT_YES;
+        provider.onConfigurationChanged(config);
+        ResourceCache cache2 = provider.getCacheForTesting();
+        assertNotSame(cache1, cache2);
     }
 }

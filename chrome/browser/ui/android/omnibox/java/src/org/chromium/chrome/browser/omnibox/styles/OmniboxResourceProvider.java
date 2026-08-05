@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.styles;
 
+import android.content.ComponentCallbacks2;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
@@ -20,6 +21,7 @@ import android.util.TypedValue;
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.IntDef;
 import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
@@ -31,6 +33,7 @@ import com.google.android.material.color.MaterialColors;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
@@ -48,6 +51,8 @@ import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.util.ColorUtils;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.function.Function;
 
 /**
@@ -60,7 +65,24 @@ import java.util.function.Function;
  * <p>Where possible please use an Instance. Static methods are set to be retired.
  */
 @NullMarked
-public class OmniboxResourceProvider {
+public class OmniboxResourceProvider implements ComponentCallbacks2 {
+    /** Identifies the current layout constraints of the screen/window. */
+    @IntDef({
+        LayoutSize.UNKNOWN,
+        LayoutSize.PHONE,
+        LayoutSize.TABLET_NARROW,
+        LayoutSize.TABLET_WIDE,
+        LayoutSize.DESKTOP
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface LayoutSize {
+        int UNKNOWN = 0;
+        int PHONE = 1; // Physical phone layout.
+        int TABLET_NARROW = 2; // Tablet screen, but in narrow split-screen window (< 600dp).
+        int TABLET_WIDE = 3; // Tablet screen, in wide window (>= 600dp).
+        int DESKTOP = 4; // Desktop platform.
+    }
+
     private static final String TAG = "OmniboxResourceProvider";
 
     private static SparseArray<ConstantState> sDrawableCache = new SparseArray<>();
@@ -69,14 +91,27 @@ public class OmniboxResourceProvider {
     private static @ColorInt @Nullable Integer sUrlBarPrimaryTextColorForTesting;
     private static @ColorInt @Nullable Integer sUrlBarHintTextColorForTesting;
 
-    private final SparseArray<ConstantState> mDrawableCache = new SparseArray<>();
-    private final SparseArray<String> mStringCache = new SparseArray<>();
+    // Tracking states for cache invalidation.
+    private @LayoutSize int mLayoutSizeState = LayoutSize.UNKNOWN;
+    private @Nullable String mLocaleState;
+    private boolean mDarkModeState;
+
     private final Context mContext;
-    private @BrandedColorScheme int mBrandedColorScheme;
+    private Context mLayoutSizeAdjustedContext;
+    private ResourceCache mCache;
+
+    private @BrandedColorScheme int mBrandedColorScheme = BrandedColorScheme.APP_DEFAULT;
 
     public OmniboxResourceProvider(Context context, @BrandedColorScheme int brandedColorScheme) {
         mContext = context;
         mBrandedColorScheme = brandedColorScheme;
+        mContext.registerComponentCallbacks(this);
+        updateStateAndCache(context.getResources().getConfiguration());
+    }
+
+    /** Unregisters context callbacks. */
+    public void destroy() {
+        mContext.unregisterComponentCallbacks(this);
     }
 
     /**
@@ -87,48 +122,93 @@ public class OmniboxResourceProvider {
         this(context, getBrandedColorScheme(context, isIncognitoBranded, primaryBackgroundColor));
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        updateStateAndCache(newConfig);
+    }
+
+    @Override
+    public void onLowMemory() {}
+
+    @Override
+    public void onTrimMemory(int level) {}
+
     /**
      * Set branded color scheme.
      *
      * @see #setBrandedColorScheme(Context, ...)
      */
     public void setBrandedColorScheme(@BrandedColorScheme int brandedColorScheme) {
-        mBrandedColorScheme = brandedColorScheme;
+        if (mBrandedColorScheme != brandedColorScheme) {
+            mBrandedColorScheme = brandedColorScheme;
+            updateStateAndCache(mContext.getResources().getConfiguration());
+        }
     }
 
     public @BrandedColorScheme int getBrandedColorScheme() {
         return mBrandedColorScheme;
     }
 
-    /** As {@link #getDrawable(Context, int)} but uses the instance context and cache. */
-    public Drawable getDrawable(@DrawableRes int res) {
-        ThreadUtils.assertOnUiThread();
-        ConstantState constantState = mDrawableCache.get(res, /* valueIfKeyNotFound= */ null);
-        if (constantState != null) {
-            return constantState.newDrawable(mContext.getResources());
+    // NullAway cannot recognize mLayoutSizeState == UNKONWN as factor impacting the outcome.
+    // We're intentionally starting with values that are not valid to trigger creation of the
+    // correct target context. One way around the problem would be to always instantiate mCache
+    // in the constructor and let it be recreated below, but this is slightly less wasteful.
+    @SuppressWarnings("NullAway")
+    @Initializer
+    private void updateStateAndCache(Configuration config) {
+        @LayoutSize int newLayoutSize = computeLayoutSize(config);
+        String newLocale = config.getLocales().toLanguageTags();
+        boolean darkModeState =
+                (config.uiMode & Configuration.UI_MODE_NIGHT_MASK)
+                        == Configuration.UI_MODE_NIGHT_YES;
+
+        if (newLayoutSize == mLayoutSizeState
+                && newLocale.equals(mLocaleState)
+                && darkModeState == mDarkModeState) {
+            return;
         }
 
-        Drawable drawable = AppCompatResources.getDrawable(mContext, res);
-        mDrawableCache.put(res, drawable.getConstantState());
-        return drawable;
+        mLayoutSizeState = newLayoutSize;
+        mLocaleState = newLocale;
+        mDarkModeState = darkModeState;
+
+        mLayoutSizeAdjustedContext =
+                mLayoutSizeState == LayoutSize.TABLET_NARROW
+                        ? forceSmallTabletWindowConfig(mContext)
+                        : mContext;
+
+        mCache = new ResourceCache(mLayoutSizeAdjustedContext);
+    }
+
+    private @LayoutSize int computeLayoutSize(Configuration config) {
+        if (OmniboxCapabilities.isDesktopPlatform()) {
+            return LayoutSize.DESKTOP;
+        }
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
+            return config.screenWidthDp < DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP
+                    ? LayoutSize.TABLET_NARROW
+                    : LayoutSize.TABLET_WIDE;
+        }
+        return LayoutSize.PHONE;
+    }
+
+    private Context forceSmallTabletWindowConfig(Context context) {
+        Configuration existingConfig = context.getResources().getConfiguration();
+        Configuration newConfig = new Configuration(existingConfig);
+        newConfig.smallestScreenWidthDp = existingConfig.screenWidthDp;
+        return context.createConfigurationContext(newConfig);
+    }
+
+    /** As {@link #getDrawable(Context, int)} but uses the instance context and cache. */
+    public Drawable getDrawable(@DrawableRes int res) {
+        return mCache.getDrawable(res);
     }
 
     /**
      * As {@link #getString(Context, int, CharSequence...)} but uses the instance context and cache.
      */
     public String getString(@StringRes int res, CharSequence... args) {
-        ThreadUtils.assertOnUiThread();
-        String string = mStringCache.get(res, /* valueIfKeyNotFound= */ null);
-        if (string == null) {
-            string = mContext.getString(res);
-
-            // Translate `$1`, `$2`, ... strings (found typically on other platforms)
-            // to `%1$s`, `%2$s` etc, which are appropriate for Chrome.
-            string = string.replaceAll("\\$(\\d+)", "%$1\\$s");
-
-            mStringCache.put(res, string);
-        }
-
+        String string = mCache.getString(res);
         return args.length == 0
                 ? string
                 : String.format(
@@ -1469,5 +1549,9 @@ public class OmniboxResourceProvider {
 
     public static void setTabFaviconFactory(Function<Tab, @Nullable Bitmap> tabFaviconFactory) {
         sTabFaviconFactory = tabFaviconFactory;
+    }
+
+    ResourceCache getCacheForTesting() {
+        return mCache;
     }
 }

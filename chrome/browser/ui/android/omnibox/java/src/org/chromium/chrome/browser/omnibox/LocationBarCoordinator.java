@@ -643,6 +643,8 @@ public class LocationBarCoordinator
 
         mLocationBarLayout.getContext().unregisterComponentCallbacks(mLocationBarMediator);
 
+        mResourceProvider.destroy();
+
         mAutocompleteCoordinator.destroy();
         mAutocompleteCoordinator = null;
 
