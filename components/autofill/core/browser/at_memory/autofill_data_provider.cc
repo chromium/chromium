@@ -17,8 +17,10 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/extend.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
@@ -39,6 +41,8 @@
 #include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
 #include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
+#include "components/autofill/core/common/autofill_features.h"
+#include "components/personal_context/proto/features/at_memory.pb.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -47,10 +51,61 @@ namespace autofill {
 
 namespace {
 
+using ::personal_context::proto::TypedValue;
+
 constexpr size_t kVisibleSuffixLength = 4;
 
-// Adds metadata from `form_group` to `entry` if `metadata_entry_type` maps to a
-// `FieldType` and differs from `primary_field_type`.
+// Extracts a `TypedValue` from `attribute` if there is a non-empty one.
+std::optional<TypedValue> GetAttributeTypedValue(
+    const AttributeInstance& attribute) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillAtMemoryTypedFetchPlan)) {
+    return std::nullopt;
+  }
+  TypedValue typed_val = attribute.GetTypedValue();
+  return typed_val.value_case() == TypedValue::VALUE_NOT_SET
+             ? std::nullopt
+             : std::optional(std::move(typed_val));
+}
+
+// Extracts the expiration date as a `TypedValue` if it is non-empty.
+std::optional<TypedValue> GetExpirationDateTypedValue(const CreditCard& card) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillAtMemoryTypedFetchPlan)) {
+    return std::nullopt;
+  }
+  const int expiration_year = card.expiration_year();
+  const int expiration_month = card.expiration_month();
+  if (expiration_year == 0 || expiration_month == 0) {
+    return std::nullopt;
+  }
+
+  TypedValue typed_val;
+  typed_val.mutable_date()->set_year(expiration_year);
+  typed_val.mutable_date()->set_month(expiration_month);
+
+  return typed_val;
+}
+
+// Extracts the home country as a `TypedValue` if it is non-empty.
+std::optional<TypedValue> GetHomeCountryTypedValue(
+    const AutofillProfile& profile) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillAtMemoryTypedFetchPlan)) {
+    return std::nullopt;
+  }
+  std::string country_code =
+      base::UTF16ToASCII(profile.GetRawInfo(ADDRESS_HOME_COUNTRY));
+  if (country_code.length() != 2) {
+    return std::nullopt;
+  }
+  TypedValue typed_val;
+  typed_val.set_country_code(country_code);
+  return typed_val;
+}
+
+// Adds metadata from `form_group` to `entry` if `metadata_entry_type` maps to
+// a `FieldType` and differs from `primary_field_type`.
 void AddMetadataToResult(MemorySearchResult& entry,
                          const FormGroup& form_group,
                          MemoryDataType metadata_entry_type,
@@ -100,7 +155,7 @@ std::vector<EntryMetadata> GetMetadataFromEntityAttributes(
     MemoryDataType metadata_type = AttributeTypeToMemoryDataType(attr.type());
     metadata.emplace_back(metadata_type,
                           GetMemoryDataTypeNameForI18n(metadata_type),
-                          std::move(attr_value));
+                          std::move(attr_value), GetAttributeTypedValue(attr));
   }
   return metadata;
 }
@@ -134,6 +189,10 @@ MemorySearchResult CreateMemorySearchResultForEntity(
     }
     NOTREACHED();
   }();
+  if (base::optional_ref<const AttributeInstance> attribute =
+          entity.attribute(primary_attribute_type)) {
+    entry.typed_value = GetAttributeTypedValue(*attribute);
+  }
   return entry;
 }
 
@@ -175,6 +234,19 @@ MemorySearchResult CreateResultFromAddressProfile(
                       app_locale);
   AddMetadataToResult(entry, profile, MemoryDataType::kAddressCountry,
                       field_type, app_locale);
+
+  if (std::optional<TypedValue> typed_home_country =
+          GetHomeCountryTypedValue(profile)) {
+    if (auto it = std::ranges::find(entry.metadata_list,
+                                    MemoryDataType::kAddressCountry,
+                                    &EntryMetadata::type);
+        it != entry.metadata_list.end()) {
+      it->typed_value = typed_home_country;
+    }
+    if (memory_data_type == MemoryDataType::kAddressCountry) {
+      entry.typed_value = std::move(typed_home_country);
+    }
+  }
 
   entry.confidence_score = profile.GetRankingScore(base::Time::Now());
   return entry;
@@ -234,7 +306,6 @@ std::vector<MemorySearchResult> FetchFullAddressData(
   }
   return entries;
 }
-
 
 // Fetches data from EntityDataManager (Autofill AI) for the requested
 // attribute.
@@ -470,6 +541,19 @@ std::vector<MemorySearchResult> AutofillDataProvider::FetchCreditCardData(
           MemoryDataType::kCreditCardNickname,
           GetMemoryDataTypeNameForI18n(MemoryDataType::kCreditCardNickname),
           std::u16string(credit_card->nickname()));
+    }
+
+    if (std::optional<TypedValue> typed_value =
+            GetExpirationDateTypedValue(*credit_card)) {
+      if (auto it = std::ranges::find(entry.metadata_list,
+                                      MemoryDataType::kCreditCardExpirationDate,
+                                      &EntryMetadata::type);
+          it != entry.metadata_list.end()) {
+        it->typed_value = typed_value;
+      }
+      if (memory_data_type == MemoryDataType::kCreditCardExpirationDate) {
+        entry.typed_value = std::move(typed_value);
+      }
     }
 
     entries.push_back(std::move(entry));

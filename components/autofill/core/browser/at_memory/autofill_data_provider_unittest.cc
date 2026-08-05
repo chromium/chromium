@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
@@ -27,6 +28,8 @@
 #include "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
+#include "components/autofill/core/common/autofill_features.h"
+#include "components/personal_context/proto/features/at_memory.pb.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -569,6 +572,64 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_MultipleTypes) {
       testing::UnorderedElementsAre(
           Field(&MemorySearchResult::type, Eq(MemoryDataType::kAddressCity)),
           Field(&MemorySearchResult::type, Eq(MemoryDataType::kAddressZip))));
+}
+
+// Tests that RetrieveAll populates typed_value on entity instance metadata.
+TEST_F(AutofillDataProviderTest,
+       RetrieveAll_PopulatesTypedValue_EntityInstance) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillAtMemoryTypedFetchPlan);
+  EntityInstance passport = test::GetPassportEntityInstance(
+      {.number = u"XYZ123", .issue_date = u"2010-09-01", .use_count = 1});
+  entity_data_manager().AddOrUpdateEntityInstance(passport);
+  WaitForDatabase();
+
+  std::vector<MemorySearchResult> results =
+      RetrieveAllHelper(retriever(), MemoryDataType::kPassportNumber);
+  ASSERT_EQ(results.size(), 1u);
+  auto it = std::ranges::find(results[0].metadata_list,
+                              MemoryDataType::kPassportIssueDate,
+                              &EntryMetadata::type);
+  ASSERT_NE(it, results[0].metadata_list.end());
+  EXPECT_TRUE(it->typed_value.has_value());
+  EXPECT_EQ(it->typed_value->date().year(), 2010);
+  EXPECT_EQ(it->typed_value->date().month(), 9);
+  EXPECT_EQ(it->typed_value->date().day(), 1);
+}
+
+// Tests that RetrieveAll populates typed_value on address profile country
+// suggestions.
+TEST_F(AutofillDataProviderTest,
+       RetrieveAll_PopulatesTypedValue_AddressProfile) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillAtMemoryTypedFetchPlan);
+  AutofillProfile profile = test::GetFullProfile();
+  profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
+  client().GetPersonalDataManager().address_data_manager().AddProfile(profile);
+
+  std::vector<MemorySearchResult> results =
+      RetrieveAllHelper(retriever(), MemoryDataType::kAddressCountry);
+  ASSERT_EQ(results.size(), 1u);
+  EXPECT_TRUE(results[0].typed_value.has_value());
+  EXPECT_EQ(results[0].typed_value->country_code(), "US");
+}
+
+// Tests that RetrieveAll populates typed_value on credit card expiration dates.
+TEST_F(AutofillDataProviderTest, RetrieveAll_PopulatesTypedValue_CreditCard) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillAtMemoryTypedFetchPlan);
+  CreditCard card = test::GetCreditCard();
+  card.SetExpirationYear(2028);
+  card.SetExpirationMonth(5);
+  client().GetPersonalDataManager().payments_data_manager().AddCreditCard(card);
+
+  std::vector<MemorySearchResult> results =
+      RetrieveAllHelper(retriever(), MemoryDataType::kCreditCardExpirationDate);
+  ASSERT_EQ(results.size(), 1u);
+  EXPECT_TRUE(results[0].typed_value.has_value());
+  EXPECT_EQ(results[0].typed_value->date().year(), 2028);
+  EXPECT_EQ(results[0].typed_value->date().month(), 5);
+  EXPECT_EQ(results[0].typed_value->date().day(), 0);
 }
 
 }  // namespace
