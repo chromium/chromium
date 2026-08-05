@@ -167,6 +167,16 @@ TEST_F(ContextHubServiceTest, GenerateFirstPartyAutoTodos_ParseError) {
   EXPECT_FALSE(future.Get());
 }
 
+TEST_F(ContextHubServiceTest, GenerateTabBasedTodos) {
+  std::vector<TabData> input_tabs = {
+      {1, "Tab 1", GURL("https://example1.com")}};
+
+  base::test::TestFuture<bool> future;
+  service_.GenerateTabBasedTodos(std::move(input_tabs), future.GetCallback());
+
+  EXPECT_FALSE(future.Get());
+}
+
 TEST_F(ContextHubServiceTest, SaveTab) {
   base::test::TestFuture<void> save_tab_future;
   service_.SaveTab(GURL("https://example.com"), "Title", "Page text",

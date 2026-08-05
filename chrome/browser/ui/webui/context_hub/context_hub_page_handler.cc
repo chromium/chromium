@@ -315,6 +315,19 @@ std::vector<browser::context_hub::mojom::ChatMessagePtr> ToMojoChatHistory(
 
 }  // namespace
 
+void ContextHubPageHandler::GenerateTabBasedTodos(
+    GenerateTabBasedTodosCallback callback) {
+  context_hub::ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(profile_);
+  if (!service || !tab_provider_) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  service->GenerateTabBasedTodos(
+      GetOpenTabs(tab_provider_.get(), web_contents_), std::move(callback));
+}
+
 void ContextHubPageHandler::GetTabs(GetTabsCallback callback) {
   std::move(callback).Run(
       ToMojoTabs(GetOpenTabs(tab_provider_.get(), web_contents_)));

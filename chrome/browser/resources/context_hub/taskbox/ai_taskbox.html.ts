@@ -63,8 +63,9 @@ export function getHtml(this: AiTaskboxElement) {
             <section class="todo-column">
                 <div class="column-header">
                     <h2>Tab-based Todos</h2>
-                    <cr-button class="tonal-button" disabled>
-                      Generate my Tab Todos
+                    <cr-button class="tonal-button" disabled
+                        @click="${this.onGenerateTabTodosClick_}">
+                      ${this.isGeneratingTabTodos_ ? 'Generating...' : 'Generate my Tab Todos'}
                     </cr-button>
                 </div>
 

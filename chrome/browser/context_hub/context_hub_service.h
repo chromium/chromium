@@ -71,6 +71,11 @@ class ContextHubService : public KeyedService, public AutoTodosStore::Observer {
   // `callback` on completion indicating whether the generation was successful.
   void GenerateFirstPartyAutoTodos(AutoTodosStore::OperationCallback callback);
 
+  // Generates tab-based todos and saves them in the AutoTodos store. Invokes
+  // `callback` on completion indicating whether the generation was successful.
+  void GenerateTabBasedTodos(std::vector<TabData> tabs,
+                             AutoTodosStore::OperationCallback callback);
+
   using GetAutoTodosCallback =
       base::OnceCallback<void(std::vector<AutoTodoEntry>)>;
   // Returns all stored AutoTodos.

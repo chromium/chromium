@@ -920,6 +920,26 @@ TEST_F(ContextHubPageHandlerTest, GetExistingTabGroupsAndChats_NoGroups) {
   EXPECT_TRUE(ungrouped_tabs.empty());
   EXPECT_TRUE(chat_history.empty());
 }
+
+TEST_F(ContextHubPageHandlerTest, GenerateTabBasedTodos) {
+  std::vector<std::unique_ptr<content::WebContents>> test_tabs;
+  std::vector<content::WebContents*> raw_test_tabs;
+  auto tab =
+      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+  sessions::SessionTabHelper::CreateForWebContents(
+      tab.get(), sessions::SessionTabHelper::DelegateLookup());
+  raw_test_tabs.push_back(tab.get());
+  test_tabs.push_back(std::move(tab));
+
+  EXPECT_CALL(*mock_tab_provider_, GetTabs(_))
+      .WillOnce(testing::Return(raw_test_tabs));
+
+  EXPECT_CALL(mock_page_, OnAutoTodosChanged(_)).Times(0);
+
+  base::test::TestFuture<bool> future;
+  handler_->GenerateTabBasedTodos(future.GetCallback());
+  EXPECT_FALSE(future.Get());
+}
 #endif
 
 TEST_F(ContextHubPageHandlerTest, ClearTabGroupChatHistory) {

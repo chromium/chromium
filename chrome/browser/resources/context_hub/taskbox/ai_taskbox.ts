@@ -36,6 +36,9 @@ export class AiTaskboxElement extends CrLitElement {
       isGeneratingGmailTodos_: {type: Boolean},
       hasGmailGenerationError_: {type: Boolean},
       hasGeneratedGmail_: {type: Boolean},
+      isGeneratingTabTodos_: {type: Boolean},
+      hasTabGenerationError_: {type: Boolean},
+      hasGeneratedTab_: {type: Boolean},
       autoTodosEnabled_: {type: Boolean},
     };
   }
@@ -45,6 +48,10 @@ export class AiTaskboxElement extends CrLitElement {
   protected accessor isGeneratingGmailTodos_: boolean = false;
   protected accessor hasGmailGenerationError_: boolean = false;
   protected accessor hasGeneratedGmail_: boolean = false;
+  protected accessor isGeneratingTabTodos_: boolean = false;
+  // TODO(crbug.com/539697847): Use this to show an error message to the user.
+  protected accessor hasTabGenerationError_: boolean = false;
+  protected accessor hasGeneratedTab_: boolean = false;
   protected accessor autoTodosEnabled_: boolean =
       loadTimeData.getBoolean('kAutoTodos');
   private listenerIds_: number[] = [];
@@ -103,6 +110,27 @@ export class AiTaskboxElement extends CrLitElement {
       this.hasGmailGenerationError_ = true;
     } finally {
       this.isGeneratingGmailTodos_ = false;
+    }
+  }
+
+  protected async onGenerateTabTodosClick_() {
+    if (!this.autoTodosEnabled_ || this.isGeneratingTabTodos_) {
+      return;
+    }
+    this.isGeneratingTabTodos_ = true;
+    this.hasTabGenerationError_ = false;
+    try {
+      const {success} = await browserProxyFactory.getInstance()
+                            .handler.generateTabBasedTodos();
+      this.hasTabGenerationError_ = !success;
+      if (success) {
+        this.hasGeneratedTab_ = true;
+      }
+    } catch (e) {
+      console.error('Failed to generate tab-based todos:', e);
+      this.hasTabGenerationError_ = true;
+    } finally {
+      this.isGeneratingTabTodos_ = false;
     }
   }
 }

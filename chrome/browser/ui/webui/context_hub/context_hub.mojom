@@ -153,6 +153,10 @@ interface PageHandler {
   [RuntimeFeature=kAutoTodos]
   UpdateAutoTodo(AutoTodoItem todo) => (bool success);
 
+  // Generates Tab-based Todos and stores them in the cache. Gated by kAutoTodos flag.
+  [RuntimeFeature=kAutoTodos]
+  GenerateTabBasedTodos() => (bool success);
+
   // Stores or updates feedback on an Auto Todo item in the cache.
   [RuntimeFeature=kAutoTodos]
   SetTodoFeedback(AutoTodoItemFeedback feedback) => ();

@@ -124,6 +124,16 @@ void ContextHubService::GenerateFirstPartyAutoTodos(
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void ContextHubService::GenerateTabBasedTodos(
+    std::vector<TabData> tabs,
+    AutoTodosStore::OperationCallback callback) {
+  // TODO(crbug.com/539697847): Implement call to MES to generate tab-based
+  // todos with fetched APC.
+  if (callback) {
+    std::move(callback).Run(false);
+  }
+}
+
 void ContextHubService::OnFirstPartyAutoTodosFetched(
     AutoTodosStore::OperationCallback callback,
     personal_context::FetchContextResult result) {
