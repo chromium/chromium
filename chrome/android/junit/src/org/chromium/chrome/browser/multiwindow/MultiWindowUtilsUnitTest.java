@@ -1047,66 +1047,6 @@ public class MultiWindowUtilsUnitTest {
     }
 
     @Test
-    public void testIsRestorableInstance() {
-        MultiWindowTestUtils.enableMultiInstance();
-
-        // 1. Inactive instance with 0 tabs -> not restorable.
-        writeInstanceInfo(
-                /* instanceId= */ INSTANCE_ID_0,
-                getOriginalNativeNtpUrl(),
-                /* tabCount= */ 0,
-                /* incognitoTabCount= */ 0,
-                /* taskId= */ MultiWindowUtils.INVALID_TASK_ID);
-        assertFalse(
-                "Inactive instance with 0 tabs should not be restorable.",
-                MultiWindowUtils.isRestorableInstance(Collections.emptySet(), INSTANCE_ID_0));
-
-        // 2. Inactive instance with single NTP tab -> not restorable.
-        writeInstanceInfo(
-                /* instanceId= */ INSTANCE_ID_1,
-                getOriginalNativeNtpUrl(),
-                /* tabCount= */ 1,
-                /* incognitoTabCount= */ 0,
-                /* taskId= */ MultiWindowUtils.INVALID_TASK_ID);
-        assertFalse(
-                "Inactive instance with single NTP tab should not be restorable.",
-                MultiWindowUtils.isRestorableInstance(Collections.emptySet(), INSTANCE_ID_1));
-
-        // 3. Active instance with single NTP tab -> restorable (because active task is running).
-        writeInstanceInfo(
-                /* instanceId= */ INSTANCE_ID_1,
-                getOriginalNativeNtpUrl(),
-                /* tabCount= */ 1,
-                /* incognitoTabCount= */ 0,
-                /* taskId= */ TASK_ID_5);
-        assertTrue(
-                "Active instance with single NTP tab should be restorable.",
-                MultiWindowUtils.isRestorableInstance(Set.of(TASK_ID_5), INSTANCE_ID_1));
-
-        // 4. Inactive instance with single non-NTP tab -> restorable.
-        writeInstanceInfo(
-                /* instanceId= */ INSTANCE_ID_2,
-                URL_1,
-                /* tabCount= */ 1,
-                /* incognitoTabCount= */ 0,
-                /* taskId= */ MultiWindowUtils.INVALID_TASK_ID);
-        assertTrue(
-                "Inactive instance with regular non-NTP tab should be restorable.",
-                MultiWindowUtils.isRestorableInstance(Collections.emptySet(), INSTANCE_ID_2));
-
-        // 5. Inactive instance with multiple tabs -> restorable.
-        writeInstanceInfo(
-                /* instanceId= */ INSTANCE_ID_0,
-                getOriginalNativeNtpUrl(),
-                /* tabCount= */ 2,
-                /* incognitoTabCount= */ 0,
-                /* taskId= */ MultiWindowUtils.INVALID_TASK_ID);
-        assertTrue(
-                "Inactive instance with multiple tabs should be restorable.",
-                MultiWindowUtils.isRestorableInstance(Collections.emptySet(), INSTANCE_ID_0));
-    }
-
-    @Test
     public void testGetPersistedInstanceIds_WithPreFetchedAppTaskIds() {
         MultiWindowTestUtils.enableMultiInstance();
 

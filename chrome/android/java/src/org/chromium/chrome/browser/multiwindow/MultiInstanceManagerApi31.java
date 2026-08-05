@@ -68,11 +68,13 @@ import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
+import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
@@ -994,7 +996,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         List<InstanceInfo> instanceInfoList = new ArrayList<>();
         for (int instanceId : instanceIds) {
             // Do not update the Recent Tabs page if the closed window has no regular tabs.
-            if (!MultiWindowUtils.hasRestorableRegularTabs(instanceId)) {
+            if (!hasRestorableRegularTabs(instanceId)) {
                 continue;
             }
             InstanceInfo instanceInfo =
@@ -1038,10 +1040,19 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         return source != CloseWindowAppSource.WINDOW_MANAGER;
     }
 
+    private static boolean hasRestorableRegularTabs(int instanceId) {
+        int normalTabCount = ChromeMultiInstancePersistentStore.readNormalTabCount(instanceId);
+
+        if (normalTabCount > 1) return true;
+        if (normalTabCount == 0) return false;
+
+        String activeUrl = ChromeMultiInstancePersistentStore.readActiveTabUrl(instanceId);
+        return !UrlUtilities.isNtpUrl(UrlFormatter.fixupUrl(activeUrl));
+    }
+
     private static boolean shouldPermanentlyDeleteWindow(
             int instanceId, @CloseWindowAppSource int source) {
-        return isPermanentClosureSource(source)
-                || !MultiWindowUtils.hasRestorableRegularTabs(instanceId);
+        return isPermanentClosureSource(source) || !hasRestorableRegularTabs(instanceId);
     }
 
     private Profile getProfile() {
@@ -1068,7 +1079,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         // Tabs of activity destruction only if the activity is finishing, with the caveat that a
         // subsequent task kill will also not be reflected as an instance closure until the Recent
         // Tabs page is reopened.
-        boolean isPermanentDeletion = !MultiWindowUtils.hasRestorableRegularTabs(mInstanceId);
+        boolean isPermanentDeletion = !hasRestorableRegularTabs(mInstanceId);
         if (!isPermanentDeletion) {
             ChromeMultiInstancePersistentStore.writeClosureTime(mInstanceId);
         }

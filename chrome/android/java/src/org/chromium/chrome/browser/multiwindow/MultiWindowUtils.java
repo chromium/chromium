@@ -73,13 +73,11 @@ import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.util.MultiInstanceUtils;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.ukm.UkmRecorder;
-import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -689,20 +687,10 @@ public class MultiWindowUtils implements ActivityStateListener {
         return inactiveInstanceCount > 0;
     }
 
-    /* package */ static boolean hasRestorableRegularTabs(int instanceId) {
-        int normalTabCount = ChromeMultiInstancePersistentStore.readNormalTabCount(instanceId);
-
-        if (normalTabCount > 1) return true;
-        if (normalTabCount == 0) return false;
-
-        String activeUrl = ChromeMultiInstancePersistentStore.readActiveTabUrl(instanceId);
-        return !UrlUtilities.isNtpUrl(UrlFormatter.fixupUrl(activeUrl));
-    }
-
-    /* package */ static boolean isRestorableInstance(Set<Integer> appTaskIds, int index) {
+    static boolean isRestorableInstance(Set<Integer> appTaskIds, int index) {
         int taskId = ChromeMultiInstancePersistentStore.readTaskId(index);
         boolean isActiveTask = appTaskIds.contains(taskId);
-        return hasRestorableRegularTabs(index) || isActiveTask;
+        return ChromeMultiInstancePersistentStore.readNormalTabCount(index) != 0 || isActiveTask;
     }
 
     @Override
