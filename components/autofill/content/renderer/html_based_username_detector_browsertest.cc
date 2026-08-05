@@ -75,7 +75,7 @@ class HtmlBasedUsernameDetectorTest : public test::AutofillRendererTest {
   WebFormElement GetFormElement() {
     const WebLocalFrame* frame = GetMainFrame();
     const std::vector<WebFormElement>& forms =
-        frame->GetDocument().GetTopLevelForms();
+        frame->GetDocument().GetOutermostForms();
     EXPECT_EQ(1U, forms.size());
     EXPECT_TRUE(forms[0]);
 

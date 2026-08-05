@@ -125,7 +125,7 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
     return r;
   }
   std::vector<blink::WebFormElement> form_elements =
-      document.GetTopLevelForms();
+      document.GetOutermostForms();
   // Add a null WebFormElement to account for the form of unowned elements.
   form_elements.emplace_back();
 

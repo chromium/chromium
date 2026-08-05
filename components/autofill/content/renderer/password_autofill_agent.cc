@@ -357,7 +357,7 @@ bool HasPasswordField(const WebLocalFrame& frame) {
   };
 
   WebDocument doc = frame.GetDocument();
-  return std::ranges::any_of(doc.GetTopLevelForms(), ContainsPasswordField,
+  return std::ranges::any_of(doc.GetOutermostForms(), ContainsPasswordField,
                              &WebFormElement::GetFormControlElements) ||
          ContainsPasswordField(doc.UnassociatedFormControls());
 }
@@ -1442,7 +1442,7 @@ void PasswordAutofillAgent::SendPasswordForms(
     return;
   }
 
-  std::vector<WebFormElement> forms = doc.GetTopLevelForms();
+  std::vector<WebFormElement> forms = doc.GetOutermostForms();
 
   if (IsShowAutofillSignaturesEnabled())
     AnnotateFormsAndFieldsWithSignatures(forms, form_cache);

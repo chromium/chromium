@@ -115,7 +115,8 @@ class PasswordFormConversionUtilsTest : public content::RenderViewTest {
     WebLocalFrame* frame = GetMainFrame();
     ASSERT_TRUE(frame);
 
-    std::vector<WebFormElement> forms = frame->GetDocument().GetTopLevelForms();
+    std::vector<WebFormElement> forms =
+        frame->GetDocument().GetOutermostForms();
     ASSERT_LE(1U, forms.size());
 
     *form = forms[0];

@@ -475,7 +475,7 @@ TEST_F(FormCacheBrowserTest, DoNotStoreEmptyForms) {
   EXPECT_TRUE(forms.updated_forms.empty());
   EXPECT_TRUE(forms.removed_forms.empty());
 
-  EXPECT_EQ(1u, GetDocument().GetTopLevelForms().size());
+  EXPECT_EQ(1u, GetDocument().GetOutermostForms().size());
   EXPECT_EQ(0u, num_extracted_forms());
 }
 
@@ -495,7 +495,8 @@ TEST_F(FormCacheBrowserTest, FormCacheSizeUpperBound) {
   EXPECT_EQ(forms.updated_forms.size(), kMaxExtractableFields);
   EXPECT_TRUE(forms.removed_forms.empty());
 
-  EXPECT_EQ(kMaxExtractableFields + 1, GetDocument().GetTopLevelForms().size());
+  EXPECT_EQ(kMaxExtractableFields + 1,
+            GetDocument().GetOutermostForms().size());
   EXPECT_EQ(kMaxExtractableFields, num_extracted_forms());
 }
 
@@ -508,7 +509,8 @@ TEST_F(FormCacheBrowserTest, FieldLimit) {
   }
   LoadHTML(html);
 
-  ASSERT_EQ(kMaxExtractableFields + 1, GetDocument().GetTopLevelForms().size());
+  ASSERT_EQ(kMaxExtractableFields + 1,
+            GetDocument().GetOutermostForms().size());
 
   FormCache::UpdateFormCacheResult forms = UpdateFormCache();
 
@@ -526,7 +528,7 @@ TEST_F(FormCacheBrowserTest, FrameLimit) {
   LoadHTML(html);
 
   ASSERT_EQ(kMaxExtractableChildFrames + 1,
-            GetDocument().GetTopLevelForms().size());
+            GetDocument().GetOutermostForms().size());
 
   FormCache::UpdateFormCacheResult forms = UpdateFormCache();
 

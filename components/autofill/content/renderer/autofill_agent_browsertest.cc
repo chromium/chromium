@@ -988,7 +988,7 @@ TEST_F(AutofillAgentTest, SelectFieldOptionsChangedAfterFillUsesFieldId) {
       "<form><select id=select_id><option value=one>One</option><option "
       "value=two>Two</option></select></form>");
 
-  std::vector<WebFormElement> forms = GetDocument().GetTopLevelForms();
+  std::vector<WebFormElement> forms = GetDocument().GetOutermostForms();
   ASSERT_EQ(forms.size(), 1u);
 
   std::optional<FormData> form = ExtractFormData(forms.front());
@@ -1039,7 +1039,7 @@ TEST_F(AutofillAgentTest, PreviewThenClear) {
     </form>
   )");
 
-  std::vector<blink::WebFormElement> forms = GetDocument().GetTopLevelForms();
+  std::vector<blink::WebFormElement> forms = GetDocument().GetOutermostForms();
   ASSERT_EQ(1U, forms.size());
   std::optional<FormData> form = ExtractFormData(forms.front());
   ASSERT_TRUE(form);
@@ -1179,7 +1179,7 @@ TEST_P(AutofillAgentSelectFillingTest, FillingSelectElements) {
   const auto& param = GetParam();
   LoadHTML(("<form>" + param.html_select + "</form>").c_str());
 
-  std::vector<WebFormElement> forms = GetDocument().GetTopLevelForms();
+  std::vector<WebFormElement> forms = GetDocument().GetOutermostForms();
   ASSERT_EQ(forms.size(), 1u);
 
   std::optional<FormData> form = ExtractFormData(forms.front());

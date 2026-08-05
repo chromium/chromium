@@ -459,7 +459,7 @@ TEST_F(DocumentTest, StyleVersion) {
   EXPECT_NE(previous_style_version, GetDocument().StyleVersion());
 }
 
-// This tests that meta-theme-color can be found correctly
+// This tests that meta-theme-color can be found correctly.
 TEST_F(DocumentTest, ThemeColor) {
   {
     SetHtmlInnerHTML(
@@ -1631,7 +1631,7 @@ TEST_F(UnassociatedListedElementTest,
   EXPECT_EQ(0u, listed_elements.size());
 }
 
-class TopLevelFormsListTest : public DocumentTest {
+class OutermostFormsListTest : public DocumentTest {
  public:
   HTMLFormElement* GetFormElement(const char* id) {
     return DynamicTo<HTMLFormElement>(GetElementById(id));
@@ -1642,8 +1642,8 @@ class TopLevelFormsListTest : public DocumentTest {
   }
 };
 
-// Tests that `GetTopLevelForms` correctly lists forms in the light DOM.
-TEST_F(TopLevelFormsListTest, FormsInLightDom) {
+// Tests that `GetOutermostForms` correctly lists forms in the light DOM.
+TEST_F(OutermostFormsListTest, FormsInLightDom) {
   SetHtmlInnerHTML(R"HTML(
     <form id="f1">
       <input type="text">
@@ -1654,16 +1654,16 @@ TEST_F(TopLevelFormsListTest, FormsInLightDom) {
       </form>
     </div>
   )HTML");
-  EXPECT_THAT(GetDocument().GetTopLevelForms(),
+  EXPECT_THAT(GetDocument().GetOutermostForms(),
               ElementsAre(GetFormElement("f1"), GetFormElement("f2")));
   // A second call has the same result.
-  EXPECT_THAT(GetDocument().GetTopLevelForms(),
+  EXPECT_THAT(GetDocument().GetOutermostForms(),
               ElementsAre(GetFormElement("f1"), GetFormElement("f2")));
 }
 
-// Tests that `GetTopLevelForms` functions correctly after dynamic form element
+// Tests that `GetOutermostForms` functions correctly after dynamic form element
 // insertion and removal.
-TEST_F(TopLevelFormsListTest, FormsInLightDomInsertionAndRemoval) {
+TEST_F(OutermostFormsListTest, FormsInLightDomInsertionAndRemoval) {
   SetHtmlInnerHTML(R"HTML(
     <form id="f1">
       <input type="text">
@@ -1674,28 +1674,28 @@ TEST_F(TopLevelFormsListTest, FormsInLightDomInsertionAndRemoval) {
       </form>
     </div>
   )HTML");
-  EXPECT_THAT(GetDocument().GetTopLevelForms(),
+  EXPECT_THAT(GetDocument().GetOutermostForms(),
               ElementsAre(GetFormElement("f1"), GetFormElement("f2")));
 
   // Adding a new form element invalidates the cache.
   Element* new_form = CreateElement(AtomicString("form"));
   new_form->SetIdAttribute(AtomicString("f3"));
-  EXPECT_THAT(GetDocument().GetTopLevelForms(),
+  EXPECT_THAT(GetDocument().GetOutermostForms(),
               ElementsAre(GetFormElement("f1"), GetFormElement("f2")));
   GetDocument().body()->AppendChild(new_form);
-  EXPECT_THAT(GetDocument().GetTopLevelForms(),
+  EXPECT_THAT(GetDocument().GetOutermostForms(),
               ElementsAre(GetFormElement("f1"), GetFormElement("f3"),
                           GetFormElement("f2")));
 
   // Removing a form element invalidates the cache.
   GetFormElement("f2")->remove();
-  EXPECT_THAT(GetDocument().GetTopLevelForms(),
+  EXPECT_THAT(GetDocument().GetOutermostForms(),
               ElementsAre(GetFormElement("f1"), GetFormElement("f3")));
 }
 
-// Tests that top level forms inside shadow DOM are listed correctly and
+// Tests that outermost forms inside shadow DOM are listed correctly and
 // insertion and removal updates the cache.
-TEST_F(TopLevelFormsListTest, FormsInShadowDomInsertionAndRemoval) {
+TEST_F(OutermostFormsListTest, FormsInShadowDomInsertionAndRemoval) {
   GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <form id="f1">
       <input type="text">
@@ -1710,20 +1710,20 @@ TEST_F(TopLevelFormsListTest, FormsInShadowDomInsertionAndRemoval) {
   )HTML");
   HTMLFormElement* f2 =
       GetFormElement("f2", *GetElementById("d")->GetShadowRoot());
-  EXPECT_THAT(GetDocument().GetTopLevelForms(),
+  EXPECT_THAT(GetDocument().GetOutermostForms(),
               ElementsAre(GetFormElement("f1"), f2));
 
   // Removing f1 updates the cache.
   GetFormElement("f1")->remove();
-  EXPECT_THAT(GetDocument().GetTopLevelForms(), ElementsAre(f2));
+  EXPECT_THAT(GetDocument().GetOutermostForms(), ElementsAre(f2));
 
   // Removing f2 also updates the cache.
   f2->remove();
-  EXPECT_THAT(GetDocument().GetTopLevelForms(), IsEmpty());
+  EXPECT_THAT(GetDocument().GetOutermostForms(), IsEmpty());
 }
 
-// Tests that nested forms across shadow DOM are ignored by `GetTopLevelForms`.
-TEST_F(TopLevelFormsListTest, GetTopLevelFormsIgnoresNestedChildren) {
+// Tests that nested forms across shadow DOM are ignored by `GetOutermostForms`.
+TEST_F(OutermostFormsListTest, GetOutermostFormsIgnoresNestedChildren) {
   GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <form id="f1">
       <input type="text">
@@ -1736,7 +1736,7 @@ TEST_F(TopLevelFormsListTest, GetTopLevelFormsIgnoresNestedChildren) {
       </div>
     </form>
   )HTML");
-  EXPECT_THAT(GetDocument().GetTopLevelForms(),
+  EXPECT_THAT(GetDocument().GetOutermostForms(),
               ElementsAre(GetFormElement("f1")));
 }
 
@@ -1928,7 +1928,7 @@ TEST_F(DocumentTest,
   )HTML");
   Document& document = GetDocument();
 
-  document.GetTopLevelForms();
+  document.GetOutermostForms();
 
   EXPECT_TRUE(document.IsUseCounted(
       blink::mojom::WebFeature::kAutofillMaybeSyntheticSelect));
@@ -1947,7 +1947,7 @@ TEST_F(DocumentTest,
   )HTML");
   Document& document = GetDocument();
 
-  document.GetTopLevelForms();
+  document.GetOutermostForms();
 
   EXPECT_FALSE(document.IsUseCounted(
       blink::mojom::WebFeature::kAutofillMaybeSyntheticSelect));
@@ -1974,7 +1974,7 @@ TEST_P(ParametrizedSyntheticSelectTest, MetricsAreReported_WhenSelectIsInForm) {
   SetHtmlInnerHTML(html);
   Document& document = GetDocument();
 
-  document.GetTopLevelForms();
+  document.GetOutermostForms();
 
   EXPECT_EQ(document.IsUseCounted(
                 blink::mojom::WebFeature::kAutofillMaybeSyntheticSelect),
@@ -1990,7 +1990,7 @@ TEST_P(ParametrizedSyntheticSelectTest,
   SetHtmlInnerHTML(test_case.html);
   Document& document = GetDocument();
 
-  document.GetTopLevelForms();
+  document.GetOutermostForms();
 
   EXPECT_FALSE(document.IsUseCounted(
       blink::mojom::WebFeature::kAutofillMaybeSyntheticSelect));

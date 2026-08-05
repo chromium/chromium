@@ -308,7 +308,7 @@ void EmitFormIssues(const WebDocument& document,
   };
 
   // Get issues from forms input elements.
-  for (const WebFormElement& form_element : document.GetTopLevelForms()) {
+  for (const WebFormElement& form_element : document.GetOutermostForms()) {
     EmitFormControlIssues(
         document,
         form_util::GetOwnedAutofillableFormControls(document, form_element),

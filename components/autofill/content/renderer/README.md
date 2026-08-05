@@ -47,10 +47,10 @@ the HTML spec](form-element-pointer).
 Form association is an HTML concept independent of Autofill. We refer to
 the spec section about form-[associated] elements for more detail.
 
-## Top-most form elements
+## Outermost form elements
 
-A form element is called a *top-most* form iff it has no [shadow-including]
-form element ancestor.
+A form element is called *outermost* iff it has no [shadow-including] form
+element ancestor.
 
 See [this README](/third_party/blink/renderer/core/dom/README.md) for further
 details on DOM traversals.
@@ -71,7 +71,7 @@ association in the following ways:
 A form control `t` is *accessible* if it is [connected] and outside of the
 [user-agent tree].
 
-A form control element `t` is *owned* by a top-most form element `f` iff
+A form control element `t` is *owned* by an outermost form element `f` iff
 `t` is accessible and
 
 - `t` is [associated] with `f` or a descendant of `f`, or
@@ -81,9 +81,9 @@ A form control element `t` is *owned* by a top-most form element `f` iff
 Note that allowing `t` to be [associated] with a descendant of `f` instead of
 `f` accommodates unconforming (but possible) scenarios in which there are
 nested forms within the same DOM tree. In that case, `t` may be associated with
-any form, but we want its *owning* form to always be a top-level form.
+any form, but we want its *owning* form to always be an outermost form.
 
-A form control element `t` is *unowned* iff `t` is accessible and no top-most
+A form control element `t` is *unowned* iff `t` is accessible and no outermost
 form element owns `t`. That is, to be explicit, `t` is unowned iff `t` is
 accessible and
 
@@ -97,15 +97,15 @@ controls. The unowned form is represented by the null `WebFormElement`.
 A [contenteditable] is *owned* by itself iff it is accessible, not a form
 element, not a form control element, and its parent is not [editable].
 
-Ownership determines the relationship between `FormData` objects (representing a
-top-most form, a synthetic form for contenteditables, or the unowned form) and
-`FormFieldData` objects (representing an autofillable form control element or a
-contenteditable).
+Ownership determines the relationship between `FormData` objects (representing
+an outermost form, a synthetic form for contenteditables, or the unowned form)
+and `FormFieldData` objects (representing an autofillable form control element
+or a contenteditable).
 
 Note: The term [form owner] used in the HTML spec about form-[associated]
 elements is unrelated to Autofill's concept of ownership.
 
-**WARNING:** Autofill code shall only call `GetOwningFormForAutofill()` and
+**WARNING:** Autofill code shall call only `GetOwningFormForAutofill()` and
 `GetOwnedFormControls()` to determine the owner/ownee relationship between forms
 and form controls. A presubmit script warns when code uses the Blink-analogues
 to these functions.

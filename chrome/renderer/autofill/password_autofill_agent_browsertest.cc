@@ -674,7 +674,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
     GetMainFrame()->NotifyUserActivation(
         blink::mojom::UserActivationNotificationType::kTest);
     auto first_form_element =
-        GetMainFrame()->GetDocument().GetTopLevelForms()[0];
+        GetMainFrame()->GetDocument().GetOutermostForms()[0];
     GetMainFrame()->Client()->FocusedElementChanged(
         first_form_element.GetFormControlElements()[0]);
     GetMainFrame()->AutofillClient()->DidCompleteFocusChangeInFrame();
@@ -1460,7 +1460,7 @@ TEST_F(PasswordAutofillAgentTest, IsWebElementVisibleTest) {
 
   LoadHTML(kVisibleFormWithNoUsernameHTML);
   frame = GetMainFrame();
-  std::vector<WebFormElement> forms = frame->GetDocument().GetTopLevelForms();
+  std::vector<WebFormElement> forms = frame->GetDocument().GetOutermostForms();
   ASSERT_EQ(1u, forms.size());
   std::vector<blink::WebFormControlElement> web_control_elements =
       forms[0].GetFormControlElements();
@@ -1469,7 +1469,7 @@ TEST_F(PasswordAutofillAgentTest, IsWebElementVisibleTest) {
 
   LoadHTML(kNonVisibleFormHTML);
   frame = GetMainFrame();
-  forms = frame->GetDocument().GetTopLevelForms();
+  forms = frame->GetDocument().GetOutermostForms();
   ASSERT_EQ(1u, forms.size());
   web_control_elements = forms[0].GetFormControlElements();
   ASSERT_EQ(1u, web_control_elements.size());
@@ -1477,7 +1477,7 @@ TEST_F(PasswordAutofillAgentTest, IsWebElementVisibleTest) {
 
   LoadHTML(kNonDisplayedFormHTML);
   frame = GetMainFrame();
-  forms = frame->GetDocument().GetTopLevelForms();
+  forms = frame->GetDocument().GetOutermostForms();
   ASSERT_EQ(1u, forms.size());
   web_control_elements = forms[0].GetFormControlElements();
   ASSERT_EQ(1u, web_control_elements.size());
@@ -4017,7 +4017,7 @@ TEST_F(PasswordAutofillAgentTest,
 
     // Get the username and password form input elements.
     blink::WebDocument document = GetMainFrame()->GetDocument();
-    std::vector<WebFormElement> forms = document.GetTopLevelForms();
+    std::vector<WebFormElement> forms = document.GetOutermostForms();
     WebFormElement form_element = forms[0];
     std::vector<blink::WebFormControlElement> control_elements =
         form_util::GetOwnedAutofillableFormControls(document, form_element);

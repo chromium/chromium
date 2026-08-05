@@ -1647,9 +1647,9 @@ bool IsWebElementVisible(const WebElement& element) {
           HasMinSize(element.GetScrollSize()));
 }
 
-// Returns the topmost <form> ancestor of |node|, or an IsNull() pointer.
+// Returns the outermost <form> ancestor of |node|, or an IsNull() pointer.
 // See README.md for the relevant terminology.
-WebFormElement GetTopLevelAncestorFormElement(WebNode n) {
+WebFormElement GetOutermostAncestorFormElement(WebNode n) {
   const bool should_return_closest_ancestor =
       !base::FeatureList::IsEnabled(features::kAutofillFixIframeOwnership);
   WebFormElement form;
@@ -1678,7 +1678,7 @@ bool IsDOMPredecessor(const WebNode& x,
   DCHECK(x.GetDocument() == y.GetDocument());
   DCHECK(!ancestor_hint || x.GetDocument() == ancestor_hint.GetDocument());
   // Extends the `path` up to `end` (exclusive) or the document root.
-  // Paths are backwards: the last element is the top-most node.
+  // Paths are backwards: the last element is the outermost node.
   auto BuildPath = [](std::vector<WebNode> path, const WebNode& end) {
     DCHECK(!path.empty());
     path.reserve(path.size() + 16);
@@ -1783,7 +1783,7 @@ bool IsRelevantChildFrame(const WebElement& element) {
 //
 // An iframe is owned by `form_element` iff it is in the light DOM and
 // - if `form_element` is non-null:
-//   `form_element` is the iframe's top-most <form> ancestor
+//   `form_element` is the iframe's outermost <form> ancestor
 // - if `form_element` is null:
 //   the iframe has no <form> ancestor.
 //
@@ -1796,7 +1796,7 @@ std::vector<WebElement> GetIframeElements(const WebDocument& document,
       document.GetElementsByHTMLTagName(GetWebString<kIframe>());
   for (WebElement iframe = iframes.FirstItem(); iframe;
        iframe = iframes.NextItem()) {
-    if (GetTopLevelAncestorFormElement(iframe) == form_element &&
+    if (GetOutermostAncestorFormElement(iframe) == form_element &&
         IsRelevantChildFrame(iframe)) {
       relevant_iframes.push_back(iframe);
     }
@@ -2555,7 +2555,7 @@ FindFormAndFieldForFormControlElement(
   auto get_id = [](const WebElement& e) {
     return e ? e.GetIdAttribute().Utf8() : "";
   };
-  auto is_top_level = [](const WebFormElement form) {
+  auto is_outermost = [](const WebFormElement form) {
     WebNode n = form;
     while (n && (n = n.ParentOrShadowHostNode())) {
       if (n.DynamicTo<WebFormElement>()) {
@@ -2608,7 +2608,7 @@ FindFormAndFieldForFormControlElement(
   SCOPED_CRASH_KEY_BOOL("Autofill", #prefix "_form_owns_element", f && std::ranges::contains(get_form_control_elements(f), element)); \
   SCOPED_CRASH_KEY_BOOL("Autofill", #prefix "_form_in_shadow_dom", f && !!f.OwnerShadowHost());                                \
   SCOPED_CRASH_KEY_BOOL("Autofill", #prefix "_form_in_same_dom", f && element.OwnerShadowHost() == f.OwnerShadowHost());       \
-  SCOPED_CRASH_KEY_BOOL("Autofill", #prefix "_form_is_top_level", is_top_level(f));                                            \
+  SCOPED_CRASH_KEY_BOOL("Autofill", #prefix "_form_is_outermost", is_outermost(f));                                            \
   SCOPED_CRASH_KEY_BOOL("Autofill", #prefix "_form_has_nested_form", has_nested_form(f, element));                             \
   SCOPED_CRASH_KEY_NUMBER("Autofill", #prefix "_form_size", get_form_size(f));                                                 \
   SCOPED_CRASH_KEY_STRING64("Autofill", #prefix "_form_id", get_id(f));
@@ -2924,7 +2924,7 @@ void TraverseDomForFourDigitCombinations(
   // elements nearby in search of four digit combinations.
   std::vector<WebFormControlElement> form_control_elements;
 
-  for (const WebFormElement& form : document.GetTopLevelForms()) {
+  for (const WebFormElement& form : document.GetOutermostForms()) {
     std::ranges::move(GetOwnedFormControls(document, form),
                       std::back_inserter(form_control_elements));
   }
@@ -3171,8 +3171,9 @@ bool IsVisibleIframeForTesting(  // IN-TEST
   return IsVisibleIframe(iframe_element);
 }
 
-WebFormElement GetTopLevelAncestorFormElementForTesting(WebNode n) {  // IN-TEST
-  return GetTopLevelAncestorFormElement(n);
+WebFormElement GetOutermostAncestorFormElementForTesting(  // IN-TEST
+    WebNode n) {
+  return GetOutermostAncestorFormElement(n);
 }
 
 bool IsDOMPredecessorForTesting(const WebNode& x,  // IN-TEST

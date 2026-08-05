@@ -796,16 +796,16 @@ void Document::MarkUnassociatedListedElementsDirty() {
   unassociated_listed_elements_.MarkDirty();
 }
 
-void Document::TopLevelFormsList::MarkDirty() {
+void Document::OutermostFormsList::MarkDirty() {
   dirty_ = true;
   list_.clear();
 }
 
-void Document::TopLevelFormsList::Trace(Visitor* visitor) const {
+void Document::OutermostFormsList::Trace(Visitor* visitor) const {
   visitor->Trace(list_);
 }
 
-const HeapVector<Member<HTMLFormElement>>& Document::TopLevelFormsList::Get(
+const HeapVector<Member<HTMLFormElement>>& Document::OutermostFormsList::Get(
     Document& owner) {
   if (dirty_) {
     // Use BFS to avoid unnecessarily visiting the descendants of form elements.
@@ -845,7 +845,7 @@ const HeapVector<Member<HTMLFormElement>>& Document::TopLevelFormsList::Get(
 // The element which satisfies one of the first 2 conditions
 // but does satisfy any of the last 5 conditions
 // is considered a potential synthetic select.
-void Document::TopLevelFormsList::LogSyntheticSelectMetrics(
+void Document::OutermostFormsList::LogSyntheticSelectMetrics(
     Document& owner) const {
   for (Node* form : list_) {
     bool found_synthetic_select = false;
@@ -868,12 +868,12 @@ void Document::TopLevelFormsList::LogSyntheticSelectMetrics(
   }
 }
 
-const HeapVector<Member<HTMLFormElement>>& Document::GetTopLevelForms() {
-  return top_level_forms_.Get(*this);
+const HeapVector<Member<HTMLFormElement>>& Document::GetOutermostForms() {
+  return outermost_forms_.Get(*this);
 }
 
-void Document::MarkTopLevelFormsDirty() {
-  top_level_forms_.MarkDirty();
+void Document::MarkOutermostFormsDirty() {
+  outermost_forms_.MarkDirty();
 }
 
 Document::URLCache::URLCache()
@@ -9585,7 +9585,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(data_);
   visitor->Trace(meta_theme_color_elements_);
   visitor->Trace(unassociated_listed_elements_);
-  visitor->Trace(top_level_forms_);
+  visitor->Trace(outermost_forms_);
   visitor->Trace(intrinsic_size_observer_);
   visitor->Trace(lazy_loaded_auto_sized_img_observer_);
   visitor->Trace(anchor_element_interaction_tracker_);

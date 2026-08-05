@@ -450,7 +450,7 @@ Node::InsertionNotificationRequest HTMLFormElement::InsertedInto(
                                             html_names::kActionAttr);
   if (insertion_point.isConnected()) {
     InvalidateAncestorFormsForAutofill(ParentElementOrShadowRoot());
-    GetDocument().MarkTopLevelFormsDirty();
+    GetDocument().MarkOutermostFormsDirty();
     GetDocument().DidChangeFormRelatedElementDynamically(
         this, WebFormRelatedChangeType::kAdd);
     ScheduleDeclarativeWebMCPToolRegistration();
@@ -498,7 +498,7 @@ void HTMLFormElement::RemovedFrom(ContainerNode& insertion_point) {
 
   if (insertion_point.isConnected()) {
     InvalidateAncestorFormsForAutofill(&insertion_point);
-    GetDocument().MarkTopLevelFormsDirty();
+    GetDocument().MarkOutermostFormsDirty();
     GetDocument().DidChangeFormRelatedElementDynamically(
         this, WebFormRelatedChangeType::kRemove);
     ScheduleDeclarativeWebMCPToolRegistration();
@@ -1318,7 +1318,7 @@ void HTMLFormElement::CollectListedElements(
 
   for (HTMLElement& element : Traversal<HTMLElement>::DescendantsOf(*root)) {
     if (ListedElement* listed_element = ListedElement::From(element)) {
-      // Autofill only considers top level forms. We therefore include all form
+      // Autofill only considers outermost forms. We therefore include all form
       // control descendants of the form whose elements we collect in
       // `elements_for_autofill`, even if their closest ancestor is a
       // different form.

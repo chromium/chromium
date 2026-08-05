@@ -96,9 +96,9 @@ class DomLabelTest : public test::AutofillRendererTest,
 
   // Returns all forms found on the page in consistent order.
   std::vector<FormData> ExtractFormDatas() {
-    // `GetTopLevelForms()` returns forms in DOM order.
+    // `GetOutermostForms()` returns forms in DOM order.
     std::vector<blink::WebFormElement> form_elements =
-        GetDocument().GetTopLevelForms();
+        GetDocument().GetOutermostForms();
     // Add a null WebFormElement to extract unowned fields into a separate form.
     form_elements.emplace_back();
     std::vector<FormData> result;
