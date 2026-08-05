@@ -8,6 +8,7 @@
 
 #import "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
+#import "base/time/time.h"
 #import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
 #import "ios/chrome/browser/passwords/password_breach/public/password_breach_constants.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
@@ -189,6 +190,11 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"P" flags:UIKeyModifierShift];
   for (NSString* character in @[ @"a", @"s", @"s", @"w", @"o", @"r", @"d" ]) {
+    // crbug.com/8141302 rate limits keydown events. Without a sufficient delay,
+    // Safe Browsing's Password Protection drops the keydown event. Earl Grey
+    // skips sleeping the thread if instructed to sleep for less than x. For
+    // this reason, the thread is
+    base::PlatformThread::Sleep(base::Milliseconds(100));
     [ChromeEarlGrey simulatePhysicalKeyboardEvent:character flags:0];
   }
 }

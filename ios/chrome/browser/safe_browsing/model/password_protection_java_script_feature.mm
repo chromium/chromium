@@ -24,6 +24,7 @@ const char kKeyDownEventType[] = "KeyDown";
 const char kPasteEventType[] = "TextPasted";
 const char kPasteKeyDetectedEventType[] = "PasteKeyDetected";
 
+constexpr base::TimeDelta kKeyDownRateLimit = base::Milliseconds(25);
 constexpr base::TimeDelta kPasteRateLimit = base::Milliseconds(200);
 inline constexpr base::TimeDelta kPasteKeyTimerDuration =
     base::Milliseconds(100);
@@ -89,7 +90,6 @@ void PasswordProtectionJavaScriptFeature::ScriptMessageReceived(
   if (!text || text->empty()) {
     return;
   }
-
   if (*event_type == kKeyDownEventType) {
     // A key event should consist of a single character. A longer string
     // means the message isn't well-formed, so might be coming from a
@@ -97,6 +97,11 @@ void PasswordProtectionJavaScriptFeature::ScriptMessageReceived(
     if (base::CountUnicodeCharacters(*text) != 1) {
       return;
     }
+
+    if (IsKeyDownRateLimited(web_state)) {
+      return;
+    }
+
     observer->OnKeyPressed(*text);
   } else if (*event_type == kPasteEventType) {
     auto timer_it = paste_key_timers_.find(web_state);
@@ -127,6 +132,24 @@ bool PasswordProtectionJavaScriptFeature::IsPasteRateLimited(
 
   const base::TimeDelta elapsed = now - it->second;
   if (elapsed < kPasteRateLimit) {
+    return true;
+  }
+
+  it->second = now;
+  return false;
+}
+
+bool PasswordProtectionJavaScriptFeature::IsKeyDownRateLimited(
+    web::WebState* web_state) {
+  const base::TimeTicks now = base::TimeTicks::Now();
+  auto [it, inserted] = last_keydown_timestamps_.insert({web_state, now});
+  if (inserted) {
+    // First keydown for this tab - not rate limited.
+    return false;
+  }
+
+  const base::TimeDelta elapsed = now - it->second;
+  if (elapsed < kKeyDownRateLimit) {
     return true;
   }
 
@@ -177,4 +200,5 @@ void PasswordProtectionJavaScriptFeature::RemoveObserver(
   lookup_by_observer_.erase(observer);
   last_paste_timestamps_.erase(web_state);
   paste_key_timers_.erase(web_state);
+  last_keydown_timestamps_.erase(web_state);
 }

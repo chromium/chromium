@@ -57,10 +57,18 @@ class PasswordProtectionJavaScriptFeature : public web::JavaScriptFeature {
   absl::flat_hash_map<web::WebState*, std::unique_ptr<base::OneShotTimer>>
       paste_key_timers_;
 
+  // Maps WebStates to the timestamp of the last allowed keydown event.
+  absl::flat_hash_map<web::WebState*, base::TimeTicks> last_keydown_timestamps_;
+
   // Returns true if a paste event (shortcut or actual paste) for `web_state`
   // should be ignored due to rate limiting. Otherwise, updates the last paste
   // timestamp and returns false.
   bool IsPasteRateLimited(web::WebState* web_state);
+
+  // Returns true if a keydown event for `web_state` should be ignored due to
+  // rate limiting. Otherwise, updates the last keydown timestamp and returns
+  // false.
+  bool IsKeyDownRateLimited(web::WebState* web_state);
 
   // Timer helper methods.
   void StartPasteKeyTimer(web::WebState* web_state);

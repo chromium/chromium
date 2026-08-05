@@ -130,6 +130,9 @@ TEST_F(PasswordProtectionJavaScriptFeatureTest, KeyDownEventLengthCheck) {
   EXPECT_TRUE(observer_->on_key_pressed_called_);
   observer_->on_key_pressed_called_ = false;
 
+  // Advance time by keydown rate limit.
+  task_environment_.FastForwardBy(base::Milliseconds(25));
+
   // A single supplementary Unicode code point (e.g., U+1F600 Grinning Face
   // emoji). It takes 2 UTF-16 code units (surrogate pair) but is 1 Unicode code
   // point.
@@ -143,6 +146,9 @@ TEST_F(PasswordProtectionJavaScriptFeatureTest, KeyDownEventLengthCheck) {
   feature_->ScriptMessageReceived(&web_state_, message2);
   EXPECT_TRUE(observer_->on_key_pressed_called_);
   observer_->on_key_pressed_called_ = false;
+
+  // Advance time by keydown rate limit.
+  task_environment_.FastForwardBy(base::Milliseconds(25));
 
   // Multiple characters should be dropped.
   base::Value body3(
@@ -250,6 +256,43 @@ TEST_F(PasswordProtectionJavaScriptFeatureTest,
   // NOT be called.
   task_environment_.FastForwardBy(base::Milliseconds(200));
   EXPECT_FALSE(observer_->on_paste_key_detected_called_);
+}
+
+// Tests that key down events are rate limited.
+TEST_F(PasswordProtectionJavaScriptFeatureTest, KeyDownEventRateLimited) {
+  base::Value body1(
+      base::DictValue().Set("eventType", "KeyDown").Set("text", "a"));
+  web::ScriptMessage message1(std::make_unique<base::Value>(std::move(body1)),
+                              /*is_user_interacting=*/true,
+                              /*is_main_frame=*/true,
+                              /*request_url=*/std::nullopt, url::Origin());
+
+  // First key down should be allowed.
+  feature_->ScriptMessageReceived(&web_state_, message1);
+  EXPECT_TRUE(observer_->on_key_pressed_called_);
+  observer_->on_key_pressed_called_ = false;
+
+  // Second key down immediately after should be dropped.
+  base::Value body2(
+      base::DictValue().Set("eventType", "KeyDown").Set("text", "b"));
+  web::ScriptMessage message2(std::make_unique<base::Value>(std::move(body2)),
+                              /*is_user_interacting=*/true,
+                              /*is_main_frame=*/true,
+                              /*request_url=*/std::nullopt, url::Origin());
+
+  feature_->ScriptMessageReceived(&web_state_, message2);
+  EXPECT_FALSE(observer_->on_key_pressed_called_);
+
+  // Third key down should be allowed after a sufficient amount of time.
+  base::Value body3(
+      base::DictValue().Set("eventType", "KeyDown").Set("text", "b"));
+  web::ScriptMessage message3(std::make_unique<base::Value>(std::move(body3)),
+                              /*is_user_interacting=*/true,
+                              /*is_main_frame=*/true,
+                              /*request_url=*/std::nullopt, url::Origin());
+  task_environment_.FastForwardBy(base::Milliseconds(25));
+  feature_->ScriptMessageReceived(&web_state_, message3);
+  EXPECT_TRUE(observer_->on_key_pressed_called_);
 }
 
 // Tests that if the text pasted event arrives after the coalescing window
