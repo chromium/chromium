@@ -16,6 +16,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -29,7 +30,7 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_centered_text_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_interactive_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_loading_view.h"
-#include "chrome/browser/ui/views/autofill/popup/popup_personal_context_notice_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_notice_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_search_bar_view.h"
@@ -41,6 +42,7 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
@@ -50,6 +52,9 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
@@ -79,6 +84,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_border_arrow_utils.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/test/ax_event_counter.h"
@@ -409,6 +415,7 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
   views::Widget& widget() { return *widget_; }
   content::WebContents& web_contents() { return *web_contents_; }
   views::Widget& web_contents_widget() { return *web_contents_widget_; }
+  TestingProfile* profile() { return profile_.get(); }
 
   std::pair<std::unique_ptr<NiceMock<MockAutofillPopupController>>,
             PopupViewViews*>
@@ -1925,21 +1932,79 @@ TEST_F(PopupViewViewsTest, ExpandableSuggestionA11yMessageTest) {
 }
 
 // Tests that Personal Context Notice view is created with valid accessibility
-// names.
-TEST_F(PopupViewViewsTest, PersonalContextNoticeViewCreated) {
+// names and proper histograms and texts for Ambient Autofill.
+TEST_F(PopupViewViewsTest, PersonalContextNoticeViewCreatedAmbientAutofill) {
+  base::HistogramTester histogram_tester;
   controller().set_suggestions(
       {Suggestion(SuggestionType::kPersonalContextNotice)});
   CreateAndShowView();
 
-  PopupInteractiveRowView* notice_view =
-      std::get<PopupInteractiveRowView*>(test_api(view()).rows()[0]);
+  PopupNoticeView* notice_view = views::AsViewClass<PopupNoticeView>(
+      std::get<PopupInteractiveRowView*>(test_api(view()).rows()[0]));
   ASSERT_TRUE(notice_view);
+  histogram_tester.ExpectUniqueSample(
+      "PersonalContext.AmbientAutofill.NoticeInteractions",
+      PopupNoticeInteractions::kShown, 1);
 
   ui::AXNodeData node_data;
   // TODO(crbug.com/515651588): Check accessibility names once they are ready.
   notice_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_FALSE(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName)
                    .empty());
+}
+
+// Tests that Personal Context Notice view is created with proper histograms
+// and texts for AtMemory with MQLS logging enabled.
+TEST_F(PopupViewViewsTest,
+       PersonalContextNoticeViewCreatedAtMemoryWithLogging) {
+  ON_CALL(controller(), GetMainFillingProduct())
+      .WillByDefault(Return(FillingProduct::kAtMemory));
+  profile()->GetPrefs()->SetInteger(
+      optimization_guide::prefs::kFindAndFillWithGeminiSettings,
+      static_cast<int>(optimization_guide::model_execution::prefs::
+                           ModelExecutionEnterprisePolicyValue::kAllow));
+
+  base::HistogramTester histogram_tester;
+  controller().set_suggestions(
+      {Suggestion(SuggestionType::kPersonalContextNotice)});
+  CreateAndShowView();
+
+  PopupNoticeView* notice_view = static_cast<PopupNoticeView*>(
+      std::get<PopupInteractiveRowView*>(test_api(view()).rows()[0]));
+  ASSERT_TRUE(notice_view);
+  histogram_tester.ExpectUniqueSample(
+      "PersonalContext.AtMemory.NoticeInteractions",
+      PopupNoticeInteractions::kShown, 1);
+  EXPECT_NE(
+      notice_view->description_for_testing()->GetText().find(
+          l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT_WITH_LOGGING)),
+      std::u16string::npos);
+}
+
+// Tests that Personal Context Notice view is created with proper texts for
+// AtMemory without logging.
+TEST_F(PopupViewViewsTest,
+       PersonalContextNoticeViewCreatedAtMemoryWithoutLogging) {
+  ON_CALL(controller(), GetMainFillingProduct())
+      .WillByDefault(Return(FillingProduct::kAtMemory));
+  profile()->GetPrefs()->SetInteger(
+      optimization_guide::prefs::kFindAndFillWithGeminiSettings,
+      static_cast<int>(
+          optimization_guide::model_execution::prefs::
+              ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging));
+
+  controller().set_suggestions(
+      {Suggestion(SuggestionType::kPersonalContextNotice)});
+  CreateAndShowView();
+
+  PopupNoticeView* notice_view = static_cast<PopupNoticeView*>(
+      std::get<PopupInteractiveRowView*>(test_api(view()).rows()[0]));
+  ASSERT_TRUE(notice_view);
+  EXPECT_NE(notice_view->description_for_testing()->GetText().find(
+                l10n_util::GetStringUTF16(
+                    IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT)),
+            std::u16string::npos);
 }
 
 // Tests that `PopupAtMemoryAiDisclosureView` is created when the suggestion

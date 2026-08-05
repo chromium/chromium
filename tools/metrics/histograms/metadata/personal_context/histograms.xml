@@ -34,8 +34,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.ThenChange(//components/personal_context/core/context_memory_features.cc:ContextMemoryFeature) -->
 
 <histogram name="PersonalContext.AmbientAutofill.NoticeInteractions"
-    enum="PersonalContextAmbientAutofillNoticeInteractions"
-    expires_after="2027-03-09">
+    enum="PopupNoticeInteractions" expires_after="2027-03-09">
   <owner>alimariam@google.com</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>
@@ -45,7 +44,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PersonalContext.AtMemory.NoticeInteractions"
-    enum="PersonalContextAtMemoryNoticeInteractions" expires_after="2027-03-09">
+    enum="PopupNoticeInteractions" expires_after="2027-03-09">
   <owner>lamzin@google.com</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>

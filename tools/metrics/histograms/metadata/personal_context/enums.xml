@@ -42,29 +42,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/personal_context/core/context_memory_error.h:ExecutionError) -->
 
-<!-- LINT.IfChange(PersonalContextAmbientAutofillNoticeInteractions) -->
+<!-- LINT.IfChange(PopupNoticeInteractions) -->
 
-<enum name="PersonalContextAmbientAutofillNoticeInteractions">
-  <summary>
-    The outcomes of interaction with the Ambient Autofill notice.
-  </summary>
+<enum name="PopupNoticeInteractions">
+  <summary>The outcomes of interaction with an Autofill popup notice.</summary>
   <int value="0" label="Shown"/>
   <int value="1" label="Acknowledged"/>
   <int value="2" label="Dismissed"/>
-  <int value="3" label="ManageSettingsButtonClicked"/>
+  <int value="3" label="Settings link/button clicked"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/touch_to_fill/autofill/android/internal/java/src/org/chromium/chrome/browser/touch_to_fill/autofill/TouchToFillAutofillMediator.java:NoticeInteraction) -->
-
-<!-- LINT.IfChange(PersonalContextAtMemoryNoticeInteractions) -->
-
-<enum name="PersonalContextAtMemoryNoticeInteractions">
-  <summary>The outcomes of interaction with the AtMemory notice.</summary>
-  <int value="0" label="Shown"/>
-  <int value="1" label="Acknowledged"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/ui/android/autofill/internal/java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetMediator.java:NoticeInteraction) -->
+<!-- LINT.ThenChange(//chrome/browser/ui/android/autofill/internal/java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetMediator.java:NoticeInteraction, //chrome/browser/touch_to_fill/autofill/android/internal/java/src/org/chromium/chrome/browser/touch_to_fill/autofill/TouchToFillAutofillMediator.java:NoticeInteraction) -->
 
 </enums>
 

@@ -118,8 +118,7 @@ public class TouchToFillAutofillControllerRobolectricTest {
         HistogramWatcher settingsWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         TouchToFillAutofillMediator.NOTICE_INTERACTIONS_HISTOGRAM,
-                        TouchToFillAutofillMediator.NoticeInteraction
-                                .MANAGE_SETTINGS_BUTTON_CLICKED);
+                        TouchToFillAutofillMediator.NoticeInteraction.LINK_BUTTON_CLICKED);
         settingsLink.performClick();
         settingsWatcher.assertExpected();
 

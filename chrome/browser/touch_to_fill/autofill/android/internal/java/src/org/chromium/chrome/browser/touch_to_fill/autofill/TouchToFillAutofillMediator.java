@@ -34,7 +34,7 @@ class TouchToFillAutofillMediator {
         NoticeInteraction.SHOWN,
         NoticeInteraction.ACKNOWLEDGED,
         NoticeInteraction.DISMISSED,
-        NoticeInteraction.MANAGE_SETTINGS_BUTTON_CLICKED,
+        NoticeInteraction.LINK_BUTTON_CLICKED,
         NoticeInteraction.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -42,11 +42,11 @@ class TouchToFillAutofillMediator {
         int SHOWN = 0;
         int ACKNOWLEDGED = 1;
         int DISMISSED = 2;
-        int MANAGE_SETTINGS_BUTTON_CLICKED = 3;
+        int LINK_BUTTON_CLICKED = 3;
         int COUNT = 4;
     }
 
-    // LINT.ThenChange(//tools/metrics/histograms/metadata/personal_context/enums.xml:PersonalContextAmbientAutofillNoticeInteractions)
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/personal_context/enums.xml:PopupNoticeInteractions)
 
     private @Nullable Delegate mDelegate;
     private @Nullable PropertyModel mModel;
@@ -87,7 +87,7 @@ class TouchToFillAutofillMediator {
     void onSettingsLinkClicked() {
         if (!dismiss()) return;
         assumeNonNull(mDelegate).onSettingsLinkClicked();
-        recordNoticeInteraction(NoticeInteraction.MANAGE_SETTINGS_BUTTON_CLICKED);
+        recordNoticeInteraction(NoticeInteraction.LINK_BUTTON_CLICKED);
     }
 
     void onDismissed() {

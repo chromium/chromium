@@ -59,15 +59,23 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
 
     // Interactions with the AtMemory notice.
     // LINT.IfChange(NoticeInteraction)
-    @IntDef({NoticeInteraction.SHOWN, NoticeInteraction.ACKNOWLEDGED, NoticeInteraction.COUNT})
+    @IntDef({
+        NoticeInteraction.SHOWN,
+        NoticeInteraction.ACKNOWLEDGED,
+        NoticeInteraction.DISMISSED,
+        NoticeInteraction.LINK_BUTTON_CLICKED,
+        NoticeInteraction.COUNT
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface NoticeInteraction {
         int SHOWN = 0;
         int ACKNOWLEDGED = 1;
-        int COUNT = 2;
+        int DISMISSED = 2;
+        int LINK_BUTTON_CLICKED = 3;
+        int COUNT = 4;
     }
 
-    // LINT.ThenChange(//tools/metrics/histograms/metadata/personal_context/enums.xml:PersonalContextAtMemoryNoticeInteractions)
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/personal_context/enums.xml:PopupNoticeInteractions)
 
     private final Context mContext;
     private final PropertyModel mModel;

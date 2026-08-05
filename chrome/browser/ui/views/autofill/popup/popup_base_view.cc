@@ -395,7 +395,7 @@ void PopupBaseView::NotifyAXSelection(views::View& selected_view) {
        "PasswordGenerationPopupViewViews::GeneratedPasswordBox", "PopupRowView",
        "PopupRowWithButtonView", "PopupRowContentView", "MdTextButton",
        "PopupBnplFootnoteView", "PopupAtMemoryAiDisclosureView",
-       "PopupPersonalContextNoticeView"});
+       "PopupNoticeView"});
   DCHECK(kDerivedClasses.contains(selected_view.GetClassName()))
       << "If you add a new derived class from AutofillPopupRowView, add it "
          "here and to onSelection(evt) in "
