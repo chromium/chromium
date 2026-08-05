@@ -238,6 +238,14 @@ enum class GeminiFirstRunType {
 // An optional text prompt to prepopulate the input field.
 @property(nonatomic, copy) NSString* prepopulatedPrompt;
 
+// Whether the signed-in active account does not match the target account
+// specified by the triggering entry point (e.g. App Switcher AI
+// Summarization). Entry points targeting a specific user identity generally
+// compare two identities communicated between applications on startup and set
+// this to YES to inform the user via a snackbar that they are on a different
+// account.
+@property(nonatomic, assign) BOOL isMismatchedAccount;
+
 // Initializes with the given entry point.
 - (instancetype)initWithEntryPoint:(gemini::EntryPoint)entryPoint;
 

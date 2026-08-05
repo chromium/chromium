@@ -1099,6 +1099,10 @@ void GeminiBrowserAgent::PresentFloaty(UIViewController* base_view_controller,
     ForceShowFloatyIfInvoked();
     ios::provider::UpdateGeminiViewState(
         ios::provider::GeminiViewState::kExpanded, /*animated=*/true);
+    if (IsAppSwitcherAISummarizationEnabled() &&
+        startup_state.isMismatchedAccount) {
+      ios::provider::ShowAccountSnackbar();
+    }
   } else {
     SetSessionCommandHandlers();
 

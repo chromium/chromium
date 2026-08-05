@@ -323,6 +323,8 @@ AppSwitcherParamsRequestStatus AppSwitcherParamsAvailability(
     if (IsCallerAppAllowListedForAISummarization(_sourceAppID)) {
       if (success && result.is_ai_summarization) {
         self.postOpeningAction = START_GEMINI_AI_SUMMARIZATION;
+        self.appSwitcherHashedUserID =
+            base::SysUTF8ToNSString(result.hashed_user_id);
         RecordAppSwitcherAISummarizationEntrypoint();
       }
     }

@@ -215,6 +215,10 @@
       geminiTabHelper->IsLastInteractionUrlDifferent();
   config.shouldShowSuggestionChips =
       [self shouldShowSuggestionChipsForEntryPoint:startupState.entryPoint];
+  if (IsAppSwitcherAISummarizationEnabled() &&
+      startupState.isMismatchedAccount) {
+    config.shouldShowAccountSnackbar = YES;
+  }
   config.contextualCueChipLabel = startupState.prepopulatedPrompt;
   config.entryPoint = startupState.entryPoint;
   config.imageRemixIPHShouldShow =

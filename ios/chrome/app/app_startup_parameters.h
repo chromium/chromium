@@ -118,6 +118,9 @@ class GURL;
 @property(nonatomic, readwrite, assign) BOOL openedViaShareExtensionScheme;
 // Boolean to track whether the app was opened via Siri shortcut.
 @property(nonatomic, readwrite, assign) BOOL openedViaSiriShortcut;
+// The hashed GAIA ID of the user identity requested by the triggering entry
+// point (e.g., App Switcher AI Summarization).
+@property(nonatomic, readwrite, copy) NSString* appSwitcherHashedUserID;
 
 - (instancetype)init NS_UNAVAILABLE;
 

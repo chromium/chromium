@@ -2672,6 +2672,17 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
   startupState.prepopulatedPrompt =
       l10n_util::GetNSString(IDS_IOS_GEMINI_SUMMARIZE_PAGE_PROMPT);
 
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
+  id<SystemIdentity> identity =
+      authService ? authService->GetPrimaryIdentity() : nil;
+  NSString* activeHashedGaiaID = identity ? identity.hashedGaiaID : nil;
+  NSString* targetHashedGaiaID = self.startupParameters.appSwitcherHashedUserID;
+  if (targetHashedGaiaID.length && activeHashedGaiaID.length &&
+      ![targetHashedGaiaID isEqualToString:activeHashedGaiaID]) {
+    startupState.isMismatchedAccount = YES;
+  }
+
   id<GeminiCommands> geminiHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), GeminiCommands);
   [geminiHandler
