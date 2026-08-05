@@ -16,6 +16,35 @@ extern const CGFloat kHintTextScale;
 // Bottom margin for the Return to Recent Tab tile.
 extern const CGFloat kReturnToRecentTabSectionBottomMargin;
 
+// Constants for the `kNewTabPagePaddingUpdate` feature arms.
+// Tight Padding Arm.
+extern const CGFloat kLogoTopPaddingTight;
+extern const CGFloat kLogoToFakeboxPaddingTight;
+extern const CGFloat kFakeboxToQuickActionsPaddingTight;
+extern const CGFloat kQuickActionsToMostVisitedPaddingTight;
+
+// Medium Padding Arm.
+extern const CGFloat kLogoTopPaddingMedium;
+extern const CGFloat kLogoToFakeboxPaddingMedium;
+extern const CGFloat kFakeboxToQuickActionsPaddingMedium;
+extern const CGFloat kQuickActionsToMostVisitedPaddingMedium;
+
+// Preferred Padding Arm.
+extern const CGFloat kLogoTopPaddingPreferred;
+extern const CGFloat kLogoToFakeboxPaddingPreferred;
+extern const CGFloat kFakeboxToQuickActionsPaddingPreferred;
+extern const CGFloat kQuickActionsToMostVisitedPaddingPreferred;
+
+// Control Padding.
+extern const CGFloat kLogoToFakeboxPaddingControl;
+extern const CGFloat kFakeboxToQuickActionsPaddingControl;
+extern const CGFloat kQuickActionsToMostVisitedPaddingControl;
+extern const CGFloat kReducedModuleSpacingControl;
+
+// Shared spacing constants.
+extern const CGFloat kReducedModuleSpacing;
+extern const CGFloat kReducedModuleSpacingRegularXRegular;
+
 // Returns the proper height for the doodle, based on `logo_state`. The
 // SizeClass of the `trait_collection` of the view displaying the doodle is used
 // in the computation.
@@ -44,6 +73,23 @@ CGFloat HeightForLogoHeader(SearchEngineLogoState logo_state,
 // Returns the bottom padding for the header. This represents the spacing
 // between the fake omnibox and the content suggestions tiles.
 CGFloat HeaderBottomPadding(UITraitCollection* trait_collection);
+
+// Spacing helper methods for kNewTabPagePaddingUpdate experiment arms.
+// Returns padding above the Google logo/doodle based on the enabled arm and
+// size class.
+CGFloat LogoTopPadding(UITraitCollection* trait_collection = nil);
+// Returns padding between the Google logo/doodle and fakebox based on the
+// enabled arm.
+CGFloat LogoToFakeboxPadding();
+// Returns padding between fakebox and Quick Actions based on the enabled arm.
+CGFloat FakeboxToQuickActionsPadding();
+// Returns padding between Quick Actions and Most Visited Tiles based on the
+// enabled arm.
+CGFloat QuickActionsToMostVisitedPadding();
+// Returns reduced spacing used between the MVT, Magic Stack, and Discover Feed.
+// Padding is based on the size class.
+CGFloat ReducedModuleSpacing(UITraitCollection* trait_collection = nil);
+
 // Configure the `search_hint_label` for the fake omnibox.  `hintLabelContainer`
 // is added to the `search_tab_target` with autolayout and `search_hint_label`
 // is added to `hintLabelContainer` with autoresizing.  This is done due to the

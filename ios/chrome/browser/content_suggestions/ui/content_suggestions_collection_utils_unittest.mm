@@ -280,4 +280,69 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, SameLogoAndDoodleHeight) {
   EXPECT_EQ(height_with_logo, height_with_doodle);
 }
 
+// Test padding helpers for kNewTabPagePaddingUpdate experiment arms.
+TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpers) {
+  // Control (Disabled).
+  EXPECT_EQ(DoodleTopMargin(SearchEngineLogoState::kLogo, nil),
+            LogoTopPadding());
+  EXPECT_EQ(kLogoToFakeboxPaddingControl, LogoToFakeboxPadding());
+  EXPECT_EQ(kFakeboxToQuickActionsPaddingControl,
+            FakeboxToQuickActionsPadding());
+  EXPECT_EQ(kQuickActionsToMostVisitedPaddingControl,
+            QuickActionsToMostVisitedPadding());
+  EXPECT_EQ(kReducedModuleSpacingControl, ReducedModuleSpacing());
+
+  // Tight Padding (Arm 1).
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        kNewTabPagePaddingUpdate, {{kNewTabPagePaddingUpdateArmParam, "1"}});
+    EXPECT_EQ(kLogoTopPaddingTight, LogoTopPadding());
+    EXPECT_EQ(kLogoToFakeboxPaddingTight, LogoToFakeboxPadding());
+    EXPECT_EQ(kFakeboxToQuickActionsPaddingTight,
+              FakeboxToQuickActionsPadding());
+    EXPECT_EQ(kQuickActionsToMostVisitedPaddingTight,
+              QuickActionsToMostVisitedPadding());
+    EXPECT_EQ(kReducedModuleSpacing, ReducedModuleSpacing());
+  }
+
+  // Medium Padding (Arm 2).
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        kNewTabPagePaddingUpdate, {{kNewTabPagePaddingUpdateArmParam, "2"}});
+    EXPECT_EQ(kLogoTopPaddingMedium, LogoTopPadding());
+    EXPECT_EQ(kLogoToFakeboxPaddingMedium, LogoToFakeboxPadding());
+    EXPECT_EQ(kFakeboxToQuickActionsPaddingMedium,
+              FakeboxToQuickActionsPadding());
+    EXPECT_EQ(kQuickActionsToMostVisitedPaddingMedium,
+              QuickActionsToMostVisitedPadding());
+    EXPECT_EQ(kReducedModuleSpacing, ReducedModuleSpacing());
+  }
+
+  // Preferred Padding (Arm 3).
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        kNewTabPagePaddingUpdate, {{kNewTabPagePaddingUpdateArmParam, "3"}});
+    EXPECT_EQ(kLogoTopPaddingPreferred, LogoTopPadding());
+    EXPECT_EQ(kLogoToFakeboxPaddingPreferred, LogoToFakeboxPadding());
+    EXPECT_EQ(kFakeboxToQuickActionsPaddingPreferred,
+              FakeboxToQuickActionsPadding());
+    EXPECT_EQ(kQuickActionsToMostVisitedPaddingPreferred,
+              QuickActionsToMostVisitedPadding());
+    EXPECT_EQ(kReducedModuleSpacing, ReducedModuleSpacing());
+  }
+
+  // iPad (Regular x Regular Size Class) overrides.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        kNewTabPagePaddingUpdate, {{kNewTabPagePaddingUpdateArmParam, "1"}});
+    EXPECT_EQ(162.0, LogoTopPadding(IPadTraitCollection()));
+    EXPECT_EQ(kReducedModuleSpacingRegularXRegular,
+              ReducedModuleSpacing(IPadTraitCollection()));
+  }
+}
+
 }  // namespace content_suggestions
