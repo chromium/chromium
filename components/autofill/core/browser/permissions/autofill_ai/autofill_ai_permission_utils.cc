@@ -475,23 +475,25 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
       const AccountCapabilities& capabilities =
           account_info.GetAccountCapabilities();
       if (base::FeatureList::IsEnabled(
-              features::kAutofillAiWalletPrivatePassesCapability) &&
-          capabilities.supports_wallet_private_passes_in_autofill() !=
-              signin::Tribool::kTrue) {
-        MaybeOutputReason(
-            debug_message,
-            "Account doesn't support private passes in Autofill.");
-        return false;
-      }
-      // For private passes, underaged users are not allowed to save.
-      // TODO(crbug.com/495779639): Using can_use_model_execution_features() is
-      // a very hacky way to check whether the user is underaged. Instead, the
-      // minor check should be integrated into
-      // supports_wallet_private_passes_in_autofill().
-      if (capabilities.can_use_model_execution_features() !=
-          signin::Tribool::kTrue) {
-        MaybeOutputReason(debug_message, "User is underaged.");
-        return false;
+              features::kAutofillAiWalletPrivatePassesCapability)) {
+        if (capabilities.supports_wallet_private_passes_in_autofill() !=
+            signin::Tribool::kTrue) {
+          MaybeOutputReason(
+              debug_message,
+              "Account doesn't support private passes in Autofill.");
+          return false;
+        }
+      } else {
+        // For private passes, underaged users are not allowed to save. When
+        // AutofillAiWalletPrivatePassesCapability is enabled, the
+        // supports_wallet_private_passes_in_autofill() capability covers this
+        // requirement. Before, it was hackily implemented by relying on another
+        // capability.
+        if (capabilities.can_use_model_execution_features() !=
+            signin::Tribool::kTrue) {
+          MaybeOutputReason(debug_message, "User is underaged.");
+          return false;
+        }
       }
       break;
     }

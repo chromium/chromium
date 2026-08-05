@@ -1084,8 +1084,11 @@ TEST_F(AutofillAiMayPerformImportToWalletTest,
 
 TEST_F(AutofillAiMayPerformImportToWalletTest,
        ImportToWallet_FalseForPrivatePassesForUnderagedUsers) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillAiWalletPrivatePasses};
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillAiWalletPrivatePasses},
+      /*disabled_features=*/{
+          features::kAutofillAiWalletPrivatePassesCapability});
   // Simulate that the can_use_model_execution_features() capability is false.
   client().SetCanUseModelExecutionFeatures(false);
   // Expect that Wallet imports for public passes are allowed.
