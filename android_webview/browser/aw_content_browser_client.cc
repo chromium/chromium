@@ -295,11 +295,16 @@ void AwContentBrowserClient::OnNetworkServiceCreated(
       base::FeatureList::IsEnabled(features::kWebViewEnableDnsPlatform)) {
     // Using the platform DNS APIs requires:
     // 1. Enabling the built-in DNS in platform mode
-    // (net::InsecureDnsMode::kEnabledPlatform)
+    // (net::InsecureDnsMode::kEnabledPlatform or
+    // net::InsecureDnsMode::kEnabledPlatformNoSystem)
     // 2. Disabling DoH queries, these do not yet use the platform DNS APIs
     //    (net::SecureDnsMode::kOff)
+    net::InsecureDnsMode insecure_dns_mode =
+        features::kWebViewEnableDnsPlatformNoSystem.Get()
+            ? net::InsecureDnsMode::kEnabledPlatformNoSystem
+            : net::InsecureDnsMode::kEnabledPlatform;
     network_service->ConfigureStubHostResolver(
-        net::InsecureDnsMode::kEnabledPlatform,
+        insecure_dns_mode,
         /*happy_eyeballs_v3_enabled=*/false, net::SecureDnsMode::kOff,
         net::DnsOverHttpsConfig(),
         /*additional_dns_types_enabled=*/true,

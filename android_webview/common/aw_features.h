@@ -39,6 +39,7 @@ BASE_DECLARE_FEATURE(kWebViewEarlyTracingInit);
 BASE_DECLARE_FEATURE(kWebViewEnableApiCallUserActions);
 BASE_DECLARE_FEATURE(kWebViewEnableCrash);
 BASE_DECLARE_FEATURE(kWebViewEnableDnsPlatform);
+extern const base::FeatureParam<bool> kWebViewEnableDnsPlatformNoSystem;
 BASE_DECLARE_FEATURE(kWebViewFasterGetDefaultUserAgent);
 BASE_DECLARE_FEATURE(kWebViewFileSystemAccess);
 BASE_DECLARE_FEATURE(kWebViewForceWebAuthn);

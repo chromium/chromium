@@ -92,6 +92,11 @@ BASE_FEATURE_PARAM(std::string,
 
 // Enables the resolution of hostnames via platform DNS APIs in Cronet.
 BASE_FEATURE(kCronetEnableDnsPlatform, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(bool,
+                   kCronetEnableDnsPlatformNoSystem,
+                   &kCronetEnableDnsPlatform,
+                   "no_system",
+                   false);
 
 BASE_FEATURE(
     kCronetMigrateSessionsEarlyV2EnableRetryOnAlternateNetworkBeforeHandshake,
@@ -855,7 +860,9 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
 
     if (enable_platform_dns) {
       host_resolver_manager_options.insecure_dns_mode =
-          net::InsecureDnsMode::kEnabledPlatform;
+          kCronetEnableDnsPlatformNoSystem.Get()
+              ? net::InsecureDnsMode::kEnabledPlatformNoSystem
+              : net::InsecureDnsMode::kEnabledPlatform;
       net::DnsConfigOverrides overrides;
       // Disabling DoH queries, we only want to use the built-in resolver to
       // direct queries to the system resolver via platform DNS APIs.

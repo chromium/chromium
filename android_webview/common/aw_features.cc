@@ -121,6 +121,8 @@ BASE_FEATURE(kWebViewEnableCrash, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the resolution of hostnames via platform DNS APIs in WebView.
 BASE_FEATURE(kWebViewEnableDnsPlatform, base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<bool> kWebViewEnableDnsPlatformNoSystem{
+    &kWebViewEnableDnsPlatform, "no_system", false};
 
 // When enabled, the default user agent string is fetched more quickly without
 // waiting for chromium startup to complete.
