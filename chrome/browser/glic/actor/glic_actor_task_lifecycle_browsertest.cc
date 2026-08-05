@@ -153,6 +153,14 @@ class GlicActorTaskLifecycleGmailOtpEnabledBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
+                       testAllTestsAreRegistered) {
+  AssertAllTestsRegistered({
+      "GlicActorTaskLifecycleFunctionalBrowserTest",
+      "GlicActorTaskLifecycleGmailOtpEnabledBrowserTest",
+  });
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
                        testPauseAndResumeCreatedTask) {
   TestFuture<ActorTask::State> task_completion_state;
   base::CallbackListSubscription completion_subscription;
