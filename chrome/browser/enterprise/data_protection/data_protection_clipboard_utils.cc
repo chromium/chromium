@@ -186,7 +186,33 @@ void HandleStringData(
 }
 
 void OnIsClipboardOwnerByContentAnalysis(
-    const content::ClipboardEndpoint& source,
+    const FullPasteSource& source,
+    const content::ClipboardEndpoint& destination,
+    const ui::ClipboardMetadata& metadata,
+    content::ClipboardPasteData clipboard_paste_data,
+    content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback,
+    bool is_owner);
+
+void PasteIfAllowedByContentAnalysis(
+    content::WebContents* web_contents,
+    const FullPasteSource& source,
+    const content::ClipboardEndpoint& destination,
+    const ui::ClipboardMetadata& metadata,
+    content::ClipboardPasteData clipboard_paste_data,
+    content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback) {
+  DCHECK(web_contents);
+  DCHECK(!SkipDataControlOrContentAnalysisChecks(destination));
+
+  // Always allow if the source of the last clipboard commit was this host.
+  destination.web_contents()->GetPrimaryMainFrame()->IsClipboardOwner(
+      metadata.seqno,
+      base::BindOnce(&OnIsClipboardOwnerByContentAnalysis, source, destination,
+                     metadata, std::move(clipboard_paste_data),
+                     std::move(callback)));
+}
+
+void OnIsClipboardOwnerByContentAnalysis(
+    const FullPasteSource& source,
     const content::ClipboardEndpoint& destination,
     const ui::ClipboardMetadata& metadata,
     content::ClipboardPasteData clipboard_paste_data,
@@ -240,8 +266,7 @@ void OnIsClipboardOwnerByContentAnalysis(
       data_controls::ChromeClipboardContext::GetClipboardSource(
           source, destination,
           enterprise_connectors::kOnBulkDataEntryScopePref);
-  dialog_data.source_content_area_email =
-      enterprise_connectors::ContentAreaUserProvider::GetUser(source);
+  dialog_data.source_content_area_email = source.active_user;
 
   if (is_files) {
     dialog_data.paths = std::move(clipboard_paste_data.file_paths);
@@ -253,24 +278,6 @@ void OnIsClipboardOwnerByContentAnalysis(
                      std::move(clipboard_paste_data), std::move(dialog_data),
                      std::move(callback));
   }
-}
-
-void PasteIfAllowedByContentAnalysis(
-    content::WebContents* web_contents,
-    const content::ClipboardEndpoint& source,
-    const content::ClipboardEndpoint& destination,
-    const ui::ClipboardMetadata& metadata,
-    content::ClipboardPasteData clipboard_paste_data,
-    content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback) {
-  DCHECK(web_contents);
-  DCHECK(!SkipDataControlOrContentAnalysisChecks(destination));
-
-  // Always allow if the source of the last clipboard commit was this host.
-  destination.web_contents()->GetPrimaryMainFrame()->IsClipboardOwner(
-      metadata.seqno,
-      base::BindOnce(&OnIsClipboardOwnerByContentAnalysis, source, destination,
-                     metadata, std::move(clipboard_paste_data),
-                     std::move(callback)));
 }
 
 void OnCopyDeepScanComplete(
@@ -398,7 +405,7 @@ void MaybeReportDataControlsPasteFromGemini(
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 }
 
-void MaybeReportDataControlsPaste(const content::ClipboardEndpoint& source,
+void MaybeReportDataControlsPaste(const FullPasteSource& source,
                                   const content::ClipboardEndpoint& destination,
                                   const ui::ClipboardMetadata& metadata,
                                   const data_controls::Verdict& verdict,
@@ -516,7 +523,7 @@ void ReportDragData(const content::ClipboardEndpoint& source,
 // content analysis, or false if content analysis should be skipped and the
 // callback run immediately with the current data.
 bool ReplaceClipboardDataIfRequired(
-    const content::ClipboardEndpoint& source,
+    const FullPasteSource& source,
     const ui::ClipboardMetadata& metadata,
     content::ClipboardPasteData& clipboard_paste_data) {
   // If the data currently being pasted was replaced when it was initially
@@ -525,7 +532,7 @@ bool ReplaceClipboardDataIfRequired(
   // if `source` has a known browser context to ensure we're not letting through
   // data that was replaced by policies that are no longer applicable due to the
   // profile being closed.
-  if (source.browser_context() &&
+  if (source.browser_context &&
       metadata.seqno == data_controls::GetLastReplacedClipboardData().seqno) {
     auto restriction_level =
         data_controls::GetLastReplacedClipboardData().restriction_level;
@@ -542,7 +549,7 @@ bool ReplaceClipboardDataIfRequired(
 }
 
 void OnDataControlsPasteWarning(
-    const content::ClipboardEndpoint& source,
+    const FullPasteSource& source,
     const content::ClipboardEndpoint& destination,
     const ui::ClipboardMetadata& metadata,
     data_controls::Verdict verdict,
@@ -574,25 +581,32 @@ void OnDataControlsPasteWarning(
 }
 
 data_controls::Verdict GetPasteVerdict(
-    const content::ClipboardEndpoint& source,
+    const BasicPasteSource& source,
     const content::ClipboardEndpoint& destination,
     const ui::ClipboardMetadata& metadata) {
   auto verdict = data_controls::ChromeRulesServiceFactory::GetInstance()
                      ->GetForBrowserContext(destination.browser_context())
                      ->GetPasteVerdict(source, destination, metadata);
-  if (source.browser_context() &&
-      source.browser_context() != destination.browser_context()) {
+  if (source.browser_context &&
+      source.browser_context.get() != destination.browser_context()) {
     verdict = data_controls::Verdict::MergePasteVerdicts(
         data_controls::ChromeRulesServiceFactory::GetInstance()
-            ->GetForBrowserContext(source.browser_context())
+            ->GetForBrowserContext(source.browser_context.get())
             ->GetPasteVerdict(source, destination, metadata),
         std::move(verdict));
   }
   return verdict;
 }
 
-void PasteIfAllowedByDataControls(
+data_controls::Verdict GetPasteVerdict(
     const content::ClipboardEndpoint& source,
+    const content::ClipboardEndpoint& destination,
+    const ui::ClipboardMetadata& metadata) {
+  return GetPasteVerdict(CacheBasicPasteSource(source), destination, metadata);
+}
+
+void PasteIfAllowedByDataControls(
+    const FullPasteSource& source,
     const content::ClipboardEndpoint& destination,
     const ui::ClipboardMetadata& metadata,
     content::ClipboardPasteData clipboard_paste_data,
@@ -649,7 +663,7 @@ void PasteIfAllowedByDataControls(
 
 #if !BUILDFLAG(IS_ANDROID)
 void OnDlpRulesCheckDone(
-    const content::ClipboardEndpoint& source,
+    const FullPasteSource& source,
     const content::ClipboardEndpoint& destination,
     const ui::ClipboardMetadata& metadata,
     content::ClipboardPasteData clipboard_paste_data,
@@ -936,6 +950,16 @@ void PasteIfAllowedByPolicy(
     const ui::ClipboardMetadata& metadata,
     content::ClipboardPasteData clipboard_paste_data,
     content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback) {
+  PasteIfAllowedByPolicy(CacheFullPasteSource(source), destination, metadata,
+                         std::move(clipboard_paste_data), std::move(callback));
+}
+
+void PasteIfAllowedByPolicy(
+    const FullPasteSource& source,
+    const content::ClipboardEndpoint& destination,
+    const ui::ClipboardMetadata& metadata,
+    content::ClipboardPasteData clipboard_paste_data,
+    content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback) {
 #if BUILDFLAG(IS_ANDROID)
   if (SkipDataControlOrContentAnalysisChecks(destination)) {
     std::move(callback).Run(std::nullopt);
@@ -970,7 +994,7 @@ void PasteIfAllowedByPolicy(
     }
 
     ui::DataTransferPolicyController::Get()->PasteIfAllowed(
-        source.data_transfer_endpoint(), destination_endpoint,
+        source.data_transfer_endpoint, destination_endpoint,
         std::move(pasted_content),
         destination.web_contents()
             ? destination.web_contents()->GetPrimaryMainFrame()
@@ -989,6 +1013,13 @@ void PasteIfAllowedByPolicy(
 bool IsPastePolicyCheckRequired(const content::ClipboardEndpoint& source,
                                 const content::ClipboardEndpoint& destination,
                                 const ui::ClipboardMetadata& metadata) {
+  return IsPastePolicyCheckRequired(CacheBasicPasteSource(source), destination,
+                                    metadata);
+}
+
+bool IsPastePolicyCheckRequired(const BasicPasteSource& source,
+                                const content::ClipboardEndpoint& destination,
+                                const ui::ClipboardMetadata& metadata) {
 #if BUILDFLAG(IS_ANDROID)
   if (!base::FeatureList::IsEnabled(
           data_controls::kEnableClipboardDataControlsAndroid)) {
@@ -1005,7 +1036,7 @@ bool IsPastePolicyCheckRequired(const content::ClipboardEndpoint& source,
     return true;
   }
 
-  if (source.browser_context() &&
+  if (source.browser_context &&
       metadata.seqno == data_controls::GetLastReplacedClipboardData().seqno) {
     return true;
   }

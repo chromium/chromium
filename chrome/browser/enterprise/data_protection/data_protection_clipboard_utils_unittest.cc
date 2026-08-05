@@ -253,6 +253,24 @@ TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
             "image");
 }
 
+TEST_F(DataProtectionPasteIfAllowedByPolicyTest, CachedPasteSource) {
+  base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
+  auto source = SourceEndpoint();
+  auto cached_source = CacheFullPasteSource(source);
+  auto destination = DestinationEndpoint();
+  ui::ClipboardMetadata metadata = {.size = 1234};
+  EXPECT_FALSE(
+      IsPastePolicyCheckRequired(cached_source, destination, metadata));
+  PasteIfAllowedByPolicy(cached_source, destination, metadata,
+                         MakeClipboardPasteData("text", "image", {}),
+                         future.GetCallback());
+  auto paste_data = future.Get();
+  EXPECT_TRUE(paste_data);
+  EXPECT_EQ(paste_data->text, u"text");
+  EXPECT_EQ(std::string(paste_data->png.begin(), paste_data->png.end()),
+            "image");
+}
+
 // The DataTransferPolicyController is not relevant / supported by Clank, and
 // is thus disabled.
 #if !BUILDFLAG(IS_ANDROID)

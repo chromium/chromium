@@ -84,6 +84,13 @@ void PasteIfAllowedByPolicy(
     content::ClipboardPasteData clipboard_paste_data,
     content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback);
 
+void PasteIfAllowedByPolicy(
+    const FullPasteSource& source,
+    const content::ClipboardEndpoint& destination,
+    const ui::ClipboardMetadata& metadata,
+    content::ClipboardPasteData clipboard_paste_data,
+    content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback);
+
 // This function checks if a paste originating from Gemini in Chrome is allowed
 // to proceed according to the following policies:
 // - DataControlsRules (specifically the "gemini_in_chrome" source)
@@ -103,6 +110,10 @@ void PasteFromGeminiIfAllowedByPolicy(content::RenderFrameHost* destination,
 // convenience for caller code that wants to keep code synchronous when no
 // enterprise restrictions are to be applied.
 bool IsPastePolicyCheckRequired(const content::ClipboardEndpoint& source,
+                                const content::ClipboardEndpoint& destination,
+                                const ui::ClipboardMetadata& metadata);
+
+bool IsPastePolicyCheckRequired(const BasicPasteSource& source,
                                 const content::ClipboardEndpoint& destination,
                                 const ui::ClipboardMetadata& metadata);
 
