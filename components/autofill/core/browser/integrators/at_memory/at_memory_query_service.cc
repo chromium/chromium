@@ -808,7 +808,8 @@ void AtMemoryQueryService::OnAuthenticationCompleted(
   request.set_feature(
       personal_context::proto::CONTEXT_MEMORY_FEATURE_AT_MEMORY);
   *request.add_masked_entities() =
-      ToPersonalContextEntity(masked_value, data_type, metadata_list);
+      ToPersonalContextEntity(masked_value, /*typed_value=*/std::nullopt,
+                              data_type, metadata_list);
 
   personal_context::ContextMemoryRequestOptions options;
   options.request_timeout = features::kAutofillAtMemoryRequestTimeout.Get();

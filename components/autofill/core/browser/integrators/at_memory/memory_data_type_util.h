@@ -22,6 +22,7 @@ namespace personal_context::proto {
 class AtMemoryQueryResponse;
 class AtMemorySearchResult;
 class Entity;
+class TypedValue;
 enum MemoryDataType : int;
 }  // namespace personal_context::proto
 
@@ -65,9 +66,11 @@ bool IsSpiiMemoryDataType(MemoryDataType type);
 // `value` is the primary value of the memory entry corresponding to the
 // `memory_data_type` (for example, the actual passport number if the type is
 // `kPassportNumber`). `metadata_list` contains the associated attributes (e.g.,
-// expiration date, issuing country) for the memory entry.
+// expiration date, issuing country) for the memory entry. If `typed_value` is
+// provided, it is used directly instead of parsing `value`.
 personal_context::proto::Entity ToPersonalContextEntity(
     std::u16string_view value,
+    const std::optional<personal_context::proto::TypedValue>& typed_value,
     MemoryDataType memory_data_type,
     base::span<const EntryMetadata> metadata_list);
 

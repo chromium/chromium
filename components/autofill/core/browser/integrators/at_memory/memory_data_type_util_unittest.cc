@@ -44,7 +44,8 @@ TEST(MemoryDataTypeUtilTest, ToPersonalContextEntity) {
                                u"Passport Expiration Date", u"2030-05-20");
 
     personal_context::proto::Entity entity =
-        ToPersonalContextEntity(value, memory_data_type, metadata_list);
+        ToPersonalContextEntity(value, /*typed_value=*/std::nullopt,
+                                memory_data_type, metadata_list);
 
     ASSERT_TRUE(entity.has_passport());
     EXPECT_EQ(entity.passport().number(), "P12345");
@@ -67,7 +68,8 @@ TEST(MemoryDataTypeUtilTest, ToPersonalContextEntity) {
                                u"Book A, Toy B");
 
     personal_context::proto::Entity entity =
-        ToPersonalContextEntity(value, memory_data_type, metadata_list);
+        ToPersonalContextEntity(value, /*typed_value=*/std::nullopt,
+                                memory_data_type, metadata_list);
 
     ASSERT_TRUE(entity.has_order());
     EXPECT_EQ(entity.order().order_id(), "ORD-123");
@@ -92,7 +94,8 @@ TEST(MemoryDataTypeUtilTest, ToPersonalContextEntity) {
                                u"Ship Date", u"2026-07-07");
 
     personal_context::proto::Entity entity =
-        ToPersonalContextEntity(value, memory_data_type, metadata_list);
+        ToPersonalContextEntity(value, /*typed_value=*/std::nullopt,
+                                memory_data_type, metadata_list);
 
     ASSERT_TRUE(entity.has_shipment());
     EXPECT_EQ(entity.shipment().tracking_number(), "TRACK-888");
@@ -102,6 +105,134 @@ TEST(MemoryDataTypeUtilTest, ToPersonalContextEntity) {
     EXPECT_EQ(entity.shipment().ship_date().year(), 2026);
     EXPECT_EQ(entity.shipment().ship_date().month(), 7);
     EXPECT_EQ(entity.shipment().ship_date().day(), 7);
+  }
+}
+
+// Tests that `ToPersonalContextEntity` uses `TypedValue` when available for
+// country codes, dates, datetimes, and string lists even when string values are empty.
+TEST(MemoryDataTypeUtilTest, ToPersonalContextEntityWithTypedValues) {
+  // Test Passport with CountryCode and Date TypedValues.
+  {
+    std::u16string value = u"P98765";
+    MemoryDataType memory_data_type = MemoryDataType::kPassportNumber;
+
+    personal_context::proto::TypedValue country_typed;
+    country_typed.set_country_code("DE");
+
+    personal_context::proto::TypedValue expiry_typed;
+    expiry_typed.mutable_date()->set_year(2035);
+    expiry_typed.mutable_date()->set_month(11);
+    expiry_typed.mutable_date()->set_day(25);
+
+    // Country code and expiration date TypedValues are set while their string
+    // values are left empty.
+    std::vector<EntryMetadata> metadata_list;
+    metadata_list.emplace_back(MemoryDataType::kPassportName, u"Passport Name",
+                               u"Max Mustermann");
+    metadata_list.emplace_back(MemoryDataType::kPassportCountry,
+                               u"Passport Country", u"",
+                               std::move(country_typed));
+    metadata_list.emplace_back(MemoryDataType::kPassportExpirationDate,
+                               u"Passport Expiration Date", u"",
+                               std::move(expiry_typed));
+
+    personal_context::proto::Entity entity =
+        ToPersonalContextEntity(value, /*typed_value=*/std::nullopt,
+                                memory_data_type, metadata_list);
+
+    // Verify that the resulting Entity proto is populated with the correct
+    // values from the TypedValues.
+    ASSERT_TRUE(entity.has_passport());
+    EXPECT_EQ(entity.passport().number(), "P98765");
+    EXPECT_EQ(entity.passport().name(), "Max Mustermann");
+    EXPECT_EQ(entity.passport().issuing_country(), "DE");
+    EXPECT_EQ(entity.passport().expiration_date().year(), 2035);
+    EXPECT_EQ(entity.passport().expiration_date().month(), 11);
+    EXPECT_EQ(entity.passport().expiration_date().day(), 25);
+  }
+
+  // Test FlightReservation with DateTime and Date TypedValues on metadata.
+  {
+    std::u16string value = u"LH400";
+    MemoryDataType memory_data_type =
+        MemoryDataType::kFlightReservationFlightNumber;
+
+    personal_context::proto::TypedValue dep_time_typed;
+    dep_time_typed.mutable_date_time()->set_year(2026);
+    dep_time_typed.mutable_date_time()->set_month(9);
+    dep_time_typed.mutable_date_time()->set_day(15);
+    dep_time_typed.mutable_date_time()->set_hours(10);
+    dep_time_typed.mutable_date_time()->set_minutes(30);
+
+    personal_context::proto::TypedValue arr_date_typed;
+    arr_date_typed.mutable_date()->set_year(2026);
+    arr_date_typed.mutable_date()->set_month(9);
+    arr_date_typed.mutable_date()->set_day(15);
+
+    // DepartureDate DateTime TypedValue and ArrivalDate Date TypedValue are set
+    // while their string values are left empty.
+    std::vector<EntryMetadata> metadata_list;
+    metadata_list.emplace_back(MemoryDataType::kFlightReservationDepartureDate,
+                               u"Departure Date", u"",
+                               std::move(dep_time_typed));
+    metadata_list.emplace_back(MemoryDataType::kFlightReservationArrivalDate,
+                               u"Arrival Date", u"",
+                               std::move(arr_date_typed));
+
+    personal_context::proto::Entity entity =
+        ToPersonalContextEntity(value, /*typed_value=*/std::nullopt,
+                                memory_data_type, metadata_list);
+
+    // Verify that the departure and arrival times on the resulting Entity proto
+    // are correctly set from the TypedValues.
+    ASSERT_TRUE(entity.has_flight_reservation());
+    EXPECT_EQ(entity.flight_reservation().flight_number(), "LH400");
+    EXPECT_EQ(entity.flight_reservation().departure_time().year(), 2026);
+    EXPECT_EQ(entity.flight_reservation().departure_time().month(), 9);
+    EXPECT_EQ(entity.flight_reservation().departure_time().day(), 15);
+    EXPECT_EQ(entity.flight_reservation().departure_time().hours(), 10);
+    EXPECT_EQ(entity.flight_reservation().departure_time().minutes(), 30);
+    EXPECT_EQ(entity.flight_reservation().arrival_time().year(), 2026);
+    EXPECT_EQ(entity.flight_reservation().arrival_time().month(), 9);
+    EXPECT_EQ(entity.flight_reservation().arrival_time().day(), 15);
+  }
+
+  // Test Order with StringList and Date TypedValues, with primary Date TypedValue.
+  {
+    // Primary OrderDate string value is empty while its TypedValue is set.
+    std::u16string value = u"";
+    MemoryDataType memory_data_type = MemoryDataType::kOrderDate;
+
+    personal_context::proto::TypedValue primary_date_typed;
+    primary_date_typed.mutable_date()->set_year(2026);
+    primary_date_typed.mutable_date()->set_month(8);
+    primary_date_typed.mutable_date()->set_day(1);
+
+    personal_context::proto::TypedValue products_typed;
+    products_typed.mutable_string_list()->add_values("Item A, with comma");
+    products_typed.mutable_string_list()->add_values("Item B");
+
+    // OrderProductNames string value is empty while its TypedValue is set.
+    std::vector<EntryMetadata> metadata_list;
+    metadata_list.emplace_back(MemoryDataType::kOrderId, u"Order ID",
+                               u"ORD-555");
+    metadata_list.emplace_back(MemoryDataType::kOrderProductNames, u"Products",
+                               u"", std::move(products_typed));
+
+    personal_context::proto::Entity entity =
+        ToPersonalContextEntity(value, primary_date_typed,
+                                memory_data_type, metadata_list);
+
+    // Verify that the order date and product names on the resulting Entity proto
+    // are correctly set from the TypedValues.
+    ASSERT_TRUE(entity.has_order());
+    EXPECT_EQ(entity.order().order_id(), "ORD-555");
+    EXPECT_EQ(entity.order().order_date().year(), 2026);
+    EXPECT_EQ(entity.order().order_date().month(), 8);
+    EXPECT_EQ(entity.order().order_date().day(), 1);
+    ASSERT_EQ(entity.order().product_names_size(), 2);
+    EXPECT_EQ(entity.order().product_names(0), "Item A, with comma");
+    EXPECT_EQ(entity.order().product_names(1), "Item B");
   }
 }
 

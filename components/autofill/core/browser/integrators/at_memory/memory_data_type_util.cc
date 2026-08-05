@@ -53,6 +53,38 @@ std::optional<personal_context::proto::Date> ParseDate(std::string_view str) {
   return std::nullopt;
 }
 
+// Returns a `personal_context::proto::Date` extracted from `typed_val` (using
+// `date()`) or parsed from `val`. Returns `std::nullopt` if no valid date can
+// be obtained.
+std::optional<personal_context::proto::Date> ToDate(
+    const std::optional<personal_context::proto::TypedValue>& typed_val,
+    std::string_view val) {
+  if (typed_val && typed_val->has_date()) {
+    return typed_val->date();
+  }
+  return ParseDate(val);
+}
+
+// Returns a `personal_context::proto::DateTime` extracted from `typed_val`
+// (using `date_time()` or `date()`) or parsed from `val`. Returns
+// `std::nullopt` if no valid date/time can be obtained.
+std::optional<personal_context::proto::DateTime> ToDateTime(
+    const std::optional<personal_context::proto::TypedValue>& typed_val,
+    std::string_view val) {
+  if (typed_val && typed_val->has_date_time()) {
+    return typed_val->date_time();
+  }
+  if (std::optional<personal_context::proto::Date> date =
+          ToDate(typed_val, val)) {
+    personal_context::proto::DateTime date_time;
+    date_time.set_year(date->year());
+    date_time.set_month(date->month());
+    date_time.set_day(date->day());
+    return date_time;
+  }
+  return std::nullopt;
+}
+
 // Formats year, month, and day into "YYYY-MM-DD" ISO format.
 std::u16string DateToIsoString(int year, int month, int day) {
   return base::UTF8ToUTF16(
@@ -245,11 +277,14 @@ bool IsSpiiMemoryDataType(MemoryDataType type) {
 
 personal_context::proto::Entity ToPersonalContextEntity(
     std::u16string_view value,
+    const std::optional<personal_context::proto::TypedValue>& typed_value,
     MemoryDataType memory_data_type,
     base::span<const EntryMetadata> metadata_list) {
   personal_context::proto::Entity entity;
 
-  auto process_attribute = [&entity](MemoryDataType type, std::string val) {
+  auto process_attribute = [&entity](
+      MemoryDataType type, std::string val,
+      const std::optional<personal_context::proto::TypedValue>& typed_val) {
     switch (type) {
       case MemoryDataType::kPassportNumber:
         entity.mutable_passport()->set_number(std::move(val));
@@ -258,17 +293,22 @@ personal_context::proto::Entity ToPersonalContextEntity(
         entity.mutable_passport()->set_name(std::move(val));
         break;
       case MemoryDataType::kPassportCountry:
-        entity.mutable_passport()->set_issuing_country(std::move(val));
+        if (typed_val && typed_val->has_country_code()) {
+          entity.mutable_passport()->set_issuing_country(
+              typed_val->country_code());
+        } else {
+          entity.mutable_passport()->set_issuing_country(std::move(val));
+        }
         break;
       case MemoryDataType::kPassportIssueDate:
         if (std::optional<personal_context::proto::Date> date =
-                ParseDate(val)) {
+                ToDate(typed_val, val)) {
           *entity.mutable_passport()->mutable_issue_date() = std::move(*date);
         }
         break;
       case MemoryDataType::kPassportExpirationDate:
         if (std::optional<personal_context::proto::Date> date =
-                ParseDate(val)) {
+                ToDate(typed_val, val)) {
           *entity.mutable_passport()->mutable_expiration_date() =
               std::move(*date);
         }
@@ -285,14 +325,14 @@ personal_context::proto::Entity ToPersonalContextEntity(
         break;
       case MemoryDataType::kDriversLicenseIssueDate:
         if (std::optional<personal_context::proto::Date> date =
-                ParseDate(val)) {
+                ToDate(typed_val, val)) {
           *entity.mutable_drivers_license()->mutable_issue_date() =
               std::move(*date);
         }
         break;
       case MemoryDataType::kDriversLicenseExpirationDate:
         if (std::optional<personal_context::proto::Date> date =
-                ParseDate(val)) {
+                ToDate(typed_val, val)) {
           *entity.mutable_drivers_license()->mutable_expiration_date() =
               std::move(*date);
         }
@@ -305,18 +345,23 @@ personal_context::proto::Entity ToPersonalContextEntity(
         entity.mutable_national_id()->set_name(std::move(val));
         break;
       case MemoryDataType::kNationalIdCardCountry:
-        entity.mutable_national_id()->set_issuing_country(std::move(val));
+        if (typed_val && typed_val->has_country_code()) {
+          entity.mutable_national_id()->set_issuing_country(
+              typed_val->country_code());
+        } else {
+          entity.mutable_national_id()->set_issuing_country(std::move(val));
+        }
         break;
       case MemoryDataType::kNationalIdCardIssueDate:
         if (std::optional<personal_context::proto::Date> date =
-                ParseDate(val)) {
+                ToDate(typed_val, val)) {
           *entity.mutable_national_id()->mutable_issue_date() =
               std::move(*date);
         }
         break;
       case MemoryDataType::kNationalIdCardExpirationDate:
         if (std::optional<personal_context::proto::Date> date =
-                ParseDate(val)) {
+                ToDate(typed_val, val)) {
           *entity.mutable_national_id()->mutable_expiration_date() =
               std::move(*date);
         }
@@ -345,23 +390,17 @@ personal_context::proto::Entity ToPersonalContextEntity(
             std::move(val));
         break;
       case MemoryDataType::kFlightReservationDepartureDate:
-        if (std::optional<personal_context::proto::Date> date =
-                ParseDate(val)) {
-          personal_context::proto::DateTime* departure_time =
-              entity.mutable_flight_reservation()->mutable_departure_time();
-          departure_time->set_year(date->year());
-          departure_time->set_month(date->month());
-          departure_time->set_day(date->day());
+        if (std::optional<personal_context::proto::DateTime> date_time =
+                ToDateTime(typed_val, val)) {
+          *entity.mutable_flight_reservation()->mutable_departure_time() =
+              std::move(*date_time);
         }
         break;
       case MemoryDataType::kFlightReservationArrivalDate:
-        if (std::optional<personal_context::proto::Date> date =
-                ParseDate(val)) {
-          personal_context::proto::DateTime* arrival_time =
-              entity.mutable_flight_reservation()->mutable_arrival_time();
-          arrival_time->set_year(date->year());
-          arrival_time->set_month(date->month());
-          arrival_time->set_day(date->day());
+        if (std::optional<personal_context::proto::DateTime> date_time =
+                ToDateTime(typed_val, val)) {
+          *entity.mutable_flight_reservation()->mutable_arrival_time() =
+              std::move(*date_time);
         }
         break;
 
@@ -402,20 +441,19 @@ personal_context::proto::Entity ToPersonalContextEntity(
         break;
       case MemoryDataType::kOrderDate:
         if (std::optional<personal_context::proto::Date> date =
-                ParseDate(val)) {
+                ToDate(typed_val, val)) {
           *entity.mutable_order()->mutable_order_date() = std::move(*date);
         }
         break;
       case MemoryDataType::kOrderProductNames:
-        // `SerializeAttributeValue` serializes a list of product names into a
-        // single comma-separated string. Splitting by comma here may not
-        // reconstruct the original list perfectly if any product name itself
-        // contained commas.
-        // TODO(crbug.com/539796966): Pass through the StringList value and
-        // use that instead.
-        for (std::string_view name : base::SplitStringPiece(
-                 val, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
-          entity.mutable_order()->add_product_names(std::string(name));
+        if (typed_val && typed_val->has_string_list()) {
+          *entity.mutable_order()->mutable_product_names() =
+              typed_val->string_list().values();
+        } else {
+          for (std::string_view name : base::SplitStringPiece(
+                   val, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+            entity.mutable_order()->add_product_names(std::string(name));
+          }
         }
         break;
 
@@ -432,24 +470,26 @@ personal_context::proto::Entity ToPersonalContextEntity(
         entity.mutable_shipment()->set_delivery_zip_code(std::move(val));
         break;
       case MemoryDataType::kShipmentAssociatedOrderId:
-        // As with `kOrderProductNames`, `SerializeAttributeValue` serializes
-        // multiple IDs as a comma-separated string. Splitting by comma may not
-        // reconstruct the exact original list if an ID contained a comma.
-        for (std::string_view id : base::SplitStringPiece(
-                 val, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
-          entity.mutable_shipment()->add_associated_order_ids(std::string(id));
+        if (typed_val && typed_val->has_string_list()) {
+          *entity.mutable_shipment()->mutable_associated_order_ids() =
+              typed_val->string_list().values();
+        } else {
+          for (std::string_view id : base::SplitStringPiece(
+                   val, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+            entity.mutable_shipment()->add_associated_order_ids(std::string(id));
+          }
         }
         break;
       case MemoryDataType::kShipmentEstimatedDeliveryDate:
         if (std::optional<personal_context::proto::Date> date =
-                ParseDate(val)) {
+                ToDate(typed_val, val)) {
           *entity.mutable_shipment()->mutable_estimated_delivery_date() =
               std::move(*date);
         }
         break;
       case MemoryDataType::kShipmentShippedDate:
         if (std::optional<personal_context::proto::Date> date =
-                ParseDate(val)) {
+                ToDate(typed_val, val)) {
           *entity.mutable_shipment()->mutable_ship_date() = std::move(*date);
         }
         break;
@@ -489,11 +529,12 @@ personal_context::proto::Entity ToPersonalContextEntity(
   };
 
   if (memory_data_type != MemoryDataType::kUnknown) {
-    process_attribute(memory_data_type, base::UTF16ToUTF8(value));
+    process_attribute(memory_data_type, base::UTF16ToUTF8(value), typed_value);
   }
   for (const EntryMetadata& metadata : metadata_list) {
     if (metadata.type != MemoryDataType::kUnknown) {
-      process_attribute(metadata.type, base::UTF16ToUTF8(metadata.value));
+      process_attribute(metadata.type, base::UTF16ToUTF8(metadata.value),
+                        metadata.typed_value);
     }
   }
 
