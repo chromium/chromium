@@ -74,3 +74,7 @@ h2 {
   font-size: 14px;
   margin: 0;
 }
+
+.error-text {
+  color: var(--cr-destructive-color, #c5221f);
+}

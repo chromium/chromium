@@ -43,7 +43,15 @@ export function getHtml(this: AiTaskboxElement) {
                           .score="${todo.score}">
                       </todo-item>
                     `) :
-                              html`
+                              this.hasGmailGenerationError_ ? html`
+                      <div class="placeholder-card">
+                        <p class="placeholder-text error-text">Failed to generate Gmail Todos. Please try again.</p>
+                      </div>
+                    ` : this.hasGeneratedGmail_ ? html`
+                      <div class="placeholder-card">
+                        <p class="placeholder-text">You're all caught up! No Gmail Todos found.</p>
+                      </div>
+                    ` : html`
                       <div class="placeholder-card">
                         <p class="placeholder-text">No Gmail Todos yet.</p>
                       </div>

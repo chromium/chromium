@@ -107,9 +107,9 @@ void ContextHubService::OnAutoTodosChanged(
 }
 
 void ContextHubService::GenerateFirstPartyAutoTodos(
-    AutoTodosCallback callback) {
+    AutoTodosStore::OperationCallback callback) {
   if (!auto_todos_store_) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(false);
     return;
   }
 
@@ -125,16 +125,16 @@ void ContextHubService::GenerateFirstPartyAutoTodos(
 }
 
 void ContextHubService::OnFirstPartyAutoTodosFetched(
-    AutoTodosCallback callback,
+    AutoTodosStore::OperationCallback callback,
     personal_context::FetchContextResult result) {
   if (!result.response.has_value()) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(false);
     return;
   }
 
   personal_context::proto::AutoTodosResponse response;
   if (!response.ParseFromString(result.response.value().value())) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(false);
     return;
   }
 
@@ -164,8 +164,8 @@ void ContextHubService::OnFirstPartyAutoTodosFetched(
     entries.push_back(std::move(entry));
   }
 
-  auto_todos_store_->AddAllTodos(entries, base::DoNothing());
-  std::move(callback).Run(std::move(entries));
+  auto_todos_store_->AddAllTodos(std::move(entries), base::DoNothing());
+  std::move(callback).Run(true);
 }
 
 void ContextHubService::GetAutoTodos(GetAutoTodosCallback callback) const {

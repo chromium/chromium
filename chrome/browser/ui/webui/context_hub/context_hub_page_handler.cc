@@ -117,14 +117,12 @@ void ContextHubPageHandler::OnAutoTodosChanged(
   page_->OnAutoTodosChanged(std::vector(std::from_range, entries));
 }
 
-// TODO(crbug.com/540562062): Update this to GenerateFirstPartyAutoTodos and
-// allow the cache change notification to return the updated Todos.
-void ContextHubPageHandler::GenerateAutoTodos(
-    GenerateAutoTodosCallback callback) {
+void ContextHubPageHandler::GenerateFirstPartyAutoTodos(
+    GenerateFirstPartyAutoTodosCallback callback) {
   context_hub::ContextHubService* service =
       ContextHubServiceFactory::GetForProfile(profile_);
   if (!service) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(false);
     return;
   }
 

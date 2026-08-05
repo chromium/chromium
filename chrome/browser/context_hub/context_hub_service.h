@@ -67,14 +67,9 @@ class ContextHubService : public KeyedService, public AutoTodosStore::Observer {
   // AutoTodosStore::Observer:
   void OnAutoTodosChanged(base::span<const AutoTodoEntry> entries) override;
 
-  // TODO(crbug.com/540562062): Receive updates via observer notifications
-  // rather than on generation.
-  using AutoTodosCallback = base::OnceCallback<void(
-      const std::optional<std::vector<AutoTodoEntry>>&)>;
-
   // Generates 1P AutoTodos and saves them in the AutoTodos store. Invokes
-  // `callback` on completion with the response if successful, or std::nullopt.
-  void GenerateFirstPartyAutoTodos(AutoTodosCallback callback);
+  // `callback` on completion indicating whether the generation was successful.
+  void GenerateFirstPartyAutoTodos(AutoTodosStore::OperationCallback callback);
 
   using GetAutoTodosCallback =
       base::OnceCallback<void(std::vector<AutoTodoEntry>)>;
@@ -170,7 +165,7 @@ class ContextHubService : public KeyedService, public AutoTodosStore::Observer {
 
   // Handles the async response from the AutoTodos fetch.
   void OnFirstPartyAutoTodosFetched(
-      AutoTodosCallback callback,
+      AutoTodosStore::OperationCallback callback,
       personal_context::FetchContextResult result);
 
   // Handles the result of the model execution from `GenerateTabGroups`.

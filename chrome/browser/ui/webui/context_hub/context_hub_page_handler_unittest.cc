@@ -42,6 +42,8 @@ namespace {
 
 using ::base::test::RunOnceCallback;
 using ::testing::_;
+using ::testing::IsEmpty;
+using ::testing::Not;
 
 #if !BUILDFLAG(IS_ANDROID)
 class MockTabProvider : public ContextHubPageHandler::TabProvider {
@@ -146,7 +148,7 @@ class ContextHubPageHandlerTest : public testing::Test {
   std::unique_ptr<ContextHubPageHandler> handler_;
 };
 
-TEST_F(ContextHubPageHandlerTest, GenerateAutoTodos_Success) {
+TEST_F(ContextHubPageHandlerTest, GenerateFirstPartyAutoTodos_Success) {
   personal_context::proto::AutoTodosResponse response;
   personal_context::proto::AutoTodoItem* todo = response.add_todos();
   todo->set_title("Test Title");
@@ -164,28 +166,31 @@ TEST_F(ContextHubPageHandlerTest, GenerateAutoTodos_Success) {
       .WillOnce(RunOnceCallback<3>(personal_context::FetchContextResult(
           base::ok(std::move(any_response)))));
 
-  base::test::TestFuture<
-      const std::optional<std::vector<context_hub::AutoTodoEntry>>&>
-      future;
-  handler_->GenerateAutoTodos(future.GetCallback());
+  // Initial clearing of the store.
+  EXPECT_CALL(mock_page_, OnAutoTodosChanged(IsEmpty()));
+  // Notification after adding the todos.
+  EXPECT_CALL(mock_page_, OnAutoTodosChanged(Not(IsEmpty())))
+      .WillOnce([](const std::vector<context_hub::AutoTodoEntry>& todos) {
+        ASSERT_EQ(todos.size(), 1u);
+        EXPECT_EQ(todos[0].title, "Test Title");
+        EXPECT_EQ(todos[0].description, "Test Description");
+        EXPECT_FLOAT_EQ(todos[0].importance_score, 0.85f);
+        ASSERT_TRUE(todos[0].is_first_party());
+        const auto& first_party =
+            std::get<context_hub::FirstPartyData>(todos[0].data);
+        EXPECT_EQ(first_party.actionable_url,
+                  GURL("https://example.com/action"));
+        EXPECT_TRUE(first_party.source_references.empty());
+      });
 
-  std::optional<std::vector<context_hub::AutoTodoEntry>> result = future.Take();
-  ASSERT_TRUE(result.has_value());
-  ASSERT_EQ(result->size(), 1u);
-  EXPECT_EQ(result->at(0).id, "Test Title");
-  EXPECT_EQ(result->at(0).title, "Test Title");
-  EXPECT_EQ(result->at(0).description, "Test Description");
-  EXPECT_EQ(result->at(0).importance_score, 0.85f);
-  EXPECT_EQ(result->at(0).status, context_hub::AutoTodoEntry::Status::kActive);
-  ASSERT_TRUE(result->at(0).is_first_party());
-  EXPECT_EQ(
-      std::get<context_hub::FirstPartyData>(result->at(0).data).actionable_url,
-      GURL("https://example.com/action"));
-  EXPECT_TRUE(std::get<context_hub::FirstPartyData>(result->at(0).data)
-                  .source_references.empty());
+  base::test::TestFuture<bool> future;
+  handler_->GenerateFirstPartyAutoTodos(future.GetCallback());
+  EXPECT_TRUE(future.Get());
+  mock_page_.Flush();
 }
 
-TEST_F(ContextHubPageHandlerTest, GenerateAutoTodos_WithSourceReferences) {
+TEST_F(ContextHubPageHandlerTest,
+       GenerateFirstPartyAutoTodos_WithSourceReferences) {
   personal_context::proto::AutoTodosResponse response;
   personal_context::proto::AutoTodoItem* todo = response.add_todos();
   todo->set_title("Test Title");
@@ -212,29 +217,33 @@ TEST_F(ContextHubPageHandlerTest, GenerateAutoTodos_WithSourceReferences) {
       .WillOnce(RunOnceCallback<3>(personal_context::FetchContextResult(
           base::ok(std::move(any_response)))));
 
-  base::test::TestFuture<
-      const std::optional<std::vector<context_hub::AutoTodoEntry>>&>
-      future;
-  handler_->GenerateAutoTodos(future.GetCallback());
+  // Initial clearing of the store.
+  EXPECT_CALL(mock_page_, OnAutoTodosChanged(IsEmpty()));
+  // Notification after adding the todos.
+  EXPECT_CALL(mock_page_, OnAutoTodosChanged(Not(IsEmpty())))
+      .WillOnce([](const std::vector<context_hub::AutoTodoEntry>& todos) {
+        ASSERT_EQ(todos.size(), 1u);
+        EXPECT_EQ(todos[0].title, "Test Title");
+        EXPECT_EQ(todos[0].description, "Test Description");
+        ASSERT_TRUE(todos[0].is_first_party());
+        const auto& first_party =
+            std::get<context_hub::FirstPartyData>(todos[0].data);
+        EXPECT_EQ(first_party.actionable_url,
+                  GURL("https://example.com/action2"));
+        ASSERT_EQ(first_party.source_references.size(), 2u);
+        EXPECT_EQ(first_party.source_references[0],
+                  GURL("https://mail.google.com/mail/u/0/#inbox/123"));
+        EXPECT_EQ(first_party.source_references[1],
+                  GURL("https://mail.google.com/mail/u/0/#inbox/456"));
+      });
 
-  std::optional<std::vector<context_hub::AutoTodoEntry>> result = future.Take();
-  ASSERT_TRUE(result.has_value());
-  ASSERT_EQ(result->size(), 1u);
-  EXPECT_EQ(result->at(0).title, "Test Title");
-  EXPECT_EQ(result->at(0).description, "Test Description");
-  EXPECT_EQ(result->at(0).status, context_hub::AutoTodoEntry::Status::kActive);
-  ASSERT_TRUE(result->at(0).is_first_party());
-  const auto& first_party =
-      std::get<context_hub::FirstPartyData>(result->at(0).data);
-  EXPECT_EQ(first_party.actionable_url, GURL("https://example.com/action2"));
-  ASSERT_EQ(first_party.source_references.size(), 2u);
-  EXPECT_EQ(first_party.source_references[0],
-            GURL("https://mail.google.com/mail/u/0/#inbox/123"));
-  EXPECT_EQ(first_party.source_references[1],
-            GURL("https://mail.google.com/mail/u/0/#inbox/456"));
+  base::test::TestFuture<bool> future;
+  handler_->GenerateFirstPartyAutoTodos(future.GetCallback());
+  EXPECT_TRUE(future.Get());
+  mock_page_.Flush();
 }
 
-TEST_F(ContextHubPageHandlerTest, GenerateAutoTodos_Failure) {
+TEST_F(ContextHubPageHandlerTest, GenerateFirstPartyAutoTodos_Failure) {
   EXPECT_CALL(
       *GetMockService(),
       FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
@@ -245,13 +254,33 @@ TEST_F(ContextHubPageHandlerTest, GenerateAutoTodos_Failure) {
                   personal_context::ContextMemoryError::ExecutionError::
                       kUnknown)))));
 
-  base::test::TestFuture<
-      const std::optional<std::vector<context_hub::AutoTodoEntry>>&>
-      future;
-  handler_->GenerateAutoTodos(future.GetCallback());
+  EXPECT_CALL(mock_page_, OnAutoTodosChanged(_)).Times(0);
 
-  std::optional<std::vector<context_hub::AutoTodoEntry>> result = future.Take();
-  EXPECT_FALSE(result.has_value());
+  base::test::TestFuture<bool> future;
+  handler_->GenerateFirstPartyAutoTodos(future.GetCallback());
+  EXPECT_FALSE(future.Get());
+  mock_page_.Flush();
+}
+
+TEST_F(ContextHubPageHandlerTest, GenerateFirstPartyAutoTodos_Empty) {
+  personal_context::proto::AutoTodosResponse response;
+
+  personal_context::proto::Any any_response;
+  response.SerializeToString(any_response.mutable_value());
+
+  EXPECT_CALL(
+      *GetMockService(),
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .WillOnce(RunOnceCallback<3>(personal_context::FetchContextResult(
+          base::ok(std::move(any_response)))));
+
+  EXPECT_CALL(mock_page_, OnAutoTodosChanged(IsEmpty())).Times(2);
+
+  base::test::TestFuture<bool> future;
+  handler_->GenerateFirstPartyAutoTodos(future.GetCallback());
+  EXPECT_TRUE(future.Get());
+  mock_page_.Flush();
 }
 
 TEST(ContextHubMojomTraitsTest, StatusSerialization) {

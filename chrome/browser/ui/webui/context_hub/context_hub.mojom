@@ -138,11 +138,9 @@ interface PageHandlerFactory {
 // The WebUI page (caller) uses this to interact with the browser
 // process (callee).
 interface PageHandler {
-  // Generates and returns a list of Auto Todos. Gated by kAutoTodos flag.
-  // TODO(crbug.com/540562062): Update this to GenerateFirstPartyAutoTodos and
-  // allow the cache change notification to return the updated Todos.
+  // Generates and saves 1P Auto Todos to the cache. Gated by kAutoTodos flag.
   [RuntimeFeature=kAutoTodos]
-  GenerateAutoTodos() => (array<AutoTodoItem>? todos);
+  GenerateFirstPartyAutoTodos() => (bool success);
 
   // Returns stored Auto Todos from the cache, differentiated by whether they
   // are first party or third party.
