@@ -17,7 +17,7 @@ namespace fake_server {
 FakeServerSyncInvalidationSender::FakeServerSyncInvalidationSender(
     FakeServer* fake_server)
     : fake_server_(fake_server) {
-  DCHECK(fake_server_);
+  CHECK(fake_server_);
   fake_server_->AddObserver(this);
 }
 
@@ -25,9 +25,7 @@ FakeServerSyncInvalidationSender::~FakeServerSyncInvalidationSender() {
   fake_server_->RemoveObserver(this);
   for (const base::WeakPtr<instance_id::FakeGCMDriverForInstanceID>&
            fake_gcm_driver : fake_gcm_drivers_) {
-    if (fake_gcm_driver) {
-      fake_gcm_driver->RemoveConnectionObserver(this);
-    }
+    fake_gcm_driver->RemoveConnectionObserver(this);
   }
 }
 
@@ -54,7 +52,8 @@ void FakeServerSyncInvalidationSender::RemoveFakeGCMDriver(
       [fake_gcm_driver](
           const base::WeakPtr<instance_id::FakeGCMDriverForInstanceID>&
               weak_driver) {
-        return weak_driver && weak_driver.get() == fake_gcm_driver;
+        CHECK(weak_driver);
+        return weak_driver.get() == fake_gcm_driver;
       });
 
   if (it != fake_gcm_drivers_.end()) {
@@ -154,9 +153,6 @@ instance_id::FakeGCMDriverForInstanceID*
 FakeServerSyncInvalidationSender::GetFakeGCMDriverByToken(
     const std::string& fcm_registration_token) const {
   for (const auto& fake_gcm_driver : fake_gcm_drivers_) {
-    if (!fake_gcm_driver) {
-      continue;
-    }
 #if !BUILDFLAG(IS_ANDROID)
     // On Android platform FCM registration token is returned from Java
     // implementation, so HasTokenForAppId() does not contain these tokens.
@@ -205,7 +201,7 @@ void FakeServerSyncInvalidationSender::UpdateTokenToInterestedDataTypesMap() {
          invalidation_fields.interested_data_type_ids()) {
       const syncer::DataType data_type =
           syncer::GetDataTypeFromSpecificsFieldNumber(field_number);
-      DCHECK(syncer::IsRealDataType(data_type));
+      CHECK(syncer::IsRealDataType(data_type));
       token_to_interested_data_types_[token].Put(data_type);
     }
   }
