@@ -25,7 +25,6 @@
 #import "components/optimization_guide/core/model_execution/on_device_model_component.h"  // nogncheck
 #import "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"  // nogncheck
 #import "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"  // nogncheck
-#import "components/optimization_guide/core/optimization_guide_constants.h"  // nogncheck
 #import "components/optimization_guide/core/optimization_guide_features.h"  // nogncheck
 #import "components/optimization_guide/core/optimization_guide_switches.h"  // nogncheck
 #import "components/optimization_guide/core/optimization_guide_util.h"  // nogncheck

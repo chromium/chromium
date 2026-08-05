@@ -12,7 +12,6 @@
 #import "components/component_updater/pref_names.h"
 #import "components/download/internal/background_service/ios/background_download_task_helper.h"
 #import "components/optimization_guide/core/delivery/optimization_target_model_observer.h"
-#import "components/optimization_guide/core/optimization_guide_constants.h"
 #import "components/optimization_guide/core/optimization_guide_enums.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/optimization_guide/core/optimization_guide_prefs.h"
