@@ -19625,6 +19625,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_IWA_SUB_APPS_INSTALLER_PARENT_APP_NAME" desc="Label before the Sub App's parent Isolated Web App name in the app related dialogs.">
     Parent App: <ph name="APP_NAME">$1<ex>Google Maps</ex></ph>
     </message>
+    <message name="IDS_IWA_SUB_APPS_UNINSTALL_INFO" desc="Explanation shown in the uninstall dialog clarifying that removing this specific Sub App will not remove its parent app or other related Sub Apps.">
+    This app was installed by <ph name="PARENT_APP_NAME">$1<ex>Google Workspace</ex></ph>. Uninstalling <ph name="APP_NAME">$2<ex>Docs</ex></ph> does not affect <ph name="PARENT_APP_NAME">$1<ex>Google Workspace</ex></ph> or any other apps it has installed.
+    </message>
     <if expr="is_chromeos">
         <message name="IDS_IWA_INSTALLER_SHELF_ITEM_TITLE" desc="Title of an Isolated Web App installer item on the ChromeOS Shelf.">
           Application Installer

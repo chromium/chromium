@@ -36,6 +36,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
 #include "chromeos/ash/experiences/arc/test/connection_holder_util.h"
@@ -447,11 +448,11 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsUninstallDialogViewBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppsUninstallDialogViewBrowserTest,
-                       SubAppUninstallShowsParentAppNameSubtitle) {
+                       SubAppUninstallShowsParentAppInfoSubtitle) {
   std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
       web_app::IsolatedWebAppBuilder(
           web_app::ManifestBuilder()
-              .SetName("Parent IWA Name")
+              .SetName("Parent IWA")
               .AddPermissionsPolicyWildcard(
                   network::mojom::PermissionsPolicyFeature::kSubApps))
           .BuildBundle();
@@ -480,8 +481,11 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsUninstallDialogViewBrowserTest,
   waiter.WaitIfNeededAndGet();
   ASSERT_NE(nullptr, ActiveView());
 
+  std::u16string expected_subtitle = l10n_util::GetStringFUTF16(
+      IDS_IWA_SUB_APPS_UNINSTALL_INFO, u"Parent IWA", u"Sub App One");
+
   EXPECT_TRUE(web_app::test::HasChildLabelWithSubstring(ActiveView(),
-                                                        u"Parent IWA Name"));
+                                                        expected_subtitle));
 
   ActiveView()->CancelDialog();
 }
