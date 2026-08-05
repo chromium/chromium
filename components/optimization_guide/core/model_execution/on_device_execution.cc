@@ -90,7 +90,6 @@ bool GetOnDeviceModelWithholdNewlines() {
 bool IsRepetitionTrackedFeature(mojom::OnDeviceFeature feature) {
   switch (feature) {
     case mojom::OnDeviceFeature::kProofreaderApi:
-    case mojom::OnDeviceFeature::kClassifier:
       return false;
     default:
       return true;
