@@ -40,7 +40,6 @@ import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.core.widget.ImageViewCompat;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener;
@@ -414,9 +413,11 @@ public class HubToolbarView extends LinearLayout {
                         PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
                         colorScheme -> HubColors.getIconColor(context, colorScheme),
                         interpolatedColor -> {
-                            ColorStateList menuButtonColor =
-                                    ColorStateList.valueOf(interpolatedColor);
-                            ImageViewCompat.setImageTintList(mMenuButton, menuButtonColor);
+                            ColorStateList iconColor = ColorStateList.valueOf(interpolatedColor);
+                            mMenuButton.setImageTintList(iconColor);
+                            if (mCloseButton != null) {
+                                mCloseButton.setImageTintList(iconColor);
+                            }
                         }));
 
         // We don't want to pass a method reference. Lambdas will ensure we run the most recent

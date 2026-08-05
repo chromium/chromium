@@ -459,6 +459,23 @@ public class HubToolbarViewUnitTest {
     }
 
     @Test
+    public void testUpdateCloseButtonColorScheme() {
+        if (mIsXrDevice) return;
+
+        ImageView closeButton = mToolbarContainer.findViewById(R.id.toolbar_close_button);
+
+        forceSetColorScheme(HubColorScheme.INCOGNITO);
+        assertEquals(
+                ColorStateList.valueOf(mActivity.getColor(R.color.default_icon_color_light)),
+                closeButton.getImageTintList());
+
+        forceSetColorScheme(HubColorScheme.DEFAULT);
+        assertEquals(
+                ColorStateList.valueOf(SemanticColorUtils.getDefaultIconColor(mActivity)),
+                closeButton.getImageTintList());
+    }
+
+    @Test
     public void testHubSearchEnabledState() {
         mPropertyModel.set(HUB_SEARCH_ENABLED_STATE, false);
         assertFalse(mSearchBox.isEnabled());
