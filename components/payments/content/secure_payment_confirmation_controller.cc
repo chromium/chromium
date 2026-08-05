@@ -373,6 +373,9 @@ void SecurePaymentConfirmationController::
   view_ = SecurePaymentConfirmationView::Create(
       request_->state()->GetPaymentRequestDelegate()->GetPaymentUIObserver());
 
+  // view_->ShowDialog() can potentially trigger observers that destroy the
+  // payment window's WebContents and delete `this`.
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
   view_->ShowDialog(
       request_->web_contents(), model_.GetWeakPtr(),
       base::BindOnce(&SecurePaymentConfirmationController::OnConfirm,
@@ -383,6 +386,9 @@ void SecurePaymentConfirmationController::
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&SecurePaymentConfirmationController::OnOptOut,
                      weak_ptr_factory_.GetWeakPtr()));
+  if (!weak_this) {
+    return;
+  }
 
   // For automated testing, SPC can be placed in an 'autoaccept' or
   // 'autoreject' mode, where the dialog should immediately be
