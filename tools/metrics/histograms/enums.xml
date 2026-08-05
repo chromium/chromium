@@ -1388,6 +1388,8 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="1" label="Yes"/>
 </enum>
 
+<!-- LINT.IfChange(BottomSheet.StateChangeReason) -->
+
 <enum name="BottomSheet.StateChangeReason">
   <int value="0" label="None"/>
   <int value="1" label="Swipe"/>
@@ -1401,6 +1403,8 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="9" label="INTERACTION_COMPLETE"/>
   <int value="10" label="CLOSE_BUTTON"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/browser_ui/bottomsheet/android/java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetController.java:StateChangeReason) -->
 
 <enum name="BrowserProfileType">
   <int value="0" label="Regular"/>

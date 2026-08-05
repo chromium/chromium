@@ -62,6 +62,7 @@ public interface BottomSheetController {
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:BottomSheet.State)
 
+    // LINT.IfChange(StateChangeReason)
     /**
      * The different reasons that the sheet's state can change.
      *
@@ -100,6 +101,7 @@ public interface BottomSheetController {
         // STOP: Updates here require an update in enums.xml.
         int MAX_VALUE = CLOSE_BUTTON;
     }
+    // LINT.ThenChange(//tools/metrics/histograms/enums.xml:BottomSheet.StateChangeReason)
 
     /**
      * Request that some content be shown in the bottom sheet.

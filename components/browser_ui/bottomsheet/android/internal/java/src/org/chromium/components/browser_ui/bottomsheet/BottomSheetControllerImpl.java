@@ -18,6 +18,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -341,6 +342,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
                         }
                         if (mBottomSheet.getCurrentSheetContent() != null
                                 && !mIsSuppressingCurrentContent) {
+                            recordBottomSheetClosedMetric(reason);
                             mBottomSheet.getCurrentSheetContent().destroy();
                         }
                         mIsSuppressingCurrentContent = false;
@@ -729,6 +731,9 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
                     .addSyncObserverAndPostIfNonNull(mContentBackPressStateChangedObserver);
         }
         mBottomSheet.showContent(nextContent);
+        if (nextContent != null) {
+            recordBottomSheetShownMetric();
+        }
         mBottomSheet.setSheetState(mBottomSheet.getOpeningState(), animate);
     }
 
@@ -892,6 +897,15 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
                                         .getBackPressStateChangedSupplier()
                                         .get()
                                 || mBottomSheet.isSheetOpen()));
+    }
+
+    private void recordBottomSheetShownMetric() {
+        RecordHistogram.recordBooleanHistogram("Android.BottomSheet.Shown", true);
+    }
+
+    private void recordBottomSheetClosedMetric(@StateChangeReason int reason) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.BottomSheet.Closed", reason, StateChangeReason.MAX_VALUE + 1);
     }
 
     private void onScrimClicked() {

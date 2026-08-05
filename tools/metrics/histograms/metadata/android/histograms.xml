@@ -1334,6 +1334,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.BottomSheet.Closed"
+    enum="BottomSheet.StateChangeReason" expires_after="2027-08-01">
+  <owner>hitarthkothari@google.com</owner>
+  <owner>mfiaz@google.com</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <summary>
+    Recorded every time a Bottom Sheet is closed or collapsed back to the
+    peeking state. Records the specific reason for closure (e.g. swipe, back
+    press, tap scrim, close button).
+  </summary>
+</histogram>
+
+<histogram name="Android.BottomSheet.Shown" enum="Boolean"
+    expires_after="2027-08-01">
+  <owner>hitarthkothari@google.com</owner>
+  <owner>mfiaz@google.com</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <summary>
+    Recorded every time any Bottom Sheet is opened and expanded beyond the
+    peeking state. This includes all types of bottom sheet content without
+    differentiation.
+  </summary>
+</histogram>
+
 <histogram name="Android.BrowserControls.LockedByTabState" enum="Boolean"
     expires_after="2026-09-13">
   <owner>wenyufu@chromium.org</owner>
