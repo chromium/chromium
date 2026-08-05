@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/analysis/page_print_request_handler.h"
 #include "chrome/browser/enterprise/connectors/common.h"
@@ -583,16 +584,12 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyNullInitiator) {
   validator.ExpectNoReport();
 
   auto data = CreateData();
-  base::RunLoop run_loop;
-  auto on_verdict = base::BindLambdaForTesting([&run_loop](bool allowed) {
-    EXPECT_FALSE(allowed);
-    run_loop.Quit();
-  });
+  base::test::TestFuture<bool> future;
   PrintIfAllowedByPolicy(data, /*initiator=*/nullptr, kPrinterName,
                          PrintScanningContext::kNormalPrintAfterPreview,
-                         std::move(on_verdict),
+                         future.GetCallback(),
                          /*hide_preview=*/base::DoNothing());
-  run_loop.Run();
+  EXPECT_FALSE(future.Get());
 }
 
 INSTANTIATE_TEST_SUITE_P(
