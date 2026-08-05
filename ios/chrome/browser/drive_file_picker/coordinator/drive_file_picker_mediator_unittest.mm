@@ -51,6 +51,7 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #import "services/network/test/test_url_loader_factory.h"
+#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
@@ -58,6 +59,19 @@ namespace {
 
 // Fake icon URL to test fetching icons.
 constexpr char kFakeIconURL[] = "http://www.example.com/image";
+
+// Mock image fetcher for DriveFilePickerMediatorTest.
+class MockDriveFilePickerImageFetcher : public DriveFilePickerImageFetcher {
+ public:
+  MockDriveFilePickerImageFetcher() : DriveFilePickerImageFetcher(nullptr) {}
+  ~MockDriveFilePickerImageFetcher() override = default;
+
+  MOCK_METHOD(void,
+              FetchImage,
+              (DriveItem item, DriveFilePickerImageFetcherCallback callback),
+              (override));
+  MOCK_METHOD(BOOL, IsFetchInProgress, (const DriveItem& item), (override));
+};
 
 }  // namespace
 
@@ -146,6 +160,9 @@ constexpr char kFakeIconURL[] = "http://www.example.com/image";
 @property(nonatomic, strong) NSArray<DriveFilePickerItem*>* primaryItems;
 @property(nonatomic, strong) NSArray<DriveFilePickerItem*>* secondaryItems;
 @property(nonatomic, assign) DriveFilePickerFilter filter;
+@property(nonatomic, assign) BOOL setFetchedIconCalled;
+@property(nonatomic, strong) UIImage* lastFetchedIcon;
+@property(nonatomic, strong) NSSet<NSString*>* lastFetchedIconItems;
 
 @end
 
@@ -198,6 +215,9 @@ constexpr char kFakeIconURL[] = "http://www.example.com/image";
 - (void)setFetchedIcon:(UIImage*)iconImage
               forItems:(NSSet<NSString*>*)itemIdentifiers
            isThumbnail:(BOOL)isThumbnail {
+  self.setFetchedIconCalled = YES;
+  self.lastFetchedIcon = iconImage;
+  self.lastFetchedIconItems = itemIdentifiers;
 }
 
 - (void)setDownloadStatus:(DriveFileDownloadStatus)downloadStatus {
@@ -284,8 +304,9 @@ class DriveFilePickerMediatorTest : public PlatformTest {
     _identityManager = IdentityManagerFactory::GetForProfile(profile_.get());
     _accountManagerService =
         ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
-    image_fetcher_ =
-        std::make_unique<DriveFilePickerImageFetcher>(shared_factory_);
+    auto image_fetcher = std::make_unique<MockDriveFilePickerImageFetcher>();
+    image_fetcher_ = image_fetcher.get();
+    owned_image_fetcher_ = std::move(image_fetcher);
     images_pending_ = [NSMutableSet set];
     image_cache_ = [[NSCache alloc] init];
     web_state_ = std::make_unique<web::FakeWebState>();
@@ -359,7 +380,7 @@ class DriveFilePickerMediatorTest : public PlatformTest {
     mediator_.accountManagerService = _accountManagerService;
     mediator_.driveFilePickerHandler = fake_drive_file_picker_handler_;
     [mediator_ setCollection:std::move(collection)];
-    mediator_.imageFetcher = image_fetcher_.get();
+    mediator_.imageFetcher = image_fetcher_;
     mediator_.metricsHelper = metrics_helper_;
     mediator_.consumer = fake_consumer_;
     if (drive_list_->IsExecutingQuery()) {
@@ -396,6 +417,7 @@ class DriveFilePickerMediatorTest : public PlatformTest {
     auth_service_ = nullptr;
     drive_list_ = nullptr;
     file_downloader_ = nullptr;
+    image_fetcher_ = nullptr;
     [mediator_ disconnect];
     mediator_ = nil;
     PlatformTest::TearDown();
@@ -418,7 +440,8 @@ class DriveFilePickerMediatorTest : public PlatformTest {
   raw_ptr<AuthenticationService> auth_service_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
-  std::unique_ptr<DriveFilePickerImageFetcher> image_fetcher_;
+  raw_ptr<MockDriveFilePickerImageFetcher> image_fetcher_ = nullptr;
+  std::unique_ptr<DriveFilePickerImageFetcher> owned_image_fetcher_;
   FakeDriveFilePickerMediatorDelegate* fake_delegate_;
   FakeDriveFilePickerConsumer* fake_consumer_;
   FakeDriveFilePickerCommands* fake_drive_file_picker_handler_;
@@ -595,9 +618,86 @@ TEST_F(DriveFilePickerMediatorTest, FetchIcon) {
   [mediator_ loadFirstPage];
   task_environment_.RunUntilQuit();
 
-  // Fetch an icon for the folder, test that the URL loader was invoked.
+  // Fetch an icon for the folder, test that the image fetcher was invoked.
+  EXPECT_CALL(*image_fetcher_, IsFetchInProgress(testing::_))
+      .WillRepeatedly(testing::Return(NO));
+  EXPECT_CALL(*image_fetcher_, FetchImage(testing::_, testing::_));
+
   [mediator_ fetchIconForDriveItem:folder.identifier];
-  EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeIconURL, nullptr));
+}
+
+// Tests that when an icon is successfully fetched, the mediator passes the
+// non-nil image to the consumer.
+TEST_F(DriveFilePickerMediatorTest, FetchIconSuccess) {
+  InitializeMediator(DriveFilePickerCollectionType::kFolder);
+  // Set up Drive list to return a folder with an icon link.
+  DriveItem folder;
+  folder.is_folder = true;
+  folder.identifier = [[NSUUID UUID] UUIDString];
+  folder.name = @"Fake Folder";
+  folder.icon_link = @(kFakeIconURL);
+  DriveListResult fake_result;
+  fake_result.items = {folder};
+  drive_list_->SetDriveListResult(fake_result);
+
+  // Fetch items.
+  drive_list_->SetListItemsCompletionQuitClosure(
+      task_environment_.QuitClosure());
+  [mediator_ loadFirstPage];
+  task_environment_.RunUntilQuit();
+
+  // Configure image fetcher mock to invoke callback with a non-nil image.
+  UIImage* test_image = [[UIImage alloc] init];
+  EXPECT_CALL(*image_fetcher_, IsFetchInProgress(testing::_))
+      .WillRepeatedly(testing::Return(NO));
+  EXPECT_CALL(*image_fetcher_, FetchImage(testing::_, testing::_))
+      .WillOnce([test_image](DriveItem item,
+                             DriveFilePickerImageFetcherCallback callback) {
+        std::move(callback).Run(std::move(item), test_image);
+      });
+
+  [mediator_ fetchIconForDriveItem:folder.identifier];
+
+  // Verify setFetchedIcon was called on the consumer with the non-nil image.
+  EXPECT_TRUE(fake_consumer_.setFetchedIconCalled);
+  EXPECT_NSEQ(test_image, fake_consumer_.lastFetchedIcon);
+  EXPECT_TRUE(
+      [fake_consumer_.lastFetchedIconItems containsObject:folder.identifier]);
+}
+
+// Tests that when fetching an icon fails (e.g. nil fetchedIcon), the mediator
+// does not pass a nil image to the consumer.
+TEST_F(DriveFilePickerMediatorTest, FetchIconFailure) {
+  InitializeMediator(DriveFilePickerCollectionType::kFolder);
+  // Set up Drive list to return a folder with an icon link.
+  DriveItem folder;
+  folder.is_folder = true;
+  folder.identifier = [[NSUUID UUID] UUIDString];
+  folder.name = @"Fake Folder";
+  folder.icon_link = @(kFakeIconURL);
+  DriveListResult fake_result;
+  fake_result.items = {folder};
+  drive_list_->SetDriveListResult(fake_result);
+
+  // Fetch items.
+  drive_list_->SetListItemsCompletionQuitClosure(
+      task_environment_.QuitClosure());
+  [mediator_ loadFirstPage];
+  task_environment_.RunUntilQuit();
+
+  // Configure image fetcher mock to invoke callback with nil (fetch failure).
+  EXPECT_CALL(*image_fetcher_, IsFetchInProgress(testing::_))
+      .WillRepeatedly(testing::Return(NO));
+  EXPECT_CALL(*image_fetcher_, FetchImage(testing::_, testing::_))
+      .WillOnce(
+          [](DriveItem item, DriveFilePickerImageFetcherCallback callback) {
+            std::move(callback).Run(std::move(item), nil);
+          });
+
+  [mediator_ fetchIconForDriveItem:folder.identifier];
+
+  // Verify setFetchedIcon was not called on the consumer.
+  EXPECT_FALSE(fake_consumer_.setFetchedIconCalled);
 }
 
 // Tests that setting the filter updates the consumer and fetches new items,

@@ -36,18 +36,19 @@ class DriveFilePickerImageFetcher {
  public:
   explicit DriveFilePickerImageFetcher(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
-  ~DriveFilePickerImageFetcher();
+  virtual ~DriveFilePickerImageFetcher();
 
   // Fetches an image for a given `item`. The `callback` will be called
   // asynchronously with the fetched image, or nil if the image could not be
   // fetched.
-  void FetchImage(DriveItem item, DriveFilePickerImageFetcherCallback callback);
+  virtual void FetchImage(DriveItem item,
+                          DriveFilePickerImageFetcherCallback callback);
 
   // Returns whether a fetch for `item` is in progress.
-  BOOL IsFetchInProgress(const DriveItem& item);
+  virtual BOOL IsFetchInProgress(const DriveItem& item);
 
   // Returns the cached image for `item` if already fetched, or nil.
-  UIImage* GetFetchedImage(const DriveItem& item) const;
+  virtual UIImage* GetFetchedImage(const DriveItem& item) const;
 
  private:
   // Called when the image data has been fetched.
