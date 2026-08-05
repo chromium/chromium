@@ -198,7 +198,7 @@ BASE_FEATURE(kOmniboxMultimodalInput, DISABLED);
 BASE_FEATURE(kAndroidDesktopAimGate, ENABLED);
 
 // Enables the AIM entrypoint for third party search engines.
-BASE_FEATURE(kAim3pEntrypoint, DISABLED);
+BASE_FEATURE(kAim3pEntrypoint, ENABLED);
 const base::FeatureParam<bool> kAim3pEntrypointDebug{
     &kAim3pEntrypoint, "Aim3pEntrypointDebug", false};
 
