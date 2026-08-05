@@ -224,10 +224,8 @@ void RealtimeAnalyser::WriteInput(AudioBus* bus, uint32_t frames_to_process) {
   DCHECK_GT(bus->NumberOfChannels(), 0u);
   DCHECK_GE(bus->Channel(0)->length(), frames_to_process);
 
-  unsigned write_index = GetWriteIndex();
-  // FIXME : allow to work with non-FFTSize divisible chunking
+  const unsigned write_index = GetWriteIndex();
   DCHECK_LT(write_index, input_buffer_.size());
-  DCHECK_LE(write_index + frames_to_process, input_buffer_.size());
 
   // Perform real-time analysis
 
@@ -236,15 +234,24 @@ void RealtimeAnalyser::WriteInput(AudioBus* bus, uint32_t frames_to_process) {
   down_mix_bus_->Zero();
   down_mix_bus_->SumFrom(*bus);
 
-  input_buffer_.as_span()
-      .subspan(write_index, frames_to_process)
-      .copy_from(down_mix_bus_->Channel(0)->Span().first(frames_to_process));
-
-  write_index += frames_to_process;
-  if (write_index >= kInputBufferSize) {
-    write_index = 0;
+  base::span<const float> src =
+      down_mix_bus_->Channel(0)->Span().first(frames_to_process);
+  if (src.size() > kInputBufferSize) {
+    src = src.last(kInputBufferSize);
   }
-  SetWriteIndex(write_index);
+
+  const uint32_t frames_to_end = kInputBufferSize - write_index;
+  if (src.size() <= frames_to_end) {
+    input_buffer_.as_span().subspan(write_index, src.size()).copy_from(src);
+  } else {
+    input_buffer_.as_span()
+        .subspan(write_index, frames_to_end)
+        .copy_from(src.first(frames_to_end));
+    input_buffer_.as_span()
+        .first(src.size() - frames_to_end)
+        .copy_from(src.subspan(frames_to_end));
+  }
+  SetWriteIndex((write_index + src.size()) % kInputBufferSize);
 }
 
 void RealtimeAnalyser::DoFFTAnalysis() {
