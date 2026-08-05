@@ -53,6 +53,7 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
@@ -293,6 +294,42 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
 
         return createNewTab(
                 loadUrlParams, null, type, parent, position, intent, /* copyHistory= */ false);
+    }
+
+    /**
+     * Creates multiple tabs from a primary URL and an optional list of additional URLs.
+     *
+     * @param firstTabParams Parameters of the primary URL load.
+     * @param additionalUrls Optional list of additional URLs to load as tabs.
+     * @param type Information about how the tab was launched.
+     * @param parent The parent tab, if present.
+     * @param openInTabGroup Whether additional URLs should be opened in a tab group with the first
+     *     tab.
+     * @param intent The source intent if present.
+     * @return The primary tab created, or null if no tab was created.
+     */
+    public @Nullable Tab createNewTabs(
+            LoadUrlParams firstTabParams,
+            @Nullable List<String> additionalUrls,
+            @TabLaunchType int type,
+            @Nullable Tab parent,
+            boolean openInTabGroup,
+            @Nullable Intent intent) {
+        Tab firstTab = createNewTab(firstTabParams, type, parent, intent);
+        if (additionalUrls != null && !additionalUrls.isEmpty()) {
+            Tab groupParent = openInTabGroup ? firstTab : null;
+            @TabLaunchType
+            int additionalUrlLaunchType =
+                    openInTabGroup
+                            ? TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
+                            : TabLaunchType.FROM_LONGPRESS_BACKGROUND;
+            for (int i = 0; i < additionalUrls.size(); i++) {
+                LoadUrlParams copy = LoadUrlParams.copy(firstTabParams);
+                copy.setUrl(additionalUrls.get(i));
+                createNewTab(copy, additionalUrlLaunchType, groupParent);
+            }
+        }
+        return firstTab;
     }
 
     /**

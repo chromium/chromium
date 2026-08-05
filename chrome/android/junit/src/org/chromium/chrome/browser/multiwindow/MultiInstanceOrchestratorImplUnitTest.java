@@ -48,6 +48,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.FeatureOverrides;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -889,6 +890,117 @@ public class MultiInstanceOrchestratorImplUnitTest {
                 "Uri data is incorrect.",
                 mUrlParams.getUrl(),
                 intentCaptor.getValue().getData().toString());
+    }
+
+    @Test
+    public void testOpenUrlsInOtherWindow_withAdditionalUrls() {
+        // Setup.
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        configureInstancesForOtherWindowTests(
+                /* isIncognito= */ false,
+                /* atInstanceLimit= */ false,
+                /* numOtherEligibleWindows= */ 1);
+        MultiWindowUtils.setLastAccessedWindowIdForTesting(DEST_WINDOW_ID);
+        List<String> additionalUrls = List.of("https://url1.com", "https://url2.com");
+
+        // Act.
+        mMultiInstanceOrchestrator.openUrlsInOtherWindow(
+                mTabbedActivity1,
+                mUrlParams,
+                additionalUrls,
+                PARENT_TAB_ID_1,
+                /* preferNew= */ false,
+                /* isIncognito= */ false,
+                /* openInTabGroup= */ true);
+
+        // Verify.
+        var intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mTabbedActivity2).onNewIntent(intentCaptor.capture());
+        Intent intent = intentCaptor.getValue();
+        assertEquals("Uri data is incorrect.", mUrlParams.getUrl(), intent.getData().toString());
+        List<String> extraUrls =
+                IntentUtils.safeGetSerializableExtra(intent, IntentHandler.EXTRA_ADDITIONAL_URLS);
+        assertNotNull("Additional URLs extra should not be null", extraUrls);
+        assertEquals(2, extraUrls.size());
+        assertEquals("https://url1.com", extraUrls.get(0));
+        assertEquals("https://url2.com", extraUrls.get(1));
+        assertTrue(
+                "Tab group extra should be true",
+                IntentUtils.safeGetBooleanExtra(
+                        intent, IntentHandler.EXTRA_OPEN_ADDITIONAL_URLS_IN_TAB_GROUP, false));
+    }
+
+    @Test
+    public void testOpenUrlsInOtherWindow_withAdditionalUrls_withoutTabGroup() {
+        // Setup.
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        configureInstancesForOtherWindowTests(
+                /* isIncognito= */ false,
+                /* atInstanceLimit= */ false,
+                /* numOtherEligibleWindows= */ 1);
+        MultiWindowUtils.setLastAccessedWindowIdForTesting(DEST_WINDOW_ID);
+        List<String> additionalUrls = List.of("https://url1.com", "https://url2.com");
+
+        // Act.
+        mMultiInstanceOrchestrator.openUrlsInOtherWindow(
+                mTabbedActivity1,
+                mUrlParams,
+                additionalUrls,
+                PARENT_TAB_ID_1,
+                /* preferNew= */ false,
+                /* isIncognito= */ false,
+                /* openInTabGroup= */ false);
+
+        // Verify.
+        var intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mTabbedActivity2).onNewIntent(intentCaptor.capture());
+        Intent intent = intentCaptor.getValue();
+        assertEquals("Uri data is incorrect.", mUrlParams.getUrl(), intent.getData().toString());
+        List<String> extraUrls =
+                IntentUtils.safeGetSerializableExtra(intent, IntentHandler.EXTRA_ADDITIONAL_URLS);
+        assertNotNull("Additional URLs extra should not be null", extraUrls);
+        assertEquals(2, extraUrls.size());
+        assertFalse(
+                "Tab group extra should be false",
+                IntentUtils.safeGetBooleanExtra(
+                        intent, IntentHandler.EXTRA_OPEN_ADDITIONAL_URLS_IN_TAB_GROUP, false));
+    }
+
+    @Test
+    public void testOpenUrlsInOtherWindow_incognito__withAdditionalUrls() {
+        // Setup.
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
+        configureInstancesForOtherWindowTests(
+                /* isIncognito= */ true,
+                /* atInstanceLimit= */ false,
+                /* numOtherEligibleWindows= */ 1);
+        MultiWindowUtils.setLastAccessedWindowIdForTesting(DEST_WINDOW_ID);
+        List<String> additionalUrls = List.of("https://url1.com", "https://url2.com");
+
+        // Act.
+        mMultiInstanceOrchestrator.openUrlsInOtherWindow(
+                mTabbedActivity1,
+                mUrlParams,
+                additionalUrls,
+                PARENT_TAB_ID_1,
+                /* preferNew= */ false,
+                /* isIncognito= */ true,
+                /* openInTabGroup= */ false);
+
+        // Verify.
+        var intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mTabbedActivity2).onNewIntent(intentCaptor.capture());
+        Intent intent = intentCaptor.getValue();
+        assertEquals("Uri data is incorrect.", mUrlParams.getUrl(), intent.getData().toString());
+        assertTrue(
+                "Incognito extra should be true",
+                IntentUtils.safeGetBooleanExtra(
+                        intent, IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false));
+        assertFalse(
+                "Tab group extra should be false",
+                IntentUtils.safeGetBooleanExtra(
+                        intent, IntentHandler.EXTRA_OPEN_ADDITIONAL_URLS_IN_TAB_GROUP, false));
     }
 
     @Test

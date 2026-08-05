@@ -181,4 +181,25 @@ public interface MultiInstanceOrchestrator {
             int parentTabId,
             boolean preferNew,
             boolean isIncognito);
+
+    /**
+     * Open a URL along with additional URLs in another window.
+     *
+     * @param sourceActivity The activity initiating the url launch request.
+     * @param loadUrlParams The {@link LoadUrlParams} describing the primary url to open.
+     * @param additionalUrls Optional list of additional URLs to open in tabs.
+     * @param parentTabId The ID of the parent tab, or {@link Tab#INVALID_TAB_ID}.
+     * @param preferNew Whether we should prioritize launching the tab in a new window.
+     * @param isIncognito Whether the target window should be an incognito window when supported.
+     * @param openInTabGroup Whether additional URLs should be opened in a tab group with the primary URL.
+     * @return {@code true} if the url launch request was successful, {@code false} otherwise.
+     */
+    boolean openUrlsInOtherWindow(
+            Activity sourceActivity,
+            LoadUrlParams loadUrlParams,
+            @Nullable List<String> additionalUrls,
+            int parentTabId,
+            boolean preferNew,
+            boolean isIncognito,
+            boolean openInTabGroup);
 }

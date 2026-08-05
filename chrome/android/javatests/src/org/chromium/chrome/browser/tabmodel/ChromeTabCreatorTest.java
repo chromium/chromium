@@ -189,6 +189,70 @@ public class ChromeTabCreatorTest {
                 });
     }
 
+    /** Verify that createNewTabs creates multiple tabs in order. */
+    @Test
+    @MediumTest
+    @Feature({"Browser"})
+    public void testCreateNewTabs() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ChromeTabCreator tabCreator =
+                            mActivityTestRule.getActivity().getCurrentTabCreator();
+                    int initialCount =
+                            mActivityTestRule.getActivity().getCurrentTabModel().getCount();
+                    String url1 = mTestServer.getURL(TEST_PATH);
+                    String url2 = mTestServer.getURL("/chrome/test/data/android/google.html");
+                    Tab firstTab =
+                            tabCreator.createNewTabs(
+                                    new LoadUrlParams(url1),
+                                    java.util.List.of(url2),
+                                    TabLaunchType.FROM_CHROME_UI,
+                                    /* parent= */ null,
+                                    /* openInTabGroup= */ false,
+                                    /* intent= */ null);
+                    assertEquals(
+                            "Tab model should have 2 new tabs",
+                            initialCount + 2,
+                            mActivityTestRule.getActivity().getCurrentTabModel().getCount());
+                });
+    }
+
+    /** Verify that createNewTabs creates multiple tabs in a tab group. */
+    @Test
+    @MediumTest
+    @Feature({"Browser"})
+    public void testCreateNewTabs_WithTabGroup() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ChromeTabCreator tabCreator =
+                            mActivityTestRule.getActivity().getCurrentTabCreator();
+                    int initialCount =
+                            mActivityTestRule.getActivity().getCurrentTabModel().getCount();
+                    String url1 = mTestServer.getURL(TEST_PATH);
+                    String url2 = mTestServer.getURL("/chrome/test/data/android/google.html");
+                    Tab firstTab =
+                            tabCreator.createNewTabs(
+                                    new LoadUrlParams(url1),
+                                    java.util.List.of(url2),
+                                    TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP,
+                                    /* parent= */ null,
+                                    /* openInTabGroup= */ true,
+                                    /* intent= */ null);
+                    assertNotNull("First tab should not be null", firstTab);
+                    TabModel tabModel = mActivityTestRule.getActivity().getCurrentTabModel();
+                    assertEquals(
+                            "Tab model should have 2 new tabs",
+                            initialCount + 2,
+                            tabModel.getCount());
+                    Tab secondTab = tabModel.getTabAt(tabModel.getCount() - 1);
+                    assertNotNull("First tab should have a tab group ID", firstTab.getTabGroupId());
+                    assertEquals(
+                            "Second tab should share the same tab group ID",
+                            firstTab.getTabGroupId(),
+                            secondTab.getTabGroupId());
+                });
+    }
+
     /** Verify that tabs opened in background when launch type is FROM_SYNC_BACKGROUND. */
     @Test
     @MediumTest

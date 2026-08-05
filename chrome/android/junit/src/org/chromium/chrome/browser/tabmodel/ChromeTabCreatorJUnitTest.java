@@ -26,6 +26,8 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.util.List;
+
 /** Unit tests for {@link ChromeTabCreator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ChromeTabCreatorJUnitTest {
@@ -77,5 +79,31 @@ public class ChromeTabCreatorJUnitTest {
                         TabLaunchType.FROM_REPARENTING_BACKGROUND,
                         /* parent= */ null,
                         intent));
+    }
+
+    @Test
+    public void testCreateNewTabs_NullTabModel() {
+        // mTabModel is null by default.
+        assertNull(
+                mTabCreator.createNewTabs(
+                        new LoadUrlParams("https://primary.com"),
+                        List.of("https://url1.com", "https://url2.com"),
+                        TabLaunchType.FROM_CHROME_UI,
+                        null,
+                        false,
+                        null));
+    }
+
+    @Test
+    public void testCreateNewTabs_WithTabGroup_NullTabModel() {
+        // mTabModel is null by default.
+        assertNull(
+                mTabCreator.createNewTabs(
+                        new LoadUrlParams("https://primary.com"),
+                        List.of("https://url1.com", "https://url2.com"),
+                        TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP,
+                        null,
+                        true,
+                        null));
     }
 }

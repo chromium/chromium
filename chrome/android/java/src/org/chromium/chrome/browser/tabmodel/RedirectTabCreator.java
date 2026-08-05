@@ -22,6 +22,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 /** This class creates various kinds of new tabs in another window. */
@@ -57,6 +58,24 @@ public class RedirectTabCreator extends ChromeTabCreator {
             int position,
             @Nullable Intent intent,
             boolean copyHistory) {
+        return createNewTabs(
+                loadUrlParams,
+                /* additionalUrls= */ null,
+                type,
+                parent,
+                /* openInTabGroup= */ false,
+                intent);
+    }
+
+    @SuppressWarnings("WrongConstant")
+    @Override
+    public @Nullable Tab createNewTabs(
+            LoadUrlParams loadUrlParams,
+            @Nullable List<String> additionalUrls,
+            @TabLaunchType int type,
+            @Nullable Tab parent,
+            boolean openInTabGroup,
+            @Nullable Intent intent) {
         // Clean up AsyncTabParams with the tab to reparent if any.
         mAsyncTabParamsManager.remove(IntentHandler.getTabId(intent));
 
@@ -67,12 +86,14 @@ public class RedirectTabCreator extends ChromeTabCreator {
                 getTransitionType(type, intent, loadUrlParams.getTransitionType()));
 
         MultiInstanceOrchestratorFactory.getInstance()
-                .openUrlInOtherWindow(
+                .openUrlsInOtherWindow(
                         mActivity,
                         loadUrlParams,
+                        additionalUrls,
                         Tab.INVALID_TAB_ID,
                         /* preferNew= */ false,
-                        mIncognito);
+                        mIncognito,
+                        openInTabGroup);
         return null;
     }
 }

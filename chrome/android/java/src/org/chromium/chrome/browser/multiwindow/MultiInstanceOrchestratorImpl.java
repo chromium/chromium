@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -438,6 +439,25 @@ import java.util.Set;
             int parentTabId,
             boolean preferNew,
             boolean isIncognito) {
+        return openUrlsInOtherWindow(
+                sourceActivity,
+                loadUrlParams,
+                /* additionalUrls= */ null,
+                parentTabId,
+                preferNew,
+                isIncognito,
+                /* openInTabGroup= */ false);
+    }
+
+    @Override
+    public boolean openUrlsInOtherWindow(
+            Activity sourceActivity,
+            LoadUrlParams loadUrlParams,
+            @Nullable List<String> additionalUrls,
+            int parentTabId,
+            boolean preferNew,
+            boolean isIncognito,
+            boolean openInTabGroup) {
         var targetActivityClass =
                 MultiWindowUtils.getInstance().getOpenInOtherWindowActivity(sourceActivity);
         if (targetActivityClass == null) return false;
@@ -449,6 +469,14 @@ import java.util.Set;
                         parentTabId,
                         isIncognito,
                         targetActivityClass);
+
+        if (additionalUrls != null && !additionalUrls.isEmpty()) {
+            intent.putExtra(IntentHandler.EXTRA_ADDITIONAL_URLS, new ArrayList<>(additionalUrls));
+            if (openInTabGroup) {
+                intent.putExtra(IntentHandler.EXTRA_OPEN_ADDITIONAL_URLS_IN_TAB_GROUP, true);
+            }
+        }
+
         if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) {
             addOpenUrlInNewWindowIntentExtras(
                     sourceActivity, intent, /* isIncognitoWindow= */ false);

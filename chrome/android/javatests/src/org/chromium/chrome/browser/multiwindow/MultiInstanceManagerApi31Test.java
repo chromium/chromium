@@ -55,6 +55,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -394,6 +395,77 @@ public class MultiInstanceManagerApi31Test {
         entries = recentlyClosedEntriesManager.getRecentlyClosedEntries();
         assertEquals("There should be 0 recently closed entry", 0, entries.size());
         verifyInstanceState(/* expectedActiveInstances= */ 3, /* expectedTotalInstances= */ 3);
+    }
+
+    @Test
+    @MediumTest
+    public void testOpenUrlsInOtherWindow_RegularWindow_CreatesSingleWindowWithMultipleTabs() {
+        ChromeTabbedActivity targetActivity =
+                openUrlsInOtherWindowForTesting(
+                        /* isIncognito= */ false, /* openInTabGroup= */ false);
+
+        CriteriaHelper.pollUiThread(
+                () ->
+                        Criteria.checkThat(
+                                "Target activity tab model should contain 3 tabs",
+                                targetActivity.getCurrentTabModel().getCount(),
+                                is(3)));
+        Assert.assertFalse(
+                "Target activity should not be Incognito", targetActivity.isIncognitoWindow());
+    }
+
+    @Test
+    @MediumTest
+    public void testOpenUrlsInOtherWindow_RegularWindow_WithTabGroup_CreatesSingleWindow() {
+        ChromeTabbedActivity targetActivity =
+                openUrlsInOtherWindowForTesting(
+                        /* isIncognito= */ false, /* openInTabGroup= */ true);
+
+        CriteriaHelper.pollUiThread(
+                () ->
+                        Criteria.checkThat(
+                                "Target activity tab model should contain 3 tabs",
+                                targetActivity.getCurrentTabModel().getCount(),
+                                is(3)));
+        Assert.assertFalse(
+                "Target activity should not be Incognito", targetActivity.isIncognitoWindow());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    var tabModel = targetActivity.getCurrentTabModel();
+                    Tab tab0 = tabModel.getTabAt(0);
+                    Tab tab1 = tabModel.getTabAt(1);
+                    Tab tab2 = tabModel.getTabAt(2);
+                    Assert.assertEquals(
+                            "Tab 1 parent should be Tab 0", tab0.getId(), tab1.getParentId());
+                    Assert.assertEquals(
+                            "Tab 2 parent should be Tab 0", tab0.getId(), tab2.getParentId());
+                });
+    }
+
+    private ChromeTabbedActivity openUrlsInOtherWindowForTesting(
+            boolean isIncognito, boolean openInTabGroup) {
+        ChromeTabbedActivity sourceActivity = mActivityTestRule.getActivity();
+        List<String> additionalUrls = List.of("https://www.google.com", "https://www.youtube.com");
+        LoadUrlParams loadUrlParams = new LoadUrlParams("https://www.example.com");
+
+        ChromeTabbedActivity targetActivity =
+                ApplicationTestUtils.waitForActivityWithClass(
+                        ChromeTabbedActivity.class,
+                        Stage.RESUMED,
+                        () ->
+                                ThreadUtils.runOnUiThreadBlocking(
+                                        () ->
+                                                MultiInstanceOrchestratorFactory.getInstance()
+                                                        .openUrlsInOtherWindow(
+                                                                sourceActivity,
+                                                                loadUrlParams,
+                                                                additionalUrls,
+                                                                Tab.INVALID_TAB_ID,
+                                                                /* preferNew= */ true,
+                                                                isIncognito,
+                                                                openInTabGroup)));
+        mExtraActivities.add(targetActivity);
+        return targetActivity;
     }
 
     private ChromeTabbedActivity[] createNewWindows(

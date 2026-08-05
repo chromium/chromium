@@ -5046,28 +5046,21 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 }
             }
 
-            Tab firstTab = tabCreator.createNewTab(loadUrlParams, launchType, parentTab, intent);
-
             List<String> additionalUrls =
                     IntentUtils.safeGetSerializableExtra(
                             intent, IntentHandler.EXTRA_ADDITIONAL_URLS);
             boolean openAdditionalUrlsInTabGroup =
                     IntentUtils.safeGetBooleanExtra(
                             intent, IntentHandler.EXTRA_OPEN_ADDITIONAL_URLS_IN_TAB_GROUP, false);
-            if (additionalUrls != null) {
-                final Tab parent = openAdditionalUrlsInTabGroup ? firstTab : null;
-                @TabLaunchType
-                int additionalUrlLaunchType =
-                        openAdditionalUrlsInTabGroup
-                                ? TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
-                                : TabLaunchType.FROM_RESTORE;
-                for (int i = 0; i < additionalUrls.size(); i++) {
-                    String url = additionalUrls.get(i);
-                    LoadUrlParams copy = LoadUrlParams.copy(loadUrlParams);
-                    copy.setUrl(url);
-                    tabCreator.createNewTab(copy, additionalUrlLaunchType, parent);
-                }
-            }
+
+            Tab firstTab =
+                    tabCreator.createNewTabs(
+                            loadUrlParams,
+                            additionalUrls,
+                            launchType,
+                            parentTab,
+                            openAdditionalUrlsInTabGroup,
+                            intent);
 
             TabModel tabModel =
                     mTabModelSelector != null && firstTab != null
