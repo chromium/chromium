@@ -10012,9 +10012,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20260309",
+                    "name": "Enabled_20260805",
                     "enable_features": [
-                        "EnableAccountPreviewData"
+                        "EnableAccountPreviewData",
+                        "EnableAccountPreviewEntityPreviews"
                     ]
                 }
             ]
