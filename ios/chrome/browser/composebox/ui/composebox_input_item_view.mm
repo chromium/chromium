@@ -116,7 +116,8 @@ const CGFloat kTrailingMargin = 28.0;
                               weight:UIImageSymbolWeightMedium
                                scale:UIImageSymbolScaleLarge];
       _leadingIconImageView.image =
-          SymbolWithConfiguration(SymbolMyDrive, configuration);
+          item.leadingIconImage
+              ?: SymbolWithConfiguration(SymbolMyDrive, configuration);
       _titleLabel.text = item.title;
     } break;
   }

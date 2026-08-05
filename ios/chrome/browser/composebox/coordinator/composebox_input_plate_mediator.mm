@@ -538,6 +538,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
         result.identifier = item.driveIdentifier;
         result.fileName = item.title;
         result.mimeType = item.driveMimeType;
+        result.icon = item.leadingIconImage;
         [driveItems addObject:result];
         break;
       }
@@ -601,7 +602,8 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   for (ComposeboxPickerDriveResult* driveItem in attachments.driveItems) {
     [self processDriveFileWithIdentifier:driveItem.identifier
                                     name:driveItem.fileName
-                                mimeType:driveItem.mimeType];
+                                mimeType:driveItem.mimeType
+                                    icon:driveItem.icon];
   }
 
   // TODO(crbug.com/512774045): update attachment is called in both embedded an
@@ -1872,7 +1874,8 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 
 - (void)processDriveFileWithIdentifier:(NSString*)identifier
                                   name:(NSString*)name
-                              mimeType:(NSString*)mimeType {
+                              mimeType:(NSString*)mimeType
+                                  icon:(UIImage*)icon {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if ([_items assetAlreadyLoaded:identifier]) {
     return;
@@ -1890,6 +1893,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   item.title = name;
   item.driveIdentifier = identifier;
   item.driveMimeType = mimeType;
+  item.leadingIconImage = icon;
 
   [self addItem:item];
 

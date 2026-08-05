@@ -147,7 +147,8 @@ class ContextualSearchSessionHandle;
 // session upload.
 - (void)processDriveFileWithIdentifier:(NSString*)identifier
                                   name:(NSString*)name
-                              mimeType:(NSString*)mimeType;
+                              mimeType:(NSString*)mimeType
+                                  icon:(UIImage*)icon;
 
 // Returns the associated IDs for all currently attached tabs.
 - (std::set<web::WebStateID>)allAttachedWebStateIDs;

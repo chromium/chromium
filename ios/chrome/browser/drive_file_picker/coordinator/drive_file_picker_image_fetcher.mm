@@ -76,6 +76,15 @@ BOOL DriveFilePickerImageFetcher::IsFetchInProgress(const DriveItem& item) {
   return [images_pending_ containsObject:item.GetImageLink()];
 }
 
+UIImage* DriveFilePickerImageFetcher::GetFetchedImage(
+    const DriveItem& item) const {
+  NSString* image_link = item.GetImageLink();
+  if (!image_link) {
+    return nil;
+  }
+  return [image_cache_ objectForKey:image_link];
+}
+
 void DriveFilePickerImageFetcher::OnImageFetched(
     DriveItem item,
     DriveFilePickerImageFetcherCallback callback,

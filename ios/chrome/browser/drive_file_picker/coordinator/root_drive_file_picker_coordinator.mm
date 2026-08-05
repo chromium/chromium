@@ -303,6 +303,9 @@ void ConfirmChangeProfileWithCompletion(
     result.identifier = item.identifier;
     result.fileName = item.name;
     result.mimeType = item.mime_type;
+    UIImage* fetchedIcon =
+        _imageFetcher ? _imageFetcher->GetFetchedImage(item) : nil;
+    result.icon = fetchedIcon ?: item.GetPlaceholderImage();
     [results addObject:result];
   }
   // Pass nil for the presenter because this coordinator manages its own
