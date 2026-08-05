@@ -1839,6 +1839,17 @@ AutofillAgent::AtMemoryState::FindAskForValuesToFill(const WebElement& element,
   if (pop) {
     last_at_memory_ask_for_values_to_fills_.erase(it);
   }
+
+  WebString value = [&] {
+    if (auto form_control = element.DynamicTo<WebFormControlElement>()) {
+      return form_control.Value();
+    }
+    return element.TextContent();
+  }();
+  if (info.value_hash != base::FastHash(base::as_byte_span(value.Utf16()))) {
+    return std::nullopt;
+  }
+
   return info;
 }
 
@@ -1863,13 +1874,20 @@ void AutofillAgent::AtMemoryState::MaybeUpdateAskForValuesToFill(
   while (last_at_memory_ask_for_values_to_fills_.size() >= kMaxSize) {
     last_at_memory_ask_for_values_to_fills_.pop_front();
   }
-  CHECK_LT(last_at_memory_ask_for_values_to_fills_.size(), kMaxSize);
+
+  WebString value = [&] {
+    if (auto form_control = element.DynamicTo<WebFormControlElement>()) {
+      return form_control.Value();
+    }
+    return element.TextContent();
+  }();
 
   last_at_memory_ask_for_values_to_fills_.push_back(AskForValuesToFillInfo{
       .field_id = form_util::GetFieldRendererId(element),
       .caused_by_trigger_string =
           trigger_source ==
-          AutofillSuggestionTriggerSource::kAtMemoryTriggerString});
+          AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
+      .value_hash = base::FastHash(base::as_byte_span(value.Utf16()))});
 }
 
 void AutofillAgent::ShowSuggestions(

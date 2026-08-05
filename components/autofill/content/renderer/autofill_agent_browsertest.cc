@@ -2369,6 +2369,21 @@ TEST_F(AutofillAgentTest_AtMemory,
   EXPECT_EQ(input.Value().Utf16(), u"hello @@");
 }
 
+// Tests that ApplyFieldAction() with kReplaceAtMemoryTrigger aborts if the
+// value changed after AskForValuesToFill().
+TEST_F(AutofillAgentTest_AtMemory, AtMemoryReplaceTriggerAbortsIfValueChanged) {
+  LoadHTML(R"(<input id="f">)");
+  WaitForFormsSeen();
+  blink::WebInputElement input = GetInputElementById("f");
+  Focus("f");
+
+  SimulateSlowTyping("hello @@");
+  input.SetValue(blink::WebString::FromUtf16(u"hello @@ changed"));
+  WaitForApplyFieldAction();
+  // Filling should be aborted; value remains unchanged.
+  EXPECT_EQ(input.Value().Utf16(), u"hello @@ changed");
+}
+
 // Tests that a non-standard trigger string works in <input> fields.
 TEST_F(AutofillAgentTest_AtMemory, NonStandardTriggerString) {
   // Ignore standard Autofill noise during setup.
@@ -2622,6 +2637,22 @@ TEST_F(AutofillAgentTest_AtMemoryContentEditable,
   blink::WebRange selection =
       GetMainFrame()->GetInputMethodController()->GetSelectionOffsets();
   EXPECT_EQ(selection.StartOffset(), 14);
+}
+
+// Tests that ApplyFieldAction() with kReplaceAtMemoryTrigger aborts if the
+// value changed after AskForValuesToFill().
+TEST_F(AutofillAgentTest_AtMemoryContentEditable,
+       AtMemoryReplaceTriggerAbortsIfValueChanged) {
+  blink::WebElement ce = GetWebElementById("ce");
+
+  SimulateSlowTyping("hello @@");
+  ExecuteJavaScriptForTests(R"(
+    document.getElementById('ce').innerText = 'hello @@ changed';
+  )");
+  test_api(autofill_agent()).ContentEditableDidChange(ce);
+  WaitForApplyFieldAction();
+  // Filling should be aborted; value remains unchanged.
+  EXPECT_EQ(ce.TextContent().Utf16(), u"hello @@ changed");
 }
 
 // Tests that a non-standard trigger string works in <div contenteditable>

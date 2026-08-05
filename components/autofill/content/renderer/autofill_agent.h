@@ -634,6 +634,7 @@ class AutofillAgent : public content::RenderFrameObserver,
     struct AskForValuesToFillInfo {
       FieldRendererId field_id{};
       bool caused_by_trigger_string = false;
+      size_t value_hash = 0;
     };
 
     AtMemoryState();
