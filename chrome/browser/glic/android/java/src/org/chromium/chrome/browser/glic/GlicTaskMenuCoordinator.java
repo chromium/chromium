@@ -224,14 +224,14 @@ public class GlicTaskMenuCoordinator {
             modelList.add(builder.build());
         }
 
-        if (shouldShowAskGemini()) {
+        if (shouldShowOpenChat()) {
             // Divider
             modelList.add(BasicListMenu.buildMenuDivider(false));
 
-            // Ask Gemini
+            // Open Chat
             modelList.add(
                     new ListItemBuilder()
-                            .withTitleRes(R.string.glic_button_entrypoint_ask_gemini_label)
+                            .withTitleRes(R.string.glic_open_gemini_label)
                             .withStartIconRes(R.drawable.ic_spark_24dp)
                             .withIsIncognito(false)
                             .withClickListener(
@@ -309,7 +309,7 @@ public class GlicTaskMenuCoordinator {
         return needsReview ? R.drawable.glic_menu_dot : Resources.ID_NULL;
     }
 
-    private boolean shouldShowAskGemini() {
+    private boolean shouldShowOpenChat() {
         return mButtonSource != ButtonSource.TAB_STRIP;
     }
 }

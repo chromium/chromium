@@ -504,6 +504,9 @@
   <message name="IDS_GLIC_BUTTON_ENTRYPOINT_ASK_GEMINI_LABEL" desc="Label on the button used to open Gemini in Chrome." formatter_data="android_java">
     Ask Gemini
   </message>
+  <message name="IDS_GLIC_OPEN_GEMINI_LABEL" desc="Label on the menu item used to open Gemini in Chrome." formatter_data="android_java">
+    Open Chat
+  </message>
   <message name="IDS_GLIC_SELECTION_CTA_TELL_ME" desc="Experimental CTA label on selection button.">
     Tell me about this
   </message>
