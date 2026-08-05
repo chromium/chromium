@@ -20,6 +20,7 @@
 #include "net/disk_cache/sql/cache_entry_key.h"
 #include "net/disk_cache/sql/sql_backend_aliases.h"
 #include "net/disk_cache/sql/sql_persistent_store.h"
+#include "net/disk_cache/sql/sql_read_cache_memory_monitor.h"
 #include "net/disk_cache/sql/sql_shared_cache_blob_handle.h"
 #include "sql/database.h"
 #include "sql/streaming_blob_handle.h"
@@ -76,7 +77,9 @@ class NET_EXPORT_PRIVATE SqlSharedCacheIsolatedDatabase {
       std::string nik_string,
       const base::FilePath& directory,
       SqlSharedCacheDbId shared_cache_db_id,
-      scoped_refptr<base::SequencedTaskRunner> task_runner);
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      scoped_refptr<SqlReadCacheMemoryMonitor> read_cache_memory_monitor =
+          nullptr);
   ~SqlSharedCacheIsolatedDatabase();
 
   // Returns a PendingFileSet that represents a read-only connection to the
@@ -249,6 +252,7 @@ class NET_EXPORT_PRIVATE SqlSharedCacheIsolatedDatabase {
   std::unique_ptr<DatabaseAssets> db_assets_;
   SimFailedCallback simulate_db_failure_callback_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  scoped_refptr<SqlReadCacheMemoryMonitor> read_cache_memory_monitor_;
 
   absl::flat_hash_map<SqlSharedCacheRowId, std::unique_ptr<BlobHandleHolder>>
       blob_handle_holders_;

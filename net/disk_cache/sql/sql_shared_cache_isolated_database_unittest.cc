@@ -17,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "net/base/features.h"
+#include "net/disk_cache/sql/sql_read_cache_memory_monitor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace disk_cache {
@@ -354,6 +355,71 @@ TEST_P(SqlSharedCacheIsolatedDatabaseTest,
   ASSERT_TRUE(read_result.has_value());
   EXPECT_EQ(read_result->read_bytes, 6);
   EXPECT_EQ(read_buffer->span(), base::span<const uint8_t>({3, 4, 5, 6, 7, 8}));
+}
+
+TEST_P(SqlSharedCacheIsolatedDatabaseTest, ReadWithReadCacheMemoryMonitor) {
+  SqlSharedCacheDbId db_id(1);
+  auto memory_monitor = base::MakeRefCounted<SqlReadCacheMemoryMonitor>(100);
+  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id,
+                                    task_runner_, memory_monitor);
+  ASSERT_TRUE(db.Init().has_value());
+
+  CacheEntryKey key("0/0/https://example.com/");
+  auto headers = base::MakeRefCounted<net::IOBufferWithSize>(4);
+  headers->span().copy_from(base::span<const uint8_t>({1, 2, 3, 4}));
+  const std::string body_data = "0123456789";
+  auto body = base::MakeRefCounted<net::StringIOBuffer>(body_data);
+
+  auto row_id_or_error = db.Insert(key, headers, body_data.size(), body);
+  ASSERT_TRUE(row_id_or_error.has_value());
+
+  // Read first 4 bytes. Remaining 6 bytes should be read into cache_buffer.
+  auto read_buffer = base::MakeRefCounted<net::IOBufferWithSize>(4);
+  auto read_result = db.Read(key, *row_id_or_error, /*body_size=*/10,
+                             /*offset=*/0, read_buffer);
+  ASSERT_TRUE(read_result.has_value());
+  EXPECT_EQ(read_result->read_bytes, 4);
+  EXPECT_EQ(std::string_view(read_buffer->data(), 4), "0123");
+  ASSERT_TRUE(read_result->cache_buffer);
+  EXPECT_EQ(read_result->cache_buffer_offset, 4);
+  EXPECT_EQ(std::string_view(read_result->cache_buffer->data(), 6), "456789");
+
+  // Read entire body. No remaining bytes, so cache_buffer should be null.
+  auto read_buffer_full = base::MakeRefCounted<net::IOBufferWithSize>(10);
+  auto read_result_full = db.Read(key, *row_id_or_error, /*body_size=*/10,
+                                  /*offset=*/0, read_buffer_full);
+  ASSERT_TRUE(read_result_full.has_value());
+  EXPECT_EQ(read_result_full->read_bytes, 10);
+  EXPECT_FALSE(read_result_full->cache_buffer);
+}
+
+TEST_P(SqlSharedCacheIsolatedDatabaseTest,
+       ReadWithReadCacheMemoryMonitorAllocationFailure) {
+  SqlSharedCacheDbId db_id(1);
+  // Set max_size to 2, which is less than remaining 6 bytes to read-ahead.
+  auto memory_monitor = base::MakeRefCounted<SqlReadCacheMemoryMonitor>(2);
+  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id,
+                                    task_runner_, memory_monitor);
+  ASSERT_TRUE(db.Init().has_value());
+
+  CacheEntryKey key("0/0/https://example.com/");
+  auto headers = base::MakeRefCounted<net::IOBufferWithSize>(4);
+  headers->span().copy_from(base::span<const uint8_t>({1, 2, 3, 4}));
+  const std::string body_data = "0123456789";
+  auto body = base::MakeRefCounted<net::StringIOBuffer>(body_data);
+
+  auto row_id_or_error = db.Insert(key, headers, body_data.size(), body);
+  ASSERT_TRUE(row_id_or_error.has_value());
+
+  // Read first 4 bytes. Remaining 6 bytes exceed the monitor's max_size of 2,
+  // so Allocate(6) returns false and cache_buffer should be null.
+  auto read_buffer = base::MakeRefCounted<net::IOBufferWithSize>(4);
+  auto read_result = db.Read(key, *row_id_or_error, /*body_size=*/10,
+                             /*offset=*/0, read_buffer);
+  ASSERT_TRUE(read_result.has_value());
+  EXPECT_EQ(read_result->read_bytes, 4);
+  EXPECT_EQ(std::string_view(read_buffer->data(), 4), "0123");
+  EXPECT_FALSE(read_result->cache_buffer);
 }
 
 TEST_P(SqlSharedCacheIsolatedDatabaseTest, ReadBeyondWrittenBody) {

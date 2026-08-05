@@ -28,6 +28,7 @@
 #include "net/disk_cache/sql/entry_write_buffer.h"
 #include "net/disk_cache/sql/sql_backend_aliases.h"
 #include "net/disk_cache/sql/sql_persistent_store_in_memory_index.h"
+#include "net/disk_cache/sql/sql_read_cache_memory_monitor.h"
 #include "url/gurl.h"
 
 // This backend is experimental and only available when the build flag is set.
@@ -806,6 +807,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
       const base::FilePath& path,
       net::CacheType type,
       bool shared_cache_enabled,
+      scoped_refptr<SqlReadCacheMemoryMonitor> read_cache_memory_monitor,
       std::vector<scoped_refptr<base::SequencedTaskRunner>>
           background_task_runners,
       SqlAsyncTaskManager& async_task_manager,
@@ -857,6 +859,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   const std::vector<scoped_refptr<base::SequencedTaskRunner>>
       background_task_runners_;
   const raw_ref<SqlAsyncTaskManager> async_task_manager_;
+  scoped_refptr<SqlReadCacheMemoryMonitor> read_cache_memory_monitor_;
   std::unique_ptr<SqlSharedCacheManager> shared_cache_manager_;
   const std::vector<std::unique_ptr<BackendShard>> backend_shards_;
   const int64_t user_max_bytes_;

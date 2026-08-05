@@ -19,6 +19,7 @@
 #include "base/threading/sequence_bound.h"
 #include "net/base/net_export.h"
 #include "net/base/network_isolation_key.h"
+#include "net/disk_cache/sql/sql_read_cache_memory_monitor.h"
 #include "net/disk_cache/sql/sql_shared_cache.h"
 #include "net/disk_cache/sql/sql_shared_cache_handle.h"
 #include "net/disk_cache/sql/sql_shared_cache_index_database.h"
@@ -40,9 +41,11 @@ class NET_EXPORT_PRIVATE SqlSharedCacheManager {
   using InitCallback = base::OnceCallback<void(
       base::expected<void, SqlSharedCacheIndexDatabase::Error>)>;
 
-  SqlSharedCacheManager(SqlPersistentStore& store,
-                        const base::FilePath& path,
-                        scoped_refptr<BackendCleanupTracker> cleanup_tracker);
+  SqlSharedCacheManager(
+      SqlPersistentStore& store,
+      const base::FilePath& path,
+      scoped_refptr<SqlReadCacheMemoryMonitor> read_cache_memory_monitor,
+      scoped_refptr<BackendCleanupTracker> cleanup_tracker);
   ~SqlSharedCacheManager();
 
   // Asynchronously initializes the index database.
@@ -120,6 +123,7 @@ class NET_EXPORT_PRIVATE SqlSharedCacheManager {
   const base::FilePath directory_;
   scoped_refptr<base::SequencedTaskRunner> db_task_runner_;
   SqlTrackedSequenceBound<SqlSharedCacheIndexDatabase> index_database_;
+  scoped_refptr<SqlReadCacheMemoryMonitor> read_cache_memory_monitor_;
   scoped_refptr<BackendCleanupTracker> cleanup_tracker_;
 
   base::queue<base::OnceCallback<void(DbOperationHandle)>>

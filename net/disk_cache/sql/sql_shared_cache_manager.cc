@@ -18,6 +18,7 @@ namespace disk_cache {
 SqlSharedCacheManager::SqlSharedCacheManager(
     SqlPersistentStore& store,
     const base::FilePath& path,
+    scoped_refptr<SqlReadCacheMemoryMonitor> read_cache_memory_monitor,
     scoped_refptr<BackendCleanupTracker> cleanup_tracker)
     : store_(store),
       directory_(path),
@@ -25,6 +26,7 @@ SqlSharedCacheManager::SqlSharedCacheManager(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       index_database_(db_task_runner_, store_->GetAsyncTaskManager(), path),
+      read_cache_memory_monitor_(std::move(read_cache_memory_monitor)),
       cleanup_tracker_(cleanup_tracker) {}
 
 SqlSharedCacheManager::~SqlSharedCacheManager() {
@@ -151,7 +153,7 @@ SqlSharedCacheManager::RegisterNewSqlSharedCache(
       nik_str, *store_, directory_,
       base::BindRepeating(&SqlSharedCacheManager::OnSqlSharedCacheUnreferenced,
                           weak_factory_.GetWeakPtr()),
-      db_task_runner, cleanup_tracker_);
+      db_task_runner, read_cache_memory_monitor_, cleanup_tracker_);
   SqlSharedCache* cache_ptr = cache.get();
   shared_caches_.insert(std::move(cache));
   CHECK(shared_caches_by_nik_string_.emplace(nik_str, cache_ptr).second);

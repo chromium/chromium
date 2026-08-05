@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -23,6 +24,7 @@
 #include "components/sqlite_vfs/vfs_utils.h"
 #include "net/base/features.h"
 #include "net/disk_cache/sql/sql_backend_constants.h"
+#include "net/disk_cache/sql/sql_read_cache_memory_monitor.h"
 #include "net/disk_cache/sql/sql_shared_cache_isolated_database_queries.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
@@ -117,10 +119,12 @@ SqlSharedCacheIsolatedDatabase::SqlSharedCacheIsolatedDatabase(
     std::string nik_string,
     const base::FilePath& directory,
     SqlSharedCacheDbId shared_cache_db_id,
-    scoped_refptr<base::SequencedTaskRunner> task_runner)
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    scoped_refptr<SqlReadCacheMemoryMonitor> read_cache_memory_monitor)
     : nik_string_(std::move(nik_string)),
       db_assets_(DatabaseAssets::MaybeCreate(directory, shared_cache_db_id)),
-      task_runner_(std::move(task_runner)) {
+      task_runner_(std::move(task_runner)),
+      read_cache_memory_monitor_(std::move(read_cache_memory_monitor)) {
   CHECK(task_runner_);
 }
 
@@ -532,6 +536,22 @@ SqlSharedCacheIsolatedDatabase::Read(const CacheEntryKey& entry_key,
 
   ReadResult read_result;
   read_result.read_bytes = buf_len;
+
+  int64_t read_end = static_cast<int64_t>(offset) + buf_len;
+  if (read_end < static_cast<int64_t>(body_size) &&
+      read_cache_memory_monitor_) {
+    const int64_t remaining_bytes = static_cast<int64_t>(body_size) - read_end;
+    const int cache_size = base::saturated_cast<int>(remaining_bytes);
+    if (read_cache_memory_monitor_->Allocate(cache_size)) {
+      auto cache_buffer = base::MakeRefCounted<MonitoredVectorIOBuffer>(
+          cache_size, read_cache_memory_monitor_);
+      if (blob_handle_ptr->Read(read_end, cache_buffer->span())) {
+        read_result.cache_buffer = std::move(cache_buffer);
+        read_result.cache_buffer_offset = read_end;
+      }
+    }
+  }
+
   return read_result;
 }
 

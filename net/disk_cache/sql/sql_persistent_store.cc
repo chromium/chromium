@@ -129,6 +129,7 @@ SqlPersistentStore::CreateBackendShards(
     const base::FilePath& path,
     net::CacheType type,
     bool shared_cache_enabled,
+    scoped_refptr<SqlReadCacheMemoryMonitor> read_cache_memory_monitor,
     std::vector<scoped_refptr<base::SequencedTaskRunner>>
         background_task_runners,
     SqlAsyncTaskManager& async_task_manager,
@@ -137,9 +138,6 @@ SqlPersistentStore::CreateBackendShards(
   CHECK(num_shards < std::numeric_limits<ShardId::underlying_type>::max());
   std::vector<std::unique_ptr<BackendShard>> backend_shards;
   backend_shards.reserve(num_shards);
-  auto read_cache_memory_monitor =
-      base::MakeRefCounted<SqlReadCacheMemoryMonitor>(
-          net::features::kSqlDiskCacheMaxReadBufferTotalSize.Get());
   for (size_t i = 0; i < num_shards; ++i) {
     backend_shards.emplace_back(std::make_unique<BackendShard>(
         ShardId(i), path, type, shared_cache_enabled, read_cache_memory_monitor,
@@ -158,17 +156,22 @@ SqlPersistentStore::SqlPersistentStore(
     scoped_refptr<BackendCleanupTracker> cleanup_tracker)
     : background_task_runners_(std::move(background_task_runners)),
       async_task_manager_(async_task_manager),
-      shared_cache_manager_(
-          base::FeatureList::IsEnabled(
-              net::features::kRendererAccessibleHttpCache)
-              ? std::make_unique<SqlSharedCacheManager>(*this,
-                                                        path,
-                                                        cleanup_tracker)
-              : nullptr),
+      read_cache_memory_monitor_(
+          base::MakeRefCounted<SqlReadCacheMemoryMonitor>(
+              net::features::kSqlDiskCacheMaxReadBufferTotalSize.Get())),
+      shared_cache_manager_(base::FeatureList::IsEnabled(
+                                net::features::kRendererAccessibleHttpCache)
+                                ? std::make_unique<SqlSharedCacheManager>(
+                                      *this,
+                                      path,
+                                      read_cache_memory_monitor_,
+                                      cleanup_tracker)
+                                : nullptr),
       backend_shards_(
           CreateBackendShards(path,
                               type,
                               /*shared_cache_enabled=*/!!shared_cache_manager_,
+                              read_cache_memory_monitor_,
                               background_task_runners_,
                               async_task_manager,
                               std::move(cleanup_tracker))),

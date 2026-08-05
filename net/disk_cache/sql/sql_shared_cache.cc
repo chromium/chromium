@@ -28,12 +28,14 @@ SqlSharedCache::SqlSharedCache(
     const base::FilePath& directory,
     base::RepeatingCallback<void(SqlSharedCache&)> on_unreferenced_callback,
     scoped_refptr<base::SequencedTaskRunner> db_task_runner,
+    scoped_refptr<SqlReadCacheMemoryMonitor> read_cache_memory_monitor,
     scoped_refptr<BackendCleanupTracker> cleanup_tracker)
     : nik_string_(std::move(nik_string)),
       store_(store),
       directory_(directory),
       on_unreferenced_callback_(std::move(on_unreferenced_callback)),
       db_task_runner_(std::move(db_task_runner)),
+      read_cache_memory_monitor_(std::move(read_cache_memory_monitor)),
       cleanup_tracker_(std::move(cleanup_tracker)) {}
 
 SqlSharedCache::~SqlSharedCache() {
@@ -63,7 +65,7 @@ void SqlSharedCache::InitIsolatedDatabase(
   shared_cache_db_id_ = shared_cache_db_id;
   isolated_database_ = SqlTrackedSequenceBound<SqlSharedCacheIsolatedDatabase>(
       db_task_runner_, store_->GetAsyncTaskManager(), nik_string_, directory_,
-      shared_cache_db_id, db_task_runner_);
+      shared_cache_db_id, db_task_runner_, read_cache_memory_monitor_);
   isolated_database_.AsyncCall(&SqlSharedCacheIsolatedDatabase::Init)
       .Then(base::BindOnce(
           [](base::OnceCallback<void(bool)> callback,

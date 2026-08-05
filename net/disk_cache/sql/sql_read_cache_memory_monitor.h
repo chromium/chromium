@@ -42,6 +42,8 @@ class NET_EXPORT_PRIVATE SqlReadCacheMemoryMonitor
 // monitor before creating this buffer.
 class NET_EXPORT_PRIVATE MonitoredVectorIOBuffer : public net::IOBuffer {
  public:
+  MonitoredVectorIOBuffer(size_t size,
+                          scoped_refptr<SqlReadCacheMemoryMonitor> monitor);
   MonitoredVectorIOBuffer(base::span<const uint8_t> data,
                           scoped_refptr<SqlReadCacheMemoryMonitor> monitor);
 

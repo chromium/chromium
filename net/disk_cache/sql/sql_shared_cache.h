@@ -18,6 +18,7 @@
 #include "net/base/network_isolation_key.h"
 #include "net/disk_cache/sql/cache_entry_key.h"
 #include "net/disk_cache/sql/sql_persistent_store.h"
+#include "net/disk_cache/sql/sql_read_cache_memory_monitor.h"
 #include "net/disk_cache/sql/sql_shared_cache_blob_handle.h"
 #include "net/disk_cache/sql/sql_shared_cache_isolated_database.h"
 #include "net/disk_cache/sql/sql_tracked_sequence_bound.h"
@@ -43,6 +44,7 @@ class NET_EXPORT_PRIVATE SqlSharedCache {
       const base::FilePath& directory,
       base::RepeatingCallback<void(SqlSharedCache&)> on_unreferenced_callback,
       scoped_refptr<base::SequencedTaskRunner> db_task_runner,
+      scoped_refptr<SqlReadCacheMemoryMonitor> read_cache_memory_monitor,
       scoped_refptr<BackendCleanupTracker> cleanup_tracker);
   ~SqlSharedCache();
 
@@ -203,6 +205,7 @@ class NET_EXPORT_PRIVATE SqlSharedCache {
   base::RepeatingCallback<void(SqlSharedCache&)> on_unreferenced_callback_;
   int handle_count_ = 0;
   scoped_refptr<base::SequencedTaskRunner> db_task_runner_;
+  scoped_refptr<SqlReadCacheMemoryMonitor> read_cache_memory_monitor_;
   scoped_refptr<BackendCleanupTracker> cleanup_tracker_;
 
   std::optional<SqlSharedCacheDbId> shared_cache_db_id_;

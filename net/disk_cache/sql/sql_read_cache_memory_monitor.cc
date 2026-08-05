@@ -31,6 +31,13 @@ void SqlReadCacheMemoryMonitor::ReleaseBytes(int size) {
 }
 
 MonitoredVectorIOBuffer::MonitoredVectorIOBuffer(
+    size_t size,
+    scoped_refptr<SqlReadCacheMemoryMonitor> monitor)
+    : monitor_(std::move(monitor)), vector_(size) {
+  SetSpan(vector_);
+}
+
+MonitoredVectorIOBuffer::MonitoredVectorIOBuffer(
     base::span<const uint8_t> data,
     scoped_refptr<SqlReadCacheMemoryMonitor> monitor)
     : monitor_(std::move(monitor)), vector_(data.begin(), data.end()) {

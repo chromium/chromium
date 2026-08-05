@@ -272,7 +272,7 @@ TEST_P(SqlSharedCacheTest, BasicLifecycleAndHandleCount) {
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
-      cleanup_tracker_);
+      /*read_cache_memory_monitor=*/nullptr, cleanup_tracker_);
 
   EXPECT_EQ(cache->nik_string(), "test_nik");
   EXPECT_FALSE(cache->shared_cache_db_id().has_value());
@@ -304,7 +304,7 @@ TEST_P(SqlSharedCacheTest, InitIsolatedDatabaseAndCleanup) {
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
-      cleanup_tracker_);
+      /*read_cache_memory_monitor=*/nullptr, cleanup_tracker_);
 
   bool init_success = false;
 
@@ -331,7 +331,7 @@ TEST_P(SqlSharedCacheTest, CleanupWithoutIsolatedDatabase) {
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
-      cleanup_tracker_);
+      /*read_cache_memory_monitor=*/nullptr, cleanup_tracker_);
 
   bool cleanup_done = false;
   cache->Cleanup(base::BindLambdaForTesting([&]() { cleanup_done = true; }));
@@ -346,7 +346,7 @@ TEST_P(SqlSharedCacheTest, DestructionTriggersCleanup) {
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
              base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
-        cleanup_tracker_);
+        /*read_cache_memory_monitor=*/nullptr, cleanup_tracker_);
 
     bool init_success = false;
     cache->InitIsolatedDatabase(
@@ -370,7 +370,7 @@ TEST_P(SqlSharedCacheTest, DestructionTriggersCleanup) {
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
-      cleanup_tracker_);
+      /*read_cache_memory_monitor=*/nullptr, cleanup_tracker_);
 
   bool reinit_success = false;
   new_cache->InitIsolatedDatabase(
@@ -968,7 +968,7 @@ TEST_P(SqlSharedCacheTest, DeleteEntriesWithoutIsolatedDatabase) {
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
-      cleanup_tracker_);
+      /*read_cache_memory_monitor=*/nullptr, cleanup_tracker_);
 
   base::test::TestFuture<
       base::expected<void, SqlSharedCacheIsolatedDatabase::Error>>
@@ -1025,7 +1025,7 @@ TEST_P(SqlSharedCacheTest, GetBlobHandleWithoutIsolatedDatabase) {
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
-      cleanup_tracker_);
+      /*read_cache_memory_monitor=*/nullptr, cleanup_tracker_);
 
   const CacheEntryKey kKey("https://example.com/blob_test");
   base::test::TestFuture<base::expected<scoped_refptr<SqlSharedCacheBlobHandle>,
