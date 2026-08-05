@@ -2820,8 +2820,19 @@ const char kChromeAppStoreUrl[] =
 - (void)showSendTabToSelfUI:(const GURL&)url
                       title:(NSString*)title
                  entryPoint:(send_tab_to_self::ShareEntryPoint)entryPoint {
-  // According to crbug.com/472243358 a second coordinator can be opened while
-  // the first one is not stopped. In doubt, let’s stop the first one.
+  [self sendTabToSelfToDeviceWithURL:url
+                               title:title
+                            deviceID:nil
+                          deviceName:nil
+                          entryPoint:entryPoint];
+}
+
+- (void)sendTabToSelfToDeviceWithURL:(const GURL&)url
+                               title:(NSString*)title
+                            deviceID:(NSString*)deviceID
+                          deviceName:(NSString*)deviceName
+                          entryPoint:
+                              (send_tab_to_self::ShareEntryPoint)entryPoint {
   [_sendTabToSelfCoordinator stop];
   _sendTabToSelfCoordinator = [[SendTabToSelfCoordinator alloc]
       initWithBaseViewController:self.viewController
@@ -2829,13 +2840,11 @@ const char kChromeAppStoreUrl[] =
                  signinPresenter:self
                              url:url
                            title:title
+           targetDeviceCacheGUID:deviceID
+                targetDeviceName:deviceName
                       entryPoint:entryPoint];
   _sendTabToSelfCoordinator.delegate = self;
 
-  // If there is another transition going on (e.g. dismissal of the context
-  // menu from which the Send-tab-to-self action was triggered), postpone the
-  // start of the coordinator to allow the other transition to complete first.
-  // This is necessary to prevent a UIKit transition deadlock.
   __weak SendTabToSelfCoordinator* weakSendTabToSelfCoordinator =
       _sendTabToSelfCoordinator;
   ExecuteWhenTransitionsComplete(

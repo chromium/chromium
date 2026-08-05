@@ -157,11 +157,19 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
                                         UIViewControllerTransitioningDelegate> {
   std::unique_ptr<TargetDeviceListWaiter> _targetDeviceListWaiter;
   send_tab_to_self::ShareEntryPoint _entryPoint;
+  // Non-nil only when the coordinator is initialized in direct-send mode,
+  // representing the target device's cache GUID where the tab should be sent.
+  NSString* _targetDeviceCacheGUID;
+  NSString* _targetDeviceName;
 }
 
 @property(nonatomic, weak, readonly) id<SigninPresenter> signinPresenter;
 @property(nonatomic, assign, readonly) GURL url;
 @property(nonatomic, copy, readonly) NSString* title;
+
+// Returns YES if the coordinator is running in direct-send mode, sending the
+// tab directly to a specific target device without presenting any picker UI.
+@property(nonatomic, assign, readonly) BOOL isDirectSend;
 
 // The TableViewController that shows the Send Tab To Self UI. This is NOT the
 // presented controller, it is wrapped in a UINavigationController.
@@ -190,6 +198,8 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
                            signinPresenter:(id<SigninPresenter>)signinPresenter
                                        url:(const GURL&)url
                                      title:(NSString*)title
+                     targetDeviceCacheGUID:(NSString*)targetDeviceCacheGUID
+                          targetDeviceName:(NSString*)targetDeviceName
                                 entryPoint:(send_tab_to_self::ShareEntryPoint)
                                                entryPoint {
   self = [super initWithBaseViewController:baseViewController browser:browser];
@@ -197,13 +207,33 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
     return nil;
   }
 
+  CHECK(!targetDeviceCacheGUID || targetDeviceName);
   _signinPresenter = signinPresenter;
   _url = url;
   _title = title;
+  _targetDeviceCacheGUID = targetDeviceCacheGUID;
+  _targetDeviceName = targetDeviceName;
   _entryPoint = entryPoint;
   _browserCoordinatorHandler = HandlerForProtocol(
       browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
   return self;
+}
+
+- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
+                                   browser:(Browser*)browser
+                           signinPresenter:(id<SigninPresenter>)signinPresenter
+                                       url:(const GURL&)url
+                                     title:(NSString*)title
+                                entryPoint:(send_tab_to_self::ShareEntryPoint)
+                                               entryPoint {
+  return [self initWithBaseViewController:baseViewController
+                                  browser:browser
+                          signinPresenter:signinPresenter
+                                      url:url
+                                    title:title
+                    targetDeviceCacheGUID:nil
+                         targetDeviceName:nil
+                               entryPoint:entryPoint];
 }
 
 - (void)dealloc {
@@ -220,6 +250,14 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
     // Sign-in was disabled after the list of action was opened. Let’s abort.
     // Don’t call anything after this, as `self` is not retained anymore.
     [self.delegate sendTabToSelfCoordinatorWantsToBeStopped:self];
+    return;
+  }
+
+  // If initialized in direct-send mode, send the tab immediately without
+  // presenting the target device picker UI.
+  if (self.isDirectSend) {
+    [self sendTabToTargetDeviceCacheGUID:_targetDeviceCacheGUID
+                        targetDeviceName:_targetDeviceName];
     return;
   }
 
@@ -345,6 +383,12 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 }
 
 #pragma mark - Private
+
+// Returns YES if the coordinator is in direct-send mode, which bypasses the
+// device picker UI and sends the tab directly to a specific target device.
+- (BOOL)isDirectSend {
+  return _targetDeviceCacheGUID != nil;
+}
 
 // Stops the signin-coordiantor
 - (void)stopSigninCoordinator {

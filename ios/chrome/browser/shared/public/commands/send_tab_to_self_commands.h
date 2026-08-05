@@ -20,6 +20,15 @@ enum class ShareEntryPoint;
                       title:(NSString*)title
                  entryPoint:(send_tab_to_self::ShareEntryPoint)entryPoint;
 
+// Sends the tab with `url` and `title` directly to `deviceID` with `deviceName`
+// without displaying the device picker UI.
+- (void)sendTabToSelfToDeviceWithURL:(const GURL&)url
+                               title:(NSString*)title
+                            deviceID:(NSString*)deviceID
+                          deviceName:(NSString*)deviceName
+                          entryPoint:
+                              (send_tab_to_self::ShareEntryPoint)entryPoint;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_SEND_TAB_TO_SELF_COMMANDS_H_

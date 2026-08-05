@@ -23,14 +23,29 @@ enum class ShareEntryPoint;
 // The delegate of this coordinator.
 @property(nonatomic, weak) id<SendTabToSelfCoordinatorDelegate> delegate;
 
+// Designated initializer. If `targetDeviceCacheGUID` is provided,
+// the coordinator initializes in direct-send mode, sending the tab directly to
+// that target device upon start (bypassing the picker UI).
+- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
+                                   browser:(Browser*)browser
+                           signinPresenter:(id<SigninPresenter>)signinPresenter
+                                       url:(const GURL&)url
+                                     title:(NSString*)title
+                     targetDeviceCacheGUID:(NSString*)targetDeviceCacheGUID
+                          targetDeviceName:(NSString*)targetDeviceName
+                                entryPoint:(send_tab_to_self::ShareEntryPoint)
+                                               entryPoint
+    NS_DESIGNATED_INITIALIZER;
+
+// Convenience initializer. Initializes the coordinator in the standard picker
+// mode, presenting the list of target devices to the user to choose from.
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser
                            signinPresenter:(id<SigninPresenter>)signinPresenter
                                        url:(const GURL&)url
                                      title:(NSString*)title
                                 entryPoint:(send_tab_to_self::ShareEntryPoint)
-                                               entryPoint
-    NS_DESIGNATED_INITIALIZER;
+                                               entryPoint;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
