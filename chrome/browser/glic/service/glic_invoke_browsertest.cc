@@ -141,6 +141,23 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, InvokeWithEmptyConversationId) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
+                       InvokeWithValidConversationIdSmokeTest) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  base::test::TestFuture<void> success_future;
+  GlicInvokeOptions options(
+      glic::Target(*tab, glic::ConversationId("test-conversation-id")),
+      mojom::InvocationSource::kOsButton);
+  options.on_success = success_future.GetCallback();
+
+  EXPECT_FALSE(GetInstanceForTab(tab));
+
+  coordinator().Invoke(std::move(options));
+
+  EXPECT_TRUE(success_future.Wait());
+  EXPECT_TRUE(GetInstanceForTab(tab));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
                        InvokeFailsWhenProfileNotEnabled) {
   ScopedGlicCapability scoped_glic_capability(GetProfile(), false);
 
