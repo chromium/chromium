@@ -1559,6 +1559,39 @@ TEST_F(MediaDevicesManagerTest, EnumerateVideoInputFailsOnce) {
                                         /*error_count=*/1);
 }
 
+TEST_F(MediaDevicesManagerTest,
+       EnumerateVideoInputInvalidatedDuringEnumeration) {
+  VideoCaptureProvider::GetDeviceInfosCallback saved_callback;
+  EXPECT_CALL(*mock_video_capture_provider_, GetDeviceInfosAsync(_))
+      .WillOnce([&](VideoCaptureProvider::GetDeviceInfosCallback callback) {
+        saved_callback = std::move(callback);
+      })
+      .WillRepeatedly(
+          [](VideoCaptureProvider::GetDeviceInfosCallback callback) {});
+
+  MediaDevicesManager::BoolDeviceTypes devices_to_enumerate;
+  devices_to_enumerate[static_cast<size_t>(MediaDeviceType::kMediaVideoInput)] =
+      true;
+
+  EXPECT_CALL(*this, MockCallback(_));
+  base::RunLoop run_loop;
+  media_devices_manager_->EnumerateDevices(
+      devices_to_enumerate,
+      base::BindOnce(&MediaDevicesManagerTest::EnumerateCallback,
+                     base::Unretained(this), &run_loop));
+
+  // Simulate an invalidation while GetDeviceInfosAsync is pending.
+  media_devices_manager_->OnDevicesChanged(
+      base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
+
+  // Now respond to the pending GetDeviceInfosAsync.
+  std::move(saved_callback)
+      .Run(DeviceEnumerationResult::kErrorCaptureServiceCrash, {});
+
+  // The client request callback should still be invoked (not hang).
+  run_loop.Run();
+}
+
 TEST_F(MediaDevicesManagerTest, RegisterUnregisterDispatcherHosts) {
   mojo::Remote<blink::mojom::MediaDevicesDispatcherHost> client1;
   media_devices_manager_->RegisterDispatcherHost(

@@ -78,6 +78,9 @@ BASE_FEATURE(kEnumerateDevicesRelaxedCache,
 #endif
 );
 
+BASE_FEATURE(kEnumerateDevicesAlwaysProcessRequestsOnDevicesEnumerated,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
 using media::mojom::DeviceEnumerationResult;
 
@@ -1516,10 +1519,14 @@ void MediaDevicesManager::DevicesEnumerated(
     }
   }
 
-  // Note that IsLastUpdateValid is always true when policy is NO_CACHE.
-  if (cache_infos_[static_cast<size_t>(type)].IsLastUpdateValid()) {
+  if (base::FeatureList::IsEnabled(
+          kEnumerateDevicesAlwaysProcessRequestsOnDevicesEnumerated) ||
+      cache_infos_[static_cast<size_t>(type)].IsLastUpdateValid()) {
     ProcessClientRequests();
-  } else {
+  }
+
+  // Note that IsLastUpdateValid is always true when policy is NO_CACHE.
+  if (!cache_infos_[static_cast<size_t>(type)].IsLastUpdateValid()) {
     EnumerateSystemDevices(request_id, type);
   }
 }
