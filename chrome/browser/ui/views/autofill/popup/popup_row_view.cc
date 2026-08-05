@@ -380,7 +380,7 @@ void PopupRowView::SetSelectedCell(std::optional<CellType> new_cell) {
     return;
   }
 
-  if (new_cell == selected_cell_) {
+  if (new_cell == selected_cell_ || (new_cell && !IsSelectable())) {
     return;
   }
 

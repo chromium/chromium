@@ -277,6 +277,19 @@ TEST_F(PopupRowViewTest, SetSelectedCellVerifiesArgumentsNoControl) {
   EXPECT_FALSE(row_view().GetSelectedCell().has_value());
 }
 
+TEST_F(PopupRowViewTest, SetSelectedCellIgnoresUnselectableSuggestions) {
+  Suggestion suggestion(u"Source attribution",
+                        SuggestionType::kAtMemorySourceAttribution);
+  suggestion.acceptability =
+      Suggestion::Acceptability::kUnselectableAndUnacceptable;
+  ShowView(/*line_number=*/0, {suggestion});
+  EXPECT_FALSE(row_view().GetSelectedCell().has_value());
+
+  EXPECT_CALL(a11y_selection_delegate(), NotifyAXSelection).Times(0);
+  row_view().SetSelectedCell(CellType::kContent);
+  EXPECT_FALSE(row_view().GetSelectedCell().has_value());
+}
+
 TEST_F(PopupRowViewTest, SetSelectedCellVerifiesArgumentsWithControl) {
   ShowView(/*line_number=*/0, /*has_control=*/true);
   ASSERT_TRUE(row_view().GetExpandChildSuggestionsView());
