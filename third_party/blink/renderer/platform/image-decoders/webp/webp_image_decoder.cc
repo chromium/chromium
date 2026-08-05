@@ -16,7 +16,9 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
+#include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/core/SkData.h"
 
 #if defined(ARCH_CPU_BIG_ENDIAN)
@@ -199,7 +201,7 @@ void WEBPImageDecoder::ClearDecoder() {
 
 WEBP_CSP_MODE WEBPImageDecoder::RGBOutputMode() {
   DCHECK(!IsDoingYuvDecode());
-  if (ColorTransform()) {
+  if (NeedsDecodeTimeColorTransform()) {
     // Swizzling between RGBA and BGRA is zero cost in a color transform.
     // So when we have a color transform, we should decode to whatever is
     // easiest for libwebp, and then let the color transform swizzle if
@@ -546,26 +548,11 @@ void WEBPImageDecoder::ApplyPostProcessing(wtf_size_t frame_index) {
   // space and then immediately after, perform a linear premultiply
   // and linear blending.  Can we find a way to perform the
   // premultiplication and blending in a linear space?
-  ColorProfileTransform* xform = ColorTransform();
-  if (xform) {
-    skcms_PixelFormat kSrcFormat = skcms_PixelFormat_BGRA_8888;
-    skcms_PixelFormat kDstFormat = skcms_PixelFormat_RGBA_8888;
-    skcms_AlphaFormat alpha_format = skcms_AlphaFormat_Unpremul;
-    for (int y = decoded_height_; y < decoded_height; ++y) {
-      const int canvas_y = top + y;
-      uint8_t* row = reinterpret_cast<uint8_t*>(buffer.GetAddr(left, canvas_y));
-      bool color_conversion_successful = skcms_Transform(
-          row, kSrcFormat, alpha_format, xform->SrcProfile(), row, kDstFormat,
-          alpha_format, xform->DstProfile(), width);
-      DCHECK(color_conversion_successful);
-      uint8_t* pixel = row;
-      for (int x = 0; x < width; ++x, UNSAFE_TODO(pixel += 4)) {
-        const int canvas_x = left + x;
-        buffer.SetRGBA(canvas_x, canvas_y, pixel[0], UNSAFE_TODO(pixel[1]),
-                       UNSAFE_TODO(pixel[2]), UNSAFE_TODO(pixel[3]));
-      }
-    }
-  }
+  DoDecodeTimeColorTransformIfNeeded(
+      buffer,
+      SkIRect::MakeXYWH(left, top + decoded_height_, width,
+                        decoded_height - decoded_height_),
+      kBGRA_8888_SkColorType, kUnpremul_SkAlphaType);
 
   // During the decoding of the current frame, we may have set some pixels to be
   // transparent (i.e. alpha < 255). If the alpha blend source was

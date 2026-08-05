@@ -29,6 +29,7 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -266,6 +267,32 @@ bool IsLosslessImageMIMEType(const String& mime_type) {
          EqualIgnoringAsciiCase(mime_type, "image/webp") ||
          EqualIgnoringAsciiCase(mime_type, "image/x-xbitmap") ||
          EqualIgnoringAsciiCase(mime_type, "image/x-png");
+}
+
+skcms_PixelFormat SkColorTypeToSkcmsPixelFormat(SkColorType color_type) {
+  switch (color_type) {
+    case kRGBA_8888_SkColorType:
+      return skcms_PixelFormat_RGBA_8888;
+    case kBGRA_8888_SkColorType:
+      return skcms_PixelFormat_BGRA_8888;
+    case kRGBA_F16_SkColorType:
+      return skcms_PixelFormat_RGBA_hhhh;
+    default:
+      NOTREACHED();
+  }
+}
+
+skcms_AlphaFormat SkAlphaTypeToSkcmsAlphaFormat(SkAlphaType alpha_type) {
+  switch (alpha_type) {
+    case kOpaque_SkAlphaType:
+      return skcms_AlphaFormat_Opaque;
+    case kPremul_SkAlphaType:
+      return skcms_AlphaFormat_PremulAsEncoded;
+    case kUnpremul_SkAlphaType:
+      return skcms_AlphaFormat_Unpremul;
+    default:
+      NOTREACHED();
+  }
 }
 
 }  // namespace
@@ -1187,33 +1214,49 @@ void ImageDecoder::SetEmbeddedColorProfile(
 
 ColorProfileTransform::~ColorProfileTransform() = default;
 
-void ImageDecoder::DoDecodeTimeColorTransformIfNeeded(ImageFrame& buffer,
-                                                      const SkIRect& rect) {
+void ImageDecoder::DoDecodeTimeColorTransformIfNeeded(
+    ImageFrame& buffer,
+    const SkIRect& rect,
+    std::optional<SkColorType> override_src_color_type,
+    std::optional<SkAlphaType> override_src_alpha_type) {
   if (!NeedsDecodeTimeColorTransform()) {
     return;
   }
   const ColorProfileTransform* transform = ColorTransform();
 
-  const auto alpha_format = (buffer.HasAlpha() && buffer.PremultiplyAlpha())
-                                ? skcms_AlphaFormat_PremulAsEncoded
-                                : skcms_AlphaFormat_Unpremul;
+  const skcms_AlphaFormat dst_alpha_format =
+      (buffer.HasAlpha() && buffer.PremultiplyAlpha())
+          ? skcms_AlphaFormat_PremulAsEncoded
+          : skcms_AlphaFormat_Unpremul;
+  const skcms_AlphaFormat src_alpha_format =
+      override_src_alpha_type.has_value()
+          ? SkAlphaTypeToSkcmsAlphaFormat(*override_src_alpha_type)
+          : dst_alpha_format;
 
   if (buffer.GetPixelFormat() == ImageFrame::kRGBA_F16) {
+    CHECK(!override_src_color_type.has_value());
     const skcms_PixelFormat color_format = skcms_PixelFormat_RGBA_hhhh;
     for (int y = rect.top(); y < rect.bottom(); ++y) {
       ImageFrame::PixelDataF16* const row = buffer.GetAddrF16(rect.left(), y);
       const bool success = skcms_Transform(
-          row, color_format, alpha_format, transform->SrcProfile(), row,
-          color_format, alpha_format, transform->DstProfile(), rect.width());
+          row, color_format, src_alpha_format, transform->SrcProfile(), row,
+          color_format, dst_alpha_format, transform->DstProfile(),
+          rect.width());
       DCHECK(success);
     }
   } else {
-    const skcms_PixelFormat color_format = XformColorFormat();
+    const skcms_PixelFormat dst_pixel_format =
+        SkColorTypeToSkcmsPixelFormat(kN32_SkColorType);
+    const skcms_PixelFormat src_pixel_format =
+        override_src_color_type.has_value()
+            ? SkColorTypeToSkcmsPixelFormat(*override_src_color_type)
+            : dst_pixel_format;
     for (int y = rect.top(); y < rect.bottom(); ++y) {
       ImageFrame::PixelData* const row = buffer.GetAddr(rect.left(), y);
       const bool success = skcms_Transform(
-          row, color_format, alpha_format, transform->SrcProfile(), row,
-          color_format, alpha_format, transform->DstProfile(), rect.width());
+          row, src_pixel_format, src_alpha_format, transform->SrcProfile(), row,
+          dst_pixel_format, dst_alpha_format, transform->DstProfile(),
+          rect.width());
       DCHECK(success);
     }
   }

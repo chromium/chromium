@@ -50,6 +50,8 @@
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/skia/include/core/SkAlphaType.h"
+#include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/modules/skcms/skcms.h"
@@ -63,16 +65,6 @@ class ICCProfileChromium;
 }
 
 namespace blink {
-
-#if SK_B32_SHIFT
-inline skcms_PixelFormat XformColorFormat() {
-  return skcms_PixelFormat_RGBA_8888;
-}
-#else
-inline skcms_PixelFormat XformColorFormat() {
-  return skcms_PixelFormat_BGRA_8888;
-}
-#endif
 
 // ImagePlanes can be used to decode color components into provided buffers
 // instead of using an ImageFrame.
@@ -434,8 +426,16 @@ class PLATFORM_EXPORT ImageDecoder {
   }
 
   // Performs color transformation on the specified rect of buffer if needed.
-  void DoDecodeTimeColorTransformIfNeeded(ImageFrame& buffer,
-                                          const SkIRect& rect);
+  // The WebP decoder fuses pixel format and alpha conversion with color space
+  // conversion. To accommodate this, the optional `src_color_type` and
+  // `src_alpha_type` parameters can be provided to indicate the input format
+  // of the data in `buffer` (the conversion will convert to the expected
+  // format).
+  void DoDecodeTimeColorTransformIfNeeded(
+      ImageFrame& buffer,
+      const SkIRect& rect,
+      std::optional<SkColorType> src_color_type = std::nullopt,
+      std::optional<SkAlphaType> src_alpha_type = std::nullopt);
 
   AlphaOption GetAlphaOption() const {
     return premultiply_alpha_ ? kAlphaPremultiplied : kAlphaNotPremultiplied;
