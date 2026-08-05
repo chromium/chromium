@@ -13,7 +13,13 @@
   --showcase-text-padding-top_: 48px;
   --subtitle-font-size_: 16px;
   --subtitle-line-height_: 24px;
+/* Bump max width on Linux to leverage larger font sizes. */
+<if expr="is_linux">
+  --text-max-width_: 365px;
+</if>
+<if expr="not is_linux">
   --text-max-width_: 350px;
+</if>
   --title-font-size_: 24px;
   align-items: center;
   color: var(--cr-primary-text-color);
