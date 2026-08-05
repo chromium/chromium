@@ -1920,7 +1920,7 @@ bool IsFullscreenNextIAEnabled() {
   if (self.currentWebState) {
     UIEdgeInsets contentPadding =
         self.currentWebState->GetWebViewProxy().contentInset;
-    contentPadding.bottom = AlignValueToPixel(
+    contentPadding.bottom = AlignValueToLowerPixel(
         self.footerFullscreenProgress * [self secondaryToolbarHeightWithInset]);
     self.currentWebState->GetWebViewProxy().contentInset = contentPadding;
   }
@@ -2350,8 +2350,8 @@ bool IsFullscreenNextIAEnabled() {
 // progress of 1.0 fully shows the headers and a progress of 0.0 fully hides
 // them.
 - (void)updateHeadersForFullscreenProgress:(CGFloat)progress {
-  CGFloat offset =
-      AlignValueToPixel((1.0 - progress) * [self primaryToolbarHeightDelta]);
+  CGFloat offset = AlignValueToLowerPixel((1.0 - progress) *
+                                          [self primaryToolbarHeightDelta]);
   [self setFramesForHeaders:[self headerViews] atOffset:offset];
 }
 
@@ -2375,11 +2375,12 @@ bool IsFullscreenNextIAEnabled() {
     CGFloat targetHeight =
         collapsedHeightWithSafeArea +
         progress * (expandedHeight - collapsedHeightWithSafeArea);
-    height = AlignValueToPixel(targetHeight);
+    height = AlignValueToLowerPixel(targetHeight);
   } else {
     const CGFloat isolatedDelta =
         std::max(0.0, expandedHeight - [self collapsedBottomToolbarHeight]);
-    const CGFloat offset = AlignValueToPixel((1.0 - progress) * isolatedDelta);
+    const CGFloat offset =
+        AlignValueToLowerPixel((1.0 - progress) * isolatedDelta);
     height = expandedHeight - offset;
   }
 
@@ -2414,8 +2415,8 @@ bool IsFullscreenNextIAEnabled() {
     return;
   }
 
-  const CGFloat offset =
-      AlignValueToPixel((1.0 - progress) * [self secondaryToolbarHeightDelta]);
+  const CGFloat offset = AlignValueToLowerPixel(
+      (1.0 - progress) * [self secondaryToolbarHeightDelta]);
   // Update the height constraint and force a layout on the container view
   // so that the update is animatable.
   const CGFloat height = expandedToolbarHeight - offset;
@@ -2452,11 +2453,11 @@ bool IsFullscreenNextIAEnabled() {
   // Calculate the heights of the toolbars for `progress`.  `-toolbarHeight`
   // returns the height of the toolbar extending below this view controller's
   // safe area, so the unsafe top height must be added.
-  CGFloat top = AlignValueToPixel(
+  CGFloat top = AlignValueToLowerPixel(
       self.headerHeight + (progress - 1.0) * [self primaryToolbarHeightDelta]);
-  CGFloat bottom =
-      AlignValueToPixel([self secondaryToolbarHeightWithInset] +
-                        (progress - 1.0) * [self secondaryToolbarHeightDelta]);
+  CGFloat bottom = AlignValueToLowerPixel(
+      [self secondaryToolbarHeightWithInset] +
+      (progress - 1.0) * [self secondaryToolbarHeightDelta]);
 
   [self updateContentPaddingForTopToolbarHeight:top bottomToolbarHeight:bottom];
 }

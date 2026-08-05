@@ -420,11 +420,12 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
   // 3pt in all other configurations.
   CGFloat fullscreenVerticalMargin =
       IsCompactHeight(self) ? 0 : kAdaptiveLocationBarVerticalMarginFullscreen;
-  return -AlignValueToPixel((kAdaptiveLocationBarVerticalMargin * progress +
-                             fullscreenVerticalMargin * (1 - progress)) *
-                                [self clampedFontSizeMultiplier] +
-                            ([self clampedFontSizeMultiplier] - 1) *
-                                kLocationBarVerticalMarginDynamicType);
+  return -AlignValueToLowerPixel(
+      (kAdaptiveLocationBarVerticalMargin * progress +
+       fullscreenVerticalMargin * (1 - progress)) *
+          [self clampedFontSizeMultiplier] +
+      ([self clampedFontSizeMultiplier] - 1) *
+          kLocationBarVerticalMarginDynamicType);
 }
 
 // Sets the height of the location bar container.

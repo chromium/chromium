@@ -488,7 +488,7 @@ UIImage* ArrowDownImage() {
         self.headerBackgroundImage == nil
             ? _noBackgroundHeaderImageTopMarginPercentage
             : kHeaderImageBackgroundTopMarginPercentage;
-    _headerBackgroundImageViewTopMargin.constant = AlignValueToPixel(
+    _headerBackgroundImageViewTopMargin.constant = AlignValueToLowerPixel(
         self.view.bounds.size.height * headerImageTopMarginPercentage);
   }
 }

@@ -786,7 +786,8 @@ UIStackView* PageControl(BubblePageControlPage page,
 
 - (NSArray<NSLayoutConstraint*>*)nextButtonConstraints {
   return @[
-    [_separator.heightAnchor constraintEqualToConstant:AlignValueToPixel(0.5)],
+    [_separator.heightAnchor
+        constraintEqualToConstant:AlignValueToLowerPixel(0.5)],
     [_separator.topAnchor constraintEqualToAnchor:_label.bottomAnchor
                                          constant:kNextButtonVerticalMargin],
     [_separator.leadingAnchor constraintEqualToAnchor:_label.leadingAnchor],
@@ -1044,7 +1045,7 @@ UIStackView* PageControl(BubblePageControlPage page,
   // Combined height of title, label and snooze button including all margins.
   CGFloat textContentHeight = kBubbleVerticalPadding + optimalTextSize.height;
   if (self.showsNextButton) {
-    textContentHeight += AlignValueToPixel(0.5);
+    textContentHeight += AlignValueToLowerPixel(0.5);
     textContentHeight += kNextButtonVerticalMargin;
   } else {
     textContentHeight += kBubbleVerticalPadding;

@@ -177,7 +177,7 @@ constexpr CGFloat kContainedLayoutTabStripTopMargin = 4.0;
   // Calculate offset based on progress (0 = collapsed/hidden, 1 =
   // expanded/visible).
   CGFloat offset =
-      AlignValueToPixel((1.0 - progress) * _fullscreenViewportInsetRange);
+      AlignValueToLowerPixel((1.0 - progress) * _fullscreenViewportInsetRange);
 
   // Update frame directly for synchronous layout.
   // We don't rely on constraints here to avoid fighting with the layout system

@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/toolbar_progress_bar.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ui/gfx/ios/uikit_util.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 
 namespace {
 const CGFloat kURLBarMarginVertical = 13.0;
@@ -109,7 +109,7 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
     [separator.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
     [separator.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
     [separator.heightAnchor
-        constraintEqualToConstant:ui::AlignValueToUpperPixel(kSeparatorHeight)],
+        constraintEqualToConstant:AlignValueToUpperPixel(kSeparatorHeight)],
     [separator.bottomAnchor
         constraintEqualToAnchor:self.webStateView.topAnchor],
     [self.progressBar.leadingAnchor
@@ -117,8 +117,7 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
     [self.progressBar.trailingAnchor
         constraintEqualToAnchor:self.view.trailingAnchor],
     [self.progressBar.heightAnchor
-        constraintEqualToConstant:ui::AlignValueToUpperPixel(
-                                      kProgressBarHeight)],
+        constraintEqualToConstant:AlignValueToUpperPixel(kProgressBarHeight)],
     [self.progressBar.bottomAnchor
         constraintEqualToAnchor:self.webStateView.topAnchor],
     [self.webStateView.leadingAnchor

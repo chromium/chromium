@@ -35,8 +35,8 @@ BOOL LayoutRectPositionEqualToPosition(LayoutRectPosition a,
 }
 
 LayoutRectPosition AlignLayoutRectPositionToPixel(LayoutRectPosition position) {
-  return LayoutRectPositionMake(AlignValueToPixel(position.leading),
-                                AlignValueToPixel(position.originY));
+  return LayoutRectPositionMake(AlignValueToLowerPixel(position.leading),
+                                AlignValueToLowerPixel(position.originY));
 }
 
 const LayoutRect LayoutRectZero = {0.0, {0.0, 0.0}, {0.0, 0.0}};

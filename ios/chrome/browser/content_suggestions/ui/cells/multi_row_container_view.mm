@@ -20,7 +20,7 @@ const CGFloat kSeparatorHeight = 0.5;
   self = [super initWithFrame:CGRectZero];
   if (self) {
     UIStackView* rowsStackView = [[UIStackView alloc] init];
-    rowsStackView.spacing = AlignValueToPixel(8.5);
+    rowsStackView.spacing = AlignValueToLowerPixel(8.5);
     rowsStackView.axis = UILayoutConstraintAxisVertical;
     rowsStackView.translatesAutoresizingMaskIntoConstraints = NO;
     rowsStackView.alignment = UIStackViewAlignmentFill;
@@ -37,7 +37,8 @@ const CGFloat kSeparatorHeight = 0.5;
         [rowsStackView addArrangedSubview:separator];
         [NSLayoutConstraint activateConstraints:@[
           [separator.heightAnchor
-              constraintEqualToConstant:AlignValueToPixel(kSeparatorHeight)],
+              constraintEqualToConstant:AlignValueToLowerPixel(
+                                            kSeparatorHeight)],
           [separator.leadingAnchor
               constraintEqualToAnchor:rowsStackView.leadingAnchor],
           [separator.trailingAnchor

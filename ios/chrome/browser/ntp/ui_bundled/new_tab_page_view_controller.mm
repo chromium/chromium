@@ -979,8 +979,8 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
     // return to it on defocus.
     self.collectionShiftingOffset =
         MAX(-[self heightAboveFeed],
-            AlignValueToPixel([self.headerView pinnedOffsetY] -
-                              [self adjustedOffset].y));
+            AlignValueToLowerPixel([self.headerView pinnedOffsetY] -
+                                   [self adjustedOffset].y));
   }
 
   // If the fake omnibox is already at the final position, just focus it and
@@ -1880,9 +1880,9 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 // The y-position content offset for when the fake omnibox
 // should stick to the top of the NTP.
 - (CGFloat)offsetToStickOmnibox {
-  return AlignValueToPixel(-([self heightAboveFeed] -
-                             [self.headerView headerHeight] +
-                             [self stickyOmniboxHeight]));
+  return AlignValueToLowerPixel(-([self heightAboveFeed] -
+                                  [self.headerView headerHeight] +
+                                  [self stickyOmniboxHeight]));
 }
 
 // Whether the collection view has attained its minimum height.
@@ -1966,7 +1966,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 // updates property.
 - (void)updateScrolledToMinimumHeight {
   CGFloat scrollPosition = [self scrollPosition];
-  CGFloat minimumHeightOffset = AlignValueToPixel([self pinnedOffsetY]);
+  CGFloat minimumHeightOffset = AlignValueToLowerPixel([self pinnedOffsetY]);
 
   self.scrolledToMinimumHeight = scrollPosition >= minimumHeightOffset;
 }

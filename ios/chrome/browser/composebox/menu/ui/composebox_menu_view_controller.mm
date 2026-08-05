@@ -393,7 +393,7 @@ UIImage* IconForModel(ComposeboxModelOption option) {
                              kAttachmentSectionInsets.trailing;
     CGFloat totalSpacing = (itemsCount - 1) * kAttachmentItemSpacing;
     CGFloat itemWidth =
-        AlignValueToPixel((availableWidth - totalSpacing) / itemsCount);
+        AlignValueToLowerPixel((availableWidth - totalSpacing) / itemsCount);
 
     NSCollectionLayoutSize* itemSize = [NSCollectionLayoutSize
         sizeWithWidthDimension:[NSCollectionLayoutDimension

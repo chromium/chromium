@@ -93,9 +93,9 @@ BOOL IsCompact(UITraitCollection* traitCollection) {
         horizontalRatio:(CGFloat)horizontalRatio {
   CGFloat imageAspectRatio = image.size.height / image.size.width;
   const CGFloat width =
-      AlignValueToPixel(self.bounds.size.width * horizontalRatio);
-  const CGFloat height =
-      MIN(self.bounds.size.height, AlignValueToPixel(width * imageAspectRatio));
+      AlignValueToLowerPixel(self.bounds.size.width * horizontalRatio);
+  const CGFloat height = MIN(self.bounds.size.height,
+                             AlignValueToLowerPixel(width * imageAspectRatio));
 
   return ResizeImage(image, CGSizeMake(width, height),
                      ProjectionMode::kAspectFillAlignTop);

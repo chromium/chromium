@@ -15,11 +15,8 @@
 
 using UIUtilTest = PlatformTest;
 
-TEST_F(UIUtilTest, AlignToPixel) {
+TEST_F(UIUtilTest, AlignToLowerPixel) {
   CGFloat scale = [[UIScreen mainScreen] scale];
-  // Pick a few interesting values: already aligned, aligned on retina, and
-  // some unaligned values that would round differently. Ensure that all are
-  // "integer" values within <1 of the original value in the scaled space.
   static constexpr auto kTestValues = std::to_array<CGPoint>({
       {10.0, 55.5},
       {55.5, 3.14159},
@@ -29,15 +26,46 @@ TEST_F(UIUtilTest, AlignToPixel) {
 
   const CGFloat kMaxAlignDelta = 0.9999;
   for (const CGPoint point : kTestValues) {
-    const CGFloat alignedX = AlignValueToPixel(point.x);
+    const CGFloat alignedX = AlignValueToLowerPixel(point.x);
     EXPECT_FLOAT_EQ(alignedX * scale, floor(alignedX * scale));
     EXPECT_NEAR(alignedX * scale, point.x * scale, kMaxAlignDelta);
 
-    const CGPoint alignedPoint = AlignPointToPixel(point);
+    const CGPoint alignedPoint = AlignPointToLowerPixel(point);
     EXPECT_FLOAT_EQ(floor(alignedPoint.x * scale), alignedPoint.x * scale);
     EXPECT_FLOAT_EQ(floor(alignedPoint.y * scale), alignedPoint.y * scale);
     EXPECT_NEAR(point.x * scale, alignedPoint.x * scale, kMaxAlignDelta);
     EXPECT_NEAR(point.y * scale, alignedPoint.y * scale, kMaxAlignDelta);
+  }
+}
+
+TEST_F(UIUtilTest, AlignToUpperPixel) {
+  CGFloat scale = [[UIScreen mainScreen] scale];
+  static constexpr auto kTestValues = std::to_array<CGPoint>({
+      {10.0, 55.5},
+      {55.5, 3.14159},
+      {3.14159, 2.71828},
+      {2.71828, 10.0},
+  });
+
+  const CGFloat kMaxAlignDelta = 0.9999;
+  for (const CGPoint point : kTestValues) {
+    const CGFloat alignedX = AlignValueToUpperPixel(point.x);
+    EXPECT_FLOAT_EQ(alignedX * scale, ceil(alignedX * scale));
+    EXPECT_NEAR(alignedX * scale, point.x * scale, kMaxAlignDelta);
+
+    const CGPoint alignedPoint = AlignPointToUpperPixel(point);
+    EXPECT_FLOAT_EQ(ceil(alignedPoint.x * scale), alignedPoint.x * scale);
+    EXPECT_FLOAT_EQ(ceil(alignedPoint.y * scale), alignedPoint.y * scale);
+    EXPECT_NEAR(point.x * scale, alignedPoint.x * scale, kMaxAlignDelta);
+    EXPECT_NEAR(point.y * scale, alignedPoint.y * scale, kMaxAlignDelta);
+
+    const CGSize alignedSize =
+        AlignSizeToUpperPixel(CGSizeMake(point.x, point.y));
+    EXPECT_FLOAT_EQ(ceil(alignedSize.width * scale), alignedSize.width * scale);
+    EXPECT_FLOAT_EQ(ceil(alignedSize.height * scale),
+                    alignedSize.height * scale);
+    EXPECT_NEAR(point.x * scale, alignedSize.width * scale, kMaxAlignDelta);
+    EXPECT_NEAR(point.y * scale, alignedSize.height * scale, kMaxAlignDelta);
   }
 }
 

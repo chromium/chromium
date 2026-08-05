@@ -181,7 +181,7 @@ const CGFloat kSeparatorHeight = 0.5;
     [_stackView addArrangedSubview:_separator];
     [NSLayoutConstraint activateConstraints:@[
       [_separator.heightAnchor
-          constraintEqualToConstant:AlignValueToPixel(kSeparatorHeight)],
+          constraintEqualToConstant:AlignValueToLowerPixel(kSeparatorHeight)],
       [_separator.leadingAnchor
           constraintEqualToAnchor:_stackView.leadingAnchor],
       [_separator.trailingAnchor

@@ -2174,7 +2174,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   if ([self.delegate shouldPinFakeOmnibox]) {
     offsetY -= self.headerHeight;
   }
-  return AlignValueToPixel(offsetY);
+  return AlignValueToLowerPixel(offsetY);
 }
 
 - (void)didAppear {

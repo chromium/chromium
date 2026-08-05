@@ -466,8 +466,8 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
       ToolbarCollapsedHeight(self.traitCollection.preferredContentSizeCategory);
   const CGFloat expandedCollapsedDelta = expandedHeight - collapsedHeight;
 
-  const CGFloat height =
-      AlignValueToPixel(collapsedHeight + expandedCollapsedDelta * progress);
+  const CGFloat height = AlignValueToLowerPixel(
+      collapsedHeight + expandedCollapsedDelta * progress);
 
   self.view.locationBarContainerHeight.constant = height;
   self.view.locationBarContainer.layer.cornerRadius = height / 2;

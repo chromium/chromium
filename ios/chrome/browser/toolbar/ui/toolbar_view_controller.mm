@@ -47,7 +47,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
-#import "ui/gfx/ios/uikit_util.h"
 
 namespace {
 
@@ -1535,7 +1534,7 @@ constexpr CGFloat kGlassContainerDarkBackgroundAlpha = 0.25;
     [_innerSeparator.trailingAnchor
         constraintEqualToAnchor:self.view.trailingAnchor],
     [_innerSeparator.heightAnchor
-        constraintEqualToConstant:ui::AlignValueToUpperPixel(
+        constraintEqualToConstant:AlignValueToUpperPixel(
                                       kToolbarSeparatorHeight)],
     innerSeparatorEdgeConstraint
   ]];
@@ -1548,7 +1547,7 @@ constexpr CGFloat kGlassContainerDarkBackgroundAlpha = 0.25;
       [_outerSeparator.trailingAnchor
           constraintEqualToAnchor:self.view.trailingAnchor],
       [_outerSeparator.heightAnchor
-          constraintEqualToConstant:ui::AlignValueToUpperPixel(
+          constraintEqualToConstant:AlignValueToUpperPixel(
                                         kToolbarSeparatorHeight)],
       [_outerSeparator.topAnchor
           constraintEqualToAnchor:_locationBarContainer.bottomAnchor

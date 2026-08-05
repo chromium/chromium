@@ -173,11 +173,11 @@
       hasBottomSafeArea ? kBottomAdaptiveLocationBarVerticalMarginFullscreen
                         : 0;
 
-  return AlignValueToPixel((kBottomAdaptiveLocationBarTopMargin * progress +
-                            fullscreenMargin * (1 - progress)) *
-                               clampedFontSizeMultiplier +
-                           (clampedFontSizeMultiplier - 1) *
-                               kLocationBarVerticalMarginDynamicType);
+  return AlignValueToLowerPixel(
+      (kBottomAdaptiveLocationBarTopMargin * progress +
+       fullscreenMargin * (1 - progress)) *
+          clampedFontSizeMultiplier +
+      (clampedFontSizeMultiplier - 1) * kLocationBarVerticalMarginDynamicType);
 }
 
 /// Updates keyboard constraints with `notification`. When

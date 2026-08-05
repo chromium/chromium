@@ -67,7 +67,7 @@ CGFloat Spacing(id<NSCollectionLayoutEnvironment> layout_environment) {
           layout_environment.traitCollection.preferredContentSizeCategory) +
       1;
   // Compute the theoretical size of the spacing, rounded to the nearest pixel.
-  const CGFloat spacing = AlignValueToPixel(total_spacing / spaces_count);
+  const CGFloat spacing = AlignValueToLowerPixel(total_spacing / spaces_count);
   // Cap to a minimum spacing.
   return MAX(spacing, kMinimumSpacing);
 }
@@ -193,7 +193,7 @@ NSCollectionLayoutSection* InactiveTabButtonSection(
         (width - spacing * (columns_count - 1) - 2 * section_horizontal_inset) /
         columns_count;
     const CGFloat button_width =
-        AlignValueToPixel(2 * tab_width + number_of_spacing * spacing);
+        AlignValueToLowerPixel(2 * tab_width + number_of_spacing * spacing);
     groupHorizontalInset =
         (width - button_width - 2 * section_horizontal_inset) / 2;
   }

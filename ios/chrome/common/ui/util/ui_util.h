@@ -15,18 +15,30 @@ CGFloat CurrentScreenWidth();
 
 // Returns the closest pixel-aligned value less than `value`, taking the scale
 // factor into account. At a scale of 1, equivalent to floor().
-CGFloat AlignValueToPixel(CGFloat value);
+CGFloat AlignValueToLowerPixel(CGFloat value);
 
-// Returns the point resulting from applying AlignValueToPixel() to both
+// Returns the closest pixel-aligned value higher than `value`, taking the scale
+// factor into account. At a scale of 1, equivalent to ceil().
+CGFloat AlignValueToUpperPixel(CGFloat value);
+
+// Returns the point resulting from applying AlignValueToLowerPixel() to both
 // components.
-CGPoint AlignPointToPixel(CGPoint point);
+CGPoint AlignPointToLowerPixel(CGPoint point);
 
-// Returns the rectangle resulting from applying AlignPointToPixel() to the
+// Returns the point resulting from applying AlignValueToUpperPixel() to both
+// components.
+CGPoint AlignPointToUpperPixel(CGPoint point);
+
+// Returns the rectangle resulting from applying AlignPointToLowerPixel() to the
 // origin.
 CGRect AlignRectToPixel(CGRect rect);
 
-// Returns the rectangle resulting from applying AlignPointToPixel() to the
-// origin, and ui::AlignSizeToUpperPixel() to the size.
+// Returns the size resulting from applying AlignValueToUpperPixel() to both
+// components.
+CGSize AlignSizeToUpperPixel(CGSize size);
+
+// Returns the rectangle resulting from applying AlignPointToLowerPixel() to the
+// origin, and AlignSizeToUpperPixel() to the size.
 CGRect AlignRectOriginAndSizeToPixels(CGRect rect);
 
 // Returns a square CGRect centered at `x`, `y` with a width of `width`.

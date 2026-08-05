@@ -123,7 +123,7 @@ bool ShouldResizeViewForPopover(
   if (!self.tableViewModel) {
     if (ShouldResizeViewForPopover(self.modalPresentationStyle)) {
       self.preferredContentSize = CGSizeMake(
-          PopoverPreferredWidth, AlignValueToPixel(PopoverLoadingHeight));
+          PopoverPreferredWidth, AlignValueToLowerPixel(PopoverLoadingHeight));
     }
     [self startLoadingIndicatorWithLoadingMessage:@""];
     _loadingIndicatorStartingTime = base::Time::Now();

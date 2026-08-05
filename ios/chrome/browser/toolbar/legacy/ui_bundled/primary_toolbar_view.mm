@@ -24,7 +24,6 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
-#import "ui/gfx/ios/uikit_util.h"
 
 namespace {
 // Extra vertical spacing when the banner promo is active.
@@ -562,7 +561,7 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
     [self.separator.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
     [self.separator.topAnchor constraintEqualToAnchor:self.bottomAnchor],
     [self.separator.heightAnchor
-        constraintEqualToConstant:ui::AlignValueToUpperPixel(
+        constraintEqualToConstant:AlignValueToUpperPixel(
                                       kToolbarSeparatorHeight)],
   ]];
 

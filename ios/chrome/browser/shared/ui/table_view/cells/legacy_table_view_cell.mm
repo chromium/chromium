@@ -37,7 +37,7 @@ const CGFloat kTableViewCustomSeparatorHeight = 0.5;
           constraintEqualToAnchor:self.trailingAnchor],
       [_customSeparator.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
       [_customSeparator.heightAnchor
-          constraintEqualToConstant:AlignValueToPixel(
+          constraintEqualToConstant:AlignValueToLowerPixel(
                                         kTableViewCustomSeparatorHeight)],
       [_customSeparator.leadingAnchor
           constraintEqualToAnchor:self.leadingAnchor

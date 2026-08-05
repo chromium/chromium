@@ -108,7 +108,7 @@ const CGFloat kSeparatorHeight = 0.5;
 
   [NSLayoutConstraint activateConstraints:@[
     [separator.heightAnchor
-        constraintEqualToConstant:AlignValueToPixel(kSeparatorHeight)],
+        constraintEqualToConstant:AlignValueToLowerPixel(kSeparatorHeight)],
     [separator.leadingAnchor constraintEqualToAnchor:textStack.leadingAnchor],
     [separator.trailingAnchor constraintEqualToAnchor:textStack.trailingAnchor],
   ]];

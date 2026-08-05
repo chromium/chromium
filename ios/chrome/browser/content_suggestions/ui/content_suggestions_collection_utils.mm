@@ -28,7 +28,6 @@
 #import "ios/components/ui_util/dynamic_type_util.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
-#import "ui/gfx/ios/uikit_util.h"
 
 namespace {
 
@@ -204,14 +203,14 @@ CGFloat DoodleTopMargin(SearchEngineLogoState logo_state,
   }
   CGFloat top_margin =
       top_inset +
-      AlignValueToPixel(kDoodleScaledTopMarginOther *
-                        ui_util::SystemSuggestedFontSizeMultiplier());
+      AlignValueToLowerPixel(kDoodleScaledTopMarginOther *
+                             ui_util::SystemSuggestedFontSizeMultiplier());
   top_margin += kDoodleTopMarginOther;
   return top_margin;
 }
 
 CGFloat HeaderSeparatorHeight() {
-  return ui::AlignValueToUpperPixel(kToolbarSeparatorHeight);
+  return AlignValueToUpperPixel(kToolbarSeparatorHeight);
 }
 
 CGFloat SearchFieldTopMargin(SearchEngineLogoState logo_state) {
@@ -244,9 +243,9 @@ CGFloat SearchFieldWidth(CGFloat width, UITraitCollection* trait_collection) {
 CGFloat FakeOmniboxHeight() {
   if (IsAimEnabledInNtp()) {
     CGFloat multiplier = ui_util::SystemSuggestedFontSizeMultiplier();
-    return AlignValueToPixel((kFakeboxHeight - kFakeboxHeightNonDynamic) *
-                                 multiplier +
-                             kFakeboxHeightNonDynamic);
+    return AlignValueToLowerPixel((kFakeboxHeight - kFakeboxHeightNonDynamic) *
+                                      multiplier +
+                                  kFakeboxHeightNonDynamic);
   }
   return ToolbarExpandedHeight(
       [UIApplication sharedApplication].preferredContentSizeCategory);
@@ -255,7 +254,7 @@ CGFloat FakeOmniboxHeight() {
 CGFloat PinnedFakeOmniboxHeight() {
   if (IsAimEnabledInNtp()) {
     CGFloat multiplier = ui_util::SystemSuggestedFontSizeMultiplier();
-    return AlignValueToPixel(
+    return AlignValueToLowerPixel(
         (kPinnedFakeboxHeight - kPinnedFakeboxHeightNonDynamic) * multiplier +
         kPinnedFakeboxHeightNonDynamic);
   }

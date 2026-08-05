@@ -31,7 +31,7 @@
   [super layoutSubviews];
   CGSize boundsSize = self.bounds.size;
   CGPoint center = CGPointMake(boundsSize.width / 2, boundsSize.height / 2);
-  [_activityIndicator setCenter:AlignPointToPixel(center)];
+  [_activityIndicator setCenter:AlignPointToLowerPixel(center)];
 }
 
 @end
