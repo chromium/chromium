@@ -127,6 +127,10 @@ if (enable_av1_decoder) {
   pipeline_integration_fuzzer_variants += [ "MP4_AV1" ]
 }
 
+if (media_use_iamf_tools) {
+  pipeline_integration_fuzzer_variants += [ "MP4_IAMF_OPUS" ]
+}
+
 if (proprietary_codecs) {
   pipeline_integration_fuzzer_variants += [
     "ADTS",

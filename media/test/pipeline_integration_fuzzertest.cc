@@ -42,6 +42,9 @@ enum FuzzerVariant {
 #if BUILDFLAG(ENABLE_AV1_DECODER)
   MP4_AV1,
 #endif
+#if BUILDFLAG(ENABLE_IAMF_TOOLS)
+  MP4_IAMF_OPUS,
+#endif
   MP4_FLAC,
   MP4_OPUS,
   MP3,
@@ -77,6 +80,10 @@ std::string MseFuzzerVariantEnumToMimeTypeString(FuzzerVariant variant) {
     case MP4_AV1:
       return "video/mp4; codecs=\"av01.0.04M.08\"";
 #endif  // BUILDFLAG(ENABLE_AV1_DECODER)
+#if BUILDFLAG(ENABLE_IAMF_TOOLS)
+    case MP4_IAMF_OPUS:
+      return "audio/mp4; codecs=\"iamf.001.001.Opus\"";
+#endif  // BUILDFLAG(ENABLE_IAMF_TOOLS)
     case MP4_FLAC:
       return "audio/mp4; codecs=\"flac\"";
     case MP4_OPUS:
