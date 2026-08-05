@@ -291,7 +291,8 @@ class FormAutofillUtilsTest : public content::RenderViewTest {
   FormAutofillUtilsTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {features::kAutofillIgnoreCheckableElements},
+        {features::kAutofillFixIframeOwnership,
+         features::kAutofillIgnoreCheckableElements},
         /*disabled_features=*/{});
   }
   ~FormAutofillUtilsTest() override = default;
@@ -1610,8 +1611,8 @@ TEST_F(FormAutofillUtilsTest, IsWebElementVisibleTest) {
   }
 }
 
-// Tests `GetClosestAncestorFormElement(element)`.
-TEST_F(FormAutofillUtilsTest, GetClosestAncestorFormElement) {
+// Tests `GetTopLevelAncestorFormElement(element)`.
+TEST_F(FormAutofillUtilsTest, GetTopLevelAncestorFormElement) {
   LoadHTML(R"(
       <body>
         <iframe id=unowned></iframe>
@@ -1636,16 +1637,16 @@ TEST_F(FormAutofillUtilsTest, GetClosestAncestorFormElement) {
 
   WebDocument doc = GetDocument();
   EXPECT_EQ(
-      GetClosestAncestorFormElementForTesting(GetElementById(doc, "unowned")),
+      GetTopLevelAncestorFormElementForTesting(GetElementById(doc, "unowned")),
       WebFormElement());
   EXPECT_EQ(
-      GetClosestAncestorFormElementForTesting(GetElementById(doc, "owned1")),
+      GetTopLevelAncestorFormElementForTesting(GetElementById(doc, "owned1")),
       GetFormElementById(doc, "outer_form"));
   EXPECT_EQ(
-      GetClosestAncestorFormElementForTesting(GetElementById(doc, "owned2")),
-      GetFormElementById(doc, "inner_form"));
+      GetTopLevelAncestorFormElementForTesting(GetElementById(doc, "owned2")),
+      GetFormElementById(doc, "outer_form"));
   EXPECT_EQ(
-      GetClosestAncestorFormElementForTesting(GetElementById(doc, "owned3")),
+      GetTopLevelAncestorFormElementForTesting(GetElementById(doc, "owned3")),
       GetFormElementById(doc, "outer_form"));
   EXPECT_EQ(WebFormControlElement(),
             GetFormElementById(doc, "non_existent_form", AllowNull(true)));

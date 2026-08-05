@@ -1648,26 +1648,21 @@ bool IsWebElementVisible(const WebElement& element) {
 }
 
 // Returns the topmost <form> ancestor of |node|, or an IsNull() pointer.
-//
-// Generally, WebFormElements must not be nested [1]. When parsing HTML, Blink
-// ignores nested form tags; the inner forms therefore never make it into the
-// DOM. However, nested forms can be created and added to the DOM dynamically,
-// in which case Blink associates each field with its closest ancestor.
-//
-// For some elements, Autofill determines the associated form without Blink's
-// help (currently, these are only iframe elements). For consistency with
-// Blink's behaviour, we associate them with their closest form element
-// ancestor.
-//
-// [1] https://html.spec.whatwg.org/multipage/forms.html#the-form-element
-WebFormElement GetClosestAncestorFormElement(WebNode n) {
+// See README.md for the relevant terminology.
+WebFormElement GetTopLevelAncestorFormElement(WebNode n) {
+  const bool should_return_closest_ancestor =
+      !base::FeatureList::IsEnabled(features::kAutofillFixIframeOwnership);
+  WebFormElement form;
   while (n) {
     if (HasTagName<kForm>(n)) {
-      return n.To<WebFormElement>();
+      form = n.To<WebFormElement>();
+      if (should_return_closest_ancestor) {
+        return form;
+      }
     }
-    n = n.ParentNode();
+    n = n.ParentOrShadowHostNode();
   }
-  return WebFormElement();
+  return form;
 }
 
 // Returns true if a DOM traversal (pre-order, depth-first) visits `x` before
@@ -1785,11 +1780,15 @@ bool IsRelevantChildFrame(const WebElement& element) {
 }
 
 // Returns the <iframe> elements that are associated with `form_element`.
-// An iframe is associated with `form_element` iff
+//
+// An iframe is owned by `form_element` iff it is in the light DOM and
 // - if `form_element` is non-null:
-//   `form_element` is the iframe's closest <form> ancestor
+//   `form_element` is the iframe's top-most <form> ancestor
 // - if `form_element` is null:
 //   the iframe has no <form> ancestor.
+//
+// The restriction to the light DOM is only because Blink currently does not
+// provide a shadow-including way of listing iframes.
 std::vector<WebElement> GetIframeElements(const WebDocument& document,
                                           const WebFormElement& form_element) {
   std::vector<WebElement> relevant_iframes;
@@ -1797,7 +1796,7 @@ std::vector<WebElement> GetIframeElements(const WebDocument& document,
       document.GetElementsByHTMLTagName(GetWebString<kIframe>());
   for (WebElement iframe = iframes.FirstItem(); iframe;
        iframe = iframes.NextItem()) {
-    if (GetClosestAncestorFormElement(iframe) == form_element &&
+    if (GetTopLevelAncestorFormElement(iframe) == form_element &&
         IsRelevantChildFrame(iframe)) {
       relevant_iframes.push_back(iframe);
     }
@@ -3172,8 +3171,8 @@ bool IsVisibleIframeForTesting(  // IN-TEST
   return IsVisibleIframe(iframe_element);
 }
 
-WebFormElement GetClosestAncestorFormElementForTesting(WebNode n) {  // IN-TEST
-  return GetClosestAncestorFormElement(n);
+WebFormElement GetTopLevelAncestorFormElementForTesting(WebNode n) {  // IN-TEST
+  return GetTopLevelAncestorFormElement(n);
 }
 
 bool IsDOMPredecessorForTesting(const WebNode& x,  // IN-TEST

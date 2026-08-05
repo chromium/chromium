@@ -341,7 +341,8 @@ std::u16string FindChildTextWithIgnoreListForTesting(
     const std::set<blink::WebNode>& divs_to_skip);
 std::vector<SelectOption> GetDataListOptionsForTesting(
     const blink::WebInputElement& element);
-blink::WebFormElement GetClosestAncestorFormElementForTesting(blink::WebNode n);
+blink::WebFormElement GetTopLevelAncestorFormElementForTesting(
+    blink::WebNode n);
 bool IsDOMPredecessorForTesting(const blink::WebNode& x,
                                 const blink::WebNode& y,
                                 const blink::WebNode& ancestor_hint);
