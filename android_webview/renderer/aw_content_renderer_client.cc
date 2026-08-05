@@ -172,9 +172,8 @@ bool AwContentRendererClient::HandleNavigation(
   mojo::AssociatedRemote<mojom::FrameHost> frame_host_remote;
   render_frame->GetRemoteAssociatedInterfaces()->GetInterface(
       &frame_host_remote);
-  frame_host_remote->ShouldOverrideUrlLoading(
-      url, has_user_gesture, is_redirect, is_outermost_main_frame,
-      &ignore_navigation);
+  frame_host_remote->ShouldOverrideUrlLoading(url, has_user_gesture,
+                                              &ignore_navigation);
 
   return ignore_navigation;
 }

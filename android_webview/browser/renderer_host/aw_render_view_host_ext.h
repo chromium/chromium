@@ -89,8 +89,6 @@ class AwRenderViewHostExt : public content::WebContentsObserver,
   void ShouldOverrideUrlLoading(
       const std::u16string& url,
       bool has_user_gesture,
-      bool is_redirect,
-      bool is_main_frame,
       ShouldOverrideUrlLoadingCallback callback) override;
 
   mojom::LocalMainFrame* GetLocalMainFrameRemote();

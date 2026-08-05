@@ -161,18 +161,20 @@ void AwRenderViewHostExt::ContentsSizeChanged(const gfx::Size& contents_size) {
 void AwRenderViewHostExt::ShouldOverrideUrlLoading(
     const std::u16string& url,
     bool has_user_gesture,
-    bool is_redirect,
-    bool is_main_frame,
     ShouldOverrideUrlLoadingCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  content::RenderFrameHost& render_frame_host =
+      frame_host_receivers_.CurrentTargetFrame();
 
   bool ignore_navigation = false;
   AwContentsClientBridge* client =
       AwContentsClientBridge::FromWebContents(web_contents());
   if (client) {
     if (!client->ShouldOverrideUrlLoading(
-            url, has_user_gesture, is_redirect, is_main_frame,
-            net::HttpRequestHeaders(), &ignore_navigation)) {
+            url, has_user_gesture, /*is_redirect=*/false,
+            render_frame_host.IsInPrimaryMainFrame(), net::HttpRequestHeaders(),
+            &ignore_navigation)) {
       // If the shouldOverrideUrlLoading call caused a java exception we should
       // always return immediately here!
       return;
