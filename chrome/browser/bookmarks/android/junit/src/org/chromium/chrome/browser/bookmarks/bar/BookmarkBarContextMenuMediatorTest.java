@@ -114,6 +114,38 @@ public class BookmarkBarContextMenuMediatorTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
+    public void testBookmarkItem_NtpFeatureEnabled() {
+        doReturn(JUnitTestGURLs.URL_1).when(mCurrentTab).getUrl();
+
+        BookmarkId bookmarkId =
+                mBookmarkModel.addBookmark(
+                        mBookmarkModel.getDesktopFolderId(), 0, "Bookmark", JUnitTestGURLs.URL_1);
+        BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
+        ModelList list = mMediator.buildContextMenuModelList(bookmarkItem, mBookmarkModel);
+
+        assertMenuStructure(
+                list,
+                enabled(R.string.contextmenu_open_in_new_tab),
+                enabled(R.string.contextmenu_open_in_new_window),
+                enabled(R.string.contextmenu_open_in_incognito_window),
+                divider(),
+                enabled(R.string.contextmenu_edit_bookmark_ellipsis),
+                enabled(R.string.bookmark_item_move),
+                divider(),
+                enabled(R.string.bookmark_item_delete),
+                divider(),
+                enabled(R.string.contextmenu_add_page),
+                enabled(R.string.contextmenu_add_folder),
+                divider(),
+                enabled(R.string.contextmenu_open_bookmarks_manager),
+                divider(),
+                enabled(R.string.contextmenu_always_hide_bookmarks_bar),
+                enabled(R.string.contextmenu_always_show_bookmarks_bar));
+    }
+
+    @Test
+    @SmallTest
     public void testFolder_Empty() {
         doReturn(JUnitTestGURLs.URL_1).when(mCurrentTab).getUrl();
 
@@ -139,6 +171,38 @@ public class BookmarkBarContextMenuMediatorTest {
                 divider(),
                 enabled(R.string.contextmenu_open_bookmarks_manager),
                 enabled(R.string.contextmenu_show_bookmarks_bar));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
+    public void testFolder_Empty_NtpFeatureEnabled() {
+        doReturn(JUnitTestGURLs.URL_1).when(mCurrentTab).getUrl();
+
+        BookmarkId folderId =
+                mBookmarkModel.addFolder(mBookmarkModel.getDesktopFolderId(), 0, "Empty Folder");
+        BookmarkItem folderItem = mBookmarkModel.getBookmarkById(folderId);
+        ModelList list = mMediator.buildContextMenuModelList(folderItem, mBookmarkModel);
+
+        assertMenuStructure(
+                list,
+                disabled(R.string.contextmenu_open_all),
+                disabled(R.string.contextmenu_open_all_in_new_window),
+                disabled(R.string.contextmenu_open_all_in_incognito_window),
+                disabled(R.string.contextmenu_open_all_in_new_tab_group),
+                divider(),
+                enabled(R.string.contextmenu_edit_bookmark_ellipsis),
+                enabled(R.string.bookmark_item_move),
+                divider(),
+                enabled(R.string.bookmark_item_delete),
+                divider(),
+                enabled(R.string.contextmenu_add_page),
+                enabled(R.string.contextmenu_add_folder),
+                divider(),
+                enabled(R.string.contextmenu_open_bookmarks_manager),
+                divider(),
+                enabled(R.string.contextmenu_always_hide_bookmarks_bar),
+                enabled(R.string.contextmenu_always_show_bookmarks_bar));
     }
 
     @Test
@@ -169,6 +233,39 @@ public class BookmarkBarContextMenuMediatorTest {
                 divider(),
                 enabled(R.string.contextmenu_open_bookmarks_manager),
                 enabled(R.string.contextmenu_show_bookmarks_bar));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
+    public void testFolder_SingleBookmark_NtpFeatureEnabled() {
+        doReturn(JUnitTestGURLs.URL_1).when(mCurrentTab).getUrl();
+
+        BookmarkId folderId =
+                mBookmarkModel.addFolder(mBookmarkModel.getDesktopFolderId(), 0, "Folder");
+        mBookmarkModel.addBookmark(folderId, 0, "Child Bookmark", JUnitTestGURLs.URL_1);
+        BookmarkItem folderItem = mBookmarkModel.getBookmarkById(folderId);
+        ModelList list = mMediator.buildContextMenuModelList(folderItem, mBookmarkModel);
+
+        assertMenuStructure(
+                list,
+                enabledPlural(R.plurals.contextmenu_open_all_plural, 1),
+                enabledPlural(R.plurals.contextmenu_open_all_in_new_window_plural, 1),
+                enabledPlural(R.plurals.contextmenu_open_all_in_incognito_window_plural, 1),
+                enabledPlural(R.plurals.contextmenu_open_all_in_new_tab_group_plural, 1),
+                divider(),
+                enabled(R.string.contextmenu_edit_bookmark_ellipsis),
+                enabled(R.string.bookmark_item_move),
+                divider(),
+                enabled(R.string.bookmark_item_delete),
+                divider(),
+                enabled(R.string.contextmenu_add_page),
+                enabled(R.string.contextmenu_add_folder),
+                divider(),
+                enabled(R.string.contextmenu_open_bookmarks_manager),
+                divider(),
+                enabled(R.string.contextmenu_always_hide_bookmarks_bar),
+                enabled(R.string.contextmenu_always_show_bookmarks_bar));
     }
 
     @Test
@@ -204,6 +301,40 @@ public class BookmarkBarContextMenuMediatorTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
+    public void testFolder_MultipleBookmarks_NtpFeatureEnabled() {
+        doReturn(JUnitTestGURLs.URL_1).when(mCurrentTab).getUrl();
+
+        BookmarkId folderId =
+                mBookmarkModel.addFolder(mBookmarkModel.getDesktopFolderId(), 0, "Folder");
+        mBookmarkModel.addBookmark(folderId, 0, "Child Bookmark 1", JUnitTestGURLs.URL_1);
+        mBookmarkModel.addBookmark(folderId, 1, "Child Bookmark 2", JUnitTestGURLs.URL_2);
+        BookmarkItem folderItem = mBookmarkModel.getBookmarkById(folderId);
+        ModelList list = mMediator.buildContextMenuModelList(folderItem, mBookmarkModel);
+
+        assertMenuStructure(
+                list,
+                enabledPlural(R.plurals.contextmenu_open_all_plural, 2),
+                enabledPlural(R.plurals.contextmenu_open_all_in_new_window_plural, 2),
+                enabledPlural(R.plurals.contextmenu_open_all_in_incognito_window_plural, 2),
+                enabledPlural(R.plurals.contextmenu_open_all_in_new_tab_group_plural, 2),
+                divider(),
+                enabled(R.string.contextmenu_edit_bookmark_ellipsis),
+                enabled(R.string.bookmark_item_move),
+                divider(),
+                enabled(R.string.bookmark_item_delete),
+                divider(),
+                enabled(R.string.contextmenu_add_page),
+                enabled(R.string.contextmenu_add_folder),
+                divider(),
+                enabled(R.string.contextmenu_open_bookmarks_manager),
+                divider(),
+                enabled(R.string.contextmenu_always_hide_bookmarks_bar),
+                enabled(R.string.contextmenu_always_show_bookmarks_bar));
+    }
+
+    @Test
+    @SmallTest
     public void testDesktopRootFolder_DisabledActions() {
         doReturn(JUnitTestGURLs.URL_1).when(mCurrentTab).getUrl();
 
@@ -228,6 +359,37 @@ public class BookmarkBarContextMenuMediatorTest {
                 divider(),
                 enabled(R.string.contextmenu_open_bookmarks_manager),
                 enabled(R.string.contextmenu_show_bookmarks_bar));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
+    public void testDesktopRootFolder_DisabledActions_NtpFeatureEnabled() {
+        doReturn(JUnitTestGURLs.URL_1).when(mCurrentTab).getUrl();
+
+        BookmarkItem desktopItem =
+                mBookmarkModel.getBookmarkById(mBookmarkModel.getDesktopFolderId());
+        ModelList list = mMediator.buildContextMenuModelList(desktopItem, mBookmarkModel);
+
+        assertMenuStructure(
+                list,
+                disabled(R.string.contextmenu_open_all),
+                disabled(R.string.contextmenu_open_all_in_new_window),
+                disabled(R.string.contextmenu_open_all_in_incognito_window),
+                disabled(R.string.contextmenu_open_all_in_new_tab_group),
+                divider(),
+                disabled(R.string.contextmenu_edit_bookmark_ellipsis),
+                disabled(R.string.bookmark_item_move),
+                divider(),
+                disabled(R.string.bookmark_item_delete),
+                divider(),
+                enabled(R.string.contextmenu_add_page),
+                enabled(R.string.contextmenu_add_folder),
+                divider(),
+                enabled(R.string.contextmenu_open_bookmarks_manager),
+                divider(),
+                enabled(R.string.contextmenu_always_hide_bookmarks_bar),
+                enabled(R.string.contextmenu_always_show_bookmarks_bar));
     }
 
     @Test
