@@ -223,7 +223,8 @@ enum class NotificationCatalogName {
   kFrozenUpdateNotification = 203,
   kDeviceCommandGeolocation = 204,
   kLocalAuthFactorsComplexity = 205,
-  kMaxValue = kLocalAuthFactorsComplexity
+  kIsolatedWebAppUpdate = 206,
+  kMaxValue = kIsolatedWebAppUpdate
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:NotificationCatalogName)
 

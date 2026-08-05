@@ -74,6 +74,10 @@ size_t FakeWebAppUiManager::GetNumWindowsForApp(const webapps::AppId& app_id) {
   return app_id_to_num_windows_map_[app_id];
 }
 
+void FakeWebAppUiManager::CloseAppWindows(const webapps::AppId& app_id) {
+  SetNumWindowsForApp(app_id, 0);
+}
+
 void FakeWebAppUiManager::NotifyOnAllAppWindowsClosed(
     const webapps::AppId& app_id,
     base::OnceClosure callback) {

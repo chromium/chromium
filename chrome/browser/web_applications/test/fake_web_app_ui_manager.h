@@ -62,7 +62,7 @@ class FakeWebAppUiManager : public WebAppUiManager {
   // WebAppUiManager:
   WebAppUiManagerImpl* AsImpl() override;
   size_t GetNumWindowsForApp(const webapps::AppId& app_id) override;
-  void CloseAppWindows(const webapps::AppId& app_id) override {}
+  void CloseAppWindows(const webapps::AppId& app_id) override;
   void NotifyOnAllAppWindowsClosed(const webapps::AppId& app_id,
                                    base::OnceClosure callback) override;
   bool CanAddAppToQuickLaunchBar() const override;

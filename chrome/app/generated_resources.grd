@@ -19642,6 +19642,17 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Manage permissions
       </message>
 
+    <!-- Isolated Web Apps pending update notification. -->
+      <message name="IDS_IWA_UPDATE_PENDING_NOTIFICATION_TITLE" desc="Title for the notification shown when an Isolated Web App update has been downloaded and is waiting for the app to restart.">
+        Update available for <ph name="APP_NAME">$1<ex>App Name</ex></ph>
+      </message>
+      <message name="IDS_IWA_UPDATE_PENDING_NOTIFICATION_MESSAGE" desc="Body text for the notification informing the user that an Isolated Web App update is ready to be applied by restarting the app, and warning about potential unsaved data loss.">
+        A new version (<ph name="VERSION">$1<ex>1.2.0</ex></ph>) is ready. Restart the app to apply the update. Unsaved data may be lost.
+      </message>
+      <message name="IDS_IWA_UPDATE_PENDING_NOTIFICATION_RESTART_BUTTON" meaning="button label" desc="Button label on the notification to restart the Isolated Web App and apply the pending update.">
+        Restart app
+      </message>
+
     <!-- Web App Protocol Handler Picker Dialog. -->
     <if expr="is_chromeos">
         <message name="IDS_PROTOCOL_HANDLER_PICKER_TITLE_SINGLE_APP" desc="Title for a dialog asking the user to confirm opening a URL in a

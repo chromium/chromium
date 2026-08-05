@@ -47,6 +47,7 @@
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/common/pref_names.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -66,6 +67,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_policy_util.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_notification_service.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #endif
 
@@ -376,6 +378,11 @@ void IsolatedWebAppUpdateManager::Start() {
   }
 
   has_started_ = true;
+#if BUILDFLAG(IS_CHROMEOS)
+  update_notification_service_ =
+      std::make_unique<IsolatedWebAppUpdateNotificationService>(*profile_,
+                                                                *provider_);
+#endif
   install_manager_observation_.Observe(&provider_->install_manager());
   runtime_data_changed_subscription_ =
       IwaRuntimeDataProvider::GetInstance().OnRuntimeDataChanged(
@@ -447,6 +454,9 @@ void IsolatedWebAppUpdateManager::Shutdown() {
   next_update_discovery_check_.Reset();
   task_queue_.Clear();
   update_apply_waiters_.clear();
+#if BUILDFLAG(IS_CHROMEOS)
+  update_notification_service_.reset();
+#endif
 }
 
 base::Value IsolatedWebAppUpdateManager::AsDebugValue() const {
@@ -709,6 +719,12 @@ void IsolatedWebAppUpdateManager::CreateUpdateApplyWaiter(
       base::BindOnce(&IsolatedWebAppUpdateManager::OnUpdateApplyWaiterFinished,
                      weak_factory_.GetWeakPtr(), url_info,
                      std::move(on_update_apply_task_created)));
+#if BUILDFLAG(IS_CHROMEOS)
+  if (provider_->ui_manager().GetNumWindowsForApp(app_id) > 0 &&
+      update_notification_service_) {
+    update_notification_service_->ShowUpdatePendingNotification(app_id);
+  }
+#endif
 }
 
 void IsolatedWebAppUpdateManager::OnUpdateDiscoverAndPrepareTaskCompleted(
@@ -758,6 +774,11 @@ void IsolatedWebAppUpdateManager::OnUpdateApplyWaiterFinished(
     base::OnceClosure on_update_apply_task_created,
     std::unique_ptr<ScopedKeepAlive> keep_alive,
     std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive) {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (update_notification_service_) {
+    update_notification_service_->CloseNotification(url_info.app_id());
+  }
+#endif
   update_apply_waiters_.erase(url_info.app_id());
 
   task_queue_.Push(std::make_unique<IsolatedWebAppUpdateApplyTask>(

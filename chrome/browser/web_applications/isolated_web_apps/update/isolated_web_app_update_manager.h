@@ -25,6 +25,7 @@
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_apply_update_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_apply_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_apply_waiter.h"
@@ -47,6 +48,9 @@ class SignedWebBundleId;
 namespace web_app {
 
 class IsolatedWebAppUrlInfo;
+#if BUILDFLAG(IS_CHROMEOS)
+class IsolatedWebAppUpdateNotificationService;
+#endif
 class WebAppProvider;
 
 namespace {
@@ -218,6 +222,12 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  IsolatedWebAppUpdateNotificationService* update_notification_service() {
+    return update_notification_service_.get();
+  }
+#endif
 
  private:
   // This queue manages update discovery and apply tasks. Tasks can be added to
@@ -412,6 +422,11 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
       local_dev_mode_update_discoverer_;
 
   base::ObserverList<Observer> task_observers_;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<IsolatedWebAppUpdateNotificationService>
+      update_notification_service_;
+#endif
 
   base::WeakPtrFactory<IsolatedWebAppUpdateManager> weak_factory_{this};
 
