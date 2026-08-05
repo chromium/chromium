@@ -6,13 +6,13 @@
 
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <set>
 #include <string_view>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
-#include "base/containers/adapters.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/input_method/mock_input_method_engine.h"
 #include "chrome/browser/browser_process.h"
@@ -111,7 +111,7 @@ class AccessibilityHandlerTest : public InProcessBrowserTest {
       const std::string& expected_listener,
       const std::string& expected_argument) {
     for (const std::unique_ptr<content::TestWebUI::CallData>& data :
-         base::Reversed(web_ui_.call_data())) {
+         std::views::reverse(web_ui_.call_data())) {
       std::string listener = data->arg1()->GetString();
       if (!data->arg2()->is_string()) {
         // Only look for listeners with a single string argument. Continue
@@ -133,7 +133,7 @@ class AccessibilityHandlerTest : public InProcessBrowserTest {
   bool GetWebUIListenerArgumentListValue(const std::string& expected_listener,
                                          const base::ListValue*& argument) {
     for (const std::unique_ptr<content::TestWebUI::CallData>& data :
-         base::Reversed(web_ui_.call_data())) {
+         std::views::reverse(web_ui_.call_data())) {
       std::string listener;
       if (data->arg1()->is_string()) {
         listener = data->arg1()->GetString();

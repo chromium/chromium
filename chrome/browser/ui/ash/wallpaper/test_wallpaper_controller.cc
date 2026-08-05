@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <ranges>
 #include <string>
 
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
@@ -14,7 +15,6 @@
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
-#include "base/containers/adapters.h"
 #include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -137,7 +137,7 @@ bool TestWallpaperController::SetDailyGooglePhotosWallpaperIdCache(
     const AccountId& account_id,
     const DailyGooglePhotosIdCache& ids) {
   id_cache_.ShrinkToSize(0);
-  std::ranges::for_each(base::Reversed(ids),
+  std::ranges::for_each(std::views::reverse(ids),
                         [&](uint id) { id_cache_.Put(std::move(id)); });
   return true;
 }
@@ -145,7 +145,7 @@ bool TestWallpaperController::SetDailyGooglePhotosWallpaperIdCache(
 bool TestWallpaperController::GetDailyGooglePhotosWallpaperIdCache(
     const AccountId& account_id,
     DailyGooglePhotosIdCache& ids_out) const {
-  std::ranges::for_each(base::Reversed(id_cache_),
+  std::ranges::for_each(std::views::reverse(id_cache_),
                         [&](uint id) { ids_out.Put(std::move(id)); });
   return true;
 }

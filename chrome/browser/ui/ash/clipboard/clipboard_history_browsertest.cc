@@ -22,7 +22,6 @@
 #include "ash/test/ash_test_util.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "base/compiler_specific.h"
-#include "base/containers/adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"

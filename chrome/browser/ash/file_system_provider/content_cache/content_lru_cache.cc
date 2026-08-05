@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ash/file_system_provider/content_cache/content_lru_cache.h"
 
-#include "base/containers/adapters.h"
+#include <ranges>
+
 #include "base/containers/hashing_lru_cache.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/cache_file_context.h"
 
@@ -15,7 +16,7 @@ ContentLRUCache::ContentLRUCache()
 ContentLRUCache::~ContentLRUCache() = default;
 
 void ContentLRUCache::Init(std::list<PathContextPair> initial_order) {
-  for (PathContextPair& pair : base::Reversed(initial_order)) {
+  for (PathContextPair& pair : std::views::reverse(initial_order)) {
     Put(std::move(pair));
   }
 }

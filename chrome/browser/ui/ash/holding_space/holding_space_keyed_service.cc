@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 
 #include <algorithm>
+#include <ranges>
 #include <set>
 
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
@@ -12,7 +13,6 @@
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
-#include "base/containers/adapters.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
@@ -262,7 +262,7 @@ void HoldingSpaceKeyedService::SetSuggestions(
   // holding space model to account for the fact that items are presented in
   // reverse-chronological order.
   std::vector<const HoldingSpaceItem*> existing_suggestions;
-  for (const auto& item : base::Reversed(holding_space_model_.items())) {
+  for (const auto& item : std::views::reverse(holding_space_model_.items())) {
     if (HoldingSpaceItem::IsSuggestionType(item->type())) {
       existing_suggestions.emplace_back(item.get());
       item_ids_to_remove.insert(item->id());
@@ -282,7 +282,7 @@ void HoldingSpaceKeyedService::SetSuggestions(
   // items which would ideally be recycled are replaced due to the fact that the
   // holding space model doesn't currently support reordering.
   std::vector<std::unique_ptr<HoldingSpaceItem>> items_to_add;
-  for (const auto& [type, file_path] : base::Reversed(suggestions)) {
+  for (const auto& [type, file_path] : std::views::reverse(suggestions)) {
     std::unique_ptr<HoldingSpaceItem> item;
     if (auto existing_item =
             std::ranges::find_if(existing_suggestions,

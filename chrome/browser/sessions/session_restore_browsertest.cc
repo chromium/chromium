@@ -8,13 +8,13 @@
 
 #include <array>
 #include <memory>
+#include <ranges>
 #include <set>
 #include <string_view>
 #include <vector>
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/containers/adapters.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -3358,7 +3358,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreWithIncompleteFileTest, LogsReadError) {
 
   // Ensure there is a restore event
   auto events = GetSessionServiceEvents(browser()->GetProfile());
-  for (const SessionServiceEvent& event : base::Reversed(events)) {
+  for (const SessionServiceEvent& event : std::views::reverse(events)) {
     // For normal shutdown (as this test triggers) kRestore should always occur
     // after kExit. This iterates in reverse, so that kRestore should occur
     // first.

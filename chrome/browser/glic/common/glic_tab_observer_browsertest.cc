@@ -4,11 +4,11 @@
 
 #include "chrome/browser/glic/common/glic_tab_observer.h"
 
+#include <ranges>
 #include <string>
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -128,7 +128,7 @@ class GlicTabEventCollector {
     WaitForEvent(base::BindRepeating([](const TestGlicTabEvent& event) {
       return std::holds_alternative<TestTabCreationEvent>(event);
     }));
-    for (auto& event : base::Reversed(events_)) {
+    for (auto& event : std::views::reverse(events_)) {
       if (const auto* c = std::get_if<TestTabCreationEvent>(&event)) {
         return *c;
       }
@@ -142,7 +142,7 @@ class GlicTabEventCollector {
     WaitForEvent(base::BindRepeating([](const TestGlicTabEvent& event) {
       return std::holds_alternative<TestTabActivationEvent>(event);
     }));
-    for (auto& event : base::Reversed(events_)) {
+    for (auto& event : std::views::reverse(events_)) {
       if (const auto* a = std::get_if<TestTabActivationEvent>(&event)) {
         return *a;
       }

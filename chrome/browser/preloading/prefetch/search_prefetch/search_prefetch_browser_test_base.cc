@@ -4,7 +4,8 @@
 
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_browser_test_base.h"
 
-#include "base/containers/adapters.h"
+#include <ranges>
+
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -383,7 +384,8 @@ SearchPrefetchBaseBrowserTest::HandleSearchSuggestRequest(
         }
     )";
 
-  for (const auto& suggestion_rule : base::Reversed(search_suggestion_rules_)) {
+  for (const auto& suggestion_rule :
+       std::views::reverse(search_suggestion_rules_)) {
     // Origin query matches a predefined rule.
     if (request.GetURL().spec().find(suggestion_rule.origin_query) ==
         std::string::npos)

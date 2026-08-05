@@ -6,11 +6,11 @@
 
 #include <algorithm>
 #include <memory>
+#include <ranges>
 #include <string_view>
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/containers/adapters.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -57,7 +57,7 @@ base::FilePath ReverseConcatPathComponents(
 
   base::FilePath::StringType result;
   result.reserve(total_size);
-  for (const base::FilePath& component : base::Reversed(components)) {
+  for (const base::FilePath& component : std::views::reverse(components)) {
     result.append(1, base::FilePath::kSeparators[0]);
     result.append(component.value());
   }
@@ -318,7 +318,7 @@ void RemoveAllDescendantTrackers(int64_t root_tracker_id,
 
   // Remove trackers in the reversed order.
   absl::flat_hash_set<std::string> affected_file_ids;
-  for (int64_t tracker_id : base::Reversed(to_be_removed)) {
+  for (int64_t tracker_id : std::views::reverse(to_be_removed)) {
     FileTracker tracker;
     index->GetFileTracker(tracker_id, &tracker);
     affected_file_ids.insert(tracker.file_id());

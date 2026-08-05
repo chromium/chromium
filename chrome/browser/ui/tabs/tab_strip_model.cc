@@ -11,6 +11,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <set>
 #include <string>
 #include <utility>
@@ -18,7 +19,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/adapters.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
@@ -1306,7 +1306,7 @@ void TabStripModel::CloseAllTabs() {
   closing_tabs.reserve(count());
   for (std::vector<tabs::TabInterface*> tabs =
            contents_data_->GetTabsRecursive();
-       tabs::TabInterface* tab : base::Reversed(tabs)) {
+       tabs::TabInterface* tab : std::views::reverse(tabs)) {
     closing_tabs.push_back(tab->GetContents());
   }
   CloseTabs(closing_tabs, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
@@ -4209,7 +4209,7 @@ std::vector<int> TabStripModel::GetSelectedUnpinnedTabs() {
 
   std::vector<int> indices;
 
-  for (int selected_index : base::Reversed(selected_indices)) {
+  for (int selected_index : std::views::reverse(selected_indices)) {
     if (selected_index >= pinned_tab_count) {
       // Insert to the start so it is in ascending order.
       indices.insert(indices.begin(), selected_index);

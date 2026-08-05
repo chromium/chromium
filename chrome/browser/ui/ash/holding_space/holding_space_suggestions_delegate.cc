@@ -5,9 +5,9 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_suggestions_delegate.h"
 
 #include <algorithm>
+#include <ranges>
 
 #include "ash/public/cpp/holding_space/holding_space_file.h"
-#include "base/containers/adapters.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -104,7 +104,7 @@ void HoldingSpaceSuggestionsDelegate::OnPersistenceRestored() {
   // items are iterated reversely so that the suggestions of the same category
   // in `suggestions_by_type_` follow the relevance order.
   DCHECK(suggestions_by_type_.empty());
-  for (const auto& item : base::Reversed(model()->items())) {
+  for (const auto& item : std::views::reverse(model()->items())) {
     // Skip if `item` is not a suggestion.
     if (HoldingSpaceItem::IsSuggestionType(item->type())) {
       suggestions_by_type_[item->type()].push_back(item->file().file_path);

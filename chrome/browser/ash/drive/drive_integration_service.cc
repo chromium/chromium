@@ -7,13 +7,13 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "base/check_deref.h"
-#include "base/containers/adapters.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -222,7 +222,7 @@ base::FilePath GetFullPath(internal::ResourceMetadataStorage* metadata_storage,
     return {};
   }
   base::FilePath path("/");
-  for (const std::string& component : base::Reversed(path_components)) {
+  for (const std::string& component : std::views::reverse(path_components)) {
     path = path.Append(component);
   }
   return path;

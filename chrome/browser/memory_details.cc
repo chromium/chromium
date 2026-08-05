@@ -5,10 +5,10 @@
 #include "chrome/browser/memory_details.h"
 
 #include <algorithm>
+#include <ranges>
 #include <set>
 #include <vector>
 
-#include "base/containers/adapters.h"
 #include "base/file_version_info.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
@@ -227,7 +227,7 @@ std::string MemoryDetails::ToLogString(bool include_tab_title) {
   std::sort(processes.begin(), processes.end());
   // Print from high to low.
   for (const ProcessMemoryInformation& process_info :
-       base::Reversed(processes)) {
+       std::views::reverse(processes)) {
     log += ProcessMemoryInformation::GetFullTypeNameInEnglish(
         process_info.process_type, process_info.renderer_type);
     // The title of a renderer may contain PII.

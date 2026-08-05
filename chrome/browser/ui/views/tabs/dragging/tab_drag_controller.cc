@@ -7,13 +7,13 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <set>
 #include <utility>
 #include <variant>
 
 #include "base/auto_reset.h"
 #include "base/check.h"
-#include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -2133,7 +2133,8 @@ void TabDragController::RestoreInitialSelection() {
   // the tabs from initial_selection_model_ as it was created with the tabs
   // still there.
   ui::ListSelectionModel selection_model = initial_selection_model_;
-  for (const TabDragData& data : base::Reversed(drag_data_.tab_drag_data_)) {
+  for (const TabDragData& data :
+       std::views::reverse(drag_data_.tab_drag_data_)) {
     if (data.source_model_index.has_value()) {
       selection_model.DecrementFrom(data.source_model_index.value());
     }
@@ -2519,7 +2520,7 @@ void TabDragController::BringWindowUnderPointToFront(
   // it in order to avoid stacking the browser window on top of the phantom
   // drag widget created by DragWindowController in a second display.
   for (aura::Window* window :
-       base::Reversed(browser_window->parent()->children())) {
+       std::views::reverse(browser_window->parent()->children())) {
     // If the iteration reached the recipient browser window then it is
     // already topmost and it is safe to return with no stacking change.
     if (window == browser_window) {

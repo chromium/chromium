@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/tab_strip_internals/tab_strip_internals_util.h"
 
+#include <ranges>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -368,7 +369,7 @@ mojom::NodePtr BuildTabCollectionTree(const TabStripModel* model) {
 
     // Walk the chain in a top-down fashion.
     mojom::Node* parent_node = root_node.get();
-    for (auto collection : base::Reversed(chain)) {
+    for (auto collection : std::views::reverse(chain)) {
       mojom::Node*& child_node = map_collection[collection];
 
       if (!child_node) {

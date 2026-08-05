@@ -11,6 +11,7 @@
 #include <functional>
 #include <initializer_list>
 #include <ostream>
+#include <ranges>
 #include <string_view>
 #include <type_traits>
 #include <utility>
@@ -18,7 +19,6 @@
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
-#include "base/containers/adapters.h"
 #include "base/containers/extend.h"
 #include "base/containers/flat_tree.h"
 #include "base/containers/span.h"
@@ -2161,7 +2161,7 @@ WebAppIconManager::FindIconMatchSmaller(
       }
       // Must iterate sizes from smallest to largest.
       const SortedSizesPx& sizes = web_app->stored_trusted_icon_sizes(purpose);
-      for (SquareSizePx size : base::Reversed(sizes)) {
+      for (SquareSizePx size : std::views::reverse(sizes)) {
         if (size <= max_size) {
           return IconSizeAndPurpose{size, purpose, /*is_trusted=*/true};
         }
@@ -2173,7 +2173,7 @@ WebAppIconManager::FindIconMatchSmaller(
   for (IconPurpose purpose : purposes) {
     // Must iterate sizes from largest to smallest.
     const SortedSizesPx& sizes = web_app->downloaded_icon_sizes(purpose);
-    for (SquareSizePx size : base::Reversed(sizes)) {
+    for (SquareSizePx size : std::views::reverse(sizes)) {
       if (size <= max_size)
         return IconSizeAndPurpose{size, purpose};
     }

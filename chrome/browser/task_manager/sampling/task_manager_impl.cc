@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -15,7 +16,6 @@
 
 #include "base/byte_size.h"
 #include "base/command_line.h"
-#include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notimplemented.h"
@@ -448,7 +448,7 @@ const TaskIdList& TaskManagerImpl::GetTaskIdsList() const {
       // Find the children of the tasks we just added, and push them into
       // |tasks_to_visit|, so that we visit them soon. Work in reverse order,
       // so that we visit them in forward order.
-      for (Task* parent : base::Reversed(current_group_tasks)) {
+      for (Task* parent : std::views::reverse(current_group_tasks)) {
         auto children_of_parent = children.find(parent);
         if (children_of_parent != children.end()) {
           // Sort children[parent], and then append in reversed order.

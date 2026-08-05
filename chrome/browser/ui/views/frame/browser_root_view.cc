@@ -6,12 +6,12 @@
 
 #include <cmath>
 #include <memory>
+#include <ranges>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -644,7 +644,7 @@ void BrowserRootView::NavigateToDroppedUrls(
     ++insertion_index;  // Additional URLs inserted to the right.
   }
 
-  for (const GURL& url : base::Reversed(urls)) {
+  for (const GURL& url : std::views::reverse(urls)) {
     NavigateParams params(browser_view_->browser(), url,
                           ui::PAGE_TRANSITION_LINK);
     params.tabstrip_index = insertion_index;

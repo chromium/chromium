@@ -8,6 +8,7 @@
 #include <concepts>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -15,7 +16,6 @@
 
 #include "base/callback_list.h"
 #include "base/check_is_test.h"
-#include "base/containers/adapters.h"
 #include "base/containers/map_util.h"
 #include "base/logging.h"
 #include "base/memory/raw_ref.h"
@@ -810,7 +810,7 @@ std::optional<BrowserAnimationController::MotionInfo>
 BrowserAnimationController::GetMotionInfo(BrowserAnimationGroup group,
                                           BrowserAnimationMotion motion) const {
   MotionInfo result;
-  for (const auto& provider : base::Reversed(providers_)) {
+  for (const auto& provider : std::views::reverse(providers_)) {
     auto spec = provider->GetMotionSpecification(group, motion);
     if (spec) {
       result.motion = std::move(*spec);
@@ -874,7 +874,7 @@ BrowserAnimationController::GetGroupData(BrowserAnimationGroup group) const {
 internal::BrowserAnimationSequenceParamsLookup
 BrowserAnimationController::GetAllSequenceParams(
     BrowserAnimationGroup group) const {
-  for (const auto& provider : base::Reversed(providers_)) {
+  for (const auto& provider : std::views::reverse(providers_)) {
     auto result = provider->GetAllSequenceParams(group);
     if (!result.empty()) {
       return result;
@@ -888,7 +888,7 @@ BrowserAnimationController::GetSequenceParams(
     BrowserAnimationGroup group,
     BrowserAnimationSequence sequence) const {
   // Find the first provider which specifies the sequence.
-  for (const auto& provider : base::Reversed(providers_)) {
+  for (const auto& provider : std::views::reverse(providers_)) {
     if (const auto params = provider->GetSequenceParams(group, sequence)) {
       return params;
     }

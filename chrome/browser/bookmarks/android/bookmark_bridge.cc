@@ -11,6 +11,7 @@
 #include <cmath>
 #include <memory>
 #include <queue>
+#include <ranges>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -22,7 +23,6 @@
 #include "base/android/jni_string.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/containers/adapters.h"
 #include "base/containers/stack.h"
 #include "base/functional/bind.h"
 #include "base/i18n/string_compare.h"
@@ -425,8 +425,9 @@ void BookmarkBridge::GetAllFoldersWithDepths(
   // Note the order to push folders to stack should be opposite to the order in
   // output.
   base::stack<std::pair<const BookmarkNode*, int>> stk;
-  for (const auto* bookmark : base::Reversed(bookmarks))
+  for (const auto* bookmark : std::views::reverse(bookmarks)) {
     stk.emplace(bookmark, 0);
+  }
 
   while (!stk.empty()) {
     const BookmarkNode* node = stk.top().first;
@@ -444,8 +445,9 @@ void BookmarkBridge::GetAllFoldersWithDepths(
     }
     std::stable_sort(bookmarks.begin(), bookmarks.end(),
                      BookmarkTitleComparer(this, collator.get()));
-    for (const auto* bookmark : base::Reversed(bookmarks))
+    for (const auto* bookmark : std::views::reverse(bookmarks)) {
       stk.emplace(bookmark, depth + 1);
+    }
   }
 }
 

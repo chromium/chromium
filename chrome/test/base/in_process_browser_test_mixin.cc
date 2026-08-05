@@ -4,7 +4,7 @@
 
 #include "chrome/test/base/in_process_browser_test_mixin.h"
 
-#include "base/containers/adapters.h"
+#include <ranges>
 
 InProcessBrowserTestMixin::InProcessBrowserTestMixin(
     InProcessBrowserTestMixinHost* host) {
@@ -101,7 +101,7 @@ void InProcessBrowserTestMixinHost::SetUpOnMainThread() {
 }
 
 void InProcessBrowserTestMixinHost::TearDownOnMainThread() {
-  for (InProcessBrowserTestMixin* mixin : base::Reversed(mixins_)) {
+  for (InProcessBrowserTestMixin* mixin : std::views::reverse(mixins_)) {
     mixin->TearDownOnMainThread();
   }
 }
@@ -113,13 +113,13 @@ void InProcessBrowserTestMixinHost::PostRunTestOnMainThread() {
 }
 
 void InProcessBrowserTestMixinHost::TearDownInProcessBrowserTestFixture() {
-  for (InProcessBrowserTestMixin* mixin : base::Reversed(mixins_)) {
+  for (InProcessBrowserTestMixin* mixin : std::views::reverse(mixins_)) {
     mixin->TearDownInProcessBrowserTestFixture();
   }
 }
 
 void InProcessBrowserTestMixinHost::TearDown() {
-  for (InProcessBrowserTestMixin* mixin : base::Reversed(mixins_)) {
+  for (InProcessBrowserTestMixin* mixin : std::views::reverse(mixins_)) {
     mixin->TearDown();
   }
 }

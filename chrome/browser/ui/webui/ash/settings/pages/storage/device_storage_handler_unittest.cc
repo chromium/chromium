@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/storage/device_storage_handler.h"
 
 #include <memory>
+#include <ranges>
 #include <string>
 #include <utility>
 #include <vector>
@@ -14,7 +15,6 @@
 #include "ash/constants/webui_url_constants.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "base/byte_size.h"
-#include "base/containers/adapters.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
@@ -232,7 +232,7 @@ class StorageHandlerTest : public testing::Test {
   // data.
   const base::Value* GetWebUICallbackMessage(const std::string& event_name) {
     for (const std::unique_ptr<content::TestWebUI::CallData>& data :
-         base::Reversed(web_ui_->call_data())) {
+         std::views::reverse(web_ui_->call_data())) {
       const std::string* name = data->arg1()->GetIfString();
       if (data->function_name() != "cr.webUIListenerCallback" || !name) {
         continue;
@@ -246,7 +246,7 @@ class StorageHandlerTest : public testing::Test {
 
   const base::Value* GetWebUIResponseMessage(const std::string& event_name) {
     for (const std::unique_ptr<content::TestWebUI::CallData>& data :
-         base::Reversed(web_ui_->call_data())) {
+         std::views::reverse(web_ui_->call_data())) {
       const std::string* name = data->arg1()->GetIfString();
       if (data->function_name() != "cr.webUIResponse" || !name ||
           *name != event_name) {
@@ -254,7 +254,7 @@ class StorageHandlerTest : public testing::Test {
       }
 
       // Assume that the data is stored in the last valid arg.
-      for (const auto& arg : base::Reversed(data->args())) {
+      for (const auto& arg : std::views::reverse(data->args())) {
         if (&arg != data->arg1()) {
           return &arg;
         }

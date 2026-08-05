@@ -8,6 +8,7 @@
 
 #include <cmath>
 #include <memory>
+#include <ranges>
 #include <set>
 #include <unordered_map>
 #include <utility>
@@ -17,7 +18,6 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/webui/file_manager/file_manager_ui.h"
 #include "base/command_line.h"
-#include "base/containers/adapters.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -1327,7 +1327,8 @@ void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
   event_status.item_count = status.sources.size();
 
   // Get the last error occurrence in the `sources`.
-  for (const io_task::EntryStatus& source : base::Reversed(status.sources)) {
+  for (const io_task::EntryStatus& source :
+       std::views::reverse(status.sources)) {
     if (source.error && source.error.value() != base::File::FILE_OK) {
       event_status.error_name = FileErrorToErrorName(source.error.value());
     }
@@ -1335,7 +1336,8 @@ void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
   // If we have no error on 'sources', check if an error came from 'outputs'.
   if (status.state == io_task::State::kError &&
       event_status.error_name.empty()) {
-    for (const io_task::EntryStatus& dest : base::Reversed(status.outputs)) {
+    for (const io_task::EntryStatus& dest :
+         std::views::reverse(status.outputs)) {
       if (dest.error && dest.error.value() != base::File::FILE_OK) {
         event_status.error_name = FileErrorToErrorName(dest.error.value());
       }

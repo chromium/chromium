@@ -14,13 +14,13 @@
 #include <iostream>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
-#include "base/containers/adapters.h"
 #include "base/containers/to_vector.h"
 #include "base/file_version_info.h"
 #include "base/files/file_enumerator.h"
@@ -477,8 +477,8 @@ void CallDispatchMethod(
     const std::wstring& method_name,
     const std::vector<base::win::ScopedVariant>& variant_params) {
   // IDispatch::Invoke() expects the parameters in reverse order.
-  std::vector<VARIANT> params = base::ToVector(base::Reversed(variant_params),
-                                               &base::win::ScopedVariant::Copy);
+  std::vector<VARIANT> params = base::ToVector(
+      std::views::reverse(variant_params), &base::win::ScopedVariant::Copy);
 
   DISPPARAMS dp = {};
   if (!params.empty()) {

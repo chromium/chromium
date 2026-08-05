@@ -8,9 +8,9 @@
 
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <vector>
 
-#include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -101,7 +101,7 @@ class SessionServiceTest : public testing::Test {
   std::optional<SessionServiceEvent> FindMostRecentEventOfType(
       SessionServiceEventLogType type) {
     auto events = GetSessionServiceEvents(profile_.get());
-    for (const SessionServiceEvent& event : base::Reversed(events)) {
+    for (const SessionServiceEvent& event : std::views::reverse(events)) {
       if (event.type == type)
         return event;
     }

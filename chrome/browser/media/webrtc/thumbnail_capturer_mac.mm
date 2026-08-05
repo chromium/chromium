@@ -12,13 +12,13 @@
 #include <cmath>
 #include <deque>
 #include <optional>
+#include <ranges>
 #include <unordered_map>
 
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/barrier_closure.h"
-#include "base/containers/adapters.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
@@ -290,7 +290,7 @@ void ScreenshotManagerCapturer::SelectSources(
   // first in the list are captured first. This way we make sure that the first
   // thumbnails in the view are captured first.
   bool new_sources_added = false;
-  for (ThumbnailCapturer::SourceId source_id : base::Reversed(ids)) {
+  for (ThumbnailCapturer::SourceId source_id : std::views::reverse(ids)) {
     if (!std::ranges::contains(selected_sources_, source_id)) {
       capture_queue_.push_front(source_id);
       new_sources_added = true;

@@ -4,11 +4,12 @@
 
 #include "chrome/browser/translate/android/translate_bridge.h"
 
+#include <ranges>
+
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check.h"
-#include "base/containers/adapters.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/tag_converters.h"
 #include "base/logging.h"
@@ -299,7 +300,7 @@ void TranslateBridge::PrependToAcceptLanguagesIfNecessary(
   absl::flat_hash_set<std::string> seen_languages;
   std::vector<std::string> output_list;
   for (const auto& [language_code, country_code] :
-       base::Reversed(unique_locale_list)) {
+       std::views::reverse(unique_locale_list)) {
     if (seen_languages.insert(language_code).second) {
       output_list.push_back(language_code);
     }

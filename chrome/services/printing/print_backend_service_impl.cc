@@ -7,12 +7,12 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/adapters.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
@@ -886,7 +886,7 @@ PrintBackendServiceImpl::GetDocumentHelper(int document_cookie) {
   // document, which would be at the end of the list.  So search the list
   // backwards to hopefully reduce the time to find the document.
   for (const std::unique_ptr<DocumentHelper>& helper :
-       base::Reversed(documents_)) {
+       std::views::reverse(documents_)) {
     if (helper->document_cookie() == document_cookie) {
       return helper.get();
     }

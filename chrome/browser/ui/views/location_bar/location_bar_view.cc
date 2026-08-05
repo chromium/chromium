@@ -6,10 +6,10 @@
 
 #include <algorithm>
 #include <memory>
+#include <ranges>
 #include <string_view>
 #include <utility>
 
-#include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -852,7 +852,8 @@ void LocationBarView::Layout(PassKey) {
                           /*edge_padding=*/trailing_decorations_edge_padding);
   add_trailing_decoration(ai_mode_hint_label_, /*intra_item_padding=*/0,
                           /*edge_padding=*/trailing_decorations_edge_padding);
-  for (ContentSettingImageView* view : base::Reversed(content_setting_views_)) {
+  for (ContentSettingImageView* view :
+       std::views::reverse(content_setting_views_)) {
     int intra_item_padding = kContentSettingIntraItemPadding;
     add_trailing_decoration(view, intra_item_padding,
                             /*edge_padding=*/trailing_decorations_edge_padding);

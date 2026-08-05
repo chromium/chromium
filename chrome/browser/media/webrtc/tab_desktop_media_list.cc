@@ -4,10 +4,10 @@
 
 #include "chrome/browser/media/webrtc/tab_desktop_media_list.h"
 
+#include <ranges>
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/task/bind_post_task.h"
@@ -202,8 +202,9 @@ void TabDesktopMediaList::Refresh(bool update_thumbnails) {
   favicon_hashes_ = new_favicon_hashes;
 
   // Sort tab sources by time. Most recent one first. Then update sources list.
-  for (const auto& [time, tab_source] : base::Reversed(tab_map))
+  for (const auto& [time, tab_source] : std::views::reverse(tab_map)) {
     sources.push_back(tab_source);
+  }
 
   UpdateSourcesList(sources);
 

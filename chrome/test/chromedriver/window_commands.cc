@@ -10,13 +10,13 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <ranges>
 #include <set>
 #include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
-#include "base/containers/adapters.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -2001,7 +2001,7 @@ Status ExecuteReleaseActions(Session* session,
                              std::unique_ptr<base::Value>* value,
                              Timeout* timeout) {
   for (const InputCancelListEntry& entry :
-       base::Reversed(session->input_cancel_list)) {
+       std::views::reverse(session->input_cancel_list)) {
     if (entry.key_event) {
       base::DictValue* pressed = entry.input_state->FindDict("pressed");
       if (!pressed->Find(entry.key_event->key))

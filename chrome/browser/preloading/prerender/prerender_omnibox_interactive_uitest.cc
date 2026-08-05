@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include <algorithm>
+#include <ranges>
 #include <string>
 #include <string_view>
 
-#include "base/containers/adapters.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
@@ -742,7 +742,7 @@ class PrerenderOmniboxSearchSuggestionUIBrowserTest
         }
       }])";
     for (const auto& suggestion_rule :
-         base::Reversed(search_suggestion_rules_)) {
+         std::views::reverse(search_suggestion_rules_)) {
       // Origin query matches a predefined rule.
       if (request.GetURL().spec().find(suggestion_rule.origin_query) !=
           std::string::npos) {

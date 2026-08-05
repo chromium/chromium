@@ -4,10 +4,10 @@
 
 #include <initializer_list>
 #include <memory>
+#include <ranges>
 #include <string_view>
 
 #include "base/cfi_buildflags.h"
-#include "base/containers/adapters.h"
 #include "base/containers/map_util.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -515,7 +515,7 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
                         const GURL& destination) {
     GURL url = destination;
 
-    for (const auto& host : base::Reversed(hosts)) {
+    for (const auto& host : std::views::reverse(hosts)) {
       url = https_server().GetURL(host, ServerRedirectPath(url));
     }
     return url;

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/vr/model/model.h"
 
-#include "base/containers/adapters.h"
 #include "base/notreached.h"
 
 namespace vr {

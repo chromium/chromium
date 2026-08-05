@@ -5,9 +5,9 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 
 #include <memory>
+#include <ranges>
 
 #include "ash/constants/web_app_id_constants.h"
-#include "base/containers/adapters.h"
 #include "base/files/file_path.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -52,8 +52,8 @@ TEST(WebAppTest, SortedSizesPxIsAscending) {
   std::vector<SquareSizePx> reversed(sorted.rbegin(), sorted.rend());
   ASSERT_THAT(reversed, ElementsAre(512, 256, 64, 32, 16));
 
-  std::vector<SquareSizePx> base_reversed(base::Reversed(sorted).begin(),
-                                          base::Reversed(sorted).end());
+  std::vector<SquareSizePx> base_reversed(std::views::reverse(sorted).begin(),
+                                          std::views::reverse(sorted).end());
   ASSERT_THAT(base_reversed, ElementsAre(512, 256, 64, 32, 16));
 }
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/media/webrtc/desktop_media_list_ash.h"
 
+#include <ranges>
 #include <utility>
 
 #include "ash/public/cpp/shell_window_ids.h"
@@ -11,7 +12,6 @@
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_properties.h"
-#include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "chrome/grit/generated_resources.h"
 #include "media/base/video_util.h"
@@ -66,7 +66,7 @@ void DesktopMediaListAsh::EnumerateWindowsForRoot(
   // The |container| has all the top-level windows in reverse order, e.g. the
   // most top-level window is at the end. So iterate children reversely to make
   // sure |sources| is in the expected order.
-  for (aura::Window* window : base::Reversed(container->children())) {
+  for (aura::Window* window : std::views::reverse(container->children())) {
     if (!window->IsVisible() || !window->CanFocus() ||
         window->GetProperty(ash::kOverviewUiKey) ||
         window->GetProperty(ash::kExcludeInMruKey)) {

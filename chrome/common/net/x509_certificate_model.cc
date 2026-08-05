@@ -4,11 +4,11 @@
 
 #include "chrome/common/net/x509_certificate_model.h"
 
+#include <ranges>
 #include <string_view>
 #include <variant>
 
 #include "base/check.h"
-#include "base/containers/adapters.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/i18n/number_formatting.h"
 #include "base/strings/strcat.h"
@@ -349,7 +349,7 @@ OptionalStringOrError RDNSequenceToStringMultiLine(
   // this one is multi-line, and prints in reverse order, and has a different
   // set of oids that it has printable names for, and different handling of
   // unprintable values, and IDN processing...
-  for (const bssl::RelativeDistinguishedName& rdn : base::Reversed(rdns)) {
+  for (const bssl::RelativeDistinguishedName& rdn : std::views::reverse(rdns)) {
     std::string rdn_value = ProcessRDN(rdn);
     if (rdn_value.empty())
       return Error();

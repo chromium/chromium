@@ -6,12 +6,12 @@
 
 #include <algorithm>
 #include <memory>
+#include <ranges>
 #include <utility>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/chrome_pref_names.h"
-#include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -44,7 +44,7 @@ base::UnguessableToken TokenFromString(const std::string& str) {
 
   uint64_t high = 0, low = 0;
   int count = 0;
-  std::ranges::for_each(base::Reversed(bytes), [&](auto byte) {
+  std::ranges::for_each(std::views::reverse(bytes), [&](auto byte) {
     auto* p = count < kBytesPerUint64 ? &low : &high;
     int pos = count < kBytesPerUint64 ? count : count - kBytesPerUint64;
     *p += static_cast<uint64_t>(byte) << (pos * 8);

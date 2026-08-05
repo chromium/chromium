@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_view_impl.h"
 
 #include <algorithm>
+#include <ranges>
 
-#include "base/containers/adapters.h"
 #include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/sharing_hub/fake_sharing_hub_bubble_controller.h"
@@ -184,7 +184,7 @@ TEST_F(SharingHubBubbleTest, ArrowKeysTraverseItemsBackward) {
 
   auto actions = GetActionButtons();
   ASSERT_GT(actions.size(), 0u);
-  for (auto* button : base::Reversed(actions)) {
+  for (auto* button : std::views::reverse(actions)) {
     SendKeyPress(bubble_widget(), ui::VKEY_UP);
     EXPECT_EQ(button, FocusedViewOf(bubble_widget()));
   }

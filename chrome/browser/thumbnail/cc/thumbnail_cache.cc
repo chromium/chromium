@@ -6,13 +6,13 @@
 
 #include <algorithm>
 #include <cmath>
+#include <ranges>
 #include <utility>
 #include <vector>
 
 #include "base/android/application_status_listener.h"
 #include "base/android/path_utils.h"
 #include "base/big_endian.h"
-#include "base/containers/adapters.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
@@ -459,7 +459,7 @@ void ThumbnailCache::MakeSpaceForNewItemIfNecessary(TabId tab_id) {
 
   if (!found_key_to_remove) {
     // 2. Find the least important id we can remove.
-    for (const TabId& id : base::Reversed(visible_ids_)) {
+    for (const TabId& id : std::views::reverse(visible_ids_)) {
       if (cache_.Get(id)) {
         key_to_remove = id;
         found_key_to_remove = true;

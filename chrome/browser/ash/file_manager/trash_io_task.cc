@@ -7,9 +7,9 @@
 #include <sys/xattr.h>
 
 #include <algorithm>
+#include <ranges>
 
 #include "ash/metrics/histogram_macros.h"
-#include "base/containers/adapters.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/i18n/time_formatting.h"
@@ -191,7 +191,7 @@ void TrashIOTask::UpdateTrashEntry(size_t source_idx) {
   // however in the case of nested directories, reverse lexicographical order is
   // preferred to ensure the closer parent path by depth is chosen.
   const trash::TrashPathsMap::reverse_iterator& trash_parent_path_it =
-      std::ranges::find_if(base::Reversed(free_space_map_),
+      std::ranges::find_if(std::views::reverse(free_space_map_),
                            [&source_path](const auto& it) {
                              return it.first.IsParent(source_path);
                            });

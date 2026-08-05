@@ -7,13 +7,13 @@
 #include <stddef.h>
 
 #include <memory>
+#include <ranges>
 #include <string>
 #include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
 
-#include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
@@ -191,7 +191,7 @@ void TestingOmniboxView::CheckUpdatePopupNotCalled() {
 std::optional<SkColor> TestingOmniboxView::GetLatestColorForRange(
     const gfx::Range& range) {
   // Iterate backwards to get the most recently applied color for |range|.
-  for (const auto& [color, other_range] : base::Reversed(range_colors_)) {
+  for (const auto& [color, other_range] : std::views::reverse(range_colors_)) {
     if (range == other_range) {
       return color;
     }
@@ -203,7 +203,7 @@ std::optional<std::pair<gfx::TextStyle, bool>>
 TestingOmniboxView::GetLatestStyleForRange(const gfx::Range& range) const {
   // Iterate backwards to get the most recently applied style for |range|.
   for (const auto& [style, value, other_range] :
-       base::Reversed(range_styles_)) {
+       std::views::reverse(range_styles_)) {
     if (range == other_range) {
       return std::make_pair(style, value);
     }

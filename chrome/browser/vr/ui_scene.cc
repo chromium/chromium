@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"

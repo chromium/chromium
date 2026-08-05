@@ -6,9 +6,9 @@
 
 #include <stddef.h>
 
+#include <ranges>
 #include <string_view>
 
-#include "base/containers/adapters.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
@@ -758,7 +758,7 @@ void TaskManagerView::EndSelectedProcess() {
   using SelectedIndices = ui::ListSelectionModel::SelectedIndices;
   SelectedIndices selection(tab_table_->selection_model().selected_indices());
   bool any_task_ended = false;
-  for (int index : base::Reversed(selection)) {
+  for (int index : std::views::reverse(selection)) {
     any_task_ended |= table_model_->KillTask(index);
   }
 

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <numeric>
+#include <ranges>
 #include <stack>
 #include <string>
 #include <type_traits>
@@ -1971,7 +1972,7 @@ void ReadAnythingAppModel::FlattenAXTree(ui::AXSerializableTree* tree) {
       children_to_push.push_back(&*it);
     }
     // Push children in reverse order for pre-order traversal.
-    for (ui::AXNode* child : base::Reversed(children_to_push)) {
+    for (ui::AXNode* child : std::views::reverse(children_to_push)) {
       stack.push(child);
     }
   }

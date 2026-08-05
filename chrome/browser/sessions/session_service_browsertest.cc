@@ -4,7 +4,8 @@
 
 #include "chrome/browser/sessions/session_service.h"
 
-#include "base/containers/adapters.h"
+#include <ranges>
+
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
@@ -34,7 +35,7 @@ class SessionServiceBrowserTest : public InProcessBrowserTest {
   std::optional<SessionServiceEvent> FindMostRecentEventOfType(
       SessionServiceEventLogType type) {
     auto events = GetSessionServiceEvents(browser()->GetProfile());
-    for (const SessionServiceEvent& event : base::Reversed(events)) {
+    for (const SessionServiceEvent& event : std::views::reverse(events)) {
       if (event.type == type) {
         return event;
       }

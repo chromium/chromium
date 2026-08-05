@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <vector>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
@@ -22,7 +23,6 @@
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
-#include "base/containers/adapters.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -812,7 +812,7 @@ class EventRewriterTestBase : public ChromeAshTestBase {
 
     // Send modifier key release events to unset rewriter'.s modifier flag
     // state.
-    for (const auto& modifier : base::Reversed(kModifierList)) {
+    for (const auto& modifier : std::views::reverse(kModifierList)) {
       if (!(extra_flags & modifier.flag)) {
         continue;
       }

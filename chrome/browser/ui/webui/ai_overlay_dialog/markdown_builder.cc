@@ -6,12 +6,12 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <ranges>
 #include <sstream>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
 
-#include "base/containers/adapters.h"
 #include "base/hash/hash.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -501,7 +501,7 @@ std::string MarkdownBuilder::FormatVideo(
 std::string MarkdownBuilder::GetListItemPrefix(
     const std::vector<const ContentNode*>& parent_chain,
     const ContentNode& node) {
-  for (const auto* it : base::Reversed(parent_chain)) {
+  for (const auto* it : std::views::reverse(parent_chain)) {
     const auto& list_node = *it;
     if (list_node.content_attributes().attribute_type() ==
         ContentAttributeType::CONTENT_ATTRIBUTE_ORDERED_LIST) {

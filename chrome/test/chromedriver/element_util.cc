@@ -6,9 +6,9 @@
 
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <utility>
 
-#include "base/containers/adapters.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -850,7 +850,7 @@ Status ScrollElementRegionIntoView(
   // If the element is in a frame, go up the frame chain (from the innermost
   // frame up to the web_view frame) and scroll each frame relative to its
   // parent frame, so that the region becomes visible in the parent frame.
-  auto frames = base::Reversed(session->frames);
+  auto frames = std::views::reverse(session->frames);
   auto end = std::ranges::find(frames, web_view->GetId(), &FrameInfo::frame_id);
   for (auto it = frames.begin(); it != end; ++it) {
     const FrameInfo& frame = *it;
@@ -891,7 +891,7 @@ Status GetElementLocationInViewCenter(Session* session,
   if (status.IsError())
     return status;
 
-  for (const FrameInfo& frame : base::Reversed(session->frames)) {
+  for (const FrameInfo& frame : std::views::reverse(session->frames)) {
     std::string frame_element_id;
     status = web_view->GetFrameOwnerElementId(
         frame.frame_id, frame.parent_frame_id, &frame_element_id);

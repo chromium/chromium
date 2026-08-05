@@ -4,7 +4,8 @@
 
 #include "chrome/browser/downgrade/snapshot_manager.h"
 
-#include "base/containers/adapters.h"
+#include <ranges>
+
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -407,7 +408,7 @@ TEST_F(SnapshotManagerTest, PurgeInvalidAndOldSnapshotsKeepsMaxValidSnapshots) {
   }
 
   // Only 3 valid snapshots remains
-  for (const base::FilePath& path : base::Reversed(valid_snapshot_paths)) {
+  for (const base::FilePath& path : std::views::reverse(valid_snapshot_paths)) {
     EXPECT_EQ(base::PathExists(path), max_number_of_snapshots != 0);
     EXPECT_EQ(!base::PathExists(deletion_directory.Append(path.BaseName())),
               max_number_of_snapshots != 0);
