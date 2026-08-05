@@ -220,12 +220,18 @@ class VideoCaptureControllerTest
         format.frame_size, base::TimeDelta());
     const int rotation = 0;
     const int frame_feedback_id = 0;
+    // SAFETY: VideoFrame allocates a single contiguous buffer across all planes
+    // starting at data(0). AllocationSize is used instead of data_span(0) to
+    // encompass the full contiguous buffer across all planes (e.g., Y, U, and
+    // V) rather than just plane 0.
+    auto data_span = UNSAFE_BUFFERS(
+        base::span(stub_frame->data(0),
+                   media::VideoFrame::AllocationSize(
+                       stub_frame->format(), stub_frame->coded_size())));
     device_client_->OnIncomingCapturedData(
-        stub_frame->data(0),
-        media::VideoFrame::AllocationSize(stub_frame->format(),
-                                          stub_frame->coded_size()),
-        format, color_space, rotation, false /* flip_y */, base::TimeTicks(),
-        base::TimeDelta(), /*capture_begin_timestamp=*/std::nullopt,
+        data_span, format, color_space, rotation, false /* flip_y */,
+        base::TimeTicks(), base::TimeDelta(),
+        /*capture_begin_timestamp=*/std::nullopt,
         /*metadata=*/std::nullopt, frame_feedback_id);
   }
 

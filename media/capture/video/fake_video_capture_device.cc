@@ -842,7 +842,7 @@ void OwnBufferFrameDeliverer::PaintAndDeliverNextFrame(
                                    frame_format.frame_size.height());
   metadata.device_scale_factor = 1.0f;
   client()->OnIncomingCapturedData(
-      buffer_.data(), frame_size, device_state()->format,
+      buffer_, device_state()->format,
       GetDefaultColorSpace(device_state()->format.pixel_format),
       0 /* rotation */, false /* flip_y */, now,
       CalculateTimeSinceFirstInvocation(now),
@@ -920,14 +920,13 @@ void JpegEncodingFrameDeliverer::PaintAndDeliverNextFrame(
   }
 
   jpeg_buffer_ = std::move(jpeg_buffer.value());
-  const size_t frame_size = jpeg_buffer_.size();
   base::TimeTicks now = base::TimeTicks::Now();
-  client()->OnIncomingCapturedData(
-      &jpeg_buffer_[0], frame_size, device_state()->format,
-      gfx::ColorSpace::CreateJpeg(), 0 /* rotation */, false /* flip_y */, now,
-      CalculateTimeSinceFirstInvocation(now),
-      /*capture_begin_timestamp=*/std::nullopt,
-      /*metadata=*/std::nullopt);
+  client()->OnIncomingCapturedData(jpeg_buffer_, device_state()->format,
+                                   gfx::ColorSpace::CreateJpeg(),
+                                   0 /* rotation */, false /* flip_y */, now,
+                                   CalculateTimeSinceFirstInvocation(now),
+                                   /*capture_begin_timestamp=*/std::nullopt,
+                                   /*metadata=*/std::nullopt);
 }
 
 GpuMemoryBufferFrameDeliverer::GpuMemoryBufferFrameDeliverer(

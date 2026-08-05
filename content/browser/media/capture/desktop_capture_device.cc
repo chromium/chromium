@@ -22,6 +22,7 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/lock.h"
@@ -878,10 +879,7 @@ void DesktopCaptureDevice::Core::OnCaptureResultLegacy(
   VLOG(2) << __func__ << " [output_size=(" << output_size.width() << "x"
           << output_size.height() << ")]";
 
-  size_t output_bytes = output_size.width() * output_size.height() *
-                        webrtc::DesktopFrame::kBytesPerPixel;
-  const uint8_t* output_data = nullptr;
-  webrtc::FourCC output_format = frame->pixel_format();
+  webrtc::DesktopFrame* returned_frame = nullptr;
 
   if (frame->size().width() <= 1 || frame->size().height() <= 1) {
     // On OSX We receive a 1x1 frame when the shared window is minimized. It
@@ -898,6 +896,7 @@ void DesktopCaptureDevice::Core::OnCaptureResultLegacy(
       output_frame_->SetFrameDataToBlack();
       output_frame_is_black_ = true;
     }
+    returned_frame = output_frame_.get();
   } else {
     // Scaling frame with odd dimensions to even dimensions will cause
     // blurring. See https://crbug.com/737278.
@@ -1032,8 +1031,7 @@ void DesktopCaptureDevice::Core::OnCaptureResultLegacy(
                         output_stride_v, output_rect.width(),
                         output_rect.height(), libyuv::kFilterBox);
 
-      output_data = output_frame_->data();
-      output_format = output_frame_->pixel_format();
+      returned_frame = output_frame_.get();
       output_frame_is_black_ = false;
     } else if (IsFrameUnpackedOrInverted(frame.get())) {
       // If |frame| is not packed top-to-bottom then create a packed
@@ -1047,17 +1045,24 @@ void DesktopCaptureDevice::Core::OnCaptureResultLegacy(
       output_frame_->CopyPixelsFrom(
           *frame, webrtc::DesktopVector(),
           webrtc::DesktopRect::MakeSize(frame->size()));
-      output_data = output_frame_->data();
-      output_format = output_frame_->pixel_format();
+      returned_frame = output_frame_.get();
       output_frame_is_black_ = false;
     } else {
       // If the captured frame matches the output size, we can return the pixel
       // data directly.
-      output_data = frame->data();
-      output_format = frame->pixel_format();
+      returned_frame = frame.get();
       output_frame_is_black_ = false;
     }
   }
+
+  CHECK(returned_frame);
+  const webrtc::FourCC output_format = returned_frame->pixel_format();
+  // SAFETY: DesktopFrame is backed by a contiguous buffer of stride * height
+  // bytes.
+  base::span<const uint8_t> output_data = UNSAFE_BUFFERS(base::span(
+      returned_frame->data(),
+      base::CheckMul(returned_frame->stride(), returned_frame->size().height())
+          .ValueOrDie<size_t>()));
 
   gfx::ColorSpace frame_color_space;
   if (!frame->icc_profile().empty()) {
@@ -1085,7 +1090,7 @@ void DesktopCaptureDevice::Core::OnCaptureResultLegacy(
   metadata.device_scale_factor = frame->device_scale_factor();
 
   client_->OnIncomingCapturedData(
-      output_data, output_bytes,
+      output_data,
       media::VideoCaptureFormat(
           gfx::Size(output_size.width(), output_size.height()),
           requested_frame_rate_, FourCCToVideoPixelFormat(output_format)),

@@ -725,9 +725,8 @@ void FileVideoCaptureDevice::OnCaptureTask() {
     // Leave the color space unset for compatibility purposes but this
     // information should be retrieved from the container when possible.
     client_->OnIncomingCapturedData(
-        ptz_frame.data(), ptz_frame.size(), ptz_format, gfx::ColorSpace(),
-        0 /* clockwise_rotation */, false /* flip_y */, current_time,
-        current_time - first_ref_time_,
+        ptz_frame, ptz_format, gfx::ColorSpace(), 0 /* clockwise_rotation */,
+        false /* flip_y */, current_time, current_time - first_ref_time_,
         /*capture_begin_timestamp=*/std::nullopt, VideoFrameMetadata{});
   }
 
