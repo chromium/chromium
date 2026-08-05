@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Process;
 import android.text.TextUtils;
 
 import androidx.browser.trusted.FileHandlingData;
@@ -474,8 +475,15 @@ public class WebAppLaunchHandler {
             try {
                 var caller = mActivity.getCurrentCaller();
                 if (caller != null) {
-                    return caller.checkContentUriPermission(uri, requestedPermission)
-                            == PackageManager.PERMISSION_GRANTED;
+                    if (caller.getUid() == Process.myUid()) {
+                        Log.d(
+                                TAG,
+                                "Caller is ourselves (trampoline launch). Falling back to session"
+                                        + " check.");
+                    } else {
+                        return caller.checkContentUriPermission(uri, requestedPermission)
+                                == PackageManager.PERMISSION_GRANTED;
+                    }
                 }
             } catch (Exception e) {
                 Log.w(TAG, "Failed to check caller's permission via getCurrentCaller.", e);
