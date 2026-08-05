@@ -1316,6 +1316,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3019738915977809060">Uložte si palubní lístek do Peněženky</translation>
 <translation id="3022959067768579802">Pokračovat v psaní</translation>
 <translation id="3024663005179499861">Chybný typ zásady</translation>
+<translation id="3027857899292697441">Chrome zjistil podrobnosti, které jsou běžné na webech spojených s phishingem, malwarem nebo podvody. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">Obrázek SVG</translation>
 <translation id="3030331669969285614">Tyto příznaky zabraňují změně, která narušuje zpětnou kompatibilitu (nebo takovouto změnu vrací zpět), a budou k dispozici pouze po omezenou dobu.</translation>
 <translation id="3033200136993730761">Adresa domů vám pomůže napříč službami Google – získáte například relevantnější výsledky ve Vyhledávání a trasy v Mapách Google. Svou adresu můžete upravit nebo smazat <ph name="BEGIN_LINK" />ve svém účtu Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
@@ -5070,6 +5071,7 @@ Další podrobnosti:
 <translation id="8814707942599948500">Obálka C8</translation>
 <translation id="881559332211266856">Aktualizace nápravného čísla</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Tab a poté Enter aktualizujete Chrome v nastavení Chromu</translation>
+<translation id="8816960833040967795">Na tomto webu buďte opatrní</translation>
 <translation id="8819155700324279105">Využijte další vrstvu ochrany proti online hrozbám</translation>
 <translation id="8819855907485254989">Uložte si jízdenku do Peněženky</translation>
 <translation id="8820817407110198400">Záložky</translation>

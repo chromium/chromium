@@ -1316,6 +1316,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3019738915977809060">Spara boardingkortet i Wallet</translation>
 <translation id="3022959067768579802">Fortsätt skriva</translation>
 <translation id="3024663005179499861">Felaktig policytyp</translation>
+<translation id="3027857899292697441">Chrome har upptäckt detaljer som är vanliga på webbplatser som är kopplade till nätfiske, skadlig kod eller bedrägerier. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">SVG-bild</translation>
 <translation id="3030331669969285614">Dessa flaggor förhindrar eller återställer en icke-bakåtkompatibel ändring och är endast tillgängliga under en begränsad tid.</translation>
 <translation id="3033200136993730761">Din hemadress kan hjälpa dig att få saker gjorda i Googles tjänster, till exempel mer relevanta sökresultat och vägbeskrivningar i Google Maps. Du kan redigera eller radera din adress <ph name="BEGIN_LINK" />i Google-kontot <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
@@ -5076,6 +5077,7 @@ Mer information:
 <translation id="8814707942599948500">C8-kuvert</translation>
 <translation id="881559332211266856">Uppdatera ditt Redress Number</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryck på Tabb och sedan på Retur om du vill uppdatera Chrome i inställningarna för Chrome</translation>
+<translation id="8816960833040967795">Var försiktig på den här webbplatsen</translation>
 <translation id="8819155700324279105">Lägg till ett extra skydd mot hot online</translation>
 <translation id="8819855907485254989">Spara åkbiljetten i Wallet</translation>
 <translation id="8820817407110198400">Bokmärken</translation>

@@ -1316,6 +1316,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3019738915977809060">Save boarding pass to Wallet</translation>
 <translation id="3022959067768579802">Continue writing</translation>
 <translation id="3024663005179499861">Wrong policy type</translation>
+<translation id="3027857899292697441">Chrome has detected details that are common on sites associated with phishing, malware or scams. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">SVG image</translation>
 <translation id="3030331669969285614">These flags prevent or revert a breaking change and will only be available for a limited time.</translation>
 <translation id="3033200136993730761">Your home address can help you get things done across Google services, like more relevant search results and directions in Google Maps. You can edit or delete your address <ph name="BEGIN_LINK" />in your Google Account <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
@@ -5075,6 +5076,7 @@ Additional details:
 <translation id="8814707942599948500">Envelope C8</translation>
 <translation id="881559332211266856">Update redress number</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, press tab, then enter to update Chrome from your Chrome settings</translation>
+<translation id="8816960833040967795">Be careful on this site</translation>
 <translation id="8819155700324279105">Add an extra layer of protection against online threats</translation>
 <translation id="8819855907485254989">Save transport ticket to Wallet</translation>
 <translation id="8820817407110198400">Bookmarks</translation>

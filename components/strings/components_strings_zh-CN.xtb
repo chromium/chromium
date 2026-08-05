@@ -1316,6 +1316,7 @@
 <translation id="3019738915977809060">将登机牌保存到 Google 钱包</translation>
 <translation id="3022959067768579802">继续撰写</translation>
 <translation id="3024663005179499861">策略类型有误</translation>
+<translation id="3027857899292697441">Chrome 检测到此网站具有钓鱼式攻击网站、恶意软件网站或欺诈网站的常见特征。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">SVG 图片</translation>
 <translation id="3030331669969285614">这些标记可以防止或还原破坏性更改，并且只能在有限的时间内使用。</translation>
 <translation id="3033200136993730761">保留住址可方便您畅享各项 Google 服务，例如在 Google 地图中获得更精确的搜索结果和路线。您可在 <ph name="BEGIN_LINK" />Google 账号 <ph name="ACCOUNT" /><ph name="END_LINK" /> 中修改或删除地址。</translation>
@@ -5071,6 +5072,7 @@
 <translation id="8814707942599948500">C8 信封</translation>
 <translation id="881559332211266856">更新身份纠正识别号</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可前往 Chrome 设置以更新 Chrome</translation>
+<translation id="8816960833040967795">请谨慎访问此网站</translation>
 <translation id="8819155700324279105">多一层保障，抵御网络威胁</translation>
 <translation id="8819855907485254989">将交通票券保存到钱包</translation>
 <translation id="8820817407110198400">书签</translation>

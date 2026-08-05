@@ -1316,6 +1316,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3019738915977809060">Stoor instapkaart in Wallet</translation>
 <translation id="3022959067768579802">Hou aan skryf</translation>
 <translation id="3024663005179499861">Verkeerde beleidtipe</translation>
+<translation id="3027857899292697441">Chrome het besonderhede bespeur wat algemeen is op werwe wat met uitvissing, wanware of swendelary geassosieer word. <ph name="BEGIN_LINK" />Meer inligting<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">SVG-prent</translation>
 <translation id="3030331669969285614">Hierdie vlae verhoed of stel ’n breekverandering terug en sal net vir ’n beperkte tyd beskikbaar wees.</translation>
 <translation id="3033200136993730761">Jou huisadres kan help om dinge in Google-dienste gedoen te kry, soos meer relevante soekresultate en rigtingaanwysings in Google Maps. Jy kan jou adres <ph name="BEGIN_LINK" />in jou Google-rekening <ph name="ACCOUNT" /><ph name="END_LINK" /> wysig of uitvee.</translation>
@@ -5074,6 +5075,7 @@ Bykomende besonderhede:
 <translation id="8814707942599948500">Koevert C8</translation>
 <translation id="881559332211266856">Dateer regstelnommer op</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om Chrome vanuit jou Chrome-instellings op te dateer</translation>
+<translation id="8816960833040967795">Wees versigtig op hierdie werf</translation>
 <translation id="8819155700324279105">Voeg ’n ekstra laag beskerming teen aanlynbedreigings by</translation>
 <translation id="8819855907485254989">Stoor vervoerkaartjie in Wallet</translation>
 <translation id="8820817407110198400">Boekmerke</translation>

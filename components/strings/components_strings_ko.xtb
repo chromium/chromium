@@ -1316,6 +1316,7 @@
 <translation id="3019738915977809060">월렛에 탑승권 저장</translation>
 <translation id="3022959067768579802">계속 작성</translation>
 <translation id="3024663005179499861">잘못된 정책 유형</translation>
+<translation id="3027857899292697441">Chrome에서 피싱, 멀웨어 또는 사기와 관련된 사이트에서 흔히 볼 수 있는 요소를 감지했습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">SVG 이미지</translation>
 <translation id="3030331669969285614">이 플래그는 브레이킹 체인지를 방지하거나 되돌리며 제한된 기간 동안만 사용할 수 있습니다.</translation>
 <translation id="3033200136993730761">집 주소를 입력하면 더 관련성 높은 Google 검색 결과를 확인하고 Google 지도에서 경로 안내를 받는 등 Google 서비스 전반에서 작업을 처리하는 데 도움이 됩니다. <ph name="BEGIN_LINK" />Google 계정(<ph name="ACCOUNT" />)에서<ph name="END_LINK" /> 주소를 수정하거나 삭제할 수 있습니다.</translation>
@@ -5074,6 +5075,7 @@
 <translation id="8814707942599948500">봉투 C8</translation>
 <translation id="881559332211266856">리드레스 넘버 업데이트</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome 설정에서 Chrome을 업데이트하려면 Tab을 누른 다음 Enter 누르기</translation>
+<translation id="8816960833040967795">이 사이트를 주의하세요</translation>
 <translation id="8819155700324279105">온라인 위협에 대비한 보호 단계 추가</translation>
 <translation id="8819855907485254989">월렛에 대중교통 티켓 저장</translation>
 <translation id="8820817407110198400">북마크</translation>

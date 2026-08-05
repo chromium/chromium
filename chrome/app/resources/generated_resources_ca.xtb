@@ -1551,6 +1551,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2198625180564913276">S'està afegint el perfil. Aquest procés pot tardar uns minuts.</translation>
 <translation id="2198712775285959645">Edita</translation>
 <translation id="2199298570273670671">Error</translation>
+<translation id="220006241671843310">Tria si vols que Chrome utilitzi models d'IA que s'executen directament al dispositiu</translation>
 <translation id="2200094388063410062">Correu electrònic</translation>
 <translation id="2200781749203116929">Registres del sistema de ChromeOS</translation>
 <translation id="2202391868799679245">Activa les tecles de drecera</translation>
@@ -5204,7 +5205,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="4963603093937263654">Assegura't que les notificacions estiguin activades a <ph name="DEVICE_NAME" /></translation>
 <translation id="4963789650715167449">Suprimeix la pestanya actual</translation>
 <translation id="4964455510556214366">Disposició</translation>
-<translation id="4964544790384916627">Ancora la finestra</translation>
+<translation id="4964544790384916627">Acobla la finestra</translation>
 <translation id="4964673849688379040">S'està comprovant…</translation>
 <translation id="4966972803217407697">Estàs en mode d'incògnit</translation>
 <translation id="4967227914555989138">Afegeix una nota</translation>

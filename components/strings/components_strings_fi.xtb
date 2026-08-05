@@ -1316,6 +1316,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3019738915977809060">Tallenna tarkistuskortti Walletiin</translation>
 <translation id="3022959067768579802">Jatka kirjoittamista</translation>
 <translation id="3024663005179499861">Väärä käytäntötyyppi</translation>
+<translation id="3027857899292697441">Chrome on havainnut tietoja, jotka ovat yleisiä tietojenkalasteluun, haittaohjelmiin tai huijauksiin liittyvillä sivustoilla. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">SVG-kuva</translation>
 <translation id="3030331669969285614">Ilmoitukset estävät tai kumoavat virheen aiheuttavan muutoksen, ja ne ovat saatavilla vain rajoitetun ajan.</translation>
 <translation id="3033200136993730761">Kotiosoitteen avulla voit saada enemmän aikaan Googlen palveluissa, esimerkiksi osuvampia hakutuloksia ja reittiohjeita Google Mapsissa. Voit muokata tai poistaa osoitteen <ph name="BEGIN_LINK" />Google-tilillä (<ph name="ACCOUNT" />)<ph name="END_LINK" />.</translation>
@@ -5077,6 +5078,7 @@ Lisätietoja:
 <translation id="8814707942599948500">Kirjekuori C8</translation>
 <translation id="881559332211266856">Päivitä oikaisunumero</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, päivitä Chrome sen asetuksista painamalla sarkainta ja sitten Enter</translation>
+<translation id="8816960833040967795">Ole varovainen tällä sivustolla</translation>
 <translation id="8819155700324279105">Lisäsuojaus verkkouhkia vastaan</translation>
 <translation id="8819855907485254989">Tallenna matkalippu Walletiin</translation>
 <translation id="8820817407110198400">Kirjanmerkit</translation>

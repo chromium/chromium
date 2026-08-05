@@ -1316,6 +1316,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3019738915977809060">Bordkarte in Wallet speichern</translation>
 <translation id="3022959067768579802">Weiter schreiben</translation>
 <translation id="3024663005179499861">Falscher Richtlinientyp</translation>
+<translation id="3027857899292697441">Chrome hat Details erkannt, die häufig auf Websites vorkommen, die mit Phishing, Malware oder Betrug in Verbindung gebracht werden. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">SVG-Bild</translation>
 <translation id="3030331669969285614">Diese Flags verhindern eine funktionsgefährdende Änderung oder machen sie rückgängig und sind nur für begrenzte Zeit verfügbar.</translation>
 <translation id="3033200136993730761">Mit deiner Privatadresse kannst du Google-Dienste besser nutzen, z. B. relevantere Suchergebnisse und Wegbeschreibungen in Google Maps erhalten. Du kannst deine Adresse <ph name="BEGIN_LINK" />in deinem Google-Konto <ph name="ACCOUNT" /><ph name="END_LINK" /> bearbeiten oder löschen.</translation>
@@ -1784,7 +1785,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um schnell eine neue Präsentation in Google Präsentationen zu erstellen</translation>
 <translation id="3727309136762649052">Namespace</translation>
 <translation id="3727850735097852673">Wenn du den Google Passwortmanager mit dem macOS-Schlüsselbund verwenden möchtest, starte Chrome neu und erlaube den Zugriff auf den Schlüsselbund. Deine Tabs werden nach dem Neustart wieder geöffnet.</translation>
-<translation id="3728173127485570463">Der Chrome-Browser benötigt deinen Fingerabdruck nicht mehr, um Passwörter automatisch auszufüllen</translation>
+<translation id="3728173127485570463">Der Chrome-Browser benötigt deinen Fingerabdruck nicht mehr, um Passwörter automatisch einzutragen</translation>
 <translation id="3736564442532774454">Der Chrome-Browser versucht, deine vertraulichen Daten auf <ph name="APP_NAME" /> auszufüllen.</translation>
 <translation id="3738166223076830879">Dein Browser wird von deinem Administrator verwaltet.</translation>
 <translation id="3739842843727261045">Mit „Mag ich“ gibst du an, dass dir diese Ergebnisse gefallen.</translation>
@@ -5074,6 +5075,7 @@ Weitere Details:
 <translation id="8814707942599948500">Umschlag C8</translation>
 <translation id="881559332211266856">Redress Number aktualisieren</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um Chrome über die Chrome-Einstellungen zu aktualisieren</translation>
+<translation id="8816960833040967795">Bei dieser Website ist Vorsicht geboten</translation>
 <translation id="8819155700324279105">Du kannst dich durch zusätzliche Schutzmaßnahmen besser vor Onlinebedrohungen schützen lassen</translation>
 <translation id="8819855907485254989">Fahrkarte in Wallet speichern</translation>
 <translation id="8820817407110198400">Lesezeichen</translation>
@@ -5268,7 +5270,7 @@ Weitere Details:
 <translation id="9138037198177304356">Benachrichtigungen zulässig</translation>
 <translation id="913846191326613072">Wenn Tabs geteilt werden, werden ihre Inhalte und URLs an Google gesendet.</translation>
 <translation id="9139318394846604261">Shopping</translation>
-<translation id="9140198744651252040">Der Chrome-Browser möchte den Fingerabdruck zum automatischen Ausfüllen von Passwörtern verwenden</translation>
+<translation id="9140198744651252040">Der Chrome-Browser möchte den Fingerabdruck zum automatischen Eintragen von Passwörtern verwenden</translation>
 <translation id="9141013498910525015">Adressen verwalten</translation>
 <translation id="9141435142213469335">Adresse mit weiteren Informationen speichern</translation>
 <translation id="9141510259469546089">Mindestkaufbetrag: <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>

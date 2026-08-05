@@ -1317,6 +1317,7 @@
 <translation id="3019738915977809060">Wallet-এ বোর্ডিং পাস সেভ করুন</translation>
 <translation id="3022959067768579802">লেখা চালিয়ে যান</translation>
 <translation id="3024663005179499861">নীতির ভুল প্রকার</translation>
+<translation id="3027857899292697441">Chrome এমন বিবরণ শনাক্ত করেছে যা সাধারণত ফিশিং, ম্যালওয়্যার বা স্ক্যামের সাথে যুক্ত সাইটে থাকে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">SVG ছবি</translation>
 <translation id="3030331669969285614">এইসব ফ্ল্যাগ ব্রেকিং পরিবর্তন থেকে রক্ষা করে অথবা তার অভিমুখ পরিবর্তন করে এবং শুধুমাত্র সীমিত সময়ের জন্য এটি উপলভ্য থাকে।</translation>
 <translation id="3033200136993730761">আপনার বাড়ির ঠিকানা Google পরিষেবা জুড়ে বিভিন্ন কাজে আপনাকে সাহায্য করতে পারে, যেমন আরও বেশি প্রাসঙ্গিক সার্চ ফলাফল এবং Google Maps-এ আরও দিকনির্দেশ পাওয়া। আপনি<ph name="BEGIN_LINK" />নিজের Google অ্যাকাউন্ট <ph name="ACCOUNT" /><ph name="END_LINK" /> থেকে ঠিকানা এডিট করতে বা মুছে ফেলতে পারবেন।</translation>
@@ -5075,6 +5076,7 @@
 <translation id="8814707942599948500">এনভেলপ C8</translation>
 <translation id="881559332211266856">রিড্রেস নম্বর আপডেট করা</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপনার Chrome সেটিংসে Chrome আপডেট করতে, প্রথমে Tab আর তারপরে Enter প্রেস করুন</translation>
+<translation id="8816960833040967795">এই সাইট সম্পর্কে সতর্ক থাকুন</translation>
 <translation id="8819155700324279105">অনলাইন ঝুঁকির বিরুদ্ধে অতিরিক্ত সুরক্ষার স্তর যোগ করুন</translation>
 <translation id="8819855907485254989">Wallet-এ ট্রান্সপোর্ট টিকিট সেভ করুন</translation>
 <translation id="8820817407110198400">Bookmarks</translation>

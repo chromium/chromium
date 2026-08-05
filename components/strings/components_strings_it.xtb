@@ -1316,6 +1316,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3019738915977809060">Salva la carta d'imbarco su Wallet</translation>
 <translation id="3022959067768579802">Continua a scrivere</translation>
 <translation id="3024663005179499861">Tipo di policy errato</translation>
+<translation id="3027857899292697441">Chrome ha rilevato dettagli comuni su siti associati a phishing, malware o frodi. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">Immagine SVG</translation>
 <translation id="3030331669969285614">Questi flag impediscono o ripristinano una modifica che provoca un errore e saranno disponibili solo per un periodo di tempo limitato.</translation>
 <translation id="3033200136993730761">Il tuo indirizzo di casa può aiutarti a svolgere attività sui servizi Google, ad esempio a ricevere risultati di ricerca più pertinenti e indicazioni stradali in Google Maps. Puoi modificare o eliminare il tuo indirizzo <ph name="BEGIN_LINK" />nel tuo Account Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
@@ -5071,6 +5072,7 @@ Ulteriori dettagli:
 <translation id="8814707942599948500">Busta C8</translation>
 <translation id="881559332211266856">Aggiorna Redress Number</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab poi Invio per aggiornare Chrome dalle relative impostazioni</translation>
+<translation id="8816960833040967795">Fai attenzione su questo sito</translation>
 <translation id="8819155700324279105">Aggiungi un ulteriore livello di protezione dalle minacce online</translation>
 <translation id="8819855907485254989">Salva il biglietto del trasporto pubblico su Wallet</translation>
 <translation id="8820817407110198400">Preferiti</translation>

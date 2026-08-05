@@ -1316,6 +1316,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3019738915977809060">Spremite ukrcajnu propusnicu u Wallet</translation>
 <translation id="3022959067768579802">Nastavite pisati</translation>
 <translation id="3024663005179499861">Pogrešna vrsta pravila</translation>
+<translation id="3027857899292697441">Chrome je otkrio pojedinosti koje su uobičajene na web-lokacijama povezanim s krađom identiteta, zlonamjernim softverom ili prijevarama. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">SVG slika</translation>
 <translation id="3030331669969285614">Te oznake sprječavaju ili poništavaju potencijalno štetne izmjene i bit će dostupne samo ograničeno vrijeme.</translation>
 <translation id="3033200136993730761">Pomoću kućne adrese možete obaviti zadatke na Googleovim uslugama, primjerice dobiti relevantnije rezultate pretraživanja i upute na Google kartama. Adresu možete urediti ili izbrisati <ph name="BEGIN_LINK" />na svom Google računu <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
@@ -5075,6 +5076,7 @@ Dodatne pojedinosti:
 <translation id="8814707942599948500">Omotnica C8</translation>
 <translation id="881559332211266856">Ažurirajte broj za rješavanje pritužbi</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste ažurirali Chrome iz postavki Chromea</translation>
+<translation id="8816960833040967795">Budite oprezni na ovoj web-lokaciji</translation>
 <translation id="8819155700324279105">Dodajte još jednu razinu zaštite od online prijetnji</translation>
 <translation id="8819855907485254989">Spremite kartu za prijevoz u Wallet</translation>
 <translation id="8820817407110198400">Oznake</translation>

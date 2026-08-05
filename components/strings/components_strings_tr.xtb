@@ -1316,6 +1316,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3019738915977809060">Biniş kartını Cüzdan'a kaydedin</translation>
 <translation id="3022959067768579802">Yazmaya devam edin</translation>
 <translation id="3024663005179499861">Yanlış politika türü</translation>
+<translation id="3027857899292697441">Chrome, kimlik avı, kötü amaçlı yazılım veya dolandırıcılıkla ilişkili sitelerde yaygın olan ayrıntılar tespit etti. <ph name="BEGIN_LINK" />Daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
 <translation id="3027915437837548462">SVG Resmi</translation>
 <translation id="3030331669969285614">Zarar veren bir değişikliği önleyen ya da geri alan bu flag'ler yalnızca sınırlı bir süre boyunca kullanılabilir.</translation>
 <translation id="3033200136993730761">Ev adresiniz, Google hizmetlerinde işlerinizi halletmenize yardımcı olabilir. Örneğin, daha alakalı Arama sonuçları ve Google Haritalar'da daha doğru yol tarifleri alabilirsiniz. Adresinizi <ph name="BEGIN_LINK" />Google Hesabınızda (<ph name="ACCOUNT" />)<ph name="END_LINK" /> düzenleyebilir veya silebilirsiniz.</translation>
@@ -5076,6 +5077,7 @@ Ek ayrıntılar:
 <translation id="8814707942599948500">Zarf C8</translation>
 <translation id="881559332211266856">Redress numarasını güncelleyin</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ayarlarınızdan Chrome'u güncellemek için Sekme'ye, sonra Enter'a basın</translation>
+<translation id="8816960833040967795">Bu sitede dikkatli olun</translation>
 <translation id="8819155700324279105">İnternet ortamındaki tehditlere karşı ek koruma katmanı</translation>
 <translation id="8819855907485254989">Ulaşım biletini Cüzdan'a kaydedin</translation>
 <translation id="8820817407110198400">Yer işaretleri</translation>

@@ -1316,6 +1316,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3019738915977809060">Gorde hegazkineratze-txartela Diru-zorroa zerbitzuan</translation>
 <translation id="3022959067768579802">Jarraitu idazten</translation>
 <translation id="3024663005179499861">Gidalerro mota okerra</translation>
+<translation id="3027857899292697441">Chrome-k phishingarekin, malwarearekin edo azpikeriekin erlazionatutako webguneetan ohikoak diren xehetasunak hauteman ditu. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">SVG irudia</translation>
 <translation id="3030331669969285614">Eginbide esperimental hauek hutsegiteak sor ditzaketen aldaketak ekiditen edo desegiten dituzte, eta epe mugatu batean soilik egongo dira erabilgarri.</translation>
 <translation id="3033200136993730761">Etxeko helbideak gauzak erraztuko dizkizu Google-ren zerbitzuetan; adibidez, egokiagoak izango dira bilaketa-emaitzak eta Google Maps-eko jarraibideak. Helbidea editatzeko edo ezabatzeko, joan <ph name="BEGIN_LINK" /><ph name="ACCOUNT" /> Google-ko kontura<ph name="END_LINK" />.</translation>
@@ -5069,6 +5070,7 @@ Xehetasun gehiago:
 <translation id="8814707942599948500">C8 gutun-azala</translation>
 <translation id="881559332211266856">Eguneratu Redress zenbakia</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, sakatu Sartu Chrome eguneratzeko Chrome-ren ezarpenetan</translation>
+<translation id="8816960833040967795">Kontuz ibili webgune honetan</translation>
 <translation id="8819155700324279105">Gehitu beste babes-geruza bat sareko mehatxuen aurka</translation>
 <translation id="8819855907485254989">Gorde garraio-txartela Diru-zorroa zerbitzuan</translation>
 <translation id="8820817407110198400">Laster-markak</translation>

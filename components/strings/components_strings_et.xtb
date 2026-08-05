@@ -1316,6 +1316,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3019738915977809060">Pardakaardi salvestamine Walletisse</translation>
 <translation id="3022959067768579802">Jätka kirjutamist</translation>
 <translation id="3024663005179499861">Reegli tüüp on vale</translation>
+<translation id="3027857899292697441">Chrome tuvastas tunnuseid, mis on levinud andmepüügi, pahavara või pettustega seotud saitidel. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">SVG-kujutis</translation>
 <translation id="3030331669969285614">Need märgistused hoiavad ära või ennistavad probleeme põhjustava muudatuse ja on saadaval vaid piiratud aja.</translation>
 <translation id="3033200136993730761">Teie kodune aadress aitab teil Google'i teenustes asju ajada, näiteks saada Google Mapsis asjakohasemaid otsingutulemusi ja juhiseid. Saate oma aadressi muuta või kustutada <ph name="BEGIN_LINK" />oma Google'i kontol <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
@@ -5075,6 +5076,7 @@ Lisateave:
 <translation id="8814707942599948500">Ümbrik C8</translation>
 <translation id="881559332211266856">Värskenda õiguskaitsenumbrit</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, vajutage Chrome'i seadetes Chrome'i värskendamiseks tabulaatorit ja seejärel sisestusklahvi</translation>
+<translation id="8816960833040967795">Olge sellel saidil ettevaatlik</translation>
 <translation id="8819155700324279105">Lisage täiendav kaitsekiht võrguohtude eest</translation>
 <translation id="8819855907485254989">Salvestage transpordipilet Walletisse</translation>
 <translation id="8820817407110198400">Järjehoidjad</translation>

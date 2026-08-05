@@ -66,6 +66,7 @@
 <translation id="1041175011127912238">הדף לא מגיב</translation>
 <translation id="1041181446722933623">התיקייה "<ph name="LOCAL_BOOKMARK" />" שמורה רק במכשיר הזה. כדי להשתמש בה במכשירים אחרים, עליך לשמור אותה בתיקייה "<ph name="ACCOUNT_FOLDER" />" בחשבון שלך.</translation>
 <translation id="1041263367839475438">מכשירים זמינים</translation>
+<translation id="1041365648398872803">מניעה מאתרים להשתמש בשירותים להגנת תוכן</translation>
 <translation id="1041607257468256895">‏ניהול הרשאות המיקום של אתרים ב-Chrome</translation>
 <translation id="1042248468362992359">כדי להשתמש בנקודה לשיתוף אינטרנט, צריך להפעיל את חבילת הגלישה. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="104385770822424034">הוספת פעולה</translation>
@@ -426,6 +427,7 @@
 <translation id="1307165550267142340">קוד האימות שלך נוצר</translation>
 <translation id="1307431692088049276">אין צורך לשאול אותי שוב</translation>
 <translation id="130744661532298792">‏כדי שתמיד תהיה לך אפשרות להשתמש בסיסמאות בחשבון שלך ב-Google, עליך לאמת את הזהות שלך</translation>
+<translation id="1308105352527684175">יכול להיות שלא תהיה לך גישה לתוכן מסוים</translation>
 <translation id="1311092170520822848">האתר הזה שולט בקוראי הכרטיסים החכמים שמחוברים למכשיר, וייתכן שגם על הכרטיסים שאליהם הקוראים יכולים לגשת</translation>
 <translation id="131112695174432497">יימחקו הנתונים שמשפיעים על ההתאמה האישית של מודעות</translation>
 <translation id="131188242279372879">‏כדאי להכיר את ההגנה המשופרת כדי ליהנות מרמת האבטחה הגבוהה ביותר ב-Chrome להורדות</translation>
@@ -1550,6 +1552,7 @@
 <translation id="2198625180564913276">הוספת הפרופיל מתבצעת. הפעולה עשויה להימשך מספר דקות.</translation>
 <translation id="2198712775285959645">עריכה</translation>
 <translation id="2199298570273670671">שגיאה</translation>
+<translation id="220006241671843310">‏יש לך אפשרות לבחור אם Chrome ישתמש במודלים של AI שפועלים ישירות במכשיר שלך</translation>
 <translation id="2200094388063410062">אימייל</translation>
 <translation id="2200781749203116929">‏יומני המערכת של ChromeOS</translation>
 <translation id="2202391868799679245">הפעלת מקש הקיצור</translation>
@@ -1789,6 +1792,7 @@
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (הנוכחי)</translation>
 <translation id="2390782873446084770">‏סנכרון Wi-Fi</translation>
 <translation id="2391419135980381625">גופן רגיל</translation>
+<translation id="2391778823627025394">אתרים יכולים להשתמש בשירותים להגנת תוכן</translation>
 <translation id="239185270194776190">‏השיחה עם Gemini נמצאת בחלון אחר. כדי להעביר את החלונית הצדדית לכאן, צריך ללחוץ עליה (לא משנה איפה).</translation>
 <translation id="2392369802118427583">הפעלה</translation>
 <translation id="2393944685985256805">‫<ph name="MODULE_NAME" /> מוסתר</translation>
@@ -2671,6 +2675,7 @@
 <translation id="3032272345862007156">‏עיצוב מהזמן אחרון שנוצר באמצעות AI‏ <ph name="INDEX" /></translation>
 <translation id="3033167916029856961">מצב 'נא לא להפריע' פועל</translation>
 <translation id="3036546437875325427">‏הפעלת Flash</translation>
+<translation id="3036602651971781493">כדי להפעיל תוכן שמוגן בזכויות יוצרים או כדי לבדוק באיזה דפדפן נעשה שימוש, יכול להיות שאתרים ישתמשו בשירות להגנת תוכן.</translation>
 <translation id="3036907164806060573">חלום</translation>
 <translation id="3037193115779933814">אותיות ומספרים</translation>
 <translation id="3038272154009688107">הצגת כל האתרים</translation>
@@ -4399,6 +4404,7 @@
 <translation id="4362459470237309049">משתמשים במקש "." כדי לשחרר את כפתור העכבר</translation>
 <translation id="4362871358537270439">הצגת כרטיסיות ממכשירים אחרים בחלונית הצדדית</translation>
 <translation id="4363262124589131906">‏הסנכרון האוטומטי של קבצים חדשים ב'אחסון שלי' יופסק ב-Chromebook הזה</translation>
+<translation id="4364129298304269786">אתרים עשויים להשתמש בשירות להגנת תוכן כדי להפעיל תוכן שמוגן בזכויות יוצרים</translation>
 <translation id="4364327530094270451">מלון</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{‏פריט אחד שמור רק במכשיר הזה. כדי להשתמש בו במכשירים אחרים, צריך לשמור אותו בחשבון Google.}one{‏‫{ITEM_COUNT} פריטים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google.}two{‏‫{ITEM_COUNT} פריטים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google.}other{‏‫{ITEM_COUNT} פריטים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google.}}</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> משתף חלון.</translation>
@@ -6549,6 +6555,7 @@
 <translation id="6069799426896362048">תצוגות נפרדות</translation>
 <translation id="6071938745001252305">חסכת זיכרון בנפח <ph name="MEMORY_VALUE" /></translation>
 <translation id="6071995715087444295">‏כדי לבדוק אם יש סיסמאות שנחשפו, צריך להיכנס לחשבון Google</translation>
+<translation id="607211254380611738">יכול להיות שהאתרים האלה יראו באיזה דפדפן נעשה שימוש</translation>
 <translation id="6073292342939316679">הפחתת הבהירות של המקלדת</translation>
 <translation id="6073451960410192870">הפסקת צילום הסרטון</translation>
 <translation id="6073903501322152803">הוספת תכונות נגישות</translation>

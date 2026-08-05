@@ -1316,6 +1316,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3019738915977809060">Enregistrez la carte d'embarquement dans Wallet</translation>
 <translation id="3022959067768579802">Continuer d'écrire</translation>
 <translation id="3024663005179499861">Type de règle incorrect.</translation>
+<translation id="3027857899292697441">Chrome a détecté des détails qui sont courants sur les sites associés à l'hameçonnage, aux logiciels malveillants ou aux escroqueries. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">Image SVG</translation>
 <translation id="3030331669969285614">Ces flags empêchent ou annulent une modification destructive et ne sont disponibles que pendant une durée limitée.</translation>
 <translation id="3033200136993730761">L'adresse de votre domicile peut vous être utile dans les services Google, par exemple pour obtenir des itinéraires dans Google Maps et des résultats de recherche plus pertinents. Vous pouvez modifier ou supprimer votre adresse <ph name="BEGIN_LINK" />dans votre compte Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
@@ -5076,6 +5077,7 @@ Informations supplémentaires :
 <translation id="8814707942599948500">Enveloppe C8</translation>
 <translation id="881559332211266856">Mettre à jour le numéro de recours</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> : appuyer sur Tabulation, puis Entrée pour mettre à jour Chrome depuis les paramètres du navigateur</translation>
+<translation id="8816960833040967795">Faites preuve de prudence sur ce site</translation>
 <translation id="8819155700324279105">Ajoutez un niveau de sécurité accru contre les menaces en ligne.</translation>
 <translation id="8819855907485254989">Enregistrez le titre de transport dans Wallet</translation>
 <translation id="8820817407110198400">Favoris</translation>

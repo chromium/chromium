@@ -1316,6 +1316,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3019738915977809060">Guardar tarjeta de embarque en Wallet</translation>
 <translation id="3022959067768579802">Seguir escribiendo</translation>
 <translation id="3024663005179499861">Tipo de política incorrecto</translation>
+<translation id="3027857899292697441">Chrome ha detectado detalles habituales en sitios asociados con phishing, malware o estafas. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">Imagen SVG</translation>
 <translation id="3030331669969285614">Estas marcas evitan o revierten un punto de ruptura y solo estarán disponibles durante un tiempo limitado.</translation>
 <translation id="3033200136993730761">Tu dirección de casa puede ayudarte a hacer cosas en los servicios de Google, como obtener resultados de búsqueda más pertinentes e indicaciones en Google Maps. Puedes editar o eliminar tu dirección en tu <ph name="BEGIN_LINK" />cuenta de Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
@@ -5075,6 +5076,7 @@ Más información:
 <translation id="8814707942599948500">Sobre C8</translation>
 <translation id="881559332211266856">Actualizar número Redress</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y, a continuación, Intro para actualizar Chrome desde la configuración de Chrome</translation>
+<translation id="8816960833040967795">Ten cuidado en este sitio</translation>
 <translation id="8819155700324279105">Añade una capa adicional de protección frente a las amenazas online</translation>
 <translation id="8819855907485254989">Guardar billete de transporte en Wallet</translation>
 <translation id="8820817407110198400">Marcadores</translation>

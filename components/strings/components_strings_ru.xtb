@@ -1316,6 +1316,7 @@
 <translation id="3019738915977809060">Сохраните посадочный талон в Кошельке</translation>
 <translation id="3022959067768579802">Продолжить создавать текст</translation>
 <translation id="3024663005179499861">Неверный тип политики</translation>
+<translation id="3027857899292697441">Chrome обнаружил элементы, которые часто встречаются на сайтах, связанных с фишингом, вредоносным ПО или мошенничеством. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">Изображение в формате SVG</translation>
 <translation id="3030331669969285614">Эти параметры блокируют или отменяют критическое изменение. Срок их действия ограничен.</translation>
 <translation id="3033200136993730761">С домашним адресом сервисы Google становятся лучше: например, вы получаете более подходящие результаты в Поиске и маршруты в Картах. Настроить или удалить адрес можно <ph name="BEGIN_LINK" />в вашем аккаунте Google, <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
@@ -5074,6 +5075,7 @@
 <translation id="8814707942599948500">Конверт C8</translation>
 <translation id="881559332211266856">Обновить данные Redress Number?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab и затем Ввод, чтобы обновить Chrome.</translation>
+<translation id="8816960833040967795">Будьте осторожны на этом сайте</translation>
 <translation id="8819155700324279105">Добавьте дополнительный уровень защиты от онлайн-угроз.</translation>
 <translation id="8819855907485254989">Сохраните транспортный билет в Кошельке</translation>
 <translation id="8820817407110198400">Закладки</translation>

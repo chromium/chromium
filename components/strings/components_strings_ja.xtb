@@ -1316,6 +1316,7 @@
 <translation id="3019738915977809060">搭乗券をウォレットに保存</translation>
 <translation id="3022959067768579802">入力を続行</translation>
 <translation id="3024663005179499861">ポリシー タイプが間違っています</translation>
+<translation id="3027857899292697441">フィッシング、マルウェア、詐欺に関連するサイトによく見られる特徴が検出されました。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">SVG 画像</translation>
 <translation id="3030331669969285614">以下は破壊的変更を防止したり元に戻したりするフラグです。期間限定でご利用いただけます。</translation>
 <translation id="3033200136993730761">自宅の住所は、関連性の高い検索結果や Google マップのルートの表示など、Google サービス全体の利便性の向上に役立ちます。住所は <ph name="BEGIN_LINK" />Google アカウント（<ph name="ACCOUNT" />）<ph name="END_LINK" />で編集、削除できます。</translation>
@@ -5076,6 +5077,7 @@
 <translation id="8814707942599948500">C8 封筒</translation>
 <translation id="881559332211266856">Redress 番号を更新</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Chrome の設定で Chrome を更新します</translation>
+<translation id="8816960833040967795">このサイトにはご注意ください</translation>
 <translation id="8819155700324279105">オンラインの脅威からの保護を強化します。</translation>
 <translation id="8819855907485254989">交通機関のチケットをウォレットに保存</translation>
 <translation id="8820817407110198400">ブックマーク</translation>

@@ -1316,6 +1316,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3019738915977809060">Shranjevanje vstopnega kupona v Denarnico</translation>
 <translation id="3022959067768579802">Piši naprej</translation>
 <translation id="3024663005179499861">Napačna vrsta pravilnika</translation>
+<translation id="3027857899292697441">Chrome je zaznal podrobnosti, ki so pogoste na spletnih mestih, povezanih z lažnim predstavljanjem, zlonamerno programsko opremo ali goljufijami. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">Slika SVG</translation>
 <translation id="3030331669969285614">Te zastavice preprečijo ali razveljavijo spremembo, ki povzroči težave, in so na voljo samo omejen čas.</translation>
 <translation id="3033200136993730761">Domači naslov vam lahko pomaga opraviti različne stvari v Googlovih storitvah, na primer pridobiti ustreznejše rezultate iskanja in navodila za pot v Google Zemljevidih. Naslov lahko uredite ali izbrišete <ph name="BEGIN_LINK" />v računu Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
@@ -5075,6 +5076,7 @@ Dodatne podrobnosti:
 <translation id="8814707942599948500">Kuverta C8</translation>
 <translation id="881559332211266856">Posodobite kontrolno številko</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite posodobiti Chrome v Chromovih nastavitvah</translation>
+<translation id="8816960833040967795">Bodite previdni na tem spletnem mestu</translation>
 <translation id="8819155700324279105">Dodajte še eno raven zaščite pred spletnimi grožnjami</translation>
 <translation id="8819855907485254989">Shranjevanje vozovnice v Denarnico</translation>
 <translation id="8820817407110198400">Zaznamki</translation>

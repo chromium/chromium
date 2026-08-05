@@ -1316,6 +1316,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3019738915977809060">Gardar tarxeta de embarque en Wallet</translation>
 <translation id="3022959067768579802">Seguir escribindo</translation>
 <translation id="3024663005179499861">Tipo de política incorrecta</translation>
+<translation id="3027857899292697441">Chrome detectou detalles que son habituais nos sitios asociados a estafas, software malicioso ou phishing. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">Imaxe SVG</translation>
 <translation id="3030331669969285614">Estas funcións experimentais evitan ou desfán un cambio que pode provocar fallos e só están dispoñibles durante tempo limitado.</translation>
 <translation id="3033200136993730761">O teu enderezo particular pode axudarche a facer cousas nos servizos de Google, como obter resultados de busca máis relevantes e indicacións en Google Maps. Podes editalo ou eliminalo na túa <ph name="BEGIN_LINK" />Conta de Google (<ph name="ACCOUNT" />)<ph name="END_LINK" />.</translation>
@@ -5074,6 +5075,7 @@ Detalles adicionais:
 <translation id="8814707942599948500">Sobre C8</translation>
 <translation id="881559332211266856">Actualiza o número Redress</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tab e, a continuación, Intro para actualizar Chrome desde a configuración do navegador</translation>
+<translation id="8816960833040967795">Ten coidado neste sitio</translation>
 <translation id="8819155700324279105">Engade unha capa máis de protección contra as ameazas en liña</translation>
 <translation id="8819855907485254989">Gardar o billete de transporte en Wallet</translation>
 <translation id="8820817407110198400">Marcadores</translation>

@@ -1316,6 +1316,7 @@
 <translation id="3019738915977809060">Сачувајте бординг карту у Новчанику</translation>
 <translation id="3022959067768579802">Наставићу да пишем</translation>
 <translation id="3024663005179499861">Погрешан тип смерница</translation>
+<translation id="3027857899292697441">Chrome је открио детаље који су уобичајени на сајтовима повезаним са „пецањем“, малвером или преварама. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">SVG слика</translation>
 <translation id="3030331669969285614">Те ознаке спречавају или враћају ризичну промену и биће доступне само у ограниченом периоду.</translation>
 <translation id="3033200136993730761">Кућна адреса може да вам помогне да обављате ствари у Google услугама, попут релевантнијих резултата Претраге и путање у Google мапама. Можете да измените или избришете адресу на <ph name="BEGIN_LINK" />Google налогу <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
@@ -5075,6 +5076,7 @@
 <translation id="8814707942599948500">Коверта C8</translation>
 <translation id="881559332211266856">Ажурирајте број обештећења</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте ажурирали Chrome из подешавања Chrome-а</translation>
+<translation id="8816960833040967795">Будите опрезни на овом сајту</translation>
 <translation id="8819155700324279105">Додајте још један ниво заштите од онлајн претњи</translation>
 <translation id="8819855907485254989">Сачувајте карту за превоз у Новчанику</translation>
 <translation id="8820817407110198400">Обележивачи</translation>

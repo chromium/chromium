@@ -1316,6 +1316,7 @@
 <translation id="3019738915977809060">बोर्डिङ पास Wallet मा सेभ गर्नुहोस्</translation>
 <translation id="3022959067768579802">लेख्न जारी राख्नुहोस्</translation>
 <translation id="3024663005179499861">गलत नीति प्रकार</translation>
+<translation id="3027857899292697441">Chrome ले फिसिङ, मालवेयर वा स्क्यामसँग सम्बन्धित साइटहरूमा सामान्यतया पाइने विवरणहरू पत्ता लगाएको छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">SVG फोटो</translation>
 <translation id="3030331669969285614">यी फ्ल्यागले हानिकारक परिवर्तनहरू रोक्छन् वा उल्टाउँछन् र यी फ्ल्यागहरू सीमित समयका लागि मात्र उपलब्ध हुन्छन्।</translation>
 <translation id="3033200136993730761">तपाईंले Chrome मा आफ्नो घरको ठेगाना हालेका खण्डमा तपाईं Google का विभिन्न सेवाबाट अझ राम्रा सुविधाहरू प्राप्त गर्न (जस्तै: अझ सान्दर्भिक खोज परिणामहरू प्राप्त गर्न र Google नक्सामा घर जाने बाटो हेर्न) सक्नुहुन्छ। तपाईं <ph name="BEGIN_LINK" />आफ्नो Google खाता <ph name="ACCOUNT" /><ph name="END_LINK" /> मा गई आफ्नो ठेगाना परिवर्तन गर्न वा मेटाउन सक्नुहुन्छ।</translation>
@@ -5072,6 +5073,7 @@
 <translation id="8814707942599948500">Envelope C8</translation>
 <translation id="881559332211266856">रिड्रेस नम्बर अपडेट गर्नुहोस्</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, आफ्नो Chrome का सेटिङमा गई Chrome अपडेट गर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
+<translation id="8816960833040967795">यो साइटमा जाँदा सावधानी अपनाउनुहोस्</translation>
 <translation id="8819155700324279105">अनलाइन जोखिमहरूबाट सुरक्षित रहन सुरक्षाको एउटा अतिरिक्त तह थप्नुहोस्</translation>
 <translation id="8819855907485254989">यातायातको टिकट Wallet मा सेभ गर्नुहोस्</translation>
 <translation id="8820817407110198400">बुकमार्कहरू</translation>

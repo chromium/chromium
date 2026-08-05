@@ -1316,6 +1316,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3019738915977809060">Beszállókártya mentése a Walletbe</translation>
 <translation id="3022959067768579802">Írás folytatása</translation>
 <translation id="3024663005179499861">Nem megfelelő irányelvtípus</translation>
+<translation id="3027857899292697441">A Chrome olyan részleteket észlelt, amelyek gyakoriak az adathalászattal, rosszindulatú programokkal vagy átverésekkel kapcsolatos webhelyeken. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="3027915437837548462">SVG-kép</translation>
 <translation id="3030331669969285614">Ezek a jelzők megakadályozzák vagy visszaállítják a kompatibilitástörő változást, és csak korlátozott ideig állnak rendelkezésre.</translation>
 <translation id="3033200136993730761">Az otthoni cím segítségével hatékonyabban végezheti el feladatait a Google-szolgáltatásokban, például relevánsabb keresési találatokat és útvonalterveket kaphat a Google Térképben. Címét <ph name="BEGIN_LINK" />Google-fiókjában (<ph name="ACCOUNT" />)<ph name="END_LINK" /> szerkesztheti vagy törölheti.</translation>
@@ -5074,6 +5075,7 @@ További részletek:
 <translation id="8814707942599948500">C8 boríték</translation>
 <translation id="881559332211266856">Helyesbítési ügy számának frissítése</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, nyomja le a Tab, majd az Enter billentyűt a Chrome-nak a Chrome beállításaiban való frissítéséhez</translation>
+<translation id="8816960833040967795">Legyen óvatos ezen a webhelyen</translation>
 <translation id="8819155700324279105">Plusz biztonsági réteg hozzáadása az internetes fenyegetések elleni védekezés érdekében</translation>
 <translation id="8819855907485254989">Tömegközlekedési jegy mentése a Walletbe</translation>
 <translation id="8820817407110198400">Könyvjelzők</translation>

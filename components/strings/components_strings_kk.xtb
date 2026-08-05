@@ -1316,6 +1316,7 @@
 <translation id="3019738915977809060">Отырғызу талонын Wallet-ке сақтау</translation>
 <translation id="3022959067768579802">Жазуды жалғастыру</translation>
 <translation id="3024663005179499861">Қате саясат түрі</translation>
+<translation id="3027857899292697441">Chrome сайттарда жиі кездесетін фишинг, зиянды бағдарлама немесе алаяқтықпен байланысты мәліметтерді анықтады. <ph name="BEGIN_LINK" />Толық ақпарат<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">SVG суреті</translation>
 <translation id="3030331669969285614">Бұл жалаушалар негізгі өзгеріске жол бермейді немесе оны қайтарады. Олар тек шектеулі уақыт қолжетімді болады.</translation>
 <translation id="3033200136993730761">Үй мекенжайы сәйкес іздеу нәтижелері және Google Maps-тегі бағыттар сияқты Google қызметтерінде көп тапсырма орындауға мүмкіндік береді. Мекенжайды <ph name="BEGIN_LINK" />Google аккаунтында (<ph name="ACCOUNT" />)<ph name="END_LINK" /> өзгертуге немесе жоюға болады.</translation>
@@ -5073,6 +5074,7 @@
 <translation id="8814707942599948500">C8 хатқалтасы</translation>
 <translation id="881559332211266856">Redress нөмірін жаңартыңыз</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome параметрлерінде Chrome-ды жаңарту үшін Tab, одан кейін Enter пернесін басыңыз.</translation>
+<translation id="8816960833040967795">Бұл сайтта абай болыңыз</translation>
 <translation id="8819155700324279105">Онлайн қауіптерге қарсы күшейтілген қауіпсіздік деңгейін қосыңыз.</translation>
 <translation id="8819855907485254989">Көлік билетін Wallet-ке сақтау</translation>
 <translation id="8820817407110198400">Бетбелгілер</translation>

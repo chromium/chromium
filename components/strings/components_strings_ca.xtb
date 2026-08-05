@@ -1316,6 +1316,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3019738915977809060">Desa la targeta d'embarcament a Wallet</translation>
 <translation id="3022959067768579802">Continua escrivint</translation>
 <translation id="3024663005179499861">Tipus de política incorrecte</translation>
+<translation id="3027857899292697441">Chrome ha detectat detalls que són habituals en llocs web associats a la pesca de credencials, al programari maliciós o a les estafes. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">Imatge SVG</translation>
 <translation id="3030331669969285614">Aquestes marques impedeixen o reverteixen un canvi conflictiu i només estaran disponibles durant un temps limitat.</translation>
 <translation id="3033200136993730761">L'adreça de casa et pot ajudar a enllestir tasques amb els serveis de Google, fent més rellevants els resultats de la Cerca i les indicacions a Google Maps, entre d'altres. Pots editar o suprimir l'adreça <ph name="BEGIN_LINK" />al teu Compte de Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
@@ -5075,6 +5076,7 @@ Detalls addicionals:
 <translation id="8814707942599948500">Sobre C8</translation>
 <translation id="881559332211266856">Actualitza el número Redress</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />; prem Tab i després Retorn per actualitzar Chrome des de la configuració de Chrome</translation>
+<translation id="8816960833040967795">Ves amb compte en aquest lloc web</translation>
 <translation id="8819155700324279105">Afegeix una capa addicional de protecció contra les amenaces en línia</translation>
 <translation id="8819855907485254989">Desa el bitllet de transport a Wallet</translation>
 <translation id="8820817407110198400">Adreces d'interès</translation>

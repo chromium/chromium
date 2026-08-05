@@ -1316,6 +1316,7 @@
 <translation id="3019738915977809060">Enregistrer la carte d'embarquement dans Portefeuille</translation>
 <translation id="3022959067768579802">Continuer à écrire</translation>
 <translation id="3024663005179499861">Type de politique incorrect</translation>
+<translation id="3027857899292697441">Chrome a détecté des éléments caractéristiques des sites associés à l'hameçonnage, aux logiciels malveillants ou aux escroqueries. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">Image SVG</translation>
 <translation id="3030331669969285614">Ces indicateurs empêchent ou rétablissent une modification pouvant occasionner une rupture et ne seront accessibles que pendant une durée limitée.</translation>
 <translation id="3033200136993730761">Votre adresse personnelle peut vous aider à accomplir des tâches dans les services Google, comme obtenir des résultats de recherche plus pertinents et des itinéraires dans Google Maps. Vous pouvez modifier ou supprimer votre adresse dans votre <ph name="BEGIN_LINK" />compte Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
@@ -2650,7 +2651,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5074134429918579056">Pantalons et shorts</translation>
 <translation id="5077767274537436092">Utiliser une autre clé d'accès</translation>
 <translation id="5078060223219502807">Le mot de passe que vous venez d'utiliser a été trouvé dans un cas de violation de données. Pour sécuriser vos comptes, le Gestionnaire de mots de passe vous recommande de le modifier maintenant, puis de vérifier vos mots de passe enregistrés.</translation>
-<translation id="5082949343606863311">Les données du système, y compris les champs de formulaire et les performances des fonctionnalités, sont analysées pour améliorer les suggestions futures</translation>
+<translation id="5082949343606863311">les données du système, y compris les champs de formulaire et les performances des fonctionnalités, sont analysées pour améliorer les suggestions futures.</translation>
 <translation id="5087286274860437796">Le certificat du serveur n'est pas valide présentement.</translation>
 <translation id="5087580092889165836">Ajouter une carte</translation>
 <translation id="5088142053160410913">Message à l'opérateur</translation>
@@ -3922,7 +3923,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="7011763495818914549">Carte d'identité</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7013835112918108252">Peut demander de verrouiller et d'utiliser votre souris</translation>
-<translation id="7013844825046560088">Chrome enregistre la façon dont vous utilisez cette fonctionnalité, notamment vos demandes et votre comportement lorsque vous acceptez ou ignorez les suggestions</translation>
+<translation id="7013844825046560088">Chrome enregistre la façon dont vous utilisez cette fonctionnalité, notamment vos demandes et votre comportement lorsque vous acceptez ou ignorez les suggestions;</translation>
 <translation id="7014042602717177828">Équipement audio pour la voiture</translation>
 <translation id="7014741021609395734">Niveau de zoom</translation>
 <translation id="7016992613359344582">Ces frais peuvent être ponctuels ou récurrents, et peuvent ne pas être évidents.</translation>
@@ -5074,6 +5075,7 @@ Détails supplémentaires :
 <translation id="8814707942599948500">Enveloppe C8</translation>
 <translation id="881559332211266856">Mettez à jour le numéro de recours</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour mettre à jour Chrome dans les paramètres de Chrome</translation>
+<translation id="8816960833040967795">Faites preuve de prudence sur ce site</translation>
 <translation id="8819155700324279105">Ajoutez une couche de protection supplémentaire contre les menaces en ligne</translation>
 <translation id="8819855907485254989">Enregistrer le titre de transport dans Portefeuille</translation>
 <translation id="8820817407110198400">Favoris</translation>

@@ -1316,6 +1316,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3019738915977809060">Lagre ombordstigningskortet i Wallet</translation>
 <translation id="3022959067768579802">Fortsett å skrive</translation>
 <translation id="3024663005179499861">Feil type enhetsinnstillinger</translation>
+<translation id="3027857899292697441">Chrome har oppdaget kjennetegn som er vanlige på nettsteder forbundet med nettfisking, skadelig programvare eller svindel. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">SVG-bilde</translation>
 <translation id="3030331669969285614">Disse flaggene forhindrer eller tilbakestiller en funksjonsbrytende endring og er bare tilgjengelige i en begrenset periode.</translation>
 <translation id="3033200136993730761">Hjemmeadressen din kan hjelpe deg med å få ting gjort i Google-tjenester, for eksempel ved at du får mer relevante søkeresultater og veibeskrivelser i Google Maps. Du kan endre eller slette adressen i <ph name="BEGIN_LINK" />Google-kontoen din <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
@@ -5074,6 +5075,7 @@ Mer informasjon:
 <translation id="8814707942599948500">C8-konvolutt</translation>
 <translation id="881559332211266856">Oppdater redress-nummer</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å oppdatere Chrome fra Chrome-innstillingene</translation>
+<translation id="8816960833040967795">Vær forsiktig på dette nettstedet</translation>
 <translation id="8819155700324279105">Legg til et ekstra lag med beskyttelse mot trusler på nettet</translation>
 <translation id="8819855907485254989">Lagre transportbilletten i Wallet</translation>
 <translation id="8820817407110198400">Bokmerker</translation>
