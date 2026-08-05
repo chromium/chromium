@@ -784,6 +784,13 @@ export class ComposeboxVoiceSearchElement extends
   }
 
   protected onCloseClick_() {
+    // If closing while an error is showing, the close action is to dismiss
+    // the error state, so it should not log as a user-canceled voice session.
+    if (this.shouldShowErrorScrim_()) {
+      this.fire('voice-search-cancel', /*canceled-by-user=*/ false);
+      this.voiceModeEndCleanup_();
+      return;
+    }
     this.voiceModeEndCleanup_();
     // Record metric by setting canceled-by-user param to true in this event:
     this.fire(
