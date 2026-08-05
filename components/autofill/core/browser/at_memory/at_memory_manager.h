@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AT_MEMORY_AT_MEMORY_MANAGER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <variant>
 #include <vector>
@@ -228,25 +229,27 @@ class AtMemoryManager : public CreditCardAccessManager::Observer {
       bool did_fetch_from_server,
       bool reauth_attempted);
 
+  // Encapsulates active session state for an AtMemory UI interaction.
+  struct SessionState {
+    AutofillSuggestionTriggerSource trigger_source =
+        AutofillSuggestionTriggerSource::kUnspecified;
+    UpdateSuggestionsCallback update_callback;
+    std::unique_ptr<AtMemoryMetricsRecorder> metrics_recorder;
+    // Indicates whether the current tab and the form uses a secure connection.
+    bool is_context_secure = false;
+    // Flag indicating that a search query is in progress.
+    bool is_searching = false;
+  };
+
   const raw_ptr<BrowserAutofillManager> owner_;
 
-  AutofillSuggestionTriggerSource trigger_source_ =
-      AutofillSuggestionTriggerSource::kUnspecified;
-
-  UpdateSuggestionsCallback update_callback_;
+  std::optional<SessionState> session_state_;
 
   base::ScopedObservation<CreditCardAccessManager,
                           CreditCardAccessManager::Observer>
       ccam_observation_{this};
 
   bool credit_card_fetch_in_progress_ = false;
-
-  std::unique_ptr<AtMemoryMetricsRecorder> at_memory_metrics_recorder_;
-
-  // Indicates whether the current tab and the form uses a secure connection.
-  bool is_context_secure_ = false;
-  // Flag indicating that a search query is in progress.
-  bool is_searching_ = false;
 
   // Factory for search queries, used to identify currently active query and
   // discard the old ones.
