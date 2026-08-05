@@ -177,7 +177,11 @@ found in the LICENSE file.
     <dimen name="ntp_search_box_action_button_margin">8dp</dimen>
     <dimen name="composeplate_view_margin_top">4dp</dimen>
     <dimen name="mvt_container_top_padding">16dp</dimen>
+    <dimen name="mvt_container_top_padding_small">8dp</dimen>
     <dimen name="mvt_container_bottom_padding">22dp</dimen>
+    <dimen name="mvt_container_bottom_padding_small">16dp</dimen>
+    <dimen name="mvt_container_top_margin_medium">24dp</dimen>
+    <dimen name="mvt_container_top_margin_large">32dp</dimen>
     <dimen name="tile_layout_no_logo_top_margin">16dp</dimen>
 
     <dimen name="content_suggestions_card_bottom_margin">12dp</dimen>

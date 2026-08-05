@@ -10,6 +10,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
@@ -22,6 +23,8 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
+import org.chromium.chrome.browser.ntp.NewTabPageUtils;
+import org.chromium.chrome.browser.ntp.NewTabPageUtils.PaddingStyle;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
@@ -71,6 +74,28 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mMvTilesContainerLayout = mvTilesContainerLayout;
         mIsLff = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
+
+        @PaddingStyle int paddingStyle = NewTabPageUtils.getPaddingStyleForAurora();
+        if (paddingStyle != PaddingStyle.DEFAULT) {
+            Resources res = activity.getResources();
+            int topPadding = res.getDimensionPixelSize(R.dimen.mvt_container_top_padding_small);
+            int bottomPadding =
+                    res.getDimensionPixelSize(R.dimen.mvt_container_bottom_padding_small);
+            mvTilesContainerLayout.setPaddingRelative(
+                    mvTilesContainerLayout.getPaddingStart(),
+                    topPadding,
+                    mvTilesContainerLayout.getPaddingEnd(),
+                    bottomPadding);
+
+            int topMarginDimen =
+                    (paddingStyle == PaddingStyle.SMALL)
+                            ? R.dimen.mvt_container_top_margin_medium
+                            : R.dimen.mvt_container_top_margin_large;
+            ViewGroup.MarginLayoutParams marginLayoutParams =
+                    (ViewGroup.MarginLayoutParams) mvTilesContainerLayout.getLayoutParams();
+            marginLayoutParams.topMargin = res.getDimensionPixelSize(topMarginDimen);
+            mvTilesContainerLayout.setLayoutParams(marginLayoutParams);
+        }
 
         MostVisitedTilesLayout tilesLayout =
                 mvTilesContainerLayout.findViewById(R.id.mv_tiles_layout);
