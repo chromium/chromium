@@ -653,6 +653,26 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 }
 #endif
 
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       ShowOpensPanelAndDoesNotClose) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  coordinator().Show(tab->GetBrowserWindowInterface(),
+                     mojom::InvocationSource::kTopChromeButton);
+  ASSERT_OK_AND_ASSIGN(auto instance, WaitForGlicOpen(tab));
+  EXPECT_TRUE(instance->IsShowing());
+
+  // Calling Show again when already showing should leave the panel open.
+  coordinator().Show(tab->GetBrowserWindowInterface(),
+                     mojom::InvocationSource::kTopChromeButton);
+  EXPECT_TRUE(instance->IsShowing());
+
+  // Calling ShowUI on GlicKeyedService should also leave the panel open.
+  GlicKeyedService::Get(GetProfile())
+      ->ShowUI(tab->GetBrowserWindowInterface(),
+               mojom::InvocationSource::kTopChromeButton);
+  EXPECT_TRUE(instance->IsShowing());
+}
+
 // Flaky test. crbug.com/498990943
 IN_PROC_BROWSER_TEST_F(
     GlicInstanceCoordinatorBrowserTest,

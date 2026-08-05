@@ -93,6 +93,10 @@ class GlicInstanceCoordinator {
 
   virtual base::WeakPtr<GlicInstance> Invoke(GlicInvokeOptions options) = 0;
 
+  // Show, summon, or activate the panel if needed.
+  virtual void Show(BrowserWindowInterface* browser,
+                    mojom::InvocationSource source) = 0;
+
   // Show, summon, or activate the panel if needed, or close it if it's already
   // active and prevent_close is false.
   virtual void Toggle(BrowserWindowInterface* browser,

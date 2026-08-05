@@ -442,9 +442,8 @@ bool GlicInstanceCoordinatorImpl::MaybeInvoke(BrowserWindowInterface* bwi,
   return false;
 }
 
-void GlicInstanceCoordinatorImpl::Toggle(BrowserWindowInterface* browser,
-                                         bool prevent_close,
-                                         mojom::InvocationSource source) {
+void GlicInstanceCoordinatorImpl::Show(BrowserWindowInterface* browser,
+                                       mojom::InvocationSource source) {
   CHECK(GlicEnabling::ShouldShowGlicButton(profile_));
 
   // TODO(b/542727532): Follow up on whether MaybeInvoke is still needed and
@@ -466,24 +465,93 @@ void GlicInstanceCoordinatorImpl::Toggle(BrowserWindowInterface* browser,
         return;
       }
     } else {
-      bool is_showing = false;
-      if (auto* floaty = GetInstanceWithFloaty()) {
-        is_showing = floaty->IsShowing();
+      EmbedderKey key = FloatingEmbedderKey();
+      if (GlicInstanceImpl* instance = GetInstanceWithFloaty()) {
+        instance->instance_metrics().OnToggle(source, key, /*is_showing=*/true);
+        return;
       }
-      std::unique_ptr<GlicWindowInvocationTracker> invocation_tracker =
-          !is_showing ? std::make_unique<glic::GlicWindowInvocationTracker>()
-                      : nullptr;
-      ToggleFloaty(prevent_close, source, std::move(invocation_tracker));
+
+      InvokeAndLogToggle(source, glic::Floating(), key,
+                         std::make_unique<glic::GlicWindowInvocationTracker>());
       return;
     }
   }
 
-  bool is_showing = IsPanelShowingForBrowser(*browser);
-  std::unique_ptr<GlicWindowInvocationTracker> invocation_tracker =
-      !is_showing ? std::make_unique<glic::GlicWindowInvocationTracker>()
-                  : nullptr;
-  ToggleSidePanel(browser, prevent_close, source,
-                  std::move(invocation_tracker));
+  auto* tab = TabListInterface::From(browser)->GetActiveTab();
+  if (!tab) {
+    LOG(ERROR) << "Active tab is null";
+    return;
+  }
+  if (!GlicInstanceHelper::From(tab)) {
+    LOG(ERROR) << "Tab doesn't have an instance helper in its UnownedUserData";
+    return;
+  }
+
+  EmbedderKey key = SidePanelEmbedderKey(tab);
+  if (GlicInstanceImpl* instance = GetInstanceImplForTab(tab);
+      instance && instance->IsActiveEmbedder(key)) {
+    instance->instance_metrics().OnToggle(source, key, /*is_showing=*/true);
+    return;
+  }
+
+  InvokeAndLogToggle(source, tab->GetHandle(), key,
+                     std::make_unique<glic::GlicWindowInvocationTracker>());
+}
+
+bool GlicInstanceCoordinatorImpl::MaybeCloseForToggle(
+    BrowserWindowInterface* browser,
+    mojom::InvocationSource source) {
+  if (!browser) {
+    if (!GlicEnabling::IsLiveAndFloatyEnabledByFlags()) {
+      return false;
+    }
+    GlicInstanceImpl* instance = GetInstanceWithFloaty();
+    if (!instance) {
+      return false;
+    }
+    EmbedderKey key = FloatingEmbedderKey();
+    instance->instance_metrics().OnToggle(source, key, /*is_showing=*/true);
+    instance->Close(key);
+    return true;
+  }
+
+  if (!IsPanelShowingForBrowser(*browser)) {
+    return false;
+  }
+  auto* tab = TabListInterface::From(browser)->GetActiveTab();
+  if (!tab) {
+    return false;
+  }
+  GlicInstanceImpl* instance = GetInstanceImplForTab(tab);
+  if (!instance) {
+    return false;
+  }
+  EmbedderKey key = SidePanelEmbedderKey(tab);
+  if (!instance->IsActiveEmbedder(key)) {
+    return false;
+  }
+
+  instance->instance_metrics().OnToggle(source, key, /*is_showing=*/true);
+  instance->Close(key);
+  return true;
+}
+
+void GlicInstanceCoordinatorImpl::Toggle(BrowserWindowInterface* browser,
+                                         bool prevent_close,
+                                         mojom::InvocationSource source) {
+  CHECK(GlicEnabling::ShouldShowGlicButton(profile_));
+
+  if (MaybeInvoke(browser, source)) {
+    return;
+  }
+
+  service()->enabling().MaybeRecordRecoveryOnInteraction();
+
+  if (!prevent_close && MaybeCloseForToggle(browser, source)) {
+    return;
+  }
+
+  Show(browser, source);
 }
 
 bool GlicInstanceCoordinatorImpl::MaybeStartInitialWarming() {
@@ -1021,55 +1089,6 @@ GlicInstanceCoordinatorImpl::GetOrCreateInstanceImplForFloaty() {
     floaty_instance = CreateGlicInstance();
   }
   return floaty_instance;
-}
-
-void GlicInstanceCoordinatorImpl::ToggleFloaty(
-    bool prevent_close,
-    glic::mojom::InvocationSource source,
-    std::unique_ptr<GlicWindowInvocationTracker> invocation_tracker) {
-  CHECK(GlicEnabling::IsLiveAndFloatyEnabledByFlags());
-  EmbedderKey key = FloatingEmbedderKey();
-  if (GlicInstanceImpl* instance = GetInstanceWithFloaty()) {
-    instance->instance_metrics().OnToggle(source, key, /*is_showing=*/true,
-                                          std::move(invocation_tracker));
-    if (!prevent_close) {
-      instance->Close(key);
-    }
-    return;
-  }
-
-  InvokeAndLogToggle(source, glic::Floating(), key,
-                     std::move(invocation_tracker));
-}
-
-void GlicInstanceCoordinatorImpl::ToggleSidePanel(
-    BrowserWindowInterface* browser,
-    bool prevent_close,
-    mojom::InvocationSource source,
-    std::unique_ptr<GlicWindowInvocationTracker> invocation_tracker) {
-  auto* tab = TabListInterface::From(browser)->GetActiveTab();
-  if (!tab) {
-    LOG(ERROR) << "Active tab is null";
-    return;
-  }
-  if (!GlicInstanceHelper::From(tab)) {
-    LOG(ERROR) << "Tab doesn't have an instance helper in its UnownedUserData";
-    return;
-  }
-
-  EmbedderKey key = SidePanelEmbedderKey(tab);
-  if (GlicInstanceImpl* instance = GetInstanceImplForTab(tab);
-      instance && instance->IsActiveEmbedder(key)) {
-    instance->instance_metrics().OnToggle(source, key, /*is_showing=*/true,
-                                          std::move(invocation_tracker));
-    if (!prevent_close) {
-      instance->Close(key);
-    }
-    return;
-  }
-
-  InvokeAndLogToggle(source, tab->GetHandle(), key,
-                     std::move(invocation_tracker));
 }
 
 // Helper method for toggling the UI open. This should ONLY be used by the

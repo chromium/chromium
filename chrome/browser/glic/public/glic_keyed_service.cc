@@ -231,6 +231,12 @@ void GlicKeyedService::Shutdown() {
   instance_coordinator().Shutdown();
 }
 
+void GlicKeyedService::ShowUI(BrowserWindowInterface* bwi,
+                              mojom::InvocationSource source) {
+  instance_coordinator().Show(
+      bwi ? bwi : GetActiveGlicEligibleBrowser(profile_), source);
+}
+
 void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
                                 bool prevent_close,
                                 mojom::InvocationSource source) {

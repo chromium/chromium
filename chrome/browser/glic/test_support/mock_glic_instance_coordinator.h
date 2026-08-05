@@ -46,6 +46,10 @@ class MockGlicInstanceCoordinator
               (override));
 
   MOCK_METHOD(void,
+              Show,
+              (BrowserWindowInterface*, mojom::InvocationSource),
+              (override));
+  MOCK_METHOD(void,
               Toggle,
               (BrowserWindowInterface*, bool, mojom::InvocationSource),
               (override));
