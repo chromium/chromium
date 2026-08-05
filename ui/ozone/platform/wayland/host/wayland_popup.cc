@@ -64,8 +64,11 @@ bool WaylandPopup::CreateShellPopup() {
     }
   }
 
+  // The popup's bounds must be relative to the parent window's geometry, rather
+  // than the root surface origin. See https://crbug.com/1292486.
   auto bounds_dip =
-      wl::TranslateWindowBoundsToParentDIP(this, xdg_parent_window);
+      wl::TranslateWindowBoundsToParentDIP(this, xdg_parent_window) -
+      xdg_parent_window->GetWindowGeometryOffsetInDIP();
   bounds_dip.Inset(delegate()->CalculateInsetsInDIP(GetPlatformWindowState()));
 
   // At this point, both `bounds` and `anchor_rect` parameters here are in
@@ -202,7 +205,8 @@ void WaylandPopup::SetBoundsInDIP(const gfx::Rect& bounds_dip) {
   // the initialization. See WaylandPopup::CreateShellPopup.
   if (xdg_popup_ && old_bounds_dip != bounds_dip) {
     auto bounds_dip_in_parent =
-        wl::TranslateWindowBoundsToParentDIP(this, xdg_parent_window);
+        wl::TranslateWindowBoundsToParentDIP(this, xdg_parent_window) -
+        xdg_parent_window->GetWindowGeometryOffsetInDIP();
     bounds_dip_in_parent.Inset(
         delegate()->CalculateInsetsInDIP(GetPlatformWindowState()));
 

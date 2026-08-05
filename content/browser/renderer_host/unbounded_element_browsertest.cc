@@ -545,13 +545,6 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, PopupInputEventRouting) {
   // TODO(crbug.com/508672616): Not yet working on ChromeOS due to Aura/Ash
   // popup container positioning and coordinate conversion issues.
   GTEST_SKIP();
-#elif BUILDFLAG(IS_OZONE)
-  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
-    // TODO(crbug.com/523970924): Not yet working on Wayland due to
-    // Ozone/Wayland popup container positioning and coordinate conversion
-    // issues.
-    GTEST_SKIP();
-  }
 #endif
 #if !BUILDFLAG(IS_CHROMEOS)
   GURL url(embedded_test_server()->GetURL("/title1.html"));
@@ -606,13 +599,6 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
   // TODO(crbug.com/508672616): Not yet working on ChromeOS due to Aura/Ash
   // popup container positioning and coordinate conversion issues.
   GTEST_SKIP();
-#elif BUILDFLAG(IS_OZONE)
-  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
-    // TODO(crbug.com/523970924): Not yet working on Wayland due to
-    // Ozone/Wayland popup container positioning and coordinate conversion
-    // issues.
-    GTEST_SKIP();
-  }
 #endif
 #if !BUILDFLAG(IS_CHROMEOS)
   GURL url(embedded_test_server()->GetURL("/title1.html"));
