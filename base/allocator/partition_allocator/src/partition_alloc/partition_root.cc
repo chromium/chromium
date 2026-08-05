@@ -1484,7 +1484,8 @@ size_t PartitionRoot::AllocationCapacityFromRequestedSize(size_t size) const {
 #endif
 }
 
-void PartitionRoot::PurgeMemory(int flags, PurgeState& purge_state) {
+PurgeResult PartitionRoot::PurgeMemory(int flags, PurgeState& purge_state) {
+  PurgeResult result;
   uint16_t& purge_generation = purge_state.generation;
   uint16_t& purge_next_bucket_index = purge_state.next_bucket_index;
   auto start = now_maybe_overridden_for_testing_();
@@ -1493,11 +1494,15 @@ void PartitionRoot::PurgeMemory(int flags, PurgeState& purge_state) {
         internal::PartitionRootLock(this)};
 
     if (flags & PurgeFlags::kDecommitEmptySlotSpans) {
+      // Everything the ring holds is about to be decommitted, so this is what
+      // the call is going to free. Reported here because we already hold the
+      // lock the counter is guarded by.
+      result.decommitted_empty_slot_spans_bytes = empty_slot_spans_dirty_bytes_;
       DecommitEmptySlotSpans();
 
       if (flags & PurgeFlags::kLimitDuration &&
           (now_maybe_overridden_for_testing_() - start > kMaxPurgeDuration)) {
-        return;
+        return result;
       }
     }
   }
@@ -1527,6 +1532,10 @@ void PartitionRoot::PurgeMemory(int flags, PurgeState& purge_state) {
       Bucket& bucket = PA_UNSAFE_TODO(buckets_[bucket_index]);
 
       if (bucket.slot_size >= min_bucket_size_to_purge) {
+        // Technically PartitionPurgeBucket should return the sum of each
+        // PartitionPurgeSlotSpan and add it up in `result`, but currently no
+        // user looks at this field so this is skipped to keep implementation
+        // simple.
         internal::PartitionPurgeBucket(this, &bucket);
       } else {
         if (sort_smaller_slot_span_free_lists_) {
@@ -1548,18 +1557,19 @@ void PartitionRoot::PurgeMemory(int flags, PurgeState& purge_state) {
         // Pick up where we stopped next time.
         purge_next_bucket_index =
             (bucket_index + 1) % BucketIndexLookup::kNumBuckets;
-        return;
+        return result;
       }
     }
 
     purge_next_bucket_index = 0;
     purge_generation = (purge_generation + 1) % 16;
   }
+  return result;
 }
 
-void PartitionRoot::PurgeMemory(int flags) {
+PurgeResult PartitionRoot::PurgeMemory(int flags) {
   PurgeState purge_state;
-  PurgeMemory(flags, purge_state);
+  return PurgeMemory(flags, purge_state);
 }
 
 void PartitionRoot::ShrinkEmptySlotSpansRing(size_t limit) {

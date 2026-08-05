@@ -1430,6 +1430,30 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
         // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  if (base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocAdaptiveMemoryReclaimInterval)) {
+    // Push the back-off configuration into the reclaimer before it is
+    // scheduled. The field trial params are base::TimeDelta while
+    // PartitionAlloc uses its own internal::base::TimeDelta, so convert them
+    // through microseconds.
+    auto to_pa_delta = [](TimeDelta delta) {
+      return ::partition_alloc::internal::base::Microseconds(
+          delta.InMicroseconds());
+    };
+    ::partition_alloc::MemoryReclaimer::AdaptiveIntervalConfig config;
+    config.enabled = true;
+    config.min_interval = to_pa_delta(
+        features::kPartitionAllocAdaptiveMemoryReclaimMinInterval.Get());
+    config.max_interval = to_pa_delta(
+        features::kPartitionAllocAdaptiveMemoryReclaimMaxInterval.Get());
+    config.default_interval = to_pa_delta(
+        features::kPartitionAllocAdaptiveMemoryReclaimDefaultInterval.Get());
+    config.min_decommittable_bytes = static_cast<size_t>(std::max(
+        0, features::kPartitionAllocAdaptiveMemoryReclaimMinDecommittableBytes
+               .Get()));
+    ::partition_alloc::MemoryReclaimer::Instance()->SetAdaptiveIntervalConfig(
+        config);
+  }
   base::allocator::StartMemoryReclaimer(
       base::SingleThreadTaskRunner::GetCurrentDefault());
 #endif

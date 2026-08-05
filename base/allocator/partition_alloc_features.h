@@ -167,6 +167,19 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocUseDenserDistribution);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocMemoryReclaimer);
 BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(TimeDelta,
                                        kPartitionAllocMemoryReclaimerInterval);
+BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocAdaptiveMemoryReclaimInterval);
+BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    TimeDelta,
+    kPartitionAllocAdaptiveMemoryReclaimMinInterval);
+BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    TimeDelta,
+    kPartitionAllocAdaptiveMemoryReclaimMaxInterval);
+BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    TimeDelta,
+    kPartitionAllocAdaptiveMemoryReclaimDefaultInterval);
+BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kPartitionAllocAdaptiveMemoryReclaimMinDecommittableBytes);
 BASE_EXPORT BASE_DECLARE_FEATURE(
     kPartitionAllocStraightenLargerSlotSpanFreeLists);
 BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(

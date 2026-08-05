@@ -612,8 +612,10 @@ class alignas(internal::kPartitionCachelineSize)
   // Caller is responsible to persist `purge_state` when calling this
   // periodically.
   // For single-time use, prefer one-param version.
-  PA_NOINLINE void PurgeMemory(int flags, PurgeState& purge_state);
-  PA_NOINLINE void PurgeMemory(int flags);
+  // Returns what was freed, see PurgeResult. Callers that do not care about
+  // the outcome can ignore it.
+  PA_NOINLINE PurgeResult PurgeMemory(int flags, PurgeState& purge_state);
+  PA_NOINLINE PurgeResult PurgeMemory(int flags);
 
   // Reduces the size of the empty slot spans ring, until the dirty size is <=
   // |limit|.

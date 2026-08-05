@@ -4,6 +4,8 @@
 
 #include "partition_alloc/memory_reclaimer.h"
 
+#include <array>
+#include <limits>
 #include <memory>
 #include <utility>
 
@@ -12,6 +14,7 @@
 #include "partition_alloc/internal/partition_root_internal.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/logging.h"
+#include "partition_alloc/partition_alloc_base/test/gtest_util.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_alloc_for_testing.h"
 #include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
@@ -66,6 +69,36 @@ class MemoryReclaimerTest : public ::testing::Test {
     allocator_->root()->Free(data);
   }
 
+  // The back-off policy internals are private. This fixture is a friend of
+  // MemoryReclaimer, but the TEST_F bodies below run in a derived class that is
+  // not, so expose what they need here.
+  using Config = MemoryReclaimer::AdaptiveIntervalConfig;
+
+  static internal::base::TimeDelta ComputeNextInterval(
+      const Config& config,
+      internal::base::TimeDelta current,
+      size_t total_decommitted_bytes) {
+    return MemoryReclaimer::ComputeNextReclaimInterval(config, current,
+                                                       total_decommitted_bytes);
+  }
+
+  // The properties the embedder relies on have to hold for any usable
+  // configuration, so the tests below check them against the defaults and
+  // against a deliberately different set of bounds.
+  static std::array<Config, 2> TestConfigs() {
+    Config defaults;
+    defaults.enabled = true;
+
+    Config custom;
+    custom.enabled = true;
+    custom.min_interval = internal::base::Seconds(1);
+    custom.max_interval = internal::base::Seconds(10);
+    custom.default_interval = internal::base::Seconds(3);
+    custom.min_decommittable_bytes = 1024;
+
+    return {defaults, custom};
+  }
+
   std::unique_ptr<PartitionAllocatorForTesting> allocator_;
 };
 
@@ -98,6 +131,210 @@ TEST_F(MemoryReclaimerTest, Reclaim) {
 
     EXPECT_LT(committed_after, committed_before);
     EXPECT_LE(committed_initially, committed_after);
+  }
+}
+
+// Tests for the adaptive reclaim-interval policy. The interval shrinks toward
+// config.min_interval when there is a lot of decommittable memory and grows
+// toward config.max_interval when there is little, with a stable hysteresis
+// band in between. Every result is clamped to [min_interval, max_interval].
+//
+// These check the properties the embedder relies on rather than the exact
+// arithmetic, so that the policy can be retuned without rewriting them.
+
+TEST_F(MemoryReclaimerTest, AdaptiveIntervalIsInertWhenDisabled) {
+  const int64_t fixed_interval =
+      MemoryReclaimer::Instance()
+          ->GetRecommendedReclaimIntervalInMicroseconds();
+  EXPECT_GT(fixed_interval, 0);
+
+  // A configuration that is not enabled must leave the embedder's cadence
+  // alone, however different its own bounds are.
+  Config config;
+  config.default_interval = internal::base::Seconds(30);
+  MemoryReclaimer::Instance()->SetAdaptiveIntervalConfig(config);
+
+  EXPECT_EQ(MemoryReclaimer::Instance()
+                ->GetRecommendedReclaimIntervalInMicroseconds(),
+            fixed_interval);
+}
+
+TEST_F(MemoryReclaimerTest, AdaptiveIntervalStartsAtDefault) {
+  Config config;
+  config.enabled = true;
+  config.default_interval = internal::base::Seconds(30);
+  MemoryReclaimer::Instance()->SetAdaptiveIntervalConfig(config);
+
+  EXPECT_EQ(MemoryReclaimer::Instance()
+                ->GetRecommendedReclaimIntervalInMicroseconds(),
+            config.default_interval.InMicroseconds());
+}
+
+TEST_F(MemoryReclaimerTest, AdaptiveIntervalConfigIsAppliedAsGiven) {
+  Config config;
+  config.enabled = true;
+  config.min_interval = internal::base::Seconds(2);
+  config.max_interval = internal::base::Minutes(5);
+  config.default_interval = internal::base::Seconds(45);
+  config.min_decommittable_bytes = 512 * 1024;
+  MemoryReclaimer::Instance()->SetAdaptiveIntervalConfig(config);
+
+  const Config applied = MemoryReclaimer::Instance()
+                             ->GetSanitizedAdaptiveIntervalConfigForTesting();
+  EXPECT_TRUE(applied.enabled);
+  EXPECT_EQ(applied.min_interval, config.min_interval);
+  EXPECT_EQ(applied.max_interval, config.max_interval);
+  EXPECT_EQ(applied.default_interval, config.default_interval);
+  EXPECT_EQ(applied.min_decommittable_bytes, config.min_decommittable_bytes);
+}
+
+TEST_F(MemoryReclaimerTest, AdaptiveIntervalConfigRejectsInvalidValues) {
+  // A configuration the state machine cannot run on is a bug in whatever
+  // produced it. Release builds repair it, but development builds must not
+  // paper over it.
+  {
+    Config config;
+    config.min_interval = internal::base::Seconds(-1);
+    PA_EXPECT_DCHECK_DEATH(
+        MemoryReclaimer::Instance()->SetAdaptiveIntervalConfig(config));
+  }
+  {
+    Config config;
+    config.max_interval = config.min_interval / 2;
+    PA_EXPECT_DCHECK_DEATH(
+        MemoryReclaimer::Instance()->SetAdaptiveIntervalConfig(config));
+  }
+  {
+    Config config;
+    config.default_interval = config.max_interval * 2;
+    PA_EXPECT_DCHECK_DEATH(
+        MemoryReclaimer::Instance()->SetAdaptiveIntervalConfig(config));
+  }
+  {
+    Config config;
+    config.min_decommittable_bytes = 0;
+    PA_EXPECT_DCHECK_DEATH(
+        MemoryReclaimer::Instance()->SetAdaptiveIntervalConfig(config));
+  }
+}
+
+// Reclaim() itself must feed back what it actually decommitted, not just carry
+// the configured default around.
+
+TEST_F(MemoryReclaimerTest, ReclaimShortensIntervalWhenPartitionsHoldMemory) {
+  Config config;
+  config.enabled = true;
+  config.min_interval = internal::base::Seconds(1);
+  config.max_interval = internal::base::Seconds(64);
+  config.default_interval = internal::base::Seconds(8);
+  // Make whatever the test partition decommits count as "a lot to reclaim".
+  config.min_decommittable_bytes = 1;
+  MemoryReclaimer::Instance()->SetAdaptiveIntervalConfig(config);
+
+  AllocateAndFree();
+  Reclaim();
+
+  const int64_t interval = MemoryReclaimer::Instance()
+                               ->GetRecommendedReclaimIntervalInMicroseconds();
+  EXPECT_LT(interval, config.default_interval.InMicroseconds());
+  EXPECT_GE(interval, config.min_interval.InMicroseconds());
+}
+
+TEST_F(MemoryReclaimerTest, ReclaimLengthensIntervalWhenLittleToReclaim) {
+  Config config;
+  config.enabled = true;
+  config.min_interval = internal::base::Seconds(1);
+  config.max_interval = internal::base::Seconds(64);
+  config.default_interval = internal::base::Seconds(8);
+  // A watermark no partition can reach, so there is never "a lot to reclaim".
+  config.min_decommittable_bytes = std::numeric_limits<size_t>::max() / 16;
+  MemoryReclaimer::Instance()->SetAdaptiveIntervalConfig(config);
+
+  AllocateAndFree();
+  Reclaim();
+  const int64_t interval = MemoryReclaimer::Instance()
+                               ->GetRecommendedReclaimIntervalInMicroseconds();
+  EXPECT_GT(interval, config.default_interval.InMicroseconds());
+  EXPECT_LE(interval, config.max_interval.InMicroseconds());
+}
+
+TEST_F(MemoryReclaimerTest, AdaptiveIntervalGrowsToMaxWhenLittleToReclaim) {
+  for (const Config& config : TestConfigs()) {
+    const size_t little_to_reclaim = config.min_decommittable_bytes - 1;
+    internal::base::TimeDelta interval = config.default_interval;
+    internal::base::TimeDelta previous;
+    do {
+      previous = interval;
+      interval = ComputeNextInterval(config, interval, little_to_reclaim);
+      EXPECT_GE(interval, previous);
+      EXPECT_LE(interval, config.max_interval);
+    } while (interval != previous);
+    EXPECT_EQ(interval, config.max_interval);
+  }
+}
+
+TEST_F(MemoryReclaimerTest, AdaptiveIntervalShrinksToMinWhenMuchToReclaim) {
+  for (const Config& config : TestConfigs()) {
+    const size_t much_to_reclaim = 10 * config.min_decommittable_bytes + 1;
+    internal::base::TimeDelta interval = config.max_interval;
+    internal::base::TimeDelta previous;
+    do {
+      previous = interval;
+      interval = ComputeNextInterval(config, interval, much_to_reclaim);
+      EXPECT_LE(interval, previous);
+      EXPECT_GE(interval, config.min_interval);
+    } while (interval != previous);
+    EXPECT_EQ(interval, config.min_interval);
+  }
+}
+
+TEST_F(MemoryReclaimerTest, AdaptiveIntervalIsStableAroundTheWatermark) {
+  // Around the watermark the interval is left alone, so that a workload
+  // hovering there doesn't make the cadence oscillate.
+  for (const Config& config : TestConfigs()) {
+    for (size_t bytes :
+         {config.min_decommittable_bytes, 2 * config.min_decommittable_bytes}) {
+      for (internal::base::TimeDelta interval :
+           {config.min_interval, config.default_interval,
+            config.max_interval}) {
+        EXPECT_EQ(ComputeNextInterval(config, interval, bytes), interval);
+      }
+    }
+  }
+}
+
+TEST_F(MemoryReclaimerTest, AdaptiveIntervalNeverGrowsWithMoreToReclaim) {
+  // The more there is to reclaim, the sooner the next reclaim must happen.
+  for (const Config& config : TestConfigs()) {
+    for (internal::base::TimeDelta interval :
+         {config.min_interval, config.default_interval, config.max_interval}) {
+      internal::base::TimeDelta previous =
+          ComputeNextInterval(config, interval, /*total_decommitted_bytes=*/0);
+      for (size_t multiplier = 1; multiplier <= 20; ++multiplier) {
+        const internal::base::TimeDelta next = ComputeNextInterval(
+            config, interval, multiplier * config.min_decommittable_bytes);
+        EXPECT_LE(next, previous);
+        previous = next;
+      }
+    }
+  }
+}
+
+TEST_F(MemoryReclaimerTest, AdaptiveIntervalAlwaysStaysWithinBounds) {
+  // Whatever it is fed, including an out-of-range current interval, the policy
+  // hands the embedder a delay it is willing to wake up on.
+  for (const Config& config : TestConfigs()) {
+    for (size_t multiplier = 0; multiplier <= 20; ++multiplier) {
+      for (internal::base::TimeDelta interval :
+           {config.min_interval / 2, config.min_interval,
+            config.default_interval, config.max_interval,
+            config.max_interval * 2}) {
+        const internal::base::TimeDelta next = ComputeNextInterval(
+            config, interval, multiplier * config.min_decommittable_bytes);
+        EXPECT_GE(next, config.min_interval);
+        EXPECT_LE(next, config.max_interval);
+      }
+    }
   }
 }
 

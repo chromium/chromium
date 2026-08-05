@@ -288,6 +288,38 @@ BASE_FEATURE_PARAM(TimeDelta,
                    TimeDelta()  // Defaults to zero.
 );
 
+// Whether the periodic memory reclaim interval adapts to how much memory is
+// actually reclaimable, instead of running at a fixed cadence: back off while
+// there is little to decommit, so that idle processes wake up less often, and
+// ramp back up once there is a lot. Only consulted when
+// `kPartitionAllocMemoryReclaimerInterval` does not pin the interval.
+BASE_FEATURE(kPartitionAllocAdaptiveMemoryReclaimInterval,
+             FEATURE_DISABLED_BY_DEFAULT);
+// Bounds of the back-off. The interval starts at `default_interval` and stays
+// within [`min_interval`, `max_interval`]. Defaults match
+// partition_alloc::MemoryReclaimer::AdaptiveIntervalConfig.
+BASE_FEATURE_PARAM(TimeDelta,
+                   kPartitionAllocAdaptiveMemoryReclaimMinInterval,
+                   &kPartitionAllocAdaptiveMemoryReclaimInterval,
+                   Seconds(4));
+BASE_FEATURE_PARAM(TimeDelta,
+                   kPartitionAllocAdaptiveMemoryReclaimMaxInterval,
+                   &kPartitionAllocAdaptiveMemoryReclaimInterval,
+                   Minutes(1));
+BASE_FEATURE_PARAM(TimeDelta,
+                   kPartitionAllocAdaptiveMemoryReclaimDefaultInterval,
+                   &kPartitionAllocAdaptiveMemoryReclaimInterval,
+                   Seconds(8));
+// Low watermark of decommittable bytes, at or below which the interval grows.
+// The default of 100 KiB was picked from live browser measurements as the
+// least aggressive back-off that still reduces reclaim wake-ups meaningfully
+// while keeping the per-reclaim decommit batch, and therefore the
+// committed-memory headroom, close to the non-adaptive baseline.
+BASE_FEATURE_PARAM(int,
+                   kPartitionAllocAdaptiveMemoryReclaimMinDecommittableBytes,
+                   &kPartitionAllocAdaptiveMemoryReclaimInterval,
+                   100 * 1024);
+
 // Configures whether we set a lower limit for renderers that do not have a main
 // frame, similar to the limit that is already done for backgrounded renderers.
 BASE_FEATURE(kLowerPAMemoryLimitForNonMainRenderers,

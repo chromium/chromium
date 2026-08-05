@@ -72,6 +72,16 @@ struct PurgeState {
   uint16_t next_bucket_index = 0;
 };
 
+// What a PartitionRoot::PurgeMemory() call managed to free, gathered while it
+// already holds the root lock so that callers interested in the outcome do not
+// have to take that lock again. Extend as more of the purge becomes worth
+// reporting.
+struct PurgeResult {
+  // Bytes that were held in empty slot spans and have been decommitted by
+  // PurgeFlags::kDecommitEmptySlotSpans. Zero without that flag.
+  size_t decommitted_empty_slot_spans_bytes = 0;
+};
+
 namespace internal {
 // Declare PartitionRootLock() for thread analysis. Its implementation
 // is defined in partition_root.h.
