@@ -1398,6 +1398,21 @@ void WebTransport::StopSending(uint32_t stream_id, uint32_t code) {
   transport_remote_->StopSending(stream_id, code);
 }
 
+void WebTransport::SetStreamPriority(
+    uint32_t stream_id,
+    network::mojom::blink::WebTransportStreamPriorityPtr priority) {
+  CHECK(priority);
+  DVLOG(1) << "WebTransport::SetStreamPriority() this=" << this
+           << ", stream_id=" << stream_id
+           << ", has_send_group_id=" << priority->send_group_id.has_value()
+           << ", send_group_id=" << priority->send_group_id.value_or(0)
+           << ", send_order=" << priority->send_order;
+  if (!transport_remote_.is_bound()) {
+    return;
+  }
+  transport_remote_->SetStreamPriority(stream_id, std::move(priority));
+}
+
 void WebTransport::ForgetIncomingStream(uint32_t stream_id,
                                         bool has_received_close) {
   DVLOG(1) << "WebTransport::ForgetIncomingStream() this=" << this
@@ -1839,14 +1854,8 @@ void WebTransport::OnCreateSendStreamResponse(
     auto* send_stream = MakeGarbageCollected<WebTransportSendStream>(
         script_state_, this, stream_id, std::move(producer));
     send_stream->Init(PassThroughException(isolate));
-    // Apply options from createUnidirectionalStream(). setSendGroup() can
-    // throw (e.g. InvalidStateError if the group belongs to another
-    // transport), so this must be inside the try_catch scope.
     if (!try_catch.HasCaught()) {
-      send_stream->ApplySendStreamOptions(send_group, send_order,
-                                          PassThroughException(isolate));
-    }
-    if (!try_catch.HasCaught()) {
+      send_stream->ApplySendStreamOptions(send_group, send_order);
       outgoing_stream = send_stream->GetOutgoingStream();
       writable_stream = send_stream;
     }
@@ -1907,13 +1916,10 @@ void WebTransport::OnCreateBidirectionalStreamResponse(
   v8::TryCatch try_catch(isolate);
   bidirectional_stream->Init(PassThroughException(isolate));
 
-  // Apply options from createBidirectionalStream(). Must be inside the
-  // try_catch scope to properly catch any exception from setSendGroup().
   if (!try_catch.HasCaught()) {
     if (auto* send_stream = DynamicTo<WebTransportSendStream>(
             bidirectional_stream->writable())) {
-      send_stream->ApplySendStreamOptions(send_group, send_order,
-                                          PassThroughException(isolate));
+      send_stream->ApplySendStreamOptions(send_group, send_order);
     }
   }
 

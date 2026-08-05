@@ -171,6 +171,11 @@ interface WebTransport {
   // This is the last message and it is not allowed to call methods after
   // calling this.
   Close(WebTransportCloseInfo? close_info);
+
+  // Updates the scheduling priority of a previously created outgoing stream
+  // identified by |stream_id|. Corresponds to the JavaScript
+  // WebTransportSendStream.sendGroup and .sendOrder setters.
+  SetStreamPriority(uint32 stream_id, WebTransportStreamPriority priority);
 };
 
 // A mojo interface for the client of WebTransport.

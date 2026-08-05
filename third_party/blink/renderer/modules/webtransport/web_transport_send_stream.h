@@ -60,11 +60,10 @@ class MODULES_EXPORT WebTransportSendStream final : public WritableStream {
   int64_t sendOrder() const { return send_order_; }
   void setSendOrder(int64_t order);
 
-  // Applies sendGroup and sendOrder from stream-creation options. Checks for
-  // exception after setSendGroup() before proceeding to setSendOrder().
+  // Applies sendGroup and sendOrder from stream-creation options. Validation
+  // and the network-service update already happened during stream creation.
   void ApplySendStreamOptions(WebTransportSendGroup* send_group,
-                              int64_t send_order,
-                              ExceptionState& exception_state);
+                              int64_t send_order);
 
   // IDL method
   ScriptPromise<WebTransportSendStreamStats> getStats(ScriptState*);
@@ -72,7 +71,10 @@ class MODULES_EXPORT WebTransportSendStream final : public WritableStream {
   void Trace(Visitor*) const override;
 
  private:
+  void SendPriorityUpdate();
+
   const Member<WebTransport> transport_;
+  const uint32_t stream_id_;
   const Member<OutgoingStream> outgoing_stream_;
   Member<WebTransportSendGroup> send_group_;  // nullable, default null
   int64_t send_order_ = 0;

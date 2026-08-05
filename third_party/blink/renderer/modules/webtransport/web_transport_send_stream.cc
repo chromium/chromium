@@ -4,8 +4,10 @@
 
 #include "third_party/blink/renderer/modules/webtransport/web_transport_send_stream.h"
 
+#include <optional>
 #include <utility>
 
+#include "services/network/public/mojom/web_transport.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_send_stream_stats.h"
 #include "third_party/blink/renderer/modules/webtransport/outgoing_stream_client.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport.h"
@@ -23,6 +25,7 @@ WebTransportSendStream::WebTransportSendStream(
     mojo::ScopedDataPipeProducerHandle handle)
     : WritableStream(script_state),
       transport_(web_transport),
+      stream_id_(stream_id),
       outgoing_stream_(MakeGarbageCollected<OutgoingStream>(
           script_state,
           MakeGarbageCollected<OutgoingStreamClient>(web_transport, stream_id),
@@ -40,26 +43,33 @@ void WebTransportSendStream::setSendGroup(WebTransportSendGroup* group,
         "The sendGroup belongs to a different WebTransport instance.");
     return;
   }
-  // TODO(crbug.com/487117768): Send priority update via Mojo.
-  send_group_ = group;
+  if (send_group_ != group) {
+    send_group_ = group;
+    SendPriorityUpdate();
+  }
 }
 
 void WebTransportSendStream::setSendOrder(int64_t order) {
-  // TODO(crbug.com/487117768): Send priority update via Mojo.
-  send_order_ = order;
+  if (send_order_ != order) {
+    send_order_ = order;
+    SendPriorityUpdate();
+  }
 }
 
 void WebTransportSendStream::ApplySendStreamOptions(
     WebTransportSendGroup* send_group,
-    int64_t send_order,
-    ExceptionState& exception_state) {
-  if (send_group) {
-    setSendGroup(send_group, exception_state);
-    if (exception_state.HadException()) {
-      return;
-    }
-  }
-  setSendOrder(send_order);
+    int64_t send_order) {
+  send_group_ = send_group;
+  send_order_ = send_order;
+}
+
+void WebTransportSendStream::SendPriorityUpdate() {
+  transport_->SetStreamPriority(
+      stream_id_,
+      network::mojom::blink::WebTransportStreamPriority::New(
+          send_group_ ? std::make_optional<uint32_t>(send_group_->group_id())
+                      : std::nullopt,
+          send_order_));
 }
 
 ScriptPromise<WebTransportSendStreamStats> WebTransportSendStream::getStats(

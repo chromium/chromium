@@ -155,6 +155,12 @@ class MODULES_EXPORT WebTransport final
   // Forwards a StopSending() message to the mojo interface.
   void StopSending(uint32_t stream_id, uint32_t code);
 
+  // Forwards a SetStreamPriority() message to the mojo interface. Used by
+  // WebTransportSendStream when its sendGroup or sendOrder is changed.
+  void SetStreamPriority(
+      uint32_t stream_id,
+      network::mojom::blink::WebTransportStreamPriorityPtr priority);
+
   // Removes the reference to a stream. |has_received_close| indicates whether
   // OnIncomingStreamClosed() was called for this stream before it was
   // forgotten.

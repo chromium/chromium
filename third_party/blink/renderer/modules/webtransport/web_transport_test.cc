@@ -189,6 +189,10 @@ class MockWebTransport : public network::mojom::blink::WebTransport {
 
   MOCK_METHOD1(SetOutgoingDatagramExpirationDuration, void(base::TimeDelta));
   MOCK_METHOD1(GetStats, void(GetStatsCallback));
+  MOCK_METHOD2(
+      SetStreamPriority,
+      void(uint32_t stream_id,
+           network::mojom::blink::WebTransportStreamPriorityPtr priority));
   MOCK_METHOD0(Close, void());
   MOCK_METHOD2(Close, void(uint32_t, String));
 
@@ -2515,6 +2519,22 @@ TEST_F(WebTransportTest, SendStreamSetSendGroup) {
         std::move(callback).Run(true, 0);
       });
 
+  auto* group = web_transport->createSendGroup(ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(group);
+  EXPECT_CALL(*mock_web_transport_, SetStreamPriority(0u, _))
+      .WillOnce([&](uint32_t,
+                    network::mojom::blink::WebTransportStreamPriorityPtr p) {
+        ASSERT_TRUE(p);
+        EXPECT_EQ(p->send_group_id, std::optional<uint32_t>(group->group_id()));
+        EXPECT_EQ(p->send_order, 0);
+      })
+      .WillOnce(
+          [](uint32_t, network::mojom::blink::WebTransportStreamPriorityPtr p) {
+            ASSERT_TRUE(p);
+            EXPECT_FALSE(p->send_group_id.has_value());
+            EXPECT_EQ(p->send_order, 0);
+          });
+
   auto* script_state = scope.GetScriptState();
   auto send_stream_promise = web_transport->createUnidirectionalStream(
       script_state, EmptySendStreamOptions(), ASSERT_NO_EXCEPTION);
@@ -2528,16 +2548,23 @@ TEST_F(WebTransportTest, SendStreamSetSendGroup) {
   auto* send_stream = DynamicTo<WebTransportSendStream>(writable);
   ASSERT_TRUE(send_stream);
 
-  // Create a send group and assign it.
-  auto* group = web_transport->createSendGroup(ASSERT_NO_EXCEPTION);
-  ASSERT_TRUE(group);
+  // Assigning a send group sends a priority update over Mojo.
+  // Re-setting the default group must not send a priority update.
+  send_stream->setSendGroup(nullptr, ASSERT_NO_EXCEPTION);
+  test::RunPendingTasks();
 
   send_stream->setSendGroup(group, ASSERT_NO_EXCEPTION);
   EXPECT_EQ(send_stream->sendGroup(), group);
+  test::RunPendingTasks();
 
-  // Setting to null should also work.
+  // Re-setting the current group must not send a priority update.
+  send_stream->setSendGroup(group, ASSERT_NO_EXCEPTION);
+  test::RunPendingTasks();
+
+  // Setting to null sends another update that clears the group.
   send_stream->setSendGroup(nullptr, ASSERT_NO_EXCEPTION);
   EXPECT_EQ(send_stream->sendGroup(), nullptr);
+  test::RunPendingTasks();
 }
 
 TEST_F(WebTransportTest, SendStreamSetSendGroupCrossTransportThrows) {
@@ -2599,6 +2626,19 @@ TEST_F(WebTransportTest, SendStreamSetSendOrder) {
         std::move(callback).Run(true, 0);
       });
 
+  EXPECT_CALL(*mock_web_transport_, SetStreamPriority(0u, _))
+      .WillOnce(
+          [](uint32_t, network::mojom::blink::WebTransportStreamPriorityPtr p) {
+            ASSERT_TRUE(p);
+            EXPECT_FALSE(p->send_group_id.has_value());
+            EXPECT_EQ(p->send_order, 42);
+          })
+      .WillOnce(
+          [](uint32_t, network::mojom::blink::WebTransportStreamPriorityPtr p) {
+            ASSERT_TRUE(p);
+            EXPECT_EQ(p->send_order, -100);
+          });
+
   auto* script_state = scope.GetScriptState();
   auto send_stream_promise = web_transport->createUnidirectionalStream(
       script_state, EmptySendStreamOptions(), ASSERT_NO_EXCEPTION);
@@ -2612,11 +2652,22 @@ TEST_F(WebTransportTest, SendStreamSetSendOrder) {
   auto* send_stream = DynamicTo<WebTransportSendStream>(writable);
   ASSERT_TRUE(send_stream);
 
+  // Setting sendOrder sends a priority update over Mojo.
+  // Re-setting the default order must not send a priority update.
+  send_stream->setSendOrder(0);
+  test::RunPendingTasks();
+
   send_stream->setSendOrder(42);
   EXPECT_EQ(send_stream->sendOrder(), 42);
+  test::RunPendingTasks();
+
+  // Re-setting the current order must not send a priority update.
+  send_stream->setSendOrder(42);
+  test::RunPendingTasks();
 
   send_stream->setSendOrder(-100);
   EXPECT_EQ(send_stream->sendOrder(), -100);
+  test::RunPendingTasks();
 }
 
 TEST_F(WebTransportTest, SendStreamGetStats) {
@@ -2695,6 +2746,22 @@ TEST_F(WebTransportTest, BidirectionalStreamWritableIsSendStream) {
         std::move(callback).Run(true, 0);
       });
 
+  auto* group = web_transport->createSendGroup(ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(group);
+  EXPECT_CALL(*mock_web_transport_, SetStreamPriority(0u, _))
+      .WillOnce([&](uint32_t,
+                    network::mojom::blink::WebTransportStreamPriorityPtr p) {
+        ASSERT_TRUE(p);
+        EXPECT_EQ(p->send_group_id, std::optional<uint32_t>(group->group_id()));
+        EXPECT_EQ(p->send_order, 0);
+      })
+      .WillOnce([&](uint32_t,
+                    network::mojom::blink::WebTransportStreamPriorityPtr p) {
+        ASSERT_TRUE(p);
+        EXPECT_EQ(p->send_group_id, std::optional<uint32_t>(group->group_id()));
+        EXPECT_EQ(p->send_order, 55);
+      });
+
   auto* script_state = scope.GetScriptState();
   auto bidirectional_stream_promise = web_transport->createBidirectionalStream(
       script_state, EmptySendStreamOptions(), ASSERT_NO_EXCEPTION);
@@ -2713,9 +2780,17 @@ TEST_F(WebTransportTest, BidirectionalStreamWritableIsSendStream) {
   auto* send_stream = DynamicTo<WebTransportSendStream>(writable);
   ASSERT_TRUE(send_stream);
 
-  // Default attribute values.
+  // Default attribute values should not be sent to the network.
   EXPECT_EQ(send_stream->sendGroup(), nullptr);
   EXPECT_EQ(send_stream->sendOrder(), 0);
+
+  send_stream->setSendGroup(group, ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(send_stream->sendGroup(), group);
+  test::RunPendingTasks();
+
+  send_stream->setSendOrder(55);
+  EXPECT_EQ(send_stream->sendOrder(), 55);
+  test::RunPendingTasks();
 }
 
 TEST_F(WebTransportTest, CreateSendStreamFlagOffReturnsSendStream) {
@@ -2838,6 +2913,7 @@ TEST_F(WebTransportTest, CreateUnidirectionalStreamWithSendOrderOnly) {
   auto* options = MakeGarbageCollected<WebTransportSendStreamOptions>();
   options->setSendOrder(99);
 
+  EXPECT_CALL(*mock_web_transport_, SetStreamPriority(_, _)).Times(0);
   EXPECT_CALL(*mock_web_transport_, CreateStream(_, _, _, _))
       .WillOnce(
           [](Unused, Unused,
@@ -2855,6 +2931,7 @@ TEST_F(WebTransportTest, CreateUnidirectionalStreamWithSendOrderOnly) {
 
   tester.WaitUntilSettled();
   ASSERT_TRUE(tester.IsFulfilled());
+  test::RunPendingTasks();
 
   auto* writable = V8WritableStream::ToWrappable(scope.GetIsolate(),
                                                  tester.Value().V8Value());

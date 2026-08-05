@@ -85,6 +85,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebTransport final
   void SendFin(uint32_t stream_id) override;
   void AbortStream(uint32_t stream_id, uint8_t code) override;
   void StopSending(uint32_t stream_id, uint8_t code) override;
+  void SetStreamPriority(
+      uint32_t stream_id,
+      mojom::WebTransportStreamPriorityPtr priority) override;
   void SetOutgoingDatagramExpirationDuration(base::TimeDelta duration) override;
   void GetStats(GetStatsCallback callback) override;
   void Close(mojom::WebTransportCloseInfoPtr close_info) override;

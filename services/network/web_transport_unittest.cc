@@ -850,6 +850,77 @@ TEST_F(WebTransportTest, EchoOnUnidirectionalStreams) {
   EXPECT_EQ(0u, resets_sent.size());
 }
 
+TEST_F(WebTransportTest, SetStreamPriority) {
+  base::test::TestFuture<void> handshake_future;
+  mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client;
+  TestHandshakeClient test_handshake_client(
+      handshake_client.InitWithNewPipeAndPassReceiver(),
+      handshake_future.GetCallback());
+
+  CreateWebTransport(GetURL("/echo"),
+                     url::Origin::Create(GURL("https://example.org/")),
+                     std::move(handshake_client));
+
+  ASSERT_TRUE(handshake_future.Wait());
+  ASSERT_TRUE(test_handshake_client.has_seen_connection_establishment());
+
+  TestClient client(test_handshake_client.PassClientReceiver());
+  mojo::Remote<mojom::WebTransport> transport_remote(
+      test_handshake_client.PassTransport());
+
+  mojo::ScopedDataPipeConsumerHandle readable_for_outgoing;
+  mojo::ScopedDataPipeProducerHandle writable_for_outgoing;
+  const MojoCreateDataPipeOptions options = {
+      sizeof(options), MOJO_CREATE_DATA_PIPE_FLAG_NONE, 1, 4 * 1024};
+  ASSERT_EQ(MOJO_RESULT_OK,
+            mojo::CreateDataPipe(&options, writable_for_outgoing,
+                                 readable_for_outgoing));
+  size_t actually_written_bytes = 0;
+  ASSERT_EQ(MOJO_RESULT_OK,
+            writable_for_outgoing->WriteData(
+                base::byte_span_from_cstring("hello"),
+                MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes));
+
+  base::test::TestFuture<bool, uint32_t> stream_creation_future;
+  transport_remote->CreateStream(std::move(readable_for_outgoing),
+                                 /*writable=*/{}, /*priority=*/nullptr,
+                                 stream_creation_future.GetCallback());
+  ASSERT_TRUE(stream_creation_future.Get<0>());
+  const uint32_t stream_id = stream_creation_future.Get<1>();
+
+  // Update the stream's priority after creation. This mirrors the JavaScript
+  // WebTransportSendStream.sendGroup / sendOrder setters and must not disrupt
+  // the stream.
+  transport_remote->SetStreamPriority(
+      stream_id, mojom::WebTransportStreamPriority::New(
+                     /*send_group_id=*/std::make_optional<uint32_t>(3),
+                     /*send_order=*/42));
+  // Setting priority on an unknown stream id must be a harmless no-op.
+  transport_remote->SetStreamPriority(
+      stream_id + 1234,
+      mojom::WebTransportStreamPriority::New(std::nullopt, 0));
+
+  transport_remote->SendFin(stream_id);
+  writable_for_outgoing.reset();
+
+  client.WaitUntilOutgoingStreamIsClosed(stream_id);
+
+  base::test::TestFuture<uint32_t, mojo::ScopedDataPipeConsumerHandle>
+      incoming_stream_future;
+  transport_remote->AcceptUnidirectionalStream(
+      incoming_stream_future.GetCallback());
+  auto [incoming_stream_id, readable_for_incoming] =
+      incoming_stream_future.Take();
+  ASSERT_TRUE(readable_for_incoming);
+
+  // The stream is unaffected by the priority updates and still echoes.
+  std::string echo_back = Read(std::move(readable_for_incoming));
+  EXPECT_EQ("hello", echo_back);
+
+  client.WaitUntilIncomingStreamIsClosed(incoming_stream_id);
+  EXPECT_FALSE(client.has_seen_mojo_connection_error());
+}
+
 TEST_F(WebTransportTest, SessionDraining) {
   base::RunLoop run_loop_for_handshake;
   mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client;

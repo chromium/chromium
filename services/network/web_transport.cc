@@ -218,6 +218,12 @@ class WebTransport::Stream final {
     MaySendFin();
   }
 
+  void SetPriority(const webtransport::StreamPriority& priority) {
+    if (outgoing_) {
+      outgoing_->SetPriority(priority);
+    }
+  }
+
   void Abort(uint8_t code) {
     if (!outgoing_) {
       return;
@@ -598,6 +604,16 @@ void WebTransport::StopSending(uint32_t stream, uint8_t code) {
     return;
   }
   it->second->StopSending(code);
+}
+
+void WebTransport::SetStreamPriority(
+    uint32_t stream,
+    mojom::WebTransportStreamPriorityPtr priority) {
+  auto it = streams_.find(stream);
+  if (it == streams_.end()) {
+    return;
+  }
+  it->second->SetPriority(ToStreamPriority(*priority));
 }
 
 void WebTransport::SetOutgoingDatagramExpirationDuration(

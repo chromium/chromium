@@ -164,6 +164,10 @@ class StubWebTransport : public network::mojom::blink::WebTransport {
     // TODO(ricea): Record that this was called when a test needs it.
   }
 
+  void SetStreamPriority(
+      uint32_t stream_id,
+      network::mojom::blink::WebTransportStreamPriorityPtr priority) override {}
+
   void SetOutgoingDatagramExpirationDuration(base::TimeDelta) override {}
 
   void GetStats(GetStatsCallback callback) override {

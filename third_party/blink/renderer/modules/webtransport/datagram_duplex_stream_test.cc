@@ -80,6 +80,10 @@ class StubWebTransport final : public network::mojom::blink::WebTransport {
 
   void StopSending(uint32_t stream_id, uint8_t code) override {}
 
+  void SetStreamPriority(
+      uint32_t stream_id,
+      network::mojom::blink::WebTransportStreamPriorityPtr priority) override {}
+
   void SetOutgoingDatagramExpirationDuration(base::TimeDelta value) override {
     outgoing_datagram_expiration_duration_value_ = value;
   }
