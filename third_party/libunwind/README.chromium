@@ -1,7 +1,7 @@
 Name: libunwind
 URL: https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libunwind.git
 Version: N/A
-Revision: ec7ac638dae6f39c950d4606809b81fdca815a19
+Revision: 871ec683fbad86cadffff0a749d9befedda01248
 Update Mechanism: Autoroll
 License: NCSA, Apache-with-LLVM-Exception, MIT
 License File: src/LICENSE.TXT
