@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabwindow.TabWindowInfo;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -99,22 +100,24 @@ public class TabSearchOverlayCoordinator implements BackPressHandler {
     private final BackPressManager mBackPressManager;
     private final MonotonicObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     private final OneshotSupplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
-    // Recursion guard to prevent event dispatch loops when forwarding scrim scroll/drag events
-    // to the underlying compositor view hierarchy.
-    private boolean mIsForwardingScroll;
     private final SettableNonNullObservableSupplier<Boolean> mBackPressStateSupplier =
             ObservableSuppliers.createNonNull(false);
     private final PropertyModel mModel;
     private final SearchBoxDataProvider mSearchBoxDataProvider;
     private final Callback<Profile> mProfileObserver;
+    private final Callback<TabModelSelector> mTabModelSelectorObserver;
+    private final Callback<Boolean> mSuggestionsObserver = this::onSuggestionsChanged;
 
+    // Recursion guard to prevent event dispatch loops when forwarding scrim scroll/drag events
+    // to the underlying compositor view hierarchy.
+    private boolean mIsForwardingScroll;
     private @Nullable
             PropertyModelChangeProcessor<
                     PropertyModel, TabSearchOverlayViewBinder.ViewHolder, PropertyKey>
             mChangeProcessor;
     private @Nullable LinearLayout mPanelContainer;
     private @Nullable SearchUiCoordinator mSearchUiCoordinator;
-    private final Callback<Boolean> mSuggestionsObserver = this::onSuggestionsChanged;
+    private @Nullable TabModelSelectorTabModelObserver mTabModelObserver;
 
     /**
      * Constructs a new TabSearchOverlayCoordinator.
@@ -169,11 +172,19 @@ public class TabSearchOverlayCoordinator implements BackPressHandler {
 
         mProfileObserver = this::onProfileChanged;
         mProfileSupplier.addSyncObserverAndCallIfNonNull(mProfileObserver);
+
+        mTabModelSelectorObserver = this::onTabModelSelectorChanged;
+        mTabModelSelectorSupplier.addSyncObserverAndCallIfNonNull(mTabModelSelectorObserver);
     }
 
     /** Destroys the coordinator, cleaning up resources and child coordinators. */
     public void destroy() {
         mProfileSupplier.removeObserver(mProfileObserver);
+        mTabModelSelectorSupplier.removeObserver(mTabModelSelectorObserver);
+        if (mTabModelObserver != null) {
+            mTabModelObserver.destroy();
+            mTabModelObserver = null;
+        }
         mBackPressManager.removeHandler(this);
         if (mChangeProcessor != null) {
             mChangeProcessor.destroy();
@@ -522,6 +533,22 @@ public class TabSearchOverlayCoordinator implements BackPressHandler {
             var locationBar = mSearchUiCoordinator.getLocationBarCoordinator();
             locationBar.clearOmniboxFocus();
         }
+    }
+
+    private void onTabModelSelectorChanged(TabModelSelector selector) {
+        // Listens to tab model selector changes to perform updates for multi-window switching.
+        if (mTabModelObserver != null) {
+            mTabModelObserver.destroy();
+        }
+        mTabModelObserver =
+                new TabModelSelectorTabModelObserver(selector) {
+                    @Override
+                    public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
+                        if (isVisible()) {
+                            hide();
+                        }
+                    }
+                };
     }
 
     // BackPressHandler implementation.

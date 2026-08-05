@@ -70,6 +70,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
@@ -128,6 +129,8 @@ public class TabSearchOverlayCoordinatorUnitTest {
             ObservableSuppliers.createMonotonic();
     private final SettableMonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier =
             ObservableSuppliers.createMonotonic();
+    private final SettableMonotonicObservableSupplier<TabModel> mTabModelSupplier =
+            ObservableSuppliers.createMonotonic();
 
     @Captor private ArgumentCaptor<OverrideUrlLoadingDelegate> mOverrideUrlLoadingDelegateCaptor;
     @Captor private ArgumentCaptor<Callback<String>> mBringTabGroupToFrontCallbackCaptor;
@@ -143,11 +146,14 @@ public class TabSearchOverlayCoordinatorUnitTest {
         mActivity.setContentView(mParentContainer);
 
         mTabModelSelectorSupplier.set(mTabModelSelector);
+        mTabModelSupplier.set(mTabModel);
         mProfileSupplier.set(mProfile);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
         mTabGroupUiActionHandlerSupplier.set(mTabGroupUiActionHandler);
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
         when(mTabModelSelector.getModel(true)).thenReturn(mTabModel);
+        when(mTabModelSelector.getCurrentTabModelSupplier()).thenReturn(mTabModelSupplier);
+        when(mTabModelSelector.getModels()).thenReturn(List.of(mTabModel));
 
         when(mSearchUiCoordinator.getLocationBarCoordinator()).thenReturn(mLocationBarCoordinator);
         when(mLocationBarCoordinator.getUrlBarCoordinator()).thenReturn(mUrlBarCoordinator);
@@ -727,5 +733,23 @@ public class TabSearchOverlayCoordinatorUnitTest {
 
         verify(mCompositorViewHolder, never()).dispatchGenericMotionEvent(any(MotionEvent.class));
         clickEvent.recycle();
+    }
+
+    @Test
+    public void testTabSelectionHidesOverlay() {
+        showOverlay();
+        assertTrue(mCoordinator.isVisible());
+
+        // Capture the registered TabModelObserver from the mock TabModel.
+        ArgumentCaptor<TabModelObserver> captor = ArgumentCaptor.forClass(TabModelObserver.class);
+        verify(mTabModel).addObserver(captor.capture());
+        TabModelObserver observer = captor.getValue();
+        assertNotNull(observer);
+
+        // Trigger didSelectTab.
+        observer.didSelectTab(mTab, TabSelectionType.FROM_USER, Tab.INVALID_TAB_ID);
+
+        // Verify the overlay is hidden.
+        assertOverlayHidden();
     }
 }
