@@ -653,14 +653,14 @@ public class PdfCoordinatorUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
     @Config(shadows = {ShadowEditablePdfViewerFragment.class, ShadowPdfView.class})
-    public void testFormFillingEnabledBasedOnEditMode() {
+    public void testFormFillingEnabledWhenInlinePdfV2IsEnabled() {
         createPdfCoordinator();
 
-        // Initially, when view is created with edit mode false, form filling should be enabled
+        // Initially, when view is created, form filling should be enabled
         mPdfCoordinator.mChromePdfViewerFragment.onPdfViewCreated(mPdfView);
         ShadowPdfView shadowPdfView = Shadow.extract(mPdfView);
         assertTrue(
-                "Form filling should be enabled initially since edit mode is false",
+                "Form filling should be enabled initially",
                 shadowPdfView.isFormFillingEnabled());
 
         PdfDocument pdfDocument = Mockito.mock(PdfDocument.class);
@@ -671,22 +671,18 @@ public class PdfCoordinatorUnitTest {
                 "Form filling should still be enabled after document load success",
                 shadowPdfView.isFormFillingEnabled());
 
-        // Simulate entering edit mode
-        mPdfCoordinator.mChromePdfViewerFragment.onEnterEditMode();
-        assertFalse(
-                "Form filling should be disabled when in edit mode",
-                shadowPdfView.isFormFillingEnabled());
-
-        // Simulate exiting edit mode
-        mPdfCoordinator.mChromePdfViewerFragment.onExitEditMode();
-        assertTrue(
-                "Form filling should be enabled again when exiting edit mode",
-                shadowPdfView.isFormFillingEnabled());
-
-        // Simulate document reload success after edit mode is exited
+        // Simulate document reload success
         mPdfCoordinator.mChromePdfViewerFragment.onLoadDocumentSuccess(pdfDocument);
         assertTrue(
-                "Form filling should remain enabled after reload when edit mode is false",
+                "Form filling should remain enabled after reload",
+                shadowPdfView.isFormFillingEnabled());
+
+        // Verify that if edit mode is true, document reload does not enable form filling
+        mPdfCoordinator.mChromePdfViewerFragment.setEditModeEnabled(true);
+        shadowPdfView.setFormFillingEnabled(false);
+        mPdfCoordinator.mChromePdfViewerFragment.onLoadDocumentSuccess(pdfDocument);
+        assertFalse(
+                "Form filling should not be enabled on reload when edit mode is true",
                 shadowPdfView.isFormFillingEnabled());
     }
 

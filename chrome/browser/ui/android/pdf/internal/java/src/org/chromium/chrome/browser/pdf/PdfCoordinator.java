@@ -587,9 +587,6 @@ public class PdfCoordinator
         @Override
         public void onEnterEditMode() {
             super.onEnterEditMode();
-            if (PdfUtils.isInlinePdfV2Enabled() && mPdfView != null) {
-                mPdfView.setFormFillingEnabled(false);
-            }
             if (mDelegate != null) {
                 mDelegate.onEditModeChanged(true);
             }
@@ -598,9 +595,6 @@ public class PdfCoordinator
         @Override
         public void onExitEditMode() {
             super.onExitEditMode();
-            if (PdfUtils.isInlinePdfV2Enabled() && mPdfView != null) {
-                mPdfView.setFormFillingEnabled(true);
-            }
             if (mDelegate != null) {
                 mDelegate.onEditModeChanged(false);
             }
