@@ -14,8 +14,8 @@
 - (void)viewControllerDidTapTranslateOptionsButton:
     (PageActionMenuViewController*)viewController;
 
-// Called when a signed-out user taps the Ask Gemini button.
-- (void)viewControllerDidTapSignedOutGemini:
+// Called when the user taps the Ask Gemini button.
+- (void)viewControllerDidTapGemini:
     (PageActionMenuViewController*)viewController;
 
 // Called when the user taps a link in the footer.

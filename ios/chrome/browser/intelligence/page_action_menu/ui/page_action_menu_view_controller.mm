@@ -15,8 +15,6 @@
 #import "ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_constants.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_metrics.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
-#import "ios/chrome/browser/reader_mode/model/features.h"
-#import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
@@ -613,24 +611,14 @@ const CGFloat kDividerWidth = 1.0;
 
 #pragma mark - Handlers
 
-// Dismisses this view controller and starts the Gemini overlay.
+// Handles tapping the Ask Gemini button.
 - (void)handleGeminiTapped:(UIButton*)button {
-  // Signed-out: notify delegate to handle the sign-in flow.
-  if (IsPageActionMenuAuthFlowEnabled() && ![self.mutator isUserSignedIn]) {
+  if ([self.mutator isUserSignedIn]) {
+    RecordAIHubAction(IOSAIHubAction::kGemini);
+  } else {
     RecordAIHubAction(IOSAIHubAction::kGeminiSignedOut);
-    [self.delegate viewControllerDidTapSignedOutGemini:self];
-    return;
   }
-
-  // Signed-in and eligible: start Gemini.
-  RecordAIHubAction(IOSAIHubAction::kGemini);
-  PageActionMenuViewController* __weak weakSelf = self;
-  [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:^{
-    [weakSelf.geminiHandler
-        startGeminiFlowWithStartupState:
-            [[GeminiStartupState alloc]
-                initWithEntryPoint:gemini::EntryPoint::AIHub]];
-  }];
+  [self.delegate viewControllerDidTapGemini:self];
 }
 
 // Dismisses the view controller and starts the Lens overlay.

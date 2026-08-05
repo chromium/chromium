@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_consumer.h"
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_options_consumer.h"
 
-@protocol GeminiCommands;
 @protocol LensOverlayCommands;
 @protocol PageActionMenuCommands;
 @protocol PageActionMenuMutator;
@@ -33,9 +32,6 @@
 
 // The mutator for communicating with the mediator.
 @property(nonatomic, weak) id<PageActionMenuMutator> mutator;
-
-// The handler for sending Gemini commands.
-@property(nonatomic, weak) id<GeminiCommands> geminiHandler;
 
 // The handler for sending page action menu commands.
 @property(nonatomic, weak) id<PageActionMenuCommands> pageActionMenuHandler;
