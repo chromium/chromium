@@ -24,6 +24,7 @@ namespace dictation {
 
 class ListenerStreamProvider;
 class SessionUiImpl;
+struct TargetDetails;
 
 class DictationInteractiveBrowserTestBase
     : public InteractiveBrowserTestMixin<DictationBrowserTestBase> {
@@ -47,7 +48,10 @@ class DictationInteractiveBrowserTestBase
 
   // Starts a dictation session. If a stream is created this will also block
   // until the StreamStart event has been received in the extension.
+  // Prefer specifying a target in new tests.
   MultiStep StartSession();
+  MultiStep StartSessionWithTarget(ui::ElementIdentifier web_contents_id,
+                                   std::string_view query_selector);
 
   // If a StreamId isn't specified, then these operate on the last started
   // stream.
@@ -68,6 +72,8 @@ class DictationInteractiveBrowserTestBase
   base::WeakPtr<ListenerStreamProvider> last_started_provider_;
 
  private:
+  MultiStep StartSession(std::unique_ptr<TargetDetails> target_details);
+
   void OnSessionStateChanged(SessionState state);
 
   base::CallbackListSubscription session_state_subscription_;

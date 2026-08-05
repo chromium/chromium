@@ -93,6 +93,10 @@ void SessionController::StartDictationStream(
   last_used_target_details_ = target_details;
 
   MoveToState(SessionState::kStreamInitializing);
+
+  if (ui_) {
+    ui_->OnStartedStream(target_details.target_id);
+  }
 }
 
 void SessionController::OnFocusChangedInPage(

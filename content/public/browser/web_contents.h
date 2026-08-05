@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/function_ref.h"
@@ -117,6 +118,7 @@ class ColorProviderSource;
 }  // namespace ui
 
 namespace gfx {
+class Point;
 class PointF;
 class Rect;
 }  // namespace gfx
@@ -1173,6 +1175,19 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // DIPs.
   virtual const std::optional<gfx::Rect> GetTextSelectionBounds(
       RenderFrameHost* render_frame_host) const = 0;
+
+  // Returns the point of the focus selection in global screen coordinates in
+  // DIPs.
+  virtual const std::optional<gfx::Point> GetFocusSelectionPoint(
+      RenderFrameHost* render_frame_host) const = 0;
+
+  // Notifies when the selection bounds change. This is provided using a
+  // callback list instead of using WebContentsObserver due to performance
+  // concerns.
+  using FocusSelectionBoundsChangedCallback =
+      base::RepeatingCallback<void(RenderWidgetHostView*)>;
+  virtual base::CallbackListSubscription RegisterFocusSelectionBoundsChanged(
+      FocusSelectionBoundsChangedCallback callback) = 0;
 
   // Replaces the currently selected word or a word around the cursor.
   virtual void Replace(const std::u16string& word) = 0;
