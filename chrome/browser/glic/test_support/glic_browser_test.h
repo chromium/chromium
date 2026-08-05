@@ -28,7 +28,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/glic/common/local_hotkey_manager.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
-#include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_instance.h"
@@ -470,12 +469,8 @@ class GlicBrowserTestMixin : public T {
   }
 
   double GetZoomLevel(GlicInstanceImpl* instance) {
-    content::WebContents* webui_contents = instance->host().webui_contents();
-    if (!webui_contents) {
-      return 1.0;
-    }
     content::WebContents* guest_contents =
-        GetGlicGuestWebContents(webui_contents);
+        instance->host().web_client_contents();
     if (!guest_contents) {
       return 1.0;
     }

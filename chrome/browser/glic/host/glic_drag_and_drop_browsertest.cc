@@ -22,7 +22,6 @@
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/enterprise/connectors/test/fake_content_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/test/mock_realtime_reporting_client.h"
-#include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/service/metrics/glic_invoke_metrics.h"
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
@@ -148,7 +147,7 @@ class GlicDragAndDropPolicyTest : public GlicApiBrowserTest {
   void PrepareGuestForDrag(Host& glic_host) {
     content::WebContents* guest_contents = nullptr;
     ASSERT_TRUE(base::test::RunUntil([&]() {
-      guest_contents = GetGlicGuestWebContents(glic_host.webui_contents());
+      guest_contents = glic_host.web_client_contents();
       return guest_contents != nullptr;
     }));
     EXPECT_TRUE(content::WaitForLoadStop(guest_contents));

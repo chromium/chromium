@@ -150,7 +150,7 @@ class GlicPasteEligibilityBrowserTest : public GlicBrowserTest {
     listener.WaitForWebUiState(mojom::WebUiState::kReady);
 
     content::WebContents* glic_guest =
-        GetGlicGuestWebContents(GetOnlyGlicInstance()->host().webui_contents());
+        GetOnlyGlicInstance()->host().web_client_contents();
     EXPECT_TRUE(glic_guest != nullptr && IsGlicGuest(glic_guest));
     return glic_guest;
   }

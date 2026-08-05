@@ -4,7 +4,6 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/glic_pref_names.h"
-#include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
@@ -52,8 +51,7 @@ IN_PROC_BROWSER_TEST_F(GlicWebUiBrowserTest,
   EXPECT_TRUE(instance->host().IsWebClientConnected());
 
   // 2. Obtain the guest WebContents and trigger navigation to b.com (untrusted)
-  content::WebContents* guest_contents =
-      GetGlicGuestWebContents(instance->host().webui_contents());
+  content::WebContents* guest_contents = instance->host().web_client_contents();
   ASSERT_TRUE(guest_contents);
 
   GURL untrusted_guest_url = embedded_test_server()->GetURL(
