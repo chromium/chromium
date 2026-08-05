@@ -76,7 +76,7 @@ namespace {
 
 constexpr char kTestQuery[] = "test";
 constexpr int kCursorXToOverlapWithANotification = 630;
-constexpr int kCursorYToOverlapWithANotification = 400;
+constexpr int kCursorYToOverlapWithANotification = 350;
 
 constexpr char kTestNotificationId[] = "id";
 constexpr char16_t kTestNotificationTitle[] = u"title";
