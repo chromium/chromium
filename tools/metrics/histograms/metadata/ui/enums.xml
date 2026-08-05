@@ -79,6 +79,7 @@ chromium-metrics-reviews@google.com.
   <int value="31" label="Open link in split view"/>
   <int value="32" label="Create image with Gemini in Chrome"/>
   <int value="33" label="Remove from dictionary"/>
+  <int value="34" label="Open link in isolated window"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/renderer_context_menu/render_view_context_menu.cc:ContextMenuOptionDesktop) -->
@@ -377,6 +378,7 @@ chromium-metrics-reviews@google.com.
   <int value="166" label="IDC_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST"/>
   <int value="167" label="IDC_SPELLCHECK_REMOVE_FROM_DICTIONARY"/>
   <int value="168" label="IDC_CONTENT_CONTEXT_SAVE_TO_MEMORY_BANKS"/>
+  <int value="169" label="IDC_CONTENT_CONTEXT_OPENLINK_ISOLATED"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/renderer_context_menu/render_view_context_menu.cc:RenderViewContextMenuItem) -->

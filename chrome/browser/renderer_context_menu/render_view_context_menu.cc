@@ -30,8 +30,8 @@
 #include "base/observer_list.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_util.h"
 #include "base/strings/string_tokenizer.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "build/branding_buildflags.h"
@@ -147,6 +147,7 @@
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
@@ -169,6 +170,7 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/download/public/common/download_url_parameters.h"
+#include "components/enterprise/isolated_mode/settings.h"
 #include "components/google/core/common/google_util.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/language/core/browser/language_model_manager.h"
@@ -642,13 +644,14 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST, 166},
        {IDC_SPELLCHECK_REMOVE_FROM_DICTIONARY, 167},
        {IDC_CONTENT_CONTEXT_SAVE_TO_MEMORY_BANKS, 168},
+       {IDC_CONTENT_CONTEXT_OPENLINK_ISOLATED, 169},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the RenderViewContextMenuItem enum in
        //     tools/metrics/histograms/metadata/ui/enums.xml.
-       {0, 169}});
+       {0, 170}});
   // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/enums.xml:RenderViewContextMenuItem)
 
   // LINT.IfChange(ContextMenuOptionDesktop)
@@ -688,13 +691,14 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW, 31},
        {IDC_CONTENT_CONTEXT_GLICSHAREIMAGE, 32},
        {IDC_SPELLCHECK_REMOVE_FROM_DICTIONARY, 33},
+       {IDC_CONTENT_CONTEXT_OPENLINK_ISOLATED, 34},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the ContextMenuOptionDesktop enum in
        //     tools/metrics/histograms/metadata/ui/enums.xml.
-       {0, 33}});
+       {0, 35}});
   // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/enums.xml:ContextMenuOptionDesktop)
 
   return *(type == UmaEnumIdLookupType::GeneralEnumId ? kGeneralMap
@@ -759,6 +763,7 @@ bool IsCommandForOpenLink(int id) {
   return id == IDC_CONTENT_CONTEXT_OPENLINKNEWTAB ||
          id == IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW ||
          id == IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD ||
+         id == IDC_CONTENT_CONTEXT_OPENLINK_ISOLATED ||
          id == IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW ||
          (id >= IDC_OPEN_LINK_IN_PROFILE_FIRST &&
           id <= IDC_OPEN_LINK_IN_PROFILE_LAST);
@@ -1992,6 +1997,20 @@ void RenderViewContextMenu::AppendLinkItems() {
             features::IsRoundedIconsEnabled() ? kIncognitoIcon
                                               : kIncognitoRefreshMenuOldIcon);
       }
+    }
+
+    bool isolated_mode_enabled =
+        enterprise_isolated_mode::IsolatedModeReplacesIncognito(
+            *GetProfile()->GetPrefs(), chrome::GetChannel());
+
+    if (show_open_link_off_the_record && isolated_mode_enabled) {
+      AddItemWithOptionalIcon(IDC_CONTENT_CONTEXT_OPENLINK_ISOLATED,
+                              features::IsMenuSimplificationEnabled()
+                                  ? IDS_CONTENT_CONTEXT_OPENLINK_ISOLATED_V2
+                                  : IDS_CONTENT_CONTEXT_OPENLINK_ISOLATED,
+                              features::IsRoundedIconsEnabled()
+                                  ? vector_icons::kDomainIcon
+                                  : vector_icons::kBusinessChromeRefreshOldIcon);
     }
 
     AppendOpenInWebAppLinkItems();
@@ -3317,6 +3336,10 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
     navigation_allowed = false;
   }
 #endif
+  bool isolated_mode_enabled =
+      enterprise_isolated_mode::IsolatedModeReplacesIncognito(
+          *GetProfile()->GetPrefs(), chrome::GetChannel());
+
   switch (id) {
     case IDC_BACK:
       return embedder_web_contents_->GetController().CanGoBack();
@@ -3462,9 +3485,15 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
     case IDC_CONTENT_CONTEXT_SELECTALL:
       return !!(params_.edit_flags & ContextMenuDataEditFlags::kCanSelectAll);
 
-    case IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD:
+    case IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD: {
       return navigation_allowed &&
-             IsOpenLinkOTREnabled(GetProfile(), params_.link_url);
+             IsOpenLinkOTREnabled(GetProfile(), params_.link_url) &&
+             !isolated_mode_enabled;
+    }
+
+    case IDC_CONTENT_CONTEXT_OPENLINK_ISOLATED: {
+      return navigation_allowed && isolated_mode_enabled;
+    }
 
     case IDC_PRINT:
       return IsPrintPreviewEnabled();
@@ -3707,6 +3736,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
           /*started_from_context_menu=*/true);
       break;
 
+    case IDC_CONTENT_CONTEXT_OPENLINK_ISOLATED:
     case IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD:
       // Pass along the |referring_url| so we can show it in browser UI. Note
       // that this won't and shouldn't be sent via the referrer header.

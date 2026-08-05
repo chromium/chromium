@@ -226,6 +226,8 @@
     IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW) \
   E(kActionContentContextOpenLinkOffTheRecord, \
     IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD) \
+  E(kActionContentContextOpenLinkIsolated, \
+    IDC_CONTENT_CONTEXT_OPENLINK_ISOLATED) \
   E(kActionContentContextSaveLinkAs, IDC_CONTENT_CONTEXT_SAVELINKAS) \
   E(kActionContentContextCopyLinkLocation, \
     IDC_CONTENT_CONTEXT_COPYLINKLOCATION) \
