@@ -1371,6 +1371,30 @@ TEST_F(RenderFrameImplTest, ContentSettingsSameDocumentNavigation) {
   EXPECT_TRUE(HasText(GetMainFrame(), "JS_ENABLED"));
 }
 
+TEST_F(RenderFrameImplTest, SubframeMojoJSDisabledByDefault) {
+  v8::Isolate* isolate = Isolate();
+  v8::HandleScope handle_scope(isolate);
+
+  v8::Local<v8::Context> child_context =
+      child_frame().GetWebFrame()->MainWorldScriptContext();
+  EXPECT_FALSE(
+      blink::WebV8Features::IsMojoJSEnabledForTesting(child_context));
+}
+
+TEST_F(RenderFrameImplTest, SubframeMojoJSEnabled) {
+  // Enable MojoJS for the child frame BEFORE accessing its context.
+  child_frame().EnableMojoJsBindings(
+      content::mojom::ExtraMojoJsFeatures::New());
+
+  v8::Isolate* isolate = Isolate();
+  v8::HandleScope handle_scope(isolate);
+  v8::Local<v8::Context> child_context =
+      child_frame().GetWebFrame()->MainWorldScriptContext();
+  EXPECT_TRUE(
+      blink::WebV8Features::IsMojoJSEnabledForTesting(child_context));
+}
+
+
 class RenderFrameImplMojoJsTest : public RenderViewTest {
  public:
   RenderFrameImplMojoJsTest() {

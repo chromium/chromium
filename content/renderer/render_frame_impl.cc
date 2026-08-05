@@ -4924,11 +4924,12 @@ void RenderFrameImpl::DidCreateScriptContext(v8::Local<v8::Context> context,
   v8::MicrotasksScope microtasks(GetAgentGroupScheduler().Isolate(),
                                  context->GetMicrotaskQueue(),
                                  v8::MicrotasksScope::kDoNotRunMicrotasks);
-  if (((enabled_bindings_.Has(BindingsPolicyValue::kMojoWebUi)) ||
-       enable_mojo_js_bindings_) &&
-      IsMainFrame() && world_id == ISOLATED_WORLD_ID_GLOBAL) {
+  if ((enable_mojo_js_bindings_ ||
+       (enabled_bindings_.Has(BindingsPolicyValue::kMojoWebUi) &&
+        IsMainFrame())) &&
+      world_id == ISOLATED_WORLD_ID_GLOBAL) {
     // We only allow these bindings to be installed when creating the main
-    // world context of the main frame.
+    // world context of the main frame (or subframes if explicitly enabled).
     blink::WebV8Features::EnableMojoJS(context, true);
 
     if (mojo_js_features_) {
