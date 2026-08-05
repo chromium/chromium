@@ -15,15 +15,17 @@ namespace private_verification_tokens {
 
 // Holds a PVT key.
 //
-// Serialized public key is the serialization of the PublicKey struct given in
+// Serialized public_key is the serialization of the PublicKey struct given in
 // the following TLS presentation form.
 //
 // struct {
 //   uint8 Z_enc[Ne];
 //   uint8 C_x_enc[Ne];
 //   uint8 C_y_enc[Ne];
-//   uint8 pi_enc[Nproof]; // serialized PublicKeyProof
 // } PublicKey;
+//
+// Serialized public_key_proof is the serialization of the PublicKeyProof struct
+// given in the following TLS presentation form.
 //
 // struct {
 //   uint8 e_enc[Ns];
@@ -37,6 +39,7 @@ class PrivateVerificationTokensPublicKey {
  public:
   PrivateVerificationTokensPublicKey(url::Origin issuer,
                                      std::vector<uint8_t> public_key,
+                                     std::vector<uint8_t> public_key_proof,
                                      base::Time expiration,
                                      uint32_t version);
   PrivateVerificationTokensPublicKey(const PrivateVerificationTokensPublicKey&);
@@ -50,6 +53,7 @@ class PrivateVerificationTokensPublicKey {
 
   const url::Origin& issuer() const;
   const std::vector<uint8_t>& public_key() const;
+  const std::vector<uint8_t>& public_key_proof() const;
   uint8_t key_id() const;
   base::Time expiration() const;
   uint32_t version() const;
@@ -60,6 +64,8 @@ class PrivateVerificationTokensPublicKey {
   url::Origin issuer_;
   // Serialized public key.
   std::vector<uint8_t> public_key_;
+  // Serialized public key proof.
+  std::vector<uint8_t> public_key_proof_;
   // Stores truncated key id.
   uint8_t key_id_;
   base::Time expiration_;

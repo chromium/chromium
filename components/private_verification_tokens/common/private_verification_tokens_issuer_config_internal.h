@@ -21,6 +21,9 @@ std::optional<int> GetValidVersion(const base::DictValue& dict);
 std::optional<std::vector<uint8_t>> GetDecodedPublicKey(
     const base::DictValue& dict);
 
+std::optional<std::vector<uint8_t>> GetDecodedPublicKeyProof(
+    const base::DictValue& dict);
+
 std::optional<int> GetValidBatchSize(
     const base::DictValue& dict,
     const PrivateVerificationTokensParameters& params);

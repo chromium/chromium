@@ -47,6 +47,16 @@ std::optional<std::vector<uint8_t>> GetDecodedPublicKey(
   return base::Base64Decode(*public_key_base64);
 }
 
+std::optional<std::vector<uint8_t>> GetDecodedPublicKeyProof(
+    const base::DictValue& dict) {
+  const std::string* public_key_proof_base64 =
+      dict.FindString(kPublicKeyProofKey);
+  if (!public_key_proof_base64) {
+    return std::nullopt;
+  }
+  return base::Base64Decode(*public_key_proof_base64);
+}
+
 std::optional<int> GetValidBatchSize(
     const base::DictValue& dict,
     const PrivateVerificationTokensParameters& params) {
@@ -114,13 +124,20 @@ std::optional<std::vector<url::Origin>> GetValidRedeemers(
 }
 
 std::optional<IssuerConfig> ParseEntry(const base::DictValue& dict) {
-  const std::string* origin_str = dict.FindString(kOriginKey);
-  if (!origin_str) {
+  const std::string* issuer_request_url_str =
+      dict.FindString(kIssuerRequestUrlKey);
+  if (!issuer_request_url_str) {
     return std::nullopt;
   }
 
-  url::Origin origin = url::Origin::Create(GURL(*origin_str));
-  if (origin.scheme() != url::kHttpsScheme) {
+  GURL issuer_request_url(*issuer_request_url_str);
+  if (!issuer_request_url.is_valid() ||
+      issuer_request_url.scheme() != url::kHttpsScheme) {
+    return std::nullopt;
+  }
+
+  url::Origin origin = url::Origin::Create(issuer_request_url);
+  if (origin.opaque()) {
     return std::nullopt;
   }
 
@@ -148,6 +165,12 @@ std::optional<IssuerConfig> ParseEntry(const base::DictValue& dict) {
     return std::nullopt;
   }
 
+  std::optional<std::vector<uint8_t>> decoded_public_key_proof =
+      internal::GetDecodedPublicKeyProof(dict);
+  if (!decoded_public_key_proof) {
+    return std::nullopt;
+  }
+
   std::optional<int> batch_size = internal::GetValidBatchSize(dict, *params);
   if (!batch_size) {
     return std::nullopt;
@@ -166,16 +189,20 @@ std::optional<IssuerConfig> ParseEntry(const base::DictValue& dict) {
 
   PrivateVerificationTokensPublicKey pk(
       std::move(origin), std::move(*decoded_public_key),
+      std::move(*decoded_public_key_proof),
       base::Time::UnixEpoch() + base::Seconds(*expiration), *version);
-  return IssuerConfig(*batch_size, std::move(pk), std::move(*redeemers));
+  return IssuerConfig(std::move(issuer_request_url), *batch_size, std::move(pk),
+                      std::move(*redeemers));
 }
 
 }  // namespace internal
 
-IssuerConfig::IssuerConfig(int32_t batch_size,
+IssuerConfig::IssuerConfig(GURL issuer_request_url,
+                           int32_t batch_size,
                            PrivateVerificationTokensPublicKey public_key,
                            std::vector<url::Origin> redeemers)
-    : batch_size(batch_size),
+    : issuer_request_url(std::move(issuer_request_url)),
+      batch_size(batch_size),
       public_key(std::move(public_key)),
       redeemers(std::move(redeemers)) {}
 

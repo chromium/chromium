@@ -66,9 +66,9 @@ constexpr base::TimeDelta kFetchTimeout = base::Minutes(1);
 // 20, Ns=32 and Ne=33.
 constexpr size_t kResponseMaxBodySize = 2 * 1024;
 
-network::ResourceRequest CreateFetchRequest(GURL issue_url) {
+network::ResourceRequest CreateFetchRequest(GURL issuer_request_url) {
   network::ResourceRequest resource_request;
-  resource_request.url = std::move(issue_url);
+  resource_request.url = std::move(issuer_request_url);
   resource_request.method = net::HttpRequestHeaders::kPostMethod;
   resource_request.credentials_mode = network::mojom::CredentialsMode::kInclude;
   resource_request.headers.SetHeader(net::HttpRequestHeaders::kAccept, kAccept);
@@ -80,25 +80,26 @@ network::ResourceRequest CreateFetchRequest(GURL issue_url) {
 // static
 std::unique_ptr<PrivateVerificationTokensFetcher>
 PrivateVerificationTokensFetcher::Create(
-    GURL issue_url,
+    GURL issuer_request_url,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
         pending_url_loader_factory) {
   if (!pending_url_loader_factory) {
     return nullptr;
   }
-  if (!issue_url.is_valid()) {
+  if (!issuer_request_url.is_valid()) {
     return nullptr;
   }
   return base::WrapUnique<PrivateVerificationTokensFetcher>(
       new PrivateVerificationTokensFetcher(
-          std::move(issue_url), std::move(pending_url_loader_factory)));
+          std::move(issuer_request_url),
+          std::move(pending_url_loader_factory)));
 }
 
 PrivateVerificationTokensFetcher::PrivateVerificationTokensFetcher(
-    GURL issue_url,
+    GURL issuer_request_url,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
         pending_url_loader_factory)
-    : request_(CreateFetchRequest(std::move(issue_url))),
+    : request_(CreateFetchRequest(std::move(issuer_request_url))),
       url_loader_factory_(network::SharedURLLoaderFactory::Create(
           std::move(pending_url_loader_factory))) {
   CHECK(url_loader_factory_);

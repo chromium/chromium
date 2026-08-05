@@ -42,9 +42,9 @@ constexpr char kIssuerServerUrl[] = "http://main.example:8080/issuepvt";
 class PrivateVerificationTokensFetcherTest : public testing::Test {
  protected:
   void SetUp() override {
-    pvt_server_issue_url_ = GURL(kIssuerServerUrl);
+    pvt_server_issuer_request_url_ = GURL(kIssuerServerUrl);
     fetcher_ = PrivateVerificationTokensFetcher::Create(
-        pvt_server_issue_url_,
+        pvt_server_issuer_request_url_,
         test_url_loader_factory_.GetSafeWeakWrapper()->Clone());
     ASSERT_TRUE(fetcher_);
   }
@@ -57,7 +57,7 @@ class PrivateVerificationTokensFetcherTest : public testing::Test {
         [this, response, expected_request_body,
          response_delay](const network::ResourceRequest& request) {
           EXPECT_TRUE(request.url.is_valid());
-          EXPECT_EQ(request.url, pvt_server_issue_url_);
+          EXPECT_EQ(request.url, pvt_server_issuer_request_url_);
           EXPECT_EQ(request.method, net::HttpRequestHeaders::kPostMethod);
           EXPECT_EQ(request.credentials_mode,
                     network::mojom::CredentialsMode::kInclude);
@@ -73,7 +73,7 @@ class PrivateVerificationTokensFetcherTest : public testing::Test {
           task_environment_.FastForwardBy(response_delay);
           auto head = network::mojom::URLResponseHead::New();
           test_url_loader_factory_.AddResponse(
-              pvt_server_issue_url_, std::move(head), response,
+              pvt_server_issuer_request_url_, std::move(head), response,
               network::URLLoaderCompletionStatus(net::OK));
         }));
   }
@@ -81,7 +81,7 @@ class PrivateVerificationTokensFetcherTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   network::TestURLLoaderFactory test_url_loader_factory_;
-  GURL pvt_server_issue_url_;
+  GURL pvt_server_issuer_request_url_;
   std::unique_ptr<PrivateVerificationTokensFetcher> fetcher_;
 };
 
@@ -148,7 +148,7 @@ TEST_F(PrivateVerificationTokensFetcherTest, OutOfMemory) {
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
         auto head = network::mojom::URLResponseHead::New();
         test_url_loader_factory_.AddResponse(
-            pvt_server_issue_url_, std::move(head), response_body,
+            pvt_server_issuer_request_url_, std::move(head), response_body,
             network::URLLoaderCompletionStatus(net::ERR_OUT_OF_MEMORY));
       }));
 

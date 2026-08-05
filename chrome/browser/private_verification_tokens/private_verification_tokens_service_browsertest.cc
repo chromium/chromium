@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
@@ -15,8 +16,10 @@
 #include "base/functional/callback.h"
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/test/values_test_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -129,6 +132,80 @@ class PrivateVerificationTokensServiceBrowserTest : public PlatformBrowserTest {
       ASSERT_TRUE(it != expected_map.end());
       EXPECT_EQ(token->serialized_token, it->second);
     }
+  }
+
+  // SetTestIssuerConfig sets a fixed config for the given service.
+  void SetTestIssuerConfig(PrivateVerificationTokensService* service) {
+    const url::Origin issuer_a = url::Origin::Create(GURL("https://a.com"));
+    const url::Origin redeemer_a =
+        url::Origin::Create(GURL("https://r1.a.com"));
+    const url::Origin issuer_b = url::Origin::Create(GURL("https://b.org"));
+    const url::Origin redeemer_b =
+        url::Origin::Create(GURL("https://r2.b.org"));
+    // The only redeemer is same as the issuer for c and d.
+    const url::Origin issuer_c = url::Origin::Create(GURL("https://c.net"));
+    const url::Origin issuer_d = url::Origin::Create(GURL("https://d.com"));
+    const std::vector<uint8_t> serialized_public_key = {3, 6, 8, 12, 14};
+    const std::string encoded_public_key =
+        base::Base64Encode(serialized_public_key);
+    const std::vector<uint8_t> serialized_public_key_proof = {1, 2, 4, 8};
+    const std::string encoded_public_key_proof =
+        base::Base64Encode(serialized_public_key_proof);
+    const std::string expiration_str = "12";
+    const std::string json_str = base::StringPrintf(
+        R"({
+      "issuers": [
+        {
+          "issuerRequestUrl": "%s/pvt/issue",
+          "version": 1,
+          "publicKey": "%s",
+          "publicKeyProof": "%s",
+          "batchSize": 3,
+          "expiration": "%s",
+          "redeemers": ["%s"]
+        },
+        {
+          "issuerRequestUrl": "%s/pvt/issue",
+          "version": 1,
+          "publicKey": "%s",
+          "publicKeyProof": "%s",
+          "batchSize": 3,
+          "expiration": "%s",
+          "redeemers": ["%s"]
+        },
+        {
+          "issuerRequestUrl": "%s/pvt/issue",
+          "version": 1,
+          "publicKey": "%s",
+          "publicKeyProof": "%s",
+          "batchSize": 3,
+          "expiration": "%s",
+          "redeemers": ["%s"]
+        },
+        {
+          "issuerRequestUrl": "%s/pvt/issue",
+          "version": 1,
+          "publicKey": "%s",
+          "publicKeyProof": "%s",
+          "batchSize": 3,
+          "expiration": "%s",
+          "redeemers": ["%s"]
+        }
+      ]
+    })",
+        issuer_a.Serialize(), encoded_public_key, encoded_public_key_proof,
+        expiration_str, redeemer_a.Serialize(), issuer_b.Serialize(),
+        encoded_public_key, encoded_public_key_proof, expiration_str,
+        redeemer_b.Serialize(), issuer_c.Serialize(), encoded_public_key,
+        encoded_public_key_proof, expiration_str, issuer_c.Serialize(),
+        issuer_d.Serialize(), encoded_public_key, encoded_public_key_proof,
+        expiration_str, issuer_d.Serialize());
+
+    auto config =
+        private_verification_tokens::PrivateVerificationTokensIssuerConfig::
+            Create(base::test::ParseJsonDict(json_str));
+    ASSERT_TRUE(config);
+    service->SetIssuerConfig(config);
   }
 
  protected:

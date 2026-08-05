@@ -58,7 +58,7 @@ class PrivateVerificationTokensFetcher {
   using TryGetTokensCallback =
       base::OnceCallback<void(base::expected<std::string, TryGetTokensResult>)>;
   static std::unique_ptr<PrivateVerificationTokensFetcher> Create(
-      GURL issue_url,
+      GURL issuer_request_url,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           pending_url_loader_factory);
   ~PrivateVerificationTokensFetcher();
@@ -67,7 +67,7 @@ class PrivateVerificationTokensFetcher {
 
  private:
   PrivateVerificationTokensFetcher(
-      GURL issue_url,
+      GURL issuer_request_url,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           pending_url_loader_factory);
   void OnGetTokensCompleted(

@@ -15,14 +15,16 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_public_key.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace private_verification_tokens {
 
 inline constexpr char kIssuersKey[] = "issuers";
-inline constexpr char kOriginKey[] = "origin";
+inline constexpr char kIssuerRequestUrlKey[] = "issuerRequestUrl";
 inline constexpr char kVersionKey[] = "version";
 inline constexpr char kPublicKeyKey[] = "publicKey";
+inline constexpr char kPublicKeyProofKey[] = "publicKeyProof";
 inline constexpr char kBatchSizeKey[] = "batchSize";
 inline constexpr char kExpirationKey[] = "expiration";
 inline constexpr char kRedeemersKey[] = "redeemers";
@@ -30,7 +32,8 @@ inline constexpr char kConfigVersionKey[] = "1";
 
 // Struct for holding config for a single issuer.
 struct IssuerConfig {
-  IssuerConfig(int32_t batch_size,
+  IssuerConfig(GURL issuer_request_url,
+               int32_t batch_size,
                PrivateVerificationTokensPublicKey public_key,
                std::vector<url::Origin> redeemers);
   IssuerConfig(const IssuerConfig&);
@@ -39,6 +42,7 @@ struct IssuerConfig {
   IssuerConfig& operator=(IssuerConfig&&);
   ~IssuerConfig();
 
+  GURL issuer_request_url;
   int32_t batch_size;
   PrivateVerificationTokensPublicKey public_key;
   std::vector<url::Origin> redeemers;
