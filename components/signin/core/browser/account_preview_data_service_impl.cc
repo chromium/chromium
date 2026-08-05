@@ -8,6 +8,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/check_deref.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -199,8 +200,13 @@ void AccountPreviewDataServiceImpl::OnSingleFetchCompleted(
   active_fetchers_.erase(gaia_id);
   // `gaia_id` is owned by the fetcher and should not be used beyond this point.
 
-  CHECK(all_accounts_fetched_barrier_);
-  all_accounts_fetched_barrier_.Run();
+  if (all_accounts_fetched_barrier_) {
+    all_accounts_fetched_barrier_.Run();
+  } else {
+    // TODO(crbug.com/543000429): Investigate why this can happen.
+    // crbug.com/542550030 is an example of that instance.
+    base::debug::DumpWithoutCrashing();
+  }
 
   if (fetch_complete_callback_for_testing_) {
     std::move(fetch_complete_callback_for_testing_).Run();
