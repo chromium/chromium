@@ -119,7 +119,11 @@ class ControlledFramePermissionRequestTestBase
   SetUpControlledFrame(const DisabledPermissionTestCase& test_case,
                        const DisabledPermissionTestParam& test_param);
 
- private:
+  void FocusControlledFrame(content::RenderFrameHost* app_frame,
+                            content::RenderFrameHost* controlled_frame,
+                            bool must_wait_document_focus = true);
+
+ protected:
   void SetUpPermissionRequestEventListener(
       content::RenderFrameHost* app_frame,
       const std::string& expected_permission_name,

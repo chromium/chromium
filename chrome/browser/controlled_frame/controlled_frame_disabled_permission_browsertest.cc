@@ -31,6 +31,10 @@
 #include "services/device/public/cpp/test/fake_usb_device_manager.h"
 #include "services/device/public/mojom/serial.mojom.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
+#include "ui/base/clipboard/file_info.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
 namespace {
@@ -370,6 +374,110 @@ IN_PROC_BROWSER_TEST_P(ControlledFrameDisabledPermissionFileSystemAccessTest,
 INSTANTIATE_TEST_SUITE_P(/*no prefix*/
                          ,
                          ControlledFrameDisabledPermissionFileSystemAccessTest,
+                         testing::ValuesIn(
+                             GetDefaultDisabledPermissionTestParams()),
+                         [](const testing::TestParamInfo<
+                             DisabledPermissionTestParam>& info) {
+                           return info.param.name;
+                         });
+
+class ControlledFrameClipboardFSABypassTest
+    : public ControlledFrameDisabledPermissionTest {
+ public:
+  void SetUpOnMainThread() override {
+    ASSERT_TRUE(
+        temp_dir_.CreateUniqueTempDirUnderPath(base::GetTempDirForTesting()));
+    ui::TestClipboard::CreateForCurrentThread();
+    ControlledFrameDisabledPermissionTest::SetUpOnMainThread();
+  }
+
+  void TearDownOnMainThread() override {
+    ui::Clipboard::DestroyClipboardForCurrentThread();
+    ASSERT_TRUE(temp_dir_.Delete());
+    ControlledFrameDisabledPermissionTest::TearDownOnMainThread();
+  }
+
+  base::FilePath CreateTestFile(const std::string& contents) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::FilePath result;
+    EXPECT_TRUE(base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &result));
+    EXPECT_TRUE(base::WriteFile(result, contents));
+    return result;
+  }
+
+ private:
+  base::ScopedTempDir temp_dir_;
+};
+
+IN_PROC_BROWSER_TEST_P(ControlledFrameClipboardFSABypassTest,
+                       GuestReadsLocalFileViaClipboardPaste) {
+  DisabledPermissionTestParam test_param = GetParam();
+  if (test_param.name == "BothFailsWhenPermissionsPolicyIsNotEnabled") {
+    return;
+  }
+
+  DisabledPermissionTestCase test_case;
+  auto [app_frame, controlled_frame] =
+      SetUpControlledFrame(test_case, test_param);
+  if (!app_frame || !controlled_frame) {
+    return;
+  }
+
+  FocusControlledFrame(app_frame, controlled_frame,
+                       /*must_wait_document_focus=*/true);
+
+  const std::string secret = "SECRET-HOST-FILE-CONTENTS-42";
+  const base::FilePath test_file = CreateTestFile(secret);
+
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.WriteFilenames(
+        ui::FileInfosToURIList({ui::FileInfo(test_file, base::FilePath())}));
+  }
+
+  ASSERT_TRUE(content::ExecJs(controlled_frame, R"(
+    var p = new Promise((resolve, reject) => {
+      window.document.onpaste = async (event) => {
+        try {
+          if (event.clipboardData.items.length !== 1) {
+            reject('Expected 1 clipboard item. length=' +
+              event.clipboardData.items.length);
+            return;
+          }
+          const fileItem = event.clipboardData.items[0];
+          const fileHandle = await fileItem.getAsFileSystemHandle();
+          if (!fileHandle) {
+            reject('fileHandle is falsey. kind=' +
+              fileItem.kind + ' type=' + fileItem.type);
+            return;
+          }
+          const file = await fileHandle.getFile();
+          const text = await file.text();
+          resolve('READ:' + text);
+        } catch (e) {
+          if (e.name === 'NotAllowedError') {
+            resolve('error');
+          } else {
+            reject(e.name + ': ' + e.message);
+          }
+        }
+      };
+    });
+  )"));
+
+  // Ensure the guest frame is focused and has user activation, which is
+  // required by ChromeContentBrowserClient::IsClipboardPasteAllowed to allow
+  // paste, and required on ChromeOS so that paste events reach the guest frame.
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(controlled_frame);
+  web_contents->Paste();
+
+  EXPECT_EQ("error", content::EvalJs(controlled_frame, "p"));
+}
+
+INSTANTIATE_TEST_SUITE_P(/*no prefix*/
+                         ,
+                         ControlledFrameClipboardFSABypassTest,
                          testing::ValuesIn(
                              GetDefaultDisabledPermissionTestParams()),
                          [](const testing::TestParamInfo<

@@ -210,6 +210,8 @@ class FileSystemAccessManagerImplTest : public testing::Test {
 
     EXPECT_CALL(permission_context_, IsFileTypeDangerous_)
         .WillRepeatedly(testing::Return(false));
+    EXPECT_CALL(permission_context_, CanShowFilePicker(testing::_))
+        .WillRepeatedly(testing::Return(base::ok()));
   }
 
   void TearDown() override {
