@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "ash/ash_export.h"
+#include "ash/wm/desks/legacy_window_occlusion_calculator.h"
 #include "ash/wm/desks/window_occlusion_calculator.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "base/memory/weak_ptr.h"
@@ -22,7 +23,7 @@ class OverviewController;
 // session.
 class ASH_EXPORT OverviewWindowOcclusionCalculator
     : public OverviewObserver,
-      public WindowOcclusionCalculator::Observer {
+      public legacy::WindowOcclusionCalculator::Observer {
  public:
   explicit OverviewWindowOcclusionCalculator(
       OverviewController* overview_controller);
@@ -42,13 +43,13 @@ class ASH_EXPORT OverviewWindowOcclusionCalculator
   void OnOverviewModeStartingAnimationComplete(bool canceled) override;
   void OnOverviewModeEnding(OverviewSession* overview_session) override;
 
-  // WindowOcclusionCalculator::Observer:
+  // legacy::WindowOcclusionCalculator::Observer:
   // Intentionally a no-op. See comments in implementation file.
   void OnWindowOcclusionChanged(aura::Window* window) override {}
 
   void ComputeOcclusionStateForAllDesks();
 
-  std::optional<WindowOcclusionCalculator> calculator_;
+  std::unique_ptr<WindowOcclusionCalculator> calculator_;
   std::unique_ptr<aura::WindowOcclusionTracker::ScopedPause>
       enter_overview_pause_;
   base::ScopedObservation<OverviewController, OverviewObserver>

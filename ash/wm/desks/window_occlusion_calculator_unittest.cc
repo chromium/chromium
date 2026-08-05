@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/desks/window_occlusion_calculator.h"
+// clang-format off
+#include "ash/wm/desks/legacy_window_occlusion_calculator.h"
+// clang-format on
 
 #include "ash/public/cpp/window_properties.h"
 #include "ash/test/test_window_builder.h"
@@ -19,14 +21,14 @@ namespace {
 using ::testing::_;
 using ::testing::Mock;
 
-class MockObserver : public WindowOcclusionCalculator::Observer {
+class MockObserver : public legacy::WindowOcclusionCalculator::Observer {
  public:
   MockObserver() = default;
   MockObserver(const MockObserver&) = delete;
   MockObserver& operator=(const MockObserver&) = delete;
   ~MockObserver() override = default;
 
-  // WindowOcclusionCalculator::Observer:
+  // legacy::WindowOcclusionCalculator::Observer:
   MOCK_METHOD(void,
               OnWindowOcclusionChanged,
               (aura::Window * window),
@@ -35,7 +37,7 @@ class MockObserver : public WindowOcclusionCalculator::Observer {
 
 class ScopedMockObserver : public MockObserver {
  public:
-  ScopedMockObserver(WindowOcclusionCalculator* occlusion_calculator,
+  ScopedMockObserver(legacy::WindowOcclusionCalculator* occlusion_calculator,
                      const aura::Window::Windows& parent_windows_to_track)
       : occlusion_calculator_(occlusion_calculator) {
     CHECK(occlusion_calculator_);
@@ -48,16 +50,17 @@ class ScopedMockObserver : public MockObserver {
   }
 
  private:
-  const raw_ptr<WindowOcclusionCalculator> occlusion_calculator_;
+  const raw_ptr<legacy::WindowOcclusionCalculator> occlusion_calculator_;
 };
 
 class WindowOcclusionCalculatorTest : public aura::test::AuraTestBase {
  protected:
   // Reflects typical construction/destruction order in reality since the
-  // `WindowOcclusionCalculator` is transient.
+  // `legacy::WindowOcclusionCalculator` is transient.
   void SetUp() override {
     aura::test::AuraTestBase::SetUp();
-    occlusion_calculator_ = std::make_unique<WindowOcclusionCalculator>();
+    occlusion_calculator_ =
+        std::make_unique<legacy::WindowOcclusionCalculator>();
   }
 
   void TearDown() override {
@@ -70,7 +73,7 @@ class WindowOcclusionCalculatorTest : public aura::test::AuraTestBase {
     // `bounds` is intentioanlly ignored because that's how original test was
     // written.
     // TODO(crbug.com/436906707): Consider using aura::WindowOcclusionTracker
-    // directly instead of WindowOcclusionCalculator.
+    // directly instead of legacy::WindowOcclusionCalculator.
     auto* delegate =
         aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate();
     return aura::test::TestWindowBuilder(
@@ -84,7 +87,7 @@ class WindowOcclusionCalculatorTest : public aura::test::AuraTestBase {
         .release();
   }
 
-  std::unique_ptr<WindowOcclusionCalculator> occlusion_calculator_;
+  std::unique_ptr<legacy::WindowOcclusionCalculator> occlusion_calculator_;
   int id_assigner_ = 1000;
 };
 

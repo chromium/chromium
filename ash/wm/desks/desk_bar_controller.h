@@ -155,7 +155,7 @@ class ASH_EXPORT DeskBarController : public DesksController::Observer,
 
   bool should_ignore_activation_change_ = false;
 
-  std::optional<WindowOcclusionCalculator> window_occlusion_calculator_;
+  std::unique_ptr<WindowOcclusionCalculator> window_occlusion_calculator_;
 };
 
 }  // namespace ash

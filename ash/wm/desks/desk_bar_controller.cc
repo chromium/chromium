@@ -342,7 +342,7 @@ void DeskBarController::OpenDeskBar(aura::Window* root) {
   CHECK(root && root->IsRootWindow());
 
   if (!window_occlusion_calculator_) {
-    window_occlusion_calculator_.emplace();
+    window_occlusion_calculator_ = WindowOcclusionCalculator::Create();
   }
 
   auto presentation_time_recorder = CreatePresentationTimeHistogramRecorder(

@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/style/system_shadow.h"
+#include "ash/wm/desks/legacy_window_occlusion_calculator.h"
 #include "ash/wm/desks/window_occlusion_calculator.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -60,8 +61,9 @@ class WallpaperBaseView;
 // layers with rounded corners. In order to use the fast rounded corners
 // implementation we must make them sibling layers, rather than one being a
 // descendant of the other. Otherwise, this will trigger a render surface.
-class ASH_EXPORT DeskPreviewView : public views::Button,
-                                   public WindowOcclusionCalculator::Observer {
+class ASH_EXPORT DeskPreviewView
+    : public views::Button,
+      public legacy::WindowOcclusionCalculator::Observer {
   METADATA_HEADER(DeskPreviewView, views::Button)
 
  public:
@@ -127,7 +129,7 @@ class ASH_EXPORT DeskPreviewView : public views::Button,
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   bool CanHandleAccelerators() const override;
 
-  // WindowOcclusionCalculator::Observer:
+  // legacy::WindowOcclusionCalculator::Observer:
   void OnWindowOcclusionChanged(aura::Window* window) override;
 
  private:
