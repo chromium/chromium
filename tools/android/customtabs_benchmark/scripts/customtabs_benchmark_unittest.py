@@ -12,27 +12,27 @@ class CustomTabsBenchmarkTestCase(unittest.TestCase):
     result_line = (
         "1,0,disabled,1000,3000,510998167,510998345,511000338,510999329")
     result = customtabs_benchmark.ParseResult(result_line)
-    self.assertEquals(1, result.warmup)
-    self.assertEquals(0, result.skip_launcher_activity)
-    self.assertEquals('disabled', result.speculation_mode)
-    self.assertEquals(1000, result.delay_to_may_launch_url)
-    self.assertEquals(3000, result.delay_to_launch_url)
-    self.assertEquals(510998345 - 510998167, result.commit)
-    self.assertEquals(511000338 - 510998167, result.plt)
-    self.assertEquals(510999329 - 510998167, result.first_contentful_paint)
+    self.assertEqual(1, result.warmup)
+    self.assertEqual(0, result.skip_launcher_activity)
+    self.assertEqual('disabled', result.speculation_mode)
+    self.assertEqual(1000, result.delay_to_may_launch_url)
+    self.assertEqual(3000, result.delay_to_launch_url)
+    self.assertEqual(510998345 - 510998167, result.commit)
+    self.assertEqual(511000338 - 510998167, result.plt)
+    self.assertEqual(510999329 - 510998167, result.first_contentful_paint)
 
   def testParsePartialResult(self):
     result_line = (
         "1,0,disabled,1000,3000,510998167,-1,-1,510999329")
     result = customtabs_benchmark.ParseResult(result_line)
-    self.assertEquals(1, result.warmup)
-    self.assertEquals(0, result.skip_launcher_activity)
-    self.assertEquals('disabled', result.speculation_mode)
-    self.assertEquals(1000, result.delay_to_may_launch_url)
-    self.assertEquals(3000, result.delay_to_launch_url)
-    self.assertEquals(-1, result.commit)
-    self.assertEquals(-1, result.plt)
-    self.assertEquals(510999329 - 510998167, result.first_contentful_paint)
+    self.assertEqual(1, result.warmup)
+    self.assertEqual(0, result.skip_launcher_activity)
+    self.assertEqual('disabled', result.speculation_mode)
+    self.assertEqual(1000, result.delay_to_may_launch_url)
+    self.assertEqual(3000, result.delay_to_launch_url)
+    self.assertEqual(-1, result.commit)
+    self.assertEqual(-1, result.plt)
+    self.assertEqual(510999329 - 510998167, result.first_contentful_paint)
 
 
 if __name__ == '__main__':
