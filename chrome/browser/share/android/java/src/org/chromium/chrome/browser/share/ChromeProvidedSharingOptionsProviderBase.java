@@ -20,6 +20,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.screenshot_protection.ScreenshotProtectionController;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.ShareContentTypeHelper.ContentType;
 import org.chromium.chrome.browser.share.ShareMetricsUtils.ShareCustomAction;
@@ -295,9 +296,12 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
         // TODO(386833405): Decide on priority for this option.
         maybeAddCollaborateFirstPartyOption();
 
+        Tab currentTab = mTabProvider.get();
+        boolean isScreenshotProtected =
+                ScreenshotProtectionController.isScreenshotBlocked(currentTab);
         // Only show a limited first party share selection for automotive and PDF pages.
         if (!isAutomotive()) {
-            if (!isPdfTab()) {
+            if (!isPdfTab() && !isScreenshotProtected) {
                 maybeAddLongScreenshotFirstPartyOption();
             }
             maybeAddPrintFirstPartyOption();
