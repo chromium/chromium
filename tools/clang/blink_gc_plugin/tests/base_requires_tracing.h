@@ -36,4 +36,4 @@ private:
 
 }
 
-#endif
+#endif  // BASE_REQUIRES_TRACING_H_

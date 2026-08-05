@@ -26,4 +26,4 @@ class Object {
 };
 }
 
-#endif
+#endif  // PERSISTENT_NO_TRACE_H_

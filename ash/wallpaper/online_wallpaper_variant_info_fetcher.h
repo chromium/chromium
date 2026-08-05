@@ -119,4 +119,4 @@ class ASH_EXPORT OnlineWallpaperVariantInfoFetcher {
 
 }  // namespace ash
 
-#endif  //  ASH_WALLPAPER_ONLINE_WALLPAPER_VARIANT_INFO_FETCHER_H_
+#endif  // ASH_WALLPAPER_ONLINE_WALLPAPER_VARIANT_INFO_FETCHER_H_

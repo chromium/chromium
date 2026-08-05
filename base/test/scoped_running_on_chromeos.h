@@ -22,4 +22,4 @@ class ScopedRunningOnChromeOS {
 }  // namespace test
 }  // namespace base
 
-#endif  //  BASE_TEST_SCOPED_RUNNING_ON_CHROMEOS_H_
+#endif  // BASE_TEST_SCOPED_RUNNING_ON_CHROMEOS_H_

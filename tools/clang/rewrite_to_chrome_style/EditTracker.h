@@ -56,4 +56,4 @@ class EditTracker {
   RenameCategory category_;
 };
 
-#endif  // #define TOOLS_CLANG_REWRITE_TO_CHROME_STYLE_EDIT_TRACKER_H_
+#endif  // TOOLS_CLANG_REWRITE_TO_CHROME_STYLE_EDIT_TRACKER_H_

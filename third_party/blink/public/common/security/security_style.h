@@ -15,4 +15,4 @@ enum class SecurityStyle {
   kMaxValue = kInsecureBroken
 };
 }  // namespace blink
-#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_SECURITY_SECURITY_STYLE_H_"
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_SECURITY_SECURITY_STYLE_H_

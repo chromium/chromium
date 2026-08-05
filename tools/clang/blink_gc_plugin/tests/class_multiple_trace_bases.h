@@ -34,4 +34,4 @@ class Derived2 : public Base, public Mixin1, public Mixin2 {
 
 }
 
-#endif
+#endif  // CLASS_MULTIPLE_TRACE_BASES_H_

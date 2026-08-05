@@ -33,4 +33,4 @@ struct AssistiveWindowProperties {
 }  // namespace input_method
 }  // namespace ash
 
-#endif  //  CHROME_BROWSER_ASH_INPUT_METHOD_ASSISTIVE_WINDOW_PROPERTIES_H_
+#endif  // CHROME_BROWSER_ASH_INPUT_METHOD_ASSISTIVE_WINDOW_PROPERTIES_H_

@@ -42,4 +42,4 @@ class UrlFilterBridge {
   base::android::ScopedJavaGlobalRef<jobject> j_bridge_;
 };
 
-#endif // CHROME_BROWSER_ANDROID_BROWSING_DATA_URL_FILTER_BRIDGE_H_
+#endif  // CHROME_BROWSER_ANDROID_BROWSING_DATA_URL_FILTER_BRIDGE_H_

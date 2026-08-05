@@ -26,4 +26,4 @@ enum class PasswordManagerSetting {
 };
 }  // namespace password_manager
 
-#endif  //  COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANAGER_SETTING_H_
+#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANAGER_SETTING_H_

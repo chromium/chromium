@@ -88,4 +88,4 @@ class ArcVpnProviderManager : public ArcAppListPrefs::Observer,
 
 }  // namespace app_list
 
-#endif  //  CHROME_BROWSER_ASH_APP_LIST_ARC_ARC_VPN_PROVIDER_MANAGER_H_
+#endif  // CHROME_BROWSER_ASH_APP_LIST_ARC_ARC_VPN_PROVIDER_MANAGER_H_

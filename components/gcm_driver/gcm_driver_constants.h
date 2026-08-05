@@ -17,4 +17,4 @@ extern const base::FilePath::CharType kGCMStoreDirname[];
 
 }  //  namespace gcm_driver
 
-#endif  //  COMPONENTS_GCM_DRIVER_GCM_DRIVER_CONSTANTS_H_
+#endif  // COMPONENTS_GCM_DRIVER_GCM_DRIVER_CONSTANTS_H_

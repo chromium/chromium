@@ -55,4 +55,4 @@ class COMPONENT_EXPORT(X11) WmSync final : public EventObserver {
 
 }  // namespace x11
 
-#endif  //  UI_GFX_X_WM_SYNC_H_
+#endif  // UI_GFX_X_WM_SYNC_H_

@@ -34,4 +34,4 @@ class MenuPreTargetHandler {
 
 }  // namespace views
 
-#endif  //  UI_VIEWS_CONTROLS_MENU_MENU_PRE_TARGET_HANDLER_H_
+#endif  // UI_VIEWS_CONTROLS_MENU_MENU_PRE_TARGET_HANDLER_H_

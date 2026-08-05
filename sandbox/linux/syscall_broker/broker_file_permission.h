@@ -315,4 +315,4 @@ class SANDBOX_EXPORT BrokerFilePermission {
 }  // namespace syscall_broker
 }  // namespace sandbox
 
-#endif  //  SANDBOX_LINUX_SYSCALL_BROKER_BROKER_FILE_PERMISSION_H_
+#endif  // SANDBOX_LINUX_SYSCALL_BROKER_BROKER_FILE_PERMISSION_H_

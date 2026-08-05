@@ -79,4 +79,4 @@ class JsonWriter {
   std::stack<bool> state_;
 };
 
-#endif // TOOLS_BLINK_GC_PLUGIN_JSON_WRITER_H_
+#endif  // TOOLS_BLINK_GC_PLUGIN_JSON_WRITER_H_

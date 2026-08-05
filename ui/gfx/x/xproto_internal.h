@@ -216,4 +216,4 @@ std::unique_ptr<T> MakeExtension(Connection* connection,
 
 }  // namespace x11
 
-#endif  //  UI_GFX_X_XPROTO_INTERNAL_H_
+#endif  // UI_GFX_X_XPROTO_INTERNAL_H_

@@ -34,4 +34,4 @@ class NotificationMetricsLogger : public KeyedService {
   virtual void LogPersistentNotificationShown();
 };
 
-#endif  // CHROME_BROWSER_NOTIFICATIONS_METRICS_NOTIFICATION_METRICS_LOGGER_H_"
+#endif  // CHROME_BROWSER_NOTIFICATIONS_METRICS_NOTIFICATION_METRICS_LOGGER_H_

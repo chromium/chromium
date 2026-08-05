@@ -32,4 +32,4 @@ class ScopedChromeOSVersionInfo {
 }  // namespace test
 }  // namespace base
 
-#endif  //  BASE_TEST_SCOPED_CHROMEOS_VERSION_INFO_H_
+#endif  // BASE_TEST_SCOPED_CHROMEOS_VERSION_INFO_H_

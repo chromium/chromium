@@ -37,4 +37,4 @@ class FakeIPenDevice final
 
 }  // namespace views
 
-#endif  //  UI_VIEWS_WIN_TEST_SUPPORT_FAKE_IPEN_DEVICE_H_
+#endif  // UI_VIEWS_WIN_TEST_SUPPORT_FAKE_IPEN_DEVICE_H_

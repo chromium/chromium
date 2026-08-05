@@ -22,4 +22,4 @@ private:
 
 }
 
-#endif
+#endif  // INNER_CLASS_H_

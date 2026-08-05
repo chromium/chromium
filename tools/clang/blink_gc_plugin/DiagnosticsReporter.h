@@ -220,4 +220,4 @@ class DiagnosticsReporter {
   unsigned diag_collection_of_members_;
 };
 
-#endif // TOOLS_BLINK_GC_PLUGIN_DIAGNOSTICS_REPORTER_H_
+#endif  // TOOLS_BLINK_GC_PLUGIN_DIAGNOSTICS_REPORTER_H_

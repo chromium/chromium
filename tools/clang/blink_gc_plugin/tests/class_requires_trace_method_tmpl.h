@@ -34,4 +34,4 @@ class TemplatedObject {
 
 }
 
-#endif
+#endif  // CLASS_REQUIRES_TRACE_METHOD_TMPL_H_

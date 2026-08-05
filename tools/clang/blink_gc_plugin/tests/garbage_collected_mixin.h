@@ -27,4 +27,4 @@ private:
 
 }
 
-#endif
+#endif  // GARBAGE_COLLECTED_MIXIN_H_

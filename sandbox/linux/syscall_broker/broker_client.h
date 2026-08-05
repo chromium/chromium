@@ -102,4 +102,4 @@ class SANDBOX_EXPORT BrokerClient : public SyscallDispatcher {
 
 }  // namespace sandbox
 
-#endif  //  SANDBOX_LINUX_SYSCALL_BROKER_BROKER_CLIENT_H_
+#endif  // SANDBOX_LINUX_SYSCALL_BROKER_BROKER_CLIENT_H_

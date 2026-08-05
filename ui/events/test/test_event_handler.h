@@ -65,4 +65,4 @@ class TestEventHandler : public EventHandler {
 }  // namespace test
 }  // namespace ui
 
-#endif // UI_EVENTS_TEST_TEST_EVENT_HANDLER_H_
+#endif  // UI_EVENTS_TEST_TEST_EVENT_HANDLER_H_

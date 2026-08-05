@@ -42,4 +42,4 @@ class SMCSampler : public Sampler {
 
 }  // namespace power_sampler
 
-#endif  // TOOLS_MAC_POWER_POWER_SAMPLER_BATTERY_SAMPLER_H_
+#endif  // TOOLS_MAC_POWER_POWER_SAMPLER_SMC_SAMPLER_H_

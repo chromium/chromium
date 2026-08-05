@@ -24,4 +24,4 @@ private:
 
 }
 
-#endif
+#endif  // WEAK_FIELDS_REQUIRE_TRACING_H_

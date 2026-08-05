@@ -19,4 +19,4 @@ VR_BASE_EXPORT gfx::Vector3dF GetForwardVector(const gfx::Transform& head_pose);
 
 }  // namespace vr
 
-#endif  //  CHROME_BROWSER_VR_POSE_UTIL_H_
+#endif  // CHROME_BROWSER_VR_POSE_UTIL_H_

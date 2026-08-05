@@ -29,4 +29,4 @@ using PlatformTest = testing::Test;
 
 #endif // GTEST_OS_MAC
 
-#endif // TESTING_PLATFORM_TEST_H_
+#endif  // TESTING_PLATFORM_TEST_H_

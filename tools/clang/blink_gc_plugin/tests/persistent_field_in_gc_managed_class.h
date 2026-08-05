@@ -35,4 +35,4 @@ private:
 
 }
 
-#endif
+#endif  // PERSISTENT_FIELD_IN_GC_MANAGED_CLASS_H_

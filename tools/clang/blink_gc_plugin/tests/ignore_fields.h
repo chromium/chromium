@@ -41,4 +41,4 @@ private:
 
 }
 
-#endif
+#endif  // IGNORE_FIELDS_H_

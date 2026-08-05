@@ -16,4 +16,4 @@ extern const size_t kNumTopKeywords;
 
 }  // namespace top_bucket_domains
 
-#endif  //  COMPONENTS_URL_FORMATTER_SPOOF_CHECKS_TOP_DOMAINS_TOP_BUCKET_DOMAINS_H_
+#endif  // COMPONENTS_URL_FORMATTER_SPOOF_CHECKS_TOP_DOMAINS_TOP_BUCKET_DOMAINS_H_

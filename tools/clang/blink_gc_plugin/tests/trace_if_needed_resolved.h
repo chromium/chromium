@@ -23,4 +23,4 @@ class HeapObject : public GarbageCollected<HeapObject> {
 
 }  // namespace blink
 
-#endif
+#endif  // TRACE_IF_NEEDED_RESOLVED_H_

@@ -57,4 +57,4 @@ private:
 
 }
 
-#endif
+#endif  // FIELDS_REQUIRE_TRACING_H_

@@ -34,4 +34,4 @@ private:
 
 }
 
-#endif
+#endif  // CYCLE_SUB_H_

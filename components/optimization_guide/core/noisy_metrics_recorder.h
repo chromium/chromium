@@ -29,4 +29,4 @@ class NoisyMetricsRecorder {
   virtual int GetRandEither0Or1() const;
 };
 
-#endif  //  COMPONENTS_OPTIMIZATION_GUIDE_CORE_NOISY_METRICS_RECORDER_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_NOISY_METRICS_RECORDER_H_

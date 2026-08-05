@@ -34,4 +34,4 @@ std::vector<std::unique_ptr<const DomainReliabilityConfig>>
 
 }  // namespace domain_reliability
 
-#endif // COMPONENTS_DOMAIN_RELIABILITY_GOOGLE_CONFIGS_H_
+#endif  // COMPONENTS_DOMAIN_RELIABILITY_GOOGLE_CONFIGS_H_

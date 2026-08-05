@@ -20,4 +20,4 @@ namespace ash::test_util {
 
 }  // namespace ash::test_util
 
-#endif  //  ASH_WEBUI_COMMON_TRUSTED_TYPES_TEST_UTIL_H_
+#endif  // ASH_WEBUI_COMMON_TRUSTED_TYPES_TEST_UTIL_H_

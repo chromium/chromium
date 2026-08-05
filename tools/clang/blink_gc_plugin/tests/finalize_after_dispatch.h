@@ -88,4 +88,4 @@ class E : public A {
 };
 }
 
-#endif
+#endif  // FINALIZE_AFTER_DISPATCH_H_

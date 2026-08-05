@@ -96,4 +96,4 @@ std::ostream& operator<<(std::ostream& os, const TpmChallengeKeyResult& result);
 }  // namespace attestation
 }  // namespace ash
 
-#endif  //  CHROME_BROWSER_ASH_ATTESTATION_TPM_CHALLENGE_KEY_RESULT_H_
+#endif  // CHROME_BROWSER_ASH_ATTESTATION_TPM_CHALLENGE_KEY_RESULT_H_

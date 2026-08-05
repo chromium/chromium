@@ -22,4 +22,4 @@ void TagAppStartForGroupedHistograms(const std::string& app_name);
 } // namespace metrics
 } // namespace chromecast
 
-#endif // CHROMECAST_BASE_METRICS_GROUPED_HISTOGRAM_H_
+#endif  // CHROMECAST_BASE_METRICS_GROUPED_HISTOGRAM_H_

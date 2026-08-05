@@ -53,4 +53,4 @@ inline LeScanner::ScanResult::~ScanResult() = default;
 }  // namespace bluetooth_v2_shlib
 }  // namespace chromecast
 
-#endif  //  CHROMECAST_PUBLIC_BLUETOOTH_LE_SCANNER_H_
+#endif  // CHROMECAST_PUBLIC_BLUETOOTH_LE_SCANNER_H_

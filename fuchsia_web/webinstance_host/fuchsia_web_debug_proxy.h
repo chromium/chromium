@@ -43,4 +43,4 @@ class FuchsiaWebDebugProxy final : public fuchsia::web::Debug,
   fidl::BindingSet<fuchsia::web::DevToolsListener> instance_bindings_;
 };
 
-#endif  //  FUCHSIA_WEB_WEBINSTANCE_HOST_FUCHSIA_WEB_DEBUG_PROXY_H_
+#endif  // FUCHSIA_WEB_WEBINSTANCE_HOST_FUCHSIA_WEB_DEBUG_PROXY_H_

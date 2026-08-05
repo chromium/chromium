@@ -132,4 +132,4 @@ class NET_EXPORT ProxyConfigServiceAndroid : public ProxyConfigService {
 
 } // namespace net
 
-#endif // NET_PROXY_RESOLUTION_PROXY_CONFIG_SERVICE_ANDROID_H_
+#endif  // NET_PROXY_RESOLUTION_PROXY_CONFIG_SERVICE_ANDROID_H_

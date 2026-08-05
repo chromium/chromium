@@ -15,4 +15,4 @@ void BadCastInUnrelatedHeaderFile() {
   (void)static_cast<raw_ptr<int>*>(p);
 }
 
-#endif // BAD_RAW_PTR_UNRELATED_H_
+#endif  // BAD_RAW_PTR_UNRELATED_H_

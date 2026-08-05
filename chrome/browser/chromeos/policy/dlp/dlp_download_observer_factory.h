@@ -29,4 +29,4 @@ class DlpDownloadObserverFactory : public ProfileKeyedServiceFactory {
 
 }  // namespace policy
 
-#endif  //  CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_DOWNLOAD_OBSERVER_FACTORY_H_
+#endif  // CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_DOWNLOAD_OBSERVER_FACTORY_H_

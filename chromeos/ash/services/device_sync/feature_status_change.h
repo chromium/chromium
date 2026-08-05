@@ -27,4 +27,4 @@ enum class FeatureStatusChange {
 
 }  // namespace ash
 
-#endif  //  CHROMEOS_ASH_SERVICES_DEVICE_SYNC_FEATURE_STATUS_CHANGE_H_
+#endif  // CHROMEOS_ASH_SERVICES_DEVICE_SYNC_FEATURE_STATUS_CHANGE_H_

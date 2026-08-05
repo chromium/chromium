@@ -15,4 +15,4 @@ using BlinkPublicType = std::vector<int>;
 
 }  // namespace blink
 
-#endif  // TOOLS_CLANG_RAW_PTR_PLUGIN_TESTS_THIRD_PARTY_BLINK_RENDERER_PUBLIC_PUBLIC_H_
+#endif  // TOOLS_CLANG_RAW_PTR_PLUGIN_TESTS_THIRD_PARTY_BLINK_PUBLIC_PUBLIC_H_

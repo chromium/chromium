@@ -547,4 +547,4 @@ struct TraceIfNeeded {
 
 }  // namespace blink
 
-#endif
+#endif  // HEAP_STUBS_H_

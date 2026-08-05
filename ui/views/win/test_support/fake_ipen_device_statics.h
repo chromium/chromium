@@ -50,4 +50,4 @@ class FakeIPenDeviceStatics final
 
 }  // namespace views
 
-#endif  //  UI_VIEWS_WIN_TEST_SUPPORT_FAKE_IPEN_DEVICE_STATICS_H_
+#endif  // UI_VIEWS_WIN_TEST_SUPPORT_FAKE_IPEN_DEVICE_STATICS_H_

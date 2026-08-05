@@ -39,4 +39,4 @@ private:
 
 }
 
-#endif
+#endif  // IGNORE_CLASS_H_

@@ -33,4 +33,4 @@ class SurfaceIdAllocatorSet {
 
 }  // namespace viz
 
-#endif  //  COMPONENTS_VIZ_TEST_SURFACE_ID_ALLOCATOR_SET_H_
+#endif  // COMPONENTS_VIZ_TEST_SURFACE_ID_ALLOCATOR_SET_H_

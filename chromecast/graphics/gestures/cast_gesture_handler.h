@@ -66,4 +66,4 @@ class CastGestureHandler {
 
 }  // namespace chromecast
 
-#endif  //  CHROMECAST_GRAPHICS_GESTURES_CAST_GESTURE_HANDLER_H_
+#endif  // CHROMECAST_GRAPHICS_GESTURES_CAST_GESTURE_HANDLER_H_

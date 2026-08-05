@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #ifndef SANDBOX_POLICY_LINUX_LANDLOCK_UTIL_H_
-
 #define SANDBOX_POLICY_LINUX_LANDLOCK_UTIL_H_
 
 #include "sandbox/policy/export.h"

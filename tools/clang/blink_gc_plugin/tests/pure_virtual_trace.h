@@ -16,4 +16,4 @@ public:
 
 }
 
-#endif
+#endif  // PURE_VIRTUAL_TRACE_H_

@@ -56,4 +56,4 @@ class BleNotificationLogger : public GattClientManager::Observer {
 }  // namespace bluetooth
 }  // namespace chromecast
 
-#endif  //  CHROMECAST_DEVICE_BLUETOOTH_LE_BLE_NOTIFICATION_LOGGER_H_
+#endif  // CHROMECAST_DEVICE_BLUETOOTH_LE_BLE_NOTIFICATION_LOGGER_H_

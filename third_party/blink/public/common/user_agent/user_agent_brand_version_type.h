@@ -12,4 +12,4 @@ enum class UserAgentBrandVersionType {
   kMaxValue = kFullVersion
 };
 }  // namespace blink
-#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_USER_AGENT_USER_AGENT_BRAND_VERSION_TYPE_H_"
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_USER_AGENT_USER_AGENT_BRAND_VERSION_TYPE_H_

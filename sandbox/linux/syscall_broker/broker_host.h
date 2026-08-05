@@ -83,4 +83,4 @@ class BrokerHost {
 
 }  // namespace sandbox
 
-#endif  //  SANDBOX_LINUX_SYSCALL_BROKER_BROKER_HOST_H_
+#endif  // SANDBOX_LINUX_SYSCALL_BROKER_BROKER_HOST_H_

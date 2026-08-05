@@ -211,4 +211,4 @@ class FakeCastEventBuilder : public CastEventBuilder {
 
 }  // namespace chromecast
 
-#endif  // CHROMECAST_INTERNAL_METRICS_MOCK_CAST_EVENT_BUILDER_H_
+#endif  // CHROMECAST_METRICS_MOCK_CAST_EVENT_BUILDER_H_

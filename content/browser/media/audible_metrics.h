@@ -71,4 +71,4 @@ class CONTENT_EXPORT AudibleMetrics {
 
 }  // namespace content
 
-#endif // CONTENT_BROWSER_MEDIA_AUDIBLE_METRICS_H_
+#endif  // CONTENT_BROWSER_MEDIA_AUDIBLE_METRICS_H_

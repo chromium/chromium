@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifndef NET_DNS_NETINET_IN_VAR_IOS_H_
+#define NET_DNS_NETINET_IN_VAR_IOS_H_
+
 #define SCOPE6_ID_MAX 16
 
 struct in6_addrlifetime {
@@ -142,3 +145,5 @@ struct in6_ifreq {
 #define SIOCGIFAFLAG_IN6 _IOWR('i', 73, struct in6_ifreq)
 
 #define IN6_IFF_DEPRECATED 0x0010 /* deprecated address */
+
+#endif  // NET_DNS_NETINET_IN_VAR_IOS_H_

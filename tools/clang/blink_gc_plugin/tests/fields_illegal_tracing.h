@@ -74,4 +74,4 @@ class StackAllocatedObject {
 
 }  // namespace blink
 
-#endif
+#endif  // FIELDS_ILLEGAL_TRACING_H_

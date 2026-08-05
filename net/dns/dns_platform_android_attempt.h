@@ -140,4 +140,4 @@ class NET_EXPORT DnsPlatformAndroidAttempt final
 
 }  // namespace net
 
-#endif  // NET_DNS_PLATFORM_DNS_QUERY_EXECUTOR_ANDROID_H_
+#endif  // NET_DNS_DNS_PLATFORM_ANDROID_ATTEMPT_H_

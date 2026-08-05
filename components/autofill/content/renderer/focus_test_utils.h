@@ -52,4 +52,4 @@ class FocusTestUtils {
 }  // namespace test
 }  // namespace autofill
 
-#endif  //  COMPONENTS_AUTOFILL_CONTENT_RENDERER_FOCUS_TEST_UTILS_H_
+#endif  // COMPONENTS_AUTOFILL_CONTENT_RENDERER_FOCUS_TEST_UTILS_H_

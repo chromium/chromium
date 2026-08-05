@@ -27,4 +27,4 @@ template <typename T>
 using raw_span = span<T, dynamic_extent, raw_ptr<T>>;
 }  // namespace base
 
-#endif
+#endif  // TOOLS_CLANG_REWRITE_RAW_PTR_FIELDS_TESTS_BASE_CONTAINERS_SPAN_H_

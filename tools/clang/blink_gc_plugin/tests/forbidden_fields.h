@@ -50,4 +50,4 @@ class AnotherHeapObject : public GarbageCollected<AnotherHeapObject> {
 
 }  // namespace blink
 
-#endif /* TOOLS_CLANG_BLINK_GC_PLUGIN_TESTS_FORBIDDEN_FIELDS_H_ */
+#endif  // TOOLS_CLANG_BLINK_GC_PLUGIN_TESTS_FORBIDDEN_FIELDS_H_

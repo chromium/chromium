@@ -38,4 +38,4 @@ class ModelValidatorKeyedServiceFactory : public ProfileKeyedServiceFactory {
 
 }  // namespace optimization_guide
 
-#endif  //  CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_VALIDATOR_KEYED_SERVICE_FACTORY_H_
+#endif  // CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_VALIDATOR_KEYED_SERVICE_FACTORY_H_

@@ -166,4 +166,4 @@ class COMPONENT_EXPORT(UI_BASE_X) XClipboardHelper : public x11::EventObserver {
 
 }  // namespace ui
 
-#endif  //  UI_BASE_X_X11_CLIPBOARD_HELPER_H_
+#endif  // UI_BASE_X_X11_CLIPBOARD_HELPER_H_

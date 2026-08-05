@@ -31,4 +31,4 @@ private:
 
 }
 
-#endif
+#endif  // RAW_PTR_TO_GC_MANAGED_CLASS_H_

@@ -126,4 +126,4 @@ class CryptAuthDeviceNotifierImpl : public CryptAuthDeviceNotifier {
 
 }  // namespace ash
 
-#endif  //  CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_DEVICE_NOTIFIER_IMPL_H_
+#endif  // CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_DEVICE_NOTIFIER_IMPL_H_

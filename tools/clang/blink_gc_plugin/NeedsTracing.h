@@ -28,4 +28,4 @@ class NeedsTracing {
   Value value_;
 };
 
-#endif // TOOLS_BLINK_GC_PLUGIN_NEEDS_TRACING_H_
+#endif  // TOOLS_BLINK_GC_PLUGIN_NEEDS_TRACING_H_

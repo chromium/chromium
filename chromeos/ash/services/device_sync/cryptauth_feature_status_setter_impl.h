@@ -129,4 +129,4 @@ class CryptAuthFeatureStatusSetterImpl : public CryptAuthFeatureStatusSetter {
 
 }  // namespace ash
 
-#endif  //  CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_FEATURE_STATUS_SETTER_IMPL_H_
+#endif  // CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_FEATURE_STATUS_SETTER_IMPL_H_

@@ -47,4 +47,4 @@ class TracingStatus {
   Status status_;
 };
 
-#endif // TOOLS_BLINK_GC_PLUGIN_TRACING_STATUS_H_
+#endif  // TOOLS_BLINK_GC_PLUGIN_TRACING_STATUS_H_

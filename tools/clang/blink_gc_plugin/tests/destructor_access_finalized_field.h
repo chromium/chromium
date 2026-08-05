@@ -43,4 +43,4 @@ class HeapObject : public GarbageCollected<HeapObject> {
 };
 }
 
-#endif
+#endif  // DESTRUCTOR_ACCESS_FINALIZED_FIELD_H_

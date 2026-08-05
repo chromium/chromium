@@ -52,4 +52,4 @@ class QueryableData {
 
 }  // namespace chromecast
 
-#endif  //  CHROMECAST_COMMON_QUERYABLE_DATA_H_
+#endif  // CHROMECAST_COMMON_QUERYABLE_DATA_H_

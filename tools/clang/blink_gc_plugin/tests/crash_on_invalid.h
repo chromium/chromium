@@ -22,4 +22,4 @@ class Gamepad final : public GarbageCollected<Gamepad>,
 };
 }
 
-#endif
+#endif  // CRASH_ON_INVALID_H_

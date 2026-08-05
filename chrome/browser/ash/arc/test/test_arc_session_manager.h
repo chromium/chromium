@@ -27,4 +27,4 @@ void ExpandPropertyFilesForTesting(ArcSessionManager* arc_session_manager);
 
 }  // namespace arc
 
-#endif  //  CHROME_BROWSER_ASH_ARC_TEST_TEST_ARC_SESSION_MANAGER_H_
+#endif  // CHROME_BROWSER_ASH_ARC_TEST_TEST_ARC_SESSION_MANAGER_H_

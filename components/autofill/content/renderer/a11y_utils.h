@@ -18,4 +18,4 @@ void SetAutofillSuggestionAvailability(
 
 }  // namespace autofill
 
-#endif  //  COMPONENTS_AUTOFILL_CONTENT_RENDERER_A11Y_UTILS_H_
+#endif  // COMPONENTS_AUTOFILL_CONTENT_RENDERER_A11Y_UTILS_H_

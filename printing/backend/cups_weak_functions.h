@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifndef PRINTING_BACKEND_CUPS_WEAK_FUNCTIONS_H_
+#define PRINTING_BACKEND_CUPS_WEAK_FUNCTIONS_H_
+
 #include <cups/ppd.h>
 
 #include "build/build_config.h"
@@ -15,3 +18,5 @@ static_assert(BUILDFLAG(IS_LINUX));
 #define WEAK_CUPS_FN(x) extern "C" __attribute__((weak)) decltype(x) x
 
 WEAK_CUPS_FN(httpConnect2);
+
+#endif  // PRINTING_BACKEND_CUPS_WEAK_FUNCTIONS_H_

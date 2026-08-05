@@ -43,4 +43,4 @@ class PendingTrustTokenStore {
 
 }  // namespace network
 
-#endif  //  SERVICES_NETWORK_TRUST_TOKENS_PENDING_TRUST_TOKEN_STORE_H_
+#endif  // SERVICES_NETWORK_TRUST_TOKENS_PENDING_TRUST_TOKEN_STORE_H_

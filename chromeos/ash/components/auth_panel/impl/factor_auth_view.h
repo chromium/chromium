@@ -29,4 +29,4 @@ class FactorAuthView : public views::View {
 
 }  // namespace ash
 
-#endif  //  CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_IMPL_FACTOR_AUTH_VIEW_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_IMPL_FACTOR_AUTH_VIEW_H_

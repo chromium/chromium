@@ -45,4 +45,4 @@ class VaapiImageDecoderTestCommon
 
 }  // namespace media
 
-#endif  //  MEDIA_GPU_VAAPI_VAAPI_IMAGE_DECODER_TEST_COMMON_H_
+#endif  // MEDIA_GPU_VAAPI_VAAPI_IMAGE_DECODER_TEST_COMMON_H_

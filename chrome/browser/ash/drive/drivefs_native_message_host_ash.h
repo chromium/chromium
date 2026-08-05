@@ -22,4 +22,4 @@ CreateDriveFsNativeMessageHostAsh(content::BrowserContext* browser_context);
 
 }  // namespace drive
 
-#endif  //  CHROME_BROWSER_ASH_DRIVE_DRIVEFS_NATIVE_MESSAGE_HOST_ASH_H_
+#endif  // CHROME_BROWSER_ASH_DRIVE_DRIVEFS_NATIVE_MESSAGE_HOST_ASH_H_

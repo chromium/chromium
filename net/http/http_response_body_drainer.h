@@ -63,4 +63,4 @@ class NET_EXPORT_PRIVATE HttpResponseBodyDrainer {
 
 }  // namespace net
 
-#endif // NET_HTTP_HTTP_RESPONSE_BODY_DRAINER_H_
+#endif  // NET_HTTP_HTTP_RESPONSE_BODY_DRAINER_H_

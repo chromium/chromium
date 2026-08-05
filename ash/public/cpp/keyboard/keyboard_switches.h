@@ -18,4 +18,4 @@ ASH_PUBLIC_EXPORT extern const char kDisableVirtualKeyboard[];
 }  // namespace switches
 }  // namespace keyboard
 
-#endif  //  ASH_PUBLIC_CPP_KEYBOARD_KEYBOARD_SWITCHES_H_
+#endif  // ASH_PUBLIC_CPP_KEYBOARD_KEYBOARD_SWITCHES_H_

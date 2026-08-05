@@ -44,4 +44,4 @@ private:
 
 }
 
-#endif
+#endif  // TRACE_COLLECTIONS_H_

@@ -66,4 +66,4 @@ struct GL_EXPORT GLVersionInfo {
 
 }  // namespace gl
 
-#endif // UI_GL_GL_VERSION_INFO_H_
+#endif  // UI_GL_GL_VERSION_INFO_H_

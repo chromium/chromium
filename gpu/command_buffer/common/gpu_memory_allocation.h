@@ -50,4 +50,4 @@ struct MemoryAllocation {
 
 }  // namespace content
 
-#endif // GPU_COMMAND_BUFFER_COMMON_GPU_MEMORY_ALLOCATION_H_
+#endif  // GPU_COMMAND_BUFFER_COMMON_GPU_MEMORY_ALLOCATION_H_
