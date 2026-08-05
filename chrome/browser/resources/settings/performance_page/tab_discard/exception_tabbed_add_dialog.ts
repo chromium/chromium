@@ -13,13 +13,14 @@ import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrTabsElement} from 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 import {NONE_SELECTED} from 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 
 import type {ExceptionAddInputElement} from './exception_add_input.js';
 import type {ExceptionCurrentSitesListElement} from './exception_current_sites_list.js';
-import {getTemplate} from './exception_tabbed_add_dialog.html.js';
+import {getCss} from './exception_tabbed_add_dialog.css.js';
+import {getHtml} from './exception_tabbed_add_dialog.html.js';
 
 export enum ExceptionAddDialogTabs {
   CURRENT_SITES = 0,
@@ -37,41 +38,50 @@ export interface ExceptionTabbedAddDialogElement {
   };
 }
 
-export class ExceptionTabbedAddDialogElement extends PolymerElement {
+export class ExceptionTabbedAddDialogElement extends CrLitElement {
   static get is() {
     return 'tab-discard-exception-tabbed-add-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      selectedTab_: {
-        type: Number,
-        value: NONE_SELECTED,
-      },
-
-      tabNames_: {
-        type: Array,
-        value: [
-          loadTimeData.getString('tabDiscardingExceptionsAddDialogCurrentTabs'),
-          loadTimeData.getString('tabDiscardingExceptionsAddDialogManual'),
-        ],
-      },
-
-      submitDisabledList_: Boolean,
-      submitDisabledManual_: Boolean,
+      selectedTab_: {type: Number},
+      tabNames_: {type: Array},
+      submitDisabledList_: {type: Boolean},
+      submitDisabledManual_: {type: Boolean},
     };
   }
 
-  declare private selectedTab_: ExceptionAddDialogTabs;
-  declare private tabNames_: string[];
-  declare private submitDisabledList_: boolean;
-  declare private submitDisabledManual_: boolean;
+  protected accessor selectedTab_: ExceptionAddDialogTabs = NONE_SELECTED;
+  protected accessor tabNames_: string[] = [
+    loadTimeData.getString('tabDiscardingExceptionsAddDialogCurrentTabs'),
+    loadTimeData.getString('tabDiscardingExceptionsAddDialogManual'),
+  ];
+  protected accessor submitDisabledList_: boolean = true;
+  protected accessor submitDisabledManual_: boolean = true;
 
-  private onSitesPopulated_(e: CustomEvent<{length: number}>) {
+  protected onTabsSelectedChanged_(
+      e: CustomEvent<{value: ExceptionAddDialogTabs}>) {
+    this.selectedTab_ = e.detail.value;
+  }
+
+  protected onListSubmitDisabledChanged_(e: CustomEvent<{value: boolean}>) {
+    this.submitDisabledList_ = e.detail.value;
+  }
+
+  protected onInputSubmitDisabledChanged_(e: CustomEvent<{value: boolean}>) {
+    this.submitDisabledManual_ = e.detail.value;
+  }
+
+  protected onSitesPopulated_(e: CustomEvent<{length: number}>) {
     if (e.detail.length > 0) {
       this.selectedTab_ = ExceptionAddDialogTabs.CURRENT_SITES;
     } else if (this.selectedTab_ === NONE_SELECTED) {
@@ -80,15 +90,15 @@ export class ExceptionTabbedAddDialogElement extends PolymerElement {
     this.$.dialog.showModal();
   }
 
-  private isAddCurrentSitesTabSelected_() {
+  protected isAddCurrentSitesTabSelected_(): boolean {
     return this.selectedTab_ === ExceptionAddDialogTabs.CURRENT_SITES;
   }
 
-  private onCancelClick_() {
+  protected onCancelClick_() {
     this.$.dialog.cancel();
   }
 
-  private onSubmitClick_() {
+  protected onSubmitClick_() {
     this.$.dialog.close();
     if (this.isAddCurrentSitesTabSelected_()) {
       this.$.list.submit();
@@ -97,7 +107,7 @@ export class ExceptionTabbedAddDialogElement extends PolymerElement {
     }
   }
 
-  private isSubmitDisabled_() {
+  protected isSubmitDisabled_(): boolean {
     if (this.isAddCurrentSitesTabSelected_()) {
       return this.submitDisabledList_;
     }

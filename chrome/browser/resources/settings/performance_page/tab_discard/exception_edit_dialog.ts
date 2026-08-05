@@ -8,9 +8,9 @@ import './exception_edit_input.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './exception_edit_dialog.html.js';
+import {getHtml} from './exception_edit_dialog.html.js';
 import type {ExceptionEditInputElement} from './exception_edit_input.js';
 
 export interface ExceptionEditDialogElement {
@@ -22,28 +22,34 @@ export interface ExceptionEditDialogElement {
   };
 }
 
-export class ExceptionEditDialogElement extends PolymerElement {
+export class ExceptionEditDialogElement extends CrLitElement {
   static get is() {
     return 'tab-discard-exception-edit-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  override render() {
+    return getHtml.bind(this)();
   }
 
-  static get properties() {
+  static override get properties() {
     return {
-      ruleToEdit: {type: String, value: ''},
+      ruleToEdit: {type: String},
+      submitDisabled_: {type: Boolean},
     };
   }
 
-  declare private ruleToEdit: string;
+  accessor ruleToEdit: string = '';
+  protected accessor submitDisabled_: boolean = true;
 
-  private onCancelClick_() {
+  protected onSubmitDisabledChanged_(e: CustomEvent<{value: boolean}>) {
+    this.submitDisabled_ = e.detail.value;
+  }
+
+  protected onCancelClick_() {
     this.$.dialog.cancel();
   }
 
-  private onSubmitClick_() {
+  protected onSubmitClick_() {
     this.$.dialog.close();
     this.$.input.submit();
   }

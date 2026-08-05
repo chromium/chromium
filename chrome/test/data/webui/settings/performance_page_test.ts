@@ -453,6 +453,7 @@ suite('TabDiscardExceptionList', function() {
 
     clickMoreActionsButton(entry);
     clickEditMenuItem();
+    flush();
     await microtasksFinished();
     await inputDialog(getEditDialog(), getExceptionListEntry(0).entry.site);
     await microtasksFinished();
