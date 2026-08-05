@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -46,12 +47,14 @@ class SavedTabGroupBarBrowserTest : public InProcessBrowserTest,
   SavedTabGroupBarBrowserTest() {
     if (GetParam()) {
       features_.InitWithFeatures(
-          {data_sharing::features::kDataSharingFeature},
+          {data_sharing::features::kDataSharingFeature,
+           features::kTabGroupsFocusing},
           {data_sharing::features::kDataSharingJoinOnly});
     } else {
       features_.InitWithFeatures(
-          {}, {data_sharing::features::kDataSharingFeature,
-               data_sharing::features::kDataSharingJoinOnly});
+          {features::kTabGroupsFocusing},
+          {data_sharing::features::kDataSharingFeature,
+           data_sharing::features::kDataSharingJoinOnly});
     }
   }
   void Wait() {
@@ -356,6 +359,69 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarNtpSimplificationBrowserTest,
           ->GetPrefs()
           ->FindPreference(bookmarks::prefs::kBookmarkBarVisibilityState)
           ->IsDefaultValue());
+}
+
+IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
+                       OpenGroupFromBookmarksBarUnfocusesCurrentGroup) {
+  TabStripModel* model = browser()->tab_strip_model();
+  chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
+  ASSERT_EQ(2, model->count());
+
+  const TabGroupId group1 = model->AddToNewGroup({0});
+  const TabGroupId group2 = model->AddToNewGroup({1});
+  Wait();
+
+  TabGroupSyncService* service =
+      TabGroupSyncServiceFactory::GetForProfile(browser()->GetProfile());
+
+  std::optional<SavedTabGroup> saved_group1 = service->GetGroup(group1);
+  std::optional<SavedTabGroup> saved_group2 = service->GetGroup(group2);
+  ASSERT_TRUE(saved_group1.has_value());
+  ASSERT_TRUE(saved_group2.has_value());
+
+  // Focus Tab Group 1.
+  model->SetFocusedGroup(group1);
+  EXPECT_EQ(group1, model->GetFocusedGroup());
+
+  // Open Tab Group 2 via SavedTabGroupUtils (simulating opening from Bookmarks
+  // Bar).
+  SavedTabGroupUtils::OpenSavedTabGroup(browser(), saved_group2->saved_guid(),
+                                        OpeningSource::kOpenedFromRevisitUi);
+
+  EXPECT_FALSE(model->GetFocusedGroup().has_value());
+  EXPECT_TRUE(model->GetActiveTab()->GetGroup().has_value());
+  EXPECT_EQ(group2, model->GetActiveTab()->GetGroup().value());
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SavedTabGroupBarBrowserTest,
+    OpenClosedGroupFromBookmarksBarWhileFocusedUnfocusesCurrentGroup) {
+  TabStripModel* model = browser()->tab_strip_model();
+  const TabGroupId group1 = model->AddToNewGroup({0});
+  Wait();
+
+  TabGroupSyncService* service =
+      TabGroupSyncServiceFactory::GetForProfile(browser()->GetProfile());
+
+  // Focus Tab Group 1.
+  model->SetFocusedGroup(group1);
+  EXPECT_EQ(group1, model->GetFocusedGroup());
+
+  // Create a saved tab group that is closed.
+  base::Uuid closed_group_guid = base::Uuid::GenerateRandomV4();
+  SavedTabGroup closed_group{
+      u"closed_group", TabGroupColorId::kBlue, {}, 0, closed_group_guid};
+  SavedTabGroupTab tab{GURL("https://www.google.com"), u"tab_title",
+                       closed_group_guid, 0};
+  closed_group.AddTabFromSync(std::move(tab));
+  service->AddGroup(std::move(closed_group));
+  Wait();
+
+  // Open the closed saved group from Bookmarks Bar.
+  SavedTabGroupUtils::OpenSavedTabGroup(browser(), closed_group_guid,
+                                        OpeningSource::kOpenedFromRevisitUi);
+
+  EXPECT_FALSE(model->GetFocusedGroup().has_value());
 }
 
 }  // namespace tab_groups

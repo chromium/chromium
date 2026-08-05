@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "components/saved_tab_groups/internal/stats.h"
 #include "components/saved_tab_groups/internal/tab_group_sync_service_impl.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -167,6 +168,16 @@ TabGroupSyncDelegateDesktop::HandleOpenTabGroupRequest(
   TabGroupActionContextDesktop* desktop_context =
       static_cast<TabGroupActionContextDesktop*>(context.get());
   Browser* const browser = desktop_context->browser;
+
+  // Only a single tab group can be focused at a time. Because of this, new open
+  // tab group requests unfocus the group putting users back into the normal tab
+  // strip state. This is done to consistently handle this behavior across a
+  // number of scenarios (opening a closed group, and focusing an already open
+  // tab group in the browser).
+  if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing) &&
+      browser->tab_strip_model()->GetFocusedGroup().has_value()) {
+    browser->tab_strip_model()->SetFocusedGroup(std::nullopt);
+  }
 
   // Open the tabs in the saved group.
   std::map<tabs::TabInterface*, base::Uuid> tab_guid_mapping =
