@@ -40,6 +40,7 @@
 
 #include "base/check_op.h"
 #include "base/gtest_prod_util.h"
+#include "base/types/to_address.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/glyph_data.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/glyph_data_range.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/glyph_index_result.h"
@@ -176,18 +177,15 @@ struct PLATFORM_EXPORT ShapeResultRun final
     const int index_adjust = other.start_index_ - start_index_;
     if (IsRtl()) [[unlikely]] {
       run->glyph_data_.CopyFrom(other.glyph_data_, glyph_data_);
-      auto* const end =
-          UNSAFE_TODO(run->glyph_data_.begin() + other.glyph_data_.size());
-      for (auto* it = run->glyph_data_.begin(); it < end; UNSAFE_TODO(++it)) {
-        it->character_index += index_adjust;
+      const unsigned num_glyphs_to_adjust = other.glyph_data_.size();
+      for (unsigned i = 0; i < num_glyphs_to_adjust; ++i) {
+        run->glyph_data_[i].character_index += index_adjust;
       }
     } else {
       run->glyph_data_.CopyFrom(glyph_data_, other.glyph_data_);
-      auto* const end = run->glyph_data_.end();
-      for (auto* it =
-               UNSAFE_TODO(run->glyph_data_.begin() + glyph_data_.size());
-           it < end; UNSAFE_TODO(++it)) {
-        it->character_index += index_adjust;
+      const unsigned num_glyphs = run->glyph_data_.size();
+      for (unsigned i = glyph_data_.size(); i < num_glyphs; ++i) {
+        run->glyph_data_[i].character_index += index_adjust;
       }
     }
     run->width_ = width_ + other.width_;
@@ -338,23 +336,27 @@ struct PLATFORM_EXPORT ShapeResultRun final
     // Note: Caller should be adjust |HarfBuzzRunGlyphData.character_index|.
     void CopyFrom(const GlyphDataCollection& other1,
                   const GlyphDataCollection& other2) {
-      SECURITY_CHECK(size() == other1.size() + other2.size());
+      const unsigned first_size = other1.size();
+      const unsigned second_size = other2.size();
+      SECURITY_CHECK(size() == first_size + second_size);
       DCHECK(!other1.IsEmpty());
       DCHECK(!other2.IsEmpty());
-      static_assert(std::is_trivially_copyable_v<HarfBuzzRunGlyphData>);
-      std::ranges::copy(other1.data_, data_.data());
-      std::ranges::copy(other2.data_,
-                        UNSAFE_TODO(data_.data() + other1.size()));
+      auto [first_glyphs, second_glyphs] =
+          base::span<HarfBuzzRunGlyphData>(data_).split_at(first_size);
+      first_glyphs.copy_from(other1.data_);
+      second_glyphs.copy_from(other2.data_);
 
       if (other1.HasNonZeroOffsets()) {
         AllocateOffsetsIfNeeded();
-        std::ranges::copy(*other1.OffsetsVector(), OffsetsVector()->begin());
+        base::span<GlyphOffset>(*OffsetsVector())
+            .first(first_size)
+            .copy_from(other1.Offsets());
       }
       if (other2.HasNonZeroOffsets()) {
         AllocateOffsetsIfNeeded();
-        std::ranges::copy(
-            *other2.OffsetsVector(),
-            UNSAFE_TODO(OffsetsVector()->begin() + other1.size()));
+        base::span<GlyphOffset>(*OffsetsVector())
+            .subspan(first_size, second_size)
+            .copy_from(other2.Offsets());
       }
     }
 
@@ -398,9 +400,11 @@ struct PLATFORM_EXPORT ShapeResultRun final
     using iterator = HarfBuzzRunGlyphData*;
     using const_iterator = const HarfBuzzRunGlyphData*;
     iterator begin() { return data_.data(); }
-    iterator end() { return UNSAFE_TODO(data_.data() + size()); }
+    iterator end() { return base::to_address(base::span(data_).end()); }
     const_iterator begin() const { return data_.data(); }
-    const_iterator end() const { return UNSAFE_TODO(data_.data() + size()); }
+    const_iterator end() const {
+      return base::to_address(base::span(data_).end());
+    }
 
     using reverse_iterator = std::reverse_iterator<iterator>;
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;

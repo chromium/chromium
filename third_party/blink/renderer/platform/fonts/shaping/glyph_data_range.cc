@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/fonts/shaping/glyph_data_range.h"
 
+#include "base/types/to_address.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_run.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
@@ -32,12 +33,11 @@ base::span<const HarfBuzzRunGlyphData> GlyphDataRange::Glyphs() const {
 }
 
 GlyphDataRange::const_iterator GlyphDataRange::begin() const {
-  return run_ ? UNSAFE_TODO(run_->glyph_data_.begin() + index_) : nullptr;
+  return Glyphs().data();
 }
 
 GlyphDataRange::const_iterator GlyphDataRange::end() const {
-  return run_ ? UNSAFE_TODO(run_->glyph_data_.begin() + index_ + size_)
-              : nullptr;
+  return base::to_address(Glyphs().end());
 }
 
 bool GlyphDataRange::HasOffsets() const {
@@ -85,10 +85,10 @@ GlyphDataRange GlyphDataRange::FindGlyphDataRange(
   }
   const auto end_glyph_it =
       std::lower_bound(start_glyph_it, rend, end_character_index, comparer);
-  // Convert reverse iterators to pointers. Then increment to make |begin|
-  // inclusive and |end| exclusive.
-  const HarfBuzzRunGlyphData* start_glyph = UNSAFE_TODO(&*end_glyph_it + 1);
-  const HarfBuzzRunGlyphData* end_glyph = UNSAFE_TODO(&*start_glyph_it + 1);
+  // reverse_iterator::base() is one past the referenced element, which gives
+  // the inclusive begin and exclusive end in forward order.
+  const HarfBuzzRunGlyphData* start_glyph = end_glyph_it.base();
+  const HarfBuzzRunGlyphData* end_glyph = start_glyph_it.base();
   return {*this, start_glyph, end_glyph};
 }
 
