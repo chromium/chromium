@@ -197,6 +197,10 @@ std::optional<int64_t> FrameTree::Delegate::GetPrivilegedContentsFeatureId() {
   return std::nullopt;
 }
 
+bool FrameTree::Delegate::DoesWebContentsDisallowServiceWorkerControl() {
+  return false;
+}
+
 FrameTree::FrameTree(
     BrowserContext* browser_context,
     Delegate* delegate,

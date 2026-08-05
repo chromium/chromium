@@ -1315,6 +1315,7 @@ class CONTENT_EXPORT WebContentsImpl
   FrameTree* GetOwnedDocumentPictureInPictureFrameTree() override;
   FrameTree* GetDocumentPictureInPictureOpenerFrameTree() override;
   std::optional<int64_t> GetPrivilegedContentsFeatureId() override;
+  bool DoesWebContentsDisallowServiceWorkerControl() override;
 
   // NavigationControllerDelegate ----------------------------------------------
 

@@ -224,6 +224,12 @@ class CONTENT_EXPORT FrameTree {
     // (fenced frames, guests) may return nullopt here; those frames instead
     // inherit the privileged bit from their outer document.
     virtual std::optional<int64_t> GetPrivilegedContentsFeatureId();
+
+    // Returns true if this FrameTree is hosted by a WebContents that disallows
+    // service worker control of the pages it hosts (see
+    // WebContents::PrivilegedParams). Used to skip the service worker for the
+    // main resource of navigations in such a WebContents.
+    virtual bool DoesWebContentsDisallowServiceWorkerControl();
   };
 
   // Type of FrameTree instance.
