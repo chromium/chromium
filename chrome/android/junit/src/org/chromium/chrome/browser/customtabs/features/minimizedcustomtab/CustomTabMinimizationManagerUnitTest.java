@@ -57,6 +57,8 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
+import org.chromium.chrome.browser.toolbar.top.ResourceFactory;
+import org.chromium.chrome.browser.toolbar.top.ResourceFactoryJni;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.WebContents;
@@ -94,6 +96,7 @@ public class CustomTabMinimizationManagerUnitTest {
     @Mock private CustomTabsConnection mConnection;
     @Mock private Runnable mCloseTabRunnable;
     @Mock private DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
+    @Mock private ResourceFactory.Natives mResourceFactoryNatives;
     @Mock private CustomTabMinimizeDelegate.Observer mMinimizationObserver;
     @Mock private CustomTabMinimizeDelegate mOtherMinimizeDelegate;
     @Mock private ActivityLifecycleDispatcher mLifecycleDispatcher;
@@ -106,6 +109,7 @@ public class CustomTabMinimizationManagerUnitTest {
     public void setUp() {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = spy(activity));
         DomDistillerUrlUtilsJni.setInstanceForTesting(mDomDistillerUrlUtilsJni);
+        ResourceFactoryJni.setInstanceForTesting(mResourceFactoryNatives);
 
         CustomTabsConnection.setInstanceForTesting(mConnection);
         mActivityTabProvider.setForTesting(mTab);
