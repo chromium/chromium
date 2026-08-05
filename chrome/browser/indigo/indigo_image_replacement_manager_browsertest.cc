@@ -7,8 +7,10 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -825,9 +827,15 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   auto* controller = IndigoPageActionController::From(tab);
   ASSERT_TRUE(controller);
 
+  base::UserActionTester user_action_tester;
+
   controller->DeleteOriginalPhoto();
 
   fake_api_.WaitForDeleteRequest();
+  EXPECT_EQ(
+      user_action_tester.GetActionCount("Indigo.DeleteOriginalPhoto.Trigger"),
+      1);
+
   fake_api_.SendDeleteSuccessResponse();
 
   EXPECT_TRUE(base::test::RunUntil([&]() {
@@ -840,6 +848,10 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
       ToastController::MaybeGetForWebContents(web_contents);
   EXPECT_EQ(toast_controller->GetCurrentToastId(),
             ToastId::kIndigoDeleteSuccess);
+
+  EXPECT_EQ(
+      user_action_tester.GetActionCount("Indigo.DeleteOriginalPhoto.Complete"),
+      1);
 }
 
 IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,

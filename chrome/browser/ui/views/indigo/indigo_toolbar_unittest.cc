@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/indigo/resources/grit/indigo_strings.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
@@ -109,6 +111,7 @@ class IndigoToolbarTest : public ChromeViewsTestBase {
 };
 
 TEST_F(IndigoToolbarTest, CloseAndReopen) {
+  base::UserActionTester user_action_tester;
   MockIndigoToolbarDelegate delegate;
   auto toolbar = std::make_unique<IndigoToolbar>(&delegate);
   toolbar->Show(overlay_view());
@@ -131,10 +134,13 @@ TEST_F(IndigoToolbarTest, CloseAndReopen) {
   views::View* toolbar_view_after_close = GetToolbarView();
   ASSERT_NE(toolbar_view_after_close, nullptr);
   EXPECT_TRUE(toolbar_view_after_close->GetVisible());
+
+  EXPECT_EQ(user_action_tester.GetActionCount("Indigo.Toolbar.Close"), 1);
 }
 
 // TODO(crbug.com/536086195): Flaky on all platforms.
 TEST_F(IndigoToolbarTest, DISABLED_ExpandCollapseInteractions) {
+  base::UserActionTester user_action_tester;
   MockIndigoToolbarDelegate delegate;
   auto toolbar = std::make_unique<IndigoToolbar>(&delegate);
   toolbar->Show(overlay_view());
@@ -162,6 +168,7 @@ TEST_F(IndigoToolbarTest, DISABLED_ExpandCollapseInteractions) {
 
   // Expand the toolbar.
   views::test::ButtonTestApi(expand_button).NotifyDefaultMouseClick();
+  EXPECT_EQ(user_action_tester.GetActionCount("Indigo.Toolbar.Expand"), 1);
   task_environment()->FastForwardBy(kToolbarAnimationDuration +
                                     kAnimationSettleDuration);
   overlay_view()->DeprecatedLayoutImmediately();
@@ -203,6 +210,7 @@ TEST_F(IndigoToolbarTest, DISABLED_ExpandCollapseInteractions) {
 
   // Collapse the toolbar.
   views::test::ButtonTestApi(expand_button).NotifyDefaultMouseClick();
+  EXPECT_EQ(user_action_tester.GetActionCount("Indigo.Toolbar.Expand"), 2);
   task_environment()->FastForwardBy(kToolbarAnimationDuration +
                                     kAnimationSettleDuration);
   overlay_view()->DeprecatedLayoutImmediately();

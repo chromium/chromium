@@ -186,6 +186,7 @@ source_set("browser_tests") {
     ":indigo",
     ":test_support",
     "//base",
+    "//base/test:test_support",
     "//chrome/browser/indigo/onboarding",
     "//chrome/browser/indigo/resources:indigo_strings",
     "//chrome/browser/optimization_guide",

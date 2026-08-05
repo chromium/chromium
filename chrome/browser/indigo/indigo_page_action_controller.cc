@@ -596,6 +596,8 @@ void IndigoPageActionController::DeleteOriginalPhoto() {
     return;
   }
 
+  base::RecordAction(
+      base::UserMetricsAction("Indigo.DeleteOriginalPhoto.Trigger"));
   delete_photo_in_flight_ = true;
   indigo_service_->GetApiClient().Delete(
       base::BindOnce(&IndigoPageActionController::OnDeleteOriginalPhotoComplete,
@@ -608,6 +610,8 @@ void IndigoPageActionController::OnDeleteOriginalPhotoComplete(
   ToastController* toast_controller =
       ToastController::MaybeGetForTabInterface(&tab());
   if (result.has_value()) {
+    base::RecordAction(
+        base::UserMetricsAction("Indigo.DeleteOriginalPhoto.Complete"));
     Reset(ResetType::kResetReplacementsAndContentScript);
     if (toast_controller) {
       toast_controller->MaybeShowToast(
