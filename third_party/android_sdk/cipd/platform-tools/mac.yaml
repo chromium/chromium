@@ -1,10 +1,10 @@
-# Copyright 2019 The Chromium Authors
+# Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-package: chromium/third_party/android_sdk/public/platform-tools
+package: chromium/third_party/android_sdk/public/platform-tools/mac
 description: platform-tools Android SDK Platform-tools library
-root: ../public/
+root: ../../public/
 data:
   - dir: platform-tools
 # Some tools inspect their argv0 and don't handle CIPD's symlink structure

@@ -2,9 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-package: chromium/third_party/android_sdk/public/build-tools/37.0.0
+package: chromium/third_party/android_sdk/public/build-tools/37.0.0/linux
 description: build-tools Android SDK Build Tools
-root: ../../public/
+root: ../../../public/
 data:
   - dir: build-tools/37.0.0
 # Some tools inspect their argv0 and don't handle CIPD's symlink structure

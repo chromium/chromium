@@ -230,7 +230,12 @@ packager_builder(
             },
             {
                 "sdk_package_name": "build-tools;37.0.0",
-                "cipd_yaml": "third_party/android_sdk/cipd/build-tools/37.0.0.yaml",
+                "cipd_yaml": "third_party/android_sdk/cipd/build-tools/37.0.0/linux.yaml",
+            },
+            {
+                "sdk_package_name": "build-tools;37.0.0",
+                "cipd_yaml": "third_party/android_sdk/cipd/build-tools/37.0.0/mac.yaml",
+                "target_os": "mac",
             },
             {
                 "sdk_package_name": "cmdline-tools;latest",
@@ -283,7 +288,12 @@ packager_builder(
             },
             {
                 "sdk_package_name": "platform-tools",
-                "cipd_yaml": "third_party/android_sdk/cipd/platform-tools.yaml",
+                "cipd_yaml": "third_party/android_sdk/cipd/platform-tools/linux.yaml",
+            },
+            {
+                "sdk_package_name": "platform-tools",
+                "cipd_yaml": "third_party/android_sdk/cipd/platform-tools/mac.yaml",
+                "target_os": "mac",
             },
             {
                 "sdk_package_name": "system-images;android-19;google_apis;x86",
