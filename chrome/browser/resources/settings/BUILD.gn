@@ -399,6 +399,7 @@ build_webui("build") {
     "site_settings/website_usage_browser_proxy.ts",
     "time.ts",
     "tooltip_mixin.ts",
+    "tooltip_mixin_lit.ts",
   ]
 
   if (is_chromeos) {
@@ -488,7 +489,9 @@ build_webui("build") {
     "performance_page/memory_page.css",
     "performance_page/performance_page_index.css",
     "performance_page/speed_page.css",
+    "performance_page/tab_discard/exception_current_sites_list.css",
     "performance_page/tab_discard/exception_entry.css",
+    "performance_page/tab_discard/exception_list.css",
     "performance_page/tab_discard/exception_tabbed_add_dialog.css",
     "privacy_page/privacy_guide/privacy_guide_fragment_shared.css",
     "reset_page/reset_profile_banner.css",

@@ -4,7 +4,6 @@
 
 import 'chrome://settings/settings.js';
 
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrIconButtonElement} from 'chrome://settings/lazy_load.js';
 import type {ExceptionEditDialogElement, ExceptionEntryElement, ExceptionListElement, ExceptionTabbedAddDialogElement, SettingsPerformancePageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {convertDateToWindowsEpoch, DISCARD_RING_PREF, MemorySaverModeExceptionListAction, PERFORMANCE_INTERVENTION_NOTIFICATION_PREF, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, PrefsBrowserProxy, PrefService, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF} from 'chrome://settings/settings.js';
@@ -173,10 +172,11 @@ suite('TabDiscardExceptionList', function() {
   });
 
   function assertExceptionListEquals(rules: string[], message?: string) {
-    flush();
     const actual =
-        exceptionList.$.list.items!.concat(exceptionList.$.overflowList.items!)
-            .map(entry => entry.site)
+        [
+          ...exceptionList.shadowRoot.querySelectorAll<ExceptionEntryElement>(
+              'tab-discard-exception-entry'),
+        ].map(entry => entry.entry.site)
             .reverse();
     assertDeepEquals(rules, actual, message);
   }
@@ -190,6 +190,7 @@ suite('TabDiscardExceptionList', function() {
         enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
         controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
       }]);
+      await microtasksFinished();
     }
     await prefService.setPrefValue(
         TAB_DISCARD_EXCEPTIONS_PREF,
@@ -200,7 +201,7 @@ suite('TabDiscardExceptionList', function() {
 
   function getExceptionListEntry(idx: number): ExceptionEntryElement {
     const entries =
-        [...exceptionList.shadowRoot!.querySelectorAll<ExceptionEntryElement>(
+        [...exceptionList.shadowRoot.querySelectorAll<ExceptionEntryElement>(
             'tab-discard-exception-entry')];
     const entry = entries[entries.length - 1 - idx];
     assertTrue(!!entry);
@@ -258,6 +259,7 @@ suite('TabDiscardExceptionList', function() {
     const onShowTooltip = eventToPromise('show-tooltip', exceptionList);
     indicator.dispatchEvent(new Event('focus'));
     await onShowTooltip;
+    await microtasksFinished();
     assertEquals(
         CrPolicyStrings.controlledSettingPolicy,
         exceptionList.$.tooltip.textContent.trim());
@@ -291,14 +293,14 @@ suite('TabDiscardExceptionList', function() {
   async function getTabbedAddDialog():
       Promise<ExceptionTabbedAddDialogElement> {
     await performanceBrowserProxy.whenCalled('getCurrentOpenSites');
-    const dialog = exceptionList.shadowRoot!.querySelector(
+    const dialog = exceptionList.shadowRoot.querySelector(
         'tab-discard-exception-tabbed-add-dialog');
     assertTrue(!!dialog);
     return dialog;
   }
 
   function getEditDialog(): ExceptionEditDialogElement {
-    const dialog = exceptionList.shadowRoot!.querySelector(
+    const dialog = exceptionList.shadowRoot.querySelector(
         'tab-discard-exception-edit-dialog');
     assertTrue(!!dialog);
     return dialog;
@@ -307,13 +309,13 @@ suite('TabDiscardExceptionList', function() {
   function assertTabbedAddDialogDoesNotExist() {
     assertEquals(
         0, performanceBrowserProxy.getCallCount('getCurrentOpenSites'));
-    const dialog = exceptionList.shadowRoot!.querySelector(
+    const dialog = exceptionList.shadowRoot.querySelector(
         'tab-discard-exception-tabbed-add-dialog');
     assertFalse(!!dialog);
   }
 
   function assertEditDialogDoesNotExist() {
-    const dialog = exceptionList.shadowRoot!.querySelector(
+    const dialog = exceptionList.shadowRoot.querySelector(
         'tab-discard-exception-edit-dialog');
     assertFalse(!!dialog);
   }
@@ -428,7 +430,6 @@ suite('TabDiscardExceptionList', function() {
 
     assertFalse(addDialog.$.actionButton.disabled);
     addDialog.$.actionButton.click();
-    flush();
     await microtasksFinished();
 
     assertFalse(exceptionList.$.collapse.opened);
@@ -451,9 +452,10 @@ suite('TabDiscardExceptionList', function() {
     await microtasksFinished();
     assertExceptionListEquals([...entries.slice(0, -1), 'foo']);
 
-    clickMoreActionsButton(entry);
+    const updatedEntry =
+        getExceptionListEntry(TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE);
+    clickMoreActionsButton(updatedEntry);
     clickEditMenuItem();
-    flush();
     await microtasksFinished();
     await inputDialog(getEditDialog(), getExceptionListEntry(0).entry.site);
     await microtasksFinished();

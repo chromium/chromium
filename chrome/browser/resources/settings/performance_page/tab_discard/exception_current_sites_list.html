@@ -1,47 +1,20 @@
-<style include="settings-shared cr-scrollable">
-  #container {
-    height: calc(5 * var(--cr-section-min-height));
-  }
-
-  /*
-   * adds horizontal padding to account for the removed padding from the dialog
-   * body
-   */
-   #emptyText {
-    padding-inline-end: 20px;
-    padding-inline-start: 20px;
-    padding-top: 20px;
-  }
-
-  .label-slot {
-    align-items: center;
-    display: flex;
-  }
-
-  .checkbox-label {
-    margin-inline-start: 10px;
-  }
-
-  cr-checkbox {
-    padding: 7px var(--cr-section-padding);
-  }
-</style>
 <div id="container" class="cr-scrollable" scrollable>
   <div class="cr-scrollable-top"></div>
   <div id="list" role="listbox" focusgroup="listbox block"
-      hidden$="[[!currentSites_.length]]">
-    <template is="dom-repeat" items="[[currentSites_]]">
-      <cr-checkbox checked="[[isSelectedSite_(item)]]"
-          on-change="onToggleSelection_">
+      ?hidden="${!this.currentSites_.length}">
+    ${this.currentSites_.map(item => html`
+      <cr-checkbox ?checked="${this.isSelectedSite_(item)}"
+          data-site="${item}"
+          @change="${this.onSelectionChange_}">
         <div class="label-slot">
-          <site-favicon url="[[item]]"></site-favicon>
-          <div class="checkbox-label text-elide">[[item]]</div>
+          <site-favicon .url="${item}"></site-favicon>
+          <div class="checkbox-label text-elide">${item}</div>
         </div>
       </cr-checkbox>
-    </template>
+    `)}
     <div class="cr-scrollable-bottom"></div>
   </div>
-  <div id="emptyText" hidden="[[currentSites_.length]]">
+  <div id="emptyText" ?hidden="${!!this.currentSites_.length}">
     $i18n{tabDiscardingExceptionsAddDialogCurrentTabsEmpty}
   </div>
 </div>
