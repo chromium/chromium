@@ -1090,15 +1090,13 @@ void Tab::ReleaseFreezingVote() {
 }
 
 void Tab::ShowHover(TabStyle::ShowHoverStyle style) {
-  if (!hover_controller_) {
-    return;
+  if (hover_controller_) {
+    if (style == TabStyle::ShowHoverStyle::kSubtle) {
+      hover_controller_->SetSubtleOpacityScale(
+          controller()->GetHoverOpacityForRadialHighlight());
+    }
+    hover_controller_->Show(style);
   }
-
-  if (style == TabStyle::ShowHoverStyle::kSubtle) {
-    hover_controller_->SetSubtleOpacityScale(
-        controller()->GetHoverOpacityForRadialHighlight());
-  }
-  hover_controller_->Show(style);
   UpdateForegroundColors();
   DeprecatedLayoutImmediately();
 }
