@@ -485,6 +485,10 @@ IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest, CommandDuplicateSelected) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TestCloseTabDuringMoveOperation \
   DISABLED_TestCloseTabDuringMoveOperation
+// TODO(crbug.com/542347163): Re-enable test.
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_TestCloseTabDuringMoveOperation \
+  DISABLED_TestCloseTabDuringMoveOperation
 #else
 #define MAYBE_TestCloseTabDuringMoveOperation TestCloseTabDuringMoveOperation
 #endif

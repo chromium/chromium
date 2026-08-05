@@ -337,7 +337,14 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, SynchronousObserver) {
   ASSERT_EQ(1, observer.num_callbacks);
 }
 
-IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, PreventsReentrancy) {
+// TODO(crbug.com/542347163): Re-enable test.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_PreventsReentrancy DISABLED_PreventsReentrancy
+#else
+#define MAYBE_PreventsReentrancy PreventsReentrancy
+#endif
+IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest,
+                       MAYBE_PreventsReentrancy) {
   class ReallyBadObserver
       : public tabs_api::observation::TabStripApiBatchedObserver {
    public:

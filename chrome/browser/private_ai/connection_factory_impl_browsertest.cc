@@ -85,8 +85,15 @@ IN_PROC_BROWSER_TEST_F(ConnectionFactoryImplBrowserTest,
   EXPECT_TRUE(connection);
 }
 
+// TODO(crbug.com/542347163): Re-enable test.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_FactoryCtorFailsWithoutApiKey \
+  DISABLED_FactoryCtorFailsWithoutApiKey
+#else
+#define MAYBE_FactoryCtorFailsWithoutApiKey FactoryCtorFailsWithoutApiKey
+#endif
 IN_PROC_BROWSER_TEST_F(ConnectionFactoryImplBrowserTest,
-                       FactoryCtorFailsWithoutApiKey) {
+                       MAYBE_FactoryCtorFailsWithoutApiKey) {
   GURL url("wss://private-ai.googleapis.com");
   EXPECT_CHECK_DEATH(ConnectionFactoryImpl(url, GetNetworkContext(),
                                            GetLogger(), GetOakSessionDriver(),

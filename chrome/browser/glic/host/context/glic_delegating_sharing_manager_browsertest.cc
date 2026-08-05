@@ -524,9 +524,16 @@ class GlicStablePinningDelegatingSharingManagerBrowserTest
 };
 
 // TODO(b:479854184): make this work on Android.
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_StablePinningDelegateSwap DISABLED_StablePinningDelegateSwap
+// TODO(crbug.com/542347163): Re-enable test.
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_StablePinningDelegateSwap DISABLED_StablePinningDelegateSwap
+#else
+#define MAYBE_StablePinningDelegateSwap StablePinningDelegateSwap
+#endif
 IN_PROC_BROWSER_TEST_F(GlicStablePinningDelegatingSharingManagerBrowserTest,
-                       StablePinningDelegateSwap) {
+                       MAYBE_StablePinningDelegateSwap) {
   // Subclass to access protected members for verification.
   class TestStableManager : public GlicStablePinningDelegatingSharingManager {
    public:
@@ -553,7 +560,6 @@ IN_PROC_BROWSER_TEST_F(GlicStablePinningDelegatingSharingManagerBrowserTest,
   // Swapping to manager2 should crash (different pinned manager).
   EXPECT_CHECK_DEATH(stable_manager.SetDelegate(manager2.get()));
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Spy class to intercept window activation changes.
 class SpyFocusedBrowserManager : public GlicEmptyFocusedBrowserManager {

@@ -352,8 +352,17 @@ IN_PROC_BROWSER_TEST_P(SingleClientCommonSyncTest, ReusesSameCacheGuid) {
   EXPECT_EQ(old_cache_guid, transport_data_prefs.GetCacheGuid());
 }
 
-IN_PROC_BROWSER_TEST_P(SingleClientCommonSyncTest,
-                       E2E_ENABLED(ShouldCrashAwaitQuiescenceForE2ETest)) {
+// TODO(crbug.com/542347163): Re-enable test.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ShouldCrashAwaitQuiescenceForE2ETest \
+  DISABLED_ShouldCrashAwaitQuiescenceForE2ETest
+#else
+#define MAYBE_ShouldCrashAwaitQuiescenceForE2ETest \
+  ShouldCrashAwaitQuiescenceForE2ETest
+#endif
+IN_PROC_BROWSER_TEST_P(
+    SingleClientCommonSyncTest,
+    E2E_ENABLED(MAYBE_ShouldCrashAwaitQuiescenceForE2ETest)) {
   ASSERT_TRUE(SetupSync());
   EXPECT_CHECK_DEATH_WITH(
       { EXPECT_TRUE(AwaitQuiescence()); },
