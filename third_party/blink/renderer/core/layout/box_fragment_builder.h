@@ -585,7 +585,14 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   // recreate a spanner break for an existing fragment being relaid out, but
   // the spanner node is no longer available. In such cases,
   // `has_column_spanner_` may be true while `column_spanner_path_` is not set.
-  void SetHasColumnSpanner() { has_column_spanner_ = true; }
+  void SetHasColumnSpanner() {
+    has_column_spanner_ = true;
+
+    // Adding a spanner automatically counts as an in-flow child break (no
+    // content that's defined after it should appear in columns preceding it),
+    // even if the container might be in a parallel flow.
+    has_inflow_child_break_inside_ = true;
+  }
   void SetColumnSpannerPath(const ColumnSpannerPath& spanner_path) {
     column_spanner_path_ = &spanner_path;
     SetHasColumnSpanner();

@@ -683,14 +683,15 @@ BreakStatus FinishFragmentation(BoxFragmentBuilder* builder) {
                                 final_block_size);
   builder->SetFragmentBlockSize(final_block_size);
 
-  if (builder->FoundColumnSpanner() || !space.HasBlockFragmentation())
+  if (!space.HasBlockFragmentation()) {
     return BreakStatus::kContinue;
+  }
 
   bool was_broken_by_child = builder->HasInflowChildBreakInside();
   if (!was_broken_by_child && space.IsNewFormattingContext())
     was_broken_by_child = builder->GetExclusionSpace().HasFragmentainerBreak();
 
-  if (space_left == kIndefiniteSize) {
+  if (space_left == kIndefiniteSize || builder->FoundColumnSpanner()) {
     // We don't know how much space is available (initial column balancing
     // pass), so we won't break. Mark that we're at the block end unless there's
     // a (forced) break inside, or if we were already at the block end before

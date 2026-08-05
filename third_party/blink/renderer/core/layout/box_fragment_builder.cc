@@ -596,12 +596,12 @@ void BoxFragmentBuilder::PropagateBreakInfo(
   if (GetConstraintSpace().IsInColumnBfc()) [[unlikely]] {
     if (const auto* child_spanner_path =
             child_layout_result.GetColumnSpannerPath()) {
-      DCHECK(HasInflowChildBreakInside() ||
-             !child_layout_result.GetPhysicalFragment().IsBox());
       const auto* spanner_path =
           MakeGarbageCollected<ColumnSpannerPath>(Node(), child_spanner_path);
       SetColumnSpannerPath(*spanner_path);
       SetIsEmptySpannerParent(child_layout_result.IsEmptySpannerParent());
+      DCHECK(HasInflowChildBreakInside() ||
+             !child_layout_result.GetPhysicalFragment().IsBox());
     }
   } else {
     DCHECK(!child_layout_result.GetColumnSpannerPath());
