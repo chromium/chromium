@@ -118,6 +118,8 @@
 #include "components/user_education/webui/help_bubble_handler.h"  // nogncheck
 #include "ui/webui/tracked_element/tracked_element_handler.h"
 #include "ui/webui/tracked_element/tracked_element_web_ui.h"
+#else
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #endif
 
 namespace {
@@ -222,8 +224,11 @@ new_tab_page::mojom::ThemePtr MakeTheme(
     bool use_alternate_logo =
         theme_provider && theme_provider->GetDisplayProperty(
                               ThemeProperties::NTP_LOGO_ALTERNATE) == 1;
-// TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+    use_alternate_logo =
+        use_alternate_logo ||
+        base::FeatureList::IsEnabled(chrome::android::kWebUiAndroidTheming);
+#else
     use_alternate_logo =
         use_alternate_logo || (!theme_service->GetIsGrayscale() &&
                                theme_service->GetUserColor().has_value());
