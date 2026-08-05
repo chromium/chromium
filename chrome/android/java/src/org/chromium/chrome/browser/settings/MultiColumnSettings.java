@@ -958,4 +958,9 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
         assert isAdded();
         getChildFragmentManager().popBackStack();
     }
+
+    /** Returns the child fragment manager if attached, or null. */
+    public @Nullable FragmentManager getChildFragmentManagerOrNull() {
+        return isAdded() ? getChildFragmentManager() : null;
+    }
 }
