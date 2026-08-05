@@ -779,6 +779,26 @@ export class ToolbarAppElement extends AppElementBase {
     }
   }
 
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    // Check if a new layout is needed and if so, do it now. Checking only after
+    // all controls have been updated ensures that there's only one update if
+    // multiple controls are updated at once. ResizeObserver could theoretically
+    // trigger another notification, but since the entire toolbar should end up
+    // the same size after laying out all controls, there should hopefully only
+    // be a single call to layoutResponsiveControls().
+    let needsLayout = false;
+    for (const control of this.getResponsiveControls()) {
+      if (control.consumeNeedsLayout()) {
+        needsLayout = true;
+      }
+    }
+    if (needsLayout) {
+      this.layoutResponsiveControls();
+    }
+  }
+
   /**
    * Returns a prioritized Array of responsive controls that can be resized or
    * hidden so the toolbar fits in the window. Earlier controls in the Array

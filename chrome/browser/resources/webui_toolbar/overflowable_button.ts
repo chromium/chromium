@@ -18,6 +18,7 @@ export interface OverflowableButton {
   setToMinWidth(): void;
   expandUpToPreferredWidth(): void;
   setToPreferredWidth(): void;
+  consumeNeedsLayout(): boolean;
 }
 
 /**
@@ -48,6 +49,9 @@ export const OverflowableButtonMixin =
           // it. See class docs for more details.
           shouldBeShown: false,
         };
+
+        // True if the next call of `consumeNeedsLayout()` should return true.
+        private needsLayout_: boolean = false;
 
         shouldBeShown(): boolean {
           return this.state.shouldBeShown;
@@ -82,16 +86,19 @@ export const OverflowableButtonMixin =
           this.toggleAttribute('overflow-display-none', false);
         }
 
+        consumeNeedsLayout(): boolean {
+          const needsLayout = this.needsLayout_;
+          this.needsLayout_ = false;
+          return needsLayout;
+        }
+
         override updated(changedProperties: PropertyValues<this>) {
           super.updated(changedProperties);
           if (changedProperties.has('state')) {
-            // When hiding a control, we set it to its preferred width so that
-            // when it's shown again, it affects the size of the toolbar,
-            // triggering a layout. We could do this on hide rather than show,
-            // but only having `overflow-display-none` on controls in the
-            // overflow menu is a better invariant.
-            if (!this.shouldBeShown()) {
-              this.setToPreferredWidth();
+            const oldState = changedProperties.get('state');
+            if (!oldState ||
+                oldState.shouldBeShown !== this.state.shouldBeShown) {
+              this.needsLayout_ = true;
             }
           }
         }

@@ -7435,6 +7435,79 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledBrowserTest,
   CheckControlSizes(expected_sizes);
 }
 
+// Tests that changing pin state of buttons triggers a full priority-based
+// layout update even when the overall width needed by enabled buttons remains
+// the same.
+//
+// Starts with split-tab and forward buttons enabled (home disabled), and sizes
+// the spacer so that only split-tab fits and forward is overflowed. Then
+// disables split-tab and enables home in prefs right in a row, which should
+// trigger a single state change notification. Rather than naively switch from
+// displaying the split-tab button for the home button, we must run the
+// layoutResponsiveControls(), which should show the forward button while making
+// home overflow, due to the forward button having a higher priority..
+IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledBrowserTest,
+                       ResponsiveNavigationControlsVisibilitySwap) {
+  // Enable split-tabs button. Forward button is enabled by default. Leave home
+  // disabled.
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kPinSplitTabButton,
+                                                  true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton,
+                                                  false);
+
+  // Wait for split-tabs and forward buttons to be visible.
+  ASSERT_TRUE(WaitUntilResponsiveControlsAreVisible(
+      {kSplitTabsSelector, kForwardSelector}));
+
+  // Create spacer so that any padding it adds is taken into account by
+  // the MeasureResponsiveControls() call.
+  int spacer_width = 0;
+  ASSERT_EQ(SetSpacerWidth(spacer_width), true);
+
+  AllResponsiveControlsInfo all_controls_info;
+  ASSERT_NO_FATAL_FAILURE(MeasureResponsiveControls(all_controls_info));
+
+  CheckResponsiveControlOrder(all_controls_info,
+                              {"location-bar", "split-tabs", "forward"});
+
+  // Size spacer so that split-tabs button (at index 1) and location bar (at
+  // index 0) are shown at preferred size, but forward button (at index 2)
+  // overflows (is hidden).
+  spacer_width += all_controls_info.location_bar_extra_width;
+  spacer_width += all_controls_info.controls[2].effective_width_delta;
+  ASSERT_EQ(SetSpacerWidth(spacer_width), true);
+
+  base::DictValue expected_sizes;
+  // location-bar
+  expected_sizes.Set(all_controls_info.controls[0].id,
+                     all_controls_info.controls[0].preferred_width);
+  // split-tabs
+  expected_sizes.Set(all_controls_info.controls[1].id,
+                     all_controls_info.controls[1].preferred_width);
+  // forward
+  expected_sizes.Set(all_controls_info.controls[2].id,
+                     all_controls_info.controls[2].min_width);
+  CheckControlSizes(expected_sizes);
+
+  // Disable split-tabs button and enable home button. Rather than displaying
+  // home, the higher priority forward button should be shown and home should be
+  // hidden.
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kPinSplitTabButton,
+                                                  false);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
+
+  base::DictValue expected_sizes_after;
+  // location-bar
+  expected_sizes_after.Set(all_controls_info.controls[0].id,
+                           all_controls_info.controls[0].preferred_width);
+  // forward
+  expected_sizes_after.Set(all_controls_info.controls[2].id,
+                           all_controls_info.controls[2].preferred_width);
+  // home
+  expected_sizes_after.Set("home", 0);
+  CheckControlSizes(expected_sizes_after);
+}
+
 // This test makes sure the toolbar-app element is correctly resized in response
 // to resizing the browser window. It does not test the specifics of how the
 // individual elements are laid out, however, apart from making sure nothing
