@@ -40,7 +40,6 @@
 namespace privacy_sandbox {
 namespace {
 
-using ::browsing_topics::Topic;
 using ::privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate;
 using ::privacy_sandbox_test_util::MultipleInputKeys;
 using ::privacy_sandbox_test_util::MultipleOutputKeys;
@@ -270,79 +269,11 @@ TEST_F(PrivacySandboxSettingsTest, OnRelatedWebsiteSetsEnabledChanged) {
   testing::Mock::VerifyAndClearExpectations(&observer);
 }
 
-TEST_F(PrivacySandboxSettingsTest, IsTopicAllowed) {
-  // Confirm that allowing / blocking topics is correctly reflected by
-  // IsTopicsAllowed().
-  CanonicalTopic topic(Topic(1), kTestTaxonomyVersion);
-  CanonicalTopic child_topic(Topic(7), kTestTaxonomyVersion);
-  CanonicalTopic grandchild_topic(Topic(8), kTestTaxonomyVersion);
-
-  CanonicalTopic unrelated_topic(Topic(57), kTestTaxonomyVersion);
-
-  // Check that a topic and its descendants get blocked.
-  privacy_sandbox_settings()->SetTopicAllowed(topic, false);
-  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(topic));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(child_topic));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(grandchild_topic));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(unrelated_topic));
-
-  // Check that explicitly blocking an implicitly blocked topic works.
-  privacy_sandbox_settings()->SetTopicAllowed(child_topic, false);
-  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(topic));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(child_topic));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(grandchild_topic));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(unrelated_topic));
-
-  // Check that a topic remains blocked if its parent is blocked even if the
-  // topic is set allowed.
-  privacy_sandbox_settings()->SetTopicAllowed(child_topic, true);
-  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(topic));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(child_topic));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(grandchild_topic));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(unrelated_topic));
-
-  // Check that unblocking an ancestor unblocks a topic as long as it wasn't
-  // explicitly blocked or implicitly blocked by another ancestor.
-  privacy_sandbox_settings()->SetTopicAllowed(topic, true);
-  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(child_topic));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(grandchild_topic));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(unrelated_topic));
-
-  // Check that blocking a descendant doesn't block an ancestor.
-  privacy_sandbox_settings()->SetTopicAllowed(child_topic, false);
-  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(child_topic));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(grandchild_topic));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(unrelated_topic));
-
-  // Check that blocking and unblocking an ancestor doesn't unblock an
-  // explicitly blocked descendant or a descendant implicitly blocked by another
-  // ancestor.
-  privacy_sandbox_settings()->SetTopicAllowed(topic, false);
-  privacy_sandbox_settings()->SetTopicAllowed(topic, true);
-  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(child_topic));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(grandchild_topic));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(unrelated_topic));
-
-  // Check that blocking an unrelated topic doesn't affect our topic or its
-  // descendants.
-  privacy_sandbox_settings()->SetTopicAllowed(unrelated_topic, false);
-  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(child_topic));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(grandchild_topic));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(unrelated_topic));
-}
-
 TEST_F(PrivacySandboxSettingsTest, ClearingTopicSettings) {
   // Confirm that time range deletions affect the correct settings.
-  CanonicalTopic topic_a(Topic(1), kTestTaxonomyVersion);
-  CanonicalTopic topic_b(Topic(57), kTestTaxonomyVersion);
-  CanonicalTopic topic_c(Topic(86), kTestTaxonomyVersion);
-  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_a));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_b));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_c));
+  CanonicalTopic topic_a(1, kTestTaxonomyVersion);
+  CanonicalTopic topic_b(57, kTestTaxonomyVersion);
+  CanonicalTopic topic_c(86, kTestTaxonomyVersion);
 
   privacy_sandbox_settings()->SetTopicAllowed(topic_a, false);
   task_environment()->AdvanceClock(base::Hours(1));
@@ -353,25 +284,20 @@ TEST_F(PrivacySandboxSettingsTest, ClearingTopicSettings) {
   task_environment()->AdvanceClock(base::Hours(1));
   privacy_sandbox_settings()->SetTopicAllowed(topic_c, false);
 
-  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(topic_a));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(topic_b));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(topic_c));
+  EXPECT_EQ(3u, prefs()->GetList(prefs::kPrivacySandboxBlockedTopics).size());
 
   // Construct a deletion which only targets the second setting.
   privacy_sandbox_settings()->ClearTopicSettings(
       kSecondSettingTime - base::Seconds(1),
       kSecondSettingTime + base::Seconds(1));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(topic_a));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_b));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(topic_c));
+
+  EXPECT_EQ(2u, prefs()->GetList(prefs::kPrivacySandboxBlockedTopics).size());
 
   // Perform a maximmal time range deletion, which should remove the two
   // remaining settings.
   privacy_sandbox_settings()->ClearTopicSettings(base::Time(),
                                                  base::Time::Max());
-  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_a));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_b));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_c));
+  EXPECT_EQ(0u, prefs()->GetList(prefs::kPrivacySandboxBlockedTopics).size());
 }
 
 struct PrivateAggregationDebugModeTestCase {

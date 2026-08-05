@@ -91,7 +91,6 @@ include_rules = [
   "+components/continuous_search/common",
   "+components/continuous_search/browser",
   "+components/browsing_data/core",
-  "+components/browsing_topics",
   "+components/custom_handlers",
   "+components/captive_portal",
   "+components/cbor",

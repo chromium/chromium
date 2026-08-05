@@ -6,7 +6,6 @@
 #define COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_H_
 
 #include "base/time/time.h"
-#include "components/browsing_topics/common/common_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class GURL;
@@ -115,13 +114,10 @@ class PrivacySandboxSettings : public KeyedService {
       const GURL& url,
       content::RenderFrameHost* console_frame = nullptr) const = 0;
 
-  // Returns whether |topic| can be either considered as a top topic for the
-  // current epoch, or provided to a website as a previous / current epochs
-  // site assigned topic.
-  virtual bool IsTopicAllowed(const CanonicalTopic& topic) = 0;
-
-  // Sets |topic| to |allowed|. Whether a topic is allowed or not is made
-  // available through IsTopicAllowed().
+  // Sets |topic| to |allowed|.
+  //
+  // NOTE: This function has no observable effect because the Topics API is
+  // deprecated and its underlying data is hidden. This will be removed soon.
   virtual void SetTopicAllowed(const CanonicalTopic& topic, bool allowed) = 0;
 
   // Removes all Topic settings with creation times between |start_time|

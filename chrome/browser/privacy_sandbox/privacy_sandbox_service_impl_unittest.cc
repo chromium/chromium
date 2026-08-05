@@ -60,7 +60,7 @@
 #include "url/origin.h"
 
 namespace {
-using ::browsing_topics::Topic;
+
 using ::privacy_sandbox::CanonicalTopic;
 
 using ::testing::Combine;
@@ -419,7 +419,6 @@ TEST_F(PrivacySandboxShouldUsePrivacyPolicyChinaDomain,
       privacy_sandbox_service()->ShouldUsePrivacyPolicyChinaDomain();
   ASSERT_EQ(should_use_china_domain, false);
 }
-
 
 TEST_F(PrivacySandboxServiceTest,
        RelatedWebsiteSetsNotRelevantMetricAllowedCookies) {

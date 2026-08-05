@@ -1,1 +1,6 @@
-mixins: "//components/browsing_topics/COMMON_METADATA"
+monorail: {
+  component: "Blink>TopicsAPI"
+}
+buganizer_public: {
+  component_id: 1456494
+}

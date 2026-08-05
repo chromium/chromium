@@ -10,13 +10,12 @@ namespace privacy_sandbox {
 
 namespace {
 
-using Topic = browsing_topics::Topic;
 
 // Constraints around the currently checked in topics and taxonomy. Changes to
 // the taxononmy version or number of topics will fail these tests unless these
 // are also updated.
 constexpr int kAvailableTaxonomyVersion = 1;
-constexpr Topic kLowestTopicID = Topic(1);
+constexpr int kLowestTopicID = 1;
 
 }  // namespace
 

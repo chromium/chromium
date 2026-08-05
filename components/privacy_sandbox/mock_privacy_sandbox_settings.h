@@ -22,10 +22,6 @@ class MockPrivacySandboxSettings
               IsTopicsAllowedForContext,
               (const url::Origin&, const GURL&, content::RenderFrameHost*),
               (override, const));
-  MOCK_METHOD(bool,
-              IsTopicAllowed,
-              (const privacy_sandbox::CanonicalTopic&),
-              (override));
   MOCK_METHOD(void,
               SetTopicAllowed,
               (const privacy_sandbox::CanonicalTopic&, bool),

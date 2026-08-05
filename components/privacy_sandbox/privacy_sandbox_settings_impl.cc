@@ -20,8 +20,6 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/browsing_topics/common/common_types.h"
-#include "components/browsing_topics/common/semantic_tree.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -230,28 +228,6 @@ bool PrivacySandboxSettingsImpl::IsTopicsAllowedForContext(
   }
   JoinHistogram(kIsTopicsAllowedForContextHistogram, status);
   return IsAllowed(status);
-}
-
-bool PrivacySandboxSettingsImpl::IsTopicAllowed(const CanonicalTopic& topic) {
-  const auto& blocked_topics =
-      pref_service_->GetList(prefs::kPrivacySandboxBlockedTopics);
-
-  std::vector<browsing_topics::Topic> ancestor_topics =
-      browsing_topics::SemanticTree().GetAncestorTopics(topic.topic_id());
-  for (const base::Value& item : blocked_topics) {
-    auto blocked_topic =
-        CanonicalTopic::FromValue(*item.GetDict().Find(kBlockedTopicsTopicKey));
-    if (!blocked_topic) {
-      continue;
-    }
-
-    if ((topic.topic_id() == blocked_topic->topic_id()) ||
-        (std::ranges::contains(ancestor_topics, blocked_topic->topic_id()))) {
-      return false;
-    }
-  }
-
-  return true;
 }
 
 void PrivacySandboxSettingsImpl::SetTopicAllowed(const CanonicalTopic& topic,

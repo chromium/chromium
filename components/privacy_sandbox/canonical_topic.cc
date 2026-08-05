@@ -16,13 +16,12 @@ constexpr char kTaxonomyVersion[] = "taxonomyVersion";
 
 namespace privacy_sandbox {
 
-CanonicalTopic::CanonicalTopic(browsing_topics::Topic topic_id,
-                               int taxonomy_version)
+CanonicalTopic::CanonicalTopic(int topic_id, int taxonomy_version)
     : topic_id_(topic_id), taxonomy_version_(taxonomy_version) {}
 
 base::Value CanonicalTopic::ToValue() const {
   return base::Value(base::DictValue()
-                         .Set(kTopicId, topic_id_.value())
+                         .Set(kTopicId, topic_id_)
                          .Set(kTaxonomyVersion, taxonomy_version_));
 }
 
@@ -42,11 +41,11 @@ base::Value CanonicalTopic::ToValue() const {
     return std::nullopt;
   }
 
-  return CanonicalTopic(browsing_topics::Topic(*topic_id), *taxonomy_version);
+  return CanonicalTopic(*topic_id, *taxonomy_version);
 }
 
 bool CanonicalTopic::operator<(const CanonicalTopic& other) const {
-  return topic_id_.value() < other.topic_id_.value();
+  return topic_id_ < other.topic_id_;
 }
 
 bool CanonicalTopic::operator==(const CanonicalTopic& other) const {

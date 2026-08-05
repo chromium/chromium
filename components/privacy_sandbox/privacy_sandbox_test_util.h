@@ -9,7 +9,6 @@
 #include <string>
 #include <variant>
 
-#include "components/browsing_topics/common/common_types.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"

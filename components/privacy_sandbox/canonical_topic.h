@@ -7,19 +7,18 @@
 
 #include <string>
 
-#include "base/types/strong_alias.h"
 #include "base/values.h"
-#include "components/browsing_topics/common/common_types.h"
 
 namespace privacy_sandbox {
+
 // Contains a topic and a name in the current locale.
 class CanonicalTopic {
  public:
-  CanonicalTopic(browsing_topics::Topic topic_id, int taxonomy_version);
+  CanonicalTopic(int topic_id, int taxonomy_version);
 
   // The ID of this topic. A Canonical Topic's ID uniquely identifies it
   // within a specific taxonomy version.
-  browsing_topics::Topic topic_id() const { return topic_id_; }
+  int topic_id() const { return topic_id_; }
 
   // The taxonomy version of the Canonical Topic.
   // TODO(crbug.com/40268081): We no longer have a use for the taxonomy
@@ -41,7 +40,7 @@ class CanonicalTopic {
   bool operator==(const CanonicalTopic& other) const;
 
  private:
-  browsing_topics::Topic topic_id_;
+  int topic_id_;
   int taxonomy_version_;
 };
 

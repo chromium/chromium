@@ -1558,10 +1558,8 @@ PageSpecificContentSettings::GetAccessedTopics() const {
       page().GetMainDocument().GetLastCommittedURL().GetHost() ==
           "example.com") {
     // TODO(crbug.com/40210776): Remove sample topic when API is ready.
-    return {privacy_sandbox::CanonicalTopic(browsing_topics::Topic(3),
-                                            kTopicsAPISampleDataTaxonomy),
-            privacy_sandbox::CanonicalTopic(browsing_topics::Topic(4),
-                                            kTopicsAPISampleDataTaxonomy)};
+    return {privacy_sandbox::CanonicalTopic(3, kTopicsAPISampleDataTaxonomy),
+            privacy_sandbox::CanonicalTopic(4, kTopicsAPISampleDataTaxonomy)};
   }
   return {accessed_topics_.begin(), accessed_topics_.end()};
 }

@@ -14,9 +14,6 @@ per-file fake_speech_recognition_manager*=file://ui/accessibility/OWNERS
 # For Attribution Reporting API.
 per-file attribution_*=file://content/browser/attribution_reporting/OWNERS
 
-# For Topics API.
-per-file browsing_topics_*=file://components/browsing_topics/OWNERS
-
 # Network Service
 per-file network_service_test_helper.*=file://services/network/OWNERS
 

@@ -64,7 +64,6 @@ if (use_blink) {
     ]
 
     deps = [
-      "//components/browsing_topics/common",
       "//components/keyed_service/core",
       "//components/pref_registry",
       "//components/prefs",
@@ -85,7 +84,6 @@ if (use_blink) {
 
     deps = [
       ":privacy_sandbox_prefs",
-      "//components/browsing_topics/common",
       "//components/content_settings/core/browser",
       "//components/content_settings/core/browser:cookie_settings",
       "//components/content_settings/core/common",
@@ -121,7 +119,6 @@ if (use_blink) {
       ":privacy_sandbox",
       ":privacy_sandbox_prefs",
       "//base/test:test_support",
-      "//components/browsing_topics/common",
       "//components/content_settings/core/browser",
       "//components/content_settings/core/common",
       "//components/content_settings/core/test:test_support",

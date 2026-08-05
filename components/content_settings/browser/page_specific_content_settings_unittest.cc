@@ -1066,8 +1066,7 @@ TEST_F(PageSpecificContentSettingsTest, Topics) {
   EXPECT_FALSE(pscs->HasAccessedTopics());
   EXPECT_THAT(pscs->GetAccessedTopics(), testing::IsEmpty());
 
-  privacy_sandbox::CanonicalTopic topic(browsing_topics::Topic(1),
-                                        kTopicsAPITestTaxonomyVersion);
+  privacy_sandbox::CanonicalTopic topic(1, kTopicsAPITestTaxonomyVersion);
   pscs->OnTopicAccessed(url::Origin::Create(GURL("https://foo.com")), false,
                         topic);
   EXPECT_TRUE(pscs->HasAccessedTopics());
@@ -1076,7 +1075,7 @@ TEST_F(PageSpecificContentSettingsTest, Topics) {
   // Check that pscs->GetAccessedTopics() does not return the same topic ID
   // twice.
   privacy_sandbox::CanonicalTopic duplicate_topic(
-      browsing_topics::Topic(1), kTopicsAPITestTaxonomyVersion - 1);
+      1, kTopicsAPITestTaxonomyVersion - 1);
   pscs->OnTopicAccessed(url::Origin::Create(GURL("https://foo.com")), false,
                         duplicate_topic);
   EXPECT_TRUE(pscs->HasAccessedTopics());

@@ -11,7 +11,6 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "components/browsing_topics/common/common_types.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 
@@ -50,7 +49,6 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
       const url::Origin& top_frame_origin,
       const GURL& url,
       content::RenderFrameHost* console_frame = nullptr) const override;
-  bool IsTopicAllowed(const CanonicalTopic& topic) override;
   void SetTopicAllowed(const CanonicalTopic& topic, bool allowed) override;
   void ClearTopicSettings(base::Time start_time, base::Time end_time) override;
   base::Time TopicsDataAccessibleSince() const override;
