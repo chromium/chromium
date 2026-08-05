@@ -79,7 +79,8 @@ GlicInvokeHandler::ResolvedTarget GlicInvokeHandler::ResolveTargetSurface(
   if (const auto* default_surface =
           std::get_if<DefaultSurface>(&target.surface)) {
     BrowserWindowInterface* browser = default_surface->browser;
-    if (browser) {
+    if (browser &&
+        browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL) {
       tabs::TabInterface* tab = TabListInterface::From(browser)->GetActiveTab();
       if (tab) {
         return TabSurface{tab, /*is_new=*/false};
@@ -96,7 +97,8 @@ GlicInvokeHandler::ResolvedTarget GlicInvokeHandler::ResolveTargetSurface(
     return {TabSurface{nullptr, /*is_new=*/false}};
   } else if (const auto* new_tab_opt = std::get_if<NewTab>(&target.surface)) {
     BrowserWindowInterface* browser = new_tab_opt->window;
-    if (!browser) {
+    if (!browser ||
+        browser->GetType() != BrowserWindowInterface::Type::TYPE_NORMAL) {
 #if !BUILDFLAG(IS_ANDROID)
       tabs::TabInterface* tab = CreateBrowserAndGetActiveTab(profile);
       if (tab) {

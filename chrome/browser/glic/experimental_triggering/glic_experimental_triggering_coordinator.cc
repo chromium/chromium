@@ -827,7 +827,9 @@ GlicExperimentalTriggeringCoordinator::GetBrowserWindow() const {
   BrowserWindowInterface* browser = nullptr;
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [&browser, this](BrowserWindowInterface* b) {
-        if (b->GetProfile() == profile_) {
+        if (b->GetProfile() == profile_ &&
+            b->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL &&
+            !b->IsDeleteScheduled()) {
           browser = b;
           return false;  // Stop iteration
         }

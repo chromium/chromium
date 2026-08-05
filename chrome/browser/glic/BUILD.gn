@@ -867,6 +867,7 @@ source_set("browser_tests") {
   if (!is_android) {
     sources += [
       "experimental_opt_in/glic_experimental_opt_in_dialog_browsertest.cc",
+      "experimental_triggering/glic_experimental_triggering_browsertest.cc",
       "glic_browsertest.cc",
       "glic_context_menu_browsertest.cc",
       "glic_metrics_browsertest.cc",

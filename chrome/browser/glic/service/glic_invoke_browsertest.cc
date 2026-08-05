@@ -34,6 +34,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/test/base/ui_test_utils.h"
 #endif
@@ -1071,6 +1072,49 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
 
   // Clean up the new window.
   CloseBrowserSynchronously(new_browser);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
+                       ResolveTargetSurfaceSkipsAppWindow) {
+  Browser* app_browser = Browser::Create(Browser::CreateParams::CreateForApp(
+      "test_app", true, gfx::Rect(), GetProfile(), true));
+  app_browser->GetWindow()->Show();
+
+  // 1. DefaultSurface targeting app_browser falls back to a normal browser.
+  {
+    BrowserWindowInterface* fallback_browser = nullptr;
+    {
+      Target target;
+      target.surface = DefaultSurface{app_browser};
+      auto resolved =
+          GlicInvokeHandler::ResolveTargetSurface(GetProfile(), target);
+      ASSERT_TRUE(
+          std::holds_alternative<GlicInvokeHandler::TabSurface>(resolved));
+      auto tab_surface = std::get<GlicInvokeHandler::TabSurface>(resolved);
+      fallback_browser = tab_surface.tab->GetBrowserWindowInterface();
+      EXPECT_NE(fallback_browser, app_browser);
+    }
+    CloseBrowserSynchronously(fallback_browser);
+  }
+
+  // 2. NewTab targeting app_browser falls back to a normal browser.
+  {
+    BrowserWindowInterface* fallback_browser = nullptr;
+    {
+      Target target;
+      target.surface = NewTab{app_browser};
+      auto resolved =
+          GlicInvokeHandler::ResolveTargetSurface(GetProfile(), target);
+      ASSERT_TRUE(
+          std::holds_alternative<GlicInvokeHandler::TabSurface>(resolved));
+      auto tab_surface = std::get<GlicInvokeHandler::TabSurface>(resolved);
+      fallback_browser = tab_surface.tab->GetBrowserWindowInterface();
+      EXPECT_NE(fallback_browser, app_browser);
+    }
+    CloseBrowserSynchronously(fallback_browser);
+  }
+
+  CloseBrowserSynchronously(app_browser);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, ResolveTargetSurfaceFloating) {
