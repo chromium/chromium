@@ -595,6 +595,21 @@
             ]
         }
     ],
+    "AccountRetrievalWaitsForRestoration": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AccountRetrievalWaitsForRestoration"
+                    ]
+                }
+            ]
+        }
+    ],
     "ActivitylessSigninAllEntryPointClank": [
         {
             "platforms": [

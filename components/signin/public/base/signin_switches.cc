@@ -55,7 +55,7 @@ constexpr char kHatsSurveyProbabilityName[] = "probability";
 
 #if BUILDFLAG(IS_IOS)
 BASE_FEATURE(kAccountRetrievalWaitsForRestoration,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Convenient testing flag for `kAvatarButtonSyncPromo` on all platforms.
