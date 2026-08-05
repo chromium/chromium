@@ -398,28 +398,6 @@ class PrivacySandboxServiceTest : public testing::Test {
   raw_ptr<PrivacySandboxServiceImpl> privacy_sandbox_service_ = nullptr;
 };
 
-class PrivacySandboxShouldUsePrivacyPolicyChinaDomain
-    : public PrivacySandboxServiceTest {};
-
-TEST_F(PrivacySandboxShouldUsePrivacyPolicyChinaDomain, ShouldUseChinaDomain) {
-  ON_CALL(*mock_privacy_sandbox_countries(), IsLatestCountryChina())
-      .WillByDefault(testing::Return(true));
-
-  bool should_use_china_domain =
-      privacy_sandbox_service()->ShouldUsePrivacyPolicyChinaDomain();
-  ASSERT_EQ(should_use_china_domain, true);
-}
-
-TEST_F(PrivacySandboxShouldUsePrivacyPolicyChinaDomain,
-       ShouldNotUseChinaDomain) {
-  ON_CALL(*mock_privacy_sandbox_countries(), IsLatestCountryChina())
-      .WillByDefault(testing::Return(false));
-
-  bool should_use_china_domain =
-      privacy_sandbox_service()->ShouldUsePrivacyPolicyChinaDomain();
-  ASSERT_EQ(should_use_china_domain, false);
-}
-
 TEST_F(PrivacySandboxServiceTest,
        RelatedWebsiteSetsNotRelevantMetricAllowedCookies) {
   base::HistogramTester histogram_tester;
@@ -1035,74 +1013,6 @@ TEST_F(PrivacySandboxServiceM1DelayCreation,
   EXPECT_EQ(
       prefs()->GetString(prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate),
       "foo");
-}
-
-
-
-class PrivacySandboxServiceM1DelayCreationRestricted
-    : public PrivacySandboxServiceM1DelayCreation {
- public:
-  std::unique_ptr<privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>
-  CreateMockDelegate() override {
-    auto mock_delegate = std::make_unique<testing::NiceMock<
-        privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>>();
-    mock_delegate->SetUpIsPrivacySandboxRestrictedResponse(
-        /*restricted=*/true);
-    return mock_delegate;
-  }
-};
-
-TEST_F(PrivacySandboxServiceM1DelayCreationRestricted,
-       RestrictedDisablesAndClearsConsent) {
-  prefs()->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, true);
-  prefs()->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, true);
-  prefs()->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled, true);
-  prefs()->SetBoolean(prefs::kPrivacySandboxTopicsConsentGiven, true);
-  prefs()->SetTime(prefs::kPrivacySandboxTopicsConsentLastUpdateTime,
-                   base::Time::Now());
-  prefs()->SetInteger(
-      prefs::kPrivacySandboxTopicsConsentLastUpdateReason,
-      static_cast<int>(
-          privacy_sandbox::TopicsConsentUpdateSource::kConfirmation));
-  prefs()->SetString(prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate,
-                     "foo");
-
-  CreateService();
-
-  EXPECT_FALSE(prefs()->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled));
-  EXPECT_FALSE(prefs()->GetBoolean(prefs::kPrivacySandboxM1FledgeEnabled));
-  EXPECT_FALSE(
-      prefs()->GetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled));
-  EXPECT_FALSE(prefs()->GetBoolean(prefs::kPrivacySandboxTopicsConsentGiven));
-  EXPECT_EQ(prefs()->GetTime(prefs::kPrivacySandboxTopicsConsentLastUpdateTime),
-            base::Time());
-  EXPECT_EQ(static_cast<privacy_sandbox::TopicsConsentUpdateSource>(
-                prefs()->GetInteger(
-                    prefs::kPrivacySandboxTopicsConsentLastUpdateReason)),
-            privacy_sandbox::TopicsConsentUpdateSource::kDefaultValue);
-  EXPECT_EQ(
-      prefs()->GetString(prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate),
-      "");
-}
-
-TEST_F(PrivacySandboxServiceM1DelayCreationRestricted,
-       RestrictedEnabledDoesntClearAdMeasurementPref) {
-  base::test::ScopedFeatureList local_feature_list;
-  local_feature_list.InitAndEnableFeatureWithParameters(
-      privacy_sandbox::kPrivacySandboxSettings4,
-      {{privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
-        "true"}});
-
-  prefs()->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, true);
-  prefs()->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, true);
-  prefs()->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled, true);
-
-  CreateService();
-
-  EXPECT_FALSE(prefs()->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled));
-  EXPECT_FALSE(prefs()->GetBoolean(prefs::kPrivacySandboxM1FledgeEnabled));
-  EXPECT_TRUE(
-      prefs()->GetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled));
 }
 
 TEST_F(PrivacySandboxServiceTest, DisablePrivacySandboxTopicsPolicy) {

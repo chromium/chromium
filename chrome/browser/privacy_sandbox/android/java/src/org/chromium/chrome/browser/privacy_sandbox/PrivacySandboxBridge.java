@@ -19,14 +19,6 @@ public class PrivacySandboxBridge {
         mProfile = profile;
     }
 
-    public boolean isPrivacySandboxRestricted() {
-        return PrivacySandboxBridgeJni.get().isPrivacySandboxRestricted(mProfile);
-    }
-
-    public boolean isRestrictedNoticeEnabled() {
-        return PrivacySandboxBridgeJni.get().isRestrictedNoticeEnabled(mProfile);
-    }
-
     public boolean isRelatedWebsiteSetsDataAccessEnabled() {
         return PrivacySandboxBridgeJni.get().isRelatedWebsiteSetsDataAccessEnabled(mProfile);
     }
@@ -53,28 +45,8 @@ public class PrivacySandboxBridge {
         return PrivacySandboxBridgeJni.get().getRelatedWebsiteSetOwner(mProfile, memberOrigin);
     }
 
-    public void setAllPrivacySandboxAllowedForTesting() {
-        PrivacySandboxBridgeJni.get().setAllPrivacySandboxAllowedForTesting(mProfile); // IN-TEST
-    }
-
-    public boolean shouldUsePrivacyPolicyChinaDomain() {
-        return PrivacySandboxBridgeJni.get().shouldUsePrivacyPolicyChinaDomain(mProfile);
-    }
-
-    public String getEmbeddedPrivacyPolicyURL(
-            @PrivacyPolicyDomainType int domainType,
-            @PrivacyPolicyColorScheme int colorScheme,
-            String locale) {
-        return PrivacySandboxBridgeJni.get()
-                .getEmbeddedPrivacyPolicyURL(domainType, colorScheme, locale);
-    }
-
     @NativeMethods
     public interface Natives {
-        boolean isPrivacySandboxRestricted(Profile profile);
-
-        boolean isRestrictedNoticeEnabled(Profile profile);
-
         boolean isRelatedWebsiteSetsDataAccessEnabled(Profile profile);
 
         boolean isRelatedWebsiteSetsDataAccessManaged(Profile profile);
@@ -84,11 +56,5 @@ public class PrivacySandboxBridge {
         void setRelatedWebsiteSetsDataAccessEnabled(Profile profile, boolean enabled);
 
         String getRelatedWebsiteSetOwner(Profile profile, String memberOrigin);
-
-        void setAllPrivacySandboxAllowedForTesting(Profile profile); // IN-TEST
-
-        boolean shouldUsePrivacyPolicyChinaDomain(Profile profile);
-
-        String getEmbeddedPrivacyPolicyURL(int domainType, int colorScheme, String locale);
     }
 }

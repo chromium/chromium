@@ -41,18 +41,6 @@ PrivacySandboxService* GetPrivacySandboxService(
 }
 }  // namespace
 
-static bool JNI_PrivacySandboxBridge_IsPrivacySandboxRestricted(
-    JNIEnv* env,
-    const JavaRef<jobject>& j_profile) {
-  return GetPrivacySandboxService(j_profile)->IsPrivacySandboxRestricted();
-}
-
-static bool JNI_PrivacySandboxBridge_IsRestrictedNoticeEnabled(
-    JNIEnv* env,
-    const JavaRef<jobject>& j_profile) {
-  return GetPrivacySandboxService(j_profile)->IsRestrictedNoticeEnabled();
-}
-
 static bool JNI_PrivacySandboxBridge_IsRelatedWebsiteSetsDataAccessEnabled(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile) {
@@ -100,36 +88,6 @@ static bool JNI_PrivacySandboxBridge_IsPartOfManagedRelatedWebsiteSet(
 
   return GetPrivacySandboxService(j_profile)->IsPartOfManagedRelatedWebsiteSet(
       schemefulSite);
-}
-
-static void
-JNI_PrivacySandboxBridge_SetAllPrivacySandboxAllowedForTesting(  // IN-TEST
-    JNIEnv* env,
-    const JavaRef<jobject>& j_profile) {
-  PrivacySandboxSettingsFactory::GetForProfile(
-      Profile::FromJavaObject(j_profile))
-      ->SetAllPrivacySandboxAllowedForTesting();  // IN-TEST
-}
-
-static bool JNI_PrivacySandboxBridge_ShouldUsePrivacyPolicyChinaDomain(
-    JNIEnv* env,
-    const JavaRef<jobject>& j_profile) {
-  return GetPrivacySandboxService(j_profile)
-      ->ShouldUsePrivacyPolicyChinaDomain();
-}
-
-static ScopedJavaLocalRef<jstring>
-JNI_PrivacySandboxBridge_GetEmbeddedPrivacyPolicyURL(
-    JNIEnv* env,
-    int32_t domain_type,
-    int32_t color_scheme,
-    const JavaRef<jstring>& locale) {
-  return ConvertUTF8ToJavaString(
-      env,
-      privacy_sandbox::GetEmbeddedPrivacyPolicyURL(
-          static_cast<privacy_sandbox::PrivacyPolicyDomainType>(domain_type),
-          static_cast<privacy_sandbox::PrivacyPolicyColorScheme>(color_scheme),
-          base::android::ConvertJavaStringToUTF8(env, locale)));
 }
 
 DEFINE_JNI(PrivacySandboxBridge)

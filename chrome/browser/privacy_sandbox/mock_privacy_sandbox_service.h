@@ -24,9 +24,6 @@ class MockPrivacySandboxService : public PrivacySandboxService {
   ~MockPrivacySandboxService() override;
 
   MOCK_METHOD(void, ForceChromeBuildForTests, (bool), (override));
-  // Mock this method to enable opening the settings page in tests.
-  MOCK_METHOD(bool, IsPrivacySandboxRestricted, (), (override));
-  MOCK_METHOD(bool, IsRestrictedNoticeEnabled, (), (override));
   MOCK_METHOD(void, SetRelatedWebsiteSetsDataAccessEnabled, (bool), (override));
   MOCK_METHOD(bool,
               IsRelatedWebsiteSetsDataAccessEnabled,
@@ -48,7 +45,6 @@ class MockPrivacySandboxService : public PrivacySandboxService {
               IsPartOfManagedRelatedWebsiteSet,
               (const net::SchemefulSite& site),
               (const, override));
-  MOCK_METHOD(bool, ShouldUsePrivacyPolicyChinaDomain, (), (override));
 };
 
 std::unique_ptr<KeyedService> BuildMockPrivacySandboxService(

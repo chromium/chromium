@@ -25,15 +25,6 @@ class PrivacySandboxService : public KeyedService {
   // Chrome build.
   virtual void ForceChromeBuildForTests(bool force_chrome_build) = 0;
 
-  // Returns whether the Privacy Sandbox is currently restricted for the
-  // profile. UI code should consult this to ensure that when restricted,
-  // Privacy Sandbox related UI is updated appropriately.
-  virtual bool IsPrivacySandboxRestricted() = 0;
-
-  // Returns whether the Privacy Sandbox is configured to show a restricted
-  // notice.
-  virtual bool IsRestrictedNoticeEnabled() = 0;
-
   // Toggles the RelatedWebsiteSets preference.
   virtual void SetRelatedWebsiteSetsDataAccessEnabled(bool enabled) = 0;
 
@@ -64,11 +55,6 @@ class PrivacySandboxService : public KeyedService {
   // no UI use for whether `site` is being removed by an enterprise yet.
   virtual bool IsPartOfManagedRelatedWebsiteSet(
       const net::SchemefulSite& site) const = 0;
-
-
-  // Determines whether the China domain should be used for the Privacy Policy
-  // page.
-  virtual bool ShouldUsePrivacyPolicyChinaDomain() = 0;
 };
 
 #endif  // CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SERVICE_H_
