@@ -688,6 +688,14 @@ input::-internal-input-suggested {
         overflow: hidden !important;
         overflow-anchor: none;
     }
+    /* ::-webkit-date-and-time-value is in a separate selector because it is
+     * invalid in configurations which don't expose the pseudo-element. */
+    input:-internal-autofill-previewed::-webkit-date-and-time-value {
+        font-family: monospace !important;
+        font-feature-settings: normal !important;
+        overflow: hidden !important;
+        overflow-anchor: none;
+    }
 }
 
 @supports not blink-feature(AutofillPreviewIgnoreAuthorFont) {
