@@ -41,7 +41,7 @@ class Profile;
 
 namespace web_app {
 
-class FinalizeInstallJob;
+class FinalizeInstallOrUpdateJob;
 
 // Represents a successful installation of an Isolated Web App.
 struct InstallIsolatedWebAppCommandSuccess {
@@ -199,7 +199,7 @@ class InstallIsolatedWebAppCommand
   const std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive_;
 
   std::unique_ptr<PrepareInstallInfoJob> prepare_install_info_job_;
-  std::unique_ptr<FinalizeInstallJob> install_job_;
+  std::unique_ptr<FinalizeInstallOrUpdateJob> install_job_;
 
   base::WeakPtrFactory<InstallIsolatedWebAppCommand> weak_factory_{this};
 };

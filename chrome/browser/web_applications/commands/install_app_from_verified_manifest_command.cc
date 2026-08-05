@@ -15,7 +15,7 @@
 #include "base/strings/to_string.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/command_metrics.h"
-#include "chrome/browser/web_applications/jobs/finalize_install_job.h"
+#include "chrome/browser/web_applications/jobs/finalize_install_or_update_job.h"
 #include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
 #include "chrome/browser/web_applications/jobs/parse_manifest_from_string_job.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
@@ -217,7 +217,7 @@ void InstallAppFromVerifiedManifestCommand::OnAppLockAcquired() {
   // association validate for all origins.
   finalize_options.skip_origin_association_validation = true;
 
-  install_job_ = std::make_unique<FinalizeInstallJob>(
+  install_job_ = std::make_unique<FinalizeInstallOrUpdateJob>(
       *Profile::FromBrowserContext(
           app_lock_->shared_web_contents().GetBrowserContext()),
       app_lock_.get(), app_lock_.get(), *web_app_info_, finalize_options);

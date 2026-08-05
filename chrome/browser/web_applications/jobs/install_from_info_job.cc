@@ -10,7 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/to_string.h"
-#include "chrome/browser/web_applications/jobs/finalize_install_job.h"
+#include "chrome/browser/web_applications/jobs/finalize_install_or_update_job.h"
 #include "chrome/browser/web_applications/jobs/uninstall/web_app_uninstall_and_replace_job.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
@@ -102,7 +102,7 @@ void InstallFromInfoJob::Start(Lock* lock, WithAppResources* lock_resources) {
   debug_value_->Set("options.install_state",
                     base::ToString(options.install_state));
 
-  install_job_ = std::make_unique<FinalizeInstallJob>(
+  install_job_ = std::make_unique<FinalizeInstallOrUpdateJob>(
       profile_.get(), lock, lock_with_app_resources_, *install_info_, options);
 
   install_job_->Start(base::BindOnce(&InstallFromInfoJob::OnInstallCompleted,

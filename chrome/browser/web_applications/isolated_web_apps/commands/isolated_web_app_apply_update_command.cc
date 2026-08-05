@@ -36,7 +36,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/remove_isolated_web_app_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/storage_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/trust_and_signature_verifier.h"
-#include "chrome/browser/web_applications/jobs/finalize_update_job.h"
+#include "chrome/browser/web_applications/jobs/finalize_install_or_update_job.h"
 #include "chrome/browser/web_applications/jobs/finalizer_delegate.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/model/isolation_data.h"
@@ -265,8 +265,6 @@ void IsolatedWebAppApplyUpdateCommand::FinalizeUpdate(
       "actual_version", install_info.isolated_web_app_version().GetString());
   GetMutableDebugValue().Set("app_title", install_info.title.AsDebugValue());
 
-  WebAppProvider* provider = WebAppProvider::GetForWebApps(&profile());
-
   if (on_finalize_before_job_callback_for_testing_) {
     auto [app_id, result_code] =
         std::move(on_finalize_before_job_callback_for_testing_).Run();
@@ -274,8 +272,9 @@ void IsolatedWebAppApplyUpdateCommand::FinalizeUpdate(
     return;
   }
 
-  install_update_job_ = std::make_unique<FinalizeUpdateJob>(
-      lock_.get(), lock_.get(), *provider, install_info,
+  install_update_job_ = std::make_unique<FinalizeInstallOrUpdateJob>(
+      profile(), lock_.get(), lock_.get(), install_info,
+      FinalizeJobOptions::ForUpdate(),
       std::make_unique<UpdateIsolationDataDelegate>());
   install_update_job_->Start(
       base::BindOnce(&IsolatedWebAppApplyUpdateCommand::OnFinalized,

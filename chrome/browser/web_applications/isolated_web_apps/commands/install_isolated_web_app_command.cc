@@ -34,7 +34,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/remove_isolated_web_app_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/storage_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/trust_and_signature_verifier.h"
-#include "chrome/browser/web_applications/jobs/finalize_install_job.h"
+#include "chrome/browser/web_applications/jobs/finalize_install_or_update_job.h"
 #include "chrome/browser/web_applications/jobs/finalizer_delegate.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/model/integrity_block_data.h"
@@ -413,7 +413,7 @@ void InstallIsolatedWebAppCommand::FinalizeInstall(
       profile(), *destination_storage_location_,
       std::move(integrity_block_data_), std::move(optional_update_info_));
 
-  install_job_ = std::make_unique<FinalizeInstallJob>(
+  install_job_ = std::make_unique<FinalizeInstallOrUpdateJob>(
       profile(), lock_.get(), lock_.get(), std::move(install_info), options,
       std::move(finalizer_delegate));
 

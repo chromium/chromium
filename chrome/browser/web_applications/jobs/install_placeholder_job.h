@@ -29,7 +29,7 @@ enum class WebAppUrlLoaderResult;
 namespace web_app {
 
 class CustomIconFetcher;
-class FinalizeInstallJob;
+class FinalizeInstallOrUpdateJob;
 class SharedWebContentsWithAppLock;
 class WebAppDataRetriever;
 
@@ -89,7 +89,7 @@ class InstallPlaceholderJob {
   std::unique_ptr<webapps::WebAppUrlLoader> url_loader_;
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
 
-  std::unique_ptr<FinalizeInstallJob> install_job_;
+  std::unique_ptr<FinalizeInstallOrUpdateJob> install_job_;
 
   // Caches the downloaded custom icon bitmaps to be passed to the installer.
   std::vector<SkBitmap> custom_icon_bitmaps_;

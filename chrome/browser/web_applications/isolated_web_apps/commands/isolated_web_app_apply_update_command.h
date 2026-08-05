@@ -38,7 +38,7 @@ enum class InstallResultCode;
 
 namespace web_app {
 
-class FinalizeUpdateJob;
+class FinalizeInstallOrUpdateJob;
 
 // This command applies a pending update of an Isolated Web App. Information
 // about the pending update is read from
@@ -132,7 +132,7 @@ class IsolatedWebAppApplyUpdateCommand
   std::optional<IsolationData> isolation_data_;
 
   std::unique_ptr<PrepareInstallInfoJob> prepare_install_info_job_;
-  std::unique_ptr<FinalizeUpdateJob> install_update_job_;
+  std::unique_ptr<FinalizeInstallOrUpdateJob> install_update_job_;
   base::OnceCallback<std::pair<webapps::AppId, webapps::InstallResultCode>()>
       on_finalize_before_job_callback_for_testing_;
 

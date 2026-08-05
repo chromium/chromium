@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_JOBS_FINALIZE_INSTALL_JOB_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_JOBS_FINALIZE_INSTALL_JOB_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_JOBS_FINALIZE_INSTALL_OR_UPDATE_JOB_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_JOBS_FINALIZE_INSTALL_OR_UPDATE_JOB_H_
 
 #include <memory>
 #include <optional>
@@ -62,6 +62,14 @@ struct FinalizeJobOptions {
   ~FinalizeJobOptions();
   FinalizeJobOptions(const FinalizeJobOptions&);
 
+  static FinalizeJobOptions ForUpdate() {
+    // Dummy WebAppInstallSource
+    auto options = FinalizeJobOptions(webapps::WebappInstallSource::MIGRATION);
+    options.is_update = true;
+    options.overwrite_existing_manifest_fields = false;
+    return options;
+  }
+
   const WebAppManagement::Type source;
   const webapps::WebappInstallSource install_surface;
   proto::InstallState install_state =
@@ -90,23 +98,23 @@ struct FinalizeJobOptions {
   // from web origins found in manifest scope_extensions entries. If true,
   // do not validate even if scope_extensions has valid entries.
   bool skip_origin_association_validation = false;
+
+  bool is_update = false;
 };
 
-// A finalizer job for the installation process, represents the last step.
-// Takes WebAppInstallInfo as input, writes data to disk (e.g icons, shortcuts)
-// and registers the app.
-//
-// This is a job based on web_app_install_finalizer.
-class FinalizeInstallJob {
+// A finalizer job for the installation or update process, represents the last
+// step. Takes WebAppInstallInfo as input, writes data to disk (e.g icons,
+// shortcuts) and registers the app.
+class FinalizeInstallOrUpdateJob {
  public:
-  FinalizeInstallJob(
+  FinalizeInstallOrUpdateJob(
       Profile& profile,
       Lock* lock,
       WithAppResources* lock_resources,
       const WebAppInstallInfo& web_app_info,
       const FinalizeJobOptions& options,
       std::unique_ptr<FinalizerDelegate> finalizer_delegate = nullptr);
-  ~FinalizeInstallJob();
+  ~FinalizeInstallOrUpdateJob();
 
   void Start(InstallFinalizedCallback callback);
 
@@ -139,17 +147,18 @@ class FinalizeInstallJob {
 
   using CommitCallback = base::OnceCallback<void(bool success)>;
 
-  void SetWebAppManifestFieldsAndWriteData(
-      std::unique_ptr<WebApp> web_app,
-      CommitCallback commit_callback,
-      bool skip_icon_writes_on_download_failure);
+  void SetWebAppManifestFieldsAndWriteData(std::unique_ptr<WebApp> web_app,
+                                           CommitCallback commit_callback);
+
+  void SetWebAppFieldsForInstall(WebApp* web_app,
+                                 const WebApp* existing_web_app,
+                                 const base::Time now_time);
 
   void CommitToSyncBridge(std::unique_ptr<WebApp> web_app,
                           CommitCallback commit_callback,
                           bool success);
 
   void WriteTranslations(
-      const webapps::AppId& app_id,
       const base::flat_map<std::string, blink::Manifest::TranslationItem>&
           translations,
       CommitCallback commit_callback,
@@ -158,13 +167,17 @@ class FinalizeInstallJob {
   void OnOriginAssociationValidated(
       OriginAssociations validated_origin_associations);
 
-  void OnDatabaseCommitCompletedForInstall(InstallFinalizedCallback callback,
-                                           webapps::AppId app_id,
-                                           std::optional<WebAppScope> old_scope,
-                                           bool success);
+  void OnDatabaseCommitCompleted(std::optional<WebAppScope> old_scope,
+                                 bool success);
 
-  void OnInstallHooksFinished(InstallFinalizedCallback callback,
-                              webapps::AppId app_id);
+  void OnHooksFinished();
+
+  // Check that sub apps cannot have overlapping scopes with parent
+  // or other sub apps of its parent.
+  bool SubAppScopeOverlapWithParentOrSibling(const WebApp* existing_web_app);
+
+  void RunCallbackAndResetLock(webapps::AppId app_id,
+                               webapps::InstallResultCode code);
 
   static void NotifyWebAppInstalledWithOsHooks(WebAppProvider* provider,
                                                webapps::AppId app_id);
@@ -178,13 +191,14 @@ class FinalizeInstallJob {
   raw_ptr<WithAppResources> resources_lock_ = nullptr;
 
   WebAppInstallInfo web_app_info_;
+  const webapps::AppId app_id_;
   FinalizeJobOptions options_;
   std::unique_ptr<FinalizerDelegate> finalizer_delegate_;
   InstallFinalizedCallback callback_;
 
-  base::WeakPtrFactory<FinalizeInstallJob> weak_ptr_factory_{this};
+  base::WeakPtrFactory<FinalizeInstallOrUpdateJob> weak_ptr_factory_{this};
 };
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_JOBS_FINALIZE_INSTALL_JOB_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_JOBS_FINALIZE_INSTALL_OR_UPDATE_JOB_H_

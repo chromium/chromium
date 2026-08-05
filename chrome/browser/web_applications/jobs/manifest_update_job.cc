@@ -27,7 +27,7 @@
 #include "chrome/browser/shortcuts/shortcut_icon_generator.h"
 #include "chrome/browser/web_applications/generated_icon_fix_util.h"
 #include "chrome/browser/web_applications/icons/trusted_icon_filter.h"
-#include "chrome/browser/web_applications/jobs/finalize_update_job.h"
+#include "chrome/browser/web_applications/jobs/finalize_install_or_update_job.h"
 #include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/locks/with_app_resources.h"
@@ -423,10 +423,9 @@ void ManifestUpdateJob::FinalizeUpdateIfSilentChangesExist() {
   // Exit early to finalize the update if we know that we are silently updating
   // the app identity.
   if (silently_update_app_identity_) {
-    WebAppProvider* provider = WebAppProvider::GetForWebApps(&profile_.get());
-
-    install_update_job_ = std::make_unique<FinalizeUpdateJob>(
-        &lock_.get(), &lock_resources_.get(), *provider, *new_install_info_);
+    install_update_job_ = std::make_unique<FinalizeInstallOrUpdateJob>(
+        profile_.get(), &lock_.get(), &lock_resources_.get(),
+        *new_install_info_, FinalizeJobOptions::ForUpdate());
     install_update_job_->Start(
         base::BindOnce(&ManifestUpdateJob::UpdateFinalizedWritePendingInfo,
                        weak_factory_.GetWeakPtr(), std::nullopt,
@@ -456,10 +455,10 @@ void ManifestUpdateJob::FinalizeUpdateIfSilentChangesExist() {
     new_install_info_->icon_bitmaps = existing_manifest_icon_bitmaps_;
     new_install_info_->trusted_icon_bitmaps = existing_trusted_icon_bitmaps_;
     new_install_info_->is_generated_icon = web_app->is_generated_icon();
-    WebAppProvider* provider = WebAppProvider::GetForWebApps(&profile_.get());
 
-    install_update_job_ = std::make_unique<FinalizeUpdateJob>(
-        &lock_.get(), &lock_resources_.get(), *provider, *new_install_info_);
+    install_update_job_ = std::make_unique<FinalizeInstallOrUpdateJob>(
+        profile_.get(), &lock_.get(), &lock_resources_.get(),
+        *new_install_info_, FinalizeJobOptions::ForUpdate());
     install_update_job_->Start(base::BindOnce(
         &ManifestUpdateJob::UpdateFinalizedWritePendingInfo,
         weak_factory_.GetWeakPtr(), std::move(pending_update_info),
@@ -582,10 +581,9 @@ void ManifestUpdateJob::OnImageDiffComputedFinalizeUpdate(
   }
 
   if (silent_update_required_) {
-    WebAppProvider* provider = WebAppProvider::GetForWebApps(&profile_.get());
-
-    install_update_job_ = std::make_unique<FinalizeUpdateJob>(
-        &lock_.get(), &lock_resources_.get(), *provider, *new_install_info_);
+    install_update_job_ = std::make_unique<FinalizeInstallOrUpdateJob>(
+        profile_.get(), &lock_.get(), &lock_resources_.get(),
+        *new_install_info_, FinalizeJobOptions::ForUpdate());
     install_update_job_->Start(
         base::BindOnce(&ManifestUpdateJob::UpdateFinalizedWritePendingInfo,
                        weak_factory_.GetWeakPtr(),

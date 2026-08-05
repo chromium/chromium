@@ -41,7 +41,7 @@ class NavigationHandle;
 namespace web_app {
 
 class AppLock;
-class FinalizeInstallJob;
+class FinalizeInstallOrUpdateJob;
 class WebAppDataRetriever;
 
 using ScreenshotInfo = std::tuple<SkBitmap, std::optional<std::u16string>>;
@@ -180,7 +180,7 @@ class FetchManifestAndInstallCommand
       base::OnceCallback<void(SkBitmap, std::optional<std::u16string>)>>
       pending_screenshot_callbacks_;
 
-  std::unique_ptr<FinalizeInstallJob> install_job_;
+  std::unique_ptr<FinalizeInstallOrUpdateJob> install_job_;
 
   base::WeakPtrFactory<FetchManifestAndInstallCommand> weak_ptr_factory_{this};
 };

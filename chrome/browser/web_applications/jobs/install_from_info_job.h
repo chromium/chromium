@@ -22,7 +22,7 @@
 class Profile;
 
 namespace web_app {
-class FinalizeInstallJob;
+class FinalizeInstallOrUpdateJob;
 
 // Starts a web app installation process using prefilled
 // |install_info| which holds all the data needed for installation.
@@ -78,7 +78,7 @@ class InstallFromInfoJob {
   std::unique_ptr<WebAppInstallInfo> install_info_;
   ResultCallback callback_;
 
-  std::unique_ptr<FinalizeInstallJob> install_job_;
+  std::unique_ptr<FinalizeInstallOrUpdateJob> install_job_;
 
   base::WeakPtrFactory<InstallFromInfoJob> weak_factory_{this};
 };

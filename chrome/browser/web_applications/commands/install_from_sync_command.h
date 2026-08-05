@@ -37,7 +37,7 @@ enum class WebAppUrlLoaderResult;
 
 namespace web_app {
 
-class FinalizeInstallJob;
+class FinalizeInstallOrUpdateJob;
 class WebAppDataRetriever;
 
 // Installs a web app using data from sync. This command will first try to
@@ -142,7 +142,7 @@ class InstallFromSyncCommand
   std::unique_ptr<ManifestToWebAppInstallInfoJob> manifest_to_install_info_job_;
   std::unique_ptr<GatherMigrationSourceInfoJob>
       gather_migration_source_info_job_;
-  std::unique_ptr<FinalizeInstallJob> install_job_;
+  std::unique_ptr<FinalizeInstallOrUpdateJob> install_job_;
 
   std::unique_ptr<WebAppInstallInfo> install_info_;
   std::unique_ptr<WebAppInstallInfo> fallback_install_info_;

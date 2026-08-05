@@ -25,7 +25,7 @@
 
 namespace web_app {
 
-class FinalizeInstallJob;
+class FinalizeInstallOrUpdateJob;
 class ParseManifestFromStringJob;
 class SharedWebContentsWithAppLock;
 
@@ -108,7 +108,7 @@ class InstallAppFromVerifiedManifestCommand
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
   std::unique_ptr<WebAppInstallInfo> web_app_info_;
   std::unique_ptr<ManifestToWebAppInstallInfoJob> manifest_to_install_info_job_;
-  std::unique_ptr<FinalizeInstallJob> install_job_;
+  std::unique_ptr<FinalizeInstallOrUpdateJob> install_job_;
 
   base::WeakPtrFactory<InstallAppFromVerifiedManifestCommand> weak_ptr_factory_{
       this};

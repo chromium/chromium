@@ -23,7 +23,7 @@
 #include "chrome/browser/web_applications/custom_icon_fetcher.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
-#include "chrome/browser/web_applications/jobs/finalize_install_job.h"
+#include "chrome/browser/web_applications/jobs/finalize_install_or_update_job.h"
 #include "chrome/browser/web_applications/jobs/install_from_info_job.h"
 #include "chrome/browser/web_applications/jobs/install_placeholder_job.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_install_url_job.h"

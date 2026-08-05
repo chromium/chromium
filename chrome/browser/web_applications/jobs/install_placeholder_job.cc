@@ -16,7 +16,7 @@
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
-#include "chrome/browser/web_applications/jobs/finalize_install_job.h"
+#include "chrome/browser/web_applications/jobs/finalize_install_or_update_job.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
@@ -201,7 +201,7 @@ void InstallPlaceholderJob::FinalizeInstall(
 
   web_app_info->is_placeholder = true;
 
-  install_job_ = std::make_unique<FinalizeInstallJob>(
+  install_job_ = std::make_unique<FinalizeInstallOrUpdateJob>(
       profile_.get(), &lock_.get(), &lock_.get(), *web_app_info, options);
 
   install_job_->Start(base::BindOnce(&InstallPlaceholderJob::OnInstallFinalized,

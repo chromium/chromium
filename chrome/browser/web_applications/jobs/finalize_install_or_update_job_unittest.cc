@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/jobs/finalize_install_job.h"
+#include "chrome/browser/web_applications/jobs/finalize_install_or_update_job.h"
 
 #include <memory>
 #include <optional>
@@ -83,12 +83,12 @@ class MockWebAppCommandScheduler : public WebAppCommandScheduler {
               (override));
 };
 
-class FinalizeInstallJobWrapperCommand
+class FinalizeInstallOrUpdateJobWrapperCommand
     : public WebAppCommand<AppLock,
                            webapps::AppId,
                            webapps::InstallResultCode> {
  public:
-  FinalizeInstallJobWrapperCommand(
+  FinalizeInstallOrUpdateJobWrapperCommand(
       Profile* profile,
       const WebAppInstallInfo& install_info,
       const FinalizeJobOptions& options,
@@ -96,7 +96,7 @@ class FinalizeInstallJobWrapperCommand
           callback,
       std::unique_ptr<FinalizerDelegate> finalizer_delegate = nullptr)
       : WebAppCommand<AppLock, webapps::AppId, webapps::InstallResultCode>(
-            "FinalizeInstallJobWrapperCommand",
+            "FinalizeInstallOrUpdateJobWrapperCommand",
             AppLockDescription(
                 GenerateAppId(std::nullopt, install_info.start_url())),
             std::move(callback),
@@ -110,12 +110,12 @@ class FinalizeInstallJobWrapperCommand
 
   void StartWithLock(std::unique_ptr<AppLock> lock) override {
     lock_ = std::move(lock);
-    job_ = std::make_unique<FinalizeInstallJob>(
+    job_ = std::make_unique<FinalizeInstallOrUpdateJob>(
         *profile_, lock_.get(), lock_.get(), install_info_, options_,
         std::move(finalizer_delegate_));
-    job_->Start(
-        base::BindOnce(&FinalizeInstallJobWrapperCommand::OnInstallFinalized,
-                       weak_factory_.GetWeakPtr()));
+    job_->Start(base::BindOnce(
+        &FinalizeInstallOrUpdateJobWrapperCommand::OnInstallFinalized,
+        weak_factory_.GetWeakPtr()));
   }
 
   void OnInstallFinalized(const webapps::AppId& app_id,
@@ -131,21 +131,44 @@ class FinalizeInstallJobWrapperCommand
   FinalizeJobOptions options_;
   std::unique_ptr<FinalizerDelegate> finalizer_delegate_;
   std::unique_ptr<AppLock> lock_;
-  std::unique_ptr<FinalizeInstallJob> job_;
-  base::WeakPtrFactory<FinalizeInstallJobWrapperCommand> weak_factory_{this};
+  std::unique_ptr<FinalizeInstallOrUpdateJob> job_;
+  base::WeakPtrFactory<FinalizeInstallOrUpdateJobWrapperCommand> weak_factory_{
+      this};
+};
+
+class TestInstallManagerObserver : public WebAppInstallManagerObserver {
+ public:
+  explicit TestInstallManagerObserver(WebAppInstallManager* install_manager) {
+    install_manager_observation_.Observe(install_manager);
+  }
+
+  void OnWebAppManifestUpdated(const webapps::AppId& app_id) override {
+    web_app_manifest_updated_called_ = true;
+  }
+
+  bool web_app_manifest_updated_called() const {
+    return web_app_manifest_updated_called_;
+  }
+
+ private:
+  bool web_app_manifest_updated_called_ = false;
+  base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
+      install_manager_observation_{this};
 };
 
 }  // namespace
 
-class FinalizeInstallJobTest : public WebAppTest {
+class FinalizeInstallOrUpdateJobTest : public WebAppTest {
  public:
-  FinalizeInstallJobTest() {
+  FinalizeInstallOrUpdateJobTest() {
     scoped_feature_list_.InitAndEnableFeature(
         blink::features::kWebAppMigrationApi);
   }
-  FinalizeInstallJobTest(const FinalizeInstallJobTest&) = delete;
-  FinalizeInstallJobTest& operator=(const FinalizeInstallJobTest&) = delete;
-  ~FinalizeInstallJobTest() override = default;
+  FinalizeInstallOrUpdateJobTest(const FinalizeInstallOrUpdateJobTest&) =
+      delete;
+  FinalizeInstallOrUpdateJobTest& operator=(
+      const FinalizeInstallOrUpdateJobTest&) = delete;
+  ~FinalizeInstallOrUpdateJobTest() override = default;
 
   void SetUp() override {
     WebAppTest::SetUp();
@@ -153,6 +176,8 @@ class FinalizeInstallJobTest : public WebAppTest {
     FakeWebAppProvider* provider = FakeWebAppProvider::Get(profile());
     auto install_manager =
         std::make_unique<WebAppInstallManager>(profile()->GetPrefs());
+    install_manager_observer_ =
+        std::make_unique<TestInstallManagerObserver>(install_manager.get());
     provider->SetInstallManager(std::move(install_manager));
     provider->SetOriginAssociationManager(
         std::make_unique<FakeWebAppOriginAssociationManager>(*profile()));
@@ -175,6 +200,7 @@ class FinalizeInstallJobTest : public WebAppTest {
 
   void TearDown() override {
     mock_scheduler_ = nullptr;
+    install_manager_observer_.reset();
     WebAppTest::TearDown();
   }
 
@@ -194,14 +220,14 @@ class FinalizeInstallJobTest : public WebAppTest {
     return bitmaps;
   }
 
-  FinalizeInstallResult AwaitFinalizeInstall(
+  FinalizeInstallResult AwaitFinalizeInstallOrUpdate(
       const WebAppInstallInfo& info,
       const FinalizeJobOptions& options,
       std::unique_ptr<FinalizerDelegate> delegate = nullptr) {
     FinalizeInstallResult result{};
     base::test::TestFuture<webapps::AppId, webapps::InstallResultCode> future;
     provider().command_manager().ScheduleCommand(
-        std::make_unique<FinalizeInstallJobWrapperCommand>(
+        std::make_unique<FinalizeInstallOrUpdateJobWrapperCommand>(
             profile(), info, options, future.GetCallback(),
             std::move(delegate)));
     result.code = future.Get<webapps::InstallResultCode>();
@@ -225,6 +251,7 @@ class FinalizeInstallJobTest : public WebAppTest {
   }
 
  protected:
+  std::unique_ptr<TestInstallManagerObserver> install_manager_observer_;
   raw_ptr<MockWebAppCommandScheduler> mock_scheduler_;
 
  private:
@@ -232,11 +259,11 @@ class FinalizeInstallJobTest : public WebAppTest {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
-TEST_F(FinalizeInstallJobTest, BasicInstallSucceeds) {
+TEST_F(FinalizeInstallOrUpdateJobTest, BasicInstallSucceeds) {
   auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
   FinalizeJobOptions options(webapps::WebappInstallSource::INTERNAL_DEFAULT);
 
-  FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+  FinalizeInstallResult result = AwaitFinalizeInstallOrUpdate(*info, options);
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(
@@ -244,7 +271,7 @@ TEST_F(FinalizeInstallJobTest, BasicInstallSucceeds) {
       GenerateAppId(/*manifest_id_path=*/std::nullopt, info->start_url()));
 }
 
-TEST_F(FinalizeInstallJobTest, ConcurrentInstallSucceeds) {
+TEST_F(FinalizeInstallOrUpdateJobTest, ConcurrentInstallSucceeds) {
   auto info1 = CreateAppInfo("https://foo1.example", u"Foo1 Title");
   auto info2 = CreateAppInfo("https://foo2.example", u"Foo2 Title");
 
@@ -255,12 +282,12 @@ TEST_F(FinalizeInstallJobTest, ConcurrentInstallSucceeds) {
 
   // Start install finalization for the 1st app.
   provider().command_manager().ScheduleCommand(
-      std::make_unique<FinalizeInstallJobWrapperCommand>(
+      std::make_unique<FinalizeInstallOrUpdateJobWrapperCommand>(
           profile(), *info1, options, future1.GetCallback()));
 
   // Start install finalization for the 2nd app.
   provider().command_manager().ScheduleCommand(
-      std::make_unique<FinalizeInstallJobWrapperCommand>(
+      std::make_unique<FinalizeInstallOrUpdateJobWrapperCommand>(
           profile(), *info2, options, future2.GetCallback()));
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
@@ -276,17 +303,18 @@ TEST_F(FinalizeInstallJobTest, ConcurrentInstallSucceeds) {
       GenerateAppId(/*manifest_id_path=*/std::nullopt, info2->start_url()));
 }
 
-TEST_F(FinalizeInstallJobTest, InstallStoresLatestWebAppInstallSource) {
+TEST_F(FinalizeInstallOrUpdateJobTest, InstallStoresLatestWebAppInstallSource) {
   auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
   FinalizeJobOptions options(webapps::WebappInstallSource::INTERNAL_DEFAULT);
 
-  FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+  FinalizeInstallResult result = AwaitFinalizeInstallOrUpdate(*info, options);
 
   EXPECT_EQ(webapps::WebappInstallSource::INTERNAL_DEFAULT,
             *registrar().GetLatestAppInstallSource(result.installed_app_id));
 }
 
-TEST_F(FinalizeInstallJobTest, NonLocalThenLocalInstallSetsBothInstallTime) {
+TEST_F(FinalizeInstallOrUpdateJobTest,
+       NonLocalThenLocalInstallSetsBothInstallTime) {
   auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
   FinalizeJobOptions options(webapps::WebappInstallSource::INTERNAL_DEFAULT);
   options.install_state = proto::SUGGESTED_FROM_ANOTHER_DEVICE;
@@ -296,7 +324,7 @@ TEST_F(FinalizeInstallJobTest, NonLocalThenLocalInstallSetsBothInstallTime) {
   options.add_to_quick_launch_bar = false;
 
   {
-    FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+    FinalizeInstallResult result = AwaitFinalizeInstallOrUpdate(*info, options);
 
     ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
     const WebApp* installed_app =
@@ -311,7 +339,7 @@ TEST_F(FinalizeInstallJobTest, NonLocalThenLocalInstallSetsBothInstallTime) {
   options.install_state = proto::INSTALLED_WITH_OS_INTEGRATION;
 
   {
-    FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+    FinalizeInstallResult result = AwaitFinalizeInstallOrUpdate(*info, options);
 
     ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
     const WebApp* installed_app =
@@ -326,7 +354,8 @@ TEST_F(FinalizeInstallJobTest, NonLocalThenLocalInstallSetsBothInstallTime) {
   }
 }
 
-TEST_F(FinalizeInstallJobTest, LatestInstallTimeAlwaysUpdatedIfReinstalled) {
+TEST_F(FinalizeInstallOrUpdateJobTest,
+       LatestInstallTimeAlwaysUpdatedIfReinstalled) {
   auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
   FinalizeJobOptions options(webapps::WebappInstallSource::INTERNAL_DEFAULT);
   options.add_to_applications_menu = false;
@@ -345,7 +374,7 @@ TEST_F(FinalizeInstallJobTest, LatestInstallTimeAlwaysUpdatedIfReinstalled) {
   test_clock.SetNow(toProtoResolutionTime(base::Time::Now()));
 
   {
-    FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+    FinalizeInstallResult result = AwaitFinalizeInstallOrUpdate(*info, options);
 
     ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
     const WebApp* installed_app =
@@ -365,7 +394,7 @@ TEST_F(FinalizeInstallJobTest, LatestInstallTimeAlwaysUpdatedIfReinstalled) {
   // Try reinstalling the same app again, the latest install time should be
   // updated but the first install time should still stay the same.
   {
-    FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+    FinalizeInstallResult result = AwaitFinalizeInstallOrUpdate(*info, options);
 
     ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
     const WebApp* installed_app =
@@ -384,13 +413,13 @@ TEST_F(FinalizeInstallJobTest, LatestInstallTimeAlwaysUpdatedIfReinstalled) {
   provider().SetClockForTesting(base::DefaultClock::GetInstance());
 }
 
-TEST_F(FinalizeInstallJobTest, InstallNoDesktopShortcut) {
+TEST_F(FinalizeInstallOrUpdateJobTest, InstallNoDesktopShortcut) {
   auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
   FinalizeJobOptions options(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
   options.add_to_desktop = false;
 
-  FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+  FinalizeInstallResult result = AwaitFinalizeInstallOrUpdate(*info, options);
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(
@@ -398,13 +427,13 @@ TEST_F(FinalizeInstallJobTest, InstallNoDesktopShortcut) {
       GenerateAppId(/*manifest_id_path=*/std::nullopt, info->start_url()));
 }
 
-TEST_F(FinalizeInstallJobTest, InstallNoQuickLaunchBarShortcut) {
+TEST_F(FinalizeInstallOrUpdateJobTest, InstallNoQuickLaunchBarShortcut) {
   auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
   FinalizeJobOptions options(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
   options.add_to_quick_launch_bar = false;
 
-  FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+  FinalizeInstallResult result = AwaitFinalizeInstallOrUpdate(*info, options);
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(
@@ -412,7 +441,7 @@ TEST_F(FinalizeInstallJobTest, InstallNoQuickLaunchBarShortcut) {
       GenerateAppId(/*manifest_id_path=*/std::nullopt, info->start_url()));
 }
 
-TEST_F(FinalizeInstallJobTest,
+TEST_F(FinalizeInstallOrUpdateJobTest,
        InstallNoDesktopShortcutAndNoQuickLaunchBarShortcut) {
   auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
   FinalizeJobOptions options(
@@ -420,7 +449,7 @@ TEST_F(FinalizeInstallJobTest,
   options.add_to_desktop = false;
   options.add_to_quick_launch_bar = false;
 
-  FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+  FinalizeInstallResult result = AwaitFinalizeInstallOrUpdate(*info, options);
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(
@@ -428,13 +457,13 @@ TEST_F(FinalizeInstallJobTest,
       GenerateAppId(/*manifest_id_path=*/std::nullopt, info->start_url()));
 }
 
-TEST_F(FinalizeInstallJobTest, InstallNoCreateOsShorcuts) {
+TEST_F(FinalizeInstallOrUpdateJobTest, InstallNoCreateOsShorcuts) {
   auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
   FinalizeJobOptions options(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
   options.add_to_desktop = false;
   options.add_to_quick_launch_bar = false;
-  FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+  FinalizeInstallResult result = AwaitFinalizeInstallOrUpdate(*info, options);
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(
@@ -442,12 +471,13 @@ TEST_F(FinalizeInstallJobTest, InstallNoCreateOsShorcuts) {
       GenerateAppId(/*manifest_id_path=*/std::nullopt, info->start_url()));
 }
 
-TEST_F(FinalizeInstallJobTest, InstallOsHooksEnabledForUserInstalledApps) {
+TEST_F(FinalizeInstallOrUpdateJobTest,
+       InstallOsHooksEnabledForUserInstalledApps) {
   auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
   FinalizeJobOptions options(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
 
-  FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+  FinalizeInstallResult result = AwaitFinalizeInstallOrUpdate(*info, options);
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(
@@ -455,12 +485,12 @@ TEST_F(FinalizeInstallJobTest, InstallOsHooksEnabledForUserInstalledApps) {
       GenerateAppId(/*manifest_id_path=*/std::nullopt, info->start_url()));
 }
 
-TEST_F(FinalizeInstallJobTest, InstallUrlSetInWebAppDB) {
+TEST_F(FinalizeInstallOrUpdateJobTest, InstallUrlSetInWebAppDB) {
   auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
   info->install_url = GURL("https://foo.example/installer");
   FinalizeJobOptions options(webapps::WebappInstallSource::EXTERNAL_POLICY);
 
-  FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+  FinalizeInstallResult result = AwaitFinalizeInstallOrUpdate(*info, options);
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(
@@ -477,8 +507,7 @@ TEST_F(FinalizeInstallJobTest, InstallUrlSetInWebAppDB) {
             *it->second.install_urls.begin());
 }
 
-
-TEST_F(FinalizeInstallJobTest, PopUpContentSettingsGrantedForIwa) {
+TEST_F(FinalizeInstallOrUpdateJobTest, PopUpContentSettingsGrantedForIwa) {
   std::unique_ptr<ScopedBundledIsolatedWebApp> app =
       IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.0.0"))
           .BuildBundle();
@@ -494,7 +523,7 @@ TEST_F(FinalizeInstallJobTest, PopUpContentSettingsGrantedForIwa) {
                 ContentSettingsType::POPUPS));
 }
 
-TEST_F(FinalizeInstallJobTest, ValidateOriginAssociationsApproved) {
+TEST_F(FinalizeInstallOrUpdateJobTest, ValidateOriginAssociationsApproved) {
   auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
   FinalizeJobOptions options(webapps::WebappInstallSource::INTERNAL_DEFAULT);
 
@@ -511,7 +540,7 @@ TEST_F(FinalizeInstallJobTest, ValidateOriginAssociationsApproved) {
       provider().origin_association_manager())
       .SetData(data);
 
-  FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+  FinalizeInstallResult result = AwaitFinalizeInstallOrUpdate(*info, options);
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   const WebApp* installed_app = registrar().GetAppById(result.installed_app_id);
@@ -521,7 +550,7 @@ TEST_F(FinalizeInstallJobTest, ValidateOriginAssociationsApproved) {
             installed_app->validated_scope_extensions());
 }
 
-TEST_F(FinalizeInstallJobTest, ValidateOriginAssociationsDenied) {
+TEST_F(FinalizeInstallOrUpdateJobTest, ValidateOriginAssociationsDenied) {
   auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
   FinalizeJobOptions options(webapps::WebappInstallSource::INTERNAL_DEFAULT);
 
@@ -536,7 +565,7 @@ TEST_F(FinalizeInstallJobTest, ValidateOriginAssociationsDenied) {
       provider().origin_association_manager())
       .SetData(data);
 
-  FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+  FinalizeInstallResult result = AwaitFinalizeInstallOrUpdate(*info, options);
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   const WebApp* installed_app = registrar().GetAppById(result.installed_app_id);
@@ -545,7 +574,7 @@ TEST_F(FinalizeInstallJobTest, ValidateOriginAssociationsDenied) {
   EXPECT_EQ(ScopeExtensions(), installed_app->validated_scope_extensions());
 }
 
-TEST_F(FinalizeInstallJobTest, ValidateMigrationSourcesApproved) {
+TEST_F(FinalizeInstallOrUpdateJobTest, ValidateMigrationSourcesApproved) {
   auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
   FinalizeJobOptions options(webapps::WebappInstallSource::INTERNAL_DEFAULT);
 
@@ -563,7 +592,7 @@ TEST_F(FinalizeInstallJobTest, ValidateMigrationSourcesApproved) {
   EXPECT_CALL(*mock_scheduler_, ScheduleResolveWebAppPendingMigrationInfo(_, _))
       .WillOnce(base::test::RunOnceClosure<0>());
 
-  FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+  FinalizeInstallResult result = AwaitFinalizeInstallOrUpdate(*info, options);
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   const WebApp* installed_app = registrar().GetAppById(result.installed_app_id);
@@ -579,7 +608,7 @@ TEST_F(FinalizeInstallJobTest, ValidateMigrationSourcesApproved) {
           webapps::ManifestId(GURL("https://migration.foo.example/")))));
 }
 
-TEST_F(FinalizeInstallJobTest, ValidateShortcutsSanitizedOutsideScope) {
+TEST_F(FinalizeInstallOrUpdateJobTest, ValidateShortcutsSanitizedOutsideScope) {
   auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
 
   WebAppShortcutsMenuItemInfo valid_shortcut;
@@ -597,7 +626,7 @@ TEST_F(FinalizeInstallJobTest, ValidateShortcutsSanitizedOutsideScope) {
                                        CreateDummyIconBitmaps()};
 
   FinalizeJobOptions options(webapps::WebappInstallSource::INTERNAL_DEFAULT);
-  FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+  FinalizeInstallResult result = AwaitFinalizeInstallOrUpdate(*info, options);
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   const WebApp* installed_app = registrar().GetAppById(result.installed_app_id);
@@ -607,7 +636,7 @@ TEST_F(FinalizeInstallJobTest, ValidateShortcutsSanitizedOutsideScope) {
   EXPECT_EQ(u"Valid", installed_app->shortcuts_menu_item_infos()[0].name);
 }
 
-TEST_F(FinalizeInstallJobTest, ValidateShortcutsKeptInExtendedScope) {
+TEST_F(FinalizeInstallOrUpdateJobTest, ValidateShortcutsKeptInExtendedScope) {
   auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
 
   WebAppShortcutsMenuItemInfo extended_scope_shortcut;
@@ -631,7 +660,7 @@ TEST_F(FinalizeInstallJobTest, ValidateShortcutsKeptInExtendedScope) {
       .SetData(data);
 
   FinalizeJobOptions options(webapps::WebappInstallSource::INTERNAL_DEFAULT);
-  FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+  FinalizeInstallResult result = AwaitFinalizeInstallOrUpdate(*info, options);
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   const WebApp* installed_app = registrar().GetAppById(result.installed_app_id);
@@ -642,7 +671,7 @@ TEST_F(FinalizeInstallJobTest, ValidateShortcutsKeptInExtendedScope) {
             installed_app->shortcuts_menu_item_infos()[0].name);
 }
 
-TEST_F(FinalizeInstallJobTest,
+TEST_F(FinalizeInstallOrUpdateJobTest,
        SuggestedFromMigrationSucceedsWithoutValidatedSource) {
   auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
   FinalizeJobOptions options(webapps::WebappInstallSource::INTERNAL_DEFAULT);
@@ -661,7 +690,7 @@ TEST_F(FinalizeInstallJobTest,
       provider().origin_association_manager())
       .SetMigrationSourcesData({});
 
-  FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+  FinalizeInstallResult result = AwaitFinalizeInstallOrUpdate(*info, options);
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   const WebApp* installed_app = registrar().GetAppById(result.installed_app_id);
@@ -675,7 +704,7 @@ TEST_F(FinalizeInstallJobTest,
   EXPECT_TRUE(installed_app->validated_migration_sources().empty());
 }
 
-TEST_F(FinalizeInstallJobTest,
+TEST_F(FinalizeInstallOrUpdateJobTest,
        SuggestedFromMigrationFailsWithoutMigrationSources) {
   auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
   FinalizeJobOptions options(webapps::WebappInstallSource::INTERNAL_DEFAULT);
@@ -683,25 +712,25 @@ TEST_F(FinalizeInstallJobTest,
 
   info->migration_sources = {};
 
-  FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+  FinalizeInstallResult result = AwaitFinalizeInstallOrUpdate(*info, options);
 
   EXPECT_EQ(webapps::InstallResultCode::kNoValidMigrationSource, result.code);
   EXPECT_FALSE(registrar().GetAppById(result.installed_app_id));
 }
 
-class FinalizeInstallJobTestQueriesAndFragments
-    : public FinalizeInstallJobTest,
+class FinalizeInstallOrUpdateJobTestQueriesAndFragments
+    : public FinalizeInstallOrUpdateJobTest,
       public testing::WithParamInterface<std::tuple<std::string, std::string>> {
  public:
-  FinalizeInstallJobTestQueriesAndFragments() = default;
-  FinalizeInstallJobTestQueriesAndFragments(
-      const FinalizeInstallJobTestQueriesAndFragments&) = delete;
-  FinalizeInstallJobTestQueriesAndFragments& operator=(
-      const FinalizeInstallJobTestQueriesAndFragments&) = delete;
-  ~FinalizeInstallJobTestQueriesAndFragments() override = default;
+  FinalizeInstallOrUpdateJobTestQueriesAndFragments() = default;
+  FinalizeInstallOrUpdateJobTestQueriesAndFragments(
+      const FinalizeInstallOrUpdateJobTestQueriesAndFragments&) = delete;
+  FinalizeInstallOrUpdateJobTestQueriesAndFragments& operator=(
+      const FinalizeInstallOrUpdateJobTestQueriesAndFragments&) = delete;
+  ~FinalizeInstallOrUpdateJobTestQueriesAndFragments() override = default;
 };
 
-TEST_P(FinalizeInstallJobTestQueriesAndFragments,
+TEST_P(FinalizeInstallOrUpdateJobTestQueriesAndFragments,
        ValidateOriginAssociationsDropQueriesAndFragments) {
   std::string start_url_str, expected_sanitized_start_url_str;
   std::tie(start_url_str, expected_sanitized_start_url_str) = GetParam();
@@ -723,7 +752,7 @@ TEST_P(FinalizeInstallJobTestQueriesAndFragments,
       provider().origin_association_manager())
       .SetData(data);
 
-  FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+  FinalizeInstallResult result = AwaitFinalizeInstallOrUpdate(*info, options);
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   const WebApp* installed_app = registrar().GetAppById(result.installed_app_id);
@@ -739,7 +768,7 @@ TEST_P(FinalizeInstallJobTestQueriesAndFragments,
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    FinalizeInstallJobTestQueriesAndFragments,
+    FinalizeInstallOrUpdateJobTestQueriesAndFragments,
     testing::Values(
         std::tuple<std::string, std::string>("https://foo.example/path",
                                              "https://foo.example/path"),
@@ -752,7 +781,8 @@ INSTANTIATE_TEST_SUITE_P(
             "https://foo.example/search?q=querystring#hello",
             "https://foo.example/search")));
 
-TEST_F(FinalizeInstallJobTest, FinalizeJobQuickLaunchBarPinningEnabled) {
+TEST_F(FinalizeInstallOrUpdateJobTest,
+       FinalizeJobQuickLaunchBarPinningEnabled) {
   auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
       GURL("https://foo.example"));
   info->title = u"Foo Title";
@@ -763,14 +793,15 @@ TEST_F(FinalizeInstallJobTest, FinalizeJobQuickLaunchBarPinningEnabled) {
   static_cast<FakeWebAppUiManager&>(provider().ui_manager())
       .SetCanAddAppToQuickLaunchBar(true);
 
-  FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+  FinalizeInstallResult result = AwaitFinalizeInstallOrUpdate(*info, options);
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_TRUE(
       provider().ui_manager().IsAppInQuickLaunchBar(result.installed_app_id));
 }
 
-TEST_F(FinalizeInstallJobTest, FinalizeJobQuickLaunchBarPinningDisabled) {
+TEST_F(FinalizeInstallOrUpdateJobTest,
+       FinalizeJobQuickLaunchBarPinningDisabled) {
   auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
       GURL("https://foo.example"));
   info->title = u"Foo Title";
@@ -781,11 +812,181 @@ TEST_F(FinalizeInstallJobTest, FinalizeJobQuickLaunchBarPinningDisabled) {
   static_cast<FakeWebAppUiManager&>(provider().ui_manager())
       .SetCanAddAppToQuickLaunchBar(true);
 
-  FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+  FinalizeInstallResult result = AwaitFinalizeInstallOrUpdate(*info, options);
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_FALSE(
       provider().ui_manager().IsAppInQuickLaunchBar(result.installed_app_id));
+}
+
+TEST_F(FinalizeInstallOrUpdateJobTest, OnWebAppManifestUpdatedTriggered) {
+  auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
+
+  webapps::AppId app_id = test::InstallWebApp(
+      profile(), std::make_unique<WebAppInstallInfo>(info->Clone()),
+      /*overwrite_existing_manifest_fields=*/true,
+      webapps::WebappInstallSource::EXTERNAL_POLICY);
+
+  FinalizeInstallResult result =
+      AwaitFinalizeInstallOrUpdate(*info, FinalizeJobOptions::ForUpdate());
+
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessAlreadyInstalled, result.code);
+  EXPECT_TRUE(install_manager_observer_->web_app_manifest_updated_called());
+}
+
+TEST_F(FinalizeInstallOrUpdateJobTest, ManifestUpdateOsIntegrationDefaultApps) {
+  auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
+
+  webapps::AppId app_id = test::InstallWebAppWithoutOsIntegration(
+      profile(), std::make_unique<WebAppInstallInfo>(info->Clone()),
+      /*overwrite_existing_manifest_fields=*/true,
+      webapps::WebappInstallSource::EXTERNAL_DEFAULT);
+  EXPECT_EQ(proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+            registrar().GetInstallState(app_id));
+
+  FinalizeInstallResult result =
+      AwaitFinalizeInstallOrUpdate(*info, FinalizeJobOptions::ForUpdate());
+
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessAlreadyInstalled, result.code);
+  EXPECT_TRUE(install_manager_observer_->web_app_manifest_updated_called());
+
+  // Post manifest update, OS integration is not triggered for default apps.
+  EXPECT_EQ(proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+            registrar().GetInstallState(app_id));
+}
+
+TEST_F(FinalizeInstallOrUpdateJobTest, InstallOsHooksDisabledForDefaultApps) {
+  auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
+
+  webapps::AppId app_id = test::InstallWebAppWithoutOsIntegration(
+      profile(), std::make_unique<WebAppInstallInfo>(info->Clone()),
+      /*overwrite_existing_manifest_fields=*/true,
+      webapps::WebappInstallSource::EXTERNAL_DEFAULT);
+
+  EXPECT_EQ(app_id, GenerateAppId(/*manifest_id_path=*/std::nullopt,
+                                  info->start_url()));
+
+  // Update the app, adding a file handler.
+  std::vector<blink::mojom::ManifestFileHandlerPtr> file_handlers;
+  AddFileHandler(&file_handlers);
+  PopulateFileHandlerInfoFromManifest(file_handlers, info->start_url(),
+                                      info.get());
+
+  FinalizeInstallResult result =
+      AwaitFinalizeInstallOrUpdate(*info, FinalizeJobOptions::ForUpdate());
+
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessAlreadyInstalled, result.code);
+}
+
+TEST_F(FinalizeInstallOrUpdateJobTest, MigrationSourceChangeSchedulesSync) {
+  auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
+  static_cast<FakeWebAppOriginAssociationManager&>(
+      provider().origin_association_manager())
+      .SetMigrationSourcesData(
+          {webapps::ManifestId(GURL("https://migration.foo.example/"))});
+
+  // 1. Install without migration sources.
+  webapps::AppId app_id = test::InstallWebApp(
+      profile(), std::make_unique<WebAppInstallInfo>(info->Clone()),
+      /*overwrite_existing_manifest_fields=*/true,
+      webapps::WebappInstallSource::INTERNAL_DEFAULT);
+
+  // 2. Expect ScheduleResolveWebAppPendingMigrationInfo to be called.
+  EXPECT_CALL(*mock_scheduler_, ScheduleResolveWebAppPendingMigrationInfo(_, _))
+      .WillOnce(base::test::RunOnceClosure<0>());
+
+  // 3. Finalize update with migration sources.
+  MigrationSource source(
+      webapps::ManifestId(GURL("https://migration.foo.example/")),
+      MigrationBehavior::kSuggest);
+  info->migration_sources = {source};
+
+  FinalizeInstallResult result =
+      AwaitFinalizeInstallOrUpdate(*info, FinalizeJobOptions::ForUpdate());
+
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessAlreadyInstalled, result.code);
+}
+
+TEST_F(FinalizeInstallOrUpdateJobTest,
+       ValidateShortcutsSanitizedOutsideScopeOnUpdate) {
+  auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
+
+  webapps::AppId app_id = test::InstallWebApp(
+      profile(), std::make_unique<WebAppInstallInfo>(info->Clone()),
+      /*overwrite_existing_manifest_fields=*/true,
+      webapps::WebappInstallSource::EXTERNAL_POLICY);
+
+  WebAppShortcutsMenuItemInfo valid_shortcut;
+  valid_shortcut.name = u"Valid";
+  valid_shortcut.url = GURL("https://foo.example/shortcut");
+
+  WebAppShortcutsMenuItemInfo invalid_shortcut;
+  invalid_shortcut.name = u"Invalid";
+  invalid_shortcut.url = GURL("https://bar.example/shortcut");
+
+  info->shortcuts_menu_item_infos = {valid_shortcut, invalid_shortcut};
+
+  // Provide dummy icon bitmaps for both shortcuts.
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(16, 16);
+  IconBitmaps valid_bitmaps;
+  valid_bitmaps.any[16] = bitmap;
+  IconBitmaps invalid_bitmaps;
+  invalid_bitmaps.any[16] = bitmap;
+  info->shortcuts_menu_icon_bitmaps = {valid_bitmaps, invalid_bitmaps};
+
+  FinalizeInstallResult result =
+      AwaitFinalizeInstallOrUpdate(*info, FinalizeJobOptions::ForUpdate());
+
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessAlreadyInstalled, result.code);
+
+  const WebApp* updated_app = registrar().GetAppById(app_id);
+  ASSERT_EQ(1u, updated_app->shortcuts_menu_item_infos().size());
+  EXPECT_EQ(u"Valid", updated_app->shortcuts_menu_item_infos()[0].name);
+}
+
+TEST_F(FinalizeInstallOrUpdateJobTest,
+       ValidateShortcutsKeptInExtendedScopeOnUpdate) {
+  auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
+
+  webapps::AppId app_id = test::InstallWebApp(
+      profile(), std::make_unique<WebAppInstallInfo>(info->Clone()),
+      /*overwrite_existing_manifest_fields=*/true,
+      webapps::WebappInstallSource::EXTERNAL_POLICY);
+
+  WebAppShortcutsMenuItemInfo extended_scope_shortcut;
+  extended_scope_shortcut.name = u"Extended Scope";
+  extended_scope_shortcut.url = GURL("https://bar.example/shortcut");
+
+  info->shortcuts_menu_item_infos = {extended_scope_shortcut};
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(16, 16);
+  IconBitmaps extended_bitmaps;
+  extended_bitmaps.any[16] = bitmap;
+  info->shortcuts_menu_icon_bitmaps = {extended_bitmaps};
+
+  // Add bar.example as a validated scope extension.
+  auto scope_extension =
+      ScopeExtensionInfo::CreateForScope(GURL("https://bar.example/"),
+                                         /*has_origin_wildcard=*/true);
+  info->scope_extensions = {scope_extension};
+
+  // Set data such that scope_extension will be returned in validated data.
+  std::map<ScopeExtensionInfo, ScopeExtensionInfo> data = {
+      {scope_extension, scope_extension}};
+  static_cast<FakeWebAppOriginAssociationManager&>(
+      provider().origin_association_manager())
+      .SetData(data);
+
+  FinalizeInstallResult result =
+      AwaitFinalizeInstallOrUpdate(*info, FinalizeJobOptions::ForUpdate());
+
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessAlreadyInstalled, result.code);
+
+  const WebApp* updated_app = registrar().GetAppById(app_id);
+  ASSERT_EQ(1u, updated_app->shortcuts_menu_item_infos().size());
+  EXPECT_EQ(u"Extended Scope",
+            updated_app->shortcuts_menu_item_infos()[0].name);
 }
 
 }  // namespace web_app
