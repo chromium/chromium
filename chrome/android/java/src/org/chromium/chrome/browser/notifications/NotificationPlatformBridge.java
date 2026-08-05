@@ -514,7 +514,11 @@ public class NotificationPlatformBridge {
      * @param actionIndex The zero-based index of the action button, or -1 if not applicable.
      */
     static Uri makeIntentData(String notificationId, String origin, int actionIndex) {
-        return Uri.parse(origin).buildUpon().fragment(notificationId + "," + actionIndex).build();
+        return Uri.parse(origin)
+                .buildUpon()
+                .appendPath(notificationId)
+                .appendQueryParameter("actionIndex", String.valueOf(actionIndex))
+                .build();
     }
 
     /**
@@ -572,7 +576,7 @@ public class NotificationPlatformBridge {
         intent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
         return PendingIntentProvider.getBroadcast(
                 context,
-                PENDING_INTENT_REQUEST_CODE,
+                actionIndex >= 0 ? actionIndex : PENDING_INTENT_REQUEST_CODE,
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT,
                 mutable);

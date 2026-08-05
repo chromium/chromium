@@ -560,7 +560,7 @@ public abstract class NotificationBuilderBase {
                 actionBuilder.build(),
                 action.intent.getFlags(),
                 action.umaActionType,
-                /* requestCode= */ 0);
+                action.intent.getRequestCode());
     }
 
     /**

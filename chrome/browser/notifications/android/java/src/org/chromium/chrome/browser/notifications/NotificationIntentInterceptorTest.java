@@ -222,4 +222,54 @@ public class NotificationIntentInterceptorTest {
                         "Mobile.SystemNotification.Action.Click",
                         NotificationUmaTracker.ActionType.DOWNLOAD_PAUSE));
     }
+
+    /**
+     * Verifies that multiple action buttons with different request codes produce distinct intercept
+     * PendingIntents that do not overwrite each other.
+     */
+    @Test
+    public void testMultipleActionIntentsHaveUniqueRequestCodes() {
+        NotificationMetadata metadata =
+                new NotificationMetadata(
+                        NotificationUmaTracker.SystemNotificationType.SITES,
+                        "notification_tag",
+                        /* notificationId= */ 1);
+
+        Intent intent0 = new Intent("action_0");
+        PendingIntentProvider provider0 =
+                PendingIntentProvider.getBroadcast(
+                        RuntimeEnvironment.getApplication(),
+                        /* requestCode= */ 0,
+                        intent0,
+                        PendingIntent.FLAG_UPDATE_CURRENT,
+                        /* mutable= */ false);
+
+        Intent intent1 = new Intent("action_1");
+        PendingIntentProvider provider1 =
+                PendingIntentProvider.getBroadcast(
+                        RuntimeEnvironment.getApplication(),
+                        /* requestCode= */ 1,
+                        intent1,
+                        PendingIntent.FLAG_UPDATE_CURRENT,
+                        /* mutable= */ false);
+
+        PendingIntent interceptIntent0 =
+                NotificationIntentInterceptor.createInterceptPendingIntent(
+                        NotificationIntentInterceptor.IntentType.ACTION_INTENT,
+                        NotificationUmaTracker.ActionType.UNKNOWN,
+                        metadata,
+                        provider0);
+
+        PendingIntent interceptIntent1 =
+                NotificationIntentInterceptor.createInterceptPendingIntent(
+                        NotificationIntentInterceptor.IntentType.ACTION_INTENT,
+                        NotificationUmaTracker.ActionType.UNKNOWN,
+                        metadata,
+                        provider1);
+
+        Assert.assertNotEquals(
+                "PendingIntents for Action 0 and Action 1 must not be equal",
+                interceptIntent0,
+                interceptIntent1);
+    }
 }
