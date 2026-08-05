@@ -422,25 +422,25 @@ HEADLESS_MODE_PROTOCOL_TEST(StartFullscreenSwitch,
 HEADLESS_MODE_PROTOCOL_TEST(StartFullscreenSwitchScaled,
                             "sanity/start-fullscreen-switch-scaled.js")
 
-// TODO(crbug.com/430156442): This fails on macOS where fullscreen uses display
-// bounds rather than work area
+// TODO(crbug.com/543040219): flaky on macOS.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_WindowStateTransitions DISABLED_WindowStateTransitions
-#define MAYBE_WindowZoomSizeMatchesWorkArea \
-  DISABLED_WindowZoomSizeMatchesWorkArea
 #else
 #define MAYBE_WindowStateTransitions WindowStateTransitions
-#define MAYBE_WindowZoomSizeMatchesWorkArea WindowZoomSizeMatchesWorkArea
 #endif
-
 HEADLESS_MODE_PROTOCOL_TEST(MAYBE_WindowStateTransitions,
                             "shared/window-state-transitions.js")
 
 HEADLESS_MODE_PROTOCOL_TEST(WindowZoomOnSecondaryScreen,
                             "shared/window-zoom-on-secondary-screen.js")
 
-HEADLESS_MODE_PROTOCOL_TEST(MAYBE_WindowZoomSizeMatchesWorkArea,
+// On macOS fullscreen uses display bounds rather than work area.
+#if BUILDFLAG(IS_MAC)
+HEADLESS_MODE_PROTOCOL_TEST(, "shared/window-zoom-size-matches-screen.js")
+#else
+HEADLESS_MODE_PROTOCOL_TEST(WindowZoomSizeMatchesWorkArea,
                             "shared/window-zoom-size-matches-work-area.js")
+#endif
 
 HEADLESS_MODE_PROTOCOL_TEST(WindowScreenScaleFactor,
                             "shared/window-screen-scale-factor.js")
