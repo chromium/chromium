@@ -1291,6 +1291,8 @@ bool CSSValue::HasRandomFunctions() const {
       return To<CSSShadowValue>(this)->HasRandomFunctions();
     case kRayClass:
       return To<cssvalue::CSSRayValue>(this)->HasRandomFunctions();
+    case kUnparsedDeclarationClass:
+      return To<CSSUnparsedDeclarationValue>(this)->HasRandomFunctions();
 
     case kInheritedClass:
     case kInitialClass:
@@ -1304,7 +1306,6 @@ bool CSSValue::HasRandomFunctions() const {
     case kStringClass:
     case kBasicShapePathClass:
     case kCSSContentDistributionClass:
-    case kUnparsedDeclarationClass:
     case kImageClass:
     case kCursorImageClass:
     case kProgressClass:

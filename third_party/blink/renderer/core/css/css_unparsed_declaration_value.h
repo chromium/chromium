@@ -49,6 +49,10 @@ class CORE_EXPORT CSSUnparsedDeclarationValue final : public CSSValue {
     return parser_context_.Get();
   }
 
+  bool HasRandomFunctions() const {
+    return data_ && data_->HasRandomFunctions();
+  }
+
   bool Equals(const CSSUnparsedDeclarationValue& other) const {
     return base::ValuesEquivalent(data_, other.data_);
   }

@@ -77,6 +77,11 @@ VariableDataFeatures CSSVariableData::ExtractFeatures(
     features |= static_cast<VariableDataFeatures>(
         VariableDataFeature::kHasDashedFunctions);
   }
+  if (token.GetType() == kFunctionToken &&
+      token.FunctionId() == CSSValueID::kRandom) {
+    features |= static_cast<VariableDataFeatures>(
+        VariableDataFeature::kHasRandomFunctions);
+  }
   return features;
 }
 
