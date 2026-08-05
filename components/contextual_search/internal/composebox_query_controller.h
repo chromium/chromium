@@ -428,6 +428,11 @@ class ComposeboxQueryController
   // Returns a mutable pointer to allow internal modifications.
   FileInfo* GetMutableFileInfo(const base::UnguessableToken& file_token);
 
+  // Builds the LensOverlayContextualInputs proto for the given context tokens.
+  std::unique_ptr<lens::LensOverlayContextualInputs> CreateContextualInputs(
+      const std::vector<base::UnguessableToken>& tokens,
+      bool send_upload_type);
+
   // Fetches the OAuth headers and calls the callback with the headers. If the
   // OAuth cannot be retrieved (like if the user is not logged in), the callback
   // will be called with an empty vector. Returns the access token fetcher

@@ -52,6 +52,10 @@ message LensOverlaySuggestInputs {
 
   // The page url of the specific page for which this request is contextual.
   optional string page_url = 11;
+
+  // The base64url encoded contextual inputs proto (lens::LensOverlayContextualInputs).
+  // Passed in the cinpts= param to the Suggest server.
+  optional string encoded_contextual_inputs = 12;
 }
 
 message LensOverlayUrlResponse {

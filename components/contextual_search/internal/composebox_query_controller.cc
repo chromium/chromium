@@ -32,6 +32,7 @@
 #include "components/lens/lens_request_construction.h"
 #include "components/lens/lens_url_utils.h"
 #include "components/lens/ref_counted_lens_overlay_client_logs.h"
+#include "components/omnibox/common/composebox_features.h"
 #include "components/search_engines/util.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -745,7 +746,8 @@ void ComposeboxQueryController::CreateSearchUrl(
 
   if (should_create_multimodal_url && cluster_info_.has_value()) {
     std::unique_ptr<lens::LensOverlayContextualInputs> contextual_inputs =
-        std::make_unique<lens::LensOverlayContextualInputs>();
+        CreateContextualInputs(search_url_request_info->file_tokens,
+                               send_upload_type);
     const FileInfo* last_active_lens_file = nullptr;
     bool has_image_upload = false;
     bool has_drive_id = false;
@@ -760,33 +762,15 @@ void ComposeboxQueryController::CreateSearchUrl(
               file_info->upload_status) &&
           file_info->request_id.has_value()) {
         num_valid_lens_files++;
-        auto* contextual_input = contextual_inputs->add_inputs();
-        contextual_input->mutable_request_id()->CopyFrom(
-            file_info->request_id.value());
-        if (send_upload_type && file_info->input_data &&
-            file_info->input_data->upload_type.has_value()) {
-          contextual_input->set_upload_type(
-              *file_info->input_data->upload_type);
-        }
         if (file_info->input_data &&
             file_info->input_data->drive_id.has_value() &&
             !file_info->input_data->drive_id->empty()) {
-          contextual_input->set_drive_id(*file_info->input_data->drive_id);
           has_drive_id = true;
         }
 
         has_image_upload |= RequestIdHasImage(*file_info->request_id);
 
-        // Add the viewport request id to the contextual inputs if it exists.
         if (file_info->viewport_request_id_) {
-          auto* viewport_contextual_input = contextual_inputs->add_inputs();
-          viewport_contextual_input->mutable_request_id()->CopyFrom(
-              *file_info->viewport_request_id_);
-          if (send_upload_type && file_info->input_data &&
-              file_info->input_data->upload_type.has_value()) {
-            viewport_contextual_input->set_upload_type(
-                *file_info->input_data->upload_type);
-          }
           has_image_upload = true;
         }
         // Find the last file, preferring non-unresolved url uploads so that
@@ -1504,6 +1488,43 @@ void ComposeboxQueryController::ClearFiles() {
   }
 }
 
+std::unique_ptr<lens::LensOverlayContextualInputs>
+ComposeboxQueryController::CreateContextualInputs(
+    const std::vector<base::UnguessableToken>& tokens,
+    bool send_upload_type) {
+  std::unique_ptr<lens::LensOverlayContextualInputs> contextual_inputs =
+      std::make_unique<lens::LensOverlayContextualInputs>();
+  for (const auto& file_token : tokens) {
+    auto* info = GetMutableFileInfo(file_token);
+    if (!info || info->is_superceded ||
+        !IsValidContextUploadStatusForMultimodalRequest(info->upload_status) ||
+        !info->request_id.has_value()) {
+      continue;
+    }
+    auto* contextual_input = contextual_inputs->add_inputs();
+    contextual_input->mutable_request_id()->CopyFrom(info->request_id.value());
+    if (send_upload_type && info->input_data &&
+        info->input_data->upload_type.has_value()) {
+      contextual_input->set_upload_type(*info->input_data->upload_type);
+    }
+    if (info->input_data && info->input_data->drive_id.has_value() &&
+        !info->input_data->drive_id->empty()) {
+      contextual_input->set_drive_id(*info->input_data->drive_id);
+    }
+    if (info->viewport_request_id_) {
+      auto* viewport_contextual_input = contextual_inputs->add_inputs();
+      viewport_contextual_input->mutable_request_id()->CopyFrom(
+          *info->viewport_request_id_);
+      if (send_upload_type && info->input_data &&
+          info->input_data->upload_type.has_value()) {
+        viewport_contextual_input->set_upload_type(
+            *info->input_data->upload_type);
+      }
+    }
+  }
+  return contextual_inputs;
+}
+
 std::unique_ptr<lens::proto::LensOverlaySuggestInputs>
 ComposeboxQueryController::CreateSuggestInputs(
     const std::vector<base::UnguessableToken>& attached_context_tokens) {
@@ -1536,27 +1557,39 @@ ComposeboxQueryController::CreateSuggestInputs(
         break;
       }
     }
-  } else {
-    // Only a single file is supported for suggest inputs.
-    if (attached_context_tokens.size() != 1) {
-      return suggest_inputs;
-    }
+  } else if (attached_context_tokens.size() == 1) {
     file_info = GetMutableFileInfo(attached_context_tokens.at(0));
   }
 
-  if (!file_info || !file_info->request_id.has_value()) {
-    return suggest_inputs;
+  if (!prioritize_suggestions_for_the_first_attached_document_ &&
+      base::FeatureList::IsEnabled(
+          omnibox::kSuggestRequestSendsMultifileCgiParam) &&
+      attached_context_tokens.size() > 1) {
+    bool send_upload_type = base::FeatureList::IsEnabled(
+        contextual_tasks::kContextualTasksSendContextualInputUploadType);
+    std::unique_ptr<lens::LensOverlayContextualInputs> contextual_inputs =
+        CreateContextualInputs(attached_context_tokens, send_upload_type);
+    if (contextual_inputs->inputs_size() > 0) {
+      std::string serialized_contextual_inputs;
+      if (contextual_inputs->SerializeToString(&serialized_contextual_inputs)) {
+        std::string encoded_contextual_inputs;
+        base::Base64UrlEncode(serialized_contextual_inputs,
+                              base::Base64UrlEncodePolicy::OMIT_PADDING,
+                              &encoded_contextual_inputs);
+        suggest_inputs->set_encoded_contextual_inputs(encoded_contextual_inputs);
+      }
+    }
+  } else if (file_info && file_info->request_id.has_value()) {
+    suggest_inputs->set_encoded_request_id(
+        lens::Base64EncodeRequestId(file_info->request_id.value()));
+    // TODO(crbug.com/445777189): Support multi-context input id flow for
+    // suggest.
+    suggest_inputs->set_contextual_visual_input_type(
+        lens::VitQueryParamValueForMediaType(
+            file_info->request_id->media_type()));
   }
 
-  suggest_inputs->set_encoded_request_id(
-      lens::Base64EncodeRequestId(file_info->request_id.value()));
-  // TODO(crbug.com/445777189): Support multi-context input id flow for
-  // suggest.
-  suggest_inputs->set_contextual_visual_input_type(
-      lens::VitQueryParamValueForMediaType(
-          file_info->request_id->media_type()));
-
-  if (attach_page_title_and_url_to_suggest_requests_) {
+  if (file_info && attach_page_title_and_url_to_suggest_requests_) {
     suggest_inputs->set_send_page_title_and_url(true);
     suggest_inputs->set_page_title(file_info->tab_title.value_or(""));
     if (file_info->input_data &&
@@ -1568,10 +1601,13 @@ ComposeboxQueryController::CreateSuggestInputs(
   }
 
   // If the cluster info is already available, update the suggest inputs.
-  suggest_inputs->set_send_gsession_vsrid_for_contextual_suggest(true);
-  if (cluster_info_.has_value()) {
-    suggest_inputs->set_search_session_id(
-        cluster_info_.value().search_session_id());
+  if (suggest_inputs->has_encoded_request_id() ||
+      suggest_inputs->has_encoded_contextual_inputs()) {
+    suggest_inputs->set_send_gsession_vsrid_for_contextual_suggest(true);
+    if (cluster_info_.has_value()) {
+      suggest_inputs->set_search_session_id(
+          cluster_info_.value().search_session_id());
+    }
   }
 
   return suggest_inputs;
