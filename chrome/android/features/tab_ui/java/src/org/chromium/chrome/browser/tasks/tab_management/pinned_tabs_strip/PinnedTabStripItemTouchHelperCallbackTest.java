@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;
@@ -104,10 +106,28 @@ public class PinnedTabStripItemTouchHelperCallbackTest {
 
     @Test
     public void testOnMove() {
-        mCallback.onMove(null, mMockViewHolder1, mMockViewHolder2);
+        assertTrue(mCallback.onMove(null, mMockViewHolder1, mMockViewHolder2));
 
         verify(mTabModel).moveRelatedTabs(TAB_ID1, POSITION2);
         verify(mTabListModel).move(POSITION1, POSITION2);
+    }
+
+    @Test
+    public void testOnMove_InvalidPositions() {
+        when(mMockViewHolder1.getBindingAdapterPosition()).thenReturn(RecyclerView.NO_POSITION);
+        assertFalse(mCallback.onMove(null, mMockViewHolder1, mMockViewHolder2));
+
+        when(mMockViewHolder1.getBindingAdapterPosition()).thenReturn(POSITION1);
+        when(mMockViewHolder2.getBindingAdapterPosition()).thenReturn(RecyclerView.NO_POSITION);
+        assertFalse(mCallback.onMove(null, mMockViewHolder1, mMockViewHolder2));
+
+        when(mMockViewHolder2.getBindingAdapterPosition()).thenReturn(POSITION1);
+        assertFalse(mCallback.onMove(null, mMockViewHolder1, mMockViewHolder2));
+    }
+
+    @Test
+    public void testOnMove_InvalidViewHolder() {
+        assertFalse(mCallback.onMove(null, mViewHolder, mMockViewHolder2));
     }
 
     @Test

@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
@@ -24,6 +22,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrch
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator.OnLongPressTabItemEventListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.recyclerview.widget.ItemTouchHelper2;
 
@@ -108,18 +107,29 @@ public class PinnedTabStripItemTouchHelperCallback extends ItemTouchHelper2.Simp
             RecyclerView recyclerView,
             RecyclerView.ViewHolder fromViewHolder,
             RecyclerView.ViewHolder toViewHolder) {
-        mSelectedTabIndex = toViewHolder.getBindingAdapterPosition();
-        @TabId
-        int currentTabId =
-                assumeNonNull(((SimpleRecyclerViewAdapter.ViewHolder) fromViewHolder).model)
-                        .get(TabProperties.TAB_ID);
-
+        int fromPosition = fromViewHolder.getBindingAdapterPosition();
         int destinationIndex = toViewHolder.getBindingAdapterPosition();
+        if (fromPosition == RecyclerView.NO_POSITION
+                || destinationIndex == RecyclerView.NO_POSITION
+                || fromPosition < 0
+                || destinationIndex < 0
+                || fromPosition == destinationIndex) {
+            return false;
+        }
+
+        PropertyModel model =
+                fromViewHolder instanceof SimpleRecyclerViewAdapter.ViewHolder holder
+                        ? holder.model
+                        : null;
+        if (model == null) return false;
+
         TabModel tabModel = mCurrentTabModelSupplier.get();
         if (tabModel == null) return false;
 
+        mSelectedTabIndex = destinationIndex;
+        @TabId int currentTabId = model.get(TabProperties.TAB_ID);
         tabModel.moveRelatedTabs(currentTabId, destinationIndex);
-        mModel.move(fromViewHolder.getBindingAdapterPosition(), destinationIndex);
+        mModel.move(fromPosition, destinationIndex);
         return true;
     }
 
@@ -130,18 +140,25 @@ public class PinnedTabStripItemTouchHelperCallback extends ItemTouchHelper2.Simp
     public void onSelectedChanged(RecyclerView.@Nullable ViewHolder viewHolder, int actionState) {
         super.onSelectedChanged(viewHolder, actionState);
 
-        if (viewHolder != null) {
-            mTabGridItemLongPressOrchestrator.onSelectedChanged(
-                    viewHolder.getBindingAdapterPosition(), actionState);
+        int position =
+                viewHolder != null
+                        ? viewHolder.getBindingAdapterPosition()
+                        : RecyclerView.NO_POSITION;
+
+        if (position != RecyclerView.NO_POSITION) {
+            mTabGridItemLongPressOrchestrator.onSelectedChanged(position, actionState);
         }
 
         if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
-            assumeNonNull(viewHolder);
-            mSelectedTabIndex = viewHolder.getBindingAdapterPosition();
-            mModel.updateSelectedCardForSelection(mSelectedTabIndex, true);
+            if (position != RecyclerView.NO_POSITION) {
+                mSelectedTabIndex = position;
+                mModel.updateSelectedCardForSelection(mSelectedTabIndex, true);
+            }
         } else if (actionState == ItemTouchHelper.ACTION_STATE_IDLE) {
-            mModel.updateSelectedCardForSelection(mSelectedTabIndex, false);
-            mSelectedTabIndex = TabModel.INVALID_TAB_INDEX;
+            if (mSelectedTabIndex != TabModel.INVALID_TAB_INDEX) {
+                mModel.updateSelectedCardForSelection(mSelectedTabIndex, false);
+                mSelectedTabIndex = TabModel.INVALID_TAB_INDEX;
+            }
         }
     }
 
