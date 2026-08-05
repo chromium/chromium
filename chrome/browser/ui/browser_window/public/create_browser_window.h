@@ -18,6 +18,7 @@
 #include "ui/gfx/geometry/rect.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "components/tab_groups/tab_group_id.h"
 #include "third_party/blink/public/mojom/picture_in_picture_window_options/picture_in_picture_window_options.mojom.h"
 #endif
 
@@ -168,6 +169,10 @@ struct BrowserWindowCreateParams {
   std::optional<bool> vertical_tab_strip_collapsed;
   // Specifies the width for the uncollapsed Vertical Tab Strip.
   std::optional<int> vertical_tab_strip_uncollapsed_width;
+
+  // Specifies the focused tab group ID, if the window should be created in a
+  // focused state.
+  std::optional<tab_groups::TabGroupId> focused_tab_group_id;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // If set, the browser should be created on the display given by

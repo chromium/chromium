@@ -235,10 +235,12 @@ BrowserDelegate* BrowserControllerImpl::NewTabWithPostData(
   navigate_params.browser = FindTabbedBrowserOnCurrentWorkspace(profile);
   if (!navigate_params.browser &&
       GetBrowserWindowCreationStatusForProfile(*profile) ==
-          Browser::CreationStatus::kOk) {
-    Browser::CreateParams create_params(profile, navigate_params.user_gesture);
+          BrowserWindowInterface::CreationStatus::kOk) {
+    BrowserWindowCreateParams create_params(profile,
+                                            navigate_params.user_gesture);
     create_params.should_trigger_session_restore = false;
-    navigate_params.browser = Browser::Create(create_params);
+    navigate_params.browser = CreateBrowserWindow(std::move(create_params))
+                                  ->GetBrowserForMigrationOnly();
   }
 
   Navigate(&navigate_params);

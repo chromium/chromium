@@ -46,6 +46,7 @@ source_set("create_browser_window") {
 
   public_deps = [
     "//chrome/browser/ui/browser_window",
+    "//components/tab_groups",
     "//ui/base/mojom:ui_base_types",
   ]
 }

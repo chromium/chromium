@@ -17,6 +17,7 @@
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/session_service_utils.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
@@ -144,9 +145,11 @@ void BrowserRestoreObserver::OnSessionRestoreDone(Profile* profile,
   on_session_restored_callback_subscription_ = {};
 
   // All browser windows are created. Open startup urls in a new browser.
-  auto create_params = Browser::CreateParams(profile, /*user_gesture*/ false);
+  auto create_params =
+      BrowserWindowCreateParams(profile, /*user_gesture=*/false);
   BrowserDelegate* browser = BrowserController::GetInstance()->GetDelegate(
-      Browser::Create(create_params));
+      CreateBrowserWindow(std::move(create_params))
+          ->GetBrowserForMigrationOnly());
   RestoreUrls(browser);
   browser->Show();
   browser->Activate();

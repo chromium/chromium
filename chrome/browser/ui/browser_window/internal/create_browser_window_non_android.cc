@@ -42,6 +42,7 @@ BrowserWindowCreateParams BrowserWindowCreateParams::Clone() const {
   clone.vertical_tab_strip_collapsed = vertical_tab_strip_collapsed;
   clone.vertical_tab_strip_uncollapsed_width =
       vertical_tab_strip_uncollapsed_width;
+  clone.focused_tab_group_id = focused_tab_group_id;
 #if BUILDFLAG(IS_CHROMEOS)
   clone.display_id = display_id;
 #endif
@@ -130,6 +131,7 @@ void CopyDesktopParamsToBrowserParams(
   browser_params.in_tab_dragging = create_params.in_tab_dragging;
   browser_params.window = create_params.window;
   browser_params.user_title = create_params.user_title;
+  browser_params.focused_tab_group_id = create_params.focused_tab_group_id;
   browser_params.can_resize = create_params.can_resize;
   browser_params.can_maximize = create_params.can_maximize;
   browser_params.can_fullscreen = create_params.can_fullscreen;
