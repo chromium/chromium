@@ -579,6 +579,8 @@ import java.util.function.Supplier;
         // Breaking down into explicit if/elseif/else to help understand what's going on.
         if (!isInInputSession()) {
             return false;
+        } else if (mInput.isStandby()) {
+            return false;
         } else if (ToolModeUtils.isConventionalRequest(mInput.getRequestType())) {
             // Never show mode button if in Search mode.
             return false;

@@ -755,6 +755,16 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
+    public void updateFuseboxState_setsRequestTypeButtonVisible_false_standby() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
+        mInput.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
+        mInput.setAutocompleteState(AutocompleteState.STANDBY);
+        recreateMediator();
+
+        assertFalse(mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_VISIBLE));
+    }
+
+    @Test
     public void endInput_clearsState() {
         assertNotEquals(
                 FuseboxState.DISABLED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
