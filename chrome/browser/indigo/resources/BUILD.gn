@@ -24,8 +24,10 @@ grit_strings("indigo_strings") {
 grit("grit") {
   if (is_chrome_branded) {
     source = "internal/browser_resources.grd"
+    inputs = [ "internal/text_layer_entry_icon.png" ]
   } else {
     source = "browser_resources.grd"
+    inputs = [ "text_layer_entry_icon.png" ]
   }
 
   use_brotli = true

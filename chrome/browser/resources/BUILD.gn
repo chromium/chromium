@@ -269,6 +269,14 @@ if (enable_extensions_core) {
 if (!is_android) {
   grit("app_icon_resources") {
     source = "app_icon/app_icon_resources.grd"
+    inputs = [
+      "app_icon/default_100_percent/app_icon_placeholder_cube.png",
+      "app_icon/default_100_percent/mask/mask.png",
+      "app_icon/default_100_percent/web_app_default_icon.png",
+      "app_icon/default_200_percent/app_icon_placeholder_cube.png",
+      "app_icon/default_200_percent/mask/mask.png",
+      "app_icon/default_200_percent/web_app_default_icon.png",
+    ]
     defines = chrome_grit_defines
     outputs = [
       "grit/app_icon_resources.h",
@@ -283,6 +291,7 @@ if (!is_android) {
   if (is_chromeos) {
     grit("office_web_app_resources") {
       source = "office_web_app/resources.grd"
+      inputs = [ "office_web_app/icons/office_192.png" ]
       defines = chrome_grit_defines
       outputs = [
         "grit/office_web_app_resources.h",
@@ -297,6 +306,23 @@ if (!is_android) {
   if (is_chrome_branded) {
     grit("preinstalled_web_apps_resources") {
       source = "preinstalled_web_apps/resources.grd"
+      inputs = [
+        "preinstalled_web_apps/internal/gmail_192.png",
+        "preinstalled_web_apps/internal/google_chat_192.png",
+        "preinstalled_web_apps/internal/google_docs_192.png",
+        "preinstalled_web_apps/internal/google_drive_192.png",
+        "preinstalled_web_apps/internal/google_sheets_192.png",
+        "preinstalled_web_apps/internal/google_slides_192.png",
+        "preinstalled_web_apps/internal/youtube_192.png",
+      ]
+      if (is_chromeos) {
+        inputs += [
+          "preinstalled_web_apps/internal/gemini_192.png",
+          "preinstalled_web_apps/internal/google_calendar_192.png",
+          "preinstalled_web_apps/internal/notebook_lm_512.png",
+          "preinstalled_web_apps/internal/vids_192.png",
+        ]
+      }
       defines = chrome_grit_defines
       outputs = [
         "grit/preinstalled_web_apps_resources.h",
