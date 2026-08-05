@@ -343,6 +343,10 @@ class PopupViewViews : public PopupBaseView,
   // level up. Returns whether this was successful.
   bool SelectParentPopupContentCell();
 
+  // Schedules or stops closing of the open sub-popup.
+  void ScheduleSubPopupClosing();
+  void StopSubPopupClosing();
+
   // The popup can be used for informing the user without providing suggestions
   // to select, e.g. when the suggestions are loading. It has only one
   // suggestion with a special type in this case. This method makes sure

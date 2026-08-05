@@ -2320,6 +2320,44 @@ TEST_F(PopupViewViewsTest, SubPopupHidingOnNoSelectionCustomDelay) {
   EXPECT_EQ(test_api(view()).GetOpenSubPopupRow(), std::nullopt);
 }
 
+TEST_F(PopupViewViewsTest, SubPopupHidesWhenMouseMovesToSearchBar) {
+  ui::MouseEvent fake_event(ui::EventType::kMouseMoved, gfx::Point(),
+                            gfx::Point(), ui::EventTimeForNow(),
+                            ui::EF_IS_SYNTHESIZED, 0);
+  controller().set_suggestions({
+      CreateSuggestionWithChildren(
+          SuggestionType::kAtMemorySearchResult,
+          {Suggestion(u"Child #1", SuggestionType::kAtMemorySearchResult)}),
+  });
+
+  CreateAndShowView(
+      /*widget_params=*/std::nullopt,
+      /*search_bar_config=*/
+      AutofillPopupView::SearchBarConfig{.placeholder = u"Search"},
+      /*tabbed_pane_config=*/std::nullopt,
+      /*sub_popup_config=*/
+      AutofillPopupView::SubPopupConfig{.no_selection_hide_delay =
+                                            base::Seconds(1)});
+
+  CellIndex cell{0, CellType::kControl};
+  view().SetSelectedCell(cell, PopupCellSelectionSource::kNonUserInput);
+  task_environment()->FastForwardBy(PopupViewViews::kNonMouseOpenSubPopupDelay);
+  ASSERT_EQ(test_api(view()).GetOpenSubPopupRow(), cell.first);
+
+  // Unselect cell (mimicking mouse moving to search bar) and trigger mouse
+  // enter on main popup.
+  view().SetSelectedCell(std::nullopt, PopupCellSelectionSource::kMouse);
+  view().OnMouseEntered(fake_event);
+
+  // Sub-popup should still be open before 1s timeout.
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+  EXPECT_NE(test_api(view()).GetOpenSubPopupRow(), std::nullopt);
+
+  // After 1s total, sub-popup should close.
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+  EXPECT_EQ(test_api(view()).GetOpenSubPopupRow(), std::nullopt);
+}
+
 TEST_F(PopupViewViewsTest, SubPopupHidingIsCanceledOnSelection) {
   controller().set_suggestions({
       CreateSuggestionWithChildren(
@@ -2417,7 +2455,7 @@ TEST_F(PopupViewViewsTest, SubPopupOwnSelectionPreventsHiding) {
   // The interrupting selection in the root popup, should prevent
   // its sub-popup from closing, but not the middle one's sub-popup.
   task_environment()->FastForwardBy(base::Milliseconds(1));
-  view().OnMouseEntered(fake_event);
+  view().SetSelectedCell(cell, PopupCellSelectionSource::kNonUserInput);
 
   task_environment()->FastForwardBy(
       PopupViewViews::kNoSelectionHideSubPopupDelay);

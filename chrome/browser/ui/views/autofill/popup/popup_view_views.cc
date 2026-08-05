@@ -330,7 +330,9 @@ PopupViewViews::PopupViewViews(
 PopupViewViews::~PopupViewViews() = default;
 
 void PopupViewViews::OnMouseEntered(const ui::MouseEvent& event) {
-  OnMouseEnteredInChildren();
+  if (parent_ && parent_->get()) {
+    parent_->get()->OnMouseEnteredInChildren();
+  }
 }
 
 void PopupViewViews::OnMouseExited(const ui::MouseEvent& event) {
@@ -432,7 +434,7 @@ void PopupViewViews::MaybeAutoSelectSuggestion(
 
 void PopupViewViews::Hide() {
   open_sub_popup_timer_.Stop();
-  no_selection_sub_popup_close_timer_.Stop();
+  StopSubPopupClosing();
 
   // The controller is no longer valid after it hides us.
   controller_ = nullptr;
@@ -1041,7 +1043,7 @@ void PopupViewViews::SetSelectedCell(
     has_keyboard_focus_ = true;
     // The sub-popup hiding is canceled because the newly selected cell will
     // rule the sub-pupop visibility from now.
-    no_selection_sub_popup_close_timer_.Stop();
+    OnMouseEnteredInChildren();
 
     row_with_selected_cell_ = cell_index->first;
     PopupInteractiveRowView& new_selected_row =
@@ -1080,6 +1082,7 @@ void PopupViewViews::SetSelectedCell(
                        autoselect_first_suggestion));
   } else {
     row_with_selected_cell_ = std::nullopt;
+    ScheduleSubPopupClosing();
   }
 }
 
@@ -1648,8 +1651,8 @@ void PopupViewViews::OnMouseEnteredInChildren() {
     parent_->get()->OnMouseEnteredInChildren();
   }
 
-  // Cancel scheluled sub-popup closing.
-  no_selection_sub_popup_close_timer_.Stop();
+  // Cancel scheduled sub-popup closing.
+  StopSubPopupClosing();
 }
 
 void PopupViewViews::OnMouseExitedInChildren() {
@@ -1661,7 +1664,15 @@ void PopupViewViews::OnMouseExitedInChildren() {
     parent_->get()->OnMouseExitedInChildren();
   }
 
-  // Schedule sub-popup closing.
+  ScheduleSubPopupClosing();
+}
+
+void PopupViewViews::ScheduleSubPopupClosing() {
+  if (!row_with_open_sub_popup_ ||
+      no_selection_sub_popup_close_timer_.IsRunning()) {
+    return;
+  }
+
   const base::TimeDelta hide_delay =
       sub_popup_config_ ? sub_popup_config_->no_selection_hide_delay
                         : kNoSelectionHideSubPopupDelay;
@@ -1671,6 +1682,10 @@ void PopupViewViews::OnMouseExitedInChildren() {
       base::BindRepeating(&PopupViewViews::SetRowWithOpenSubPopup,
                           weak_ptr_factory_.GetWeakPtr(), std::nullopt,
                           AutoselectFirstSuggestion(false)));
+}
+
+void PopupViewViews::StopSubPopupClosing() {
+  no_selection_sub_popup_close_timer_.Stop();
 }
 
 bool PopupViewViews::IsFooterScrollable() const {
