@@ -26,13 +26,15 @@
 namespace blink {
 namespace {
 
-// The default miter limit is 4.0, which can cause polygon corners to be
-// unexpectedly cut off into bevels. We use a large finite value to prevent
-// this.
+// The default miter limit of 4.0 is suitable for shapes containing curves or
+// arcs (such as shape() and path() with curved segments) to prevent huge miter
+// spikes at sharp cusps. For purely linear polygon shapes, however, we use a
+// large finite miter limit so acute polygon corners remain sharp miters
+// rather than being cut off into bevels.
 // Note: using an infinite or maximum float miter limit is not supported
 // by Skia, as squaring it during internal miter length calculations causes
 // floating-point overflow and fails internal finiteness validation checks.
-constexpr float kBorderShapeMiterLimit = 1e10f;
+constexpr float kBorderShapePolygonMiterLimit = 1e10f;
 
 Path OuterPathWithoutStroke(const ComputedStyle& style,
                             const PhysicalRect& outer_reference_rect) {
@@ -44,31 +46,25 @@ Path OuterPathWithoutStroke(const ComputedStyle& style,
 }
 
 StrokeData GetStrokeData(const StyleBorderShape& border_shape,
+                         const Path& path,
                          float thickness) {
   StrokeData stroke_data;
   stroke_data.SetThickness(thickness);
-  stroke_data.SetMiterLimit(kBorderShapeMiterLimit);
 
-  // If the shape is a polygon, check if the CSS `round <length>` modifier was
-  // used. If so, we change the join type to round to handle two scenarios:
-  //
-  //  1) Floating-point noise: When a rounding radius consumes segment length
-  //  within an epsilon distance of the midpoint of the first and second points,
-  //  floating-point noise in the `lineTo` calculation can cause slight jitter.
-  //  Although the distance is small, it can result in a large turning angle,
-  //  causing a miter join to spike outwards. Round and bevel joins are
-  //  guaranteed to stay within the stroke width, avoiding this. See:
-  //  https://g-issues.chromium.org/issues/504697281
-  //
-  //  2) Bevel flattening: While a bevel join avoids the miter spike, consider
-  //  a rounded polygon with a thick stroke and a corner segment smaller than
-  //  `kMinRoundingThreshold`. If the stroke is thick enough, a bevel join
-  //  will draw a visually noticeable flat edge. A round join prevents this.
-  //
-  // Since all points on the path produced by rounding the polygon must be
-  // collinear with the original line segments, any movement (and resulting
-  // joins) caused by floating-point noise is, by definition, visually
-  // negligible.
+  // The default miter limit of 4.0 is suitable for shapes containing curves or
+  // arcs (such as shape() and path() with curved segments) to prevent huge
+  // miter spikes at sharp cusps. For purely linear polygon shapes, however, we
+  // use a large finite miter limit so acute polygon corners remain sharp miters
+  // rather than being cut off into bevels.
+  const uint32_t segment_masks = path.GetSkPath().getSegmentMasks();
+  if ((segment_masks & ~SkPath::kLine_SegmentMask) == 0) {
+    stroke_data.SetMiterLimit(kBorderShapePolygonMiterLimit);
+  }
+
+  // If the shape is a polygon with CSS `round <length>`, set line join to round
+  // to handle floating-point noise micro-segments and prevent bevel flattening.
+  // Note: When line join is round (kRoundJoin), Skia renders rounded joins and
+  // completely ignores the miter limit value.
   const BasicShape& outer_shape = border_shape.OuterShape();
   if (outer_shape.GetType() == BasicShape::kBasicShapePolygonType &&
       To<BasicShapePolygon>(outer_shape).HasRoundingRadius()) {
@@ -97,7 +93,7 @@ Path BorderShapePainter::OuterPath(const ComputedStyle& style,
 
   // Add stroke to the outer path, if we don't have an inner one.
   StrokeData stroke_data =
-      GetStrokeData(*style.BorderShape(), derived_stroke.thickness);
+      GetStrokeData(*style.BorderShape(), outer_path, derived_stroke.thickness);
   SkOpBuilder builder;
   builder.add(outer_path.GetSkPath(), SkPathOp::kUnion_SkPathOp);
   Path stroke_path = outer_path.StrokePath(stroke_data, AffineTransform());
@@ -127,7 +123,7 @@ Path BorderShapePainter::InnerPath(const ComputedStyle& style,
   }
 
   StrokeData stroke_data =
-      GetStrokeData(*style.BorderShape(), derived_stroke.thickness);
+      GetStrokeData(*style.BorderShape(), inner_path, derived_stroke.thickness);
   Path stroke_path = inner_path.StrokePath(stroke_data, AffineTransform());
   SkOpBuilder builder;
   builder.add(inner_path.GetSkPath(), SkPathOp::kUnion_SkPathOp);
@@ -179,8 +175,8 @@ Path BorderShapePainter::OuterPathWithOffset(
   }
 
   // Anything else
-  StrokeData stroke_data =
-      GetStrokeData(*style.BorderShape(), std::abs(total_offset) * 2);
+  StrokeData stroke_data = GetStrokeData(*style.BorderShape(), base_path,
+                                         std::abs(total_offset) * 2);
   Path stroke_path = base_path.StrokePath(stroke_data, AffineTransform());
 
   SkOpBuilder builder;
@@ -236,7 +232,7 @@ static void PaintBorderShape(GraphicsContext& context,
   // When only a single <basic-shape> is given, the border is rendered as a
   // stroke with the relevant side’s computed border width as the stroke width.
   StrokeData stroke_data =
-      GetStrokeData(*style.BorderShape(), stroke_thickness);
+      GetStrokeData(*style.BorderShape(), outer_path, stroke_thickness);
   context.SetStrokeColor(color);
   context.SetStroke(stroke_data);
   context.StrokePath(outer_path, auto_dark_mode);
