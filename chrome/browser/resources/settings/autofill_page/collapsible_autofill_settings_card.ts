@@ -125,6 +125,10 @@ export class CollapsibleCardElement extends SettingsViewMixin
               'AutofillSettingsEnterprisePolicyEnabled');
         },
       },
+      prefsInitialized_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -132,7 +136,8 @@ export class CollapsibleCardElement extends SettingsViewMixin
     return [
       `onEnterprisePolicyChanged_(prefs.${
           AiEnterpriseFeaturePrefName.AUTOFILL_AI}.value,
-          prefs.autofill.profile_enabled.*)`,
+          prefs.autofill.profile_enabled.*,
+          prefsInitialized_)`,
     ];
   }
 
@@ -144,11 +149,20 @@ export class CollapsibleCardElement extends SettingsViewMixin
   declare private enhancedAutofillOptedIn_: chrome.settingsPrivate.PrefObject;
   declare private isUserEligibleForWalletablePassDetection_: boolean;
   declare private autofillSettingsEnterprisePolicyEnabled_: boolean;
+  declare private prefsInitialized_: boolean;
 
   private entityInstancesChangedListener_: EntityInstancesChangedListener|null =
       null;
   private entityDataManager_: EntityDataManagerProxy =
       EntityDataManagerProxyImpl.getInstance();
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    CrSettingsPrefs.initialized.then(() => {
+      this.prefsInitialized_ = true;
+    });
+  }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
@@ -198,12 +212,13 @@ export class CollapsibleCardElement extends SettingsViewMixin
    * without blocking the UI.
    */
   private async onEnterprisePolicyChanged_() {
-    // TODO(crbug.com/490338056): replace undefined check with pref
-    // initialization check
-    const addressAutofillEnabled = this.get('prefs.autofill.profile_enabled');
+    if (!this.prefsInitialized_) {
+      return;
+    }
+    const addressAutofillEnabled =
+        this.getPref<boolean>('autofill.profile_enabled');
 
     if (!this.autofillSettingsEnterprisePolicyEnabled_ &&
-        !!addressAutofillEnabled &&
         addressAutofillEnabled.enforcement ===
             chrome.settingsPrivate.Enforcement.ENFORCED &&
         !addressAutofillEnabled.value) {
@@ -223,13 +238,8 @@ export class CollapsibleCardElement extends SettingsViewMixin
       return;
     }
 
-    await CrSettingsPrefs.initialized;
     const autofillAiPolicyValue =
         this.getPref(AiEnterpriseFeaturePrefName.AUTOFILL_AI).value;
-
-    if (autofillAiPolicyValue === undefined) {
-      return;
-    }
 
     if (autofillAiPolicyValue === ModelExecutionEnterprisePolicyValue.DISABLE) {
       this.set(
@@ -254,27 +264,30 @@ export class CollapsibleCardElement extends SettingsViewMixin
         this.set(
             'enhancedAutofillOptedIn_.value',
             this.enhancedAutofillEligibleUser_ && enhancedAutofillOptedIn &&
-                !!addressAutofillEnabled && addressAutofillEnabled.value);
+                addressAutofillEnabled.value);
       }
     }
   }
 
-  private showExtensionControlledIndicator_() {
-    // TODO(crbug.com/490338056): replace undefined check with pref
-    // initialization check
-    const addressAutofillEnabled = this.get('prefs.autofill.profile_enabled');
+  private showExtensionControlledIndicator_(): boolean {
+    if (!this.prefsInitialized_) {
+      return false;
+    }
 
-    // We show the extension control only if extension forces false value
-    return !!addressAutofillEnabled && !!addressAutofillEnabled.extensionId &&
+    const addressAutofillEnabled =
+        this.getPref<boolean>('autofill.profile_enabled');
+
+    return !!addressAutofillEnabled.extensionId &&
         !addressAutofillEnabled.value;
   }
 
-  private optInToggleDisabled_(
-      addressAutofillEnabled?: chrome.settingsPrivate.PrefObject<boolean>):
-      boolean {
-    if (addressAutofillEnabled === undefined) {
+  private optInToggleDisabled_(): boolean {
+    if (!this.prefsInitialized_) {
       return true;
     }
+
+    const addressAutofillEnabled =
+        this.getPref<boolean>('autofill.profile_enabled');
     const addressAutofillEnforcedFalse = addressAutofillEnabled.enforcement ===
             chrome.settingsPrivate.Enforcement.ENFORCED &&
         !addressAutofillEnabled.value;

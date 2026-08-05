@@ -6,8 +6,8 @@
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsSimpleConfirmationDialogElement} from 'chrome://settings/lazy_load.js';
 import {PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
-import type {CrButtonElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {CvcDeletionUserAction, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrivacyElementInteractions} from 'chrome://settings/settings.js';
+import type {CrButtonElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, CvcDeletionUserAction, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrivacyElementInteractions} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 // <if expr="not is_chromeos">
@@ -49,7 +49,9 @@ suite('PaymentSectionUiTest', function() {
 
 suite('PaymentsSection', function() {
   let openWindowProxy: TestOpenWindowProxy;
-  setup(function() {
+  let settingsPrefs: SettingsPrefsElement;
+
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
@@ -59,6 +61,14 @@ suite('PaymentsSection', function() {
       deviceAuthAvailable: true,
       mandatoryReauthFeatureFlagEnabled: true,
     });
+
+    settingsPrefs = document.createElement('settings-prefs');
+    document.body.appendChild(settingsPrefs);
+    await CrSettingsPrefs.initialized;
+  });
+
+  teardown(function() {
+    CrSettingsPrefs.resetForTesting();
   });
 
   test('ManagePaymentMethodsLink_RecordsMetrics', async function() {
@@ -67,7 +77,7 @@ suite('PaymentsSection', function() {
 
     const section = await createPaymentsSection(
         /*creditCards=*/[], /*ibans=*/[], /*payOverTimeIssuers=*/[],
-        /*prefValues=*/ {});
+        {credit_card_enabled: {value: true}});
 
     const manageAnchor = section.$.manageLink.querySelector('a');
     assertTrue(!!manageAnchor);
@@ -190,7 +200,7 @@ suite('PaymentsSection', function() {
 
     const section = await createPaymentsSection(
         /*creditCards=*/[], /*ibans=*/[], /*payOverTimeIssuers=*/[],
-        /*prefValues=*/ {});
+        {credit_card_enabled: {value: true}});
 
     section.$.canMakePaymentToggle.click();
     const result =

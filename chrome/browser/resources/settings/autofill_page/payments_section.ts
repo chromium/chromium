@@ -35,6 +35,8 @@ import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {CvcDeletionUserAction, MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
@@ -82,7 +84,7 @@ export interface SettingsPaymentsSectionElement {
 }
 
 const SettingsPaymentsSectionElementBase =
-    SettingsViewMixin(I18nMixin(PolymerElement));
+    PrefsMixin(SettingsViewMixin(I18nMixin(PolymerElement)));
 
 export class SettingsPaymentsSectionElement extends
     SettingsPaymentsSectionElementBase {
@@ -227,6 +229,10 @@ export class SettingsPaymentsSectionElement extends
         },
       },
 
+      prefsInitialized_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -256,9 +262,14 @@ export class SettingsPaymentsSectionElement extends
   declare private shouldShowPayOverTimeSettings_: boolean;
   declare private payOverTimeSublabel_: string;
   declare private mandatoryReauthFeatureFlagEnabled_: boolean;
+  declare private prefsInitialized_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
+
+    CrSettingsPrefs.initialized.then(() => {
+      this.prefsInitialized_ = true;
+    });
 
     // Create listener function.
     const setCreditCardsListener =
@@ -328,8 +339,8 @@ export class SettingsPaymentsSectionElement extends
 
     // To align with Android, only record this histogram when the pref is
     // enabled.
-    const autofillEnabledPref = this.get('prefs.autofill.credit_card_enabled');
-    if (!!autofillEnabledPref && autofillEnabledPref.value) {
+    if (this.prefsInitialized_ &&
+        this.getPref<boolean>('autofill.credit_card_enabled').value) {
       MetricsBrowserProxyImpl.getInstance().recordBooleanHistogram(
           'Autofill.PaymentMethodsSettingsPage.CardsViewedWithoutExistingCards',
           this.creditCards.length === 0);
@@ -625,7 +636,13 @@ export class SettingsPaymentsSectionElement extends
    * Under any of these circumstances, we should display a disabled mandatory
    * re-auth toggle to the user.
    */
-  private shouldDisableAuthToggle_(creditCardEnabled: boolean): boolean {
+  private shouldDisableAuthToggle_(): boolean {
+    if (!this.prefsInitialized_) {
+      return true;
+    }
+
+    const creditCardEnabled =
+        this.getPref<boolean>('autofill.credit_card_enabled').value;
     return !creditCardEnabled || !this.deviceAuthAvailable_;
   }
   // </if>

@@ -61,7 +61,8 @@
       sub-label="$i18n{enableMandatoryAuthToggleSublabel}"
       pref="{{prefs.autofill.payment_methods_mandatory_reauth}}" no-set-pref
       disabled="[[shouldDisableAuthToggle_(
-          prefs.autofill.credit_card_enabled.value, deviceAuthAvailable_)]]"
+          prefs.autofill.credit_card_enabled.value, deviceAuthAvailable_,
+          prefsInitialized_)]]"
       on-settings-boolean-control-change="onMandatoryAuthToggleChange_">
   </settings-toggle-button>
 </template>
