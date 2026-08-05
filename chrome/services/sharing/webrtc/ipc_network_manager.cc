@@ -150,8 +150,7 @@ void IpcNetworkManager::NetworkListChanged(
   set_default_local_addresses(ipv4_default, ipv6_default);
 
   bool changed = false;
-  NetworkManager::Stats stats;
-  MergeNetworkList(std::move(networks), &changed, &stats);
+  MergeNetworkList(std::move(networks), &changed);
   if (changed)
     NotifyNetworksChanged();
 }

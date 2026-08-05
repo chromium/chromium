@@ -215,16 +215,9 @@ void IpcNetworkManager::OnNetworkListChanged(
   }
 
   bool changed = false;
-  NetworkManager::Stats stats;
-  MergeNetworkList(std::move(networks), &changed, &stats);
+  MergeNetworkList(std::move(networks), &changed);
   if (changed)
     NotifyNetworksChanged();
-
-  // Send interface counts to UMA.
-  UMA_HISTOGRAM_COUNTS_100("WebRTC.PeerConnection.IPv4Interfaces",
-                           stats.ipv4_network_count);
-  UMA_HISTOGRAM_COUNTS_100("WebRTC.PeerConnection.IPv6Interfaces",
-                           stats.ipv6_network_count);
 }
 
 webrtc::MdnsResponderInterface* IpcNetworkManager::GetMdnsResponder() const {
