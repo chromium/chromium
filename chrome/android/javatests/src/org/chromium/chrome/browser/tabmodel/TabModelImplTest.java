@@ -832,7 +832,6 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/447152102")
     public void testAddTab_CurrentTabPinned() {
         createTabs(4);
 
