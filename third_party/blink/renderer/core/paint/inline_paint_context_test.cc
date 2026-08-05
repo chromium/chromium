@@ -7,7 +7,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/text_decoration_offset.h"
+#include "third_party/blink/renderer/core/paint/text_decoration_info.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -95,6 +98,64 @@ TEST_F(InlinePaintContextTest, MultiLine) {
   // Test the containing block.
   const PhysicalBoxFragment& container_fragment = cursor.ContainerFragment();
   EXPECT_EQ(container_fragment.InkOverflowRect(), PhysicalRect(0, 0, 800, 40));
+}
+
+TEST_F(InlinePaintContextTest,
+       DecorationInsetConservativeBoundsDoNotShrinkWidth) {
+  ScopedCSSTextDecorationInsetForTest text_decoration_inset(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #target {
+      text-decoration: underline;
+      text-decoration-inset: 20px;
+      box-decoration-break: slice;
+    }
+    </style>
+    <span id="target">x</span>
+  )HTML");
+
+  const LayoutObject* target_layout_object =
+      GetLayoutObjectByElementId("target");
+  ASSERT_TRUE(target_layout_object);
+  const ComputedStyle& style = target_layout_object->StyleRef();
+
+  constexpr LayoutUnit kDecorationWidth(40);
+  TextDecorationInfo non_conservative_info(
+      LineRelativeOffset(LayoutUnit(), LayoutUnit()), kDecorationWidth, style,
+      UsedFont(*style.GetFont(), 1.0f),
+      /*inline_context=*/nullptr, TextDecorationLine::kNone, Color(),
+      /*decoration_override=*/nullptr, IsSvgText(false),
+      /*svg_resource_scaling_factor=*/1.0f, TextDecorationFragmentContext(),
+      /*conservative_inset_bounds=*/false);
+  TextDecorationInfo conservative_info(
+      LineRelativeOffset(LayoutUnit(), LayoutUnit()), kDecorationWidth, style,
+      UsedFont(*style.GetFont(), 1.0f),
+      /*inline_context=*/nullptr, TextDecorationLine::kNone, Color(),
+      /*decoration_override=*/nullptr, IsSvgText(false),
+      /*svg_resource_scaling_factor=*/1.0f, TextDecorationFragmentContext(),
+      /*conservative_inset_bounds=*/true);
+
+  ASSERT_EQ(non_conservative_info.AppliedDecorationCount(), 1u);
+  ASSERT_EQ(conservative_info.AppliedDecorationCount(), 1u);
+
+  TextDecorationOffset decoration_offset(style);
+  const ResolvedDecoration non_conservative_decoration =
+      non_conservative_info.ResolveDecorationAt(0);
+  const ResolvedDecoration conservative_decoration =
+      conservative_info.ResolveDecorationAt(0);
+  ASSERT_TRUE(non_conservative_decoration.HasUnderline());
+  ASSERT_TRUE(conservative_decoration.HasUnderline());
+
+  const DecorationGeometry non_conservative_geometry =
+      non_conservative_info.ComputeUnderlineLineData(
+          non_conservative_decoration, decoration_offset);
+  const DecorationGeometry conservative_geometry =
+      conservative_info.ComputeUnderlineLineData(conservative_decoration,
+                                                 decoration_offset);
+
+  EXPECT_FLOAT_EQ(0.0f, non_conservative_geometry.line.width());
+  EXPECT_FLOAT_EQ(40.0f, conservative_geometry.line.width());
 }
 
 TEST_F(InlinePaintContextTest, VerticalAlign) {

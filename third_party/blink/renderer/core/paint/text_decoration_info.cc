@@ -6,10 +6,13 @@
 
 #include <math.h>
 
+#include <algorithm>
+
 #include "base/feature_list.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
 #include "third_party/blink/renderer/core/layout/text_decoration_offset.h"
 #include "third_party/blink/renderer/core/paint/inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
@@ -60,6 +63,36 @@ inline bool ShouldUseDecoratingBox(const ComputedStyle& style) {
   if (IsHighlightPseudoElement(pseudo_id))
     return false;
   return true;
+}
+
+bool HasSameDecorationAtIndexOnLine(const FragmentItem* item,
+                                    wtf_size_t decoration_index,
+                                    const AppliedTextDecoration& decoration) {
+  if (!item) {
+    return false;
+  }
+  DCHECK(item->IsText());
+  const LayoutUnit inline_size =
+      item->IsHorizontal() ? item->Size().width : item->Size().height;
+  if (inline_size <= LayoutUnit()) {
+    return false;
+  }
+
+  const AppliedTextDecorationVector& decorations =
+      item->Style().AppliedTextDecorations();
+  if (decoration_index >= decorations.size()) {
+    return false;
+  }
+  return decorations[decoration_index] == decoration;
+}
+
+bool NeedsFragmentContextForDecoration(
+    const AppliedTextDecoration& decoration) {
+  const TextDecorationInset& inset = decoration.DecorationInset();
+  if (inset.GetStart().IsAuto()) {
+    return false;
+  }
+  return !inset.GetStart().IsZero() || !inset.GetEnd().IsZero();
 }
 
 float ComputeDecorationThickness(
@@ -132,7 +165,9 @@ TextDecorationInfo::TextDecorationInfo(
     const Color selection_decoration_color,
     const AppliedTextDecoration* decoration_override,
     IsSvgText is_svg_text,
-    float svg_resource_scaling_factor)
+    float svg_resource_scaling_factor,
+    TextDecorationFragmentContext fragment_context,
+    bool conservative_inset_bounds)
     : target_style_(target_style),
       inline_context_(inline_context),
       target_used_font_(target_font),
@@ -143,6 +178,8 @@ TextDecorationInfo::TextDecorationInfo(
       width_(width),
       target_ascent_(target_font.FloatAscent()),
       svg_resource_scaling_factor_(svg_resource_scaling_factor),
+      fragment_context_(fragment_context),
+      conservative_inset_bounds_(conservative_inset_bounds),
       // NOTE: The use of is_svg_text here is probably problematic.
       // See LayoutSVGInlineText::ComputeNewScaledFontForStyle() for
       // a workaround that is needed due to that.
@@ -157,6 +194,19 @@ TextDecorationInfo::TextDecorationInfo(
       antialias_ = true;
     }
   }
+}
+
+// static
+bool TextDecorationInfo::NeedsFragmentContextForInset(
+    const ComputedStyle& style) {
+  CHECK(style.HasAppliedTextDecorations());
+  for (const AppliedTextDecoration& decoration :
+       style.AppliedTextDecorations()) {
+    if (NeedsFragmentContextForDecoration(decoration)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 wtf_size_t TextDecorationInfo::AppliedDecorationCount() const {
@@ -176,8 +226,8 @@ const ResolvedDecoration TextDecorationInfo::ResolveDecorationAt(
     wtf_size_t decoration_index) {
   DCHECK_LT(decoration_index, AppliedDecorationCount());
 
-  ResolvedDecoration decoration(target_used_font_);
-  decoration.applied_text_decoration = &AppliedDecoration(decoration_index);
+  ResolvedDecoration decoration(target_used_font_,
+                                AppliedDecoration(decoration_index));
   decoration.lines = decoration.applied_text_decoration->Lines();
   decoration.has_underline =
       EnumHasFlags(decoration.lines, TextDecorationLine::kUnderline);
@@ -249,6 +299,7 @@ const ResolvedDecoration TextDecorationInfo::ResolveDecorationAt(
           : LayoutUnit();
 
   decoration.resolved_thickness = ComputeThickness(decoration);
+  ResolveDecorationInsets(decoration_index, decoration);
   return decoration;
 }
 
@@ -309,15 +360,90 @@ DecorationGeometry TextDecorationInfo::ComputeLineData(
         decoration.applied_text_decoration->Style());
   }
 
-  const gfx::PointF start_point =
-      gfx::PointF(local_origin_) + gfx::Vector2dF(0, line_offset);
-  DecorationGeometry geometry = DecorationGeometry::Make(
-      style,
-      gfx::RectF(start_point,
-                 gfx::SizeF(width_, decoration.resolved_thickness)),
-      double_offset, wavy_offset, base::OptionalToPtr(spelling_wave));
+  gfx::RectF decoration_rect(
+      gfx::PointF(local_origin_) +
+          gfx::Vector2dF(decoration.line_left_inset, line_offset),
+      gfx::SizeF(std::max(0.0f, Width().ToFloat() - decoration.line_left_inset -
+                                    decoration.line_right_inset),
+                 decoration.resolved_thickness));
+
+  DecorationGeometry geometry =
+      DecorationGeometry::Make(style, decoration_rect, double_offset,
+                               wavy_offset, base::OptionalToPtr(spelling_wave));
   geometry.antialias = antialias;
   return geometry;
+}
+
+void TextDecorationInfo::ResolveDecorationInsets(
+    wtf_size_t decoration_index,
+    ResolvedDecoration& decoration) const {
+  const AppliedTextDecoration& applied_text_decoration =
+      *decoration.applied_text_decoration;
+  const TextDecorationInset& inset = applied_text_decoration.DecorationInset();
+  const bool is_auto = inset.GetStart().IsAuto();
+  if (!is_auto && inset.GetStart().IsZero() && inset.GetEnd().IsZero()) {
+    return;
+  }
+
+  float start_inset = 0.0f;
+  float end_inset = 0.0f;
+  if (is_auto) {
+    // Keep adjacent automatic underlines visually distinct, but avoid
+    // disproportionately large trims for very thick decorations.
+    const float auto_inset =
+        std::clamp(decoration.resolved_thickness / 2.0f, 1.0f, 2.0f);
+    start_inset = auto_inset;
+    end_inset = auto_inset;
+  } else {
+    const bool has_previous_same_decoration = HasSameDecorationAtIndexOnLine(
+        fragment_context_.previous_fragment_on_line, decoration_index,
+        applied_text_decoration);
+    const bool has_next_same_decoration = HasSameDecorationAtIndexOnLine(
+        fragment_context_.next_fragment_on_line, decoration_index,
+        applied_text_decoration);
+    if (has_previous_same_decoration && has_next_same_decoration) {
+      return;
+    }
+
+    bool apply_start = true;
+    bool apply_end = true;
+    const EBoxDecorationBreak box_decoration_break =
+        applied_text_decoration.BoxDecorationBreak();
+    if (box_decoration_break == EBoxDecorationBreak::kSlice) {
+      apply_start = fragment_context_.is_first_fragment_for_node &&
+                    !has_previous_same_decoration;
+      apply_end = fragment_context_.is_last_fragment_for_node &&
+                  !has_next_same_decoration;
+    } else {
+      apply_start = !has_previous_same_decoration;
+      apply_end = !has_next_same_decoration;
+    }
+
+    // TODO(crbug.com/498974811): For `box-decoration-break: slice`,
+    // percentages should resolve against the sum of all decoration
+    // segments.
+    const float percentage_reference = Width().ToFloat();
+    if (apply_start) {
+      start_inset = FloatValueForLength(inset.GetStart(), percentage_reference);
+    }
+    if (apply_end) {
+      end_inset = FloatValueForLength(inset.GetEnd(), percentage_reference);
+    }
+  }
+
+  if (conservative_inset_bounds_) {
+    // For overflow computations, positive inset values could under-estimate
+    // bounds on interior fragments where those trims are not applied.
+    // Keep only negative (expanding) contributions.
+    start_inset = std::min(start_inset, 0.0f);
+    end_inset = std::min(end_inset, 0.0f);
+  }
+
+  if (TargetStyle().Direction() == TextDirection::kRtl) {
+    std::swap(start_inset, end_inset);
+  }
+  decoration.line_left_inset = start_inset;
+  decoration.line_right_inset = end_inset;
 }
 
 // Returns the offset of the target text/box (|local_origin_|) from the

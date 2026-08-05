@@ -779,13 +779,14 @@ void HighlightPainter::PaintOneSpellingGrammarDecoration(
   // or crash if asked to paint decorations introduced by highlight pseudos.
   // TODO(crbug.com/1147859) is SVG spec ready for highlight decorations?
   // TODO(crbug.com/1147859) https://github.com/w3c/svgwg/issues/894
-  const AppliedTextDecoration synthesised{LineFor(type),
-                                          {},
-                                          ColorFor(type),
-                                          {},
-                                          {},
-                                          TextDecorationInset(),
-                                          EBoxDecorationBreak::kClone};
+  const AppliedTextDecoration synthesised{
+      LineFor(type),
+      {},
+      ColorFor(type),
+      {},
+      {},
+      TextDecorationInset(Length::Fixed(0), Length::Fixed(0)),
+      EBoxDecorationBreak::kClone};
   PaintOneSpellingGrammarDecoration(type, text, paint_start_offset,
                                     paint_end_offset, originating_style_,
                                     originating_text_style_, &synthesised);
@@ -1279,7 +1280,8 @@ void HighlightPainter::PaintTextForCompositionMarker(
   decoration_rect.Move(LineRelativeOffset::CreateFromBoxOrigin(box_origin_));
   TextDecorationPainter decoration_painter(
       text_painter_, decoration_painter_.InlineContext(), paint_info_,
-      originating_style_, text_style, decoration_rect, selection_);
+      originating_style_, text_style, decoration_rect, selection_,
+      decoration_painter_.FragmentContext());
 
   decoration_painter.Begin(fragment_item_, TextDecorationPainter::kOriginating);
   decoration_painter.PaintExceptLineThrough(

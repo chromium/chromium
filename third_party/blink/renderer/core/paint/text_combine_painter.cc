@@ -88,7 +88,7 @@ void TextCombinePainter::Paint(const PaintInfo& paint_info,
         /* inline_context */ nullptr, TextDecorationLine::kNone, Color());
     decoration_painter.emplace(text_painter, /* inline_context */ nullptr,
                                paint_info, style, text_style, text_frame_rect,
-                               nullptr);
+                               nullptr, TextDecorationFragmentContext());
 
     // Paint underline and overline text decorations.
     decoration_painter->PaintExceptLineThrough(*decoration_info, text_style,

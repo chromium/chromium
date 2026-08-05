@@ -76,9 +76,9 @@ TEST_P(HighlightPainterTest, FastSpellingGrammarPaintCase) {
         graphics_context, /*svg_context_paints*/ nullptr,
         text_item.ScaledFont(), rect,
         LineRelativeOffset::CreateFromBoxOrigin(physical_offset));
-    TextDecorationPainter decoration_painter(text_painter, &inline_context,
-                                             paint_info, style, text_style,
-                                             rotated_rect, selection);
+    TextDecorationPainter decoration_painter(
+        text_painter, &inline_context, paint_info, style, text_style,
+        rotated_rect, selection, TextDecorationFragmentContext());
     HighlightPainter highlight_painter(
         cursor.Current()->TextPaintInfo(cursor.Items()), text_painter,
         decoration_painter, paint_info, cursor, text_item, physical_offset,

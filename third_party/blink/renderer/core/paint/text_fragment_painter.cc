@@ -283,6 +283,34 @@ Path GetCanonicalDisclosurePath(const ComputedStyle& style,
   return result.Finalize();
 }
 
+TextDecorationFragmentContext ComputeTextDecorationFragmentContext(
+    const InlineCursor& cursor) {
+  CHECK(RuntimeEnabledFeatures::CSSTextDecorationInsetEnabled());
+  TextDecorationFragmentContext fragment_context;
+  const FragmentItem& text_item = *cursor.CurrentItem();
+  fragment_context.is_first_fragment_for_node = text_item.IsFirstForNode();
+  fragment_context.is_last_fragment_for_node = text_item.IsLastForNode();
+
+  InlineCursor line_cursor = cursor;
+  line_cursor.ExpandRootToContainingBlock();
+  line_cursor.MoveTo(*cursor.CurrentItem());
+
+  InlineCursor previous_cursor = line_cursor;
+  previous_cursor.MoveToPreviousInlineLeafOnLine();
+  if (previous_cursor.CurrentItem() &&
+      previous_cursor.CurrentItem()->IsText() &&
+      !previous_cursor.CurrentItem()->IsLineBreak()) {
+    fragment_context.previous_fragment_on_line = previous_cursor.CurrentItem();
+  }
+  InlineCursor next_cursor = line_cursor;
+  next_cursor.MoveToNextInlineLeafOnLine();
+  if (next_cursor.CurrentItem() && next_cursor.CurrentItem()->IsText() &&
+      !next_cursor.CurrentItem()->IsLineBreak()) {
+    fragment_context.next_fragment_on_line = next_cursor.CurrentItem();
+  }
+  return fragment_context;
+}
+
 }  // namespace
 
 void TextFragmentPainter::PaintSymbol(const LayoutObject* layout_object,
@@ -540,6 +568,8 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   TextPainter text_painter(context, paint_info.GetSvgContextPaints(), *font,
                            visual_rect, text_origin);
 
+  const bool has_applied_text_decorations = style.HasAppliedTextDecorations();
+
   // Apply text-decoration-skip-spaces by trimming the decoration box.
   LineRelativeRect decoration_box = rotated_box;
   const TextDecorationSkipSpaces skip_spaces =
@@ -551,7 +581,7 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   // decoration canvas after the writing-mode rotation is applied.
   Vector<gfx::RectF> interior_space_rects;
   if (skip_spaces != TextDecorationSkipSpaces::kNone &&
-      style.HasAppliedTextDecorations()) {
+      has_applied_text_decorations) {
     const bool is_first_text_on_line = [&]() -> bool {
       if (cursor_.IsAtFirst()) {
         return true;
@@ -638,16 +668,21 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
     }
   }
 
-  TextDecorationPainter decoration_painter(text_painter, inline_context_,
-                                           paint_info, style, text_style,
-                                           decoration_box, selection);
+  TextDecorationFragmentContext fragment_context;
+  if (has_applied_text_decorations &&
+      TextDecorationInfo::NeedsFragmentContextForInset(style)) {
+    fragment_context = ComputeTextDecorationFragmentContext(cursor_);
+  }
+  TextDecorationPainter decoration_painter(
+      text_painter, inline_context_, paint_info, style, text_style,
+      decoration_box, selection, fragment_context);
   HighlightPainter highlight_painter(
       fragment_paint_info, text_painter, decoration_painter, paint_info,
       cursor_, text_item, physical_box.offset, style, text_style, selection);
   // Pass the decoration_box to HighlightPainter so that the kOverlay path
   // respects text-decoration-skip-spaces trimming.
   if (skip_spaces != TextDecorationSkipSpaces::kNone &&
-      style.HasAppliedTextDecorations()) {
+      has_applied_text_decorations) {
     highlight_painter.SetOriginatingDecorationRect(decoration_box);
   }
   if (paint_info.phase == PaintPhase::kForeground) {
@@ -753,7 +788,7 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
       // Shadows must paint before decorations, but painting shadows in their
       // own pass is less efficient, so only do it when decorations are present.
       bool paint_shadows_first =
-          text_style.shadow && style.HasAppliedTextDecorations();
+          text_style.shadow && has_applied_text_decorations;
       if (paint_shadows_first) {
         highlight_painter.PaintOriginatingShadow(text_style, node_id);
       }

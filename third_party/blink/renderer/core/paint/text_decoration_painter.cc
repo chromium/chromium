@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/layout/text_decoration_offset.h"
+#include "third_party/blink/renderer/core/paint/inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/text_painter.h"
@@ -22,7 +23,8 @@ TextDecorationPainter::TextDecorationPainter(
     const ComputedStyle& style,
     const TextPaintStyle& text_style,
     const LineRelativeRect& decoration_rect,
-    HighlightPainter::SelectionPaintState* selection)
+    HighlightPainter::SelectionPaintState* selection,
+    TextDecorationFragmentContext fragment_context)
     : text_painter_(text_painter),
       inline_context_(inline_context),
       paint_info_(paint_info),
@@ -30,6 +32,7 @@ TextDecorationPainter::TextDecorationPainter(
       text_style_(text_style),
       decoration_rect_(decoration_rect),
       selection_(selection),
+      fragment_context_(fragment_context),
       step_(kBegin),
       phase_(kOriginating) {}
 
@@ -84,7 +87,8 @@ void TextDecorationPainter::UpdateDecorationInfo(
         decoration_rect_.InlineSize(), style, UsedFont(*scaled_font, 1.0f),
         inline_context_, effective_selection_decoration_lines,
         effective_selection_decoration_color, decoration_override,
-        IsSvgText(true), text_item.SvgScalingFactor() / scaling_factor);
+        IsSvgText(true), text_item.SvgScalingFactor() / scaling_factor,
+        fragment_context_);
   } else {
     LineRelativeRect decoration_rect =
         decoration_rect_override.value_or(decoration_rect_);
@@ -92,7 +96,8 @@ void TextDecorationPainter::UpdateDecorationInfo(
                    text_item.GetUsedFont(), inline_context_,
                    effective_selection_decoration_lines,
                    effective_selection_decoration_color, decoration_override,
-                   IsSvgText(text_item.IsSvgText()));
+                   IsSvgText(text_item.IsSvgText()),
+                   /*svg_resource_scaling_factor=*/1.0f, fragment_context_);
   }
 }
 
