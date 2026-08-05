@@ -223,6 +223,11 @@ class GlicActorAttemptOtpFillingBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(GlicActorAttemptOtpFillingBrowserTest,
+                       testAllTestsAreRegistered) {
+  AssertAllTestsRegistered({"GlicActorAttemptOtpFillingBrowserTest"});
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorAttemptOtpFillingBrowserTest,
                        testOptInDeclined) {
   // No mock OTP setup needed because user declines opt-in, so retrieve is not
   // called.
