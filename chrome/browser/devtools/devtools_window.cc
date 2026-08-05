@@ -2046,11 +2046,12 @@ void DevToolsWindow::CreateDevToolsBrowser() {
   NOTIMPLEMENTED();
 #else
   if (GetBrowserWindowCreationStatusForProfile(*profile_) !=
-      Browser::CreationStatus::kOk) {
+      BrowserWindowInterface::CreationStatus::kOk) {
     return;
   }
-  browser_ =
-      Browser::Create(Browser::CreateParams::CreateForDevTools(profile_));
+  browser_ = CreateBrowserWindow(
+                 BrowserWindowCreateParams::CreateForDevTools(profile_))
+                 ->GetBrowserForMigrationOnly();
   browser_->GetTabStripModel()->AddWebContents(
       OwnedMainWebContents::TakeWebContents(
           std::move(owned_main_web_contents_)),

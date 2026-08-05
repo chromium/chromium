@@ -208,8 +208,8 @@ void ReparentWebContentsToTabbedBrowser(content::WebContents* old_web_contents,
   BrowserWindowInterface* target_browser_window =
       (disposition == WindowOpenDisposition::NEW_WINDOW ||
        !existing_browser_window)
-          ? Browser::Create(Browser::CreateParams(
-                source_browser->GetProfile(), /*user_gesture=*/true))
+          ? CreateBrowserWindow(BrowserWindowCreateParams(
+                source_browser->GetProfile(), /*from_user_gesture=*/true))
           : existing_browser_window;
 
   ReparentWebContentsIntoBrowserImpl(
@@ -759,8 +759,10 @@ NavigationCapturingProcess::GetInitialNavigationParamsOverride(
     if (disposition_ == WindowOpenDisposition::NEW_WINDOW) {
       Browser* app_host_window;
       if (app_display_mode == DisplayMode::kBrowser) {
-        app_host_window = Browser::Create(
-            Browser::CreateParams(&*profile_, params.user_gesture));
+        app_host_window =
+            CreateBrowserWindow(
+                BrowserWindowCreateParams(&*profile_, params.user_gesture))
+                ->GetBrowserForMigrationOnly();
       } else {
         if (is_target_iwa_with_https_url) {
           LaunchIsolatedWebAppInNewWindow(provider, app_id, params.url);
@@ -803,8 +805,10 @@ NavigationCapturingProcess::GetInitialNavigationParamsOverride(
         } else if (client_mode_and_browser->browser) {
           app_host_window = client_mode_and_browser->browser.get();
         } else {
-          app_host_window = Browser::Create(
-              Browser::CreateParams(&*profile_, params.user_gesture));
+          app_host_window =
+              CreateBrowserWindow(
+                  BrowserWindowCreateParams(&*profile_, params.user_gesture))
+                  ->GetBrowserForMigrationOnly();
         }
       } else {
         if (is_target_iwa_with_https_url) {
@@ -872,8 +876,9 @@ NavigationCapturingProcess::GetInitialNavigationParamsOverride(
       if (client_mode_and_browser->browser) {
         host_window = client_mode_and_browser->browser;
       } else {
-        host_window = Browser::Create(
-            Browser::CreateParams(&*profile_, params.user_gesture));
+        host_window = CreateBrowserWindow(BrowserWindowCreateParams(
+                                              &*profile_, params.user_gesture))
+                          ->GetBrowserForMigrationOnly();
       }
       break;
     case blink::mojom::DisplayMode::kMinimalUi:

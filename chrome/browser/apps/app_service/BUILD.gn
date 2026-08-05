@@ -48,6 +48,7 @@ source_set("app_service") {
     "//chrome/browser/metrics",
     "//chrome/browser/notifications",
     "//chrome/browser/ui:browser_tab_strip_tracker",
+    "//chrome/browser/ui/browser_window:create_browser_window",
     "//chrome/browser/ui/extensions",
     "//chrome/browser/web_applications:features",
     "//components/app_constants",

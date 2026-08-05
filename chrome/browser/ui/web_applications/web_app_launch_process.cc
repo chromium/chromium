@@ -449,9 +449,11 @@ BrowserWindowInterface* WebAppLaunchProcess::MaybeFindBrowserForLaunch() const {
 
 Browser* WebAppLaunchProcess::CreateBrowserForLaunch() {
   if (params_->container == apps::LaunchContainer::kLaunchContainerTab) {
-    return Browser::Create(Browser::CreateParams(Browser::TYPE_NORMAL,
-                                                 &profile_.get(),
-                                                 /*user_gesture=*/true));
+    return CreateBrowserWindow(
+               BrowserWindowCreateParams(BrowserWindowInterface::TYPE_NORMAL,
+                                         &profile_.get(),
+                                         /*from_user_gesture=*/true))
+        ->GetBrowserForMigrationOnly();
   }
 
   Browser::CreateParams browser_params = web_app::CreateParamsForApp(

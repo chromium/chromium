@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -94,8 +95,9 @@ std::vector<base::FilePath> GetLaunchFilesFromCommandLine(
 }
 
 Browser* CreateBrowserWithNewTabPage(Profile* profile) {
-  Browser::CreateParams create_params(profile, /*user_gesture=*/false);
-  Browser* browser = Browser::Create(create_params);
+  BrowserWindowCreateParams create_params(profile, /*from_user_gesture=*/false);
+  Browser* browser = CreateBrowserWindow(std::move(create_params))
+                         ->GetBrowserForMigrationOnly();
 
   NavigateParams params(browser, chrome::ChromeUINewTabURLAsGURL(),
                         ui::PAGE_TRANSITION_AUTO_TOPLEVEL);

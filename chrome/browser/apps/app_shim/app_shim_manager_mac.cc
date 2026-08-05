@@ -1462,11 +1462,14 @@ void AppShimManager::OpenAppURLInBrowserWindow(
     profile = profile_manager_->GetLastUsedProfile();
   }
   if (!profile || GetBrowserWindowCreationStatusForProfile(*profile) !=
-                      Browser::CreationStatus::kOk) {
+                      BrowserWindowInterface::CreationStatus::kOk) {
     return;
   }
-  Browser* browser = Browser::Create(
-      Browser::CreateParams(Browser::TYPE_NORMAL, profile, true));
+  Browser* browser =
+      CreateBrowserWindow(
+          BrowserWindowCreateParams(BrowserWindowInterface::TYPE_NORMAL,
+                                    profile, true))
+          ->GetBrowserForMigrationOnly();
   browser->GetWindow()->Show();
   NavigateParams params(browser, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   params.tabstrip_add_types = AddTabTypes::ADD_ACTIVE;

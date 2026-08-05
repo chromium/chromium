@@ -625,9 +625,11 @@ BrowserWindowInterface* ReparentWebContentsIntoAppBrowser(
   }
 
   if (!browser) {
-    browser = Browser::Create(Browser::CreateParams::CreateForApp(
-        GenerateApplicationNameFromAppId(app_id), true /* trusted_source */,
-        gfx::Rect(), profile, true /* user_gesture */));
+    browser = CreateBrowserWindow(BrowserWindowCreateParams::CreateForApp(
+                                      GenerateApplicationNameFromAppId(app_id),
+                                      true /* trusted_source */, gfx::Rect(),
+                                      profile, true /* user_gesture */))
+                  ->GetBrowserForMigrationOnly();
 
     // If the current url isn't in scope, then set the initial url on the
     // AppBrowserController so that the 'x' button still shows up.
@@ -735,7 +737,26 @@ Browser* CreateWebAppWindowMaybeWithHomeTab(
     const Browser::CreateParams& params) {
   CHECK(params.type == Browser::Type::TYPE_APP_POPUP ||
         params.type == Browser::Type::TYPE_APP);
-  Browser* browser = Browser::Create(params);
+  BrowserWindowCreateParams create_params =
+      params.type == BrowserWindowInterface::Type::TYPE_APP_POPUP
+          ? BrowserWindowCreateParams::CreateForAppPopup(
+                params.app_name, params.trusted_source, params.initial_bounds,
+                params.profile, params.user_gesture)
+          : BrowserWindowCreateParams::CreateForApp(
+                params.app_name, params.trusted_source, params.initial_bounds,
+                params.profile, params.user_gesture);
+#if BUILDFLAG(IS_CHROMEOS)
+  create_params.restore_id = params.restore_id;
+#endif
+  create_params.initial_show_state = params.initial_show_state;
+  create_params.can_resize = params.can_resize;
+  create_params.can_maximize = params.can_maximize;
+  create_params.can_fullscreen = params.can_fullscreen;
+  create_params.omit_from_session_restore = params.omit_from_session_restore;
+  create_params.should_trigger_session_restore =
+      params.should_trigger_session_restore;
+  Browser* browser = CreateBrowserWindow(std::move(create_params))
+                         ->GetBrowserForMigrationOnly();
   CHECK(GenerateApplicationNameFromAppId(app_id) ==
         BrowserInitState::From(browser)->create_params().app_name);
   if (params.type != Browser::Type::TYPE_APP_POPUP) {

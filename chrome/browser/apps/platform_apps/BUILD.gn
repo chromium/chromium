@@ -66,6 +66,7 @@ source_set("platform_apps") {
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_manager",
+    "//chrome/browser/ui/browser_window:create_browser_window",
     "//chrome/browser/ui/extensions",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications/extensions",
