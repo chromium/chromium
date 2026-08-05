@@ -7,6 +7,7 @@
 #include <zircon/status.h>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -438,18 +439,16 @@ void VideoCaptureDeviceFuchsia::ProcessNewFrame(
       buffer.handle_provider->GetHandleForInProcessAccess();
 
   // Calculate offsets and strides for the output buffer.
-  uint8_t* dst_y = output_handle->data().data();
-  int dst_stride_y = output_size.width();
+  auto output_data = output_handle->data();
   size_t dst_y_plane_size = output_size.width() * output_size.height();
-  uint8_t* dst_u = UNSAFE_TODO(dst_y + dst_y_plane_size);
-  int dst_stride_u = output_size.width() / 2;
-  uint8_t* dst_v = UNSAFE_TODO(dst_u + dst_y_plane_size / 4);
-  int dst_stride_v = output_size.width() / 2;
+  size_t dst_uv_plane_size = dst_y_plane_size / 4;
 
-  // Check that the output fits in the buffer.
-  const uint8_t* dst_end = UNSAFE_TODO(dst_v + dst_y_plane_size / 4);
-  UNSAFE_TODO(CHECK_LE(
-      dst_end, output_handle->data().data() + output_handle->mapped_size()));
+  auto [dst_y_span, rem] = output_data.split_at(dst_y_plane_size);
+  auto [dst_u_span, dst_v_rem] = rem.split_at(dst_uv_plane_size);
+  auto dst_v_span = dst_v_rem.first(dst_uv_plane_size);
+
+  int dst_stride_y = output_size.width();
+  int dst_stride_uv = output_size.width() / 2;
 
   // Vertical flip is indicated to ConvertToI420() by negating src_height.
   int flipped_src_height = static_cast<int>(src_coded_height);
@@ -458,10 +457,11 @@ void VideoCaptureDeviceFuchsia::ProcessNewFrame(
 
   auto four_cc = GetFourccForPixelFormat(buffers_format_.pixel_format());
 
-  libyuv::ConvertToI420(src_span.data(), src_span.size(), dst_y, dst_stride_y,
-                        dst_u, dst_stride_u, dst_v, dst_stride_v,
-                        /*crop_x=*/0, /*crop_y=*/0, src_stride,
-                        flipped_src_height, nonrotated_output_size.width(),
+  libyuv::ConvertToI420(src_span.data(), src_span.size(), dst_y_span.data(),
+                        dst_stride_y, dst_u_span.data(), dst_stride_uv,
+                        dst_v_span.data(), dst_stride_uv, /*crop_x=*/0,
+                        /*crop_y=*/0, src_stride, flipped_src_height,
+                        nonrotated_output_size.width(),
                         nonrotated_output_size.height(), rotation, four_cc);
 
   client_->OnIncomingCapturedBufferExt(
