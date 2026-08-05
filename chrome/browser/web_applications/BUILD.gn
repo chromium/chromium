@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
 import("//chrome/browser/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
@@ -456,6 +457,8 @@ source_set("web_applications") {
   if (is_linux) {
     # Desktop linux, doesn't count ChromeOS.
     sources += [
+      "os_integration/dynamic_launcher_portal.cc",
+      "os_integration/dynamic_launcher_portal.h",
       "os_integration/web_app_file_handler_registration_linux.cc",
       "os_integration/web_app_run_on_os_login_linux.cc",
       "os_integration/web_app_shortcut_linux.cc",
@@ -677,6 +680,9 @@ source_set("web_applications") {
 
   if (is_linux) {
     deps += [ "//chrome/browser:shell_integration_linux" ]
+    if (use_dbus) {
+      deps += [ "//components/dbus" ]
+    }
   }
 
   if (is_chromeos) {
@@ -1111,6 +1117,7 @@ source_set("web_applications_unit_tests") {
   if (is_linux) {
     # Desktop linux, doesn't count ChromeOS.
     sources += [
+      "os_integration/dynamic_launcher_portal_unittest.cc",
       "os_integration/web_app_run_on_os_login_linux_unittest.cc",
       "os_integration/web_app_shortcut_linux_unittest.cc",
     ]
@@ -1228,6 +1235,9 @@ source_set("web_applications_unit_tests") {
 
   if (is_linux) {
     deps += [ "//chrome/browser:shell_integration_linux" ]
+    if (use_dbus) {
+      deps += [ "//dbus:test_support" ]
+    }
   }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
