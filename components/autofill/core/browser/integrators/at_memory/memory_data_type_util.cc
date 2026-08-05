@@ -666,173 +666,162 @@ std::u16string GetMemoryDataTypeNameForI18n(MemoryDataType type) {
 
 MemoryDataType ToMemoryDataType(
     personal_context::proto::MemoryDataType data_type) {
+  using ProtoType = personal_context::proto::MemoryDataType;
   switch (data_type) {
-    case personal_context::proto::MEMORY_DATA_TYPE_UNSPECIFIED:
+    case ProtoType::MEMORY_DATA_TYPE_UNSPECIFIED:
       return MemoryDataType::kUnknown;
-    case personal_context::proto::MEMORY_DATA_TYPE_NAME_FULL:
+    case ProtoType::MEMORY_DATA_TYPE_NAME_FULL:
       return MemoryDataType::kNameFull;
-    case personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_FULL:
+    case ProtoType::MEMORY_DATA_TYPE_ADDRESS_FULL:
       return MemoryDataType::kAddressFull;
-    case personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_STREET_ADDRESS:
+    case ProtoType::MEMORY_DATA_TYPE_ADDRESS_STREET_ADDRESS:
       return MemoryDataType::kAddressStreetAddress;
-    case personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_CITY:
+    case ProtoType::MEMORY_DATA_TYPE_ADDRESS_CITY:
       return MemoryDataType::kAddressCity;
-    case personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_STATE:
+    case ProtoType::MEMORY_DATA_TYPE_ADDRESS_STATE:
       return MemoryDataType::kAddressState;
-    case personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_ZIP:
+    case ProtoType::MEMORY_DATA_TYPE_ADDRESS_ZIP:
       return MemoryDataType::kAddressZip;
-    case personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_COUNTRY:
+    case ProtoType::MEMORY_DATA_TYPE_ADDRESS_COUNTRY:
       return MemoryDataType::kAddressCountry;
-    case personal_context::proto::MEMORY_DATA_TYPE_PHONE:
+    case ProtoType::MEMORY_DATA_TYPE_PHONE:
       return MemoryDataType::kPhone;
-    case personal_context::proto::MEMORY_DATA_TYPE_EMAIL:
+    case ProtoType::MEMORY_DATA_TYPE_EMAIL:
       return MemoryDataType::kEmail;
-    case personal_context::proto::MEMORY_DATA_TYPE_COMPANY_NAME:
+    case ProtoType::MEMORY_DATA_TYPE_COMPANY_NAME:
       return MemoryDataType::kCompanyName;
-    case personal_context::proto::MEMORY_DATA_TYPE_IBAN:
+    case ProtoType::MEMORY_DATA_TYPE_IBAN:
       return MemoryDataType::kIban;
-    case personal_context::proto::MEMORY_DATA_TYPE_IBAN_NICKNAME:
+    case ProtoType::MEMORY_DATA_TYPE_IBAN_NICKNAME:
       return MemoryDataType::kIbanNickname;
-    case personal_context::proto::MEMORY_DATA_TYPE_VEHICLE:
+    case ProtoType::MEMORY_DATA_TYPE_VEHICLE:
       return MemoryDataType::kVehiclePlateNumber;
-    case personal_context::proto::MEMORY_DATA_TYPE_VEHICLE_MAKE:
+    case ProtoType::MEMORY_DATA_TYPE_VEHICLE_MAKE:
       return MemoryDataType::kVehicleMake;
-    case personal_context::proto::MEMORY_DATA_TYPE_VEHICLE_MODEL:
+    case ProtoType::MEMORY_DATA_TYPE_VEHICLE_MODEL:
       return MemoryDataType::kVehicleModel;
-    case personal_context::proto::MEMORY_DATA_TYPE_VEHICLE_YEAR:
+    case ProtoType::MEMORY_DATA_TYPE_VEHICLE_YEAR:
       return MemoryDataType::kVehicleYear;
-    case personal_context::proto::MEMORY_DATA_TYPE_VEHICLE_OWNER:
+    case ProtoType::MEMORY_DATA_TYPE_VEHICLE_OWNER:
       return MemoryDataType::kVehicleOwner;
-    case personal_context::proto::MEMORY_DATA_TYPE_VEHICLE_PLATE_NUMBER:
+    case ProtoType::MEMORY_DATA_TYPE_VEHICLE_PLATE_NUMBER:
       return MemoryDataType::kVehiclePlateNumber;
-    case personal_context::proto::MEMORY_DATA_TYPE_VEHICLE_PLATE_STATE:
+    case ProtoType::MEMORY_DATA_TYPE_VEHICLE_PLATE_STATE:
       return MemoryDataType::kVehiclePlateState;
-    case personal_context::proto::MEMORY_DATA_TYPE_VEHICLE_VIN:
+    case ProtoType::MEMORY_DATA_TYPE_VEHICLE_VIN:
       return MemoryDataType::kVehicleVin;
-    case personal_context::proto::MEMORY_DATA_TYPE_PASSPORT_FULL:
+    case ProtoType::MEMORY_DATA_TYPE_PASSPORT_FULL:
       return MemoryDataType::kPassportNumber;
-    case personal_context::proto::MEMORY_DATA_TYPE_PASSPORT_NAME:
+    case ProtoType::MEMORY_DATA_TYPE_PASSPORT_NAME:
       return MemoryDataType::kPassportName;
-    case personal_context::proto::MEMORY_DATA_TYPE_PASSPORT_COUNTRY:
+    case ProtoType::MEMORY_DATA_TYPE_PASSPORT_COUNTRY:
       return MemoryDataType::kPassportCountry;
-    case personal_context::proto::MEMORY_DATA_TYPE_PASSPORT_NUMBER:
+    case ProtoType::MEMORY_DATA_TYPE_PASSPORT_NUMBER:
       return MemoryDataType::kPassportNumber;
-    case personal_context::proto::MEMORY_DATA_TYPE_PASSPORT_ISSUE_DATE:
+    case ProtoType::MEMORY_DATA_TYPE_PASSPORT_ISSUE_DATE:
       return MemoryDataType::kPassportIssueDate;
-    case personal_context::proto::MEMORY_DATA_TYPE_PASSPORT_EXPIRATION_DATE:
+    case ProtoType::MEMORY_DATA_TYPE_PASSPORT_EXPIRATION_DATE:
       return MemoryDataType::kPassportExpirationDate;
-    case personal_context::proto::MEMORY_DATA_TYPE_FLIGHT_RESERVATION_FULL:
+    case ProtoType::MEMORY_DATA_TYPE_FLIGHT_RESERVATION_FULL:
       return MemoryDataType::kFlightReservationFlightNumber;
-    case personal_context::proto::
-        MEMORY_DATA_TYPE_FLIGHT_RESERVATION_FLIGHT_NUMBER:
+    case ProtoType::MEMORY_DATA_TYPE_FLIGHT_RESERVATION_FLIGHT_NUMBER:
       return MemoryDataType::kFlightReservationFlightNumber;
-    case personal_context::proto::
-        MEMORY_DATA_TYPE_FLIGHT_RESERVATION_TICKET_NUMBER:
+    case ProtoType::MEMORY_DATA_TYPE_FLIGHT_RESERVATION_TICKET_NUMBER:
       return MemoryDataType::kFlightReservationTicketNumber;
-    case personal_context::proto::
-        MEMORY_DATA_TYPE_FLIGHT_RESERVATION_CONFIRMATION_CODE:
+    case ProtoType::MEMORY_DATA_TYPE_FLIGHT_RESERVATION_CONFIRMATION_CODE:
       return MemoryDataType::kFlightReservationConfirmationCode;
-    case personal_context::proto::
-        MEMORY_DATA_TYPE_FLIGHT_RESERVATION_PASSENGER_NAME:
+    case ProtoType::MEMORY_DATA_TYPE_FLIGHT_RESERVATION_PASSENGER_NAME:
       return MemoryDataType::kFlightReservationPassengerName;
-    case personal_context::proto::
-        MEMORY_DATA_TYPE_FLIGHT_RESERVATION_DEPARTURE_AIRPORT:
+    case ProtoType::MEMORY_DATA_TYPE_FLIGHT_RESERVATION_DEPARTURE_AIRPORT:
       return MemoryDataType::kFlightReservationDepartureAirport;
-    case personal_context::proto::
-        MEMORY_DATA_TYPE_FLIGHT_RESERVATION_ARRIVAL_AIRPORT:
+    case ProtoType::MEMORY_DATA_TYPE_FLIGHT_RESERVATION_ARRIVAL_AIRPORT:
       return MemoryDataType::kFlightReservationArrivalAirport;
-    case personal_context::proto::
-        MEMORY_DATA_TYPE_FLIGHT_RESERVATION_DEPARTURE_DATE:
+    case ProtoType::MEMORY_DATA_TYPE_FLIGHT_RESERVATION_DEPARTURE_DATE:
       return MemoryDataType::kFlightReservationDepartureDate;
-    case personal_context::proto::
-        MEMORY_DATA_TYPE_FLIGHT_RESERVATION_ARRIVAL_DATE:
+    case ProtoType::MEMORY_DATA_TYPE_FLIGHT_RESERVATION_ARRIVAL_DATE:
       return MemoryDataType::kFlightReservationArrivalDate;
-    case personal_context::proto::MEMORY_DATA_TYPE_SHIPMENT_FULL:
+    case ProtoType::MEMORY_DATA_TYPE_SHIPMENT_FULL:
       return MemoryDataType::kShipmentTrackingNumber;
-    case personal_context::proto::MEMORY_DATA_TYPE_SHIPMENT_TRACKING_NUMBER:
+    case ProtoType::MEMORY_DATA_TYPE_SHIPMENT_TRACKING_NUMBER:
       return MemoryDataType::kShipmentTrackingNumber;
-    case personal_context::proto::MEMORY_DATA_TYPE_SHIPMENT_ASSOCIATED_ORDER_ID:
+    case ProtoType::MEMORY_DATA_TYPE_SHIPMENT_ASSOCIATED_ORDER_ID:
       return MemoryDataType::kShipmentAssociatedOrderId;
-    case personal_context::proto::MEMORY_DATA_TYPE_SHIPMENT_DELIVERY_ADDRESS:
+    case ProtoType::MEMORY_DATA_TYPE_SHIPMENT_DELIVERY_ADDRESS:
       return MemoryDataType::kShipmentDeliveryAddress;
-    case personal_context::proto::MEMORY_DATA_TYPE_SHIPMENT_DELIVERY_ZIP_CODE:
+    case ProtoType::MEMORY_DATA_TYPE_SHIPMENT_DELIVERY_ZIP_CODE:
       return MemoryDataType::kShipmentDeliveryZipCode;
-    case personal_context::proto::MEMORY_DATA_TYPE_SHIPMENT_CARRIER_NAME:
+    case ProtoType::MEMORY_DATA_TYPE_SHIPMENT_CARRIER_NAME:
       return MemoryDataType::kShipmentCarrierName;
-    case personal_context::proto::MEMORY_DATA_TYPE_SHIPMENT_CARRIER_DOMAIN:
+    case ProtoType::MEMORY_DATA_TYPE_SHIPMENT_CARRIER_DOMAIN:
       return MemoryDataType::kShipmentCarrierDomain;
-    case personal_context::proto::
-        MEMORY_DATA_TYPE_SHIPMENT_ESTIMATED_DELIVERY_DATE:
+    case ProtoType::MEMORY_DATA_TYPE_SHIPMENT_ESTIMATED_DELIVERY_DATE:
       return MemoryDataType::kShipmentEstimatedDeliveryDate;
-    case personal_context::proto::MEMORY_DATA_TYPE_NATIONAL_ID_CARD_FULL:
+    case ProtoType::MEMORY_DATA_TYPE_NATIONAL_ID_CARD_FULL:
       return MemoryDataType::kNationalIdCardNumber;
-    case personal_context::proto::MEMORY_DATA_TYPE_NATIONAL_ID_CARD_NAME:
+    case ProtoType::MEMORY_DATA_TYPE_NATIONAL_ID_CARD_NAME:
       return MemoryDataType::kNationalIdCardName;
-    case personal_context::proto::MEMORY_DATA_TYPE_NATIONAL_ID_CARD_COUNTRY:
+    case ProtoType::MEMORY_DATA_TYPE_NATIONAL_ID_CARD_COUNTRY:
       return MemoryDataType::kNationalIdCardCountry;
-    case personal_context::proto::MEMORY_DATA_TYPE_NATIONAL_ID_CARD_NUMBER:
+    case ProtoType::MEMORY_DATA_TYPE_NATIONAL_ID_CARD_NUMBER:
       return MemoryDataType::kNationalIdCardNumber;
-    case personal_context::proto::MEMORY_DATA_TYPE_NATIONAL_ID_CARD_ISSUE_DATE:
+    case ProtoType::MEMORY_DATA_TYPE_NATIONAL_ID_CARD_ISSUE_DATE:
       return MemoryDataType::kNationalIdCardIssueDate;
-    case personal_context::proto::
-        MEMORY_DATA_TYPE_NATIONAL_ID_CARD_EXPIRATION_DATE:
+    case ProtoType::MEMORY_DATA_TYPE_NATIONAL_ID_CARD_EXPIRATION_DATE:
       return MemoryDataType::kNationalIdCardExpirationDate;
-    case personal_context::proto::MEMORY_DATA_TYPE_REDRESS_NUMBER_FULL:
+    case ProtoType::MEMORY_DATA_TYPE_REDRESS_NUMBER_FULL:
       return MemoryDataType::kRedressNumberNumber;
-    case personal_context::proto::MEMORY_DATA_TYPE_REDRESS_NUMBER_NAME:
+    case ProtoType::MEMORY_DATA_TYPE_REDRESS_NUMBER_NAME:
       return MemoryDataType::kRedressNumberName;
-    case personal_context::proto::MEMORY_DATA_TYPE_REDRESS_NUMBER_NUMBER:
+    case ProtoType::MEMORY_DATA_TYPE_REDRESS_NUMBER_NUMBER:
       return MemoryDataType::kRedressNumberNumber;
-    case personal_context::proto::MEMORY_DATA_TYPE_KNOWN_TRAVELER_NUMBER_FULL:
+    case ProtoType::MEMORY_DATA_TYPE_KNOWN_TRAVELER_NUMBER_FULL:
       return MemoryDataType::kKnownTravelerNumberNumber;
-    case personal_context::proto::MEMORY_DATA_TYPE_KNOWN_TRAVELER_NUMBER_NAME:
+    case ProtoType::MEMORY_DATA_TYPE_KNOWN_TRAVELER_NUMBER_NAME:
       return MemoryDataType::kKnownTravelerNumberName;
-    case personal_context::proto::MEMORY_DATA_TYPE_KNOWN_TRAVELER_NUMBER_NUMBER:
+    case ProtoType::MEMORY_DATA_TYPE_KNOWN_TRAVELER_NUMBER_NUMBER:
       return MemoryDataType::kKnownTravelerNumberNumber;
-    case personal_context::proto::
-        MEMORY_DATA_TYPE_KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE:
+    case ProtoType::MEMORY_DATA_TYPE_KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE:
       return MemoryDataType::kKnownTravelerNumberExpirationDate;
-    case personal_context::proto::MEMORY_DATA_TYPE_DRIVERS_LICENSE_FULL:
+    case ProtoType::MEMORY_DATA_TYPE_DRIVERS_LICENSE_FULL:
       return MemoryDataType::kDriversLicenseNumber;
-    case personal_context::proto::MEMORY_DATA_TYPE_DRIVERS_LICENSE_NAME:
+    case ProtoType::MEMORY_DATA_TYPE_DRIVERS_LICENSE_NAME:
       return MemoryDataType::kDriversLicenseName;
-    case personal_context::proto::MEMORY_DATA_TYPE_DRIVERS_LICENSE_STATE:
+    case ProtoType::MEMORY_DATA_TYPE_DRIVERS_LICENSE_STATE:
       return MemoryDataType::kDriversLicenseState;
-    case personal_context::proto::MEMORY_DATA_TYPE_DRIVERS_LICENSE_NUMBER:
+    case ProtoType::MEMORY_DATA_TYPE_DRIVERS_LICENSE_NUMBER:
       return MemoryDataType::kDriversLicenseNumber;
-    case personal_context::proto::MEMORY_DATA_TYPE_DRIVERS_LICENSE_ISSUE_DATE:
+    case ProtoType::MEMORY_DATA_TYPE_DRIVERS_LICENSE_ISSUE_DATE:
       return MemoryDataType::kDriversLicenseIssueDate;
-    case personal_context::proto::
-        MEMORY_DATA_TYPE_DRIVERS_LICENSE_EXPIRATION_DATE:
+    case ProtoType::MEMORY_DATA_TYPE_DRIVERS_LICENSE_EXPIRATION_DATE:
       return MemoryDataType::kDriversLicenseExpirationDate;
-    case personal_context::proto::MEMORY_DATA_TYPE_ORDER_FULL:
+    case ProtoType::MEMORY_DATA_TYPE_ORDER_FULL:
       return MemoryDataType::kOrderId;
-    case personal_context::proto::MEMORY_DATA_TYPE_ORDER_ID:
+    case ProtoType::MEMORY_DATA_TYPE_ORDER_ID:
       return MemoryDataType::kOrderId;
-    case personal_context::proto::MEMORY_DATA_TYPE_ORDER_ACCOUNT:
+    case ProtoType::MEMORY_DATA_TYPE_ORDER_ACCOUNT:
       return MemoryDataType::kOrderAccount;
-    case personal_context::proto::MEMORY_DATA_TYPE_ORDER_DATE:
+    case ProtoType::MEMORY_DATA_TYPE_ORDER_DATE:
       return MemoryDataType::kOrderDate;
-    case personal_context::proto::MEMORY_DATA_TYPE_ORDER_MERCHANT_NAME:
+    case ProtoType::MEMORY_DATA_TYPE_ORDER_MERCHANT_NAME:
       return MemoryDataType::kOrderMerchantName;
-    case personal_context::proto::MEMORY_DATA_TYPE_ORDER_MERCHANT_DOMAIN:
+    case ProtoType::MEMORY_DATA_TYPE_ORDER_MERCHANT_DOMAIN:
       return MemoryDataType::kOrderMerchantDomain;
-    case personal_context::proto::MEMORY_DATA_TYPE_ORDER_PRODUCT_NAMES:
+    case ProtoType::MEMORY_DATA_TYPE_ORDER_PRODUCT_NAMES:
       return MemoryDataType::kOrderProductNames;
-    case personal_context::proto::MEMORY_DATA_TYPE_ORDER_GRAND_TOTAL:
+    case ProtoType::MEMORY_DATA_TYPE_ORDER_GRAND_TOTAL:
       return MemoryDataType::kOrderGrandTotal;
-    case personal_context::proto::MEMORY_DATA_TYPE_CREDIT_CARD_NUMBER:
+    case ProtoType::MEMORY_DATA_TYPE_CREDIT_CARD_NUMBER:
       return MemoryDataType::kCreditCardNumber;
-    case personal_context::proto::MEMORY_DATA_TYPE_CREDIT_CARD_EXPIRATION_DATE:
+    case ProtoType::MEMORY_DATA_TYPE_CREDIT_CARD_EXPIRATION_DATE:
       return MemoryDataType::kCreditCardExpirationDate;
-    case personal_context::proto::MEMORY_DATA_TYPE_CREDIT_CARD_SECURITY_CODE:
+    case ProtoType::MEMORY_DATA_TYPE_CREDIT_CARD_SECURITY_CODE:
       return MemoryDataType::kCreditCardSecurityCode;
-    case personal_context::proto::MEMORY_DATA_TYPE_CREDIT_CARD_NAME_ON_CARD:
+    case ProtoType::MEMORY_DATA_TYPE_CREDIT_CARD_NAME_ON_CARD:
       return MemoryDataType::kCreditCardNameOnCard;
-    case personal_context::proto::MEMORY_DATA_TYPE_CREDIT_CARD_NICKNAME:
+    case ProtoType::MEMORY_DATA_TYPE_CREDIT_CARD_NICKNAME:
       return MemoryDataType::kCreditCardNickname;
   }
-  NOTREACHED();
+  return MemoryDataType::kUnknown;
 }
 
 std::vector<MemoryEntrySource> ExtractSources(

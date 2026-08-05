@@ -83,7 +83,9 @@ std::vector<MemorySearchResult> ExtractRemoteResults(
 
 // The following functions are exposed in the header for testing purposes only:
 
-// Converts a `proto::MemoryDataType` to a local `MemoryDataType`.
+// Converts a `proto::MemoryDataType` to a local `MemoryDataType`. Returns
+// `MemoryDataType::kUnknown` if `data_type` is outside the bounds of its enum
+// range.
 MemoryDataType ToMemoryDataType(
     personal_context::proto::MemoryDataType data_type);
 
