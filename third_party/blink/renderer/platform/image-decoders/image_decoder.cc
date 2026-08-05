@@ -1094,13 +1094,55 @@ wtf_size_t ImagePlanes::RowBytes(cc::YUVIndex index) const {
   return row_bytes_[static_cast<wtf_size_t>(index)];
 }
 
+void ColorProfile::ComputeSkColorSpace() {
+  // If the ICC profile has CICP data, prefer to use that.
+  if (profile_.has_CICP) {
+    sk_color_space_ = skia::CICPGetSkColorSpace(
+        profile_.CICP.color_primaries, profile_.CICP.transfer_characteristics,
+        profile_.CICP.matrix_coefficients, profile_.CICP.video_full_range_flag,
+        /*prefer_srgb_trfn=*/true);
+    if (sk_color_space_) {
+      is_sk_color_space_exact_ = true;
+      return;
+    }
+  }
+
+  // If there was no CICP data, then use the ICC profile.
+  sk_color_space_ = SkColorSpace::Make(profile_);
+  if (sk_color_space_) {
+    is_sk_color_space_exact_ = true;
+    return;
+  }
+
+  // If the embedded color space isn't supported by Skia, transform
+  // to a supported color space. Preserve the gamut, but convert to a
+  // standard transfer function.
+  if (profile_.has_toXYZD50) {
+    skcms_ICCProfile with_srgb = profile_;
+    skcms_SetTransferFunction(&with_srgb, skcms_sRGB_TransferFunction());
+    sk_color_space_ = SkColorSpace::Make(with_srgb);
+    if (sk_color_space_) {
+      is_sk_color_space_exact_ = false;
+      return;
+    }
+  }
+
+  // For color spaces without an identifiable gamut, just default to sRGB.
+  sk_color_space_ = SkColorSpace::MakeSRGB();
+  is_sk_color_space_exact_ = false;
+}
+
 ColorProfile::ColorProfile(const skcms_ICCProfile& profile)
-    : profile_(profile) {}
+    : profile_(profile) {
+  ComputeSkColorSpace();
+}
 
 ColorProfile::ColorProfile(
     std::unique_ptr<SkCodecs::ICCProfileChromium> skia_profile)
     : profile_(skia_profile->GetProfile()),
-      skia_profile_(std::move(skia_profile)) {}
+      skia_profile_(std::move(skia_profile)) {
+  ComputeSkColorSpace();
+}
 
 ColorProfile::~ColorProfile() = default;
 
@@ -1114,85 +1156,25 @@ std::unique_ptr<ColorProfile> ColorProfile::Create(
   return std::make_unique<ColorProfile>(std::move(skia_profile));
 }
 
-
-
 void ImageDecoder::SetEmbeddedColorProfile(
     std::unique_ptr<ColorProfile> profile) {
   DCHECK(!IgnoresColorSpace());
 
   embedded_color_profile_ = std::move(profile);
-  sk_image_color_space_ = nullptr;
-  needs_decode_time_color_transform_ = false;
 
-  if (color_behavior_ == ColorBehavior::kTag) {
-    // Set `sk_image_color_space_` to the best SkColorSpace approximation
-    // of `embedded_color_profile_`.
-    if (embedded_color_profile_) {
-      const skcms_ICCProfile* icc_profile =
-          embedded_color_profile_->GetProfile();
-
-      // If the ICC profile has CICP data, prefer to use that.
-      if (icc_profile->has_CICP) {
-        sk_image_color_space_ = skia::CICPGetSkColorSpace(
-            icc_profile->CICP.color_primaries,
-            icc_profile->CICP.transfer_characteristics,
-            icc_profile->CICP.matrix_coefficients,
-            icc_profile->CICP.video_full_range_flag,
-            /*prefer_srgb_trfn=*/true);
-        // A CICP profile's SkColorSpace is considered an exact representation
-        // of `profile`, so decode-time transform is not needed.
-        if (sk_image_color_space_) {
-          return;
-        }
-      }
-
-      // If there was not CICP data, then use the ICC profile.
-      DCHECK(!sk_image_color_space_);
-      sk_image_color_space_ = SkColorSpace::Make(*icc_profile);
-
-      // If the embedded color space isn't supported by Skia, we will transform
-      // to a supported color space at decode time.
-      if (!sk_image_color_space_ && icc_profile->has_toXYZD50) {
-        // Preserve the gamut, but convert to a standard transfer function.
-        skcms_ICCProfile with_srgb = *icc_profile;
-        skcms_SetTransferFunction(&with_srgb, skcms_sRGB_TransferFunction());
-        sk_image_color_space_ = SkColorSpace::Make(with_srgb);
-      }
-
-      // For color spaces without an identifiable gamut, just default to sRGB.
-      if (!sk_image_color_space_) {
-        sk_image_color_space_ = SkColorSpace::MakeSRGB();
-      }
-    } else {
-      // If there is no `embedded_color_profile_`, then assume that the content
-      // was sRGB (and decode-time transform is not needed).
-      sk_image_color_space_ = SkColorSpace::MakeSRGB();
-      return;
-    }
+  if (color_behavior_ == ColorBehavior::kTag && embedded_color_profile_) {
+    sk_image_color_space_ = embedded_color_profile_->GetSkColorSpace();
   } else {
-    DCHECK(color_behavior_ == ColorBehavior::kTransformToSRGB);
     sk_image_color_space_ = SkColorSpace::MakeSRGB();
-
-    // If there is no `embedded_color_profile_`, then assume the content was
-    // sRGB  (and, as above, decode-time transform is not needed).
-    if (!embedded_color_profile_) {
-      return;
-    }
   }
 
-  // If we arrive here then we may need a decode-time transform from
-  // `embedded_color_profile_` to `sk_image_color_space_`.
-  DCHECK(embedded_color_profile_);
-  DCHECK(sk_image_color_space_);
-
-  const skcms_ICCProfile* src_profile = embedded_color_profile_->GetProfile();
-  skcms_ICCProfile dst_profile;
-  sk_image_color_space_->toProfile(&dst_profile);
-  if (skcms_ApproximatelyEqualProfiles(src_profile, &dst_profile)) {
-    return;
+  needs_decode_time_color_transform_ = false;
+  if (embedded_color_profile_) {
+    needs_decode_time_color_transform_ =
+        !embedded_color_profile_->IsSkColorSpaceExact() ||
+        !SkColorSpace::Equals(embedded_color_profile_->GetSkColorSpace().get(),
+                              sk_image_color_space_.get());
   }
-
-  needs_decode_time_color_transform_ = true;
 }
 
 void ImageDecoder::DoDecodeTimeColorTransformIfNeeded(

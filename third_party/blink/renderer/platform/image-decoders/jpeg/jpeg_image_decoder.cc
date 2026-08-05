@@ -480,23 +480,20 @@ class JPEGImageReader final {
             std::unique_ptr<ColorProfile> profile =
                 ColorProfile::Create(skia::as_byte_span(*profile_data));
             if (profile) {
-              uint32_t data_color_space =
-                  profile->GetProfile()->data_color_space;
               switch (info_.jpeg_color_space) {
                 case JCS_CMYK:
                 case JCS_YCCK:
-                  if (data_color_space != skcms_Signature_CMYK) {
+                  if (!profile->IsCMYK()) {
                     profile = nullptr;
                   }
                   break;
                 case JCS_GRAYSCALE:
-                  if (data_color_space != skcms_Signature_Gray &&
-                      data_color_space != skcms_Signature_RGB) {
+                  if (!profile->IsGray() && !profile->IsRGB()) {
                     profile = nullptr;
                   }
                   break;
                 default:
-                  if (data_color_space != skcms_Signature_RGB) {
+                  if (!profile->IsRGB()) {
                     profile = nullptr;
                   }
                   break;

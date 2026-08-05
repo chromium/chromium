@@ -163,22 +163,7 @@ sk_sp<SkColorSpace> GetAltImageColorSpace(const crabbyavif::avifImage& image) {
       DVLOG(1) << "Failed to parse gain map ICC profile";
       return nullptr;
     }
-    const skcms_ICCProfile* icc_profile = profile->GetProfile();
-    if (icc_profile->has_CICP) {
-      color_space =
-          skia::CICPGetSkColorSpace(icc_profile->CICP.color_primaries,
-                                    icc_profile->CICP.transfer_characteristics,
-                                    icc_profile->CICP.matrix_coefficients,
-                                    icc_profile->CICP.video_full_range_flag,
-                                    /*prefer_srgb_trfn=*/true);
-    } else if (icc_profile->has_toXYZD50) {
-      // The transfer function is irrelevant for gain map tone mapping,
-      // set it to something standard in case it's not set or not
-      // supported.
-      skcms_ICCProfile with_srgb = *icc_profile;
-      skcms_SetTransferFunction(&with_srgb, skcms_sRGB_TransferFunction());
-      color_space = SkColorSpace::Make(with_srgb);
-    }
+    color_space = profile->GetSkColorSpace();
   } else if (gain_map->altColorPrimaries !=
              crabbyavif::AVIF_COLOR_PRIMARIES_UNSPECIFIED) {
     if (image.icc.size == 0 &&
@@ -876,16 +861,14 @@ bool AVIFImageDecoder::UpdateDemuxer() {
         DVLOG(1) << "Failed to parse image ICC profile";
         return false;
       }
-      uint32_t data_color_space = profile->GetProfile()->data_color_space;
       const bool is_mono =
           container->yuvFormat == crabbyavif::AVIF_PIXEL_FORMAT_YUV400;
       if (is_mono) {
-        if (data_color_space != skcms_Signature_Gray &&
-            data_color_space != skcms_Signature_RGB) {
+        if (!profile->IsGray() && !profile->IsRGB()) {
           profile = nullptr;
         }
       } else {
-        if (data_color_space != skcms_Signature_RGB) {
+        if (!profile->IsRGB()) {
           profile = nullptr;
         }
       }

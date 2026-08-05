@@ -511,7 +511,7 @@ void WEBPImageDecoder::ReadColorProfile() {
 
   if (auto profile = ColorProfile::Create(
           UNSAFE_TODO(base::span(chunk_iterator.chunk.bytes, profile_size)))) {
-    if (profile->GetProfile()->data_color_space == skcms_Signature_RGB) {
+    if (profile->IsRGB()) {
       SetEmbeddedColorProfile(std::move(profile));
     }
   } else {
