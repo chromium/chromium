@@ -116,6 +116,7 @@ robolectric_binary("xr_immersive_playback_junit_tests") {
     "internal/junit/src/org/chromium/chrome/browser/media/immersive_playback/ImmersiveVideoPlaybackCoordinatorTest.java",
     "internal/junit/src/org/chromium/chrome/browser/media/immersive_playback/components/ImmersiveVideoControlAutoHideManagerTest.java",
     "internal/junit/src/org/chromium/chrome/browser/media/immersive_playback/components/ImmersiveVideoControlCoordinatorTest.java",
+    "internal/junit/src/org/chromium/chrome/browser/media/immersive_playback/components/ImmersiveVideoControlMediatorTest.java",
     "internal/junit/src/org/chromium/chrome/browser/media/immersive_playback/components/ImmersiveVideoFormatCoordinatorTest.java",
     "internal/junit/src/org/chromium/chrome/browser/media/immersive_playback/components/ImmersiveVideoPlayerCoordinatorTest.java",
     "internal/junit/src/org/chromium/chrome/browser/media/immersive_playback/components/ImmersiveVideoPoseManagerTest.java",

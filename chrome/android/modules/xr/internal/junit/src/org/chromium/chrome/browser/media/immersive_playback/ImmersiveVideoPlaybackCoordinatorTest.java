@@ -237,13 +237,37 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
     @UiThreadTest
     public void testControlPanelAutoHide() {
         clearInvocations(mControlPanelHolder);
+        ImmersiveVideoControlView panel =
+                mCoordinator.getControlCoordinatorForTesting().getControlPanelForTesting();
+        mCoordinator.updateMediaPosition(
+                /* durationMs= */ 60_000, /* positionMs= */ 1_000, /* playbackRate= */ 1.0);
+        mCoordinator.updatePlaybackState(true);
 
-        // Warp time forward by 5 seconds (AUTO_HIDE_DELAY_MS)
         ShadowLooper.idleMainLooper(
                 ImmersiveVideoControlAutoHideManager.AUTO_HIDE_DELAY_MS, TimeUnit.MILLISECONDS);
 
-        // Verify control panel autohides
         verify(mControlPanelHolder).setEntityEnabled(false);
+        int hiddenProgress = (int) panel.getSeekBarForTesting().getValue();
+        ShadowLooper.idleMainLooper(1_000, TimeUnit.MILLISECONDS);
+        assertEquals(hiddenProgress, (int) panel.getSeekBarForTesting().getValue());
+    }
+
+    /** Tests that disposal stops an active seekbar loop. */
+    @Test
+    @UiThreadTest
+    public void testDisposeStopsSeekbarUpdates() {
+        ImmersiveVideoControlView panel =
+                mCoordinator.getControlCoordinatorForTesting().getControlPanelForTesting();
+        mCoordinator.updateMediaPosition(
+                /* durationMs= */ 60_000, /* positionMs= */ 1_000, /* playbackRate= */ 1.0);
+        mCoordinator.updatePlaybackState(true);
+        ShadowLooper.idleMainLooper(100, TimeUnit.MILLISECONDS);
+
+        mCoordinator.dispose();
+        int disposedProgress = (int) panel.getSeekBarForTesting().getValue();
+        ShadowLooper.idleMainLooper(1_000, TimeUnit.MILLISECONDS);
+
+        assertEquals(disposedProgress, (int) panel.getSeekBarForTesting().getValue());
     }
 
     /** Tests that hovering/pointing at the panel prevents the autohide timer from firing. */

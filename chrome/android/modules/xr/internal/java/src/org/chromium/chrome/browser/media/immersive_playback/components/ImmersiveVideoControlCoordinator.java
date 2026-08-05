@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.media.immersive_playback.ImmersiveVideoPlaybackDelegate;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.xr.scenecore.XrEntityHolder;
@@ -82,6 +83,11 @@ public class ImmersiveVideoControlCoordinator {
     private @Nullable ImmersiveVideoControlView mView;
     private @Nullable ImmersiveVideoControlMediator mMediator;
     private @Nullable XrPanelEntityHolder<?> mHolder;
+    private @Nullable PropertyModelChangeProcessor<
+                    PropertyModel, ImmersiveVideoControlSpatialView, PropertyKey>
+            mModelChangeProcessor;
+    private boolean mIsShowing;
+    private boolean mIsDisposed;
 
     /**
      * Creates a new {@link ImmersiveVideoControlCoordinator}.
@@ -104,15 +110,14 @@ public class ImmersiveVideoControlCoordinator {
 
         mMediator = new ImmersiveVideoControlMediator(mModel, mVideoControlDelegate);
         mView = createView(mActivity, mMediator);
-        mView.setAccessibilityFocusListener(
-                mVideoControlDelegate::onControlPanelAccessibilityFocusChanged);
         mHolder = mSessionManager.createPanelEntity(mView, "MediaControlPanel");
         mHolder.getMovableComponent().addMoveListener(mOnMoveListener);
 
-        PropertyModelChangeProcessor.create(
-                mModel,
-                new ImmersiveVideoControlSpatialView(mView, mHolder),
-                ImmersiveVideoControlViewBinder::bind);
+        mModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mModel,
+                        new ImmersiveVideoControlSpatialView(mView, mHolder),
+                        ImmersiveVideoControlViewBinder::bind);
     }
 
     @VisibleForTesting
@@ -127,7 +132,10 @@ public class ImmersiveVideoControlCoordinator {
      * @param parent The parent entity to attach to.
      */
     public void show(XrEntityHolder<?> parent) {
+        if (mIsDisposed) return;
+
         ensureInitialized();
+        mIsShowing = true;
         setParent(parent);
 
         if (mHolder != null) {
@@ -136,6 +144,11 @@ public class ImmersiveVideoControlCoordinator {
         if (mView != null) {
             mView.setVisibility(View.VISIBLE);
             mView.setHoverListener(mVideoControlDelegate::onControlPanelHoverChanged);
+            mView.setAccessibilityFocusListener(
+                    mVideoControlDelegate::onControlPanelAccessibilityFocusChanged);
+        }
+        if (mMediator != null) {
+            mMediator.setVisible(true);
         }
     }
 
@@ -145,36 +158,62 @@ public class ImmersiveVideoControlCoordinator {
      * @param parent The parent entity to attach to.
      */
     public void setParent(XrEntityHolder<?> parent) {
-        if (mHolder != null) {
+        if (mIsShowing && mHolder != null) {
             mHolder.setParent(parent);
         }
     }
 
     /** Dismisses the control panel. */
     public void dismiss() {
+        if (mIsDisposed || !mIsShowing) return;
+
+        mIsShowing = false;
+        if (mMediator != null) {
+            mMediator.setVisible(false);
+        }
+        if (mView != null) {
+            mView.setHoverListener(null);
+            mView.setAccessibilityFocusListener(null);
+            mView.setVisibility(View.GONE);
+        }
         if (mHolder != null && !mHolder.isDisposed()) {
             mHolder.setEntityEnabled(false);
             mHolder.setParent(null);
-        }
-
-        if (mView != null) {
-            mView.setVisibility(View.GONE);
-            mView.setHoverListener(null);
         }
     }
 
     /** Disposes the control panel. */
     public void dispose() {
-        dismiss();
-        if (mHolder != null) {
-            mHolder.dispose();
-            mHolder = null;
+        if (mIsDisposed) return;
+
+        mIsDisposed = true;
+        mIsShowing = false;
+        if (mMediator != null) {
+            mMediator.destroy();
         }
+        if (mModelChangeProcessor != null) {
+            mModelChangeProcessor.destroy();
+            mModelChangeProcessor = null;
+        }
+        if (mView != null) {
+            mView.setHoverListener(null);
+            mView.setAccessibilityFocusListener(null);
+            mView.setVisibility(View.GONE);
+        }
+        if (mHolder != null && !mHolder.isDisposed()) {
+            mHolder.setEntityEnabled(false);
+            mHolder.setParent(null);
+            mHolder.getMovableComponent().removeMoveListener(mOnMoveListener);
+            mHolder.dispose();
+        }
+        mHolder = null;
+        mView = null;
+        mMediator = null;
     }
 
     /** Returns true if the control panel is currently showing, false otherwise. */
     public boolean isShowing() {
-        return mHolder != null && mHolder.getParent() != null;
+        return mIsShowing;
     }
 
     /** Returns the {@link XrPanelEntityHolder} for the control panel. */
@@ -277,5 +316,10 @@ public class ImmersiveVideoControlCoordinator {
 
     public ImmersiveVideoControlView getControlPanelForTesting() {
         return assumeNonNull(mView);
+    }
+
+    @VisibleForTesting
+    PropertyModel getModelForTesting() {
+        return mModel;
     }
 }
