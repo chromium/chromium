@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
@@ -15,11 +18,16 @@
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_chip.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/animation/animation_test_api.h"
 
@@ -28,7 +36,11 @@ class AnimationObserver : public PermissionChipInterface::Observer {
   explicit AnimationObserver(base::OnceClosure quit_closure)
       : animation_complete_callback_(std::move(quit_closure)) {}
 
-  void OnAnimationEnded() { std::move(animation_complete_callback_).Run(); }
+  void OnAnimationEnded() {
+    if (animation_complete_callback_) {
+      std::move(animation_complete_callback_).Run();
+    }
+  }
 
   // PermissionChipInterface::Observer
   void OnChipVisibilityChanged(bool is_visible) override {}
@@ -39,32 +51,26 @@ class AnimationObserver : public PermissionChipInterface::Observer {
   base::OnceClosure animation_complete_callback_;
 };
 
-class PermissionDashboardUnitTest : public TestWithBrowserView {
+class PermissionDashboardBrowserTest : public InProcessBrowserTest {
  public:
-  PermissionDashboardUnitTest()
-      : TestWithBrowserView(base::test::TaskEnvironment::TimeSource::MOCK_TIME,
-                            base::test::TaskEnvironment::MainThreadType::UI),
-        animation_mode_reset_(gfx::AnimationTestApi::SetRichAnimationRenderMode(
+  PermissionDashboardBrowserTest()
+      : animation_mode_reset_(gfx::AnimationTestApi::SetRichAnimationRenderMode(
             gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED)) {
     feature_list_.InitAndEnableFeature(
         content_settings::features::kLeftHandSideActivityIndicators);
   }
 
-  PermissionDashboardUnitTest(const PermissionDashboardUnitTest&) = delete;
-  PermissionDashboardUnitTest& operator=(const PermissionDashboardUnitTest&) =
+  PermissionDashboardBrowserTest(const PermissionDashboardBrowserTest&) =
       delete;
+  PermissionDashboardBrowserTest& operator=(
+      const PermissionDashboardBrowserTest&) = delete;
 
-  void SetUp() override {
-    TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
-        /*profile_manager=*/false);
-    TestWithBrowserView::SetUp();
-
-    AddTab(browser(), GURL("http://a.com"));
-  }
-
-  void TearDown() override {
-    TestWithBrowserView::TearDown();
-    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("a.com", "/empty.html")));
   }
 
   void WaitForAnimationCompletion() {
@@ -82,7 +88,7 @@ class PermissionDashboardUnitTest : public TestWithBrowserView {
   }
 
   content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetWebContentsAt(0);
+    return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
   LocationBarView* location_bar_view() {
@@ -104,7 +110,8 @@ class PermissionDashboardUnitTest : public TestWithBrowserView {
 
 // TODO(crbug.com/41492809): Test LHS indicators animation on macOS as well.
 #if !BUILDFLAG(IS_MAC)
-TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorTooltip) {
+IN_PROC_BROWSER_TEST_F(PermissionDashboardBrowserTest,
+                       DisplayLHSIndicatorTooltip) {
   PermissionChipView* indicator_chip =
       location_bar_view()->permission_dashboard_view()->GetIndicatorChip();
 
@@ -141,9 +148,11 @@ TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorTooltip) {
   pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_CAMERA, true);
 
   // Transitioning to both will not trigger animation if chip is already
-  // visible. No need to wait check WaitForAnimationCompletion, but just
-  // RunUntilIdle.
-  base::RunLoop().RunUntilIdle();
+  // visible.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return indicator_chip->GetTooltipText() ==
+           l10n_util::GetStringUTF16(IDS_MICROPHONE_CAMERA_ALLOWED);
+  }));
 
   EXPECT_TRUE(indicator_chip->GetVisible());
   EXPECT_EQ(indicator_chip->GetTooltipText(),
@@ -153,9 +162,11 @@ TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorTooltip) {
   pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_CAMERA, false);
 
   // Transitioning to both will not trigger animation if chip is already
-  // visible. No need to wait check WaitForAnimationCompletion, but just
-  // RunUntilIdle.
-  base::RunLoop().RunUntilIdle();
+  // visible.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return indicator_chip->GetTooltipText() ==
+           l10n_util::GetStringUTF16(IDS_MICROPHONE_ACCESSED);
+  }));
 
   EXPECT_TRUE(indicator_chip->GetVisible());
   EXPECT_EQ(indicator_chip->GetTooltipText(),
@@ -168,7 +179,8 @@ TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorTooltip) {
 // 2. The chip's verbose state collapses after 4 seconds.
 // 3. The chip disappears after `PageSpecificContentSettings` resets camera
 // usage.
-TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorForCamera) {
+IN_PROC_BROWSER_TEST_F(PermissionDashboardBrowserTest,
+                       DisplayLHSIndicatorForCamera) {
   PermissionChipView* indicator_chip =
       location_bar_view()->permission_dashboard_view()->GetIndicatorChip();
 
@@ -192,11 +204,11 @@ TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorForCamera) {
   EXPECT_TRUE(
       dashboard_controller()->get_collapse_timer_for_testing().IsRunning());
   EXPECT_FALSE(indicator_chip->IsAnimating());
-  // Wait longer than 4 seconds for collapse timer to fire and the collapse
-  // animation to finish.
-  task_environment()->AdvanceClock(base::Milliseconds(4100));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(indicator_chip->IsAnimating());
+  // Trigger collapse timer to fire and wait for the collapse animation to
+  // finish.
+  dashboard_controller()->get_collapse_timer_for_testing().FireNow();
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return indicator_chip->IsAnimating(); }));
 
   WaitForAnimationCompletion();
 
@@ -209,7 +221,10 @@ TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorForCamera) {
   EXPECT_FALSE(dashboard_controller()->is_verbose());
 
   pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_CAMERA, false);
-  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return pscs->get_indicators_hiding_delay_timer_for_testing().contains(
+        ContentSettingsType::MEDIASTREAM_CAMERA);
+  }));
 
   ASSERT_TRUE(pscs->get_indicators_hiding_delay_timer_for_testing().contains(
       ContentSettingsType::MEDIASTREAM_CAMERA));
@@ -229,7 +244,8 @@ TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorForCamera) {
 // 1. Camera & Mic activity indicator chip is shown.
 // 2. The chip disappears after `PageSpecificContentSettings` resets camera &
 // microphone usage.
-TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorForCameraMic) {
+IN_PROC_BROWSER_TEST_F(PermissionDashboardBrowserTest,
+                       DisplayLHSIndicatorForCameraMic) {
   PermissionChipView* indicator_chip =
       location_bar_view()->permission_dashboard_view()->GetIndicatorChip();
 
@@ -283,7 +299,8 @@ TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorForCameraMic) {
 // camera.
 // 4. The chip disappears after `PageSpecificContentSettings` resets microphone
 // usage.
-TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorForCameraAndThenMic) {
+IN_PROC_BROWSER_TEST_F(PermissionDashboardBrowserTest,
+                       DisplayLHSIndicatorForCameraAndThenMic) {
   PermissionChipView* indicator_chip =
       location_bar_view()->permission_dashboard_view()->GetIndicatorChip();
 
@@ -309,10 +326,11 @@ TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorForCameraAndThenMic) {
       pscs->IsIndicatorVisible(ContentSettingsType::MEDIASTREAM_CAMERA));
   EXPECT_FALSE(pscs->IsIndicatorVisible(ContentSettingsType::MEDIASTREAM_MIC));
 
-  // Wait longer than 4 seconds for collapse timer to fire and the collapse
-  // animation to finish.
-  task_environment()->AdvanceClock(base::Milliseconds(4100));
-  base::RunLoop().RunUntilIdle();
+  // Trigger collapse timer to fire and wait for the collapse animation to
+  // finish.
+  dashboard_controller()->get_collapse_timer_for_testing().FireNow();
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return indicator_chip->IsAnimating(); }));
 
   WaitForAnimationCompletion();
 
