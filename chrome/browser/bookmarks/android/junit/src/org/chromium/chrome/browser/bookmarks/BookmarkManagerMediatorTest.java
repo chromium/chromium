@@ -2778,6 +2778,24 @@ public class BookmarkManagerMediatorTest {
         verify(mNativePage).onStateChange("chrome-native://bookmarks/folder/6", true);
     }
 
+    @Test
+    public void testUpdateForUrl_popsStateStack() {
+        finishLoading();
+        mMediator.openFolder(mMobileFolderId);
+        mMediator.openFolder(mFolderId1);
+        mMediator.openFolder(mFolderId2);
+        // Initially, the stack should contain root folder (MobileBookmarks), Folder1, and Folder2.
+        assertEquals(3, mMediator.getStateStackForTesting().size());
+
+        // Simulate tab back navigation to Folder1 by calling updateForUrl.
+        mMediator.updateForUrl("chrome-native://bookmarks/folder/" + mFolderId1.getId());
+
+        // The stack should now contain root folder and Folder1. Folder2 should be popped.
+        assertEquals(2, mMediator.getStateStackForTesting().size());
+        assertEquals(BookmarkUiMode.FOLDER, mMediator.getCurrentUiMode());
+        assertEquals(mFolderId1, mMediator.getStateStackForTesting().peekLast().mFolder);
+    }
+
     private void verifyMenuListItemTitles(ModelList modelList, int... expectedTitleIds) {
         assertEquals(expectedTitleIds.length, modelList.size());
         for (int i = 0; i < expectedTitleIds.length; ++i) {
