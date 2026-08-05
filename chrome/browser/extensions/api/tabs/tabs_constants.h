@@ -66,6 +66,15 @@ inline constexpr char kGroupParamsError[] =
     "Cannot specify 'createProperties' along with a 'groupId'.";
 inline constexpr char kNotAllowedForDevToolsError[] =
     "Operation not allowed for DevTools windows";
+inline constexpr char kSplitWithTabAlreadyInSplitViewError[] =
+    "Cannot create split view with 'splitWithTabId': *. Tab is already in a "
+    "split view.";
+inline constexpr char kSplitWithTabNotInSameWindowError[] =
+    "Cannot create split view with 'splitWithTabId': *. Tab is not in the same "
+    "window as the target window.";
+inline constexpr char kSplitWithTabIndexNotAdjacentError[] =
+    "Cannot create split view with 'splitWithTabId': Tab ID * is at index *, "
+    "which is not adjacent to 'index' *.";
 #if BUILDFLAG(IS_ANDROID)
 inline constexpr char kAndroidCannotMoveTabsWithinCctOrWebAppWindowError[] =
     "Cannot move tabs within an Android web app or custom tab window.";

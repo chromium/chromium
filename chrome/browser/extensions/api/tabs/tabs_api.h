@@ -330,6 +330,7 @@ class TabsCreateFunction : public ExtensionFunction {
   std::optional<bool> active_;
   std::optional<bool> pinned_;
   std::optional<int> index_;
+  std::optional<int> split_with_tab_id_;
 
   // The validated URL to open.
   GURL validated_url_;

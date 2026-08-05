@@ -33,6 +33,7 @@
 #include "content/public/test/prerender_test_util.h"
 #include "extensions/browser/api/constants.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -1108,4 +1109,137 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabDSERedirectTest,
 
   histogram_tester.ExpectBucketCount("Extensions.Tabs.RemoveAction",
                                      3 /* kDSERemovalsAfterLandingOnSERP */, 1);
+}
+
+class ExtensionApiTabSplitViewTest : public ExtensionApiTabTest {
+ public:
+  ExtensionApiTabSplitViewTest() = default;
+  ~ExtensionApiTabSplitViewTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      extensions_features::kApiTabsSplitView};
+};
+
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabSplitViewTest,
+                       CreateSplitWithTabIdValidation) {
+  constexpr char kManifest[] = R"({
+    "name": "Create Split With Tab Id Test",
+    "version": "1.0",
+    "manifest_version": 3,
+    "permissions": ["tabs"],
+    "background": {"service_worker": "background.js"}
+  })";
+
+  constexpr char kBackgroundJs[] = R"(
+    async function createFreshTab() {
+      return await chrome.tabs.create({url: 'about:blank'});
+    }
+
+    chrome.test.runTests([
+      async function validUnspecifiedIndex() {
+        const tab = await createFreshTab();
+        const newTab = await chrome.tabs.create({
+          splitWithTabId: tab.id
+        });
+        chrome.test.assertTrue(!!newTab);
+        chrome.test.succeed();
+      },
+
+      async function validAdjacentIndexRight() {
+        const tab = await createFreshTab();
+        const newTab = await chrome.tabs.create({
+          splitWithTabId: tab.id,
+          index: tab.index + 1
+        });
+        chrome.test.assertTrue(!!newTab);
+        await chrome.tabs.remove([tab.id, newTab.id]);
+        chrome.test.succeed();
+      },
+
+      async function validAdjacentIndexLeft() {
+        const tab = await createFreshTab();
+        const newTab = await chrome.tabs.create({
+          splitWithTabId: tab.id,
+          index: tab.index
+        });
+        chrome.test.assertTrue(!!newTab);
+        await chrome.tabs.remove([tab.id, newTab.id]);
+        chrome.test.succeed();
+      },
+
+      async function errorTabNotFound() {
+        await chrome.test.assertPromiseRejects(
+          chrome.tabs.create({
+            splitWithTabId: 999999
+          }),
+          'Error: No tab with id: 999999.'
+        );
+        chrome.test.succeed();
+      },
+
+      // TODO(crbug.com/456257896): Add a test for
+      // kSplitWithTabAlreadyInSplitViewError once there is an API to put a tab
+      // into a split view.
+
+      async function errorNotInSameWindow() {
+        const primaryWin = (await chrome.windows.getAll())[0];
+        const tab = await chrome.tabs.create({
+          windowId: primaryWin.id, url: 'about:blank'
+        });
+        const otherWin = await chrome.windows.create({url: ['about:blank']});
+        await chrome.test.assertPromiseRejects(
+          chrome.tabs.create({
+            windowId: otherWin.id,
+            splitWithTabId: tab.id,
+          }),
+          `Error: Cannot create split view with 'splitWithTabId': ${tab.id}. ` +
+              `Tab is not in the same window as the target window.`
+        );
+        await chrome.tabs.remove(tab.id);
+        await chrome.windows.remove(otherWin.id);
+        await chrome.windows.update(primaryWin.id, {focused: true});
+        chrome.test.succeed();
+      },
+
+      async function errorIndexTooSmall() {
+        const tab1 = await createFreshTab();
+        const tab2 = await createFreshTab();
+        await chrome.test.assertPromiseRejects(
+          chrome.tabs.create({
+            splitWithTabId: tab2.id,
+            index: 0
+          }),
+          `Error: Cannot create split view with 'splitWithTabId': Tab ID ` +
+              `${tab2.id} is at index ${tab2.index}, which is not adjacent ` +
+              `to 'index' 0.`
+        );
+        await chrome.tabs.remove([tab1.id, tab2.id]);
+        chrome.test.succeed();
+      },
+
+      async function errorIndexTooLarge() {
+        const tab = await createFreshTab();
+        await chrome.test.assertPromiseRejects(
+          chrome.tabs.create({
+            splitWithTabId: tab.id,
+            index: 100
+          }),
+          `Error: Cannot create split view with 'splitWithTabId': Tab ID ` +
+              `${tab.id} is at index ${tab.index}, which is not adjacent ` +
+              `to 'index' 100.`
+        );
+        await chrome.tabs.remove(tab.id);
+        chrome.test.succeed();
+      }
+    ]);
+  )";
+
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+
+  extensions::ResultCatcher result_catcher;
+  ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
+  EXPECT_TRUE(result_catcher.GetNextResult());
 }

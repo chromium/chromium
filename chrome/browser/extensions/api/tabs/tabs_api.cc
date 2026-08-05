@@ -60,6 +60,7 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/mojom/api_permission_id.mojom-shared.h"
@@ -2140,6 +2141,56 @@ ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
   // we *will* create a new browser below.
   if (!browser) {
     return RespondNow(Error(std::move(error)));
+  }
+
+  if (base::FeatureList::IsEnabled(extensions_features::kApiTabsSplitView)) {
+    split_with_tab_id_ = create_properties.split_with_tab_id;
+
+    if (split_with_tab_id_) {
+      int target_index = -1;
+      WindowController* target_window_controller = nullptr;
+      content::WebContents* target_contents = nullptr;
+      // 1. Check that the split-with tab exists.
+      if (!ExtensionTabUtil::GetTabById(*split_with_tab_id_, browser_context(),
+                                        include_incognito_information(),
+                                        &target_window_controller,
+                                        &target_contents, &target_index)) {
+        return RespondNow(Error(ErrorUtils::FormatErrorMessage(
+            ExtensionTabUtil::kTabNotFoundError,
+            base::NumberToString(*split_with_tab_id_))));
+      }
+
+      // 2. Check that the split-with tab is not already in a split view.
+      if (::tabs::TabInterface::GetFromContents(target_contents)->IsSplit()) {
+        return RespondNow(Error(ErrorUtils::FormatErrorMessage(
+            tabs_constants::kSplitWithTabAlreadyInSplitViewError,
+            base::NumberToString(*split_with_tab_id_))));
+      }
+
+      // 3. Check that the split-with tab is in the same window as the new tab.
+      BrowserWindowInterface* split_with_browser =
+          target_window_controller
+              ? target_window_controller->GetBrowserWindowInterface()
+              : nullptr;
+      if (split_with_browser != browser) {
+        return RespondNow(Error(ErrorUtils::FormatErrorMessage(
+            tabs_constants::kSplitWithTabNotInSameWindowError,
+            base::NumberToString(*split_with_tab_id_))));
+      }
+
+      // 4. Check that the index (if specified) is adjacent to the split-with
+      // tab.
+      if (create_properties.index) {
+        int index = *create_properties.index;
+        if (index < target_index || index > target_index + 1) {
+          return RespondNow(Error(ErrorUtils::FormatErrorMessage(
+              tabs_constants::kSplitWithTabIndexNotAdjacentError,
+              base::NumberToString(*split_with_tab_id_),
+              base::NumberToString(target_index),
+              base::NumberToString(index))));
+        }
+      }
+    }
   }
 
   // We can't load extension URLs into incognito windows unless the extension

@@ -43,6 +43,9 @@ BASE_DECLARE_FEATURE(kApiActionSetBadgeTextByteLimit);
 // Controls the limit for alarms.create() API input.
 BASE_DECLARE_FEATURE(kApiAlarmsCreateLengthLimit);
 
+// Controls the availability of SplitView Extension APIs.
+BASE_DECLARE_FEATURE(kApiTabsSplitView);
+
 // Controls the availability of contentSettings.clipboard.
 BASE_DECLARE_FEATURE(kApiContentSettingsClipboard);
 

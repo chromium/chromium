@@ -403,6 +403,13 @@
                 "minimum": 0,
                 "optional": true,
                 "description": "The ID of the tab that opened this tab. If specified, the opener tab must be in the same window as the newly created tab."
+              },
+              "splitWithTabId": {
+                "type": "integer",
+                "minimum": 0,
+                "optional": true,
+                "nodoc": true,
+                "description": "The ID of an existing tab to create a split view with. If specified, the split-with tab must meet the following conditions: <ul><li>It must not be an already split tab.</li><li>It must be in the same window as the newly created tab.</li><li>If <var>windowId</var> is specified, it must be the same as the split-with tab's window ID.</li><li>If <var>index</var> is specified, it must be an index adjacent to the split-with tab and will affect the relative positioning of the newly created tab.</li></ul>"
               }
             }
           }
