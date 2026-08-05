@@ -1,0 +1,48 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+source_set("sapisid") {
+  sources = [
+    "sapisid_module_api.h",
+    "sapisid_module_loader.cc",
+    "sapisid_module_loader.h",
+  ]
+
+  deps = [ "//base" ]
+
+  # TODO(crbug.com/534400256): Uncomment this in a follow-up CL once the internal CL lands.
+  # if (is_chrome_branded) {
+  #   data_deps = [ "//internal/chrome/browser/lens/sapisid:generate_sapisid_module" ]
+  # }
+}
+
+if (is_mac) {
+  # TODO(crbug.com/534400256): Uncomment this in a follow-up CL once the internal CL lands.
+  # if (is_chrome_branded) {
+  #   bundle_data("sapisid_bundle_data") {
+  #     sources = [ "$root_out_dir/sapisid.so" ]
+  #     outputs = [ "{{bundle_contents_dir}}/Libraries/{{source_file_part}}" ]
+  #     public_deps = [ "//internal/chrome/browser/lens/sapisid:generate_sapisid_module" ]
+  #   }
+  # } else {
+  #   group("sapisid_bundle_data") {
+  #   }
+  # }
+  group("sapisid_bundle_data") {
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "sapisid_module_loader_unittest.cc" ]
+  deps = [
+    ":sapisid",
+    "//base",
+    "//base/test:test_support",
+    "//build:branding_buildflags",
+    "//testing/gtest",
+  ]
+}
