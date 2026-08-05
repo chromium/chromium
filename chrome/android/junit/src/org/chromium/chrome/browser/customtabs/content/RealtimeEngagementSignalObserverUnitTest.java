@@ -1031,6 +1031,23 @@ public class RealtimeEngagementSignalObserverUnitTest {
         assertFalse(mEngagementSignalObserver.getDidGetUserInteractionForTesting());
     }
 
+    @Test
+    public void doesNotThrowExceptionWhenTabWebContentsIsNullOnScrollOffsetChanged() {
+        initializeTabForTest();
+        GestureStateListener listener = captureGestureStateListener(ON_SCROLL_END);
+
+        Tab tab = env.tabProvider.getTab();
+        when(tab.getWebContents()).thenReturn(null);
+
+        // Invoking onScrollOffsetOrExtentChanged when tab.getWebContents() is null should return
+        // early without throwing a NullPointerException.
+        listener.onScrollOffsetOrExtentChanged(50, SCROLL_EXTENT);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mEngagementSignalsCallback, never())
+                .onGreatestScrollPercentageIncreased(anyInt(), any(Bundle.class));
+    }
+
     private void advanceTime(long millis) {
         SystemClock.setCurrentTimeMillis(CURRENT_TIME_MS + millis);
     }
