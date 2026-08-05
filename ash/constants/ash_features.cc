@@ -386,6 +386,9 @@ BASE_FEATURE(kCellularBypassESimInstallationConnectivityCheck,
 // and Settings.
 BASE_FEATURE(kCellularUseSecondEuicc, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables Enterprise Policy controls for Clipboard History.
+BASE_FEATURE(kClipboardHistoryPolicy, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled alongside the keyboard auto-repeat setting, holding down Ctrl+V
 // will cause the clipboard history menu to show. From there, the user can
 // select a clipboard history item to replace the initially pasted content.
@@ -2409,6 +2412,10 @@ bool IsCaptureModeEducationEnabled() {
 bool IsCaptureModeOnDeviceOcrEnabled() {
   return (IsScannerEnabled() || IsSunfishFeatureEnabled()) &&
          base::FeatureList::IsEnabled(kCaptureModeOnDeviceOcr);
+}
+
+bool IsClipboardHistoryPolicyEnabled() {
+  return base::FeatureList::IsEnabled(kClipboardHistoryPolicy);
 }
 
 bool IsContinuousOverviewScrollAnimationEnabled() {
