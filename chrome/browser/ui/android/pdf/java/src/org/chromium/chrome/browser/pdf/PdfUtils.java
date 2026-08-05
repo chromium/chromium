@@ -354,7 +354,7 @@ public class PdfUtils {
                 File file = new File(pdfFilePath);
                 return ChromeFileProvider.generateUri(file);
             }
-        } catch (Exception e) {
+        } catch (IllegalArgumentException | NullPointerException e) {
             Log.e(TAG, "Couldn't generate Uri: " + e);
             return null;
         }
@@ -414,7 +414,7 @@ public class PdfUtils {
             String decodedUrl = uri.getQueryParameter(UrlConstants.PDF_URL_QUERY_PARAM);
             recordIsPdfDownloadUrlDecoded(true);
             return decodedUrl;
-        } catch (Exception e) {
+        } catch (UnsupportedOperationException | NullPointerException e) {
             recordIsPdfDownloadUrlDecoded(false);
             Log.e(TAG, "Unsupported encoding: " + e.getMessage());
             return null;

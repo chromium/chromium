@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.pdf;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.DocumentsContract;
@@ -18,6 +19,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -76,7 +78,11 @@ class PdfDocumentPropertiesFetcher {
                         props.mLastModified = cursor.getLong(modIndex);
                     }
                 }
-            } catch (Exception e) {
+            } catch (SecurityException
+                    | IllegalArgumentException
+                    | NullPointerException
+                    | IllegalStateException
+                    | SQLException e) {
                 Log.w(
                         TAG,
                         "Failed to query content URI properties in a single query, attempting"
@@ -98,7 +104,11 @@ class PdfDocumentPropertiesFetcher {
                             props.mFileSize = cursor.getLong(sizeIndex);
                         }
                     }
-                } catch (Exception ex) {
+                } catch (SecurityException
+                        | IllegalArgumentException
+                        | NullPointerException
+                        | IllegalStateException
+                        | SQLException ex) {
                     Log.w(TAG, "Failed to query OpenableColumns", ex);
                 }
 
@@ -113,7 +123,11 @@ class PdfDocumentPropertiesFetcher {
                             props.mLastModified = cursor.getLong(modIndex);
                         }
                     }
-                } catch (Exception ex) {
+                } catch (SecurityException
+                        | IllegalArgumentException
+                        | NullPointerException
+                        | IllegalStateException
+                        | SQLException ex) {
                     // Ignore
                 }
             }
@@ -166,7 +180,7 @@ class PdfDocumentPropertiesFetcher {
                         Files.readAttributes(Paths.get(path), BasicFileAttributes.class);
                 FileTime time = attrs.creationTime();
                 return time.toMillis();
-            } catch (Exception e) {
+            } catch (IOException | SecurityException e) {
                 Log.w(TAG, "Failed to get file creation time", e);
             }
         }

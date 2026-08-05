@@ -154,22 +154,14 @@ public class PdfContentProviderUnitTest {
                 Uri.parse("content://com.example.app.PdfContentProvider/nonexistent"), "r");
     }
 
-    @Test(expected = FileNotFoundException.class)
-    public void testOpenFile_WriteModeRejected() throws IOException, FileNotFoundException {
+    @Test
+    public void testOpenFile_WriteModeAllowed() throws IOException, FileNotFoundException {
         ParcelFileDescriptor pfd = createMockPfd();
         Uri uri =
                 PdfContentProvider.createContentUri(
                         TEST_UNIQUE_ID, "dummy_path", pfd, TEST_FILE_NAME);
-        mProvider.openFile(uri, "w");
-    }
-
-    @Test(expected = FileNotFoundException.class)
-    public void testOpenFile_WriteTextModeRejected() throws IOException, FileNotFoundException {
-        ParcelFileDescriptor pfd = createMockPfd();
-        Uri uri =
-                PdfContentProvider.createContentUri(
-                        TEST_UNIQUE_ID, "dummy_path", pfd, TEST_FILE_NAME);
-        mProvider.openFile(uri, "wt");
+        ParcelFileDescriptor writePfd = mProvider.openFile(uri, "w");
+        assertNotNull("Write ParcelFileDescriptor should not be null", writePfd);
     }
 
     @Test

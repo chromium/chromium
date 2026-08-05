@@ -336,8 +336,12 @@ public class PdfCoordinator
                                 // throw an IndexOutOfBoundsException error.
                                 ThreadUtils.postOnUiThread(
                                         () -> capturedView.removeOnViewportChangedListener(this));
-                                delegate.onDocumentLoaded(
-                                        capturedView.getPdfDocument().getPageCount());
+                                try {
+                                    delegate.onDocumentLoaded(
+                                            capturedView.getPdfDocument().getPageCount());
+                                } catch (PdfDocument.DocumentClosedException e) {
+                                    Log.w(TAG, "Failed to get page count", e);
+                                }
                             }
                         }
                     });
@@ -535,7 +539,11 @@ public class PdfCoordinator
                             fileName = cursor.getString(index);
                         }
                     }
-                } catch (Exception e) {
+                } catch (SecurityException
+                        | IllegalArgumentException
+                        | NullPointerException
+                        | IllegalStateException
+                        | android.database.SQLException e) {
                     // Ignore
                 }
             }
@@ -893,28 +901,34 @@ public class PdfCoordinator
             PdfView pdfView = mPdfView;
             if (pdfView == null) return;
 
+            // pdfDocument can legitimately be null during tab teardown or concurrent switches.
             PdfDocument pdfDocument = pdfView.getPdfDocument();
-            assert pdfDocument != null;
+            if (pdfDocument == null) return;
 
             int pageCount = pdfDocument.getPageCount();
             int safePageIndex = getSafePageIndex(pageIndex, pageCount);
 
-            pdfDocument.getPageInfo(
-                    safePageIndex,
-                    new Continuation<PageInfo>() {
-                        @Override
-                        public CoroutineContext getContext() {
-                            return EmptyCoroutineContext.INSTANCE;
-                        }
+            try {
+                pdfDocument.getPageInfo(
+                        safePageIndex,
+                        new Continuation<PageInfo>() {
+                            @Override
+                            public CoroutineContext getContext() {
+                                return EmptyCoroutineContext.INSTANCE;
+                            }
 
-                        @Override
-                        public void resumeWith(Object result) {
-                            PageInfo pageInfo =
-                                    result instanceof PageInfo ? (PageInfo) result : null;
-                            assert pageInfo != null;
-                            action.accept(pageInfo);
-                        }
-                    });
+                            @Override
+                            public void resumeWith(Object result) {
+                                if (result instanceof PageInfo) {
+                                    action.accept((PageInfo) result);
+                                } else {
+                                    Log.w(TAG, "Failed to get page info. Result: " + result);
+                                }
+                            }
+                        });
+            } catch (PdfDocument.DocumentClosedException e) {
+                Log.w(TAG, "Failed to get page info", e);
+            }
         }
 
         void fitToPage(boolean fitToPageHeight, int pageIndex) {
@@ -1441,6 +1455,7 @@ public class PdfCoordinator
     public void showDocumentProperties() {
         if (mChromePdfViewerFragment == null) return;
         PdfView pdfView = mChromePdfViewerFragment.mPdfView;
+        // pdfDocument can legitimately be null during tab teardown or concurrent switches.
         if (pdfView == null || pdfView.getPdfDocument() == null) return;
 
         Context appContext = mActivity.getApplicationContext();
@@ -1486,7 +1501,11 @@ public class PdfCoordinator
         if (mChromePdfViewerFragment != null
                 && mChromePdfViewerFragment.mPdfView != null
                 && mChromePdfViewerFragment.mPdfView.getPdfDocument() != null) {
-            pageCount = mChromePdfViewerFragment.mPdfView.getPdfDocument().getPageCount();
+            try {
+                pageCount = mChromePdfViewerFragment.mPdfView.getPdfDocument().getPageCount();
+            } catch (PdfDocument.DocumentClosedException e) {
+                Log.w(TAG, "Failed to get page count for properties dialog", e);
+            }
         }
         String pageCountStr = String.valueOf(pageCount);
         String pageSizeStr = formatPageSize(pageInfo);
