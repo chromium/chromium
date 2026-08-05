@@ -14179,6 +14179,21 @@
             ]
         }
     ],
+    "IOSComposeboxDriveContextMenuOption": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ComposeboxDriveContextMenuOption"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSComposeboxPhysicalKeyboardReturnKeys": [
         {
             "platforms": [
