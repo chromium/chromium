@@ -16,7 +16,7 @@
 #include "chrome/browser/dictation/stream_provider.h"
 #include "chrome/browser/dictation/target.h"
 #include "chrome/browser/dictation/test_util.h"
-#include "chrome/browser/glic/test_support/non_interactive_glic_test.h"
+#include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -608,22 +608,21 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
 
 // TODO(b/533465625): Ideally we could also make this a child of
 // DictationBrowserTestBase so we get all the helpers.
-// TODO(crbug.com/537848278): Simplify this test suite to GlicBrowserTest.
-class DictationGlicBrowserTest : public glic::NonInteractiveGlicTest {
+class DictationGlicBrowserTest : public glic::GlicBrowserTest {
  public:
   DictationGlicBrowserTest()
       : scoped_feature_list_(CreateEnablingFeatureList()) {}
   ~DictationGlicBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    glic::NonInteractiveGlicTest::SetUpCommandLine(command_line);
+    glic::GlicBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(
         extensions::switches::kAllowlistedExtensionID,
         std::string(kDictationTestExtensionId));
   }
 
   void SetUpOnMainThread() override {
-    glic::NonInteractiveGlicTest::SetUpOnMainThread();
+    glic::GlicBrowserTest::SetUpOnMainThread();
     GetProfile()->GetPrefs()->SetBoolean(
         prefs::kPrefDictationOnboardingCompleted, true);
     LoadTestExtensionInManualMode(GetProfile());
@@ -640,9 +639,10 @@ class DictationGlicBrowserTest : public glic::NonInteractiveGlicTest {
 // Ensure basic stream setup, state changes, and end work correctly for streams
 // started for a Glic guest.
 IN_PROC_BROWSER_TEST_F(DictationGlicBrowserTest, BasicStreamFunctions) {
-  RunTestSequence(OpenGlic(), CheckGlicInstanceIsShowing());
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  ASSERT_OK(WaitForGlicClient(instance));
 
-  content::RenderFrameHost* glic_rfh = FindGlicGuestMainFrame();
+  content::RenderFrameHost* glic_rfh = instance->host().GetGuestMainFrame();
   ASSERT_TRUE(glic_rfh);
 
   // Start a session using the Glic guest document rather than the normal tab
@@ -650,8 +650,8 @@ IN_PROC_BROWSER_TEST_F(DictationGlicBrowserTest, BasicStreamFunctions) {
   content::GlobalDOMNodeId target_id(glic_rfh->GetWeakDocumentPtr(),
                                      blink::DOMNodeIdType(123));
 
-  tabs::TabInterface* tab = chrome_test_utils::GetActiveTab(this);
-  CHECK(tab);
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(tab);
   dictation_service().StartSession(*tab, TargetDetails(target_id),
                                    DictationSessionEntryPoint::kContextMenu);
 
@@ -680,7 +680,6 @@ IN_PROC_BROWSER_TEST_F(DictationGlicBrowserTest, BasicStreamFunctions) {
   EXPECT_EQ(controller->GetState(), SessionState::kInactive);
 
   dictation_service().EndSession();
-  RunTestSequence(CloseGlic());
 }
 
 }  // namespace
