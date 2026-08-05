@@ -28,7 +28,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/password_manager/remote_actor_credential_sharing_policy.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/sync/protocol/password_specifics.pb.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -37,6 +36,7 @@
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/protocol/password_specifics.pb.h"
 #include "components/sync/test/mock_sync_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -167,9 +167,8 @@ class RemoteActorCredentialSharingImplTest
     // Default sync config: active.
     SetSyncActive(true);
     autofill::ChromeAutofillClient::CreateForWebContents(web_contents());
-    mock_client_ =
-        MockChromePasswordManagerClient::CreateForWebContentsAndGet(
-            web_contents());
+    mock_client_ = MockChromePasswordManagerClient::CreateForWebContentsAndGet(
+        web_contents());
     ON_CALL(*mock_client_, IsReauthBeforeFillingRequired)
         .WillByDefault(testing::Return(false));
     mock_match_helper_ = std::make_unique<
@@ -316,23 +315,25 @@ class RemoteActorCredentialSharingImplTest
       EXPECT_CALL(*raw_authenticator,
                   AuthenticateWithMessage(expected_message, testing::_))
           .WillOnce(testing::WithArg<1>(
-              [auth_success](device_reauth::DeviceAuthenticator::AuthenticateCallback callback) {
-                std::move(callback).Run(auth_success);
-              }));
+              [auth_success](
+                  device_reauth::DeviceAuthenticator::AuthenticateCallback
+                      callback) { std::move(callback).Run(auth_success); }));
     } else {
       EXPECT_CALL(*raw_authenticator, AuthenticateWithMessage).Times(0);
     }
 
     EXPECT_CALL(*mock_client_, GetDeviceAuthenticator)
-        .WillOnce([authenticator = std::move(prepared_authenticator)]() mutable {
-          return std::move(authenticator);
-        });
+        .WillOnce(
+            [authenticator = std::move(prepared_authenticator)]() mutable {
+              return std::move(authenticator);
+            });
     EXPECT_CALL(*mock_client_, IsReauthBeforeFillingRequired)
         .WillOnce(testing::Return(reauth_required));
   }
 
   bool RunSharingFlowAndSelect(
-      mojo::AssociatedRemote<chrome::mojom::RemoteActorCredentialSharing>& remote) {
+      mojo::AssociatedRemote<chrome::mojom::RemoteActorCredentialSharing>&
+          remote) {
     PasswordForm form;
     form.signon_realm = "https://google.com/";
     form.url = GURL("https://google.com");
@@ -400,7 +401,8 @@ class RemoteActorCredentialSharingImplTest
   std::string last_dialog_credential_domain_;
   base::OnceCallback<void(std::optional<PasswordForm>)> last_dialog_callback_;
   base::OnceClosure dialog_shown_quit_closure_;
-  raw_ptr<StubRemoteActorSelectionDialogController> last_dialog_controller_ = nullptr;
+  raw_ptr<StubRemoteActorSelectionDialogController> last_dialog_controller_ =
+      nullptr;
 
   raw_ptr<MockChromePasswordManagerClient> mock_client_ = nullptr;
   affiliations::FakeAffiliationService fake_affiliation_service_;
@@ -669,28 +671,27 @@ TEST_F(RemoteActorCredentialSharingImplTest, SuccessFlow_SelectCredential) {
 
   EXPECT_CALL(
       *mock_sharing_service_,
-      SharePassword(AllOf(Field(&RemoteActorCredentialSharingService::
-                                    ShareParameters::password_data,
-                                ::testing::Property(
-                                    &sync_pb::PasswordSpecificsData::
-                                        username_value,
-                                    "user")),
-                          Field(&RemoteActorCredentialSharingService::
-                                    ShareParameters::password_data,
-                                ::testing::Property(
-                                    &sync_pb::PasswordSpecificsData::
-                                        password_value,
-                                    "pass")),
-                          Field(&RemoteActorCredentialSharingService::
-                                    ShareParameters::web_origin,
-                                "https://google.com"),
-                          Field(&RemoteActorCredentialSharingService::
-                                    ShareParameters::agent_oauth_client_id,
-                                "actor_id"),
-                          Field(&RemoteActorCredentialSharingService::
-                                    ShareParameters::password_client_tag_hash,
-                                Not(IsEmpty()))),
-                    _))
+      SharePassword(
+          AllOf(Field(&RemoteActorCredentialSharingService::ShareParameters::
+                          password_data,
+                      ::testing::Property(
+                          &sync_pb::PasswordSpecificsData::username_value,
+                          "user")),
+                Field(&RemoteActorCredentialSharingService::ShareParameters::
+                          password_data,
+                      ::testing::Property(
+                          &sync_pb::PasswordSpecificsData::password_value,
+                          "pass")),
+                Field(&RemoteActorCredentialSharingService::ShareParameters::
+                          web_origin,
+                      "https://google.com"),
+                Field(&RemoteActorCredentialSharingService::ShareParameters::
+                          agent_oauth_client_id,
+                      "actor_id"),
+                Field(&RemoteActorCredentialSharingService::ShareParameters::
+                          password_client_tag_hash,
+                      Not(IsEmpty()))),
+          _))
       .WillOnce(base::test::RunOnceCallback<1>(true));
 
   // Simulate user selecting the credential.
@@ -1004,6 +1005,66 @@ TEST_F(RemoteActorCredentialSharingImplTest,
   EXPECT_EQ(last_dialog_credentials_[1]->username_value, u"affiliated_user");
 
   SimulateDialogSelection(std::nullopt);
+}
+
+TEST_F(RemoteActorCredentialSharingImplTest,
+       RejectDuplicateRequestWhenRequestAlreadyInProgress) {
+  base::HistogramTester histograms;
+  SignIn("user@gmail.com");
+  NavigateAndCommit(GURL("https://gemini.google.com"));
+  content::RenderFrameHostTester::For(main_rfh())
+      ->InitializeRenderFrameIfNeeded();
+  CreateImpl();
+
+  RemoteActorCredentialSharingImpl* impl =
+      RemoteActorCredentialSharingImpl::GetForCurrentDocument(main_rfh());
+  ASSERT_NE(impl, nullptr);
+
+  mojo::AssociatedRemote<chrome::mojom::RemoteActorCredentialSharing> remote;
+  impl->Bind(remote.BindNewEndpointAndPassDedicatedReceiver());
+
+  PasswordForm form;
+  form.signon_realm = "https://google.com/";
+  form.url = GURL("https://google.com");
+  form.username_value = u"user";
+  form.password_value = u"pass";
+  form.in_store = PasswordForm::Store::kProfileStore;
+  profile_store_->AddLogin(FromPasswordForm(form));
+
+  content::RenderFrameHostTester::For(main_rfh())->SimulateUserActivation();
+  base::test::TestFuture<bool> first_result;
+  base::test::TestFuture<void> dialog_shown_future;
+  dialog_shown_quit_closure_ = dialog_shown_future.GetCallback();
+  remote->RequestAgentAuthentication(
+      /*gaia_id=*/account_info_.gaia.ToString(),
+      /*domain=*/"google.com", /*remote_actor_id=*/"actor_id",
+      first_result.GetCallback());
+
+  dialog_shown_future.Get();
+
+  // A second request while the first request is active (dialog shown) should be
+  // immediately rejected with false and log kRequestAlreadyInProgress.
+  content::RenderFrameHostTester::For(main_rfh())->SimulateUserActivation();
+  base::test::TestFuture<bool> second_result;
+  remote->RequestAgentAuthentication(
+      /*gaia_id=*/account_info_.gaia.ToString(),
+      /*domain=*/"google.com", /*remote_actor_id=*/"actor_id_2",
+      second_result.GetCallback());
+
+  EXPECT_FALSE(second_result.Get());
+  histograms.ExpectBucketCount(
+      "PasswordManager.RemoteActorCredentialSharing.Result",
+      RemoteActorCredentialSharingResult::kRequestAlreadyInProgress, 1);
+
+  // The first request should still proceed unaffected.
+  EXPECT_CALL(*mock_sharing_service_, SharePassword)
+      .WillOnce(base::test::RunOnceCallback<1>(true));
+  SimulateDialogSelection(*last_dialog_credentials_[0]);
+  EXPECT_TRUE(first_result.Get());
+
+  histograms.ExpectBucketCount(
+      "PasswordManager.RemoteActorCredentialSharing.Result",
+      RemoteActorCredentialSharingResult::kSuccess, 1);
 }
 
 }  // namespace password_manager

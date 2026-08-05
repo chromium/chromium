@@ -109,7 +109,6 @@ RemoteActorCredentialSharingImpl::RemoteActorCredentialSharingImpl(
 
 RemoteActorCredentialSharingImpl::~RemoteActorCredentialSharingImpl() = default;
 
-
 void RemoteActorCredentialSharingImpl::Bind(
     mojo::PendingAssociatedReceiver<chrome::mojom::RemoteActorCredentialSharing>
         receiver) {
@@ -122,6 +121,12 @@ void RemoteActorCredentialSharingImpl::RequestAgentAuthentication(
     const std::string& remote_actor_id,
     RequestAgentAuthenticationCallback callback) {
   if (!ValidateRequestPreconditions(gaia_id, domain, remote_actor_id)) {
+    RespondWithError(std::move(callback));
+    return;
+  }
+
+  if (pending_request_) {
+    LogResult(RemoteActorCredentialSharingResult::kRequestAlreadyInProgress);
     RespondWithError(std::move(callback));
     return;
   }
@@ -162,10 +167,8 @@ void RemoteActorCredentialSharingImpl::OnGetPasswordStoreResultsOrErrorFrom(
     for (StoredCredential& login : logins) {
       password_manager_util::GetLoginMatchType match_type =
           password_manager_util::GetMatchType(login);
-      if (match_type !=
-              password_manager_util::GetLoginMatchType::kExact &&
-          match_type !=
-              password_manager_util::GetLoginMatchType::kAffiliated) {
+      if (match_type != password_manager_util::GetLoginMatchType::kExact &&
+          match_type != password_manager_util::GetLoginMatchType::kAffiliated) {
         continue;
       }
       PasswordForm form = ToPasswordForm(std::move(login));
@@ -345,10 +348,7 @@ void RemoteActorCredentialSharingImpl::QueryPasswordStores(
     const std::string& domain,
     const std::string& remote_actor_id,
     RequestAgentAuthenticationCallback callback) {
-  if (pending_request_) {
-    std::move(pending_request_->callback).Run(false);
-    pending_request_.reset();
-  }
+  CHECK(!pending_request_);
   dialog_controller_.reset();
 
   auto* sync_service = SyncServiceFactory::GetForProfile(profile);
@@ -443,13 +443,14 @@ void RemoteActorCredentialSharingImpl::OnDialogResult(
         GURL(base::StrCat({"https://", pending_request_->domain})));
     const std::u16string origin_str =
         base::UTF8ToUTF16(GetShownOrigin(domain_origin));
-    message = l10n_util::GetStringFUTF16(
-        IDS_PASSWORD_MANAGER_FILLING_REAUTH, origin_str);
+    message = l10n_util::GetStringFUTF16(IDS_PASSWORD_MANAGER_FILLING_REAUTH,
+                                         origin_str);
 #endif
     device_authenticator_->AuthenticateWithMessage(
         message,
         base::BindOnce(&RemoteActorCredentialSharingImpl::ProceedWithCredential,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(*selected_form)));
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(*selected_form)));
     return;
   }
 
