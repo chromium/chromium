@@ -225,6 +225,7 @@ class AtMemoryManager : public CreditCardAccessManager::Observer {
       std::unique_ptr<AtMemoryMetricsRecorder> metrics,
       base::expected<EntityInstance, AutofillAiAccessManager::FailureReason>
           result,
+      bool did_fetch_from_server,
       bool reauth_attempted);
 
   const raw_ptr<BrowserAutofillManager> owner_;

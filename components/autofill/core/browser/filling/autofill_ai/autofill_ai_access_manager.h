@@ -37,6 +37,7 @@ class AutofillAiAccessManager {
 
   using OnEntityInstanceFetchedCallback = base::OnceCallback<void(
       base::expected<EntityInstance, FailureReason> result,
+      bool did_fetch_from_server,
       bool reauth_attempted)>;
 
   explicit AutofillAiAccessManager(BrowserAutofillManager* manager);
@@ -50,16 +51,17 @@ class AutofillAiAccessManager {
   // 2. If re-authentication succeeds (or isn't required), fetches the unmasked
   //    server entity from the wallet server if the entity is a masked server
   //    entity.
-  // 3. Invokes `callback` with the final entity on success, or with a
-  //    `FailureReason` if re-authentication or unmasking fails.
+  // 3. Invokes `on_fetched_callback` with the final entity on success, or with
+  //    a `FailureReason` if re-authentication or unmasking fails.
   //
   // Returns a boolean indicating if the operation is asynchronous (requiring
   // server-side fetching or device re-authentication). Only one flow can be
   // active at any given time; starting a new one cancels the previous one.
   // When a pending flow is cancelled, its callback is not executed.
-  virtual bool FetchEntityInstance(EntityInstance entity,
-                                   bool will_fill_sensitive_info,
-                                   OnEntityInstanceFetchedCallback callback);
+  virtual bool FetchEntityInstance(
+      EntityInstance entity,
+      bool will_fill_sensitive_info,
+      OnEntityInstanceFetchedCallback on_fetched_callback);
 
   // Cancels any pending authentication or fetch operations and invalidates all
   // pending callbacks.
@@ -68,12 +70,16 @@ class AutofillAiAccessManager {
  private:
   friend class AutofillAiAccessManagerTestApi;
 
+  using OnUnmaskCallback = base::OnceCallback<void(
+      base::expected<EntityInstance, FailureReason> result,
+      bool reauth_attempted)>;
+
   // Handles optional device re-authentication before unmasking. Invokes
-  // `callback` with the unmasked entity if authentication succeeds or isn't
-  // needed, or with the failure reason if it fails.
+  // `on_unmask_callback` with the unmasked entity if authentication
+  // succeeds or isn't needed, or with the failure reason if it fails.
   void MaybeAuthenticate(EntityInstance entity,
                          bool should_reauth,
-                         OnEntityInstanceFetchedCallback callback);
+                         OnUnmaskCallback on_unmask_callback);
 
   // Triggers user authentication and runs `callback` with an authentication
   // result on completion.
@@ -81,10 +87,10 @@ class AutofillAiAccessManager {
                     base::OnceCallback<void(bool)> callback);
 
   // Handles optional server-side fetching of the unmasked server entity.
-  // Invokes `callback` with the unmasked entity, or the failure reason if it
-  // fails.
+  // Invokes `on_fetched_callback` with the unmasked entity, or the failure
+  // reason if it fails.
   void MaybeUnmaskServerEntity(
-      OnEntityInstanceFetchedCallback callback,
+      OnEntityInstanceFetchedCallback on_fetched_callback,
       bool should_fetch,
       base::expected<EntityInstance, FailureReason> result,
       bool reauth_attempted);

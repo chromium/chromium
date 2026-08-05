@@ -153,6 +153,7 @@ TEST_F(AutofillAiAccessManagerTest, NoReauthRequired_LocalEntity) {
       callback,
       Run(base::expected<EntityInstance,
                          AutofillAiAccessManager::FailureReason>(passport),
+          /*did_fetch_from_server=*/false,
           /*reauth_attempted=*/false));
 
   EXPECT_FALSE(access_manager().FetchEntityInstance(
@@ -187,6 +188,7 @@ TEST_F(AutofillAiAccessManagerTest, ReauthRequired_ReauthAccepted) {
       callback,
       Run(base::expected<EntityInstance,
                          AutofillAiAccessManager::FailureReason>(passport),
+          /*did_fetch_from_server=*/false,
           /*reauth_attempted=*/true));
 
   EXPECT_TRUE(access_manager().FetchEntityInstance(
@@ -220,6 +222,7 @@ TEST_F(AutofillAiAccessManagerTest, ReauthRequired_ReauthRejected) {
                          AutofillAiAccessManager::FailureReason>(
               base::unexpected(
                   AutofillAiAccessManager::FailureReason::kReauthFailed)),
+          /*did_fetch_from_server=*/false,
           /*reauth_attempted=*/true));
 
   EXPECT_TRUE(access_manager().FetchEntityInstance(
@@ -254,6 +257,7 @@ TEST_F(AutofillAiAccessManagerTest,
                          AutofillAiAccessManager::FailureReason>(
               base::unexpected(
                   AutofillAiAccessManager::FailureReason::kReauthFailed)),
+          /*did_fetch_from_server=*/false,
           /*reauth_attempted=*/true));
 
   base::HistogramTester histogram_tester;
@@ -287,6 +291,7 @@ TEST_F(AutofillAiAccessManagerTest, ReauthRequired_NoAuthenticator) {
       callback,
       Run(base::expected<EntityInstance,
                          AutofillAiAccessManager::FailureReason>(passport),
+          /*did_fetch_from_server=*/false,
           /*reauth_attempted=*/true));
 
   EXPECT_TRUE(access_manager().FetchEntityInstance(
@@ -318,6 +323,7 @@ TEST_F(AutofillAiAccessManagerTest, ServerFetch_Success) {
       callback,
       Run(base::expected<EntityInstance,
                          AutofillAiAccessManager::FailureReason>(full_passport),
+          /*did_fetch_from_server=*/true,
           /*reauth_attempted=*/false));
 
   EXPECT_TRUE(access_manager().FetchEntityInstance(
@@ -350,6 +356,7 @@ TEST_F(AutofillAiAccessManagerTest, ServerFetch_Failure) {
                          AutofillAiAccessManager::FailureReason>(
               base::unexpected(
                   AutofillAiAccessManager::FailureReason::kFetchFailed)),
+          /*did_fetch_from_server=*/true,
           /*reauth_attempted=*/false));
 
   EXPECT_TRUE(access_manager().FetchEntityInstance(
@@ -393,6 +400,7 @@ TEST_F(AutofillAiAccessManagerTest, ReauthAndServerFetch_Success) {
       callback,
       Run(base::expected<EntityInstance,
                          AutofillAiAccessManager::FailureReason>(full_passport),
+          /*did_fetch_from_server=*/true,
           /*reauth_attempted=*/true));
 
   EXPECT_TRUE(access_manager().FetchEntityInstance(
@@ -436,6 +444,7 @@ TEST_F(AutofillAiAccessManagerTest, ReauthAndServerFetch_ServerFetchFailure) {
                          AutofillAiAccessManager::FailureReason>(
               base::unexpected(
                   AutofillAiAccessManager::FailureReason::kFetchFailed)),
+          /*did_fetch_from_server=*/true,
           /*reauth_attempted=*/true));
 
   EXPECT_TRUE(access_manager().FetchEntityInstance(
@@ -507,6 +516,7 @@ TEST_F(AutofillAiAccessManagerTest, PersonalContextFetch_Success) {
       callback,
       Run(base::expected<EntityInstance,
                          AutofillAiAccessManager::FailureReason>(full_passport),
+          /*did_fetch_from_server=*/true,
           /*reauth_attempted=*/true));
 
   EXPECT_TRUE(access_manager().FetchEntityInstance(
@@ -546,6 +556,7 @@ TEST_F(AutofillAiAccessManagerTest, PersonalContextFetch_Failure) {
                          AutofillAiAccessManager::FailureReason>(
               base::unexpected(
                   AutofillAiAccessManager::FailureReason::kFetchFailed)),
+          /*did_fetch_from_server=*/true,
           /*reauth_attempted=*/true));
 
   EXPECT_TRUE(access_manager().FetchEntityInstance(
@@ -583,6 +594,7 @@ TEST_F(AutofillAiAccessManagerTest, PersonalContextFetch_NoManager) {
                          AutofillAiAccessManager::FailureReason>(
               base::unexpected(
                   AutofillAiAccessManager::FailureReason::kFetchFailed)),
+          /*did_fetch_from_server=*/true,
           /*reauth_attempted=*/true));
 
   EXPECT_TRUE(access_manager().FetchEntityInstance(

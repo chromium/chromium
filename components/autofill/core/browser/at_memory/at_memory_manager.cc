@@ -1299,6 +1299,7 @@ void AtMemoryManager::OnAutofillAiFetched(
     std::unique_ptr<AtMemoryMetricsRecorder> metrics,
     base::expected<EntityInstance, AutofillAiAccessManager::FailureReason>
         result,
+    bool did_fetch_from_server,
     bool reauth_attempted) {
   owner_->client().HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
                                    FillingProduct::kAtMemory);
