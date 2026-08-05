@@ -24,6 +24,8 @@
 #include "extensions/browser/api/declarative_net_request/prefs_helper.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_manager.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
+#include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_prefs_observer.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
@@ -34,7 +36,6 @@ class BrowserContext;
 }  // namespace content
 
 namespace extensions {
-class ExtensionPrefs;
 class WarningService;
 
 namespace api {
@@ -57,7 +58,8 @@ using LoadRulesetThrottleCallback =
 // separate instance of RulesMonitorService is not created for incognito. Both
 // the incognito and normal contexts will share the same ruleset.
 class RulesMonitorService : public BrowserContextKeyedAPI,
-                            public ExtensionRegistryObserver {
+                            public ExtensionRegistryObserver,
+                            public ExtensionPrefsObserver {
  public:
   using ApiCallback =
       base::OnceCallback<void(std::optional<std::string> error)>;
@@ -191,6 +193,21 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
                               const Extension* extension,
                               UninstallReason reason) override;
 
+  // ExtensionPrefsObserver implementation.
+  // Fired when an extension's prefs are deleted. This has two sources: as a
+  // downstream effect of an uninstall (ExtensionPrefs::OnExtensionUninstalled),
+  // or (the case this cares about) when ExtensionGarbageCollector removes
+  // an unpacked extension whose source directory was deleted on disk while the
+  // browser was closed. The latter never loads, so no unload/uninstall event
+  // fires and its global rule allocation would leak. Only that orphan path
+  // releases the allocation and cleans up on-disk rules here; when this instead
+  // follows an OnExtensionUninstalled (tracked in
+  // `extensions_handled_by_uninstall_`), that handler already dealt with the
+  // allocation (a normal uninstall released it; a reinstall deliberately kept
+  // it), so this must not touch it again. Runs before the pref dict is erased,
+  // so the allocation value is still readable here.
+  void OnExtensionPrefsDeleted(const ExtensionId& extension_id) override;
+
   // Internal helper for UpdateDynamicRules.
   void UpdateDynamicRulesInternal(
       const ExtensionId& extension_id,
@@ -256,8 +273,9 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
   // checksum in preferences from `load_data`.
   void LogMetricsAndUpdateChecksumsIfNeeded(const LoadRequestData& load_data);
 
-  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
-      registry_observation_{this};
+  // Releases the global rule allocation held by `extension_id`, and deletes its
+  // on-disk dynamic rules directory if it has a dynamic ruleset.
+  void CleanUpRulesOnExtensionUninstall(const ExtensionId& extension_id);
 
   // Helper to bridge tasks to a sequence which allows file IO.
   std::unique_ptr<FileSequenceBridge> file_sequence_bridge_;
@@ -290,6 +308,22 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
   // part of RulesetMatcher, leading to double memory usage. We should be able
   // to do away with the base::ListValue representation.
   base::flat_map<ExtensionId, base::ListValue> session_rules_;
+
+  // Extension ids for which OnExtensionUninstalled has just run. Prefs deletion
+  // fires OnExtensionPrefsDeleted synchronously afterwards as a downstream
+  // effect; an id present here tells that handler the allocation was already
+  // dealt with by the uninstall (released for a normal uninstall, deliberately
+  // preserved for a reinstall) and must not be released again. Entries are
+  // inserted in OnExtensionUninstalled and erased in OnExtensionPrefsDeleted,
+  // so only prefs deletions with no matching uninstall (the orphaned unpacked
+  // extension path) fall through to release the allocation.
+  std::set<ExtensionId> extensions_handled_by_uninstall_;
+
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      registry_observation_{this};
+
+  base::ScopedObservation<ExtensionPrefs, ExtensionPrefsObserver>
+      prefs_observation_{this};
 
   // Must be the last member variable. See WeakPtrFactory documentation for
   // details.

@@ -53,6 +53,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/manifest.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "tools/json_schema_compiler/util.h"
 
@@ -518,6 +519,7 @@ RulesMonitorService::RulesMonitorService(
       action_tracker_(browser_context),
       global_rules_tracker_(prefs_, extension_registry_) {
   registry_observation_.Observe(extension_registry_.get());
+  prefs_observation_.Observe(prefs_);
 }
 
 RulesMonitorService::~RulesMonitorService() = default;
@@ -689,28 +691,60 @@ void RulesMonitorService::OnExtensionUninstalled(
 
   session_rules_.erase(extension->id());
 
+  // Record that this extension went through uninstall.
+  // ExtensionRegistrar::UninstallExtension fires OnExtensionUninstalled, then
+  // calls ExtensionPrefs::OnExtensionUninstalled which fires
+  // OnExtensionPrefsDeleted synchronously; that handler keys off this set so it
+  // doesn't re-release (or, on a reinstall, wrongly release) the allocation.
+  extensions_handled_by_uninstall_.insert(extension->id());
+
   // Skip if the extension will be reinstalled soon.
   if (reason == UNINSTALL_REASON_REINSTALL) {
     return;
   }
 
-  global_rules_tracker_.ClearExtensionAllocation(extension->id());
+  CleanUpRulesOnExtensionUninstall(extension->id());
+}
 
-  // Skip if the extension doesn't have a dynamic ruleset.
-  PrefsHelper helper(*prefs_);
-  int dynamic_checksum;
-  if (!helper.GetDynamicRulesetChecksum(extension->id(), dynamic_checksum)) {
+void RulesMonitorService::OnExtensionPrefsDeleted(
+    const ExtensionId& extension_id) {
+  // If this prefs deletion is the downstream effect of an uninstall we just
+  // handled, OnExtensionUninstalled already dealt with the allocation (released
+  // it for a normal uninstall, or deliberately preserved it for a reinstall);
+  // don't touch it again.
+  if (extensions_handled_by_uninstall_.erase(extension_id)) {
     return;
   }
 
-  // Cleanup the dynamic rules directory for the extension.
+  // Otherwise the prefs were erased with no uninstall event, e.g. when
+  // ExtensionGarbageCollector removes an unpacked extension whose source
+  // directory was deleted on disk while the browser was closed. Such extensions
+  // never load, so OnExtensionUnloaded and OnExtensionUninstalled never run.
+  // Release the global rule allocation the extension held so the budget isn't
+  // leaked, and clean up any on-disk dynamic rules. This runs before the pref
+  // dict is erased, so the allocation and dynamic ruleset checksum are still
+  // readable here.
+  CleanUpRulesOnExtensionUninstall(extension_id);
+}
+
+void RulesMonitorService::CleanUpRulesOnExtensionUninstall(
+    const ExtensionId& extension_id) {
+  global_rules_tracker_.ClearExtensionAllocation(extension_id);
+
+  int dynamic_checksum = 0;
+  if (!PrefsHelper(*prefs_).GetDynamicRulesetChecksum(extension_id,
+                                                      dynamic_checksum)) {
+    return;
+  }
+
   // TODO(karandeepb): It's possible that this task fails, e.g. during shutdown.
   // Make this more robust.
   FileBackedRulesetSource source =
-      FileBackedRulesetSource::CreateDynamic(browser_context, extension->id());
+      FileBackedRulesetSource::CreateDynamic(context_, extension_id);
   DCHECK_EQ(source.json_path().DirName(), source.indexed_path().DirName());
   GetExtensionFileTaskRunner()->PostTask(
-      FROM_HERE, base::GetDeleteFileCallback(source.json_path().DirName()));
+      FROM_HERE,
+      base::GetDeletePathRecursivelyCallback(source.json_path().DirName()));
 }
 
 void RulesMonitorService::UpdateDynamicRulesInternal(

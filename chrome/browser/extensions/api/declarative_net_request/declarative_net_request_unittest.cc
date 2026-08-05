@@ -31,6 +31,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/declarative_net_request/dnr_test_base.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/extensions/extension_garbage_collector.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/declarative_net_request/composite_matcher.h"
@@ -58,6 +59,7 @@
 #include "extensions/common/file_util.h"
 #include "extensions/common/install_warning.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/url_pattern.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -3151,6 +3153,157 @@ TEST_P(MultipleRulesetsTest_Unpacked, UpdateAllocationOnReload) {
   // reloaded.
   EXPECT_EQ(50u, global_rules_tracker.GetAllocatedGlobalRuleCountForTesting());
   CheckExtensionAllocationInPrefs(extension_id, 50);
+}
+
+// Regression test for crbug.com/520262201: an unpacked extension whose source
+// directory is deleted while the browser is closed never loads on restart, so
+// its DNR global rule allocation leaks. Verifies that
+// ExtensionGarbageCollector reclaims it via the OnExtensionPrefsDeleted path.
+TEST_P(MultipleRulesetsTest_Unpacked,
+       OrphanedUnpackedExtensionAllocationReclaimed) {
+  const size_t kAllocation = 50;
+  AddRuleset(CreateRuleset(
+      kId1, GetStaticGuaranteedMinimumRuleCount() + kAllocation, 0, true));
+
+  RulesetManagerObserver ruleset_waiter(manager());
+  LoadAndExpectSuccess(GetStaticGuaranteedMinimumRuleCount() + kAllocation);
+  ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
+
+  const ExtensionId extension_id = extension()->id();
+  const base::FilePath source_dir = extension()->path();
+
+  GlobalRulesTracker& global_rules_tracker =
+      RulesMonitorService::Get(browser_context())->global_rules_tracker();
+
+  ASSERT_EQ(kAllocation,
+            global_rules_tracker.GetAllocatedGlobalRuleCountForTesting());
+  CheckExtensionAllocationInPrefs(extension_id, kAllocation);
+
+  const size_t total_limit =
+      global_rules_tracker.GetUnallocatedRuleCount() + kAllocation;
+
+  // Simulate orphan state: source dir gone, extension absent from registry,
+  // but prefs survived. RemoveEnabled (unlike uninstall) doesn't release the
+  // allocation, matching the never-loaded startup state.
+  ASSERT_TRUE(base::DeletePathRecursively(source_dir));
+  ASSERT_FALSE(base::PathExists(source_dir));
+  ASSERT_TRUE(registry()->RemoveEnabled(extension_id));
+  ASSERT_FALSE(registry()->GetInstalledExtension(extension_id));
+
+  // Can't use GetAllocatedGlobalRuleCountForTesting() here because it
+  // cross-checks against the registry (which no longer has this extension).
+  EXPECT_EQ(total_limit - kAllocation,
+            global_rules_tracker.GetUnallocatedRuleCount());
+  CheckExtensionAllocationInPrefs(extension_id, kAllocation);
+
+  ExtensionGarbageCollector::Get(browser_context())
+      ->GarbageCollectExtensionsForTest();
+  content::RunAllTasksUntilIdle();
+
+  // After garbage collection, the rule counter should have updated to remove
+  // the allocation for the no-longer-present extension.
+  EXPECT_EQ(total_limit, global_rules_tracker.GetUnallocatedRuleCount());
+  CheckExtensionAllocationInPrefs(extension_id, std::nullopt);
+}
+
+// Control: ensures garbage collection doesn't reclaim allocations from
+// extensions that are still installed (not orphaned).
+TEST_P(MultipleRulesetsTest_Unpacked,
+       LoadedUnpackedExtensionAllocationPreserved) {
+  const size_t kAllocation = 50;
+  AddRuleset(CreateRuleset(
+      kId1, GetStaticGuaranteedMinimumRuleCount() + kAllocation, 0, true));
+
+  RulesetManagerObserver ruleset_waiter(manager());
+  LoadAndExpectSuccess(GetStaticGuaranteedMinimumRuleCount() + kAllocation);
+  ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
+
+  const ExtensionId extension_id = extension()->id();
+  GlobalRulesTracker& global_rules_tracker =
+      RulesMonitorService::Get(browser_context())->global_rules_tracker();
+
+  ASSERT_EQ(kAllocation,
+            global_rules_tracker.GetAllocatedGlobalRuleCountForTesting());
+  CheckExtensionAllocationInPrefs(extension_id, kAllocation);
+
+  ExtensionGarbageCollector::Get(browser_context())
+      ->GarbageCollectExtensionsForTest();
+  content::RunAllTasksUntilIdle();
+
+  EXPECT_EQ(kAllocation,
+            global_rules_tracker.GetAllocatedGlobalRuleCountForTesting());
+  CheckExtensionAllocationInPrefs(extension_id, kAllocation);
+}
+
+// Regression test for crbug.com/520262201: orphan-reclaim must NOT touch
+// kCommandLine extensions. They are excluded from budget seeding at startup
+// (GlobalRulesTracker::CalculateInitialAllocatedGlobalRuleCount), so clearing
+// a stale pref would underflow allocated_global_rule_count_.
+TEST_P(MultipleRulesetsTest_Unpacked,
+       OrphanedCommandLineExtensionAllocationNotReclaimed) {
+  const size_t kAllocation = 50;
+  AddRuleset(CreateRuleset(
+      kId1, GetStaticGuaranteedMinimumRuleCount() + kAllocation, 0, true));
+
+  RulesetManagerObserver ruleset_waiter(manager());
+  LoadAndExpectSuccess(GetStaticGuaranteedMinimumRuleCount() + kAllocation);
+  ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
+
+  const ExtensionId extension_id = extension()->id();
+  const base::FilePath source_dir = extension()->path();
+
+  GlobalRulesTracker& global_rules_tracker =
+      RulesMonitorService::Get(browser_context())->global_rules_tracker();
+  ASSERT_EQ(kAllocation,
+            global_rules_tracker.GetAllocatedGlobalRuleCountForTesting());
+  CheckExtensionAllocationInPrefs(extension_id, kAllocation);
+
+  // Fake a kCommandLine install so GC skips this extension.
+  extension_prefs()->SetInstallLocation(extension_id,
+                                        mojom::ManifestLocation::kCommandLine);
+
+  ASSERT_TRUE(base::DeletePathRecursively(source_dir));
+  ASSERT_FALSE(base::PathExists(source_dir));
+  ASSERT_TRUE(registry()->RemoveEnabled(extension_id));
+  ASSERT_FALSE(registry()->GetInstalledExtension(extension_id));
+
+  ExtensionGarbageCollector::Get(browser_context())
+      ->GarbageCollectExtensionsForTest();
+  content::RunAllTasksUntilIdle();
+
+  CheckExtensionAllocationInPrefs(extension_id, kAllocation);
+}
+
+// Regression test for crbug.com/520262201: UNINSTALL_REASON_REINSTALL must
+// preserve the allocation. Without `extensions_handled_by_uninstall_`, the
+// synchronous OnExtensionPrefsDeleted would wrongly release it.
+TEST_P(MultipleRulesetsTest_Unpacked, ReinstallPreservesGlobalRuleAllocation) {
+  const size_t kAllocation = 50;
+  AddRuleset(CreateRuleset(
+      kId1, GetStaticGuaranteedMinimumRuleCount() + kAllocation, 0, true));
+
+  RulesetManagerObserver ruleset_waiter(manager());
+  LoadAndExpectSuccess(GetStaticGuaranteedMinimumRuleCount() + kAllocation);
+  ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
+
+  const ExtensionId extension_id = extension()->id();
+  GlobalRulesTracker& global_rules_tracker =
+      RulesMonitorService::Get(browser_context())->global_rules_tracker();
+
+  ASSERT_EQ(kAllocation,
+            global_rules_tracker.GetAllocatedGlobalRuleCountForTesting());
+  CheckExtensionAllocationInPrefs(extension_id, kAllocation);
+
+  const size_t total_limit =
+      global_rules_tracker.GetUnallocatedRuleCount() + kAllocation;
+
+  ASSERT_TRUE(registrar()->UninstallExtension(
+      extension_id, UNINSTALL_REASON_REINSTALL, /*error=*/nullptr));
+  content::RunAllTasksUntilIdle();
+
+  // Allocation still held: reinstall path preserved it.
+  EXPECT_EQ(total_limit - kAllocation,
+            global_rules_tracker.GetUnallocatedRuleCount());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/files/file_enumerator.h"
@@ -40,6 +41,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/file_util.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -131,6 +133,28 @@ void CheckUnpackedExtensionDirectory(
   base::DeletePathRecursively(extension_directory);
 }
 
+// Identifying info for an unpacked extension whose source directory existence
+// is checked on a file thread.
+struct UnpackedExtensionPathInfo {
+  ExtensionId id;
+  base::FilePath path;
+  mojom::ManifestLocation location;
+};
+
+// Returns the (id, location) of each unpacked extension whose source directory
+// no longer exists on disk. Runs on a file thread.
+std::vector<std::pair<ExtensionId, mojom::ManifestLocation>>
+GetDeletedUnpackedExtensionsOnFileThread(
+    std::vector<UnpackedExtensionPathInfo> unpacked_extensions) {
+  std::vector<std::pair<ExtensionId, mojom::ManifestLocation>> deleted;
+  for (const auto& info : unpacked_extensions) {
+    if (!base::PathExists(info.path)) {
+      deleted.emplace_back(info.id, info.location);
+    }
+  }
+  return deleted;
+}
+
 }  // namespace
 
 ExtensionGarbageCollector::ExtensionGarbageCollector(
@@ -219,9 +243,23 @@ void ExtensionGarbageCollector::GarbageCollectExtensions() {
   ExtensionPrefs::InstallRecords extensions_info =
       extension_prefs->GetInstalledExtensionsInfo();
   std::multimap<ExtensionId, base::FilePath> extension_paths;
+  std::vector<UnpackedExtensionPathInfo> unpacked_extensions;
   for (const auto& info : extensions_info) {
     extension_paths.insert(
         std::make_pair(info.extension_id, info.extension_path));
+    // Collect unpacked extensions so we can later check whether their
+    // source directory still exists on disk. Only kUnpacked is considered here,
+    // not kCommandLine (--load-extension): command-line extensions are not
+    // reloaded on restart (installed_loader.cc) and are deliberately excluded
+    // when seeding the global static rule budget at startup
+    // (global_rules_tracker.cc CalculateInitialAllocatedGlobalRuleCount), so a
+    // stale command-line pref never leaks any allocation. Worse, clearing it
+    // here would decrement the budget by an amount that was never counted,
+    // underflowing allocated_global_rule_count_ (DCHECK/size_t wrap).
+    if (info.extension_location == mojom::ManifestLocation::kUnpacked) {
+      unpacked_extensions.push_back(
+          {info.extension_id, info.extension_path, info.extension_location});
+    }
   }
 
   extensions_info = extension_prefs->GetAllDelayedInstallInfo();
@@ -243,6 +281,48 @@ void ExtensionGarbageCollector::GarbageCollectExtensions() {
                                     registrar->unpacked_install_directory(),
                                     extension_paths, /*unpacked=*/true))) {
     NOTREACHED();
+  }
+
+  // Detect unpacked extensions whose source directory was deleted on disk
+  // (e.g. the user removed the folder while Chrome was closed). These never
+  // load, so no unload/uninstall event fires and their ExtensionPrefs are never
+  // cleaned up (GetInstalledExtensionsInfo still contains them). Check path
+  // existence on a file thread, then remove their stale prefs on the UI thread.
+  if (!unpacked_extensions.empty()) {
+    GetExtensionFileTaskRunner()->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&GetDeletedUnpackedExtensionsOnFileThread,
+                       std::move(unpacked_extensions)),
+        base::BindOnce(
+            &ExtensionGarbageCollector::OnDeletedUnpackedExtensionsIdentified,
+            weak_factory_.GetWeakPtr()));
+  }
+}
+
+void ExtensionGarbageCollector::OnDeletedUnpackedExtensionsIdentified(
+    std::vector<std::pair<ExtensionId, mojom::ManifestLocation>>
+        deleted_extensions) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (deleted_extensions.empty()) {
+    return;
+  }
+
+  ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(context_);
+  ExtensionRegistry* registry = ExtensionRegistry::Get(context_);
+  for (const auto& [extension_id, location] : deleted_extensions) {
+    // If the extension is somehow still installed (e.g. the directory
+    // reappeared, or it was loaded from elsewhere before this task ran), leave
+    // it alone.
+    if (registry->GetInstalledExtension(extension_id)) {
+      continue;
+    }
+
+    // Removing the prefs entry deletes core extension state and notifies
+    // observers via ExtensionPrefsObserver::OnExtensionPrefsDeleted(), letting
+    // API-specific systems (e.g. declarativeNetRequest) release the state they
+    // associated with this extension.
+    extension_prefs->OnExtensionUninstalled(extension_id, location,
+                                            /*external_uninstall=*/false);
   }
 }
 
