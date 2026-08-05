@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 
@@ -31,7 +32,9 @@ OmniboxEverywhereServiceFactory::OmniboxEverywhereServiceFactory()
               .WithRegular(ProfileSelection::kOwnInstance)
               .WithGuest(ProfileSelection::kOwnInstance)
               .WithAshInternals(ProfileSelection::kNone)
-              .Build()) {}
+              .Build()) {
+  DependsOn(TemplateURLServiceFactory::GetInstance());
+}
 
 OmniboxEverywhereServiceFactory::~OmniboxEverywhereServiceFactory() = default;
 

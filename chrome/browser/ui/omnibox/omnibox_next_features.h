@@ -146,6 +146,11 @@ bool IsAimPopupFeatureEnabled();
 bool IsAimPopupEnabled(Profile* profile);
 bool ShouldShowAimContextMenuOption(Profile* profile);
 
+// Returns true if the Omnibox Everywhere feature is fully enabled for the given
+// `profile`. This checks both the base::Feature flag and that Google is the
+// default search provider.
+bool IsOmniboxEverywhereEnabled(Profile* profile);
+
 // Returns true if search content sharing is permitted by enterprise policy.
 bool IsContentSharingEnabled(
     Profile* profile,
