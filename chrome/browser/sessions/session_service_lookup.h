@@ -12,6 +12,7 @@ namespace content {
 class WebContents;
 }
 
+class Profile;
 class SessionServiceBase;
 
 // Returns whether or not the argument specified is accepted and
@@ -25,7 +26,8 @@ SessionServiceBase* GetAppropriateSessionServiceForProfile(
     BrowserWindowInterface* browser);
 
 SessionServiceBase* GetAppropriateSessionServiceForSessionRestore(
-    BrowserWindowInterface* browser);
+    Profile* profile,
+    BrowserWindowInterface::Type type);
 
 SessionServiceBase* GetAppropriateSessionServiceIfExisting(
     BrowserWindowInterface* browser);

@@ -34,14 +34,13 @@ SessionServiceBase* GetAppropriateSessionServiceForProfile(
 }
 
 SessionServiceBase* GetAppropriateSessionServiceForSessionRestore(
-    BrowserWindowInterface* browser) {
-  if (IsRelevantToAppSessionService(browser->GetType())) {
-    return AppSessionServiceFactory::GetForProfileForSessionRestore(
-        browser->GetProfile());
+    Profile* profile,
+    BrowserWindowInterface::Type type) {
+  if (IsRelevantToAppSessionService(type)) {
+    return AppSessionServiceFactory::GetForProfileForSessionRestore(profile);
   }
 
-  return SessionServiceFactory::GetForProfileForSessionRestore(
-      browser->GetProfile());
+  return SessionServiceFactory::GetForProfileForSessionRestore(profile);
 }
 
 SessionServiceBase* GetAppropriateSessionServiceIfExisting(

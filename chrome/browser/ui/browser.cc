@@ -197,10 +197,6 @@
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
 #endif
 
-#if BUILDFLAG(IS_OZONE)
-#include "ui/ozone/public/platform_session_manager.h"
-#endif
-
 using base::UserMetricsAction;
 using content::GlobalRenderFrameHostId;
 using content::NavigationController;
@@ -398,19 +394,6 @@ Browser::Browser(const CreateParams& params)
   features_ = std::make_unique<BrowserWindowFeatures>();
   features_->Init(this);
 
-  SessionServiceBase* session_service =
-      GetAppropriateSessionServiceForSessionRestore(this);
-#if BUILDFLAG(IS_OZONE)
-  if (session_service && session_service->GetPlatformSessionId()) {
-    platform_session_data_ = ui::PlatformSessionWindowData{
-        .session_id = session_service->GetPlatformSessionId().value(),
-        .window_id = session_id_.id(),
-        .restore_id = params.restore_id > Browser::kDefaultRestoreId
-                          ? std::optional<int32_t>(params.restore_id)
-                          : std::nullopt};
-  }
-#endif  // BUILDFLAG(IS_OZONE)
-
   if (params.window) {
     CHECK_IS_TEST() << "Browser::CreateParams::window is a test-only param";
   }
@@ -425,6 +408,8 @@ Browser::Browser(const CreateParams& params)
     app_browser_controller->UpdateCustomTabBarVisibility(false);
   }
 
+  SessionServiceBase* const session_service =
+      GetAppropriateSessionServiceForSessionRestore(profile_, type_);
   if (session_service) {
     session_service->WindowOpened(this);
   }

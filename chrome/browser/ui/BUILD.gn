@@ -2253,6 +2253,10 @@ static_library("ui") {
       # c/b/ui/browser.h gets componentized.
       "//chrome/browser/ui/web_applications:launch_utils",
 
+      # TODO(crbug.com/542827630): Remove this circular dependency when
+      # c/b/ui/browser.h gets componentized.
+      "//chrome/browser/ui/sessions",
+
       # ntp and ntp_resource_cache include browser_window.h and
       # layout_constants.h from //chrome/browser/ui.
       "//chrome/browser/ui/webui/ntp:ntp_resource_cache",

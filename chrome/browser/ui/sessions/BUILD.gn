@@ -4,6 +4,8 @@
 
 assert(!is_android)
 
+import("//build/config/ozone.gni")
+
 source_set("sessions") {
   public = [ "session_service_browser_helper.h" ]
 
@@ -11,6 +13,7 @@ source_set("sessions") {
 
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//components/sessions:session_id",
@@ -25,4 +28,8 @@ source_set("sessions") {
     "//components/tabs:public",
     "//content/public/browser",
   ]
+
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
 }

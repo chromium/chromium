@@ -58,10 +58,6 @@
 #error This file should only be included on desktop.
 #endif
 
-#if BUILDFLAG(IS_OZONE)
-#include "ui/ozone/public/platform_session_manager.h"
-#endif
-
 class BackgroundContents;
 class BrowserInitState;
 class BrowserView;
@@ -444,13 +440,6 @@ class Browser : public TabStripModelObserver,
   // async and allows graceful teardown of the tab strip and associated data.
   void SynchronouslyDestroyBrowser();
 
-#if BUILDFLAG(IS_OZONE)
-  const std::optional<ui::PlatformSessionWindowData>& platform_session_data()
-      const {
-    return platform_session_data_;
-  }
-#endif
-
  private:
   friend class BrowserTest;
   friend class BrowserWebContentsDelegate;
@@ -690,14 +679,6 @@ class Browser : public TabStripModelObserver,
   std::unique_ptr<BrowserInitState> init_state_;
 
   std::unique_ptr<BrowserWindowFeatures> features_;
-
-#if BUILDFLAG(IS_OZONE)
-  // If supported by the platform, this stores stores data related to the
-  // windowing system level session. E.g: session and window IDs. See
-  // ui/ozone/public/platform_session_manager.h for more details.
-  std::optional<ui::PlatformSessionWindowData> platform_session_data_ =
-      std::nullopt;
-#endif
 
   // Tracks whether the browser object is fully initialized.
   bool is_initialized_ = false;
