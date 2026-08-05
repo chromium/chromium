@@ -98,8 +98,8 @@ std::u16string GetMonthDayYearWeek(const base::Time date) {
 }
 
 std::u16string GetMonthName(const base::Time date) {
-  return calendar_utils::FormatDate(
-      DateHelper::GetInstance()->month_name_formatter(), date);
+  return base::i18n::IcuBridge::GetInstance().date_time_formatter().Format(
+      date, base::i18n::datetime_options::M::Long());
 }
 
 std::u16string GetDayOfMonth(const base::Time date) {
