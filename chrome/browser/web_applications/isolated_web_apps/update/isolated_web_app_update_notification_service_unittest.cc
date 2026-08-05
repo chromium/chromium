@@ -22,6 +22,10 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/components/kiosk/kiosk_test_utils.h"
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
 #include "components/webapps/isolated_web_apps/types/iwa_version.h"
@@ -181,6 +185,28 @@ TEST_F(IsolatedWebAppUpdateNotificationServiceTest,
        NoNotificationWhenFeatureDisabled) {
   feature_list_.InitAndDisableFeature(
       ash::features::kIsolatedWebAppInlineUpdate);
+
+  IsolatedWebAppUrlInfo url_info =
+      InstallIwaWithPendingUpdate("IWA App", "1.0.0", "1.2.0");
+
+  update_manager().update_notification_service()->ShowUpdatePendingNotification(
+      url_info.app_id());
+
+  EXPECT_TRUE(tester_
+                  ->GetDisplayedNotificationsForType(
+                      NotificationHandler::Type::TRANSIENT)
+                  .empty());
+}
+
+TEST_F(IsolatedWebAppUpdateNotificationServiceTest,
+       NoNotificationInKioskSession) {
+  feature_list_.InitAndEnableFeature(
+      ash::features::kIsolatedWebAppInlineUpdate);
+
+  user_manager::ScopedUserManager user_manager(
+      std::make_unique<user_manager::FakeUserManager>(
+          TestingBrowserProcess::GetGlobal()->local_state()));
+  chromeos::SetUpFakeIwaKioskSession();
 
   IsolatedWebAppUrlInfo url_info =
       InstallIwaWithPendingUpdate("IWA App", "1.0.0", "1.2.0");

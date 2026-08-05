@@ -20,6 +20,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -55,6 +56,9 @@ void IsolatedWebAppUpdateNotificationService::ShowUpdatePendingNotification(
     const webapps::AppId& app_id) {
   if (!base::FeatureList::IsEnabled(
           ash::features::kIsolatedWebAppInlineUpdate)) {
+    return;
+  }
+  if (chromeos::IsKioskSession()) {
     return;
   }
 
