@@ -6,6 +6,7 @@ group("signin") {
   testonly = true
   deps = [
     ":choice",
+    ":device_identifier",
     ":signin_error",
     ":signin_identity",
     ":signin_resources",
@@ -22,6 +23,18 @@ source_set("choice") {
     "//ios/public/provider/chrome/browser/signin:choice_api",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("device_identifier") {
+  testonly = true
+  sources = [
+    "test_device_identifier.h",
+    "test_device_identifier.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/public/provider/chrome/browser/signin:device_identifier_api",
+  ]
 }
 
 source_set("signin_error") {

@@ -46,6 +46,7 @@ group("chromium_providers") {
     "//ios/chrome/browser/providers/screenshot_protection:chromium_screenshot_protection",
     "//ios/chrome/browser/providers/share_kit:chromium_share_kit",
     "//ios/chrome/browser/providers/signin:chromium_choice",
+    "//ios/chrome/browser/providers/signin:chromium_device_identifier",
     "//ios/chrome/browser/providers/signin:chromium_signin_error",
     "//ios/chrome/browser/providers/signin:chromium_signin_identity",
     "//ios/chrome/browser/providers/signin:chromium_signin_resources",

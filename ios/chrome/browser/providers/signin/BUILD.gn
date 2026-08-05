@@ -11,6 +11,14 @@ source_set("chromium_choice") {
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("chromium_device_identifier") {
+  sources = [ "chromium_device_identifier.mm" ]
+  deps = [
+    "//base",
+    "//ios/public/provider/chrome/browser/signin:device_identifier_api",
+  ]
+}
+
 source_set("chromium_signin_error") {
   sources = [ "chromium_signin_error.mm" ]
   deps = [
