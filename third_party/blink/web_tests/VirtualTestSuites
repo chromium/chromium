@@ -1721,9 +1721,9 @@
       "external/wpt/html/semantics/forms/the-select-element/customizable-select/select-parsing.html"
     ],
     "args": [
-      "--enable-features=InputClosesSelect,SelectParserRelaxation"
+      "--enable-features=InputClosesSelect"
     ],
-    "expires": "Aug 1, 2026",
+    "expires": "Aug 1, 2027",
     "owners": [
       "jarhar@chromium.org",
       "dom-dev@google.com"
