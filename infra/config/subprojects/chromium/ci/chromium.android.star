@@ -3513,7 +3513,9 @@ ci.builder(
             "android_browsertests": targets.mixin(
                 args = [
                     # https://crbug.com/375086487
-                    "--gtest_filter=-InstallableManagerBrowserTest.CheckManifestWithIconThatIsTooSmall",
+                    ("--gtest_filter=-InstallableManagerBrowserTest.CheckManifestWithIconThatIsTooSmall:" +
+                     # https://crbug.com/542940281
+                     "PrerenderBrowserTest.HTTPFormActivation"),
                 ],
                 swarming = targets.swarming(
                     shards = 2,

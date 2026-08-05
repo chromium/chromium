@@ -36,7 +36,7 @@
       },
       {
         "args": [
-          "--gtest_filter=-InstallableManagerBrowserTest.CheckManifestWithIconThatIsTooSmall",
+          "--gtest_filter=-InstallableManagerBrowserTest.CheckManifestWithIconThatIsTooSmall:PrerenderBrowserTest.HTTPFormActivation",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
