@@ -23,6 +23,7 @@
 
 namespace enterprise_connectors {
 struct RequestHandlerResult;
+class PasteboardContentHandlerIOS;
 }
 
 namespace web {
@@ -184,6 +185,10 @@ class DataControlsTabHelper
 
   // The snackbar command handler.
   __weak id<SnackbarCommands> snackbar_handler_ = nil;
+
+  // The handler for pasteboard content analysis.
+  std::unique_ptr<enterprise_connectors::PasteboardContentHandlerIOS>
+      pasteboard_content_handler_;
 
   PasteEventState paste_event_state_ = PasteEventState::kIdle;
 
