@@ -11,7 +11,10 @@ generate_jni("jni_headers") {
 
 java_cpp_enum("java_enum_srcjar") {
   visibility = [ ":*" ]
-  sources = [ "../tab_interface.h" ]
+  sources = [
+    "../tab_alert.h",
+    "../tab_interface.h",
+  ]
 }
 
 android_library("java") {

@@ -11,9 +11,11 @@ import("//chrome/common/features.gni")
 # dependencies this interface should not depend on anything else in //chrome.
 source_set("tabs_public") {
   public = [
+    "contents_observing_tab_feature.h",
     "public/tab_dialog_manager.h",
     "public/tab_features.h",
   ]
+  sources = [ "contents_observing_tab_feature.cc" ]
   public_deps = [
     "//base",
     "//chrome/common:buildflags",
@@ -362,7 +364,6 @@ if (!is_android) {
 
   source_set("tabs") {
     sources = [
-      "contents_observing_tab_feature.h",
       "features.h",
       "hover_tab_selector.h",
       "new_tab_grouping_user_data.h",
@@ -432,7 +433,6 @@ if (!is_android) {
     ]
 
     sources = [
-      "contents_observing_tab_feature.cc",
       "hover_tab_selector.cc",
       "page_context_eligibility_helper.cc",
       "pinned_tab_codec.cc",

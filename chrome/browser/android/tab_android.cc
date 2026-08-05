@@ -53,6 +53,7 @@
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/startup/bad_flags_prompt.h"
 #include "chrome/browser/ui/tab_helpers.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "components/android_autofill/browser/android_autofill_client.h"
 #include "components/android_autofill/browser/android_autofill_manager.h"
 #include "components/android_autofill/browser/android_autofill_provider.h"
@@ -420,10 +421,22 @@ void TabAndroid::InitWebContents(
   ShowBadFlagsPrompt(web_contents());
 
   MediaStateObserver::CreateForWebContents(web_contents_.get());
+  tab_alert_controller_ = std::make_unique<tabs::TabAlertController>(*this);
 
   for (Observer& observer : observers_) {
     observer.OnInitWebContents(this);
   }
+}
+
+std::optional<int> TabAndroid::GetAlertState(JNIEnv* env) {
+  if (!tab_alert_controller_) {
+    return std::nullopt;
+  }
+  std::optional<tabs::TabAlert> alert = tab_alert_controller_->GetAlertToShow();
+  if (!alert.has_value()) {
+    return std::nullopt;
+  }
+  return std::to_underlying(*alert);
 }
 
 void TabAndroid::GetMemoryUsageBytes(
@@ -688,6 +701,7 @@ tabs::TabDestroyStatus TabAndroid::DestroyWebContents() {
     return DestroyWebContentsSlowShutdown();
   }
 
+  tab_alert_controller_.reset();
   tab_features_.reset();
   web_contents_.reset();
   synced_tab_delegate_->ResetWebContents();
@@ -719,6 +733,7 @@ std::unique_ptr<content::WebContents> TabAndroid::ReleaseWebContentsInternal(
     bool clear_delegate) {
   WillRemoveWebContentsFromTab(web_contents(), clear_delegate);
 
+  tab_alert_controller_.reset();
   tab_features_.reset();
   std::unique_ptr<content::WebContents> released_contents =
       std::move(web_contents_);

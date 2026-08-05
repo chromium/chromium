@@ -14,6 +14,7 @@ source_set("tab_alert") {
 
   public_deps = [
     "//base",
+    "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/browser/vr",
     "//content/public/browser",
     "//ui/base/unowned_user_data",
@@ -23,7 +24,6 @@ source_set("tab_alert") {
     "//chrome/browser/actor/ui",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/ui/color:color_headers",
-    "//chrome/browser/ui/tabs",
   ]
 }
 
@@ -50,51 +50,54 @@ source_set("impl") {
   ]
 }
 
-source_set("unit_tests") {
-  testonly = true
+# TODO(crbug.com/542691146): Enable unit_tests on Android
+if (!is_android) {
+  source_set("unit_tests") {
+    testonly = true
 
-  sources = [ "tab_alert_controller_unittest.cc" ]
+    sources = [ "tab_alert_controller_unittest.cc" ]
 
-  deps = [
-    ":impl",
-    ":tab_alert",
-    "//chrome/browser/glic",
-    "//chrome/browser/glic:mojo_bindings_shared_cpp_sources",
-    "//chrome/browser/glic/test_support",
-    "//chrome/browser/permissions/system",
-    "//chrome/browser/ui:ui_features",
-    "//chrome/browser/ui/tabs:test_support",
-    "//chrome/test:test_support",
-    "//components/tabs:test_support",
-    "//content/test:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-}
+    deps = [
+      ":impl",
+      ":tab_alert",
+      "//chrome/browser/glic",
+      "//chrome/browser/glic:mojo_bindings_shared_cpp_sources",
+      "//chrome/browser/glic/test_support",
+      "//chrome/browser/permissions/system",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/tabs:test_support",
+      "//chrome/test:test_support",
+      "//components/tabs:test_support",
+      "//content/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
 
-source_set("interactive_ui_tests") {
-  testonly = true
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  source_set("interactive_ui_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [
-    "tab_alert_controller_interactive_uitest.cc",
-    "unload_controller_glic_interactive_uitest.cc",
-  ]
+    sources = [
+      "tab_alert_controller_interactive_uitest.cc",
+      "unload_controller_glic_interactive_uitest.cc",
+    ]
 
-  deps = [
-    ":impl",
-    ":tab_alert",
-    "//chrome/browser/glic",
-    "//chrome/browser/glic:mojo_bindings_shared_cpp_sources",
-    "//chrome/browser/glic/browser_ui",
-    "//chrome/browser/glic/test_support",
-    "//chrome/browser/ui:ui_features",
-    "//chrome/browser/ui/browser_web_contents_delegate",
-    "//chrome/browser/ui/tabs:test_support",
-    "//chrome/test:test_support",
-    "//components/tabs:test_support",
-    "//content/test:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
+    deps = [
+      ":impl",
+      ":tab_alert",
+      "//chrome/browser/glic",
+      "//chrome/browser/glic:mojo_bindings_shared_cpp_sources",
+      "//chrome/browser/glic/browser_ui",
+      "//chrome/browser/glic/test_support",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/browser_web_contents_delegate",
+      "//chrome/browser/ui/tabs:test_support",
+      "//chrome/test:test_support",
+      "//components/tabs:test_support",
+      "//content/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
 }

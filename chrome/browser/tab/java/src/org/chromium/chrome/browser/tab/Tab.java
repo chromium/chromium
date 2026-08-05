@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.tabs.DetachReason;
+import org.chromium.components.tabs.TabAlert;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
@@ -480,6 +481,11 @@ public interface Tab extends TabLifecycle {
      * @param isPinned True if the tab is pinned.
      */
     void setIsPinned(boolean isPinned);
+
+    /** Returns the active alert state for this tab, or null if no alert applies. */
+    @Nullable
+    @TabAlert
+    Integer getAlertState();
 
     /** Returns the media state of the tab. */
     @MediaState

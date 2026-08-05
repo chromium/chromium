@@ -592,6 +592,8 @@ if (is_android) {
       "//chrome/browser/ui/android/webid",
       "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/digital_credentials",
+      "//chrome/browser/ui/tabs/alert:impl",
+      "//chrome/browser/ui/tabs/alert:tab_alert",
       "//chrome/browser/ui/webui/notifications_internals",
       "//chrome/browser/ui/webui/notifications_internals:impl",
       "//chrome/browser/wallet/android:wallet_android",

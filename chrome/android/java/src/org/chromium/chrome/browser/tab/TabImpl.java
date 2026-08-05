@@ -106,6 +106,7 @@ import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.sensitive_content.SensitiveContentClient;
 import org.chromium.components.sensitive_content.SensitiveContentFeatures;
 import org.chromium.components.tabs.DetachReason;
+import org.chromium.components.tabs.TabAlert;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -3063,6 +3064,12 @@ class TabImpl implements Tab, TabInternal {
     }
 
     @Override
+    public @Nullable @TabAlert Integer getAlertState() {
+        if (mNativeTabAndroid == 0) return null;
+        return TabImplJni.get().getAlertState(mNativeTabAndroid);
+    }
+
+    @Override
     public @MediaState int getMediaState() {
         return mMediaState;
     }
@@ -3276,6 +3283,11 @@ class TabImpl implements Tab, TabInternal {
         void initializeAutofillIfNecessary(long nativeTabAndroid);
 
         void getMemoryUsageBytes(long nativeTabAndroid, Callback<Long> callback);
+
+        @JniType("std::optional<int>")
+        @Nullable
+        @TabAlert
+        Integer getAlertState(long nativeTabAndroid);
 
         void updateDelegates(
                 long nativeTabAndroid,

@@ -7,6 +7,7 @@
 
 namespace tabs {
 // Alert states for a tab. Any number of these (or none) may apply at once.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.tabs
 // LINT.IfChange(TabAlert)
 enum class TabAlert {
   kMediaRecording,       // Audio/Video [both] being recorded, consumed by tab.
