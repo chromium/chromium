@@ -163,6 +163,7 @@ source_set("test_support") {
     "//base",
     "//base/test:test_support",
     "//ios/third_party/webkit",
+    "//ios/web/common:uikit",
     "//testing/gtest",
     "//ui/base",
   ]

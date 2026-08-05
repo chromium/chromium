@@ -22,6 +22,7 @@
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
+#import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
@@ -147,8 +148,9 @@ TEST_F(CWVCreditCardVerifierTest, Properties) {
   // ui::ResourceBundle will return a placeholder image at @1x scale if the
   // underlying resource id is not found. Since no @1x devices are supported
   // anymore, check to make sure the UIImage scale matches that of the UIScreen.
-  EXPECT_EQ(UIScreen.mainScreen.scale,
-            credit_card_verifier_.CVCHintImage.scale);
+  CGFloat scale = GetAnyKeyWindow().traitCollection.displayScale;
+  ASSERT_GT(scale, 1);
+  EXPECT_EQ(scale, credit_card_verifier_.CVCHintImage.scale);
   EXPECT_GT(credit_card_verifier_.expectedCVCLength, 0);
   EXPECT_FALSE(credit_card_verifier_.shouldRequestUpdateForExpirationDate);
   [credit_card_verifier_ requestUpdateForExpirationDate];

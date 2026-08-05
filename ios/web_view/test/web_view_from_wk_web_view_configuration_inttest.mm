@@ -94,7 +94,9 @@ class WebViewFromWKWebViewConfigurationTest : public WebViewInttestBase {
                     windowFeatures:(WKWindowFeatures*)windowFeatures {
   WKWebView* created_web_view = nil;
   configuration.userContentController = [[WKUserContentController alloc] init];
-  _test->SetWebView([[CWVWebView alloc] initWithFrame:UIScreen.mainScreen.bounds
+  CGRect bounds = GetAnyKeyWindow().screen.bounds;
+  CHECK(!CGRectEqualToRect(bounds, CGRectZero));
+  _test->SetWebView([[CWVWebView alloc] initWithFrame:bounds
                                         configuration:self.CWVConfiguration
                                       WKConfiguration:configuration
                                      createdWKWebView:&created_web_view]);
@@ -125,7 +127,8 @@ namespace ios_web_view {
 TEST_F(WebViewFromWKWebViewConfigurationTest, FromWKWebViewConfiguration) {
   ASSERT_TRUE(test_server_->Start());
 
-  CGRect frame = UIScreen.mainScreen.bounds;
+  CGRect frame = GetAnyKeyWindow().screen.bounds;
+  ASSERT_FALSE(CGRectEqualToRect(frame, CGRectZero));
   WKWebViewConfiguration* config = [[WKWebViewConfiguration alloc] init];
   WKWebView* wk_web_view = [[WKWebView alloc] initWithFrame:frame
                                               configuration:config];
