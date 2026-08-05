@@ -228,4 +228,15 @@ public class SuggestionListViewBinderUnitTest {
                 ViewUtils.dpToPx(mActivity, VerticalTabUtils.SIDE_UI_CONTAINER_WIDTH_DP),
                 layoutParams.leftMargin);
     }
+
+    @Test
+    public void applyVerticalPadding() {
+        mListModel.set(SuggestionListProperties.APPLY_VERTICAL_PADDING, false);
+        assertEquals(0, mDropdown.getPaddingTop());
+        assertEquals(0, mDropdown.getPaddingBottom());
+
+        mListModel.set(SuggestionListProperties.APPLY_VERTICAL_PADDING, true);
+        assertEquals(mResourceProvider.getDropdownTopPadding(), mDropdown.getPaddingTop());
+        assertEquals(mResourceProvider.getDropdownBottomPadding(), mDropdown.getPaddingBottom());
+    }
 }

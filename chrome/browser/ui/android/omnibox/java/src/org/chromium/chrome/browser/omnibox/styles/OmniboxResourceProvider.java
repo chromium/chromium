@@ -1166,9 +1166,6 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
 
     /** Returns the top padding for the Omnibox suggestions dropdown list. */
     public static @Px int getDropdownTopPadding(Context context) {
-        if (OmniboxCapabilities.isDesktopPlatform()) {
-            return 0;
-        }
         context = maybeReplaceContextForSmallTabletWindow(context);
         return context.getResources()
                 .getDimensionPixelOffset(R.dimen.omnibox_suggestion_list_padding_top);
@@ -1176,9 +1173,6 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
 
     /** Returns the bottom padding for the Omnibox suggestions dropdown list. */
     public static @Px int getDropdownBottomPadding(Context context) {
-        if (OmniboxCapabilities.isDesktopPlatform()) {
-            return 0;
-        }
         context = maybeReplaceContextForSmallTabletWindow(context);
         return context.getResources()
                 .getDimensionPixelOffset(R.dimen.omnibox_suggestion_list_padding_bottom);

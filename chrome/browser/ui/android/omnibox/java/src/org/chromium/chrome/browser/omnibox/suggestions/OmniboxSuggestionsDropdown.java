@@ -355,10 +355,6 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     public void setResourceProvider(OmniboxResourceProvider resourceProvider) {
         if (mResourceProvider == resourceProvider || resourceProvider == null) return;
         mResourceProvider = resourceProvider;
-
-        setVerticalPadding(
-                mResourceProvider.getDropdownTopPadding(),
-                mResourceProvider.getDropdownBottomPadding());
         mHeaderDecoration.setHeaderStartPadding(mResourceProvider.getHeaderStartPadding());
     }
 
@@ -698,7 +694,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
      * @param topPadding Top padding in pixels.
      * @param bottomPadding Bottom padding in pixels.
      */
-    public void setVerticalPadding(int topPadding, int bottomPadding) {
+    public void setVerticalPadding(@Px int topPadding, @Px int bottomPadding) {
         mBaseTopPadding = topPadding;
         mBaseBottomPadding = bottomPadding;
         this.setPaddingRelative(0, mBaseTopPadding, 0, mBaseBottomPadding);

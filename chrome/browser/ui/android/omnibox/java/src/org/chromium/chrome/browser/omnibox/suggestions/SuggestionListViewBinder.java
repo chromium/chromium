@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.Px;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
@@ -59,6 +60,8 @@ class SuggestionListViewBinder
                     model.get(SuggestionListProperties.ALLOW_PARKING_AT_SENTINEL));
         } else if (SuggestionListProperties.ALPHA.equals(propertyKey)) {
             view.dropdown.setChildAlpha(model.get(SuggestionListProperties.ALPHA));
+        } else if (SuggestionListProperties.APPLY_VERTICAL_PADDING.equals(propertyKey)) {
+            updateVerticalPadding(model, view);
         } else if (SuggestionListProperties.CHILD_TRANSLATION_Y.equals(propertyKey)) {
             view.dropdown.translateChildrenVertical(
                     model.get(SuggestionListProperties.CHILD_TRANSLATION_Y));
@@ -169,6 +172,17 @@ class SuggestionListViewBinder
         }
     }
 
+    private static void updateVerticalPadding(PropertyModel model, SuggestionListViewHolder holder) {
+        boolean applyVerticalPadding = model.get(SuggestionListProperties.APPLY_VERTICAL_PADDING);
+        @Px
+        int topPadding =
+                applyVerticalPadding ? getResourceProvider(model).getDropdownTopPadding() : 0;
+        @Px
+        int bottomPadding =
+                applyVerticalPadding ? getResourceProvider(model).getDropdownBottomPadding() : 0;
+        holder.dropdown.setVerticalPadding(topPadding, bottomPadding);
+    }
+
     private static void updateContainerVisibility(
             PropertyModel model, SuggestionListViewHolder holder) {
         ModelList listItems = model.get(SuggestionListProperties.SUGGESTION_MODELS);
@@ -187,7 +201,7 @@ class SuggestionListViewBinder
         updateContainerMargin(model, holder);
     }
 
-    private OmniboxResourceProvider getResourceProvider(PropertyModel model) {
+    private static OmniboxResourceProvider getResourceProvider(PropertyModel model) {
         return assumeNonNull(model.get(SuggestionListProperties.RESOURCE_PROVIDER));
     }
 

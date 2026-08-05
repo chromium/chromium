@@ -1226,6 +1226,11 @@ class AutocompleteMediator
         }
 
         mListPropertyModel.set(SuggestionListProperties.LIST_IS_FINAL, isFinal);
+        boolean shouldApplyVerticalPadding =
+                input.getRequestType() != AutocompleteRequestType.AI_MODE
+                        || getFuseboxLayoutMode() != FuseboxLayoutMode.SUGGESTIONS_POPOVER;
+        mListPropertyModel.set(
+                SuggestionListProperties.APPLY_VERTICAL_PADDING, shouldApplyVerticalPadding);
         measureSuggestionRequestToUiModelTime(isFinal);
     }
 

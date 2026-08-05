@@ -3075,4 +3075,28 @@ public class AutocompleteMediatorUnitTest {
 
         verify(mAutocompleteController).stop(AutocompleteStopReason.CLOBBERED);
     }
+
+    @Test
+    @SmallTest
+    public void testApplyVerticalSpacing() {
+        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
+        FuseboxSessionState session = createSession(AutocompleteRequestType.AI_MODE, SAMPLE_QUERY);
+        mMediator.beginInput(session);
+
+        mMediator.onSuggestionsReceived(createAutocompleteResult(), /* isFinal= */ true);
+        assertFalse(mListModel.get(SuggestionListProperties.APPLY_VERTICAL_PADDING));
+
+        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.TOOLBAR);
+        session.getAutocompleteInput().setRequestType(AutocompleteRequestType.AI_MODE);
+        mMediator.onSuggestionsReceived(createAutocompleteResult(), /* isFinal= */ true);
+        assertTrue(mListModel.get(SuggestionListProperties.APPLY_VERTICAL_PADDING));
+
+        session.getAutocompleteInput().setRequestType(AutocompleteRequestType.SEARCH);
+        mMediator.onSuggestionsReceived(createAutocompleteResult(), /* isFinal= */ true);
+        assertTrue(mListModel.get(SuggestionListProperties.APPLY_VERTICAL_PADDING));
+
+        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
+        mMediator.onSuggestionsReceived(createAutocompleteResult(), /* isFinal= */ true);
+        assertTrue(mListModel.get(SuggestionListProperties.APPLY_VERTICAL_PADDING));
+    }
 }
