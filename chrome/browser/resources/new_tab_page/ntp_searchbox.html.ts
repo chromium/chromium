@@ -38,6 +38,7 @@ export function getHtml(this: NtpSearchboxElement) {
       searchbox-aria-description="${this.searchboxAriaDescription}"
       searchbox-icon="${this.searchboxIcon_}"
       .selectedMatch="${this.selectedMatch}"
+      .inputKeywordModel="${this.inputKeywordModel}"
       ?input-has-matches="${this.inputHasMatches_()}"
       ?allow-file-paste="${this.ntpRealboxNextEnabled}"
       @focusin="${this.onInputFocusin_}"
