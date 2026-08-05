@@ -143,8 +143,8 @@ std::u16string GetYear(const base::Time date) {
 }
 
 std::u16string GetMonthNameAndYear(const base::Time date) {
-  return calendar_utils::FormatDate(
-      DateHelper::GetInstance()->month_name_year_formatter(), date);
+  return base::i18n::IcuBridge::GetInstance().date_time_formatter().Format(
+      date, base::i18n::datetime_options::YM::Long());
 }
 
 std::u16string GetTwelveHourClockHours(const base::Time date) {
