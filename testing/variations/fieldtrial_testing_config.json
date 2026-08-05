@@ -13791,6 +13791,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "GeminiUpdatedConsent",
                         "GeminiUpdatedEligibility"
                     ]
                 }
