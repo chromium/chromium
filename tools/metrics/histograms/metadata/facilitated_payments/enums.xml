@@ -225,6 +225,7 @@ reviewer.
   <int value="22"
       label="Pix code was copied in a same-origin iframe but the merchant is
              not allowlisted"/>
+  <int value="23" label="Pix code was copied in an error document frame"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:PixFlowExitedReason) -->

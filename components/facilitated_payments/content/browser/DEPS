@@ -17,5 +17,7 @@ specific_include_rules = {
    ],
    "content_facilitated_payments_driver_factory_unittest.cc": [
       "+components/optimization_guide/core",
-      "+content/public/test",]
+      "+content/public/test",
+      "+net/base/net_errors.h",
+   ]
 }

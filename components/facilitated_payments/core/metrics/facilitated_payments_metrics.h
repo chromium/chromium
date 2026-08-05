@@ -202,7 +202,9 @@ enum class PixFlowExitedReason {
   // Pix code was copied in a same-origin iframe but the merchant is not
   // allowlisted.
   kSameOriginMerchantNotAllowlisted = 22,
-  kMaxValue = kSameOriginMerchantNotAllowlisted
+  // Pix code was copied in an error document frame.
+  kFrameIsErrorDocument = 23,
+  kMaxValue = kFrameIsErrorDocument
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.PixFlowExitedReason)
 
