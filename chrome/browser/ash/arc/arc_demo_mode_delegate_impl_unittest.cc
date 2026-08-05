@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/check_deref.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_helper.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -21,25 +22,43 @@ namespace {
 class ArcDemoModeDelegateImplTest : public testing::Test {
  public:
   ArcDemoModeDelegateImplTest() = default;
-  ~ArcDemoModeDelegateImplTest() override = default;
   ArcDemoModeDelegateImplTest(const ArcDemoModeDelegateImplTest&) = delete;
   ArcDemoModeDelegateImplTest& operator=(const ArcDemoModeDelegateImplTest&) =
       delete;
+  ~ArcDemoModeDelegateImplTest() override = default;
 
  protected:
-  ash::DemoModeTestHelper* demo_helper() { return &demo_helper_; }
+  void SetUp() override {
+    stub_install_attributes_ =
+        std::make_unique<ash::ScopedStubInstallAttributes>(
+            ash::StubInstallAttributes::CreateDemoMode());
+    test_user_session_manager_ =
+        std::make_unique<ash::test::TestUserSessionManager>(
+            TestingBrowserProcess::GetGlobal()->local_state());
 
-  ArcDemoModeDelegateImpl* delegate() { return &delegate_; }
-  std::unique_ptr<ash::ScopedStubInstallAttributes> stub_install_attributes_{
-      std::make_unique<ash::ScopedStubInstallAttributes>(
-          ash::StubInstallAttributes::CreateDemoMode())};
+    demo_helper_.emplace();
+    delegate_.emplace();
+  }
+
+  void TearDown() override {
+    delegate_.reset();
+    demo_helper_.reset();
+    test_user_session_manager_.reset();
+    stub_install_attributes_.reset();
+  }
+
+  ash::StubInstallAttributes& stub_install_attributes() {
+    return CHECK_DEREF(stub_install_attributes_->Get());
+  }
+  ash::DemoModeTestHelper& demo_helper() { return *demo_helper_; }
+  ArcDemoModeDelegateImpl& delegate() { return *delegate_; }
 
  private:
   content::BrowserTaskEnvironment browser_task_environment_;
-  ash::test::TestUserSessionManager test_user_session_manager_{
-      TestingBrowserProcess::GetGlobal()->local_state()};
-  ash::DemoModeTestHelper demo_helper_;
-  ArcDemoModeDelegateImpl delegate_;
+  std::unique_ptr<ash::ScopedStubInstallAttributes> stub_install_attributes_;
+  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::optional<ash::DemoModeTestHelper> demo_helper_;
+  std::optional<ArcDemoModeDelegateImpl> delegate_;
 };
 
 // Test that EnsureResourcesLoaded returns immediately if demo mode is
@@ -47,27 +66,27 @@ class ArcDemoModeDelegateImplTest : public testing::Test {
 TEST_F(ArcDemoModeDelegateImplTest, EnsureResourcesLoaded_NotEnabled) {
   ash::DemoSession::SetDemoConfigForTesting(
       ash::DemoSession::DemoModeConfig::kNone);
-  stub_install_attributes_->Get()->SetConsumerOwned();
+  stub_install_attributes().SetConsumerOwned();
 
   bool was_called = false;
   base::OnceClosure callback =
       base::BindOnce([](bool* was_called) { *was_called = true; }, &was_called);
-  delegate()->EnsureResourcesLoaded(std::move(callback));
+  delegate().EnsureResourcesLoaded(std::move(callback));
   EXPECT_TRUE(was_called);
 }
 
 // Test that EnsureResourcesLoaded returns after resources are loaded if
 // demo mode is enabled.
 TEST_F(ArcDemoModeDelegateImplTest, EnsureResourcesLoaded_Enabled) {
-  demo_helper()->InitializeSessionWithPendingComponent();
+  demo_helper().InitializeSessionWithPendingComponent();
 
   bool was_called = false;
   base::OnceClosure callback =
       base::BindOnce([](bool* was_called) { *was_called = true; }, &was_called);
-  delegate()->EnsureResourcesLoaded(std::move(callback));
+  delegate().EnsureResourcesLoaded(std::move(callback));
   EXPECT_FALSE(was_called);
 
-  demo_helper()->FinishLoadingComponent();
+  demo_helper().FinishLoadingComponent();
   EXPECT_TRUE(was_called);
 }
 
@@ -75,20 +94,20 @@ TEST_F(ArcDemoModeDelegateImplTest, EnsureResourcesLoaded_Enabled) {
 TEST_F(ArcDemoModeDelegateImplTest, GetDemoAppsPath_NotEnabled) {
   ash::DemoSession::SetDemoConfigForTesting(
       ash::DemoSession::DemoModeConfig::kNone);
-  stub_install_attributes_->Get()->SetConsumerOwned();
+  stub_install_attributes().SetConsumerOwned();
 
-  base::FilePath demo_session_apps_path = delegate()->GetDemoAppsPath();
+  base::FilePath demo_session_apps_path = delegate().GetDemoAppsPath();
   EXPECT_TRUE(demo_session_apps_path.empty());
 }
 
 // Test that GetDemoAppsPath returns the correct path if demo mode is enabled.
 TEST_F(ArcDemoModeDelegateImplTest, GetDemoAppsPath_Enabled) {
-  demo_helper()->InitializeSession();
+  demo_helper().InitializeSession();
 
-  base::FilePath demo_session_apps_path = delegate()->GetDemoAppsPath();
+  base::FilePath demo_session_apps_path = delegate().GetDemoAppsPath();
   EXPECT_FALSE(demo_session_apps_path.empty());
   EXPECT_EQ(
-      demo_helper()->GetDemoResourcesPath().Append("android_demo_apps.squash"),
+      demo_helper().GetDemoResourcesPath().Append("android_demo_apps.squash"),
       demo_session_apps_path);
 }
 
