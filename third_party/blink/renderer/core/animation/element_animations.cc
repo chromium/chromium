@@ -146,9 +146,19 @@ void ElementAnimations::RecalcCompositedStatus(
   Animation::NativePaintWorkletReasons overlapping_reasons =
       Animation::kNoPaintWorklet;
   for (auto& entry : Animations()) {
-    if (entry.key->CalculateAnimationPlayState() ==
-        V8AnimationPlayState::Enum::kIdle) {
+    const Animation* animation = entry.key;
+    V8AnimationPlayState::Enum play_state =
+        animation->CalculateAnimationPlayState();
+    if (play_state == V8AnimationPlayState::Enum::kIdle) {
       continue;
+    }
+    // A finished animation that is not in effect (i.e. no fill-mode) can
+    // be treated as if idle. This animation will stop ticking until reset via
+    // an API call. It will no longer appear in a getAnimations() call.
+    if (play_state == V8AnimationPlayState::Enum::kFinished) {
+      if (!animation->effect() || !animation->effect()->IsInEffect()) {
+        continue;
+      }
     }
 
     Animation::NativePaintWorkletReasons reasons_to_add =

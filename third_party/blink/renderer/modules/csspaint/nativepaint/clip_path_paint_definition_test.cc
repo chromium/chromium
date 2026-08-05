@@ -1859,27 +1859,10 @@ TEST_F(ClipPathPaintDefinitionTest, TransitionRetarget) {
   // PreCommit has been run the first time.
   UpdateAndAdvanceTimeTo(1000);
 
-  // Even though the newly-finished transition was never started on compositor,
-  // the completion of it should trigger a status reset.
+  // A finished animation that is not in effect, is no longer animated
+  // (i.e. does not appear in a document.getAnimations() call).
   EXPECT_EQ(element->GetElementAnimations()->CompositedClipPathStatus(),
-            CompositedPaintStatus::kNeedsRepaint);
-
-  // Update the lifecycle, at this point, pre-commit should run, but there's
-  // nothing to start on the compositor because the transition is already
-  // finished. By the end of this call, all strong references to the transition
-  // will be gone.
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(element->GetElementAnimations()->CompositedClipPathStatus(),
-            CompositedPaintStatus::kNotComposited);
-
-  // Ensure the transition is garbage collected.
-  ThreadState::Current()->CollectAllGarbageForTesting();
-
-  // Force paint invalidation and run lifecycle to ensure no CHECK failures or
-  // other crashes occur during painting, even though the transition has been
-  // removed from memory.
-  element->GetLayoutObject()->SetShouldDoFullPaintInvalidation();
-  UpdateAllLifecyclePhasesForTest();
+            CompositedPaintStatus::kNoAnimation);
 }
 
 // Like TransitionRetarget, except the transition runs for such short a time
@@ -1963,11 +1946,11 @@ TEST_F(ClipPathPaintDefinitionTest, TransitionRetargetVerySmallDuration) {
   GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
 
-  // Aa status recalc + pre-paint results in kNotComposited. Because the
-  // transition was not idle at the time of the status recalc, we don't get
-  // kNoAnimation.
+  // A finished animation is not a candidate for compositing. Unless updated
+  // via an API call or kept in effect via a fill-mode, there is no longer an
+  // animation running.
   EXPECT_EQ(element->GetElementAnimations()->CompositedClipPathStatus(),
-            CompositedPaintStatus::kNotComposited);
+            CompositedPaintStatus::kNoAnimation);
 
   // Ensure the transition is garbage collected.
   ThreadState::Current()->CollectAllGarbageForTesting();
