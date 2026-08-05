@@ -32,14 +32,21 @@
 #include "ui/base/ui_base_features.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/startup/default_browser_prompt/pin_infobar/pin_infobar_controller.h"
+#include "components/omnibox/browser/vector_icons.h"
+#endif
+
 namespace infobars {
 
 void RegisterInfoBars() {
+  auto* browser_infobar_manager =
+      BrowserInfoBarManager::From(g_browser_process);
+  if (!browser_infobar_manager) {
+    return;
+  }
 
   if (IsInfoBarMigrated(InfoBarDelegate::COLLECTED_COOKIES_INFOBAR_DELEGATE)) {
-      auto* browser_infobar_manager =
-      BrowserInfoBarManager::From(g_browser_process);
-    CHECK(browser_infobar_manager);
     auto spec =
         InfoBarSpec::Builder(
             InfoBarDelegate::COLLECTED_COOKIES_INFOBAR_DELEGATE)
@@ -62,9 +69,6 @@ void RegisterInfoBars() {
   }
 
   if (IsInfoBarMigrated(InfoBarDelegate::GOOGLE_API_KEYS_INFOBAR_DELEGATE)) {
-    auto* browser_infobar_manager =
-        BrowserInfoBarManager::From(g_browser_process);
-    CHECK(browser_infobar_manager);
     auto spec =
         InfoBarSpec::Builder(InfoBarDelegate::GOOGLE_API_KEYS_INFOBAR_DELEGATE)
             .SetMessageText(
@@ -77,17 +81,10 @@ void RegisterInfoBars() {
   }
 
   if (IsInfoBarMigrated(InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE)) {
-      auto* browser_infobar_manager =
-      BrowserInfoBarManager::From(g_browser_process);
-    if (browser_infobar_manager) {
       ChromePageInfoDelegate::RegisterPageInfoInfoBar(browser_infobar_manager);
-    }
   }
 
   if (IsInfoBarMigrated(InfoBarDelegate::OBSOLETE_SYSTEM_INFOBAR_DELEGATE)) {
-    auto* browser_infobar_manager =
-        BrowserInfoBarManager::From(g_browser_process);
-    CHECK(browser_infobar_manager);
     auto spec =
         InfoBarSpec::Builder(InfoBarDelegate::OBSOLETE_SYSTEM_INFOBAR_DELEGATE)
             .SetMessageText(ObsoleteSystem::LocalizedObsoleteString())
@@ -101,9 +98,6 @@ void RegisterInfoBars() {
 
   if (IsInfoBarMigrated(
           InfoBarDelegate::KNOWN_INTERCEPTION_DISCLOSURE_INFOBAR_DELEGATE)) {
-    auto* browser_infobar_manager =
-        BrowserInfoBarManager::From(g_browser_process);
-    CHECK(browser_infobar_manager);
     auto spec =
         InfoBarSpec::Builder(
             InfoBarDelegate::KNOWN_INTERCEPTION_DISCLOSURE_INFOBAR_DELEGATE)
@@ -127,6 +121,29 @@ void RegisterInfoBars() {
             .Build();
     browser_infobar_manager->Register(std::move(spec));
   }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  if (infobars::IsInfoBarMigrated(
+          infobars::InfoBarDelegate::PIN_INFOBAR_DELEGATE)) {
+    CHECK(browser_infobar_manager);
+    auto spec = infobars::InfoBarSpec::Builder(
+                    infobars::InfoBarDelegate::PIN_INFOBAR_DELEGATE)
+                    .SetMessageText(
+                        default_browser::PinInfoBarController::GetMessageText())
+                    .SetIcon(features::IsRoundedIconsEnabled()
+                                 ? omnibox::kChromeProductIcon
+                                 : vector_icons::kProductRefreshIcon)
+                    .SetScope(infobars::InfoBarScope::kGlobal)
+                    .AddOkButton(
+                        default_browser::PinInfoBarController::GetButtonLabel(),
+                        base::BindRepeating(
+                            &default_browser::PinInfoBarController::OnAccept))
+                    .SetDismissAction(base::BindRepeating(
+                        &default_browser::PinInfoBarController::OnDismiss))
+                    .Build();
+    browser_infobar_manager->Register(std::move(spec));
+  }
+#endif
 }
 
 #if BUILDFLAG(CHROME_FOR_TESTING)

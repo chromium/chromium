@@ -32,51 +32,6 @@
 
 namespace default_browser {
 
-namespace {
-
-void RecordUserInteractionHistogram(PinInfoBarUserInteraction interaction) {
-  base::UmaHistogramEnumeration("DefaultBrowser.PinInfoBar.UserInteraction",
-                                interaction);
-}
-
-struct ExperimentalString {
-  std::u16string_view message_win;
-  std::u16string_view button_win;
-  std::u16string_view message_mac;
-  std::u16string_view button_mac;
-};
-
-const ExperimentalString kExperimentalStrings[] = {
-    {u"", u"", u"", u""},  // Version 0 (Standard)
-    {u"Open Chrome with one click. Pin it for faster access.",
-     u"Enable One-Click Access",
-     u"Open Chrome with one click. Keep it in your Dock for faster access.",
-     u"Enable One-Click Access"},
-    {u"Launch the web faster. Pin Chrome to your taskbar.", u"Pin for Speed",
-     u"Launch the web faster. Keep Chrome in your Dock.", u"Keep in Dock"},
-    {u"Keep Chrome within reach anytime you browse.", u"Pin Chrome Now",
-     u"Keep Chrome within reach anytime you browse.", u"Keep in Dock Now"},
-    {u"Optimize your workflow. Add Chrome to your taskbar.", u"Add to Taskbar",
-     u"Optimize your workflow. Add Chrome to your Dock.", u"Add to Dock"},
-    {u"Never search for your browser again. Secure it here.",
-     u"Secure to Taskbar",
-     u"Never search for your browser again. Secure it here.",
-     u"Secure to Dock"},
-    {u"Simplify your startup. Pin Chrome to your taskbar.", u"Pin to Taskbar",
-     u"Simplify your startup. Keep Chrome in your Dock.", u"Keep in Dock"},
-    {u"Always one click away from the web.", u"Pin to Taskbar",
-     u"Always one click away from the web.", u"Keep in Dock"},
-    {u"Ready when you are.", u"Pin Chrome", u"Ready when you are.",
-     u"Keep in Dock"},
-    {u"For a better desktop experience, pin Chrome to your taskbar.",
-     u"Pin to Taskbar",
-     u"For a better desktop experience, keep Chrome in your Dock.",
-     u"Keep in Dock"},
-    {u"Start browsing instantly. Pin Chrome to your taskbar.", u"Pin Chrome",
-     u"Start browsing instantly. Keep Chrome in your Dock.", u"Keep in Dock"}};
-
-}  // namespace
-
 // static
 infobars::InfoBar* PinInfoBarDelegate::Create(
     infobars::ContentInfoBarManager* infobar_manager) {
@@ -87,7 +42,8 @@ infobars::InfoBar* PinInfoBarDelegate::Create(
 
 PinInfoBarDelegate::~PinInfoBarDelegate() {
   if (!action_taken_) {
-    RecordUserInteractionHistogram(PinInfoBarUserInteraction::kIgnored);
+    base::UmaHistogramEnumeration("DefaultBrowser.PinInfoBar.UserInteraction",
+                                  PinInfoBarUserInteraction::kIgnored);
   }
 }
 
@@ -104,51 +60,11 @@ const gfx::VectorIcon& PinInfoBarDelegate::GetVectorIcon() const {
 }
 
 std::u16string PinInfoBarDelegate::GetMessageText() const {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  if (base::FeatureList::IsEnabled(features::kSeparateDefaultAndPinPrompt)) {
-    const int version =
-        features::kSeparateDefaultAndPinPromptMessageVersion.Get();
-    auto experimental_strings = base::span(kExperimentalStrings);
-    if (version >= 1 &&
-        static_cast<size_t>(version) < experimental_strings.size()) {
-#if BUILDFLAG(IS_WIN)
-      return std::u16string(experimental_strings[version].message_win);
-#else
-      return std::u16string(experimental_strings[version].message_mac);
-#endif
-    }
-  }
-#endif
-
-#if BUILDFLAG(IS_WIN)
-  return l10n_util::GetStringUTF16(IDS_PIN_INFOBAR_TEXT);
-#elif BUILDFLAG(IS_MAC)
-  return l10n_util::GetStringUTF16(IDS_PIN_INFOBAR_DOCK_TEXT);
-#endif
+  return PinInfoBarController::GetMessageText();
 }
 
 std::u16string PinInfoBarDelegate::GetButtonLabel(InfoBarButton button) const {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  if (base::FeatureList::IsEnabled(features::kSeparateDefaultAndPinPrompt)) {
-    const int version =
-        features::kSeparateDefaultAndPinPromptMessageVersion.Get();
-    auto experimental_strings = base::span(kExperimentalStrings);
-    if (version >= 1 &&
-        static_cast<size_t>(version) < experimental_strings.size()) {
-#if BUILDFLAG(IS_WIN)
-      return std::u16string(experimental_strings[version].button_win);
-#else
-      return std::u16string(experimental_strings[version].button_mac);
-#endif
-    }
-  }
-#endif
-
-#if BUILDFLAG(IS_WIN)
-  return l10n_util::GetStringUTF16(IDS_PIN_INFOBAR_BUTTON);
-#elif BUILDFLAG(IS_MAC)
-  return l10n_util::GetStringUTF16(IDS_PIN_INFOBAR_DOCK_BUTTON);
-#endif
+  return PinInfoBarController::GetButtonLabel();
 }
 
 int PinInfoBarDelegate::GetButtons() const {
@@ -157,24 +73,13 @@ int PinInfoBarDelegate::GetButtons() const {
 
 bool PinInfoBarDelegate::Accept() {
   action_taken_ = true;
-  RecordUserInteractionHistogram(PinInfoBarUserInteraction::kAccepted);
-
-  // Pin Chrome to taskbar.
-#if BUILDFLAG(IS_WIN)
-  browser_util::PinAppToTaskbar(
-      ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()),
-      browser_util::PinAppToTaskbarChannel::kPinToTaskbarInfoBar,
-      base::DoNothing());
-#elif BUILDFLAG(IS_MAC)
-  PinChromeToDock();
-#endif
-
+  PinInfoBarController::OnAccept(/*web_contents=*/nullptr);
   return ConfirmInfoBarDelegate::Accept();
 }
 
 void PinInfoBarDelegate::InfoBarDismissed() {
   action_taken_ = true;
-  RecordUserInteractionHistogram(PinInfoBarUserInteraction::kDismissed);
+  PinInfoBarController::OnDismiss(/*web_contents=*/nullptr);
   ConfirmInfoBarDelegate::InfoBarDismissed();
 }
 

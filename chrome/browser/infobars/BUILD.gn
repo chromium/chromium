@@ -38,10 +38,18 @@ source_set("infobars") {
 
   deps = [
     "//chrome/app:generated_resources",
+    "//chrome/app:generated_resources_grit",
     "//chrome/browser/ui:ui_features",
+    "//components/omnibox/browser:vector_icons",
     "//components/strings:components_strings",
+    "//components/vector_icons",
+    "//content/public/browser",
     "//ui/base",
   ]
+
+  if (is_win || is_mac) {
+    deps += [ "//chrome/browser/ui/startup/default_browser_prompt/pin_infobar" ]
+  }
 
   if (toolkit_views) {
     deps += [ "//chrome/browser/ui/views/infobars" ]

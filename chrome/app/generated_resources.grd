@@ -3996,6 +3996,82 @@ are declared in tools/grit/grit_args.gni.
         </message>
       </if>
 
+      <!-- Pin InfoBar Experimental strings -->
+      <if expr="is_win">
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_BUTTON_1" translateable="false" desc="Button text for the experimental pin infobar version 1 on Windows">
+          Enable One-Click Access
+        </message>
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_BUTTON_2" translateable="false" desc="Button text for the experimental pin infobar version 2 on Windows">
+          Pin for Speed
+        </message>
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_BUTTON_4" translateable="false" desc="Button text for the experimental pin infobar version 4 on Windows">
+          Add to Taskbar
+        </message>
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_MESSAGE_5" translateable="false" desc="Message text for the experimental pin infobar version 5 on Windows">
+          Never search for your browser again. Secure it here.
+        </message>
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_BUTTON_5" translateable="false" desc="Button text for the experimental pin infobar version 5 on Windows">
+          Secure to Taskbar
+        </message>
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_BUTTON_6" translateable="false" desc="Button text for the experimental pin infobar version 6 on Windows">
+          Pin to Taskbar
+        </message>
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_MESSAGE_7" translateable="false" desc="Message text for the experimental pin infobar version 7 on Windows">
+          Always one click away from the web.
+        </message>
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_BUTTON_7" translateable="false" desc="Button text for the experimental pin infobar version 7 on Windows">
+          Pin to Taskbar
+        </message>
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_MESSAGE_8" translateable="false" desc="Message text for the experimental pin infobar version 8 on Windows">
+          Ready when you are.
+        </message>
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_BUTTON_9" translateable="false" desc="Button text for the experimental pin infobar version 9 on Windows">
+          Pin to Taskbar
+        </message>
+      </if>
+
+      <if expr="is_macosx">
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_DOCK_BUTTON_1" translateable="false" desc="Button text for the experimental pin infobar version 1 on Mac">
+          Enable One-Click Access
+        </message>
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_DOCK_BUTTON_2" translateable="false" desc="Button text for the experimental pin infobar version 2 on Mac">
+          Keep in Dock
+        </message>
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_DOCK_BUTTON_3" translateable="false" desc="Button text for the experimental pin infobar version 3 on Mac">
+          Keep in Dock Now
+        </message>
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_DOCK_BUTTON_4" translateable="false" desc="Button text for the experimental pin infobar version 4 on Mac">
+          Add to Dock
+        </message>
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_DOCK_MESSAGE_5" translateable="false" desc="Message text for the experimental pin infobar version 5 on Mac">
+          Never search for your browser again. Secure it here.
+        </message>
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_DOCK_BUTTON_5" translateable="false" desc="Button text for the experimental pin infobar version 5 on Mac">
+          Secure to Dock
+        </message>
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_DOCK_BUTTON_6" translateable="false" desc="Button text for the experimental pin infobar version 6 on Mac">
+          Keep in Dock
+        </message>
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_DOCK_MESSAGE_7" translateable="false" desc="Message text for the experimental pin infobar version 7 on Mac">
+          Always one click away from the web.
+        </message>
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_DOCK_BUTTON_7" translateable="false" desc="Button text for the experimental pin infobar version 7 on Mac">
+          Keep in Dock
+        </message>
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_DOCK_MESSAGE_8" translateable="false" desc="Message text for the experimental pin infobar version 8 on Mac">
+          Ready when you are.
+        </message>
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_DOCK_BUTTON_8" translateable="false" desc="Button text for the experimental pin infobar version 8 on Mac">
+          Keep in Dock
+        </message>
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_DOCK_BUTTON_9" translateable="false" desc="Button text for the experimental pin infobar version 9 on Mac">
+          Keep in Dock
+        </message>
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_DOCK_BUTTON_10" translateable="false" desc="Button text for the experimental pin infobar version 10 on Mac">
+          Keep in Dock
+        </message>
+      </if>
+
       <!-- Bluetooth Device Credentials (i.e. PIN/Passkey) dialog -->
       <if expr="is_win or is_linux or is_chromeos">
         <message name="IDS_BLUETOOTH_DEVICE_CREDENTIALS_TITLE" desc="Title of the Bluetooth device credentials prompt dialog.">

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "chrome/browser/ui/startup/default_browser_prompt/pin_infobar/pin_infobar_controller.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
 namespace infobars {
@@ -15,16 +16,6 @@ class InfoBar;
 }  // namespace infobars
 
 namespace default_browser {
-
-// Potential user interactions with the pin-to-taskbar infobar.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. Exposed for testing.
-enum class PinInfoBarUserInteraction {
-  kAccepted = 0,
-  kDismissed = 1,
-  kIgnored = 2,
-  kMaxValue = kIgnored,
-};
 
 // The pin-to-taskbar infobar offers to pin Chrome to the taskbar. This class
 // customizes its appearance and behavior.

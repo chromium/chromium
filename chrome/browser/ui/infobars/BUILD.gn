@@ -17,6 +17,7 @@ source_set("infobars") {
     "//chrome/browser/ssl",
     "//chrome/browser/ui/page_info",
     "//components/infobars/core",
+    "//components/omnibox/browser:vector_icons",
     "//components/strings:components_strings",
     "//components/vector_icons",
     "//components/version_info",
@@ -24,4 +25,8 @@ source_set("infobars") {
     "//google_apis",
     "//ui/base",
   ]
+
+  if (is_win || is_mac) {
+    deps += [ "//chrome/browser/ui/startup/default_browser_prompt/pin_infobar" ]
+  }
 }

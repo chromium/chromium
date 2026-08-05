@@ -121,6 +121,7 @@ source_set("unit_tests") {
 source_set("interactive_ui_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
   sources = [ "default_browser_prompt_interactive_uitest.cc" ]
 
   if (is_win) {
@@ -129,6 +130,7 @@ source_set("interactive_ui_tests") {
       "default_browser_modal_dialog_manager_interactive_uitest.cc",
     ]
   }
+
   deps = [
     ":default_browser_prompt",
     "//base/test:test_support",
@@ -138,6 +140,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser:shell_integration",
     "//chrome/browser/default_browser",
     "//chrome/browser/default_browser:test_support",
+    "//chrome/browser/infobars",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:chrome_pages",
@@ -161,4 +164,12 @@ source_set("interactive_ui_tests") {
     "//ui/gfx:gfx_switches",
     "//ui/gfx:test_support",
   ]
+
+  if (is_win || is_mac) {
+    sources += [ "pin_infobar/pin_infobar_interactive_uitest.cc" ]
+    deps += [
+      "//chrome/browser/ui/startup/default_browser_prompt/pin_infobar",
+      "//chrome/browser/ui/startup/default_browser_prompt/pin_infobar:impl",
+    ]
+  }
 }

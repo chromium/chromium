@@ -19,7 +19,21 @@ class ContentInfoBarManager;
 class InfoBar;
 }  // namespace infobars
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace default_browser {
+
+// Potential user interactions with the pin-to-taskbar infobar.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Exposed for testing.
+enum class PinInfoBarUserInteraction {
+  kAccepted = 0,
+  kDismissed = 1,
+  kIgnored = 2,
+  kMaxValue = kIgnored,
+};
 
 // Toggles the pin-to-taskbar infobar if Chrome is the default browser but is
 // not pinned to the taskbar. This infobar offers to pin Chrome to the taskbar.
@@ -30,6 +44,11 @@ class PinInfoBarController : public infobars::InfoBarManager::Observer {
   ~PinInfoBarController() override;
 
   static PinInfoBarController* From(BrowserWindowInterface* window);
+
+  static std::u16string GetMessageText();
+  static std::u16string GetButtonLabel();
+  static void OnAccept(content::WebContents* web_contents);
+  static void OnDismiss(content::WebContents* web_contents);
 
   // Callback passed to `BrowserWindowInterface::RegisterBrowserDidClose()`.
   void OnBrowserClosed(BrowserWindowInterface* browser);
@@ -68,6 +87,9 @@ class PinInfoBarController : public infobars::InfoBarManager::Observer {
 
   // The infobar being shown, or `nullptr` if no infobar currently exists.
   raw_ptr<infobars::InfoBar> infobar_ = nullptr;
+
+  // Tracks whether the infobar has been shown in this session.
+  bool infobar_shown_ = false;
 
   // The manager of the infobar being shown, or `nullptr` if no infobar
   // currently exists.

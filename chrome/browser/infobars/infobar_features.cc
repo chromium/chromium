@@ -49,6 +49,11 @@ BASE_FEATURE_PARAM(bool,
                    &kCentralizedInfoBarFramework,
                    false);
 
+BASE_FEATURE_PARAM(bool,
+                   kMigratedPinInfoBar,
+                   &kCentralizedInfoBarFramework,
+                   false);
+
 const base::FeatureParam<bool>* GetInfoBarMigrationParam(
     InfoBarDelegate::InfoBarIdentifier infobar_id) {
   switch (infobar_id) {
@@ -68,6 +73,8 @@ const base::FeatureParam<bool>* GetInfoBarMigrationParam(
       return &kMigratedChromeForTesting;
     case InfoBarDelegate::OBSOLETE_SYSTEM_INFOBAR_DELEGATE:
       return &kMigratedObsoleteSystem;
+    case InfoBarDelegate::PIN_INFOBAR_DELEGATE:
+      return &kMigratedPinInfoBar;
     default:
       return nullptr;
   }

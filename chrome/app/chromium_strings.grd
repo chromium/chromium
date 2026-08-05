@@ -798,6 +798,64 @@ Chromium is unable to recover your settings.
           Keep in Dock
         </message>
       </if>
+
+            <!-- Pin InfoBar Experimental strings -->
+      <if expr="is_win">
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_MESSAGE_1" translateable="false" desc="Message text for the experimental pin infobar version 1 on Windows">
+          Open Chromium with one click. Pin it for faster access.
+        </message>
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_MESSAGE_2" translateable="false" desc="Message text for the experimental pin infobar version 2 on Windows">
+          Launch the web faster. Pin Chromium to your taskbar.
+        </message>
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_MESSAGE_3" translateable="false" desc="Message text for the experimental pin infobar version 3 on Windows">
+          Keep Chromium within reach anytime you browse.
+        </message>
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_BUTTON_3" translateable="false" desc="Button text for the experimental pin infobar version 3 on Windows">
+          Pin Chromium Now
+        </message>
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_MESSAGE_4" translateable="false" desc="Message text for the experimental pin infobar version 4 on Windows">
+          Optimize your workflow. Add Chromium to your taskbar.
+        </message>
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_MESSAGE_6" translateable="false" desc="Message text for the experimental pin infobar version 6 on Windows">
+          Simplify your startup. Pin Chromium to your taskbar.
+        </message>
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_BUTTON_8" translateable="false" desc="Button text for the experimental pin infobar version 8 on Windows">
+          Pin Chromium
+        </message>
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_MESSAGE_9" translateable="false" desc="Message text for the experimental pin infobar version 9 on Windows">
+          For a better desktop experience, pin Chromium to your taskbar.
+        </message>
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_MESSAGE_10" translateable="false" desc="Message text for the experimental pin infobar version 10 on Windows">
+          Start browsing instantly. Pin Chromium to your taskbar.
+        </message>
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_BUTTON_10" translateable="false" desc="Button text for the experimental pin infobar version 10 on Windows">
+          Pin Chromium
+        </message>
+      </if>
+      <if expr="is_macosx">
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_DOCK_MESSAGE_1" translateable="false" desc="Message text for the experimental pin infobar version 1 on Mac">
+          Open Chromium with one click. Keep it in your Dock for faster access.
+        </message>
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_DOCK_MESSAGE_2" translateable="false" desc="Message text for the experimental pin infobar version 2 on Mac">
+          Launch the web faster. Keep Chromium in your Dock.
+        </message>
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_DOCK_MESSAGE_3" translateable="false" desc="Message text for the experimental pin infobar version 3 on Mac">
+          Keep Chromium within reach anytime you browse.
+        </message>
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_DOCK_MESSAGE_4" translateable="false" desc="Message text for the experimental pin infobar version 4 on Mac">
+          Optimize your workflow. Add Chromium to your Dock.
+        </message>
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_DOCK_MESSAGE_6" translateable="false" desc="Message text for the experimental pin infobar version 6 on Mac">
+          Simplify your startup. Keep Chromium in your Dock.
+        </message>
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_DOCK_MESSAGE_9" translateable="false" desc="Message text for the experimental pin infobar version 9 on Mac">
+          For a better desktop experience, keep Chromium in your Dock.
+        </message>
+        <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_DOCK_MESSAGE_10" translateable="false" desc="Message text for the experimental pin infobar version 10 on Mac">
+          Start browsing instantly. Keep Chromium in your Dock.
+        </message>
+      </if>
+
       <message name="IDS_DEFAULT_BROWSER_INFOBAR_TEXT" desc="Text to show in an infobar when Chromium is not the current default browser.">
         Chromium isn't your default browser
       </message>
