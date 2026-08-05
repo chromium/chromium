@@ -1364,10 +1364,6 @@ void ToggleCalendar() {
 }
 
 void ToggleCameraAllowed() {
-  if (!features::IsToggleCameraShortcutEnabled()) {
-    return;
-  }
-
   auto* pref_service =
       Shell::Get()->session_controller()->GetActivePrefService();
   if (!pref_service) {

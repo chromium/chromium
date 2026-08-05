@@ -7637,12 +7637,6 @@ inline constexpr char kEnableSeamlessRefreshRateSwitchingDescription[] =
     "This option enables seamlessly changing the refresh rate based on power "
     "state on devices with supported hardware and drivers.";
 
-inline constexpr char kEnableToggleCameraShortcutName[] =
-    "Enable shortcut to toggle camera access";
-inline constexpr char kEnableToggleCameraShortcutDescription[] =
-    "Adds a shortcut to toggle the value of the top level 'Camera access' "
-    "setting in the privacy controls section of the Settings app.";
-
 inline constexpr char kEnableTouchpadsInDiagnosticsAppName[] =
     "Enable touchpad cards in the Diagnostics App";
 inline constexpr char kEnableTouchpadsInDiagnosticsAppDescription[] =

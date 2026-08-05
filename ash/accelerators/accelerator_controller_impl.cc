@@ -879,7 +879,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case AcceleratorAction::kToggleCalendar:
       return true;
     case AcceleratorAction::kToggleCameraAllowed:
-      return features::IsToggleCameraShortcutEnabled();
+      return true;
     case AcceleratorAction::kToggleCapsLock:
       return CanHandleToggleCapsLock(accelerator, *capslock_state_machine_,
                                      notification_controller_.get());

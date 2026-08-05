@@ -10076,11 +10076,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAshSplitKeyboardRefactorDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kSplitKeyboardRefactor)},
 
-    {"enable-toggle-camera-shortcut",
-     flag_descriptions::kEnableToggleCameraShortcutName,
-     flag_descriptions::kEnableToggleCameraShortcutDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kEnableToggleCameraShortcut)},
-
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
     {"enable-unrestricted-usb", flag_descriptions::kEnableUnrestrictedUsbName,

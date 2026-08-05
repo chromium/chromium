@@ -459,7 +459,7 @@ bool ShouldExcludeItem(const AcceleratorLayoutDetails& details) {
     case kToggleSnapGroupWindowsMinimizeAndRestore:
       return true;
     case kToggleCameraAllowed:
-      return !features::IsToggleCameraShortcutEnabled();
+      return false;
     case kStartSunfishSession:
       return !CanShowSunfishOrScannerUi();
   }

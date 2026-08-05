@@ -4431,14 +4431,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "enable-toggle-camera-shortcut",
-    "owners": [
-      "longbowei@google.com",
-      "cros-device-enablement@google.com"
-    ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "enable-touch-drag-drop",
     "owners": [ "mustaq@chromium.org", "input-dev@chromium.org" ],
     "expiry_milestone": 142
