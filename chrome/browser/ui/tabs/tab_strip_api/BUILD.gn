@@ -37,7 +37,10 @@ if (!is_android) {
   source_set("browser_tests") {
     testonly = true
 
-    deps = [ "tab_strip_model_impl:browser_tests" ]
+    deps = [
+      "controllers:browser_tests",
+      "tab_strip_model_impl:browser_tests",
+    ]
   }
 }
 
