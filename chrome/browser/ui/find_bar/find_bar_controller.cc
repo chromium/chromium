@@ -12,6 +12,7 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_platform_helper.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
@@ -31,9 +32,12 @@
 using content::NavigationController;
 using content::WebContents;
 
-FindBarController::FindBarController(std::unique_ptr<FindBar> find_bar)
+FindBarController::FindBarController(
+    std::unique_ptr<FindBar> find_bar,
+    chrome::BrowserCommandController* browser_command_controller)
     : find_bar_(std::move(find_bar)),
-      find_bar_platform_helper_(FindBarPlatformHelper::Create(this)) {}
+      find_bar_platform_helper_(FindBarPlatformHelper::Create(this)),
+      browser_command_controller_(browser_command_controller) {}
 
 FindBarController::~FindBarController() {
   DCHECK(!web_contents());
@@ -417,5 +421,13 @@ void FindBarController::UpdatePageAction() {
   } else {
     controller->Show(kActionFind);
     find_bar_page_action_activity_ = controller->AddActivity(kActionFind);
+  }
+}
+
+void FindBarController::OnFindBarVisibilityChanged() {
+  UpdatePageAction();
+
+  if (browser_command_controller_) {
+    browser_command_controller_->FindBarVisibilityChanged();
   }
 }

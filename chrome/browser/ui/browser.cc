@@ -787,12 +787,6 @@ void Browser::FullscreenTopUIStateChanged() {
       BookmarkBarController::StateChangeReason::kToolbarOptionChange);
 }
 
-void Browser::OnFindBarVisibilityChanged() {
-  GetFeatures().GetFindBarController()->UpdatePageAction();
-
-  chrome::BrowserCommandController::From(this)->FindBarVisibilityChanged();
-}
-
 void Browser::UpdateUIForNavigationInTab(WebContents* contents,
                                          ui::PageTransition transition,
                                          NavigateParams::WindowAction action,

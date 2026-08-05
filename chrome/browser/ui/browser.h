@@ -350,8 +350,6 @@ class Browser : public TabStripModelObserver,
   // may trigger bookmark bar state change.
   void FullscreenTopUIStateChanged();
 
-  void OnFindBarVisibilityChanged();
-
   // Called by Navigate() when a navigation has occurred in a tab in
   // this Browser. Updates the UI for the start of this navigation.
   void UpdateUIForNavigationInTab(content::WebContents* contents,

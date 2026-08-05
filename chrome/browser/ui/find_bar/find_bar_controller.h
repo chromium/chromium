@@ -8,6 +8,7 @@
 #include <memory>
 #include <string_view>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "components/find_in_page/find_result_observer.h"
@@ -16,6 +17,10 @@
 
 class FindBar;
 class FindBarPlatformHelper;
+
+namespace chrome {
+class BrowserCommandController;
+}
 
 namespace content {
 class WebContents;
@@ -33,7 +38,9 @@ enum class ResultAction;
 class FindBarController : public content::WebContentsObserver,
                           public find_in_page::FindResultObserver {
  public:
-  explicit FindBarController(std::unique_ptr<FindBar> find_bar);
+  FindBarController(
+      std::unique_ptr<FindBar> find_bar,
+      chrome::BrowserCommandController* browser_command_controller);
 
   FindBarController(const FindBarController&) = delete;
   FindBarController& operator=(const FindBarController&) = delete;
@@ -83,6 +90,9 @@ class FindBarController : public content::WebContentsObserver,
   // Updates the page action, which the find bar appears anchored to.
   void UpdatePageAction();
 
+  // Called when the find bar visibility changes.
+  void OnFindBarVisibilityChanged();
+
  private:
   // Sends an update to the find bar with the tab contents' current result. The
   // `web_contents()` must be non-NULL before this call. This handles
@@ -131,6 +141,9 @@ class FindBarController : public content::WebContentsObserver,
   // Set in DidStartNavigation and cleared in NavigationEntryCommitted and
   // DidFinishNavigation.
   std::optional<bool> close_find_bar_on_navigation_commit_;
+
+  raw_ptr<chrome::BrowserCommandController> browser_command_controller_ =
+      nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_FIND_BAR_FIND_BAR_CONTROLLER_H_
