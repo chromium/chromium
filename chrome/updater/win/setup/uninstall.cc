@@ -17,6 +17,7 @@
 
 #include "base/base_paths.h"
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -215,6 +216,12 @@ int UninstallImpl(UpdaterScope scope, bool uninstall_all) {
                                &temp_dir)) {
       base::CopyFile(*log_file, temp_dir.Append(log_file->BaseName()));
     }
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kSkipUninstallScriptSwitch)) {
+    VLOG(1) << "Skipping uninstall script as requested.";
+    return kErrorOk;
   }
 
   return RunUninstallScript(scope, uninstall_all);

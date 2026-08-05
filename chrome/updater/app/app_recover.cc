@@ -138,6 +138,7 @@ int AppRecover::ReinstallUpdater() const {
   int exit_code = -1;
   base::CommandLine uninstall_command(setup_path);
   uninstall_command.AppendSwitch(kUninstallSwitch);
+  uninstall_command.AppendSwitch(kSkipUninstallScriptSwitch);
   if (IsSystemInstall(updater_scope())) {
     uninstall_command.AppendSwitch(kSystemSwitch);
   }

@@ -136,6 +136,11 @@ inline constexpr char kUninstallSelfSwitch[] = "uninstall-self";
 // Uninstalls the updater if no apps are managed by it.
 inline constexpr char kUninstallIfUnusedSwitch[] = "uninstall-if-unused";
 
+// Specifies that the uninstaller should skip running the async uninstall script
+// (uninstall.cmd). This is used during recovery to avoid racing with the
+// subsequent install.
+inline constexpr char kSkipUninstallScriptSwitch[] = "skip-uninstall-script";
+
 // Kicks off the update service. This switch is typically used for by a
 // scheduled to invoke the updater periodically.
 inline constexpr char kWakeSwitch[] = "wake";
