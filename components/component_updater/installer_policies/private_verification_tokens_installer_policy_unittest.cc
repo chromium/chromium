@@ -108,7 +108,8 @@ TEST_F(PrivateVerificationTokensInstallerPolicyTest, ParsesValidJson) {
             "publicKeyProof": "cHZ0LXByb29m",
             "batchSize": 4,
             "expiration": "12",
-            "redeemers": ["https://s1.a.example", "https://s2.a.example"]
+            "redeemers": ["https://s1.a.example", "https://s2.a.example"],
+            "deploymentId": "dep-a"
           },
           {
             "issuerRequestUrl": "https://b.example/pvt/issue",
@@ -117,7 +118,8 @@ TEST_F(PrivateVerificationTokensInstallerPolicyTest, ParsesValidJson) {
             "publicKeyProof": "YW5vdGhlci1hd2Vzb21lLXByb29m",
             "batchSize": 3,
             "expiration": "24",
-            "redeemers": ["https://sub1.b.example", "https://sub2.b.example"]
+            "redeemers": ["https://sub1.b.example", "https://sub2.b.example"],
+            "deploymentId": "dep-b"
           }
         ]
       }
@@ -156,6 +158,7 @@ TEST_F(PrivateVerificationTokensInstallerPolicyTest, ParsesValidJson) {
                     testing::ElementsAre(
                         url::Origin::Create(GURL("https://s1.a.example")),
                         url::Origin::Create(GURL("https://s2.a.example"))));
+        EXPECT_EQ(config_a.deployment_id, "dep-a");
 
         std::string decoded_key_b;
         ASSERT_TRUE(
@@ -181,6 +184,7 @@ TEST_F(PrivateVerificationTokensInstallerPolicyTest, ParsesValidJson) {
                     testing::ElementsAre(
                         url::Origin::Create(GURL("https://sub1.b.example")),
                         url::Origin::Create(GURL("https://sub2.b.example"))));
+        EXPECT_EQ(config_b.deployment_id, "dep-b");
 
         run_loop.Quit();
       };

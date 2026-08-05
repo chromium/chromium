@@ -123,6 +123,14 @@ std::optional<std::vector<url::Origin>> GetValidRedeemers(
   return redeemers;
 }
 
+std::optional<std::string> GetValidDeploymentId(const base::DictValue& dict) {
+  const std::string* deployment_id = dict.FindString(kDeploymentIdKey);
+  if (!deployment_id) {
+    return std::nullopt;
+  }
+  return *deployment_id;
+}
+
 std::optional<IssuerConfig> ParseEntry(const base::DictValue& dict) {
   const std::string* issuer_request_url_str =
       dict.FindString(kIssuerRequestUrlKey);
@@ -187,12 +195,18 @@ std::optional<IssuerConfig> ParseEntry(const base::DictValue& dict) {
     return std::nullopt;
   }
 
+  std::optional<std::string> deployment_id =
+      internal::GetValidDeploymentId(dict);
+  if (!deployment_id) {
+    return std::nullopt;
+  }
+
   PrivateVerificationTokensPublicKey pk(
       std::move(origin), std::move(*decoded_public_key),
       std::move(*decoded_public_key_proof),
       base::Time::UnixEpoch() + base::Seconds(*expiration), *version);
   return IssuerConfig(std::move(issuer_request_url), *batch_size, std::move(pk),
-                      std::move(*redeemers));
+                      std::move(*redeemers), std::move(*deployment_id));
 }
 
 }  // namespace internal
@@ -200,11 +214,13 @@ std::optional<IssuerConfig> ParseEntry(const base::DictValue& dict) {
 IssuerConfig::IssuerConfig(GURL issuer_request_url,
                            int32_t batch_size,
                            PrivateVerificationTokensPublicKey public_key,
-                           std::vector<url::Origin> redeemers)
+                           std::vector<url::Origin> redeemers,
+                           std::string deployment_id)
     : issuer_request_url(std::move(issuer_request_url)),
       batch_size(batch_size),
       public_key(std::move(public_key)),
-      redeemers(std::move(redeemers)) {}
+      redeemers(std::move(redeemers)),
+      deployment_id(std::move(deployment_id)) {}
 
 IssuerConfig::IssuerConfig(const IssuerConfig&) = default;
 IssuerConfig& IssuerConfig::operator=(const IssuerConfig&) = default;

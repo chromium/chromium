@@ -162,7 +162,8 @@ class PrivateVerificationTokensServiceBrowserTest : public PlatformBrowserTest {
           "publicKeyProof": "%s",
           "batchSize": 3,
           "expiration": "%s",
-          "redeemers": ["%s"]
+          "redeemers": ["%s"],
+          "deploymentId": "test-deployment-id"
         },
         {
           "issuerRequestUrl": "%s/pvt/issue",
@@ -171,7 +172,8 @@ class PrivateVerificationTokensServiceBrowserTest : public PlatformBrowserTest {
           "publicKeyProof": "%s",
           "batchSize": 3,
           "expiration": "%s",
-          "redeemers": ["%s"]
+          "redeemers": ["%s"],
+          "deploymentId": "test-deployment-id"
         },
         {
           "issuerRequestUrl": "%s/pvt/issue",
@@ -180,7 +182,8 @@ class PrivateVerificationTokensServiceBrowserTest : public PlatformBrowserTest {
           "publicKeyProof": "%s",
           "batchSize": 3,
           "expiration": "%s",
-          "redeemers": ["%s"]
+          "redeemers": ["%s"],
+          "deploymentId": "test-deployment-id"
         },
         {
           "issuerRequestUrl": "%s/pvt/issue",
@@ -189,7 +192,8 @@ class PrivateVerificationTokensServiceBrowserTest : public PlatformBrowserTest {
           "publicKeyProof": "%s",
           "batchSize": 3,
           "expiration": "%s",
-          "redeemers": ["%s"]
+          "redeemers": ["%s"],
+          "deploymentId": "test-deployment-id"
         }
       ]
     })",

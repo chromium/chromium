@@ -182,6 +182,7 @@ TEST(PrivateVerificationTokensIssuerConfigInternalTest, ParseEntry_Valid) {
   base::ListValue redeemers_list;
   redeemers_list.Append("https://s1.example.com");
   entry.Set(kRedeemersKey, std::move(redeemers_list));
+  entry.Set(kDeploymentIdKey, base::Value("test-deployment-id"));
 
   auto result = ParseEntry(entry);
   EXPECT_TRUE(result.has_value());
@@ -196,6 +197,7 @@ TEST(PrivateVerificationTokensIssuerConfigInternalTest, ParseEntry_Valid) {
   EXPECT_EQ(result->redeemers.size(), 1u);
   EXPECT_EQ(result->redeemers[0],
             url::Origin::Create(GURL("https://s1.example.com")));
+  EXPECT_EQ(result->deployment_id, "test-deployment-id");
 }
 
 struct MissingFieldTestCase {
@@ -220,6 +222,7 @@ TEST_P(PrivateVerificationTokensIssuerConfigInternalMissingFieldTest,
   base::ListValue redeemers_list;
   redeemers_list.Append("https://s1.example.com");
   entry.Set(kRedeemersKey, std::move(redeemers_list));
+  entry.Set(kDeploymentIdKey, base::Value("test-deployment-id"));
   entry.Remove(test_case.field_to_remove);
   auto result = ParseEntry(entry);
   EXPECT_FALSE(result.has_value());
@@ -234,7 +237,8 @@ INSTANTIATE_TEST_SUITE_P(
                     MissingFieldTestCase{kPublicKeyProofKey},
                     MissingFieldTestCase{kBatchSizeKey},
                     MissingFieldTestCase{kExpirationKey},
-                    MissingFieldTestCase{kRedeemersKey}));
+                    MissingFieldTestCase{kRedeemersKey},
+                    MissingFieldTestCase{kDeploymentIdKey}));
 
 }  // namespace internal
 
@@ -294,7 +298,8 @@ TEST_F(PrivateVerificationTokensIssuerConfigTest,
         "publicKeyProof": "%s",
         "batchSize": 3,
         "expiration": "%s",
-        "redeemers": ["https://s1.example.com", "https://s2.example.com"]
+        "redeemers": ["https://s1.example.com", "https://s2.example.com"],
+        "deploymentId": "test-deployment-id"
       }
     ]
   })",
@@ -318,6 +323,7 @@ TEST_F(PrivateVerificationTokensIssuerConfigTest,
               testing::ElementsAre(
                   url::Origin::Create(GURL("https://s1.example.com")),
                   url::Origin::Create(GURL("https://s2.example.com"))));
+  EXPECT_EQ(parsed_issuer_config.deployment_id, "test-deployment-id");
 }
 
 TEST_F(PrivateVerificationTokensIssuerConfigTest,
@@ -340,7 +346,8 @@ TEST_F(PrivateVerificationTokensIssuerConfigTest,
         "publicKeyProof": "%s",
         "batchSize": 3,
         "expiration": "49",
-        "redeemers": ["https://sub1.a.com"]
+        "redeemers": ["https://sub1.a.com"],
+        "deploymentId": "dep-a"
       },
       {
         "issuerRequestUrl": "https://b.com/pvt/issue",
@@ -349,7 +356,8 @@ TEST_F(PrivateVerificationTokensIssuerConfigTest,
         "publicKeyProof": "%s",
         "batchSize": 5,
         "expiration": "53",
-        "redeemers": ["https://sub1.b.com"]
+        "redeemers": ["https://sub1.b.com"],
+        "deploymentId": "dep-b"
       }
     ]
   })",
@@ -374,6 +382,7 @@ TEST_F(PrivateVerificationTokensIssuerConfigTest,
   EXPECT_THAT(
       config1.redeemers,
       testing::ElementsAre(url::Origin::Create(GURL("https://sub1.a.com"))));
+  EXPECT_EQ(config1.deployment_id, "dep-a");
 
   PrivateVerificationTokensPublicKey expected_pk2{
       b_origin, serialized_public_key2, serialized_proof,
@@ -385,6 +394,7 @@ TEST_F(PrivateVerificationTokensIssuerConfigTest,
   EXPECT_THAT(
       config2.redeemers,
       testing::ElementsAre(url::Origin::Create(GURL("https://sub1.b.com"))));
+  EXPECT_EQ(config2.deployment_id, "dep-b");
 }
 
 TEST_F(PrivateVerificationTokensIssuerConfigTest,
@@ -404,7 +414,8 @@ TEST_F(PrivateVerificationTokensIssuerConfigTest,
         "publicKeyProof": "%s",
         "batchSize": 3,
         "expiration": "49",
-        "redeemers": ["https://sub.valid.com"]
+        "redeemers": ["https://sub.valid.com"],
+        "deploymentId": "athm-dep"
       },
       {
         "issuerRequestUrl": "https://invalid.com/pvt/issue",
@@ -413,7 +424,8 @@ TEST_F(PrivateVerificationTokensIssuerConfigTest,
         "publicKeyProof": "Cg==",
         "batchSize": 5,
         "expiration": "53",
-        "redeemers": ["https://sub.invalid.com"]
+        "redeemers": ["https://sub.invalid.com"],
+        "deploymentId": "test-dep"
       }
     ]
   })",
@@ -457,7 +469,8 @@ TEST_F(PrivateVerificationTokensIssuerConfigTest,
         "publicKeyProof": "%s",
         "batchSize": 3,
         "expiration": "49",
-        "redeemers": ["https://sub.a.com"]
+        "redeemers": ["https://sub.a.com"],
+        "deploymentId": "dep-a"
       },
       {
         "issuerRequestUrl": "https://b.com/pvt/issue",
@@ -466,7 +479,8 @@ TEST_F(PrivateVerificationTokensIssuerConfigTest,
         "publicKeyProof": "%s",
         "batchSize": 5,
         "expiration": "53",
-        "redeemers": ["https://sub.b.com"]
+        "redeemers": ["https://sub.b.com"],
+        "deploymentId": "dep-b"
       },
       {
         "issuerRequestUrl": "https://a.com/pvt/issue",
@@ -475,7 +489,8 @@ TEST_F(PrivateVerificationTokensIssuerConfigTest,
         "publicKeyProof": "%s",
         "batchSize": 7,
         "expiration": "62",
-        "redeemers": ["https://sub.a.com"]
+        "redeemers": ["https://sub.a.com"],
+        "deploymentId": "dep-a-v2"
       }
     ]
   })",
@@ -559,7 +574,8 @@ TEST_F(PrivateVerificationTokensIssuerConfigTest, LoadFromFile_ValidJson) {
           "publicKeyProof": "%s",
           "batchSize": 3,
           "expiration": "12",
-          "redeemers": ["https://s1.example.com", "https://s2.example.com"]
+          "redeemers": ["https://s1.example.com", "https://s2.example.com"],
+          "deploymentId": "test-deployment-id"
         }
       ]
     }
