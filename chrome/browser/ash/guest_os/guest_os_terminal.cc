@@ -36,7 +36,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/system_web_apps/system_web_app_type.h"

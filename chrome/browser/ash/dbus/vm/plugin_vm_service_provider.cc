@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/chrome_pages.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/plugin_vm_service/plugin_vm_service.pb.h"
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"

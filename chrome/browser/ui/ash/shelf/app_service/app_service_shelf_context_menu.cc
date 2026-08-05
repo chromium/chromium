@@ -41,7 +41,6 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/shelf/shelf_context_menu.h"
-#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/views/crostini/crostini_app_restart_dialog.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"

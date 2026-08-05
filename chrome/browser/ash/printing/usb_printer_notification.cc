@@ -14,7 +14,6 @@
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"

@@ -13,6 +13,5 @@ include_rules = [
   "+chrome/browser/apps/app_service",
   "+chrome/browser/ash/login/users",
   "+chrome/browser/profiles/profile_manager.h",
-  "+chrome/browser/ui/chrome_pages.h",
   "+chrome/test/base",
 ]

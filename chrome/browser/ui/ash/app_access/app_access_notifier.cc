@@ -22,7 +22,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/chrome_pages.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "components/account_id/account_id.h"

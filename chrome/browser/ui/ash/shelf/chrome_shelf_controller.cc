@@ -74,7 +74,6 @@
 #include "chrome/browser/ui/ash/shelf/shelf_extension_app_updater.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/grit/branded_strings.h"

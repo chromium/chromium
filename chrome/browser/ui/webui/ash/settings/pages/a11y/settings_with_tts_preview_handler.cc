@@ -10,7 +10,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"
-#include "chrome/browser/ui/chrome_pages.h"
 #include "content/public/browser/tts_controller.h"
 #include "content/public/browser/web_ui.h"
 #include "extensions/browser/event_router.h"
