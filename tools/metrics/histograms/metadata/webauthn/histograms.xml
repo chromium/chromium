@@ -367,6 +367,36 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="WebAuthentication.Enclave.ActionOutcome.{Action}"
+    enum="EnclaveManagerActionOutcome" expires_after="2027-08-01">
+  <owner>martinkr@google.com</owner>
+  <owner>kenrb@chromium.org</owner>
+  <owner>nsatragno@chromium.org</owner>
+  <owner>ylahodiuk@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>Records the outcome of the EnclaveManager action {Action}.</summary>
+<!-- LINT.IfChange(EnclaveManagerActionForUMA) -->
+
+  <token key="Action">
+    <variant name="AddDeviceAndPINToAccount"
+        summary="adding a device and PIN to the account"/>
+    <variant name="AddDeviceToAccount"
+        summary="adding a device to the account"/>
+    <variant name="AddICloudRecoveryKey"
+        summary="adding an iCloud recovery key"/>
+    <variant name="ChangePIN" summary="changing the GPM PIN"/>
+    <variant name="ConsiderSecurityDomainState"
+        summary="processing security domain state updates"/>
+    <variant name="RegisterIfNeeded"
+        summary="registering the enclave if needed"/>
+    <variant name="SetPIN" summary="setting a GPM PIN"/>
+    <variant name="SetupWithPIN" summary="setting up an account with PIN"/>
+    <variant name="Unenroll" summary="unenrolling from the enclave"/>
+  </token>
+<!-- LINT.ThenChange(//chrome/browser/webauthn/enclave_manager.h:EnclaveManagerActionForUMA) -->
+
+</histogram>
+
 <histogram name="WebAuthentication.Enclave.ChangePinEventsV2"
     enum="ChangePinEvent" expires_after="2027-01-17">
   <owner>derinel@google.com</owner>

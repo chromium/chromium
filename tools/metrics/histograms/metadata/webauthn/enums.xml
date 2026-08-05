@@ -173,6 +173,12 @@ chromium-metrics-reviews@google.com.
       label="Can not parse a vault and security domain member keys from a
              CBOR map"/>
   <int value="44" label="Account mismatch in DoNextAction"/>
+  <int value="45"
+      label="Failed to parse wrapped PIN or PIN invariants check failed in
+             AddDeviceToAccount"/>
+  <int value="46"
+      label="Failed to parse wrapped PIN or PIN invariants check failed in
+             ConsiderSecurityDomainState"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/webauthn/enclave_manager.h:EnclaveManagerActionOutcome) -->

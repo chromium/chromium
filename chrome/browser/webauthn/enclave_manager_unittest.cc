@@ -742,6 +742,19 @@ TEST_F(EnclaveManagerTest, GetAccessTokenErrorMetric_Success) {
   histogram_tester.ExpectUniqueSample(
       "WebAuthentication.Enclave.GetAccessTokenError",
       GoogleServiceAuthError::State::NONE, 1);
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.Enclave.ActionOutcome.RegisterIfNeeded",
+      EnclaveManager::ActionOutcome::kSuccess, 1);
+
+  // Calling RegisterIfNeeded when already registered should also record
+  // kSuccess.
+  BoolFuture register_future;
+  manager_.RegisterIfNeeded(register_future.GetCallback());
+  EXPECT_TRUE(register_future.Wait());
+  EXPECT_TRUE(register_future.Get());
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.Enclave.ActionOutcome.RegisterIfNeeded",
+      EnclaveManager::ActionOutcome::kSuccess, 2);
 }
 
 TEST_F(EnclaveManagerTest, GetAccessTokenErrorMetric_Failure) {
@@ -922,6 +935,7 @@ TEST_F(EnclaveManagerTest, AddWithExistingPIN) {
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   AcquireLockAndStoreKey(&manager_, {std::move(key)},
                          /*last_key_version=*/417);
+  base::HistogramTester histogram_tester;
   BoolFuture add_future;
   ASSERT_TRUE(manager_.AddDeviceToAccount(
       trusted_vault::GpmPinMetadata(std::string(kTestPINPublicKey),
@@ -942,9 +956,13 @@ TEST_F(EnclaveManagerTest, AddWithExistingPIN) {
   // pretending that it was already there.
   EXPECT_EQ(security_domain_service_->num_pin_members(), 0u);
   EXPECT_TRUE(manager_.has_wrapped_pin());
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.Enclave.ActionOutcome.AddDeviceToAccount",
+      EnclaveManager::ActionOutcome::kSuccess, 1);
 }
 
 TEST_F(EnclaveManagerTest, InvalidWrappedPIN) {
+  base::HistogramTester histogram_tester;
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   AcquireLockAndStoreKey(&manager_, {std::move(key)},
                          /*last_key_version=*/417);
@@ -957,6 +975,11 @@ TEST_F(EnclaveManagerTest, InvalidWrappedPIN) {
           trusted_vault::UsableRecoveryPinMetadata("nonsense wrapped PIN",
                                                    /*expiry=*/base::Time())),
       add_future.GetCallback()));
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.Enclave.ActionOutcome.AddDeviceToAccount",
+      EnclaveManager::ActionOutcome::
+          kAddDeviceToAccountNotStartedWrappedPinParsingError,
+      1);
 
   // A valid protobuf, but which fails invariants, should be rejected.
   webauthn_pb::EnclaveLocalState::WrappedPIN wrapped_pin = GetTestWrappedPIN();
@@ -967,9 +990,15 @@ TEST_F(EnclaveManagerTest, InvalidWrappedPIN) {
                                         wrapped_pin.SerializeAsString(),
                                         /*expiry=*/base::Time())),
       add_future.GetCallback()));
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.Enclave.ActionOutcome.AddDeviceToAccount",
+      EnclaveManager::ActionOutcome::
+          kAddDeviceToAccountNotStartedWrappedPinParsingError,
+      2);
 }
 
 TEST_F(EnclaveManagerTest, SetupWithPIN) {
+  base::HistogramTester histogram_tester;
   const std::string pin = "123456";
 
   BoolFuture setup_future;
@@ -1010,6 +1039,9 @@ TEST_F(EnclaveManagerTest, SetupWithPIN) {
   DoCreate(/*claimed_pin=*/nullptr, &entity);
   DoAssertion(std::move(entity), std::move(claimed_pin),
               GetAssertionResponseExpectation());
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.Enclave.ActionOutcome.SetupWithPIN",
+      EnclaveManager::ActionOutcome::kSuccess, 1);
 }
 
 TEST_F(EnclaveManagerTest, SetupWithPIN_SecurityDomainFailure) {
@@ -1104,6 +1136,7 @@ TEST_F(EnclaveManagerTest, AddDeviceAndPINToAccount) {
                          /*last_key_version=*/kSecretVersion);
   ASSERT_TRUE(manager_.has_pending_keys());
 
+  base::HistogramTester histogram_tester;
   BoolFuture add_future;
   manager_.AddDeviceAndPINToAccount(
       pin, /*previous_pin_public_key=*/std::nullopt, add_future.GetCallback());
@@ -1142,6 +1175,9 @@ TEST_F(EnclaveManagerTest, AddDeviceAndPINToAccount) {
   DoCreate(/*claimed_pin=*/nullptr, &entity);
   DoAssertion(std::move(entity), std::move(claimed_pin),
               GetAssertionResponseExpectation());
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.Enclave.ActionOutcome.AddDeviceAndPINToAccount",
+      EnclaveManager::ActionOutcome::kSuccess, 1);
 }
 
 TEST_F(EnclaveManagerTest, AddDeviceAndPINToAccountWithPreviouslyInvalidPIN) {
@@ -1199,6 +1235,7 @@ TEST_F(EnclaveManagerTest, ChangePIN) {
   const std::vector<uint8_t> security_domain_secret =
       std::move(manager_.TakeSecret()->second);
 
+  base::HistogramTester histogram_tester;
   BoolFuture change_future;
   manager_.ChangePIN(new_pin, "rapt", change_future.GetCallback());
   EXPECT_TRUE(change_future.Wait());
@@ -1219,6 +1256,9 @@ TEST_F(EnclaveManagerTest, ChangePIN) {
   DoCreate(/*claimed_pin=*/nullptr, &entity);
   DoAssertion(std::move(entity), std::move(claimed_pin),
               GetAssertionResponseExpectation());
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.Enclave.ActionOutcome.ChangePIN",
+      EnclaveManager::ActionOutcome::kSuccess, 1);
 }
 
 TEST_F(EnclaveManagerTest, AddPINToExistingAccount) {
@@ -1238,6 +1278,7 @@ TEST_F(EnclaveManagerTest, AddPINToExistingAccount) {
   const std::vector<uint8_t> security_domain_secret =
       std::move(manager_.TakeSecret()->second);
 
+  base::HistogramTester histogram_tester;
   BoolFuture set_pin_future;
   manager_.SetPIN(new_pin, "rapt", set_pin_future.GetCallback());
   EXPECT_TRUE(set_pin_future.Wait());
@@ -1258,6 +1299,9 @@ TEST_F(EnclaveManagerTest, AddPINToExistingAccount) {
   DoCreate(/*claimed_pin=*/nullptr, &entity);
   DoAssertion(std::move(entity), std::move(claimed_pin),
               GetAssertionResponseExpectation());
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.Enclave.ActionOutcome.SetPIN",
+      EnclaveManager::ActionOutcome::kSuccess, 1);
 }
 
 TEST_F(EnclaveManagerTest, AddPINToExistingAccountButTheresAlreadyOne) {
@@ -1814,12 +1858,16 @@ TEST_F(EnclaveManagerTest, EpochChanged) {
   EXPECT_TRUE(manager_.ConsiderSecurityDomainState(state, base::DoNothing()));
   EXPECT_TRUE(manager_.is_idle());
 
+  base::HistogramTester histogram_tester;
   BoolFuture update_future;
   state.key_version = kSecretVersion + 1;
   EXPECT_FALSE(
       manager_.ConsiderSecurityDomainState(state, update_future.GetCallback()));
   EXPECT_TRUE(update_future.Wait());
   EXPECT_FALSE(manager_.IsReady());
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.Enclave.ActionOutcome.ConsiderSecurityDomainState",
+      EnclaveManager::ActionOutcome::kSuccess, 1);
 }
 
 TEST_F(EnclaveManagerTest, PINChanged) {
@@ -1845,6 +1893,7 @@ TEST_F(EnclaveManagerTest, PINChanged) {
                             wrapped_pin.SerializeAsString(),
                             /*expiry=*/base::Time::FromTimeT(1)));
 
+  base::HistogramTester histogram_tester;
   BoolFuture update_future;
   EXPECT_TRUE(
       manager_.ConsiderSecurityDomainState(state, update_future.GetCallback()));
@@ -1853,6 +1902,35 @@ TEST_F(EnclaveManagerTest, PINChanged) {
   const webauthn_pb::EnclaveLocalState::User& updated_user =
       manager_.local_state_for_testing().users().begin()->second;
   EXPECT_EQ(updated_user.wrapped_pin().wrapped_pin(), kNewWrappedPin);
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.Enclave.ActionOutcome.ConsiderSecurityDomainState",
+      EnclaveManager::ActionOutcome::kSuccess, 1);
+}
+
+TEST_F(EnclaveManagerTest, ConsiderSecurityDomainState_InvalidWrappedPIN) {
+  ASSERT_TRUE(Register());
+  BoolFuture setup_future;
+  manager_.SetupWithPIN("123456", setup_future.GetCallback());
+  EXPECT_TRUE(setup_future.Wait());
+  EXPECT_TRUE(manager_.IsReady());
+
+  // Simulaing the new state with invalid wrapped pin.
+  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult state;
+  state.state = trusted_vault::
+      DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
+  state.key_version = kSecretVersion;
+  state.gpm_pin_metadata = trusted_vault::GpmPinMetadata(
+      "new public key", trusted_vault::UsableRecoveryPinMetadata(
+                            "invalid wrapped pin",
+                            /*expiry=*/base::Time::FromTimeT(1)));
+
+  base::HistogramTester histogram_tester;
+  EXPECT_TRUE(manager_.ConsiderSecurityDomainState(state, base::DoNothing()));
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.Enclave.ActionOutcome.ConsiderSecurityDomainState",
+      EnclaveManager::ActionOutcome::
+          kConsiderSecurityDomainStateNotStartedWrappedPinParsingError,
+      1);
 }
 
 TEST_F(EnclaveManagerTest, SigningFails) {
@@ -1917,6 +1995,7 @@ TEST_F(EnclaveManagerTest, AddICloudRecoveryKey) {
   std::unique_ptr<trusted_vault::SecureBoxKeyPair> key =
       trusted_vault::SecureBoxKeyPair::CreateByPrivateKeyImport(
           icloud_key->key()->private_key().ExportToBytes());
+  base::HistogramTester histogram_tester;
   BoolFuture icloud_future;
   manager_.AddICloudRecoveryKey(std::move(icloud_key),
                                 icloud_future.GetCallback());
@@ -1953,6 +2032,9 @@ TEST_F(EnclaveManagerTest, AddICloudRecoveryKey) {
   EXPECT_TRUE(crypto::hmac::VerifySha256(
       *security_domain_secret, base::as_byte_span(icloud_member->public_key()),
       proof));
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.Enclave.ActionOutcome.AddICloudRecoveryKey",
+      EnclaveManager::ActionOutcome::kSuccess, 1);
 }
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -1960,11 +2042,15 @@ TEST_F(EnclaveManagerTest, Unenroll) {
   ASSERT_TRUE(Register());
 
   ASSERT_TRUE(manager_.IsRegistered());
+  base::HistogramTester histogram_tester;
   BoolFuture unenroll_future;
   manager_.Unenroll(unenroll_future.GetCallback());
   EXPECT_TRUE(unenroll_future.Wait());
   EXPECT_TRUE(unenroll_future.Get());
   ASSERT_FALSE(manager_.IsRegistered());
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.Enclave.ActionOutcome.Unenroll",
+      EnclaveManager::ActionOutcome::kSuccess, 1);
 
   // Things should be in a good state such that we can register again.
   ASSERT_TRUE(Register());
