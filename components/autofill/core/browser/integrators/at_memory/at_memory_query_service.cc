@@ -48,6 +48,9 @@ namespace autofill {
 namespace {
 
 using ::personal_context::proto::AtMemoryQueryResponse;
+using ::personal_context::proto::TypedValue;
+using TypedValueFilter =
+    ::personal_context::proto::AutofillFetchSpecification::TypedValueFilter;
 
 std::vector<personal_context::proto::MemoryDataType>
 GetSupportedLocalDataTypes() {
@@ -701,6 +704,45 @@ bool MatchesStringFilter(
     default:
       return normalized_entry.contains(normalized_filter);
   }
+}
+
+bool MatchesTypedFilter(const TypedValue& entry_typed_val,
+                        const TypedValueFilter& filter) {
+  if (!filter.has_typed_value()) {
+    return true;
+  }
+  switch (filter.typed_value().value_case()) {
+    case TypedValue::kCountryCode:
+      return entry_typed_val.has_country_code() &&
+             base::EqualsCaseInsensitiveASCII(
+                 entry_typed_val.country_code(),
+                 filter.typed_value().country_code());
+    case TypedValue::kDate: {
+      if (!entry_typed_val.has_date()) {
+        return false;
+      }
+
+      using ::personal_context::proto::Date;
+      const Date& entry_date = entry_typed_val.date();
+      const Date& filter_date = filter.typed_value().date();
+      if (filter_date.year() != 0 && entry_date.year() != filter_date.year()) {
+        return false;
+      }
+      if (filter_date.month() != 0 &&
+          entry_date.month() != filter_date.month()) {
+        return false;
+      }
+      if (filter_date.day() != 0 && entry_date.day() != filter_date.day()) {
+        return false;
+      }
+      return true;
+    }
+    case personal_context::proto::TypedValue::kDateTime:
+    case personal_context::proto::TypedValue::kStringList:
+    case personal_context::proto::TypedValue::VALUE_NOT_SET:
+      return false;
+  }
+  return false;
 }
 
 }  // namespace internal

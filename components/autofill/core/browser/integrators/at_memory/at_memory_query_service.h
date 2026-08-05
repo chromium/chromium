@@ -142,6 +142,12 @@ bool MatchesStringFilter(
     const personal_context::proto::AutofillFetchSpecification::StringFilter&
         filter);
 
+// Returns whether `entry_typed_val` matches `filter`.
+bool MatchesTypedFilter(
+    const personal_context::proto::TypedValue& entry_typed_val,
+    const personal_context::proto::AutofillFetchSpecification::TypedValueFilter&
+        filter);
+
 }  // namespace internal
 
 }  // namespace autofill
