@@ -48,6 +48,16 @@ TransportSession* TransportSessionRegistryImpl::GetSession(
   return GetSessionImpl(session_id);
 }
 
+void TransportSessionRegistryImpl::AddObserver(Observer* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  observers_.AddObserver(observer);
+}
+
+void TransportSessionRegistryImpl::RemoveObserver(Observer* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  observers_.RemoveObserver(observer);
+}
+
 std::vector<TransportSessionImpl*>
 TransportSessionRegistryImpl::GetAllSessionImpls() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -107,6 +117,9 @@ TransportSessionImpl* TransportSessionRegistryImpl::CreateSession(
       std::make_unique<TransportSessionImpl>(session_id, channel_);
   TransportSessionImpl* session_ptr = session.get();
   sessions_.emplace(std::string(session_id), std::move(session));
+  for (auto& observer : observers_) {
+    observer.OnSessionRegistered(session_ptr);
+  }
   return session_ptr;
 }
 

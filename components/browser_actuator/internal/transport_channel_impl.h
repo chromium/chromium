@@ -15,6 +15,7 @@
 #include "components/browser_actuator/internal/transport/message_stream_client.h"
 #include "components/browser_actuator/public/common.h"
 #include "components/browser_actuator/public/transport_channel.h"
+#include "components/browser_actuator/public/transport_session_registry.h"
 
 namespace browser_actuator {
 
@@ -38,7 +39,8 @@ class TransportSessionRegistryImpl;
 // TransportSessionImpl. Sessions borrow the channel back (WeakPtr) only to
 // hand it their outgoing sends.
 class TransportChannelImpl : public TransportChannel,
-                             public MessageStreamClient::Observer {
+                             public MessageStreamClient::Observer,
+                             public TransportSessionRegistry::Observer {
  public:
   // Builds the fully-decorated downstream stream client (auth wrapper,
   // framer, traffic annotation) around the channel's resume-body delegate.
@@ -65,6 +67,9 @@ class TransportChannelImpl : public TransportChannel,
   // MessageStreamClient::Observer:
   void OnStreamMessage(const std::string& message) override;
   void OnStreamConnectionStateChange(bool connected) override;
+
+  // TransportSessionRegistry::Observer:
+  void OnSessionRegistered(TransportSession* session) override;
 
   base::WeakPtr<TransportChannelImpl> GetWeakPtr();
 

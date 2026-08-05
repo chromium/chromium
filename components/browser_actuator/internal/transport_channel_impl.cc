@@ -21,6 +21,7 @@ TransportChannelImpl::TransportChannelImpl(
     StreamClientFactory stream_client_factory) {
   session_registry_ = std::make_unique<TransportSessionRegistryImpl>(
       weak_ptr_factory_.GetWeakPtr());
+  session_registry_->AddObserver(this);
 
   // The resume delegate carries no state: on every connection attempt it asks
   // the channel to rebuild the WatchSessionsRequest body from the current
@@ -40,6 +41,9 @@ TransportChannelImpl::TransportChannelImpl(
 
 TransportChannelImpl::~TransportChannelImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (session_registry_) {
+    session_registry_->RemoveObserver(this);
+  }
   if (stream_client_) {
     stream_client_->RemoveObserver(this);
   }
@@ -55,6 +59,14 @@ TransportChannelImpl::GetHandlerFactoryRegistry() {
 TransportSessionRegistry* TransportChannelImpl::GetSessionRegistry() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return session_registry_.get();
+}
+
+void TransportChannelImpl::OnSessionRegistered(TransportSession*) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (stream_client_ && stream_client_->IsConnected()) {
+    stream_client_->Disconnect();
+    stream_client_->Connect();
+  }
 }
 
 // Downstream: route each message to its session so the *session* advances its
@@ -121,12 +133,11 @@ std::string TransportChannelImpl::BuildWatchSessionsRequestBody() {
 
   for (TransportSessionImpl* session :
        session_registry_->GetAllSessionImpls()) {
-    if (!session->has_last_seen_sequence_number()) {
-      continue;  // Nothing received yet; no resume position to send.
-    }
     WatchSessionsRequest::Session* data = request.add_sessions();
     data->set_session_id(session->GetSessionId());
-    data->set_last_seen_sequence_number(session->last_seen_sequence_number());
+    if (session->has_last_seen_sequence_number()) {
+      data->set_last_seen_sequence_number(session->last_seen_sequence_number());
+    }
   }
   return request.SerializeAsString();
 }

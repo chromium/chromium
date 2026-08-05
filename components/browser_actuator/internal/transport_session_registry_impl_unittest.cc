@@ -286,5 +286,58 @@ TEST(TransportSessionRegistryImplTest,
       /*expected_bucket_count=*/3);
 }
 
+namespace {
+
+class MockSessionRegistryObserver : public TransportSessionRegistry::Observer {
+ public:
+  MOCK_METHOD(void,
+              OnSessionRegistered,
+              (TransportSession * session),
+              (override));
+};
+
+}  // namespace
+
+TEST(TransportSessionRegistryImplTest, NotifiesObserversOnSessionRegistered) {
+  MockTransportChannel channel;
+  TransportSessionRegistryImpl registry(channel.GetWeakPtr());
+  MockSessionRegistryObserver observer;
+  registry.AddObserver(&observer);
+
+  TransportSession* created_session = nullptr;
+  EXPECT_CALL(observer, OnSessionRegistered)
+      .WillOnce(testing::SaveArg<0>(&created_session));
+
+  TransportSessionImpl* session1 = registry.GetOrCreateSession("session_1");
+
+  EXPECT_EQ(created_session, session1);
+}
+
+TEST(TransportSessionRegistryImplTest,
+     DoesNotNotifyObserversWhenGettingExistingSession) {
+  MockTransportChannel channel;
+  TransportSessionRegistryImpl registry(channel.GetWeakPtr());
+  MockSessionRegistryObserver observer;
+  registry.AddObserver(&observer);
+  TransportSessionImpl* session1 = registry.GetOrCreateSession("session_1");
+
+  EXPECT_CALL(observer, OnSessionRegistered).Times(0);
+  TransportSessionImpl* retrieved_session =
+      registry.GetOrCreateSession("session_1");
+
+  EXPECT_EQ(retrieved_session, session1);
+}
+
+TEST(TransportSessionRegistryImplTest, DoesNotNotifyRemovedObservers) {
+  MockTransportChannel channel;
+  TransportSessionRegistryImpl registry(channel.GetWeakPtr());
+  MockSessionRegistryObserver observer;
+  registry.AddObserver(&observer);
+  registry.RemoveObserver(&observer);
+
+  EXPECT_CALL(observer, OnSessionRegistered).Times(0);
+  registry.GetOrCreateSession("session_1");
+}
+
 }  // namespace
 }  // namespace browser_actuator

@@ -16,6 +16,7 @@
 #include "components/browser_actuator/internal/proto/transport_messages.pb.h"
 #include "components/browser_actuator/internal/transport/message_stream_client.h"
 #include "components/browser_actuator/internal/transport/stream_connection_delegate.h"
+#include "components/browser_actuator/internal/transport_session_registry_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -30,15 +31,25 @@ using ::testing::UnorderedElementsAre;
 // straight to the channel's observer.
 class FakeMessageStreamClient : public MessageStreamClient {
  public:
-  void Connect() override {}
-  void Disconnect() override {}
-  bool IsConnected() const override { return false; }
+  void Connect() override {
+    is_connected_ = true;
+    connect_count_++;
+  }
+  void Disconnect() override {
+    is_connected_ = false;
+    disconnect_count_++;
+  }
+  bool IsConnected() const override { return is_connected_; }
   void AddObserver(Observer* observer) override { observer_ = observer; }
   void RemoveObserver(Observer* observer) override {
     if (observer_ == observer) {
       observer_ = nullptr;
     }
   }
+
+  void set_connected(bool connected) { is_connected_ = connected; }
+  int connect_count() const { return connect_count_; }
+  int disconnect_count() const { return disconnect_count_; }
 
   void Dispatch(const std::string& message) {
     ASSERT_TRUE(observer_);
@@ -47,6 +58,9 @@ class FakeMessageStreamClient : public MessageStreamClient {
 
  private:
   raw_ptr<Observer> observer_ = nullptr;
+  bool is_connected_ = false;
+  int connect_count_ = 0;
+  int disconnect_count_ = 0;
 };
 
 std::string SerializedDownstream(std::string_view session_id, int64_t seq) {
@@ -77,6 +91,11 @@ class TransportChannelImplTest : public testing::Test {
     EXPECT_TRUE(request.ParseFromString(
         channel_->BuildWatchSessionsRequestBodyForTesting()));
     return request;
+  }
+
+  TransportSessionRegistryImpl* GetSessionRegistryImpl() {
+    return static_cast<TransportSessionRegistryImpl*>(
+        channel_->GetSessionRegistry());
   }
 
   std::unique_ptr<TransportChannelImpl> channel_;
@@ -113,12 +132,44 @@ TEST_F(TransportChannelImplTest, AdvanceIsMonotonicAndIgnoresNonPositive) {
   EXPECT_EQ(body.sessions(0).last_seen_sequence_number(), 5);
 }
 
-TEST_F(TransportChannelImplTest, SessionWithoutResumePositionIsOmitted) {
-  // A session that only produced an unset (0) sequence number has no resume
-  // position, so it must not appear in the watch request.
-  fake_client_->Dispatch(SerializedDownstream("s1", 0));
+TEST_F(TransportChannelImplTest,
+       SessionWithoutResumePositionIsIncludedInWatchRequest) {
+  GetSessionRegistryImpl()->GetOrCreateSession("s1");
 
-  EXPECT_EQ(ResumeBody().sessions_size(), 0);
+  const WatchSessionsRequest body = ResumeBody();
+  ASSERT_EQ(body.sessions_size(), 1);
+  EXPECT_EQ(body.sessions(0).session_id(), "s1");
+  EXPECT_EQ(body.sessions(0).last_seen_sequence_number(), 0);
+}
+
+TEST_F(TransportChannelImplTest,
+       ReconnectsWhenNewSessionRegisteredAndConnected) {
+  fake_client_->set_connected(true);
+
+  GetSessionRegistryImpl()->GetOrCreateSession("s1");
+
+  EXPECT_EQ(fake_client_->disconnect_count(), 1);
+  EXPECT_EQ(fake_client_->connect_count(), 1);
+}
+
+TEST_F(TransportChannelImplTest,
+       DoesNotReconnectWhenExistingSessionRegistered) {
+  fake_client_->set_connected(true);
+  GetSessionRegistryImpl()->GetOrCreateSession("s1");
+
+  GetSessionRegistryImpl()->GetOrCreateSession("s1");
+
+  EXPECT_EQ(fake_client_->disconnect_count(), 1);
+  EXPECT_EQ(fake_client_->connect_count(), 1);
+}
+
+TEST_F(TransportChannelImplTest, DoesNotReconnectWhenDisconnected) {
+  fake_client_->set_connected(false);
+
+  GetSessionRegistryImpl()->GetOrCreateSession("s1");
+
+  EXPECT_EQ(fake_client_->disconnect_count(), 0);
+  EXPECT_EQ(fake_client_->connect_count(), 0);
 }
 
 }  // namespace
