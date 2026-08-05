@@ -35,7 +35,8 @@ enum class OneTimeTokenSource;
 //
 // It queries cached tokens and listens for incoming ones from
 // `OneTimeTokenService`. Only tokens whose sender matches the target frame
-// origin are accepted.
+// origin are accepted. The retriever keeps listening for incoming tokens
+// either until it finds a match or the subbscription times out.
 //
 // This is a single-use object. On destruction, it cancels pending domain
 // checks, unsubscribes from `OneTimeTokenService`, and discards any pending
@@ -103,7 +104,7 @@ class GmailOtpRetriever {
       OneTimeToken token,
       std::optional<affiliations::MatchType> match_type);
   void OnOneTimeTokenTimeout();
-  void MaybeFailWithTimeoutError();
+  void MaybeFail();
   void OnOpaqueOriginDetected();
 
   const raw_ref<OneTimeTokenService> one_time_token_service_;
@@ -111,7 +112,7 @@ class GmailOtpRetriever {
   const url::Origin otp_frame_origin_;
   const bool is_login_flow_;
   size_t pending_sender_domain_checks_ = 0;
-  bool subscription_timed_out_ = false;
+  std::optional<OneTimeTokenRetrievalError> error_;
   ExpiringSubscription subscription_;
   ResultCallback retrieve_otp_callback_;
 

@@ -489,5 +489,101 @@ TEST_F(GmailOtpRetrieverTest, RetrieveOtp_OpaqueOrigin_ReturnsError) {
   EXPECT_EQ(future.Get().error(), OneTimeTokenRetrievalError::kGmailOtpUnknown);
 }
 
+TEST_F(GmailOtpRetrieverTest, RetrieveOtp_SubscriptionError_ReturnsError) {
+  otp_service().SetCachedTokens({});
+
+  base::test::TestFuture<
+      base::expected<GmailOtpRetriever::Result, OneTimeTokenRetrievalError>>
+      future;
+  auto retriever = GmailOtpRetriever::CreateAndStart(
+      otp_service(), domain_relation_checker(),
+      url::Origin::Create(GURL("https://example.com")),
+      /*is_login_flow=*/false, future.GetCallback());
+
+  otp_service().NotifySubscribers(
+      OneTimeTokenSource::kGmail,
+      base::unexpected(OneTimeTokenRetrievalError::kGmailOtpBackendAuthError));
+
+  ASSERT_FALSE(future.Get().has_value());
+  EXPECT_EQ(future.Get().error(),
+            OneTimeTokenRetrievalError::kGmailOtpBackendAuthError);
+}
+
+TEST_F(
+    GmailOtpRetrieverTest,
+    RetrieveOtp_CachedTokenCheckPendingDuringSubscriptionError_ResolvesMatchCorrectly) {
+  FakeAsyncAffiliationService async_affiliation_service;
+  auto async_domain_relation_checker =
+      std::make_unique<affiliations::DomainRelationChecker>(
+          async_affiliation_service);
+
+  std::vector<OneTimeToken> items;
+  items.emplace_back(OneTimeTokenType::kGmail, "111111", base::TimeTicks::Now(),
+                     "sender@different.com");
+  otp_service().SetCachedTokens(items);
+
+  base::test::TestFuture<
+      base::expected<GmailOtpRetriever::Result, OneTimeTokenRetrievalError>>
+      future;
+
+  auto retriever = GmailOtpRetriever::CreateAndStart(
+      otp_service(), std::move(async_domain_relation_checker),
+      url::Origin::Create(GURL("https://example.com")),
+      /*is_login_flow=*/false, future.GetCallback());
+
+  // Simulate subscription returning an error.
+  otp_service().NotifySubscribers(
+      OneTimeTokenSource::kGmail,
+      base::unexpected(OneTimeTokenRetrievalError::kGmailOtpBackendAuthError));
+
+  EXPECT_FALSE(future.IsReady());
+  async_affiliation_service.ResolveNextAsTrue("https://different.com",
+                                              "https://example.com");
+
+  EXPECT_TRUE(future.IsReady());
+  // The match succeeded despite the subscription error, the token should
+  // be returned and not the error.
+  ASSERT_TRUE(future.Get().has_value());
+  EXPECT_EQ(future.Get()->otp, "111111");
+  EXPECT_EQ(future.Get()->source, GmailOtpRetriever::Source::kCache);
+}
+
+TEST_F(
+    GmailOtpRetrieverTest,
+    RetrieveOtp_CachedTokenCheckPendingDuringSubscriptionError_ResolvesMatchAsFailed) {
+  FakeAsyncAffiliationService async_affiliation_service;
+  auto async_domain_relation_checker =
+      std::make_unique<affiliations::DomainRelationChecker>(
+          async_affiliation_service);
+
+  std::vector<OneTimeToken> items;
+  items.emplace_back(OneTimeTokenType::kGmail, "111111", base::TimeTicks::Now(),
+                     "sender@different.com");
+  otp_service().SetCachedTokens(items);
+
+  base::test::TestFuture<
+      base::expected<GmailOtpRetriever::Result, OneTimeTokenRetrievalError>>
+      future;
+
+  auto retriever = GmailOtpRetriever::CreateAndStart(
+      otp_service(), std::move(async_domain_relation_checker),
+      url::Origin::Create(GURL("https://example.com")),
+      /*is_login_flow=*/false, future.GetCallback());
+
+  // Simulate subscription returning an error.
+  otp_service().NotifySubscribers(
+      OneTimeTokenSource::kGmail,
+      base::unexpected(OneTimeTokenRetrievalError::kGmailOtpBackendAuthError));
+
+  EXPECT_FALSE(future.IsReady());
+  async_affiliation_service.ResolveFullDomainCheckAsFalse();
+
+  EXPECT_TRUE(future.IsReady());
+  // The match failed, the subscription error should be returned.
+  ASSERT_FALSE(future.Get().has_value());
+  EXPECT_EQ(future.Get().error(),
+            OneTimeTokenRetrievalError::kGmailOtpBackendAuthError);
+}
+
 }  // namespace
 }  // namespace one_time_tokens

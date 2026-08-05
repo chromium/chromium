@@ -197,7 +197,7 @@ void GmailOtpRetriever::OnCachedTokenMatchChecked(
   }
 
   CheckCachedTokenMatch(std::move(cached_tokens), index + 1);
-  MaybeFailWithTimeoutError();
+  MaybeFail();
 }
 
 void GmailOtpRetriever::OnOneTimeTokenReceived(
@@ -209,13 +209,10 @@ void GmailOtpRetriever::OnOneTimeTokenReceived(
   // called.
   CHECK(retrieve_otp_callback_);
 
-  // TODO(crbug.com/541174924): Don't return here unconditionally since
-  // cache checks might still be in flight. Instead, use a similar approach
-  // to `MaybeFailWithTimeoutError`, to only report an error if no cache
-  // match was found.
   if (!result.has_value()) {
-    weak_ptr_factory_.InvalidateWeakPtrs();
-    std::move(retrieve_otp_callback_).Run(base::unexpected(result.error()));
+    error_ = result.error();
+    subscription_ = {};
+    MaybeFail();
     return;
   }
 
@@ -249,21 +246,22 @@ void GmailOtpRetriever::OnReceivedTokenMatchChecked(
     return;
   }
 
-  MaybeFailWithTimeoutError();
+  MaybeFail();
 }
 
 void GmailOtpRetriever::OnOneTimeTokenTimeout() {
-  subscription_timed_out_ = true;
-  MaybeFailWithTimeoutError();
+  // The retriever will no longer be called after timeout anyway, but
+  // clean up the state nonetheless to make it clearer.
+  subscription_ = {};
+  error_ = OneTimeTokenRetrievalError::kSubscriptionExpired;
+  MaybeFail();
 }
 
-void GmailOtpRetriever::MaybeFailWithTimeoutError() {
-  if (subscription_timed_out_ && pending_sender_domain_checks_ == 0) {
+void GmailOtpRetriever::MaybeFail() {
+  if (pending_sender_domain_checks_ == 0 && error_.has_value()) {
     CHECK(retrieve_otp_callback_);
     weak_ptr_factory_.InvalidateWeakPtrs();
-    std::move(retrieve_otp_callback_)
-        .Run(
-            base::unexpected(OneTimeTokenRetrievalError::kSubscriptionExpired));
+    std::move(retrieve_otp_callback_).Run(base::unexpected(*error_));
   }
 }
 
