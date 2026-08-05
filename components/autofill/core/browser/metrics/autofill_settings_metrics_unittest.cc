@@ -185,6 +185,40 @@ TEST_P(AutofillSettingsMetricsTest, AutofillCreditCardIsEnabledAtStartup) {
                                        GetParam(), 1);
 }
 
+// Tests that LogIsAutofillEnabledAtStartup correctly logs the overall autofill
+// enabled state when the enterprise policy feature is enabled.
+TEST_P(AutofillSettingsMetricsTest, LogIsAutofillEnabledAtStartup) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillEnableAutofillSettingsEnterprisePolicy);
+
+  PrefService* prefs = autofill_client().GetPrefs();
+
+  // All disabled
+  prefs->SetBoolean(prefs::kAutofillProfileEnabled, false);
+  prefs->SetBoolean(prefs::kAutofillCreditCardEnabled, false);
+  prefs->SetBoolean(prefs::kAutofillAiIdentityEntitiesEnabled, false);
+  prefs->SetBoolean(prefs::kAutofillAiTravelEntitiesEnabled, false);
+  prefs->SetBoolean(prefs::kAutofillAiShoppingEntitiesEnabled, false);
+  LogIsAutofillEnabledAtStartup(*prefs);
+  histogram_tester_.ExpectBucketCount("Autofill.IsEnabled.Startup", false, 1);
+  histogram_tester_.ExpectBucketCount("Autofill.IsEnabled.Startup", true, 0);
+
+  // Profile disabled, Credit card enabled
+  prefs->SetBoolean(prefs::kAutofillProfileEnabled, false);
+  prefs->SetBoolean(prefs::kAutofillCreditCardEnabled, true);
+  LogIsAutofillEnabledAtStartup(*prefs);
+  histogram_tester_.ExpectBucketCount("Autofill.IsEnabled.Startup", false, 1);
+  histogram_tester_.ExpectBucketCount("Autofill.IsEnabled.Startup", true, 1);
+
+  // Credit card disabled, Forms AI Travel enabled
+  prefs->SetBoolean(prefs::kAutofillCreditCardEnabled, false);
+  prefs->SetBoolean(prefs::kAutofillAiTravelEntitiesEnabled, true);
+  LogIsAutofillEnabledAtStartup(*prefs);
+  // Forms AI is enabled and feature is enabled. Should log true.
+  histogram_tester_.ExpectBucketCount("Autofill.IsEnabled.Startup", false, 1);
+  histogram_tester_.ExpectBucketCount("Autofill.IsEnabled.Startup", true, 2);
+}
+
 // Tests that Autofill Profile disabled by user setting is logged at startup.
 TEST_P(AutofillSettingsMetricsTest,
        EmitsAutofillProfileDisabledByUserAtStartup) {

@@ -74,6 +74,21 @@ std::optional<AutofillPreferenceSetter> GetDisabledReasonAtStartup(
   return std::nullopt;
 }
 
+bool IsAutofillTypeEnabledAtStartup(
+    const PrefService& prefs,
+    std::string_view user_pref_name,
+    AutofillClient::AutofillPolicyDataCategory category) {
+  if (!prefs.GetBoolean(user_pref_name)) {
+    return false;
+  }
+
+  if (AutofillPolicyService::IsAutofillTypeBlockedByPolicyFromPref(
+          prefs, GURL(), category)) {
+    return false;
+  }
+  return true;
+}
+
 std::optional<AutofillPreferenceSetter> GetDisabledReasonAtPageLoad(
     const AutofillClient& client,
     std::string_view user_pref_name,
@@ -102,7 +117,30 @@ std::optional<AutofillPreferenceSetter> GetDisabledReasonAtPageLoad(
 
 }  // namespace
 
-void LogIsAutofillEnabledAtStartup(bool enabled) {
+void LogIsAutofillEnabledAtStartup(const PrefService& prefs) {
+  bool profile_enabled = IsAutofillTypeEnabledAtStartup(
+      prefs, prefs::kAutofillProfileEnabled,
+      AutofillClient::AutofillPolicyDataCategory::kContactInfo);
+  bool payment_enabled = IsAutofillTypeEnabledAtStartup(
+      prefs, prefs::kAutofillCreditCardEnabled,
+      AutofillClient::AutofillPolicyDataCategory::kPayments);
+
+  bool forms_ai_enabled = false;
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableAutofillSettingsEnterprisePolicy)) {
+    bool identity_enabled = IsAutofillTypeEnabledAtStartup(
+        prefs, prefs::kAutofillAiIdentityEntitiesEnabled,
+        AutofillClient::AutofillPolicyDataCategory::kIdentityDocs);
+    bool travel_enabled = IsAutofillTypeEnabledAtStartup(
+        prefs, prefs::kAutofillAiTravelEntitiesEnabled,
+        AutofillClient::AutofillPolicyDataCategory::kTravel);
+    bool shopping_enabled = IsAutofillTypeEnabledAtStartup(
+        prefs, prefs::kAutofillAiShoppingEntitiesEnabled,
+        AutofillClient::AutofillPolicyDataCategory::kShopping);
+    forms_ai_enabled = identity_enabled || travel_enabled || shopping_enabled;
+  }
+  bool enabled = profile_enabled || payment_enabled || forms_ai_enabled;
+
   UMA_HISTOGRAM_BOOLEAN("Autofill.IsEnabled.Startup", enabled);
 }
 
