@@ -51,7 +51,7 @@ class MiniMapService : public KeyedService, public TemplateURLServiceObserver {
   raw_ptr<PrefService> pref_service_ = nullptr;
 
   // Service to check if the DSE is Google.
-  raw_ptr<TemplateURLService> template_url_service_;
+  raw_ptr<TemplateURLService> template_url_service_ = nullptr;
   // Whether the current default search engine is Google.
   bool is_dse_google_ = false;
 

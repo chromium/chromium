@@ -15,6 +15,9 @@ namespace {
 
 // Checks if the Default Search Engine is Google.
 bool IsGoogleDSE(TemplateURLService* template_url_service) {
+  if (!template_url_service) {
+    return false;
+  }
   const TemplateURL* default_provider =
       template_url_service->GetDefaultSearchProvider();
   if (!default_provider) {
@@ -30,7 +33,9 @@ bool IsGoogleDSE(TemplateURLService* template_url_service) {
 MiniMapService::MiniMapService(PrefService* pref_service,
                                TemplateURLService* template_url_service)
     : pref_service_(pref_service), template_url_service_(template_url_service) {
-  template_url_service_->AddObserver(this);
+  if (template_url_service_) {
+    template_url_service_->AddObserver(this);
+  }
   is_dse_google_ = IsGoogleDSE(template_url_service_);
 
   mini_map_enabled_pref_.Init(

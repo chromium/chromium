@@ -73,9 +73,9 @@ TEST_F(ContentSettingsTableViewControllerTest,
     }
   }
   if (base::FeatureList::IsEnabled(web::features::kEnableMeasurements)) {
-    ASSERT_EQ(6, NumberOfItemsInSection(0));
+    ASSERT_EQ(7, NumberOfItemsInSection(0));
   } else {
-    ASSERT_EQ(5, NumberOfItemsInSection(0));
+    ASSERT_EQ(6, NumberOfItemsInSection(0));
   }
   CheckDetailItemTextWithIds(IDS_IOS_BLOCK_POPUPS, IDS_IOS_SETTING_ON, 0, 0);
 }

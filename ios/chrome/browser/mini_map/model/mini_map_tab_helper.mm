@@ -53,7 +53,7 @@ void MiniMapTabHelper::WebStateDestroyed(web::WebState* web_state) {
 void MiniMapTabHelper::ShouldAllowRequest(NSURLRequest* request,
                                           RequestInfo request_info,
                                           PolicyDecisionCallback callback) {
-  if (!request_info.target_frame_is_main) {
+  if (!request_info.target_frame_is_main || !mini_map_service_) {
     std::move(callback).Run(PolicyDecision::Allow());
     return;
   }
@@ -129,8 +129,8 @@ bool MiniMapTabHelper::ShouldInterceptRequest(
   }
 
   GURL target_url = net::GURLWithNSURL(url);
-  if (!is_on_google_srp_) {
-    // Only consider links from Google Search results page.
+  if (!is_on_google_srp_ || !mini_map_service_) {
+    // Only consider links from Google Search results page when service exists.
     return false;
   }
   if (mini_map_service_->IsGoogleMapsInstalled()) {
