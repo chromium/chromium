@@ -96,9 +96,6 @@ void NavigationLocationTestExpression::SerializePrepositionTo(
     case NavigationPreposition::kTo:
       builder.Append("to");
       break;
-    case NavigationPreposition::kWith:
-      builder.Append("with");
-      break;
   }
 }
 

@@ -243,8 +243,6 @@ KURL RouteMap::GetActiveNavigationURL(NavigationPreposition preposition) const {
       return state->GetOldURL();
     case NavigationPreposition::kTo:
       return state->GetNewURL();
-    case NavigationPreposition::kWith:
-      return !at_old_url() ? state->GetOldURL() : state->GetNewURL();
   }
 }
 

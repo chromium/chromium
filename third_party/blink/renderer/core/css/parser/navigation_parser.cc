@@ -98,7 +98,7 @@ NavigationTestExpression* NavigationParser::ParseNavigationTest(
 
   // <navigation-location-test> =
   //   <navigation-location-keyword> : <route-location>
-  // <navigation-location-keyword> = at | from | to | with
+  // <navigation-location-keyword> = at | from | to
   // <route-location> = <route-name> | <url-pattern()>
   // <route-name> = <dashed-ident>
   std::optional<NavigationPreposition> preposition =
@@ -181,9 +181,6 @@ std::optional<NavigationPreposition> NavigationParser::ParsePrepositionIdent(
   }
   if (EqualIgnoringAsciiCase(token.Value(), "to")) {
     return NavigationPreposition::kTo;
-  }
-  if (EqualIgnoringAsciiCase(token.Value(), "with")) {
-    return NavigationPreposition::kWith;
   }
   return std::nullopt;
 }

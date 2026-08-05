@@ -34,8 +34,6 @@ class Route : public GarbageCollected<Route> {
         return matches_from_;
       case NavigationPreposition::kTo:
         return matches_to_;
-      case NavigationPreposition::kWith:
-        return matches_with_;
     }
   }
 
@@ -53,7 +51,6 @@ class Route : public GarbageCollected<Route> {
   bool matches_at_ = false;
   bool matches_from_ = false;
   bool matches_to_ = false;
-  bool matches_with_ = false;
 };
 
 }  // namespace blink

@@ -17,11 +17,6 @@
       --to-foo: matched;
     }
   }
-  @navigation (with: url("/target/foo/")) {
-    #elm {
-      --with-foo: matched;
-    }
-  }
   @navigation (at: url("/target/bar/")) {
     #elm {
       --at-bar: matched;
@@ -35,11 +30,6 @@
   @navigation (to: url("/target/bar/")) {
     #elm {
       --to-bar: matched;
-    }
-  }
-  @navigation (with: url("/target/bar/")) {
-    #elm {
-      --with-bar: matched;
     }
   }
 
@@ -61,19 +51,17 @@
       [elm, "--at-foo"],
       [elm, "--from-foo"],
       [elm, "--to-foo"],
-      [elm, "--with-foo"],
       [elm, "--at-bar"],
       [elm, "--from-bar"],
       [elm, "--to-bar"],
-      [elm, "--with-bar"],
       [elm, "--between"],
     ];
 
-    //                                                                               onnavigate             committed
-    //                                                                               foo      bar           foo      bar
-    //                                                                               A F T W  A F T W  B    A F T W  A F T W  B
-    await test_navigation(t, "nav1", ()=> { navigation.navigate("/target/foo/"); }, [0,0,1,1, 0,0,0,0, 0], [1,0,1,0, 0,0,0,0, 0], match_params);
-    await test_navigation(t, "nav2", ()=> { navigation.navigate("/target/bar/"); }, [1,1,0,0, 0,0,1,1, 1], [0,1,0,1, 1,0,1,0, 1], match_params);
-    await test_navigation(t, "nav3", ()=> { navigation.back(); },                   [0,0,1,1, 1,1,0,0, 1], [1,0,1,0, 0,1,0,1, 1], match_params);
+    //                                                                               onnavigate          committed
+    //                                                                               foo     bar         foo     bar
+    //                                                                               A F T   A F T  B    A F T   A F T  B
+    await test_navigation(t, "nav1", ()=> { navigation.navigate("/target/foo/"); }, [0,0,1,  0,0,0, 0], [1,0,1,  0,0,0, 0], match_params);
+    await test_navigation(t, "nav2", ()=> { navigation.navigate("/target/bar/"); }, [1,1,0,  0,0,1, 1], [0,1,0,  1,0,1, 1], match_params);
+    await test_navigation(t, "nav3", ()=> { navigation.back(); },                   [0,0,1,  1,1,0, 1], [1,0,1,  0,1,0, 1], match_params);
   }, "Navigate between URLs");
 </script>

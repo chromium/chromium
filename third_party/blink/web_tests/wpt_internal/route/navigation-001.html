@@ -23,11 +23,6 @@
       --to-foo: matched;
     }
   }
-  @navigation (with: --foo) {
-    #elm {
-      --with-foo: matched;
-    }
-  }
   @navigation (at: --bar) {
     #elm {
       --at-bar: matched;
@@ -43,11 +38,6 @@
       --to-bar: matched;
     }
   }
-  @navigation (with: --bar) {
-    #elm {
-      --with-bar: matched;
-    }
-  }
 </style>
 <span id="elm"></span>
 <script src="/resources/testharness.js"></script>
@@ -61,20 +51,18 @@
       [elm, "--at-foo"],
       [elm, "--from-foo"],
       [elm, "--to-foo"],
-      [elm, "--with-foo"],
       [elm, "--at-bar"],
       [elm, "--from-bar"],
       [elm, "--to-bar"],
-      [elm, "--with-bar"],
     ];
 
-    //                                                                                onnavigate          committed
-    //                                                                                --foo    -bar       -foo     --bar
-    //                                                                                A F T W  A F T W    A F T W  A F T W
-    await test_navigation(t, "nav1", ()=> { navigation.navigate("/target/foo/1"); }, [0,0,1,1, 0,0,0,0], [1,0,1,0, 0,0,0,0], match_params);
-    await test_navigation(t, "nav2", ()=> { navigation.navigate("/target/bar/1"); }, [1,1,0,0, 0,0,1,1], [0,1,0,1, 1,0,1,0], match_params);
-    await test_navigation(t, "nav3", ()=> { navigation.navigate("/target/bar/2"); }, [0,0,0,0, 1,1,1,1], [0,0,0,0, 1,1,1,1], match_params);
-    await test_navigation(t, "nav4", ()=> { navigation.back(); },                    [0,0,0,0, 1,1,1,1], [0,0,0,0, 1,1,1,1], match_params);
-    await test_navigation(t, "nav4", ()=> { navigation.back(); },                    [0,0,1,1, 1,1,0,0], [1,0,1,0, 0,1,0,1], match_params);
+    //                                                                                onnavigate         committed
+    //                                                                                --foo   -bar       -foo    --bar
+    //                                                                                A F T   A F T      A F T   A F T
+    await test_navigation(t, "nav1", ()=> { navigation.navigate("/target/foo/1"); }, [0,0,1,  0,0,0],   [1,0,1,  0,0,0], match_params);
+    await test_navigation(t, "nav2", ()=> { navigation.navigate("/target/bar/1"); }, [1,1,0,  0,0,1],   [0,1,0,  1,0,1], match_params);
+    await test_navigation(t, "nav3", ()=> { navigation.navigate("/target/bar/2"); }, [0,0,0,  1,1,1],   [0,0,0,  1,1,1], match_params);
+    await test_navigation(t, "nav4", ()=> { navigation.back(); },                    [0,0,0,  1,1,1],   [0,0,0,  1,1,1], match_params);
+    await test_navigation(t, "nav4", ()=> { navigation.back(); },                    [0,0,1,  1,1,0],   [1,0,1,  0,1,0], match_params);
   }, "Navigate between URLs");
 </script>

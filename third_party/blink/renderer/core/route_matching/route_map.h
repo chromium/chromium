@@ -89,8 +89,7 @@ class CORE_EXPORT RouteMap final : public GarbageCollected<RouteMap>,
 
   void SetTraverseType(NavigationState::HistoryTraverseType type);
 
-  // The current URL has changed. This is used to match @route "at" and "with"
-  // rules. What was "at" is now "with", and vice versa.
+  // The current URL has changed. This is used to match @route "at" rules.
   void SetCommitted();
 
   // Finish the navigation if allowed, and update routes. Calling this if

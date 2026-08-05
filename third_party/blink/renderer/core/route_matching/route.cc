@@ -62,12 +62,10 @@ void Route::UpdateMatchStatus(const NavigationState* navigation_state) {
     matches_at_ = MatchesPatterns(committed ? new_url : old_url, patterns_);
     matches_from_ = MatchesPatterns(old_url, patterns_);
     matches_to_ = MatchesPatterns(new_url, patterns_);
-    matches_with_ = MatchesPatterns(committed ? old_url : new_url, patterns_);
   } else {
     matches_at_ = false;
     matches_to_ = false;
     matches_from_ = false;
-    matches_with_ = false;
   }
 }
 
