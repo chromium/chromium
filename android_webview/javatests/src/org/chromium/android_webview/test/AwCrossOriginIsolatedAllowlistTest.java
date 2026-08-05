@@ -28,7 +28,7 @@ import java.util.Set;
 @Batch(Batch.PER_CLASS)
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
-public class AwSharedArrayBufferTest extends AwParameterizedTest {
+public class AwCrossOriginIsolatedAllowlistTest extends AwParameterizedTest {
     @Rule public AwActivityTestRule mActivityTestRule;
 
     private TestAwContentsClient mContentsClient;
@@ -75,7 +75,7 @@ public class AwSharedArrayBufferTest extends AwParameterizedTest {
             </html>
             """;
 
-    public AwSharedArrayBufferTest(AwSettingsMutation param) {
+    public AwCrossOriginIsolatedAllowlistTest(AwSettingsMutation param) {
         mActivityTestRule = new AwActivityTestRule(param.getMutation());
     }
 
