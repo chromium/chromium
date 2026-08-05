@@ -53,8 +53,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceDeckLinkMac : public VideoCaptureDevice {
 
   // Copy of VideoCaptureDevice::Client::OnIncomingCapturedData(). Used by
   // |decklink_capture_delegate_| to forward captured frames.
-  void OnIncomingCapturedData(const uint8_t* data,
-                              size_t length,
+  void OnIncomingCapturedData(base::span<const uint8_t> data,
                               const VideoCaptureFormat& frame_format,
                               const gfx::ColorSpace& color_space,
                               int rotation,  // Clockwise.
