@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/child_process_launcher.h"
-
 #include "base/command_line.h"
-#include "base/files/file_enumerator.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "content/browser/child_process_launcher.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
@@ -19,12 +17,6 @@
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
-
-#if BUILDFLAG(IS_MAC)
-#include "base/apple/bundle_locations.h"
-#include "base/apple/foundation_util.h"
-#include "base/files/file_util.h"
-#endif
 
 namespace {
 
@@ -104,51 +96,5 @@ IN_PROC_BROWSER_TEST_F(ChildProcessLauncherBrowserTest, ChildSpawnFail) {
   EXPECT_EQ(last_entry->GetPageType(), PAGE_TYPE_NORMAL);
   EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), url);
 }
-
-#if BUILDFLAG(IS_MAC)
-// Verifies that isolated Darwin user directories are created for sandboxed
-// child processes that require them (like the GPU process).
-IN_PROC_BROWSER_TEST_F(ChildProcessLauncherBrowserTest,
-                       IsolatedDarwinUserDirs) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-
-  // Prepend the bundle id to match CreateUniqueTempDir's behavior.
-  std::string expected_prefix =
-      std::string(base::apple::BaseBundleID()) + "." +
-      internal::GetProcessIsolatedDarwinUserDirSuffix();
-  auto FindIsolatedDirsInParent =
-      [&](const base::FilePath& dir_path) -> std::vector<base::FilePath> {
-    std::vector<base::FilePath> results;
-    base::FileEnumerator enumerator(dir_path, /*recursive=*/false,
-                                    base::FileEnumerator::DIRECTORIES);
-    for (base::FilePath entry = enumerator.Next(); !entry.empty();
-         entry = enumerator.Next()) {
-      if (entry.BaseName().value().find(expected_prefix) == 0) {
-        results.push_back(entry);
-      }
-    }
-    return results;
-  };
-
-  // Because ChildProcessLauncherHelper::CreateProcessIsolatedDarwinUserDirs
-  // uses ScopedTempDir::CreateUniqueTempDir to create the user temp directory,
-  // we need to use base::GetTempDir instead of base::GetDarwinUserDirectory
-  // here to ensure that the MAC_CHROMIUM_TMPDIR environment variable is
-  // respected.
-  base::FilePath system_temp_dir;
-  ASSERT_TRUE(base::GetTempDir(&system_temp_dir));
-
-  std::vector<base::FilePath> temp_dirs =
-      FindIsolatedDirsInParent(system_temp_dir);
-  std::vector<base::FilePath> cache_dirs = FindIsolatedDirsInParent(
-      base::GetDarwinUserDirectory(base::DarwinUserDirectory::kUserCache));
-  std::vector<base::FilePath> user_dirs = FindIsolatedDirsInParent(
-      base::GetDarwinUserDirectory(base::DarwinUserDirectory::kUser));
-
-  EXPECT_EQ(temp_dirs.size(), 1u);
-  EXPECT_EQ(cache_dirs.size(), 1u);
-  EXPECT_EQ(user_dirs.size(), 1u);
-}
-#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace content

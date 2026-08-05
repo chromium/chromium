@@ -80,35 +80,6 @@ class CONTENT_EXPORT SandboxedProcessLauncherDelegate
   // A `ProcessRequirement` that the launched process will be validated against
   // before it can retrieve any Mach ports and bootstrap Mojo IPC.
   virtual std::optional<base::mac::ProcessRequirement> GetProcessRequirement();
-
-  // Whether to create process-isolated subdirectories of the Darwin user,
-  // cache, and temporary directories.
-  //
-  // When true, the browser creates a unique per-child-process subdirectory
-  // under each macOS user directory:
-  //   - User: `/var/folders/.../0/org.chromium.Chromium.12345.child.XXXXXX`
-  //   - Cache: `/var/folders/.../C/org.chromium.Chromium.12345.child.XXXXXX`
-  //   - Temp: `/var/folders/.../T/org.chromium.Chromium.12345.child.XXXXXX`,
-  // (where 12345 is the browser process PID and XXXXXX is a random string)
-  // and sets the DIRHELPER_USER_DIR_SUFFIX environment variable to
-  // `org.chromium.Chromium.12345.child.XXXXXX` and the TMPDIR environment
-  // variable to the Temp value mentioned earlier.
-  //
-  // This causes macOS system APIs (e.g. `NSTemporaryDirectory()`, `confstr()`)
-  // and `base::GetTempDir()` to resolve directly to the isolated paths,
-  // ensuring that the child process will use these process-isolated
-  // subdirectories. The Seatbelt sandbox profile enforces isolation by denying
-  // read/write access to parent directories while allowing access within the
-  // subdirectories.
-  //
-  // Note: `base::GetTempDir()`, which uses the Temp dir by default, can be
-  // overridden by MAC_CHROMIUM_TMPDIR. The override is limited to
-  // `base::GetTempDir()` and does not affect the paths vended by the system
-  // (i.e., `NSTemporaryDirectory()` and `confstr()` will still return the Temp
-  // path).
-  //
-  // Defaults to false.
-  virtual bool NeedsProcessIsolatedDarwinUserDirs();
 #endif  // BUILDFLAG(IS_MAC)
 };
 

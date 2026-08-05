@@ -138,13 +138,6 @@
 #include "components/vrp_flags/vrp_flags.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(IS_MAC)
-// If enabled, the macOS sandbox for the GPU process will use process-isolated
-// subdirectories of the darwin user directories instead of the
-// non-process-isolated directories themselves.
-BASE_FEATURE(kMacGpuSandboxDarwinUserDirs, base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 namespace content {
 
 base::subtle::Atomic32 GpuProcessHost::gpu_crash_count_ = 0;
@@ -478,12 +471,6 @@ class GpuSandboxedProcessLauncherDelegate
     }
     return sandbox::mojom::Sandbox::kGpu;
   }
-
-#if BUILDFLAG(IS_MAC)
-  bool NeedsProcessIsolatedDarwinUserDirs() override {
-    return base::FeatureList::IsEnabled(kMacGpuSandboxDarwinUserDirs);
-  }
-#endif
 
  private:
 #if BUILDFLAG(IS_WIN)

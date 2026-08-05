@@ -4,15 +4,9 @@
 
 #include "content/browser/child_process_launcher_helper.h"
 
-#include "base/apple/bundle_locations.h"
-#include "base/apple/foundation_util.h"
 #include "base/apple/mach_port_rendezvous.h"
-#include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
-#include "base/environment.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/posix/global_descriptors.h"
@@ -75,24 +69,7 @@ class SandboxProfileCache {
   base::flat_map<sandbox::mojom::Sandbox, std::string> cache_ GUARDED_BY(lock_);
 };
 
-std::unique_ptr<base::ScopedTempDir> CreateSandboxChildDir(
-    base::DarwinUserDirectory directory,
-    const std::string& suffix) {
-  base::FilePath parent_dir = base::GetDarwinUserDirectory(directory);
-  CHECK(!parent_dir.empty());
-
-  base::FilePath path = parent_dir.Append(suffix);
-  auto scoped_dir = std::make_unique<base::ScopedTempDir>();
-  CHECK(scoped_dir->CreateDirectoryExclusive(path))
-      << "Failed to create process-isolated directory at " << path;
-  return scoped_dir;
-}
-
 }  // namespace
-
-std::string GetProcessIsolatedDarwinUserDirSuffix() {
-  return base::NumberToString(base::GetCurrentProcId()) + ".child";
-}
 
 std::optional<mojo::NamedPlatformChannel>
 ChildProcessLauncherHelper::CreateNamedPlatformChannelOnLauncherThread() {
@@ -144,11 +121,6 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
       sandbox::policy::IsUnsandboxedSandboxType(sandbox_type);
 
   if (!no_sandbox) {
-    if (delegate_->NeedsProcessIsolatedDarwinUserDirs() &&
-        !CreateProcessIsolatedDarwinUserDirs(options)) {
-      return false;
-    }
-
     if (!LOG_IS_ON(INFO)) {
       // Disable os logging to com.apple.diagnosticd when logging is not
       // enabled. The system logging has a measureable performance impact.
@@ -169,8 +141,8 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
           can_cache_policy ? sandbox::SandboxSerializer::Target::kCompiled
                            : sandbox::SandboxSerializer::Target::kSource);
       compiler.SetProfile(sandbox::policy::GetSandboxProfile(sandbox_type));
-      const bool sandbox_ok = SetupSandboxParameters(
-          sandbox_type, *command_line_.get(), options->environment, &compiler);
+      const bool sandbox_ok =
+          SetupSandboxParameters(sandbox_type, *command_line_.get(), &compiler);
 
       if (!sandbox_ok) {
         LOG(ERROR) << "Sandbox setup failed.";
@@ -204,72 +176,6 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
   }
 
   return true;
-}
-
-bool ChildProcessLauncherHelper::CreateProcessIsolatedDarwinUserDirs(
-    base::LaunchOptions* options) {
-  DCHECK(CurrentlyOnProcessLauncherTaskRunner());
-
-  std::string user_dir_suffix = GetProcessIsolatedDarwinUserDirSuffix();
-
-  // Retry in the event that the directory name created by CreateUniqueTempDir
-  // exists in one of other the darwin user dirs.
-  const int kMaxTries = 3;
-  for (int i = 0; i < kMaxTries; i++) {
-    auto cmd_line_copy = std::make_unique<base::CommandLine>(*command_line_);
-    auto temp_user_temp_dir = std::make_unique<base::ScopedTempDir>();
-    if (!temp_user_temp_dir->CreateUniqueTempDir(user_dir_suffix)) {
-      continue;
-    }
-    std::string last_path_component =
-        temp_user_temp_dir->GetPath().BaseName().value();
-
-    std::unique_ptr<base::ScopedTempDir> temp_user_dir = CreateSandboxChildDir(
-        base::DarwinUserDirectory::kUser, last_path_component);
-    if (!temp_user_dir) {
-      continue;
-    }
-
-    std::unique_ptr<base::ScopedTempDir> temp_user_cache_dir =
-        CreateSandboxChildDir(base::DarwinUserDirectory::kUserCache,
-                              last_path_component);
-    if (!temp_user_cache_dir) {
-      continue;
-    }
-
-    std::unique_ptr<base::Environment> env(base::Environment::Create());
-    CHECK(!env->GetVar(base::env_vars::kDirHelperUserDirSuffix).has_value())
-        << base::env_vars::kDirHelperUserDirSuffix
-        << " is used to create process isolated subdirectories for child "
-           "processes and cannot be set";
-
-    // Set DIRHELPER_USER_DIR_SUFFIX to customize the path provided by
-    // NSTemporaryDirectory() and other paths retrieved from confstr.
-    //
-    // Note that DIRHELPER_USER_DIR_SUFFIX *does not* support nested paths.
-    // Providing more than one path component will cause this environment
-    // variable to be ignored.
-    options->environment[base::env_vars::kDirHelperUserDirSuffix] =
-        last_path_component;
-
-    // Prevent the child process from inheriting MAC_CHROMIUM_TMPDIR if set,
-    // ensuring base::GetTempDir() in the child process falls back to
-    // NSTemporaryDirectory(), which respects DIRHELPER_USER_DIR_SUFFIX.
-    options->environment[base::env_vars::kMacChromiumTmpDir] = "";
-
-    // Set TMPDIR to the isolated temp directory path so code that inspects
-    // TMPDIR directly uses the permitted directory.
-    options->environment[base::env_vars::kTmpDir] =
-        temp_user_temp_dir->GetPath().value();
-
-    command_line_ = std::move(cmd_line_copy);
-    scoped_sandboxed_user_dir_ = std::move(temp_user_dir);
-    scoped_sandboxed_user_cache_dir_ = std::move(temp_user_cache_dir);
-    scoped_sandboxed_user_temp_dir_ = std::move(temp_user_temp_dir);
-    return true;
-  }
-
-  return false;
 }
 
 ChildProcessLauncherHelper::Process
