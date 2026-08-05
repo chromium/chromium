@@ -50,19 +50,11 @@ using ::testing::_;
 struct TestCase {
   std::string test_label;
   bool start_with_family_link_enabled;
-  bool merge_device_parental_controls_and_family_link_prefs;
 };
 
-// Test case where the system has Family Link parental controls enabled but
-// won't merge with device parental controls is impossible: in this
-// configuration both systems are mutually exclusive and Device Parental
-// Controls will be ignored.
 TestCase kTestCases[] = {
-    {"StartWithFamilyLinkEnabled_MergeWithDeviceParentalControls", true, true},
-    {"StartWithFamilyLinkDisabled_MergeWithDeviceParentalControls", false,
-     true},
-    {"StartWithFamilyLinkDisabled_DoNotMergeWithDeviceParentalControls", false,
-     false},
+    {"StartWithFamilyLinkEnabled", true},
+    {"StartWithFamilyLinkDisabled", false},
 };
 
 // Covers extra behaviors available only in Clank (Android). See supervised
@@ -80,15 +72,8 @@ class SupervisedUserNavigationObserverAndroidBrowserTest
 #if BUILDFLAG(IS_ANDROID)
     // On Android, we disable the feature that automatically scales web content
     // because it is not meaningful and would change expected values.
-    scoped_feature_list_.InitWithFeatureStates(
-        {{kSupervisedUserMergeDeviceParentalControlsAndFamilyLinkPrefs,
-          GetTestCase().merge_device_parental_controls_and_family_link_prefs},
-         { features::kAndroidDesktopZoomScaling,
-           false }});
-#else
     scoped_feature_list_.InitWithFeatureState(
-        kSupervisedUserMergeDeviceParentalControlsAndFamilyLinkPrefs,
-        GetTestCase().merge_device_parental_controls_and_family_link_prefs);
+        features::kAndroidDesktopZoomScaling, false);
 #endif  // BUILDFLAG(IS_ANDROID)
   }
 
@@ -178,11 +163,10 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserNavigationObserverAndroidBrowserTest,
 // supervised user pref store by device parental controls.
 IN_PROC_BROWSER_TEST_P(SupervisedUserNavigationObserverAndroidBrowserTest,
                        InactiveSupervisedUserSettingsCantVetoSafeSearch) {
-  if (GetTestCase().merge_device_parental_controls_and_family_link_prefs &&
-      GetTestCase().start_with_family_link_enabled) {
+  if (GetTestCase().start_with_family_link_enabled) {
     GTEST_SKIP() << "This test specifically tests what happens when the Family "
                     "Link parental controls are enabled after Device Parental "
-                    "Controls were set; and there's no merging of settings.";
+                    "Controls were set.";
   }
 
   GetDeviceParentalControls().SetSearchContentFiltersEnabledForTesting(true);
@@ -439,10 +423,7 @@ IN_PROC_BROWSER_TEST_P(
 // or Device Parental Controls interstitial (depending on which system blocked
 // the navigation).
 TestCase kTestCasesNoApprovalsInterstitial[] = {
-    {"StartWithFamilyLinkDisabled_MergeWithDeviceParentalControls", false,
-     true},
-    {"StartWithFamilyLinkDisabled_DoNotMergeWithDeviceParentalControls", false,
-     false},
+    {"StartWithFamilyLinkDisabled", false},
 };
 
 INSTANTIATE_TEST_SUITE_P(

@@ -1867,15 +1867,6 @@ inline constexpr char kSupervisedUserEmitLogRecordSeparatelyDescription[] =
     "Emit supervised user log record separately for Family Link and device "
     "parental controls users (no user-visible effect).";
 
-inline constexpr char
-    kSupervisedUserMergeDeviceParentalControlsAndFamilyLinkPrefsName[] =
-        "Merge device parental controls and Family Link prefs";
-inline constexpr char
-    kSupervisedUserMergeDeviceParentalControlsAndFamilyLinkPrefsDescription[] =
-        "Merges non-web filtering device parental controls settings with "
-        "Family Link settings in the SupervisedUserPrefStore (no user-visible "
-        "effect).";
-
 inline constexpr char kSupervisedUserUseUrlFilteringServiceName[] =
     "Use URL filtering service";
 inline constexpr char kSupervisedUserUseUrlFilteringServiceDescription[] =

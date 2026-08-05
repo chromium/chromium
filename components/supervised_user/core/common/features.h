@@ -40,12 +40,6 @@ BASE_DECLARE_FEATURE(kLocalWebApprovalsWidgetSupportsUrlPayload);
 // related supervision services.
 BASE_DECLARE_FEATURE(kSupervisedUserUseUrlFilteringService);
 
-// The SupervisedUserPrefStore will merge all of the non-web filtering device
-// parental controls settings with the Family Link settings and emit merged
-// values as prefs.
-BASE_DECLARE_FEATURE(
-    kSupervisedUserMergeDeviceParentalControlsAndFamilyLinkPrefs);
-
 // When enabled, the supervised user log record will emit the device
 // log record separately. When disabled, the system assumes that the device log
 // record is mutually exclusive with the account/policy based log record.

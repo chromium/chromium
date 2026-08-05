@@ -236,9 +236,8 @@ void SupervisedUserPrefStore::RecreatePreferences() {
 
     // Apparently two parental controls systems are enabled at the same time.
     // This is considered a conflict which in versions before
-    // kSupervisedUserUseUrlFilteringService and
-    // kSupervisedUserMergeDeviceParentalControlsAndFamilyLinkPrefs was resolved
-    // in favor of Family Link settings.
+    // kSupervisedUserUseUrlFilteringService was resolved in favor of Family
+    // Link settings.
     if (device_parental_controls_state_.is_enabled) {
       base::UmaHistogramEnumeration(
           supervised_user::kSupervisionConflictHistogramName,
@@ -246,26 +245,18 @@ void SupervisedUserPrefStore::RecreatePreferences() {
     }
   }
 
-  // Merge device parental controls settings with the Family Link settings in
-  // one of two situations:
-  // 1. Family Link is not enabled (old behavior).
-  // 2. Family Link is enabled, and new merging feature is enabled too.
+  // Merge device parental controls settings with the Family Link settings.
   // The merge policy is to select the most restrictive setting.
-  if (!is_family_link_settings_service_active ||
-      base::FeatureList::IsEnabled(
-          supervised_user::
-              kSupervisedUserMergeDeviceParentalControlsAndFamilyLinkPrefs)) {
-    if (device_parental_controls_state_.is_incognito_mode_disabled) {
-      // IncognitoModeAvailability::kDisabled is the most restrictive setting -
-      // it's safe to apply it regardless of the Family Link settings.
-      prefs_->SetInteger(
-          policy::policy_prefs::kIncognitoModeAvailability,
-          static_cast<int>(policy::IncognitoModeAvailability::kDisabled));
-    }
-    if (device_parental_controls_state_.is_safe_search_forced) {
-      // kForceGoogleSafeSearch=true is also the most restrictive setting.
-      prefs_->SetBoolean(policy::policy_prefs::kForceGoogleSafeSearch, true);
-    }
+  if (device_parental_controls_state_.is_incognito_mode_disabled) {
+    // IncognitoModeAvailability::kDisabled is the most restrictive setting -
+    // it's safe to apply it regardless of the Family Link settings.
+    prefs_->SetInteger(
+        policy::policy_prefs::kIncognitoModeAvailability,
+        static_cast<int>(policy::IncognitoModeAvailability::kDisabled));
+  }
+  if (device_parental_controls_state_.is_safe_search_forced) {
+    // kForceGoogleSafeSearch=true is also the most restrictive setting.
+    prefs_->SetBoolean(policy::policy_prefs::kForceGoogleSafeSearch, true);
   }
 
   // Web filtering prefs are being deprecated: only merge them if device
