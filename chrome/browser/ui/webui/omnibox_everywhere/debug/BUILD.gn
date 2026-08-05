@@ -1,0 +1,31 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojo_bindings") {
+  sources = [ "omnibox_everywhere_debug.mojom" ]
+
+  webui_module_path = "/"
+}
+
+source_set("debug") {
+  sources = [
+    "omnibox_everywhere_debug_page_handler.cc",
+    "omnibox_everywhere_debug_page_handler.h",
+  ]
+
+  public_deps = [
+    ":mojo_bindings",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/omnibox/omnibox_everywhere",
+    "//chrome/browser/ui/omnibox/omnibox_everywhere:prefs",
+    "//components/prefs",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+  ]
+}

@@ -1,0 +1,110 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=chrome
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: block;
+  font-family: Roboto, Arial, sans-serif;
+  padding: 16px;
+}
+
+.toggle-container {
+  align-items: center;
+  display: flex;
+  margin-top: 16px;
+}
+
+.toggle-label {
+  font-size: 14px;
+  margin-left: 12px;
+}
+
+.switch {
+  display: inline-block;
+  height: 24px;
+  position: relative;
+  width: 44px;
+}
+
+.switch input {
+  height: 0;
+  opacity: 0;
+  width: 0;
+}
+
+.slider {
+  background-color: #ccc;
+  bottom: 0;
+  cursor: pointer;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transition: .4s;
+  border-radius: 24px;
+}
+
+.slider:before {
+  background-color: white;
+  bottom: 3px;
+  content: '';
+  height: 18px;
+  left: 3px;
+  position: absolute;
+  transition: .4s;
+  width: 18px;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #1a73e8;
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+.invoke-container {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.invoke-label {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.invoke-select {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  padding: 6px 12px;
+}
+
+.invoke-button {
+  background-color: #1a73e8;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 16px;
+  transition: background-color .2s;
+}
+
+.invoke-button:hover {
+  background-color: #1557b0;
+}
+
+.invoke-button:active {
+  background-color: #174ea6;
+}

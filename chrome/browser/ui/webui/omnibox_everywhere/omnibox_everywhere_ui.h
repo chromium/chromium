@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/webui/omnibox_everywhere/debug/omnibox_everywhere_debug.mojom.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/common/webui_url_constants.h"
@@ -17,6 +18,10 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
+
+namespace omnibox_everywhere_debug {
+class OmniboxEverywhereDebugPageHandler;
+}
 
 class ComposeboxEverywhereHandler;
 class OmniboxEverywhereHandler;
@@ -39,9 +44,11 @@ class OmniboxEverywhereUIConfig
   bool ShouldCrashOnJavascriptErrorInDevelopmentBuild() const override;
 };
 
-class OmniboxEverywhereUI : public TopChromeWebUIController,
-                            public composebox::mojom::PageHandlerFactory,
-                            public searchbox::mojom::PageHandlerFactory {
+class OmniboxEverywhereUI
+    : public TopChromeWebUIController,
+      public composebox::mojom::PageHandlerFactory,
+      public searchbox::mojom::PageHandlerFactory,
+      public omnibox_everywhere_debug::mojom::PageHandlerFactory {
  public:
   explicit OmniboxEverywhereUI(content::WebUI* web_ui);
   OmniboxEverywhereUI(const OmniboxEverywhereUI&) = delete;
@@ -70,6 +77,15 @@ class OmniboxEverywhereUI : public TopChromeWebUIController,
       mojo::PendingRemote<searchbox::mojom::Page> page,
       mojo::PendingReceiver<searchbox::mojom::PageHandler> handler) override;
 
+  // omnibox_everywhere_debug::mojom::PageHandlerFactory:
+  void BindInterface(
+      mojo::PendingReceiver<omnibox_everywhere_debug::mojom::PageHandlerFactory>
+          receiver);
+  void CreatePageHandler(
+      mojo::PendingRemote<omnibox_everywhere_debug::mojom::Page> page,
+      mojo::PendingReceiver<omnibox_everywhere_debug::mojom::PageHandler>
+          handler) override;
+
   ComposeboxEverywhereHandler* composebox_handler() {
     return composebox_handler_.get();
   }
@@ -85,6 +101,9 @@ class OmniboxEverywhereUI : public TopChromeWebUIController,
   std::unique_ptr<ComposeboxEverywhereHandler> composebox_handler_;
   std::unique_ptr<OmniboxEverywhereHandler> omnibox_handler_;
 
+  std::unique_ptr<omnibox_everywhere_debug::OmniboxEverywhereDebugPageHandler>
+      debug_page_handler_;
+
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
       shared_session_handle_;
 
@@ -92,6 +111,8 @@ class OmniboxEverywhereUI : public TopChromeWebUIController,
       composebox_page_factory_receiver_{this};
   mojo::Receiver<searchbox::mojom::PageHandlerFactory>
       searchbox_page_factory_receiver_{this};
+  mojo::Receiver<omnibox_everywhere_debug::mojom::PageHandlerFactory>
+      debug_page_factory_receiver_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

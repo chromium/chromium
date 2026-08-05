@@ -355,6 +355,7 @@ if (!is_android) {
   browser_exposed_mojom_targets += [
     "//chrome/browser/ui/webui/feedback/report_unsafe_site:mojo_bindings",
     "//chrome/browser/ui/webui/iwa_dev:mojo_bindings",
+    "//chrome/browser/ui/webui/omnibox_everywhere/debug:mojo_bindings",
   ]
 }
 

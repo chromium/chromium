@@ -654,7 +654,7 @@
     "includes": [4460],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/omnibox_everywhere/resources.grd": {
-    "META": {"sizes": {"includes": [15]}},
+    "META": {"sizes": {"includes": [30]}},
     "includes": [4470],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/omnibox_popup/resources.grd": {

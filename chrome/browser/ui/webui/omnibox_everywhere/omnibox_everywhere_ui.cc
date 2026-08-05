@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/omnibox_everywhere/composebox_everywhere_handler.h"
+#include "chrome/browser/ui/webui/omnibox_everywhere/debug/omnibox_everywhere_debug_page_handler.h"
 #include "chrome/browser/ui/webui/omnibox_everywhere/omnibox_everywhere_handler.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/sanitized_image/sanitized_image_source.h"
@@ -287,6 +288,24 @@ void OmniboxEverywhereUI::CreatePageHandler(
       base::BindRepeating(
           &OmniboxEverywhereUI::GetOrCreateContextualSessionHandle,
           base::Unretained(this)));
+}
+
+void OmniboxEverywhereUI::BindInterface(
+    mojo::PendingReceiver<omnibox_everywhere_debug::mojom::PageHandlerFactory>
+        receiver) {
+  if (debug_page_factory_receiver_.is_bound()) {
+    debug_page_factory_receiver_.reset();
+  }
+  debug_page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void OmniboxEverywhereUI::CreatePageHandler(
+    mojo::PendingRemote<omnibox_everywhere_debug::mojom::Page> page,
+    mojo::PendingReceiver<omnibox_everywhere_debug::mojom::PageHandler>
+        handler) {
+  debug_page_handler_ = std::make_unique<
+      omnibox_everywhere_debug::OmniboxEverywhereDebugPageHandler>(
+      profile_, std::move(page), std::move(handler));
 }
 
 contextual_search::ContextualSearchSessionHandle*

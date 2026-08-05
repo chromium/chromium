@@ -13,8 +13,12 @@ source_set("omnibox_everywhere") {
     "omnibox_everywhere_ui.cc",
     "omnibox_everywhere_ui.h",
   ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "debug:mojo_bindings",
+    "//chrome/browser:browser_public_dependencies",
+  ]
   deps = [
+    "debug",
     "//base",
     "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/contextual_search",
@@ -22,6 +26,7 @@ source_set("omnibox_everywhere") {
     "//chrome/browser/resources/omnibox_everywhere:resources",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/omnibox",
+    "//chrome/browser/ui/omnibox/omnibox_everywhere",
     "//chrome/browser/ui/profiles",
     "//chrome/browser/ui/webui:favicon_source",
     "//chrome/browser/ui/webui:plural_string_handler",

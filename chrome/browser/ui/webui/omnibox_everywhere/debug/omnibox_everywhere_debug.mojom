@@ -1,0 +1,53 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module omnibox_everywhere_debug.mojom;
+
+// Represents the entry point or source that triggered the Omnibox Everywhere
+// invocation.
+enum InvocationSource {
+  // Triggered by pressing the global system hotkey accelerator.
+  kGlobalHotkey = 0,
+  // Triggered from the profile picker UI component.
+  kProfilePicker = 1,
+};
+
+// Interface for sending diagnostic status updates from C++ browser process to
+// WebUI JS page.
+interface Page {
+  // Called when the Omnibox Everywhere background mode preference state
+  // changes.
+  OnBackgroundModeChanged(bool enabled);
+
+  // Called when the Omnibox Everywhere global hotkey preference state changes.
+  OnHotkeyChanged(bool enabled);
+};
+
+// Interface for controlling Omnibox Everywhere features and preferences from
+// WebUI JS page.
+interface PageHandler {
+  // Enables or disables the Omnibox Everywhere background mode preference.
+  SetBackgroundModeEnabled(bool enabled);
+
+  // Retrieves the current state of the background mode preference.
+  GetBackgroundModeEnabled() => (bool enabled);
+
+  // Enables or disables the global system hotkey preference.
+  SetHotkeyEnabled(bool enabled);
+
+  // Retrieves the current state of the global system hotkey preference.
+  GetHotkeyEnabled() => (bool enabled);
+
+  // Directly invokes the Omnibox Everywhere widget with the specified
+  // invocation source.
+  InvokeOmniboxEverywhere(InvocationSource source);
+};
+
+// Factory interface used to set up the connection between the WebUI
+// renderer and C++ page handler.
+interface PageHandlerFactory {
+  // Binds the diagnostic page remote and handler receiver for the WebUI.
+  CreatePageHandler(pending_remote<Page> page,
+                    pending_receiver<PageHandler> handler);
+};
