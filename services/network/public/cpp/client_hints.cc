@@ -123,10 +123,10 @@ ParseClientHintsHeader(const std::string& header) {
   // only have tokens (but params are OK!)
   for (const auto& list_item : maybe_list.value()) {
     // Make sure not a nested list.
-    if (list_item.member.size() != 1u)
+    if (list_item.member_is_inner_list || list_item.member.size() != 1u ||
+        !list_item.member.front().item.is_token()) {
       return std::nullopt;
-    if (!list_item.member[0].item.is_token())
-      return std::nullopt;
+    }
   }
 
   std::vector<network::mojom::WebClientHintsType> result;
@@ -134,8 +134,8 @@ ParseClientHintsHeader(const std::string& header) {
   // Now convert those to actual hint enums.
   const DecodeMap& decode_map = GetDecodeMap();
   for (const auto& list_item : maybe_list.value()) {
-    const std::string& token_value = list_item.member[0].item.GetString();
-    auto iter = decode_map.find(token_value);
+    const std::string* token_value = list_item.member.front().item.GetIfToken();
+    auto iter = decode_map.find(*token_value);
     if (iter != decode_map.end())
       result.push_back(iter->second);
   }  // for list_item

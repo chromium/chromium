@@ -36,6 +36,10 @@ TEST(ClientHintsTest, ParseClientHintsHeader) {
   result = ParseClientHintsHeader("\"device-memory\", \"rtt\"");
   ASSERT_FALSE(result.has_value());
 
+  // Must not be a single-element inner list of tokens either.
+  result = ParseClientHintsHeader("(device-memory)");
+  ASSERT_FALSE(result.has_value());
+
   // Parameters to the tokens are ignored, as encourageed by structured headers
   // spec.
   result = ParseClientHintsHeader("device-memory;resolution=GIB, rtt");
