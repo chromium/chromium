@@ -138,12 +138,12 @@ void PenIdHandler::InitPenIdStatics() {
   initialized = true;
 
   // Initialize the statics by creating a static instance of PenIdStatics. This
-  // is done in an worker thread to avoid jank during startup. If the statics
+  // is done in a worker thread to avoid jank during startup. If the statics
   // are not initialized by the time they are needed, use of
   // PenIdStatics::GetInstance will be a blocking call until they are
   // loaded.
   base::ThreadPool::PostTask(
-      FROM_HERE,
+      FROM_HERE, {base::TaskPriority::USER_VISIBLE},
       base::BindOnce(base::IgnoreResult(&PenIdStatics::GetInstance)));
 }
 
