@@ -520,5 +520,26 @@ TEST_F(PopupNoticeViewTest, AccessibilitySelectionAndAnnouncements) {
   EXPECT_FALSE(IsViewSelected());
 }
 
+// Tests that when the notice is the only suggestion shown in the popup, neither
+// a custom background nor a border is applied to the view.
+TEST_F(PopupNoticeViewTest, SingleSuggestionNoCustomBackgroundOrBorder) {
+  controller().set_suggestions({SuggestionType::kPersonalContextNotice});
+  ShowView();
+
+  EXPECT_EQ(view().GetBackground(), nullptr);
+  EXPECT_EQ(view().GetBorder(), nullptr);
+}
+
+// Tests that when multiple suggestions are shown in the popup along with the
+// notice, a custom rounded background and empty border are applied to the view.
+TEST_F(PopupNoticeViewTest, MultipleSuggestionsHaveCustomBackgroundAndBorder) {
+  controller().set_suggestions({SuggestionType::kFillAutofillAi,
+                                SuggestionType::kPersonalContextNotice});
+  ShowView();
+
+  EXPECT_NE(view().GetBackground(), nullptr);
+  EXPECT_NE(view().GetBorder(), nullptr);
+}
+
 }  // namespace
 }  // namespace autofill

@@ -570,6 +570,15 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   ShowAndVerifyUi();
 }
 
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
+                       InvokeUi_SuggestionNoticeIsTheOnlySuggestion) {
+  ON_CALL(controller(), GetMainFillingProduct())
+      .WillByDefault(Return(FillingProduct::kAutofillAi));
+  Suggestion notice_suggestion(SuggestionType::kPersonalContextNotice);
+  PrepareSuggestions({notice_suggestion});
+  ShowAndVerifyUi();
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          PopupViewViewsBrowsertest,
                          Combine(Bool(), Bool()),

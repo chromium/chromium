@@ -128,9 +128,12 @@ PopupNoticeView::PopupNoticeView(
               gfx::Insets::TLBR(kRowVerticalMargin, kRowHorizontalMargin,
                                 kRowVerticalMargin, kRowHorizontalMargin));
 
-  SetBackground(views::CreateRoundedRectBackground(
-      ui::kColorSysSurface3, /*radius=*/kBackgroundCornerRadius));
-  SetBorder(views::CreateEmptyBorder(gfx::Insets(kBorderInsets)));
+  // When shown on its own, the notice suggestion has a slightly different UI.
+  if (controller_ && controller_->GetSuggestions().size() > 1) {
+    SetBackground(views::CreateRoundedRectBackground(
+        ui::kColorSysSurface3, /*radius=*/kBackgroundCornerRadius));
+    SetBorder(views::CreateEmptyBorder(gfx::Insets(kBorderInsets)));
+  }
 
   description_ = AddChildView(std::make_unique<views::StyledLabel>());
 
