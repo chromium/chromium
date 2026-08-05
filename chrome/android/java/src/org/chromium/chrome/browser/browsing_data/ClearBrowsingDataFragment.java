@@ -1126,6 +1126,10 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
                     }
 
                     indexData.removeEntry(getUniqueId(PREF_SIGN_OUT_OF_CHROME_TEXT));
+                    indexData.removeEntry(getUniqueId(PREF_MY_ACTIVITY_LINK_OUT));
+                    indexData.removeEntry(getUniqueId(PREF_SEARCH_HISTORY_LINK_OUT));
+                    indexData.removeEntry(getUniqueId(PREF_PASSWORD_MANAGER_LINK_OUT));
+                    indexData.removeEntry(getUniqueId(PREF_MANAGE_OTHER_GOOGLE_DATA_EXPANDABLE));
                 }
             };
 }

@@ -483,6 +483,31 @@ public class ClearBrowsingDataFragmentTest {
 
     @Test
     @MediumTest
+    public void testSearchableIndex_ManageOtherGoogleData_AlwaysRemoved() {
+        var indexProvider = ClearBrowsingDataFragment.SEARCH_INDEX_DATA_PROVIDER;
+        indexProvider.updateDynamicPreferences(
+                mActivityTestRule.getActivity(), mSearchIndexDataMock, null);
+        verify(mSearchIndexDataMock)
+                .removeEntry(
+                        indexProvider.getUniqueId(
+                                ClearBrowsingDataFragment
+                                        .PREF_MANAGE_OTHER_GOOGLE_DATA_EXPANDABLE));
+        verify(mSearchIndexDataMock)
+                .removeEntry(
+                        indexProvider.getUniqueId(
+                                ClearBrowsingDataFragment.PREF_MY_ACTIVITY_LINK_OUT));
+        verify(mSearchIndexDataMock)
+                .removeEntry(
+                        indexProvider.getUniqueId(
+                                ClearBrowsingDataFragment.PREF_SEARCH_HISTORY_LINK_OUT));
+        verify(mSearchIndexDataMock)
+                .removeEntry(
+                        indexProvider.getUniqueId(
+                                ClearBrowsingDataFragment.PREF_PASSWORD_MANAGER_LINK_OUT));
+    }
+
+    @Test
+    @MediumTest
     public void testSearchableIndex_ClearTabs_NotRemovedIfContextIsNotSearchActivity() {
         var indexProvider = ClearBrowsingDataFragment.SEARCH_INDEX_DATA_PROVIDER;
         // Using ChromeTabbedActivity (from rule) which is not SearchActivity.
