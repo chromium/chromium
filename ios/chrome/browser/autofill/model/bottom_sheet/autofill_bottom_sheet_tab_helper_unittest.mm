@@ -11,7 +11,9 @@
 #import "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #import "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
+#import "components/autofill/core/browser/integrators/autofill_ai/mock_autofill_ai_manager.h"
 #import "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
+#import "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
 #import "components/autofill/core/common/autofill_test_utils.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
@@ -23,14 +25,18 @@
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "components/personal_context/first_run/personal_context_first_run_service.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
+#import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/model/strike_database_factory.h"
 #import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
+#import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/personal_context/model/ios_personal_context_first_run_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
+#import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/test/js_test_util.h"
@@ -46,6 +52,11 @@
 #import "url/origin.h"
 
 namespace {
+
+using ::testing::NiceMock;
+using ::testing::Return;
+
+constexpr char kTestGuid[] = "00000000-0000-4000-8000-000000000000";
 
 // Fake implementation of PersonalContextFirstRunService to control the notice
 // state.
@@ -74,6 +85,23 @@ class FakePersonalContextFirstRunService
  private:
   bool should_show_ = false;
   bool acknowledged_ = false;
+};
+
+class TestChromeAutofillClientIOS : public autofill::ChromeAutofillClientIOS {
+ public:
+  using ChromeAutofillClientIOS::ChromeAutofillClientIOS;
+
+  autofill::AutofillAiManager* GetAutofillAiManager() override {
+    return mock_ai_manager_ ? mock_ai_manager_.get()
+                            : ChromeAutofillClientIOS::GetAutofillAiManager();
+  }
+
+  void SetMockAiManager(autofill::AutofillAiManager* ai_manager) {
+    mock_ai_manager_ = ai_manager;
+  }
+
+ private:
+  raw_ptr<autofill::AutofillAiManager> mock_ai_manager_ = nullptr;
 };
 
 }  // namespace
@@ -165,6 +193,27 @@ class AutofillBottomSheetTabHelperTest : public PlatformTest {
         autofill::AutofillType(autofill::NAME_FULL),
         autofill::AutofillPredictionSource::kHeuristics);
 
+    std::vector<autofill::Suggestion> suggestions;
+    if (should_show_ambient_notice) {
+      autofill::Suggestion suggestion(
+          autofill::SuggestionType::kAutofillAiPrivateInferenceNotice);
+      suggestion.payload = autofill::Suggestion::AutofillAiPayload(
+          autofill::EntityInstance::EntityId(kTestGuid));
+      suggestions.push_back(suggestion);
+
+      autofill::EntityDataManager* entity_manager =
+          IOSAutofillEntityDataManagerFactory::GetForProfile(profile_.get());
+      ASSERT_NE(entity_manager, nullptr);
+      autofill::test::PassportEntityOptions options;
+      options.guid = kTestGuid;
+      options.record_type =
+          autofill::EntityInstance::RecordType::kPersonalContext;
+      entity_manager->SetPersonalContextEntitiesForTesting(
+          {autofill::test::GetPassportEntityInstance(options)});
+    }
+    ON_CALL(*mock_ai_manager_, GetSuggestions)
+        .WillByDefault(Return(suggestions));
+
     FakePersonalContextFirstRunService* first_run_service =
         static_cast<FakePersonalContextFirstRunService*>(
             IOSPersonalContextFirstRunServiceFactory::GetForProfile(
@@ -194,7 +243,15 @@ class AutofillBottomSheetTabHelperTest : public PlatformTest {
              base::BindOnce([](ProfileIOS* profile)
                                 -> std::unique_ptr<KeyedService> {
                return std::make_unique<FakePersonalContextFirstRunService>();
-             })}});
+             })},
+         TestProfileIOS::TestingFactory{
+             static_cast<ProfileKeyedServiceFactoryIOS*>(
+                 ios::HistoryServiceFactory::GetInstance()),
+             ios::HistoryServiceFactory::GetDefaultFactory()},
+         TestProfileIOS::TestingFactory{
+             static_cast<ProfileKeyedServiceFactoryIOS*>(
+                 ios::WebDataServiceFactory::GetInstance()),
+             ios::WebDataServiceFactory::GetDefaultFactory()}});
     profile_ = std::move(builder).Build();
 
     web::WebState::CreateParams params(profile_.get());
@@ -220,8 +277,22 @@ class AutofillBottomSheetTabHelperTest : public PlatformTest {
     // That's why we initialize it in the constructor but put it in the
     // declaration order above `web_state_`.
     autofill_client_ = std::make_unique<
-        autofill::WithFakedFromWebState<autofill::ChromeAutofillClientIOS>>(
+        autofill::WithFakedFromWebState<TestChromeAutofillClientIOS>>(
         profile_.get(), web_state_.get(), infobar_manager, autofill_agent_);
+    // Use NiceMock to ignore uninteresting lifecycle calls (e.g., OnFormSeen)
+    // that are triggered by form activities but not relevant to testing the
+    // bottom sheet trigger.
+    mock_ai_manager_ =
+        std::make_unique<NiceMock<autofill::MockAutofillAiManager>>(
+            autofill_client_.get(),
+            autofill::StrikeDatabaseFactory::GetForProfile(profile_.get()));
+    static_cast<TestChromeAutofillClientIOS*>(autofill_client_.get())
+        ->SetMockAiManager(mock_ai_manager_.get());
+  }
+
+  ~AutofillBottomSheetTabHelperTest() override {
+    static_cast<TestChromeAutofillClientIOS*>(autofill_client_.get())
+        ->SetMockAiManager(nullptr);
   }
 
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
@@ -232,6 +303,7 @@ class AutofillBottomSheetTabHelperTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
   std::unique_ptr<autofill::AutofillClient> autofill_client_;
+  std::unique_ptr<autofill::MockAutofillAiManager> mock_ai_manager_;
   raw_ptr<AutofillBottomSheetTabHelper> helper_;
   AutofillAgent* autofill_agent_;
   base::test::ScopedFeatureList scoped_feature_list_;

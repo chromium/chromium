@@ -6,6 +6,8 @@
 
 #import <algorithm>
 #import <map>
+#import <ranges>
+#import <variant>
 
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
@@ -13,12 +15,16 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/string_util.h"
 #import "base/time/time.h"
+#import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #import "components/autofill/core/browser/form_structure.h"
 #import "components/autofill/core/browser/foundations/autofill_client.h"
+#import "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
 #import "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #import "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
+#import "components/autofill/core/browser/suggestions/suggestion.h"
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
 #import "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model.h"
@@ -129,6 +135,35 @@ bool IsRendererIdRegistered(
     autofill::FieldRendererId renderer_id) {
   auto it = map.find(frame_id);
   return it != map.end() && it->second.contains(renderer_id);
+}
+
+// Returns true if `field` has any personal context suggestions.
+bool FieldHasPersonalContextSuggestions(
+    autofill::AutofillAiManager& ai_manager,
+    autofill::EntityDataManager& entity_manager,
+    const autofill::FormStructure& form,
+    const autofill::AutofillField& field) {
+  const std::vector<autofill::Suggestion> suggestions =
+      ai_manager.GetSuggestions(form, field);
+  auto is_personal_context_suggestion =
+      [&entity_manager](const autofill::Suggestion& suggestion) {
+        const auto* payload =
+            std::get_if<autofill::Suggestion::AutofillAiPayload>(
+                &suggestion.payload);
+
+        if (!payload) {
+          return false;
+        }
+
+        base::optional_ref<const autofill::EntityInstance> entity =
+            entity_manager.GetEntityInstance(payload->guid);
+
+        return entity.has_value() &&
+               entity->record_type() ==
+                   autofill::EntityInstance::RecordType::kPersonalContext;
+      };
+
+  return std::ranges::any_of(suggestions, is_personal_context_suggestion);
 }
 
 }  // namespace
@@ -770,12 +805,22 @@ void AutofillBottomSheetTabHelper::UpdateListenersForAmbientAutofillForm(
     return;
   }
 
+  autofill::AutofillAiManager* ai_manager =
+      manager.client().GetAutofillAiManager();
+  autofill::EntityDataManager* entity_manager =
+      manager.client().GetEntityDataManager();
+  if (!ai_manager || !entity_manager) {
+    return;
+  }
+
   // Partition the fields by their local frame token to attach listeners per
   // iframe.
   std::map<autofill::LocalFrameToken, std::vector<autofill::FieldRendererId>>
       fields_to_attach_by_frame;
   for (const auto& field : form_structure->fields()) {
-    if (!field->Type().GetAutofillAiTypes().empty()) {
+    if (!field->Type().GetAutofillAiTypes().empty() &&
+        FieldHasPersonalContextSuggestions(*ai_manager, *entity_manager,
+                                           *form_structure, *field)) {
       autofill::FieldGlobalId field_id = field->global_id();
       fields_to_attach_by_frame[field_id.frame_token].push_back(
           field->renderer_id());
