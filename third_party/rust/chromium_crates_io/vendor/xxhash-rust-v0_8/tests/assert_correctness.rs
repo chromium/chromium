@@ -261,3 +261,27 @@ fn assert_xxh3() {
         hasher_default_128.reset();
     }
 }
+
+#[cfg(feature = "xxh3")]
+#[test]
+fn xxh3_builder_seed_and_secret_are_order_independent() {
+    use xxhash_rust::xxh3::Xxh3Builder;
+
+    const SEED: u64 = 0x0123_4567_89ab_cdef;
+    const SECRET: [u8; 192] = [0xa5; 192];
+    const INPUT: [u8; 241] = [0x42; 241];
+
+    let mut seed_then_secret = Xxh3Builder::new()
+        .with_seed(SEED)
+        .with_secret(SECRET)
+        .build();
+    let mut secret_then_seed = Xxh3Builder::new()
+        .with_secret(SECRET)
+        .with_seed(SEED)
+        .build();
+
+    seed_then_secret.update(&INPUT);
+    secret_then_seed.update(&INPUT);
+
+    assert_eq!(seed_then_secret.digest(), secret_then_seed.digest());
+}

@@ -1,6 +1,6 @@
 [package]
 name = "xxhash-rust"
-version = "0.8.17"
+version = "0.8.18"
 authors = ["Douman <douman@gmx.se>"]
 edition = "2018"
 description = "Implementation of xxhash"

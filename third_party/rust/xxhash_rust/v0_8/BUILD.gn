@@ -35,7 +35,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "xxhash-rust"
   cargo_pkg_description = "Implementation of xxhash"
   cargo_pkg_repository = "https://github.com/DoumanAsh/xxhash-rust"
-  cargo_pkg_version = "0.8.17"
+  cargo_pkg_version = "0.8.18"
 
   allow_unsafe = true
 
