@@ -11,7 +11,7 @@ import '../controls/settings_toggle_button.js';
 import '../icons.html.js';
 import '../settings_columned_section.css.js';
 import '../settings_shared.css.js';
-import './your_saved_info_shared.css.js';
+import './autofill_shared.css.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';

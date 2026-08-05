@@ -7,14 +7,14 @@ import 'chrome://settings/lazy_load.js';
 
 import {AiEnterpriseFeaturePrefName} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, ModelExecutionEnterprisePolicyValue} from 'chrome://settings/settings.js';
-import type {SettingsPrefsElement, SettingsYourSavedInfoPageIndexElement} from 'chrome://settings/settings.js';
+import type {SettingsAutofillPageIndexElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {loadTimeData, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-suite('YourSavedInfoPageIndex', function() {
-  let index: SettingsYourSavedInfoPageIndexElement;
+suite('AutofillPageIndex', function() {
+  let index: SettingsAutofillPageIndexElement;
   let settingsPrefs: SettingsPrefsElement;
 
   suiteSetup(function() {
@@ -31,7 +31,7 @@ suite('YourSavedInfoPageIndex', function() {
     });
     resetRouterForTesting();
 
-    index = document.createElement('settings-your-saved-info-page-index');
+    index = document.createElement('settings-autofill-page-index');
 
     settingsPrefs.set(
         `prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI}.value`,
@@ -60,7 +60,7 @@ suite('YourSavedInfoPageIndex', function() {
     assertEquals(routes.BASIC, Router.getInstance().getCurrentRoute());
     assertActiveView('parent');
 
-    Router.getInstance().navigateTo(routes.YOUR_SAVED_INFO);
+    Router.getInstance().navigateTo(routes.AUTOFILL);
     await microtasksFinished();
     assertActiveView('parent');
 
@@ -68,7 +68,7 @@ suite('YourSavedInfoPageIndex', function() {
     await microtasksFinished();
     assertActiveView('payments');
 
-    Router.getInstance().navigateTo(routes.YOUR_SAVED_INFO_CONTACT_INFO);
+    Router.getInstance().navigateTo(routes.CONTACT_INFO);
     await microtasksFinished();
     assertActiveView('contactInfo');
 
@@ -78,7 +78,7 @@ suite('YourSavedInfoPageIndex', function() {
     assertActiveView('passkeys');
     // </if>
 
-    Router.getInstance().navigateTo(routes.YOUR_SAVED_INFO_SHOPPING);
+    Router.getInstance().navigateTo(routes.SHOPPING);
     await microtasksFinished();
     assertActiveView('shopping');
 
@@ -94,7 +94,7 @@ suite('YourSavedInfoPageIndex', function() {
     });
     resetRouterForTesting();
 
-    index = document.createElement('settings-your-saved-info-page-index');
+    index = document.createElement('settings-autofill-page-index');
     index.prefs = settingsPrefs.prefs!;
     document.body.appendChild(index);
     await flushTasks();
@@ -111,12 +111,12 @@ suite('YourSavedInfoPageIndex', function() {
     });
     resetRouterForTesting();
 
-    index = document.createElement('settings-your-saved-info-page-index');
+    index = document.createElement('settings-autofill-page-index');
     index.prefs = settingsPrefs.prefs!;
     document.body.appendChild(index);
     await flushTasks();
 
-    assertEquals(undefined, routes.YOUR_SAVED_INFO_SHOPPING);
+    assertEquals(undefined, routes.SHOPPING);
     const subpage = index.$.viewManager.querySelector('#shopping');
     assertFalse(!!subpage);
   });

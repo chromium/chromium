@@ -211,25 +211,25 @@ function createRoutes(): SettingsRoutes {
   }
 
   if (visibility.yourSavedInfo !== false) {
-    r.YOUR_SAVED_INFO = r.BASIC.createSection(
+    r.AUTOFILL = r.BASIC.createSection(
         '/autofill', 'yourSavedInfo',
         loadTimeData.getString('autofillPageTitle'));
 
-    r.PAYMENTS = r.YOUR_SAVED_INFO.createChild('/payments');
-    r.YOUR_SAVED_INFO_CONTACT_INFO =
-        r.YOUR_SAVED_INFO.createChild('/contactInfo');
-    r.YOUR_SAVED_INFO_IDENTITY_DOCS =
-        r.YOUR_SAVED_INFO.createChild('/identityDocs');
-    r.YOUR_SAVED_INFO_TRAVEL = r.YOUR_SAVED_INFO.createChild('/travel');
+    r.PAYMENTS = r.AUTOFILL.createChild('/payments');
+    r.CONTACT_INFO =
+        r.AUTOFILL.createChild('/contactInfo');
+    r.IDENTITY_DOCS =
+        r.AUTOFILL.createChild('/identityDocs');
+    r.TRAVEL = r.AUTOFILL.createChild('/travel');
     if (loadTimeData.getBoolean('shoppingIntegrationEnabled')) {
-      r.YOUR_SAVED_INFO_SHOPPING = r.YOUR_SAVED_INFO.createChild('/shopping');
+      r.SHOPPING = r.AUTOFILL.createChild('/shopping');
     }
     if (loadTimeData.getBoolean('showSuggestionsFromGeminiSettings')) {
       r.SUGGESTIONS_FROM_GEMINI =
-          r.YOUR_SAVED_INFO.createChild('/enhancedAutofill');
+          r.AUTOFILL.createChild('/enhancedAutofill');
     }
     // <if expr="is_win or is_macosx">
-    r.PASSKEYS = r.YOUR_SAVED_INFO.createChild('/passkeys');
+    r.PASSKEYS = r.AUTOFILL.createChild('/passkeys');
     // </if>
   }
 

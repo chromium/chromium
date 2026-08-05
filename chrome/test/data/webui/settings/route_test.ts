@@ -294,7 +294,7 @@ suite('Basic', function() {
     assertTrue(hasRoute('BASIC'));
 
     assertFalse(hasRoute('APPEARANCE'));
-    assertFalse(hasRoute('YOUR_SAVED_INFO'));
+    assertFalse(hasRoute('AUTOFILL'));
     assertFalse(hasRoute('DEFAULT_BROWSER'));
     assertFalse(hasRoute('ON_STARTUP'));
     assertFalse(hasRoute('RESET'));

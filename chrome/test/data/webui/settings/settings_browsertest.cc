@@ -1935,20 +1935,20 @@ IN_PROC_BROWSER_TEST_F(SettingsTranslatePageTest, MetricsBrowser) {
 
 using YourSavedInfoTest = SettingsBrowserTest;
 
-IN_PROC_BROWSER_TEST_F(YourSavedInfoTest, YourSavedInfoAccount) {
-  RunTest("settings/your_saved_info_account_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(YourSavedInfoTest, AutofillAccount) {
+  RunTest("settings/autofill_account_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(YourSavedInfoTest, CollapsibleAutofillSettingsCard) {
   RunTest("settings/collapsible_autofill_settings_card_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(YourSavedInfoTest, YourSavedInfoPage) {
-  RunTest("settings/your_saved_info_page_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(YourSavedInfoTest, AutofillPage) {
+  RunTest("settings/autofill_page_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(YourSavedInfoTest, YourSavedInfoPageIndex) {
-  RunTest("settings/your_saved_info_page_index_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(YourSavedInfoTest, AutofillPageIndex) {
+  RunTest("settings/autofill_page_index_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(YourSavedInfoTest, IdentityDocsPageTest) {

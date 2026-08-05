@@ -4,7 +4,7 @@
 
 /**
  * @fileoverview
- * 'settings-your-saved-info-page' is the entry point for users to see
+ * 'settings-autofill-page' is the entry point for users to see
  * and manage their saved info.
  */
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
@@ -43,8 +43,8 @@ import {Router} from '../router.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import type {DataCategoryClickEvent, DataChipClickEvent} from './category_reference_card.js';
+import {getTemplate} from './autofill_page.html.js';
 import {DataManagementSurvey, SavedInfoHandlerImpl} from './saved_info_handler_proxy.js';
-import {getTemplate} from './your_saved_info_page.html.js';
 
 type AddressEntry = chrome.autofillPrivate.AddressEntry;
 type CreditCardEntry = chrome.autofillPrivate.CreditCardEntry;
@@ -87,13 +87,13 @@ export interface DataChip {
   isVisibleWhenNoEntitiesOfTypeExists: () => boolean;
 }
 
-const SettingsYourSavedInfoPageElementBase = WebUiListenerMixin(
+const SettingsAutofillPageElementBase = WebUiListenerMixin(
     SettingsViewMixin(PrefsMixin(I18nMixin(PolymerElement))));
 
-export class SettingsYourSavedInfoPageElement extends
-    SettingsYourSavedInfoPageElementBase {
+export class SettingsAutofillPageElement extends
+    SettingsAutofillPageElementBase {
   static get is() {
-    return 'settings-your-saved-info-page';
+    return 'settings-autofill-page';
   }
 
   static get template() {
@@ -458,19 +458,19 @@ export class SettingsYourSavedInfoPageElement extends
     if (routes.PAYMENTS) {
       map.set(routes.PAYMENTS.path, '#paymentManagerButton');
     }
-    if (routes.YOUR_SAVED_INFO_CONTACT_INFO) {
+    if (routes.CONTACT_INFO) {
       map.set(
-          routes.YOUR_SAVED_INFO_CONTACT_INFO.path, '#addressesManagerButton');
+          routes.CONTACT_INFO.path, '#addressesManagerButton');
     }
-    if (routes.YOUR_SAVED_INFO_IDENTITY_DOCS) {
+    if (routes.IDENTITY_DOCS) {
       map.set(
-          routes.YOUR_SAVED_INFO_IDENTITY_DOCS.path, '#identityManagerButton');
+          routes.IDENTITY_DOCS.path, '#identityManagerButton');
     }
-    if (routes.YOUR_SAVED_INFO_TRAVEL) {
-      map.set(routes.YOUR_SAVED_INFO_TRAVEL.path, '#travelManagerButton');
+    if (routes.TRAVEL) {
+      map.set(routes.TRAVEL.path, '#travelManagerButton');
     }
-    if (routes.YOUR_SAVED_INFO_SHOPPING) {
-      map.set(routes.YOUR_SAVED_INFO_SHOPPING.path, '#shoppingManagerButton');
+    if (routes.SHOPPING) {
+      map.set(routes.SHOPPING.path, '#shoppingManagerButton');
     }
     if (routes.SUGGESTIONS_FROM_GEMINI) {
       map.set(
@@ -565,16 +565,16 @@ export class SettingsYourSavedInfoPageElement extends
         Router.getInstance().navigateTo(routes.PAYMENTS);
         break;
       case YourSavedInfoDataCategory.CONTACT_INFO:
-        Router.getInstance().navigateTo(routes.YOUR_SAVED_INFO_CONTACT_INFO);
+        Router.getInstance().navigateTo(routes.CONTACT_INFO);
         break;
       case YourSavedInfoDataCategory.IDENTITY_DOCS:
-        Router.getInstance().navigateTo(routes.YOUR_SAVED_INFO_IDENTITY_DOCS);
+        Router.getInstance().navigateTo(routes.IDENTITY_DOCS);
         break;
       case YourSavedInfoDataCategory.TRAVEL:
-        Router.getInstance().navigateTo(routes.YOUR_SAVED_INFO_TRAVEL);
+        Router.getInstance().navigateTo(routes.TRAVEL);
         break;
       case YourSavedInfoDataCategory.SHOPPING:
-        Router.getInstance().navigateTo(routes.YOUR_SAVED_INFO_SHOPPING);
+        Router.getInstance().navigateTo(routes.SHOPPING);
         break;
       case YourSavedInfoDataCategory.MAX_VALUE:
         assertNotReached();
@@ -625,9 +625,9 @@ export class SettingsYourSavedInfoPageElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-your-saved-info-page': SettingsYourSavedInfoPageElement;
+    'settings-autofill-page': SettingsAutofillPageElement;
   }
 }
 
 customElements.define(
-    SettingsYourSavedInfoPageElement.is, SettingsYourSavedInfoPageElement);
+    SettingsAutofillPageElement.is, SettingsAutofillPageElement);

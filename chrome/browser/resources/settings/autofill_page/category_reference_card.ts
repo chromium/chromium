@@ -18,7 +18,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import type {YourSavedInfoDataCategory, YourSavedInfoDataChip} from '../metrics_browser_proxy.js';
 
 import {getTemplate} from './category_reference_card.html.js';
-import type {DataChip} from './your_saved_info_page.js';
+import type {DataChip} from './autofill_page.js';
 
 export type DataChipClickEvent = CustomEvent<{
   chipId: YourSavedInfoDataChip,

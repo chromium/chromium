@@ -6,7 +6,7 @@ import 'chrome://settings/settings.js';
 
 import {AiEnterpriseFeaturePrefName, AutofillManagerImpl, EntityDataManagerProxyImpl, PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, ModelExecutionEnterprisePolicyValue} from 'chrome://settings/settings.js';
-import type {SettingsPrefsElement, SettingsYourSavedInfoPageElement} from 'chrome://settings/settings.js';
+import type {SettingsAutofillPageElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PasswordManagerImpl, PasswordManagerPage, resetRouterForTesting, Router, YourSavedInfoDataCategory, YourSavedInfoDataChip, YourSavedInfoRelatedService} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -29,8 +29,8 @@ function setDefaultPrefs(objectToSetup: SettingsPrefsElement) {
       ModelExecutionEnterprisePolicyValue.ALLOW);
 }
 
-suite('YourSavedInfoPage', function() {
-  let yourSavedInfoPage: SettingsYourSavedInfoPageElement;
+suite('AutofillPage', function() {
+  let autofillPage: SettingsAutofillPageElement;
   let autofillManager: TestAutofillManager;
   let passwordManager: TestPasswordManagerProxy;
   let paymentsManager: TestPaymentsManager;
@@ -67,15 +67,15 @@ suite('YourSavedInfoPage', function() {
     resetRouterForTesting();
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    yourSavedInfoPage = document.createElement('settings-your-saved-info-page');
+    autofillPage = document.createElement('settings-autofill-page');
     setDefaultPrefs(settingsPrefs);
-    yourSavedInfoPage.prefs = settingsPrefs.prefs!;
-    document.body.appendChild(yourSavedInfoPage);
+    autofillPage.prefs = settingsPrefs.prefs!;
+    document.body.appendChild(autofillPage);
     await flushTasks();
   }
 
   function getChipCount(chipLabel: string): number|undefined {
-    const cards = yourSavedInfoPage.shadowRoot!.querySelectorAll(
+    const cards = autofillPage.shadowRoot!.querySelectorAll(
         'category-reference-card');
     for (const card of cards) {
       const chips = card.shadowRoot!.querySelectorAll('cr-button');
@@ -99,9 +99,9 @@ suite('YourSavedInfoPage', function() {
   });
 
   test('TitleExists', function() {
-    const yourSavedInfoPageTitleElement =
-        yourSavedInfoPage.shadowRoot!.querySelector('#yourSavedInfoPageTitle');
-    assertTrue(!!yourSavedInfoPageTitleElement);
+    const autofillPageTitleElement =
+        autofillPage.shadowRoot!.querySelector('#autofillPageTitle');
+    assertTrue(!!autofillPageTitleElement);
   });
 
   test('ShoppingCategoryHiddenWhenFlagDisabled', async function() {
@@ -110,13 +110,13 @@ suite('YourSavedInfoPage', function() {
     });
 
     const shoppingCard =
-        yourSavedInfoPage.shadowRoot!.querySelector<HTMLElement>(
+        autofillPage.shadowRoot!.querySelector<HTMLElement>(
             '#shoppingManagerButton');
     assertFalse(!!shoppingCard);
   });
 
   test('CardsRenderCorrectly', function() {
-    const cards = yourSavedInfoPage.shadowRoot!.querySelectorAll(
+    const cards = autofillPage.shadowRoot!.querySelectorAll(
         'category-reference-card');
     const expectedCardTitles = [
       loadTimeData.getString('localPasswordManager'),
@@ -135,7 +135,7 @@ suite('YourSavedInfoPage', function() {
 
   test('passwordsCardOpensPasswordManager', async function() {
     const passwordsCard =
-        yourSavedInfoPage.shadowRoot!.querySelector<HTMLElement>(`
+        autofillPage.shadowRoot!.querySelector<HTMLElement>(`
         category-reference-card[card-title="${
             loadTimeData.getString('localPasswordManager')}"]`);
     assertTrue(!!passwordsCard);
@@ -185,7 +185,7 @@ suite('YourSavedInfoPage', function() {
    },
   ].forEach(({cardTitle, expectedRoute, expectedCategory}) => {
     test(`${cardTitle} card navigates to the correct route`, async function() {
-      const card = yourSavedInfoPage.shadowRoot!.querySelector<HTMLElement>(
+      const card = autofillPage.shadowRoot!.querySelector<HTMLElement>(
           `category-reference-card[card-title="${
               loadTimeData.getString(cardTitle)}"]`);
       assertTrue(!!card);
@@ -238,7 +238,7 @@ suite('YourSavedInfoPage', function() {
   });
 
   test('ClickOnChipNavigatesToLeafPage', async function() {
-    const card = yourSavedInfoPage.shadowRoot!.querySelector<HTMLElement>(
+    const card = autofillPage.shadowRoot!.querySelector<HTMLElement>(
         `category-reference-card[card-title="${
             loadTimeData.getString('contactInfoTitle')}"]`);
     assertTrue(!!card);
@@ -260,7 +260,7 @@ suite('YourSavedInfoPage', function() {
   });
 
   test('ClickOnShoppingChipNavigatesToLeafPage', async function() {
-    const card = yourSavedInfoPage.shadowRoot!.querySelector<HTMLElement>(
+    const card = autofillPage.shadowRoot!.querySelector<HTMLElement>(
         `category-reference-card[card-title="${
             loadTimeData.getString('shoppingCardTitle')}"]`);
     assertTrue(!!card);
@@ -287,21 +287,21 @@ suite('YourSavedInfoPage', function() {
       showSuggestionsFromGeminiSettings: false,
     });
 
-    const geminiCard = yourSavedInfoPage.shadowRoot!.querySelector<HTMLElement>(
+    const geminiCard = autofillPage.shadowRoot!.querySelector<HTMLElement>(
         '#suggestionsFromGeminiCard');
     assertFalse(!!geminiCard);
   });
 
   test('SuggestionsFromGeminiCardNavigates', async function() {
-    const geminiCard = yourSavedInfoPage.shadowRoot!.querySelector<HTMLElement>(
+    const geminiCard = autofillPage.shadowRoot!.querySelector<HTMLElement>(
         '#suggestionsFromGeminiCard');
     assertTrue(!!geminiCard);
 
-    const button = yourSavedInfoPage.shadowRoot!.querySelector<HTMLElement>(
+    const button = autofillPage.shadowRoot!.querySelector<HTMLElement>(
         '#suggestionsFromGeminiLinkRow');
     assertTrue(!!button);
 
-    const icon = yourSavedInfoPage.shadowRoot!.querySelector<CrIconElement>(
+    const icon = autofillPage.shadowRoot!.querySelector<CrIconElement>(
         '#suggestionsFromGeminiSubLabel cr-icon');
     assertTrue(!!icon);
     // <if expr="_google_chrome">
@@ -369,18 +369,18 @@ suite('DataChipsVisibility', function() {
   });
 
   async function setupPage(overrides: {[key: string]: boolean}):
-      Promise<SettingsYourSavedInfoPageElement> {
+      Promise<SettingsAutofillPageElement> {
     loadTimeData.overrideValues(overrides);
     resetRouterForTesting();
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    const yourSavedInfoPage: SettingsYourSavedInfoPageElement =
-        document.createElement('settings-your-saved-info-page');
+    const autofillPage: SettingsAutofillPageElement =
+        document.createElement('settings-autofill-page');
     setDefaultPrefs(settingsPrefs);
-    yourSavedInfoPage.prefs = settingsPrefs.prefs!;
-    document.body.appendChild(yourSavedInfoPage);
+    autofillPage.prefs = settingsPrefs.prefs!;
+    document.body.appendChild(autofillPage);
     await flushTasks();
-    return yourSavedInfoPage;
+    return autofillPage;
   }
 
   teardown(function() {
@@ -388,10 +388,10 @@ suite('DataChipsVisibility', function() {
   });
 
   function getChipLabels(
-      yourSavedInfoPage: SettingsYourSavedInfoPageElement,
+      autofillPage: SettingsAutofillPageElement,
       cardSelector: string): string[] {
     const card =
-        yourSavedInfoPage.shadowRoot!.querySelector<HTMLElement>(cardSelector);
+        autofillPage.shadowRoot!.querySelector<HTMLElement>(cardSelector);
     assertTrue(!!card);
     const chips: HTMLElement[] =
         Array.from(card.shadowRoot!.querySelectorAll('cr-button'));
@@ -399,7 +399,7 @@ suite('DataChipsVisibility', function() {
   }
 
   test('AllChipsVisible', async function() {
-    const yourSavedInfoPage = await setupPage({
+    const autofillPage = await setupPage({
       showIbansSettings: true,
       shouldShowPayOverTimeSettings: true,
       shoppingIntegrationEnabled: true,
@@ -413,40 +413,40 @@ suite('DataChipsVisibility', function() {
           loadTimeData.getString('autofillPayOverTimeSettingsLabel'),
           loadTimeData.getString('loyaltyCardsTitle'),
         ],
-        getChipLabels(yourSavedInfoPage, '#paymentManagerButton'));
+        getChipLabels(autofillPage, '#paymentManagerButton'));
 
     assertTrue(
-        isChildVisible(yourSavedInfoPage, '#identityManagerButton'),
+        isChildVisible(autofillPage, '#identityManagerButton'),
         'Identity docs category should be visible');
     assertDeepEquals(
         [
           loadTimeData.getString('yourSavedInfoDriverLicenseChip'),
           loadTimeData.getString('yourSavedInfoPassportChip'),
         ],
-        getChipLabels(yourSavedInfoPage, '#identityManagerButton'));
+        getChipLabels(autofillPage, '#identityManagerButton'));
 
     assertTrue(
-        isChildVisible(yourSavedInfoPage, '#travelManagerButton'),
+        isChildVisible(autofillPage, '#travelManagerButton'),
         'Travel category should be visible');
     assertDeepEquals(
         [
           loadTimeData.getString('yourSavedInfoVehiclesChip'),
         ],
-        getChipLabels(yourSavedInfoPage, '#travelManagerButton'));
+        getChipLabels(autofillPage, '#travelManagerButton'));
 
     assertTrue(
-        isChildVisible(yourSavedInfoPage, '#shoppingManagerButton'),
+        isChildVisible(autofillPage, '#shoppingManagerButton'),
         'Shopping category should be visible');
     assertDeepEquals(
         [
           loadTimeData.getString('yourSavedInfoOrdersChip'),
           loadTimeData.getString('yourSavedInfoShipmentsChip'),
         ],
-        getChipLabels(yourSavedInfoPage, '#shoppingManagerButton'));
+        getChipLabels(autofillPage, '#shoppingManagerButton'));
   });
 
   test('DisabledIbans', async function() {
-    const yourSavedInfoPage = await setupPage({
+    const autofillPage = await setupPage({
       showIbansSettings: false,
       shouldShowPayOverTimeSettings: true,
     });
@@ -456,13 +456,13 @@ suite('DataChipsVisibility', function() {
           loadTimeData.getString('autofillPayOverTimeSettingsLabel'),
           loadTimeData.getString('loyaltyCardsTitle'),
         ],
-        getChipLabels(yourSavedInfoPage, '#paymentManagerButton'));
+        getChipLabels(autofillPage, '#paymentManagerButton'));
   });
 
   test('DisabledIbansButAlreadyExisting', async function() {
     const autofillManager = new TestAutofillManager();
     AutofillManagerImpl.setInstance(autofillManager);
-    const yourSavedInfoPage = await setupPage({
+    const autofillPage = await setupPage({
       showIbansSettings: false,
       shouldShowPayOverTimeSettings: true,
     });
@@ -477,12 +477,12 @@ suite('DataChipsVisibility', function() {
           loadTimeData.getString('autofillPayOverTimeSettingsLabel'),
           loadTimeData.getString('loyaltyCardsTitle'),
         ],
-        getChipLabels(yourSavedInfoPage, '#paymentManagerButton'));
+        getChipLabels(autofillPage, '#paymentManagerButton'));
   });
 
   test('DisabledPayOverTime', async function() {
     // Disable Pay over time
-    const yourSavedInfoPage = await setupPage({
+    const autofillPage = await setupPage({
       showIbansSettings: true,
       shouldShowPayOverTimeSettings: false,
     });
@@ -492,28 +492,28 @@ suite('DataChipsVisibility', function() {
           loadTimeData.getString('ibanTitle'),
           loadTimeData.getString('loyaltyCardsTitle'),
         ],
-        getChipLabels(yourSavedInfoPage, '#paymentManagerButton'));
+        getChipLabels(autofillPage, '#paymentManagerButton'));
   });
 
   test('DisabledAutofillAi', async function() {
-    const yourSavedInfoPage = await setupPage({});
+    const autofillPage = await setupPage({});
     assertTrue(
-        isChildVisible(yourSavedInfoPage, '#identityManagerButton'),
+        isChildVisible(autofillPage, '#identityManagerButton'),
         'Identity docs category should be visible');
     assertTrue(
-        isChildVisible(yourSavedInfoPage, '#travelManagerButton'),
+        isChildVisible(autofillPage, '#travelManagerButton'),
         'Travel category should be visible');
     assertTrue(
-        isChildVisible(yourSavedInfoPage, '#shoppingManagerButton'),
+        isChildVisible(autofillPage, '#shoppingManagerButton'),
         'Shopping category should be visible');
   });
 
   test('DisabledAmbientAutofill', async function() {
-    const yourSavedInfoPage = await setupPage({
+    const autofillPage = await setupPage({
       shoppingIntegrationEnabled: false,
     });
     assertFalse(
-        isChildVisible(yourSavedInfoPage, '#shoppingManagerButton'),
+        isChildVisible(autofillPage, '#shoppingManagerButton'),
         'Shopping category should not be visible');
   });
 
@@ -540,11 +540,11 @@ suite('DataChipsVisibility', function() {
     ];
     entityDataManager.setLoadEntityInstancesResponse(
         testEntityInstancesWithLabels);
-    const yourSavedInfoPage = await setupPage({});
+    const autofillPage = await setupPage({});
     await entityDataManager.whenCalled('loadEntityInstances');
 
     assertTrue(
-        isChildVisible(yourSavedInfoPage, '#identityManagerButton'),
+        isChildVisible(autofillPage, '#identityManagerButton'),
         'Identity docs category should be visible');
     assertDeepEquals(
         [
@@ -552,21 +552,21 @@ suite('DataChipsVisibility', function() {
           loadTimeData.getString('yourSavedInfoNationalIdsChip'),
           loadTimeData.getString('yourSavedInfoPassportChip'),
         ],
-        getChipLabels(yourSavedInfoPage, '#identityManagerButton'),
+        getChipLabels(autofillPage, '#identityManagerButton'),
         'Extra national ID cards chip should be visible');
     assertTrue(
-        isChildVisible(yourSavedInfoPage, '#travelManagerButton'),
+        isChildVisible(autofillPage, '#travelManagerButton'),
         'Travel category should be visible');
     assertDeepEquals(
         [
           loadTimeData.getString('yourSavedInfoVehiclesChip'),
         ],
-        getChipLabels(yourSavedInfoPage, '#travelManagerButton'));
+        getChipLabels(autofillPage, '#travelManagerButton'));
   });
 });
 
 suite('RelatedServices', function() {
-  let yourSavedInfoPage: SettingsYourSavedInfoPageElement;
+  let autofillPage: SettingsAutofillPageElement;
   let openWindowProxy: TestOpenWindowProxy;
   let passwordManager: TestPasswordManagerProxy;
   let settingsPrefs: SettingsPrefsElement;
@@ -590,10 +590,10 @@ suite('RelatedServices', function() {
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    yourSavedInfoPage = document.createElement('settings-your-saved-info-page');
+    autofillPage = document.createElement('settings-autofill-page');
     setDefaultPrefs(settingsPrefs);
-    yourSavedInfoPage.prefs = settingsPrefs.prefs!;
-    document.body.appendChild(yourSavedInfoPage);
+    autofillPage.prefs = settingsPrefs.prefs!;
+    document.body.appendChild(autofillPage);
   });
 
   teardown(function() {
@@ -602,7 +602,7 @@ suite('RelatedServices', function() {
 
   async function testRowOpensUrl(selector: string, urlStringId: string) {
     const row =
-        yourSavedInfoPage.shadowRoot!.querySelector<HTMLElement>(selector);
+        autofillPage.shadowRoot!.querySelector<HTMLElement>(selector);
     assertTrue(!!row);
     row.click();
     const url = await openWindowProxy.whenCalled('openUrl');
@@ -611,7 +611,7 @@ suite('RelatedServices', function() {
 
   test('CardRendersCorrectly', function() {
     const relatedServicesCard =
-        yourSavedInfoPage.shadowRoot!.querySelector<HTMLElement>(
+        autofillPage.shadowRoot!.querySelector<HTMLElement>(
             `settings-section[page-title="${
                 loadTimeData.getString(
                     'yourSavedInfoRelatedServicesTitle')}"]`);
@@ -630,7 +630,7 @@ suite('RelatedServices', function() {
 
   test('PasswordManagerRowOpensPasswordManager', async function() {
     const passwordManagerRow =
-        yourSavedInfoPage.shadowRoot!.querySelector<HTMLElement>(
+        autofillPage.shadowRoot!.querySelector<HTMLElement>(
             '#passwordManagerButton');
     assertTrue(!!passwordManagerRow);
     passwordManagerRow.click();

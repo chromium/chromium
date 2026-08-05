@@ -12,7 +12,7 @@ import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
 import '/shared/settings/prefs/prefs.js';
 import './autofill_ai_entries_list.js';
-import './your_saved_info_shared.css.js';
+import './autofill_shared.css.js';
 import '../controls/settings_toggle_button.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';

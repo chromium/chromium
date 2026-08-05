@@ -24,7 +24,7 @@ import '../site_favicon.js';
 import './address_edit_dialog.js';
 import './address_remove_confirmation_dialog.js';
 import './passwords_shared.css.js';
-import './your_saved_info_shared.css.js';
+import './autofill_shared.css.js';
 
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';

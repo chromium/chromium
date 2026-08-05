@@ -75,8 +75,8 @@ export {SettingsAutofillAiEntriesListElement} from './autofill_page/autofill_ai_
 export {CollapsibleCardElement} from './autofill_page/collapsible_autofill_settings_card.js';
 export {PasswordCheckReferrer, PasswordManagerImpl, PasswordManagerPage} from './autofill_page/password_manager_proxy.js';
 export type {PasswordManagerProxy} from './autofill_page/password_manager_proxy.js';
-export {SettingsYourSavedInfoPageElement} from './autofill_page/your_saved_info_page.js';
-export {SettingsYourSavedInfoPageIndexElement} from './autofill_page/your_saved_info_page_index.js';
+export {SettingsAutofillPageElement} from './autofill_page/autofill_page.js';
+export {SettingsAutofillPageIndexElement} from './autofill_page/autofill_page_index.js';
 export {BaseMixin} from './base_mixin.js';
 export {SettingsCheckboxListEntryElement} from './controls/settings_checkbox_list_entry.js';
 // <if expr="not is_chromeos">

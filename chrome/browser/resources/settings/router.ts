@@ -27,6 +27,7 @@ export interface SettingsRoutes {
   CAPTIONS: Route;
   CLEAR_BROWSER_DATA: Route;
   COMPARE: Route;
+  CONTACT_INFO: Route;
   COOKIES: Route;
   DEFAULT_BROWSER: Route;
   DOWNLOADS: Route;
@@ -36,6 +37,7 @@ export interface SettingsRoutes {
   GEMINI_LOGIN: Route;
   GLIC_SECTION: Route;
   HISTORY_SEARCH: Route;
+  IDENTITY_DOCS: Route;
   INLINE_CUE_MENU: Route;
   LANGUAGES: Route;
   MANAGE_PROFILE: Route;
@@ -55,6 +57,7 @@ export interface SettingsRoutes {
   SEARCH_ENGINES: Route;
   SECURITY: Route;
   SECURITY_KEYS: Route;
+  SHOPPING: Route;
   SITE_SETTINGS: Route;
   SITE_SETTINGS_ADS: Route;
   SITE_SETTINGS_ALL: Route;
@@ -114,12 +117,8 @@ export interface SettingsRoutes {
   SYNC: Route;
   SYNC_ADVANCED: Route;
   SYSTEM: Route;
+  TRAVEL: Route;
   TRIGGERED_RESET_DIALOG: Route;
-  YOUR_SAVED_INFO: Route;
-  YOUR_SAVED_INFO_CONTACT_INFO: Route;
-  YOUR_SAVED_INFO_IDENTITY_DOCS: Route;
-  YOUR_SAVED_INFO_TRAVEL: Route;
-  YOUR_SAVED_INFO_SHOPPING: Route;
   ACCOUNT: Route;
   GOOGLE_SERVICES: Route;
 

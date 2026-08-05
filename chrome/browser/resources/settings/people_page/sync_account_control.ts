@@ -808,7 +808,7 @@ export class SettingsSyncAccountControlElement extends
     // Only record if we are currently on a page that could have an account
     // control in promo state.
     const currentRoute = Router.getInstance().getCurrentRoute();
-    if (![routes.BASIC, routes.PEOPLE, routes.YOUR_SAVED_INFO].includes(
+    if (![routes.BASIC, routes.PEOPLE, routes.AUTOFILL].includes(
             currentRoute)) {
       return;
     }
@@ -835,7 +835,7 @@ export class SettingsSyncAccountControlElement extends
     // Only record if we are currently on a page that could have an account
     // control in pending state.
     const currentRoute = Router.getInstance().getCurrentRoute();
-    if (![routes.BASIC, routes.PEOPLE, routes.YOUR_SAVED_INFO].includes(
+    if (![routes.BASIC, routes.PEOPLE, routes.AUTOFILL].includes(
             currentRoute)) {
       return;
     }

@@ -217,7 +217,7 @@ suite('SettingsMenu', function() {
     assertTrue(!!selector.selected);
     assertEquals('/autofill', selector.selected.toString());
     assertEquals(
-        routes.YOUR_SAVED_INFO, Router.getInstance().getCurrentRoute());
+        routes.AUTOFILL, Router.getInstance().getCurrentRoute());
   });
 
   test('navMenuItemClickActions', async function() {
@@ -238,7 +238,7 @@ suite('SettingsMenu', function() {
       {
         selector: '#autofill',
         action: 'SettingsMenu_AutofillClicked',
-        route: routes.YOUR_SAVED_INFO,
+        route: routes.AUTOFILL,
       },
       {
         selector: '#privacy',

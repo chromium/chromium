@@ -4,12 +4,12 @@
 
 /**
  * @fileoverview
- * 'settings-your-saved-info-page-index' is the settings page containing
+ * 'settings-autofill-page-index' is the settings page containing
  * settings for passwords, payment methods, addresses and more.
  */
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import '/shared/settings/prefs/prefs.js';
-import './your_saved_info_page.js';
+import './autofill_page.js';
 import '../settings_shared.css.js';
 
 import type {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
@@ -23,23 +23,23 @@ import type {Route} from '../router.js';
 import type {SettingsPlugin} from '../settings_main/settings_plugin.js';
 import {SearchableViewContainerMixin} from '../settings_page/searchable_view_container_mixin.js';
 
+import {getTemplate} from './autofill_page_index.html.js';
 import {DataManagementSurvey, SavedInfoHandlerImpl} from './saved_info_handler_proxy.js';
-import {getTemplate} from './your_saved_info_page_index.html.js';
 
 
-export interface SettingsYourSavedInfoPageIndexElement {
+export interface SettingsAutofillPageIndexElement {
   $: {
     viewManager: CrViewManagerElement,
   };
 }
 
-const SettingsYourSavedInfoPageIndexElementBase =
+const SettingsAutofillPageIndexElementBase =
     SearchableViewContainerMixin(RouteObserverMixin(PolymerElement));
 
-export class SettingsYourSavedInfoPageIndexElement extends
-    SettingsYourSavedInfoPageIndexElementBase implements SettingsPlugin {
+export class SettingsAutofillPageIndexElement extends
+    SettingsAutofillPageIndexElementBase implements SettingsPlugin {
   static get is() {
-    return 'settings-your-saved-info-page-index';
+    return 'settings-autofill-page-index';
   }
 
   static get template() {
@@ -73,12 +73,12 @@ export class SettingsYourSavedInfoPageIndexElement extends
   override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
     super.currentRouteChanged(newRoute, oldRoute);
 
-    const isFromHomePage = oldRoute?.path === routes.YOUR_SAVED_INFO.path;
+    const isFromHomePage = oldRoute?.path === routes.AUTOFILL.path;
     // Need to wait for currentRouteChanged observers on child views to run
     // first, before switching views.
     queueMicrotask(() => {
       switch (newRoute) {
-        case routes.YOUR_SAVED_INFO:
+        case routes.AUTOFILL:
           this.$.viewManager.switchView(
               'parent', 'no-animation', 'no-animation');
           SavedInfoHandlerImpl.getInstance().requestDataManagementSurvey(
@@ -90,13 +90,13 @@ export class SettingsYourSavedInfoPageIndexElement extends
           this.$.viewManager.switchView(
               'parent', 'no-animation', 'no-animation');
           break;
-        case routes.YOUR_SAVED_INFO_CONTACT_INFO:
+        case routes.CONTACT_INFO:
           this.$.viewManager.switchView(
               'contactInfo', 'no-animation', 'no-animation');
           SavedInfoHandlerImpl.getInstance().requestDataManagementSurvey(
               DataManagementSurvey.CONTACT_INFO, isFromHomePage);
           break;
-        case routes.YOUR_SAVED_INFO_IDENTITY_DOCS:
+        case routes.IDENTITY_DOCS:
           this.$.viewManager.switchView(
               'identityDocs', 'no-animation', 'no-animation');
           SavedInfoHandlerImpl.getInstance().requestDataManagementSurvey(
@@ -114,13 +114,13 @@ export class SettingsYourSavedInfoPageIndexElement extends
           SavedInfoHandlerImpl.getInstance().requestDataManagementSurvey(
               DataManagementSurvey.PAYMENTS, isFromHomePage);
           break;
-        case routes.YOUR_SAVED_INFO_TRAVEL:
+        case routes.TRAVEL:
           this.$.viewManager.switchView(
               'travel', 'no-animation', 'no-animation');
           SavedInfoHandlerImpl.getInstance().requestDataManagementSurvey(
               DataManagementSurvey.TRAVEL, isFromHomePage);
           break;
-        case routes.YOUR_SAVED_INFO_SHOPPING:
+        case routes.SHOPPING:
           assert(this.isShoppingEnabled_);
           this.$.viewManager.switchView(
               'shopping', 'no-animation', 'no-animation');
@@ -141,11 +141,11 @@ export class SettingsYourSavedInfoPageIndexElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-your-saved-info-page-index':
-        SettingsYourSavedInfoPageIndexElement;
+    'settings-autofill-page-index':
+        SettingsAutofillPageIndexElement;
   }
 }
 
 customElements.define(
-    SettingsYourSavedInfoPageIndexElement.is,
-    SettingsYourSavedInfoPageIndexElement);
+    SettingsAutofillPageIndexElement.is,
+    SettingsAutofillPageIndexElement);

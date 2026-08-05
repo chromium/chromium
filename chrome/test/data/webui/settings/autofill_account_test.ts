@@ -26,7 +26,7 @@ import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 const ICON_DATA_URL = 'data:image/gif;base64,' +
     +'R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
 
-suite('YourSavedInfoAccount', function() {
+suite('AutofillAccount', function() {
   let accountCardElement: HTMLElement;
   let profileInfoBrowserProxy: TestProfileInfoBrowserProxy;
   let syncBrowserProxy: TestSyncBrowserProxy;

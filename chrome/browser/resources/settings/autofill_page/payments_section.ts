@@ -24,7 +24,7 @@ import './iban_edit_dialog.js';
 import './passwords_shared.css.js';
 import './payments_list.js';
 import './virtual_card_unenroll_dialog.js';
-import './your_saved_info_shared.css.js';
+import './autofill_shared.css.js';
 
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';

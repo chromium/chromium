@@ -65,8 +65,8 @@ suite('SettingsMain', function() {
       {route: routes.BASIC, pluginTag: 'settings-people-page-index'},
       {route: routes.PRIVACY, pluginTag: 'settings-privacy-page-index'},
       {
-        route: routes.YOUR_SAVED_INFO,
-        pluginTag: 'settings-your-saved-info-page-index',
+        route: routes.AUTOFILL,
+        pluginTag: 'settings-autofill-page-index',
       },
       {route: routes.PERFORMANCE, pluginTag: 'settings-performance-page-index'},
       {route: routes.APPEARANCE, pluginTag: 'settings-appearance-page-index'},
