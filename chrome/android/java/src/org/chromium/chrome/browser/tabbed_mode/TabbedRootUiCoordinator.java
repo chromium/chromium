@@ -2401,6 +2401,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                     mUndoGroupSnackbarController),
                             mIsVerticalTabsActiveSupplier);
             mSideUiCoordinator.registerSideUiContainer(mVerticalTabsSideUiCoordinator);
+            if (mToolbarManager != null) {
+                mToolbarManager.setVerticalTabsAutoHiddenSupplier(
+                        mVerticalTabsSideUiCoordinator.getIsAutoHiddenSupplier());
+            }
         }
 
         mSideUiStateProviderSupplier.onAvailable(

@@ -18,6 +18,8 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.Px;
 
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -55,9 +57,11 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
     private final @Px int mExpandedViewWidth;
     private final @Px int mCollapsedViewWidth;
     private final SettableNonNullObservableSupplier<Boolean> mIsVerticalTabsActiveSupplier;
+    private final SettableNonNullObservableSupplier<Boolean> mIsAutoHiddenSupplier =
+            ObservableSuppliers.createNonNull(false);
 
     // Whether the vertical tab is set to visible via UI. Remains true even if it is temporarily
-    // hidden by other conditions such as narrow window i.e. |mIsAutoHidden| is true.
+    // hidden by other conditions such as narrow window i.e. |mIsAutoHiddenSupplier.get()| is true.
     private boolean mManualVisible;
 
     public VerticalTabsSideUiCoordinator(
@@ -98,8 +102,15 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
         mCollapseController.setRailCollapseListener(this::onRailCollapseStateChangeRequestedByUser);
     }
 
+    public NonNullObservableSupplier<Boolean> getIsAutoHiddenSupplier() {
+        return mIsAutoHiddenSupplier;
+    }
+
     public void setVisible(boolean show, boolean suppressAnimations) {
         mManualVisible = show;
+        if (!show) {
+            updateAutoHiddenState(false);
+        }
         mSideUiCoordinator.updateUi(new UiUpdateRequest(getSideUiId(), suppressAnimations));
         // Fallback: If hiding VT when spec diff is empty (no hide animation scheduled),
         // update active state immediately to avoid dropping the state update.
@@ -110,6 +121,7 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
     }
 
     public void destroy() {
+        updateAutoHiddenState(false);
         mSideUiCoordinator.removeObserver(this);
         mCollapseController.setRailCollapseListener(null);
         mTabListCoordinator.destroy();
@@ -139,9 +151,14 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
                         ? mCollapsedViewWidth
                         : mExpandedViewWidth;
         boolean shouldHide = availableWidth < targetWidth;
+        updateAutoHiddenState(mManualVisible && shouldHide);
         return shouldHide
                 ? new SideUiSize(0, HeightType.NOT_APPLICABLE)
                 : new SideUiSize(targetWidth, HeightType.TOOLBAR);
+    }
+
+    private void updateAutoHiddenState(boolean isHiddenDueToNarrowWidth) {
+        mIsAutoHiddenSupplier.set(isHiddenDueToNarrowWidth);
     }
 
     @Override

@@ -49,6 +49,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -148,6 +149,7 @@ public class ToolbarControlContainerTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
     @Mock private TopControlsStacker mTopControlsStacker;
+    @Mock private Callback<Integer> mRightMarginCallback;
     @Captor private ArgumentCaptor<CoordinatorLayout.LayoutParams> mToolbarLayoutParamsCaptor;
     @Captor private ArgumentCaptor<CoordinatorLayout.LayoutParams> mHairlineLayoutParamsCaptor;
     @Captor private ArgumentCaptor<ViewTreeObserver.OnPreDrawListener> mOnPreDrawCaptor;
@@ -688,63 +690,44 @@ public class ToolbarControlContainerTest {
 
     @Test
     public void testToolbarRightOffsetInDesktopWindow() {
-        // Mock the inner layout of the toolbar since mToolbarView is mocked.
-        View tabletLayout = mock(View.class);
-        MarginLayoutParams lp = new MarginLayoutParams(100, 100);
-        when(tabletLayout.getLayoutParams()).thenReturn(lp);
-        when(mToolbarView.findViewById(R.id.toolbar_tablet_layout)).thenReturn(tabletLayout);
-
         initControlContainer(R.layout.toolbar_tablet);
+        mControlContainer.setToolbarRightMarginCallback(mRightMarginCallback);
+
+        SettableNonNullObservableSupplier<Boolean> isVerticalTabsActiveSupplier =
+                ObservableSuppliers.createNonNull(true);
+        mControlContainer.setIsVerticalTabsActiveSupplier(isVerticalTabsActiveSupplier);
+
+        // Initially, tab strip is visible (height 80). Callback should be called with 0
+        // but is skipped since the initial margin is already 0.
+        mControlContainer.onHeightChanged(80, 20, false);
+        verify(mRightMarginCallback, never()).onResult(0);
 
         // Set app header with 10px padding on left, 20px on right, and 100px height.
         var appHeaderState =
                 new AppHeaderState(new Rect(0, 0, 100, 100), new Rect(10, 0, 80, 100), true);
         when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState);
 
-        SettableNonNullObservableSupplier<Boolean> isVerticalTabsActiveSupplier =
-                ObservableSuppliers.createNonNull(true);
-        mControlContainer.setIsVerticalTabsActiveSupplier(isVerticalTabsActiveSupplier);
-
-        // Initially, tab strip is visible (height 80). Margin should be 0.
-        mControlContainer.onHeightChanged(80, 20, false);
-        assertEquals(
-                "Toolbar right margin should be 0 when tab strip is visible.", 0, lp.rightMargin);
-
-        // Vertical tabs active and tab strip hidden (height 0). Margin should be right padding
-        // (20).
+        // Vertical tabs active and tab strip hidden (height 0). Callback should be called with
+        // right padding 20).
         mControlContainer.onHeightChanged(0, 20, false);
-        assertEquals(
-                "Toolbar right margin should be equal to right padding when vertical tabs is"
-                        + " active.",
-                20,
-                lp.rightMargin);
+        verify(mRightMarginCallback).onResult(20);
 
-        // Disable vertical tabs while tab strip height is 0. Margin should be reset to 0.
+        // Disable vertical tabs while tab strip height is 0. Callback should be called with 0.
         isVerticalTabsActiveSupplier.set(false);
-        assertEquals(
-                "Toolbar right margin should be reset to 0 when vertical tabs is inactive.",
-                0,
-                lp.rightMargin);
+        verify(mRightMarginCallback).onResult(0);
 
-        // Exit desktop window. Margin should be reset to 0.
+        // Exit desktop window. Margin is still 0, so callback should not be called again.
         var appHeaderState2 =
                 new AppHeaderState(new Rect(0, 0, 100, 100), new Rect(10, 0, 80, 100), false);
         when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState2);
         mControlContainer.onAppHeaderStateChanged(appHeaderState2);
-        assertEquals(
-                "Toolbar right margin should be reset to 0 when exiting desktop window.",
-                0,
-                lp.rightMargin);
+        verify(mRightMarginCallback).onResult(0);
     }
 
     @Test
     public void testToolbarRightOffset_StartupWithVerticalTabsOff() {
-        View tabletLayout = mock(View.class);
-        MarginLayoutParams lp = new MarginLayoutParams(100, 100);
-        when(tabletLayout.getLayoutParams()).thenReturn(lp);
-        when(mToolbarView.findViewById(R.id.toolbar_tablet_layout)).thenReturn(tabletLayout);
-
         initControlContainer(R.layout.toolbar_tablet);
+        mControlContainer.setToolbarRightMarginCallback(mRightMarginCallback);
 
         SettableNonNullObservableSupplier<Boolean> isVerticalTabsActiveSupplier =
                 ObservableSuppliers.createNonNull(false);
@@ -756,10 +739,30 @@ public class ToolbarControlContainerTest {
         when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState);
         mControlContainer.onAppHeaderStateChanged(appHeaderState);
 
-        assertEquals(
-                "Toolbar right margin should remain 0 on startup when vertical tabs is off.",
-                0,
-                lp.rightMargin);
+        assertEquals(0, mControlContainer.getRightMarginForTesting());
+        verify(mRightMarginCallback, never()).onResult(0);
+    }
+
+    @Test
+    public void testSetToolbarContainerTopMarginForAutoHiddenVerticalTab() {
+        initControlContainer(R.layout.toolbar_tablet);
+        View toolbarContainer = mControlContainer.findViewById(R.id.toolbar_container);
+        assertNotNull(toolbarContainer);
+
+        MarginLayoutParams lp = (MarginLayoutParams) toolbarContainer.getLayoutParams();
+        int tabStripHeight =
+                mControlContainer
+                        .getContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.tab_strip_height);
+
+        mControlContainer.setToolbarContainerTopMarginForAutoHiddenVerticalTab(true);
+        mControlContainer.onMeasure(0, 0);
+        assertEquals(tabStripHeight, lp.topMargin);
+
+        mControlContainer.setToolbarContainerTopMarginForAutoHiddenVerticalTab(false);
+        mControlContainer.onMeasure(0, 0);
+        assertEquals(0, lp.topMargin);
     }
 
     @Test

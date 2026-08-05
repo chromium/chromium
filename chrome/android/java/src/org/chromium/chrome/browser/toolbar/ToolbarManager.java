@@ -460,6 +460,9 @@ public class ToolbarManager
     private @Nullable SideUiStateProvider mSideUiStateProvider;
     private @Nullable SideUiObserver mControlContainerSideUiObserver;
     private @Nullable SideUiObserver mProgressBarSideUiObserver;
+    private boolean mIsVerticalTabsHiddenDueToNarrow;
+    private boolean mIsXrFsm;
+    private int mRestoredRightMargin;
 
     private final MonotonicObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
     private final SettableNonNullObservableSupplier<Boolean> mBackPressStateSupplier =
@@ -892,6 +895,7 @@ public class ToolbarManager
                         mToolbarPositionSupplier,
                         /* matchTrustedCdnUrl= */ mIsCustomTab);
         mControlContainer = controlContainer;
+        mControlContainer.setToolbarRightMarginCallback(this::onToolbarRightMarginChanged);
         mToolbarHairline = mControlContainer.findViewById(R.id.toolbar_hairline);
 
         mBookmarkModelSupplier = bookmarkModelSupplier;
@@ -3782,6 +3786,71 @@ public class ToolbarManager
         return false;
     }
 
+    /**
+     * Sets the supplier for whether Vertical Tabs is auto-hidden due to narrow width.
+     *
+     * @param supplier The supplier indicating whether Vertical Tabs is auto-hidden.
+     */
+    public void setVerticalTabsAutoHiddenSupplier(NonNullObservableSupplier<Boolean> supplier) {
+        supplier.addSyncObserver(this::setToolbarTabletMarginsForAutoHiddenVerticalTab);
+    }
+
+    /**
+     * Updates the margins of {@code R.id.toolbar_tablet_layout} when Vertical Tabs is hidden due to
+     * narrow window width vs when it is shown again or turned off.
+     *
+     * @param hidden Whether Vertical Tabs is hidden due to narrow window width.
+     */
+    public void setToolbarTabletMarginsForAutoHiddenVerticalTab(boolean hidden) {
+        if (mControlContainer == null) return;
+        mControlContainer.setToolbarContainerTopMarginForAutoHiddenVerticalTab(hidden);
+
+        View toolbarTabletLayout = mControlContainer.findViewById(R.id.toolbar_tablet_layout);
+        if (toolbarTabletLayout == null) return;
+
+        var lp = (ViewGroup.MarginLayoutParams) toolbarTabletLayout.getLayoutParams();
+        boolean update = false;
+        if (hidden && !mIsVerticalTabsHiddenDueToNarrow) {
+            mIsVerticalTabsHiddenDueToNarrow = true;
+            mRestoredRightMargin = lp.rightMargin;
+            lp.rightMargin = 0;
+            update = true;
+        } else if (!hidden && mIsVerticalTabsHiddenDueToNarrow) {
+            mIsVerticalTabsHiddenDueToNarrow = false;
+            lp.rightMargin = mRestoredRightMargin;
+            update = true;
+        }
+
+        if (update) {
+            toolbarTabletLayout.setLayoutParams(lp);
+            mToolbarLayout.onWidthConsumerVisibilityChanged();
+        }
+        updateToolbarSceneLayerSuppression();
+    }
+
+    private void updateToolbarSceneLayerSuppression() {
+        mSuppressToolbarSceneLayerSupplier.set(mIsXrFsm || mIsVerticalTabsHiddenDueToNarrow);
+    }
+
+    private void onToolbarRightMarginChanged(int rightMargin) {
+        // When Vertical Tabs is in auto-hidden mode, keep the right margin intact. It is
+        // required only for VT - HT switching.
+        if (mIsVerticalTabsHiddenDueToNarrow) return;
+
+        if (mControlContainer == null) return;
+        View toolbarTabletLayout = mControlContainer.findViewById(R.id.toolbar_tablet_layout);
+        if (toolbarTabletLayout == null) return;
+
+        var lp = (ViewGroup.MarginLayoutParams) toolbarTabletLayout.getLayoutParams();
+        if (lp == null) return;
+
+        if (lp.rightMargin != rightMargin) {
+            lp.rightMargin = rightMargin;
+            toolbarTabletLayout.setLayoutParams(lp);
+            mToolbarLayout.onWidthConsumerVisibilityChanged();
+        }
+    }
+
     public @Nullable HomeButtonCoordinator getHomeButtonCoordinatorForTesting() {
         return mHomeButtonCoordinator;
     }
@@ -3869,11 +3938,11 @@ public class ToolbarManager
     }
 
     public void onXrSpaceModeChanged(Boolean fullSpaceMode) {
-        boolean isFsm = Boolean.TRUE.equals(fullSpaceMode);
-        mSuppressToolbarSceneLayerSupplier.set(isFsm);
+        mIsXrFsm = Boolean.TRUE.equals(fullSpaceMode);
+        updateToolbarSceneLayerSuppression();
         mXrSpaceHairlineToken =
-                setToolbarShadowVisibilityAndClearOldToken(!isFsm, mXrSpaceHairlineToken);
-        getToolbar().getProgressBar().setVisibility(isFsm ? View.INVISIBLE : View.VISIBLE);
+                setToolbarShadowVisibilityAndClearOldToken(!mIsXrFsm, mXrSpaceHairlineToken);
+        getToolbar().getProgressBar().setVisibility(mIsXrFsm ? View.INVISIBLE : View.VISIBLE);
     }
 
     /**

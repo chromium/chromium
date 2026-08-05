@@ -135,6 +135,9 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     private @Nullable NonNullObservableSupplier<Boolean> mIsVerticalTabsActiveSupplier;
     private @Nullable View mTopLeftCornerOverlayView;
     private @Nullable StringBuilder mMeasureLogBuilder;
+    private @Nullable Callback<Integer> mToolbarRightMarginCallback;
+    private int mRightMargin;
+    private int mTopMarginNarrowWidth;
 
     /**
      * Constructs a new control container.
@@ -426,11 +429,13 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                     hairlineParams.topMargin = mToolbarLayoutHeight;
                 }
 
-                // Set a top margin of tab strip height to the toolbar_container.
+                // Set a top margin of tab strip height + narrow width top margin to the
+                // toolbar_container.
                 MarginLayoutParams containerParams =
                         (MarginLayoutParams) mToolbarContainer.getLayoutParams();
-                if (containerParams.topMargin != tabStripHeight) {
-                    containerParams.topMargin = tabStripHeight;
+                int targetTopMargin = tabStripHeight + mTopMarginNarrowWidth;
+                if (containerParams.topMargin != targetTopMargin) {
+                    containerParams.topMargin = targetTopMargin;
                 }
             }
         }
@@ -1316,6 +1321,10 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         mToolbarHairline = hairline;
     }
 
+    int getRightMarginForTesting() {
+        return mRightMargin;
+    }
+
     ToolbarViewResourceCoordinatorLayout getToolbarContainerForTesting() {
         return mToolbarContainer;
     }
@@ -1377,11 +1386,29 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         return mTopLeftCornerOverlayView;
     }
 
-    private void updateToolbarRightOffset(int currentTabStripHeight) {
-        if (mToolbarView == null) return;
-        View tabletLayout = mToolbarView.findViewById(R.id.toolbar_tablet_layout);
-        if (tabletLayout == null) return;
+    public void setToolbarRightMarginCallback(Callback<Integer> callback) {
+        mToolbarRightMarginCallback = callback;
+    }
 
+    /**
+     * Sets top margin for {@code mToolbarContainer} when Vertical Tabs is auto-hidden due to narrow
+     * window width vs when it is shown again or turned off.
+     *
+     * @param hidden Whether Vertical Tabs is hidden due to narrow window width.
+     */
+    public void setToolbarContainerTopMarginForAutoHiddenVerticalTab(boolean hidden) {
+        // This method is triggered by an event resizing toolbar, which means |onMeasure| will
+        // always follow to reflect the update in |mTopMarginNarrowWidth|. No need to call
+        // call |ToolbarContainer.invalidate|.
+        mTopMarginNarrowWidth =
+                hidden
+                        ? getContext()
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.tab_strip_height)
+                        : 0;
+    }
+
+    private void updateToolbarRightOffset(int currentTabStripHeight) {
         int rightMargin = 0;
         AppHeaderState appHeaderState = getAppHeaderState();
         boolean isVerticalTabsActive =
@@ -1392,10 +1419,9 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                 && currentTabStripHeight == 0) {
             rightMargin = appHeaderState.getRightPadding();
         }
-        MarginLayoutParams lp = (MarginLayoutParams) tabletLayout.getLayoutParams();
-        if (lp.rightMargin != rightMargin) {
-            lp.rightMargin = rightMargin;
-            tabletLayout.setLayoutParams(lp);
+        if (mToolbarRightMarginCallback != null && mRightMargin != rightMargin) {
+            mRightMargin = rightMargin;
+            mToolbarRightMarginCallback.onResult(rightMargin);
         }
     }
 

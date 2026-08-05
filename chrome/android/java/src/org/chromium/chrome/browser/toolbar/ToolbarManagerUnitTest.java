@@ -19,6 +19,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.view.View;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewStub;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -1144,5 +1145,45 @@ public class ToolbarManagerUnitTest {
         IncognitoNewTabPage incognitoNtpPage = mock(IncognitoNewTabPage.class);
         when(incognitoNtpTab.getNativePage()).thenReturn(incognitoNtpPage);
         assertTrue(delegate.isIncognitoNewTabPageCurrentlyVisible());
+    }
+
+    @Test
+    public void testSetToolbarTabletMarginsForAutoHiddenVerticalTab() throws Exception {
+        ToolbarControlContainer controlContainer = mock(ToolbarControlContainer.class);
+        View tabletLayout = new View(mActivityController.get());
+        MarginLayoutParams params = new MarginLayoutParams(100, 100);
+        params.rightMargin = 20;
+        params.topMargin = 0;
+        params.leftMargin = 0;
+        tabletLayout.setLayoutParams(params);
+
+        when(controlContainer.findViewById(R.id.toolbar_tablet_layout)).thenReturn(tabletLayout);
+        when(controlContainer.getContext()).thenReturn(mActivityController.get());
+
+        Field controlContainerField = ToolbarManager.class.getDeclaredField("mControlContainer");
+        controlContainerField.setAccessible(true);
+        controlContainerField.set(mToolbarManager, controlContainer);
+
+        SettableNonNullObservableSupplier<Boolean> isAutoHiddenSupplier =
+                ObservableSuppliers.createNonNull(false);
+        mToolbarManager.setVerticalTabsAutoHiddenSupplier(isAutoHiddenSupplier);
+
+        int tabStripHeight =
+                mActivityController
+                        .get()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.tab_strip_height);
+
+        // When Vertical Tabs is hidden due to narrow window width
+        isAutoHiddenSupplier.set(true);
+        verify(controlContainer).setToolbarContainerTopMarginForAutoHiddenVerticalTab(true);
+        assertEquals(0, params.rightMargin);
+        assertEquals(0, params.leftMargin);
+
+        // When Vertical Tabs gets shown again or turned off
+        isAutoHiddenSupplier.set(false);
+        verify(controlContainer).setToolbarContainerTopMarginForAutoHiddenVerticalTab(false);
+        assertEquals(20, params.rightMargin);
+        assertEquals(0, params.leftMargin);
     }
 }
