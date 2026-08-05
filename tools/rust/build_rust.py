@@ -88,6 +88,8 @@ EXCLUDED_TESTS = [
     os.path.join('tests', 'codegen-llvm', 'enum', 'enum-match.rs'),
     # Temporarily disabled due to https://crbug.com/535127458
     os.path.join('tests', 'ui', 'asm', 'riscv', 'riscv32e-registers.rs'),
+    # Temporarily disabled due to https://crbug.com/540331562
+    os.path.join('tests', 'codegen-llvm', 'vec-reserve-extend.rs'),
 ]
 EXCLUDED_TESTS_WINDOWS = [
     # Temporarily disabled due to https://crbug.com/379308086
