@@ -26,6 +26,7 @@ export function getHtml(this: HistoryListElement) {
         role="grid" aria-rowcount="${this.historyData_.length}"
         ?hidden="${!this.hasResults_()}"
         .scrollTarget="${this.scrollTarget}" .scrollOffset="${this.scrollOffset}"
+        @restore-list-focus="${this.onRestoreListFocus_}"
         .template='${(item: HistoryEntry, index: number, tabindex: number) =>
             html`
               <history-item tabindex="${tabindex}"

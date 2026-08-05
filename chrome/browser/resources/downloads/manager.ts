@@ -451,6 +451,10 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
     this.listBlurred_ = e.detail.value;
   }
 
+  protected onRestoreListFocus_() {
+    this.listBlurred_ = false;
+  }
+
   // Override FindShortcutMixin methods.
   override handleFindShortcut(modalContextOpen: boolean): boolean {
     if (modalContextOpen) {

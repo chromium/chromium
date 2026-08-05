@@ -738,6 +738,10 @@ export class HistoryListElement extends HistoryListElementBase {
     this.listBlurred_ = e.detail.value;
   }
 
+  protected onRestoreListFocus_() {
+    this.listBlurred_ = false;
+  }
+
   private getSelectedEntries_(): HistoryEntry[] {
     // `selectedItems` is a Set<number> of row-indexes.
     return Array.from(this.selectedItems, idx => this.historyData_[idx]!);

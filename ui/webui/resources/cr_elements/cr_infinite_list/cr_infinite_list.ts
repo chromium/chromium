@@ -5,6 +5,17 @@
 /**
  * @fileoverview 'cr-infinite-list' is a thin wrapper around 'cr-lazy-list' that
  * emulates some of the behavior of 'iron-list'.
+ * In particular, 'cr-infinite-list':
+ *   - Tracks a `focusedIndex`, and uses this to pass a `tabindex` to the
+ *     template method.
+ *   - If list items change while focus is within the element at
+ *     `focusedIndex`, 'cr-infinite-list' will restore focus once rendering is
+ *     complete. Before restoring focus, a restore-list-focus event is fired.
+ *     Clients using FocusRowMixinLit should reset listBlurred = false when
+ *     this event is fired so the mixin correctly handles the following focus()
+ *     call.
+ *   - Implements the arrow key up/down navigation behavior that was provided
+ *     by 'iron-list'.
  */
 
 import '../cr_lazy_list/cr_lazy_list.js';
@@ -35,10 +46,9 @@ export class CrInfiniteListElement<T> extends CrLitElement {
           .template="${
             (item: T, index: number) => this.template(
                 item, index, index === this.focusedIndex ? 0 : -1)}"
-          .restoreFocusElement="${this.focusedItem_}"
           @keydown="${this.onKeyDown_}"
-          @focusin="${this.onItemFocus_}"
-          @viewport-filled="${this.updateFocusedItem_}">
+          @focusin="${this.onFocusIn_}"
+          @viewport-filled="${this.onViewportFilled_}">
         </cr-lazy-list>`,
         this, {
           host: this,
@@ -59,7 +69,6 @@ export class CrInfiniteListElement<T> extends CrLitElement {
       focusedIndex: {type: Number},
       itemSize: {type: Number},
       template: {type: Object},
-      focusedItem_: {type: Object},
     };
   }
 
@@ -77,7 +86,7 @@ export class CrInfiniteListElement<T> extends CrLitElement {
       (item: T, index: number,
        tabindex: number) => TemplateResult = () => html``;
   accessor focusedIndex: number = -1;
-  private accessor focusedItem_: HTMLElement|null = null;
+  private restoreFocus_: boolean = false;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -87,6 +96,9 @@ export class CrInfiniteListElement<T> extends CrLitElement {
     }
 
     if (changedProperties.has('items')) {
+      if (this.isFocusWithinList_()) {
+        this.restoreFocus_ = true;
+      }
       if (this.focusedIndex >= this.items.length) {
         this.focusedIndex = this.items.length - 1;
       } else if (this.focusedIndex === -1 && this.items.length > 0) {
@@ -95,12 +107,16 @@ export class CrInfiniteListElement<T> extends CrLitElement {
     }
   }
 
-  override updated(changedProperties: PropertyValues<this>) {
-    super.updated(changedProperties);
-
-    if (changedProperties.has('focusedIndex')) {
-      this.updateFocusedItem_();
+  private isFocusWithinList_(): boolean {
+    if (this.focusedIndex === -1) {
+      return false;
     }
+
+    const list = this.querySelector('cr-lazy-list');
+    assert(list);
+
+    const renderedItems = list.domItems();
+    return renderedItems[this.focusedIndex]!.matches(':focus-within');
   }
 
   fillCurrentViewport(): Promise<void> {
@@ -115,25 +131,30 @@ export class CrInfiniteListElement<T> extends CrLitElement {
     return list.ensureItemRendered(index);
   }
 
-  private updateFocusedItem_() {
-    if (this.focusedIndex === -1) {
-      this.focusedItem_ = null;
+  private onViewportFilled_() {
+    if (!this.restoreFocus_) {
       return;
     }
+    this.restoreFocus_ = false;
 
-    const list = this.querySelector('cr-lazy-list');
-    assert(list);
-    this.focusedItem_ =
-        (list.domItems()[this.focusedIndex + 1] as HTMLElement | undefined) ||
-        null;
+    // Wait 1 macrotask for clients to catch the event and propagate the
+    // state via data bindings before focusing the relevant item.
+    this.fire('restore-list-focus');
+    setTimeout(async () => {
+      if (this.focusedIndex >= 0 && this.focusedIndex < this.items.length) {
+        const item = await this.ensureItemRendered(this.focusedIndex);
+        item.focus();
+      }
+    }, 0);
   }
 
-  private onItemFocus_(e: Event) {
+  private onFocusIn_(e: Event) {
     const list = this.querySelector('cr-lazy-list');
     assert(list);
     const renderedItems = list.domItems();
     const focusedIdx = Array.from(renderedItems).findIndex(item => {
-      return item === e.target || item.shadowRoot?.activeElement === e.target;
+      return item === e.target || item.contains(e.target as Node) ||
+          item.shadowRoot?.activeElement === e.target;
     });
 
     if (focusedIdx !== -1) {
@@ -154,9 +175,17 @@ export class CrInfiniteListElement<T> extends CrLitElement {
     e.preventDefault();
 
     // Identify the new focused index.
-    this.focusedIndex = e.key === 'ArrowUp' ?
+    const newIndex = e.key === 'ArrowUp' ?
         Math.max(0, this.focusedIndex - 1) :
         Math.min(this.items.length - 1, this.focusedIndex + 1);
+    if (newIndex === this.focusedIndex) {
+      return;
+    }
+
+    // Await updateComplete to allow the focusedIndex change to properly
+    // propagate to the DOM before focusing the relevant item.
+    this.focusedIndex = newIndex;
+    await this.updateComplete;
 
     const list = this.querySelector('cr-lazy-list');
     assert(list);

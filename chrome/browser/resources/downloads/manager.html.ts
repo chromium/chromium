@@ -28,6 +28,7 @@ export function getHtml(this: DownloadsManagerElement) {
   <cr-infinite-list id="downloadsList" .items="${this.items_}"
       role="grid" aria-rowcount="${this.items_.length}"
       ?hidden="${!this.hasDownloads_}" .scrollTarget="${this.listScrollTarget_}"
+      @restore-list-focus="${this.onRestoreListFocus_}"
       .template="${(item: MojomData, index: number, tabindex: number) => html`
   <if expr="_google_chrome">
         <downloads-item .data="${item}" tabindex="${tabindex}"
