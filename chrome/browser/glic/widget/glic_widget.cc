@@ -130,7 +130,8 @@ class GlicFrameView : public views::NativeFrameView {
 #elif BUILDFLAG(IS_LINUX)
     int resize_border = OpaqueBrowserFrameViewLayout::kFrameBorderThickness;
 #endif
-    const bool can_resize = GetWidget()->widget_delegate()->CanResize();
+    const bool can_resize = GetWidget()->widget_delegate() &&
+                            GetWidget()->widget_delegate()->CanResize();
 
     // Same value as used in `BrowserFrameViewWin::NonClientHitTest()` and `
     // OpaqueBrowserFrameView::NonClientHitTest`.
@@ -499,14 +500,14 @@ gfx::Size GlicWidget::GetMinimumSize() const {
 }
 
 gfx::Rect GlicWidget::VisibleToWidgetBounds(gfx::Rect visible_bounds) {
-  if (widget_delegate()->CanResize()) {
+  if (widget_delegate() && widget_delegate()->CanResize()) {
     visible_bounds.Outset(GetTargetOutsets(visible_bounds));
   }
   return visible_bounds;
 }
 
 gfx::Rect GlicWidget::WidgetToVisibleBounds(gfx::Rect widget_bounds) {
-  if (widget_delegate()->CanResize()) {
+  if (widget_delegate() && widget_delegate()->CanResize()) {
     widget_bounds.Inset(-GetTargetOutsets(widget_bounds).ToInsets());
   }
   return widget_bounds;

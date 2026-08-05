@@ -241,8 +241,14 @@ void GlicFloatingUi::CloseSelectionOverlay() {
 void GlicFloatingUi::EnableDragResize(bool enabled) {
   user_resizable_ = enabled;
 
+  if (!GetGlicWidget() || !GetGlicWidget()->widget_delegate()) {
+    return;
+  }
+
   MaybeSetWidgetCanResize();
-  GetGlicView()->UpdateBackgroundColor();
+  if (auto* glic_view = GetGlicView()) {
+    glic_view->UpdateBackgroundColor();
+  }
   glic_window_animator_->MaybeAnimateToTargetSize();
 }
 
