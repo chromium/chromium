@@ -43,7 +43,6 @@
 #include "chrome/browser/glic/test_support/test_result.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui_provider.h"
 #include "chrome/common/chrome_switches.h"
@@ -573,28 +572,6 @@ class GlicBrowserTestMixin : public T {
     return CreateAndActivateTab(TabListInterface::From(browser), url);
   }
 
-  // Creates a new browser window and returns it. On Desktop, it will also
-  // automatically create a blank tab.
-  // TODO(crbug.com/530318599): CreateBrowserWindow() does not create a tab on
-  // Desktop. Fix the Desktop implementation of CreateBrowserWindow() to match
-  // Android, then remove the #if/#else and just use the #if part.
-  [[nodiscard]] BrowserWindowInterface* CreateAdditionalBrowserWindow() {
-    BrowserWindowInterface* browser = nullptr;
-#if BUILDFLAG(IS_ANDROID)
-    BrowserWindowCreateParams create_params = BrowserWindowCreateParams(
-        BrowserWindowInterface::Type::TYPE_NORMAL, *T::GetProfile(),
-        /*from_user_gesture=*/false);
-    base::test::TestFuture<BrowserWindowInterface*> future;
-    CreateBrowserWindow(std::move(create_params), future.GetCallback());
-    browser = future.Get();
-#else
-    browser = T::CreateBrowser(T::GetProfile());
-#endif
-    CHECK(browser);
-    CHECK(TabListInterface::From(browser)->GetActiveTab());
-    return browser;
-  }
-
   content::Visibility GetContentsVisibility(GlicInstanceImpl* instance) {
     EXPECT_TRUE(instance);
     content::WebContents* webui_contents = instance->host().webui_contents();
@@ -774,6 +751,28 @@ class GlicBrowserTestMixin : public T {
     return T::GetTabListInterface()
         ->GetActiveTab()
         ->GetBrowserWindowInterface();
+  }
+
+  // Creates a new browser window and returns it. On Desktop, it will also
+  // automatically create a blank tab.
+  // TODO(crbug.com/530318599): CreateBrowserWindow() does not create a tab on
+  // Desktop. Fix the Desktop implementation of CreateBrowserWindow() to match
+  // Android, then remove the #if/#else and just use the #if part.
+  [[nodiscard]] BrowserWindowInterface* CreateAdditionalBrowserWindow() {
+    BrowserWindowInterface* browser = nullptr;
+#if BUILDFLAG(IS_ANDROID)
+    BrowserWindowCreateParams create_params = BrowserWindowCreateParams(
+        BrowserWindowInterface::Type::TYPE_NORMAL, *T::GetProfile(),
+        /*from_user_gesture=*/false);
+    base::test::TestFuture<BrowserWindowInterface*> future;
+    CreateBrowserWindow(std::move(create_params), future.GetCallback());
+    browser = future.Get();
+#else
+    browser = T::CreateBrowser(T::GetProfile());
+#endif
+    CHECK(browser);
+    CHECK(TabListInterface::From(browser)->GetActiveTab());
+    return browser;
   }
 
   // Returns a simple URL for testing that is guaranteed to load properly via

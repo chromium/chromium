@@ -1200,7 +1200,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
 
   // 2. Create Window B (background window).
-  BrowserWindowInterface* window_b = CreateAdditionalBrowserWindow();
+  BrowserWindowInterface* window_b = CreateBrowserWindow(GetProfile());
+  ASSERT_TRUE(window_b);
 
   // Ensure Window A is active.
   {
