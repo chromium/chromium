@@ -68,6 +68,8 @@ inline LayoutStateScenePassKey PassKey() {
 @implementation SceneViewController {
   // The app bar.
   UIViewController* _appBar;
+  // The TabGrid.
+  UIViewController* _tabGridViewController;
   // The assistant container view controller.
   AssistantContainerViewController* _assistantContainerViewController;
 
@@ -226,12 +228,37 @@ inline LayoutStateScenePassKey PassKey() {
   [self updateAssistantTopConstraints:self.layoutState.containedLayoutActive];
 }
 
-#pragma mark - Public
+#pragma mark - UIResponder
 
-- (UIView*)appContainer {
-  [self loadViewIfNeeded];
-  return _appContentView;
+- (BOOL)canBecomeFirstResponder {
+  return YES;
 }
+
+- (NSArray<UIKeyCommand*>*)keyCommands {
+  // The commands of both the AppBar and the TabGrid needs to be exposed. As
+  // they are sibling, manually bundle them together.
+  NSMutableArray<UIKeyCommand*>* commands = [NSMutableArray array];
+  if (_appBar.keyCommands) {
+    [commands addObjectsFromArray:_appBar.keyCommands];
+  }
+  if (_tabGridViewController.keyCommands) {
+    [commands addObjectsFromArray:_tabGridViewController.keyCommands];
+  }
+  [commands addObjectsFromArray:[super keyCommands]];
+  return commands;
+}
+
+- (id)targetForAction:(SEL)action withSender:(id)sender {
+  if ([_appBar canPerformAction:action withSender:sender]) {
+    return _appBar;
+  }
+  if ([_tabGridViewController canPerformAction:action withSender:sender]) {
+    return [_tabGridViewController targetForAction:action withSender:sender];
+  }
+  return [super targetForAction:action withSender:sender];
+}
+
+#pragma mark - Public
 
 - (void)setAppBar:(UIViewController*)appBar {
   CHECK(!_appBar);
@@ -242,6 +269,23 @@ inline LayoutStateScenePassKey PassKey() {
   [self updateLayoutForViews];
 }
 
+- (void)setTabGrid:(UIViewController*)tabGridViewController {
+  CHECK(!_tabGridViewController);
+  [self loadViewIfNeeded];
+  _tabGridViewController = tabGridViewController;
+
+  UIView* tabGrid = tabGridViewController.view;
+  [self addChildViewController:tabGridViewController];
+  if (IsChromeNextIaEnabled() && !IsFullscreenRefactoringEnabled()) {
+    [self.view addSubview:tabGrid];
+    [tabGrid addSubview:_appContentView];
+    tabGrid.frame = self.view.bounds;
+  } else {
+    [_appContentView addSubview:tabGrid];
+    tabGrid.frame = _appContentView.bounds;
+  }
+  [tabGridViewController didMoveToParentViewController:self];
+}
 #pragma mark - SceneViewDelegate
 
 - (void)sceneViewDidMoveToWindow:(SceneView*)sceneView {

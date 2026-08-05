@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_view_controller.h"
 
 #import "base/test/metrics/user_action_tester.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
@@ -75,6 +76,10 @@ class TabGridViewControllerTest : public PlatformTest,
     view_controller_.pinnedTabsViewController =
         [[PinnedTabsViewController alloc] init];
 
+    tab_grid_state_ = [[TabGridState alloc] init];
+    tab_grid_state_.tabGridVisible = YES;
+    view_controller_.tabGridState = tab_grid_state_;
+
     view_controller_.mutator = mock_mutator_;
   }
 
@@ -95,6 +100,7 @@ class TabGridViewControllerTest : public PlatformTest,
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   base::UserActionTester user_action_tester_;
   TabGridViewController* view_controller_;
+  TabGridState* tab_grid_state_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   GridContainerViewController* regular_grid_;
@@ -106,6 +112,29 @@ class TabGridViewControllerTest : public PlatformTest,
 // Checks that TabGridViewController returns key commands.
 TEST_F(TabGridViewControllerTest, ReturnsKeyCommands) {
   EXPECT_GT(view_controller_.keyCommands.count, 0u);
+}
+
+// Tests targetForAction resolves targets correctly for toolbar actions, VC
+// actions, and unhandled actions.
+TEST_F(TabGridViewControllerTest, TestTargetForAction) {
+  id findTarget = [view_controller_ targetForAction:@selector(keyCommand_find)
+                                         withSender:nil];
+  EXPECT_EQ(findTarget, view_controller_.topToolbar);
+
+  [view_controller_.topToolbar setCloseAllActionEnabled:YES];
+  id closeAllTarget =
+      [view_controller_ targetForAction:@selector(keyCommand_closeAll)
+                             withSender:nil];
+  EXPECT_EQ(closeAllTarget, view_controller_.topToolbar);
+
+  id openTabTarget =
+      [view_controller_ targetForAction:@selector(keyCommand_openNewRegularTab)
+                             withSender:nil];
+  EXPECT_EQ(openTabTarget, view_controller_);
+
+  id unhandledTarget = [view_controller_ targetForAction:@selector(copy:)
+                                              withSender:nil];
+  EXPECT_EQ(unhandledTarget, nil);
 }
 
 // Checks whether TabGridViewController can perform the actions to open tabs.

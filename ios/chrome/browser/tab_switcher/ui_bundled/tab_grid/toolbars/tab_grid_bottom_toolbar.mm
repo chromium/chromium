@@ -69,8 +69,6 @@ CGFloat CompactButtonHorizontalPadding() {
   BOOL _scrolledToEdge;
   TabGridToolbarBackground* _backgroundView;
   TabGridToolbarScrollingBackground* _scrollBackgroundView;
-  // Configures the responder following the receiver in the responder chain.
-  UIResponder* _followingNextResponder;
   NSLayoutConstraint* _viewTopConstraint;
 }
 
@@ -594,17 +592,7 @@ CGFloat CompactButtonHorizontalPadding() {
   _largeNewTabButton.hidden = YES;
 }
 
-#pragma mark - Public
-
-- (void)respondBeforeResponder:(UIResponder*)nextResponder {
-  _followingNextResponder = nextResponder;
-}
-
 #pragma mark - UIResponder
-
-- (UIResponder*)nextResponder {
-  return _followingNextResponder;
-}
 
 - (NSArray<UIKeyCommand*>*)keyCommands {
   return @[ UIKeyCommand.cr_closeAll, UIKeyCommand.cr_close ];

@@ -101,6 +101,9 @@ const char kCurrencyCode[] = "USD";
 NSString* const kExpectedCurrentPrice = @"$5.00";
 NSString* const kExpectedPreviousPrice = @"$10";
 
+// Key string for Escape in keyboard simulation.
+NSString* const kEscapeKey = @"escape";
+
 // Identifier for cell at given `index` in the tab grid.
 NSString* IdentifierForCellAtIndex(unsigned int index) {
   return [NSString stringWithFormat:@"%@%u", kGridCellIdentifierPrefix, index];
@@ -344,6 +347,34 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
       performAction:grey_tap()];
+}
+
+// Tests entering the tab grid using the button and leaving it using the Escape
+// keyboard shortcut.
+- (void)testEnteringAndLeavingTabGridWithEscape {
+  [ChromeEarlGreyUI openTabGrid];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:kEscapeKey flags:0];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that pressing a TabGrid keyboard shortcut (such as Cmd+1 to switch to
+// the Incognito panel) when the tab grid is not visible does not trigger the
+// TabGrid page change.
+- (void)testShortcutIgnoredWhenTabGridNotVisible {
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Send Cmd+1 (which is the shortcut for TabGridPageIncognitoTabs).
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"1"
+                                          flags:UIKeyModifierCommand];
+
+  // Open the TabGrid and verify it opened to the Regular Tabs panel.
+  [ChromeEarlGreyUI openTabGrid];
+  [[EarlGrey selectElementWithMatcher:TabGridOpenTabsPanelButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests that tapping on the first cell shows that tab.
