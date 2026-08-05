@@ -23,6 +23,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_utils.h"
@@ -103,6 +104,36 @@ class IndigoToolbarTest : public ChromeViewsTestBase {
     EXPECT_TRUE(toolbar_view->GetLocalBounds().Contains(
         views::View::ConvertRectToTarget(child, toolbar_view,
                                          child->GetLocalBounds())));
+  }
+
+  void ExpandAndWait() {
+    views::View* toolbar_view = GetToolbarView();
+    views::Button* expand_button = GetButtonFromToolbar(
+        toolbar_view, IndigoToolbar::kExpandButtonElementId);
+    views::test::ButtonTestApi(expand_button).NotifyDefaultMouseClick();
+    auto* animating_container = toolbar_view->GetViewByElementId(
+        IndigoToolbar::kAnimatingContainerElementId);
+    overlay_view()->DeprecatedLayoutImmediately();
+    static_cast<views::AnimatingLayoutManager*>(
+        animating_container->GetLayoutManager())
+        ->ResetLayout();
+    views::Button* regenerate_button = GetButtonFromToolbar(
+        toolbar_view, IndigoToolbar::kRegenerateButtonElementId);
+    EXPECT_TRUE(regenerate_button->IsDrawn());
+  }
+
+  void WaitForCollapse() {
+    views::View* toolbar_view = GetToolbarView();
+    widget()->GetFocusManager()->ClearFocus();
+    auto* animating_container = toolbar_view->GetViewByElementId(
+        IndigoToolbar::kAnimatingContainerElementId);
+    overlay_view()->DeprecatedLayoutImmediately();
+    static_cast<views::AnimatingLayoutManager*>(
+        animating_container->GetLayoutManager())
+        ->ResetLayout();
+    views::Button* regenerate_button = GetButtonFromToolbar(
+        toolbar_view, IndigoToolbar::kRegenerateButtonElementId);
+    EXPECT_FALSE(regenerate_button->IsDrawn());
   }
 
  private:
@@ -534,6 +565,63 @@ TEST_F(IndigoToolbarTest, Accessibility) {
   // Collapse before hiding to prevent LSan compositor layer leaks.
   views::test::ButtonTestApi(expand_button).NotifyDefaultMouseClick();
   toolbar->Hide();
+}
+
+TEST_F(IndigoToolbarTest, OptionsAutoClose_Regenerate) {
+  MockIndigoToolbarDelegate delegate;
+  auto toolbar = std::make_unique<IndigoToolbar>(&delegate);
+  toolbar->Show(overlay_view());
+  toolbar->UpdateTrackedPosition(gfx::Rect(10, 10, 100, 100));
+  overlay_view()->DeprecatedLayoutImmediately();
+
+  views::View* toolbar_view = GetToolbarView();
+  ASSERT_NE(toolbar_view, nullptr);
+  auto* const regenerate_button = GetButtonFromToolbar(
+      toolbar_view, IndigoToolbar::kRegenerateButtonElementId);
+
+  // Test Regenerate
+  ExpandAndWait();
+  EXPECT_CALL(delegate, OnRegenerate(toolbar.get())).Times(1);
+  views::test::ButtonTestApi(regenerate_button).NotifyDefaultMouseClick();
+  WaitForCollapse();
+}
+
+TEST_F(IndigoToolbarTest, OptionsAutoClose_ReplacePhoto) {
+  MockIndigoToolbarDelegate delegate;
+  auto toolbar = std::make_unique<IndigoToolbar>(&delegate);
+  toolbar->Show(overlay_view());
+  toolbar->UpdateTrackedPosition(gfx::Rect(10, 10, 100, 100));
+  overlay_view()->DeprecatedLayoutImmediately();
+
+  views::View* toolbar_view = GetToolbarView();
+  ASSERT_NE(toolbar_view, nullptr);
+  auto* const replace_photo_button = GetButtonFromToolbar(
+      toolbar_view, IndigoToolbar::kReplacePhotoButtonElementId);
+
+  // Test Replace Photo
+  ExpandAndWait();
+  EXPECT_CALL(delegate, OnReplaceOriginalPhoto(toolbar.get())).Times(1);
+  views::test::ButtonTestApi(replace_photo_button).NotifyDefaultMouseClick();
+  WaitForCollapse();
+}
+
+TEST_F(IndigoToolbarTest, OptionsAutoClose_DeletePhoto) {
+  MockIndigoToolbarDelegate delegate;
+  auto toolbar = std::make_unique<IndigoToolbar>(&delegate);
+  toolbar->Show(overlay_view());
+  toolbar->UpdateTrackedPosition(gfx::Rect(10, 10, 100, 100));
+  overlay_view()->DeprecatedLayoutImmediately();
+
+  views::View* toolbar_view = GetToolbarView();
+  ASSERT_NE(toolbar_view, nullptr);
+  auto* const delete_photo_button = GetButtonFromToolbar(
+      toolbar_view, IndigoToolbar::kDeletePhotoButtonElementId);
+
+  // Test Delete Photo
+  ExpandAndWait();
+  EXPECT_CALL(delegate, OnDeleteOriginalPhoto(toolbar.get())).Times(1);
+  views::test::ButtonTestApi(delete_photo_button).NotifyDefaultMouseClick();
+  WaitForCollapse();
 }
 
 }  // namespace indigo
