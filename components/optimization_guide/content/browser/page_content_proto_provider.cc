@@ -612,7 +612,7 @@ void GetAIPageContent(content::WebContents* web_contents,
           return;
         }
 
-        auto* parent_frame = rfh->GetParentOrOuterDocumentOrEmbedder();
+        auto* parent_or_outer_document = rfh->GetParentOrOuterDocument();
         content::GlobalRenderFrameHostToken frame_token =
             rfh->GetGlobalFrameToken();
 
@@ -631,15 +631,15 @@ void GetAIPageContent(content::WebContents* web_contents,
         // Skip dispatching IPCs for non-local root frames. The local root
         // provides data for itself and all child local frames.
         const bool is_local_root =
-            !parent_frame ||
-            parent_frame->GetRenderWidgetHost() != rfh->GetRenderWidgetHost();
+            !parent_or_outer_document ||
+            parent_or_outer_document->GetRenderWidgetHost() !=
+                rfh->GetRenderWidgetHost();
 
         if (!is_local_root) {
           return;
         }
 
-        // Also true for the main frame of a GuestView.
-        const bool is_subframe = parent_frame != nullptr;
+        const bool is_subframe = rfh != web_contents->GetPrimaryMainFrame();
         auto options_to_use =
             is_subframe ? ApplyOptionsOverridesForSubframe(
                               main_frame_rph, rfh->GetProcess(), *options)

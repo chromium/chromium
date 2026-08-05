@@ -1613,6 +1613,47 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestFencedFrame,
                    b_geometry.visible_bounding_box());
 }
 
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
+                       AIPageContentInnerWebContents) {
+  LoadPage(https_server()->GetURL("a.com", "/iframe.html"), nullptr);
+
+  content::WebContents::CreateParams inner_params(
+      web_contents()->GetBrowserContext());
+  std::unique_ptr<content::WebContents> inner_wc =
+      content::WebContents::Create(inner_params);
+
+  const GURL inner_url = https_server()->GetURL("b.com", "/simple.html");
+  content::NavigationController::LoadURLParams load_params(inner_url);
+  inner_wc->GetController().LoadURLWithParams(load_params);
+  EXPECT_TRUE(content::WaitForLoadStop(inner_wc.get()));
+
+  content::WebContents* inner_wc_ptr = inner_wc.get();
+
+  content::RenderFrameHost* iframe_rfh =
+      content::ChildFrameAt(web_contents(), 0);
+  ASSERT_TRUE(iframe_rfh);
+
+  base::test::TestFuture<content::RenderFrameHost*> future;
+  iframe_rfh->PrepareForInnerWebContentsAttach(future.GetCallback());
+
+  content::RenderFrameHost* frame_to_attach_to = future.Get();
+  ASSERT_TRUE(frame_to_attach_to);
+
+  web_contents()->AttachInnerWebContents(std::move(inner_wc),
+                                         frame_to_attach_to,
+                                         /*is_full_page=*/false);
+
+  base::RunLoop run_loop2;
+  GetAIPageContent(
+      inner_wc_ptr, GetAIPageContentOptions(),
+      base::BindOnce(&PageContentProtoProviderBrowserTest::SetPageContent,
+                     base::Unretained(this), run_loop2.QuitClosure()));
+  run_loop2.Run();
+
+  EXPECT_TRUE(has_page_content());
+  AssertHasText(page_content().root_node(), "Non empty simple page\n\n");
+}
+
 IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
                        AIPageContentMetadata) {
   // TODO(crbug.com/403325367) When remote frames are supported, this same test
@@ -2266,7 +2307,6 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   EXPECT_EQ(form_node_relative.content_attributes().form_data().action_url(),
             https_server()->GetURL("/relative/next").spec());
 }
-
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
                        FragmentVisibleBoundingBoxes) {
