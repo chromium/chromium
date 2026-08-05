@@ -164,6 +164,16 @@ StaticElementList* SelectorQuery::QueryAll(ContainerNode& root_node) const {
   NthIndexCache nth_index_cache(root_node.GetDocument());
   HeapVector<Member<Element>> result;
   Execute<AllElementsSelectorQueryTrait>(root_node, result);
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  HeapVector<Member<Element>> result_slow;
+  // Need to ignore slow path stats for unit tests.
+  QueryStats stored_stats = CurrentQueryStats();
+  ExecuteSlow<AllElementsSelectorQueryTrait>(root_node, result_slow);
+  CurrentQueryStats() = stored_stats;
+  CHECK(result == result_slow)
+      << "Fast path did not match slow path for QueryAll(): "
+      << selector_list_->SelectorsText();
+#endif
   return StaticElementList::Adopt(result);
 }
 
@@ -174,6 +184,16 @@ Element* SelectorQuery::QueryFirst(ContainerNode& root_node) const {
   NthIndexCache nth_index_cache(root_node.GetDocument());
   Element* matched_element = nullptr;
   Execute<SingleElementSelectorQueryTrait>(root_node, matched_element);
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  Element* matched_element_slow = nullptr;
+  // Need to ignore slow path stats for unit tests.
+  QueryStats stored_stats = CurrentQueryStats();
+  ExecuteSlow<SingleElementSelectorQueryTrait>(root_node, matched_element_slow);
+  CurrentQueryStats() = stored_stats;
+  CHECK_EQ(matched_element, matched_element_slow)
+      << "Fast path did not match slow path for QueryFirst(): "
+      << selector_list_->SelectorsText();
+#endif
   return matched_element;
 }
 
@@ -627,7 +647,7 @@ bool SelectorQuery::ExecuteSearch(
          (element &&
           MatchCompound(*element, *compound, sibling_idx, is_html_doc)));
     if (match) {
-      if (compound->nth_child && !(sibling_idx & kUnknownSiblingIndex)) {
+      if (compound->nth_child && (sibling_idx & kUnknownSiblingIndex) != 0) {
         // This compound required :nth-child(), but we don't know
         // our element index, so we need a full recheck.
         // (This can only happen on the root node, so it's fine
