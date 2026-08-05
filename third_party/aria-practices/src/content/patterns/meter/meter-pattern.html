@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Meter Pattern</title>
+
+    <!-- Core JS and CSS shared by all patterns -->
+    <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
+    <link rel="stylesheet" href="../../shared/css/core.css">
+    <script src="../../shared/js/highlight.pack.js"></script>
+    <script src="../../shared/js/app.js"></script>
+    <script data-skipto="colorTheme:aria; displayOption:popup; containerElement:div" src="../../shared/js/skipto.js"></script>
+    <script data-read-this-first="showImage:false" src="../../shared/js/read-this-first.js"></script>
+  </head>
+  <body>
+    <main>
+      <h1>Meter Pattern</h1>
+
+      <section id="about">
+        <h2>About This Pattern</h2>
+        <p>
+          A <a class="role-reference" href="#meter">meter</a> is a graphical display of a numeric value that varies within a defined range.
+          For example, a meter could be used to depict a device's current battery percentage or a car's fuel level.
+        </p>
+        <div class="note">
+          <h3>Note</h3>
+          <ul>
+            <li>A <code>meter</code> should not be used to represent a value like the current world population since it does not have a meaningful maximum limit.</li>
+            <li>
+              The <code>meter</code> should not be used to indicate progress, such as loading or percent completion of a task.
+              To communicate progress, use the <a href="#progressbar" class="role-reference">progressbar</a> role instead.
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="examples">
+        <img alt="" src="../../images/pattern-meter.svg">
+        <h2>Example</h2>
+        <p><a href="examples/meter.html">Meter Example</a></p>
+      </section>
+
+      <section id="keyboard_interaction">
+        <h2>Keyboard Interaction</h2>
+        <p>Not applicable.</p>
+      </section>
+
+      <section id="roles_states_properties">
+        <h2>WAI-ARIA Roles, States, and Properties</h2>
+        <ul>
+          <li>The element serving as the meter has a role of <a class="role-reference" href="#meter">meter</a>.</li>
+          <li>The meter has <a class="property-reference" href="#aria-valuenow">aria-valuenow</a> set to a decimal value between <code>aria-valuemin</code> and <code>aria-valuemax</code> representing the current value of the meter.</li>
+          <li>The meter has <a class="property-reference" href="#aria-valuemin">aria-valuemin</a> set to a decimal value less than <code>aria-valuemax</code>.</li>
+          <li>The meter has <a class="property-reference" href="#aria-valuemax">aria-valuemax</a> set to a decimal value greater than <code>aria-valuemin</code>.</li>
+          <li>
+            Assistive technologies often present <code>aria-valuenow</code> as a percentage.
+            If conveying the value of the meter only in terms of a percentage would not be user friendly, the <a class="property-reference" href="#aria-valuetext">aria-valuetext</a> property is set to a string that makes the meter value understandable.
+            For example, a battery meter value might be conveyed as <code>aria-valuetext="50% (6 hours) remaining"</code>.
+          </li>
+          <li>
+            If the meter has a visible label, it is referenced by <a href="#aria-labelledby" class="property-reference">aria-labelledby</a> on the element with role <code>meter</code>.
+            Otherwise, the element with role <code>meter</code> has a label provided by <a href="#aria-label" class="property-reference">aria-label</a>.
+          </li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto-Rotating Image Carousel Example with Buttons for Slide Control</title>
+
+    <!-- Core JS and CSS shared by all examples -->
+    <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
+    <link rel="stylesheet" href="../../../shared/css/core.css">
+    <script src="../../../shared/js/examples.js"></script>
+    <script src="../../../shared/js/highlight.pack.js"></script>
+    <script src="../../../shared/js/app.js"></script>
+    <script data-skipto="colorTheme:aria; displayOption:popup; containerElement:div" src="../../../shared/js/skipto.js"></script>
+
+    <!-- JS and CSS for this example -->
+    <link rel="stylesheet" href="css/carousel-prev-next.css">
+    <script src="js/carousel-prev-next.js"></script>
+  </head>
+  <body>
+    <nav aria-label="Related Links" class="feedback">
+      <ul>
+        <li><a href="https://github.com/orgs/w3c/projects/129">Related Issues</a></li>
+        <li><a href="../carousel-pattern.html">Design Pattern</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h1>Auto-Rotating Image Carousel Example with Buttons for Slide Control</h1>
+
+      <section>
+        <h2>About This Example</h2>
+        <img alt="" class="example-page-example-icon" src="../../../images/pattern-carousel.svg">
+        <p>
+          The following example implementation of the <a href="../carousel-pattern.html">Carousel Pattern</a> demonstrates features of the pattern that are essential to accessibility for carousels that automatically start rotating when the page loads.
+          For instance, rotation stops when users either move focus into the carousel or hover the mouse over carousel content, and users can manually control which slide is displayed with previous and next slide buttons.
+          The accessibility features section that follows the example describes these features in detail.
+        </p>
+        <p>Similar examples include:</p>
+        <ul>
+          <li><a href="carousel-2-tablist.html">Auto-Rotating Image Carousel with Tabs for Slide Control:</a> An image carousel that demonstrates accessibility features necessary for carousels that rotate automatically on page load and also enables users to choose which slide is displayed with a set of tabs.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Example Options</h2>
+
+        <fieldset class="carousel-options">
+          <legend>Carousel View and Behavior Options</legend>
+
+          <label for="accessible-controls">
+            <input type="checkbox" id="accessible-controls" value="moreaccessible" aria-describedby="accessible-controls-desc">
+            Display controls and captions outside of image
+          </label>
+          <p id="accessible-controls-desc">This option is more accessible than rendering controls and captions within the image, because controls are easier to perceive and captions are easier to read without rotating images behind them.</p>
+
+          <label for="rotation-paused">
+            <input type="checkbox" id="rotation-paused" value="paused" aria-describedby="rotation-paused-desc">
+            Pause auto-rotation on load (<a href="javascript:history.go(0)"><img class="reload" src="images/reload-icon.png" alt="">reload needed</a>)
+          </label>
+          <p id="rotation-paused-desc">
+            This option controls whether the carousel is paused or playing on page load.
+            The paused option improves accessibility for users with visual impairments and people who are distracted or confused by auto-rotation, but allows users to start auto-rotation using the start/stop button.</p>
+          <p>Note: If the user has chosen reduced motion in system settings, auto-rotation will always be paused on load.</p>
+
+          <label for="rotation-disabled">
+            <input type="checkbox" id="rotation-disabled" value="norotate" aria-describedby="rotation-disabled-desc">
+            Disable auto-rotation
+          </label>
+          <p id="rotation-disabled-desc">
+            This option improves accessibility for users with visual impairments and people who are distracted or confused by auto-rotation by disabling the auto-rotation feature and removing the start/stop button from the user interface.
+            Users can use the previous and next buttons to manually navigate through the slides.
+          </p>
+        </fieldset>
+      </section>
+
+      <section>
+        <div class="example-header">
+          <h2 id="ex_label">Example</h2>
+        </div>
+        <div role="separator" id="ex_start_sep" aria-labelledby="ex_start_sep ex_label" aria-label="Start of"></div>
+        <div id="ex1">
+          <section id="myCarousel" class="carousel" aria-roledescription="carousel" aria-label="Highlighted television shows">
+            <div class="carousel-inner">
+              <div class="controls">
+                <button type="button" class="rotation pause" aria-label="Stop automatic slide show">
+                  <svg width="42" height="34" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                    <rect class="background" x="2" y="2" rx="5" ry="5" width="38" height="24" />
+                    <rect class="border" x="4" y="4" rx="5" ry="5" width="34" height="20" />
+
+                    <polygon class="pause" points="17 8 17 20" />
+
+                    <polygon class="pause" points="24 8 24 20" />
+
+                    <polygon class="play" points="15 8 15 20 27 14" />
+                  </svg>
+                </button>
+
+                <button type="button" class="previous" aria-controls="myCarousel-items" aria-label="Previous Slide">
+                  <svg width="42" height="34" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                    <rect class="background" x="2" y="2" rx="5" ry="5" width="38" height="24" />
+                    <rect class="border" x="4" y="4" rx="5" ry="5" width="34" height="20" />
+                    <polygon points="9 14 21 8 21 11 33 11 33 17 21 17 21 20" />
+                  </svg>
+                </button>
+
+                <button type="button" class="next" aria-controls="myCarousel-items" aria-label="Next Slide">
+                  <svg width="42" height="34" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                    <rect class="background" x="2" y="2" rx="5" ry="5" width="38" height="24" />
+                    <rect class="border" x="4" y="4" rx="5" ry="5" width="34" height="20" />
+                    <polygon points="9 11 21 11 21 8 33 14 21 20 21 17 9 17" />
+                  </svg>
+                </button>
+              </div>
+
+              <div id="myCarousel-items" class="carousel-items" aria-live="off">
+                <div class="carousel-item active" role="group" aria-roledescription="slide" aria-label="1 of 6">
+                  <div class="carousel-image">
+                    <a href="#">
+                      <img src="images/amsterdamslide__800x600.jpg" alt="Walking Tour in Amsterdam">
+                    </a>
+                  </div>
+
+                  <div class="carousel-caption">
+                    <h3>
+                      <a href="#" id="carousel-label-1"> Dynamic Europe: Amsterdam, Prague, Berlin </a>
+                    </h3>
+
+                    <div class="hidden-xs hidden-sm">
+                      <p><span class="contrast">7 pm Tuesday, March 3, on TV</span></p>
+                    </div>
+                  </div>
+                  <!-- .carousel-caption -->
+                </div>
+                <!-- .item -->
+
+                <div class="carousel-item" role="group" aria-roledescription="slide" aria-label="2 of 6">
+                  <div class="carousel-image">
+                    <a href="#">
+                      <img src="images/lands-endslide__800x600.jpg" alt="Land&#039;s End in Cornwall">
+                    </a>
+                  </div>
+
+                  <div class="carousel-caption">
+                    <h3>
+                      <a href="#" id="carousel-label-2"> Travel to Southwest England and Paris </a>
+                    </h3>
+
+                    <div>
+                      <p><span class="contrast">Sept. 14 to Sept. 24 or 27</span></p>
+                    </div>
+                  </div>
+                  <!-- .carousel-caption -->
+                </div>
+                <!-- .item -->
+
+                <div class="carousel-item" role="group" aria-roledescription="slide" aria-label="3 of 6">
+                  <div class="carousel-image">
+                    <a href="#">
+                      <img src="images/trustslide-2__800x600.jpg" alt="Mom and daughter play Daniel Tiger game on notebook computer.">
+                    </a>
+                  </div>
+
+                  <div class="carousel-caption">
+                    <h3>
+                      <a href="#" id="carousel-label-3"> Great Children's Programming on Public TV </a>
+                    </h3>
+
+                    <div></div>
+                  </div>
+                  <!-- .carousel-caption -->
+                </div>
+                <!-- .item -->
+
+                <div class="carousel-item" role="group" aria-roledescription="slide" aria-label="4 of 6">
+                  <div class="carousel-image">
+                    <a href="#">
+                      <img src="images/foyleswarslide__800x600.jpg" alt="A man in a suit and fedora and a woman with coiffed hair look sternly into the camera.">
+                    </a>
+                  </div>
+
+                  <div class="carousel-caption">
+                    <h3>
+                      <a href="#" id="carousel-label-4"> Foyle&#8217;s War Revisited </a>
+                    </h3>
+
+                    <div>
+                      <p><span class="contrast">8 pm Sunday, March 8, on TV: Sneak peek at the final season.</span></p>
+                    </div>
+                  </div>
+                  <!-- .carousel-caption -->
+                </div>
+                <!-- .item -->
+
+                <div class="carousel-item" role="group" aria-roledescription="slide" aria-label="5 of 6">
+                  <div class="carousel-image">
+                    <a href="#">
+                      <img src="images/britcomdavidslide__800x600.jpg" alt="British flag with WILL-TV host David Thiel.">
+                    </a>
+                  </div>
+
+                  <div class="carousel-caption">
+                    <h3>
+                      <a href="#" id="carousel-label-5"> Great Britain Vote: 7 pm Sat. </a>
+                    </h3>
+
+                    <div></div>
+                  </div>
+                  <!-- .carousel-caption -->
+                </div>
+                <!-- .item -->
+
+                <div class="carousel-item" role="group" aria-roledescription="slide" aria-label="6 of 6">
+                  <div class="carousel-image">
+                    <a href="#">
+                      <img src="images/mag800-2__800x600.jpg" alt="Mid-American Gardener panelists on the set">
+                    </a>
+                  </div>
+
+                  <div class="carousel-caption">
+                    <h3>
+                      <a href="#" id="carousel-label-6"> Mid-American Gardener: Thursdays at 7 pm </a>
+                    </h3>
+
+                    <div class="hidden-xs hidden-sm">
+                      <p><span class="contrast">Watch the latest episodes.</span></p>
+                    </div>
+                  </div>
+                  <!-- .carousel-caption -->
+                </div>
+                <!-- .item -->
+              </div>
+            </div>
+            <!-- carousel-inner -->
+          </section>
+          <!-- /.carousel -->
+
+          <div class="col-sm-1"></div>
+        </div>
+        <div role="separator" id="ex_end_sep" aria-labelledby="ex_end_sep ex_label" aria-label="End of"></div>
+      </section>
+
+      <section>
+        <h2>Accessibility Features</h2>
+        <h3>Controlling Automatic Slide Rotation</h3>
+        <p>
+          Users can stop and start slide rotation, which is an essential aspect of accessibility of the carousel for a variety of people with disabilities.
+          People with low vision or a cognitive disability that affects visual processing or reading benefit from being able to control slide rotation so they have sufficient time to explore slide content.
+          Similarly, since screen reader users cannot perceive automatic rotation, it can make reading the page confusing and disorienting.
+          For example, when slides are automatically rotating, a screen reader user may read an element on slide one, execute a screen reader command to read the next element, and, instead of hearing the next element on slide one, hear an element from slide 2 without any knowledge that the element just announced is from an entirely new context.
+        </p>
+        <p>This example includes the following features for giving users control over slide rotation:</p>
+        <ul>
+          <li>If operating system preferences have been set for reduced motion or disabling animations, the auto-rotation is initially paused.</li>
+          <li>
+            Hovering the mouse over any carousel content pauses automatic rotation.
+            Automatic rotation resumes when the mouse moves away from the carousel unless another condition, such as keyboard focus, that prevents rotation has been triggered.
+          </li>
+          <li>
+            Moving keyboard focus to any of the carousel content, including the next and previous slide elements, pauses automatic rotation.
+            Automatic rotation resumes when keyboard focus moves out of the carousel content unless another condition, such as mouse hover, that prevents rotation has been triggered.
+          </li>
+          <li>
+            The carousel also contains a rotation control button that can stop and start automatic rotation.
+            <ul>
+              <li>The rotation control button is the first element in the screen reader reading order.</li>
+              <li>The rotation control button is always visible so it is available to all users whether they are interacting via a mouse, keyboard, assistive technology, or touch.</li>
+              <li>If the carousel is rotating, the button's accessible name is &quot;Stop Automatic Slide Show&quot;, informing screen reader users that the slides are changing in addition to providing a way to stop the changes.</li>
+              <li>If the carousel is not rotating, the accessible name of the button is &quot;Start Automatic Slide Show&quot;.</li>
+              <li>
+                If a user activates the rotation control button to start rotation it is assumed the user wants auto-rotation to start immediately, so focus and/or hover states within the carousel for pausing rotation are ignored.
+                The rotation will only stop if the rotation control button is activated again.
+              </li>
+            </ul>
+          </li>
+          <li>
+            The example includes an option to completely disable automatic slide rotation.
+            When this option is selected the start/stop button is not rendered and the slides can only be rotated through activation of the next and previous buttons.
+          </li>
+        </ul>
+        <h3>Color Contrast of Text and Rotation Controls</h3>
+        <p>
+          In the view of this carousel where the controls and captions are displayed inside the image, background images could cause color contrast for the controls and text to become insufficient.
+          However, this view includes the following features to prevent this potential problem and ensure it meets WCAG 2.1 color contrast requirements:
+        </p>
+        <ul>
+          <li>
+            When the rotation control, next slide, and previous slide buttons are rendered within the image, the buttons have foreground and background colors that meet WCAG 2.1 color contrast requirements.
+            In addition, the focus styling uses SVG images that make the focus indicator highly visible when a control receives keyboard focus.</li>
+          <li>The transparency of the caption area is decreased so the caption text meets the WCAG 2.1 color contrast requirements.</li>
+        </ul>
+
+        <p>
+          One way to avoid the color contrast issues caused by displaying controls and text within the images is to position the controls outside the image.
+          Displaying the controls and text on a solid background makes it easier to control color contrast.
+          One of the view options provides an example of this technique.
+        </p>
+
+        <h3>Screen Reader Announcement of Slide Changes</h3>
+        <p>
+          When automatic rotation is turned off, the carousel slide content is included in a live region.
+          This makes it easier for screen reader users to scan through the carousel slides.
+          When screen reader users activate the next or previous slide button, the new slide content is announced, giving users immediate feedback that helps them determine whether or not to interact with the content.
+          Very importantly, if automatic rotation is turned on, the live region is disabled.
+          If it were not, the page would become unusable as announcements of the continuously changing content constantly interrupt anything else the user is reading.
+        </p>
+      </section>
+
+      <section>
+        <h2 id="kbd_label">Keyboard Support</h2>
+        <section>
+          <h3 id="kbd_label_2">Rotation Control Button</h3>
+          <table aria-labelledby="kbd_label_2 kbd_label" class="def">
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Function</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-test-id="carousel-key-tab">
+                <th><kbd>Tab</kbd></th>
+                <td>
+                  <ul>
+                    <li>Moves focus through interactive elements in the carousel.</li>
+                    <li>Rotation control, previous slide, and next slide buttons precede the slide content in the <kbd>Tab</kbd> sequence.</li>
+                  </ul>
+                </td>
+              </tr>
+              <tr data-test-id="carousel-enter-or-space-toggle">
+                <th><kbd>Enter</kbd> or <kbd>Space</kbd></th>
+                <td>Toggle the auto rotation of slides in the carousel.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <h3 id="kbd_label_3">Next and Previous Slide Buttons</h3>
+          <table aria-labelledby="kbd_label_3 kbd_label" class="def">
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Function</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-test-id="carousel-key-enter-or-space-move">
+                <th><kbd>Enter</kbd><br><kbd>Space</kbd></th>
+                <td>Display next or previous slide in the carousel.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </section>
+
+      <section>
+        <h2 id="rps_label">Role, Property, State, and Tabindex Attributes</h2>
+        <table aria-labelledby="rps_label" class="data attributes">
+          <thead>
+            <tr>
+              <th scope="col">Role</th>
+              <th scope="col">Attribute</th>
+              <th scope="col">Element</th>
+              <th scope="col">Usage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="carousel-region-role">
+              <th scope="row">
+                <code>region</code>
+              </th>
+              <td></td>
+              <td>
+                <code>section</code>
+              </td>
+              <td>
+                <ul>
+                  <li>Role <code>region</code> is implied for any <code>section</code> element that has an accessible name.</li>
+                  <li>Defines the carousel and its controls as a landmark region.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="carousel-region-aria-roledescription">
+              <td></td>
+              <th scope="row">
+                <code>aria-roledescription="carousel"</code>
+              </th>
+              <td>
+                <code>section</code>
+              </td>
+              <td>
+                <ul>
+                  <li>Informs assistive technologies to identify the element as a &quot;carousel&quot; rather than a &quot;region.&quot;</li>
+                  <li>Affects how the assistive technology renders the role but does not affect functionality, such as commands for navigating to landmark regions.</li>
+                  <li>NOTE: The <code>aria-roledescription</code> value is defined using the language of the page and should be localized by the author.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="carousel-region-aria-label">
+              <td></td>
+              <th scope="row">
+                <code>aria-label="Highlighted television shows"</code>
+              </th>
+              <td>
+                <code>section</code>
+              </td>
+              <td>Provides a label that describes the content in the carousel region.</td>
+            </tr>
+            <tr data-test-id="carousel-aria-live">
+              <td></td>
+              <th scope="row">
+                <code>aria-live="off"</code>
+              </th>
+              <td>
+                <code>div.carousel-items</code>
+              </td>
+              <td>
+                <ul>
+                  <li>Applied to a <code>div</code> element that contains all the slides.</li>
+                  <li>Identifies the container element as a live region that is in the &quot;off&quot; state, meaning assistive technology users are not informed about changes to the region.</li>
+                  <li>The live region is off when the carousel is automatically rotating.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="carousel-aria-live">
+              <td></td>
+              <th scope="row">
+                <code>aria-live="polite"</code>
+              </th>
+              <td>
+                <code>div.carousel-items</code>
+              </td>
+              <td>
+                <ul>
+                  <li>Applied to a <code>div</code> element that contains all the slides.</li>
+                  <li>Identifies the container element as a live region in the &quot;polite&quot; state, meaning assistive technology users are informed about changes to the region at the next available opportunity.</li>
+                  <li>This causes screen readers to automatically announce the content of slides when the next and previous slide buttons are activated.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="carousel-group-role">
+              <th scope="row">
+                <code>group</code>
+              </th>
+              <td></td>
+              <td>
+                <code>div.carousel-item</code>
+              </td>
+              <td>
+                <ul>
+                  <li>Applied to each of the elements that contains the content of a single slide.</li>
+                  <li>Enables assistive technology users to perceive the boundaries of a slide.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="carousel-group-aria-roledescription">
+              <td></td>
+              <th scope="row">
+                <code>aria-roledescription="slide"</code>
+              </th>
+              <td>
+                <code>div.carousel-item</code>
+              </td>
+              <td>
+                <ul>
+                  <li>Informs assistive technologies to identify the element as a &quot;slide&quot; rather than a &quot;group.&quot;</li>
+                  <li>Affects how the assistive technology renders the role but does not remove any assistive technology functions related to <code>group</code> elements.</li>
+                  <li>NOTE: The <code>aria-roledescription</code> value is defined using the language of the page and should be localized by the author.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="carousel-group-aria-label">
+              <td></td>
+              <th scope="row">
+                <code>aria-label="<em>N</em> of 6"</code>
+              </th>
+              <td>
+                <code>div.carousel-item</code>
+              </td>
+              <td>
+                <ul>
+                  <li>Provides each slide with a distinct label that helps the user understand which of the 6 slides is displayed.</li>
+                  <li>
+                    Note: Normally, including set position and size information in an accessible name is not appropriate.
+                    An exception is helpful in this implementation because group elements do not support <code>aria-setsize</code> or <code>aria-posinset</code>.
+                  </li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="carousel-button-aria-label">
+              <td></td>
+              <th scope="row">
+                <code>aria-label="LABEL_STRING"</code>
+              </th>
+              <td>
+                <code>button</code>
+              </td>
+              <td>Defines the accessible name for the pause auto-rotation button and the next and previous slide buttons.</td>
+            </tr>
+            <tr data-test-id="carousel-button-aria-controls">
+              <td></td>
+              <th scope="row">
+                <code>aria-controls="IDREF"</code>
+              </th>
+              <td>
+                <code>button</code>
+              </td>
+              <td>
+                <ul>
+                  <li>Identifies the content on the page that the button controls.</li>
+                  <li>Refers to the <code>div</code> that contains all the slides.</li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>JavaScript and CSS Source Code</h2>
+        <ul id="css_js_files">
+          <li>CSS: <a href="css/carousel-prev-next.css" type="text/css">carousel-prev-next.css</a></li>
+          <li>JavaScript: <a href="js/carousel-prev-next.js" type="text/javascript">carousel-prev-next.js</a></li>
+        </ul>
+      </section>
+
+      <section class="example-code">
+        <h2 id="sc1_label">HTML Source Code</h2>
+        <p id="sc1_description">To copy the following HTML code, please open it in CodePen.</p>
+        <div role="separator" id="sc1_start_sep" aria-labelledby="sc1_start_sep sc1_label" aria-label="Start of"></div>
+        <pre><code id="sc1"></code></pre>
+        <div role="separator" id="sc1_end_sep" aria-labelledby="sc1_end_sep sc1_label" aria-label="End of"></div>
+        <script>
+          sourceCode.add('sc1', 'ex1', 'ex_label', 'css_js_files', 'sc1_description');
+          sourceCode.make();
+        </script>
+      </section>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,160 @@
+.page header {
+  border: #005a9c solid 2px;
+  background: #005a9c;
+  color: white;
+  text-align: center;
+}
+
+.page header .title {
+  font-size: 2.5em;
+  font-weight: bold;
+  font-family: serif;
+}
+
+.page header .tagline {
+  font-style: italic;
+}
+
+.page footer {
+  border: #005a9c solid 2px;
+  background: #005a9c;
+  font-family: serif;
+  color: white;
+  font-style: italic;
+  padding-left: 1em;
+}
+
+.page .body {
+  display: grid;
+  grid-template-columns: auto auto;
+  border: #eee solid 2px;
+}
+
+.page .body nav {
+  margin: 0;
+  padding: 6px;
+  width: 17em;
+  height: 60em;
+  background: #eee;
+}
+
+.page .body nav.focus {
+  padding: 4px;
+  border: 2px solid #005a9c;
+}
+
+.page .body .page {
+  margin: 0.25em;
+  padding: 0.25em;
+  height: 30em;
+}
+
+.page .body .page h1 {
+  margin: 0;
+  padding: 0;
+}
+
+.page .main {
+  padding: 1em;
+}
+
+.treeview-navigation ul,
+.treeview-navigation li {
+  margin: 0;
+  padding: 0;
+}
+
+.treeview-navigation li li span.label {
+  padding-left: 1em;
+}
+
+.treeview-navigation li li li span.label {
+  padding-left: 2em;
+}
+
+.treeview-navigation[role="tree"] {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.treeview-navigation[role="tree"] li {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.treeview-navigation a[role="treeitem"] ul {
+  margin: 0;
+  padding: 0;
+}
+
+.treeview-navigation
+  a[role="treeitem"][aria-expanded="false"]
+  + [role="group"] {
+  display: none;
+}
+
+.treeview-navigation a[role="treeitem"][aria-expanded="true"] + [role="group"] {
+  display: block;
+}
+
+.treeview-navigation a[role="treeitem"] > span svg {
+  transform: translate(0, 0);
+}
+
+.treeview-navigation a[role="treeitem"][aria-expanded="false"] > span svg {
+  transform: rotate(270deg) translate(2px, 2px);
+}
+
+.treeview-navigation a[role="treeitem"] {
+  margin: 0;
+  padding: 4px;
+  padding-left: 9px;
+  text-decoration: none;
+  color: #005a9c;
+  border: none;
+  display: block;
+}
+
+.treeview-navigation a[role="treeitem"][aria-current] {
+  border-left: 5px solid #005a9c;
+  padding-left: 4px;
+  background-color: #ddd;
+}
+
+.treeview-navigation a[role="treeitem"] span.icon svg polygon {
+  stroke-width: 2px;
+  fill: currentcolor;
+  stroke: transparent;
+}
+
+/* disable default keyboard focus styling for treeitems
+   Keyboard focus is styled with the following CSS */
+
+.treeview-navigation a[role="treeitem"]:focus {
+  outline: 0;
+  padding: 2px;
+  padding-left: 7px;
+  border: 2px #005a9c solid;
+}
+
+.treeview-navigation a[role="treeitem"][aria-current]:focus {
+  padding-left: 4px;
+  border-left-width: 5px;
+}
+
+.treeview-navigation a[role="treeitem"]:hover {
+  background-color: #adddff;
+  text-decoration: underline;
+  padding-left: 4px;
+  border-left: 5px solid #333;
+}
+
+.treeview-navigation a[role="treeitem"] span.icon:hover {
+  color: #333;
+}
+
+.treeview-navigation a[role="treeitem"] span.icon svg polygon:hover {
+  stroke: currentcolor;
+}

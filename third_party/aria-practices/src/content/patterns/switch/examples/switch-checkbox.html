@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Switch Example Using HTML Checkbox Input</title>
+
+    <!-- Core JS and CSS shared by all examples -->
+    <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
+    <link rel="stylesheet" href="../../../shared/css/core.css">
+    <script src="../../../shared/js/examples.js"></script>
+    <script src="../../../shared/js/highlight.pack.js"></script>
+    <script src="../../../shared/js/app.js"></script>
+    <script data-skipto="colorTheme:aria; displayOption:popup; containerElement:div" src="../../../shared/js/skipto.js"></script>
+
+    <!-- JS and CSS for this example -->
+    <link href="css/switch-checkbox.css" rel="stylesheet">
+    <script src="js/switch-checkbox.js"></script>
+  </head>
+  <body>
+    <nav aria-label="Related Links" class="feedback">
+      <ul>
+        <li><a href="https://github.com/orgs/w3c/projects/123">Related Issues</a></li>
+        <li><a href="../switch-pattern.html">Design Pattern</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h1>Switch Example Using HTML Checkbox Input</h1>
+
+      <section>
+        <h2>About This Example</h2>
+        <img alt="" class="example-page-example-icon" src="../../../images/pattern-switch.svg">
+        <p>
+          This example illustrates implementing the <a href="../switch-pattern.html">Switch Pattern</a> with an HTML <code>input[type="checkbox"]</code> as the switch element and using CSS borders to provide graphical rendering of switch states.
+          It also demonstrates using the HTML <code>fieldset</code> and <code>legend</code> elements to present multiple switches in a labeled group.
+        </p>
+        <p>Similar examples include:</p>
+        <ul>
+          <li><a href="switch.html">Switch Example</a>: A switch based on a <code>div</code> element that turns a notification preference on and off.</li>
+          <li><a href="switch-button.html">Switch Example Using HTML Button</a>: A group of 2 switches based on HTML <code>button</code> elements that turn lights on and off.</li>
+        </ul>
+      </section>
+
+      <section>
+        <div class="example-header">
+          <h2 id="ex_label">Example</h2>
+        </div>
+        <div role="separator" id="ex_start_sep" aria-labelledby="ex_start_sep ex_label" aria-label="Start of"></div>
+        <div id="ex1">
+          <fieldset>
+            <legend>Accessibility Preferences</legend>
+            <label>
+              <span class="label">Reduced motion</span>
+              <input id="id-switch-1" type="checkbox" role="switch">
+              <span class="state">
+                <span class="container">
+                  <span class="position"> </span>
+                </span>
+                <span class="on" aria-hidden="true">On</span>
+                <span class="off" aria-hidden="true">Off</span>
+              </span>
+            </label>
+
+            <label>
+              <span class="label">Show captions</span>
+              <input id="id-switch-2" type="checkbox" role="switch">
+              <span class="state">
+                <span class="container">
+                  <span class="position"> </span>
+                </span>
+                <span class="on" aria-hidden="true">On</span>
+                <span class="off" aria-hidden="true">Off</span>
+              </span>
+            </label>
+          </fieldset>
+        </div>
+        <div role="separator" id="ex_end_sep" aria-labelledby="ex_end_sep ex_label" aria-label="End of"></div>
+      </section>
+
+      <section>
+        <h2>Accessibility Features</h2>
+        <ul>
+          <li>To help assistive technology users understand that each switch belongs to a set of switches related to <q>Accessibility Preferences</q>, the switches are wrapped in a <code>fieldset</code> element labeled with a <code>legend</code> element.</li>
+          <li>
+            To make understanding the state of the switch easier for users with visual or cognitive disabilities, a text equivalent of the state (<q>on</q> or <q>off</q>) is displayed adjacent to the graphical state indicator.
+            CSS attribute selectors ensure the label displayed is synchronized with the value of the <code>input</code>.<br>
+            <strong>NOTE:</strong> To prevent redundant announcement of the state by screen readers, the text indicators of state are hidden from assistive technologies with <code>aria-hidden</code>.
+          </li>
+          <li>
+            Spacing, border widths and fill are important to ensure the graphical states are visible and discernible to people with visual impairments, including when browser or operating system high contrast settings are enabled:
+            <ul>
+              <li>To make the graphical representation of the state of a switch readily perceivable, two pixel borders are used for the switch state container and a solid color is used for the fill of the circles indicating the on and off states.</li>
+              <li>To ensure users can perceive the difference between the container and the circles used to indicate the state of the switch, there are two pixels of space between the container border and the circles.</li>
+            </ul>
+          </li>
+          <li>
+            To enhance perceivability when operating the switches, visual keyboard focus and hover are styled using the CSS <code>:hover</code> pseudo-class and <code>onfocus</code> and <code>onblur</code> event handlers:
+            <ul>
+              <li>To make it easier to perceive focus and the relationship between a label and its associated switch, focus creates a border around both the switch and the label and also changes the background color.</li>
+              <li>To make it easier to perceive that clicking either the label or switch will activate the switch, the hover indicator is the same as the focus indicator.</li>
+              <li>To help people with visual impairments identify the switch as an interactive element, the cursor is changed to a pointer when hovering over the switch.</li>
+              <li>
+                Note: Because transparent borders are visible on some systems with operating system high contrast settings enabled, transparency cannot be used to create a visual difference between the element that is focused and other elements.
+                Instead of using transparency, the focused element has a thicker border and less padding.
+                When an element receives focus, its border changes from zero to two pixels and padding is reduced by two pixels.
+                When an element loses focus, its border changes from two pixels to zero and padding is increased by two pixels.
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 id="kbd_label">Keyboard Support</h2>
+        <table aria-labelledby="kbd_label" class="def">
+          <thead>
+            <tr>
+              <th>Key</th>
+              <th>Function</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="key-tab">
+              <th><kbd>Tab</kbd></th>
+              <td>Moves keyboard focus to the <code>switch</code>.</td>
+            </tr>
+            <tr data-test-id="key-space">
+              <th><kbd>Space</kbd></th>
+              <td>Toggles the state of the switch between on and off.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2 id="rps_label">Role, Property, State, and Tabindex Attributes</h2>
+        <table aria-labelledby="rps_label" class="data attributes">
+          <thead>
+            <tr>
+              <th scope="col">Role</th>
+              <th scope="col">Attribute</th>
+              <th scope="col">Element</th>
+              <th scope="col">Usage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="switch-role">
+              <th scope="row"><code>switch</code></th>
+              <td></td>
+              <td><code>input[type="checkbox"]</code></td>
+              <td>
+                <ul>
+                  <li>Identifies the element as an ARIA <code>switch</code>.</li>
+                  <li>The accessible name is defined using the <code>label</code> element.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="aria-hidden">
+              <td></td>
+              <th scope="row"><code>aria-hidden="true"</code></th>
+              <td><code>span.on</code> and <code>span.off</code></td>
+              <td>
+                <ul>
+                  <li>Removes the strings <q>on</q> and <q>off</q> that appear to the right of the switch from the accessible name of the switch.</li>
+                  <li>These strings are included only for enhancing visual comprehension of the state; element states are not permitted in accessible names.</li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>JavaScript and CSS Source Code</h2>
+        <ul id="css_js_files">
+          <li>
+            CSS:
+            <a href="css/switch-checkbox.css" type="tex/css">switch-checkbox.css</a>
+          </li>
+          <li>
+            JavaScript:
+            <a href="js/switch-checkbox.js" type="text/javascript">switch-checkbox.js</a>
+          </li>
+        </ul>
+      </section>
+
+      <section class="example-code">
+        <h2 id="sc1_label">HTML Source Code</h2>
+        <p id="sc1_description">To copy the following HTML code, please open it in CodePen.</p>
+        <div role="separator" id="sc1_start_sep" aria-labelledby="sc1_start_sep sc1_label" aria-label="Start of"></div>
+        <pre><code id="sc1"></code></pre>
+        <div role="separator" id="sc1_end_sep" aria-labelledby="sc1_end_sep sc1_label" aria-label="End of"></div>
+        <script>
+          sourceCode.add('sc1', 'ex1', 'ex_label', 'css_js_files', 'sc1_description');
+          sourceCode.make();
+        </script>
+      </section>
+    </main>
+  </body>
+</html>

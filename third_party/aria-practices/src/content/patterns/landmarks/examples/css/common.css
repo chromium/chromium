@@ -1,0 +1,168 @@
+body {
+  font-size: large;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  padding: 0;
+}
+
+h1 {
+  font-size: 1.75em;
+  margin-bottom: 0.125em;
+}
+
+h2 {
+  font-size: 1.35em;
+  margin-bottom: 0.25em;
+}
+
+h3 {
+  margin-top: 2em;
+  font-size: 1.15em;
+}
+
+img {
+  max-width: 100%;
+}
+
+header {
+  margin-bottom: 1em;
+}
+
+header img {
+  height: 4em;
+  margin: 0;
+  padding: 0;
+}
+
+header h1 {
+  padding-top: 0.125em;
+  margin-bottom: 0;
+  font-size: 2em;
+}
+
+main {
+  margin-bottom: 5em;
+}
+
+.code {
+  font-family: courier, monospace;
+  background: #f0f0f0;
+}
+
+main p {
+  margin-bottom: 1em;
+}
+
+main ul {
+  margin-left: 0;
+  padding-left: 1em;
+  margin-bottom: 1em;
+}
+
+main li,
+aside li {
+  padding-bottom: 0.25em;
+}
+
+nav li {
+  margin-top: 0.45em;
+  border: solid thin #337ab7;
+  border-radius: 6px;
+}
+
+main ul.nav-tabs li {
+  padding-bottom: 0;
+}
+
+aside a {
+  text-decoration: underline;
+}
+
+main a {
+  text-decoration: underline;
+}
+
+a:focus,
+a:hover {
+  text-decoration: underline;
+}
+
+aside ul {
+  margin: 0;
+  padding: 0;
+  margin-left: 1.15em;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+main [role="tabpanel"] > p,
+main [role="tabpanel"] > ul {
+  margin-top: 0.5em;
+}
+
+section[aria-labelledby] p {
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+main [role="tabpanel"] > h3 + p {
+  margin-top: 0;
+}
+
+main .code {
+  margin-top: 0.5em;
+  margin-bottom: 2em;
+  padding: 1em;
+}
+
+nav {
+  margin: 0;
+  margin-bottom: 1em;
+}
+
+section[aria-labelledby] {
+  margin-bottom: 4em;
+}
+
+aside {
+  margin: 0;
+  padding: 0;
+  padding: 0.5em;
+  margin-top: 0.5em;
+  margin-bottom: 1em;
+  margin-right: 12em;
+  width: 100%;
+  border-radius: 6px;
+}
+
+aside h2 {
+  margin: 0;
+  padding: 0;
+}
+
+header .inst {
+  margin: 0;
+  padding: 0;
+  font-size: 90%;
+  font-style: italic;
+}
+
+header button {
+  margin: 0.25em;
+  text-align: center;
+  margin-left: -0.125em;
+}
+
+aside .note {
+  font-size: 90%;
+  font-style: italic;
+}
+
+form {
+  margin-top: 2em;
+  margin-bottom: 2em;
+}

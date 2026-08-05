@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>(Deprecated) Date Picker Spin Button Example</title>
+
+    <!-- Core JS and CSS shared by all examples -->
+    <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
+    <link rel="stylesheet" href="../../../shared/css/core.css">
+    <script src="../../../shared/js/examples.js"></script>
+    <script src="../../../shared/js/highlight.pack.js"></script>
+    <script src="../../../shared/js/app.js"></script>
+    <script data-skipto="colorTheme:aria; displayOption:popup; containerElement:div" src="../../../shared/js/skipto.js"></script>
+
+    <!-- JS and CSS for this example -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+    <link href="css/datepicker-spinbuttons.css" rel="stylesheet">
+    <script src="js/spinbutton-date.js"></script>
+    <script src="js/datepicker-spinbuttons.js"></script>
+  </head>
+  <body>
+    <nav aria-label="Related Links" class="feedback">
+      <ul>
+        <li><a href="https://github.com/orgs/w3c/projects/143">Related Issues</a></li>
+        <li><a href="../spinbutton-pattern.html">Design Pattern</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h1>(Deprecated) Date Picker Spin Button Example</h1>
+
+      <section>
+        <h2>About This Example</h2>
+        <div class="advisement">
+          <h3>Deprecation Warning</h3>
+          <p>
+            This pattern has been deprecated, and will be removed in a future version of the ARIA Authoring Practices.
+            The <a href="../../spinbutton/examples/quantity-spinbutton.html">Quantity Spin Button</a> should be used as an alternative to this pattern.
+          </p>
+        </div>
+        <img alt="" class="example-page-example-icon" src="../../../images/pattern-spinbutton.svg">
+        <p>
+          The following example uses the <a href="../spinbutton-pattern.html">Spin Button Pattern</a> to implement a date picker.
+          It includes three spin buttons: one for setting the day, a second for month, and a third for year.
+        </p>
+        <p>Similar examples include:</p>
+        <ul>
+          <li><a href="../../toolbar/examples/toolbar.html">Toolbar Example</a>: A toolbar that contains a spin button for setting font size.</li>
+          <li>
+            <a href="../../dialog-modal/examples/datepicker-dialog.html">Date Picker Dialog Example</a>:
+            Demonstrates a dialog containing a calendar grid for choosing a date.
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <div class="example-header">
+          <h2 id="ex_label">Example</h2>
+        </div>
+        <div role="separator" id="ex_start_sep" aria-labelledby="ex_start_sep ex_label" aria-label="Start of"></div>
+        <div id="example">
+          <div id="example-group" class="datepicker-spinbuttons" role="group" aria-labelledby="myDatepickerLabel myDatepickerDate">
+            <div id="myDatepickerLabel">Choose a Date</div>
+            <div class="date" hidden id="myDatepickerDate">current value is Friday, June 30th, 2019</div>
+
+            <div class="day spinbutton">
+              <button type="button" class="decrease" tabindex="-1" aria-label="previous day">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+                  <polygon points="2,18 18,18 10,4"></polygon>
+                </svg>
+              </button>
+              <div class="previous" aria-hidden="true">30</div>
+              <div role="spinbutton" tabindex="0" aria-valuenow="1" aria-valuetext="first" aria-valuemin="1" aria-valuemax="31" aria-label="Day">1</div>
+              <div class="next" aria-hidden="true">2</div>
+              <button type="button" class="increase" tabindex="-1" aria-label="next day">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+                  <polygon points="2,4 18,4 10,18"></polygon>
+                </svg>
+              </button>
+            </div>
+
+            <div class="month spinbutton">
+              <button type="button" class="decrease" tabindex="-1" aria-label="previous month">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+                  <polygon points="2,18 18,18 10,4"></polygon>
+                </svg>
+              </button>
+              <div class="previous" aria-hidden="true">May</div>
+              <div role="spinbutton" tabindex="0" aria-valuenow="5" aria-valuetext="June" aria-valuemin="0" aria-valuemax="11" aria-label="Month">June</div>
+              <div class="next" aria-hidden="true">July</div>
+              <button type="button" class="increase" tabindex="-1" aria-label="next month">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+                  <polygon points="2,4 18,4 10,18"></polygon>
+                </svg>
+              </button>
+            </div>
+
+            <div class="year spinbutton">
+              <button type="button" class="decrease" tabindex="-1" aria-label="previous year">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+                  <polygon points="2,18 18,18 10,4"></polygon>
+                </svg>
+              </button>
+              <div class="previous" aria-hidden="true">2018</div>
+              <div role="spinbutton" tabindex="0" aria-valuenow="2019" aria-valuemin="2019" aria-valuemax="2040" aria-label="Year">2019</div>
+              <div class="next" aria-hidden="true">2020</div>
+              <button type="button" class="increase" tabindex="-1" aria-label="next year">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+                  <polygon points="2,4 18,4 10,18"></polygon>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div role="separator" id="ex_end_sep" aria-labelledby="ex_end_sep ex_label" aria-label="End of"></div>
+      </section>
+
+      <section>
+        <h2>Accessibility Features</h2>
+        <ul>
+          <li>
+            The three spin buttons are wrapped in a group to help assistive technology users understand that all three elements together represent a date.
+            The accessible name for the group includes a hidden <code>div</code> that contains a date string that reflects the current values of the three spin buttons.
+            This enables screen reader users to easily perceive the date represented by the three buttons without having to navigate to all three buttons and remember the value of each one; it is the screen reader user equivalent to seeing the date at a glance.
+          </li>
+          <li>The day spin button uses <code>aria-valuetext</code> to properly pronounce the day, e.g. first, second, third ...</li>
+          <li>The month spin button uses <code>aria-valuetext</code> to properly pronounce the month instead of the numeric value, e.g. January, February, ...</li>
+          <li>On hover, the up and down arrow images enlarge slightly, enlarging the effective target area for increasing or decreasing the spin button value.</li>
+          <li>Focusing a spin button enlarges the increase and decrease buttons to make perceiving keyboard focus easier.</li>
+          <li>
+            The increase and decrease buttons are not contained within the <code>div</code> with role <code>spinbutton</code> so they can be separately focusable by users of touch screen readers.
+            However, they are excluded from the page <kbd>Tab</kbd> sequence with <code>tabindex="-1"</code> because they are redundant with the arrow key support provided to keyboard users.
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 id="kbd_label">Keyboard Support</h2>
+        <p>The spin buttons provide the following keyboard support described in the <a href="../spinbutton-pattern.html#keyboard_interaction">Spin Button Pattern</a>.</p>
+        <table aria-labelledby="kbd_label" class="def">
+          <thead>
+            <tr>
+              <th>Key</th>
+              <th>Function</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="spinbutton-down-arrow">
+              <th><kbd>Down Arrow</kbd></th>
+              <td>
+                <ul>
+                  <li>Decreases value 1 step.</li>
+                  <li>When focus is on the <q>Day</q> spin button and the value is the first day of the month, changes value to the last day of the month.</li>
+                  <li>When focus is on the <q>Month</q> spin button and the value is <q>January</q>, changes value to <q>December</q>.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="spinbutton-up-arrow">
+              <th><kbd>Up Arrow</kbd></th>
+              <td>
+                <ul>
+                  <li>Increases the value 1 step.</li>
+                  <li>When focus is on the <q>Day</q> spin button and the value is the last day of the month, changes value to the first day of the month.</li>
+                  <li>When focus is on the <q>Month</q> spin button and the value is <q>December</q>, changes value to <q>January</q>.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="spinbutton-page-down">
+              <th><kbd>Page Down</kbd></th>
+              <td>
+                <ul>
+                  <li>Decreases the value 5 steps.</li>
+                  <li>When focus is on the <q>Day</q> spin button and the value is the fifth day of the month or less, changes value to the last day of the month.</li>
+                  <li>When focus is on the <q>Month</q> spin button and the value is the fifth month of the year or less, changes value to <q>December</q>.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="spinbutton-page-up">
+              <th><kbd>Page Up</kbd></th>
+              <td>
+                <ul>
+                  <li>Increases the value 5 steps.</li>
+                  <li>When focus is on the <q>Day</q> spin button and the value is any of the last five days of the month, changes value to the first day of the month.</li>
+                  <li>When focus is on the <q>Month</q> spin button and the value is any of the last five months of the year, changes value to <q>January</q>.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="spinbutton-home">
+              <th><kbd>Home</kbd></th>
+              <td>Decreases to minimum value.</td>
+            </tr>
+            <tr data-test-id="spinbutton-end">
+              <th><kbd>End</kbd></th>
+              <td>Increases to maximum value.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2 id="rps_label">Role, Property, State, and Tabindex Attributes</h2>
+        <table aria-labelledby="rps_label" class="data attributes">
+          <thead>
+            <tr>
+              <th scope="col">Role</th>
+              <th scope="col">Attribute</th>
+              <th scope="col">Element</th>
+              <th scope="col">Usage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="group-role">
+              <th scope="row"><code>group</code></th>
+              <td></td>
+              <td><code>div</code></td>
+              <td>
+                <ul>
+                  <li>Identifies the <code>div</code> as a group.</li>
+                  <li>The group provides a means to inform assistive technology users that the three spin buttons are all related to the single purpose of choosing a date.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="group-aria-labelledby">
+              <td></td>
+              <th scope="row"><code>aria-labelledby="IDREFs"</code></th>
+              <td><code>div</code></td>
+              <td>
+                <ul>
+                  <li>Contains two IDs that reference the <code>div</code> elements that provide the accessible name for the group.</li>
+                  <li>One ID refers to the visible label <q>Choose a Date</q>.</li>
+                  <li>The second ID refers to a hidden <code>div</code> that contains a string specifying the current date represented by the values of the three spin buttons, which is updated by JavaScript as users change the values of the spin buttons.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="spinbutton-role">
+              <th scope="row"><code>spinbutton</code></th>
+              <td></td>
+              <td><code>div</code></td>
+              <td>Identifies the <code>div</code> element as a <code>spinbutton</code>.</td>
+            </tr>
+            <tr data-test-id="spinbutton-aria-label">
+              <td></td>
+              <th scope="row"><code>aria-label="NAME_STRING"</code></th>
+              <td><code>div</code></td>
+              <td>Defines the accessible name for each spin button (e.g. <q>day</q>, <q>month</q> and <q>year</q>).</td>
+            </tr>
+            <tr data-test-id="spinbutton-aria-valuenow">
+              <td></td>
+              <th scope="row"><code>aria-valuenow="NUMBER"</code></th>
+              <td><code>div</code></td>
+              <td>
+                <ul>
+                  <li>Indicates the current numeric value of the spin button.</li>
+                  <li>Updated by JavaScript as users change the value of the spin button.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="spinbutton-aria-valuetext">
+              <td></td>
+              <th scope="row">
+                <code>aria-valuetext="DAY_NUMBER_STRING"</code> or<br>
+                <code>aria-valuetext="MONTH_STRING"</code>
+              </th>
+              <td><code>div</code></td>
+              <td>
+                <ul>
+                  <li>For the <q>Day</q> spin button, provides screen reader users with a friendlier pronunciation of the number of the day of the month (i.e. <q>first</q> instead of <q>one</q>).</li>
+                  <li>For the <q>Month</q> spin button, provides screen reader users with a friendlier announcement of the month (i.e., <q>January</q> instead of <q>one</q>).</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="spinbutton-aria-valuemin">
+              <td></td>
+              <th scope="row"><code>aria-valuemin="NUMBER"</code></th>
+              <td><code>div</code></td>
+              <td>Indicates the minimum allowed value for the spin button.</td>
+            </tr>
+            <tr data-test-id="spinbutton-aria-valuemax">
+              <td></td>
+              <th scope="row"><code>aria-valuemax="NUMBER"</code></th>
+              <td><code>div</code></td>
+              <td>
+                <ul>
+                  <li>Indicates the maximum allowed value for the spin button.</li>
+                  <li>For the <q>Day</q> spin button, this property is updated based on the value of the <q>Month</q> spin button.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="spinbutton-aria-hidden">
+              <td></td>
+              <th scope="row"><code>aria-hidden="true"</code></th>
+              <td>
+                <ul>
+                  <li><code>div.next</code></li>
+                  <li><code>div.previous</code></li>
+                </ul>
+              </td>
+              <td>For assistive technology users, hides the text showing the next and previous values that is displayed adjacent to the up and down arrow icons since it would otherwise add superfluous elements to the screen reader reading order that are likely to be more confusing than helpful.</td>
+            </tr>
+            <tr data-test-id="button-aria-label">
+              <td></td>
+              <th scope="row"><code>aria-label="NAME_STRING"</code></th>
+              <td><code>button</code></td>
+              <td>Defines the accessible name for each increase and decrease button (<q>Next Day</q>, <q>Previous Day</q>, <q>Next Month</q>, <q>Previous Month</q>, <q>Next year</q>, and <q>Previous Year</q>).</td>
+            </tr>
+            <tr data-test-id="button-tabindex">
+              <td></td>
+              <th scope="row"><code>tabindex="-1"</code></th>
+              <td><code>button</code></td>
+              <td>Removes the decrease and increase buttons from the page <kbd>Tab</kbd> sequence while keeping them focusable so they can be accessed with touch-based assistive technologies.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>JavaScript and CSS Source Code</h2>
+        <ul id="css_js_files">
+          <li>
+            CSS:
+            <a href="css/datepicker-spinbuttons.css" type="text/css">datepicker-spinbuttons.css</a>
+          </li>
+          <li>
+            JavaScript:
+            <ul>
+              <li><a href="js/datepicker-spinbuttons.js" type="text/javascript">datepicker-spinbuttons.js</a></li>
+              <li><a href="js/spinbutton-date.js" type="text/javascript">spinbutton-date.js</a></li>
+            </ul>
+          </li>
+        </ul>
+      </section>
+
+      <section class="example-code">
+        <h2 id="sc1_label">HTML Source Code</h2>
+        <p id="sc1_description">To copy the following HTML code, please open it in CodePen.</p>
+        <div role="separator" id="sc1_start_sep" aria-labelledby="sc1_start_sep sc1_label" aria-label="Start of"></div>
+        <pre><code id="sc1"></code></pre>
+        <div role="separator" id="sc1_end_sep" aria-labelledby="sc1_end_sep sc1_label" aria-label="End of"></div>
+        <script>
+          sourceCode.add('sc1', 'example', 'ex_label', 'css_js_files', 'sc1_description');
+          sourceCode.make();
+        </script>
+      </section>
+    </main>
+  </body>
+</html>

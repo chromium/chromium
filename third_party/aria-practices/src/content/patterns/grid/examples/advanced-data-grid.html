@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Data Grid Example</title>
+
+    <!-- Core JS and CSS shared by all examples -->
+    <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
+    <link rel="stylesheet" href="../../../shared/css/core.css">
+    <script src="../../../shared/js/examples.js"></script>
+    <script src="../../../shared/js/highlight.pack.js"></script>
+    <script src="../../../shared/js/app.js"></script>
+    <script data-skipto="colorTheme:aria; displayOption:popup; containerElement:div" src="../../../shared/js/skipto.js"></script>
+
+    <!-- JS and CSS for this example -->
+    <!-- Additional scripts will need to be added to add the advanced functions required by issue #155. -->
+    <link href="css/menuButton.css" rel="stylesheet">
+    <link href="css/dataGrids.css" rel="stylesheet">
+    <script src="../../../shared/js/utils.js"></script>
+    <script src="js/menuButton.js"></script>
+    <script src="js/dataGrid.js"></script>
+    <script src="js/dataGrids.js"></script>
+  </head>
+  <body>
+    <nav aria-label="Related Links" class="feedback">
+      <ul>
+        <li><a href="https://github.com/orgs/w3c/projects/133">Related Issues</a></li>
+        <li><a href="../grid-pattern.html">Design Pattern</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h1>Advanced Data Grid</h1>
+
+      <section>
+        <h2>About This Example</h2>
+        <img alt="" class="example-page-example-icon" src="../../../images/pattern-grid.svg">
+        <p>
+          This example has not yet been developed.
+          Development is described in <a href="https://github.com/w3c/aria-practices/issues/155">issue 155.</a>
+        </p>
+        <p>
+          This implementation of the <a href="../grid-pattern.html">Grid Pattern</a> demonstrates how to implement a grid that has functionality similar to a spreadsheet.
+        </p>
+        <p>Similar examples include:</p>
+        <ul>
+          <li><a href="data-grids.html">Data Grid Examples</a>: Three example implementations of grid that include features relevant to presenting tabular information, such as content editing, sort, and column hiding.</li>
+          <li><a href="layout-grids.html">Layout Grid Examples</a>: Three example implementations of grids that are used to lay out widgets, including a collection of navigation links, a message recipients list, and a set of search results.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 id="ex_label">Example</h2>
+        <div role="separator" id="ex_start_sep" aria-labelledby="ex_start_sep ex_label" aria-label="Start of"></div>
+        <!--
+          Note the ID of the following div that contains the example HTML is used as a parameter for the sourceCode.add() function.
+          The sourceCode functions in the examples/js/examples.js render the HTML source to show it to the reader of the example page.
+          If you change the ID of this div, be sure to update the parameters of the sourceCode.add() function call, which is made following the div with id="sc1" where the HTML is render.
+          The div for the rendered HTML source is in the last section of the page.
+        -->
+        <div id="ex1">
+          <!--  Replace content of this div with the example.  -->
+          <p>This is the place where the reader will experience the functioning example.</p>
+          <p>The HTML in this section along with the javascript and CSS it uses demonstrate the design pattern.</p>
+        </div>
+        <div role="separator" id="ex_end_sep" aria-labelledby="ex_end_sep ex_label" aria-label="End of"></div>
+      </section>
+
+      <section>
+        <h2>Accessibility Features</h2>
+        <p class="annotate">Please replace this content with a list of accessibility features demonstrated in this implementation, such as:</p>
+        <ol>
+          <li>ARIA roles</li>
+          <li>property and state information</li>
+          <li>Event handlers</li>
+          <li><code>tabindex</code> values</li>
+        </ol>
+      </section>
+
+      <section>
+        <h2 id="kbd_label">Keyboard Support</h2>
+        <!--
+          List the keys supported in this example.
+          Recommendation: Copy the list from the keyboard section of the design pattern in aria-practices.html and then reduce/simplify it to describe only what this example supports and how it behaves.
+        -->
+        <ul>
+          <li><kbd>KEY_NAME</kbd>: function</li>
+          <li><kbd>KEY_NAME</kbd>: function</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 id="rps_label">Role, Property, State, and Tabindex Attributes</h2>
+        <!--
+          Update this table to describe how roles, properties, states, and tabindex are used in this example.
+          If the content will vary significantly for the above implementations, make this a level 4 section inside each of the above level 3 implementation sections.
+        -->
+        <table aria-labelledby="rps_label" class="data attributes">
+          <thead>
+            <tr>
+              <th>Attribute</th>
+              <th>Applied to Element</th>
+              <th>Usage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th><code>role=&quot;ROLE_NAME&quot;</code></th>
+              <td><code>HTML_ELEMENT</code></td>
+              <td>Brief explanation of usage, purpose, benefit, and/or guidance that is relevant to this specific implementation.</td>
+            </tr>
+            <tr>
+              <th>
+                <!--  Specify states and properties used like this; replace with the attributes that are relevant. -->
+                <code>aria-labelledby=&quot;ID_REF&quot;</code>
+              </th>
+              <td><code>HTML_ELEMENT</code></td>
+              <td>Brief explanation of usage, purpose, benefit, and/or guidance that is relevant to this specific implementation.</td>
+            </tr>
+            <tr>
+              <th>And so on ... covering all relevant attributes</th>
+              <td>...</td>
+              <td>...</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>JavaScript and CSS Source Code</h2>
+        <!--  After the js and css files are named with the name of this example, change the href and text of the following 2 links to refer to the appropriate js and css files.  -->
+        <ul id="css_js_files">
+          <li>
+            CSS:
+            <!--a href="css/example_name.css" type="tex/css">example_name.css</a-->
+          </li>
+          <li>
+            JavaScript:
+            <!--a href="js/example_name.js" type="text/javascript">example_name.js</a-->
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 id="sc1_label">HTML Source Code</h2>
+        <div role="separator" id="sc1_start_sep" aria-labelledby="sc1_start_sep sc1_label" aria-label="Start of"></div>
+        <pre><code id="sc1"></code></pre>
+        <div role="separator" id="sc1_end_sep" aria-labelledby="sc1_end_sep sc1_label" aria-label="End of"></div>
+        <script>
+          sourceCode.add('sc1', 'ex1');
+          sourceCode.make();
+        </script>
+      </section>
+    </main>
+  </body>
+</html>

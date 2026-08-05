@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alert Example</title>
+
+    <!-- Core JS and CSS shared by all examples -->
+    <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
+    <link rel="stylesheet" href="../../../shared/css/core.css">
+    <script src="../../../shared/js/examples.js"></script>
+    <script src="../../../shared/js/highlight.pack.js"></script>
+    <script src="../../../shared/js/app.js"></script>
+    <script data-skipto="colorTheme:aria; displayOption:popup; containerElement:div" src="../../../shared/js/skipto.js"></script>
+
+    <!-- JS and CSS for this example -->
+    <link href="css/alert.css" rel="stylesheet">
+    <script src="js/alert.js" type="text/javascript"></script>
+  </head>
+  <body>
+    <nav aria-label="Related Links" class="feedback">
+      <ul>
+        <li><a href="https://github.com/orgs/w3c/projects/138">Related Issues</a></li>
+        <li><a href="../alert-pattern.html">Design Pattern</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h1>Alert Example</h1>
+
+      <section>
+        <h2>About This Example</h2>
+        <img alt="" class="example-page-example-icon" src="../../../images/pattern-alert.svg">
+        <p>
+          The below example demonstrates the <a href="../alert-pattern.html">Alert Pattern</a>.
+          Activating the <q>Trigger Alert</q> button causes a message to be inserted into the example alert element.
+        </p>
+        <p>Similar examples include:</p>
+        <ul>
+          <li><a href="../../alertdialog/examples/alertdialog.html">Alert Dialog Example</a>: A confirmation prompt that demonstrates an alert dialog.</li>
+        </ul>
+      </section>
+
+      <section>
+        <div class="example-header">
+          <h2 id="ex_label">Example</h2>
+        </div>
+        <p>This is just a test. A typical alert is triggered by an event, such as an error, warning condition, or the arrival of information that is important in the context of the user's task.</p>
+        <div role="separator" id="ex_start_sep" aria-labelledby="ex_start_sep ex_label" aria-label="Start of"></div>
+        <div id="ex1">
+          <button type="button" id="alert-trigger">Trigger Alert</button>
+
+          <div id="example" role="alert"></div>
+
+          <!--  The following script element contains the content that will be inserted into the alert element. -->
+          <script type="text/template" id="alert-template">
+            <p>Hello</p>
+          </script>
+        </div>
+        <div role="separator" id="ex_end_sep" aria-labelledby="ex_end_sep ex_label" aria-label="End of"></div>
+      </section>
+
+      <section>
+        <h2>Accessibility Features</h2>
+        <p>
+          Because an alert is for critical information, assistive technologies may provide special behaviors designed to help call attention to changes in the text of an alert.
+          For example, screen readers may interrupt all other speech and preface announcement of the new alert text with a special sound or phrase.
+        </p>
+      </section>
+
+      <section>
+        <h2 id="kbd_label">Keyboard Support</h2>
+        <p>No keyboard interaction needed.</p>
+      </section>
+
+      <section>
+        <h2 id="rps_label">Role, Property, State, and Tabindex Attributes</h2>
+        <table aria-labelledby="rps_label" class="data attributes">
+          <thead>
+            <tr>
+              <th scope="col">Role</th>
+              <th scope="col">Attribute</th>
+              <th scope="col">Element</th>
+              <th scope="col">Usage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="alert-role">
+              <th scope="row"><code>alert</code></th>
+              <td></td>
+              <td><code>div</code></td>
+              <td>Identifies the element as the container where alert content will be added or updated.</td>
+            </tr>
+            <tr data-test-id="test-not-required">
+              <td></td>
+              <th scope="row">
+                <code>aria-live=<q>assertive</q></code>
+              </th>
+              <td>Implicit on <code>div</code></td>
+              <td>
+                <ul>
+                  <li>This does not have to be declared in the code because it is implicit in the alert role.</li>
+                  <li>Tells assistive technologies to interrupt other processes to provide users with immediate notification of relevant alert container changes.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="test-not-required">
+              <td></td>
+              <th scope="row">
+                <code>aria-atomic=<q>true</q></code>
+              </th>
+              <td>Implicit on <code>div</code></td>
+              <td>
+                <ul>
+                  <li>This does not have to be declared in the code because it is implicit in the alert role.</li>
+                  <li>Tells assistive technologies to use the entire content of the alert element as the alert message even if only a portion of it has changed.</li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="at-support">
+        <h2>Assistive Technology Support</h2>
+        <p><a href="../../../about/at-support-tables/at-support-tables.html">Learn how to interpret and use assistive technology support data</a></p>
+        <iframe
+          class="support-levels-alert"
+          src="https://aria-at.w3.org/embed/reports/apg/alert"
+          height="100"
+          allow="clipboard-write"
+          style="border-style: none; width: 100%;">
+        </iframe>
+      </section>
+
+      <section>
+        <h2>JavaScript and CSS Source Code</h2>
+        <ul id="css_js_files">
+          <li>
+            CSS:
+            <a href="css/alert.css" type="tex/css">alert.css</a>
+          </li>
+          <li>
+            JavaScript:
+            <a href="js/alert.js" type="text/javascript">alert.js</a>
+          </li>
+        </ul>
+      </section>
+
+      <section class="example-code">
+        <h2 id="sc1_label">HTML Source Code</h2>
+        <p id="sc1_description">To copy the following HTML code, please open it in CodePen.</p>
+        <div role="separator" id="sc1_start_sep" aria-labelledby="sc1_start_sep sc1_label" aria-label="Start of"></div>
+        <pre><code id="sc1"></code></pre>
+        <div role="separator" id="sc1_end_sep" aria-labelledby="sc1_end_sep sc1_label" aria-label="End of"></div>
+        <script>
+          sourceCode.add('sc1', 'ex1', 'ex_label', 'css_js_files', 'sc1_description');
+          sourceCode.make();
+        </script>
+      </section>
+
+
+    </main>
+  </body>
+</html>

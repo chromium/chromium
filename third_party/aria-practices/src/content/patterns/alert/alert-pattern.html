@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Alert Pattern</title>
+
+    <!-- Core JS and CSS shared by all patterns -->
+    <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
+    <link rel="stylesheet" href="../../shared/css/core.css">
+    <script src="../../shared/js/highlight.pack.js"></script>
+    <script src="../../shared/js/app.js"></script>
+    <script data-skipto="colorTheme:aria; displayOption:popup; containerElement:div" src="../../shared/js/skipto.js"></script>
+    <script data-read-this-first="showImage:false" src="../../shared/js/read-this-first.js"></script>
+  </head>
+  <body>
+    <main>
+      <h1>Alert Pattern</h1>
+
+      <section id="about">
+        <h2>About This Pattern</h2>
+        <p>
+          An <a class="role-reference" href="#alert">alert</a> is an element that displays a brief, important message in a way that attracts the user's attention without interrupting the user's task.
+          Dynamically rendered alerts are automatically announced by most screen readers, and in some operating systems, they may trigger an alert sound.
+          It is important to note that, at this time, screen readers do not inform users of alerts that are present on the page before page load completes.
+        </p>
+        <p>
+          Because alerts are intended to provide important and potentially time-sensitive information without interfering with the user's ability to continue working, it is crucial they do not affect keyboard focus.
+          The <a href="../alertdialog/alertdialog-pattern.html">Alert Dialog Pattern</a> is designed for situations where interrupting work flow is necessary.
+        </p>
+        <p>
+          It is also important to avoid designing alerts that disappear automatically.
+          An alert that disappears too quickly can lead to failure to meet
+          <a href="https://www.w3.org/TR/UNDERSTANDING-WCAG20/time-limits-no-exceptions.html">WCAG 2.0 success criterion 2.2.3</a>.
+          Another critical design consideration is the frequency of interruption caused by alerts.
+          Frequent interruptions inhibit usability for people with visual and cognitive disabilities, which makes meeting the requirements of
+          <a href="https://www.w3.org/TR/UNDERSTANDING-WCAG20/time-limits-postponed.html">WCAG 2.0 success criterion 2.2.4</a> more difficult.
+        </p>
+      </section>
+
+      <section id="examples">
+        <img alt="" src="../../images/pattern-alert.svg">
+        <h2>Example</h2>
+        <p><a href="examples/alert.html">Alert Example</a></p>
+      </section>
+
+      <section id="keyboard_interaction">
+        <h2>Keyboard Interaction</h2>
+        <p>Not applicable.</p>
+      </section>
+
+      <section id="roles_states_properties">
+        <h2>WAI-ARIA Roles, States, and Properties</h2>
+        <p>The widget has a role of <a class="role-reference" href="#alert">alert</a>.</p>
+      </section>
+    </main>
+  </body>
+</html>

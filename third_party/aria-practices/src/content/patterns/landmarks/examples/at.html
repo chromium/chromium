@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Assistive Technology: ARIA Landmarks Example</title>
+    <meta charset="utf-8">
+    <link href="css/bootstrap.css" rel="stylesheet" media="screen">
+    <link href="css/bootstrap-theme.css" rel="stylesheet" media="screen">
+    <link href="css/bootstrap-accessibility.css" rel="stylesheet" media="screen">
+    <link href="css/visua11y.css" rel="stylesheet" media="screen">
+    <link href="css/common.css" rel="stylesheet" media="screen">
+  </head>
+  <body>
+    <div class="container">
+      <header class="row">
+        <div id="skip-to-attach" class="col-xs-12 col-sm-3 col-md-3 col-lg-2">
+          <img src="images/w3c.png" alt="W3C Logo" style="margin-top: 2em">
+        </div>
+        <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+          <h1>ARIA Landmarks Example</h1>
+          <p id="inst" class="inst">Visually outline the landmarks and/or headings on the page using the following buttons.</p>
+          <button type="button" onclick="showLandmarks(event)" aria-describedby="inst">Show Landmarks</button>
+          <button type="button" onclick="showHeadings(event)"  aria-describedby="inst">Show Headings</button>
+        </div>
+      </header>
+      <div class="row">
+        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2">
+          <nav>
+            <ul class="nav nav-stacked">
+              <li><a href="general-principles.html">Principles</a></li>
+              <li><a href="HTML5.html">HTML</a></li>
+              <li><a href="banner.html">Banner</a></li>
+              <li><a href="complementary.html">Complementary</a></li>
+              <li><a href="contentinfo.html">Contentinfo</a></li>
+              <li><a href="form.html">Form</a></li>
+              <li><a href="main.html">Main</a></li>
+              <li><a href="navigation.html">Navigation</a></li>
+              <li><a href="region.html">Region</a></li>
+              <li><a href="search.html">Search</a></li>
+              <li class="active"><a href="at.html" aria-label="Assistive Technology" aria-current="page">Asst. Tech.</a></li>
+              <li><a href="resources.html">Resources</a></li>
+            </ul>
+          </nav>
+        </div>
+        <div class="col-xs-12 col-sm-9 col-md-6 col-lg-7">
+          <main>
+            <h1>Assistive Technology</h1>
+
+            <p>The following sections demonstrate how various popular
+            assistive technologies support landmark navigation</p>
+
+            <ul>
+              <li><a href="#jaws">JAWS Screen Reader for Windows</a></li>
+              <li><a href="#nvda">NVDA Screen Reader for Windows</a></li>
+              <li><a href="#vo">VoiceOver Screen Reader for macOS</a></li>
+              <li><a href="#orca">ORCA Screen Reader for Linux/Gnome</a></li>
+              <li><a href="#skipto">SkipTo Landmarks &amp; Headings browser extension</a></li>
+            </ul>
+
+            <section>
+              <h2 id="jaws">JAWS Screen Reader for Windows</h2>
+              <p>The following commands are available in the JAWS screen reader (since version 15) for navigating landmarks:</p>
+
+              <table class="table table-striped table-hover" aria-labelledby="jaws">
+
+                <thead>
+                  <tr>
+                    <th>Command</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Q</td>
+                    <td>Go to main landmark</td>
+                  </tr>
+                  <tr>
+                    <td>R</td>
+                    <td>Go to next landmark</td>
+                  </tr>
+                  <tr>
+                    <td>Shift+R</td>
+                    <td>Go to previous landmark</td>
+                  </tr>
+                  <tr>
+                    <td>Insert+Control+R</td>
+                    <td>List of landmarks</td>
+                  </tr>
+                </tbody>
+
+              </table>
+
+              <p>Screen shot of list of landmarks in JAWS</p>
+              <p><img src="images/landmarks-jaws.png" alt="Screen shot of list of landmarks in JAWS"></p>
+
+            </section>
+
+            <section>
+            <h2 id="nvda">NVDA Screen Reader for Windows</h2>
+               <p>The following commands are available in NVDA screen reader (since version 2014.2) for navigating landmarks:</p>
+
+              <table class="table table-striped table-hover" aria-labelledby="nvda">
+
+                <thead>
+                  <tr>
+                    <th>Command</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>D</td>
+                    <td>Go to next landmark</td>
+                  </tr>
+                  <tr>
+                    <td>Shift+D</td>
+                    <td>Go to previous landmark</td>
+                  </tr>
+                  <tr>
+                    <td>NVDA+F7</td>
+                    <td>List of landmarks</td>
+                  </tr>
+                </tbody>
+
+              </table>
+              <p>Screen shot of list of landmarks in NVDA</p>
+                <p><img src="images/landmarks-nvda.png" alt="Screen shot of list of landmarks in N V D A"></p>
+            </section>
+
+            <section>
+            <h2 id="vo">VoiceOver Screen Reader for macOS</h2>
+               <p>The following commands are available in VoiceOver screen reader for navigating landmarks:</p>
+              <table class="table table-striped table-hover" aria-labelledby="vo">
+
+                <thead>
+                  <tr>
+                    <th>Command</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>W (Quick Nav)</td>
+                    <td>Go to next landmark</td>
+                  </tr>
+                  <tr>
+                    <td>Shift+W (Quick Nav)</td>
+                    <td>Go to previous landmark</td>
+                  </tr>
+                  <tr>
+                    <td>Control+Option+U, then left or right arrow key to landmark list</td>
+                    <td>List of landmarks</td>
+                  </tr>
+                </tbody>
+
+              </table>
+             <p>Screen shot of list of landmarks in VoiceOver</p>
+            <p><img src="images/landmarks-vo.png" alt="Screen shot of list of landmarks in voice over"></p>
+            </section>
+
+            <section>
+            <h2 id="orca">ORCA Screen Reader for Linux/GNOME</h2>
+              <p>The following commands are available in ORCA Screen reader for navigating landmarks:</p>
+
+              <table class="table table-striped table-hover" aria-labelledby="orca">
+
+                <thead>
+                  <tr>
+                    <th>Command</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>M</td>
+                    <td>Next landmark</td>
+                  </tr>
+                  <tr>
+                    <td>Shift+M</td>
+                    <td>Previous landmark</td>
+                  </tr>
+                  <tr>
+                    <td>Alt+Shift+M</td>
+                    <td>List of landmarks</td>
+                  </tr>
+                </tbody>
+
+              </table>
+             <p>Screen shot of list of landmarks in Orca</p>
+            <p><img src="images/landmarks-orca.png" alt="Screen shot of list of landmarks in orca"></p>
+            </section>
+
+            <section>
+              <h2 id="skipto">SkipTo Landmarks &amp; Headings Browser Extension</h2>
+
+              <p>The SkipTo Landmarks &amp; Headings browser extension implements the <a href="https://www.w3.org/TR/UAAG/">User Agent Accessibility Guidelines 1.0</a> requirement <q><a href="https://www.w3.org/TR/UAAG/guidelines.html#tech-nav-structure">9.9 Allow Structured Navigation</a></q>. It does this by providing keyboard navigation to landmarks and headings on any web page.  The keyboard shortcut to open the SkipTo menu is <kbd>alt</kbd> + <kbd>2</kbd> on Windows/Linux and <kbd>option</kbd> + <kbd>2</kbd> on Mac keyboards.</p>
+
+              <ul style="margin-top: 1em">
+                <li><a href="https://chrome.google.com/webstore/detail/skipto-landmarks-headings/fjkpbfcodhflpdildjbmdhhmcoplghgf">Chrome Extension: Skip to Landmarks &amp; Headings</a></li>
+                <li><a href="https://addons.mozilla.org/en-US/firefox/addon/skipto/">Firefox Extension: Skip to Landmarks &amp; Headings</a></li>
+              </ul>
+
+             <p>Screen shot of list of landmarks and Headings</p>
+              <p><img src="images/landmarks-skipto.png" alt="Screen shot of list of landmarks and headings using SkipTo Landmarks &amp; Headings Browser Extension"></p>
+
+            </section>
+
+          </main>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+          <aside aria-labelledby="id4">
+            <h2 id="id4">Landmarks</h2>
+            <p>The following landmarks are defined on this page:</p>
+            <ul>
+              <li>Banner</li>
+              <li>Complementary</li>
+              <li>Contentinfo</li>
+              <li>Navigation</li>
+              <li>Main</li>
+            </ul>
+          </aside>
+          <aside aria-labelledby="id3">
+            <h2 id="id3">Related Documents</h2>
+            <ul>
+              <li><a href="https://w3.org/WAI/ARIA/apg/">ARIA Authoring Practices</a></li>
+              <li><a href="https://www.w3.org/TR/wai-aria-1.2/">ARIA 1.2 Specification</a></li>
+
+              <li><a href="https://www.w3.org/TR/accname-1.2/">Accessible Name and Description Computation 1.2</a></li>
+              <li><a href="http://www.w3.org/TR/core-aam-1.2/">Core Accessibility API Mappings 1.2</a></li>
+              <li><a href="https://w3c.github.io/html-aam/">HTML Accessibility API Mappings (latest editors draft)</a></li>
+              <li><a href="https://html.spec.whatwg.org/">HTML Specification</a></li>
+              <li><a href="https://www.w3.org/TR/html-aria/">ARIA in HTML</a></li>
+              <li><a href="https://www.w3.org/TR/using-aria/">Using ARIA in HTML</a></li>
+              <li><a href="http://www.w3.org/TR/WCAG/">WCAG Specification</a></li>
+            </ul>
+          </aside>
+        </div>
+      </div>
+      <div class="well well-sm">
+        <footer class="row">
+          <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+            W3C ARIA Authoring Practices Task Force
+          </div>
+          <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2">
+            Copyright 2023
+          </div>
+        </footer>
+      </div>
+    </div>
+    <script type="text/javascript" src="js/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/tabs.js"></script>
+    <script type="text/javascript" src="js/bootstrap-accessibility.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap-accessibility-2.js"></script>
+    <script type="text/javascript" src="js/visua11y.js"></script>
+    <script type="text/javascript" src="js/show.js"></script>
+    <!-- Customize SkipTo features using the data-skipto attribute -->
+    <script data-skipto="attachElement: #skip-to-attach; colorTheme: aria"
+            src="js/skipto.min.js">
+    </script>
+  </body>
+</html>

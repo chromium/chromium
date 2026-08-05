@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rating Slider Example</title>
+
+    <!-- Core JS and CSS shared by all examples -->
+    <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
+    <link rel="stylesheet" href="../../../shared/css/core.css">
+    <script src="../../../shared/js/examples.js"></script>
+    <script src="../../../shared/js/highlight.pack.js"></script>
+    <script src="../../../shared/js/app.js"></script>
+    <script data-skipto="colorTheme:aria; displayOption:popup; containerElement:div" src="../../../shared/js/skipto.js"></script>
+
+    <!-- JS and CSS for this example -->
+    <link rel="stylesheet" type="text/css" href="css/slider-rating.css">
+    <script src="js/slider-rating.js"></script>
+  </head>
+  <body>
+    <nav aria-label="Related Links" class="feedback">
+      <ul>
+        <li><a href="https://github.com/orgs/w3c/projects/124">Related Issues</a></li>
+        <li><a href="../slider-pattern.html">Design Pattern</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h1>Rating Slider Example</h1>
+
+      <section>
+        <h2>About This Example</h2>
+        <div class="advisement">
+          <h3>Warning!</h3>
+          <p>
+            Some users of touch-based assistive technologies may experience difficulty utilizing widgets that implement this slider pattern because the gestures their assistive technology provides for operating sliders may not yet generate the necessary output.
+            To change the slider value, touch-based assistive technologies need to respond to user gestures for increasing and decreasing the value by synthesizing key events.
+            This is a new convention that may not be fully implemented by some assistive technologies.
+            Authors should fully test slider widgets using assistive technologies on devices where touch is a primary input mechanism before considering incorporation into production systems.
+          </p>
+        </div>
+        <img alt="" class="example-page-example-icon" src="../../../images/pattern-slider.svg">
+        <p>
+          Following is an example of a rating input that demonstrates the <a href="../slider-pattern.html">Slider Pattern</a>.
+          This rating widget employs a slider because it enables users to choose from ten rating values, which is a relatively large number of choices for users to navigate.
+          For inputs with seven or fewer choices, another pattern that could be used is radio group as demonstrated by the
+          <a href="../../radio/examples/radio-rating.html">Rating Radio Group Example</a>.
+          However, when there are more than seven choices, other patterns provide additional keyboard commands that significantly increase efficiency for users who rely on keyboard navigation to perceive options and make a selection.
+          These include
+          <a href="../slider-pattern.html">slider</a>,
+          <a href="../../spinbutton/spinbutton-pattern.html">spin button</a>,
+          <a href="../../combobox/combobox-pattern.html">combobox</a>,
+          and <a href="../../listbox/listbox-pattern.html">listbox</a>.
+        </p>
+        <p>Similar examples include:</p>
+        <ul>
+          <li><a href="../../radio/examples/radio-rating.html">Rating Radio Group Example</a>: Radio group that provides input for a five star rating scale.</li>
+          <li><a href="slider-color-viewer.html">Color Viewer Slider Example</a>: Basic horizontal sliders that illustrate setting numeric values for a color picker.</li>
+          <li><a href="slider-temperature.html">Vertical Temperature Slider Example</a>: Demonstrates using <code>aria-orientation</code> to specify vertical orientation and <code>aria-valuetext</code> to communicate unit of measure for a temperature input.</li>
+          <li><a href="slider-seek.html">Media Seek Slider Example</a>: Horizontal slider that demonstrates using <code>aria-valuetext</code> to communicate current and maximum values of time in media to make the values easy to understand for assistive technology users by converting the total number of seconds to minutes and seconds.</li>
+          <li><a href="../../slider-multithumb/examples/slider-multithumb.html">Horizontal Multi-Thumb Slider Example</a>: Demonstrates using sliders with two thumbs to provide inputs for numeric ranges, such as for searching in a price range.</li>
+        </ul>
+      </section>
+
+      <section>
+        <div class="example-header">
+          <h2 id="ex_label">Example</h2>
+        </div>
+        <div role="separator" id="ex_start_sep" aria-labelledby="ex_start_sep ex_label" aria-label="Start of"></div>
+        <div id="ex1">
+          <div id="id-rating-label" class="label">Rate your satisfaction with the service you received</div>
+
+          <div id="id-rating"
+               class="rating-slider"
+               role="slider"
+               tabindex="0"
+               aria-valuemin="0"
+               aria-valuenow="0"
+               aria-valuemax="10"
+               aria-valuetext="Choose a rating from 1 to 10 where 10 is extremely satisfied"
+              aria-labelledby="id-rating-label">
+            <!-- SVG position and dimension values added through JavaScript -->
+
+            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="800" height="110">
+              <rect class="focus-ring" x="23" y="2" width="54" height="90" rx="5" />
+              <g class="rating" data-value="1">
+                <rect class="target" height="24" width="32" x="13" y="30"></rect>
+                <text class="label" x="25" y="47">1</text>
+                <text class="description"  x="13" y="20">Extremely Unsatisfied</text>
+              </g>
+              <g class="rating" data-value="2">
+                <rect class="target" height="24" width="32" x="45" y="30"></rect>
+                <text class="label" x="58" y="47">2</text>
+              </g>
+              <g class="rating" data-value="3">
+                <rect class="target" height="24" width="32" x="77" y="30"></rect>
+                <text class="label" x="91" y="47">3</text>
+              </g>
+              <g class="rating" data-value="4">
+                <rect class="target" height="24" width="32" x="109" y="30"></rect>
+                <text class="label" x="121" y="47">4</text>
+              </g>
+              <g class="rating" data-value="5">
+                <rect class="target" height="24" width="32" x="141" y="30"></rect>
+                <text class="label" x="153" y="47">5</text>
+              </g>
+              <g class="rating" data-value="6">
+                <rect class="target" height="24" width="32" x="173" y="30"></rect>
+                <text class="label" x="185" y="47">6</text>
+              </g>
+              <g class="rating" data-value="7">
+                <rect class="target" height="24" width="32" x="205" y="30"></rect>
+                <text class="label" x="217" y="47">7</text>
+              </g>
+              <g class="rating" data-value="8">
+                <rect class="target" height="24" width="32" x="237" y="30"></rect>
+                <text class="label" x="249" y="47">8</text>
+              </g>
+              <g class="rating" data-value="9">
+                <rect class="target" height="24" width="32" x="269" y="30"></rect>
+                <text class="label" x="281" y="47">9</text>
+               </g>
+              <g class="rating" data-value="10">
+                <rect class="target" height="24" width="32" x="301" y="30"></rect>
+                <text class="label" x="310" y="47">10</text>
+                <text class="description"  x="208" y="20">Extremely Satisfied</text>
+               </g>
+            </svg>
+          </div>
+        </div>
+        <div role="separator" id="ex_end_sep" aria-labelledby="ex_end_sep ex_label" aria-label="End of"></div>
+      </section>
+
+      <section>
+        <h2>Accessibility Features</h2>
+        <ul>
+          <li>
+            To ensure assistive technology users correctly understand the meaning of the current value, this example uses the
+            <a href="#aria-valuetext" class="property-reference">aria-valuetext</a>
+            property to communicate the current value, maximum value, and the meaning of the maximum value (<q>Extremely Satisfied</q>).
+            However, since repeating the maximum value every time the slider value changes is potentially distracting, the maximum value is included in <code>aria-valuetext</code> only when the slider is initialized and when the thumb loses keyboard focus.
+          </li>
+          <li>To highlight the interactive nature of the satisfaction rating, a focus ring appears around the group of rating options when the slider has focus and a rating value has not yet been set.</li>
+          <li>
+            To ensure the borders of the rating values and focus ring have sufficient contrast with the background when high contrast settings invert colors, the color of the borders is synchronized with the color of the text content using a CSS media query selector  (e.g. <code>@media (forced-colors: active)</code>) .
+            For example, the color of the rating value borders is set to match the link foreground color of high contrast mode text by specifying the CSS <code>canvas</code> and <code>linkText</code> values for the <code>stroke</code> and <code>fill</code> properties of each inline SVG <code>rect</code> and <code>text</code> element.
+            If specific colors were used to specify the <code>stroke</code> and <code>fill</code> properties, the color of these elements would remain the same in high contrast mode, which could lead to insufficient contrast between them and their background or even make them invisible if their color were to match the high contrast mode background.<br>
+            Note: The SVG element needs to have the CSS <code>forced-color-adjust</code> property set to the value <code>auto</code> for the <code>currentcolor</code> value to be updated in high contrast modes.
+            Some browsers do not use <code>auto</code> for the default value.
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 id="kbd_label">Keyboard Support</h2>
+        <table aria-labelledby="kbd_label" class="def">
+          <thead>
+            <tr>
+              <th>Key</th>
+              <th>Function</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="key-right-arrow">
+              <th><kbd>Right Arrow</kbd></th>
+              <td>Increases slider by one rating step.</td>
+            </tr>
+            <tr data-test-id="key-up-arrow">
+              <th><kbd>Up Arrow</kbd></th>
+              <td>Increases slider by one rating step.</td>
+            </tr>
+            <tr data-test-id="key-left-arrow">
+              <th><kbd>Left Arrow</kbd></th>
+              <td>Decreases slider by one rating step.</td>
+            </tr>
+            <tr data-test-id="key-down-arrow">
+              <th><kbd>Down Arrow</kbd></th>
+              <td>Decreases slider by one rating step.</td>
+            </tr>
+            <tr data-test-id="key-page-up">
+              <th><kbd>Page Up</kbd></th>
+              <td>
+                Increases slider value multiple steps.
+                In this slider, by two rating steps.
+              </td>
+            </tr>
+            <tr data-test-id="key-page-down">
+              <th><kbd>Page Down</kbd></th>
+              <td>
+                Decreases slider value multiple steps.
+                In this slider, by two rating steps.
+              </td>
+            </tr>
+            <tr data-test-id="key-home">
+              <th><kbd>Home</kbd></th>
+              <td>Sets slider to its minimum value, extremely dissatisfied.</td>
+            </tr>
+            <tr data-test-id="key-end">
+              <th><kbd>End</kbd></th>
+              <td>Sets slider to its maximum value, extremely satisfied.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2 id="rps_label">Role, Property, State, and Tabindex Attributes</h2>
+        <table aria-labelledby="rps_label" class="data attributes">
+          <thead>
+            <tr>
+              <th scope="col">Role</th>
+              <th scope="col">Attribute</th>
+              <th scope="col">Element</th>
+              <th scope="col">Usage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="slider-role">
+              <th scope="row">
+                <code>slider</code>
+              </th>
+              <td></td>
+              <td>
+                <code>div</code>
+              </td>
+              <td>
+                <ul>
+                  <li>Identifies the element as a slider.</li>
+                  <li>Set on the <code>div</code> that represents the movable thumb because it is the operable element that controls the slider value.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="slider-tabindex">
+              <td></td>
+              <th scope="row">
+                <code>tabindex="0"</code>
+              </th>
+              <td>
+                <code>div</code>
+              </td>
+              <td>Includes the slider thumb in the page tab sequence.</td>
+            </tr>
+            <tr data-test-id="aria-valuemax">
+              <td></td>
+              <th scope="row">
+                <code>aria-valuemax="10"</code>
+              </th>
+              <td>
+                <code>div</code>
+              </td>
+              <td>Specifies the maximum value of the slider.</td>
+            </tr>
+            <tr data-test-id="aria-valuemin">
+              <td></td>
+              <th scope="row">
+                <code>aria-valuemin="0"</code>
+              </th>
+              <td>
+                <code>div</code>
+              </td>
+              <td>Specifies the minimum value of the slider.  <br>NOTE: 0 indicates a rating value has not yet been set.</td>
+            </tr>
+            <tr data-test-id="aria-valuenow">
+              <td></td>
+              <th scope="row">
+                <code>aria-valuenow="NUMBER"</code>
+              </th>
+              <td>
+                <code>div</code>
+              </td>
+              <td>Indicates the current value of the slider.</td>
+            </tr>
+            <tr data-test-id="aria-valuetext">
+              <td></td>
+              <th scope="row">
+                <code>aria-valuetext="STRING"</code>
+              </th>
+              <td>
+                <code>div</code>
+              </td>
+              <td>
+                <ul>
+                  <li>A string that provides a user-friendly name for the current value.</li>
+                  <li>When the value is <code>0</code>, <code>1</code>, or <code>10</code>, provides the name of the value.</li>
+                  <li>When initialized and when the slider loses focus, the string also includes the number of rating values and the meaning of the maximum value, e.g., <q>seven out of 10 where 10 is extremely satisfied</q>.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="aria-labelledby">
+              <td></td>
+              <th scope="row">
+                <code>aria-labelledby="ID_REFERENCE"</code>
+              </th>
+              <td>
+                <code>div</code>
+              </td>
+              <td>Refers to the element containing the name of the slider.</td>
+            </tr>
+            <tr data-test-id="svg-aria-hidden">
+              <td></td>
+              <th scope="row"><code>aria-hidden="true"</code></th>
+              <td><code>svg</code></td>
+              <td>Removes the SVG elements from the accessibility tree to prevent assistive technologies from presenting them as elements separate from the slider.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>JavaScript and CSS Source Code</h2>
+        <ul id="css_js_files">
+          <li>CSS: <a href="css/slider-rating.css" type="text/css">slider-rating.css</a></li>
+          <li>JavaScript: <a href="js/slider-rating.js" type="text/javascript">slider-rating.js</a></li>
+        </ul>
+      </section>
+
+      <section class="example-code">
+        <h2 id="sc1_label">HTML Source Code</h2>
+        <p id="sc1_description">To copy the following HTML code, please open it in CodePen.</p>
+        <div role="separator" id="sc1_start_sep" aria-labelledby="sc1_start_sep sc1_label" aria-label="Start of"></div>
+        <pre><code id="sc1"></code></pre>
+        <div role="separator" id="sc1_end_sep" aria-labelledby="sc1_end_sep sc1_label" aria-label="End of"></div>
+        <script>
+          sourceCode.add('sc1', 'ex1', 'ex_label', 'css_js_files', 'sc1_description');
+          sourceCode.make();
+        </script>
+      </section>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,62 @@
+.checkbox-mixed ul.checkboxes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.checkbox-mixed ul.checkboxes li {
+  margin: 0;
+  padding: 0;
+  padding-left: 15px;
+}
+
+.checkbox-mixed label {
+  margin: 1px;
+  padding: 4px;
+}
+
+.checkbox-mixed [role="checkbox"] {
+  display: inline-block;
+  padding: 4px;
+  cursor: pointer;
+}
+
+.checkbox-mixed [role="checkbox"]::before {
+  position: relative;
+  top: 1px;
+  content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='16' width='16' style='forced-color-adjust: auto;'%3E%3Crect x='2' y='2' height='13' width='13' rx='2' stroke='currentcolor' stroke-width='1' fill-opacity='0' /%3E%3C/svg%3E");
+}
+
+.checkbox-mixed [role="checkbox"][aria-checked="true"]::before {
+  position: relative;
+  top: 1px;
+  content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='16' width='16' style='forced-color-adjust: auto;'%3E%3Crect x='2' y='2' height='13' width='13' rx='2' stroke='currentcolor' stroke-width='1' fill-opacity='0' /%3E%3Cpolyline points='4,8 7,12 12,5' fill='none' stroke='currentcolor' stroke-width='2' /%3E%3C/svg%3E");
+}
+
+.checkbox-mixed [role="checkbox"][aria-checked="mixed"]::before {
+  position: relative;
+  top: 1px;
+  content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='16' width='16' style='forced-color-adjust: auto;'%3E%3Crect x='2' y='2' height='13' width='13' rx='2' stroke='currentcolor' stroke-width='1' fill-opacity='0' /%3E%3Cline x1='5' y1='5' x2='12' y2='12' stroke='currentcolor' stroke-width='2' /%3E%3C/svg%3E");
+}
+
+.checkbox-mixed input:focus,
+.checkbox-mixed [role="checkbox"] {
+  outline: none;
+}
+
+.checkbox-mixed [role="checkbox"]:focus,
+.checkbox-mixed [role="checkbox"]:hover {
+  padding: 2px;
+  border: 2px solid #005a9c;
+  border-radius: 5px;
+  background-color: #def;
+}
+
+.checkbox-mixed label.focus,
+.checkbox-mixed label:hover {
+  padding: 2px;
+  border: 2px solid #005a9c;
+  background-color: #def;
+  border-radius: 5px;
+  cursor: pointer;
+}

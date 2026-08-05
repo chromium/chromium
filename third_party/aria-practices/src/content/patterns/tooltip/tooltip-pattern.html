@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Tooltip Pattern</title>
+
+    <!-- Core JS and CSS shared by all patterns -->
+    <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
+    <link rel="stylesheet" href="../../shared/css/core.css">
+    <script src="../../shared/js/highlight.pack.js"></script>
+    <script src="../../shared/js/app.js"></script>
+    <script data-skipto="colorTheme:aria; displayOption:popup; containerElement:div" src="../../shared/js/skipto.js"></script>
+    <script data-read-this-first="showImage:false" src="../../shared/js/read-this-first.js"></script>
+  </head>
+  <body>
+    <main>
+      <h1>Tooltip Pattern</h1>
+
+      <section id="about">
+        <h2>About This Pattern</h2>
+        <p>
+          <strong>NOTE:</strong> This design pattern is work in progress; it does not yet have task force consensus.
+          Progress and discussions are captured in <a href="https://github.com/w3c/aria-practices/issues/128">issue 128.</a>
+        </p>
+        <p>
+          A tooltip is a popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.
+          It typically appears after a small delay and disappears when <kbd>Escape</kbd> is pressed or on mouse out.
+        </p>
+        <p>
+          Tooltip widgets do not receive focus.
+          A hover that contains focusable elements can be made using a non-modal dialog.
+        </p>
+      </section>
+
+      <section id="examples">
+        <img alt="" src="../../images/pattern-tooltip.svg">
+        <h2>Example</h2>
+        <p>Work to develop a tooltip example is tracked by <a href="https://github.com/w3c/aria-practices/issues/127">issue 127.</a></p>
+      </section>
+
+      <section id="keyboard_interaction">
+        <h2>Keyboard Interaction</h2>
+        <p><kbd>Escape</kbd>: Dismisses the Tooltip.</p>
+        <div class="note">
+          <h3>Note</h3>
+          <ol>
+            <li>Focus stays on the triggering element while the tooltip is displayed.</li>
+            <li>If the tooltip is invoked when the trigger element receives focus, then it is dismissed when it no longer has focus (onBlur).</li>
+            <li>If the tooltip is invoked when a pointing cursor moves over the trigger element, then it remains open as long as the cursor is over the trigger or the tooltip.</li>
+          </ol>
+        </div>
+      </section>
+
+      <section id="roles_states_properties">
+        <h2>WAI-ARIA Roles, States, and Properties</h2>
+        <ul>
+          <li>The element that serves as the tooltip container has role <a href="#tooltip" class="role-reference">tooltip</a>.</li>
+          <li>The element that triggers the tooltip references the tooltip element with <a href="#aria-describedby" class="property-reference">aria-describedby</a>.</li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>

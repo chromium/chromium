@@ -1,0 +1,131 @@
+body {
+  background: #fafafa;
+  font-family: Helvetica, Arial, sans-serif;
+  color: #000;
+}
+
+#side-panel {
+  box-sizing: border-box;
+  display: inline-block;
+  padding-left: 1.5em;
+  vertical-align: top;
+  width: 29%;
+}
+
+#delay-time-select {
+  display: block;
+  margin-top: 5px;
+  width: 10em;
+}
+
+#main-content {
+  display: inline-block;
+  vertical-align: top;
+  min-width: 250px;
+  width: 70%;
+}
+
+#restaurant-feed {
+  max-width: 100%;
+  width: 500px;
+}
+
+@media screen and (max-width: 560px) {
+  #main-content {
+    width: 100%;
+  }
+}
+
+.restaurant-item {
+  background: white;
+  box-shadow: 1px 1px 6px #bbb;
+  margin-bottom: 15px;
+  padding-top: 15px;
+}
+
+.restaurant-details {
+  display: inline-block;
+  margin-bottom: 10px;
+  padding-left: 15px;
+  vertical-align: top;
+  width: 55%;
+}
+
+.restaurant-name {
+  font-size: 18px;
+  margin-bottom: 2px;
+}
+
+.restaurant-star-img {
+  width: 90px;
+}
+
+.restaurant-type {
+  color: black;
+  font-size: 13px;
+}
+
+.bookmark-button {
+  height: 24px;
+}
+
+.location-block {
+  color: black;
+  display: inline-block;
+  vertical-align: top;
+  margin: 0 15px 10px;
+  font-size: 14px;
+  line-height: 1.3em;
+}
+
+.restaurant-actions {
+  box-sizing: border-box;
+  background: #a2afbc;
+  padding: 10px;
+  width: 100%;
+}
+
+.restaurant-rating svg g {
+  color: #ffde00;
+}
+
+.restaurant-rating svg .star {
+  stroke-width: 2px;
+  stroke: #f8951d;
+  fill-opacity: 0;
+}
+
+.restaurant-rating[data-rating-value="1"] svg .star-1 .star {
+  fill: currentcolor;
+  fill-opacity: 1;
+}
+
+.restaurant-rating[data-rating-value="2"] svg .star-2 .star {
+  fill: currentcolor;
+  fill-opacity: 1;
+}
+
+.restaurant-rating[data-rating-value="3"] svg .star-3 .star {
+  fill: currentcolor;
+  fill-opacity: 1;
+}
+
+.restaurant-rating[data-rating-value="4"] svg .star-4 .star {
+  fill: currentcolor;
+  fill-opacity: 1;
+}
+
+.restaurant-rating[data-rating-value="5"] svg .star-5 .star {
+  fill: currentcolor;
+  fill-opacity: 1;
+}
+
+@media (forced-colors: active) {
+  .restaurant-rating svg g {
+    color: currentcolor;
+  }
+
+  .restaurant-rating svg .star {
+    stroke: currentcolor;
+  }
+}

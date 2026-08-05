@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Experimental Example of Tabs with Action Buttons</title>
+
+    <!-- Core JS and CSS shared by all examples -->
+    <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
+    <link rel="stylesheet" href="../../../shared/css/core.css">
+    <script src="../../../shared/js/examples.js"></script>
+    <script src="../../../shared/js/highlight.pack.js"></script>
+    <script src="../../../shared/js/app.js"></script>
+    <script data-skipto="colorTheme:aria; displayOption:popup; containerElement:div" src="../../../shared/js/skipto.js"></script>
+
+    <!-- JS and CSS for this example -->
+    <link href="css/tabs-actions.css" rel="stylesheet">
+    <script src="js/tabs-actions.js"></script>
+    <script src="../../menu-button/examples/js/menu-button-actions.js"></script>
+  </head>
+  <body>
+    <nav aria-label="Related Links" class="feedback">
+      <ul>
+        <li><a href="https://github.com/orgs/w3c/projects/130">Related Issues</a></li>
+        <li><a href="../tabs-pattern.html">Design Pattern</a></li>
+      </ul>
+    </nav>
+    <main data-content-phase="experimental">
+      <h1>Experimental Example of Tabs with Action Buttons</h1>
+
+      <section>
+        <h2>About This Experimental Example</h2>
+        <img alt="" class="example-page-example-icon" src="../../../images/pattern-tabs.svg">
+        <p>
+          This is an experimental implementation of the <a href="https://pr-preview.s3.amazonaws.com/w3c/aria/pull/1805.html#aria-actions">draft specification of the aria-actions attribute</a>.
+          The <code>aria-actions</code> property enables an element to reference another interactive element that can be activated to perform an action on the referencing element.
+          In this example, each tab element references a menu button that opens a menu of actions that apply to the referencing tab.
+          The relationship provided by <code>aria-actions</code> enables an assistive technology to both communicate the  availability of the action button and provide a command for activating the button while focus is on the tab.
+        </p>
+        <p>
+          The below example demonstrates a tabs widget that implements the <a href="../tabs-pattern.html">Tabs Pattern</a>.
+          In this example, a panel is displayed when users activate its tab with either <kbd>Space</kbd>, <kbd>Enter</kbd>, or a mouse click.
+          So, for keyboard users, activating a tab requires two steps: 1) focus the tab, and 2) activate the tab.
+          This two-step process is referred to as manual activation.
+          Manual activation of tabs is recommended unless panels can be displayed instantly, i.e., all the panel content is present in the DOM.
+          For additional guidance, see <a href="../../../practices/keyboard-interface/keyboard-interface-practice.html#kbd_selection_follows_focus">Deciding When to Make Selection Automatically Follow Focus</a>.
+        </p>
+        <p>
+          This example also demonstrates how to provide buttons that provide contextual actions for the tab.
+          Each tab has an associated context actions menu button.
+          The menu button is referenced by <code>aria-actions</code>, which enables it to be activated by an assistive technology user while focus is on the tab.
+        </p>
+        <p>Similar examples include:</p>
+        <ul>
+          <li><a href="tabs-manual.html">Example of Tabs with Manual Activation</a>: A tabs widget where users activate a tab and display its panel by pressing <kbd>Space</kbd> or <kbd>Enter</kbd>.</li>
+          <li><a href="tabs-automatic.html">Example of Tabs with Automatic Activation</a>: A tabs widget where tabs are automatically activated and their panel is displayed when they receive focus.</li>
+        </ul>
+      </section>
+
+      <section>
+        <div class="example-header">
+          <h2 id="ex_label">Experimental Example</h2>
+        </div>
+        <div role="separator" id="ex_start_sep" aria-labelledby="ex_start_sep ex_label" aria-label="Start of"></div>
+        <div id="ex1">
+          <div class="tabs">
+            <h3 id="tablist-1">Interesting Sharks</h3>
+            <div role="tablist" aria-labelledby="tablist-1" class="manual">
+              <div class="tab-wrapper">
+                <button id="tab-1" type="button" role="tab" aria-selected="true" aria-controls="tabpanel-1" aria-actions="tab-1-action">
+                  <span class="focus">Nurse shark</span>
+                </button>
+                <div class="menu-button-actions">
+                  <button type="button" id="tab-1-action" tabindex="-1" aria-label="Actions for Nurse shark tab" aria-haspopup="true" aria-expanded="false" aria-controls="menu1">
+                    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="8" cy="13" r="2" fill="black"/>
+                      <circle cx="8" cy="3" r="2" fill="black"/>
+                      <circle cx="8" cy="8" r="2" fill="black"/>
+                    </svg>
+                  </button>
+                  <ul id="menu1" role="menu" aria-labelledby="tab-1-action">
+                    <li role="menuitem" data-action="tab-1-action" data-operation="move-forward">Move tab forward</li>
+                    <li role="menuitem" data-action="tab-1-action" data-operation="move-backward">Move tab backward</li>
+                    <li role="menuitem" data-action="tab-1-action" data-operation="clipboard-copy">Copy tab contents to clipboard</li>
+                    <li role="menuitem" data-action="tab-1-action" data-operation="close">Close tab</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="tab-wrapper">
+                <button id="tab-2" type="button" role="tab" aria-selected="false" aria-controls="tabpanel-2" tabindex="-1" aria-actions="tab-2-action">
+                  <span class="focus">Basking shark</span>
+                </button>
+                <div class="menu-button-actions">
+                  <button type="button" id="tab-2-action" tabindex="-1" aria-label="Actions for Basking shark tab" aria-haspopup="true" aria-expanded="false" aria-controls="menu2">
+                    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="8" cy="13" r="2" fill="black"/>
+                      <circle cx="8" cy="3" r="2" fill="black"/>
+                      <circle cx="8" cy="8" r="2" fill="black"/>
+                    </svg>
+                  </button>
+                  <ul id="menu2" role="menu" aria-labelledby="tab-2-action">
+                    <li role="menuitem" data-action="tab-2-action" data-operation="move-forward">Move tab forward</li>
+                    <li role="menuitem" data-action="tab-2-action" data-operation="move-backward">Move tab backward</li>
+                    <li role="menuitem" data-action="tab-2-action" data-operation="clipboard-copy">Copy tab contents to clipboard</li>
+                    <li role="menuitem" data-action="tab-2-action" data-operation="close">Close tab</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="tab-wrapper">
+                <button id="tab-3" type="button" role="tab" aria-selected="false" aria-controls="tabpanel-3" tabindex="-1" aria-actions="tab-3-action">
+                  <span class="focus">Whale shark</span>
+                </button>
+                <div class="menu-button-actions">
+                  <button type="button" id="tab-3-action" tabindex="-1" aria-label="Actions for Whale shark tab" aria-haspopup="true" aria-expanded="false" aria-controls="menu3">
+                    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="8" cy="13" r="2" fill="black"/>
+                      <circle cx="8" cy="3" r="2" fill="black"/>
+                      <circle cx="8" cy="8" r="2" fill="black"/>
+                    </svg>
+                  </button>
+                  <ul id="menu3" role="menu" aria-labelledby="tab-3-action">
+                    <li role="menuitem" data-action="tab-3-action" data-operation="move-forward">Move tab forward</li>
+                    <li role="menuitem" data-action="tab-3-action" data-operation="move-backward">Move tab backward</li>
+                    <li role="menuitem" data-action="tab-3-action" data-operation="clipboard-copy">Copy tab contents to clipboard</li>
+                    <li role="menuitem" data-action="tab-3-action" data-operation="close">Close tab</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="tab-wrapper">
+                <button id="tab-4" type="button" role="tab" aria-selected="false" aria-controls="tabpanel-4" tabindex="-1" aria-actions="tab-4-action">
+                  <span class="focus">Goblin shark</span>
+                </button>
+                <div class="menu-button-actions">
+                  <button type="button" id="tab-4-action" tabindex="-1" aria-label="Actions for Goblin shark tab" aria-haspopup="true" aria-expanded="false" aria-controls="menu4">
+                    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="8" cy="13" r="2" fill="black"/>
+                      <circle cx="8" cy="3" r="2" fill="black"/>
+                      <circle cx="8" cy="8" r="2" fill="black"/>
+                    </svg>
+                  </button>
+                  <ul id="menu4" role="menu" aria-labelledby="tab-4-action">
+                    <li role="menuitem" data-action="tab-4-action" data-operation="move-forward">Move tab forward</li>
+                    <li role="menuitem" data-action="tab-4-action" data-operation="move-backward">Move tab backward</li>
+                    <li role="menuitem" data-action="tab-4-action" data-operation="clipboard-copy">Copy tab contents to clipboard</li>
+                    <li role="menuitem" data-action="tab-4-action" data-operation="close">Close tab</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div id="tabpanel-1" role="tabpanel" aria-labelledby="tab-1">
+              <p>
+                The <a href="https://en.wikipedia.org/wiki/Nurse_shark">nurse
+                shark</a> (<span lang="la">Ginglymostoma cirratum</span>) is an
+                elasmobranch fish in the family <span
+                lang="la">Ginglymostomatidae</span>. The conservation status of
+                the nurse shark is globally assessed as Vulnerable in the IUCN
+                List of Threatened Species. They are considered to be a species
+                of least concern in the United States and in The Bahamas, but
+                considered to be near threatened in the western Atlantic Ocean
+                because of their vulnerable status in South America and reported
+                threats throughout many areas of Central America and the
+                Caribbean. They are directly targeted in some fisheries and
+                considered by-catch in others.
+              </p>
+            </div>
+            <div id="tabpanel-2" role="tabpanel" aria-labelledby="tab-2" class="is-hidden">
+              <p>
+                The <a
+                href="https://en.wikipedia.org/wiki/Basking_shark">basking
+                shark</a> (<span lang="la">Cetorhinus maximus</span>) is the
+                second-largest living shark and fish, after the whale shark. It
+                is one of three plankton-eating shark species, along with the
+                whale shark and megamouth shark. Typically, basking sharks reach
+                7.9 m (26 ft) in length. It is usually greyish-brown, with
+                mottled skin, with the inside of the mouth being white in
+                colour. The caudal fin has a strong lateral keel and a crescent
+                shape. Other common names include bone shark, elephant shark,
+                sailfish, and sunfish. In Orkney, it is called hoe-mother
+                (contracted homer), meaning "the mother of the picked dogfish".
+              </p>
+            </div>
+            <div id="tabpanel-3" role="tabpanel" aria-labelledby="tab-3" class="is-hidden">
+              <p>
+                The <a href="https://en.wikipedia.org/wiki/Whale_shark">whale
+                shark</a> (<span lang="la">Rhincodon typus</span>) is a
+                slow-moving, filter-feeding carpet shark and the largest known
+                extant fish species. The largest confirmed individual had a
+                length of 18.8 m (61.7 ft). The whale shark holds many records
+                for size in the animal kingdom, most notably being by far the
+                most massive living non-cetacean animal. It is the sole member
+                of the genus <span lang="la">Rhincodon</span> and the only
+                extant member of the family
+                <span lang="la">Rhincodontidae</span>, which belongs to the
+                subclass <span lang="la">Elasmobranchii</span> in the class
+                <span lang="la">Chondrichthyes</span>. Before 1984 it was
+                classified as <span lang="la">Rhiniodon</span> into <span
+                lang="la">Rhinodontidae</span>.
+              </p>
+            </div>
+            <div id="tabpanel-4" role="tabpanel" aria-labelledby="tab-4" class="is-hidden">
+              <p>
+                The <a href="https://en.wikipedia.org/wiki/Goblin_shark">goblin
+                shark</a> (<span lang="la">Mitsukurina owstoni</span>) is a rare
+                species of deep-sea shark. Sometimes called a "living fossil",
+                it is the only extant representative of the family
+                <span lang="la">Mitsukurinidae</span>, a lineage some 125
+                million years old. This pink-skinned animal has a distinctive
+                profile with an elongated, flat snout, and highly protrusible
+                jaws containing prominent nail-like teeth. It is usually between
+                3 and 4 m (10 and 13 ft) long when mature, though it can grow
+                considerably larger such as one captured in 2000 that is thought
+                to have measured 6 m (20 ft). Goblin sharks are benthopelagic
+                creatures that inhabit upper continental slopes, submarine
+                canyons, and seamounts throughout the world at depths greater
+                than 100 m (330 ft), with adults found deeper than juveniles.
+                Some researchers believe that these sharks could also dive to
+                depths of up to 1,300 m (4,270 ft), for short periods of time.
+              </p>
+            </div>
+            <output for="tablist-1" class="action"></output>
+          </div>
+        </div>
+        <div role="separator" id="ex_end_sep" aria-labelledby="ex_end_sep ex_label" aria-label="End of"></div>
+      </section>
+
+      <section>
+        <h2>Accessibility Features</h2>
+        <ul>
+          <li>
+            To ensure people who rely on browser or operating system high contrast settings can both distinguish the active (selected) tab from other tabs and perceive keyboard focus:
+            <ul>
+              <li>
+                The active tab has a 2 pixel border on its left and right sides and a 4 pixel border on top, while the names of inactive tabs have 1 pixel borders.
+                The active tab is also 4 pixels higher than the inactive tabs.
+              </li>
+              <li>
+                The focus ring is drawn with a CSS border on a child <code>span</code> element of the tab element.
+                This focus span is separated from the tab border by 2 pixels of space to ensure focus and selection are separately perceivable.
+                Note that when a tab element is focused, the outline of the tab element itself is set to 0 so that only one focus ring is displayed.
+              </li>
+              <li>
+                Because transparent borders are visible on some systems when high contrast settings are enabled, only the focused <code>span</code> element has a visible border.
+                When <code>span</code> elements are not indicating focus, they have a 0-width border and additional padding equal in width to the border that is used to indicate focus.
+              </li>
+            </ul>
+          </li>
+          <li>
+            Note that since the first element in every <code>tabpanel</code> is a focusable element (i.e., a link), the <code>tabpanel</code> is <strong>not</strong> included in the page <kbd>Tab</kbd> sequence.
+            To make it easy for screen reader users to navigate from a tab to the beginning of content in the active <code>tabpanel</code>, it is recommended that all <code>tabpanel</code> elements in a tab set are focusable if there are any panels in the set that contain content where the first element in the panel is not focusable.
+          </li>
+          <li>
+             To ensure the tab content remains visible when the screen is magnified, the width of the tabs and tab panels are defined using a percentage of the screen width.  As the page is magnified the height of the tab increases and the tab content re-flows to the new dimensions of the tab.
+         </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 id="kbd_label">Keyboard Support</h2>
+        <h3 id="kbd1_label">Tabs</h3>
+        <table aria-labelledby="kbd_label" class="def">
+          <thead>
+            <tr>
+              <th>Key</th>
+              <th>Function</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="key-tab">
+              <th><kbd>Tab</kbd></th>
+              <td>
+                <ul>
+                  <li>When focus moves into the <code>tablist</code>, places focus on the active <code>tab</code>.</li>
+                  <li>When focus is on a <code>tab</code>, places focus on its associated menu <code>button</code>.</li>
+                  <li>When focus is on the menu <code>button</code> associated with a <code>tab</code>, moves focus to one of the following depending on which is nearest in the forward tab sequence:
+                    <ul>
+                      <li>The active <code>tab</code>.</li>
+                      <li>The first focusable element following the <code>tablist</code>. In this example, that is the <code>a</code> element in <code>tabpanel</code>.</li>
+                    </ul>
+                  </li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="key-shift-tab">
+              <th><kbd>Shift</kbd> + <kbd>Tab</kbd></th>
+              <td>
+                <ul>
+                  <li>When focus moves into the <code>tablist</code>, places focus on the menu <code>button</code> associated with the active <code>tab</code>.</li>
+                  <li>When focus is on the menu <code>button</code> associated with a <code>tab</code>, places focus on that <code>tab</code>.</li>
+                  <li>When focus is on a <code>tab</code>, moves focus to one of the following depending on which is nearest in the backward tab sequence:
+                    <ul>
+                      <li>The active <code>tab</code>.</li>
+                      <li>The first focusable element preceding the <code>tablist</code>.</li>
+                    </ul>
+                  </li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="key-enter-or-space">
+              <th><kbd>Enter</kbd><br><kbd>Space</kbd></th>
+              <td>When a tab has focus, activates the tab, causing its associated panel to be displayed.</td>
+            </tr>
+            <tr data-test-id="key-right-arrow">
+              <th><kbd>Right Arrow</kbd></th>
+              <td>
+                When a <code>tab</code> or its associated menu button have focus:
+                <ul>
+                  <li>Moves focus to the next <code>tab</code>.</li>
+                  <li>If focus is on the last <code>tab</code>, moves focus to the first <code>tab</code>.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="key-left-arrow">
+              <th><kbd>Left Arrow</kbd></th>
+              <td>
+                When a <code>tab</code> or its associated menu button have focus:
+                <ul>
+                  <li>Moves focus to the previous <code>tab</code>.</li>
+                  <li>If focus is on the first <code>tab</code>, moves focus to the last <code>tab</code>.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="key-home">
+              <th><kbd>Home</kbd></th>
+              <td>When a <code>tab</code> has focus, moves focus to the first <code>tab</code>.</td>
+            </tr>
+            <tr data-test-id="key-end">
+              <th><kbd>End</kbd></th>
+              <td>When a <code>tab</code> has focus, moves focus to the last <code>tab</code>.</td>
+            </tr>
+          </tbody>
+        </table>
+        <h3 id="kbd2_label">Menu Button</h3>
+        <p>
+          Keyboard support for each <code>tab</code>’s associated menu button is documented in <a href="../../menu-button/examples/menu-button-actions.html#kbd_label">Menu Button Pattern</a>.
+        </p>
+      </section>
+
+      <section>
+        <h2 id="rps_label">Role, Property, State, and Tabindex Attributes</h2>
+        <table aria-labelledby="rps_label" class="data attributes">
+          <thead>
+            <tr>
+              <th scope="col">Role</th>
+              <th scope="col">Attribute</th>
+              <th scope="col">Element</th>
+              <th scope="col">Usage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="tablist-role">
+              <th scope="row">
+                <code>tablist</code>
+              </th>
+              <td></td>
+              <td>
+                <code>div</code>
+              </td>
+              <td>Indicates that the element serves as a container for a set of tabs.</td>
+            </tr>
+            <tr data-test-id="tablist-aria-labelledby">
+              <td></td>
+              <th scope="row">
+                <code>aria-labelledby="ID_REFERENCE"</code>
+              </th>
+              <td>
+                <code>div</code>
+              </td>
+              <td>Provides a label that describes the purpose of the set of tabs.</td>
+            </tr>
+            <tr data-test-id="tab-role">
+              <th scope="row">
+                <code>tab</code>
+              </th>
+              <td></td>
+              <td>
+                <code>button</code>
+              </td>
+              <td>
+                <ul>
+                  <li>Indicates the element serves as a tab control.</li>
+                  <li>Provides a title for its associated <code>tabpanel</code>.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="tab-aria-selected">
+              <td></td>
+              <th scope="row">
+                <code>aria-selected="true"</code>
+              </th>
+              <td>
+                <code>button</code>
+              </td>
+              <td>
+                <ul>
+                  <li>Indicates the tab control is activated and its associated panel is displayed.</li>
+                  <li>Set when a user activates a tab.</li>
+                  <li>Does not change when focus moves in the <code>tablist</code>.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="tab-aria-selected">
+              <td></td>
+              <th scope="row">
+                <code>aria-selected="false"</code>
+              </th>
+              <td>
+                <code>button</code>
+              </td>
+              <td>
+                <ul>
+                  <li>Indicates the tab control is not active and its associated panel is <strong>NOT</strong> displayed.</li>
+                  <li>Set for all tab elements in the tab set except the active tab; the one associated with the currently displayed panel.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="tab-tabindex">
+              <td></td>
+              <th scope="row">
+                <code>tabindex="-1"</code>
+              </th>
+              <td>
+                <code>button</code>
+              </td>
+              <td>
+                <ul>
+                  <li>Removes the element from the page <kbd>Tab</kbd> sequence.</li>
+                  <li>Set when a tab is not selected so that only the selected (active) tab is in the page <kbd>Tab</kbd> sequence.</li>
+                  <li>Since an HTML <code>button</code> element is used for the tab, it is not necessary to set <code>tabindex="0"</code> on the selected (active) tab element.</li>
+                  <li>
+                    This approach to managing focus is described in the section on
+                    <a href="../../../practices/keyboard-interface/keyboard-interface-practice.html#kbd_roving_tabindex">Managing Focus Within Components Using a Roving tabindex</a>.
+                  </li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="tab-aria-controls">
+              <td></td>
+              <th scope="row">
+                <code>aria-controls="ID_REFERENCE"</code>
+              </th>
+              <td>
+                <code>button</code>
+              </td>
+              <td>Refers to the <code>tabpanel</code> element associated with the tab.</td>
+            </tr>
+            <tr data-test-id="tab-aria-actions">
+              <td></td>
+              <th scope="row">
+                <code>aria-actions="ID_REFERENCE"</code>
+              </th>
+              <td>
+                <code>button</code>
+              </td>
+              <td>Refers to the context actions menu <code>button</code> element associated with the tab.</td>
+            </tr>
+            <tr data-test-id="tabpanel-role">
+              <th scope="row">
+                <code>tabpanel</code>
+              </th>
+              <td></td>
+              <td>
+                <code>div</code>
+              </td>
+              <td>
+                <ul>
+                  <li>Indicates the element serves as a container for tab panel content.</li>
+                  <li>Is hidden unless its associated <code>tab</code> control is activated.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="tabpanel-aria-labelledby">
+              <td></td>
+              <th scope="row">
+                <code>aria-labelledby="ID_REFERENCE"</code>
+              </th>
+              <td>
+                <code>div</code>
+              </td>
+              <td>
+                <ul>
+                  <li>Refers to the <code>tab</code> element that controls the panel.</li>
+                  <li>Provides an accessible name for the tab panel.</li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>JavaScript and CSS Source Code</h2>
+        <ul id="css_js_files">
+          <li>CSS: <a href="css/tabs-actions.css" type="tex/css">tabs-actions.css</a></li>
+          <li>JavaScript: <a href="js/tabs-actions.js" type="text/javascript">tabs-actions.js</a></li>
+          <li>JavaScript: <a href="../../menu-button/examples/js/menu-button-actions.js" type="text/javascript">menu-button-actions.js</a></li>
+        </ul>
+      </section>
+
+      <section class="example-code">
+        <h2 id="sc1_label">HTML Source Code</h2>
+        <p id="sc1_description">To copy the following HTML code, please open it in CodePen.</p>
+        <div role="separator" id="sc1_start_sep" aria-labelledby="sc1_start_sep sc1_label" aria-label="Start of"></div>
+        <pre><code id="sc1"></code></pre>
+        <div role="separator" id="sc1_end_sep" aria-labelledby="sc1_end_sep sc1_label" aria-label="End of"></div>
+        <script>
+          sourceCode.add('sc1', 'ex1', 'ex_label', 'css_js_files', 'sc1_description');
+          sourceCode.make();
+        </script>
+      </section>
+    </main>
+  </body>
+</html>

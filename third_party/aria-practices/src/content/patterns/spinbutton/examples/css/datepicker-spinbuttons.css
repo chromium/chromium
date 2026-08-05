@@ -1,0 +1,91 @@
+.datepicker-spinbuttons {
+  margin-top: 1em;
+}
+
+.datepicker-spinbuttons .day {
+  width: 2em;
+}
+
+.datepicker-spinbuttons .month {
+  width: 6em;
+}
+
+.datepicker-spinbuttons .year {
+  width: 3em;
+}
+
+.datepicker-spinbuttons .spinbutton {
+  float: left;
+  text-align: center;
+}
+
+.datepicker-spinbuttons .spinbutton:first-child {
+  border-left: 4px;
+}
+
+.datepicker-spinbuttons .spinbutton:last-child {
+  border-right: 4px;
+}
+
+.datepicker-spinbuttons .spinbutton .previous,
+.datepicker-spinbuttons .spinbutton .next {
+  color: #666;
+}
+
+.datepicker-spinbuttons .spinbutton.focus {
+  outline: 2px solid #005a9c;
+}
+
+.datepicker-spinbuttons .spinbutton.focus,
+.datepicker-spinbuttons .spinbutton:hover {
+  color: #444;
+  background-color: #eee;
+}
+
+.datepicker-spinbuttons .spinbutton.focus [role="spinbutton"],
+.datepicker-spinbuttons .spinbutton:hover [role="spinbutton"] {
+  background-color: #fff;
+  color: black;
+}
+
+.datepicker-spinbuttons .spinbutton .previous {
+  border-bottom: 1px solid black;
+}
+
+.datepicker-spinbuttons .spinbutton .next {
+  border-top: 1px solid black;
+}
+
+.datepicker-spinbuttons .spinbutton button {
+  padding: 0;
+  margin: 0;
+  border: none;
+  background-color: transparent;
+}
+
+.datepicker-spinbuttons .spinbutton .decrease svg polygon,
+.datepicker-spinbuttons .spinbutton .increase svg polygon {
+  fill: #333;
+  stroke-width: 3px;
+  stroke: transparent;
+}
+
+.datepicker-spinbuttons .spinbutton .decrease {
+  position: relative;
+  top: 4px;
+}
+
+.datepicker-spinbuttons .spinbutton.focus svg polygon {
+  fill: #005a9c;
+  stroke: #005a9c;
+}
+
+.datepicker-spinbuttons .spinbutton .decrease:hover svg polygon,
+.datepicker-spinbuttons .spinbutton .increase:hover svg polygon {
+  fill: #005a9c;
+  stroke: #005a9c;
+}
+
+div[role="separator"] {
+  clear: both;
+}

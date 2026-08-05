@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infinite Scrolling Feed Example</title>
+
+    <!-- Core JS and CSS shared by all examples -->
+    <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
+    <link rel="stylesheet" href="../../../shared/css/core.css">
+    <script src="../../../shared/js/examples.js"></script>
+    <script src="../../../shared/js/highlight.pack.js"></script>
+    <script src="../../../shared/js/app.js"></script>
+    <script data-skipto="colorTheme:aria; displayOption:popup; containerElement:div" src="../../../shared/js/skipto.js"></script>
+  </head>
+  <body>
+    <nav aria-label="Related Links" class="feedback">
+      <ul>
+        <li><a href="https://github.com/orgs/w3c/projects/136">Related Issues</a></li>
+        <li><a href="../feed-pattern.html">Design Pattern</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h1>Infinite Scrolling Feed Example</h1>
+
+      <section>
+        <h2>About This Example</h2>
+        <img alt="" class="example-page-example-icon" src="../../../images/pattern-feed.svg">
+        <p>
+          <strong>NOTE:</strong> The feed role was introduced by WAI-ARIA 1.1.
+          Since native desktop operating systems offer only a few conventions that are applicable to the feed pattern, the implementation of a feed illustrated by this example is intended to serve as as a proposal.
+          Feedback is welcome in <a href="https://github.com/w3c/aria-practices/issues/565">issue 565.</a>
+        </p>
+        <p>
+          The example below implements the <a href="../feed-pattern.html">Feed Pattern</a> for a restaurant review site.
+          To imitate an infinitely scrolling set of data, information about ten restaurants is repeatedly loaded as the user reads the feed.
+          This example includes an article load time selector that simulates data fetch delays.
+        </p>
+      </section>
+
+      <section>
+        <h2>Example Usage Option</h2>
+        <p id="feed-controls-desc">
+          The following article loading delay time selector enables simulation of different amounts of latency introduced by data fetches.
+          Such latency can affect assistive technology behavior when using assistive technology functions for navigating by article.
+        </p>
+        <label for="delay-time-select"> Loading delay</label>
+        <select id="delay-time-select" name="delay_time" aria-describedby="feed-controls-desc">
+          <option value="200">200 ms</option>
+          <option value="400">400 ms</option>
+        </select>
+      </section>
+
+      <section>
+        <h2 id="ex_label">Example</h2>
+        <div role="separator" id="ex_start_sep" aria-labelledby="ex_start_sep ex_label" aria-label="Start of"></div>
+        <div id="ex1">
+          <p>The example feed experience below is presented in an iframe in order not to obstruct from the rest of the content of the page.</p>
+          <iframe id="feed_frame" src="./feed-display.html" height="500" title="Feed example" style="width: 100%"></iframe>
+          <button id="terms-of-use" onclick="alert('This is just for demo purposes')">Terms of use</button>
+        </div>
+        <div role="separator" id="ex_end_sep" aria-labelledby="ex_end_sep ex_label" aria-label="End of"></div>
+      </section>
+
+      <section>
+        <h2 id="kbd_label">Keyboard Support</h2>
+        <table aria-labelledby="kbd_label" class="def">
+          <thead>
+            <tr>
+              <th>Key</th>
+              <th>Function</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="key-page-down">
+              <th><kbd>Page Down</kbd></th>
+              <td>Move focus to next article.</td>
+            </tr>
+            <tr data-test-id="key-page-up">
+              <th><kbd>Page Up</kbd></th>
+              <td>Move focus to previous article.</td>
+            </tr>
+            <tr data-test-id="key-control-end">
+              <th><kbd>Control</kbd> + <kbd>End</kbd></th>
+              <td>Move focus to the first focusable element after the feed.</td>
+            </tr>
+            <tr data-test-id="key-control-home">
+              <th><kbd>Control</kbd> + <kbd>Home</kbd></th>
+              <td>Move focus to the first focusable element in the feed.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2 id="rps_label">Role, Property, State, and Tabindex Attributes</h2>
+        <table aria-labelledby="rps_label" class="data attributes">
+          <thead>
+            <tr>
+              <th scope="col">Role</th>
+              <th scope="col">Attribute</th>
+              <th scope="col">Element</th>
+              <th scope="col">Usage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="feed-role">
+              <th scope="row"><code>feed</code></th>
+              <td></td>
+              <td><code>div</code></td>
+              <td>
+                <ul>
+                  <li>Identifies the element that contains the set of feed articles.</li>
+                  <li>The feed element is a structural container that it is not focusable.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="feed-aria-labelledby">
+              <td></td>
+              <th scope="row"><code>aria-labelledby="IDREF"</code></th>
+              <td><code>div</code></td>
+              <td>Provides an accessible name for the feed element.</td>
+            </tr>
+            <tr data-test-id="feed-aria-busy">
+              <td></td>
+              <th scope="row"><code>aria-busy="true"</code></th>
+              <td><code>div</code></td>
+              <td>
+                <ul>
+                  <li>Set during the process of loading additional articles.</li>
+                  <li>Removed when the article load process is complete.</li>
+                  <li>Enables assistive technologies to ignore DOM changes during the load process and then render the changes when the DOM is stable.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="article-role">
+              <th scope="row"><code>article</code></th>
+              <td></td>
+              <td><code>div</code></td>
+              <td>
+                <ul>
+                  <li>Identifies an element that contains content for a feed article.</li>
+                  <li>Feed articles and their content are Dynamically created in the JavaScript.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="article-tabindex">
+              <td></td>
+              <th scope="row"><code>tabindex="0"</code></th>
+              <td><code>div</code></td>
+              <td>
+                <ul>
+                  <li>Makes the article element focusable and includes it in the page <kbd>Tab</kbd> sequence.</li>
+                  <li>As the user reads, the feed loads additional articles based on either focus position or scroll position.</li>
+                  <li>Assistive technologies can ensure new articles are loaded and correctly visually positioned by ensuring that the article containing the assistive technology reading cursor has or contains DOM focus.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="article-labelledby">
+              <td></td>
+              <th scope="row"><code>aria-labelledby="IDREF_LIST"</code></th>
+              <td><code>div</code></td>
+              <td>
+                <ul>
+                  <li>Identifies one or more elements in the article that provide a distinguishing label.</li>
+                  <li>In this example, the restaurant name sufficiently identifies each article.</li>
+                  <li>Note: due to the nature of feeds, labels are often not unique.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="article-describedby">
+              <td></td>
+              <th scope="row"><code>aria-describedby="IDREF_LIST"</code></th>
+              <td><code>div</code></td>
+              <td>
+                <ul>
+                  <li>Refers to the list of elements that provide the main content of the article.</li>
+                  <li>Does not include elements that are identically repeated in every article, e.g., does not include the &quot;Bookmark&quot; button.</li>
+                  <li>Enables assistive technology users to skim the feed.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="article-aria-posinset">
+              <td></td>
+              <th scope="row"><code>aria-posinset="INTEGER"</code></th>
+              <td><code>div</code></td>
+              <td>
+                <ul>
+                  <li>Indicates the position of the article in the feed.</li>
+                  <li>Numbering starts with 1.</li>
+                  <li>Note: If articles are added to the beginning of the feed, all articles are renumbered.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="article-aria-setsize">
+              <td></td>
+              <th scope="row"><code>aria-setsize="INTEGER"</code></th>
+              <td><code>div</code></td>
+              <td>Set to the total number of articles currently contained by the feed element.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>JavaScript and CSS Source Code</h2>
+        <p>The following JavaScript and CSS is used by the feed-display.html page:</p>
+        <ul id="css_js_files">
+          <li>CSS: <a href="css/feedDisplay.css" type="tex/css">feedDisplay.css</a></li>
+          <li>JavaScript: <a href="js/feed.js" type="text/javascript">feed.js</a>, <a href="js/feedDisplay.js" type="text/javascript">feedDisplay.js</a>, <a href="js/main.js" type="text/javascript">main.js</a>, <a href="../../../shared/js/utils.js">utils.js</a></li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 id="sc1_label">HTML Source Code</h2>
+        <p>Please open <a href="feed-display.html">feed-display.html</a> and view source.</p>
+      </section>
+    </main>
+  </body>
+</html>

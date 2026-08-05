@@ -1,0 +1,94 @@
+.annotate {
+  font-style: italic;
+  color: #366ed4;
+}
+
+.hidden {
+  display: none !important;
+}
+
+[role="button"] {
+  cursor: pointer;
+}
+
+[aria-sort="ascending"] {
+  position: relative;
+}
+
+[aria-sort="ascending"]::after {
+  content: " ";
+  border-bottom: 0.4em solid black;
+  border-left: 0.4em solid transparent;
+  border-right: 0.4em solid transparent;
+  position: absolute;
+  right: 1em;
+  top: 0.8em;
+}
+
+[aria-sort="descending"] {
+  position: relative;
+}
+
+[aria-sort="descending"]::after {
+  content: " ";
+  border-left: 0.4em solid transparent;
+  border-right: 0.4em solid transparent;
+  border-top: 0.4em solid black;
+  position: absolute;
+  right: 1em;
+  top: 0.8em;
+}
+
+.edit-text-button {
+  color: #360;
+  display: block;
+  position: relative;
+}
+
+.edit-text-button::after {
+  background-image: url("../imgs/pencil-icon.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 44px;
+  content: " ";
+  height: 17px;
+  opacity: 0.6;
+  position: absolute;
+  right: -24px;
+  top: 0;
+  width: 20px;
+}
+
+.edit-text-button:hover,
+.edit-text-button:focus {
+  color: black;
+}
+
+.edit-text-button:hover::after,
+.edit-text-button:focus::after {
+  opacity: 1;
+}
+
+[role="gridcell"]:focus,
+[role="gridcell"] *:focus,
+[role="grid"] [tabindex="0"]:focus {
+  outline: #005a9c;
+  outline-style: dotted;
+  outline-width: 3px;
+}
+
+#arrow-keys-indicator {
+  bottom: 10px;
+  left: 0;
+  position: fixed;
+  height: 65px;
+  width: 85px;
+  background: url("../imgs/black_keys.png") no-repeat;
+  background-size: contain;
+}
+
+@media screen and (max-width: 1000px) {
+  #arrow-keys-indicator {
+    display: none;
+  }
+}

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Switch Example Using HTML Button</title>
+
+    <!-- Core JS and CSS shared by all examples -->
+    <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
+    <link rel="stylesheet" href="../../../shared/css/core.css">
+    <script src="../../../shared/js/examples.js"></script>
+    <script src="../../../shared/js/highlight.pack.js"></script>
+    <script src="../../../shared/js/app.js"></script>
+    <script data-skipto="colorTheme:aria; displayOption:popup; containerElement:div" src="../../../shared/js/skipto.js"></script>
+
+    <!-- JS and CSS for this example -->
+    <link href="css/switch-button.css" rel="stylesheet">
+    <script src="js/switch-button.js"></script>
+  </head>
+  <body>
+    <nav aria-label="Related Links" class="feedback">
+      <ul>
+        <li><a href="https://github.com/orgs/w3c/projects/123">Related Issues</a></li>
+        <li><a href="../switch-pattern.html">Design Pattern</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h1>Switch Example Using HTML Button</h1>
+
+      <section>
+        <h2>About This Example</h2>
+        <img alt="" class="example-page-example-icon" src="../../../images/pattern-switch.svg">
+        <p>
+          This example illustrates implementing the <a href="../switch-pattern.html">Switch Pattern</a> with an HTML <code>button</code> as a switch element and using an <code>SVG</code> element to provide graphical rendering of switch states.
+          It also demonstrates using the <code>group</code> role to present multiple switches in a labeled group.
+        </p>
+        <p>Similar examples include:</p>
+        <ul>
+          <li><a href="switch.html">Switch Example</a>: A switch based on a <code>div</code> element that turns a notification preference on and off.</li>
+          <li><a href="switch-checkbox.html">Switch Example Using HTML Checkbox Input</a>: A group of 2 switches based on HTML <code>input[type="checkbox"]</code> elements that turn accessibility preferences on and off.</li>
+        </ul>
+      </section>
+
+      <section>
+        <div class="example-header">
+          <h2 id="ex_label">Example</h2>
+        </div>
+        <div role="separator" id="ex_start_sep" aria-labelledby="ex_start_sep ex_label" aria-label="Start of"></div>
+        <div id="ex1">
+          <div role="group" aria-labelledby="id-group-label">
+            <h3 id="id-group-label">Environmental Controls</h3>
+            <button type="button" role="switch" aria-checked="false">
+              <span class="label">Living Room Lights</span>
+              <svg xmlns="http://www.w3.org/2000/svg" height="20" width="36">
+                <rect class="container" x="1" y="1" width="34" height="18" rx="4" />
+                <rect class="off" x="4" y="4" width="12" height="12" rx="4" />
+                <rect class="on" x="20" y="4" width="12" height="12" rx="4" />
+              </svg>
+              <span class="on" aria-hidden="true">On</span>
+              <span class="off" aria-hidden="true">Off</span>
+            </button>
+
+            <button type="button" role="switch" aria-checked="false">
+              <span class="label">Outdoor Lights</span>
+              <svg xmlns="http://www.w3.org/2000/svg" height="20" width="36">
+                <rect class="container" x="1" y="1" width="34" height="18" rx="4" />
+                <rect class="off" x="4" y="4" width="12" height="12" rx="4" />
+                <rect class="on" x="20" y="4" width="12" height="12" rx="4" />
+              </svg>
+              <span class="on" aria-hidden="true">On</span>
+              <span class="off" aria-hidden="true">Off</span>
+            </button>
+          </div>
+        </div>
+        <div role="separator" id="ex_end_sep" aria-labelledby="ex_end_sep ex_label" aria-label="End of"></div>
+      </section>
+
+      <section>
+        <h2>Accessibility Features</h2>
+        <ul>
+          <li>To help assistive technology users understand that the <q>Environmental Controls</q> are a group of two switches, the switches are wrapped in a <code>group</code> labeled by the heading that labels the set of switches.</li>
+          <li>
+            To make understanding the state of the switch easier for users with visual or cognitive disabilities, a text equivalent of the state (<q>on</q> or <q>off</q>) is displayed adjacent to the graphical state indicator.
+            CSS attribute selectors ensure the label displayed is synchronized with the value of the <code>aria-checked</code> attribute.<br>
+            <strong>NOTE:</strong> To prevent redundant announcement of the state by screen readers, the text indicators of state are hidden from assistive technologies with <code>aria-hidden</code>.
+          </li>
+          <li>
+            Spacing, stroke widths, and fill are important to ensure the graphical states will be visible and discernible to people with visual impairments, including when browser or operating system high contrast settings are enabled:
+            <ul>
+              <li>To make the graphical representation of the state of a switch readily perceivable, two pixel stroke width is used for the switch state container and a solid color is used to fill the rectangles indicating the on and off states.</li>
+              <li>To ensure users can perceive the difference between the container and the rectangles used to indicate the state of the switch, there are two pixels of space between the container border and the rectangles.</li>
+            </ul>
+          </li>
+          <li>
+            To enhance perceivability when operating the switches, visual keyboard focus and hover are styled using the CSS <code>:hover</code> and <code>:focus</code> pseudo-classes:
+            <ul>
+              <li>To make it easier to perceive focus and the relationship between a label and its associated switch, focus creates a border around both the switch and the label and also changes the background color.</li>
+              <li>To make it easier to perceive that clicking either the label or switch will activate the switch, the hover indicator is the same as the focus indicator.</li>
+              <li>To help people with visual impairments identify the switch as an interactive element, the cursor is changed to a pointer when hovering over the switch.</li>
+            </ul>
+          </li>
+          <li>
+            To ensure the SVG graphics have sufficient contrast with the background when high contrast settings invert colors, the CSS <code>currentcolor</code> value for the <code>stroke</code> and <code>fill</code> properties is used to synchronize the colors with text content.
+            If specific colors were used to specify the <code>stroke</code> and <code>fill</code> properties, the color of these elements would remain the same in high contrast mode, which could lead to insufficient contrast between them and their background or even make them invisible if their color were to match the high contrast mode background.
+            The <code>fill-opacity</code> of the container <code>rect</code> is set to zero for the background color of the page to provide the contrasting color to the <code>stroke</code> and <code>fill</code> colors.<br>
+            NOTE: The SVG elements need to set the CSS <code>forced-color-adjust</code> property to <code>auto</code> for some browsers to support the <code>currentcolor</code> value.
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 id="kbd_label">Keyboard Support</h2>
+        <table aria-labelledby="kbd_label" class="def">
+          <thead>
+            <tr>
+              <th>Key</th>
+              <th>Function</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="key-tab">
+              <th><kbd>Tab</kbd></th>
+              <td>
+                <ul>
+                  <li>Moves keyboard focus to the <code>switch</code>.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="key-space">
+              <th><kbd>Space</kbd>, <kbd>Enter</kbd></th>
+              <td>
+                <ul>
+                  <li>Toggle switch between on and off.</li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2 id="rps_label">Role, Property, State, and Tabindex Attributes</h2>
+        <table aria-labelledby="rps_label" class="data attributes">
+          <thead>
+            <tr>
+              <th scope="col">Role</th>
+              <th scope="col">Attribute</th>
+              <th scope="col">Element</th>
+              <th scope="col">Usage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="switch-role">
+              <th scope="row"><code>switch</code></th>
+              <td></td>
+              <td><code>button</code></td>
+              <td>Identifies the <code>button</code> element as a <code>switch</code>.</td>
+            </tr>
+            <tr data-test-id="switch-aria-checked">
+              <td></td>
+              <th scope="row"><code>aria-checked="false"</code></th>
+              <td><code>button</code></td>
+              <td>
+                <ul>
+                  <li>Indicates the <code>switch</code> is off.</li>
+                  <li>CSS attribute selectors (e.g. <code>[aria-checked="false"]</code>) are used to synchronize the visual states with the value of the <code>aria-checked</code> attribute.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="switch-aria-checked">
+              <td></td>
+              <th scope="row"><code>aria-checked="true"</code></th>
+              <td><code>button</code></td>
+              <td>
+                <ul>
+                  <li>Indicates the <code>switch</code> is on.</li>
+                  <li>CSS attribute selectors (e.g. <code>[aria-checked="true"]</code>) are used to synchronize the visual states with the value of the <code>aria-checked</code> attribute.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="aria-hidden">
+              <td></td>
+              <th scope="row"><code>aria-hidden="true"</code></th>
+              <td><code>span.on</code> and <code>span.off</code></td>
+              <td>
+                <ul>
+                  <li>Removes the strings <q>on</q> and <q>off</q> that appear to the right of the switch from the accessible name of the switch.</li>
+                  <li>These strings are included only for enhancing visual comprehension of the state; element states are not permitted in accessible names.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="h3">
+              <td></td>
+              <td></td>
+              <td><code>h3</code></td>
+              <td>Provides a grouping label for the group of switches.</td>
+            </tr>
+            <tr data-test-id="group-role">
+              <th scope="row"><code>group</code></th>
+              <td></td>
+              <td><code>div</code></td>
+              <td>Identifies the <code>div</code> element as a <code>group</code> container for the switches.</td>
+            </tr>
+            <tr data-test-id="group-aria-labelledby">
+              <td></td>
+              <th scope="row"><code>aria-labelledby</code></th>
+              <td><code>div</code></td>
+              <td>References the <code>h3</code> element to define the accessible name for the group of switches.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="at-support">
+        <h2>Assistive Technology Support</h2>
+        <p><a href="../../../about/at-support-tables/at-support-tables.html">Learn how to interpret and use assistive technology support data</a></p>
+        <iframe
+          class="support-levels-switch-button"
+          src="https://aria-at.w3.org/embed/reports/apg/switch-button"
+          height="100"
+          allow="clipboard-write"
+          style="border-style: none; width: 100%;">
+        </iframe>
+      </section>
+      
+      <section>
+        <h2>JavaScript and CSS Source Code</h2>
+        <!--  After the js and css files are named with the name of this example, change the href and text of the following 2 links to refer to the appropriate js and css files.  -->
+        <ul id="css_js_files">
+          <li>
+            CSS:
+            <a href="css/switch-button.css" type="text/css">switch-button.css</a>
+          </li>
+          <li>
+            JavaScript:
+            <a href="js/switch-button.js" type="text/javascript">switch-button.js</a>
+          </li>
+        </ul>
+      </section>
+
+      <section class="example-code">
+        <h2 id="sc1_label">HTML Source Code</h2>
+        <p id="sc1_description">To copy the following HTML code, please open it in CodePen.</p>
+        <div role="separator" id="sc1_start_sep" aria-labelledby="sc1_start_sep sc1_label" aria-label="Start of"></div>
+        <pre><code id="sc1"></code></pre>
+        <div role="separator" id="sc1_end_sep" aria-labelledby="sc1_end_sep sc1_label" aria-label="End of"></div>
+        <script>
+          sourceCode.add('sc1', 'ex1', 'ex_label', 'css_js_files', 'sc1_description');
+          sourceCode.make();
+        </script>
+      </section>
+    </main>
+  </body>
+</html>

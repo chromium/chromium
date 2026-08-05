@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Date Picker Dialog Example</title>
+
+    <!-- Core JS and CSS shared by all examples -->
+    <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
+    <link rel="stylesheet" href="../../../shared/css/core.css">
+    <script src="../../../shared/js/examples.js"></script>
+    <script src="../../../shared/js/highlight.pack.js"></script>
+    <script src="../../../shared/js/app.js"></script>
+    <script data-skipto="colorTheme:aria; displayOption:popup; containerElement:div" src="../../../shared/js/skipto.js"></script>
+
+    <!-- JS and CSS for this example -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+    <link href="css/datepicker-dialog.css" rel="stylesheet">
+    <script src="js/datepicker-dialog.js"></script>
+  </head>
+  <body>
+    <nav aria-label="Related Links" class="feedback">
+      <ul>
+        <li><a href="https://github.com/orgs/w3c/projects/140">Related Issues</a></li>
+        <li><a href="../dialog-modal-pattern.html">Design Pattern</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h1>Date Picker Dialog Example</h1>
+
+      <section>
+        <h2>About This Example</h2>
+        <img alt="" class="example-page-example-icon" src="../../../images/pattern-dialog-modal.svg">
+        <p>
+          The example below includes a date input field and a button that opens a date picker that implements the <a href="../dialog-modal-pattern.html">Dialog (Modal) Pattern</a>.
+          The dialog contains a calendar that uses the <a href="../../grid/grid-pattern.html">grid pattern</a> to present buttons that enable the user to choose a day from the calendar.
+          Choosing a date from the calendar closes the dialog and populates the date input field.
+          When the dialog is opened, if the input field is empty, or does not contain a valid date, then the current date is focused in the calendar.
+          Otherwise, the focus is placed on the day in the calendar that matches the value of the date input field.
+        </p>
+        <p>Similar examples include:</p>
+        <ul>
+          <li><a href="../../alertdialog/examples/alertdialog.html">Alert Dialog Example</a>: A confirmation prompt that demonstrates an alert dialog.</li>
+          <li><a href="dialog.html">Modal Dialog Example</a>: An example demonstrating multiple layers of modal dialogs with both small and large amounts of content.</li>
+          <li><a href="../../combobox/examples/combobox-datepicker.html">Date Picker Combobox</a>: An editable date input combobox that opens a dialog containing a calendar grid and buttons for navigating by month and year.</li>
+        </ul>
+      </section>
+
+      <section>
+        <div class="example-header">
+          <h2 id="ex_label">Example</h2>
+        </div>
+        <div role="separator" id="ex_start_sep" aria-labelledby="ex_start_sep ex_label" aria-label="Start of"></div>
+        <div id="example">
+          <div id="myDatepicker" class="datepicker">
+            <div class="date">
+              <label for="id-textbox-1">Date</label>
+
+              <div class="group">
+                <input type="text" placeholder="mm/dd/yyyy" id="id-textbox-1" aria-describedby="id-description-1">
+                <span class="desc" id="id-description-1">(<span class="sr-only">date format: </span>mm/dd/yyyy)</span>
+                <button type="button" class="icon" aria-label="Choose Date">
+                  <span class="fa fa-calendar-alt fa-2x"></span>
+                </button>
+              </div>
+            </div>
+
+            <div id="id-datepicker-1" class="datepicker-dialog" role="dialog" aria-modal="true" aria-label="Choose Date">
+              <div class="header">
+                <button type="button" class="prev-year" aria-label="previous year">
+                  <span class="fas fa-angle-double-left fa-lg"></span>
+                </button>
+
+                <button type="button" class="prev-month" aria-label="previous month">
+                  <span class="fas fa-angle-left fa-lg"></span>
+                </button>
+
+                <h2 id="id-grid-label" class="month-year" aria-live="polite">February 2020</h2>
+
+                <button type="button" class="next-month" aria-label="next month">
+                  <span class="fas fa-angle-right fa-lg"></span>
+                </button>
+
+                <button type="button" class="next-year" aria-label="next year">
+                  <span class="fas fa-angle-double-right fa-lg"></span>
+                </button>
+              </div>
+
+              <table class="dates" role="grid" aria-labelledby="id-grid-label">
+                <thead>
+                  <tr>
+                    <th scope="col" abbr="Sunday">Su</th>
+                    <th scope="col" abbr="Monday">Mo</th>
+                    <th scope="col" abbr="Tuesday">Tu</th>
+                    <th scope="col" abbr="Wednesday">We</th>
+                    <th scope="col" abbr="Thursday">Th</th>
+                    <th scope="col" abbr="Friday">Fr</th>
+                    <th scope="col" abbr="Saturday">Sa</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr>
+                    <td class="disabled" tabindex="-1"></td>
+                    <td class="disabled" tabindex="-1"></td>
+                    <td class="disabled" tabindex="-1"></td>
+                    <td class="disabled" tabindex="-1"></td>
+                    <td class="disabled" tabindex="-1"></td>
+                    <td class="disabled" tabindex="-1"></td>
+                    <td tabindex="-1" data-date="2020-02-01">1</td>
+                  </tr>
+                  <tr>
+                    <td tabindex="-1" data-date="2020-02-02">2</td>
+                    <td tabindex="-1" data-date="2020-02-03">3</td>
+                    <td tabindex="-1" data-date="2020-02-04">4</td>
+                    <td tabindex="-1" data-date="2020-02-05">5</td>
+                    <td tabindex="-1" data-date="2020-02-06">6</td>
+                    <td tabindex="-1" data-date="2020-02-07">7</td>
+                    <td tabindex="-1" data-date="2020-02-08">8</td>
+                  </tr>
+                  <tr>
+                    <td tabindex="-1" data-date="2020-02-09">9</td>
+                    <td tabindex="-1" data-date="2020-02-10">10</td>
+                    <td tabindex="-1" data-date="2020-02-11">11</td>
+                    <td tabindex="-1" data-date="2020-02-12">12</td>
+                    <td tabindex="-1" data-date="2020-02-13">13</td>
+                    <td tabindex="0" data-date="2020-02-14" role="gridcell" aria-selected="true">14</td>
+                    <td tabindex="-1" data-date="2020-02-15">15</td>
+                  </tr>
+                  <tr>
+                    <td tabindex="-1" data-date="2020-02-16">16</td>
+                    <td tabindex="-1" data-date="2020-02-17">17</td>
+                    <td tabindex="-1" data-date="2020-02-18">18</td>
+                    <td tabindex="-1" data-date="2020-02-19">19</td>
+                    <td tabindex="-1" data-date="2020-02-20">20</td>
+                    <td tabindex="-1" data-date="2020-02-21">21</td>
+                    <td tabindex="-1" data-date="2020-02-22">22</td>
+                  </tr>
+                  <tr>
+                    <td tabindex="-1" data-date="2020-02-23">23</td>
+                    <td tabindex="-1" data-date="2020-02-24">24</td>
+                    <td tabindex="-1" data-date="2020-02-25">25</td>
+                    <td tabindex="-1" data-date="2020-02-26">26</td>
+                    <td tabindex="-1" data-date="2020-02-27">27</td>
+                    <td tabindex="-1" data-date="2020-02-28">28</td>
+                    <td tabindex="-1" data-date="2020-02-29">29</td>
+                  </tr>
+                  <tr>
+                    <td tabindex="-1" data-date="2020-02-30">30</td>
+                    <td tabindex="-1" data-date="2020-02-31">31</td>
+                    <td class="disabled" tabindex="-1"></td>
+                    <td class="disabled" tabindex="-1"></td>
+                    <td class="disabled" tabindex="-1"></td>
+                    <td class="disabled" tabindex="-1"></td>
+                    <td class="disabled" tabindex="-1"></td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div class="dialog-ok-cancel-group">
+                <button class="dialog-button" value="cancel">Cancel</button>
+                <button class="dialog-button" value="ok">OK</button>
+              </div>
+              <div class="dialog-message" aria-live="polite"></div>
+            </div>
+          </div>
+        </div>
+        <div role="separator" id="ex_end_sep" aria-labelledby="ex_end_sep ex_label" aria-label="End of"></div>
+      </section>
+
+      <section>
+        <h2>Accessibility Features</h2>
+        <ul>
+          <li>The description of the date format is associated with the text input via <code>aria-describedby</code>, making it available to assistive technologies as an accessible description.</li>
+          <li>
+            After a date is chosen, the accessible name of the "Choose Date" button is changed to "Change Date, DATE_STRING" where DATE_STRING is the selected date.
+            So, when the dialog closes and focus returns to the button, screen reader users hear confirmation of the selected date.
+          </li>
+          <li>In the dialog, shortcut keys are assigned to the additional buttons for changing the month and year displayed in the calendar.</li>
+          <li>The calendar heading displaying the month and year is marked up as a live region so screen reader users get feedback from the buttons and keyboard commands that change the month and year.</li>
+          <li>
+            Keyboard help is displayed at the bottom of the dialog.
+            A live region is used to announce it to screen reader users when focus moves into the calendar grid.
+          </li>
+          <li>
+            To facilitate compact visual design in the calendar, the day names in the column headers are abbreviated to two characters.
+            However, this makes it more difficult for screen reader users to understand the day names.
+            So, full day names are provided to assistive technologies in the HTML <code>abbr</code> attribute on the column headers, enabling screen readers to announce the full names when users navigate the grid.
+          </li>
+          <li>
+            High contrast support for focus and hover styling of the controls in the dialog box use the CSS border property:
+            <ul>
+              <li>When a button or date cell receives focus a border is added.</li>
+              <li>When hovering over a button or date cell with a pointing device a border is added.</li>
+              <li>By default buttons and date cells do not have a border, padding is used as a placeholder for the added border for focus and hover styling.</li>
+            </ul>
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 id="kbd_label">Keyboard Support</h2>
+
+        <section>
+          <h3 id="kbd_label_2">Choose Date Button</h3>
+          <table aria-labelledby="kbd_label_2 kbd_label" class="def">
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Function</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-test-id="button-space-return">
+                <th><kbd>Space</kbd>,<br><kbd>Enter</kbd></th>
+                <td>
+                  <ul>
+                    <li>Open the date picker dialog.</li>
+                    <li>
+                      Move focus to selected date, i.e., the date displayed in the date input text field.
+                      If no date has been selected, places focus on the current date.
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <h3 id="kbd_label_3">Date Picker Dialog</h3>
+          <table aria-labelledby="kbd_label_3 kbd_label" class="def">
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Function</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-test-id="dialog-esc">
+                <th><kbd>ESC</kbd></th>
+                <td>Closes the dialog and returns focus to the "Choose Date" button.</td>
+              </tr>
+              <tr data-test-id="dialog-tab">
+                <th><kbd>Tab</kbd></th>
+                <td>
+                  <ul>
+                    <li>Moves focus to next element in the dialog <kbd>Tab</kbd> sequence.</li>
+                    <li>Note that, as specified in the <a href="../../grid/grid-pattern.html">Grid Pattern</a>, only one button in the calendar grid is in the <kbd>Tab</kbd> sequence.</li>
+                    <li>If focus is on the last button (i.e., "OK"), moves focus to the first button (i.e. "Previous Year").</li>
+                  </ul>
+                </td>
+              </tr>
+              <tr data-test-id="dialog-shift-tab">
+                <th><kbd>Shift</kbd> + <kbd>Tab</kbd></th>
+                <td>
+                  <ul>
+                    <li>Moves focus to previous element in the dialog <kbd>Tab</kbd> sequence.</li>
+                    <li>Note that, as specified in the <a href="../../grid/grid-pattern.html">Grid Pattern</a>, only one button in the calendar grid is in the <kbd>Tab</kbd> sequence.</li>
+                    <li>If focus is on the first button (i.e., "Previous Year"), moves focus to the last button (i.e. "OK").</li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <h3 id="kbd_label_4">Date Picker Dialog: Month/Year Buttons</h3>
+          <table aria-labelledby="kbd_label_4 kbd_label" class="def">
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Function</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-test-id="month-year-button-space-return">
+                <th><kbd>Space</kbd>,<br><kbd>Enter</kbd></th>
+                <td>Change the month and/or year displayed in the calendar grid.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <h3 id="kbd_label_5">Date Picker Dialog: Date Grid</h3>
+          <table aria-labelledby="kbd_label_5 kbd_label" class="def">
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Function</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-test-id="grid-space-return">
+                <th><kbd>Space</kbd>,<br><kbd>Enter</kbd></th>
+                <td>
+                  <ul>
+                    <li>Select the date, close the dialog, and move focus to the "Choose Date" button.</li>
+                    <li>Update the value of the "Date" input with the selected date.</li>
+                    <li>Update the accessible name of the "Choose Date" button to include the selected date.</li>
+                  </ul>
+                </td>
+              </tr>
+              <tr data-test-id="grid-up-arrow">
+                <th><kbd>Up Arrow</kbd></th>
+                <td>Moves focus to the same day of the previous week.</td>
+              </tr>
+              <tr data-test-id="grid-down-arrow">
+                <th><kbd>Down Arrow</kbd></th>
+                <td>Moves focus to the same day of the next week.</td>
+              </tr>
+              <tr data-test-id="grid-right-arrow">
+                <th><kbd>Right Arrow</kbd></th>
+                <td>Moves focus to the next day.</td>
+              </tr>
+              <tr data-test-id="grid-left-arrow">
+                <th><kbd>Left Arrow</kbd></th>
+                <td>Moves focus to the previous day.</td>
+              </tr>
+              <tr data-test-id="grid-home">
+                <th><kbd>Home</kbd></th>
+                <td>Moves focus to the first day (e.g Sunday) of the current week.</td>
+              </tr>
+              <tr data-test-id="grid-end">
+                <th><kbd>End</kbd></th>
+                <td>Moves focus to the last day (e.g. Saturday) of the current week.</td>
+              </tr>
+              <tr data-test-id="grid-pageup">
+                <th><kbd>Page Up</kbd></th>
+                <td>
+                  <ul>
+                    <li>Changes the grid of dates to the previous month.</li>
+                    <li>
+                      Moves focus to the day of the month that has the same number.
+                      If that day does not exist, moves focus to the last day of the month.
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+              <tr data-test-id="grid-shift-pageup">
+                <th><kbd>Shift</kbd> + <kbd>Page Up</kbd></th>
+                <td>
+                  <ul>
+                    <li>Changes the grid of dates to the same month in the previous year.</li>
+                    <li>
+                      Moves focus to the day of the month that has the same number.
+                      If that day does not exist, moves focus to the last day of the month.
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+              <tr data-test-id="grid-pagedown">
+                <th><kbd>Page Down</kbd></th>
+                <td>
+                  <ul>
+                    <li>Changes the grid of dates to the next month.</li>
+                    <li>
+                      Moves focus to the day of the month that has the same number.
+                      If that day does not exist, moves focus to the last day of the month.
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+              <tr data-test-id="grid-shift-pagedown">
+                <th><kbd>Shift</kbd> + <kbd>Page Down</kbd></th>
+                <td>
+                  <ul>
+                    <li>Changes the grid of dates to the same month in the next year.</li>
+                    <li>
+                      Moves focus to the day of the month that has the same number.
+                      If that day does not exist, moves focus to the last day of the month.
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <h3 id="kbd_label_6">Date Picker Dialog: OK and Cancel Buttons</h3>
+          <table aria-labelledby="kbd_label_6 kbd_label" class="def">
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Function</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-test-id="okay-cancel-button-space-return">
+                <th><kbd>Space</kbd>,<br><kbd>Enter</kbd></th>
+                <td>
+                  Activates the button:
+                  <ul>
+                    <li>"Cancel": Closes the dialog, moves focus to "Choose Date" button, does not update date in date input.</li>
+                    <li>"OK": Closes the dialog, moves focus to "Choose Date" button, updates date in date input, updates accessible name of the "Choose Date" button to include the selected date.</li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </section>
+
+      <section>
+        <h2 id="rps_label">Role, Property, State, and Tabindex Attributes</h2>
+
+        <section>
+          <h3 id="rps_label_textbox">Textbox</h3>
+          <table aria-labelledby="rps_label_textbox rps_label" class="data attributes">
+            <thead>
+              <tr>
+                <th scope="col">Role</th>
+                <th scope="col">Attribute</th>
+                <th scope="col">Element</th>
+                <th scope="col">Usage</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-test-id="textbox-aria-describedby">
+                <td></td>
+                <th scope="row"><code>aria-describedby="ID_REFERENCE"</code></th>
+                <td><code>input</code></td>
+                <td>Identifies the element that provides an accessible description for the textbox, enabling assistive technologies to associate the date format description with the input.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <h3 id="rps_label_2">Choose Date Button</h3>
+          <table aria-labelledby="rps_label_2 rps_label" class="data attributes">
+            <thead>
+              <tr>
+                <th scope="col">Role</th>
+                <th scope="col">Attribute</th>
+                <th scope="col">Element</th>
+                <th scope="col">Usage</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-test-id="calendar-button-aria-label">
+                <td></td>
+                <th scope="row"><code>aria-label="String"</code></th>
+                <td><code>button</code></td>
+                <td>
+                  <ul>
+                    <li>The initial value of accessible name is "Choose Date".</li>
+                    <li>When users select a date, the accessible name is changed to "Change Date, DATE_STRING" where DATE_STRING is the selected date.</li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <h3 id="rps_label_3">Date Picker Dialog</h3>
+          <table aria-labelledby="rps_label_3 rps_label" class="data attributes">
+            <thead>
+              <tr>
+                <th scope="col">Role</th>
+                <th scope="col">Attribute</th>
+                <th scope="col">Element</th>
+                <th scope="col">Usage</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-test-id="dialog-role">
+                <th scope="row"><code>dialog</code></th>
+                <td></td>
+                <td>
+                  <code>div</code>
+                </td>
+                <td>Identifies the element as a dialog .</td>
+              </tr>
+              <tr data-test-id="dialog-aria-modal">
+                <td></td>
+                <th scope="row"><code>aria-modal="true"</code></th>
+                <td><code>div</code></td>
+                <td>Indicates the dialog is modal.</td>
+              </tr>
+              <tr data-test-id="dialog-aria-label">
+                <td></td>
+                <th scope="row"><code>aria-label="string"</code></th>
+                <td><code>div</code></td>
+                <td>Defines the accessible name for the dialog.</td>
+              </tr>
+              <tr data-test-id="change-date-aria-live">
+                <td></td>
+                <th scope="row"><code>aria-live="polite"</code></th>
+                <td>
+                  <code>h2</code>
+                </td>
+                <td>
+                  <ul>
+                    <li>When the month and/or year changes the content of the <code>h2</code> element is updated.</li>
+                    <li>Indicates the <code>h2</code> should be automatically announced by screen readers.</li>
+                  </ul>
+                </td>
+              </tr>
+              <tr data-test-id="dialog-aria-live">
+                <td></td>
+                <th scope="row"><code>aria-live="polite"</code></th>
+                <td><code>div</code></td>
+                <td>
+                  <ul>
+                    <li>Indicates the element that displays information about keyboard commands for navigating the grid should be automatically announced by screen readers.</li>
+                    <li>The script slightly delays display of the information, so screen readers are more likely to read it after information related to change of focus.</li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <h3 id="rps_label_4">Date Picker Dialog: Calendar Navigation Buttons</h3>
+          <table aria-labelledby="rps_label_4 rps_label" class="data attributes">
+            <thead>
+              <tr>
+                <th scope="col">Role</th>
+                <th scope="col">Attribute</th>
+                <th scope="col">Element</th>
+                <th scope="col">Usage</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-test-id="change-date-button-aria-label">
+                <td></td>
+                <th scope="row"><code>aria-label="String"</code></th>
+                <td><code>button</code></td>
+                <td>Defines the accessible name of the button (e.g. "Next Year").</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <h3 id="rps_label_5">Date Picker Dialog: Date Grid</h3>
+          <table aria-labelledby="rps_label_5 rps_label" class="data attributes">
+            <thead>
+              <tr>
+                <th scope="col">Role</th>
+                <th scope="col">Attribute</th>
+                <th scope="col">Element</th>
+                <th scope="col">Usage</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-test-id="grid-role">
+                <th scope="row"><code>grid</code></th>
+                <td></td>
+                <td>
+                  <code>table</code>
+                </td>
+                <td>
+                  <ul>
+                    <li>Identifies the <code>table</code> element as a <code>grid</code> widget.</li>
+                    <li>Since the <code>grid</code> role is applied to a <code>table</code> element, the <code>row</code>, <code>columnheader</code>, and <code>gridcell</code> roles do not need to be specified because they are implied by <code>tr</code>, <code>th</code>, and <code>td</code> tags.</li>
+                  </ul>
+                </td>
+              </tr>
+              <tr data-test-id="grid-aria-labelledby">
+                <td></td>
+                <th scope="row"><code>aria-labelledby="ID_REFERENCE"</code></th>
+                <td><code>table</code></td>
+                <td>Identifies the element that provides the accessible name for the <code>grid</code>.</td>
+              </tr>
+              <tr data-test-id="gridcell-button-tabindex">
+                <td></td>
+                <th scope="row">
+                  <code>tabindex="0"</code>
+                </th>
+                <td>
+                  <code>td</code>
+                </td>
+                <td>
+                  <ul>
+                    <li>Makes the cell focusable and includes it in the dialog <kbd>Tab</kbd> sequence.</li>
+                    <li>Set dynamically by the JavaScript when the element is to be included in the dialog <kbd>Tab</kbd> sequence.</li>
+                    <li>At any given time, only one <code>gridcell</code> within the grid is in the dialog <kbd>Tab</kbd> sequence.</li>
+                    <li>
+                      This approach to managing focus is described in the section on
+                      <a href="../../../practices/keyboard-interface/keyboard-interface-practice.html#kbd_roving_tabindex">Managing Focus Within Components Using a Roving tabindex</a>.
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+              <tr data-test-id="gridcell-button-tabindex">
+                <td></td>
+                <th scope="row">
+                  <code>tabindex="-1"</code>
+                </th>
+                <td>
+                  <code>td</code>
+                </td>
+                <td>
+                  <ul>
+                    <li>Makes the cell focusable and excludes it from the dialog <kbd>Tab</kbd> sequence.</li>
+                    <li>Changed dynamically to <code>0</code> by the JavaScript when the cell is to be included in the dialog <kbd>Tab</kbd> sequence.</li>
+                    <li>At any given time, only one <code>gridcell</code> within the grid is in the dialog <kbd>Tab</kbd> sequence.</li>
+                    <li>
+                      This approach to managing focus is described in the section on
+                      <a href="../../../practices/keyboard-interface/keyboard-interface-practice.html#kbd_roving_tabindex">Managing Focus Within Components Using a Roving tabindex</a>.
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+              <tr data-test-id="gridcell-button-aria-selected">
+                <td></td>
+                <th scope="row"><code>aria-selected="true"</code></th>
+                <td><code>td</code></td>
+                <td>
+                  <ul>
+                    <li>Identifies the cell containing the currently selected date, i.e., the date value present in the date input.</li>
+                    <li>Only set on the cell containing the currently selected date; no other cells have <code>aria-selected</code> specified.</li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <p>
+            <strong>Note:</strong> Since the names of the days of the week in the column headers are abbreviated to two characters, they may be difficult to understand when announced by a screen reader.
+            An alternative column header name can be provided to screen readers by applying the <code>abbr</code> attribute to the <code>th</code> elements.
+            So, each <code>th</code> element includes a <code>abbr</code> attribute containing the full spelling of the name of the day for that column.
+          </p>
+        </section>
+      </section>
+
+      <section>
+        <h2>JavaScript and CSS Source Code</h2>
+        <ul id="css_js_files">
+          <li>
+            CSS:
+            <a href="css/datepicker-dialog.css" type="text/css">datepicker-dialog.css</a>
+          </li>
+          <li>
+            JavaScript:
+            <a href="js/datepicker-dialog.js" type="text/javascript">datepicker-dialog.js</a>
+          </li>
+        </ul>
+      </section>
+
+      <section class="example-code">
+        <h2 id="sc1_label">HTML Source Code</h2>
+        <p id="sc1_description">To copy the following HTML code, please open it in CodePen.</p>
+        <div role="separator" id="sc1_start_sep" aria-labelledby="sc1_start_sep sc1_label" aria-label="Start of"></div>
+        <pre><code id="sc1"></code></pre>
+        <div role="separator" id="sc1_end_sep" aria-labelledby="sc1_end_sep sc1_label" aria-label="End of"></div>
+        <script>
+          sourceCode.add('sc1', 'example', 'ex_label', 'css_js_files', 'sc1_description');
+          sourceCode.make();
+        </script>
+      </section>
+    </main>
+  </body>
+</html>

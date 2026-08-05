@@ -1,0 +1,215 @@
+.tabs {
+  --color-1-hue: 200;
+  --color-1-sat: 0%;
+  --light-max: 100%;
+  --light-inactive: 92%;
+  --light-interest: 94%;
+  --light-diminish: 60%;
+  --light-dark: 35%;
+  --light-min: 0%;
+  --border-radius: 0.25rem;
+  --selected-tab-accent-color: rgb(36 116 214);
+  --selected-tab-accent-block-size: 0.4rem;
+
+  font-family: system-ui, sans-serif;
+  margin-block-start: 2rem;
+}
+
+.tabs * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+  fill: currentcolor;
+}
+
+.tabs svg {
+  display: block;
+}
+
+.tabs output {
+  display: block;
+}
+
+.tabs output span {
+  display: inline-block;
+  padding: 0.25rem 1ch;
+  font-size: 1rem;
+  font-weight: bold;
+  background-color: darkgreen;
+  color: white;
+  border-radius: 0.25rem;
+}
+
+.tabs output span.error {
+  background-color: darkred;
+}
+
+.tabs button[data-operation] {
+  line-height: 1;
+}
+
+[role="tablist"] {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5ch;
+  z-index: 1;
+  margin-block-start: 1rem;
+  padding-block-start: var(--selected-tab-accent-block-size);
+}
+
+[role="tablist"] > * {
+  position: relative;
+  border: 1px solid
+    hsl(var(--color-1-hue) var(--color-1-sat) var(--light-diminish));
+  background-color: hsl(
+    var(--color-1-hue) var(--color-1-sat) var(--light-inactive)
+  );
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+
+[role="tablist"] > *:hover {
+  background-color: hsl(
+    var(--color-1-hue) var(--color-1-sat) var(--light-interest)
+  );
+}
+
+[role="tablist"] > .tab-wrapper {
+  display: flex;
+}
+
+[role="tab"],
+[role="tab"] ~ button,
+[role="tab"] ~ .menu-button-actions > button {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-inline-size: 6ch;
+  padding: 2ch;
+  color: hsl(var(--color-1-hue) var(--color-1-sat) var(--light-dark));
+  outline: 3px solid transparent;
+}
+
+[role="tab"] {
+  font-weight: bold;
+  text-align: start;
+}
+
+[role="tab"]::before,
+[role="tab"] ~ button::before,
+[role="tab"] ~ .menu-button-actions > button::before {
+  content: "";
+  display: block;
+  position: absolute;
+  inset-block: 0.3rem;
+  inset-inline: 0.3rem;
+  border: 0.2rem solid transparent;
+  outline: 0.2rem solid transparent;
+  outline-offset: -0.4rem;
+}
+
+[role="tab"]:focus::before,
+[role="tab"] ~ button:focus::before,
+[role="tab"] ~ .menu-button-actions > button:focus::before {
+  border-color: blue;
+  outline-color: white;
+}
+
+[role="tab"]:hover,
+[role="tab"]:focus,
+[role="tab"] ~ button:hover,
+[role="tab"] ~ button:focus,
+[role="tab"] ~ .menu-button-actions > button:hover,
+[role="tab"] ~ .menu-button-actions > button:focus {
+  color: hsl(var(--color-1-hue) var(--color-1-sat) var(--light-min));
+  outline-color: transparent;
+}
+
+[role="tab"][aria-selected="true"],
+.tab-wrapper:has([role="tab"][aria-selected="true"]) {
+  color: hsl(var(--color-1-hue) var(--color-1-sat) var(--light-min));
+  background-color: hsl(var(--color-1-hue) var(--color-1-sat) var(--light-max));
+}
+
+[role="tablist"] > [role="tab"][aria-selected="true"],
+[role="tablist"] > .tab-wrapper:has([role="tab"][aria-selected="true"]) {
+  border-radius: 0;
+  border-block-end-color: hsl(
+    var(--color-1-hue) var(--color-1-sat) var(--light-max)
+  );
+}
+
+[role="tablist"] > [role="tab"][aria-selected="true"]::after,
+[role="tablist"] > .tab-wrapper:has([role="tab"][aria-selected="true"])::after {
+  content: "";
+  position: absolute;
+  inset-block-start: calc(-1 * var(--selected-tab-accent-block-size));
+  inset-inline-start: -1px;
+  inset-inline-end: -1px;
+  block-size: var(--selected-tab-accent-block-size);
+  background-color: var(--selected-tab-accent-color);
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+
+[role="tabpanel"] {
+  position: relative;
+  z-index: 0;
+  top: -1px;
+  overflow: auto;
+  padding: 1em 2ch;
+  min-block-size: 10em;
+  margin-block-end: 1rem;
+  background-color: hsl(var(--color-1-hue) var(--color-1-sat) var(--light-max));
+  border: 1px solid
+    hsl(var(--color-1-hue) var(--color-1-sat) var(--light-diminish));
+  border-radius: 0 var(--border-radius) var(--border-radius);
+}
+
+[role="tabpanel"].is-hidden {
+  display: none;
+}
+
+/* -------------------------------------------------------------------------- */
+
+.menu-button-actions {
+  position: relative;
+  display: flex;
+  z-index: 1;
+}
+
+.menu-button-actions [role="menu"] {
+  position: absolute;
+  inset-block-start: calc(100% - 1em);
+  inset-inline-start: 0%;
+  list-style: none;
+  font-size: 0.85rem;
+  min-inline-size: 28ch;
+  padding: 1ch;
+  background-color: white;
+  border: 1px solid
+    hsl(var(--color-1-hue) var(--color-1-sat) var(--light-diminish));
+  box-shadow: 0 0.25ch 0.5ch rgb(0 0 0 / 25%);
+  color: hsl(var(--color-1-hue) var(--color-1-sat) var(--light-min));
+}
+
+.menu-button-actions [aria-expanded="true"] svg {
+  rotate: 180deg;
+}
+
+.menu-button-actions [aria-expanded="false"] + [role="menu"] {
+  display: none;
+}
+
+.menu-button-actions [role="menuitem"] {
+  cursor: default;
+  padding: 0.5ch;
+}
+
+.menu-button-actions [role="menuitem"]:hover,
+.menu-button-actions [role="menuitem"]:focus {
+  color: blue;
+}

@@ -1,0 +1,202 @@
+@charset "utf-8";
+
+.menubar-editor {
+  margin: 0;
+  padding: 2px;
+  width: 560px;
+}
+
+.menubar-editor.focus {
+  padding: 0;
+  border: solid 2px #034575;
+}
+
+.menubar-editor textarea {
+  padding: 4px;
+  margin: 0;
+  border: 2px solid #eee;
+  height: 400px;
+  width: 548px;
+  font-size: medium;
+  font-family: sans-serif;
+}
+
+.menubar-editor [role="menubar"] {
+  margin: 0;
+  padding: 2px;
+  border: 2px solid #eee;
+  font-size: 110%;
+  list-style: none;
+  background-color: #eee;
+  height: 32px;
+  display: block;
+}
+
+.menubar-editor [role="menubar"] li {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.menubar-editor [role="menubar"] > li {
+  display: inline-block;
+  position: relative;
+  top: 3px;
+  left: 1px;
+}
+
+.menubar-editor [role="menubar"] [role="menuitem"] > [aria-hidden]::before {
+  content: "▼";
+  padding-left: 0.25rem;
+  font-size: 11px;
+  vertical-align: middle;
+}
+
+.menubar-editor
+  [role="menubar"]
+  [role="menuitem"][aria-expanded="true"]
+  > [aria-hidden]::before {
+  content: "▲";
+}
+
+.menubar-editor [role="menubar"] [role="menu"] {
+  display: none;
+  margin: 0;
+  padding: 2px;
+  position: absolute;
+  border: 2px solid #034575;
+  background-color: #eee;
+}
+
+.menubar-editor [role="menubar"] [role="group"] {
+  margin: 0;
+  padding: 0;
+}
+
+.menubar-editor [role="menubar"] [role="menuitem"][aria-disabled="true"] {
+  color: #666;
+  text-decoration: line-through;
+}
+
+.menubar-editor [role="menubar"] [role="separator"] {
+  padding-top: 3px;
+  background-image: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='utf-8'%3F%3E%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cline x1='0' y1='6' x2='12' y2='6' style='stroke:black;stroke-width:1' /%3E%3C/svg%3E%0A");
+  background-size: 10px 10px;
+  background-position: center;
+  background-repeat: repeat-x;
+}
+
+.menubar-editor [role="menubar"] [role="menuitem"],
+.menubar-editor [role="menubar"] [role="menuitemcheckbox"],
+.menubar-editor [role="menubar"] [role="menuitemradio"],
+.menubar-editor [role="menubar"] [role="separator"] {
+  padding: 6px;
+  background-color: #eee;
+  border: 0 solid #eee;
+  color: black;
+}
+
+.menubar-editor [role="menubar"] [role="menuitem"][aria-expanded="true"] {
+  padding: 4px;
+  border: 2px solid #034575;
+  background-color: #034575;
+  color: #fff;
+  outline: none;
+}
+
+.menubar-editor [role="menubar"] [role="menu"] [role="menuitem"],
+.menubar-editor [role="menubar"] [role="menu"] [role="menuitemcheckbox"],
+.menubar-editor [role="menubar"] [role="menu"] [role="menuitemradio"],
+.menubar-editor [role="menubar"] [role="menu"] [role="separator"] {
+  padding-left: 27px;
+  width: 8em;
+}
+
+.menubar-editor [role="menubar"] [role="menu"] [aria-checked="true"] {
+  padding: 6px;
+  padding-left: 8px;
+  padding-right: 18px;
+}
+
+.menubar-editor
+  [role="menubar"]
+  [role="menuitemradio"][aria-checked="true"]
+  > [aria-hidden]::before {
+  content: "●";
+  display: inline-block;
+  width: 18px;
+}
+
+.menubar-editor
+  [role="menubar"]
+  [role="menuitemcheckbox"][aria-checked="true"]
+  > [aria-hidden]::before {
+  content: "✓";
+  display: inline-block;
+  width: 18px;
+}
+
+/* focus and hover styling */
+
+.menubar-editor [role="menubar"] [role="menuitem"]:focus,
+.menubar-editor [role="menubar"] [role="menuitemcheckbox"]:focus,
+.menubar-editor [role="menubar"] [role="menuitemradio"]:focus {
+  padding: 4px;
+  border: 2px solid #034575;
+  background-color: #034575;
+  color: #fff;
+  outline: none;
+}
+
+.menubar-editor
+  [role="menubar"]
+  [role="menuitemradio"][aria-checked="true"]:focus
+  > [aria-hidden]::before,
+.menubar-editor
+  [role="menubar"]
+  [role="menuitemcheckbox"][aria-checked="true"]:focus
+  > [aria-hidden]::before {
+  margin-left: -2px;
+}
+
+.menubar-editor [role="menubar"] [role="menuitem"]:hover {
+  padding: 4px;
+  border: 2px solid #034575;
+}
+
+.menubar-editor [role="menubar"] [role="menu"] [role="menuitem"]:focus,
+.menubar-editor [role="menubar"] [role="menu"] [role="menuitemcheckbox"]:focus,
+.menubar-editor [role="menubar"] [role="menu"] [role="menuitemradio"]:focus {
+  padding-left: 25px;
+}
+
+.menubar-editor
+  [role="menubar"]
+  [role="menu"]
+  [role="menuitem"][aria-checked="true"]:focus,
+.menubar-editor
+  [role="menubar"]
+  [role="menu"]
+  [role="menuitemcheckbox"][aria-checked="true"]:focus,
+.menubar-editor
+  [role="menubar"]
+  [role="menu"]
+  [role="menuitemradio"][aria-checked="true"]:focus {
+  padding-left: 8px;
+  padding-right: 21px;
+}
+
+/*
+* Text area styles
+*/
+.menubar-editor .italic {
+  font-style: italic;
+}
+
+.menubar-editor .bold {
+  font-weight: bold;
+}
+
+.menubar-editor .underline {
+  text-decoration: underline;
+}

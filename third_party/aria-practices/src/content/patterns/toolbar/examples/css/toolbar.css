@@ -1,0 +1,178 @@
+[role="toolbar"] {
+  border: 2px solid transparent;
+  border-radius: 5px;
+  padding: 6px;
+  height: 44px;
+  width: 1050px;
+  background-color: #ececea;
+}
+
+[role="toolbar"].focus {
+  border-color: #005a9c;
+  border-width: 3px;
+  padding: 5px;
+}
+
+[role="toolbar"] .group {
+  padding: 0.25em;
+  display: block;
+  float: left;
+}
+
+[role="toolbar"] .group:not(:first-child) {
+  margin-left: 0.75em;
+}
+
+[role="toolbar"] button,
+[role="toolbar"] [role="radio"],
+[role="toolbar"] label,
+[role="toolbar"] .spinbutton,
+[role="toolbar"] a,
+[role="toolbar"] .input {
+  border: 1px solid rgb(255 255 255);
+  outline: none;
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 5px;
+  text-align: center;
+  background: rgb(255 255 255);
+  color: #222428;
+  font-size: 14px;
+  line-height: 1.5em;
+  margin-right: 0.25em;
+}
+
+[role="toolbar"] button.popup {
+  position: relative;
+}
+
+[role="toolbar"] button .popup-label {
+  display: block;
+  width: initial;
+  border: 1px solid white;
+  padding: 2px 4px;
+  border-radius: 5px;
+  position: absolute;
+  top: -30000em;
+  background-color: black;
+  color: white;
+  font-weight: normal;
+}
+
+[role="toolbar"] button .popup-label.show {
+  text-align: center;
+  top: -2.5em;
+}
+
+[role="toolbar"] button .popup-label::after,
+[role="toolbar"] button .popup-label::before {
+  top: 100%;
+  left: 50%;
+  border: solid transparent;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+}
+
+[role="toolbar"] button .popup-label::after {
+  border-color: rgb(0 0 0 / 0%);
+  border-top-color: #000;
+  border-width: 10px;
+  margin-left: -10px;
+}
+
+[role="toolbar"] button .popup-label::before {
+  border-color: rgb(255 255 255 / 0%);
+  border-top-color: #fff;
+  border-width: 12px;
+  margin-left: -12px;
+}
+
+[role="toolbar"] button[aria-pressed="true"],
+[role="toolbar"] [role="radio"][aria-checked="true"] {
+  border-color: #555;
+  font-weight: bold;
+  background-color: #f4f4f4;
+}
+
+[role="toolbar"] button[aria-disabled="true"] {
+  color: #889;
+  cursor: not-allowed;
+}
+
+[role="toolbar"] button[aria-disabled="true"]:focus {
+  border-color: #005a9c;
+}
+
+[role="toolbar"] button::-moz-focus-inner {
+  border: 0;
+}
+
+[role="toolbar"] button:focus,
+[role="toolbar"] [role="radio"]:focus,
+[role="toolbar"] .spinbutton:focus,
+[role="toolbar"] .focus,
+[role="toolbar"] a:focus {
+  border-width: 2px;
+  border-color: #005a9c;
+  background: rgb(226 239 255);
+  padding: 5px 11px;
+}
+
+[role="toolbar"] button:hover,
+[role="toolbar"] [role="radio"]:hover,
+[role="toolbar"] .spinbutton:hover,
+[role="toolbar"] label.input:hover,
+[role="toolbar"] a:hover {
+  border-color: #005a9c;
+  background: rgb(226 239 255);
+}
+
+[role="toolbar"] [role="spinbutton"] .value,
+[role="toolbar"] [role="spinbutton"] .increase,
+[role="toolbar"] [role="spinbutton"] .decrease {
+  width: 60px;
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+}
+
+[role="toolbar"] button[aria-haspopup] span {
+  float: right;
+}
+
+[role="toolbar"] button[aria-haspopup] span::after {
+  content: url("../images/pulldown-icon.svg");
+}
+
+[role="toolbar"] button[aria-haspopup]:focus span::after {
+  content: url("../images/pulldown-icon-focus.svg");
+}
+
+[role="toolbar"] [role="spinbutton"] .increase,
+[role="toolbar"] [role="spinbutton"] .decrease {
+  width: 20px;
+  border: 1px solid #ececea;
+  border-radius: 3px;
+  background-color: #ececea;
+}
+
+[role="toolbar"] [role="spinbutton"] .increase:hover,
+[role="toolbar"] [role="spinbutton"] .decrease:hover,
+[role="toolbar"] [role="spinbutton"]:focus .increase,
+[role="toolbar"] [role="spinbutton"]:focus .decrease {
+  fill: #005a9c;
+  border-color: #005a9c;
+}
+
+textarea {
+  width: 990px;
+  padding: 0.25em;
+  border: 2px solid black;
+  height: 400px;
+  font-size: 14pt;
+  font-family: sans-serif;
+  border-radius: 5px;
+}

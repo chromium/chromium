@@ -1,0 +1,16 @@
+[role="meter"] {
+  padding: 2px;
+  width: 200px;
+  height: 40px;
+  border: 2px solid black;
+  border-radius: 5px;
+}
+
+.fill {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  border: 2px solid black;
+  border-radius: 3px;
+  background-color: black;
+}

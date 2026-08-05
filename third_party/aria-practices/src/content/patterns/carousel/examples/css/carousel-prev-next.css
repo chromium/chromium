@@ -1,0 +1,285 @@
+/* .carousel */
+
+img.reload {
+  padding: 0.25em;
+  display: block-inline;
+  position: relative;
+  top: 6px;
+  height: 0.9em;
+}
+
+.carousel {
+  background-color: #eee;
+  max-width: 900px;
+}
+
+.carousel .carousel-inner {
+  position: relative;
+}
+
+.carousel .carousel-items {
+  padding: 5px;
+}
+
+.carousel .carousel-items.focus {
+  padding: 2px;
+  border: solid 3px #005a9c;
+}
+
+.carousel .carousel-item {
+  display: none;
+  max-height: 400px;
+  max-width: 900px;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+.carousel .carousel-item.active {
+  display: block;
+}
+
+/* More like bootstrap, less accessible */
+
+.carousel .carousel-item .carousel-image a img {
+  height: 100%;
+  width: 100%;
+}
+
+.carousel .carousel-item .carousel-caption a {
+  cursor: pointer;
+  text-decoration: underline;
+  color: #fff;
+  font-weight: 600;
+}
+
+.carousel .carousel-item .carousel-caption a,
+.carousel .carousel-item .carousel-caption span.contrast {
+  display: inline-block;
+  margin: 0;
+  padding: 6px;
+  background-color: rgb(0 0 0 / 65%);
+  border-radius: 5px;
+  border: 0 solid transparent;
+}
+
+.carousel-moreaccessible .carousel-items .carousel-image a {
+  display: block;
+  margin: 0;
+  padding: 5px;
+  text-decoration: none;
+  border: none;
+}
+
+.carousel-moreaccessible .carousel-item .carousel-caption a {
+  display: inline-block;
+  margin: 0;
+  padding: 6px;
+  color: black;
+  background-color: transparent;
+  border: none;
+  border-radius: 5px;
+}
+
+.carousel-moreaccessible .carousel-item .carousel-caption span.contrast,
+.carousel-moreaccessible .carousel-item .carousel-caption span.contrast:hover {
+  background-color: transparent;
+}
+
+.carousel .carousel-item .carousel-caption a:hover,
+.carousel .carousel-item .carousel-caption span.contrast:hover {
+  background-color: rgb(0 0 0 / 100%);
+}
+
+.carousel .carousel-item .carousel-caption a:focus {
+  padding: 4px;
+  border: 2px solid #fff;
+  background-color: rgb(0 0 0 / 100%);
+  outline: none;
+  border-width: 2px solid #fff;
+  color: #fff;
+}
+
+.carousel .carousel-item .carousel-caption p {
+  font-size: 1em;
+  line-height: 1.5;
+  margin-bottom: 0;
+}
+
+.carousel .carousel-item .carousel-caption {
+  position: absolute;
+  right: 15%;
+  bottom: 0;
+  left: 15%;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  color: #fff;
+  text-align: center;
+}
+
+/* Shared CSS for Pause, Previous and Next Buttons */
+
+.carousel .controls {
+  box-sizing: border-box;
+  position: absolute;
+  top: 1em;
+  z-index: 10;
+  display: flex;
+  width: 100%;
+  padding: 0.25em 1.25em 0;
+}
+
+.carousel .controls button {
+  position: absolute;
+  z-index: 10;
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  outline: none;
+}
+
+.carousel .controls button.previous {
+  right: 70px;
+}
+
+.carousel .controls button.next {
+  right: 18px;
+}
+
+/* SVG Controls */
+
+.carousel .controls svg .background {
+  stroke: black;
+  fill: black;
+  stroke-width: 1px;
+  opacity: 0.6;
+}
+
+.carousel .controls svg .border {
+  fill: transparent;
+  stroke: transparent;
+  stroke-width: 2px;
+}
+
+.carousel .controls svg .pause {
+  stroke-width: 4;
+  fill: transparent;
+  stroke: transparent;
+}
+
+.carousel .controls svg .play {
+  stroke-width: 1;
+  fill: transparent;
+  stroke: transparent;
+}
+
+.carousel .controls .pause svg .pause {
+  fill: white;
+  stroke: white;
+}
+
+.carousel .controls .play svg .play {
+  fill: white;
+  stroke: white;
+}
+
+.carousel .controls svg polygon {
+  fill: white;
+  stroke: white;
+}
+
+.carousel .controls button:focus svg .background,
+.carousel .controls button:hover svg .background,
+.carousel .controls button:hover svg .border {
+  fill: #005a9c;
+  stroke: #005a9c;
+  opacity: 1;
+}
+
+.carousel .controls button:focus svg .border {
+  stroke: white;
+}
+
+/* More accessible carousel styles, with caption and controls above/below image */
+
+.carousel-moreaccessible {
+  padding: 0;
+  margin: 0;
+  position: relative;
+  border: #eee solid 4px;
+  border-radius: 5px;
+}
+
+/* Shared CSS for Pause and Tab Controls */
+
+.carousel-moreaccessible .controls {
+  position: relative;
+  top: 0;
+  left: 0;
+  padding: 0.25em 0.25em 0;
+}
+
+.carousel.carousel-moreaccessible .controls {
+  position: static;
+  height: 36px;
+}
+
+.carousel.carousel-moreaccessible .controls button.previous {
+  right: 60px;
+}
+
+.carousel.carousel-moreaccessible .controls button.next {
+  right: 6px;
+}
+
+.carousel-moreaccessible .carousel-items,
+.carousel-moreaccessible .carousel-items.focus {
+  padding: 0;
+  border: none;
+}
+
+.carousel-moreaccessible .carousel-items.focus .carousel-image a {
+  padding: 2px;
+  border: 3px solid #005a9c;
+}
+
+/* More accessible caption styling */
+
+.carousel-moreaccessible .carousel-item {
+  padding: 0;
+  margin: 0;
+  max-height: none;
+}
+
+.carousel-moreaccessible .carousel-item .carousel-caption {
+  position: static;
+  padding: 0;
+  margin: 0;
+  height: 60px;
+  color: black;
+}
+
+.carousel-moreaccessible .carousel-item .carousel-caption p {
+  padding: 0;
+  margin: 0;
+}
+
+.carousel-moreaccessible .carousel-item .carousel-caption h3 {
+  font-size: 1.1em;
+  padding: 0;
+  margin: 0;
+}
+
+.carousel-moreaccessible .carousel-item .carousel-caption a:hover {
+  background-color: rgb(0 0 0 / 20%);
+}
+
+.carousel-moreaccessible .carousel-item .carousel-caption a:focus {
+  padding: 4px;
+  border: 2px solid #005a9c;
+  background-color: transparent;
+  color: black;
+  outline: none;
+}

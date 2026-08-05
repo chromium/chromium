@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select-Only Combobox Example</title>
+
+    <!-- Core JS and CSS shared by all examples -->
+    <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
+    <link rel="stylesheet" href="../../../shared/css/core.css">
+    <script src="../../../shared/js/examples.js"></script>
+    <script src="../../../shared/js/highlight.pack.js"></script>
+    <script src="../../../shared/js/app.js"></script>
+    <script data-skipto="colorTheme:aria; displayOption:popup; containerElement:div" src="../../../shared/js/skipto.js"></script>
+
+    <!-- JS and CSS for this example -->
+    <link href="css/select-only.css" rel="stylesheet">
+    <script src="js/select-only.js"></script>
+  </head>
+  <body>
+    <nav aria-label="Related Links" class="feedback">
+      <ul>
+        <li><a href="https://github.com/orgs/w3c/projects/118">Related Issues</a></li>
+        <li><a href="../combobox-pattern.html">Design Pattern</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h1>Select-Only Combobox Example</h1>
+
+      <section>
+        <h2>About This Example</h2>
+        <img alt="" class="example-page-example-icon" src="../../../images/pattern-combobox.svg">
+        <p>
+          The following example implementation of the <a href="../combobox-pattern.html">Combobox Pattern</a> demonstrates a single-select combobox widget that is functionally similar to an HTML <code>select</code> element.
+          Unlike the editable combobox examples, this select-only combobox is not made with an <code>&lt;input&gt;</code> element, and it does not accept freeform user input.
+          However, like an HTML <code>&lt;select&gt;</code>, users can type characters to select matching options.
+        </p>
+        <p>Similar examples include:</p>
+        <ul>
+          <li><a href="combobox-autocomplete-both.html">Editable Combobox with Both List and Inline Autocomplete</a>: An editable combobox that demonstrates the autocomplete behavior known as <q>list with inline autocomplete</q>.</li>
+          <li><a href="combobox-autocomplete-list.html">Editable Combobox with List Autocomplete</a>: An editable combobox that demonstrates the autocomplete behavior known as <q>list with manual selection</q>.</li>
+          <li><a href="combobox-autocomplete-none.html">Editable Combobox Without Autocomplete</a>: An editable combobox that demonstrates the behavior associated with <code>aria-autocomplete=none</code>.</li>
+          <li><a href="grid-combo.html">Editable Combobox with Grid Popup</a>: An editable combobox that presents suggestions in a grid, enabling users to navigate descriptive information about each suggestion.</li>
+          <li><a href="combobox-datepicker.html">Date Picker Combobox</a>: An editable date input combobox that opens a dialog containing a calendar grid and buttons for navigating by month and year.</li>
+        </ul>
+      </section>
+
+      <section>
+        <div class="example-header">
+          <h2 id="ex_label">Example</h2>
+        </div>
+        <div role="separator" id="ex_start_sep" aria-labelledby="ex_start_sep ex_label" aria-label="Start of"></div>
+        <div id="ex1">
+          <div class="combo js-select">
+            <div id="combo1-label" class="combo-label">Favorite Fruit</div>
+            <div aria-controls="listbox1" aria-expanded="false" aria-haspopup="listbox" aria-labelledby="combo1-label" id="combo1" class="combo-input" role="combobox" tabindex="0"></div>
+            <div class="combo-menu" role="listbox" id="listbox1" aria-labelledby="combo1-label" tabindex="-1">
+              <!-- options are inserted here -->
+              <!-- e.g. <div role="option" id="op1">option text</div>  -->
+            </div>
+          </div>
+        </div>
+        <div role="separator" id="ex_end_sep" aria-labelledby="ex_end_sep ex_label" aria-label="End of"></div>
+      </section>
+
+      <section>
+        <h2>Accessibility Features</h2>
+        <p>While the functionality and user experience of this example are nearly equivalent to an HTML <code>select</code> element with the attribute <code>size="1"</code>, the following differences in behavior are implemented to improve both accessibility and general usability.</p>
+        <ol>
+          <li>
+            If the combobox is collapsed and the user types printable characters, the listbox is displayed and receives accessibility focus via <code>aria-activedescendant</code>.
+            This enables users to perceive the presence of the options, and enables assistive technology users to comprehend the size of the list of options.</li>
+          <li>
+            Navigating the list of options does not set the value of the input.
+            This gives screen reader users, who need to navigate among the options to perceive them, the ability to explore options without losing the current value of the input.
+            The value is set when users press <kbd>Space</kbd>, <kbd>Enter</kbd>, or <kbd>Tab</kbd>, or when focus moves out of the combobox.
+            The current value is retained if the listbox is closed with <kbd>Escape</kbd> or if the user collapses the list by clicking the input.
+          </li>
+          <li>
+            Browsers do not manage visibility of elements referenced by <code>aria-activedescendant</code> like they do for elements with focus.
+            When a keyboard event changes the active option in the listbox, the JavaScript scrolls the option referenced by <code>aria-activedescendant</code> into view.
+            Managing <code>aria-activedescendant</code> visibility is essential to accessibility for people who use a browser's zoom feature to increase the size of content.
+          </li>
+        </ol>
+      </section>
+
+      <section>
+        <h2 id="kbd_label">Keyboard Support</h2>
+        <p>
+          The example combobox on this page implements the following keyboard interface.
+          Other variations and options for the keyboard interface are described in the <a href="../combobox-pattern.html#keyboard_interaction">Keyboard Interaction section of the combobox pattern.</a>
+        </p>
+        <h3 id="kbd_label_combobox">Closed Combobox</h3>
+        <table aria-labelledby="kbd_label_combobox kbd_label" class="def">
+          <thead>
+            <tr>
+              <th>Key</th>
+              <th>Function</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="combobox-key-down-arrow">
+              <th><kbd>Down Arrow</kbd></th>
+              <td>
+                <ul>
+                  <li>Opens the listbox if it is not already displayed without moving focus or changing selection.</li>
+                  <li>DOM focus remains on the combobox.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="combobox-key-alt-down-arrow">
+              <th><kbd>Alt</kbd> + <kbd>Down Arrow</kbd></th>
+              <td>Opens the listbox without moving focus or changing selection.</td>
+            </tr>
+            <tr data-test-id="combobox-key-up-arrow">
+              <th><kbd>Up Arrow</kbd></th>
+              <td>
+                <ul>
+                  <li>First opens the listbox if it is not already displayed and then moves visual focus to the first option.</li>
+                  <li>DOM focus remains on the combobox.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="combobox-key-enter">
+              <th><kbd>Enter</kbd></th>
+              <td>Opens the listbox without moving focus or changing selection.</td>
+            </tr>
+            <tr data-test-id="combobox-key-space">
+              <th><kbd>Space</kbd></th>
+              <td>Opens the listbox without moving focus or changing selection.</td>
+            </tr>
+            <tr data-test-id="combobox-key-home">
+              <th><kbd>Home</kbd></th>
+              <td>Opens the listbox and moves visual focus to the first option.</td>
+            </tr>
+            <tr data-test-id="combobox-key-end">
+              <th><kbd>End</kbd></th>
+              <td>Opens the listbox and moves visual focus to the last option.</td>
+            </tr>
+            <tr data-test-id="printable-chars">
+              <th>Printable Characters</th>
+              <td>
+                <ul>
+                  <li>First opens the listbox if it is not already displayed and then moves visual focus to the first option that matches the typed character.</li>
+                  <li>If multiple keys are typed in quick succession, visual focus moves to the first option that matches the full string.</li>
+                  <li>If the same character is typed in succession, visual focus cycles among the options starting with that character.</li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <h3 id="kbd_label_listbox">Listbox Popup</h3>
+        <p>
+          <strong>NOTE:</strong> When visual focus is in the listbox, DOM focus remains on the combobox and the value of <code>aria-activedescendant</code> on the combobox is set to a value that refers to the listbox option that is visually indicated as focused.
+          Where the following descriptions of keyboard commands mention focus, they are referring to the visual focus indicator.
+          For more information about this focus management technique, see
+          <a href="../../../practices/keyboard-interface/keyboard-interface-practice.html#kbd_focus_activedescendant">Managing Focus in Composites Using aria-activedescendant</a>.
+        </p>
+        <table aria-labelledby="kbd_label_listbox kbd_label" class="def">
+          <thead>
+            <tr>
+              <th>Key</th>
+              <th>Function</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="listbox-key-enter">
+              <th><kbd>Enter</kbd></th>
+              <td>
+                <ul>
+                  <li>Sets the value to the content of the focused option in the listbox.</li>
+                  <li>Closes the listbox.</li>
+                  <li>Sets visual focus on the combobox.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="listbox-key-space">
+              <th><kbd>Space</kbd></th>
+              <td>
+                <ul>
+                  <li>Sets the value to the content of the focused option in the listbox.</li>
+                  <li>Closes the listbox.</li>
+                  <li>Sets visual focus on the combobox.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="listbox-key-tab">
+              <th><kbd>Tab</kbd></th>
+              <td>
+                <ul>
+                  <li>Sets the value to the content of the focused option in the listbox.</li>
+                  <li>Closes the listbox.</li>
+                  <li>
+                    Performs the default action, moving focus to the next focusable element.
+                    Note: the native <code>&lt;select&gt;</code> element closes the listbox but does not move focus on tab.
+                    This pattern matches the behavior of the other comboboxes rather than the native element in this case.
+                  </li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="listbox-key-escape">
+              <th><kbd>Escape</kbd></th>
+              <td>
+                <ul>
+                  <li>Closes the listbox.</li>
+                  <li>Sets visual focus on the combobox.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="listbox-key-down-arrow">
+              <th><kbd>Down Arrow</kbd></th>
+              <td>
+                <ul>
+                  <li>Moves visual focus to the next option.</li>
+                  <li>If visual focus is on the last option, visual focus does not move.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="listbox-key-up-arrow">
+              <th><kbd>Up Arrow</kbd></th>
+              <td>
+                <ul>
+                  <li>Moves visual focus to the previous option.</li>
+                  <li>If visual focus is on the first option, visual focus does not move.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="listbox-key-alt-up-arrow">
+              <th><kbd>Alt</kbd> + <kbd>Up Arrow</kbd></th>
+              <td>
+                <ul>
+                  <li>Sets the value to the content of the focused option in the listbox.</li>
+                  <li>Closes the listbox.</li>
+                  <li>Sets visual focus on the combobox.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="listbox-key-home">
+              <th><kbd>Home</kbd></th>
+              <td>Moves visual focus to the first option.</td>
+            </tr>
+            <tr data-test-id="listbox-key-end">
+              <th><kbd>End</kbd></th>
+              <td>Moves visual focus to the last option.</td>
+            </tr>
+            <tr data-test-id="listbox-key-pageup">
+              <th><kbd>PageUp</kbd></th>
+              <td>Jumps visual focus up 10 options (or to first option).</td>
+            </tr>
+            <tr data-test-id="listbox-key-pagedown">
+              <th><kbd>PageDown</kbd></th>
+              <td>Jumps visual focus down 10 options (or to last option).</td>
+            </tr>
+            <tr data-test-id="printable-chars">
+              <th>Printable Characters</th>
+              <td>
+                <ul>
+                  <li>First opens the listbox if it is not already displayed and then moves visual focus to the first option that matches the typed character.</li>
+                  <li>If multiple keys are typed in quick succession, visual focus moves to the first option that matches the full string.</li>
+                  <li>If the same character is typed in succession, visual focus cycles among the options starting with that character.</li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2 id="rps_label">Role, Property, State, and Tabindex Attributes</h2>
+        <p>
+          The example combobox on this page implements the following ARIA roles, states, and properties.
+          Information about other ways of applying ARIA roles, states, and properties is available in the <a href="../combobox-pattern.html#roles_states_properties">Roles, States, and Properties section of the Combobox Pattern</a>.
+        </p>
+        <h3 id="rps_label_combobox">Combobox</h3>
+        <table aria-labelledby="rps_label_combobox rps_label" class="data attributes">
+          <thead>
+            <tr>
+              <th scope="col">Role</th>
+              <th scope="col">Attribute</th>
+              <th scope="col">Element</th>
+              <th scope="col">Usage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="combobox-role">
+              <th scope="row">
+                <code>combobox</code>
+              </th>
+              <td></td>
+              <td><code>div</code></td>
+              <td>Identifies the input as a combobox.</td>
+            </tr>
+            <tr data-test-id="combobox-aria-labelledby">
+              <td></td>
+              <th scope="row">
+                <code>aria-labelledby="#IDREF"</code>
+              </th>
+              <td><code>div</code></td>
+              <td>Identifies the element that labels the combobox.</td>
+            </tr>
+            <tr data-test-id="combobox-aria-controls">
+              <td></td>
+              <th scope="row">
+                <code>aria-controls="#IDREF"</code>
+              </th>
+              <td><code>div</code></td>
+              <td>Identifies the element that serves as the popup.</td>
+            </tr>
+            <tr data-test-id="combobox-aria-expanded">
+              <td></td>
+              <th scope="row">
+                <code>aria-expanded="false"</code>
+              </th>
+              <td><code>div</code></td>
+              <td>Indicates that the popup element <strong>is not</strong> displayed.</td>
+            </tr>
+            <tr data-test-id="combobox-aria-expanded">
+              <td></td>
+              <th scope="row">
+                <code>aria-expanded="true"</code>
+              </th>
+              <td><code>div</code></td>
+              <td>Indicates that the popup element <strong>is</strong> displayed.</td>
+            </tr>
+            <tr data-test-id="combobox-aria-activedescendant">
+              <td></td>
+              <th scope="row">
+                <code>aria-activedescendant="IDREF"</code>
+              </th>
+              <td><code>div</code></td>
+              <td>
+                <ul>
+                  <li>When an option in the listbox is visually indicated as having keyboard focus, refers to that option.</li>
+                  <li>When navigation keys, such as <kbd>Down Arrow</kbd>, are pressed, the JavaScript changes the value.</li>
+                  <li>Enables assistive technologies to know which element the application regards as focused while DOM focus remains on the <code>input</code> element.</li>
+                  <li>
+                    For more information about this focus management technique, see
+                    <a href="../../../practices/keyboard-interface/keyboard-interface-practice.html#kbd_focus_activedescendant">Managing Focus in Composites Using aria-activedescendant</a>.
+                  </li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <h3 id="rps_label_listbox">Listbox Popup</h3>
+        <table aria-labelledby="rps_label_listbox rps_label" class="data attributes">
+          <thead>
+            <tr>
+              <th scope="col">Role</th>
+              <th scope="col">Attribute</th>
+              <th scope="col">Element</th>
+              <th scope="col">Usage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="listbox-role">
+              <th scope="row">
+                <code>listbox</code>
+              </th>
+              <td></td>
+              <td>
+                <code>div</code>
+              </td>
+              <td>Identifies the element as a <code>listbox</code>.</td>
+            </tr>
+            <tr data-test-id="option-role">
+              <th scope="row">
+                <code>option</code>
+              </th>
+              <td></td>
+              <td><code>div</code></td>
+              <td>
+                <ul>
+                  <li>Identifies the element as a <code>listbox</code> <code>option</code>.</li>
+                  <li>The text content of the element provides the accessible name of the <code>option</code>.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="option-aria-selected">
+              <td></td>
+              <th scope="row">
+                <code>aria-selected="true"</code>
+              </th>
+              <td><code>li</code></td>
+              <td>
+                <ul>
+                  <li>Specified on an option in the listbox when it is visually highlighted as selected.</li>
+                  <li>Occurs only when an option in the list is referenced by <code>aria-activedescendant</code>.</li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>JavaScript and CSS Source Code</h2>
+        <ul id="css_js_files">
+          <li>
+            CSS:
+            <a href="css/select-only.css" type="text/css">select-only.css</a>
+          </li>
+          <li>
+            JavaScript:
+            <a href="js/select-only.js" type="text/javascript">select-only.js</a>
+          </li>
+        </ul>
+      </section>
+
+      <section class="example-code">
+        <h2 id="sc1_label">HTML Source Code</h2>
+        <p id="sc1_description">To copy the following HTML code, please open it in CodePen.</p>
+        <div role="separator" id="sc1_start_sep" aria-labelledby="sc1_start_sep sc1_label" aria-label="Start of"></div>
+        <pre><code id="sc1"></code></pre>
+        <div role="separator" id="sc1_end_sep" aria-labelledby="sc1_end_sep sc1_label" aria-label="End of"></div>
+        <script>
+          sourceCode.add('sc1', 'ex1', 'ex_label', 'css_js_files', 'sc1_description');
+          sourceCode.make();
+        </script>
+      </section>
+    </main>
+  </body>
+</html>

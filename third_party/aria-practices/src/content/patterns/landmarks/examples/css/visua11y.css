@@ -1,0 +1,65 @@
+div.oaa-element-overlay {
+  position: absolute;
+  overflow: hidden;
+  box-sizing: border-box;
+  border: 3px solid;
+  pointer-events: none;
+}
+
+div.oaa-element-overlay > div {
+  float: right;
+  padding: 1px 1px 4px 4px;
+  color: white;
+  font-family: arial, helvetica, sans-serif;
+  font-size: 15px;
+  pointer-events: auto;
+}
+
+div.oaa-message-dialog > div {
+  margin: 0;
+  padding: 10px 8px 12px;
+  font-size: 14px;
+  line-height: 150%;
+}
+
+div.oaa-element-overlay > div:hover {
+  cursor: grab;
+}
+
+div.oaa-message-dialog {
+  position: absolute;
+  overflow: auto;
+  z-index: 2147483647;
+  padding: 4px;
+  border: 2px solid #333;
+  box-shadow: 2px 2px 4px #555;
+  background: #fff;
+  color: #333;
+  font-family: arial, helvetica, sans-serif;
+}
+
+div.oaa-message-dialog > button {
+  float: right;
+}
+
+div.oaa-message-dialog > button::after {
+  content: "Close";
+}
+
+div.oaa-message-dialog > h2 {
+  margin: 0;
+  padding: 8px 8px 0;
+  color: inherit;
+  font-family: inherit;
+  font-size: 22px;
+}
+
+div.oaa-message-dialog > div ul {
+  margin: 0 1em;
+  padding-top: 0.5em;
+  padding-left: 1em;
+}
+
+div.oaa-message-dialog > div ul li {
+  margin-top: 0;
+}

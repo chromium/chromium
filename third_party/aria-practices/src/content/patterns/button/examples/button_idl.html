@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button Examples (IDL Version)</title>
+
+    <!-- Core JS and CSS shared by all examples -->
+    <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
+    <link rel="stylesheet" href="../../../shared/css/core.css">
+    <script src="../../../shared/js/examples.js"></script>
+    <script src="../../../shared/js/highlight.pack.js"></script>
+    <script src="../../../shared/js/app.js"></script>
+    <script data-skipto="colorTheme:aria; displayOption:popup; containerElement:div" src="../../../shared/js/skipto.js"></script>
+
+    <!-- JS and CSS for this example -->
+    <link rel="stylesheet" href="css/button.css">
+    <script src="js/button_idl.js"></script>
+  </head>
+  <body>
+    <nav aria-label="Related Links" class="feedback">
+      <ul>
+        <li><a href="https://github.com/orgs/w3c/projects/132">Related Issues</a></li>
+        <li><a href="../button-pattern.html">Design Pattern</a></li>
+      </ul>
+    </nav>
+
+    <main>
+      <h1>Button Examples (IDL Version)</h1>
+
+      <section>
+        <h2>About This example</h2>
+        <img alt="" class="example-page-example-icon" src="../../../images/pattern-button.svg">
+        <p>The following examples of the <a href="../button-pattern.html">Button Pattern</a> demonstrate a new JavaScript syntax for coding ARIA attributes.</p>
+        <p>
+          The JavaScript for the example buttons on this page uses the <a class="specref" href="#idl-interface">IDL Interface defined in ARIA 1.2</a>.
+          The purpose of these examples is to illustrate how to use ARIA Attribute Reflection and provide a test case for browser and assistive technology interoperability.
+          Specifically, the <code>role</code> and <code>ariaPressed</code> attributes are accessed using dot notation instead of <code>setAttribute()</code> and <code>getAttribute()</code>.
+          In all other respects, these examples are identical to the <a href="button.html">Button Examples</a>.
+        </p>
+      </section>
+
+      <section>
+        <div class="example-header">
+          <h2 id="ex_label">Example</h2>
+        </div>
+
+        <div role="separator" id="ex_start_sep" aria-labelledby="ex_start_sep ex_label" aria-label="Start of"></div>
+
+        <div id="example">
+          <div class="advisement">
+            <h3>Important</h3>
+            <p>
+              This example is coded using syntax that was not introduced until version 1.2 of the ARIA specification.
+              When using a
+              <a href="https://github.com/w3c/aria-practices/issues/1692" target="_blank">browser that does not yet provide support for ARIA attribute reflection</a>,
+              the buttons will not be styled correctly.
+            </p>
+          </div>
+
+          <p>This <q>Print</q> action button uses a <code>div</code> element.</p>
+          <div tabindex="0" id="action">Print Page</div>
+
+          <p>This <q>Mute</q> toggle button uses an <code>a</code> element.</p>
+          <a tabindex="0" id="toggle">
+            Mute
+            <svg aria-hidden="true" focusable="false">
+              <use xlink:href="#icon-sound"></use>
+            </svg>
+          </a>
+
+          <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="display: none" id="svg_definitions">
+            <defs>
+              <symbol id="icon-mute" viewBox="0 0 75 75">
+                <polygon id="polygon1" points="39.389,13.769 22.235,28.606 6,28.606 6,47.699 21.989,47.699 39.389,62.75 39.389,13.769" style="stroke: currentcolor; stroke-width: 5; stroke-linejoin: round; fill: currentcolor" />
+                <path id="path3003" d="M 48.651772,50.269646 69.395223,25.971024" style="fill: none; stroke: currentcolor; stroke-width: 5; stroke-linecap: round" />
+                <path id="path3003-1" d="M 69.395223,50.269646 48.651772,25.971024" style="fill: none; stroke: currentcolor; stroke-width: 5; stroke-linecap: round" />
+              </symbol>
+              <symbol id="icon-sound" viewBox="0 0 75 75">
+                <polygon points="39.389,13.769 22.235,28.606 6,28.606 6,47.699 21.989,47.699 39.389,62.75 39.389,13.769" style="stroke: currentcolor; stroke-width: 5; stroke-linejoin: round; fill: currentcolor" />
+                <path d="M 48.128,49.03 C 50.057,45.934 51.19,42.291 51.19,38.377 C 51.19,34.399 50.026,30.703 48.043,27.577" style="fill: none; stroke: currentcolor; stroke-width: 5; stroke-linecap: round" />
+                <path d="M 55.082,20.537 C 58.777,25.523 60.966,31.694 60.966,38.377 C 60.966,44.998 58.815,51.115 55.178,56.076" style="fill: none; stroke: currentcolor; stroke-width: 5; stroke-linecap: round" />
+                <path d="M 61.71,62.611 C 66.977,55.945 70.128,47.531 70.128,38.378 C 70.128,29.161 66.936,20.696 61.609,14.01" style="fill: none; stroke: currentcolor; stroke-width: 5; stroke-linecap: round" />
+              </symbol>
+            </defs>
+          </svg>
+        </div>
+
+        <div role="separator" id="ex_end_sep" aria-labelledby="ex_end_sep ex_label" aria-label="End of"></div>
+      </section>
+
+      <section>
+        <h2 id="kbd_label">Keyboard Support</h2>
+
+        <table aria-labelledby="kbd_label" class="def">
+          <thead>
+            <tr>
+              <th>Key</th>
+              <th>Function</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="key-enter">
+              <th><kbd>Enter</kbd></th>
+              <td>Activates the button.</td>
+            </tr>
+            <tr data-test-id="key-space">
+              <th><kbd>Space</kbd></th>
+              <td>Activates the button.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2 id="rps_label">Role, Property, State, and Tabindex Attributes</h2>
+
+        <table aria-labelledby="rps_label" class="data attributes">
+          <thead>
+            <tr>
+              <th scope="col">Role</th>
+              <th scope="col">Attribute</th>
+              <th scope="col">Element</th>
+              <th scope="col">Usage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="button-role">
+              <th scope="row"><code>button</code></th>
+              <td></td>
+              <td><code>div</code>, <code>a</code></td>
+              <td>
+                <ul>
+                  <li>Set in javascript with <code>element.role = 'button';</code>.</li>
+                  <li>Identifies the element as a <code>button</code> widget.</li>
+                  <li>Accessible name for the button is defined by the text content of the element.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="button-tabindex">
+              <td></td>
+              <th scope="row">
+                <code>tabindex="0"</code>
+              </th>
+              <td><code>div</code>, <code>a</code></td>
+              <td>
+                <ul>
+                  <li>Includes the element in the tab sequence.</li>
+                  <li>Needed on the <code>a</code> element because it does not have a <code>href</code> attribute.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="button-aria-pressed">
+              <td></td>
+              <th scope="row"><code>aria-pressed="false"</code></th>
+              <td><code>a</code></td>
+              <td>
+                <ul>
+                  <li>Set in javascript with <code>button.ariaPressed = 'false';</code>.</li>
+                  <li>Identifies the button as a toggle button.</li>
+                  <li>Indicates the toggle button is not pressed.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="button-aria-pressed">
+              <td></td>
+              <th scope="row"><code>aria-pressed="true"</code></th>
+              <td><code>a</code></td>
+              <td>
+                <ul>
+                  <li>Set in javascript with <code>button.ariaPressed = 'true';</code>.</li>
+                  <li>Identifies the button as a toggle button.</li>
+                  <li>Indicates the toggle button is pressed.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="svg-aria-hidden">
+              <td></td>
+              <th scope="row"><code>aria-hidden="true"</code></th>
+              <td><code>svg</code></td>
+              <td>Excludes SVG from accessible name calculation for the button.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>JavaScript and CSS Source Code</h2>
+
+        <ul id="css_js_files">
+          <li>
+            CSS:
+            <a href="css/button.css" type="text/css">button.css</a>
+          </li>
+          <li>
+            JavaScript:
+            <a href="js/button_idl.js" type="text/javascript">button_idl.js</a>
+          </li>
+        </ul>
+      </section>
+
+      <section class="example-code">
+        <h2 id="sc1_label">HTML Source Code</h2>
+        <p id="sc1_description">To copy the following HTML code, please open it in CodePen.</p>
+        <div role="separator" id="sc1_start_sep" aria-labelledby="sc1_start_sep sc1_label" aria-label="Start of"></div>
+        <pre><code id="sc1"></code></pre>
+        <div role="separator" id="sc1_end_sep" aria-labelledby="sc1_end_sep sc1_label" aria-label="End of"></div>
+        <script>
+          sourceCode.add('sc1', 'example', 'ex_label', 'css_js_files', 'sc1_description');
+          sourceCode.make();
+        </script>
+      </section>
+    </main>
+  </body>
+</html>

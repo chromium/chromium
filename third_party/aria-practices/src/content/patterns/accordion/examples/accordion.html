@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accordion Example</title>
+
+    <!-- Core JS and CSS shared by all examples -->
+    <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
+    <link rel="stylesheet" href="../../../shared/css/core.css">
+    <script src="../../../shared/js/examples.js"></script>
+    <script src="../../../shared/js/highlight.pack.js"></script>
+    <script src="../../../shared/js/app.js"></script>
+    <script data-skipto="colorTheme:aria; displayOption:popup; containerElement:div" src="../../../shared/js/skipto.js"></script>
+
+    <!-- JS and CSS for this example -->
+    <link rel="stylesheet" href="css/accordion.css">
+  </head>
+  <body>
+    <nav aria-label="Related Links" class="feedback">
+      <ul>
+        <li><a href="https://github.com/orgs/w3c/projects/127">Related Issues</a></li>
+        <li><a href="../accordion-pattern.html">Design Pattern</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h1>Accordion Example</h1>
+
+      <section>
+        <h2>About This Example</h2>
+        <img alt="" class="example-page-example-icon" src="../../../images/pattern-accordion.svg">
+        <p>The below example section contains a simple personal information input form divided into 3 sections that demonstrates the <a href="../accordion-pattern.html">Accordion Pattern</a>.</p>
+      </section>
+
+      <section>
+        <div class="example-header">
+          <h2 id="ex_label">Example</h2>
+        </div>
+        <div role="separator" id="ex_start_sep" aria-labelledby="ex_start_sep ex_label" aria-label="Start of"></div>
+        <div id="ex1">
+          <div id="accordionGroup" class="accordion">
+            <h3>
+              <button type="button" aria-expanded="true" class="accordion-trigger" aria-controls="sect1" id="accordion1id">
+                <span class="accordion-title">
+                  Personal Information
+                  <span class="accordion-icon"></span>
+                </span>
+              </button>
+            </h3>
+            <div id="sect1" role="region" aria-labelledby="accordion1id" class="accordion-panel">
+              <div>
+                <!-- Variable content within section, may include any type of markup or interactive widgets. -->
+                <fieldset>
+                  <p>
+                    <label for="cufc1">Name<span aria-hidden="true">*</span>:</label>
+                    <input type="text" value="" name="Name" id="cufc1" class="required" aria-required="true">
+                  </p>
+                  <p>
+                    <label for="cufc2">Email<span aria-hidden="true">*</span>:</label>
+                    <input type="text" value="" name="Email" id="cufc2" aria-required="true">
+                  </p>
+                  <p>
+                    <label for="cufc3">Phone:</label>
+                    <input type="text" value="" name="Phone" id="cufc3">
+                  </p>
+                  <p>
+                    <label for="cufc4">Extension:</label>
+                    <input type="text" value="" name="Ext" id="cufc4">
+                  </p>
+                  <p>
+                    <label for="cufc5">Country:</label>
+                    <input type="text" value="" name="Country" id="cufc5">
+                  </p>
+                  <p>
+                    <label for="cufc6">City/Province:</label>
+                    <input type="text" value="" name="City_Province" id="cufc6">
+                  </p>
+                </fieldset>
+              </div>
+            </div>
+            <h3>
+              <button type="button" aria-expanded="false" class="accordion-trigger" aria-controls="sect2" id="accordion2id">
+                <span class="accordion-title">
+                  Billing Address
+                  <span class="accordion-icon"></span>
+                </span>
+              </button>
+            </h3>
+            <div id="sect2" role="region" aria-labelledby="accordion2id" class="accordion-panel" hidden>
+              <div>
+                <fieldset>
+                  <p>
+                    <label for="b-add1">Address 1:</label>
+                    <input type="text" name="b-add1" id="b-add1">
+                  </p>
+                  <p>
+                    <label for="b-add2">Address 2:</label>
+                    <input type="text" name="b-add2" id="b-add2">
+                  </p>
+                  <p>
+                    <label for="b-city">City:</label>
+                    <input type="text" name="b-city" id="b-city">
+                  </p>
+                  <p>
+                    <label for="b-state">State:</label>
+                    <input type="text" name="b-state" id="b-state">
+                  </p>
+                  <p>
+                    <label for="b-zip">Zip Code:</label>
+                    <input type="text" name="b-zip" id="b-zip">
+                  </p>
+                </fieldset>
+              </div>
+            </div>
+            <h3>
+              <button type="button" aria-expanded="false" class="accordion-trigger" aria-controls="sect3" id="accordion3id">
+                <span class="accordion-title">
+                  Shipping Address
+                  <span class="accordion-icon"></span>
+                </span>
+              </button>
+            </h3>
+            <div id="sect3" role="region" aria-labelledby="accordion3id" class="accordion-panel" hidden>
+              <div>
+                <fieldset>
+                  <p>
+                    <label for="m-add1">Address 1:</label>
+                    <input type="text" name="m-add1" id="m-add1">
+                  </p>
+                  <p>
+                    <label for="m-add2">Address 2:</label>
+                    <input type="text" name="m-add2" id="m-add2">
+                  </p>
+                  <p>
+                    <label for="m-city">City:</label>
+                    <input type="text" name="m-city" id="m-city">
+                  </p>
+                  <p>
+                    <label for="m-state">State:</label>
+                    <input type="text" name="m-state" id="m-state">
+                  </p>
+                  <p>
+                    <label for="m-zip">Zip Code:</label>
+                    <input type="text" name="m-zip" id="m-zip">
+                  </p>
+                </fieldset>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div role="separator" id="ex_end_sep" aria-labelledby="ex_end_sep ex_label" aria-label="End of"></div>
+      </section>
+
+      <section>
+        <h2 id="kbd_label">Keyboard Support</h2>
+        <table aria-labelledby="kbd_label" class="def">
+          <thead>
+            <tr>
+              <th>Key</th>
+              <th>Function</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="key-enter-or-space">
+              <th><kbd>Space</kbd> or <kbd>Enter</kbd></th>
+              <td>When focus is on the accordion header of a collapsed section, expands the section.</td>
+            </tr>
+            <tr data-test-id="key-tab">
+              <th><kbd>Tab</kbd></th>
+              <td>
+                <ul>
+                  <li>Moves focus to the next focusable element.</li>
+                  <li>All focusable elements in the accordion are included in the page <kbd>Tab</kbd> sequence.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="key-shift-tab">
+              <th><kbd>Shift</kbd> + <kbd>Tab</kbd></th>
+              <td>
+                <ul>
+                  <li>Moves focus to the previous focusable element.</li>
+                  <li>All focusable elements in the accordion are included in the page <kbd>Tab</kbd> sequence.</li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2 id="rps_label">Role, Property, State, and Tabindex Attributes</h2>
+        <!--
+      Update this table to describe how roles, properties, states, and tabindex are used in this example -->
+        <table aria-labelledby="rps_label" class="data attributes">
+          <thead>
+            <tr>
+              <th scope="col">Role</th>
+              <th scope="col">Attribute</th>
+              <th scope="col">Element</th>
+              <th scope="col">Usage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="h3-element">
+              <td></td>
+              <td></td>
+              <th scope="row"><code>h3</code></th>
+              <td>
+                <ul>
+                  <li>Element that serves as an accordion header.</li>
+                  <li>Each accordion header element contains a button that controls the visibility of its content panel.</li>
+                  <li>The example uses heading level 3 so it fits correctly within the outline of the page; the example is contained in a section titled with a level 2 heading.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="button-aria-expanded">
+              <td></td>
+              <th scope="row"><code>aria-expanded="true"</code></th>
+              <td><code>button</code></td>
+              <td>Set to <code>true</code> when the Accordion panel is expanded, otherwise set to <code>false</code>.</td>
+            </tr>
+            <tr data-test-id="button-aria-controls">
+              <td></td>
+              <th scope="row"><code>aria-controls="ID"</code></th>
+              <td><code>button</code></td>
+              <td>Points to the ID of the panel which the header controls.</td>
+            </tr>
+            <tr data-test-id="region-role">
+              <th scope="row"><code>region</code></th>
+              <td></td>
+              <td><code>div</code></td>
+              <td>Creates a landmark region that contains the currently expanded accordion panel.</td>
+            </tr>
+            <tr data-test-id="region-aria-labelledby">
+              <td></td>
+              <th scope="row"><code>aria-labelledby="IDREF"</code></th>
+              <td><code>div</code></td>
+              <td>
+                <ul>
+                  <li>Defines the accessible name for the <code>region</code> element.</li>
+                  <li>References the accordion header button that expands and collapses the region.</li>
+                  <li><code>region</code> elements are required to have an accessible name to be identified as a landmark.</li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="at-support">
+        <h2>Assistive Technology Support</h2>
+        <p><a href="../../../about/at-support-tables/at-support-tables.html">Learn how to interpret and use assistive technology support data</a></p>
+        <iframe
+          class="support-levels-accordion"
+        src="https://aria-at.w3.org/embed/reports/apg/accordion"
+          height="100"
+          allow="clipboard-write"
+          style="border-style: none; width: 100%;">
+        </iframe>
+      </section>
+
+      <section>
+        <h2>JavaScript and CSS Source Code</h2>
+        <ul id="css_js_files">
+          <li>CSS: <a href="css/accordion.css" type="tex/css">accordion.css</a></li>
+          <li>JavaScript: <a href="js/accordion.js" type="text/javascript">accordion.js</a></li>
+        </ul>
+      </section>
+
+      <section class="example-code">
+        <h2 id="sc1_label">HTML Source Code</h2>
+        <p id="sc1_description">To copy the following HTML code, please open it in CodePen.</p>
+        <div role="separator" id="sc1_start_sep" aria-labelledby="sc1_start_sep sc1_label" aria-label="Start of"></div>
+        <pre><code id="sc1"></code></pre>
+        <div role="separator" id="sc1_end_sep" aria-labelledby="sc1_end_sep sc1_label" aria-label="End of"></div>
+        <script>
+          sourceCode.add('sc1', 'ex1', 'ex_label', 'css_js_files', 'sc1_description');
+          sourceCode.make();
+        </script>
+      </section>
+    </main>
+    <script src="js/accordion.js"></script>
+  </body>
+</html>

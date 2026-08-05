@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Example Disclosure (Show/Hide) Card</title>
+
+    <!-- Core JS and CSS shared by all examples -->
+    <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
+    <link rel="stylesheet" href="../../../shared/css/core.css">
+    <script src="../../../shared/js/examples.js"></script>
+    <script src="../../../shared/js/highlight.pack.js"></script>
+    <script src="../../../shared/js/app.js"></script>
+    <script data-skipto="colorTheme:aria; displayOption:popup; containerElement:div" src="../../../shared/js/skipto.js"></script>
+
+    <!-- JS and CSS for this example -->
+    <link href="css/disclosure-card.css" rel="stylesheet">
+    <script src="js/disclosure-card.js"></script>
+  </head>
+  <body>
+    <nav aria-label="Related Links" class="feedback">
+      <ul>
+        <li><a href="https://github.com/orgs/w3c/projects/132">Related Issues</a></li>
+        <li><a href="../disclosure-pattern.html">Design Pattern</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h1>Example Disclosure (Show/Hide) Card</h1>
+
+      <section>
+        <h2>About This Example</h2>
+        <img alt="" class="example-page-example-icon" src="../../../images/pattern-disclosure.svg">
+        <p>
+          The following example demonstrates using the <a
+          href="../disclosure-pattern.html">Disclosure Pattern</a> to create an
+          expandable card.
+        </p>
+        <p>
+          Authors sometimes want to display a summary of content in a collapsed disclosure that includes content that is more rich or complex than a plain text summary.
+          In addition, they may want to enable users of pointing devices to toggle the expanded state by clicking anywhere within the visible boundaries of the collapsed summary.
+          Authors may assume these goals can be achieved by nesting the entire rich summary within a disclosure button. However, doing so can:
+        </p>
+        <ul>
+          <li>
+            Make the accessible label of the disclosure button cumbersome, inaccurate, or disorienting.
+          </li>
+          <li>
+            Result in invalid HTML, since 
+            <a href="https://html.spec.whatwg.org/multipage/form-elements.html#:~:text=Content%20model%3A,tabindex%20attribute%20specified.">the <code>&lt;button&gt;</code> element</a>
+            only permits phrasing content.
+          </li>
+        </ul>
+        <p>
+          The following example avoids these problems by modifying the structure
+          of the basic disclosure pattern. Instead of having the entire summary
+          contained within a button that controls a separate details container,
+          it nests the expand and collapse disclosure button within an article
+          element that presents a card. When the card is collapsed, it presents
+          a rich summary and the disclosure button. When the card is expanded,
+          its content also includes the additional details content. This
+          structure allows the summary to include headings, links, or any other
+          type of rich content while also enabling the disclosure button to have
+          a concise, understandable accessible name. Finally, some light
+          JavaScript makes the entire card clickable, so its pointer
+          interactions are similar to the summary of a basic disclosure.
+        </p>
+        <p>Similar examples include:</p>
+        <ul>
+          <li>
+            <a href="disclosure-faq.html">Example Disclosure (Show/Hide) for Answers to Frequently Asked Questions</a>
+          </li>
+          <li>
+            <a href="disclosure-image-description.html">Example Disclosure (Show/Hide) for an Image Description</a>
+          </li>
+          <li>
+            <a href="disclosure-navigation.html">Example Disclosure Navigation Menu</a>
+          </li>
+          <li><a href="disclosure-navigation-hybrid.html">Example Disclosure Navigation Menu with Top-Level Links</a></li>
+        </ul>
+      </section>
+
+      <section>
+        <div class="example-header">
+          <h2 id="ex_label">Example</h2>
+        </div>
+        <div role="separator" id="ex_start_sep" aria-labelledby="ex_start_sep ex_label" aria-label="Start of"></div>
+        <div id="ex1">
+          <div class="disclosure-cards">
+            <h3 id="conference-heading">Musical Education Conference</h3>
+            <ol class="sessions" aria-labelledby="conference-heading">
+              <li>
+                <article
+                  class="disclosure-card session"
+                  aria-labelledby="symphonic-structure"
+                >
+                  <header>
+                    <hgroup>
+                      <h4 id="symphonic-structure">
+                        Symphonic Structure: Form, Function, and Feeling
+                      </h4>
+                      <p>Ludwig van Beethoven</p>
+                    </hgroup>
+                    <p>
+                      <span class="location">7 AM in Theater an der Wien</span>
+                      <button
+                        id="toggle-symphonic-structure"
+                        aria-labelledby="symphonic-structure toggle-symphonic-structure"
+                        aria-expanded="false"
+                        aria-controls="details-symphonic-structure"
+                        type="button"
+                      >
+                        <svg
+                          role="image"
+                          aria-hidden="true"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          height="24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            fill="none"
+                          />
+                          <polyline
+                            points="7,10 12,15 17,10"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            fill="none"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                        </svg>
+                        Details
+                      </button>
+                    </p>
+                  </header>
+                  <div id="details-symphonic-structure" class="details" inert>
+                    <div class="description">
+                      <p>
+                        Beethoven invites you to uncover the architectural
+                        principles that make a composition — or a curriculum —
+                        sing. He compares <a href="#"
+                        onclick="alert('This is just for demo purposes'); return false;"
+                        >symphonic form</a> to effective educational frameworks,
+                        emphasizing how recurring motifs and variations foster
+                        retention, engagement, and deep emotional resonance. He
+                        asserts that structure should never constrain passion;
+                        rather, it channels it into something truly enduring.
+                      </p>
+                      <p>
+                        Blending musical theory with pedagogical insight,
+                        Beethoven encourages educators to embrace contrast,
+                        conflict, and resolution in their lesson planning. Just
+                        as the second movement of a symphony can be a quiet
+                        reflection following a turbulent first, so too should
+                        pacing and emotional cadence be considered in designing
+                        impactful learning experiences.
+                      </p>
+                    </div>
+                    <form>
+                      <h5>Session registration</h5>
+                      <label>
+                        <input type="checkbox">
+                        I’d like a transcript of this session
+                      </label>
+                      <button
+                        type="button"
+                        onclick="alert('This is just for demo purposes'); return false;"
+                      >
+                        Book a seat
+                      </button>
+                    </form>
+                  </div>
+                </article>
+              </li>
+              <li>
+                <article
+                  class="disclosure-card session"
+                  aria-labelledby="folk-futures"
+                >
+                  <header>
+                    <hgroup>
+                      <h4 id="folk-futures">
+                        Folk Futures: Tradition in the Classroom
+                      </h4>
+                      <p>Antonín Dvořák</p>
+                    </hgroup>
+                    <p>
+                      <span class="location">8 AM in Rudolfinum Hall</span>
+                      <button
+                        id="toggle-folk-futures"
+                        aria-labelledby="folk-futures toggle-folk-futures"
+                        aria-expanded="false"
+                        aria-controls="details-folk-futures"
+                        type="button"
+                      >
+                        <svg
+                          role="image"
+                          aria-hidden="true"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          height="24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            fill="none"
+                          />
+                          <polyline
+                            points="7,10 12,15 17,10"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            fill="none"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                        </svg>
+                        Details
+                      </button>
+                    </p>
+                  </header>
+                  <div id="details-folk-futures" class="details" inert>
+                    <div class="description">
+                      <p>
+                        Dvořák explores the power of cultural roots in modern
+                        music education, drawing from his own deep connection to
+                        the folk melodies of Bohemia. He demonstrates how
+                        incorporating <a href="#"
+                        onclick="alert('This is just for demo purposes'); return false;"
+                        >regional traditions</a> into teaching not only
+                        diversifies students’ musical vocabulary, but fosters a
+                        sense of identity and continuity across generations.
+                        Through examples from his own works, he illustrates how
+                        authenticity can coexist with innovation.
+                      </p>
+                      <p>
+                        Attendees will learn strategies to weave traditional
+                        forms into contemporary curricula, using rhythm,
+                        language, and storytelling as tools of engagement.
+                        Dvořák makes the case that honoring heritage doesn’t
+                        mean resisting progress—instead, it provides a vibrant
+                        foundation on which students can build their own musical
+                        voices.
+                      </p>
+                    </div>
+                    <form>
+                      <h5>Session registration</h5>
+                      <label>
+                        <input type="checkbox">
+                        I’d like a transcript of this session
+                      </label>
+                      <button
+                        type="button"
+                        onclick="alert('This is just for demo purposes'); return false;"
+                      >
+                        Book a seat
+                      </button>
+                    </form>
+                  </div>
+                </article>
+              </li>
+              <li>
+                <article
+                  class="disclosure-card session"
+                  aria-labelledby="playful-dissonance"
+                >
+                  <header>
+                    <hgroup>
+                      <h4 id="playful-dissonance">
+                        Playful Dissonance: Teaching with Wit and Wonder
+                      </h4>
+                      <p>Francis Poulenc</p>
+                    </hgroup>
+                    <p>
+                      <span class="location">9 AM in Église Saint-Roch</span>
+                      <button
+                        id="toggle-playful-dissonance"
+                        aria-labelledby="playful-dissonance toggle-playful-dissonance"
+                        aria-expanded="false"
+                        aria-controls="details-playful-dissonance"
+                        type="button"
+                      >
+                        <svg
+                          role="image"
+                          aria-hidden="true"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          height="24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            fill="none"
+                          />
+                          <polyline
+                            points="7,10 12,15 17,10"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            fill="none"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                        </svg>
+                        Details
+                      </button>
+                    </p>
+                  </header>
+                  <div id="details-playful-dissonance" class="details" inert>
+                    <div class="description">
+                      <p>
+                        Poulenc brings charm and surprise to the spotlight,
+                        making a compelling case for <a href="#"
+                        onclick="alert('This is just for demo purposes'); return false;"
+                        >humor as pedagogy</a>. Through anecdotes, musical
+                        excerpts, and sly asides, he reveals how wit and whimsy
+                        can disarm resistance and unlock creativity in learners
+                        of all ages. He shows that even dissonance, when
+                        playfully framed, becomes an invitation rather than a
+                        disruption.
+                      </p>
+                      <p>
+                        This session challenges the notion that music education
+                        must be rigid or overly serious. Poulenc encourages
+                        instructors to embrace imperfection, joy, and even
+                        contradiction in their teaching. The result? A classroom
+                        atmosphere that not only nurtures skill but sparks
+                        lifelong curiosity and delight.
+                      </p>
+                    </div>
+                    <form>
+                      <h5>Session registration</h5>
+                      <label>
+                        <input type="checkbox">
+                        I’d like a transcript of this session
+                      </label>
+                      <button
+                        type="button"
+                        onclick="alert('This is just for demo purposes'); return false;"
+                      >
+                        Book a seat
+                      </button>
+                    </form>
+                  </div>
+                </article>
+              </li>
+            </ol>
+          </div>
+        </div>
+        <div role="separator" id="ex_end_sep" aria-labelledby="ex_end_sep ex_label" aria-label="End of"></div>
+      </section>
+
+      <section>
+        <h2>Accessibility Features</h2>
+        <ul>
+          <li>
+            To form an accessible name that is brief but sufficiently
+            descriptive, the “Details” button uses <a
+            href="https://w3c.github.io/aria/#aria-labelledby"><code>aria-labelledby</code></a>
+            to combine the card’s heading with the text “Details”.
+          </li>
+          <li>
+            To help people with visual impairments identify the disclosure card
+            as interactive and make it easier to perceive that interacting with
+            the card will expand or collapse additional content:
+            <ul>
+              <li>
+                When a pointer hovers over the card:
+                <ul>
+                  <li>The card area gains a thin gray border.</li>
+                  <li>The “Details” button gains an underline.</li>
+                  <li>The chevron icon enlarges slightly.</li>
+                  <li>
+                    The text and icon color of the “Details” button change from
+                    gray to black.
+                  </li>
+                </ul>
+              </li>
+              <li>
+                When the “Details” button receives keyboard focus:
+                <ul>
+                  <li>
+                    The entire card gains a blue outline, giving the illusion
+                    that the card itself is “focused”.
+                  </li>
+                  <li>The “Details” button gains an underline.</li>
+                  <li>The chevron icon enlarges slightly.</li>
+                  <li>
+                    The text and icon color of the “Details” button change from
+                    gray to blue.
+                  </li>
+                  <li>
+                    The card continues to react to hover events by “stacking”
+                    the thin gray border alongside the blue outline, reinforcing
+                    that the entire card remains clickable in both its collapsed
+                    and expanded states.
+                  </li>
+                </ul>
+              </li>
+              <li>
+                The “Details” button is accompanied by an encircled chevron icon
+                which points in a direction matching its
+                <code>aria-expanded</code> state:
+                <ul>
+                  <li>
+                    Downward when the disclosure is collapsed, indicating
+                    that activating it will expand the card.
+                  </li>
+                  <li>
+                    Upward when the disclosure is expanded, indicating
+                    that activating it will collapse the card.
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li>
+            To create a logical and predictable keyboard experience for
+            multimodal users, when any location within the card is clicked by a
+            pointer, keyboard focus is programmatically placed on the “Details”
+            button as if the user had activated it explicitly.
+          </li>
+          <li>
+            If the user’s click operation triggers a text selection within the
+            card (i.e., highlight), the disclosure’s toggling behavior is
+            suppressed to avoid interference.
+          </li>
+          <li>
+            If the user’s click operation targets a focusable element nested
+            within the card (e.g., a link, form control, or button) or a
+            clickable <code>&lt;label&gt;</code>, the disclosure’s toggling
+            behavior is suppressed to avoid interference.
+          </li>
+          <li>
+            When forced colors are enabled, <a
+            href="https://www.w3.org/TR/css-color-4/#css-system-colors">system
+            color keywords</a> are used to ensure visibility and sufficient
+            contrast for the card’s content and interactive states.
+          </li>
+          <li>
+            Animation is suppressed for users who have indicated a preference
+            for reduced motion or high contrast.
+          </li>
+          <li>
+            Voice control users can toggle a disclosure card by speaking an
+            activation command such as <q>Click Folk Futures: Tradition in the
+            Classroom details</q>.
+          </li>
+          <li>
+            The content of each card is contained within an HTML <a
+            href="https://w3c.github.io/aria/#article"><code>&lt;article&gt;</code></a>
+            element that is labeled by the heading element within the card. This
+            gives each card the <a
+            href="https://w3c.github.io/aria/#article"><code>article</code></a>
+            role, which enables screen reader users to perceive the boundaries
+            of each card and easily move their reading cursor to the next or
+            previous card. The article element is preferable to the section
+            element because section elements would create ARIA <a
+            href="https://w3c.github.io/aria/#dfn-landmark">landmark</a>
+            regions, and excessive use of landmark regions diminishes their
+            utility.
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 id="kbd_label">Keyboard Support</h2>
+        <table
+          aria-labelledby="kbd_label"
+          class="def"
+        >
+          <thead>
+            <tr>
+              <th>Key</th>
+              <th>Function</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="key-tab">
+              <th>
+                <kbd>Tab</kbd>
+              </th>
+              <td>Moves keyboard focus to the disclosure button.</td>
+            </tr>
+            <tr data-test-id="key-enter-or-space">
+              <th>
+                <kbd>Space</kbd> or <br>
+                <kbd>Enter</kbd>
+              </th>
+              <td>
+                Activates the disclosure button, which toggles the
+                expanded/collapsed state of the card.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2 id="rps_label">Role, Property, State, and Tabindex Attributes</h2>
+        <table
+          aria-labelledby="rps_label"
+          class="data attributes"
+        >
+          <thead>
+            <tr>
+              <th scope="col">Role</th>
+              <th scope="col">Attribute</th>
+              <th scope="col">Element</th>
+              <th scope="col">Usage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="button-aria-controls">
+              <td></td>
+              <th scope="row">
+                <code>aria-controls="ID_REFERENCE"</code>
+              </th>
+              <td><code>button</code></td>
+              <td>Identifies the element controlled by the disclosure button.</td>
+            </tr>
+            <tr data-test-id="button-aria-expanded">
+              <td></td>
+              <th scope="row">
+                <code>aria-expanded="false"</code>
+              </th>
+              <td>
+                <code>button</code>
+              </td>
+              <td>
+                <ul>
+                  <li>Indicates that the container controlled by the disclosure button
+                    is <em>hidden</em>.</li>
+                  <li>
+                    CSS attribute selectors (e.g.
+                    <code>[aria-expanded="false"]</code>) are used to synchronize the
+                    visual states with the value of the <code>aria-expanded</code>
+                    attribute.
+                  </li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="button-aria-expanded">
+              <td></td>
+              <th scope="row">
+                <code>aria-expanded="true"</code>
+              </th>
+              <td>
+                <code>button</code>
+              </td>
+              <td>
+                <ul>
+                  <li>Indicates that the container controlled by the disclosure button
+                    is <em>visible</em>.</li>
+                  <li>
+                    CSS attribute selectors (e.g. <code>[aria-expanded="true"]</code>)
+                    are used to synchronize the visual states with the value of the
+                    <code>aria-expanded</code> attribute.
+                  </li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="test-not-required">
+              <th scope="row"><code>article</code></th>
+              <td></td>
+              <td><code>article</code></td>
+              <td>
+                <ul>
+                  <li>
+                    This does not have to be declared in the code because it is
+                    implicit in the HTML article element.
+                  </li>
+                  <li>
+                    Enables screen reader users to perceive the boundaries of
+                    each card and easily move a reading cursor from card to
+                    card.
+                  </li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>JavaScript and CSS Source Code</h2>
+        <!--  After the js and css files are named with the name of this example, change the href and text of the following 2 links to refer to the appropriate js and css files.  -->
+        <ul id="css_js_files">
+          <li>
+            CSS:
+            <a href="css/disclosure-card.css">disclosure-card.css</a>
+          </li>
+          <li>
+            JavaScript:
+            <a href="js/disclosure-card.js">disclosure-card.js</a>
+          </li>
+        </ul>
+      </section>
+
+      <section class="example-code">
+        <h2 id="sc1_label">HTML Source Code</h2>
+        <p id="sc1_description">To copy the following HTML code, please open it in CodePen.</p>
+        <div role="separator" id="sc1_start_sep" aria-labelledby="sc1_start_sep sc1_label" aria-label="Start of"></div>
+        <pre><code id="sc1"></code></pre>
+        <div role="separator" id="sc1_end_sep" aria-labelledby="sc1_end_sep sc1_label" aria-label="End of"></div>
+        <script>
+          sourceCode.add('sc1', 'ex1', 'ex_label', 'css_js_files', 'sc1_description');
+          sourceCode.make();
+        </script>
+      </section>
+    </main>
+  </body>
+</html>

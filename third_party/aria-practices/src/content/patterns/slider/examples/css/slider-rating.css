@@ -1,0 +1,102 @@
+/* CSS Document */
+
+.rating-slider label {
+  display: block;
+}
+
+.rating-slider {
+  color: #005a9c;
+  user-select: none;
+}
+
+.rating-slider svg {
+  forced-color-adjust: auto;
+  touch-action: pan-y;
+}
+
+.rating-slider svg .focus-ring {
+  fill: currentcolor;
+  stroke-width: 0;
+  fill-opacity: 0;
+}
+
+.rating-slider svg .target {
+  stroke-width: 2px;
+  stroke: currentcolor;
+  fill-opacity: 0;
+}
+
+.rating-slider svg .label {
+  font-size: 90%;
+  font-family: sans-serif;
+  fill: currentcolor;
+}
+
+.rating-slider svg .description {
+  font-size: 90%;
+  fill: canvastext;
+}
+
+.rating-slider svg .current .target {
+  fill: currentcolor;
+  fill-opacity: 1;
+}
+
+.rating-slider svg .current .label {
+  fill: white;
+  font-weight: bold;
+}
+
+/* focus styling */
+
+.rating-slider:focus,
+.rating-slider:focus-visible {
+  outline: none !important;
+}
+
+.rating-slider svg .focus {
+  stroke-width: 0;
+  stroke: currentcolor;
+  fill-opacity: 0;
+}
+
+.rating-slider:focus svg .focus-ring {
+  stroke-width: 2px;
+  stroke: currentcolor;
+}
+
+@media (forced-colors: active) {
+  .rating-slider svg .focus-ring {
+    fill: buttontext;
+  }
+
+  .rating-slider svg .target {
+    stroke: buttontext;
+  }
+
+  .rating-slider svg .label {
+    fill: buttontext;
+  }
+
+  .rating-slider svg .description {
+    fill: buttontext;
+  }
+
+  .rating-slider svg .current .target {
+    fill: buttontext;
+  }
+
+  .rating-slider svg .current .label {
+    fill: canvas;
+  }
+
+  /* focus styling */
+
+  .rating-slider svg .focus {
+    stroke: linktext;
+  }
+
+  .rating-slider:focus svg .focus-ring {
+    stroke: linktext;
+  }
+}

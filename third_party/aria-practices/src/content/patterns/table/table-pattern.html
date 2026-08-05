@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Table Pattern</title>
+
+    <!-- Core JS and CSS shared by all patterns -->
+    <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
+    <link rel="stylesheet" href="../../shared/css/core.css">
+    <script src="../../shared/js/highlight.pack.js"></script>
+    <script src="../../shared/js/app.js"></script>
+    <script data-skipto="colorTheme:aria; displayOption:popup; containerElement:div" src="../../shared/js/skipto.js"></script>
+    <script data-read-this-first="showImage:false" src="../../shared/js/read-this-first.js"></script>
+  </head>
+  <body>
+    <main>
+      <h1>Table Pattern</h1>
+
+      <section id="about">
+        <h2>About This Pattern</h2>
+        <p>
+          Like an HTML <code>table</code> element, a WAI-ARIA <a href="#table" class="role-reference">table</a> is a static tabular structure containing one or more rows that each contain one or more cells; it is not an interactive widget.
+          Thus, its cells are not focusable or selectable.
+          The <a href="../grid/grid-pattern.html">grid pattern</a> is used to make an interactive widget that has a tabular structure.
+        </p>
+        <p>
+          However, tables are often used to present a combination of information and interactive widgets.
+          Since a table is not a widget, each widget contained in a table is a separate stop in the page tab sequence.
+          If the number of widgets is large, replacing the table with a grid can dramatically reduce the length of the page tab sequence because a grid is a composite widget that can contain other widgets.
+        </p>
+        <div class="note">
+          <h3>Note</h3>
+          <p>As with other WAI-ARIA roles that have a native host language equivalent, authors are strongly encouraged to use a native HTML <code>table</code> element whenever possible.
+          This is especially important with role <code>table</code> because it is a new feature of WAI-ARIA 1.1.
+          It is thus advisable to test implementations thoroughly with each browser and assistive technology combination that could be used by the target audience.</p>
+        </div>
+      </section>
+
+      <section id="examples">
+        <img alt="" src="../../images/pattern-table.svg">
+        <h2>Examples</h2>
+        <ul>
+          <li><a href="examples/table.html">Table Example</a>: ARIA table made using HTML <code>div</code> and <code>span</code> elements.</li>
+          <li><a href="examples/sortable-table.html">Sortable Table Example</a>: Basic HTML table that illustrates implementation of <code>aria-sort</code> in the headers of sortable columns.</li>
+        </ul>
+      </section>
+
+      <section id="keyboard_interaction">
+        <h2>Keyboard Interaction</h2>
+        <p>Not applicable.</p>
+      </section>
+
+      <section id="roles_states_properties">
+        <h2>WAI-ARIA Roles, States, and Properties</h2>
+        <ul>
+          <li>The table container has role <a href="#table" class="role-reference">table</a>.</li>
+          <li>Each row container has role <a href="#row" class="role-reference">row</a> and is either a DOM descendant of or owned by the <code>table</code> element or an element with role <a href="#rowgroup" class="role-reference">rowgroup</a>.</li>
+          <li>
+            Each cell is either a DOM descendant of or owned by a <code>row</code> element and has one of the following roles:
+            <ul>
+              <li><a href="#columnheader" class="role-reference">columnheader</a> if the cell contains a title or header information for the column.</li>
+              <li><a href="#rowheader" class="role-reference">rowheader</a> if the cell contains title or header information for the row.</li>
+              <li><a href="#cell" class="role-reference">cell</a> if the cell does not contain column or row header information.</li>
+            </ul>
+          </li>
+          <li>
+            If there is an element in the user interface that serves as a label for the table, <a href="#aria-labelledby" class="property-reference">aria-labelledby</a> is set on the table element with a value that refers to the labelling element.
+            Otherwise, a label is specified for the table element using <a href="#aria-label" class="property-reference">aria-label</a>.
+          </li>
+          <li>If the table has a caption or description, <a href="#aria-describedby" class="property-reference">aria-describedby</a> is set on the table element with a value referring to the element containing the description.</li>
+          <li>
+            If the table contains sortable columns or rows, <a href="#aria-sort" class="property-reference">aria-sort</a> is set to an appropriate value on the header cell element for the sorted column or row as described in the
+            <a href="../../practices/grid-and-table-properties/grid-and-table-properties-practice.html#gridAndTableProperties_sort">Grid and Table Properties Practice</a>.
+          </li>
+          <li>
+            If there are conditions where some rows or columns are hidden or not present in the DOM, e.g., there are widgets on the page for hiding rows or columns, the following properties are applied as described in the
+            <a href="../../practices/grid-and-table-properties/grid-and-table-properties-practice.html">Grid and Table Properties Practice</a>.
+            <ul>
+              <li><a href="#aria-colcount" class="property-reference">aria-colcount</a> or <a href="#aria-rowcount" class="property-reference">aria-rowcount</a> is set to the total number of columns or rows, respectively.</li>
+              <li><a href="#aria-colindex" class="property-reference">aria-colindex</a> or <a href="#aria-rowindex" class="property-reference">aria-rowindex</a> is set to the position of a cell within a row or column, respectively.</li>
+            </ul>
+          </li>
+          <li>
+            If the table includes cells that span multiple rows or multiple columns, then <a href="#aria-rowspan" class="property-reference">aria-rowspan</a> or <a href="#aria-colspan" class="property-reference">aria-colspan</a> is applied as described in the
+            <a href="../../practices/grid-and-table-properties/grid-and-table-properties-practice.html#gridAndTableProperties_spans">Grid and Table Properties Practice</a>.
+          </li>
+        </ul>
+        <div class="note">
+          <h3>Note</h3>
+          <p>If rows or cells are included in a table via <a href="#aria-owns" class="property-reference">aria-owns</a>, they will be presented to assistive technologies after the DOM descendants of the <code>table</code> element unless the DOM descendants are also included in the <code>aria-owns</code> attribute.</p>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

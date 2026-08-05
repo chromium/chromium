@@ -1,0 +1,185 @@
+.hidden {
+  display: none !important;
+}
+
+#arrow-keys-indicator {
+  bottom: 10px;
+  left: 0;
+  position: fixed;
+  height: 65px;
+  width: 85px;
+  background: url("../imgs/black_keys.png") no-repeat;
+  background-size: contain;
+}
+
+@media screen and (max-width: 1000px) {
+  #arrow-keys-indicator {
+    display: none;
+  }
+
+  .indicator_description {
+    display: none;
+  }
+}
+
+.accessible_elem {
+  clip: rect(1px 1px 1px 1px);
+  clip: rect(1px, 1px, 1px, 1px);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+.list-links {
+  font-size: 0;
+}
+
+.list-link {
+  background: #eee;
+  border: 1px solid #bbb;
+  display: inline-block;
+  font-size: 14px;
+  height: 40px;
+  margin: 5px 0 0;
+  padding: 5px;
+  position: relative;
+  vertical-align: middle;
+  width: 120px;
+}
+
+[role="gridcell"],
+[role="gridcell"] [tabindex] {
+  display: inline-block;
+  position: relative;
+}
+
+[role="gridcell"]:focus,
+[role="gridcell"] *:focus {
+  outline: #005a9c;
+  outline-style: dotted;
+  outline-width: 3px;
+}
+
+.grid-nux {
+  background: #eaf9ef;
+  position: absolute;
+  max-width: 500px;
+  border: 1px solid #bbb;
+  padding: 0 15px 20px;
+  margin-top: 20px;
+  box-shadow: 2px 2px 3px rgb(0 0 0 / 30%);
+}
+
+.grid-nux::after,
+.grid-nux::before {
+  bottom: 100%;
+  left: 20px;
+  border: solid transparent;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+}
+
+.grid-nux::after {
+  border-color: rgb(136 183 213 / 0%);
+  border-bottom-color: #eaf9ef;
+  border-width: 10px;
+  margin-left: -10px;
+}
+
+.grid-nux::before {
+  border-color: rgb(194 225 245 / 0%);
+  border-bottom-color: #bbb;
+  border-width: 11px;
+  margin-left: -11px;
+}
+
+.grid-nux-header {
+  font-weight: bold;
+}
+
+.indicator_graphic {
+  float: right;
+  margin-left: 10px;
+}
+
+.close-nux-button {
+  color: #360;
+  cursor: default;
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  text-decoration: underline;
+}
+
+.recipient-list {
+  background: #eee;
+  border: 1px solid #ddd;
+  margin-bottom: 10px;
+  padding: 5px 15px;
+  position: relative;
+}
+
+#send_to_label {
+  font-size: 14px;
+  font-weight: bold;
+  position: absolute;
+  top: 1.2em;
+}
+
+.pill-list {
+  background: white;
+  border: 1px solid #ccc;
+  font-size: 0;
+  margin-bottom: 5px;
+  margin-left: 65px;
+  min-height: 31px;
+  padding: 0 5px 5px;
+}
+
+.pill-item {
+  background: #eee;
+  border: 1px solid #3a69b6;
+  border-radius: 2px;
+  color: #3a69b6;
+  display: inline-block;
+  font-size: 14px;
+  margin: 5px 5px 0 0;
+  padding: 0.3em;
+}
+
+.pill-name {
+  text-decoration: none;
+}
+
+.pill-remove {
+  cursor: default;
+  margin-left: 10px;
+}
+
+#recipient-form {
+  margin-left: 65px;
+}
+
+#add-recipient-input {
+  font-size: 14px;
+}
+
+.ex3_result_header {
+  margin: 0;
+  font-style: normal;
+  font-weight: bold;
+}
+
+.ex3_result_indices {
+  margin-bottom: 40px;
+}
+
+.ex3_pagination {
+  margin-top: 40px;
+  text-align: center;
+}

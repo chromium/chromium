@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Combobox Pattern</title>
+
+    <!-- Core JS and CSS shared by all patterns -->
+    <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
+    <link rel="stylesheet" href="../../shared/css/core.css">
+    <script src="../../shared/js/highlight.pack.js"></script>
+    <script src="../../shared/js/app.js"></script>
+    <script data-skipto="colorTheme:aria; displayOption:popup; containerElement:div" src="../../shared/js/skipto.js"></script>
+    <script data-read-this-first="showImage:false" src="../../shared/js/read-this-first.js"></script>
+  </head>
+  <body>
+    <main>
+      <h1>Combobox Pattern</h1>
+
+      <section id="about">
+        <h2>About This Pattern</h2>
+        <p>
+          A <a href="#combobox" class="role-reference">combobox</a> is an input widget that has an associated popup.
+          The popup enables users to choose a value for the input from a collection.
+          The popup may be a <a href="../listbox/listbox-pattern.html">listbox</a>, <a href="../grid/grid-pattern.html">grid</a>, <a href="../treeview/treeview-pattern.html">tree</a>, or <a href="../dialog-modal/dialog-modal-pattern.html">dialog.</a>
+        </p>
+        <p>
+          In some implementations, the popup presents allowed values, while in other implementations, the popup presents suggested values.
+          Many implementations also include a third optional element -- a graphical <q>Open</q> button adjacent to the combobox, which indicates availability of the popup.
+          Activating the <q>Open</q> button displays the popup if suggestions are available.
+        </p>
+        <p>
+          The combobox pattern supports several optional behaviors.
+          The one that most shapes interaction is text input.
+          Some comboboxes allow users to type and edit text in the combobox and others do not.
+          If a combobox does not support text input, it is referred to as select-only, meaning the only way users can set its value is by selecting a value in the popup.
+          For example, in some browsers, an HTML <code>select</code> element with <code>size="1"</code> is presented to assistive technologies as a combobox.
+          Alternatively, if a combobox supports text input, it is referred to as editable.
+          An editable combobox may either allow users to input any arbitrary value, or it may restrict its value to a discrete set of allowed values, in which case typing input serves to filter suggestions presented in the popup.
+        </p>
+        <p>
+          The popup is hidden by default, i.e., the default state is collapsed.
+          The conditions that trigger expansion -- display of the popup --are specific to each implementation.
+          Some possible conditions that trigger expansion include:
+        </p>
+        <ul>
+          <li>
+            It is displayed when the <kbd>Down Arrow</kbd> key is pressed or the <q>Open</q> button is activated.
+            Optionally, if the combobox is editable and contains a string that does not match an allowed value, expansion does not occur.
+          </li>
+          <li>It is displayed when the combobox receives focus even if the combobox is editable and empty.</li>
+          <li>If the combobox is editable, the popup is displayed only if a certain number of characters are typed in the combobox and those characters match some portion of one of the suggested values.</li>
+        </ul>
+        <p>Combobox widgets are useful for acquiring user input in either of two scenarios:</p>
+        <ol>
+          <li>
+            The value must be one of a predefined set of allowed values, e.g., a location field must contain a valid location name.
+            Note that the listbox and menu button patterns are also useful in this scenario; differences between combobox and alternative patterns are described below.
+          </li>
+          <li>
+            An arbitrary value is allowed, but it is advantageous to suggest possible values to users.
+            For example, a search field may suggest similar or previous searches to save the user time.
+          </li>
+        </ol>
+        <p>
+          The nature of possible values presented by a popup and the way they are presented is called the autocomplete behavior.
+          Comboboxes can have one of four forms of autocomplete:</p>
+        <ol>
+          <li>
+            <strong>No autocomplete:</strong> The combobox is editable, and when the popup is triggered, the suggested values it contains are the same regardless of the characters typed in the combobox.
+            For example, the popup suggests a set of recently entered values, and the suggestions do not change as the user types.
+          </li>
+          <li>
+            <strong>List autocomplete with manual selection:</strong> When the popup is triggered, it presents suggested values.
+            If the combobox is editable, the suggested values complete or logically correspond to the characters typed in the combobox.
+            The character string the user has typed will become the value of the combobox unless the user selects a value in the popup.
+          </li>
+          <li>
+            <strong>List autocomplete with automatic selection:</strong> The combobox is editable, and when the popup is triggered, it presents suggested values that complete or logically correspond to the characters typed in the combobox, and the first suggestion is automatically highlighted as selected.
+            The automatically selected suggestion becomes the value of the combobox when the combobox loses focus unless the user chooses a different suggestion or changes the character string in the combobox.
+          </li>
+          <li>
+            <strong>List with inline autocomplete:</strong> This is the same as list with automatic selection with one additional feature.
+            The portion of the selected suggestion that has not been typed by the user, a completion string, appears inline after the input cursor in the combobox.
+            The inline completion string is visually highlighted and has a selected state.</li>
+        </ol>
+        <p>
+          If a combobox is editable and has any form of list autocomplete, the popup may appear and disappear as the user types.
+          For example, if the user types a two character string that triggers five suggestions to be displayed but then types a third character that forms a string that does not have any matching suggestions, the popup may close and, if present, the inline completion string disappears.
+        </p>
+        <p>
+          Two other widgets that are also visually compact and enable users to make a single choice from a set of discrete choices are <a href="../listbox/listbox-pattern.html">listbox</a> and <a href="../menu-button/menu-button-pattern.html">menu button</a>.
+          One feature that distinguishes combobox from both listbox and menu button is that the user's choice can be presented as a value in an editable field, which gives users the ability to select some or all of the value for copying to the clipboard.
+          Comboboxes and menu buttons can be implemented so users can explore the set of allowed choices without losing a previously made choice.
+          That is, users can navigate the set of available choices in a combobox popup or menu and then press <kbd>escape</kbd>, which closes the popup or menu without changing previous input.
+          In contrast, navigating among options in a single-select listbox immediately changes its value, and <kbd>Escape</kbd> does not provide an undo mechanism.
+          Comboboxes and listboxes can be marked as required with <code>aria-required="true"</code>, and they have an accessible name that is distinct from their value.
+          Thus, when assistive technology users focus either a combobox or listbox in its default state, they can perceive both a name and value for the widget.
+          However, a menu button cannot be marked required, and while it has an accessible name, it does not have a value so is not suitable for conveying the user's choice in its collapsed state.
+        </p>
+      </section>
+
+      <section id="examples">
+        <img alt="" src="../../images/pattern-combobox.svg">
+        <h2>Examples</h2>
+        <ul>
+          <li><a href="examples/combobox-select-only.html">Select-Only Combobox</a>: A single-select combobox with no text input that is functionally similar to an HTML <code>select</code> element.</li>
+          <li><a href="examples/combobox-autocomplete-both.html">Editable Combobox with Both List and Inline Autocomplete</a>: An editable combobox that demonstrates the autocomplete behavior known as <q>list with inline autocomplete</q>.</li>
+          <li><a href="examples/combobox-autocomplete-list.html">Editable Combobox with List Autocomplete</a>: An editable combobox that demonstrates the autocomplete behavior known as <q>list with manual selection</q>.</li>
+          <li><a href="examples/combobox-autocomplete-none.html">Editable Combobox Without Autocomplete</a>: An editable combobox that demonstrates the behavior associated with <code>aria-autocomplete=none</code>.</li>
+          <li><a href="examples/grid-combo.html">Editable Combobox with Grid Popup</a>: An editable combobox that presents suggestions in a grid, enabling users to navigate descriptive information about each suggestion.</li>
+          <li><a href="examples/combobox-datepicker.html">Date Picker Combobox</a>: An editable date input combobox that opens a dialog containing a calendar grid and buttons for navigating by month and year.</li>
+        </ul>
+      </section>
+
+      <section id="keyboard_interaction">
+        <h2>Keyboard Interaction</h2>
+        <ul>
+          <li><kbd>Tab</kbd>: The combobox is in the page <kbd>Tab</kbd> sequence.</li>
+          <li>Note: The popup indicator icon or button (if present), the popup, and the popup descendants are excluded from the page <kbd>Tab</kbd> sequence.</li>
+        </ul>
+        <h3>Combobox Keyboard Interaction</h3>
+        <p>When focus is in the combobox:</p>
+        <ul>
+          <li>
+            <kbd>Down Arrow</kbd>: If the popup is available, moves focus into the popup:
+            <ul>
+              <li>If the autocomplete behavior automatically selected a suggestion before <kbd>Down Arrow</kbd> was pressed, focus is placed on the suggestion following the automatically selected suggestion.</li>
+              <li>Otherwise, places focus on the first focusable element in the popup.</li>
+            </ul>
+          </li>
+          <li><kbd>Up Arrow</kbd> (Optional): If the popup is available, places focus on the last focusable element in the popup.</li>
+          <li>
+            <kbd>Escape</kbd>: Dismisses the popup if it is visible.
+            Optionally, if the popup is hidden before <kbd>Escape</kbd> is pressed, clears the combobox.
+          </li>
+          <li>
+            <kbd>Enter</kbd>: If the combobox is editable and an autocomplete suggestion is selected in the popup, accepts the suggestion either by placing the input cursor at the end of the accepted value in the combobox or by performing a default action on the value.
+            For example, in a messaging application, the default action may be to add the accepted value to a list of message recipients and then clear the combobox so the user can add another recipient.
+          </li>
+          <li>
+            Printable Characters:
+            <ul>
+              <li>
+                If the combobox is editable, type characters in the combobox.
+                Note that some implementations may regard certain characters as invalid and prevent their input.
+              </li>
+              <li>If the combobox is not editable, optionally moves focus to a value that starts with the typed characters.</li>
+            </ul>
+          </li>
+          <li>If the combobox is editable, it supports standard single line text editing keys appropriate for the device platform (see note below).</li>
+          <li><kbd>Alt</kbd> + <kbd>Down Arrow</kbd> (Optional): If the popup is available but not displayed, displays the popup without moving focus.</li>
+          <li>
+            <kbd>Alt</kbd> + <kbd>Up Arrow</kbd> (Optional): If the popup is displayed:
+            <ul>
+              <li>If the popup contains focus, returns focus to the combobox.</li>
+              <li>Closes the popup.</li>
+            </ul>
+          </li>
+        </ul>
+        <div class="note">
+          <h4>Note</h4>
+          <p>Standard single line text editing keys appropriate for the device platform:</p>
+          <ol>
+            <li>include keys for input, cursor movement, selection, and text manipulation.</li>
+            <li>Standard key assignments for editing functions depend on the device operating system.</li>
+            <li>The most robust approach for providing text editing functions is to rely on browsers, which supply them for HTML inputs with type text and for elements with the <code>contenteditable</code> HTML attribute.</li>
+            <li><strong>IMPORTANT:</strong> Ensure JavaScript does not interfere with browser-provided text editing functions by capturing key events for the keys used to perform them.</li>
+          </ol>
+        </div>
+        <h3>Listbox Popup Keyboard Interaction</h3>
+        <p>When focus is in a listbox popup:</p>
+        <ul>
+          <li><kbd>Enter</kbd>: Accepts the focused option in the listbox by closing the popup, placing the accepted value in the combobox, and if the combobox is editable, placing the input cursor at the end of the value.</li>
+          <li>
+            <kbd>Escape</kbd>: Closes the popup and returns focus to the combobox.
+            Optionally, if the combobox is editable, clears the contents of the combobox.
+          </li>
+          <li>
+            <kbd>Down Arrow</kbd>: Moves focus to and selects the next option.
+            If focus is on the last option, either returns focus to the combobox or does nothing.
+          </li>
+          <li>
+            <kbd>Up Arrow</kbd>: Moves focus to and selects the previous option.
+            If focus is on the first option, either returns focus to the combobox or does nothing.
+          </li>
+          <li>
+            <kbd>Right Arrow</kbd>: If the combobox is editable, returns focus to the combobox without closing the popup and moves the input cursor one character to the right.
+            If the input cursor is on the right-most character, the cursor does not move.
+          </li>
+          <li>
+            <kbd>Left Arrow</kbd>: If the combobox is editable, returns focus to the combobox without closing the popup and moves the input cursor one character to the left.
+            If the input cursor is on the left-most character, the cursor does not move.
+          </li>
+          <li><kbd>Home</kbd> (Optional): Either moves focus to and selects the first option or, if the combobox is editable, returns focus to the combobox and places the cursor on the first character.</li>
+          <li><kbd>End</kbd> (Optional): Either moves focus to the last option or, if the combobox is editable, returns focus to the combobox and places the cursor after the last character.</li>
+          <li>
+            Any printable character:
+            <ul>
+              <li>If the combobox is editable, returns the focus to the combobox without closing the popup and types the character.</li>
+              <li>Otherwise, moves focus to the next option with a name that starts with the characters typed.</li>
+            </ul>
+          </li>
+          <li><kbd>Backspace</kbd> (Optional): If the combobox is editable, returns focus to the combobox and deletes the character prior to the cursor.</li>
+          <li><kbd>Delete</kbd> (Optional): If the combobox is editable, returns focus to the combobox, removes the selected state if a suggestion was selected, and removes the inline autocomplete string if present.</li>
+        </ul>
+        <div class="note">
+          <h4>Note</h4>
+          <ol>
+            <li>
+              DOM Focus is maintained on the combobox and the assistive technology focus is moved within the listbox using <code>aria-activedescendant</code> as described in
+              <a href="../../practices/keyboard-interface/keyboard-interface-practice.html#kbd_focus_activedescendant">Managing Focus in Composites Using aria-activedescendant</a>.
+            </li>
+            <li>Selection follows focus in the listbox; the listbox allows only one suggested value to be selected at a time for the combobox value.</li>
+          </ol>
+        </div>
+        <h3>Grid Popup Keyboard Interaction</h3>
+        <p>
+          In a grid popup, each suggested value may be represented by either a single cell or an entire row.
+          See notes below for how this aspect of grid design effects the keyboard interaction design and the way that selection moves in response to focus movements.
+        </p>
+        <ul>
+          <li><kbd>Enter</kbd>: Accepts the currently selected suggested value by closing the popup, placing the selected value in the combobox, and if the combobox is editable, placing the input cursor at the end of the value.</li>
+          <li>
+            <kbd>Escape</kbd>: Closes the popup and returns focus to the combobox.
+            Optionally, if the combobox is editable, clears the contents of the combobox.
+          </li>
+          <li>
+            <kbd>Right Arrow</kbd>: Moves focus one cell to the right.
+            Optionally, if focus is on the right-most cell in the row, focus may move to the first cell in the following row.
+            If focus is on the last cell in the grid, either does nothing or returns focus to the combobox.
+          </li>
+          <li>
+            <kbd>Left Arrow</kbd>: Moves focus one cell to the left.
+            Optionally, if focus is on the left-most cell in the row, focus may move to the last cell in the previous row.
+            If focus is on the first cell in the grid, either does nothing or returns focus to the combobox.
+          </li>
+          <li>
+            <kbd>Down Arrow</kbd>: Moves focus one cell down.
+            If focus is in the last row of the grid, either does nothing or returns focus to the combobox.
+          </li>
+          <li>
+            <kbd>Up Arrow</kbd>: Moves focus one cell up.
+            If focus is in the first row of the grid, either does nothing or returns focus to the combobox.
+          </li>
+          <li>
+            <kbd>Page Down</kbd> (Optional): Moves focus down an author-determined number of rows, typically scrolling so the bottom row in the currently visible set of rows becomes one of the first visible rows.
+            If focus is in the last row of the grid, focus does not move.
+          </li>
+          <li>
+            <kbd>Page Up</kbd> (Optional): Moves focus up an author-determined number of rows, typically scrolling so the top row in the currently visible set of rows becomes one of the last visible rows.
+            If focus is in the first row of the grid, focus does not move.
+          </li>
+          <li>
+            <kbd>Home</kbd> (Optional): <strong>Either:</strong>
+            <ul>
+              <li>
+                Moves focus to the first cell in the row that contains focus.
+                Or, if the grid has fewer than three cells per row or multiple suggested values per row, focus may move to the first cell in the grid.
+              </li>
+              <li>If the combobox is editable, returns focus to the combobox and places the cursor on the first character.</li>
+            </ul>
+          </li>
+          <li>
+            <kbd>End</kbd> (Optional): <strong>Either:</strong>
+            <ul>
+              <li>
+                Moves focus to the last cell in the row that contains focus.
+                Or, if the grid has fewer than three cells per row or multiple suggested values per row, focus may move to the last cell in the grid.
+              </li>
+              <li>If the combobox is editable, returns focus to the combobox and places the cursor after the last character.</li>
+            </ul>
+          </li>
+          <li><kbd>Control</kbd> + <kbd>Home</kbd> (optional): moves focus to the first row.</li>
+          <li><kbd>Control</kbd> + <kbd>End</kbd> (Optional): moves focus to the last row.</li>
+          <li>Any printable character: If the combobox is editable, returns the focus to the combobox without closing the popup and types the character.</li>
+          <li><kbd>Backspace</kbd> (Optional): If the combobox is editable, returns focus to the combobox and deletes the character prior to the cursor.</li>
+          <li><kbd>Delete</kbd> (Optional): If the combobox is editable, returns focus to the combobox, removes the selected state if a suggestion was selected, and removes the inline autocomplete string if present.</li>
+        </ul>
+        <div class="note">
+          <h4>Note</h4>
+          <ol>
+            <li>
+              DOM Focus is maintained on the combobox and the assistive technology focus is moved within the grid using <code>aria-activedescendant</code> as described in
+              <a href="../../practices/keyboard-interface/keyboard-interface-practice.html#kbd_focus_activedescendant">Managing Focus in Composites Using aria-activedescendant</a>.
+            </li>
+            <li>The grid allows only one suggested value to be selected at a time for the combobox value.</li>
+            <li>
+              In a grid popup, each suggested value may be represented by either a single cell or an entire row.
+              This aspect of design effects focus and selection movement:
+              <ol>
+                <li>
+                  If every cell contains a different suggested value:
+                  <ul>
+                    <li>Selection follows focus so that the cell containing focus is selected.</li>
+                    <li>Horizontal arrow key navigation typically wraps from one row to another.</li>
+                    <li>Vertical arrow key navigation typically wraps from one column to another.</li>
+                  </ul>
+                </li>
+                <li>
+                  If all cells in a row contain information about the same suggested value:
+                  <ul>
+                    <li>Either the row containing focus is selected or a cell containing a suggested value is selected when any cell in the same row contains focus.</li>
+                    <li>Horizontal key navigation may wrap from one row to another.</li>
+                    <li>Vertical arrow key navigation <strong>does not</strong> wrap from one column to another.</li>
+                  </ul>
+                </li>
+              </ol>
+            </li>
+          </ol>
+        </div>
+        <h3>Tree Popup Keyboard Interaction</h3>
+        <p>
+          In some implementations of tree popups, some or all parent nodes may serve as suggestion category labels so may not be selectable values.
+          See notes below for how this aspect of the design effects the way selection moves in response to focus movements.
+        </p>
+        <p>When focus is in a vertically oriented tree popup:</p>
+        <ul>
+          <li><kbd>Enter</kbd>: Accepts the currently selected suggested value by closing the popup, placing the selected value in the combobox, and if the combobox is editable, placing the input cursor at the end of the value.</li>
+          <li>
+            <kbd>Escape</kbd>: Closes the popup and returns focus to the combobox.
+            Optionally, clears the contents of the combobox.
+          </li>
+          <li>
+            <kbd>Right arrow</kbd>:
+            <ul>
+              <li>When focus is on a closed node, opens the node; focus and selection do not move.</li>
+              <li>When focus is on a open node, moves focus to the first child node and selects it if it is selectable.</li>
+              <li>When focus is on an end node, does nothing.</li>
+            </ul>
+          </li>
+          <li>
+            <kbd>Left arrow</kbd>:
+            <ul>
+              <li>When focus is on an open node, closes the node.</li>
+              <li>When focus is on a child node that is also either an end node or a closed node, moves focus to its parent node and selects it if it is selectable.</li>
+              <li>When focus is on a root node that is also either an end node or a closed node, does nothing.</li>
+            </ul>
+          </li>
+          <li><kbd>Down Arrow</kbd>: Moves focus to the next node that is focusable without opening or closing a node and selects it if it is selectable.</li>
+          <li><kbd>Up Arrow</kbd>: Moves focus to the previous node that is focusable without opening or closing a node and selects it if it is selectable.</li>
+          <li><kbd>Home</kbd>: Moves focus to the first focusable node in the tree without opening or closing a node and selects it if it is selectable.</li>
+          <li><kbd>End</kbd>: Moves focus to the last focusable node in the tree without opening or closing a node and selects it if it is selectable.</li>
+          <li>
+            Any printable character:
+            <ul>
+              <li>If the combobox is editable, returns the focus to the combobox without closing the popup and types the character.</li>
+              <li>Otherwise, moves focus to the next suggested value with a name that starts with the characters typed.</li>
+            </ul>
+          </li>
+        </ul>
+        <div  class="note">
+          <h4>Note</h4>
+          <ol>
+            <li>
+              DOM Focus is maintained on the combobox and the assistive technology focus is moved within the tree using <code>aria-activedescendant</code> as described in
+              <a href="../../practices/keyboard-interface/keyboard-interface-practice.html#kbd_focus_activedescendant">Managing Focus in Composites Using aria-activedescendant</a>.
+            </li>
+            <li>The tree allows only one suggested value to be selected at a time for the combobox value.</li>
+            <li>
+              In a tree popup, some or all parent nodes may not be selectable values; they may serve as category labels for suggested values.
+              If focus moves to a node that is not a selectable value, either:
+              <ul>
+                <li>The previously selected node, if any, remains selected until focus moves to a node that is selectable.</li>
+                <li>There is no selected value.</li>
+                <li>In either case, focus is visually distinct from selection so users can readily see if a value is selected or not.</li>
+              </ul>
+            </li>
+            <li>
+              If nodes in the tree are arranged horizontally (<a href="#aria-orientation" class="property-reference">aria-orientation</a> is set to <code>horizontal</code>):
+              <ol>
+                <li><kbd>Down Arrow</kbd> performs as <kbd>Right Arrow</kbd> is described above, and vice versa.</li>
+                <li><kbd>Up Arrow</kbd> performs as <kbd>Left Arrow</kbd> is described above, and vice versa.</li>
+              </ol>
+            </li>
+          </ol>
+        </div>
+        <h3>Dialog Popup Keyboard Interaction</h3>
+        <p>When focus is in a dialog popup:</p>
+        <ul>
+          <li>
+            There are two ways to close the popup and return focus to the combobox:
+            <ol>
+              <li>Perform an action in the dialog, such as activate a button, that specifies a value for the combobox.</li>
+              <li>
+                Cancel out of the dialog, e.g., press <kbd>Escape</kbd> or activate the cancel button in the dialog.
+                Canceling either returns focus to the text box without changing the combobox value or returns focus to the combobox and clears the combobox.
+              </li>
+            </ol>
+          </li>
+          <li>The dialog implements the keyboard interaction defined in the <a href="../dialog-modal/dialog-modal-pattern.html">modal dialog pattern.</a></li>
+        </ul>
+        <div class="note">
+          <h4>Note</h4>
+          <p>Unlike other combobox popups, dialogs do not support <code>aria-activedescendant</code> so DOM focus moves into the dialog from the combobox.</p>
+        </div>
+      </section>
+
+      <section id="roles_states_properties">
+        <h2>WAI-ARIA Roles, States, and Properties</h2>
+        <ul>
+          <li>The element that serves as an input and displays the combobox value has role <a href="#combobox" class="role-reference">combobox</a>.</li>
+          <li>
+            The combobox element has <a href="#aria-controls" class="property-reference">aria-controls</a> set to a value that refers to the element that serves as the popup.
+            Note that <code>aria-controls</code> only needs to be set when the popup is visible.
+            However, it is valid to reference an element that is not visible.
+          </li>
+          <li>The popup is an element that has role <a href="#listbox" class="role-reference">listbox</a>, <a href="#tree" class="role-reference">tree</a>, <a href="#grid" class="role-reference">grid</a>, or <a href="#dialog" class="role-reference">dialog</a>.</li>
+          <li>
+            If the popup has a role other than <code>listbox</code>, the element with role <code>combobox</code> has <a href="#aria-haspopup" class="property-reference">aria-haspopup</a> set to a value that corresponds to the popup type.
+            That is, <code>aria-haspopup</code> is set to <code>grid</code>, <code>tree</code>, or <code>dialog</code>.
+            Note that elements with role <code>combobox</code> have an implicit <code>aria-haspopup</code> value of <code>listbox</code>.
+          </li>
+          <li>
+            When the combobox popup is not visible, the element with role <code>combobox</code> has <a href="#aria-expanded" class="state-reference">aria-expanded</a> set to <code>false</code>.
+            When the popup element is visible, <code>aria-expanded</code> is set to <code>true</code>.
+            Note that elements with role <code>combobox</code> have a default value for <code>aria-expanded</code> of <code>false</code>.
+          </li>
+          <li>When a combobox receives focus, DOM focus is placed on the combobox element.</li>
+          <li>When a descendant of a listbox, grid, or tree popup is focused, DOM focus remains on the combobox and the combobox has <a href="#aria-activedescendant" class="property-reference">aria-activedescendant</a> set to a value that refers to the focused element within the popup.</li>
+          <li>For a combobox that controls a listbox, grid, or tree popup, when a suggested value is visually indicated as the currently selected value, the <code>option</code>, <code>gridcell</code>, <code>row</code>, or <code>treeitem</code> containing that value has <a href="#aria-selected" class="state-reference">aria-selected</a> set to <code>true</code>.</li>
+          <li>
+            If the combobox has a visible label and the combobox element is an HTML element that can be labelled using the HTML <code>label</code> element (e.g., the <code>input</code> element), it is labeled using the <code>label</code> element.
+            Otherwise, if it has a visible label, the combobox element has <a href="#aria-labelledby" class="property-reference">aria-labelledby</a> set to a value that refers to the labelling element.
+            Otherwise, the combobox element has a label provided by <a href="#aria-label" class="property-reference">aria-label</a>.
+          </li>
+          <li>
+            The combobox element has <a href="#aria-autocomplete" class="property-reference">aria-autocomplete</a> set to a value that corresponds to its autocomplete behavior:
+            <ul>
+              <li><code>none</code>: When the popup is displayed, the suggested values it contains are the same regardless of the characters typed in the combobox.</li>
+              <li>
+                <code>list</code>: When the popup is triggered, it presents suggested values.
+                If the combobox is editable, the values complete or logically correspond to the characters typed in the combobox.
+              </li>
+              <li>
+                <code>both</code>: When the popup is triggered, it presents suggested values that complete or logically correspond to the characters typed in the combobox.
+                In addition, the portion of the selected suggestion that has not been typed by the user, known as the <q>completion string</q>, appears inline after the input cursor in the combobox.
+                The inline completion string is visually highlighted and has a selected state.
+              </li>
+            </ul>
+          </li>
+        </ul>
+        <div class="note">
+          <h3>Note</h3>
+          <ol>
+            <li>
+              In ARIA 1.0, the combobox referenced its popup with <a href="#aria-owns" class="property-reference">aria-owns</a> instead of <a href="#aria-controls" class="property-reference">aria-controls</a>.
+              While user agents might support comboboxes with <a href="#aria-owns" class="property-reference">aria-owns</a> for backwards compatibility with legacy content, it is strongly recommended that authors use <a href="#aria-controls" class="property-reference">aria-controls</a>.
+            </li>
+            <li>When referring to the roles, states, and properties documentation for the below list of patterns used for popups, keep in mind that a combobox is a single-select widget where selection follows focus in the popup.</li>
+            <li>
+              The roles, states, and properties for popup elements are defined in their respective design patterns:
+              <ul>
+                <li><a href="../listbox/listbox-pattern.html#roles_states_properties">Listbox Roles, States, and Properties</a></li>
+                <li><a href="../grid/grid-pattern.html#roles_states_properties">Grid Roles, States, and Properties</a></li>
+                <li><a href="../treeview/treeview-pattern.html#roles_states_properties">Tree Roles, States, and Properties</a></li>
+                <li><a href="../dialog-modal/dialog-modal-pattern.html#roles_states_properties">Dialog Roles, States, and Properties</a></li>
+              </ul>
+            </li>
+          </ol>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

@@ -195,13 +195,11 @@ public class WebContentsAccessibilityTreeTest {
         performTest(inputFile, expectationFile, BASE_APG_PATTERN_FILE_PATH);
     }
 
-    @SuppressWarnings("UnusedMethod")
     private void performApgPatternThirdPartyTest(String input) {
         String filename = input.substring(input.lastIndexOf('/') + 1);
         performApgPatternThirdPartyTest(input, removeHtmlSuffix(filename));
     }
 
-    @SuppressWarnings("UnusedMethod")
     private void performApgPatternThirdPartyTest(String inputFile, String expectationFile) {
         performTest(
                 inputFile,
@@ -1404,6 +1402,12 @@ public class WebContentsAccessibilityTreeTest {
     @SmallTest
     public void test_ariaTreeviewFileDirectoryDeclaredProperties() {
         performApgPatternTest("aria-treeview-file-directory-declared-properties.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartyMeter() {
+        performApgPatternThirdPartyTest("meter/examples/meter.html");
     }
 
     // ------------------ CSS TESTS ------------------ //

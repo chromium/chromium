@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>General Principles: Principles: ARIA Landmarks Example</title>
+    <meta charset="utf-8">
+    <link href="css/bootstrap.css" rel="stylesheet" media="screen">
+    <link href="css/bootstrap-theme.css" rel="stylesheet" media="screen">
+    <link href="css/bootstrap-accessibility.css" rel="stylesheet" media="screen">
+    <link href="css/visua11y.css" rel="stylesheet" media="screen">
+    <link href="css/common.css" rel="stylesheet" media="screen">
+  </head>
+  <body>
+    <div class="container">
+      <header class="row">
+        <div id="skip-to-attach" class="col-xs-12 col-sm-3 col-md-3 col-lg-2">
+          <img src="images/w3c.png" alt="W3C Logo" style="margin-top: 2em">
+        </div>
+        <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+          <h1>ARIA Landmarks Example</h1>
+          <p id="inst" class="inst">Visually outline the landmarks and/or headings on the page using the following buttons.</p>
+          <button type="button" onclick="showLandmarks(event)" aria-describedby="inst">Show Landmarks</button>
+          <button type="button" onclick="showHeadings(event)"  aria-describedby="inst">Show Headings</button>
+        </div>
+      </header>
+      <div class="row">
+        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2">
+          <nav>
+            <ul class="nav nav-stacked">
+              <li class="active"><a href="general-principles.html" aria-current="page">Principles</a></li>
+              <li><a href="HTML5.html">HTML</a></li>
+              <li><a href="banner.html">Banner</a></li>
+              <li><a href="complementary.html">Complementary</a></li>
+              <li><a href="contentinfo.html">Contentinfo</a></li>
+              <li><a href="form.html">Form</a></li>
+              <li><a href="main.html">Main</a></li>
+              <li><a href="navigation.html">Navigation</a></li>
+              <li><a href="region.html">Region</a></li>
+              <li><a href="search.html">Search</a></li>
+              <li><a href="at.html" aria-label="Assistive Technology">Asst. Tech.</a></li>
+              <li><a href="resources.html">Resources</a></li>
+            </ul>
+          </nav>
+        </div>
+        <div class="col-xs-12 col-sm-9 col-md-6 col-lg-7">
+          <main>
+            <h1>General Principles</h1>
+            <p>Landmarks provide a powerful way to identify the organization and structure of a web page.
+              The structural information conveyed visually to users should be represented programmatically in the markup using landmark roles.
+              The use of landmarks roles support keyboard navigation to the structure of a web page for screen reader users, and can be used as targets for author supplied "skip links" and browser extensions for enhanced keyboard navigation.
+            </p>
+            <p>This section is intended to assist designers, developers and quality assurance staff in defining and understanding the importance of logical, usable, and accessible layout for assistive technologies
+              using HTML sectioning elements and ARIA landmark roles.
+            </p>
+            <p>Due to the complexity of today's web content, if using landmarks, <strong>all perceivable content</strong> should reside in a semantically meaningful landmark in order that content is not missed by the user.</p>
+
+            <p style="font-weight: bold">Step 1: Identify the logical structure</p>
+            <ul>
+              <li>
+                Break the page into perceivable areas called "areas".
+              </li>
+              <li>
+                Typically, designers indicate areas visually using alignment and spacing of content.
+              </li>
+              <li>
+                Regions can be further defined into logical sub-areas as needed.
+              </li>
+              <li>
+                An example of a sub-area is a portlet in a portal application.
+              </li>
+            </ul>
+
+            <p style="font-weight: bold">Step 2: Assign landmark roles to each area</p>
+            <ul>
+              <li>
+                Assign landmark roles based on the type of content in the area.
+              </li>
+              <li>
+                <code>banner</code>, <code>main</code>, <code>complementary</code> and <code>contentinfo</code> landmarks should be top level landmarks.
+              </li>
+              <li>
+                Landmark roles can be nested to identify parent/child relationships of the information being presented.
+              </li>
+              <li>
+                Note that wrapping  the content  of a modal dialog in a landmark region is unnecessary.
+                A landmark that wraps modal content cannot provide any benefit to users because it is not perceivable unless the modal is open.
+                In addition, when a modal is open, a landmark containing its content is   superfluous because the modal itself is a container that provides both a name and boundaries.
+              </li>
+            </ul>
+
+            <p style="font-weight: bold">Step 3: Label each area</p>
+            <ul>
+              <li>
+                If a specific landmark role is used more than once on a web page, it should have a unique label.
+              </li>
+              <li>
+                If an area begins with a heading element (e.g. <code>h1-h6</code>), it can be used as the label for the area using <code>aria-labelledby</code> attribute.
+              </li>
+              <li>
+                If an area does not have a heading element, provide a label using the <code>aria-label</code> attribute.
+              </li>
+              <li>
+                Avoid using the landmark role as part of the label.
+                For example, a navigation landmark with a label "Site Navigation" will be announced by a screen reader as "Site Navigation Navigation".
+                The label should simply be "Site".
+              </li>
+            </ul>
+          </main>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+          <aside aria-labelledby="id4">
+            <h2 id="id4">Landmarks</h2>
+            <p>The following landmarks are defined on this page:</p>
+            <ul>
+              <li>Banner</li>
+              <li>Complementary</li>
+              <li>Contentinfo</li>
+              <li>Main</li>
+              <li>Navigation</li>
+            </ul>
+          </aside>
+          <aside aria-labelledby="id3">
+            <h2 id="id3">Related Documents</h2>
+            <ul>
+              <li><a href="https://w3.org/WAI/ARIA/apg/">ARIA Authoring Practices</a></li>
+              <li><a href="https://www.w3.org/TR/wai-aria-1.2/">ARIA 1.2 Specification</a></li>
+
+              <li><a href="https://www.w3.org/TR/accname-1.2/">Accessible Name and Description Computation 1.2</a></li>
+              <li><a href="http://www.w3.org/TR/core-aam-1.2/">Core Accessibility API Mappings 1.2</a></li>
+              <li><a href="https://w3c.github.io/html-aam/">HTML Accessibility API Mappings (latest editors draft)</a></li>
+              <li><a href="https://html.spec.whatwg.org/">HTML Specification</a></li>
+              <li><a href="https://www.w3.org/TR/html-aria/">ARIA in HTML</a></li>
+              <li><a href="https://www.w3.org/TR/using-aria/">Using ARIA in HTML</a></li>
+              <li><a href="http://www.w3.org/TR/WCAG/">WCAG Specification</a></li>
+            </ul>
+          </aside>
+        </div>
+      </div>
+      <div class="well well-sm">
+        <footer class="row">
+          <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+            W3C ARIA Authoring Practices Task Force
+          </div>
+          <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2">
+            Copyright 2023
+          </div>
+        </footer>
+      </div>
+    </div>
+    <script type="text/javascript" src="js/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap-accessibility.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap-accessibility-2.js"></script>
+    <script type="text/javascript" src="js/visua11y.js"></script>
+    <script type="text/javascript" src="js/show.js"></script>
+    <!-- Customize SkipTo features using the data-skipto attribute -->
+    <script data-skipto="attachElement: #skip-to-attach; colorTheme: aria"
+            src="js/skipto.min.js">
+    </script>
+  </body>
+</html>

@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigation Treeview Example</title>
+
+    <!-- Core JS and CSS shared by all examples -->
+    <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
+    <link rel="stylesheet" href="../../../shared/css/core.css">
+    <script src="../../../shared/js/examples.js"></script>
+    <script src="../../../shared/js/highlight.pack.js"></script>
+    <script src="../../../shared/js/app.js"></script>
+    <script data-skipto="colorTheme:aria; displayOption:popup; containerElement:div" src="../../../shared/js/skipto.js"></script>
+
+    <!-- JS and CSS for this example -->
+    <link href="css/treeview-navigation.css" rel="stylesheet">
+    <script src="js/treeview-navigation.js"></script>
+  </head>
+  <body>
+    <nav aria-label="Related Links" class="feedback">
+      <ul>
+        <li><a href="https://github.com/orgs/w3c/projects/117">Related Issues</a></li>
+        <li><a href="../treeview-pattern.html">Design Pattern</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h1>Navigation Treeview Example</h1>
+
+      <section>
+        <h2>About This Example</h2>
+        <div class="advisement">
+          <h3>Caution!</h3>
+          <p>Before considering use of the <a href="../treeview-pattern.html">Tree View Pattern</a> for site navigation, it is important to understand:</p>
+          <ul>
+            <li>Correct implementation of the <code>tree</code> role requires implementation of complex functionality that is not needed for typical site navigation that is styled to look like a tree with expandable sections.</li>
+            <li>A pattern more suited for typical site navigation with expandable groups of links is the <a href="../../disclosure/disclosure-pattern.html">disclosure pattern.</a></li>
+          </ul>
+        </div>
+        <img alt="" class="example-page-example-icon" src="../../../images/pattern-treeview.svg">
+        <p>
+          The below example demonstrates how the <a href="../treeview-pattern.html">Tree View Pattern</a> can be used to build a navigation tree for a set of hierarchically organized web pages.
+          It illustrates navigation of a mythical university web site that is comparable to the navigation illustrated in the
+          <a href="../../disclosure/examples/disclosure-navigation.html">Example Disclosure Navigation Menu</a>.
+          As noted above, the disclosure pattern is better suited for most web sites because few sites need the additional keyboard functionality required to support the ARIA <code>tree</code> role.
+        </p>
+        <p>
+          This example relies on the browser to compute values for <code>aria-setsize</code>, <code>aria-posinset</code>, and <code>aria-level</code>.
+          The ARIA specification for these properties states that browsers can, but are not required to, compute their values.
+          So, some browser and assistive technology combinations may not compute or report correct position and level information if it is not explicitly declared.
+          If testing reveals gaps in support for these properties, override automatic computation by explicitly declaring their values as demonstrated in the example of a <a href="treeview-1b.html">File Directory Treeview Example Using Declared Properties.</a>
+        </p>
+        <p>Similar examples include:</p>
+        <ul>
+          <li>
+            <a href="treeview-1a.html">File Directory Treeview using <em>computed</em> properties</a>
+          </li>
+          <li>
+            <a href="treeview-1b.html">File Directory Treeview using <em>declared</em> properties</a>
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <div class="example-header">
+          <h2 id="ex_label">Example</h2>
+        </div>
+        <div role="separator" id="ex_start_sep" aria-labelledby="ex_start_sep ex_label" aria-label="Start of"></div>
+
+        <div id="ex1">
+          <!-- NOTE: In a real website the header element would be a top level element, i.e., it would have the body as its scope.
+            If the scope of the header element were body, browsers would automatically treat the header as an ARIA banner,
+            so the header would not need the role="banner". -->
+          <div class="page">
+            <header role="banner">
+              <div class="title" id="id_website_title">Mythical University</div>
+              <div class="tagline">Using a Tree widget pattern for navigation links</div>
+            </header>
+            <div class="body">
+              <nav aria-label="Mythical University">
+                <ul class="treeview-navigation" role="tree" aria-label="Mythical University">
+                  <li role="none">
+                    <a role="treeitem" href="#home" aria-current="page">
+                      <span class="label">Home</span>
+                    </a>
+                  </li>
+                  <li role="none">
+                    <a role="treeitem" aria-expanded="false" aria-owns="id-about-subtree" href="#about">
+                      <span class="label">
+                        <span class="icon">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="10" viewBox="0 0 13 10">
+                            <polygon points="2 1, 12 1, 7 9" />
+                          </svg>
+                        </span>
+                        About
+                      </span>
+                    </a>
+                    <ul id="id-about-subtree" role="group" aria-label="About">
+                      <li role="none">
+                        <a role="treeitem" href="#overview">
+                          <span class="label">Overview</span>
+                        </a>
+                      </li>
+                      <li role="none">
+                        <a role="treeitem" href="#adminstration">
+                          <span class="label">Administration</span>
+                        </a>
+                      </li>
+                      <li role="none">
+                        <a role="treeitem" aria-expanded="false" aria-owns="id-facts-subtree" href="#facts">
+                          <span class="label">
+                            <span class="icon">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="10" viewBox="0 0 13 10">
+                                <polygon points="2 1, 12 1, 7 9" />
+                              </svg>
+                            </span>
+                            Facts
+                          </span>
+                        </a>
+                        <ul id="id-facts-subtree" role="group" aria-label="Facts">
+                          <li role="none">
+                            <a role="treeitem" href="#history">
+                              <span class="label">History</span>
+                            </a>
+                          </li>
+                          <li role="none">
+                            <a role="treeitem" href="#current-statistics">
+                              <span class="label"> Current Statistics </span>
+                            </a>
+                          </li>
+                          <li role="none">
+                            <a role="treeitem" href="#awards">
+                              <span class="label">Awards</span>
+                            </a>
+                          </li>
+                        </ul>
+                      </li>
+                      <li role="none">
+                        <a role="treeitem" aria-expanded="false" aria-owns="id-campus-tours-subtree" href="#campus-tours">
+                          <span class="label">
+                            <span class="icon">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="10" viewBox="0 0 13 10">
+                                <polygon points="2 1, 12 1, 7 9" />
+                              </svg>
+                            </span>
+                            Campus Tours
+                          </span>
+                        </a>
+                        <ul id="id-campus-tours-subtree" role="group" aria-label="Campus Tours">
+                          <li role="none">
+                            <a role="treeitem" href="#for-prospective-students">
+                              <span class="label"> For Prospective Students </span>
+                            </a>
+                          </li>
+                          <li role="none">
+                            <a role="treeitem" href="#for-alumni">
+                              <span class="label">For Alumni</span>
+                            </a>
+                          </li>
+                          <li role="none">
+                            <a role="treeitem" href="#for-visitors">
+                              <span class="label">For Visitors</span>
+                            </a>
+                          </li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                  <li role="none">
+                    <a role="treeitem" aria-expanded="false" aria-owns="id-admissions-subtree" href="#admissions">
+                      <span class="label">
+                        <span class="icon">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="10" viewBox="0 0 13 10">
+                            <polygon points="2 1, 12 1, 7 9" />
+                          </svg>
+                        </span>
+                        Admissions
+                      </span>
+                    </a>
+                    <ul id="id-admissions-subtree" role="group" aria-label="Admissions">
+                      <li role="none">
+                        <a role="treeitem" href="#apply">
+                          <span class="label">Apply</span>
+                        </a>
+                      </li>
+                      <li role="none">
+                        <a role="treeitem" aria-expanded="false" aria-owns="id-tuition-subtree" href="#tuition">
+                          <span class="label">
+                            <span class="icon">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="10" viewBox="0 0 13 10">
+                                <polygon points="2 1, 12 1, 7 9" />
+                              </svg>
+                            </span>
+                            Tuition
+                          </span>
+                        </a>
+                        <ul id="id-tuition-subtree" role="group" aria-label="Tuition">
+                          <li role="none">
+                            <a role="treeitem" href="#undergraduate">
+                              <span class="label">Undergraduate</span>
+                            </a>
+                          </li>
+                          <li role="none">
+                            <a role="treeitem" href="#graduate">
+                              <span class="label">Graduate</span>
+                            </a>
+                          </li>
+                          <li role="none">
+                            <a role="treeitem" href="#professional-schools">
+                              <span class="label">Professional Schools</span>
+                            </a>
+                          </li>
+                        </ul>
+                      </li>
+                      <li role="none">
+                        <a role="treeitem" href="#signup">
+                          <span class="label">Sign Up</span>
+                        </a>
+                      </li>
+                      <li role="none">
+                        <a role="treeitem" href="#visit">
+                          <span class="label">Visit</span>
+                        </a>
+                      </li>
+                      <li role="none">
+                        <a role="treeitem" href="#photo-tour">
+                          <span class="label">Photo Tour</span>
+                        </a>
+                      </li>
+                      <li role="none">
+                        <a role="treeitem" href="#connect">
+                          <span class="label">Connect</span>
+                        </a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li role="none">
+                    <a role="treeitem" aria-expanded="false" aria-owns="id-academics-subtree" href="#academics">
+                      <span class="label">
+                        <span class="icon">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="10" viewBox="0 0 13 10">
+                            <polygon points="2 1, 12 1, 7 9" />
+                          </svg>
+                        </span>
+                        Academics
+                      </span>
+                    </a>
+                    <ul id="id-academics-subtree" role="group" aria-label="Academics">
+                      <li role="none">
+                        <a role="treeitem" href="#colleges-and-schools">
+                          <span class="label">Colleges &amp; Schools</span>
+                        </a>
+                      </li>
+                      <li role="none">
+                        <a role="treeitem" href="#programs-of-study">
+                          <span class="label">Programs of Study</span>
+                        </a>
+                      </li>
+                      <li role="none">
+                        <a role="treeitem" href="#honors-programs">
+                          <span class="label">Honors Programs</span>
+                        </a>
+                      </li>
+                      <li role="none">
+                        <a role="treeitem" href="#online-courses">
+                          <span class="label">Online Courses</span>
+                        </a>
+                      </li>
+                      <li role="none">
+                        <a role="treeitem" href="#course-explorer">
+                          <span class="label">Course Explorer</span>
+                        </a>
+                      </li>
+                      <li role="none">
+                        <a role="treeitem" href="#register-for-classes">
+                          <span class="label">Register for Classes</span>
+                        </a>
+                      </li>
+                      <li role="none">
+                        <a role="treeitem" href="#academic-calendar">
+                          <span class="label">Academic Calendar</span>
+                        </a>
+                      </li>
+                      <li role="none">
+                        <a role="treeitem" href="#tanscripts">
+                          <span class="label">Transcripts</span>
+                        </a>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </nav>
+
+              <!-- NOTE: In a real website the following SECTION element should be MAIN element -->
+              <section class="main" aria-labelledby="id_website_title id_page_title">
+                <h1 class="page_title" id="id_page_title">Mythical University</h1>
+                <div class="content">
+                  <p></p>
+                </div>
+              </section>
+            </div>
+            <!-- NOTE: In a real website the footer element would be a top level element, i.e., it would have the body as its scope.
+            If the scope of the footer element were body, browsers would automatically treat the header as an ARIA contentinfo,
+            so the footer would not need the role="contentinfo". -->
+            <footer role="contentinfo">Mythical University footer information</footer>
+          </div>
+        </div>
+        <div role="separator" id="ex_end_sep" aria-labelledby="ex_end_sep ex_label" aria-label="End of"></div>
+      </section>
+
+      <section>
+        <h2>Accessibility Features</h2>
+        <h3>Focus Movement After Content Load</h3>
+        <p>
+          An important aspect of designing a navigation tree experience is the behavior of keyboard focus when an item in the tree is activated.
+          If activating a tree item changes content on the page without triggering a browser page load, i.e., works like typical single-page apps, the focus position after the content load significantly affects efficiency for keyboard and assistive technology users.
+          Accessible navigation trees typically implement one of the following two behaviors:
+        </p>
+        <ol>
+          <li>
+            Activating a tree item moves focus to the beginning of the new content, ideally a level one heading with content that matches the name of the tree item that was activated.
+            Focusing on the heading informs screen reader users that navigation is complete and confirms the destination.
+            This behavior is appropriate when common or important use case scenarios assume users want to start interacting with the loaded content after activating the tree item.
+            Note: Keyboard users will need to navigate back to the navigation tree to view other pages.
+            To optimize keyboard efficiency, design a layout that logically locates the tree immediately before the content display area in the <kbd>Tab</kbd> sequence.
+          </li>
+          <li>
+            Activating an item in the tree keeps focus on the activated item in the tree.
+            In this case, the movement of <code>aria-current</code> to the currently focused tree item informs screen reader users that navigation is complete and confirms the destination.
+            This behavior is appropriate when common or important use case scenarios assume users are likely to need to peruse content from multiple nodes in the tree before deciding to interact with the loaded content.
+            Note: screen reader users will need to navigate to the content to read it.
+            In some cases, it might be possible to help screen reader users more quickly perceive the nature of the loaded content without navigating to it by referencing a portion of the content with an <code>aria-describedby</code> attribute on the tree item.
+          </li>
+        </ol>
+        <p>The example on this page illustrates the first technique of focusing the level one heading in the newly loaded content.</p>
+        <h3>Assistive Technology Support Features</h3>
+        <ul>
+          <li>Since the tree presents a site navigation system, it is wrapped in a navigation region implemented with a <code>nav</code> element that has an <code>aria-label</code> that matches the label on the tree.</li>
+          <li>
+            To ensure assistive technology users can identify and easily locate the tree item associated with the currently displayed page:
+            <ul>
+              <li>The <code>aria-current="page"</code> attribute is applied to the item in the tree associated with the currently displayed page.</li>
+              <li>
+                The tree item with <code>aria-current</code> is also the only item with <code>tabindex="0"</code>.
+                That is, when tabbing into the tree, focus always lands on the item representing the current page.
+              </li>
+              <li>When focus leaves the tree, if the item representing the current page is in a branch that has been collapsed, that branch is expanded to ensure the current page item is both visible and exposed as active to assistive technologies.</li>
+            </ul>
+          </li>
+        </ul>
+        <h3>Visual design and high contrast features</h3>
+        <ul>
+          <li>To help communicate that the arrow keys are available for navigation within the tree, a border is added to the tree container when focus is within the tree.</li>
+          <li>
+            To support operating system high contrast settings:
+            <ul>
+              <li>
+                Because transparent borders are visible on some systems with operating system high contrast settings enabled, transparency cannot be used to create a visual difference between the element that is focused and other elements.
+                Instead of using transparency, the focused element has a thicker border and less padding.
+                When an element receives focus, its border changes from 1 to 3 pixels and padding is reduced by 2 pixels.
+                When an element loses focus, its border changes from 3 pixels to 1 and padding is increased by 2 pixels.
+              </li>
+              <li>
+                To ensure the arrow icons used to indicate the expanded or collapsed state have sufficient contrast with the background when high contrast settings invert colors, the CSS <code>currentcolor</code> value for the <code>fill</code> and <code>stroke</code> properties of the SVG <code>polygon</code> element is used to synchronize the color with text content.
+                If specific colors are used to specify the <code>fill</code> and <code>stroke</code> properties, these colors will remain the same in high contrast mode, which could lead to insufficient contrast between the icon and the background or even make the icon invisible if its color matches the high contrast mode background.
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Terms Used to Describe Trees</h2>
+        <p>
+          A tree item that can be expanded to reveal child items is called a parent node.
+          It is a closed node when the children are hidden and an open node when it is expanded.
+          An end node does not have any children.
+          For a complete list of terms and definitions, see the <a href="../treeview-pattern.html#terms">Tree View Pattern</a>.
+        </p>
+      </section>
+
+      <section>
+        <h2 id="kbd_label">Keyboard Support</h2>
+        <table aria-labelledby="kbd_label" class="def">
+          <thead>
+            <tr>
+              <th>Key</th>
+              <th>Function</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="key-enter-or-space">
+              <th><kbd>Enter</kbd><br>or <kbd>Space</kbd></th>
+              <td>
+                <ul>
+                  <li>Performs the default action (e.g. onclick event) for the focused node which is to activate the link, opening its target page.</li>
+                  <li>
+                    Moves focus to the <code>h1</code> element in the newly loaded content.
+                    Note: Moving focus is optional behavior.
+                    Please read the above accessibility feature sections for details.
+                  </li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="key-down-arrow">
+              <th><kbd>Down arrow</kbd></th>
+              <td>
+                <ul>
+                  <li>Moves focus to the next node that is focusable without opening or closing a node.</li>
+                  <li>If focus is on the last node, does nothing.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="key-up-arrow">
+              <th><kbd>Up arrow</kbd></th>
+              <td>
+                <ul>
+                  <li>Moves focus to the previous node that is focusable without opening or closing a node.</li>
+                  <li>If focus is on the first node, does nothing.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="key-right-arrow">
+              <th><kbd>Right Arrow</kbd></th>
+              <td>
+                <ul>
+                  <li>When focus is on a closed node, opens the node; focus does not move.</li>
+                  <li>When focus is on a open node, moves focus to the first child node.</li>
+                  <li>When focus is on an end node, does nothing.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="key-left-arrow">
+              <th><kbd>Left Arrow</kbd></th>
+              <td>
+                <ul>
+                  <li>When focus is on an open node, closes the node.</li>
+                  <li>When focus is on a child node that is also either an end node or a closed node, moves focus to its parent node.</li>
+                  <li>When focus is on a root node that is also either an end node or a closed node, does nothing.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="key-home">
+              <th><kbd>Home</kbd></th>
+              <td>Moves focus to first node without opening or closing a node.</td>
+            </tr>
+            <tr data-test-id="key-end">
+              <th><kbd>End</kbd></th>
+              <td>Moves focus to the last node that can be focused without expanding any nodes that are closed.</td>
+            </tr>
+            <tr data-test-id="key-character">
+              <th><kbd>a-z, A-Z</kbd></th>
+              <td>
+                <ul>
+                  <li>Focus moves to the next node with a name that starts with the typed character.</li>
+                  <li>Search wraps to first node if a matching name is not found among the nodes that follow the focused node.</li>
+                  <li>Search ignores nodes that are descendants of closed nodes.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="key-asterisk">
+              <th><kbd>*</kbd> (asterisk)</th>
+              <td>
+                <ul>
+                  <li>Expands all closed sibling nodes that are at the same level as the focused node.</li>
+                  <li>Focus does not move.</li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2 id="rps_label">Role, Property, State, and Tabindex Attributes</h2>
+
+        <h3 id="rps_label_1">Landmarks</h3>
+        <table aria-labelledby="rps_label_1 rps_label" class="data attributes">
+          <thead>
+            <tr>
+              <th scope="col">Role</th>
+              <th scope="col">Attribute</th>
+              <th scope="col">Element</th>
+              <th scope="col">Usage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="banner-role">
+              <th scope="row"><code>banner</code></th>
+              <td></td>
+              <td><code>header</code></td>
+              <td>
+                <ul>
+                  <li>Identifies the common content found at the top of most pages in a website.</li>
+                  <li>In a real web page the <code>header</code> element would typically not need <code>role="banner"</code> attribute to define the landmark, but in this example the <code>header</code> element is not in the proper scope of the <code>body</code> element to identify is as a banner landmark, so it must be explicitly identified using the role attribute.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="navigation-role">
+              <th scope="row"><code>navigation</code></th>
+              <td></td>
+              <td><code>nav</code></td>
+              <td>Identifies the region containing the navigation tree.</td>
+            </tr>
+            <tr data-test-id="navigation-aria-label">
+              <td></td>
+              <th scope="row">
+                <code>aria-label="<em>navigation label</em>"</code>
+              </th>
+              <td><code>nav</code></td>
+              <td>The <code>aria-label</code> attribute provides an accessible name for the <code>navigation</code> landmark.</td>
+            </tr>
+            <tr data-test-id="region-role">
+              <th scope="row"><code>region</code></th>
+              <td></td>
+              <td><code>section</code></td>
+              <td>
+                <ul>
+                  <li>Identifies the main content region of the page in this example.</li>
+                  <li>In a real web page, this region would typically be identified with <code>main</code> landmark, but since the page containing this example already has a main landmark, this section is identified using the <code>region</code> landmark.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="region-aria-labelledby">
+              <td></td>
+              <th scope="row"><code>aria-labelledby="<em>IDREFs</em>"</code></th>
+              <td><code>section</code></td>
+              <td>The <code>aria-labelledby</code> attribute provides an accessible name for the <code>region</code> landmark by concatenating the website and page titles.</td>
+            </tr>
+            <tr data-test-id="contentinfo-role">
+              <th scope="row"><code>contentinfo</code></th>
+              <td><code>role="contentinfo"</code></td>
+              <td><code>footer</code></td>
+              <td>
+                <ul>
+                  <li>Identifies the common content found at the bottom of most pages in a website.</li>
+                  <li>In a real web page the <code>footer</code> element would typically not need <code>role="contentinfo"</code> attribute to define the landmark, but in this example the <code>footer</code> element is not in the proper scope of the <code>body</code> element to identify is as a contentinfo landmark, so it must be explicitly identified using the role attribute.</li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 id="rps_label_2">Tree</h3>
+        <table aria-labelledby="rps_label_2 rps_label" class="data attributes">
+          <thead>
+            <tr>
+              <th scope="col">Role</th>
+              <th scope="col">Attribute</th>
+              <th scope="col">Element</th>
+              <th scope="col">Usage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="tree-role">
+              <th scope="row"><code>tree</code></th>
+              <td></td>
+              <td><code>ul</code></td>
+              <td>
+                <ul>
+                  <li>Identifies the <code>ul</code> element as a <code>tree</code> widget.</li>
+                  <li>
+                    The tree element is not focusable because it implements the practice described in
+                    <a href="../../../practices/keyboard-interface/keyboard-interface-practice.html#kbd_roving_tabindex">Managing Focus Within Components Using a Roving tabindex</a>.
+                  </li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="tree-aria-label">
+              <td></td>
+              <th scope="row"><code>aria-label="Mythical University"</code></th>
+              <td><code>ul</code></td>
+              <td>Provides an accessible name for the <code>tree</code>.</td>
+            </tr>
+            <tr data-test-id="treeitem-role">
+              <th scope="row"><code>treeitem</code></th>
+              <td></td>
+              <td><code>a</code></td>
+              <td>Identifies the element as a <code>treeitem</code>.</td>
+            </tr>
+            <tr data-test-id="treeitem-tabindex">
+              <td></td>
+              <th scope="row"><code>tabindex="-1"</code></th>
+              <td><code>a</code></td>
+              <td>
+                <ul>
+                  <li>Makes the element with the <code>treeitem</code> role focusable without including it in the tab sequence of the page.</li>
+                  <li>All <code>treeitem</code> elements are focusable, but only one is included in the tab sequence.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="treeitem-tabindex">
+              <td></td>
+              <th scope="row"><code>tabindex="0"</code></th>
+              <td><code>a</code></td>
+              <td>
+                <ul>
+                  <li>Includes the element with the <code>treeitem</code> role in the tab sequence.</li>
+                  <li>Only one <code>treeitem</code> in the <code>tree</code> has <code>tabindex="0"</code>.</li>
+                  <li>In this implementation <code>tabindex="0"</code> is always on the treeitem with <code>aria-current="page"</code>.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="treeitem-aria-current">
+              <td></td>
+              <th scope="row"><code>aria-current="page"</code></th>
+              <td><code>a</code></td>
+              <td>
+                <ul>
+                  <li>Applied to the <code>treeitem</code> that is the link to the currently displayed page.</li>
+                  <li>The visual indication of the <code>treeitem</code> with <code>aria-current</code> is a vertical bar to the left of the treeitem label.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="treeitem-aria-expanded">
+              <td></td>
+              <th scope="row"><code>aria-expanded="false"</code></th>
+              <td><code>a</code></td>
+              <td>
+                <ul>
+                  <li>Applied to <code>treeitem</code> elements that are parent nodes, i.e., they have <code>aria-owns</code> referencing a <code>ul</code> with role <code>group</code>.</li>
+                  <li>Indicates the parent node is closed, i.e., the descendant elements are <strong>not</strong> visible.</li>
+                  <li>The visual indication of the collapsed state is synchronized by a CSS attribute selector.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="treeitem-aria-expanded">
+              <td></td>
+              <th scope="row"><code>aria-expanded="true"</code></th>
+              <td><code>a</code></td>
+              <td>
+                <ul>
+                  <li>Applied to <code>treeitem</code> elements that are parent nodes, i.e., they have <code>aria-owns</code> referencing a <code>ul</code> with role <code>group</code>.</li>
+                  <li>Indicates the parent node is open, i.e., the descendant elements <strong>are</strong> visible.</li>
+                  <li>The visual indication of the expanded state is synchronized by a CSS attribute selector.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="treeitem-aria-owns">
+              <td></td>
+              <th scope="row"><code>aria-owns="IDREF"</code></th>
+              <td><code>a</code></td>
+              <td>Refers to the element with role <code>group</code> that contains the set of child <code>treeitem</code> elements that belong to this parent <code>treeitem</code>.</td>
+            </tr>
+            <tr data-test-id="group-role">
+              <th scope="row"><code>group</code></th>
+              <td></td>
+              <td><code>ul</code></td>
+              <td>
+                <ul>
+                  <li>Identifies the <code>ul</code> element as a container of <code>treeitem</code> elements that form a branch of the tree.</li>
+                  <li>The group is owned by the element that serves as the parent <code>treeitem</code>.</li>
+                  <li>Browsers use the grouping to compute <code>aria-level</code>, <code>aria-setsize</code> and <code>aria-posinset</code> values for the nodes contained in the branch.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="none-role">
+              <th scope="row">
+                <code>none</code>
+              </th>
+              <td></td>
+              <td>
+                <code>li</code>
+              </td>
+              <td>
+                <ul>
+                  <li>Hides the implicit <code>listitem</code> role of the <code>li</code> element from assistive technologies.</li>
+                  <li>A <code>listitem</code> is required to be contained by a <code>list</code>, but the containing element is no longer a <code>list</code>; it is a <code>tree</code> or a <code>group</code>.</li>
+                  <li>Removing the <code>listitem</code> semantic from the browser's accessibility tree eliminates the potential for confusing rendering by assistive technologies.</li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>JavaScript and CSS Source Code</h2>
+        <ul id="css_js_files">
+          <li>
+            CSS:
+            <a href="css/treeview-navigation.css" type="text/css">treeview-navigation.css</a>
+          </li>
+          <li>
+            JavaScript:
+            <a href="js/treeview-navigation.js" type="text/javascript">treeview-navigation.js</a>
+          </li>
+        </ul>
+      </section>
+
+      <section class="example-code">
+        <h2 id="sc1_label">HTML Source Code</h2>
+        <p id="sc1_description">To copy the following HTML code, please open it in CodePen.</p>
+        <div role="separator" id="sc1_start_sep" aria-labelledby="sc1_start_sep sc1_label" aria-label="Start of"></div>
+        <pre><code id="sc1"></code></pre>
+        <div role="separator" id="sc1_end_sep" aria-labelledby="sc1_end_sep sc1_label" aria-label="End of"></div>
+        <script>
+          sourceCode.add('sc1', 'ex1', 'ex_label', 'css_js_files', 'sc1_description');
+          sourceCode.make();
+        </script>
+      </section>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,114 @@
+[role="button"] {
+  display: inline-block;
+  position: relative;
+  padding: 0.4em 0.7em;
+  border: 1px solid hsl(213deg 71% 49%);
+  border-radius: 5px;
+  box-shadow: 0 1px 2px hsl(216deg 27% 55%);
+  color: #fff;
+  text-shadow: 0 -1px 1px hsl(216deg 27% 25%);
+  background-color: hsl(216deg 82% 51%);
+  background-image: linear-gradient(
+    to bottom,
+    hsl(216deg 82% 53%),
+    hsl(216deg 82% 47%)
+  );
+}
+
+[role="button"]:hover {
+  border-color: hsl(213deg 71% 29%);
+  background-color: hsl(216deg 82% 31%);
+  background-image: linear-gradient(
+    to bottom,
+    hsl(216deg 82% 33%),
+    hsl(216deg 82% 27%)
+  );
+  cursor: default;
+}
+
+[role="button"]:focus {
+  outline: none;
+}
+
+[role="button"]:focus::before {
+  position: absolute;
+
+  /* button border width - outline width - offset */
+  top: calc(-1px - 3px - 3px);
+  right: calc(-1px - 3px - 3px);
+  bottom: calc(-1px - 3px - 3px);
+  left: calc(-1px - 3px - 3px);
+  border: 3px solid hsl(213deg 71% 49%);
+
+  /* button border radius + outline width + offset */
+  border-radius: calc(5px + 3px + 3px);
+  content: "";
+}
+
+[role="button"]:active {
+  border-color: hsl(213deg 71% 49%);
+  background-color: hsl(216deg 82% 31%);
+  background-image: linear-gradient(
+    to bottom,
+    hsl(216deg 82% 53%),
+    hsl(216deg 82% 47%)
+  );
+  box-shadow: inset 0 3px 5px 1px hsl(216deg 82% 30%);
+}
+
+[role="button"][aria-pressed] {
+  border-color: hsl(261deg 71% 49%);
+  box-shadow: 0 1px 2px hsl(261deg 27% 55%);
+  text-shadow: 0 -1px 1px hsl(261deg 27% 25%);
+  background-color: hsl(261deg 82% 51%);
+  background-image: linear-gradient(
+    to bottom,
+    hsl(261deg 82% 53%),
+    hsl(261deg 82% 47%)
+  );
+}
+
+[role="button"][aria-pressed]:hover {
+  border-color: hsl(261deg 71% 29%);
+  background-color: hsl(261deg 82% 31%);
+  background-image: linear-gradient(
+    to bottom,
+    hsl(261deg 82% 33%),
+    hsl(261deg 82% 27%)
+  );
+}
+
+[role="button"][aria-pressed="true"] {
+  padding-top: 0.5em;
+  padding-bottom: 0.3em;
+  border-color: hsl(261deg 71% 49%);
+  background-color: hsl(261deg 82% 31%);
+  background-image: linear-gradient(
+    to bottom,
+    hsl(261deg 82% 63%),
+    hsl(261deg 82% 57%)
+  );
+  box-shadow: inset 0 3px 5px 1px hsl(261deg 82% 30%);
+}
+
+[role="button"][aria-pressed="true"]:hover {
+  border-color: hsl(261deg 71% 49%);
+  background-color: hsl(261deg 82% 31%);
+  background-image: linear-gradient(
+    to bottom,
+    hsl(261deg 82% 43%),
+    hsl(261deg 82% 37%)
+  );
+  box-shadow: inset 0 3px 5px 1px hsl(261deg 82% 20%);
+}
+
+[role="button"][aria-pressed]:focus::before {
+  border-color: hsl(261deg 71% 49%);
+}
+
+[role="button"] svg {
+  margin: 0.15em auto -0.15em;
+  height: 1em;
+  width: 1em;
+  pointer-events: none;
+}

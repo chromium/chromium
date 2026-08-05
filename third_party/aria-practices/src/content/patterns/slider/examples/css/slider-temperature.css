@@ -1,0 +1,107 @@
+/* CSS Document */
+
+.slider-valuetext h3 {
+  color: black;
+  font-weight: bold;
+  font-size: 150%;
+}
+
+.slider-temperature .label,
+.slider-seek .label {
+  font-weight: bold;
+  font-size: 125%;
+}
+
+.slider-temperature svg,
+.slider-seek svg {
+  forced-color-adjust: auto;
+}
+
+.slider-temperature text,
+.slider-seek text {
+  font-weight: bold;
+  fill: currentcolor;
+  font-family: sans-serif;
+}
+
+.slider-temperature {
+  width: 12em;
+}
+
+.slider-temperature,
+.slider-seek {
+  margin-top: 1em;
+  padding: 6px;
+  color: black;
+}
+
+.slider-temperature .value,
+.slider-slider .value {
+  position: relative;
+  top: 20px;
+  height: 1.5em;
+  font-size: 80%;
+}
+
+.slider-temperature .temp-value,
+.slider-seek .temp-value {
+  padding-left: 24px;
+  font-size: 200%;
+}
+
+.slider-temperature .rail,
+.slider-seek .rail {
+  stroke: currentcolor;
+  stroke-width: 2px;
+  fill: currentcolor;
+  fill-opacity: 0.25;
+}
+
+.slider-temperature .thumb,
+.slider-seek .thumb {
+  stroke-width: 0;
+  fill: currentcolor;
+}
+
+.slider-temperature .focus-ring,
+.slider-seek .focus-ring {
+  stroke: currentcolor;
+  stroke-opacity: 0;
+  fill-opacity: 0;
+  stroke-width: 3px;
+  display: none;
+}
+
+.slider-temperature .slider-group {
+  touch-action: pan-x;
+}
+
+.slider-seek .slider-group {
+  touch-action: pan-y;
+}
+
+.slider-seek .slider-group .value {
+  display: none;
+}
+
+/* Focus and hover styling */
+
+.slider-seek.focus [role="slider"],
+.slider-temperature.focus [role="slider"] {
+  color: #005a9c;
+}
+
+.slider-temperature [role="slider"]:focus,
+.slider-seek [role="slider"]:focus {
+  outline: none;
+}
+
+.slider-temperature [role="slider"]:focus .focus-ring,
+.slider-seek [role="slider"]:focus .focus-ring {
+  display: block;
+  stroke-opacity: 1;
+}
+
+.slider-seek [role="slider"]:focus .value {
+  display: block;
+}

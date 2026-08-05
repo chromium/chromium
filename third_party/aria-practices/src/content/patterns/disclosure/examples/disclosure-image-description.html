@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Example Disclosure (Show/Hide) for Image Description</title>
+
+    <!-- Core JS and CSS shared by all examples -->
+    <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
+    <link rel="stylesheet" href="../../../shared/css/core.css">
+    <script src="../../../shared/js/examples.js"></script>
+    <script src="../../../shared/js/highlight.pack.js"></script>
+    <script src="../../../shared/js/app.js"></script>
+    <script data-skipto="colorTheme:aria; displayOption:popup; containerElement:div" src="../../../shared/js/skipto.js"></script>
+
+    <!-- JS and CSS for this example -->
+    <link href="css/disclosure-image-description.css" rel="stylesheet">
+    <script src="js/disclosure-button.js"></script>
+  </head>
+  <body>
+    <nav aria-label="Related Links" class="feedback">
+      <ul>
+        <li><a href="https://github.com/orgs/w3c/projects/132">Related Issues</a></li>
+        <li><a href="../disclosure-pattern.html">Design Pattern</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h1>Example Disclosure (Show/Hide) for Image Description</h1>
+
+      <section>
+        <h2>About This Example</h2>
+        <img alt="" class="example-page-example-icon" src="../../../images/pattern-disclosure.svg">
+        <p>
+          The following example demonstrates using the <a href="../disclosure-pattern.html">Disclosure Pattern</a> to provide a way of revealing a table of data that complements an image.
+        </p>
+        <p>Similar examples include:</p>
+        <ul>
+          <li>
+            <a href="disclosure-faq.html">Example Disclosure (Show/Hide) for Answers to Frequently Asked Questions</a>
+          </li>
+          <li>
+            <a href="disclosure-navigation.html">Example Disclosure Navigation Menu</a>
+          </li>
+          <li><a href="disclosure-navigation-hybrid.html">Example Disclosure Navigation Menu with Top-Level Links</a></li>
+          <li><a href="disclosure-card.html">Disclosure (Show/Hide) Card</a></li>
+        </ul>
+      </section>
+
+      <section>
+        <div class="example-header">
+          <h2 id="ex_label">Example</h2>
+        </div>
+        <div role="separator" id="ex_start_sep" aria-labelledby="ex_start_sep ex_label" aria-label="Start of"></div>
+        <div id="ex1">
+          <figure>
+            <img
+              src="images/minard.png"
+              alt="Charles Minard's 1869 chart showing the number of men in Napoleon’s 1812 Russian campaign army, their movements, as well as the temperature they encountered on the return path."
+            >
+            <figcaption>
+              <p>
+                Figurative Map of the successive losses in men of the French Army in the Russian campaign 1812-1813.
+                Drawn by Mr. Minard, Inspector General of Bridges and Roads in retirement.
+                Paris, 20 November 1869.
+              </p>
+              <p>
+                The numbers of men present are represented by the widths of the colored zones in a rate of one millimeter for ten thousand men; these are also written beside the zones.
+                Red designates men moving into Russia, black those on retreat.
+              </p>
+              <p>The information used for drawing the map were taken from the works of Messrs. Thiers, <span lang="fr">de Ségur, de Fezensac, de Chambray</span> and the unpublished diary of Jacob, pharmacist of the Army since 28 October.</p>
+              <p>In order to facilitate the judgement of the eye regarding the diminution of the army, I supposed that the troops under Prince Jèrôme and under Marshal Davoust, who were sent to Minsk and Mobilow and who rejoined near Orscha and Witebsk, had always marched with the army.</p>
+              <p><strong>Note: A French translation from Wikipedia.</strong></p>
+              <button type="button" aria-expanded="true" aria-controls="id_long_desc">Data Table for Minard's Chart</button>
+              <div class="long_desc" id="id_long_desc">
+                <h3 id="id_data_label">Data for Charles Minard's Chart of Napoleon's Invasion of Russia</h3>
+                <table aria-labelledby="id_data_label" class="data">
+                  <thead>
+                    <tr>
+                      <th scope="col">Location</th>
+                      <th scope="col">Approximate Date</th>
+                      <th scope="col">Size of Army</th>
+                      <th scope="col">Temperature C</th>
+                      <th scope="col">Temperature F</th>
+                      <th scope="col">Direction</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row">Kowno River</th>
+                      <td>June 24th</td>
+                      <td>442,000</td>
+                      <td>na</td>
+                      <td>na</td>
+                      <td>Advance</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Wilna</th>
+                      <td>June 30th</td>
+                      <td>400,000</td>
+                      <td>na</td>
+                      <td>na</td>
+                      <td>Advance</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Witebsk</th>
+                      <td>na</td>
+                      <td>175,000</td>
+                      <td>na</td>
+                      <td>na</td>
+                      <td>Advance</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Smolensk</th>
+                      <td>August 16th</td>
+                      <td>145,000</td>
+                      <td>na</td>
+                      <td>na</td>
+                      <td>Advance</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Chjat</th>
+                      <td>na</td>
+                      <td>127,000</td>
+                      <td>na</td>
+                      <td>na</td>
+                      <td>Advance</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Mojaisk</th>
+                      <td>September 7th</td>
+                      <td>100,000</td>
+                      <td>na</td>
+                      <td>na</td>
+                      <td>Advance</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Moscow</th>
+                      <td>September 14th</td>
+                      <td>100,000</td>
+                      <td>na</td>
+                      <td>na</td>
+                      <td>Advance</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Malo-jarosewli</th>
+                      <td>October 18th</td>
+                      <td>96,000</td>
+                      <td>0</td>
+                      <td>32</td>
+                      <td>Retreat</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Mojaisk</th>
+                      <td>October 24th</td>
+                      <td>87,000</td>
+                      <td>0</td>
+                      <td>32</td>
+                      <td>Retreat</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Wirma</th>
+                      <td>na</td>
+                      <td>55,000</td>
+                      <td>na</td>
+                      <td>na</td>
+                      <td>Retreat</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Smolensk</th>
+                      <td>November 14th</td>
+                      <td>37,000</td>
+                      <td>-26</td>
+                      <td>-13</td>
+                      <td>Retreat</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Orscha</th>
+                      <td>na</td>
+                      <td>24,000</td>
+                      <td>na</td>
+                      <td>na</td>
+                      <td>Retreat</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Botr</th>
+                      <td>na</td>
+                      <td>20,000</td>
+                      <td>-14</td>
+                      <td>-7</td>
+                      <td>Retreat</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Studienska (reinforcements arrive)</th>
+                      <td>December 1st</td>
+                      <td>50,000</td>
+                      <td>-25</td>
+                      <td>-13</td>
+                      <td>Retreat</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Minsk</th>
+                      <td>December 1st</td>
+                      <td>28,000</td>
+                      <td>-30</td>
+                      <td>-22</td>
+                      <td>Retreat</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Moloderno</th>
+                      <td>December 6th</td>
+                      <td>28,000</td>
+                      <td>-38</td>
+                      <td>-34</td>
+                      <td>Retreat</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Smorgeni</th>
+                      <td>December 7th</td>
+                      <td>12,000</td>
+                      <td>-33</td>
+                      <td>-27</td>
+                      <td>Retreat</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Wilna</th>
+                      <td>na</td>
+                      <td>8,000</td>
+                      <td>na</td>
+                      <td>na</td>
+                      <td>Retreat</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Kowno (reinforcements arrive)</th>
+                      <td>December 14th</td>
+                      <td>10,000</td>
+                      <td>na</td>
+                      <td>na</td>
+                      <td>Retreat</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </figcaption>
+          </figure>
+        </div>
+        <div role="separator" id="ex_end_sep" aria-labelledby="ex_end_sep ex_label" aria-label="End of"></div>
+      </section>
+
+      <section>
+        <h2>Accessibility Features</h2>
+        <ul>
+          <li>To help people with visual impairments identify the disclosure as interactive and make it easier to perceive that clicking either the disclosure button or its label changes the expanded state, when a pointer hovers over the button or its label, the background color changes, a border appears, and the cursor changes to a pointer.</li>
+          <li>
+            Because transparent borders are visible on some systems with operating system high contrast settings enabled, transparency cannot be used to create a visual difference between the element that is focused and other elements.
+            Instead of using transparency, the focused element has a thicker border and less padding.
+            When an element receives focus, its border changes from 0 to 2 pixels and padding is reduced by 2 pixels.
+            When an element loses focus, its border changes from 2 pixels to 0 and padding is increased by 2 pixels.
+          </li>
+          <li>
+            To ensure the inline SVG arrow graphics in the CSS have sufficient contrast with the background when high contrast settings invert colors, the color of the arrows are synchronized with the color of the text content.
+            For example, the color of the arrow is set to match the foreground color of high contrast mode text by specifying the CSS <code>currentcolor</code> value for the <code>stroke</code> and <code>fill</code> properties of the <code>polygon</code> elements used to draw the arrows.
+            If specific colors were instead used to specify the <code>polygon</code> properties, those colors would remain the same in high contrast mode, which could lead to insufficient contrast between the arrows and the background or even make the arrows invisible if the color matched the high contrast mode background.<br>
+            Note: The SVG element needs to have the CSS <code>forced-color-adjust</code> property set to <code>auto</code> for the <code>currentcolor</code> value to be updated in high contrast mode.
+            Some browsers do not use <code>auto</code> for the default value.
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 id="kbd_label">Keyboard Support</h2>
+        <table aria-labelledby="kbd_label" class="def">
+          <thead>
+            <tr>
+              <th>Key</th>
+              <th>Function</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="key-tab">
+              <th>
+                <kbd>Tab</kbd>
+              </th>
+              <td>Moves keyboard focus to the disclosure button.</td>
+            </tr>
+            <tr data-test-id="key-space-or-enter">
+              <th>
+                <kbd>Space</kbd> or <br>
+                <kbd>Enter</kbd>
+              </th>
+              <td>Activates the disclosure button, which toggles the visibility of the long description.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2 id="rps_label">Role, Property, State, and Tabindex Attributes</h2>
+        <table aria-labelledby="rps_label" class="data attributes">
+          <thead>
+            <tr>
+              <th scope="col">Role</th>
+              <th scope="col">Attribute</th>
+              <th scope="col">Element</th>
+              <th scope="col">Usage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="aria-controls">
+              <td></td>
+              <th scope="row">
+                <code>aria-controls="ID_REFERENCE"</code>
+              </th>
+              <td><code>button</code></td>
+              <td>Identifies the element controlled by the disclosure button.</td>
+            </tr>
+            <tr data-test-id="aria-expanded">
+              <td></td>
+              <th scope="row">
+                <code>aria-expanded="false"</code>
+              </th>
+              <td>
+                <code>button</code>
+              </td>
+              <td>
+                <ul>
+                  <li>Indicates that the container controlled by the disclosure button is <em>hidden </em>.</li>
+                  <li>
+                    CSS attribute selectors (e.g. <code>[aria-expanded="false"]</code>) synchronize the visual states with the value of the <code>aria-expanded</code> attribute.
+                  </li>
+                  <li>The visual indicator of the show/hide state is created using the CSS <code>:before</code> pseudo element and the <code>content</code> property so the image is reliably rendered in high contrast mode of operating systems and browsers.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="aria-expanded">
+              <td></td>
+              <th scope="row">
+                <code>aria-expanded="true"</code>
+              </th>
+              <td>
+                <code>button</code>
+              </td>
+              <td>
+                <ul>
+                  <li>Indicates that the container controlled by the disclosure button is <em>visible</em>.</li>
+                  <li>
+                    CSS attribute selectors (e.g. <code>[aria-expanded="true"]</code>) synchronize the visual states with the value of the <code>aria-expanded</code> attribute.
+                  </li>
+                  <li>The visual indicator of the show/hide state is created using the CSS <code>:before</code> pseudo element and the <code>content</code> property so the image is reliably rendered in high contrast mode of operating systems and browsers.</li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>JavaScript and CSS Source Code</h2>
+        <ul id="css_js_files">
+          <li>
+            CSS:
+            <a href="css/disclosure-image-description.css" type="tex/css">disclosure-img-long-description.css</a>
+          </li>
+          <li>
+            JavaScript:
+            <a href="js/disclosure-button.js" type="text/javascript">disclosureButton.js</a>
+          </li>
+        </ul>
+      </section>
+
+      <section class="example-code">
+        <h2 id="sc1_label">HTML Source Code</h2>
+        <p id="sc1_description">To copy the following HTML code, please open it in CodePen.</p>
+        <div role="separator" id="sc1_start_sep" aria-labelledby="sc1_start_sep sc1_label" aria-label="Start of"></div>
+        <pre><code id="sc1"></code></pre>
+        <div role="separator" id="sc1_end_sep" aria-labelledby="sc1_end_sep sc1_label" aria-label="End of"></div>
+        <script>
+          sourceCode.add('sc1', 'ex1', 'ex_label', 'css_js_files', 'sc1_description');
+          sourceCode.make();
+        </script>
+      </section>
+    </main>
+  </body>
+</html>

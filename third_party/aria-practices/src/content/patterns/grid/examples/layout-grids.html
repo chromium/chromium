@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Layout Grid Examples</title>
+
+    <!-- Core JS and CSS shared by all examples -->
+    <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
+    <link rel="stylesheet" href="../../../shared/css/core.css">
+    <script src="../../../shared/js/examples.js"></script>
+    <script src="../../../shared/js/highlight.pack.js"></script>
+    <script src="../../../shared/js/app.js"></script>
+    <script data-skipto="colorTheme:aria; displayOption:popup; containerElement:div" src="../../../shared/js/skipto.js"></script>
+
+    <!-- JS and CSS for this example -->
+    <link href="css/layoutGrids.css" rel="stylesheet">
+    <script src="../../../shared/js/utils.js"></script>
+    <script src="js/dataGrid.js"></script>
+    <script src="js/layoutGrids.js"></script>
+  </head>
+  <body>
+    <nav aria-label="Related Links" class="feedback">
+      <ul>
+        <li><a href="https://github.com/orgs/w3c/projects/133">Related Issues</a></li>
+        <li><a href="../grid-pattern.html">Design Pattern</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h1>Layout Grid Examples</h1>
+
+      <section>
+        <h2>About This Example</h2>
+        <img alt="" class="example-page-example-icon" src="../../../images/pattern-grid.svg">
+        <p>
+          The following examples demonstrate how the <a href="../grid-pattern.html">Grid Pattern</a> can be used to group a collection of interactive widgets into a single tab stop.
+          In these examples, each widget, such as a link or button, is in a separate cell of the grid, and the user can navigate between them with the arrow keys.
+          While navigating with the arrow keys, widgets receive keyboard focus and can be activated with <kbd>Space</kbd> or <kbd>Enter</kbd>.
+        </p>
+        <p>
+          In addition to streamlining keyboard interfaces, these grids also convey logical grouping and semantic relationships for the elements they contain.
+          For people who can see the screen, these groupings and relationships are visually communicated with layout and other elements of the visual design.
+          And, by navigating the logical structure that a grid widget provides, screen reader users are also able to easily perceive the same semantic relationships.
+        </p>
+        <p>
+          The distinguishing feature of <code>grid</code> that enables it to be used for grouping other widgets is that its cells are containers that preserve the semantics of their descendant elements.
+          That is, grid cells do not override or suppress the semantics of the elements they contain.
+          Thus, a link contained inside of a grid cell is presented to a screen reader as a link.
+          By contrast, a link inside of a menu is presented as a menuitem, and a link inside of a listbox is presented as an option.
+        </p>
+        <p>Similar examples include:</p>
+        <ul>
+          <li><a href="data-grids.html">Data Grid Examples</a>: Three example implementations of grid that include features relevant to presenting tabular information, such as content editing, sort, and column hiding.</li>
+          <li><a href="advanced-data-grid.html">Advanced Data Grid Example</a>: Example of a grid with behaviors and features similar to a typical spreadsheet, including cell and row selection.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Examples</h2>
+        <section>
+          <div class="example-header">
+            <h3 id="ex1_label">Example 1: Simple List of Links</h3>
+          </div>
+          <p>This example presents a list of links titled &quot;Related Documents&quot; in a grid.</p>
+          <div role="separator" id="ex1_start_sep" aria-labelledby="ex1_start_sep ex1_label" aria-label="Start of"></div>
+          <div id="ex1">
+            <h4 id="grid1_label">Related Documents</h4>
+            <div id="ex1-grid" role="grid" class="list-links" aria-labelledby="grid1_label" data-wrap-cols="true" data-wrap-rows="true" data-restructure="true">
+              <div role="row">
+                <span role="gridcell" class="list-link"><a tabindex="-1" href="http://www.w3.org/TR/wai-aria-1.1/">ARIA 1.1 Specification</a></span>
+                <span role="gridcell" class="list-link"><a tabindex="-1" href="https://www.w3.org/TR/core-aam-1.1/">Core Accessibility API Mappings 1.1</a></span>
+                <span role="gridcell" class="list-link"><a tabindex="-1" href="https://www.w3.org/WAI/intro/aria.php">WAI-ARIA Overview</a></span>
+                <span role="gridcell" class="list-link"><a tabindex="-1" href="https://www.w3.org/WAI/intro/wcag">WCAG Overview</a></span>
+                <span role="gridcell" class="list-link"><a tabindex="-1" href="https://html.spec.whatwg.org/">HTML Specification</a></span>
+                <span role="gridcell" class="list-link"><a tabindex="-1" href="https://www.w3.org/TR/SVG2/">SVG 2 Specification</a></span>
+              </div>
+            </div>
+            <div id="grid-nux" class="grid-nux hidden" role="region" aria-label="Grid Instructions" tabindex="0">
+              <p class="grid-nux-header">Move keyboard focus inside a grid with arrow keys.</p>
+              <p class="indicator_description">
+                <img src="imgs/black_keys.png" width="100" alt="Arrow keypad" class="indicator_graphic">
+              </p>
+              <p>
+                This focus ring means arrow key navigation is available.
+                Press arrow keys to move inside the component.
+                Press Tab to jump to the next component.
+                <span class="indicator_description">As a reminder, an arrow keypad graphic also appears in the lower left corner of the page.</span>
+              </p>
+              <p>Components that support arrow keys often enable additional keys that make navigation easier, such as Home, End, Ctrl-Home, Ctrl-End, Page Up, and Page Down.</p>
+              <a id="close-nux-button" class="close-nux-button" role="button" tabindex="0">Close Tutorial</a>
+            </div>
+          </div>
+          <div role="separator" id="ex1_end_sep" aria-labelledby="ex1_end_sep ex1_label" aria-label="End of"></div>
+          <h4>Notes</h4>
+          <ol>
+            <li>
+              This grid includes three features to enhance perception of the availability of arrow key navigation:
+              <ol type="A">
+                <li>The focus indicator changes to a dotted blue box.</li>
+                <li>When screen size is sufficiently large, A graphic of an arrow keypad appears in the page gutter on the bottom left.</li>
+                <li>
+                  The first time a user moves focus into the grid with <kbd>Tab</kbd>, a <q>NUX</q> (new user experience helper) appears in the page tab sequence immediately following the grid.
+                  The NUX explains the meaning of the focus indicator and keypad graphic, and it remains visible until the user closes it.
+                </li>
+              </ol>
+            </li>
+            <li>
+              This grid is useful in a responsive design.
+              It dynamically adjusts the number of cells per row based on screen size.
+              As the grid structure changes, the arrow key behavior adjusts accordingly.
+            </li>
+            <li>Since all of the links are part of a single logical group, repeatedly pressing either <kbd>Down Arrow</kbd> or <kbd>Right Arrow</kbd> will move focus through all links in different sequences that depend on the visual arrangement.</li>
+            <li>The <kbd>Left Arrow</kbd> and <kbd>Up Arrow</kbd> keys reverse <kbd>Right Arrow</kbd> and <kbd>Down Arrow</kbd> focus movement, respectively.</li>
+            <li>The <kbd>Home</kbd> and <kbd>End</kbd> keys will move focus to the first and last links, respectively.</li>
+            <li>The <kbd>Page Down</kbd> and <kbd>Page Up</kbd> keys are not supported since scrolling or row skipping functions are not needed with so few rows.</li>
+            <li>The links can be activated with the keyboard when focused.</li>
+          </ol>
+        </section>
+        <section>
+          <div class="example-header">
+            <h3 id="ex2_label">Example 2: Pill List For a List of Message Recipients</h3>
+          </div>
+          <p>
+            Add recipients by typing a string in the &quot;New Recipient Name&quot; field and pressing <kbd>Enter</kbd> or activating the &quot;Add&quot; button.
+            See how this grid behaves as the number of elements increases.
+          </p>
+          <div role="separator" id="ex2_start_sep" aria-labelledby="ex2_start_sep ex2_label" aria-label="Start of"></div>
+          <div id="ex2">
+            <!--
+          @Tatiana: The user should be able to type a string in the input and either press enter or activate the add button and a row gets added to the grid.
+          The IDs provided in the following are just to demo the labeling; I assume most will be dynamically generated.
+          This should be styled so it is presented like a e-mail "To" field and wrap to new lines as it grows; tokens on a line will not necessarily align with tokens on a previous or following line.
+          I am assuming the remove icon buttons will be the typical X icon; I just put a letter X in the span as a placeholder.
+         -->
+            <div class="recipient-list">
+              <span id="send_to_label">Send To:</span>
+              <div id="ex2-grid" role="grid" class="pill-list" aria-labelledby="send_to_label" data-wrap-cols="true">
+                <div role="row" class="pill-item" data-id="1">
+                  <span role="gridcell"><a id="r1" class="pill-name" tabindex="-1" href="#">Recipient Name 1</a></span>
+                  <span role="gridcell"><span id="rb1" class="pill-remove" tabindex="-1" role="button" aria-label="Remove" aria-labelledby="rb1 r1"> X </span></span>
+                </div>
+                <div role="row" class="pill-item" data-id="2">
+                  <span role="gridcell"><a id="r2" class="pill-name" tabindex="-1" href="#">Recipient Name 2</a></span>
+                  <span role="gridcell"><span id="rb2" class="pill-remove" tabindex="-1" role="button" aria-label="Remove" aria-labelledby="rb2 r2"> X </span></span>
+                </div>
+              </div>
+
+              <div id="recipient-form">
+                <input id="add-recipient-input" type="text" aria-label="Add Recipient" placeholder="New Recipient Name">
+                <button type="button" id="add-recipient-button">Add</button>
+                <div class="accessible_elem">
+                  Last change to recipient list:
+                  <span aria-live="polite" aria-relevant="text" id="form-action-text"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div role="separator" id="ex2_end_sep" aria-labelledby="ex2_end_sep ex2_label" aria-label="End of"></div>
+          <h4>Notes</h4>
+          <ol>
+            <li>
+              This grid demonstrates that logical rows do not have to be vertically stacked.
+              <ol type="A">
+                <li>Each logical row has two cells: one containing a recipient name link and one containing the remove icon for that recipient.</li>
+                <li>There are multiple logical rows arranged in a line across the screen.</li>
+                <li>As the number of recipients grows, new elements wrap to additional lines as needed.</li>
+                <li><kbd>Down Arrow</kbd> and <kbd>Up Arrow</kbd> move to the next and previous logical row.</li>
+                <li>So for example, <kbd>Down Arrow</kbd> can move focus from recipient to recipient or from remove icon to remove icon.</li>
+              </ol>
+            </li>
+            <li>Like in example 1, <kbd>Right Arrow</kbd> can move focus to every element from beginning to end and vice versa with the <kbd>Left Arrow</kbd>.</li>
+            <li>Pressing <kbd>Enter</kbd> when focus is in the add recipient input will activate the &quot;Add&quot; button.</li>
+            <li>When recipients are added or removed, an off-screen live region informs screen reader users of the result of the action so they do not have to move focus to confirm that the action was completed.</li>
+          </ol>
+        </section>
+        <section>
+          <div class="example-header">
+            <h3 id="ex3_label">Example 3: Scrollable Search Results</h3>
+          </div>
+          <p>
+            This example demonstrates how a grid can make moving through an infinitely large data set as easy and efficient for keyboard users as it is for mouse users.
+            It presents a hypothetical set of search results for W3C resources about WAI-ARIA.
+          </p>
+          <div role="separator" id="ex3_start_sep" aria-labelledby="ex3_start_sep ex3_label" aria-label="Start of"></div>
+          <div id="ex3">
+            <h4 id="ex3_search_results_label">Search Results for "W3C WAI-ARIA"</h4>
+            <div class="ex3_result_indices">Showing results <span id="ex3_start_index">1</span> to <span id="ex3_end_index">5</span> of 19</div>
+
+            <div id="ex3-grid" role="grid" aria-labelledby="ex3_search_results_label" aria-rowcount="19" data-per-page="5" data-wrap-cols="true">
+              <div role="row">
+                <div role="gridcell">
+                  <h5 class="ex3_result_header">
+                    <a tabindex="-1" href="https://www.w3.org/WAI/intro/aria">WAI-ARIA Overview Web Accessibility Initiative W3C</a>
+                  </h5>
+                </div>
+                <span tabindex="-1" role="gridcell">World Wide Web Consortium</span> <span tabindex="-1" role="gridcell">WAI-ARIA, the Accessible Rich Internet Applications Suite, defines a way to make Web content and Web applications more accessible to people with disabilities.</span>
+              </div>
+              <div role="row">
+                <div role="gridcell">
+                  <h5 class="ex3_result_header">
+                    <a tabindex="-1" href="https://www.w3.org/TR/wai-aria-1.0/states_and_properties">ARIA States and Properties - W3C</a>
+                  </h5>
+                </div>
+                <span tabindex="-1" role="gridcell">World Wide Web Consortium</span> <span tabindex="-1" role="gridcell">In this document, states and properties are both treated as aria-prefixed markup attributes. However, they are maintained conceptually distinct to clarify subtle ...</span>
+              </div>
+              <div role="row">
+                <div role="gridcell">
+                  <h5 class="ex3_result_header">
+                    <a tabindex="-1" href="https://www.w3.org/TR/wai-aria/">Accessible Rich Internet Applications (WAI-ARIA) 1.0 - W3C</a>
+                  </h5>
+                </div>
+                <span tabindex="-1" role="gridcell">World Wide Web Consortium</span> <span tabindex="-1" role="gridcell">Mar 20, 2014 - This is the WAI-ARIA 1.0 W3C Recommendation from the Protocols &amp; Formats Working Group of the Web Accessibility Initiative. The Working ...</span>
+              </div>
+              <div role="row">
+                <div role="gridcell">
+                  <h5 class="ex3_result_header">
+                    <a tabindex="-1" href="https://www.w3.org/WAI/ARIA/">Accessible Rich Internet Applications (ARIA) Working Group - W3C</a>
+                  </h5>
+                </div>
+                <span tabindex="-1" role="gridcell">World Wide Web Consortium</span> <span tabindex="-1" role="gridcell">The mission of the Accessible Rich Internet Applications Working Group (ARIA WG) is to develop technologies that enhance accessibility of web content for ...</span>
+              </div>
+              <div role="row">
+                <div role="gridcell">
+                  <h5 class="ex3_result_header">
+                    <a tabindex="-1" href="https://www.w3.org/TR/wai-aria-1.1/">Accessible Rich Internet Applications (WAI-ARIA) 1.1 - W3C</a>
+                  </h5>
+                </div>
+                <span tabindex="-1" role="gridcell">World Wide Web Consortium</span> <span tabindex="-1" role="gridcell">Jul 21, 2016 - This version of ARIA 1.1 changes the aria-kbdshortcuts property to aria-keyshortcuts , expands roles that can be used in comboboxes, adds a ...</span>
+              </div>
+              <div role="row">
+                <div role="gridcell">
+                  <h5 class="ex3_result_header">
+                    <a tabindex="-1" href="https://www.w3.org/TR/wai-aria-1.0/roles">The Roles Model | Accessible Rich Internet Applications (WAI-ARIA) 1.0</a>
+                  </h5>
+                </div>
+                <span tabindex="-1" role="gridcell">World Wide Web Consortium</span> <span tabindex="-1" role="gridcell">This section defines the WAI-ARIA role taxonomy and describes the characteristics and properties of all roles. A formal RDF / OWL representation of all the ...</span>
+              </div>
+              <div role="row">
+                <div role="gridcell">
+                  <h5 class="ex3_result_header">
+                    <a tabindex="-1" href="https://www.w3.org/TR/wai-aria-practices-1.1/">WAI-ARIA Authoring Practices 1.1 - W3C</a>
+                  </h5>
+                </div>
+                <span tabindex="-1" role="gridcell">World Wide Web Consortium</span> <span tabindex="-1" role="gridcell">Mar 17, 2016 - The WAI-ARIA Authoring Practices Guide is intended to provide an understanding of how to use WAI-ARIA to create an accessible Rich Internet ...</span>
+              </div>
+              <div role="row">
+                <div role="gridcell">
+                  <h5 class="ex3_result_header">
+                    <a tabindex="-1" href="https://www.w3.org/TR/html-aria/">ARIA in HTML - W3C</a>
+                  </h5>
+                </div>
+                <span tabindex="-1" role="gridcell">World Wide Web Consortium</span> <span tabindex="-1" role="gridcell">Oct 5, 2016 - ARIA in HTML is a [ HTML51 ] specification module. Any HTML features, conformance requirements, or terms that this specification module ...</span>
+              </div>
+              <div role="row">
+                <div role="gridcell">
+                  <h5 class="ex3_result_header">
+                    <a tabindex="-1" href="https://www.w3.org/TR/html-aria/">ARIA in HTML</a>
+                  </h5>
+                </div>
+                <span tabindex="-1" role="gridcell">World Wide Web Consortium</span> <span tabindex="-1" role="gridcell">Jul 24, 2015 - Setting an ARIA role and/or aria-* attribute that matches the default implicit ARIA semantics is unnecessary and is NOT RECOMMENDED as ...</span>
+              </div>
+              <div role="row">
+                <div role="gridcell">
+                  <h5 class="ex3_result_header">
+                    <a tabindex="-1" href="https://www.w3.org/WAI/standards-guidelines/aria/">Accessible Rich Internet Applications (ARIA) Overview</a>
+                  </h5>
+                </div>
+                <span tabindex="-1" role="gridcell">World Wide Web Consortium</span> <span tabindex="-1" role="gridcell">Here are answers to some frequently asked questions (FAQ) about WAI-ARIA, the Accessible Rich Internet Applications Suite. When we add significant ...</span>
+              </div>
+              <div role="row">
+                <div role="gridcell">
+                  <h5 class="ex3_result_header">
+                    <a tabindex="-1" href="https://www.w3.org/TR/wai-aria-implementation/">WAI-ARIA 1.0 User Agent Implementation Guide - W3C</a>
+                  </h5>
+                </div>
+                <span tabindex="-1" role="gridcell">World Wide Web Consortium</span> <span tabindex="-1" role="gridcell">WAI-ARIA enables rich Internet applications to have the same accessibility features as desktop GUI applications by adding metadata to markup technologies ...</span>
+              </div>
+              <div role="row">
+                <div role="gridcell">
+                  <h5 class="ex3_result_header">
+                    <a tabindex="-1" href="https://w3c.github.io/html-reference/aria/aria.html">ARIA - HTML5 - W3C on GitHub</a>
+                  </h5>
+                </div>
+                <span tabindex="-1" role="gridcell">World Wide Web Consortium</span> <span tabindex="-1" role="gridcell">Alertdialog #. aria.alertdialog = role="" alertdialog "" intermixed with an optional aria-expanded element. Application #. aria.application = role="" application ...</span>
+              </div>
+              <div role="row">
+                <div role="gridcell">
+                  <h5 class="ex3_result_header">
+                    <a tabindex="-1" href="https://www.w3.org/WAI/PF/aria-practices/">WAI-ARIA 1.0 Authoring Practices - W3C</a>
+                  </h5>
+                </div>
+                <span tabindex="-1" role="gridcell">World Wide Web Consortium</span> <span tabindex="-1" role="gridcell">Abstract. This document provided readers with an understanding of how to use WAI-ARIA [ ARIA ] to create accessible rich internet applications. It described ...</span>
+              </div>
+              <div role="row">
+                <div role="gridcell">
+                  <h5 class="ex3_result_header">
+                    <a tabindex="-1" href="https://www.w3.org/TR/aria-in-html/">Notes on Using ARIA in HTML - W3C</a>
+                  </h5>
+                </div>
+                <span tabindex="-1" role="gridcell">World Wide Web Consortium</span> <span tabindex="-1" role="gridcell">May 21, 2015 - This document demonstrates how to use WAI-ARIA in [ HTML51 ], which especially helps with dynamic content and advanced user interface ...</span>
+              </div>
+              <div role="row">
+                <div role="gridcell">
+                  <h5 class="ex3_result_header">
+                    <a tabindex="-1" href="https://www.w3.org/standards/techs/aria">Accessible Rich Internet Applications (WAI-ARIA) Current Status - W3C</a>
+                  </h5>
+                </div>
+                <span tabindex="-1" role="gridcell">World Wide Web Consortium</span> <span tabindex="-1" role="gridcell">Accessible Rich Internet Applications (WAI-ARIA) 1.0. Accessibility of Web content to people with disabilities requires semantic information about widgets, ...</span>
+              </div>
+              <div role="row">
+                <div role="gridcell">
+                  <h5 class="ex3_result_header">
+                    <a tabindex="-1" href="https://www.w3.org/WAI/PF/aria/">Accessible Rich Internet Applications (WAI-ARIA) 1.0 - W3C</a>
+                  </h5>
+                </div>
+                <span tabindex="-1" role="gridcell">World Wide Web Consortium</span> <span tabindex="-1" role="gridcell">Feb 3, 2014 - This version: http://www.w3.org/WAI/PF/aria/; Previous editors' draft: ... This document is part of the WAI-ARIA suite described in the WAI-ARIA ...</span>
+              </div>
+              <div role="row">
+                <div role="gridcell">
+                  <h5 class="ex3_result_header">
+                    <a tabindex="-1" href="https://www.w3.org/TR/wai-aria-1.0/introduction">Introduction | Accessible Rich Internet Applications (WAI-ARIA) 1.0</a>
+                  </h5>
+                </div>
+                <span tabindex="-1" role="gridcell">World Wide Web Consortium</span> <span tabindex="-1" role="gridcell">WAI-ARIA is a technical specification that provides a framework to improve the accessibility and interoperability of web content and applications. This document ...</span>
+              </div>
+              <div role="row">
+                <div role="gridcell">
+                  <h5 class="ex3_result_header">
+                    <a tabindex="-1" href="https://www.w3.org/TR/wai-aria-1.0/usage">Using WAI-ARIA | Accessible Rich Internet Applications (WAI-ARIA) 1.0</a>
+                  </h5>
+                </div>
+                <span tabindex="-1" role="gridcell">World Wide Web Consortium</span> <span tabindex="-1" role="gridcell">WAI-ARIA divides the semantics into roles (the type defining a user interface element) and states and properties supported by the roles. Authors need to ...</span>
+              </div>
+              <div role="row">
+                <div role="gridcell">
+                  <h5 class="ex3_result_header">
+                    <a tabindex="-1" href="https://www.w3.org/TR/WCAG20-TECHS/aria#ARIA11">Using ARIA landmarks to identify regions of a page - WCAG WG - W3C</a>
+                  </h5>
+                </div>
+                <span tabindex="-1" role="gridcell">World Wide Web Consortium</span> <span tabindex="-1" role="gridcell">Jan 3, 2014 - NVDA 2 supports all landmarks except it will not support navigation to “application”; Window Eyes as of V.7 does not support ARIA landmarks.</span>
+              </div>
+            </div>
+
+            <div class="ex3_pagination">
+              <button type="button" disabled id="ex3_pageup_button">Previous</button>
+              <button type="button" id="ex3_pagedown_button">Next</button>
+            </div>
+          </div>
+          <div role="separator" id="ex3_end_sep" aria-labelledby="ex3_end_sep ex3_label" aria-label="End of"></div>
+          <h4>Notes</h4>
+          <ol>
+            <li>
+              This example shows how a logical row can span multiple physical rows.
+              All three cells for each result are in a row, and that row occupies multiple visual rows on the screen.
+            </li>
+            <li>In addition to the navigation keys supported in examples 1 and 2, <kbd>Page Down</kbd> and <kbd>Page Up</kbd> scroll the grid.</li>
+            <li>
+              As navigating up or down scrolls the visible set of rows, the <code>aria-rowindex</code> value of the row containing focus informs assistive technologies of the number of that row within the total set of rows.
+            </li>
+          </ol>
+        </section>
+        <div id="arrow-keys-indicator" class="hidden"></div>
+      </section>
+
+      <section>
+        <h2>Other Features</h2>
+        <p>This implementation of grid allows the following focus movement behaviors to be declared in the HTML.</p>
+        <dl>
+          <dt>Whether to focus a cell or an element inside it when the cell is clicked or a navigation key is pressed:</dt>
+          <dd>
+            The section of the grid pattern on <a href="../grid-pattern.html#gridNav">Setting Focus and Navigating Inside Cells</a> describes how to design the focus placement strategy.
+          </dd>
+          <dt>Whether focus can wrap from the last column to the first column in the next row or from the first column to the last column in the previous row when <kbd>Right Arrow</kbd> and <kbd>Left Arrow</kbd> are pressed:</dt>
+          <dd>
+            This wrapping is expected in all grids except for those presenting tabular, i.e., spreadsheet-like, data.
+            The <a href="data-grids.html">data grid examples</a> demonstrate grids where focus movement does not wrap at the ends of rows.
+          </dd>
+          <dt>Whether focus can wrap to the first row in the next column or the last row in the previous column when <kbd>Down Arrow</kbd> and <kbd>Up Arrow</kbd> are pressed:</dt>
+          <dd>
+            The only condition where this wrapping is appropriate is when every cell in the grid belongs to a single logical set.
+            In other words, if presentation of all elements in a single row is logically equivalent to presenting the same elements in an arbitrary number of rows and columns, then it is appropriate for <kbd>Down Arrow</kbd> and <kbd>Up Arrow</kbd> to behave as if all cells are in a single column.
+            For instance, in example 1, all cells contain a navigation link.
+            That set of six links could be presented in a single row, a single column, or divided into two rows of three or three rows of two; all these presentations would be logically equivalent.
+            Conversely, in example 3, each logical row contains three cells, and it would be bizarre for the focus to move from the last search result link to the organization cell of the first search result when <kbd>Down Arrow</kbd> is pressed.
+          </dd>
+        </dl>
+        <p>The example JavaScript allows the desired focus placement and wrapping behavior to be declared in the HTML content as follows.</p>
+        <ol>
+          <li>
+            If a cell has <code>tabindex=&quot;-1&quot;</code>, focus is placed on the cell.
+            Otherwise, it is placed on a focusable element inside the cell.
+          </li>
+          <li>
+            To determine whether arrow key events should wrap focus movement, the example JavaScript looks for the following custom data attributes:
+            <ol type="A">
+              <li>
+                <code>data-wrap-cols=&quot;true&quot;</code>: When this custom data attribute is on the grid, <kbd>Right Arrow</kbd> and <kbd>Left Arrow</kbd> move focus from column to column even across row boundaries to the column (cell) in the next or previous row.
+                Setting it <code>false</code> will disable this type of wrapping.
+              </li>
+              <li>
+                <code>data-wrap-rows=&quot;true&quot;</code>: When this custom data attribute is on the grid, <kbd>Down Arrow</kbd> and <kbd>Up Arrow</kbd> move focus from row to row even across column boundaries to the row (cell) in the next or previous column.
+                Setting it <code>false</code> will disable this type of wrapping.
+              </li>
+            </ol>
+          </li>
+        </ol>
+      </section>
+
+      <section>
+        <h2 id="kbd_label">Keyboard Support</h2>
+        <p>
+          <strong>NOTE:</strong> The following table describes keyboard commands that move focus among grid cells.
+          In the examples on this page, some cells contain a single focusable widget, and if a cell contains a widget, the cell is not focusable; the widget receives focus instead of the cell.
+          So, when a description says a command moves focus to a cell, the command may either focus the cell or a widget inside the cell.
+        </p>
+        <table aria-labelledby="kbd_label" class="def">
+          <thead>
+            <tr>
+              <th>Key</th>
+              <th>Function</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="key-right-arrow">
+              <th>
+                <kbd>Right Arrow</kbd>
+              </th>
+              <td>
+                <ul>
+                  <li>Moves focus one cell to the right.</li>
+                  <li>When focus is on the right-most cell in the row, focus moves to the first cell in the following row.</li>
+                  <li>If focus is on the last cell in the grid, focus does not move.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="key-left-arrow">
+              <th>
+                <kbd>Left Arrow</kbd>
+              </th>
+              <td>
+                <ul>
+                  <li>Moves focus one cell to the left.</li>
+                  <li>When focus is on the left-most cell in the row, focus moves to the last cell in the previous row.</li>
+                  <li>If focus is on the first cell in the grid, focus does not move.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="key-down-arrow">
+              <th>
+                <kbd>Down Arrow</kbd>
+              </th>
+              <td>
+                <ul>
+                  <li>Moves focus to the next logical row.</li>
+                  <li>In examples 2 and 3, if focus is in the last logical row, focus does not move.</li>
+                  <li>In example 1, since there is only one logical row and since all elements are logically equivalent, focus moves to the next cell but does not move if it is in the last cell of the grid.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="key-up-arrow">
+              <th>
+                <kbd>Up Arrow</kbd>
+              </th>
+              <td>
+                <ul>
+                  <li>Moves focus to the previous logical row.</li>
+                  <li>In examples 2 and 3, if focus is in the first logical row, focus does not move.</li>
+                  <li>In example 1, since there is only one logical row and since all elements are logically equivalent, focus moves to the previous cell but does not move if it is in the first cell of the grid.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="key-page-down">
+              <th><kbd>Page Down</kbd> (Example 3)</th>
+              <td>
+                <ul>
+                  <li>Moves focus down five rows, scrolling so the bottom row in the currently visible set of rows becomes the first visible row.</li>
+                  <li>If focus is in the last row, focus does not move.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="key-page-up">
+              <th><kbd>Page Up</kbd> (Example 3)</th>
+              <td>
+                <ul>
+                  <li>Moves focus up 5 rows, scrolling so the top row in the currently visible set of rows becomes the last visible row.</li>
+                  <li>If focus is in the first row, focus does not move.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="key-home">
+              <th>
+                <kbd>Home</kbd>
+              </th>
+              <td>Moves focus to the first cell in the row that contains focus.</td>
+            </tr>
+            <tr data-test-id="key-end">
+              <th>
+                <kbd>End</kbd>
+              </th>
+              <td>Moves focus to the last cell in the row that contains focus.</td>
+            </tr>
+            <tr data-test-id="key-control-home">
+              <th>
+                <kbd>Control</kbd> + <kbd>Home</kbd>
+              </th>
+              <td>Moves focus to the first cell in the first row.</td>
+            </tr>
+            <tr data-test-id="key-control-end">
+              <th>
+                <kbd>Control</kbd> + <kbd>End</kbd>
+              </th>
+              <td>Moves focus to the last cell in the last row.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2 id="rps_label">Role, Property, State, and Tabindex Attributes</h2>
+        <table aria-labelledby="rps_label" class="data attributes">
+          <thead>
+            <tr>
+              <th scope="col">Role</th>
+              <th scope="col">Attribute</th>
+              <th scope="col">Element</th>
+              <th scope="col">Usage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="grid-role">
+              <th scope="row"><code>grid</code></th>
+              <td></td>
+              <td><code>div</code></td>
+              <td>
+                <ul>
+                  <li>Identifies the element containing the grid widget.</li>
+                  <li>
+                    The grid element is not focusable because it implements the practice described in the section on
+                    <a href="../../../practices/keyboard-interface/keyboard-interface-practice.html#kbd_roving_tabindex">Managing Focus Within Components Using a Roving tabindex</a>.
+                  </li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="aria-labelledby">
+              <td></td>
+              <th scope="row">
+                <code>aria-labelledby=&quot;ID_REF&quot;</code>
+              </th>
+              <td><code>div</code></td>
+              <td>Refers to the element that labels the grid.</td>
+            </tr>
+            <tr data-test-id="aria-rowcount">
+              <td></td>
+              <th scope="row"><code>aria-rowcount=&quot;19&quot;</code></th>
+              <td><code>div</code></td>
+              <td>
+                <ul>
+                  <li>Specified in example 3 because the total number of rows available is 19, but fewer than 19 rows are visible to assistive technologies.</li>
+                  <li>To demonstrate this feature, some rows are hidden using <code>display:none</code>, which excludes them from the browser's accessibility tree.</li>
+                  <li>More commonly, <code>aria-rowcount</code> is used when not all data is loaded into the DOM at one time.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="row-role">
+              <th scope="row"><code>row</code></th>
+              <td></td>
+              <td><code>div</code></td>
+              <td>
+                <ul>
+                  <li>Identifies the element containing all the cells for a row.</li>
+                  <li>
+                    In these examples, the rows are not physical; they are logical groups of cells:
+                    <ul>
+                      <li>In example 2, each recipient and its remove icon make a logical row, but on a physical row, there may be multiple recipients.</li>
+                      <li>In example 3, each search result is a logical row, but that logical row occupies multiple physical rows on the screen.</li>
+                    </ul>
+                  </li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="aria-rowindex">
+              <td></td>
+              <th scope="row"><code>aria-rowindex=&quot;INDEX_VALUE&quot;</code></th>
+              <td><code>div</code></td>
+              <td>
+                <ul>
+                  <li>Used in example 3 because not all rows are present in the accessibility tree.</li>
+                  <li>Overrides browser calculation of row number provided to assistive technologies.</li>
+                  <li>Has a value from 1 to 19 that is dynamically inserted by the JavaScript.</li>
+                  <li><strong>Note:</strong> it is 1-based, not 0-based.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="gridcell-role">
+              <th scope="row"><code>gridcell</code></th>
+              <td></td>
+              <td><code>span, div</code></td>
+              <td>Identifies the element containing the content for a single cell.</td>
+            </tr>
+            <tr data-test-id="tabindex">
+              <td></td>
+              <th scope="row"><code>tabindex=&quot;-1&quot;</code></th>
+              <td><code>span, div</code></td>
+              <td>
+                <ul>
+                  <li>Makes the cell focusable and excludes it from the page <kbd>Tab</kbd> sequence.</li>
+                  <li>Applied to all cells that do not contain an interactive widget that consumes arrow keys, such as a link or button.</li>
+                  <li>Changed dynamically to <code>0</code> by the JavaScript when the cell is to be included in the page <kbd>Tab</kbd> sequence.</li>
+                  <li>At any given time, only one of the cells or widgets within the grid is in the page <kbd>Tab</kbd> sequence.</li>
+                  <li>
+                    This approach to managing focus is described in the section on
+                    <a href="../../../practices/keyboard-interface/keyboard-interface-practice.html#kbd_roving_tabindex">Managing Focus Within Components Using a Roving tabindex</a>.
+                  </li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="tabindex">
+              <td></td>
+              <th scope="row"><code>tabindex=&quot;-1&quot;</code></th>
+              <td>Widgets inside cells</td>
+              <td>
+                <ul>
+                  <li>Makes the widget, e.g., link or button, focusable and excludes it from the page <kbd>Tab</kbd> sequence.</li>
+                  <li>Clicks and keyboard commands that move focus inside the grid can focus widgets if the containing cell is not focusable.</li>
+                  <li>Changed dynamically to <code>0</code> by the JavaScript when the widget is to be included in the page <kbd>Tab</kbd> sequence.</li>
+                  <li>At any given time, only one of the cells or widgets within the grid is in the page <kbd>Tab</kbd> sequence.</li>
+                  <li>
+                    This approach to managing focus is described in the section on
+                    <a href="../../../practices/keyboard-interface/keyboard-interface-practice.html#kbd_roving_tabindex">Managing Focus Within Components Using a Roving tabindex</a>.
+                  </li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="tabindex">
+              <td></td>
+              <th scope="row"><code>tabindex=&quot;0&quot;</code></th>
+              <td>span, div, or if present, widget inside cell</td>
+              <td>
+                <ul>
+                  <li>Makes the element focusable and includes it in the page <kbd>Tab</kbd> sequence.</li>
+                  <li>Set dynamically by the JavaScript when the element is to be included in the page <kbd>Tab</kbd> sequence.</li>
+                  <li>At any given time, only one element within the grid is in the page <kbd>Tab</kbd> sequence.</li>
+                  <li>
+                    This approach to managing focus is described in the section on
+                    <a href="../../../practices/keyboard-interface/keyboard-interface-practice.html#kbd_roving_tabindex">Managing Focus Within Components Using a Roving tabindex</a>.
+                  </li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>JavaScript and CSS Source Code</h2>
+        <ul id="css_js_files">
+          <li>
+            CSS:
+            <ul>
+              <li><a href="css/layoutGrids.css" type="tex/css">layoutGrids.css</a></li>
+            </ul>
+          </li>
+          <li>
+            JavaScript:
+            <ul>
+              <li><a href="js/layoutGrids.js" type="text/javascript">layoutGrids.js</a></li>
+              <li><a href="js/dataGrid.js" type="text/javascript">dataGrid.js</a></li>
+              <li><a href="../../../shared/js/utils.js">utils.js</a></li>
+            </ul>
+          </li>
+        </ul>
+      </section>
+
+      <section class="example-code">
+        <h2>HTML Source Code</h2>
+        <h3 id="sc1_label">Example 1: Simple List of Links</h3>
+        <p id="sc1_description">To copy the following HTML code, please open it in CodePen.</p>
+        <div id="sc1_start_sep" role="separator" aria-labelledby="sc1_start_sep sc1_label" aria-label="Start of HTML for"></div>
+        <pre><code id="sc1"></code></pre>
+        <div id="sc1_end_sep" role="separator" aria-labelledby="sc1_end_sep sc1_label" aria-label="End of HTML for"></div>
+        <script>
+          sourceCode.add('sc1', 'ex1', 'ex1_label', 'css_js_files', 'sc1_description');
+        </script>
+
+        <h3 id="sc2_label">Example 2: Pill List For Components Like a List of Message Recipients</h3>
+        <p id="sc2_description">To copy the following HTML code, please open it in CodePen.</p>
+        <div id="sc2_start_sep" role="separator" aria-labelledby="sc2_start_sep sc2_label" aria-label="Start of HTML for"></div>
+        <pre><code id="sc2"></code></pre>
+        <div id="sc2_end_sep" role="separator" aria-labelledby="sc2_end_sep sc2_label" aria-label="End of HTML for"></div>
+        <script>
+          sourceCode.add('sc2', 'ex2', 'ex2_label', 'css_js_files', 'sc2_description');
+        </script>
+
+        <h3 id="sc3_label">Example 3: Scrollable Search Results</h3>
+        <p id="sc3_description">To copy the following HTML code, please open it in CodePen.</p>
+        <div id="sc3_start_sep" role="separator" aria-labelledby="sc3_start_sep sc3_label" aria-label="Start of HTML for"></div>
+        <pre><code id="sc3"></code></pre>
+        <div id="sc3_end_sep" role="separator" aria-labelledby="sc3_end_sep sc3_label" aria-label="End of HTML for"></div>
+        <script>
+          sourceCode.add('sc3', 'ex3', 'ex3_label', 'css_js_files', 'sc3_description');
+        </script>
+        <!--  After all source has been added, run make to do the insert.  -->
+        <script>
+          sourceCode.make();
+        </script>
+      </section>
+    </main>
+  </body>
+</html>

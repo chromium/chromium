@@ -283,6 +283,7 @@ third_party/android_deps/buildSrc/src/main/groovy
 third_party/android_deps/libs
 third_party/android_toolchain
 third_party/arcore-android-sdk
+third_party/aria-practices/src/content/patterns/tabs/examples
 third_party/axe-core
 third_party/blink/perf_tests/bindings/resources/data
 third_party/blink/perf_tests/css/resources

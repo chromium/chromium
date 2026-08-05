@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meter Example</title>
+
+    <!-- Core JS and CSS shared by all examples -->
+    <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
+    <link rel="stylesheet" href="../../../shared/css/core.css">
+    <script src="../../../shared/js/examples.js"></script>
+    <script src="../../../shared/js/highlight.pack.js"></script>
+    <script src="../../../shared/js/app.js"></script>
+    <script data-skipto="colorTheme:aria; displayOption:popup; containerElement:div" src="../../../shared/js/skipto.js"></script>
+
+    <!-- JS and CSS for this example -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/meter.css">
+    <script src="js/meter.js"></script>
+  </head>
+  <body>
+    <nav aria-label="Related Links" class="feedback">
+      <ul>
+        <li><a href="https://github.com/orgs/w3c/projects/141">Related Issues</a></li>
+        <li><a href="../meter-pattern.html">Design Pattern</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h1>Meter Example</h1>
+
+      <section>
+        <h2>About This Example</h2>
+        <img alt="" class="example-page-example-icon" src="../../../images/pattern-meter.svg">
+        <p>The following example of a CPU meter demonstrates the <a href="../meter-pattern.html">Meter Pattern</a>.</p>
+      </section>
+
+      <section>
+        <div class="example-header">
+          <h2 id="ex_label">Example</h2>
+        </div>
+        <div role="separator" id="ex_start_sep" aria-labelledby="ex_start_sep ex_label" aria-label="Start of"></div>
+
+        <div id="example">
+          <p>
+            The value of this meter changes every 5 seconds.
+            Use the pause button to stop changes.
+          </p>
+          <h3 id="cpu_usage_label">Central Processing Unit (CPU) Usage</h3>
+          <p>
+            <button type="button" class="play-meters">Pause Updates</button>
+          </p>
+          <div role="meter" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100" aria-labelledby="cpu_usage_label">
+            <svg width="100" height="100" class="fill" aria-hidden="true" version="1.1" xmlns="http://www.w3.org/2000/svg">
+              <rect x="0" y="0" width="100%" height="100%" fill="currentcolor" />
+            </svg>
+          </div>
+        </div>
+        <div role="separator" id="ex_end_sep" aria-labelledby="ex_end_sep ex_label" aria-label="End of"></div>
+      </section>
+
+      <section>
+        <h2 id="kbd_label">Keyboard Support</h2>
+        <p>Not applicable.</p>
+      </section>
+
+      <section>
+        <h2 id="rps_label">Role, Property, State, and Tabindex Attributes</h2>
+        <table aria-labelledby="rps_label" class="data attributes">
+          <thead>
+            <tr>
+              <th scope="col">Role</th>
+              <th scope="col">Attribute</th>
+              <th scope="col">Element</th>
+              <th scope="col">Usage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="meter-role">
+              <th scope="row"><code>meter</code></th>
+              <td></td>
+              <td>
+                <code>div</code>
+              </td>
+              <td>
+                <ul>
+                  <li>Identifies the element as a <code>meter</code>.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="meter-aria-valuemin">
+              <td></td>
+              <th scope="row"><code>aria-valuemin="NUMBER"</code></th>
+              <td><code>div</code></td>
+              <td>Specifies the minimum value the meter can have.</td>
+            </tr>
+            <tr data-test-id="meter-aria-valuemax">
+              <td></td>
+              <th scope="row"><code>aria-valuemax="NUMBER"</code></th>
+              <td><code>div</code></td>
+              <td>Specifies the maximum value the meter can have.</td>
+            </tr>
+            <tr data-test-id="meter-aria-valuenow">
+              <td></td>
+              <th scope="row"><code>aria-valuenow="NUMBER"</code></th>
+              <td><code>div</code></td>
+              <td>Specifies the current value of the meter.</td>
+            </tr>
+            <tr data-test-id="meter-aria-labelledby">
+              <td></td>
+              <th scope="row"><code>aria-labelledby</code></th>
+              <td><code>div</code></td>
+              <td>Identifies the element that provides the accessible name of the <code>meter</code>.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>JavaScript and CSS Source Code</h2>
+
+        <ul id="css_js_files">
+          <li>
+            CSS:
+            <a href="css/meter.css" type="text/css">meter.css</a>
+          </li>
+          <li>
+            JavaScript:
+            <a href="js/meter.js" type="text/javascript">meter.js</a>
+          </li>
+        </ul>
+      </section>
+
+      <section class="example-code">
+        <h2 id="sc1_label">HTML Source Code</h2>
+        <p id="sc1_description">To copy the following HTML code, please open it in CodePen.</p>
+        <div role="separator" id="sc1_start_sep" aria-labelledby="sc1_start_sep sc1_label" aria-label="Start of"></div>
+        <pre><code id="sc1"></code></pre>
+        <div role="separator" id="sc1_end_sep" aria-labelledby="sc1_end_sep sc1_label" aria-label="End of"></div>
+        <script>
+          sourceCode.add('sc1', 'example', 'ex_label', 'css_js_files', 'sc1_description');
+          sourceCode.make();
+        </script>
+      </section>
+    </main>
+  </body>
+</html>

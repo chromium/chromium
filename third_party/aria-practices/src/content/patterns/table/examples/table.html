@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Table Example</title>
+
+    <!-- Core JS and CSS shared by all examples -->
+    <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
+    <link rel="stylesheet" href="../../../shared/css/core.css">
+    <script src="../../../shared/js/examples.js"></script>
+    <script src="../../../shared/js/highlight.pack.js"></script>
+    <script src="../../../shared/js/app.js"></script>
+    <script data-skipto="colorTheme:aria; displayOption:popup; containerElement:div" src="../../../shared/js/skipto.js"></script>
+
+    <!-- JS and CSS for this example -->
+    <link href="css/table.css" rel="stylesheet">
+  </head>
+  <body>
+    <nav aria-label="Related Links" class="feedback">
+      <ul>
+        <li><a href="https://github.com/orgs/w3c/projects/134">Related Issues</a></li>
+        <li><a href="../table-pattern.html">Design Pattern</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h1>Table Example</h1>
+
+      <section>
+        <h2>About This Example</h2>
+        <img alt="" class="example-page-example-icon" src="../../../images/pattern-table.svg">
+        <p>
+          The below example illustrates an implementation of the WAI-ARIA <a href="../table-pattern.html">Table Pattern.</a>
+          Note that when possible, using a native HTML <code>table</code> element is recommended.
+        </p>
+        <p>Similar examples include:</p>
+        <ul>
+          <li><a href="sortable-table.html">Sortable Table Example</a>: Basic HTML table that illustrates implementation of <code>aria-sort</code> in the headers of sortable columns.</li>
+          <li><a href="../../grid/examples/data-grids.html">Data Grid Examples</a>: Three example implementations of grid that include features relevant to presenting tabular information, such as content editing, sort, and column hiding.</li>
+        </ul>
+      </section>
+
+      <section>
+        <div class="example-header">
+          <h2 id="ex_label">Example</h2>
+        </div>
+        <div role="separator" id="ex_start_sep" aria-labelledby="ex_start_sep ex_label" aria-label="Start of"></div>
+        <div id="ex1">
+          <div role="table" aria-label="Students" aria-describedby="students_table_desc">
+            <div id="students_table_desc">Students currently enrolled in WAI-ARIA 101 for the coming semester</div>
+            <div role="rowgroup">
+              <div role="row">
+                <span role="columnheader">First Name</span>
+                <span role="columnheader">Last Name</span>
+                <span role="columnheader">Company</span>
+                <span role="columnheader">Address</span>
+              </div>
+            </div>
+            <div role="rowgroup">
+              <div role="row">
+                <span role="cell">Fred</span>
+                <span role="cell">Jackson</span>
+                <span role="cell">Acme, Inc.</span>
+                <span role="cell">123 Broad St.</span>
+              </div>
+              <div role="row">
+                <span role="cell">Sara</span>
+                <span role="cell">James</span>
+                <span role="cell">Acme, Inc.</span>
+                <span role="cell">123 Broad St.</span>
+              </div>
+              <div role="row">
+                <span role="cell">Ralph</span>
+                <span role="cell">Jefferson</span>
+                <span role="cell">XYZ, Inc.</span>
+                <span role="cell">456 Main St.</span>
+              </div>
+              <div role="row">
+                <span role="cell">Nancy</span>
+                <span role="cell">Jensen</span>
+                <span role="cell">XYZ, Inc.</span>
+                <span role="cell">456 Main St.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div role="separator" id="ex_end_sep" aria-labelledby="ex_end_sep ex_label" aria-label="End of"></div>
+      </section>
+
+      <section>
+        <h2 id="kbd_label">Keyboard Support</h2>
+        <p>Not Applicable</p>
+      </section>
+
+      <section>
+        <h2 id="rps_label">Role, Property, State, and Tabindex Attributes</h2>
+        <table aria-labelledby="rps_label" class="data attributes">
+          <thead>
+            <tr>
+              <th scope="col">Role</th>
+              <th scope="col">Attribute</th>
+              <th scope="col">Element</th>
+              <th scope="col">Usage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="table-role">
+              <th scope="row"><code>table</code></th>
+              <td></td>
+              <td><code>div</code></td>
+              <td>Identifies the element containing the table structure.</td>
+            </tr>
+            <tr data-test-id="table-aria-label">
+              <td></td>
+              <th scope="row">
+                <code>aria-label=&quot;Students&quot;</code>
+              </th>
+              <td><code>div</code></td>
+              <td>Provides an accessible name for the table.</td>
+            </tr>
+            <tr data-test-id="table-aria-describedby">
+              <td></td>
+              <th scope="row">
+                <code>aria-describedby=&quot;IDREF&quot;</code>
+              </th>
+              <td><code>div</code></td>
+              <td>Refers to the element that serves as the caption for the table.</td>
+            </tr>
+            <tr data-test-id="rowgroup-role">
+              <th scope="row"><code>rowgroup</code></th>
+              <td></td>
+              <td><code>div</code></td>
+              <td>
+                <ul>
+                  <li>Identifies the elements that serve as containers for the table header and table body rows.</li>
+                  <li>Unlike HTML, WAI-ARIA does not include separate roles for the table header and table body row sets.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="row-role">
+              <th scope="row"><code>row</code></th>
+              <td></td>
+              <td><code>div</code></td>
+              <td>Identifies each element that contains the cells for a row.</td>
+            </tr>
+            <tr data-test-id="columnheader-role">
+              <th scope="row"><code>columnheader</code></th>
+              <td></td>
+              <td><code>span</code></td>
+              <td>Identifies elements that serve as a cell containing a column label.</td>
+            </tr>
+            <tr data-test-id="cell-role">
+              <th scope="row"><code>cell</code></th>
+              <td></td>
+              <td><code>span</code></td>
+              <td>Identifies elements containing content for a single cell.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>JavaScript and CSS Source Code</h2>
+        <!--  After the js and css files are named with the name of this example, change the href and text of the following 2 links to refer to the appropriate js and css files.  -->
+        <ul id="css_js_files">
+          <li>
+            CSS:
+            <a href="css/table.css" type="tex/css">table.css</a>
+          </li>
+          <li>JavaScript: Not applicable.</li>
+        </ul>
+      </section>
+
+      <section class="example-code">
+        <h2 id="sc1_label">HTML Source Code</h2>
+        <p id="sc1_description">To copy the following HTML code, please open it in CodePen.</p>
+        <div role="separator" id="sc1_start_sep" aria-labelledby="sc1_start_sep sc1_label" aria-label="Start of"></div>
+        <pre><code id="sc1"></code></pre>
+        <div role="separator" id="sc1_end_sep" aria-labelledby="sc1_end_sep sc1_label" aria-label="End of"></div>
+        <script>
+          sourceCode.add('sc1', 'ex1', 'ex_label', 'css_js_files', 'sc1_description');
+          sourceCode.make();
+        </script>
+      </section>
+    </main>
+  </body>
+</html>

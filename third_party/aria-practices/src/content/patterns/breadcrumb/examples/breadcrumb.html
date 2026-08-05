@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Breadcrumb Example</title>
+
+    <!-- Core JS and CSS shared by all examples -->
+    <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
+    <link rel="stylesheet" href="../../../shared/css/core.css">
+    <script src="../../../shared/js/examples.js"></script>
+    <script src="../../../shared/js/highlight.pack.js"></script>
+    <script src="../../../shared/js/app.js"></script>
+    <script data-skipto="colorTheme:aria; displayOption:popup; containerElement:div" src="../../../shared/js/skipto.js"></script>
+
+    <!-- JS and CSS for this example -->
+    <link href="css/breadcrumb.css" rel="stylesheet">
+  </head>
+  <body>
+    <nav aria-label="Related Links" class="feedback">
+      <ul>
+        <li><a href="https://github.com/orgs/w3c/projects/137">Related Issues</a></li>
+        <li><a href="../breadcrumb-pattern.html">Design Pattern</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h1>Breadcrumb Example</h1>
+
+      <section>
+        <h2>About This Example</h2>
+        <img alt="" class="example-page-example-icon" src="../../../images/pattern-breadcrumb.svg">
+        <p>The following example demonstrates the <a href="../breadcrumb-pattern.html">Breadcrumb Pattern</a>.</p>
+      </section>
+
+      <section>
+        <div class="example-header">
+          <h2 id="ex_label">Example</h2>
+        </div>
+        <div role="separator" id="ex_start_sep" aria-labelledby="ex_start_sep ex_label" aria-label="Start of"></div>
+        <div id="ex1">
+          <nav aria-label="Breadcrumb" class="breadcrumb">
+            <ol>
+              <li>
+                <a href="../../../apg-home.html">WAI-ARIA Authoring Practices Guide (APG)</a>
+              </li>
+              <li>
+                <a href="../../patterns.html">Patterns</a>
+              </li>
+              <li>
+                <a href="../breadcrumb-pattern.html">Breadcrumb Pattern</a>
+              </li>
+              <li>
+                <a href="./breadcrumb.html" aria-current="page">Breadcrumb Example</a>
+              </li>
+            </ol>
+          </nav>
+        </div>
+        <div role="separator" id="ex_end_sep" aria-labelledby="ex_end_sep ex_label" aria-label="End of"></div>
+      </section>
+
+      <section>
+        <h2>Accessibility Features</h2>
+        <ul>
+          <li>The set of links is structured using an ordered list .</li>
+          <li>A <code>nav</code> element labeled <q>Breadcrumb</q> identifies the structure as a breadcrumb trail and makes it a navigation landmark so that it is easy to locate.</li>
+          <li>
+            To prevent screen reader announcement of the visual separators between links, they are added via <abbr title="Cascading Style Sheets">CSS</abbr>:
+            <ul>
+              <li>
+                The separators are part of the visual presentation that signifies the breadcrumb trail, which is already semantically represented by the <code>nav</code> element with its label of <q>Breadcrumb</q>.
+                So, using a display technique that is not represented in the accessibility tree used by screen readers prevents redundant and potentially distracting verbosity.
+              </li>
+              <li>Each link has a border on one side that is skewed with the CSS’ <code>transform</code> property so it resembles a slash.</li>
+            </ul>
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 id="kbd_label">Keyboard Support</h2>
+        <p>No keyboard interaction needed.</p>
+      </section>
+
+      <section>
+        <h2 id="rps_label">Role, Property, State, and Tabindex Attributes</h2>
+        <table aria-labelledby="rps_label" class="data attributes">
+          <thead>
+            <tr>
+              <th scope="col">Role</th>
+              <th scope="col">Attribute</th>
+              <th scope="col">Element</th>
+              <th scope="col">Usage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="aria-label">
+              <td></td>
+              <th scope="row">
+                <code>aria-label=<q>Breadcrumb</q></code>
+              </th>
+              <td>
+                <code>nav</code>
+              </td>
+              <td>Provides a label that describes the type of navigation provided in the <code>nav</code> element.</td>
+            </tr>
+            <tr data-test-id="aria-current">
+              <td></td>
+              <th scope="row">
+                <code>aria-current=<q>page</q></code>
+              </th>
+              <td>
+                <code>a</code>
+              </td>
+              <td>Applied to the last link in the set to indicate that it represents the current page.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>JavaScript and CSS Source Code</h2>
+        <ul id="css_js_files">
+          <li>
+            CSS:
+            <a href="css/breadcrumb.css" type="tex/css">breadcrumb.css</a>
+          </li>
+        </ul>
+      </section>
+
+      <section class="example-code">
+        <h2 id="sc1_label">HTML Source Code</h2>
+        <p id="sc1_description">To copy the following HTML code, please open it in CodePen.</p>
+        <div role="separator" id="sc1_start_sep" aria-labelledby="sc1_start_sep sc1_label" aria-label="Start of"></div>
+        <pre><code id="sc1"></code></pre>
+        <div role="separator" id="sc1_end_sep" aria-labelledby="sc1_end_sep sc1_label" aria-label="End of"></div>
+        <script>
+          sourceCode.add('sc1', 'ex1', 'ex_label', 'css_js_files', 'sc1_description');
+          sourceCode.make();
+        </script>
+      </section>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Landmarks Pattern</title>
+
+    <!-- Core JS and CSS shared by all patterns -->
+    <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
+    <link rel="stylesheet" href="../../shared/css/core.css">
+    <script src="../../shared/js/highlight.pack.js"></script>
+    <script src="../../shared/js/app.js"></script>
+    <script data-skipto="colorTheme:aria; displayOption:popup; containerElement:div" src="../../shared/js/skipto.js"></script>
+    <script data-read-this-first="showImage:false" src="../../shared/js/read-this-first.js"></script>
+  </head>
+  <body>
+    <main>
+      <h1>Landmarks Pattern</h1>
+
+      <section id="about">
+        <h2>About This Pattern</h2>
+        <p>
+          <a class="role-reference" href="#landmark">Landmarks</a> are a set of eight roles that identify the major sections of a page.
+          Each landmark role enables assistive technology users to perceive the start and end of a feature of the high-level page structure that is usually conveyed visually with placement, spacing, color, or borders.
+          For example, the <a class="role-reference" href="#main">main</a> landmark designates the section that contains the main content of the page.
+          In addition to conveying structure, landmarks enable browsers and assistive technologies to facilitate efficient keyboard navigation among sections of a page.
+        </p>
+        <p>
+          Several landmark roles are implied by HTML elements.
+          For example, the HTML <code>main</code> element automatically creates a main landmark region, and the HTML <code>nav</code> element creates a navigation landmark region.
+          </p>
+        <p>
+          Since landmarks are intended to help assistive technology users perceive the high-level structure of a page, their value diminishes as their number grows.
+          For optimum value, a general rule of thumb is that a page contains seven or fewer landmark regions.
+          Another best practice is to ensure that all content is contained within an appropriate landmark region.
+          The <a href="../../practices//landmark-regions//landmark-regions-practice.html">Landmark Regions Practice</a> describes ways of using HTML sectioning elements and ARIA landmark roles that will most benefit users.
+        </p>
+      </section>
+
+      <section id="examples">
+        <img alt="" src="../../images/pattern-landmarks.svg">
+        <h2>Examples</h2>
+        <ul>
+          <li><a href="examples/main.html">Main Landmark Example</a></li>
+          <li><a href="examples/navigation.html">Navigation Landmark Example</a></li>
+          <li><a href="examples/search.html">Search Landmark Example</a></li>
+          <li><a href="examples/banner.html">Banner Landmark Example</a></li>
+          <li><a href="examples/contentinfo.html">Contentinfo Landmark Example</a></li>
+          <li><a href="examples/complementary.html">Complementary Landmark Example</a></li>
+          <li><a href="examples/form.html">Form Landmark Example</a></li>
+          <li><a href="examples/region.html">Region Landmark Example</a></li>
+        </ul>
+      </section>
+
+      <section id="keyboard_interaction">
+        <h2>Keyboard Interaction</h2>
+        <p>Not applicable.</p>
+      </section>
+
+      <section id="roles_states_properties">
+        <h2>WAI-ARIA Roles, States, and Properties</h2>
+        <p>
+          The <a href="../../practices//landmark-regions//landmark-regions-practice.html">Landmark Regions Practice</a> describes the HTML elements, roles, properties, and usage guidelines for each of the landmark region roles.
+        </p>
+      </section>
+
+    </main>
+  </body>
+</html>

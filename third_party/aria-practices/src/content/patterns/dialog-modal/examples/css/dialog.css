@@ -1,0 +1,138 @@
+.hidden {
+  display: none;
+}
+
+[role="dialog"] {
+  box-sizing: border-box;
+  padding: 15px;
+  border: 1px solid #000;
+  background-color: #fff;
+  min-height: 100vh;
+}
+
+@media screen and (min-width: 640px) {
+  [role="dialog"] {
+    position: absolute;
+    top: 2rem;
+    left: 50vw; /* move to the middle of the screen (assumes relative parent is the body/viewport) */
+    transform: translateX(
+      -50%
+    ); /* move backwards 50% of this element's width */
+
+    min-width: calc(640px - (15px * 2)); /* == breakpoint - left+right margin */
+    min-height: auto;
+    box-shadow:
+      0 19px 38px rgb(0 0 0 / 12%),
+      0 15px 12px rgb(0 0 0 / 22%);
+  }
+}
+
+.dialog_label {
+  text-align: center;
+}
+
+.dialog_form {
+  margin: 15px;
+}
+
+.dialog_form .label_text {
+  box-sizing: border-box;
+  padding-right: 0.5em;
+  display: inline-block;
+  font-size: 16px;
+  font-weight: bold;
+  width: 30%;
+  text-align: right;
+}
+
+.dialog_form .label_info {
+  box-sizing: border-box;
+  padding-right: 0.5em;
+  font-size: 12px;
+  width: 30%;
+  text-align: right;
+  display: inline-block;
+}
+
+.dialog_form_item {
+  margin: 10px 0;
+  font-size: 0;
+}
+
+.dialog_form_item .wide_input {
+  box-sizing: border-box;
+  max-width: 70%;
+  width: 27em;
+}
+
+.dialog_form_item .city_input {
+  box-sizing: border-box;
+  max-width: 70%;
+  width: 17em;
+}
+
+.dialog_form_item .state_input {
+  box-sizing: border-box;
+  max-width: 70%;
+  width: 15em;
+}
+
+.dialog_form_item .zip_input {
+  box-sizing: border-box;
+  max-width: 70%;
+  width: 9em;
+}
+
+.dialog_form_actions {
+  text-align: right;
+  padding: 0 20px 20px;
+}
+
+.dialog_close_button {
+  float: right;
+  position: absolute;
+  top: 10px;
+  left: 92%;
+  height: 25px;
+}
+
+.dialog_close_button img {
+  border: 0;
+}
+
+.dialog_desc {
+  padding: 10px 20px;
+}
+
+/* native <dialog> element uses the ::backdrop pseudo-element */
+
+/* dialog::backdrop, */
+.dialog-backdrop {
+  display: none;
+  position: fixed;
+  overflow-y: auto;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+}
+
+@media screen and (min-width: 640px) {
+  .dialog-backdrop {
+    background: rgb(0 0 0 / 30%);
+  }
+}
+
+.dialog-backdrop.active {
+  display: block;
+}
+
+.no-scroll {
+  overflow-y: auto !important;
+}
+
+/* this is added to the body when a dialog is open */
+.has-dialog {
+  overflow: hidden;
+}

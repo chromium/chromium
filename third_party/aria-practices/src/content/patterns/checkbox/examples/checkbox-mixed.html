@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkbox Example (Mixed-State)</title>
+
+    <!-- Core JS and CSS shared by all examples -->
+    <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
+    <link rel="stylesheet" href="../../../shared/css/core.css">
+    <script src="../../../shared/js/examples.js"></script>
+    <script src="../../../shared/js/highlight.pack.js"></script>
+    <script src="../../../shared/js/app.js"></script>
+    <script data-skipto="colorTheme:aria; displayOption:popup; containerElement:div" src="../../../shared/js/skipto.js"></script>
+
+    <!-- JS and CSS for this example -->
+    <link href="css/checkbox-mixed.css" rel="stylesheet">
+    <script src="js/checkbox-mixed.js"></script>
+  </head>
+  <body>
+    <nav aria-label="Related Links" class="feedback">
+      <ul>
+        <li><a href="https://github.com/orgs/w3c/projects/128">Related Issues</a></li>
+        <li><a href="../checkbox-pattern.html">Design Pattern</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h1>Checkbox Example (Mixed-State)</h1>
+
+      <section>
+        <h2>About This Example</h2>
+        <img alt="" class="example-page-example-icon" src="../../../images/pattern-checkbox.svg">
+        <p>
+          This example demonstrates using the <a href="../checkbox-pattern.html">Checkbox Pattern</a> to create a tri-state, or mixed-state, checkbox.
+          In this implementation, the mixed-state checkbox represents the state of a set of standard HTML checkboxes.
+          If none of the checkboxes in the set are checked, the mixed state checkbox is not checked, and if all members of the set are checked, the mixed state checkbox is checked.
+          If the set contains both some checked and unchecked checkboxes, the mixed state checkbox is partially checked.
+          Activating the tri-state checkbox changes the states of the checkboxes in the set.
+        </p>
+        <p>Similar examples include:</p>
+        <ul>
+          <li><a href="checkbox.html">Checkbox (Two State)</a>: Simple two state checkbox.</li>
+        </ul>
+      </section>
+
+      <section>
+        <div class="example-header">
+          <h2 id="ex_label">Example</h2>
+        </div>
+        <div role="separator" id="ex_start_sep" aria-labelledby="ex_start_sep ex_label" aria-label="Start of"></div>
+        <div id="ex1">
+          <fieldset class="checkbox-mixed">
+            <legend>Sandwich Condiments</legend>
+            <div role="checkbox" class="group_checkbox" aria-checked="mixed" aria-controls="cond1 cond2 cond3 cond4" tabindex="0">All condiments</div>
+            <ul class="checkboxes">
+              <li>
+                <label><input type="checkbox" id="cond1">Lettuce</label>
+              </li>
+              <li>
+                <label><input type="checkbox" id="cond2" checked>Tomato</label>
+              </li>
+              <li>
+                <label><input type="checkbox" id="cond3">Mustard</label>
+              </li>
+              <li>
+                <label><input type="checkbox" id="cond4">Sprouts</label>
+              </li>
+            </ul>
+          </fieldset>
+        </div>
+        <div role="separator" id="ex_end_sep" aria-labelledby="ex_end_sep ex_label" aria-label="End of"></div>
+      </section>
+
+      <section>
+        <h2>Accessibility Features</h2>
+        <ul>
+          <li>To help assistive technology users understand that the checkboxes are all part of a group of related checkboxes named <q>Sandwich Condiments</q>, the checkboxes are wrapped in a <code>fieldset</code> element which is labeled by a <code>legend</code> element.</li>
+          <li>To make it easier to perceive that clicking either the label or checkbox will activate the checkbox, when a pointer hovers over either the checkbox or label, the background color changes, a border appears, and the cursor changes to a pointer.</li>
+          <li>
+            Because transparent borders are visible on some systems when operating system high contrast settings are enabled, transparency cannot be used to create a visual difference between the element that is focused and other elements.
+            Instead of using transparency, the focused element has a thicker border and less padding.
+            When an element receives focus, its border changes from 0 to 2 pixels and padding is reduced by 2 pixels.
+            When an element loses focus, its border changes from 2 pixels to 0 and padding is increased by 2 pixels.
+          </li>
+          <li>
+            To ensure the borders of the inline SVG checkbox graphics in the CSS have sufficient contrast with the background when high contrast settings invert colors, the color of the borders are synchronized with the color of the text content.
+            For example, the color of the checkbox borders is set to match the foreground color of high contrast mode text by specifying the CSS <code>currentcolor</code> value for the <code>stroke</code> property of the <code>rect</code> and <code>polyline</code> elements used to draw the checkbox.
+            To make the background of the checkbox graphics match the high contrast background color, the <code>fill-opacity</code> attribute of the <code>rect</code> element is set to zero.
+            If specific colors were instead used to specify the <code>stroke</code> and <code>fill</code> properties, those colors would remain the same in high contrast mode, which could lead to insufficient contrast between the checkbox and the background or even make the checkbox invisible if the color matched the high contrast mode background.
+            <br>Note: The SVG element needs to have the CSS <code>forced-color-adjust</code> property set to <code>auto</code> for the <code>currentcolor</code> value to be updated in high contrast mode.
+            Some browsers do not use <code>auto</code> for the default value.
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 id="kbd_label">Keyboard Support</h2>
+        <table aria-labelledby="kbd_label" class="def">
+          <thead>
+            <tr>
+              <th>Key</th>
+              <th>Function</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="key-tab">
+              <th><kbd>Tab</kbd></th>
+              <td>Moves keyboard focus among the checkboxes.</td>
+            </tr>
+            <tr data-test-id="key-space">
+              <th><kbd>Space</kbd></th>
+              <td>
+                <ul>
+                  <li>Cycles the tri-state checkbox among unchecked, mixed, and checked states.</li>
+                  <li>When the tri-state checkbox is unchecked, all the controlled checkboxes are unchecked.</li>
+                  <li>When the tri-state checkbox is mixed, the controlled checkboxes return to the last combination of states they had when the tri-state checkbox was last mixed or to the default combination of states they had when the page loaded.</li>
+                  <li>When the tri-state checkbox is checked, all the controlled checkboxes are checked.</li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2 id="rps_label">Role, Property, State, and Tabindex Attributes</h2>
+        <table aria-labelledby="rps_label" class="data attributes">
+          <thead>
+            <tr>
+              <th scope="col">Role</th>
+              <th scope="col">Attribute</th>
+              <th scope="col">Element</th>
+              <th scope="col">Usage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="checkbox-role">
+              <th scope="row"><code>checkbox</code></th>
+              <td></td>
+              <td><code>div</code></td>
+              <td>
+                <ul>
+                  <li>Identifies the <code>div</code> element as a <code>checkbox</code>.</li>
+                  <li>The child text content of this <code>div</code> provides the accessible name of the checkbox.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="checkbox-tabindex">
+              <td></td>
+              <th scope="row"><code>tabindex=&quot;0&quot;</code></th>
+              <td><code>div</code></td>
+              <td>Includes the checkbox in the page tab sequence.</td>
+            </tr>
+            <tr data-test-id="checkbox-aria-controls">
+              <td></td>
+              <th scope="row"><code>aria-controls=&quot;[IDREFS]&quot;</code></th>
+              <td><code>div</code></td>
+              <td>identifies the set of checkboxes controlled by the mixed checkbox.</td>
+            </tr>
+            <tr data-test-id="checkbox-aria-checked-false">
+              <td></td>
+              <th scope="row"><code>aria-checked=&quot;false&quot;</code></th>
+              <td><code>div</code></td>
+              <td>
+                <ul>
+                  <li>Indicates the tri-state <code>checkbox</code> is <strong>not</strong> checked.</li>
+                  <li>In this state, all controlled checkboxes are unchecked.</li>
+                  <li>CSS attribute selectors (e.g. <code>[aria-checked=&quot;false&quot;]</code>) are used to synchronize the visual states with the value of the <code>aria-checked</code> attribute.</li>
+                  <li>To support operating system and browser high contrast settings, the CSS <code>::before</code> pseudo element and <code>content</code> property are used to generate the visual indicators of the checkbox state.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="checkbox-aria-checked-true">
+              <td></td>
+              <th scope="row"><code>aria-checked=&quot;true&quot;</code></th>
+              <td><code>div</code></td>
+              <td>
+                <ul>
+                  <li>Indicates the tri-state <code>checkbox</code> is checked.</li>
+                  <li>In this state, all controlled checkboxes are checked.</li>
+                  <li>CSS attribute selectors (e.g. <code>[aria-checked=&quot;true&quot;]</code>) are used to synchronize the visual states with the value of the <code>aria-checked</code> attribute.</li>
+                  <li>To support operating system and browser high contrast settings, the CSS <code>::before</code> pseudo element and <code>content</code> property are used to generate the visual indicators of the checkbox state.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="checkbox-aria-checked-mixed">
+              <td></td>
+              <th scope="row"><code>aria-checked=&quot;mixed&quot;</code></th>
+              <td><code>div</code></td>
+              <td>
+                <ul>
+                  <li>Indicates the tri-state <code>checkbox</code> is mixed.</li>
+                  <li>In this state, some controlled checkboxes are unchecked and some are checked.</li>
+                  <li>CSS attribute selectors (e.g. <code>[aria-checked=&quot;mixed&quot;]</code>) are used to synchronize the visual states with the value of the <code>aria-checked</code> attribute.</li>
+                  <li>To support operating system and browser high contrast settings, the CSS <code>::before</code> pseudo element and <code>content</code> property are used to generate the visual indicators of the checkbox state.</li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>JavaScript and CSS Source Code</h2>
+        <ul id="css_js_files">
+          <li>CSS: <a href="css/checkbox-mixed.css" type="text/css">checkbox-mixed.css</a></li>
+          <li>JavaScript: <a href="js/checkbox-mixed.js" type="text/javascript">checkbox-mixed.js</a></li>
+        </ul>
+      </section>
+
+      <section class="example-code">
+        <h2 id="sc1_label">HTML Source Code</h2>
+        <p id="sc1_description">To copy the following HTML code, please open it in CodePen.</p>
+        <div role="separator" id="sc1_start_sep" aria-labelledby="sc1_start_sep sc1_label" aria-label="Start of"></div>
+        <pre><code id="sc1"></code></pre>
+        <div role="separator" id="sc1_end_sep" aria-labelledby="sc1_end_sep sc1_label" aria-label="End of"></div>
+        <script>
+          sourceCode.add('sc1', 'ex1', 'ex_label', 'css_js_files', 'sc1_description');
+          sourceCode.make();
+        </script>
+      </section>
+    </main>
+  </body>
+</html>

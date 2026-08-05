@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Example Listboxes with Rearrangeable Options</title>
+
+    <!-- Core JS and CSS shared by all examples -->
+    <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
+    <link rel="stylesheet" href="../../../shared/css/core.css">
+    <script src="../../../shared/js/examples.js"></script>
+    <script src="../../../shared/js/highlight.pack.js"></script>
+    <script src="../../../shared/js/app.js"></script>
+    <script data-skipto="colorTheme:aria; displayOption:popup; containerElement:div" src="../../../shared/js/skipto.js"></script>
+
+    <!-- JS and CSS for this example -->
+    <link href="css/listbox.css" rel="stylesheet">
+    <script src="js/listbox.js"></script>
+    <script src="js/toolbar.js"></script>
+    <script src="js/listbox-rearrangeable.js"></script>
+  </head>
+  <body>
+    <nav aria-label="Related Links" class="feedback">
+      <ul>
+        <li><a href="https://github.com/orgs/w3c/projects/131">Related Issues</a></li>
+        <li><a href="../listbox-pattern.html">Design Pattern</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h1>Example Listboxes with Rearrangeable Options</h1>
+
+      <section>
+        <h2>About This Example</h2>
+        <img alt="" class="example-page-example-icon" src="../../../images/pattern-listbox.svg">
+        <p>
+          The following two example implementations of the <a href="../listbox-pattern.html">Listbox Pattern</a> demonstrate differences between single-select and multi-select functionality.
+          In both examples, users can use action buttons to move options from one list to another.
+          In the first implementation, users can choose a single option and then activate an action button while in the second example, they may select multiple options before activating an action button.
+        </p>
+        <p>Similar examples include:</p>
+        <ul>
+          <li><a href="listbox-scrollable.html">Scrollable Listbox Example</a>: Single-select listbox that scrolls to reveal more options, similar to HTML <code>select</code> with <code>size</code> attribute greater than one.</li>
+          <li><a href="listbox-grouped.html">Listbox Example with Grouped Options</a>: Single-select listbox with grouped options, similar to an HTML <code>select</code> with <code>optgroup</code> children.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Examples</h2>
+        <section>
+          <div class="example-header">
+            <h3 id="ex1_label">Example 1: Single-Select Listbox</h3>
+          </div>
+          <div role="separator" id="ex1_start_sep" aria-labelledby="ex1_start_sep ex1_label" aria-label="Start of"></div>
+          <div id="ex1">
+            <p>
+              Rank features important to you when choosing where to live.
+              If a feature is unimportant, move it to the unimportant features list.
+            </p>
+            <div class="listbox-area">
+              <div class="left-area">
+                <span id="ss_imp_l" class="listbox-label">Important Features:</span>
+                <ul id="ss_imp_list"
+                    tabindex="0"
+                    role="listbox"
+                    aria-labelledby="ss_imp_l">
+                  <li id="ss_opt1" role="option">
+                    <span class="checkmark" aria-hidden="true"></span>
+                    Proximity of public K-12 schools
+                  </li>
+                  <li id="ss_opt2" role="option">
+                    <span class="checkmark" aria-hidden="true"></span>
+                    Proximity of child-friendly parks</li>
+                  <li id="ss_opt3" role="option">
+                    <span class="checkmark" aria-hidden="true"></span>
+                    Proximity of grocery shopping</li>
+                  <li id="ss_opt4" role="option">
+                    <span class="checkmark" aria-hidden="true"></span>
+                    Proximity of fast food</li>
+                  <li id="ss_opt5" role="option">
+                    <span class="checkmark" aria-hidden="true"></span>
+                    Proximity of fine dining</li>
+                  <li id="ss_opt6" role="option">
+                    <span class="checkmark" aria-hidden="true"></span>
+                    Neighborhood walkability</li>
+                  <li id="ss_opt7" role="option">
+                    <span class="checkmark" aria-hidden="true"></span>
+                    Availability of public transit</li>
+                  <li id="ss_opt8" role="option">
+                    <span class="checkmark" aria-hidden="true"></span>
+                    Proximity of hospital and medical services</li>
+                  <li id="ss_opt9" role="option">
+                    <span class="checkmark" aria-hidden="true"></span>
+                    Level of traffic noise</li>
+                  <li id="ss_opt10" role="option">
+                    <span class="checkmark" aria-hidden="true"></span>
+                    Access to major highways</li>
+                </ul>
+                <div role="toolbar" aria-label="Actions" class="toolbar">
+                  <button type="button"
+                          id="ex1-up"
+                          class="toolbar-item selected"
+                          aria-keyshortcuts="Alt+ArrowUp"
+                          aria-disabled="true">
+                    Up
+                  </button>
+                  <button type="button"
+                          id="ex1-down"
+                          class="toolbar-item"
+                          tabindex="-1"
+                          aria-keyshortcuts="Alt+ArrowDown"
+                          aria-disabled="true">
+                    Down
+                  </button>
+                  <button type="button"
+                          id="ex1-delete"
+                          class="toolbar-item move-right-btn"
+                          tabindex="-1"
+                          aria-keyshortcuts="Alt+ArrowRight Delete"
+                          aria-disabled="true">
+                    <span class="checkmark" aria-hidden="true"></span>
+                    Not Important
+                  </button>
+                </div>
+              </div>
+              <div class="right-area">
+                <span id="ss_unimp_l" class="listbox-label">Unimportant Features:</span>
+                <ul id="ss_unimp_list"
+                    tabindex="0"
+                    role="listbox"
+                    aria-labelledby="ss_unimp_l"
+                    aria-activedescendant=""></ul>
+                <button type="button"
+                        id="ex1-add"
+                        class="move-left-btn"
+                        aria-keyshortcuts="Alt+ArrowLeft Enter"
+                        aria-disabled="true">
+                  <span class="checkmark" aria-hidden="true"></span>
+                  Important
+                </button>
+              </div>
+              <div class="offscreen">Last change: <span aria-live="polite" id="ss_live_region"></span></div>
+            </div>
+          </div>
+          <div role="separator" id="ex1_end_sep" aria-labelledby="ex1_end_sep ex1_label" aria-label="End of"></div>
+        </section>
+
+        <section>
+          <div class="example-header">
+            <h3 id="ex2_label">Example 2: Multi-Select Listbox</h3>
+          </div>
+          <div role="separator" id="ex2_start_sep" aria-labelledby="ex2_start_sep ex2_label" aria-label="Start of"></div>
+          <div id="ex2">
+            <p>Choose upgrades for your transport capsule.</p>
+            <div class="listbox-area">
+              <div class="left-area">
+                <span id="ms_av_l" class="listbox-label">Available upgrades:</span>
+                <ul id="ms_imp_list"
+                    tabindex="0"
+                    role="listbox"
+                    aria-labelledby="ms_av_l"
+                    aria-multiselectable="true">
+                  <li id="ms_opt1" role="option" aria-selected="false">
+                    <span class="checkmark" aria-hidden="true"></span>
+                    Leather seats
+                  </li>
+                  <li id="ms_opt2" role="option" aria-selected="false">
+                    <span class="checkmark" aria-hidden="true"></span>
+                    Front seat warmers
+                  </li>
+                  <li id="ms_opt3" role="option" aria-selected="false">
+                    <span class="checkmark" aria-hidden="true"></span>
+                    Rear bucket seats
+                  </li>
+                  <li id="ms_opt4" role="option" aria-selected="false">
+                    <span class="checkmark" aria-hidden="true"></span>
+                    Rear seat warmers
+                  </li>
+                  <li id="ms_opt5" role="option" aria-selected="false">
+                    <span class="checkmark" aria-hidden="true"></span>
+                    Front sun roof
+                  </li>
+                  <li id="ms_opt6" role="option" aria-selected="false">
+                    <span class="checkmark" aria-hidden="true"></span>
+                    Rear sun roof
+                  </li>
+                  <li id="ms_opt7" role="option" aria-selected="false">
+                    <span class="checkmark" aria-hidden="true"></span>
+                    Cloaking capability
+                  </li>
+                  <li id="ms_opt8" role="option" aria-selected="false">
+                    <span class="checkmark" aria-hidden="true"></span>
+                    Food synthesizer
+                  </li>
+                  <li id="ms_opt9" role="option" aria-selected="false">
+                    <span class="checkmark" aria-hidden="true"></span>
+                    Advanced waste recycling system
+                  </li>
+                  <li id="ms_opt10" role="option" aria-selected="false">
+                    <span class="checkmark" aria-hidden="true"></span>
+                    Turbo vertical take-off capability
+                  </li>
+                </ul>
+                <button type="button"
+                        id="ex2-add"
+                        class="move-right-btn"
+                        aria-keyshortcuts="Alt+ArrowRight Enter"
+                        aria-disabled="true">
+                  <span class="checkmark" aria-hidden="true"></span>
+                  Add
+                </button>
+              </div>
+              <div class="right-area">
+                <span id="ms_ch_l" class="listbox-label">Upgrades you have chosen:</span>
+                <ul id="ms_unimp_list"
+                    tabindex="0"
+                    role="listbox"
+                    aria-labelledby="ms_ch_l"
+                    aria-activedescendant=""
+                    aria-multiselectable="true">
+                </ul>
+                <button type="button"
+                        id="ex2-delete"
+                        class="move-left-btn"
+                        aria-keyshortcuts="Alt+ArrowLeft Delete"
+                        aria-disabled="true">
+                  <span class="checkmark" aria-hidden="true"></span>
+                  Remove
+                </button>
+              </div>
+              <div class="offscreen">Last change: <span aria-live="polite" id="ms_live_region"></span></div>
+            </div>
+          </div>
+          <div role="separator" id="ex2_end_sep" aria-labelledby="ex2_end_sep ex2_label" aria-label="End of"></div>
+        </section>
+      </section>
+
+      <section>
+        <h2>Accessibility Features</h2>
+        <ul>
+          <li>
+            Keyboard shortcuts for action buttons:
+            <ul>
+              <li>
+                Action buttons have the following shortcuts:
+                <ul>
+                  <li>"Up": <kbd>Alt</kbd> + <kbd>Up Arrow</kbd></li>
+                  <li>"Down": <kbd>Alt</kbd> + <kbd>Down Arrow</kbd></li>
+                  <li>"Add": <kbd>Enter</kbd></li>
+                  <li>"Not Important", "Important", and "Remove": <kbd>Delete</kbd></li>
+                </ul>
+              </li>
+              <li>Availability of the shortcuts is communicated to assistive technologies via the <code>aria-keyshortcuts</code> property on the button elements.</li>
+              <li>
+                Each shortcut is only captured when focus is in a context where it is relevant.
+                For example, <kbd>Enter</kbd> performs an add only when focus is in the available options list, and <kbd>Delete</kbd> performs a remove only when focus is in the chosen options list.
+              </li>
+              <li>
+                Using a shortcut key intentionally places focus to optimize both screen reader and keyboard usability.
+                For example, pressing <kbd>Alt</kbd> + <kbd>Up Arrow</kbd> in the "Important Features" list keeps focus on the option that is moved up, enabling all keyboard users to easily perform consecutive move operations for an option and screen reader users to hear the position of an option after it is moved.
+                Similarly, pressing <kbd>Enter</kbd> in the available options list leaves focus in the available options list.
+                If the option that had focus before the add operation is no longer present in the list, focus lands on the first of the subsequent options that is still present.
+              </li>
+            </ul>
+          </li>
+          <li>In example 1, since there are four action buttons, a toolbar widget is used to group all the action buttons into a single tab stop.</li>
+          <li>Live regions provide confirmation of completed actions.</li>
+          <li>
+            Because this listbox implementation is scrollable and manages which option is focused by <a href="../../../practices/keyboard-interface/keyboard-interface-practice.html#kbd_focus_activedescendant">using aria-activedescendant</a>, the JavaScript must ensure the focused option is visible.
+            So, when a keyboard or pointer event changes the option referenced by <code>aria-activedescendant</code>, if the referenced option is not fully visible, the JavaScript scrolls the listbox to position the option in view.
+          </li>
+          <li>
+            To enhance perceivability when operating the listbox, visual keyboard focus and hover are styled using the CSS <code>:hover</code> and <code>:focus</code> pseudo-classes:
+            <ul>
+              <li>To help people with visual impairments identify the listbox as an interactive element, the cursor is changed to a pointer when hovering over the list.</li>
+              <li>To make it easier to distinguish the selected listbox option from other options, selection creates a 2 pixel border above and below the option.</li>
+            </ul>
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 id="kbd_label">Keyboard Support</h2>
+        <p>
+          The example listboxes on this page implement the following keyboard interface.
+          Other variations and options for the keyboard interface are described in the <a href="../listbox-pattern.html#keyboard_interaction">Keyboard Interaction section of the Listbox Pattern</a>.
+        </p>
+        <p>
+          <strong>NOTE:</strong> When visual focus is on an option in these implementations of listbox, DOM focus remains on the listbox element and the value of <code>aria-activedescendant</code> on the listbox refers to the descendant option that is visually indicated as focused.
+          Where the following descriptions of keyboard commands mention focus, they are referring to the visual focus indicator, not DOM focus.
+          For more information about this focus management technique, see
+          <a href="../../../practices/keyboard-interface/keyboard-interface-practice.html#kbd_focus_activedescendant">Managing Focus in Composites Using aria-activedescendant</a>.
+        </p>
+        <table aria-labelledby="kbd_label" class="def">
+          <thead>
+            <tr>
+              <th>Key</th>
+              <th>Function</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="key-tab">
+              <th><kbd>Tab</kbd></th>
+              <td>
+                <ul>
+                  <li>Moves focus into and out of the listbox.</li>
+                  <li>
+                    When the listbox receives focus, if none of the options are selected, the first option receives focus.
+                    Otherwise, the first selected option receives focus.
+                  </li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="key-down-arrow">
+              <th><kbd>Down Arrow</kbd></th>
+              <td>
+              <ul>
+                <li>Moves focus to the next option.</li>
+                <li>In the example 1 single-select listboxes, also selects the focused option.</li>
+              </ul>
+              </td>
+            </tr>
+            <tr data-test-id="key-up-arrow">
+              <th><kbd>Up Arrow</kbd></th>
+              <td>
+                <ul>
+                  <li>Moves focus to the previous option.</li>
+                  <li>In the example 1 single-select listboxes, also selects the focused option.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="key-home">
+              <th><kbd>Home</kbd></th>
+              <td>
+                <ul>
+                  <li>Moves focus to the first option.</li>
+                  <li>In the example 1 single-select listboxes, also selects the focused option.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="key-end">
+              <th><kbd>End</kbd></th>
+              <td>
+                <ul>
+                  <li>Moves focus to the last option.</li>
+                  <li>In the example 1 single-select listboxes, also selects the focused option.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="key-character">
+              <th>Printable Characters</th>
+              <td>
+                <ul>
+                  <li>Type a character: focus moves to the next item with a name that starts with the typed character.</li>
+                  <li>Type multiple characters in rapid succession: focus moves to the next item with a name that starts with the string of characters typed.</li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <h3 id="kbd_label_multiselect">Multiple selection keys supported in example 2</h3>
+        <p>
+          <strong>NOTE:</strong> The selection behavior demonstrated differs from the behavior provided by browsers for native HTML <code>&lt;select multiple&gt;</code> elements.
+          The HTML select element behavior is to alter selection with unmodified up/down arrow keys, requiring the use of modifier keys to select multiple options.
+          This example demonstrates the multiple selection interaction model recommended in the <a href="../listbox-pattern.html#keyboard_interaction">Keyboard Interaction section of the Listbox Pattern</a>, which does not require the use of modifier keys.
+        </p>
+        <table aria-labelledby="kbd_label_multiselect" class="def">
+          <thead>
+            <tr>
+              <th>Key</th>
+              <th>Function</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="key-space">
+              <th><kbd>Space</kbd></th>
+              <td>changes the selection state of the focused option .</td>
+            </tr>
+            <tr data-test-id="key-shift-down-arrow">
+              <th><kbd>Shift</kbd> + <kbd>Down Arrow</kbd></th>
+              <td>Moves focus to and selects the next option.</td>
+            </tr>
+            <tr data-test-id="key-shift-up-arrow">
+              <th><kbd>Shift</kbd> + <kbd>Up Arrow</kbd></th>
+              <td>Moves focus to and selects the previous option.</td>
+            </tr>
+            <tr data-test-id="key-control-shift-home">
+              <th><kbd>Control</kbd> + <kbd>Shift</kbd> + <kbd>Home</kbd></th>
+              <td>Selects from the focused option to the beginning of the list.</td>
+            </tr>
+            <tr data-test-id="key-control-shift-end">
+              <th><kbd>Control</kbd> + <kbd>Shift</kbd> + <kbd>End</kbd></th>
+              <td>Selects from the focused option to the end of the list.</td>
+            </tr>
+            <tr data-test-id="key-control-a">
+              <th>
+                <kbd>Control</kbd> + <kbd>A</kbd> (All Platforms)<br>
+                <kbd>Command-A</kbd> (macOS)
+              </th>
+              <td>
+                Selects all options in the list.
+                If all options are selected, unselects all options.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2 id="rps_label">Role, Property, State, and Tabindex Attributes</h2>
+        <p>
+          The example listboxes on this page implement the following ARIA roles, states, and properties.
+          Information about other ways of applying ARIA roles, states, and properties is available in the <a href="../listbox-pattern.html#roles_states_properties">Roles, States, and Properties section of the Listbox Pattern</a>.
+        </p>
+        <table aria-labelledby="rps_label" class="data attributes">
+          <thead>
+            <tr>
+              <th scope="col">Role</th>
+              <th scope="col">Attribute</th>
+              <th scope="col">Element</th>
+              <th scope="col">Usage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="listbox-role">
+              <th scope="row"><code>listbox</code></th>
+              <td></td>
+              <td><code>ul</code></td>
+              <td>Identifies the focusable element that has listbox behaviors and contains the listbox options.</td>
+            </tr>
+            <tr data-test-id="listbox-aria-labelledby">
+              <td></td>
+              <th scope="row"><code>aria-labelledby="ID_REF"</code></th>
+              <td><code>ul</code></td>
+              <td>Applied to the element with the listbox role, it refers to the span containing its label.</td>
+            </tr>
+            <tr data-test-id="listbox-tabindex">
+              <td></td>
+              <th scope="row"><code>tabindex="0"</code></th>
+              <td><code>ul</code></td>
+              <td>Applied to the element with the listbox role, it puts the listbox in the tab sequence.</td>
+            </tr>
+            <tr data-test-id="listbox-aria-multiselectable">
+              <td></td>
+              <th scope="row"><code>aria-multiselectable="true"</code></th>
+              <td><code>ul</code></td>
+              <td>
+                <ul>
+                  <li><strong>Used only in example 2.</strong></li>
+                  <li>Applied to the element with the listbox role, tells assistive technologies that the list supports multiple selection.</li>
+                  <li>The default value is false so it is not specified in example 1.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="listbox-aria-activedescendant">
+              <td></td>
+              <th scope="row"><code>aria-activedescendant="ID_REF"</code></th>
+              <td><code>ul</code></td>
+              <td>
+                <ul>
+                  <li>When an option in the listbox is visually indicated as having keyboard focus, refers to that option.</li>
+                  <li>Enables assistive technologies to know which element the application regards as focused while DOM focus remains on the listbox element.</li>
+                  <li>When navigation keys, such as <kbd>Down Arrow</kbd>, are pressed, the JavaScript changes the value.</li>
+                  <li>When the listbox is empty, <code>aria-activedescendant=""</code>.</li>
+                  <li>
+                    For more information about this focus management technique, see
+                    <a href="../../../practices/keyboard-interface/keyboard-interface-practice.html#kbd_focus_activedescendant">Managing Focus in Composites Using aria-activedescendant</a>.
+                  </li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="option-role">
+              <th scope="row"><code>option</code></th>
+              <td></td>
+              <td><code>li</code></td>
+              <td>Identifies each selectable element containing the name of an option.</td>
+            </tr>
+            <tr data-test-id="option-aria-selected">
+              <td></td>
+              <th scope="row"><code>aria-selected="true"</code></th>
+              <td><code>li</code></td>
+              <td>
+                <ul>
+                  <li>Applied to elements with role option that are visually styled as selected to inform assistive technologies that the options are selected.</li>
+                  <li>In example 1, the option with this attribute is always the same as the option that is referenced by aria-activedescendant because it is a single-select listbox where selection follows focus.</li>
+                  <li>In example 2, more than one option may be selected so the user can move focus among options without effecting which options have this attribute.</li>
+                  <li>Note that in example 2, the focus style and selection styles are distinctly different and independent.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="option-aria-selected">
+              <td></td>
+              <th><code>aria-selected="false"</code></th>
+              <td><code>li</code></td>
+              <td>
+                <ul>
+                  <li><strong>Used only in example 2.</strong></li>
+                  <li>Applied to elements with role option that are <strong>not</strong> visually styled as selected to inform assistive technologies that the options are selectable but not selected.</li>
+                  <li>In example 1, this is unnecessary because the selection moves every time the focus moves.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="span-aria-hidden">
+              <td></td>
+              <th><code>aria-hidden="true"</code></th>
+              <td><code>span</code></td>
+              <td>
+                Removes the character entities used for the check mark, left arrow and right arrow from the accessibility tree to prevent them from being included in the accessible name of an option or button.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>JavaScript and CSS Source Code</h2>
+        <ul id="css_js_files">
+          <li>
+            CSS:
+            <a href="css/listbox.css" type="tex/css">listbox.css</a>
+          </li>
+          <li>
+            JavaScript:
+            <a href="js/listbox.js" type="text/javascript">listbox.js</a>, <a href="js/toolbar.js" type="text/javascript">toolbar.js</a>, <a href="js/listbox-rearrangeable.js" type="text/javascript">listbox-rearrangeable.js</a>
+          </li>
+        </ul>
+      </section>
+
+      <section class="example-code">
+        <h2>HTML Source Code</h2>
+        <h3 id="sc1_label">Example 1: Single-Select Listbox</h3>
+        <p id="sc1_description">To copy the following HTML code, please open it in CodePen.</p>
+        <div id="sc1_start_sep" role="separator" aria-labelledby="sc1_start_sep sc1_label" aria-label="Start of HTML for"></div>
+        <pre><code id="sc1"></code></pre>
+        <div id="sc1_end_sep" role="separator" aria-labelledby="sc1_end_sep sc1_label" aria-label="End of HTML for"></div>
+        <script>
+          sourceCode.add('sc1', 'ex1', 'ex1_label', 'css_js_files', 'sc1_description');
+        </script>
+        <h3 id="sc2_label">Example 2: Multi-Select Listbox</h3>
+        <p id="sc2_description">To copy the following HTML code, please open it in CodePen.</p>
+        <div id="sc2_start_sep" role="separator" aria-labelledby="sc2_start_sep sc2_label" aria-label="Start of HTML for"></div>
+        <pre><code id="sc2"></code></pre>
+        <div id="sc2_end_sep" role="separator" aria-labelledby="sc2_end_sep sc2_label" aria-label="End of HTML for"></div>
+        <script>
+          sourceCode.add('sc2', 'ex2', 'ex2_label', 'css_js_files', 'sc2_description');
+        </script>
+        <!--  After all source has been added, run make to do the insert.  -->
+        <script>
+          sourceCode.make();
+        </script>
+      </section>
+    </main>
+  </body>
+</html>

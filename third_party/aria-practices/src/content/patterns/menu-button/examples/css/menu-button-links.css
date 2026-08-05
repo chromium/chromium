@@ -1,0 +1,78 @@
+.menu-button-links {
+  margin: 0;
+  font-size: 110%;
+}
+
+.menu-button-links button {
+  margin: 0;
+  padding: 6px;
+  display: inline-block;
+  position: relative;
+  background-color: #034575;
+  border: 1px solid #034575;
+  font-size: 0.9em;
+  color: white;
+  border-radius: 5px;
+}
+
+.menu-button-links [role="menu"] {
+  margin: 0;
+  padding: 7px 4px;
+  list-style: none;
+  display: none;
+  position: absolute;
+  border: 2px solid #034575;
+  border-radius: 5px;
+  background-color: #eee;
+}
+
+.menu-button-links [role="menuitem"],
+.menu-button-links [role="separator"] {
+  margin: 0;
+  padding: 6px;
+  display: block;
+  width: 24em;
+  background-color: #eee;
+  border: none;
+  color: black;
+  border-radius: 5px;
+}
+
+.menu-button-links [role="separator"] {
+  padding-top: 3px;
+  background-image: url("../images/separator.svg");
+  background-position: center;
+  background-repeat: repeat-x;
+}
+
+.menu-button-links button svg.down {
+  padding-left: 0.125em;
+  fill: currentcolor;
+  stroke: currentcolor;
+}
+
+.menu-button-links button[aria-expanded="true"] svg.down {
+  transform: rotate(180deg);
+}
+
+/* focus styling */
+
+.menu-button-links button:hover,
+.menu-button-links button:focus,
+.menu-button-links button[aria-expanded="true"] {
+  padding: 4px;
+  border: 3px solid #034575;
+  background: #eee;
+  color: #222;
+  outline: none;
+  margin: 0;
+}
+
+.menu-button-links [role="menuitem"]:focus {
+  padding: 4px;
+  border: 2px solid #034575;
+  background: #034575;
+  color: #fff;
+  outline: none;
+  margin: 0;
+}

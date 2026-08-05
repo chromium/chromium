@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radio Group Example Using aria-activedescendant</title>
+
+    <!-- Core JS and CSS shared by all examples -->
+    <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
+    <link rel="stylesheet" href="../../../shared/css/core.css">
+    <script src="../../../shared/js/examples.js"></script>
+    <script src="../../../shared/js/highlight.pack.js"></script>
+    <script src="../../../shared/js/app.js"></script>
+    <script data-skipto="colorTheme:aria; displayOption:popup; containerElement:div" src="../../../shared/js/skipto.js"></script>
+
+    <!-- JS and CSS for this example -->
+    <link rel="stylesheet" href="css/radio.css">
+    <script src="js/radio-activedescendant.js"></script>
+  </head>
+  <body>
+    <nav aria-label="Related Links" class="feedback">
+      <ul>
+        <li><a href="https://github.com/orgs/w3c/projects/139">Related Issues</a></li>
+        <li><a href="../radio-group-pattern.html">Design Pattern</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h1>Radio Group Example Using aria-activedescendant</h1>
+
+      <section>
+        <h2>About This Example</h2>
+        <img alt="" class="example-page-example-icon" src="../../../images/pattern-radio.svg">
+        <p>
+          This example implements the features of the <a href="../radio-group-pattern.html">Radio Group Pattern</a> for two radio groups -- one for choosing a pizza crust and another for choosing a delivery method.
+          This implementation uses <code>aria-activedescendant</code> for informing assistive technologies which radio button has visual focus.
+        </p>
+        <p>Similar examples include:</p>
+        <ul>
+          <li><a href="radio.html">Radio Group Example Using Roving tabindex</a>: A radio button group that uses roving <code>tabindex</code> for managing keyboard focus.</li>
+          <li><a href="radio-rating.html">Rating Radio Group Example</a>: Radio group that provides input for a five-star rating scale.</li>
+        </ul>
+      </section>
+
+      <section>
+        <div class="example-header">
+          <h2 id="ex_label">Example</h2>
+        </div>
+        <div role="separator" id="ex_start_sep" aria-labelledby="ex_start_sep ex_label" aria-label="Start of"></div>
+        <div id="ex1">
+          <h3 id="group_label_1">Pizza Crust</h3>
+
+          <ul class="radiogroup-activedescendant" role="radiogroup" aria-labelledby="group_label_1" aria-activedescendant="rb11" tabindex="0">
+            <li id="rb11" role="radio" aria-checked="false">Regular crust</li>
+            <li id="rb12" role="radio" aria-checked="false">Deep dish</li>
+            <li id="rb13" role="radio" aria-checked="false">Thin crust</li>
+          </ul>
+
+          <h3 id="group_label_2">Pizza Delivery</h3>
+
+          <ul class="radiogroup-activedescendant" role="radiogroup" aria-labelledby="group_label_2" aria-activedescendant="rb21" tabindex="0">
+            <li id="rb21" role="radio" aria-checked="false">Pick up</li>
+            <li id="rb22" role="radio" aria-checked="false">Home Delivery</li>
+            <li id="rb23" role="radio" aria-checked="false">Dine in Restaurant</li>
+          </ul>
+        </div>
+        <div role="separator" id="ex_end_sep" aria-labelledby="ex_end_sep ex_label" aria-label="End of"></div>
+      </section>
+
+      <section>
+        <h2>Accessibility Features</h2>
+        <ul>
+          <li>
+            The radio button referenced by <code>aria-activedescendant</code> is scrolled into view when it is not visible in the graphical rendering.
+            This can occur under many conditions, but is most common when people with visual impairments use a browser's zoom feature to increase the size of content.
+          </li>
+          <li>Uses CSS attribute selectors for synchronizing <code>aria-checked</code> state with the visual state indicator.</li>
+          <li>
+            Uses CSS <code>:hover</code> and <code>:focus</code> pseudo-classes for styling visual keyboard focus and hover.
+            <ul>
+              <li>The focus indicator encompasses both the radio button and label, making it easier to perceive which option is being chosen.</li>
+              <li>Hover changes background of both the radio button and label, making it easier to perceive that clicking either the label or button will activate the radio button.</li>
+              <li>The cursor is changed to a pointer when hovering over the radio button to help people with visual impairments identify it as an interactive element.</li>
+            </ul>
+          </li>
+          <li>
+            Because transparent borders are visible on some systems with high contrast enabled, only the focused element has a visible border.
+            When focusable elements are not focused, they have a 0-width border and additional padding equal in width to the border that is used to indicate focus.
+          </li>
+          <li>
+            To ensure the inline SVG radio button graphics in the CSS file have sufficient contrast with the background when high contrast settings change the color of text content, CSS <code>forced-color-adjust</code> is set to <code>auto</code> on the <code>svg</code> graphics.
+            This causes the colors of the <code>stroke</code> and <code>fill</code> of the circle elements to be overridden by the high contrast color setting.
+            To make the background of the <code>circle</code> elements match the high contrast background color, the <code>fill-opacity</code> attribute of the outer <code>circle</code> is set to zero and the <code>stroke-opacity</code> attribute of the inner <code>circle</code> is set to zero.
+            If <code>forced-color-adjust</code> were not used to override the colors specified for the <code>stroke</code> and <code>fill</code> properties, those colors would remain the same in high contrast mode, which could lead to insufficient contrast between the radio circle elements and the background or even make them invisible if their color matched the high contrast mode background.<br>
+            Note: The explicit setting of <code>forced-color-adjust</code> is necessary because some browsers do not use <code>auto</code> as the default value for SVG graphics.
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 id="kbd_label">Keyboard Support</h2>
+        <p>
+          <strong>NOTE:</strong> When visual focus is on a radio button in the radio group, DOM focus remains on the radio group container and the value of <code>aria-activedescendant</code> on the radio group refers to the radio button that is visually indicated as focused.
+          Where the following descriptions of keyboard commands mention focus, they are referring to the visual focus indicator, not DOM focus.
+          For more information about this focus management technique, see
+          <a href="../../../practices/keyboard-interface/keyboard-interface-practice.html#kbd_focus_activedescendant">Managing Focus in Composites Using aria-activedescendant</a>.
+        </p>
+        <table aria-labelledby="kbd_label" class="def">
+          <thead>
+            <tr>
+              <th>Key</th>
+              <th>Function</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="key-tab">
+              <th><kbd>Tab</kbd></th>
+              <td>
+                <ul>
+                  <li>Moves focus to the checked <code>radio</code> button in the <code>radiogroup</code>.</li>
+                  <li>If a <code>radio</code> button is not checked, focus moves to the first <code>radio</code> button in the group.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="key-space">
+              <th><kbd>Space</kbd></th>
+              <td>
+                <ul>
+                  <li>If the <code>radio</code> button with focus is not checked, changes the state to <code>checked</code>.</li>
+                  <li>Otherwise, does nothing.</li>
+                  <li>Note: The state where a radio is not checked only occurs on page load.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="key-down-right-arrow">
+              <th><kbd>Down arrow</kbd><br><kbd>Right arrow</kbd></th>
+              <td>
+                <ul>
+                  <li>Moves focus to and checks the next <code>radio</code> button in the group.</li>
+                  <li>If focus is on the last <code>radio</code> button, moves focus to the first <code>radio</code> button.</li>
+                  <li>The state of the previously checked radio button is changed to unchecked.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="key-up-left-arrow">
+              <th><kbd>Up arrow</kbd><br><kbd>Left arrow</kbd></th>
+              <td>
+                <ul>
+                  <li>Moves focus to and checks the previous <code>radio</code> button in the group.</li>
+                  <li>If focus is on the first <code>radio</code> button, moves focus to and checks the last <code>radio</code> button.</li>
+                  <li>The state of the previously checked radio button is changed to unchecked.</li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2 id="rps_label">Role, Property, State, and Tabindex Attributes</h2>
+        <table aria-labelledby="rps_label" class="data attributes">
+          <thead>
+            <tr>
+              <th scope="col">Role</th>
+              <th scope="col">Attributes</th>
+              <th scope="col">Element</th>
+              <th scope="col">Usage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="radiogroup-role">
+              <th scope="row"><code>radiogroup</code></th>
+              <td></td>
+              <td><code>ul</code></td>
+              <td>Identifies the element as a container for a group of <code>radio</code> buttons.</td>
+            </tr>
+            <tr data-test-id="radiogroup-aria-labelledby">
+              <td></td>
+              <th scope="row"><code>aria-labelledby="[IDREF]"</code></th>
+              <td><code>ul</code></td>
+              <td>Refers to the element that contains the label of the radio group.</td>
+            </tr>
+            <tr data-test-id="radiogroup-tabindex">
+              <td></td>
+              <th scope="row"><code>tabindex=&quot;0&quot;</code></th>
+              <td><code>ul</code></td>
+              <td>
+                <ul>
+                  <li>Includes the radio group in the page <kbd>Tab</kbd> sequence.</li>
+                  <li>Applied to the radio group because <code>aria--activedescendant</code> is used to manage focus as described below.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="radiogroup-aria-activedescendant">
+              <td></td>
+              <th scope="row"><code>aria-activedescendant=&quot;[IDREF]&quot;</code></th>
+              <td><code>ul</code></td>
+              <td>
+                <ul>
+                  <li>When a radio button in the radio group is visually indicated as having keyboard focus, refers to that radio button.</li>
+                  <li>When arrow keys are pressed, the JavaScript changes the value.</li>
+                  <li>Enables assistive technologies to know which element the application regards as focused while DOM focus remains on the radio group element.</li>
+                  <li>
+                    For more information about this focus management technique, see
+                    <a href="../../../practices/keyboard-interface/keyboard-interface-practice.html#kbd_focus_activedescendant">Managing Focus in Composites Using aria-activedescendant</a>.
+                  </li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="radio-role">
+              <th scope="row"><code>radio</code></th>
+              <td></td>
+              <td><code>li</code></td>
+              <td>
+                <ul>
+                  <li>Identifies the element as an ARIA <code>radio</code> button.</li>
+                  <li>The accessible name is computed from the child text content of the element.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="radio-aria-checked">
+              <td></td>
+              <th scope="row"><code>aria-checked="false"</code></th>
+              <td><code>li</code></td>
+              <td>
+                <ul>
+                  <li>Identifies <code>radio</code> buttons which are not checked.</li>
+                  <li>CSS attribute selectors (e.g. <code>[aria-checked="false"]</code>) are used to synchronize the visual states with the value of the <code>aria-checked</code> attribute.</li>
+                  <li>The CSS <code>::before</code> pseudo-element is used to indicate visual state of unchecked radio buttons to support high contrast settings in operating systems and browsers.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="radio-aria-checked">
+              <td></td>
+              <th scope="row"><code>aria-checked="true"</code></th>
+              <td><code>li</code></td>
+              <td>
+                <ul>
+                  <li>Identifies the <code>radio</code> button which is checked.</li>
+                  <li>CSS attribute selectors (e.g. <code>[aria-checked="true"]</code>) are used to synchronize the visual states with the value of the <code>aria-checked</code> attribute.</li>
+                  <li>The CSS <code>::before</code> pseudo-element is used to indicate visual state of checked radio buttons to support high contrast settings in operating systems and browsers.</li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="at-support">
+        <h2>Assistive Technology Support</h2>
+        <p><a href="../../../about/at-support-tables/at-support-tables.html">Learn how to interpret and use assistive technology support data</a></p>
+        <iframe
+          class="support-levels-radiogroup-aria-activedescendant"
+          src="https://aria-at.w3.org/embed/reports/apg/radiogroup-aria-activedescendant"
+          height="100"
+          allow="clipboard-write"
+          style="border-style: none; width: 100%;">
+        </iframe>
+      </section>
+
+      <section>
+        <h2>JavaScript and CSS Source Code</h2>
+        <ul id="css_js_files">
+          <li>CSS: <a href="css/radio.css" type="tex/css">radio.css</a></li>
+          <li>JavaScript: <a href="js/radio-activedescendant.js" type="text/javascript">radio-activedescendant.js</a></li>
+        </ul>
+      </section>
+
+      <section class="example-code">
+        <h2 id="sc1_label">HTML Source Code</h2>
+        <p id="sc1_description">To copy the following HTML code, please open it in CodePen.</p>
+        <div role="separator" id="sc1_start_sep" aria-labelledby="sc1_start_sep sc1_label" aria-label="Start of"></div>
+        <pre><code id="sc1"></code></pre>
+        <div role="separator" id="sc1_end_sep" aria-labelledby="sc1_end_sep sc1_label" aria-label="End of"></div>
+        <script>
+          sourceCode.add('sc1', 'ex1', 'ex_label', 'css_js_files', 'sc1_description');
+          sourceCode.make();
+        </script>
+      </section>
+
+    </main>
+  </body>
+</html>

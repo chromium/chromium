@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sortable Table Example</title>
+
+    <!-- Core JS and CSS shared by all examples -->
+    <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
+    <link rel="stylesheet" href="../../../shared/css/core.css">
+    <script src="../../../shared/js/examples.js"></script>
+    <script src="../../../shared/js/highlight.pack.js"></script>
+    <script src="../../../shared/js/app.js"></script>
+    <script data-skipto="colorTheme:aria; displayOption:popup; containerElement:div" src="../../../shared/js/skipto.js"></script>
+
+    <!-- JS and CSS for this example -->
+    <link href="css/sortable-table.css" rel="stylesheet">
+    <script src="js/sortable-table.js"></script>
+  </head>
+  <body>
+    <nav aria-label="Related Links" class="feedback">
+      <ul>
+        <li><a href="https://github.com/orgs/w3c/projects/134">Related Issues</a></li>
+        <li><a href="../table-pattern.html">Design Pattern</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h1>Sortable Table Example</h1>
+
+      <section>
+        <h2>About This Example</h2>
+        <img alt="" class="example-page-example-icon" src="../../../images/pattern-table.svg">
+        <p>
+          The example below illustrates an implementation of the <a href="../table-pattern.html">Table Pattern</a> for a table with sortable rows.
+          The example uses HTML table markup for all elements of the table structure, e.g., cells, rows, column headers, and caption.
+          The <code>aria-sort</code> attribute is set on the column header of the currently sorted column, and the header text of sortable columns is wrapped in a <code>button</code> element.
+          One column, the <q>Address</q> column is not sortable.
+        </p>
+        <p>Similar examples include:</p>
+        <ul>
+          <li><a href="../../grid/examples/data-grids.html">Data Grid Examples</a>: Three example implementations of grid that include features relevant to presenting tabular information, such as content editing, sort, and column hiding.</li>
+          <li><a href="table.html">Table Example</a>: ARIA table made using HTML <code>div</code> and <code>span</code> elements.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Example Option</h2>
+        <label>
+          <input type="checkbox" value="show-unsorted-icon" aria-describedby="show-unsorted-icon-desc">
+          Display sort icon in headers of sortable columns that are not sorted
+        </label>
+        <p id="show-unsorted-icon-desc">
+          Adds a diamond shaped icon (e.g. <q>♢</q>) to the header of each column that can be sorted but is not currently sorted.
+          Some sortable tables add an icon to unsorted columns to help users distinguish sortable columns from columns that cannot be sorted.
+          It is <em>important</em> that the shape of the unsorted icon differ in more than just color and size from the icons that indicate sort direction (e.g. '▼' and '▲') so people with visual impairments can easily distinguish them.
+        </p>
+      </section>
+
+      <section>
+        <div class="example-header">
+          <h2 id="ex_label">Example</h2>
+        </div>
+        <div role="separator" id="ex_start_sep" aria-labelledby="ex_start_sep ex_label" aria-label="Start of"></div>
+        <div id="ex1">
+          <table class="sortable">
+            <caption>
+              Students currently enrolled in WAI-ARIA 101
+              <span class="sr-only">&puncsp;(column headers with buttons are sortable).</span>
+            </caption>
+            <thead>
+              <tr>
+                <th>
+                  <button>
+                    First Name
+                    <span aria-hidden="true"></span>
+                  </button>
+                </th>
+                <th aria-sort="ascending">
+                  <button>
+                    Last Name
+                    <span aria-hidden="true"></span>
+                  </button>
+                </th>
+                <th>
+                  <button>
+                    Company
+                    <span aria-hidden="true"></span>
+                  </button>
+                </th>
+                <th class="no-sort">Address</th>
+                <th class="num">
+                  <button>
+                    Favorite Number
+                    <span aria-hidden="true"></span>
+                  </button>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Fred</td>
+                <td>Jackson</td>
+                <td>Canary, Inc.</td>
+                <td>123 Broad St.</td>
+                <td class="num">56</td>
+              </tr>
+              <tr>
+                <td>Sara</td>
+                <td>James</td>
+                <td>Cardinal, Inc.</td>
+                <td>457 First St.</td>
+                <td class="num">7</td>
+              </tr>
+              <tr>
+                <td>Ralph</td>
+                <td>Jefferson</td>
+                <td>Robin, Inc.</td>
+                <td>456 Main St.</td>
+                <td class="num">513</td>
+              </tr>
+              <tr>
+                <td>Nancy</td>
+                <td>Jensen</td>
+                <td>Eagle, Inc.</td>
+                <td>2203 Logan Dr.</td>
+                <td class="num">3.5</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div role="separator" id="ex_end_sep" aria-labelledby="ex_end_sep ex_label" aria-label="End of"></div>
+      </section>
+
+      <section>
+        <h2>Accessibility Features</h2>
+        <ul>
+          <li>
+            To help screen reader users understand the purpose of the buttons in the column headers, an off-screen description of the sort functionality of the buttons is appended to the caption text.
+            The description is added to the caption instead of to each button to prevent repetitious verbosity that could interfere with understanding of the column titles.
+          </li>
+          <li>
+            To enhance perceivability when operating the sort buttons, visual keyboard focus and hover are styled using CSS <code>:hover</code> and <code>:focus</code> pseudo-classes:
+            <ul>
+              <li>To make it easier to perceive when a button has focus, the focus indicator encompasses both the column label and sort direction icon.</li>
+              <li>The cursor is changed to a pointer when hovering over the button to help people identify it as an interactive element.</li>
+              <li>To make it easier to perceive that clicking either the column label or the sort direction icon will sort the table, hover styles the button and icon in the same way that focus does.</li>
+              <li>To make activating sort easier for people with visual and movement impairments who are using a pointing device, the click target is maximized not only by making both the column label and sort icon clickable but also by using CSS positioning and sizing to make the button fill the entire header cell area.</li>
+            </ul>
+          </li>
+          <li>To ensure the sorting direction icons have sufficient contrast with the background when high contrast settings invert colors, character entities (e.g. '▼' and '▲') are used to indicate the sorting direction.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 id="kbd_label">Keyboard Support</h2>
+        <p>Not applicable: The only interactive elements are HTML button elements, and all their keyboard functionality is provided by browsers.</p>
+      </section>
+
+      <section>
+        <h2 id="rps_label">Role, Property, State, and Tabindex Attributes</h2>
+        <table aria-labelledby="rps_label" class="data attributes">
+          <thead>
+            <tr>
+              <th scope="col">Role</th>
+              <th scope="col">Attribute</th>
+              <th scope="col">Element</th>
+              <th scope="col">Usage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="th-aria-sort">
+              <td></td>
+              <th scope="row"><code>aria-sort="<em>value</em>"</code></th>
+              <td><code>th</code></td>
+              <td>
+                <ul>
+                  <li>
+                    Set on the currently sorted column.
+                    When the sorted column is changed, the <code>aria-sort</code> attribute is removed and set on the newly sorted column.
+                  </li>
+                  <li>A value of &quot;<code>ascending</code>&quot; indicates the data cells in the column are sorted in ascending order.</li>
+                  <li>A value of &quot;<code>descending</code>&quot; indicates the data cells in the column are sorted in descending order.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="span-aria-hidden">
+              <td></td>
+              <th scope="row"><code>aria-hidden="true"</code></th>
+              <td><code>span</code></td>
+              <td>Removes the character entities used for sort icons from the accessibility tree to prevent them from being included in the accessible name of the sort buttons.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>JavaScript and CSS Source Code</h2>
+        <ul id="css_js_files">
+          <li>
+            CSS:
+            <a href="css/sortable-table.css" type="text/css">sortable-table.css</a>
+          </li>
+          <li>
+            JavaScript:
+            <a href="js/sortable-table.js" type="text/javascript">sortable-table.js</a>
+          </li>
+        </ul>
+      </section>
+
+      <section class="example-code">
+        <h2 id="sc1_label">HTML Source Code</h2>
+        <p id="sc1_description">To copy the following HTML code, please open it in CodePen.</p>
+        <div role="separator" id="sc1_start_sep" aria-labelledby="sc1_start_sep sc1_label" aria-label="Start of"></div>
+        <pre><code id="sc1"></code></pre>
+        <div role="separator" id="sc1_end_sep" aria-labelledby="sc1_end_sep sc1_label" aria-label="End of"></div>
+        <script>
+          sourceCode.add('sc1', 'ex1', 'ex_label', 'css_js_files', 'sc1_description');
+          sourceCode.make();
+        </script>
+      </section>
+    </main>
+  </body>
+</html>

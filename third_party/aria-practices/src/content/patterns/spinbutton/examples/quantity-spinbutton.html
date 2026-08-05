@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantity Spin Button Example</title>
+
+    <!-- Core JS and CSS shared by all examples -->
+    <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
+    <link rel="stylesheet" href="../../../shared/css/core.css">
+    <script src="../../../shared/js/examples.js"></script>
+    <script src="../../../shared/js/highlight.pack.js"></script>
+    <script src="../../../shared/js/app.js"></script>
+    <script data-skipto="colorTheme:aria; displayOption:popup; containerElement:div" src="../../../shared/js/skipto.js"></script>
+
+    <!-- JS and CSS for this example -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+    <link href="css/quantity-spinbutton.css" rel="stylesheet">
+    <script src="js/quantity-spinbutton.js"></script>
+  </head>
+  <body>
+    <nav aria-label="Related Links" class="feedback">
+      <ul>
+        <li><a href="https://github.com/orgs/w3c/projects/143">Related Issues</a></li>
+        <li><a href="../spinbutton-pattern.html">Design Pattern</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h1>Quantity Spin Button Example</h1>
+
+      <section>
+        <h2>About This Example</h2>
+        <img alt="" class="example-page-example-icon" src="../../../images/pattern-spinbutton.svg">
+        <p>
+          The following example uses the <a href="../spinbutton-pattern.html">Spin Button Pattern</a> to implement three quantity inputs.
+        </p>
+        <p>Similar examples include:</p>
+        <ul>
+          <li><a href="../../toolbar/examples/toolbar.html">Toolbar Example</a>: A toolbar that contains a spin button for setting font size.</li>
+        </ul>
+      </section>
+
+      <section>
+        <div class="example-header">
+          <h2 id="ex_label">Example</h2>
+        </div>
+        <div role="separator" id="ex_start_sep" aria-labelledby="ex_start_sep ex_label" aria-label="Start of"></div>
+        <div id="example">
+          <div class="spinners">
+            <fieldset>
+              <legend>Guests</legend>
+              <div class="spinner-fields">
+                <div class="spinner-field">
+                  <label for="adults">
+                    Adults
+                  </label>
+                  <div class="spinner">
+                    <button
+                      type="button"
+                      title="Remove adult"
+                      aria-controls="adults"
+                      data-spinbutton-operation="decrement"
+                      tabindex="-1"
+                    >
+                      <span aria-hidden="true">&minus;</span>
+                    </button>
+                    <input
+                      id="adults"
+                      aria-errormessage="error-adults"
+                      role="spinbutton"
+                      type="text"
+                      size="4"
+                      inputmode="numeric"
+                      autocomplete="off"
+                      spellcheck="false"
+                      aria-valuemin="1"
+                      aria-valuemax="8"
+                      aria-valuenow="1"
+                      value="1"
+                      >
+                    <button
+                      type="button"
+                      title="Add adult"
+                      aria-controls="adults"
+                      data-spinbutton-operation="increment"
+                      tabindex="-1"
+                    >
+                      <span aria-hidden="true">&plus;</span>
+                    </button>
+                  </div>
+                  <small id="error-adults">Must be between 1 and 8</small>
+                  <small id="help-adults">1 to 8</small>
+                  <output
+                    for="adults"
+                    data-self-destruct="2000"
+                    class="visually-hidden"></output>
+                </div>
+                <div class="spinner-field">
+                  <label for="kids">
+                    Kids
+                  </label>
+                  <div class="spinner">
+                    <button
+                      type="button"
+                      title="Remove kid"
+                      aria-controls="kids"
+                      data-spinbutton-operation="decrement"
+                      tabindex="-1"
+                    >
+                      <span aria-hidden="true">&minus;</span>
+                    </button>
+                    <input
+                      id="kids"
+                      aria-errormessage="error-kids"
+                      role="spinbutton"
+                      type="text"
+                      size="4"
+                      inputmode="numeric"
+                      autocomplete="off"
+                      spellcheck="false"
+                      aria-valuemin="0"
+                      aria-valuemax="8"
+                      aria-valuenow="0"
+                      value="0"
+                      >
+                    <button
+                      type="button"
+                      title="Add kid"
+                      aria-controls="kids"
+                      data-spinbutton-operation="increment"
+                      tabindex="-1"
+                    >
+                      <span aria-hidden="true">&plus;</span>
+                    </button>
+                  </div>
+                  <small id="error-kids">Must be between 0 and 8</small>
+                  <small id="help-kids">0 to 8</small>
+                  <output
+                    for="kids"
+                    data-self-destruct="2000"
+                    class="visually-hidden"></output>
+                </div>
+                <div class="spinner-field">
+                  <label for="animals">
+                    Animals
+                  </label>
+                  <div class="spinner">
+                    <button
+                      type="button"
+                      title="Remove animal"
+                      aria-controls="animals"
+                      data-spinbutton-operation="decrement"
+                      tabindex="-1"
+                    >
+                      <span aria-hidden="true">&minus;</span>
+                    </button>
+                    <input
+                      id="animals"
+                      aria-errormessage="error-animals"
+                      role="spinbutton"
+                      type="text"
+                      size="4"
+                      inputmode="numeric"
+                      autocomplete="off"
+                      spellcheck="false"
+                      aria-valuemin="0"
+                      aria-valuemax="12"
+                      aria-valuenow="0"
+                      value="0"
+                      >
+                    <button
+                      type="button"
+                      title="Add animal"
+                      aria-controls="animals"
+                      data-spinbutton-operation="increment"
+                      tabindex="-1"
+                    >
+                      <span aria-hidden="true">&plus;</span>
+                    </button>
+                  </div>
+                  <small id="error-animals">Must be between 0 and 12</small>
+                  <small id="help-animals">0 to 12</small>
+                  <output
+                    for="animals"
+                    data-self-destruct="2000"
+                    class="visually-hidden"></output>
+                </div>
+              </div>
+            </fieldset>
+          </div>
+        </div>
+        <div role="separator" id="ex_end_sep" aria-labelledby="ex_end_sep ex_label" aria-label="End of"></div>
+      </section>
+
+      <section>
+        <h2>Accessibility Features</h2>
+        <ul>
+          <li>
+            The element with role <code>spinbutton</code> allows text input, for
+            users who prefer to enter a value directly.
+          </li>
+          <li>
+            The spin button input and its adjacent buttons are visually
+            presented as a single form field containing an editable value, an
+            <span data-test-id="increment-button">increment button</span>, and a
+            <span data-test-id="decrement-button">decrement button</span>.
+          </li>
+          <li>
+            When either the spin button input or its adjacent buttons have
+            received focus, a single visual focus indicator encompasses all
+            three, reinforcing the relationship between them.
+          </li>
+          <li>
+            For users who have not set a preference for reduced motion, the
+            focus indicator appears with subtle animation to draw attention.
+          </li>
+          <li>
+            The increment and decrement buttons:
+            <ul>
+              <li>
+                Are generously sized for ease of use.
+              </li>
+              <li>
+                Are adjacent to the spin button input so they can be accessed by
+                users of touch-based and voice-based assistive technologies.
+              </li>
+              <li>
+                Are labeled with the <code>title</code> attribute, providing a
+                human-friendly representation of the plus and minus characters
+                for users of touch-based and voice-based assistive technologies. The
+                <code>title</code> attribute also presents a tooltip on hover,
+                clarifying the meaning of each button’s icon.
+              </li>
+              <li>
+                Use an invisible live region to announce the updated value
+                when pressed. The live region empties its contents after 3
+                seconds to avoid leaving stale content in the document.
+              </li>
+              <li>
+                Are excluded from the page <kbd>Tab</kbd> sequence with
+                <code>tabindex="-1"</code> because they are redundant with the
+                arrow key support provided to keyboard users.
+              </li>
+              <li>
+                Can be activated with voice control by speaking a command such
+                as <q>Click add adult</q>.
+              </li>
+            </ul>
+          </li>
+          <li>
+            When forced colors are enabled, <a
+            href="https://www.w3.org/TR/css-color-4/#css-system-colors">system
+            color keywords</a> are used to ensure visibility and sufficient
+            contrast for the spin button’s content and interactive states.
+          </li>
+          <li>
+            Each spin button’s minimum and maximum values are programmatically
+            defined with <code>aria-valuemin</code> and
+            <code>aria-valuemax</code>, enabling assistive technologies to
+            convey that information to users in a predictable manner.
+          </li>
+          <li>
+            The minimum and maximum values are also visually expressed with
+            adjacent help text, but is purposefully <em>not</em> associated using
+            <code>aria-describedby</code> since the same information is already
+            programmatically defined.
+          </li>
+          <li>
+            When a user inputs an invalid value:
+            <ul>
+              <li>
+                The spin button is visually styled to indicate an error state.
+              </li>
+              <li>
+                <code>aria-invalid="true"</code> is added to the input to inform
+                assistive technologies of the invalid state.
+              </li>
+              <li>
+                An error message is displayed and associated with
+                the input using <code>aria-errormessage</code>.
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 id="kbd_label">Keyboard Support</h2>
+        <p>The spin buttons provide the following keyboard support described in the <a href="../spinbutton-pattern.html#keyboard_interaction">Spin Button Pattern</a>.</p>
+        <table aria-labelledby="kbd_label" class="def">
+          <thead>
+            <tr>
+              <th>Key</th>
+              <th>Function</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="spinbutton-down-arrow">
+              <th><kbd>Down Arrow</kbd></th>
+              <td>Decreases value by 1.</td>
+            </tr>
+            <tr data-test-id="spinbutton-up-arrow">
+              <th><kbd>Up Arrow</kbd></th>
+              <td>Increases value by 1.</td>
+            </tr>
+            <tr data-test-id="spinbutton-home">
+              <th><kbd>Home</kbd></th>
+              <td>Decreases to minimum value.</td>
+            </tr>
+            <tr data-test-id="spinbutton-end">
+              <th><kbd>End</kbd></th>
+              <td>Increases to maximum value.</td>
+            </tr>
+            <tr data-test-id="standard-single-line-editing-keys">
+              <th>Standard single line text editing keys</th>
+              <td>
+                <ul>
+                  <li>Keys used for cursor movement and text manipulation, such as <kbd>Delete</kbd> and <kbd>Shift</kbd> + <kbd>Right Arrow</kbd>.</li>
+                  <li>An HTML <code>input</code> with <code>type="text"</code> is used for the spin button so the browser will provide platform-specific editing keys.</li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2 id="rps_label">Role, Property, State, and Tabindex Attributes</h2>
+        <table aria-labelledby="rps_label" class="data attributes">
+          <thead>
+            <tr>
+              <th scope="col">Role</th>
+              <th scope="col">Attribute</th>
+              <th scope="col">Element</th>
+              <th scope="col">Usage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="spinbutton-role">
+              <th scope="row"><code>spinbutton</code></th>
+              <td></td>
+              <td><code>input[type="text"]</code></td>
+              <td>Identifies the <code>input[type="text"]</code> element as a spin button.</td>
+            </tr>
+            <tr data-test-id="spinbutton-aria-valuenow">
+              <td></td>
+              <th scope="row"><code>aria-valuenow="NUMBER"</code></th>
+              <td><code>input[type="text"]</code></td>
+              <td>
+                <ul>
+                  <li>Indicates the current numeric value of the spin button.</li>
+                  <li>Updated by JavaScript as users change the value of the spin button.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="spinbutton-aria-valuemin">
+              <td></td>
+              <th scope="row"><code>aria-valuemin="NUMBER"</code></th>
+              <td><code>input[type="text"]</code></td>
+              <td>Indicates the minimum allowed value for the spin button.</td>
+            </tr>
+            <tr data-test-id="spinbutton-aria-valuemax">
+              <td></td>
+              <th scope="row"><code>aria-valuemax="NUMBER"</code></th>
+              <td><code>input[type="text"]</code></td>
+              <td>Indicates the maximum allowed value for the spin button.</td>
+            </tr>
+            <tr data-test-id="spinbutton-aria-invalid">
+              <td></td>
+              <th scope="row"><code>aria-invalid="true"</code></th>
+              <td><code>input[type="text"]</code></td>
+              <td>Indicates that the current value is invalid.</td>
+            </tr>
+            <tr data-test-id="spinbutton-aria-errormessage">
+              <td></td>
+              <th scope="row"><code>aria-errormessage="ID_REF"</code></th>
+              <td><code>input[type="text"]</code></td>
+              <td>Identifies the element that provides an error message for the spin button.</td>
+            </tr>
+            <tr data-test-id="button-title">
+              <td></td>
+              <th scope="row"><code>title="NAME_STRING"</code></th>
+              <td><code>button</code></td>
+              <td>Defines the accessible name for each increment and decrement button (<q>Remove adult</q>, <q>Add adult</q>, <q>Remove kid</q>, <q>Add kid</q>, <q>Remove animal</q>, and <q>Add animal</q>).</td>
+            </tr>
+            <tr data-test-id="button-aria-controls">
+              <td></td>
+              <th scope="row">
+                <code>aria-controls="ID_REF"</code>
+              </th>
+              <td><code>button</code></td>
+              <td>Identifies the element whose value will be modified when the button is activated.</td>
+            </tr>
+            <tr data-test-id="button-tabindex">
+              <td></td>
+              <th scope="row"><code>tabindex="-1"</code></th>
+              <td><code>button</code></td>
+              <td>Removes the increment and decrement buttons from the page <kbd>Tab</kbd> sequence while keeping them focusable so they can be accessed with touch-based and voice-based assistive technologies.</td>
+            </tr>
+            <tr>
+              <td></td>
+              <th scope="row"><code>aria-disabled="true"</code></th>
+              <td><code>button</code></td>
+              <td>Set when the minimum or maximum value has been reached to inform assistive technologies that the button has been disabled.</td>
+            </tr>
+            <tr data-test-id="span-aria-hidden">
+              <td></td>
+              <th scope="row"><code>aria-hidden="true"</code></th>
+              <td><code>span</code></td>
+              <td>For assistive technology users, hides the visible minus and plus characters in the increment and decrement buttons since they are symbolic of the superior button labels provided by the <code>title</code> attribute.</td>
+            </tr>
+            <tr data-test-id="output">
+              <td></td>
+              <td></td>
+              <td><code>output</code></td>
+              <td>
+                <ul>
+                  <li>An element with an implicit role of <code>status</code> and an implicit <code>aria-live</code> value of <code>polite</code>.</li>
+                  <li>Triggers a screen reader announcement of the <code>output</code> element’s updated content at the next graceful opportunity.</li>
+                  <li>When either the increment or decrement button is pressed, the current value of the spin button is injected into the <code>output</code> element.</li>
+                  <li>Its contents are emptied 2000 milliseconds after injection.</li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>JavaScript and CSS Source Code</h2>
+        <ul id="css_js_files">
+          <li>
+            CSS:
+            <a href="css/quantity-spinbutton.css" type="text/css">quantity-spinbutton.css</a>
+          </li>
+          <li>
+            JavaScript:
+            <ul>
+              <li><a href="js/quantity-spinbutton.js" type="text/javascript">quantity-spinbutton.js</a></li>
+            </ul>
+          </li>
+        </ul>
+      </section>
+
+      <section class="example-code">
+        <h2 id="sc1_label">HTML Source Code</h2>
+        <p id="sc1_description">To copy the following HTML code, please open it in CodePen.</p>
+        <div role="separator" id="sc1_start_sep" aria-labelledby="sc1_start_sep sc1_label" aria-label="Start of"></div>
+        <pre><code id="sc1"></code></pre>
+        <div role="separator" id="sc1_end_sep" aria-labelledby="sc1_end_sep sc1_label" aria-label="End of"></div>
+        <script>
+          sourceCode.add('sc1', 'example', 'ex_label', 'css_js_files', 'sc1_description');
+          sourceCode.make();
+        </script>
+      </section>
+    </main>
+  </body>
+</html>

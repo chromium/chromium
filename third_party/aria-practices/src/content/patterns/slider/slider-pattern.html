@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Slider Pattern</title>
+
+    <!-- Core JS and CSS shared by all patterns -->
+    <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
+    <link rel="stylesheet" href="../../shared/css/core.css">
+    <script src="../../shared/js/highlight.pack.js"></script>
+    <script src="../../shared/js/app.js"></script>
+    <script data-skipto="colorTheme:aria; displayOption:popup; containerElement:div" src="../../shared/js/skipto.js"></script>
+    <script data-read-this-first="showImage:false" src="../../shared/js/read-this-first.js"></script>
+  </head>
+  <body>
+    <main>
+      <h1>Slider Pattern</h1>
+
+      <section id="about">
+        <h2>About This Pattern</h2>
+        <p>
+          A slider is an input where the user selects a value from within a given range.
+          Sliders typically have a slider thumb that can be moved along a bar, rail, or track to change the value of the slider.
+        </p>
+        <div class="warning">
+          <h3>Warning</h3>
+          <p>
+            Some users of touch-based assistive technologies may experience difficulty utilizing widgets that implement this slider pattern because the gestures their assistive technology provides for operating sliders may not yet generate the necessary output.
+            To change the slider value, touch-based assistive technologies need to respond to user gestures for increasing and decreasing the value by synthesizing key events.
+            This is a new convention that may not be fully implemented by some assistive technologies.
+            Authors should fully test slider widgets using assistive technologies on devices where touch is a primary input mechanism before considering incorporation into production systems.
+          </p>
+        </div>
+      </section>
+
+      <section id="examples">
+        <img alt="" src="../../images/pattern-slider.svg">
+        <h2>Examples</h2>
+        <ul>
+          <li><a href="examples/slider-color-viewer.html">Color Viewer Slider Example</a>: Basic horizontal sliders that illustrate setting numeric values for a color picker.</li>
+          <li><a href="examples/slider-temperature.html">Vertical Temperature Slider Example</a>: Demonstrates using <code>aria-orientation</code> to specify vertical orientation and <code>aria-valuetext</code> to communicate unit of measure for a temperature input.</li>
+          <li><a href="examples/slider-rating.html">Rating Slider Example</a>: Horizontal slider that demonstrates using <code>aria-valuetext</code> to make it easy for assistive technology users to understand the meaning of the current value chosen on a ten-point satisfaction scale.</li>
+          <li><a href="examples/slider-seek.html">Media Seek Slider Example</a>: Horizontal slider that demonstrates using <code>aria-valuetext</code> to communicate current and maximum values of time in media to make the values easy to understand for assistive technology users by converting the total number of seconds to minutes and seconds.</li>
+        </ul>
+      </section>
+
+      <section id="keyboard_interaction">
+        <h2>Keyboard Interaction</h2>
+        <ul>
+          <li><kbd>Right Arrow</kbd>: Increase the value of the slider by one step.</li>
+          <li><kbd>Up Arrow</kbd>: Increase the value of the slider by one step.</li>
+          <li><kbd>Left Arrow</kbd>: Decrease the value of the slider by one step.</li>
+          <li><kbd>Down Arrow</kbd>: Decrease the value of the slider by one step.</li>
+          <li><kbd>Home</kbd>: Set the slider to the first allowed value in its range.</li>
+          <li><kbd>End</kbd>: Set the slider to the last allowed value in its range.</li>
+          <li><kbd>Page Up</kbd> (Optional): Increase the slider value by an amount larger than the step change made by <kbd>Up Arrow</kbd>.</li>
+          <li><kbd>Page Down</kbd> (Optional): Decrease the slider value by an amount larger than the step change made by <kbd>Down Arrow</kbd>.</li>
+        </ul>
+        <div class="note">
+          <h3>Note</h3>
+          <ol>
+            <li>Focus is placed on the slider (the visual object that the mouse user would move, also known as the thumb.</li>
+            <li>In some circumstances, reversing the direction of the value change for the keys specified above, e.g., having <kbd>Up Arrow</kbd> decrease the value, could create a more intuitive experience.</li>
+          </ol>
+        </div>
+      </section>
+
+      <section id="roles_states_properties">
+        <h2>WAI-ARIA Roles, States, and Properties</h2>
+        <ul>
+          <li>The element serving as the focusable slider control has role <a class="role-reference" href="#slider">slider</a>.</li>
+          <li>The slider element has the <a class="property-reference" href="#aria-valuenow">aria-valuenow</a> property set to a decimal value representing the current value of the slider.</li>
+          <li>The slider element has the <a class="property-reference" href="#aria-valuemin">aria-valuemin</a> property set to a decimal value representing the minimum allowed value of the slider.</li>
+          <li>The slider element has the <a class="property-reference" href="#aria-valuemax">aria-valuemax</a> property set to a decimal value representing the maximum allowed value of the slider.</li>
+          <li>If the value of <code>aria-valuenow</code> is not user-friendly, e.g., the day of the week is represented by a number, the <a class="property-reference" href="#aria-valuetext">aria-valuetext</a> property is set to a string that makes the slider value understandable, e.g., &quot;Monday&quot;.</li>
+          <li>
+            If the slider has a visible label, it is referenced by <a href="#aria-labelledby" class="property-reference">aria-labelledby</a> on the slider element.
+            Otherwise, the slider element has a label provided by <a href="#aria-label" class="property-reference">aria-label</a>.
+          </li>
+          <li>
+            If the slider is vertically oriented, it has <a class="property-reference" href="#aria-orientation">aria-orientation</a> set to <code>vertical</code>.
+            The default value of <code>aria-orientation</code> for a slider is <code>horizontal</code>.
+          </li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>

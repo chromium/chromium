@@ -1,0 +1,36 @@
+button {
+  cursor: pointer;
+  font-size: 110%;
+}
+
+.menu-wrapper {
+  position: relative;
+}
+
+ul[role="menu"] {
+  display: none;
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  z-index: 1;
+}
+
+ul[role="menu"] li {
+  list-style: none;
+}
+
+[role="menu"] {
+  padding: 0;
+  width: 8em;
+  border: thin solid black;
+  background-color: #eee;
+}
+
+[role="menuitem"] {
+  padding: 0.25em;
+}
+
+[role="menuitem"]:focus,
+[role="menuitem"]:hover {
+  background-color: #fff;
+}

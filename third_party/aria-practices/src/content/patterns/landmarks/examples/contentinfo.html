@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Contentinfo Landmark: ARIA Landmarks Example</title>
+    <meta charset="utf-8">
+    <link href="css/bootstrap.css" rel="stylesheet" media="screen">
+    <link href="css/bootstrap-theme.css" rel="stylesheet" media="screen">
+    <link href="css/bootstrap-accessibility.css" rel="stylesheet" media="screen">
+    <link href="css/visua11y.css" rel="stylesheet" media="screen">
+    <link href="css/common.css" rel="stylesheet" media="screen">
+  </head>
+  <body>
+    <div class="container">
+      <header class="row">
+        <div id="skip-to-attach" class="col-xs-12 col-sm-3 col-md-3 col-lg-2">
+          <img src="images/w3c.png" alt="W3C Logo" style="margin-top: 2em">
+        </div>
+        <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+          <h1>ARIA Landmarks Example</h1>
+          <p id="inst" class="inst">Visually outline the landmarks and/or headings on the page using the following buttons.</p>
+          <button type="button" onclick="showLandmarks(event)" aria-describedby="inst">Show Landmarks</button>
+          <button type="button" onclick="showHeadings(event)"  aria-describedby="inst">Show Headings</button>
+        </div>
+      </header>
+      <div class="row">
+        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2">
+          <nav>
+            <ul class="nav nav-stacked">
+              <li><a href="general-principles.html">Principles</a></li>
+              <li><a href="HTML5.html">HTML</a></li>
+              <li><a href="banner.html">Banner</a></li>
+              <li><a href="complementary.html">Complementary</a></li>
+              <li class="active"><a href="contentinfo.html" aria-current="page">Contentinfo</a></li>
+              <li><a href="form.html">Form</a></li>
+              <li><a href="main.html">Main</a></li>
+              <li><a href="navigation.html">Navigation</a></li>
+              <li><a href="region.html">Region</a></li>
+              <li><a href="search.html">Search</a></li>
+              <li><a href="at.html" aria-label="Assistive Technology">Asst. Tech.</a></li>
+              <li><a href="resources.html">Resources</a></li>
+            </ul>
+          </nav>
+        </div>
+        <div class="col-xs-12 col-sm-9 col-md-6 col-lg-7">
+          <main>
+            <h1 id="id1"> Contentinfo Landmark</h1>
+            <p> A <code>contentinfo</code> landmark is a way to identify common information at the bottom of each page within a website, typically called the "footer" of the page, including information such as copyrights and links to privacy and accessibility statements. </p>
+             <p> ARIA 1.2 Specification: <a href="https://www.w3.org/TR/wai-aria-1.2/#contentinfo"><code>contentinfo</code> landmark</a>.</p>
+            <h2>Design Patterns</h2>
+            <ul>
+              <li>Each page may have one <code>contentinfo</code> landmark.</li>
+              <li>The <code>contentinfo</code> landmark should be a top-level landmark.</li>
+              <li>When a page contains nested <code>document</code> and/or <code>application</code> roles (e.g. typically through the use of <code>iframe</code> and <code>frame</code> elements),
+                each <code>document</code> or <code>application</code> role may have one <code>contentinfo</code> landmark.
+              </li>
+              <li>If a page includes more than one <code>contentinfo</code> landmark, each should have a unique label.</li>
+            </ul>
+            <section aria-label="Coding Techniques">
+              <ul id="myTabs" class="nav nav-tabs" role="tablist">
+                <li class="active"><a id="tab2" href="#tabpanel2" aria-controls="tabpanel2"  role="tab" data-toggle="tab">HTML Techniques</a></li>
+                <li><a id="tab1" href="#tabpanel1" aria-controls="tabpanel1" role="tab" data-toggle="tab">ARIA Techniques</a></li>
+              </ul>
+              <div class="tab-content">
+                <div id="tabpanel2" aria-labelledby="tab2" role="tabpanel" class="tab-pane active">
+                  <ul>
+                    <li>The HTML <code>footer</code> element defines a <code>contentinfo</code> landmark when its context is the <code>body</code> element.</li>
+                    <li>
+                      The HTML <code>footer</code> element is not considered a <code>contentinfo</code> landmark when it is descendant of any of following elements:
+                      <ul>
+                        <li><code>article</code></li>
+                        <li><code>aside</code></li>
+                        <li><code>main</code></li>
+                        <li><code>nav</code></li>
+                        <li><code>section</code></li>
+                      </ul>
+                    </li>
+                  </ul>
+                  <h3>HTML Example</h3>
+                    <div class="code">
+                            <strong>&lt;footer&gt;</strong>
+                    <br>
+                    <br>
+                            &nbsp;&nbsp;&lt;h2&gt;<em>Contact, Policies and Legal</em>&lt;h2&gt;<br>
+                    <br>
+                            &nbsp;&nbsp;.... <em>contentinfo area content</em> ....   <br>
+                    <br>
+                            <strong>&lt;/footer&gt;</strong>
+                    </div>
+                </div>
+                <div id="tabpanel1" aria-labelledby="tab1" role="tabpanel" class="tab-pane">
+                  <p>A <code>role="contentinfo"</code> attribute is used to define a <code>contentinfo</code> landmark.</p>
+                  <h3>ARIA Example</h3>
+                    <div class="code">
+                            &lt;div <strong>role="contentinfo"</strong>&gt;<br>
+                            <br>
+                            &nbsp;&nbsp;&lt;h2&gt;<em>Contact, Policies and Legal</em>&lt;h2&gt;<br>
+                            <br>
+                            &nbsp;&nbsp;.... <em>contentinfo area content</em> ....   <br>
+                            <br>
+                            &lt;/div&gt;<br>
+                    </div>
+                </div>
+              </div>
+            </section>
+          </main>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+          <aside aria-labelledby="id4">
+            <h2 id="id4">Landmarks</h2>
+            <p>The following landmarks are defined on this page:</p>
+            <ul>
+              <li>Banner</li>
+              <li>Complementary</li>
+              <li>Contentinfo</li>
+              <li>Main</li>
+              <li>Navigation</li>
+              <li>Region</li>
+            </ul>
+          </aside>
+          <aside aria-labelledby="id3">
+            <h2 id="id3">Related Documents</h2>
+            <ul>
+              <li><a href="https://w3.org/WAI/ARIA/apg/">ARIA Authoring Practices</a></li>
+              <li><a href="https://www.w3.org/TR/wai-aria-1.2/">ARIA 1.2 Specification</a></li>
+
+              <li><a href="https://www.w3.org/TR/accname-1.2/">Accessible Name and Description Computation 1.2</a></li>
+              <li><a href="http://www.w3.org/TR/core-aam-1.2/">Core Accessibility API Mappings 1.2</a></li>
+              <li><a href="https://w3c.github.io/html-aam/">HTML Accessibility API Mappings (latest editors draft)</a></li>
+              <li><a href="https://html.spec.whatwg.org/">HTML Specification</a></li>
+              <li><a href="https://www.w3.org/TR/html-aria/">ARIA in HTML</a></li>
+              <li><a href="https://www.w3.org/TR/using-aria/">Using ARIA in HTML</a></li>
+              <li><a href="http://www.w3.org/TR/WCAG/">WCAG Specification</a></li>
+            </ul>
+          </aside>
+        </div>
+      </div>
+      <div class="well well-sm">
+        <footer class="row">
+          <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+            W3C ARIA Authoring Practices Task Force
+          </div>
+          <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2">
+            Copyright 2023
+          </div>
+        </footer>
+      </div>
+    </div>
+    <script type="text/javascript" src="js/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/tabs.js"></script>
+    <script type="text/javascript" src="js/bootstrap-accessibility.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap-accessibility-2.js"></script>
+    <script type="text/javascript" src="js/visua11y.js"></script>
+    <script type="text/javascript" src="js/show.js"></script>
+    <!-- Customize SkipTo features using the data-skipto attribute -->
+    <script data-skipto="attachElement: #skip-to-attach; colorTheme: aria"
+            src="js/skipto.min.js">
+    </script>
+  </body>
+</html>

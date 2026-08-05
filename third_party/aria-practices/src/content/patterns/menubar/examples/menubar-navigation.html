@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigation Menubar Example</title>
+
+    <!-- Core JS and CSS shared by all examples -->
+    <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
+    <link rel="stylesheet" href="../../../shared/css/core.css">
+    <script src="../../../shared/js/examples.js"></script>
+    <script src="../../../shared/js/highlight.pack.js"></script>
+    <script src="../../../shared/js/app.js"></script>
+    <script data-skipto="colorTheme:aria; displayOption:popup; containerElement:div" src="../../../shared/js/skipto.js"></script>
+
+    <!-- JS and CSS for this example -->
+    <link href="css/menubar-navigation.css" rel="stylesheet">
+    <script src="js/menubar-navigation.js"></script>
+  </head>
+  <body>
+    <nav aria-label="Related Links" class="feedback">
+      <ul>
+        <li><a href="https://github.com/orgs/w3c/projects/125">Related Issues</a></li>
+        <li><a href="../menu-and-menubar-pattern.html">Design Pattern</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h1>Navigation Menubar Example</h1>
+
+      <section>
+        <h2>About This Example</h2>
+        <div class="advisement">
+          <h3>Caution!</h3>
+          <p>Before considering use of the <a href="../menu-and-menubar-pattern.html">Menubar Pattern</a> for site navigation, it is important to understand:</p>
+          <ul>
+            <li>The <code>menubar</code> pattern requires complex functionality that is unnecessary for typical site navigation that is styled to look like a menubar with expandable sections or <q>fly outs</q>.</li>
+            <li>
+              A pattern more suited for typical site navigation with expandable groups of links is the <a href="../../disclosure/disclosure-pattern.html">Disclosure Pattern</a>.
+              For an example, see <a href="../../disclosure/examples/disclosure-navigation.html">Example Disclosure Navigation Menu</a>.
+            </li>
+          </ul>
+        </div>
+        <img alt="" class="example-page-example-icon" src="../../../images/pattern-menubar.svg">
+        <p>
+          The following implementation of the <a href="../menu-and-menubar-pattern.html">Menubar Pattern</a> demonstrates how a menubar can provide navigation menus.
+          The parent menu items in the menubar represent a section of a mythical university web site and open a submenu containing menu items that link to pages within that section.
+          The navigation system it illustrates is comparable to the navigation illustrated in the
+          <a href="../../disclosure/examples/disclosure-navigation.html">Example Disclosure Navigation Menu</a>.
+          As noted above, the disclosure pattern is better suited for most web sites because few sites need the additional keyboard functionality required to support the ARIA <code>menubar</code> and <code>menu</code> roles.
+        </p>
+        <p>Similar examples include:</p>
+        <ul>
+          <li><a href="menubar-editor.html">Editor Menubar Example</a>: Example of a menubar that presents text styling actions similar to an editor application.</li>
+          <li><a href="../../disclosure/examples/disclosure-navigation.html">Example Disclosure Navigation Menu</a>: Navigation menus implemented as simple drop down lists of links that are shown and hidden using disclosure buttons.</li>
+          <li><a href="../../disclosure/examples/disclosure-navigation-hybrid.html">Example Disclosure Navigation Menu with Top-Level Links</a></li>
+        </ul>
+      </section>
+
+      <section id="code-ex-1">
+        <div class="example-header">
+          <h2 id="ex_label">Example</h2>
+        </div>
+        <div role="separator" id="ex_start_sep" aria-labelledby="ex_start_sep ex_label" aria-label="Start of"></div>
+        <div id="ex1">
+          <div class="page">
+            <!-- NOTE: In an actual website, the header element would be a top level element, i.e., it would have the body as its scope.
+          If the scope of the header element were body, browsers would automatically treat the header as an ARIA banner,
+          so the header would not need the role="banner". -->
+            <header role="banner">
+              <div class="title">Mythical University</div>
+              <div class="tagline">Using a Menubar for navigation links</div>
+            </header>
+            <nav aria-label="Mythical University">
+              <ul class="menubar-navigation" role="menubar" aria-label="Mythical University">
+                <li role="none">
+                  <a role="menuitem" href="#home"> Home </a>
+                </li>
+                <li role="none">
+                  <a role="menuitem" aria-haspopup="true" aria-expanded="false" href="#about">
+                    About
+                    <svg xmlns="http://www.w3.org/2000/svg" class="down" width="12" height="9" viewBox="0 0 12 9">
+                      <polygon points="1 0, 11 0, 6 8" />
+                    </svg>
+                  </a>
+                  <ul role="menu" aria-label="About">
+                    <li role="none">
+                      <a role="menuitem" href="#overview">Overview</a>
+                    </li>
+                    <li role="none">
+                      <a role="menuitem" href="#administration">Administration</a>
+                    </li>
+                    <li role="none">
+                      <a role="menuitem" aria-haspopup="true" aria-expanded="false" href="#facts">
+                        Facts
+                        <svg xmlns="http://www.w3.org/2000/svg" class="right" width="9" height="12" viewBox="0 0 9 12">
+                          <polygon points="0 1, 0 11, 8 6" />
+                        </svg>
+                      </a>
+                      <ul role="menu" aria-label="Facts">
+                        <li role="none">
+                          <a role="menuitem" href="#history">History</a>
+                        </li>
+                        <li role="none">
+                          <a role="menuitem" href="#current-statistics">Current Statistics</a>
+                        </li>
+                        <li role="none">
+                          <a role="menuitem" href="#awards">Awards</a>
+                        </li>
+                      </ul>
+                    </li>
+                    <li role="none">
+                      <a role="menuitem" aria-haspopup="true" aria-expanded="false" href="#campus-tours">
+                        Campus Tours
+                        <svg xmlns="http://www.w3.org/2000/svg" class="right" width="9" height="12" viewBox="0 0 9 12">
+                          <polygon points="0 1, 0 11, 8 6" />
+                        </svg>
+                      </a>
+                      <ul role="menu" aria-label="Campus Tours">
+                        <li role="none">
+                          <a role="menuitem" href="#for-prospective-students">For prospective students</a>
+                        </li>
+                        <li role="none">
+                          <a role="menuitem" href="#for-alumni">For alumni</a>
+                        </li>
+                        <li role="none">
+                          <a role="menuitem" href="#for-visitors">For visitors</a>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+                <li role="none">
+                  <a role="menuitem" aria-haspopup="true" aria-expanded="false" href="#admissions">
+                    Admissions
+                    <svg xmlns="http://www.w3.org/2000/svg" class="down" width="12" height="9" viewBox="0 0 12 9">
+                      <polygon points="1 0, 11 0, 6 8" />
+                    </svg>
+                  </a>
+                  <ul role="menu" aria-label="Admissions">
+                    <li role="none">
+                      <a role="menuitem" href="#apply">Apply</a>
+                    </li>
+                    <li role="none">
+                      <a role="menuitem" aria-haspopup="true" aria-expanded="false" href="#tuition">
+                        Tuition
+                        <svg xmlns="http://www.w3.org/2000/svg" class="right" width="9" height="12" viewBox="0 0 9 12">
+                          <polygon points="0 1, 0 11, 8 6" />
+                        </svg>
+                      </a>
+                      <ul role="menu" aria-label="Tuition">
+                        <li role="none">
+                          <a role="menuitem" href="#undergraduate">Undergraduate</a>
+                        </li>
+                        <li role="none">
+                          <a role="menuitem" href="#graduate">Graduate</a>
+                        </li>
+                        <li role="none">
+                          <a role="menuitem" href="#professional-schools">Professional Schools</a>
+                        </li>
+                      </ul>
+                    </li>
+                    <li role="none">
+                      <a role="menuitem" href="#sign-up">Sign Up</a>
+                    </li>
+                    <li role="separator"></li>
+                    <li role="none">
+                      <a role="menuitem" href="#visit">Visit</a>
+                    </li>
+                    <li role="none">
+                      <a role="menuitem" href="#photo-tour">Photo Tour</a>
+                    </li>
+                    <li role="none">
+                      <a role="menuitem" href="#connect">Connect</a>
+                    </li>
+                  </ul>
+                </li>
+                <li role="none">
+                  <a role="menuitem" aria-haspopup="true" aria-expanded="false" href="#academics">
+                    Academics
+                    <svg xmlns="http://www.w3.org/2000/svg" class="down" width="12" height="9" viewBox="0 0 12 9">
+                      <polygon points="1 0, 11 0, 6 8" />
+                    </svg>
+                  </a>
+                  <ul role="menu" id="sub-menu-academics" aria-label="Academics">
+                    <li role="none">
+                      <a role="menuitem" href="#colleges-and-schools">Colleges &amp; Schools</a>
+                    </li>
+                    <li role="none">
+                      <a role="menuitem" href="#programs-of-study">Programs of Study</a>
+                    </li>
+                    <li role="none">
+                      <a role="menuitem" href="#honors-programs">Honors Programs</a>
+                    </li>
+                    <li role="none">
+                      <a role="menuitem" href="#online-courses">Online Courses</a>
+                    </li>
+                    <li role="separator"></li>
+                    <li role="none">
+                      <a role="menuitem" href="#course-explorer">Course Explorer</a>
+                    </li>
+                    <li role="none">
+                      <a role="menuitem" href="#register-for-class">Register for Class</a>
+                    </li>
+                    <li role="none">
+                      <a role="menuitem" href="#academic-calendar">Academic Calendar</a>
+                    </li>
+                    <li role="none">
+                      <a role="menuitem" href="#tanscripts">Transcripts</a>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </nav>
+            <!-- NOTE: The following SECTION element would be a MAIN element in an actual website -->
+            <div class="main">
+              <section aria-labelledby="id-page-title">
+                <h1 id="id-page-title" class="page_title">Mythical University</h1>
+                <div class="content">
+                  <p></p>
+                </div>
+              </section>
+            </div>
+            <!--
+              NOTE: In an actual website, the footer element would be a top level element, i.e., it would have the body as its scope.
+              If the scope of the footer element were body, browsers would automatically treat the footer as an ARIA contentinfo landmark, so the footer would not need the role="contentinfo".
+            -->
+            <footer role="contentinfo">Mythical University footer information</footer>
+          </div>
+        </div>
+        <div role="separator" id="ex_end_sep" aria-labelledby="ex_end_sep ex_label" aria-label="End of"></div>
+      </section>
+
+      <section>
+        <h2>Accessibility Features</h2>
+        <ol>
+          <li>
+            Menu items that trigger navigation move focus to the target page title:
+            <ul>
+              <li>
+                An important aspect of designing a navigation menu experience is where keyboard focus moves when an item that triggers navigation is activated and the menu closes.
+                If activating a menubar item changes content on the page without triggering a browser page load, i.e., works like typical single-page apps, the focus position after the content load significantly effects efficiency for keyboard and assistive technology users.
+              </li>
+              <li>
+                This example behaves like a single page app and activating a menu item that loads new content moves focus to the beginning of the new content, which is a level one heading with content that matches the name of the activated menu item.
+                Focusing on the heading informs screen reader users that navigation is complete and confirms the destination.
+              </li>
+              <li>To view other pages, keyboard users need to navigate back to the menubar . To optimize keyboard efficiency, this example locates the menubar immediately before the content display area in the Tab sequence.</li>
+            </ul>
+          </li>
+          <li>To help communicate that the arrow keys are available for directional navigation within the menubar and its submenus, a border is added to the menubar container when focus is within the menubar.</li>
+          <li>
+            To help users locate the menu item that loads the currently displayed page, visual indicators of the path to that menu item are added to the menu items in the path:
+            <ul>
+              <li>The parent menubar item in the path has an extra thick (4 pixel) bottom border.</li>
+              <li>If the current page menu item is nested within a deeper submenu, the parent submenu item in the path has an extra thick (4 pixel) left side border.</li>
+              <li>Finally, the menu item that loads the currently displayed page is styled with an extra thick border on the left side.</li>
+            </ul>
+          </li>
+          <li>
+            To support operating system high contrast settings:
+            <ul>
+              <li>
+                Because transparent borders are visible on some systems with operating system high contrast settings enabled, transparency cannot be used to create a visual difference between the element that is focused and other elements.
+                Instead of using transparency, the focused element has a thicker border and less padding.
+                When an element receives focus, its border changes from 0 to 2 pixels and padding is reduced by 2 pixels.
+                When an element loses focus, its border changes from 2 to 0 pixels and padding is increased by 2 pixels.
+              </li>
+              <li>
+                To ensure the arrow icons used to indicate the expanded or collapsed state have sufficient contrast with the background when high contrast settings invert colors, the CSS <code>currentcolor</code> value for the <code>fill</code> and <code>stroke</code> properties of the SVG <code>polygon</code> element is used to synchronize the color with text content.
+                If specific colors are used to specify the <code>fill</code> and <code>stroke</code> properties, these colors will remain the same in high contrast mode, which could lead to insufficient contrast between the icon and the background or even make the icon invisible if its color matches the high contrast mode background.
+              </li>
+            </ul>
+          </li>
+          <li>Since the menubar presents a site navigation system, it is wrapped in a navigation region implemented with a <code>nav</code> element that has an <code>aria-label</code> that matches the label on the menubar.</li>
+        </ol>
+      </section>
+
+      <section>
+        <h2 id="kbd_label">Keyboard Support</h2>
+        <h3 id="kbd1_label">Menubar</h3>
+        <table aria-labelledby="kbd1_label kbd_label" class="def">
+          <thead>
+            <tr>
+              <th>Key</th>
+              <th>Function</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="menubar-space-or-enter">
+              <th><kbd>Space</kbd><br><kbd>Enter</kbd></th>
+              <td>
+                <ul>
+                  <li>If the item is a parent menu item, opens submenu and moves focus to first item in the submenu.</li>
+                  <li>Otherwise, activates the menu item, which loads new content and places focus on the heading that titles the content.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="menubar-right-arrow">
+              <th>
+                <kbd>Right Arrow</kbd>
+              </th>
+              <td>
+                <ul>
+                  <li>Moves focus to the next item in the menubar.</li>
+                  <li>If focus is on the last item, moves focus to the first item.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="menubar-left-arrow">
+              <th>
+                <kbd>Left Arrow</kbd>
+              </th>
+              <td>
+                <ul>
+                  <li>Moves focus to the previous item in the menubar.</li>
+                  <li>If focus is on the first item, moves focus to the last item.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="menubar-down-arrow">
+              <th>
+                <kbd>Down Arrow</kbd>
+              </th>
+              <td>Opens submenu and moves focus to first item in the submenu.</td>
+            </tr>
+            <tr data-test-id="menubar-up-arrow">
+              <th>
+                <kbd>Up Arrow</kbd>
+              </th>
+              <td>Opens submenu and moves focus to last item in the submenu.</td>
+            </tr>
+            <tr data-test-id="menubar-home">
+              <th>
+                <kbd>Home</kbd>
+              </th>
+              <td>Moves focus to first item in the menubar.</td>
+            </tr>
+            <tr data-test-id="menubar-end">
+              <th>
+                <kbd>End</kbd>
+              </th>
+              <td>Moves focus to last item in the menubar.</td>
+            </tr>
+            <tr data-test-id="menubar-character">
+              <th>
+                <kbd>Character</kbd>
+              </th>
+              <td>
+                <ul>
+                  <li>Moves focus to next item in the menubar having a name that starts with the typed character.</li>
+                  <li>If none of the items have a name starting with the typed character, focus does not move.</li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 id="kbd2_label">Submenu</h3>
+        <table aria-labelledby="kbd2_label kbd_label" class="def">
+          <thead>
+            <tr>
+              <th>Key</th>
+              <th>Function</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="submenu-space-or-enter">
+              <th><kbd>Space</kbd><br><kbd>Enter</kbd></th>
+              <td>
+                <ul>
+                  <li>If the item is a parent menu item, opens submenu and moves focus to first item in the submenu.</li>
+                  <li>Otherwise, activates the menu item, which loads new content and places focus on the heading that titles the content.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="submenu-escape">
+              <th>
+                <kbd>Escape</kbd>
+              </th>
+              <td>
+                <ul>
+                  <li>Closes submenu.</li>
+                  <li>Moves focus to parent menubar item.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="submenu-right-arrow">
+              <th>
+                <kbd>Right Arrow</kbd>
+              </th>
+              <td>
+                <ul>
+                  <li>If focus is on an item with a submenu, opens the submenu and places focus on the first item.</li>
+                  <li>
+                    If focus is on an item that does not have a submenu:
+                    <ul>
+                      <li>Closes submenu.</li>
+                      <li>Moves focus to next item in the menubar.</li>
+                      <li>Opens submenu of newly focused menubar item, keeping focus on that parent menubar item.</li>
+                    </ul>
+                  </li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="submenu-left-arrow">
+              <th>
+                <kbd>Left Arrow</kbd>
+              </th>
+              <td>
+                <ul>
+                  <li>Closes submenu and moves focus to parent menu item.</li>
+                  <li>
+                    If parent menu item is in the menubar, also:
+                    <ul>
+                      <li>moves focus to previous item in the menubar.</li>
+                      <li>Opens submenu of newly focused menubar item, keeping focus on that parent menubar item.</li>
+                    </ul>
+                  </li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="submenu-down-arrow">
+              <th>
+                <kbd>Down Arrow</kbd>
+              </th>
+              <td>
+                <ul>
+                  <li>Moves focus to the next item in the submenu.</li>
+                  <li>If focus is on the last item, moves focus to the first item.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="submenu-up-arrow">
+              <th>
+                <kbd>Up Arrow</kbd>
+              </th>
+              <td>
+                <ul>
+                  <li>Moves focus to previous item in the submenu.</li>
+                  <li>If focus is on the first item, moves focus to the last item.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="submenu-home">
+              <th>
+                <kbd>Home</kbd>
+              </th>
+              <td>Moves focus to the first item in the submenu.</td>
+            </tr>
+            <tr data-test-id="submenu-end">
+              <th>
+                <kbd>End</kbd>
+              </th>
+              <td>Moves focus to the last item in the submenu.</td>
+            </tr>
+            <tr data-test-id="submenu-character">
+              <th>
+                <kbd>Character</kbd>
+              </th>
+              <td>
+                <ul>
+                  <li>Moves focus to the next item having a name that starts with the typed character.</li>
+                  <li>If none of the items have a name starting with the typed character, focus does not move.</li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2 id="rps_label">Role, Property, State, and Tabindex Attributes</h2>
+
+        <h3 id="rps_label_1">Landmarks</h3>
+        <table aria-labelledby="rps_label_1 rps_label" class="data attributes">
+          <thead>
+            <tr>
+              <th scope="col">Role</th>
+              <th scope="col">Attribute</th>
+              <th scope="col">Element</th>
+              <th scope="col">Usage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="banner-role">
+              <th scope="row"><code>banner</code></th>
+              <td></td>
+              <td><code>header</code></td>
+              <td>
+                <ul>
+                  <li>Identifies the top section of content that is common across pages in a web site.</li>
+                  <li>
+                    NOTE: The <code>banner</code> role declaration is only necessary because it is an example that is nested inside the content of this page.
+                    In an actual website, the header element would be a top level element, i.e., it would have the body as its scope.
+                    If the scope of the header element were body, browsers would automatically treat the header as an ARIA banner, so the header would not need <code>role="banner"</code>.
+                  </li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="navigation-role">
+              <th scope="row"><code>navigation</code></th>
+              <td></td>
+              <td><code>nav</code></td>
+              <td>Identifies the region containing the mythical university navigation.</td>
+            </tr>
+            <tr data-test-id="navigation-aria-label">
+              <td></td>
+              <th scope="row"><code>aria-label="Mythical University"</code></th>
+              <td><code>nav</code></td>
+              <td>Provides an accessible name for the <code>navigation</code> landmark that describes the purpose of the navigation.</td>
+            </tr>
+            <tr data-test-id="region-role">
+              <th scope="row"><code>region</code></th>
+              <td></td>
+              <td><code>section</code></td>
+              <td>
+                <ul>
+                  <li>Identifies the main content region of the page depicted in the example.</li>
+                  <li>In an actual web page, this region would be identified by a <code>main</code> landmark, but since this page already has a main landmark, role <code>region</code> is used to avoid having two <code>main</code> landmarks on the page.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="region-aria-labelledby">
+              <td></td>
+              <th scope="row"><code>aria-labelledby="<em>idref</em>"</code></th>
+              <td><code>section</code></td>
+              <td>Provides the region with an accessible name from the <code>h1</code> element.</td>
+            </tr>
+            <tr data-test-id="contentinfo-role">
+              <th scope="row"><code>contentinfo</code></th>
+              <td></td>
+              <td><code>footer</code></td>
+              <td>
+                <ul>
+                  <li>Identifies the bottom section of content common across pages in a web site.</li>
+                  <li>
+                    NOTE: The <code>contentinfo</code> role declaration is only necessary because the footer is an example that is nested inside the content of this page.
+                    In an actual website, the footer element would be a top level element, i.e., it would have the body as its scope.
+                    If the scope of the footer element were body, browsers would automatically treat the footer as a ARIA <code>contentinfo</code> landmark, so the footer would not need <code>role="contentinfo"</code>.
+                  </li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 id="rps1_label">Menubar</h3>
+        <table aria-labelledby="rps1_label rps_label" class="data attributes">
+          <thead>
+            <tr>
+              <th>Role</th>
+              <th>Attribute</th>
+              <th>Element</th>
+              <th>Usage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="menubar-role">
+              <th>
+                <code>menubar</code>
+              </th>
+              <td></td>
+              <td>
+                <code>ul</code>
+              </td>
+              <td>
+                <ul>
+                  <li>Identifies the element as a <code>menubar</code> container for a set of <code>menuitem</code> elements.</li>
+                  <li>
+                    The menubar element is not focusable because it implements the practice described in the section on
+                    <a href="../../../practices/keyboard-interface/keyboard-interface-practice.html#kbd_roving_tabindex">Managing Focus Within Components Using a Roving tabindex</a>.
+                  </li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="menubar-aria-label">
+              <td></td>
+              <th>
+                <code>aria-label="<em>string</em>"</code>
+              </th>
+              <td>
+                <code>ul</code>
+              </td>
+              <td>
+                <ul>
+                  <li>Defines an accessible name for the <code>menubar</code>.</li>
+                  <li>Helps assistive technology users understand the purpose of the menubar and distinguish it from any other menubars or similar elements on the page.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="menuitem-role">
+              <th>
+                <code>menuitem</code>
+              </th>
+              <td></td>
+              <td>
+                <code>a</code>
+              </td>
+              <td>
+                <ul>
+                  <li>Identifies the element as a menu item.</li>
+                  <li>The accessible name is calculated from the text content of the <code>a</code> element.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="menubar-menuitem-tabindex">
+              <td></td>
+              <th>
+                <code>tabindex="-1"</code>
+              </th>
+              <td>
+                <code>a</code>
+              </td>
+              <td>Makes the <code>a</code> element keyboard focusable, but <strong>not</strong> part of the tab sequence.</td>
+            </tr>
+            <tr data-test-id="menubar-menuitem-tabindex">
+              <td></td>
+              <th>
+                <code>tabindex="0"</code>
+              </th>
+              <td>
+                <code>a</code>
+              </td>
+              <td>
+                <ul>
+                  <li>Includes the element in the <kbd>Tab</kbd> sequence.</li>
+                  <li>Only one menubar item has <code>tabindex="0"</code>.</li>
+                  <li>On page load, the first menubar item has <code>tabindex="0"</code>.</li>
+                  <li>
+                    Focus is managed using the practice for
+                    <a href="../../../practices/keyboard-interface/keyboard-interface-practice.html#kbd_roving_tabindex">Managing Focus Within Components Using a Roving tabindex</a>.
+                  </li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="menubar-menuitem-aria-current">
+              <td></td>
+              <th>
+                <code>aria-current="page"</code>
+              </th>
+              <td>
+                <code>a</code>
+              </td>
+              <td>
+                <ul>
+                  <li>Identifies the link URL has the same URL as the web page.</li>
+                  <li>If the link URL is not the same, the attribute is removed.</li>
+                  <li>Menu items in the menubar in the path to the current page menu item are given a <code>title</code> attribute with the text content of "Contains current page link" to indicate to screen reader users the menu item contains the current page link.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="menubar-menuitem-aria-haspopup">
+              <td></td>
+              <th>
+                <code>aria-haspopup="true"</code>
+              </th>
+              <td>
+                <code>a</code>
+              </td>
+              <td>Indicates the menuitem has a submenu.</td>
+            </tr>
+            <tr data-test-id="menubar-menuitem-aria-expanded-true">
+              <td></td>
+              <th>
+                <code>aria-expanded="true"</code>
+              </th>
+              <td>
+                <code>a</code>
+              </td>
+              <td>Indicates the submenu is open.</td>
+            </tr>
+            <tr data-test-id="menubar-menuitem-aria-expanded-false">
+              <td></td>
+              <th>
+                <code>aria-expanded="false"</code>
+              </th>
+              <td>
+                <code>a</code>
+              </td>
+              <td>Indicates the submenu is closed.</td>
+            </tr>
+            <tr data-test-id="menubar-role-none">
+              <th>
+                <code>none</code>
+              </th>
+              <td></td>
+              <td>
+                <code>li</code>
+              </td>
+              <td>
+                <ul>
+                  <li>Removes the implied <code>listitem</code> role of the <code>li</code> element.</li>
+                  <li>Necessary because the parent <code>ul</code> is serving as a <code>menu</code> so the <code>li</code> elements are not in their required list context.</li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <h3 id="rps2_label">Submenu</h3>
+        <table aria-labelledby="rps2_label rps_label" class="data attributes">
+          <thead>
+            <tr>
+              <th>Role</th>
+              <th>Attribute</th>
+              <th>Element</th>
+              <th>Usage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="menu-role">
+              <th>
+                <code>menu</code>
+              </th>
+              <td></td>
+              <td>
+                <code>ul</code>
+              </td>
+              <td>Identifies the element as a menu container for a set of menu items.</td>
+            </tr>
+            <tr data-test-id="menu-aria-label">
+              <td></td>
+              <th>
+                <code>aria-label="<em>string</em>"</code>
+              </th>
+              <td>
+                <code>ul</code>
+              </td>
+              <td>
+                <ul>
+                  <li>Defines an accessible name for the <code>menu</code>.</li>
+                  <li>Helps assistive technology users understand the purpose of the menu and distinguish it from any other menu or similar elements (e.g. menubar) on the page.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="menu-menuitem-role">
+              <th>
+                <code>menuitem</code>
+              </th>
+              <td></td>
+              <td>
+                <code>a</code>
+              </td>
+              <td>
+                <ul>
+                  <li>Identifies the element as a menu item.</li>
+                  <li>The accessible name is calculated from the text content of the <code>a</code> element.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="menu-menuitem-tabindex">
+              <td></td>
+              <th>
+                <code>tabindex="-1"</code>
+              </th>
+              <td>
+                <code>a</code>
+              </td>
+              <td>Keeps the <code>a</code> element focusable but removes it from the <kbd>Tab</kbd> sequence.</td>
+            </tr>
+            <tr data-test-id="menu-menuitem-aria-haspopup">
+              <td></td>
+              <th>
+                <code>aria-haspopup="true"</code>
+              </th>
+              <td>
+                <code>a</code>
+              </td>
+              <td>Indicates the menu item has a submenu.</td>
+            </tr>
+            <tr data-test-id="menu-menuitem-aria-expanded-true">
+              <td></td>
+              <th>
+                <code>aria-expanded="true"</code>
+              </th>
+              <td>
+                <code>a</code>
+              </td>
+              <td>Indicates the submenu is open.</td>
+            </tr>
+            <tr data-test-id="menu-menuitem-aria-expanded-false">
+              <td></td>
+              <th>
+                <code>aria-expanded="false"</code>
+              </th>
+              <td>
+                <code>a</code>
+              </td>
+              <td>Indicates the submenu is closed.</td>
+            </tr>
+            <tr data-test-id="menu-role-none">
+              <th>
+                <code>none</code>
+              </th>
+              <td></td>
+              <td>
+                <code>li</code>
+              </td>
+              <td>
+                <ul>
+                  <li>Removes the implied <code>listitem</code> role of the <code>li</code> element.</li>
+                  <li>Necessary because the parent <code>ul</code> is serving as a <code>menu</code> so the <code>li</code> elements are not in their required list context.</li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>JavaScript and CSS Source Code</h2>
+        <ul id="css_js_files">
+          <li>CSS: <a href="css/menubar-navigation.css" type="tex/css">menubar-navigation.css</a></li>
+          <li>JavaScript: <a href="js/menubar-navigation.js" type="text/javascript">menubar-navigation.js</a></li>
+        </ul>
+      </section>
+
+      <section class="example-code">
+        <h2 id="sc_label">HTML Source Code</h2>
+        <p id="sc1_description">To copy the following HTML code, please open it in CodePen.</p>
+        <div id="sc1_start_sep" role="separator" aria-labelledby="sc1_start_sep sc_label" aria-label="Start of "></div>
+        <pre><code id="sc1"></code></pre>
+        <div id="sc1_end_sep" role="separator" aria-labelledby="sc1_end_sep sc_label" aria-label="End of "></div>
+        <script>
+          sourceCode.add('sc1', 'ex1', 'ex_label', 'css_js_files', 'sc1_description');
+          sourceCode.make();
+        </script>
+      </section>
+    </main>
+  </body>
+</html>

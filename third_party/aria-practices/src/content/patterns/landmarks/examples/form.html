@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Form Landmark: ARIA Landmarks Example</title>
+    <meta charset="utf-8">
+    <link href="css/bootstrap.css" rel="stylesheet" media="screen">
+    <link href="css/bootstrap-theme.css" rel="stylesheet" media="screen">
+    <link href="css/bootstrap-accessibility.css" rel="stylesheet" media="screen">
+    <link href="css/visua11y.css" rel="stylesheet" media="screen">
+    <link href="css/common.css" rel="stylesheet" media="screen">
+    <style>
+      label,
+      input[type=submit] {
+        display: block;
+        margin-top: 0.5em;
+        margin-bottom: 0;
+        padding-bottom: 0;
+      }
+
+      input[type=submit] {
+        margin-bottom: 1em;
+      }
+
+      fieldset {
+        padding: 0.5em;
+        margin-top: 1em;
+        padding-top: 1em;
+        background-color: #EEEEEE;
+      }
+
+      fieldset legend {
+        position: relative;
+        top: 1.5em;
+        border-color: #AAAAAA;
+        font-weight: bold;
+        font-size: 1em;
+      }
+
+      fieldset label {
+        font-weight: normal;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header class="row">
+        <div id="skip-to-attach" class="col-xs-12 col-sm-3 col-md-3 col-lg-2">
+          <img src="images/w3c.png" alt="W3C Logo" style="margin-top: 2em">
+        </div>
+        <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+          <h1>ARIA Landmarks Example</h1>
+          <p id="inst" class="inst">Visually outline the landmarks and/or headings on the page using the following buttons.</p>
+          <button type="button" onclick="showLandmarks(event)" aria-describedby="inst">Show Landmarks</button>
+          <button type="button" onclick="showHeadings(event)"  aria-describedby="inst">Show Headings</button>
+        </div>
+      </header>
+      <div class="row">
+        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2">
+          <nav>
+            <ul class="nav nav-stacked">
+              <li><a href="general-principles.html">Principles</a></li>
+              <li><a href="HTML5.html">HTML</a></li>
+              <li><a href="banner.html">Banner</a></li>
+              <li><a href="complementary.html">Complementary</a></li>
+              <li><a href="contentinfo.html">Contentinfo</a></li>
+              <li class="active"><a href="form.html" aria-current="page">Form</a></li>
+              <li><a href="main.html">Main</a></li>
+              <li><a href="navigation.html">Navigation</a></li>
+              <li><a href="region.html">Region</a></li>
+              <li><a href="search.html">Search</a></li>
+              <li><a href="at.html" aria-label="Assistive Technology">Asst. Tech.</a></li>
+              <li><a href="resources.html">Resources</a></li>
+            </ul>
+          </nav>
+        </div>
+        <div class="col-xs-12 col-sm-9 col-md-6 col-lg-7">
+          <main>
+            <h1 id="id1"> Form Landmark</h1>
+            <p> A <code>form</code> landmark identifies a region that contains a collection of items and objects that, as a whole, combine to create a form when no other named landmark is appropriate (e.g. main or search). </p>
+             <p> ARIA 1.2 Specification: <a href="https://www.w3.org/TR/wai-aria-1.2/#form"><code>form</code> landmark</a></p>
+            <h2>Design Patterns</h2>
+            <ul>
+              <li>Use the <code>search</code> landmark instead of the <code>form</code> landmark when the form is used for search functionality.</li>
+              <li>A <code>form</code> landmark should have a label to help users understand the purpose of the form.</li>
+              <li>A label for the <code>form</code> landmark should be identified using <code>aria-labelledby</code> to visible heading element (e.g. an <code>h1-h6</code> element).</li>
+              <li>If a page includes more than one <code>form</code> landmark, each should have a unique label.</li>
+              <li>
+                Whenever possible, controls contained in a <code>form</code> landmark in an HTML document should use native host semantics:
+                <ul>
+                  <li><code>button</code></li>
+                  <li><code>input</code></li>
+                  <li><code>select</code></li>
+                  <li><code>textarea</code></li>
+                </ul>
+                </li>
+            </ul>
+            <section aria-label="Coding Techniques">
+              <ul id="myTabs" class="nav nav-tabs" role="tablist">
+                <li class="active"><a  id="tab2" href="#tabpanel2" aria-controls="tabpanel2"  role="tab" data-toggle="tab">HTML Techniques</a></li>
+                <li><a  id="tab1" href="#tabpanel1" aria-controls="tabpanel1"  role="tab" data-toggle="tab">ARIA Techniques</a></li>
+              </ul>
+              <div class="tab-content">
+                <div id="tabpanel2" aria-labelledby="tab2" role="tabpanel" class="tab-pane active">
+                  <p>If a <code>form</code> element has an accessible name it is considered <code>form</code> landmark.</p>
+
+                  <h3>HTML Form Landmark Example</h3>
+
+                  <p>Assume the following two forms (e.g. add contact and add organization) can be independently submitted from the same web page.</p>
+
+                  <form aria-labelledby="contact_html5">
+                    <fieldset>
+                      <legend id="contact_html5">Add Contact</legend>
+
+                      <label for="name_html5">Name</label>
+                      <input id="name_html5" type="text" size="25">
+
+                      <label for="email_html5">E-mail</label>
+                      <input id="email_html5" type="text" size="25">
+
+                      <label for="phone_html5">Phone</label>
+                      <input id="phone_html5" type="text" size="25">
+
+                      <input type="submit" value="Add Contact">
+
+                    </fieldset>
+                  </form>
+
+                  <form aria-labelledby="organization">
+                    <fieldset>
+                      <legend id="organization_html5">Add Organization</legend>
+
+                      <label for="org_html5">Organization</label>
+                      <input id="org_html5" type="text" size="25">
+
+                      <label for="www_html5">WWW</label>
+                      <input id="www_html5" type="text" size="25">
+
+                      <input type="submit" value="Add Organization">
+                    </fieldset>
+                  </form>
+
+                  <h3>Source Code</h3>
+                  <div class="code">
+
+                    &nbsp;&nbsp;&lt;<strong>form aria-labelledby="contact"</strong>&gt;
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&lt;fieldset&gt;<br>
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;legend <strong>id="contact"</strong>&gt;Add Contact &lt;/legend&gt;
+                    <br>
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;... <em>form controls add contact</em> ...
+                    <br>
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&lt;/fieldset&gt;
+                    <br>
+                    &nbsp;&nbsp;&lt;<strong>/form</strong>&gt;
+                    <br>
+                    <br> &nbsp;&nbsp;...............
+                    <br>
+                    <br>
+                    &nbsp;&nbsp;&lt;<strong>form aria-labelledby="organization"</strong>&gt;
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&lt;fieldset&gt;<br>
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;legend <strong>id="organization"</strong>&gt;Add Organization &lt;/legend&gt;
+                    <br>
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;... <em>form controls add organization</em> ...
+                    <br>
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&lt;/fieldset&gt;
+                    <br>
+                    &nbsp;&nbsp;&lt;<strong>/form</strong>&gt;
+                    <br>
+                  </div>
+                </div>
+                <div id="tabpanel1" aria-labelledby="tab1" role="tabpanel" class="tab-pane">
+                  <ul>
+                    <li>The <code>role="form"</code> attribute defines a form landmark.</li>
+                    <li>Use the <code>role="form"</code> to identify a region of the page; do not use it to identify every form field.</li>
+                  </ul>
+
+                  <h3>ARIA Form Landmark Example</h3>
+
+                  <p>Assume the following two forms (e.g. add contact and add organization) can be independently submitted from the same web page.</p>
+
+                  <div role="form" aria-labelledby="contact">
+                    <fieldset>
+                      <legend id="contact">Add Contact</legend>
+
+                      <label for="name">Name</label>
+                      <input id="name" type="text" size="25">
+
+                      <label for="email">E-mail</label>
+                      <input id="email" type="text" size="25">
+
+                      <label for="phone">Phone</label>
+                      <input id="phone" type="text" size="25">
+
+                      <input type="submit" value="Add Contact">
+
+                    </fieldset>
+                  </div>
+
+                  <div role="form" aria-labelledby="organization">
+                    <fieldset>
+                      <legend id="organization">Add Organization</legend>
+
+                      <label for="org">Organization</label>
+                      <input id="org" type="text" size="25">
+
+                      <label for="www">WWW</label>
+                      <input id="www" type="text" size="25">
+
+                      <input type="submit" value="Add Organization">
+                    </fieldset>
+                  </div>
+
+                  <h3>Source Code</h3>
+                  <div class="code">
+
+                    &nbsp;&nbsp;&lt;div <strong>role="form" aria-labelledby="contact"</strong>&gt;
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&lt;fieldset&gt;<br>
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;legend <strong>id="contact"</strong>&gt;Add Contact &lt;/legend&gt;
+                    <br>
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;... <em>form controls add contact</em> ...
+                    <br>
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&lt;/fieldset&gt;
+                    <br>
+                    &nbsp;&nbsp;&lt;/div&gt;
+                    <br>
+                    <br> &nbsp;&nbsp;...............
+                    <br>
+                    <br>
+                    &nbsp;&nbsp;&lt;div <strong>role="form" aria-labelledby="organization"</strong>&gt;
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&lt;fieldset&gt;<br>
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;legend <strong>id="organization"</strong>&gt;Add Organization &lt;/legend&gt;
+                    <br>
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;... <em>form controls add organization</em> ...
+                    <br>
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&lt;/fieldset&gt;
+                    <br>
+                    &nbsp;&nbsp;&lt;/div&gt;
+                    <br>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </main>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+          <aside aria-labelledby="id4">
+            <h2 id="id4">Landmarks</h2>
+            <p>The following landmarks are defined on this page:</p>
+            <ul>
+              <li>Banner</li>
+              <li>Complementary</li>
+              <li>Contentinfo</li>
+              <li>Form</li>
+              <li>Main</li>
+              <li>Navigation</li>
+              <li>Region</li>
+            </ul>
+          </aside>
+          <aside aria-labelledby="id3">
+            <h2 id="id3">Related Documents</h2>
+            <ul>
+              <li><a href="https://w3.org/WAI/ARIA/apg/">ARIA Authoring Practices</a></li>
+              <li><a href="https://www.w3.org/TR/wai-aria-1.2/">ARIA 1.2 Specification</a></li>
+
+              <li><a href="https://www.w3.org/TR/accname-1.2/">Accessible Name and Description Computation 1.2</a></li>
+              <li><a href="http://www.w3.org/TR/core-aam-1.2/">Core Accessibility API Mappings 1.2</a></li>
+              <li><a href="https://w3c.github.io/html-aam/">HTML Accessibility API Mappings (latest editors draft)</a></li>
+              <li><a href="https://html.spec.whatwg.org/">HTML Specification</a></li>
+              <li><a href="https://www.w3.org/TR/html-aria/">ARIA in HTML</a></li>
+              <li><a href="https://www.w3.org/TR/using-aria/">Using ARIA in HTML</a></li>
+              <li><a href="http://www.w3.org/TR/WCAG/">WCAG Specification</a></li>
+            </ul>
+          </aside>
+        </div>
+      </div>
+      <div class="well well-sm">
+        <footer class="row">
+          <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+            W3C ARIA Authoring Practices Task Force
+          </div>
+          <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2">
+            Copyright 2023
+          </div>
+        </footer>
+      </div>
+    </div>
+    <script type="text/javascript" src="js/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap-accessibility.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap-accessibility-2.js"></script>
+    <script type="text/javascript" src="js/visua11y.js"></script>
+    <script type="text/javascript" src="js/show.js"></script>
+    <!-- Customize SkipTo features using the data-skipto attribute -->
+    <script data-skipto="attachElement: #skip-to-attach; colorTheme: aria"
+            src="js/skipto.min.js">
+    </script>
+  </body>
+</html>

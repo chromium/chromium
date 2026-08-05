@@ -1,0 +1,86 @@
+button[role="switch"] {
+  display: block;
+  margin: 2px;
+  padding: 4px 4px 8px 8px;
+  border: 0 solid #005a9c;
+  border-radius: 5px;
+  width: 17em;
+  height: 3em;
+  text-align: left;
+  background-color: white;
+  color: black;
+}
+
+button[role="switch"] .label {
+  position: relative;
+  top: -3px;
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+  width: 10em;
+  vertical-align: middle;
+  color: black;
+}
+
+button[role="switch"] svg {
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+  forced-color-adjust: auto;
+  position: relative;
+  top: 4px;
+}
+
+button[role="switch"] svg rect {
+  fill-opacity: 0;
+  stroke-width: 2;
+  stroke: currentcolor;
+}
+
+button[role="switch"] svg rect.off {
+  display: block;
+  stroke: currentcolor;
+  fill: currentcolor;
+  fill-opacity: 1;
+}
+
+button[role="switch"][aria-checked="true"] svg rect.off {
+  display: none;
+}
+
+button[role="switch"] svg rect.on {
+  display: none;
+}
+
+button[role="switch"][aria-checked="true"] svg rect.on {
+  color: green;
+  display: block;
+  stroke-color: currentcolor;
+  fill: currentcolor;
+  fill-opacity: 1;
+}
+
+button[role="switch"] span.off {
+  display: inline-block;
+}
+
+button[role="switch"] span.on {
+  display: none;
+}
+
+button[role="switch"][aria-checked="true"] span.off {
+  display: none;
+}
+
+button[role="switch"][aria-checked="true"] span.on {
+  display: inline-block;
+}
+
+button[role="switch"]:focus,
+button[role="switch"]:hover {
+  padding: 2px 2px 6px 6px;
+  border-width: 2px;
+  outline: none;
+  background-color: #def;
+  cursor: pointer;
+}

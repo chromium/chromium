@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accordion Pattern</title>
+
+    <!-- Core JS and CSS shared by all patterns -->
+    <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
+    <link rel="stylesheet" href="../../shared/css/core.css">
+    <script src="../../shared/js/highlight.pack.js"></script>
+    <script src="../../shared/js/app.js"></script>
+    <script data-skipto="colorTheme:aria; displayOption:popup; containerElement:div" src="../../shared/js/skipto.js"></script>
+    <script data-read-this-first="showImage:false" src="../../shared/js/read-this-first.js"></script>
+  </head>
+  <body>
+    <main>
+      <h1>Accordion Pattern (Sections With Show/Hide Functionality)</h1>
+
+      <section id="about">
+        <h2>About This Pattern</h2>
+        <p>
+          An accordion is a vertically stacked set of interactive headings that each contain a title, content snippet, or thumbnail representing a section of content.
+          The headings function as controls that enable users to reveal or hide their associated sections of content.
+          Accordions are commonly used to reduce the need to scroll when presenting multiple sections of content on a single page.
+        </p>
+        <p>Terms for understanding accordions include:</p>
+        <dl>
+          <dt>Accordion Header:</dt>
+          <dd>Label for or thumbnail representing a section of content that also serves as a control for showing, and in some implementations, hiding the section of content.</dd>
+          <dt>Accordion Panel:</dt>
+          <dd>Section of content associated with an accordion header.</dd>
+        </dl>
+        <p>
+          In some accordions, there are additional elements that are always visible adjacent to the accordion header.
+          For instance, a menubutton may accompany each accordion header to provide access to actions that apply to that section. And, in some cases, a snippet of the hidden content may also be visually persistent.
+        </p>
+      </section>
+
+      <section id="examples">
+        <img alt="" src="../../images/pattern-accordion.svg">
+        <h2>Example</h2>
+        <p><a href="examples/accordion.html">Accordion Example</a>: demonstrates using an accordion to divide a form into three expandable sections.</p>
+      </section>
+
+      <section id="keyboard_interaction">
+        <h2>Keyboard Interaction</h2>
+        <ul>
+          <li>
+            <kbd>Enter</kbd> or <kbd>Space</kbd>:
+            <ul>
+              <li>
+                When focus is on the accordion header for a collapsed panel, expands the associated panel.
+                If the implementation allows only one panel to be expanded, and if another panel is expanded, collapses that panel.
+              </li>
+              <li>
+                When focus is on the accordion header for an expanded panel, collapses the panel if the implementation supports collapsing.
+                Some implementations require one panel to be expanded at all times and allow only one panel to be expanded; so, they do not support a collapse function.
+              </li>
+            </ul>
+          </li>
+          <li><kbd>Tab</kbd>: Moves focus to the next focusable element; all focusable elements in the accordion are included in the page <kbd>Tab</kbd> sequence.</li>
+          <li><kbd>Shift</kbd> + <kbd>Tab</kbd>: Moves focus to the previous focusable element; all focusable elements in the accordion are included in the page <kbd>Tab</kbd> sequence.</li>
+        </ul>
+      </section>
+
+      <section id="roles_states_properties">
+        <h2>WAI-ARIA Roles, States, and Properties</h2>
+        <ul>
+          <li>The title of each accordion header is contained in an element with role <a href="#button" class="role-reference">button</a>.</li>
+          <li>
+            Each accordion header <code>button</code> is wrapped in an element with role <a href="#heading" class="role-reference">heading</a> that has a value set for <a href="#aria-level" class="property-reference">aria-level</a> that is appropriate for the information architecture of the page.
+            <ul>
+              <li>If the native host language has an element with an implicit <code>heading</code> and <code>aria-level</code>, such as an HTML heading tag, a native host language element may be used.</li>
+              <li>The <code>button</code> element is the only element inside the <code>heading</code> element. That is, if there are other visually persistent elements, they are not included inside the <code>heading</code> element.</li>
+            </ul>
+          </li>
+          <li>If the accordion panel associated with an accordion header is visible, the header <code>button</code> element has <a href="#aria-expanded" class="state-reference">aria-expanded</a> set to <code>true</code>. If the panel is not visible, <a href="#aria-expanded" class="state-reference">aria-expanded</a> is set to <code>false</code>.</li>
+          <li>The accordion header <code>button</code> element has <a href="#aria-controls" class="property-reference">aria-controls</a> set to the ID of the element containing the accordion panel content.</li>
+          <li>If the accordion panel associated with an accordion header is visible, and if the accordion does not permit the panel to be collapsed, the header <code>button</code> element has <a href="#aria-disabled" class="state-reference">aria-disabled</a> set to <code>true</code>.</li>
+          <li>
+            Optionally, each element that serves as a container for panel content has role <a href="#region" class="role-reference">region</a> and <a href="#aria-labelledby" class="property-reference">aria-labelledby</a> with a value that refers to the button that controls display of the panel.
+            <ul>
+              <li>Avoid using the <code>region</code> role in circumstances that create landmark region proliferation, e.g., in an accordion that contains more than approximately 6 panels that can be expanded at the same time.</li>
+              <li>Role <code>region</code> is especially helpful to the perception of structure by screen reader users when panels contain heading elements or a nested accordion.</li>
+            </ul>
+          </li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>

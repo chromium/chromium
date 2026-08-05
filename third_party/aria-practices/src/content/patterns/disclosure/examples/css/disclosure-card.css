@@ -1,0 +1,256 @@
+.disclosure-cards {
+  --length-xs: calc(10 / 16 * 0.175rem);
+  --length-s: calc(10 / 16 * 0.25rem);
+  --length-m: calc(10 / 16 * 1rem);
+  --length-l: calc(10 / 16 * 1.5rem);
+  --length-xl: calc(10 / 16 * 2rem);
+  --length-xxl: calc(10 / 16 * 3rem);
+  --color-interactive-idle: transparent;
+  --color-interactive-hover: gray;
+  --color-interactive-hover-text: black;
+  --color-interactive-focus: var(--wai-green, #005a6a);
+  --color-interactive-focus-text: var(--wai-green, #005a6a);
+  --transition-duration-snappy: 0;
+  --transition-duration-leisurely: 0;
+
+  @media (forced-colors: active) {
+    --color-interactive-idle: Canvas;
+    --color-interactive-hover: Highlight;
+    --color-interactive-hover-text: Highlight;
+    --color-interactive-focus: Highlight;
+    --color-interactive-focus-text: Highlight;
+  }
+
+  @media (prefers-reduced-motion: no-preference) and (forced-colors: none) {
+    --transition-duration-snappy: 0.15s;
+    --transition-duration-leisurely: 0.5s;
+  }
+
+  font-family: system-ui, sans-serif;
+  font-size: var(--length-m);
+  line-height: 1.4;
+  background-color: ghostwhite;
+  margin-inline: -2em;
+  padding: 2em;
+  interpolate-size: allow-keywords;
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  *:focus {
+    outline: var(--length-s) solid var(--color-interactive-focus);
+    outline-offset: var(--length-s);
+  }
+
+  h3 {
+    font-size: var(--length-xxl);
+    font-weight: 500;
+    border-block-end: var(--length-xs) solid currentcolor;
+    text-wrap: balance;
+  }
+
+  h5 {
+    font-style: normal;
+    font-size: var(--length-xl);
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  button {
+    appearance: none;
+    font: inherit;
+    color: inherit;
+    border: none;
+    background: none;
+
+    &[aria-expanded] {
+      display: inline-flex;
+      gap: 0.175ch;
+      padding-inline-start: 0.65ch;
+      outline: 0;
+      font-weight: 600;
+      text-decoration: underline;
+      text-underline-offset: 1em;
+      text-decoration-color: var(--color-interactive-idle);
+      text-decoration-thickness: var(--length-s);
+      border-inline-start: var(--length-xs) solid lightgray;
+      transition:
+        color var(--transition-duration-snappy) ease,
+        text-underline-offset var(--transition-duration-snappy) ease,
+        text-decoration-color var(--transition-duration-snappy) ease;
+
+      svg {
+        scale: 0.8;
+        rotate: 0deg;
+        transition:
+          scale var(--transition-duration-snappy) ease,
+          rotate var(--transition-duration-snappy) ease;
+      }
+    }
+
+    &[aria-expanded="true"] svg {
+      rotate: -180deg;
+    }
+
+    &:not([aria-expanded]) {
+      font-size: var(--length-xl);
+      padding: 0.5ch 1ch;
+      border: 1px solid black;
+      color: white;
+      font-weight: bold;
+      background-color: rebeccapurple;
+      border-radius: var(--length-s);
+
+      &:hover,
+      &:focus {
+        background-color: darkorchid;
+      }
+
+      &:active {
+        background-color: midnightblue;
+      }
+    }
+  }
+
+  .disclosure-card {
+    border: 0.2em solid transparent;
+    outline: 0 solid transparent;
+    outline-offset: 0;
+    transition:
+      outline-offset var(--transition-duration-snappy) ease,
+      outline-width var(--transition-duration-snappy) ease,
+      outline-color var(--transition-duration-snappy) ease,
+      border-color var(--transition-duration-snappy) ease;
+
+    &:hover {
+      border-color: var(--color-interactive-hover);
+
+      button[aria-expanded] {
+        color: var(--color-interactive-hover-text);
+        text-underline-offset: 0.2em;
+        text-decoration-color: var(--color-interactive-hover-text);
+      }
+    }
+
+    &:hover,
+    &:has(button[aria-expanded]:focus) {
+      button[aria-expanded] {
+        svg {
+          scale: 1;
+        }
+      }
+    }
+
+    &[data-being-pressed],
+    &:has(button[aria-expanded]:focus) {
+      outline-offset: 0.25em;
+      outline-width: 0.3em;
+      outline-color: var(--color-interactive-focus);
+
+      &[data-being-pressed] {
+        outline-width: 0.6em;
+      }
+
+      button[aria-expanded] {
+        color: var(--color-interactive-focus-text);
+        text-decoration-color: var(--color-interactive-focus);
+        text-underline-offset: 0.2em;
+      }
+    }
+  }
+
+  .sessions {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    margin-block: 2em;
+  }
+
+  .session {
+    padding: 1.5em 1.5em 0;
+    background-color: white;
+    box-shadow: 0 0.25em 0.5em rgba(0 0 0 / 20%);
+    margin: 0.25em;
+    border-radius: 0.25em;
+    max-inline-size: 84ch;
+
+    header,
+    hgroup {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5em;
+      color: darkslategray;
+    }
+
+    hgroup {
+      color: black;
+      font-weight: 400;
+
+      h4 {
+        color: black;
+        font-size: 2em;
+        font-style: normal;
+        font-weight: 700;
+      }
+
+      p {
+        font-size: 1.8em;
+      }
+    }
+
+    hgroup + p {
+      display: flex;
+      flex-wrap: wrap;
+      font-size: 1.6em;
+      gap: 1ch;
+      margin-block-start: var(--length-xs);
+    }
+  }
+
+  .details {
+    block-size: auto;
+    opacity: 1;
+    overflow-y: clip;
+    font-size: 1.6em;
+    transition: all var(--transition-duration-leisurely) ease;
+    padding-block-end: var(--length-l);
+
+    &[inert] {
+      block-size: 0;
+      opacity: 0;
+    }
+
+    .description {
+      display: flex;
+      flex-direction: column;
+      gap: var(--length-l);
+      padding-block-start: var(--length-l);
+
+      > *:first-child {
+        border-block-start: var(--length-xs) solid lightgray;
+        padding-block-start: var(--length-l);
+      }
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: var(--length-l);
+      margin-block-start: var(--length-l);
+      border-block-start: var(--length-xs) solid lightgray;
+      padding-block-start: var(--length-l);
+
+      label:has(input[type="checkbox"]) {
+        display: flex;
+        gap: 0.75ch;
+        align-items: baseline;
+      }
+    }
+  }
+}

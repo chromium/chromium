@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Grid Examples</title>
+
+    <!-- Core JS and CSS shared by all examples -->
+    <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
+    <link rel="stylesheet" href="../../../shared/css/core.css">
+    <script src="../../../shared/js/examples.js"></script>
+    <script src="../../../shared/js/highlight.pack.js"></script>
+    <script src="../../../shared/js/app.js"></script>
+    <script data-skipto="colorTheme:aria; displayOption:popup; containerElement:div" src="../../../shared/js/skipto.js"></script>
+
+    <!--  JS and CSS for this example. -->
+    <link href="css/menuButton.css" rel="stylesheet">
+    <link href="css/dataGrids.css" rel="stylesheet">
+    <script src="../../../shared/js/utils.js"></script>
+    <script src="js/menuButton.js"></script>
+    <script src="js/dataGrid.js"></script>
+    <script src="js/dataGrids.js"></script>
+  </head>
+  <body>
+    <nav aria-label="Related Links" class="feedback">
+      <ul>
+        <li><a href="https://github.com/orgs/w3c/projects/133">Related Issues</a></li>
+        <li><a href="../grid-pattern.html">Design Pattern</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h1>Data Grid Examples</h1>
+
+      <section>
+        <h2>About This Example</h2>
+        <img alt="" class="example-page-example-icon" src="../../../images/pattern-grid.svg">
+        <p>
+          Following are three example implementations of the <a href="../grid-pattern.html">Grid Pattern</a> that demonstrate the keyboard interactions and ARIA features that enable accessible, interactive presentation of tabular information.
+          Each of the following three grids presents a set of financial transactions.
+          The first is a simple grid with minimum ARIA markup and keyboard support.
+          The second and third implementations add advanced features, such as content editing, sort, scroll, and show/hide.
+        </p>
+        <p>Similar examples include:</p>
+        <ul>
+          <li><a href="layout-grids.html">Layout Grid Examples</a>: Three example implementations of grids that are used to lay out widgets, including a collection of navigation links, a message recipients list, and a set of search results.</li>
+          <li><a href="advanced-data-grid.html">Advanced Data Grid Example</a>: Example of a grid with behaviors and features similar to a typical spreadsheet, including cell and row selection.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Examples</h2>
+        <section>
+          <div class="example-header">
+            <h3 id="ex1_label">Example 1: Minimal Data Grid</h3>
+          </div>
+          <div role="separator" id="ex1_start_sep" aria-labelledby="ex1_start_sep ex1_label" aria-label="Start of"></div>
+          <div id="ex1">
+            <h4 id="grid1Label">Transactions January 1 through January 6</h4>
+            <table id="ex1-grid" role="grid" aria-labelledby="grid1Label" class="data">
+              <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Amount</th>
+                <th>Balance</th>
+              </tr>
+              <tr>
+                <td tabindex="-1">01-Jan-16</td>
+                <td tabindex="-1">Deposit</td>
+                <td>
+                  <a tabindex="-1" href="#">Cash Deposit</a>
+                </td>
+                <td tabindex="-1">$1,000,000.00</td>
+                <td tabindex="-1">$1,000,000.00</td>
+              </tr>
+              <tr>
+                <td tabindex="-1">02-Jan-16</td>
+                <td tabindex="-1">Debit</td>
+                <td>
+                  <a tabindex="-1" href="#">Down Town Grocery</a>
+                </td>
+                <td tabindex="-1">$250.00</td>
+                <td tabindex="-1">$999,750.00</td>
+              </tr>
+              <tr>
+                <td tabindex="-1">03-Jan-16</td>
+                <td tabindex="-1">Debit</td>
+                <td>
+                  <a tabindex="-1" href="#">Hot Coffee</a>
+                </td>
+                <td tabindex="-1">$9.00</td>
+                <td tabindex="-1">$999,741.00</td>
+              </tr>
+              <tr>
+                <td tabindex="-1">04-Jan-16</td>
+                <td tabindex="-1">Debit</td>
+                <td>
+                  <a tabindex="-1" href="#">The Filling Station</a>
+                </td>
+                <td tabindex="-1">$88.00</td>
+                <td tabindex="-1">$999,653.00</td>
+              </tr>
+              <tr>
+                <td tabindex="-1">05-Jan-16</td>
+                <td tabindex="-1">Debit</td>
+                <td>
+                  <a tabindex="-1" href="#">Tinker's Hardware</a>
+                </td>
+                <td tabindex="-1">$3,421.00</td>
+                <td tabindex="-1">$996,232.00</td>
+              </tr>
+              <tr>
+                <td tabindex="-1">06-Jan-16</td>
+                <td tabindex="-1">Debit</td>
+                <td>
+                  <a tabindex="-1" href="#">Cutey's Salon</a>
+                </td>
+                <td tabindex="-1">$700.00</td>
+                <td tabindex="-1">$995,532.00</td>
+              </tr>
+            </table>
+          </div>
+          <div role="separator" id="ex1_end_sep" aria-labelledby="ex1_end_sep ex1_label" aria-label="End of"></div>
+          <h4>Notes</h4>
+          <ol>
+            <li>Data cells can be focused using standard navigation keys, including directional arrows, <kbd>Home</kbd>, <kbd>End</kbd>, <kbd>Control</kbd> + <kbd>Home</kbd>, and <kbd>Control</kbd> + <kbd>End</kbd>.</li>
+            <li>The <kbd>Page Down</kbd> and <kbd>Page Up</kbd> keys are not supported since such scroll-like functions are not useful with so few rows.</li>
+            <li>The links can be activated with the keyboard when focused.</li>
+            <li>
+              Since the header cells do not provide any functionality, they are not focusable.
+              Screen reader users are still aware of their presence because row and column headers are announced by screen readers during navigation.
+              And, they are also navigable when using a screen reader's reading or browsing mode.
+            </li>
+          </ol>
+        </section>
+        <section>
+          <div class="example-header">
+            <h3 id="ex2_label">Example 2: Sortable Data Grid With Editable Cells</h3>
+          </div>
+          <div role="separator" id="ex2_start_sep" aria-labelledby="ex2_start_sep ex2_label" aria-label="Start of"></div>
+          <div id="ex2">
+            <h4 id="grid2Label">Transactions January 1 through January 7</h4>
+            <table id="ex2-grid" role="grid" aria-labelledby="grid2Label" class="data">
+              <tr>
+                <th aria-sort="ascending">
+                  <span tabindex="-1" role="button">Date</span>
+                </th>
+                <th tabindex="-1">Type</th>
+                <th tabindex="-1">Description</th>
+                <th tabindex="-1">Category</th>
+                <th aria-sort="none">
+                  <span tabindex="-1" role="button">Amount</span>
+                </th>
+                <th tabindex="-1">Balance</th>
+              </tr>
+              <tr>
+                <td tabindex="-1">01-Jan-16</td>
+                <td tabindex="-1">Deposit</td>
+                <td>
+                  <div class="editable-text">
+                    <span class="edit-text-button" tabindex="-1" role="button">Cash Deposit</span>
+                    <input class="edit-text-input hidden" tabindex="-1" value="">
+                  </div>
+                </td>
+                <td class="menu-wrapper">
+                  <button type="button" tabindex="-1" aria-haspopup="true" aria-controls="menu1">Income</button>
+                  <ul role="menu" id="menu1">
+                    <li role="menuitem">Income</li>
+                    <li role="menuitem">Groceries</li>
+                    <li role="menuitem">Dining Out</li>
+                    <li role="menuitem">Auto</li>
+                    <li role="menuitem">Household</li>
+                    <li role="menuitem">Beauty</li>
+                  </ul>
+                </td>
+                <td tabindex="-1">$1,000,000.00</td>
+                <td tabindex="-1">$1,000,000.00</td>
+              </tr>
+              <tr>
+                <td tabindex="-1">02-Jan-16</td>
+                <td tabindex="-1">Debit</td>
+                <td>
+                  <div class="editable-text">
+                    <span class="edit-text-button" tabindex="-1" role="button">Down Town Grocery</span>
+                    <input class="edit-text-input hidden" tabindex="-1" value="">
+                  </div>
+                </td>
+                <td class="menu-wrapper">
+                  <button type="button" tabindex="-1" aria-haspopup="true" aria-controls="menu2">Groceries</button>
+                  <ul role="menu" id="menu2">
+                    <li role="menuitem">Income</li>
+                    <li role="menuitem">Groceries</li>
+                    <li role="menuitem">Dining Out</li>
+                    <li role="menuitem">Auto</li>
+                    <li role="menuitem">Household</li>
+                    <li role="menuitem">Beauty</li>
+                  </ul>
+                </td>
+                <td tabindex="-1">$250.00</td>
+                <td tabindex="-1">$999,750.00</td>
+              </tr>
+              <tr>
+                <td tabindex="-1">03-Jan-16</td>
+                <td tabindex="-1">Debit</td>
+                <td>
+                  <div class="editable-text">
+                    <span class="edit-text-button" tabindex="-1" role="button">Hot Coffee</span>
+                    <input class="edit-text-input hidden" tabindex="-1" value="">
+                  </div>
+                </td>
+                <td class="menu-wrapper">
+                  <button type="button" tabindex="-1" aria-haspopup="true" aria-controls="menu3">Dining Out</button>
+                  <ul role="menu" id="menu3">
+                    <li role="menuitem">Income</li>
+                    <li role="menuitem">Groceries</li>
+                    <li role="menuitem">Dining Out</li>
+                    <li role="menuitem">Auto</li>
+                    <li role="menuitem">Household</li>
+                    <li role="menuitem">Beauty</li>
+                  </ul>
+                </td>
+                <td tabindex="-1">$9.00</td>
+                <td tabindex="-1">$999,741.00</td>
+              </tr>
+              <tr>
+                <td tabindex="-1">04-Jan-16</td>
+                <td tabindex="-1">Debit</td>
+                <td>
+                  <div class="editable-text">
+                    <span class="edit-text-button" tabindex="-1" role="button">The Filling Station</span>
+                    <input class="edit-text-input hidden" tabindex="-1" value="">
+                  </div>
+                </td>
+                <td class="menu-wrapper">
+                  <button type="button" tabindex="-1" aria-haspopup="true" aria-controls="menu4">Auto</button>
+                  <ul role="menu" id="menu4">
+                    <li role="menuitem">Income</li>
+                    <li role="menuitem">Groceries</li>
+                    <li role="menuitem">Dining Out</li>
+                    <li role="menuitem">Auto</li>
+                    <li role="menuitem">Household</li>
+                    <li role="menuitem">Beauty</li>
+                  </ul>
+                </td>
+                <td tabindex="-1">$88.00</td>
+                <td tabindex="-1">$999,653.00</td>
+              </tr>
+              <tr>
+                <td tabindex="-1">05-Jan-16</td>
+                <td tabindex="-1">Debit</td>
+                <td>
+                  <div class="editable-text">
+                    <span class="edit-text-button" tabindex="-1" role="button">Tinker's Hardware</span>
+                    <input class="edit-text-input hidden" tabindex="-1" value="">
+                  </div>
+                </td>
+                <td class="menu-wrapper">
+                  <button type="button" tabindex="-1" aria-haspopup="true" aria-controls="menu5">Household</button>
+                  <ul role="menu" id="menu5">
+                    <li role="menuitem">Income</li>
+                    <li role="menuitem">Groceries</li>
+                    <li role="menuitem">Dining Out</li>
+                    <li role="menuitem">Auto</li>
+                    <li role="menuitem">Household</li>
+                    <li role="menuitem">Beauty</li>
+                  </ul>
+                </td>
+                <td tabindex="-1">$3,421.00</td>
+                <td tabindex="-1">$996,232.00</td>
+              </tr>
+              <tr>
+                <td tabindex="-1">06-Jan-16</td>
+                <td tabindex="-1">Debit</td>
+                <td>
+                  <div class="editable-text">
+                    <span class="edit-text-button" tabindex="-1" role="button">Cutey's Salon</span>
+                    <input class="edit-text-input hidden" tabindex="-1" value="">
+                  </div>
+                </td>
+                <td class="menu-wrapper">
+                  <button type="button" tabindex="-1" aria-haspopup="true" aria-controls="menu6">Beauty</button>
+                  <ul role="menu" id="menu6">
+                    <li role="menuitem">Income</li>
+                    <li role="menuitem">Groceries</li>
+                    <li role="menuitem">Dining Out</li>
+                    <li role="menuitem">Auto</li>
+                    <li role="menuitem">Household</li>
+                    <li role="menuitem">Beauty</li>
+                  </ul>
+                </td>
+                <td tabindex="-1">$700.00</td>
+                <td tabindex="-1">$995,532.00</td>
+              </tr>
+              <tr>
+                <td tabindex="-1">07-Jan-16</td>
+                <td tabindex="-1">Debit</td>
+                <td>
+                  <div class="editable-text">
+                    <span class="edit-text-button" tabindex="-1" role="button">My Chocolate Shop</span>
+                    <input class="edit-text-input hidden" tabindex="-1" value="">
+                  </div>
+                </td>
+                <td class="menu-wrapper">
+                  <button type="button" tabindex="-1" aria-haspopup="true" aria-controls="menu7">Dining Out</button>
+                  <ul role="menu" id="menu7">
+                    <li role="menuitem">Income</li>
+                    <li role="menuitem">Groceries</li>
+                    <li role="menuitem">Dining Out</li>
+                    <li role="menuitem">Auto</li>
+                    <li role="menuitem">Household</li>
+                    <li role="menuitem">Beauty</li>
+                  </ul>
+                </td>
+                <td tabindex="-1">$41.00</td>
+                <td tabindex="-1">$995,491.00</td>
+              </tr>
+            </table>
+          </div>
+          <div role="separator" id="ex2_end_sep" aria-labelledby="ex2_end_sep ex2_label" aria-label="End of"></div>
+          <h4>Notes</h4>
+          <ol>
+            <li>The navigation keys and functions are the same as example 1 except that the column headers are focusable because the date and amount columns provide sort functionality.</li>
+            <li>A description may be edited by activating the cell.</li>
+            <li>A category may be changed by using the category popup menu.</li>
+          </ol>
+        </section>
+        <section>
+          <div class="example-header">
+            <h3 id="ex3_label">Example 3: Scrollable Data Grid With Column Hiding</h3>
+          </div>
+          <div role="separator" id="ex3_start_sep" aria-labelledby="ex3_start_sep ex3_label" aria-label="Start of"></div>
+          <div id="ex3">
+            <h4 id="grid3Label">Transactions for January 1 through January 15</h4>
+            <button type="button" id="toggle_column_btn" name="toggle_columns">Hide Type and Category</button>
+            <table id="ex3-grid" role="grid" aria-labelledby="grid3Label" aria-rowcount="16" aria-colcount="6" data-per-page="5" class="data">
+              <tr data-fixed="true">
+                <th>Date</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Category</th>
+                <th>Amount</th>
+                <th>Balance</th>
+              </tr>
+              <tr>
+                <td tabindex="-1">01-Jan-16</td>
+                <td tabindex="-1">Deposit</td>
+                <td>
+                  <a tabindex="-1" href="#">Cash Deposit</a>
+                </td>
+                <td tabindex="-1">Income</td>
+                <td tabindex="-1">$1,000,000.00</td>
+                <td tabindex="-1">$1,000,000.00</td>
+              </tr>
+              <tr>
+                <td tabindex="-1">02-Jan-16</td>
+                <td tabindex="-1">Debit</td>
+                <td>
+                  <a tabindex="-1" href="#">Down Town Grocery</a>
+                </td>
+                <td tabindex="-1">Groceries</td>
+                <td tabindex="-1">$250.00</td>
+                <td tabindex="-1">$999,750.00</td>
+              </tr>
+              <tr>
+                <td tabindex="-1">03-Jan-16</td>
+                <td tabindex="-1">Debit</td>
+                <td>
+                  <a tabindex="-1" href="#">Hot Coffee</a>
+                </td>
+                <td tabindex="-1">Dining Out</td>
+                <td tabindex="-1">$9.00</td>
+                <td tabindex="-1">$999,741.00</td>
+              </tr>
+              <tr>
+                <td tabindex="-1">04-Jan-16</td>
+                <td tabindex="-1">Debit</td>
+                <td>
+                  <a tabindex="-1" href="#">The Filling Station</a>
+                </td>
+                <td tabindex="-1">Auto</td>
+                <td tabindex="-1">$88.00</td>
+                <td tabindex="-1">$999,653.00</td>
+              </tr>
+              <tr>
+                <td tabindex="-1">05-Jan-16</td>
+                <td tabindex="-1">Debit</td>
+                <td>
+                  <a tabindex="-1" href="#">Tinker's Hardware</a>
+                </td>
+                <td tabindex="-1">Household</td>
+                <td tabindex="-1">$3,421.00</td>
+                <td tabindex="-1">$996,232.00</td>
+              </tr>
+              <tr>
+                <td tabindex="-1">06-Jan-16</td>
+                <td tabindex="-1">Debit</td>
+                <td>
+                  <a tabindex="-1" href="#">Cutey's Salon</a>
+                </td>
+                <td tabindex="-1">Beauty</td>
+                <td tabindex="-1">$700.00</td>
+                <td tabindex="-1">$995,532.00</td>
+              </tr>
+              <tr>
+                <td tabindex="-1">07-Jan-16</td>
+                <td tabindex="-1">Debit</td>
+                <td>
+                  <a tabindex="-1" href="#">My Chocolate Shop</a>
+                </td>
+                <td tabindex="-1">Dining Out</td>
+                <td tabindex="-1">$41.00</td>
+                <td tabindex="-1">$995,491.00</td>
+              </tr>
+              <tr>
+                <td tabindex="-1">08-Jan-16</td>
+                <td tabindex="-1">Debit</td>
+                <td>
+                  <a tabindex="-1" href="#">Who's Cook'n</a>
+                </td>
+                <td tabindex="-1">Dining Out</td>
+                <td tabindex="-1">$150.00</td>
+                <td tabindex="-1">$995,341.00</td>
+              </tr>
+              <tr>
+                <td tabindex="-1">09-Jan-16</td>
+                <td tabindex="-1">Debit</td>
+                <td>
+                  <a tabindex="-1" href="#">Dmuddy Paws</a>
+                </td>
+                <td tabindex="-1">Pet</td>
+                <td tabindex="-1">$100.00</td>
+                <td tabindex="-1">$995,241.00</td>
+              </tr>
+              <tr>
+                <td tabindex="-1">10-Jan-16</td>
+                <td tabindex="-1">Debit</td>
+                <td>
+                  <a tabindex="-1" href="#">West End Bikes</a>
+                </td>
+                <td tabindex="-1">Recreation</td>
+                <td tabindex="-1">$6,420.00</td>
+                <td tabindex="-1">$988,821.00</td>
+              </tr>
+              <tr>
+                <td tabindex="-1">11-Jan-16</td>
+                <td tabindex="-1">Debit</td>
+                <td>
+                  <a tabindex="-1" href="#">Pay More Cars</a>
+                </td>
+                <td tabindex="-1">Auto</td>
+                <td tabindex="-1">$431,323.00</td>
+                <td tabindex="-1">$557,498.00</td>
+              </tr>
+              <tr>
+                <td tabindex="-1">12-Jan-16</td>
+                <td tabindex="-1">Debit</td>
+                <td>
+                  <a tabindex="-1" href="#">The Interior Shop</a>
+                </td>
+                <td tabindex="-1">Household</td>
+                <td tabindex="-1">$142,334.00</td>
+                <td tabindex="-1">$415,164.00</td>
+              </tr>
+              <tr>
+                <td tabindex="-1">13-Jan-16</td>
+                <td tabindex="-1">Debit</td>
+                <td>
+                  <a tabindex="-1" href="#">Adventure Guys</a>
+                </td>
+                <td tabindex="-1">Recreation</td>
+                <td tabindex="-1">$88,424.00</td>
+                <td tabindex="-1">$326,740.00</td>
+              </tr>
+              <tr>
+                <td tabindex="-1">14-Jan-16</td>
+                <td tabindex="-1">Debit</td>
+                <td>
+                  <a tabindex="-1" href="#">Hungry Folks Place</a>
+                </td>
+                <td tabindex="-1">Dining Out</td>
+                <td tabindex="-1">$313.00</td>
+                <td tabindex="-1">$326,427.00</td>
+              </tr>
+              <tr>
+                <td tabindex="-1">15-Jan-16</td>
+                <td tabindex="-1">Debit</td>
+                <td>
+                  <a tabindex="-1" href="#">Horse Play</a>
+                </td>
+                <td tabindex="-1">Recreation</td>
+                <td tabindex="-1">$2,421.00</td>
+                <td tabindex="-1">$324,006.00</td>
+              </tr>
+            </table>
+          </div>
+          <div role="separator" id="ex3_end_sep" aria-labelledby="ex3_end_sep ex3_label" aria-label="End of"></div>
+          <h4>Notes</h4>
+          <ol>
+            <li>In addition to the navigation keys supported in examples 1 and 2, <kbd>Page Down</kbd> and <kbd>Page Up</kbd> scroll the grid.</li>
+            <li>As navigating up or down scrolls the visible set of rows, the <code>aria-rowindex</code> value of the row containing the focus informs the screen reader of the number of that row within the total set of rows.</li>
+            <li>Activating the &quot;Hide Type and Category&quot; button hides the type and category columns.</li>
+            <li>
+              The <code>aria-colindex</code> value on a cell informs screen readers of the position of that cell within the row.
+              When one or more columns are hidden, screen reader users can be aware of the hidden columns because those column numbers are not present as users navigate across a row.
+            </li>
+          </ol>
+        </section>
+      </section>
+
+      <section>
+        <h2 id="kbd_label">Keyboard Support</h2>
+        <table aria-labelledby="kbd_label" class="def">
+          <tr>
+            <th>key</th>
+            <th>Function</th>
+          </tr>
+          <tr data-test-id="key-right-arrow">
+            <th scope="row">
+              <kbd>Right Arrow</kbd>
+            </th>
+            <td>
+              <ul>
+                <li>Moves focus one cell to the right.</li>
+                <li>If focus is on the right-most cell in the row, focus does not move.</li>
+              </ul>
+            </td>
+          </tr>
+          <tr data-test-id="key-left-arrow">
+            <th scope="row">
+              <kbd>Left Arrow</kbd>
+            </th>
+            <td>
+              <ul>
+                <li>Moves focus one cell to the left.</li>
+                <li>If focus is on the left-most cell in the row, focus does not move.</li>
+              </ul>
+            </td>
+          </tr>
+          <tr data-test-id="key-down-arrow">
+            <th scope="row">
+              <kbd>Down Arrow</kbd>
+            </th>
+            <td>
+              <ul>
+                <li>Moves focus one cell down.</li>
+                <li>If focus is on the bottom cell in the column, focus does not move.</li>
+              </ul>
+            </td>
+          </tr>
+          <tr data-test-id="key-up-arrow">
+            <th scope="row">
+              <kbd>Up Arrow</kbd>
+            </th>
+            <td>
+              <ul>
+                <li>Moves focus one cell Up.</li>
+                <li>If focus is on the top cell in the column, focus does not move.</li>
+              </ul>
+            </td>
+          </tr>
+          <tr data-test-id="key-page-down">
+            <th scope="row">
+              <kbd>Page Down</kbd>
+            </th>
+            <td>
+              <ul>
+                <li>In example 3, moves focus down five rows, scrolling so the bottom row in the currently visible set of rows becomes the first visible row.</li>
+                <li>If focus is in the last row, focus does not move.</li>
+              </ul>
+            </td>
+          </tr>
+          <tr data-test-id="key-page-up">
+            <th scope="row">
+              <kbd>Page Up</kbd>
+            </th>
+            <td>
+              <ul>
+                <li>In example 3, moves focus up 5 rows, scrolling so the top row in the currently visible set of rows becomes the last visible row.</li>
+                <li>If focus is in the first row of the grid, focus does not move.</li>
+              </ul>
+            </td>
+          </tr>
+          <tr data-test-id="key-home">
+            <th scope="row">
+              <kbd>Home</kbd>
+            </th>
+            <td>moves focus to the first cell in the row that contains focus.</td>
+          </tr>
+          <tr data-test-id="key-end">
+            <th scope="row">
+              <kbd>End</kbd>
+            </th>
+            <td>moves focus to the last cell in the row that contains focus.</td>
+          </tr>
+          <tr data-test-id="key-control-home">
+            <th scope="row">
+              <kbd>Control</kbd> + <kbd>Home</kbd>
+            </th>
+            <td>moves focus to the first cell in the first row.</td>
+          </tr>
+          <tr data-test-id="key-control-end">
+            <th scope="row">
+              <kbd>Control</kbd> + <kbd>End</kbd>
+            </th>
+            <td>moves focus to the last cell in the last row.</td>
+          </tr>
+        </table>
+      </section>
+
+      <section>
+        <h2 id="rps_label">Role, Property, State, and Tabindex Attributes</h2>
+        <table aria-labelledby="rps_label" class="data attributes">
+          <thead>
+            <tr>
+              <th scope="col">Role</th>
+              <th scope="col">Attribute</th>
+              <th scope="col">Element</th>
+              <th scope="col">Usage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="grid-role">
+              <th scope="row">
+                <code>grid</code>
+              </th>
+              <td></td>
+              <td>
+                <code>table</code>
+              </td>
+              <td>
+                <ul>
+                  <li>Identifies the element that serves as the grid widget container.</li>
+                  <li>
+                    The grid element is not focusable because it implements the practice described in the section on
+                    <a href="../../../practices/keyboard-interface/keyboard-interface-practice.html#kbd_roving_tabindex">Managing Focus Within Components Using a Roving tabindex</a>.
+                  </li>
+                  <li>Since the <code>grid</code> role is applied to a <code>table</code> element, the <code>row</code> , <code>rowheader</code>, <code>colheader</code>, and <code>gridcell</code> roles do not need to be specified because they are implied by <code>tr</code>, <code>th</code>, and <code>td</code> tags.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="aria-labelledby">
+              <td></td>
+              <th scope="row">
+                <code>aria-labelledby=&quot;ID_REF&quot;</code>
+              </th>
+              <td>
+                <code>table</code>
+              </td>
+              <td>Refers to the heading element that labels the grid.</td>
+            </tr>
+            <tr data-test-id="aria-rowcount">
+              <td></td>
+              <th scope="row">
+                <code>aria-rowcount=&quot;16&quot;</code>
+              </th>
+              <td>
+                <code>table</code>
+              </td>
+              <td>
+                <ul>
+                  <li>In example 3, specified because a total of 16 rows are available, but fewer than 16 rows are visible.</li>
+                  <li>In this case, to demonstrate this feature, some rows are hidden using <code>display:none</code>, which excludes them from the browser's accessibility tree.</li>
+                  <li>a more common scenario for using <code>aria-rowcount</code> is when not all data is loaded into the DOM at one time.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="aria-colcount">
+              <td></td>
+              <th scope="row">
+                <code>aria-colcount=&quot;6&quot;</code>
+              </th>
+              <td>
+                <code>table</code>
+              </td>
+              <td>
+                <ul>
+                  <li>In example 3, specified because a total of 6 columns are available, but when columns are hidden, fewer than 6 columns are visible.</li>
+                  <li>Similar to how <code>aria-rowcount</code> overrides the browser calculation of the total number of rows, the browser uses this value for the total number of columns so it can report the correct number when columns are hidden.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="aria-rowindex">
+              <td></td>
+              <th scope="row">
+                <code>aria-rowindex=&quot;INDEX_VALUE&quot;</code>
+              </th>
+              <td>
+                <code>tr</code>
+              </td>
+              <td>
+                <ul>
+                  <li>Used in example 3 because not all rows are present in the accessibility tree.</li>
+                  <li>Overrides the browser calculation of the row number.</li>
+                  <li>Has a value from 1 to 16.</li>
+                  <li>Note that it is 1-based, not 0-based.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="aria-sort">
+              <td></td>
+              <th scope="row">
+                <code>aria-sort=&quot;ascending&quot;</code>
+              </th>
+              <td>
+                <code>th</code>
+              </td>
+              <td>In example 2, applied when a column is sorted in ascending order.</td>
+            </tr>
+            <tr data-test-id="aria-sort">
+              <td></td>
+              <th scope="row">
+                <code>aria-sort=&quot;descending&quot;</code>
+              </th>
+              <td>
+                <code>th</code>
+              </td>
+              <td>In example 2, applied when a column is sorted in descending order.</td>
+            </tr>
+            <tr data-test-id="aria-sort">
+              <td></td>
+              <th scope="row">
+                <code>aria-sort=&quot;none&quot;</code>
+              </th>
+              <td>
+                <code>th</code>
+              </td>
+              <td>In example 2, applied when a column is sortable but not sorted.</td>
+            </tr>
+            <tr data-test-id="aria-colindex">
+              <td></td>
+              <th scope="row">
+                <code>aria-colindex=&quot;INDEX_VALUE&quot;</code>
+              </th>
+              <td><code>th</code> and <code>td</code></td>
+              <td>
+                <ul>
+                  <li>Used in example 3 because when the column hiding feature is used, not all columns are present in the accessibility tree.</li>
+                  <li>Overrides the browser calculation of the column number.</li>
+                  <li>Has a value from 1 to 6.</li>
+                  <li>Note that it is 1-based, not 0-based.</li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <div id="arrow-keys-indicator" class="hidden"></div>
+
+      <section>
+        <h2>JavaScript and CSS Source Code</h2>
+        <ul id="css_js_files">
+          <li>
+            CSS:
+            <ul>
+              <li><a href="css/dataGrids.css" type="tex/css">dataGrids.css</a></li>
+              <li><a href="css/menuButton.css" type="tex/css">menuButton.css</a></li>
+            </ul>
+          </li>
+          <li>
+            JavaScript:
+            <ul>
+              <li><a href="js/dataGrid.js" type="text/javascript">dataGrid.js</a></li>
+              <li><a href="js/dataGrids.js" type="text/javascript">dataGrids.js</a></li>
+              <li><a href="js/menuButton.js" type="text/javascript">menuButton.js</a></li>
+              <li><a href="../../../shared/js/utils.js">utils.js</a></li>
+            </ul>
+          </li>
+        </ul>
+      </section>
+
+      <section class="example-code">
+        <h2>HTML Source Code</h2>
+        <h3 id="sc1_label">Example 1: Minimal Data Grid</h3>
+        <p id="sc1_description">To copy the following HTML code, please open it in CodePen.</p>
+        <div id="sc1_start_sep" role="separator" aria-labelledby="sc1_start_sep sc1_label" aria-label="Start of HTML for"></div>
+        <pre><code id="sc1"></code></pre>
+        <div id="sc1_end_sep" role="separator" aria-labelledby="sc1_end_sep sc1_label" aria-label="End of HTML for"></div>
+        <script>
+          sourceCode.add('sc1', 'ex1', 'ex1_label', 'css_js_files', 'sc1_description');
+        </script>
+
+        <h3 id="sc2_label">Example 2: Sortable Data Grid With Editable Cells</h3>
+        <p id="sc2_description">To copy the following HTML code, please open it in CodePen.</p>
+        <div id="sc2_start_sep" role="separator" aria-labelledby="sc2_start_sep sc2_label" aria-label="Start of HTML for"></div>
+        <pre><code id="sc2"></code></pre>
+        <div id="sc2_end_sep" role="separator" aria-labelledby="sc2_end_sep sc2_label" aria-label="End of HTML for"></div>
+        <script>
+          sourceCode.add('sc2', 'ex2', 'ex2_label', 'css_js_files', 'sc2_description');
+        </script>
+
+        <h3 id="sc3_label">Example 3: Scrollable Data Grid With Column Hiding</h3>
+        <p id="sc3_description">To copy the following HTML code, please open it in CodePen.</p>
+        <div id="sc3_start_sep" role="separator" aria-labelledby="sc3_start_sep sc3_label" aria-label="Start of HTML for"></div>
+        <pre><code id="sc3"></code></pre>
+        <div id="sc3_end_sep" role="separator" aria-labelledby="sc3_end_sep sc3_label" aria-label="End of HTML for"></div>
+        <script>
+          sourceCode.add('sc3', 'ex3', 'ex3_label', 'css_js_files', 'sc3_description');
+        </script>
+        <!--  After all source has been added, run make to do the insert.  -->
+        <script>
+          sourceCode.make();
+        </script>
+      </section>
+    </main>
+  </body>
+</html>

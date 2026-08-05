@@ -1,0 +1,76 @@
+/* CSS Document */
+
+.rating-radio label {
+  display: block;
+}
+
+.rating-radio svg g[role="radio"] {
+  color: #005a9c;
+}
+
+.rating-radio svg {
+  forced-color-adjust: auto;
+  touch-action: pan-y;
+}
+
+.rating-radio svg .focus-ring,
+.rating-radio svg .focus-ring-none {
+  stroke-width: 0;
+  fill-opacity: 0;
+}
+
+.rating-radio svg .star {
+  stroke-width: 2px;
+  stroke: currentcolor;
+  fill-opacity: 0;
+}
+
+.rating-radio svg .star-none {
+  stroke-width: 3px;
+  stroke: currentcolor;
+  fill-opacity: 0;
+}
+
+.rating-radio[data-rating-value="5"] svg .star {
+  fill: currentcolor;
+  fill-opacity: 1;
+}
+
+.rating-radio[data-rating-value="1"] svg .star-1 .star {
+  fill: currentcolor;
+  fill-opacity: 1;
+}
+
+.rating-radio[data-rating-value="2"] svg .star-2 .star {
+  fill: currentcolor;
+  fill-opacity: 1;
+}
+
+.rating-radio[data-rating-value="3"] svg .star-3 .star {
+  fill: currentcolor;
+  fill-opacity: 1;
+}
+
+.rating-radio[data-rating-value="4"] svg .star-4 .star {
+  fill: currentcolor;
+  fill-opacity: 1;
+}
+
+/* focus styling */
+
+.rating-radio:focus {
+  outline: none;
+}
+
+.rating-radio svg g:focus {
+  outline: none;
+}
+
+.rating-radio svg g:focus .focus-ring {
+  stroke-width: 2px;
+  stroke: currentcolor;
+}
+
+.rating-radio:hover {
+  cursor: pointer;
+}

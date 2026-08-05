@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Complementary Landmark: ARIA Landmarks Example</title>
+    <meta charset="utf-8">
+    <link href="css/bootstrap.css" rel="stylesheet" media="screen">
+    <link href="css/bootstrap-theme.css" rel="stylesheet" media="screen">
+    <link href="css/bootstrap-accessibility.css" rel="stylesheet" media="screen">
+    <link href="css/visua11y.css" rel="stylesheet" media="screen">
+    <link href="css/common.css" rel="stylesheet" media="screen">
+  </head>
+  <body>
+    <div class="container">
+      <header class="row">
+        <div id="skip-to-attach" class="col-xs-12 col-sm-3 col-md-3 col-lg-2">
+          <img src="images/w3c.png" alt="W3C Logo" style="margin-top: 2em">
+        </div>
+        <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+          <h1>ARIA Landmarks Example</h1>
+          <p id="inst" class="inst">Visually outline the landmarks and/or headings on the page using the following buttons.</p>
+          <button type="button" onclick="showLandmarks(event)" aria-describedby="inst">Show Landmarks</button>
+          <button type="button" onclick="showHeadings(event)"  aria-describedby="inst">Show Headings</button>
+        </div>
+      </header>
+      <div class="row">
+        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2">
+          <nav>
+            <ul class="nav nav-stacked">
+              <li><a href="general-principles.html">Principles</a></li>
+              <li><a href="HTML5.html">HTML</a></li>
+              <li><a href="banner.html">Banner</a></li>
+              <li class="active"><a href="complementary.html" aria-current="page">Complementary</a></li>
+              <li><a href="contentinfo.html">Contentinfo</a></li>
+              <li><a href="form.html">Form</a></li>
+              <li><a href="main.html">Main</a></li>
+              <li><a href="navigation.html">Navigation</a></li>
+              <li><a href="region.html">Region</a></li>
+              <li><a href="search.html">Search</a></li>
+              <li><a href="at.html" aria-label="Assistive Technology">Asst. Tech.</a></li>
+              <li><a href="resources.html">Resources</a></li>
+            </ul>
+          </nav>
+        </div>
+        <div class="col-xs-12 col-sm-9 col-md-6 col-lg-7">
+          <main>
+            <h1 id="id1"> Complementary Landmark</h1>
+            <p>A <code>complementary</code> landmark is a supporting section of the document, designed to be complementary to the main content at a similar level in the DOM hierarchy, but remains meaningful when separated from the main content.
+            </p>
+            <p>ARIA 1.2 Specification: <a href="https://www.w3.org/TR/wai-aria-1.2/#complementary"><code>complementary</code> landmark</a></p>
+            <h2>Design Patterns</h2>
+            <ul>
+              <li><code>complementary</code> landmarks should be top level landmarks (e.g. not contained within any other landmarks).</li>
+              <li>If the complementary content is not related to the main content, a more general role should be assigned (e.g. <code>region</code>).</li>
+              <li>If a page includes more than one <code>complementary</code> landmark, each should have a unique label.</li>
+            </ul>
+            <section aria-label="Coding Techniques">
+              <ul id="myTabs" class="nav nav-tabs" role="tablist">
+                <li class="active">
+                  <a id="tab2" href="#tabpanel2" aria-controls="tabpanel2" role="tab" data-toggle="tab">HTML Techniques</a>
+                </li>
+                <li>
+                  <a id="tab1" href="#tabpanel1" aria-controls="tabpanel1" role="tab" data-toggle="tab">ARIA Techniques</a>
+                </li>
+              </ul>
+              <div class="tab-content">
+
+                <div role="tabpanel" class="tab-pane active" id="tabpanel2" aria-labelledby="tab2">
+                  <p>Use the HTML <code>aside</code> element to define a <code>complementary</code> landmark.</p>
+
+                  <h3>HTML Example: One Complementary Landmark on Page</h3>
+                  <p>When only one complementary landmark on a page, a label is optional.</p>
+                  <div class="code">
+                          <strong>&lt;aside&gt;</strong>
+                  <br>
+                  <br>
+                          &nbsp;&nbsp;&lt;h2&gt;<em>Title for complementary area</em>&lt;h2&gt;<br>
+                  <br>
+                          &nbsp;&nbsp;.... <em>complementary content area</em> ....   <br>
+                  <br>
+                          <strong>&lt;/aside&gt;</strong>
+                  <br>
+                  </div>
+
+                  <h3>HTML Example: Multiple Complementary Landmarks</h3>
+                  <p>When there is more than one complementary landmark on a page, each should have a unique label.</p>
+                  <div class="code">
+                    <strong>&lt;aside aria-labelledby="comp1"&gt;</strong>
+                    <br>
+                    <br>
+                    &nbsp;&nbsp;&lt;h2 <strong>id="comp1"</strong>&gt;<em>Title for complementary area 1</em>&lt;/h2&gt;
+                    <br>
+                    <br>
+                    &nbsp;&nbsp;... <em>complementary content area 1</em> ...
+                   <br>
+                   <br>
+                    <strong>&lt;/aside&gt;</strong>
+                    <br>
+                    <br>
+                    <strong>&lt;aside aria-labelledby="comp2"&gt;</strong>
+                    <br>
+                    <br>
+                   &nbsp;&nbsp;&lt;h2 <strong>id="comp2"</strong>&gt;<em>Title for complementary area 2</em>&lt;/h2&gt;
+                    <br>
+                    <br>
+                    &nbsp;&nbsp;... <em>complementary content area 2</em> ...
+                    <br>
+                    <br>
+                    <strong>&lt;/aside&gt;</strong>
+                    <br>
+                  </div>
+
+                </div>
+                <div role="tabpanel" class="tab-pane" id="tabpanel1" aria-labelledby="tab1">
+
+                  <p>A <code>role="complementary"</code> attribute is used to define a <code>complementary</code> landmark.</p>
+
+                  <h3>ARIA Example: One Complementary Landmark on Page</h3>
+                  <p>When only one complementary landmark exists on a page, a label is optional.</p>
+                  <div class="code">
+                          &lt;div <strong>role="complementary"</strong>&gt;
+                  <br>
+                  <br>
+                          &nbsp;&nbsp;&lt;h2&gt;<em>Title for complementary area</em>&lt;h2&gt;<br>
+                  <br>
+                          &nbsp;&nbsp;.... <em>complementary content area</em> ....   <br>
+                  <br>
+                          &lt;/div&gt;
+                  <br>
+                  </div>
+
+                  <h3>ARIA Example: Multiple Complementary Landmarks</h3>
+                  <p>When there is more than one complementary landmark on a page, each should have a unique label.</p>
+                  <div class="code">
+                    &lt;div <strong>role="complementary" aria-labelledby="comp1"</strong>&gt;
+                    <br>
+                    <br>
+                    &nbsp;&nbsp;&lt;h2 <strong>id="comp1"</strong>&gt;<em>Title for complementary area 1</em>&lt;/h2&gt;
+                    <br>
+                    <br>
+                    &nbsp;&nbsp;... <em>complementary content area 1</em> ...
+                   <br>
+                   <br>
+                    &lt;/div&gt;
+                    <br>
+                    <br>
+                    &lt;div <strong>role="complementary" aria-labelledby="comp2"</strong>&gt;
+                    <br>
+                    <br>
+                   &nbsp;&nbsp;&lt;h2 <strong>id="comp2"</strong>&gt;<em>Title for complementary area 2</em>&lt;/h2&gt;
+                    <br>
+                    <br>
+                    &nbsp;&nbsp;... <em>complementary content area 2</em> ...
+                    <br>
+                    <br>
+                    &lt;/div&gt;
+                    <br>
+                  </div>
+
+                </div>
+              </div>
+            </section>
+          </main>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+          <aside aria-labelledby="id4">
+            <h2 id="id4">Landmarks</h2>
+            <p>The following landmarks are defined on this page:</p>
+            <ul>
+              <li>Banner</li>
+              <li>Complementary</li>
+              <li>Contentinfo</li>
+              <li>Main</li>
+              <li>Navigation</li>
+              <li>Region</li>
+            </ul>
+          </aside>
+          <aside aria-labelledby="id3">
+            <h2 id="id3">Related Documents</h2>
+            <ul>
+              <li><a href="https://w3.org/WAI/ARIA/apg/">ARIA Authoring Practices</a></li>
+              <li><a href="https://www.w3.org/TR/wai-aria-1.2/">ARIA 1.2 Specification</a></li>
+
+              <li><a href="https://www.w3.org/TR/accname-1.2/">Accessible Name and Description Computation 1.2</a></li>
+              <li><a href="http://www.w3.org/TR/core-aam-1.2/">Core Accessibility API Mappings 1.2</a></li>
+              <li><a href="https://w3c.github.io/html-aam/">HTML Accessibility API Mappings (latest editors draft)</a></li>
+              <li><a href="https://html.spec.whatwg.org/">HTML Specification</a></li>
+              <li><a href="https://www.w3.org/TR/html-aria/">ARIA in HTML</a></li>
+              <li><a href="https://www.w3.org/TR/using-aria/">Using ARIA in HTML</a></li>
+              <li><a href="http://www.w3.org/TR/WCAG/">WCAG Specification</a></li>
+            </ul>
+          </aside>
+        </div>
+      </div>
+      <div class="well well-sm">
+        <footer class="row">
+          <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+            W3C ARIA Authoring Practices Task Force
+          </div>
+          <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2">
+            Copyright 2023
+          </div>
+        </footer>
+      </div>
+    </div>
+    <script type="text/javascript" src="js/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/tabs.js"></script>
+    <script type="text/javascript" src="js/bootstrap-accessibility.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap-accessibility-2.js"></script>
+    <script type="text/javascript" src="js/visua11y.js"></script>
+    <script type="text/javascript" src="js/show.js"></script>
+    <!-- Customize SkipTo features using the data-skipto attribute -->
+    <script data-skipto="attachElement: #skip-to-attach; colorTheme: aria"
+            src="js/skipto.min.js">
+    </script>
+  </body>
+</html>

@@ -1,0 +1,133 @@
+.hidden {
+  display: none;
+}
+
+[role="alertdialog"] {
+  box-sizing: border-box;
+  padding: 15px;
+  border: 1px solid #000;
+  background-color: #fff;
+  min-height: 100vh;
+}
+
+@media screen and (min-width: 640px) {
+  [role="alertdialog"] {
+    position: absolute;
+    top: 2rem;
+    left: 50vw; /* move to the middle of the screen (assumes relative parent is the body/viewport) */
+    transform: translateX(
+      -50%
+    ); /* move backwards 50% of this element's width */
+
+    min-width: calc(640px - (15px * 2)); /* == breakpoint - left+right margin */
+    min-height: auto;
+    box-shadow:
+      0 19px 38px rgb(0 0 0 / 12%),
+      0 15px 12px rgb(0 0 0 / 22%);
+  }
+}
+
+.dialog_label {
+  text-align: center;
+}
+
+.dialog_form_actions {
+  text-align: right;
+  padding: 0 20px 20px;
+}
+
+.dialog_desc {
+  padding: 10px 20px;
+}
+
+/* native <dialog> element uses the ::backdrop pseudo-element */
+
+/* dialog::backdrop, */
+.dialog-backdrop {
+  display: none;
+  position: fixed;
+  overflow-y: auto;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+@media screen and (min-width: 640px) {
+  .dialog-backdrop {
+    background: rgb(0 0 0 / 30%);
+  }
+}
+
+.dialog-backdrop.active {
+  display: block;
+}
+
+.no-scroll {
+  overflow-y: auto !important;
+}
+
+/* this is added to the body when a dialog is open */
+.has-dialog {
+  overflow: hidden;
+}
+
+/* styling for alertdialog example */
+.notes {
+  display: block;
+  font-size: 1rem;
+  line-height: 1.3;
+  min-width: 400px;
+  max-width: 100%;
+  width: 33%;
+}
+
+.visually-hidden {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: auto;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+  white-space: nowrap;
+}
+
+#ex_alertdialog [aria-disabled="true"] {
+  opacity: 0.4;
+}
+
+#notes_save {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+#notes_save svg {
+  display: block;
+  width: 0.75rem;
+}
+
+#notes_save .icon {
+  display: none;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+#notes_save.loading .spinner {
+  display: block;
+  animation: rotate 2s linear infinite;
+}
+
+#notes_save.saved .check {
+  display: block;
+}

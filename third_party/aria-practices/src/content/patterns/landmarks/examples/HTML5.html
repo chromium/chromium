@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>HTML Sectioning Elements: ARIA Landmarks Example</title>
+    <meta charset="utf-8">
+    <link href="css/bootstrap.css" rel="stylesheet" media="screen">
+    <link href="css/bootstrap-theme.css" rel="stylesheet" media="screen">
+    <link href="css/bootstrap-accessibility.css" rel="stylesheet" media="screen">
+    <link href="css/visua11y.css" rel="stylesheet" media="screen">
+    <link href="css/common.css" rel="stylesheet" media="screen">
+
+  </head>
+  <body>
+    <div class="container">
+      <header class="row">
+        <div id="skip-to-attach" class="col-xs-12 col-sm-3 col-md-3 col-lg-2">
+          <img src="images/w3c.png" alt="W3C Logo" style="margin-top: 2em">
+        </div>
+        <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+          <h1>ARIA Landmarks Example</h1>
+          <p id="inst" class="inst">Visually outline the landmarks and/or headings on the page using the following buttons.</p>
+          <button type="button" onclick="showLandmarks(event)" aria-describedby="inst">Show Landmarks</button>
+          <button type="button" onclick="showHeadings(event)"  aria-describedby="inst">Show Headings</button>
+        </div>
+      </header>
+      <div class="row">
+        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2">
+          <nav>
+            <ul class="nav nav-stacked">
+              <li><a href="general-principles.html">Principles</a></li>
+              <li class="active"><a href="HTML5.html" aria-current="page">HTML</a></li>
+              <li><a href="banner.html">Banner</a></li>
+              <li><a href="complementary.html">Complementary</a></li>
+              <li><a href="contentinfo.html">Contentinfo</a></li>
+              <li><a href="form.html">Form</a></li>
+              <li><a href="main.html">Main</a></li>
+              <li><a href="navigation.html">Navigation</a></li>
+              <li><a href="region.html">Region</a></li>
+              <li><a href="search.html">Search</a></li>
+              <li><a href="at.html" aria-label="Assistive Technology">Asst. Tech.</a></li>
+              <li><a href="resources.html">Resources</a></li>
+            </ul>
+          </nav>
+        </div>
+        <div class="col-xs-12 col-sm-9 col-md-6 col-lg-7">
+          <main>
+            <h1 id="id1">HTML Sectioning Elements</h1>
+            <p>It is important to understand that many HTML sectioning (e.g. <code>main</code>, <code>nav</code>, <code>aside</code> ...) elements by default define ARIA landmarks.
+              If HTML sectioning elements are used without understanding the associated landmark structure, assistive technology users will most likely be confused and less efficient in accessing content and interacting with web pages.
+            </p>
+            <table class="table table-striped table-hover" aria-label="Default landmark roles for HTML sectioning elements">
+              <thead>
+                <tr>
+                  <th>HTML Element</th>
+                  <th>Default Landmark Role</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>aside</code></td>
+                  <td><code>complementary</code></td>
+                </tr>
+                <tr>
+                  <td><code>footer</code></td>
+                  <td><code>contentinfo</code> when in context of the <code>body</code> element.
+                    The <code>footer</code> element is <strong>not</strong> a <code>contentinfo</code> landmark when it is a descendant of the following HTML sectioning elements:
+                    <ul>
+                      <li><code>article</code></li>
+                      <li><code>aside</code></li>
+                      <li><code>main</code></li>
+                      <li><code>nav</code></li>
+                      <li><code>section</code></li>
+                    </ul>
+                    </td>
+                </tr>
+                <tr>
+                  <td><code>form</code></td>
+                  <td><code>form</code> when it has an accessible name using <code>aria-labelledby</code>, <code>aria-label</code> or <code>title</code> attributes</td>
+                </tr>
+                <tr>
+                  <td><code>header</code></td>
+                  <td><code>banner</code> when in context of the <code>body</code> element.
+                    The <code>header</code> element is <strong>not</strong> a <code>banner</code> landmark when it is a descendant of the following HTML sectioning elements:
+                    <ul>
+                      <li><code>article</code></li>
+                      <li><code>aside</code></li>
+                      <li><code>main</code></li>
+                      <li><code>nav</code></li>
+                      <li><code>section</code></li>
+                    </ul>
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>main</code></td>
+                  <td><code>main</code></td>
+                </tr>
+                <tr>
+                  <td><code>nav</code></td>
+                  <td><code>navigation</code></td>
+                </tr>
+                <tr>
+                  <td><code>section</code></td>
+                  <td><code>region</code> when it has an accessible name using <code>aria-labelledby</code>, <code>aria-label</code> or <code>title</code> attribute</td>
+                </tr>
+              </tbody>
+            </table>
+          </main>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+          <aside aria-labelledby="id4">
+            <h2 id="id4">Landmarks</h2>
+            <p>The following landmarks are defined on this page:</p>
+            <ul>
+              <li>Banner</li>
+              <li>Complementary</li>
+              <li>Contentinfo</li>
+              <li>Main</li>
+              <li>Navigation</li>
+            </ul>
+          </aside>
+          <aside aria-labelledby="id3">
+            <h2 id="id3">Related Documents</h2>
+            <ul>
+              <li><a href="https://w3.org/WAI/ARIA/apg/">ARIA Authoring Practices</a></li>
+              <li><a href="https://www.w3.org/TR/wai-aria-1.2/">ARIA 1.2 Specification</a></li>
+
+              <li><a href="https://www.w3.org/TR/accname-1.2/">Accessible Name and Description Computation 1.2</a></li>
+              <li><a href="http://www.w3.org/TR/core-aam-1.2/">Core Accessibility API Mappings 1.2</a></li>
+              <li><a href="https://w3c.github.io/html-aam/">HTML Accessibility API Mappings (latest editors draft)</a></li>
+              <li><a href="https://html.spec.whatwg.org/">HTML Specification</a></li>
+              <li><a href="https://www.w3.org/TR/html-aria/">ARIA in HTML</a></li>
+              <li><a href="https://www.w3.org/TR/using-aria/">Using ARIA in HTML</a></li>
+              <li><a href="http://www.w3.org/TR/WCAG/">WCAG Specification</a></li>
+            </ul>
+          </aside>
+        </div>
+      </div>
+      <div class="well well-sm">
+        <footer class="row">
+          <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+            W3C ARIA Authoring Practices Task Force
+          </div>
+          <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2">
+            Copyright 2023
+          </div>
+        </footer>
+      </div>
+    </div>
+    <script type="text/javascript" src="js/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap-accessibility.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap-accessibility-2.js"></script>
+    <script type="text/javascript" src="js/visua11y.js"></script>
+    <script type="text/javascript" src="js/show.js"></script>
+    <!-- Customize SkipTo features using the data-skipto attribute -->
+    <script data-skipto="attachElement: #skip-to-attach; colorTheme: aria"
+            src="js/skipto.min.js">
+    </script>
+  </body>
+</html>

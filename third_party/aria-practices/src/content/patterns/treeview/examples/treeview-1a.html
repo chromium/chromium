@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Directory Treeview Example Using Computed Properties</title>
+
+    <!-- Core JS and CSS shared by all examples -->
+    <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
+    <link rel="stylesheet" href="../../../shared/css/core.css">
+    <script src="../../../shared/js/examples.js"></script>
+    <script src="../../../shared/js/utils.js"></script>
+    <script src="../../../shared/js/highlight.pack.js"></script>
+    <script src="../../../shared/js/app.js"></script>
+    <script data-skipto="colorTheme:aria; displayOption:popup; containerElement:div" src="../../../shared/js/skipto.js"></script>
+
+    <!-- JS and CSS for this example -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+    <link href="css/tree.css" rel="stylesheet">
+    <script src="js/tree.js"></script>
+    <script src="js/treeitem.js"></script>
+    <script src="js/treeitemClick.js"></script>
+  </head>
+  <body>
+    <nav aria-label="Related Links" class="feedback">
+      <ul>
+        <li><a href="https://github.com/orgs/w3c/projects/117">Related Issues</a></li>
+        <li><a href="../treeview-pattern.html">Design Pattern</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h1>File Directory Treeview Example Using Computed Properties</h1>
+      <section>
+        <h2>About This Example</h2>
+        <img alt="" class="example-page-example-icon" src="../../../images/pattern-treeview.svg">
+        <p>
+          The following example implementation of the <a href="../treeview-pattern.html">Tree View Pattern</a> simulates a widget for selecting a file or folder from within a hierarchical file system for viewing in a file viewer.
+          In the <q>My Documents</q> tree, each parent node represents a folder and each end node represents a file.
+          Activating a node selects the node and puts the name of the folder or file in the read-only edit field that represents the file viewer.
+        </p>
+        <p>
+          This example relies on the browser to compute values for <code>aria-setsize</code>, <code>aria-posinset</code>, and <code>aria-level</code>.
+          The ARIA specification for these properties states that browsers can, but are not required to, compute their values.
+          So, some browser and assistive technology combinations may not compute or report correct position and level information if it is not explicitly declared.
+          If testing reveals gaps in support for these properties, override automatic computation by explicitly declaring their values as demonstrated in the example of a <a href="treeview-1b.html">File Directory Treeview using <em>declared</em> properties.</a>
+        </p>
+        <p>Similar examples include:</p>
+        <ul>
+          <li>
+            <a href="treeview-1b.html">File Directory Treeview using <em>declared</em> properties</a>
+          </li>
+          <li><a href="treeview-navigation.html">Navigation Treeview Example</a></li>
+        </ul>
+      </section>
+
+      <section>
+        <div class="example-header">
+          <h2 id="start">Example</h2>
+        </div>
+        <div role="separator" id="ex_start_sep" aria-labelledby="ex_start_sep start" aria-label="Start of"></div>
+        <div id="ex1">
+          <h3 id="tree_label">My Documents</h3>
+          <ul role="tree" aria-labelledby="tree_label">
+            <li role="treeitem" aria-expanded="false" aria-selected="false">
+              <span> Projects </span>
+              <ul role="group">
+                <li role="treeitem" aria-selected="false" class="doc">project-1.docx</li>
+                <li role="treeitem" aria-selected="false" class="doc">project-2.docx</li>
+                <li role="treeitem" aria-expanded="false" aria-selected="false">
+                  <span> Project 3 </span>
+                  <ul role="group">
+                    <li role="treeitem" aria-selected="false" class="doc">project-3A.docx</li>
+                    <li role="treeitem" aria-selected="false" class="doc">project-3B.docx</li>
+                    <li role="treeitem" aria-selected="false" class="doc">project-3C.docx</li>
+                  </ul>
+                </li>
+                <li role="treeitem" aria-selected="false" class="doc">project-4.docx</li>
+                <li role="treeitem" aria-expanded="false" aria-selected="false">
+                  <span> Project 5 </span>
+                  <ul role="group">
+                    <li role="treeitem" aria-selected="false" class="doc">project-5A.docx</li>
+                    <li role="treeitem" aria-selected="false" class="doc">project-5B.docx</li>
+                    <li role="treeitem" aria-selected="false" class="doc">project-5C.docx</li>
+                    <li role="treeitem" aria-selected="false" class="doc">project-5D.docx</li>
+                    <li role="treeitem" aria-selected="false" class="doc">project-5E.docx</li>
+                    <li role="treeitem" aria-selected="false" class="doc">project-5F.docx</li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li role="treeitem" aria-expanded="false" aria-selected="false">
+              <span> Reports </span>
+              <ul role="group">
+                <li role="treeitem" aria-expanded="false" aria-selected="false">
+                  <span> report-1 </span>
+                  <ul role="group">
+                    <li role="treeitem" aria-selected="false" class="doc">report-1A.docx</li>
+                    <li role="treeitem" aria-selected="false" class="doc">report-1B.docx</li>
+                    <li role="treeitem" aria-selected="false" class="doc">report-1C.docx</li>
+                  </ul>
+                </li>
+                <li role="treeitem" aria-expanded="false" aria-selected="false">
+                  <span> report-2 </span>
+                  <ul role="group">
+                    <li role="treeitem" aria-selected="false" class="doc">report-2A.docx</li>
+                    <li role="treeitem" aria-selected="false" class="doc">report-2B.docx</li>
+                    <li role="treeitem" aria-selected="false" class="doc">report-2C.docx</li>
+                    <li role="treeitem" aria-selected="false" class="doc">report-2D.docx</li>
+                  </ul>
+                </li>
+                <li role="treeitem" aria-expanded="false" aria-selected="false">
+                  <span> report-3 </span>
+                  <ul role="group">
+                    <li role="treeitem" aria-selected="false" class="doc">report-3A.docx</li>
+                    <li role="treeitem" aria-selected="false" class="doc">report-3B.docx</li>
+                    <li role="treeitem" aria-selected="false" class="doc">report-3C.docx</li>
+                    <li role="treeitem" aria-selected="false" class="doc">report-3D.docx</li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li role="treeitem" aria-expanded="false" aria-selected="false">
+              <span> Letters </span>
+              <ul role="group">
+                <li role="treeitem" aria-expanded="false" aria-selected="false">
+                  <span> letter-1 </span>
+                  <ul>
+                    <li role="treeitem" aria-selected="false" class="doc">letter-1A.docx</li>
+                    <li role="treeitem" aria-selected="false" class="doc">letter-1B.docx</li>
+                    <li role="treeitem" aria-selected="false" class="doc">letter-1C.docx</li>
+                  </ul>
+                </li>
+                <li role="treeitem" aria-expanded="false" aria-selected="false">
+                  <span> letter-2 </span>
+                  <ul role="group">
+                    <li role="treeitem" aria-selected="false" class="doc">letter-2A.docx</li>
+                    <li role="treeitem" aria-selected="false" class="doc">letter-2B.docx</li>
+                    <li role="treeitem" aria-selected="false" class="doc">letter-2C.docx</li>
+                    <li role="treeitem" aria-selected="false" class="doc">letter-2D.docx</li>
+                  </ul>
+                </li>
+                <li role="treeitem" aria-expanded="false" aria-selected="false">
+                  <span> letter-3 </span>
+                  <ul role="group">
+                    <li role="treeitem" aria-selected="false" class="doc">letter-3A.docx</li>
+                    <li role="treeitem" aria-selected="false" class="doc">letter-3B.docx</li>
+                    <li role="treeitem" aria-selected="false" class="doc">letter-3C.docx</li>
+                    <li role="treeitem" aria-selected="false" class="doc">letter-3D.docx</li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+          </ul>
+
+          <p>
+            <label>File or Folder Selected: <input id="last_action" type="text" size="15" readonly></label>
+          </p>
+        </div>
+        <div role="separator" id="ex_end_sep" aria-labelledby="ex_end_sep start" aria-label="End of"></div>
+      </section>
+
+      <section>
+        <h2>Accessibility Features</h2>
+        <p>To make the focus indicator easier to see, nodes in the tree have custom focus and hover styling created using CSS focus and hover pseudo-classes.</p>
+      </section>
+
+      <section>
+        <h2>Terms Used to Describe Trees</h2>
+        <p>
+          A tree item that can be expanded to reveal child items is called a parent node.
+          It is a closed node when the children are hidden and an open node when it is expanded.
+          An end node does not have any children.
+          For a complete list of terms and definitions, see the <a href="../treeview-pattern.html#terms">Treeview Pattern</a>.
+        </p>
+      </section>
+
+      <section>
+        <h2 id="kbd_label">Keyboard Support</h2>
+        <p>
+          Note that in this example, selection and focus are distinct; moving focus does not change which node is selected.
+          Because selection does not follow focus, keyboard and screen reader users can navigate and explore the tree without changing the content of the file viewer.
+          To learn more about this aspect of the design, see
+          <a href="../../../practices/keyboard-interface/keyboard-interface-practice.html#kbd_selection_follows_focus">Deciding When to Make Selection Automatically Follow Focus</a>.
+        </p>
+        <table aria-labelledby="kbd_label" class="def">
+          <thead>
+            <tr>
+              <th>Key</th>
+              <th>Function</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="key-enter">
+              <th><kbd>Enter</kbd></th>
+              <td>Performs the default action, which is to select the node, causing the name of the node to appear in the <q>File or Folder Selected</q> textbox.</td>
+            </tr>
+            <tr data-test-id="key-space">
+              <th><kbd>Space</kbd></th>
+              <td>Performs the default action, which is to select the node, causing the name of the node to appear in the <q>File or Folder Selected</q> textbox.</td>
+            </tr>
+            <tr data-test-id="key-down-arrow">
+              <th><kbd>Down arrow</kbd></th>
+              <td>
+                <ul>
+                  <li>Moves focus to the next node that is focusable without opening or closing a node.</li>
+                  <li>If focus is on the last node, does nothing.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="key-up-arrow">
+              <th><kbd>Up arrow</kbd></th>
+              <td>
+                <ul>
+                  <li>Moves focus to the previous node that is focusable without opening or closing a node.</li>
+                  <li>If focus is on the first node, does nothing.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="key-right-arrow">
+              <th><kbd>Right Arrow</kbd></th>
+              <td>
+                <ul>
+                  <li>When focus is on a closed node, opens the node; focus does not move.</li>
+                  <li>When focus is on a open node, moves focus to the first child node.</li>
+                  <li>When focus is on an end node, does nothing.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="key-left-arrow">
+              <th><kbd>Left Arrow</kbd></th>
+              <td>
+                <ul>
+                  <li>When focus is on an open node, closes the node.</li>
+                  <li>When focus is on a child node that is also either an end node or a closed node, moves focus to its parent node.</li>
+                  <li>When focus is on a root node that is also either an end node or a closed node, does nothing.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="key-home">
+              <th><kbd>Home</kbd></th>
+              <td>Moves focus to first node without opening or closing a node.</td>
+            </tr>
+            <tr data-test-id="key-end">
+              <th><kbd>End</kbd></th>
+              <td>Moves focus to the last node that can be focused without expanding any nodes that are closed.</td>
+            </tr>
+            <tr data-test-id="key-character">
+              <th><kbd>a-z, A-Z</kbd></th>
+              <td>
+                <ul>
+                  <li>Focus moves to the next node with a name that starts with the typed character.</li>
+                  <li>Search wraps to first node if a matching name is not found among the nodes that follow the focused node.</li>
+                  <li>Search ignores nodes that are descendants of closed nodes.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="key-asterisk">
+              <th><kbd>*</kbd> (asterisk)</th>
+              <td>
+                <ul>
+                  <li>Expands all closed sibling nodes that are at the same level as the focused node.</li>
+                  <li>Focus does not move.</li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2 id="rps_label">Role, Property, State, and Tabindex Attributes</h2>
+        <table aria-labelledby="rps_label" class="data attributes">
+          <thead>
+            <tr>
+              <th scope="col">Role</th>
+              <th scope="col">Attribute</th>
+              <th scope="col">Element</th>
+              <th scope="col">Usage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-test-id="tree-role">
+              <th scope="row"><code>tree</code></th>
+              <td></td>
+              <td><code>ul</code></td>
+              <td>
+                <ul>
+                  <li>Identifies the <code>ul</code> element as a <code>tree</code> widget.</li>
+                  <li>
+                    The tree element is not focusable because it implements the practice described in
+                    <a href="../../../practices/keyboard-interface/keyboard-interface-practice.html#kbd_roving_tabindex">Managing Focus Within Components Using a Roving tabindex</a>.
+                  </li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="tree-aria-labelledby">
+              <td></td>
+              <th scope="row"><code>aria-labelledby="ID_REFERENCE"</code></th>
+              <td><code>ul</code></td>
+              <td>Refers to the heading element that contains the label that identifies the purpose of the <code>tree</code>.</td>
+            </tr>
+            <tr data-test-id="treeitem-role">
+              <th scope="row"><code>treeitem</code></th>
+              <td></td>
+              <td><code>li</code></td>
+              <td>Identifies the element as a <code>treeitem</code>.</td>
+            </tr>
+            <tr data-test-id="treeitem-tabindex">
+              <td></td>
+              <th scope="row"><code>tabindex="-1"</code></th>
+              <td><code>li</code></td>
+              <td>
+                <ul>
+                  <li>Makes the <code>treeitem</code> element focusable without including it in the tab sequence of the page.</li>
+                  <li>All <code>treeitem</code> elements are focusable, but only one is included in the tab sequence.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="treeitem-tabindex">
+              <td></td>
+              <th scope="row"><code>tabindex="0"</code></th>
+              <td><code>li</code></td>
+              <td>
+                <ul>
+                  <li>Includes the <code>treeitem</code> element in the tab sequence.</li>
+                  <li>Only one <code>treeitem</code> in the <code>tree</code> has <code>tabindex="0"</code>.</li>
+                  <li>In this implementation, the first <code>treeitem</code> in the <code>tree</code> is included in the tab sequence when the page loads.</li>
+                  <li>
+                    When the user moves focus in the <code>tree</code>, the element included in the tab sequence changes to the element with focus as described in
+                    <a href="../../../practices/keyboard-interface/keyboard-interface-practice.html#kbd_roving_tabindex">Managing Focus Within Components Using a Roving tabindex</a>.
+                  </li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="treeitem-aria-expanded">
+              <td></td>
+              <th scope="row"><code>aria-expanded="false"</code></th>
+              <td><code>li</code></td>
+              <td>
+                <ul>
+                  <li>Applied only to <code>treeitem</code> elements that are parent nodes, i.e., they contain a <code>ul</code> with the <code>group</code> role.</li>
+                  <li>Indicates the parent node is closed, i.e., the descendant elements are <strong>not</strong> visible.</li>
+                  <li>The visual indication of the collapsed state is synchronized by a CSS attribute selector.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="treeitem-aria-expanded">
+              <td></td>
+              <th scope="row"><code>aria-expanded="true"</code></th>
+              <td><code>li</code></td>
+              <td>
+                <ul>
+                  <li>Applied only to <code>treeitem</code> elements that are parent nodes, i.e., they contain a <code>ul</code> with the <code>group</code> role.</li>
+                  <li>Indicates the parent node is open, i.e., the descendant elements <strong>are</strong> visible.</li>
+                  <li>The visual indication of the expanded state is synchronized by a CSS attribute selector.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="treeitem-aria-selected">
+              <td></td>
+              <th scope="row"><code>aria-selected="false"</code></th>
+              <td><code>li</code></td>
+              <td>
+                <ul>
+                  <li>Applied to <code>treeitem</code> elements.</li>
+                  <li>Indicates the file or folder for the item is not currently selected.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="treeitem-aria-selected">
+              <td></td>
+              <th scope="row"><code>aria-selected="true"</code></th>
+              <td><code>li</code></td>
+              <td>
+                <ul>
+                  <li>Applied to <code>treeitem</code> elements.</li>
+                  <li>Indicates the file or folder for the item is currently selected.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr data-test-id="group-role">
+              <th scope="row"><code>group</code></th>
+              <td></td>
+              <td><code>ul</code></td>
+              <td>
+                <ul>
+                  <li>Identifies the <code>ul</code> element as a container of <code>treeitem</code> elements that form a branch of the tree.</li>
+                  <li>The group is contained in the element that serves as the parent <code>treeitem</code>.</li>
+                  <li>Browsers use the grouping to compute <code>aria-level</code>, <code>aria-setsize</code> and <code>aria-posinset</code> values for the nodes contained in the branch.</li>
+                  <li>The grouping also prevents browsers from including the content of the nodes in the group in the accessible name for the parent node.</li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>JavaScript and CSS Source Code</h2>
+        <ul id="css_js_files">
+          <li>
+            CSS:
+            <a href="css/tree.css" type="text/css">tree.css</a>
+          </li>
+          <li>
+            JavaScript:
+            <a href="js/tree.js" type="text/javascript">tree.js</a>
+          </li>
+          <li>
+            JavaScript:
+            <a href="js/treeitem.js" type="text/javascript">treeitem.js</a>
+          </li>
+          <li>
+            JavaScript:
+            <a href="js/treeitemClick.js" type="text/javascript">treeitemClick.js</a>
+          </li>
+        </ul>
+      </section>
+
+      <section class="example-code">
+        <h2 id="sc1_label">HTML Source Code</h2>
+        <p id="sc1_description">To copy the following HTML code, please open it in CodePen.</p>
+        <div role="separator" id="sc1_start_sep" aria-labelledby="sc1_start_sep sc1_label" aria-label="Start of"></div>
+        <pre><code id="sc1"></code></pre>
+        <div role="separator" id="sc1_end_sep" aria-labelledby="sc1_end_sep sc1_label" aria-label="End of"></div>
+        <script>
+          sourceCode.add('sc1', 'ex1', 'start', 'css_js_files', 'sc1_description');
+          sourceCode.make();
+        </script>
+      </section>
+    </main>
+  </body>
+</html>

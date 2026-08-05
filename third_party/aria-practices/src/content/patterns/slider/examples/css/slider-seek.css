@@ -1,0 +1,81 @@
+/* CSS Document */
+
+.slider-seek .label {
+  font-weight: bold;
+  font-size: 125%;
+}
+
+.slider-seek svg {
+  forced-color-adjust: auto;
+}
+
+.slider-seek text {
+  font-weight: bold;
+  fill: currentcolor;
+  font-family: sans-serif;
+}
+
+.slider-seek {
+  margin-top: 1em;
+  padding: 6px;
+  color: black;
+}
+
+.slider-slider .value {
+  position: relative;
+  top: 20px;
+  height: 1.5em;
+  font-size: 80%;
+}
+
+.slider-seek .temp-value {
+  padding-left: 24px;
+  font-size: 200%;
+}
+
+.slider-seek .rail {
+  stroke: currentcolor;
+  stroke-width: 2px;
+  fill: currentcolor;
+  fill-opacity: 0.25;
+}
+
+.slider-seek .thumb {
+  stroke-width: 0;
+  fill: currentcolor;
+}
+
+.slider-seek .focus-ring {
+  stroke: currentcolor;
+  stroke-opacity: 0;
+  fill-opacity: 0;
+  stroke-width: 3px;
+  display: none;
+}
+
+.slider-seek .slider-group {
+  touch-action: pan-y;
+}
+
+.slider-seek .slider-group .value {
+  display: none;
+}
+
+/* Focus and hover styling */
+
+.slider-seek.focus [role="slider"] {
+  color: #005a9c;
+}
+
+.slider-seek [role="slider"]:focus {
+  outline: none;
+}
+
+.slider-seek [role="slider"]:focus .focus-ring {
+  display: block;
+  stroke-opacity: 1;
+}
+
+.slider-seek [role="slider"]:focus .value {
+  display: block;
+}

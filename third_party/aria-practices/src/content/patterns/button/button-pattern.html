@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Button Pattern</title>
+
+    <!-- Core JS and CSS shared by all patterns -->
+    <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
+    <link rel="stylesheet" href="../../shared/css/core.css">
+    <script src="../../shared/js/highlight.pack.js"></script>
+    <script src="../../shared/js/app.js"></script>
+    <script data-skipto="colorTheme:aria; displayOption:popup; containerElement:div" src="../../shared/js/skipto.js"></script>
+    <script data-read-this-first="showImage:false" src="../../shared/js/read-this-first.js"></script>
+  </head>
+  <body>
+    <main>
+      <h1>Button Pattern</h1>
+
+      <section id="about">
+        <h2>About This Pattern</h2>
+        <p>
+          A <a class="role-reference" href="#button">button</a> is a widget that enables users to trigger an action or event, such as submitting a form, opening a dialog, canceling an action, or performing a delete operation.
+          A common convention for informing users that a button launches a dialog is to append &quot;&#8230;&quot; (ellipsis) to the button label, e.g., &quot;Save as&#8230;&quot;.
+        </p>
+        <p>In addition to the ordinary button widget, WAI-ARIA supports 2 other types of buttons:</p>
+        <ul>
+          <li>
+            Toggle button: A two-state button that can be either off (not pressed) or on (pressed).
+            To tell assistive technologies that a button is a toggle button, specify a value for the attribute <a href="#aria-pressed" class="state-reference">aria-pressed</a>.
+            For example, a button labelled mute in an audio player could indicate that sound is muted by setting the pressed state true.
+            <strong>Important:</strong> it is critical the label on a toggle does not change when its state changes.
+            In this example, when the pressed state is true, the label remains &quot;Mute&quot; so a screen reader would say something like &quot;Mute toggle button pressed&quot;.
+            Alternatively, if the design were to call for the button label to change from &quot;Mute&quot; to &quot;Unmute,&quot; the aria-pressed attribute would not be needed.
+          </li>
+          <li>Menu button: as described in the <a href="../menu-button/menu-button-pattern.html">menu button pattern</a>, a button is revealed to assistive technologies as a menu button if it has the property <a href="#aria-haspopup" class="property-reference">aria-haspopup</a> set to either <code>menu</code> or <code>true</code>.</li>
+        </ul>
+        <div class="note">
+          <h3>Note</h3>
+          <p>
+            The types of actions performed by buttons are distinctly different from the function of a link (see <a href="../link/link-pattern.html">link pattern</a>).
+            It is important that both the appearance and role of a widget match the function it provides.
+            Nevertheless, elements occasionally have the visual style of a link but perform the action of a button.
+            In such cases, giving the element role <code>button</code> helps assistive technology users understand the function of the element.
+            However, a better solution is to adjust the visual design so it matches the function and ARIA role.
+          </p>
+        </div>
+      </section>
+
+      <section id="examples">
+        <img alt="" src="../../images/pattern-button.svg">
+        <h2>Examples</h2>
+        <ul>
+          <li><a href="examples/button.html">Button Examples</a>: Examples of clickable HTML <code>div</code> and <code>span</code> elements made into accessible command and toggle buttons.</li>
+          <li>
+            <a href="examples/button_idl.html">Button Examples (IDL)</a>: Examples of clickable HTML <code>div</code> and <code>span</code> elements made into accessible command and toggle buttons.
+            This example uses the <a class="specref" href="#idl-interface">IDL Interface</a>.
+          </li>
+        </ul>
+      </section>
+
+      <section id="keyboard_interaction">
+        <h2>Keyboard Interaction</h2>
+        <p>When the button has focus:</p>
+        <ul>
+          <li><kbd>Space</kbd>: Activates the button.</li>
+          <li><kbd>Enter</kbd>: Activates the button.</li>
+          <li>
+            Following button activation, focus is set depending on the type of action the button performs. For example:
+            <ul>
+              <li>
+                If activating the button opens a dialog, the focus moves inside the dialog.
+                (see <a href="../dialog-modal/dialog-modal-pattern.html">dialog pattern</a>)
+              </li>
+              <li>
+                If activating the button closes a dialog, focus typically returns to the button that opened the dialog unless the function performed in the dialog context logically leads to a different element.
+                For example, activating a cancel button in a dialog returns focus to the button that opened the dialog.
+                However, if the dialog were confirming the action of deleting the page from which it was opened, the focus would logically move to a new context.
+              </li>
+              <li>If activating the button does not dismiss the current context, then focus typically remains on the button after activation, e.g., an Apply or Recalculate button.</li>
+              <li>If the button action indicates a context change, such as move to next step in a wizard or add another search criteria, then it is often appropriate to move focus to the starting point for that action.</li>
+              <li>
+                If the button is activated with a shortcut key, the focus usually remains in the context from which the shortcut key was activated.
+                For example, if <kbd>Alt</kbd> + <kbd>U</kbd> were assigned to an &quot;Up&quot; button that moves the currently focused item in a list one position higher in the list, pressing <kbd>Alt</kbd> + <kbd>U</kbd> when the focus is in the list would not move the focus from the list.
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </section>
+
+      <section id="roles_states_properties">
+        <h2>WAI-ARIA Roles, States, and Properties</h2>
+        <ul>
+          <li>The button has role of <a class="role-reference" href="#button">button</a>.</li>
+          <li>
+            The <code>button</code> has an accessible label.
+            By default, the accessible name is computed from any text content inside the button element.
+            However, it can also be provided with <a href="#aria-labelledby" class="property-reference">aria-labelledby</a> or <a href="#aria-label" class="property-reference">aria-label</a>.
+          </li>
+          <li>If a description of the button's function is present, the button element has <a href="#aria-describedby" class="property-reference">aria-describedby</a> set to the ID of the element containing the description.</li>
+          <li>When the action associated with a button is unavailable, the button has <a class="state-reference" href="#aria-disabled">aria-disabled</a> set to <code>true</code>.</li>
+          <li>
+            If the button is a toggle button, it has an <a href="#aria-pressed" class="state-reference">aria-pressed</a> state.
+            When the button is toggled on, the value of this state is <code>true</code>, and when toggled off, the state is <code>false</code>.
+          </li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>
