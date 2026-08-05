@@ -2387,6 +2387,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                     assumeNonNull(mProfileSupplier.get()),
                                     mVerticalTabsActionDelegate,
                                     mWindowAndroid,
+                                    mActivityResultTracker,
                                     assumeNonNull(mMultiInstanceManager),
                                     assumeNonNull(mSnackbarManagerSupplier.get()),
                                     getDesktopWindowStateManager(),
