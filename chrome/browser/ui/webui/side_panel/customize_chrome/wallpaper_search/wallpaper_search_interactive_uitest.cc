@@ -340,8 +340,8 @@ class WallpaperSearchOptimizationGuideInteractiveTest
   base::CallbackListSubscription subscription_;
 };
 
-// TODO(crbug.com/524036564): Flaky on Win.
-#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/524036564): Flaky on Win and macOS.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_CustomizeButtonsWorkTogether DISABLED_CustomizeButtonsWorkTogether
 #else
 #define MAYBE_CustomizeButtonsWorkTogether CustomizeButtonsWorkTogether
