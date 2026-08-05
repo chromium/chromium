@@ -865,6 +865,7 @@ TEST_F(AIWriterManifestTest, CanCreateAndCreateWithManifestGemma4) {
 
   ASSERT_TRUE(fake_manifest_broker_);
   fake_manifest_broker_->client().RequestAssetsFor("writing_assistance_gemma4");
+  base::RunLoop().RunUntilIdle();
 
   // Verify CanCreateWriter check passes successfully.
   base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;

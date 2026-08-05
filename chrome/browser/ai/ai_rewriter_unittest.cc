@@ -880,6 +880,7 @@ TEST_F(AIRewriterManifestTest, CanCreateAndCreateWithManifestGemma4) {
       kAIApiFoundationalModel, {{"model_version", "v4"}});
 
   fake_manifest_broker_->client().RequestAssetsFor("rewriter_gemma4");
+  base::RunLoop().RunUntilIdle();
 
   // Verify CanCreateRewriter check passes successfully for default options
   // mapping to gemma4. We requested assets only for rewriter_gemma4,
