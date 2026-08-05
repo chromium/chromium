@@ -63,6 +63,15 @@ main {
   margin: 0;
 }
 
+.link {
+  color: var(--cr-link-color);
+  cursor: pointer;
+}
+
+.link:focus-visible {
+  outline: auto;
+}
+
 .title:focus {
   outline: none;
 }
