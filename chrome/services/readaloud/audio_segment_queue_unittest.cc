@@ -16,7 +16,6 @@
 #include "base/time/time.h"
 #include "chrome/services/readaloud/decoded_audio_segment.h"
 #include "chrome/services/readaloud/read_aloud_playback_controller.h"
-#include "media/base/audio_bus.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace readaloud {
@@ -117,10 +116,13 @@ TEST_F(AudioSegmentQueueTest, PushAndPopBasic) {
   EXPECT_EQ(0u, queue_.size());
   EXPECT_EQ(base::TimeDelta(), queue_.GetBufferedDuration());
 
-  auto segment1 = base::MakeRefCounted<DecodedAudioSegment>(
-      media::AudioBus::Create(1, 1024), 44100, base::Milliseconds(1500));
-  auto segment2 = base::MakeRefCounted<DecodedAudioSegment>(
-      media::AudioBus::Create(2, 512), 22050, base::Milliseconds(500));
+  auto buffer1 = media::AudioBuffer::CreateEmptyBuffer(
+      media::CHANNEL_LAYOUT_MONO, 1, 44100, 66150, base::TimeDelta());
+  auto segment1 = base::MakeRefCounted<DecodedAudioSegment>(std::move(buffer1));
+
+  auto buffer2 = media::AudioBuffer::CreateEmptyBuffer(
+      media::CHANNEL_LAYOUT_STEREO, 2, 22050, 11025, base::TimeDelta());
+  auto segment2 = base::MakeRefCounted<DecodedAudioSegment>(std::move(buffer2));
 
   EXPECT_TRUE(queue_.Push(segment1));
   EXPECT_EQ(1u, queue_.size());

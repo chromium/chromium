@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/time/time.h"
-#include "media/base/audio_bus.h"
+#include "media/base/audio_buffer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -16,7 +16,7 @@ namespace readaloud {
 
 TEST(DecodedAudioSegmentTest, DefaultConstructor) {
   auto segment = base::MakeRefCounted<DecodedAudioSegment>();
-  EXPECT_EQ(nullptr, segment->audio_bus());
+  EXPECT_EQ(nullptr, segment->audio_buffer());
   EXPECT_EQ(0, segment->sample_rate());
   EXPECT_EQ(base::TimeDelta(), segment->duration());
   EXPECT_TRUE(segment->word_timings().empty());
@@ -25,7 +25,7 @@ TEST(DecodedAudioSegmentTest, DefaultConstructor) {
 TEST(DecodedAudioSegmentTest, DurationConstructor) {
   auto segment =
       base::MakeRefCounted<DecodedAudioSegment>(base::Milliseconds(500));
-  EXPECT_EQ(nullptr, segment->audio_bus());
+  EXPECT_EQ(nullptr, segment->audio_buffer());
   EXPECT_EQ(0, segment->sample_rate());
   EXPECT_EQ(base::Milliseconds(500), segment->duration());
   EXPECT_TRUE(segment->word_timings().empty());
@@ -34,19 +34,21 @@ TEST(DecodedAudioSegmentTest, DurationConstructor) {
 TEST(DecodedAudioSegmentTest, FullConstructor) {
   constexpr int kSampleRate = 44100;
   constexpr int kChannels = 2;
-  constexpr int kFrames = 1024;
-  auto bus = media::AudioBus::Create(kChannels, kFrames);
+  constexpr int kFrames = 22050;
+  auto buffer = media::AudioBuffer::CreateEmptyBuffer(
+      media::CHANNEL_LAYOUT_STEREO, kChannels, kSampleRate, kFrames,
+      base::TimeDelta());
 
   std::vector<DecodedAudioSegment::WordTiming> timings = {
       {"Hello", base::Milliseconds(0), base::Milliseconds(200)},
       {"World", base::Milliseconds(200), base::Milliseconds(500)}};
 
-  auto segment = base::MakeRefCounted<DecodedAudioSegment>(
-      std::move(bus), kSampleRate, base::Milliseconds(500), timings);
+  auto segment =
+      base::MakeRefCounted<DecodedAudioSegment>(std::move(buffer), timings);
 
-  ASSERT_NE(nullptr, segment->audio_bus());
-  EXPECT_EQ(kChannels, segment->audio_bus()->channels());
-  EXPECT_EQ(kFrames, segment->audio_bus()->frames());
+  ASSERT_NE(nullptr, segment->audio_buffer());
+  EXPECT_EQ(kChannels, segment->audio_buffer()->channel_count());
+  EXPECT_EQ(kFrames, segment->audio_buffer()->frame_count());
   EXPECT_EQ(kSampleRate, segment->sample_rate());
   EXPECT_EQ(base::Milliseconds(500), segment->duration());
   ASSERT_EQ(2u, segment->word_timings().size());
