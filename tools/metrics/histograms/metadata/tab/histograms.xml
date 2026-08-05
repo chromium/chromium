@@ -910,6 +910,26 @@ chromium-metrics-reviews@google.com.
   <summary>[iOS] The number of tab groups opened at cold launch.</summary>
 </histogram>
 
+<histogram name="TabGroups.Focus.EntryPoint" enum="TabGroupFocusEntryPoint"
+    expires_after="2027-02-04">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Recorded when the user enters Tab Groups Focus Mode, categorizing the
+    entrypoint used.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.Focus.ExitReason" enum="TabGroupFocusExitReason"
+    expires_after="2027-02-04">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Recorded when the user or browser exits Tab Groups Focus Mode, categorizing
+    the exit reason.
+  </summary>
+</histogram>
+
 <histogram
     name="TabGroups.ParseSavedTabGroupDataEntries.ParseFailurePercentage"
     units="%" expires_after="2026-12-15">

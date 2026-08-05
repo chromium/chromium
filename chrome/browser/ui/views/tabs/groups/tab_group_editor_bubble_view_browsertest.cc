@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -508,12 +509,15 @@ IN_PROC_BROWSER_TEST_F(
     ToggleFocusGroup) {
   ShowUi("SetUp");
 
+  base::HistogramTester histogram_tester;
   TabStripModel* const tsm = browser()->tab_strip_model();
   ASSERT_TRUE(group_.has_value());
   const tab_groups::TabGroupId group_id = group_.value();
 
   // 1. Initially, no group is focused.
   EXPECT_FALSE(tsm->GetFocusedGroup().has_value());
+  histogram_tester.ExpectTotalCount("TabGroups.Focus.EntryPoint", 0);
+  histogram_tester.ExpectTotalCount("TabGroups.Focus.ExitReason", 0);
 
   views::Widget* editor_bubble = WaitForAndGetEditorBubbleWidget();
   ASSERT_NE(nullptr, editor_bubble);
@@ -541,6 +545,9 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_TRUE(tsm->GetFocusedGroup().has_value());
   EXPECT_EQ(group_id, tsm->GetFocusedGroup().value());
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Focus.EntryPoint", TabGroupFocusEntryPoint::kEditorBubble, 1);
+  histogram_tester.ExpectTotalCount("TabGroups.Focus.ExitReason", 0);
 
   // 3. Open the editor again to unfocus.
   browser()->tab_strip_model()->OpenTabGroupEditor(group_id);
@@ -566,6 +573,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(base::test::RunUntil([&]() { return !weak_widget2; }));
 
   EXPECT_FALSE(tsm->GetFocusedGroup().has_value());
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Focus.EntryPoint", TabGroupFocusEntryPoint::kEditorBubble, 1);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Focus.ExitReason", TabGroupFocusExitReason::kEditorBubble, 1);
 }
 
 class TabGroupEditorBubbleViewDialogBrowserTestWithTabGroupHome

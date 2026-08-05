@@ -1352,6 +1352,7 @@ TEST_F(TabStripModelTest, ClosingFocusedGroupUnsetsFocus) {
   TabStripModel model(&delegate, profile());
   ASSERT_TRUE(model.empty());
 
+  base::HistogramTester histogram_tester;
   model.AppendWebContents(CreateWebContents(), true);
   model.AppendWebContents(CreateWebContents(), true);
 
@@ -1361,6 +1362,8 @@ TEST_F(TabStripModelTest, ClosingFocusedGroupUnsetsFocus) {
 
   model.CloseAllTabsInGroup(group);
   EXPECT_EQ(model.GetFocusedGroup(), std::nullopt);
+  histogram_tester.ExpectUniqueSample("TabGroups.Focus.ExitReason",
+                                      TabGroupFocusExitReason::kGroupClosed, 1);
 }
 
 TEST_F(TabStripModelTest, UngroupingFocusedGroupUnsetsFocus) {
@@ -1368,6 +1371,7 @@ TEST_F(TabStripModelTest, UngroupingFocusedGroupUnsetsFocus) {
   TabStripModel model(&delegate, profile());
   ASSERT_TRUE(model.empty());
 
+  base::HistogramTester histogram_tester;
   model.AppendWebContents(CreateWebContents(), true);
   model.AppendWebContents(CreateWebContents(), true);
 
@@ -1377,6 +1381,36 @@ TEST_F(TabStripModelTest, UngroupingFocusedGroupUnsetsFocus) {
 
   model.RemoveFromGroup({0, 1});
   EXPECT_EQ(model.GetFocusedGroup(), std::nullopt);
+  histogram_tester.ExpectUniqueSample("TabGroups.Focus.ExitReason",
+                                      TabGroupFocusExitReason::kGroupUngrouped,
+                                      1);
+}
+
+TEST_F(TabStripModelTest,
+       ClosingLastTabOfFocusedGroupUnsetsFocusAndLogsHistogram) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel model(&delegate, profile());
+  ASSERT_TRUE(model.empty());
+
+  base::HistogramTester histogram_tester;
+  model.AppendWebContents(CreateWebContents(), true);
+  model.AppendWebContents(CreateWebContents(), true);
+  model.AppendWebContents(CreateWebContents(), true);
+
+  const tab_groups::TabGroupId group = model.AddToNewGroup({0, 1});
+  model.SetFocusedGroup(group);
+  EXPECT_EQ(model.GetFocusedGroup(), group);
+
+  // Closing first tab keeps group focused.
+  model.CloseWebContentsAt(1, TabCloseTypes::CLOSE_USER_GESTURE);
+  EXPECT_EQ(model.GetFocusedGroup(), group);
+  histogram_tester.ExpectTotalCount("TabGroups.Focus.ExitReason", 0);
+
+  // Closing last tab unsets focus and logs histogram.
+  model.CloseWebContentsAt(0, TabCloseTypes::CLOSE_USER_GESTURE);
+  EXPECT_EQ(model.GetFocusedGroup(), std::nullopt);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Focus.ExitReason", TabGroupFocusExitReason::kLastTabClosed, 1);
 }
 
 TEST_F(TabStripModelTest, RemovingLastTabOfFocusedGroupUnsetsFocus) {

@@ -109,4 +109,26 @@ enum class VerticalTabStripCollapseState {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:VerticalTabStripCollapseState)
 
+// Enumerates entry points for Tab Groups Focus mode.
+// KEEP IN SYNC WITH THE TabGroupFocusEntryPoint ENUM IN enums.xml.
+// LINT.IfChange(TabGroupFocusEntryPoint)
+enum class TabGroupFocusEntryPoint {
+  kEditorBubble = 0,
+  kMaxValue = kEditorBubble,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:TabGroupFocusEntryPoint)
+
+// Enumerates exit reasons for Tab Groups Focus mode.
+// KEEP IN SYNC WITH THE TabGroupFocusExitReason ENUM IN enums.xml.
+// LINT.IfChange(TabGroupFocusExitReason)
+enum class TabGroupFocusExitReason {
+  kEditorBubble = 0,
+  kTabStripButton = 1,
+  kGroupClosed = 2,
+  kGroupUngrouped = 3,
+  kLastTabClosed = 4,
+  kMaxValue = kLastTabClosed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:TabGroupFocusExitReason)
+
 #endif  // CHROME_BROWSER_UI_TABS_TAB_ENUMS_H_

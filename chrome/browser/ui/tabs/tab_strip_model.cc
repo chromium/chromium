@@ -802,7 +802,6 @@ void TabStripModel::UpdateSelectionModelForCollectionDetach(
       }
     }
   }
-
   NotifyTabGroupFocusChanged(old_focused_group);
 }
 
@@ -1319,6 +1318,8 @@ void TabStripModel::CloseAllTabsInGroup(const tab_groups::TabGroupId& group) {
   }
 
   if (selection_model_.focused_group() == group) {
+    base::UmaHistogramEnumeration("TabGroups.Focus.ExitReason",
+                                  TabGroupFocusExitReason::kGroupClosed);
     SetFocusedGroup(std::nullopt);
   }
 
@@ -2143,6 +2144,13 @@ void TabStripModel::RemoveFromGroup(const std::vector<int>& indices) {
     tabs::TabInterface* first_tab_in_group = group->GetFirstTab();
     CHECK(first_tab_in_group);
     int first_tab_index = GetIndexOfTab(first_tab_in_group);
+
+    if (selection_model_.focused_group() == immutable_group_id &&
+        static_cast<int>(immutable_group_indices.size()) ==
+            group->tab_count()) {
+      base::UmaHistogramEnumeration("TabGroups.Focus.ExitReason",
+                                    TabGroupFocusExitReason::kGroupUngrouped);
+    }
 
     tabs::TabInterface* last_tab_in_group = group->GetLastTab();
     int last_tab_index = GetIndexOfTab(last_tab_in_group);
@@ -4679,6 +4687,12 @@ std::unique_ptr<tabs::TabModel> TabStripModel::RemoveTabFromIndexImpl(
         SetSelectedIndex(selection_model_, next_selected_index.value());
       }
     }
+  }
+
+  if (old_focused_group.has_value() &&
+      !selection_model_.focused_group().has_value()) {
+    base::UmaHistogramEnumeration("TabGroups.Focus.ExitReason",
+                                  TabGroupFocusExitReason::kLastTabClosed);
   }
 
   NotifyTabGroupFocusChanged(old_focused_group);

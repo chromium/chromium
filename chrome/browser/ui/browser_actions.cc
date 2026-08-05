@@ -134,6 +134,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/toolbar/cast/cast_toolbar_button_util.h"
@@ -2103,10 +2104,8 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
             base::BindRepeating(
                 [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                    actions::ActionInvocationContext context) {
-                  if (!bwi || !bwi->GetTabStripModel()) {
-                    return;
-                  }
-                  bwi->GetTabStripModel()->SetFocusedGroup(std::nullopt);
+                  chrome::UnfocusTabGroup(
+                      bwi, TabGroupFocusExitReason::kTabStripButton);
                 },
                 bwi))
             .SetActionId(kActionUnfocusTabGroup)

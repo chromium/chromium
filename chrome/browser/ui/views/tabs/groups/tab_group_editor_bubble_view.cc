@@ -44,6 +44,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_pref_names.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -1063,12 +1064,16 @@ void TabGroupEditorBubbleView::MoveGroupToNewWindowPressed() {
 }
 
 void TabGroupEditorBubbleView::FocusGroupPressed() {
+  base::UmaHistogramEnumeration("TabGroups.Focus.EntryPoint",
+                                TabGroupFocusEntryPoint::kEditorBubble);
   TabStripModel* const model = browser_->tab_strip_model();
   model->SetFocusedGroup(group_);
   GetWidget()->Close();
 }
 
 void TabGroupEditorBubbleView::UnfocusGroupPressed() {
+  base::UmaHistogramEnumeration("TabGroups.Focus.ExitReason",
+                                TabGroupFocusExitReason::kEditorBubble);
   TabStripModel* const model = browser_->tab_strip_model();
   model->SetFocusedGroup(std::nullopt);
   GetWidget()->Close();
