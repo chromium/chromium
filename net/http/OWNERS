@@ -1,5 +1,4 @@
 per-file http_cache_*=shivanisha@chromium.org
-per-file transport_security_state_static*=estark@chromium.org
 per-file transport_security_state_static*=cthomp@chromium.org
 per-file transport_security_state_static*=carlosil@chromium.org
 per-file transport_security_state_static*=jdeblasio@chromium.org
