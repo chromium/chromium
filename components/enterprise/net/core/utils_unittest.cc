@@ -453,6 +453,11 @@ TEST(FindMatchingProxyEndpointTest, FindsFirstMatchingEndpoint) {
       FindMatchingProxyEndpoint(*config, GURL("https://test.domain.com/path"),
                                 MakeHttpsProxyChain("unknown.proxy.com:443"));
   EXPECT_EQ(nullptr, non_matching);
+
+  // Request with an invalid URL should return nullptr.
+  const auto* invalid_url_endpoint = FindMatchingProxyEndpoint(
+      *config, GURL(), MakeHttpsProxyChain(kTestProxyHost1));
+  EXPECT_EQ(nullptr, invalid_url_endpoint);
 }
 
 TEST(ProvisioningDomainConfigToDictTest, SerializesConfigToDict) {

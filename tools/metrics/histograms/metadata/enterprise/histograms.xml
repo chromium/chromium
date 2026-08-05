@@ -4122,6 +4122,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.SecureGateway.ProxyAuthChallengeResult"
+    enum="EnterpriseProxyAuthChallengeResult" expires_after="2027-07-01">
+  <owner>xzonghan@google.com</owner>
+  <owner>chrome-enterprise-networking-core@google.com</owner>
+  <summary>
+    Recorded the result of evaluating a 407 Proxy Authentication challenge
+    against managed dynamic routes in EnterpriseProxyService. This is recorded
+    when Chrome receives and tries to handle a 407 proxy authentication
+    challenge for the CONNECT call.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.SecurityReport.User.Mode"
     enum="SecuritySignalsMode" expires_after="2027-01-02">
   <owner>xzonghan@chromium.org</owner>

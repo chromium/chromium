@@ -5,25 +5,57 @@
 #include "components/enterprise/net/core/enterprise_proxy_service.h"
 
 #include <set>
+#include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/escape.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/net/core/enterprise_network_auth_service.h"
 #include "components/enterprise/net/core/prefs.h"
 #include "components/enterprise/net/core/proxy_provisioning_domain_manager.h"
 #include "components/enterprise/net/core/utils.h"
+#include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "net/traffic_annotation/network_traffic_annotation.h"
+#include "net/base/auth.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace enterprise_net {
 
 namespace {
+
+constexpr std::string_view kDisguisedErrorCodes[] = {
+    "403", "500", "502", "503", "504",
+};
+
+void RecordResultAndRunAuthCallback(
+    base::OnceCallback<void(EnterpriseProxyService::ProxyAuthChallengeResult,
+                            const std::optional<net::AuthCredentials>&)>
+        callback,
+    EnterpriseProxyService::ProxyAuthChallengeResult result,
+    const std::optional<net::AuthCredentials>& credentials) {
+  base::UmaHistogramEnumeration(
+      "Enterprise.SecureGateway.ProxyAuthChallengeResult", result);
+  std::move(callback).Run(result, credentials);
+}
+
+// Checks whether `realm` header value represents a disguised proxy error.
+// Currently, only supported error codes are 403, 500, 502, 503, 504.
+bool IsDisguisedErrorRealm(std::string_view realm) {
+  for (std::string_view code : kDisguisedErrorCodes) {
+    if (realm == code) {
+      return true;
+    }
+  }
+  return false;
+}
 
 const base::DictValue* FindMatchingCachedConfig(
     const base::Value& policy_val,
@@ -45,6 +77,24 @@ const base::DictValue* FindMatchingCachedConfig(
 }
 
 }  // namespace
+
+struct EnterpriseProxyService::PendingAuthRequest {
+  PendingAuthRequest(
+      base::OnceCallback<void(ProxyAuthChallengeResult,
+                              const std::optional<net::AuthCredentials>&)>
+          callback,
+      const ProvisioningDomainProxyConfig::ProxyEndpoint& proxy_endpoint)
+      : proxy_endpoint(proxy_endpoint) {
+    callbacks.push_back(std::move(callback));
+  }
+  ~PendingAuthRequest() = default;
+
+  std::vector<
+      base::OnceCallback<void(ProxyAuthChallengeResult,
+                              const std::optional<net::AuthCredentials>&)>>
+      callbacks;
+  ProvisioningDomainProxyConfig::ProxyEndpoint proxy_endpoint;
+};
 
 EnterpriseProxyService::EnterpriseProxyService(
     PrefService* pref_service,
@@ -95,6 +145,10 @@ EnterpriseProxyService::FindMatchingProxyEndpoint(
     const GURL& destination_url,
     const net::ProxyChain& proxy_chain) const {
   for (const auto& domain_manager : provisioning_domain_managers_) {
+    if (domain_manager->fetched_config().state ==
+        ProvisioningDomainProxyConfig::State::kFailedPermanent) {
+      continue;
+    }
     const auto* endpoint = enterprise_net::FindMatchingProxyEndpoint(
         domain_manager->fetched_config(), destination_url, proxy_chain);
     if (endpoint) {
@@ -118,7 +172,86 @@ EnterpriseProxyService::GetDynamicRoutingConfig() const {
   return merged_config;
 }
 
+void EnterpriseProxyService::HandleProxyAuthChallenge(
+    const net::AuthChallengeInfo& auth_info,
+    const GURL& destination_url,
+    const scoped_refptr<net::HttpResponseHeaders>& response_headers,
+    base::OnceCallback<void(ProxyAuthChallengeResult,
+                            const std::optional<net::AuthCredentials>&)>
+        callback) {
+  if (!auth_info.is_proxy) {
+    RecordResultAndRunAuthCallback(std::move(callback),
+                                   ProxyAuthChallengeResult::kNotApplicable,
+                                   std::nullopt);
+    return;
+  }
+
+  net::ProxyChain proxy_chain = net::ProxyChain::FromSchemeHostAndPort(
+      net::ProxyServer::SCHEME_HTTPS, auth_info.challenger.host(),
+      auth_info.challenger.port());
+
+  std::optional<ProvisioningDomainProxyConfig::ProxyEndpoint> matched_proxy =
+      FindMatchingProxyEndpoint(destination_url, proxy_chain);
+
+  if (!matched_proxy.has_value()) {
+    RecordResultAndRunAuthCallback(std::move(callback),
+                                   ProxyAuthChallengeResult::kNotApplicable,
+                                   std::nullopt);
+    return;
+  }
+
+  // If a matching route specifies a proxy endpoint with no auth config, return
+  // true for challenge handling but no credentials.
+  // TODO(crbug.com/542666426): This path also applies to PvD routes with
+  // invalid auth config types. We should correct this behaviour and make a
+  // distinction between the two.
+  if (!matched_proxy->auth.has_value() ||
+      matched_proxy->auth->type != AuthType::kProfileBearerToken) {
+    RecordResultAndRunAuthCallback(
+        std::move(callback), ProxyAuthChallengeResult::kNoCredentialsNeeded,
+        std::nullopt);
+    return;
+  }
+
+  if (IsDisguisedErrorRealm(auth_info.realm)) {
+    RecordResultAndRunAuthCallback(std::move(callback),
+                                   ProxyAuthChallengeResult::kDisguisedError,
+                                   std::nullopt);
+    return;
+  }
+
+  // Deduplicate concurrent auth requests for the same challenger host/port.
+  for (const auto& req : pending_auth_requests_) {
+    const auto& host_port =
+        req->proxy_endpoint.proxy_chain.First().host_port_pair();
+    if (host_port.host() == auth_info.challenger.host() &&
+        host_port.port() == auth_info.challenger.port()) {
+      req->callbacks.push_back(std::move(callback));
+      return;
+    }
+  }
+
+  auto request =
+      std::make_unique<PendingAuthRequest>(std::move(callback), *matched_proxy);
+  PendingAuthRequest* request_ptr = request.get();
+
+  auth_service_->FetchAccessToken(
+      matched_proxy->auth->scope,
+      base::BindOnce(&EnterpriseProxyService::OnProxyAuthTokenFetched,
+                     weak_ptr_factory_.GetWeakPtr(), request_ptr));
+
+  pending_auth_requests_.push_back(std::move(request));
+}
+
 void EnterpriseProxyService::Shutdown() {
+  for (auto& request : pending_auth_requests_) {
+    for (auto& cb : request->callbacks) {
+      RecordResultAndRunAuthCallback(
+          std::move(cb), ProxyAuthChallengeResult::kCredentialFetchFailure,
+          std::nullopt);
+    }
+  }
+  pending_auth_requests_.clear();
   pref_change_registrar_.RemoveAll();
   refreshing_managers_.clear();
   provisioning_domain_observations_.RemoveAllObservations();
@@ -224,6 +357,76 @@ void EnterpriseProxyService::RecreateProvisioningDomainManagers(
   }
   for (const auto& key : keys_to_remove) {
     update->Remove(key);
+  }
+}
+
+std::string EnterpriseProxyService::BuildBasicAuthUsername(
+    const std::vector<ProxyExtraHeader>& proxy_headers) const {
+  std::string profile_id;
+  if (profile_id_service_) {
+    std::optional<std::string> pid = profile_id_service_->GetProfileId();
+    if (pid.has_value()) {
+      profile_id = *pid;
+    }
+  }
+  std::string accept_languages;
+  if (pref_service_ &&
+      pref_service_->FindPreference(language::prefs::kAcceptLanguages)) {
+    accept_languages =
+        pref_service_->GetString(language::prefs::kAcceptLanguages);
+  }
+
+  net::HttpRequestHeaders resolved_proxy_headers =
+      ResolveExtraHeadersWithValues(proxy_headers, profile_id,
+                                    accept_languages);
+
+  std::vector<std::string> query_params;
+  for (const auto& [key, val] : resolved_proxy_headers.GetHeaderVector()) {
+    std::string escaped_key = base::EscapeQueryParamValue(key, true);
+    std::string escaped_val = base::EscapeQueryParamValue(val, true);
+    query_params.push_back(escaped_key + "=" + escaped_val);
+  }
+  return base::JoinString(query_params, "&");
+}
+
+void EnterpriseProxyService::OnProxyAuthTokenFetched(
+    PendingAuthRequest* request,
+    AccessTokenResult token_result) {
+  std::unique_ptr<PendingAuthRequest> owned_request;
+  auto it =
+      std::find_if(pending_auth_requests_.begin(), pending_auth_requests_.end(),
+                   [request](const std::unique_ptr<PendingAuthRequest>& r) {
+                     return r.get() == request;
+                   });
+  if (it != pending_auth_requests_.end()) {
+    owned_request = std::move(*it);
+    pending_auth_requests_.erase(it);
+  }
+
+  if (!owned_request) {
+    return;
+  }
+
+  if (!token_result.has_value()) {
+    for (auto& cb : owned_request->callbacks) {
+      RecordResultAndRunAuthCallback(
+          std::move(cb), ProxyAuthChallengeResult::kCredentialFetchFailure,
+          std::nullopt);
+    }
+    return;
+  }
+
+  std::string access_token = std::move(*token_result);
+  std::string username =
+      BuildBasicAuthUsername(owned_request->proxy_endpoint.extra_headers);
+  std::string password = access_token;
+
+  net::AuthCredentials credentials(base::UTF8ToUTF16(username),
+                                   base::UTF8ToUTF16(password));
+  for (auto& cb : owned_request->callbacks) {
+    RecordResultAndRunAuthCallback(
+        std::move(cb), ProxyAuthChallengeResult::kCredentialFetchSuccess,
+        credentials);
   }
 }
 

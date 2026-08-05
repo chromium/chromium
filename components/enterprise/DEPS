@@ -4,6 +4,7 @@ include_rules = [
   "+components/device_signals/core/common",
   "+components/enterprise/device_attestation/android",
   "+components/keyed_service",
+  "+components/language/core/browser",
   "+components/policy",
   "+components/pref_registry",
   "+components/prefs",

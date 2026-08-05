@@ -21,7 +21,6 @@
 #include "net/base/proxy_string_util.h"
 #include "net/http/http_util.h"
 #include "url/gurl.h"
-#include "url/url_constants.h"
 
 namespace enterprise_net {
 
@@ -496,6 +495,10 @@ const ProvisioningDomainProxyConfig::ProxyEndpoint* FindMatchingProxyEndpoint(
     const ProvisioningDomainProxyConfig& config,
     const GURL& destination_url,
     const net::ProxyChain& proxy_chain) {
+  if (!destination_url.is_valid()) {
+    return nullptr;
+  }
+
   for (const auto& rule : config.routing_rules) {
     if (!rule.destination_matchers.Matches(destination_url)) {
       continue;
@@ -508,6 +511,7 @@ const ProvisioningDomainProxyConfig::ProxyEndpoint* FindMatchingProxyEndpoint(
       }
     }
   }
+
   return nullptr;
 }
 
