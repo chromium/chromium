@@ -600,7 +600,7 @@ void BoxFragmentBuilder::PropagateBreakInfo(
              !child_layout_result.GetPhysicalFragment().IsBox());
       const auto* spanner_path =
           MakeGarbageCollected<ColumnSpannerPath>(Node(), child_spanner_path);
-      SetColumnSpannerPath(spanner_path);
+      SetColumnSpannerPath(*spanner_path);
       SetIsEmptySpannerParent(child_layout_result.IsEmptySpannerParent());
     }
   } else {

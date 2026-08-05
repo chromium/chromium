@@ -1045,7 +1045,7 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
         // so we don't set a spanner path, but since we did find a spanner, make
         // a note of it. This will make sure that we resolve our BFC block-
         // offset, so that we don't incorrectly appear to be self-collapsing.
-        container_builder_.SetHasColumnSpanner(true);
+        container_builder_.SetHasColumnSpanner();
         break;
       }
 
@@ -1055,7 +1055,7 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
           MakeGarbageCollected<ColumnSpannerPath>(To<BlockNode>(child));
       const auto* container_spanner_path =
           MakeGarbageCollected<ColumnSpannerPath>(Node(), child_spanner_path);
-      container_builder_.SetColumnSpannerPath(container_spanner_path);
+      container_builder_.SetColumnSpannerPath(*container_spanner_path);
 
       // In order to properly collapse column spanner margins, we need to know
       // if the column spanner's parent was empty, for example, in the case that

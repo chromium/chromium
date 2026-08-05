@@ -58,6 +58,12 @@ LayoutResult::LayoutResult(BoxFragmentBuilderPassKey passkey,
                            BoxFragmentBuilder* builder)
     : LayoutResult(std::move(physical_fragment),
                    static_cast<FragmentBuilder*>(builder)) {
+  if (builder->column_spanner_path_) {
+    EnsureRareData()->column_spanner_path = builder->column_spanner_path_;
+    bitfields_.is_empty_spanner_parent = builder->is_empty_spanner_parent_;
+  }
+  bitfields_.should_force_same_fragmentation_flow =
+      builder->should_force_same_fragmentation_flow_;
   bitfields_.is_initial_block_size_indefinite =
       builder->is_initial_block_size_indefinite_;
   intrinsic_block_size_ = builder->intrinsic_block_size_;
@@ -273,15 +279,8 @@ LayoutResult::LayoutResult(const PhysicalFragment* physical_fragment,
     EnsureRareData()->early_break = builder->early_break_;
   }
 
-  if (builder->column_spanner_path_) {
-    EnsureRareData()->column_spanner_path = builder->column_spanner_path_;
-    bitfields_.is_empty_spanner_parent = builder->is_empty_spanner_parent_;
-  }
-
   bitfields_.break_appeal = builder->break_appeal_;
 
-  bitfields_.should_force_same_fragmentation_flow =
-      builder->should_force_same_fragmentation_flow_;
   bitfields_.has_orthogonal_fallback_size_descendant =
       builder->has_orthogonal_fallback_size_descendant_;
 

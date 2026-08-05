@@ -36,6 +36,7 @@
 
 namespace blink {
 
+class ColumnSpannerPath;
 class PhysicalFragment;
 
 class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
@@ -579,6 +580,33 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
     return *early_break_;
   }
 
+  // There may be cases where a column spanner was previously found but is no
+  // longer accessible. For example, in simplified OOF layout, we may want to
+  // recreate a spanner break for an existing fragment being relaid out, but
+  // the spanner node is no longer available. In such cases,
+  // `has_column_spanner_` may be true while `column_spanner_path_` is not set.
+  void SetHasColumnSpanner() { has_column_spanner_ = true; }
+  void SetColumnSpannerPath(const ColumnSpannerPath& spanner_path) {
+    column_spanner_path_ = &spanner_path;
+    SetHasColumnSpanner();
+  }
+  bool FoundColumnSpanner() const {
+    DCHECK(has_column_spanner_ || !column_spanner_path_);
+    return has_column_spanner_;
+  }
+  void SetIsEmptySpannerParent(bool is_empty_spanner_parent) {
+    DCHECK(FoundColumnSpanner());
+    is_empty_spanner_parent_ = is_empty_spanner_parent;
+  }
+  bool IsEmptySpannerParent() const { return is_empty_spanner_parent_; }
+
+  void SetShouldForceSameFragmentationFlow() {
+    should_force_same_fragmentation_flow_ = true;
+  }
+  bool ShouldForceSameFragmentationFlow() const {
+    return should_force_same_fragmentation_flow_;
+  }
+
   // Creates the fragment. Can only be called once.
   const LayoutResult* ToBoxFragment() {
     DCHECK_NE(GetBoxType(), PhysicalFragment::kInlineBox);
@@ -792,6 +820,9 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   bool has_forced_break_ = false;
   bool has_seen_all_children_ = false;
   bool has_subsequent_children_ = false;
+  bool has_column_spanner_ = false;
+  bool is_empty_spanner_parent_ = false;
+  bool should_force_same_fragmentation_flow_ = false;
   bool is_math_fraction_ = false;
   bool is_math_operator_ = false;
   bool is_at_block_end_ = false;
@@ -841,6 +872,8 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   std::optional<wtf_size_t> table_cell_column_index_;
   wtf_size_t table_section_start_row_index_;
   Vector<LayoutUnit> table_section_row_offsets_;
+
+  const ColumnSpannerPath* column_spanner_path_ = nullptr;
 
   BreakTokenAlgorithmData* break_token_data_ = nullptr;
   const GridLayoutData* grid_layout_data_ = nullptr;

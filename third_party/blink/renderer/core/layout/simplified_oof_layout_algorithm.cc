@@ -50,7 +50,7 @@ void SimplifiedOofLayoutAlgorithm::ResumeColumnLayout(
   }
 
   // Carry over the IsCausedByColumnSpanner flag (stored in the break token).
-  container_builder_.SetHasColumnSpanner(true);
+  container_builder_.SetHasColumnSpanner();
 }
 
 const LayoutResult* SimplifiedOofLayoutAlgorithm::Layout() {
