@@ -10,6 +10,7 @@
 #include "base/types/strong_alias.h"
 #include "cc/paint/paint_record.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/used_font.h"
 #include "third_party/blink/renderer/core/paint/decoration_line_painter.h"
 #include "third_party/blink/renderer/core/paint/line_relative_rect.h"
@@ -48,9 +49,11 @@ struct TextDecorationFragmentContext {
  public:
   const FragmentItem* previous_fragment_on_line = nullptr;
   const FragmentItem* next_fragment_on_line = nullptr;
-  bool is_first_fragment_for_node = true;
-  bool is_last_fragment_for_node = true;
+  InlineCursor line_cursor;
 };
+
+CORE_EXPORT TextDecorationFragmentContext
+ComputeTextDecorationFragmentContext(const InlineCursor& cursor);
 
 // Holds the resolved metrics and styling for a single AppliedTextDecoration.
 // This immutable structure decouples index-specific properties from the overall
@@ -179,6 +182,19 @@ class CORE_EXPORT TextDecorationInfo {
 
   void ResolveDecorationInsets(wtf_size_t decoration_index,
                                ResolvedDecoration& decoration) const;
+
+  struct DecoratedRunMetrics {
+    float size_before;
+    float size_after;
+    float total_size;
+  };
+
+  // Returns the inline size before and after the current fragment within the
+  // contiguous decorated run, plus the total run size. Falls back to treating
+  // the current fragment as the whole run when no cursor is available.
+  DecoratedRunMetrics ComputeDecoratedRunMetrics(
+      const ResolvedDecoration& decoration,
+      wtf_size_t decoration_index) const;
 
   // The |ComputedStyle| of the target text/box to paint decorations for.
   const ComputedStyle& target_style_;

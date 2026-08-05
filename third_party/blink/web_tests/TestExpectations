@@ -911,8 +911,6 @@ crbug.com/666433 external/wpt/css/css-text-decor/text-emphasis-style-property-01
 crbug.com/666433 external/wpt/css/css-text-decor/text-emphasis-style-property-020.html [ Failure ]
 crbug.com/666433 external/wpt/css/css-text-decor/text-emphasis-style-property-020a.html [ Failure ]
 
-crbug.com/468928416 external/wpt/css/css-text-decor/text-decoration-inset-028.html [ Failure ]
-crbug.com/468928416 external/wpt/css/css-text-decor/text-decoration-inset-030.html [ Failure ]
 
 crbug.com/338842128 fast/table/border-collapsing/composited-cell-collapsed-border.html [ Failure ]
 crbug.com/338842128 fast/table/border-collapsing/composited-row-collapsed-border.html [ Failure ]

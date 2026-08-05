@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -65,6 +66,28 @@ inline bool ShouldUseDecoratingBox(const ComputedStyle& style) {
   return true;
 }
 
+LayoutUnit InlineSizeOfItem(const FragmentItem& item) {
+  return item.IsHorizontal() ? item.Size().width : item.Size().height;
+}
+
+// Returns true if |item| continues the run of fragments decorated by
+// |decoration|. Zero-sized fragments (e.g. collapsed spaces and forced line
+// breaks inside the decorated run) do not end the run, but non-text leaves
+// and fragments with different decorations do.
+bool ContinuesDecoratedRun(const FragmentItem* item,
+                           wtf_size_t decoration_index,
+                           const AppliedTextDecoration& decoration) {
+  if (!item || !item->IsText()) {
+    return false;
+  }
+  const AppliedTextDecorationVector& decorations =
+      item->Style().AppliedTextDecorations();
+  if (decoration_index >= decorations.size()) {
+    return false;
+  }
+  return decorations[decoration_index] == decoration;
+}
+
 bool HasSameDecorationAtIndexOnLine(const FragmentItem* item,
                                     wtf_size_t decoration_index,
                                     const AppliedTextDecoration& decoration) {
@@ -72,18 +95,16 @@ bool HasSameDecorationAtIndexOnLine(const FragmentItem* item,
     return false;
   }
   DCHECK(item->IsText());
-  const LayoutUnit inline_size =
-      item->IsHorizontal() ? item->Size().width : item->Size().height;
-  if (inline_size <= LayoutUnit()) {
-    return false;
-  }
+  DCHECK(!item->IsLineBreak());
+  return ContinuesDecoratedRun(item, decoration_index, decoration) &&
+         InlineSizeOfItem(*item) > LayoutUnit();
+}
 
-  const AppliedTextDecorationVector& decorations =
-      item->Style().AppliedTextDecorations();
-  if (decoration_index >= decorations.size()) {
-    return false;
+float ResolveInsetForFragment(float inset, float preceding_size) {
+  if (inset <= 0.0f) {
+    return preceding_size == 0.0f ? inset : 0.0f;
   }
-  return decorations[decoration_index] == decoration;
+  return std::max(inset - preceding_size, 0.0f);
 }
 
 bool NeedsFragmentContextForDecoration(
@@ -155,6 +176,31 @@ WaveDefinition MakeSpellingGrammarWave(float effective_zoom) {
 
 }  // namespace
 
+TextDecorationFragmentContext ComputeTextDecorationFragmentContext(
+    const InlineCursor& cursor) {
+  CHECK(RuntimeEnabledFeatures::CSSTextDecorationInsetEnabled());
+  TextDecorationFragmentContext fragment_context;
+  InlineCursor line_cursor = cursor;
+  line_cursor.ExpandRootToContainingBlock();
+  line_cursor.MoveTo(*cursor.CurrentItem());
+  fragment_context.line_cursor = line_cursor;
+
+  InlineCursor previous_cursor = line_cursor;
+  previous_cursor.MoveToPreviousInlineLeafOnLine();
+  if (previous_cursor.CurrentItem() &&
+      previous_cursor.CurrentItem()->IsText() &&
+      !previous_cursor.CurrentItem()->IsLineBreak()) {
+    fragment_context.previous_fragment_on_line = previous_cursor.CurrentItem();
+  }
+  InlineCursor next_cursor = line_cursor;
+  next_cursor.MoveToNextInlineLeafOnLine();
+  if (next_cursor.CurrentItem() && next_cursor.CurrentItem()->IsText() &&
+      !next_cursor.CurrentItem()->IsLineBreak()) {
+    fragment_context.next_fragment_on_line = next_cursor.CurrentItem();
+  }
+  return fragment_context;
+}
+
 TextDecorationInfo::TextDecorationInfo(
     LineRelativeOffset local_origin,
     LayoutUnit width,
@@ -207,6 +253,62 @@ bool TextDecorationInfo::NeedsFragmentContextForInset(
     }
   }
   return false;
+}
+
+TextDecorationInfo::DecoratedRunMetrics
+TextDecorationInfo::ComputeDecoratedRunMetrics(
+    const ResolvedDecoration& decoration,
+    wtf_size_t decoration_index) const {
+  LayoutUnit size_before;
+  LayoutUnit size_after;
+  if (fragment_context_.line_cursor.Current()) {
+    const AppliedTextDecoration& applied = *decoration.applied_text_decoration;
+    for (InlineCursor cursor = fragment_context_.line_cursor;;) {
+      cursor.MoveToPreviousInlineLeaf();
+      const FragmentItem* item = cursor.CurrentItem();
+      if (!ContinuesDecoratedRun(item, decoration_index, applied)) {
+        break;
+      }
+      size_before += InlineSizeOfItem(*item);
+    }
+    for (InlineCursor cursor = fragment_context_.line_cursor;;) {
+      cursor.MoveToNextInlineLeaf();
+      const FragmentItem* item = cursor.CurrentItem();
+      if (!ContinuesDecoratedRun(item, decoration_index, applied)) {
+        break;
+      }
+      size_after += InlineSizeOfItem(*item);
+    }
+
+    // Visual-order traversal can encounter unrelated bidi content between
+    // fragments of the same text node. Account for all fragments of the node
+    // so wrapped insets are still accumulated in logical order.
+    const FragmentItem* current_item =
+        fragment_context_.line_cursor.CurrentItem();
+    DCHECK(current_item);
+    DCHECK(current_item->GetLayoutObject());
+    LayoutUnit size_before_in_node;
+    LayoutUnit size_after_in_node;
+    bool found_current = false;
+    InlineCursor cursor = fragment_context_.line_cursor;
+    cursor.MoveTo(*current_item->GetLayoutObject());
+    for (; cursor.Current(); cursor.MoveToNextForSameLayoutObject()) {
+      const FragmentItem* item = cursor.CurrentItem();
+      if (item == current_item) {
+        found_current = true;
+      } else if (found_current) {
+        size_after_in_node += InlineSizeOfItem(*item);
+      } else {
+        size_before_in_node += InlineSizeOfItem(*item);
+      }
+    }
+    DCHECK(found_current);
+    size_before = std::max(size_before, size_before_in_node);
+    size_after = std::max(size_after, size_after_in_node);
+  }
+  return {.size_before = size_before.ToFloat(),
+          .size_after = size_after.ToFloat(),
+          .total_size = (size_before + width_ + size_after).ToFloat()};
 }
 
 wtf_size_t TextDecorationInfo::AppliedDecorationCount() const {
@@ -394,6 +496,17 @@ void TextDecorationInfo::ResolveDecorationInsets(
         std::clamp(decoration.resolved_thickness / 2.0f, 1.0f, 2.0f);
     start_inset = auto_inset;
     end_inset = auto_inset;
+  } else if (applied_text_decoration.BoxDecorationBreak() ==
+             EBoxDecorationBreak::kSlice) {
+    const DecoratedRunMetrics run_metrics =
+        ComputeDecoratedRunMetrics(decoration, decoration_index);
+    const float resolved_start =
+        FloatValueForLength(inset.GetStart(), run_metrics.total_size);
+    const float resolved_end =
+        FloatValueForLength(inset.GetEnd(), run_metrics.total_size);
+    start_inset =
+        ResolveInsetForFragment(resolved_start, run_metrics.size_before);
+    end_inset = ResolveInsetForFragment(resolved_end, run_metrics.size_after);
   } else {
     const bool has_previous_same_decoration = HasSameDecorationAtIndexOnLine(
         fragment_context_.previous_fragment_on_line, decoration_index,
@@ -405,33 +518,16 @@ void TextDecorationInfo::ResolveDecorationInsets(
       return;
     }
 
-    bool apply_start = true;
-    bool apply_end = true;
-    const EBoxDecorationBreak box_decoration_break =
-        applied_text_decoration.BoxDecorationBreak();
-    if (box_decoration_break == EBoxDecorationBreak::kSlice) {
-      apply_start = fragment_context_.is_first_fragment_for_node &&
-                    !has_previous_same_decoration;
-      apply_end = fragment_context_.is_last_fragment_for_node &&
-                  !has_next_same_decoration;
-    } else {
-      apply_start = !has_previous_same_decoration;
-      apply_end = !has_next_same_decoration;
-    }
-
-    // TODO(crbug.com/498974811): For `box-decoration-break: slice`,
-    // percentages should resolve against the sum of all decoration
-    // segments.
     const float percentage_reference = Width().ToFloat();
-    if (apply_start) {
+    if (!has_previous_same_decoration) {
       start_inset = FloatValueForLength(inset.GetStart(), percentage_reference);
     }
-    if (apply_end) {
+    if (!has_next_same_decoration) {
       end_inset = FloatValueForLength(inset.GetEnd(), percentage_reference);
     }
   }
 
-  if (conservative_inset_bounds_) {
+  if (conservative_inset_bounds_ && !is_auto) {
     // For overflow computations, positive inset values could under-estimate
     // bounds on interior fragments where those trims are not applied.
     // Keep only negative (expanding) contributions.

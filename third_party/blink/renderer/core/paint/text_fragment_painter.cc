@@ -283,34 +283,6 @@ Path GetCanonicalDisclosurePath(const ComputedStyle& style,
   return result.Finalize();
 }
 
-TextDecorationFragmentContext ComputeTextDecorationFragmentContext(
-    const InlineCursor& cursor) {
-  CHECK(RuntimeEnabledFeatures::CSSTextDecorationInsetEnabled());
-  TextDecorationFragmentContext fragment_context;
-  const FragmentItem& text_item = *cursor.CurrentItem();
-  fragment_context.is_first_fragment_for_node = text_item.IsFirstForNode();
-  fragment_context.is_last_fragment_for_node = text_item.IsLastForNode();
-
-  InlineCursor line_cursor = cursor;
-  line_cursor.ExpandRootToContainingBlock();
-  line_cursor.MoveTo(*cursor.CurrentItem());
-
-  InlineCursor previous_cursor = line_cursor;
-  previous_cursor.MoveToPreviousInlineLeafOnLine();
-  if (previous_cursor.CurrentItem() &&
-      previous_cursor.CurrentItem()->IsText() &&
-      !previous_cursor.CurrentItem()->IsLineBreak()) {
-    fragment_context.previous_fragment_on_line = previous_cursor.CurrentItem();
-  }
-  InlineCursor next_cursor = line_cursor;
-  next_cursor.MoveToNextInlineLeafOnLine();
-  if (next_cursor.CurrentItem() && next_cursor.CurrentItem()->IsText() &&
-      !next_cursor.CurrentItem()->IsLineBreak()) {
-    fragment_context.next_fragment_on_line = next_cursor.CurrentItem();
-  }
-  return fragment_context;
-}
-
 }  // namespace
 
 void TextFragmentPainter::PaintSymbol(const LayoutObject* layout_object,

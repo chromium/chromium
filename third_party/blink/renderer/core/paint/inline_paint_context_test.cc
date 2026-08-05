@@ -121,12 +121,14 @@ TEST_F(InlinePaintContextTest,
   const ComputedStyle& style = target_layout_object->StyleRef();
 
   constexpr LayoutUnit kDecorationWidth(40);
+  // First and last fragment of the run, but without a line cursor.
+  TextDecorationFragmentContext fragment_context;
   TextDecorationInfo non_conservative_info(
       LineRelativeOffset(LayoutUnit(), LayoutUnit()), kDecorationWidth, style,
       UsedFont(*style.GetFont(), 1.0f),
       /*inline_context=*/nullptr, TextDecorationLine::kNone, Color(),
       /*decoration_override=*/nullptr, IsSvgText(false),
-      /*svg_resource_scaling_factor=*/1.0f, TextDecorationFragmentContext(),
+      /*svg_resource_scaling_factor=*/1.0f, fragment_context,
       /*conservative_inset_bounds=*/false);
   TextDecorationInfo conservative_info(
       LineRelativeOffset(LayoutUnit(), LayoutUnit()), kDecorationWidth, style,
@@ -156,6 +158,76 @@ TEST_F(InlinePaintContextTest,
 
   EXPECT_FLOAT_EQ(0.0f, non_conservative_geometry.line.width());
   EXPECT_FLOAT_EQ(40.0f, conservative_geometry.line.width());
+}
+
+TEST_F(InlinePaintContextTest, DecorationInsetAccumulatesAcrossRun) {
+  ScopedCSSTextDecorationInsetForTest text_decoration_inset(true);
+  LoadAhem();
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #target {
+      font: 10px/1 Ahem;
+      text-decoration-line: underline;
+      text-decoration-inset: 40%;
+      box-decoration-break: slice;
+    }
+    </style>
+    <div><u id="target">AB<span>CD</span>EF</u></div>
+  )HTML");
+
+  const LayoutObject* target_layout_object =
+      GetLayoutObjectByElementId("target");
+  ASSERT_TRUE(target_layout_object);
+  const ComputedStyle& style = target_layout_object->StyleRef();
+
+  // The decorated run consists of three 20px fragments. A 40% inset resolves
+  // to 24px against the 60px run, consuming each edge fragment and carrying
+  // the remaining 4px into both edges of the middle fragment.
+  const LayoutObject* ab_text = target_layout_object->SlowFirstChild();
+  ASSERT_TRUE(ab_text && ab_text->IsText());
+  const LayoutObject* span = ab_text->NextSibling();
+  ASSERT_TRUE(span);
+  const LayoutObject* cd_text = span->SlowFirstChild();
+  ASSERT_TRUE(cd_text && cd_text->IsText());
+  const LayoutObject* ef_text = span->NextSibling();
+  ASSERT_TRUE(ef_text && ef_text->IsText());
+
+  constexpr float kFragmentWidth = 20.0f;
+  constexpr float kInset = 24.0f;
+  constexpr float kRemainingTrim = 4.0f;
+  TextDecorationOffset decoration_offset(style);
+
+  auto compute_underline = [&](const LayoutObject& text) {
+    InlineCursor cursor;
+    cursor.MoveTo(text);
+    EXPECT_TRUE(cursor.Current());
+    TextDecorationFragmentContext fragment_context;
+    fragment_context.line_cursor = cursor;
+    TextDecorationInfo info(
+        LineRelativeOffset(LayoutUnit(), LayoutUnit()),
+        LayoutUnit(kFragmentWidth), style, UsedFont(*style.GetFont(), 1.0f),
+        /*inline_context=*/nullptr, TextDecorationLine::kNone, Color(),
+        /*decoration_override=*/nullptr, IsSvgText(false),
+        /*svg_resource_scaling_factor=*/1.0f, fragment_context);
+    EXPECT_EQ(info.AppliedDecorationCount(), 1u);
+    const ResolvedDecoration decoration = info.ResolveDecorationAt(0);
+    EXPECT_TRUE(decoration.HasUnderline());
+    return info.ComputeUnderlineLineData(decoration, decoration_offset);
+  };
+
+  const DecorationGeometry ab_geometry = compute_underline(*ab_text);
+  EXPECT_FLOAT_EQ(kInset, ab_geometry.line.x());
+  EXPECT_FLOAT_EQ(0.0f, ab_geometry.line.width());
+
+  const DecorationGeometry cd_geometry = compute_underline(*cd_text);
+  EXPECT_FLOAT_EQ(kRemainingTrim, cd_geometry.line.x());
+  EXPECT_FLOAT_EQ(kFragmentWidth - 2 * kRemainingTrim,
+                  cd_geometry.line.width());
+
+  const DecorationGeometry ef_geometry = compute_underline(*ef_text);
+  EXPECT_FLOAT_EQ(0.0f, ef_geometry.line.x());
+  EXPECT_FLOAT_EQ(0.0f, ef_geometry.line.width());
 }
 
 TEST_F(InlinePaintContextTest, VerticalAlign) {
