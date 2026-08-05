@@ -92,7 +92,8 @@ const CGFloat kInputPlateStackViewSpacing = 6.0f;
 /// top edge when scrolling (crbug.com/464259064).
 const CGFloat kInputPlateStackViewVerticalPadding = 0.0f;
 /// The top padding with the expanded input plate when there are attachments.
-const CGFloat kInputPlateStackViewExpandedWithAttachmentsTopPadding = 10.0f;
+const CGFloat kInputPlateAttachmentsPadding = 10.0f;
+const CGFloat kInputPlateCobrowseAttachmentsPadding = 12.0f;
 /// The bottom padding with the expanded input plate when AIM is available.
 const CGFloat kInputPlateStackViewExpandedBottomPadding = 10.0f;
 /// The horizontal padding for the input plate stack view.
@@ -102,19 +103,10 @@ const NSDirectionalEdgeInsets kInputPlateStackViewPadding = {.leading = 0.0f,
 /// toolbar).
 const NSDirectionalEdgeInsets kInputPlatePadding = {.leading = 8.0,
                                                     .trailing = 5.0};
+const NSDirectionalEdgeInsets kInputPlateCobrowsePadding = {.leading = 12.0,
+                                                            .trailing = 5.0};
 /// The spacing added after the Lens and Voice buttons in compact mode.
 const CGFloat kShortcutsTrailingPaddingCompact = 3.0f;
-/// The padding of the toolbar.
-///
-/// Note: While padding is offset to visually align the clear button's visual
-/// bounding box, all other UI elements maintain symmetrical centering.
-const UIEdgeInsets kToolbarPadding = {.left = kInputPlatePadding.leading,
-                                      .right = kInputPlatePadding.leading};
-/// The padding of the carousel. Same as
-/// `kInputPlateStackViewExpandedWithAttachmentsTopPadding` to keep symmetry.
-const UIEdgeInsets kCarouselPadding = {
-    .left = kInputPlateStackViewExpandedWithAttachmentsTopPadding,
-    .right = kInputPlateStackViewExpandedWithAttachmentsTopPadding};
 
 /// The font size for the AIM mode button title.
 const CGFloat kAIMButtonFontSize = 14.0f;
@@ -1072,8 +1064,7 @@ UIImage* SendButtonImage(BOOL highlighted,
   if (_carouselContainer.hidden) {
     _topPaddingConstraint.constant = kInputPlateStackViewVerticalPadding;
   } else {
-    _topPaddingConstraint.constant =
-        kInputPlateStackViewExpandedWithAttachmentsTopPadding;
+    _topPaddingConstraint.constant = [self inputPlateAttachmentsPadding];
   }
 }
 
@@ -1506,7 +1497,7 @@ UIImage* SendButtonImage(BOOL highlighted,
         constraintEqualToConstant:kButtonStackViewDimension]
   ]];
   buttonsStackView.layoutMarginsRelativeArrangement = YES;
-  buttonsStackView.layoutMargins = kToolbarPadding;
+  buttonsStackView.layoutMargins = [self toolbarPadding];
 
   return buttonsStackView;
 }
@@ -1795,6 +1786,24 @@ UIImage* SendButtonImage(BOOL highlighted,
   return action;
 }
 
+// The padding for the attachments section of the input plate.
+- (CGFloat)inputPlateAttachmentsPadding {
+  if (_entrypoint == ComposeboxEntrypoint::kCobrowse) {
+    return kInputPlateCobrowseAttachmentsPadding;
+  }
+
+  return kInputPlateAttachmentsPadding;
+}
+
+/// The padding of the carousel. Same as `inputPlateAttachmentsPadding` to keep
+/// symmetry.
+- (UIEdgeInsets)carouselPadding {
+  return {
+      .left = [self inputPlateAttachmentsPadding],
+      .right = [self inputPlateAttachmentsPadding],
+  };
+}
+
 /// Initializes and configures the collection view for the attachment carousel.
 - (void)setupCarouselContainer {
   // Carousel view
@@ -1818,7 +1827,7 @@ UIImage* SendButtonImage(BOOL highlighted,
   // The outer view has minimal padding to allow the carousel space for multiple
   // attachments when they overflow. This ensures that there's still some
   // padding when the carousel is scrolled to either end.
-  _carouselView.contentInset = kCarouselPadding;
+  _carouselView.contentInset = [self carouselPadding];
   _carouselView.showsHorizontalScrollIndicator = NO;
 
   _carouselContainer = [[UIView alloc] init];
@@ -1958,7 +1967,7 @@ UIImage* SendButtonImage(BOOL highlighted,
 
 // Updates the side paddings of the input plate stack view.
 - (void)updateInputPlateStackViewPadding {
-  CGFloat baseTrailingPadding = kInputPlatePadding.trailing;
+  CGFloat baseTrailingPadding = [self inputPlatePadding].trailing;
   if (_theme.inputPlatePosition == ComposeboxInputPlatePosition::kiPad) {
     baseTrailingPadding = 14.0f;
   }
@@ -1976,14 +1985,14 @@ UIImage* SendButtonImage(BOOL highlighted,
 
     _inputPlateStackView.layoutMarginsRelativeArrangement = YES;
     // Ensure we do not lose the margins on the sides when in compact mode.
-    _inputPlateStackView.layoutMargins =
-        UIEdgeInsetsMake(0, kInputPlatePadding.leading, 0, trailingPadding);
+    _inputPlateStackView.layoutMargins = UIEdgeInsetsMake(
+        0, [self inputPlatePadding].leading, 0, trailingPadding);
     // Margins are applied on the input plate, remove the margins on the
     // omnibox.
     _omniboxContainer.directionalLayoutMargins = NSDirectionalEdgeInsetsZero;
   } else {
     _inputPlateStackView.layoutMarginsRelativeArrangement = NO;
-    NSDirectionalEdgeInsets margins = kInputPlatePadding;
+    NSDirectionalEdgeInsets margins = [self inputPlatePadding];
     margins.trailing = baseTrailingPadding;
     _omniboxContainer.directionalLayoutMargins = margins;
   }
@@ -2517,6 +2526,23 @@ UIImage* SendButtonImage(BOOL highlighted,
 
   [self rebuildTabsAccordion];
   _tabsAccordionStackView.alpha = 1;
+}
+
+/// The side padding for the input plate stack view content (e.g. omnibox,
+/// toolbar).
+- (NSDirectionalEdgeInsets)inputPlatePadding {
+  return _entrypoint == ComposeboxEntrypoint::kCobrowse
+             ? kInputPlateCobrowsePadding
+             : kInputPlatePadding;
+}
+
+/// The padding of the toolbar.
+///
+/// Note: While padding is offset to visually align the clear button's visual
+/// bounding box, all other UI elements maintain symmetrical centering.
+- (UIEdgeInsets)toolbarPadding {
+  return {.left = [self inputPlatePadding].leading,
+          .right = [self inputPlatePadding].leading};
 }
 
 @end
