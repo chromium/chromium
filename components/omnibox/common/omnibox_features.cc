@@ -588,6 +588,8 @@ const base::FeatureParam<bool> kAskGLensChipRoute{
     &kWebUIOmniboxAskGAboutThisPage, "Omnibox_AskGLensChipRoute", false};
 const base::FeatureParam<bool> kAskGSwapIcon{
     &kWebUIOmniboxAskGAboutThisPage, "Omnibox_AskGSwapIcon", false};
+const base::FeatureParam<bool> kAskGSwapSuggestionIcon{
+    &kWebUIOmniboxAskGAboutThisPage, "Omnibox_AskGSwapSuggestionIcon", false};
 const base::FeatureParam<bool> kAskGCurrentTabChip{
     &kWebUIOmniboxAskGAboutThisPage, "Omnibox_AskGCurrentTabChip", false};
 const base::FeatureParam<bool> kAskGLensIcon{
