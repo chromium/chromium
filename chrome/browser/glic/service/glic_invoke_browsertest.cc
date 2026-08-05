@@ -158,6 +158,26 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
+                       InvokeWithNewConversationSpawnsNewInstance) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_OK_AND_ASSIGN(auto* instance1, OpenGlicForActiveTab());
+  EXPECT_EQ(GetInstanceForTab(tab), instance1);
+
+  base::test::TestFuture<void> success_future;
+  GlicInvokeOptions options(glic::Target(*tab, glic::NewConversation{}),
+                            mojom::InvocationSource::kOsButton);
+  options.on_success = success_future.GetCallback();
+
+  coordinator().Invoke(std::move(options));
+
+  EXPECT_TRUE(success_future.Wait());
+
+  auto* instance2 = GetInstanceForTab(tab);
+  ASSERT_TRUE(instance2);
+  EXPECT_NE(instance1, instance2);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
                        InvokeFailsWhenProfileNotEnabled) {
   ScopedGlicCapability scoped_glic_capability(GetProfile(), false);
 
