@@ -155,4 +155,23 @@ TEST_F(ContentWebStateTest,
   EXPECT_EQ(initial_item_count, navigation_manager->GetItemCount());
 }
 
+// Tests that reload with web::ReloadType::ORIGINAL_REQUEST_URL is a no-op
+// (falls back to a normal reload) when navigation manager only has the
+// initial NavigationEntry that content::WebContents is created with (i.e. no
+// real navigation has happened yet).
+TEST_F(ContentWebStateTest,
+       ReloadWithOriginalTypeWithInitialNavigationEntryOnly) {
+  NavigationManager* navigation_manager =
+      content_web_state()->GetNavigationManager();
+  ASSERT_FALSE(navigation_manager->GetPendingItem());
+  ASSERT_TRUE(navigation_manager->GetLastCommittedItem());
+  int initial_item_count = navigation_manager->GetItemCount();
+
+  navigation_manager->Reload(web::ReloadType::ORIGINAL_REQUEST_URL,
+                             /*check_for_repost=*/false);
+
+  EXPECT_FALSE(navigation_manager->GetPendingItem());
+  EXPECT_EQ(initial_item_count, navigation_manager->GetItemCount());
+}
+
 }  // namespace web
