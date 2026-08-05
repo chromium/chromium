@@ -726,7 +726,8 @@ class AutocompleteMediator
                         keyword,
                         name,
                         /* enteredViaSpace= */ false,
-                        suggestion.getStarterPackId()));
+                        suggestion.getStarterPackId(),
+                        /* isStarterPackPreview= */ true));
         return true;
     }
 
@@ -1054,13 +1055,14 @@ class AutocompleteMediator
     @Override
     public void onSuggestionFocused(AutocompleteMatch suggestion) {
         if (!isInInputSession()) return;
+        if (mIgnoreOmniboxItemSelection) return;
 
         if (!maybeEnterKeywordMode(suggestion)) {
             // Clear keyword mode only if it was a temporary preview triggered by highlighting
-            // a starter pack. hasPreviewText() prevents clearing explicitly typed keyword modes.
+            // a starter pack.
             if (mAutocompleteInput != null
                     && mAutocompleteInput.getSiteSearchData() != null
-                    && mAutocompleteInput.hasPreviewText()) {
+                    && mAutocompleteInput.getSiteSearchData().isStarterPackPreview) {
                 onKeywordModeEntered(null);
             }
             setOmniboxEditingText(suggestion.getFillIntoEdit(), suggestion);

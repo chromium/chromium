@@ -83,13 +83,14 @@ public class AutocompleteInput implements UserData {
         public final String fullName;
         public final boolean enteredViaSpace;
         public final @StarterPackId int starterPackId;
+        public final boolean isStarterPackPreview;
 
         public SiteSearchData(String keyword, String fullName) {
-            this(keyword, fullName, false, StarterPackId.NONE);
+            this(keyword, fullName, false, StarterPackId.NONE, false);
         }
 
         public SiteSearchData(String keyword, String fullName, boolean enteredViaSpace) {
-            this(keyword, fullName, enteredViaSpace, StarterPackId.NONE);
+            this(keyword, fullName, enteredViaSpace, StarterPackId.NONE, false);
         }
 
         public SiteSearchData(
@@ -97,10 +98,20 @@ public class AutocompleteInput implements UserData {
                 String fullName,
                 boolean enteredViaSpace,
                 @StarterPackId int starterPackId) {
+            this(keyword, fullName, enteredViaSpace, starterPackId, false);
+        }
+
+        public SiteSearchData(
+                String keyword,
+                String fullName,
+                boolean enteredViaSpace,
+                @StarterPackId int starterPackId,
+                boolean isStarterPackPreview) {
             this.keyword = keyword;
             this.fullName = fullName;
             this.enteredViaSpace = enteredViaSpace;
             this.starterPackId = starterPackId;
+            this.isStarterPackPreview = isStarterPackPreview;
         }
 
         @Override

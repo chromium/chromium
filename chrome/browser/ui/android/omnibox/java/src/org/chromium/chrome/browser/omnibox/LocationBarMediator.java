@@ -959,7 +959,9 @@ class LocationBarMediator
 
         if (mUrlCoordinator.shouldAutocomplete()) {
             String siteSearchLabel = null;
-            if (defaultMatch != null && defaultMatch.getAssociatedKeyword() != null) {
+            if (mCurrentInput.getSiteSearchData() != null) {
+                siteSearchLabel = mCurrentInput.getSiteSearchData().fullName;
+            } else if (defaultMatch != null && defaultMatch.getAssociatedKeyword() != null) {
                 TemplateUrlService templateUrlService = mTemplateUrlServiceSupplier.get();
                 if (templateUrlService != null) {
                     siteSearchLabel =

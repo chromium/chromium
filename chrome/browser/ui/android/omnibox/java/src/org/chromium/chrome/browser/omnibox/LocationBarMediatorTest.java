@@ -4335,6 +4335,27 @@ public class LocationBarMediatorTest {
     }
 
     @Test
+    public void testOnSuggestionsChanged_withSiteSearchData_preservesSiteSearchLabel() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+
+        mSessionState.getAutocompleteInput().setAutocompleteState(AutocompleteState.ENABLED);
+        mSessionState.activate(mContext, mWebContents, mProfileSupplier, null);
+        mSessionState.getAutocompleteInput().setUserText("t");
+        mSessionState
+                .getAutocompleteInput()
+                .setSiteSearchData(new SiteSearchData("bing.com", "Search Microsoft Bing"));
+        mMediator.beginInput(mSessionState.getAutocompleteInput());
+        doReturn(true).when(mUrlCoordinator).shouldAutocomplete();
+
+        AutocompleteMatch match = mock(AutocompleteMatch.class);
+        doReturn("est").when(match).getInlineAutocompletion();
+        mMediator.onSuggestionsChanged(match, true);
+
+        verify(mUrlCoordinator).setAutocompleteText("t", "est", null, "Search Microsoft Bing");
+    }
+
+    @Test
     public void testUrlBarAccessibilityOrder() {
         mActivationChipVisibilitySupplier.set(true);
         verify(mUrlBar, atLeastOnce())

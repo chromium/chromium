@@ -1089,11 +1089,16 @@ public class AutocompleteMediatorUnitTest {
         var session = createEmptySession();
         mMediator.beginInput(session);
         assertTrue("Session should be active", mMediator.isInInputSession());
-        mMediator.allowPendingItemSelection();
 
         session.getAutocompleteInput().setPreviewText("preview");
         session.getAutocompleteInput()
-                .setSiteSearchData(new SiteSearchData("kw", "name", false, StarterPackId.NONE));
+                .setSiteSearchData(
+                        new SiteSearchData(
+                                "kw",
+                                "name",
+                                false,
+                                StarterPackId.NONE,
+                                /* isStarterPackPreview= */ true));
 
         AutocompleteMatch match =
                 new AutocompleteMatchBuilder()
@@ -1101,12 +1106,70 @@ public class AutocompleteMediatorUnitTest {
                         .setFillIntoEdit("something")
                         .build();
 
+        mMediator.allowPendingItemSelection();
         mMediator.onSuggestionFocused(match);
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         assertTrue(session.getAutocompleteInput().getSiteSearchData() == null);
         verify(mAutocompleteDelegate).setOmniboxEditingText("something");
+    }
+
+    @Test
+    @SmallTest
+    public void onSuggestionFocused_whileTypingInKeywordMode_doesNotClearKeywordMode() {
+        mMediator.onNativeInitialized();
+        FuseboxSessionState session = createEmptySession();
+        mMediator.beginInput(session);
+        assertTrue("Session should be active", mMediator.isInInputSession());
+
+        SiteSearchData siteSearchData =
+                new SiteSearchData("bing.com", "Search Microsoft Bing", false, StarterPackId.NONE);
+        session.getAutocompleteInput().setSiteSearchData(siteSearchData);
+
+        session.getAutocompleteInput().setPreviewText("test");
+
+        AutocompleteMatch match =
+                new AutocompleteMatchBuilder()
+                        .setType(OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED)
+                        .setFillIntoEdit("bing.com test")
+                        .build();
+
+        mMediator.onSuggestionFocused(match);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        assertEquals(siteSearchData, session.getAutocompleteInput().getSiteSearchData());
+    }
+
+    @Test
+    @SmallTest
+    public void onSuggestionFocused_arrowDownInKeywordMode_doesNotClearKeywordMode() {
+        mMediator.onNativeInitialized();
+        FuseboxSessionState session = createEmptySession();
+        mMediator.beginInput(session);
+        assertTrue("Session should be active", mMediator.isInInputSession());
+
+        SiteSearchData siteSearchData =
+                new SiteSearchData("bing.com", "Search Microsoft Bing", false, StarterPackId.NONE);
+        session.getAutocompleteInput().setSiteSearchData(siteSearchData);
+        session.getAutocompleteInput().setPreviewText("test");
+
+        // Simulate user pressing Down Arrow to navigate items
+        mMediator.allowPendingItemSelection();
+
+        AutocompleteMatch match1 =
+                new AutocompleteMatchBuilder()
+                        .setType(OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED)
+                        .setFillIntoEdit("t")
+                        .build();
+
+        mMediator.onSuggestionFocused(match1);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        assertEquals(siteSearchData, session.getAutocompleteInput().getSiteSearchData());
+        verify(mAutocompleteDelegate).setOmniboxEditingText("t");
     }
 
     @Test
