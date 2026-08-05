@@ -123,20 +123,9 @@ bool AwContentRendererClient::HandleNavigation(
     blink::WebFrame* frame,
     const blink::WebURLRequest& request,
     blink::WebNavigationType type,
-    blink::WebNavigationPolicy default_policy,
-    bool is_redirect) {
+    blink::WebNavigationPolicy default_policy) {
   // Only GETs can be overridden.
   if (!request.HttpMethod().Equals("GET"))
-    return false;
-
-  // Any navigation from loadUrl, and goBack/Forward are considered application-
-  // initiated and hence will not yield a shouldOverrideUrlLoading() callback.
-  // Webview classic does not consider reload application-initiated so we
-  // continue the same behavior.
-  bool application_initiated = type == blink::kWebNavigationTypeBackForward;
-
-  // Don't offer application-initiated navigations unless it's a redirect.
-  if (application_initiated && !is_redirect)
     return false;
 
   bool is_outermost_main_frame = frame->IsOutermostMainFrame();

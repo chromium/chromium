@@ -248,8 +248,7 @@ class CONTENT_EXPORT ContentRendererClient {
                                 blink::WebFrame* frame,
                                 const blink::WebURLRequest& request,
                                 blink::WebNavigationType type,
-                                blink::WebNavigationPolicy default_policy,
-                                bool is_redirect);
+                                blink::WebNavigationPolicy default_policy);
 #endif
 
   // Notifies the embedder that the given frame is requesting the resource at

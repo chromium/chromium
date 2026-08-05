@@ -68,8 +68,7 @@ class AwContentRendererClient : public content::ContentRendererClient,
                         blink::WebFrame* frame,
                         const blink::WebURLRequest& request,
                         blink::WebNavigationType type,
-                        blink::WebNavigationPolicy default_policy,
-                        bool is_redirect) override;
+                        blink::WebNavigationPolicy default_policy) override;
   std::unique_ptr<blink::WebPrescientNetworking> CreatePrescientNetworking(
       content::RenderFrame* render_frame) override;
   void SetRuntimeFeaturesDefaultsBeforeBlinkInitialization() override;

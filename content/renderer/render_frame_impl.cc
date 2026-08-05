@@ -5714,7 +5714,7 @@ void RenderFrameImpl::BeginNavigation(
   if (!url.is_empty() && !use_archive && !IsURLHandledByNetworkStack(url) &&
       GetContentClient()->renderer()->HandleNavigation(
           this, frame_, info->url_request, info->navigation_type,
-          info->navigation_policy, false /* is_redirect */)) {
+          info->navigation_policy)) {
     return;
   }
 #endif
