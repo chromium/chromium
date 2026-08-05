@@ -46,7 +46,28 @@
         },
         "feedback_file": {
           "type": "string",
-          "description": "Path to the JSON file containing the feedback/constraints."
+          "description": "Path to the JSON file containing the feedback/constraints (required for BASIC_PATH)."
+        },
+        "target_files_to_analyze": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "List of product files to mine Gerrit review comments from (DEEP_PATH)."
+        },
+        "cl_to_analyze": {
+          "type": "string",
+          "description": "Specific Gerrit CL number to fetch comments from (DEEP_PATH)."
+        },
+        "target_component": {
+          "type": "string",
+          "description": "Path to the component directory to analyze (e.g., 'content/browser/renderer_host') (BREADTH_PATH)."
+        },
+        "breadth_strategies": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["STATIC_ARCH", "CL_SAMPLING", "CONSUMER_USAGE"]
+          },
+          "description": "Strategies to execute for BREADTH_PATH."
         },
         "environment": { "$ref": "#/definitions/EnvironmentDef" },
         "active_protocol": {
@@ -55,7 +76,13 @@
           "description": "Identifies the active protocol."
         }
       },
-      "required": ["target_skill", "feedback_file", "environment", "active_protocol"]
+      "required": ["target_skill", "environment", "active_protocol"],
+      "oneOf": [
+        { "required": ["feedback_file"] },
+        { "required": ["target_files_to_analyze"] },
+        { "required": ["cl_to_analyze"] },
+        { "required": ["target_component"] }
+      ]
     }
   }
 }

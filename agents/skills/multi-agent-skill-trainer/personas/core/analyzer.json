@@ -13,6 +13,11 @@
       "Read and analyze the feedback file to understand the root cause of the ",
       "failure or gap."
     ],
+    "noise_filtered": [
+      "If analyzing Gerrit review comments, filter out conversational noise ",
+      "(greetings, nits, 'done' acknowledgments) and focus strictly on ",
+      "actionable code corrections."
+    ],
     "responsible_persona_identified": [
       "Determine which persona in the target skill should have caught this issue ",
       "based on its role and existing checklist."
