@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
+#import "ios/chrome/browser/search_engine_choice/search_engine_choice_learn_more/ui/search_engine_choice_learn_more_consumer.h"
 
 @class SearchEngineChoiceLearnMoreViewController;
 
@@ -21,7 +21,8 @@
 @end
 
 // A base view controller for showing an informational screen.
-@interface SearchEngineChoiceLearnMoreViewController : UIViewController
+@interface SearchEngineChoiceLearnMoreViewController
+    : UIViewController <SearchEngineChoiceLearnMoreConsumer>
 
 // View controller delegate.
 @property(nonatomic, weak) id<SearchEngineChoiceLearnMoreDelegate> delegate;

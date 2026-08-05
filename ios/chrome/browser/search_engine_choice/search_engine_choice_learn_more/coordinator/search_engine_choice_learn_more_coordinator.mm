@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/search_engine_choice/search_engine_choice_learn_more/coordinator/search_engine_choice_learn_more_coordinator.h"
 
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/search_engine_choice/search_engine_choice_learn_more/ui/search_engine_choice_learn_more_view_controller.h"
 #import "ios/chrome/browser/search_engine_choice/ui/search_engine_choice_constants.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -24,6 +25,8 @@
 - (void)start {
   [super start];
   _viewController = [[SearchEngineChoiceLearnMoreViewController alloc] init];
+  _viewController.thirdParagraphStringID =
+      IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_BODY_THIRD_PARAGRAPH;
   _viewController.delegate = self;
   // Creates the navigation controller and presents.
   UINavigationController* navigationController = [[UINavigationController alloc]

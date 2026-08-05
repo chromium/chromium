@@ -4,6 +4,7 @@
 
 source_set("ui") {
   sources = [
+    "search_engine_choice_learn_more_consumer.h",
     "search_engine_choice_learn_more_view_controller.h",
     "search_engine_choice_learn_more_view_controller.mm",
   ]
