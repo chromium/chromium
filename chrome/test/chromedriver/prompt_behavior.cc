@@ -4,7 +4,10 @@
 
 #include "chrome/test/chromedriver/prompt_behavior.h"
 
+#include <algorithm>
+#include <array>
 #include <memory>
+#include <string_view>
 #include <unordered_map>
 
 #include "base/values.h"
@@ -24,6 +27,11 @@ extern const char kBeforeUnload[] = "beforeUnload";
 extern const char kConfirm[] = "confirm";
 extern const char kPrompt[] = "prompt";
 }  // namespace dialog_types
+
+namespace {
+constexpr char kDefaultPromptKey[] = "default";
+constexpr char kFilePromptKey[] = "file";
+}  // namespace
 
 PromptBehavior::PromptBehavior() : PromptBehavior(true) {}
 
@@ -94,10 +102,10 @@ Status GetDefaultHandlerConfiguration(
     const base::DictValue& prompt_behavior_dict,
     bool w3c_compliant,
     PromptHandlerConfiguration& result) {
-  if (prompt_behavior_dict.contains("default")) {
+  if (prompt_behavior_dict.contains(kDefaultPromptKey)) {
     // Set default value to the one specified in the capability dict.
     Status status = ParsePromptHandlerConfiguration(
-        prompt_behavior_dict.Find("default"), w3c_compliant, result);
+        prompt_behavior_dict.Find(kDefaultPromptKey), w3c_compliant, result);
     return status;
   }
 
@@ -167,6 +175,29 @@ Status PromptBehavior::Create(bool w3c_compliant,
                               PromptBehavior& result) {
   result = PromptBehavior(w3c_compliant);
 
+  // Every key must be a known prompt handler key. Unknown keys are rejected so
+  // that invalid handler configurations are not silently ignored.
+  static const std::array<std::string_view, 6> kValidPromptKeys = {
+      dialog_types::kAlert,   dialog_types::kBeforeUnload,
+      dialog_types::kConfirm, kDefaultPromptKey,
+      kFilePromptKey,         dialog_types::kPrompt};
+  for (auto it : prompt_behavior_dict) {
+    if (!std::ranges::contains(kValidPromptKeys, it.first)) {
+      return Status(kInvalidArgument,
+                    "Unexpected key " + it.first +
+                        " in capability `unhandledPromptBehavior`");
+    }
+
+    PromptHandlerConfiguration configuration;
+    Status status = ParsePromptHandlerConfiguration(&it.second, w3c_compliant,
+                                                    configuration);
+    if (status.IsError()) {
+      return status;
+    }
+  }
+
+  // The BiDi mapper applies the file prompt handler. ChromeDriver only stores
+  // configurations for JavaScript dialogs.
   // Maps dialog type name to reference to the corresponding handler.
   std::vector<std::tuple<std::string, PromptHandlerConfiguration&>>
       prompt_types_to_fill = {
