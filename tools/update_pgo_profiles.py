@@ -92,18 +92,41 @@ def _update(args):
   """
   profile_name = args.override_filename or _read_profile_name(args.target)
   profile_path = os.path.join(_PGO_PROFILE_DIR, profile_name)
-  if os.path.isfile(profile_path):
-    _mark_profile_as_used(profile_path)
-    return
 
-  gsutil = download_from_google_storage.Gsutil(
-      download_from_google_storage.GSUTIL_DEFAULT_PATH)
-  gs_path = 'gs://' + args.gs_url_base.strip('/') + '/' + profile_name
-  code = gsutil.call('cp', gs_path, profile_path)
-  if code != 0:
-    raise RuntimeError('gsutil failed to download "%s"' % gs_path)
+  if not os.path.exists(_PGO_PROFILE_DIR):
+    os.makedirs(_PGO_PROFILE_DIR, exist_ok=True)
 
-  _remove_unused_profiles(profile_name)
+  lock_file_path = profile_path + '.lock'
+  with open(lock_file_path, 'a') as lock_file:
+    try:
+      import fcntl
+      fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
+    except OSError as e:
+      raise RuntimeError(f'Failed to lock "{lock_file_path}": {e}') from e
+    except (ImportError, AttributeError):
+      # fcntl is POSIX-only. On non-POSIX platforms (e.g. Windows), skip file
+      # locking and fall back to un-synchronized profile download.
+      pass
+
+    try:
+      if os.path.isfile(profile_path):
+        _mark_profile_as_used(profile_path)
+        return
+
+      gsutil = download_from_google_storage.Gsutil(
+          download_from_google_storage.GSUTIL_DEFAULT_PATH)
+      gs_path = 'gs://' + args.gs_url_base.strip('/') + '/' + profile_name
+      code = gsutil.call('cp', gs_path, profile_path)
+      if code != 0:
+        raise RuntimeError('gsutil failed to download "%s"' % gs_path)
+
+      _remove_unused_profiles(profile_name)
+    finally:
+      try:
+        import fcntl
+        fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
+      except Exception:
+        pass
 
 
 def _get_profile_path(args):
