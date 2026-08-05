@@ -351,6 +351,47 @@ TEST_F(TabAndroidTest, DestroyWebContentsSlowShutdown_StopsNavigations) {
   task_environment_.RunUntilIdle();
 }
 
+namespace {
+class ObserverUAFTestObserver : public content::WebContentsObserver {
+ public:
+  explicit ObserverUAFTestObserver(content::WebContents* contents)
+      : content::WebContentsObserver(contents) {}
+
+  void DidStartNavigation(content::NavigationHandle* handle) override {
+    EXPECT_TRUE(handle != nullptr);
+    did_start_called_ = true;
+  }
+
+  bool did_start_called_ = false;
+};
+}  // namespace
+
+TEST_F(TabAndroidTest, GracefulShutdownNavigationObserverSafety) {
+  content::RenderViewHostTestEnabler rvh_test_enabler;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      chrome::android::kTabAndroidGracefulShutdown);
+
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(profile_.get()));
+  content::WebContents* raw_web_contents = web_contents.get();
+
+  std::unique_ptr<TabAndroid> tab = TabAndroid::CreateForTesting(
+      profile_.get(), kTabId + 1, std::move(web_contents));
+
+  tab->DestroyWebContentsSlowShutdownForTesting();
+
+  ObserverUAFTestObserver test_observer(raw_web_contents);
+
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://example.com"), raw_web_contents->GetPrimaryMainFrame());
+
+  EXPECT_TRUE(test_observer.did_start_called_);
+
+  task_environment_.RunUntilIdle();
+}
+
 TEST_F(TabAndroidTest,
        DestroyWebContentsSlowShutdown_ImmediateDestructionOnProfileShutdown) {
   content::RenderViewHostTestEnabler rvh_test_enabler;

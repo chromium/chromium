@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.blink.mojom.SerializedBlob;
@@ -169,49 +170,55 @@ public class ShareServiceImplTest {
         int[] shareError = new int[1];
         boolean[] shareCalled = new boolean[1];
 
-        ShareServiceImpl.WebShareDelegate mockDelegate =
-                new ShareServiceImpl.WebShareDelegate() {
-                    @Override
-                    public boolean canShare() {
-                        return true;
-                    }
+        WindowAndroid windowAndroid =
+                new WindowAndroid(ContextUtils.getApplicationContext(), false);
+        try {
+            ShareServiceImpl.WebShareDelegate mockDelegate =
+                    new ShareServiceImpl.WebShareDelegate() {
+                        @Override
+                        public boolean canShare() {
+                            return true;
+                        }
 
-                    @Override
-                    public void share(ShareParams params) {
-                        shareCalled[0] = true;
-                        params.getCallback().onTargetChosen(null);
-                    }
+                        @Override
+                        public void share(ShareParams params) {
+                            shareCalled[0] = true;
+                            params.getCallback().onTargetChosen(null);
+                        }
 
-                    @Override
-                    public WindowAndroid getWindowAndroid() {
-                        return null;
-                    }
+                        @Override
+                        public WindowAndroid getWindowAndroid() {
+                            return windowAndroid;
+                        }
 
-                    @Override
-                    public void terminateRendererDueToBadMessage(int reason) {
-                        badMessageReason[0] = reason;
-                    }
-                };
+                        @Override
+                        public void terminateRendererDueToBadMessage(int reason) {
+                            badMessageReason[0] = reason;
+                        }
+                    };
 
-        ShareServiceImpl shareService = new ShareServiceImpl(mockDelegate);
-        Url url = new Url();
-        url.url = "";
+            ShareServiceImpl shareService = new ShareServiceImpl(mockDelegate);
+            Url url = new Url();
+            url.url = "";
 
-        shareService.share(
-                "title",
-                "text",
-                url,
-                null,
-                new ShareService.Share_Response() {
-                    @Override
-                    public void call(int error) {
-                        shareError[0] = error;
-                    }
-                });
+            shareService.share(
+                    "title",
+                    "text",
+                    url,
+                    null,
+                    new ShareService.Share_Response() {
+                        @Override
+                        public void call(int error) {
+                            shareError[0] = error;
+                        }
+                    });
 
-        Assert.assertTrue(shareCalled[0]);
-        Assert.assertEquals(ShareError.OK, shareError[0]);
-        Assert.assertEquals(0, badMessageReason[0]);
+            Assert.assertTrue(shareCalled[0]);
+            Assert.assertEquals(ShareError.OK, shareError[0]);
+            Assert.assertEquals(0, badMessageReason[0]);
+        } finally {
+            windowAndroid.destroy();
+        }
     }
 
     // Verifies that ShareServiceImpl preserves file names when creating temporary shared files.
@@ -259,5 +266,53 @@ public class ShareServiceImplTest {
                 }
             }
         }
+    }
+
+    @Test
+    @SmallTest
+    public void testShareWhenWebContentsDestroyed() {
+        int[] shareError = new int[1];
+
+        ShareServiceImpl.WebShareDelegate mockDelegate =
+                new ShareServiceImpl.WebShareDelegate() {
+                    @Override
+                    public boolean canShare() {
+                        // Simulates mWebContents.isDestroyed() returning true.
+                        return false;
+                    }
+
+                    @Override
+                    public void share(ShareParams params) {
+                        Assert.fail("share() should not be called when canShare() is false.");
+                    }
+
+                    @Override
+                    public WindowAndroid getWindowAndroid() {
+                        throw new IllegalStateException("Native WebContents already destroyed");
+                    }
+
+                    @Override
+                    public void terminateRendererDueToBadMessage(int reason) {}
+                };
+
+        ShareServiceImpl shareService = new ShareServiceImpl(mockDelegate);
+        Url url = new Url();
+        url.url = "https://example.com";
+
+        Assert.assertFalse(mockDelegate.canShare());
+
+        shareService.share(
+                "title",
+                "text",
+                url,
+                null,
+                new ShareService.Share_Response() {
+                    @Override
+                    public void call(int error) {
+                        shareError[0] = error;
+                    }
+                });
+
+        Assert.assertEquals(ShareError.INTERNAL_ERROR, shareError[0]);
     }
 }
