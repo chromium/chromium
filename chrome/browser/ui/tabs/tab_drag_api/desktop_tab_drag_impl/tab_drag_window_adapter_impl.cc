@@ -215,7 +215,6 @@ void TabDragWindowAdapterImpl::EndWindowMoveLoop() {
   }
 }
 
-// TODO(crbug.com/501070793) Implement this using the TabStripAPI.
 base::expected<void, mojo_base::mojom::ErrorPtr>
 TabDragWindowAdapterImpl::MigrateTabs(
     tabs_api::TabDragWindowId target_window_id,

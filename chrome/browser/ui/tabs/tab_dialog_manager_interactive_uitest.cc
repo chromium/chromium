@@ -100,7 +100,6 @@ IN_PROC_BROWSER_TEST_F(TabDialogManagerDesktopWidgetUiTest,
 
 // TODO(crbug.com/430291260): macOS does not forward the focus to the dialog
 // when the contents views::WebView is focused.
-// TODO(crbug.com/431143409): widget activation does not work on Wayland.
 #if !BUILDFLAG(IS_MAC)
 // Tests that the modal dialog is activated when the contents views::WebView
 // is focused.

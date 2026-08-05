@@ -497,11 +497,6 @@ void TabMenuModel::Build(int index) {
             send_tab_to_self::EntryPointDisplayReason::kOfferFeature) {
       BuildSendTabToSelfSubmenu(index, indices);
     } else {
-      if (send_tab_to_self_reason !=
-          send_tab_to_self::EntryPointDisplayReason::kOfferFeature) {
-        // TODO(crbug.com/488252159): Add edge cases (e.g. not signed in
-        // or no target devices available) when UI is fully specified.
-      }
       BuildLegacySendTabToSelfItem();
     }
   }

@@ -156,9 +156,8 @@ tabs::TabInterface* TabListBridge::OpenTab(const GURL& url,
   }
   CHECK(index == TabStripModel::kNoTab || tab_strip_->ContainsIndex(index));
 
-  // TODO(crbug.com/460650221): It's a bit of a code smell to reach in and grab
-  // the delegate from TabStripModel, but it avoids introducing new dependencies
-  // here.
+  // It's a bit of a code smell to reach in and grab the delegate from
+  // TabStripModel, but it avoids introducing new dependencies here.
   TabStripModelDelegate* delegate = tab_strip_->delegate();
   delegate->AddTabAt(url, index, foreground);
   int index_to_retrieve =
@@ -213,9 +212,8 @@ tabs::TabInterface* TabListBridge::DuplicateTab(tabs::TabHandle tab) {
   const int index = GetIndexOfTab(tab);
   CHECK_NE(index, TabStripModel::kNoTab);
 
-  // TODO(crbug.com/460650221): It's a bit of a code smell to reach in and grab
-  // the delegate from TabStripModel, but it avoids introducing new dependencies
-  // here.
+  // It's a bit of a code smell to reach in and grab the delegate from
+  // TabStripModel, but it avoids introducing new dependencies here.
   TabStripModelDelegate* delegate = tab_strip_->delegate();
   if (!delegate->CanDuplicateContentsAt(index)) {
     return nullptr;
