@@ -55,7 +55,7 @@ const PromoStyleValues kStandardPromoStyle = {
     12.0,  // kButtonTitleHorizontalContentInset
     8.0,   // kButtonTitleVerticalContentInset
     8.0,   // kButtonCornerRadius
-    5.0,   // kCloseButtonTrailingMargin
+    0.0,   // kCloseButtonTrailingMargin
     0.0,   // kCloseButtonTopMargin
     13.0,  // kMainPromoSubViewSpacing
     13.0,  // kButtonStackViewSubViewSpacing
