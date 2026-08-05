@@ -11,7 +11,7 @@
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_observer.h"
 #include "ui/base/models/dialog_model.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace bookmarks {
 class BookmarkNode;
@@ -24,7 +24,7 @@ class BookmarkAccountStorageMoveDialogDelegate
       public BookmarkMergedSurfaceServiceObserver {
  public:
   explicit BookmarkAccountStorageMoveDialogDelegate(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       const bookmarks::BookmarkNode* source,
       const bookmarks::BookmarkNode* destination);
   ~BookmarkAccountStorageMoveDialogDelegate() override;
@@ -51,7 +51,7 @@ class BookmarkAccountStorageMoveDialogDelegate
   void BookmarkAllUserNodesRemoved() override {}
 
  private:
-  raw_ptr<Browser> browser_;
+  raw_ptr<BrowserWindowInterface> browser_;
   raw_ptr<BookmarkMergedSurfaceService> bookmark_service_;
   const raw_ptr<const bookmarks::BookmarkNode> dialog_source_node_;
   const raw_ptr<const bookmarks::BookmarkNode> dialog_destination_node_;

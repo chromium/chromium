@@ -8,7 +8,7 @@
 #include "base/functional/callback_helpers.h"
 #include "ui/base/interaction/element_identifier.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace bookmarks {
 class BookmarkNode;
@@ -37,7 +37,7 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kBookmarkAccountStorageMoveDialogCancelButton);
 // Original Profile instead of `browser`. It will create a new browser window if
 // one doesn't exist already.
 void ShowBookmarkAccountStorageMoveDialog(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const bookmarks::BookmarkNode* node,
     const bookmarks::BookmarkNode* target_folder,
     size_t index,
@@ -61,7 +61,7 @@ void ShowBookmarkAccountStorageMoveDialog(
 // Original Profile instead of `browser`. It will create a new browser window if
 // one doesn't exist already.
 void ShowBookmarkAccountStorageUploadDialog(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const bookmarks::BookmarkNode* node,
     base::OnceClosure closed_callback = base::DoNothing());
 

@@ -340,8 +340,7 @@ void BookmarksMessageHandler::HandleSingleUploadClicked(
   BrowserWindowInterface* const browser =
       ProfileBrowserCollection::GetForProfile(profile)->GetLastActiveBrowser();
   ShowBookmarkAccountStorageUploadDialog(
-      browser ? browser->GetBrowserForMigrationOnly() : nullptr,
-      bookmarks::GetBookmarkNodeByID(model, id));
+      browser, bookmarks::GetBookmarkNodeByID(model, id));
 }
 
 void BookmarksMessageHandler::UpdateCanEditBookmarks() {

@@ -5,12 +5,12 @@
 #include "chrome/browser/ui/views/bookmarks/bookmark_account_storage_move_dialog_delegate.h"
 
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 
 BookmarkAccountStorageMoveDialogDelegate::
     BookmarkAccountStorageMoveDialogDelegate(
-        Browser* browser,
+        BrowserWindowInterface* browser,
         const bookmarks::BookmarkNode* source,
         const bookmarks::BookmarkNode* destination)
     : browser_(browser),
