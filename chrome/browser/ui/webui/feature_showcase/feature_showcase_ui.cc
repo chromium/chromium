@@ -13,6 +13,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
@@ -303,7 +304,9 @@ void FeatureShowcaseUI::CreatePageHandler(
 
 void FeatureShowcaseUI::CreateGeminiPageHandler(
     mojo::PendingReceiver<feature_showcase::mojom::GeminiPageHandler> handler) {
-  gemini_handler_ = std::make_unique<GeminiHandler>(std::move(handler));
+  gemini_handler_ = std::make_unique<GeminiHandler>(
+      std::move(handler),
+      glic::GlicKeyedService::Get(Profile::FromWebUI(web_ui())));
 }
 
 void FeatureShowcaseUI::CreateGoogleLensPageHandler(
