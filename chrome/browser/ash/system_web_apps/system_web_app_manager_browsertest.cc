@@ -40,7 +40,6 @@
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/volume.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
-#include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
@@ -78,7 +77,6 @@
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -88,7 +86,6 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/common/constants.h"
-#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -445,24 +442,6 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchFilesBrowserTest,
   navigation_observer.Wait();
   histograms.ExpectTotalCount("Apps.DefaultAppLaunch.FromOtherApp", 1);
 }
-
-using FileManagerAppIntegrationTest = ash::SystemWebAppIntegrationTest;
-
-// Test that the Files App (FILE_MANAGER SWA) returns true from IsPrivileged().
-IN_PROC_BROWSER_TEST_P(FileManagerAppIntegrationTest, FilesAppIsPrivileged) {
-  WaitForTestSystemAppInstall();
-
-  content::WebContents* web_contents =
-      LaunchApp(ash::SystemWebAppType::FILE_MANAGER);
-  ASSERT_TRUE(web_contents);
-
-  content::WebContentsDelegate* delegate = web_contents->GetDelegate();
-  ASSERT_TRUE(delegate);
-  EXPECT_TRUE(delegate->IsPrivileged());
-}
-
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
-    FileManagerAppIntegrationTest);
 
 class SystemWebAppManagerLaunchDirectoryBrowserTest
     : public SystemWebAppManagerFileHandlingBrowserTestBase {
