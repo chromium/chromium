@@ -244,9 +244,6 @@ public class OtherDevicesShortcutController implements Destroyable {
         if (ChromeFeatureList.sSendTabToSelfDynamicShortcuts.isEnabled()) {
             List<TargetDeviceInfo> devices =
                     SendTabToSelfAndroidBridge.getAllTargetDeviceInfos(mProfile);
-            // TODO(crbug.com/484887324): Consider filtering out devices which won't show up in the
-            // "Recent Tabs" page - this may happen if a device has no eligible open tabs.
-
             IdentityManager identityManager =
                     IdentityServicesProvider.get().getIdentityManager(mProfile);
             AccountInfo accountInfo =
@@ -255,8 +252,6 @@ public class OtherDevicesShortcutController implements Destroyable {
 
             // LauncherShortcutActivity may create a dynamic shortcut (with rank 0), which should
             // always appear before the STTS shortcuts, so start at rank 1 here.
-            // TODO(crbug.com/484887324): Introduce a common manager class for all dynamic
-            // shortcuts.
             int nextRank = 1;
             // Limit the number of devices to avoid overcrowding the share sheet and the launcher.
             // The list of devices is sorted, so the most-recently-used devices will be used for
@@ -284,7 +279,6 @@ public class OtherDevicesShortcutController implements Destroyable {
 
                 // Note: A Person can also have a name and an icon, but those are not used for the
                 // display of DirectShare targets.
-                // TODO(crbug.com/484887324): Is there any point in providing name/icon/key/uri?
                 Person person = new Person.Builder().setImportant(true).build();
 
                 PersistableBundle shortcutExtras = new PersistableBundle();
