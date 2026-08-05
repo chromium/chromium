@@ -197,9 +197,10 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
 
 class StreamingSanitizer : public GarbageCollected<StreamingSanitizer> {
  public:
-  StreamingSanitizer(Sanitizer* sanitizer, Sanitizer::Mode mode)
+  StreamingSanitizer(const Sanitizer* sanitizer, Sanitizer::Mode mode)
       : sanitizer_(sanitizer), mode_(mode) {}
 
+  static StreamingSanitizer* SafeFor(StreamingSanitizer*);
   bool Sanitize(Node* node) {
     return sanitizer_->SanitizeSingleNode(node, mode_) ==
            Sanitizer::Action::kKeep;
@@ -224,7 +225,7 @@ class StreamingSanitizer : public GarbageCollected<StreamingSanitizer> {
   void Trace(Visitor* visitor) const { visitor->Trace(sanitizer_); }
 
  private:
-  Member<Sanitizer> sanitizer_;
+  Member<const Sanitizer> sanitizer_;
   Sanitizer::Mode mode_;
 };
 

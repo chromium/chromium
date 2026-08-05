@@ -54,5 +54,6 @@
 
     // Used by document patching
     [CEReactions, Reflect, RuntimeEnabled=DeclarativeFragment] attribute boolean buffer;
+    [CEReactions, Reflect, RuntimeEnabled=DeclarativeFragment] attribute DOMString sanitize;
     [CEReactions, Reflect=for, RuntimeEnabled=DocumentPatching] attribute DOMString htmlFor;
 };

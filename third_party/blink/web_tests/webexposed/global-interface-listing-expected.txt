@@ -5430,6 +5430,7 @@ interface HTMLTemplateElement : HTMLElement
     getter buffer
     getter content
     getter htmlFor
+    getter sanitize
     getter shadowRootAdoptedStyleSheets
     getter shadowRootClonable
     getter shadowRootCustomElementRegistry
@@ -5441,6 +5442,7 @@ interface HTMLTemplateElement : HTMLElement
     method constructor
     setter buffer
     setter htmlFor
+    setter sanitize
     setter shadowRootAdoptedStyleSheets
     setter shadowRootClonable
     setter shadowRootCustomElementRegistry

@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/trustedtypes/trusted_type_policy_factory.h"
 #include "third_party/blink/renderer/core/xlink_names.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
@@ -1516,6 +1517,24 @@ void StreamingSanitizer::DidParseDocument(Document* document) {
     case Sanitizer::Action::kKeep:
       NOTREACHED();
   }
+}
+
+// static
+StreamingSanitizer* StreamingSanitizer::SafeFor(StreamingSanitizer* parent) {
+  CHECK(RuntimeEnabledFeatures::DeclarativeFragmentEnabled());
+  if (!parent) {
+    return MakeGarbageCollected<StreamingSanitizer>(
+        SanitizerBuiltins::GetDefaultSafe(), Sanitizer::Mode::kSafe);
+  }
+
+  if (parent->mode_ == Sanitizer::Mode::kSafe) {
+    return parent;
+  }
+  Sanitizer* clone = MakeGarbageCollected<Sanitizer>();
+  clone->setFrom(*parent->sanitizer_);
+  clone->removeUnsafe();
+  return MakeGarbageCollected<StreamingSanitizer>(clone,
+                                                  Sanitizer::Mode::kSafe);
 }
 
 }  // namespace blink

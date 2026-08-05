@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/html/parser/atomic_html_token.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
+#include "third_party/blink/renderer/core/sanitizer/sanitizer.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -358,7 +359,12 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
   void Trace(Visitor* visitor) const {
     visitor->Trace(node_);
     visitor->Trace(next_item_in_stack_);
+    visitor->Trace(sanitizer_);
   }
+
+  void SetSanitizer(StreamingSanitizer* sanitizer) { sanitizer_ = sanitizer; }
+
+  StreamingSanitizer* GetSanitizer() const { return sanitizer_.Get(); }
 
  private:
   void SetNextItemInStack(HTMLStackItem* item) {
@@ -397,6 +403,8 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
 
   // This member is maintained by HTMLElementStack.
   Member<HTMLStackItem> next_item_in_stack_{nullptr};
+
+  Member<StreamingSanitizer> sanitizer_;
 
   HTMLTokenName token_name_;
   AtomicString namespace_uri_;

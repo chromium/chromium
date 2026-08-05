@@ -1211,6 +1211,7 @@ html element template
     property buffer
     property content
     property htmlFor
+    property sanitize
     property shadowRootAdoptedStyleSheets
     property shadowRootClonable
     property shadowRootCustomElementRegistry

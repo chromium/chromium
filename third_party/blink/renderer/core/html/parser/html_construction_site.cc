@@ -463,17 +463,48 @@ void HTMLConstructionSite::QueueTask(HTMLConstructionSiteTask& task,
     FlushPendingText();
   }
 
-  if (sanitizer_ && task.child && task.parent &&
-      !task.parent->IsDocumentNode() &&
+  if (task.child && task.parent && !task.parent->IsDocumentNode() &&
       task.operation != HTMLConstructionSiteTask::Operation::kTakeAllChildren) {
-    CHECK(RuntimeEnabledFeatures::StreamingSanitizerEnabled());
-    if (!sanitizer_->Sanitize(task.child)) {
-      return;
+    if (auto* active_sanitizer = ActiveSanitizer(task.child.Get())) {
+      if (!active_sanitizer->Sanitize(task.child)) {
+        return;
+      }
     }
   }
 
   AdjustInsertionLocation(task);
   task_queue_.push_back(task);
+}
+
+StreamingSanitizer* HTMLConstructionSite::ActiveSanitizer(
+    Node* node_being_inserted) const {
+  if (!RuntimeEnabledFeatures::StreamingSanitizerEnabled()) {
+    return nullptr;
+  }
+
+  auto* default_sanitizer = sanitizer_.Get();
+
+  if (!RuntimeEnabledFeatures::DeclarativeFragmentEnabled()) {
+    return default_sanitizer;
+  }
+
+  HTMLStackItem* top = open_elements_.TopStackItem();
+
+  // This is needed because sanitization might take place after the <template
+  // sanitize> element is already added to the stack.
+  if (top && node_being_inserted && top->GetNode() == node_being_inserted) {
+    top = top->NextItemInStack();
+  }
+
+  if (!top) {
+    return default_sanitizer;
+  }
+
+  if (StreamingSanitizer* patch_sanitizer = top->GetSanitizer()) {
+    return patch_sanitizer;
+  }
+
+  return default_sanitizer;
 }
 
 void HTMLConstructionSite::AttachLater(InsertionLocation location,
@@ -911,7 +942,7 @@ void HTMLConstructionSite::AdjustInsertionLocation(
   if (IsEmpty()) {
     return;
   }
-  if (sanitizer_) {
+  if (auto* active_sanitizer = ActiveSanitizer()) {
     // Find the first inclusive ancestor of task.parent that is not replaced
     // with its children by the sanitizer.
     // Using Find here as it might not be the topmost item due to foster
@@ -920,7 +951,8 @@ void HTMLConstructionSite::AdjustInsertionLocation(
     // doing this at the same time as foster parenting.
     for (HTMLStackItem* parent_item =
              open_elements_.Find(DynamicTo<Element>(task.parent.Get()));
-         parent_item && sanitizer_->ShouldReplaceWithChildren(task.parent);
+         parent_item &&
+         active_sanitizer->ShouldReplaceWithChildren(task.parent);
          parent_item = parent_item->NextItemInStack()) {
       task.parent = parent_item->GetNode();
     }
@@ -1035,10 +1067,10 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
           ? template_element->FastGetAttribute(html_names::kForAttr)
           : g_null_atom;
 
-  if (sanitizer_ &&
+  auto* active_sanitizer = ActiveSanitizer();
+  if (active_sanitizer &&
       (!declarative_shadow_root_mode.IsNull() || !patch_target.IsNull())) {
-    CHECK(RuntimeEnabledFeatures::StreamingSanitizerEnabled());
-    bool ok = sanitizer_->Sanitize(template_element);
+    bool ok = active_sanitizer->Sanitize(template_element);
     if (!ok ||
         !template_element->FastHasAttribute(html_names::kShadowrootmodeAttr)) {
       declarative_shadow_root_mode = String();
@@ -1102,8 +1134,10 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
     }
   }
 
+  HTMLStackItem* stack_item = HTMLStackItem::Create(template_element, token);
+
   auto current_insertion_location = CurrentInsertionLocation();
-  open_elements_.Push(HTMLStackItem::Create(template_element, token));
+  open_elements_.Push(stack_item);
   if (!should_attach_template) {
     return;
   }
@@ -1113,6 +1147,16 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
     CHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
     UseCounter::Count(OwnerDocumentForCurrentNode(), WebFeature::kHTMLPatching);
     template_element->SetPatch(patch);
+    if (RuntimeEnabledFeatures::DeclarativeFragmentEnabled()) {
+      const AtomicString& sanitize_val =
+          template_element->FastGetAttribute(html_names::kSanitizeAttr);
+      if (!sanitize_val.IsNull() &&
+          (sanitize_val.empty() ||
+           EqualIgnoringAsciiCase(sanitize_val, "sanitize"))) {
+        stack_item->SetSanitizer(StreamingSanitizer::SafeFor(sanitizer_.Get()));
+      }
+    }
+
     if (!patch_target.empty() && !patch->is_buffered()) {
       return;
     }
@@ -1177,8 +1221,10 @@ void HTMLConstructionSite::InsertScriptElement(AtomicHTMLToken* token) {
       .SetAlreadyStarted(ShouldMarkScriptAlreadyStarted());
   HTMLScriptElement* element = nullptr;
   const auto* is_attribute = token->GetAttributeItem(html_names::kIsAttr);
+  auto* active_sanitizer = ActiveSanitizer();
   bool sanitizer_allows_is_attribute =
-      !sanitizer_ || sanitizer_->AllowIsAttribute(html_names::kScriptTag);
+      !active_sanitizer ||
+      active_sanitizer->AllowIsAttribute(html_names::kScriptTag);
   if (is_attribute && sanitizer_allows_is_attribute) {
     element = To<HTMLScriptElement>(OwnerDocumentForCurrentNode().CreateElement(
         html_names::kScriptTag, flags, is_attribute->Value(),
@@ -1366,19 +1412,17 @@ Element* HTMLConstructionSite::CreateElement(
            ? static_cast<const QualifiedName&>(
                  html_names::TagToQualifiedName(token->GetHTMLTag()))
            : QualifiedName(g_null_atom, token->GetName(), namespace_uri));
-
-  // TODO(nrosenthal): make this explicit in the HTML standard.
-  Document& creation_document = (sanitizer_ && document.IsActive() &&
-                                 !sanitizer_->IsElementAllowed(tag_name))
-                                    ? document.EnsureTemplateDocument()
-                                    : document;
-
   // "5. Let is be the value of the "is" attribute in the given token ..." etc.
   const Attribute* is_attribute = token->GetAttributeItem(html_names::kIsAttr);
   // If sanitizer_ is set and if santizer_ would not allow the "is" attribute,
   // then we will just pretend to not have seen it.
+  auto* active_sanitizer = ActiveSanitizer();
+  Document& creation_document = (active_sanitizer && document.IsActive() &&
+                                 !active_sanitizer->IsElementAllowed(tag_name))
+                                    ? document.EnsureTemplateDocument()
+                                    : document;
   bool sanitizer_allows_is_attribute =
-      !sanitizer_ || sanitizer_->AllowIsAttribute(tag_name);
+      !active_sanitizer || active_sanitizer->AllowIsAttribute(tag_name);
   const AtomicString& is = (is_attribute && sanitizer_allows_is_attribute)
                                ? is_attribute->Value()
                                : g_null_atom;
@@ -1429,7 +1473,7 @@ Element* HTMLConstructionSite::CreateElement(
   // 8. Let definition be the result of looking up a custom element definition
   // given registry, given namespace, local name and is.
   CustomElementDefinition* definition = nullptr;
-  if (!sanitizer_ || sanitizer_->IsElementAllowed(tag_name)) {
+  if (!active_sanitizer || active_sanitizer->IsElementAllowed(tag_name)) {
     definition =
         LookUpCustomElementDefinition(document, tag_name, is, registry);
   }
@@ -1488,10 +1532,10 @@ Element* HTMLConstructionSite::CreateElement(
       element = definition->CreateElement(creation_document, tag_name,
                                           GetCreateElementFlags());
     } else {
-      CreateElementFlags flags = GetCreateElementFlags();
       // SVG <script> in foreign content is created here, not in
       // InsertScriptElement(). Mark fragment-parsed ones "already started" too,
       // so an innerHTML-injected SVG script can't run when later cloned.
+      CreateElementFlags flags = GetCreateElementFlags();
       if (RuntimeEnabledFeatures::SvgScriptFragmentAlreadyStartedEnabled() &&
           tag_name == svg_names::kScriptTag &&
           ShouldMarkScriptAlreadyStarted()) {
