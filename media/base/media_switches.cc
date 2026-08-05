@@ -541,7 +541,7 @@ BASE_FEATURE(kDocumentPictureInPictureReparenting,
 );
 
 // Enables support for >8 audio channel layouts (i.e., 5.1.4 and 7.1.4).
-BASE_FEATURE(kEnableHighChannelLayouts, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableHighChannelLayouts, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether the Mirroring Service will fetch, analyze, and store
 // information on the quality of the session using RTCP logs.
