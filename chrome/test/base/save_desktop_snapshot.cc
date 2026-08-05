@@ -102,8 +102,7 @@ SkBitmap CaptureScreen() {
   size_t src_buffer_size = base::CheckMul(static_cast<size_t>(frame->stride()),
                                           static_cast<size_t>(height))
                                .ValueOrDie();
-  auto src_span = UNSAFE_BUFFERS(
-      base::span(base::unchecked, frame->data(), src_buffer_size));
+  auto src_span = UNSAFE_BUFFERS(base::span(frame->data(), src_buffer_size));
   auto dest_span = gfx::SkPixmapToWritableSpan(pixmap);
   if (dest_span.empty()) {
     LOG(ERROR) << "Failed to get writable span from pixmap.";
