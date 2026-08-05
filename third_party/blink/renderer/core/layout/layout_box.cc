@@ -701,7 +701,6 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
           diff.border_radius_changed ||
           (diff.border_shape_changed &&
            (new_style.HasBorderShape() || old_style->HasBorderShape())) ||
-          (HasControlClip() && !old_style->PaddingEqual(new_style)) ||
           (new_style.OverflowClipMargin() &&
            new_style.OverflowClipMargin()->GetReferenceBox() ==
                StyleOverflowClipMargin::ReferenceBox::kContentBox &&
@@ -2334,23 +2333,11 @@ PhysicalRect LayoutBox::OverflowClipRect(
                       kExcludeScrollbarGutter);
   }
 
-  if (HasControlClip()) [[unlikely]] {
-    PhysicalRect control_clip = PhysicalContentBoxRect();
-    clip_rect.Intersect(control_clip);
-  }
-
   return clip_rect;
 }
 
 PhysicalRect LayoutBox::OverflowClipRectForScrollNode() const {
   return OverflowClipRect();
-}
-
-bool LayoutBox::HasControlClip() const {
-  NOT_DESTROYED();
-  return !RuntimeEnabledFeatures::SelectUsesUAClipEnabled() && IsMenuList() &&
-         StyleRef().EffectiveAppearance() != AppearanceValue::kBase &&
-         StyleRef().EffectiveAppearance() != AppearanceValue::kBaseSelect;
 }
 
 void LayoutBox::ExcludeScrollbars(
@@ -3888,8 +3875,9 @@ PhysicalRect LayoutBox::DebugRect() const {
 
 OverflowClipAxes LayoutBox::ComputeOverflowClipAxes() const {
   NOT_DESTROYED();
-  if (ShouldApplyPaintContainment() || HasControlClip())
+  if (ShouldApplyPaintContainment()) {
     return kOverflowClipBothAxis;
+  }
 
   if (!RespectsCSSOverflow() || !HasNonVisibleOverflow())
     return kNoOverflowClip;

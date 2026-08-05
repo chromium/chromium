@@ -870,8 +870,6 @@ bool LayoutObject::HasClipRelatedProperty() const {
       (ShouldApplyStyleContainment() && ShouldApplyLayoutContainment())) {
     return true;
   }
-  if (IsBox() && To<LayoutBox>(this)->HasControlClip())
-    return true;
   return false;
 }
 

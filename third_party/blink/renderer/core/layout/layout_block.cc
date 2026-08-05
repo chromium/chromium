@@ -545,7 +545,7 @@ void LayoutBlock::AddOutlineRects(OutlineRectCollector& collector,
   }
 
   if (ShouldIncludeBlockInkOverflow(include_block_overflows) &&
-      !HasNonVisibleOverflow() && !HasControlClip()) {
+      !HasNonVisibleOverflow()) {
     AddOutlineRectsForNormalChildren(collector, additional_offset,
                                      include_block_overflows);
   }

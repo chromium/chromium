@@ -1280,13 +1280,8 @@ select:-internal-list-box {
 }
 
 select:not(:-internal-list-box) {
-    @supports not blink-feature(SelectUsesUAClip) {
-        overflow: -internal-auto-base(visible, revert-rule) !important;
-    }
-    @supports blink-feature(SelectUsesUAClip) {
-        overflow: -internal-auto-base(clip, revert-rule) !important;
-        overflow-clip-margin: -internal-auto-base(content-box, revert-rule) !important;
-    }
+    overflow: -internal-auto-base(clip, revert-rule) !important;
+    overflow-clip-margin: -internal-auto-base(content-box, revert-rule) !important;
 }
 
 /* The padding here should match the value of

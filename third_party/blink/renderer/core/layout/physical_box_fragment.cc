@@ -60,11 +60,6 @@ struct SameSizeAsPhysicalBoxFragment : PhysicalFragment {
 
 ASSERT_SIZE(PhysicalBoxFragment, SameSizeAsPhysicalBoxFragment);
 
-bool HasControlClip(const PhysicalBoxFragment& self) {
-  const LayoutBox* box = DynamicTo<LayoutBox>(self.GetLayoutObject());
-  return box && box->HasControlClip();
-}
-
 bool IsFlexibleBoxWithSingleChildElement(const LayoutObject& layout_object) {
   if (!RuntimeEnabledFeatures::
           UsePositionForPointInFlexibleBoxWithSingleChildElementEnabled()) {
@@ -1265,8 +1260,7 @@ void PhysicalBoxFragment::AddOutlineRects(
     }
   }
 
-  if (ShouldIncludeBlockInkOverflow(outline_type) && !HasNonVisibleOverflow() &&
-      !HasControlClip(*this)) {
+  if (ShouldIncludeBlockInkOverflow(outline_type) && !HasNonVisibleOverflow()) {
     // Tricky code ahead: we pass a 0,0 additional_offset to
     // AddOutlineRectsForNormalChildren, and add it in after the call.
     // This is necessary because AddOutlineRectsForNormalChildren expects
@@ -1364,7 +1358,7 @@ void PhysicalBoxFragment::AddOutlineRectsForInlineBox(
   collector.Combine(cursor_collector.get(), additional_offset);
 
   if (ShouldIncludeBlockInkOverflowForAnchorOnly(outline_type) &&
-      !HasNonVisibleOverflow() && !HasControlClip(*this)) {
+      !HasNonVisibleOverflow()) {
     for (const auto& child : container->PostLayoutChildren()) {
       if (!child->IsOutOfFlowPositioned() ||
           child->GetLayoutObject()->ContainerForAbsolutePosition() !=

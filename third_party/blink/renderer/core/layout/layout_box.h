@@ -922,7 +922,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   void EnsureIsReadyForPaintInvalidation() override;
   void ClearPaintFlags() override;
 
-  bool HasControlClip() const;
 
   class MutableForPainting : public LayoutObject::MutableForPainting {
    public:
