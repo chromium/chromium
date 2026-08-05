@@ -26,6 +26,16 @@ export enum LineFocusMovement {
   CURSOR = 1,
 }
 
+// Used to notify of the type of line focus movement that occurred.
+// Some movements should trigger a visual update only, while others should
+// also trigger a content update, and others should trigger no visual or
+// content update.
+export enum LineFocusNotificationType {
+  NONE = 0,
+  VISUAL = 1,
+  CONTENT = 2,
+}
+
 export class LineFocusStyle {
   static readonly SMALL_WINDOW = new LineFocusStyle(LineFocusType.WINDOW, 1);
   static readonly MEDIUM_WINDOW = new LineFocusStyle(LineFocusType.WINDOW, 3);
