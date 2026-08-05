@@ -88,20 +88,28 @@ class X509CertificateModel : public X509CertificateModelBase {
   // certificate's DER encoding.
   std::vector<bssl::der::Input> GetExtensionOidsInOrder() const;
 
+  // The per-extension content accessors below follow a common convention: the
+  // primary getter returns std::nullopt when the extension is absent or cannot
+  // be decoded, and a companion Get<Ext>Raw() returns a hex dump of the
+  // extension's extnValue (empty if the extension is absent) for an "Invalid"
+  // fallback in the UI. Callers determine which extensions are present via
+  // GetExtensionOidsInOrder() and only invoke a getter for a present extension,
+  // so in practice std::nullopt means the extension failed to decode.
+
   // Returns true if the KeyUsage extension is present and marked critical.
   bool IsKeyUsageCritical() const;
 
-  // Returns a comma-separated list of the asserted key usages, or an empty
-  // string if the extension is not present or could not be parsed.
-  std::string GetKeyUsageString() const;
+  // Returns a comma-separated list of the asserted key usages.
+  std::optional<std::string> GetKeyUsageString() const;
+  std::string GetKeyUsageStringRaw() const;
 
   // Returns true if the ExtendedKeyUsage extension is present and marked
   // critical.
   bool IsExtendedKeyUsageCritical() const;
 
-  // Returns a vector of the asserted EKU purposes, or an empty vector if the
-  // extension is not present or could not be parsed.
-  std::vector<std::string> GetExtendedKeyUsagePurposes() const;
+  // Returns the asserted EKU purposes.
+  std::optional<std::vector<std::string>> GetExtendedKeyUsagePurposes() const;
+  std::string GetExtendedKeyUsagePurposesRaw() const;
 
   // Returns true if the BasicConstraints extension is present and marked
   // critical.
@@ -119,9 +127,9 @@ class X509CertificateModel : public X509CertificateModelBase {
   // critical.
   bool IsSubjectKeyIdentifierCritical() const;
 
-  // Returns the SubjectKeyIdentifier key identifier as a hex string, or an
-  // empty string if the extension is not present or could not be parsed.
-  std::string GetSubjectKeyIdentifier() const;
+  // Returns the SubjectKeyIdentifier key identifier as a hex string.
+  std::optional<std::string> GetSubjectKeyIdentifier() const;
+  std::string GetSubjectKeyIdentifierRaw() const;
 
   // A single decoded RFC 5280 GeneralName referenced from bssl::GeneralNames.
   // `value` holds the decoded text for textual variants
@@ -151,49 +159,66 @@ class X509CertificateModel : public X509CertificateModelBase {
   // critical.
   bool IsAuthorityKeyIdentifierCritical() const;
 
-  // Returns the AuthorityKeyIdentifier keyIdentifier as a hex string, or an
-  // empty string if the extension is not present, could not be parsed, or does
-  // not contain a keyIdentifier.
-  std::string GetAuthorityKeyIdentifier() const;
+  // The following AuthorityKeyIdentifier getters are an exception to the
+  // convention above: the three share one all-or-nothing parse and a single
+  // GetAuthorityKeyIdentifierRaw(). If the extension fails to decode, all three
+  // return std::nullopt. When the extension decodes but an individual field is
+  // legitimately absent (all three are OPTIONAL), the corresponding getter
+  // returns an empty (but present) value.
 
-  // Returns the authorityCertIssuer entries decoded as GeneralNames, grouped by
-  // type (directoryName, URI, DNS, ...). Empty if the extension is absent or
-  // does not contain an authorityCertIssuer.
-  std::vector<GeneralName> GetAuthorityKeyIdentifierIssuer() const;
+  // keyIdentifier as a hex string (empty if the field is absent).
+  std::optional<std::string> GetAuthorityKeyIdentifier() const;
 
-  // Returns the authorityCertSerialNumber as hex, or an empty string if absent.
-  std::string GetAuthorityKeyIdentifierSerial() const;
+  // authorityCertIssuer decoded as GeneralNames (empty if the field is absent).
+  std::optional<std::vector<GeneralName>> GetAuthorityKeyIdentifierIssuer()
+      const;
+
+  // authorityCertSerialNumber as hex (empty if the field is absent).
+  std::optional<std::string> GetAuthorityKeyIdentifierSerial() const;
+
+  std::string GetAuthorityKeyIdentifierRaw() const;
 
   struct AccessDescription {
-    std::string method;    // localized label, e.g. "CA Issuers" or "OCSP"
-    GeneralName location;  // accessLocation GeneralName
+    std::string method;  // localized label, e.g. "CA Issuers" or "OCSP"
+    // accessLocation GeneralName, or std::nullopt if that single location
+    // failed to decode. In that case `raw_location` holds a hex dump of the
+    // location's bytes for the UI to show as an "Invalid General Name"
+    // fallback.
+    std::optional<GeneralName> location;
+    // Set only when `location` is std::nullopt: a hex dump of the raw
+    // accessLocation bytes.
+    std::string raw_location;
   };
 
   // Returns true if the AuthorityInformationAccess extension is present and
   // marked critical.
   bool IsAuthorityInformationAccessCritical() const;
 
-  // Returns the AuthorityInformationAccess descriptions in DER order, or an
-  // empty vector if the extension is absent or could not be parsed.
-  std::vector<AccessDescription> GetAuthorityInformationAccess() const;
+  // Returns the AuthorityInformationAccess descriptions in DER order; nullopt
+  // only on a top-level decode failure. A single description whose
+  // accessLocation fails to decode is kept (not dropped) with a nullopt
+  // `location` and its bytes in `raw_location`.
+  std::optional<std::vector<AccessDescription>> GetAuthorityInformationAccess()
+      const;
+  std::string GetAuthorityInformationAccessRaw() const;
 
   // Returns true if the SubjectAlternativeName extension is present and marked
   // critical.
   bool IsSubjectAlternativeNameCritical() const;
 
-  // Returns every SubjectAlternativeName entry decoded as a GeneralName,
-  // grouped by type (DNS, IP, URI, ...). Empty if the extension is absent or
-  // cannot be parsed.
-  std::vector<GeneralName> GetSubjectAlternativeNames() const;
+  // Returns every SubjectAlternativeName entry decoded as a GeneralName. There
+  // is no Raw fallback: a SubjectAltName that fails to decode makes the whole
+  // certificate invalid (is_valid() is false), so this getter is never reached
+  // in that case.
+  std::optional<std::vector<GeneralName>> GetSubjectAlternativeNames() const;
 
   // Returns true if the IssuerAlternativeName extension is present and marked
   // critical.
   bool IsIssuerAlternativeNameCritical() const;
 
-  // Returns every IssuerAlternativeName entry decoded as a GeneralName, grouped
-  // by type (DNS, IP, URI, ...). Empty if the extension is absent or cannot be
-  // parsed.
-  std::vector<GeneralName> GetIssuerAlternativeNames() const;
+  // Returns every IssuerAlternativeName entry decoded as a GeneralName.
+  std::optional<std::vector<GeneralName>> GetIssuerAlternativeNames() const;
+  std::string GetIssuerAlternativeNamesRaw() const;
 
   // Returns true if the CRLDistributionPoints extension is present and marked
   // critical.
@@ -202,8 +227,13 @@ class X509CertificateModel : public X509CertificateModelBase {
   // Returns every CRLDistributionPoints fullName entry decoded as a
   // GeneralName, flattened across all distribution points and grouped by type
   // (URI, DNS, ...). The relativeName, reasons, and cRLIssuer fields are not
-  // parsed. Empty if the extension is absent or cannot be parsed.
-  std::vector<GeneralName> GetCRLDistributionPointsFullNames() const;
+  // parsed.
+  std::optional<std::vector<GeneralName>> GetCRLDistributionPointsFullNames()
+      const;
+
+  // Returns a hex dump of the CRLDistributionPoints extnValue, or empty if the
+  // extension is absent.
+  std::string GetCRLDistributionPointsFullNamesRaw() const;
 
   // A decoded RFC 5280 UserNotice policy qualifier. Each field is optional in
   // the DER encoding.
@@ -262,6 +292,12 @@ class X509CertificateModel : public X509CertificateModelBase {
   // `CertificatePoliciesResult` for how the result reflects success, failure,
   // and an absent extension.
   CertificatePoliciesResult GetCertificatePolicies() const;
+
+ private:
+  // Returns a hex dump of the value of the extension identified by `oid`, or an
+  // empty string if the extension is absent. Used by the Get<Ext>Raw() getters
+  // to surface an extension's bytes as an "Invalid" fallback.
+  std::string GetExtensionRawHex(bssl::der::Input oid) const;
 };
 
 }  // namespace x509_certificate_model

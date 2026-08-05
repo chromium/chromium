@@ -66,6 +66,19 @@ bool ContainsGeneralName(
   return false;
 }
 
+// Builds a valid certificate from ok_cert.pem carrying a single extension with
+// the given `oid` and raw `value`, and returns the parsed model. Used by the
+// "...Invalid" tests to exercise a malformed extension.
+X509CertificateModel ModelWithExtension(bssl::der::Input oid,
+                                        base::span<const uint8_t> value) {
+  std::unique_ptr<net::CertBuilder> builder = net::CertBuilder::FromFile(
+      net::GetTestCertsDirectory().AppendASCII("ok_cert.pem"), nullptr);
+  CHECK(builder);
+  builder->SetExtension(oid, std::string(base::as_string_view(value)),
+                        /*critical=*/false);
+  return X509CertificateModel(bssl::UpRef(builder->GetCertBuffer()));
+}
+
 }  // namespace
 
 class X509CertificateModelTest : public PlatformTest {};
@@ -182,32 +195,37 @@ TEST_F(X509CertificateModelTest, GetGoogleCertFields) {
 
   EXPECT_FALSE(model.IsCRLDistributionPointsCritical());
   auto crl_dps = model.GetCRLDistributionPointsFullNames();
-  ASSERT_EQ(1u, crl_dps.size());
-  EXPECT_EQ(X509CertificateModel::GeneralName::Type::kURI, crl_dps[0].type);
-  EXPECT_EQ("http://crl.thawte.com/ThawteSGCCA.crl", crl_dps[0].value);
+  ASSERT_TRUE(crl_dps.has_value());
+  ASSERT_EQ(1u, crl_dps->size());
+  EXPECT_EQ(X509CertificateModel::GeneralName::Type::kURI, (*crl_dps)[0].type);
+  EXPECT_EQ("http://crl.thawte.com/ThawteSGCCA.crl", (*crl_dps)[0].value);
 
   EXPECT_FALSE(model.IsExtendedKeyUsageCritical());
   auto eku_purposes = model.GetExtendedKeyUsagePurposes();
-  ASSERT_EQ(3u, eku_purposes.size());
-  EXPECT_EQ("Server Authentication", eku_purposes[0]);
-  EXPECT_EQ("Client Authentication", eku_purposes[1]);
+  ASSERT_TRUE(eku_purposes.has_value());
+  ASSERT_EQ(3u, eku_purposes->size());
+  EXPECT_EQ("Server Authentication", (*eku_purposes)[0]);
+  EXPECT_EQ("Client Authentication", (*eku_purposes)[1]);
   // Unknown OID: Netscape Server Gated Crypto (2.16.840.1.113730.4.1) falls
   // back to dotted decimal notation.
-  EXPECT_EQ("2.16.840.1.113730.4.1", eku_purposes[2]);
+  EXPECT_EQ("2.16.840.1.113730.4.1", (*eku_purposes)[2]);
 
   // Two AccessDescriptions in DER order: OCSP then CA Issuers, both URIs.
   EXPECT_FALSE(model.IsAuthorityInformationAccessCritical());
   auto aia = model.GetAuthorityInformationAccess();
-  ASSERT_EQ(2u, aia.size());
-  EXPECT_EQ("OCSP", aia[0].method);
+  ASSERT_TRUE(aia.has_value());
+  ASSERT_EQ(2u, aia->size());
+  EXPECT_EQ("OCSP", (*aia)[0].method);
+  ASSERT_TRUE((*aia)[0].location.has_value());
   EXPECT_EQ(X509CertificateModel::GeneralName::Type::kURI,
-            aia[0].location.type);
-  EXPECT_EQ("http://ocsp.thawte.com", aia[0].location.value);
-  EXPECT_EQ("CA Issuers", aia[1].method);
+            (*aia)[0].location->type);
+  EXPECT_EQ("http://ocsp.thawte.com", (*aia)[0].location->value);
+  EXPECT_EQ("CA Issuers", (*aia)[1].method);
+  ASSERT_TRUE((*aia)[1].location.has_value());
   EXPECT_EQ(X509CertificateModel::GeneralName::Type::kURI,
-            aia[1].location.type);
+            (*aia)[1].location->type);
   EXPECT_EQ("http://www.thawte.com/repository/Thawte_SGC_CA.crt",
-            aia[1].location.value);
+            (*aia)[1].location->value);
 }
 
 TEST_F(X509CertificateModelTest, GetNDNCertFields) {
@@ -418,9 +436,10 @@ TEST_F(X509CertificateModelTest, GlobalsignComCert) {
 
   EXPECT_FALSE(model.IsExtendedKeyUsageCritical());
   auto eku_purposes = model.GetExtendedKeyUsagePurposes();
-  ASSERT_EQ(2u, eku_purposes.size());
-  EXPECT_EQ("Server Authentication", eku_purposes[0]);
-  EXPECT_EQ("Client Authentication", eku_purposes[1]);
+  ASSERT_TRUE(eku_purposes.has_value());
+  ASSERT_EQ(2u, eku_purposes->size());
+  EXPECT_EQ("Server Authentication", (*eku_purposes)[0]);
+  EXPECT_EQ("Client Authentication", (*eku_purposes)[1]);
 
   EXPECT_FALSE(model.IsSubjectKeyIdentifierCritical());
   EXPECT_EQ("59 BC D9 69 F7 B0 65 BB C8 34 C5 D2 C2 EF 17 78 A6 47 1E 8B",
@@ -429,24 +448,32 @@ TEST_F(X509CertificateModelTest, GlobalsignComCert) {
   EXPECT_FALSE(model.IsAuthorityKeyIdentifierCritical());
   EXPECT_EQ("8A FC 14 1B 3D A3 59 67 A5 3B E1 73 92 A6 62 91 7F E4 78 30",
             model.GetAuthorityKeyIdentifier());
-  EXPECT_TRUE(model.GetAuthorityKeyIdentifierIssuer().empty());
+  // The extension decodes, but authorityCertIssuer / serial are absent: present
+  // but empty.
+  auto aki_issuer = model.GetAuthorityKeyIdentifierIssuer();
+  ASSERT_TRUE(aki_issuer.has_value());
+  EXPECT_TRUE(aki_issuer->empty());
   EXPECT_EQ("", model.GetAuthorityKeyIdentifierSerial());
 
   // A single CA Issuers AccessDescription with a URI location.
   EXPECT_FALSE(model.IsAuthorityInformationAccessCritical());
   auto aia = model.GetAuthorityInformationAccess();
-  ASSERT_EQ(1u, aia.size());
-  EXPECT_EQ("CA Issuers", aia[0].method);
+  ASSERT_TRUE(aia.has_value());
+  ASSERT_EQ(1u, aia->size());
+  EXPECT_EQ("CA Issuers", (*aia)[0].method);
+  ASSERT_TRUE((*aia)[0].location.has_value());
   EXPECT_EQ(X509CertificateModel::GeneralName::Type::kURI,
-            aia[0].location.type);
+            (*aia)[0].location->type);
   EXPECT_EQ("http://secure.globalsign.net/cacert/SHA256extendval1.crt",
-            aia[0].location.value);
+            (*aia)[0].location->value);
 
   EXPECT_FALSE(model.IsCRLDistributionPointsCritical());
   auto crl_dps = model.GetCRLDistributionPointsFullNames();
-  ASSERT_EQ(1u, crl_dps.size());
-  EXPECT_EQ(X509CertificateModel::GeneralName::Type::kURI, crl_dps[0].type);
-  EXPECT_EQ("http://crl.globalsign.net/SHA256ExtendVal1.crl", crl_dps[0].value);
+  ASSERT_TRUE(crl_dps.has_value());
+  ASSERT_EQ(1u, crl_dps->size());
+  EXPECT_EQ(X509CertificateModel::GeneralName::Type::kURI, (*crl_dps)[0].type);
+  EXPECT_EQ("http://crl.globalsign.net/SHA256ExtendVal1.crl",
+            (*crl_dps)[0].value);
 
   // A single policy with one CPS pointer qualifier.
   EXPECT_FALSE(model.IsCertificatePoliciesCritical());
@@ -496,11 +523,13 @@ TEST_F(X509CertificateModelTest, DiginotarCert) {
   // A single OCSP AccessDescription with a URI location.
   EXPECT_FALSE(model.IsAuthorityInformationAccessCritical());
   auto aia = model.GetAuthorityInformationAccess();
-  ASSERT_EQ(1u, aia.size());
-  EXPECT_EQ("OCSP", aia[0].method);
+  ASSERT_TRUE(aia.has_value());
+  ASSERT_EQ(1u, aia->size());
+  EXPECT_EQ("OCSP", (*aia)[0].method);
+  ASSERT_TRUE((*aia)[0].location.has_value());
   EXPECT_EQ(X509CertificateModel::GeneralName::Type::kURI,
-            aia[0].location.type);
-  EXPECT_EQ("http://validation.diginotar.nl", aia[0].location.value);
+            (*aia)[0].location->type);
+  EXPECT_EQ("http://validation.diginotar.nl", (*aia)[0].location->value);
 
   EXPECT_FALSE(model.IsCertificatePoliciesCritical());
   auto policies = model.GetCertificatePolicies();
@@ -562,6 +591,139 @@ TEST_F(X509CertificateModelTest, DiginotarCyberCa) {
             model.GetAuthorityKeyIdentifier());
 }
 
+TEST_F(X509CertificateModelTest, SubjectKeyIdentifierInvalid) {
+  // extnValue is an INTEGER (02) where RFC 5280 requires an OCTET STRING (04).
+  const uint8_t kSubjectKeyId[] = {0x02, 0x04, 0xde, 0xad, 0xbe, 0xef};
+  X509CertificateModel model = ModelWithExtension(
+      bssl::der::Input(bssl::kSubjectKeyIdentifierOid), kSubjectKeyId);
+  ASSERT_TRUE(model.is_valid());
+
+  EXPECT_EQ(std::nullopt, model.GetSubjectKeyIdentifier());
+  EXPECT_EQ("02 04 DE AD BE EF", model.GetSubjectKeyIdentifierRaw());
+}
+
+// A KeyUsage that is not a BIT STRING fails to decode.
+TEST_F(X509CertificateModelTest, KeyUsageInvalid) {
+  // INTEGER where a BIT STRING is required.
+  const uint8_t kKeyUsage[] = {0x02, 0x02, 0x05, 0xa0};
+  X509CertificateModel model =
+      ModelWithExtension(bssl::der::Input(bssl::kKeyUsageOid), kKeyUsage);
+  ASSERT_TRUE(model.is_valid());
+
+  EXPECT_EQ(std::nullopt, model.GetKeyUsageString());
+  EXPECT_EQ("02 02 05 A0", model.GetKeyUsageStringRaw());
+}
+
+// An ExtendedKeyUsage that is not a SEQUENCE fails to decode.
+TEST_F(X509CertificateModelTest, ExtendedKeyUsageInvalid) {
+  // INTEGER where a SEQUENCE OF OID is required.
+  const uint8_t kEku[] = {0x02, 0x01, 0x2a};
+  X509CertificateModel model =
+      ModelWithExtension(bssl::der::Input(bssl::kExtKeyUsageOid), kEku);
+  ASSERT_TRUE(model.is_valid());
+
+  EXPECT_EQ(std::nullopt, model.GetExtendedKeyUsagePurposes());
+  EXPECT_EQ("02 01 2A", model.GetExtendedKeyUsagePurposesRaw());
+}
+
+// A CRLDistributionPoints that is not a SEQUENCE fails to decode.
+TEST_F(X509CertificateModelTest, CRLDistributionPointsInvalid) {
+  // INTEGER where a SEQUENCE is required.
+  const uint8_t kCrldp[] = {0x02, 0x01, 0x2a};
+  X509CertificateModel model = ModelWithExtension(
+      bssl::der::Input(bssl::kCrlDistributionPointsOid), kCrldp);
+  ASSERT_TRUE(model.is_valid());
+
+  EXPECT_EQ(std::nullopt, model.GetCRLDistributionPointsFullNames());
+  EXPECT_EQ("02 01 2A", model.GetCRLDistributionPointsFullNamesRaw());
+}
+
+// An IssuerAlternativeName that is not a SEQUENCE of GeneralName fails.
+TEST_F(X509CertificateModelTest, IssuerAlternativeNameInvalid) {
+  // INTEGER where a SEQUENCE OF GeneralName is required.
+  const uint8_t kIan[] = {0x02, 0x01, 0x2a};
+  X509CertificateModel model =
+      ModelWithExtension(bssl::der::Input(kIssuerAltNameOid), kIan);
+  ASSERT_TRUE(model.is_valid());
+
+  EXPECT_EQ(std::nullopt, model.GetIssuerAlternativeNames());
+  EXPECT_EQ("02 01 2A", model.GetIssuerAlternativeNamesRaw());
+}
+
+// An AuthorityKeyIdentifier that is not a SEQUENCE fails to decode: all three
+// getters return nullopt and the shared Raw getter returns the raw bytes.
+TEST_F(X509CertificateModelTest, AuthorityKeyIdentifierInvalid) {
+  // INTEGER where a SEQUENCE is required.
+  const uint8_t kAki[] = {0x02, 0x01, 0x2a};
+  X509CertificateModel model = ModelWithExtension(
+      bssl::der::Input(bssl::kAuthorityKeyIdentifierOid), kAki);
+  ASSERT_TRUE(model.is_valid());
+
+  EXPECT_EQ(std::nullopt, model.GetAuthorityKeyIdentifier());
+  EXPECT_EQ(std::nullopt, model.GetAuthorityKeyIdentifierIssuer());
+  EXPECT_EQ(std::nullopt, model.GetAuthorityKeyIdentifierSerial());
+  EXPECT_EQ("02 01 2A", model.GetAuthorityKeyIdentifierRaw());
+}
+
+// An AuthorityInformationAccess that is not a SEQUENCE fails at the top level.
+TEST_F(X509CertificateModelTest, AuthorityInformationAccessInvalid) {
+  // INTEGER where a SEQUENCE is required.
+  const uint8_t kAia[] = {0x02, 0x01, 0x2a};
+  X509CertificateModel model =
+      ModelWithExtension(bssl::der::Input(bssl::kAuthorityInfoAccessOid), kAia);
+  ASSERT_TRUE(model.is_valid());
+
+  EXPECT_EQ(std::nullopt, model.GetAuthorityInformationAccess());
+  EXPECT_EQ("02 01 2A", model.GetAuthorityInformationAccessRaw());
+}
+
+// A single AccessDescription whose accessLocation is a malformed GeneralName is
+// kept with its method but a nullopt location; the others decode normally and
+// the extension does not fail at the top level.
+TEST_F(X509CertificateModelTest, AuthorityInformationAccessInvalidLocation) {
+  // Four AccessDescriptions; the 3rd's accessLocation uses GeneralName tag [9],
+  // which is not a defined choice, so only that location fails to decode.
+  const uint8_t kAia[] = {
+      0x30, 0x81, 0x9f, 0x30, 0x25, 0x06, 0x08, 0x2b, 0x06, 0x01, 0x05, 0x05,
+      0x07, 0x30, 0x01, 0x86, 0x19, 0x68, 0x74, 0x74, 0x70, 0x3a, 0x2f, 0x2f,
+      0x6f, 0x63, 0x73, 0x70, 0x2e, 0x65, 0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65,
+      0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x31, 0x30, 0x27, 0x06, 0x08, 0x2b, 0x06,
+      0x01, 0x05, 0x05, 0x07, 0x30, 0x02, 0x86, 0x1b, 0x68, 0x74, 0x74, 0x70,
+      0x3a, 0x2f, 0x2f, 0x63, 0x61, 0x2e, 0x65, 0x78, 0x61, 0x6d, 0x70, 0x6c,
+      0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x32, 0x2e, 0x63, 0x72, 0x74, 0x30,
+      0x24, 0x06, 0x08, 0x2b, 0x06, 0x01, 0x05, 0x05, 0x07, 0x30, 0x01, 0x89,
+      0x18, 0x68, 0x74, 0x74, 0x70, 0x3a, 0x2f, 0x2f, 0x62, 0x61, 0x64, 0x2e,
+      0x65, 0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f,
+      0x33, 0x30, 0x27, 0x06, 0x08, 0x2b, 0x06, 0x01, 0x05, 0x05, 0x07, 0x30,
+      0x02, 0x86, 0x1b, 0x68, 0x74, 0x74, 0x70, 0x3a, 0x2f, 0x2f, 0x63, 0x61,
+      0x2e, 0x65, 0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d,
+      0x2f, 0x34, 0x2e, 0x63, 0x72, 0x74};
+  X509CertificateModel model =
+      ModelWithExtension(bssl::der::Input(bssl::kAuthorityInfoAccessOid), kAia);
+  ASSERT_TRUE(model.is_valid());
+
+  auto aia = model.GetAuthorityInformationAccess();
+  ASSERT_TRUE(aia.has_value());
+  ASSERT_EQ(4u, aia->size());
+
+  // Items 1, 2, 4 decode normally.
+  ASSERT_TRUE((*aia)[0].location.has_value());
+  EXPECT_EQ("http://ocsp.example.com/1", (*aia)[0].location->value);
+  ASSERT_TRUE((*aia)[1].location.has_value());
+  EXPECT_EQ("http://ca.example.com/2.crt", (*aia)[1].location->value);
+  ASSERT_TRUE((*aia)[3].location.has_value());
+  EXPECT_EQ("http://ca.example.com/4.crt", (*aia)[3].location->value);
+
+  // Item 3 keeps its method but has no decoded location; its raw bytes are
+  // surfaced instead.
+  EXPECT_EQ("OCSP", (*aia)[2].method);
+  EXPECT_FALSE((*aia)[2].location.has_value());
+  EXPECT_EQ(
+      "89 18 68 74 74 70 3A 2F 2F 62 61 64 2E 65 78 61 6D 70 6C 65 2E 63 6F "
+      "6D 2F 33",
+      (*aia)[2].raw_location);
+}
+
 TEST_F(X509CertificateModelTest, AuthorityKeyIdentifierAllFields) {
   auto cert = net::ImportCertFromFile(net::GetTestCertsDirectory(),
                                       "diginotar_cyber_ca.pem");
@@ -573,17 +735,18 @@ TEST_F(X509CertificateModelTest, AuthorityKeyIdentifierAllFields) {
             model.GetAuthorityKeyIdentifier());
 
   auto aki_issuer = model.GetAuthorityKeyIdentifierIssuer();
-  EXPECT_FALSE(aki_issuer.empty());
+  ASSERT_TRUE(aki_issuer.has_value());
+  EXPECT_FALSE(aki_issuer->empty());
   // 2.5.4.3 = commonName.
-  EXPECT_TRUE(ContainsDirectoryNameAttribute(aki_issuer, "2.5.4.3",
+  EXPECT_TRUE(ContainsDirectoryNameAttribute(*aki_issuer, "2.5.4.3",
                                              "GTE CyberTrust Global Root"));
   // 2.5.4.6 = countryName.
-  EXPECT_TRUE(ContainsDirectoryNameAttribute(aki_issuer, "2.5.4.6", "US"));
+  EXPECT_TRUE(ContainsDirectoryNameAttribute(*aki_issuer, "2.5.4.6", "US"));
   // 2.5.4.10 = organizationName.
-  EXPECT_TRUE(ContainsDirectoryNameAttribute(aki_issuer, "2.5.4.10",
+  EXPECT_TRUE(ContainsDirectoryNameAttribute(*aki_issuer, "2.5.4.10",
                                              "GTE Corporation"));
   // 2.5.4.11 = organizationalUnitName.
-  EXPECT_TRUE(ContainsDirectoryNameAttribute(aki_issuer, "2.5.4.11",
+  EXPECT_TRUE(ContainsDirectoryNameAttribute(*aki_issuer, "2.5.4.11",
                                              "GTE CyberTrust Solutions, Inc."));
 
   EXPECT_EQ("01 A5", model.GetAuthorityKeyIdentifierSerial());
@@ -612,12 +775,14 @@ TEST_F(X509CertificateModelTest,
   ASSERT_TRUE(model.is_valid());
 
   auto aia = model.GetAuthorityInformationAccess();
-  ASSERT_EQ(1u, aia.size());
+  ASSERT_TRUE(aia.has_value());
+  ASSERT_EQ(1u, aia->size());
   // Unknown accessMethod OID falls back to dotted decimal notation.
-  EXPECT_EQ("1.4.9.20", aia[0].method);
+  EXPECT_EQ("1.4.9.20", (*aia)[0].method);
+  ASSERT_TRUE((*aia)[0].location.has_value());
   EXPECT_EQ(X509CertificateModel::GeneralName::Type::kRFC822Name,
-            aia[0].location.type);
-  EXPECT_EQ("foo@example.com", aia[0].location.value);
+            (*aia)[0].location->type);
+  EXPECT_EQ("foo@example.com", (*aia)[0].location->value);
 }
 
 TEST_F(X509CertificateModelTest, SubjectAltNameSanityTest) {
@@ -633,7 +798,9 @@ TEST_F(X509CertificateModelTest, SubjectAltNameSanityTest) {
   // DNS test.example, email test@test.example, otherName 1.2.3.4,
   // DirName CN=127.0.0.3.
   using GeneralName = X509CertificateModel::GeneralName;
-  auto names = model.GetSubjectAlternativeNames();
+  auto names_opt = model.GetSubjectAlternativeNames();
+  ASSERT_TRUE(names_opt.has_value());
+  const auto& names = *names_opt;
 
   EXPECT_TRUE(
       ContainsGeneralName(names, GeneralName::Type::kIPAddress, "127.0.0.2"));
@@ -690,15 +857,16 @@ TEST_F(X509CertificateModelTest, IssuerAltNameTest) {
 
   using GeneralName = X509CertificateModel::GeneralName;
   auto names = model.GetIssuerAlternativeNames();
-  ASSERT_EQ(4u, names.size());
+  ASSERT_TRUE(names.has_value());
+  ASSERT_EQ(4u, names->size());
   EXPECT_TRUE(
-      ContainsGeneralName(names, GeneralName::Type::kDNSName, "test.example"));
-  EXPECT_TRUE(ContainsGeneralName(names, GeneralName::Type::kRFC822Name,
+      ContainsGeneralName(*names, GeneralName::Type::kDNSName, "test.example"));
+  EXPECT_TRUE(ContainsGeneralName(*names, GeneralName::Type::kRFC822Name,
                                   "test@test.example"));
-  EXPECT_TRUE(ContainsGeneralName(names, GeneralName::Type::kURI,
+  EXPECT_TRUE(ContainsGeneralName(*names, GeneralName::Type::kURI,
                                   "http://test.example/"));
   EXPECT_TRUE(
-      ContainsGeneralName(names, GeneralName::Type::kIPAddress, "127.0.0.2"));
+      ContainsGeneralName(*names, GeneralName::Type::kIPAddress, "127.0.0.2"));
 }
 
 TEST_F(X509CertificateModelTest, CertificatePoliciesSanityTest) {
