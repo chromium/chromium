@@ -889,7 +889,7 @@ class PydepsNeedsUpdatingTest(unittest.TestCase):
     def testAddedPydep(self):
         # PRESUBMIT.CheckPydepsNeedsUpdating is only implemented for Linux.
         if not self.mock_input_api.platform.startswith('linux'):
-            return []
+            return
 
         self.mock_input_api.InitFiles([
             MockAffectedFile('new.pydeps', [], action='A'),
@@ -910,7 +910,7 @@ class PydepsNeedsUpdatingTest(unittest.TestCase):
     def testRemovedPydep(self):
         # PRESUBMIT.CheckPydepsNeedsUpdating is only implemented for Linux.
         if not self.mock_input_api.platform.startswith('linux'):
-            return []
+            return
 
         self.mock_input_api.InitFiles([
             MockAffectedFile(PRESUBMIT._ALL_PYDEPS_FILES[0], [], action='D'),
@@ -922,7 +922,7 @@ class PydepsNeedsUpdatingTest(unittest.TestCase):
     def testRandomPyIgnored(self):
         # PRESUBMIT.CheckPydepsNeedsUpdating is only implemented for Linux.
         if not self.mock_input_api.platform.startswith('linux'):
-            return []
+            return
 
         self.mock_input_api.files = [
             MockAffectedFile('random.py', []),
@@ -934,7 +934,7 @@ class PydepsNeedsUpdatingTest(unittest.TestCase):
     def testRelevantPyNoChange(self):
         # PRESUBMIT.CheckPydepsNeedsUpdating is only implemented for Linux.
         if not self.mock_input_api.platform.startswith('linux'):
-            return []
+            return
 
         self.mock_input_api.files = [
             MockAffectedFile('A.py', []),
@@ -952,7 +952,7 @@ class PydepsNeedsUpdatingTest(unittest.TestCase):
     def testRelevantPyOneChange(self):
         # PRESUBMIT.CheckPydepsNeedsUpdating is only implemented for Linux.
         if not self.mock_input_api.platform.startswith('linux'):
-            return []
+            return
 
         self.mock_input_api.files = [
             MockAffectedFile('A.py', []),
@@ -973,7 +973,7 @@ class PydepsNeedsUpdatingTest(unittest.TestCase):
     def testRelevantPyTwoChanges(self):
         # PRESUBMIT.CheckPydepsNeedsUpdating is only implemented for Linux.
         if not self.mock_input_api.platform.startswith('linux'):
-            return []
+            return
 
         self.mock_input_api.files = [
             MockAffectedFile('C.py', []),
@@ -992,7 +992,7 @@ class PydepsNeedsUpdatingTest(unittest.TestCase):
     def testRelevantAndroidPyInNonAndroidCheckout(self):
         # PRESUBMIT.CheckPydepsNeedsUpdating is only implemented for Linux.
         if not self.mock_input_api.platform.startswith('linux'):
-            return []
+            return
 
         self.mock_input_api.files = [
             MockAffectedFile('D.py', []),
@@ -1014,7 +1014,7 @@ class PydepsNeedsUpdatingTest(unittest.TestCase):
     def testGnPathsAndMissingOutputFlag(self):
         # PRESUBMIT.CheckPydepsNeedsUpdating is only implemented for Linux.
         if not self.mock_input_api.platform.startswith('linux'):
-            return []
+            return
 
         self.checker._file_cache = {
             'A.pydeps':
