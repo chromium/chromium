@@ -1797,12 +1797,13 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
     bool is_thread_switch =
         webui_thread_id && webui_thread_id.value() != url_thread_id;
 
-    bool should_create_new_task =
-        (pending_task_title_mismatch || is_new_conversation ||
-         is_thread_switch) &&
-        (!base::FeatureList::IsEnabled(
-             omnibox::kContextManagementInComposebox) ||
-         !task_info_delegate_->GetTaskId().has_value());
+    bool has_reusable_task =
+        base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox) &&
+        task_info_delegate_->GetTaskId().has_value();
+
+    bool should_create_new_task = pending_task_title_mismatch ||
+                                  is_thread_switch ||
+                                  (is_new_conversation && !has_reusable_task);
 
     if (should_create_new_task) {
       OMNIBOX_LOG("nav_trace") << "ContextualTasks navigation trace: "
