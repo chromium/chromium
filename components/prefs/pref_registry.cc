@@ -10,12 +10,15 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/map_util.h"
 #include "base/values.h"
 #include "components/prefs/default_pref_store.h"
 #include "components/prefs/pref_store.h"
 
 PrefRegistry::PrefRegistry()
-    : defaults_(base::MakeRefCounted<DefaultPrefStore>()) {}
+    : defaults_(base::MakeRefCounted<DefaultPrefStore>()),
+      registration_types_(base::MakeRefCounted<
+                          base::RefCountedData<PrefRegistrationTypeMap>>()) {}
 
 PrefRegistry::~PrefRegistry() {}
 
@@ -26,9 +29,14 @@ uint32_t PrefRegistry::GetRegistrationFlags(std::string_view pref_name) const {
 
 std::optional<PrefRegistry::RegisteredPrefType>
 PrefRegistry::GetRegisteredPrefType(std::string_view pref_name) const {
-  const auto& it = registration_types_.find(pref_name);
-  return it != registration_types_.end() ? std::make_optional(it->second)
-                                         : std::nullopt;
+  if (const RegisteredPrefType* pref_type =
+          base::FindOrNull(registration_types_->data, pref_name)) {
+    return *pref_type;
+  }
+  if (!defaults_->GetValue(pref_name, nullptr)) {
+    return std::nullopt;
+  }
+  return RegisteredPrefType::kOther;
 }
 
 scoped_refptr<PrefStore> PrefRegistry::defaults() {
@@ -66,15 +74,20 @@ void PrefRegistry::RegisterPreference(std::string_view path,
       << "Trying to register a previously registered pref: " << path;
   DCHECK(!registration_flags_.contains(path))
       << "Trying to register a previously registered pref: " << path;
-  DCHECK(!registration_types_.contains(path))
-      << "Trying to register a previously registered pref: " << path;
+  // `registration_types_` is not checked here because it is shared between
+  // regular and incognito profiles. Therefore, values can be written again
+  // when incognito profiles are created.
 
   defaults_->SetDefaultValue(path, std::move(default_value));
   if (flags != NO_REGISTRATION_FLAGS) {
     registration_flags_.insert_or_assign(path, flags);
   }
 
-  registration_types_.insert_or_assign(path, type);
+  // Only values diverging from `RegisteredPrefType::kOther` are persisted. All
+  // other prefs are assumed to be of type `kOther`.
+  if (type != RegisteredPrefType::kOther) {
+    registration_types_->data.insert_or_assign(path, type);
+  }
 
   OnPrefRegistered(path, flags);
 }

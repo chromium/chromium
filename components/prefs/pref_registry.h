@@ -118,10 +118,14 @@ class COMPONENTS_PREFS_EXPORT PrefRegistry
   // A map of pref name to a bitmask of PrefRegistrationFlags.
   PrefRegistrationFlagsMap registration_flags_;
 
-  // A map of pref name to its registered type.
+  // A map of pref name to its non-default registered type. Entries that are
+  // not in the map are assumed to be of type `RegisteredPrefType::kOther`.
+  // This is shared between regular and incognito registries so late
+  // registrations propagate.
   using PrefRegistrationTypeMap =
       absl::flat_hash_map<std::string, RegisteredPrefType>;
-  PrefRegistrationTypeMap registration_types_;
+  scoped_refptr<base::RefCountedData<PrefRegistrationTypeMap>>
+      registration_types_;
 };
 
 #endif  // COMPONENTS_PREFS_PREF_REGISTRY_H_

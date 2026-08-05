@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_notifier_impl.h"
@@ -315,6 +316,23 @@ class PrefServiceSyncableTest : public testing::Test {
 
   raw_ptr<PrefModelAssociator> pref_sync_service_ = nullptr;
 };
+
+TEST_F(PrefServiceSyncableTest, ForkForIncognitoSharesRegisteredPrefTypes) {
+  constexpr char kInt64PrefName[] = "int64_pref_name";
+  constexpr char kTimePrefName[] = "time_pref_name";
+  prefs_.registry()->RegisterInt64Pref(kInt64PrefName, 0);
+
+  scoped_refptr<PrefRegistrySyncable> forked_registry =
+      prefs_.registry()->ForkForIncognito();
+  prefs_.registry()->RegisterTimePref(kTimePrefName, base::Time());
+
+  EXPECT_EQ(PrefRegistry::RegisteredPrefType::kOther,
+            forked_registry->GetRegisteredPrefType(kStringPrefName));
+  EXPECT_EQ(PrefRegistry::RegisteredPrefType::kInt64,
+            forked_registry->GetRegisteredPrefType(kInt64PrefName));
+  EXPECT_EQ(PrefRegistry::RegisteredPrefType::kTime,
+            forked_registry->GetRegisteredPrefType(kTimePrefName));
+}
 
 TEST_F(PrefServiceSyncableTest, CreatePrefSyncData) {
   prefs_.SetString(kStringPrefName, kExampleUrl0);

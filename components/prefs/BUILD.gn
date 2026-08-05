@@ -105,6 +105,7 @@ source_set("unit_tests") {
     "pref_change_registrar_unittest.cc",
     "pref_member_unittest.cc",
     "pref_notifier_impl_unittest.cc",
+    "pref_registry_unittest.cc",
     "pref_service_unittest.cc",
     "pref_value_map_unittest.cc",
     "pref_value_store_unittest.cc",
