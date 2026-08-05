@@ -26,35 +26,6 @@ namespace base {
 
 class SamplingHeapProfilerTest;
 
-// Stats about the allocation sampler.
-struct BASE_EXPORT PoissonAllocationSamplerStats {
-  using AddressCacheBucketStats = LockFreeAddressHashSet::BucketStats;
-
-  PoissonAllocationSamplerStats(
-      size_t address_cache_hits,
-      size_t address_cache_misses,
-      size_t address_cache_max_size,
-      float address_cache_max_load_factor,
-      AddressCacheBucketStats address_cache_bucket_stats,
-      size_t bloom_filter_hits,
-      size_t bloom_filter_misses,
-      size_t bloom_filter_max_saturation);
-  ~PoissonAllocationSamplerStats();
-
-  PoissonAllocationSamplerStats(const PoissonAllocationSamplerStats&);
-  PoissonAllocationSamplerStats& operator=(
-      const PoissonAllocationSamplerStats&);
-
-  size_t address_cache_hits;
-  size_t address_cache_misses;
-  size_t address_cache_max_size;
-  float address_cache_max_load_factor;
-  AddressCacheBucketStats address_cache_bucket_stats;
-  size_t bloom_filter_hits;
-  size_t bloom_filter_misses;
-  size_t bloom_filter_max_saturation;
-};
-
 // This singleton class implements Poisson sampling of the incoming allocations
 // stream. It hooks onto base::allocator and base::PartitionAlloc.
 // The only control parameter is sampling interval that controls average value
@@ -169,11 +140,6 @@ class BASE_EXPORT PoissonAllocationSampler {
   // resets it to the default if `load_factor` is nulloptr.
   void SetTargetHashSetLoadFactor(std::optional<float> load_factor);
 
-  // Returns statistics about the allocation sampler, and resets the running
-  // counts so that each call to this returns only stats about the period
-  // between calls.
-  PoissonAllocationSamplerStats GetAndResetStats();
-
   ALWAYS_INLINE void OnAllocation(
       const base::allocator::dispatcher::AllocationNotificationData&
           allocation_data);
@@ -260,25 +226,7 @@ class BASE_EXPORT PoissonAllocationSampler {
   // Fast, thread-safe access to the current profiling state.
   static std::atomic<ProfilingStateFlagMask> profiling_state_;
 
-  // Running counts for PoissonAllocationSamplerStats. These are all atomic or
-  // mutex-guarded because they're updated from multiple threads. The atomics
-  // can always be accessed using std::memory_order_relaxed since each value is
-  // separately recorded in UMA and no other memory accesses depend on it. Some
-  // values are correlated (eg. `address_cache_hits_` and
-  // `address_cache_misses_`), and this might see a write to one but not the
-  // other, but this shouldn't cause enough errors in the aggregated UMA metrics
-  // to be worth adding overhead to avoid it.
-  std::atomic<size_t> address_cache_hits_;
-  std::atomic<size_t> address_cache_misses_;
-  size_t address_cache_max_size_ GUARDED_BY(mutex_) = 0;
-  // The max load factor that's observed in sampled_addresses_set().
-  float address_cache_max_load_factor_ GUARDED_BY(mutex_) = 0;
-  std::atomic<size_t> bloom_filter_hits_;
-  std::atomic<size_t> bloom_filter_misses_;
-  size_t bloom_filter_max_saturation_ GUARDED_BY(mutex_) = 0;
-
   // The load factor that will trigger rebalancing in sampled_addresses_set().
-  // By definition `address_cache_max_load_factor_` will never exceed this.
   float address_cache_target_load_factor_ GUARDED_BY(mutex_) = 1.0;
 
   friend class NoDestructor<PoissonAllocationSampler>;
@@ -391,16 +339,10 @@ ALWAYS_INLINE void PoissonAllocationSampler::OnFree(
   const LockFreeAddressHashSet& address_cache = sampled_addresses_set();
   switch (address_cache.Contains(address)) {
     [[likely]] case LockFreeAddressHashSet::ContainsResult::kNotFound:
-      bloom_filter_misses_.fetch_add(1, std::memory_order_relaxed);
-      return;
     case LockFreeAddressHashSet::ContainsResult::
         kNotFoundButMatchedInBloomFilter:
-      bloom_filter_hits_.fetch_add(1, std::memory_order_relaxed);
-      address_cache_misses_.fetch_add(1, std::memory_order_relaxed);
       return;
     [[unlikely]] case LockFreeAddressHashSet::ContainsResult::kFound:
-      bloom_filter_hits_.fetch_add(1, std::memory_order_relaxed);
-      address_cache_hits_.fetch_add(1, std::memory_order_relaxed);
       // Continue after switch.
       break;
   }

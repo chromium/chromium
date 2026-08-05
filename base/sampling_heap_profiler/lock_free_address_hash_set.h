@@ -55,21 +55,6 @@ namespace base {
 // N-1: {*}--> {keyM,*}--> NULL
 class BASE_EXPORT LockFreeAddressHashSet {
  public:
-  // Stats about the hash set's buckets, for metrics.
-  struct BASE_EXPORT BucketStats {
-    BucketStats(std::vector<size_t> lengths, double chi_squared);
-    ~BucketStats();
-
-    BucketStats(const BucketStats&);
-    BucketStats& operator=(const BucketStats&);
-
-    // Length of each bucket (ie. number of key slots that must be searched).
-    std::vector<size_t> lengths;
-
-    // Result of a chi-squared test that measures uniformity of bucket usage.
-    double chi_squared = 0.0;
-  };
-
   // Creates a hash set with `buckets_count` buckets (which must be a power of
   // 2). `lock` is a reference to a global lock (shared by all
   // LockFreeAddressHashSet instances) that must be held by callers of |Insert|,
@@ -85,8 +70,6 @@ class BASE_EXPORT LockFreeAddressHashSet {
     kNotFound,
     // The key was matched in the supplemental Bloom filter, but not the hash
     // set. (A Bloom filter false positive.)
-    // TODO(crbug.com/487747381): This is mainly useful for tracking statistics
-    // of the Bloom filter usage, and could be removed.
     kNotFoundButMatchedInBloomFilter,
   };
 
@@ -127,13 +110,6 @@ class BASE_EXPORT LockFreeAddressHashSet {
     lock_->AssertAcquired();
     return 1.f * size() / buckets_.size();
   }
-
-  // Returns stats about the buckets. Must not be called concurrently with
-  // |Insert|, |Remove| or |Copy|.
-  BucketStats GetBucketStats() const;
-
-  // Returns the highest number of bits set in any bloom filter, for metrics.
-  size_t MaxBloomFilterSaturation() const;
 
  private:
   friend class LockFreeAddressHashSetTest;

@@ -94,27 +94,6 @@ namespace {
 // 7 or 8 bits per key seems optimal: after that point the false positive rate
 // starts to rise at the 99th, which could lead to spikes of poor performance.
 
-// Returns the result of a chi-squared test showing how evenly keys are
-// distributed. `bucket_key_counts` is the count of keys stored in each bucket.
-double ChiSquared(const std::vector<size_t>& bucket_key_counts) {
-  // Algorithm taken from
-  // https://en.wikipedia.org/wiki/Hash_function#Testing_and_measurement:
-  // "n is the number of keys, m is the number of buckets, and b[j] is the
-  // number of items in bucket j."
-  const size_t n = std::accumulate(bucket_key_counts.begin(),
-                                   bucket_key_counts.end(), size_t{0});
-  const size_t m = bucket_key_counts.size();
-  DCHECK(m);
-
-  const double numerator = std::accumulate(
-      bucket_key_counts.begin(), bucket_key_counts.end(), 0.0,
-      [](double sum, size_t b) { return sum + b * (b + 1) / 2.0; });
-  const double denominator = (n / (2.0 * m)) * (n + 2 * m - 1);
-  // `denominator` could be 0 if n == 0. An empty set has uniformity 1.0 by
-  // definition (all buckets have 0 keys).
-  return denominator ? (numerator / denominator) : 1.0;
-}
-
 }  // namespace
 
 LockFreeAddressHashSet::LockFreeAddressHashSet(size_t buckets_count, Lock& lock)
@@ -296,51 +275,5 @@ void LockFreeAddressHashSet::Copy(const LockFreeAddressHashSet& other) {
     }
   }
 }
-
-LockFreeAddressHashSet::BucketStats LockFreeAddressHashSet::GetBucketStats()
-    const {
-  lock_->AssertAcquired();
-  std::vector<size_t> lengths;
-  lengths.reserve(buckets_.size());
-  std::vector<size_t> key_counts;
-  key_counts.reserve(buckets_.size());
-  for (const Bucket& bucket : buckets_) {
-    // Bucket length includes all nodes, including ones with null keys, since
-    // they will need to be searched when iterating. Key count only includes
-    // real keys.
-    size_t length = 0;
-    size_t key_count = 0;
-    for (const Node* node = bucket.head.load(std::memory_order_relaxed);
-         node != nullptr; node = node->next) {
-      ++length;
-      if (node->key.load(std::memory_order_relaxed)) {
-        ++key_count;
-      }
-    }
-    lengths.push_back(length);
-    key_counts.push_back(key_count);
-  }
-  return BucketStats(std::move(lengths), ChiSquared(key_counts));
-}
-
-size_t LockFreeAddressHashSet::MaxBloomFilterSaturation() const {
-  lock_->AssertAcquired();
-  size_t max_bits = 0;
-  for (const Bucket& bucket : buckets_) {
-    max_bits = std::max(max_bits, bucket.filter.CountBits());
-  }
-  return max_bits;
-}
-
-LockFreeAddressHashSet::BucketStats::BucketStats(std::vector<size_t> lengths,
-                                                 double chi_squared)
-    : lengths(std::move(lengths)), chi_squared(chi_squared) {}
-
-LockFreeAddressHashSet::BucketStats::~BucketStats() = default;
-
-LockFreeAddressHashSet::BucketStats::BucketStats(const BucketStats&) = default;
-
-LockFreeAddressHashSet::BucketStats&
-LockFreeAddressHashSet::BucketStats::operator=(const BucketStats&) = default;
 
 }  // namespace base

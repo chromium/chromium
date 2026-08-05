@@ -95,32 +95,6 @@ ThreadLocalData* GetThreadLocalData() {
 
 }  // namespace
 
-PoissonAllocationSamplerStats::PoissonAllocationSamplerStats(
-    size_t address_cache_hits,
-    size_t address_cache_misses,
-    size_t address_cache_max_size,
-    float address_cache_max_load_factor,
-    AddressCacheBucketStats address_cache_bucket_stats,
-    size_t bloom_filter_hits,
-    size_t bloom_filter_misses,
-    size_t bloom_filter_max_saturation)
-    : address_cache_hits(address_cache_hits),
-      address_cache_misses(address_cache_misses),
-      address_cache_max_size(address_cache_max_size),
-      address_cache_max_load_factor(address_cache_max_load_factor),
-      address_cache_bucket_stats(std::move(address_cache_bucket_stats)),
-      bloom_filter_hits(bloom_filter_hits),
-      bloom_filter_misses(bloom_filter_misses),
-      bloom_filter_max_saturation(bloom_filter_max_saturation) {}
-
-PoissonAllocationSamplerStats::~PoissonAllocationSamplerStats() = default;
-
-PoissonAllocationSamplerStats::PoissonAllocationSamplerStats(
-    const PoissonAllocationSamplerStats&) = default;
-
-PoissonAllocationSamplerStats& PoissonAllocationSamplerStats::operator=(
-    const PoissonAllocationSamplerStats&) = default;
-
 PoissonAllocationSampler::ScopedMuteThreadSamples::ScopedMuteThreadSamples() {
   ThreadLocalData* const thread_local_data = GetThreadLocalData();
 
@@ -245,20 +219,6 @@ void PoissonAllocationSampler::SetTargetHashSetLoadFactor(
   address_cache_target_load_factor_ = load_factor.value_or(1.0);
 }
 
-PoissonAllocationSamplerStats PoissonAllocationSampler::GetAndResetStats() {
-  ScopedMuteThreadSamples no_reentrancy_scope;
-  AutoLock lock(mutex_);
-  return PoissonAllocationSamplerStats(
-      address_cache_hits_.exchange(0, std::memory_order_relaxed),
-      address_cache_misses_.exchange(0, std::memory_order_relaxed),
-      std::exchange(address_cache_max_size_, 0),
-      std::exchange(address_cache_max_load_factor_, 0.0),
-      sampled_addresses_set().GetBucketStats(),
-      bloom_filter_hits_.exchange(0, std::memory_order_relaxed),
-      bloom_filter_misses_.exchange(0, std::memory_order_relaxed),
-      std::exchange(bloom_filter_max_saturation_, 0));
-}
-
 // static
 size_t PoissonAllocationSampler::GetNextSampleInterval(size_t interval) {
   if (g_deterministic) [[unlikely]] {
@@ -367,17 +327,6 @@ void PoissonAllocationSampler::DoRecordAllocation(
     address_cache.Insert(address);
     BalanceAddressesHashSet();
 
-    // Record the load factor after balancing gets a chance to reduce it.
-    // Balancing won't change the size.
-    const LockFreeAddressHashSet& balanced_address_cache =
-        sampled_addresses_set();
-    address_cache_max_size_ =
-        std::max(address_cache_max_size_, balanced_address_cache.size());
-    address_cache_max_load_factor_ = std::max(
-        address_cache_max_load_factor_, balanced_address_cache.load_factor());
-    bloom_filter_max_saturation_ =
-        std::max(bloom_filter_max_saturation_,
-                 balanced_address_cache.MaxBloomFilterSaturation());
     observers_copy = observers_;
   }
 
