@@ -62,11 +62,11 @@ export class TodoItemElement extends CrLitElement {
   }
 
   protected getThumbsUpIcon_(): string {
-    return this.liked === true ? 'cr:thumbs-up-filled' : 'cr:thumbs-up';
+    return this.liked === true ? 'cr:thumb-up-filled' : 'cr:thumb-up';
   }
 
   protected getThumbsDownIcon_(): string {
-    return this.liked === false ? 'cr:thumbs-down-filled' : 'cr:thumbs-down';
+    return this.liked === false ? 'cr:thumb-down-filled' : 'cr:thumb-down';
   }
 
   protected onThumbsUpClick_(e: Event) {
