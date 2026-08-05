@@ -22,8 +22,10 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "ui/base/base_window.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/widget/widget_delegate.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -141,10 +143,11 @@ void GlicFloatingUi::CreateAndSetupWidget(gfx::Rect initial_bounds) {
   glic_view->SetWebContents(delegate_->host().webui_contents());
   glic_delegate_ =
       GlicWidget::CreateWidgetDelegate(std::move(glic_view), user_resizable_);
+  glic_delegate_->SetAccessibleTitle(
+      l10n_util::GetStringUTF16(IDS_GLIC_WINDOW_TITLE));
   glic_widget_ = GlicWidget::Create(glic_delegate_.get(), profile_,
                                     initial_bounds, user_resizable_);
 
-  // TODO: Setup AccessibilityText.
 #if BUILDFLAG(IS_MAC)
   GetGlicWidget()->SetActivationIndependence(true);
   GetGlicWidget()->SetVisibleOnAllWorkspaces(true);
