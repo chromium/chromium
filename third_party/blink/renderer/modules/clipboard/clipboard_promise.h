@@ -114,6 +114,15 @@ class MODULES_EXPORT ClipboardPromise final
 
   SystemClipboard* GetSystemClipboard() const;
 
+  // Same as GetSystemClipboard(), but rejects the promise before returning
+  // null, so a detached frame doesn't leave the promise unsettled.
+  SystemClipboard* GetSystemClipboardOrReject();
+
+  // Reject the promise and return true if read permission came from the
+  // implicit paste event grant and the clipboard has changed since the paste
+  // event started.
+  bool RejectIfClipboardChangedSincePasteStart(SystemClipboard& clipboard);
+
   // Returns the script state associated with the promise.
   ScriptState* GetScriptState() const;
   // ExecutionContextLifecycleObserver
@@ -201,7 +210,8 @@ class MODULES_EXPORT ClipboardPromise final
   bool will_read_unprocessed_html_ = false;
   // Plain text data to be written to the clipboard.
   String plain_text_;
-  // Clipboard sequence number captured at the start of paste event.
+  // Clipboard sequence number as of the start of the paste event whose implicit
+  // permission grant this read is riding.
   std::optional<absl::uint128> sequence_number_at_paste_start_;
   // The list of formats read from the clipboard.
   HeapVector<std::pair<String, Member<V8UnionBlobOrString>>>
