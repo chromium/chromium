@@ -106,6 +106,15 @@ class ContextualSearchSessionHandle {
     smart_tab_sharing_toggled_since_last_turn_ = toggled;
   }
 
+  const std::vector<lens::LensOverlayRequestId>&
+  sts_toggled_removed_contexts() const {
+    return sts_toggled_removed_contexts_;
+  }
+  void set_sts_toggled_removed_contexts(
+      std::vector<lens::LensOverlayRequestId> contexts) {
+    sts_toggled_removed_contexts_ = std::move(contexts);
+  }
+
   std::optional<lens::LensOverlayInvocationSource> invocation_source() const {
     return invocation_source_;
   }
@@ -398,6 +407,11 @@ class ContextualSearchSessionHandle {
   // need to clear the context on next query submission.
   // This is reset after the next query submission.
   bool smart_tab_sharing_toggled_since_last_turn_ = false;
+
+  // Request IDs of submitted and uploaded contexts collected when Smart Tab
+  // Sharing was toggled, to be sent to AIM via `removed_contexts` on the next
+  // query submission turn.
+  std::vector<lens::LensOverlayRequestId> sts_toggled_removed_contexts_;
 
   // This needs to be the last member to ensure all outstanding WeakPtrs are
   // invalidated before the rest of the members.

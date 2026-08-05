@@ -107,6 +107,8 @@ void UpdateContextualSearchWebContentsHelperForTask(
         existing_session->smart_tab_sharing_active());
     session_handle->set_smart_tab_sharing_toggled_since_last_turn(
         existing_session->smart_tab_sharing_toggled_since_last_turn());
+    session_handle->set_sts_toggled_removed_contexts(
+        existing_session->sts_toggled_removed_contexts());
   } else {
     session_handle = contextual_search_service->CreateSession(
         CreateQueryControllerConfigParams(),
