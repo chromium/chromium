@@ -41,6 +41,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
+#include "third_party/blink/renderer/core/frame/browser_controls.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -862,17 +863,26 @@ ScrollOffset VisualViewport::MaximumScrollOffsetAtScale(float scale) const {
   // crbug.com/470718.
   gfx::SizeF frame_view_size(ContentsSize());
 
-  if (browser_controls_adjustment_) {
+  // Match the combined browser controls delta the compositor applies in
+  // LayerTreeImpl::UpdateViewportContainerSizes(). The top contribution
+  // arrives via SetBrowserControlsAdjustment() since it also affects
+  // VisibleRect(); bottom controls never affect VisibleRect(), so read
+  // their contribution directly.
+  const float scroll_bounds_adjustment =
+      browser_controls_adjustment_ +
+      GetPage().GetBrowserControls().UnreportedBottomSizeAdjustment();
+
+  if (scroll_bounds_adjustment) {
     float min_scale =
         GetPage().GetPageScaleConstraintsSet().FinalConstraints().minimum_scale;
-    frame_view_size.Enlarge(0, browser_controls_adjustment_ / min_scale);
+    frame_view_size.Enlarge(0, scroll_bounds_adjustment / min_scale);
   }
 
   frame_view_size.Scale(scale);
   frame_view_size = gfx::SizeF(ToFlooredSize(frame_view_size));
 
   gfx::SizeF viewport_size(size_);
-  viewport_size.Enlarge(0, ceilf(browser_controls_adjustment_));
+  viewport_size.Enlarge(0, ceilf(scroll_bounds_adjustment));
 
   gfx::SizeF max_position = frame_view_size - viewport_size;
   max_position.Scale(1 / scale);

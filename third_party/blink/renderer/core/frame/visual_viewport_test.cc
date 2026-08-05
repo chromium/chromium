@@ -1384,6 +1384,45 @@ TEST_P(VisualViewportTest, TestBrowserControlsAdjustmentWithScale) {
             frame_view.LayoutViewport()->GetScrollOffset());
 }
 
+// Tests that bottom browser controls extend the transient scroll bounds like
+// the compositor does, without affecting the visible rect.
+TEST_P(VisualViewportTest, TestBottomBrowserControlsAdjustmentWithScale) {
+  InitializeWithAndroidSettings();
+  WebView()->ResizeWithBrowserControls(gfx::Size(500, 450), 0, 20, true);
+  UpdateAllLifecyclePhases();
+
+  RegisterMockedHttpURLLoad("content-width-1000.html");
+  NavigateTo(base_url_ + "content-width-1000.html");
+  UpdateAllLifecyclePhases();
+
+  VisualViewport& visual_viewport = GetFrame()->GetPage()->GetVisualViewport();
+  LocalFrameView& frame_view = *WebView()->MainFrameImpl()->GetFrameView();
+
+  visual_viewport.SetScale(2);
+  EXPECT_EQ(gfx::Size(1000, 900), frame_view.Size());
+
+  // Fully show the bottom controls. Since the controls shrink the layout,
+  // fully shown controls need no scroll bounds adjustment.
+  WebView()->MainFrameViewWidget()->ApplyViewportChangesForTesting(
+      {gfx::Vector2dF(), gfx::Vector2dF(), 1, false, 0, 1,
+       cc::BrowserControlsState::kBoth});
+  EXPECT_EQ(gfx::SizeF(250, 225), visual_viewport.VisibleRect().size());
+
+  visual_viewport.Move(ScrollOffset(10000, 10000));
+  EXPECT_EQ(ScrollOffset(750, 675), visual_viewport.GetScrollOffset());
+
+  // Simulate hiding the bottom controls. The visible rect must not change,
+  // but the 20px given back must extend the scroll bounds: the maximum
+  // offset grows by 20 / min_scale - 20 / scale = 40 - 10 = 30.
+  WebView()->MainFrameViewWidget()->ApplyViewportChangesForTesting(
+      {gfx::Vector2dF(), gfx::Vector2dF(), 1, false, 0, -1,
+       cc::BrowserControlsState::kBoth});
+  EXPECT_EQ(gfx::SizeF(250, 225), visual_viewport.VisibleRect().size());
+
+  visual_viewport.Move(ScrollOffset(10000, 10000));
+  EXPECT_EQ(ScrollOffset(750, 705), visual_viewport.GetScrollOffset());
+}
+
 // Tests that a scroll all the way to the bottom of the page, while hiding the
 // browser controls doesn't cause a clamp in the viewport scroll offset when the
 // top controls initiated resize occurs.

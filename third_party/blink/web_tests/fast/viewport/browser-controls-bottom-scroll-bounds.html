@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bottom browser controls extend only the transient scroll bounds</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style>
+  html, body {
+    margin: 0;
+  }
+  body {
+    height: 2000px;
+  }
+</style>
+<script>
+promise_test(async () => {
+  assert_implements(window.internals, "This test requires window.internals");
+
+  const bottomControlsHeight = 64;
+  const minScale = 1;
+  const pageScale = 2;
+
+  internals.settings.setViewportEnabled(true);
+  internals.setPageScaleFactorLimits(minScale, 5);
+  internals.setBrowserControlsState(0, bottomControlsHeight, true);
+  internals.setBrowserControlsShownRatio(0, 1);
+  internals.setPageScaleFactor(pageScale);
+
+  await new Promise(requestAnimationFrame);
+  await new Promise(requestAnimationFrame);
+
+  assert_equals(visualViewport.scale, pageScale, "page scale must be applied");
+
+  internals.setVisualViewportOffset(0, 100000);
+  const shownMaximum = visualViewport.offsetTop;
+  const visibleHeight = visualViewport.height;
+  assert_greater_than(shownMaximum, 0,
+                      "the visual viewport must be scrollable");
+
+  internals.setBrowserControlsShownRatio(0, 0);
+  await new Promise(requestAnimationFrame);
+  await new Promise(requestAnimationFrame);
+
+  assert_equals(visualViewport.height, visibleHeight,
+                "hiding bottom controls must not change visualViewport.height");
+  assert_equals(visualViewport.offsetTop, shownMaximum,
+                "hiding bottom controls must not move the visual viewport");
+
+  // The compositor extends the outer viewport by height / minScale and the
+  // inner viewport by height, so the maximum offset at the current scale
+  // grows by height / minScale - height / pageScale.
+  const expectedGain =
+      bottomControlsHeight / minScale - bottomControlsHeight / pageScale;
+
+  internals.setVisualViewportOffset(0, 100000);
+  assert_equals(visualViewport.offsetTop, shownMaximum + expectedGain,
+                "hidden bottom controls must extend the scroll bounds");
+}, "Bottom controls keep Blink and compositor scroll bounds synchronized");
+</script>

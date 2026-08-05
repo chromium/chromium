@@ -36,6 +36,14 @@ float BrowserControls::UnreportedSizeAdjustment() {
   return (ShrinkViewport() ? TopHeight() : TopMinHeight()) - ContentOffset();
 }
 
+// Matches the bottom controls contribution to the viewport container bounds
+// deltas in LayerTreeImpl::UpdateViewportContainerSizes(). The min-height
+// portion of the controls shrinks the layout even when the controls don't.
+float BrowserControls::UnreportedBottomSizeAdjustment() {
+  return (ShrinkViewport() ? BottomHeight() : BottomMinHeight()) -
+         BottomContentOffset();
+}
+
 float BrowserControls::ContentOffset() {
   return top_shown_ratio_ * TopHeight();
 }

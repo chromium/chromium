@@ -32,6 +32,10 @@ class CORE_EXPORT BrowserControls final
   // The height the top controls are hidden; used for viewport adjustments
   // while the controls are resizing.
   float UnreportedSizeAdjustment();
+  // The height the bottom controls are hidden; used for scroll bounds
+  // adjustments while the controls are resizing. Unlike the top adjustment,
+  // this never affects the visible rect.
+  float UnreportedBottomSizeAdjustment();
   // The amount that browser controls are currently shown.
   float ContentOffset();
   float BottomContentOffset();
