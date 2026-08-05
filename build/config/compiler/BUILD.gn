@@ -1766,7 +1766,13 @@ config("treat_warnings_as_errors") {
   if (is_win) {
     cflags = [ "/WX" ]
   } else {
-    cflags = [ "-Werror" ]
+    cflags = [
+      "-Werror",
+
+      # Treat #pragma message warnings (-W#pragma-messages) as fatal errors
+      # so that #pragma message does not bypass -Werror.
+      "-Werror=#pragma-messages",
+    ]
 
     # The compiler driver can sometimes (rarely) emit warnings before calling
     # the actual linker.  Make sure these warnings are treated as errors as
