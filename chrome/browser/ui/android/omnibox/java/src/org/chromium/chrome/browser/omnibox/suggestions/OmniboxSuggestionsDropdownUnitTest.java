@@ -46,6 +46,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdown.SuggestionLayoutScrollListener;
+import org.chromium.chrome.browser.omnibox.suggestions.SelectionController.Mode;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -370,13 +371,16 @@ public class OmniboxSuggestionsDropdownUnitTest {
     }
 
     @Test
-    public void testSetAllowParkingAtSentinel() {
+    public void testSetSelectionMode() {
         SelectionController controller = mDropdown.getSelectionControllerForTesting();
 
-        mDropdown.setAllowParkingAtSentinel(true);
+        mDropdown.setSelectionMode(Mode.WRAPPING_WITH_SENTINEL);
         assertTrue(controller.isParkedAtSentinel());
 
-        mDropdown.setAllowParkingAtSentinel(false);
+        mDropdown.setSelectionMode(Mode.SENTINEL_THEN_WRAPPING);
+        assertTrue(controller.isParkedAtSentinel());
+
+        mDropdown.setSelectionMode(Mode.WRAPPING);
         assertFalse(controller.isParkedAtSentinel());
     }
 

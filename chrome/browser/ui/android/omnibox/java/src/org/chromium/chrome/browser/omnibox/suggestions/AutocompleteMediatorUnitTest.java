@@ -78,6 +78,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.SelectionController.Mode;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.RoundSides;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionInSuggest;
@@ -2713,35 +2714,41 @@ public class AutocompleteMediatorUnitTest {
         var input = session.getAutocompleteInput();
         OmniboxCapabilities.setHasDesktopExperienceForTesting(false);
 
-        // ZPS -- allow parking.
+        // ZPS -- use WRAPPING_WITH_SENTINEL mode on mobile.
         input.setUserText("");
         mMediator.onInputChanged();
-        assertTrue(mListModel.get(SuggestionListProperties.ALLOW_PARKING_AT_SENTINEL));
+        assertEquals(
+                Mode.WRAPPING_WITH_SENTINEL,
+                mListModel.get(SuggestionListProperties.SELECTION_MODE));
 
-        // Prefixed -- allow parking.
+        // Prefixed -- use WRAPPING_WITH_SENTINEL mode on mobile.
         input.setUserText("test");
         mMediator.onInputChanged();
-        assertTrue(mListModel.get(SuggestionListProperties.ALLOW_PARKING_AT_SENTINEL));
+        assertEquals(
+                Mode.WRAPPING_WITH_SENTINEL,
+                mListModel.get(SuggestionListProperties.SELECTION_MODE));
     }
 
     @Test
     @SmallTest
-    public void onInputChanged_setsAllowParkingAtSentinelProperty_desktop() {
+    public void onInputChanged_setsSelectionModeProperty_desktop() {
         var session = createEmptySession();
         mMediator.beginInput(session);
 
         var input = session.getAutocompleteInput();
         OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
 
-        // ZPS -- allow parking.
+        // ZPS -- use SENTINEL_THEN_WRAPPING mode.
         input.setUserText("");
         mMediator.onInputChanged();
-        assertTrue(mListModel.get(SuggestionListProperties.ALLOW_PARKING_AT_SENTINEL));
+        assertEquals(
+                Mode.SENTINEL_THEN_WRAPPING,
+                mListModel.get(SuggestionListProperties.SELECTION_MODE));
 
-        // Prefixed -- Don't allow parking.
+        // Prefixed -- use WRAPPING mode on desktop.
         input.setUserText("test");
         mMediator.onInputChanged();
-        assertFalse(mListModel.get(SuggestionListProperties.ALLOW_PARKING_AT_SENTINEL));
+        assertEquals(Mode.WRAPPING, mListModel.get(SuggestionListProperties.SELECTION_MODE));
     }
 
     @Test

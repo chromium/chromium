@@ -1118,11 +1118,20 @@ class AutocompleteMediator
         mListPropertyModel.set(SuggestionListProperties.LIST_IS_FINAL, false);
         mIgnoreOmniboxItemSelection = true;
         boolean isInZeroPrefixContext = mAutocompleteInput.isInZeroPrefixContext();
-        boolean allowParking =
-                isInZeroPrefixContext
-                        || !mAutocompleteInput.isConventionalRequestType()
-                        || !OmniboxCapabilities.hasDesktopExperience(mContext);
-        mListPropertyModel.set(SuggestionListProperties.ALLOW_PARKING_AT_SENTINEL, allowParking);
+        boolean isUnconventional =
+                isInZeroPrefixContext || !mAutocompleteInput.isConventionalRequestType();
+        @SelectionController.Mode int selectionMode;
+        if (isUnconventional || !OmniboxCapabilities.hasDesktopExperience(mContext)) {
+            // In desktop experiences, we use SENTINEL_THEN_WRAPPING to match the behavior of the
+            // desktop browser.
+            selectionMode =
+                    OmniboxCapabilities.hasDesktopExperience(mContext)
+                            ? SelectionController.Mode.SENTINEL_THEN_WRAPPING
+                            : SelectionController.Mode.WRAPPING_WITH_SENTINEL;
+        } else {
+            selectionMode = SelectionController.Mode.WRAPPING;
+        }
+        mListPropertyModel.set(SuggestionListProperties.SELECTION_MODE, selectionMode);
         mListPropertyModel.set(SuggestionListProperties.RESET_SELECTION, null);
         cancelAutocompleteRequests();
 

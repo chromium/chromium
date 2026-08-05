@@ -55,9 +55,8 @@ class SuggestionListViewBinder
 
         if (SuggestionListProperties.ACTIVITY_WINDOW_FOCUSED.equals(propertyKey)) {
             updateContainerVisibility(model, view);
-        } else if (SuggestionListProperties.ALLOW_PARKING_AT_SENTINEL.equals(propertyKey)) {
-            view.dropdown.setAllowParkingAtSentinel(
-                    model.get(SuggestionListProperties.ALLOW_PARKING_AT_SENTINEL));
+        } else if (SuggestionListProperties.SELECTION_MODE.equals(propertyKey)) {
+            view.dropdown.setSelectionMode(model.get(SuggestionListProperties.SELECTION_MODE));
         } else if (SuggestionListProperties.ALPHA.equals(propertyKey)) {
             view.dropdown.setChildAlpha(model.get(SuggestionListProperties.ALPHA));
         } else if (SuggestionListProperties.APPLY_VERTICAL_PADDING.equals(propertyKey)) {

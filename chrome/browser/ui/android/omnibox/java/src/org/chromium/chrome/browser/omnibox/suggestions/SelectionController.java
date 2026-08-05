@@ -42,13 +42,19 @@ public abstract class SelectionController {
      *         <li>forward: ∅- -> A -> B -> C -> ∅- -> A
      *         <li>backward: ∅- -> C -> B -> A -> ∅- -> C
      *       </ul>
+     *   <li>SENTINEL_THEN_WRAPPING:
+     *       <ul>
+     *         <li>forward: ∅- -> A -> B -> C -> A -> B
+     *         <li>backward: ∅- -> C -> B -> A -> C -> B
+     *       </ul>
      * </ul>
      */
     @IntDef({
         Mode.SATURATING,
         Mode.SATURATING_WITH_SENTINEL,
         Mode.WRAPPING,
-        Mode.WRAPPING_WITH_SENTINEL
+        Mode.WRAPPING_WITH_SENTINEL,
+        Mode.SENTINEL_THEN_WRAPPING
     })
     @Retention(RetentionPolicy.SOURCE)
     @Target(ElementType.TYPE_USE)
@@ -57,6 +63,7 @@ public abstract class SelectionController {
         int SATURATING_WITH_SENTINEL = 1;
         int WRAPPING = 2;
         int WRAPPING_WITH_SENTINEL = 3;
+        int SENTINEL_THEN_WRAPPING = 4;
     }
 
     protected @Mode int mMode;
@@ -85,6 +92,7 @@ public abstract class SelectionController {
 
             case Mode.SATURATING_WITH_SENTINEL:
             case Mode.WRAPPING_WITH_SENTINEL:
+            case Mode.SENTINEL_THEN_WRAPPING:
             default:
                 mDefaultPosition = Integer.MIN_VALUE; // Lower-end sentinel.
                 break;
@@ -126,7 +134,7 @@ public abstract class SelectionController {
                 setPosition(Integer.MAX_VALUE);
             }
             return false;
-        } else if (mMode == Mode.WRAPPING) {
+        } else if (mMode == Mode.WRAPPING || mMode == Mode.SENTINEL_THEN_WRAPPING) {
             // Check full list once, with wrapping, to find the next selectable item.
             for (int i = 0; i < itemCount; i++) {
                 if (newPosition >= itemCount) {
@@ -180,7 +188,7 @@ public abstract class SelectionController {
                 setPosition(Integer.MIN_VALUE);
             }
             return false;
-        } else if (mMode == Mode.WRAPPING) {
+        } else if (mMode == Mode.WRAPPING || mMode == Mode.SENTINEL_THEN_WRAPPING) {
             // Check full list once, with wrapping, to find the previous selectable item.
             for (int i = 0; i < itemCount; i++) {
                 if (newPosition < 0) {
@@ -254,6 +262,14 @@ public abstract class SelectionController {
             case Mode.WRAPPING_WITH_SENTINEL:
                 if (newPosition < 0 || newPosition >= itemCount) {
                     newPosition = Integer.MIN_VALUE;
+                }
+                break;
+
+            case Mode.SENTINEL_THEN_WRAPPING:
+                if (newPosition == Integer.MIN_VALUE || itemCount == 0) {
+                    newPosition = Integer.MIN_VALUE;
+                } else {
+                    newPosition = MathUtils.clamp(newPosition, 0, itemCount - 1);
                 }
                 break;
         }

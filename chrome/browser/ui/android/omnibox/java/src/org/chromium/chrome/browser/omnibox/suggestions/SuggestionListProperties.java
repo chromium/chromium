@@ -23,7 +23,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
      */
     WritableBooleanPropertyKey ACTIVITY_WINDOW_FOCUSED = new WritableBooleanPropertyKey();
 
-    WritableBooleanPropertyKey ALLOW_PARKING_AT_SENTINEL = new WritableBooleanPropertyKey();
+    WritableIntPropertyKey SELECTION_MODE = new WritableIntPropertyKey();
 
     WritableFloatPropertyKey ALPHA = new WritableFloatPropertyKey();
 
@@ -114,7 +114,6 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
             new PropertyKey[] {
                 // keep-sorted start
                 ACTIVITY_WINDOW_FOCUSED,
-                ALLOW_PARKING_AT_SENTINEL,
                 ALPHA,
                 APPLY_MARGIN_FOR_LEFT_SIDE_BAR,
                 APPLY_VERTICAL_PADDING,
@@ -136,6 +135,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
                 RESET_SELECTION,
                 RESOURCE_PROVIDER,
                 ROUND_TOP_CORNERS,
+                SELECTION_MODE,
                 SUGGESTION_MODELS,
                 TOOLBAR_POSITION,
                 // keep-sorted end

@@ -471,15 +471,12 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     }
 
     /**
-     * Sets whether parking at sentinel is allowed.
+     * Sets the selection mode for the dropdown selection controller.
      *
-     * @param allow Whether parking at sentinel is allowed.
+     * @param mode The selection mode to use.
      */
-    public void setAllowParkingAtSentinel(boolean allow) {
-        mSelectionMode =
-                allow
-                        ? SelectionController.Mode.WRAPPING_WITH_SENTINEL
-                        : SelectionController.Mode.WRAPPING;
+    public void setSelectionMode(@SelectionController.Mode int mode) {
+        mSelectionMode = mode;
         mSelectionController.setSelectionMode(mSelectionMode);
         mSelectionController.reset();
     }
