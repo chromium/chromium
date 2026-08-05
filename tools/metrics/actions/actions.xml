@@ -6879,6 +6879,8 @@ should be able to be added at any place in this file.
     <variant name=".ProgressScreen.Dismissed"
         summary="Progress screen dismissed."/>
     <variant name=".ProgressScreen.Shown" summary="Progress screen shown."/>
+    <variant name=".TabbedHomeScreen.Dismissed"
+        summary="Tabbed home screen dismissed."/>
     <variant name=".ZipTosScreen.Accepted"
         summary="BNPL ToS screen for Zip accepted."/>
     <variant name=".ZipTosScreen.Dismissed"

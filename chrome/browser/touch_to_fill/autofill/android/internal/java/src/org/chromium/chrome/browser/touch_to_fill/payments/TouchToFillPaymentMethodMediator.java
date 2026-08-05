@@ -422,6 +422,9 @@ class TouchToFillPaymentMethodMediator implements AutofillImageFetcher.Observer 
 
     @VisibleForTesting static final String ERROR_SCREEN_DISMISSED = ".ErrorScreen.Dismissed";
 
+    @VisibleForTesting
+    static final String TABBED_HOME_SCREEN_DISMISSED = ".TabbedHomeScreen.Dismissed";
+
     @VisibleForTesting static final String AFFIRM_TOS_SCREEN = ".AffirmTosScreen";
 
     @VisibleForTesting static final String KLARNA_TOS_SCREEN = ".KlarnaTosScreen";
@@ -1194,6 +1197,8 @@ class TouchToFillPaymentMethodMediator implements AutofillImageFetcher.Observer 
                 } else if (mModel.get(CURRENT_SCREEN) == BNPL_ISSUER_TOS_SCREEN) {
                     recordTouchToFillBnplTosUserAction(
                             TouchToFillBnplTosScreenUserAction.DISMISSED);
+                } else if (mModel.get(CURRENT_SCREEN) == TABBED_HOME_SCREEN) {
+                    recordTouchToFillBnplUserAction(TABBED_HOME_SCREEN_DISMISSED);
                 }
                 RecordHistogram.recordEnumeratedHistogram(
                         TOUCH_TO_FILL_CREDIT_CARD_OUTCOME_HISTOGRAM,
