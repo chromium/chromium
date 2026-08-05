@@ -864,6 +864,7 @@ TEST_F(It2MeHostTest, UnauthorizedHelperIsRejected) {
 TEST_F(It2MeHostTest, HostUdpPortRangePolicyValidRange) {
   PortRange port_range_actual;
   ASSERT_TRUE(PortRange::Parse(kPortRange, &port_range_actual));
+  ASSERT_TRUE(port_range_actual.is_valid());
   SetPolicies(
       {{policy::key::kRemoteAccessHostUdpPortRange, base::Value(kPortRange)}});
   StartHost();

@@ -10,6 +10,8 @@
 #include <optional>
 
 #include "base/time/time.h"
+#include "base/types/expected.h"
+#include "remoting/base/loggable.h"
 #include "remoting/base/port_range.h"
 
 namespace remoting {
@@ -29,6 +31,12 @@ struct SessionPolicies {
       base::Minutes(30);
 
   bool operator==(const SessionPolicies&) const;
+
+  // Returns `base::ok()` if all policy fields are semantically valid.
+  // Otherwise returns an error (`Loggable`).
+  // Used to verify semantic validity after structural deserialization
+  // (e.g., across Mojo IPC boundaries or after dictionary extraction).
+  base::expected<void, Loggable> Validate() const;
 
   // The maximum size, in bytes, that can be transferred between client and host
   // via clipboard synchronization. Defaults to no restrictions. Setting it to 0

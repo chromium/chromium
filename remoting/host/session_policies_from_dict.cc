@@ -26,21 +26,17 @@ std::optional<SessionPolicies> SessionPoliciesFromDict(
   if (max_session_duration_mins.has_value() &&
       *max_session_duration_mins != 0) {
     maximum_session_duration = base::Minutes(*max_session_duration_mins);
-    if (*maximum_session_duration <
-        SessionPolicies::kMinMaximumSessionDuration) {
-      LOG(WARNING) << "Invalid session duration: " << *maximum_session_duration;
-      return std::nullopt;
-    }
   }
 #endif
 
   PortRange host_udp_port_range;
   const std::string* udp_port_range_string =
       dict.FindString(policy::key::kRemoteAccessHostUdpPortRange);
-  if (udp_port_range_string &&
-      !PortRange::Parse(*udp_port_range_string, &host_udp_port_range)) {
-    LOG(WARNING) << "Invalid port range: " << udp_port_range_string;
-    return std::nullopt;
+  if (udp_port_range_string) {
+    if (!PortRange::Parse(*udp_port_range_string, &host_udp_port_range)) {
+      LOG(WARNING) << "Invalid port range: " << *udp_port_range_string;
+      return std::nullopt;
+    }
   }
 
   std::optional<bool> allow_firewall_traversal =
@@ -81,6 +77,10 @@ std::optional<SessionPolicies> SessionPoliciesFromDict(
   session_policies.host_username_match_required =
       dict.FindBool(policy::key::kRemoteAccessHostMatchUsername);
 #endif
+  if (auto result = session_policies.Validate(); !result.has_value()) {
+    LOG(WARNING) << "Invalid session policies: " << result.error();
+    return std::nullopt;
+  }
   return session_policies;
 }
 

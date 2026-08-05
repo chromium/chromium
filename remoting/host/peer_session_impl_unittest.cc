@@ -413,6 +413,23 @@ TEST_F(PeerSessionImplTest, DisconnectsAfterMaxSessionDurationIsReached) {
   EXPECT_TRUE(base::test::RunUntil([this] { return !is_connected(); }));
 }
 
+TEST_F(PeerSessionImplTest, Start_InvalidSessionPolicies_DisconnectsSession) {
+  SessionPolicies policies;
+#if !BUILDFLAG(IS_CHROMEOS)
+  policies.maximum_session_duration = base::Minutes(15);
+  EXPECT_CALL(
+      session_event_handler_,
+      OnSessionClosed(ErrorCode::HOST_CONFIGURATION_ERROR,
+                      testing::HasSubstr("maximum_session_duration"), _));
+#else
+  policies.host_udp_port_range = PortRange{100, 50};
+  EXPECT_CALL(session_event_handler_,
+              OnSessionClosed(ErrorCode::HOST_CONFIGURATION_ERROR,
+                              testing::HasSubstr("UDP port range"), _));
+#endif
+  StartPeerSession(policies);
+}
+
 // TODO(lambroslambrou): Re-implement the deleted MultiMonMouseMove
 // and MultiMonMouseMove_SameSize tests in a way that makes sense for
 // multi-stream mode.

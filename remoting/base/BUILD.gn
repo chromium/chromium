@@ -129,8 +129,6 @@ source_set("base") {
     "leaky_bucket.h",
     "local_session_policies_provider.cc",
     "local_session_policies_provider.h",
-    "loggable.cc",
-    "loggable.h",
     "logging_service_client.h",
     "memory_consumer_registry.cc",
     "memory_consumer_registry.h",
@@ -193,6 +191,7 @@ source_set("base") {
     ":authentication_method",
     ":buildflags",
     ":http_status",
+    ":loggable",
     "//base",
     "//net",
     "//remoting/proto",
@@ -269,6 +268,14 @@ source_set("errors") {
   ]
 }
 
+source_set("loggable") {
+  sources = [
+    "loggable.cc",
+    "loggable.h",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("session_policies") {
   public = [
     "port_range.h",
@@ -278,6 +285,7 @@ source_set("session_policies") {
     "port_range.cc",
     "session_policies.cc",
   ]
+  public_deps = [ ":loggable" ]
   deps = [ "//base" ]
 }
 

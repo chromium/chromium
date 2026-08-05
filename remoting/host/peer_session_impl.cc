@@ -177,6 +177,13 @@ void PeerSessionImpl::Start(
   desktop_environment_options_ = desktop_environment_options;
   extensions_.assign(extensions.begin(), extensions.end());
   effective_policies_ = session_policies;
+  if (auto result = effective_policies_.Validate(); !result.has_value()) {
+    LOG(ERROR) << "Disconnecting session due to invalid session policies: "
+               << result.error();
+    DisconnectSession(ErrorCode::HOST_CONFIGURATION_ERROR,
+                      result.error().ToString(), FROM_HERE);
+    return;
+  }
 
   base::TimeDelta max_duration =
       effective_policies_.maximum_session_duration.value_or(base::TimeDelta());

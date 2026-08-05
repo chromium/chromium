@@ -4,6 +4,7 @@
 
 #include "remoting/base/local_session_policies_provider.h"
 
+#include "base/check.h"
 #include "remoting/base/session_policies.h"
 
 namespace remoting {
@@ -19,6 +20,8 @@ LocalSessionPoliciesProvider::AddLocalPoliciesChangedCallback(
 
 void LocalSessionPoliciesProvider::set_local_policies(
     const SessionPolicies& policies) {
+  DCHECK(policies.Validate().has_value())
+      << "Invalid policies: " << policies.Validate().error();
   if (policies == local_policies_) {
     return;
   }

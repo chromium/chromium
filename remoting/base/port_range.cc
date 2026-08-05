@@ -20,12 +20,16 @@ void PortRange::reset() {
   max_port = 0;
 }
 
+bool PortRange::is_valid() const {
+  return is_null() || (min_port > 0 && min_port <= max_port);
+}
+
+// static
 bool PortRange::Parse(const std::string& port_range, PortRange* result) {
   DCHECK(result);
 
   if (port_range.empty()) {
-    result->min_port = 0;
-    result->max_port = 0;
+    result->reset();
     return true;
   }
 
@@ -46,12 +50,18 @@ bool PortRange::Parse(const std::string& port_range, PortRange* result) {
     return false;
   }
 
-  if (min_port == 0 || min_port > max_port || max_port > USHRT_MAX) {
+  if (min_port == 0 || min_port > USHRT_MAX || max_port == 0 ||
+      max_port > USHRT_MAX) {
     return false;
   }
 
-  result->min_port = static_cast<uint16_t>(min_port);
-  result->max_port = static_cast<uint16_t>(max_port);
+  PortRange candidate{static_cast<uint16_t>(min_port),
+                      static_cast<uint16_t>(max_port)};
+  if (!candidate.is_valid()) {
+    return false;
+  }
+
+  *result = candidate;
   return true;
 }
 

@@ -6,6 +6,9 @@
 
 #include <optional>
 
+#include "base/strings/string_number_conversions.h"
+#include "build/build_config.h"
+
 namespace remoting {
 
 namespace {
@@ -31,6 +34,26 @@ SessionPolicies::SessionPolicies(SessionPolicies&&) = default;
 SessionPolicies& SessionPolicies::operator=(SessionPolicies&&) = default;
 
 bool SessionPolicies::operator==(const SessionPolicies&) const = default;
+
+base::expected<void, Loggable> SessionPolicies::Validate() const {
+  if (!host_udp_port_range.is_valid()) {
+    return base::unexpected(
+        Loggable(FROM_HERE, "Invalid host UDP port range policy"));
+  }
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (maximum_session_duration.has_value() &&
+      *maximum_session_duration < kMinMaximumSessionDuration) {
+    return base::unexpected(Loggable(
+        FROM_HERE,
+        "maximum_session_duration (" +
+            base::NumberToString(maximum_session_duration->InMinutes()) +
+            " mins) is shorter than minimum required (" +
+            base::NumberToString(kMinMaximumSessionDuration.InMinutes()) +
+            " mins)"));
+  }
+#endif
+  return base::ok();
+}
 
 std::ostream& operator<<(std::ostream& os,
                          const SessionPolicies& session_policies) {

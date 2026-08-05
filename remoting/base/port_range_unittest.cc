@@ -16,6 +16,7 @@ TEST(PortRange, ParseEmpty) {
 
   EXPECT_TRUE(PortRange::Parse("", &port_range));
   EXPECT_TRUE(port_range.is_null());
+  EXPECT_TRUE(port_range.is_valid());
 }
 
 TEST(PortRange, ParseValid) {
@@ -23,16 +24,19 @@ TEST(PortRange, ParseValid) {
 
   EXPECT_TRUE(PortRange::Parse("1-65535", &port_range));
   EXPECT_FALSE(port_range.is_null());
+  EXPECT_TRUE(port_range.is_valid());
   EXPECT_EQ(port_range.min_port, 1u);
   EXPECT_EQ(port_range.max_port, 65535u);
 
   EXPECT_TRUE(PortRange::Parse(" 1 - 65535 ", &port_range));
   EXPECT_FALSE(port_range.is_null());
+  EXPECT_TRUE(port_range.is_valid());
   EXPECT_EQ(port_range.min_port, 1u);
   EXPECT_EQ(port_range.max_port, 65535u);
 
   EXPECT_TRUE(PortRange::Parse("12400-12400", &port_range));
   EXPECT_FALSE(port_range.is_null());
+  EXPECT_TRUE(port_range.is_valid());
   EXPECT_EQ(port_range.min_port, 12400u);
   EXPECT_EQ(port_range.max_port, 12400u);
 }
@@ -49,14 +53,16 @@ TEST(PortRange, ParseInvalid) {
   EXPECT_FALSE(PortRange::Parse("1--65535", &port_range));
   EXPECT_FALSE(PortRange::Parse("1-65535-", &port_range));
   EXPECT_FALSE(PortRange::Parse("0-65535", &port_range));
+  EXPECT_FALSE(PortRange::Parse("0-0", &port_range));
   EXPECT_FALSE(PortRange::Parse("1-65536", &port_range));
   EXPECT_FALSE(PortRange::Parse("1-4294967295", &port_range));
-  EXPECT_FALSE(PortRange::Parse("10-1", &port_range));
   EXPECT_FALSE(PortRange::Parse("1foo-2bar", &port_range));
 
+  EXPECT_FALSE(PortRange::Parse("10-1", &port_range));
+
   // Unsuccessful parses should NOT modify their output.
-  EXPECT_EQ(port_range.min_port, 123);
-  EXPECT_EQ(port_range.max_port, 456);
+  EXPECT_EQ(port_range.min_port, 123u);
+  EXPECT_EQ(port_range.max_port, 456u);
 }
 
 TEST(PortRange, Output) {
@@ -85,6 +91,16 @@ TEST(PortRange, Equality) {
 
   EXPECT_EQ(port_range_1, port_range_2);
   EXPECT_NE(port_range_1, port_range_3);
+}
+
+TEST(PortRange, IsValid) {
+  EXPECT_TRUE(PortRange().is_valid());
+  EXPECT_TRUE((PortRange{12400, 12409}).is_valid());
+  EXPECT_TRUE((PortRange{12400, 12400}).is_valid());
+  EXPECT_FALSE((PortRange{100, 50}).is_valid());
+  EXPECT_FALSE((PortRange{0, 80}).is_valid());
+  EXPECT_FALSE((PortRange{80, 0}).is_valid());
+  EXPECT_FALSE((PortRange{1, 0}).is_valid());
 }
 
 }  // namespace remoting

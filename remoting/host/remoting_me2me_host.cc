@@ -1618,7 +1618,8 @@ void HostProcess::OnPolicyUpdate(base::DictValue policies) {
   // incremental changes.
   std::optional<SessionPolicies> local_session_policies =
       SessionPoliciesFromDict(policy_watcher_->GetPlatformPolicies());
-  if (!local_session_policies.has_value()) {
+  if (!local_session_policies) {
+    LOG(ERROR) << "Invalid local session policies.";
     OnPolicyError();
     return;
   }
