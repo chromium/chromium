@@ -1271,24 +1271,21 @@ public class TabListMediator implements TabListNotificationHandler {
                                         : TabClosingSource.UNKNOWN;
 
                         setUseShrinkCloseAnimation(tabId, /* useShrinkCloseAnimation= */ true);
+                        boolean allowUndo = TabClosureParamsUtils.shouldAllowUndo(triggeringMotion);
                         if (mLayoutType == TabListLayoutType.GROUPED
                                 && tabModel.isTabInTabGroup(closingTab)) {
                             onGroupClosedFrom(tabId);
-
-                            // TODO(crbug.com/375468032): use "triggeringMotion" to determine
-                            //  if the "undo" snackbar should be shown when closing a tab group.
                             TabUiUtils.closeTabGroup(
                                     tabModel,
                                     tabId,
                                     tabClosingSource,
-                                    /* allowUndo= */ true,
+                                    allowUndo,
                                     /* hideTabGroups= */ true,
                                     getOnMaybeTabClosedCallback(tabId));
                             return;
                         }
 
                         onTabClosedFrom(tabId, mComponentId);
-                        boolean allowUndo = TabClosureParamsUtils.shouldAllowUndo(triggeringMotion);
                         TabClosureParams closureParams =
                                 TabClosureParams.closeTab(closingTab)
                                         .allowUndo(allowUndo)

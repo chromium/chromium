@@ -1135,6 +1135,52 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void sendsCloseSignalCorrectly_Group_TriggeringMotionFromMouse_DisallowUndo() {
+        createTabGroup(List.of(mTab1, mTab2), TAB_GROUP_ID);
+        mModelList
+                .get(0)
+                .model
+                .get(TabProperties.TAB_ACTION_BUTTON_DATA)
+                .tabActionListener
+                .run(
+                        mItemView1,
+                        mModelList.get(0).model.get(TabProperties.TAB_ID),
+                        MotionEventTestUtils.createMouseMotionInfo(
+                                /* downTime= */ SystemClock.uptimeMillis(),
+                                /* eventTime= */ SystemClock.uptimeMillis() + 200,
+                                MotionEvent.ACTION_UP));
+
+        verify(mTabRemover)
+                .closeTabs(
+                        argThat(params -> params.isTabGroup && !params.allowUndo),
+                        /* allowDialog= */ eq(true),
+                        /* listener= */ any());
+    }
+
+    @Test
+    public void sendsCloseSignalCorrectly_Group_TriggeringMotionFromTouch_AllowUndo() {
+        createTabGroup(List.of(mTab1, mTab2), TAB_GROUP_ID);
+        mModelList
+                .get(0)
+                .model
+                .get(TabProperties.TAB_ACTION_BUTTON_DATA)
+                .tabActionListener
+                .run(
+                        mItemView1,
+                        mModelList.get(0).model.get(TabProperties.TAB_ID),
+                        MotionEventTestUtils.createTouchMotionInfo(
+                                /* downTime= */ SystemClock.uptimeMillis(),
+                                /* eventTime= */ SystemClock.uptimeMillis() + 200,
+                                MotionEvent.ACTION_UP));
+
+        verify(mTabRemover)
+                .closeTabs(
+                        argThat(params -> params.isTabGroup && params.allowUndo),
+                        /* allowDialog= */ eq(true),
+                        /* listener= */ any());
+    }
+
+    @Test
     public void sendsCloseSignalCorrectly_ActionOnAllRelatedTabs() {
         mModelList
                 .get(1)
