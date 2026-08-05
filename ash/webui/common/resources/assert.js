@@ -70,7 +70,7 @@ export function assertNotReached(message) {
 
 /**
  * @param {*} value The value to check.
- * @param {function(new: T, ...)} type A user-defined constructor.
+ * @param {new (...args: any[]) => T} type A user-defined constructor.
  * @param {string=} message A message to show when this is hit.
  * @return {T}
  * @template T

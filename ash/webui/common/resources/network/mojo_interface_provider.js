@@ -4,20 +4,25 @@
 
 import {CrosNetworkConfig} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 
+/**
+ * @typedef {import('//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js').CrosNetworkConfigInterface}
+ * CrosNetworkConfigInterface
+ */
+
 /** @interface */
 export class MojoInterfaceProvider {
-  /** @return {!*} was !CrosNetworkConfigInterface */
+  /** @return {!CrosNetworkConfigInterface} */
   getMojoServiceRemote() {}
 }
 
 /** @implements {MojoInterfaceProvider} */
 export class MojoInterfaceProviderImpl {
   constructor() {
-    /** @private {?*} was ?CrosNetworkConfigInterface */
+    /** @type {?CrosNetworkConfigInterface} */
     this.remote_ = null;
   }
 
-  /** @return {!*} was !CrosNetworkConfigInterface */
+  /** @return {!CrosNetworkConfigInterface} */
   getMojoServiceRemote() {
     if (!this.remote_) {
       this.remote_ = CrosNetworkConfig.getRemote();
@@ -25,7 +30,7 @@ export class MojoInterfaceProviderImpl {
 
     return this.remote_;
   }
-  /** @param {!*} was !CrosNetworkConfigInterface remote */
+  /** @param {!CrosNetworkConfigInterface} remote */
   setMojoServiceRemoteForTest(remote) {
     this.remote_ = remote;
   }

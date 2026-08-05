@@ -17,9 +17,8 @@
  * @typedef {{
  *   data: ?(Blob|string|undefined),
  *   dataType: string
- * }}
+ * }} FilePreviewContent
  */
-let FilePreviewContent;
 
 /**
  * Parameters gathered to set the Quick View dialog properties.
@@ -34,9 +33,8 @@ let FilePreviewContent;
  *   audioArtwork: (?FilePreviewContent|undefined),
  *   autoplay: (?boolean|undefined),
  *   browsable: (?boolean|undefined),
- * }}
+ * }} QuickViewParams
  */
-let QuickViewParams;
 
 /**
  * Preview data that we send from the trusted context (Files app) to
@@ -44,7 +42,6 @@ let QuickViewParams;
  * 'image', etc...).
  * @typedef {{
  *   type: string,
- *   sourceContent: !FilePreviewContent
- * }}
+ *   sourceContent: FilePreviewContent
+ * }} UntrustedPreviewData
  */
-let UntrustedPreviewData;

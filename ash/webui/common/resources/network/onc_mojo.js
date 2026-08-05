@@ -1466,20 +1466,14 @@ export class OncMojo {
  */
 OncMojo.USE_ATTACH_APN_NAME = 'attach';
 
-/** @typedef {MojomDeviceStateProperties} */
-OncMojo.DeviceStateProperties;
+/** @typedef {MojomDeviceStateProperties} OncMojo.DeviceStateProperties */
 
-/** @typedef {MojomNetworkStateProperties} */
-OncMojo.NetworkStateProperties;
+/** @typedef {MojomNetworkStateProperties} OncMojo.NetworkStateProperties */
 
 /**
- * @typedef {ManagedBoolean|
- *           ManagedInt32|
- *           ManagedString|
- *           ManagedStringList|
- *           ManagedApnList}
+ * @typedef {ManagedBoolean|ManagedInt32|ManagedString|ManagedStringList|ManagedApnList}
+ * OncMojo.ManagedProperty
  */
-OncMojo.ManagedProperty;
 
 /**
  * Modified version of IPConfigProperties to store routingPrefix as
@@ -1490,8 +1484,7 @@ OncMojo.ManagedProperty;
  *   ipAddress: (string|null),
  *   nameServers: (Array<string>|null),
  *   netmask: (string|null),
- *   type: !IPConfigType,
+ *   type: IPConfigType,
  *   webProxyAutoDiscoveryUrl: (string|null),
- * }}
+ * }} OncMojo.IPConfigUIProperties
  */
-OncMojo.IPConfigUIProperties;

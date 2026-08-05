@@ -46,7 +46,7 @@ class TsLibraryTest(unittest.TestCase):
         gen_dir,
         '--js_files',
         'legacy_file.js',
-    ])
+    ] + self._additional_flags)
 
     # Build project1, which includes a mix of TS and definition files.
     args = [

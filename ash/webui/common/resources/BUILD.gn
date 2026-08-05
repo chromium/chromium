@@ -233,6 +233,7 @@ preprocess_if_expr("preprocess") {
   out_manifest = "$target_gen_dir/$preprocessed_manifest"
   in_files =
       ts_files + web_component_files + icons_html_files + html_files + css_files
+  defines = [ "use_typescript_go=$use_typescript_go" ]
   if (is_chrome_branded) {
     deps = [ ":copy_internal_icons" ]
   }

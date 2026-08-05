@@ -207,7 +207,7 @@ export class ActivationCodePageElement extends ActivationCodePageElementBase {
 
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
-    this.networkConfig_!.getDeviceStateList().then(response => {
+    this.networkConfig_.getDeviceStateList().then(response => {
       const devices = response.result;
       const deviceState =
           devices.find(device => device.type == NetworkType.kCellular) || null;
