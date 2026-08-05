@@ -80,7 +80,7 @@ found in the LICENSE file.
         android:overScrollMode="never" />
 
     <!-- Tab List Recycler View -->
-    <org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView
+    <org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListRecyclerView
         android:id="@+id/tab_list_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

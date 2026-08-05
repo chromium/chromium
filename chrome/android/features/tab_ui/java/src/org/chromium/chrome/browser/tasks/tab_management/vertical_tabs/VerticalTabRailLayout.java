@@ -18,8 +18,6 @@ import android.widget.LinearLayout;
 
 import androidx.appcompat.widget.TooltipCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
@@ -37,11 +35,9 @@ import org.chromium.chrome.tab_ui.R;
 // click handlers) from VerticalTabListCoordinator to VerticalTabRailLayout.
 @NullMarked
 public class VerticalTabRailLayout extends ConstraintLayout {
-    private static final float SCROLL_OFFSET_DIVISOR = 4f;
-
     private @Nullable Callback<@RailCollapseState Integer> mExpandOrCollapseOnHoverListener;
 
-    private TabListRecyclerView mRecyclerView;
+    private VerticalTabListRecyclerView mRecyclerView;
     private TabListRecyclerView mPinnedTabsRecyclerView;
     private View mSpacerView;
     private LinearLayout mHeaderContainer;
@@ -94,7 +90,7 @@ public class VerticalTabRailLayout extends ConstraintLayout {
     }
 
     /** Returns the main tab list recycler view. */
-    public TabListRecyclerView getRecyclerView() {
+    public VerticalTabListRecyclerView getRecyclerView() {
         return mRecyclerView;
     }
 
@@ -111,37 +107,6 @@ public class VerticalTabRailLayout extends ConstraintLayout {
     /** Sets the visibility of the desktop window top spacer. */
     public void setDesktopWindowSpacerVisible(boolean visible) {
         mSpacerView.setVisibility(visible ? View.VISIBLE : View.GONE);
-    }
-
-    /** Initializes and configures the main tab list recycler view. */
-    public void initRecyclerView(RecyclerView.Adapter<?> adapter) {
-        LinearLayoutManager layoutManager =
-                new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-        mRecyclerView.setLayoutManager(layoutManager);
-        mRecyclerView.setAdapter(adapter);
-        mRecyclerView.setupCustomItemAnimator(/* useClipAnimations= */ true);
-        mRecyclerView.setVisibility(View.VISIBLE);
-    }
-
-    /**
-     * Scrolls the main recycler view to the specified position with an offset if it is not
-     * completely visible.
-     */
-    public void scrollToPositionWithOffset(int position) {
-        RecyclerView.LayoutManager layoutManager = mRecyclerView.getLayoutManager();
-        if (layoutManager instanceof LinearLayoutManager linearLayoutManager) {
-            mRecyclerView.post(
-                    () -> {
-                        int first = linearLayoutManager.findFirstCompletelyVisibleItemPosition();
-                        int last = linearLayoutManager.findLastCompletelyVisibleItemPosition();
-                        if (position < first || position > last) {
-                            int offset =
-                                    Math.round(mRecyclerView.getHeight() / SCROLL_OFFSET_DIVISOR);
-                            linearLayoutManager.scrollToPositionWithOffset(
-                                    position, Math.max(0, offset));
-                        }
-                    });
-        }
     }
 
     /** Sets the hover listener to be notified when hover state transitions occur. */

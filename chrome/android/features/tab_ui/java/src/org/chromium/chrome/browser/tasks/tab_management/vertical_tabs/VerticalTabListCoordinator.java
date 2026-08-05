@@ -115,7 +115,7 @@ public class VerticalTabListCoordinator {
     private final TabListFaviconProvider mTabListFaviconProvider;
     private final TabListModel mModelList;
     private final TabListMediator mMediator;
-    private final TabListRecyclerView mRecyclerView;
+    private final VerticalTabListRecyclerView mRecyclerView;
     private final TabListModel mPinnedTabsModelList;
     private final StaticPinnedTabsMediator mPinnedTabsMediator;
     private final TabListRecyclerView mPinnedTabsRecyclerView;
@@ -306,9 +306,9 @@ public class VerticalTabListCoordinator {
                         nullableSupplier,
                         this::isAnyContextMenuShowing);
 
-        TabListRecyclerView recyclerView = mContainerView.getRecyclerView();
+        VerticalTabListRecyclerView recyclerView = mContainerView.getRecyclerView();
         mRecyclerView = recyclerView;
-        mContainerView.initRecyclerView(adapter);
+        mRecyclerView.initialize(adapter);
         mOnScrollListener =
                 new RecyclerView.OnScrollListener() {
                     @Override
@@ -749,7 +749,7 @@ public class VerticalTabListCoordinator {
         int uiIndex = getIndexForTabScroll(activeTabId);
 
         if (uiIndex != TabModel.INVALID_TAB_INDEX) {
-            mContainerView.scrollToPositionWithOffset(uiIndex);
+            mRecyclerView.scrollToPositionWithOffset(uiIndex);
         }
     }
 
