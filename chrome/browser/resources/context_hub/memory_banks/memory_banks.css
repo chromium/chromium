@@ -4,12 +4,21 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
  * #css_wrapper_metadata_end */
 
 :host {
   display: flex;
   flex-direction: column;
   height: 100%;
+}
+
+h1 {
+  font-family: 'Google Sans', sans-serif;
+  font-weight: 600;
+  font-size: 28px;
+  color: var(--cr-primary-text-color);
+  margin: 0;
 }
 
 h2 {

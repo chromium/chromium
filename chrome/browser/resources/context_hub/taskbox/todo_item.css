@@ -10,9 +10,9 @@
 
 :host {
   display: block;
-  background-color: var(--cr-card-background-color, #FFF);
+  background-color: var(--cr-card-background-color);
   border-radius: var(--cr-card-border-radius, 16px);
-  border: none;
+  border: 1px solid var(--cr-separator-color);
   box-shadow: none;
   overflow: hidden;
 }
@@ -47,12 +47,12 @@ cr-expand-button {
   font-size: 16px;
   font-weight: 500;
   margin: 0;
-  color: var(--cr-primary-text-color, #0F172A);
+  color: var(--cr-primary-text-color);
 }
 
 .description {
   font-size: 14px;
-  color: #64748B;
+  color: var(--cr-secondary-text-color);
   margin: 4px 0 0 0;
   text-align: start;
 }
@@ -69,14 +69,14 @@ cr-expand-button {
   justify-content: space-between;
   align-items: center;
   padding: 12px 20px 16px 20px;
-  border-top: 1px solid #F1F5F9;
+  border-top: 1px solid var(--cr-separator-color);
   font-size: 14px;
-  color: #64748B;
+  color: var(--cr-secondary-text-color);
   text-align: start;
 }
 
 .expanded-content a {
-  color: var(--cr-link-color, #1a73e8);
+  color: var(--cr-link-color);
   text-decoration: none;
 }
 

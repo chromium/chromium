@@ -4,6 +4,7 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
@@ -33,7 +34,7 @@
 .right-panel {
   width: 360px;
   flex-shrink: 0;
-  border-left: 1px solid var(--google-grey-300);
+  border-left: 1px solid var(--cr-separator-color);
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -61,6 +62,7 @@ section {
 }
 
 .header-section h1 {
+  color: var(--cr-primary-text-color);
   font-size: 28px;
   font-weight: 600;
   margin: 0;
@@ -71,11 +73,12 @@ section {
   justify-content: space-between;
   align-items: center;
   padding-bottom: 16px;
-  border-bottom: 1px solid var(--google-grey-300);
+  border-bottom: 1px solid var(--cr-separator-color);
   margin-bottom: 16px;
 }
 
 .chat-header h2 {
+  color: var(--cr-primary-text-color);
   font-size: 20px;
   font-weight: 600;
   margin: 0;
@@ -103,7 +106,7 @@ section {
 /* LLM message bubble on the left */
 .message-bubble.assistant {
   align-self: flex-start;
-  background-color: var(--google-grey-200);
+  background-color: var(--cr-fallback-color-surface3);
   color: var(--cr-primary-text-color);
   border-bottom-left-radius: 4px;
 }
@@ -121,7 +124,7 @@ section {
   align-items: center;
   gap: 8px;
   padding-top: 12px;
-  border-top: 1px solid var(--google-grey-300);
+  border-top: 1px solid var(--cr-separator-color);
 }
 
 #group-input {
@@ -145,7 +148,7 @@ section {
 
 .tab-card {
   height: 120px;
-  border: 1px solid var(--google-grey-300);
+  border: 1px solid var(--cr-separator-color);
   border-radius: 8px;
   padding: 16px;
   box-sizing: border-box;
@@ -153,6 +156,7 @@ section {
   flex-direction: column;
   justify-content: space-between;
   background-color: var(--cr-card-background-color);
+  color: var(--cr-primary-text-color);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   cursor: pointer;
 }
@@ -174,7 +178,7 @@ section {
 }
 
 .group-card {
-  border: 1px solid var(--google-grey-300);
+  border: 1px solid var(--cr-separator-color);
   border-radius: 8px;
   background-color: var(--cr-card-background-color);
   overflow: hidden;
@@ -204,18 +208,18 @@ cr-expand-button {
 
 .group-tabs-list {
   padding: 8px 16px 16px 16px;
-  border-top: 1px solid var(--google-grey-300);
+  border-top: 1px solid var(--cr-separator-color);
   display: flex;
   flex-direction: column;
   gap: 12px;
-  background-color: var(--google-grey-50);
+  background-color: var(--cr-fallback-color-surface1);
 }
 
 .group-tab-item {
   padding: 8px;
   border-radius: 4px;
   background-color: var(--cr-card-background-color);
-  border: 1px solid var(--google-grey-300);
+  border: 1px solid var(--cr-separator-color);
   cursor: pointer;
 }
 
@@ -239,6 +243,7 @@ cr-expand-button {
 }
 
 .ungrouped-section h2 {
+  color: var(--cr-primary-text-color);
   font-size: 20px;
   font-weight: 600;
   margin-bottom: 16px;
@@ -258,7 +263,7 @@ cr-expand-button {
 .spinner {
   width: 40px;
   height: 40px;
-  border: 4px solid var(--google-grey-200);
+  border: 4px solid var(--cr-separator-color);
   border-top: 4px solid var(--google-blue-600);
   border-radius: 50%;
   animation: spin 1s linear infinite;

@@ -5,10 +5,12 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #import=chrome://resources/cr_elements/cr_nav_menu_item_style_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
  * #include=cr-nav-menu-item-style-lit
  * #css_wrapper_metadata_end */
 
 :host {
+  color: var(--cr-primary-text-color);
   display: flex;
   height: 100vh;
   overflow: hidden;
@@ -16,7 +18,7 @@
 
 aside {
   width: 240px;
-  border-right: 1px solid #E2E8F0;
+  border-right: 1px solid var(--cr-separator-color);
   box-sizing: border-box;
   flex-shrink: 0;
 }
