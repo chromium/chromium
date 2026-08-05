@@ -8,6 +8,7 @@
 #include <set>
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -56,6 +57,13 @@ class CdmDocumentServiceImpl final
       base::Time end,
       const base::RepeatingCallback<bool(const GURL&)>& filter,
       base::OnceClosure complete_cb);
+
+  // Gets the processed paths cache for use in the implementation.
+  static base::flat_set<base::FilePath>& GetCdmStoreProcessedPaths();
+
+  // Clears the processed paths cache for testing so that ACL migration logic
+  // can be re-triggered.
+  static void ClearCdmStoreProcessedPathsForTesting();
 #endif  // BUILDFLAG(IS_WIN)
 
  private:

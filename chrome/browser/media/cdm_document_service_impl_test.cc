@@ -467,6 +467,9 @@ TEST_F(CdmDocumentServiceImplTest, MigrateCdmStorePathRootAcl) {
   // Verify the vulnerable ACL is actually applied.
   EXPECT_TRUE(HasListDirectoryPermission(data->cdm_store_path_root, sids));
 
+  // Clear the processed paths cache so the migration logic runs again.
+  CdmDocumentServiceImpl::ClearCdmStoreProcessedPathsForTesting();
+
   // Trigger the creation/migration logic again.
   auto data2 = GetMediaFoundationCdmData();
 
