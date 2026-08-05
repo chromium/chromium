@@ -5,6 +5,7 @@
 
 #include "ash/wallpaper/wallpaper_utils/wallpaper_file_utils.h"
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
