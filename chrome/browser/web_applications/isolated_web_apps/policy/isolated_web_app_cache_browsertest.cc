@@ -125,17 +125,21 @@ KioskMixin::Config GetKioskIwaManualLaunchConfig(
     const SignedWebBundleId& bundle_id,
     const GURL& update_manifest_url,
     const std::optional<UpdateChannel>& update_channel,
-    const std::optional<IwaVersion>& pinned_version) {
+    const std::optional<IwaVersion>& pinned_version,
+    bool allow_downgrades) {
   // Use `bundle_id` as `account_id` to make it possible to find the app by the
   // AccountId.
   KioskMixin::IsolatedWebAppOption iwa_option(
-      bundle_id.id(), bundle_id, update_manifest_url,
-      update_channel ? update_channel->ToString() : "",
-      pinned_version.has_value() ? pinned_version->GetString() : "",
-      /*allow_downgrades=*/false);
-  return {bundle_id.id(),
+      /*account_id=*/bundle_id.id(), /*web_bundle_id=*/bundle_id,
+      /*update_manifest_url=*/update_manifest_url,
+      /*update_channel=*/update_channel ? update_channel->ToString() : "",
+      /*pinned_version=*/pinned_version.has_value()
+          ? pinned_version->GetString()
+          : "",
+      /*allow_downgrades=*/allow_downgrades);
+  return {/*account_id=*/bundle_id.id(),
           /*auto_launch_account_id=*/{},
-          {iwa_option}};
+          /*options=*/{iwa_option}};
 }
 
 void WaitUntilPathExists(const base::FilePath& path) {
@@ -193,15 +197,16 @@ class IwaPolicyConfig {
   explicit IwaPolicyConfig(
       const SignedWebBundleId& bundle_id,
       const std::optional<UpdateChannel>& update_channel = std::nullopt,
-      const std::optional<IwaVersion>& pinned_version = std::nullopt)
+      const std::optional<IwaVersion>& pinned_version = std::nullopt,
+      bool allow_downgrades = false,
+      const std::optional<GURL>& custom_update_manifest_url = std::nullopt)
       : bundle_id_(bundle_id),
         update_channel_(update_channel),
-        pinned_version_(pinned_version) {}
+        pinned_version_(pinned_version),
+        allow_downgrades_(allow_downgrades),
+        custom_update_manifest_url_(custom_update_manifest_url) {}
 
-  IwaPolicyConfig(const IwaPolicyConfig& other)
-      : bundle_id_(other.bundle_id()),
-        update_channel_(other.update_channel()),
-        pinned_version_(other.pinned_version()) {}
+  IwaPolicyConfig(const IwaPolicyConfig& other) = default;
 
   ~IwaPolicyConfig() = default;
 
@@ -212,11 +217,17 @@ class IwaPolicyConfig {
   const std::optional<IwaVersion>& pinned_version() const {
     return pinned_version_;
   }
+  bool allow_downgrades() const { return allow_downgrades_; }
+  const std::optional<GURL>& custom_update_manifest_url() const {
+    return custom_update_manifest_url_;
+  }
 
  private:
   const SignedWebBundleId bundle_id_;
   const std::optional<UpdateChannel> update_channel_;
   const std::optional<IwaVersion> pinned_version_;
+  const bool allow_downgrades_ = false;
+  const std::optional<GURL> custom_update_manifest_url_;
 };
 
 // This class is used to add an IWA to the update server.
@@ -325,14 +336,20 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
                                    {ash::kAccountsPrefDeviceLocalAccounts});
                          }));
 
+                     scoped_update.policy_payload()->Clear();
                      for (auto& iwa : apps_to_configure_in_session) {
                        kiosk_mixin.Configure(
                            scoped_update,
                            GetKioskIwaManualLaunchConfig(
-                               iwa.bundle_id(),
-                               iwa_test_update_server_.GetUpdateManifestUrl(
-                                   iwa.bundle_id()),
-                               iwa.update_channel(), iwa.pinned_version()));
+                               /*bundle_id=*/iwa.bundle_id(),
+                               /*update_manifest_url=*/
+                               iwa.custom_update_manifest_url()
+                                   ? *iwa.custom_update_manifest_url()
+                                   : iwa_test_update_server_
+                                         .GetUpdateManifestUrl(iwa.bundle_id()),
+                               /*update_channel=*/iwa.update_channel(),
+                               /*pinned_version=*/iwa.pinned_version(),
+                               /*allow_downgrades=*/iwa.allow_downgrades()));
                      }
                    },
                    [&](LoginManagerMixin& login_manager_mixin) {
@@ -468,14 +485,22 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
     }
   }
 
-  void AddNewIwaToServer(const IwaServerConfig& iwa_server_config,
+  void AddNewIwaToServer(IsolatedWebAppTestUpdateServer& server,
+                         const IwaServerConfig& iwa_server_config,
                          std::optional<std::vector<UpdateChannel>>
                              update_channels = std::nullopt) {
-    iwa_test_update_server_.AddBundle(
+    server.AddBundle(
         IsolatedWebAppBuilder(ManifestBuilder().SetName(kIwaName).SetVersion(
                                   iwa_server_config.version().GetString()))
             .BuildBundle(iwa_server_config.public_key_pair()),
         std::move(update_channels));
+  }
+
+  void AddNewIwaToServer(const IwaServerConfig& iwa_server_config,
+                         std::optional<std::vector<UpdateChannel>>
+                             update_channels = std::nullopt) {
+    AddNewIwaToServer(iwa_test_update_server_, iwa_server_config,
+                      std::move(update_channels));
   }
 
   void OpenIwa(const SignedWebBundleId& bundle_id) {
@@ -1025,7 +1050,7 @@ IN_PROC_BROWSER_TEST_P(IwaCacheCrossSessionCleanupTest,
 
   WaitUntilPathDoesNotExist(kiosk_bundle);
   CheckCacheManagerDebugOperationResult(
-      kRemoveCacheForIwaKioskDeletedFromPolicy,
+      kEvictUnnecessaryIwasFromKioskCache,
       "Successfully finished cleanup, number of cleaned up directories: 1");
 }
 
@@ -1176,6 +1201,57 @@ IN_PROC_BROWSER_TEST_F(IwaCacheKioskTest,
       IwaServerConfig{kWebBundleId1, GetBaseVersion(), kKeyPair1});
   network_state_.SimulateOnline();
   ASSERT_TRUE(WaitKioskLaunched());
+}
+
+IN_PROC_BROWSER_TEST_F(IwaCacheKioskTest,
+                       PolicyPinnedVersionChangeEvictsBundle) {
+  network_state_.SimulateOnline();
+  ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
+
+  ASSERT_TRUE(WaitKioskLaunched());
+  AssertAppInstalledAtVersion(kWebBundleId1, GetBaseVersion());
+
+  base::FilePath cached_bundle_path =
+      GetCachedBundlePath(kWebBundleId1, GetBaseVersion());
+  WaitUntilPathExists(cached_bundle_path);
+
+  // Update the policy to pin to a different version.
+  ConfigureSession(IwaPolicyConfig{kWebBundleId1,
+                                   /*update_channel=*/std::nullopt,
+                                   /*pinned_version=*/GetUpdateVersion()});
+
+  // Verify that the bundle was evicted from the cache.
+  WaitUntilPathDoesNotExist(cached_bundle_path);
+
+  CheckCacheManagerDebugOperationResult(
+      kEvictUnnecessaryIwasFromKioskCache,
+      "Successfully finished cleanup, number of cleaned up directories: 2");
+}
+
+IN_PROC_BROWSER_TEST_F(IwaCacheKioskTest,
+                       PolicyAllowDowngradesChangeEvictsBundle) {
+  network_state_.SimulateOnline();
+  ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
+
+  ASSERT_TRUE(WaitKioskLaunched());
+  AssertAppInstalledAtVersion(kWebBundleId1, GetBaseVersion());
+
+  base::FilePath cached_bundle_path =
+      GetCachedBundlePath(kWebBundleId1, GetBaseVersion());
+  WaitUntilPathExists(cached_bundle_path);
+
+  // Update the policy to set allow_downgrades to true.
+  ConfigureSession(IwaPolicyConfig{kWebBundleId1,
+                                   /*update_channel=*/std::nullopt,
+                                   /*pinned_version=*/std::nullopt,
+                                   /*allow_downgrades=*/true});
+
+  // Verify that the bundle was evicted from the cache.
+  WaitUntilPathDoesNotExist(cached_bundle_path);
+
+  CheckCacheManagerDebugOperationResult(
+      kEvictUnnecessaryIwasFromKioskCache,
+      "Successfully finished cleanup, number of cleaned up directories: 2");
 }
 
 class IwaCacheMultipleAppsConfigurationMgs : public IwaCacheBaseTest {

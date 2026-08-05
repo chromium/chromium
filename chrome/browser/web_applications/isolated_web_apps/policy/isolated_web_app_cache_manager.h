@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_POLICY_ISOLATED_WEB_APP_CACHE_MANAGER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_POLICY_ISOLATED_WEB_APP_CACHE_MANAGER_H_
 
+#include "base/callback_list.h"
+#include "base/containers/flat_map.h"
 #include "base/scoped_observation.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,8 +27,8 @@ inline constexpr char kBundleCacheIsEnabled[] = "iwa_bundle_cache_is_enabled";
 inline constexpr char kOperationsResults[] = "operations_results";
 inline constexpr char kRemoveManagedGuestSessionCache[] =
     "remove_managed_guest_session_cache";
-inline constexpr char kRemoveCacheForIwaKioskDeletedFromPolicy[] =
-    "remove_cache_for_iwa_kiosk_deleted_from_policy";
+inline constexpr char kEvictUnnecessaryIwasFromKioskCache[] =
+    "evict_unnecessary_iwas_from_kiosk_cache";
 inline constexpr char kCleanupManagedGuestSessionOrphanedIwas[] =
     "cleanup_managed_guest_session_orphaned_iwas";
 inline constexpr char kRemoveObsoleteIwaVersionCache[] =
@@ -53,16 +55,30 @@ class IwaBundleCacheManager : public WebAppInstallManagerObserver {
   base::Value GetDebugValue() const;
 
  private:
+  // Stores policy metadata for Kiosk IWAs. If any of these values change for a
+  // bundle ID on policy refresh, the associated bundle is evicted from the
+  // cache.
+  struct KioskIwaInfo {
+    std::string update_manifest_url;
+    std::string pinned_version;
+    bool allow_downgrades = false;
+    std::string update_channel;
+
+    bool operator==(const KioskIwaInfo& other) const = default;
+  };
+
+  static base::flat_map<web_package::SignedWebBundleId, KioskIwaInfo>
+  GetKioskIwaPolicyInfo();
+
   // If Managed Guest Session is not in configured on the device anymore, remove
   // all IWA bundle cache for it.
   void MaybeRemoveManagedGuestSessionCache();
   void OnMaybeRemoveManagedGuestSessionCache(CleanupBundleCacheResult result);
 
-  // If some IWA kiosks are not in the policy list anymore, remove their bundles
-  // from cache.
-  void RemoveCacheForIwaKioskDeletedFromPolicy();
-  void OnRemoveCacheForIwaKioskDeletedFromPolicy(
-      CleanupBundleCacheResult result);
+  // Cleans IWA bundle cache for Kiosk IWAs which are no longer in the policy
+  // list or whose policy configuration / pinned version changed.
+  void EvictUnnecessaryIwasFromKioskCache();
+  void OnEvictUnnecessaryIwasFromKioskCache(CleanupBundleCacheResult result);
 
   // Cleans IWA bundle cache for the IWAs which are not in the policy list for
   // current Managed Guest Session. Does nothing when called outside of the
@@ -87,6 +103,15 @@ class IwaBundleCacheManager : public WebAppInstallManagerObserver {
   // Log all the operations results using `operations_results_` for the debug
   // purpose.
   base::ListValue operations_results_;
+
+  // Tracks the Kiosk IWAs that should be cached given the current policy state
+  // (from the last policy evaluation), rather than the physical list of IWAs
+  // currently installed in the cache on disk. Used to determine which bundles
+  // changed or were removed when device local account policies update.
+  std::optional<base::flat_map<web_package::SignedWebBundleId, KioskIwaInfo>>
+      kiosk_iwas_;
+
+  base::CallbackListSubscription cros_settings_subscription_;
 
   base::WeakPtrFactory<IwaBundleCacheManager> weak_ptr_factory_{this};
 };

@@ -59,11 +59,11 @@ class CleanupBundleCacheCommandTest
  public:
   void SetUp() override {
     WebAppTest::SetUp();
-    test::AwaitStartWebAppProviderAndSubsystems(profile());
-
     ASSERT_TRUE(cache_root_dir_.CreateUniqueTempDir());
     cache_root_dir_override_ = std::make_unique<base::ScopedPathOverride>(
         ash::DIR_DEVICE_LOCAL_ACCOUNT_IWA_CACHE, cache_root_dir_.GetPath());
+
+    test::AwaitStartWebAppProviderAndSubsystems(profile());
 
     WaitForInitialBundleCleanupAndCleanMetric();
   }

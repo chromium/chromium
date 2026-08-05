@@ -8,6 +8,8 @@
 #include <optional>
 #include <vector>
 
+#include "base/check_is_test.h"
+#include "base/containers/map_util.h"
 #include "base/containers/to_value_list.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
@@ -26,6 +28,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/prefs/pref_service.h"
@@ -60,29 +63,6 @@ std::vector<web_package::SignedWebBundleId> FilterAllowlistedIwas(
   return iwa_ids;
 }
 
-std::vector<web_package::SignedWebBundleId> GetPolicyInstalledIwasForKiosk() {
-  const std::vector<policy::DeviceLocalAccount> device_local_accounts =
-      policy::GetDeviceLocalAccounts(ash::CrosSettings::Get());
-  std::vector<web_package::SignedWebBundleId> kiosk_iwas;
-
-  for (const policy::DeviceLocalAccount& account : device_local_accounts) {
-    if (account.type != policy::DeviceLocalAccountType::kKioskIsolatedWebApp) {
-      continue;
-    }
-
-    auto kiosk_bundle_id = web_package::SignedWebBundleId::Create(
-        account.kiosk_iwa_info.web_bundle_id());
-
-    if (kiosk_bundle_id.has_value()) {
-      kiosk_iwas.push_back(kiosk_bundle_id.value());
-    } else {
-      LOG(ERROR) << "Cannot create SignedWebBundleId for "
-                 << account.kiosk_iwa_info.web_bundle_id();
-    }
-  }
-  return kiosk_iwas;
-}
-
 std::vector<web_package::SignedWebBundleId>
 GetPolicyInstalledIwasForManagedGuestSession(const Profile& profile) {
   std::vector<IsolatedWebAppExternalInstallOptions> iwas_in_policy =
@@ -113,10 +93,21 @@ void IwaBundleCacheManager::Start() {
 
   if (IsIwaBundleCacheFeatureEnabled()) {
     // Remove MGS and Kiosk app cache directories when they are not in the
-    // device local account policy anymore. This should be done during any
-    // session.
+    // device local account policy anymore or when policy changed. This should
+    // be done during any session.
     MaybeRemoveManagedGuestSessionCache();
-    RemoveCacheForIwaKioskDeletedFromPolicy();
+    EvictUnnecessaryIwasFromKioskCache();
+
+    if (ash::CrosSettings::IsInitialized()) {
+      cros_settings_subscription_ =
+          ash::CrosSettings::Get()->AddSettingsObserver(
+              ash::kAccountsPrefDeviceLocalAccounts,
+              base::BindRepeating(
+                  &IwaBundleCacheManager::EvictUnnecessaryIwasFromKioskCache,
+                  weak_ptr_factory_.GetWeakPtr()));
+    } else {
+      CHECK_IS_TEST();
+    }
   }
 
   if (!content::AreIsolatedWebAppsEnabled(&*profile_) ||
@@ -181,20 +172,36 @@ void IwaBundleCacheManager::OnMaybeRemoveManagedGuestSessionCache(
   AddResultToLog(kRemoveManagedGuestSessionCache, result, operations_results_);
 }
 
-void IwaBundleCacheManager::RemoveCacheForIwaKioskDeletedFromPolicy() {
-  std::vector<web_package::SignedWebBundleId> iwas_to_keep_in_cache =
-      FilterAllowlistedIwas(GetPolicyInstalledIwasForKiosk());
+void IwaBundleCacheManager::EvictUnnecessaryIwasFromKioskCache() {
+  base::flat_map<web_package::SignedWebBundleId, KioskIwaInfo> new_kiosk_iwas =
+      GetKioskIwaPolicyInfo();
+
+  if (kiosk_iwas_.has_value() && *kiosk_iwas_ == new_kiosk_iwas) {
+    return;
+  }
+
+  std::vector<web_package::SignedWebBundleId> iwas_to_keep;
+
+  for (const auto& [id, info] : new_kiosk_iwas) {
+    if (const KioskIwaInfo* cached_info =
+            kiosk_iwas_ ? base::FindOrNull(*kiosk_iwas_, id) : nullptr;
+        !cached_info || *cached_info == info) {
+      iwas_to_keep.push_back(id);
+    }
+  }
+
+  kiosk_iwas_ = std::move(new_kiosk_iwas);
 
   provider_->scheduler().CleanupIsolatedWebAppBundleCache(
-      iwas_to_keep_in_cache, SessionType::kKiosk,
+      FilterAllowlistedIwas(std::move(iwas_to_keep)), SessionType::kKiosk,
       base::BindOnce(
-          &IwaBundleCacheManager::OnRemoveCacheForIwaKioskDeletedFromPolicy,
+          &IwaBundleCacheManager::OnEvictUnnecessaryIwasFromKioskCache,
           weak_ptr_factory_.GetWeakPtr()));
 }
 
-void IwaBundleCacheManager::OnRemoveCacheForIwaKioskDeletedFromPolicy(
+void IwaBundleCacheManager::OnEvictUnnecessaryIwasFromKioskCache(
     CleanupBundleCacheResult result) {
-  AddResultToLog(kRemoveCacheForIwaKioskDeletedFromPolicy, result,
+  AddResultToLog(kEvictUnnecessaryIwasFromKioskCache, result,
                  operations_results_);
 }
 
@@ -238,6 +245,37 @@ void IwaBundleCacheManager::RemoveObsoleteIwaVersionsCache(const WebApp& iwa) {
 void IwaBundleCacheManager::OnRemoveObsoleteIwaVersionsCache(
     RemoveObsoleteBundleVersionsResult result) {
   AddResultToLog(kRemoveObsoleteIwaVersionCache, result, operations_results_);
+}
+
+// static
+base::flat_map<web_package::SignedWebBundleId,
+               IwaBundleCacheManager::KioskIwaInfo>
+IwaBundleCacheManager::GetKioskIwaPolicyInfo() {
+  const std::vector<policy::DeviceLocalAccount> device_local_accounts =
+      policy::GetDeviceLocalAccounts(ash::CrosSettings::Get());
+  base::flat_map<web_package::SignedWebBundleId, KioskIwaInfo> infos;
+
+  for (const policy::DeviceLocalAccount& account : device_local_accounts) {
+    if (account.type != policy::DeviceLocalAccountType::kKioskIsolatedWebApp) {
+      continue;
+    }
+
+    auto kiosk_bundle_id = web_package::SignedWebBundleId::Create(
+        account.kiosk_iwa_info.web_bundle_id());
+    if (!kiosk_bundle_id.has_value()) {
+      LOG(ERROR) << "Cannot create SignedWebBundleId for "
+                 << account.kiosk_iwa_info.web_bundle_id();
+      continue;
+    }
+
+    infos[*kiosk_bundle_id] = KioskIwaInfo{
+        .update_manifest_url = account.kiosk_iwa_info.update_manifest_url(),
+        .pinned_version = account.kiosk_iwa_info.pinned_version(),
+        .allow_downgrades = account.kiosk_iwa_info.allow_downgrades(),
+        .update_channel = account.kiosk_iwa_info.update_channel(),
+    };
+  }
+  return infos;
 }
 
 }  // namespace web_app
