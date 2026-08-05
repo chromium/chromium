@@ -2790,10 +2790,10 @@ TEST_P(LayerWithDelegateTest, SurfaceLayerBackgroundColor) {
   EXPECT_EQ(SkColors::kRed, layer->GetBackgroundColor());
 
   auto* surface = static_cast<cc::SurfaceLayer*>(layer->cc_layer_for_testing());
-  EXPECT_EQ(SkColor4f::FromColor(SK_ColorRED), surface->background_color());
+  EXPECT_EQ(SkColors::kRed, surface->background_color());
 
   layer->SetBackgroundColor(SkColors::kGreen);
-  EXPECT_EQ(SkColor4f::FromColor(SK_ColorGREEN), surface->background_color());
+  EXPECT_EQ(SkColors::kGreen, surface->background_color());
 }
 
 TEST_P(LayerWithDelegateTest, SurfaceLayerBackgroundColorMirroring) {
@@ -2805,11 +2805,11 @@ TEST_P(LayerWithDelegateTest, SurfaceLayerBackgroundColorMirroring) {
   const auto* surface = static_cast<cc::SurfaceLayer*>(cc_layer);
 
   // Mirroring preserves background color.
-  EXPECT_EQ(SkColor4f::FromColor(SK_ColorRED), surface->background_color());
+  EXPECT_EQ(SkColors::kRed, surface->background_color());
 
   // Background color updates propagate to the mirror.
   layer->SetBackgroundColor(SkColors::kGreen);
-  EXPECT_EQ(SkColor4f::FromColor(SK_ColorGREEN), surface->background_color());
+  EXPECT_EQ(SkColors::kGreen, surface->background_color());
 }
 
 TEST_P(LayerWithDelegateTest, SurfaceLayerBackgroundColorCloning) {
