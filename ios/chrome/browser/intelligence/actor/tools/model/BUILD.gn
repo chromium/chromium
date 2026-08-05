@@ -5,6 +5,17 @@
 import("//ios/web/public/js_messaging/compile_ts.gni")
 import("//ios/web/public/js_messaging/optimize_ts.gni")
 
+source_set("action_target") {
+  sources = [
+    "action_target.h",
+    "action_target.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+  ]
+}
+
 source_set("actor_tool_factory") {
   sources = [
     "actor_tool_factory.h",
@@ -49,6 +60,7 @@ source_set("actor_tool_interface") {
   ]
 
   deps = [
+    ":action_target",
     "//base",
     "//components/actor/core:journal",
     "//components/autofill/core/browser",
@@ -76,9 +88,11 @@ source_set("web_actor_tool_interface") {
     "web_actor_tool.mm",
   ]
   deps = [
+    ":action_target",
     ":actor_tool_interface",
     ":java_script_features",
     "//base",
+    "//ios/chrome/browser/intelligence/actor/public:actor_types",
     "//ios/chrome/browser/intelligence/actor/tools/public",
     "//ios/web/public",
   ]
@@ -274,11 +288,13 @@ source_set("click_tool") {
   ]
 
   deps = [
+    ":action_target",
     ":actor_tool_interface",
     ":java_script_features",
     ":web_actor_tool_interface",
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/intelligence/actor/public:actor_types",
     "//ios/chrome/browser/intelligence/actor/tools/public",
     "//ios/chrome/browser/intelligence/actor/tools/utils:profile_context_resolver",
     "//ios/chrome/browser/shared/model/browser",
@@ -296,11 +312,13 @@ source_set("select_tool") {
   ]
 
   deps = [
+    ":action_target",
     ":actor_tool_interface",
     ":java_script_features",
     ":web_actor_tool_interface",
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/intelligence/actor/public:actor_types",
     "//ios/chrome/browser/intelligence/actor/tools/public",
     "//ios/chrome/browser/intelligence/actor/tools/utils:profile_context_resolver",
     "//ios/chrome/browser/shared/model/profile",
@@ -316,11 +334,13 @@ source_set("type_tool") {
   ]
 
   deps = [
+    ":action_target",
     ":actor_tool_interface",
     ":java_script_features",
     ":web_actor_tool_interface",
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/intelligence/actor/public:actor_types",
     "//ios/chrome/browser/intelligence/actor/tools/public",
     "//ios/chrome/browser/intelligence/actor/tools/utils:profile_context_resolver",
     "//ios/chrome/browser/shared/model/profile",
@@ -336,12 +356,14 @@ source_set("scroll_tool") {
   ]
 
   deps = [
+    ":action_target",
     ":actor_tool_constants",
     ":actor_tool_interface",
     ":java_script_features",
     ":web_actor_tool_interface",
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/intelligence/actor/public:actor_types",
     "//ios/chrome/browser/intelligence/actor/tools/public",
     "//ios/chrome/browser/intelligence/actor/tools/utils:profile_context_resolver",
     "//ios/chrome/browser/shared/model/profile",
@@ -357,11 +379,13 @@ source_set("scroll_to_tool") {
   ]
 
   deps = [
+    ":action_target",
     ":actor_tool_interface",
     ":java_script_features",
     ":web_actor_tool_interface",
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/intelligence/actor/public:actor_types",
     "//ios/chrome/browser/intelligence/actor/tools/public",
     "//ios/chrome/browser/intelligence/actor/tools/utils:profile_context_resolver",
     "//ios/chrome/browser/shared/model/profile",
@@ -387,6 +411,7 @@ source_set("java_script_features") {
   ]
 
   deps = [
+    ":action_target",
     ":action_target_ts",
     ":actor_tool_interface",
     ":click_tool_ts",
@@ -399,6 +424,7 @@ source_set("java_script_features") {
     "//components/autofill/ios/browser:util",
     "//components/autofill/ios/form_util:child_frame_registrar",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/intelligence/actor/public:actor_types",
     "//ios/chrome/browser/intelligence/actor/tools/public",
     "//ios/chrome/browser/intelligence/features",
     "//ios/web/public",
@@ -469,6 +495,7 @@ source_set("unit_tests") {
   sources = [
     "action_target_java_script_feature_unittest.mm",
     "action_target_js_unittest.mm",
+    "action_target_unittest.mm",
     "actor_tool_factory_unittest.mm",
     "actor_tool_request_unittest.mm",
     "attempt_login_tool_unittest.mm",
@@ -497,6 +524,7 @@ source_set("unit_tests") {
     "wait_tool_unittest.mm",
   ]
   deps = [
+    ":action_target",
     ":action_target_ts",
     ":actor_tool_constants",
     ":actor_tool_factory",

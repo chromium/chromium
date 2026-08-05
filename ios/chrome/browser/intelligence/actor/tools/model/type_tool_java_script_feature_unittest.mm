@@ -7,6 +7,7 @@
 #import "base/strings/stringprintf.h"
 #import "base/test/test_future.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/action_target.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_java_script_feature_test_base.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
@@ -34,43 +35,37 @@ class TypeToolJavaScriptFeatureTest
     MockJsFunction(feature(), "type_tool", "typeByNodeId", mock_return_value);
   }
 
-  TypeAction CreateTypeActionWithCoordinates() {
-    TypeAction action;
+  ActionTarget CreateTargetWithCoordinates() {
+    optimization_guide::proto::ActionTarget target;
     // Use arbitrary values since the JS function is mocked.
-    action.mutable_target()->mutable_coordinate()->set_x(1);
-    action.mutable_target()->mutable_coordinate()->set_y(2);
-    action.mutable_target()->mutable_coordinate()->set_pixel_type(
+    target.mutable_coordinate()->set_x(1);
+    target.mutable_coordinate()->set_y(2);
+    target.mutable_coordinate()->set_pixel_type(
         optimization_guide::proto::Coordinate::PIXEL_TYPE_UNSPECIFIED);
-    action.set_text("default");
-    action.set_mode(TypeAction::UNKNOWN_TYPE_MODE);
-    action.set_follow_by_enter(false);
-    return action;
+    return ActionTarget::FromProto(target);
   }
 
-  TypeAction CreateTypeActionWithIdentifiers() {
-    TypeAction action;
+  ActionTarget CreateTargetWithIdentifiers() {
+    optimization_guide::proto::ActionTarget target;
     // Use arbitrary values since the JS function is mocked.
-    action.mutable_target()->set_content_node_id(0);
-    action.mutable_target()
-        ->mutable_document_identifier()
-        ->set_serialized_token("token");
-    action.set_text("default");
-    action.set_mode(TypeAction::UNKNOWN_TYPE_MODE);
-    action.set_follow_by_enter(false);
-    return action;
+    target.set_content_node_id(0);
+    target.mutable_document_identifier()->set_serialized_token("token");
+    return ActionTarget::FromProto(target);
   }
 };
 
 TEST_F(TypeToolJavaScriptFeatureTest, JsReturnsNonDict) {
   MockTypeJsFunctions(/*mock_return_value=*/"[]");
-  TypeAction type_by_coordinate = CreateTypeActionWithCoordinates();
-  TypeAction type_by_node_id = CreateTypeActionWithIdentifiers();
+  ActionTarget type_by_coordinate = CreateTargetWithCoordinates();
+  ActionTarget type_by_node_id = CreateTargetWithIdentifiers();
   base::test::TestFuture<ToolExecutionResult> coordinate_future;
   base::test::TestFuture<ToolExecutionResult> node_id_future;
 
-  feature()->Type(GetMainFrame(feature()), type_by_coordinate,
+  feature()->Type(GetMainFrame(feature()), type_by_coordinate, "default",
+                  TypeAction::UNKNOWN_TYPE_MODE, false,
                   coordinate_future.GetCallback());
-  feature()->Type(GetMainFrame(feature()), type_by_node_id,
+  feature()->Type(GetMainFrame(feature()), type_by_node_id, "default",
+                  TypeAction::UNKNOWN_TYPE_MODE, false,
                   node_id_future.GetCallback());
 
   auto coordinate_result = coordinate_future.Get();
@@ -90,14 +85,16 @@ TEST_F(TypeToolJavaScriptFeatureTest, JsReturnsError) {
   MockTypeJsFunctions(
       /*mock_return_value=*/base::StringPrintf(
           "{resultCode: %d, message: 'Custom JS Error'}", js_code));
-  TypeAction type_by_coordinate = CreateTypeActionWithCoordinates();
-  TypeAction type_by_node_id = CreateTypeActionWithIdentifiers();
+  ActionTarget type_by_coordinate = CreateTargetWithCoordinates();
+  ActionTarget type_by_node_id = CreateTargetWithIdentifiers();
   base::test::TestFuture<ToolExecutionResult> coordinate_future;
   base::test::TestFuture<ToolExecutionResult> node_id_future;
 
-  feature()->Type(GetMainFrame(feature()), type_by_coordinate,
+  feature()->Type(GetMainFrame(feature()), type_by_coordinate, "default",
+                  TypeAction::UNKNOWN_TYPE_MODE, false,
                   coordinate_future.GetCallback());
-  feature()->Type(GetMainFrame(feature()), type_by_node_id,
+  feature()->Type(GetMainFrame(feature()), type_by_node_id, "default",
+                  TypeAction::UNKNOWN_TYPE_MODE, false,
                   node_id_future.GetCallback());
 
   auto coordinate_result = coordinate_future.Get();
@@ -112,14 +109,16 @@ TEST_F(TypeToolJavaScriptFeatureTest, JsReturnsError) {
 }
 
 TEST_F(TypeToolJavaScriptFeatureTest, InvalidatedWebFrame) {
-  TypeAction type_by_coordinate = CreateTypeActionWithCoordinates();
-  TypeAction type_by_node_id = CreateTypeActionWithIdentifiers();
+  ActionTarget type_by_coordinate = CreateTargetWithCoordinates();
+  ActionTarget type_by_node_id = CreateTargetWithIdentifiers();
   base::test::TestFuture<ToolExecutionResult> coordinate_future;
   base::test::TestFuture<ToolExecutionResult> node_id_future;
 
-  feature()->Type(/*target_frame=*/nullptr, type_by_coordinate,
+  feature()->Type(/*target_frame=*/nullptr, type_by_coordinate, "default",
+                  TypeAction::UNKNOWN_TYPE_MODE, false,
                   coordinate_future.GetCallback());
-  feature()->Type(/*target_frame=*/nullptr, type_by_node_id,
+  feature()->Type(/*target_frame=*/nullptr, type_by_node_id, "default",
+                  TypeAction::UNKNOWN_TYPE_MODE, false,
                   node_id_future.GetCallback());
 
   auto coordinate_result = coordinate_future.Get();
@@ -133,10 +132,11 @@ TEST_F(TypeToolJavaScriptFeatureTest, InvalidatedWebFrame) {
 TEST_F(TypeToolJavaScriptFeatureTest, TypeByCoordinate_Success) {
   MockTypeJsFunctions(
       /*mock_return_value=*/"{resultCode: 0, message: 'fake success!'}");
-  TypeAction action = CreateTypeActionWithCoordinates();
+  ActionTarget action = CreateTargetWithCoordinates();
   base::test::TestFuture<ToolExecutionResult> future;
 
-  feature()->Type(GetMainFrame(feature()), action, future.GetCallback());
+  feature()->Type(GetMainFrame(feature()), action, "default",
+                  TypeAction::UNKNOWN_TYPE_MODE, false, future.GetCallback());
 
   auto result = future.Get();
   EXPECT_TRUE(result.IsOk());
@@ -145,10 +145,11 @@ TEST_F(TypeToolJavaScriptFeatureTest, TypeByCoordinate_Success) {
 TEST_F(TypeToolJavaScriptFeatureTest, TypeByIdentifier_Success) {
   MockTypeJsFunctions(
       /*mock_return_value=*/"{resultCode: 0, message: 'fake success!'}");
-  TypeAction action = CreateTypeActionWithIdentifiers();
+  ActionTarget action = CreateTargetWithIdentifiers();
   base::test::TestFuture<ToolExecutionResult> future;
 
-  feature()->Type(GetMainFrame(feature()), action, future.GetCallback());
+  feature()->Type(GetMainFrame(feature()), action, "default",
+                  TypeAction::UNKNOWN_TYPE_MODE, false, future.GetCallback());
 
   auto result = future.Get();
   EXPECT_TRUE(result.IsOk());

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/web_actor_tool.h"
 
 #import "base/memory/weak_ptr.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/action_target.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/action_target_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/web/public/web_state.h"
@@ -21,7 +22,7 @@ base::WeakPtr<web::WebFrame> WebActorTool::GetTargetWebFrame() const {
 void WebActorTool::ResolveTargetFrame(
     base::WeakPtr<web::WebState> web_state,
     base::WeakPtr<web::WebFrame> web_frame,
-    const optimization_guide::proto::ActionTarget& target,
+    const ActionTarget& target,
     ActionTargetJavaScriptFeature::TargetFrameCallback callback) {
   if (!web_state) {
     std::move(callback).Run(base::unexpected(

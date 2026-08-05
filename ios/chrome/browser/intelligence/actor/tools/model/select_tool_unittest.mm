@@ -84,63 +84,6 @@ TEST_F(SelectToolTest, Validate_MissingTarget) {
   EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
 }
 
-TEST_F(SelectToolTest, Validate_ByCoordinates_Success) {
-  optimization_guide::proto::SelectAction action;
-  action.set_tab_id(tab_id_);
-  action.set_value("v1");
-  action.mutable_target()->mutable_coordinate()->set_x(1);
-  action.mutable_target()->mutable_coordinate()->set_y(1);
-
-  base::expected<std::unique_ptr<SelectTool>, ToolExecutionResult> result =
-      CreateToolAndValidate(action, web_state_);
-  EXPECT_TRUE(result.has_value());
-}
-
-TEST_F(SelectToolTest, Validate_ByIdentifiers_Success) {
-  optimization_guide::proto::SelectAction action;
-  action.set_tab_id(tab_id_);
-  action.set_value("v1");
-  action.mutable_target()->set_content_node_id(1);
-  action.mutable_target()->mutable_document_identifier()->set_serialized_token(
-      "fake_id");
-
-  base::expected<std::unique_ptr<SelectTool>, ToolExecutionResult> result =
-      CreateToolAndValidate(action, web_state_);
-  EXPECT_TRUE(result.has_value());
-}
-
-TEST_F(SelectToolTest, Validate_NodeIdWithoutDocumentIdentifier_Invalid) {
-  optimization_guide::proto::SelectAction action;
-  action.set_tab_id(tab_id_);
-  action.set_value("v1");
-
-  optimization_guide::proto::ActionTarget* target = action.mutable_target();
-  target->set_content_node_id(1);
-  // Omit document_identifier
-
-  base::expected<std::unique_ptr<SelectTool>, ToolExecutionResult> result =
-      CreateToolAndValidate(action, web_state_);
-  EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
-}
-
-TEST_F(SelectToolTest, Validate_BothTargetingTypes_Invalid) {
-  optimization_guide::proto::SelectAction action;
-  action.set_tab_id(tab_id_);
-  action.set_value("v1");
-
-  optimization_guide::proto::ActionTarget* target = action.mutable_target();
-  target->mutable_coordinate()->set_x(1);
-  target->mutable_coordinate()->set_y(1);
-  target->set_content_node_id(1);
-  target->mutable_document_identifier()->set_serialized_token("fake_id");
-
-  base::expected<std::unique_ptr<SelectTool>, ToolExecutionResult> result =
-      CreateToolAndValidate(action, web_state_);
-  EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
-}
-
 TEST_F(SelectToolTest, Execute_WebStateDestroyed_ReturnsError) {
   optimization_guide::proto::SelectAction select_action;
   select_action.set_tab_id(tab_id_);

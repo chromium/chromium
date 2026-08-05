@@ -7,6 +7,7 @@
 #import "base/strings/stringprintf.h"
 #import "base/test/test_future.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/action_target.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_java_script_feature_test_base.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -34,40 +35,36 @@ class SelectToolJavaScriptFeatureTest
                    mock_return_value);
   }
 
-  SelectAction CreateSelectActionWithCoordinates() {
-    SelectAction action;
+  ActionTarget CreateTargetWithCoordinates() {
+    optimization_guide::proto::ActionTarget target;
     // Use arbitrary values since the JS function is mocked.
-    action.mutable_target()->mutable_coordinate()->set_x(1);
-    action.mutable_target()->mutable_coordinate()->set_y(2);
-    action.mutable_target()->mutable_coordinate()->set_pixel_type(
+    target.mutable_coordinate()->set_x(1);
+    target.mutable_coordinate()->set_y(2);
+    target.mutable_coordinate()->set_pixel_type(
         optimization_guide::proto::Coordinate::PIXEL_TYPE_UNSPECIFIED);
-    action.set_value("selected_value");
-    return action;
+    return ActionTarget::FromProto(target);
   }
 
-  SelectAction CreateSelectActionWithNodeId() {
-    SelectAction action;
+  ActionTarget CreateTargetWithNodeId() {
+    optimization_guide::proto::ActionTarget target;
     // Use arbitrary values since the JS function is mocked.
-    action.mutable_target()->set_content_node_id(123);
-    action.mutable_target()
-        ->mutable_document_identifier()
-        ->set_serialized_token("doc_id");
-    action.set_value("selected_value");
-    return action;
+    target.set_content_node_id(123);
+    target.mutable_document_identifier()->set_serialized_token("doc_id");
+    return ActionTarget::FromProto(target);
   }
 };
 
 TEST_F(SelectToolJavaScriptFeatureTest, JsReturnsNonDict) {
   MockSelectJsFunctions(/*mock_return_value=*/"'unexpected type'");
-  SelectAction select_by_coordinate = CreateSelectActionWithCoordinates();
-  SelectAction select_by_node_id = CreateSelectActionWithNodeId();
+  ActionTarget select_by_coordinate = CreateTargetWithCoordinates();
+  ActionTarget select_by_node_id = CreateTargetWithNodeId();
   base::test::TestFuture<ToolExecutionResult> coordinate_future;
   base::test::TestFuture<ToolExecutionResult> node_id_future;
 
   feature()->Select(GetMainFrame(feature()), select_by_coordinate,
-                    coordinate_future.GetCallback());
+                    "selected_value", coordinate_future.GetCallback());
   feature()->Select(GetMainFrame(feature()), select_by_node_id,
-                    node_id_future.GetCallback());
+                    "selected_value", node_id_future.GetCallback());
 
   auto coordinate_result = coordinate_future.Get();
   EXPECT_FALSE(coordinate_result.IsOk());
@@ -86,15 +83,15 @@ TEST_F(SelectToolJavaScriptFeatureTest, JsReturnsError) {
   MockSelectJsFunctions(
       /*mock_return_value=*/base::StringPrintf(
           "{resultCode: %d, message: 'Custom JS Error'}", js_code));
-  SelectAction select_by_coordinate = CreateSelectActionWithCoordinates();
-  SelectAction select_by_node_id = CreateSelectActionWithNodeId();
+  ActionTarget select_by_coordinate = CreateTargetWithCoordinates();
+  ActionTarget select_by_node_id = CreateTargetWithNodeId();
   base::test::TestFuture<ToolExecutionResult> coordinate_future;
   base::test::TestFuture<ToolExecutionResult> node_id_future;
 
   feature()->Select(GetMainFrame(feature()), select_by_coordinate,
-                    coordinate_future.GetCallback());
+                    "selected_value", coordinate_future.GetCallback());
   feature()->Select(GetMainFrame(feature()), select_by_node_id,
-                    node_id_future.GetCallback());
+                    "selected_value", node_id_future.GetCallback());
 
   auto coordinate_result = coordinate_future.Get();
   EXPECT_FALSE(coordinate_result.IsOk());
@@ -108,15 +105,15 @@ TEST_F(SelectToolJavaScriptFeatureTest, JsReturnsError) {
 }
 
 TEST_F(SelectToolJavaScriptFeatureTest, InvalidatedWebFrame) {
-  SelectAction select_by_coordinate = CreateSelectActionWithCoordinates();
-  SelectAction select_by_node_id = CreateSelectActionWithNodeId();
+  ActionTarget select_by_coordinate = CreateTargetWithCoordinates();
+  ActionTarget select_by_node_id = CreateTargetWithNodeId();
   base::test::TestFuture<ToolExecutionResult> coordinate_future;
   base::test::TestFuture<ToolExecutionResult> node_id_future;
 
   feature()->Select(/*target_frame=*/nullptr, select_by_coordinate,
-                    coordinate_future.GetCallback());
+                    "selected_value", coordinate_future.GetCallback());
   feature()->Select(/*target_frame=*/nullptr, select_by_node_id,
-                    node_id_future.GetCallback());
+                    "selected_value", node_id_future.GetCallback());
 
   auto coordinate_result = coordinate_future.Get();
   EXPECT_FALSE(coordinate_result.IsOk());
@@ -131,15 +128,15 @@ TEST_F(SelectToolJavaScriptFeatureTest, JsReturnsErrorWithoutMessage) {
   auto expected_code = mojom::ActionResultCode::kSelectInvalidElement;
   MockSelectJsFunctions(
       /*mock_return_value=*/base::StringPrintf("{resultCode: %d}", js_code));
-  SelectAction select_by_coordinate = CreateSelectActionWithCoordinates();
-  SelectAction select_by_node_id = CreateSelectActionWithNodeId();
+  ActionTarget select_by_coordinate = CreateTargetWithCoordinates();
+  ActionTarget select_by_node_id = CreateTargetWithNodeId();
   base::test::TestFuture<ToolExecutionResult> coordinate_future;
   base::test::TestFuture<ToolExecutionResult> node_id_future;
 
   feature()->Select(GetMainFrame(feature()), select_by_coordinate,
-                    coordinate_future.GetCallback());
+                    "selected_value", coordinate_future.GetCallback());
   feature()->Select(GetMainFrame(feature()), select_by_node_id,
-                    node_id_future.GetCallback());
+                    "selected_value", node_id_future.GetCallback());
 
   auto coordinate_result = coordinate_future.Get();
   EXPECT_FALSE(coordinate_result.IsOk());
@@ -155,10 +152,11 @@ TEST_F(SelectToolJavaScriptFeatureTest, JsReturnsErrorWithoutMessage) {
 TEST_F(SelectToolJavaScriptFeatureTest, SelectByCoordinate_Success) {
   MockSelectJsFunctions(
       /*mock_return_value=*/"{resultCode: 0, message: 'fake success!'}");
-  SelectAction action = CreateSelectActionWithCoordinates();
+  ActionTarget action = CreateTargetWithCoordinates();
   base::test::TestFuture<ToolExecutionResult> future;
 
-  feature()->Select(GetMainFrame(feature()), action, future.GetCallback());
+  feature()->Select(GetMainFrame(feature()), action, "selected_value",
+                    future.GetCallback());
 
   auto result = future.Get();
   EXPECT_TRUE(result.IsOk());
@@ -167,10 +165,11 @@ TEST_F(SelectToolJavaScriptFeatureTest, SelectByCoordinate_Success) {
 TEST_F(SelectToolJavaScriptFeatureTest, SelectByNodeId_Success) {
   MockSelectJsFunctions(
       /*mock_return_value=*/"{resultCode: 0, message: 'fake success!'}");
-  SelectAction action = CreateSelectActionWithNodeId();
+  ActionTarget action = CreateTargetWithNodeId();
   base::test::TestFuture<ToolExecutionResult> future;
 
-  feature()->Select(GetMainFrame(feature()), action, future.GetCallback());
+  feature()->Select(GetMainFrame(feature()), action, "selected_value",
+                    future.GetCallback());
 
   auto result = future.Get();
   EXPECT_TRUE(result.IsOk());

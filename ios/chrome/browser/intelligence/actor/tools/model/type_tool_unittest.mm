@@ -119,61 +119,7 @@ TEST_F(TypeToolTest, Validate_MissingTarget) {
   EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
 }
 
-TEST_F(TypeToolTest, Validate_NodeIdWithoutDocumentIdentifier_Invalid) {
-  optimization_guide::proto::Action action;
-  auto web_state = std::make_unique<web::FakeWebState>();
-  web::WebState* web_state_ptr = web_state.get();
-  web_state->SetBrowserState(profile_.get());
-  int tab_id = web_state->GetUniqueIdentifier().identifier();
-  browser_->GetWebStateList()->InsertWebState(
-      std::move(web_state),
-      WebStateList::InsertionParams::AtIndex(0).Activate());
 
-  action.mutable_type()->set_tab_id(tab_id);
-  action.mutable_type()->set_text("test");
-  action.mutable_type()->set_mode(
-      optimization_guide::proto::TypeAction::APPEND);
-
-  optimization_guide::proto::ActionTarget* target =
-      action.mutable_type()->mutable_target();
-  target->set_content_node_id(123);
-  // Omit document_identifier
-
-  base::expected<std::unique_ptr<TypeTool>, ToolExecutionResult> result =
-      CreateToolAndValidate(action.type(), web_state_ptr);
-
-  EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
-}
-
-TEST_F(TypeToolTest, Validate_BothTargetingTypes_Invalid) {
-  optimization_guide::proto::Action action;
-  auto web_state = std::make_unique<web::FakeWebState>();
-  web::WebState* web_state_ptr = web_state.get();
-  web_state->SetBrowserState(profile_.get());
-  int tab_id = web_state->GetUniqueIdentifier().identifier();
-  browser_->GetWebStateList()->InsertWebState(
-      std::move(web_state),
-      WebStateList::InsertionParams::AtIndex(0).Activate());
-
-  action.mutable_type()->set_tab_id(tab_id);
-  action.mutable_type()->set_text("test");
-  action.mutable_type()->set_mode(
-      optimization_guide::proto::TypeAction::APPEND);
-
-  optimization_guide::proto::ActionTarget* target =
-      action.mutable_type()->mutable_target();
-  target->mutable_coordinate()->set_x(50);
-  target->mutable_coordinate()->set_y(50);
-  target->set_content_node_id(123);
-  target->mutable_document_identifier()->set_serialized_token("dummy");
-
-  base::expected<std::unique_ptr<TypeTool>, ToolExecutionResult> result =
-      CreateToolAndValidate(action.type(), web_state_ptr);
-
-  EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
-}
 
 TEST_F(TypeToolTest, Execute_WebStateDestroyed_ReturnsError) {
   auto web_state = std::make_unique<web::FakeWebState>();

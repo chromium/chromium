@@ -52,13 +52,10 @@ SelectToolJavaScriptFeature* SelectToolJavaScriptFeature::GetInstance() {
 
 void SelectToolJavaScriptFeature::Select(
     base::WeakPtr<web::WebFrame> target_frame,
-    const optimization_guide::proto::SelectAction& action,
+    const ActionTarget& target,
+    const std::string& value,
     ToolExecutionCallback callback) {
-  CHECK(action.has_target());
-  CHECK(action.has_value());
-  CHECK(action.target().has_coordinate() ||
-        (action.target().has_content_node_id() &&
-         action.target().has_document_identifier()));
+  CHECK(target.node_id().has_value() || target.coordinate().has_value());
 
   if (!target_frame) {
     std::move(callback).Run(
@@ -69,16 +66,15 @@ void SelectToolJavaScriptFeature::Select(
   base::ListValue parameters;
   std::string function_name;
 
-  if (action.target().has_content_node_id()) {
-    parameters.Append(action.target().content_node_id());
-    parameters.Append(action.value());
+  if (target.node_id().has_value()) {
+    parameters.Append(target.node_id()->content_node_id);
+    parameters.Append(value);
     function_name = "select_tool.selectByNodeId";
   } else {
-    parameters.Append(action.target().coordinate().x());
-    parameters.Append(action.target().coordinate().y());
-    parameters.Append(
-        static_cast<int>(action.target().coordinate().pixel_type()));
-    parameters.Append(action.value());
+    parameters.Append(target.coordinate()->x);
+    parameters.Append(target.coordinate()->y);
+    parameters.Append(static_cast<int>(target.coordinate()->pixel_type));
+    parameters.Append(value);
     function_name = "select_tool.selectByCoordinate";
   }
 

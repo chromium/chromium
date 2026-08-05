@@ -11,6 +11,7 @@
 #import "base/memory/weak_ptr.h"
 #import "base/types/expected.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/action_target.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/action_target_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/web_actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
@@ -39,16 +40,14 @@ class ScrollToTool : public WebActorTool {
   ToolType GetToolType() const override;
 
  private:
-  ScrollToTool(base::WeakPtr<web::WebState> web_state,
-               const optimization_guide::proto::ScrollToAction& action);
+  ScrollToTool(base::WeakPtr<web::WebState> web_state, ActionTarget target);
 
   void OnTargetFrameResolved(
-      optimization_guide::proto::ScrollToAction action,
       ToolExecutionCallback callback,
       base::expected<ActionTargetJavaScriptFeature::TargetFrameResult,
                      ToolExecutionResult> result);
 
-  optimization_guide::proto::ScrollToAction action_;
+  ActionTarget target_;
   base::WeakPtr<web::WebState> web_state_;
   raw_ptr<ScrollToolJavaScriptFeature> js_feature_ = nullptr;
   base::WeakPtrFactory<ScrollToTool> weak_ptr_factory_{this};

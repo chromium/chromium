@@ -11,18 +11,14 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 
-namespace optimization_guide {
-namespace proto {
-class ActionTarget;
-}  // namespace proto
-}  // namespace optimization_guide
-
 namespace web {
 class WebState;
 class WebFrame;
 }  // namespace web
 
 namespace actor {
+
+class ActionTarget;
 
 // Base class for actor tools that interact with web content.
 //
@@ -40,7 +36,7 @@ class WebActorTool : public ActorTool {
   void ResolveTargetFrame(
       base::WeakPtr<web::WebState> web_state,
       base::WeakPtr<web::WebFrame> web_frame,
-      const optimization_guide::proto::ActionTarget& target,
+      const ActionTarget& target,
       ActionTargetJavaScriptFeature::TargetFrameCallback callback);
 
   base::WeakPtr<web::WebFrame> target_frame_;

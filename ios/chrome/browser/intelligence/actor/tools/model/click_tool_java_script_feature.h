@@ -7,18 +7,14 @@
 
 #import "base/memory/weak_ptr.h"
 #import "base/no_destructor.h"
+#import "components/optimization_guide/proto/features/actions_data.pb.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/action_target.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 
 namespace web {
 class WebFrame;
 }  // namespace web
-
-namespace optimization_guide {
-namespace proto {
-class ClickAction;
-}  // namespace proto
-}  // namespace optimization_guide
 
 namespace actor {
 
@@ -44,7 +40,9 @@ class ClickToolJavaScriptFeature : public web::JavaScriptFeature {
 
   // Executes a click action on the given WebFrame.
   void Click(base::WeakPtr<web::WebFrame> target_frame,
-             const optimization_guide::proto::ClickAction& action,
+             const ActionTarget& target,
+             optimization_guide::proto::ClickAction_ClickType click_type,
+             int click_count,
              ToolExecutionCallback callback);
 
  protected:

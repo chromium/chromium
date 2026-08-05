@@ -11,6 +11,7 @@
 #import "base/functional/callback.h"
 #import "base/types/expected.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/action_target.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/type_tool_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -26,7 +27,9 @@ TypeTool::~TypeTool() = default;
 std::unique_ptr<TypeTool> TypeTool::Create(
     base::WeakPtr<web::WebState> web_state,
     const optimization_guide::proto::TypeAction& action) {
-  return std::unique_ptr<TypeTool>(new TypeTool(web_state, action));
+  ActionTarget target = ActionTarget::FromProto(action.target());
+  return std::unique_ptr<TypeTool>(
+      new TypeTool(web_state, action, std::move(target)));
 }
 
 void TypeTool::Validate(ToolExecutionCallback callback) {
@@ -36,33 +39,12 @@ void TypeTool::Validate(ToolExecutionCallback callback) {
     return;
   }
 
-  if (!action_.has_target()) {
+  if (!target_.is_valid()) {
     std::move(callback).Run(
         ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
     return;
   }
 
-  const optimization_guide::proto::ActionTarget& target = action_.target();
-  // TODO(crbug.com/537772128): Share common target validation logic.
-  // Callers must either target by coordinate or (document_identifier, node_id).
-  if (target.has_content_node_id() && !target.has_document_identifier()) {
-    std::move(callback).Run(
-        ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
-    return;
-  }
-  bool can_target_by_coordinate = target.has_coordinate();
-  bool can_target_by_node_id =
-      target.has_content_node_id() && target.has_document_identifier();
-  if (!can_target_by_coordinate && !can_target_by_node_id) {
-    std::move(callback).Run(
-        ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
-    return;
-  }
-  if (can_target_by_coordinate && can_target_by_node_id) {
-    std::move(callback).Run(
-        ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
-    return;
-  }
   std::move(callback).Run(ToolExecutionResult::Ok());
 }
 
@@ -80,11 +62,10 @@ void TypeTool::Execute(ToolExecutionCallback callback) {
     return;
   }
 
-  ResolveTargetFrame(web_state_, frames_manager->GetMainWebFrame()->AsWeakPtr(),
-                     action_.target(),
-                     base::BindOnce(&TypeTool::OnTargetFrameResolved,
-                                    weak_ptr_factory_.GetWeakPtr(), action_,
-                                    std::move(callback)));
+  ResolveTargetFrame(
+      web_state_, frames_manager->GetMainWebFrame()->AsWeakPtr(), target_,
+      base::BindOnce(&TypeTool::OnTargetFrameResolved,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 base::WeakPtr<web::WebState> TypeTool::GetTargetWebState() const {
@@ -96,13 +77,14 @@ ToolType TypeTool::GetToolType() const {
 }
 
 TypeTool::TypeTool(base::WeakPtr<web::WebState> web_state,
-                   const optimization_guide::proto::TypeAction& action)
+                   const optimization_guide::proto::TypeAction& action,
+                   ActionTarget target)
     : action_(action),
+      target_(std::move(target)),
       web_state_(web_state),
       js_feature_(TypeToolJavaScriptFeature::GetInstance()) {}
 
 void TypeTool::OnTargetFrameResolved(
-    optimization_guide::proto::TypeAction action,
     ToolExecutionCallback callback,
     base::expected<ActionTargetJavaScriptFeature::TargetFrameResult,
                    ToolExecutionResult> result) {
@@ -122,11 +104,9 @@ void TypeTool::OnTargetFrameResolved(
 
   target_frame_ = target_web_frame->AsWeakPtr();
 
-  // Update the target with the potentially translated coordinates relative
-  // to the target frame.
-  *action.mutable_target() = target_frame.target;
-
-  js_feature_->Type(target_web_frame->AsWeakPtr(), action, std::move(callback));
+  js_feature_->Type(target_web_frame->AsWeakPtr(), target_frame.target,
+                    action_.text(), action_.mode(), action_.follow_by_enter(),
+                    std::move(callback));
 }
 
 }  // namespace actor

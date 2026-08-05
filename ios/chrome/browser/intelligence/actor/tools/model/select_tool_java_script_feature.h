@@ -9,16 +9,13 @@
 
 #import "base/memory/weak_ptr.h"
 #import "base/no_destructor.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/action_target.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 
 namespace web {
 class WebFrame;
 }  // namespace web
-
-namespace optimization_guide::proto {
-class SelectAction;
-}  // namespace optimization_guide::proto
 
 namespace actor {
 
@@ -47,7 +44,8 @@ class SelectToolJavaScriptFeature : public web::JavaScriptFeature {
 
   // Executes a select action on the given WebFrame.
   void Select(base::WeakPtr<web::WebFrame> target_frame,
-              const optimization_guide::proto::SelectAction& action,
+              const ActionTarget& target,
+              const std::string& value,
               ToolExecutionCallback callback);
 
  protected:

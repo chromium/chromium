@@ -9,6 +9,7 @@
 #import "base/memory/weak_ptr.h"
 #import "base/types/expected.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/action_target.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/action_target_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/web_actor_tool.h"
 
@@ -37,15 +38,16 @@ class ClickTool : public WebActorTool {
 
  private:
   void OnTargetFrameResolved(
-      const optimization_guide::proto::ClickAction& action,
       ToolExecutionCallback callback,
       base::expected<ActionTargetJavaScriptFeature::TargetFrameResult,
                      ToolExecutionResult> result);
 
   ClickTool(base::WeakPtr<web::WebState> web_state,
-            const optimization_guide::proto::ClickAction& action);
+            const optimization_guide::proto::ClickAction& action,
+            ActionTarget target);
 
   optimization_guide::proto::ClickAction action_;
+  ActionTarget target_;
   base::WeakPtr<web::WebState> web_state_ = nullptr;
   raw_ptr<ClickToolJavaScriptFeature> js_feature_ = nullptr;
   base::WeakPtrFactory<ClickTool> weak_ptr_factory_{this};

@@ -63,35 +63,33 @@ ScrollToolJavaScriptFeature::~ScrollToolJavaScriptFeature() = default;
 
 void ScrollToolJavaScriptFeature::Scroll(
     base::WeakPtr<web::WebFrame> target_frame,
-    const optimization_guide::proto::ScrollAction& action,
+    const ActionTarget& target,
+    optimization_guide::proto::ScrollAction_ScrollDirection direction,
+    float distance,
     ToolExecutionCallback callback) {
-  CHECK(action.has_target());
-  CHECK(action.has_direction() && action.has_distance());
-  ExecuteScrollAction(target_frame, action.target(),
+  ExecuteScrollAction(target_frame, target,
                       /*direction_and_distance=*/
-                      std::make_pair(action.direction(), action.distance()),
+                      std::make_pair(direction, static_cast<int>(distance)),
                       std::move(callback));
 }
 
 void ScrollToolJavaScriptFeature::ScrollTo(
     base::WeakPtr<web::WebFrame> target_frame,
-    const optimization_guide::proto::ScrollToAction& action,
+    const ActionTarget& target,
     ToolExecutionCallback callback) {
-  CHECK(action.has_target());
-  ExecuteScrollAction(target_frame, action.target(),
+  ExecuteScrollAction(target_frame, target,
                       /*direction_and_distance=*/std::nullopt,
                       std::move(callback));
 }
 
 void ScrollToolJavaScriptFeature::ExecuteScrollAction(
     base::WeakPtr<web::WebFrame> web_frame,
-    const optimization_guide::proto::ActionTarget& target,
+    const ActionTarget& target,
     std::optional<
         std::pair<optimization_guide::proto::ScrollAction_ScrollDirection, int>>
         direction_and_distance,
     ToolExecutionCallback callback) {
-  CHECK(target.has_coordinate() ||
-        (target.has_content_node_id() && target.has_document_identifier()));
+  CHECK(target.node_id().has_value() || target.coordinate().has_value());
 
   if (!web_frame) {
     std::move(callback).Run(
@@ -102,14 +100,14 @@ void ScrollToolJavaScriptFeature::ExecuteScrollAction(
   base::ListValue parameters;
   std::string function_name;
 
-  if (target.has_content_node_id()) {
+  if (target.node_id().has_value()) {
     function_name = "scroll_tool.scrollByNodeId";
-    parameters.Append(target.content_node_id());
+    parameters.Append(target.node_id()->content_node_id);
   } else {
     function_name = "scroll_tool.scrollByCoordinate";
-    parameters.Append(target.coordinate().x());
-    parameters.Append(target.coordinate().y());
-    parameters.Append(static_cast<int>(target.coordinate().pixel_type()));
+    parameters.Append(target.coordinate()->x);
+    parameters.Append(target.coordinate()->y);
+    parameters.Append(static_cast<int>(target.coordinate()->pixel_type));
   }
 
   if (direction_and_distance.has_value()) {

@@ -50,23 +50,23 @@ class ActionTargetJavaScriptFeatureTest : public IOSChromeTestWithWebState {
   }
 
   // Defaults to clicking in the center of the page.
-  optimization_guide::proto::ActionTarget CreateTargetWithCoordinates(
-      int x = kMidPointX,
-      int y = kMidPointY) {
+  ActionTarget CreateTargetWithCoordinates(int x = kMidPointX,
+                                           int y = kMidPointY) {
     optimization_guide::proto::ActionTarget target;
     target.mutable_coordinate()->set_x(x);
     target.mutable_coordinate()->set_y(y);
     target.mutable_coordinate()->set_pixel_type(
         optimization_guide::proto::Coordinate::PIXEL_TYPE_DIPS);
-    return target;
+    return ActionTarget::FromProto(target);
   }
 
-  optimization_guide::proto::ActionTarget CreateTargetWithDocumentIdentifier(
+  ActionTarget CreateTargetWithDocumentIdentifier(
       const std::string& document_identifier) {
     optimization_guide::proto::ActionTarget target;
+    target.set_content_node_id(0);
     target.mutable_document_identifier()->set_serialized_token(
         document_identifier);
-    return target;
+    return ActionTarget::FromProto(target);
   }
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -81,8 +81,7 @@ TEST_F(ActionTargetJavaScriptFeatureTest, JsReturnsUnexpectedType) {
         ); true;
       )"),
                                          feature());
-  optimization_guide::proto::ActionTarget target =
-      CreateTargetWithCoordinates();
+  ActionTarget target = CreateTargetWithCoordinates();
 
   base::test::TestFuture<base::expected<
       ActionTargetJavaScriptFeature::TargetFrameResult, ToolExecutionResult>>
@@ -110,8 +109,7 @@ TEST_F(ActionTargetJavaScriptFeatureTest, JsReturnsError) {
       )"),
                                          feature());
 
-  optimization_guide::proto::ActionTarget target =
-      CreateTargetWithCoordinates();
+  ActionTarget target = CreateTargetWithCoordinates();
 
   base::test::TestFuture<base::expected<
       ActionTargetJavaScriptFeature::TargetFrameResult, ToolExecutionResult>>
@@ -140,8 +138,7 @@ TEST_F(ActionTargetJavaScriptFeatureTest, TargetsMainFrame_Success) {
         ); true;
       )"),
                                          feature());
-  optimization_guide::proto::ActionTarget target =
-      CreateTargetWithCoordinates();
+  ActionTarget target = CreateTargetWithCoordinates();
 
   base::test::TestFuture<base::expected<
       ActionTargetJavaScriptFeature::TargetFrameResult, ToolExecutionResult>>
@@ -178,8 +175,7 @@ TEST_F(ActionTargetJavaScriptFeatureTest,
       )",
                              fake_remote_token.ToString().c_str())),
       feature());
-  optimization_guide::proto::ActionTarget target =
-      CreateTargetWithCoordinates();
+  ActionTarget target = CreateTargetWithCoordinates();
 
   base::test::TestFuture<base::expected<
       ActionTargetJavaScriptFeature::TargetFrameResult, ToolExecutionResult>>
@@ -252,8 +248,7 @@ TEST_F(ActionTargetJavaScriptFeatureTest,
                              remote_token.ToString().c_str())),
       feature());
 
-  optimization_guide::proto::ActionTarget target =
-      CreateTargetWithCoordinates();
+  ActionTarget target = CreateTargetWithCoordinates();
 
   base::test::TestFuture<base::expected<
       ActionTargetJavaScriptFeature::TargetFrameResult, ToolExecutionResult>>
@@ -300,8 +295,7 @@ TEST_F(ActionTargetJavaScriptFeatureTest, TargetsIframe_FrameIdNotRegistered) {
                              remote_token.ToString().c_str())),
       feature());
 
-  optimization_guide::proto::ActionTarget target =
-      CreateTargetWithCoordinates();
+  ActionTarget target = CreateTargetWithCoordinates();
 
   base::test::TestFuture<base::expected<
       ActionTargetJavaScriptFeature::TargetFrameResult, ToolExecutionResult>>
@@ -371,7 +365,7 @@ TEST_F(ActionTargetJavaScriptFeatureTest, TargetIframe_ByCoordinate_Success) {
                              remote_token.ToString().c_str())),
       feature());
 
-  optimization_guide::proto::ActionTarget target =
+  ActionTarget target =
       CreateTargetWithCoordinates(/*x=*/kIframeSize / 2, /*y=*/kIframeSize / 2);
 
   base::test::TestFuture<base::expected<
@@ -421,7 +415,7 @@ TEST_F(ActionTargetJavaScriptFeatureTest,
   registrar->RegisterMapping(autofill::RemoteFrameToken(remote_token),
                              autofill::LocalFrameToken(*local_token));
 
-  optimization_guide::proto::ActionTarget target =
+  ActionTarget target =
       CreateTargetWithDocumentIdentifier(remote_token.ToString());
 
   base::test::TestFuture<base::expected<
@@ -439,8 +433,7 @@ TEST_F(ActionTargetJavaScriptFeatureTest, MaxDepthExceeded) {
   web::WebFrame* main_frame = WaitForMainFrame(feature());
   ASSERT_TRUE(main_frame);
 
-  optimization_guide::proto::ActionTarget target =
-      CreateTargetWithCoordinates();
+  ActionTarget target = CreateTargetWithCoordinates();
 
   base::test::TestFuture<base::expected<
       ActionTargetJavaScriptFeature::TargetFrameResult, ToolExecutionResult>>

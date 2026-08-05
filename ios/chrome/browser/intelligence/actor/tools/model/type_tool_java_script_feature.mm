@@ -64,13 +64,12 @@ TypeToolJavaScriptFeature::~TypeToolJavaScriptFeature() = default;
 
 void TypeToolJavaScriptFeature::Type(
     base::WeakPtr<web::WebFrame> target_frame,
-    const optimization_guide::proto::TypeAction& action,
+    const ActionTarget& target,
+    const std::string& text,
+    optimization_guide::proto::TypeAction_TypeMode mode,
+    bool follow_by_enter,
     ToolExecutionCallback callback) {
-  CHECK(action.has_target());
-  CHECK(action.has_text() && action.has_mode());
-  CHECK(action.target().has_coordinate() ||
-        (action.target().has_content_node_id() &&
-         action.target().has_document_identifier()));
+  CHECK(target.node_id().has_value() || target.coordinate().has_value());
 
   if (!target_frame) {
     std::move(callback).Run(
@@ -81,20 +80,19 @@ void TypeToolJavaScriptFeature::Type(
   base::ListValue parameters;
   std::string function_name;
 
-  if (action.target().has_content_node_id()) {
-    parameters.Append(action.target().content_node_id());
-    parameters.Append(action.text());
-    parameters.Append(static_cast<int>(action.mode()));
-    parameters.Append(action.follow_by_enter());
+  if (target.node_id().has_value()) {
+    parameters.Append(target.node_id()->content_node_id);
+    parameters.Append(text);
+    parameters.Append(static_cast<int>(mode));
+    parameters.Append(follow_by_enter);
     function_name = "type_tool.typeByNodeId";
   } else {
-    parameters.Append(action.target().coordinate().x());
-    parameters.Append(action.target().coordinate().y());
-    parameters.Append(
-        static_cast<int>(action.target().coordinate().pixel_type()));
-    parameters.Append(action.text());
-    parameters.Append(static_cast<int>(action.mode()));
-    parameters.Append(action.follow_by_enter());
+    parameters.Append(target.coordinate()->x);
+    parameters.Append(target.coordinate()->y);
+    parameters.Append(static_cast<int>(target.coordinate()->pixel_type));
+    parameters.Append(text);
+    parameters.Append(static_cast<int>(mode));
+    parameters.Append(follow_by_enter);
     function_name = "type_tool.typeByCoordinate";
   }
 
