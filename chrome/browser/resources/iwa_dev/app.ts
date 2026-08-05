@@ -12,11 +12,12 @@ import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import type {IwaDevInstallDialogElement} from './install_dialog.js';
-import type {BrowserProxy, IwaDevModeAppInfo} from './iwa_dev.mojom-webui.js';
+import type {BrowserProxy, IwaDevModeAppInfo, UpdateInfo, UpdateManifest} from './iwa_dev.mojom-webui.js';
 import {browserProxyFactory} from './iwa_dev.mojom-webui.js';
 
 export interface IwaDevAppElement {
@@ -66,7 +67,7 @@ export class IwaDevAppElement extends CrLitElement {
     this.$.installDialog.showDialog();
   }
 
-  protected async onRequestInstallFromDevProxy_(e: CustomEvent<{url: string}>) {
+  protected async onRequestInstallFromDevProxy_(e: CustomEvent<{url: Url}>) {
     await this.processInstallRequest_(
         this.browserProxy_.handler.installAppFromDevProxy(e.detail.url));
   }
@@ -74,6 +75,26 @@ export class IwaDevAppElement extends CrLitElement {
   protected async onRequestInstallFromLocalBundle_() {
     await this.processInstallRequest_(
         this.browserProxy_.handler.selectAndInstallAppFromLocalWebBundle());
+  }
+
+  protected onRequestParseUpdateManifestFromUrl_(e: CustomEvent<{
+    url: Url,
+    callback: (result: {success?: UpdateManifest, error?: string}) => void,
+  }>) {
+    this.browserProxy_.handler.parseUpdateManifestFromUrl(e.detail.url)
+        .then(success => e.detail.callback({success}))
+        .catch(
+            err => e.detail.callback(
+                {error: (err as Error)?.message || String(err)}));
+  }
+
+  protected async onRequestInstallFromUpdateManifest_(e: CustomEvent<{
+    webBundleUrl: Url,
+    updateInfo: UpdateInfo,
+  }>) {
+    await this.processInstallRequest_(
+        this.browserProxy_.handler.installAppFromUpdateManifest(
+            e.detail.webBundleUrl, e.detail.updateInfo));
   }
 
   private async processInstallRequest_(

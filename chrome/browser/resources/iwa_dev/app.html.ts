@@ -50,7 +50,11 @@ ${!this.devModeEnabled_ ? html`
           @request-install-from-dev-proxy="${
             this.onRequestInstallFromDevProxy_}"
           @request-install-from-local-bundle="${
-            this.onRequestInstallFromLocalBundle_}">
+            this.onRequestInstallFromLocalBundle_}"
+          @request-parse-update-manifest-from-url="${
+            this.onRequestParseUpdateManifestFromUrl_}"
+          @request-install-from-update-manifest="${
+            this.onRequestInstallFromUpdateManifest_}">
       </iwa-dev-install-dialog>
       <cr-toast id="toast" duration="3000">
         <div>${this.toastMessage_}</div>

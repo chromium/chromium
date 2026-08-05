@@ -4,6 +4,7 @@
 
 import './install_dev_proxy_tab.js';
 import './install_local_bundle_tab.js';
+import './install_update_manifest_tab.js';
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -33,9 +34,12 @@ export function getHtml(this: IwaDevInstallDialogElement) {
             ?disabled="${this.isInstalling_}"
             @valid-changed="${this.onTabValidChanged_}">
         </iwa-dev-install-local-bundle-tab>
-      ` : html`
-        <p>Not implemented yet.</p>
-      `}
+      ` : this.selectedTab_ === TabIndex.UPDATE_MANIFEST ? html`
+        <iwa-dev-install-update-manifest-tab
+            ?disabled="${this.isInstalling_}"
+            @valid-changed="${this.onTabValidChanged_}">
+        </iwa-dev-install-update-manifest-tab>
+      ` : ''}
       ${this.installationError_ ? html`
         <div id="error-message" aria-live="polite">
           ${this.installationError_}

@@ -16,6 +16,10 @@ cr-dialog [slot='title'] {
   padding-top: 24px;
 }
 
+.tab-content:has(iwa-dev-install-update-manifest-tab) {
+  min-height: 200px;
+}
+
 cr-input {
   --cr-input-width: 100%;
 }

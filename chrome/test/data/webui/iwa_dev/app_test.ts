@@ -6,10 +6,10 @@ import 'chrome://iwa-dev/app.js';
 
 import type {IwaDevAppElement} from 'chrome://iwa-dev/app.js';
 import type {InstalledAppListItemElement} from 'chrome://iwa-dev/installed_app_list_item.js';
-import type {IwaDevModeAppInfo, PageCallbackRouter} from 'chrome://iwa-dev/iwa_dev.mojom-webui.js';
+import type {IwaDevModeAppInfo, PageCallbackRouter, UpdateManifest} from 'chrome://iwa-dev/iwa_dev.mojom-webui.js';
 import {browserProxyFactory, PageHandlerRemote} from 'chrome://iwa-dev/iwa_dev.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -352,5 +352,96 @@ suite('<iwa-dev-app>', () => {
             dialog.shadowRoot.querySelector<HTMLElement>('#error-message');
         assertTrue(!!errorDiv);
         assertEquals('No file selected', errorDiv.textContent?.trim());
+      });
+
+  async function testParseUpdateManifestFromUrl(
+      mojoResult: Promise<UpdateManifest>):
+      Promise<{success?: UpdateManifest, error?: string}> {
+    handler.setResultFor('getInstalledAppsInfo', Promise.resolve({apps: []}));
+    handler.setResultFor('parseUpdateManifestFromUrl', mojoResult);
+
+    createApp(/*devModeEnabled=*/ true);
+    await handler.whenCalled('getInstalledAppsInfo');
+    await microtasksFinished();
+
+    const testUrl = 'https://example.com/manifest.json';
+    let callbackResult: {success?: UpdateManifest, error?: string}|undefined;
+
+    app.$.installDialog.dispatchEvent(
+        new CustomEvent('request-parse-update-manifest-from-url', {
+          detail: {
+            url: testUrl,
+            callback: (result: {success?: UpdateManifest, error?: string}) => {
+              callbackResult = result;
+            },
+          },
+        }));
+
+    const urlArg = await handler.whenCalled('parseUpdateManifestFromUrl');
+    assertEquals(testUrl, urlArg);
+
+    await microtasksFinished();
+    assertTrue(callbackResult !== undefined);
+    return callbackResult;
+  }
+
+  test(
+      'calls parseUpdateManifestFromUrl when dialog requests ' +
+          'parse update manifest from url (success)',
+      async () => {
+        const mockManifest: UpdateManifest = {
+          versions: [{
+            version: '1.0.0',
+            src: 'https://example.com/bundle.swbn',
+            channels: ['stable'],
+          }],
+          channels: [{channel: 'stable', displayName: 'Stable'}],
+        };
+        const result =
+            await testParseUpdateManifestFromUrl(Promise.resolve(mockManifest));
+        assertEquals(mockManifest, result.success);
+      });
+
+  test(
+      'calls parseUpdateManifestFromUrl when dialog requests ' +
+          'parse update manifest from url (error)',
+      async () => {
+        const errorMessage = 'Manifest fetch failed: 404 Not Found';
+        const result =
+            await testParseUpdateManifestFromUrl(Promise.reject(errorMessage));
+        assertEquals(errorMessage, result.error);
+      });
+
+  test(
+      'calls installAppFromUpdateManifest when dialog requests ' +
+          'install from update manifest',
+      async () => {
+        handler.setResultFor(
+            'getInstalledAppsInfo', Promise.resolve({apps: []}));
+        handler.setResultFor(
+            'installAppFromUpdateManifest', Promise.resolve({error: null}));
+
+        createApp(/*devModeEnabled=*/ true);
+        await handler.whenCalled('getInstalledAppsInfo');
+        await microtasksFinished();
+
+        const webBundleUrl = 'http://localhost:8080/app.swbn';
+        const updateInfo = {
+          updateManifestUrl: 'http://localhost:8080/manifest.json',
+          updateChannel: 'stable',
+        };
+        app.$.installDialog.dispatchEvent(
+            new CustomEvent('request-install-from-update-manifest', {
+              detail: {webBundleUrl, updateInfo},
+            }));
+        const [bundleUrlArg, updateInfoArg] =
+            await handler.whenCalled('installAppFromUpdateManifest');
+        assertEquals(webBundleUrl, bundleUrlArg);
+        assertDeepEquals(updateInfo, updateInfoArg);
+
+        await microtasksFinished();
+        assertTrue(app.$.toast.open);
+        assertEquals(
+            'Installation successful!', app.$.toast.textContent?.trim());
       });
 });

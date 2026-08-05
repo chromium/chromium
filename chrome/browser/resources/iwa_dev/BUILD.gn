@@ -15,6 +15,7 @@ build_webui("build") {
     "app.css",
     "install_dialog.css",
     "install_tab.css",
+    "install_update_manifest_tab.css",
     "installed_app_list_item.css",
   ]
 
@@ -28,6 +29,8 @@ build_webui("build") {
     "install_local_bundle_tab.html.ts",
     "install_local_bundle_tab.ts",
     "install_tab.ts",
+    "install_update_manifest_tab.html.ts",
+    "install_update_manifest_tab.ts",
     "installed_app_list_item.html.ts",
     "installed_app_list_item.ts",
   ]
