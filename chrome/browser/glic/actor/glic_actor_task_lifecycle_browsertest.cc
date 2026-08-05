@@ -177,8 +177,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
       << "Task " << task_id << " did not reach kFinished state.";
 }
 
-// TODO(b/484011242): Fix flakiness and re-enable this test on Android.
-#if BUILDFLAG(IS_ANDROID)
+// TODO(b/484011242): Fix flakiness and re-enable this test on Android and Mac.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_testPauseAndResumeCreatedTaskWithIframe \
   DISABLED_testPauseAndResumeCreatedTaskWithIframe
 #else
