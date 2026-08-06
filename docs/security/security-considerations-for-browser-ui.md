@@ -74,7 +74,7 @@ a permission that they wouldn't otherwise grant.
 
 When demarcating untrustworthy content in browser UI, consider what might happen
 if the content is longer than expected or uses unexpected characters. Take
-special care with [URLs](url_display/url_display_guidelines.md).
+special care with [URLs](url_display_guidelines/url_display_guidelines.md).
 
 ### Avoid occlusion of browser UI
 
@@ -151,6 +151,6 @@ Chrome uses short and long delays in various UI:
 
 -   For smaller UI surfaces such as dialog boxes, a shorter delay like 500ms can
     be more practical.
-    [`InputEventActivationProtector`](ui/views/input_event_activation_protector.h)
+    [`InputEventActivationProtector`](../../ui/views/input_event_activation_protector.h)
     is a helper class that ignores UI events that happen within 500ms of the
     sensitive UI being displayed.
