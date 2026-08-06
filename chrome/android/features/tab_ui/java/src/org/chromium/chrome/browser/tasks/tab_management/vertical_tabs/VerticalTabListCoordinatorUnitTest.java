@@ -266,6 +266,11 @@ public class VerticalTabListCoordinatorUnitTest {
                         })
                 .when(mTabModel)
                 .addObserver(any(TabModelObserver.class));
+
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS,
+                VerticalTabUtils.EXTERNAL_DRAG_PARAM,
+                true);
     }
 
     @After
@@ -1456,27 +1461,6 @@ public class VerticalTabListCoordinatorUnitTest {
 
     @Test
     @SmallTest
-    public void testGroupHeaderDragParam_DefaultDisabled() {
-        assertFalse(
-                "Group header drag feature parameter should be disabled by default.",
-                VerticalTabUtils.isGroupHeaderDragEnabled());
-    }
-
-    @Test
-    @SmallTest
-    public void testGroupHeaderDragParam_EnabledViaOverride() {
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ANDROID_VERTICAL_TABS,
-                VerticalTabUtils.GROUP_HEADER_DRAG_PARAM,
-                /* testValue= */ true);
-        assertTrue(
-                "Group header drag feature parameter should be enabled when overrideParam is set to"
-                        + " true.",
-                VerticalTabUtils.isGroupHeaderDragEnabled());
-    }
-
-    @Test
-    @SmallTest
     public void testSingleTabDragOut_InvalidOrNullTab() {
         createCoordinator();
         PropertyModel model = createTabPropertyModel();
@@ -1527,7 +1511,30 @@ public class VerticalTabListCoordinatorUnitTest {
 
     @Test
     @SmallTest
+    public void testSingleTabDragOut_DisabledParam() {
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS,
+                VerticalTabUtils.EXTERNAL_DRAG_PARAM,
+                /* testValue= */ false);
+        Tab tab1 = prepareMockTab(mMockTab1, TAB_ID_1);
+        when(mTabModel.getTabById(TAB_ID_1)).thenReturn(tab1);
+        when(mTabModel.isTabInTabGroup(tab1)).thenReturn(false);
+
+        createCoordinator();
+        PropertyModel model = createTabPropertyModel();
+        model.set(TabProperties.TAB_ID, TAB_ID_1);
+
+        getOnDragOutListener().onDragOut(createViewHolder(model), /* dX= */ 100f, /* dY= */ 50f);
+        verify(mMainTabSwitcherDragHandler, never()).startTabDragAction(any(), any(), any(), any());
+    }
+
+    @Test
+    @SmallTest
     public void testGroupHeaderDragOut_DisabledParam() {
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS,
+                VerticalTabUtils.EXTERNAL_DRAG_PARAM,
+                /* testValue= */ false);
         createCoordinator();
         Token tabGroupId = new Token(1L, 2L);
         PropertyModel model = createTabPropertyModel();
@@ -1542,11 +1549,6 @@ public class VerticalTabListCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testGroupHeaderDragOut_AllTabsInWindow() {
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ANDROID_VERTICAL_TABS,
-                VerticalTabUtils.GROUP_HEADER_DRAG_PARAM,
-                /* testValue= */ true);
-
         Token tabGroupId = new Token(1L, 2L);
         Tab tab =
                 setupMockTabGroup(
@@ -1567,11 +1569,6 @@ public class VerticalTabListCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testGroupHeaderDragOut_Success() {
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ANDROID_VERTICAL_TABS,
-                VerticalTabUtils.GROUP_HEADER_DRAG_PARAM,
-                /* testValue= */ true);
-
         Token tabGroupId = new Token(1L, 2L);
         Tab tab1 =
                 setupMockTabGroup(
