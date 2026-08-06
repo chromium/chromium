@@ -1161,25 +1161,25 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_CLEAR_BROWSING_DATA_TAB_PERIOD_EVERYTHING" desc="The option to delete browsing data from the beginning of time.">
         All time
       </message>
-      <message name="IDS_CLEAR_BROWSING_DATA_MANAGE_OTHER_GOOGLE_DATA_EXPANDABLE_TITLE" desc="Title for the expandable 'Manage other Google data' section in Clear Browsing Data." translateable="false">
+      <message name="IDS_CLEAR_BROWSING_DATA_MANAGE_OTHER_GOOGLE_DATA_EXPANDABLE_TITLE" desc="Title for the expandable 'Manage other Google data' section in the Clear Browsing Data dialog.">
         Manage other Google data
       </message>
-            <message name="IDS_PASSWORD_MANAGER_LINK_OUT_TITLE" desc="Title for the link out button in Clear Browsing Data settings that redirects to the Google Password Manager." translateable="false">
+            <message name="IDS_PASSWORD_MANAGER_LINK_OUT_TITLE" desc="Title for the link out button in the Clear Browsing Data dialog that redirects to the Google Password Manager.">
         Passwords and passkeys
       </message>
-      <message name="IDS_PASSWORD_MANAGER_LINK_OUT_DESCRIPTION" desc="Description for the link out button in Clear Browsing Data settings that redirects to the Google Password Manager." translateable="false">
+      <message name="IDS_PASSWORD_MANAGER_LINK_OUT_DESCRIPTION" desc="Description for the link out button in the Clear Browsing Data dialog that redirects to the Google Password Manager.">
         Manage in Google Password Manager
       </message>
-            <message name="IDS_SEARCH_HISTORY_LINK_OUT_TITLE" desc="Title for the link out button in Clear Browsing Data settings that redirects to the Google Search History page." translateable="false">
+            <message name="IDS_SEARCH_HISTORY_LINK_OUT_TITLE" desc="Title for the link out button in the Clear Browsing Data dialog that redirects to the Google Search History page.">
         Search history
       </message>
-      <message name="IDS_SEARCH_HISTORY_LINK_OUT_DESCRIPTION_OTHER_DSE" desc="Description for the button in Clear Browsing Data settings that instruct the user to manage their search history in their default search engine." translateable="false">
+      <message name="IDS_SEARCH_HISTORY_LINK_OUT_DESCRIPTION_OTHER_DSE" desc="Description for the tab in the Clear Browsing Data dialog that instructs users to refer to their default search engine provider to manage search history.">
         Your search engine is <ph name="DSE_NAME">%1$s<ex>Google</ex></ph>. See their instructions for deleting your search history, if applicable.
       </message>
-      <message name="IDS_MY_ACTIVITY_LINK_OUT_TITLE" desc="Title for the link out button in Clear Browsing Data settings that redirects to the Google My Activity page." translateable="false">
+      <message name="IDS_MY_ACTIVITY_LINK_OUT_TITLE" desc="Title for the link out button in the Clear Browsing Data dialog that redirects to the Google My Activity page.">
         My Activity
       </message>
-      <message name="IDS_MY_ACTIVITY_LINK_OUT_DESCRIPTION" desc="Description for the link out button in Clear Browsing Data settings that redirects to the Google My Activity page." translateable="false">
+      <message name="IDS_MY_ACTIVITY_LINK_OUT_DESCRIPTION" desc="Description for the link out button in the Clear Browsing Data dialog that redirects to the Google My Activity page.">
         Manage in your Google Account
       </message>
       <message name="IDS_IMPORTANT_SITES_TITLE" desc="Title of clear storage dialogs used in a couple different places to confirm clearing site storage data. [CHAR_LIMIT=24]">
