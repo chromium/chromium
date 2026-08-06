@@ -637,6 +637,21 @@ void BrowserActions::InitializeSidePanelActions() {
                   if (!bwi) {
                     return;
                   }
+                  auto* controller =
+                      contextual_tasks::ContextualTasksPanelController::From(
+                          bwi);
+                  if (controller) {
+                    bool is_open = controller->IsPanelOpenForContextualTask();
+                    const char* user_action =
+                        is_open ? "ContextualTasks.PermanentToolbarButton."
+                                  "UserAction."
+                                  "CloseSidePanel"
+                                : "ContextualTasks.PermanentToolbarButton."
+                                  "UserAction."
+                                  "OpenSidePanel";
+                    base::RecordAction(base::UserMetricsAction(user_action));
+                    base::UmaHistogramBoolean(user_action, true);
+                  }
                   if (contextual_tasks::
                           IsContextualTasksPinButtonInToolbarEnabled() &&
                       contextual_tasks::GetEffectivePinState(

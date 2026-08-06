@@ -306,6 +306,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContextualTasks.EphemeralToolbarButton.Shown" enum="Boolean"
+    expires_after="2027-01-03">
+  <owner>dianaou@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded every time the ephemeral (unpinned) contextual tasks toolbar button
+    becomes visible in the browser toolbar. This occurs when an eligible
+    contextual task is active or suggested and the toolbar button transitions
+    from hidden to shown. Always recorded as true.
+  </summary>
+</histogram>
+
 <histogram
     name="ContextualTasks.HistoryNavigation.UserAction.NavigatedInFullTab"
     enum="Boolean" expires_after="2026-12-22">
@@ -640,16 +652,23 @@ chromium-metrics-reviews@google.com.
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>
   <summary>
-    Recorded every time the user interacted with the {EntrypointType}.
-    {ActionType} Always recorded as true.
+    Recorded every time the user clicks on {EntrypointType} in the Chrome
+    toolbar to toggle the Contextual Tasks side panel state. {ActionType} Always
+    recorded as true.
   </summary>
   <token key="ActionType">
-    <variant name=".CloseSidePanel" summary="The user closed the side panel."/>
-    <variant name=".OpenSidePanel" summary="The user opened the side panel."/>
+    <variant name=".CloseSidePanel"
+        summary="Recorded when clicking the button closes the side panel."/>
+    <variant name=".OpenSidePanel"
+        summary="Recorded when clicking the button opens the side panel."/>
   </token>
   <token key="EntrypointType">
+    <variant name="EphemeralToolbarButton"
+        summary="the ephemeral (unpinned) contextual tasks toolbar button"/>
+    <variant name="PermanentToolbarButton"
+        summary="the permanently pinned contextual tasks toolbar button"/>
     <variant name="ToolbarButton"
-        summary="the contextual tasks toolbar button"/>
+        summary="any contextual tasks toolbar button"/>
   </token>
 </histogram>
 
