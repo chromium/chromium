@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
-"""Script to do the first step of Abseil roll into chromium.
-"""
+"""Script to roll Abseil into chromium."""
 
 import argparse
 import convert_bazel_to_gn
+import generate_def_files
 import logging
 import os
 import re
@@ -115,17 +115,15 @@ Bug: None""".format(hash_diff)
 
     if should_upload:
         logging.info('Upload...')
-        subprocess.check_call(
-            ['git', 'cl', 'upload', '-m', desc, '--bypass-hooks'],
-            cwd=chromium_dir)
-
-    logging.info(
-        "Next step is manual: Fix BUILD.gn files to match BUILD.bazel changes."
-    )
-    logging.info("After that run generate_def_files.py. ")
+        subprocess.check_call([
+            'git', 'cl', 'upload', '--commit-description=' + desc,
+            '--bypass-hooks'
+        ],
+                              cwd=chromium_dir)
 
 
-def _Roll(should_branch, should_pull, should_upload, revision):
+def _Roll(should_branch, should_pull, should_generate_def, should_upload,
+          revision):
     chromium_dir = os.getcwd()
     abseil_in_chromium_dir = os.path.join(chromium_dir, 'third_party',
                                           'abseil-cpp')
@@ -148,6 +146,9 @@ def _Roll(should_branch, should_pull, should_upload, revision):
 
     _PatchAbseil(abseil_in_chromium_dir)
     convert_bazel_to_gn.convert_all(abseil_in_chromium_dir)
+    if should_generate_def:
+        generate_def_files.generate_all(chromium_dir)
+
     _Commit(chromium_dir, hash_diff, should_upload)
 
 
@@ -162,6 +163,9 @@ if __name__ == '__main__':
     parser.add_argument('--no-pull',
                         action='store_true',
                         help='Skip pulling the latest Chromium revision.')
+    parser.add_argument('--no-def',
+                        action='store_true',
+                        help='Skip regenerating def files.')
     parser.add_argument('--no-upload',
                         action='store_true',
                         help='Skip uploading the change.')
@@ -171,7 +175,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if os.getcwd().endswith('src') and os.path.exists('chrome/browser'):
-        _Roll(not args.no_branch, not args.no_pull, not args.no_upload,
-              args.revision)
+        _Roll(not args.no_branch, not args.no_pull, not args.no_def,
+              not args.no_upload, args.revision)
     else:
         logging.error('Run this script from a chromium/src/ directory.')
