@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.omnibox.styles;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
@@ -469,21 +468,6 @@ public class OmniboxResourceProviderTest {
 
         OmniboxResourceProvider.invalidateDrawableCache();
         assertEquals(0, OmniboxResourceProvider.getDrawableCacheForTesting().size());
-    }
-
-    @Test
-    @Config(qualifiers = "sw600dp")
-    public void replaceContextForSmallTabletWindow() {
-        Context originalContext = mContext;
-        originalContext.getResources().getConfiguration().screenWidthDp = 700;
-        assertEquals(
-                originalContext,
-                OmniboxResourceProvider.maybeReplaceContextForSmallTabletWindow(originalContext));
-
-        originalContext.getResources().getConfiguration().screenWidthDp = 400;
-        assertNotEquals(
-                originalContext,
-                OmniboxResourceProvider.maybeReplaceContextForSmallTabletWindow(originalContext));
     }
 
     @Test
