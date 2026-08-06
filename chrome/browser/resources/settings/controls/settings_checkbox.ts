@@ -12,10 +12,12 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '/shared/settings/controls/cr_policy_pref_indicator.js';
 
 import {SettingsBooleanControlMixin} from '/shared/settings/controls/settings_boolean_control_mixin.js';
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {PrefKeyObserverMixin} from './pref_key_observer_mixin.js';
 import {getTemplate} from './settings_checkbox.html.js';
 
 export interface SettingsCheckboxElement {
@@ -25,7 +27,8 @@ export interface SettingsCheckboxElement {
   };
 }
 
-const SettingsCheckboxElementBase = SettingsBooleanControlMixin(PolymerElement);
+const SettingsCheckboxElementBase =
+    PrefKeyObserverMixin(SettingsBooleanControlMixin(PolymerElement));
 
 export class SettingsCheckboxElement extends SettingsCheckboxElementBase {
   static get is() {
@@ -94,6 +97,17 @@ export class SettingsCheckboxElement extends SettingsCheckboxElementBase {
       // Don't let link click events from the sub-label reach the checkbox.
       e.stopPropagation();
     }
+  }
+
+  override sendPrefChangeInternal(value: boolean|number) {
+    if (this.prefKey) {
+      PrefService.getInstance().setPrefValue(this.prefKey, value);
+      return;
+    }
+
+    // Fallback to the old 'prefs' mechanism if this element hasn't been
+    // migrated to use prefKey yet.
+    super.sendPrefChangeInternal(value);
   }
 }
 
