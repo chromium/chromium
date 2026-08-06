@@ -15,11 +15,13 @@
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/renderer/bindings/api_binding_test.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
+#include "extensions/renderer/bindings/api_binding_util.h"
 #include "extensions/renderer/bindings/exception_handler.h"
 #include "extensions/renderer/bindings/test_js_runner.h"
 #include "gin/arguments.h"
 #include "gin/converter.h"
 #include "gin/public/context_holder.h"
+#include "gin/public/gin_embedders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "v8/include/v8-object.h"
 #include "v8/include/v8-primitive.h"
@@ -1339,6 +1341,87 @@ TEST_F(APIEventHandlerTest,
       .Times(1);
   RemoveListener(context_beta1, listener_beta1, event_beta1);
   ::testing::Mock::VerifyAndClearExpectations(&change_handler);
+}
+
+// Tests the behavior of a context getting invalidated during event dispatch.
+// Regression test for https://crbug.com/536512612.
+TEST_F(APIEventHandlerTest, ContextInvalidationDuringEventDispatch) {
+  TestJSRunner::AllowErrors allow_errors;
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+  v8::Context::Scope context_scope(context);
+
+  const char kEventName[] = "alpha";
+  v8::Local<v8::Object> event = handler()->CreateEventInstance(
+      kEventName, /*supports_filters=*/false, /*supports_lazy_listeners=*/true,
+      binding::kNoListenerMax, /*notify_on_change=*/true, context);
+  ASSERT_FALSE(event.IsEmpty());
+
+  // Craft a JS function to invalidate the context directly and expose it on
+  // the global.
+  auto invalidate_context =
+      [](const v8::FunctionCallbackInfo<v8::Value>& info) {
+        v8::Local<v8::Context> context = info.GetIsolate()->GetCurrentContext();
+        APIEventHandler* handler =
+            static_cast<APIEventHandler*>(info.Data().As<v8::External>()->Value(
+                gin::kExternalPointerTypeTagDefaultTag));
+        handler->InvalidateContext(context);
+        binding::InvalidateContext(context);
+      };
+  v8::Local<v8::Function> invalidate_func =
+      v8::Function::New(
+          context, invalidate_context,
+          v8::External::New(isolate(), handler(),
+                            gin::kExternalPointerTypeTagDefaultTag))
+          .ToLocalChecked();
+  context->Global()
+      ->Set(context, gin::StringToSymbol(isolate(), "invalidateContext"),
+            invalidate_func)
+      .Check();
+
+  // An attacker script that defines a sneaky getter on index '0' for all
+  // objects in an effort to inject itself into our bindings. It then
+  // invalidates the context.
+  const char kAttackerScript[] = R"(
+    (function() {
+      Object.defineProperty(Object.prototype, '0', {
+        get: function() {
+          globalThis.invalidateContext();
+          return 'foo';
+        },
+        configurable: true
+      });
+    })
+  )";
+  v8::Local<v8::Function> attacker_script =
+      FunctionFromString(context, kAttackerScript);
+  RunFunction(attacker_script, context, 0, nullptr);
+
+  // An unsuspecting argument massager that accidentally triggers the attacker
+  // getter.
+  const char kArgumentMassager[] = R"(
+    (function(originalArgs, dispatch) {
+        let args = [];
+        args.length = 1;
+        dispatch(args);
+    });
+    )";
+  v8::Local<v8::Function> massager =
+      FunctionFromString(context, kArgumentMassager);
+  handler()->RegisterArgumentMassager(context, kEventName, massager);
+
+  v8::Local<v8::Function> listener_function =
+      FunctionFromString(context, "(function() {})");
+  AddListener(context, listener_function, event);
+
+  const char kArguments[] = "[{}]";
+  base::ListValue event_args = ListValueFromString(kArguments);
+  // Dispatching the event will invoke the massager, which calls `dispatch()`.
+  // `dispatch` attempts to convert `args` via `FromV8()`, which triggers the
+  // getter on index '0'. The getter calls `invalidateContext()`, invalidating
+  // the context and clearing emitters.
+  handler()->FireEventInContext(kEventName, context, event_args, nullptr);
+  EXPECT_FALSE(binding::IsContextValid(context));
 }
 
 }  // namespace extensions
