@@ -667,6 +667,11 @@ TEST_F(PopupRowViewAcceptGuardEnabledTest,
 }
 #endif  // !BUILDFLAG(IS_MAC)
 
+// TODO(crbug.com/500960278): Test case is flaky on macOS runners (frequently
+// running into timeout).
+#if !BUILDFLAG(IS_MAC)
+// Tests that a suggestion can be selected as soon as the row has been visible
+// for 500ms.
 TEST_F(PopupRowViewAcceptGuardEnabledTest,
        SuggestionIsAcceptedIfVisibleLongEnough) {
   base::HistogramTester histogram_tester;
@@ -686,6 +691,7 @@ TEST_F(PopupRowViewAcceptGuardEnabledTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.AcceptedSuggestionDesktopRowViewVisibleEnough", 1, 1);
 }
+#endif  // !BUILDFLAG(IS_MAC)
 
 }  // namespace
 }  // namespace autofill
