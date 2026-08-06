@@ -144,8 +144,6 @@ public class CoBrowseViewFactory {
 
         webUi.setWebContents(webContents, requestFocus);
 
-        PeekViewManager peekViewManager = createPeekViewManagerIfNeeded(bottomSheetContentProvider);
-
         return new CoBrowseViews(
                 containerView,
                 clientType,
@@ -154,7 +152,7 @@ public class CoBrowseViewFactory {
                 fusebox,
                 backgroundColor,
                 bottomSheetContentProvider,
-                peekViewManager);
+                () -> createPeekViewManagerIfNeeded(bottomSheetContentProvider));
     }
 
     @CalledByNative

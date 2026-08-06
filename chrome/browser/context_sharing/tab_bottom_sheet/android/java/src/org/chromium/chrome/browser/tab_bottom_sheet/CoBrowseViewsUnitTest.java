@@ -74,7 +74,7 @@ public class CoBrowseViewsUnitTest {
                         mFusebox,
                         Color.WHITE,
                         null,
-                        null);
+                        () -> null);
     }
 
     @Test
@@ -109,7 +109,7 @@ public class CoBrowseViewsUnitTest {
                         mFusebox,
                         Color.WHITE,
                         mMockContentProvider,
-                        null);
+                        () -> null);
 
         View view = coBrowseViews.getView();
         View handleBar = view.findViewById(R.id.handle_bar);
@@ -181,7 +181,7 @@ public class CoBrowseViewsUnitTest {
                         mFusebox,
                         Color.WHITE,
                         mMockContentProvider,
-                        null);
+                        () -> null);
         assertEquals(mMockContentProvider, coBrowseViews.getContentProvider());
     }
 
@@ -211,7 +211,7 @@ public class CoBrowseViewsUnitTest {
                         mFusebox,
                         Color.WHITE,
                         mMockContentProvider,
-                        null);
+                        () -> null);
         assertTrue(coBrowseViews.isPlaceholderSetUp());
         verify(mMockContentProvider).setupPlaceholderView(any());
     }
@@ -229,7 +229,7 @@ public class CoBrowseViewsUnitTest {
                         mFusebox,
                         Color.WHITE,
                         mMockContentProvider,
-                        null);
+                        () -> null);
         assertTrue(!coBrowseViews.isPlaceholderSetUp());
         verify(mMockContentProvider).setupPlaceholderView(any());
     }
@@ -248,7 +248,7 @@ public class CoBrowseViewsUnitTest {
                         mFusebox,
                         Color.WHITE,
                         mMockContentProvider,
-                        null);
+                        () -> null);
 
         View placeholderView = rootView.findViewById(R.id.empty_placeholder_container);
         assertEquals(View.VISIBLE, placeholderView.getVisibility());

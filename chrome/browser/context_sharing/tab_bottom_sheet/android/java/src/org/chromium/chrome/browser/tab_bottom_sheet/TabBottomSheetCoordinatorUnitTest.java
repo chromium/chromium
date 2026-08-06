@@ -175,7 +175,7 @@ public class TabBottomSheetCoordinatorUnitTest {
                                 null,
                                 0,
                                 mMockContentProvider,
-                                null));
+                                () -> null));
         mView = containerViewSpy;
         assertNotNull(
                 "peek_view_container should be found in CoBrowseViews",
@@ -1153,7 +1153,7 @@ public class TabBottomSheetCoordinatorUnitTest {
                         null,
                         0,
                         mMockContentProvider,
-                        null);
+                        () -> null);
         mCoordinator =
                 new TabBottomSheetCoordinator(
                         mContext,
