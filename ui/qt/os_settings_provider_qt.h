@@ -30,12 +30,29 @@ class OsSettingsProviderQt : public ui::OsSettingsProvider {
   // pushed in via QtUi::SetAccentColor) and notifies observers.
   void SetAccentColor(std::optional<SkColor> accent_color);
 
+  // Sets the color-scheme preference (sourced from the xdg-desktop-portal and
+  // pushed in via QtUi::SetColorScheme) and notifies observers. `std::nullopt`
+  // means "no portal preference"; `PreferredColorScheme()` then falls back to
+  // the toolkit-derived scheme. Otherwise the value selects dark (true) or
+  // light (false).
+  void SetColorScheme(std::optional<bool> prefer_dark);
+
+  // Called by QtUi when the Qt theme changes. Unlike GTK, the Qt provider has
+  // no settings signals of its own, so QtUi notifies it explicitly to re-derive
+  // the toolkit color scheme.
+  void OnThemeChanged();
+
  private:
   // IMPORTANT NOTE: All members that use `shim_` must be decorated with
   // `DISABLE_CFI_VCALL`.
   raw_ptr<QtInterface> shim_;
 
   std::optional<SkColor> accent_color_;
+
+  // The xdg-desktop-portal color-scheme preference, if any (dark = true,
+  // light = false). When unset, `PreferredColorScheme()` derives the scheme
+  // from the toolkit theme instead.
+  std::optional<bool> prefer_dark_;
 };
 
 }  // namespace qt

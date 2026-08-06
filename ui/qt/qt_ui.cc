@@ -508,6 +508,13 @@ void QtUi::SetDarkTheme(bool dark) {
   // Qt::ColorScheme is only available in QT 6.5 and later.
 }
 
+void QtUi::SetColorScheme(std::optional<bool> prefer_dark) {
+  // Route the color scheme through the OS settings provider, which sources the
+  // web `NativeTheme::preferred_color_scheme()` via
+  // `UpdateVariablesForToolkitSettings()`.
+  os_settings_provider_->SetColorScheme(prefer_dark);
+}
+
 DISABLE_CFI_VCALL
 void QtUi::SetAccentColor(std::optional<SkColor> accent_color) {
   accent_color_ = accent_color;
@@ -594,6 +601,9 @@ void QtUi::FontChanged() {
 
 void QtUi::ThemeChanged() {
   native_theme_->OnQtThemeChanged();
+  // Unlike GTK (which has settings signals), the Qt provider must be told to
+  // re-derive the toolkit color scheme when the Qt theme changes.
+  os_settings_provider_->OnThemeChanged();
 }
 
 void QtUi::ScaleFactorMaybeChanged() {

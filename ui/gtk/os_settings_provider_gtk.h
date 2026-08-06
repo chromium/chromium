@@ -38,6 +38,13 @@ class OsSettingsProviderGtk : public ui::OsSettingsProvider {
   // pushed in via GtkUi::SetAccentColor) and notifies observers.
   void SetAccentColor(std::optional<SkColor> accent_color);
 
+  // Sets the color-scheme preference (sourced from the xdg-desktop-portal and
+  // pushed in via GtkUi::SetColorScheme) and notifies observers. `std::nullopt`
+  // means "no portal preference"; `PreferredColorScheme()` then falls back to
+  // the toolkit-derived scheme. Otherwise the value selects dark (true) or
+  // light (false).
+  void SetColorScheme(std::optional<bool> prefer_dark);
+
  private:
   ScopedGSignal ConnectSignal(const gchar* name);
 
@@ -45,6 +52,11 @@ class OsSettingsProviderGtk : public ui::OsSettingsProvider {
   void OnSignal(GtkSettings*, GtkParamSpec*);
 
   std::optional<SkColor> accent_color_;
+
+  // The xdg-desktop-portal color-scheme preference, if any (dark = true,
+  // light = false). When unset, `PreferredColorScheme()` derives the scheme
+  // from the toolkit theme instead.
+  std::optional<bool> prefer_dark_;
 
   // Have to explicitly give template params instead of using `std::to_array()`,
   // since CTAD is banned in non-static member declarations :(

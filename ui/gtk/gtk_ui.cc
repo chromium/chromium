@@ -694,6 +694,13 @@ void GtkUi::SetDarkTheme(bool dark) {
   // notify::gtk-application-prefer-dark-theme handler to update the colors.
 }
 
+void GtkUi::SetColorScheme(std::optional<bool> prefer_dark) {
+  // Route the color scheme through the OS settings provider, which sources the
+  // web `NativeTheme::preferred_color_scheme()` via
+  // `UpdateVariablesForToolkitSettings()`.
+  os_settings_provider_->SetColorScheme(prefer_dark);
+}
+
 void GtkUi::SetAccentColor(std::optional<SkColor> accent_color) {
   accent_color_ = accent_color;
   // Route the accent color through the OS settings provider. This updates

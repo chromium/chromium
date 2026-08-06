@@ -22,8 +22,11 @@ namespace {
 
 class MockLinuxUi : public FakeLinuxUi {
  public:
-  MOCK_METHOD(ui::NativeTheme*, GetNativeTheme, (), (const override));
   MOCK_METHOD(void, SetDarkTheme, (bool dark), (override));
+  MOCK_METHOD(void,
+              SetColorScheme,
+              (std::optional<bool> prefer_dark),
+              (override));
   MOCK_METHOD(void, SetAccentColor, (std::optional<SkColor> color), (override));
 };
 
@@ -35,8 +38,6 @@ MATCHER_P2(Calls, interface, member, "") {
 }  // namespace
 
 using testing::_;
-using testing::AtLeast;
-using testing::ByMove;
 using testing::Mock;
 using testing::Return;
 using testing::StrictMock;
@@ -46,8 +47,11 @@ class DarkModeManagerLinuxTest : public testing::Test {
   ~DarkModeManagerLinuxTest() override = default;
 
  protected:
-  bool ManagerPrefersDarkTheme() const {
-    return manager_->preferred_color_scheme_ ==
+  // The web color scheme is sourced from the active `OsSettingsProvider` via
+  // `UpdateVariablesForToolkitSettings()`, so it reflects what the manager
+  // pushed into the toolkit (emulated by the `SetColorScheme` wiring below).
+  bool PrefersDarkTheme() const {
+    return NativeTheme::GetInstanceForNativeUi()->preferred_color_scheme() ==
            NativeTheme::PreferredColorScheme::kDark;
   }
 
@@ -122,17 +126,20 @@ class DarkModeManagerLinuxTest : public testing::Test {
     mock_linux_ui_ = std::make_unique<MockLinuxUi>();
     linux_ui_themes_ = std::vector<raw_ptr<LinuxUiTheme, VectorExperimental>>{
         mock_linux_ui_.get()};
-    auto* const native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-    native_theme->set_preferred_color_scheme(
-        NativeTheme::PreferredColorScheme::kNoPreference);
-    EXPECT_CALL(*mock_linux_ui_, GetNativeTheme())
-        .WillOnce(Return(native_theme));
 
-    // In production, each toolkit's `SetAccentColor()` routes the accent color
-    // through its `OsSettingsProvider`, which is what drives
-    // `NativeTheme::user_color()` via `UpdateVariablesForToolkitSettings()`.
-    // Emulate that here so the `user_color()` assertions below exercise the
-    // provider path rather than a direct write from the manager.
+    // In production, each toolkit's `SetColorScheme()`/`SetAccentColor()` route
+    // the value through its `OsSettingsProvider`, which is what drives the web
+    // `NativeTheme` via `UpdateVariablesForToolkitSettings()`. Emulate that
+    // here so the assertions below exercise the provider path rather than a
+    // direct write from the manager.
+    ON_CALL(*mock_linux_ui_, SetColorScheme(_))
+        .WillByDefault([this](std::optional<bool> prefer_dark) {
+          os_settings_provider_.SetPreferredColorScheme(
+              prefer_dark
+                  ? (*prefer_dark ? NativeTheme::PreferredColorScheme::kDark
+                                  : NativeTheme::PreferredColorScheme::kLight)
+                  : NativeTheme::PreferredColorScheme::kNoPreference);
+        });
     ON_CALL(*mock_linux_ui_, SetAccentColor(_))
         .WillByDefault([this](std::optional<SkColor> color) {
           if (color.has_value()) {
@@ -143,10 +150,16 @@ class DarkModeManagerLinuxTest : public testing::Test {
     enable_portal_accent_color_.InitAndEnableFeature(
         features::kUsePortalAccentColor);
 
-    manager_ = std::make_unique<DarkModeManagerLinux>(
-        mock_bus_, mock_linux_ui_.get(), &linux_ui_themes_);
+    // Baseline: no portal preference yet, so the toolkit-sourced scheme (here,
+    // the mock provider) is "no preference".
+    os_settings_provider_.SetPreferredColorScheme(
+        NativeTheme::PreferredColorScheme::kNoPreference);
 
-    EXPECT_FALSE(ManagerPrefersDarkTheme());
+    manager_ =
+        std::make_unique<DarkModeManagerLinux>(mock_bus_, &linux_ui_themes_);
+
+    auto* const native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+    EXPECT_FALSE(PrefersDarkTheme());
     EXPECT_EQ(native_theme->preferred_color_scheme(),
               NativeTheme::PreferredColorScheme::kNoPreference);
     EXPECT_FALSE(native_theme->user_color().has_value());
@@ -178,13 +191,14 @@ class DarkModeManagerLinuxTest : public testing::Test {
 };
 
 TEST_F(DarkModeManagerLinuxTest, UseNativeThemeSetting) {
-  // Set the native theme preference before the async DBus calls complete.
+  // Without a portal preference, the toolkit-sourced scheme (the provider)
+  // drives the web theme directly; the manager is not involved.
   os_settings_provider().SetPreferredColorScheme(
       NativeTheme::PreferredColorScheme::kDark);
-  EXPECT_TRUE(ManagerPrefersDarkTheme());
+  EXPECT_TRUE(PrefersDarkTheme());
   os_settings_provider().SetPreferredColorScheme(
       NativeTheme::PreferredColorScheme::kLight);
-  EXPECT_FALSE(ManagerPrefersDarkTheme());
+  EXPECT_FALSE(PrefersDarkTheme());
 
   // Let the manager know the DBus method call and signal connection failed.
   dbus::MethodCall method_call(
@@ -198,13 +212,13 @@ TEST_F(DarkModeManagerLinuxTest, UseNativeThemeSetting) {
       .Run(DarkModeManagerLinux::kFreedesktopSettingsInterface,
            DarkModeManagerLinux::kSettingChangedSignal, false);
 
-  // The native theme preference should still toggle the manager preference.
+  // The toolkit-sourced scheme should still drive the web theme.
   os_settings_provider().SetPreferredColorScheme(
       NativeTheme::PreferredColorScheme::kDark);
-  EXPECT_TRUE(ManagerPrefersDarkTheme());
+  EXPECT_TRUE(PrefersDarkTheme());
   os_settings_provider().SetPreferredColorScheme(
       NativeTheme::PreferredColorScheme::kLight);
-  EXPECT_FALSE(ManagerPrefersDarkTheme());
+  EXPECT_FALSE(PrefersDarkTheme());
 }
 
 TEST_F(DarkModeManagerLinuxTest, UsePortalSetting) {
@@ -220,15 +234,16 @@ TEST_F(DarkModeManagerLinuxTest, UsePortalSetting) {
   variant_writer.AppendVariantOfUint32(static_cast<uint32_t>(
       DarkModeManagerLinux::FreedesktopColorScheme::kDark));
   writer.CloseContainer(&variant_writer);
+  // The manager pushes the portal preference into the toolkit: SetDarkTheme()
+  // for native widgets, and SetColorScheme() for the web theme (via the
+  // provider).
   EXPECT_CALL(*mock_linux_ui(), SetDarkTheme(true));
+  EXPECT_CALL(*mock_linux_ui(), SetColorScheme(std::optional<bool>(true)));
   std::move(color_scheme_callback()).Run(response.get(), nullptr);
-  EXPECT_TRUE(ManagerPrefersDarkTheme());
-  auto* const native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-  EXPECT_EQ(native_theme->preferred_color_scheme(),
-            NativeTheme::PreferredColorScheme::kDark);
+  EXPECT_TRUE(PrefersDarkTheme());
 
   // Changes in the portal preference should be processed by the manager and the
-  // native theme should be updated.
+  // web theme should be updated.
   dbus::Signal signal(DarkModeManagerLinux::kFreedesktopSettingsInterface,
                       DarkModeManagerLinux::kSettingChangedSignal);
   dbus::MessageWriter signal_writer(&signal);
@@ -237,19 +252,9 @@ TEST_F(DarkModeManagerLinuxTest, UsePortalSetting) {
   signal_writer.AppendVariantOfUint32(static_cast<uint32_t>(
       DarkModeManagerLinux::FreedesktopColorScheme::kLight));
   EXPECT_CALL(*mock_linux_ui(), SetDarkTheme(false));
+  EXPECT_CALL(*mock_linux_ui(), SetColorScheme(std::optional<bool>(false)));
   std::move(setting_changed_callback()).Run(&signal);
-  EXPECT_FALSE(ManagerPrefersDarkTheme());
-  EXPECT_EQ(native_theme->preferred_color_scheme(),
-            NativeTheme::PreferredColorScheme::kLight);
-
-  // The native theme preference should have no effect when the portal
-  // preference is being used.
-  os_settings_provider().SetPreferredColorScheme(
-      NativeTheme::PreferredColorScheme::kDark);
-  EXPECT_FALSE(ManagerPrefersDarkTheme());
-  os_settings_provider().SetPreferredColorScheme(
-      NativeTheme::PreferredColorScheme::kLight);
-  EXPECT_FALSE(ManagerPrefersDarkTheme());
+  EXPECT_FALSE(PrefersDarkTheme());
 }
 
 TEST_F(DarkModeManagerLinuxTest, UsePortalAccentColor) {

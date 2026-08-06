@@ -317,6 +317,15 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUiTheme {
   // setting is provided by org.freedesktop.appearance instead of the toolkit.
   virtual void SetDarkTheme(bool dark) = 0;
 
+  // Route the org.freedesktop.appearance color-scheme preference into the
+  // toolkit's `OsSettingsProvider`, which sources the web
+  // `NativeTheme::preferred_color_scheme()`. `std::nullopt` means "no
+  // preference" and falls back to the toolkit-derived scheme; otherwise the
+  // value selects dark (true) or light (false). (A plain tri-state is used
+  // rather than `NativeTheme::PreferredColorScheme` to avoid a //ui/linux ->
+  // //ui/native_theme dependency cycle.)
+  virtual void SetColorScheme(std::optional<bool> prefer_dark) = 0;
+
   // Override the toolkit's accent color.
   virtual void SetAccentColor(std::optional<SkColor> accent_color) = 0;
 

@@ -13,12 +13,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
 #include "components/dbus/utils/call_method.h"
 #include "components/dbus/utils/connect_to_signal.h"
 #include "components/dbus/utils/variant.h"
 #include "ui/native_theme/native_theme.h"
-#include "ui/native_theme/native_theme_observer.h"
 
 namespace dbus {
 class Bus;
@@ -30,23 +28,21 @@ namespace ui {
 class LinuxUiTheme;
 class DarkModeManagerLinuxTest;
 
-// Observes the system color scheme preference using
-// org.freedesktop.portal.Settings. Falls back to the toolkit preference if
-// org.freedesktop.portal.Settings is unavailable.
-// TODO(pkasting): Perhaps this functionality should be in a new
-// `OsSettingsProviderLinux` class instead? Not sure how it should interact with
-// `OsSettingsProviderGtk`/`OsSettingsProviderQt`.
-class DarkModeManagerLinux : public NativeThemeObserver {
+// Reads the system color-scheme and accent-color preferences from
+// org.freedesktop.portal.Settings and pushes them into each toolkit's
+// `OsSettingsProvider` (`OsSettingsProviderGtk`/`OsSettingsProviderQt`), which
+// source the corresponding web `NativeTheme` values. When the portal is
+// unavailable, the providers fall back to the toolkit-derived values.
+class DarkModeManagerLinux {
  public:
   DarkModeManagerLinux();
   DarkModeManagerLinux(
       scoped_refptr<dbus::Bus> bus,
-      LinuxUiTheme* default_linux_ui_theme,
       const std::vector<raw_ptr<LinuxUiTheme, VectorExperimental>>*
           linux_ui_themes);
   DarkModeManagerLinux(const DarkModeManagerLinux&) = delete;
   DarkModeManagerLinux& operator=(const DarkModeManagerLinux&) = delete;
-  ~DarkModeManagerLinux() override;
+  ~DarkModeManagerLinux();
 
  private:
   friend class DarkModeManagerLinuxTest;
@@ -77,9 +73,6 @@ class DarkModeManagerLinux : public NativeThemeObserver {
   FreedesktopColorSchemeToNativeThemeColorScheme(
       DarkModeManagerLinux::FreedesktopColorScheme color_scheme);
 
-  // ui::NativeThemeObserver:
-  void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
-
   // D-Bus async handlers
   void OnPortalRequestResult(uint32_t version);
   void OnSignalConnected(const std::string& interface_name,
@@ -90,9 +83,9 @@ class DarkModeManagerLinux : public NativeThemeObserver {
   void OnReadColorScheme(dbus_utils::CallMethodResultSig<"v"> result);
   void OnReadAccentColor(dbus_utils::CallMethodResultSig<"v"> result);
 
-  // Sets `prefer_dark_theme_` and propagates to the web theme.
-  void SetColorScheme(NativeTheme::PreferredColorScheme color_scheme,
-                      bool from_toolkit_theme);
+  // Pushes the portal color-scheme preference into each toolkit's
+  // `OsSettingsProvider`, which sources the web theme.
+  void SetColorScheme(NativeTheme::PreferredColorScheme color_scheme);
 
   void SetAccentColor(dbus_utils::Variant variant);
 
@@ -101,13 +94,6 @@ class DarkModeManagerLinux : public NativeThemeObserver {
 
   scoped_refptr<dbus::Bus> bus_;
   raw_ptr<dbus::ObjectProxy> settings_proxy_;
-
-  NativeTheme::PreferredColorScheme preferred_color_scheme_ =
-      NativeTheme::PreferredColorScheme::kNoPreference;
-  bool ignore_toolkit_theme_changes_ = false;
-
-  base::ScopedObservation<NativeTheme, NativeThemeObserver>
-      native_theme_observer_{this};
 
   base::WeakPtrFactory<DarkModeManagerLinux> weak_ptr_factory_{this};
 };

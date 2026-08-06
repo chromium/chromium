@@ -4,6 +4,7 @@
 
 #include "ui/linux/dark_mode_manager_linux.h"
 
+#include <optional>
 #include <tuple>
 
 #include "base/functional/bind.h"
@@ -26,12 +27,10 @@ namespace ui {
 
 DarkModeManagerLinux::DarkModeManagerLinux()
     : DarkModeManagerLinux(dbus_thread_linux::GetSharedSessionBus(),
-                           ui::GetDefaultLinuxUiTheme(),
                            &ui::GetLinuxUiThemes()) {}
 
 DarkModeManagerLinux::DarkModeManagerLinux(
     scoped_refptr<dbus::Bus> bus,
-    LinuxUiTheme* default_linux_ui_theme,
     const std::vector<raw_ptr<LinuxUiTheme, VectorExperimental>>*
         linux_ui_themes)
     : linux_ui_themes_(linux_ui_themes),
@@ -42,14 +41,9 @@ DarkModeManagerLinux::DarkModeManagerLinux(
   dbus_xdg::RequestXdgDesktopPortal(
       bus_.get(), base::BindOnce(&DarkModeManagerLinux::OnPortalRequestResult,
                                  weak_ptr_factory_.GetWeakPtr()));
-
-  // Read the toolkit preference while asynchronously fetching the
-  // portal preference.
-  if (default_linux_ui_theme) {
-    auto* native_theme = default_linux_ui_theme->GetNativeTheme();
-    native_theme_observer_.Observe(native_theme);
-    SetColorScheme(native_theme->preferred_color_scheme(), true);
-  }
+  // No seeding is needed: until the portal preference (if any) arrives, the
+  // toolkit OsSettingsProviders source the toolkit-derived color scheme for
+  // the web NativeTheme.
 }
 
 DarkModeManagerLinux::~DarkModeManagerLinux() = default;
@@ -67,11 +61,6 @@ DarkModeManagerLinux::FreedesktopColorSchemeToNativeThemeColorScheme(
       return NativeTheme::PreferredColorScheme::kLight;
   }
   return NativeTheme::PreferredColorScheme::kNoPreference;
-}
-
-void DarkModeManagerLinux::OnNativeThemeUpdated(
-    ui::NativeTheme* observed_theme) {
-  SetColorScheme(observed_theme->preferred_color_scheme(), true);
 }
 
 void DarkModeManagerLinux::OnPortalRequestResult(uint32_t version) {
@@ -132,8 +121,7 @@ void DarkModeManagerLinux::OnPortalSettingChanged(
     }
 
     SetColorScheme(FreedesktopColorSchemeToNativeThemeColorScheme(
-                       static_cast<FreedesktopColorScheme>(*new_color_scheme)),
-                   false);
+        static_cast<FreedesktopColorScheme>(*new_color_scheme)));
   } else if (key_changed == kAccentColorKey &&
              base::FeatureList::IsEnabled(features::kUsePortalAccentColor)) {
     SetAccentColor(std::move(value_variant));
@@ -161,14 +149,8 @@ void DarkModeManagerLinux::OnReadColorScheme(
     return;
   }
 
-  // Once we read the org.freedesktop.appearance color-scheme setting
-  // successfully, it should always take precedence over the toolkit color
-  // scheme.
-  ignore_toolkit_theme_changes_ = true;
-
   SetColorScheme(FreedesktopColorSchemeToNativeThemeColorScheme(
-                     static_cast<FreedesktopColorScheme>(*new_color_scheme)),
-                 false);
+      static_cast<FreedesktopColorScheme>(*new_color_scheme)));
 }
 
 void DarkModeManagerLinux::OnReadAccentColor(
@@ -189,25 +171,30 @@ void DarkModeManagerLinux::OnReadAccentColor(
 }
 
 void DarkModeManagerLinux::SetColorScheme(
-    NativeTheme::PreferredColorScheme color_scheme,
-    bool from_toolkit_theme) {
-  if (from_toolkit_theme && ignore_toolkit_theme_changes_) {
-    return;
+    NativeTheme::PreferredColorScheme color_scheme) {
+  // Convert to the toolkit-independent tri-state used by `LinuxUiTheme`:
+  // `std::nullopt` (no preference) falls back to the toolkit-derived scheme in
+  // the provider.
+  std::optional<bool> prefer_dark;
+  if (color_scheme == NativeTheme::PreferredColorScheme::kDark) {
+    prefer_dark = true;
+  } else if (color_scheme == NativeTheme::PreferredColorScheme::kLight) {
+    prefer_dark = false;
   }
-  if (!from_toolkit_theme) {
-    for (ui::LinuxUiTheme* linux_ui_theme : *linux_ui_themes_) {
-      linux_ui_theme->SetDarkTheme(color_scheme ==
-                                   NativeTheme::PreferredColorScheme::kDark);
-    }
-  }
-  if (preferred_color_scheme_ == color_scheme) {
-    return;
-  }
-  preferred_color_scheme_ = color_scheme;
 
-  auto* const native_theme = NativeTheme::GetInstanceForNativeUi();
-  native_theme->set_preferred_color_scheme(preferred_color_scheme_);
-  native_theme->NotifyOnNativeThemeUpdated();
+  // Push the portal color-scheme preference into each toolkit. `SetDarkTheme()`
+  // toggles the toolkit's own dark/light variant for native widgets, while
+  // `SetColorScheme()` routes the preference through the toolkit's
+  // `OsSettingsProvider`, which is the single source of the web
+  // `NativeTheme::preferred_color_scheme()` (via
+  // `UpdateVariablesForToolkitSettings()`). Writing `preferred_color_scheme`
+  // directly here would race with that provider-sourced write
+  // (crbug.com/536445418).
+  for (ui::LinuxUiTheme* linux_ui_theme : *linux_ui_themes_) {
+    linux_ui_theme->SetDarkTheme(color_scheme ==
+                                 NativeTheme::PreferredColorScheme::kDark);
+    linux_ui_theme->SetColorScheme(prefer_dark);
+  }
 }
 
 void DarkModeManagerLinux::SetAccentColor(dbus_utils::Variant variant) {

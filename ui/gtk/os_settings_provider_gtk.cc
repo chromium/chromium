@@ -27,6 +27,13 @@ OsSettingsProviderGtk::~OsSettingsProviderGtk() = default;
 
 ui::NativeTheme::PreferredColorScheme
 OsSettingsProviderGtk::PreferredColorScheme() const {
+  // The xdg-desktop-portal color-scheme preference (pushed in via
+  // GtkUi::SetColorScheme) takes precedence when it expresses one.
+  if (prefer_dark_) {
+    return *prefer_dark_ ? ui::NativeTheme::PreferredColorScheme::kDark
+                         : ui::NativeTheme::PreferredColorScheme::kLight;
+  }
+
   // GTK has a dark mode setting called "gtk-application-prefer-dark-theme", but
   // this is really only used for themes that have a dark or light variant that
   // gets toggled based on this setting (eg. Adwaita).  Most dark themes do not
@@ -86,6 +93,14 @@ void OsSettingsProviderGtk::SetAccentColor(
     return;
   }
   accent_color_ = accent_color;
+  NotifyOnSettingsChanged();
+}
+
+void OsSettingsProviderGtk::SetColorScheme(std::optional<bool> prefer_dark) {
+  if (prefer_dark_ == prefer_dark) {
+    return;
+  }
+  prefer_dark_ = prefer_dark;
   NotifyOnSettingsChanged();
 }
 

@@ -102,6 +102,8 @@ bool FakeLinuxUi::PreferDarkTheme() const {
 
 void FakeLinuxUi::SetDarkTheme(bool dark) {}
 
+void FakeLinuxUi::SetColorScheme(std::optional<bool> prefer_dark) {}
+
 void FakeLinuxUi::SetAccentColor(std::optional<SkColor> accent_color) {}
 
 bool FakeLinuxUi::AnimationsEnabled() const {
