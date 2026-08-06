@@ -20,7 +20,9 @@
 
 namespace video_capture {
 
-// Decorator that adds support for virtual devices to a given DeviceFactory.
+// Decorator that adds support for virtual devices to an optional
+// DeviceFactory. If no wrapped factory is provided, only registered virtual
+// devices are exposed.
 class VirtualDeviceEnabledDeviceFactory : public DeviceFactory {
  public:
   explicit VirtualDeviceEnabledDeviceFactory(

@@ -43,6 +43,7 @@
 #include "content/public/common/zygote/zygote_buildflags.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "media/base/media_switches.h"
+#include "media/capture/capture_switches.h"
 #include "media/media_buildflags.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox_type.h"
@@ -74,7 +75,6 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/synchronization/waitable_event.h"
 #include "components/app_launch_prefetch/app_launch_prefetch.h"
-#include "media/capture/capture_switches.h"
 #include "services/audio/public/mojom/audio_service.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/webnn/public/mojom/webnn_compiler_service.mojom.h"
@@ -84,7 +84,6 @@
 #if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
 #include "base/task/sequenced_task_runner.h"
 #include "components/viz/host/gpu_client.h"
-#include "media/capture/capture_switches.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 #endif  // BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
 
@@ -435,6 +434,7 @@ bool UtilityProcessHost::StartProcess() {
       switches::kUseFakeDeviceForMediaStream,
       switches::kUseFakeMjpegDecodeAccelerator,
       switches::kUseFileForFakeVideoCapture,
+      switches::kVideoCaptureUseVirtualDevicesOnly,
       switches::kUseMockCertVerifierForTesting,
       switches::kMockCertVerifierDefaultResultForTesting,
       switches::kUtilityStartupDialog,

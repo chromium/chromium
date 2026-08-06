@@ -12,6 +12,7 @@
 namespace switches {
 
 CAPTURE_EXPORT extern const char kVideoCaptureUseGpuMemoryBuffer[];
+CAPTURE_EXPORT extern const char kVideoCaptureUseVirtualDevicesOnly[];
 CAPTURE_EXPORT extern const char kDisableVideoCaptureUseGpuMemoryBuffer[];
 
 CAPTURE_EXPORT bool IsVideoCaptureUseGpuMemoryBufferEnabled();

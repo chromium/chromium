@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
@@ -17,6 +18,7 @@
 #include "build/build_config.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/ipc/client/gpu_channel_observer.h"
+#include "media/capture/capture_switches.h"
 #include "media/capture/video/create_video_capture_device_factory.h"
 #include "media/capture/video/video_capture_buffer_pool.h"
 #include "media/capture/video/video_capture_buffer_tracker.h"
@@ -360,6 +362,13 @@ void VideoCaptureServiceImpl::LazyInitializeDeviceFactory() {
 
   if (device_factory_)
     return;
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kVideoCaptureUseVirtualDevicesOnly)) {
+    device_factory_ =
+        std::make_unique<VirtualDeviceEnabledDeviceFactory>(nullptr);
+    return;
+  }
 
   LazyInitializeGpuDependenciesContext();
 

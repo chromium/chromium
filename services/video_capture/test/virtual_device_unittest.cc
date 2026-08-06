@@ -254,6 +254,67 @@ class VirtualDeviceEnabledDeviceFactoryTest : public ::testing::Test {
   raw_ptr<MockDeviceFactory> mock_factory_ = nullptr;
 };
 
+class VirtualDeviceEnabledDeviceFactoryWithoutWrappedFactoryTest
+    : public ::testing::Test {
+ protected:
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  std::unique_ptr<VirtualDeviceEnabledDeviceFactory> factory_ =
+      std::make_unique<VirtualDeviceEnabledDeviceFactory>(nullptr);
+};
+
+TEST_F(VirtualDeviceEnabledDeviceFactoryWithoutWrappedFactoryTest,
+       ReturnsNoDevicesWithoutRegisteredVirtualDevices) {
+  base::MockCallback<DeviceFactory::GetDeviceInfosCallback> infos_callback;
+  EXPECT_CALL(infos_callback, Run)
+      .WillOnce([](const std::vector<media::VideoCaptureDeviceInfo>& infos) {
+        EXPECT_TRUE(infos.empty());
+      });
+  factory_->GetDeviceInfos(infos_callback.Get());
+
+  base::MockCallback<DeviceFactory::CreateDeviceCallback> create_callback;
+  EXPECT_CALL(create_callback, Run)
+      .WillOnce([](DeviceFactory::DeviceInfo info) {
+        EXPECT_EQ(
+            info.result_code,
+            media::VideoCaptureError::kVideoCaptureSystemDeviceIdNotFound);
+        EXPECT_EQ(info.device, nullptr);
+      });
+  factory_->CreateDevice("virtual-chromium-missing-device",
+                         create_callback.Get());
+}
+
+TEST_F(VirtualDeviceEnabledDeviceFactoryWithoutWrappedFactoryTest,
+       RegistersAndCreatesVirtualDevice) {
+  const std::string device_id = "virtual-chromium-test-device";
+  media::VideoCaptureDeviceInfo device_info;
+  device_info.descriptor.device_id = device_id;
+
+  mojo::PendingRemote<mojom::Producer> producer;
+  MockProducer mock_producer(producer.InitWithNewPipeAndPassReceiver());
+  mojo::Remote<mojom::SharedMemoryVirtualDevice> virtual_device;
+  factory_->AddSharedMemoryVirtualDevice(
+      device_info, std::move(producer),
+      virtual_device.BindNewPipeAndPassReceiver());
+  virtual_device.FlushForTesting();
+  ASSERT_TRUE(virtual_device.is_connected());
+
+  base::MockCallback<DeviceFactory::GetDeviceInfosCallback> infos_callback;
+  EXPECT_CALL(infos_callback, Run)
+      .WillOnce([&](const std::vector<media::VideoCaptureDeviceInfo>& infos) {
+        ASSERT_EQ(infos.size(), 1u);
+        EXPECT_EQ(infos.front().descriptor.device_id, device_id);
+      });
+  factory_->GetDeviceInfos(infos_callback.Get());
+
+  base::MockCallback<DeviceFactory::CreateDeviceCallback> create_callback;
+  EXPECT_CALL(create_callback, Run)
+      .WillOnce([](DeviceFactory::DeviceInfo info) {
+        EXPECT_EQ(info.result_code, media::VideoCaptureError::kNone);
+        EXPECT_NE(info.device, nullptr);
+      });
+  factory_->CreateDevice(device_id, create_callback.Get());
+}
+
 // Tests that when an underlying device creation succeeds, any old virtual
 // device connection with the same device ID is severed.
 TEST_F(VirtualDeviceEnabledDeviceFactoryTest,
