@@ -136,8 +136,10 @@ void SettingsWindowFinderWin::UpdateGlobalInstance() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (winevent_hook_ || location_change_hook_) {
     if (GetGlobalFinderInstance().get() != this) {
-      CHECK(!GetGlobalFinderInstance())
-          << "Only one SettingsWindowFinderWin can be active at a time.";
+      if (auto old_finder = GetGlobalFinderInstance()) {
+        old_finder->Stop();
+        old_finder->StopObservingLocationChanges();
+      }
       GetGlobalFinderInstance() = weak_ptr_factory_.GetWeakPtr();
     }
   } else if (GetGlobalFinderInstance().get() == this) {

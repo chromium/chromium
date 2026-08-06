@@ -81,44 +81,49 @@ TEST_F(SettingsWindowFinderWinTest, DestructorCancelsTimeout) {
   EXPECT_FALSE(timeout_called);
 }
 
-TEST_F(SettingsWindowFinderWinTest, OnlyOneActiveInstanceAllowed) {
+TEST_F(SettingsWindowFinderWinTest,
+       NewInstanceDeactivatesPreviousActiveInstance) {
   TestSettingsWindowFinderWin finder1;
-
-  finder1.Start(base::Seconds(5), base::DoNothing(), base::DoNothing());
+  bool finder1_timeout_called = false;
+  finder1.Start(
+      base::Seconds(5), base::DoNothing(),
+      base::BindLambdaForTesting([&]() { finder1_timeout_called = true; }));
 
   TestSettingsWindowFinderWin finder2;
-  // Because `finder1` is active and using the global WinEvent hook instance
-  // slot, `finder2` should CHECK fail if it tries to start.
-  EXPECT_DEATH_IF_SUPPORTED(
-      finder2.Start(base::Seconds(5), base::DoNothing(), base::DoNothing()),
-      "");
+  bool finder2_timeout_called = false;
+  // Starting finder2 should succeed and deactivate finder1.
+  finder2.Start(
+      base::Seconds(5), base::DoNothing(),
+      base::BindLambdaForTesting([&]() { finder2_timeout_called = true; }));
+
+  // Fast-forward past the timeout.
+  task_environment_.FastForwardBy(base::Seconds(6));
+
+  // finder1 was deactivated, so its timeout callback should NOT run.
+  EXPECT_FALSE(finder1_timeout_called);
+  // finder2 is active, so its timeout callback should run.
+  EXPECT_TRUE(finder2_timeout_called);
 }
 
 TEST_F(SettingsWindowFinderWinTest,
-       OnlyOneActiveInstanceAllowedWithLocationObserver) {
+       NewInstanceDeactivatesPreviousLocationObserver) {
   TestSettingsWindowFinderWin finder1;
-
-  finder1.StartObservingLocationChanges(reinterpret_cast<HWND>(0x12345),
-                                        base::DoNothing());
+  bool finder1_timeout_called = false;
+  finder1.Start(
+      base::Seconds(5), base::DoNothing(),
+      base::BindLambdaForTesting([&]() { finder1_timeout_called = true; }));
 
   TestSettingsWindowFinderWin finder2;
-  // Because `finder1` is active and using the global WinEvent hook instance
-  // slot, `finder2` should CHECK fail if it tries to start.
-  EXPECT_DEATH_IF_SUPPORTED(
-      finder2.Start(base::Seconds(5), base::DoNothing(), base::DoNothing()),
-      "");
-}
-
-TEST_F(SettingsWindowFinderWinTest, StopObservingReleasesGlobalInstance) {
-  TestSettingsWindowFinderWin finder1;
-  finder1.StartObservingLocationChanges(reinterpret_cast<HWND>(0x12345),
+  // Starting finder2 with location changes should succeed and deactivate
+  // finder1.
+  finder2.StartObservingLocationChanges(reinterpret_cast<HWND>(0x12345),
                                         base::DoNothing());
-  finder1.StopObservingLocationChanges();
 
-  TestSettingsWindowFinderWin finder2;
-  // Since finder1 stopped observing, finder2 should be able to start without
-  // crashing.
-  finder2.Start(base::Seconds(5), base::DoNothing(), base::DoNothing());
+  // Fast-forward past the timeout.
+  task_environment_.FastForwardBy(base::Seconds(6));
+
+  // finder1 was deactivated by finder2's location observer startup.
+  EXPECT_FALSE(finder1_timeout_called);
 }
 
 }  // namespace
