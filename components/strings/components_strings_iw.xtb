@@ -352,6 +352,7 @@
 <translation id="1539840569003678498">הדוח נשלח:</translation>
 <translation id="1542105669288201090">לימודי מנהל עסקים</translation>
 <translation id="1542830386724426410">צפייה בהטבות ובפרסים הזמינים של הכרטיס בזמן התשלום. בכפוף לתנאי המוסד המנפיק. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />מידע נוסף<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">לפי מדיניות הארגון שלך, התוכן שהעתקת נסרק כדי לאתר מידע רגיש. יכול להיות שההדבקה תתאפשר אחרי שהסריקה תסתיים.</translation>
 <translation id="1545757265410828525">היסטוריית המחירים</translation>
 <translation id="1546286808622193216">‏השוואת הטבות הכרטיסים באמצעות Gemini</translation>
 <translation id="1549470594296187301">‏JavaScript צריך להיות מופעל כדי להשתמש בתכונה זו.</translation>
@@ -1504,6 +1505,7 @@
 <translation id="3293642807462928945">מידע נוסף על המדיניות <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">‏הצגה וניהול של הסיסמאות שלך בהגדרות Chrome</translation>
 <translation id="3299098170013242198">‏התכונה Windows Hello מופעלת לצורך מילוי סיסמאות</translation>
+<translation id="3299197721044635447">‏בגלל מדיניות הארגון, אי אפשר להדביק את התוכן מחוץ להקשר המנוהל של Chrome</translation>
 <translation id="3299720788264079132">משהו השתבש במהלך השימוש ב<ph name="FEATURE_NAME" /></translation>
 <translation id="3303176609391916566">‏30x42 אינץ'</translation>
 <translation id="3303855915957856445">לא נמצאו תוצאות חיפוש</translation>
@@ -4374,6 +4376,7 @@ Del</translation>
 <translation id="767550629621587224">Pre-Cut Tabs</translation>
 <translation id="7675756033024037212">אין הרשאה לגלול ולשנות את מרחק התצוגה</translation>
 <translation id="7676643023259824263">חיפוש טקסט בלוח, <ph name="TEXT" /></translation>
+<translation id="7676840398262504532">הארגון שלך עוקב אחרי פעולות ההעתקה</translation>
 <translation id="7678730592635586336">צילום מחדש של הסרטון</translation>
 <translation id="7679287273775285018">תשלום באמצעות הארנק האלקטרוני</translation>
 <translation id="7679367271685653708">‏הצגה וניהול של היסטוריית הגלישה בהגדרות Chrome</translation>
@@ -4660,6 +4663,7 @@ Del</translation>
 <translation id="8134058435519644366">גיוס והעסקה</translation>
 <translation id="8135546115396015134">מקש שמאלי</translation>
 <translation id="8137456439814903304">אנרגיה ותשתיות</translation>
+<translation id="814071672416123670">בגלל מדיניות הארגון, אי אפשר להעתיק את התוכן</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{נוצרה לפני חודש}one{נוצרה לפני {NUM_MONTHS} חודשים}two{נוצרה לפני חודשיים ({NUM_MONTHS})}other{נוצרה לפני {NUM_MONTHS} חודשים}}</translation>
 <translation id="8147389370274164212">ברירת המחדל הנוכחית: <ph name="SEARCH_ENGINE_NAME" />. ‫<ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">‏גרסת PDF:</translation>
