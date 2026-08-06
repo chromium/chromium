@@ -1749,6 +1749,15 @@ public class MultiWindowUtils implements ActivityStateListener {
         return ChromeFeatureList.sOnStartupWindowPolicy.isEnabled() && DeviceInfo.isDesktop();
     }
 
+    /**
+     * Returns whether syncing the session restore-on-startup user preference is enabled.
+     *
+     * @return {@code true} if the feature is enabled; {@code false} otherwise.
+     */
+    public static boolean isRestoreOnStartupPrefSyncEnabled() {
+        return ChromeFeatureList.sSyncRestoreOnStartupPref.isEnabled() && DeviceInfo.isDesktop();
+    }
+
     /* package */ static int getRunningTabbedActivityCount() {
         int numActivities = 0;
         List<Activity> activities = ApplicationStatus.getRunningActivities();

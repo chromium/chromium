@@ -9333,6 +9333,14 @@
     "expiry_milestone": 155
   },
   {
+    "name": "sync-restore-on-startup-pref",
+    "owners": [
+      "aishwaryarj@google.com",
+      "clank-large-form-factors@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "sync-search-engines-android-lff",
     "owners": ["ender@google.com", "kaiyilin@google.com", "oka@google.com"],
     "expiry_milestone": 160

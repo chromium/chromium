@@ -678,6 +678,7 @@ public abstract class ChromeFeatureList {
     public static final String SYNC_ENABLE_NEW_SYNC_DASHBOARD_URL = "SyncEnableNewSyncDashboardUrl";
     public static final String SYNC_ENABLE_PASSWORDS_SYNC_ERROR_MESSAGE_ALTERNATIVE =
             "SyncEnablePasswordsSyncErrorMessageAlternative";
+    public static final String SYNC_RESTORE_ON_STARTUP_PREF = "SyncRestoreOnStartupPref";
     public static final String SYNC_TAB_SCREENSHOTS = "SyncTabScreenshots";
     public static final String SYNC_TRUSTED_VAULT_ERROR_MESSAGE_DURATION =
             "SyncTrustedVaultErrorMessageDuration";
@@ -1202,6 +1203,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(SMALLER_TAB_STRIP_TITLE_LIMIT, true);
     public static final CachedFlag sStartSurfaceReturnTime =
             newCachedFlag(START_SURFACE_RETURN_TIME, true);
+    public static final CachedFlag sSyncRestoreOnStartupPref =
+            newCachedFlag(SYNC_RESTORE_ON_STARTUP_PREF, /* defaultValue= */ false);
     public static final CachedFlag sTabClosureMethodRefactor =
             newCachedFlag(TAB_CLOSURE_METHOD_REFACTOR, false);
     public static final CachedFlag sTabSharingToolbarAndroid =
@@ -1457,6 +1460,7 @@ public abstract class ChromeFeatureList {
                     sShutdownPreNativeThreadPoolAfterStartup,
                     sSmallerTabStripTitleLimit,
                     sStartSurfaceReturnTime,
+                    sSyncRestoreOnStartupPref,
                     sTabClosureMethodRefactor,
                     sTabSharingToolbarAndroid,
                     sTabStorageSqlitePrototype,

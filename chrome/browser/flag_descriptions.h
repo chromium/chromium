@@ -1392,6 +1392,11 @@ inline constexpr char kOnStartupWindowPolicyDescription[] =
     "Enables updated on-startup window default behavior and settings on "
     "Android.";
 
+inline constexpr char kSyncRestoreOnStartupPrefName[] =
+    "Sync Restore On Startup Pref";
+inline constexpr char kSyncRestoreOnStartupPrefDescription[] =
+    "Enables syncing of the session restore-on-startup preference on Android.";
+
 inline constexpr char kSettingsInTabName[] = "Settings in Tab";
 inline constexpr char kSettingsInTabDescription[] =
     "Allows the Chrome Settings UI to appear in a tab on Android.";

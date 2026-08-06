@@ -9516,6 +9516,7 @@ from previous Chrome versions.
       label="SafeBrowsingSeparateNetworkContexts:disabled"/>
   <int value="-1591450227" label="enable-microphone-mute-switch-device"/>
   <int value="-1590631822" label="enable-openxr-android-smooth-depth:enabled"/>
+  <int value="-1590602751" label="SyncRestoreOnStartupPref:disabled"/>
   <int value="-1589720671"
       label="DebugHistoryInterventionNoUserActivation:disabled"/>
   <int value="-1589087211"
@@ -12398,6 +12399,7 @@ from previous Chrome versions.
   <int value="-690455069" label="TabArchivalDragDropAndroid:disabled"/>
   <int value="-690288799" label="MenuElements:disabled"/>
   <int value="-689481289" label="EnablePerDeskZOrder:disabled"/>
+  <int value="-688281654" label="SyncRestoreOnStartupPref:enabled"/>
   <int value="-688003116" label="FocusFollowsCursor:enabled"/>
   <int value="-687907673" label="ConchExpandTranscriptionLanguage:enabled"/>
   <int value="-687302378" label="BluetoothFixA2dpPacketSize:enabled"/>

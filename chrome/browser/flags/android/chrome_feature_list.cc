@@ -461,6 +461,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kStartSurfaceReturnTime,
     &kSubmenusInAppMenu,
     &kSubmenusInAppMenuLff,
+    &kSyncRestoreOnStartupPref,
     &kTabAndroidGracefulShutdown,
     &kTabBottomSheet,
     &kTabBottomSheetFullHeight,
@@ -857,6 +858,7 @@ BASE_FEATURE(kSmallerTabStripTitleLimit, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kStartSurfaceReturnTime, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSubmenusInAppMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSubmenusInAppMenuLff, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSyncRestoreOnStartupPref, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kTabAndroidGracefulShutdown, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kTabBottomSheet, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kTabBottomSheetFullHeight, base::FEATURE_DISABLED_BY_DEFAULT);

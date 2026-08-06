@@ -7658,6 +7658,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOnStartupWindowPolicyDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kOnStartupWindowPolicy)},
 
+    {"sync-restore-on-startup-pref",
+     flag_descriptions::kSyncRestoreOnStartupPrefName,
+     flag_descriptions::kSyncRestoreOnStartupPrefDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kSyncRestoreOnStartupPref)},
+
     {kSettingsInTabInternalName, flag_descriptions::kSettingsInTabName,
      flag_descriptions::kSettingsInTabDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kSettingsInTab)},
