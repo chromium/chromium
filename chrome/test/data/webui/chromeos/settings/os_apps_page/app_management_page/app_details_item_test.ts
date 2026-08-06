@@ -495,4 +495,106 @@ suite('<app-management-app-details-item>', () => {
     assertEquals('Check for updates', checkUpdateButton.innerText.trim());
     assertTrue(lastCheckText.innerText.includes('up to date'));
   });
+
+  test(
+      'IWA update button disabled and loading state accessibility',
+      async () => {
+        loadTimeData.overrideValues({isIwaInlineUpdateEnabled: true});
+        await addApp({
+          type: AppType.kWeb,
+          publisherId: 'isolated-app://pt2igw6.../',
+          version: '1.0.0',
+          title: 'Kitchen Sink IWA',
+        });
+
+        const checkUpdateButton =
+            appDetailsItem.shadowRoot!.querySelector<HTMLElement>(
+                '#checkUpdateButton');
+        assertTrue(!!checkUpdateButton);
+        // Initially enabled
+        assertEquals(null, checkUpdateButton.getAttribute('disabled'));
+
+        fakeHandler.updateVersion = null;
+
+        checkUpdateButton.click();
+        await flushTasks();
+
+        // Spinner and disabled state during check
+        const spinner =
+            appDetailsItem.shadowRoot!.querySelector('paper-spinner-lite');
+        assertTrue(!!spinner);
+        assertTrue(spinner.hasAttribute('active'));
+
+        await fakeHandler.whenCalled('checkForIsolatedWebAppUpdate');
+        await fakeHandler.flushPipesForTesting();
+        await flushTasks();
+
+        // Button is re-enabled and status announces up to date
+        assertEquals(null, checkUpdateButton.getAttribute('disabled'));
+        const lastCheckText =
+            appDetailsItem.shadowRoot!.querySelector<HTMLElement>(
+                '.last-check-text');
+        assertTrue(!!lastCheckText);
+        assertTrue(lastCheckText.innerText.includes('up to date'));
+      });
+
+  test(
+      'IWA update dialog accessibility structure and cancellation',
+      async () => {
+        loadTimeData.overrideValues({isIwaInlineUpdateEnabled: true});
+        await addApp({
+          type: AppType.kWeb,
+          publisherId: 'isolated-app://pt2igw6.../',
+          version: '1.0.0',
+          title: 'Kitchen Sink IWA',
+        });
+
+        const checkUpdateButton =
+            appDetailsItem.shadowRoot!.querySelector<HTMLElement>(
+                '#checkUpdateButton');
+        assertTrue(!!checkUpdateButton);
+
+        fakeHandler.updateVersion = {components: [1, 2, 0]};
+        fakeHandler.numWindowsForApp = 1;
+
+        checkUpdateButton.click();
+        await fakeHandler.whenCalled('checkForIsolatedWebAppUpdate');
+        await fakeHandler.whenCalled('getNumWindowsForApp');
+        await fakeHandler.flushPipesForTesting();
+        await flushTasks();
+
+        // Verify dialog accessibility container and attributes
+        const updateFoundDialog =
+            appDetailsItem.shadowRoot!.querySelector('#updateFoundDialog');
+        assertTrue(!!updateFoundDialog);
+
+        // Verify title and body slots for screen readers
+        const titleSlot = updateFoundDialog.querySelector('[slot="title"]');
+        assertTrue(!!titleSlot);
+        assertEquals('Update found', titleSlot.textContent.trim());
+
+        const bodySlot = updateFoundDialog.querySelector('[slot="body"]');
+        assertTrue(!!bodySlot);
+        assertTrue(bodySlot.textContent.includes('1.2.0'));
+        assertTrue(bodySlot.textContent.includes('Kitchen Sink IWA'));
+
+        // Verify action and cancel buttons
+        const cancelButton =
+            updateFoundDialog.querySelector<HTMLElement>('#cancelFound');
+        assertTrue(!!cancelButton);
+        assertEquals('Cancel', cancelButton.innerText.trim());
+
+        const applyButton =
+            updateFoundDialog.querySelector<HTMLElement>('#confirmFound');
+        assertTrue(!!applyButton);
+        assertEquals('Apply update', applyButton.innerText.trim());
+
+        // Test cancelling the dialog closes it without applying update
+        cancelButton.click();
+        await flushTasks();
+
+        assertNull(
+            appDetailsItem.shadowRoot!.querySelector('#updateFoundDialog'));
+        assertEquals('Check for updates', checkUpdateButton.innerText.trim());
+      });
 });
