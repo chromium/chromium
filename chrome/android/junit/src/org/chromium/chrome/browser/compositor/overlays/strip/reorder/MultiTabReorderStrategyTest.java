@@ -263,8 +263,8 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
         // Verify the pinned tab is moved to the last pinned position and offsetX is toward end.
         verify(mModel).moveTab(eq(mUngroupedTab1.getTabId()), eq(firstNonPinnedTabIndex - 1));
         // 250f(firstUnpinnedTab IdealX) + 0f(firstUnpinnedTab OffsetX) - 0f(lastPinnedTab idealX) -
-        // 48f(lastPinnedTab width) = 202f.
-        float expectedOffsetX = 202f;
+        // 40f(lastPinnedTab width) = 210f.
+        float expectedOffsetX = 210f;
         assertEquals(
                 "The pinned tab should have positive offsetX.",
                 expectedOffsetX,
@@ -295,11 +295,11 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
         // Verify the unpinned tab is moved to the first non-pinned position and offsetX is toward
         // start.
         verify(mModel).moveTab(eq(mUngroupedTab2.getTabId()), eq(firstNonPinnedTabIndex));
-        // 0f(lastPinnedTab IdealX) + 0f(lastPinnedTab OffsetX) + 48f(lastPinnedTab width) -
-        // 250f(lastUnpinnedTab idealX) = -202f.
-        float expectedOffsetX = -202f;
+        // 0f(lastPinnedTab IdealX) + 0f(lastPinnedTab OffsetX) + 40f(lastPinnedTab width) -
+        // 250f(lastUnpinnedTab idealX) = -210f.
+        float expectedOffsetX = -210f;
         assertEquals(
-                "THe unpinned tab should have negative offsetX.",
+                "The unpinned tab should have negative offsetX.",
                 expectedOffsetX,
                 mUngroupedTab2.getOffsetX(),
                 DELTA);
@@ -400,8 +400,8 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
                 /* expectedModelIndex= */ 4);
 
         // 350f(firstUnpinnedTab IdealX) + -35f(firstUnpinnedTab OffsetX) - 100f(lastPinnedTab
-        // idealX) - 48f(lastPinnedTab width) = 167f.
-        float expectedOffsetX = 167f;
+        // idealX) - 40f(lastPinnedTab width) = 175f.
+        float expectedOffsetX = 175f;
         assertEquals(
                 "The offsetX of the pinned tab is incorrect",
                 expectedOffsetX,
@@ -442,9 +442,9 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
                 mGroupedTab1,
                 /* expectedModelIndex= */ 0);
 
-        // 50f(lastPinnedTab IdealX) + -5f(firstUnpinnedTab OffsetX) + 48f(lastPinnedTab width) -
-        // 94f(lastUnpinnedTab idealX) = -1f.
-        float expectedOffsetX = -1f;
+        // 50f(lastPinnedTab IdealX) + -5f(firstUnpinnedTab OffsetX) + 40f(lastPinnedTab width) -
+        // 94f(lastUnpinnedTab idealX) = -9f.
+        float expectedOffsetX = -9f;
         assertEquals(
                 "The offsetX of the unpinned tab is incorrect",
                 expectedOffsetX,

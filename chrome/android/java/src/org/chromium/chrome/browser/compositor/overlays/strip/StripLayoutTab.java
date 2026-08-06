@@ -105,20 +105,6 @@ public class StripLayoutTab extends StripLayoutView {
                 }
             };
 
-    /** A property for animations to use for shifting the pinned icon to the center. */
-    public static final FloatProperty<StripLayoutTab> PINNED_TAB_FAVICON_OFFSET =
-            new FloatProperty<>("pinnedTabFaviconOffset") {
-                @Override
-                public void setValue(StripLayoutTab object, float value) {
-                    object.setPinnedTabFaviconOffsetX(value);
-                }
-
-                @Override
-                public Float get(StripLayoutTab object) {
-                    return object.getPinnedTabFaviconOffsetX();
-                }
-            };
-
     /** A property for animations to use for changing the Glic underline opacity. */
     public static final FloatProperty<StripLayoutTab> UNDERLINE_OPACITY =
             new FloatProperty<>("underlineOpacity") {
@@ -159,12 +145,15 @@ public class StripLayoutTab extends StripLayoutView {
 
     // Close Button Constants
     // Close button padding value comes from the built-in padding in the source png.
+    private static final int CLOSE_BUTTON_PADDING_DESKTOP_DP = 5;
     private static final int CLOSE_BUTTON_PADDING_DP = 7;
-    // 16dp(Folio foot) + 10dp(Close end offset) - 7dp(Close icon padding) = 19dp.
-    private static final int DESKTOP_CLOSE_BUTTON_OFFSET_X_DP = 19;
-    // 7dp(ContentOffsetY) - (24dp(Close button height) - 20dp(Divider height)) / 2 + 2dp(TabDrawY)
-    // = 7dp.
-    private static final int DESKTOP_CLOSE_BUTTON_OFFSET_Y_DP = 7;
+    private static final int CLOSE_BUTTON_EXTRA_OFFSET_DESKTOP_DP = 3;
+    // 16dp(Folio foot) + 10dp(Close end offset) - 5dp(Close icon padding) + 3dp(desktop close
+    // button extra offset) = 24dp.
+    private static final int CLOSE_BUTTON_OFFSET_X_DESKTOP_DP = 24;
+    // 7dp(ContentOffsetY) - (20dp(Close button height) - 20dp(Divider height)) / 2 + 2dp(TabDrawY)
+    // = 9dp.
+    private static final int CLOSE_BUTTON_OFFSET_Y_DESKTOP_DP = 9;
 
     // Strip Tab Offset Constants
     protected static final float TOP_MARGIN_DP = 2.f;
@@ -188,12 +177,12 @@ public class StripLayoutTab extends StripLayoutView {
     // We want the visual gap between title and media indicator to be the same as the visual gap
     // between title and close button (which is CLOSE_BUTTON_PADDING_DP).
     private static final float TITLE_TO_MEDIA_INDICATOR_SPACING_DP =
-            Math.max(0, CLOSE_BUTTON_PADDING_DP - MEDIA_INDICATOR_INTERNAL_PADDING_DP);
+            getCloseButtonPadding() - MEDIA_INDICATOR_INTERNAL_PADDING_DP;
     private static final float WIDTH_TO_HIDE_FAVICON_FOR_MEDIA_INDICATOR =
             WIDTH_TO_HIDE_ICON
                     + MEDIA_INDICATOR_WIDTH
                     + (MEDIA_INDICATOR_TO_CLOSE_BUTTON_SPACING_DP
-                            - CLOSE_BUTTON_PADDING_DP
+                            - getCloseButtonPadding()
                             - MEDIA_INDICATOR_INTERNAL_PADDING_DP);
 
     // Tab Underline Constants
@@ -216,7 +205,6 @@ public class StripLayoutTab extends StripLayoutView {
 
     private boolean mIsSelected;
     private boolean mIsPinned;
-    private float mPinnedTabFaviconOffsetX;
     private boolean mIsHovered;
     private boolean mIsMultiSelected;
     private boolean mCanShowCloseButton = true;
@@ -308,8 +296,12 @@ public class StripLayoutTab extends StripLayoutView {
                         /* tooltipHandler= */ null,
                         clickHandler,
                         keyboardFocusHandler,
-                        R.drawable.btn_tab_close_normal,
-                        R.drawable.tab_close_button_bg,
+                        StyleUtils.shouldApplyDesktopDensity()
+                                ? R.drawable.ic_tab_close_tabstrip_20dp
+                                : R.drawable.ic_tab_close_tabstrip_24dp,
+                        StyleUtils.shouldApplyDesktopDensity()
+                                ? R.drawable.tab_close_button_bg_20dp
+                                : R.drawable.tab_close_button_bg_24dp,
                         /* clickSlopDp= */ 0f,
                         /* hasLongClickAction= */ true);
         mCloseButton.setOnLongClickHandler(longClickHandler);
@@ -869,20 +861,6 @@ public class StripLayoutTab extends StripLayoutView {
     }
 
     /**
-     * @param offset How far to horizontally offset the favicon when the tab is pinned.
-     */
-    public void setPinnedTabFaviconOffsetX(float offset) {
-        mPinnedTabFaviconOffsetX = offset;
-    }
-
-    /**
-     * @return How far to horizontally offset the favicon when the tab is pinned.
-     */
-    public float getPinnedTabFaviconOffsetX() {
-        return mPinnedTabFaviconOffsetX;
-    }
-
-    /**
      * @return How far to vertically offset the tab content.
      */
     public static float getContentOffsetY() {
@@ -1094,7 +1072,7 @@ public class StripLayoutTab extends StripLayoutView {
         }
 
         mClosePlacement.top =
-                StyleUtils.shouldApplyDesktopDensity() ? DESKTOP_CLOSE_BUTTON_OFFSET_Y_DP : 0;
+                StyleUtils.shouldApplyDesktopDensity() ? CLOSE_BUTTON_OFFSET_Y_DESKTOP_DP : 0;
         mClosePlacement.bottom =
                 StyleUtils.shouldApplyDesktopDensity()
                         ? mClosePlacement.top + closeButtonHeight
@@ -1115,8 +1093,14 @@ public class StripLayoutTab extends StripLayoutView {
         return new Size(Math.round(widthPx / dpToPx), Math.round(heightPx / dpToPx));
     }
 
-    public int getCloseButtonPadding() {
-        return CLOSE_BUTTON_PADDING_DP;
+    public static int getCloseButtonPadding() {
+        return StyleUtils.shouldApplyDesktopDensity()
+                ? CLOSE_BUTTON_PADDING_DESKTOP_DP
+                : CLOSE_BUTTON_PADDING_DP;
+    }
+
+    public static int getCloseButtonExtraOffset() {
+        return StyleUtils.shouldApplyDesktopDensity() ? CLOSE_BUTTON_EXTRA_OFFSET_DESKTOP_DP : 0;
     }
 
     public int getTabTouchTargetEndOffsetX() {
@@ -1125,7 +1109,7 @@ public class StripLayoutTab extends StripLayoutView {
 
     public int getCloseButtonOffsetX() {
         return StyleUtils.shouldApplyDesktopDensity()
-                ? DESKTOP_CLOSE_BUTTON_OFFSET_X_DP
+                ? CLOSE_BUTTON_OFFSET_X_DESKTOP_DP
                 : getTabTouchTargetEndOffsetX();
     }
 

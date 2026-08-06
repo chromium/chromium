@@ -361,6 +361,7 @@ public class TabStripSceneLayerTest {
                         anyFloat(),
                         anyFloat(),
                         anyFloat(),
+                        anyFloat(),
                         anyBoolean(),
                         anyBoolean(),
                         anyBoolean(),
@@ -381,7 +382,6 @@ public class TabStripSceneLayerTest {
                                 FOLIO_FOOT_LENGTH_DP
                                         * mContext.getResources().getDisplayMetrics().density),
                         anyBoolean(),
-                        anyFloat(),
                         anyFloat(),
                         anyFloat(),
                         anyInt(),
@@ -440,6 +440,7 @@ public class TabStripSceneLayerTest {
                         anyFloat(),
                         anyFloat(),
                         anyFloat(),
+                        anyFloat(),
                         anyBoolean(),
                         anyBoolean(),
                         anyBoolean(),
@@ -458,7 +459,6 @@ public class TabStripSceneLayerTest {
                                 FOLIO_FOOT_LENGTH_DP
                                         * mContext.getResources().getDisplayMetrics().density),
                         anyBoolean(),
-                        anyFloat(),
                         anyFloat(),
                         anyFloat(),
                         anyInt(),
@@ -517,6 +517,7 @@ public class TabStripSceneLayerTest {
                         anyFloat(),
                         anyFloat(),
                         anyFloat(),
+                        anyFloat(),
                         anyBoolean(),
                         anyBoolean(),
                         anyBoolean(),
@@ -537,7 +538,6 @@ public class TabStripSceneLayerTest {
                                 FOLIO_FOOT_LENGTH_DP
                                         * mContext.getResources().getDisplayMetrics().density),
                         anyBoolean(),
-                        anyFloat(),
                         anyFloat(),
                         anyFloat(),
                         anyInt(),
@@ -595,6 +595,7 @@ public class TabStripSceneLayerTest {
                         anyFloat(),
                         anyFloat(),
                         anyFloat(),
+                        anyFloat(),
                         anyBoolean(),
                         anyBoolean(),
                         anyBoolean(),
@@ -615,7 +616,6 @@ public class TabStripSceneLayerTest {
                                 FOLIO_FOOT_LENGTH_DP
                                         * mContext.getResources().getDisplayMetrics().density),
                         anyBoolean(),
-                        anyFloat(),
                         anyFloat(),
                         anyFloat(),
                         anyInt(),

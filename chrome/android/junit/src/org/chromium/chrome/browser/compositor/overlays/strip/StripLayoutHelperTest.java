@@ -22,7 +22,6 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.ArgumentMatchers.nullable;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -141,7 +140,6 @@ import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener.DialogType;
-import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tasks.tab_management.TabDragHandlerBase;
@@ -248,7 +246,6 @@ public class StripLayoutHelperTest {
     @Captor private ArgumentCaptor<Callback<TabClosureParams>> mTabRemoverCallbackCaptor;
     @Captor private ArgumentCaptor<List<Tab>> mTabListCaptor;
     @Captor private ArgumentCaptor<List<Animator>> mAnimationListCaptor;
-    @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
     private Activity mActivity;
     private Context mContext;
@@ -337,6 +334,7 @@ public class StripLayoutHelperTest {
             mStripLayoutHelper.destroyTabContextMenuForTesting();
         }
         mTabStripDragHandler = null;
+        DeviceInfo.resetIsDesktopForTesting();
     }
 
     /**
@@ -1872,7 +1870,7 @@ public class StripLayoutHelperTest {
         // Verify close button hover highlight resource id.
         assertEquals(
                 "Close button hover highlight is not as expected",
-                R.drawable.tab_close_button_bg,
+                R.drawable.tab_close_button_bg_24dp,
                 tabs[0].getCloseButton().getBackgroundResourceId());
 
         // Verify the non-hover background tint for the close button. It should always be
@@ -1947,8 +1945,8 @@ public class StripLayoutHelperTest {
                         mTooltipHandler,
                         mClickHandler,
                         mKeyboardFocusHandler,
-                        R.drawable.btn_tab_close_normal,
-                        R.drawable.tab_close_button_bg,
+                        R.drawable.ic_tab_close_tabstrip_24dp,
+                        R.drawable.tab_close_button_bg_24dp,
                         0f);
         closeButton.setOpacity(1.f);
         int x = (int) closeButton.getDrawX();
@@ -1986,8 +1984,8 @@ public class StripLayoutHelperTest {
                         mTooltipHandler,
                         mClickHandler,
                         mKeyboardFocusHandler,
-                        R.drawable.btn_tab_close_normal,
-                        R.drawable.tab_close_button_bg,
+                        R.drawable.ic_tab_close_tabstrip_24dp,
+                        R.drawable.tab_close_button_bg_24dp,
                         0f);
         closeButton.setOpacity(1.f);
         int x = (int) closeButton.getDrawX();
@@ -2004,6 +2002,109 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.onLongPress(x + 1, y + 1);
         assertFalse("Close button should NOT be hovered", closeButton.isHovered());
         assertFalse("Close button should NOT be pressed", closeButton.isPressed());
+    }
+
+    @Test
+    public void testCloseButtonProperties_OnDesktop_MinTabWidth() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        mActivity.getTheme().applyStyle(R.style.ThemeOverlay_BrowserUI_DesktopDensity, true);
+        mActivity
+                .getTheme()
+                .applyStyle(R.style.ThemeOverlay_BrowserUI_DesktopDensity_TabStrip, true);
+        initializeTest(false, false, 1);
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        StripLayoutTab tab = tabs[0];
+
+        // Set tab width to minimum width on Desktop (68dp)
+        float minTabWidth = 68f;
+        tab.setWidth(minTabWidth);
+
+        // Force recreation or update close button state / size
+        TintedCompositorButton closeButton = tab.getCloseButton();
+
+        // On desktop, close button size is 20dp x 20dp
+        float closeButtonWidth = closeButton.getWidth();
+        float closeButtonHeight = closeButton.getHeight();
+        assertEquals(
+                "Close button width on desktop should be 20dp", 20f, closeButtonWidth, EPSILON);
+        assertEquals(
+                "Close button height on desktop should be 20dp", 20f, closeButtonHeight, EPSILON);
+
+        // Close button padding should be 5dp on desktop
+        assertEquals(
+                "Close button padding on desktop should be 5dp",
+                5f,
+                StripLayoutTab.getCloseButtonPadding(),
+                EPSILON);
+
+        // Close button should be centered horizontally inside the 68dp-wide tab:
+        // Expected X-offset = (68 - 20) / 2 = 24dp (relative to tab draw X)
+        float relativeCloseX = closeButton.getDrawX() - tab.getDrawX();
+        assertEquals("Close button should be horizontally centered", 24f, relativeCloseX, EPSILON);
+
+        // Expected Y-offset = CLOSE_BUTTON_OFFSET_Y_DESKTOP_DP = 9dp (relative to tab draw Y)
+        float relativeCloseY = closeButton.getDrawY() - tab.getDrawY();
+        assertEquals(
+                "Close button vertical offset on desktop should be 9dp",
+                9f,
+                relativeCloseY,
+                EPSILON);
+    }
+
+    @Test
+    public void testCloseButtonProperties_OnDesktop_MinTabWidth_Rtl() {
+        // Set layout to RTL
+        LocalizationUtils.setRtlForTesting(true);
+
+        DeviceInfo.setIsDesktopForTesting(true);
+        mActivity.getTheme().applyStyle(R.style.ThemeOverlay_BrowserUI_DesktopDensity, true);
+        mActivity
+                .getTheme()
+                .applyStyle(R.style.ThemeOverlay_BrowserUI_DesktopDensity_TabStrip, true);
+        initializeTest(false, false, 1);
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        StripLayoutTab tab = tabs[0];
+
+        // Set tab width to minimum width on Desktop (68dp)
+        float minTabWidth = 68f;
+        tab.setWidth(minTabWidth);
+
+        // Force layout update to compute the close button state and position
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        TintedCompositorButton closeButton = tab.getCloseButton();
+
+        // On desktop, close button size is 20dp x 20dp
+        float closeButtonWidth = closeButton.getWidth();
+        float closeButtonHeight = closeButton.getHeight();
+        assertEquals(
+                "Close button width on desktop should be 20dp", 20f, closeButtonWidth, EPSILON);
+        assertEquals(
+                "Close button height on desktop should be 20dp", 20f, closeButtonHeight, EPSILON);
+
+        // Close button padding should be 5dp on desktop
+        assertEquals(
+                "Close button padding on desktop should be 5dp",
+                5f,
+                StripLayoutTab.getCloseButtonPadding(),
+                EPSILON);
+
+        // Close button should be centered horizontally inside the 68dp-wide tab in RTL:
+        // Expected X-offset in RTL = 24dp (relative to tab draw X)
+        float relativeCloseX = closeButton.getDrawX() - tab.getDrawX();
+        assertEquals(
+                "Close button should be horizontally centered in RTL",
+                24f,
+                relativeCloseX,
+                EPSILON);
+
+        // Expected Y-offset = CLOSE_BUTTON_OFFSET_Y_DESKTOP_DP = 9dp (relative to tab draw Y)
+        float relativeCloseY = closeButton.getDrawY() - tab.getDrawY();
+        assertEquals(
+                "Close button vertical offset on desktop should be 9dp",
+                9f,
+                relativeCloseY,
+                EPSILON);
     }
 
     @Test
@@ -5253,7 +5354,7 @@ public class StripLayoutHelperTest {
         // First half of second tab:
         // tabWidth(265) - overlapWidth(28) + inset(16) to +halfTabWidth(132.5) = 253 to 385.5
         int expectedIndex = 1;
-        float dropX = 300.f;
+        float dropX = 290.f;
         assertEquals(
                 "Should prepare to drop at index 1.",
                 expectedIndex,
@@ -7335,9 +7436,9 @@ public class StripLayoutHelperTest {
 
         float expectedDrawXWithPinnedTab = PADDING_LEFT;
 
-        // 191.5(tabWidth) = (800(screenWidth) - 10(leftPadding) - 60(rightPadding) -
-        // 48(pinnedTabWidth) + (28(overlapWidth) * 3) / 4(numTab).
-        float expectedTabWidthWithPinnedTab = 191.5f;
+        // 193.5(tabWidth) = (800(screenWidth) - 10(leftPadding) - 60(rightPadding) -
+        // 40(pinnedTabWidth) + (28(overlapWidth) * 3) / 4(numTab).
+        float expectedTabWidthWithPinnedTab = 193.5f;
 
         // Verify the tabs are resized and positioned correctly after pinning.
         for (int i = 0; i < tabs.length; i++) {
@@ -7425,9 +7526,9 @@ public class StripLayoutHelperTest {
 
         float expectedDrawXWithPinnedTab = STRIP_WIDTH - PADDING_LEFT - TAB_OVERLAP_WIDTH_DP;
 
-        // 191.5(tabWidth) = (800(screenWidth) - 10(leftPadding) - 60(rightPadding) -
-        // 48(pinnedTabWidth) + (28(overlapWidth) * 3) / 4(numTab).
-        float expectedTabWidthWithPinnedTab = 191.5f;
+        // 193.5(tabWidth) = (800(screenWidth) - 10(leftPadding) - 60(rightPadding) -
+        // 40(pinnedTabWidth) + (28(overlapWidth) * 3) / 4(numTab).
+        float expectedTabWidthWithPinnedTab = 193.5f;
 
         // Verify the tabs are resized and positioned correctly after pinning.
         for (int i = 0; i < tabs.length; i++) {
@@ -7480,87 +7581,6 @@ public class StripLayoutHelperTest {
             assertEquals(
                     "The tab's drawX is incorrect", expectedDrawXNoPinnedTab, tab.getDrawX(), 0.1f);
         }
-    }
-
-    @Test
-    @Feature("Pinned Tabs")
-    public void testPinnedTabFaviconCentering_OnStartup() {
-        // 1. Initialize with one pinned tab.
-        int numTabs = 1;
-        initializeTest(false, false, 0, numTabs);
-        mStripLayoutHelper.onSizeChanged(
-                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
-
-        // 2. Set the tab as pinned in the model.
-        Tab tab = mModel.getTabAt(0);
-        when(mModel.getTabById(anyInt())).thenReturn(tab);
-        when(tab.getIsPinned()).thenReturn(true);
-
-        // Reset TabModel to re-initialize tab state.
-        mStripLayoutHelper.setTabModel(new TestTabModel(), null, false);
-        mStripLayoutHelper.setTabModel(mModel, mTabCreator, false);
-
-        // 3. Trigger onTabStateInitialized to simulate startUp.
-        mStripLayoutHelper.setTabModelStartupInfo(1, 0, true);
-        mStripLayoutHelper.onTabStateInitialized();
-
-        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
-        StripLayoutTab pinnedTab = tabs[0];
-
-        // 4. Verify the favicon offset on the tab.
-        float expectedOffset =
-                (PINNED_TAB_WIDTH_DP - pinnedTab.getFaviconSize()) / 2.f
-                        - pinnedTab.getFaviconPadding();
-        assertEquals(
-                "Favicon offset should be centered on startup",
-                expectedOffset,
-                pinnedTab.getPinnedTabFaviconOffsetX(),
-                0.1f);
-    }
-
-    @Test
-    @Feature("Pinned Tabs")
-    public void testPinnedTabFaviconCenteringAndReset() {
-        // 1. Initialize with one tab.
-        initializeTest(false, false, 0, 1);
-        mStripLayoutHelper.onSizeChanged(
-                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
-
-        // 2. Pin the tab in the model and trigger the observer.
-        Tab tab = mModel.getTabAt(0);
-        when(tab.getIsPinned()).thenReturn(true);
-        getTabModelObserver().didChangePinState(tab);
-        mStripLayoutHelper.updateLayout(TIMESTAMP);
-        mStripLayoutHelper.finishAnimations();
-
-        // 3. Verify favicon offset is set (centered).
-        StripLayoutTab stripTab = mStripLayoutHelper.getStripLayoutTabsForTesting()[0];
-        float expectedOffset =
-                (PINNED_TAB_WIDTH_DP - stripTab.getFaviconSize()) / 2.f
-                        - stripTab.getFaviconPadding();
-        assertEquals(
-                "Favicon offset should be centered when pinned",
-                expectedOffset,
-                stripTab.getPinnedTabFaviconOffsetX(),
-                0.1f);
-
-        // 4. Unpin the tab in the model and trigger the observer.
-        when(tab.getIsPinned()).thenReturn(false);
-        getTabModelObserver().didChangePinState(tab);
-        mStripLayoutHelper.updateLayout(TIMESTAMP);
-        mStripLayoutHelper.finishAnimations();
-
-        // 5. Verify favicon offset is reset to 0.
-        assertEquals(
-                "Favicon offset should be reset to 0 when unpinned",
-                0f,
-                stripTab.getPinnedTabFaviconOffsetX(),
-                0.1f);
-    }
-
-    private TabModelObserver getTabModelObserver() {
-        verify(mModel, atLeastOnce()).addObserver(mTabModelObserverCaptor.capture());
-        return mTabModelObserverCaptor.getValue();
     }
 
     private float getClickCoordinateForTabAtIndex(StripLayoutView[] stripViews, int i) {

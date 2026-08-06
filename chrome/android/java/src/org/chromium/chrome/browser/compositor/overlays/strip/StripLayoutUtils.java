@@ -50,7 +50,7 @@ public class StripLayoutUtils {
     public static final float TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET = 27f;
 
     // Tab width constants.
-    private static final float MIN_TAB_WIDTH_DESKTOP_DP = 76f;
+    public static final float MIN_TAB_WIDTH_DESKTOP_DP = 68f;
     private static final float MIN_TAB_WIDTH_TABLET_DP = 108f;
     public static final float MIN_TAB_WIDTH_DP =
             StyleUtils.shouldApplyDesktopDensity()

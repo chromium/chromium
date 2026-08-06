@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.actor.ui.TabIndicatorStatus;
@@ -33,6 +34,7 @@ import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.util.ColorUtils;
 
 /** Tests for {@link StripLayoutTab}. */
@@ -341,5 +343,79 @@ public class StripLayoutTabTest {
     private StripLayoutTab createStripLayoutTab(boolean incognito) {
         return new StripLayoutTab(
                 mContext, 0, null, null, null, null, null, null, incognito, false, MediaState.NONE);
+    }
+
+    @Test
+    public void testCloseButtonRect_OnDesktop() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        mContext.getTheme().applyStyle(R.style.ThemeOverlay_BrowserUI_DesktopDensity, true);
+        mContext.getTheme()
+                .applyStyle(R.style.ThemeOverlay_BrowserUI_DesktopDensity_TabStrip, true);
+
+        // Recreate normal tab under desktop theme
+        StripLayoutTab desktopTab = createStripLayoutTab(false);
+        desktopTab.setWidth(68f);
+        desktopTab.setHeight(40f);
+        desktopTab.setDrawX(100f);
+        desktopTab.setDrawY(0f);
+
+        // Force close button opacity to be visible so layout properties are updated
+        desktopTab.getCloseButton().setOpacity(1.f);
+
+        // LTR Verification
+        LocalizationUtils.setRtlForTesting(false);
+        // Setting width forces the bounds of the close button to be calculated
+        desktopTab.setWidth(68f);
+
+        // On desktop, close touch target bounds should have right padding 8dp, meaning:
+        // left = width (68) - closeButtonWidth (20) - closeOffsetX (24) = 24dp.
+        // absolute close_left = tab_draw_x (100) + 24 = 124f
+        float expectedLtrLeft = 124f;
+        assertEquals(
+                "Close button left in LTR should be 124f",
+                expectedLtrLeft,
+                desktopTab.getCloseButton().getDrawX(),
+                0.0001f);
+        assertEquals(
+                "Close button width in LTR should be 20f",
+                20f,
+                desktopTab.getCloseButton().getWidth(),
+                0.0001f);
+    }
+
+    @Test
+    public void testCloseButtonRect_OnDesktop_Rtl() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        mContext.getTheme().applyStyle(R.style.ThemeOverlay_BrowserUI_DesktopDensity, true);
+        mContext.getTheme()
+                .applyStyle(R.style.ThemeOverlay_BrowserUI_DesktopDensity_TabStrip, true);
+
+        // Recreate normal tab under desktop theme
+        StripLayoutTab desktopTab = createStripLayoutTab(false);
+        desktopTab.setWidth(68f);
+        desktopTab.setHeight(40f);
+        desktopTab.setDrawX(100f);
+        desktopTab.setDrawY(0f);
+
+        // Force close button opacity to be visible so layout properties are updated
+        desktopTab.getCloseButton().setOpacity(1.f);
+
+        // RTL Verification
+        LocalizationUtils.setRtlForTesting(true);
+        // Force calculation of bounds
+        desktopTab.setWidth(68f);
+
+        // In RTL, close_left = tab_draw_x (100) + closeOffsetX (24) = 124f
+        float expectedRtlLeft = 124f;
+        assertEquals(
+                "Close button left in RTL should be 124f",
+                expectedRtlLeft,
+                desktopTab.getCloseButton().getDrawX(),
+                0.0001f);
+        assertEquals(
+                "Close button width in RTL should be 20f",
+                20f,
+                desktopTab.getCloseButton().getWidth(),
+                0.0001f);
     }
 }

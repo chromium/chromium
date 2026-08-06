@@ -385,9 +385,9 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
             boolean shouldShowIndicator = st.shouldShowIndicator();
 
             boolean isPinned = st.getIsPinned();
-            float widthToHideTabTitle =
+            float desktopMinTabWidth =
                     (StyleUtils.shouldApplyDesktopDensity() || isPinned)
-                            ? StripLayoutUtils.MIN_TAB_WIDTH_DP
+                            ? StripLayoutUtils.MIN_TAB_WIDTH_DESKTOP_DP
                             : 0.f;
 
             TabStripSceneLayerJni.get()
@@ -430,9 +430,10 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             Math.round(st.getDividerOffsetX() * mDpToPx),
                             Math.round(st.getBottomMargin() * mDpToPx),
                             Math.round(StripLayoutTab.getTopMargin() * mDpToPx),
-                            Math.round(st.getCloseButtonPadding() * mDpToPx),
+                            Math.round(StripLayoutTab.getCloseButtonPadding() * mDpToPx),
+                            Math.round(StripLayoutTab.getCloseButtonExtraOffset() * mDpToPx),
                             closeButton.getOpacity(),
-                            Math.round(widthToHideTabTitle * mDpToPx),
+                            Math.round(desktopMinTabWidth * mDpToPx),
                             st.isStartDividerVisible(),
                             st.isEndDividerVisible(),
                             st.isLoading(),
@@ -445,7 +446,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             st.getLineWidth(),
                             Math.round(FOLIO_FOOT_LENGTH_DP * mDpToPx),
                             isPinned,
-                            Math.round(st.getPinnedTabFaviconOffsetX() * mDpToPx),
                             st.getUnderlineOpacity(),
                             st.getUnderlineShimmerOffset(),
                             underlineStartColor,
@@ -686,8 +686,9 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 float bottomMargin,
                 float topMargin,
                 float closeButtonPadding,
+                float closeButtonExtraOffset,
                 float closeButtonAlpha,
-                float widthToHideTabTitle,
+                float desktopMinTabWidth,
                 boolean isStartDividerVisible,
                 boolean isEndDividerVisible,
                 boolean isLoading,
@@ -700,7 +701,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 int strokeWidth,
                 float folioFootLength,
                 boolean isPinned,
-                float pinnedIconOffsetX,
                 float underlineOpacity,
                 float underlineShimmerOffset,
                 @ColorInt int underlineStartColor,

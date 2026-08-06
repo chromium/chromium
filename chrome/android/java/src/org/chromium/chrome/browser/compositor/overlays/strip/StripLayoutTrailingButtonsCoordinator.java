@@ -384,6 +384,8 @@ public class StripLayoutTrailingButtonsCoordinator {
                             handleGlicButtonClick(/* preventClose= */ false);
 
             float dismissIconWidthDp = getDimensionDp(R.dimen.tab_strip_glic_dismiss_icon_width);
+            // TODO(crbug.com/541373786) Replace GLIC close button PNG assets with vector drawables
+            //  and remove unused PNGs.
             mGlicDismissNudgeButton =
                     new TintedCompositorButton(
                             mContext,

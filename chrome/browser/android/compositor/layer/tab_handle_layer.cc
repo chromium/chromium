@@ -69,6 +69,7 @@ void TabHandleLayer::SetProperties(
     float bottom_margin,
     float top_margin,
     float close_button_padding,
+    float close_button_extra_offset,
     float close_button_alpha,
     bool is_start_divider_visible,
     bool is_end_divider_visible,
@@ -80,8 +81,7 @@ void TabHandleLayer::SetProperties(
     int keyboard_focus_ring_offset,
     int stroke_width,
     float folio_foot_length,
-    float width_to_hide_tab_title,
-    float pinned_icon_offset_x,
+    float desktop_min_tab_width,
     float underline_opacity,
     float underline_shimmer_offset,
     SkColor underline_start_color,
@@ -140,7 +140,6 @@ void TabHandleLayer::SetProperties(
                          title_layer_);
     }
     title_layer->SetUIResourceIds();
-    title_layer->SetIconOffsetX(pinned_icon_offset_x);
   } else if (title_layer_.get()) {
     title_layer_->RemoveFromParent();
     title_layer_ = nullptr;
@@ -182,7 +181,8 @@ void TabHandleLayer::SetProperties(
                               tab_handle_resource->padding().right();
   const float padding_left = tab_handle_resource->padding().x();
 
-  float close_width = close_button_->bounds().width() - close_button_padding;
+  float close_width = close_button_->bounds().width() - close_button_padding +
+                      close_button_extra_offset;
 
   // If close button is not shown, fill
   // the remaining space with the title text
@@ -266,7 +266,7 @@ void TabHandleLayer::SetProperties(
     title_y = std::min(content_offset_y, title_y_offset_mid);
 
     // Hide tab title text when it reached threshold.
-    float hide_title_threshold = width_to_hide_tab_title;
+    float hide_title_threshold = desktop_min_tab_width;
     if (media_indicator_size > 0) {
       hide_title_threshold += media_indicator_size +
                               title_to_media_indicator_spacing +
