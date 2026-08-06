@@ -122,13 +122,17 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
                     .setCustomTabLauncher(new SettingsCustomTabLauncherImpl());
         }
 
-        if (fragment instanceof SearchViewProvider f) {
-            f.setSearchViewObserver(
-                    (open) -> {
-                        if (mSearchCoordinatorSupplier.get() != null) {
-                            mSearchCoordinatorSupplier.get().showSearchBar(!open);
-                        }
-                    });
+        if (!SettingsInTab.isEnabled()) {
+            // SettingsInTab always keeps the main search bar visible, even when fragments are
+            // searching.
+            if (fragment instanceof SearchViewProvider f) {
+                f.setSearchViewObserver(
+                        (open) -> {
+                            if (mSearchCoordinatorSupplier.get() != null) {
+                                mSearchCoordinatorSupplier.get().showSearchBar(!open);
+                            }
+                        });
+            }
         }
 
         // Settings screen specific attachments.

@@ -198,8 +198,15 @@ public class SelectLanguageFragment extends Fragment
         menu.clear();
         inflater.inflate(R.menu.languages_action_bar_menu, menu);
 
-        mSearchView = (SearchView) menu.findItem(R.id.search).getActionView();
-        assumeNonNull(mSearchView);
+        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        assumeNonNull(searchView);
+        initSearchView(searchView);
+    }
+
+    /** Initialize a {@link SearchView} for filtering languages. */
+    @Override
+    public void initSearchView(SearchView searchView) {
+        mSearchView = searchView;
         mSearchView.setImeOptions(EditorInfo.IME_FLAG_NO_FULLSCREEN);
 
         mBackPressCallback =

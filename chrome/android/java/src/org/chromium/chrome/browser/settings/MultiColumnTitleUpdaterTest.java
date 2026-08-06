@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.settings;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 
@@ -18,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.slidingpanelayout.widget.SlidingPaneLayout;
@@ -42,6 +44,8 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.language.settings.SelectLanguageFragment;
+import org.chromium.components.browser_ui.settings.SearchViewProvider;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.widget.ChromeImageButton;
 
@@ -252,5 +256,125 @@ public class MultiColumnTitleUpdaterTest {
 
         // Clicking parent title ("Appearance") should pop to previous title and trigger callback.
         verify(mTitleTapCallback).onResult("appearance_entry");
+    }
+
+    public static class TestSearchViewProviderFragment extends Fragment
+            implements SearchViewProvider {
+        private @Nullable SearchView mSearchView;
+        private SearchViewProvider.@Nullable Observer mObserver;
+
+        @Override
+        public View onCreateView(
+                LayoutInflater inflater,
+                @Nullable ViewGroup container,
+                @Nullable Bundle savedInstanceState) {
+            return new View(inflater.getContext());
+        }
+
+        @Override
+        public void setSearchViewObserver(SearchViewProvider.Observer observer) {
+            mObserver = observer;
+        }
+
+        @Override
+        public void initSearchView(SearchView searchView) {
+            mSearchView = searchView;
+        }
+
+        public @Nullable SearchView getSearchView() {
+            return mSearchView;
+        }
+    }
+
+    public static class TestSelectLanguageFragment extends SelectLanguageFragment {
+        private @Nullable SearchView mSearchView;
+
+        @Override
+        public View onCreateView(
+                LayoutInflater inflater,
+                @Nullable ViewGroup container,
+                @Nullable Bundle savedInstanceState) {
+            return new View(inflater.getContext());
+        }
+
+        @Override
+        public void initSearchView(SearchView searchView) {
+            mSearchView = searchView;
+        }
+
+        public @Nullable SearchView getSearchView() {
+            return mSearchView;
+        }
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.SETTINGS_IN_TAB,
+        ChromeFeatureList.DETAILED_LANGUAGE_SETTINGS
+    })
+    public void testSelectLanguageFragment_addsSearchButtonAndSearchView() {
+        TestSelectLanguageFragment selectLanguageFragment = new TestSelectLanguageFragment();
+        mMultiColumnSettings
+                .getChildFragmentManager()
+                .beginTransaction()
+                .replace(R.id.preferences_detail, selectLanguageFragment)
+                .commitNow();
+
+        List<MultiColumnSettings.Title> titles = new ArrayList<>();
+        titles.add(
+                new MultiColumnSettings.Title(
+                        "uuid1", createTitleSupplier("Select language"), 0, null));
+        mMultiColumnSettings.setFakeTitles(titles);
+
+        MultiColumnTitleUpdater updater =
+                new MultiColumnTitleUpdater(
+                        /* savedInstanceState= */ null,
+                        mMultiColumnSettings,
+                        mActivity,
+                        mContainer,
+                        /* mainTitleSetter= */ (t) -> {},
+                        /* titleTapCallback= */ mTitleTapCallback,
+                        /* initialBreadcrumbPath= */ null);
+
+        updater.onTitleUpdated();
+
+        // 1 DetailedTitle ("Select language") + 1 search button + 1 search view = 3 views in
+        // mContainer.
+        assertEquals(3, mContainer.getChildCount());
+        assertNotNull(selectLanguageFragment.getSearchView());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
+    public void testSearchViewProvider_addsSearchButtonAndSearchView() {
+        TestSearchViewProviderFragment searchViewProviderFragment =
+                new TestSearchViewProviderFragment();
+        mMultiColumnSettings
+                .getChildFragmentManager()
+                .beginTransaction()
+                .replace(R.id.preferences_detail, searchViewProviderFragment)
+                .commitNow();
+
+        List<MultiColumnSettings.Title> titles = new ArrayList<>();
+        titles.add(
+                new MultiColumnSettings.Title("uuid1", createTitleSupplier("All Sites"), 0, null));
+        mMultiColumnSettings.setFakeTitles(titles);
+
+        MultiColumnTitleUpdater updater =
+                new MultiColumnTitleUpdater(
+                        /* savedInstanceState= */ null,
+                        mMultiColumnSettings,
+                        mActivity,
+                        mContainer,
+                        /* mainTitleSetter= */ (t) -> {},
+                        /* titleTapCallback= */ mTitleTapCallback,
+                        /* initialBreadcrumbPath= */ null);
+
+        updater.onTitleUpdated();
+
+        // 1 DetailedTitle ("All Sites") + 1 search button + 1 search view = 3 views in
+        // mContainer.
+        assertEquals(3, mContainer.getChildCount());
+        assertNotNull(searchViewProviderFragment.getSearchView());
     }
 }

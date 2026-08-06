@@ -21,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.TooltipCompat;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
@@ -34,6 +35,7 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.components.browser_ui.settings.SearchViewProvider;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.widget.ChromeImageButton;
@@ -364,6 +366,7 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
                 SettingsInTab.isEnabled()
                         ? Math.max(mFirstVisibleTitleIndex, titles.size() - 1)
                         : mFirstVisibleTitleIndex;
+        DetailedTitle lastTitleView = null;
         for (int i = startIndex; i < titles.size(); ++i) {
             if (i != startIndex) {
                 // '>' separator.
@@ -387,7 +390,54 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
                 final int finalIndex = i;
                 view.setOnClickListener((View v) -> navigateToTitle(title, finalIndex));
             }
+
             mContainer.addView(view);
+            lastTitleView = view;
+        }
+
+        if (SettingsInTab.isEnabled() && lastTitleView != null) {
+            Fragment detailFragment =
+                    mMultiColumnSettings
+                            .getChildFragmentManager()
+                            .findFragmentById(R.id.preferences_detail);
+            if (detailFragment instanceof SearchViewProvider searchViewProvider) {
+                final DetailedTitle titleView = lastTitleView;
+                var searchButton = new ChromeImageButton(mContext);
+                searchButton.setImageResource(R.drawable.ic_search_24dp);
+                searchButton.setScaleType(ImageView.ScaleType.CENTER);
+                searchButton.setBackgroundResource(R.drawable.default_icon_background);
+                int minTouchTargetPx = getDimenPx(R.dimen.min_touch_target_size);
+                searchButton.setMinimumWidth(minTouchTargetPx);
+                searchButton.setMinimumHeight(minTouchTargetPx);
+                TooltipCompat.setTooltipText(searchButton, mContext.getString(R.string.search));
+                searchButton.setContentDescription(mContext.getString(R.string.search));
+                searchButton.setLayoutParams(new LinearLayout.LayoutParams(LAYOUT_CENTER_VERTICAL));
+
+                var searchView = new SearchView(mContext);
+                searchView.setLayoutParams(new LinearLayout.LayoutParams(LAYOUT_CENTER_VERTICAL));
+                searchView.setVisibility(View.GONE);
+                searchViewProvider.initSearchView(searchView);
+
+                searchButton.setOnClickListener(
+                        v -> {
+                            titleView.setVisibility(View.GONE);
+                            searchButton.setVisibility(View.GONE);
+                            searchView.setVisibility(View.VISIBLE);
+                            searchView.setIconified(false);
+                            searchView.requestFocus();
+                        });
+
+                searchView.setOnCloseListener(
+                        () -> {
+                            searchView.setVisibility(View.GONE);
+                            titleView.setVisibility(View.VISIBLE);
+                            searchButton.setVisibility(View.VISIBLE);
+                            return false;
+                        });
+
+                mContainer.addView(searchButton);
+                mContainer.addView(searchView);
+            }
         }
 
         // Make the last-added/tapped one visible after adding titles.

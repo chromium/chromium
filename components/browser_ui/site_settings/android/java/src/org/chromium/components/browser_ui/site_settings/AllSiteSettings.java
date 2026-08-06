@@ -26,6 +26,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.SearchView;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -377,6 +378,23 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
         mSearchViewObserver = observer;
     }
 
+    private void onSearchQueryChanged(String query) {
+        boolean queryHasChanged =
+                mSearch == null ? query != null && !query.isEmpty() : !mSearch.equals(query);
+        mSearch = query;
+        if (queryHasChanged) getInfoForOrigins();
+    }
+
+    @Override
+    public void initSearchView(SearchView searchView) {
+        SearchUtils.initializeSearchView(
+                searchView,
+                mSearch,
+                getActivity(),
+                mSearchViewObserver,
+                this::onSearchQueryChanged);
+    }
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
@@ -388,14 +406,7 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
                 mSearch,
                 getActivity(),
                 assumeNonNull(mSearchViewObserver),
-                (query) -> {
-                    boolean queryHasChanged =
-                            mSearch == null
-                                    ? query != null && !query.isEmpty()
-                                    : !mSearch.equals(query);
-                    mSearch = query;
-                    if (queryHasChanged) getInfoForOrigins();
-                });
+                this::onSearchQueryChanged);
 
         if (getSiteSettingsDelegate().isHelpAndFeedbackEnabled()) {
             MenuItem help =
