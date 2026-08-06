@@ -1831,18 +1831,6 @@ export class AppElement extends AppElementBase {
       }
     });
   }
-
-  getVoiceSearchListeningForTesting(): boolean {
-    return this.voiceSearchListening_;
-  }
-
-  getVoiceSearchReceivedSpeechForTesting(): boolean {
-    return this.voiceSearchReceivedSpeech_;
-  }
-
-  getVoiceSearchTranscriptForTesting(): string {
-    return this.voiceSearchTranscript_;
-  }
 }
 
 declare global {

@@ -537,8 +537,13 @@ suite('ComposeboxVoiceSearch', () => {
         tryAgainLink.click();
         await microtasksFinished();
         assertEquals(2, mockSpeechRecognition.startCount);
-        assertEquals(null, voiceSearchElement.getErrorForTesting());
-        assertEquals('', voiceSearchElement.getErrorMessageForTesting());
+        assertEquals(null, voiceSearchElement.detailedError);
+        assertEquals(
+            '',
+            voiceSearchElement.shadowRoot
+                .querySelector<HTMLElement>('#error-message')!.textContent);
+        assertFalse(voiceSearchElement.shadowRoot.querySelector('#container')!
+                        .classList.contains('has-error'));
 
         // Trigger other error (like `audio-capture`).
         mockSpeechRecognition.onerror!
@@ -1306,7 +1311,8 @@ suite('ComposeboxVoiceSearch', () => {
             'static', window.getComputedStyle(voiceSearchElement).position);
 
         // Clean up.
-        voiceSearchElement.voiceModeEndCleanupForTesting();
+        voiceSearchElement.shadowRoot
+            .querySelector<HTMLElement>('#closeButton')!.click();
         await microtasksFinished();
       });
 

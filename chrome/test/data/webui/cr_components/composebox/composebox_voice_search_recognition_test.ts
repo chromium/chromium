@@ -236,9 +236,6 @@ suite('ComposeboxVoiceSearchRecognition', () => {
                 'VoiceSearch.Action.NTP_REALBOX',
                 VoiceSearchAction.QUERY_SUBMITTED));
 
-        // Clean up internal state.
-        voiceSearchElement.voiceModeEndCleanupForTesting();
-        await microtasksFinished();
       });
 
   test(
