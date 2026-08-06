@@ -4668,6 +4668,13 @@ const FeatureEntry::Choice kSpeculativeDecodingChoices[] = {
      "OnDeviceModelSpeculativeDecoding,OptimizationGuideManifestBroker,"
      "OnDeviceModelLitertLmBackend,AIApiFoundationalModel:model_version/v4"}};
 
+const FeatureEntry::Choice kOnDeviceWebSpeechSmallExpertModelChoices[] = {
+    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
+    {flags_ui::kGenericExperimentChoiceEnabled, switches::kEnableFeatures,
+     "OnDeviceWebSpeech,OnDeviceWebSpeechSmallExpertModel,"
+     "OptimizationGuideManifestBroker,OnDeviceModelLitertLmBackend,"
+     "OnDeviceModelGpuProgramCache,OnDeviceModelGpuWeightCache"}};
+
 const FeatureEntry::FeatureParam kWalletApiPrivatePassesUrl[] = {
     {"wallet_pass_save_url", "https://wallet1ppasses.pa.googleapis.com"}};
 
@@ -10519,6 +10526,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOnDeviceModelSpeculativeDecodingName,
      flag_descriptions::kOnDeviceModelSpeculativeDecodingDescription,
      kOsDesktop, MULTI_VALUE_TYPE(kSpeculativeDecodingChoices)},
+
+    {"web-speech-on-device-small-expert-model",
+     flag_descriptions::kOnDeviceWebSpeechSmallExpertModelName,
+     flag_descriptions::kOnDeviceWebSpeechSmallExpertModelDescription,
+     kOsDesktop, MULTI_VALUE_TYPE(kOnDeviceWebSpeechSmallExpertModelChoices)},
 
     {"css-grid-lanes-layout", flag_descriptions::kCSSGridLanesLayoutName,
      flag_descriptions::kCSSGridLanesLayoutDescription, kOsAll,

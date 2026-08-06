@@ -5314,6 +5314,12 @@ inline constexpr char kOnDeviceModelLitertLmBackendName[] =
 inline constexpr char kOnDeviceModelLitertLmBackendDescription[] =
     "Use LiteRT-LM runtime for on-device model service inference.";
 
+inline constexpr char kOnDeviceWebSpeechSmallExpertModelName[] =
+    "Web Speech API On-Device Small Expert Model";
+inline constexpr char kOnDeviceWebSpeechSmallExpertModelDescription[] =
+    "Enables the small expert model for on-device Web Speech API "
+    "recognition.";
+
 // Android ---------------------------------------------------------------------
 // FLAG_DESCRIPTIONS_ANDROID_START
 

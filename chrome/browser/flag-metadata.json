@@ -10279,6 +10279,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "web-speech-on-device-small-expert-model",
+    "owners": [ "evliu@google.com", "chrome-media-ux@google.com" ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "webcrypto-pqc",
     "owners": [ "hchao@chromium.org", "chrome-secure-web-and-net@chromium.org" ],
     "expiry_milestone": 152

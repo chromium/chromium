@@ -10417,6 +10417,7 @@ from previous Chrome versions.
   <int value="-1314603238" label="ChromeHomePullToRefreshIphAtTop:enabled"/>
   <int value="-1314130620" label="ToolbarProfileChipResizing:disabled"/>
   <int value="-1313810940" label="StrictOriginIsolation:disabled"/>
+  <int value="-1313719766" label="OnDeviceWebSpeechSmallExpertModel:enabled"/>
   <int value="-1313042829" label="DbdPasswordRemovalOnAndroid:disabled"/>
   <int value="-1312719341" label="ChromeRefresh2023NTB:enabled"/>
   <int value="-1312128217" label="NtpNextCanvasChip:enabled"/>
@@ -11522,6 +11523,7 @@ from previous Chrome versions.
   <int value="-970201112"
       label="AutofillEnableDependentLocalityParsing:enabled"/>
   <int value="-970067535" label="BackgroundTaskComponentUpdate:disabled"/>
+  <int value="-969778386" label="OnDeviceWebSpeechSmallExpertModel:disabled"/>
   <int value="-969534951" label="FedCmExemptIdpWithThirdPartyCookies:disabled"/>
   <int value="-969332901" label="stop-non-timers-in-background:disabled"/>
   <int value="-969028093" label="FullRestore:disabled"/>
