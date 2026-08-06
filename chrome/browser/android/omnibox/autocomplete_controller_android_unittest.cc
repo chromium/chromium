@@ -10,15 +10,19 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_controller_config.h"
 #include "components/omnibox/browser/autocomplete_input.h"
+#include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "content/public/test/mock_navigation_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
@@ -145,4 +149,44 @@ TEST_F(AutocompleteControllerAndroidTest, Start_InKeywordMode) {
   controller()->Start(env, nullptr, u"query", -1, "", url, OEP::OTHER,
                       omnibox::TOOL_MODE_UNSPECIFIED, false, true, false,
                       true);
+}
+
+TEST_F(AutocompleteControllerAndroidTest,
+       CreateNavigationObserver_OmniboxDirectUrlInput_AttachesUserData) {
+  content::MockNavigationHandle navigation_handle(web_contents());
+  AutocompleteMatch match;
+  match.transition = ui::PAGE_TRANSITION_TYPED;
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  controller()->CreateNavigationObserver(
+      env, reinterpret_cast<uintptr_t>(&navigation_handle),
+      reinterpret_cast<uintptr_t>(&match));
+
+  auto* user_data =
+      page_load_metrics::NavigationHandleUserData::GetForNavigationHandle(
+          navigation_handle);
+  ASSERT_TRUE(user_data);
+  EXPECT_EQ(
+      user_data->navigation_type(),
+      GetInitiatorLocation(ChromeInitiatorLocation::kOmniboxDirectUrlInput));
+}
+
+TEST_F(AutocompleteControllerAndroidTest,
+       CreateNavigationObserver_OmniboxDefaultSearchEngine_AttachesUserData) {
+  content::MockNavigationHandle navigation_handle(web_contents());
+  AutocompleteMatch match;
+  match.transition = ui::PAGE_TRANSITION_GENERATED;
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  controller()->CreateNavigationObserver(
+      env, reinterpret_cast<uintptr_t>(&navigation_handle),
+      reinterpret_cast<uintptr_t>(&match));
+
+  auto* user_data =
+      page_load_metrics::NavigationHandleUserData::GetForNavigationHandle(
+          navigation_handle);
+  ASSERT_TRUE(user_data);
+  EXPECT_EQ(user_data->navigation_type(),
+            GetInitiatorLocation(
+                ChromeInitiatorLocation::kOmniboxDefaultSearchEngine));
 }
