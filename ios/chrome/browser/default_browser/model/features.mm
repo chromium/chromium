@@ -35,3 +35,15 @@ SettingsDefaultBrowserPromoType CurrentSettingsDefaultBrowserPromoType() {
   return static_cast<SettingsDefaultBrowserPromoType>(
       kIOSSettingsDefaultBrowserPromoTypeFeatureParam.Get());
 }
+
+BASE_FEATURE(kOmniboxPastePromoExperiment, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(int,
+                   kOmniboxPastePromoExperimentType,
+                   &kOmniboxPastePromoExperiment,
+                   "arm",
+                   1);
+
+int GetOmniboxPastePromoExperimentType() {
+  return kOmniboxPastePromoExperimentType.Get();
+}

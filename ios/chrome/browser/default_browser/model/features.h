@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_DEFAULT_BROWSER_MODEL_FEATURES_H_
 
 #import "base/feature_list.h"
+#import "base/metrics/field_trial_params.h"
 
 // Feature to enable sharing default browser status with 1P apps.
 BASE_DECLARE_FEATURE(kShareDefaultBrowserStatus);
@@ -32,4 +33,9 @@ bool IsIOSSettingsDefaultBrowserPromoV2Enabled();
 // parameters.
 SettingsDefaultBrowserPromoType CurrentSettingsDefaultBrowserPromoType();
 
+// Feature to enable the Omnibox Paste Flow copy experiments.
+BASE_DECLARE_FEATURE(kOmniboxPastePromoExperiment);
+
+// Returns the active experiment arm (1 through 10).
+int GetOmniboxPastePromoExperimentType();
 #endif  // IOS_CHROME_BROWSER_DEFAULT_BROWSER_MODEL_FEATURES_H_

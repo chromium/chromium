@@ -397,6 +397,41 @@ const FeatureEntry::FeatureVariation
          kDefaultBrowserPictureInPictureArm3, nullptr},
 };
 
+const FeatureEntry::FeatureParam kOmniboxPastePromoExperimentArm1[] = {
+    {"arm", "1"}};
+const FeatureEntry::FeatureParam kOmniboxPastePromoExperimentArm2[] = {
+    {"arm", "2"}};
+const FeatureEntry::FeatureParam kOmniboxPastePromoExperimentArm3[] = {
+    {"arm", "3"}};
+const FeatureEntry::FeatureParam kOmniboxPastePromoExperimentArm4[] = {
+    {"arm", "4"}};
+const FeatureEntry::FeatureParam kOmniboxPastePromoExperimentArm5[] = {
+    {"arm", "5"}};
+const FeatureEntry::FeatureParam kOmniboxPastePromoExperimentArm6[] = {
+    {"arm", "6"}};
+const FeatureEntry::FeatureParam kOmniboxPastePromoExperimentArm7[] = {
+    {"arm", "7"}};
+const FeatureEntry::FeatureParam kOmniboxPastePromoExperimentArm8[] = {
+    {"arm", "8"}};
+const FeatureEntry::FeatureParam kOmniboxPastePromoExperimentArm9[] = {
+    {"arm", "9"}};
+const FeatureEntry::FeatureParam kOmniboxPastePromoExperimentArm10[] = {
+    {"arm", "10"}};
+
+const FeatureEntry::FeatureVariation kOmniboxPastePromoExperimentVariations[] =
+    {
+        {"Arm 1", kOmniboxPastePromoExperimentArm1, nullptr},
+        {"Arm 2", kOmniboxPastePromoExperimentArm2, nullptr},
+        {"Arm 3", kOmniboxPastePromoExperimentArm3, nullptr},
+        {"Arm 4", kOmniboxPastePromoExperimentArm4, nullptr},
+        {"Arm 5", kOmniboxPastePromoExperimentArm5, nullptr},
+        {"Arm 6", kOmniboxPastePromoExperimentArm6, nullptr},
+        {"Arm 7", kOmniboxPastePromoExperimentArm7, nullptr},
+        {"Arm 8", kOmniboxPastePromoExperimentArm8, nullptr},
+        {"Arm 9", kOmniboxPastePromoExperimentArm9, nullptr},
+        {"Arm 10", kOmniboxPastePromoExperimentArm10, nullptr},
+};
+
 const FeatureEntry::FeatureParam kIOSDockingPromoV2Header1[] = {
     {kIOSDockingPromoV2VariationParam, kIOSDockingPromoV2VariationHeader1}};
 
@@ -1625,6 +1660,13 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_WITH_PARAMS_VALUE_TYPE(kDefaultBrowserPictureInPicture,
                                     kDefaultBrowserPictureInPictureVariations,
                                     "DefaultBrowserPictureInPicture")},
+    {"omnibox-paste-promo-experiment",
+     flag_descriptions::kOmniboxPastePromoExperimentName,
+     flag_descriptions::kOmniboxPastePromoExperimentDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kOmniboxPastePromoExperiment,
+                                    kOmniboxPastePromoExperimentVariations,
+                                    "OmniboxPastePromoExperiment")},
 #if BUILDFLAG(IOS_BACKGROUND_MODE_ENABLED)
     {"feed-background-refresh-ios",
      flag_descriptions::kFeedBackgroundRefreshName,

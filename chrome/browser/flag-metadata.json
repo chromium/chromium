@@ -7710,6 +7710,11 @@
     "expiry_milestone": 159
   },
   {
+    "name": "omnibox-paste-promo-experiment",
+    "owners": [ "lilybalas@google.com", "bling-mony-pod@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "omnibox-rich-autocompletion-promising",
     "owners": [ "manukh@chromium.org", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 140

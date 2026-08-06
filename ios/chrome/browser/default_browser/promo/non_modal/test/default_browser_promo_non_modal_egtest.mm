@@ -4,6 +4,7 @@
 
 #import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
+#import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/feature_engagement/public/feature_constants.h"
@@ -17,6 +18,7 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/third_party/earl_grey2/src/UILib/GREYScreenshotter.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
@@ -40,6 +42,54 @@ id<GREYMatcher> NonModalShareTitleMatcher() {
 id<GREYMatcher> NonModalPasteTitleMatcher() {
   NSString* a11yLabelText = l10n_util::GetNSString(
       IDS_IOS_DEFAULT_BROWSER_NON_MODAL_OMNIBOX_NAVIGATION_TITLE);
+  return grey_accessibilityLabel(a11yLabelText);
+}
+
+id<GREYMatcher> NonModalPasteTitleMatcherForArm(int arm) {
+  int title_id = 0;
+  switch (arm) {
+    case 1:
+      title_id =
+          IDS_IOS_DEFAULT_BROWSER_NON_MODAL_OMNIBOX_NAVIGATION_TITLE_EXP1;
+      break;
+    case 2:
+      title_id =
+          IDS_IOS_DEFAULT_BROWSER_NON_MODAL_OMNIBOX_NAVIGATION_TITLE_EXP2;
+      break;
+    case 3:
+      title_id =
+          IDS_IOS_DEFAULT_BROWSER_NON_MODAL_OMNIBOX_NAVIGATION_TITLE_EXP3;
+      break;
+    case 4:
+      title_id =
+          IDS_IOS_DEFAULT_BROWSER_NON_MODAL_OMNIBOX_NAVIGATION_TITLE_EXP4;
+      break;
+    case 5:
+      title_id =
+          IDS_IOS_DEFAULT_BROWSER_NON_MODAL_OMNIBOX_NAVIGATION_TITLE_EXP5;
+      break;
+    case 6:
+      title_id =
+          IDS_IOS_DEFAULT_BROWSER_NON_MODAL_OMNIBOX_NAVIGATION_TITLE_EXP6;
+      break;
+    case 7:
+      title_id =
+          IDS_IOS_DEFAULT_BROWSER_NON_MODAL_OMNIBOX_NAVIGATION_TITLE_EXP7;
+      break;
+    case 8:
+      title_id =
+          IDS_IOS_DEFAULT_BROWSER_NON_MODAL_OMNIBOX_NAVIGATION_TITLE_EXP8;
+      break;
+    case 9:
+      title_id =
+          IDS_IOS_DEFAULT_BROWSER_NON_MODAL_OMNIBOX_NAVIGATION_TITLE_EXP9;
+      break;
+    case 10:
+      title_id =
+          IDS_IOS_DEFAULT_BROWSER_NON_MODAL_OMNIBOX_NAVIGATION_TITLE_EXP10;
+      break;
+  }
+  NSString* a11yLabelText = l10n_util::GetNSString(title_id);
   return grey_accessibilityLabel(a11yLabelText);
 }
 
@@ -72,6 +122,76 @@ id<GREYMatcher> NonModalPasteTitleMatcher() {
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.iph_feature_enabled = IPHconfigName;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+}
+
+- (void)captureScreenshotForArm:(int)arm {
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.iph_feature_enabled = "IPH_iOSPromoNonModalUrlPasteDefaultBrowser";
+  config.additional_args.push_back(base::StringPrintf(
+      "--enable-features=OmniboxPastePromoExperiment:arm/%d", arm));
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  GURL testURL = self.testServer->GetURL("/my_page.html");
+  [ChromeEarlGrey copyTextToPasteboard:base::SysUTF8ToNSString(testURL.spec())];
+
+  const GURL destinationUrl = self.testServer->GetURL("/destination.html");
+  [ChromeEarlGrey loadURL:destinationUrl];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
+      performAction:grey_longPress()];
+
+  [[[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                           IDS_IOS_VISIT_COPIED_LINK))]
+      assertWithMatcher:grey_sufficientlyVisible()] performAction:grey_tap()];
+
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:NonModalPasteTitleMatcherForArm(arm)]
+        assertWithMatcher:grey_sufficientlyVisible()
+                    error:&error];
+    return (error == nil);
+  };
+  GREYAssert(
+      WaitUntilConditionOrTimeout(kShowPromoWebpageLoadWaitTime, condition),
+      @"Wait for promo to appear.");
+
+  UIImage* screenshot = [GREYScreenshotter takeScreenshot];
+  NSString* filename = [NSString stringWithFormat:@"promo_arm_%d.png", arm];
+  [GREYScreenshotter saveImageAsPNG:screenshot
+                             toFile:filename
+                        inDirectory:@"/tmp"];
+}
+
+- (void)testCapturePromoScreenshotArm1 {
+  [self captureScreenshotForArm:1];
+}
+- (void)testCapturePromoScreenshotArm2 {
+  [self captureScreenshotForArm:2];
+}
+- (void)testCapturePromoScreenshotArm3 {
+  [self captureScreenshotForArm:3];
+}
+- (void)testCapturePromoScreenshotArm4 {
+  [self captureScreenshotForArm:4];
+}
+- (void)testCapturePromoScreenshotArm5 {
+  [self captureScreenshotForArm:5];
+}
+- (void)testCapturePromoScreenshotArm6 {
+  [self captureScreenshotForArm:6];
+}
+- (void)testCapturePromoScreenshotArm7 {
+  [self captureScreenshotForArm:7];
+}
+- (void)testCapturePromoScreenshotArm8 {
+  [self captureScreenshotForArm:8];
+}
+- (void)testCapturePromoScreenshotArm9 {
+  [self captureScreenshotForArm:9];
+}
+- (void)testCapturePromoScreenshotArm10 {
+  [self captureScreenshotForArm:10];
 }
 
 // Test that a non modal default modal promo appears when it is triggered by

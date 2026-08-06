@@ -1586,6 +1586,12 @@ inline constexpr char kOmniboxOnDeviceTailSuggestionsDescription[] =
     "Google tail non personalized search suggestions provided by a compact on "
     "device model.";
 
+inline constexpr char kOmniboxPastePromoExperimentName[] =
+    "Omnibox Paste Flow Default Browser Promo Experiment";
+inline constexpr char kOmniboxPastePromoExperimentDescription[] =
+    "Enables non-modal default browser promo experiment arms for Omnibox "
+    "navigation.";
+
 inline constexpr char kOmniboxSuggestionAnswerMigrationName[] =
     "Omnibox suggestion answer migration";
 inline constexpr char kOmniboxSuggestionAnswerMigrationDescription[] =
