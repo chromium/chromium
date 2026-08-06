@@ -1483,7 +1483,6 @@ void AutofillAgent::TriggerSuggestions(
       case kiOS:
       case kManualFallbackPasswords:
       case kPasswordManagerProcessedFocusedField:
-      case kPlusAddressUpdatedInBrowserProcess:
       case kProactivePasswordRecovery:
       case kGlic:
       case kAtMemoryInactivityNudge:

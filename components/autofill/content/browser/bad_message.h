@@ -33,17 +33,6 @@ bool ValidateArguments(Pred&& pred, const Args&... args) {
   return (recursion_helper(args) && ...);
 }
 
-// Returns true if `trigger_source` is a trigger source that may be used in
-// renderer -> browser communication. Kills the renderer and returns false
-// otherwise.
-bool CheckSingleValidTriggerSource(
-    AutofillSuggestionTriggerSource trigger_source);
-
-template <typename... Args>
-bool CheckValidTriggerSource(const Args&... args) {
-  return ValidateArguments(&CheckSingleValidTriggerSource, args...);
-}
-
 // Returns true if `form.fields` contains a field identified by `field_id`.
 // Kills the renderer otherwise.
 bool CheckFieldInForm(const FormData& form, FieldRendererId field_id);
@@ -76,15 +65,13 @@ bool CheckFieldInForm(const FormData& form, const Args&... args) {
 bool CheckFrameNotPrerendering(content::RenderFrameHost* frame);
 
 // Returns true if the following checks pass:
-// - The trigger source is allowed to be sent by the renderer.
 // - If the first argument is a `FormData` and it is succeeded by
 // `FieldRendererId` arguments, then they must all correspond to entries in
 // `FormData::fields()`.
 // Returns false and kills the renderer otherwise.
 template <typename... Args>
 bool CheckArgs(const Args&... args) {
-  return internal::CheckValidTriggerSource(args...) &&
-         internal::CheckFieldInForm(args...);
+  return internal::CheckFieldInForm(args...);
 }
 
 }  // namespace bad_message

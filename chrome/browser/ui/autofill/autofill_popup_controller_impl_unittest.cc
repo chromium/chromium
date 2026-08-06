@@ -583,7 +583,6 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     AutofillPopupControllerImplTestWithTriggerSource,
     ::testing::Values(
-        AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess,
         AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
         AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut,
         AutofillSuggestionTriggerSource::kAtMemoryContextMenu,

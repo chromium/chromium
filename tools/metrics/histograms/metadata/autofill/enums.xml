@@ -4505,7 +4505,7 @@ Called by update_autofill_enums.py.-->
   <int value="16" label="Compose delayed proactive nudge"/>
   <int value="17" label="Password manager processed focused field"/>
   <int value="18" label="Autofill AI"/>
-  <int value="19" label="Plus address update in browser process"/>
+  <int value="19" label="(Obsolete) Plus address update in browser process"/>
   <int value="20" label="Proactive password recovery"/>
   <int value="21" label="Glic"/>
   <int value="22" label="AtMemory trigger string"/>

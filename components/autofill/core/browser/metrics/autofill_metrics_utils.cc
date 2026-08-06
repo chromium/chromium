@@ -290,7 +290,6 @@ bool ShouldLogAutofillSuggestionShown(
       return true;
     case AutofillSuggestionTriggerSource::kTextFieldValueChanged:
     case AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge:
-    case AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess:
     case AutofillSuggestionTriggerSource::kGlic:
     // Initial trigger of @memory shows a search bar rather than actual
     // suggestions. Logging it would skew the standard Autofill funnel metrics.

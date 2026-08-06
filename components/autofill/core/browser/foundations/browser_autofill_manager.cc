@@ -433,7 +433,6 @@ bool IsTriggerSourceOnlyRelevantForCompose(
     case AutofillSuggestionTriggerSource::kiOS:
     case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
     case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
-    case AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess:
     case AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
     case AutofillSuggestionTriggerSource::kGlic:
     case AutofillSuggestionTriggerSource::kAtMemoryContextMenu:
@@ -463,8 +462,6 @@ bool CanReplaceCurrentSuggestions(AutofillSuggestionTriggerSource source) {
     case mojom::AutofillSuggestionTriggerSource::kComposeDialogLostFocus:
     case mojom::AutofillSuggestionTriggerSource::
         kPasswordManagerProcessedFocusedField:
-    case mojom::AutofillSuggestionTriggerSource::
-        kPlusAddressUpdatedInBrowserProcess:
     case mojom::AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
     case mojom::AutofillSuggestionTriggerSource::kGlic:
     case mojom::AutofillSuggestionTriggerSource::kAtMemoryContextMenu:
@@ -565,7 +562,6 @@ FillingProductSet GetFillingProductsToSuggest(
     case kPasswordManagerProcessedFocusedField:
     case kManualFallbackPasswords:
       return {FillingProduct::kPassword, FillingProduct::kPasskey};
-    case kPlusAddressUpdatedInBrowserProcess:
     case kOpenTextDataListChooser:
     case kFormControlElementClicked:
     case kTextFieldValueChanged:

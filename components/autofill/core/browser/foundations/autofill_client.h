@@ -167,9 +167,6 @@ namespace payments {
 class PaymentsAutofillClient;
 }
 
-// Fills the focused field with the string passed to it.
-using PlusAddressCallback = base::OnceCallback<void(const std::string&)>;
-
 // A client interface that needs to be supplied to the Autofill component by the
 // embedder.
 //

@@ -35,7 +35,6 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
-#include "components/plus_addresses/core/common/features.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
