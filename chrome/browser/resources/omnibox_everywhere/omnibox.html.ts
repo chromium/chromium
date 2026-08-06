@@ -9,9 +9,13 @@ import type {OmniboxEverywhereOmniboxElement} from './omnibox.js';
 export function getHtml(this: OmniboxEverywhereOmniboxElement) {
   return html`
     <div id="inputWrapper" @focusout="${this.onInputWrapperFocusout}"
-        @keydown="${this.onInputWrapperKeydown}">
+        @keydown="${this.onInputWrapperKeydown}"
+        @dragenter="${this.dragAndDropHandler.handleDragEnter}"
+        @dragover="${this.dragAndDropHandler.handleDragOver}"
+        @dragleave="${this.dragAndDropHandler.handleDragLeave}"
+        @drop="${this.dragAndDropHandler.handleDrop}">
       <search-animated-glow
-        animation-state="${this.animationState_}"
+        animation-state="${this.animationState}"
         part="animated-glow">
       </search-animated-glow>
       <cr-searchbox-input id="input"
@@ -25,7 +29,6 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
           .selectedMatch="${this.selectedMatch}"
           ?input-has-matches="${this.hasMatches()}"
           @focusin="${this.onInputFocusin_}"
-          @searchbox-input-files-pasted="${this.onSearchboxInputFilesPasted_}"
           @searchbox-input-text-updated="${this.onSearchboxInputTextUpdated_}"
           @input-focus-changed="${this.onInputFocusChanged}">
         ${

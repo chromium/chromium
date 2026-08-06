@@ -14,6 +14,8 @@ import {ContextType, GlifAnimationState, recordContextAdditionMethod, recordCont
 import type {ComposeboxState, ContextualUpload, DriveUpload, TabUpload, TabUploadOrigin} from '//resources/cr_components/composebox/common.js';
 import type {ComposeboxFileInputsElement} from '//resources/cr_components/composebox/composebox_file_inputs.js';
 import {ComposeboxContextAddedMethod, GlowAnimationState} from '//resources/cr_components/search/constants.js';
+import {DragAndDropHandler} from '//resources/cr_components/search/drag_drop_handler.js';
+import type {DragAndDropHost} from '//resources/cr_components/search/drag_drop_host.js';
 import {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import type {SearchboxDropdownElement} from '//resources/cr_components/searchbox/searchbox_dropdown.js';
 import type {SearchboxInputElement} from '//resources/cr_components/searchbox/searchbox_input.js';
@@ -48,7 +50,8 @@ const OmniboxEverywhereOmniboxElementBase =
     SearchboxMixin(I18nMixinLit(WebUiListenerMixinLit(CrLitElement)));
 
 export class OmniboxEverywhereOmniboxElement extends
-    OmniboxEverywhereOmniboxElementBase implements SearchboxMixinInterface {
+    OmniboxEverywhereOmniboxElementBase implements SearchboxMixinInterface,
+                                                   DragAndDropHost {
   static get is() {
     return 'omnibox-everywhere-omnibox';
   }
@@ -89,7 +92,10 @@ export class OmniboxEverywhereOmniboxElement extends
         type: Boolean,
         reflect: true,
       },
-      animationState_: {type: String},
+      animationState: {
+        type: String,
+        reflect: true,
+      },
       inVoiceSearchMode: {
         type: Boolean,
         reflect: true,
@@ -105,10 +111,18 @@ export class OmniboxEverywhereOmniboxElement extends
       searchboxLayoutMode: {type: String},
       tabSuggestionsState_: {type: Number},
       contextManagementInComposeboxEnabled: {type: Boolean},
+      isDraggingFile: {
+        reflect: true,
+        type: Boolean,
+      },
     };
   }
 
   accessor placeholderText: string = '';
+  accessor isDraggingFile: boolean = false;
+  protected dragAndDropHandler: DragAndDropHandler;
+  private dragAndDropEnabled_: boolean =
+      loadTimeData.getBoolean('composeboxContextDragAndDropEnabled');
   accessor searchboxChromeRefreshTheming: boolean =
       loadTimeData.getBoolean('searchboxCr23Theming');
   accessor searchboxSteadyStateShadow: boolean =
@@ -121,8 +135,7 @@ export class OmniboxEverywhereOmniboxElement extends
   protected accessor searchboxLensSearchEnabled_: boolean =
       loadTimeData.getBoolean('searchboxLensSearch');
   protected accessor useWebkitSearchIcons_: boolean = true;
-  protected accessor animationState_: GlowAnimationState =
-      GlowAnimationState.NONE;
+  accessor animationState: GlowAnimationState = GlowAnimationState.NONE;
   accessor inVoiceSearchMode: boolean = false;
   protected accessor composeButtonEnabled: boolean =
       loadTimeData.getBoolean('searchboxShowComposeEntrypoint');
@@ -147,6 +160,8 @@ export class OmniboxEverywhereOmniboxElement extends
     const browserProxy = SearchboxBrowserProxy.getInstance();
     this.pageHandler_ = browserProxy.handler;
     this.callbackRouter_ = browserProxy.callbackRouter;
+    this.dragAndDropHandler =
+        new DragAndDropHandler(this, this.dragAndDropEnabled_);
   }
 
   override connectedCallback() {
@@ -196,6 +211,14 @@ export class OmniboxEverywhereOmniboxElement extends
 
   setInputText(text: string) {
     this.$.input.setInputText(text);
+  }
+
+  getDropTarget() {
+    return this;
+  }
+
+  addDroppedFiles(files: FileList) {
+    this.processFiles_(files, ComposeboxContextAddedMethod.DRAG_AND_DROP);
   }
 
   //========================================================================
@@ -255,9 +278,10 @@ export class OmniboxEverywhereOmniboxElement extends
   }
 
   protected async onVoiceSearchButtonClick_() {
-    this.animationState_ = GlowAnimationState.NONE;
+    this.animationState = GlowAnimationState.NONE;
     await this.updateComplete;
-    this.animationState_ = GlowAnimationState.LISTENING;
+    this.animationState = GlowAnimationState.LISTENING;
+    this.inVoiceSearchMode = true;
     this.dispatchEvent(
         new Event('open-voice-search', {bubbles: true, composed: true}));
   }
@@ -322,10 +346,6 @@ export class OmniboxEverywhereOmniboxElement extends
         e.detail.files, ComposeboxContextAddedMethod.CONTEXT_MENU);
   }
 
-  protected onSearchboxInputFilesPasted_(e: CustomEvent<{files: FileList}>) {
-    this.processFiles_(e.detail.files, ComposeboxContextAddedMethod.COPY_PASTE);
-  }
-
   protected processFiles_(
       files: FileList|null,
       contextAdditionMethod: ComposeboxContextAddedMethod) {
@@ -351,9 +371,9 @@ export class OmniboxEverywhereOmniboxElement extends
   }
 
   protected async openComposeboxWithMode_(mode?: ToolMode, model?: ModelMode) {
-    this.animationState_ = GlowAnimationState.NONE;
+    this.animationState = GlowAnimationState.NONE;
     await this.updateComplete;
-    this.animationState_ = GlowAnimationState.LISTENING;
+    this.animationState = GlowAnimationState.LISTENING;
     setTimeout(() => {
       this.openComposebox_([], mode, model);
     }, 300);

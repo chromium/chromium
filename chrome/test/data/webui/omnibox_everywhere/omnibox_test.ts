@@ -9,6 +9,7 @@ import type {OmniboxEverywhereAppElement, OmniboxEverywhereComposeboxElement, Om
 import {TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
 import type {ComposeboxState} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
+import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
@@ -25,7 +26,9 @@ suite('OmniboxEverywhereOmniboxTest', () => {
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
+      ntpRealboxNextEnabled: true,
       searchboxVoiceSearch: true,
+      composeboxContextDragAndDropEnabled: true,
     });
     testProxy = new TestSearchboxBrowserProxy();
     SearchboxBrowserProxy.setInstance(testProxy);
@@ -67,6 +70,33 @@ suite('OmniboxEverywhereOmniboxTest', () => {
   });
 
   test(
+      'sets is-dragging-file attribute on dragenter and removes on dragleave',
+      async () => {
+        const inputWrapper = omnibox.shadowRoot.querySelector('#inputWrapper');
+        assertTrue(!!inputWrapper);
+
+        assertFalse(omnibox.hasAttribute('is-dragging-file'));
+
+        inputWrapper?.dispatchEvent(new DragEvent('dragenter', {
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        assertTrue(omnibox.hasAttribute('is-dragging-file'));
+        assertEquals(GlowAnimationState.DRAGGING, omnibox.animationState);
+
+        inputWrapper?.dispatchEvent(new DragEvent('dragleave', {
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        assertFalse(omnibox.hasAttribute('is-dragging-file'));
+        assertEquals(GlowAnimationState.NONE, omnibox.animationState);
+      });
+
+  test(
       'clicking voice search button dispatches open-voice-search event',
       async () => {
         let eventFired = false;
@@ -91,6 +121,9 @@ suite('OmniboxEverywhereComposeboxTest', () => {
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({
+      composeboxContextDragAndDropEnabled: true,
+    });
     testProxy = new TestSearchboxBrowserProxy();
     SearchboxBrowserProxy.setInstance(testProxy);
     mockPageHandler = TestMock.fromClass(PageHandlerRemote);
@@ -159,6 +192,31 @@ suite('OmniboxEverywhereComposeboxTest', () => {
     await microtasksFinished();
     assertEquals('test composebox query', composebox.getInputElement().input);
   });
+
+  test(
+      'sets is-dragging-file attribute on dragenter and removes on dragleave',
+      async () => {
+        const dropZone = composebox.shadowRoot.querySelector('#composebox');
+        assertTrue(!!dropZone);
+
+        assertFalse(composebox.hasAttribute('is-dragging-file'));
+
+        dropZone?.dispatchEvent(new DragEvent('dragenter', {
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        assertTrue(composebox.hasAttribute('is-dragging-file'));
+
+        dropZone?.dispatchEvent(new DragEvent('dragleave', {
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        assertFalse(composebox.hasAttribute('is-dragging-file'));
+      });
 });
 
 declare global {
