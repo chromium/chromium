@@ -1389,11 +1389,11 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                 && isVerticalTabsActive
                 && mTabStripHeight == 0
                 && getWidth() > 0) {
-            // The left edge of the exclusion rectangle dictates where the draggable desktop window
-            // space ends. When vertical tabs are active, this equals the width of the vertical tabs
-            // container rail. When vertical tabs are disabled or hidden,
-            // mVerticalTabsContainerWidthSupplier holds 0, keeping left at 0.
-            int left = mVerticalTabsContainerWidthSupplier.get();
+            // The left edge of the exclusion rectangle must start at 0 so that toolbar buttons
+            // located on the left of the toolbar (such as back, forward, reload, and home buttons)
+            // are included in the system gesture exclusion rectangle and receive mouse clicks
+            // instead of having mouse clicks intercepted by the system for window dragging.
+            int left = 0;
             int right = getWidth() - appHeaderState.getRightPadding();
             int top = appHeaderState.getCaptionControlsTopOffset();
             int bottom = top + appHeaderState.getCaptionControlsHeight();
