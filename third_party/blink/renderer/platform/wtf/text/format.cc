@@ -45,29 +45,49 @@ StringBuilder& VFormatTo(StringBuilder& builder,
         // SAFETY: `i + 1` is checked against `len`.
       } else if (i + 1 < len && (UNSAFE_BUFFERS(format[i + 1]) == '}' ||
                                  UNSAFE_BUFFERS(format[i + 1]) == ':')) {
+        ++i;
         uint32_t width = 0;
-        // SAFETY: `i + 1` is checked against `len`.
-        if (UNSAFE_BUFFERS(format[i + 1]) == ':') {
-          auto parsed = internal::ParseWidth(format, i + 2);
+        bool zero_pad = false;
+        // SAFETY: `i` is checked against `len`.
+        if (UNSAFE_BUFFERS(format[i]) == ':') {
+          ++i;
+          // SAFETY: `i` is checked against `len`.
+          if (i < len && UNSAFE_BUFFERS(format[i]) == '0') {
+            zero_pad = true;
+            ++i;
+          }
+          auto parsed = internal::ParseWidth(format, i);
           CHECK(parsed.has_value()) << "Format string width out of bounds";
           width = parsed->width;
           i = static_cast<wtf_size_t>(parsed->next_index);
           CHECK_LT(i, len);
           // SAFETY: `i` is checked against `len` via CHECK_LT.
           CHECK_EQ(UNSAFE_BUFFERS(format[i]), '}');
-        } else {
-          ++i;
         }
 
         if (arg_index < args.size()) {
           const FormatArg& arg = args[arg_index++];
           std::visit(
-              [&builder, width](const auto& val) {
+              [&builder, width, zero_pad](const auto& val) {
                 using T = std::decay_t<decltype(val)>;
-                if constexpr (std::is_same_v<T, int64_t> ||
-                              std::is_same_v<T, uint64_t>) {
+                if constexpr (std::is_same_v<T, int64_t>) {
+                  if (val < 0 && zero_pad) {
+                    String num_str = String::Number(val);
+                    if (width > num_str.length()) {
+                      builder.Append('-');
+                      Pad('0', width, num_str.length(), builder);
+                      builder.Append(StringView(num_str, 1));
+                    } else {
+                      builder.Append(num_str);
+                    }
+                  } else {
+                    String num_str = String::Number(val);
+                    Pad(zero_pad ? '0' : ' ', width, num_str.length(), builder);
+                    builder.Append(num_str);
+                  }
+                } else if constexpr (std::is_same_v<T, uint64_t>) {
                   String num_str = String::Number(val);
-                  Pad(' ', width, num_str.length(), builder);
+                  Pad(zero_pad ? '0' : ' ', width, num_str.length(), builder);
                   builder.Append(num_str);
                 } else if constexpr (std::is_same_v<T, StringView>) {
                   builder.Append(val);

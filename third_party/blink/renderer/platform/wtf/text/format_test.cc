@@ -67,13 +67,16 @@ TEST(FormatTest, WidthSpecifier) {
   EXPECT_EQ("12345", Format("{:2}", 12345));
   EXPECT_EQ("42", Format("{:0}", 42));
 
-  // Zero-padding is not supported yet.
-  EXPECT_NE("00042", Format("{:05}", 42));
-  EXPECT_NE("-042", Format("{:04}", -42));
+  // Zero-padding.
+  EXPECT_EQ("00042", Format("{:05}", 42));
+  EXPECT_EQ("-042", Format("{:04}", -42));
   EXPECT_EQ("12345", Format("{:02}", 12345));
+  EXPECT_EQ("-12345", Format("{:04}", -12345));
+  EXPECT_EQ("00042", Format("{:05}", 42u));
 
   // Strings (Left-aligned / padded on right)
   EXPECT_EQ("abc  ", Format("{:5}", StringView("abc")));
+  EXPECT_EQ("abc  ", Format("{:05}", StringView("abc")));
   EXPECT_EQ("abc", Format("{:2}", StringView("abc")));
 
   // Multiple width specifiers

@@ -206,10 +206,10 @@ WTF_EXPORT StringBuilder& VFormatTo(StringBuilder& builder,
 // Format String Specifications:
 // - Encoding: Expects ASCII / Latin1 string literals or `std::string_view`
 //   convertible types.
-// - Placeholders: Unindexed `{}` or `{:}` and width-specified `{:width}`
-//   (where width is a 32-bit unsigned integer) are supported. Positional (e.g.
-//   `{0}`) or typed (e.g. `{:d}`) format specifiers are currently not
-//   supported.
+// - Placeholders: Unindexed `{}` or `{:}` and width-specified `{:width}` or
+//   zero-padded `{:0width}` (where width is a 32-bit unsigned integer) are
+//   supported. Positional (e.g. `{0}`) or typed (e.g. `{:d}`) format
+//   specifiers are currently not supported.
 // - Escaping: `{{` outputs `{`, and `}}` outputs `}`.
 //
 // Supported Argument Types:
