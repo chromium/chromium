@@ -128,7 +128,7 @@ public class SettingsNavigationHelperTest {
     @Test
     @SmallTest
     public void testDoesntLaunchOrRecordAddressesSettingsWithoutContext() {
-        assertFalse(SettingsNavigationHelper.showAutofillCreditCardSettings(null));
+        assertFalse(SettingsNavigationHelper.showAutofillProfileSettings(null));
         assertFalse(mActionTester.getActions().contains("AutofillAddressesViewed"));
         verifyNoInteractions(mMockLauncher);
     }
