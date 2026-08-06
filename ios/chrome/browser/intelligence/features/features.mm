@@ -32,19 +32,30 @@ bool IsEnhancedCalendarEnabled() {
   return base::FeatureList::IsEnabled(kEnhancedCalendar);
 }
 
-// Launched in en-US, but remains disabled by default for other locales.
+// Launched for kDefaultEnabledCountries and kDefaultEnabledLocales, but
+// remains disabled by default for other locales and countries.
 BASE_FEATURE(kPageActionMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGeminiKillSwitch, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Default enabled countries for PageActionMenu in Gemini for Chrome
-// Expansion V2.
-constexpr std::array<std::string_view, 53> kDefaultEnabledCountries = {
-    "as", "au", "bd", "bn", "bt", "ca", "cc", "ck", "cx", "fj", "fm",
-    "gu", "hk", "hm", "id", "in", "kh", "ki", "kr", "la", "lk", "mh",
-    "mm", "mn", "mo", "mp", "mv", "my", "nc", "nf", "np", "nr", "nu",
-    "nz", "pf", "pg", "ph", "pk", "pn", "pw", "sb", "sg", "th", "tk",
-    "tl", "to", "tv", "tw", "us", "vn", "vu", "wf", "ws"};
+// Expansion V3.
+constexpr std::array<std::string_view, 171> kDefaultEnabledCountries = {
+    "ae", "ag", "am", "ao", "aq", "ar", "as", "au", "az", "ba", "bb", "bd",
+    "bf", "bh", "bi", "bj", "bn", "bo", "br", "bs", "bt", "bw", "bz", "ca",
+    "cc", "cd", "cf", "cg", "ci", "ck", "cl", "cm", "co", "cr", "cv", "cx",
+    "dj", "dm", "do", "dz", "ec", "eg", "eh", "er", "et", "fj", "fm", "ga",
+    "gd", "ge", "gh", "gm", "gn", "gq", "gt", "gu", "gw", "gy", "hk", "hm",
+    "hn", "ht", "id", "il", "in", "iq", "jm", "jo", "ke", "kg", "kh", "ki",
+    "km", "kn", "kr", "kw", "kz", "la", "lb", "lc", "lk", "lr", "ls", "ly",
+    "ma", "md", "me", "mg", "mh", "mk", "ml", "mm", "mn", "mo", "mp", "mr",
+    "mu", "mv", "mw", "mx", "my", "mz", "na", "nc", "ne", "nf", "ng", "ni",
+    "np", "nr", "nu", "nz", "om", "pa", "pe", "pf", "pg", "ph", "pk", "pn",
+    "pr", "ps", "pw", "py", "qa", "rs", "rw", "sa", "sb", "sc", "sd", "sg",
+    "sl", "sn", "so", "sr", "ss", "st", "sv", "sz", "td", "tg", "th", "tj",
+    "tk", "tl", "tm", "tn", "to", "tt", "tv", "tw", "tz", "ua", "ug", "um",
+    "us", "uy", "uz", "vc", "ve", "vi", "vn", "vu", "wf", "ws", "xk", "ye",
+    "za", "zm", "zw"};
 
 // Default enabled locales for PageActionMenu. Locales are
 // matching Bluebird in chrome/browser/glic/public/glic_enabling.cc.
