@@ -802,6 +802,7 @@ if (is_android) {
     sources = [
       "src/org/chromium/chrome/browser/download/DownloadOpenRequestTest.java",
       "src/org/chromium/chrome/browser/download/DownloadSharedPreferenceEntryTest.java",
+      "src/org/chromium/chrome/browser/download/DownloadUtilsUnitTest.java",
       "src/org/chromium/chrome/browser/download/OfflineContentAvailabilityStatusProviderTest.java",
       "src/org/chromium/chrome/browser/download/items/OfflineContentAggregatorNotificationBridgeUiTest.java",
       "src/org/chromium/chrome/browser/download/service/DownloadBackgroundTaskTest.java",
