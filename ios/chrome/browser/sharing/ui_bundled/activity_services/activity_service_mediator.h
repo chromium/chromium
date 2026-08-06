@@ -14,6 +14,10 @@ namespace bookmarks {
 class BookmarkModel;
 }
 
+namespace send_tab_to_self {
+class SendTabToSelfSyncService;
+}
+
 @protocol BookmarksCommands;
 @protocol BrowserCoordinatorCommands;
 @class ChromeActivityImageSource;
@@ -42,18 +46,20 @@ class WebNavigationBrowserAgent;
 // states. `baseViewController` can be passed to activities which need to
 // present VCs.
 - (instancetype)
-     initWithBrowserHandler:(id<BrowserCoordinatorCommands>)browserHandler
-          findInPageHandler:(id<FindInPageCommands>)findInPageHandler
-       sendTabToSelfHandler:(id<SendTabToSelfCommands>)sendTabToSelfHandler
-           bookmarksHandler:(id<BookmarksCommands>)bookmarksHandler
-                helpHandler:(id<HelpCommands>)helpHandler
-        qrGenerationHandler:(id<QRGenerationCommands>)qrGenerationHandler
-                prefService:(PrefService*)prefService
-              bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
-         baseViewController:(UIViewController*)baseViewController
-            navigationAgent:(WebNavigationBrowserAgent*)agent
-    readingListBrowserAgent:(ReadingListBrowserAgent*)readingListBrowserAgent
-    NS_DESIGNATED_INITIALIZER;
+      initWithBrowserHandler:(id<BrowserCoordinatorCommands>)browserHandler
+           findInPageHandler:(id<FindInPageCommands>)findInPageHandler
+        sendTabToSelfHandler:(id<SendTabToSelfCommands>)sendTabToSelfHandler
+            bookmarksHandler:(id<BookmarksCommands>)bookmarksHandler
+                 helpHandler:(id<HelpCommands>)helpHandler
+         qrGenerationHandler:(id<QRGenerationCommands>)qrGenerationHandler
+                 prefService:(PrefService*)prefService
+               bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
+          baseViewController:(UIViewController*)baseViewController
+             navigationAgent:(WebNavigationBrowserAgent*)agent
+     readingListBrowserAgent:(ReadingListBrowserAgent*)readingListBrowserAgent
+    sendTabToSelfSyncService:
+        (send_tab_to_self::SendTabToSelfSyncService*)sendTabToSelfSyncService
+               userGivenName:(NSString*)userGivenName NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Scheduler to notify about events happening in this activity.

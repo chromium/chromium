@@ -45,6 +45,8 @@
 @interface ActivityServiceMediator () {
   // The custom activities created by the mediator.
   NSMutableArray<ChromeActivity*>* _activities;
+  // The user's given name used to format target device titles in Share Sheet.
+  NSString* _userGivenName;
 }
 
 @property(nonatomic, weak) id<BrowserCoordinatorCommands> browserHandler;
@@ -70,6 +72,9 @@
 
 @property(nonatomic, readonly) ReadingListBrowserAgent* readingListBrowserAgent;
 
+@property(nonatomic, assign)
+    send_tab_to_self::SendTabToSelfSyncService* sendTabToSelfSyncService;
+
 @end
 
 @implementation ActivityServiceMediator
@@ -77,17 +82,20 @@
 #pragma mark - Public
 
 - (instancetype)
-     initWithBrowserHandler:(id<BrowserCoordinatorCommands>)browserHandler
-          findInPageHandler:(id<FindInPageCommands>)findInPageHandler
-       sendTabToSelfHandler:(id<SendTabToSelfCommands>)sendTabToSelfHandler
-           bookmarksHandler:(id<BookmarksCommands>)bookmarksHandler
-                helpHandler:(id<HelpCommands>)helpHandler
-        qrGenerationHandler:(id<QRGenerationCommands>)qrGenerationHandler
-                prefService:(PrefService*)prefService
-              bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
-         baseViewController:(UIViewController*)baseViewController
-            navigationAgent:(WebNavigationBrowserAgent*)navigationAgent
-    readingListBrowserAgent:(ReadingListBrowserAgent*)readingListBrowserAgent {
+      initWithBrowserHandler:(id<BrowserCoordinatorCommands>)browserHandler
+           findInPageHandler:(id<FindInPageCommands>)findInPageHandler
+        sendTabToSelfHandler:(id<SendTabToSelfCommands>)sendTabToSelfHandler
+            bookmarksHandler:(id<BookmarksCommands>)bookmarksHandler
+                 helpHandler:(id<HelpCommands>)helpHandler
+         qrGenerationHandler:(id<QRGenerationCommands>)qrGenerationHandler
+                 prefService:(PrefService*)prefService
+               bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
+          baseViewController:(UIViewController*)baseViewController
+             navigationAgent:(WebNavigationBrowserAgent*)navigationAgent
+     readingListBrowserAgent:(ReadingListBrowserAgent*)readingListBrowserAgent
+    sendTabToSelfSyncService:
+        (send_tab_to_self::SendTabToSelfSyncService*)sendTabToSelfSyncService
+               userGivenName:(NSString*)userGivenName {
   if ((self = [super init])) {
     _browserHandler = browserHandler;
     _findInPageHandler = findInPageHandler;
@@ -100,6 +108,8 @@
     _baseViewController = baseViewController;
     _navigationAgent = navigationAgent;
     _readingListBrowserAgent = readingListBrowserAgent;
+    _sendTabToSelfSyncService = sendTabToSelfSyncService;
+    _userGivenName = userGivenName;
     _activities = [[NSMutableArray alloc] init];
   }
   return self;
@@ -144,10 +154,12 @@
   ShareToData* data = dataItems.firstObject;
 
   if (data.shareURL.SchemeIsHTTPOrHTTPS()) {
-    SendTabToSelfActivity* sendTabToSelfActivity =
-        [[SendTabToSelfActivity alloc] initWithData:data
-                                            handler:self.sendTabToSelfHandler];
-    [applicationActivities addObject:sendTabToSelfActivity];
+    NSArray<UIActivity*>* sendTabToSelfActivities = [SendTabToSelfActivity
+        sendTabToSelfActivitiesForData:data
+                           syncService:self.sendTabToSelfSyncService
+                               handler:self.sendTabToSelfHandler
+                         userGivenName:_userGivenName];
+    [applicationActivities addObjectsFromArray:sendTabToSelfActivities];
 
     ReadingListActivity* readingListActivity =
         [[ReadingListActivity alloc] initWithURL:data.shareURL

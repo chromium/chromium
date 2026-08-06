@@ -169,5 +169,15 @@ TEST_F(TargetDeviceInfoWithImprovedLabelsDisabledTest,
             device_info.GetLastActiveTimeForDisplay());
 }
 
+// Tests that the default constructor initializes members to default values.
+TEST(TargetDeviceInfoTest, DefaultConstructor_InitializesDefaultValues) {
+  TargetDeviceInfo device_info;
+  EXPECT_TRUE(device_info.device_name.empty());
+  EXPECT_TRUE(device_info.cache_guid.empty());
+  EXPECT_EQ(syncer::DeviceInfo::FormFactor::kUnknown, device_info.form_factor);
+  EXPECT_TRUE(device_info.last_updated_timestamp.is_null());
+  EXPECT_FALSE(device_info.has_high_precision_timestamp);
+}
+
 }  // namespace
 }  // namespace send_tab_to_self

@@ -176,3 +176,43 @@ TEST_F(SendTabToSelfActivityTest, ActivityCategory) {
   EXPECT_EQ(UIActivityCategoryShare,
             [SendTabToSelfShareActivity activityCategory]);
 }
+
+// Tests that `sendTabToSelfActivitiesForData` returns an empty array when the
+// URL is invalid.
+TEST_F(SendTabToSelfActivityTest,
+       SendTabToSelfActivitiesForData_InvalidURLReturnsEmpty) {
+  ShareToData* data =
+      [[ShareToData alloc] initWithShareURL:GURL("chrome://version")
+                                 visibleURL:GURL("chrome://version")
+                                      title:@"Version"
+                             additionalText:nil
+                            isOriginalTitle:YES
+                            isPagePrintable:YES
+                           isPageSearchable:YES
+                           canSendTabToSelf:YES
+                                  userAgent:web::UserAgentType::MOBILE
+                         thumbnailGenerator:nil
+                               linkMetadata:nil];
+
+  NSArray<UIActivity*>* activities =
+      [SendTabToSelfActivity sendTabToSelfActivitiesForData:data
+                                                syncService:nullptr
+                                                    handler:mocked_handler_
+                                              userGivenName:@"John"];
+  EXPECT_EQ(0u, activities.count);
+}
+
+// Tests that `sendTabToSelfActivitiesForData` returns the generic activity when
+// the sync service is null.
+TEST_F(SendTabToSelfActivityTest,
+       SendTabToSelfActivitiesForData_NullSyncServiceReturnsGenericActivity) {
+  ShareToData* data = CreateData(true);
+  NSArray<UIActivity*>* activities =
+      [SendTabToSelfActivity sendTabToSelfActivitiesForData:data
+                                                syncService:nullptr
+                                                    handler:mocked_handler_
+                                              userGivenName:@"John"];
+  ASSERT_EQ(1u, activities.count);
+  EXPECT_TRUE(
+      [activities.firstObject isKindOfClass:[SendTabToSelfActivity class]]);
+}

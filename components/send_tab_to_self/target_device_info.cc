@@ -16,6 +16,8 @@
 
 namespace send_tab_to_self {
 
+TargetDeviceInfo::TargetDeviceInfo() = default;
+
 TargetDeviceInfo::TargetDeviceInfo(
     std::string device_name,
     std::string cache_guid,

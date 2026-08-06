@@ -19,6 +19,7 @@ namespace send_tab_to_self {
 // Device information for generating send tab to self UI.
 struct TargetDeviceInfo {
  public:
+  TargetDeviceInfo();
   TargetDeviceInfo(std::string device_name,
                    std::string cache_guid,
                    const syncer::DeviceInfo::FormFactor form_factor,
@@ -41,12 +42,13 @@ struct TargetDeviceInfo {
   // Device guid.
   std::string cache_guid;
   // Device Form Factor.
-  syncer::DeviceInfo::FormFactor form_factor;
+  syncer::DeviceInfo::FormFactor form_factor =
+      syncer::DeviceInfo::FormFactor::kUnknown;
   // Last updated timestamp.
   base::Time last_updated_timestamp;
   // Whether the device timestamp is highly precise (e.g. from sessions sync)
   // rather than just day-granularity.
-  bool has_high_precision_timestamp;
+  bool has_high_precision_timestamp = false;
 };
 
 }  // namespace send_tab_to_self

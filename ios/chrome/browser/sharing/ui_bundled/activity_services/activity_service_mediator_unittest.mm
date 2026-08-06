@@ -5,9 +5,13 @@
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/activity_service_mediator.h"
 
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/testing_pref_service.h"
+#import "components/send_tab_to_self/fake_send_tab_to_self_model.h"
+#import "components/send_tab_to_self/features.h"
+#import "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
@@ -60,17 +64,19 @@ class ActivityServiceMediatorTest : public PlatformTest {
         OCMStrictClassMock([ChromeActivityItemThumbnailGenerator class]);
 
     mediator_ = [[ActivityServiceMediator alloc]
-         initWithBrowserHandler:mocked_browser_handler_
-              findInPageHandler:mocked_find_in_page_handler_
-           sendTabToSelfHandler:mocked_send_tab_to_self_handler_
-               bookmarksHandler:mocked_bookmarks_handler_
-                    helpHandler:mocked_help_handler_
-            qrGenerationHandler:mocked_qr_generation_handler_
-                    prefService:pref_service_.get()
-                  bookmarkModel:nil
-             baseViewController:nil
-                navigationAgent:nil
-        readingListBrowserAgent:nil];
+          initWithBrowserHandler:mocked_browser_handler_
+               findInPageHandler:mocked_find_in_page_handler_
+            sendTabToSelfHandler:mocked_send_tab_to_self_handler_
+                bookmarksHandler:mocked_bookmarks_handler_
+                     helpHandler:mocked_help_handler_
+             qrGenerationHandler:mocked_qr_generation_handler_
+                     prefService:pref_service_.get()
+                   bookmarkModel:nil
+              baseViewController:nil
+                 navigationAgent:nil
+         readingListBrowserAgent:nil
+        sendTabToSelfSyncService:nil
+                   userGivenName:nil];
 
     pref_service_->registry()->RegisterBooleanPref(prefs::kPrintingEnabled,
                                                    true);
@@ -465,4 +471,85 @@ TEST_F(ActivityServiceMediatorTest, PrintPrefDisabled) {
 
   // Verify activities' size.
   EXPECT_EQ(7U, [activities count]);
+}
+
+// Tests that the mediator dynamically populates the target device list in the
+// Share Sheet when the feature flag is enabled and devices are available,
+// formatting titles with the user's given name and capping target devices at 2.
+TEST_F(
+    ActivityServiceMediatorTest,
+    ApplicationActivitiesForDataItems_PopulatesCappedTargetDevicesWithGivenName) {
+  @autoreleasepool {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        send_tab_to_self::kSendTabToSelfIOSShareSheetDeviceList);
+
+    send_tab_to_self::StubSendTabToSelfSyncService sync_service;
+    send_tab_to_self::FakeSendTabToSelfModel* model =
+        static_cast<send_tab_to_self::FakeSendTabToSelfModel*>(
+            sync_service.GetSendTabToSelfModel());
+
+    // Explicitly set target device list order using
+    // SetTargetDeviceInfoSortedList.
+    std::vector<send_tab_to_self::TargetDeviceInfo> devices = {
+        send_tab_to_self::TargetDeviceInfo(
+            "Phone", "phone_guid", syncer::DeviceInfo::FormFactor::kPhone,
+            base::Time::Now()),
+        send_tab_to_self::TargetDeviceInfo(
+            "Tablet", "tablet_guid", syncer::DeviceInfo::FormFactor::kTablet,
+            base::Time::Now()),
+        send_tab_to_self::TargetDeviceInfo(
+            "Desktop", "desktop_guid", syncer::DeviceInfo::FormFactor::kDesktop,
+            base::Time::Now()),
+    };
+    model->SetTargetDeviceInfoSortedList(devices);
+    model->SetIsReady(true);
+
+    ActivityServiceMediator* mediator = [[ActivityServiceMediator alloc]
+          initWithBrowserHandler:mocked_browser_handler_
+               findInPageHandler:mocked_find_in_page_handler_
+            sendTabToSelfHandler:mocked_send_tab_to_self_handler_
+                bookmarksHandler:mocked_bookmarks_handler_
+                     helpHandler:mocked_help_handler_
+             qrGenerationHandler:mocked_qr_generation_handler_
+                     prefService:pref_service_.get()
+                   bookmarkModel:nil
+              baseViewController:nil
+                 navigationAgent:nil
+         readingListBrowserAgent:nil
+        sendTabToSelfSyncService:&sync_service
+                   userGivenName:@"John"];
+
+    ShareToData* data =
+        [[ShareToData alloc] initWithShareURL:GURL("http://example.com")
+                                   visibleURL:GURL("http://example.com")
+                                        title:@"baz"
+                               additionalText:nil
+                              isOriginalTitle:YES
+                              isPagePrintable:YES
+                             isPageSearchable:YES
+                             canSendTabToSelf:YES
+                                    userAgent:web::UserAgentType::MOBILE
+                           thumbnailGenerator:mocked_thumbnail_generator_
+                                 linkMetadata:nil];
+
+    NSArray* activities =
+        [mediator applicationActivitiesForDataItems:@[ data ]];
+
+    // Target devices are capped at max 2 devices (Phone and Tablet).
+    VerifyTypes(activities, @[
+      [CopyActivity class], [SendTabToSelfActivity class],
+      [SendTabToSelfShareActivity class], [SendTabToSelfShareActivity class],
+      [ReadingListActivity class], [BookmarkActivity class],
+      [GenerateQrCodeActivity class], [FindInPageActivity class],
+      [RequestDesktopOrMobileSiteActivity class], [PrintActivity class]
+    ]);
+
+    SendTabToSelfShareActivity* phone_activity = activities[2];
+    SendTabToSelfShareActivity* tablet_activity = activities[3];
+
+    // Verify device titles match formatted "Name • device_name" string.
+    EXPECT_NSEQ(@"John • Phone", [phone_activity activityTitle]);
+    EXPECT_NSEQ(@"John • Tablet", [tablet_activity activityTitle]);
+  }
 }
