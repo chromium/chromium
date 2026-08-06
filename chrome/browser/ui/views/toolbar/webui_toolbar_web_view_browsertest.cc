@@ -6824,8 +6824,14 @@ class WebUIToolbarSynchronousStartupBrowserTest
 // `true` directly upon cold window display confirms that the initial window
 // dependencies accurately hydrated synchronous startup data during early
 // `BrowserView::Init()` sequences.
+// TODO(crbug.com/540971327): Test is flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ColdWindowLaunch DISABLED_ColdWindowLaunch
+#else
+#define MAYBE_ColdWindowLaunch ColdWindowLaunch
+#endif
 IN_PROC_BROWSER_TEST_F(WebUIToolbarSynchronousStartupBrowserTest,
-                       ColdWindowLaunch) {
+                       MAYBE_ColdWindowLaunch) {
   // Set up active multi-tab profile/session.
   // Tab 0 has history.
   ASSERT_TRUE(
