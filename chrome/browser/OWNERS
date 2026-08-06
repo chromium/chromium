@@ -61,6 +61,8 @@ per-file flag-never-expire-list.json=ellyjones@chromium.org
 
 per-file load_library_perf_test.*=xhwang@chromium.org
 
+per-file multi_network_browser_test.cc=stefanoduo@google.com
+
 per-file *.mm=file://ui/base/cocoa/OWNERS
 per-file *_mac.h=file://ui/base/cocoa/OWNERS
 

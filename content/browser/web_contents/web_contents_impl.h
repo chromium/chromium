@@ -1659,6 +1659,10 @@ class CONTENT_EXPORT WebContentsImpl
     return current_fullscreen_frame_id_;
   }
 
+  void set_target_network_for_testing(net::handles::NetworkHandle network) {
+    target_network_ = network;
+  }
+
   ui::mojom::VirtualKeyboardMode GetVirtualKeyboardMode() const;
 
   const std::optional<base::Location>& ownership_location() const {

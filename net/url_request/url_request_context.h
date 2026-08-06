@@ -270,6 +270,30 @@ class NET_EXPORT URLRequestContext final {
     job_factory_ = job_factory;
   }
 
+  // If `target_network` is not empty, configures URLRequestContext for
+  // multi-networking tests, enabling checks for every URLRequest created. When
+  // `CreateRequest` is called with network X, if:
+  // - X does not match `target_network`, we CHECK-fail (see `CreateRequest` for
+  //   more details).
+  // - X matches `target_network`, X is ignored and the URLRequest is sent over
+  //   the default network.
+  // If `target_network` is empty, the behavior is reset to the default (no
+  // checking takes place).
+  // NOTE: this is necessary to prevent requests triggered by multi-network
+  // tests to fail due to a fake network handle being used. Unfortunately,
+  // Android does not offer a way to easily setup fake networks for testing
+  // purposes, so this is the best we can do. Nevertheless, this allows
+  // multi-network tests to still confirm that the target network is correctly
+  // propagated through the stack.
+  void set_expected_target_network_for_testing(
+      std::optional<handles::NetworkHandle> target_network) {
+    expected_target_network_for_testing_ = target_network;
+  }
+  std::optional<handles::NetworkHandle> expected_target_network_for_testing()
+      const {
+    return expected_target_network_for_testing_;
+  }
+
  private:
   friend class URLRequestContextBuilder;
 
@@ -419,6 +443,8 @@ class NET_EXPORT URLRequestContext final {
   bool require_network_anonymization_key_ = false;
 
   handles::NetworkHandle bound_network_;
+
+  std::optional<handles::NetworkHandle> expected_target_network_for_testing_;
 
   THREAD_CHECKER(thread_checker_);
 };

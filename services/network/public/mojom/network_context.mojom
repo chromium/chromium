@@ -997,6 +997,11 @@ struct URLLoaderFactoryParams {
   // (e.g., a subframe whose effective top frame for storage
   // partitioning differs from the actual top frame).
   bool prefer_factory_site_for_cookies = false;
+
+  // If available, the network that URLLoaders, created out of this factory,
+  // will target. If absent, the default network is instead used. Represents a
+  //net::handles::NetworkHandle. See URLRequestContext::CreateRequest.
+  int64? target_network;
 };
 
 struct IdAndAllowlistedPatterns {
@@ -1876,12 +1881,6 @@ interface NetworkContext {
            MutableNetworkTrafficAnnotationTag traffic_annotation,
            mojo_base.mojom.UnguessableToken network_restrictions_id);
 
-  // Returns whether this NetworkContext was bound to a network.
-  // `bound_network` represents a net::handles::NetworkHandle,
-  // `bound_network` == -1 means that this NetworkContext is not bound to any
-  // network. Refer to NetworkContextParams::bound_network for more info.
-  GetBoundNetworkForTesting() => (int64 bound_network);
-
   // Gets the DeviceBoundSessionManager associated with this network context.
   //
   // This must only be passed to trusted processes.
@@ -1896,4 +1895,19 @@ interface NetworkContext {
 
   // Updates the variations headers to be used for requests.
   SetVariationsHeaders(variations.mojom.VariationsHeaders? variations_headers);
+
+  // Sets the expected target network to test Chrome's multi-networking.
+  // See net::URLRequestContext::set_expected_target_network_for_testing, and
+  // chrome/browser/multi_network_browser_test.cc, for details.
+  // NOTE: Ideally we would expose this via NetworkServiceTest's mojo APIs.
+  // Having said that, we need the ability to target the NetworkContext
+  // associated with the default storage partition. Doing that via a
+  // NetworkContext API is trivial, since the test environment already has
+  // access to the NetworkContext it cares about. Doing so via a
+  // NetworkServiceTest API requires being able to identify and target specific
+  // NetworkContexts, which is currently not possible.
+  // TODO(crbug.com/543274233): Drop this in favor of an API exposed via
+  // NetworkServiceTest that directly affects the socket layer. See the bug and
+  // https://crrev.com/c/7904261/comment/43ee0e22_e82eef35/ for more details.
+  SetExpectedTargetNetworkForTesting(int64? target_network);
 };

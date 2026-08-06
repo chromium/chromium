@@ -533,7 +533,7 @@ ScopedMockContentBrowserClient::ScopedMockContentBrowserClient() {
       WillCreateURLLoaderFactory(
           _, _, _,
           ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource, _,
-          _, _, _, _, _, _, _, _, _))
+          _, _, _, _, _, _, _, _, _, _))
       .Times(::testing::AnyNumber());
 }
 

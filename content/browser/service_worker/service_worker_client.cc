@@ -1413,7 +1413,8 @@ ServiceWorkerClient::CreateNetworkURLLoaderFactory(
           frame_tree_node->navigation_request()->GetNextPageUkmSourceId()),
       factory_builder, &header_client, &bypass_redirect_checks_,
       /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr,
-      GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
+      GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}),
+      /*is_for_network_service=*/true);
 
   // Record the number of interceptors for metrics.
   factory_interceptor_count_ = factory_builder.num_interceptors();

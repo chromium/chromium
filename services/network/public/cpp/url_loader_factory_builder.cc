@@ -4,6 +4,11 @@
 
 #include "services/network/public/cpp/url_loader_factory_builder.h"
 
+#include <ostream>
+
+#include "base/check_op.h"
+#include "base/logging.h"
+
 namespace network {
 
 URLLoaderFactoryBuilder::URLLoaderFactoryBuilder() = default;
@@ -36,6 +41,15 @@ URLLoaderFactoryBuilder::Append() {
                          std::move(factory_remote));
 }
 
+void URLLoaderFactoryBuilder::SetTargetNetwork(
+    net::handles::NetworkHandle target_network) {
+  target_network_ = target_network;
+}
+
+bool URLLoaderFactoryBuilder::RequiresFreshFactory() const {
+  return target_network_ != net::handles::kInvalidNetworkHandle;
+}
+
 bool URLLoaderFactoryBuilder::IsEmpty() const {
   CHECK_EQ(head_.is_valid(), tail_.is_valid());
   return !head_.is_valid();
@@ -54,12 +68,18 @@ bool URLLoaderFactoryBuilder::IsEmpty() const {
 void URLLoaderFactoryBuilder::ConnectTerminal(
     mojo::PendingReceiver<mojom::URLLoaderFactory> pending_receiver,
     mojo::Remote<mojom::URLLoaderFactory> terminal_factory) {
+  CHECK_EQ(target_network_, net::handles::kInvalidNetworkHandle)
+      << "target_network set on builder but terminal is an already created "
+         "factory.";
   terminal_factory->Clone(std::move(pending_receiver));
 }
 
 void URLLoaderFactoryBuilder::ConnectTerminal(
     mojo::PendingReceiver<mojom::URLLoaderFactory> pending_receiver,
     mojo::PendingRemote<mojom::URLLoaderFactory> terminal_factory) {
+  CHECK_EQ(target_network_, net::handles::kInvalidNetworkHandle)
+      << "target_network set on builder but terminal is an already created "
+         "factory.";
   mojo::Remote<mojom::URLLoaderFactory>(std::move(terminal_factory))
       ->Clone(std::move(pending_receiver));
 }
@@ -67,6 +87,9 @@ void URLLoaderFactoryBuilder::ConnectTerminal(
 void URLLoaderFactoryBuilder::ConnectTerminal(
     mojo::PendingReceiver<mojom::URLLoaderFactory> pending_receiver,
     scoped_refptr<SharedURLLoaderFactory> terminal_factory) {
+  CHECK_EQ(target_network_, net::handles::kInvalidNetworkHandle)
+      << "target_network set on builder but terminal is an already created "
+         "factory.";
   terminal_factory->Clone(std::move(pending_receiver));
 }
 
@@ -74,6 +97,9 @@ void URLLoaderFactoryBuilder::ConnectTerminal(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver,
     network::mojom::NetworkContext* terminal_context,
     network::mojom::URLLoaderFactoryParamsPtr factory_param) {
+  if (target_network_ != net::handles::kInvalidNetworkHandle) {
+    factory_param->target_network = target_network_;
+  }
   terminal_context->CreateURLLoaderFactory(std::move(pending_receiver),
                                            std::move(factory_param));
 }

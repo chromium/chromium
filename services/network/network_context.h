@@ -617,15 +617,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       const base::UnguessableToken& network_restrictions_id) override;
 
-  void GetBoundNetworkForTesting(
-      GetBoundNetworkForTestingCallback callback) override;
-
   void AddQuicHints(
       const std::vector<url::SchemeHostPort>& origins,
       const net::NetworkAnonymizationKey& network_anonymization_key) override;
 
   void SetVariationsHeaders(
       variations::mojom::VariationsHeadersPtr variations_headers) override;
+
+  void SetExpectedTargetNetworkForTesting(
+      std::optional<int64_t> target_network) override;
 
   void GetDeviceBoundSessionManager(
       mojo::PendingReceiver<network::mojom::DeviceBoundSessionManager>
@@ -717,10 +717,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
     return url_loader_factories_.size();
   }
 
-  // Returns whether all URLLoaderFactories owned by `this` are bound to
-  // `bound_network`.
-  bool AllURLLoaderFactoriesAreBoundToNetworkForTesting(
-      net::handles::NetworkHandle bound_network) const;
+  // Returns how many URLLoaderFactories owned by `this` are bound to
+  // `target_network`.
+  size_t CountURLLoaderFactoriesBoundToNetworkForTesting(
+      net::handles::NetworkHandle target_network) const;
 
   GURL GetNetworkRestrictionResponseUrlForTesting(
       const base::UnguessableToken& network_restrictions_id) const;

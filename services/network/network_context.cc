@@ -2809,14 +2809,12 @@ WebTransport* NetworkContext::GetWebTransportForTesting() {
   return web_transports_.begin()->get();
 }
 
-bool NetworkContext::AllURLLoaderFactoriesAreBoundToNetworkForTesting(
+size_t NetworkContext::CountURLLoaderFactoriesBoundToNetworkForTesting(
     net::handles::NetworkHandle target_network) const {
-  for (const auto& factory : url_loader_factories_) {
-    if (factory->GetBoundNetworkForTesting() != target_network) {
-      return false;
-    }
-  }
-  return true;
+  return std::ranges::count_if(
+      url_loader_factories_, [target_network](const auto& factory) {
+        return factory->GetBoundNetworkForTesting() == target_network;
+      });
 }
 
 void NetworkContext::OnHttpAuthDynamicParamsChanged(
@@ -3847,11 +3845,6 @@ void NetworkContext::Prefetch(
       client->BindNewPipeAndPassRemote(), traffic_annotation);
 }
 
-void NetworkContext::GetBoundNetworkForTesting(
-    GetBoundNetworkForTestingCallback callback) {
-  std::move(callback).Run(url_request_context()->bound_network());
-}
-
 void NetworkContext::GetDeviceBoundSessionManager(
     mojo::PendingReceiver<network::mojom::DeviceBoundSessionManager>
         device_bound_session_manager) {
@@ -4054,6 +4047,11 @@ void NetworkContext::SetVariationsHeaders(
     variations::mojom::VariationsHeadersPtr variations_headers) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   variations_headers_ = std::move(variations_headers);
+}
+
+void NetworkContext::SetExpectedTargetNetworkForTesting(
+    std::optional<int64_t> target_network) {
+  url_request_context_->set_expected_target_network_for_testing(target_network);
 }
 
 bool NetworkContext::HasCookieAccessForDeviceBoundSession(

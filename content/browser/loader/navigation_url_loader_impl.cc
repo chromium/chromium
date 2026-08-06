@@ -2265,7 +2265,8 @@ NavigationURLLoaderImpl::CreateNetworkLoaderFactory(
       frame_tree_node->navigation_request()->GetNavigationId(), ukm_id,
       factory_builder, &header_client, bypass_redirect_checks,
       /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr,
-      GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
+      GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}),
+      /*is_for_network_service=*/true);
 
   auto devtools_params =
       devtools_instrumentation::WillCreateURLLoaderFactoryParams::ForFrame(
@@ -2299,7 +2300,8 @@ NavigationURLLoaderImpl::CreateNetworkLoaderFactory(
             std::move(cookie_overrides),
             network::GetNoOpNetworkRestrictionsId()));
   } else {
-    if (!devtools_cookie_overrides.empty() || !cookie_overrides.empty()) {
+    if (!devtools_cookie_overrides.empty() || !cookie_overrides.empty() ||
+        factory_builder.RequiresFreshFactory()) {
       network::mojom::URLLoaderFactoryParamsPtr params =
           storage_partition->CreateURLLoaderFactoryParams();
       params->devtools_cookie_setting_overrides =

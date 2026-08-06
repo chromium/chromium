@@ -404,8 +404,6 @@ class TestNetworkContext : public mojom::NetworkContext {
       const ResourceRequest& request,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       const base::UnguessableToken& network_restrictions_id) override {}
-  void GetBoundNetworkForTesting(
-      GetBoundNetworkForTestingCallback callback) override {}
   void GetDeviceBoundSessionManager(
       mojo::PendingReceiver<network::mojom::DeviceBoundSessionManager>
           device_bound_session_manager) override {}
@@ -414,6 +412,8 @@ class TestNetworkContext : public mojom::NetworkContext {
       const net::NetworkAnonymizationKey& network_anonymization_key) override {}
   void SetVariationsHeaders(
       variations::mojom::VariationsHeadersPtr variations_headers) override {}
+  void SetExpectedTargetNetworkForTesting(
+      std::optional<int64_t> target_network) override {}
 };
 
 }  // namespace network

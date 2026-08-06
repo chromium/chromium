@@ -4,7 +4,9 @@
 
 #include "services/network/public/cpp/url_loader_factory_builder.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -239,6 +241,17 @@ TEST_F(URLLoaderFactoryBuilderTest, Empty) {
   CreateLoaderAndStart(result);
   run_loop.Run();
   EXPECT_THAT(GetLogs(), ElementsAre("Terminal"));
+}
+
+TEST_F(URLLoaderFactoryBuilderTest, RequiresFreshFactory) {
+  URLLoaderFactoryBuilder factory_builder;
+  EXPECT_FALSE(factory_builder.RequiresFreshFactory());
+
+  factory_builder.SetTargetNetwork(1);
+  EXPECT_TRUE(factory_builder.RequiresFreshFactory());
+
+  factory_builder.SetTargetNetwork(net::handles::kInvalidNetworkHandle);
+  EXPECT_FALSE(factory_builder.RequiresFreshFactory());
 }
 
 // ================================================================
@@ -482,6 +495,33 @@ TEST_F(URLLoaderFactoryBuilderTest, PendingRemoteFromTerminalNetworkContext) {
   run_loop.Run();
   EXPECT_THAT(GetLogs(),
               ElementsAre("Interceptor1", "Interceptor2", "Terminal"));
+}
+
+TEST_F(URLLoaderFactoryBuilderTest, FinishWithTargetNetworkAsserts) {
+  // 1. Test with SharedURLLoaderFactory terminal
+  {
+    URLLoaderFactoryBuilder factory_builder;
+    factory_builder.SetTargetNetwork(123);
+    scoped_refptr<SharedURLLoaderFactory> terminal =
+        LoggingURLLoaderFactory::CreateTerminal(this, "Terminal",
+                                                base::DoNothing());
+
+    EXPECT_CHECK_DEATH(
+        std::ignore = std::move(factory_builder).Finish(std::move(terminal)));
+  }
+
+  // 2. Test with PendingRemote<URLLoaderFactory> terminal
+  {
+    URLLoaderFactoryBuilder factory_builder;
+    factory_builder.SetTargetNetwork(123);
+    mojo::PendingRemote<mojom::URLLoaderFactory> terminal_remote;
+    std::ignore = terminal_remote.InitWithNewPipeAndPassReceiver();
+
+    EXPECT_CHECK_DEATH(
+        std::ignore = std::move(factory_builder)
+                          .Finish<mojo::PendingRemote<mojom::URLLoaderFactory>>(
+                              std::move(terminal_remote)));
+  }
 }
 
 }  // namespace

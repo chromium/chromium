@@ -417,7 +417,19 @@ CreatePendingSharedURLLoaderFactory(StoragePartitionImpl* storage_partition,
         ukm::kInvalidSourceIdObj, factory_builder, /*header_client=*/nullptr,
         /*bypass_redirect_checks=*/nullptr, /*disable_secure_dns=*/nullptr,
         /*factory_override=*/nullptr,
-        /*navigation_response_task_runner=*/nullptr);
+        /*navigation_response_task_runner=*/nullptr,
+        /*is_for_network_service=*/true);
+  }
+
+  if (factory_builder.RequiresFreshFactory()) {
+    network::mojom::URLLoaderFactoryParamsPtr params =
+        storage_partition->CreateURLLoaderFactoryParams();
+    auto factory =
+        std::move(factory_builder)
+            .Finish<mojo::PendingRemote<network::mojom::URLLoaderFactory>>(
+                storage_partition->GetNetworkContext(), std::move(params));
+    return std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
+        std::move(factory));
   }
 
   return std::make_unique<network::PendingSharedURLLoaderFactoryWithBuilder>(

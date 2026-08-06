@@ -1967,7 +1967,8 @@ ServiceWorkerContextWrapper::GetLoaderFactoryForBrowserInitiatedRequest(
       &header_client, &bypass_redirect_checks,
       /*disable_secure_dns=*/nullptr,
       /*factory_override=*/nullptr,
-      /*navigation_response_task_runner=*/nullptr);
+      /*navigation_response_task_runner=*/nullptr,
+      /*is_for_network_service=*/true);
 
   // If we have a version_id, we are fetching a worker main script. We have a
   // DevtoolsAgentHost ready for the worker and we can add the devtools override

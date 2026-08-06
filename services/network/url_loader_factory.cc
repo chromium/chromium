@@ -412,7 +412,9 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
 
 net::handles::NetworkHandle URLLoaderFactory::GetBoundNetworkForTesting()
     const {
-  return context_->url_request_context()->bound_network();
+  auto target_network =
+      params_->target_network.value_or(net::handles::kInvalidNetworkHandle);
+  return target_network;
 }
 
 mojom::DevToolsObserver* URLLoaderFactory::GetDevToolsObserver() const {

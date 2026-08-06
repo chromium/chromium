@@ -175,8 +175,8 @@ class TestBrowserClientWithHeaderClient
       bool* bypass_redirect_checks,
       bool* disable_secure_dns,
       network::mojom::URLLoaderFactoryOverridePtr* factory_override,
-      scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner)
-      override {
+      scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner,
+      bool is_for_network_service) override {
     if (header_client) {
       receivers_.Add(this, header_client->InitWithNewPipeAndPassReceiver());
     }

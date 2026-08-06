@@ -62,8 +62,8 @@ public class WebContentsFactory {
      * @param initiallyHidden Whether or not the {@link WebContents} should be initially hidden.
      * @param initializeRenderer Whether or not the {@link WebContents} should initialize renderer.
      * @param targetNetwork target bound network, also refer to the documentation of {@link
-     *     ChromeContentBrowserClient::MaybeProxyNetworkBoundRequest} on how to use targetNetwork at
-     *     the native layer.
+     *     ChromeContentBrowserClient::MaybeSetTargetNetwork} on how to use targetNetwork at the
+     *     native layer.
      * @return A newly created {@link WebContents} object.
      */
     public static WebContents createWebContents(

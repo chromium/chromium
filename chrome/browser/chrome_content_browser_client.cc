@@ -1729,74 +1729,15 @@ void ChromeContentBrowserClient::DisableAdvancedProtectionCachingForTests() {
   g_disable_advanced_protection_caching_for_tests = true;
 }
 
-void ChromeContentBrowserClient::MaybeProxyNetworkBoundRequest(
-    content::BrowserContext* browser_context,
+void ChromeContentBrowserClient::MaybeSetTargetNetwork(
     net::handles::NetworkHandle bound_network,
     network::URLLoaderFactoryBuilder& factory_builder,
-    network::mojom::URLLoaderFactoryOverridePtr* factory_override,
-    const net::IsolationInfo& isolation_info) {
-  if (bound_network == net::handles::kInvalidNetworkHandle) {
+    bool is_for_network_service) {
+  if (bound_network == net::handles::kInvalidNetworkHandle ||
+      !is_for_network_service) {
     return;
   }
-
-  // We support one network-bound NetworkContext at most. If a new one is
-  // needed, make sure to clean up the previous one first.
-  if (bound_network != target_network_for_network_bound_network_context_) {
-    network_bound_network_context_ =
-        mojo::Remote<network::mojom::NetworkContext>();
-    network::mojom::NetworkContextParamsPtr context_params =
-        network::mojom::NetworkContextParams::New();
-    context_params->bound_network = bound_network;
-    context_params->cert_verifier_params = content::GetCertVerifierParams(
-        cert_verifier::mojom::CertVerifierCreationParams::New());
-    context_params->enable_domain_reliability = false;
-    ConfigureNetworkContextParams(
-        browser_context, true, base::FilePath(), context_params.get(),
-        cert_verifier::mojom::CertVerifierCreationParams::New().get());
-    content::CreateNetworkContextInNetworkService(
-        network_bound_network_context_.BindNewPipeAndPassReceiver(),
-        std::move(context_params));
-    target_network_for_network_bound_network_context_ = bound_network;
-  }
-
-  // TLDR; if `factory_override` != nullptr, this is being called for the
-  // creation of a 2-layer URLLoaderFactory (see
-  // network.mojom.URLLoaderFactoryOverride documentation). In this case, we
-  // want to substitute the internal (defined by
-  // factory_override->overriding_factory, with a URLLoaderFactory that targets
-  // `bound_network`. If `factory_override` == nullptr, this is a single-layer
-  // URLLoaderFactory. In this case, we want the last URLLoaderFactory in the
-  // `factory_builder` chain to be a URLLoaderFactory that targets
-  // `bound_network`.
-  mojo::PendingReceiver<network::mojom::URLLoaderFactory> proxied_receiver;
-  mojo::PendingRemote<network::mojom::URLLoaderFactory> bypassed_remote;
-  if (!factory_override) {
-    // Hijack the receiver end returned by network::URLLoaderFactoryBuilder.
-    // This will be then redirected to a network-bound URLLoaderFactory.
-    std::tie(proxied_receiver, bypassed_remote) = factory_builder.Append();
-  } else {
-    // Hijack the remote end stored in network::mojom::URLLoaderFactoryOverride.
-    // This will be then redirected to a network-bound URLLoaderFactory.
-    *factory_override = network::mojom::URLLoaderFactoryOverride::New();
-    proxied_receiver =
-        (*factory_override)
-            ->overriding_factory.InitWithNewPipeAndPassReceiver();
-    (*factory_override)->overridden_factory_receiver =
-        bypassed_remote.InitWithNewPipeAndPassReceiver();
-    (*factory_override)->skip_cors_enabled_scheme_check = true;
-  }
-
-  // Create a network-bound URLLoaderFactory and redirect the receiver end of
-  // the hijacked remote to this.
-  network::mojom::URLLoaderFactoryParamsPtr params =
-      network::mojom::URLLoaderFactoryParams::New();
-  params->process_id = network::OriginatingProcessId::browser();
-  params->is_trusted = true;
-  params->isolation_info = isolation_info;
-  // Disable CORS wrapping, this is already handled by the caller.
-  params->disable_web_security = true;
-  network_bound_network_context_->CreateURLLoaderFactory(
-      std::move(proxied_receiver), std::move(params));
+  factory_builder.SetTargetNetwork(bound_network);
 }
 
 std::unique_ptr<content::BrowserMainParts>
@@ -6666,7 +6607,8 @@ void ChromeContentBrowserClient::WillCreateURLLoaderFactory(
     bool* bypass_redirect_checks,
     bool* disable_secure_dns,
     network::mojom::URLLoaderFactoryOverridePtr* factory_override,
-    scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner) {
+    scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner,
+    bool is_for_network_service) {
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   auto* web_request_api =
       extensions::BrowserContextKeyedAPIFactory<extensions::WebRequestAPI>::Get(
@@ -6729,12 +6671,8 @@ void ChromeContentBrowserClient::WillCreateURLLoaderFactory(
 #endif  // BUILDFLAG (ENABLE_EXTENSIONS_CORE)
 #endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
-  // WARNING: This must be the last interceptor in the chain as the proxying
-  // URLLoaderFactory installed by this needs to be the one actually sending
-  // packets over the network (to effectively target `bound_network`).
-  MaybeProxyNetworkBoundRequest(
-      browser_context, GetBoundNetworkFromRenderFrameHost(frame),
-      factory_builder, factory_override, isolation_info);
+  MaybeSetTargetNetwork(GetBoundNetworkFromRenderFrameHost(frame),
+                        factory_builder, is_for_network_service);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)

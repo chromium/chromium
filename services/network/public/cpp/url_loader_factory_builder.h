@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/base/network_handle.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -69,6 +70,16 @@ class COMPONENT_EXPORT(NETWORK_CPP) URLLoaderFactoryBuilder final {
                            mojo::PendingRemote<mojom::URLLoaderFactory>>
   Append();
 
+  void SetTargetNetwork(net::handles::NetworkHandle target_network);
+
+  // Whether a new URLLoaderFactory has to be created, or an existing
+  // SharedURLLoaderFactory can be reused.
+  bool RequiresFreshFactory() const;
+
+  net::handles::NetworkHandle target_network_for_testing() const {
+    return target_network_;
+  }
+
   // `Finish()` methods finalize the builder by connecting the builder to the
   // mojom::URLLoaderFactory-ish terminal (`terminal_args`).
   // See `ConnectTerminal()` methods for supported terminal `Args`.
@@ -79,6 +90,14 @@ class COMPONENT_EXPORT(NETWORK_CPP) URLLoaderFactoryBuilder final {
   template <typename OutType = scoped_refptr<SharedURLLoaderFactory>,
             typename... Args>
   [[nodiscard]] OutType Finish(Args... terminal_args) && {
+    if (target_network_ != net::handles::kInvalidNetworkHandle && IsEmpty()) {
+      // If `target_network_` is set, prevent short-circuiting the call to
+      // `ConnectTerminal` when the builder has no interceptors. This is
+      // necessary because `ConnectTerminal` is what handles `target_network_`.
+      // This is done by adding an "empty" interceptor when the builder would
+      // otherwise have none (i.e. `IsEmpty()` returns true).
+      tail_ = head_.InitWithNewPipeAndPassReceiver();
+    }
     if (IsEmpty()) {
       // The builder has no interceptors, so just forward the terminal.
       return WrapAs<OutType>(std::forward<Args>(terminal_args)...);
@@ -134,16 +153,16 @@ class COMPONENT_EXPORT(NETWORK_CPP) URLLoaderFactoryBuilder final {
   // ----------------------------------------------------------------
   // `ConnectTerminal`: Connect the `PendingReceiver` endpoint to a
   // mojom::URLLoaderFactory-ish terminal.
-  static void ConnectTerminal(
+  void ConnectTerminal(
       mojo::PendingReceiver<mojom::URLLoaderFactory> pending_receiver,
       mojo::Remote<mojom::URLLoaderFactory> terminal_factory);
-  static void ConnectTerminal(
+  void ConnectTerminal(
       mojo::PendingReceiver<mojom::URLLoaderFactory> pending_receiver,
       mojo::PendingRemote<mojom::URLLoaderFactory> terminal_factory);
-  static void ConnectTerminal(
+  void ConnectTerminal(
       mojo::PendingReceiver<mojom::URLLoaderFactory> pending_receiver,
       scoped_refptr<SharedURLLoaderFactory> terminal_factory);
-  static void ConnectTerminal(
+  void ConnectTerminal(
       mojo::PendingReceiver<mojom::URLLoaderFactory> pending_receiver,
       mojom::NetworkContext* terminal_context,
       mojom::URLLoaderFactoryParamsPtr factory_param);
@@ -154,6 +173,9 @@ class COMPONENT_EXPORT(NETWORK_CPP) URLLoaderFactoryBuilder final {
   // If they are both invalid, then there are no interceptors.
   mojo::PendingRemote<mojom::URLLoaderFactory> head_;
   mojo::PendingReceiver<mojom::URLLoaderFactory> tail_;
+
+  net::handles::NetworkHandle target_network_ =
+      net::handles::kInvalidNetworkHandle;
 
   size_t num_interceptors_ = 0;
 };

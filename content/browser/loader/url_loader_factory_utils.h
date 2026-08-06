@@ -73,7 +73,8 @@ class CONTENT_EXPORT ContentClientParams final {
            mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
                header_client,
            bool* disable_secure_dns,
-           network::mojom::URLLoaderFactoryOverridePtr* factory_override);
+           network::mojom::URLLoaderFactoryOverridePtr* factory_override,
+           bool is_for_network_service);
 
  private:
   raw_ptr<BrowserContext> browser_context_;
@@ -155,6 +156,7 @@ class CONTENT_EXPORT TerminalParams final {
   int process_id() const;
   network::mojom::URLLoaderFactoryParamsPtr TakeFactoryParams();
   std::optional<URLLoaderFactoryTypes> TakeURLLoaderFactory();
+  bool is_for_network_service() const;
 
  private:
   TerminalParams(network::mojom::NetworkContext* network_context,
@@ -164,7 +166,8 @@ class CONTENT_EXPORT TerminalParams final {
                  DisableSecureDnsOption disable_secure_dns_option,
                  StoragePartitionImpl* storage_partition,
                  std::optional<URLLoaderFactoryTypes> url_loader_factory,
-                 int process_id);
+                 int process_id,
+                 bool is_for_network_service);
 
   raw_ptr<network::mojom::NetworkContext> network_context_;
   network::mojom::URLLoaderFactoryParamsPtr factory_params_;
@@ -181,6 +184,7 @@ class CONTENT_EXPORT TerminalParams final {
   // `ContentClientParams::render_process_id_`. Clarify the meaning of
   // `process_id_` here if needed.
   int process_id_;
+  bool is_for_network_service_;
 };
 
 // Creates a URLLoaderFactory, intercepted by:
