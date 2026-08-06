@@ -19,12 +19,6 @@
 
 namespace ui {
 
-BASE_FEATURE(kNoDelayForVSyncThread, base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool NoDelayForVSyncThread() {
-  return base::FeatureList::IsEnabled(kNoDelayForVSyncThread);
-}
-
 DisplayLinkMacMojo::DisplayLinkMacMojo(
     viz::HostFrameSinkManager* host_frame_sink_manager)
     : base::Thread("VSyncThread") {

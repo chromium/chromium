@@ -150,8 +150,6 @@ class COMPOSITOR_EXPORT DisplayLinkMacMojo
   base::WeakPtrFactory<DisplayLinkMacMojo> weak_ptr_factory_{this};
 };
 
-COMPOSITOR_EXPORT bool NoDelayForVSyncThread();
-
 }  // namespace ui
 
 #endif  // UI_COMPOSITOR_DISPLAY_LINK_MAC_MOJO_H_

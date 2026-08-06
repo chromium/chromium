@@ -572,7 +572,7 @@ void VizProcessTransportFactory::CreateDisplayLinkMacMojoIfNeeded(
   }
 
   // Create only one CADisplayLinkMojo/VSyncThread.
-  if (vsync_thread_task_posted_ || display_link_mac_mojo_) {
+  if (display_link_mac_mojo_) {
     return;
   }
 
@@ -581,28 +581,8 @@ void VizProcessTransportFactory::CreateDisplayLinkMacMojoIfNeeded(
   // ConnectHostFrameSinkManager(), but display::Screen is not available in that
   // function in Content Shell. (Note: display::Screen is available and not an
   // issue there when running on Chrome.)
-  if (ui::NoDelayForVSyncThread()) {
-    display_link_mac_mojo_ =
-        std::make_unique<ui::DisplayLinkMacMojo>(GetHostFrameSinkManager());
-  } else {
-    vsync_thread_task_posted_ = true;
-
-    // Delay the creation of DisplayLinkMacMojo (which starts the dedicated
-    // browser-side VSyncThread) to prevent desktop startup performance
-    // regressions.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](base::WeakPtr<VizProcessTransportFactory> weak_this) {
-              if (weak_this && !weak_this->display_link_mac_mojo_) {
-                weak_this->display_link_mac_mojo_ =
-                    std::make_unique<ui::DisplayLinkMacMojo>(
-                        weak_this->GetHostFrameSinkManager());
-              }
-            },
-            weak_ptr_factory_.GetWeakPtr()),
-        base::Seconds(60));
-  }
+  display_link_mac_mojo_ =
+      std::make_unique<ui::DisplayLinkMacMojo>(GetHostFrameSinkManager());
 }
 #endif
 
