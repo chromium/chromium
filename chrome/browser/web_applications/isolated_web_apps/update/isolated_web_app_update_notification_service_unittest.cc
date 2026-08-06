@@ -9,6 +9,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/test_future.h"
+#include "base/types/expected.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
@@ -218,6 +220,45 @@ TEST_F(IsolatedWebAppUpdateNotificationServiceTest,
                   ->GetDisplayedNotificationsForType(
                       NotificationHandler::Type::TRANSIENT)
                   .empty());
+}
+
+TEST_F(IsolatedWebAppUpdateNotificationServiceTest,
+       RestartsOnlyMainWindowWhenMultipleWindowsOpen) {
+  feature_list_.InitAndEnableFeature(
+      ash::features::kIsolatedWebAppInlineUpdate);
+
+  IsolatedWebAppUrlInfo url_info =
+      InstallIwaWithPendingUpdate("IWA App", "1.0.0", "1.2.0");
+  webapps::AppId app_id = url_info.app_id();
+
+  ui_manager().SetNumWindowsForApp(app_id, 3);
+
+  update_manager().update_notification_service()->ShowUpdatePendingNotification(
+      app_id);
+
+  auto notifications = tester_->GetDisplayedNotificationsForType(
+      NotificationHandler::Type::TRANSIENT);
+  ASSERT_EQ(notifications.size(), 1u);
+
+  base::test::TestFuture<apps::AppLaunchParams, LaunchWebAppWindowSetting>
+      launch_future;
+  ui_manager().SetOnLaunchWebAppCallback(launch_future.GetRepeatingCallback());
+
+  tester_->SimulateClick(NotificationHandler::Type::TRANSIENT,
+                         "iwa_pending_update_" + app_id,
+                         /*action_index=*/0, /*reply=*/std::nullopt);
+
+  EXPECT_EQ(ui_manager().GetNumWindowsForApp(app_id), 0u);
+  EXPECT_FALSE(launch_future.IsReady());
+
+  static_cast<IsolatedWebAppUpdateManager::Observer*>(
+      update_manager().update_notification_service())
+      ->OnUpdateApplyTaskCompleted(app_id, base::ok());
+
+  auto [params, launch_setting] = launch_future.Take();
+  EXPECT_EQ(params.app_id, app_id);
+  EXPECT_EQ(params.launch_source, apps::LaunchSource::kFromChromeInternal);
+  EXPECT_EQ(params.container, apps::LaunchContainer::kLaunchContainerNone);
 }
 
 }  // namespace web_app
