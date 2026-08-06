@@ -25,7 +25,10 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_test.h"
+#include "extensions/browser/process_manager.h"
+#include "extensions/browser/process_manager_observer.h"
 #include "extensions/browser/process_map.h"
+#include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/browser/test_event_router.h"
 #include "extensions/common/api/web_request/web_request_resource_type.h"
 #include "extensions/common/constants.h"
@@ -309,9 +312,7 @@ class WebRequestEventRouterContextDispatchTest : public ExtensionsTest {
     render_process_host_ =
         std::make_unique<content::MockRenderProcessHost>(browser_context());
 
-    extension_ = ExtensionBuilder(kExtensionName)
-                     .AddHostPermission("<all_urls>")
-                     .Build();
+    extension_ = BuildExtension();
     ExtensionRegistry::Get(browser_context())->AddEnabled(extension_);
     ProcessMap::Get(browser_context())
         ->Insert(extension_->id(), render_process_host_->GetID());
@@ -324,11 +325,23 @@ class WebRequestEventRouterContextDispatchTest : public ExtensionsTest {
   }
 
  protected:
+  // Builds the extension under test. Subclasses override this to change the
+  // manifest.
+  virtual scoped_refptr<const Extension> BuildExtension() {
+    return ExtensionBuilder(kExtensionName)
+        .AddHostPermission("<all_urls>")
+        .Build();
+  }
+
   WebRequestEventRouter* router() {
     return WebRequestEventRouter::Get(browser_context());
   }
 
   int process_id() { return render_process_host_->GetID().GetUnsafeValue(); }
+
+  content::MockRenderProcessHost* process() {
+    return render_process_host_.get();
+  }
 
   const ExtensionId& extension_id() { return extension_->id(); }
 
@@ -425,6 +438,16 @@ class WebRequestEventRouterContextDispatchTest : public ExtensionsTest {
                                   request_id, render_process_host_->GetID(),
                                   /*web_view_instance_id=*/0, kWorkerThreadId,
                                   kServiceWorkerVersionId);
+  }
+
+  // Fires the worker-stop teardown signal, as the ProcessManager would when the
+  // worker stops.
+  void SimulateWorkerStopped() {
+    static_cast<ProcessManagerObserver*>(router())
+        ->OnStoppedTrackingServiceWorkerInstance(
+            *browser_context(),
+            WorkerId(extension_id(), render_process_host_->GetID(),
+                     kServiceWorkerVersionId, kWorkerThreadId));
   }
 
   net::HttpRequestHeaders headers_;
@@ -641,6 +664,56 @@ TEST_F(WebRequestEventRouterContextDispatchTest,
   EXPECT_EQ(net::OK, *result_);
   EXPECT_TRUE(removed_headers_.empty());
   EXPECT_TRUE(set_headers_.empty());
+}
+
+// Stopping the extension's service worker resolves the pending targets
+// recorded under the worker's concrete identity.
+TEST_F(WebRequestEventRouterContextDispatchTest, WorkerStopResolvesTarget) {
+  ASSERT_TRUE(AddListener("http://example.com/*", ExtraInfoSpec::BLOCKING));
+
+  std::unique_ptr<WebRequestInfo> request = CreateRequest(1);
+  ASSERT_EQ(net::ERR_IO_PENDING, StartOnBeforeSendHeaders(request.get()));
+
+  // The worker stops before responding; the target resolves with no responses
+  // and the request proceeds unmodified.
+  SimulateWorkerStopped();
+  ASSERT_TRUE(result_.has_value());
+  EXPECT_EQ(net::OK, *result_);
+
+  // A late response from the stopped worker (e.g. still in flight when the
+  // stop was processed) is ignored.
+  RespondWithCancel(request->id);
+  FinishHandling(request->id);
+  EXPECT_EQ(net::OK, *result_);
+}
+
+// Stopping the extension's service worker also resolves a pending target
+// still recorded under the extension's lazy key.
+TEST_F(WebRequestEventRouterContextDispatchTest, WorkerStopResolvesLazyTarget) {
+  ASSERT_TRUE(AddListener("http://example.com/*", ExtraInfoSpec::BLOCKING,
+                          /*is_lazy=*/true));
+
+  std::unique_ptr<WebRequestInfo> request = CreateRequest(1);
+  ASSERT_EQ(net::ERR_IO_PENDING, StartOnBeforeSendHeaders(request.get()));
+
+  // The woken worker dies before re-registering or responding. The stop
+  // signal resolves the lazy target synchronously, before any queued
+  // dispatch-failure fallback gets a chance to run.
+  SimulateWorkerStopped();
+  ASSERT_TRUE(result_.has_value());
+  EXPECT_EQ(net::OK, *result_);
+}
+
+// A render process going away resolves every pending target it hosts.
+TEST_F(WebRequestEventRouterContextDispatchTest, ProcessExitResolvesTarget) {
+  ASSERT_TRUE(AddListener("http://example.com/*", ExtraInfoSpec::BLOCKING));
+
+  std::unique_ptr<WebRequestInfo> request = CreateRequest(1);
+  ASSERT_EQ(net::ERR_IO_PENDING, StartOnBeforeSendHeaders(request.get()));
+
+  process()->SimulateCrash();
+  ASSERT_TRUE(result_.has_value());
+  EXPECT_EQ(net::OK, *result_);
 }
 
 // Tests that when a request matches both a started worker's concrete identity
@@ -900,6 +973,129 @@ TEST_F(WebRequestEventRouterCrossBrowserContextTest,
   EXPECT_EQ(net::OK, *result_);
 
   router()->OnRequestWillBeDestroyed(browser_context(), regular_request.get());
+}
+
+// Per-context dispatch across regular contexts and off-the-record contexts,
+// with the default spanning incognito mode.
+class WebRequestEventRouterContextDispatchIncognitoTest
+    : public WebRequestEventRouterContextDispatchTest {
+ protected:
+  void SetUp() override {
+    WebRequestEventRouterContextDispatchTest::SetUp();
+    user_prefs::UserPrefs::Set(browser_context(), pref_service());
+    user_prefs::UserPrefs::Set(incognito_context(), pref_service());
+    incognito_event_router_ =
+        CreateAndUseTestEventRouter<CapturingEventRouter>(incognito_context());
+    ExtensionPrefs::Get(browser_context())
+        ->SetIsIncognitoEnabled(extension_id(), true);
+    WebRequestEventRouter::OnOTRBrowserContextCreated(browser_context(),
+                                                      incognito_context());
+  }
+
+  void TearDown() override {
+    incognito_event_router_ = nullptr;
+    WebRequestEventRouter::OnOTRBrowserContextDestroyed(browser_context(),
+                                                        incognito_context());
+    WebRequestEventRouterContextDispatchTest::TearDown();
+  }
+
+  // Starts the blocking "onBeforeSendHeaders" stage for `request` in the
+  // incognito context. The completion callback stores its error code in
+  // `incognito_result_`.
+  int StartIncognitoOnBeforeSendHeaders(const WebRequestInfo* request) {
+    return router()->OnBeforeSendHeaders(
+        incognito_context(), request,
+        base::BindLambdaForTesting(
+            [this](const std::set<std::string>& removed_headers,
+                   const std::set<std::string>& set_headers,
+                   int error_code) { incognito_result_ = error_code; }),
+        &incognito_headers_);
+  }
+
+  std::optional<int> incognito_result_;
+
+ private:
+  net::HttpRequestHeaders incognito_headers_;
+  raw_ptr<CapturingEventRouter> incognito_event_router_ = nullptr;
+};
+
+// In spanning-mode incognito, a regular-context target can block a request
+// that the off-the-record context owns; the target's teardown must resolve
+// that request.
+TEST_F(WebRequestEventRouterContextDispatchIncognitoTest,
+       WorkerStopResolvesCrossContextTarget) {
+  ASSERT_TRUE(AddListener("http://example.com/*", ExtraInfoSpec::BLOCKING));
+
+  std::unique_ptr<WebRequestInfo> request = CreateRequest(1);
+  ASSERT_EQ(net::ERR_IO_PENDING,
+            StartIncognitoOnBeforeSendHeaders(request.get()));
+  EXPECT_EQ(1u,
+            router()->GetBlockedRequestCountForTesting(incognito_context()));
+  EXPECT_EQ(0u, router()->GetBlockedRequestCountForTesting(browser_context()));
+
+  // The spanning extension's worker stops in the regular context.
+  SimulateWorkerStopped();
+  ASSERT_TRUE(incognito_result_.has_value());
+  EXPECT_EQ(net::OK, *incognito_result_);
+  EXPECT_EQ(0u,
+            router()->GetBlockedRequestCountForTesting(incognito_context()));
+}
+
+// Same as above, but with the extension in split incognito mode.
+class WebRequestEventRouterContextDispatchSplitIncognitoTest
+    : public WebRequestEventRouterContextDispatchIncognitoTest {
+ protected:
+  scoped_refptr<const Extension> BuildExtension() override {
+    return ExtensionBuilder(kExtensionName)
+        .AddHostPermission("<all_urls>")
+        .SetManifestKey("incognito", "split")
+        .Build();
+  }
+
+  // Registers a lazy blocking listener in the incognito context, as the
+  // extension's incognito instance would.
+  bool AddIncognitoLazyListener(const std::string& url_pattern) {
+    WebRequestEventRouter::RequestFilter filter;
+    filter.urls.AddPattern(
+        URLPattern(kWebRequestFilterValidSchemes, url_pattern));
+    return router()->AddEventListener(
+        incognito_context(), extension_id(), kExtensionName, kEventName,
+        /*sub_event_name=*/kEventName, std::move(filter),
+        ExtraInfoSpec::BLOCKING, /*render_process_id=*/-1,
+        /*web_view_instance_id=*/0, kMainThreadId,
+        blink::mojom::kInvalidServiceWorkerVersionId, /*is_lazy=*/true);
+  }
+};
+
+// In split-mode incognito, a worker stop must resolve only its own context's
+// lazy targets; the other context's lazy targets for the same extension stay
+// pending.
+TEST_F(WebRequestEventRouterContextDispatchSplitIncognitoTest,
+       WorkerStopKeepsOtherContextLazyTarget) {
+  ASSERT_TRUE(AddListener("http://example.com/*", ExtraInfoSpec::BLOCKING,
+                          /*is_lazy=*/true));
+  ASSERT_TRUE(AddIncognitoLazyListener("http://example.com/*"));
+
+  // Both listeners match both requests, but split-mode keeps each request on
+  // its own context's listener.
+  std::unique_ptr<WebRequestInfo> regular_request = CreateRequest(1);
+  std::unique_ptr<WebRequestInfo> incognito_request = CreateRequest(2);
+  ASSERT_EQ(net::ERR_IO_PENDING,
+            StartOnBeforeSendHeaders(regular_request.get()));
+  ASSERT_EQ(net::ERR_IO_PENDING,
+            StartIncognitoOnBeforeSendHeaders(incognito_request.get()));
+
+  // The regular context's worker stops. Only the regular context's lazy
+  // target resolves; the incognito one keeps blocking its request.
+  SimulateWorkerStopped();
+  ASSERT_TRUE(result_.has_value());
+  EXPECT_EQ(net::OK, *result_);
+  EXPECT_FALSE(incognito_result_.has_value());
+  EXPECT_EQ(1u,
+            router()->GetBlockedRequestCountForTesting(incognito_context()));
+
+  router()->OnRequestWillBeDestroyed(incognito_context(),
+                                     incognito_request.get());
 }
 
 }  // namespace extensions
