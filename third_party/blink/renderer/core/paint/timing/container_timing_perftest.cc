@@ -13,6 +13,8 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/paint/timing/container_timing_test_utils.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -86,6 +88,71 @@ String GenerateNestedHTML(size_t container_depth, size_t non_container_depth) {
     html.Append("</div>");  // ct_root
   }
   return html.ToString();
+}
+
+// A container timing root holding `image_count` <img> elements. Real <img>s,
+// unlike the nested generator's CSS background images, so the pre-paint walk
+// records actual image-generating nodes.
+String GenerateImagesHTML(size_t image_count) {
+  StringBuilder html;
+  html.Append("<div id='ct_root' containertiming='ct'>");
+  for (size_t i = 1; i <= image_count; ++i) {
+    html.AppendFormat("<img id='image_%zu' style='width:10px;height:10px'>", i);
+  }
+  html.Append("</div>");
+  return html.ToString();
+}
+
+// Per-image attribution: each lap paints a different image, where the depth
+// benchmarks repeat one element. No resources are loaded; the load
+// notification is a single attribute check.
+void RunImageAttributionBenchmark(Variant variant,
+                                  const std::string& story_base,
+                                  size_t image_count) {
+  const bool use_prepaint = variant == Variant::kPrePaint;
+  ScopedContainerTimingPrepaintTraversalForTest scoped_feature(use_prepaint);
+  auto page = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
+  Document& document = page->GetDocument();
+  document.body()->SetInnerHTMLWithoutTrustedTypes(
+      GenerateImagesHTML(image_count));
+  if (use_prepaint) {
+    // Populate the tracker, else both variants measure the legacy path.
+    page->GetFrameView().UpdateAllLifecyclePhasesForTest();
+  } else {
+    document.UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  }
+
+  ContainerTiming& container_timing =
+      ContainerTiming::From(*document.domWindow());
+
+  HeapVector<Member<Element>> images;
+  images.ReserveInitialCapacity(static_cast<wtf_size_t>(image_count));
+  for (size_t i = 1; i <= image_count; ++i) {
+    Element* image =
+        document.getElementById(AtomicString(String::Format("image_%zu", i)));
+    ASSERT_TRUE(image);
+    images.push_back(image);
+  }
+
+  // Fail rather than time empty calls if the images were not attributed.
+  auto* performance = DOMWindowPerformance::performance(*document.domWindow());
+  SimulateContainerTimingPaint(container_timing, images.front(),
+                               gfx::RectF(0, 0, 10, 10));
+  performance->PopulateContainerTimingEntries();
+  ASSERT_FALSE(
+      performance->getBufferedEntriesByType(AtomicString("container")).empty());
+
+  base::LapTimer timer(kWarmupLaps, base::TimeDelta(), kLaps);
+  for (int i = 0; i < kLaps + kWarmupLaps; ++i) {
+    Element* image = images[static_cast<wtf_size_t>(i) % images.size()];
+    SimulateContainerTimingPaint(
+        container_timing, image,
+        gfx::RectF((i % 1000) * 10, (i / 1000) * 10, 10, 10));
+    timer.NextLap();
+  }
+
+  auto reporter = SetUpReporter(story_base + "_" + VariantSuffix(variant));
+  reporter.AddResult(kMetricRunsPerSecond, timer.LapsPerSecond());
 }
 
 // Unified paint benchmark. The variant selects whether the legacy DOM-walk
@@ -261,6 +328,14 @@ TEST_P(ContainerTimingPerfTest, CacheInvalidationCycle_Depth10_100_5) {
 
 TEST_P(ContainerTimingPerfTest, CacheInvalidationCycle_Depth10_100_1) {
   RunInvalidationCycleBenchmark(GetParam(), "depth10_100_1", 10, 100, 1);
+}
+
+TEST_P(ContainerTimingPerfTest, ImageAttribution_100) {
+  RunImageAttributionBenchmark(GetParam(), "images_100", 100);
+}
+
+TEST_P(ContainerTimingPerfTest, ImageAttribution_1000) {
+  RunImageAttributionBenchmark(GetParam(), "images_1000", 1000);
 }
 
 }  // namespace blink
