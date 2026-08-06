@@ -406,6 +406,34 @@ INSTANTIATE_TEST_SUITE_P(WebUsbServiceImplTests,
 
 using WebUsbServiceImplFrameTest = WebUsbServiceImplBaseTest;
 
+TEST_F(WebUsbServiceImplFrameTest, GetPermission) {
+  const auto& service = GetService(kCreateForFrame);
+
+  contents()->GetPrimaryMainFrame()->SimulateUserActivation();
+
+  auto device_info = ConnectDevice(CreateFakeDevice(), nullptr);
+  EXPECT_CALL(delegate(), CanRequestDevicePermission).WillOnce(Return(true));
+  EXPECT_CALL(delegate(), RunChooserInternal)
+      .WillOnce(Return(testing::ByMove(device_info->Clone())));
+
+  TestFuture<device::mojom::UsbDeviceInfoPtr> future;
+  service->GetPermission(blink::mojom::WebUsbRequestDeviceOptions::New(),
+                         future.GetCallback());
+  EXPECT_FALSE(future.Get().is_null());
+}
+
+TEST_F(WebUsbServiceImplFrameTest, GetPermissionWithoutUserActivation) {
+  const auto& service = GetService(kCreateForFrame);
+
+  ON_CALL(delegate(), CanRequestDevicePermission).WillByDefault(Return(true));
+  EXPECT_CALL(delegate(), RunChooserInternal).Times(0);
+
+  TestFuture<device::mojom::UsbDeviceInfoPtr> future;
+  service->GetPermission(blink::mojom::WebUsbRequestDeviceOptions::New(),
+                         future.GetCallback());
+  EXPECT_TRUE(future.Get().is_null());
+}
+
 TEST_F(WebUsbServiceImplFrameTest, OpenAndNavigateCrossOrigin) {
   const auto origin = url::Origin::Create(GURL(kDefaultTestUrl));
 

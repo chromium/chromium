@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "build/android_buildflags.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_usb_delegate_observer.h"
@@ -26,6 +27,8 @@
 #include "services/device/public/mojom/usb_enumeration_options.mojom.h"
 #include "services/device/public/mojom/usb_manager_client.mojom.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
+#include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
 
 namespace content {
 
@@ -342,6 +345,15 @@ void WebUsbServiceImpl::GetPermission(
   if (!render_frame_host_) {
     mojo::ReportBadMessage(
         "GetPermission is not allowed from a service worker.");
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  if (!FrameTreeNode::From(render_frame_host_)
+           ->UpdateUserActivationState(
+               blink::mojom::UserActivationUpdateType::
+                   kConsumeTransientActivation,
+               blink::mojom::UserActivationNotificationType::kNone)) {
     std::move(callback).Run(nullptr);
     return;
   }

@@ -182,6 +182,41 @@ TEST_F(SerialTest, GetPortsForAllDeviceTypes) {
   EXPECT_TRUE(has_bluetooth);
 }
 
+TEST_F(SerialTest, RequestPort) {
+  NavigateAndCommit(GURL(kTestUrl));
+
+  contents()->GetPrimaryMainFrame()->SimulateUserActivation();
+
+  mojo::Remote<blink::mojom::SerialService> service;
+  contents()->GetPrimaryMainFrame()->BindSerialService(
+      service.BindNewPipeAndPassReceiver());
+
+  EXPECT_CALL(delegate(), CanRequestPortPermission).WillOnce(Return(true));
+  auto port = device::mojom::SerialPortInfo::New();
+  port->token = base::UnguessableToken::Create();
+  EXPECT_CALL(delegate(), RunChooserInternal)
+      .WillOnce(Return(testing::ByMove(std::move(port))));
+
+  TestFuture<blink::mojom::SerialPortInfoPtr> future;
+  service->RequestPort({}, {}, future.GetCallback());
+  EXPECT_FALSE(future.Get().is_null());
+}
+
+TEST_F(SerialTest, RequestPortWithoutUserActivation) {
+  NavigateAndCommit(GURL(kTestUrl));
+
+  mojo::Remote<blink::mojom::SerialService> service;
+  contents()->GetPrimaryMainFrame()->BindSerialService(
+      service.BindNewPipeAndPassReceiver());
+
+  ON_CALL(delegate(), CanRequestPortPermission).WillByDefault(Return(true));
+  EXPECT_CALL(delegate(), RunChooserInternal).Times(0);
+
+  TestFuture<blink::mojom::SerialPortInfoPtr> future;
+  service->RequestPort({}, {}, future.GetCallback());
+  EXPECT_TRUE(future.Get().is_null());
+}
+
 TEST_F(SerialTest, OpenAndClosePort) {
   NavigateAndCommit(GURL(kTestUrl));
 

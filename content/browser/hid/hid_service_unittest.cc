@@ -443,6 +443,9 @@ TEST_P(HidServiceTest, RequestDevice) {
   ConnectDevice(*device_info);
 
   if (service_creation_type == kCreateUsingRenderFrameHost) {
+    static_cast<TestWebContents*>(web_contents_)
+        ->GetPrimaryMainFrame()
+        ->SimulateUserActivation();
     EXPECT_CALL(hid_delegate(), CanRequestDevicePermission)
         .WillOnce(Return(true));
     EXPECT_CALL(hid_delegate(), RunChooserInternal)
@@ -466,6 +469,28 @@ TEST_P(HidServiceTest, RequestDevice) {
   } else {
     EXPECT_EQ(0u, chosen_devices.size());
   }
+}
+
+TEST_P(HidServiceTest, RequestDeviceWithoutUserActivation) {
+  const auto& service = GetService(GetParam());
+
+  ON_CALL(hid_delegate(), CanRequestDevicePermission)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(hid_delegate(), RunChooserInternal).Times(0);
+
+  base::RunLoop run_loop;
+  std::vector<device::mojom::HidDeviceInfoPtr> chosen_devices;
+  service->RequestDevice(
+      std::vector<blink::mojom::HidDeviceFilterPtr>(),
+      std::vector<blink::mojom::HidDeviceFilterPtr>(),
+      base::BindLambdaForTesting(
+          [&run_loop,
+           &chosen_devices](std::vector<device::mojom::HidDeviceInfoPtr> d) {
+            chosen_devices = std::move(d);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+  EXPECT_EQ(0u, chosen_devices.size());
 }
 
 TEST_P(HidServiceTest, OpenAndCloseHidConnection) {

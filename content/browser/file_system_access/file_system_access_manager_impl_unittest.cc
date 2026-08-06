@@ -1638,6 +1638,41 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenFile) {
   ASSERT_TRUE(future.Wait());
 }
 
+TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_WithoutUserActivation) {
+  mojo::Remote<blink::mojom::FileSystemAccessManager> manager_remote;
+  FileSystemAccessManagerImpl::BindingContext binding_context = {
+      kTestStorageKey, kTestURL,
+      web_contents_->GetPrimaryMainFrame()->GetGlobalId()};
+  manager_->BindReceiver(binding_context,
+                         manager_remote.BindNewPipeAndPassReceiver());
+
+  EXPECT_CALL(permission_context_,
+              CanObtainReadPermission(kTestStorageKey.origin()))
+      .WillOnce(testing::Return(true));
+
+  auto open_file_picker_options = blink::mojom::OpenFilePickerOptions::New(
+      blink::mojom::AcceptsTypesInfo::New(
+          std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr>(),
+          /*include_accepts_all=*/true),
+      /*can_select_multiple_files=*/false);
+  auto picker_options = blink::mojom::FilePickerOptions::New(
+      blink::mojom::TypeSpecificFilePickerOptionsUnion::
+          NewOpenFilePickerOptions(std::move(open_file_picker_options)),
+      /*starting_directory_id=*/std::string(),
+      blink::mojom::FilePickerStartInOptionsUnionPtr());
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                         std::vector<blink::mojom::FileSystemAccessEntryPtr>>
+      future;
+  manager_remote->ChooseEntries(std::move(picker_options),
+                                future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(future.Get<0>()->status,
+            blink::mojom::FileSystemAccessStatus::kPermissionDenied);
+  EXPECT_EQ(future.Get<0>()->message, "User activation required.");
+  EXPECT_TRUE(future.Get<1>().empty());
+}
+
 // Test opening multiple files where all selected files are safe (i.e., they
 // pass the sensitive entry check with `kAllowed`). Verifies that the recursive
 // check successfully iterates through all entries and returns handles for all
