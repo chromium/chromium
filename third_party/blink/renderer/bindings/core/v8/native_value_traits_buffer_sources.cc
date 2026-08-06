@@ -36,7 +36,7 @@ bool DoesExceedSizeLimitSlow(v8::Isolate* isolate,
 inline bool DoesExceedSizeLimit(v8::Isolate* isolate,
                                 size_t byte_length,
                                 ExceptionState& exception_state) {
-  if (byte_length <= ::partition_alloc::MaxDirectMapped()) [[likely]] {
+  if (byte_length <= ::partition_alloc::MaxAllocationSize()) [[likely]] {
     return false;
   }
 
