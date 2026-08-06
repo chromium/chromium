@@ -31,7 +31,7 @@ ScopedJavaLocalFrame::~ScopedJavaLocalFrame() {
 // else here.
 JavaRef<jobject>::JavaRef(JNIEnv* env, jobject obj) : obj_(obj) {
   if (obj) {
-    JNI_ZERO_DCHECK(env && env->GetObjectRefType(obj) == JNILocalRefType);
+    JNI_ZERO_DCHECK(env && env->GetObjectRefType(obj) != JNIInvalidRefType);
   }
 }
 #endif
@@ -67,6 +67,11 @@ void JavaRef<jobject>::SetNewGlobalRef(JNIEnv* env, jobject obj) {
     env->DeleteGlobalRef(obj_);
   }
   obj_ = obj;
+}
+
+void JavaRef<jobject>::SetNewGlobalRefAndLeak(JNIEnv* env, jobject obj) {
+  JNI_ZERO_DCHECK(env == AttachCurrentThread());
+  obj_ = env->NewGlobalRef(obj);
 }
 
 void JavaRef<jobject>::ResetLocalRef(JNIEnv* env) {

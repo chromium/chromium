@@ -217,7 +217,10 @@ void SetClassResolver(jclass (*resolver)(JNIEnv*, const char*)) {
 
 void SetClassLoader(JNIEnv* env, const JavaRef<jobject>& class_loader) {
   JNI_ZERO_DCHECK(class_loader);
-  g_class_loader.Reset(env, class_loader);
+  // g_class_loader is used by codegen to resolve classes. Rather than
+  // introduce a lock when resolving classes, leak the old ref.
+  // https://crbug.com/542753540
+  g_class_loader.ResetAndLeak(env, class_loader);
 }
 
 ScopedJavaLocalRef<jclass> GetClass(JNIEnv* env, const char* class_name) {

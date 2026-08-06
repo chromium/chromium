@@ -261,8 +261,6 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT JNI_ZERO_TRIVIAL_ABI JavaRef<jobject> {
   JavaRef(JavaRef&&) = default;
   JavaRef& operator=(JavaRef&&) = default;
 
-// Takes ownership of the |obj| reference passed; requires it to be a local
-// reference type.
 #if JNI_ZERO_DCHECK_IS_ON()
   // Implementation contains a DCHECK; implement out-of-line when DCHECK_IS_ON.
   JavaRef(JNIEnv* env, jobject obj);
@@ -280,6 +278,7 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT JNI_ZERO_TRIVIAL_ABI JavaRef<jobject> {
   // use by the sub-classes.
   JNIEnv* SetNewLocalRef(JNIEnv* env, jobject obj);
   void SetNewGlobalRef(JNIEnv* env, jobject obj);
+  void SetNewGlobalRefAndLeak(JNIEnv* env, jobject obj);
   void ResetLocalRef(JNIEnv* env);
   void ResetGlobalRef();
 
@@ -769,6 +768,12 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT JNI_ZERO_TRIVIAL_ABI LeakedJavaGlobalRef
   void Reset(JNIEnv* env, const JavaRef<U>& j_object) {
     Reset();
     JavaRef<T>::SetNewGlobalRef(env, j_object.obj());
+  }
+
+  template <typename U>
+    requires internal::IsConvertibleJObject<T, U>
+  void ResetAndLeak(JNIEnv* env, const JavaRef<U>& j_object) {
+    JavaRef<T>::SetNewGlobalRefAndLeak(env, j_object.obj());
   }
 
   // Create a local reference.
