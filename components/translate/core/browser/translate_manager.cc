@@ -45,6 +45,7 @@
 #include "components/translate/core/browser/translate_trigger_decision.h"
 #include "components/translate/core/browser/translate_url_util.h"
 #include "components/translate/core/common/language_detection_details.h"
+#include "components/translate/core/common/translate_features.h"
 #include "components/translate/core/common/translate_language_matcher.h"
 #include "components/translate/core/common/translate_switches.h"
 #include "components/translate/core/common/translate_util.h"
@@ -478,6 +479,11 @@ void TranslateManager::DoTranslatePage(std::string_view translate_script,
   language_state_.set_translation_pending(true);
   translate_driver_->TranslatePage(page_seq_no_, translate_script, source_lang,
                                    target_lang);
+  if (translate_driver_->GetContentsMimeType() == "application/pdf" &&
+      base::FeatureList::IsEnabled(translate::kEnableTranslatePdf)) {
+    TranslateBrowserMetrics::ReportPdfSourceLanguage(source_lang);
+    TranslateBrowserMetrics::ReportPdfTargetLanguage(target_lang);
+  }
 }
 
 // Notifies |g_error_callback_list_| of translate errors.

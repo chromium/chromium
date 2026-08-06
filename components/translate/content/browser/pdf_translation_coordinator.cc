@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "base/barrier_callback.h"
-#include "base/functional/callback.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "components/pdf/browser/pdf_document_helper.h"
 #include "components/translate/content/browser/content_translate_driver.h"
 #include "components/translate/core/browser/language_state.h"
@@ -41,9 +41,12 @@ void PDFTranslationCoordinator::RunIfPdfIsTranslatable(
     return;
   }
 
-  // Get the PDFDocumentHelper from the current document.
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&render_frame_host());
   pdf::PDFDocumentHelper* pdf_helper =
-      pdf::PDFDocumentHelper::GetForCurrentDocument(&this->render_frame_host());
+      web_contents
+          ? pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents)
+          : nullptr;
   if (!pdf_helper) {
     OnTranslatabilityDetermined(false);
     return;
@@ -55,8 +58,12 @@ void PDFTranslationCoordinator::RunIfPdfIsTranslatable(
 }
 
 void PDFTranslationCoordinator::StartTranslatabilityCheck() {
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&render_frame_host());
   pdf::PDFDocumentHelper* pdf_helper =
-      pdf::PDFDocumentHelper::GetForCurrentDocument(&this->render_frame_host());
+      web_contents
+          ? pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents)
+          : nullptr;
   if (!pdf_helper) {
     OnTranslatabilityDetermined(false);
     return;
@@ -121,7 +128,7 @@ void PDFTranslationCoordinator::OnTranslatabilityDetermined(
                             : TranslatabilityStatus::kUntranslatable;
 
   content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(&this->render_frame_host());
+      content::WebContents::FromRenderFrameHost(&render_frame_host());
   if (web_contents) {
     ContentTranslateDriver* driver =
         ContentTranslateDriver::FromWebContents(web_contents);

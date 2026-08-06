@@ -5,6 +5,7 @@
 #include "components/translate/core/browser/translate_browser_metrics.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/metrics_hashes.h"
 
 namespace translate {
 
@@ -17,6 +18,8 @@ const char kTranslateLanguageDetectionContentLength[] =
 const char kTranslateHrefHintStatus[] = "Translate.HrefHint.Status";
 const char kTranslateMenuTranslationUnavailableReasons[] =
     "Translate.MenuTranslation.UnavailableReasons";
+constexpr char kTranslatePdfSourceLanguage[] = "Translate.PDF.SourceLanguage";
+constexpr char kTranslatePdfTargetLanguage[] = "Translate.PDF.TargetLanguage";
 
 }  // namespace
 
@@ -35,6 +38,16 @@ void ReportLanguageDetectionContentLength(size_t length) {
 
 void ReportTranslateHrefHintStatus(HrefTranslateStatus status) {
   base::UmaHistogramEnumeration(kTranslateHrefHintStatus, status);
+}
+
+void ReportPdfSourceLanguage(std::string_view language) {
+  base::UmaHistogramSparse(kTranslatePdfSourceLanguage,
+                           base::HashMetricName(language));
+}
+
+void ReportPdfTargetLanguage(std::string_view language) {
+  base::UmaHistogramSparse(kTranslatePdfTargetLanguage,
+                           base::HashMetricName(language));
 }
 
 }  // namespace TranslateBrowserMetrics

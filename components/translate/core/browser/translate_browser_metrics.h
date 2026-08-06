@@ -77,6 +77,14 @@ void ReportTranslateTargetLanguage(std::string_view language);
 // a href translate target is present.
 void ReportTranslateHrefHintStatus(HrefTranslateStatus status);
 
+// Called when a PDF page is translated to report the source language. Buckets
+// are labelled with LocaleCodeBCP47 values.
+void ReportPdfSourceLanguage(std::string_view language);
+
+// Called when a PDF page is translated to report the target language. Buckets
+// are labelled with LocaleCodeBCP47 values.
+void ReportPdfTargetLanguage(std::string_view language);
+
 }  // namespace translate::TranslateBrowserMetrics
 
 #endif  // COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_BROWSER_METRICS_H_

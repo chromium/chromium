@@ -672,6 +672,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Translate.PDF.SourceLanguage" enum="LocaleCodeBCP47"
+    expires_after="2027-01-03">
+  <owner>danft@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Records the hashcode of the source language used for a PDF translation. This
+    is recorded when a PDF translation is started.
+  </summary>
+</histogram>
+
+<histogram name="Translate.PDF.TargetLanguage" enum="LocaleCodeBCP47"
+    expires_after="2027-01-03">
+  <owner>danft@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Records the hashcode of the target language used for a PDF translation. This
+    is recorded when a PDF translation is started.
+  </summary>
+</histogram>
+
 <histogram name="Translate.Ranker.Model.Status2" enum="RankerModelStatus"
     expires_after="2026-12-10">
   <owner>megjablon@google.com</owner>

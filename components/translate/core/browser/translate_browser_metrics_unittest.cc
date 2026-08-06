@@ -8,7 +8,9 @@
 
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_samples.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -198,6 +200,17 @@ TEST(TranslateBrowserMetricsTest, ReportTranslateHrefHintStatus) {
       TranslateBrowserMetrics::HrefTranslateStatus::
           kNoUiShownNotAutoTranslated);
   recorder.CheckTranslateHrefHintStatus(1, 1, 1, 1);
+}
+
+TEST(TranslateBrowserMetricsTest, ReportPdfLanguages) {
+  base::HistogramTester histogram_tester;
+  TranslateBrowserMetrics::ReportPdfSourceLanguage("en");
+  TranslateBrowserMetrics::ReportPdfTargetLanguage("es");
+
+  histogram_tester.ExpectUniqueSample("Translate.PDF.SourceLanguage",
+                                      base::HashMetricName("en"), 1);
+  histogram_tester.ExpectUniqueSample("Translate.PDF.TargetLanguage",
+                                      base::HashMetricName("es"), 1);
 }
 
 }  // namespace
