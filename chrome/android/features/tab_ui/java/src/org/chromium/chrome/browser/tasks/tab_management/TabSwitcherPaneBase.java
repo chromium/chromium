@@ -19,6 +19,7 @@ import android.graphics.RectF;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.view.View;
+import android.view.View.OnClickListener;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
@@ -104,6 +105,7 @@ public abstract class TabSwitcherPaneBase extends PaneBase
             ObservableSuppliers.createNonNull(false);
     protected final SettableNonNullObservableSupplier<Boolean> mIsAnimatingSupplier =
             ObservableSuppliers.createNonNull(false);
+    private final OnClickListener mNewTabButtonClickListener;
     private final SettableNullableObservableSupplier<View> mOverlayViewSupplier =
             ObservableSuppliers.createNullable();
     private final Callback<Boolean> mVisibilityObserver = this::onVisibilityChanged;
@@ -176,7 +178,8 @@ public abstract class TabSwitcherPaneBase extends PaneBase
             MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
             MonotonicObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
             TabGroupCreationUiDelegate tabGroupCreationUiDelegate,
-            NonNullObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
+            NonNullObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
+            OnClickListener newTabButtonClickListener) {
         super(paneId, context, onToolbarAlphaChange);
         mMenuButtonVisible = shouldShowMenuButton(context);
         mFactory = factory;
@@ -187,6 +190,7 @@ public abstract class TabSwitcherPaneBase extends PaneBase
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
         mUiFlow = tabGroupCreationUiDelegate;
         mXrSpaceModeObservableSupplier = xrSpaceModeObservableSupplier;
+        mNewTabButtonClickListener = newTabButtonClickListener;
         mIsBottomBarEnabledOnGts =
                 BottomBarConfigUtils.isBottomBarEnabled(context)
                         && BottomBarConfigUtils.shouldShowOnGts();
@@ -222,6 +226,15 @@ public abstract class TabSwitcherPaneBase extends PaneBase
         mSearchBoxVisibilityFractionSupplier =
                 mTabSwitcherPaneCoordinatorSupplier.createTransitiveNonNull(
                         0.0f, TabSwitcherPaneCoordinator::getSearchBoxVisibilityFractionSupplier);
+    }
+
+    @Override
+    public boolean createNewTab() {
+        if (mNewTabButtonClickListener != null) {
+            mNewTabButtonClickListener.onClick(null);
+            return true;
+        }
+        return false;
     }
 
     @Override

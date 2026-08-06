@@ -169,7 +169,8 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
                 edgeToEdgeSupplier,
                 compositorViewHolderSupplier,
                 tabGroupCreationUiDelegate,
-                xrSpaceModeObservableSupplier);
+                xrSpaceModeObservableSupplier,
+                newTabButtonClickListener);
 
         mColorScheme = HubColorScheme.INCOGNITO;
         mIncognitoTabModelSupplier = incognitoTabModelSupplier;

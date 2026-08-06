@@ -150,10 +150,7 @@ public class HubCoordinator implements PaneHubController, BackPressHandler, Pane
                         userEducationHelper,
                         hubLayoutController.getIsAnimatingSupplier(),
                         bottomToolbarVisibilitySupplier,
-                        () -> {
-                            RecordUserAction.record("Hub.BackButtonPressed");
-                            selectCurrentTabAndHideHub();
-                        });
+                        this::onToolbarCloseButtonPressed);
 
         // Dynamically add bottom toolbar if delegate is available and enabled
         if (bottomToolbarDelegate != null && bottomToolbarDelegate.isBottomToolbarEnabled()) {
@@ -367,6 +364,20 @@ public class HubCoordinator implements PaneHubController, BackPressHandler, Pane
             int scrollPosition = (int) absoluteScroll;
             float scrollOffset = absoluteScroll - scrollPosition;
             mHubToolbarCoordinator.setPaneSwitcherScrollPosition(scrollPosition, scrollOffset);
+        }
+    }
+
+    private void onToolbarCloseButtonPressed() {
+        RecordUserAction.record("Hub.CloseButtonPressed");
+        if (selectCurrentTabAndHideHub()) {
+            return;
+        }
+
+        // When there is no current tab to select, explicitly create a new tab in the tab switcher
+        // pane.
+        Pane tabSwitcherPane = mPaneManager.getPaneForId(PaneId.TAB_SWITCHER);
+        if (tabSwitcherPane != null) {
+            tabSwitcherPane.createNewTab();
         }
     }
 

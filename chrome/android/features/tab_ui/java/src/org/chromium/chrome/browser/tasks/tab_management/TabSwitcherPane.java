@@ -153,7 +153,8 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
                 edgeToEdgeSupplier,
                 compositorViewHolderSupplier,
                 tabGroupCreationUiDelegate,
-                xrSpaceModeObservableSupplier);
+                xrSpaceModeObservableSupplier,
+                newTabButtonClickListener);
         mSharedPreferences = sharedPreferences;
         mTabModelSupplier = tabModelSupplier;
         mTabSwitcherPaneDrawableCoordinator = tabSwitcherDrawableCoordinator;
