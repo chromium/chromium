@@ -8928,12 +8928,12 @@
   {
     "name": "sensitive-content",
     "owners": ["jkeitel@google.com"],
-    "expiry_milestone": 145
+    "expiry_milestone": 163
   },
   {
     "name": "sensitive-content-while-switching-tabs",
     "owners": ["jkeitel@google.com"],
-    "expiry_milestone": 145
+    "expiry_milestone": 163
   },
   {
     "name": "separate-web-app-shortcut-badge-icon",
