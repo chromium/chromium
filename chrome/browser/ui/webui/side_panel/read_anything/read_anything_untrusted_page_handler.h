@@ -502,6 +502,12 @@ class ReadAnythingUntrustedPageHandler :
   std::optional<std::string> dom_distiller_title_;
   std::optional<std::string> dom_distiller_content_;
 
+  // Tracks the start time of a readability distillation triggered by an active
+  // accessibility tree ID change. This is used to measure readability
+  // distilation latency from a tree change event and is null for SPA or manual
+  // redistillations.
+  base::TimeTicks readability_distillation_tree_change_start_time_;
+
   mojo::Remote<reading_mode::mojom::DistillationEvaluator>
       distillation_evaluator_;
 

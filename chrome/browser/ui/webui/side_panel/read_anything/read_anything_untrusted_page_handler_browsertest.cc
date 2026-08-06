@@ -2198,6 +2198,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerDistillerTest,
 #endif
 IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerDistillerTest,
                        MAYBE_DistillationPopulatesContent) {
+  base::HistogramTester histogram_tester;
   ASSERT_TRUE(embedded_test_server()->Start());
   handler_ = CreateHandler();
 
@@ -2212,6 +2213,10 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerDistillerTest,
       [&]() { return handler_->dom_distiller_title().has_value(); }));
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return handler_->dom_distiller_content().has_value(); }));
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.TimeFromTreeChangedToDistillationComplete",
+      1);
 }
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerDistillerTest,
@@ -2352,12 +2357,32 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerDistillerTest,
       WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
+  // Wait for the initial distillation triggered by navigation to complete.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return handler_->dom_distiller_content().has_value(); }));
+
+  // Setup expectations for RequestReadabilityDistillation.
+  base::RunLoop run_loop;
   EXPECT_CALL(page_, OnReadabilityDistillationStateChanged(
                          read_anything::mojom::ReadAnythingDistillationState::
                              kDistillationInProgress))
       .Times(testing::AtLeast(1));
+  EXPECT_CALL(page_, OnReadabilityDistillationStateChanged(
+                         read_anything::mojom::ReadAnythingDistillationState::
+                             kDistillationWithContent))
+      .WillOnce([&]() { run_loop.Quit(); });
+
+  base::HistogramTester histogram_tester;
 
   handler_->RequestReadabilityDistillation();
+  run_loop.Run();
+
+  // After distillation by RequestReadabilityDistillation, ensure the
+  // tree-changed distillation latency metric isn't logged as it should only be
+  // triggered by ActiveTreeIdChanged events.
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.TimeFromTreeChangedToDistillationComplete",
+      0);
 }
 
 // In order to test that Readability isn't used in automated tests,

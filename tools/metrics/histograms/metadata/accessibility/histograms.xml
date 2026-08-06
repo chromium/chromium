@@ -3784,6 +3784,27 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram
+    name="Accessibility.ReadAnything.TimeFromTreeChangedToDistillationComplete"
+    units="ms" expires_after="2027-03-01">
+  <owner>gusmartin@google.com</owner>
+  <owner>chrome-irm-devs@google.com</owner>
+  <summary>
+    Measures the latency of successful distillations via the readability engine
+    triggered by active accessibility tree ID changes.
+
+    The interval starts when Reading Mode detects that the active accessibility
+    tree ID has changed and ends when the readability engine successfully
+    finishes extracting the distilled article content.
+
+    This metric is only recorded for successful distillations resulting from
+    initial active tree changes. It explicitly excludes background updates,
+    failed distillations, or sub-document navigations (such as Single Page
+    Application updates) to ensure a clean baseline for evaluating distillation
+    pipeline performance.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.TimeFrom{Flow}StartedTo{Method}"
     units="ms" expires_after="2026-12-06">
   <owner>lwinston@google.com</owner>
