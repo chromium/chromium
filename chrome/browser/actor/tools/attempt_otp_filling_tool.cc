@@ -383,6 +383,9 @@ void AttemptOtpFillingTool::OnActorLoginFlowChecked(ToolCallback callback,
     return;
   }
 
+  LogJournalEvent(
+      "AttemptOtpFillingTool::OnActorLoginFlowChecked",
+      JournalDetailsBuilder().Add("status", "Calling RetrieveOtp").Build());
   tool_delegate().GetActorOneTimeTokenFillingService().RetrieveOtp(
       GetTargetTab(), otp_frame->GetLastCommittedOrigin(), trigger_field_ids_,
       is_actor_login,
@@ -458,6 +461,10 @@ void AttemptOtpFillingTool::OnOtpRetrieved(
           .GetActorOneTimeTokenFillingService()
           .ValidateFormFillingContext(GetTargetTab(), trigger_field_ids_));
   if (!IsOk(*validation_result)) {
+    LogJournalEvent("AttemptOtpFillingTool::OnOtpRetrieved",
+                    JournalDetailsBuilder()
+                        .AddError("Form filling context validation failed")
+                        .Build());
     RecordAttemptOtpFillingEvent(
         AttemptOtpFillingToolEvent::kFormFillingNotSecureBeforeFilling);
     std::move(callback).Run(std::move(validation_result));
@@ -465,10 +472,11 @@ void AttemptOtpFillingTool::OnOtpRetrieved(
   }
 
   if (requires_confirmation_) {
-    LogJournalEvent("AttemptOtpFillingTool::OnOtpRetrieved",
-                    JournalDetailsBuilder()
-                        .Add("status", "Showing Gmail OTP confirmation dialog")
-                        .Build());
+    LogJournalEvent(
+        "AttemptOtpFillingTool::OnOtpRetrieved",
+        JournalDetailsBuilder()
+            .Add("status", "Requesting to show the confirmation dialog")
+            .Build());
     std::string otp_code = retrieved_otp;
     tool_delegate().RequestToShowGmailOtpConfirmationDialog(
         otp_code,
@@ -478,6 +486,12 @@ void AttemptOtpFillingTool::OnOtpRetrieved(
     return;
   }
 
+  LogJournalEvent(
+      "AttemptOtpFillingTool::OnOtpRetrieved",
+      JournalDetailsBuilder()
+          .Add("status",
+               "Calling FillOtp without showing the confirmation dialog")
+          .Build());
   tool_delegate().GetActorOneTimeTokenFillingService().FillOtp(
       GetTargetTab(), trigger_field_ids_, std::move(retrieved_otp),
       base::BindOnce(&AttemptOtpFillingTool::OnOtpFilled,
@@ -612,12 +626,20 @@ void AttemptOtpFillingTool::OnGmailOtpConfirmationResponse(
           .GetActorOneTimeTokenFillingService()
           .ValidateFormFillingContext(GetTargetTab(), trigger_field_ids_));
   if (!IsOk(*validation_result)) {
+    LogJournalEvent("AttemptOtpFillingTool::OnGmailOtpConfirmationResponse",
+                    JournalDetailsBuilder()
+                        .AddError("Form filling context validation failed")
+                        .Build());
     RecordAttemptOtpFillingEvent(
         AttemptOtpFillingToolEvent::kFormFillingNotSecureBeforeFilling);
     std::move(callback).Run(std::move(validation_result));
     return;
   }
 
+  LogJournalEvent("AttemptOtpFillingTool::OnGmailOtpConfirmationResponse",
+                  JournalDetailsBuilder()
+                      .Add("status", "Calling FillOtp after confirmation")
+                      .Build());
   tool_delegate().GetActorOneTimeTokenFillingService().FillOtp(
       GetTargetTab(), trigger_field_ids_, std::move(otp),
       base::BindOnce(&AttemptOtpFillingTool::OnOtpFilled,

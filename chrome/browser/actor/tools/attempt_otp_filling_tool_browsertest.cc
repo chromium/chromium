@@ -871,7 +871,7 @@ IN_PROC_BROWSER_TEST_F(
       "is_actor_login=false;"));
   EXPECT_TRUE(HasJournalEntryWithDetails(
       "AttemptOtpFillingTool::OnOtpRetrieved",
-      "status=Showing Gmail OTP confirmation dialog;"));
+      "status=Requesting to show the confirmation dialog;"));
 }
 
 IN_PROC_BROWSER_TEST_F(
