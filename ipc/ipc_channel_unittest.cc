@@ -49,7 +49,6 @@
 #include "ipc/ipc_channel_factory.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "ipc/ipc_mojo_handle_attachment.h"
-#include "ipc/ipc_sync_channel.h"
 #include "ipc/ipc_test.test-mojom.h"
 #include "ipc/mojo_param_traits.h"
 #include "ipc/param_traits_utils.h"
@@ -213,14 +212,10 @@ class ListenerThatQuits : public IPC::Listener {
 
 class ChannelProxyRunner {
  public:
-  ChannelProxyRunner(mojo::ScopedMessagePipeHandle handle,
-                     bool for_server)
+  ChannelProxyRunner(mojo::ScopedMessagePipeHandle handle, bool for_server)
       : for_server_(for_server),
         handle_(std::move(handle)),
-        io_thread_("ChannelProxyRunner IO thread"),
-        never_signaled_(base::WaitableEvent::ResetPolicy::MANUAL,
-                        base::WaitableEvent::InitialState::NOT_SIGNALED) {
-  }
+        io_thread_("ChannelProxyRunner IO thread") {}
 
   ChannelProxyRunner(const ChannelProxyRunner&) = delete;
   ChannelProxyRunner& operator=(const ChannelProxyRunner&) = delete;
@@ -230,9 +225,9 @@ class ChannelProxyRunner {
       IPC::UrgentMessageObserver* urgent_message_observer = nullptr) {
     io_thread_.StartWithOptions(
         base::Thread::Options(base::MessagePumpType::IO, 0));
-    proxy_ = IPC::SyncChannel::Create(
+    proxy_ = std::make_unique<IPC::ChannelProxy>(
         listener, io_thread_.task_runner(),
-        base::SingleThreadTaskRunner::GetCurrentDefault(), &never_signaled_);
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     proxy_->SetUrgentMessageObserver(urgent_message_observer);
   }
 
@@ -257,7 +252,6 @@ class ChannelProxyRunner {
 
   mojo::ScopedMessagePipeHandle handle_;
   base::Thread io_thread_;
-  base::WaitableEvent never_signaled_;
   std::unique_ptr<IPC::ChannelProxy> proxy_;
 };
 

@@ -32,7 +32,7 @@
 #include "extensions/renderer/service_worker_data.h"
 #include "extensions/renderer/trace_util.h"
 #include "extensions/renderer/worker_thread_dispatcher.h"
-#include "ipc/ipc_sync_channel.h"
+#include "ipc/ipc_channel_proxy.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"

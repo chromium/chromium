@@ -58,8 +58,7 @@
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
 #include "gpu/vulkan/buildflags.h"
-#include "ipc/ipc_channel.h"
-#include "ipc/ipc_sync_channel.h"
+#include "ipc/ipc_channel_proxy.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
 #include "media/gpu/buildflags.h"
@@ -939,7 +938,7 @@ void GpuServiceImpl::EstablishGpuChannel(
   if (features::IsLegacyIpcDisabled()) {
     gpu_channel->Start(std::move(channel_handle));
   } else {
-    gpu_channel->Init(channel_handle.release(), shutdown_event_);
+    gpu_channel->Init(channel_handle.release());
   }
 
   media_gpu_channel_manager_->AddChannel(client_id, channel_token);

@@ -23,7 +23,6 @@
 #include "build/build_config.h"
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_perftest_util.h"
-#include "ipc/ipc_sync_channel.h"
 #include "ipc/ipc_test.test-mojom.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/test/mojo_test_base.h"

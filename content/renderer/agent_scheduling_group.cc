@@ -23,8 +23,8 @@
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/renderer_navigation_metrics_manager.h"
 #include "ipc/ipc_channel_factory.h"
+#include "ipc/ipc_channel_proxy.h"
 #include "ipc/ipc_listener.h"
-#include "ipc/ipc_sync_channel.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/page/page.mojom.h"
@@ -38,8 +38,8 @@
 namespace content {
 
 using ::IPC::ChannelFactory;
+using ::IPC::ChannelProxy;
 using ::IPC::Listener;
-using ::IPC::SyncChannel;
 using ::mojo::AssociatedReceiver;
 using ::mojo::AssociatedRemote;
 using ::mojo::PendingAssociatedReceiver;
@@ -123,10 +123,9 @@ AgentSchedulingGroup::AgentSchedulingGroup(
   DCHECK(agent_group_scheduler_);
   DCHECK_NE(GetMBIMode(), features::MBIMode::kLegacy);
 
-  channel_ = SyncChannel::Create(
+  channel_ = std::make_unique<IPC::ChannelProxy>(
       /*listener=*/this, /*ipc_task_runner=*/render_thread_->GetIOTaskRunner(),
-      /*listener_task_runner=*/agent_group_scheduler_->DefaultTaskRunner(),
-      render_thread_->GetShutdownEvent());
+      /*listener_task_runner=*/agent_group_scheduler_->DefaultTaskRunner());
 
   channel_->SetUrgentMessageObserver(agent_group_scheduler_.get());
 

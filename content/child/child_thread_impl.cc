@@ -59,7 +59,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "ipc/ipc_channel_factory.h"
-#include "ipc/ipc_sync_channel.h"
+#include "ipc/ipc_channel_proxy.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -605,11 +605,10 @@ void ChildThreadImpl::Init(const Options& options) {
   main_thread_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 
   if (options.with_legacy_ipc_channel) {
-    channel_ = IPC::SyncChannel::Create(
+    channel_ = std::make_unique<IPC::ChannelProxy>(
         this, ChildProcess::current()->io_task_runner(),
         ipc_task_runner_ ? ipc_task_runner_
-                         : base::SingleThreadTaskRunner::GetCurrentDefault(),
-        ChildProcess::current()->GetShutDownEvent());
+                         : base::SingleThreadTaskRunner::GetCurrentDefault());
     if (options.urgent_message_observer) {
       channel_->SetUrgentMessageObserver(options.urgent_message_observer);
     }

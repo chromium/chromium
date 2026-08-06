@@ -39,8 +39,6 @@ component("ipc") {
       "ipc_message_pipe_reader.h",
       "ipc_mojo_bootstrap.cc",
       "ipc_mojo_bootstrap.h",
-      "ipc_sync_channel.cc",
-      "ipc_sync_channel.h",
       "urgent_message_observer.h",
     ]
   }
@@ -211,7 +209,6 @@ if (use_blink) {
       "ipc_channel_unittest.cc",
       "ipc_message_unittest.cc",
       "ipc_mojo_bootstrap_unittest.cc",
-      "ipc_sync_channel_unittest.cc",
       "param_traits_protobuf_utils_unittest.cc",
       "param_traits_utils_unittest.cc",
     ]

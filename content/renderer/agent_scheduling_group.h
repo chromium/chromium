@@ -27,7 +27,7 @@
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 
 namespace IPC {
-class SyncChannel;
+class ChannelProxy;
 }  // namespace IPC
 
 namespace blink {
@@ -123,7 +123,7 @@ class CONTENT_EXPORT AgentSchedulingGroup
   // This AgentSchedulingGroup's legacy IPC channel. Will only be used in
   // `features::MBIMode::kEnabledPerRenderProcessHost` or
   // `features::MBIMode::kEnabledPerSiteInstance` mode.
-  std::unique_ptr<IPC::SyncChannel> channel_;
+  std::unique_ptr<IPC::ChannelProxy> channel_;
 
   const raw_ref<RenderThread> render_thread_;
 

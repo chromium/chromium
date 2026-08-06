@@ -45,7 +45,7 @@
 #include "content/renderer/memory_reclaimer_pressure_listener.h"
 #include "content/renderer/skia_graphics_pressure_listener.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
-#include "ipc/ipc_sync_channel.h"
+#include "ipc/ipc_channel_proxy.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/clients/mojo_codec_factory.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -146,7 +146,7 @@ class CONTENT_EXPORT RenderThreadImpl
   static void RegisterSchemes();
 
   // RenderThread implementation:
-  IPC::SyncChannel* GetChannel() override;
+  IPC::ChannelProxy* GetChannel() override;
   std::string GetLocale() override;
 
   bool GenerateFrameRoutingID(

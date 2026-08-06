@@ -770,14 +770,13 @@ void GpuChannel::Stop() {
   Destroy();
 }
 
-void GpuChannel::Init(mojo::MessagePipeHandle channel_handle,
-                      base::WaitableEvent* shutdown_event) {
-  sync_channel_ = IPC::SyncChannel::Create(this, io_task_runner_.get(),
-                                           task_runner_.get(), shutdown_event);
-  sync_channel_->AddAssociatedInterfaceForIOThread(
+void GpuChannel::Init(mojo::MessagePipeHandle channel_handle) {
+  channel_proxy_ =
+      std::make_unique<IPC::ChannelProxy>(this, io_task_runner_, task_runner_);
+  channel_proxy_->AddAssociatedInterfaceForIOThread(
       base::BindRepeating(&GpuChannelMessageFilter::BindGpuChannel, filter_));
-  sync_channel_->Init(channel_handle, IPC::Channel::MODE_SERVER,
-                      /*create_pipe_now=*/false);
+  channel_proxy_->Init(channel_handle, IPC::Channel::MODE_SERVER,
+                       /*create_pipe_now=*/false);
 }
 
 base::WeakPtr<GpuChannel> GpuChannel::AsWeakPtr() {
