@@ -88,6 +88,9 @@
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_url_lookup_service_factory.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
+#include "chrome/browser/enterprise/net/enterprise_network_auth_service_factory.h"
+#include "chrome/browser/enterprise/net/enterprise_proxy_error_service_factory.h"
+#include "chrome/browser/enterprise/net/enterprise_proxy_service_factory.h"
 #include "chrome/browser/enterprise/remote_commands/user_remote_commands_service_factory.h"
 #include "chrome/browser/enterprise/reporting/cloud_profile_reporting_service_factory.h"
 #include "chrome/browser/enterprise/reporting/legacy_tech/legacy_tech_service.h"
@@ -434,11 +437,6 @@
 #include "chrome/browser/enterprise/client_certificates/certificate_provisioning_service_factory.h"
 #include "chrome/browser/enterprise/client_certificates/certificate_store_factory.h"
 #endif
-
-#if BUILDFLAG(ENTERPRISE_PROXY)
-#include "chrome/browser/enterprise/net/enterprise_network_auth_service_factory.h"
-#include "chrome/browser/enterprise/net/enterprise_proxy_service_factory.h"
-#endif  // BUILDFLAG(ENTERPRISE_PROXY)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
@@ -1029,10 +1027,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   enterprise_idle::IdleServiceFactory::GetInstance();
 #endif
   enterprise_signals::SignalsAggregatorFactory::GetInstance();
-#if BUILDFLAG(ENTERPRISE_PROXY)
   EnterpriseNetworkAuthServiceFactory::GetInstance();
+  EnterpriseProxyErrorServiceFactory::GetInstance();
   EnterpriseProxyServiceFactory::GetInstance();
-#endif  // BUILDFLAG(ENTERPRISE_PROXY)
   enterprise_reporting::CloudProfileReportingServiceFactory::GetInstance();
   enterprise_reporting::LegacyTechServiceFactory::GetInstance();
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \

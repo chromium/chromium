@@ -25,6 +25,9 @@ source_set("enterprise") {
     "encryption/cache_encryption_provider_impl.h",
     "identifiers/profile_id_delegate_impl.h",
     "identifiers/profile_id_service_factory.h",
+    "net/enterprise_network_auth_service_factory.h",
+    "net/enterprise_proxy_error_service_factory.h",
+    "net/enterprise_proxy_service_factory.h",
     "profile_management/saml_response_parser.h",
     "reporting/cloud_profile_reporting_service.h",
     "reporting/cloud_profile_reporting_service_factory.h",
@@ -66,6 +69,7 @@ source_set("enterprise") {
     "//components/enterprise/data_protection",
     "//components/enterprise/encryption/cache",
     "//components/enterprise/isolated_mode",
+    "//components/enterprise/net",
     "//components/enterprise/watermarking",
     "//components/keyed_service/content",
     "//components/keyed_service/core",
@@ -94,14 +98,6 @@ source_set("enterprise") {
     "//ui/base/idle",
     "//url",
   ]
-
-  if (enterprise_proxy) {
-    public += [
-      "net/enterprise_network_auth_service_factory.h",
-      "net/enterprise_proxy_service_factory.h",
-    ]
-    public_deps += [ "//components/enterprise/net" ]
-  }
 
   if (!is_android) {
     public_deps += [
@@ -445,6 +441,9 @@ source_set("impl") {
     "encryption/cache_encryption_provider_impl.cc",
     "identifiers/profile_id_delegate_impl.cc",
     "identifiers/profile_id_service_factory.cc",
+    "net/enterprise_network_auth_service_factory.cc",
+    "net/enterprise_proxy_error_service_factory.cc",
+    "net/enterprise_proxy_service_factory.cc",
     "profile_management/saml_response_parser.cc",
     "reporting/cloud_profile_reporting_service.cc",
     "reporting/cloud_profile_reporting_service_factory.cc",
@@ -520,6 +519,7 @@ source_set("impl") {
     "//components/enterprise/core",
     "//components/enterprise/data_protection",
     "//components/enterprise/encryption/cache",
+    "//components/enterprise/net",
     "//components/guest_view/browser",
     "//components/image_fetcher/core",
     "//components/policy/proto",
@@ -715,14 +715,6 @@ source_set("impl") {
         "//net",
       ]
     }
-  }
-
-  if (enterprise_proxy) {
-    sources += [
-      "net/enterprise_network_auth_service_factory.cc",
-      "net/enterprise_proxy_service_factory.cc",
-    ]
-    deps += [ "//components/enterprise/net" ]
   }
 
   if (is_linux || is_win || is_mac || is_chromeos || is_android) {

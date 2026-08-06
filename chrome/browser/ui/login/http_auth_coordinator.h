@@ -112,6 +112,10 @@ class HttpAuthCoordinator {
     bool ForwardToExtension(content::GuestPageHolder* guest,
                             content::BrowserContext* browser_context);
 
+    // Gives the enterprise proxy error subsystem the chance to respond to
+    // http auth. Returns true if it is responding.
+    bool ForwardToEnterpriseProxy(content::BrowserContext* browser_context);
+
     // Show a dialog to the user.
     void ShowDialog();
 
