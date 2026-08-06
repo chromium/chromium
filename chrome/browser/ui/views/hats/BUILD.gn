@@ -1,0 +1,52 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+source_set("hats") {
+  public = [ "hats_next_web_dialog.h" ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/hats",
+    "//content/public/browser",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//ui/base",
+    "//ui/base/metadata",
+    "//ui/views",
+    "//ui/views/controls/webview",
+    "//ui/web_dialogs",
+  ]
+}
+
+source_set("impl") {
+  sources = [ "hats_next_web_dialog.cc" ]
+
+  deps = [
+    ":hats",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/devtools",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/dialogs:browser_dialogs",
+    "//chrome/browser/ui/hats",
+    "//chrome/browser/ui/views/frame:toolbar_button_provider",
+    "//chrome/browser/ui/views/toolbar",
+    "//chrome/common:chrome_features",
+    "//components/constrained_window",
+    "//content/public/browser",
+    "//net",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//third_party/blink/public/common",
+    "//third_party/re2",
+    "//ui/base",
+    "//ui/base/metadata",
+    "//ui/views",
+    "//ui/web_dialogs",
+  ]
+}

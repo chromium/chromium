@@ -3016,8 +3016,6 @@ static_library("ui") {
       "views/close_bubble_on_tab_activation_helper.h",
       "views/external_protocol_dialog.cc",
       "views/external_protocol_dialog.h",
-      "views/hats/hats_next_web_dialog.cc",
-      "views/hats/hats_next_web_dialog.h",
       "views/profiles/avatar_badge_view.cc",
       "views/profiles/avatar_badge_view.h",
       "views/profiles/incognito_menu_view.cc",
@@ -3038,13 +3036,18 @@ static_library("ui") {
       "//chrome/browser/ui/frame:impl",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/lens:impl",
+      "//chrome/browser/ui/views/hats",
+      "//chrome/browser/ui/views/hats:impl",
       "//chrome/browser/ui/wallet",
       "//components/lens/proto/server:proto",
       "//third_party/lens_server_proto:lens_overlay_proto",
       "//third_party/omnibox_proto",
     ]
 
-    allow_circular_includes_from += [ "//chrome/browser/ui/wallet" ]
+    allow_circular_includes_from += [
+      "//chrome/browser/ui/wallet",
+      "//chrome/browser/ui/views/hats:impl",
+    ]
   }
 
   if (is_win || is_mac || is_linux || is_chromeos || is_desktop_android) {
