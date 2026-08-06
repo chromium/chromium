@@ -45,6 +45,7 @@
 #import "ios/chrome/browser/send_tab_to_self/coordinator/send_tab_to_self_mediator.h"
 #import "ios/chrome/browser/send_tab_to_self/coordinator/send_tab_to_self_mediator_delegate.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_browser_agent.h"
+#import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_text_fragment_selector_generator.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_util.h"
 #import "ios/chrome/browser/send_tab_to_self/ui/send_tab_to_self_bottom_sheet_view_controller.h"
@@ -503,9 +504,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
   _targetDeviceListWaiter =
       std::make_unique<send_tab_to_self::TargetDeviceListWaiter>(
           SyncServiceFactory::GetForProfile(self.profile),
-          base::BindRepeating(^{
-            return [weakSelf displayReason];
-          }),
+          SendTabToSelfSyncServiceFactory::GetForProfile(self.profile), _url,
           base::BindOnce(^{
             [weakSelf onTargetDeviceListReady];
           }));

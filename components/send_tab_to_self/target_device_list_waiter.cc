@@ -8,17 +8,19 @@
 
 #include "base/check.h"
 #include "components/send_tab_to_self/entry_point_display_reason.h"
+#include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/sync/service/sync_service.h"
 
 namespace send_tab_to_self {
 
 TargetDeviceListWaiter::TargetDeviceListWaiter(
     syncer::SyncService* sync_service,
-    const GetDisplayReasonCallback& get_display_reason_callback,
+    SendTabToSelfSyncService* send_tab_to_self_service,
+    const GURL& url_to_share,
     base::OnceClosure on_list_known_callback)
-    : get_display_reason_callback_(get_display_reason_callback),
+    : send_tab_to_self_service_(send_tab_to_self_service),
+      url_to_share_(url_to_share),
       on_list_known_callback_(std::move(on_list_known_callback)) {
-  CHECK(get_display_reason_callback_);
   CHECK(on_list_known_callback_);
   if (sync_service) {
     sync_observation_.Observe(sync_service);
@@ -29,11 +31,11 @@ TargetDeviceListWaiter::TargetDeviceListWaiter(
 TargetDeviceListWaiter::~TargetDeviceListWaiter() = default;
 
 void TargetDeviceListWaiter::OnStateChanged(syncer::SyncService* /*sync_service*/) {
-  if (!on_list_known_callback_) {
+  if (!on_list_known_callback_ || !send_tab_to_self_service_) {
     return;
   }
   std::optional<EntryPointDisplayReason> display_reason =
-      get_display_reason_callback_.Run();
+      send_tab_to_self_service_->GetEntryPointDisplayReason(url_to_share_);
   if (!display_reason) {
     return;
   }
@@ -49,9 +51,14 @@ void TargetDeviceListWaiter::OnStateChanged(syncer::SyncService* /*sync_service*
   }
 }
 
-void TargetDeviceListWaiter::OnSyncShutdown(syncer::SyncService* /*sync_service*/) {
+void TargetDeviceListWaiter::OnSyncShutdown(
+    syncer::SyncService* /*sync_service*/) {
+  // `send_tab_to_self_service_` is guaranteed to be valid during SyncService
+  // shutdown because SyncServiceFactory depends on
+  // SendTabToSelfSyncServiceFactory.
   sync_observation_.Reset();
   on_list_known_callback_.Reset();
+  send_tab_to_self_service_ = nullptr;
 }
 
 }  // namespace send_tab_to_self

@@ -6,8 +6,10 @@
 #define COMPONENTS_SEND_TAB_TO_SELF_TARGET_DEVICE_LIST_WAITER_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/sync/service/sync_service_observer.h"
+#include "url/gurl.h"
 
 namespace syncer {
 class SyncService;
@@ -15,23 +17,21 @@ class SyncService;
 
 namespace send_tab_to_self {
 
-enum class EntryPointDisplayReason;
+class SendTabToSelfSyncService;
 
 // Shared utility to wait for Sync to download the target device list (or
 // determine that no target devices exist) after sign-in.
 class TargetDeviceListWaiter : public syncer::SyncServiceObserver {
  public:
-  using GetDisplayReasonCallback = base::RepeatingCallback<
-      std::optional<send_tab_to_self::EntryPointDisplayReason>()>;
-
-  // Queries `get_display_reason_callback` until it indicates the device list is
+  // Queries `send_tab_to_self_service` until it indicates the device list is
   // known (i.e. until it returns kOfferFeature or kInformNoTargetDevice), then
   // calls `on_list_known_callback`. The callback may run synchronously inside
   // this constructor if the display reason is already known. Destroying the
   // object aborts the waiting.
   TargetDeviceListWaiter(
       syncer::SyncService* sync_service,
-      const GetDisplayReasonCallback& get_display_reason_callback,
+      SendTabToSelfSyncService* send_tab_to_self_service,
+      const GURL& url_to_share,
       base::OnceClosure on_list_known_callback);
 
   TargetDeviceListWaiter(const TargetDeviceListWaiter&) = delete;
@@ -46,7 +46,8 @@ class TargetDeviceListWaiter : public syncer::SyncServiceObserver {
  private:
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_observation_{this};
-  GetDisplayReasonCallback get_display_reason_callback_;
+  raw_ptr<SendTabToSelfSyncService> send_tab_to_self_service_;
+  const GURL url_to_share_;
   base::OnceClosure on_list_known_callback_;
 };
 

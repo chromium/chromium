@@ -13,9 +13,11 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/send_tab_to_self/entry_point_display_reason.h"
+#include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace send_tab_to_self {
 
@@ -25,30 +27,25 @@ using base::test::TestFuture;
 using testing::IsNull;
 using testing::Test;
 
+const char kTestUrl[] = "https://www.example.com";
+
 class TargetDeviceListWaiterTest : public Test {
  public:
   TargetDeviceListWaiterTest() = default;
 
   syncer::TestSyncService* sync_service() { return &sync_service_; }
-
-  TargetDeviceListWaiter::GetDisplayReasonCallback GetReasonCallback() {
-    return base::BindRepeating(
-        &TargetDeviceListWaiterTest::GetEntryPointDisplayReason,
-        base::Unretained(this));
+  StubSendTabToSelfSyncService* send_tab_to_self_service() {
+    return &send_tab_to_self_service_;
   }
 
   void SetDisplayReason(std::optional<EntryPointDisplayReason> reason) {
-    display_reason_ = reason;
+    send_tab_to_self_service_.SetEntryPointDisplayReason(reason);
   }
 
  private:
-  std::optional<EntryPointDisplayReason> GetEntryPointDisplayReason() const {
-    return display_reason_;
-  }
-
   base::test::TaskEnvironment task_environment_;
   syncer::TestSyncService sync_service_;
-  std::optional<EntryPointDisplayReason> display_reason_;
+  StubSendTabToSelfSyncService send_tab_to_self_service_;
 };
 
 // Verifies that the waiter triggers its completion callback when the display
@@ -58,8 +55,8 @@ TEST_F(TargetDeviceListWaiterTest,
   TestFuture<void> future;
   SetDisplayReason(EntryPointDisplayReason::kOfferSignIn);
 
-  TargetDeviceListWaiter waiter(sync_service(), GetReasonCallback(),
-                                future.GetCallback());
+  TargetDeviceListWaiter waiter(sync_service(), send_tab_to_self_service(),
+                                GURL(kTestUrl), future.GetCallback());
 
   EXPECT_FALSE(future.IsReady());
 
@@ -77,8 +74,8 @@ TEST_F(TargetDeviceListWaiterTest,
   TestFuture<void> future;
   SetDisplayReason(EntryPointDisplayReason::kOfferSignIn);
 
-  TargetDeviceListWaiter waiter(sync_service(), GetReasonCallback(),
-                                future.GetCallback());
+  TargetDeviceListWaiter waiter(sync_service(), send_tab_to_self_service(),
+                                GURL(kTestUrl), future.GetCallback());
 
   EXPECT_FALSE(future.IsReady());
 
@@ -97,8 +94,8 @@ TEST_F(TargetDeviceListWaiterTest,
   TestFuture<void> future;
   SetDisplayReason(std::nullopt);
 
-  TargetDeviceListWaiter waiter(sync_service(), GetReasonCallback(),
-                                future.GetCallback());
+  TargetDeviceListWaiter waiter(sync_service(), send_tab_to_self_service(),
+                                GURL(kTestUrl), future.GetCallback());
 
   EXPECT_FALSE(future.IsReady());
 
@@ -115,14 +112,15 @@ TEST_F(TargetDeviceListWaiterTest,
   EXPECT_TRUE(future.Wait());
 }
 
-// Verifies that the waiter remains waiting when display reason is kOfferReauth.
+// Verifies that the waiter remains waiting when display reason is kOfferReauth
+// and resolves once it transitions to kInformNoTargetDevice.
 TEST_F(TargetDeviceListWaiterTest,
        DoesNotTriggerCallbackWhileDisplayReasonIsOfferReauth) {
   TestFuture<void> future;
   SetDisplayReason(EntryPointDisplayReason::kOfferSignIn);
 
-  TargetDeviceListWaiter waiter(sync_service(), GetReasonCallback(),
-                                future.GetCallback());
+  TargetDeviceListWaiter waiter(sync_service(), send_tab_to_self_service(),
+                                GURL(kTestUrl), future.GetCallback());
 
   EXPECT_FALSE(future.IsReady());
 
@@ -131,6 +129,12 @@ TEST_F(TargetDeviceListWaiterTest,
   sync_service()->FireStateChanged();
 
   EXPECT_FALSE(future.IsReady());
+
+  // Transition to kInformNoTargetDevice - completes successfully.
+  SetDisplayReason(EntryPointDisplayReason::kInformNoTargetDevice);
+  sync_service()->FireStateChanged();
+
+  EXPECT_TRUE(future.Wait());
 }
 
 // Verifies that if the display reason is already resolved at construction
@@ -140,20 +144,38 @@ TEST_F(TargetDeviceListWaiterTest,
   TestFuture<void> future;
   SetDisplayReason(EntryPointDisplayReason::kOfferFeature);
 
-  TargetDeviceListWaiter waiter(sync_service(), GetReasonCallback(),
-                                future.GetCallback());
+  TargetDeviceListWaiter waiter(sync_service(), send_tab_to_self_service(),
+                                GURL(kTestUrl), future.GetCallback());
 
   EXPECT_TRUE(future.IsReady());
 }
 
 // Verifies that null SyncService pointers are handled gracefully without
-// crashing.
+// crashing when display reason is pending.
 TEST_F(TargetDeviceListWaiterTest, HandlesNullSyncServiceGracefully) {
+  TestFuture<void> future;
+  SetDisplayReason(EntryPointDisplayReason::kOfferSignIn);
+
+  TargetDeviceListWaiter waiter(
+      /*sync_service=*/nullptr, send_tab_to_self_service(), GURL(kTestUrl),
+      future.GetCallback());
+
+  EXPECT_FALSE(future.IsReady());
+}
+
+// Verifies that null SendTabToSelfSyncService pointers are handled gracefully
+// without crashing.
+TEST_F(TargetDeviceListWaiterTest, HandlesNullSendTabToSelfServiceGracefully) {
   TestFuture<void> future;
 
   TargetDeviceListWaiter waiter(
-      /*sync_service=*/nullptr, GetReasonCallback(), future.GetCallback());
+      sync_service(), /*send_tab_to_self_service=*/nullptr, GURL(kTestUrl),
+      future.GetCallback());
 
+  EXPECT_FALSE(future.IsReady());
+
+  // Subsequent sync state changes should not crash when service is null.
+  sync_service()->FireStateChanged();
   EXPECT_FALSE(future.IsReady());
 }
 
@@ -164,7 +186,7 @@ TEST_F(TargetDeviceListWaiterTest, HandlesSelfDestructionInCompletionCallback) {
 
   std::unique_ptr<TargetDeviceListWaiter> waiter;
   waiter = std::make_unique<TargetDeviceListWaiter>(
-      sync_service(), GetReasonCallback(),
+      sync_service(), send_tab_to_self_service(), GURL(kTestUrl),
       base::BindOnce(
           [](std::unique_ptr<TargetDeviceListWaiter>* waiter_ptr) {
             waiter_ptr->reset();
@@ -183,8 +205,8 @@ TEST_F(TargetDeviceListWaiterTest, HandlesSyncShutdownWithoutCrashing) {
   TestFuture<void> future;
   SetDisplayReason(EntryPointDisplayReason::kOfferSignIn);
 
-  TargetDeviceListWaiter waiter(sync_service(), GetReasonCallback(),
-                                future.GetCallback());
+  TargetDeviceListWaiter waiter(sync_service(), send_tab_to_self_service(),
+                                GURL(kTestUrl), future.GetCallback());
 
   waiter.OnSyncShutdown(sync_service());
 
@@ -203,7 +225,7 @@ TEST_F(TargetDeviceListWaiterTest,
   SetDisplayReason(EntryPointDisplayReason::kOfferSignIn);
 
   TargetDeviceListWaiter waiter(
-      sync_service(), GetReasonCallback(),
+      sync_service(), send_tab_to_self_service(), GURL(kTestUrl),
       base::BindLambdaForTesting([&]() { callback_count++; }));
 
   SetDisplayReason(EntryPointDisplayReason::kOfferFeature);
