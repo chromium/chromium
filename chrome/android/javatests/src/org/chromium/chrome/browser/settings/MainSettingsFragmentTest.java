@@ -409,7 +409,7 @@ public class MainSettingsFragmentTest {
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
     })
     public void testSignInRowLaunchesSignInFlowForSignedOutAccounts_legacy() {
-        mSyncTestRule.addTestAccount();
+        mSyncTestRule.addAccount(TestAccounts.ACCOUNT1);
         startSettings();
 
         onView(withId(R.id.recycler_view))

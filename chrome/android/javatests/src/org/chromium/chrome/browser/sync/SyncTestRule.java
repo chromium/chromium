@@ -205,13 +205,6 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
         return mSyncService;
     }
 
-    /**
-     * Adds an account of default account name to AccountManagerFacade and waits for the seeding.
-     */
-    public CoreAccountInfo addTestAccount() {
-        return addAccount(TestAccounts.ACCOUNT1);
-    }
-
     /** Adds an account of given account name to AccountManagerFacade and waits for the seeding. */
     public CoreAccountInfo addAccount(AccountInfo account) {
         mSigninTestRule.addAccount(account);
