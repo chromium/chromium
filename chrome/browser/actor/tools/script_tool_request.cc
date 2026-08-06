@@ -68,4 +68,10 @@ ScriptToolRequest::GetObservationPageStabilityConfig() const {
   }
 }
 
+bool ScriptToolRequest::RequiresOpeningWebContents() const {
+  // The functionality provided by a script tool may require opening new
+  // windows. For example, login or payment flows must be performed in a
+  // seperate top-level window.
+  return true;
+}
 }  // namespace actor
