@@ -70,10 +70,9 @@ namespace blink {
 using UkmPaintTiming = ukm::builders::Blink_PaintTiming;
 using ::testing::Optional;
 
-class ImagePaintTimingDetectorTest : public PaintTimingTestBase,
-                                     public PaintTestConfigurations {
+class ImagePaintTimingDetectorTestBase : public PaintTimingTestBase {
  public:
-  ImagePaintTimingDetectorTest() = default;
+  ImagePaintTimingDetectorTestBase() = default;
 
   const PerformanceTimingForReporting& GetPerformanceTimingForReporting() {
     PerformanceTimingForReporting* performance_for_reporting =
@@ -174,8 +173,27 @@ class ImagePaintTimingDetectorTest : public PaintTimingTestBase,
     To<SVGImageElement>(element)->SetImageForTest(content);
   }
 
+  void SimulateImagePaint(Element* element,
+                          MediaTiming* timing,
+                          int width,
+                          int height) {
+    // Fake the property tree state and border properties since these are
+    // invalid when simulating image paints.
+    gfx::Rect border(width, height);
+    auto property_tree_state = PropertyTreeStateOrAlias::Root();
+    GetPaintTimingDetector().NotifyImagePaint(*element->GetLayoutObject(),
+                                              gfx::Size(width, height), *timing,
+                                              property_tree_state, border);
+  }
+
  protected:
   base::test::TracingEnvironment tracing_environment_;
+};
+
+class ImagePaintTimingDetectorTest : public ImagePaintTimingDetectorTestBase,
+                                     public PaintTestConfigurations {
+ public:
+  ImagePaintTimingDetectorTest() = default;
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(ImagePaintTimingDetectorTest);
@@ -199,7 +217,7 @@ TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_OneImage) {
   ImageRecord* record = LargestImage();
   EXPECT_TRUE(record);
   EXPECT_EQ(record->EffectiveVisualSize(), 25ul);
-  EXPECT_TRUE(record->HasLoadTime());
+  EXPECT_FALSE(record->LoadTime().is_null());
   // Simulate some input event to force StopRecordEntries().
   SimulateKeyDown();
   auto entries = test_ukm_recorder.GetEntriesByName(UkmPaintTiming::kEntryName);
@@ -1375,6 +1393,227 @@ TEST_P(ImagePaintTimingDetectorTransparentPlaceholderImageTest,
           .LargestContentfulPaintDetailsForMetrics();
   EXPECT_EQ(largest_contentful_paint_details.image_paint_size, 1u);
   EXPECT_GT(largest_contentful_paint_details.image_paint_time, 0u);
+}
+
+namespace {
+
+class FakeAnimatedImageTiming final
+    : public GarbageCollected<FakeAnimatedImageTiming>,
+      public MediaTiming {
+ public:
+  FakeAnimatedImageTiming() = default;
+
+  void SetFirstVideoFrameTime(base::TimeTicks) override { NOTREACHED(); }
+  base::TimeTicks GetFirstVideoFrameTime() const override {
+    return base::TimeTicks();
+  }
+  std::optional<WebURLRequest::Priority> RequestPriority() const override {
+    return std::nullopt;
+  }
+  bool IsDataUrl() const override { return false; }
+  bool IsBroken() const override { return false; }
+  base::TimeTicks DiscoveryTime() const override { return base::TimeTicks(); }
+  base::TimeTicks LoadStart() const override { return base::TimeTicks(); }
+  base::TimeTicks LoadEnd() const override { return base::TimeTicks(); }
+
+  const KURL& Url() const override { return url_; }
+  AtomicString MediaType() const override { return AtomicString("gif"); }
+
+  bool IsAnimatedImage() const override { return true; }
+
+  // Allows tests to control when the first frame was painted.
+  void SetIsPaintedFirstFrame() { is_painted_first_frame_ = true; }
+  bool IsPaintedFirstFrame() const override { return is_painted_first_frame_; }
+
+  // Allows tests to control when the image is sufficiently loaded.
+  void SetIsSufficientContentLoadedForPaint() override {
+    is_sufficiently_loaded_for_paint_ = true;
+  }
+  bool IsSufficientContentLoadedForPaint() const override {
+    return is_sufficiently_loaded_for_paint_;
+  }
+
+  // Ensure the image has enough entropy to be considered for LCP.
+  uint64_t ContentSizeForEntropy() const override { return 100000; }
+
+  void Trace(Visitor*) const override {}
+
+ private:
+  bool is_painted_first_frame_ = false;
+  bool is_sufficiently_loaded_for_paint_ = false;
+  KURL url_{"http://test.com/animated.gif"};
+};
+
+}  // namespace
+
+class ImagePaintTimingDetectorAnimatedImageTest
+    : public ImagePaintTimingDetectorTestBase,
+      public testing::WithParamInterface<bool> {
+ protected:
+  ImagePaintTimingDetectorAnimatedImageTest()
+      : scoped_feature_(IsReportFirstFrameTimeAsRenderTimeEnabled()) {}
+
+  bool IsReportFirstFrameTimeAsRenderTimeEnabled() { return GetParam(); }
+
+ private:
+  ScopedReportFirstFrameTimeAsRenderTimeForTest scoped_feature_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ImagePaintTimingDetectorAnimatedImageTest,
+    testing::Bool(),
+    [](const testing::TestParamInfo<bool>& info) {
+      return info.param ? "ReportFirstFrameTimeAsRenderTimeEnabled"
+                        : "ReportFirstFrameTimeAsRenderTimeDisabled";
+    });
+
+TEST_P(ImagePaintTimingDetectorAnimatedImageTest, ImageRenderingSequence) {
+  SetMainFrameBodyContent(R"HTML(
+      <img id="target" style:"width:100px;height:100px"></img>
+    )HTML");
+  SimulateRenderingAndPresentationTime();
+  EXPECT_FALSE(LargestImage());
+
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  ASSERT_TRUE(target);
+  auto* timing = MakeGarbageCollected<FakeAnimatedImageTiming>();
+
+  // Simulate a paint without the first frame or sufficiently loaded content.
+  SimulateImagePaint(target, timing, 100, 100);
+  // The image should be pending and recorded.
+  EXPECT_EQ(ContainerTotalSize(), 2u);
+  SimulateRenderingAndPresentationTime();
+  // For LCP, the largest pending should be set, but the largest should not be.
+  EXPECT_TRUE(LargestImage());
+  EXPECT_FALSE(LargestPaintedImage());
+
+  // Simulate a paint with the first frame painted.
+  timing->SetIsPaintedFirstFrame();
+  SimulateImagePaint(target, timing, 100, 100);
+  SimulateRendering();
+  // The image should be pending, recorded, and queued for paint time for the
+  // first image frame (regardless of the feature), and queued for paint time
+  // for being sufficiently loaded (with the feature).
+  EXPECT_EQ(ContainerTotalSize(),
+            IsReportFirstFrameTimeAsRenderTimeEnabled() ? 4u : 3u);
+
+  // Simulate presentation time. This should set the first animated frame time
+  // with and without the feature, and set the paint time with the feature.
+  SimulatePresentationTime();
+  base::TimeTicks expected_first_frame_time = base::TimeTicks::Now();
+
+  // There should be 1 entry if the feature is enabled (recorded) and 2 if not
+  // (recorded and pending).
+  EXPECT_EQ(ContainerTotalSize(),
+            IsReportFirstFrameTimeAsRenderTimeEnabled() ? 1u : 2u);
+  // In either case, `record` will be the largest pending image.
+  ImageRecord* record = LargestImage();
+  ASSERT_TRUE(record);
+  EXPECT_EQ(record->FirstAnimatedFrameTime(), expected_first_frame_time);
+  EXPECT_EQ(record->GetNode(), target);
+  // But the image should only be reported with the feature enabled.
+  EXPECT_EQ(record->IsSufficientlyLoadedForReporting(),
+            IsReportFirstFrameTimeAsRenderTimeEnabled());
+  EXPECT_EQ(record->HasPaintTime(),
+            IsReportFirstFrameTimeAsRenderTimeEnabled());
+  EXPECT_EQ(!!LargestPaintedImage(),
+            IsReportFirstFrameTimeAsRenderTimeEnabled());
+
+  // Finally, simulate a paint with the `timing` sufficiently loaded. This
+  // should be a no-op if with the feature enabled, and it should cause the
+  // record to be reported without.
+  timing->SetIsSufficientContentLoadedForPaint();
+  SimulateImagePaint(target, timing, 100, 100);
+  SimulateRendering();
+  // There should be 1 entry if the feature is enabled (recorded) and 3 if not
+  // (recorded, pending, and queued for paint time).
+  EXPECT_EQ(ContainerTotalSize(),
+            IsReportFirstFrameTimeAsRenderTimeEnabled() ? 1u : 3u);
+  SimulatePresentationTime();
+  EXPECT_EQ(ContainerTotalSize(), 1u);
+  record = LargestImage();
+  EXPECT_EQ(record->FirstAnimatedFrameTime(), expected_first_frame_time);
+  EXPECT_TRUE(record->IsSufficientlyLoadedForReporting());
+  EXPECT_EQ(record->GetNode(), target);
+  EXPECT_TRUE(record->HasPaintTime());
+  EXPECT_EQ(LargestPaintedImage(), record);
+}
+
+TEST_P(ImagePaintTimingDetectorAnimatedImageTest, DelayedPresentationFeedback) {
+  SetMainFrameBodyContent(R"HTML(
+      <img id="target" style:"width:100px;height:100px"></img>
+    )HTML");
+  SimulateRenderingAndPresentationTime();
+  EXPECT_FALSE(LargestImage());
+
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  ASSERT_TRUE(target);
+  auto* timing = MakeGarbageCollected<FakeAnimatedImageTiming>();
+  timing->SetIsPaintedFirstFrame();
+
+  // Simulate a paint with the first animated frame painted.
+  SimulateImagePaint(target, timing, 100, 100);
+  // The image should be pending, recorded, and queued for paint time for the
+  // first image frame (regardless of the feature), and queued for paint time
+  // for being sufficiently loaded (with the feature).
+  EXPECT_EQ(ContainerTotalSize(),
+            IsReportFirstFrameTimeAsRenderTimeEnabled() ? 4u : 3u);
+  SimulateRendering();
+  // For LCP, the largest pending should be set, but the largest should not be.
+  EXPECT_TRUE(LargestImage());
+  EXPECT_FALSE(LargestPaintedImage());
+
+  // Simulate the sufficiently loaded paint while presentation time is still
+  // pending.
+  timing->SetIsSufficientContentLoadedForPaint();
+  SimulateImagePaint(target, timing, 100, 100);
+  SimulateRendering();
+  // With the feature enabled, the count should stay the same, but without the
+  // feature, there's a second entry queued for first frame since the other is
+  // still pending.
+  EXPECT_EQ(ContainerTotalSize(),
+            IsReportFirstFrameTimeAsRenderTimeEnabled() ? 4u : 5u);
+  // The largest pending and painted should be unchanged.
+  EXPECT_TRUE(LargestImage());
+  EXPECT_FALSE(LargestPaintedImage());
+
+  // Now, simulate presentation time for the first frame. This should set the
+  // first animated frame time with and without the feature enabled, and set the
+  // paint time only with the feature enabled.
+  SimulatePresentationTime();
+  base::TimeTicks expected_first_frame_time = base::TimeTicks::Now();
+
+  // There should be 1 entry if the feature is enabled (recorded) and 4 if not
+  // (recorded, pending, and 2 queued for the second frame's presentation time).
+  EXPECT_EQ(ContainerTotalSize(),
+            IsReportFirstFrameTimeAsRenderTimeEnabled() ? 1u : 4u);
+  // Without the feature enabled, `record` will be the largest pending image.
+  ImageRecord* record = LargestImage();
+  ASSERT_TRUE(record);
+  EXPECT_EQ(record->FirstAnimatedFrameTime(), expected_first_frame_time);
+  EXPECT_EQ(record->GetNode(), target);
+  // The record will be sufficiently loaded in either case (since it's set
+  // during paint), but setting the paint time needs to wait for the correct
+  // frame's feedback.
+  EXPECT_TRUE(record->IsSufficientlyLoadedForReporting());
+  EXPECT_EQ(record->HasPaintTime(),
+            IsReportFirstFrameTimeAsRenderTimeEnabled());
+  EXPECT_EQ(!!LargestPaintedImage(),
+            IsReportFirstFrameTimeAsRenderTimeEnabled());
+
+  // Finally, simulate the presentation time of the second frame. This should
+  // set the paint time with the feature disabled.
+  SimulatePresentationTime();
+  EXPECT_EQ(ContainerTotalSize(), 1u);
+  record = LargestImage();
+  // The second frame's presentation time should not overwrite the first
+  // animated frame time.
+  EXPECT_EQ(record->FirstAnimatedFrameTime(), expected_first_frame_time);
+  EXPECT_TRUE(record->IsSufficientlyLoadedForReporting());
+  EXPECT_EQ(record->GetNode(), target);
+  EXPECT_TRUE(record->HasPaintTime());
+  EXPECT_EQ(record, LargestPaintedImage());
 }
 
 }  // namespace blink

@@ -109,8 +109,26 @@ class CORE_EXPORT ImagePaintTimingDetector final
   void Trace(Visitor*) const;
 
  private:
-  friend class ImagePaintTimingDetectorTest;
+  friend class ImagePaintTimingDetectorTestBase;
   friend class LargestContentfulPaintCalculatorTest;
+
+  enum class PresentationReason : uint8_t {
+    kFirstAnimatedFrame,
+    kSufficientlyLoaded,
+  };
+
+  struct QueuedImageRecordInfo
+      : public GarbageCollected<QueuedImageRecordInfo> {
+    QueuedImageRecordInfo(ImageRecord*,
+                          uint32_t frame_index,
+                          PresentationReason);
+
+    void Trace(Visitor*) const;
+
+    const Member<ImageRecord> image_record;
+    const uint32_t frame_index;
+    const PresentationReason presentation_reason;
+  };
 
   void SendRectsToHud();
 
@@ -144,7 +162,7 @@ class CORE_EXPORT ImagePaintTimingDetector final
       const DOMPaintTimingInfo&,
       HeapVector<Member<ImageRecord>>& settled_records);
 
-  void QueueToMeasurePaintTime(ImageRecord*);
+  void QueueToMeasurePaintTime(ImageRecord*, PresentationReason);
 
   // Used to decide which frame a record belongs to, monotonically increasing.
   uint32_t frame_index_ = 1;
@@ -169,7 +187,7 @@ class CORE_EXPORT ImagePaintTimingDetector final
 
   // |ImageRecord|s waiting for paint time are stored in this map
   // until they get a presentation time.
-  HeapDeque<Member<ImageRecord>> images_queued_for_paint_time_;
+  HeapDeque<Member<QueuedImageRecordInfo>> images_queued_for_paint_time_;
 
   // Map containing timestamps of when LayoutObject::ImageNotifyFinished is
   // first called.

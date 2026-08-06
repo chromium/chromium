@@ -229,6 +229,8 @@ void LargestContentfulPaintManager::MaybeUpdateLargestIgnoredImage(
   }
 
   CHECK(record->GetMediaTiming());
+  // TODO(crbug.com/449779010): This should probably be based on first frame for
+  // animated images.
   if (!record->GetMediaTiming()->IsSufficientContentLoadedForPaint()) {
     return;
   }
@@ -239,7 +241,7 @@ void LargestContentfulPaintManager::MaybeUpdateLargestIgnoredImage(
   // TODO(crbug.com/503691215): Can we use the actual image load time here
   // rather instead? It's not clear why this inconsistency exists.
   record->SetLoadTime(base::TimeTicks::Now());
-  record->MarkLoaded();
+  record->SetIsSufficientlyLoadedForReporting();
 
   InitializePaintTracking(record);
 

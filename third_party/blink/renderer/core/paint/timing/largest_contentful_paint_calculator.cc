@@ -366,13 +366,14 @@ bool LargestContentfulPaintCalculator::
       image_record.RequestPriority();
   UpdateLatestLcpDetailsTypeIfNeeded();
 
-  // TODO(crbug.com/449779010): Consider removing this IsLoaded(), since we
-  // having presentation time is the only thing that matters for metrics.  When
-  // ReportFirstFrameTimeAsRenderTime ships, we will emit some performance
+  // TODO(crbug.com/449779010): Presentation time is the only thing that matters
+  // for metrics, so consider removing this IsSufficientlyLoadedForReporting().
+  // When ReportFirstFrameTimeAsRenderTime ships, we will emit some performance
   // entries before they are considered fully loaded, so this should probably be
   // removed along with shipping that feature.
   if (delegate_->IsHardNavigation() && PaintTimingDetector::IsTracing()) {
-    if (!image_paint_time.is_null() && image_record.IsLoaded()) {
+    if (!image_paint_time.is_null() &&
+        image_record.IsSufficientlyLoadedForReporting()) {
       ReportMetricsCandidateToTrace(image_record, image_paint_time);
     } else {
       ReportNoMetricsImageCandidateToTrace();

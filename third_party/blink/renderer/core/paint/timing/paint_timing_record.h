@@ -62,9 +62,6 @@ class CORE_EXPORT PaintTimingRecord
     return paint_timing_info_;
   }
 
-  uint32_t FrameIndex() const { return frame_index_; }
-  void SetFrameIndex(uint32_t index) { frame_index_ = index; }
-
   SoftNavigationContext* GetSoftNavigationContext() const {
     return soft_navigation_context_;
   }
@@ -101,7 +98,6 @@ class CORE_EXPORT PaintTimingRecord
   const WeakMember<Node> node_;
   const WeakMember<LayoutObject> layout_object_;
   const gfx::RectF root_visual_rect_;
-  uint32_t frame_index_ = 0;
   bool is_needed_for_lcp_ = false;
   base::TimeTicks paint_time_;
   DOMPaintTimingInfo paint_timing_info_;
@@ -123,6 +119,9 @@ class CORE_EXPORT TextRecord final : public PaintTimingRecord {
     return effective_visual_size_;
   }
 
+  uint32_t FrameIndex() const { return frame_index_; }
+  void SetFrameIndex(uint32_t index) { frame_index_ = index; }
+
   bool IsNeededForElementTiming() const {
     return is_needed_for_element_timing_;
   }
@@ -132,6 +131,7 @@ class CORE_EXPORT TextRecord final : public PaintTimingRecord {
   const gfx::RectF& ElementTimingRect() const { return element_timing_rect_; }
 
  private:
+  uint32_t frame_index_ = 0;
   const uint64_t effective_visual_size_;
   const gfx::RectF element_timing_rect_;
   bool is_needed_for_element_timing_ = false;
@@ -162,28 +162,36 @@ class CORE_EXPORT ImageRecord final : public PaintTimingRecord {
   // is no `media_timing`.
   std::optional<WebURLRequest::Priority> RequestPriority() const;
 
-  bool IsLoaded() const { return is_loaded_; }
-  void MarkLoaded() { is_loaded_ = true; }
+  // Returns or sets whether the image is sufficiently loaded to be considered
+  // for reporting. This is set for all media based on the `media_timing_`'s
+  // IsSufficientContentLoadedForPaint(), except for animated images with
+  // ReportFirstFrameTimeAsRenderTime enabled, in which case it's based on the
+  // `media_timing_`'s IsPaintedFirstFrame().
+  bool IsSufficientlyLoadedForReporting() const {
+    return is_sufficiently_loaded_for_reporting_;
+  }
+  void SetIsSufficientlyLoadedForReporting() {
+    is_sufficiently_loaded_for_reporting_ = true;
+  }
 
-  bool HasLoadTime() const { return !load_time_.is_null(); }
+  // Returns or sets the load time of the image. Note that in some cases there
+  // will not be a load time even when `IsSufficientlyLoadedForReporting()` is
+  // true, e.g. first video frame and when using first animated frame for
+  // images.
   base::TimeTicks LoadTime() const { return load_time_; }
   void SetLoadTime(base::TimeTicks value) { load_time_ = value; }
 
-  bool HasFirstAnimatedFrameTime() const {
-    return !first_animated_frame_time_.is_null();
-  }
+  // Returns or sets the first animated frame time. This is set for the first
+  // video or animated image frame, and it's used for metrics (independently of
+  // the `PaintTimingRecord`).
   base::TimeTicks FirstAnimatedFrameTime() const {
     return first_animated_frame_time_;
   }
   void SetFirstAnimatedFrameTime(base::TimeTicks value) {
     first_animated_frame_time_ = value;
   }
-
-  bool IsFirstAnimatedFramePaintTimingQueued() {
-    return is_first_animated_frame_paint_timing_queued_;
-  }
-  void SetIsFirstAnimatedFramePaintTimingQueued(bool value) {
-    is_first_animated_frame_paint_timing_queued_ = value;
+  bool HasFirstAnimatedFrameTime() const {
+    return !first_animated_frame_time_.is_null();
   }
 
   MediaRecordIdHash Hash() const { return hash_; }
@@ -198,8 +206,7 @@ class CORE_EXPORT ImageRecord final : public PaintTimingRecord {
   const MediaRecordIdHash hash_;
   base::TimeTicks load_time_;
   base::TimeTicks first_animated_frame_time_;
-  bool is_first_animated_frame_paint_timing_queued_ = false;
-  bool is_loaded_ = false;
+  bool is_sufficiently_loaded_for_reporting_ = false;
   const EffectiveVisualSizeResult effective_visual_size_result_;
 };
 
