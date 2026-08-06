@@ -111,7 +111,9 @@ def _FindTestTargetsViaGnRefs(out_dir: str, gn_paths: list[str]) -> list[str]:
       tmp_file.write('\n'.join(gn_paths))
       cmd.append(f'@{tmp_file.name}')
 
-    targets: list[str] = _ParseRefsOutput(command.RunCommand(cmd))
+    targets: list[str] = _ParseRefsOutput(
+        command.RunCommand(
+            cmd + ['--exclude-type=source_set,static_library,rust_library']))
     test_targets = _TestTargetsFromGnRefs(targets)
 
     if not test_targets and targets:
