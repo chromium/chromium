@@ -30,17 +30,12 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
-  # These tests live in the else branch of an `if (is_android)` block in the
-  # original //chrome/test target, i.e. they are desktop-only.
-  if (!is_android) {
-    sources += [ "real_time_report_generator_unittest.cc" ]
-  }
-
   if (enable_extensions_core) {
     sources += [
       "extension_info_unittest.cc",
       "extension_request/extension_request_observer_factory_unittest.cc",
       "extension_request/extension_request_report_generator_unittest.cc",
+      "real_time_report_generator_unittest.cc",
     ]
   }
 

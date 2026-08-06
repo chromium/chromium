@@ -9,6 +9,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/reporting/legacy_tech/legacy_tech_report_generator.h"
+#include "chrome/browser/enterprise/reporting/real_time_report_controller_delegate.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/browser/reporting/real_time_report_type.h"
@@ -18,13 +19,10 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/enterprise/reporting/real_time_report_controller_android.h"
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_android.h"
 #else
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_report_generator.h"
-#include "chrome/browser/enterprise/reporting/real_time_report_controller_desktop.h"
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
 #include "components/enterprise/common/proto/synced/extensions_workflow_events.pb.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -39,11 +37,10 @@ namespace enterprise_reporting {
 
 #if BUILDFLAG(IS_ANDROID)
 using ReportingDelegateFactoryDelegate = ReportingDelegateFactoryAndroid;
-using RealTimeReportControllerDelegate = RealTimeReportControllerAndroid;
 #else
 using ReportingDelegateFactoryDelegate = ReportingDelegateFactoryDesktop;
-using RealTimeReportControllerDelegate = RealTimeReportControllerDesktop;
 #endif  // BUILDFLAG(IS_ANDROID)
+using RealTimeReportControllerDelegate = RealTimeReportControllerDelegate;
 
 namespace {
 

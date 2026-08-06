@@ -10,6 +10,18 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "extensions/buildflags/buildflags.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "base/json/values_util.h"
+#include "chrome/browser/enterprise/reporting/extension_info.h"
+#include "chrome/browser/enterprise/reporting/extension_request/extension_request_report_generator.h"
+#include "chrome/browser/extensions/extension_management.h"
+#include "components/enterprise/browser/reporting/common_pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "extensions/common/constants.h"
+#include "extensions/common/extension_urls.h"
+#endif
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -35,6 +47,14 @@
 namespace em = enterprise_management;
 
 namespace enterprise_reporting {
+
+namespace {
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+constexpr int kMaxNumberOfExtensionRequest = 1000;
+#endif
+
+}  // namespace
 
 ProfileReportGeneratorDelegateBase::ProfileReportGeneratorDelegateBase() =
     default;
@@ -154,6 +174,59 @@ ProfileReportGeneratorDelegateBase::GetCloudPolicyManager(
   // Or ProfileCloudPolicyManager when it's not managed by gaia account.
   return profile_->GetCloudPolicyManager();
 #endif  // BUILDFLAG(IS_CHROMEOS)
+}
+
+void ProfileReportGeneratorDelegateBase::GetExtensionInfo(
+    enterprise_management::ChromeUserProfileInfo* report) {
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  AppendExtensionInfoIntoProfileReport(profile_, report);
+#endif
+}
+
+void ProfileReportGeneratorDelegateBase::GetExtensionRequest(
+    enterprise_management::ChromeUserProfileInfo* report) {
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  if (!profile_->GetPrefs()->GetBoolean(
+          enterprise_reporting::kCloudExtensionRequestEnabled)) {
+    return;
+  }
+  const base::DictValue& pending_requests = profile_->GetPrefs()->GetDict(
+      enterprise_reporting::kCloudExtensionRequestIds);
+
+  extensions::ExtensionManagement* extension_management =
+      extensions::ExtensionManagementFactory::GetForBrowserContext(profile_);
+  std::string webstore_update_url =
+      extension_urls::GetDefaultWebstoreUpdateUrl().spec();
+
+  int number_of_requests = 0;
+  for (auto [extension_id, request_data] : pending_requests) {
+    if (!ExtensionRequestReportGenerator::ShouldUploadExtensionRequest(
+            extension_id, webstore_update_url, extension_management)) {
+      continue;
+    }
+
+    number_of_requests += 1;
+    if (number_of_requests > kMaxNumberOfExtensionRequest) {
+      break;
+    }
+
+    auto* request = report->add_extension_requests();
+    request->set_id(extension_id);
+
+    const auto& request_data_dict = request_data.GetDict();
+    std::optional<base::Time> timestamp = ::base::ValueToTime(
+        request_data_dict.Find(extension_misc::kExtensionRequestTimestamp));
+    if (timestamp) {
+      request->set_request_timestamp(timestamp->InMillisecondsSinceUnixEpoch());
+    }
+
+    const std::string* justification = request_data_dict.FindString(
+        extension_misc::kExtensionWorkflowJustification);
+    if (justification) {
+      request->set_justification(*justification);
+    }
+  }
+#endif
 }
 
 }  // namespace enterprise_reporting

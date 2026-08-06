@@ -7,9 +7,9 @@
 #include <memory>
 
 #include "chrome/browser/enterprise/reporting/browser_report_generator_desktop.h"
-#include "chrome/browser/enterprise/reporting/profile_report_generator_desktop.h"
-#include "chrome/browser/enterprise/reporting/real_time_report_controller_desktop.h"
-#include "chrome/browser/enterprise/reporting/real_time_report_generator_desktop.h"
+#include "chrome/browser/enterprise/reporting/profile_report_generator_delegate_base.h"
+#include "chrome/browser/enterprise/reporting/real_time_report_controller_delegate.h"
+#include "chrome/browser/enterprise/reporting/real_time_report_generator_delegate.h"
 #include "chrome/browser/enterprise/reporting/report_generator_desktop.h"
 #include "chrome/browser/enterprise/reporting/report_scheduler_desktop.h"
 #include "components/enterprise/browser/reporting/real_time_report_controller.h"
@@ -23,7 +23,7 @@ ReportingDelegateFactoryDesktop::GetBrowserReportGeneratorDelegate() const {
 
 std::unique_ptr<ProfileReportGenerator::Delegate>
 ReportingDelegateFactoryDesktop::GetProfileReportGeneratorDelegate() const {
-  return std::make_unique<ProfileReportGeneratorDesktop>();
+  return std::make_unique<ProfileReportGeneratorDelegateBase>();
 }
 
 std::unique_ptr<ReportGenerator::Delegate>
@@ -38,12 +38,12 @@ ReportingDelegateFactoryDesktop::GetReportSchedulerDelegate() const {
 
 std::unique_ptr<RealTimeReportGenerator::Delegate>
 ReportingDelegateFactoryDesktop::GetRealTimeReportGeneratorDelegate() const {
-  return std::make_unique<RealTimeReportGeneratorDesktop>();
+  return std::make_unique<RealTimeReportGeneratorDelegate>();
 }
 
 std::unique_ptr<RealTimeReportController::Delegate>
 ReportingDelegateFactoryDesktop::GetRealTimeReportControllerDelegate() const {
-  return std::make_unique<RealTimeReportControllerDesktop>(profile_);
+  return std::make_unique<RealTimeReportControllerDelegate>(profile_);
 }
 
 std::unique_ptr<ReportScheduler::Delegate>

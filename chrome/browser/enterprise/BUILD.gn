@@ -33,6 +33,8 @@ source_set("enterprise") {
     "reporting/legacy_tech/legacy_tech_service.h",
     "reporting/prefs.h",
     "reporting/profile_report_generator_delegate_base.h",
+    "reporting/real_time_report_controller_delegate.h",
+    "reporting/real_time_report_generator_delegate.h",
     "signals/profile_signals_collector.h",
     "signin/interstitials/managed_profile_required_controller_client.h",
     "signin/interstitials/managed_profile_required_page.h",
@@ -113,9 +115,6 @@ source_set("enterprise") {
     public += [
       "data_protection/data_protection_ui_controller.h",
       "reporting/browser_report_generator_desktop.h",
-      "reporting/profile_report_generator_desktop.h",
-      "reporting/real_time_report_controller_desktop.h",
-      "reporting/real_time_report_generator_desktop.h",
       "reporting/report_generator_desktop.h",
       "reporting/report_scheduler_desktop.h",
       "reporting/reporting_delegate_factory_desktop.h",
@@ -142,8 +141,6 @@ source_set("enterprise") {
     public += [
       "platform_auth/entra_provider_android.h",
       "reporting/browser_report_generator_android.h",
-      "reporting/profile_report_generator_android.h",
-      "reporting/real_time_report_controller_android.h",
       "reporting/report_scheduler_android.h",
       "reporting/reporting_delegate_factory_android.h",
     ]
@@ -456,6 +453,8 @@ source_set("impl") {
     "reporting/legacy_tech/legacy_tech_service.cc",
     "reporting/prefs.cc",
     "reporting/profile_report_generator_delegate_base.cc",
+    "reporting/real_time_report_controller_delegate.cc",
+    "reporting/real_time_report_generator_delegate.cc",
     "signals/profile_signals_collector.cc",
     "signin/interstitials/managed_profile_required_controller_client.cc",
     "signin/interstitials/managed_profile_required_page.cc",
@@ -545,9 +544,6 @@ source_set("impl") {
     sources += [
       "data_protection/data_protection_ui_controller.cc",
       "reporting/browser_report_generator_desktop.cc",
-      "reporting/profile_report_generator_desktop.cc",
-      "reporting/real_time_report_controller_desktop.cc",
-      "reporting/real_time_report_generator_desktop.cc",
       "reporting/report_generator_desktop.cc",
       "reporting/report_scheduler_desktop.cc",
       "reporting/reporting_delegate_factory_desktop.cc",
@@ -575,8 +571,6 @@ source_set("impl") {
     sources += [
       "platform_auth/entra_provider_android.cc",
       "reporting/browser_report_generator_android.cc",
-      "reporting/profile_report_generator_android.cc",
-      "reporting/real_time_report_controller_android.cc",
       "reporting/report_scheduler_android.cc",
       "reporting/reporting_delegate_factory_android.cc",
       "util/data_protection_bridge.cc",

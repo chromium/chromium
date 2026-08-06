@@ -31,7 +31,6 @@
 #include "chrome/browser/policy/messaging_layer/upload/encrypted_reporting_client.h"
 #include "chrome/browser/policy/messaging_layer/util/upload_declarations.h"
 #include "chrome/browser/policy/messaging_layer/util/upload_response_parser.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/reporting_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/embedder_support/user_agent_utils.h"
@@ -264,19 +263,6 @@ ReportingServerConnector::GetUserCloudPolicyManager() {
   return g_browser_process->platform_part()
       ->browser_policy_connector_ash()
       ->GetDeviceCloudPolicyManager();
-#elif BUILDFLAG(IS_ANDROID)
-  // Android doesn't have access to a device level CloudPolicyClient, so get
-  // the PrimaryUserProfile CloudPolicyClient.
-  if (!ProfileManager::GetPrimaryUserProfile()) {
-    base::UmaHistogramEnumeration(
-        reporting::kUmaUnavailableErrorReason,
-        UnavailableErrorReason::CANNOT_GET_CLOUD_POLICY_MANAGER_FOR_PROFILE,
-        UnavailableErrorReason::MAX_VALUE);
-    return base::unexpected(Status(error::UNAVAILABLE,
-                                   "PrimaryUserProfile not fit to retrieve "
-                                   "CloudPolicyManager"));
-  }
-  return ProfileManager::GetPrimaryUserProfile()->GetUserCloudPolicyManager();
 #else
   if (!g_browser_process || !g_browser_process->browser_policy_connector()) {
     base::UmaHistogramEnumeration(

@@ -8,8 +8,9 @@
 #include <utility>
 
 #include "chrome/browser/enterprise/reporting/browser_report_generator_android.h"
-#include "chrome/browser/enterprise/reporting/profile_report_generator_android.h"
-#include "chrome/browser/enterprise/reporting/real_time_report_controller_android.h"
+#include "chrome/browser/enterprise/reporting/profile_report_generator_delegate_base.h"
+#include "chrome/browser/enterprise/reporting/real_time_report_controller_delegate.h"
+#include "chrome/browser/enterprise/reporting/real_time_report_generator_delegate.h"
 #include "chrome/browser/enterprise/reporting/report_scheduler_android.h"
 
 namespace enterprise_reporting {
@@ -21,7 +22,7 @@ ReportingDelegateFactoryAndroid::GetBrowserReportGeneratorDelegate() const {
 
 std::unique_ptr<ProfileReportGenerator::Delegate>
 ReportingDelegateFactoryAndroid::GetProfileReportGeneratorDelegate() const {
-  return std::make_unique<ProfileReportGeneratorAndroid>();
+  return std::make_unique<ProfileReportGeneratorDelegateBase>();
 }
 
 std::unique_ptr<ReportGenerator::Delegate>
@@ -36,20 +37,23 @@ ReportingDelegateFactoryAndroid::GetReportSchedulerDelegate() const {
 
 std::unique_ptr<RealTimeReportGenerator::Delegate>
 ReportingDelegateFactoryAndroid::GetRealTimeReportGeneratorDelegate() const {
-  // TODO(crbug.com/40189722) Implement RealTimeReportGenerator::Delegate for
-  // Android
-  return nullptr;
+  return std::make_unique<RealTimeReportGeneratorDelegate>();
 }
 
 std::unique_ptr<RealTimeReportController::Delegate>
 ReportingDelegateFactoryAndroid::GetRealTimeReportControllerDelegate() const {
-  return std::make_unique<RealTimeReportControllerAndroid>();
+  return std::make_unique<RealTimeReportControllerDelegate>(profile_);
 }
 
 std::unique_ptr<ReportScheduler::Delegate>
 ReportingDelegateFactoryAndroid::GetReportSchedulerDelegate(
     Profile* profile) const {
   return std::make_unique<ReportSchedulerAndroid>(profile);
+}
+
+void ReportingDelegateFactoryAndroid::SetProfileForRealTimeController(
+    Profile* profile) {
+  profile_ = profile;
 }
 
 }  // namespace enterprise_reporting

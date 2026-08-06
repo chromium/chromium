@@ -49,6 +49,10 @@ class ProfileReportGeneratorDelegateBase
       bool is_machine_scope) final;
   policy::CloudPolicyManager* GetCloudPolicyManager(
       bool is_machine_scope) final;
+  void GetExtensionInfo(
+      enterprise_management::ChromeUserProfileInfo* report) override;
+  void GetExtensionRequest(
+      enterprise_management::ChromeUserProfileInfo* report) override;
 
  protected:
   raw_ptr<Profile, DanglingUntriaged> profile_;

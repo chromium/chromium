@@ -75,7 +75,6 @@ constexpr char kBlockedExtensionSettings[] = R"({
   }
 })";
 
-#if !BUILDFLAG(IS_ANDROID)
 const int kMaxNumberOfExtensionRequest = 1000;
 constexpr char kExtensionId2[] = "abcdefghijklmnopabcdefghijklmnpo";
 constexpr int kFakeTime = 123456;
@@ -86,7 +85,6 @@ constexpr char kAllowedExtensionSettings[] = R"({
     "installation_mode": "allowed"
   }
 })";
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
@@ -169,7 +167,6 @@ class ProfileReportGeneratorTest : public ::testing::Test {
   }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-#if !BUILDFLAG(IS_ANDROID)
   void SetExtensionToPendingList(const std::vector<std::string>& ids) {
     base::DictValue id_values;
     for (const auto& id : ids) {
@@ -185,7 +182,6 @@ class ProfileReportGeneratorTest : public ::testing::Test {
     profile()->GetTestingPrefService()->SetUserPref(
         enterprise_reporting::kCloudExtensionRequestIds, std::move(id_values));
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   void SetExtensionSettings(const std::string& settings_string) {
     std::optional<base::Value> settings = base::JSONReader::Read(
@@ -490,7 +486,6 @@ TEST_F(ProfileReportGeneratorTest, NotAffiliated) {
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-#if !BUILDFLAG(IS_ANDROID)
 TEST_F(ProfileReportGeneratorTest, PendingRequest) {
   profile()->GetTestingPrefService()->SetManagedPref(
       enterprise_reporting::kCloudExtensionRequestEnabled,
@@ -577,7 +572,6 @@ TEST_F(ProfileReportGeneratorTest, TooManyRequests) {
               report2->extension_requests(id).id());
   }
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(ProfileReportGeneratorTest, DisableExtensionInfo) {
   extensions::ExtensionBuilder builder(
