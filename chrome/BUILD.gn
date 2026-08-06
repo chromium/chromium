@@ -1937,6 +1937,13 @@ if (enable_separate_renderer_binary) {
     _chrome_renderer_deps += [ "//components/webapps/isolated_web_apps:scheme" ]
   }
 
+  if (is_win) {
+    process_version_rc_template("chrome_renderer_dll_version") {
+      sources = [ "app/chrome_renderer_dll.ver" ]
+      output = "$target_gen_dir/chrome_renderer_dll_version.rc"
+    }
+  }
+
   if (is_win || is_mac) {
     shared_library("chrome_renderer") {
       if (is_mac) {
@@ -1967,6 +1974,7 @@ if (enable_separate_renderer_binary) {
       deps = _chrome_renderer_deps + [ "//chrome/child" ]
       if (is_win) {
         deps += [
+          ":chrome_renderer_dll_version",
           "//chrome/chrome_elf",
           "//chrome/install_static:secondary_module",
           "//sandbox/win:sandbox",
