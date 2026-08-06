@@ -198,6 +198,18 @@ const FeatureEntry::FeatureVariation kActorToolsPageStabilityVariations[] = {
     {"PageStabilityEnabled", kActorToolsPageStabilityEnabled, nullptr},
 };
 
+const FeatureEntry::FeatureParam kAutofillAiWalletPassBranding2026Variant1[] = {
+    {"string_variant", "1"}};
+const FeatureEntry::FeatureParam kAutofillAiWalletPassBranding2026Variant2[] = {
+    {"string_variant", "2"}};
+
+const FeatureEntry::FeatureVariation
+    kAutofillAiWalletPassBranding2026Variations[] = {
+        {"Variant 1 (Securely + Wallet)",
+         kAutofillAiWalletPassBranding2026Variant1, nullptr},
+        {"Variant 2 (Securely only)", kAutofillAiWalletPassBranding2026Variant2,
+         nullptr},
+};
 
 const FeatureEntry::FeatureParam kAIMCobrowseHeaderOptionA[] = {
     {kAIMCobrowseHeaderParam, kAIMCobrowseHeaderParamOptionA}};
@@ -2786,7 +2798,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kAutofillAiWalletPassBranding2026Name,
      flag_descriptions::kAutofillAiWalletPassBranding2026Description,
      flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillAiWalletPassBranding2026)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         autofill::features::kAutofillAiWalletPassBranding2026,
+         kAutofillAiWalletPassBranding2026Variations,
+         "AutofillAiWalletPassBranding2026")},
     {"ios-mini-map-linkified-address",
      flag_descriptions::kIOSMiniMapLinkifiedAddressName,
      flag_descriptions::kIOSMiniMapLinkifiedAddressDescription,

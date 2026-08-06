@@ -4780,6 +4780,18 @@ const FeatureEntry::FeatureVariation
         {"Convenience", kAutofillEnableResurrectingPaymentsUsersConvenience,
          nullptr}};
 
+const FeatureEntry::FeatureParam kAutofillAiWalletPassBranding2026Variant1[] = {
+    {"string_variant", "1"}};
+const FeatureEntry::FeatureParam kAutofillAiWalletPassBranding2026Variant2[] = {
+    {"string_variant", "2"}};
+
+const FeatureEntry::FeatureVariation kAutofillAiWalletPassBranding2026Variations[] = {
+    {"Variant 1 (Securely + Wallet)", kAutofillAiWalletPassBranding2026Variant1,
+     nullptr},
+    {"Variant 2 (Securely only)", kAutofillAiWalletPassBranding2026Variant2,
+     nullptr},
+};
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -13339,7 +13351,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"autofill-ai-wallet-pass-branding-2026",
      flag_descriptions::kAutofillAiWalletPassBranding2026Name,
      flag_descriptions::kAutofillAiWalletPassBranding2026Description, kOsAll,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillAiWalletPassBranding2026)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         autofill::features::kAutofillAiWalletPassBranding2026,
+         kAutofillAiWalletPassBranding2026Variations,
+         "AutofillAiWalletPassBranding2026")},
 #if BUILDFLAG(IS_CHROMEOS)
     {"enable-dlp-file-system-api",
      flag_descriptions::kEnableDlpFileSystemApiName,

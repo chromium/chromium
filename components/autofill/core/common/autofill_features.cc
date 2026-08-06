@@ -374,6 +374,12 @@ DEFINE_FEATURE_WITH_MOBILE_COUNTRY_RESTRICTION(
 BASE_FEATURE(kAutofillAiWalletPassBranding2026,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE_PARAM(int,
+                   kAutofillAiWalletPassBranding2026StringVariant,
+                   &kAutofillAiWalletPassBranding2026,
+                   "string_variant",
+                   0);
+
 // If enabled, AutofillAi supports private passes entities from Google Wallet.
 #if BUILDFLAG(IS_IOS)
 BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(kAutofillAiWalletPrivatePasses,
