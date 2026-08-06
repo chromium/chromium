@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.ui.native_page.FrozenNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.url.GURL;
@@ -275,7 +276,8 @@ public class TabContentManager {
         return readbackNativeView(viewToDraw, scale, nativePage);
     }
 
-    private @Nullable Bitmap readbackNativeView(
+    @VisibleForTesting
+    @Nullable Bitmap readbackNativeView(
             View viewToDraw, float scale, @Nullable NativePage nativePage) {
         Bitmap bitmap;
         float overlayTranslateY = mBrowserControlsStateProvider.getTopVisibleContentOffset();
@@ -289,6 +291,11 @@ public class TabContentManager {
             MarginLayoutParams params = (MarginLayoutParams) viewToDraw.getLayoutParams();
             leftMargin = params.leftMargin;
             topMargin = params.topMargin;
+        }
+
+        Context context = viewToDraw.getContext();
+        if (VerticalTabUtils.isVerticalTabsEnabled(context)) {
+            leftMargin = 0.f;
         }
 
         int width = (int) ((viewToDraw.getMeasuredWidth() + leftMargin) * mThumbnailScale);
