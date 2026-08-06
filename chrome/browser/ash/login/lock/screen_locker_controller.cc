@@ -14,6 +14,8 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 
@@ -67,17 +69,22 @@ void ScreenLockerController::HandleShowLockScreenRequest() {
     return;
   }
 
-  auto* active_user = user_manager_->GetActiveUser();
-  if (!session_manager_observation_.IsObserving() && active_user &&
-      active_user->CanLock()) {
-    ScreenLocker::Show();
-  } else {
-    // If the current user's session cannot be locked or the user has not
-    // completed all sign-in steps yet, log out instead.
-    VLOG(1) << "The user session cannot be locked, logging out";
-    session_termination_manager_->StopSession(
-        login_manager::SessionStopReason::FAILED_TO_LOCK);
+  if (!session_manager_observation_.IsObserving()) {
+    const session_manager::Session& active_session =
+        CHECK_DEREF(session_manager_->GetActiveSession());
+    const user_manager::User& active_user =
+        CHECK_DEREF(user_manager_->FindUser(active_session.account_id()));
+    if (active_user.CanLock()) {
+      ScreenLocker::Show();
+      return;
+    }
   }
+
+  // If the current user's session cannot be locked or the user has not
+  // completed all sign-in steps yet, log out instead.
+  VLOG(1) << "The user session cannot be locked, logging out";
+  session_termination_manager_->StopSession(
+      login_manager::SessionStopReason::FAILED_TO_LOCK);
 }
 
 void ScreenLockerController::OnSessionStateChanged() {
@@ -93,9 +100,9 @@ void ScreenLockerController::OnSessionStateChanged() {
 
   // The user session has just started, so the user has logged in. Mark a
   // strong authentication to allow them to use PIN to unlock the device.
-  user_manager::User* user = user_manager_->GetActiveUser();
   quick_unlock::QuickUnlockStorage* quick_unlock_storage =
-      quick_unlock::QuickUnlockFactory::GetForUser(user);
+      quick_unlock::QuickUnlockFactory::GetForAccountId(
+          CHECK_DEREF(session_manager_->GetActiveSession()).account_id());
   if (quick_unlock_storage) {
     quick_unlock_storage->MarkStrongAuth();
   }
