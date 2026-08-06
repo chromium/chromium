@@ -5,8 +5,6 @@
 #ifndef CONTENT_PUBLIC_BROWSER_CDM_REGISTRY_H_
 #define CONTENT_PUBLIC_BROWSER_CDM_REGISTRY_H_
 
-#include <vector>
-
 #include "content/common/content_export.h"
 #include "content/public/common/cdm_info.h"
 

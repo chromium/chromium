@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_WEBID_REQUEST_PAGE_DATA_H_
 #define CONTENT_BROWSER_WEBID_REQUEST_PAGE_DATA_H_
 
-#include <memory>
-
 #include "base/time/time.h"
 #include "content/public/browser/page_user_data.h"
 #include "url/gurl.h"
