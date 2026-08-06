@@ -590,7 +590,6 @@ source_set("chrome_web_ui_controller_factory") {
     "//chrome/browser/ui/webui/flags",
     "//chrome/browser/ui/webui/version",
     "//chrome/common",
-    "//chrome/common:buildflags",
     "//chrome/common:constants",
     "//components/commerce/core:commerce_constants",
     "//components/favicon/core",
@@ -640,10 +639,6 @@ source_set("chrome_web_ui_controller_factory") {
 
   if (is_win) {
     deps += [ "//chrome/browser/ui/webui/conflicts" ]
-  }
-
-  if (is_win || is_mac || is_linux || is_chromeos) {
-    deps += [ "//components/webapps/isolated_web_apps:scheme" ]
   }
 
   if (is_win || is_linux || is_chromeos || is_android) {
