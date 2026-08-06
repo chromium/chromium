@@ -21,6 +21,7 @@ import android.view.ViewStub;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
@@ -162,6 +163,37 @@ public class VerticalTabListCoordinator {
                     public void run(
                             View view, int tabId, @Nullable MotionEventInfo triggeringMotion) {
                         toggleTabGroupExpansion(tabId);
+
+                        int headerIndex = mMediator.getGroupHeaderIndexForTabId(tabId);
+                        if (headerIndex == TabModel.INVALID_TAB_INDEX) {
+                            return;
+                        }
+                        PropertyModel headerModel = mModelList.get(headerIndex).model;
+                        if (headerModel.get(TabProperties.IS_COLLAPSED)) {
+                            return;
+                        }
+                        // Scroll the header to the top only if the last child is off-screen.
+                        // This brings child tabs into view while keeping the header anchored at the
+                        // top for context.
+                        Token groupId = headerModel.get(TabProperties.TAB_GROUP_HEADER_ID);
+                        int childCount =
+                                mTabModelSelector.getCurrentModel().getTabCountForGroup(groupId);
+                        if (childCount > 0) {
+                            int lastChildIndex = headerIndex + childCount;
+                            mRecyclerView.post(
+                                    () -> {
+                                        RecyclerView.LayoutManager layoutManager =
+                                                mRecyclerView.getLayoutManager();
+                                        if (layoutManager instanceof LinearLayoutManager lm) {
+                                            int lastVisible =
+                                                    lm.findLastCompletelyVisibleItemPosition();
+                                            if (lastChildIndex > lastVisible) {
+                                                lm.scrollToPositionWithOffset(
+                                                        headerIndex, /* offset= */ 0);
+                                            }
+                                        }
+                                    });
+                        }
                     }
 
                     @Override
@@ -621,6 +653,15 @@ public class VerticalTabListCoordinator {
                             scrollActiveTabIntoView();
                         }
                         mTabHoverCardController.hideHoverCard();
+                    }
+
+                    @Override
+                    public void didChangePinState(Tab tab) {
+                        // Scroll the newly unpinned active tab into view.
+                        if (!tab.getIsPinned()
+                                && tab.getId() == mTabModelSelector.getCurrentTabId()) {
+                            mRecyclerView.post(() -> scrollActiveTabIntoView());
+                        }
                     }
 
                     @Override

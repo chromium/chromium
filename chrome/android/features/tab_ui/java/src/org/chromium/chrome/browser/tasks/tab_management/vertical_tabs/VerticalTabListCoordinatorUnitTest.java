@@ -99,6 +99,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabHoverCardView;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListItemOnClickListenerProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
@@ -1117,6 +1119,178 @@ public class VerticalTabListCoordinatorUnitTest {
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         verify(spyLayoutManager).scrollToPositionWithOffset(eq(0), anyInt());
+    }
+
+    @Test
+    @SmallTest
+    public void testScrollActiveTabIntoView_UnpinActiveTab_Scrolls() {
+        Tab unpinnedTab = prepareMockTab(mMockTab1, TAB_ID_1);
+        when(unpinnedTab.getIsPinned()).thenReturn(false);
+        when(mTabModel.getTabById(TAB_ID_1)).thenReturn(unpinnedTab);
+        when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_1);
+
+        mIsVerticalTabsActiveSupplier.set(true);
+        createCoordinator();
+        mActivity.setContentView(mCoordinator.getView());
+
+        View view = mCoordinator.getView();
+        TabListRecyclerView recyclerView = view.findViewById(R.id.tab_list_recycler_view);
+        SimpleRecyclerViewAdapter adapter = (SimpleRecyclerViewAdapter) recyclerView.getAdapter();
+        assertNotNull(adapter);
+
+        PropertyModel model =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_VERTICAL_TAB)
+                        .with(CardProperties.CARD_TYPE, CardProperties.ModelType.TAB)
+                        .with(TabProperties.TAB_ID, TAB_ID_1)
+                        .build();
+        adapter.getModelList().add(new MVCListAdapter.ListItem(UiType.TAB, model));
+
+        LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+        recyclerView.setLayoutManager(null);
+        assertNotNull(layoutManager);
+        LinearLayoutManager spyLayoutManager = spy(layoutManager);
+        recyclerView.setLayoutManager(spyLayoutManager);
+
+        assertFalse(mTabModelObservers.isEmpty());
+        for (TabModelObserver observer : mTabModelObservers) {
+            observer.didChangePinState(unpinnedTab);
+        }
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(spyLayoutManager).scrollToPositionWithOffset(eq(0), anyInt());
+    }
+
+    @Test
+    @SmallTest
+    public void testGroupExpansion_ChildrenOffScreen_Scrolls() {
+        Token groupId = new Token(1L, 2L);
+        Tab headerTab = prepareMockTab(mMockTab1, TAB_ID_1);
+        when(headerTab.getTabGroupId()).thenReturn(groupId);
+        when(mTabModel.getTabById(TAB_ID_1)).thenReturn(headerTab);
+
+        Tab tab2 = prepareMockTab(mMockTab2, TAB_ID_2);
+        Tab tab3 = prepareMockTab(mMockTab3, TAB_ID_3);
+        when(mTabModel.getRelatedTabList(TAB_ID_1)).thenReturn(List.of(headerTab, tab2, tab3));
+        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(headerTab, tab2, tab3));
+        when(mTabModel.getTabCountForGroup(groupId)).thenReturn(3);
+
+        doAnswer(
+                        invocation -> {
+                            Token token = invocation.getArgument(0);
+                            boolean collapsed = invocation.getArgument(1);
+                            for (TabGroupObserver observer : mTabGroupObservers) {
+                                observer.didChangeTabGroupCollapsed(
+                                        token, collapsed, /* animate= */ false);
+                            }
+                            return null;
+                        })
+                .when(mTabModel)
+                .setTabGroupCollapsed(eq(groupId), anyBoolean(), anyBoolean());
+        when(mTabModel.getTabGroupCollapsed(groupId)).thenReturn(true);
+
+        mIsVerticalTabsActiveSupplier.set(true);
+        createCoordinator();
+        mActivity.setContentView(mCoordinator.getView());
+
+        View view = mCoordinator.getView();
+        TabListRecyclerView recyclerView = view.findViewById(R.id.tab_list_recycler_view);
+        SimpleRecyclerViewAdapter adapter = (SimpleRecyclerViewAdapter) recyclerView.getAdapter();
+        assertNotNull(adapter);
+
+        PropertyModel headerModel =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_VERTICAL_TAB)
+                        .with(CardProperties.CARD_TYPE, CardProperties.ModelType.TAB_GROUP)
+                        .with(TabProperties.TAB_ID, TAB_ID_1)
+                        .with(TabProperties.TAB_GROUP_HEADER_ID, groupId)
+                        .with(TabProperties.IS_COLLAPSED, true)
+                        .build();
+        adapter.getModelList().add(new MVCListAdapter.ListItem(UiType.TAB_GROUP, headerModel));
+
+        LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+        recyclerView.setLayoutManager(null);
+        assertNotNull(layoutManager);
+        LinearLayoutManager spyLayoutManager = spy(layoutManager);
+        recyclerView.setLayoutManager(spyLayoutManager);
+
+        when(spyLayoutManager.findLastCompletelyVisibleItemPosition()).thenReturn(2);
+
+        TabListMediator mediator = ReflectionHelpers.getField(mCoordinator, "mMediator");
+        TabListItemOnClickListenerProvider clickHandler =
+                ReflectionHelpers.getField(mediator, "mTabListItemOnClickListenerProvider");
+        TabActionListener listener = clickHandler.onTabGroupClicked(headerTab);
+        assertNotNull(listener);
+        listener.run(view, TAB_ID_1, /* triggeringMotion= */ null);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(spyLayoutManager).scrollToPositionWithOffset(eq(0), eq(0));
+    }
+
+    @Test
+    @SmallTest
+    public void testGroupExpansion_ChildrenVisible_NoScroll() {
+        Token groupId = new Token(1L, 2L);
+        Tab headerTab = prepareMockTab(mMockTab1, TAB_ID_1);
+        when(headerTab.getTabGroupId()).thenReturn(groupId);
+        when(mTabModel.getTabById(TAB_ID_1)).thenReturn(headerTab);
+
+        Tab tab2 = prepareMockTab(mMockTab2, TAB_ID_2);
+        Tab tab3 = prepareMockTab(mMockTab3, TAB_ID_3);
+        when(mTabModel.getRelatedTabList(TAB_ID_1)).thenReturn(List.of(headerTab, tab2, tab3));
+        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(headerTab, tab2, tab3));
+        when(mTabModel.getTabCountForGroup(groupId)).thenReturn(3);
+
+        doAnswer(
+                        invocation -> {
+                            Token token = invocation.getArgument(0);
+                            boolean collapsed = invocation.getArgument(1);
+                            for (TabGroupObserver observer : mTabGroupObservers) {
+                                observer.didChangeTabGroupCollapsed(
+                                        token, collapsed, /* animate= */ false);
+                            }
+                            return null;
+                        })
+                .when(mTabModel)
+                .setTabGroupCollapsed(eq(groupId), anyBoolean(), anyBoolean());
+        when(mTabModel.getTabGroupCollapsed(groupId)).thenReturn(true);
+
+        mIsVerticalTabsActiveSupplier.set(true);
+        createCoordinator();
+        mActivity.setContentView(mCoordinator.getView());
+
+        View view = mCoordinator.getView();
+        TabListRecyclerView recyclerView = view.findViewById(R.id.tab_list_recycler_view);
+        SimpleRecyclerViewAdapter adapter = (SimpleRecyclerViewAdapter) recyclerView.getAdapter();
+        assertNotNull(adapter);
+
+        PropertyModel headerModel =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_VERTICAL_TAB)
+                        .with(CardProperties.CARD_TYPE, CardProperties.ModelType.TAB_GROUP)
+                        .with(TabProperties.TAB_ID, TAB_ID_1)
+                        .with(TabProperties.TAB_GROUP_HEADER_ID, groupId)
+                        .with(TabProperties.IS_COLLAPSED, true)
+                        .build();
+        adapter.getModelList().add(new MVCListAdapter.ListItem(UiType.TAB_GROUP, headerModel));
+
+        LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+        recyclerView.setLayoutManager(null);
+        assertNotNull(layoutManager);
+        LinearLayoutManager spyLayoutManager = spy(layoutManager);
+        recyclerView.setLayoutManager(spyLayoutManager);
+
+        when(spyLayoutManager.findLastCompletelyVisibleItemPosition()).thenReturn(4);
+
+        TabListMediator mediator = ReflectionHelpers.getField(mCoordinator, "mMediator");
+        TabListItemOnClickListenerProvider clickHandler =
+                ReflectionHelpers.getField(mediator, "mTabListItemOnClickListenerProvider");
+        TabActionListener listener = clickHandler.onTabGroupClicked(headerTab);
+        assertNotNull(listener);
+        listener.run(view, TAB_ID_1, /* triggeringMotion= */ null);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(spyLayoutManager, never()).scrollToPositionWithOffset(anyInt(), anyInt());
     }
 
     // =============================================================================================
