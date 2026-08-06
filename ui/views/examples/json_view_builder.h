@@ -20,6 +20,18 @@ class View;
 
 namespace views::examples {
 
+// JsonViewBuilder provides declarative runtime instantiation and property
+// application for Views UI components from JSON specifications without
+// requiring recompilation.
+//
+// The complete JSON Schema specification describing all supported component
+// types, layout managers, properties, and dynamic token resolvers is documented
+// in:
+//   ui/views/examples/json_view_builder_schema.md
+//
+// Whenever new components, properties, or converters are added or modified in
+// JsonViewBuilder, the json_view_builder_schema.md file MUST also be updated to
+// maintain congruency.
 class VIEWS_EXAMPLES_EXPORT JsonViewBuilder {
  public:
   // Tree Construction.

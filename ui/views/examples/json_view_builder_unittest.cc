@@ -19,12 +19,20 @@
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/button/toggle_button.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/link.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/controls/slider.h"
+#include "ui/views/controls/styled_label.h"
+#include "ui/views/controls/tabbed_pane/tabbed_pane.h"
+#include "ui/views/controls/table/table_view.h"
 #include "ui/views/controls/textarea/textarea.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/test/test_layout_provider.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
@@ -438,6 +446,362 @@ TEST_F(JsonViewBuilderTest, TestBootstrapSampleJson) {
   EXPECT_NE(view->GetViewByID(3), nullptr);
   EXPECT_NE(view->GetViewByID(4), nullptr);
   EXPECT_NE(view->GetViewByID(5), nullptr);
+}
+
+TEST_F(JsonViewBuilderTest, TestImageView) {
+  const char kJson[] = R"({
+    "type": "ImageView",
+    "properties": {
+      "ImageSize": "24,24",
+      "HorizontalAlignment": "kCenter",
+      "VerticalAlignment": "kCenter",
+      "CornerRadius": 4,
+      "TooltipText": "Profile Image",
+      "image": "vector_icon:info,24"
+    }
+  })";
+
+  std::string error_msg;
+  auto result = base::JSONReader::ReadAndReturnValueWithError(
+      kJson, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(result.has_value()) << result.error().message;
+
+  std::unique_ptr<views::View> view =
+      JsonViewBuilder::BuildView(result->GetDict(), &error_msg);
+  ASSERT_NE(view, nullptr) << error_msg;
+
+  bool apply_ok = JsonViewBuilder::ApplyPropertiesRecursive(
+      view.get(), result->GetDict(), &error_msg);
+  EXPECT_TRUE(apply_ok) << error_msg;
+
+  views::ImageView* image_view =
+      views::AsViewClass<views::ImageView>(view.get());
+  ASSERT_NE(image_view, nullptr);
+  EXPECT_EQ(image_view->GetImageModel().Size(), gfx::Size(24, 24));
+  EXPECT_EQ(image_view->GetHorizontalAlignment(),
+            views::ImageView::Alignment::kCenter);
+  EXPECT_EQ(image_view->GetVerticalAlignment(),
+            views::ImageView::Alignment::kCenter);
+  EXPECT_EQ(image_view->GetCornerRadius(), 4);
+  EXPECT_EQ(image_view->GetTooltipText(), u"Profile Image");
+  EXPECT_FALSE(image_view->GetImageModel().IsEmpty());
+}
+
+TEST_F(JsonViewBuilderTest, TestLabel) {
+  const char kJson[] = R"({
+    "type": "Label",
+    "properties": {
+      "Text": "Sample Headline",
+      "TextStyle": "STYLE_HEADLINE_1",
+      "TextContext": "CONTEXT_DIALOG_TITLE",
+      "HorizontalAlignment": "ALIGN_RIGHT",
+      "EnabledColor": "red"
+    }
+  })";
+
+  std::string error_msg;
+  auto result = base::JSONReader::ReadAndReturnValueWithError(
+      kJson, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(result.has_value()) << result.error().message;
+
+  std::unique_ptr<views::View> view =
+      JsonViewBuilder::BuildView(result->GetDict(), &error_msg);
+  ASSERT_NE(view, nullptr) << error_msg;
+
+  bool apply_ok = JsonViewBuilder::ApplyPropertiesRecursive(
+      view.get(), result->GetDict(), &error_msg);
+  EXPECT_TRUE(apply_ok) << error_msg;
+
+  views::Label* label = views::AsViewClass<views::Label>(view.get());
+  ASSERT_NE(label, nullptr);
+  EXPECT_EQ(label->GetText(), u"Sample Headline");
+  EXPECT_EQ(label->GetTextStyle(), views::style::STYLE_HEADLINE_1);
+  EXPECT_EQ(label->GetTextContext(), views::style::CONTEXT_DIALOG_TITLE);
+  EXPECT_EQ(label->GetHorizontalAlignment(), gfx::ALIGN_RIGHT);
+  EXPECT_EQ(label->GetEnabledColor(), SK_ColorRED);
+}
+
+TEST_F(JsonViewBuilderTest, TestLink) {
+  const char kJson[] = R"({
+    "type": "Link",
+    "properties": {
+      "Text": "Click here to learn more",
+      "ForceUnderline": true,
+      "Enabled": true
+    }
+  })";
+
+  std::string error_msg;
+  auto result = base::JSONReader::ReadAndReturnValueWithError(
+      kJson, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(result.has_value()) << result.error().message;
+
+  std::unique_ptr<views::View> view =
+      JsonViewBuilder::BuildView(result->GetDict(), &error_msg);
+  ASSERT_NE(view, nullptr) << error_msg;
+
+  bool apply_ok = JsonViewBuilder::ApplyPropertiesRecursive(
+      view.get(), result->GetDict(), &error_msg);
+  EXPECT_TRUE(apply_ok) << error_msg;
+
+  views::Link* link = views::AsViewClass<views::Link>(view.get());
+  ASSERT_NE(link, nullptr);
+  EXPECT_EQ(link->GetText(), u"Click here to learn more");
+  EXPECT_TRUE(link->GetForceUnderline());
+}
+
+TEST_F(JsonViewBuilderTest, TestSlider) {
+  const char kJson[] = R"({
+    "type": "Slider",
+    "properties": {
+      "Value": 0.75,
+      "ValueIndicatorRadius": 6,
+      "EnableAccessibilityEvents": false,
+      "style": "minimal"
+    }
+  })";
+
+  std::string error_msg;
+  auto result = base::JSONReader::ReadAndReturnValueWithError(
+      kJson, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(result.has_value()) << result.error().message;
+
+  std::unique_ptr<views::View> view =
+      JsonViewBuilder::BuildView(result->GetDict(), &error_msg);
+  ASSERT_NE(view, nullptr) << error_msg;
+
+  bool apply_ok = JsonViewBuilder::ApplyPropertiesRecursive(
+      view.get(), result->GetDict(), &error_msg);
+  EXPECT_TRUE(apply_ok) << error_msg;
+
+  views::Slider* slider = views::AsViewClass<views::Slider>(view.get());
+  ASSERT_NE(slider, nullptr);
+  EXPECT_FLOAT_EQ(slider->GetValue(), 0.75f);
+  EXPECT_EQ(slider->GetValueIndicatorRadius(), 6);
+  EXPECT_EQ(slider->style(), views::Slider::RenderingStyle::kMinimalStyle);
+}
+
+TEST_F(JsonViewBuilderTest, TestStyledLabel) {
+  const char kJson[] = R"({
+    "type": "StyledLabel",
+    "properties": {
+      "Text": "This is a styled label with a link inside.",
+      "DefaultTextStyle": "STYLE_BODY_2",
+      "HorizontalAlignment": "ALIGN_CENTER",
+      "ranges": [
+        {
+          "start": 0,
+          "length": 4,
+          "style": "STYLE_HEADLINE_4_BOLD",
+          "color": "blue"
+        },
+        {
+          "start": 31,
+          "length": 4,
+          "style": "STYLE_LINK",
+          "tooltip": "Link tooltip"
+        }
+      ]
+    }
+  })";
+
+  std::string error_msg;
+  auto result = base::JSONReader::ReadAndReturnValueWithError(
+      kJson, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(result.has_value()) << result.error().message;
+
+  std::unique_ptr<views::View> view =
+      JsonViewBuilder::BuildView(result->GetDict(), &error_msg);
+  ASSERT_NE(view, nullptr) << error_msg;
+
+  bool apply_ok = JsonViewBuilder::ApplyPropertiesRecursive(
+      view.get(), result->GetDict(), &error_msg);
+  EXPECT_TRUE(apply_ok) << error_msg;
+
+  views::StyledLabel* styled_label =
+      views::AsViewClass<views::StyledLabel>(view.get());
+  ASSERT_NE(styled_label, nullptr);
+  EXPECT_EQ(styled_label->GetText(),
+            u"This is a styled label with a link inside.");
+  EXPECT_EQ(styled_label->GetDefaultTextStyle(), views::style::STYLE_BODY_2);
+}
+
+TEST_F(JsonViewBuilderTest, TestThrobber) {
+  const char kJson[] = R"({
+    "type": "BoxLayoutView",
+    "properties": {
+      "Orientation": "kHorizontal"
+    },
+    "children": [
+      {
+        "type": "Throbber",
+        "properties": {
+          "Checked": true,
+          "running": true
+        }
+      },
+      {
+        "type": "SmoothedThrobber",
+        "properties": {
+          "StartDelayMs": 100,
+          "StopDelayMs": 200,
+          "running": true
+        }
+      }
+    ]
+  })";
+
+  std::string error_msg;
+  auto result = base::JSONReader::ReadAndReturnValueWithError(
+      kJson, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(result.has_value()) << result.error().message;
+
+  std::unique_ptr<views::View> view =
+      JsonViewBuilder::BuildView(result->GetDict(), &error_msg);
+  ASSERT_NE(view, nullptr) << error_msg;
+
+  bool apply_ok = JsonViewBuilder::ApplyPropertiesRecursive(
+      view.get(), result->GetDict(), &error_msg);
+  EXPECT_TRUE(apply_ok) << error_msg;
+
+  ASSERT_EQ(view->children().size(), 2u);
+  views::Throbber* throbber1 =
+      views::AsViewClass<views::Throbber>(view->children()[0]);
+  ASSERT_NE(throbber1, nullptr);
+  EXPECT_TRUE(throbber1->GetChecked());
+
+  views::SmoothedThrobber* throbber2 =
+      views::AsViewClass<views::SmoothedThrobber>(view->children()[1]);
+  ASSERT_NE(throbber2, nullptr);
+  EXPECT_EQ(throbber2->GetStartDelay(), base::Milliseconds(100));
+  EXPECT_EQ(throbber2->GetStopDelay(), base::Milliseconds(200));
+}
+
+TEST_F(JsonViewBuilderTest, TestTextarea) {
+  const char kJson[] = R"({
+    "type": "Textarea",
+    "properties": {
+      "Text": "Multi-line\nText Content",
+      "PlaceholderText": "Enter notes here..."
+    }
+  })";
+
+  std::string error_msg;
+  auto result = base::JSONReader::ReadAndReturnValueWithError(
+      kJson, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(result.has_value()) << result.error().message;
+
+  std::unique_ptr<views::View> view =
+      JsonViewBuilder::BuildView(result->GetDict(), &error_msg);
+  ASSERT_NE(view, nullptr) << error_msg;
+
+  bool apply_ok = JsonViewBuilder::ApplyPropertiesRecursive(
+      view.get(), result->GetDict(), &error_msg);
+  EXPECT_TRUE(apply_ok) << error_msg;
+
+  views::Textarea* textarea = views::AsViewClass<views::Textarea>(view.get());
+  ASSERT_NE(textarea, nullptr);
+  EXPECT_EQ(textarea->GetText(), u"Multi-line\nText Content");
+  EXPECT_EQ(textarea->GetPlaceholderText(), u"Enter notes here...");
+}
+
+TEST_F(JsonViewBuilderTest, TestTabbedPane) {
+  const char kJson[] = R"({
+    "type": "TabbedPane",
+    "properties": {
+      "SelectedTabIndex": 1,
+      "DrawTabDivider": true
+    },
+    "children": [
+      {
+        "title": "General",
+        "type": "Label",
+        "properties": {
+          "Text": "General Settings Content"
+        }
+      },
+      {
+        "title": "Advanced",
+        "type": "Label",
+        "properties": {
+          "Text": "Advanced Settings Content"
+        }
+      }
+    ]
+  })";
+
+  std::string error_msg;
+  auto result = base::JSONReader::ReadAndReturnValueWithError(
+      kJson, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(result.has_value()) << result.error().message;
+
+  std::unique_ptr<views::View> view =
+      JsonViewBuilder::BuildView(result->GetDict(), &error_msg);
+  ASSERT_NE(view, nullptr) << error_msg;
+
+  bool apply_ok = JsonViewBuilder::ApplyPropertiesRecursive(
+      view.get(), result->GetDict(), &error_msg);
+  EXPECT_TRUE(apply_ok) << error_msg;
+
+  views::TabbedPane* tabbed_pane =
+      views::AsViewClass<views::TabbedPane>(view.get());
+  ASSERT_NE(tabbed_pane, nullptr);
+  EXPECT_EQ(tabbed_pane->GetTabCount(), 2u);
+  EXPECT_EQ(tabbed_pane->GetSelectedTabIndex(), 1u);
+
+  const views::Label* label1 =
+      views::AsViewClass<views::Label>(tabbed_pane->GetTabContents(0));
+  ASSERT_NE(label1, nullptr);
+  EXPECT_EQ(label1->GetText(), u"General Settings Content");
+
+  const views::Label* label2 =
+      views::AsViewClass<views::Label>(tabbed_pane->GetTabContents(1));
+  ASSERT_NE(label2, nullptr);
+  EXPECT_EQ(label2->GetText(), u"Advanced Settings Content");
+}
+
+TEST_F(JsonViewBuilderTest, TestTableView) {
+  const char kJson[] = R"({
+    "type": "TableView",
+    "properties": {
+      "TableType": "TEXT_ONLY",
+      "SingleSelection": true,
+      "columns": [
+        { "id": 0, "title": "Fruit", "percent": 0.5, "sortable": true },
+        { "id": 1, "title": "Color", "percent": 0.3, "alignment": "CENTER" },
+        { "id": 2, "title": "Price", "percent": 0.2, "alignment": "RIGHT" }
+      ],
+      "rows": [
+        ["Apple", "Red", "$1.20"],
+        ["Banana", "Yellow", "$0.50"],
+        ["Kiwi", "Green", "$2.00"]
+      ]
+    }
+  })";
+
+  std::string error_msg;
+  auto result = base::JSONReader::ReadAndReturnValueWithError(
+      kJson, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(result.has_value()) << result.error().message;
+
+  std::unique_ptr<views::View> view =
+      JsonViewBuilder::BuildView(result->GetDict(), &error_msg);
+  ASSERT_NE(view, nullptr) << error_msg;
+
+  bool apply_ok = JsonViewBuilder::ApplyPropertiesRecursive(
+      view.get(), result->GetDict(), &error_msg);
+  EXPECT_TRUE(apply_ok) << error_msg;
+
+  views::TableView* table_view =
+      views::AsViewClass<views::TableView>(view.get());
+  ASSERT_NE(table_view, nullptr);
+  EXPECT_EQ(table_view->GetRowCount(), 3u);
+  EXPECT_TRUE(table_view->GetSingleSelection());
+  EXPECT_EQ(table_view->model()->GetText(0, 0), u"Apple");
+  EXPECT_EQ(table_view->model()->GetText(0, 1), u"Red");
+  EXPECT_EQ(table_view->model()->GetText(0, 2), u"$1.20");
+  EXPECT_EQ(table_view->model()->GetText(1, 0), u"Banana");
+  EXPECT_EQ(table_view->model()->GetText(2, 0), u"Kiwi");
 }
 
 }  // namespace views::examples
