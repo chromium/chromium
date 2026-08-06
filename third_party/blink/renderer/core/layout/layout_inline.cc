@@ -419,15 +419,17 @@ void LayoutInline::CollectLineBoxRects(
 
 void LayoutInline::QuadsInAncestorInternal(Vector<gfx::QuadF>& quads,
                                            const LayoutBoxModelObject* ancestor,
-                                           MapCoordinatesFlags mode) const {
+                                           MapCoordinatesFlags mode,
+                                           BoxQuadType box_type) const {
   NOT_DESTROYED();
-  QuadsForSelfInternal(quads, ancestor, mode, true);
+  QuadsForSelfInternal(quads, ancestor, mode, true, box_type);
 }
 
 void LayoutInline::QuadsForSelfInternal(Vector<gfx::QuadF>& quads,
                                         const LayoutBoxModelObject* ancestor,
                                         MapCoordinatesFlags mode,
-                                        bool map_to_ancestor) const {
+                                        bool map_to_ancestor,
+                                        BoxQuadType box_type) const {
   NOT_DESTROYED();
   std::optional<gfx::Transform> mapping_to_ancestor;
   auto PushAncestorQuad = [&mapping_to_ancestor, &quads, ancestor, mode,
@@ -438,15 +440,49 @@ void LayoutInline::QuadsForSelfInternal(Vector<gfx::QuadF>& quads,
     quads.push_back(mapping_to_ancestor->MapQuad(gfx::QuadF(gfx::RectF(rect))));
   };
 
-  CollectLineBoxRects(
-      [&PushAncestorQuad, &map_to_ancestor, &quads](const PhysicalRect& rect) {
-        if (map_to_ancestor) {
-          PushAncestorQuad(rect);
-        } else {
-          quads.push_back(gfx::QuadF(gfx::RectF(rect)));
+  bool found_quad = false;
+  if (IsInLayoutNGInlineFormattingContext()) {
+    InlineCursor cursor;
+    cursor.MoveToIncludingCulledInline(*this);
+    for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
+      if (IsInChildRubyText(*this, cursor.Current().GetLayoutObject())) {
+        continue;
+      }
+
+      PhysicalRect rect = cursor.CurrentRectInFirstContainerFragment();
+      if (box_type == BoxQuadType::kMargin) {
+        BoxStrut margins =
+            MarginOutsets().ConvertToLogical(StyleRef().GetWritingDirection());
+        if (!cursor.Current()->IsFirstForNode()) {
+          margins.inline_start = LayoutUnit();
         }
-      });
-  if (quads.empty()) {
+        if (!cursor.Current()->IsLastForNode()) {
+          margins.inline_end = LayoutUnit();
+        }
+        rect.Expand(
+            margins.ConvertToPhysical(StyleRef().GetWritingDirection()));
+      } else if (const PhysicalBoxFragment* fragment =
+                     cursor.Current().BoxFragment()) {
+        PhysicalOffset fragment_offset = rect.offset;
+        rect = LocalRectForBoxQuad(*fragment, box_type);
+        rect.offset += fragment_offset;
+      } else if (box_type == BoxQuadType::kPadding) {
+        rect.Contract(BorderOutsets());
+      } else if (box_type == BoxQuadType::kContent) {
+        rect.Contract(BorderOutsets() + PaddingOutsets());
+      }
+      rect.size.width = rect.size.width.ClampNegativeToZero();
+      rect.size.height = rect.size.height.ClampNegativeToZero();
+
+      if (map_to_ancestor) {
+        PushAncestorQuad(rect);
+      } else {
+        quads.push_back(gfx::QuadF(gfx::RectF(rect)));
+      }
+      found_quad = true;
+    }
+  }
+  if (!found_quad) {
     if (map_to_ancestor) {
       PushAncestorQuad(PhysicalRect());
     } else {

@@ -136,7 +136,8 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 
   void QuadsInAncestorInternal(Vector<gfx::QuadF>&,
                                const LayoutBoxModelObject* ancestor,
-                               MapCoordinatesFlags) const final;
+                               MapCoordinatesFlags,
+                               BoxQuadType) const final;
   void AbsoluteQuadsForRange(Vector<gfx::QuadF>&,
                              unsigned start_offset = 0,
                              unsigned end_offset = INT_MAX) const;

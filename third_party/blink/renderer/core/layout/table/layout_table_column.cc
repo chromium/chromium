@@ -273,7 +273,8 @@ PhysicalRect LayoutTableColumn::BoundingBoxRelativeToFirstFragment() const {
 void LayoutTableColumn::QuadsInAncestorInternal(
     Vector<gfx::QuadF>& quads,
     const LayoutBoxModelObject* ancestor,
-    MapCoordinatesFlags mode) const {
+    MapCoordinatesFlags mode,
+    BoxQuadType) const {
   NOT_DESTROYED();
   // Offset from the root fragmentation context to the first synthesized table
   // column fragment. When mapping to ancestors, it's all about the offsets from

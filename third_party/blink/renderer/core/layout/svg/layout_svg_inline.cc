@@ -128,20 +128,39 @@ void LayoutSVGInline::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
 void LayoutSVGInline::QuadsInAncestorInternal(
     Vector<gfx::QuadF>& quads,
     const LayoutBoxModelObject* ancestor,
-    MapCoordinatesFlags mode) const {
+    MapCoordinatesFlags mode,
+    BoxQuadType) const {
   NOT_DESTROYED();
   if (IsInLayoutNGInlineFormattingContext()) {
     InlineCursor cursor;
     for (cursor.MoveToIncludingCulledInline(*this); cursor;
          cursor.MoveToNextForSameLayoutObject()) {
+      gfx::RectF bounds;
+      bool has_bounds = false;
       const FragmentItem& item = *cursor.CurrentItem();
       if (item.IsSvgText()) {
+        bounds = cursor.Current().ObjectBoundingBox(cursor);
+        has_bounds = true;
+      } else if (InlineCursor descendants = cursor.CursorForDescendants()) {
+        for (; descendants; descendants.MoveToNext()) {
+          const FragmentItem& descendant_item = *descendants.CurrentItem();
+          if (descendant_item.IsSvgText()) {
+            bounds.Union(descendants.Current().ObjectBoundingBox(cursor));
+            has_bounds = true;
+          }
+        }
+      }
+      if (has_bounds) {
         quads.push_back(LocalToAncestorQuad(
-            gfx::QuadF(SVGLayoutSupport::ExtendTextBBoxWithStroke(
-                *this, cursor.Current().ObjectBoundingBox(cursor))),
+            gfx::QuadF(
+                SVGLayoutSupport::ExtendTextBBoxWithStroke(*this, bounds)),
             ancestor, mode));
       }
     }
+  }
+  if (quads.empty() && IsObjectBoundingBoxValid()) {
+    quads.push_back(LocalToAncestorQuad(gfx::QuadF(DecoratedBoundingBox()),
+                                        ancestor, mode));
   }
 }
 

@@ -406,7 +406,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   void QuadsInAncestorInternal(Vector<gfx::QuadF>&,
                                const LayoutBoxModelObject* ancestor,
-                               MapCoordinatesFlags) const override;
+                               MapCoordinatesFlags,
+                               BoxQuadType) const override;
   gfx::RectF LocalBoundingBoxRectForAccessibility(
       IncludeDescendants include_descendants) const override;
 

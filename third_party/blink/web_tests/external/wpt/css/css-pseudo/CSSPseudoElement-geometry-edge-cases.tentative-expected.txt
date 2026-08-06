@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] convertPointFromNode preserves z and w coordinates
+  assert_equals: z coordinate should be preserved expected 30 but got 0
+Harness: the test ran to completion.
+

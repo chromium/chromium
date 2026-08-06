@@ -64,6 +64,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/tracked_element_data.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/ad_tagging_utils.h"
 #include "third_party/blink/renderer/platform/region_capture_crop_id.h"
@@ -93,9 +94,11 @@ class AnimationTrigger;
 class AriaNotificationOptions;
 class Attr;
 class Attribute;
+class BoxQuadOptions;
 class CheckVisibilityOptions;
 class ColumnPseudoElement;
 class ComputedStyleBuilder;
+class ConvertCoordinateOptions;
 class ContainerQueryData;
 class ContainerQueryEvaluator;
 class ContainerQueryList;
@@ -109,8 +112,13 @@ class CustomElementRegistry;
 class DisplayLockContext;
 class DisplayStyle;
 class Document;
+class DOMPoint;
+class DOMPointInit;
+class DOMQuad;
+class DOMQuadInit;
 class DOMRect;
 class DOMRectList;
+class DOMRectReadOnly;
 class DOMStringMap;
 class DOMTokenList;
 class EditContext;
@@ -162,6 +170,7 @@ class StyleScopeData;
 class TextVisitor;
 class TrustedParserOptions;
 class V8UnionBooleanOrScrollIntoViewOptions;
+class V8UnionCSSPseudoElementOrDocumentOrElementOrText;
 class V8UnionKeyframeAnimationOptionsOrUnrestrictedDouble;
 class V8UnionStringLegacyNullToEmptyStringOrTrustedHTML;
 class V8UnionStringOrTrustedHTML;
@@ -634,6 +643,24 @@ class CORE_EXPORT Element : public ContainerNode {
   gfx::Rect VisibleBoundsRespectingClipsInLocalRoot() const;
 
   DOMRectList* getClientRects();
+  HeapVector<Member<DOMQuad>> getBoxQuads(const BoxQuadOptions* options,
+                                          ExceptionState&) const;
+  DOMQuad* convertQuadFromNode(
+      DOMQuadInit* quad,
+      const V8UnionCSSPseudoElementOrDocumentOrElementOrText* from,
+      const ConvertCoordinateOptions* options,
+      ExceptionState&) const;
+  DOMQuad* convertRectFromNode(
+      DOMRectReadOnly* rect,
+      const V8UnionCSSPseudoElementOrDocumentOrElementOrText* from,
+      const ConvertCoordinateOptions* options,
+      ExceptionState&) const;
+  DOMPoint* convertPointFromNode(
+      DOMPointInit* point,
+      const V8UnionCSSPseudoElementOrDocumentOrElementOrText* from,
+      const ConvertCoordinateOptions* options,
+      ExceptionState&) const;
+
   // Returns a list of clients Rects in zoomed pixel units.
   Vector<gfx::RectF> GetClientRectsNoAdjustment();
 

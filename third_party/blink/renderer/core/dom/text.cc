@@ -24,9 +24,12 @@
 
 #include <utility>
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_box_quad_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_convert_coordinate_options.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/events/scoped_event_queue.h"
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/geometry_utils.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_cloning_data.h"
@@ -35,9 +38,12 @@
 #include "third_party/blink/renderer/core/dom/text_diff_range.h"
 #include "third_party/blink/renderer/core/dom/whitespace_attacher.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
+#include "third_party/blink/renderer/core/geometry/dom_point.h"
+#include "third_party/blink/renderer/core/geometry/dom_quad.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/svg/svg_foreign_object_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
@@ -154,6 +160,40 @@ Text* Text::splitText(unsigned offset, ExceptionState& exception_state) {
              .IsEmpty());
 
   return new_text;
+}
+
+HeapVector<Member<DOMQuad>> Text::getBoxQuads(
+    const BoxQuadOptions* options,
+    ExceptionState& exception_state) const {
+  return geometry_utils::GetBoxQuads(const_cast<Text*>(this), nullptr, options,
+                                     exception_state);
+}
+
+DOMQuad* Text::convertQuadFromNode(
+    DOMQuadInit* quad,
+    const V8UnionCSSPseudoElementOrDocumentOrElementOrText* from,
+    const ConvertCoordinateOptions* options,
+    ExceptionState& exception_state) const {
+  return geometry_utils::ConvertQuadFromNode(
+      quad, const_cast<Text*>(this), nullptr, from, options, exception_state);
+}
+
+DOMQuad* Text::convertRectFromNode(
+    DOMRectReadOnly* rect,
+    const V8UnionCSSPseudoElementOrDocumentOrElementOrText* from,
+    const ConvertCoordinateOptions* options,
+    ExceptionState& exception_state) const {
+  return geometry_utils::ConvertRectFromNode(
+      rect, const_cast<Text*>(this), nullptr, from, options, exception_state);
+}
+
+DOMPoint* Text::convertPointFromNode(
+    DOMPointInit* point,
+    const V8UnionCSSPseudoElementOrDocumentOrElementOrText* from,
+    const ConvertCoordinateOptions* options,
+    ExceptionState& exception_state) const {
+  return geometry_utils::ConvertPointFromNode(
+      point, const_cast<Text*>(this), nullptr, from, options, exception_state);
 }
 
 static const Text* EarliestLogicallyAdjacentTextNode(const Text* t) {

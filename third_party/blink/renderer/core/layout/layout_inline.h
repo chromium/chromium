@@ -228,13 +228,15 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
 
   void QuadsInAncestorInternal(Vector<gfx::QuadF>&,
                                const LayoutBoxModelObject* ancestor,
-                               MapCoordinatesFlags) const override;
+                               MapCoordinatesFlags,
+                               BoxQuadType) const override;
 
  private:
   void QuadsForSelfInternal(Vector<gfx::QuadF>& quads,
                             const LayoutBoxModelObject* ancestor,
                             MapCoordinatesFlags mode,
-                            bool map_to_ancestor) const;
+                            bool map_to_ancestor,
+                            BoxQuadType box_type = BoxQuadType::kBorder) const;
 
   // Collects rectangles that the outline of this object would be drawing along
   // the outside of, even if the object isn't styled with a outline for now.

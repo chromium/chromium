@@ -291,6 +291,28 @@ void ApplyVisibleOverflowToClipRect(OverflowClipAxes overflow_clip,
   }
 }
 
+PhysicalRect LocalRectForBoxQuad(const PhysicalBoxFragment& fragment,
+                                 BoxQuadType box_type) {
+  PhysicalRect rect({}, fragment.Size());
+  switch (box_type) {
+    case BoxQuadType::kMargin:
+      rect.Expand(fragment.Margins());
+      break;
+    case BoxQuadType::kBorder:
+      break;
+    case BoxQuadType::kPadding:
+      rect.Contract(fragment.Borders() + fragment.Scrollbar());
+      break;
+    case BoxQuadType::kContent:
+      rect.Contract(fragment.Borders() + fragment.Scrollbar() +
+                    fragment.Padding());
+      break;
+  }
+  rect.size.width = rect.size.width.ClampNegativeToZero();
+  rect.size.height = rect.size.height.ClampNegativeToZero();
+  return rect;
+}
+
 AllowDestroyingLayoutObjectInFinalizerScope::
     AllowDestroyingLayoutObjectInFinalizerScope() {
   ++g_allow_destroying_layout_object_in_finalizer;

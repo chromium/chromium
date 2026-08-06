@@ -2184,6 +2184,9 @@ interface Document : Node
     method clear
     method close
     method constructor
+    method convertPointFromNode
+    method convertQuadFromNode
+    method convertRectFromNode
     method createAttribute
     method createAttributeNS
     method createCDATASection
@@ -2207,6 +2210,7 @@ interface Document : Node
     method exitPictureInPicture
     method exitPointerLock
     method getAnimations
+    method getBoxQuads
     method getElementById
     method getElementsByClassName
     method getElementsByName
@@ -2591,6 +2595,9 @@ interface Element : Node
     method closest
     method computedStyleMap
     method constructor
+    method convertPointFromNode
+    method convertQuadFromNode
+    method convertRectFromNode
     method getAnimations
     method getAttribute
     method getAttributeNS
@@ -2598,6 +2605,7 @@ interface Element : Node
     method getAttributeNode
     method getAttributeNodeNS
     method getBoundingClientRect
+    method getBoxQuads
     method getClientRects
     method getElementsByClassName
     method getElementsByTagName
@@ -10537,6 +10545,10 @@ interface Text : CharacterData
     getter assignedSlot
     getter wholeText
     method constructor
+    method convertPointFromNode
+    method convertQuadFromNode
+    method convertRectFromNode
+    method getBoxQuads
     method splitText
 interface TextCluster
     attribute @@toStringTag

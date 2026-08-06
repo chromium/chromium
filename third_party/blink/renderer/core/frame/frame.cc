@@ -714,6 +714,66 @@ Frame* Frame::Top() {
   return parent;
 }
 
+Frame* Frame::CommonAncestor(const Frame* other) const {
+  if (!other || &Tree().Top() != &other->Tree().Top()) {
+    return nullptr;
+  }
+
+  const Frame* frame_a = this;
+  const Frame* frame_b = other;
+  unsigned depth_a = 0;
+  for (const Frame* frame = frame_a; frame; frame = frame->Parent()) {
+    ++depth_a;
+  }
+  unsigned depth_b = 0;
+  for (const Frame* frame = frame_b; frame; frame = frame->Parent()) {
+    ++depth_b;
+  }
+
+  while (depth_a > depth_b) {
+    frame_a = frame_a->Parent();
+    --depth_a;
+  }
+  while (depth_b > depth_a) {
+    frame_b = frame_b->Parent();
+    --depth_b;
+  }
+  while (frame_a != frame_b) {
+    frame_a = frame_a->Parent();
+    frame_b = frame_b->Parent();
+  }
+  return const_cast<Frame*>(frame_a);
+}
+
+bool Frame::IsFrameTreePathSameOrigin(const Frame* other) const {
+  Frame* common_ancestor = CommonAncestor(other);
+  if (!common_ancestor || !GetSecurityContext()) {
+    return false;
+  }
+
+  const SecurityOrigin* origin = GetSecurityContext()->GetSecurityOrigin();
+  auto has_same_origin = [origin](const Frame* frame) {
+    const SecurityContext* security_context = frame->GetSecurityContext();
+    const SecurityOrigin* frame_origin =
+        security_context ? security_context->GetSecurityOrigin() : nullptr;
+    return origin && frame_origin && origin->IsSameOriginWith(frame_origin);
+  };
+
+  for (const Frame* frame = this; frame != common_ancestor;
+       frame = frame->Parent()) {
+    if (!has_same_origin(frame)) {
+      return false;
+    }
+  }
+  for (const Frame* frame = other; frame != common_ancestor;
+       frame = frame->Parent()) {
+    if (!has_same_origin(frame)) {
+      return false;
+    }
+  }
+  return has_same_origin(common_ancestor);
+}
+
 bool Frame::AllowFocusWithoutUserActivation() {
   if (!features::IsFencedFramesEnabled())
     return true;

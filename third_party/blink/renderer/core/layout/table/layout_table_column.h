@@ -46,7 +46,8 @@ class CORE_EXPORT LayoutTableColumn : public LayoutBox {
 
   void QuadsInAncestorInternal(Vector<gfx::QuadF>&,
                                const LayoutBoxModelObject* ancestor,
-                               MapCoordinatesFlags) const override;
+                               MapCoordinatesFlags,
+                               BoxQuadType) const override;
 
   // LayoutObject methods start.
 

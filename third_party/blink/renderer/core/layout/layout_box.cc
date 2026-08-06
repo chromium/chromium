@@ -1106,7 +1106,8 @@ LayoutBlock* LayoutBox::ScrollerFromScrollMarkerGroup() const {
 
 void LayoutBox::QuadsInAncestorInternal(Vector<gfx::QuadF>& quads,
                                         const LayoutBoxModelObject* ancestor,
-                                        MapCoordinatesFlags mode) const {
+                                        MapCoordinatesFlags mode,
+                                        BoxQuadType box_type) const {
   NOT_DESTROYED();
   const PhysicalBoxFragment* first_fragment = nullptr;
   for (const PhysicalBoxFragment& fragment : PhysicalFragments()) {
@@ -1119,7 +1120,8 @@ void LayoutBox::QuadsInAncestorInternal(Vector<gfx::QuadF>& quads,
       offset = fragment.OffsetFromRootFragmentationContext() -
                first_fragment->OffsetFromRootFragmentationContext();
     }
-    PhysicalRect rect(offset, fragment.Size());
+    PhysicalRect rect = LocalRectForBoxQuad(fragment, box_type);
+    rect.offset += offset;
     quads.push_back(LocalRectToAncestorQuad(rect, ancestor, mode));
   }
 }

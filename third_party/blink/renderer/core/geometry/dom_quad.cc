@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/geometry/dom_point.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/geometry/geometry_util.h"
+#include "ui/gfx/geometry/quad_f.h"
 
 namespace blink {
 namespace {
@@ -73,6 +74,12 @@ DOMQuad* DOMQuad::Create(const DOMPointInit* p1,
   return MakeGarbageCollected<DOMQuad>(p1, p2, p3, p4);
 }
 
+DOMQuad* DOMQuad::FromQuadF(const gfx::QuadF& quad) {
+  return MakeGarbageCollected<DOMQuad>(
+      quad.p1().x(), quad.p1().y(), quad.p2().x(), quad.p2().y(), quad.p3().x(),
+      quad.p3().y(), quad.p4().x(), quad.p4().y());
+}
+
 DOMQuad* DOMQuad::fromRect(const DOMRectInit* other) {
   return MakeGarbageCollected<DOMQuad>(other->x(), other->y(), other->width(),
                                        other->height());
@@ -108,6 +115,20 @@ DOMQuad::DOMQuad(const DOMPointInit* p1,
       p2_(DOMQuadPoint::FromPoint(p2, this)),
       p3_(DOMQuadPoint::FromPoint(p3, this)),
       p4_(DOMQuadPoint::FromPoint(p4, this)),
+      needs_bounds_calculation_(true) {}
+
+DOMQuad::DOMQuad(double p1_x,
+                 double p1_y,
+                 double p2_x,
+                 double p2_y,
+                 double p3_x,
+                 double p3_y,
+                 double p4_x,
+                 double p4_y)
+    : p1_(DOMQuadPoint::Create(p1_x, p1_y, 0, 1, this)),
+      p2_(DOMQuadPoint::Create(p2_x, p2_y, 0, 1, this)),
+      p3_(DOMQuadPoint::Create(p3_x, p3_y, 0, 1, this)),
+      p4_(DOMQuadPoint::Create(p4_x, p4_y, 0, 1, this)),
       needs_bounds_calculation_(true) {}
 
 DOMQuad::DOMQuad(double x, double y, double width, double height)

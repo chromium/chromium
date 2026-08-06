@@ -99,6 +99,16 @@ struct SVGLayoutResult;
 
 enum class PhysicalAxis : uint8_t;
 
+enum class BoxQuadType {
+  kMargin,
+  kBorder,
+  kPadding,
+  kContent,
+};
+
+CORE_EXPORT PhysicalRect
+LocalRectForBoxQuad(const PhysicalBoxFragment& fragment, BoxQuadType box_type);
+
 enum CursorDirective { kSetCursorBasedOnStyle, kSetCursor, kDoNotSetCursor };
 
 enum MarkingBehavior {
@@ -2470,16 +2480,18 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // which case they will be in absolute coordinates).
   void QuadsInAncestor(Vector<gfx::QuadF>& quads,
                        const LayoutBoxModelObject* ancestor,
-                       MapCoordinatesFlags mode = 0) const {
+                       MapCoordinatesFlags mode = 0,
+                       BoxQuadType box_type = BoxQuadType::kBorder) const {
     NOT_DESTROYED();
-    QuadsInAncestorInternal(quads, ancestor, mode);
+    QuadsInAncestorInternal(quads, ancestor, mode, box_type);
   }
 
   // Build an array of quads in absolute coords.
   void AbsoluteQuads(Vector<gfx::QuadF>& quads,
-                     MapCoordinatesFlags mode = 0) const {
+                     MapCoordinatesFlags mode = 0,
+                     BoxQuadType box_type = BoxQuadType::kBorder) const {
     NOT_DESTROYED();
-    QuadsInAncestor(quads, /*ancestor=*/nullptr, mode);
+    QuadsInAncestor(quads, /*ancestor=*/nullptr, mode, box_type);
   }
 
   // The bounding box (see: absoluteBoundingBoxRect) including all descendant
@@ -3616,7 +3628,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   virtual void QuadsInAncestorInternal(Vector<gfx::QuadF>&,
                                        const LayoutBoxModelObject* ancestor,
-                                       MapCoordinatesFlags) const {
+                                       MapCoordinatesFlags,
+                                       BoxQuadType) const {
     NOT_DESTROYED();
   }
 

@@ -342,7 +342,8 @@ gfx::RectF LayoutSVGText::VisualRectInLocalSVGCoordinates() const {
 void LayoutSVGText::QuadsInAncestorInternal(
     Vector<gfx::QuadF>& quads,
     const LayoutBoxModelObject* ancestor,
-    MapCoordinatesFlags mode) const {
+    MapCoordinatesFlags mode,
+    BoxQuadType) const {
   NOT_DESTROYED();
   quads.push_back(
       LocalToAncestorQuad(gfx::QuadF(DecoratedBoundingBox()), ancestor, mode));

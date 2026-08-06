@@ -69,7 +69,8 @@ void LayoutSVGModelObject::MapAncestorToLocal(
 void LayoutSVGModelObject::QuadsInAncestorInternal(
     Vector<gfx::QuadF>& quads,
     const LayoutBoxModelObject* ancestor,
-    MapCoordinatesFlags mode) const {
+    MapCoordinatesFlags mode,
+    BoxQuadType) const {
   NOT_DESTROYED();
   quads.push_back(
       LocalToAncestorQuad(gfx::QuadF(DecoratedBoundingBox()), ancestor, mode));

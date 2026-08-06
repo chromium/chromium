@@ -150,7 +150,8 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
 
   void QuadsInAncestorInternal(Vector<gfx::QuadF>&,
                                const LayoutBoxModelObject* ancestor,
-                               MapCoordinatesFlags) const override;
+                               MapCoordinatesFlags,
+                               BoxQuadType) const override;
 
   PhysicalRect ViewRect() const override;
   using LayoutBlockFlow::OverflowClipRect;

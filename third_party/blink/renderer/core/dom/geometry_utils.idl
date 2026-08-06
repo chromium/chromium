@@ -25,8 +25,12 @@ dictionary BoxQuadOptions {
 // https://drafts.csswg.org/cssom-view/#the-geometryutils-interface
 [RuntimeEnabled=GeometryUtils]
 interface mixin GeometryUtils {
-    sequence<DOMQuad> getBoxQuads(optional BoxQuadOptions options = {});
-    DOMQuad convertQuadFromNode(DOMQuadInit quad, GeometryNode from, optional ConvertCoordinateOptions options = {});
-    DOMQuad convertRectFromNode(DOMRectReadOnly rect, GeometryNode from, optional ConvertCoordinateOptions options = {});
-    DOMPoint convertPointFromNode(DOMPointInit point, GeometryNode from, optional ConvertCoordinateOptions options = {});
+    [RaisesException] sequence<DOMQuad> getBoxQuads(optional BoxQuadOptions options = {});
+    [RaisesException] DOMQuad convertQuadFromNode(DOMQuadInit quad, GeometryNode from, optional ConvertCoordinateOptions options = {});
+    [RaisesException] DOMQuad convertRectFromNode(DOMRectReadOnly rect, GeometryNode from, optional ConvertCoordinateOptions options = {});
+    [RaisesException] DOMPoint convertPointFromNode(DOMPointInit point, GeometryNode from, optional ConvertCoordinateOptions options = {});
 };
+
+Text includes GeometryUtils;
+Element includes GeometryUtils;
+Document includes GeometryUtils;

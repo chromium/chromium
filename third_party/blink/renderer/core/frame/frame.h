@@ -381,6 +381,15 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   // Returns the top-most frame in the hierarchy containing this frame.
   Frame* Top();
 
+  // Returns the nearest frame that is an inclusive ancestor of both this frame
+  // and `other`, or nullptr if there is no common ancestor.
+  Frame* CommonAncestor(const Frame* other) const;
+
+  // Returns true if every frame on the shortest frame-tree path between this
+  // frame and `other`, including both endpoints and their common ancestor, has
+  // the same origin.
+  bool IsFrameTreePathSameOrigin(const Frame* other) const;
+
   // Returns the first child frame.
   Frame* FirstChild() const { return first_child_.Get(); }
 

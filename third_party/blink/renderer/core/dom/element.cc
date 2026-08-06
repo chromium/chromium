@@ -45,7 +45,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_aria_notification_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_box_quad_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_check_visibility_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_convert_coordinate_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_get_animations_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_keyframe_animation_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_pointer_lock_options.h"
@@ -132,6 +134,7 @@
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/focusgroup_dom_token_list.h"
+#include "third_party/blink/renderer/core/dom/geometry_utils.h"
 #include "third_party/blink/renderer/core/dom/indexed_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/interest_invoker_target_data.h"
 #include "third_party/blink/renderer/core/dom/invalidate_node_list_caches_scope.h"
@@ -184,6 +187,8 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
+#include "third_party/blink/renderer/core/geometry/dom_point.h"
+#include "third_party/blink/renderer/core/geometry/dom_quad.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_list.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
@@ -3366,6 +3371,43 @@ DOMRectList* Element::getClientRects() {
                                                      *element_layout_object);
   }
   return MakeGarbageCollected<DOMRectList>(rects);
+}
+
+HeapVector<Member<DOMQuad>> Element::getBoxQuads(
+    const BoxQuadOptions* options,
+    ExceptionState& exception_state) const {
+  return geometry_utils::GetBoxQuads(const_cast<Element*>(this), nullptr,
+                                     options, exception_state);
+}
+
+DOMQuad* Element::convertQuadFromNode(
+    DOMQuadInit* quad,
+    const V8UnionCSSPseudoElementOrDocumentOrElementOrText* from,
+    const ConvertCoordinateOptions* options,
+    ExceptionState& exception_state) const {
+  return geometry_utils::ConvertQuadFromNode(quad, const_cast<Element*>(this),
+                                             nullptr, from, options,
+                                             exception_state);
+}
+
+DOMQuad* Element::convertRectFromNode(
+    DOMRectReadOnly* rect,
+    const V8UnionCSSPseudoElementOrDocumentOrElementOrText* from,
+    const ConvertCoordinateOptions* options,
+    ExceptionState& exception_state) const {
+  return geometry_utils::ConvertRectFromNode(rect, const_cast<Element*>(this),
+                                             nullptr, from, options,
+                                             exception_state);
+}
+
+DOMPoint* Element::convertPointFromNode(
+    DOMPointInit* point,
+    const V8UnionCSSPseudoElementOrDocumentOrElementOrText* from,
+    const ConvertCoordinateOptions* options,
+    ExceptionState& exception_state) const {
+  return geometry_utils::ConvertPointFromNode(point, const_cast<Element*>(this),
+                                              nullptr, from, options,
+                                              exception_state);
 }
 
 Vector<gfx::RectF> Element::GetClientRectsNoAdjustment() {

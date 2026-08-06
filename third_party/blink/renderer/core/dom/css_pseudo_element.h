@@ -18,6 +18,7 @@ class DOMPointInit;
 class DOMQuad;
 class DOMQuadInit;
 class DOMRectReadOnly;
+class ExceptionState;
 class V8UnionCSSPseudoElementOrDocumentOrElementOrText;
 class V8UnionCSSPseudoElementOrElement;
 
@@ -91,19 +92,23 @@ class CSSPseudoElement final : public ScriptWrappable {
 
   // GeometryUtils methods
   // https://drafts.csswg.org/cssom-view/#the-geometryutils-interface
-  HeapVector<Member<DOMQuad>> getBoxQuads(const BoxQuadOptions* options) const;
+  HeapVector<Member<DOMQuad>> getBoxQuads(const BoxQuadOptions* options,
+                                          ExceptionState&) const;
   DOMQuad* convertQuadFromNode(
       DOMQuadInit* quad,
       const V8UnionCSSPseudoElementOrDocumentOrElementOrText* from,
-      const ConvertCoordinateOptions* options) const;
+      const ConvertCoordinateOptions* options,
+      ExceptionState&) const;
   DOMQuad* convertRectFromNode(
       DOMRectReadOnly* rect,
       const V8UnionCSSPseudoElementOrDocumentOrElementOrText* from,
-      const ConvertCoordinateOptions* options) const;
+      const ConvertCoordinateOptions* options,
+      ExceptionState&) const;
   DOMPoint* convertPointFromNode(
       DOMPointInit* point,
       const V8UnionCSSPseudoElementOrDocumentOrElementOrText* from,
-      const ConvertCoordinateOptions* options) const;
+      const ConvertCoordinateOptions* options,
+      ExceptionState&) const;
 
   PseudoId GetPseudoId() const { return pseudo_id_; }
   const AtomicString& GetPseudoArgument() const { return pseudo_argument_; }

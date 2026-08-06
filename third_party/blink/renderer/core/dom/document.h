@@ -157,6 +157,7 @@ class AnimationClock;
 class AriaNotificationOptions;
 class Attr;
 class BeforeUnloadEventListener;
+class BoxQuadOptions;
 class ViewTransitionSupplement;
 class CaretPosition;
 class CaretPositionFromPointOptions;
@@ -168,9 +169,15 @@ class CheckPseudoHasCacheScope;
 class ChromeClient;
 class Comment;
 class ConsoleMessage;
+class ConvertCoordinateOptions;
 class CookieJar;
 class DOMFeaturePolicy;
 class DOMImplementation;
+class DOMPoint;
+class DOMPointInit;
+class DOMQuad;
+class DOMQuadInit;
+class DOMRectReadOnly;
 class DOMWindow;
 class DOMWrapperWorld;
 class DisplayLockDocumentState;
@@ -269,6 +276,7 @@ class TreeWalker;
 class TrustedHTML;
 class V8DocumentReadyState;
 class V8NodeFilter;
+class V8UnionCSSPseudoElementOrDocumentOrElementOrText;
 class V8UnionElementCreationOptionsOrString;
 class V8UnionStringOrTrustedHTML;
 class ViewportData;
@@ -457,6 +465,24 @@ class CORE_EXPORT Document : public ContainerNode,
   // // document.documentElement is now null
   // ```
   Element* documentElement() const { return document_element_.Get(); }
+
+  HeapVector<Member<DOMQuad>> getBoxQuads(const BoxQuadOptions* options,
+                                          ExceptionState&) const;
+  DOMQuad* convertQuadFromNode(
+      DOMQuadInit* quad,
+      const V8UnionCSSPseudoElementOrDocumentOrElementOrText* from,
+      const ConvertCoordinateOptions* options,
+      ExceptionState&) const;
+  DOMQuad* convertRectFromNode(
+      DOMRectReadOnly* rect,
+      const V8UnionCSSPseudoElementOrDocumentOrElementOrText* from,
+      const ConvertCoordinateOptions* options,
+      ExceptionState&) const;
+  DOMPoint* convertPointFromNode(
+      DOMPointInit* point,
+      const V8UnionCSSPseudoElementOrDocumentOrElementOrText* from,
+      const ConvertCoordinateOptions* options,
+      ExceptionState&) const;
 
   Location* location() const;
 

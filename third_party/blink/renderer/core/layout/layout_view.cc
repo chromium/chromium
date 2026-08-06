@@ -531,7 +531,8 @@ PhysicalOffset LayoutView::OffsetForFixedPosition() const {
 
 void LayoutView::QuadsInAncestorInternal(Vector<gfx::QuadF>& quads,
                                          const LayoutBoxModelObject* ancestor,
-                                         MapCoordinatesFlags mode) const {
+                                         MapCoordinatesFlags mode,
+                                         BoxQuadType) const {
   NOT_DESTROYED();
   quads.push_back(LocalRectToAncestorQuad(
       PhysicalRect(PhysicalOffset(), GetScrollableArea()->Size()), ancestor,

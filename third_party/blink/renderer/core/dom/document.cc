@@ -88,7 +88,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_aria_notification_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_box_quad_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_caret_position_from_point_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_convert_coordinate_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_document_ready_state.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element_creation_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element_registration_options.h"
@@ -164,6 +166,7 @@
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/focused_element_change_observer.h"
 #include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
+#include "third_party/blink/renderer/core/dom/geometry_utils.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/live_node_list.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer.h"
@@ -231,6 +234,8 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/geometry/dom_point.h"
+#include "third_party/blink/renderer/core/geometry/dom_quad.h"
 #include "third_party/blink/renderer/core/html/anchor_element_metrics_sender.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_font_cache.h"
 #include "third_party/blink/renderer/core/html/collection_type.h"
@@ -1242,6 +1247,44 @@ DOMImplementation& Document::implementation() {
   if (!implementation_)
     implementation_ = MakeGarbageCollected<DOMImplementation>(*this);
   return *implementation_;
+}
+
+HeapVector<Member<DOMQuad>> Document::getBoxQuads(
+    const BoxQuadOptions* options,
+    ExceptionState& exception_state) const {
+  auto* document = const_cast<Document*>(this);
+  return geometry_utils::GetBoxQuads(document, nullptr, options,
+                                     exception_state);
+}
+
+DOMQuad* Document::convertQuadFromNode(
+    DOMQuadInit* quad,
+    const V8UnionCSSPseudoElementOrDocumentOrElementOrText* from,
+    const ConvertCoordinateOptions* options,
+    ExceptionState& exception_state) const {
+  auto* document = const_cast<Document*>(this);
+  return geometry_utils::ConvertQuadFromNode(quad, document, nullptr, from,
+                                             options, exception_state);
+}
+
+DOMQuad* Document::convertRectFromNode(
+    DOMRectReadOnly* rect,
+    const V8UnionCSSPseudoElementOrDocumentOrElementOrText* from,
+    const ConvertCoordinateOptions* options,
+    ExceptionState& exception_state) const {
+  auto* document = const_cast<Document*>(this);
+  return geometry_utils::ConvertRectFromNode(rect, document, nullptr, from,
+                                             options, exception_state);
+}
+
+DOMPoint* Document::convertPointFromNode(
+    DOMPointInit* point,
+    const V8UnionCSSPseudoElementOrDocumentOrElementOrText* from,
+    const ConvertCoordinateOptions* options,
+    ExceptionState& exception_state) const {
+  auto* document = const_cast<Document*>(this);
+  return geometry_utils::ConvertPointFromNode(point, document, nullptr, from,
+                                              options, exception_state);
 }
 
 Location* Document::location() const {

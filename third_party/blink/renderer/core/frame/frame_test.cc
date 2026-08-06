@@ -14,10 +14,12 @@
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
+#include "third_party/blink/renderer/core/frame/web_remote_frame_impl.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 
@@ -71,6 +73,33 @@ TEST_F(FrameTest, PossiblyExisting) {
   LocalFrame::NotifyUserActivation(
       nullptr, mojom::UserActivationNotificationType::kTest);
   EXPECT_TRUE(GetDocument().GetFrame()->HasStickyUserActivation());
+}
+
+TEST(FrameTreeTest, CommonAncestorAndSameOriginPath) {
+  test::TaskEnvironment task_environment;
+  scoped_refptr<SecurityOrigin> origin =
+      SecurityOrigin::Create(KURL("https://example.com/"));
+  frame_test_helpers::WebViewHelper helper;
+  helper.InitializeRemote(origin);
+  WebRemoteFrameImpl* web_frame_a = frame_test_helpers::CreateRemoteChild(
+      *helper.RemoteMainFrame(), WebString(), origin);
+  WebRemoteFrameImpl* web_frame_b = frame_test_helpers::CreateRemoteChild(
+      *helper.RemoteMainFrame(), WebString(), origin);
+
+  Frame* root = helper.RemoteMainFrame()->GetFrame();
+  Frame* frame_a = web_frame_a->GetFrame();
+  Frame* frame_b = web_frame_b->GetFrame();
+
+  EXPECT_EQ(frame_a, frame_a->CommonAncestor(frame_a));
+  EXPECT_EQ(root, root->CommonAncestor(frame_a));
+  EXPECT_EQ(root, frame_a->CommonAncestor(frame_b));
+  EXPECT_EQ(root, frame_b->CommonAncestor(frame_a));
+  EXPECT_EQ(nullptr, frame_a->CommonAncestor(nullptr));
+
+  EXPECT_TRUE(root->IsFrameTreePathSameOrigin(frame_a));
+  EXPECT_TRUE(frame_a->IsFrameTreePathSameOrigin(root));
+  EXPECT_TRUE(frame_a->IsFrameTreePathSameOrigin(frame_b));
+  EXPECT_FALSE(frame_a->IsFrameTreePathSameOrigin(nullptr));
 }
 
 TEST_F(FrameTest, NavigateDifferentDomain) {

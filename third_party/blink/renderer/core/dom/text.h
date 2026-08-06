@@ -27,12 +27,21 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/style_recalc_change.h"
 #include "third_party/blink/renderer/core/dom/character_data.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
+class BoxQuadOptions;
+class ConvertCoordinateOptions;
+class DOMPoint;
+class DOMPointInit;
+class DOMQuad;
+class DOMQuadInit;
+class DOMRectReadOnly;
 class ExceptionState;
 class LayoutText;
+class V8UnionCSSPseudoElementOrDocumentOrElementOrText;
 class WhitespaceAttacher;
 struct TextDiffRange;
 
@@ -58,6 +67,24 @@ class CORE_EXPORT Text : public CharacterData {
   // then returns a node not merged.
   Node* MergeNextSiblingNodesIfPossible();
   Text* splitText(unsigned offset, ExceptionState&);
+
+  HeapVector<Member<DOMQuad>> getBoxQuads(const BoxQuadOptions* options,
+                                          ExceptionState&) const;
+  DOMQuad* convertQuadFromNode(
+      DOMQuadInit* quad,
+      const V8UnionCSSPseudoElementOrDocumentOrElementOrText* from,
+      const ConvertCoordinateOptions* options,
+      ExceptionState&) const;
+  DOMQuad* convertRectFromNode(
+      DOMRectReadOnly* rect,
+      const V8UnionCSSPseudoElementOrDocumentOrElementOrText* from,
+      const ConvertCoordinateOptions* options,
+      ExceptionState&) const;
+  DOMPoint* convertPointFromNode(
+      DOMPointInit* point,
+      const V8UnionCSSPseudoElementOrDocumentOrElementOrText* from,
+      const ConvertCoordinateOptions* options,
+      ExceptionState&) const;
 
   // DOM Level 3: http://www.w3.org/TR/DOM-Level-3-Core/core.html#ID-1312295772
 
