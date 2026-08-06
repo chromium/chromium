@@ -501,7 +501,7 @@ bool RenderViewHostImpl::CreateRenderView(
     }
 
     // Populate the sandbox origin token if available.
-    if (auto token = main_rfh->TakeSandboxOriginToken()) {
+    if (auto token = main_rfh->GetPage().TakeSandboxOriginTokenForPopup()) {
       local_frame_params->sandbox_origin_token = *token;
     }
 
