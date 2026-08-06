@@ -26,7 +26,6 @@ export function getHtml(this: OmniboxPopupSearchboxElement) {
           @mousedown="${this.onInputMousedown_}"
           @searchbox-input-text-updated="${this.onSearchboxInputTextUpdated_}"
           @input-focus-changed="${this.onInputFocusChanged}"
-          @input-keydown="${this.onInputKeydown_}"
           @paste="${this.onInputPaste_}">
         ${
       this.shouldShowVoiceLens_(this.searchboxVoiceSearchEnabled_) ? html`
