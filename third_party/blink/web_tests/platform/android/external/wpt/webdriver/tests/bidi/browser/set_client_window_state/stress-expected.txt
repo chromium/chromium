@@ -1,0 +1,8 @@
+This is a wdspec test.
+[FAIL] test_maximized_state_transitions
+  webdriver.bidi.error.UnknownErrorException: unknown error (Window state or bounds cannot be changed in the current Android configuration)
+[FAIL] test_minimized_transitions
+  webdriver.bidi.error.UnknownErrorException: unknown error (Window state or bounds cannot be changed in the current Android configuration)
+[FAIL] test_fullscreen_transitions
+  webdriver.bidi.error.UnknownErrorException: unknown error (Window state or bounds cannot be changed in the current Android configuration)
+Harness: the test ran to completion.

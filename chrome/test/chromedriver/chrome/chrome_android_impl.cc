@@ -6,13 +6,10 @@
 
 #include <utility>
 
-#include "base/strings/string_split.h"
 #include "chrome/test/chromedriver/chrome/device_manager.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
-#include "chrome/test/chromedriver/chrome/devtools_http_client.h"
 #include "chrome/test/chromedriver/chrome/status.h"
-#include "chrome/test/chromedriver/chrome/web_view_impl.h"
 
 ChromeAndroidImpl::ChromeAndroidImpl(
     BrowserInfo browser_info,
@@ -45,43 +42,8 @@ std::string ChromeAndroidImpl::GetOperatingSystemName() {
   return "ANDROID";
 }
 
-Status ChromeAndroidImpl::GetWindow(const std::string& tab_target_id,
-                                    internal::Window& window) {
-  WebView* page = nullptr;
-  Status status =
-      GetActivePageByWebViewId(tab_target_id, &page, /*wait_for_page=*/true);
-  if (status.IsError()) {
-    return status;
-  }
-
-  std::unique_ptr<base::Value> result;
-  std::string expression =
-      "[window.screenX, window.screenY, window.outerWidth, window.outerHeight]";
-  status = page->EvaluateScript(page->GetId(), expression, false, &result);
-  if (status.IsError())
-    return status;
-
-  window.left = static_cast<int>(result->GetList()[0].GetDouble());
-  window.top = static_cast<int>(result->GetList()[1].GetDouble());
-  window.width = static_cast<int>(result->GetList()[2].GetDouble());
-  window.height = static_cast<int>(result->GetList()[3].GetDouble());
-  // Android does not use Window.id or have window states
-  window.id = 0;
-  window.state = "";
-
-  return status;
-}
-
-Status ChromeAndroidImpl::MaximizeWindow(const std::string& target_id) {
-  return Status{kUnsupportedOperation,
-                "Unable to maximize window on Android platform"};
-}
-
-Status ChromeAndroidImpl::MinimizeWindow(const std::string& target_id) {
-  return Status{kUnsupportedOperation,
-                "Unable to minimize window on Android platform"};
-}
-
+// Window lookup and non-fullscreen state changes use ChromeImpl's Browser
+// domain path now that Android implements the corresponding commands.
 Status ChromeAndroidImpl::FullScreenWindow(const std::string& target_id) {
   return Status{kUnsupportedOperation,
                 "Fullscreen mode is not supported on Android platform"};

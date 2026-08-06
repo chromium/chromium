@@ -1,0 +1,32 @@
+This is a wdspec test.
+[FAIL] test_partial_input[width]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Window state or bounds cannot be changed in the current Android configuration)
+[FAIL] test_partial_input[height]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Window state or bounds cannot be changed in the current Android configuration)
+[FAIL] test_partial_input[x]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Window state or bounds cannot be changed in the current Android configuration)
+[FAIL] test_partial_input[y]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Window state or bounds cannot be changed in the current Android configuration)
+[FAIL] test_partial_input[width_x]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Window state or bounds cannot be changed in the current Android configuration)
+[FAIL] test_partial_input[height_x]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Window state or bounds cannot be changed in the current Android configuration)
+[FAIL] test_partial_input[width_y]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Window state or bounds cannot be changed in the current Android configuration)
+[FAIL] test_partial_input[height_y]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Window state or bounds cannot be changed in the current Android configuration)
+[FAIL] test_set_client_window_state_normal
+  webdriver.bidi.error.UnknownErrorException: unknown error (Window state or bounds cannot be changed in the current Android configuration)
+[FAIL] test_move_xy
+  webdriver.bidi.error.UnknownErrorException: unknown error (Window state or bounds cannot be changed in the current Android configuration)
+[FAIL] test_resize_width_height
+  webdriver.bidi.error.UnknownErrorException: unknown error (Window state or bounds cannot be changed in the current Android configuration)
+[FAIL] test_no_position_resize
+  webdriver.bidi.error.UnknownErrorException: unknown error (Window state or bounds cannot be changed in the current Android configuration)
+[FAIL] test_same_position_resize
+  webdriver.bidi.error.UnknownErrorException: unknown error (Window state or bounds cannot be changed in the current Android configuration)
+[FAIL] test_move_in_special_state[fullscreen]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Fullscreen not supported on Android)
+[FAIL] test_move_in_special_state[minimized]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Window state or bounds cannot be changed in the current Android configuration)
+Harness: the test ran to completion.

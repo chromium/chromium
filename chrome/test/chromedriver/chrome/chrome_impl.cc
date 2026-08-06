@@ -513,8 +513,8 @@ Status ChromeImpl::SetWindowBounds(
     params.SetByDottedPath("bounds.windowState", normal);
     status = devtools_websocket_client_->SendCommand("Browser.setWindowBounds",
                                                      params);
-    // Return success in case of `Browser.setWindowBounds` not implemented like
-    // on Android. crbug.com/40193012
+    // Preserve compatibility with browsers that do not implement
+    // Browser.setWindowBounds. crbug.com/40193012
     if (status.code() == kUnknownCommand)
       return Status(kOk);
 
@@ -602,8 +602,8 @@ Status ChromeImpl::SetWindowBounds(
 
   // From this point the assertion window->state == normal does not have to hold
 
-  // Return success in case of `Browser.setWindowBounds` not implemented like
-  // on Android. crbug.com/40193012
+  // Preserve compatibility with browsers that do not implement
+  // Browser.setWindowBounds. crbug.com/40193012
   if (status.code() == kUnknownCommand)
     return Status(kOk);
 

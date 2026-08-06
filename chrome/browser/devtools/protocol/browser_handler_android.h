@@ -77,6 +77,13 @@ class BrowserHandlerAndroid : public protocol::Browser::Backend {
       const std::string& in_url) override;
 
  private:
+  struct WindowLookupResult {
+    raw_ptr<ui::BaseWindow> window;
+    bool is_pending;
+  };
+
+  WindowLookupResult FindWindowById(int window_id);
+
   protocol::Response BuildBoundsForWindowId(
       int window_id,
       std::unique_ptr<protocol::Browser::Bounds>* out_bounds);

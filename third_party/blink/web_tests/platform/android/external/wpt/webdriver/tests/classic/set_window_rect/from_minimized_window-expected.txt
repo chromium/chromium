@@ -1,5 +1,5 @@
 This is a wdspec test.
 [FAIL] test_restore_from_minimized
-  webdriver.error.UnsupportedOperationException: unsupported operation (500): unsupported operation: Unable to minimize window on Android platform
+  webdriver.error.UnknownErrorException: unknown error (500): unknown error: unhandled inspector error: {"code":-32000,"message":"Window state or bounds cannot be changed in the current Android configuration"}
 Harness: the test ran to completion.
 

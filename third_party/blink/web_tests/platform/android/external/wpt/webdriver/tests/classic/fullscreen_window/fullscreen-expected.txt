@@ -6,7 +6,7 @@ This is a wdspec test.
 [FAIL] test_fullscreen_from_normal_window
   AssertionError: unsupported operation (500): unsupported operation: Fullscreen mode is not supported on Android platform
 [FAIL] test_fullscreen_from_maximized_window
-  webdriver.error.UnsupportedOperationException: unsupported operation (500): unsupported operation: Unable to maximize window on Android platform
+  AssertionError: unsupported operation (500): unsupported operation: Fullscreen mode is not supported on Android platform
 [FAIL] test_fullscreen_twice_is_idempotent
   AssertionError: unsupported operation (500): unsupported operation: Fullscreen mode is not supported on Android platform
 Harness: the test ran to completion.

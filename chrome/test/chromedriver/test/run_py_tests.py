@@ -255,7 +255,8 @@ _ANDROID_NEGATIVE_FILTER['chrome'] = (
         'ChromeDownloadDirTest.*',
         # https://crbug.com/41037474
         'ChromeDriverTest.testCloseWindow',
-        # Most window operations don't make sense on Android.
+        # The Android test configuration does not provide a resizable
+        # desktop-windowing environment.
         'ChromeDriverTest.testWindowFullScreen',
         'ChromeDriverTest.testWindowPosition',
         'ChromeDriverTest.testWindowSize',
@@ -279,7 +280,7 @@ _ANDROID_NEGATIVE_FILTER['chrome'] = (
         'ChromeDriverTest.testCanClickAlertInIframes',
         # Tests of the desktop Chrome launch process.
         'LaunchDesktopTest.*',
-        # setWindowBounds not supported on Android
+        # The Android test configuration cannot resize the browser window.
         'ChromeDriverTest.testTakeLargeElementScreenshot',
         # Android has no concept of tab or window, and will always lose focus
         # on tab creation. https://crbug.com/chromedriver/3018
