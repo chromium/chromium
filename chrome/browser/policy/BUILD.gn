@@ -785,6 +785,9 @@ source_set("unit_tests") {
 
   sources = [
     "chrome_browser_policy_connector_unittest.cc",
+    "cloud/cloud_policy_invalidator_unittest.cc",
+    "cloud/fm_registration_token_uploader_unittest.cc",
+    "cloud/user_cloud_policy_invalidator_unittest.cc",
     "homepage_location_policy_handler_unittest.cc",
     "isolate_origins_policy_handler_unittest.cc",
     "javascript_policy_handler_unittest.cc",
@@ -805,6 +808,7 @@ source_set("unit_tests") {
     "messaging_layer/upload/upload_provider_unittest.cc",
     "messaging_layer/util/dm_token_retriever_provider_unittest.cc",
     "messaging_layer/util/report_queue_manual_test_context_unittest.cc",
+    "messaging_layer/util/reporting_server_connector_unittest.cc",
     "messaging_layer/util/upload_response_parser_unittest.cc",
     "messaging_layer/util/user_dm_token_retriever_unittest.cc",
     "profile_policy_connector_unittest.cc",
@@ -822,6 +826,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//components/account_id:test_support",
     "//components/enterprise:test_support",
+    "//components/invalidation:test_support",
     "//components/policy/core/browser:test_support",
     "//components/policy/core/common:test_support",
     "//components/reporting/client:test_support",
@@ -846,24 +851,14 @@ source_set("unit_tests") {
   }
 
   if (!is_android) {
-  }
-
-  if (!is_android) {
     sources += [
-      "cloud/cloud_policy_invalidator_unittest.cc",
       "cloud/extension_install_policy_invalidator_unittest.cc",
       "cloud/extension_install_policy_service_unittest.cc",
-      "cloud/fm_registration_token_uploader_unittest.cc",
-      "cloud/user_cloud_policy_invalidator_unittest.cc",
       "developer_tools_policy_checker_factory_unittest.cc",
       "developer_tools_policy_checker_unittest.cc",
-      "messaging_layer/util/reporting_server_connector_unittest.cc",
       "policy_path_parser_unittest.cc",
     ]
-    deps += [
-      ":path_parser",
-      "//components/invalidation:test_support",
-    ]
+    deps += [ ":path_parser" ]
   }
 
   if (!is_android && !is_chromeos) {
