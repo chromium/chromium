@@ -201,4 +201,41 @@ public class BookmarkBarButtonTest {
         assertEquals(123, point.x);
         assertEquals(456, point.y);
     }
+
+    @Test
+    @SmallTest
+    public void testDoubleTrigger_OnlyFiresOnce() {
+        // Down event (touch)
+        MotionEvent downEvent = Mockito.mock(MotionEvent.class);
+        when(downEvent.getButtonState()).thenReturn(MotionEvent.BUTTON_TERTIARY);
+        when(downEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
+        assertTrue(mButton.onTouchEvent(downEvent));
+
+        // Press event (generic)
+        MotionEvent pressEvent = Mockito.mock(MotionEvent.class);
+        when(pressEvent.getSource()).thenReturn(InputDevice.SOURCE_MOUSE);
+        when(pressEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_BUTTON_PRESS);
+        when(pressEvent.getActionButton()).thenReturn(MotionEvent.BUTTON_TERTIARY);
+        when(pressEvent.getButtonState()).thenReturn(MotionEvent.BUTTON_TERTIARY);
+        mButton.onGenericMotionEvent(pressEvent);
+
+        // Release event (generic) -> should trigger click
+        MotionEvent releaseEvent = Mockito.mock(MotionEvent.class);
+        when(releaseEvent.getSource()).thenReturn(InputDevice.SOURCE_MOUSE);
+        when(releaseEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_BUTTON_RELEASE);
+        when(releaseEvent.getActionButton()).thenReturn(MotionEvent.BUTTON_TERTIARY);
+        when(releaseEvent.getMetaState()).thenReturn(0);
+        when(releaseEvent.getButtonState()).thenReturn(0);
+        assertTrue(mButton.onGenericMotionEvent(releaseEvent));
+        verify(mClickCallback).onClickWithMeta(0, MotionEvent.BUTTON_TERTIARY);
+
+        // Reset mock to verify it's not called again
+        Mockito.reset(mClickCallback);
+
+        // Up event (touch) -> should NOT trigger click again
+        MotionEvent upEvent = Mockito.mock(MotionEvent.class);
+        when(upEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_UP);
+        assertTrue(mButton.onTouchEvent(upEvent));
+        verify(mClickCallback, never()).onClickWithMeta(anyInt(), anyInt());
+    }
 }

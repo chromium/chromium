@@ -79,19 +79,17 @@ class BookmarkBarButton extends LinearLayout {
             mLastEventButtonState = event.getButtonState();
         }
 
-        // Consume events for the middle and secondary buttons. Since we consume ACTION_DOWN, the
-        // standard OnClickListener (which only handles primary clicks) will not be triggered.
-        if ((mLastEventButtonState & MotionEvent.BUTTON_TERTIARY) != 0
-                || (mLastEventButtonState & MotionEvent.BUTTON_SECONDARY) != 0) {
-            if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_BUTTON_RELEASE) {
-                int buttonToFire = mLastEventButtonState;
-                if (action == MotionEvent.ACTION_BUTTON_RELEASE && event.getActionButton() != 0) {
-                    buttonToFire = event.getActionButton();
-                }
-                mLastEventButtonState = buttonToFire;
-                onClick(this);
-                mLastEventButtonState = 0;
-            } else if (action == MotionEvent.ACTION_CANCEL) {
+        // Consume middle/right-click touch events to prevent accidental primary triggers.
+        // Execution of these actions is safely deferred to onGenericMotionEvent.
+        int targetButtons = MotionEvent.BUTTON_TERTIARY | MotionEvent.BUTTON_SECONDARY;
+        boolean isMiddleOrRightClick = (mLastEventButtonState & targetButtons) != 0;
+
+        if (isMiddleOrRightClick) {
+            boolean isEndOfGesture =
+                    action == MotionEvent.ACTION_UP
+                            || action == MotionEvent.ACTION_BUTTON_RELEASE
+                            || action == MotionEvent.ACTION_CANCEL;
+            if (isEndOfGesture) {
                 mLastEventButtonState = 0;
             }
             return true;

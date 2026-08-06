@@ -34,7 +34,9 @@ import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.url.GURL;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 /** Unit tests for {@link BookmarkOpenerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -45,17 +47,24 @@ public class BookmarkOpenerImplUnitTest {
 
     private Activity mActivity;
     private BookmarkOpenerImpl mOpener;
-    private BookmarkId mBookmarkId;
-    private BookmarkItem mBookmarkItem;
+    private BookmarkId mBookmarkId1;
+    private BookmarkItem mBookmarkItem1;
+    private BookmarkId mBookmarkId2;
+    private BookmarkItem mBookmarkItem2;
+    private BookmarkId mBookmarkId3;
+    private BookmarkItem mBookmarkItem3;
+    private BookmarkId mFolderId;
+    private BookmarkId mNestedFolderId;
+    private BookmarkItem mNestedFolderItem;
 
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).get();
 
-        mBookmarkId = new BookmarkId(1, BookmarkType.NORMAL);
-        mBookmarkItem =
+        mBookmarkId1 = new BookmarkId(1, BookmarkType.NORMAL);
+        mBookmarkItem1 =
                 new BookmarkItem(
-                        mBookmarkId,
+                        mBookmarkId1,
                         "Title",
                         new GURL("https://example.com"),
                         /* isFolder= */ false,
@@ -67,7 +76,59 @@ public class BookmarkOpenerImplUnitTest {
                         /* dateLastOpened= */ 0,
                         /* isAccountBookmark= */ false);
 
-        when(mBookmarkModel.getBookmarkById(mBookmarkId)).thenReturn(mBookmarkItem);
+        mBookmarkId2 = new BookmarkId(2, BookmarkType.NORMAL);
+        mBookmarkItem2 =
+                new BookmarkItem(
+                        mBookmarkId2,
+                        "Title 2",
+                        new GURL("https://example2.com"),
+                        /* isFolder= */ false,
+                        /* parentId= */ null,
+                        /* isEditable= */ true,
+                        /* isManaged= */ false,
+                        /* dateAdded= */ 0,
+                        /* read= */ false,
+                        /* dateLastOpened= */ 0,
+                        /* isAccountBookmark= */ false);
+
+        mBookmarkId3 = new BookmarkId(3, BookmarkType.NORMAL);
+        mBookmarkItem3 =
+                new BookmarkItem(
+                        mBookmarkId3,
+                        "Title 3",
+                        new GURL("https://example3.com"),
+                        /* isFolder= */ false,
+                        /* parentId= */ null,
+                        /* isEditable= */ true,
+                        /* isManaged= */ false,
+                        /* dateAdded= */ 0,
+                        /* read= */ false,
+                        /* dateLastOpened= */ 0,
+                        /* isAccountBookmark= */ false);
+
+        mFolderId = new BookmarkId(4, BookmarkType.NORMAL);
+        mNestedFolderId = new BookmarkId(5, BookmarkType.NORMAL);
+        mNestedFolderItem =
+                new BookmarkItem(
+                        mNestedFolderId,
+                        "Nested Folder",
+                        null,
+                        /* isFolder= */ true,
+                        mFolderId,
+                        /* isEditable= */ true,
+                        /* isManaged= */ false,
+                        /* dateAdded= */ 0,
+                        /* read= */ false,
+                        /* dateLastOpened= */ 0,
+                        /* isAccountBookmark= */ false);
+
+        when(mBookmarkModel.getBookmarkById(mBookmarkId1)).thenReturn(mBookmarkItem1);
+        when(mBookmarkModel.getBookmarkById(mBookmarkId2)).thenReturn(mBookmarkItem2);
+        when(mBookmarkModel.getBookmarkById(mBookmarkId3)).thenReturn(mBookmarkItem3);
+        when(mBookmarkModel.getBookmarkById(mNestedFolderId)).thenReturn(mNestedFolderItem);
+        when(mBookmarkModel.getChildIds(mFolderId))
+                .thenReturn(
+                        Arrays.asList(mBookmarkId1, mBookmarkId2, mNestedFolderId, mBookmarkId3));
 
         mOpener =
                 new BookmarkOpenerImpl(
@@ -78,7 +139,7 @@ public class BookmarkOpenerImplUnitTest {
 
     @Test
     public void testOpenBookmarkInCurrentTab() {
-        assertTrue(mOpener.openBookmarkInCurrentTab(mBookmarkId, false));
+        assertTrue(mOpener.openBookmarkInCurrentTab(mBookmarkId1, false));
 
         Intent startedIntent = shadowOf(mActivity).getNextStartedActivity();
         assertNotNull(startedIntent);
@@ -88,7 +149,7 @@ public class BookmarkOpenerImplUnitTest {
     public void testOpenBookmarksInNewTabs() {
         assertTrue(
                 mOpener.openBookmarksInNewTabs(
-                        Collections.singletonList(mBookmarkId), /* incognito= */ false));
+                        Collections.singletonList(mBookmarkId1), /* incognito= */ false));
 
         Intent startedIntent = shadowOf(mActivity).getNextStartedActivity();
         assertNotNull(startedIntent);
@@ -99,7 +160,9 @@ public class BookmarkOpenerImplUnitTest {
         String testTitle = "Custom Folder Title";
         assertTrue(
                 mOpener.openBookmarksInNewTabGroup(
-                        Collections.singletonList(mBookmarkId), /* incognito= */ false, testTitle));
+                        Collections.singletonList(mBookmarkId1),
+                        /* incognito= */ false,
+                        testTitle));
 
         Intent startedIntent = shadowOf(mActivity).getNextStartedActivity();
         assertNotNull(startedIntent);
@@ -116,7 +179,7 @@ public class BookmarkOpenerImplUnitTest {
     public void testOpenBookmarksInNewTabGroupWithoutTitle() {
         assertTrue(
                 mOpener.openBookmarksInNewTabGroup(
-                        Collections.singletonList(mBookmarkId),
+                        Collections.singletonList(mBookmarkId1),
                         /* incognito= */ false,
                         /* title= */ null));
 
@@ -138,7 +201,7 @@ public class BookmarkOpenerImplUnitTest {
         extras.putString(IntentHandler.EXTRA_TAB_GROUP_TITLE, testTitle);
         assertTrue(
                 mOpener.openBookmarksInNewTabs(
-                        Collections.singletonList(mBookmarkId),
+                        Collections.singletonList(mBookmarkId1),
                         /* incognito= */ false,
                         TabLaunchType.FROM_LINK,
                         extras));
@@ -157,7 +220,7 @@ public class BookmarkOpenerImplUnitTest {
     public void testOpenBookmarksInNewWindow() {
         assertTrue(
                 mOpener.openBookmarksInNewWindow(
-                        Collections.singletonList(mBookmarkId), /* incognito= */ false));
+                        Collections.singletonList(mBookmarkId1), /* incognito= */ false));
 
         Intent startedIntent = shadowOf(mActivity).getNextStartedActivity();
         assertNotNull(startedIntent);
@@ -169,7 +232,7 @@ public class BookmarkOpenerImplUnitTest {
 
         assertTrue(
                 mOpener.openBookmarksInNewWindow(
-                        Collections.singletonList(mBookmarkId), /* incognito= */ true));
+                        Collections.singletonList(mBookmarkId1), /* incognito= */ true));
 
         startedIntent = shadowOf(mActivity).getNextStartedActivity();
         assertNotNull(startedIntent);
@@ -179,5 +242,32 @@ public class BookmarkOpenerImplUnitTest {
                         IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, false));
         assertTrue(
                 startedIntent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false));
+    }
+
+    @Test
+    public void testOpenFolderBookmarksInNewTabs() {
+        assertTrue(
+                mOpener.openFolderBookmarksInNewTabs(
+                        mFolderId,
+                        /* incognito= */ false,
+                        TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND));
+
+        Intent startedIntent = shadowOf(mActivity).getNextStartedActivity();
+        assertNotNull(startedIntent);
+        assertTrue(
+                startedIntent.getBooleanExtra(
+                        IntentHandler.EXTRA_DISABLE_INITIALIZE_RENDERER, false));
+    }
+
+    @Test
+    public void testExtractBookmarkChildrenFromFolder() {
+        List<BookmarkId> children = mOpener.extractBookmarkChildrenFromFolder(mFolderId);
+        // Original order: mBookmarkId1, mBookmarkId2, mNestedFolderId, mBookmarkId3
+        // Non-folders: mBookmarkId1, mBookmarkId2, mBookmarkId3
+        // Result should be reversed order
+        assertEquals(3, children.size());
+        assertEquals(mBookmarkId3, children.get(0));
+        assertEquals(mBookmarkId2, children.get(1));
+        assertEquals(mBookmarkId1, children.get(2));
     }
 }

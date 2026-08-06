@@ -15,6 +15,8 @@ import android.os.Bundle;
 import android.provider.Browser;
 import android.text.format.DateUtils;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -120,18 +122,6 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
     }
 
     @Override
-    public boolean openBookmarksInNewTabGroup(
-            List<BookmarkId> bookmarkIds, boolean incognito, @Nullable String title) {
-        Bundle extras = new Bundle();
-        if (title != null) {
-            extras.putString(IntentHandler.EXTRA_TAB_GROUP_TITLE, title);
-        }
-        extras.putBoolean(IntentHandler.EXTRA_DISABLE_INITIALIZE_RENDERER, true);
-        return openBookmarksInNewTabs(
-                bookmarkIds, incognito, TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP, extras);
-    }
-
-    @Override
     public boolean openBookmarksInNewWindow(
             List<BookmarkId> bookmarkIds, boolean incognito, @Nullable Bundle extras) {
         if (bookmarkIds.isEmpty()) return false;
@@ -191,6 +181,49 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
                         && MultiWindowUtils.getInstance()
                                 .isLinkNavigationToOtherWindowSupported(activity);
         return MultiWindowUtils.isLinkNavigationToNewWindowSupported() || supportedPreApi31;
+    }
+
+    @Override
+    public boolean openBookmarksInNewTabGroup(
+            List<BookmarkId> bookmarkIds, boolean incognito, @Nullable String title) {
+        Bundle extras = new Bundle();
+        if (title != null) {
+            extras.putString(IntentHandler.EXTRA_TAB_GROUP_TITLE, title);
+        }
+        extras.putBoolean(IntentHandler.EXTRA_DISABLE_INITIALIZE_RENDERER, true);
+        return openBookmarksInNewTabs(
+                bookmarkIds, incognito, TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP, extras);
+    }
+
+    @Override
+    public boolean openFolderBookmarksInNewTabs(
+            BookmarkId folderId,
+            boolean incognito,
+            @Nullable @TabLaunchType Integer tabLaunchType) {
+        List<BookmarkId> bookmarksToOpen = extractBookmarkChildrenFromFolder(folderId);
+        if (bookmarksToOpen.isEmpty()) return false;
+
+        Bundle extras = new Bundle();
+        extras.putBoolean(IntentHandler.EXTRA_DISABLE_INITIALIZE_RENDERER, true);
+        return openBookmarksInNewTabs(bookmarksToOpen, incognito, tabLaunchType, extras);
+    }
+
+    @VisibleForTesting
+    List<BookmarkId> extractBookmarkChildrenFromFolder(BookmarkId folderId) {
+        BookmarkModel bookmarkModel = assumeNonNull(mBookmarkModelSupplier.get());
+        List<BookmarkId> children = bookmarkModel.getChildIds(folderId);
+        List<BookmarkId> bookmarksToOpen = new ArrayList<>();
+        // Iterate backwards because Android's TabModel inserts batch-created background tabs
+        // adjacent to the active tab, pushing previously inserted tabs to the right. Reversing
+        // our extraction order neutralizes this quirk and reconstructs the intended forward order.
+        for (int i = children.size() - 1; i >= 0; i--) {
+            BookmarkId childId = children.get(i);
+            BookmarkItem child = bookmarkModel.getBookmarkById(childId);
+            if (child != null && !child.isFolder()) {
+                bookmarksToOpen.add(childId);
+            }
+        }
+        return bookmarksToOpen;
     }
 
     private Intent createBasicOpenIntent(

@@ -15,12 +15,14 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.util.Pair;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
@@ -358,7 +360,7 @@ public class BookmarkBarMediatorTest {
 
     @Test
     @SmallTest
-    public void testPopupMenuItemTouchListener_MiddleClick() {
+    public void testPopupMenuItemTouchListener_MiddleClickConsumed() {
         BookmarkId desktopFolderId = mBookmarkModel.getDesktopFolderId();
         BookmarkId bookmarkId =
                 mBookmarkModel.addBookmark(
@@ -366,11 +368,8 @@ public class BookmarkBarMediatorTest {
 
         ModelList modelList =
                 mMediator.buildMenuModelListForFolder(mBookmarkModel, desktopFolderId);
-        assertEquals(1, modelList.size());
-
         ListItem listItem = modelList.get(0);
         OnTouchListener touchListener = listItem.model.get(ListMenuItemProperties.TOUCH_LISTENER);
-        assertNotNull(touchListener);
 
         View placeholderView = new View(mActivity);
 
@@ -386,11 +385,94 @@ public class BookmarkBarMediatorTest {
         when(releaseEvent.getActionButton()).thenReturn(MotionEvent.BUTTON_TERTIARY);
         assertTrue(touchListener.onTouch(placeholderView, releaseEvent));
 
+        verifyNoInteractions(mBookmarkOpener);
+    }
+
+    @Test
+    @SmallTest
+    public void testPopupMenuItemGenericMotion_MiddleClick() {
+        BookmarkId desktopFolderId = mBookmarkModel.getDesktopFolderId();
+        BookmarkId bookmarkId =
+                mBookmarkModel.addBookmark(
+                        desktopFolderId, 0, "Popup Bookmark", JUnitTestGURLs.URL_1);
+
+        ModelList modelList =
+                mMediator.buildMenuModelListForFolder(mBookmarkModel, desktopFolderId);
+        ListItem listItem = modelList.get(0);
+        View.OnGenericMotionListener listener =
+                listItem.model.get(ListMenuItemProperties.GENERIC_MOTION_LISTENER);
+        assertNotNull(listener);
+
+        View placeholderView = new View(mActivity);
+        MotionEvent releaseEvent = mock(MotionEvent.class);
+        when(releaseEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_BUTTON_RELEASE);
+        when(releaseEvent.getActionButton()).thenReturn(MotionEvent.BUTTON_TERTIARY);
+        assertTrue(listener.onGenericMotion(placeholderView, releaseEvent));
+
         verify(mBookmarkOpener)
                 .openBookmarksInNewTabs(
                         eq(List.of(bookmarkId)),
                         eq(false),
                         eq(TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND));
+    }
+
+    @Test
+    @SmallTest
+    public void testPopupMenuItemClickListener_CtrlClick_Url() {
+        BookmarkId desktopFolderId = mBookmarkModel.getDesktopFolderId();
+        BookmarkId bookmarkId =
+                mBookmarkModel.addBookmark(
+                        desktopFolderId, 0, "Popup Bookmark", JUnitTestGURLs.URL_1);
+
+        ModelList modelList =
+                mMediator.buildMenuModelListForFolder(mBookmarkModel, desktopFolderId);
+        ListItem listItem = modelList.get(0);
+
+        // Simulate Ctrl Key active in Touch events to fake state
+        MotionEvent downEvent = mock(MotionEvent.class);
+        when(downEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
+        when(downEvent.getMetaState()).thenReturn(KeyEvent.META_CTRL_ON);
+        listItem.model
+                .get(ListMenuItemProperties.TOUCH_LISTENER)
+                .onTouch(new View(mActivity), downEvent);
+
+        View.OnClickListener listener = listItem.model.get(ListMenuItemProperties.CLICK_LISTENER);
+        listener.onClick(new View(mActivity));
+
+        verify(mBookmarkOpener)
+                .openBookmarksInNewTabs(
+                        eq(List.of(bookmarkId)),
+                        eq(false),
+                        eq(TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND));
+    }
+
+    @Test
+    @SmallTest
+    public void testPopupMenuItemClickListener_CtrlClick_Folder() {
+        BookmarkId desktopFolderId = mBookmarkModel.getDesktopFolderId();
+        BookmarkId folderId = mBookmarkModel.addFolder(desktopFolderId, 0, "Test Folder");
+        BookmarkId urlId1 = mBookmarkModel.addBookmark(folderId, 0, "B1", JUnitTestGURLs.URL_1);
+        BookmarkId urlId2 = mBookmarkModel.addBookmark(folderId, 0, "B2", JUnitTestGURLs.URL_2);
+
+        ModelList modelList =
+                mMediator.buildMenuModelListForFolder(mBookmarkModel, desktopFolderId);
+        ListItem listItem = modelList.get(0); // Should be the Test Folder
+
+        // Simulate Ctrl Key active
+        MotionEvent downEvent = mock(MotionEvent.class);
+        when(downEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
+        when(downEvent.getMetaState()).thenReturn(KeyEvent.META_CTRL_ON);
+        listItem.model
+                .get(ListMenuItemProperties.TOUCH_LISTENER)
+                .onTouch(new View(mActivity), downEvent);
+
+        View.OnClickListener listener = listItem.model.get(ListMenuItemProperties.CLICK_LISTENER);
+        listener.onClick(new View(mActivity));
+
+        // Expect it to bulk-open the children URLs
+        verify(mBookmarkOpener)
+                .openFolderBookmarksInNewTabs(
+                        eq(folderId), eq(false), eq(TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND));
     }
 
     @Test
