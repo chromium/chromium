@@ -1486,14 +1486,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testClosedCaptioning) {
   ExecuteJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetUserProfileInfo) {
-  ExecuteJsTest();
-
-  // Confirm that this response-receiving request gets latency metrics recorded.
-  histogram_tester->ExpectTotalCount(
-      "Glic.Api.RequestHostLatency.GetUserProfileInfo", 1);
-}
-
 class GlicApiTestWithOneTabAndCachedUserProfile : public GlicApiTestWithOneTab {
  public:
   GlicApiTestWithOneTabAndCachedUserProfile() {
