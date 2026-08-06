@@ -947,6 +947,17 @@ TEST_F(ContextualTasksPageHandlerTest, LensSearchTooltipDismissed) {
             1);
 }
 
+TEST_F(ContextualTasksPageHandlerTest, AskGTooltipDismissed) {
+  PrefService* prefs = profile()->GetPrefs();
+  EXPECT_EQ(prefs->GetInteger(
+                contextual_tasks::kContextualTasksAskGTooltipDismissedCount),
+            0);
+  page_handler_->AskGTooltipDismissed();
+  EXPECT_EQ(prefs->GetInteger(
+                contextual_tasks::kContextualTasksAskGTooltipDismissedCount),
+            1);
+}
+
 
 TEST_F(ContextualTasksPageHandlerTest, GetCommonSearchParams) {
   g_browser_process->GetFeatures()->application_locale_storage()->Set("en-US");

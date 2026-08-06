@@ -99,6 +99,8 @@ void ContextualTasksUiServiceFactory::RegisterProfilePrefs(
                                 0);
   registry->RegisterIntegerPref(kContextualTasksLensSearchTooltipDismissedCount,
                                 0);
+  registry->RegisterIntegerPref(kContextualTasksAskGTooltipDismissedCount,
+                                0);
 
   registry->RegisterBooleanPref(kContextualTasksShareOpenTabsEveryThread,
                                 false);

@@ -602,6 +602,14 @@ base::DictValue ContextualTasksUI::GetContextualTasksLoadTimeData(
   dict.Set("lensSearchTooltipSessionImpressionCap",
            contextual_tasks::
                GetContextualTasksLensSearchTooltipSessionImpressionCap());
+  dict.Set(
+      "isAskGTooltipDismissCountBelowCap",
+      profile->GetPrefs()->GetInteger(
+          contextual_tasks::kContextualTasksAskGTooltipDismissedCount) <
+          contextual_tasks::GetContextualTasksAskGTooltipDismissedCap());
+  dict.Set("askGTooltipSessionImpressionCap",
+           contextual_tasks::
+               GetContextualTasksAskGTooltipSessionImpressionCap());
   dict.Set("askGCoBrowseEnabled", omnibox::kAskGCoBrowse.Get());
   dict.Set("contextualTasksSidePanelRearchitectureEnabled",
            contextual_tasks::IsContextualTasksSidePanelRearchitectureEnabled());

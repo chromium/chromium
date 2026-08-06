@@ -514,6 +514,16 @@ const base::FeatureParam<int>
         "ContextualTasksLensSearchTooltipSessionImpressionCap",
         1);
 
+const base::FeatureParam<int> kContextualTasksAskGTooltipDismissedCap(
+    &kContextualTasksShowOnboardingTooltip,
+    "ContextualTasksAskGTooltipDismissedCap", 1);
+
+const base::FeatureParam<int>
+    kContextualTasksAskGTooltipSessionImpressionCap(
+        &kContextualTasksShowOnboardingTooltip,
+        "ContextualTasksAskGTooltipSessionImpressionCap",
+        10);
+
 const base::FeatureParam<int> kContextualTasksOnboardingTooltipImpressionDelay(
     &kContextualTasksShowOnboardingTooltip,
     "ContextualTasksOnboardingTooltipImpressionDelay",
@@ -596,6 +606,23 @@ int GetContextualTasksLensSearchTooltipSessionImpressionCap() {
     return 0;
   }
   return kContextualTasksLensSearchTooltipSessionImpressionCap.Get();
+}
+
+int GetContextualTasksAskGTooltipDismissedCap() {
+  if (!base::FeatureList::IsEnabled(kContextualTasksShowOnboardingTooltip)) {
+    return 0;
+  }
+  if (base::FeatureList::IsEnabled(kContextualTasksBypassDismissedCap)) {
+    return std::numeric_limits<int>::max();
+  }
+  return kContextualTasksAskGTooltipDismissedCap.Get();
+}
+
+int GetContextualTasksAskGTooltipSessionImpressionCap() {
+  if (!base::FeatureList::IsEnabled(kContextualTasksShowOnboardingTooltip)) {
+    return 0;
+  }
+  return kContextualTasksAskGTooltipSessionImpressionCap.Get();
 }
 
 int GetContextualTasksOnboardingTooltipImpressionDelay() {

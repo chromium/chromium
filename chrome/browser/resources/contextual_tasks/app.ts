@@ -323,13 +323,12 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
         this.browserProxy_.handler.lensSearchTooltipDismissed();
         this.updateTooltipVisibility_();
       });
-  // TODO (b/540855836): Implement persistent dismissal and session
-  // impression caps for AskG tooltip.
   private askGTooltipState_ = new TooltipState(
       loadTimeData.getBoolean('askGCoBrowseEnabled'),
-      true,  // AskG has no persistent dismissal cap yet
-      10,    // AskG has no session impression cap
+      loadTimeData.getBoolean('isAskGTooltipDismissCountBelowCap'),
+      loadTimeData.getInteger('askGTooltipSessionImpressionCap'),
       () => {
+        this.browserProxy_.handler.askGTooltipDismissed();
         this.updateTooltipVisibility_();
       });
   // </if>
