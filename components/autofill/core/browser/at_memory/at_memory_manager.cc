@@ -65,16 +65,6 @@ namespace autofill {
 
 namespace {
 
-Suggestion CreateFetchingSuggestion() {
-  Suggestion suggestion(
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_FETCHING),
-      SuggestionType::kAtMemoryFetching);
-  suggestion.acceptability =
-      Suggestion::Acceptability::kSelectableButUnacceptable;
-  suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
-  return suggestion;
-}
-
 // Returns the primary type name label for `entry`. For AutofillAi
 // entities and attributes, this resolves to the Entity name.
 std::u16string GetSuggestionLabelTypeName(const MemorySearchResult& entry) {
@@ -291,32 +281,7 @@ Suggestion CreateNoDataSuggestion() {
   return suggestion;
 }
 
-// Creates a suggestion to display when AtMemory search fails to connect to the
-// server.
-Suggestion CreateNoConnectionSuggestion(std::u16string query) {
-  Suggestion suggestion(std::move(query),
-                        SuggestionType::kAtMemoryNoConnection);
-  suggestion.labels = {{Suggestion::Text(
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_NO_CONNECTION))}};
-  suggestion.acceptability =
-      Suggestion::Acceptability::kUnselectableAndUnacceptable;
-  suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
-  suggestion.icon = Suggestion::Icon::kSadTab;
-  return suggestion;
-}
 
-// Creates a catch-all suggestion to display when AtMemory search fails due to
-// an unexpected or generic error.
-Suggestion CreateGenericErrorSuggestion() {
-  Suggestion suggestion(
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_GENERIC_ERROR),
-      SuggestionType::kAtMemoryGenericError);
-  suggestion.acceptability =
-      Suggestion::Acceptability::kSelectableButUnacceptable;
-  suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
-  suggestion.icon = Suggestion::Icon::kSadTab;
-  return suggestion;
-}
 
 std::optional<std::u16string> GetAttributeFillValue(
     const EntityInstance& entity,
@@ -809,13 +774,47 @@ Suggestion AtMemoryManager::CreateSearchAffordanceSuggestion(
   return affordance;
 }
 
-Suggestion AtMemoryManager::CreateAiDisclosureSuggestion() const {
+Suggestion AtMemoryManager::CreateAiDisclosureSuggestion() {
   Suggestion suggestion(SuggestionType::kAtMemoryAiDisclosure);
   suggestion.acceptability =
       Suggestion::Acceptability::kUnselectableAndUnacceptable;
   suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
   return suggestion;
 }
+
+Suggestion AtMemoryManager::CreateFetchingSuggestion() {
+  Suggestion suggestion(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_FETCHING),
+      SuggestionType::kAtMemoryFetching);
+  suggestion.acceptability =
+      Suggestion::Acceptability::kSelectableButUnacceptable;
+  suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+  return suggestion;
+}
+
+Suggestion AtMemoryManager::CreateGenericErrorSuggestion() {
+  Suggestion suggestion(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_GENERIC_ERROR),
+      SuggestionType::kAtMemoryGenericError);
+  suggestion.acceptability =
+      Suggestion::Acceptability::kSelectableButUnacceptable;
+  suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+  suggestion.icon = Suggestion::Icon::kSadTab;
+  return suggestion;
+}
+
+Suggestion AtMemoryManager::CreateNoConnectionSuggestion(std::u16string query) {
+  Suggestion suggestion(std::move(query),
+                        SuggestionType::kAtMemoryNoConnection);
+  suggestion.labels = {{Suggestion::Text(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_NO_CONNECTION))}};
+  suggestion.acceptability =
+      Suggestion::Acceptability::kUnselectableAndUnacceptable;
+  suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+  suggestion.icon = Suggestion::Icon::kSadTab;
+  return suggestion;
+}
+
 void AtMemoryManager::CancelPendingQueries() {
   query_weak_ptr_factory_.InvalidateWeakPtrs();
   if (session_state_) {

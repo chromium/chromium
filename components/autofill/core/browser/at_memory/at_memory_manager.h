@@ -116,6 +116,23 @@ class AtMemoryManager : public CreditCardAccessManager::Observer {
   void MaybeAppendPersonalContextNotice(
       std::vector<Suggestion>& suggestions) const;
 
+  // Creates the AI disclosure suggestion.
+  static Suggestion CreateAiDisclosureSuggestion();
+
+  // Creates the fetching / loading throbber suggestion.
+  static Suggestion CreateFetchingSuggestion();
+
+  // Creates a catch-all suggestion to display when AtMemory search fails due to
+  // an unexpected or generic error.
+  static Suggestion CreateGenericErrorSuggestion();
+
+  // Creates a suggestion to display when AtMemory search fails to connect to
+  // the server.
+  static Suggestion CreateNoConnectionSuggestion(std::u16string query);
+
+  // Creates the search affordance suggestion.
+  static Suggestion CreateSearchAffordanceSuggestion(std::u16string query);
+
   // Creates a source attribution suggestion ("Suggested by Gemini").
   static Suggestion CreateSourceAttributionSuggestion();
 
@@ -132,12 +149,6 @@ class AtMemoryManager : public CreditCardAccessManager::Observer {
 
   // Creates a suggestion to display when the query is not supported.
   Suggestion CreateUnsupportedQuerySuggestion(const std::u16string& query);
-
-  // Creates the search affordance suggestion.
-  Suggestion CreateSearchAffordanceSuggestion(std::u16string query);
-
-  // Creates the AI disclosure suggestion.
-  Suggestion CreateAiDisclosureSuggestion() const;
 
   // Cancels any pending search queries and resets searching states.
   void CancelPendingQueries();
