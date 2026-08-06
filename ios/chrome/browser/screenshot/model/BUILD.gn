@@ -12,10 +12,10 @@ source_set("model") {
   deps = [
     "//base",
     "//ios/chrome/browser/enterprise/data_protection/model",
-    "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/main/ui_bundled",
     "//ios/chrome/browser/reader_mode/model",
     "//ios/chrome/browser/reader_mode/model:features",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/web/public",
   ]

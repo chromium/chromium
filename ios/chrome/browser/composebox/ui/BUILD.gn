@@ -52,7 +52,6 @@ source_set("ui") {
     "//ios/chrome/browser/omnibox/public:constants",
     "//ios/chrome/browser/omnibox/ui:omnibox_internal",
     "//ios/chrome/browser/omnibox/ui/popup",
-    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/elements",

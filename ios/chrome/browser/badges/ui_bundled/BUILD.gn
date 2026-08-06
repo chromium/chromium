@@ -82,7 +82,6 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/reader_mode/model:constants",
     "//ios/chrome/browser/reader_mode/model:features",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
-    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/url",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",

@@ -19,7 +19,6 @@ source_set("consistency_sheet") {
   deps = [
     "//ios/chrome/browser/authentication/consistency_promo_signin/ui",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_protected",
-    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util/image",
     "//ios/chrome/common/ui/colors",

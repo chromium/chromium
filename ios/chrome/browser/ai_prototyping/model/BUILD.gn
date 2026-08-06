@@ -17,7 +17,6 @@ source_set("model") {
     "//ios/chrome/browser/intelligence/proto_wrappers",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/optimization_guide/mojom",
-    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/web/public",

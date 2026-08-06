@@ -31,6 +31,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/composebox/public",
     "//ios/chrome/browser/composebox/ui",
     "//ios/chrome/browser/composebox/ui/presentation",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/web/public",
     "//ui/base",
   ]
@@ -113,6 +114,7 @@ source_set("input_plate") {
     "//ios/chrome/browser/https_upgrades/model",
     "//ios/chrome/browser/intents/model:model_donation_helper",
     "//ios/chrome/browser/prerender/model",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/utils:web_state_deferred_executor",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/snapshots/model",
@@ -179,7 +181,6 @@ group("shared_deps") {
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/layout_guide",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url",
     "//ios/chrome/browser/shared/model/url:constants",

@@ -14,8 +14,6 @@ source_set("model") {
     "browser_web_state_list_delegate.mm",
   ]
 
-  public_deps = [ "//ios/chrome/browser/shared/model/browser" ]
-
   deps = [
     "//base",
     "//components/breadcrumbs/core:status",
@@ -56,6 +54,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/coordinator/scene/state",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
@@ -98,7 +97,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//ios/chrome/browser/saved_tab_groups/model",
     "//ios/chrome/browser/shared/coordinator/scene/test",
-    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",

@@ -18,6 +18,7 @@ source_set("promo") {
     "//ios/chrome/browser/promos_manager/model:constants",
     "//ios/chrome/browser/promos_manager/model:types",
     "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/whats_new/coordinator:util",
   ]
@@ -38,6 +39,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/promos_manager/model:test_support",
     "//ios/chrome/browser/shared/coordinator/scene",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile/test",

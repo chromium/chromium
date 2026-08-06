@@ -14,12 +14,10 @@ source_set("coordinator") {
     "//components/lens",
     "//ios/chrome/browser/composebox/public:input_item_source",
     "//ios/chrome/browser/composebox/shared/ui",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/tab_switcher/ui_bundled:utils",
     "//ios/chrome/browser/tabs/model",
   ]
-  public_deps = [
-    "//ios/chrome/browser/shared/model/browser",
-    "//ios/web/public",
-  ]
+  public_deps = [ "//ios/web/public" ]
 }

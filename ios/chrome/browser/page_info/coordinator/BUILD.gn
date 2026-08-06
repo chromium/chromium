@@ -36,7 +36,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/history/ui_bundled:coordinator",
     "//ios/chrome/browser/history/ui_bundled:coordinator_factory",
-    "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/page_info/features",
     "//ios/chrome/browser/page_info/last_visited",
     "//ios/chrome/browser/page_info/model",
@@ -49,6 +48,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/coordinator/alert",  # for
                                                       # page_info_last_visited_coordinator
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",

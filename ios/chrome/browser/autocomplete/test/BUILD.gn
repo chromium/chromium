@@ -32,7 +32,6 @@ source_set("eg_app_support+eg2") {
     "//base",
     "//ios/chrome/browser/autocomplete/model",
     "//ios/chrome/browser/omnibox/public",
-    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/common:string_conversions",
     "//ios/chrome/test/app:test_support",
     "//ios/chrome/test/earl_grey:eg_app_support+eg2",

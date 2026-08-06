@@ -25,7 +25,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/collaboration/model/messaging",
     "//ios/chrome/browser/drag_and_drop/model",
     "//ios/chrome/browser/favicon/model",
-    "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/ntp/model:util",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/saved_tab_groups/coordinator",
@@ -78,7 +77,6 @@ source_set("tab_strip_mediator_utils") {
   ]
   deps = [
     "//base",
-    "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/saved_tab_groups/model",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",

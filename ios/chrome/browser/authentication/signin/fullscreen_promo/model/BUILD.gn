@@ -19,6 +19,7 @@ source_set("model") {
     "//ios/chrome/browser/promos_manager/model",
     "//ios/chrome/browser/promos_manager/model:constants",
     "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/signin/model:authentication_service",
   ]
 }

@@ -49,7 +49,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/infobars/model/overlays:overlay_type",
     "//ios/chrome/browser/infobars/model/overlays/browser_agent/interaction_handlers/test",
     "//ios/chrome/browser/infobars/model/test",
-    "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/common/infobars",
     "//ios/chrome/browser/overlays/model/public/infobar_banner",
