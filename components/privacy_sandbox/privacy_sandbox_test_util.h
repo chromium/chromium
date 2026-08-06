@@ -84,19 +84,6 @@ class MockPrivacySandboxSettingsDelegate
     });
   }
 
-  void SetUpHasAppropriateTopicsConsentResponse(bool has_appropriate_consent) {
-    ON_CALL(*this, HasAppropriateTopicsConsent).WillByDefault([=]() {
-      return has_appropriate_consent;
-    });
-  }
-
-  void SetUpIsSubjectToM1NoticeRestrictedResponse(
-      bool is_subject_to_restricted_notice) {
-    ON_CALL(*this, IsSubjectToM1NoticeRestricted).WillByDefault([=]() {
-      return is_subject_to_restricted_notice;
-    });
-  }
-
   MOCK_METHOD(bool, IsPrivacySandboxRestricted, (), (const, override));
   MOCK_METHOD(bool,
               IsPrivacySandboxCurrentlyUnrestricted,
@@ -104,9 +91,6 @@ class MockPrivacySandboxSettingsDelegate
               (const, override));
 
   MOCK_METHOD(bool, IsIncognitoProfile, (), (const, override));
-  MOCK_METHOD(bool, HasAppropriateTopicsConsent, (), (const, override));
-  MOCK_METHOD(bool, IsSubjectToM1NoticeRestricted, (), (const, override));
-  MOCK_METHOD(bool, IsRestrictedNoticeEnabled, (), (const, override));
 };
 
 // A declarative test case is a collection of key value pairs, which each define
@@ -134,7 +118,6 @@ enum class StateKey {
   kM1TopicsDisabledByPolicy = 21,
   kM1FledgeDisabledByPolicy = 22,
   kM1AdMesaurementDisabledByPolicy = 23,
-  kHasAppropriateTopicsConsent = 24,
   kM1RestrictedNoticePreviouslyAcknowledged = 25,
   kAttestationsMap = 26,
   kBlockFledgeJoiningForEtldplus1 = 27,

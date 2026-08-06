@@ -88,8 +88,6 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
   void SetTopicsBlockedForTesting() override;
   bool IsPrivacySandboxRestricted() const override;
   bool IsPrivacySandboxCurrentlyUnrestricted() const override;
-  bool IsSubjectToM1NoticeRestricted() const override;
-  bool IsRestrictedNoticeEnabled() const override;
   void OnCookiesCleared() override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;

@@ -83,19 +83,6 @@ class PrivacySandboxSettings : public KeyedService {
     // Whether the current profile is Incognito or not. For Incognito, the
     // privacy sandbox APIs are restricted.
     virtual bool IsIncognitoProfile() const = 0;
-
-    // Whether there is an appropriate level of consent for the Topics API.
-    // When this returns false, access control functions for Topics will
-    // return as not allowed.
-    virtual bool HasAppropriateTopicsConsent() const = 0;
-
-    // Whether the profile is subject to being given notice of restrictions to
-    // the standard set of Privacy Sandbox APIs.
-    virtual bool IsSubjectToM1NoticeRestricted() const = 0;
-
-    // Whether the Privacy Sandbox is partially enabled based on
-    // restrictions.
-    virtual bool IsRestrictedNoticeEnabled() const = 0;
   };
 
   // Returns whether the Topics API is allowed at all. If false, Topics API
@@ -249,16 +236,6 @@ class PrivacySandboxSettings : public KeyedService {
   // Virtual to allow mocking in tests. Unlike IsPrivacySandboxRestricted
   // this method always return the current restriction status.
   virtual bool IsPrivacySandboxCurrentlyUnrestricted() const = 0;
-
-  // Returns whether the privacy sandbox restricted notice should be shown,
-  // based on account characteristics. Forwards to the delegate. Virtual for
-  // mocking in tests.
-  virtual bool IsSubjectToM1NoticeRestricted() const = 0;
-
-  // Returns whether the Privacy Sandbox is partially enabled based on
-  // restrictions. Forwards to the delegate. Virtual for
-  // mocking in tests.
-  virtual bool IsRestrictedNoticeEnabled() const = 0;
 
   // Called when there's a broad cookies clearing action. For example, this
   // should be called on "Clear browsing data", but shouldn't be called on the

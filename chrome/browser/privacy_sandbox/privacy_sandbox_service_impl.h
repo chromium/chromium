@@ -5,10 +5,7 @@
 #ifndef CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SERVICE_IMPL_H_
 #define CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SERVICE_IMPL_H_
 
-// clang-format off
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
-// clang-format on
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -39,8 +36,7 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
       profile_metrics::BrowserProfileType profile_type,
       content::BrowsingDataRemover* browsing_data_remover,
       HostContentSettingsMap* host_content_settings_map,
-      first_party_sets::FirstPartySetsPolicyService* first_party_sets_service,
-      PrivacySandboxCountries* privacy_sandbox_countries);
+      first_party_sets::FirstPartySetsPolicyService* first_party_sets_service);
 
   ~PrivacySandboxServiceImpl() override;
 
@@ -113,7 +109,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
   raw_ptr<HostContentSettingsMap> host_content_settings_map_;
   raw_ptr<first_party_sets::FirstPartySetsPolicyService>
       first_party_sets_policy_service_;
-  raw_ptr<PrivacySandboxCountries> privacy_sandbox_countries_;
 
   PrefChangeRegistrar user_prefs_registrar_;
 

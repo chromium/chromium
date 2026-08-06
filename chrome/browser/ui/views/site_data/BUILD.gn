@@ -128,7 +128,6 @@ source_set("interactive_ui_tests") {
   deps = [
     ":site_data",
     "//chrome/app:command_ids",
-    "//chrome/browser/privacy_sandbox",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:ui_features",

@@ -5326,7 +5326,6 @@ test("unit_tests") {
     "//chrome/browser/preloading/prefetch:unit_tests",
     "//chrome/browser/preloading/prefetch/no_state_prefetch",
     "//chrome/browser/preloading/prerender:unit_tests",
-    "//chrome/browser/privacy_sandbox",
     "//chrome/browser/privacy_sandbox:unit_tests",
     "//chrome/browser/private_ai:unit_tests",
     "//chrome/browser/profiles",

@@ -20,7 +20,6 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 #include "chrome/browser/first_party_sets/scoped_mock_first_party_sets_handler.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/privacy_sandbox/profile_bucket_metrics.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -120,14 +119,6 @@ void ClearRwsUserPrefs(
 }
 
 }  // namespace
-
-// A mock implementation of the PrivacySandboxCountries interface for testing.
-class MockPrivacySandboxCountries : public PrivacySandboxCountries {
- public:
-  MOCK_METHOD(bool, IsConsentCountry, (), (override));
-  MOCK_METHOD(bool, IsRestOfWorldCountry, (), (override));
-  MOCK_METHOD(bool, IsLatestCountryChina, (), (override));
-};
 
 class PrivacySandboxServiceTest : public testing::Test {
  public:
@@ -251,8 +242,6 @@ class PrivacySandboxServiceTest : public testing::Test {
 
     auto mock_delegate = CreateMockDelegate();
     mock_delegate_ = mock_delegate.get();
-    mock_privacy_sandbox_countries_ =
-        std::make_unique<MockPrivacySandboxCountries>();
 
     privacy_sandbox_settings_ =
         std::make_unique<privacy_sandbox::PrivacySandboxSettingsImpl>(
@@ -333,24 +322,6 @@ class PrivacySandboxServiceTest : public testing::Test {
     return first_party_sets_policy_service_.get();
   }
 
-  MockPrivacySandboxCountries* mock_privacy_sandbox_countries() {
-    return mock_privacy_sandbox_countries_.get();
-  }
-
-  void MoveToEEA() {
-    ON_CALL(*mock_privacy_sandbox_countries(), IsConsentCountry())
-        .WillByDefault(testing::Return(true));
-    ON_CALL(*mock_privacy_sandbox_countries(), IsRestOfWorldCountry())
-        .WillByDefault(testing::Return(false));
-  }
-
-  void MoveToROW() {
-    ON_CALL(*mock_privacy_sandbox_countries(), IsConsentCountry())
-        .WillByDefault(testing::Return(false));
-    ON_CALL(*mock_privacy_sandbox_countries(), IsRestOfWorldCountry())
-        .WillByDefault(testing::Return(true));
-  }
-
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
 
   content::BrowserTaskEnvironment* browser_task_environment() {
@@ -366,8 +337,7 @@ class PrivacySandboxServiceTest : public testing::Test {
     return std::make_unique<PrivacySandboxServiceImpl>(
         profile(), privacy_sandbox_settings(), cookie_settings(),
         profile()->GetPrefs(), GetProfileType(), browsing_data_remover(),
-        host_content_settings_map(), first_party_sets_policy_service(),
-        mock_privacy_sandbox_countries());
+        host_content_settings_map(), first_party_sets_policy_service());
   }
 
   content::BrowserTaskEnvironment browser_task_environment_;
@@ -388,7 +358,6 @@ class PrivacySandboxServiceTest : public testing::Test {
       mock_first_party_sets_handler_;
   std::unique_ptr<first_party_sets::FirstPartySetsPolicyService>
       first_party_sets_policy_service_;
-  std::unique_ptr<MockPrivacySandboxCountries> mock_privacy_sandbox_countries_;
   std::unique_ptr<privacy_sandbox::PrivacySandboxSettings>
       privacy_sandbox_settings_;
   raw_ptr<privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>

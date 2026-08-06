@@ -233,12 +233,6 @@ void ApplyTestState(
           prefs::kPrivacySandboxM1AdMeasurementEnabled));
       return;
     }
-    case (StateKey::kHasAppropriateTopicsConsent): {
-      SCOPED_TRACE("State Setup: Appropriate Topics Consent");
-      mock_delegate->SetUpHasAppropriateTopicsConsentResponse(
-          GetItemValue<bool>(value));
-      return;
-    }
     case (StateKey::kAttestationsMap): {
       SCOPED_TRACE("State Setup: Attestations Map");
       privacy_sandbox::PrivacySandboxAttestations::GetInstance()
@@ -857,8 +851,6 @@ MockPrivacySandboxSettingsDelegate::MockPrivacySandboxSettingsDelegate() {
   SetUpIsPrivacySandboxRestrictedResponse(false);
   SetUpIsPrivacySandboxCurrentlyUnrestrictedResponse(true);
   SetUpIsIncognitoProfileResponse(false);
-  SetUpHasAppropriateTopicsConsentResponse(true);
-  SetUpIsSubjectToM1NoticeRestrictedResponse(false);
 }
 
 MockPrivacySandboxSettingsDelegate::~MockPrivacySandboxSettingsDelegate() =

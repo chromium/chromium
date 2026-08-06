@@ -1658,7 +1658,6 @@ static_library("ui") {
       "//chrome/browser/new_tab_page/modules/v2/tab_groups:mojo_bindings",
       "//chrome/browser/password_manager/actor_login:factories",
       "//chrome/browser/password_manager/factories",
-      "//chrome/browser/privacy_sandbox:countries",
       "//chrome/browser/record_replay",
       "//chrome/browser/record_replay:impl",
       "//chrome/browser/send_tab_to_self",

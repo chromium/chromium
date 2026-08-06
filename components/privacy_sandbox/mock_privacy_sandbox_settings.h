@@ -76,8 +76,6 @@ class MockPrivacySandboxSettings
               IsPrivacySandboxCurrentlyUnrestricted,
               (),
               (override, const));
-  MOCK_METHOD(bool, IsSubjectToM1NoticeRestricted, (), (override, const));
-  MOCK_METHOD(bool, IsRestrictedNoticeEnabled, (), (override, const));
   MOCK_METHOD(void, OnCookiesCleared, (), (override));
   MOCK_METHOD(void, AddObserver, (Observer*), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer*), (override));

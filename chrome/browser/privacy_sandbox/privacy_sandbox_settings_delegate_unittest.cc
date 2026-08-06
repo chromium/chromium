@@ -51,8 +51,8 @@ class PrivacySandboxSettingsDelegateTest : public testing::Test {
         CreateProfileForIdentityTestEnvironment();
     adapter_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
-    delegate_ = std::make_unique<PrivacySandboxSettingsDelegate>(
-        profile_.get(), GetSingletonPrivacySandboxCountries());
+    delegate_ =
+        std::make_unique<PrivacySandboxSettingsDelegate>(profile_.get());
   }
 
  protected:
@@ -63,18 +63,6 @@ class PrivacySandboxSettingsDelegateTest : public testing::Test {
                             ->FindExtendedAccountInfoByEmailAddress(kTestEmail);
     AccountCapabilitiesTestMutator mutator(&account_info);
     mutator.set_can_run_chrome_privacy_sandbox_trials(enabled);
-    signin::UpdateAccountInfoForAccount(identity_test_env()->identity_manager(),
-                                        account_info);
-  }
-
-  void SetRestrictedNoticeCapability(const std::string& account, bool enabled) {
-    auto account_info = identity_test_env()
-                            ->identity_manager()
-                            ->FindExtendedAccountInfoByEmailAddress(kTestEmail);
-    AccountCapabilitiesTestMutator mutator(&account_info);
-    mutator
-        .set_is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice(
-            enabled);
     signin::UpdateAccountInfoForAccount(identity_test_env()->identity_manager(),
                                         account_info);
   }
@@ -125,115 +113,6 @@ TEST_F(PrivacySandboxSettingsDelegateTest,
   // don't restrict the feature.
   EXPECT_FALSE(delegate()->IsPrivacySandboxRestricted());
   EXPECT_FALSE(delegate()->IsPrivacySandboxCurrentlyUnrestricted());
-}
-
-TEST_F(PrivacySandboxSettingsDelegateTest,
-       RestrictedNoticeRequiredForSignedInUser) {
-  feature_list()->InitAndEnableFeatureWithParameters(
-      privacy_sandbox::kPrivacySandboxSettings4,
-      {{privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
-        "true"}});
-  // Sign the user in.
-  identity_test_env()->MakePrimaryAccountAvailable(
-      kTestEmail, signin::ConsentLevel::kSignin);
-
-  // Initially the account capability will be in an unknown state, which
-  // should be interpreted as no restriction.
-  EXPECT_FALSE(delegate()->IsSubjectToM1NoticeRestricted());
-
-  // Validate that the notice is not required when the account is not configured
-  // to show it.
-  SetRestrictedNoticeCapability(kTestEmail, false);
-  EXPECT_FALSE(delegate()->IsSubjectToM1NoticeRestricted());
-
-  // Validate that the notice is required when the account is configured to show
-  // it.
-  SetRestrictedNoticeCapability(kTestEmail, true);
-  EXPECT_TRUE(delegate()->IsSubjectToM1NoticeRestricted());
-}
-
-TEST_F(PrivacySandboxSettingsDelegateTest,
-       RestrictedNoticeRequiredWithoutAccountToken) {
-  feature_list()->InitAndEnableFeatureWithParameters(
-      privacy_sandbox::kPrivacySandboxSettings4,
-      {{privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
-        "true"}});
-  // Sign the user in.
-  identity_test_env()->MakePrimaryAccountAvailable(
-      kTestEmail, signin::ConsentLevel::kSignin);
-
-  // Initially the account capability will be in an unknown state
-  EXPECT_FALSE(delegate()->IsSubjectToM1NoticeRestricted());
-
-  // Enable the account capability
-  SetRestrictedNoticeCapability(kTestEmail, true);
-
-  // Remove the refresh token for the account
-  signin::RemoveRefreshTokenForPrimaryAccount(
-      identity_test_env()->identity_manager());
-
-  // Capability is fetched even if the token is not available
-  EXPECT_TRUE(delegate()->IsSubjectToM1NoticeRestricted());
-}
-
-TEST_F(PrivacySandboxSettingsDelegateTest,
-       RestrictedNoticeRequiredForSignedOutUser) {
-  feature_list()->InitAndEnableFeatureWithParameters(
-      privacy_sandbox::kPrivacySandboxSettings4,
-      {{privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
-        "true"}});
-  // If the user is not signed in to Chrome then we don't use any age signal and
-  // don't restrict the feature.
-  EXPECT_FALSE(delegate()->IsSubjectToM1NoticeRestricted());
-}
-
-TEST_F(PrivacySandboxSettingsDelegateTest,
-       RestrictedNoticeRequiredFeatureDisabled) {
-  feature_list()->InitAndEnableFeatureWithParameters(
-      privacy_sandbox::kPrivacySandboxSettings4,
-      {{privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
-        "false"}});
-  identity_test_env()->MakePrimaryAccountAvailable(
-      kTestEmail, signin::ConsentLevel::kSignin);
-  SetRestrictedNoticeCapability(kTestEmail, true);
-  // Even if the user is signed in to Chrome, the feature being disabled means
-  // no notice should be shown.
-  EXPECT_FALSE(delegate()->IsSubjectToM1NoticeRestricted());
-}
-
-TEST_F(PrivacySandboxSettingsDelegateTest,
-       AppropriateTopicsConsent_ConsentNotRequired) {
-  // When the V4 consent required parameter is not present, Topics always has
-  // an appropriate level of consent.
-  prefs()->SetBoolean(prefs::kPrivacySandboxTopicsConsentGiven, false);
-  feature_list()->InitAndEnableFeature(
-      privacy_sandbox::kPrivacySandboxSettings4);
-
-  EXPECT_TRUE(delegate()->HasAppropriateTopicsConsent());
-
-  feature_list()->Reset();
-  feature_list()->InitAndEnableFeatureWithParameters(
-      privacy_sandbox::kPrivacySandboxSettings4,
-      {{privacy_sandbox::kPrivacySandboxSettings4NoticeRequired.name, "true"}});
-
-  EXPECT_TRUE(delegate()->HasAppropriateTopicsConsent());
-}
-
-TEST_F(PrivacySandboxSettingsDelegateTest,
-       AppropriateTopicsConsent_ConsentRequired) {
-  feature_list()->InitAndEnableFeatureWithParameters(
-      privacy_sandbox::kPrivacySandboxSettings4,
-      {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequired.name,
-        "true"}});
-
-  // Default state should be a not-active consent.
-  EXPECT_FALSE(delegate()->HasAppropriateTopicsConsent());
-
-  prefs()->SetBoolean(prefs::kPrivacySandboxTopicsConsentGiven, true);
-  EXPECT_TRUE(delegate()->HasAppropriateTopicsConsent());
-
-  prefs()->SetBoolean(prefs::kPrivacySandboxTopicsConsentGiven, false);
-  EXPECT_FALSE(delegate()->HasAppropriateTopicsConsent());
 }
 
 }  // namespace

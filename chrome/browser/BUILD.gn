@@ -2252,7 +2252,6 @@ source_set("browser") {
     "//chrome/browser/preloading/prerender:impl",
     "//chrome/browser/preloading/search_preload",
     "//chrome/browser/privacy",
-    "//chrome/browser/privacy_sandbox",
     "//chrome/browser/privacy_sandbox:impl",
     "//chrome/browser/private_verification_tokens",
     "//chrome/browser/profiles",
@@ -5135,7 +5134,6 @@ static_library("test_support") {
     deps += [
       "//chrome/browser/apps/app_service",
       "//chrome/browser/hid",
-      "//chrome/browser/privacy_sandbox:countries",
       "//chrome/browser/speech",
       "//chrome/browser/speech:test_support",
       "//chrome/test:test_support_ui",

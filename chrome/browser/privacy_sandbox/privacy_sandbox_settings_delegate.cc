@@ -15,8 +15,6 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/content_settings/cookie_settings_factory.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_notice_confirmation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -49,11 +47,8 @@ signin::Tribool GetPrivacySandboxRestrictedByAccountCapability(
 
 }  // namespace
 
-PrivacySandboxSettingsDelegate::PrivacySandboxSettingsDelegate(
-    Profile* profile,
-    PrivacySandboxCountries* privacy_sandbox_countries)
-    : profile_(profile),
-      privacy_sandbox_countries_(privacy_sandbox_countries)
+PrivacySandboxSettingsDelegate::PrivacySandboxSettingsDelegate(Profile* profile)
+    : profile_(profile)
 #if BUILDFLAG(IS_ANDROID)
       ,
       webapp_registry_(std::make_unique<WebappRegistry>())
@@ -62,11 +57,6 @@ PrivacySandboxSettingsDelegate::PrivacySandboxSettingsDelegate(
 }
 
 PrivacySandboxSettingsDelegate::~PrivacySandboxSettingsDelegate() = default;
-
-bool PrivacySandboxSettingsDelegate::IsRestrictedNoticeEnabled() const {
-  return privacy_sandbox::IsRestrictedNoticeRequired(
-      privacy_sandbox_countries_);
-}
 
 bool PrivacySandboxSettingsDelegate::IsPrivacySandboxRestricted() const {
   // If the Sandbox was ever reported as restricted, it is always restricted.
@@ -115,52 +105,8 @@ bool PrivacySandboxSettingsDelegate::IsPrivacySandboxCurrentlyUnrestricted()
   return capability == signin::Tribool::kTrue;
 }
 
-bool PrivacySandboxSettingsDelegate::IsSubjectToM1NoticeRestricted() const {
-  // If the feature is deactivated, the notice shouldn't be shown.
-  if (!privacy_sandbox::IsRestrictedNoticeRequired(
-          privacy_sandbox_countries_)) {
-    return false;
-  }
-  return PrivacySandboxRestrictedNoticeRequired();
-}
-
 bool PrivacySandboxSettingsDelegate::IsIncognitoProfile() const {
   return profile_->IsIncognitoProfile();
-}
-
-bool PrivacySandboxSettingsDelegate::HasAppropriateTopicsConsent() const {
-  // If the profile doesn't require a release 4 consent, then it always has
-  // an appropriate (i.e. not required) Topics consent.
-  if (!privacy_sandbox::IsConsentRequired(privacy_sandbox_countries_)) {
-    return true;
-  }
-
-  // Ideally we could consult the PrivacySandboxService, and centralise this
-  // logic. However, that service depends on PrivacySandboxSettings, which will
-  // own this delegate, and so including it here would create a circular
-  // dependency.
-  return profile_->GetPrefs()->GetBoolean(
-      prefs::kPrivacySandboxTopicsConsentGiven);
-}
-
-bool PrivacySandboxSettingsDelegate::PrivacySandboxRestrictedNoticeRequired()
-    const {
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
-
-  if (!identity_manager ||
-      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    // The user isn't signed in so we can't apply any capabilties-based
-    // restrictions.
-    return false;
-  }
-
-  const AccountInfo account_info =
-      identity_manager->FindExtendedPrimaryAccountInfo(
-          signin::ConsentLevel::kSignin);
-  auto capability =
-      account_info.GetAccountCapabilities()
-          .is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice();
-  return capability == signin::Tribool::kTrue;
 }
 
 bool PrivacySandboxSettingsDelegate::IsSubjectToEnterpriseFeatures() const {
