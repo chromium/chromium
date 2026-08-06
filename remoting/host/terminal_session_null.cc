@@ -13,4 +13,9 @@ std::unique_ptr<TerminalSession> TerminalSession::Create(
   return nullptr;
 }
 
+// static
+std::vector<int32_t> TerminalSession::GetPersistentTerminalIds() {
+  return {};
+}
+
 }  // namespace remoting

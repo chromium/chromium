@@ -437,6 +437,15 @@ void PeerSessionImpl::SetCapabilities(
             base::Unretained(this)));
   }
 
+  if (HasCapability(capabilities_, protocol::kTerminalModeCapability)) {
+    terminal_session_manager_ = std::make_unique<TerminalSessionManager>();
+    terminal_session_manager_->Start(
+        base::BindRepeating(&PeerSessionImpl::SendTerminalOutput,
+                            weak_factory_.GetWeakPtr()),
+        base::BindRepeating(&PeerSessionImpl::OnTerminalExited,
+                            weak_factory_.GetWeakPtr()));
+  }
+
   if (HasCapability(capabilities_, protocol::kRemoteOpenUrlCapability)) {
     data_channel_manager_.RegisterCreateHandlerCallback(
         kRemoteOpenUrlDataChannelName,
@@ -662,20 +671,13 @@ void PeerSessionImpl::ControlTerminal(
   if (!HasCapability(capabilities_, protocol::kTerminalModeCapability)) {
     return;
   }
-  if (!terminal_session_manager_) {
-    terminal_session_manager_ = std::make_unique<TerminalSessionManager>();
-  }
 
   if (terminal_control.has_create_request()) {
     // Create a new terminal session and store the ID. We'll use this ID to
     // identify the terminal session when sending output to the client. Bind the
     // callbacks to the weak factory to ensure that the callbacks are not
     // called after the client session is disconnected.
-    int32_t id = terminal_session_manager_->CreateTerminal(
-        base::BindRepeating(&PeerSessionImpl::SendTerminalOutput,
-                            weak_factory_.GetWeakPtr()),
-        base::BindOnce(&PeerSessionImpl::OnTerminalExited,
-                       weak_factory_.GetWeakPtr()));
+    int32_t id = terminal_session_manager_->CreateTerminal();
 
     protocol::TerminalControl response;
     auto* create_response = response.mutable_create_response();
