@@ -80,7 +80,7 @@ def main_register_function(sb,
                            gen_jni_class=None,
                            register_natives_name='RegisterNatives'):
   """RegisterNatives() that calls the helper RegisterNatives() methods."""
-  with sb.namespace(namespace or ''):
+  with sb.namespace(namespace):
     sb(f'bool {register_natives_name}(JNIEnv* env)')
     with sb.block():
       if gen_jni_class:

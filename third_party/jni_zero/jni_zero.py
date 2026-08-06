@@ -96,6 +96,8 @@ def _add_io_args(parser, *, is_final=False, is_javap=False):
     outputs.add_argument('--jni-pickle',
                          help='Path to write intermediate .jni.pickle file.')
   if is_final:
+    outputs.add_argument('--impl-path',
+                         help='Path to output C++ implementation file.')
     outputs.add_argument(
         '--depfile', help='Path to depfile (for use with ninja build system)')
 

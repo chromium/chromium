@@ -41,6 +41,26 @@ license {
     ],
 }
 
+// Redirect "jni_registration" to "final_jni". This module name is being referenced
+// in the top-level external/cronet/Android.bp file so we temporarily alias it to
+// avoid having to coordinate an Android-side change.
+// TODO(https://crbug.com/542041778): once the "final_jni" name exists in both tot
+// and stable, get rid of this and adjust ../Android.bp.
+java_library {
+    name: "${GN2BP_MODULE_PREFIX}components_cronet_android_cronet_tests_jni_registration_java__testing",
+    apex_available: [
+        "com.android.tethering",
+    ],
+    defaults: [
+        "${GN2BP_MODULE_PREFIX}java_framework_defaults",
+    ],
+    min_sdk_version: "30",
+    static_libs: [
+        "${GN2BP_MODULE_PREFIX}components_cronet_android_cronet_tests_final_jni_java__testing",
+    ],
+    visibility: ["//external/cronet:__pkg__"],
+}
+
 java_library {
     name: "${GN2BP_MODULE_PREFIX}api_java",
     static_libs: [
@@ -62,7 +82,7 @@ java_library {
     static_libs: [
         "${GN2BP_MODULE_PREFIX}components_cronet_android_cronet_build_config_java",
         "${GN2BP_MODULE_PREFIX}components_cronet_android_cronet_impl_native_java",
-        "${GN2BP_MODULE_PREFIX}components_cronet_android_cronet_jni_registration_java",
+        "${GN2BP_MODULE_PREFIX}components_cronet_android_cronet_final_jni_java",
     ],
     sdk_version: "module_current",
     min_sdk_version: "30",
@@ -79,8 +99,8 @@ java_library {
     static_libs: [
         "${GN2BP_MODULE_PREFIX}components_cronet_android_cronet_build_config_java__testing",
         "${GN2BP_MODULE_PREFIX}components_cronet_android_cronet_impl_native_java__testing",
-        "${GN2BP_MODULE_PREFIX}components_cronet_android_cronet_jni_registration_java__testing",
-        "${GN2BP_MODULE_PREFIX}components_cronet_android_cronet_tests_jni_registration_java__testing",
+        "${GN2BP_MODULE_PREFIX}components_cronet_android_cronet_final_jni_java__testing",
+        "${GN2BP_MODULE_PREFIX}components_cronet_android_cronet_tests_final_jni_java__testing",
     ],
     sdk_version: "module_current",
     min_sdk_version: "30",

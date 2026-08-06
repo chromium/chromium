@@ -427,13 +427,18 @@ def create_action_module_internal(gn,
                                   is_test_target,
                                   blueprint,
                                   context,
-                                  arch=None):
+                                  arch=None,
+                                  mode=None):
     if target.script == '//build/android/gyp/gcc_preprocess.py':
         return create_gcc_preprocess_modules(blueprint, target, is_test_target,
                                              context)
-    sanitizer = action_sanitizers.get_action_sanitizer(gn, target, gn_type,
-                                                       arch, is_test_target,
-                                                       context)
+    sanitizer = action_sanitizers.get_action_sanitizer(gn,
+                                                       target,
+                                                       gn_type,
+                                                       arch,
+                                                       is_test_target,
+                                                       context,
+                                                       mode=mode)
     sanitizer.sanitize()
 
     module = soong_ast.create_module(gn_type,
@@ -445,6 +450,12 @@ def create_action_module_internal(gn,
     module.out = sanitizer.get_outputs()
     if sanitizer.is_header_generated():
         module.genrule_headers.add(module.name)
+    if gn_type == 'cc_genrule':
+        for out in module.out:
+            if out.endswith('.cc') or out.endswith('.cpp') or out.endswith(
+                    '.c'):
+                module.genrule_srcs.add(f":{module.name}")
+                break
     module.srcs = sanitizer.get_srcs()
     module.tool_files = sanitizer.get_tool_files()
     module.tools = sanitizer.get_tools()
@@ -520,11 +531,13 @@ def merge_modules(modules, genrule_type):
 
 def create_java_module(bp_module_name, target, blueprint, is_test_target,
                        context):
+
     def add_java_library_properties(module):
         module.min_sdk_version = cronet_utils.MIN_SDK_VERSION_FOR_AOSP
         module.apex_available.add(common.tethering_apex)
         module.defaults.add(context.java_framework_defaults_module)
         module.build_file_path = target.build_file_path
+
     # As hinted in `parse_gn_desc()`, Java GN targets are... complicated.
     #
     # Here the main source of complexity is the need to support the
@@ -793,8 +806,13 @@ def create_generated_headers_export_module(
     return module
 
 
-def create_action_module(blueprint, gn, target, genrule_type, is_test_target,
-                         context):
+def create_action_module(blueprint,
+                         gn,
+                         target,
+                         genrule_type,
+                         is_test_target,
+                         context,
+                         mode=None):
     '''
   Create module for action target and add to the blueprint. If target has arch specific attributes
   this function merge them and create a single module.
@@ -807,17 +825,27 @@ def create_action_module(blueprint, gn, target, genrule_type, is_test_target,
     # different value for cpu-family arg between archs
     if re.match('//build/android:native_libraries_gen(__testing)?$',
                 target.name):
-        module = create_action_module_internal(gn, target, genrule_type,
-                                               is_test_target, blueprint,
+        module = create_action_module_internal(gn,
+                                               target,
+                                               genrule_type,
+                                               is_test_target,
+                                               blueprint,
                                                context,
-                                               target.arch['android_arm'])
+                                               target.arch['android_arm'],
+                                               mode=mode)
         blueprint.add_module(module)
         return module
 
     modules = {
         arch_name:
-        create_action_module_internal(gn, target, genrule_type, is_test_target,
-                                      blueprint, context, arch)
+        create_action_module_internal(gn,
+                                      target,
+                                      genrule_type,
+                                      is_test_target,
+                                      blueprint,
+                                      context,
+                                      arch,
+                                      mode=mode)
         for arch_name, arch in target.get_archs().items()
     }
     module = merge_modules(modules, genrule_type)
@@ -1323,6 +1351,31 @@ def _set_rust_flags(module: soong_ast.Target, rust_flags: List[str],
             module.flags.append(pre_filter_flag)
 
 
+def create_jni_registration_modules(blueprint, gn, target, is_test_target,
+                                    context):
+    header_genrule = create_action_module(blueprint,
+                                          gn,
+                                          target,
+                                          'cc_genrule',
+                                          is_test_target,
+                                          context,
+                                          mode='headers')
+
+    # Export both root genDir and the subdirectory to satisfy different include styles.
+    header_genrule.export_include_dirs.update(
+        [".", "components/cronet/android"])
+
+    cc_genrule = create_action_module(blueprint,
+                                      gn,
+                                      target,
+                                      'cc_genrule',
+                                      is_test_target,
+                                      context,
+                                      mode='source')
+
+    cc_genrule.genrule_srcs = {f":{cc_genrule.name}"}
+
+    return [cc_genrule, header_genrule]
 
 
 def _create_initial_modules(blueprint, gn, target, bp_module_name,
@@ -1393,12 +1446,16 @@ def _create_initial_modules(blueprint, gn, target, bp_module_name,
         modules = (create_bindgen_module(blueprint, target, bp_module_name,
                                          is_test_target, context), )
     elif target.type == 'action':
-        module = create_action_module(
-            blueprint, gn, target, 'java_genrule' if parent_gn_type
-            == "java_library" else 'cc_genrule', is_test_target, context)
-        module.jni_zero_target_type = soong_ast.get_jni_zero_target_type(
-            target)
-        modules = (module, )
+        jni_zero_target_type = soong_ast.get_jni_zero_target_type(target)
+        if jni_zero_target_type == soong_ast.JniZeroTargetType.REGISTRATION_GENERATOR and parent_gn_type != "java_library":
+            modules = create_jni_registration_modules(blueprint, gn, target,
+                                                      is_test_target, context)
+        else:
+            module = create_action_module(
+                blueprint, gn, target, 'java_genrule' if parent_gn_type
+                == "java_library" else 'cc_genrule', is_test_target, context)
+            module.jni_zero_target_type = jni_zero_target_type
+            modules = (module, )
     elif target.type == 'action_foreach':
         if target.script == "//third_party/rust/cxx/chromium_integration/run_cxxbridge.py":
             modules = create_rust_cxx_modules(blueprint, gn, target,

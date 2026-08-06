@@ -51,8 +51,7 @@ def header_preamble(script_name,
                     user_includes=None,
                     header_guard=None,
                     is_shared_header=False):
-  if header_guard is None:
-    assert java_class is not None
+  if header_guard is None and java_class is not None:
     if is_shared_header:
       header_guard = f'{java_class.to_cpp()}_SHARED_JNI'
     else:
@@ -68,7 +67,8 @@ def header_preamble(script_name,
 //     {java_class.full_name_with_dots}
 
 """)
-  sb.append(f"""\
+  if header_guard:
+    sb.append(f"""\
 #ifndef {header_guard}
 #define {header_guard}
 
@@ -92,7 +92,8 @@ def header_preamble(script_name,
   sb = []
   if not is_shared_header:
     sb.append('#pragma clang diagnostic pop\n')
-  sb.append(f'#endif  // {header_guard}\n')
+  if header_guard:
+    sb.append(f'#endif  // {header_guard}\n')
   epilogue = ''.join(sb)
 
   return preamble, epilogue
