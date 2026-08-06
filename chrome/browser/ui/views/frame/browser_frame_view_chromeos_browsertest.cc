@@ -51,6 +51,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
@@ -1956,8 +1957,10 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewAshAvatarTest,
 
   // We use a DevTools window here as a representative example of a non-tabbed
   // browser window that renders a native title in its frame.
-  Browser* non_tabbed_browser = Browser::Create(
-      Browser::CreateParams::CreateForDevTools(primary_user_profile));
+  Browser* non_tabbed_browser =
+      CreateBrowserWindow(
+          BrowserWindowCreateParams::CreateForDevTools(primary_user_profile))
+          ->GetBrowserForMigrationOnly();
   non_tabbed_browser->GetWindow()->Show();
 
   BrowserView* browser_view =

@@ -37,6 +37,7 @@
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
@@ -163,12 +164,13 @@ class VideoConferenceIntegrationTest
 
     ASSERT_TRUE(embedded_test_server()->Start());
 
-    // Create an incognito browser when parameter is true.
     if (is_incognito_mode_) {
-      browser_ = Browser::Create(
-          Browser::CreateParams(browser()->GetProfile()->GetPrimaryOTRProfile(
-                                    /*create_if_needed=*/true),
-                                true));
+      browser_ =
+          CreateBrowserWindow(BrowserWindowCreateParams(
+                                  browser()->GetProfile()->GetPrimaryOTRProfile(
+                                      /*create_if_needed=*/true),
+                                  /*from_user_gesture=*/true))
+              ->GetBrowserForMigrationOnly();
       // This creates a blank page which is more consistent with normal mode.
       ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
           browser_, GURL("chrome://blank"), 1,

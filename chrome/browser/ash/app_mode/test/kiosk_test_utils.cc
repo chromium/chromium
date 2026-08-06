@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
@@ -394,8 +395,9 @@ AccountId CreateDeviceLocalAccountId(std::string_view account_id,
 }
 
 Browser& CreateRegularBrowser(Profile& profile, const GURL& url) {
-  Browser::CreateParams params(&profile, /*user_gesture=*/true);
-  Browser& browser = CHECK_DEREF(Browser::Create(params));
+  BrowserWindowCreateParams params(&profile, /*from_user_gesture=*/true);
+  Browser& browser = CHECK_DEREF(
+      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly());
   browser.GetWindow()->Show();
 
   AddWebContentsToBrowser(browser, profile);
@@ -407,12 +409,14 @@ Browser& CreateRegularBrowser(Profile& profile, const GURL& url) {
 Browser& CreatePopupBrowser(Profile& profile,
                             const std::string& app_name,
                             const GURL& url) {
-  Browser::CreateParams params = Browser::CreateParams::CreateForAppPopup(
-      app_name,
-      /*trusted_source=*/true,
-      /*window_bounds=*/gfx::Rect(), &profile,
-      /*user_gesture=*/true);
-  Browser& browser = CHECK_DEREF(Browser::Create(params));
+  BrowserWindowCreateParams params =
+      BrowserWindowCreateParams::CreateForAppPopup(
+          app_name,
+          /*trusted_source=*/true,
+          /*window_bounds=*/gfx::Rect(), &profile,
+          /*user_gesture=*/true);
+  Browser& browser = CHECK_DEREF(
+      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly());
   browser.GetWindow()->Show();
 
   AddWebContentsToBrowser(browser, profile);

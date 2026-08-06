@@ -22,6 +22,7 @@ specific_include_rules = {
     "+chrome/browser/ui/browser.h",
     "+chrome/browser/ui/browser_window.h",
     "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
+    "+chrome/browser/ui/browser_window/public/create_browser_window.h",
     "+chrome/test",
   ],
   "chrome_content_browser_client_tablet_mode_part_browsertest\\.cc": [

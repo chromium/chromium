@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/window_sizer/window_sizer.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -138,12 +139,13 @@ IN_PROC_BROWSER_TEST_F(WindowSizerTest, TrustedPopupBehavior) {
   ASSERT_TRUE(browser()->GetWindow()->IsMaximized());
 
   // Create a trusted popup browser.
-  Browser::CreateParams trusted_popup_create_params(
-      Browser::TYPE_POPUP, browser()->GetProfile(), true);
-  trusted_popup_create_params.trusted_source = true;
+  BrowserWindowCreateParams trusted_popup_create_params(
+      BrowserWindowInterface::TYPE_POPUP, browser()->GetProfile(),
+      /*from_user_gesture=*/true);
+  trusted_popup_create_params.is_trusted_source = true;
 
   BrowserWindowInterface* trusted_popup =
-      Browser::Create(trusted_popup_create_params);
+      CreateBrowserWindow(std::move(trusted_popup_create_params));
   chrome::AddTabAt(trusted_popup, GURL(), -1, true);
   trusted_popup->GetWindow()->Show();
 

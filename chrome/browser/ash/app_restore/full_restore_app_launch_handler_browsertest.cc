@@ -61,6 +61,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -782,7 +783,10 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
                        PRE_FullRestoreOverridesSessionRestoreTest) {
   // Create a browser and create a tab for it. Its bounds should not equal
   // |kCurrentBounds|.
-  Browser* browser = Browser::Create(Browser::CreateParams(profile(), true));
+  Browser* browser =
+      CreateBrowserWindow(
+          BrowserWindowCreateParams(profile(), /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   PrefService* local_state = g_browser_process->local_state();
   static_cast<PrefRegistrySimple*>(local_state->DeprecatedGetPrefRegistry())
       ->RegisterIntegerPref(kRestoreIdPrefName, 0);
@@ -872,8 +876,11 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   const gfx::Rect expected_bounds(10, 10, 500, 300);
   const GURL expected_url("https://example.org");
 
-  Browser* new_browser = Browser::Create(
-      Browser::CreateParams(Browser::TYPE_NORMAL, profile(), false));
+  Browser* new_browser =
+      CreateBrowserWindow(BrowserWindowCreateParams(
+                              BrowserWindowInterface::TYPE_NORMAL, profile(),
+                              /*from_user_gesture=*/false))
+          ->GetBrowserForMigrationOnly();
 
   content::TestNavigationObserver navigation_observer(expected_url);
   navigation_observer.StartWatchingNewWebContents();
@@ -996,9 +1003,12 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerChromeAppBrowserTest,
   AppLaunchInfoSaveWaiter::Wait();
 
   // Create a non-restored window in the restored window's desk container.
-  Browser::CreateParams non_restored_params(profile(), true);
+  BrowserWindowCreateParams non_restored_params(profile(),
+                                                /*from_user_gesture=*/true);
   non_restored_params.initial_workspace = "2";
-  Browser* non_restored_browser = Browser::Create(non_restored_params);
+  Browser* non_restored_browser =
+      CreateBrowserWindow(std::move(non_restored_params))
+          ->GetBrowserForMigrationOnly();
   AddBlankTabAndShow(non_restored_browser);
   aura::Window* non_restored_window =
       non_restored_browser->GetWindow()->GetNativeWindow();

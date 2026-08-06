@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -988,8 +989,11 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
   ASSERT_TRUE(window_tracker->CanOpenNewPopup());
   const size_t original_browser_count =
       GlobalBrowserCollection::GetInstance()->GetSize();
-  Browser* const popup_browser = Browser::Create(Browser::CreateParams(
-      Browser::TYPE_APP_POPUP, profile(), /*user_gesture=*/true));
+  Browser* const popup_browser =
+      CreateBrowserWindow(BrowserWindowCreateParams(
+                              BrowserWindowInterface::TYPE_APP_POPUP, profile(),
+                              /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   content::RunAllTasksUntilIdle();
   ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(),
             original_browser_count + 1);
@@ -1404,8 +1408,10 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
   // Spawn a regular browser window and verify it gets closed because it's not
   // authorized.
   Browser* const unauthorized_regular_browser =
-      Browser::Create(Browser::CreateParams(Browser::TYPE_NORMAL, profile(),
-                                            /*user_gesture=*/true));
+      CreateBrowserWindow(
+          BrowserWindowCreateParams(BrowserWindowInterface::TYPE_NORMAL,
+                                    profile(), /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   ui_test_utils::BrowserDestroyedObserver destroyed_observer(
       unauthorized_regular_browser);
 

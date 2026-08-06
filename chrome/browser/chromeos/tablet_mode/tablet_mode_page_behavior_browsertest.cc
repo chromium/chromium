@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -107,11 +108,12 @@ IN_PROC_BROWSER_TEST_F(TabletModePageBehaviorTest, ExcludeHostedApps) {
   browser()->GetWindow()->Close();
 
   // Open a new app window.
-  Browser::CreateParams params = Browser::CreateParams::CreateForApp(
-      "test_browser_app", true /* trusted_source */, gfx::Rect(),
-      browser()->GetProfile(), true);
+  BrowserWindowCreateParams params = BrowserWindowCreateParams::CreateForApp(
+      "test_browser_app", /*trusted_source=*/true, gfx::Rect(),
+      browser()->GetProfile(), /*user_gesture=*/true);
   params.initial_show_state = ui::mojom::WindowShowState::kDefault;
-  Browser* browser = Browser::Create(params);
+  Browser* browser =
+      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
   AddBlankTabAndShow(browser);
 
   ASSERT_EQ(browser->GetType(), BrowserWindowInterface::Type::TYPE_APP);

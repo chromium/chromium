@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -79,11 +80,12 @@ content::WebContents* OpenUrlInBrowser(GURL page_url) {
   ash::kiosk::test::CurrentProfile().GetPrefs()->SetBoolean(
       ash::prefs::kKioskTroubleshootingToolsEnabled, true);
 
-  Browser::CreateParams params =
-      Browser::CreateParams(Browser::Type::TYPE_NORMAL,
-                            /*profile=*/&ash::kiosk::test::CurrentProfile(),
-                            /*user_gesture=*/true);
-  auto& new_browser = CHECK_DEREF(Browser::Create(params));
+  BrowserWindowCreateParams params(
+      BrowserWindowInterface::Type::TYPE_NORMAL,
+      /*profile=*/&ash::kiosk::test::CurrentProfile(),
+      /*from_user_gesture=*/true);
+  Browser& new_browser = CHECK_DEREF(
+      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly());
   new_browser.GetWindow()->Show();
   ui_test_utils::NavigateToURLWithDisposition(
       &new_browser, page_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,

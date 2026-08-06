@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -129,9 +130,10 @@ webapps::AppId CreateSystemWebApp(Profile* profile,
 Browser* CreateBrowser(Profile* profile,
                        const std::vector<GURL>& urls,
                        std::optional<size_t> active_url_index) {
-  Browser::CreateParams params(Browser::TYPE_NORMAL, profile,
-                               /*user_gesture=*/false);
-  Browser* browser = Browser::Create(params);
+  BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_NORMAL, profile,
+                                   /*from_user_gesture=*/false);
+  Browser* browser =
+      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
   // Create a new tab and make sure the urls have loaded.
   for (size_t i = 0; i < urls.size(); i++) {
     content::TestNavigationObserver navigation_observer(urls[i]);

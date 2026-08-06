@@ -6,6 +6,7 @@
 #include "ash/wm/wm_event.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/views/frame/browser_native_widget_ash.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -43,15 +44,20 @@ IN_PROC_BROWSER_TEST_P(BrowserTestParam,
 
   // Open a new browser window (app or tabbed depending on a parameter).
   bool is_test_app = CreateV1App();
-  Browser::CreateParams params =
-      is_test_app ? Browser::CreateParams::CreateForApp(
-                        "test_browser_app", true /* trusted_source */,
-                        gfx::Rect(), browser()->GetProfile(), true)
-                  : Browser::CreateParams(browser()->GetProfile(), true);
+  auto create_params = [this, is_test_app]() {
+    return is_test_app ? BrowserWindowCreateParams::CreateForApp(
+                             "test_browser_app", /*trusted_source=*/true,
+                             gfx::Rect(), browser()->GetProfile(),
+                             /*user_gesture=*/true)
+                       : BrowserWindowCreateParams(browser()->GetProfile(),
+                                                   /*from_user_gesture=*/true);
+  };
   gfx::Rect original_bounds(gfx::Rect(150, 250, 510, 150));
+  BrowserWindowCreateParams params = create_params();
   params.initial_show_state = ui::mojom::WindowShowState::kNormal;
   params.initial_bounds = original_bounds;
-  Browser* browser = Browser::Create(params);
+  Browser* browser =
+      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
   browser->GetWindow()->Show();
 
   // The bounds passed via |initial_bounds| should be respected regardless of
@@ -62,8 +68,11 @@ IN_PROC_BROWSER_TEST_P(BrowserTestParam,
   // Don't provide initial bounds. The bounds should have been saved, but for
   // tabbed windows, the position should be auto-managed.
   browser->GetWindow()->Close();
-  params.initial_bounds = gfx::Rect();
-  browser = Browser::Create(params);
+  BrowserWindowCreateParams params2 = create_params();
+  params2.initial_show_state = ui::mojom::WindowShowState::kNormal;
+  params2.initial_bounds = gfx::Rect();
+  browser =
+      CreateBrowserWindow(std::move(params2))->GetBrowserForMigrationOnly();
   browser->GetWindow()->Show();
 
   // For tabbed browser window, it will be centered to work area by auto window

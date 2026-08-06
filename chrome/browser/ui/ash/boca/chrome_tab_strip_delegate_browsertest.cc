@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/test/base/ash/util/ash_test_util.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -55,9 +56,10 @@ class ChromeTabStripDelegateBrowserTest
 
   Browser* CreateBrowser(const std::vector<GURL>& urls,
                          std::optional<size_t> active_url_index) {
-    Browser::CreateParams params(Browser::TYPE_NORMAL, profile(),
-                                 /*user_gesture=*/false);
-    Browser* browser = Browser::Create(params);
+    BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_NORMAL,
+                                     profile(), /*from_user_gesture=*/false);
+    Browser* browser =
+        CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
     // Create a new tab and make sure the urls have loaded.
     for (const auto& url : urls) {
       // content::TestNavigationObserver navigation_observer(urls[i]);
