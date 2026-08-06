@@ -153,6 +153,9 @@ class OmniboxPopupPresenterBase
   // handlers.
   void SetPermissionPromptShowing(bool showing);
 
+  // Resets prompt showing and dismissal state flags.
+  void ResetPermissionPromptShowingState();
+
   // Handles common dismissal state updates when a permission prompt is closed.
   void HandlePermissionPromptDismissal();
 

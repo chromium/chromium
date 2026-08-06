@@ -17,6 +17,7 @@
 class TestOmniboxPopupPresenter : public OmniboxPopupPresenterBase {
  public:
   using OmniboxPopupPresenterBase::OmniboxPopupPresenterBase;
+  using OmniboxPopupPresenterBase::OnPromptRemoved;
 
   std::optional<base::TimeDelta> ShouldDeferUntilVisualStateReady()
       const override {
@@ -205,6 +206,43 @@ TEST_F(OmniboxPopupPresenterBaseTest, ResetsOnAllClosureStates) {
   test_closure("Deny/Close");
   test_closure("Out of Focus (Blur)");
   test_closure("Allow Always");
+}
+
+TEST_F(OmniboxPopupPresenterBaseTest, PermissionPromptShowingStateAndReset) {
+  EXPECT_FALSE(presenter_->IsPermissionPromptPreventingClose());
+
+  // Calling `SetPermissionPromptShowing(true)` locks presenter via
+  // dismissal mode, ensuring focus-loss events in omnibox are ignored.
+  presenter_->SetPermissionPromptShowing(true);
+  EXPECT_TRUE(presenter_->IsPermissionPromptPreventingClose());
+
+  // Reset to clean state.
+  presenter_->ResetPermissionPromptShowingState();
+  EXPECT_FALSE(presenter_->IsPermissionPromptPreventingClose());
+
+  // `OnPromptRemoved` puts it in dismissal mode.
+  presenter_->OnPromptRemoved();
+  EXPECT_TRUE(presenter_->IsPermissionPromptPreventingClose());
+
+  // Reset to clean state.
+  presenter_->ResetPermissionPromptShowingState();
+  EXPECT_FALSE(presenter_->IsPermissionPromptPreventingClose());
+
+  // `OnEmbeddedPermissionDialogChanged(true)` locks presenter.
+  presenter_->OnEmbeddedPermissionDialogChanged(true, gfx::Size(500, 400));
+  EXPECT_TRUE(presenter_->IsPermissionPromptPreventingClose());
+
+  // Reset to clean state.
+  presenter_->ResetPermissionPromptShowingState();
+  EXPECT_FALSE(presenter_->IsPermissionPromptPreventingClose());
+
+  // `OnEmbeddedPermissionDialogChanged(false)` puts it in dismissal mode.
+  presenter_->OnEmbeddedPermissionDialogChanged(false, gfx::Size());
+  EXPECT_TRUE(presenter_->IsPermissionPromptPreventingClose());
+
+  // Resetting clears state.
+  presenter_->ResetPermissionPromptShowingState();
+  EXPECT_FALSE(presenter_->IsPermissionPromptPreventingClose());
 }
 
 TEST_F(OmniboxPopupPresenterBaseTest,
