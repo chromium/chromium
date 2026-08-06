@@ -137,17 +137,17 @@ public class BookmarkBarUtilsTest {
     public void testIsBookmarkBarManagedByPolicy() {
         assertFalse(
                 "Should be false for null profile.",
-                BookmarkBarUtils.isBookmarkBarManagedByPolicy(null));
+                BookmarkBarUtils.isUserPrefsShowBookmarkBarManagedByPolicy(null));
 
         when(mPrefService.isManagedPreference(Pref.SHOW_BOOKMARK_BAR)).thenReturn(true);
         assertTrue(
                 "Should be true when preference is managed.",
-                BookmarkBarUtils.isBookmarkBarManagedByPolicy(mProfile));
+                BookmarkBarUtils.isUserPrefsShowBookmarkBarManagedByPolicy(mProfile));
 
         when(mPrefService.isManagedPreference(Pref.SHOW_BOOKMARK_BAR)).thenReturn(false);
         assertFalse(
                 "Should be false when preference is not managed.",
-                BookmarkBarUtils.isBookmarkBarManagedByPolicy(mProfile));
+                BookmarkBarUtils.isUserPrefsShowBookmarkBarManagedByPolicy(mProfile));
     }
 
     @Test
@@ -155,17 +155,17 @@ public class BookmarkBarUtilsTest {
     public void testIsBookmarkBarRecommended() {
         assertFalse(
                 "Should be false for null profile.",
-                BookmarkBarUtils.isBookmarkBarRecommended(null));
+                BookmarkBarUtils.isUserPrefsShowBookmarkBarRecommended(null));
 
         when(mPrefService.hasRecommendation(Pref.SHOW_BOOKMARK_BAR)).thenReturn(true);
         assertTrue(
                 "Should be true when pref service has a recommendation.",
-                BookmarkBarUtils.isBookmarkBarRecommended(mProfile));
+                BookmarkBarUtils.isUserPrefsShowBookmarkBarRecommended(mProfile));
 
         when(mPrefService.hasRecommendation(Pref.SHOW_BOOKMARK_BAR)).thenReturn(false);
         assertFalse(
                 "Should be false when pref service has no recommendation.",
-                BookmarkBarUtils.isBookmarkBarRecommended(mProfile));
+                BookmarkBarUtils.isUserPrefsShowBookmarkBarRecommended(mProfile));
     }
 
     @Test

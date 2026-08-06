@@ -236,22 +236,10 @@ public class BookmarkBarUtils {
      * @param profile The profile for which the policy should be assessed.
      * @return Whether the bookmark bar visibility is managed by the policy.
      */
-    public static boolean isBookmarkBarManagedByPolicy(@Nullable Profile profile) {
+    public static boolean isUserPrefsShowBookmarkBarManagedByPolicy(@Nullable Profile profile) {
         return profile != null
                 ? getPrefService(profile).isManagedPreference(Pref.SHOW_BOOKMARK_BAR)
                 : false;
-    }
-
-    /**
-     * Returns the value of the bookmark bar visibility if the bookmark bar visibility is managed by
-     * the enterprise policy.
-     *
-     * @param profile The profile for which the policy value should be retrieved.
-     * @return The policy's value for showing the bookmark bar.
-     */
-    public static boolean isBookmarkBarEnabledByPolicy(@Nullable Profile profile) {
-        assert isBookmarkBarManagedByPolicy(profile);
-        return profile != null ? getPrefService(profile).getBoolean(Pref.SHOW_BOOKMARK_BAR) : false;
     }
 
     /**
@@ -260,7 +248,7 @@ public class BookmarkBarUtils {
      * @param profile The profile for which the policy should be assessed.
      * @return Whether a recommended value exists for the bookmark bar visibility preference.
      */
-    public static boolean isBookmarkBarRecommended(@Nullable Profile profile) {
+    public static boolean isUserPrefsShowBookmarkBarRecommended(@Nullable Profile profile) {
         return profile != null
                 ? getPrefService(profile).hasRecommendation(Pref.SHOW_BOOKMARK_BAR)
                 : false;
@@ -268,13 +256,14 @@ public class BookmarkBarUtils {
 
     /**
      * Returns whether the user's current setting matches the recommended policy value. Should only
-     * be called when isBookmarkBarRecommended is true.
+     * be called when isUserPrefsShowBookmarkBarRecommended is true.
      *
      * @param profile The profile for which the policy should be assessed.
      * @return Whether the user's setting matches the recommended value.
      */
-    public static boolean isFollowingBookmarkBarRecommendation(@Nullable Profile profile) {
-        assert isBookmarkBarRecommended(profile);
+    public static boolean isUserPrefsShowBookmarkBarFollowingRecommendation(
+            @Nullable Profile profile) {
+        assert isUserPrefsShowBookmarkBarRecommended(profile);
         return profile != null
                 ? getPrefService(profile).isFollowingRecommendation(Pref.SHOW_BOOKMARK_BAR)
                 : false;
@@ -288,7 +277,8 @@ public class BookmarkBarUtils {
      * @param profile The profile for which the policy should be assessed.
      * @return True if the preference is using the recommended value as its default.
      */
-    public static boolean isBookmarkBarValueFromRecommendation(@Nullable Profile profile) {
+    public static boolean isUserPrefsShowBookmarkBarValueFromRecommendation(
+            @Nullable Profile profile) {
         return profile != null
                 ? getPrefService(profile).isRecommendedPreference(Pref.SHOW_BOOKMARK_BAR)
                 : false;
@@ -361,15 +351,15 @@ public class BookmarkBarUtils {
      */
     public static boolean isDevicePrefShowBookmarksBarEnabled(@Nullable Profile profile) {
         // Highest priority: Mandatory policy (checks pref service).
-        if (isBookmarkBarManagedByPolicy(profile)) {
-            return isBookmarkBarEnabledByPolicy(profile);
+        if (isUserPrefsShowBookmarkBarManagedByPolicy(profile)) {
+            return isUserPrefsShowBookmarksBarEnabled(profile);
         }
 
         // Returns true if the value is currently set to the recommended value AND and the user has
         // not yet set an overriding value in PrefService for this session. Note that in the
         // PrefService hierarchy, the user's overridden value takes priority over the recommended
         // value.
-        if (isBookmarkBarValueFromRecommendation(profile)) {
+        if (isUserPrefsShowBookmarkBarValueFromRecommendation(profile)) {
             return isUserPrefsShowBookmarksBarEnabled(profile);
         }
 

@@ -118,15 +118,16 @@ public class BookmarkBarSettingsFragment extends ChromeBaseSettingsFragment
         return new ChromeManagedPreferenceDelegate(getProfile()) {
             @Override
             public boolean isPreferenceControlledByPolicy(Preference preference) {
-                return BookmarkBarUtils.isBookmarkBarManagedByPolicy(getProfile());
+                return BookmarkBarUtils.isUserPrefsShowBookmarkBarManagedByPolicy(getProfile());
             }
 
             @Override
             public @Nullable Boolean isPreferenceRecommendation(Preference preference) {
-                if (!BookmarkBarUtils.isBookmarkBarRecommended(getProfile())) {
+                if (!BookmarkBarUtils.isUserPrefsShowBookmarkBarRecommended(getProfile())) {
                     return null;
                 }
-                return BookmarkBarUtils.isFollowingBookmarkBarRecommendation(getProfile());
+                return BookmarkBarUtils.isUserPrefsShowBookmarkBarFollowingRecommendation(
+                        getProfile());
             }
         };
     }

@@ -135,12 +135,13 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
                     // text with the business icon.
                     @Override
                     public boolean isPreferenceControlledByPolicy(Preference preference) {
-                        return BookmarkBarUtils.isBookmarkBarManagedByPolicy(getProfile());
+                        return BookmarkBarUtils.isUserPrefsShowBookmarkBarManagedByPolicy(
+                                getProfile());
                     }
 
                     @Override
                     public @Nullable Boolean isPreferenceRecommendation(Preference preference) {
-                        if (!BookmarkBarUtils.isBookmarkBarRecommended(getProfile())) {
+                        if (!BookmarkBarUtils.isUserPrefsShowBookmarkBarRecommended(getProfile())) {
                             // No recommendation exists.
                             return null;
                         }
@@ -148,7 +149,8 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
                         // Return true if the user's setting matches the recommendation, which
                         // shows the icon & text. Return false if it doesn't match, which hides
                         // the icon & text.
-                        return BookmarkBarUtils.isFollowingBookmarkBarRecommendation(getProfile());
+                        return BookmarkBarUtils.isUserPrefsShowBookmarkBarFollowingRecommendation(
+                                getProfile());
                     }
                 });
 
