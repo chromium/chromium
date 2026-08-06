@@ -46,6 +46,7 @@
 #include "chrome/test/chromedriver/util.h"
 #include "ui/gfx/geometry/point.h"
 #include "url/url_util.h"
+#include "base/notimplemented.h"
 
 namespace {
 
@@ -3046,4 +3047,33 @@ Status ExecuteClearDisplayFeatures(Session* session,
                                    Timeout* timeout) {
   return web_view->SendCommand("Emulation.clearDisplayFeaturesOverride",
                                base::DictValue());
+}
+
+Status ExecuteGetGlobalPrivacyControl(Session* session,
+                                      WebView* web_view,
+                                      const base::DictValue& params,
+                                      std::unique_ptr<base::Value>* value,
+                                      Timeout* timeout) {
+  base::DictValue result;
+  // TODO(crbug.com/40745270): Get gpc pref.
+  *value = base::Value::ToUniquePtrValue(base::Value(std::move(result)));
+  NOTIMPLEMENTED();
+  return Status(kOk);
+}
+
+Status ExecuteSetGlobalPrivacyControl(Session* session,
+                                      WebView* web_view,
+                                      const base::DictValue& params,
+                                      std::unique_ptr<base::Value>* value,
+                                      Timeout* timeout) {
+  const std::optional<bool> gpc = params.FindBool("gpc");
+  if (!gpc) {
+    return Status(kInvalidArgument, "missing 'gpc'");
+  }
+  // TODO(crbug.com/40745270): Set gpc pref.
+  base::DictValue result;
+  // TODO(crbug.com/40745270): Get gpc pref.
+  *value = base::Value::ToUniquePtrValue(base::Value(std::move(result)));
+  NOTIMPLEMENTED();
+  return Status(kOk);
 }

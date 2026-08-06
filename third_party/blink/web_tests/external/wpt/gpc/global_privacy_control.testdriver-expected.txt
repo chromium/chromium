@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
 [FAIL] GPC Testdriver Validation
-  promise_test: Unhandled rejection with value: "error: Action get_global_privacy_control not implemented"
+  assert_true: Initial value of GPC must be a boolean true or false. expected true got false
 Harness: the test ran to completion.
 

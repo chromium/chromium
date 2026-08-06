@@ -491,4 +491,18 @@ Status ExecuteSetPermission(Session* session,
                             std::unique_ptr<base::Value>* value,
                             Timeout* timeout);
 
+// Gets the current status of the global privacy control.
+Status ExecuteGetGlobalPrivacyControl(Session* session,
+                                      WebView* web_view,
+                                      const base::DictValue& params,
+                                      std::unique_ptr<base::Value>* value,
+                                      Timeout* timeout);
+
+// Sets and gets the current status of the global privacy control.
+Status ExecuteSetGlobalPrivacyControl(Session* session,
+                                      WebView* web_view,
+                                      const base::DictValue& params,
+                                      std::unique_ptr<base::Value>* value,
+                                      Timeout* timeout);
+
 #endif  // CHROME_TEST_CHROMEDRIVER_WINDOW_COMMANDS_H_

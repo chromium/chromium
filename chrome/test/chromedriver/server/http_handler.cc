@@ -1232,6 +1232,15 @@ HttpHandler::HttpHandler(
           kPost, kSendCommandFromWebSocket,
           WrapToCommand("SendCommandFromWebSocket",
                         base::BindRepeating(&ExecuteSendCommandFromWebSocket))),
+
+      CommandMapping(
+          kGet, "session/:sessionId/privacy",
+          WrapToCommand("GetGlobalPrivacyControl",
+                        base::BindRepeating(&ExecuteGetGlobalPrivacyControl))),
+      CommandMapping(
+          kPost, "session/:sessionId/privacy",
+          WrapToCommand("SetGlobalPrivacyControl",
+                        base::BindRepeating(&ExecuteSetGlobalPrivacyControl))),
   };
   command_map_ =
       std::make_unique<CommandMap>(std::begin(commands), std::end(commands));

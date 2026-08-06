@@ -276,6 +276,8 @@ class Command(object):
       _Method.DELETE, '/session/:sessionId/pressuresource/:type')
   SET_PROTECTED_AUDIENCE_KANONYMITY = (
       _Method.POST, '/session/:sessionId/protected_audience/set_k_anonymity')
+  GET_GLOBAL_PRIVACY_CONTROL = (_Method.GET, '/session/:sessionId/privacy')
+  SET_GLOBAL_PRIVACY_CONTROL = (_Method.POST, '/session/:sessionId/privacy')
 
   # Custom Chrome commands.
   IS_LOADING = (_Method.GET, '/session/:sessionId/is_loading')
