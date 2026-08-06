@@ -38,6 +38,8 @@ static_library("send_tab_to_self") {
     "send_tab_to_self_sync_service.h",
     "target_device_info.cc",
     "target_device_info.h",
+    "target_device_list_waiter.cc",
+    "target_device_list_waiter.h",
   ]
   deps = [
     "//base",
@@ -126,6 +128,7 @@ source_set("unit_tests") {
     "send_tab_to_self_commit_tracker_unittest.cc",
     "send_tab_to_self_entry_unittest.cc",
     "target_device_info_unittest.cc",
+    "target_device_list_waiter_unittest.cc",
   ]
   deps = [
     ":send_tab_to_self",

@@ -30,6 +30,7 @@
 #import "components/send_tab_to_self/send_tab_to_self_model.h"
 #import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #import "components/send_tab_to_self/target_device_info.h"
+#import "components/send_tab_to_self/target_device_list_waiter.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/service/sync_service.h"
@@ -81,63 +82,6 @@
 
 namespace {
 
-// TODO(crbug.com/519101926): Consider moving TargetDeviceListWaiter to
-// components/send_tab_to_self as a shared C++ utility to be shared with
-// Android.
-class TargetDeviceListWaiter : public syncer::SyncServiceObserver {
- public:
-  using GetDisplayReasonCallback = base::RepeatingCallback<
-      std::optional<send_tab_to_self::EntryPointDisplayReason>()>;
-
-  // Queries `get_display_reason_callback` until it indicates the device list
-  // is known (i.e. until it returns kOfferFeature or kInformNoTargetDevice),
-  // then calls `on_list_known_callback`. Destroying the object aborts the
-  // waiting.
-  TargetDeviceListWaiter(
-      syncer::SyncService* sync_service,
-      const GetDisplayReasonCallback& get_display_reason_callback,
-      base::OnceClosure on_list_known_callback)
-      : get_display_reason_callback_(get_display_reason_callback),
-        on_list_known_callback_(std::move(on_list_known_callback)) {
-    sync_observation_.Observe(sync_service);
-    OnStateChanged(sync_observation_.GetSource());
-  }
-
-  TargetDeviceListWaiter(const TargetDeviceListWaiter&) = delete;
-  TargetDeviceListWaiter& operator=(const TargetDeviceListWaiter&) = delete;
-
-  ~TargetDeviceListWaiter() override = default;
-
-  void OnStateChanged(syncer::SyncService*) override {
-    std::optional<send_tab_to_self::EntryPointDisplayReason> display_reason =
-        get_display_reason_callback_.Run();
-    if (!display_reason) {
-      // Model starting up, keep waiting.
-      return;
-    }
-    switch (*display_reason) {
-      case send_tab_to_self::EntryPointDisplayReason::kOfferSignIn:
-      case send_tab_to_self::EntryPointDisplayReason::kOfferReauth:
-        break;
-      case send_tab_to_self::EntryPointDisplayReason::kOfferFeature:
-      case send_tab_to_self::EntryPointDisplayReason::kInformNoTargetDevice:
-        sync_observation_.Reset();
-        std::move(on_list_known_callback_).Run();
-        break;
-    }
-  }
-
-  void OnSyncShutdown(syncer::SyncService*) override {
-    sync_observation_.Reset();
-  }
-
- private:
-  base::ScopedObservation<syncer::SyncService, TargetDeviceListWaiter>
-      sync_observation_{this};
-  const GetDisplayReasonCallback get_display_reason_callback_;
-  base::OnceClosure on_list_known_callback_;
-};
-
 void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
   if (!dispatcher) {
     return;
@@ -155,7 +99,8 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
                                         SendTabToSelfMediatorDelegate,
                                         SendTabToSelfModalDelegate,
                                         UIViewControllerTransitioningDelegate> {
-  std::unique_ptr<TargetDeviceListWaiter> _targetDeviceListWaiter;
+  std::unique_ptr<send_tab_to_self::TargetDeviceListWaiter>
+      _targetDeviceListWaiter;
   send_tab_to_self::ShareEntryPoint _entryPoint;
   // Non-nil only when the coordinator is initialized in direct-send mode,
   // representing the target device's cache GUID where the tab should be sent.
@@ -555,16 +500,15 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 // Waits for the device list to be available and shows it.
 - (void)waitForDeviceList {
   __weak __typeof(self) weakSelf = self;
-  _targetDeviceListWaiter = std::make_unique<TargetDeviceListWaiter>(
-      SyncServiceFactory::GetForProfile(self.profile),
-      base::BindRepeating(
-          [](__typeof(self) strongSelf) { return [strongSelf displayReason]; },
-          weakSelf),
-      base::BindOnce(
-          [](__typeof(self) strongSelf) {
-            [strongSelf onTargetDeviceListReady];
-          },
-          weakSelf));
+  _targetDeviceListWaiter =
+      std::make_unique<send_tab_to_self::TargetDeviceListWaiter>(
+          SyncServiceFactory::GetForProfile(self.profile),
+          base::BindRepeating(^{
+            return [weakSelf displayReason];
+          }),
+          base::BindOnce(^{
+            [weakSelf onTargetDeviceListReady];
+          }));
 }
 
 // Called when the list of target devices is ready.
