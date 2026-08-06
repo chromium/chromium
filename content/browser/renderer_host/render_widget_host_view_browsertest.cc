@@ -82,6 +82,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/renderer_host/compositor_impl_android.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "ui/android/delegated_frame_host_android.h"
 #endif
 
@@ -1909,13 +1910,13 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewCopyFromSurfaceBrowserTest,
 
 namespace {
 
-void AssertSnapshotIsPureWhite(base::RepeatingClosure resume_test,
-                               const content::CopyFromSurfaceResult& result) {
-  const SkBitmap& snapshot = result.has_value() ? result->bitmap : SkBitmap();
-  for (int r = 0; r < snapshot.height(); ++r) {
-    for (int c = 0; c < snapshot.width(); ++c) {
-      ASSERT_EQ(snapshot.getColor(c, r), SK_ColorWHITE);
-    }
+void AssertCopySharedImageSucceeded(
+    base::RepeatingClosure resume_test,
+    scoped_refptr<gpu::ClientSharedImage> shared_image,
+    viz::ReleaseCallback release_callback) {
+  EXPECT_TRUE(shared_image);
+  if (release_callback) {
+    std::move(release_callback).Run(gpu::SyncToken(), /*is_lost=*/false);
   }
   std::move(resume_test).Run();
 }
@@ -1944,10 +1945,11 @@ class ScopedSnapshotWaiter : public WebContentsObserver {
            base::RepeatingClosure resume) {
           ASSERT_TRUE(std::move(renderer_swapped).Run());
           ASSERT_TRUE(old_view);
-          static_cast<RenderWidgetHostViewBase*>(old_view)
-              ->CopyFromExactSurface(gfx::Rect(), gfx::Size(),
-                                     base::BindOnce(&AssertSnapshotIsPureWhite,
-                                                    std::move(resume)));
+          static_cast<RenderWidgetHostViewAndroid*>(old_view)
+              ->CopySharedImageFromExactSurface(
+                  gfx::Rect(), gfx::Size(),
+                  base::BindOnce(&AssertCopySharedImageSucceeded,
+                                 std::move(resume)));
         },
         request->frame_tree_node()->current_frame_host()->GetView(),
         // The request must outlive its own callback.

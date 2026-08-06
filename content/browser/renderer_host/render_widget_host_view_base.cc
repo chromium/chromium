@@ -349,15 +349,6 @@ void RenderWidgetHostViewBase::CopyFromSurface(
       content::CopyFromSurfaceError::kNotImplemented));
 }
 
-void RenderWidgetHostViewBase::CopyFromExactSurface(
-    const gfx::Rect& src_rect,
-    const gfx::Size& output_size,
-    base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  std::move(callback).Run(base::unexpected<content::CopyFromSurfaceError>(
-      content::CopyFromSurfaceError::kNotImplemented));
-}
-
 ui::FilteredGestureProvider*
 RenderWidgetHostViewBase::GetFilteredGestureProviderForTesting() {
   return nullptr;

@@ -2006,32 +2006,6 @@ RenderWidgetHostViewAndroid::GetFilteredGestureProviderForTesting() {
   return gesture_provider_.get();
 }
 
-void RenderWidgetHostViewAndroid::CopyFromExactSurface(
-    const gfx::Rect& src_rect,
-    const gfx::Size& output_size,
-    base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback) {
-  CHECK(IsSurfaceAvailableForCopy())
-      << "To copy the exact surface, it must be available for copy (embedded "
-         "via the browser).";
-  CHECK(using_browser_compositor_);
-  CHECK(delegated_frame_host_);
-
-  delegated_frame_host_->CopyFromCompositingSurface(
-      src_rect, output_size, base::TimeDelta(),
-      base::BindOnce(
-          [](base::OnceCallback<void(const content::CopyFromSurfaceResult&)>
-                 callback,
-             const base::expected<viz::CopyOutputBitmapWithMetadata,
-                                  viz::CopyOutputResult::Error>& result) {
-            TRACE_EVENT0("cc",
-                         "RenderWidgetHostViewAndroid::"
-                         "CopyFromCompositingSurface finished");
-            std::move(callback).Run(ToCopyFromSurfaceResult(result));
-          },
-          std::move(callback)),
-      /*capture_exact_surface_id=*/true);
-}
-
 void RenderWidgetHostViewAndroid::CopySharedImageFromExactSurface(
     const gfx::Rect& src_rect,
     const gfx::Size& output_size,
