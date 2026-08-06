@@ -5,7 +5,6 @@
 package org.chromium.ui.util;
 
 import org.chromium.base.ObserverList;
-import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.accessibility.AccessibilityState;
@@ -69,15 +68,5 @@ public class AccessibilityUtil implements AccessibilityState.Listener {
         for (Observer observer : getObservers()) {
             observer.onAccessibilityModeChanged(isAccessibilityEnabled);
         }
-    }
-
-    /**
-     * Set whether the device has accessibility enabled. Should be reset back to null after the test
-     * has finished.
-     * @param isEnabled whether the device has accessibility enabled.
-     */
-    public void setAccessibilityEnabledForTesting(@Nullable Boolean isEnabled) {
-        ThreadUtils.assertOnUiThread();
-        notifyModeChange(Boolean.TRUE.equals(isEnabled));
     }
 }

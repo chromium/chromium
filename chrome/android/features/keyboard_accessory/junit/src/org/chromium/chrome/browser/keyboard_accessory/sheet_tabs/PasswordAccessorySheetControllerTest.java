@@ -51,7 +51,7 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.OptionToggle;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.UserInfo;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 import org.chromium.ui.modelutil.ListObservable;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -82,7 +82,7 @@ public class PasswordAccessorySheetControllerTest {
 
     @After
     public void tearDown() {
-        ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(false);
+        AccessibilityStateTestHelper.setAccessibilityEnabledForTesting(false);
     }
 
     @Test
@@ -104,7 +104,7 @@ public class PasswordAccessorySheetControllerTest {
 
     @Test
     public void testRequestDefaultFocus() {
-        ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true);
+        AccessibilityStateTestHelper.setAccessibilityEnabledForTesting(true);
 
         when(mMockView.getParent()).thenReturn(mMockView);
         KeyboardAccessoryData.Tab tab = mCoordinator.getTab();

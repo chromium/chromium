@@ -75,8 +75,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil.FailToShowHomeSurfaceReason;
 import org.chromium.chrome.browser.ui.native_page.FrozenNativePage;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.ui.R;
+import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -126,7 +126,7 @@ public class ReturnToChromeUtilUnitTest {
         Assert.assertFalse(SysUtils.isLowEndDevice());
 
         // Sets accessibility:
-        ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(false);
+        AccessibilityStateTestHelper.setAccessibilityEnabledForTesting(false);
 
         // Sets for phones, i.e., !DeviceFormFactor.isNonMultiDisplayContextOnTablet():
         doReturn(mResources).when(mContext).getResources();

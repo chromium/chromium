@@ -120,7 +120,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.extensions.ExtensionUi;
 import org.chromium.chrome.browser.ui.extensions.ExtensionUiBackend;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.accessibility.PageZoomIndicatorCoordinator;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -152,6 +151,7 @@ import org.chromium.components.webapps.AppBannerManagerJni;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
+import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -1679,7 +1679,8 @@ public class LocationBarMediatorTest {
         verify(mStatusCoordinator).setBrandedColorScheme(BrandedColorScheme.LIGHT_BRANDED_THEME);
         verify(mAutocompleteCoordinator)
                 .updateVisualsForState(BrandedColorScheme.LIGHT_BRANDED_THEME);
-        verify(mOmniboxResourceProvider).setBrandedColorScheme(BrandedColorScheme.LIGHT_BRANDED_THEME);
+        verify(mOmniboxResourceProvider)
+                .setBrandedColorScheme(BrandedColorScheme.LIGHT_BRANDED_THEME);
     }
 
     @Test
@@ -1692,7 +1693,8 @@ public class LocationBarMediatorTest {
         verify(mStatusCoordinator).setBrandedColorScheme(BrandedColorScheme.DARK_BRANDED_THEME);
         verify(mAutocompleteCoordinator)
                 .updateVisualsForState(BrandedColorScheme.DARK_BRANDED_THEME);
-        verify(mOmniboxResourceProvider).setBrandedColorScheme(BrandedColorScheme.DARK_BRANDED_THEME);
+        verify(mOmniboxResourceProvider)
+                .setBrandedColorScheme(BrandedColorScheme.DARK_BRANDED_THEME);
     }
 
     @Test
@@ -1733,7 +1735,8 @@ public class LocationBarMediatorTest {
         verify(mStatusCoordinator).setBrandedColorScheme(BrandedColorScheme.DARK_BRANDED_THEME);
         verify(mAutocompleteCoordinator)
                 .updateVisualsForState(BrandedColorScheme.DARK_BRANDED_THEME);
-        verify(mOmniboxResourceProvider).setBrandedColorScheme(BrandedColorScheme.DARK_BRANDED_THEME);
+        verify(mOmniboxResourceProvider)
+                .setBrandedColorScheme(BrandedColorScheme.DARK_BRANDED_THEME);
     }
 
     @Test
@@ -2038,7 +2041,7 @@ public class LocationBarMediatorTest {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
 
-        ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true);
+        AccessibilityStateTestHelper.setAccessibilityEnabledForTesting(true);
         mMediator.beginInput(
                 new AutocompleteInput()
                         .setUserText("text")
@@ -2067,7 +2070,7 @@ public class LocationBarMediatorTest {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
 
-        ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true);
+        AccessibilityStateTestHelper.setAccessibilityEnabledForTesting(true);
         mMediator.beginInput(
                 new AutocompleteInput()
                         .setUserText("text")

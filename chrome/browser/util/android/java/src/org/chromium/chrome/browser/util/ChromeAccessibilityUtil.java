@@ -28,11 +28,4 @@ public class ChromeAccessibilityUtil extends AccessibilityUtil {
     public boolean isAccessibilityEnabled() {
         return AccessibilityState.isAccessibilityEnabled();
     }
-
-    @Override
-    public void setAccessibilityEnabledForTesting(@Nullable Boolean isEnabled) {
-        AccessibilityState.setIsPerformGesturesEnabledForTesting(Boolean.TRUE.equals(isEnabled));
-        AccessibilityState.setIsTouchExplorationEnabledForTesting(Boolean.TRUE.equals(isEnabled));
-        super.setAccessibilityEnabledForTesting(isEnabled);
-    }
 }

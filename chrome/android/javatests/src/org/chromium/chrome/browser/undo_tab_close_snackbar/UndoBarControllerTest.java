@@ -34,12 +34,12 @@ import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.List;
@@ -75,7 +75,7 @@ public class UndoBarControllerTest {
     public void tearDown() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(null);
+                    AccessibilityStateTestHelper.uninitializeForTesting();
                 });
     }
 
@@ -881,7 +881,7 @@ public class UndoBarControllerTest {
     @SmallTest
     public void testUndoSnackbarDisabled_AccessibilityEnabled() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
-                () -> ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true));
+                () -> AccessibilityStateTestHelper.setAccessibilityEnabledForTesting(true));
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
 
@@ -900,7 +900,7 @@ public class UndoBarControllerTest {
     @Restriction(DeviceFormFactor.PHONE)
     public void testUndoSnackbarEnabled_AccessibilityEnabled() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
-                () -> ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true));
+                () -> AccessibilityStateTestHelper.setAccessibilityEnabledForTesting(true));
 
         assertNull("Snack bar should be null initially", getCurrentSnackbar());
         assertEquals(

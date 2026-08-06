@@ -40,7 +40,7 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.UserInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 import org.chromium.ui.modelutil.ListObservable;
 
 /** Controller tests for the address accessory sheet. */
@@ -68,7 +68,7 @@ public class AddressAccessorySheetControllerTest {
 
     @After
     public void tearDown() {
-        ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(false);
+        AccessibilityStateTestHelper.setAccessibilityEnabledForTesting(false);
     }
 
     @Test
@@ -90,7 +90,7 @@ public class AddressAccessorySheetControllerTest {
 
     @Test
     public void testRequestDefaultFocus() {
-        ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true);
+        AccessibilityStateTestHelper.setAccessibilityEnabledForTesting(true);
 
         when(mMockView.getParent()).thenReturn(mMockView);
         KeyboardAccessoryData.Tab tab = mCoordinator.getTab();

@@ -94,7 +94,6 @@ import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -107,6 +106,7 @@ import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -164,7 +164,7 @@ public class TabSwitcherLayoutTest {
     @After
     public void tearDown() {
         ThreadUtils.runOnUiThreadBlocking(
-                () -> ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(null));
+                () -> AccessibilityStateTestHelper.uninitializeForTesting());
         if (mModalDialogManagerSupplier != null) {
             dismissAllModalDialogs();
         }
@@ -426,7 +426,7 @@ public class TabSwitcherLayoutTest {
     @MediumTest
     public void testUndoClosure_AccessibilityMode() {
         ThreadUtils.runOnUiThreadBlocking(
-                () -> ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true));
+                () -> AccessibilityStateTestHelper.setAccessibilityEnabledForTesting(true));
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
         createTabs(cta, false, 3);

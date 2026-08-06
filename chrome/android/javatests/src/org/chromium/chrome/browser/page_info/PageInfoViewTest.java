@@ -98,7 +98,6 @@ import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridgeJni;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingSuspiciousSiteDialogBridge;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -131,6 +130,7 @@ import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.GURLUtils;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.net.test.ServerCertificate;
+import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -1291,7 +1291,7 @@ public class PageInfoViewTest {
     public void testCloseButton() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true);
+                    AccessibilityStateTestHelper.setAccessibilityEnabledForTesting(true);
                 });
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         PageInfoController controller = PageInfoController.getLastPageInfoController();
@@ -1300,7 +1300,7 @@ public class PageInfoViewTest {
         assertFalse(controller.isDialogShowing());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(null);
+                    AccessibilityStateTestHelper.uninitializeForTesting();
                 });
     }
 

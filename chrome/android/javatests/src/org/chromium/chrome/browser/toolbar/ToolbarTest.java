@@ -88,7 +88,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -106,6 +105,7 @@ import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.UiAndroidFeatures;
 
@@ -774,7 +774,7 @@ public class ToolbarTest {
 
     private void setAccessibilityEnabled(boolean enabled) {
         ThreadUtils.runOnUiThreadBlocking(
-                () -> ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(enabled));
+                () -> AccessibilityStateTestHelper.setAccessibilityEnabledForTesting(enabled));
     }
 
     private void setControlsPosition(@ControlsPosition int position) {
