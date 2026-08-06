@@ -191,6 +191,9 @@ void SetLoadTimeDataDefaults(const std::string& app_locale,
   localized_strings->Set("fontsize", GetFontSize());
   localized_strings->Set("language", l10n_util::GetLanguage(app_locale));
   localized_strings->Set("textdirection", GetTextDirection());
+  localized_strings->Set(
+      "roundedIconsAttribute",
+      features::IsRoundedIconsEnabled() ? "rounded-icons" : "");
   localized_strings->Set("webuiRoundedIconsEnabled",
                          features::IsWebUIRoundedIconsEnabled());
   localized_strings->Set(
@@ -205,6 +208,8 @@ void SetLoadTimeDataDefaults(const std::string& app_locale,
   (*replacements)["fontsize"] = GetFontSize();
   (*replacements)["language"] = l10n_util::GetLanguage(app_locale);
   (*replacements)["textdirection"] = GetTextDirection();
+  (*replacements)["roundedIconsAttribute"] =
+      features::IsRoundedIconsEnabled() ? "rounded-icons" : "";
   (*replacements)["webuiRoundedIconsEnabled"] =
       features::IsWebUIRoundedIconsEnabled() ? "true" : "false";
   (*replacements)["webuiRoundedIconsAttribute"] =
