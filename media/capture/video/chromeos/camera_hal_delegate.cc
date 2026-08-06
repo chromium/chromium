@@ -496,34 +496,31 @@ void CameraHalDelegate::GetSupportedFormats(
   base::flat_set<int32_t> candidate_fps_set =
       GetAvailableFramerates(camera_info);
 
-  const cros::mojom::CameraMetadataEntryPtr* min_frame_durations =
-      GetMetadataEntry(camera_info->static_camera_characteristics,
-                       cros::mojom::CameraMetadataTag::
-                           ANDROID_SCALER_AVAILABLE_MIN_FRAME_DURATIONS);
-  if (!min_frame_durations) {
+  auto min_frame_durations = GetMetadataEntryAsSpan<const int64_t>(
+      camera_info->static_camera_characteristics,
+      cros::mojom::CameraMetadataTag::
+          ANDROID_SCALER_AVAILABLE_MIN_FRAME_DURATIONS);
+  if (min_frame_durations.empty()) {
     LOG(ERROR)
         << "Failed to get available min frame durations from camera info";
     return;
   }
   // The min frame durations are stored as tuples of four int64s:
   // (hal_pixel_format, width, height, ns) x n
-  const size_t kStreamFormatOffset = 0;
-  const size_t kStreamWidthOffset = 1;
-  const size_t kStreamHeightOffset = 2;
-  const size_t kStreamDurationOffset = 3;
-  const size_t kStreamDurationSize = 4;
-  int64_t* iter = UNSAFE_TODO(
-      reinterpret_cast<int64_t*>((*min_frame_durations)->data.data()));
-  for (size_t i = 0; i < (*min_frame_durations)->count;
-       i += kStreamDurationSize) {
+  constexpr size_t kStreamFormatOffset = 0;
+  constexpr size_t kStreamWidthOffset = 1;
+  constexpr size_t kStreamHeightOffset = 2;
+  constexpr size_t kStreamDurationOffset = 3;
+  constexpr size_t kStreamDurationSize = 4;
+  while (!min_frame_durations.empty()) {
+    auto frame_duration = min_frame_durations.take_first<kStreamDurationSize>();
     auto hal_format = static_cast<cros::mojom::HalPixelFormat>(
-        UNSAFE_TODO(iter[kStreamFormatOffset]));
-    int32_t width =
-        base::checked_cast<int32_t>(UNSAFE_TODO(iter[kStreamWidthOffset]));
-    int32_t height =
-        base::checked_cast<int32_t>(UNSAFE_TODO(iter[kStreamHeightOffset]));
-    int64_t duration = UNSAFE_TODO(iter[kStreamDurationOffset]);
-    UNSAFE_TODO(iter += kStreamDurationSize);
+        frame_duration[kStreamFormatOffset]);
+    int32_t width = base::checked_cast<int32_t>(
+        frame_duration[kStreamWidthOffset]);
+    int32_t height = base::checked_cast<int32_t>(
+        frame_duration[kStreamHeightOffset]);
+    int64_t duration = frame_duration[kStreamDurationOffset];
 
     if (hal_format == cros::mojom::HalPixelFormat::HAL_PIXEL_FORMAT_BLOB) {
       // Skip BLOB formats and use it only for TakePicture() since it's
@@ -994,11 +991,13 @@ void CameraHalDelegate::OnGotCameraInfoOnIpcThread(
 
 int32_t CameraHalDelegate::GetMaskedModuleID(const std::string& module_id) {
   if (module_id.size() == 9) {
-    int vid = UNSAFE_TODO(strtol(module_id.substr(0, 4).c_str(), nullptr, 16));
-    int pid = UNSAFE_TODO(strtol(module_id.substr(5, 8).c_str(), nullptr, 16));
-    int decimal_module_id = (vid << 16) + pid;
-    if (module_id_set.contains(decimal_module_id)) {
-      return decimal_module_id;
+    uint32_t vid, pid;
+    if (base::HexStringToUInt(module_id.substr(0, 4), &vid) &&
+        base::HexStringToUInt(module_id.substr(5, 4), &pid)) {
+      int32_t decimal_module_id = static_cast<int32_t>((vid << 16) + pid);
+      if (module_id_set.contains(decimal_module_id)) {
+        return decimal_module_id;
+      }
     }
   }
   return static_cast<int32_t>(PopularCamPeriphModuleID::kOthers);
