@@ -23,10 +23,13 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/generate_qr_code_command.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_generation_commands.h"
+#import "ios/chrome/browser/shared/public/commands/send_tab_to_self_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/sharing/model/share_file_download_tab_helper.h"
@@ -77,6 +80,18 @@ class SharingCoordinatorTest : public BookmarkIOSUnitTestSupport {
         startDispatchingToTarget:snackbar_handler_
                      forProtocol:@protocol(SnackbarCommands)];
 
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:OCMStrictProtocolMock(
+                                     @protocol(BrowserCoordinatorCommands))
+                     forProtocol:@protocol(BrowserCoordinatorCommands)];
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:OCMStrictProtocolMock(
+                                     @protocol(FindInPageCommands))
+                     forProtocol:@protocol(FindInPageCommands)];
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:OCMStrictProtocolMock(
+                                     @protocol(SendTabToSelfCommands))
+                     forProtocol:@protocol(SendTabToSelfCommands)];
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:OCMStrictProtocolMock(
                                      @protocol(BookmarksCommands))

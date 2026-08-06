@@ -38,11 +38,6 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
-@protocol HandlerProtocols <BrowserCoordinatorCommands,
-                            FindInPageCommands,
-                            SendTabToSelfCommands>
-@end
-
 class ActivityServiceMediatorTest : public PlatformTest {
  protected:
   void SetUp() override {
@@ -50,7 +45,12 @@ class ActivityServiceMediatorTest : public PlatformTest {
 
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
 
-    mocked_handler_ = OCMStrictProtocolMock(@protocol(HandlerProtocols));
+    mocked_browser_handler_ =
+        OCMStrictProtocolMock(@protocol(BrowserCoordinatorCommands));
+    mocked_find_in_page_handler_ =
+        OCMStrictProtocolMock(@protocol(FindInPageCommands));
+    mocked_send_tab_to_self_handler_ =
+        OCMStrictProtocolMock(@protocol(SendTabToSelfCommands));
     mocked_bookmarks_handler_ =
         OCMStrictProtocolMock(@protocol(BookmarksCommands));
     mocked_help_handler_ = OCMStrictProtocolMock(@protocol(HelpCommands));
@@ -60,7 +60,9 @@ class ActivityServiceMediatorTest : public PlatformTest {
         OCMStrictClassMock([ChromeActivityItemThumbnailGenerator class]);
 
     mediator_ = [[ActivityServiceMediator alloc]
-                initWithHandler:mocked_handler_
+         initWithBrowserHandler:mocked_browser_handler_
+              findInPageHandler:mocked_find_in_page_handler_
+           sendTabToSelfHandler:mocked_send_tab_to_self_handler_
                bookmarksHandler:mocked_bookmarks_handler_
                     helpHandler:mocked_help_handler_
             qrGenerationHandler:mocked_qr_generation_handler_
@@ -85,7 +87,9 @@ class ActivityServiceMediatorTest : public PlatformTest {
     }
   }
 
-  id mocked_handler_;
+  id mocked_browser_handler_;
+  id mocked_find_in_page_handler_;
+  id mocked_send_tab_to_self_handler_;
   id mocked_bookmarks_handler_;
   id mocked_help_handler_;
   id mocked_qr_generation_handler_;

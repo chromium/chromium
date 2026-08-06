@@ -10,9 +10,12 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_generation_commands.h"
+#import "ios/chrome/browser/shared/public/commands/send_tab_to_self_commands.h"
 #import "ios/chrome/browser/sharing/model/share_file_download_tab_helper.h"
 #import "ios/chrome/browser/sharing/ui_bundled/qr_generator/qr_generator_view_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
@@ -38,6 +41,18 @@ class QRGeneratorCoordinatorTest : public PlatformTest {
     mock_qr_generation_commands_handler_ =
         OCMStrictProtocolMock(@protocol(QRGenerationCommands));
 
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:OCMStrictProtocolMock(
+                                     @protocol(BrowserCoordinatorCommands))
+                     forProtocol:@protocol(BrowserCoordinatorCommands)];
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:OCMStrictProtocolMock(
+                                     @protocol(FindInPageCommands))
+                     forProtocol:@protocol(FindInPageCommands)];
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:OCMStrictProtocolMock(
+                                     @protocol(SendTabToSelfCommands))
+                     forProtocol:@protocol(SendTabToSelfCommands)];
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:OCMStrictProtocolMock(
                                      @protocol(BookmarksCommands))
