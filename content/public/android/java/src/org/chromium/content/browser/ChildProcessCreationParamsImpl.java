@@ -6,6 +6,7 @@ package org.chromium.content.browser;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Process;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.library_loader.LibraryProcessType;
@@ -104,11 +105,28 @@ public class ChildProcessCreationParamsImpl {
         return PRIVILEGED_SERVICES_NAME;
     }
 
+    private static boolean isPrimaryAbi64Bit() {
+        if (Build.SUPPORTED_ABIS.length == 0) return false;
+        String primaryAbi = Build.SUPPORTED_ABIS[0];
+        for (String abi : Build.SUPPORTED_64_BIT_ABIS) {
+            if (primaryAbi.equals(abi)) return true;
+        }
+        return false;
+    }
+
+    private static boolean isRunningInSecondaryAbi() {
+        return Process.is64Bit() != isPrimaryAbi64Bit();
+    }
+
     private static boolean isNativeSandboxedServiceSupported() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN
                 // Incremental install disables isolated processes, which are required for
                 // javaless renderers.
-                && !BuildConfig.IS_INCREMENTAL_INSTALL;
+                && !BuildConfig.IS_INCREMENTAL_INSTALL
+                // Native App Zygote (/system/bin/zygote_next) is built only for the device's
+                // primary ABI. If Chrome is running in a secondary ABI, disable native
+                // sandboxed services to avoid dlopen failures in zygote_next.
+                && !isRunningInSecondaryAbi();
     }
 
     public static boolean isNativeSandboxedServiceEnabled() {
