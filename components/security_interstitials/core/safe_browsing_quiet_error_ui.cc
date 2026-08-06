@@ -83,8 +83,8 @@ void SafeBrowsingQuietErrorUI::HandleCommand(
   switch (command) {
     case CMD_PROCEED: {
       // User pressed on the button to proceed.
-      user_made_decision_ = true;
       if (!is_proceed_anyway_disabled()) {
+        user_made_decision_ = true;
         controller()->metrics_helper()->RecordUserDecision(
             MetricsHelper::PROCEED);
         controller()->Proceed();
