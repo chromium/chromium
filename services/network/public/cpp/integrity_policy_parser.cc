@@ -24,33 +24,34 @@ void HandleKeyValue(base::cstring_view key,
     return;
   }
   for (const auto& parameter : value.member) {
-    if (!parameter.item.is_token()) {
-      policy.parsing_errors.emplace_back(base::StringPrintf(
-          "The %s item '%s' is not a token. "
-          "Did you accidentally add it as a string?",
-          header_name.c_str(), parameter.item.GetString().c_str()));
+    const std::string* parameter_value = parameter.item.GetIfToken();
+    if (!parameter_value) {
+      std::string serialized =
+          net::structured_headers::SerializeItem(parameter.item).value_or("");
+      policy.parsing_errors.emplace_back(
+          base::StringPrintf("The %s item '%s' is not a token.",
+                             header_name.c_str(), serialized.c_str()));
       continue;
     }
-    const base::cstring_view parameter_value = parameter.item.GetString();
     if (key == "blocked-destinations") {
-      if (parameter_value == "script") {
+      if (*parameter_value == "script") {
         policy.blocked_destinations.emplace_back(
             mojom::IntegrityPolicy_Destination::kScript);
       } else {
         policy.parsing_errors.emplace_back(
             base::StringPrintf("The %s destination '%s' is not supported.",
-                               header_name.c_str(), parameter_value.c_str()));
+                               header_name.c_str(), parameter_value->c_str()));
       }
     } else if (key == "sources") {
-      if (parameter_value == "inline") {
+      if (*parameter_value == "inline") {
         policy.sources.emplace_back(mojom::IntegrityPolicy_Source::kInline);
       } else {
         policy.parsing_errors.emplace_back(
             base::StringPrintf("The %s source '%s' is not supported.",
-                               header_name.c_str(), parameter_value.c_str()));
+                               header_name.c_str(), parameter_value->c_str()));
       }
     } else if (key == "endpoints") {
-      policy.endpoints.emplace_back(parameter_value);
+      policy.endpoints.emplace_back(*parameter_value);
     } else {
       policy.parsing_errors.emplace_back(base::StringPrintf(
           "Unrecognized %s in %s header.", key.c_str(), header_name.c_str()));

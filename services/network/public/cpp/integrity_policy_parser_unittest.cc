@@ -134,6 +134,16 @@ TEST(IntegrityPolicyParserTest, Parse) {
        kEmptyVectorString,
        {"The Integrity-Policy value \"sources=(inline), "
         "blocked-destinations=[], endpoints=[]\" is not a dictionary."}},
+      {"sources=(\"inline\")",
+       kEmptyDestination,
+       kEmptySource,
+       kEmptyVectorString,
+       {"The Integrity-Policy item '\"inline\"' is not a token."}},
+      {"sources=(123)",
+       kEmptyDestination,
+       kEmptySource,
+       kEmptyVectorString,
+       {"The Integrity-Policy item '123' is not a token."}},
 
   };
 
