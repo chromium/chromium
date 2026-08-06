@@ -1,0 +1,21 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package google.internal.chrome.passwords.onetimetoken.v1;
+
+option optimize_for = LITE_RUNTIME;
+
+enum UserDataProcessingConsentState {
+  USER_DATA_PROCESSING_CONSENT_STATE_UNDEFINED = 0;
+  USER_DATA_PROCESSING_CONSENT_STATE_UNKNOWN = 1;
+  USER_DATA_PROCESSING_CONSENT_STATE_ENABLED = 2;
+  USER_DATA_PROCESSING_CONSENT_STATE_DISABLED = 3;
+}
+
+message FetchUserDataProcessingConsentResponse {
+  UserDataProcessingConsentState comms_apps = 1;
+  UserDataProcessingConsentState google_apps = 2;
+}

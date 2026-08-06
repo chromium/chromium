@@ -36,6 +36,7 @@ static_library("browser") {
     ":fetch_email_one_time_token_error_details_proto",
     ":fetch_email_one_time_token_request_proto",
     ":fetch_email_one_time_token_response_proto",
+    ":fetch_user_data_processing_consent_response_proto",
     "//base",
     "//components/affiliations/core/browser/domain_matching",
     "//components/autofill/core/common:features",
@@ -58,6 +59,10 @@ proto_library("fetch_email_one_time_token_response_proto") {
 
 proto_library("fetch_email_one_time_token_error_details_proto") {
   sources = [ "fetch_email_one_time_token_error_details.proto" ]
+}
+
+proto_library("fetch_user_data_processing_consent_response_proto") {
+  sources = [ "fetch_user_data_processing_consent_response.proto" ]
 }
 
 source_set("unit_tests") {
