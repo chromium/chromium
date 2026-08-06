@@ -1,0 +1,42 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+source_set("autofill_ai") {
+  public = [
+    "autofill_ai_bubble_utils.h",
+    "autofill_ai_import_data_bubble_view.h",
+    "autofill_ai_local_save_notification_view.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/autofill",
+    "//chrome/browser/ui/autofill:autofill_ai_ui_utils",
+    "//chrome/browser/ui/views/autofill:autofill_location_bar_bubble",
+    "//ui/views",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "autofill_ai_bubble_utils.cc",
+    "autofill_ai_import_data_bubble_view.cc",
+    "autofill_ai_local_save_notification_view.cc",
+  ]
+  public_deps = [ ":autofill_ai" ]
+  deps = [
+    "//build:branding_buildflags",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ui/views:layout_provider",
+    "//components/autofill/core/common",
+    "//components/strings",
+    "//components/vector_icons",
+    "//ui/accessibility:ax_base",
+    "//ui/base",
+    "//ui/color",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}

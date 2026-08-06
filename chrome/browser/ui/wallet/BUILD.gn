@@ -25,6 +25,7 @@ source_set("wallet") {
     "//chrome/browser/signin",
     "//chrome/browser/ui/autofill",
     "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/views/autofill/autofill_ai",
     "//chrome/browser/ui/views/location_bar",
     "//components/wallet/core/browser",
     "//content/public/browser",

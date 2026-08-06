@@ -3686,6 +3686,7 @@ if (!is_android) {
       deps += [
         "//chrome/browser/ui/views:external_protocol_dialog_test_support",
         "//chrome/browser/ui/views:hung_renderer_view",
+        "//chrome/browser/ui/views/autofill/autofill_ai",
         "//chrome/browser/ui/views/profiles:profiles_pixel_test_utils",
         "//chrome/browser/ui/views/search_engines",
         "//chrome/browser/ui/views/web_apps",
@@ -6477,6 +6478,7 @@ test("unit_tests") {
       "//chrome/browser/ui/user_education:unit_tests",
       "//chrome/browser/ui/views/accessibility:unit_tests",
       "//chrome/browser/ui/views/app_menu:unit_tests",
+      "//chrome/browser/ui/views/autofill/autofill_ai",
       "//chrome/browser/ui/views/autofill/popup/email_verifier",
       "//chrome/browser/ui/views/data_sharing:unit_tests",
       "//chrome/browser/ui/views/dictation:unit_tests",

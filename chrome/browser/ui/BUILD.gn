@@ -3453,20 +3453,12 @@ static_library("ui") {
       "views/autofill/address_editor_view.h",
       "views/autofill/at_memory_promo_bubble_view.cc",
       "views/autofill/at_memory_promo_bubble_view.h",
-      "views/autofill/autofill_ai/autofill_ai_bubble_utils.cc",
-      "views/autofill/autofill_ai/autofill_ai_bubble_utils.h",
-      "views/autofill/autofill_ai/autofill_ai_import_data_bubble_view.cc",
-      "views/autofill/autofill_ai/autofill_ai_import_data_bubble_view.h",
-      "views/autofill/autofill_ai/autofill_ai_local_save_notification_view.cc",
-      "views/autofill/autofill_ai/autofill_ai_local_save_notification_view.h",
       "views/autofill/autofill_bubble_handler_impl.cc",
       "views/autofill/autofill_bubble_handler_impl.h",
       "views/autofill/autofill_bubble_utils.cc",
       "views/autofill/autofill_bubble_utils.h",
       "views/autofill/autofill_field_promo_view_impl.cc",
       "views/autofill/autofill_field_promo_view_impl.h",
-      "views/autofill/autofill_location_bar_bubble.cc",
-      "views/autofill/autofill_location_bar_bubble.h",
       "views/autofill/edit_address_profile_view.cc",
       "views/autofill/edit_address_profile_view.h",
       "views/autofill/payments/autofill_error_dialog_view_native_views.cc",
@@ -4717,6 +4709,23 @@ static_library("ui") {
         "views/bookmarks/bookmark_sign_in_promo_bubble_view.h",
       ]
     }
+
+    # Merged and added for autofill_ai
+    deps += [
+      "//chrome/browser/ui/views:hung_renderer_view",
+      "//chrome/browser/ui/views:tab_dialogs_impl",
+      "//chrome/browser/ui/views/autofill:autofill_location_bar_bubble",
+      "//chrome/browser/ui/views/autofill/autofill_ai",
+      "//chrome/browser/ui/views/autofill/autofill_ai:impl",
+      "//chrome/browser/ui/views/autofill/popup/email_verifier",
+      "//chrome/browser/ui/views/frame:top_controls_slide_controller",
+      "//chrome/browser/ui/views/web_apps/sub_apps",
+      "//chrome/browser/ui/views/web_apps/sub_apps:sub_apps_install_dialog",
+    ]
+    allow_circular_includes_from += [
+      "//chrome/browser/ui/views/autofill/popup/email_verifier",
+      "//chrome/browser/ui/views/autofill/autofill_ai:impl",
+    ]
   }
 
   # TODO(https://crbug.com/330808104): Delete this code.
@@ -4961,19 +4970,6 @@ static_library("ui") {
     # "chrome/browser/ui/browser.h" is fully componentized.
     allow_circular_includes_from +=
         [ "//chrome/browser/ui/webui/tab_strip_internals:impl" ]
-  }
-
-  if (toolkit_views) {
-    deps += [
-      "//chrome/browser/ui/views:hung_renderer_view",
-      "//chrome/browser/ui/views:tab_dialogs_impl",
-      "//chrome/browser/ui/views/autofill/popup/email_verifier",
-      "//chrome/browser/ui/views/frame:top_controls_slide_controller",
-      "//chrome/browser/ui/views/web_apps/sub_apps",
-      "//chrome/browser/ui/views/web_apps/sub_apps:sub_apps_install_dialog",
-    ]
-    allow_circular_includes_from +=
-        [ "//chrome/browser/ui/views/autofill/popup/email_verifier" ]
   }
 }
 

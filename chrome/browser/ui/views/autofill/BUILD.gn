@@ -16,3 +16,13 @@ source_set("delete_address_profile_dialog_view") {
     "//ui/views",
   ]
 }
+
+source_set("autofill_location_bar_bubble") {
+  public = [ "autofill_location_bar_bubble.h" ]
+  sources = [ "autofill_location_bar_bubble.cc" ]
+  public_deps = [
+    "//chrome/browser/ui/autofill",
+    "//chrome/browser/ui/views/location_bar",
+    "//ui/base/metadata",
+  ]
+}
