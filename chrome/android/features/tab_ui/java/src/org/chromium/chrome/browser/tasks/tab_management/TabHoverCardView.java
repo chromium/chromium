@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.drawable.BitmapDrawable;
 import android.text.format.Formatter;
 import android.util.AttributeSet;
@@ -15,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.Callback;
@@ -28,6 +30,7 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.tabs.TabAlert;
@@ -98,6 +101,9 @@ public class TabHoverCardView extends FrameLayout {
         boolean showAlert = false;
         if (alertState != null) {
             showAlert = true;
+            @ColorInt int accentColor = SemanticColorUtils.getDefaultIconColorAccent1(getContext());
+            ColorStateList accentTintList = ColorStateList.valueOf(accentColor);
+            mAlertStatusView.setDrawableTintColor(accentTintList);
             switch (alertState) {
                 case TabAlert.ACTOR_ACCESSING -> {
                     mAlertStatusView.setText(R.string.tooltip_tab_alert_state_actor_accessing);
@@ -107,12 +113,12 @@ public class TabHoverCardView extends FrameLayout {
                 case TabAlert.GLIC_ACCESSING -> {
                     mAlertStatusView.setText(R.string.tooltip_tab_alert_state_glic_accessing);
                     mAlertStatusView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                            R.drawable.ic_spark_4c_16dp, 0, 0, 0);
+                            R.drawable.ic_screensaver_auto_16dp, 0, 0, 0);
                 }
                 case TabAlert.GLIC_SHARING -> {
                     mAlertStatusView.setText(R.string.tooltip_tab_alert_state_glic_sharing);
                     mAlertStatusView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                            R.drawable.ic_spark_4c_16dp, 0, 0, 0);
+                            R.drawable.ic_screensaver_auto_16dp, 0, 0, 0);
                 }
                 default -> showAlert = false;
             }
