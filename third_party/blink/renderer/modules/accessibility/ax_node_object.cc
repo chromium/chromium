@@ -2670,6 +2670,19 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
         element->HasTagName(mathml_names::kSemanticsTag)) {
       return ax::mojom::blink::Role::kMathMLRow;
     }
+    // We map the MathML a element to link role under certain conditions.
+    // Otherwise we map it the same as mrow
+    // See the discussion in https://github.com/w3c/mathml-aam/issues/39
+    if (RuntimeEnabledFeatures::MathMLAnchorElementEnabled()) {
+      if (element->HasTagName(mathml_names::kATag)) {
+        if (element->IsLink() || element->HasAnyEventListeners(
+                                     event_util::MouseButtonEventTypes())) {
+          return ax::mojom::blink::Role::kLink;
+        } else {
+          return ax::mojom::blink::Role::kMathMLRow;
+        }
+      }
+    }
     if (element->HasTagName(mathml_names::kMprescriptsTag))
       return ax::mojom::blink::Role::kMathMLPrescriptDelimiter;
     if (element->HasTagName(mathml_names::kNoneTag))

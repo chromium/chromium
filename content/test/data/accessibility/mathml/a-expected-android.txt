@@ -1,0 +1,9 @@
+android.webkit.WebView focusable focused
+++android.view.View
+++++android.view.View role_description='math'
+++++++android.view.View role_description='link' clickable focusable link interesting name='google'
+++++++++android.view.View name='Link with href'
+++++++android.view.View role_description='link' clickable link
+++++++++android.view.View name='Link with mouse event'
+++++++android.view.View
+++++++++android.view.View interesting name='Generic mrow'

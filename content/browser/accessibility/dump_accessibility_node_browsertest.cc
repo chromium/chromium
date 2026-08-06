@@ -59,6 +59,7 @@ class DumpAccessibilityNodeTest : public DumpAccessibilityTestBase {
   void ChooseFeatures(
       std::vector<base::test::FeatureRef>* enabled_features,
       std::vector<base::test::FeatureRef>* disabled_features) override {
+    enabled_features->emplace_back(blink::features::kMathMLAnchorElement);
 #if BUILDFLAG(IS_ANDROID)
     disabled_features->emplace_back(
         features::kAccessibilityPopulateSupplementalDescriptionApi);
@@ -197,6 +198,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest,
 //
 // MathML tests.
 //
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityMathMLNodeTest, MathMLAnchor) {
+  RunMathMLTest(FILE_PATH_LITERAL("a.html"));
+}
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityMathMLNodeTest, MathMLAction) {
   RunMathMLTest(FILE_PATH_LITERAL("maction.html"));

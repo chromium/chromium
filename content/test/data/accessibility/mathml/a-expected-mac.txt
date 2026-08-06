@@ -1,0 +1,12 @@
+AXWebArea
+++AXGroup
+++++AXGroup AXSubrole=AXDocumentMath
+++++++AXLink
+++++++++AXGroup AXSubrole=AXMathText
+++++++++++AXStaticText AXValue='Link with href'
+++++++AXLink
+++++++++AXGroup AXSubrole=AXMathText
+++++++++++AXStaticText AXValue='Link with mouse event'
+++++++AXGroup AXSubrole=AXMathRow
+++++++++AXGroup AXSubrole=AXMathText
+++++++++++AXStaticText AXValue='Generic mrow'

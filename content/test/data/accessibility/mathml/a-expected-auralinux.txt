@@ -1,0 +1,12 @@
+[document web] focusable focused tag:#document
+++[section] tag:body
+++++[math] tag:math
+++++++[link] focusable class:test id:link-with-href tag:a
+++++++++[static] tag:mtext
+++++++++++[static] name='Link with href'
+++++++[link] id:link-with-event tag:a
+++++++++[static] tag:mtext
+++++++++++[static] name='Link with mouse event'
+++++++[section] id:no-link tag:a
+++++++++[static] tag:mtext
+++++++++++[static] name='Generic mrow'

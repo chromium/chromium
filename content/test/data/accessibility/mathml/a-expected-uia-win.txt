@@ -1,0 +1,12 @@
+Document
+++Group IsControlElement=false
+++++Custom MathML='<math><newline>  <a id="link-with-href" href="https://google.com" class="test"><newline>    <mtext>Link with href</mtext><newline>  </a><newline><newline>  <a id="link-with-event" onclick="void(0)"><newline>    <mtext>Link with mouse event</mtext><newline>  </a><newline><newline>  <a id="no-link"><newline>    <mtext>Generic mrow</mtext><newline>  </a><newline></math>'
+++++++Hyperlink
+++++++++Custom IsControlElement=false
+++++++++++Text Name='Link with href' IsControlElement=false
+++++++Hyperlink
+++++++++Custom IsControlElement=false
+++++++++++Text Name='Link with mouse event' IsControlElement=false
+++++++Custom IsControlElement=false
+++++++++Custom IsControlElement=false
+++++++++++Text Name='Generic mrow'

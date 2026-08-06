@@ -1,0 +1,23 @@
+<!--
+@AURALINUX-ALLOW:class:*
+@AURALINUX-ALLOW:focus*
+@AURALINUX-ALLOW:id:*
+@AURALINUX-ALLOW:tag:*
+@BLINK-ALLOW:className*
+@BLINK-ALLOW:htmlTag*
+@UIA-WIN-ALLOW:MathML=*
+-->
+<!DOCTYPE html>
+<math>
+  <a id="link-with-href" href="https://google.com" class="test">
+    <mtext>Link with href</mtext>
+  </a>
+
+  <a id="link-with-event" onclick="void(0)">
+    <mtext>Link with mouse event</mtext>
+  </a>
+
+  <a id="no-link">
+    <mtext>Generic mrow</mtext>
+  </a>
+</math>

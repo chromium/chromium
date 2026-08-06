@@ -72,6 +72,9 @@ void DumpAccessibilityTreeTest::SetUpCommandLine(
   // Enable reference target
   command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                   "ShadowRootReferenceTarget");
+  // Enable MatML anchor element
+  command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                  "MathMLAnchorElement");
 
   // Enable AOMAriaRelationshipProperties
   command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
@@ -4696,6 +4699,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, SVGAndMathElements) {
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, MathMLAction) {
   RunMathMLTest(FILE_PATH_LITERAL("maction.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, MathMLAnchor) {
+  RunMathMLTest(FILE_PATH_LITERAL("a.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, MathMLAnnotation) {
