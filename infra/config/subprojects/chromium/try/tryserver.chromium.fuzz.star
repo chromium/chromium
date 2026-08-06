@@ -139,7 +139,8 @@ _builder(
 _builder(
     name = "mac-asan-media-rel",
     cores = None,
-    os = os.MAC_DEFAULT,
+    # TODO(crbug.com/543006750): Revert to MAC_DEFAULT after arm migration.
+    os = os.MAC_15,
     mirror_of = "ci/Mac ASAN Release Media",
 )
 

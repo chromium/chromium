@@ -286,6 +286,8 @@ try_.builder(
             "skip_generate_fuzzer_owners",
         ],
     ),
+    # TODO(crbug.com/543006750): Revert to MAC_DEFAULT after arm migration.
+    os = os.MAC_15,
     contact_team_email = "chrome-fuzzing-core@google.com",
 )
 
@@ -304,6 +306,8 @@ try_.builder(
         "ci/mac-ubsan-fyi-rel",
     ],
     gn_args = "ci/mac-ubsan-fyi-rel",
+    # TODO(crbug.com/543006750): Revert to MAC_DEFAULT after arm migration.
+    os = os.MAC_15,
 )
 
 try_.builder(
@@ -526,6 +530,8 @@ try_.builder(
             "x64",
         ],
     ),
+    # TODO(crbug.com/543006750): Revert to MAC_DEFAULT after arm migration.
+    os = os.MAC_15,
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
 )
 
@@ -620,6 +626,8 @@ try_.builder(
     name = "mac_upload_clang",
     executable = "recipe:chromium_toolchain/package_clang",
     builderless = False,
+    # Mac 15 is the last mac version widely supported on x64.
+    os = os.MAC_15,
     execution_timeout = 8 * time.hour,
 )
 
@@ -635,6 +643,8 @@ try_.builder(
     name = "mac_upload_rust",
     executable = "recipe:chromium_toolchain/package_rust",
     builderless = False,
+    # Mac 15 is the last mac version widely supported on x64.
+    os = os.MAC_15,
     execution_timeout = 8 * time.hour,
 )
 
@@ -660,6 +670,8 @@ try_.builder(
         "ci/mac-treesinviz-disabled-rel",
     ],
     gn_args = "ci/mac-treesinviz-disabled-rel",
+    # TODO(crbug.com/543006750): Revert to MAC_DEFAULT after arm migration.
+    os = os.MAC_15,
     contact_team_email = "chrome-gpu-team@google.com",
 )
 
@@ -1020,6 +1032,8 @@ try_.builder(
             "dcheck_always_on",
         ],
     ),
+    # TODO(crbug.com/543006750): Revert to MAC_DEFAULT after arm migration.
+    os = os.MAC_15,
     contact_team_email = "toyoshim@chromium.org",
     cq_settings = try_.cq_settings(
         includable_only = True,

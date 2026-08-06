@@ -791,7 +791,8 @@ ci.builder(
     ),
     builderless = False,
     cores = None,  # Swapping between 8 and 24
-    os = os.MAC_DEFAULT,
+    # TODO(crbug.com/543006750): Revert to MAC_DEFAULT after arm migration.
+    os = os.MAC_15,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
         short_name = "bld",
@@ -1083,7 +1084,8 @@ ci.builder(
     ),
     builderless = False,
     cores = 12,
-    os = os.MAC_DEFAULT,
+    # TODO(crbug.com/543006750): Revert to MAC_DEFAULT after arm migration.
+    os = os.MAC_15,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
         short_name = "tst",

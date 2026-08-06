@@ -225,7 +225,7 @@ polymorphic.launcher(
             builder = "ci/Mac Builder",
             dimensions = dimensions.dimensions(
                 builderless = True,
-                os = os.MAC_DEFAULT,
+                os = os.MAC_15,
                 cpu = cpu.X86_64,
                 ssd = True,
                 free_space = free_space.standard,

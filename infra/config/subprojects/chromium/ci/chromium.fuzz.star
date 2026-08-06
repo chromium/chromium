@@ -871,6 +871,7 @@ def browser_asan_mac_builder(
         gn_extra_configs = [],
         max_concurrent_invocations = 2,
         **kwargs):
+    kwargs.setdefault("os", os.MAC_DEFAULT)
     return browser_asan_builder(
         max_concurrent_invocations = max_concurrent_invocations,
         build_config = builder_config.build_config.RELEASE,
@@ -880,7 +881,6 @@ def browser_asan_mac_builder(
             "fuzzer",
             "v8_heap",
         ] + gn_extra_configs,
-        os = os.MAC_DEFAULT,
         console_category = "mac asan",
         **kwargs
     )
@@ -902,6 +902,8 @@ browser_asan_mac_builder(
     name = "Mac ASAN Release Media",
     builderless = False,
     cores = 12,
+    # TODO(crbug.com/543006750): Revert to MAC_DEFAULT after arm migration.
+    os = os.MAC_15,
     clusterfuzz_archive_path = "mac-release-media/asan-mac-release",
     clusterfuzz_archive_subdir = "media",
     console_short_name = "med",
@@ -1317,8 +1319,8 @@ libfuzzer_linux_builder(
 )
 
 def libfuzzer_mac_asan_builder(**kwargs):
+    kwargs.setdefault("os", os.MAC_DEFAULT)
     return libfuzzer_builder(
-        os = os.MAC_DEFAULT,
         build_config = builder_config.build_config.RELEASE,
         target_bits = 64,
         target_platform = builder_config.target_platform.MAC,
@@ -1337,6 +1339,8 @@ libfuzzer_mac_asan_builder(
     name = "Libfuzzer Upload Mac ASan",
     builderless = False,
     cores = 12,
+    # TODO(crbug.com/543006750): Revert to MAC_DEFAULT after arm migration.
+    os = os.MAC_15,
     clusterfuzz_archive_path = "mac-release-asan/libfuzzer-mac-release",
     console_short_name = "mac-asan",
     execution_timeout = 4 * time.hour,

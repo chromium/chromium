@@ -279,7 +279,8 @@ ci_builder(
             "mac_15_x64",
         ],
     ),
-    os = os.MAC_DEFAULT,
+    # TODO(crbug.com/543006750): Revert to MAC_DEFAULT after arm migration.
+    os = os.MAC_15,
 )
 
 ci_builder(

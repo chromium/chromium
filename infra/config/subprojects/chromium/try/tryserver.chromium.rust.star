@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 """Definitions of builders in the tryserver.chromium.rust builder group."""
 
-load("@chromium-luci//builders.star", "os")
+load("@chromium-luci//builders.star", "cpu", "os")
 load("@chromium-luci//consoles.star", "consoles")
 load("@chromium-luci//try.star", "try_")
 load("//lib/siso.star", "siso")
@@ -81,5 +81,6 @@ try_.builder(
     gn_args = "ci/mac-rust-arm64-dbg",
     cores = None,
     os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
     contact_team_email = "rust-in-chrome@google.com",
 )

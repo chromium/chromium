@@ -2061,6 +2061,8 @@ fyi_mac_builder(
     ),
     builderless = True,
     cores = None,
+    # TODO(crbug.com/543006750): Revert to MAC_DEFAULT after arm migration.
+    os = os.MAC_15,
     console_view_entry = consoles.console_view_entry(
         category = "deterministic|mac",
         short_name = "rel",
@@ -2081,7 +2083,8 @@ fyi_mac_builder(
     ),
     builderless = True,
     cores = None,
-    os = os.MAC_DEFAULT,
+    # TODO(crbug.com/543006750): Revert to MAC_DEFAULT after arm migration.
+    os = os.MAC_15,
     console_view_entry = consoles.console_view_entry(
         category = "deterministic|mac",
         short_name = "dbg",
@@ -2433,6 +2436,8 @@ fyi_mac_builder(
     ),
     builderless = True,
     cores = None,
+    # TODO(crbug.com/543006750): Revert to MAC_DEFAULT after arm migration.
+    os = os.MAC_15,
     console_view_entry = [
         consoles.console_view_entry(
             category = "treesinviz",
