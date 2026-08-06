@@ -372,50 +372,50 @@ export class AppStyleUpdater {
 
   private getAudioPlayerBackgroundColor_(colorSuffix: ColorSuffix): string {
     return (colorSuffix === ColorSuffix.DEFAULT) ?
-        AUDIO_PLAYER_BACKGROUND :
+        `${AUDIO_PLAYER_BACKGROUND})` :
         `${AUDIO_PLAYER_BACKGROUND}${colorSuffix})`;
   }
 
   private getAudioPlayerIconColor_(colorSuffix: ColorSuffix): string {
     return (colorSuffix === ColorSuffix.DEFAULT) ?
-        AUDIO_PLAYER_ICON :
+        `${AUDIO_PLAYER_ICON})` :
         `${AUDIO_PLAYER_ICON}${colorSuffix})`;
   }
 
   private getToolbarIconColor_(colorSuffix: ColorSuffix): string {
     return (colorSuffix === ColorSuffix.DEFAULT) ?
-        TOOLBAR_ICON :
+        `${TOOLBAR_ICON})` :
         `${TOOLBAR_ICON}${colorSuffix})`;
   }
 
   private getToolbarIconHoverBackgroundColor_(colorSuffix: ColorSuffix):
       string {
     return (colorSuffix === ColorSuffix.DEFAULT) ?
-        TOOLBAR_ICON_HOVER_BACKGROUND :
-        (`${TOOLBAR_ICON_HOVER_BACKGROUND}${colorSuffix})`);
+        `${TOOLBAR_ICON_HOVER_BACKGROUND})` :
+        `${TOOLBAR_ICON_HOVER_BACKGROUND}${colorSuffix})`;
   }
 
   private getToolbarFocusOutlineColor_(colorSuffix: ColorSuffix): string {
     return (colorSuffix === ColorSuffix.DEFAULT) ?
-        TOOLBAR_FOCUS_OUTLINE :
-        (`${TOOLBAR_FOCUS_OUTLINE}${colorSuffix})`);
+        `${TOOLBAR_FOCUS_OUTLINE})` :
+        `${TOOLBAR_FOCUS_OUTLINE}${colorSuffix})`;
   }
 
   private getOnAudioPlayerFocusOutlineColor_(colorSuffix: ColorSuffix): string {
     return (colorSuffix === ColorSuffix.DEFAULT) ?
-        ON_AUDIO_PLAYER_FOCUS_OUTLINE :
-        (`${ON_AUDIO_PLAYER_FOCUS_OUTLINE}${colorSuffix})`);
+        `${ON_AUDIO_PLAYER_FOCUS_OUTLINE})` :
+        `${ON_AUDIO_PLAYER_FOCUS_OUTLINE}${colorSuffix})`;
   }
 
   private getAudioControlsIconColor_(colorSuffix: ColorSuffix): string {
     return (colorSuffix === ColorSuffix.DEFAULT) ?
-        AUDIO_CONTROLS_ICON :
+        `${AUDIO_CONTROLS_ICON})` :
         `${AUDIO_CONTROLS_ICON}${colorSuffix})`;
   }
 
   private getFullPageScrollbarColor_(colorSuffix: ColorSuffix): string {
     return (colorSuffix === ColorSuffix.DEFAULT) ?
-        FULL_PAGE_SCROLLBAR :
+        `${FULL_PAGE_SCROLLBAR})` :
         `${FULL_PAGE_SCROLLBAR}${colorSuffix})`;
   }
 }
