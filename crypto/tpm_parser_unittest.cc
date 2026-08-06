@@ -40,8 +40,10 @@ constexpr uint16_t kTpmAlgSha256 = std::to_underlying(TpmAlg::TPM_ALG_SHA256);
 constexpr uint32_t kTpmGeneratedValue =
     std::to_underlying(TpmConstant::TPM_GENERATED_VALUE);
 constexpr uint32_t kTpmCcHash = std::to_underlying(TpmCc::TPM_CC_HASH);
+constexpr uint32_t kTpmCcSign = std::to_underlying(TpmCc::TPM_CC_SIGN);
 constexpr uint16_t kTpmStNoSessions =
     std::to_underlying(TpmSt::TPM_ST_NO_SESSIONS);
+constexpr uint16_t kTpmStSessions = std::to_underlying(TpmSt::TPM_ST_SESSIONS);
 constexpr uint16_t kTpmStAttestCertify =
     std::to_underlying(TpmSt::TPM_ST_ATTEST_CERTIFY);
 constexpr uint16_t kTpmStHashcheck =
@@ -209,6 +211,41 @@ std::vector<uint8_t> BuildFakeHashResponse(
     writer.WriteU32BigEndian(ticket_hierarchy);
     writer.WriteU16BigEndian(ticket_digest.size());
     writer.Write(ticket_digest);
+  }
+
+  CHECK_EQ(writer.remaining(), 0u);
+  return resp;
+}
+
+std::vector<uint8_t> BuildFakeSignResponse(base::span<const uint8_t> signature,
+                                           uint32_t response_code = 0,
+                                           uint16_t tag = kTpmStSessions) {
+  size_t body_size = signature.size();
+  size_t session_size = (tag == kTpmStSessions) ? 5 : 0;
+  uint32_t resp_size = 10;
+  if (response_code == 0) {
+    if (tag == kTpmStSessions) {
+      resp_size += 4;  // parameterSize
+    }
+    resp_size += body_size + session_size;
+  }
+
+  std::vector<uint8_t> resp(resp_size);
+  base::SpanWriter<uint8_t> writer(resp);
+  writer.WriteU16BigEndian(tag);
+  writer.WriteU32BigEndian(resp_size);
+  writer.WriteU32BigEndian(response_code);
+
+  if (response_code == 0) {
+    if (tag == kTpmStSessions) {
+      writer.WriteU32BigEndian(body_size);
+    }
+    writer.Write(signature);
+    if (tag == kTpmStSessions) {
+      writer.WriteU16BigEndian(0);  // nonce size
+      writer.WriteU8BigEndian(0);   // sessionAttributes
+      writer.WriteU16BigEndian(0);  // HMAC size
+    }
   }
 
   CHECK_EQ(writer.remaining(), 0u);
@@ -510,6 +547,68 @@ TEST(TpmCppParserTest, ParseHashResponse_TpmError) {
   EXPECT_THAT(
       parsed_or_error,
       ErrorIs(TpmParseError(TpmParseError::Type::kTpmErrorResponse, 0x100)));
+}
+
+TEST(TpmCppParserTest, BuildSignCommand) {
+  uint32_t key_handle = 0x81000001;
+  static constexpr uint8_t kDigest[] = {1, 2, 3};
+  uint16_t sig_alg = kTpmAlgEcdsa;
+  uint16_t hash_alg = kTpmAlgSha256;
+  static constexpr uint8_t kTicket[] = {7, 8, 9, 10};
+
+  std::vector<uint8_t> cmd =
+      BuildSignCommand(key_handle, kDigest, sig_alg, hash_alg, kTicket);
+  EXPECT_EQ(cmd.size(), 40u);
+
+  base::SpanReader<const uint8_t> reader(cmd);
+  uint16_t tag;
+  uint32_t size, cc;
+  ASSERT_TRUE(reader.ReadU16BigEndian(tag));
+  ASSERT_TRUE(reader.ReadU32BigEndian(size));
+  ASSERT_TRUE(reader.ReadU32BigEndian(cc));
+  EXPECT_EQ(tag, kTpmStSessions);
+  EXPECT_EQ(size, 40u);
+  EXPECT_EQ(cc, kTpmCcSign);
+
+  uint32_t handle;
+  ASSERT_TRUE(reader.ReadU32BigEndian(handle));
+  EXPECT_EQ(handle, key_handle);
+
+  uint32_t auth_size;
+  ASSERT_TRUE(reader.ReadU32BigEndian(auth_size));
+  EXPECT_EQ(auth_size, 9u);
+  auto auth_span = reader.Read<9>();
+  ASSERT_TRUE(auth_span.has_value());
+
+  uint16_t digest_len;
+  ASSERT_TRUE(reader.ReadU16BigEndian(digest_len));
+  EXPECT_EQ(digest_len, 3u);
+  auto digest_span = reader.Read<3>();
+  ASSERT_TRUE(digest_span.has_value());
+  EXPECT_THAT(*digest_span, ElementsAre(1, 2, 3));
+
+  uint16_t sig_scheme;
+  ASSERT_TRUE(reader.ReadU16BigEndian(sig_scheme));
+  EXPECT_EQ(sig_scheme, sig_alg);
+
+  uint16_t hash;
+  ASSERT_TRUE(reader.ReadU16BigEndian(hash));
+  EXPECT_EQ(hash, hash_alg);
+
+  auto ticket_span = reader.Read<4>();
+  ASSERT_TRUE(ticket_span.has_value());
+  EXPECT_THAT(*ticket_span, ElementsAre(7, 8, 9, 10));
+}
+
+TEST(TpmCppParserTest, ParseSignResponse_Success) {
+  static constexpr uint8_t kDummySig[] = {0xAA, 0xBB};
+  std::vector<uint8_t> sig_blob =
+      BuildTpmRsaSignature(kTpmAlgSha256, kDummySig);
+  std::vector<uint8_t> resp = BuildFakeSignResponse(sig_blob);
+
+  auto parsed_or_error = ParseSignResponse(resp);
+  ASSERT_OK_AND_ASSIGN(SignResponse parsed, parsed_or_error);
+  EXPECT_EQ(parsed.signature, sig_blob);
 }
 
 }  // namespace crypto::tpm

@@ -100,6 +100,13 @@ struct CRYPTO_EXPORT HashResponse {
   friend bool operator==(const HashResponse&, const HashResponse&) = default;
 };
 
+// Response components extracted from a parsed TPM2_Sign response.
+struct CRYPTO_EXPORT SignResponse {
+  std::vector<uint8_t> signature;
+
+  friend bool operator==(const SignResponse&, const SignResponse&) = default;
+};
+
 // TPM algorithm IDs returned by the parser, solely for telemetry.
 struct CRYPTO_EXPORT SignatureAlgorithms {
   uint16_t sig_alg = 0;
@@ -161,6 +168,18 @@ CRYPTO_EXPORT std::vector<uint8_t> BuildHashCommand(
 // be returned containing the error code, and no digest or validation ticket
 // will be extracted.
 CRYPTO_EXPORT TpmParseErrorOr<HashResponse> ParseHashResponse(
+    base::span<const uint8_t> response_blob);
+
+// Builds a serialized TPM2_Sign command buffer.
+CRYPTO_EXPORT std::vector<uint8_t> BuildSignCommand(
+    uint32_t key_handle,
+    base::span<const uint8_t> digest,
+    uint16_t sig_alg,
+    uint16_t hash_alg,
+    base::span<const uint8_t> validation_ticket);
+
+// Parses a serialized TPM2_Sign response.
+CRYPTO_EXPORT TpmParseErrorOr<SignResponse> ParseSignResponse(
     base::span<const uint8_t> response_blob);
 
 // Parses a serialized `TPMT_SIGNATURE` and returns the signature and hash

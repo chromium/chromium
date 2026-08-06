@@ -185,6 +185,30 @@ TpmParseErrorOr<HashResponse> ParseHashResponse(
       });
 }
 
+std::vector<uint8_t> BuildSignCommand(
+    uint32_t key_handle,
+    base::span<const uint8_t> digest,
+    uint16_t sig_alg,
+    uint16_t hash_alg,
+    base::span<const uint8_t> validation_ticket) {
+  return base::ToVector(
+      build_sign_command(key_handle, base::SpanToRustSlice(digest), sig_alg,
+                         hash_alg, base::SpanToRustSlice(validation_ticket)));
+}
+
+TpmParseErrorOr<SignResponse> ParseSignResponse(
+    base::span<const uint8_t> response_blob) {
+  RawSignResponse raw_response =
+      parse_sign_response(base::SpanToRustSlice(response_blob));
+
+  return MapParseResult(raw_response.result, raw_response.tpm_response_code)
+      .transform([&] {
+        return SignResponse{
+            .signature = base::ToVector(raw_response.signature),
+        };
+      });
+}
+
 SignatureErrorOr<SignatureAlgorithms> GetSignatureAlgorithms(
     base::span<const uint8_t> signature_blob) {
   RawSignatureComponents raw_sig =

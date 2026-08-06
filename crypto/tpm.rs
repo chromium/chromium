@@ -11,6 +11,8 @@ pub const TPM_GENERATED_VALUE: u32 = ffi::TpmConstant::TPM_GENERATED_VALUE.repr;
 pub const TPM_CC_CERTIFY: u32 = ffi::TpmCc::TPM_CC_CERTIFY.repr;
 /// TPM_CC_HASH is the command code for TPM2_Hash.
 pub const TPM_CC_HASH: u32 = ffi::TpmCc::TPM_CC_HASH.repr;
+/// TPM_CC_SIGN is the command code for TPM2_Sign.
+pub const TPM_CC_SIGN: u32 = ffi::TpmCc::TPM_CC_SIGN.repr;
 
 // TPM Structure Tags. See https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-2-Structures_Version-185_pub.pdf#page=65 for details.
 /// TPM_ST_NO_SESSIONS indicates that the command has no sessions.
@@ -158,6 +160,17 @@ pub mod ffi {
         validation_ticket: Vec<u8>,
     }
 
+    /// Response from parsing a TPM2_Sign command.
+    #[cxx_name = "RawSignResponse"]
+    struct SignResponse {
+        /// The outcome of the parsing operation.
+        result: ParseResult,
+        /// The TPM response code, if the TPM returned an error.
+        tpm_response_code: u32,
+        /// The serialized `TPMT_SIGNATURE` returned by the TPM.
+        signature: Vec<u8>,
+    }
+
     /// Results that can occur during TPM signature parsing.
     // LINT.IfChange(SignatureParseResult)
     enum SignatureParseResult {
@@ -208,6 +221,8 @@ pub mod ffi {
         TPM_CC_CERTIFY = 0x00000148,
         /// TPM_CC_HASH is the command code for TPM2_Hash.
         TPM_CC_HASH = 0x0000017d,
+        /// TPM_CC_SIGN is the command code for TPM2_Sign.
+        TPM_CC_SIGN = 0x0000015d,
     }
 
     /// TPM Structure Tags.
@@ -299,6 +314,18 @@ pub mod ffi {
         /// Note that if the TPM returns an error code, the `digest` and
         /// `validation_ticket` fields will be empty.
         fn parse_hash_response(resp: &[u8]) -> HashResponse;
+
+        /// Builds a TPM2_Sign command buffer.
+        fn build_sign_command(
+            key_handle: u32,
+            digest: &[u8],
+            sig_alg: u16,
+            hash_alg: u16,
+            validation_ticket: &[u8],
+        ) -> Vec<u8>;
+
+        /// Parses a TPM2_Sign response.
+        fn parse_sign_response(resp: &[u8]) -> SignResponse;
 
         /// Parses a serialized `TPMT_SIGNATURE` and returns its raw components.
         fn parse_tpm_signature(signature: &[u8]) -> RawSignatureComponents;
@@ -953,6 +980,97 @@ fn parse_hash_response_impl<'a>(resp: &'a [u8]) -> Result<HashData<'a>, TpmParse
     Ok(HashData { digest, validation })
 }
 
+pub fn build_sign_command_impl(
+    key_handle: u32,
+    digest: &[u8],
+    sig_alg: u16,
+    hash_alg: u16,
+    validation_ticket: &[u8],
+) -> Vec<u8> {
+    let mut in_scheme_size = 2;
+    if sig_alg != ffi::TpmAlg::TPM_ALG_NULL.repr {
+        in_scheme_size += 2;
+    }
+
+    let total_size = TPM_HEADER_SIZE
+        + TPM_HANDLE_SIZE
+        + TPM_AUTH_SIZE_SIZE
+        + TPM_SESSION_SIZE
+        + 2 // digest size prefix
+        + digest.len()
+        + in_scheme_size
+        + validation_ticket.len();
+
+    let mut writer = Writer::with_capacity(total_size);
+
+    // 1. Command Header
+    writer.write_u16(TPM_ST_SESSIONS);
+    writer.write_u32(total_size.try_into().unwrap());
+    writer.write_u32(TPM_CC_SIGN);
+
+    // 2. Handles
+    writer.write_u32(key_handle);
+
+    // 3. Authorization Area
+    writer.write_u32(u32::try_from(TPM_SESSION_SIZE).unwrap());
+    writer.write_u32(TPM_RS_PW);
+    writer.write_u16(0); // nonce size
+    writer.write_u8(0); // sessionAttributes
+    writer.write_u16(0); // hmac size
+
+    // 4. Command Parameters
+    writer.write_tpm2b(digest);
+
+    writer.write_u16(sig_alg);
+    if sig_alg != ffi::TpmAlg::TPM_ALG_NULL.repr {
+        writer.write_u16(hash_alg);
+    }
+
+    writer.write_bytes(validation_ticket);
+
+    writer.into_inner()
+}
+
+fn parse_sign_response_impl(resp: &[u8]) -> Result<&[u8], TpmParseError> {
+    let mut reader = Reader::new(resp);
+
+    let tag = reader.read_u16().ok_or(TpmParseError::BufferTooSmall)?;
+    let response_size: usize =
+        reader.read_u32().ok_or(TpmParseError::BufferTooSmall)?.try_into().unwrap();
+    let response_code = reader.read_u32().ok_or(TpmParseError::BufferTooSmall)?;
+
+    if resp.len() != response_size {
+        return Err(TpmParseError::TrailingBytes);
+    }
+
+    if response_code != 0 {
+        return Err(TpmParseError::TpmErrorResponse(response_code));
+    }
+
+    let parameter_size = match tag {
+        TPM_ST_SESSIONS => {
+            reader.read_u32().ok_or(TpmParseError::BufferTooSmall)?.try_into().unwrap()
+        }
+        TPM_ST_NO_SESSIONS => response_size - TPM_HEADER_SIZE,
+        _ => return Err(TpmParseError::WrongType),
+    };
+
+    let signature = reader.read_bytes(parameter_size).ok_or(TpmParseError::BufferTooSmall)?;
+
+    let _algs = SignatureAlgorithms::parse(&mut Reader::new(signature))
+        .ok_or(TpmParseError::BufferTooSmall)?;
+
+    if tag == TPM_ST_SESSIONS {
+        let _session1 = TpmsAuthResponse::parse(&mut reader)?;
+    }
+
+    if !reader.is_empty() {
+        return Err(TpmParseError::TrailingBytes);
+    }
+
+    Ok(signature)
+}
+
 impl From<TpmParseError> for ffi::HashResponse {
     fn from(err: TpmParseError) -> Self {
         let (result, tpm_response_code) = match err {
@@ -986,6 +1104,33 @@ impl<'a> From<Result<HashData<'a>, TpmParseError>> for ffi::HashResponse {
     }
 }
 
+impl From<TpmParseError> for ffi::SignResponse {
+    fn from(err: TpmParseError) -> Self {
+        let (result, tpm_response_code) = match err {
+            TpmParseError::BufferTooSmall => (ffi::ParseResult::BufferTooSmall, 0),
+            TpmParseError::TrailingBytes => (ffi::ParseResult::TrailingBytes, 0),
+            TpmParseError::TpmErrorResponse(code) => (ffi::ParseResult::TpmErrorResponse, code),
+            TpmParseError::BadMagicNumber => (ffi::ParseResult::BadMagicNumber, 0),
+            TpmParseError::WrongType => (ffi::ParseResult::WrongType, 0),
+            TpmParseError::ChallengeMismatch => (ffi::ParseResult::ChallengeMismatch, 0),
+        };
+        ffi::SignResponse { result, tpm_response_code, signature: Vec::new() }
+    }
+}
+
+impl<'a> From<Result<&'a [u8], TpmParseError>> for ffi::SignResponse {
+    fn from(result: Result<&'a [u8], TpmParseError>) -> Self {
+        match result {
+            Ok(sig) => ffi::SignResponse {
+                result: ffi::ParseResult::Ok,
+                tpm_response_code: 0,
+                signature: sig.to_vec(),
+            },
+            Err(err) => err.into(),
+        }
+    }
+}
+
 pub fn build_hash_command(data: &[u8], hash_alg: u16, hierarchy: u32) -> Vec<u8> {
     build_hash_command_impl(data, hash_alg, hierarchy)
 }
@@ -1000,4 +1145,18 @@ pub fn build_hash_command(data: &[u8], hash_alg: u16, hierarchy: u32) -> Vec<u8>
 /// `validation_ticket` in the returned `HashResponse` will be empty Vecs.
 pub fn parse_hash_response(resp: &[u8]) -> ffi::HashResponse {
     parse_hash_response_impl(resp).into()
+}
+
+pub fn build_sign_command(
+    key_handle: u32,
+    digest: &[u8],
+    sig_alg: u16,
+    hash_alg: u16,
+    validation_ticket: &[u8],
+) -> Vec<u8> {
+    build_sign_command_impl(key_handle, digest, sig_alg, hash_alg, validation_ticket)
+}
+
+pub fn parse_sign_response(resp: &[u8]) -> ffi::SignResponse {
+    parse_sign_response_impl(resp).into()
 }

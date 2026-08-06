@@ -442,3 +442,166 @@ fn test_hash_happy_path() {
     };
     expect_eq!(result.validation_ticket, expected_ticket);
 }
+
+#[gtest(TpmTest, BuildSignCommand)]
+fn test_build_sign_command() {
+    let key_handle = 0x81000001;
+    let digest = &[1, 2, 3];
+    let sig_alg = tpm::ffi::TpmAlg::TPM_ALG_ECDSA.repr;
+    let hash_alg = tpm::ffi::TpmAlg::TPM_ALG_SHA256.repr;
+    let validation_ticket = &[7, 8, 9, 10];
+    let cmd = tpm::build_sign_command(key_handle, digest, sig_alg, hash_alg, validation_ticket);
+
+    // Header (10) + Handle (4) + AuthSize (4) + Session (9) + digest prefix (2) +
+    // digest len (3)
+    // + sig_alg (2) + hash_alg (2) + ticket len (4) = 40
+    expect_eq!(cmd.len(), 40);
+
+    let mut reader = tpm::Reader::new(&cmd);
+    expect_eq!(reader.read_u16().unwrap(), tpm::TPM_ST_SESSIONS);
+    expect_eq!(reader.read_u32().unwrap(), 40);
+    expect_eq!(reader.read_u32().unwrap(), tpm::TPM_CC_SIGN);
+
+    expect_eq!(reader.read_u32().unwrap(), key_handle);
+
+    // Auth session
+    expect_eq!(reader.read_u32().unwrap(), 9); // auth size
+    expect_eq!(reader.read_u32().unwrap(), tpm::TPM_RS_PW);
+    expect_eq!(reader.read_u16().unwrap(), 0);
+    expect_eq!(reader.read_u8().unwrap(), 0);
+    expect_eq!(reader.read_u16().unwrap(), 0);
+
+    // Parameters
+    expect_eq!(reader.read_u16().unwrap(), 3);
+    expect_eq!(reader.read_bytes(3).unwrap(), digest);
+
+    expect_eq!(reader.read_u16().unwrap(), sig_alg);
+    expect_eq!(reader.read_u16().unwrap(), hash_alg);
+
+    expect_eq!(reader.read_bytes(4).unwrap(), validation_ticket);
+}
+
+#[gtest(TpmTest, BuildSignCommandNullScheme)]
+fn test_build_sign_command_null_scheme() {
+    let key_handle = 0x81000001;
+    let digest = &[1, 2, 3];
+    let sig_alg = tpm::ffi::TpmAlg::TPM_ALG_NULL.repr;
+    let hash_alg = tpm::ffi::TpmAlg::TPM_ALG_SHA256.repr;
+    let validation_ticket = &[7, 8, 9, 10];
+    let cmd = tpm::build_sign_command(key_handle, digest, sig_alg, hash_alg, validation_ticket);
+
+    // Header (10) + Handle (4) + AuthSize (4) + Session (9) + digest prefix (2) +
+    // digest len (3)
+    // + sig_alg (2) + ticket len (4) = 38 (no hash_alg written)
+    expect_eq!(cmd.len(), 38);
+
+    let mut reader = tpm::Reader::new(&cmd);
+    expect_eq!(reader.read_u16().unwrap(), tpm::TPM_ST_SESSIONS);
+    expect_eq!(reader.read_u32().unwrap(), 38);
+    expect_eq!(reader.read_u32().unwrap(), tpm::TPM_CC_SIGN);
+
+    expect_eq!(reader.read_u32().unwrap(), key_handle);
+
+    // Auth session
+    expect_eq!(reader.read_u32().unwrap(), 9); // auth size
+    expect_eq!(reader.read_u32().unwrap(), tpm::TPM_RS_PW);
+    expect_eq!(reader.read_u16().unwrap(), 0);
+    expect_eq!(reader.read_u8().unwrap(), 0);
+    expect_eq!(reader.read_u16().unwrap(), 0);
+
+    // Parameters
+    expect_eq!(reader.read_u16().unwrap(), 3);
+    expect_eq!(reader.read_bytes(3).unwrap(), digest);
+
+    expect_eq!(reader.read_u16().unwrap(), sig_alg); // TPM_ALG_NULL
+                                                     // No hash_alg
+
+    expect_eq!(reader.read_bytes(4).unwrap(), validation_ticket);
+}
+
+struct SignResponseBuilder {
+    tag: u16,
+    rc: u32,
+    sig_alg: u16,
+    hash_alg: u16,
+    sig: Vec<u8>,
+}
+
+impl SignResponseBuilder {
+    fn new() -> Self {
+        Self {
+            tag: tpm::TPM_ST_SESSIONS,
+            rc: 0,
+            sig_alg: tpm::ffi::TpmAlg::TPM_ALG_RSASSA.repr,
+            hash_alg: tpm::ffi::TpmAlg::TPM_ALG_SHA256.repr,
+            sig: vec![0xAA, 0xBB],
+        }
+    }
+
+    fn build(self) -> Vec<u8> {
+        let mut sig_size = 2 // sigAlg
+            + 2 // hashAlg
+            + u16::try_from(self.sig.len()).unwrap();
+        if self.sig_alg == tpm::ffi::TpmAlg::TPM_ALG_RSASSA.repr {
+            sig_size += 2; // size prefix
+        }
+
+        let mut total_size = 10;
+        if self.rc == 0 {
+            if self.tag == tpm::TPM_ST_SESSIONS {
+                total_size += 4; // parameterSize field
+            }
+            total_size += u32::from(sig_size);
+            if self.tag == tpm::TPM_ST_SESSIONS {
+                total_size += 5; // Session size
+            }
+        }
+
+        let mut writer = tpm::Writer::with_capacity(total_size.try_into().unwrap());
+        writer.write_u16(self.tag);
+        writer.write_u32(total_size);
+        writer.write_u32(self.rc);
+
+        if self.rc == 0 {
+            if self.tag == tpm::TPM_ST_SESSIONS {
+                writer.write_u32(sig_size.into());
+            }
+
+            writer.write_u16(self.sig_alg);
+            writer.write_u16(self.hash_alg);
+            if self.sig_alg == tpm::ffi::TpmAlg::TPM_ALG_RSASSA.repr {
+                writer.write_tpm2b(&self.sig);
+            } else {
+                writer.write_bytes(&self.sig);
+            }
+
+            if self.tag == tpm::TPM_ST_SESSIONS {
+                // Auth Response Session
+                writer.write_u16(0); // nonce size
+                writer.write_u8(0); // sessionAttributes
+                writer.write_u16(0); // HMAC size (for pw it is 0)
+            }
+        }
+
+        writer.into_inner()
+    }
+}
+
+#[gtest(TpmParserTest, SignHappyPath)]
+fn test_sign_happy_path() {
+    let builder = SignResponseBuilder::new();
+    let resp = builder.build();
+
+    let result = tpm::parse_sign_response(&resp);
+    expect_true!(matches!(result.result, tpm::ffi::ParseResult::Ok));
+    expect_eq!(result.tpm_response_code, 0);
+
+    let expected_sig_bytes = {
+        let mut writer = tpm::Writer::new();
+        writer.write_u16(tpm::ffi::TpmAlg::TPM_ALG_RSASSA.repr);
+        writer.write_u16(tpm::ffi::TpmAlg::TPM_ALG_SHA256.repr);
+        writer.write_tpm2b(&[0xAA, 0xBB]);
+        writer.into_inner()
+    };
+    expect_eq!(result.signature, expected_sig_bytes);
+}
