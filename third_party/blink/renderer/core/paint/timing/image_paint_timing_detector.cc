@@ -269,6 +269,18 @@ bool ImagePaintTimingDetector::RecordImage(
     return false;
   }
 
+  // The first frame of an autoplaying <video> races with its poster image if it
+  // has one, and since we only use `LayoutObject` for the `record_id` for
+  // videos (to avoid counting both the poster and first frame), we can end up
+  // with a mismatch between the `record`'s `MediaTiming` and `media_timing`
+  // while the poster image is pending. Switch to tracking the first video frame
+  // in that case.
+  if (record && record->GetMediaTiming() != &media_timing &&
+      media_timing.IsVideo()) {
+    NotifyImageRemoved(object, &media_timing);
+    record = nullptr;
+  }
+
   int ignore_paint_depth = IgnorePaintTimingScope::IgnoreDepth();
 
   // Create a new new `ImageRecord` and initialize paint tracking if:
@@ -339,11 +351,7 @@ bool ImagePaintTimingDetector::RecordImage(
   CHECK(record);
   CHECK(!record->IsSufficientlyLoadedForReporting());
 
-  // TODO(crbug.com/540021702): Due to races with the poster image, the
-  // `media_timing` might not match the `record`'s `MediaTiming`. In that case,
-  // we erroneously fall through to the first animated frame case below.
-  bool is_video = !media_timing.GetFirstVideoFrameTime().is_null() &&
-                  &media_timing == record->GetMediaTiming();
+  bool is_video = !media_timing.GetFirstVideoFrameTime().is_null();
 
   // If this is the first frame of an animated image, we need the paint and
   // presentation time of this paint, in addition to when it becomes
@@ -420,6 +428,8 @@ void ImagePaintTimingDetector::ReportLargestIgnoredImage() {
 void ImagePaintTimingDetector::SetVideoFirstAnimatedFrameTime(
     ImageRecord* record) {
   CHECK(record->GetMediaTiming());
+  CHECK(!record->GetMediaTiming()->GetFirstVideoFrameTime().is_null(),
+        base::NotFatalUntil::M156);
   record->SetFirstAnimatedFrameTime(
       record->GetMediaTiming()->GetFirstVideoFrameTime());
 

@@ -186,6 +186,18 @@ class ImagePaintTimingDetectorTestBase : public PaintTimingTestBase {
                                               property_tree_state, border);
   }
 
+  void SimulateFirstVideoFrame(Element* element,
+                               VideoTiming* timing,
+                               int width,
+                               int height) {
+    // Unlike simulating image paints, the property tree state and border
+    // properties should be set for video elements.
+    GetPaintTimingDetector().NotifyFirstVideoFrame(
+        *element->GetLayoutObject(), gfx::Size(width, height), *timing,
+        element->GetLayoutObject()->FirstFragment().LocalBorderBoxProperties(),
+        element->GetLayoutObject()->AbsoluteBoundingBoxRect());
+  }
+
  protected:
   base::test::TracingEnvironment tracing_environment_;
 };
@@ -1295,12 +1307,7 @@ TEST_P(ImagePaintTimingDetectorTest, LargestPaintedImageSetForFirstVideoFrame) {
   // Since ReportFirstFrameTimeAsRenderTime is enabled, this should create an
   // `ImageRecord` and set its paint and presentation time. But the image will
   // only be pending until the next animation frame.
-  GetPaintTimingDetector().NotifyFirstVideoFrame(
-      *video_element->GetLayoutObject(), gfx::Size(300, 100), *video_timing,
-      video_element->GetLayoutObject()
-          ->FirstFragment()
-          .LocalBorderBoxProperties(),
-      video_element->GetLayoutObject()->AbsoluteBoundingBoxRect());
+  SimulateFirstVideoFrame(video_element, video_timing, 300, 100);
   EXPECT_FALSE(LargestPaintedImage());
   ImageRecord* record = LargestImage();
   ASSERT_TRUE(record);
@@ -1309,6 +1316,51 @@ TEST_P(ImagePaintTimingDetectorTest, LargestPaintedImageSetForFirstVideoFrame) {
 
   SimulateRenderingAndPresentationTime();
   EXPECT_EQ(LargestPaintedImage(), record);
+}
+
+TEST_P(ImagePaintTimingDetectorTest, FirstVideoFrameRacesWithPosterImage) {
+  SetMainFrameBodyContent(R"HTML(
+    <video id="target" width=300 height=200></video>
+  )HTML");
+  SimulateRenderingAndPresentationTime();
+  EXPECT_FALSE(LargestImage());
+
+  Element* video_element = GetDocument().getElementById(AtomicString("target"));
+  ASSERT_TRUE(video_element);
+  ASSERT_TRUE(video_element->GetLayoutObject());
+
+  // First, simulate painting the pending poster image.
+  ImageResourceContent* image_timing =
+      CreateImageForTest(300, 200, /*bytes=*/0, ImageStatus::kPending);
+  SimulateImagePaint(video_element, image_timing, 300, 200);
+  EXPECT_FALSE(LargestPaintedImage());
+  // LCP should track `image_timing` as the largest pending image.
+  ImageRecord* record1 = LargestImage();
+  ASSERT_TRUE(record1);
+  EXPECT_EQ(record1->GetMediaTiming(), image_timing);
+  EXPECT_EQ(CountImageRecords(), 1u);
+
+  // Next, simulate the first video frame while the poster image is still
+  // pending.
+  VideoTiming* video_timing = MakeGarbageCollected<VideoTiming>();
+  video_timing->SetFirstVideoFrameTime(NowTicks());
+  video_timing->SetIsSufficientContentLoadedForPaint();
+  video_timing->SetUrl(KURL("http://test.com/video"));
+  video_timing->SetContentSizeForEntropy(1024 * 1024);
+
+  // The first video frame should replace the poster image as the <video>'s
+  // media.
+  SimulateFirstVideoFrame(video_element, video_timing, 300, 200);
+  EXPECT_FALSE(LargestPaintedImage());
+  ImageRecord* record2 = LargestImage();
+  ASSERT_TRUE(record2);
+  EXPECT_NE(record1, record2);
+  EXPECT_EQ(record2->GetMediaTiming(), video_timing);
+  // There's still only 1 record since the poster image was replaced.
+  EXPECT_EQ(CountImageRecords(), 1u);
+
+  SimulateRenderingAndPresentationTime();
+  EXPECT_EQ(LargestPaintedImage(), record2);
 }
 
 class ImagePaintTimingDetectorFencedFrameTest
@@ -1614,6 +1666,73 @@ TEST_P(ImagePaintTimingDetectorAnimatedImageTest, DelayedPresentationFeedback) {
   EXPECT_EQ(record->GetNode(), target);
   EXPECT_TRUE(record->HasPaintTime());
   EXPECT_EQ(record, LargestPaintedImage());
+}
+
+TEST_P(ImagePaintTimingDetectorAnimatedImageTest,
+       FirstVideoFrameRacesWithAnimatedPosterImage) {
+  SetMainFrameBodyContent(R"HTML(
+    <video id="target" width=300 height=200></video>
+  )HTML");
+  SimulateRenderingAndPresentationTime();
+  EXPECT_FALSE(LargestImage());
+
+  Element* video_element = GetDocument().getElementById(AtomicString("target"));
+  ASSERT_TRUE(video_element);
+  ASSERT_TRUE(video_element->GetLayoutObject());
+
+  // First, simulate painting an animated pending poster image, with the first
+  // frame painted but not presented.
+  FakeAnimatedImageTiming* image_timing =
+      MakeGarbageCollected<FakeAnimatedImageTiming>();
+  image_timing->SetIsPaintedFirstFrame();
+  SimulateImagePaint(video_element, image_timing, 300, 200);
+  SimulateRendering();
+  // LCP should consider the poster image as the largest pending image, but it
+  // should not be considered painted yet.
+  EXPECT_FALSE(LargestPaintedImage());
+  ImageRecord* record1 = LargestImage();
+  ASSERT_TRUE(record1);
+  EXPECT_EQ(record1->GetMediaTiming(), image_timing);
+  EXPECT_EQ(CountImageRecords(), 1u);
+
+  // Next, simulate the first video frame while the poster image is still
+  // pending.
+  VideoTiming* video_timing = MakeGarbageCollected<VideoTiming>();
+  video_timing->SetFirstVideoFrameTime(base::TimeTicks::Now());
+  video_timing->SetIsSufficientContentLoadedForPaint();
+  video_timing->SetUrl(KURL("http://test.com/video"));
+  video_timing->SetContentSizeForEntropy(1024 * 1024);
+  SimulateFirstVideoFrame(video_element, video_timing, 300, 200);
+  // The first video frame should replace the poster image as the <video>'s
+  // media *if* not using first animated frame for presentation time. Otherwise,
+  // the first video frame should be ignored (first animated frame wins the race
+  // since it's only pending presentation time).
+  EXPECT_FALSE(LargestPaintedImage());
+  ImageRecord* record2 = LargestImage();
+  ASSERT_TRUE(record2);
+
+  if (IsReportFirstFrameTimeAsRenderTimeEnabled()) {
+    EXPECT_EQ(record1, record2);
+    EXPECT_EQ(record2->GetMediaTiming(), image_timing);
+  } else {
+    EXPECT_NE(record1, record2);
+    EXPECT_EQ(record2->GetMediaTiming(), video_timing);
+  }
+
+  // There's still only 1 record since either the poster image was replaced or
+  // the first video frame was ignored.
+  EXPECT_EQ(CountImageRecords(), 1u);
+
+  // Simulate presentation time for the animated image frame.
+  SimulatePresentationTime();
+  EXPECT_EQ(LargestPaintedImage(),
+            IsReportFirstFrameTimeAsRenderTimeEnabled() ? record1 : nullptr);
+
+  // Simulate rendering and presentation time to flush the first video frame.
+  SimulateRenderingAndPresentationTime();
+  EXPECT_EQ(LargestPaintedImage(),
+            IsReportFirstFrameTimeAsRenderTimeEnabled() ? record1 : record2);
+  EXPECT_EQ(LargestImage(), LargestPaintedImage());
 }
 
 }  // namespace blink
