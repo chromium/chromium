@@ -67,8 +67,10 @@ TransportSessionRegistry* TransportChannelImpl::GetSessionRegistry() {
 
 void TransportChannelImpl::OnSessionRegistered(TransportSession*) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (stream_client_ && stream_client_->IsConnected()) {
-    stream_client_->Disconnect();
+  if (stream_client_) {
+    if (stream_client_->IsConnected()) {
+      stream_client_->Disconnect();
+    }
     stream_client_->Connect();
   }
 }

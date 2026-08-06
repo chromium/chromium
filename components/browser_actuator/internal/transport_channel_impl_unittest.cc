@@ -222,13 +222,14 @@ TEST_F(TransportChannelImplTest,
   EXPECT_EQ(fake_client_->connect_count(), 1);
 }
 
-TEST_F(TransportChannelImplTest, DoesNotReconnectWhenDisconnected) {
+TEST_F(TransportChannelImplTest,
+       ConnectsWhenNewSessionRegisteredAndDisconnected) {
   fake_client_->set_connected(false);
 
   GetSessionRegistryImpl()->GetOrCreateSession("s1");
 
   EXPECT_EQ(fake_client_->disconnect_count(), 0);
-  EXPECT_EQ(fake_client_->connect_count(), 0);
+  EXPECT_EQ(fake_client_->connect_count(), 1);
 }
 
 struct TestPayload {
