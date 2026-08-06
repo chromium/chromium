@@ -55,8 +55,9 @@ Vector<uint8_t> StaticBitmapImage::CopyImageData(const SkImageInfo& info,
 
   wtf_size_t byte_length =
       base::checked_cast<wtf_size_t>(info.computeMinByteSize());
-  if (byte_length > partition_alloc::MaxDirectMapped())
+  if (byte_length > partition_alloc::MaxAllocationSize()) {
     return {};
+  }
   Vector<uint8_t> dst_buffer(byte_length);
 
   bool read_pixels_successful =
