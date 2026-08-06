@@ -45,6 +45,7 @@
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/unload_controller.h"
+#include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_close_button_controller.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
@@ -58,6 +59,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
@@ -399,6 +401,18 @@ void BrowserTabStripController::OnCloseTab(
 void BrowserTabStripController::CloseTab(int model_index) {
   // Cancel any pending tab transition.
   hover_tab_selector_.CancelTabTransition();
+
+  if (base::FeatureList::IsEnabled(
+          contextual_tasks::kContextualTasksCloseTabExpandsSidePanel)) {
+    tabs::TabInterface* closing_tab = model_->GetTabAtIndex(model_index);
+    ContextualTasksCloseButtonController* const close_button_controller =
+        ContextualTasksCloseButtonController::From(GetBrowserWindowInterface());
+    if (closing_tab && closing_tab->IsActivated() && close_button_controller &&
+        close_button_controller->ShouldShowCloseButton()) {
+      close_button_controller->MaybeCloseTabExpandSidePanel();
+      return;
+    }
+  }
 
   model_->CloseWebContentsAt(model_index,
                              TabCloseTypes::CLOSE_USER_GESTURE |

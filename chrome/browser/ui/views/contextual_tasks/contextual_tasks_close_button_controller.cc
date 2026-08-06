@@ -150,7 +150,7 @@ void ContextualTasksCloseButtonController::OnEligibilityChange(
   MaybeNotifyVisibilityShouldChange();
 }
 
-void ContextualTasksCloseButtonController::MaybeNotifyVisibilityShouldChange() {
+bool ContextualTasksCloseButtonController::ShouldShowCloseButton() {
   auto* eligibility_manager =
       contextual_tasks::EntryPointEligibilityManager::From(
           browser_window_interface_);
@@ -169,9 +169,15 @@ void ContextualTasksCloseButtonController::MaybeNotifyVisibilityShouldChange() {
    *  - Side panel can expand to full tab.
    **/
   bool is_panel_state_eligible = is_panel_visible_ && !is_panel_hiding_;
-  should_update_visibility_callbacks_.Notify(
-      !IsVerticalTabOrIsImmersiveMode() && is_eligible &&
-      is_panel_state_eligible && can_expand_to_full_tab);
+  return !IsVerticalTabOrIsImmersiveMode() && is_eligible &&
+         is_panel_state_eligible && can_expand_to_full_tab;
+}
+
+void ContextualTasksCloseButtonController::MaybeNotifyVisibilityShouldChange() {
+  should_update_visibility_callbacks_.Notify(ShouldShowCloseButton());
+
+  auto* controller = contextual_tasks::ContextualTasksPanelController::From(
+      browser_window_interface_);
 
   if (controller) {
     content::WebContents* contents = controller->GetActiveWebContents();
