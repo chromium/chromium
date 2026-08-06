@@ -89,7 +89,7 @@ class TestContextualTasksUI : public ContextualTasksUI {
   explicit TestContextualTasksUI(content::WebUI* web_ui)
       : ContextualTasksUI(web_ui) {}
   MOCK_METHOD(void,
-              PostMessageToWebview,
+              PostAimMessage,
               (const lens::ClientToAimMessage& message),
               (override));
   MOCK_METHOD(contextual_search::ContextualSearchSessionHandle*,
@@ -598,7 +598,7 @@ TEST_F(ContextualTasksPageHandlerTest, CloseSidePanel) {
 
 TEST_F(ContextualTasksPageHandlerTest, ShowThreadHistory) {
   // ShowThreadHistory sends a message to the webview.
-  EXPECT_CALL(page_, PostMessageToWebview(_))
+  EXPECT_CALL(page_, PostAimMessage(_))
       .WillOnce([&](const std::vector<uint8_t>& message) {
         lens::ClientToAimMessage client_message;
         ASSERT_TRUE(
@@ -1039,12 +1039,12 @@ TEST_F(ContextualTasksPageHandlerTest,
   page_handler_->OnWebviewMessage(serialized);
 }
 
-TEST_F(ContextualTasksPageHandlerTest, PostMessageToWebview) {
+TEST_F(ContextualTasksPageHandlerTest, PostAimMessage) {
   lens::ClientToAimMessage message;
   message.mutable_open_threads_view();
 
-  EXPECT_CALL(page_, PostMessageToWebview(_)).Times(1);
-  page_handler_->PostMessageToWebview(message);
+  EXPECT_CALL(page_, PostAimMessage(_)).Times(1);
+  page_handler_->PostAimMessage(message);
 }
 
 TEST_F(ContextualTasksPageHandlerTest, OnTaskUpdated) {

@@ -110,8 +110,7 @@ class ContextualTasksUIInterface : public TaskInfoDelegate {
   // Sends a message to the <webview> guest. The WebUI is responsible for
   // taking the 'message' (a serialized lens.ClientToAimMessage protobuf) and
   // using the <webview> postMessage API to send it to the guest content.
-  virtual void PostMessageToWebview(
-      const lens::ClientToAimMessage& message) = 0;
+  virtual void PostAimMessage(const lens::ClientToAimMessage& message) = 0;
 
   // Lazily creates and returns a reference to the owned contextual search
   // session handle.

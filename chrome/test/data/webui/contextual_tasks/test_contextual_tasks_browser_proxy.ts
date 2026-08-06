@@ -22,7 +22,7 @@ class MockPage extends TestBrowserProxy implements PageInterface {
   constructor() {
     super([
       'hideInput',
-      'postMessageToWebview',
+      'postAimMessage',
       'onAiPageStatusChanged',
       'onContextUpdated',
       'onHandshakeComplete',
@@ -60,8 +60,8 @@ class MockPage extends TestBrowserProxy implements PageInterface {
     this.methodCalled('setThreadTitle', title);
   }
 
-  postMessageToWebview(message: number[]) {
-    this.methodCalled('postMessageToWebview', message);
+  postAimMessage(message: number[]) {
+    this.methodCalled('postAimMessage', message);
   }
 
 
@@ -424,9 +424,6 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
     return Promise.resolve();
   }
 
-  postMessageToWebview(message: number[]) {
-    this.methodCalled('postMessageToWebview', message);
-  }
 
   pinSidePanel() {
     this.methodCalled('pinSidePanel');

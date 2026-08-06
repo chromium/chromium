@@ -94,7 +94,7 @@ class ContextualTasksPageHandler
   void MaybeTriggerPinningPromo() override;
   void ShowPageInfoBubble() override;
   void CreateNewThread() override;
-  void PostMessageToWebview(const lens::ClientToAimMessage& message);
+  void PostAimMessage(const lens::ClientToAimMessage& message);
 
   // contextual_tasks::ContextualTasksService::Observer:
   void OnTaskAdded(
