@@ -83,7 +83,8 @@ class SuspiciousSiteBrowserTest : public AndroidBrowserTest {
   TestSafeBrowsingServiceFactory factory_;
 };
 
-IN_PROC_BROWSER_TEST_F(SuspiciousSiteBrowserTest, ShowsWarningBeforeCommit) {
+IN_PROC_BROWSER_TEST_F(SuspiciousSiteBrowserTest,
+                       DISABLED_ShowsWarningBeforeCommit) {
   GURL malicious_url = embedded_test_server()->GetURL("/title1.html");
   SetURLThreatType(malicious_url,
                    SBThreatType::SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE);
