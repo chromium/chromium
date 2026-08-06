@@ -140,6 +140,10 @@ class TabStatsTracker :
     // The name of the histogram that records the keyboard tab switch mode.
     static const char kKeyboardTabSwitchModeHistogramName[];
 
+    // The name of the histogram that records if a window's tab strip is in
+    // focus mode.
+    static const char kFocusModeIsActiveHistogramName[];
+
     // The name of the histogram that records the number of pinned tabs in the
     // tab strip.
     static const char kPinnedTabCountHistogramName[];

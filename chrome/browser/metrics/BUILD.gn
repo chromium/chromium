@@ -560,6 +560,7 @@ source_set("unit_tests") {
     "//chrome/browser/performance_manager:test_support",
     "//chrome/browser/sync",
     "//chrome/browser/ui",
+    "//chrome/browser/ui:ui_features",
     "//chrome/test:test_support",
     "//components/component_updater:test_support",
     "//components/metrics:test_support",

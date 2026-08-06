@@ -2238,6 +2238,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.FocusMode.IsActive" enum="Boolean"
+    expires_after="2027-02-06">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Logs whether the window's tab strip is currently in focus mode (focused on a
+    tab group). Recorded every 5 minutes (the heartbeat interval) for each
+    normal browser window.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.FreezeAndAppendPendingNavigationResult"
     enum="BooleanSuccess" expires_after="2027-01-10">
   <owner>ckitagawa@chromium.org</owner>
