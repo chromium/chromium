@@ -197,12 +197,14 @@ void AccountFetcherService::StartFetchingUserInfo(
   if (!user_info_requests_.contains(account_id)) {
     DVLOG(1) << "StartFetching " << account_id;
     user_info_fetch_start_times_[account_id] = base::TimeTicks::Now();
-    user_info_requests_.emplace(
+    auto [it, inserted] = user_info_requests_.emplace(
         account_id,
         account_fetcher_factory_->CreateAccountInfoFetcher(
             account_id,
             base::BindOnce(&AccountFetcherService::OnUserInfoFetchCompleted,
                            base::Unretained(this), account_id)));
+    CHECK(inserted);
+    it->second->Start();
   }
 }
 
