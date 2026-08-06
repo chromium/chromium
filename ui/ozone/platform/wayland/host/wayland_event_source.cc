@@ -334,6 +334,9 @@ void WaylandEventSource::OnPointerFocusChanged(
     base::TimeTicks timestamp,
     wl::EventDispatchPolicy dispatch_policy) {
   bool focused = !!window;
+  // Only wl_pointer.enter/leave reach here, so this tracks where the mouse
+  // really is even while a tablet tool has borrowed pointer focus.
+  wl_pointer_focused_window_ = focused ? window->AsWeakPtr() : nullptr;
   if (focused) {
     // Save new pointer location.
     pointer_location_ = location;
@@ -597,7 +600,7 @@ void WaylandEventSource::OnTabletToolProximityIn(WaylandWindow* window,
   WaylandWindow* old_focus = tablet_tool_focused_window_.get();
   base::WeakPtr<WaylandWindow> window_weak = window->AsWeakPtr();
   if (old_focus && old_focus != window) {
-    OnTabletToolProximityOut(time);
+    OnTabletToolProximityOut(details, time);
   }
 
   if (!window_weak) {
@@ -606,6 +609,12 @@ void WaylandEventSource::OnTabletToolProximityIn(WaylandWindow* window,
 
   tablet_tool_focused_window_ = window->AsWeakPtr();
   tablet_tool_location_ = location;
+
+  // Stylus tab dragging resolves its drag origin through the pointer focused
+  // window (WaylandWindowDragController::GetSerial), so the tool has to hold
+  // pointer focus while it is in proximity. OnTabletToolProximityOut() hands it
+  // back to `wl_pointer_focused_window_`.
+  window_manager_->SetPointerFocusedWindow(window);
 
   MouseEvent event(EventType::kMouseEntered, tablet_tool_location_,
                    tablet_tool_location_, time, keyboard_modifiers_, 0,
@@ -617,15 +626,26 @@ void WaylandEventSource::OnTabletToolProximityIn(WaylandWindow* window,
   }
 }
 
-void WaylandEventSource::OnTabletToolProximityOut(base::TimeTicks time) {
+void WaylandEventSource::OnTabletToolProximityOut(const PointerDetails& details,
+                                                  base::TimeTicks time) {
   if (!tablet_tool_focused_window_) {
     return;
   }
 
+  // `details` carries the tool's pointer type. Without it the event defaults to
+  // a mouse, which surfaces in Blink as a `pointerType:"mouse"` sample with the
+  // spec-default `pressure:0.5` injected into the tail of a pen stroke.
   MouseEvent event(EventType::kMouseExited, tablet_tool_location_,
-                   tablet_tool_location_, time, keyboard_modifiers_, 0);
+                   tablet_tool_location_, time, keyboard_modifiers_, 0,
+                   details);
   SetTargetAndDispatchEvent(&event, tablet_tool_focused_window_.get());
   tablet_tool_focused_window_ = nullptr;
+
+  // Give pointer focus back to the mouse. Clearing it instead would strand it:
+  // the mouse never left the surface, so no wl_pointer.enter follows to restore
+  // focus and every subsequent mouse event is dropped for lack of a target.
+  window_manager_->SetPointerFocusedWindow(wl_pointer_focused_window_.get());
+
   // Intentionally not resetting `tablet_tool_buttons_` since the button state
   // should still be treated as pressed during a DnD.
 }

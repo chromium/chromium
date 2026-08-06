@@ -8,9 +8,7 @@
 #include <linux/input-event-codes.h>
 #include <tablet-unstable-v2-client-protocol.h>
 
-#include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
-#include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor_shape.h"
@@ -56,12 +54,6 @@ EventFlags ButtonToEventFlags(uint32_t button) {
   }
 }
 
-wl::EventDispatchPolicy GetEventDispatchPolicy() {
-  return IsDispatchPointerEventsOnFrameEventEnabled()
-             ? wl::EventDispatchPolicy::kOnFrame
-             : wl::EventDispatchPolicy::kImmediate;
-}
-
 }  // namespace
 
 WaylandTabletTool::FrameData::FrameData() = default;
@@ -71,13 +63,8 @@ WaylandTabletTool::FrameData::~FrameData() = default;
 WaylandTabletTool::WaylandTabletTool(zwp_tablet_tool_v2* tool,
                                      WaylandTabletSeat* seat,
                                      WaylandConnection* connection,
-                                     Delegate* delegate,
-                                     WaylandPointer::Delegate* pointer_delegate)
-    : connection_(connection),
-      seat_(seat),
-      delegate_(delegate),
-      pointer_delegate_(pointer_delegate),
-      tool_(tool) {
+                                     Delegate* delegate)
+    : connection_(connection), seat_(seat), delegate_(delegate), tool_(tool) {
   static constexpr zwp_tablet_tool_v2_listener kListener = {
       .type = &Type,
       .hardware_serial = &HardwareSerial,
@@ -136,7 +123,8 @@ void WaylandTabletTool::DispatchBufferedEvents() {
   }
 
   if (frame_data_.proximity_out) {
-    delegate_->OnTabletToolProximityOut(frame_data_.timestamp);
+    delegate_->OnTabletToolProximityOut(frame_data_.pointer_details,
+                                        frame_data_.timestamp);
   }
 }
 
@@ -231,10 +219,6 @@ void WaylandTabletTool::ProximityIn(void* data,
   self->frame_data_.proximity_out = false;
   self->frame_data_.proximity_target = window->AsWeakPtr();
   self->frame_data_.proximity_serial = serial;
-
-  self->pointer_delegate_->OnPointerFocusChanged(
-      window, self->pointer_delegate_->GetPointerLocation(), EventTimeForNow(),
-      GetEventDispatchPolicy());
 }
 
 // static
@@ -242,10 +226,6 @@ void WaylandTabletTool::ProximityOut(void* data, zwp_tablet_tool_v2* tool) {
   auto* self = static_cast<WaylandTabletTool*>(data);
   self->frame_data_.proximity_out = true;
   self->frame_data_.proximity_in = false;
-
-  self->pointer_delegate_->OnPointerFocusChanged(
-      nullptr, self->pointer_delegate_->GetPointerLocation(), EventTimeForNow(),
-      GetEventDispatchPolicy());
 }
 
 // static

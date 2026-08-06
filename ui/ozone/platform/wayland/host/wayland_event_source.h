@@ -141,7 +141,8 @@ class WaylandEventSource : public PlatformEventSource,
                                const gfx::PointF& location,
                                const PointerDetails& details,
                                base::TimeTicks time) override;
-  void OnTabletToolProximityOut(base::TimeTicks time) override;
+  void OnTabletToolProximityOut(const PointerDetails& details,
+                                base::TimeTicks time) override;
   void OnTabletToolMotion(const gfx::PointF& location,
                           const PointerDetails& details,
                           base::TimeTicks time) override;
@@ -313,6 +314,11 @@ class WaylandEventSource : public PlatformEventSource,
 
   // Bitmask of EventFlags used to keep track of the the tablet tool state.
   int tablet_tool_buttons_ = 0;
+
+  // The window wl_pointer last entered. A tablet tool in proximity takes over
+  // WaylandWindowManager's pointer focus, so that is not a reliable record of
+  // where the mouse actually is; this is what proximity out hands back.
+  base::WeakPtr<WaylandWindow> wl_pointer_focused_window_;
 
   std::unique_ptr<WaylandEventWatcher> event_watcher_;
 };

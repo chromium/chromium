@@ -1906,7 +1906,7 @@ TEST_P(WaylandWindowDragControllerTest, TabletPenDragProximityInAndOut) {
 
   // 4. While dragging, lift the pen (proximity-out).
   // Note: tablet_tool_buttons_ remains treated as pressed during drag.
-  event_source->OnTabletToolProximityOut(time);
+  event_source->OnTabletToolProximityOut({}, time);
 
   // 5. Hover the pen back in (proximity-in).
   // Under the bug, this unilaterally released the buttons and cancelled the

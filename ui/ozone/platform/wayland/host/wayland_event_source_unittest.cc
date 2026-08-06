@@ -449,6 +449,86 @@ TEST_P(WaylandEventSourceTest, TabletToolProximityInUAF) {
                                         base::TimeTicks::Now());
 }
 
+// A tablet tool borrows pointer focus while in proximity, and must hand it back
+// when it leaves. Clearing it instead strands it: the mouse never left the
+// surface, so no wl_pointer.enter follows to restore focus, and every
+// subsequent mouse event is dropped for lack of a target.
+TEST_P(WaylandEventSourceTest, TabletToolProximityOutRestoresPointerFocus) {
+  auto* event_source = connection_->event_source();
+  auto* window_manager = connection_->window_manager();
+
+  MockWaylandPlatformWindowDelegate delegate(connection_.get());
+  auto window = CreateWaylandWindowWithParams(PlatformWindowType::kWindow,
+                                              kDefaultBounds, &delegate);
+  EXPECT_CALL(delegate, DispatchEvent(::testing::_))
+      .Times(::testing::AnyNumber());
+
+  // The mouse enters the window, as wl_pointer.enter would.
+  event_source->OnPointerFocusChanged(window.get(), gfx::PointF(10, 10),
+                                      base::TimeTicks::Now(),
+                                      wl::EventDispatchPolicy::kImmediate);
+  ASSERT_EQ(window.get(), window_manager->GetCurrentPointerFocusedWindow());
+
+  // Stylus tab dragging resolves its drag origin through the pointer focused
+  // window, so the tool takes pointer focus while in proximity.
+  event_source->OnTabletToolProximityIn(window.get(), gfx::PointF(20, 20), {},
+                                        base::TimeTicks::Now());
+  EXPECT_EQ(window.get(), window_manager->GetCurrentPointerFocusedWindow());
+
+  event_source->OnTabletToolProximityOut({}, base::TimeTicks::Now());
+  EXPECT_EQ(window.get(), window_manager->GetCurrentPointerFocusedWindow());
+}
+
+// The exit event dispatched on proximity out must carry the tool's pointer
+// type. Defaulting it to a mouse surfaces in Blink as a `pointerType:"mouse"`
+// sample with the spec-default `pressure:0.5` at the tail of a pen stroke.
+TEST_P(WaylandEventSourceTest, TabletToolProximityOutKeepsPenPointerType) {
+  auto* event_source = connection_->event_source();
+
+  MockWaylandPlatformWindowDelegate delegate(connection_.get());
+  auto window = CreateWaylandWindowWithParams(PlatformWindowType::kWindow,
+                                              kDefaultBounds, &delegate);
+
+  const PointerDetails pen(EventPointerType::kPen, /*pointer_id=*/2);
+  EXPECT_CALL(delegate, DispatchEvent(::testing::_))
+      .Times(::testing::AnyNumber());
+  event_source->OnTabletToolProximityIn(window.get(), gfx::PointF(20, 20), pen,
+                                        base::TimeTicks::Now());
+  ::testing::Mock::VerifyAndClearExpectations(&delegate);
+
+  EXPECT_CALL(delegate, DispatchEvent(::testing::_)).WillOnce([](Event* event) {
+    ASSERT_TRUE(event->IsMouseEvent());
+    auto* mouse_event = event->AsMouseEvent();
+    EXPECT_EQ(mouse_event->type(), EventType::kMouseExited);
+    EXPECT_EQ(mouse_event->pointer_details().pointer_type,
+              EventPointerType::kPen);
+  });
+  event_source->OnTabletToolProximityOut(pen, base::TimeTicks::Now());
+}
+
+// The mirror case: with no mouse in the window, proximity out must not leave
+// the tool's window holding pointer focus.
+TEST_P(WaylandEventSourceTest,
+       TabletToolProximityOutClearsUnownedPointerFocus) {
+  auto* event_source = connection_->event_source();
+  auto* window_manager = connection_->window_manager();
+
+  MockWaylandPlatformWindowDelegate delegate(connection_.get());
+  auto window = CreateWaylandWindowWithParams(PlatformWindowType::kWindow,
+                                              kDefaultBounds, &delegate);
+  EXPECT_CALL(delegate, DispatchEvent(::testing::_))
+      .Times(::testing::AnyNumber());
+
+  ASSERT_EQ(nullptr, window_manager->GetCurrentPointerFocusedWindow());
+
+  event_source->OnTabletToolProximityIn(window.get(), gfx::PointF(20, 20), {},
+                                        base::TimeTicks::Now());
+  EXPECT_EQ(window.get(), window_manager->GetCurrentPointerFocusedWindow());
+
+  event_source->OnTabletToolProximityOut({}, base::TimeTicks::Now());
+  EXPECT_EQ(nullptr, window_manager->GetCurrentPointerFocusedWindow());
+}
+
 // Check that if an event dispatched by ReleasePressedPointerButtons causes the
 // target window to be destroyed, we don't cause a UAF or dangling pointer.
 TEST_P(WaylandEventSourceTest, ReleasePressedPointerButtonsUAF) {
