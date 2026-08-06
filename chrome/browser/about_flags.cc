@@ -2568,6 +2568,8 @@ const FeatureEntry::FeatureParam
         {"external_drag", "true"}};
 const FeatureEntry::FeatureParam kAndroidVerticalTabs_EnableByDefault[] = {
     {"enable_by_default", "true"}};
+const FeatureEntry::FeatureParam kAndroidVerticalTabs_AutoResize[] = {
+    {"auto_resize", "true"}};
 
 const FeatureEntry::FeatureVariation kAndroidVerticalTabsVariations[] = {
     {"with expand-on-hover", kAndroidVerticalTabs_ExpandOnHover, nullptr},
@@ -2575,6 +2577,7 @@ const FeatureEntry::FeatureVariation kAndroidVerticalTabsVariations[] = {
     {"with expand-on-hover and external-drag",
      kAndroidVerticalTabs_ExpandOnHoverAndExternalDrag, nullptr},
     {"with enabled-by-default", kAndroidVerticalTabs_EnableByDefault, nullptr},
+    {"with auto-resize", kAndroidVerticalTabs_AutoResize, nullptr},
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_ANDROID)

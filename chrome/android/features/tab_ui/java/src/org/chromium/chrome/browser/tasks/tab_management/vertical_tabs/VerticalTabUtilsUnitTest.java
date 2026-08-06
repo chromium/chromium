@@ -135,6 +135,22 @@ public class VerticalTabUtilsUnitTest {
 
     @Test
     @SmallTest
+    public void testIsAutoResizeEnabled_DefaultDisabled() {
+        assertFalse(VerticalTabUtils.isAutoResizeEnabled());
+    }
+
+    @Test
+    @SmallTest
+    public void testIsAutoResizeEnabled_EnabledViaOverride() {
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS,
+                VerticalTabUtils.AUTO_RESIZE_PARAM,
+                /* testValue= */ true);
+        assertTrue(VerticalTabUtils.isAutoResizeEnabled());
+    }
+
+    @Test
+    @SmallTest
     public void testRecordLayoutToggle_Enable_AppMenu() {
         assertLayoutToggleHistogram(
                 VerticalTabUtils.LayoutSwitchEntryPoint.APP_MENU,

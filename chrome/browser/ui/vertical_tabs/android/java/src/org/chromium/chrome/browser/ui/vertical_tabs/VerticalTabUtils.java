@@ -39,9 +39,18 @@ public class VerticalTabUtils {
 
     /**
      * Minimum window width threshold in dp required to allow expanding vertical tabs rail and
-     * enable collapse button.
+     * enable collapse button when auto-resize is disabled.
      */
     public static final int MIN_EXPAND_WINDOW_WIDTH_DP = 652;
+
+    /**
+     * Minimum width in dp required for the expanded vertical tabs rail before snapping to collapsed
+     * state.
+     */
+    public static final int MIN_EXPANDED_WIDTH_DP = 90;
+
+    /** The ratio of window width that the vertical tabs rail can consume when expanded. */
+    public static final float EXPANDED_WINDOW_WIDTH_RATIO = 0.33f;
 
     /** Maximum number of times the "New" badge is shown on the Vertical Tabs entry points. */
     public static final int NEW_BADGE_MAX_VIEW_COUNT = 3;
@@ -83,6 +92,12 @@ public class VerticalTabUtils {
 
     /** Feature parameter name for enabling Vertical Tabs by default. */
     public static final String ENABLE_BY_DEFAULT_PARAM = "enable_by_default";
+
+    /** Feature parameter name for enabling external drag. */
+    public static final String EXTERNAL_DRAG_PARAM = "external_drag";
+
+    /** Feature parameter name for enabling auto-resize. */
+    public static final String AUTO_RESIZE_PARAM = "auto_resize";
 
     /**
      * Returns whether Vertical Tabs should be enabled by default for eligible users who have not
@@ -164,9 +179,6 @@ public class VerticalTabUtils {
         return outValue.getFloat();
     }
 
-    /** Feature parameter name for enabling external drag. */
-    public static final String EXTERNAL_DRAG_PARAM = "external_drag";
-
     /** Returns whether expand-on-hover behavior is enabled for Vertical Tabs. */
     public static boolean isExpandOnHoverEnabled() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
@@ -177,6 +189,12 @@ public class VerticalTabUtils {
     public static boolean isExternalDragEnabled() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ChromeFeatureList.ANDROID_VERTICAL_TABS, EXTERNAL_DRAG_PARAM, false);
+    }
+
+    /** Returns whether auto-resize behavior is enabled for Vertical Tabs. */
+    public static boolean isAutoResizeEnabled() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS, AUTO_RESIZE_PARAM, false);
     }
 
     /** Reads the current view count for the Vertical Tabs "New" badge from shared preferences. */
