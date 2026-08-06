@@ -108,6 +108,9 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
       bool strict_enforcement,
       base::OnceCallback<void(content::CertificateRequestResultType)> callback)
       override;
+  bool IsSecurityLevelAcceptableForWebAuthn(
+      content::RenderFrameHost* rfh,
+      const url::Origin& caller_origin) override;
   base::OnceClosure SelectClientCertificate(
       content::BrowserContext* browser_context,
       int process_id,

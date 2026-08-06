@@ -4,7 +4,16 @@
 
 package org.chromium.android_webview.test;
 
+import android.app.PendingIntent;
+import android.net.Uri;
+import android.os.Build;
+import android.os.ResultReceiver;
+
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -22,8 +31,15 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
+import org.chromium.components.webauthn.AuthenticationContextProvider;
+import org.chromium.components.webauthn.Fido2ApiCallHelper;
+import org.chromium.components.webauthn.GmsCoreUtils;
 import org.chromium.components.webauthn.WebauthnMode;
+import org.chromium.components.webauthn.cred_man.CredManSupportProvider;
 import org.chromium.content_public.common.ContentSwitches;
+import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.net.test.ServerCertificate;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.url.GURL;
 
@@ -32,6 +48,23 @@ import org.chromium.url.GURL;
 @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
 @Batch(Batch.PER_CLASS)
 public class WebAuthnTest {
+    private static class TestFido2ApiCallHelper extends Fido2ApiCallHelper {
+        public boolean mGetAssertionCalled;
+
+        @Override
+        public void invokeFido2GetAssertion(
+                AuthenticationContextProvider authenticationContextProvider,
+                PublicKeyCredentialRequestOptions options,
+                Uri uri,
+                byte[] clientDataHash,
+                ResultReceiver resultReceiver,
+                OnSuccessListener<PendingIntent> successCallback,
+                OnFailureListener failureCallback) {
+            mGetAssertionCalled = true;
+            failureCallback.onFailure(new Exception("MOCK_FIDO2_API_INVOKED"));
+        }
+    }
+
     @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private TestAwContentsClient mContentsClient;
@@ -47,6 +80,12 @@ public class WebAuthnTest {
         mAwContents = mTestContainerView.getAwContents();
         mAwSettings = mActivityTestRule.getAwSettingsOnUiThread(mAwContents);
         mWebServer = TestWebServer.start();
+
+        // We need to mock out the GMS Core version, otherwise Blink will eagerly declare that
+        // WebAuthn is unsupported. The actual GMS Core version does not matter, because test cases
+        // are responsible for intercepting WebAuthn requests before they are actually delivered to
+        // GMS Core.
+        GmsCoreUtils.setGmsCoreVersionForTesting(240700000);
     }
 
     @After
@@ -156,6 +195,69 @@ public class WebAuthnTest {
         mAwSettings.setWebauthnSupport(WebauthnMode.BROWSER);
 
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testWebAuthnBlockedOnSslError() throws Throwable {
+        CredManSupportProvider.setupForTesting(Build.VERSION_CODES.TIRAMISU, false);
+        TestFido2ApiCallHelper testHelper = new TestFido2ApiCallHelper();
+        Fido2ApiCallHelper.overrideInstanceForTesting(testHelper);
+
+        EmbeddedTestServer testServer =
+                EmbeddedTestServer.createAndStartHTTPSServer(
+                        InstrumentationRegistry.getInstrumentation().getContext(),
+                        ServerCertificate.CERT_MISMATCHED_NAME);
+        try {
+            mAwSettings.setJavaScriptEnabled(true);
+            mAwSettings.setWebauthnSupport(WebauthnMode.APP);
+            mContentsClient.setAllowSslError(true);
+
+            final String pageUrl =
+                    testServer.getURLWithHostName(
+                            "a.test", "/android_webview/test/data/hello_world.html");
+            mActivityTestRule.loadUrlSync(
+                    mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
+
+            mActivityTestRule.executeJavaScriptAndWaitForResult(
+                    mAwContents,
+                    mContentsClient,
+                    """
+                    window.webauthnResult = 'PENDING';
+                    navigator.credentials.get({
+                      publicKey: {
+                        challenge: new Uint8Array([1, 2, 3, 4]),
+                        timeout: 500,
+                        rpId: 'a.test'
+                      }
+                    }).then(
+                      () => { window.webauthnResult = 'SUCCESS'; },
+                      (e) => { window.webauthnResult = e.name + ': ' + e.message; }
+                    );
+                    """);
+
+            AwActivityTestRule.pollInstrumentationThread(
+                    () -> {
+                        String val =
+                                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                                        mAwContents, mContentsClient, "window.webauthnResult");
+                        return !"\"PENDING\"".equals(val) && !"null".equals(val);
+                    });
+
+            String result =
+                    mActivityTestRule.executeJavaScriptAndWaitForResult(
+                            mAwContents, mContentsClient, "window.webauthnResult");
+
+            Assert.assertFalse(
+                    "FIDO2 API should not be invoked for pages with SSL errors",
+                    testHelper.mGetAssertionCalled);
+            Assert.assertTrue(
+                    "WebAuthn should be blocked due to SSL error, but got: " + result,
+                    result.contains("NotAllowedError") && result.contains("certificate errors"));
+        } finally {
+            testServer.stopAndDestroyServer();
+        }
     }
 
     private static boolean isSecureDomain(GURL url) {

@@ -82,6 +82,7 @@
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/heap_profiling/in_process/heap_profiler_controller.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
+#include "components/network_session_configurator/common/network_switches.h"
 #include "components/page_load_metrics/browser/metrics_navigation_throttle.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/policy/content/policy_blocklist_navigation_throttle.h"
@@ -94,6 +95,8 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/sampling_profiler/process_type.h"
+#include "components/security_state/content/content_utils.h"
+#include "components/security_state/core/security_state.h"
 #include "components/url_matcher/url_matcher.h"
 #include "components/url_matcher/url_util.h"
 #include "components/user_prefs/user_prefs.h"
@@ -126,6 +129,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/android/network_library.h"
 #include "net/base/features.h"
+#include "net/base/url_util.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/http/http_util.h"
@@ -587,6 +591,32 @@ void AwContentBrowserClient::AllowCertificateError(
     std::move(split_callback.second)
         .Run(content::CERTIFICATE_REQUEST_RESULT_TYPE_DENY);
   }
+}
+
+bool AwContentBrowserClient::IsSecurityLevelAcceptableForWebAuthn(
+    content::RenderFrameHost* rfh,
+    const url::Origin& caller_origin) {
+  if (!base::FeatureList::IsEnabled(
+          android_webview::features::kWebViewWebAuthnRequiresSecureOrigin)) {
+    return true;
+  }
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents) {
+    return false;
+  }
+  if (net::IsLocalhost(caller_origin.GetURL())) {
+    return true;
+  }
+  auto state = security_state::GetVisibleSecurityState(web_contents);
+  if (!state) {
+    return false;
+  }
+  security_state::SecurityLevel security_level =
+      security_state::GetSecurityLevel(*state);
+  return security_level == security_state::SecurityLevel::SECURE ||
+         base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kIgnoreCertificateErrors);
 }
 
 base::OnceClosure AwContentBrowserClient::SelectClientCertificate(
