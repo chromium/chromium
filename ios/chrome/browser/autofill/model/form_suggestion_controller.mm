@@ -101,7 +101,7 @@ void RunSearchPipeline(NSArray<PipelineBlock>* blocks,
 UIImage* DefaultIconForType(FormSuggestion* suggestion,
                             web::WebState* web_state) {
   switch (suggestion.type) {
-    case autofill::SuggestionType::kUndoOrClear:
+    case autofill::SuggestionType::kUndo:
       return SymbolWithPalette(
           SymbolWithPointSize(SymbolArrowUTurnBackward, kSymbolActionPointSize),
           @[

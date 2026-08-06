@@ -252,7 +252,7 @@ bool HasAutofillSuggestionsForA11y(SuggestionType type) {
     case SuggestionType::kSeparator:
     case SuggestionType::kTitle:
     case SuggestionType::kTroubleSigningInEntry:
-    case SuggestionType::kUndoOrClear:
+    case SuggestionType::kUndo:
     case SuggestionType::kViewPasswordDetails:
     case SuggestionType::kWebauthnCredential:
     case SuggestionType::kWebauthnPasskeyQrCode:
@@ -358,7 +358,7 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kSeparator:
     case SuggestionType::kTitle:
     case SuggestionType::kTroubleSigningInEntry:
-    case SuggestionType::kUndoOrClear:
+    case SuggestionType::kUndo:
     case SuggestionType::kViewPasswordDetails:
     case SuggestionType::kWebauthnCredential:
     case SuggestionType::kWebauthnPasskeyQrCode:
@@ -668,7 +668,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
   ClearPreviewedForm();
 
   switch (suggestion.type) {
-    case SuggestionType::kUndoOrClear:
+    case SuggestionType::kUndo:
       manager_->UndoAutofill(mojom::ActionPersistence::kPreview,
                              last_query_.form_id, last_query_.field_id);
       break;
@@ -883,7 +883,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       }
       break;
     }
-    case SuggestionType::kUndoOrClear:
+    case SuggestionType::kUndo:
       manager_->UndoAutofill(mojom::ActionPersistence::kFill,
                              last_query_.form_id, last_query_.field_id);
       break;
@@ -1271,7 +1271,7 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kSeparator:
     case SuggestionType::kTitle:
     case SuggestionType::kTroubleSigningInEntry:
-    case SuggestionType::kUndoOrClear:
+    case SuggestionType::kUndo:
     case SuggestionType::kViewPasswordDetails:
     case SuggestionType::kVirtualCreditCardEntry:
     case SuggestionType::kWebauthnCredential:

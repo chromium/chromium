@@ -118,7 +118,7 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kSeparator:
     case SuggestionType::kTitle:
-    case SuggestionType::kUndoOrClear:
+    case SuggestionType::kUndo:
       return FillingProduct::kNone;
     case SuggestionType::kAutofillAiOtherOrders:
     case SuggestionType::kAutofillAiOtherShipments:

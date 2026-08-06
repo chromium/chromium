@@ -1264,10 +1264,10 @@ TEST_F(AutofillAiSuggestionGeneratorTest, GetFillingSuggestions_Undo) {
   SetForm({PASSPORT_NUMBER});
 
   EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
-              Not(Contains(EqualsSuggestion(SuggestionType::kUndoOrClear))));
+              Not(Contains(EqualsSuggestion(SuggestionType::kUndo))));
   field_data().set_is_autofilled_according_to_renderer(true);
   EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
-              Contains(EqualsSuggestion(SuggestionType::kUndoOrClear)));
+              Contains(EqualsSuggestion(SuggestionType::kUndo)));
 }
 
 // Tests that even when labels aren't needed to disambiguate, we still add one

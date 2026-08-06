@@ -69,7 +69,7 @@ std::vector<Suggestion> CreateSuggestionsWithUndoOrClearEntry(
       create_pw_suggestion(u"***", u"Carl", u"")};
   suggestions.emplace(suggestions.begin() + clear_form_offset,
                       std::u16string(u"Clear"), std::u16string(u""),
-                      Suggestion::Icon::kNoIcon, SuggestionType::kUndoOrClear);
+                      Suggestion::Icon::kNoIcon, SuggestionType::kUndo);
   return suggestions;
 }
 

@@ -310,7 +310,7 @@ Matcher<Suggestion> EqualsSuggestion(const Suggestion& suggestion) {
 
 #if !BUILDFLAG(IS_IOS)
 Matcher<Suggestion> EqualsUndoAutofillSuggestion() {
-  return EqualsSuggestion(SuggestionType::kUndoOrClear,
+  return EqualsSuggestion(SuggestionType::kUndo,
 #if BUILDFLAG(IS_ANDROID)
                           base::i18n::ToUpper(l10n_util::GetStringUTF16(
                               IDS_AUTOFILL_UNDO_MENU_ITEM)),

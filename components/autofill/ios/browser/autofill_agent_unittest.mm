@@ -669,9 +669,8 @@ TEST_F(AutofillAgentTest, onSuggestionsReady_Undo) {
   autofillSuggestions.push_back(
       autofill::Suggestion(u"", u"", autofill::Suggestion::Icon::kNoIcon,
                            autofill::SuggestionType::kAddressEntry));
-  autofillSuggestions.push_back(
-      autofill::Suggestion(u"", u"", autofill::Suggestion::Icon::kUndo,
-                           SuggestionType::kUndoOrClear));
+  autofillSuggestions.push_back(autofill::Suggestion(
+      u"", u"", autofill::Suggestion::Icon::kUndo, SuggestionType::kUndo));
   [autofill_agent_
        showAutofillPopup:autofillSuggestions
       suggestionDelegate:base::WeakPtr<autofill::AutofillSuggestionDelegate>()];
@@ -706,8 +705,7 @@ TEST_F(AutofillAgentTest, onSuggestionsReady_Undo) {
   // Undo should appear as the first suggestion. Otherwise, the order of
   // suggestions should not change.
   EXPECT_EQ(3U, completion_handler_suggestions.count);
-  EXPECT_EQ(SuggestionType::kUndoOrClear,
-            completion_handler_suggestions[0].type);
+  EXPECT_EQ(SuggestionType::kUndo, completion_handler_suggestions[0].type);
   EXPECT_EQ(autofill::SuggestionType::kAddressEntry,
             completion_handler_suggestions[1].type);
   EXPECT_EQ(autofill::SuggestionType::kAddressEntry,
@@ -728,9 +726,8 @@ TEST_F(AutofillAgentTest, onSuggestionsReady_UndoWithGPay) {
   autofillSuggestions.push_back(
       autofill::Suggestion(u"", u"", autofill::Suggestion::Icon::kNoIcon,
                            autofill::SuggestionType::kCreditCardEntry));
-  autofillSuggestions.push_back(
-      autofill::Suggestion(u"", u"", autofill::Suggestion::Icon::kUndo,
-                           SuggestionType::kUndoOrClear));
+  autofillSuggestions.push_back(autofill::Suggestion(
+      u"", u"", autofill::Suggestion::Icon::kUndo, SuggestionType::kUndo));
   [autofill_agent_
        showAutofillPopup:autofillSuggestions
       suggestionDelegate:base::WeakPtr<autofill::AutofillSuggestionDelegate>()];
@@ -763,8 +760,7 @@ TEST_F(AutofillAgentTest, onSuggestionsReady_UndoWithGPay) {
       }));
 
   EXPECT_EQ(3U, completion_handler_suggestions.count);
-  EXPECT_EQ(SuggestionType::kUndoOrClear,
-            completion_handler_suggestions[0].type);
+  EXPECT_EQ(SuggestionType::kUndo, completion_handler_suggestions[0].type);
   EXPECT_EQ(autofill::SuggestionType::kCreditCardEntry,
             completion_handler_suggestions[1].type);
   EXPECT_EQ(autofill::SuggestionType::kCreditCardEntry,
@@ -1124,15 +1120,15 @@ TEST_F(AutofillAgentTest, DidSelectSuggestion_Undo) {
 
   // Mock the suggestion delegate that will be called by the "Undo" action
   autofill::MockAutofillSuggestionDelegate mock_delegate;
-  EXPECT_CALL(mock_delegate,
-              DidAcceptSuggestion(
-                  ::testing::Field(&autofill::Suggestion::type,
-                                   autofill::SuggestionType::kUndoOrClear),
-                  ::testing::_));
+  EXPECT_CALL(
+      mock_delegate,
+      DidAcceptSuggestion(::testing::Field(&autofill::Suggestion::type,
+                                           autofill::SuggestionType::kUndo),
+                          ::testing::_));
 
   // Show the popup to set the delegate used by didSelectSuggestion.
   std::vector<autofill::Suggestion> suggestions;
-  suggestions.emplace_back(u"", autofill::SuggestionType::kUndoOrClear);
+  suggestions.emplace_back(u"", autofill::SuggestionType::kUndo);
   [autofill_agent_ showAutofillPopup:suggestions
                   suggestionDelegate:mock_delegate.GetWeakPtr()];
 
@@ -1140,7 +1136,7 @@ TEST_F(AutofillAgentTest, DidSelectSuggestion_Undo) {
   FormRendererId form_id(1);
   FieldRendererId field1_id(2);
   FormSuggestion* form_suggestion = SimpleFormSuggestion(
-      u"", autofill::SuggestionType::kUndoOrClear, mock_delegate.GetWeakPtr());
+      u"", autofill::SuggestionType::kUndo, mock_delegate.GetWeakPtr());
   [autofill_agent_ didSelectSuggestion:form_suggestion
                                atIndex:0
                                   form:@"single-username-form"

@@ -98,7 +98,7 @@ typedef NS_ENUM(NSInteger, CWVSuggestionType) {
   // Other suggestions.
   CWVSuggestionTypeTitle = 45,
   CWVSuggestionTypeSeparator = 46,
-  CWVSuggestionTypeUndoOrClear = 47,
+  CWVSuggestionTypeUndo = 47,
   CWVSuggestionTypeMixedFormMessage = 48,
 
   // Top level suggestion rendered when test addresses are available. Shown only

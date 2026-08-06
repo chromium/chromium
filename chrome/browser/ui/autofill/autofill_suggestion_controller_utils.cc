@@ -59,7 +59,7 @@ SuggestionSection GetSuggestionSection(SuggestionType type) {
     case SuggestionType::kManageEnhancedAutofill:
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kSeePromoCodeDetails:
-    case SuggestionType::kUndoOrClear:
+    case SuggestionType::kUndo:
     case SuggestionType::kViewPasswordDetails:
       return SuggestionSection::kFooter;
 

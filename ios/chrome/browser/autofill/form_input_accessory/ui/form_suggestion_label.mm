@@ -294,7 +294,7 @@ bool IsPasswordSuggestion(FormSuggestion* suggestion) {
     case SuggestionType::kIdentityCredential:
     case SuggestionType::kTitle:
     case SuggestionType::kSeparator:
-    case SuggestionType::kUndoOrClear:
+    case SuggestionType::kUndo:
     case SuggestionType::kMixedFormMessage:
     case SuggestionType::kDevtoolsTestAddresses:
     case SuggestionType::kDevtoolsTestAddressByCountry:
@@ -340,7 +340,7 @@ NSString* PasswordSuggestionDisplayText(NSString* suggestion_value) {
 NSString* AccessibilityLabel(NSString* suggestion_text,
                              NSString* suggestion_description,
                              SuggestionType suggestion_type) {
-  if (suggestion_type == SuggestionType::kUndoOrClear) {
+  if (suggestion_type == SuggestionType::kUndo) {
     // On Mobile, "Undo Autofill" is hidden from the KeyboardAccessory to save
     // horizontal space and instead only the icon is shown. That's why the
     // string is explicitly inlined here instead of looking at the suggestion

@@ -147,12 +147,12 @@ struct ProfileWithText {
   std::u16string text;
 };
 
-Suggestion CreateUndoOrClearFormSuggestion() {
+Suggestion CreateUndoSuggestion() {
   std::u16string value = l10n_util::GetStringUTF16(IDS_AUTOFILL_UNDO_MENU_ITEM);
   if constexpr (BUILDFLAG(IS_ANDROID)) {
     value = base::i18n::ToUpper(value);
   }
-  Suggestion suggestion(value, SuggestionType::kUndoOrClear);
+  Suggestion suggestion(value, SuggestionType::kUndo);
   suggestion.icon = Suggestion::Icon::kUndo;
   // TODO(crbug.com/40266549): update "Clear Form" a11y announcement to "Undo"
   suggestion.acceptance_a11y_announcement =
@@ -452,7 +452,7 @@ std::vector<Suggestion> GetAddressFooterSuggestions(bool is_autofilled) {
   std::vector<Suggestion> footer_suggestions;
   footer_suggestions.emplace_back(SuggestionType::kSeparator);
   if (is_autofilled) {
-    footer_suggestions.push_back(CreateUndoOrClearFormSuggestion());
+    footer_suggestions.push_back(CreateUndoSuggestion());
   }
   footer_suggestions.push_back(CreateManageAddressesSuggestion());
   return footer_suggestions;

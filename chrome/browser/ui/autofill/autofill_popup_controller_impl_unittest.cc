@@ -893,7 +893,7 @@ TEST_F(AutofillPopupControllerImplTest,
 
   Suggestion footer_suggestion1 = Suggestion(kSeparator);
   footer_suggestion1.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
-  Suggestion footer_suggestion2 = Suggestion(kUndoOrClear);
+  Suggestion footer_suggestion2 = Suggestion(kUndo);
   footer_suggestion2.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
 
   AutofillPopupController& controller =
@@ -912,7 +912,7 @@ TEST_F(AutofillPopupControllerImplTest,
               ElementsAre(Field(&Suggestion::type, kAddressEntry),
                           Field(&Suggestion::type, kAddressEntry),
                           Field(&Suggestion::type, kSeparator),
-                          Field(&Suggestion::type, kUndoOrClear)));
+                          Field(&Suggestion::type, kUndo)));
   EXPECT_THAT(
       controller.GetSuggestionFilterMatches(),
       ElementsAre(std::optional<AutofillPopupController::SuggestionFilterMatch>(
@@ -931,7 +931,7 @@ TEST_F(AutofillPopupControllerImplTest,
   EXPECT_THAT(controller.GetSuggestions(),
               ElementsAre(Field(&Suggestion::type, kAddressEntry),
                           Field(&Suggestion::type, kSeparator),
-                          Field(&Suggestion::type, kUndoOrClear)));
+                          Field(&Suggestion::type, kUndo)));
   EXPECT_THAT(
       controller.GetSuggestionFilterMatches(),
       ElementsAre(std::optional<AutofillPopupController::SuggestionFilterMatch>(
@@ -945,7 +945,7 @@ TEST_F(AutofillPopupControllerImplTest,
   EXPECT_EQ(controller.GetSuggestions().size(), 2u);
   EXPECT_THAT(controller.GetSuggestions(),
               ElementsAre(Field(&Suggestion::type, kSeparator),
-                          Field(&Suggestion::type, kUndoOrClear)));
+                          Field(&Suggestion::type, kUndo)));
   EXPECT_THAT(controller.GetSuggestionFilterMatches(),
               ElementsAre(std::nullopt, std::nullopt));
 }

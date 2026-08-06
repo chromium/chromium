@@ -104,7 +104,7 @@ bool IsSuggestionHandledInPasswordManager(SuggestionType type) {
     case SuggestionType::kManageIban:
     case SuggestionType::kManageLoyaltyCard:
     case SuggestionType::kManageEnhancedAutofill:
-    case SuggestionType::kUndoOrClear:
+    case SuggestionType::kUndo:
     case SuggestionType::kDatalistEntry:
     case SuggestionType::kAutocompleteEntry:
     case SuggestionType::kComposeResumeNudge:

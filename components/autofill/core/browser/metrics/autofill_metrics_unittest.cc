@@ -654,7 +654,7 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
         AutofillSuggestionTriggerSource::kFormControlElementClicked);
 
     external_delegate().DidAcceptSuggestion(
-        Suggestion(SuggestionType::kUndoOrClear),
+        Suggestion(SuggestionType::kUndo),
         AutofillSuggestionDelegate::SuggestionMetadata{.multi_index = {0}});
 
     EXPECT_EQ(

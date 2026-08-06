@@ -401,7 +401,7 @@ bool HasGuid(const Suggestion::Payload& payload) {
       suggestion.type == SuggestionType::kAddressFieldByFieldFilling ||
       suggestion.type == SuggestionType::kFillAutofillAi ||
       suggestion.type == SuggestionType::kAtMemorySearchAffordance ||
-      suggestion.type == SuggestionType::kUndoOrClear ||
+      suggestion.type == SuggestionType::kUndo ||
       (base::FeatureList::IsEnabled(
            autofill::features::kAutofillEnableBottomSheetScanCardAndFill) &&
        suggestion.type == SuggestionType::kSaveAndFillCreditCardEntry)) {
@@ -617,7 +617,7 @@ bool HasGuid(const Suggestion::Payload& payload) {
         }
         break;
 
-      case SuggestionType::kUndoOrClear:
+      case SuggestionType::kUndo:
         // There's no information to set, but this will not be discarded because
         // `suggestionIconType` will be set below.
         break;
@@ -746,7 +746,7 @@ bool HasGuid(const Suggestion::Payload& payload) {
     }
 
     // Put the Undo suggestion at the front of the suggestions.
-    if (popup_suggestion.type == SuggestionType::kUndoOrClear) {
+    if (popup_suggestion.type == SuggestionType::kUndo) {
       [suggestions insertObject:suggestion atIndex:0];
     } else {
       [suggestions addObject:suggestion];

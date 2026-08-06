@@ -1073,7 +1073,7 @@ bool IsCreditCardFooterSuggestion(
     case SuggestionType::kManageCreditCard:
     case SuggestionType::kMaximizeCreditCardBenefitsEntry:
     case SuggestionType::kScanCreditCard:
-    case SuggestionType::kUndoOrClear:
+    case SuggestionType::kUndo:
       return true;
     case SuggestionType::kAccountStoragePasswordEntry:
     case SuggestionType::kAddressEntry:

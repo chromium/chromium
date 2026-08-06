@@ -234,7 +234,7 @@ TEST_F(ValuableSuggestionGeneratorTest, WithMatchingDomainAndFieldAutofilled) {
                   IDS_AUTOFILL_LOYALTY_CARDS_ALL_YOUR_CARDS_SUBMENU_TITLE)),
 #endif  // !BUILDFLAG(IS_ANDROID)
           EqualsSuggestion(SuggestionType::kSeparator),
-          EqualsSuggestion(SuggestionType::kUndoOrClear),
+          EqualsSuggestion(SuggestionType::kUndo),
           EqualsManageLoyaltyCardsSuggestion()));
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -462,7 +462,7 @@ TEST_F(ValuableSuggestionGeneratorTest,
       Suggestion(u"test-email2@domain2.example", SuggestionType::kAddressEntry),
       Suggestion(SuggestionType::kSeparator),
       Suggestion(l10n_util::GetStringUTF16(IDS_AUTOFILL_UNDO_MENU_ITEM),
-                 SuggestionType::kUndoOrClear),
+                 SuggestionType::kUndo),
       Suggestion(l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_ADDRESSES),
                  SuggestionType::kManageAddress)};
 
@@ -483,7 +483,7 @@ TEST_F(ValuableSuggestionGeneratorTest,
                            u"test-email2@domain2.example"),
           EqualsSuggestion(SuggestionType::kSeparator),
           EqualsSuggestion(
-              SuggestionType::kUndoOrClear,
+              SuggestionType::kUndo,
               l10n_util::GetStringUTF16(IDS_AUTOFILL_UNDO_MENU_ITEM)),
           EqualsSuggestion(
               SuggestionType::kManageAddress,
@@ -506,7 +506,7 @@ TEST_F(ValuableSuggestionGeneratorTest,
                                IDS_AUTOFILL_LOYALTY_CARDS_SUBMENU_TITLE)),
           EqualsSuggestion(SuggestionType::kSeparator),
           EqualsSuggestion(
-              SuggestionType::kUndoOrClear,
+              SuggestionType::kUndo,
               l10n_util::GetStringUTF16(IDS_AUTOFILL_UNDO_MENU_ITEM)),
           EqualsSuggestion(
               SuggestionType::kManageAddress,

@@ -202,7 +202,7 @@ Suggestion CreateManageShoppingSuggestion() {
 // Returns a suggestion to "Undo" Autofill.
 Suggestion CreateUndoSuggestion() {
   Suggestion suggestion(l10n_util::GetStringUTF16(IDS_AUTOFILL_UNDO_MENU_ITEM),
-                        SuggestionType::kUndoOrClear);
+                        SuggestionType::kUndo);
   suggestion.icon = Suggestion::Icon::kUndo;
   suggestion.acceptance_a11y_announcement =
       l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_CLEARED_FORM);

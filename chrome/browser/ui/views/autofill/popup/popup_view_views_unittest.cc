@@ -113,7 +113,7 @@ using CellType = PopupRowView::CellType;
 const std::vector<SuggestionType> kClickableSuggestionTypes{
     SuggestionType::kAutocompleteEntry,
     SuggestionType::kPasswordEntry,
-    SuggestionType::kUndoOrClear,
+    SuggestionType::kUndo,
     SuggestionType::kManageAddress,
     SuggestionType::kManageCreditCard,
     SuggestionType::kManageIban,
@@ -876,7 +876,7 @@ TEST_F(PopupViewViewsTest, ShowsWidePopup_ElementAtRightEdge) {
 // This is a regression test for crbug.com/40710172.
 TEST_F(PopupViewViewsTest, ShowViewWithOnlyFooterItemsShouldNotCrash) {
   // Set suggestions to have only a footer item.
-  std::vector<SuggestionType> suggestion_ids = {SuggestionType::kUndoOrClear};
+  std::vector<SuggestionType> suggestion_ids = {SuggestionType::kUndo};
   controller().set_suggestions(suggestion_ids);
   CreateAndShowView();
 }

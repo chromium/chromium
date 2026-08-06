@@ -772,7 +772,7 @@ void AutofillKeyboardAccessoryControllerImpl::OpenSettingsForEntityType(
 void AutofillKeyboardAccessoryControllerImpl::
     OrderSuggestionsAndCreateLabels() {
   // If there is an Undo suggestion, move it to the front.
-  if (auto it = std::ranges::find(suggestions_, SuggestionType::kUndoOrClear,
+  if (auto it = std::ranges::find(suggestions_, SuggestionType::kUndo,
                                   &Suggestion::type);
       it != suggestions_.end()) {
     std::rotate(suggestions_.begin(), it, it + 1);

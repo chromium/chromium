@@ -88,7 +88,7 @@ constexpr auto kPopupItemTypesUsingLeadingIcons = DenseSet<SuggestionType>(
      SuggestionType::kManageAutofillAiShopping,
      SuggestionType::kManageAutofillAiTravel, SuggestionType::kManageIban,
      SuggestionType::kManageLoyaltyCard,
-     SuggestionType::kManageEnhancedAutofill, SuggestionType::kUndoOrClear,
+     SuggestionType::kManageEnhancedAutofill, SuggestionType::kUndo,
      SuggestionType::kViewPasswordDetails, SuggestionType::kPendingStateSignin,
      SuggestionType::kWebauthnSignInWithAnotherDevice});
 
@@ -866,7 +866,7 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kTitle:
-    case SuggestionType::kUndoOrClear:
+    case SuggestionType::kUndo:
     case SuggestionType::kViewPasswordDetails:
     case SuggestionType::kWebauthnCredential:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
