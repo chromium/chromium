@@ -7,12 +7,15 @@
 
 #include <concepts>
 #include <cstdint>
+#include <limits>
+#include <optional>
 #include <string_view>
 #include <type_traits>
 #include <variant>
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
@@ -65,6 +68,50 @@ class WTF_EXPORT FormatArg {
 // Type alias for a view over a list of type-erased `FormatArg`s.
 using FormatArgs = base::span<const FormatArg>;
 
+namespace internal {
+
+struct ParsedWidth {
+  uint32_t width = 0;
+  size_t next_index = 0;
+};
+
+// Common constexpr helper to parse width specifier.
+// Returns the parsed width and next index after digits, or std::nullopt if
+// width is out of bounds.
+// If no digits are present, returns width 0 and `start_index`.
+template <typename StringType>
+constexpr std::optional<ParsedWidth> ParseWidth(
+    const StringType& format,
+    typename StringType::size_type start_index) {
+  auto len = format.length();
+  if (start_index >= len) {
+    return ParsedWidth{0, start_index};
+  }
+  // SAFETY: `start_index` is checked against `len`.
+  auto first_ch = UNSAFE_BUFFERS(format[start_index]);
+  if (!IsAsciiDigit(first_ch)) {
+    return ParsedWidth{0, start_index};
+  }
+
+  base::CheckedNumeric<uint32_t> width = 0;
+  auto i = start_index;
+  while (i < len) {
+    // SAFETY: `i` is checked against `len` in the loop condition.
+    auto ch = UNSAFE_BUFFERS(format[i]);
+    if (!IsAsciiDigit(ch)) {
+      break;
+    }
+    width = width * 10 + static_cast<uint32_t>(ch - '0');
+    if (!width.IsValid()) {
+      return std::nullopt;
+    }
+    ++i;
+  }
+  return ParsedWidth{width.ValueOrDefault(0), i};
+}
+
+}  // namespace internal
+
 // Internal wrapper class for format strings that performs compile-time
 // validation. Checks that braces `{}` match the number of arguments `Args...`
 // and validates escape sequences `{{` and `}}`. Not intended for direct public
@@ -85,6 +132,17 @@ class FormatString {
         } else if (i + 1 < len && format_[i + 1] == '}') {
           ++brace_count;
           ++i;
+        } else if (i + 1 < len && format_[i + 1] == ':') {
+          auto parsed = internal::ParseWidth(format_, i + 2);
+          if (!parsed.has_value()) {
+            FormatStringError("Format string width out of bounds");
+          }
+          i = parsed->next_index;
+          if (i >= len || format_[i] != '}') {
+            FormatStringError(
+                "Invalid format string: unclosed width specifier");
+          }
+          ++brace_count;
         } else {
           FormatStringError(
               "Invalid format string: unclosed or unsupported brace specifier");
@@ -148,8 +206,10 @@ WTF_EXPORT StringBuilder& VFormatTo(StringBuilder& builder,
 // Format String Specifications:
 // - Encoding: Expects ASCII / Latin1 string literals or `std::string_view`
 //   convertible types.
-// - Placeholders: Only unindexed `{}` is supported. Positional (e.g. `{0}`) or
-//   typed (e.g. `{:d}`) format specifiers are currently not supported.
+// - Placeholders: Unindexed `{}` or `{:}` and width-specified `{:width}`
+//   (where width is a 32-bit unsigned integer) are supported. Positional (e.g.
+//   `{0}`) or typed (e.g. `{:d}`) format specifiers are currently not
+//   supported.
 // - Escaping: `{{` outputs `{`, and `}}` outputs `}`.
 //
 // Supported Argument Types:

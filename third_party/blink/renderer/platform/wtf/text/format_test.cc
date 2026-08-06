@@ -56,4 +56,38 @@ TEST(FormatTest, VFormatToDirect) {
   EXPECT_EQ("Prefix: Value: 200", builder.ReleaseString());
 }
 
+TEST(FormatTest, WidthSpecifier) {
+  // Empty specifier {:}
+  EXPECT_EQ("42", Format("{:}", 42));
+  EXPECT_EQ("abc", Format("{:}", StringView("abc")));
+
+  // Integers (Right-aligned / padded on left)
+  EXPECT_EQ("   42", Format("{:5}", 42));
+  EXPECT_EQ(" -42", Format("{:4}", -42));
+  EXPECT_EQ("12345", Format("{:2}", 12345));
+  EXPECT_EQ("42", Format("{:0}", 42));
+
+  // Zero-padding is not supported yet.
+  EXPECT_NE("00042", Format("{:05}", 42));
+  EXPECT_NE("-042", Format("{:04}", -42));
+  EXPECT_EQ("12345", Format("{:02}", 12345));
+
+  // Strings (Left-aligned / padded on right)
+  EXPECT_EQ("abc  ", Format("{:5}", StringView("abc")));
+  EXPECT_EQ("abc", Format("{:2}", StringView("abc")));
+
+  // Multiple width specifiers
+  EXPECT_EQ("  1 +   2 =   3", Format("{:3} + {:3} = {:3}", 1, 2, 3));
+}
+
+TEST(FormatTest, WidthDeathTest) {
+  FormatArg args[] = {FormatArg(42)};
+  // Non-digit in width
+  EXPECT_DEATH_IF_SUPPORTED(VFormat("{:a}", FormatArgs(args)), "");
+  // Missing closing brace
+  EXPECT_DEATH_IF_SUPPORTED(VFormat("{:5", FormatArgs(args)), "");
+  // Width out of bounds
+  EXPECT_DEATH_IF_SUPPORTED(VFormat("{:4294967296}", FormatArgs(args)), "");
+}
+
 }  // namespace blink
