@@ -11918,25 +11918,6 @@ void Element::UpdateFocusgroupInShadowRootIfNeeded() {
     return;
   }
 
-  Element* ancestor = this;
-  bool has_focusgroup_ancestor = false;
-  while (ancestor) {
-    if (ancestor->GetFocusgroupData().behavior !=
-        FocusgroupBehavior::kNoBehavior) {
-      has_focusgroup_ancestor = true;
-      break;
-    }
-    ancestor = ancestor->parentElement();
-  }
-
-  // We don't need to update the focusgroup value for the ShadowDOM elements if
-  // there is no ancestor with a focusgroup value, since the parsing would be
-  // exactly the same as the one that happened when we first built the
-  // ShadowDOM.
-  if (!has_focusgroup_ancestor) {
-    return;
-  }
-
   // In theory, we should only reach this point when at least one node within
   // the shadow tree has the focusgroup attribute. However, it's possible to get
   // here if a node initially had the focusgroup attribute but then lost it
