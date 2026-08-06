@@ -235,7 +235,18 @@ class PasswordDialogViewTest : public base::test::WithFeatureOverride,
 
   content::WebContents* SetupTabWithTestController(Browser* browser);
 
-  TestManagePasswordsUIController* controller() const { return controller_; }
+  TestManagePasswordsUIController* controller(
+      Browser* target_browser = nullptr) const {
+    if (!target_browser) {
+      target_browser = browser();
+    }
+    content::WebContents* web_contents =
+        target_browser->tab_strip_model()->GetActiveWebContents();
+    return web_contents ? static_cast<TestManagePasswordsUIController*>(
+                              ManagePasswordsUIController::FromWebContents(
+                                  web_contents))
+                        : nullptr;
+  }
 
   ChromePasswordManagerClient* client() const {
     return ChromePasswordManagerClient::FromWebContents(
@@ -258,8 +269,6 @@ class PasswordDialogViewTest : public base::test::WithFeatureOverride,
   }
 
  private:
-  raw_ptr<TestManagePasswordsUIController, AcrossTasksDanglingUntriaged>
-      controller_;
   std::unique_ptr<CredentialManagerDialogControllerMock>
       remote_actor_mock_controller_;
   std::unique_ptr<PasswordCombinedSelectorView> remote_actor_view_;
@@ -311,14 +320,13 @@ content::WebContents* PasswordDialogViewTest::SetupTabWithTestController(
   autofill::ChromeAutofillClient::CreateForWebContents(raw_new_tab);
   ChromePasswordManagerClient::CreateForWebContents(raw_new_tab);
   EXPECT_TRUE(ChromePasswordManagerClient::FromWebContents(raw_new_tab));
-  controller_ = new TestManagePasswordsUIController(raw_new_tab);
+  new TestManagePasswordsUIController(raw_new_tab);
   browser->tab_strip_model()->AppendWebContents(std::move(new_tab), true);
 
   // Navigate to a Web URL.
   EXPECT_NO_FATAL_FAILURE(EXPECT_TRUE(
       ui_test_utils::NavigateToURL(browser, GURL("http://www.google.com"))));
-  EXPECT_EQ(controller_,
-            ManagePasswordsUIController::FromWebContents(raw_new_tab));
+  EXPECT_TRUE(ManagePasswordsUIController::FromWebContents(raw_new_tab));
   return raw_new_tab;
 }
 
@@ -557,15 +565,15 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest, PopupAccountChooserInIncognito) {
       base::BindOnce(&PasswordDialogViewTest::OnChooseCredential,
                      base::Unretained(this)));
   EXPECT_EQ(password_manager::ui::CREDENTIAL_REQUEST_STATE,
-            controller()->GetState());
-  EXPECT_TRUE(controller()->current_account_chooser());
+            controller(incognito)->GetState());
+  EXPECT_TRUE(controller(incognito)->current_account_chooser());
 
   EXPECT_CALL(*this, OnChooseCredential(Pointee(form)));
-  controller()->ChooseCredential(
+  controller(incognito)->ChooseCredential(
       form, password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD);
 
   // The first run experience isn't shown because of Incognito.
-  EXPECT_FALSE(controller()->current_autosignin_prompt());
+  EXPECT_FALSE(controller(incognito)->current_autosignin_prompt());
 }
 
 IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest, EscCancelsAutoSigninPrompt) {
