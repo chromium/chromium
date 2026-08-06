@@ -74,11 +74,14 @@ TabGroupView::TabGroupView(TabCollectionNode* collection_node)
           collection_node_->GetController()->GetStateController(),
           &tab_group_visual_data_))),
       group_line_(AddChildView(std::make_unique<views::View>())),
-      layout_manager_(*SetLayoutManager(
-          std::make_unique<TabCollectionAnimatingLayoutManager>(
-              std::make_unique<TabGroupViewLayout>(
-                  collection_node->orientation()),
-              *this))) {
+      layout_manager_(*SetLayoutManager(std::make_unique<
+                                        TabCollectionAnimatingLayoutManager>(
+          std::make_unique<TabGroupViewLayout>(collection_node->orientation()),
+          *this,
+          collection_node->orientation() == TabStripOrientation::kHorizontal
+              ? TabCollectionAnimatingLayoutManager::AnimationAxis::kHorizontal
+              : TabCollectionAnimatingLayoutManager::AnimationAxis::
+                    kVertical))) {
   collection_node->set_remove_child_from_node(base::BindRepeating(
       &TabCollectionAnimatingLayoutManager::AnimateAndDestroyChildView,
       base::Unretained(&layout_manager_.get())));

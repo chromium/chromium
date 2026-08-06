@@ -14,6 +14,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/tween.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
@@ -293,15 +294,19 @@ bool TabCollectionAnimatingLayoutManager::RecalculateTarget() {
   }
 
   // Calculate the target layout with unbounded height for vertical axis, or
-  // bounded by available parent width for horizontal axis, to support dynamic
-  // tab shrinking and scrolling.
+  // bounded by available width for horizontal axis, to support dynamic tab
+  // shrinking and scrolling.
   views::SizeBounds size_bounds;
   if (animation_axis_ == AnimationAxis::kVertical) {
     size_bounds = views::SizeBounds(std::max(host_view()->width(), 0), {});
   } else {
-    const int available_width = host_view()->parent()
-                                    ? host_view()->parent()->width()
-                                    : host_view()->width();
+    // Top-level containers directly in a scroll view use the viewport width to
+    // support proportional shrinking, while nested containers (e.g. a tab
+    // group) use their own allocated width.
+    const views::ScrollView* scroll_view =
+        views::ScrollView::GetScrollViewForContents(host_view());
+    const int available_width =
+        scroll_view ? scroll_view->width() : host_view()->width();
     size_bounds = views::SizeBounds(std::max(available_width, 0),
                                     std::max(host_view()->height(), 0));
   }
