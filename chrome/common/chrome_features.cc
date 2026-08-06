@@ -1996,6 +1996,10 @@ const base::FeatureParam<bool> kWebUIReloadButtonProfilePrewarming{
 // first non-empty paint.
 const base::FeatureParam<bool> kWebUIReloadButtonKeepVisibleUntilPaint{
     &kWebUIReloadButton, "WebUIReloadButtonKeepVisibleUntilPaint", false};
+// When enabled, bypasses creating URL loader throttles for WebUI resources
+// during startup.
+const base::FeatureParam<bool> kWebUIReloadButtonBypassLoaderThrottles{
+    &kWebUIReloadButton, "WebUIReloadButtonBypassLoaderThrottles", false};
 // When enabled, the split tabs button will be replaced with WebUI loaded from
 // chrome://webui-toolbar.top-chrome.
 // crbug.com/470039098
@@ -2031,6 +2035,7 @@ BASE_FEATURE(kWebUIPinnedToolbarActions, base::FEATURE_DISABLED_BY_DEFAULT);
 // When enabled, the extensions container will be replaced with WebUI loaded
 // from chrome://webui-toolbar.top-chrome.
 BASE_FEATURE(kWebUIExtensionsContainer, base::FEATURE_DISABLED_BY_DEFAULT);
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Enables the User-Agent override fix for SearchPrefetch. This will work only

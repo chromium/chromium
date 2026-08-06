@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/google_url_loader_throttle.h"
 #include "chrome/common/request_header_integrity/buildflags.h"
 #include "chrome/renderer/chrome_content_renderer_client.h"
@@ -22,6 +23,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/web_identity.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
@@ -168,6 +170,16 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
     base::optional_ref<const blink::LocalFrameToken> local_frame_token,
     const network::ResourceRequest& request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#if !BUILDFLAG(IS_ANDROID)
+  const bool is_webui = base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kTopChromeWebUI);
+  const bool bypass_throttles =
+      is_webui && features::kWebUIReloadButtonBypassLoaderThrottles.Get();
+  // Resource loads for topchrome WebUIs shouldn't be throttled.
+  if (bypass_throttles) {
+    return {};
+  }
+#endif
 
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
 
