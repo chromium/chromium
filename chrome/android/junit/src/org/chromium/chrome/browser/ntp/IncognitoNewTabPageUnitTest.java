@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -102,5 +103,46 @@ public class IncognitoNewTabPageUnitTest {
         assertTrue(
                 "ScrollView should be clip to padding where there's no bottom insets.",
                 view.getClipToPadding());
+    }
+
+    @Test
+    public void testDescriptionViewLayoutAdaptsToViewWidth() {
+        IncognitoDescriptionView descriptionView =
+                mIncognitoNtp.getView().findViewById(R.id.new_tab_incognito_container);
+        LinearLayout bulletpointsContainer =
+                descriptionView.findViewById(R.id.new_tab_incognito_bulletpoints_container);
+
+        float density = mActivity.getResources().getDisplayMetrics().density;
+
+        // Simulate measuring the view at a narrow width (e.g. 580dp, as when vertical tabs is
+        // shown).
+        int narrowWidthPx = Math.round(580 * density);
+        int heightPx = Math.round(800 * density);
+
+        descriptionView.measure(
+                android.view.View.MeasureSpec.makeMeasureSpec(
+                        narrowWidthPx, android.view.View.MeasureSpec.EXACTLY),
+                android.view.View.MeasureSpec.makeMeasureSpec(
+                        heightPx, android.view.View.MeasureSpec.EXACTLY));
+
+        // When view width is <= 720dp, bullet points should be stacked vertically (narrow layout).
+        assertEquals(
+                "Bullet points should be vertical when view width is narrow.",
+                LinearLayout.VERTICAL,
+                bulletpointsContainer.getOrientation());
+
+        // Simulate measuring the view at a wide width (e.g. 800dp).
+        int wideWidthPx = Math.round(800 * density);
+        descriptionView.measure(
+                android.view.View.MeasureSpec.makeMeasureSpec(
+                        wideWidthPx, android.view.View.MeasureSpec.EXACTLY),
+                android.view.View.MeasureSpec.makeMeasureSpec(
+                        heightPx, android.view.View.MeasureSpec.EXACTLY));
+
+        // When view width is > 720dp, bullet points should be horizontal (wide layout).
+        assertEquals(
+                "Bullet points should be horizontal when view width is wide.",
+                LinearLayout.HORIZONTAL,
+                bulletpointsContainer.getOrientation());
     }
 }
