@@ -22,6 +22,7 @@
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/map_util.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/debug/crash_logging.h"
@@ -2875,13 +2876,15 @@ ButtonTitleList GetButtonTitles(const WebFormElement& web_form,
     return InferButtonTitlesForForm(web_form);
   }
 
-  auto [form_position, cache_miss] = button_titles_cache->emplace(
-      GetFormRendererId(web_form), ButtonTitleList());
-  if (!cache_miss)
-    return form_position->second;
+  FormRendererId form_id = GetFormRendererId(web_form);
+  if (const ButtonTitleList* titles =
+          base::FindOrNull(*button_titles_cache, form_id)) {
+    return *titles;
+  }
 
-  form_position->second = InferButtonTitlesForForm(web_form);
-  return form_position->second;
+  ButtonTitleList button_titles = InferButtonTitlesForForm(web_form);
+  button_titles_cache->insert_or_assign(form_id, button_titles);
+  return button_titles;
 }
 
 WebFormElement GetFormByRendererId(FormRendererId form_renderer_id) {
