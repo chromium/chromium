@@ -634,12 +634,10 @@ void WebView::UpdateCrashedOverlayView() {
 }
 
 void WebView::UpdateNativeViewHostAccessibleParent() {
-  // Updates the parent accessible object on the NativeView. As WebView
-  // overrides GetNativeViewAccessible() to return the accessible from the
-  // WebContents, it needs to ensure the accessible from the parent is set on
-  // the NativeView.
-  View* parent =
-      ::features::IsAccessibilityTreeForViewsEnabled() ? this : this->parent();
+  // The NativeView needs the accessible of an ancestor that platform APIs
+  // expose. That is never the web view itself, because its own accessible
+  // belongs to the web contents.
+  View* parent = this->parent();
   if (!parent) {
     return;
   }
