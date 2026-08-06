@@ -10,6 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
+#include "base/win/win_util.h"
 #include "chrome/installer/util/install_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -85,6 +86,10 @@ class BrowserDMTokenStorageWinTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   registry_util::RegistryOverrideManager registry_override_manager_;
+  base::win::ScopedDomainStateForTesting scoped_domain_{false};
+  base::win::ScopedDeviceRegisteredWithManagementForTesting scoped_management_{
+      false};
+  base::win::ScopedAzureADJoinStateForTesting scoped_azure_ad_{std::nullopt};
 };
 
 TEST_F(BrowserDMTokenStorageWinTest, InitClientId) {
