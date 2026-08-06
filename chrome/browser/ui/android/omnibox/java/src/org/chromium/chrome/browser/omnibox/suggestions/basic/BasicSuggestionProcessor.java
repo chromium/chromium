@@ -243,12 +243,6 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
             textLine2 = null;
         }
 
-        if (OmniboxCapabilities.isDesktopPlatform()) {
-            model.set(
-                    SuggestionViewProperties.TEXT_LINE_1_TEXT_APPEARANCE,
-                    R.style.TextAppearance_TextMedium);
-        }
-
         model.set(SuggestionViewProperties.IS_SEARCH_SUGGESTION, isSearchSuggestion);
         model.set(SuggestionViewProperties.ALLOW_WRAP_AROUND, isSearchSuggestion);
         model.set(SuggestionViewProperties.TEXT_LINE_1_TEXT, textLine1);

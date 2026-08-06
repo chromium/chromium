@@ -24,10 +24,7 @@ public class SuggestionViewViewBinder extends BaseSuggestionViewBinder<View> {
      */
     @Override
     protected void bindContent(PropertyModel model, View view, PropertyKey propertyKey) {
-        if (propertyKey == SuggestionViewProperties.TEXT_LINE_1_TEXT_APPEARANCE) {
-            TextView tv = view.findViewById(R.id.line_1);
-            tv.setTextAppearance(model.get(SuggestionViewProperties.TEXT_LINE_1_TEXT_APPEARANCE));
-        } else if (propertyKey == SuggestionViewProperties.TEXT_LINE_1_TEXT) {
+        if (propertyKey == SuggestionViewProperties.TEXT_LINE_1_TEXT) {
             TextView tv = view.findViewById(R.id.line_1);
             tv.setText(model.get(SuggestionViewProperties.TEXT_LINE_1_TEXT));
             int minHeight = getResourceProvider(model).getSuggestionMinHeight(tv.getLineCount());

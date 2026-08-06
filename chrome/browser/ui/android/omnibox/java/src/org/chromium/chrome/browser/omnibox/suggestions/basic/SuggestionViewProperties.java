@@ -12,7 +12,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewPr
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** The properties associated with rendering the default suggestion view. */
@@ -20,10 +19,6 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 public @interface SuggestionViewProperties {
     /** Whether suggestion is a search suggestion. */
     WritableBooleanPropertyKey IS_SEARCH_SUGGESTION = new WritableBooleanPropertyKey();
-
-    /** The resource id of the text appearance attribute for the text on line 1. */
-    @VisibleForTesting
-    WritableIntPropertyKey TEXT_LINE_1_TEXT_APPEARANCE = new WritableIntPropertyKey();
 
     /** The actual text content for the first line of text. */
     @VisibleForTesting
@@ -47,7 +42,6 @@ public @interface SuggestionViewProperties {
             new PropertyKey[] {
                 IS_SEARCH_SUGGESTION,
                 TEXT_LINE_1_TEXT,
-                TEXT_LINE_1_TEXT_APPEARANCE,
                 TEXT_LINE_2_TEXT,
                 ALLOW_WRAP_AROUND,
                 CONTENT_DESCRIPTION
