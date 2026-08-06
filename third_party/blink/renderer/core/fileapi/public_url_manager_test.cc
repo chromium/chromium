@@ -114,7 +114,7 @@ class PublicURLManagerTest : public testing::Test {
 TEST_F(PublicURLManagerTest, RegisterURLRegistrable) {
   FakeURLRegistry registry;
   TestURLRegistrable registrable(registry);
-  String url = url_manager().RegisterURL(&registrable);
+  String url = url_manager().RegisterUrl(&registrable);
   ASSERT_EQ(1u, registry.registrations.size());
   EXPECT_EQ(0u, url_store_.registrations.size());
   EXPECT_EQ(url, registry.registrations[0].url);
@@ -138,7 +138,7 @@ TEST_F(PublicURLManagerTest, RegisterURLRegistrable) {
 TEST_F(PublicURLManagerTest, RegisterBlob) {
   Blob* blob = MakeGarbageCollected<Blob>(
       BlobDataHandle::Create("id", "", 0, CreateMojoBlob("id")));
-  String url = url_manager().RegisterURL(blob);
+  String url = url_manager().RegisterUrl(blob);
 
   ASSERT_EQ(1u, url_store_.registrations.size());
   EXPECT_EQ(url, url_store_.registrations.begin()->key);

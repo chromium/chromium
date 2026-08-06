@@ -555,7 +555,7 @@ void HTMLVideoElement::RequestSaveVideoFrame() {
   LocalDOMWindow* window = GetDocument().domWindow();
   CHECK(window);
   PublicURLManager& url_manager = window->GetPublicURLManager();
-  String blob_url = url_manager.RegisterURL(blob);
+  String blob_url = url_manager.RegisterUrl(blob);
 
   mojo::PendingRemote<mojom::blink::BlobURLToken> blob_url_token;
   url_manager.ResolveAsBlobURLToken(

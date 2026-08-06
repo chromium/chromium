@@ -63,10 +63,10 @@ class CORE_EXPORT PublicURLManager final
 
   // Returns a serialized new Blob URL and registers the Blob with the
   // BlobURLStore.
-  String RegisterURL(Blob*);
+  String RegisterUrl(Blob*);
   // Returns a serialized new Blob URL and registers the URLRegistrable with its
   // URLRegistry.
-  String RegisterURL(URLRegistrable*);
+  String RegisterUrl(URLRegistrable*);
   // Revokes the given URL.
   void Revoke(const KURL&);
   // Resolves the provided URL to a factory capable of creating loaders for
@@ -96,7 +96,7 @@ class CORE_EXPORT PublicURLManager final
   mojom::blink::BlobURLStore& GetBlobURLStore();
 
  private:
-  KURL GenerateURL() const;
+  KURL GenerateUrl() const;
   String CompleteRegistration(const KURL&);
 
   typedef String URLString;

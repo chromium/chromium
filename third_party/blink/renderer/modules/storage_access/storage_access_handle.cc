@@ -385,7 +385,7 @@ String StorageAccessHandle::createObjectURL(
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_createObjectURL_Use);
   GetSupplementable()->CountUse(WebFeature::kCreateObjectURLBlob);
   CHECK(blob);
-  return public_url_manager->RegisterURL(blob);
+  return public_url_manager->RegisterUrl(blob);
 }
 
 void StorageAccessHandle::revokeObjectURL(

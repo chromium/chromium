@@ -138,13 +138,13 @@ mojom::blink::BlobURLStore& PublicURLManager::GetBlobURLStore() {
   }
 }
 
-String PublicURLManager::RegisterURL(URLRegistrable* registrable) {
+String PublicURLManager::RegisterUrl(URLRegistrable* registrable) {
   if (is_stopped_) {
     return String();
   }
   CHECK(registrable);
 
-  const KURL url = GenerateURL();
+  const KURL url = GenerateUrl();
   const String& url_string = url.GetString();
 
   URLRegistry* registry = &registrable->Registry();
@@ -154,13 +154,13 @@ String PublicURLManager::RegisterURL(URLRegistrable* registrable) {
   return CompleteRegistration(url);
 }
 
-String PublicURLManager::RegisterURL(Blob* blob) {
+String PublicURLManager::RegisterUrl(Blob* blob) {
   if (is_stopped_) {
     return String();
   }
   CHECK(blob);
 
-  const KURL url = GenerateURL();
+  const KURL url = GenerateUrl();
   const String& url_string = url.GetString();
 
   mojo::PendingRemote<mojom::blink::Blob> blob_remote;
@@ -175,7 +175,7 @@ String PublicURLManager::RegisterURL(Blob* blob) {
   return CompleteRegistration(url);
 }
 
-KURL PublicURLManager::GenerateURL() const {
+KURL PublicURLManager::GenerateUrl() const {
   KURL url =
       BlobURL::CreatePublicURL(GetExecutionContext()->GetSecurityOrigin());
   DCHECK(!url.IsEmpty());
