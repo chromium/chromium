@@ -561,11 +561,22 @@ class GlicBrowserTestMixin : public T {
   }
 
   // Opens a new tab with the given URL and wait for load to complete.
-  tabs::TabInterface* CreateAndActivateTab(const GURL& url) {
-    tabs::TabInterface* new_tab = T::GetTabListInterface()->OpenTab(url, -1);
-    T::GetTabListInterface()->ActivateTab(new_tab->GetHandle());
+  tabs::TabInterface* CreateAndActivateTab(TabListInterface* tab_list,
+                                           const GURL& url) {
+    CHECK(tab_list);
+    tabs::TabInterface* new_tab = tab_list->OpenTab(url, -1);
+    tab_list->ActivateTab(new_tab->GetHandle());
     CHECK(content::WaitForLoadStop(new_tab->GetContents()));
     return new_tab;
+  }
+
+  tabs::TabInterface* CreateAndActivateTab(const GURL& url) {
+    return CreateAndActivateTab(T::GetTabListInterface(), url);
+  }
+
+  tabs::TabInterface* CreateAndActivateTab(BrowserWindowInterface* browser,
+                                           const GURL& url) {
+    return CreateAndActivateTab(TabListInterface::From(browser), url);
   }
 
   // Creates a new browser window and returns it. On Desktop, it will also
