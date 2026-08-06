@@ -1407,17 +1407,17 @@ void TabDragController::AttachToNewContext(
   // index in MoveAttached() later, if we're transitioning to kDraggingTabs;
   // if we're transitioning to kDraggingWindow this is the correct index, 0.
   size_t index = tab_strip_model->IndexOfFirstNonPinnedTab();
-  // When focus mode is active, initial insertion of attached dragged tabs
-  // should target the focused group's range to prevent index desync.
-  if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
-    const std::optional<tab_groups::TabGroupId> focused_group =
-        tab_strip_model->GetFocusedGroup();
-    if (focused_group.has_value()) {
-      const TabGroup* group =
-          tab_strip_model->group_model()->GetTabGroup(*focused_group);
-      if (group && group->ListTabs().length() > 0) {
-        index = group->ListTabs().start();
-      }
+  // When focus mode is active, initial insertion of attached dragged unpinned
+  // tabs should target the focused group's range to prevent index desync.
+  // Pinned tabs cannot be inserted into tab groups.
+  const std::optional<tab_groups::TabGroupId> focused_group =
+      tab_strip_model->GetFocusedGroup();
+  if (focused_group.has_value() &&
+      !std::ranges::any_of(drag_data_.tab_drag_data_, &TabDragData::pinned)) {
+    const TabGroup* group =
+        tab_strip_model->group_model()->GetTabGroup(*focused_group);
+    if (group && group->ListTabs().length() > 0) {
+      index = group->ListTabs().start();
     }
   }
 

@@ -5505,6 +5505,21 @@ std::optional<int> TabStripModel::DetermineNewSelectedIndex(
 
   gfx::Range block_tabs = gfx::Range(start_index, start_index + block_size);
 
+  // When focus mode is active, prioritize selecting a tab within the focused
+  // group so that tab removals/detaches preserve focus state.
+  const std::optional<tab_groups::TabGroupId> focused_group = GetFocusedGroup();
+  if (focused_group) {
+    const TabGroup* group = group_model_->GetTabGroup(*focused_group);
+    if (group) {
+      const gfx::Range group_range = group->ListTabs();
+      for (uint32_t i = group_range.start(); i < group_range.end(); ++i) {
+        if (!block_tabs.Contains(gfx::Range(i, i + 1))) {
+          return GetTabIndexAfterClosing(i, block_tabs);
+        }
+      }
+    }
+  }
+
   // First preference is a tab the block opened.
   int new_selected_index = GetIndexOfNextWebContentsOpenedBy(block_tabs);
   if (new_selected_index != TabStripModel::kNoTab &&

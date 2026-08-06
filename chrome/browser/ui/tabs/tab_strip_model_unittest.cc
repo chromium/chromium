@@ -2572,6 +2572,26 @@ TEST_F(TabStripModelTest,
   EXPECT_EQ(group_id, tabstrip()->GetFocusedGroup());
 }
 
+TEST_F(TabStripModelTest, RemovingPinnedTabPreservesFocusAndSelectsGroupTab) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kTabGroupsFocusing);
+
+  PrepareTabs(tabstrip(), 4);
+  tabstrip()->SetTabPinned(0, true);
+  tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({1, 2});
+  tabstrip()->SetFocusedGroup(group_id);
+  ASSERT_EQ(group_id, tabstrip()->GetFocusedGroup());
+
+  // Close/remove the pinned tab at index 0.
+  tabstrip()->CloseWebContentsAt(0, TabCloseTypes::CLOSE_NONE);
+
+  // Focus mode should be preserved, and a tab in the focused group should be
+  // selected.
+  EXPECT_EQ(group_id, tabstrip()->GetFocusedGroup());
+  EXPECT_EQ(group_id,
+            tabstrip()->GetTabGroupForTab(tabstrip()->active_index()));
+}
+
 TEST_F(TabStripModelTest, SplitTabPinning) {
   for (bool split_is_selected : {true, false}) {
     for (bool use_left_tab : {true, false}) {
