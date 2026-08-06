@@ -292,7 +292,7 @@ TEST_F(AutofillAiAccessManagerTest, ReauthRequired_NoAuthenticator) {
       Run(base::expected<EntityInstance,
                          AutofillAiAccessManager::FailureReason>(passport),
           /*did_fetch_from_server=*/false,
-          /*reauth_attempted=*/true));
+          /*reauth_attempted=*/false));
 
   EXPECT_TRUE(access_manager().FetchEntityInstance(
       passport, /*will_fill_sensitive_info=*/true, callback.Get()));
