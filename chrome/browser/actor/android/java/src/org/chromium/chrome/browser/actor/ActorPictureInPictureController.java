@@ -187,15 +187,20 @@ public class ActorPictureInPictureController
 
     /** Replaces manual PictureInPictureParams building. */
     public void updatePipState() {
+        if (mActivity.isFinishing() || mActivity.isDestroyed()) return;
         boolean active = shouldEnterPip();
         // The Jetpack PiP library handles auto-entry (setAutoEnterEnabled) internally
         // on Android 12+ when setEnabled(true) is called.
-        mPipDelegate.setEnabled(active);
-        if (active) {
-            mPipDelegate.setAspectRatio(new Rational(16, 9));
-            updatePausePlayActions();
+        try {
+            mPipDelegate.setEnabled(active);
+            if (active) {
+                mPipDelegate.setAspectRatio(new Rational(16, 9));
+                updatePausePlayActions();
+            }
+            mPipDelegate.commit();
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            Log.e(TAG, "Failed to update PiP state", e);
         }
-        mPipDelegate.commit();
     }
 
     /** For entering PiP via fallback in onUserLeaveHint for older devices. */
