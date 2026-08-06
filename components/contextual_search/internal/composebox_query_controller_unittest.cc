@@ -6720,10 +6720,6 @@ TEST_F(ComposeboxQueryControllerTest, MimeTypeStringFromFileInfo) {
   EXPECT_EQ(ComposeboxQueryController::MimeTypeStringFromFileInfo(file_info),
             "text/plain");
 
-  file_info.mime_type = lens::MimeType::kImage;
-  EXPECT_EQ(ComposeboxQueryController::MimeTypeStringFromFileInfo(file_info),
-            "image/jpeg");
-
   file_info.mime_type = lens::MimeType::kAnnotatedPageContent;
   EXPECT_EQ(ComposeboxQueryController::MimeTypeStringFromFileInfo(file_info),
             "application/x-protobuf");

@@ -278,7 +278,7 @@ ComposeboxQueryControllerBridge::AddFile(
 
   std::optional<lens::ImageEncodingOptions> image_options;
   if (file_type.find("image") != std::string::npos) {
-    image_options = lens::ImageEncodingOptions{.enable_webp_encoding = false,
+    image_options = lens::ImageEncodingOptions{
                                                .max_size = 1500000,
                                                .max_height = 1600,
                                                .max_width = 1600,
@@ -627,7 +627,7 @@ void ComposeboxQueryControllerBridge::StartTabContextUploadFlow(
       base::TimeTicks::Now() - start_time);
 
   std::optional<lens::ImageEncodingOptions> image_options =
-      lens::ImageEncodingOptions{.enable_webp_encoding = false,
+      lens::ImageEncodingOptions{
                                  .max_size = 1500000,
                                  .max_height = 1600,
                                  .max_width = 1600,

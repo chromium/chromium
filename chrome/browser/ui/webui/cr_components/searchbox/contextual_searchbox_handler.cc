@@ -194,7 +194,6 @@ ContextualSearchboxHandler::CreateImageEncodingOptions() {
   const auto& image_upload_config =
       ntp_composebox::FeatureConfig::Get().config.composebox().image_upload();
   return lens::ImageEncodingOptions{
-      .enable_webp_encoding = image_upload_config.enable_webp_encoding(),
       .max_size = image_upload_config.downscale_max_image_size(),
       .max_height = image_upload_config.downscale_max_image_height(),
       .max_width = image_upload_config.downscale_max_image_width(),

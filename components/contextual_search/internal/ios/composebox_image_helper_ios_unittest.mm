@@ -41,10 +41,8 @@ class ComposeboxImageHelperIosTest : public PlatformTest {
     return image;
   }
 
-  lens::ImageData DownscaleAndEncodeUiImage(UIImage* ui_image,
-                                            bool enable_webp_encoding = true) {
+  lens::ImageData DownscaleAndEncodeUiImage(UIImage* ui_image) {
     lens::ImageEncodingOptions image_options{
-        .enable_webp_encoding = enable_webp_encoding,
         .max_size = kImageMaxArea,
         .max_height = kImageMaxHeight,
         .max_width = kImageMaxWidth,

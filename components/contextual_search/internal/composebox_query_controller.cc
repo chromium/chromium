@@ -532,10 +532,9 @@ ComposeboxQueryController::MimeTypeStringFromFileInfo(
     case lens::MimeType::kPlainText:
       return "text/plain";
     case lens::MimeType::kImage:
-      // Images always use jpeg encoding.
-      // TODO(crbug.com/481835802): Update this logic if webp encoding is
-      // turned on.
-      return "image/jpeg";
+      // This function is only used to populate Lens Added Inputs, which
+      // explicitly exclude image uploads.
+      NOTREACHED();
     case lens::MimeType::kAnnotatedPageContent:
       return "application/x-protobuf";
     case lens::MimeType::kUnknown:

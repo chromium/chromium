@@ -20,7 +20,6 @@ class ImageData;
 
 // Image encoding options for an uploaded image.
 struct ImageEncodingOptions {
-  bool enable_webp_encoding;
   int max_size;
   int max_height;
   int max_width;

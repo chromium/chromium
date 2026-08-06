@@ -46,7 +46,7 @@ message NTPComposeboxConfig {
     optional bool close_by_click_outside = 2;
     // Next ID: 7
     message ImageUpload {
-      optional bool enable_webp_encoding = 1;
+      optional bool enable_webp_encoding = 1 [deprecated = true];
       optional int32 downscale_max_image_size = 2;
       optional int32 downscale_max_image_width = 3;
       optional int32 downscale_max_image_height = 4;

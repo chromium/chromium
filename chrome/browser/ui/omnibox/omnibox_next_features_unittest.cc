@@ -80,7 +80,6 @@ TEST_F(OmniboxNextFeaturesTest, ComposeboxConfigEnabled_DefaultConfiguration) {
   auto composebox = config.composebox();
 
   auto image_upload = config.composebox().image_upload();
-  EXPECT_EQ(image_upload.enable_webp_encoding(), false);
   EXPECT_EQ(image_upload.downscale_max_image_size(), 1500000);
   EXPECT_EQ(image_upload.downscale_max_image_width(), 1600);
   EXPECT_EQ(image_upload.downscale_max_image_height(), 1600);
