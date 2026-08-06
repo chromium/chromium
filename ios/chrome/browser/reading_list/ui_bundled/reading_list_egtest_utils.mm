@@ -86,6 +86,7 @@ void AddURLToReadingListWithSnackbarDismiss(const GURL& URL, NSString* email) {
   } else {
     matcher = reading_list_test_utils::AddedToLocalReadingListSnackbar();
   }
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:matcher];
   [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
 }
 
