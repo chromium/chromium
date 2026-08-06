@@ -153,4 +153,19 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestMetricsTest,
       PaymentRequestOutcome::kNotShownNoSupportedPaymentMethod, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(PaymentRequestMetricsTest, TimeToCheckout) {
+  base::HistogramTester histogram_tester;
+  OpenPaymentRequestDialog();
+  ResetEventWaiterForSequence(
+      {DialogEvent::PROCESSING_SPINNER_SHOWN, DialogEvent::DIALOG_CLOSED});
+  ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON,
+                           /*wait_for_animation=*/false);
+  ASSERT_TRUE(WaitForObservedEvent());
+
+  histogram_tester.ExpectTotalCount(
+      "PaymentRequest.TimeToCheckout.InitToCompleteSuccessfully", 1);
+  histogram_tester.ExpectTotalCount(
+      "PaymentRequest.TimeToCheckout.ShowToCompleteSuccessfully", 1);
+}
+
 }  // namespace payments

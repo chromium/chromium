@@ -186,6 +186,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PaymentRequest.MandatoryPaymentAppUi.LoadingViewShownDuration.{Outcome}"
+    units="ms" expires_after="2027-09-01">
+  <owner>xuehuichen@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Records the duration in milliseconds that the payment app loading view is
+    shown during payment handler invocation when {Outcome}.
+
+    When the payment app loads normally, RemoveLoadingView() is called upon
+    completion and records Completed. If the payment app loading takes too long
+    and the user manually closes the dialog window, or if the request is
+    aborted, the dialog is destructed without calling RemoveLoadingView(), which
+    records Aborted. Separating these variants prevents cancellation/abort
+    latencies from impacting normal loading view shown latencies.
+  </summary>
+  <token key="Outcome">
+    <variant name="Aborted"
+        summary="the loading process was interrupted. This includes the user
+                 canceling due to slow load times, the merchant script
+                 aborting the request, or the payment app process terminating
+                 prematurely"/>
+    <variant name="Completed"
+        summary="the loading view is hidden or removed after loading
+                 completes successfully"/>
+  </token>
+</histogram>
+
 <histogram name="PaymentRequest.NumberOfSuggestionsShown" units="units"
     expires_after="2022-11-22">
   <owner>smcgruer@chromium.org</owner>
@@ -455,6 +483,32 @@ chromium-metrics-reviews@google.com.
     be being made from a background tab, which is checked later after this
     metric is recorded. As such, interpret this metric with care - it cannot be
     read as &quot;these calls succeed and these calls do not&quot;!
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.TimeToCheckout.InitToCompleteSuccessfully"
+    units="ms" expires_after="2027-09-01">
+  <owner>xuehuichen@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Duration from PaymentRequest.Init() to successful transaction completion.
+    Recorded when a payment transaction completes successfully.
+
+    Note that this metrics is foucs on the happy path, failed transaction are
+    not counted.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.TimeToCheckout.ShowToCompleteSuccessfully"
+    units="ms" expires_after="2027-09-01">
+  <owner>xuehuichen@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Duration from PaymentRequest.show() to successful transaction completion.
+    Recorded when a payment transaction completes successfully.
+
+    Note that this metrics is foucs on the happy path, failed transaction are
+    not counted.
   </summary>
 </histogram>
 

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/payments/content/developer_console_logger.h"
 #include "components/payments/content/initialization_task.h"
 #include "components/payments/content/payment_handler_host.h"
@@ -291,6 +292,10 @@ class PaymentRequest : public content::DocumentService<mojom::PaymentRequest>,
   // Whether PaymentRequest mojo connection has been initialized from the
   // renderer.
   bool is_initialized_ = false;
+
+  // Timestamps for checkout duration tracking.
+  base::TimeTicks init_time_;
+  base::TimeTicks show_time_;
 
   // Whether PaymentRequest.show() has been called.
   bool is_show_called_ = false;

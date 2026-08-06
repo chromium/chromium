@@ -247,6 +247,7 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
   // A full dialog overlay that shows a loading view for a payment app. It's
   // hidden until ShowLoadingView is called.
   raw_ptr<PaymentAppLoadingView> loading_view_overlay_ = nullptr;
+  base::TimeTicks loading_view_shown_time_;
 
   base::WeakPtr<ObserverForTest> observer_for_testing_;
 

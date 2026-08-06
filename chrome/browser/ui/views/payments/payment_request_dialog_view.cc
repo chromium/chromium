@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
@@ -60,6 +61,11 @@ constexpr float kMinimumWindowToDialogRatio = 1.05f;
 // browser window during a resize.
 constexpr int kResizeThrottleMs = 100;
 
+constexpr char kLoadingViewShownDurationCompletedHistogramName[] =
+    "PaymentRequest.MandatoryPaymentAppUi.LoadingViewShownDuration.Completed";
+constexpr char kLoadingViewShownDurationAbortedHistogramName[] =
+    "PaymentRequest.MandatoryPaymentAppUi.LoadingViewShownDuration.Aborted";
+
 views::Widget* GetBrowserWindowWidget(content::WebContents* web_contents) {
   if (!web_contents) {
     return nullptr;
@@ -103,6 +109,11 @@ views::View* PaymentRequestDialogView::GetInitiallyFocusedView() {
 
 void PaymentRequestDialogView::OnDialogClosed() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!loading_view_shown_time_.is_null()) {
+    base::UmaHistogramTimes(kLoadingViewShownDurationAbortedHistogramName,
+                            base::TimeTicks::Now() - loading_view_shown_time_);
+    loading_view_shown_time_ = base::TimeTicks();
+  }
   // Called when the widget is about to close. We send a message to the
   // PaymentRequest object to signal user cancellation.
   //
@@ -227,6 +238,7 @@ void PaymentRequestDialogView::ShowProcessingSpinner() {
 void PaymentRequestDialogView::ShowLoadingView() {
   CHECK(request_->state()->selected_app());
   ResizeToPaymentHandlerSize();
+  loading_view_shown_time_ = base::TimeTicks::Now();
   loading_view_overlay_ = AddChildView(std::make_unique<PaymentAppLoadingView>(
       request_->state()->selected_app()->icon_bitmap(),
       GURL(request_->state()->selected_app()->GetId()),
@@ -606,6 +618,12 @@ void PaymentRequestDialogView::HideLoadingView() {
 
 void PaymentRequestDialogView::RemoveLoadingView() {
   if (loading_view_overlay_) {
+    if (!loading_view_shown_time_.is_null()) {
+      base::UmaHistogramTimes(
+          kLoadingViewShownDurationCompletedHistogramName,
+          base::TimeTicks::Now() - loading_view_shown_time_);
+      loading_view_shown_time_ = base::TimeTicks();
+    }
     RemoveChildViewT(std::exchange(loading_view_overlay_, nullptr));
     view_stack_->SetVisible(true);
     RequestFocus();
@@ -689,7 +707,12 @@ PaymentRequestDialogView::PaymentRequestDialogView(
   ShowInitialPaymentSheet();
 }
 
-PaymentRequestDialogView::~PaymentRequestDialogView() = default;
+PaymentRequestDialogView::~PaymentRequestDialogView() {
+  if (!loading_view_shown_time_.is_null()) {
+    base::UmaHistogramTimes(kLoadingViewShownDurationAbortedHistogramName,
+                            base::TimeTicks::Now() - loading_view_shown_time_);
+  }
+}
 
 void PaymentRequestDialogView::OnDialogOpened() {
   if (!request_->spec()) {
