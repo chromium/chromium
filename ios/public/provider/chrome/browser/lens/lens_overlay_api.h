@@ -139,6 +139,11 @@ UIViewController<ChromeLensOverlay>* NewChromeLensOverlay(
     NSArray<UIAction*>* precedingMenuItems,
     NSArray<UIAction*>* additionalMenuItems);
 
+UIViewController<ChromeLensOverlay>* NewChromeLensOverlay(
+    LensImageSource* imageSource,
+    LensConfiguration* config,
+    NSArray<UIAction*>* additionalMenuItems);
+
 }  // namespace provider
 }  // namespace ios
 
