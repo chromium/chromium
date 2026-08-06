@@ -2358,6 +2358,47 @@ TEST_F(PopupViewViewsTest, SubPopupHidesWhenMouseMovesToSearchBar) {
   EXPECT_EQ(test_api(view()).GetOpenSubPopupRow(), std::nullopt);
 }
 
+// Tests that mouse exiting a sub-popup schedules sub-popup closing on the
+// parent view.
+TEST_F(PopupViewViewsTest, SubPopupClosesWhenMouseExitsSubPopup) {
+  controller().set_suggestions({
+      CreateSuggestionWithChildren(
+          SuggestionType::kPasswordEntry,
+          {Suggestion(u"Child #1",
+                      SuggestionType::kPasswordFieldByFieldFilling)}),
+  });
+
+  CreateAndShowView(
+      /*widget_params=*/std::nullopt,
+      /*search_bar_config=*/std::nullopt,
+      /*tabbed_pane_config=*/std::nullopt,
+      /*sub_popup_config=*/
+      AutofillPopupView::SubPopupConfig{.no_selection_hide_delay =
+                                            base::Seconds(1)});
+
+  CellIndex cell{0, CellType::kControl};
+  view().SetSelectedCell(cell, PopupCellSelectionSource::kMouse);
+  task_environment()->FastForwardBy(PopupViewViews::kMouseOpenSubPopupDelay);
+  ASSERT_EQ(test_api(view()).GetOpenSubPopupRow(), cell.first);
+
+  auto [sub_controller, sub_view] = OpenSubView(
+      view(),
+      {Suggestion(u"Child #1", SuggestionType::kPasswordFieldByFieldFilling)});
+
+  // Mouse enters and then leaves sub_popup without selecting a cell.
+  ui::MouseEvent fake_event(ui::EventType::kMouseMoved, gfx::Point(),
+                            gfx::Point(), ui::EventTimeForNow(),
+                            ui::EF_IS_SYNTHESIZED, 0);
+  sub_view->OnMouseEntered(fake_event);
+  sub_view->OnMouseExited(fake_event);
+
+  // Fast-forward by the 1-second no-selection hide delay.
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  // The sub-popup should be closed on the parent view.
+  EXPECT_EQ(test_api(view()).GetOpenSubPopupRow(), std::nullopt);
+}
+
 TEST_F(PopupViewViewsTest, SubPopupHidingIsCanceledOnSelection) {
   controller().set_suggestions({
       CreateSuggestionWithChildren(

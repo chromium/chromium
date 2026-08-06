@@ -1656,7 +1656,7 @@ void PopupViewViews::OnMouseEnteredInChildren() {
 }
 
 void PopupViewViews::OnMouseExitedInChildren() {
-  if (GetSelectedCell()) {
+  if (GetSelectedCell() && !row_with_open_sub_popup_) {
     return;
   }
 
