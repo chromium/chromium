@@ -47,6 +47,7 @@ import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHistory;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuDelegate;
@@ -295,6 +296,9 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
                             .with(ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END, true)
                             .build();
             updateIconForModel(model, entry.getFavicon(), entry.getIndex());
+            if (entry.getIndex() == FULL_HISTORY_ENTRY_INDEX) {
+                mListItems.add(BasicListMenu.buildMenuDivider(shouldUseIncognitoResources()));
+            }
             mListItems.add(new ListItem(ListItemType.MENU_ITEM, model));
         }
         initListMenuHost(anchorView);
@@ -431,7 +435,9 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
             if (pageUrl.equals(entry.getUrl())) {
                 entry.updateFavicon(favicon);
 
-                if (!mListItems.isEmpty() && i < mListItems.size()) {
+                if (!mListItems.isEmpty()
+                        && i < mListItems.size()
+                        && entry.getIndex() != FULL_HISTORY_ENTRY_INDEX) {
                     PropertyModel model = mListItems.get(i).model;
                     updateIconForModel(model, favicon, entry.getIndex());
                 }
