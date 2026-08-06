@@ -298,9 +298,7 @@ bool UnpinnedTabContainerView::ShouldDragRemainInGroup(
     const gfx::Rect& proposed_group_bounds,
     const gfx::Point& point_in_screen) const {
   // If in focused mode, then the group should always handle the drag.
-  if (collection_node_ && collection_node_->GetController() &&
-      collection_node_->GetController()->GetFocusedGroup() ==
-          group_view.GetTabGroup().id()) {
+  if (group_view.IsGroupFocused()) {
     return true;
   }
 
