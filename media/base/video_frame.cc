@@ -386,6 +386,10 @@ scoped_refptr<VideoFrame> VideoFrame::WrapTrackingToken(
     DLOG(ERROR) << "Invalid layout.";
     return nullptr;
   }
+  if (!IsValidConfig(format, StorageType::STORAGE_OPAQUE, coded_size,
+                     visible_rect, natural_size)) {
+    return nullptr;
+  }
   auto frame = base::MakeRefCounted<VideoFrame>(
       base::PassKey<VideoFrame>(), *layout, StorageType::STORAGE_OPAQUE,
       visible_rect, natural_size, timestamp);

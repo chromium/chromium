@@ -1285,4 +1285,30 @@ TEST(VideoFrame, GetVisibleSkYUVAPixmaps) {
   }
 }
 
+TEST(VideoFrame, WrapTrackingToken) {
+  const gfx::Size coded_size(320, 240);
+  const gfx::Rect visible_rect(10, 10, 300, 220);
+  const gfx::Size natural_size(640, 480);
+  const base::TimeDelta timestamp = base::Seconds(1);
+  const auto tracking_token = base::UnguessableToken::Create();
+
+  auto frame = VideoFrame::WrapTrackingToken(PIXEL_FORMAT_NV12, tracking_token,
+                                             coded_size, visible_rect,
+                                             natural_size, timestamp);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(frame->format(), PIXEL_FORMAT_NV12);
+  EXPECT_EQ(frame->coded_size(), coded_size);
+  EXPECT_EQ(frame->visible_rect(), visible_rect);
+  EXPECT_EQ(frame->natural_size(), natural_size);
+  EXPECT_EQ(frame->timestamp(), timestamp);
+  EXPECT_EQ(frame->metadata().tracking_token, tracking_token);
+
+  // Invalid config (visible_rect outside coded_size) should return nullptr.
+  const gfx::Rect invalid_visible_rect(0, 0, 400, 400);
+  auto invalid_frame = VideoFrame::WrapTrackingToken(
+      PIXEL_FORMAT_NV12, tracking_token, coded_size, invalid_visible_rect,
+      natural_size, timestamp);
+  EXPECT_FALSE(invalid_frame);
+}
+
 }  // namespace media
