@@ -41,6 +41,8 @@ std::optional<std::string> ToolTypeToToolDisplayString(ToolType tool) {
       return "Closing tab";
     case ToolType::kCreateTab:
       return "Creating tab";
+    case ToolType::kActivateTab:
+      return "Activating tab";
     case ToolType::kUnknown:
       return std::nullopt;
   }

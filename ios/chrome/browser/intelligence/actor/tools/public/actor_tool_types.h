@@ -46,6 +46,8 @@ enum class ToolType {
   kAttemptFormFilling,
   // Tool to create a new tab.
   kCreateTab,
+  // Tool to activate an existing tab.
+  kActivateTab,
 };
 
 // iOS-specific error codes for tool execution failures.

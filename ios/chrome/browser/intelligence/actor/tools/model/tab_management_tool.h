@@ -36,6 +36,11 @@ class TabManagementTool : public ActorTool {
       base::WeakPtr<web::WebState> web_state,
       base::WeakPtr<WebStateList> web_state_list);
 
+  // Creates a TabManagementTool for the ActivateTab action.
+  static std::unique_ptr<TabManagementTool> CreateActivateTabTool(
+      base::WeakPtr<web::WebState> web_state,
+      base::WeakPtr<WebStateList> web_state_list);
+
   // Creates a TabManagementTool for the CreateTab action.
   static std::unique_ptr<TabManagementTool> CreateTabTool(
       const optimization_guide::proto::CreateTabAction& action,
@@ -54,6 +59,7 @@ class TabManagementTool : public ActorTool {
   enum class ActionType {
     kClose,
     kCreate,
+    kActivate,
   };
 
   TabManagementTool(base::WeakPtr<web::WebState> web_state,
@@ -63,10 +69,14 @@ class TabManagementTool : public ActorTool {
                     bool foreground,
                     ToolDelegate* tool_delegate);
 
-  void ValidateCloseTab(ToolExecutionCallback callback);
-  void ValidateCreateTab(ToolExecutionCallback callback);
+  // Validates that the targeted tab and web state list exist and are valid.
+  ToolExecutionResult ValidateTabExists() const;
+
+  // Validates that the target window is valid for tab creation.
+  ToolExecutionResult ValidateCreateTab() const;
 
   void ExecuteCloseTab();
+  void ExecuteActivateTab();
   void ExecuteCreateTab();
 
   const ActionType action_type_;

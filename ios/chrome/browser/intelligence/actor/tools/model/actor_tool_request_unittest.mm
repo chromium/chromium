@@ -69,6 +69,11 @@ std::vector<ToolRequestTestCase> GetTestCases() {
     action.mutable_scroll_to()->set_tab_id(kTabId);
     test_cases.push_back({action, ToolType::kScrollTo});
   }
+  {
+    optimization_guide::proto::Action action;
+    action.mutable_activate_tab()->set_tab_id(kTabId);
+    test_cases.push_back({action, ToolType::kActivateTab});
+  }
   return test_cases;
 }
 

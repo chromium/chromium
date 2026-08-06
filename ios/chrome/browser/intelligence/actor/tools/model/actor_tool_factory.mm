@@ -42,6 +42,7 @@ bool RequiresTabId(const ActorToolRequest& request) {
     case optimization_guide::proto::Action::kAttemptLogin:
     case optimization_guide::proto::Action::kAttemptFormFilling:
     case optimization_guide::proto::Action::kCloseTab:
+    case optimization_guide::proto::Action::kActivateTab:
       return true;
     default:
       return false;
@@ -124,6 +125,9 @@ ActorToolFactory::CreateTool(const ActorToolRequest& request,
     case optimization_guide::proto::Action::kCreateTab:
       return TabManagementTool::CreateTabTool(request.action().create_tab(),
                                               tool_delegate);
+    case optimization_guide::proto::Action::kActivateTab:
+      return TabManagementTool::CreateActivateTabTool(target_web_state,
+                                                      target_web_state_list);
     default:
       return base::unexpected(
           ToolExecutionResult(InternalToolErrorCode::kUnsupportedAction));
@@ -153,6 +157,7 @@ ActorToolFactory::GetSupportedCapabilities() const {
       optimization_guide::proto::Action::kAttemptFormFilling,
       optimization_guide::proto::Action::kCloseTab,
       optimization_guide::proto::Action::kCreateTab,
+      optimization_guide::proto::Action::kActivateTab,
   };
   // LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.mm:CreateTool)
 

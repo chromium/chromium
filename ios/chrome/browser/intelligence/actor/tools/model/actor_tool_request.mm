@@ -42,6 +42,8 @@ ToolType ActorToolRequest::GetToolType() const {
       return ToolType::kCreateTab;
     case optimization_guide::proto::Action::kCloseTab:
       return ToolType::kCloseTab;
+    case optimization_guide::proto::Action::kActivateTab:
+      return ToolType::kActivateTab;
     default:
       return ToolType::kUnknown;
   }
@@ -110,6 +112,11 @@ web::WebStateID ActorToolRequest::GetTargetWebStateId() const {
     case optimization_guide::proto::Action::kCloseTab:
       if (action_.close_tab().has_tab_id()) {
         tab_id = action_.close_tab().tab_id();
+      }
+      break;
+    case optimization_guide::proto::Action::kActivateTab:
+      if (action_.activate_tab().has_tab_id()) {
+        tab_id = action_.activate_tab().tab_id();
       }
       break;
     default:

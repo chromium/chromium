@@ -29,6 +29,7 @@ enum class ActionType {
   kAttemptLogin,
   kCreateTab,
   kCloseTab,
+  kActivateTab,
 };
 
 // Based on the field names in
@@ -69,6 +70,9 @@ ActionType GetActionType(const std::string& key) {
   }
   if (key == "close_tab") {
     return ActionType::kCloseTab;
+  }
+  if (key == "activate_tab") {
+    return ActionType::kActivateTab;
   }
   return ActionType::kUnknown;
 }
@@ -301,6 +305,16 @@ bool MapCloseTabAction(const base::DictValue& dict,
   return close_tab->ByteSizeLong() > 0;
 }
 
+bool MapActivateTabAction(const base::DictValue& dict,
+                          optimization_guide::proto::Action* action) {
+  optimization_guide::proto::ActivateTabAction* activate_tab =
+      action->mutable_activate_tab();
+  if (std::optional<int> tab_id = dict.FindInt("tab_id")) {
+    activate_tab->set_tab_id(*tab_id);
+  }
+  return activate_tab->ByteSizeLong() > 0;
+}
+
 }  // namespace
 
 bool ParseActionFromDict(const base::DictValue& dict,
@@ -343,6 +357,8 @@ bool ParseActionFromDict(const base::DictValue& dict,
       return MapCreateTabAction(value.GetDict(), action);
     case ActionType::kCloseTab:
       return MapCloseTabAction(value.GetDict(), action);
+    case ActionType::kActivateTab:
+      return MapActivateTabAction(value.GetDict(), action);
     case ActionType::kUnknown:
       return false;
   }

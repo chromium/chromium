@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/tab_management_tool.h"
 
 #import "base/functional/callback.h"
+#import "base/memory/ptr_util.h"
 #import "base/memory/weak_ptr.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
@@ -21,8 +22,16 @@ namespace actor {
 std::unique_ptr<TabManagementTool> TabManagementTool::CreateCloseTabTool(
     base::WeakPtr<web::WebState> web_state,
     base::WeakPtr<WebStateList> web_state_list) {
-  return std::unique_ptr<TabManagementTool>(
+  return base::WrapUnique(
       new TabManagementTool(web_state, ActionType::kClose, web_state_list));
+}
+
+// static
+std::unique_ptr<TabManagementTool> TabManagementTool::CreateActivateTabTool(
+    base::WeakPtr<web::WebState> web_state,
+    base::WeakPtr<WebStateList> web_state_list) {
+  return base::WrapUnique(
+      new TabManagementTool(web_state, ActionType::kActivate, web_state_list));
 }
 
 // static
@@ -32,7 +41,7 @@ std::unique_ptr<TabManagementTool> TabManagementTool::CreateTabTool(
   // Default to foreground when unspecified, following Desktop's example:
   // https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/actor/actor_proto_conversion.cc;l=437;drc=853aabf2c9c58f9e0389c13ed41d843806dca3b9
   bool open_in_foreground = !action.has_foreground() || action.foreground();
-  return std::unique_ptr<TabManagementTool>(new TabManagementTool(
+  return base::WrapUnique(new TabManagementTool(
       action.window_id(), open_in_foreground, tool_delegate));
 }
 
@@ -41,43 +50,37 @@ TabManagementTool::~TabManagementTool() = default;
 void TabManagementTool::Validate(ToolExecutionCallback callback) {
   switch (action_type_) {
     case ActionType::kClose:
-      ValidateCloseTab(std::move(callback));
+    case ActionType::kActivate:
+      std::move(callback).Run(ValidateTabExists());
       break;
     case ActionType::kCreate:
-      ValidateCreateTab(std::move(callback));
+      std::move(callback).Run(ValidateCreateTab());
       break;
   }
 }
 
-void TabManagementTool::ValidateCloseTab(ToolExecutionCallback callback) {
-  CHECK_EQ(action_type_, ActionType::kClose);
+ToolExecutionResult TabManagementTool::ValidateTabExists() const {
+  CHECK(action_type_ == ActionType::kClose ||
+        action_type_ == ActionType::kActivate);
   if (!web_state_list_) {
-    std::move(callback).Run(
-        ToolExecutionResult(mojom::ActionResultCode::kWindowWentAway));
-    return;
+    return ToolExecutionResult(mojom::ActionResultCode::kWindowWentAway);
   }
   if (!web_state_) {
-    std::move(callback).Run(
-        ToolExecutionResult(mojom::ActionResultCode::kTabWentAway));
-    return;
+    return ToolExecutionResult(mojom::ActionResultCode::kTabWentAway);
   }
   if (web_state_list_->GetIndexOfWebState(web_state_.get()) ==
       WebStateList::kInvalidIndex) {
-    std::move(callback).Run(
-        ToolExecutionResult(mojom::ActionResultCode::kTabWentAway));
-    return;
+    return ToolExecutionResult(mojom::ActionResultCode::kTabWentAway);
   }
-  std::move(callback).Run(ToolExecutionResult::Ok());
+  return ToolExecutionResult::Ok();
 }
 
-void TabManagementTool::ValidateCreateTab(ToolExecutionCallback callback) {
+ToolExecutionResult TabManagementTool::ValidateCreateTab() const {
   CHECK_EQ(action_type_, ActionType::kCreate);
   if (!tool_delegate_->IsWindowIdValid(window_id_)) {
-    std::move(callback).Run(
-        ToolExecutionResult(mojom::ActionResultCode::kWindowWentAway));
-    return;
+    return ToolExecutionResult(mojom::ActionResultCode::kWindowWentAway);
   }
-  std::move(callback).Run(ToolExecutionResult::Ok());
+  return ToolExecutionResult::Ok();
 }
 
 void TabManagementTool::Execute(ToolExecutionCallback callback) {
@@ -85,6 +88,9 @@ void TabManagementTool::Execute(ToolExecutionCallback callback) {
   switch (action_type_) {
     case ActionType::kClose:
       ExecuteCloseTab();
+      break;
+    case ActionType::kActivate:
+      ExecuteActivateTab();
       break;
     case ActionType::kCreate:
       ExecuteCreateTab();
@@ -94,24 +100,13 @@ void TabManagementTool::Execute(ToolExecutionCallback callback) {
 
 void TabManagementTool::ExecuteCloseTab() {
   CHECK_EQ(action_type_, ActionType::kClose);
-  if (!web_state_list_) {
-    std::move(callback_).Run(
-        ToolExecutionResult(mojom::ActionResultCode::kWindowWentAway));
-    return;
-  }
-
-  if (!web_state_) {
-    std::move(callback_).Run(
-        ToolExecutionResult(mojom::ActionResultCode::kTabWentAway));
+  ToolExecutionResult validation_result = ValidateTabExists();
+  if (!validation_result.IsOk()) {
+    std::move(callback_).Run(std::move(validation_result));
     return;
   }
 
   int index = web_state_list_->GetIndexOfWebState(web_state_.get());
-  if (index == WebStateList::kInvalidIndex) {
-    std::move(callback_).Run(
-        ToolExecutionResult(mojom::ActionResultCode::kTabWentAway));
-    return;
-  }
 
   // `CloseWebStateAt` may trigger synchronous destruction of `this`. Holding
   // the callback on the stack guarantees it survives even if `this` is deleted.
@@ -126,11 +121,29 @@ void TabManagementTool::ExecuteCloseTab() {
   std::move(local_callback).Run(ToolExecutionResult::Ok());
 }
 
+void TabManagementTool::ExecuteActivateTab() {
+  CHECK_EQ(action_type_, ActionType::kActivate);
+  ToolExecutionResult validation_result = ValidateTabExists();
+  if (!validation_result.IsOk()) {
+    std::move(callback_).Run(std::move(validation_result));
+    return;
+  }
+  int index = web_state_list_->GetIndexOfWebState(web_state_.get());
+
+  ToolExecutionCallback local_callback = std::move(callback_);
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
+  web_state_list_->ActivateWebStateAt(index);
+  if (!weak_this) {
+    return;
+  }
+  std::move(local_callback).Run(ToolExecutionResult::Ok());
+}
+
 void TabManagementTool::ExecuteCreateTab() {
   CHECK_EQ(action_type_, ActionType::kCreate);
-  if (!tool_delegate_->IsWindowIdValid(window_id_)) {
-    std::move(callback_).Run(
-        ToolExecutionResult(mojom::ActionResultCode::kWindowWentAway));
+  ToolExecutionResult validation_result = ValidateCreateTab();
+  if (!validation_result.IsOk()) {
+    std::move(callback_).Run(std::move(validation_result));
     return;
   }
   web::NavigationManager::WebLoadParams load_params{GURL(url::kAboutBlankURL)};
@@ -173,6 +186,8 @@ ToolType TabManagementTool::GetToolType() const {
       return ToolType::kCreateTab;
     case ActionType::kClose:
       return ToolType::kCloseTab;
+    case ActionType::kActivate:
+      return ToolType::kActivateTab;
   }
 }
 

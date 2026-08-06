@@ -188,6 +188,9 @@ void InjectDataIntoAction(optimization_guide::proto::Action& action,
         action.mutable_create_tab()->set_window_id(window_id.id());
       }
       break;
+    case optimization_guide::proto::Action::kActivateTab:
+      action.mutable_activate_tab()->set_tab_id(tab_id);
+      break;
     default:
       break;
   }

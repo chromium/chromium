@@ -67,7 +67,8 @@ TEST_F(ActorToolFactoryTest, GetSupportedCapabilities) {
                   optimization_guide::proto::Action::kAttemptLogin,
                   optimization_guide::proto::Action::kAttemptFormFilling,
                   optimization_guide::proto::Action::kCloseTab,
-                  optimization_guide::proto::Action::kCreateTab));
+                  optimization_guide::proto::Action::kCreateTab,
+                  optimization_guide::proto::Action::kActivateTab));
 }
 
 // Tests that GetSupportedCapabilities filters out tools that are disabled via
@@ -216,6 +217,9 @@ class ActorToolFactoryTabIdRequiredTest
       case optimization_guide::proto::Action::kCloseTab:
         action.mutable_close_tab()->set_tab_id(tab_id);
         break;
+      case optimization_guide::proto::Action::kActivateTab:
+        action.mutable_activate_tab()->set_tab_id(tab_id);
+        break;
       default:
         NOTREACHED();
     }
@@ -322,6 +326,10 @@ INSTANTIATE_TEST_SUITE_P(
         TabIdRequiredTestParam{"CloseTab",
                                [](optimization_guide::proto::Action& a) {
                                  a.mutable_close_tab();
+                               }},
+        TabIdRequiredTestParam{"ActivateTab",
+                               [](optimization_guide::proto::Action& a) {
+                                 a.mutable_activate_tab();
                                }}),
     [](const ::testing::TestParamInfo<TabIdRequiredTestParam>& info) {
       return info.param.name;

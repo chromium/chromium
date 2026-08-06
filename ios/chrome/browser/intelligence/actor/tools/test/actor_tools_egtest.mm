@@ -1562,4 +1562,34 @@ FindNodeResult FindNodeWithText(
       @"Expected active tab to remain the same (background tab created).");
 }
 
+// Tests that the activate tab tool successfully switches the active tab.
+- (void)testActivateTabTool {
+  // Create a new tab so we have at least 2 tabs open.
+  [ChromeEarlGrey openNewTab];
+  GREYAssertEqual([ChromeEarlGrey mainTabCount], 2u, @"Expected 2 tabs");
+
+  // Get the IDs of the current active tab (1) and the first tab (0).
+  NSString* tabId1 = [ChromeEarlGrey currentTabID];
+  [ChromeEarlGrey selectTabAtIndex:0];
+  NSString* tabId0 = [ChromeEarlGrey currentTabID];
+  GREYAssertNotEqualObjects(tabId0, tabId1, @"Tab IDs should be different");
+  // Currently tab 0 is active.
+  GREYAssertEqualObjects([ChromeEarlGrey currentTabID], tabId0,
+                         @"Expected tab 0 to be active");
+
+  // Run the ActivateTab tool targeting tab 1.
+  optimization_guide::proto::Action action;
+  int32_t targetTabIdVal = [tabId1 intValue];
+  action.mutable_activate_tab()->set_tab_id(targetTabIdVal);
+
+  [self executeAction:action];
+
+  // Verify that tab 1 is now the active tab.
+  NSString* activeTabID = [ChromeEarlGrey currentTabID];
+  GREYAssertEqualObjects(
+      activeTabID, tabId1,
+      @"Expected tab 1 to be active after ActivateTab action, but was %@",
+      activeTabID);
+}
+
 @end
