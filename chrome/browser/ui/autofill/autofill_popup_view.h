@@ -49,13 +49,6 @@ class AutofillPopupView {
       std::u16string title;
     };
 
-    explicit TabbedPaneConfig(std::vector<TabbedPaneConfig::Tab> tabs);
-    TabbedPaneConfig(const TabbedPaneConfig&);
-    TabbedPaneConfig(TabbedPaneConfig&&);
-    TabbedPaneConfig& operator=(const TabbedPaneConfig&);
-    TabbedPaneConfig& operator=(TabbedPaneConfig&&);
-    ~TabbedPaneConfig();
-
     // The ordered list of tabs that should be displayed in the tabbed pane.
     std::vector<Tab> tabs;
   };
