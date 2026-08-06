@@ -589,6 +589,13 @@ void RequestService::CompleteUserInfoRequest(
 void RequestService::Disconnect(
     blink::mojom::IdentityCredentialDisconnectOptionsPtr options,
     DisconnectCallback callback) {
+  if (render_frame_host().GetLastCommittedOrigin().opaque() ||
+      render_frame_host().IsNestedWithinFencedFrame() ||
+      !render_frame_host().GetPage().IsPrimary()) {
+    std::move(callback).Run(blink::mojom::DisconnectStatus::kError);
+    return;
+  }
+
   // Enforce identity-credentials-get Permissions Policy browser-side.
   // The renderer checks this, but a compromised renderer can bypass it.
   if (!render_frame_host().IsFeatureEnabled(

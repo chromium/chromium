@@ -9187,6 +9187,106 @@ TEST_F(RequestTest, DisconnectViaFederatedRequestService) {
   run_loop.Run();
 }
 
+TEST_F(RequestTest, DisconnectFromOpaqueOrigin) {
+  base::HistogramTester histogram_tester;
+  ResetAndDeleteRequest();
+
+  static_cast<TestWebContents*>(web_contents())
+      ->NavigateAndCommit(GURL("data:text/html,hi"), ui::PAGE_TRANSITION_LINK);
+
+  mojo::Remote<FederatedRequestService> federated_request_service;
+  RequestService* service =
+      RequestService::GetOrCreateForCurrentDocument(main_test_rfh());
+  service->BindFederatedRequestService(
+      federated_request_service.BindNewPipeAndPassReceiver());
+
+  auto options = blink::mojom::IdentityCredentialDisconnectOptions::New();
+  options->config = blink::mojom::IdentityProviderConfig::New();
+  options->config->config_url = GURL(kProviderUrlFull);
+  options->config->client_id = kClientId;
+  options->account_hint = "hint";
+
+  base::RunLoop run_loop;
+  federated_request_service->Disconnect(
+      std::move(options),
+      base::BindLambdaForTesting([&](blink::mojom::DisconnectStatus status) {
+        EXPECT_EQ(blink::mojom::DisconnectStatus::kError, status);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  histogram_tester.ExpectTotalCount("Blink.FedCm.Status.Disconnect", 0);
+}
+
+TEST_F(RequestTest, DisconnectFromFencedFrame) {
+  base::HistogramTester histogram_tester;
+  ResetAndDeleteRequest();
+
+  RenderFrameHost* fenced_frame =
+      RenderFrameHostTester::For(main_test_rfh())->AppendFencedFrame();
+  ASSERT_TRUE(fenced_frame);
+
+  GURL fenced_frame_url = GURL("https://fencedframe.com");
+  std::unique_ptr<NavigationSimulator> navigation_simulator =
+      NavigationSimulator::CreateRendererInitiated(fenced_frame_url,
+                                                   fenced_frame);
+  navigation_simulator->Commit();
+  fenced_frame = navigation_simulator->GetFinalRenderFrameHost();
+  ASSERT_TRUE(fenced_frame);
+
+  mojo::Remote<FederatedRequestService> federated_request_service;
+  RequestService* service =
+      RequestService::GetOrCreateForCurrentDocument(fenced_frame);
+  service->BindFederatedRequestService(
+      federated_request_service.BindNewPipeAndPassReceiver());
+
+  auto options = blink::mojom::IdentityCredentialDisconnectOptions::New();
+  options->config = blink::mojom::IdentityProviderConfig::New();
+  options->config->config_url = GURL(kProviderUrlFull);
+  options->config->client_id = kClientId;
+  options->account_hint = "hint";
+
+  base::RunLoop run_loop;
+  federated_request_service->Disconnect(
+      std::move(options),
+      base::BindLambdaForTesting([&](blink::mojom::DisconnectStatus status) {
+        EXPECT_EQ(blink::mojom::DisconnectStatus::kError, status);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  histogram_tester.ExpectTotalCount("Blink.FedCm.Status.Disconnect", 0);
+}
+
+TEST_F(RequestTest, DisconnectFromNonPrimaryPage) {
+  base::HistogramTester histogram_tester;
+  ResetAndDeleteRequest();
+
+  mojo::Remote<FederatedRequestService> federated_request_service;
+  RequestService* service =
+      RequestService::GetOrCreateForCurrentDocument(main_test_rfh());
+  service->BindFederatedRequestService(
+      federated_request_service.BindNewPipeAndPassReceiver());
+
+  static_cast<RenderFrameHostImpl*>(main_test_rfh())
+      ->SetLifecycleState(
+          RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+
+  auto options = blink::mojom::IdentityCredentialDisconnectOptions::New();
+  options->config = blink::mojom::IdentityProviderConfig::New();
+  options->config->config_url = GURL(kProviderUrlFull);
+  options->config->client_id = kClientId;
+  options->account_hint = "hint";
+
+  base::RunLoop run_loop;
+  federated_request_service->Disconnect(
+      std::move(options),
+      base::BindLambdaForTesting([&](blink::mojom::DisconnectStatus status) {
+        EXPECT_EQ(blink::mojom::DisconnectStatus::kError, status);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  histogram_tester.ExpectTotalCount("Blink.FedCm.Status.Disconnect", 0);
+}
+
 TEST_F(RequestTest, ResolveViaFederatedRequestService) {
   mojo::Remote<FederatedRequestService> federated_request_service;
   RequestService* service =
