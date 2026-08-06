@@ -66,4 +66,14 @@ public class NewTabPageUtils {
             return resources.getDimensionPixelSize(R.dimen.ntp_section_top_margin_small);
         }
     }
+
+    /** Returns whether the Aurora layout is enabled. */
+    public static boolean isNtpAuroraEnabled() {
+        return ChromeFeatureList.sNtpAurora.isEnabled();
+    }
+
+    /** Returns whether the Aurora layout with updated button colors is enabled. */
+    public static boolean isNtpAuroraButtonColorEnabled() {
+        return isNtpAuroraEnabled() && ChromeFeatureList.sNtpAuroraChangeButtonColor.getValue();
+    }
 }

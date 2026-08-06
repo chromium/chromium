@@ -86,6 +86,7 @@ import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.ntp_customization.policy.NtpCustomizationPolicyManager;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorFromHexInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
@@ -598,9 +599,8 @@ public class NtpCustomizationUtils {
 
     /** Returns whether a white background should be applied on fake search box. */
     public static boolean shouldApplyWhiteBackgroundOnSearchBox() {
-        if (ChromeFeatureList.sNtpAurora.isEnabled() && !OmniboxCapabilities.isDesktopPlatform()) {
+        if (NewTabPageUtils.isNtpAuroraEnabled() && !OmniboxCapabilities.isDesktopPlatform())
             return true;
-        }
 
         return shouldApplyWhiteBackgroundOnComposeplate();
     }

@@ -156,6 +156,7 @@ android_library("java") {
     "//base:resetters_java",
     "//base:supplier_java",
     "//base:tasks_java",
+    "//chrome/android:new_tab_page_utils_java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/composeplate/android:java",
     "//chrome/browser/composeplate/android:java_resources",

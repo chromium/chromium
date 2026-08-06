@@ -168,14 +168,11 @@ found in the LICENSE file.
     <dimen name="find_in_page_popup_margin_end">62dp</dimen>
 
     <!-- NTP dimensions -->
-    <!-- Spacing between sections. -->
-    <dimen name="ntp_section_bottom_margin">4dp</dimen>
     <!-- Specific margins and paddings, ordered by appearance. -->
     <dimen name="ntp_search_box_transition_start_offset">16dp</dimen>
     <dimen name="ntp_search_box_transition_end_offset">4dp</dimen>
     <dimen name="ntp_search_box_max_width">680dp</dimen>
     <dimen name="ntp_search_box_action_button_margin">8dp</dimen>
-    <dimen name="composeplate_view_margin_top">4dp</dimen>
     <dimen name="mvt_container_top_padding">16dp</dimen>
     <dimen name="mvt_container_top_padding_small">8dp</dimen>
     <dimen name="mvt_container_bottom_padding">22dp</dimen>

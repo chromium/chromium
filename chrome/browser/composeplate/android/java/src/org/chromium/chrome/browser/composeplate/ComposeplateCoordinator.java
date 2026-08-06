@@ -5,12 +5,14 @@
 package org.chromium.chrome.browser.composeplate;
 
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.StyleRes;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -32,6 +34,28 @@ public class ComposeplateCoordinator {
         mModel = new PropertyModel(ComposeplateProperties.ALL_KEYS);
         mView = parentView.findViewById(R.id.composeplate_view);
         PropertyModelChangeProcessor.create(mModel, mView, ComposeplateViewBinder::bind);
+        maybeRevertToLegacyLayout();
+    }
+
+    private void maybeRevertToLegacyLayout() {
+        if (NewTabPageUtils.isNtpAuroraButtonColorEnabled()) {
+            return;
+        }
+
+        ViewGroup.MarginLayoutParams containerParams =
+                (ViewGroup.MarginLayoutParams) mView.getLayoutParams();
+        if (containerParams == null) {
+            return;
+        }
+
+        Resources resources = mView.getResources();
+        containerParams.topMargin =
+                resources.getDimensionPixelSize(R.dimen.composeplate_view_legacy_margin_top);
+        containerParams.bottomMargin =
+                resources.getDimensionPixelSize(R.dimen.ntp_section_bottom_margin);
+        containerParams.height =
+                resources.getDimensionPixelSize(R.dimen.composeplate_view_legacy_height);
+        mView.setLayoutParams(containerParams);
     }
 
     /**
@@ -76,24 +100,39 @@ public class ComposeplateCoordinator {
     }
 
     /**
-     * Sets the width of the composeplate view in LayoutParams and clears its margins. This should
-     * be called before the parent view's measure pass to avoid double measurement. The width of the
-     * composeplate is set to be the same as that of the fake search box.
+     * Sets the width of the composeplate view in LayoutParams and clears its margins. It keeps the
+     * composeplate the same width as the fake search box, except when the Aurora button color
+     * change feature is enabled, lateral margins are subtracted. Furthermore, if the Aurora feature
+     * is enabled, it adds a shadow, so the shadow padding must be subtracted. This should be called
+     * before the parent view's measure pass to avoid double measurement.
      *
      * @param searchBoxWidthPx The width of the fake search box.
      */
     public void setLayoutWidth(int searchBoxWidthPx) {
         ViewGroup.MarginLayoutParams layoutParams =
                 (ViewGroup.MarginLayoutParams) mView.getLayoutParams();
-        if (layoutParams.width == searchBoxWidthPx
-                && layoutParams.leftMargin == 0
-                && layoutParams.rightMargin == 0) {
+
+        int targetWidth = searchBoxWidthPx;
+
+        if (NewTabPageUtils.isNtpAuroraButtonColorEnabled()) {
+            // If the aurora button color is enabled, adjust the margin.
+            int margin =
+                    mView.getResources()
+                            .getDimensionPixelSize(R.dimen.composeplate_view_lateral_margin);
+            targetWidth -= margin * 2;
+        } else if (NewTabPageUtils.isNtpAuroraEnabled()) {
+            // If aurora is enabled, consider the shadow.
+            int paddingForShadow =
+                    mView.getResources()
+                            .getDimensionPixelSize(R.dimen.search_box_padding_for_shadow_lateral);
+            targetWidth -= paddingForShadow * 2;
+        }
+
+        if (layoutParams.width == targetWidth) {
             return;
         }
 
-        layoutParams.width = searchBoxWidthPx;
-        layoutParams.leftMargin = 0;
-        layoutParams.rightMargin = 0;
+        layoutParams.width = targetWidth;
     }
 
     /**

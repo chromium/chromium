@@ -28,7 +28,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.omnibox.GlifStrokeDrawable;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
@@ -73,7 +73,7 @@ public class SearchBoxContainerView extends LinearLayout {
                 (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
                     updateTouchDelegate();
                 });
-        mIsNtpAuroraEnabled = ChromeFeatureList.sNtpAurora.isEnabled();
+        mIsNtpAuroraEnabled = NewTabPageUtils.isNtpAuroraEnabled();
 
         Typeface typeface = Typeface.create("google-sans-medium", Typeface.NORMAL);
         mHintTextView.setTypeface(typeface);

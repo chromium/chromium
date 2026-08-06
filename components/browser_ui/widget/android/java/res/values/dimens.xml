@@ -230,6 +230,7 @@ found in the LICENSE file.
     <!-- Spacing between sections. -->
     <dimen name="ntp_section_top_margin">12dp</dimen>
     <dimen name="ntp_section_top_margin_small">8dp</dimen>
+    <dimen name="ntp_section_bottom_margin">4dp</dimen>
 
     <!-- Single Tab module -->
     <dimen name="single_tab_module_tab_thumbnail_size_big">114dp</dimen>

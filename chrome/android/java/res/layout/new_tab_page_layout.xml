@@ -38,9 +38,6 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="@dimen/composeplate_view_height"
         android:layout_marginTop="@dimen/composeplate_view_margin_top"
-        android:layout_marginBottom="@dimen/ntp_section_bottom_margin"
-        android:layout_marginStart="@dimen/mvt_container_lateral_margin"
-        android:layout_marginEnd="@dimen/mvt_container_lateral_margin"
         android:layout="@layout/composeplate_view_layout"
         />
 
