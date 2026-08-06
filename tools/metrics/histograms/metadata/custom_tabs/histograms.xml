@@ -502,7 +502,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CustomTabs.IncognitoCCTCallerId" enum="IncognitoCCTCallerId"
+<histogram name="CustomTabs.IncognitoCctCallerId" enum="IncognitoCCTCallerId"
     expires_after="2026-12-05">
   <owner>yawfrempong@google.com</owner>
   <owner>chrome-incognito@google.com</owner>
