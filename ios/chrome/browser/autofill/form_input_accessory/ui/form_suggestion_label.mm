@@ -339,13 +339,21 @@ NSString* PasswordSuggestionDisplayText(NSString* suggestion_value) {
 // Returns the string to set as the view's accessibility label.
 NSString* AccessibilityLabel(NSString* suggestion_text,
                              NSString* suggestion_description,
-                             BOOL is_backup_password_suggestion) {
+                             SuggestionType suggestion_type) {
+  if (suggestion_type == SuggestionType::kUndoOrClear) {
+    // On Mobile, "Undo Autofill" is hidden from the KeyboardAccessory to save
+    // horizontal space and instead only the icon is shown. That's why the
+    // string is explicitly inlined here instead of looking at the suggestion
+    // main text.
+    suggestion_text = l10n_util::GetNSString(IDS_AUTOFILL_UNDO_MENU_ITEM);
+  }
+
   std::u16string accessibility_label = l10n_util::GetStringFUTF16(
       IDS_IOS_AUTOFILL_ACCNAME_SUGGESTION,
       base::SysNSStringToUTF16(suggestion_text),
       base::SysNSStringToUTF16(suggestion_description));
 
-  if (is_backup_password_suggestion) {
+  if (suggestion_type == SuggestionType::kBackupPasswordEntry) {
     // Append an additional mention to the accessibility label.
     accessibility_label = l10n_util::GetStringFUTF16(
         IDS_IOS_AUTOFILL_ACCNAME_SUGGESTION, accessibility_label,
@@ -642,10 +650,9 @@ void ConfigureFetchingAmbientDataSuggestion(UIStackView* stackView,
   NSString* displayDescription =
       [_delegate displayDescriptionForSuggestion:_suggestion];
 
-  [self setAccessibilityLabel:AccessibilityLabel(
-                                  suggestionText, displayDescription,
-                                  _suggestion.type ==
-                                      SuggestionType::kBackupPasswordEntry)];
+  [self setAccessibilityLabel:AccessibilityLabel(suggestionText,
+                                                 displayDescription,
+                                                 _suggestion.type)];
   [self
       setAccessibilityValue:l10n_util::GetNSStringF(
                                 IDS_IOS_AUTOFILL_SUGGESTION_INDEX_VALUE,

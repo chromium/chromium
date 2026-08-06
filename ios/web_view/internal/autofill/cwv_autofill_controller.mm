@@ -339,24 +339,6 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
       ->SetForceSubmittedByUserForTesting(force);  // IN-TEST
 }
 
-- (void)clearFormWithName:(NSString*)formName
-          fieldIdentifier:(NSString*)fieldIdentifier
-                  frameID:(NSString*)frameID
-        completionHandler:(nullable void (^)(void))completionHandler {
-  autofill::AutofillJavaScriptFeature* feature =
-      autofill::AutofillJavaScriptFeature::GetInstance();
-  web::WebFrame* frame =
-      feature->GetWebFramesManager(_webState)->GetFrameWithId(
-          base::SysNSStringToUTF8(frameID));
-  feature->ClearAutofilledFieldsForForm(frame, _lastFormActivityFormRendererID,
-                                        _lastFormActivityFieldRendererID,
-                                        base::BindOnce(^(NSString*) {
-                                          if (completionHandler) {
-                                            completionHandler();
-                                          }
-                                        }));
-}
-
 - (void)fetchSuggestionsForFormWithName:(NSString*)formName
                         fieldIdentifier:(NSString*)fieldIdentifier
                               fieldType:(NSInteger)fieldType

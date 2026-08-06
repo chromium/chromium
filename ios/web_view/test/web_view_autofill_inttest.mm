@@ -287,8 +287,8 @@ TEST_F(WebViewAutofillTest, TestDelegateCallbacks) {
       verifyWithDelay:kWaitForActionTimeout.InSecondsF()];
 }
 
-// Tests that CWVAutofillController can fetch, fill, and clear suggestions.
-TEST_F(WebViewAutofillTest, TestSuggestionFetchFillClear) {
+// Tests that CWVAutofillController can fetch and fill suggestions.
+TEST_F(WebViewAutofillTest, TestSuggestionFetchFill) {
   ASSERT_TRUE(test_server_->Start());
   ASSERT_TRUE(LoadTestPage());
   ASSERT_TRUE(SetFormFieldValue(kTestNameFieldID, kTestNameFieldValue));
@@ -367,25 +367,7 @@ TEST_F(WebViewAutofillTest, TestSuggestionFetchFillClear) {
     }
     return [fetched_suggestion.value isEqualToString:filled_value];
   }));
-  ASSERT_FALSE(filled_error);
-  [autofill_controller_ clearFormWithName:kTestFormName
-                          fieldIdentifier:kTestAddressFieldID
-                                  frameID:main_frame_id
-                        completionHandler:nil];
-  NSString* cleared_script =
-      [NSString stringWithFormat:@"document.getElementById('%@').value",
-                                 kTestAddressFieldID];
-  __block NSError* cleared_error = nil;
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
-    NSString* current_value =
-        test::EvaluateJavaScript(web_view_, cleared_script, &cleared_error);
-    // If there is an error, early return so the ASSERT catch the error.
-    if (cleared_error) {
-      return true;
-    }
-    return [current_value isEqualToString:@""];
-  }));
-  EXPECT_FALSE(cleared_error);
+  EXPECT_FALSE(filled_error);
 }
 
 // Tests that submitting a form in a child frame reports the correct frame ID.

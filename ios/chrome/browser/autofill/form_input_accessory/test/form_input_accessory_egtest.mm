@@ -361,7 +361,6 @@ void SlowlyTypeText(NSString* text) {
   } else if ([self isRunningTest:@selector(testFillAndUndoVehicleForm)]) {
     [self configureAutofillAiWithConfig:config
                           overrideParam:kVehicleOverrideParam];
-    config.features_disabled.push_back(kAutofillUndoIos);
   } else {
     config.features_disabled.push_back(
         autofill::features::debug::kAutofillServerCommunication);
@@ -1323,11 +1322,11 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormVehicleMake)];
 
-  // TODO(crbug.com/511251267): Update the test with kAutofillUndoIos enabled by
-  // default once undo autofill has been fixed.
   // Define the matcher for the undo autofill.
-  id<GREYMatcher> undoChipMatcher =
-      grey_text(l10n_util::GetNSString(IDS_AUTOFILL_UNDO_MENU_ITEM));
+  NSString* undoLabel = l10n_util::GetNSStringF(
+      IDS_IOS_AUTOFILL_ACCNAME_SUGGESTION,
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_UNDO_MENU_ITEM), u"");
+  id<GREYMatcher> undoChipMatcher = grey_accessibilityLabel(undoLabel);
 
   // Wait for the chip to appear.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:undoChipMatcher];

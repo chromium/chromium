@@ -58,20 +58,6 @@ class AutofillJavaScriptFeature : public web::JavaScriptFeature {
                 base::DictValue data,
                 base::OnceCallback<void(NSString*)> callback);
 
-  // Clear autofilled fields of the specified form and frame. Fields that are
-  // not currently autofilled are not modified. Field contents are cleared, and
-  // Autofill flag and styling are removed. 'change' events are sent for fields
-  // whose contents changed.
-  // `form_renderer_id` and `field_renderer_id` identify the field that
-  // initiated the clear action. `callback is called after the forms are filled
-  // with the JSON string containing a list of unique renderer ids of cleared
-  // fields. `callback` cannot be nil.
-  void ClearAutofilledFieldsForForm(
-      web::WebFrame* frame,
-      FormRendererId form_renderer_id,
-      FieldRendererId field_renderer_id,
-      base::OnceCallback<void(NSString*)> callback);
-
   // Marks up the form with autofill field prediction data (diagnostic tool).
   void FillPredictionData(web::WebFrame* frame, base::DictValue data);
 

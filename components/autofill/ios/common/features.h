@@ -63,10 +63,6 @@ BASE_DECLARE_FEATURE(kAutofillPaymentsSheetV2Ios);
 // the FormSuggestionController.
 BASE_DECLARE_FEATURE(kAutofillPaymentsSheetV3Ios);
 
-// Enables Undo for Autofill operations on iOS. This will replace the Clear form
-// button with the Undo autofill button in the keyboard accessory.
-BASE_DECLARE_FEATURE(kAutofillUndoIos);
-
 // Rejects form submission events if they lack user gesture.
 BASE_DECLARE_FEATURE(kAutofillRejectFormSubmissionsWithoutUserGesture);
 
