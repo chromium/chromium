@@ -2207,6 +2207,10 @@ bool GLES2DecoderPassthroughImpl::IsIgnoredCap(GLenum cap) const {
       // it's blocked in ANGLE for WebGL contexts.
       return feature_info_->IsWebGLContext();
 
+    case GL_TEXTURE_RECTANGLE_ANGLE:
+      // Used internally, not exposed to WebGL contexts.
+      return feature_info_->IsWebGLContext();
+
     default:
       return false;
   }
