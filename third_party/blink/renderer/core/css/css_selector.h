@@ -24,6 +24,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_SELECTOR_H_
 
 #include <array>
+#include <limits>
 #include <memory>
 #include <utility>
 
@@ -596,6 +597,36 @@ class CORE_EXPORT CSSSelector {
 
   void SetNth(int a, int b, CSSSelectorList* sub_selector);
   bool MatchNth(unsigned count) const;
+
+  // Returns whether a 1-based sibling index satisfies :nth-child(An + B) for
+  // the given A and B. Shared between the full selector matching and the fast
+  // path for :nth-child() and :first-child.
+  ALWAYS_INLINE static bool MatchNth(int nth_a, int nth_b, unsigned count) {
+    // These very large values for An + B or the index can't ever match, so
+    // give up immediately if we see them.
+    constexpr int kMaxValue = std::numeric_limits<int>::max() / 2;
+    constexpr int kMinValue = std::numeric_limits<int>::min() / 2;
+    if (count > static_cast<unsigned>(kMaxValue) || nth_a > kMaxValue ||
+        nth_a < kMinValue || nth_b > kMaxValue || nth_b < kMinValue)
+        [[unlikely]] {
+      return false;
+    }
+
+    int current_count = static_cast<int>(count);
+    if (nth_a == 0) {
+      return current_count == nth_b;
+    }
+    if (nth_a > 0) {
+      if (current_count < nth_b) {
+        return false;
+      }
+      return (current_count - nth_b) % nth_a == 0;
+    }
+    if (current_count > nth_b) {
+      return false;
+    }
+    return (nth_b - current_count) % (-nth_a) == 0;
+  }
 
   static bool IsAdjacentRelation(RelationType relation) {
     return relation == kDirectAdjacent || relation == kIndirectAdjacent;

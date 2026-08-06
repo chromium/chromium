@@ -116,7 +116,8 @@ bool SelectorQuery::Matches(Element& target_element) const {
   QUERY_STATS_RESET();
   CheckPseudoHasCacheScope check_pseudo_has_cache_scope(
       &target_element.GetDocument(), /*within_selector_checking=*/false);
-  if (compounds_.size() == 1 && !need_full_check_ && !compounds_[0].nth_child) {
+  if (compounds_.size() == 1 && !need_full_check_ &&
+      !compounds_[0].has_nth_child) {
     FillMissingData(target_element);
     return MatchCompound(target_element, compounds_[0], kUnknownSiblingIndex,
                          IsA<HTMLDocument>(target_element.GetDocument()));
@@ -135,7 +136,8 @@ Element* SelectorQuery::Closest(Element& target_element) const {
 
   // Single-compound fast path, mirroring Matches(): test each ancestor with
   // MatchCompound() instead of running the full SelectorChecker.
-  if (compounds_.size() == 1 && !need_full_check_ && !compounds_[0].nth_child) {
+  if (compounds_.size() == 1 && !need_full_check_ &&
+      !compounds_[0].has_nth_child) {
     FillMissingData(target_element);
     const bool is_html_doc = IsA<HTMLDocument>(target_element.GetDocument());
     for (Element* current_element = &target_element; current_element;
@@ -326,9 +328,9 @@ bool SelectorQuery::MatchCompound(const Element& element,
     }
   }
 
-  if (compound.nth_child && !(sibling_idx & kUnknownSiblingIndex)) {
+  if (compound.has_nth_child && !(sibling_idx & kUnknownSiblingIndex)) {
     QUERY_STATS_INCREMENT(check_nth_child);
-    if (compound.nth_child != sibling_idx) {
+    if (!CSSSelector::MatchNth(compound.nth_a, compound.nth_b, sibling_idx)) {
       return false;
     }
   }
@@ -647,7 +649,7 @@ bool SelectorQuery::ExecuteSearch(
          (element &&
           MatchCompound(*element, *compound, sibling_idx, is_html_doc)));
     if (match) {
-      if (compound->nth_child && (sibling_idx & kUnknownSiblingIndex) != 0) {
+      if (compound->has_nth_child && (sibling_idx & kUnknownSiblingIndex) != 0) {
         // This compound required :nth-child(), but we don't know
         // our element index, so we need a full recheck.
         // (This can only happen on the root node, so it's fine
@@ -839,15 +841,20 @@ void SelectorQuery::BuildCompounds(const CSSSelector* first_selector) {
 
       case CSSSelector::kPseudoClass:
         if (current->GetPseudoType() == CSSSelector::kPseudoNthChild &&
-            !current->SelectorList() && current->NthAValue() == 0 &&
-            current->NthBValue() > 0 && !current_compound.nth_child) {
-          // b == 0 collides with the "no :nth-child()" sentinel (see
-          // Compound::nth_child); only b > 0 is safe on the fast path.
-          // TODO(sesse): Consider supporting aN + b, not just b.
-          current_compound.nth_child = current->NthBValue();
+            !current->SelectorList() && !current_compound.has_nth_child) {
+          // A plain :nth-child(aN + b) can be evaluated on the fast path from
+          // the element's sibling index; the ":nth-child(... of S)" form
+          // carries a SelectorList and is excluded above. The index is matched
+          // against aN + b in MatchCompound() via NthChildMatches().
+          current_compound.has_nth_child = true;
+          current_compound.nth_a = current->NthAValue();
+          current_compound.nth_b = current->NthBValue();
         } else if (current->GetPseudoType() == CSSSelector::kPseudoFirstChild &&
-                   !current_compound.nth_child) {
-          current_compound.nth_child = 1;
+                   !current_compound.has_nth_child) {
+          // :first-child is equivalent to :nth-child(1), i.e. a == 0, b == 1.
+          current_compound.has_nth_child = true;
+          current_compound.nth_a = 0;
+          current_compound.nth_b = 1;
         } else {
           need_full_check_ = true;
         }
@@ -955,7 +962,7 @@ void SelectorQuery::BuildCompounds(const CSSSelector* first_selector) {
   subject_compound.simple_traversal_from_here =
       (subject_compound.next_compound_for_children_on_mismatch ==
        &subject_compound) &&
-      !subject_compound.nth_child;
+      !subject_compound.has_nth_child;
 }
 
 // Fill in attribute data that we can only fill in when we know the document.

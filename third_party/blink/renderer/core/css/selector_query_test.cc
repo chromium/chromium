@@ -254,6 +254,57 @@ TEST(SelectorQueryTest, StandardsModeFastPaths) {
   RunTests(*document, kTestCases);
 }
 
+TEST(SelectorQueryTest, NthChildFastPath) {
+  test::TaskEnvironment task_environment;
+  ScopedNullExecutionContext execution_context;
+  auto* document =
+      HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
+  document->write(R"HTML(
+    <!DOCTYPE html>
+    <html>
+      <body>
+        <div id=parent>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </body>
+    </html>
+  )HTML");
+
+  Element* parent = document->getElementById(AtomicString("parent"));
+  ASSERT_TRUE(parent);
+
+  // The children have 1-based sibling indices 1..6. These exercise the
+  // fast-path :nth-child(aN + b) handling for a == 0, a > 0 and a < 0.
+  static const struct {
+    const char* selector;
+    unsigned matches;
+  } kTestCases[] = {
+      {":nth-child(3)", 1},       // b only: index 3.
+      {":first-child", 1},        // index 1.
+      {":nth-child(n)", 6},       // a == 1, b == 0: all.
+      {":nth-child(2n)", 3},      // even: 2, 4, 6.
+      {":nth-child(2n+1)", 3},    // odd: 1, 3, 5.
+      {":nth-child(3n+1)", 2},    // 1, 4.
+      {":nth-child(n+3)", 4},     // 3, 4, 5, 6.
+      {":nth-child(-n+2)", 2},    // 1, 2.
+      {":nth-child(2n+100)", 0},  // Out of range: none.
+      {":nth-child(0)", 0},       // a == 0, b == 0: matches nothing.
+      {":nth-child(0n)", 0},      // a == 0, b == 0: matches nothing.
+
+  };
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.selector);
+    StaticElementList* matches =
+        parent->QuerySelectorAll(AtomicString(test_case.selector));
+    EXPECT_EQ(test_case.matches, matches->length());
+  }
+}
+
 TEST(SelectorQueryTest, FastPathScoped) {
   test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
