@@ -62,7 +62,11 @@ class VisualGuidedSetterControllerWin : public views::WidgetObserver,
     kStageTooSmall = 3,
     // The user manually closed the Settings window before flow completion.
     kSettingsWindowClosed = 4,
-    kMaxValue = kSettingsWindowClosed,
+    // Launching the Windows Settings default-apps UI failed, e.g. because the
+    // install mode does not support set-as-default (canary) or registration
+    // failed.
+    kSettingsLaunchFailed = 5,
+    kMaxValue = kSettingsLaunchFailed,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/enums.xml:DefaultBrowserVisualGuideOutcome)
 
@@ -108,6 +112,12 @@ class VisualGuidedSetterControllerWin : public views::WidgetObserver,
                                          const gfx::Rect& target_rect) const;
   virtual void CloseSettingsWindow();
   virtual bool IsValidSettingsProcess(HWND hwnd) const;
+
+  // Called on the UI sequence with the result of the Settings launch posted
+  // by LaunchSettings(). A failed launch tears the flow down immediately with
+  // Outcome::kSettingsLaunchFailed instead of waiting for the finder timeout.
+  // Protected so test subclasses that stub LaunchSettings() can drive it.
+  void OnLaunchSettingsResult(bool succeeded);
 
  private:
   // views::WidgetObserver:

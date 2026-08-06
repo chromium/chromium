@@ -13,6 +13,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -172,6 +173,13 @@ class TestVisualGuidedSetterControllerWin
   bool IsChromeWindowActive() const override { return chrome_window_active_; }
   void LaunchSettings() override {}
 
+  // Simulates the asynchronous reply of the real LaunchSettings(), which
+  // posts ShellUtil::ShowMakeChromeDefaultSystemUI() to a COM STA task runner
+  // and replies with its result on the UI sequence.
+  void SimulateLaunchSettingsResult(bool succeeded) {
+    OnLaunchSettingsResult(succeeded);
+  }
+
   std::unique_ptr<SettingsWindowFinderWin> CreateSettingsWindowFinder()
       override {
     auto finder = std::make_unique<TestSettingsWindowFinderWin>();
@@ -276,6 +284,62 @@ TEST_F(VisualGuidedSetterControllerWinTest, FindSettingsTimeout) {
   histograms.ExpectUniqueSample(
       "DefaultBrowser.VisualGuide.Outcome",
       TestVisualGuidedSetterControllerWin::Outcome::kSettingsWindowNotFound, 1);
+}
+
+TEST_F(VisualGuidedSetterControllerWinTest, LaunchSettingsFailureFailsFast) {
+  base::HistogramTester histograms;
+  bool error_state = false;
+  controller_->SetErrorCallback(base::BindLambdaForTesting(
+      [&](bool is_error) { error_state = is_error; }));
+
+  controller_->Start();
+  EXPECT_TRUE(controller_->is_running());
+  EXPECT_EQ(controller_->test_finder()->start_called_count(), 1);
+
+  // The launch reply arrives asynchronously after Start().
+  controller_->SimulateLaunchSettingsResult(false);
+
+  EXPECT_FALSE(controller_->is_running());
+  EXPECT_TRUE(error_state);
+  EXPECT_GE(controller_->test_finder()->stop_called_count(), 1);
+  histograms.ExpectUniqueSample(
+      "DefaultBrowser.VisualGuide.Outcome",
+      TestVisualGuidedSetterControllerWin::Outcome::kSettingsLaunchFailed, 1);
+
+  // The finder was stopped, so no timeout can double-record an outcome.
+  controller_->test_finder()->TriggerFound(nullptr);
+  histograms.ExpectUniqueSample(
+      "DefaultBrowser.VisualGuide.Outcome",
+      TestVisualGuidedSetterControllerWin::Outcome::kSettingsLaunchFailed, 1);
+}
+
+TEST_F(VisualGuidedSetterControllerWinTest, LaunchSettingsSuccessKeepsRunning) {
+  HWND fake_hwnd = reinterpret_cast<HWND>(0x12345);
+
+  controller_->Start();
+  controller_->SimulateLaunchSettingsResult(true);
+
+  EXPECT_TRUE(controller_->is_running());
+  EXPECT_EQ(controller_->test_finder()->start_called_count(), 1);
+
+  controller_->test_finder()->TriggerFound(fake_hwnd);
+  EXPECT_GT(controller_->applied_rects().size(), 0u);
+
+  controller_->Stop();
+}
+
+TEST_F(VisualGuidedSetterControllerWinTest,
+       LaunchSettingsFailureAfterStopIsIgnored) {
+  base::HistogramTester histograms;
+
+  controller_->Start();
+  controller_->Stop();
+
+  controller_->SimulateLaunchSettingsResult(false);
+
+  histograms.ExpectBucketCount(
+      "DefaultBrowser.VisualGuide.Outcome",
+      TestVisualGuidedSetterControllerWin::Outcome::kSettingsLaunchFailed, 0);
 }
 
 TEST_F(VisualGuidedSetterControllerWinTest, DpiMismatchDegrades) {

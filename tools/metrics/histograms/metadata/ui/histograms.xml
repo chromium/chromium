@@ -413,6 +413,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DefaultBrowser.VisualGuide.EventHookDiscoveryTime" units="ms"
+    expires_after="2027-08-06">
+  <owner>alsan@chromium.org</owner>
+  <owner>atharvmaan@chromium.org</owner>
+  <owner>koretadaniel@chromium.org</owner>
+  <summary>
+    Time between starting the search for the Windows Settings default-apps
+    window and the window being discovered by the visual guided setter. Recorded
+    on Windows only, when the window is found.
+  </summary>
+</histogram>
+
+<histogram name="DefaultBrowser.VisualGuide.Outcome"
+    enum="DefaultBrowserVisualGuideOutcome" expires_after="2027-08-06">
+  <owner>alsan@chromium.org</owner>
+  <owner>atharvmaan@chromium.org</owner>
+  <owner>koretadaniel@chromium.org</owner>
+  <summary>
+    Outcome of the visual guided setter flow that docks the Windows Settings
+    default-apps window over the chrome://default-browser WebUI stage. Recorded
+    on Windows only, when the flow tears down.
+  </summary>
+</histogram>
+
 <histogram
     name="DefaultBrowser.{DefaultBrowserEntrypointType}.{DefaultBrowserSetterType}.DefaultSetAfterSetterFailure"
     enum="BooleanSuccess" expires_after="2027-04-27">

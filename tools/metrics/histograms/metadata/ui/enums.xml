@@ -142,6 +142,25 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/default_browser/default_browser_controller.h:DefaultBrowserInteractionType) -->
 
+<!-- LINT.IfChange(DefaultBrowserVisualGuideOutcome) -->
+
+<enum name="DefaultBrowserVisualGuideOutcome">
+  <summary>
+    Outcome of the visual guided setter flow that docks the Windows Settings
+    default-apps window over the chrome://default-browser WebUI stage.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Settings window not found (finder timeout)"/>
+  <int value="2" label="DPI mismatch (degraded to floating)"/>
+  <int value="3" label="Stage too small (degraded to floating)"/>
+  <int value="4" label="Settings window closed before completion"/>
+  <int value="5"
+      label="Settings launch failed (e.g. set-as-default unsupported by the
+             install mode)"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webui/default_browser/visual_guided_setter_controller_win.h:DefaultBrowserVisualGuideOutcome) -->
+
 <!-- LINT.IfChange(InitialWebUIView) -->
 
 <enum name="InitialWebUIView">

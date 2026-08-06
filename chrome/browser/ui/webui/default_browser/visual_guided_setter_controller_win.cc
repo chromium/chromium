@@ -242,13 +242,26 @@ void VisualGuidedSetterControllerWin::LaunchSettings() {
   // run it off the UI thread.
   base::ThreadPool::CreateCOMSTATaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE})
-      ->PostTask(FROM_HERE, base::BindOnce([]() {
-                   base::FilePath chrome_exe;
-                   if (!base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
-                     return;
-                   }
+      ->PostTaskAndReplyWithResult(
+          FROM_HERE, base::BindOnce([]() {
+            base::FilePath chrome_exe;
+            return base::PathService::Get(base::FILE_EXE, &chrome_exe) &&
                    ShellUtil::ShowMakeChromeDefaultSystemUI(chrome_exe);
-                 }));
+          }),
+          base::BindOnce(
+              &VisualGuidedSetterControllerWin::OnLaunchSettingsResult,
+              weak_ptr_factory_.GetWeakPtr()));
+}
+
+void VisualGuidedSetterControllerWin::OnLaunchSettingsResult(bool succeeded) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!is_running_ || succeeded) {
+    return;
+  }
+
+  outcome_ = Outcome::kSettingsLaunchFailed;
+  NotifyErrorState(true);
+  TearDownInternal();
 }
 
 void VisualGuidedSetterControllerWin::StartFindSettingsWindow() {

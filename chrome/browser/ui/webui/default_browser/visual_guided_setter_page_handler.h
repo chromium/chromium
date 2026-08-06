@@ -40,6 +40,7 @@ class VisualGuidedSetterPageHandler
   void OpenSettings() override;
 
  private:
+  void OnOpenSettingsResult(bool succeeded);
   void OnErrorStateChanged(bool has_error);
 
   raw_ptr<content::WebContents> web_contents_;
