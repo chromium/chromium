@@ -385,6 +385,10 @@ export const ComposeboxEmbedderMixin =
               ComposeboxProxyImpl.getInstance().observeSmartTabSharingActive(
                   (active: boolean) => {
                     this.smartTabSharingActive = active;
+                    if (!active) {
+                      this.addedTabsIds = new Map();
+                      this.resetRestoredTabs();
+                    }
                   });
           this.searchboxListenerIds.push(listenerId);
           // </if>
@@ -1203,9 +1207,13 @@ export const ComposeboxEmbedderMixin =
 
         onSmartTabSharingActiveChanged(_e: CustomEvent<{active: boolean}>) {
           // <if expr="not is_android">
-          this.smartTabSharingActive = _e.detail.active;
-          ComposeboxProxyImpl.getInstance().setSmartTabSharingActive(
-              _e.detail.active);
+          const active = _e.detail.active;
+          this.smartTabSharingActive = active;
+          ComposeboxProxyImpl.getInstance().setSmartTabSharingActive(active);
+          if (!active) {
+            this.addedTabsIds = new Map();
+            this.resetRestoredTabs();
+          }
           // </if>
         }
 

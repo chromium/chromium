@@ -315,8 +315,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
-    if (changedProperties.has('smartTabSharingActive') &&
-        this.smartTabSharingActive) {
+    if (changedProperties.has('smartTabSharingActive')) {
       this.clearContextForSmartTabSharingActive_();
     }
     if (changedProperties.has('entrypointName') ||
@@ -930,7 +929,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   private clearManualTabs_() {
     const fileMap = new Map(this.files);
     for (const [uuid, file] of fileMap.entries()) {
-      if (file.type === 'tab' &&
+      if ((file.type === 'tab' || !!file.tabId) &&
           (!this.automaticActiveTab_ ||
            file.uuid !== this.automaticActiveTab_.uuid)) {
         this.deleteFile(uuid, /*fromUserAction=*/ false);
