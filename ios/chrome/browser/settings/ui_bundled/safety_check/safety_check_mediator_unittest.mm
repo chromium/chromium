@@ -913,7 +913,7 @@ TEST_F(SafetyCheckMediatorTest, DoesNotCrashOnDelayedTasksAfterDisconnect) {
   [mediator_ disconnect];
 
   // Fast-forward time to force all delayed tasks to execute immediately.
-  environment_.FastForwardUntilNoTasksRemain();
+  environment_.FastForwardBy(base::Days(1));
 
   // If the test reaches this point without a seg fault, it passes.
 }
