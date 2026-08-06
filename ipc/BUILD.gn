@@ -75,8 +75,6 @@ component("message_support") {
     "ipc_message_support_export.h",
     "ipc_mojo_handle_attachment.cc",
     "ipc_mojo_handle_attachment.h",
-    "ipc_mojo_message_helper.cc",
-    "ipc_mojo_message_helper.h",
   ]
 
   if (is_win) {
