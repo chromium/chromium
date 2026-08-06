@@ -153,7 +153,8 @@ class MockAutofillAiAccessManager : public AutofillAiAccessManager {
               FetchEntityInstance,
               (EntityInstance entity,
                bool will_fill_sensitive_info,
-               OnEntityInstanceFetchedCallback callback),
+               OnAuthenticationCompleteCallback on_auth_complete_callback,
+               OnEntityInstanceFetchedCallback on_fetched_callback),
               (override));
 };
 
@@ -840,11 +841,16 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_AttributeSuccess) {
     InSequence seq;
     EXPECT_CALL(
         *mock_ai_access_manager_ptr,
-        FetchEntityInstance(passport, /*will_fill_sensitive_info=*/true, _))
+        FetchEntityInstance(passport, /*will_fill_sensitive_info=*/true, _, _))
         .WillOnce([&](EntityInstance entity, bool will_fill,
+                      AutofillAiAccessManager::OnAuthenticationCompleteCallback
+                          on_auth_complete_callback,
                       AutofillAiAccessManager::OnEntityInstanceFetchedCallback
                           callback) {
-          std::move(callback).Run(entity, /*reauth_attempted=*/false,
+          std::move(on_auth_complete_callback)
+              .Run(/*reauth_attempted=*/false, /*with_fetch_from_server=*/true);
+          std::move(callback).Run(entity,
+                                  /*reauth_attempted=*/false,
                                   /*did_fetch_from_server=*/true);
           return true;
         });
@@ -1132,10 +1138,14 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_FetchFailed) {
       .set_autofill_ai_access_manager(std::move(mock_ai_access_manager));
 
   EXPECT_CALL(*mock_ai_access_manager_ptr,
-              FetchEntityInstance(passport, true, _))
+              FetchEntityInstance(passport, true, _, _))
       .WillOnce([&](EntityInstance entity, bool will_fill,
+                    AutofillAiAccessManager::OnAuthenticationCompleteCallback
+                        on_auth_complete_callback,
                     AutofillAiAccessManager::OnEntityInstanceFetchedCallback
                         callback) {
+        std::move(on_auth_complete_callback)
+            .Run(/*reauth_attempted=*/false, /*with_fetch_from_server=*/true);
         std::move(callback).Run(
             base::unexpected(
                 AutofillAiAccessManager::FailureReason::kFetchFailed),

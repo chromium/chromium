@@ -150,18 +150,23 @@ TEST_F(AutofillAiAccessManagerTest, NoReauthRequired_LocalEntity) {
   EntityInstance passport = test::GetPassportEntityInstance();
   AddOrUpdateEntityInstance(passport);
 
+  base::MockCallback<AutofillAiAccessManager::OnAuthenticationCompleteCallback>
+      on_auth_complete;
   base::MockCallback<AutofillAiAccessManager::OnEntityInstanceFetchedCallback>
-      callback;
+      on_fetched_callback;
 
+  EXPECT_CALL(on_auth_complete, Run(/*reauth_attempted=*/false,
+                                    /*will_fetch_from_server=*/false));
   EXPECT_CALL(
-      callback,
+      on_fetched_callback,
       Run(base::expected<EntityInstance,
                          AutofillAiAccessManager::FailureReason>(passport),
           /*reauth_attempted=*/false,
           /*did_fetch_from_server=*/false));
 
   EXPECT_FALSE(access_manager().FetchEntityInstance(
-      passport, /*will_fill_sensitive_info=*/false, callback.Get()));
+      passport, /*will_fill_sensitive_info=*/false, on_auth_complete.Get(),
+      on_fetched_callback.Get()));
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
@@ -182,18 +187,23 @@ TEST_F(AutofillAiAccessManagerTest, ReauthRequired_ReauthAccepted) {
   test_api(access_manager())
       .SetDeviceAuthenticator(std::move(mock_authenticator_));
 
+  base::MockCallback<AutofillAiAccessManager::OnAuthenticationCompleteCallback>
+      on_auth_complete;
   base::MockCallback<AutofillAiAccessManager::OnEntityInstanceFetchedCallback>
-      callback;
+      on_fetched_callback;
 
+  EXPECT_CALL(on_auth_complete,
+              Run(/*reauth_attempted=*/true, /*will_fetch_from_server=*/false));
   EXPECT_CALL(
-      callback,
+      on_fetched_callback,
       Run(base::expected<EntityInstance,
                          AutofillAiAccessManager::FailureReason>(passport),
           /*reauth_attempted=*/true,
           /*did_fetch_from_server=*/false));
 
   EXPECT_TRUE(access_manager().FetchEntityInstance(
-      passport, /*will_fill_sensitive_info=*/true, callback.Get()));
+      passport, /*will_fill_sensitive_info=*/true, on_auth_complete.Get(),
+      on_fetched_callback.Get()));
 }
 
 // Tests that when re-authentication is required and rejected,
@@ -211,11 +221,15 @@ TEST_F(AutofillAiAccessManagerTest, ReauthRequired_ReauthRejected) {
   test_api(access_manager())
       .SetDeviceAuthenticator(std::move(mock_authenticator_));
 
+  base::MockCallback<AutofillAiAccessManager::OnAuthenticationCompleteCallback>
+      on_auth_complete;
   base::MockCallback<AutofillAiAccessManager::OnEntityInstanceFetchedCallback>
-      callback;
+      on_fetched_callback;
 
+  EXPECT_CALL(on_auth_complete,
+              Run(/*reauth_attempted=*/true, /*will_fetch_from_server=*/false));
   EXPECT_CALL(
-      callback,
+      on_fetched_callback,
       Run(base::expected<EntityInstance,
                          AutofillAiAccessManager::FailureReason>(
               base::unexpected(
@@ -224,16 +238,18 @@ TEST_F(AutofillAiAccessManagerTest, ReauthRequired_ReauthRejected) {
           /*did_fetch_from_server=*/false));
 
   EXPECT_TRUE(access_manager().FetchEntityInstance(
-      passport, /*will_fill_sensitive_info=*/true, callback.Get()));
+      passport, /*will_fill_sensitive_info=*/true, on_auth_complete.Get(),
+      on_fetched_callback.Get()));
 }
 
 // Tests that when re-authentication is required and rejected for a
 // Personal Context entity, kReauthFailed is logged to the Unmask.Result metric.
 TEST_F(AutofillAiAccessManagerTest,
        ReauthRequired_ReauthRejected_PersonalContext) {
-  EntityInstance passport = test::GetPassportEntityInstance(
-      {.record_type = EntityInstance::RecordType::kPersonalContext});
-  AddOrUpdateEntityInstance(passport);
+  EntityInstance masked_passport =
+      test::MaskEntityInstance(test::GetPassportEntityInstance(
+          {.record_type = EntityInstance::RecordType::kPersonalContext}));
+  AddOrUpdateEntityInstance(masked_passport);
 
   mock_authenticator_ =
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
@@ -244,10 +260,14 @@ TEST_F(AutofillAiAccessManagerTest,
   test_api(access_manager())
       .SetDeviceAuthenticator(std::move(mock_authenticator_));
 
+  base::MockCallback<AutofillAiAccessManager::OnAuthenticationCompleteCallback>
+      on_auth_complete;
   base::MockCallback<AutofillAiAccessManager::OnEntityInstanceFetchedCallback>
-      callback;
+      on_fetched_callback;
+  EXPECT_CALL(on_auth_complete,
+              Run(/*reauth_attempted=*/true, /*will_fetch_from_server=*/false));
   EXPECT_CALL(
-      callback,
+      on_fetched_callback,
       Run(base::expected<EntityInstance,
                          AutofillAiAccessManager::FailureReason>(
               base::unexpected(
@@ -257,7 +277,8 @@ TEST_F(AutofillAiAccessManagerTest,
 
   base::HistogramTester histogram_tester;
   EXPECT_TRUE(access_manager().FetchEntityInstance(
-      passport, /*will_fill_sensitive_info=*/true, callback.Get()));
+      masked_passport, /*will_fill_sensitive_info=*/true,
+      on_auth_complete.Get(), on_fetched_callback.Get()));
   histogram_tester.ExpectUniqueSample(
       "Autofill.Ai.Unmask.Result.PersonalContext",
       AutofillAiUnmaskResult::kReauthFailed, 1);
@@ -276,18 +297,23 @@ TEST_F(AutofillAiAccessManagerTest, ReauthRequired_NoAuthenticator) {
   test_api(access_manager())
       .SetDeviceAuthenticator(std::move(mock_authenticator_));
 
+  base::MockCallback<AutofillAiAccessManager::OnAuthenticationCompleteCallback>
+      on_auth_complete;
   base::MockCallback<AutofillAiAccessManager::OnEntityInstanceFetchedCallback>
-      callback;
+      on_fetched_callback;
 
+  EXPECT_CALL(on_auth_complete, Run(/*reauth_attempted=*/false,
+                                    /*will_fetch_from_server=*/false));
   EXPECT_CALL(
-      callback,
+      on_fetched_callback,
       Run(base::expected<EntityInstance,
                          AutofillAiAccessManager::FailureReason>(passport),
           /*reauth_attempted=*/false,
           /*did_fetch_from_server=*/false));
 
   EXPECT_TRUE(access_manager().FetchEntityInstance(
-      passport, /*will_fill_sensitive_info=*/true, callback.Get()));
+      passport, /*will_fill_sensitive_info=*/true, on_auth_complete.Get(),
+      on_fetched_callback.Get()));
 }
 #endif
 
@@ -303,18 +329,23 @@ TEST_F(AutofillAiAccessManagerTest, ServerFetch_Success) {
               GetUnmaskedWalletEntityInstance(masked_passport.guid(), _))
       .WillOnce(RunOnceCallback<1>(full_passport));
 
+  base::MockCallback<AutofillAiAccessManager::OnAuthenticationCompleteCallback>
+      on_auth_complete;
   base::MockCallback<AutofillAiAccessManager::OnEntityInstanceFetchedCallback>
-      callback;
+      on_fetched_callback;
 
+  EXPECT_CALL(on_auth_complete,
+              Run(/*reauth_attempted=*/false, /*will_fetch_from_server=*/true));
   EXPECT_CALL(
-      callback,
+      on_fetched_callback,
       Run(base::expected<EntityInstance,
                          AutofillAiAccessManager::FailureReason>(full_passport),
           /*reauth_attempted=*/false,
           /*did_fetch_from_server=*/true));
 
   EXPECT_TRUE(access_manager().FetchEntityInstance(
-      masked_passport, /*will_fill_sensitive_info=*/true, callback.Get()));
+      masked_passport, /*will_fill_sensitive_info=*/true,
+      on_auth_complete.Get(), on_fetched_callback.Get()));
 }
 
 // Tests that when unmasking a server entity fails, FailureReason::kFetchFailed
@@ -329,11 +360,15 @@ TEST_F(AutofillAiAccessManagerTest, ServerFetch_Failure) {
               GetUnmaskedWalletEntityInstance(masked_passport.guid(), _))
       .WillOnce(RunOnceCallback<1>(std::nullopt));
 
+  base::MockCallback<AutofillAiAccessManager::OnAuthenticationCompleteCallback>
+      on_auth_complete;
   base::MockCallback<AutofillAiAccessManager::OnEntityInstanceFetchedCallback>
-      callback;
+      on_fetched_callback;
 
+  EXPECT_CALL(on_auth_complete,
+              Run(/*reauth_attempted=*/false, /*will_fetch_from_server=*/true));
   EXPECT_CALL(
-      callback,
+      on_fetched_callback,
       Run(base::expected<EntityInstance,
                          AutofillAiAccessManager::FailureReason>(
               base::unexpected(
@@ -342,7 +377,8 @@ TEST_F(AutofillAiAccessManagerTest, ServerFetch_Failure) {
           /*did_fetch_from_server=*/true));
 
   EXPECT_TRUE(access_manager().FetchEntityInstance(
-      masked_passport, /*will_fill_sensitive_info=*/true, callback.Get()));
+      masked_passport, /*will_fill_sensitive_info=*/true,
+      on_auth_complete.Get(), on_fetched_callback.Get()));
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
@@ -369,18 +405,23 @@ TEST_F(AutofillAiAccessManagerTest, ReauthAndServerFetch_Success) {
               GetUnmaskedWalletEntityInstance(masked_passport.guid(), _))
       .WillOnce(RunOnceCallback<1>(full_passport));
 
+  base::MockCallback<AutofillAiAccessManager::OnAuthenticationCompleteCallback>
+      on_auth_complete;
   base::MockCallback<AutofillAiAccessManager::OnEntityInstanceFetchedCallback>
-      callback;
+      on_fetched_callback;
 
+  EXPECT_CALL(on_auth_complete,
+              Run(/*reauth_attempted=*/true, /*will_fetch_from_server=*/true));
   EXPECT_CALL(
-      callback,
+      on_fetched_callback,
       Run(base::expected<EntityInstance,
                          AutofillAiAccessManager::FailureReason>(full_passport),
           /*reauth_attempted=*/true,
           /*did_fetch_from_server=*/true));
 
   EXPECT_TRUE(access_manager().FetchEntityInstance(
-      masked_passport, /*will_fill_sensitive_info=*/true, callback.Get()));
+      masked_passport, /*will_fill_sensitive_info=*/true,
+      on_auth_complete.Get(), on_fetched_callback.Get()));
 }
 
 // Tests that when both re-authentication and unmasking are required, and
@@ -405,11 +446,15 @@ TEST_F(AutofillAiAccessManagerTest, ReauthAndServerFetch_ServerFetchFailure) {
               GetUnmaskedWalletEntityInstance(masked_passport.guid(), _))
       .WillOnce(RunOnceCallback<1>(std::nullopt));
 
+  base::MockCallback<AutofillAiAccessManager::OnAuthenticationCompleteCallback>
+      on_auth_complete;
   base::MockCallback<AutofillAiAccessManager::OnEntityInstanceFetchedCallback>
-      callback;
+      on_fetched_callback;
 
+  EXPECT_CALL(on_auth_complete,
+              Run(/*reauth_attempted=*/true, /*will_fetch_from_server=*/true));
   EXPECT_CALL(
-      callback,
+      on_fetched_callback,
       Run(base::expected<EntityInstance,
                          AutofillAiAccessManager::FailureReason>(
               base::unexpected(
@@ -418,7 +463,8 @@ TEST_F(AutofillAiAccessManagerTest, ReauthAndServerFetch_ServerFetchFailure) {
           /*did_fetch_from_server=*/true));
 
   EXPECT_TRUE(access_manager().FetchEntityInstance(
-      masked_passport, /*will_fill_sensitive_info=*/true, callback.Get()));
+      masked_passport, /*will_fill_sensitive_info=*/true,
+      on_auth_complete.Get(), on_fetched_callback.Get()));
 }
 
 // Tests that calling Reset() cancels the pending authenticator and invalidates
@@ -437,14 +483,18 @@ TEST_F(AutofillAiAccessManagerTest, ResetCancelsPendingOperations) {
   test_api(access_manager())
       .SetDeviceAuthenticator(std::move(mock_authenticator_));
 
+  base::MockCallback<AutofillAiAccessManager::OnAuthenticationCompleteCallback>
+      on_auth_complete;
   base::MockCallback<AutofillAiAccessManager::OnEntityInstanceFetchedCallback>
-      callback;
+      on_fetched_callback;
 
   // The callback should NEVER be run because it is invalidated on Reset().
-  EXPECT_CALL(callback, Run).Times(0);
+  EXPECT_CALL(on_auth_complete, Run).Times(0);
+  EXPECT_CALL(on_fetched_callback, Run).Times(0);
 
   EXPECT_TRUE(access_manager().FetchEntityInstance(
-      passport, /*will_fill_sensitive_info=*/true, callback.Get()));
+      passport, /*will_fill_sensitive_info=*/true, on_auth_complete.Get(),
+      on_fetched_callback.Get()));
 
   access_manager().Reset();
 }
@@ -473,18 +523,23 @@ TEST_F(AutofillAiAccessManagerTest, PersonalContextFetch_Success) {
               GetUnmaskedSpiiEntity(masked_passport.guid(), _))
       .WillOnce(RunOnceCallback<1>(full_passport));
 
+  base::MockCallback<AutofillAiAccessManager::OnAuthenticationCompleteCallback>
+      on_auth_complete;
   base::MockCallback<AutofillAiAccessManager::OnEntityInstanceFetchedCallback>
-      callback;
+      on_fetched_callback;
 
+  EXPECT_CALL(on_auth_complete,
+              Run(/*reauth_attempted=*/true, /*will_fetch_from_server=*/true));
   EXPECT_CALL(
-      callback,
+      on_fetched_callback,
       Run(base::expected<EntityInstance,
                          AutofillAiAccessManager::FailureReason>(full_passport),
           /*reauth_attempted=*/true,
           /*did_fetch_from_server=*/true));
 
   EXPECT_TRUE(access_manager().FetchEntityInstance(
-      masked_passport, /*will_fill_sensitive_info=*/true, callback.Get()));
+      masked_passport, /*will_fill_sensitive_info=*/true,
+      on_auth_complete.Get(), on_fetched_callback.Get()));
 }
 
 // Tests that when unmasking a personal context entity fails,
@@ -508,11 +563,15 @@ TEST_F(AutofillAiAccessManagerTest, PersonalContextFetch_Failure) {
               GetUnmaskedSpiiEntity(masked_passport.guid(), _))
       .WillOnce(RunOnceCallback<1>(std::nullopt));
 
+  base::MockCallback<AutofillAiAccessManager::OnAuthenticationCompleteCallback>
+      on_auth_complete;
   base::MockCallback<AutofillAiAccessManager::OnEntityInstanceFetchedCallback>
-      callback;
+      on_fetched_callback;
 
+  EXPECT_CALL(on_auth_complete,
+              Run(/*reauth_attempted=*/true, /*will_fetch_from_server=*/true));
   EXPECT_CALL(
-      callback,
+      on_fetched_callback,
       Run(base::expected<EntityInstance,
                          AutofillAiAccessManager::FailureReason>(
               base::unexpected(
@@ -521,7 +580,8 @@ TEST_F(AutofillAiAccessManagerTest, PersonalContextFetch_Failure) {
           /*did_fetch_from_server=*/true));
 
   EXPECT_TRUE(access_manager().FetchEntityInstance(
-      masked_passport, /*will_fill_sensitive_info=*/true, callback.Get()));
+      masked_passport, /*will_fill_sensitive_info=*/true,
+      on_auth_complete.Get(), on_fetched_callback.Get()));
 }
 
 // Tests that when AutofillAiPersonalContextAccessManager is not available,
@@ -543,11 +603,15 @@ TEST_F(AutofillAiAccessManagerTest, PersonalContextFetch_NoManager) {
 
   client().set_personal_context_access_manager(nullptr);
 
+  base::MockCallback<AutofillAiAccessManager::OnAuthenticationCompleteCallback>
+      on_auth_complete;
   base::MockCallback<AutofillAiAccessManager::OnEntityInstanceFetchedCallback>
-      callback;
+      on_fetched_callback;
 
+  EXPECT_CALL(on_auth_complete,
+              Run(/*reauth_attempted=*/true, /*will_fetch_from_server=*/true));
   EXPECT_CALL(
-      callback,
+      on_fetched_callback,
       Run(base::expected<EntityInstance,
                          AutofillAiAccessManager::FailureReason>(
               base::unexpected(
@@ -556,7 +620,8 @@ TEST_F(AutofillAiAccessManagerTest, PersonalContextFetch_NoManager) {
           /*did_fetch_from_server=*/true));
 
   EXPECT_TRUE(access_manager().FetchEntityInstance(
-      masked_passport, /*will_fill_sensitive_info=*/true, callback.Get()));
+      masked_passport, /*will_fill_sensitive_info=*/true,
+      on_auth_complete.Get(), on_fetched_callback.Get()));
 }
 #endif
 

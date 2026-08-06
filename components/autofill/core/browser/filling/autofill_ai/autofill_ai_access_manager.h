@@ -35,6 +35,10 @@ class AutofillAiAccessManager {
     kFetchFailed,
   };
 
+  using OnAuthenticationCompleteCallback =
+      base::OnceCallback<void(bool reauth_attempted,
+                              bool will_fetch_from_server)>;
+
   using OnEntityInstanceFetchedCallback = base::OnceCallback<void(
       base::expected<EntityInstance, FailureReason> result,
       bool reauth_attempted,
@@ -47,7 +51,9 @@ class AutofillAiAccessManager {
 
   // Fetches and authenticates the given `entity` through the following flow:
   // 1. Triggers a best-effort device re-authentication before unmasking if
-  //    authentication conditions are met.
+  //    authentication conditions are met. Calls
+  //    `OnAuthenticationCompleteCallback` after that (even in the case the
+  //    authentication didn't run).
   // 2. If re-authentication succeeds (or isn't required), fetches the unmasked
   //    server entity from the wallet server if the entity is a masked server
   //    entity.
@@ -61,6 +67,7 @@ class AutofillAiAccessManager {
   virtual bool FetchEntityInstance(
       EntityInstance entity,
       bool will_fill_sensitive_info,
+      OnAuthenticationCompleteCallback on_auth_complete_callback,
       OnEntityInstanceFetchedCallback on_fetched_callback);
 
   // Cancels any pending authentication or fetch operations and invalidates all
@@ -77,9 +84,12 @@ class AutofillAiAccessManager {
   // Handles optional device re-authentication before unmasking. Invokes
   // `on_unmask_callback` with the unmasked entity if authentication
   // succeeds or isn't needed, or with the failure reason if it fails.
-  void MaybeAuthenticate(EntityInstance entity,
-                         bool should_reauth,
-                         OnUnmaskCallback on_unmask_callback);
+  void MaybeAuthenticate(
+      EntityInstance entity,
+      bool should_reauth,
+      bool should_fetch_from_server,
+      OnAuthenticationCompleteCallback on_auth_complete_callback,
+      OnUnmaskCallback on_unmask_callback);
 
   // Triggers user authentication and runs `callback` with an authentication
   // result on completion.

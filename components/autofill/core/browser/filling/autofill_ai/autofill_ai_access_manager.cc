@@ -36,6 +36,7 @@ AutofillAiAccessManager::~AutofillAiAccessManager() = default;
 bool AutofillAiAccessManager::FetchEntityInstance(
     EntityInstance entity,
     bool will_fill_sensitive_info,
+    OnAuthenticationCompleteCallback on_auth_complete_callback,
     OnEntityInstanceFetchedCallback on_fetched_callback) {
   // Invalidate any pending operations from prior flows, ensuring that only one
   // flow is active at a time.
@@ -67,7 +68,8 @@ bool AutofillAiAccessManager::FetchEntityInstance(
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(on_fetched_callback), should_fetch);
 
-  MaybeAuthenticate(std::move(entity), should_reauth,
+  MaybeAuthenticate(std::move(entity), should_reauth, should_fetch,
+                    std::move(on_auth_complete_callback),
                     std::move(on_unmask_callback));
   return should_fetch || should_reauth;
 }
@@ -84,8 +86,12 @@ void AutofillAiAccessManager::Reset() {
 void AutofillAiAccessManager::MaybeAuthenticate(
     EntityInstance entity,
     bool should_reauth,
+    bool should_fetch_from_server,
+    OnAuthenticationCompleteCallback on_auth_complete_callback,
     OnUnmaskCallback on_unmask_callback) {
   if (!should_reauth) {
+    std::move(on_auth_complete_callback)
+        .Run(/*reauth_attempted=*/false, should_fetch_from_server);
     std::move(on_unmask_callback)
         .Run(std::move(entity), /*reauth_attempted=*/false);
     return;
@@ -99,14 +105,20 @@ void AutofillAiAccessManager::MaybeAuthenticate(
       !authenticator_->CanAuthenticateWithBiometricOrScreenLock()) {
     // If the device is not capable of reauth or not set up, we assume success
     // to avoid blocking the user. Reauth is a best-effort security measure.
+    std::move(on_auth_complete_callback)
+        .Run(/*reauth_attempted=*/false, should_fetch_from_server);
     std::move(on_unmask_callback)
         .Run(std::move(entity), /*reauth_attempted=*/false);
     return;
   }
 
   base::OnceCallback<void(bool)> on_auth_complete = base::BindOnce(
-      [](EntityInstance entity, OnUnmaskCallback on_unmask_callback,
-         bool auth_succeeded) {
+      [](EntityInstance entity, bool should_fetch_from_server,
+         OnAuthenticationCompleteCallback on_auth_complete_callback,
+         OnUnmaskCallback on_unmask_callback, bool auth_succeeded) {
+        std::move(on_auth_complete_callback)
+            .Run(/*reauth_attempted=*/true,
+                 should_fetch_from_server && auth_succeeded);
         if (auth_succeeded) {
           std::move(on_unmask_callback)
               .Run(std::move(entity), /*reauth_attempted=*/true);
@@ -122,7 +134,8 @@ void AutofillAiAccessManager::MaybeAuthenticate(
                    /*reauth_attempted=*/true);
         }
       },
-      std::move(entity), std::move(on_unmask_callback));
+      std::move(entity), should_fetch_from_server,
+      std::move(on_auth_complete_callback), std::move(on_unmask_callback));
 
   Authenticate(manager_->client().GetLastCommittedPrimaryMainFrameOrigin(),
                std::move(on_auth_complete));

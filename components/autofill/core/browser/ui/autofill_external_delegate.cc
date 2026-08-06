@@ -950,9 +950,11 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           *entity, *form_structure, autofill_field->section(),
           manager_->client().GetAppLocale());
 
+      // TODO(crbug.com/c/536814322): Show loading dialog on Android after
+      // successful authentication.
       const bool is_async =
           manager_->GetAutofillAiAccessManager().FetchEntityInstance(
-              *entity, will_fill_sensitive_info,
+              *entity, will_fill_sensitive_info, base::DoNothing(),
               base::BindOnce(&OnEntityInstanceFetched,
                              manager_->GetBrowserAutofillManagerWeakPtr(),
                              GetTriggerSource(), last_query_.form_id,

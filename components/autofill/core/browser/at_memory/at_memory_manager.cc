@@ -1204,8 +1204,10 @@ IsAsync AtMemoryManager::FillSensitiveAutofillAiData(
         AtMemoryMetricsRecorder::FetchPiiSource::kAutofillAi);
   }
 
+  // TODO(crbug.com/c/536814322): Show loading dialog on Android after
+  // successful authentication.
   return IsAsync(owner_->GetAutofillAiAccessManager().FetchEntityInstance(
-      *entity, /*will_fill_sensitive_info=*/true,
+      *entity, /*will_fill_sensitive_info=*/true, base::DoNothing(),
       base::BindOnce(&AtMemoryManager::OnAutofillAiFetched,
                      fill_weak_ptr_factory_.GetWeakPtr(), form_id, field_id,
                      suggestion, attribute_type, std::move(metrics))));
