@@ -748,6 +748,13 @@ export class OmniboxPopupSearchboxElement extends
   }
 
   override handleKeyNavigation(e: KeyboardEvent) {
+    // Ignore key navigation (including ESC) during active IME text composition
+    // (e.g. Japanese/Chinese/Korean) so the OS IME engine handles the key
+    // first.
+    if (e.isComposing) {
+      return;
+    }
+
     if (e.key === 'Escape') {
       e.preventDefault();
       this.handleEscapeKey_();
@@ -764,10 +771,7 @@ export class OmniboxPopupSearchboxElement extends
     // (selectedMatchIndex > 0 or non-default match/action highlighted),
     // restores typed query and resets match selection to index 0. Dropdown
     // stays open and focus stays in Omnibox.
-    const hasTemporaryText =
-        (this.lastQueriedInput !== null &&
-         inputEl.inputElement.value !== this.lastQueriedInput) ||
-        this.selectedMatchIndex > 0 ||
+    const hasTemporaryText = this.selectedMatchIndex > 0 ||
         (dropdown && dropdown.selection &&
          dropdown.selection.state !== SelectionLineState.kNormal);
     if (this.dropdownIsVisible && hasTemporaryText) {
@@ -801,12 +805,11 @@ export class OmniboxPopupSearchboxElement extends
     // selects all text (or closes UI if already empty on NTP). Focus stays in
     // Omnibox.
     const isInputDirty = this.userInputInProgress_ ||
-        (inputEl.inputElement.value !== this.permanentDisplayText_ &&
-         inputEl.inputElement.value !== this.fullUrl_);
+        inputEl.inputElement.value !== this.permanentDisplayText_;
     if (isInputDirty) {
       const wasAlreadyEmpty = inputEl.inputElement.value.length === 0;
-      const restoredText =
-          this.fullUrlShown_ ? this.fullUrl_ : this.permanentDisplayText_;
+      const restoredText = this.permanentDisplayText_;
+      this.fullUrlShown_ = false;
       inputEl.setInput({
         text: restoredText,
         inline: '',

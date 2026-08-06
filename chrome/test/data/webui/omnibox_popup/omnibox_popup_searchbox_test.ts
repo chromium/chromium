@@ -882,14 +882,16 @@ suite('OmniboxPopupSearchboxTest', function() {
    testProxy.handler.reset();
 
    // Stage 3 (`kClearUserInput` - elided URL where showFullUrl is false):
+   const permanentDisplayText = 'example.com';
+   const fullUrl = 'https://example.com/';
    callbackRouter.setInputState(createDefaultOmniboxInputState({
      sequenceNumber: 5,
      text: 'dirty input',
      selection: {start: 1, end: 1},
      userInputInProgress: true,
-     fullUrl: 'https://example.com/',
+     fullUrl: fullUrl,
      isFocused: true,
-     permanentDisplayText: 'example.com',
+     permanentDisplayText: permanentDisplayText,
    }));
    await microtasksFinished();
 
@@ -899,10 +901,11 @@ suite('OmniboxPopupSearchboxTest', function() {
    }));
    await microtasksFinished();
 
-   assertEquals('example.com', searchbox.getInputElement().inputElement.value);
+   assertEquals(
+       permanentDisplayText, searchbox.getInputElement().inputElement.value);
    assertEquals(0, searchbox.getInputElement().inputElement.selectionStart);
    assertEquals(
-       'example.com'.length,
+       permanentDisplayText.length,
        searchbox.getInputElement().inputElement.selectionEnd);
    assertEquals(1, handler.getCallCount('revert'));
    assertEquals(5, handler.getArgs('revert')[0]);
@@ -920,9 +923,9 @@ suite('OmniboxPopupSearchboxTest', function() {
      text: 'dirty input',
      selection: {start: 1, end: 1},
      userInputInProgress: true,
-     fullUrl: 'https://example.com/',
+     fullUrl: fullUrl,
      isFocused: true,
-     permanentDisplayText: 'example.com',
+     permanentDisplayText: permanentDisplayText,
      showFullUrl: true,
    }));
    await microtasksFinished();
@@ -933,11 +936,10 @@ suite('OmniboxPopupSearchboxTest', function() {
    }));
    await microtasksFinished();
 
-   assertEquals(
-       'https://example.com/', searchbox.getInputElement().inputElement.value);
+   assertEquals('example.com', searchbox.getInputElement().inputElement.value);
    assertEquals(0, searchbox.getInputElement().inputElement.selectionStart);
    assertEquals(
-       'https://example.com/'.length,
+       permanentDisplayText.length,
        searchbox.getInputElement().inputElement.selectionEnd);
    assertEquals(1, handler.getCallCount('revert'));
    assertEquals(6, handler.getArgs('revert')[0]);
@@ -965,12 +967,13 @@ suite('OmniboxPopupSearchboxTest', function() {
  test('EscapeStagedUnwinding_ClearedInputNonEmptyUrl', async () => {
    // Input was manually cleared ('') on a page with a non-empty permanent URL.
    // ESC should restore the permanent URL ('example.com') without closing UI.
+   const permanentDisplayText = 'example.com';
    callbackRouter.setInputState(createDefaultOmniboxInputState({
      sequenceNumber: 8,
      userInputInProgress: true,
      fullUrl: 'https://example.com/',
      isFocused: true,
-     permanentDisplayText: 'example.com',
+     permanentDisplayText: permanentDisplayText,
    }));
    await microtasksFinished();
 
@@ -980,7 +983,8 @@ suite('OmniboxPopupSearchboxTest', function() {
    }));
    await microtasksFinished();
 
-   assertEquals('example.com', searchbox.getInputElement().inputElement.value);
+   assertEquals(
+       permanentDisplayText, searchbox.getInputElement().inputElement.value);
    assertEquals(0, handler.getCallCount('closeUI'));
    assertEquals(1, handler.getCallCount('revert'));
    assertEquals(1, handler.getCallCount('logEscapeAction'));
@@ -1043,6 +1047,36 @@ suite('OmniboxPopupSearchboxTest', function() {
    assertEquals(
        OmniboxEscapeAction.kClearUserInput,
        handler.getArgs('logEscapeAction')[0]);
+ });
+
+ test('EscapeIgnoredDuringIMEComposition', async () => {
+   searchbox.lastQueriedInput = 'a';
+   searchbox.activeQueryId = 0;
+   testProxy.page.autocompleteResultChanged(createAutocompleteResultForTesting({
+     input: 'a',
+     matches: [
+       createSearchMatchForTesting({
+         allowedToBeDefaultMatch: true,
+         fillIntoEdit: 'autocomplete.com',
+         inlineAutocompletion: 'utocomplete.com',
+       }),
+     ],
+   }));
+   await microtasksFinished();
+   assertTrue(searchbox.dropdownIsVisible);
+
+   // Press Escape while IME composition is active (isComposing: true).
+   await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
+     key: 'Escape',
+     isComposing: true,
+     cancelable: true,
+   }));
+   await microtasksFinished();
+
+   // Escape should be ignored so the OS IME engine can handle it.
+   // Popup should remain open and logEscapeAction should not be called.
+   assertTrue(searchbox.dropdownIsVisible);
+   assertEquals(0, handler.getCallCount('logEscapeAction'));
  });
 
  test('SecondarySideShows', async () => {
