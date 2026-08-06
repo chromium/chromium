@@ -160,12 +160,14 @@ class FullWebUIOmniboxInteractiveTest
                  WaitForPopupTransitionLockout());
   }
 
-  // TODO(b/504668292): Tests that use this seem to flake. This needs to be
-  // reworked.
   auto ClickWebPageBody(ui::ElementIdentifier tab_id) {
-    return Steps(FocusWebContents(tab_id),
-                 ExecuteJsAt(tab_id, DeepQuery{"body"}, "el => el.focus()"),
-                 WaitForPopupTransitionLockout());
+    return Steps(MoveMouseTo(ContentsWebView::kContentsWebViewElementId,
+                             base::BindOnce([](ui::TrackedElement* el) {
+                               gfx::Rect bounds = el->GetScreenBounds();
+                               return gfx::Point(bounds.right() - 20,
+                                                 bounds.bottom() - 20);
+                             })),
+                 ClickMouse());
   }
 
   auto SwitchTabAndRestorePopup(ui::ElementIdentifier tab_strip,
@@ -250,10 +252,8 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest, HighlightAndSwitchTab) {
 
 // Verifies that clicking outside on the webpage body closes the WebUI
 // suggestions dropdown.
-// TODO(b/504668292): Re-enable after de-flaking tests that use
-// `ClickWebPageBody()`.
 IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
-                       DISABLED_ClickOutsideClosesDropdown) {
+                       ClickOutsideClosesDropdown) {
   RunTestSequence(
       // Open Tab 1 and focus Omnibox to open WebUI popup with suggestions.
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
@@ -269,9 +269,7 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
 
 // Verifies that clicking outside on the webpage body while an active user draft
 // exists keeps the popup open while shifting focus to the webpage.
-// TODO(b/504668292): Re-enable after de-flaking on Windows/ChromeOS.
-IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
-                       DISABLED_ActiveUnfocusedDraft) {
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest, ActiveUnfocusedDraft) {
   RunTestSequence(
       // Open Tab 1 and focus Omnibox to open WebUI popup.
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
@@ -315,22 +313,21 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest, FocusOnlyNtp) {
 
 // Verifies switching to a tab where the webpage body is focused and has no
 // omnibox draft to verify the popup remains closed.
-// TODO(b/504668292): Re-enable after de-flaking on Windows/ChromeOS.
-IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest, DISABLED_BlurredPage) {
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest, BlurredPage) {
   RunTestSequence(
-      // Setup Tab 1.
-      AddInstrumentedTab(kTab1, GURL("chrome://version/")),
-      WaitForWebContentsReady(kTab1),
+      // Setup Tab 1 with open WebUI popup.
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
       // Navigate to a normal webpage on Tab 2 (Omnibox is blurred, webpage
       // has focus).
       AddInstrumentedTab(kTab2, GURL("chrome://version/")),
       WaitForWebContentsReady(kTab2), ClickWebPageBody(kTab2),
-      WaitForOmniboxFocus(false),
+      WaitForOmniboxFocus(false), UninstrumentWebContents(kPopupWebView),
       // Switch to Tab 1 (focused).
       SwitchTabAndRestorePopup(kTabStripElementId, 1, kTab1),
       CheckWebUIInputFocus(true),
       // Switch back to Tab 2.
-      SwitchTab(kTabStripElementId, 2), FocusWebContents(kTab2),
+      UninstrumentWebContents(kPopupWebView), SwitchTab(kTabStripElementId, 2),
+      FocusWebContents(kTab2),
       // Verify the native Omnibox displays the page's permanent URL.
       WaitForViewProperty(kOmniboxElementId, views::Textfield, Text,
                           u"chrome://version"),
@@ -341,11 +338,8 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest, DISABLED_BlurredPage) {
       InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)));
 }
 
-// TODO(b/504668292): Re-enable after de-flaking on Windows/ChromeOS.
-// Verifies clearing omnibox then manual blurring in one tab then switching to
-// another and back.
-IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
-                       DISABLED_ClearAndManualBlur) {
+// Verifies clearing omnibox then manual blurring.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest, ClearAndManualBlur) {
   RunTestSequence(
       // Open Tab 1 and focus Omnibox to open WebUI popup.
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
@@ -357,12 +351,11 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
       WaitForViewProperty(kOmniboxElementId, views::Textfield, Text, u""),
       // Click the webpage body (triggering blur).
       ClickWebPageBody(kTab1),
-      // Verify Omnibox popup remains open, the text is empty, and the
-      // Omnibox is unfocused.
-      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      // Verify WebUI Omnibox popup is closed, empty, and Omnibox is unfocused.
+      InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)),
       WaitForViewProperty(kOmniboxElementId, views::Textfield, Text, u""),
-      WaitForWebUIInputValue(""), WaitForOmniboxFocus(false),
-      // Click back inside the Omnibox (triggering focus).
+      WaitForOmniboxFocus(false),
+      // Focus the Omnibox.
       Do([this]() {
         if (auto* popup_view = BrowserWindow::FromBrowser(browser())
                                    ->GetLocationBar()
@@ -370,11 +363,25 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
           popup_view->OnFocus(/*query_zps=*/true);
         }
       }),
-      // Verify popup is open, text remains empty, and WebUI input is
-      // focused.
+      // Verify popup is open, and WebUI input is empty.
       InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
-      WaitForViewProperty(kOmniboxElementId, views::Textfield, Text, u""),
-      WaitForWebUIInputValue(""), CheckWebUIInputFocus(true));
+      WaitForJsConditionAt(kPopupWebView, kWebUIInput,
+                           "(el) => el && el.value === ''"),
+      CheckWebUIInputFocus(true),
+      // Unfocus the Omnibox.
+      ClickWebPageBody(kTab1),
+      InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      WaitForOmniboxFocus(false),
+      // Switch to Tab 2.
+      AddInstrumentedTab(kTab2, GURL("about:blank")),
+      WaitForWebContentsReady(kTab2), UninstrumentWebContents(kPopupWebView),
+      // Switch back to Tab 1.
+      SwitchTab(kTabStripElementId, 1),
+      // Verify the WebUI popup remains closed.
+      InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      WaitForViewProperty(kOmniboxElementId, views::Textfield, Text,
+                          u"chrome://version"),
+      WaitForOmniboxFocus(false));
 }
 
 // Verifies that after typing a draft and clearing the input in one tab,
