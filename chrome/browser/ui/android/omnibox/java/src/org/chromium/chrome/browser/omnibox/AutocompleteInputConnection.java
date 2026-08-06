@@ -384,7 +384,8 @@ class AutocompleteInputConnection extends InputConnectionWrapper {
     }
 
     @Override
-    public ExtractedText getExtractedText(final ExtractedTextRequest request, final int flags) {
+    public @Nullable ExtractedText getExtractedText(
+            final ExtractedTextRequest request, final int flags) {
         if (DEBUG) Log.i(TAG, "getExtractedText");
         onBeginImeCommand();
         ExtractedText retVal = super.getExtractedText(request, flags);
@@ -411,7 +412,7 @@ class AutocompleteInputConnection extends InputConnectionWrapper {
     }
 
     @Override
-    public CharSequence getSelectedText(final int flags) {
+    public @Nullable CharSequence getSelectedText(final int flags) {
         if (DEBUG) Log.i(TAG, "getSelectedText");
         onBeginImeCommand();
         CharSequence retVal = super.getSelectedText(flags);
