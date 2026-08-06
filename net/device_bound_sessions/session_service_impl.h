@@ -15,9 +15,11 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/elapsed_timer.h"
+#include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "net/base/net_export.h"
+#include "net/cookies/canonical_cookie.h"
 #include "net/device_bound_sessions/refresh_result.h"
 #include "net/device_bound_sessions/registration_fetcher.h"
 #include "net/device_bound_sessions/registration_fetcher_param.h"
@@ -148,6 +150,8 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       const GURL& url,
       scoped_refptr<SSLCertRequestInfo> cert_info,
       SelectClientCertificateCallback callback) override;
+  void PrewarmSessionsForUrl(const GURL& url,
+                             PrewarmCallback callback) override;
 
   // The `SessionService` implementation has a const-qualified accessor
   // for sessions. This overload allows for non-const access as well.
@@ -156,6 +160,39 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
  private:
   friend class SessionServiceImplWithStoreTest;
 
+  enum class RefreshTrigger {
+    // Refresh due to a request missing a bound cookie.
+    kMissingCookie,
+    // Proactive refresh due to a soon-to-expire bound cookie.
+    kProactive,
+  };
+
+  // State tracking an in-flight proactive refresh for a session, including
+  // callbacks waiting for it to finish and a timer for metrics.
+  struct ProactiveRefresh {
+    std::vector<base::OnceCallback<void(RefreshResult)>> completion_callbacks;
+    base::ElapsedTimer timer;
+  };
+
+  // Parameters required to initiate a session refresh. Encapsulates trigger
+  // cause, isolation context, priority, and net logging.
+  struct RefreshParams {
+    RefreshTrigger trigger = RefreshTrigger::kProactive;
+    net::IsolationInfo isolation_info;
+    std::optional<url::Origin> initiator;
+    unexportable_keys::BackgroundTaskPriority priority =
+        unexportable_keys::BackgroundTaskPriority::kBestEffort;
+    SessionService::OnAccessCallback access_callback;
+    net::NetLogWithSource net_log;
+  };
+
+  // The refresh outcome and earliest next refresh time for a single session
+  // evaluated during `PrewarmSessionsForUrl`.
+  struct PrewarmResult {
+    RefreshResult result = RefreshResult::kRefreshed;
+    base::Time earliest_next_refresh_time = base::Time::Max();
+  };
+
   // The key is the site (eTLD+1) of the session's origin and the
   // session id.
   // NOTE: This map needs to be ordered, and thus is not a hash map.
@@ -163,8 +200,7 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   using DeferredRequestsMap =
       absl::flat_hash_map<SessionKey,
                           absl::InlinedVector<DeferredURLRequest, 1>>;
-  using ProactiveRefreshMap =
-      absl::flat_hash_map<SessionKey, base::ElapsedTimer>;
+  using ProactiveRefreshMap = absl::flat_hash_map<SessionKey, ProactiveRefresh>;
   using LatestSignedRefreshChallengesMap =
       absl::flat_hash_map<SessionKey, SignedRefreshChallenge>;
 
@@ -174,13 +210,6 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   };
 
   using ObserverSet = absl::flat_hash_set<std::unique_ptr<Observer>>;
-
-  enum class RefreshTrigger {
-    // Refresh due to a request missing a bound cookie.
-    kMissingCookie,
-    // Proactive refresh due to a soon-to-expire bound cookie.
-    kProactive,
-  };
 
   void OnLoadSessionsComplete(SessionsMap sessions);
 
@@ -208,7 +237,11 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
                   std::unique_ptr<Session> session,
                   SessionStore::SaveSessionMode mode =
                       SessionStore::SaveSessionMode::kNewSession);
-  void UnblockDeferredRequests(
+
+  // Continue or restart all deferred requests and complete any proactive
+  // refresh requests waiting for the session, removing the session key from
+  // both maps.
+  void UnblockWaitingRequests(
       const SessionKey& session_key,
       RefreshResult result,
       std::optional<net::device_bound_sessions::SessionError> fetch_error =
@@ -280,10 +313,11 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
           std::optional<unexportable_keys::UnexportableSigningKeyId>)> callback,
       Session::KeyIdOrError key_id_or_error);
 
-  // Helper function for starting a refresh
+  // Helper function for starting a refresh.
+  void StartSessionRefresh(const SessionKey& session_key, RefreshParams params);
+
   void RefreshSessionInternal(
-      RefreshTrigger trigger,
-      base::WeakPtr<URLRequest> maybe_request,
+      RefreshParams params,
       const SessionKey& session_key,
       std::optional<unexportable_keys::UnexportableSigningKeyId> key_id);
 
@@ -334,6 +368,20 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       DbscRequest& request,
       const SessionKey& session_key,
       base::TimeDelta minimum_cookie_lifetime);
+
+  // Continuation of `PrewarmSessionsForUrl` after retrieving cookies from the
+  // cookie store. Checks each matching session's cookie lifetimes and starts
+  // proactive refreshes for any soon-to-expire sessions.
+  void OnGetCookiesForPrewarm(const GURL& url,
+                              std::vector<SessionKey> matching_sessions,
+                              PrewarmCallback callback,
+                              const CookieAccessResultList& cookies,
+                              const CookieAccessResultList& excluded_cookies);
+
+  // Barrier callback invoked once all sessions matching a prewarm request have
+  // completed their evaluation and any needed proactive refreshes.
+  void OnAllPrewarmSessionsDone(PrewarmCallback callback,
+                                std::vector<PrewarmResult> session_results);
 
   // Helper function for common behavior from federated and regular
   // session registration.

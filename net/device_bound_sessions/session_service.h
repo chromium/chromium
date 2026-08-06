@@ -6,14 +6,17 @@
 #define NET_DEVICE_BOUND_SESSIONS_SESSION_SERVICE_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
+#include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/device_bound_sessions/cookie_access_check_params.h"
 #include "net/device_bound_sessions/deletion_reason.h"
+#include "net/device_bound_sessions/refresh_result.h"
 #include "net/device_bound_sessions/registration_fetcher_param.h"
 #include "net/device_bound_sessions/session.h"
 #include "net/device_bound_sessions/session_access.h"
@@ -34,6 +37,14 @@ class SSLPrivateKey;
 }  // namespace net
 
 namespace net::device_bound_sessions {
+
+// Result of prewarming DBSC sessions for a URL.
+struct NET_EXPORT SessionPrewarmResult {
+  std::vector<RefreshResult> results;
+  base::Time earliest_next_refresh_time = base::Time::Max();
+
+  bool operator==(const SessionPrewarmResult&) const = default;
+};
 
 // Callback invoked when a client certificate selection has finished.
 // `cert` and `key` are the selected certificate and its private key. Both are
@@ -64,6 +75,7 @@ class NET_EXPORT SessionService {
   using RefreshCompleteCallback = base::OnceCallback<void(RefreshResult)>;
   using CookieAccessCallback =
       base::RepeatingCallback<bool(const CookieAccessCheckParams&)>;
+  using PrewarmCallback = base::OnceCallback<void(SessionPrewarmResult)>;
 
   // Indicates the reason for deferring. Exactly one of
   // `is_pending_initialization` or `session_id` will be truthy.
@@ -245,6 +257,17 @@ class NET_EXPORT SessionService {
       const GURL& url,
       scoped_refptr<SSLCertRequestInfo> cert_info,
       SelectClientCertificateCallback callback) = 0;
+
+  // Evaluates all DBSC sessions matching `url` to determine if their required
+  // cookies are missing or expiring soon. If a refresh is needed, initiates
+  // background proactive refreshes and invokes `callback` asynchronously when
+  // all concurrent evaluations and refreshes complete, passing a
+  // `SessionPrewarmResult` containing a vector of `RefreshResult` outcomes and
+  // an absolute `base::Time` timestamp for `earliest_next_refresh_time`. If
+  // `url` is invalid or no matching sessions are found, `callback` is invoked
+  // asynchronously with an empty `SessionPrewarmResult`.
+  virtual void PrewarmSessionsForUrl(const GURL& url,
+                                     PrewarmCallback callback) = 0;
 
  protected:
   SessionService() = default;

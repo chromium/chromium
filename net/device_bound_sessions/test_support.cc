@@ -450,6 +450,13 @@ ScopedTestRegistrationFetcher::CreateWithTermination(
       std::string(session_id), std::string(refresh_url_string)));
 }
 
+// static
+ScopedTestRegistrationFetcher
+ScopedTestRegistrationFetcher::CreateWithDynamicCallback(
+    RegistrationFetcher::FetcherType fetcher) {
+  return ScopedTestRegistrationFetcher(std::move(fetcher));
+}
+
 ScopedTestRegistrationFetcher::ScopedTestRegistrationFetcher(
     RegistrationFetcher::FetcherType fetcher)
     : fetcher_(fetcher) {

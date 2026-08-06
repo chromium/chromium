@@ -126,6 +126,10 @@ class SessionServiceMock : public SessionService {
                scoped_refptr<SSLCertRequestInfo> cert_info,
                SelectClientCertificateCallback callback),
               (override));
+  MOCK_METHOD(void,
+              PrewarmSessionsForUrl,
+              (const GURL& url, PrewarmCallback callback),
+              (override));
 };
 
 }  // namespace net::device_bound_sessions
