@@ -21,9 +21,3 @@ include_rules = [
   "+third_party/dom_distiller_js",
   # keep-sorted end
 ]
-specific_include_rules = {
-  # TODO(crbug.com/532174813): Remove usage of //ios/web internals.
-  "^reader_mode_tab_helper\\.mm$" : [
-    "+ios/web/navigation/wk_navigation_util.h",
-  ]
-}

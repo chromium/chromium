@@ -7,6 +7,7 @@
 #import "base/command_line.h"
 #import "base/functional/callback_helpers.h"
 #import "base/ios/block_types.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_manager.h"
@@ -36,12 +37,12 @@
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h"
-#import "ios/web/navigation/wk_navigation_util.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "net/base/apple/url_conversions.h"
+#import "net/http/http_request_headers.h"
 
 namespace {
 
@@ -377,8 +378,9 @@ void ReaderModeTabHelper::ReaderModeContentDidCancelRequest(
   // When the Reader mode content cancels a request to navigate, load the
   // requested URL in the host WebState instead.
   web::NavigationManager::WebLoadParams params(net::GURLWithNSURL(request.URL));
-  NSString* referrer_value = [request
-      valueForHTTPHeaderField:web::wk_navigation_util::kReferrerHeaderName];
+  NSString* referrer_value =
+      [request valueForHTTPHeaderField:base::SysUTF8ToNSString(
+                                           net::HttpRequestHeaders::kReferer)];
   if (referrer_value) {
     NSURL* referrer_url = [NSURL URLWithString:referrer_value];
     params.referrer.url = net::GURLWithNSURL(referrer_url);
