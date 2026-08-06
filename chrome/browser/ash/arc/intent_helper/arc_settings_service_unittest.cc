@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
@@ -43,7 +44,6 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/prefs/testing_pref_store.h"
 #include "components/services/app_service/public/cpp/app_service_registry.h"
 #include "components/session_manager/core/session.h"
@@ -83,9 +83,8 @@ class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
         std::make_unique<ash::NetworkHandlerTestHelper>();
     network_config_helper_ =
         std::make_unique<ash::network_config::CrosNetworkConfigTestHelper>();
-    ash::StatsReportingController::RegisterLocalStatePrefs(
-        local_state_.registry());
-    ash::StatsReportingController::Initialize(&local_state_);
+    ash::StatsReportingController::Initialize(
+        TestingBrowserProcess::GetGlobal()->local_state());
 
     arc_service_manager_ = std::make_unique<ArcServiceManager>();
     arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();
@@ -97,8 +96,8 @@ class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::SetUp();
     arc_service_manager_->set_browser_context(profile());
 
-    arc::prefs::RegisterLocalStatePrefs(local_state_.registry());
-    arc::StabilityMetricsManager::Initialize(&local_state_);
+    arc::StabilityMetricsManager::Initialize(
+        TestingBrowserProcess::GetGlobal()->local_state());
 
     ArcMetricsService::GetForBrowserContextForTesting(profile())
         ->SetHistogramNamerCallback(
@@ -136,7 +135,6 @@ class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
     arc_session_manager()->Shutdown();
 
     arc_service_manager_->set_browser_context(nullptr);
-    network_config_helper_.reset();
     BrowserWithTestWindowTest::TearDown();
 
     arc_session_manager_.reset();
@@ -144,6 +142,7 @@ class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
     arc_service_manager_.reset();
 
     ash::StatsReportingController::Shutdown();
+    network_config_helper_.reset();
     network_handler_test_helper_.reset();
     ash::DlcserviceClient::Shutdown();
     ash::ConciergeClient::Shutdown();
@@ -188,16 +187,15 @@ class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
   std::unique_ptr<ash::NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<ash::network_config::CrosNetworkConfigTestHelper>
       network_config_helper_;
-  TestingPrefServiceSimple local_state_;
   apps::AppServiceRegistry app_service_registry_;
-  std::unique_ptr<FakeIntentHelperHost> intent_helper_host_;
+  std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
-  std::unique_ptr<ArcServiceManager> arc_service_manager_;
-  FakeIntentHelperInstance intent_helper_instance_;
-  FakeBackupSettingsInstance backup_settings_instance_;
+  std::unique_ptr<FakeIntentHelperHost> intent_helper_host_;
   std::unique_ptr<FakeAppHost> app_host_;
   std::unique_ptr<FakeAppInstance> app_instance_;
+  FakeIntentHelperInstance intent_helper_instance_;
+  FakeBackupSettingsInstance backup_settings_instance_;
 };
 
 }  // namespace

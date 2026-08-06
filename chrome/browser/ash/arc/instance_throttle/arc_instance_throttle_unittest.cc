@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/arc/instance_throttle/arc_power_throttle_observer.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
@@ -42,7 +43,6 @@
 #include "chromeos/ash/experiences/arc/test/fake_intent_helper_instance.h"
 #include "chromeos/ash/experiences/arc/test/fake_power_instance.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/device/public/cpp/test/test_wake_lock_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -78,18 +78,14 @@ class ArcInstanceThrottleTest : public testing::Test {
 
     ash::SessionManagerClient::InitializeFakeInMemory();
     ash::FakeSessionManagerClient::Get()->set_arc_available(true);
-    StabilityMetricsManager::Initialize(&local_state_);
-    prefs::RegisterLocalStatePrefs(local_state_.registry());
-    prefs::RegisterProfilePrefs(local_state_.registry());
+    StabilityMetricsManager::Initialize(
+        TestingBrowserProcess::GetGlobal()->local_state());
     arc_metrics_service_ = ArcMetricsService::GetForBrowserContextForTesting(
         testing_profile_.get());
     arc_metrics_service_->SetHistogramNamerCallback(base::BindLambdaForTesting(
         [](const std::string& s) -> std::string { return s; }));
 
-    arc_instance_throttle_ =
-        ArcInstanceThrottle::GetForBrowserContextForTesting(
-            testing_profile_.get());
-    arc_instance_throttle_->set_delegate_for_testing(
+    CreateArcInstanceThrottle()->set_delegate_for_testing(
         std::make_unique<TestDelegateImpl>(this));
 
     app_host_ = std::make_unique<FakeAppHost>(
@@ -104,7 +100,7 @@ class ArcInstanceThrottleTest : public testing::Test {
     // variable (and call the default delegate for production) before doing
     // set_delegate_for_testing(). If that happens, SetActive() might not call
     // the test delegate as expected.
-    arc_instance_throttle_->reset_should_throttle_for_testing();
+    GetArcInstanceThrottle()->reset_should_throttle_for_testing();
   }
 
   void TearDown() override {
@@ -114,6 +110,7 @@ class ArcInstanceThrottleTest : public testing::Test {
     intent_helper_host_.reset();
     intent_helper_instance_.reset();
 
+    arc_metrics_service_ = nullptr;
     arc::StabilityMetricsManager::Shutdown();
     ash::SessionManagerClient::Shutdown();
     testing_profile_.reset();
@@ -163,14 +160,19 @@ class ArcInstanceThrottleTest : public testing::Test {
     return arc_service_manager_->arc_bridge_service();
   }
 
-  ArcInstanceThrottle* arc_instance_throttle() {
-    return arc_instance_throttle_;
+  ArcInstanceThrottle* GetArcInstanceThrottle() {
+    return ArcInstanceThrottle::GetForBrowserContext(testing_profile_.get());
+  }
+
+  ArcInstanceThrottle* CreateArcInstanceThrottle() {
+    return ArcInstanceThrottle::GetForBrowserContextForTesting(
+        testing_profile_.get());
   }
 
   // Returns an observer that will be classified as |kOther| in
   // GetUnthrottlingReason().
   ash::ThrottleObserver* GetThrottleObserver() {
-    const auto& observers = arc_instance_throttle()->observers_for_testing();
+    const auto& observers = GetArcInstanceThrottle()->observers_for_testing();
     DCHECK(!observers.empty());
     for (const auto& observer : observers) {
       // This must be in sync with GetUnthrottlingReason().
@@ -185,7 +187,7 @@ class ArcInstanceThrottleTest : public testing::Test {
   }
 
   ash::ThrottleObserver* GetArcBootPhaseThrottleObserver() {
-    const auto& observers = arc_instance_throttle()->observers_for_testing();
+    const auto& observers = GetArcInstanceThrottle()->observers_for_testing();
     DCHECK(!observers.empty());
     for (const auto& observer : observers) {
       if (observer->name() == kArcBootPhaseThrottleObserverName)
@@ -195,18 +197,13 @@ class ArcInstanceThrottleTest : public testing::Test {
   }
 
   ash::ThrottleObserver* GetArcPowerThrottleObserver() {
-    const auto& observers = arc_instance_throttle()->observers_for_testing();
+    const auto& observers = GetArcInstanceThrottle()->observers_for_testing();
     DCHECK(!observers.empty());
     for (const auto& observer : observers) {
       if (observer->name() == kArcPowerThrottleObserverName)
         return observer.get();
     }
     NOTREACHED();
-  }
-
-  ArcInstanceThrottle* CreateArcInstanceThrottle() {
-    return ArcInstanceThrottle::GetForBrowserContextForTesting(
-        testing_profile_.get());
   }
 
   FakePowerInstance* power_instance() { return power_instance_.get(); }
@@ -257,8 +254,9 @@ class ArcInstanceThrottleTest : public testing::Test {
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
-  TestingPrefServiceSimple local_state_;
   std::unique_ptr<TestingProfile> testing_profile_;
+
+  raw_ptr<ArcMetricsService> arc_metrics_service_ = nullptr;
 
   std::unique_ptr<FakePowerInstance> power_instance_;
   std::unique_ptr<FakeAppHost> app_host_;
@@ -266,8 +264,6 @@ class ArcInstanceThrottleTest : public testing::Test {
   std::unique_ptr<FakeIntentHelperHost> intent_helper_host_;
   std::unique_ptr<FakeIntentHelperInstance> intent_helper_instance_;
 
-  raw_ptr<ArcInstanceThrottle, DanglingUntriaged> arc_instance_throttle_;
-  raw_ptr<ArcMetricsService, DanglingUntriaged> arc_metrics_service_ = nullptr;
   size_t disable_cpu_restriction_counter_ = 0;
   size_t enable_cpu_restriction_counter_ = 0;
   size_t use_quota_counter_ = 0;
@@ -477,8 +473,9 @@ class ArcInstanceThrottleVMTest : public testing::Test {
   ArcInstanceThrottleVMTest() = default;
   ~ArcInstanceThrottleVMTest() override = default;
 
-  explicit ArcInstanceThrottleVMTest(const ArcInstanceThrottleTest&) = delete;
-  ArcInstanceThrottleVMTest& operator=(const ArcInstanceThrottleTest&) = delete;
+  ArcInstanceThrottleVMTest(const ArcInstanceThrottleVMTest&) = delete;
+  ArcInstanceThrottleVMTest& operator=(const ArcInstanceThrottleVMTest&) =
+      delete;
 
   void SetUp() override {
     auto* command_line = base::CommandLine::ForCurrentProcess();
@@ -502,22 +499,20 @@ class ArcInstanceThrottleVMTest : public testing::Test {
 
     ash::SessionManagerClient::InitializeFakeInMemory();
     ash::FakeSessionManagerClient::Get()->set_arc_available(true);
-    StabilityMetricsManager::Initialize(&local_state_);
-    prefs::RegisterLocalStatePrefs(local_state_.registry());
-    prefs::RegisterProfilePrefs(local_state_.registry());
+    StabilityMetricsManager::Initialize(
+        TestingBrowserProcess::GetGlobal()->local_state());
     arc_metrics_service_ = ArcMetricsService::GetForBrowserContextForTesting(
         testing_profile_.get());
     arc_metrics_service_->SetHistogramNamerCallback(base::BindLambdaForTesting(
         [](const std::string& s) -> std::string { return s; }));
 
-    arc_instance_throttle_ =
-        ArcInstanceThrottle::GetForBrowserContextForTesting(
-            testing_profile_.get());
+    ArcInstanceThrottle::GetForBrowserContextForTesting(testing_profile_.get());
 
     run_loop()->RunUntilIdle();
   }
 
   void TearDown() override {
+    arc_metrics_service_ = nullptr;
     arc::StabilityMetricsManager::Shutdown();
     ash::SessionManagerClient::Shutdown();
     testing_profile_.reset();
@@ -525,6 +520,7 @@ class ArcInstanceThrottleVMTest : public testing::Test {
     arc_dlc_installer_.reset();
     arc_service_manager_.reset();
     ash::DlcserviceClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
   }
 
  protected:
@@ -534,7 +530,8 @@ class ArcInstanceThrottleVMTest : public testing::Test {
 
   ash::ThrottleObserver* GetThrottleObserver() {
     for (const auto& observer :
-         arc_instance_throttle_->observers_for_testing()) {
+         ArcInstanceThrottle::GetForBrowserContext(testing_profile_.get())
+             ->observers_for_testing()) {
       if (observer->name() == kArcPowerThrottleObserverName)
         return observer.get();
     }
@@ -545,18 +542,15 @@ class ArcInstanceThrottleVMTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<base::RunLoop> run_loop_;
-
   display::test::TestScreen test_screen_{/*create_display=*/true,
                                          /*register_screen=*/true};
+  std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
-  TestingPrefServiceSimple local_state_;
   std::unique_ptr<TestingProfile> testing_profile_;
 
-  raw_ptr<ArcInstanceThrottle, DanglingUntriaged> arc_instance_throttle_;
-  raw_ptr<ArcMetricsService, DanglingUntriaged> arc_metrics_service_ = nullptr;
+  raw_ptr<ArcMetricsService> arc_metrics_service_ = nullptr;
 };
 
 TEST_F(ArcInstanceThrottleVMTest, Histograms) {
