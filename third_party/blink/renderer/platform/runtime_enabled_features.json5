@@ -6752,7 +6752,6 @@
       // the 'type' attribute carried over from older permission element
       // implementations).
       name: "UserMediaElementLegacy",
-      status: "experimental",
       // By mapping this new flag to the existing "UserMediaElement" origin
       // trial name, both features can be evaluated concurrently during the
       // trial phase while preserving a partner-less-effort path for future

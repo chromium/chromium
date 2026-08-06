@@ -3580,7 +3580,6 @@ crbug.com/41482163 [ Linux ] external/wpt/fedcm/fedcm-authz/fedcm-continue-on-wi
 crbug.com/41482163 [ Mac14 ] external/wpt/fedcm/fedcm-authz/fedcm-continue-on-with-account.https.html [ Timeout ]
 [ Linux ] virtual/fenced-frame-mparch-internal/wpt_internal/fenced_frame/revoke-manual-report-event-beacons.https.html [ Crash ]
 [ Win ] virtual/fenced-frame-mparch-internal/wpt_internal/fenced_frame/revoke-manual-report-event-beacons.https.html [ Crash ]
-crbug.com/388376334 [ Win ] virtual/permission-element/external/wpt/html/semantics/permission-element/display-css-property-reftest.tentative.html [ Crash ]
 crbug.com/388319476 [ Mac15 ] virtual/threaded/external/wpt/css/css-view-transitions/navigation/pagereveal-ready-promise.html [ Crash ]
 crbug.com/388319476 [ Win ] virtual/threaded/external/wpt/css/css-view-transitions/navigation/pagereveal-ready-promise.html [ Crash ]
 crbug.com/388319476 [ Win ] virtual/threaded/external/wpt/css/css-view-transitions/navigation/with-types/navigation-supersedes-types-same-rule.html [ Crash ]
@@ -7809,10 +7808,6 @@ crbug.com/519462980 [ Mac26 ] external/wpt/webrtc/legacy/onaddstream.https.html 
 crbug.com/519462980 [ Mac26 ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-encoded-transform.https.html [ Failure Pass Skip Timeout ]
 crbug.com/519462980 [ Mac26 ] external/wpt/webrtc-encoded-transform/script-audio-transform.https.html [ Timeout ]
 crbug.com/519462980 [ Mac26 ] external/wpt/webrtc-identity/idlharness.https.window.html [ Skip Timeout ]
-crbug.com/519462980 [ Mac26 ] virtual/permission-element/external/wpt/html/semantics/permission-element/usermedia/set-constraints-combinations-camera-microphone.tentative.https.html [ Skip Timeout ]
-crbug.com/519462980 [ Mac26 ] virtual/permission-element/external/wpt/html/semantics/permission-element/usermedia/set-constraints-combinations-microphone.tentative.https.html [ Skip Timeout ]
-crbug.com/519462980 [ Mac26 ] virtual/permission-element/external/wpt/html/semantics/permission-element/usermedia/set-constraints-combinations-null.tentative.https.html [ Skip Timeout ]
-crbug.com/519462980 [ Mac26 ] virtual/permission-element/external/wpt/html/semantics/permission-element/usermedia/usermedia-constraints-descriptors.tentative.https.html [ Timeout ]
 crbug.com/519462980 [ Mac26 ] virtual/select-audio-output/external/wpt/audio-output/enumerateDevices-permissions-policy.https.html [ Timeout ]
 crbug.com/519462980 [ Mac26 ] virtual/select-audio-output/external/wpt/audio-output/setSinkId.https.html [ Timeout ]
 crbug.com/519462980 [ Mac26 ] virtual/unified-autoplay/external/wpt/permissions-policy/reporting/microphone-report-only.https.html [ Timeout ]
@@ -9173,7 +9168,6 @@ crbug.com/466779939 [ Debug Linux ] http/tests/inspector-protocol/tracing/user-m
 crbug.com/510085315 [ Win ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/history-length-outer-page-navigation-not-reflected-in-fenced-nested-iframe.https.html [ Failure ]
 crbug.com/485661974 [ Linux ] external/wpt/client-hints/critical-ch/request-count.https.window.html [ Failure ]
 crbug.com/485661974 [ Linux ] external/wpt/client-hints/critical-ch/subresource.https.window.html [ Failure ]
-crbug.com/507309053 [ Linux ] virtual/permission-element/external/wpt/html/semantics/permission-element/install/no-focus.tentative.html [ Failure ]
 crbug.com/485661974 [ Mac ] external/wpt/client-hints/critical-ch/request-count.multiple.https.window.html [ Failure ]
 crbug.com/485661974 external/wpt/client-hints/critical-ch/unsafe-method.https.window.html [ Failure Pass ]
 
@@ -9298,7 +9292,6 @@ crbug.com/529423495 http/tests/devtools/elements/styles/xsl-transformed.js [ Fai
 
 # Gardener 2026-07-17
 crbug.com/535696870 [ Linux ] external/wpt/html/semantics/permission-element/bounded-sizes-reftest.tentative.html [ Failure Pass ]
-crbug.com/535696870 [ Linux ] virtual/permission-element/external/wpt/html/semantics/permission-element/bounded-sizes-reftest.tentative.html [ Failure Pass ]
 
 # Gardener 2026-07-21
 crbug.com/531170669 [ Linux ] fast/canvas/canvas-drawImage-live-video.html [ Failure Pass Timeout ]

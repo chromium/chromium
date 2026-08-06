@@ -1316,17 +1316,9 @@ html element ul
     property type
 html element usermedia
     property error
-    property initialPermissionStatus
-    property invalidReason
-    property isValid
-    property onpromptaction
-    property onpromptdismiss
     property onstream
-    property onvalidationstatuschange
-    property permissionStatus
     property setConstraints
     property stream
-    property type
 html element var
 html element video
     property HAVE_CURRENT_DATA

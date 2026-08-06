@@ -236,6 +236,25 @@
     "expires": "Sep 1, 2024"
   },
   {
+    "prefix": "capability-element-usermedia-legacy",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/html/semantics/permission-element/usermedia/legacy-mode"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-blink-features=UserMediaElement,UserMediaElementLegacy"
+    ],
+    "expires": "Jan 1, 2027",
+    "owners": [
+      "permissions-core@google.com"
+    ]
+  },
+  {
     "prefix": "content-extraction",
     "platforms": [
       "Linux",
@@ -2391,38 +2410,6 @@
     "owners": [
       "wangxianzhu@chromium.org"
     ]
-  },
-  {
-    "prefix": "permission-element",
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "external/wpt/html/semantics/permission-element"
-    ],
-    "args": [
-      "--enable-blink-features=UserMediaElement,InstallElement,UserMediaElementLegacy"
-    ],
-    "owners": [
-      "permissions-core@google.com"
-    ],
-    "expires": "Jul 1, 2025"
-  },
-  {
-    "prefix": "permission-element-disabled",
-    "platforms": [
-      "Linux"
-    ],
-    "bases": [],
-    "args": [
-      "--disable-blink-features=UserMediaElement,GeolocationElement,InstallElement"
-    ],
-    "owners": [
-      "permissions-core@google.com"
-    ],
-    "expires": "Jul 1, 2026"
   },
   {
     "prefix": "port-bound-cookies",

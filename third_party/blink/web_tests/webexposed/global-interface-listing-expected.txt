@@ -5537,30 +5537,17 @@ interface HTMLUnknownElement : HTMLElement
     attribute @@toStringTag
     method constructor
 interface HTMLUserMediaElement : HTMLElement
-    static method isTypeSupported
     attribute @@toStringTag
     getter error
-    getter initialPermissionStatus
-    getter invalidReason
-    getter isValid
     getter oncancel
     getter onerror
-    getter onpromptaction
-    getter onpromptdismiss
     getter onstream
-    getter onvalidationstatuschange
-    getter permissionStatus
     getter stream
-    getter type
     method constructor
     method setConstraints
     setter oncancel
     setter onerror
-    setter onpromptaction
-    setter onpromptdismiss
     setter onstream
-    setter onvalidationstatuschange
-    setter type
 interface HTMLVideoElement : HTMLMediaElement
     attribute @@toStringTag
     getter disablePictureInPicture
