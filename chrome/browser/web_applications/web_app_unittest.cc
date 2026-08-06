@@ -489,6 +489,36 @@ TEST(WebAppTest, IsolationDataPendingUpdateInfoDebugValue) {
   EXPECT_EQ(*debug_isolation_data, expected_isolation_data);
 }
 
+TEST(WebAppTest, IsolationDataUpdateChannelNonDevMode) {
+  GURL kStartUrl("isolated-app://random_name");
+  WebApp app(GenerateManifestIdFromStartUrlOnly(kStartUrl),
+             /*start_url=*/kStartUrl, /*scope=*/kStartUrl);
+
+  const UpdateChannel kBetaChannel = *UpdateChannel::Create("beta");
+  const UpdateChannel kCanaryChannel = *UpdateChannel::Create("canary");
+
+  // Test r-value Builder::SetUpdateChannel overload for non-dev mode.
+  app.SetIsolationData(
+      IsolationData::Builder(
+          IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
+          *IwaVersion::Create("1.0.0"))
+          .SetUpdateChannel(kBetaChannel)
+          .Build());
+
+  ASSERT_TRUE(app.isolation_data().has_value());
+  EXPECT_FALSE(app.isolation_data()->location().dev_mode());
+  EXPECT_EQ(kBetaChannel, app.isolation_data()->update_channel());
+
+  // Test l-value Builder::SetUpdateChannel overload for non-dev mode.
+  IsolationData::Builder builder(
+      IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
+      *IwaVersion::Create("1.0.0"));
+  builder.SetUpdateChannel(kCanaryChannel);
+  IsolationData isolation_data = std::move(builder).Build();
+  EXPECT_FALSE(isolation_data.location().dev_mode());
+  EXPECT_EQ(kCanaryChannel, isolation_data.update_channel());
+}
+
 TEST(WebAppTest, DisplayOverrideDebugValue) {
   GURL start_url("https://example.com");
   WebApp app(GenerateManifestIdFromStartUrlOnly(start_url), start_url,

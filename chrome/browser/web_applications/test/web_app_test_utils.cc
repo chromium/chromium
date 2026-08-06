@@ -1216,6 +1216,8 @@ std::unique_ptr<WebApp> CreateRandomWebApp(
     }
     if (dev_mode && random.next_bool()) {
       idb.SetUpdateManifestUrl(GURL("https://update-manifest.com"));
+    }
+    if (random.next_bool()) {
       idb.SetUpdateChannel(UpdateChannel::default_channel());
     }
     if (random.next_bool()) {
