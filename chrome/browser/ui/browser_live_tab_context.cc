@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/features.h"
@@ -465,23 +466,23 @@ sessions::LiveTabContext* BrowserLiveTabContext::Create(
     const std::string& workspace,
     const std::string& user_title,
     const std::map<std::string, std::string>& extra_data) {
-  std::unique_ptr<Browser::CreateParams> create_params;
+  std::unique_ptr<BrowserWindowCreateParams> create_params;
   if (ShouldCreateAppWindowForAppName(profile, app_name)) {
     // Only trusted app popup windows should ever be restored.
     if (type == sessions::SessionWindow::TYPE_APP_POPUP) {
-      create_params = std::make_unique<Browser::CreateParams>(
-          Browser::CreateParams::CreateForAppPopup(
+      create_params = std::make_unique<BrowserWindowCreateParams>(
+          BrowserWindowCreateParams::CreateForAppPopup(
               app_name, /*trusted_source=*/true, bounds, profile,
               /*user_gesture=*/true));
     } else {
-      create_params = std::make_unique<Browser::CreateParams>(
-          Browser::CreateParams::CreateForApp(app_name, /*trusted_source=*/true,
-                                              bounds, profile,
-                                              /*user_gesture=*/true));
+      create_params = std::make_unique<BrowserWindowCreateParams>(
+          BrowserWindowCreateParams::CreateForApp(
+              app_name, /*trusted_source=*/true, bounds, profile,
+              /*user_gesture=*/true));
     }
   } else {
-    create_params = std::make_unique<Browser::CreateParams>(
-        Browser::CreateParams(profile, true));
+    create_params = std::make_unique<BrowserWindowCreateParams>(
+        BrowserWindowCreateParams(profile, true));
     create_params->initial_bounds = bounds;
   }
 
@@ -521,7 +522,8 @@ sessions::LiveTabContext* BrowserLiveTabContext::Create(
     }
   }
 
-  Browser* browser = Browser::Create(*create_params.get());
+  Browser* browser = CreateBrowserWindow(std::move(*create_params))
+                         ->GetBrowserForMigrationOnly();
 
   return browser->GetFeatures().live_tab_context();
 }

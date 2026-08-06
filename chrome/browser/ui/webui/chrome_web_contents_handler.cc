@@ -49,13 +49,15 @@ WebContents* ChromeWebContentsHandler::OpenURLFromTab(
   const bool browser_created = !browser;
   if (!browser) {
     if (GetBrowserWindowCreationStatusForProfile(*profile) !=
-        Browser::CreationStatus::kOk) {
+        BrowserWindowInterface::CreationStatus::kOk) {
       return nullptr;
     }
     // TODO(erg): OpenURLParams should pass a user_gesture flag, pass it to
     // CreateParams, and pass the real value to nav_params below.
-    browser = Browser::Create(
-        Browser::CreateParams(Browser::TYPE_NORMAL, profile, true));
+    browser = CreateBrowserWindow(
+                  BrowserWindowCreateParams(BrowserWindowInterface::TYPE_NORMAL,
+                                            profile, true))
+                  ->GetBrowserForMigrationOnly();
   }
   NavigateParams nav_params(browser, params.url, params.transition);
   nav_params.FillNavigateParamsFromOpenURLParams(params);
@@ -109,11 +111,11 @@ void ChromeWebContentsHandler::AddNewContents(
     // The request can be triggered by Captive portal when browser is not ready
     // (https://crbug.com/40154317).
     if (GetBrowserWindowCreationStatusForProfile(*profile) !=
-        Browser::CreationStatus::kOk) {
+        BrowserWindowInterface::CreationStatus::kOk) {
       return;
     }
-    browser = Browser::Create(
-        Browser::CreateParams(Browser::TYPE_NORMAL, profile, user_gesture));
+    browser = CreateBrowserWindow(BrowserWindowCreateParams(
+        BrowserWindowInterface::TYPE_NORMAL, profile, user_gesture));
   }
   NavigateParams params(browser, std::move(new_contents));
   params.source_contents = source;

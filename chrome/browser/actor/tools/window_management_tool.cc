@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
@@ -67,11 +68,12 @@ void WindowManagementTool::Invoke(ToolCallback callback) {
 
   switch (action_) {
     case Action::kCreate: {
-      Browser::CreateParams params(Browser::TYPE_NORMAL,
-                                   &tool_delegate().GetProfile(),
-                                   /*user_gesture=*/false);
+      BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_NORMAL,
+                                       &tool_delegate().GetProfile(),
+                                       /*from_user_gesture=*/false);
       params.initial_show_state = ::ui::mojom::WindowShowState::kNormal;
-      Browser* browser = Browser::Create(params);
+      Browser* browser =
+          CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
       browser_did_become_active_subscription_ =
           browser->RegisterDidBecomeActive(base::BindRepeating(
               &WindowManagementTool::OnBrowserDidBecomeActive,

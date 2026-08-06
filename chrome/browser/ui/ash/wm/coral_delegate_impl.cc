@@ -17,6 +17,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/desks/desks_templates_app_launch_handler.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/ash/scanner_feedback_dialog/scanner_feedback_dialog.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -146,10 +147,11 @@ Browser* CreateBrowser() {
     return nullptr;
   }
 
-  Browser::CreateParams params(Browser::Type::TYPE_NORMAL, active_profile,
-                               /*user_gesture=*/false);
+  BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_NORMAL,
+                                   active_profile,
+                                   /*user_gesture=*/false);
   params.should_trigger_session_restore = false;
-  return Browser::Create(std::move(params));
+  return CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
 }
 
 // Finds the first tab with given url on the desk with the given `index` and

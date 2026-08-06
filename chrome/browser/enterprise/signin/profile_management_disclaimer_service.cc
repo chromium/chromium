@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
@@ -653,11 +654,13 @@ void ProfileManagementDisclaimerService::OpenPrivacyPolicyArticlePopUp(
   // This will open a new browser window in the same profile. We need to make
   // sure the dialog is not shown in that window to allow the user to read the
   // article.
-  Browser::CreateParams create_params(Browser::TYPE_POPUP, &*profile_,
-                                      /*user_gesture=*/true);
+  BrowserWindowCreateParams create_params(BrowserWindowInterface::TYPE_POPUP,
+                                          &*profile_,
+                                          /*from_user_gesture=*/true);
   create_params.should_trigger_session_restore = false;
   create_params.omit_from_session_restore = true;
-  Browser* popup_browser = Browser::Create(create_params);
+  Browser* popup_browser = CreateBrowserWindow(std::move(create_params))
+                               ->GetBrowserForMigrationOnly();
   if (popup_browser) {
     privacy_article_browser_ = popup_browser->GetWeakPtr();
     chrome::AddSelectedTabWithURL(popup_browser,

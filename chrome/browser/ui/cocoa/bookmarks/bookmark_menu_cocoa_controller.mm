@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #import "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_bridge.h"
 #import "chrome/browser/ui/cocoa/l10n_util.h"
@@ -76,7 +77,8 @@ void DoOpenBookmark(Profile* profile,
           ? browser_window_interface->GetBrowserForMigrationOnly()
           : nullptr;
   if (!browser) {
-    browser = Browser::Create(Browser::CreateParams(profile, true));
+    browser = CreateBrowserWindow(BrowserWindowCreateParams(profile, true))
+                  ->GetBrowserForMigrationOnly();
   }
   OpenURLParams params(node->url(), Referrer(), disposition,
                        ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);

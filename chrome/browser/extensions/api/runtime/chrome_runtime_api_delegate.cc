@@ -280,7 +280,8 @@ void ChromeRuntimeAPIDelegate::OpenURL(const GURL& uninstall_url) {
   BrowserWindowInterface* current_browser =
       ProfileBrowserCollection::GetForProfile(profile)->GetLastActiveBrowser();
   if (!current_browser) {
-    current_browser = Browser::Create(Browser::CreateParams(profile, false));
+    current_browser =
+        CreateBrowserWindow(BrowserWindowCreateParams(profile, false));
   }
   if (!current_browser) {
     return;

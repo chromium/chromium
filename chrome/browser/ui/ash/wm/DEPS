@@ -13,6 +13,7 @@ include_rules = [
   "+chrome/browser/ui/ash/new_window",
   "+chrome/browser/ui/ash/system_web_apps",
   "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/browser_window/public/create_browser_window.h",
   "+chrome/browser/ui/browser_tab_strip_tracker.h",
   "+chrome/browser/ui/tabs/tab_strip_model.h",
   "+chrome/browser/ui/tabs/tab_strip_model_observer.h",

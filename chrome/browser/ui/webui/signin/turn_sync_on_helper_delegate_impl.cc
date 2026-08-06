@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
@@ -60,7 +61,8 @@ BrowserWindowInterface* EnsureBrowser(BrowserWindowInterface* browser,
                   ->GetLastActiveBrowser();
     if (!browser) {
       Browser* new_browser =
-          Browser::Create(Browser::CreateParams(profile, true));
+          CreateBrowserWindow(BrowserWindowCreateParams(profile, true))
+              ->GetBrowserForMigrationOnly();
       chrome::AddTabAt(new_browser, GURL(), -1, true);
       browser = new_browser;
     }

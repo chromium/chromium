@@ -201,6 +201,7 @@ source_set("impl") {
     "//chrome/browser/tab_list",
     "//chrome/browser/ui",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/browser_window:create_browser_window",
     "//chrome/browser/ui/navigator",
     "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/common",

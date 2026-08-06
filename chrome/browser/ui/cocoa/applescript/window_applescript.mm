@@ -93,13 +93,15 @@
     // browser shutdown or profile deletion, we have to check whether it's okay
     // to spawn a new browser for the specified profile or not.
     if (GetBrowserWindowCreationStatusForProfile(*aProfile) !=
-        Browser::CreationStatus::kOk) {
+        BrowserWindowInterface::CreationStatus::kOk) {
       self = nil;
       return nil;
     }
 
-    Browser* browser = Browser::Create(
-        Browser::CreateParams(aProfile, /*user_gesture=*/false));
+    Browser* browser =
+        CreateBrowserWindow(
+            BrowserWindowCreateParams(aProfile, /*user_gesture=*/false))
+            ->GetBrowserForMigrationOnly();
     // TODO(crbug.com/452431839): Make a new NewTabTypes enum value
     // for new tabs made with AppleScript requests.
     chrome::NewTab(browser, NewTabTypes::kNewTabCommand);

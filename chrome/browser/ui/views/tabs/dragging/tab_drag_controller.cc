@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/split_tab_util.h"
@@ -2714,21 +2715,22 @@ Browser* TabDragController::CreateBrowserForDrag(TabDragContext* source,
       GetControllingAppForDrag(from_browser);
   const bool open_as_web_app = controlling_app.has_value();
 
-  Browser::CreateParams create_params =
-      open_as_web_app ? Browser::CreateParams::CreateForApp(
+  BrowserWindowCreateParams create_params =
+      open_as_web_app ? BrowserWindowCreateParams::CreateForApp(
                             web_app::GenerateApplicationNameFromAppId(
                                 controlling_app.value()),
                             /* trusted_source=*/true, gfx::Rect(),
                             from_browser->GetProfile(),
                             /* user_gesture=*/true)
-                      : BrowserInitState::From(from_browser)->create_params();
-
+                      : BrowserInitState::From(from_browser)
+                            ->browser_window_create_params()
+                            .Clone();
   // Web app windows have their own initial size independent of the source
   // browser window.
   if (!open_as_web_app) {
     create_params.initial_bounds = gfx::Rect(initial_size);
   }
-  create_params.user_gesture = true;
+  create_params.from_user_gesture = true;
   create_params.in_tab_dragging = true;
 #if BUILDFLAG(IS_CHROMEOS)
   // Do not copy attached window's restore id as this will cause Full Restore to
@@ -2757,7 +2759,8 @@ Browser* TabDragController::CreateBrowserForDrag(TabDragContext* source,
   create_params.user_title = std::string();
 
   base::TimeTicks now = base::TimeTicks::Now();
-  Browser* browser = Browser::Create(create_params);
+  Browser* browser = CreateBrowserWindow(std::move(create_params))
+                         ->GetBrowserForMigrationOnly();
   if (auto* manager = InitialWebUIWindowMetricsManager::From(browser)) {
     manager->SetWindowCreationInfo(
         waap::NewWindowCreationSource::kDragToNewWindow, now);

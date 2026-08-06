@@ -414,7 +414,7 @@ static_library("browser_launch_reporting") {
       ":enterprise",
       "//base",
       "//chrome/browser:browser_process",
-      "//chrome/browser/enterprise/connectors/reporting:reporting",
+      "//chrome/browser/enterprise/connectors/reporting",
       "//chrome/browser/profiles:profile",
       "//components/enterprise",
       "//components/enterprise/common/proto:browser_events_proto",
@@ -861,6 +861,7 @@ source_set("impl") {
     deps += [
       "//chrome/browser/enterprise/connectors/device_trust/key_management/browser",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core",
+      "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/services/system_signals/public/cpp/browser",
     ]
   }

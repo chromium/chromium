@@ -1499,8 +1499,8 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
         ProfileBrowserCollection::GetForProfile(profile.get())
             ->GetLastActiveBrowser();
     if (!browser) {
-      browser = Browser::Create(
-          Browser::CreateParams(profile.get(), /*user_gesture=*/true));
+      browser = CreateBrowserWindow(
+          BrowserWindowCreateParams(profile.get(), /*user_gesture=*/true));
       browser->GetWindow()->Show();
     }
 
@@ -2664,7 +2664,7 @@ void OpenStartupTabsInBrowserWithProfile(const StartupTabs& tabs,
     startupContent = browser->GetTabStripModel()->GetActiveWebContents();
   } else if (!browser) {
     // if no browser window exists then create one with no tabs to be filled in.
-    browser = Browser::Create(Browser::CreateParams(profile, true));
+    browser = CreateBrowserWindow(BrowserWindowCreateParams(profile, true));
     browser->GetWindow()->Show();
   }
 

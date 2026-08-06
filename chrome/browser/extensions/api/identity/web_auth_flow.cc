@@ -202,15 +202,16 @@ bool WebAuthFlow::DisplayAuthPageInPopupWindow() {
   }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  Browser::CreateParams browser_params(Browser::TYPE_POPUP, profile_,
-                                       user_gesture_);
+  BrowserWindowCreateParams browser_params(BrowserWindowInterface::TYPE_POPUP,
+                                           profile_, user_gesture_);
   browser_params.omit_from_session_restore = true;
   browser_params.should_trigger_session_restore = false;
   if (popup_bounds_.has_value()) {
     browser_params.initial_bounds = popup_bounds_.value();
   }
 
-  Browser* browser = Browser::Create(browser_params);
+  Browser* browser = CreateBrowserWindow(std::move(browser_params))
+                         ->GetBrowserForMigrationOnly();
   browser->tab_strip_model()->AddWebContents(
       std::move(web_contents_), /*index=*/0,
       ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
