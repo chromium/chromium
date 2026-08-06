@@ -4,11 +4,13 @@
 
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/values.h"
 #include "base/version_info/channel.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
@@ -54,6 +56,23 @@ GlicLauncherConfiguration::GlicLauncherConfiguration(Observer* manager)
     if (!default_hotkey.empty()) {
       local_state->SetDefaultPrefValue(prefs::kGlicLauncherHotkey,
                                        base::Value(default_hotkey));
+    }
+
+    if (base::FeatureList::IsEnabled(features::kGlicHotkeyLocalScope) &&
+        !local_state->GetBoolean(prefs::kGlicHotkeyGlobalScopeMigrated)) {
+      std::string hotkey_str =
+          local_state->GetString(prefs::kGlicLauncherHotkey);
+      bool is_default_or_empty = hotkey_str.empty();
+      if (!is_default_or_empty) {
+        const base::Value* default_value =
+            local_state->GetDefaultPrefValue(prefs::kGlicLauncherHotkey);
+        if (default_value && default_value->GetString() == hotkey_str) {
+          is_default_or_empty = true;
+        }
+      }
+      local_state->SetBoolean(prefs::kGlicHotkeyGlobalScopeEnabled,
+                              !is_default_or_empty);
+      local_state->SetBoolean(prefs::kGlicHotkeyGlobalScopeMigrated, true);
     }
 
     pref_registrar_.Init(local_state);

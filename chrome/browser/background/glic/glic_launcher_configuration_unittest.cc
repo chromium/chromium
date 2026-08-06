@@ -4,8 +4,10 @@
 
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -85,6 +87,81 @@ TEST_F(GlicLauncherConfigurationTest, Observer) {
   const ui::Accelerator hotkey(ui::VKEY_K, ui::EF_ALT_DOWN);
   local_state()->SetString(prefs::kGlicLauncherHotkey,
                            ui::Command::AcceleratorToString(hotkey));
+}
+
+TEST_F(GlicLauncherConfigurationTest, HotkeyScope_Disabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kGlicHotkeyLocalScope);
+
+  MockObserver observer;
+  GlicLauncherConfiguration config{&observer};
+  EXPECT_FALSE(local_state()->GetBoolean(prefs::kGlicHotkeyGlobalScopeEnabled));
+
+  const ui::Accelerator hotkey(ui::VKEY_K, ui::EF_ALT_DOWN);
+  local_state()->SetString(prefs::kGlicLauncherHotkey,
+                           ui::Command::AcceleratorToString(hotkey));
+  EXPECT_FALSE(local_state()->GetBoolean(prefs::kGlicHotkeyGlobalScopeEnabled));
+}
+
+TEST_F(GlicLauncherConfigurationTest, HotkeyScope_Enabled_Empty) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kGlicHotkeyLocalScope);
+
+  local_state()->SetString(prefs::kGlicLauncherHotkey, "");
+
+  MockObserver observer;
+  GlicLauncherConfiguration config{&observer};
+  EXPECT_FALSE(local_state()->GetBoolean(prefs::kGlicHotkeyGlobalScopeEnabled));
+}
+
+TEST_F(GlicLauncherConfigurationTest, HotkeyScope_Migration_CustomHotkey) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kGlicHotkeyLocalScope);
+
+  // Set custom hotkey and ensure migrated is false.
+  const ui::Accelerator hotkey(ui::VKEY_K, ui::EF_ALT_DOWN);
+  local_state()->SetString(prefs::kGlicLauncherHotkey,
+                           ui::Command::AcceleratorToString(hotkey));
+  local_state()->SetBoolean(prefs::kGlicHotkeyGlobalScopeMigrated, false);
+  local_state()->SetBoolean(prefs::kGlicHotkeyGlobalScopeEnabled, false);
+
+  MockObserver observer;
+  GlicLauncherConfiguration config{&observer};
+  // Should migrate to true.
+  EXPECT_TRUE(local_state()->GetBoolean(prefs::kGlicHotkeyGlobalScopeEnabled));
+  EXPECT_TRUE(local_state()->GetBoolean(prefs::kGlicHotkeyGlobalScopeMigrated));
+}
+
+TEST_F(GlicLauncherConfigurationTest, HotkeyScope_Migration_DefaultHotkey) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kGlicHotkeyLocalScope);
+
+  // Ensure migrated is false, and enabled is true.
+  local_state()->SetBoolean(prefs::kGlicHotkeyGlobalScopeMigrated, false);
+  local_state()->SetBoolean(prefs::kGlicHotkeyGlobalScopeEnabled, true);
+
+  MockObserver observer;
+  GlicLauncherConfiguration config{&observer};
+  // Should migrate to false.
+  EXPECT_FALSE(local_state()->GetBoolean(prefs::kGlicHotkeyGlobalScopeEnabled));
+  EXPECT_TRUE(local_state()->GetBoolean(prefs::kGlicHotkeyGlobalScopeMigrated));
+}
+
+TEST_F(GlicLauncherConfigurationTest, HotkeyScope_AlreadyMigrated) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kGlicHotkeyLocalScope);
+
+  // Already migrated, enabled is false, custom hotkey.
+  const ui::Accelerator hotkey(ui::VKEY_K, ui::EF_ALT_DOWN);
+  local_state()->SetString(prefs::kGlicLauncherHotkey,
+                           ui::Command::AcceleratorToString(hotkey));
+  local_state()->SetBoolean(prefs::kGlicHotkeyGlobalScopeMigrated, true);
+  local_state()->SetBoolean(prefs::kGlicHotkeyGlobalScopeEnabled, false);
+
+  MockObserver observer;
+  GlicLauncherConfiguration config{&observer};
+  // Should NOT change because already migrated.
+  EXPECT_FALSE(local_state()->GetBoolean(prefs::kGlicHotkeyGlobalScopeEnabled));
 }
 
 }  // namespace glic
