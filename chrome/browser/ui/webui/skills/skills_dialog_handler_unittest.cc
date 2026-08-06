@@ -41,6 +41,10 @@ class MockSkillsDialogDelegate : public SkillsDialogDelegate {
   MOCK_METHOD(void, CloseDialog, (), (override));
   MOCK_METHOD(void, OnSkillSaved, (const std::string&), (override));
   MOCK_METHOD(void, OnSkillDeleted, (const std::string&), (override));
+  MOCK_METHOD(BrowserWindowInterface*,
+              GetBrowserWindowInterface,
+              (),
+              (override));
 
   base::WeakPtr<MockSkillsDialogDelegate> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();

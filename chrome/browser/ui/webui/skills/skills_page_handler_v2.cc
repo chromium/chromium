@@ -5,10 +5,12 @@
 #include "chrome/browser/ui/webui/skills/skills_page_handler_v2.h"
 
 #include "base/check_deref.h"
+#include "base/supports_user_data.h"
 #include "chrome/browser/glic/host/glic_cookie_synchronizer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
 #include "chrome/browser/skills/skills_ui_window_controller.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/webui/skills/skills_dialog_delegate.h"
@@ -17,8 +19,45 @@
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "ui/base/window_open_disposition.h"
+#include "url/gurl.h"
 
 namespace skills {
+namespace {
+
+// A profile-scoped container for storing pending editor data that needs to be
+// passed when transitioning between closing the skills dialog and opening the
+// skills editor in a new foreground tab. The dialog's handler stores the data
+// before closing, and the editor's handler retrieves and clears the data upon
+// loading.
+class PendingEditorDataHandler : public base::SupportsUserData::Data {
+ public:
+  static constexpr char kUserDataKey[] = "pending_editor_data_handler";
+
+  static PendingEditorDataHandler* GetOrCreateForProfile(Profile* profile) {
+    auto* handler = static_cast<PendingEditorDataHandler*>(
+        profile->GetUserData(kUserDataKey));
+    if (!handler) {
+      auto new_handler = std::make_unique<PendingEditorDataHandler>();
+      handler = new_handler.get();
+      profile->SetUserData(kUserDataKey, std::move(new_handler));
+    }
+    return handler;
+  }
+
+  void StoreData(mojom::PendingEditorDataPtr data) {
+    pending_data_ = std::move(data);
+  }
+
+  mojom::PendingEditorDataPtr RetrieveData() {
+    return std::move(pending_data_);
+  }
+
+ private:
+  mojom::PendingEditorDataPtr pending_data_;
+};
+
+}  // namespace
 
 SkillsPageHandlerV2::SkillsPageHandlerV2(
     mojo::PendingReceiver<::skills::mojom::SkillsPageHandler> receiver,
@@ -105,10 +144,29 @@ void SkillsPageHandlerV2::SendPrompt(const std::string& prompt) {
   }
 }
 
-void SkillsPageHandlerV2::CloseDialog() {
-  if (delegate_) {
-    delegate_->CloseDialog();
+void SkillsPageHandlerV2::CloseDialog(
+    skills::mojom::PendingEditorDataPtr data) {
+  if (!delegate_) {
+    return;
   }
+  // First store any data in user data, then proceed with dialog and handler
+  // destruction.
+  if (data) {
+    PendingEditorDataHandler::GetOrCreateForProfile(&profile_.get())
+        ->StoreData(std::move(data));
+    delegate_->GetBrowserWindowInterface()->OpenGURL(
+        GURL("chrome://skills/editor"),
+        WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  }
+  delegate_->CloseDialog();
+}
+
+void SkillsPageHandlerV2::GetPendingEditorData(
+    GetPendingEditorDataCallback callback) {
+  auto data = PendingEditorDataHandler::GetOrCreateForProfile(&profile_.get())
+                  ->RetrieveData();
+  // Note: Data is cleared when this callback runs.
+  std::move(callback).Run(std::move(data));
 }
 
 }  // namespace skills

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/chrome_web_contents_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -35,7 +36,10 @@ gfx::Size kWebViewMaxSize = gfx::Size(kWebViewWidth, kWebViewMaxHeight);
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SkillsDialogView, kSkillsDialogElementId);
 
-SkillsDialogView::SkillsDialogView(Profile* profile, const GURL& url) {
+SkillsDialogView::SkillsDialogView(Profile* profile, const GURL& url)
+    : ui::WebDialogWebContentsDelegate(
+          profile,
+          std::make_unique<ChromeWebContentsHandler>()) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   // Create the webview.

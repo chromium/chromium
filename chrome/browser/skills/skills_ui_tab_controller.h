@@ -68,6 +68,7 @@ class SkillsUiTabController : public SkillsUiTabControllerInterface,
   void CloseDialog() override;
   void OnSkillSaved(const std::string& skill_id) override;
   void OnSkillDeleted(const std::string& skill_id) override;
+  BrowserWindowInterface* GetBrowserWindowInterface() override;
 
   // views::WidgetObserver override:
   void OnWidgetDestroyed(views::Widget* widget) override;

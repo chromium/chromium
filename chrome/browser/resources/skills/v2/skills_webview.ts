@@ -8,6 +8,7 @@ import {getRequiredElement} from '//resources/js/util.js';
 import {ErrorType} from '../error_page.js';
 import {SkillsDialogType} from '../skill.mojom-webui.js';
 import {SkillsPageHandler} from '../skills.mojom-webui.js';
+import type {PendingEditorData} from '../skills.mojom-webui.js';
 
 import type {SkillsWebviewBridgeDelegate} from './skills_webview_bridge.js';
 import {SkillsWebviewBridge} from './skills_webview_bridge.js';
@@ -92,6 +93,17 @@ export class SkillsWebview {
       return;
     }
 
+    // If we are opening an editor page, check if we have pending prompt data to
+    // send.
+    let pendingData: PendingEditorData|null = null;
+    if (window.location.pathname === '/editor') {
+      const {data} = await this.handler.getPendingEditorData();
+      pendingData = data;
+      if (pendingData) {
+        this.remoteUrl = pendingData.url;
+      }
+    }
+
     const delegate: SkillsWebviewBridgeDelegate = {
       onError: () => this.showError(ErrorType.REMOTE_AUTHORITY_UNREACHABLE),
       onShowSaveToast: () => this.handler.showSaveToast(),
@@ -100,9 +112,11 @@ export class SkillsWebview {
       onInvokeSkill: (skillId: string, skillName: string, skillIcon: string) =>
           this.handler.invokeSkill(skillId, skillName, skillIcon),
       onUrlChanged: (url: URL) => this.handleUrlChanged(url),
-      onCloseDialog: () => this.handler.closeDialog(),
+      onCloseDialog: () => this.handler.closeDialog(null),
       onHandshakeComplete: () => this.recordTotalInitLatencyMetric(),
       onSendPrompt: (prompt: string) => this.handler.sendPrompt(prompt),
+      onCloseDialogAndOpenEditor: (data: PendingEditorData) =>
+          this.handler.closeDialog(data),
     };
 
     // Initiate handshake. Show error page on failure.
@@ -116,6 +130,14 @@ export class SkillsWebview {
       if (this.promptToSend) {
         this.bridge?.sendGeminiPrompt(this.promptToSend);
         this.promptToSend = '';
+      }
+      if (pendingData) {
+        this.bridge?.sendSkillDialogInfo({
+          skillIcon: pendingData.icon,
+          skillName: pendingData.name,
+          skillDescription: pendingData.description,
+          skillInstructions: pendingData.instructions,
+        });
       }
     });
 

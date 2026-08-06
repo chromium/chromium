@@ -24,6 +24,12 @@ export const SKILLS_OPEN_URL = 'open-url';
 /** Message type used by the guest to send a prompt to the host. */
 export const SKILLS_SEND_PROMPT = 'send-prompt';
 
+/** Message type used by the guest to open the full page editor. */
+export const SKILLS_OPEN_FULL_PAGE_EDITOR = 'open-full-page-editor';
+
+/** Message type used by the host to send skill dialog info to the guest. */
+export const SKILLS_DIALOG_INFO_TYPE = 'skills-dialog-info';
+
 /** Message type used by the host to send the Gemini prompt. */
 export const SKILLS_GEMINI_PROMPT_TYPE = 'skills-gemini-prompt';
 

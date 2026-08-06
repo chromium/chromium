@@ -5,7 +5,9 @@ import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
-import {getLoadingStageHistogramName, getPrimarySkillsOrigin, getSkillsApiAllowedOrigins, HANDSHAKE_PING_INTERVAL_MS, HANDSHAKE_TIMEOUT_MS, HISTOGRAM_HANDSHAKE_RESULT, HISTOGRAM_WRITE_LATENCY, LoadingStage, SKILLS_CLOSE_DIALOG, SKILLS_GEMINI_PROMPT_TYPE, SKILLS_HANDSHAKE_ACK, SKILLS_HANDSHAKE_TYPE, SKILLS_INVOKE_SKILL, SKILLS_LOG_METRIC, SKILLS_OPEN_URL, SKILLS_SEND_PROMPT, SKILLS_SHOW_TOAST, SKILLS_TOAST_CLOSED_TYPE, SKILLS_UNDO_TYPE} from './skills_webview_bridge_constants.js';
+import type {PendingEditorData} from '../skills.mojom-webui.js';
+
+import {getLoadingStageHistogramName, getPrimarySkillsOrigin, getSkillsApiAllowedOrigins, HANDSHAKE_PING_INTERVAL_MS, HANDSHAKE_TIMEOUT_MS, HISTOGRAM_HANDSHAKE_RESULT, HISTOGRAM_WRITE_LATENCY, LoadingStage, SKILLS_CLOSE_DIALOG, SKILLS_DIALOG_INFO_TYPE, SKILLS_GEMINI_PROMPT_TYPE, SKILLS_HANDSHAKE_ACK, SKILLS_HANDSHAKE_TYPE, SKILLS_INVOKE_SKILL, SKILLS_LOG_METRIC, SKILLS_OPEN_FULL_PAGE_EDITOR, SKILLS_OPEN_URL, SKILLS_SEND_PROMPT, SKILLS_SHOW_TOAST, SKILLS_TOAST_CLOSED_TYPE, SKILLS_UNDO_TYPE} from './skills_webview_bridge_constants.js';
 
 /**
  * Returns a URLPattern given an origin pattern string that has the syntax:
@@ -63,6 +65,7 @@ export interface SkillsWebviewBridgeDelegate {
   onInvokeSkill(skillId: string, skillName: string, skillIcon: string): void;
   onUrlChanged(url: URL): void;
   onCloseDialog(): void;
+  onCloseDialogAndOpenEditor(data: PendingEditorData): void;
   onHandshakeComplete(): void;
   onSendPrompt(prompt: string): void;
 }
@@ -222,6 +225,8 @@ export class SkillsWebviewBridge {
       this.handleOpenUrlMessage(e.data);
     } else if (e.data.type === SKILLS_SEND_PROMPT) {
       this.handleSendPromptMessage(e.data);
+    } else if (e.data.type === SKILLS_OPEN_FULL_PAGE_EDITOR) {
+      this.handleOpenFullPageEditorMessage(e.data);
     }
   }
 
@@ -322,6 +327,44 @@ export class SkillsWebviewBridge {
   private handleSendPromptMessage(data: {prompt: string}) {
     if (data.prompt) {
       this.delegate_.onSendPrompt(data.prompt);
+    }
+  }
+
+  private handleOpenFullPageEditorMessage(data: {
+    url: string,
+    skillIcon: string,
+    skillName: string,
+    skillDescription: string,
+    skillInstructions: string,
+  }) {
+    const urlObj = new URL(data.url, getPrimarySkillsOrigin());
+
+    // Close the dialog and open the editor page.
+    this.delegate_.onCloseDialogAndOpenEditor({
+      name: data.skillName ?? '',
+      description: data.skillDescription ?? '',
+      instructions: data.skillInstructions ?? '',
+      icon: data.skillIcon ?? '',
+      url: urlObj.toString(),
+    });
+  }
+
+  sendSkillDialogInfo(info: {
+    skillIcon?: string,
+    skillName?: string,
+    skillDescription?: string,
+    skillInstructions?: string,
+  }) {
+    if (this.webview_.contentWindow && this.targetOrigin_) {
+      this.webview_.contentWindow.postMessage(
+          {
+            type: SKILLS_DIALOG_INFO_TYPE,
+            skillIcon: info.skillIcon,
+            skillName: info.skillName,
+            skillDescription: info.skillDescription,
+            skillInstructions: info.skillInstructions,
+          },
+          this.targetOrigin_);
     }
   }
 

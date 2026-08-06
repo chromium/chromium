@@ -30,6 +30,10 @@ class MockSkillsDialogDelegate : public SkillsDialogDelegate {
   MOCK_METHOD(void, CloseDialog, (), (override));
   MOCK_METHOD(void, OnSkillSaved, (const std::string& skill_id), (override));
   MOCK_METHOD(void, OnSkillDeleted, (const std::string& skill_id), (override));
+  MOCK_METHOD(BrowserWindowInterface*,
+              GetBrowserWindowInterface,
+              (),
+              (override));
 };
 
 class MockSkillsUiTabController : public SkillsUiTabControllerInterface {
@@ -141,7 +145,7 @@ TEST_F(SkillsPageHandlerV2Test, CloseDialog) {
 
   EXPECT_CALL(mock_delegate, CloseDialog()).Times(1);
 
-  remote_handler->CloseDialog();
+  remote_handler->CloseDialog(nullptr);
   remote_handler.FlushForTesting();
 }
 

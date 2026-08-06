@@ -6,6 +6,7 @@ module skills.mojom;
 
 import "components/skills/public/skill.mojom";
 import "components/skills/public/skill_metrics.mojom";
+import "url/mojom/url.mojom";
 
 // Initial data needed when opening a dialog.
 struct InitialDialogState {
@@ -131,6 +132,16 @@ interface DialogHandler {
 // V2 skills interfaces.
 // ----------------------------------------------------------------------------
 
+// Holds temporary unsaved data for a skill that is transitioning from
+// a dialog to the full page editor.
+struct PendingEditorData {
+  string name;
+  string description;
+  string instructions;
+  string icon;
+  url.mojom.Url url;
+};
+
 // Called from TS side of chrome://skills (Renderer -> Browser).
 interface SkillsPageHandler {
   // Sync necessary cookies to the webview partition.
@@ -150,7 +161,12 @@ interface SkillsPageHandler {
   // Sends a prompt to the side panel.
   SendPrompt(string prompt);
 
-  // Closes the skills dialog.
-  CloseDialog();
+  // Closes the skills dialog. If `data` is provided, it stores it and opens
+  // the full page editor.
+  CloseDialog(PendingEditorData? data);
+
+  // Retrieves pending editor data.
+  GetPendingEditorData() => (PendingEditorData? data);
 };
+
 

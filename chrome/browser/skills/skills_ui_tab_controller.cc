@@ -134,6 +134,10 @@ void SkillsUiTabController::CloseDialog() {
   dialog_widget_->Close();
 }
 
+BrowserWindowInterface* SkillsUiTabController::GetBrowserWindowInterface() {
+  return tab_->GetBrowserWindowInterface();
+}
+
 void SkillsUiTabController::OnWidgetDestroyed(views::Widget* widget) {
   if (dialog_widget_.get() != widget) {
     return;

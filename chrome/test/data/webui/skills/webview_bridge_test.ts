@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import type {PendingEditorData} from 'chrome://skills/skills.mojom-webui.js';
 import {SkillsWebview} from 'chrome://skills/v2/skills_webview.js';
 import type {SkillsWebviewBridgeDelegate} from 'chrome://skills/v2/skills_webview_bridge.js';
 import {SkillsWebviewBridge} from 'chrome://skills/v2/skills_webview_bridge.js';
-import {getChromePathForRemoteUrl, getLoadingStageHistogramName, getPrimarySkillsOrigin, getRemoteUrlForChromePath, getSkillsRemoteUrl, HANDSHAKE_TIMEOUT_MS, HISTOGRAM_HANDSHAKE_RESULT, LoadingStage, SKILLS_HANDSHAKE_ACK, SKILLS_HANDSHAKE_TYPE, SKILLS_INVOKE_SKILL, SKILLS_LOG_METRIC, SKILLS_OPEN_URL, SKILLS_SEND_PROMPT, SKILLS_SHOW_TOAST, SKILLS_TOAST_CLOSED_TYPE, SKILLS_UNDO_TYPE} from 'chrome://skills/v2/skills_webview_bridge_constants.js';
+import {getChromePathForRemoteUrl, getLoadingStageHistogramName, getPrimarySkillsOrigin, getRemoteUrlForChromePath, getSkillsRemoteUrl, HANDSHAKE_TIMEOUT_MS, HISTOGRAM_HANDSHAKE_RESULT, LoadingStage, SKILLS_DIALOG_INFO_TYPE, SKILLS_HANDSHAKE_ACK, SKILLS_HANDSHAKE_TYPE, SKILLS_INVOKE_SKILL, SKILLS_LOG_METRIC, SKILLS_OPEN_FULL_PAGE_EDITOR, SKILLS_OPEN_URL, SKILLS_SEND_PROMPT, SKILLS_SHOW_TOAST, SKILLS_TOAST_CLOSED_TYPE, SKILLS_UNDO_TYPE} from 'chrome://skills/v2/skills_webview_bridge_constants.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 
@@ -37,6 +38,7 @@ suite('SkillsWebviewBridgeTest', () => {
       onInvokeSkill: () => {},
       onUrlChanged: () => {},
       onCloseDialog: () => {},
+      onCloseDialogAndOpenEditor: (_data: PendingEditorData) => {},
       onHandshakeComplete: () => {},
       onSendPrompt: (_prompt: string) => {},
       ...overrides,
@@ -643,5 +645,75 @@ suite('SkillsWebviewBridgeTest', () => {
     window.dispatchEvent(promptEvent);
 
     assertEquals('test prompt content', receivedPrompt);
+  });
+
+  test('HostReceivesOpenFullPageEditorMessage', () => {
+    let receivedData: PendingEditorData = {
+      name: '',
+      description: '',
+      instructions: '',
+      icon: '',
+      url: '',
+    };
+    const delegate = createMockDelegate({
+      onCloseDialogAndOpenEditor: (data: PendingEditorData) => {
+        receivedData = data;
+      },
+    });
+    bridge = new SkillsWebviewBridge(webview, delegate);
+
+    establishHandshake();
+
+    // Send open-full-page-editor message.
+    sendMockMessage({
+      type: SKILLS_OPEN_FULL_PAGE_EDITOR,
+      url: '/chromeskills/yourSkills',
+      skillName: 'test name',
+      skillDescription: 'test description',
+      skillInstructions: 'test instructions',
+      skillIcon: 'test icon',
+    });
+
+    assertEquals('test name', receivedData.name);
+    assertEquals('test description', receivedData.description);
+    assertEquals('test instructions', receivedData.instructions);
+    assertEquals('test icon', receivedData.icon);
+    assertEquals(getRemoteUrlForChromePath('/yourSkills'), receivedData.url);
+  });
+
+  test('SendSkillDialogInfo', async () => {
+    const delegate = createMockDelegate();
+    bridge = new SkillsWebviewBridge(webview, delegate);
+
+    establishHandshake();
+
+    interface DialogInfoMessage {
+      type?: string;
+      skillName?: string;
+      skillDescription?: string;
+      skillInstructions?: string;
+      skillIcon?: string;
+    }
+
+    const infoPromise = new Promise<DialogInfoMessage>(resolve => {
+      onPostMessage = (message) => {
+        if (message.type === SKILLS_DIALOG_INFO_TYPE) {
+          resolve(message as unknown as DialogInfoMessage);
+        }
+      };
+    });
+
+    bridge.sendSkillDialogInfo({
+      skillName: 'test name',
+      skillDescription: 'test description',
+      skillInstructions: 'test instructions',
+      skillIcon: 'test icon',
+    });
+
+    const msg = await infoPromise;
+    assertEquals('test name', msg.skillName);
+    assertEquals('test description', msg.skillDescription);
+    assertEquals('test instructions', msg.skillInstructions);
+    assertEquals('test icon', msg.skillIcon);
   });
 });
