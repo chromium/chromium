@@ -396,6 +396,14 @@ AXNode* AXTreeManager::GetParentNodeFromParentTree() const {
   return parent_node;
 }
 
+AXNode* AXTreeManager::GetUnignoredParentNodeFromParentTree() const {
+  AXNode* parent_node = GetParentNodeFromParentTree();
+  if (parent_node && parent_node->IsIgnored()) {
+    return parent_node->GetUnignoredParent();
+  }
+  return parent_node;
+}
+
 void AXTreeManager::ParentConnectionChanged(AXNode* parent) {
   if (!parent) {
     connected_to_parent_tree_node_ = false;

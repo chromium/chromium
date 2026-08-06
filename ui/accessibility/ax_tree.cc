@@ -802,6 +802,18 @@ void AXTree::SetFocusedNodeShouldNeverBeIgnored() {
 }
 
 // static
+bool AXTree::MightBeIgnoredChildTreeHost(const AXNodeData& node_data) {
+  // `ComputeNodeIsIgnored` reads the focus as well, but the focus can only
+  // make a node unignored. This test is thus never false for a node that
+  // `AXNode::IsIgnored` reports as ignored.
+  return node_data.HasStringAttribute(
+             ax::mojom::StringAttribute::kChildTreeId) &&
+         (node_data.HasState(ax::mojom::State::kIgnored) ||
+          node_data.role == ax::mojom::Role::kNone ||
+          node_data.role == ax::mojom::Role::kRowGroup);
+}
+
+// static
 bool AXTree::ComputeNodeIsIgnored(const AXTreeData* optional_tree_data,
                                   const AXNodeData& node_data) {
   // A node with an ARIA presentational role (role="none") should also be
@@ -2421,6 +2433,16 @@ void AXTree::UpdateReverseRelations(AXNode* node,
         map[new_relation_target_id].insert(id);
       }
     }
+  }
+
+  // Update the set of nodes that could be ignored and host a child tree. The
+  // ignored state and the child tree ID can each change on their own, thus
+  // both need a check here. A node that goes away arrives here with empty
+  // data, which takes it out of the set.
+  if (MightBeIgnoredChildTreeHost(new_data)) {
+    ignored_child_tree_host_ids_.insert(id);
+  } else if (!is_new_node && MightBeIgnoredChildTreeHost(old_data)) {
+    ignored_child_tree_host_ids_.erase(id);
   }
 
   // Update child tree id reverse map.

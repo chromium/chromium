@@ -102,10 +102,15 @@ size_t AXNode::GetUnignoredChildCountCrossingTreeBoundary() const {
     DCHECK_EQ(unignored_child_count_, 0u)
         << "A node cannot be hosting both a child tree and other nodes as "
            "children.";
-    return 1u;  // A child tree is never ignored.
+    // The root of a child tree is never ignored, thus the hosted tree always
+    // counts as one unignored child, whether or not its host is ignored.
+    return 1u;
   }
 
-  return unignored_child_count_;
+  // Each hosted tree takes the place of the ignored node that hosts it, which
+  // the cache cannot hold, because a tree connects and disconnects without a
+  // change to the data of its host.
+  return unignored_child_count_ + GetConnectedIgnoredChildTreeHostCount();
 }
 
 AXNode* AXNode::GetChildAtIndex(size_t index) const {
@@ -155,11 +160,25 @@ AXNode* AXNode::GetUnignoredChildAtIndexCrossingTreeBoundary(
     DCHECK_EQ(index, 0u)
         << "A node cannot be hosting both a child tree and other nodes as "
            "children.";
-    // A child tree is never ignored.
+    // The root of a child tree is never ignored, thus it is the only unignored
+    // child, whether or not its host is ignored.
     return child_tree_manager->GetRoot();
   }
 
-  return GetUnignoredChildAtIndex(index);
+  if (GetConnectedIgnoredChildTreeHostCount() == 0u) {
+    return GetUnignoredChildAtIndex(index);
+  }
+
+  for (auto it = UnignoredChildrenCrossingTreeBoundaryBegin(),
+            end = UnignoredChildrenCrossingTreeBoundaryEnd();
+       it != end; ++it) {
+    if (index == 0) {
+      return it.get();
+    }
+    --index;
+  }
+
+  return nullptr;
 }
 
 AXNode* AXNode::GetParent() const {
@@ -190,8 +209,9 @@ AXNode* AXNode::GetUnignoredParentCrossingTreeBoundary() const {
   AXNode* unignored_parent = GetUnignoredParent();
   if (!unignored_parent) {
     const AXTreeManager* manager = GetManager();
-    if (manager)
-      unignored_parent = manager->GetParentNodeFromParentTree();
+    if (manager) {
+      unignored_parent = manager->GetUnignoredParentNodeFromParentTree();
+    }
   }
   return unignored_parent;
 }
@@ -226,6 +246,27 @@ size_t AXNode::GetUnignoredIndexInParent() const {
   return unignored_index_in_parent_;
 }
 
+size_t AXNode::GetUnignoredIndexInParentCrossingTreeBoundary() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
+  // This node takes the place of its host, which is ignored and thus holds no
+  // index of its own. The host also lives in another tree, thus this test
+  // comes before the one that reads this tree.
+  if (GetIgnoredChildTreeHost()) {
+    return ComputeUnignoredIndexInParentCrossingTreeBoundary();
+  }
+
+  // A hosted tree that stands among the same unignored children moves this
+  // node by one place, which the cache does not hold.
+  if (tree_->HasIgnoredChildTreeHosts()) {
+    AXNode* parent = GetUnignoredParent();
+    if (parent && parent->GetConnectedIgnoredChildTreeHostCount() > 0u) {
+      return ComputeUnignoredIndexInParentCrossingTreeBoundary();
+    }
+  }
+
+  return GetUnignoredIndexInParent();
+}
+
 AXNode* AXNode::GetFirstChild() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   return GetChildAtIndex(0);
@@ -238,7 +279,7 @@ AXNode* AXNode::GetFirstChildCrossingTreeBoundary() const {
 
 AXNode* AXNode::GetFirstUnignoredChild() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
-  return ComputeFirstUnignoredChildRecursive();
+  return ComputeFirstUnignoredChildRecursive(/*crossing=*/false);
 }
 
 AXNode* AXNode::GetFirstUnignoredChildCrossingTreeBoundary() const {
@@ -248,7 +289,7 @@ AXNode* AXNode::GetFirstUnignoredChildCrossingTreeBoundary() const {
   if (child_tree_manager)
     return child_tree_manager->GetRoot();
 
-  return ComputeFirstUnignoredChildRecursive();
+  return ComputeFirstUnignoredChildRecursive(/*crossing=*/true);
 }
 
 AXNode* AXNode::GetLastChild() const {
@@ -269,7 +310,7 @@ AXNode* AXNode::GetLastChildCrossingTreeBoundary() const {
 
 AXNode* AXNode::GetLastUnignoredChild() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
-  return ComputeLastUnignoredChildRecursive();
+  return ComputeLastUnignoredChildRecursive(/*crossing=*/false);
 }
 
 AXNode* AXNode::GetLastUnignoredChildCrossingTreeBoundary() const {
@@ -279,7 +320,7 @@ AXNode* AXNode::GetLastUnignoredChildCrossingTreeBoundary() const {
   if (child_tree_manager)
     return child_tree_manager->GetRoot();
 
-  return ComputeLastUnignoredChildRecursive();
+  return ComputeLastUnignoredChildRecursive(/*crossing=*/true);
 }
 
 AXNode* AXNode::GetDeepestFirstDescendant() const {
@@ -469,6 +510,10 @@ AXNode* AXNode::GetNextSibling() const {
 //    2 <-- [5] --> 4
 //    5 <-- [4] --> null
 AXNode* AXNode::GetNextUnignoredSibling() const {
+  return ComputeNextUnignoredSibling(/*crossing=*/false);
+}
+
+AXNode* AXNode::ComputeNextUnignoredSibling(bool crossing) const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   const AXNode* current = this;
 
@@ -482,13 +527,21 @@ AXNode* AXNode::GetNextUnignoredSibling() const {
     AXNode* candidate;
 
     if (considerChildren && (candidate = current->GetFirstChild())) {
-      if (!candidate->IsIgnored())
+      if (!candidate->IsIgnored()) {
         return candidate;
+      }
+      if (crossing && candidate->IsIgnoredChildTreeHost()) {
+        return candidate->GetHostedChildTreeRoot();
+      }
       current = candidate;
 
     } else if ((candidate = current->GetNextSibling())) {
-      if (!candidate->IsIgnored())
+      if (!candidate->IsIgnored()) {
         return candidate;
+      }
+      if (crossing && candidate->IsIgnoredChildTreeHost()) {
+        return candidate->GetHostedChildTreeRoot();
+      }
       current = candidate;
       // Look through the ignored candidate node to consider their children as
       // though they were siblings.
@@ -548,6 +601,10 @@ AXNode* AXNode::GetPreviousSibling() const {
 //
 // See the documentation for |GetNextUnignoredSibling| for more details.
 AXNode* AXNode::GetPreviousUnignoredSibling() const {
+  return ComputePreviousUnignoredSibling(/*crossing=*/false);
+}
+
+AXNode* AXNode::ComputePreviousUnignoredSibling(bool crossing) const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   const AXNode* current = this;
 
@@ -561,13 +618,21 @@ AXNode* AXNode::GetPreviousUnignoredSibling() const {
     AXNode* candidate;
 
     if (considerChildren && (candidate = current->GetLastChild())) {
-      if (!candidate->IsIgnored())
+      if (!candidate->IsIgnored()) {
         return candidate;
+      }
+      if (crossing && candidate->IsIgnoredChildTreeHost()) {
+        return candidate->GetHostedChildTreeRoot();
+      }
       current = candidate;
 
     } else if ((candidate = current->GetPreviousSibling())) {
-      if (!candidate->IsIgnored())
+      if (!candidate->IsIgnored()) {
         return candidate;
+      }
+      if (crossing && candidate->IsIgnoredChildTreeHost()) {
+        return candidate->GetHostedChildTreeRoot();
+      }
       current = candidate;
       // Look through the ignored candidate node to consider their children as
       // though they were siblings.
@@ -605,6 +670,26 @@ AXNode* AXNode::GetPreviousUnignoredSibling() const {
   }
 
   return nullptr;
+}
+
+AXNode* AXNode::GetNextUnignoredSiblingCrossingTreeBoundary() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
+  // This node takes the place of its host, thus it walks from the host.
+  const AXNode* start = this;
+  if (AXNode* host = GetIgnoredChildTreeHost()) {
+    start = host;
+  }
+  return start->ComputeNextUnignoredSibling(/*crossing=*/true);
+}
+
+AXNode* AXNode::GetPreviousUnignoredSiblingCrossingTreeBoundary() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
+  // This node takes the place of its host, thus it walks from the host.
+  const AXNode* start = this;
+  if (AXNode* host = GetIgnoredChildTreeHost()) {
+    start = host;
+  }
+  return start->ComputePreviousUnignoredSibling(/*crossing=*/true);
 }
 
 AXNode* AXNode::GetNextUnignoredInTreeOrder() const {
@@ -2047,7 +2132,7 @@ bool AXNode::IsView() const {
   return manager->IsView();
 }
 
-AXNode* AXNode::ComputeLastUnignoredChildRecursive() const {
+AXNode* AXNode::ComputeLastUnignoredChildRecursive(bool crossing) const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   if (children().empty())
     return nullptr;
@@ -2057,25 +2142,117 @@ AXNode* AXNode::ComputeLastUnignoredChildRecursive() const {
     if (!child->IsIgnored())
       return child;
 
-    AXNode* descendant = child->ComputeLastUnignoredChildRecursive();
+    if (crossing && child->IsIgnoredChildTreeHost()) {
+      return child->GetHostedChildTreeRoot();
+    }
+
+    AXNode* descendant = child->ComputeLastUnignoredChildRecursive(crossing);
     if (descendant)
       return descendant;
   }
   return nullptr;
 }
 
-AXNode* AXNode::ComputeFirstUnignoredChildRecursive() const {
+AXNode* AXNode::ComputeFirstUnignoredChildRecursive(bool crossing) const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   for (size_t i = 0; i < children().size(); i++) {
     AXNode* child = children_[i];
     if (!child->IsIgnored())
       return child;
 
-    AXNode* descendant = child->ComputeFirstUnignoredChildRecursive();
+    if (crossing && child->IsIgnoredChildTreeHost()) {
+      return child->GetHostedChildTreeRoot();
+    }
+
+    AXNode* descendant = child->ComputeFirstUnignoredChildRecursive(crossing);
     if (descendant)
       return descendant;
   }
   return nullptr;
+}
+
+bool AXNode::IsIgnoredChildTreeHost() const {
+  if (!IsIgnored() || !GetHostedChildTreeManager()) {
+    return false;
+  }
+
+  // `GetIgnoredChildTreeHost` finds a host from the hosted tree, which does not
+  // read this set. A host that the set lacks would thus hide the tree that it
+  // hosts from the accessors that count on the set.
+  DCHECK(tree_->ignored_child_tree_host_ids().contains(id()))
+      << "The tree must know each of its hosts: " << *this;
+  return true;
+}
+
+AXTreeManager* AXNode::GetHostedChildTreeManager() const {
+  // `AXTreeManager::ForChildTree` also asks the hosted tree which node hosts
+  // it. A tree cannot answer that question while an update is in flight, and
+  // the callers here examine nodes other than the one that they were asked
+  // about. This function thus takes the manager without the question.
+  const std::string& child_tree_id =
+      GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId);
+  if (child_tree_id.empty()) {
+    return nullptr;
+  }
+  return AXTreeManager::FromID(AXTreeID::FromString(child_tree_id));
+}
+
+AXNode* AXNode::GetHostedChildTreeRoot() const {
+  const AXTreeManager* child_tree_manager = GetHostedChildTreeManager();
+  if (!child_tree_manager) {
+    return nullptr;
+  }
+
+  AXNode* root = child_tree_manager->GetRoot();
+  // The root of a child tree is never ignored. A walk over the unignored nodes
+  // can therefore stop at this root, instead of looking below it.
+  DCHECK(!root || !root->IsIgnored())
+      << "The root of a child tree must not be ignored: " << *root;
+  return root;
+}
+
+AXNode* AXNode::GetIgnoredChildTreeHost() const {
+  if (GetParent()) {
+    return nullptr;
+  }
+  const AXTreeManager* manager = GetManager();
+  if (!manager) {
+    return nullptr;
+  }
+  AXNode* host = manager->GetParentNodeFromParentTree();
+  return host && host->IsIgnoredChildTreeHost() ? host : nullptr;
+}
+
+size_t AXNode::GetConnectedIgnoredChildTreeHostCount() const {
+  // A hosted tree joins the unignored children of the nearest unignored
+  // ancestor of its host. Each host is thus found from the small set that the
+  // tree keeps, instead of from a walk over the ignored nodes below this one.
+  size_t count = 0;
+  for (AXNodeID host_id : tree_->ignored_child_tree_host_ids()) {
+    AXNode* host = tree_->GetFromId(host_id);
+    if (host && host->IsIgnoredChildTreeHost() &&
+        host->GetUnignoredParent() == this) {
+      ++count;
+    }
+  }
+  return count;
+}
+
+size_t AXNode::ComputeUnignoredIndexInParentCrossingTreeBoundary() const {
+  AXNode* parent = GetUnignoredParentCrossingTreeBoundary();
+  if (!parent) {
+    return 0u;
+  }
+
+  size_t index = 0;
+  for (auto it = parent->UnignoredChildrenCrossingTreeBoundaryBegin(),
+            end = parent->UnignoredChildrenCrossingTreeBoundaryEnd();
+       it != end; ++it, ++index) {
+    if (it.get() == this) {
+      return index;
+    }
+  }
+  return 0u;
 }
 
 std::optional<std::string> AXNode::GetAriaValueTextOrValue() const {

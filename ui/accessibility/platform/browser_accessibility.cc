@@ -144,7 +144,11 @@ void BrowserAccessibility::OnDataChanged() {
 }
 
 bool BrowserAccessibility::ShouldHavePlatformNode() const {
-  return true;
+  // A hosted tree takes the place of its host, thus no platform API can reach
+  // that host. Whether the tree is connected does not matter here: the host is
+  // ignored either way, and a platform node that came and went with another
+  // tree would make an event fire on a node that no client can reach.
+  return !(node()->IsIgnored() && node()->data().HasChildTreeID());
 }
 
 bool BrowserAccessibility::CanFireEvents() const {
@@ -218,10 +222,12 @@ BrowserAccessibility* BrowserAccessibility::PlatformGetNextSibling() const {
   // On some platforms, we rely on extra announcement nodes to support aria
   // notify.
   BrowserAccessibility* parent = PlatformGetParent();
-  size_t next_child_index = node()->GetUnignoredIndexInParent() + 1;
+  size_t next_child_index =
+      node()->GetUnignoredIndexInParentCrossingTreeBoundary() + 1;
   if (!manager()->TreeHasExtraAnnouncementNodes() || !parent ||
       next_child_index < parent->InternalChildCount()) {
-    return InternalGetNextSibling();
+    return manager()->GetFromAXNode(
+        node()->GetNextUnignoredSiblingCrossingTreeBoundary());
   }
 
   // The InternalChildCount() will not include extra announcement nodes, but
@@ -238,10 +244,11 @@ BrowserAccessibility* BrowserAccessibility::PlatformGetPreviousSibling() const {
   // On some platforms, we rely on extra announcement nodes to support aria
   // notify.
   BrowserAccessibility* parent = PlatformGetParent();
-  size_t child_index = node()->GetUnignoredIndexInParent();
+  size_t child_index = node()->GetUnignoredIndexInParentCrossingTreeBoundary();
   if (!manager()->TreeHasExtraAnnouncementNodes() || !parent ||
       child_index < parent->InternalChildCount()) {
-    return InternalGetPreviousSibling();
+    return manager()->GetFromAXNode(
+        node()->GetPreviousUnignoredSiblingCrossingTreeBoundary());
   }
 
   // The InternalChildCount() will not include extra announcement nodes, but
@@ -1281,7 +1288,7 @@ std::optional<size_t> BrowserAccessibility::GetIndexInParent() const {
     // index at AXPlatformNodeBase.
     return std::nullopt;
   }
-  return node()->GetUnignoredIndexInParent();
+  return node()->GetUnignoredIndexInParentCrossingTreeBoundary();
 }
 
 gfx::AcceleratedWidget

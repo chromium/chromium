@@ -112,7 +112,8 @@ BrowserAccessibility* BrowserAccessibilityIOS::PlatformGetLastChild() const {
 BrowserAccessibility* BrowserAccessibilityIOS::PlatformGetNextSibling() const {
   BrowserAccessibility* parent = PlatformGetParent();
   if (parent) {
-    size_t next_child_index = node()->GetUnignoredIndexInParent() + 1;
+    size_t next_child_index =
+        node()->GetUnignoredIndexInParentCrossingTreeBoundary() + 1;
     if (next_child_index >= parent->InternalChildCount() &&
         next_child_index < parent->PlatformChildCount()) {
       // Get the extra_mac_node.
@@ -128,7 +129,8 @@ BrowserAccessibility* BrowserAccessibilityIOS::PlatformGetPreviousSibling()
     const {
   BrowserAccessibility* parent = PlatformGetParent();
   if (parent) {
-    size_t child_index = node()->GetUnignoredIndexInParent();
+    size_t child_index =
+        node()->GetUnignoredIndexInParentCrossingTreeBoundary();
     if (child_index > parent->InternalChildCount() &&
         child_index <= parent->PlatformChildCount()) {
       // Get the extra_mac_node.

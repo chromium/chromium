@@ -26,6 +26,7 @@
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/accessibility/platform/browser_accessibility_manager_mac.h"
 #include "ui/accessibility/platform/test_ax_node_id_delegate.h"
+#include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
 #include "ui/accessibility/test_ax_tree_update.h"
 #import "ui/base/test/cocoa_helper.h"
 
@@ -192,7 +193,8 @@ class BrowserAccessibilityPlatformNodeMacTest : public CocoaTest {
   const base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
-TEST_F(BrowserAccessibilityPlatformNodeMacTest, ANodeOwnsAPlatformNodeByDefault) {
+TEST_F(BrowserAccessibilityPlatformNodeMacTest,
+       ANodeOwnsAPlatformNodeByDefault) {
   std::unique_ptr<TogglablePlatformNodeBrowserAccessibilityMac> node =
       MakeNode();
 
@@ -210,7 +212,8 @@ TEST_F(BrowserAccessibilityPlatformNodeMacTest, ANodeCanOwnNoPlatformNode) {
   EXPECT_FALSE(node->GetNativeViewAccessible());
 }
 
-TEST_F(BrowserAccessibilityPlatformNodeMacTest, EveryAccessorIsSafeWithNoPlatformNode) {
+TEST_F(BrowserAccessibilityPlatformNodeMacTest,
+       EveryAccessorIsSafeWithNoPlatformNode) {
   std::unique_ptr<TogglablePlatformNodeBrowserAccessibilityMac> node =
       MakeNode();
   node->SetShouldHavePlatformNode(false);
@@ -247,7 +250,8 @@ TEST_F(BrowserAccessibilityPlatformNodeMacTest, RepeatedChangesAreSafe) {
   }
 }
 
-TEST_F(BrowserAccessibilityPlatformNodeMacTest, RepeatedUpdatesKeepOnePlatformNode) {
+TEST_F(BrowserAccessibilityPlatformNodeMacTest,
+       RepeatedUpdatesKeepOnePlatformNode) {
   std::unique_ptr<TogglablePlatformNodeBrowserAccessibilityMac> node =
       MakeNode();
   AXPlatformNode* first = node->GetAXPlatformNode();
@@ -257,7 +261,6 @@ TEST_F(BrowserAccessibilityPlatformNodeMacTest, RepeatedUpdatesKeepOnePlatformNo
 
   EXPECT_EQ(first, node->GetAXPlatformNode());
 }
-
 
 class BrowserAccessibilityMacTest : public CocoaTest {
  public:
@@ -304,8 +307,9 @@ class BrowserAccessibilityMacTest : public CocoaTest {
   }
 
   void SetRootValue(std::string value) {
-    if (!manager_)
+    if (!manager_) {
       return;
+    }
     root_.SetValue(value);
     AXUpdatesAndEvents event_bundle;
     event_bundle.updates.resize(1);
@@ -1136,6 +1140,225 @@ TEST_F(BrowserAccessibilityMacTest,
   NSRange visibleRange = [accessibility_ accessibilityVisibleCharacterRange];
   EXPECT_EQ(visibleRange.location, 0U);
   EXPECT_EQ(visibleRange.length, 11U);
+}
+
+// A Views-sourced tree whose WebView node hosts the web content child tree.
+class BrowserAccessibilityMacWebViewHostTest : public CocoaTest {
+ public:
+  void SetUp() override {
+    CocoaTest::SetUp();
+
+    AXNodeData child_tree_root;
+    child_tree_root.id = 1;
+    child_tree_root.role = ax::mojom::Role::kRootWebArea;
+    child_tree_root.relative_bounds.bounds = gfx::RectF(100, 0, 100, 100);
+    AXTreeUpdate child_tree_update =
+        MakeAXTreeUpdateForTesting(child_tree_root);
+
+    AXNodeData views_root;
+    views_root.id = 1;
+    views_root.role = ax::mojom::Role::kWindow;
+    views_root.relative_bounds.bounds = gfx::RectF(0, 0, 200, 100);
+    views_root.child_ids = {2, 3};
+
+    AXNodeData toolbar;
+    toolbar.id = 2;
+    toolbar.role = ax::mojom::Role::kToolbar;
+    toolbar.relative_bounds.bounds = gfx::RectF(0, 0, 100, 100);
+
+    AXNodeData web_view;
+    web_view.id = 3;
+    web_view.role = ax::mojom::Role::kWebView;
+    web_view.relative_bounds.bounds = gfx::RectF(100, 0, 100, 100);
+    web_view.AddChildTreeId(child_tree_update.tree_data.tree_id);
+    web_view.AddState(ax::mojom::State::kIgnored);
+
+    AXTreeUpdate views_update =
+        MakeAXTreeUpdateForTesting(views_root, toolbar, web_view);
+
+    child_tree_update.tree_data.parent_tree_id = views_update.tree_data.tree_id;
+    child_tree_update_ = child_tree_update;
+
+    views_delegate_.is_web_content_source_ = false;
+    views_manager_ = std::make_unique<BrowserAccessibilityManagerMac>(
+        views_update, node_id_delegate_, &views_delegate_);
+    web_delegate_.is_root_frame_ = false;
+    ConnectTheBridge();
+  }
+
+  void TearDown() override {
+    web_manager_.reset();
+    views_manager_.reset();
+    CocoaTest::TearDown();
+  }
+
+ protected:
+  BrowserAccessibility* ViewsRoot() const {
+    return views_manager_->GetBrowserAccessibilityRoot();
+  }
+  BrowserAccessibility* WebRoot() const {
+    return web_manager_->GetBrowserAccessibilityRoot();
+  }
+  BrowserAccessibility* Host() const { return views_manager_->GetFromID(3); }
+
+  void SeverTheBridge() {
+    AXNodeData severed = Host()->GetData();
+    severed.RemoveStringAttribute(ax::mojom::StringAttribute::kChildTreeId);
+    severed.RemoveState(ax::mojom::State::kIgnored);
+    AXTreeUpdate update;
+    update.nodes.push_back(severed);
+    ASSERT_TRUE(views_manager_->ax_tree()->Unserialize(update));
+  }
+
+  void RestoreTheBridge() {
+    AXNodeData restored = Host()->GetData();
+    restored.AddChildTreeId(child_tree_update_.tree_data.tree_id);
+    restored.AddState(ax::mojom::State::kIgnored);
+    AXTreeUpdate update;
+    update.nodes.push_back(restored);
+    ASSERT_TRUE(views_manager_->ax_tree()->Unserialize(update));
+  }
+
+  // Brings up the hosted tree the way the renderer does: the manager is
+  // created, then its first event batch establishes the parent connection and
+  // tells the host about it.
+  void ConnectTheBridge() {
+    web_manager_ = std::make_unique<BrowserAccessibilityManagerMac>(
+        child_tree_update_, node_id_delegate_, &web_delegate_);
+    AXUpdatesAndEvents bundle;
+    bundle.updates.resize(1);
+    bundle.updates[0].nodes.push_back(WebRoot()->GetData());
+    ASSERT_TRUE(web_manager_->OnAccessibilityEvents(bundle));
+  }
+
+  BrowserAccessibilityCocoa* CocoaNode(BrowserAccessibility* node) const {
+    return base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+        node->GetNativeViewAccessible().Get());
+  }
+
+  TestAXNodeIdDelegate node_id_delegate_;
+  TestAXPlatformTreeManagerDelegate views_delegate_;
+  TestAXPlatformTreeManagerDelegate web_delegate_;
+  AXTreeUpdate child_tree_update_;
+  std::unique_ptr<BrowserAccessibilityManager> views_manager_;
+  std::unique_ptr<BrowserAccessibilityManager> web_manager_;
+
+  const base::test::SingleThreadTaskEnvironment task_environment_;
+};
+
+TEST_F(BrowserAccessibilityMacWebViewHostTest, HostIsNotInThePlatformTree) {
+  EXPECT_EQ(2u, ViewsRoot()->PlatformChildCount());
+  EXPECT_EQ(WebRoot(), ViewsRoot()->PlatformGetChild(1));
+  EXPECT_EQ(WebRoot(), ViewsRoot()->PlatformGetLastChild());
+}
+
+TEST_F(BrowserAccessibilityMacWebViewHostTest, HostedRootFollowsTheToolbar) {
+  BrowserAccessibility* toolbar = views_manager_->GetFromID(2);
+  EXPECT_EQ(WebRoot(), toolbar->PlatformGetNextSibling());
+}
+
+TEST_F(BrowserAccessibilityMacWebViewHostTest,
+       IgnoredHostWithNoHostedTreeIsNotExposed) {
+  web_manager_.reset();
+
+  EXPECT_EQ(1u, ViewsRoot()->PlatformChildCount());
+}
+
+TEST_F(BrowserAccessibilityMacWebViewHostTest, SeveredHostIsExposedAgain) {
+  web_manager_.reset();
+  SeverTheBridge();
+
+  EXPECT_EQ(Host(), ViewsRoot()->PlatformGetChild(1));
+  EXPECT_EQ(ViewsRoot(), Host()->PlatformGetParent());
+}
+
+TEST_F(BrowserAccessibilityMacWebViewHostTest,
+       HostedRootWalksBackToTheToolbar) {
+  BrowserAccessibility* toolbar = views_manager_->GetFromID(2);
+
+  EXPECT_EQ(WebRoot(), toolbar->PlatformGetNextSibling());
+  EXPECT_EQ(toolbar, WebRoot()->PlatformGetPreviousSibling());
+}
+
+TEST_F(BrowserAccessibilityMacWebViewHostTest,
+       HostedRootTakesTheIndexOfItsHost) {
+  BrowserAccessibility* toolbar = views_manager_->GetFromID(2);
+
+  EXPECT_EQ(0u, toolbar->GetIndexInParent());
+  EXPECT_EQ(1u, WebRoot()->GetIndexInParent());
+}
+
+TEST_F(BrowserAccessibilityMacWebViewHostTest,
+       TreeOrderCrossesTheHostBothWays) {
+  BrowserAccessibility* toolbar = views_manager_->GetFromID(2);
+
+  EXPECT_EQ(WebRoot(), BrowserAccessibilityManager::NextInTreeOrder(toolbar));
+  EXPECT_EQ(toolbar, BrowserAccessibilityManager::PreviousInTreeOrder(
+                         WebRoot(), /*can_wrap_to_last_element=*/false));
+}
+
+TEST_F(BrowserAccessibilityMacWebViewHostTest, CocoaTreeSkipsTheHost) {
+  BrowserAccessibilityCocoa* views_root = CocoaNode(ViewsRoot());
+  BrowserAccessibilityCocoa* web_root = CocoaNode(WebRoot());
+
+  EXPECT_NSEQ(web_root, [views_root accessibilityChildren].lastObject);
+  EXPECT_EQ(2u, [[views_root accessibilityChildren] count]);
+}
+
+TEST_F(BrowserAccessibilityMacWebViewHostTest, ConnectedHostHasNoPlatformNode) {
+  EXPECT_FALSE(Host()->GetAXPlatformNode());
+  EXPECT_FALSE(Host()->GetNativeViewAccessible());
+}
+
+TEST_F(BrowserAccessibilityMacWebViewHostTest,
+       EveryPlatformChildHasANativeObject) {
+  for (size_t i = 0; i < ViewsRoot()->PlatformChildCount(); ++i) {
+    EXPECT_TRUE(ViewsRoot()->PlatformGetChild(i)->GetNativeViewAccessible())
+        << "platform child " << i;
+  }
+}
+
+TEST_F(BrowserAccessibilityMacWebViewHostTest, SeveredHostHasAPlatformNode) {
+  SeverTheBridge();
+
+  EXPECT_TRUE(Host()->GetAXPlatformNode());
+  EXPECT_TRUE(Host()->GetNativeViewAccessible());
+}
+
+TEST_F(BrowserAccessibilityMacWebViewHostTest,
+       AHostWithoutAHostedTreeStillOwnsNoPlatformNode) {
+  web_manager_.reset();
+
+  EXPECT_FALSE(Host()->GetAXPlatformNode());
+  EXPECT_FALSE(Host()->GetNativeViewAccessible());
+}
+
+TEST_F(BrowserAccessibilityMacWebViewHostTest,
+       PlatformNodeFollowsRepeatedBridgeTransitions) {
+  for (int i = 0; i < 3; ++i) {
+    SeverTheBridge();
+    ASSERT_TRUE(Host()->GetAXPlatformNode()) << "iteration " << i;
+    ASSERT_EQ(Host(), ViewsRoot()->PlatformGetChild(1)) << "iteration " << i;
+
+    RestoreTheBridge();
+    ASSERT_FALSE(Host()->GetAXPlatformNode()) << "iteration " << i;
+    ASSERT_EQ(WebRoot(), ViewsRoot()->PlatformGetChild(1)) << "iteration " << i;
+  }
+}
+
+TEST_F(BrowserAccessibilityMacWebViewHostTest,
+       NoPlatformNodeAcrossHostedTreeTransitions) {
+  // The host keeps its child tree ID here, thus it stays ignored and owns no
+  // platform node. Only the tree that takes its place comes and goes.
+  for (int i = 0; i < 3; ++i) {
+    web_manager_.reset();
+    ASSERT_FALSE(Host()->GetAXPlatformNode()) << "iteration " << i;
+    ASSERT_EQ(1u, ViewsRoot()->PlatformChildCount()) << "iteration " << i;
+
+    ConnectTheBridge();
+    ASSERT_FALSE(Host()->GetAXPlatformNode()) << "iteration " << i;
+    ASSERT_EQ(WebRoot(), ViewsRoot()->PlatformGetChild(1)) << "iteration " << i;
+  }
 }
 
 namespace {

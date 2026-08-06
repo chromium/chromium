@@ -146,6 +146,7 @@ class AX_EXPORT AXNode final {
   base::stack<AXNode*> GetAncestorsCrossingTreeBoundaryAsStack() const;
   size_t GetIndexInParent() const;
   size_t GetUnignoredIndexInParent() const;
+  size_t GetUnignoredIndexInParentCrossingTreeBoundary() const;
   AXNode* GetFirstChild() const;
   AXNode* GetFirstChildCrossingTreeBoundary() const;
   AXNode* GetFirstUnignoredChild() const;
@@ -166,8 +167,10 @@ class AX_EXPORT AXNode final {
 
   AXNode* GetNextSibling() const;
   AXNode* GetNextUnignoredSibling() const;
+  AXNode* GetNextUnignoredSiblingCrossingTreeBoundary() const;
   AXNode* GetPreviousSibling() const;
   AXNode* GetPreviousUnignoredSibling() const;
+  AXNode* GetPreviousUnignoredSiblingCrossingTreeBoundary() const;
 
   // Traverse the tree in depth-first pre-order.
   AXNode* GetNextUnignoredInTreeOrder() const;
@@ -210,12 +213,12 @@ class AX_EXPORT AXNode final {
   UnignoredChildIterator UnignoredChildrenBegin() const;
   UnignoredChildIterator UnignoredChildrenEnd() const;
 
-  using UnignoredChildCrossingTreeBoundaryIterator =
-      ChildIteratorBase<AXNode,
-                        &AXNode::GetNextUnignoredSibling,
-                        &AXNode::GetPreviousUnignoredSibling,
-                        &AXNode::GetFirstUnignoredChildCrossingTreeBoundary,
-                        &AXNode::GetLastUnignoredChildCrossingTreeBoundary>;
+  using UnignoredChildCrossingTreeBoundaryIterator = ChildIteratorBase<
+      AXNode,
+      &AXNode::GetNextUnignoredSiblingCrossingTreeBoundary,
+      &AXNode::GetPreviousUnignoredSiblingCrossingTreeBoundary,
+      &AXNode::GetFirstUnignoredChildCrossingTreeBoundary,
+      &AXNode::GetLastUnignoredChildCrossingTreeBoundary>;
   UnignoredChildCrossingTreeBoundaryIterator
   UnignoredChildrenCrossingTreeBoundaryBegin() const;
   UnignoredChildCrossingTreeBoundaryIterator
@@ -642,6 +645,14 @@ class AX_EXPORT AXNode final {
   // role. Focused nodes are, by design, not ignored.
   bool IsIgnored() const;
 
+  // Returns true if this node is ignored and hosts a connected child tree.
+  //
+  // Such a node is transparent, like every other ignored node. The accessors
+  // that cross the tree boundary put the root of the hosted tree in its place
+  // among the unignored children of its parent. The accessors that stay in
+  // this tree do not see the host or the tree that it hosts.
+  bool IsIgnoredChildTreeHost() const;
+
   // Some nodes are not ignored but should be skipped during text navigation.
   // For example, on some platforms screen readers should not stop when
   // encountering a splitter during character and word navigation.
@@ -768,8 +779,34 @@ class AX_EXPORT AXNode final {
                             std::vector<AXNode*>* nodes) const;
 
   int UpdateUnignoredCachedValuesRecursive(int start_index);
-  AXNode* ComputeLastUnignoredChildRecursive() const;
-  AXNode* ComputeFirstUnignoredChildRecursive() const;
+  // `crossing` makes a walk give the root of a hosted tree when it meets the
+  // ignored node that hosts it. Without `crossing` such a host is transparent,
+  // like every other ignored node.
+  //
+  // The root of a child tree is never ignored, thus a walk that gives such a
+  // root has found an unignored node and can stop.
+  AXNode* ComputeLastUnignoredChildRecursive(bool crossing) const;
+  AXNode* ComputeFirstUnignoredChildRecursive(bool crossing) const;
+  AXNode* ComputeNextUnignoredSibling(bool crossing) const;
+  AXNode* ComputePreviousUnignoredSibling(bool crossing) const;
+
+  // Returns the manager of the tree that this node hosts, or nullptr.
+  AXTreeManager* GetHostedChildTreeManager() const;
+
+  // Returns the root of the tree that this node hosts, or nullptr. That root
+  // is never ignored.
+  AXNode* GetHostedChildTreeRoot() const;
+
+  // Returns the ignored host whose place this node takes, or nullptr.
+  AXNode* GetIgnoredChildTreeHost() const;
+
+  // Returns the number of hosted trees that stand among the unignored children
+  // of this node. Each one takes the place of the ignored node that hosts it.
+  size_t GetConnectedIgnoredChildTreeHostCount() const;
+
+  // Returns the position of this node among the unignored children of its
+  // parent, counting the hosted trees.
+  size_t ComputeUnignoredIndexInParentCrossingTreeBoundary() const;
 
   // Returns the value of a range control such as a slider or a scroll bar in
   // text format.

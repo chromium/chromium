@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_updates_and_events.h"
 #include "ui/accessibility/platform/ax_fragment_root_delegate_win.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
@@ -277,6 +278,145 @@ TEST_F(BrowserAccessibilityManagerWinTest,
             UIA_ToggleToggleStatePropertyId);
 }
 
+// A Views-sourced tree whose WebView node bridges to the web content tree must
+// expose the hosted RootWebArea in its own place, so UIA and MSAA/IA2 see the
+// same nodes they saw before ViewsAX.
+TEST_F(BrowserAccessibilityManagerWinTest, WebViewHostIsNotInThePlatformTree) {
+  AXNodeData child_tree_root;
+  child_tree_root.id = 1;
+  child_tree_root.role = ax::mojom::Role::kRootWebArea;
+  AXTreeUpdate child_tree_update = MakeAXTreeUpdateForTesting(child_tree_root);
+
+  AXNodeData views_root;
+  views_root.id = 1;
+  views_root.role = ax::mojom::Role::kWindow;
+  views_root.child_ids = {2, 3};
+
+  AXNodeData toolbar;
+  toolbar.id = 2;
+  toolbar.role = ax::mojom::Role::kToolbar;
+
+  AXNodeData web_view;
+  web_view.id = 3;
+  web_view.role = ax::mojom::Role::kWebView;
+  web_view.AddChildTreeId(child_tree_update.tree_data.tree_id);
+  web_view.AddState(ax::mojom::State::kIgnored);
+
+  AXTreeUpdate views_update =
+      MakeAXTreeUpdateForTesting(views_root, toolbar, web_view);
+  child_tree_update.tree_data.parent_tree_id = views_update.tree_data.tree_id;
+
+  test_browser_accessibility_delegate_->is_web_content_source_ = false;
+  test_browser_accessibility_delegate_->accelerated_widget_ =
+      gfx::kMockAcceleratedWidget;
+  std::unique_ptr<BrowserAccessibilityManager> views_manager(
+      BrowserAccessibilityManager::Create(
+          views_update, node_id_delegate_,
+          test_browser_accessibility_delegate_.get()));
+
+  std::unique_ptr<TestAXPlatformTreeManagerDelegate> web_delegate =
+      std::make_unique<TestAXPlatformTreeManagerDelegate>();
+  web_delegate->is_root_frame_ = false;
+  web_delegate->accelerated_widget_ = gfx::kMockAcceleratedWidget;
+  std::unique_ptr<BrowserAccessibilityManager> web_manager(
+      BrowserAccessibilityManager::Create(child_tree_update, node_id_delegate_,
+                                          web_delegate.get()));
+
+  // The renderer's first event batch is what connects the hosted tree to its
+  // host.
+  AXUpdatesAndEvents bundle;
+  bundle.updates.resize(1);
+  bundle.updates[0].nodes.push_back(child_tree_root);
+  ASSERT_TRUE(web_manager->OnAccessibilityEvents(bundle));
+
+  BrowserAccessibility* views_root_node =
+      views_manager->GetBrowserAccessibilityRoot();
+  BrowserAccessibility* web_root_node =
+      web_manager->GetBrowserAccessibilityRoot();
+  BrowserAccessibility* toolbar_node = views_manager->GetFromID(2);
+
+  EXPECT_EQ(2u, views_root_node->PlatformChildCount());
+  EXPECT_EQ(web_root_node->GetNativeViewAccessible(),
+            views_root_node->ChildAtIndex(1));
+  EXPECT_EQ(web_root_node->GetNativeViewAccessible(),
+            toolbar_node->PlatformGetNextSibling()->GetNativeViewAccessible());
+  EXPECT_EQ(ax::mojom::Role::kRootWebArea,
+            views_root_node->PlatformGetChild(1)->GetRole());
+
+  // The hosted root takes the place of its host, thus it walks back to the
+  // siblings of that host and it reports the index of that host.
+  EXPECT_EQ(toolbar_node, web_root_node->PlatformGetPreviousSibling());
+  EXPECT_EQ(0u, toolbar_node->GetIndexInParent());
+  EXPECT_EQ(1u, web_root_node->GetIndexInParent());
+
+  // The host holds its child tree ID until the WebView clears it, thus it
+  // stays ignored, and the toolbar is the only child that is left.
+  web_manager.reset();
+  EXPECT_EQ(1u, views_root_node->PlatformChildCount());
+}
+
+// An ignored host that holds a child tree ID is unreachable through every
+// platform accessor, thus it owns no platform node. Whether the tree that takes
+// its place is there does not change this.
+TEST_F(BrowserAccessibilityManagerWinTest, WebViewHostOwnsNoPlatformNode) {
+  AXNodeData child_tree_root;
+  child_tree_root.id = 1;
+  child_tree_root.role = ax::mojom::Role::kRootWebArea;
+  AXTreeUpdate child_tree_update = MakeAXTreeUpdateForTesting(child_tree_root);
+
+  AXNodeData views_root;
+  views_root.id = 1;
+  views_root.role = ax::mojom::Role::kWindow;
+  views_root.child_ids = {2};
+
+  AXNodeData web_view;
+  web_view.id = 2;
+  web_view.role = ax::mojom::Role::kWebView;
+  web_view.AddChildTreeId(child_tree_update.tree_data.tree_id);
+  web_view.AddState(ax::mojom::State::kIgnored);
+
+  AXTreeUpdate views_update = MakeAXTreeUpdateForTesting(views_root, web_view);
+  child_tree_update.tree_data.parent_tree_id = views_update.tree_data.tree_id;
+
+  test_browser_accessibility_delegate_->is_web_content_source_ = false;
+  test_browser_accessibility_delegate_->accelerated_widget_ =
+      gfx::kMockAcceleratedWidget;
+  std::unique_ptr<BrowserAccessibilityManager> views_manager(
+      BrowserAccessibilityManager::Create(
+          views_update, node_id_delegate_,
+          test_browser_accessibility_delegate_.get()));
+
+  // The host is ignored and holds a child tree ID from the start, thus it owns
+  // no platform node even before the tree that takes its place arrives.
+  BrowserAccessibility* host_node = views_manager->GetFromID(2);
+  ASSERT_FALSE(host_node->GetAXPlatformNode());
+
+  std::unique_ptr<TestAXPlatformTreeManagerDelegate> web_delegate =
+      std::make_unique<TestAXPlatformTreeManagerDelegate>();
+  web_delegate->is_root_frame_ = false;
+  web_delegate->accelerated_widget_ = gfx::kMockAcceleratedWidget;
+  std::unique_ptr<BrowserAccessibilityManager> web_manager(
+      BrowserAccessibilityManager::Create(child_tree_update, node_id_delegate_,
+                                          web_delegate.get()));
+
+  // The renderer's first event batch is what connects the hosted tree to its
+  // host.
+  AXUpdatesAndEvents bundle;
+  bundle.updates.resize(1);
+  bundle.updates[0].nodes.push_back(child_tree_root);
+  ASSERT_TRUE(web_manager->OnAccessibilityEvents(bundle));
+
+  EXPECT_FALSE(host_node->GetAXPlatformNode());
+  EXPECT_EQ(gfx::NativeViewAccessible(), host_node->GetNativeViewAccessible());
+
+  // The host keeps its child tree ID here, thus it stays ignored and owns no
+  // platform node, whether or not the tree that takes its place is there.
+  web_manager.reset();
+
+  EXPECT_FALSE(host_node->GetAXPlatformNode());
+  EXPECT_EQ(gfx::NativeViewAccessible(), host_node->GetNativeViewAccessible());
+}
+
 namespace {
 
 // Lets a test choose whether a node owns a platform node. See
@@ -337,7 +477,8 @@ class BrowserAccessibilityPlatformNodeWinTest
   std::unique_ptr<BrowserAccessibilityManager> manager_;
 };
 
-TEST_F(BrowserAccessibilityPlatformNodeWinTest, ANodeOwnsAPlatformNodeByDefault) {
+TEST_F(BrowserAccessibilityPlatformNodeWinTest,
+       ANodeOwnsAPlatformNodeByDefault) {
   std::unique_ptr<TogglablePlatformNodeBrowserAccessibilityWin> node =
       MakeNode();
 
@@ -394,7 +535,8 @@ TEST_F(BrowserAccessibilityPlatformNodeWinTest, NoPlatformNodeFiresNoEvent) {
   EXPECT_FALSE(node->CanFireEvents());
 }
 
-TEST_F(BrowserAccessibilityPlatformNodeWinTest, EveryAccessorIsSafeWithNoPlatformNode) {
+TEST_F(BrowserAccessibilityPlatformNodeWinTest,
+       EveryAccessorIsSafeWithNoPlatformNode) {
   std::unique_ptr<TogglablePlatformNodeBrowserAccessibilityWin> node =
       MakeNode();
   node->SetShouldHavePlatformNode(false);
@@ -430,7 +572,8 @@ TEST_F(BrowserAccessibilityPlatformNodeWinTest, RepeatedChangesAreSafe) {
   }
 }
 
-TEST_F(BrowserAccessibilityPlatformNodeWinTest, RepeatedUpdatesKeepOnePlatformNode) {
+TEST_F(BrowserAccessibilityPlatformNodeWinTest,
+       RepeatedUpdatesKeepOnePlatformNode) {
   std::unique_ptr<TogglablePlatformNodeBrowserAccessibilityWin> node =
       MakeNode();
   AXPlatformNode* first = node->GetAXPlatformNode();

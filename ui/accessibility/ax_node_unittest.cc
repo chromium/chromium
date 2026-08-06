@@ -5,6 +5,7 @@
 #include "ui/accessibility/ax_node.h"
 
 #include <stdint.h>
+
 #include <memory>
 #include <utility>
 #include <vector>
@@ -265,8 +266,8 @@ TEST(AXNodeTest, TreeWalking) {
 
   {
     std::vector<AXNode*> siblings;
-    for (AXNode* sibling = tree.GetFromId(paragraph_3_ignored.id);
-         sibling; sibling = sibling->GetPreviousSibling()) {
+    for (AXNode* sibling = tree.GetFromId(paragraph_3_ignored.id); sibling;
+         sibling = sibling->GetPreviousSibling()) {
       siblings.push_back(sibling);
     }
     EXPECT_THAT(siblings, ElementsAre(HasAXNodeID(paragraph_3_ignored),
@@ -300,7 +301,7 @@ TEST(AXNodeTest, TreeWalking) {
   }
 
   {
-    std::vector< AXNode::AllChildCrossingTreeBoundaryIterator> siblings;
+    std::vector<AXNode::AllChildCrossingTreeBoundaryIterator> siblings;
     for (auto iter = root_node->AllChildrenCrossingTreeBoundaryBegin();
          iter != root_node->AllChildrenCrossingTreeBoundaryEnd(); ++iter) {
       siblings.push_back(iter);
@@ -325,8 +326,7 @@ TEST(AXNodeTest, TreeWalking) {
   }
 
   {
-    std::vector<AXNode::UnignoredChildCrossingTreeBoundaryIterator>
-        siblings;
+    std::vector<AXNode::UnignoredChildCrossingTreeBoundaryIterator> siblings;
     for (auto iter = root_node->UnignoredChildrenCrossingTreeBoundaryBegin();
          iter != root_node->UnignoredChildrenCrossingTreeBoundaryEnd();
          ++iter) {
@@ -396,6 +396,242 @@ TEST(AXNodeTest, TreeWalkingCrossingTreeBoundary) {
   EXPECT_EQ(root_node_1, root_node_2->GetParentCrossingTreeBoundary());
   EXPECT_EQ(nullptr, root_node_2->GetUnignoredParent());
   EXPECT_EQ(root_node_1, root_node_2->GetUnignoredParentCrossingTreeBoundary());
+}
+
+// Builds a parent tree whose middle child is an ignored host of a child tree.
+//
+// kRootWebArea
+// ++kButton
+// ++kGenericContainer (ignored, hosts the child tree)
+// ++kButton
+class ConnectableAXTreeManager : public TestSingleAXTreeManager {
+ public:
+  explicit ConnectableAXTreeManager(std::unique_ptr<AXTree> tree)
+      : TestSingleAXTreeManager(std::move(tree)) {}
+
+  // The platform managers do this when they take their first event batch.
+  void ConnectToParentTree() { EnsureParentConnectionIfNotRootManager(); }
+};
+
+class AXNodeIgnoredChildTreeHostTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    AXTreeData parent_tree_data;
+    parent_tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+    child_tree_data_.tree_id = AXTreeID::CreateNewAXTreeID();
+    child_tree_data_.parent_tree_id = parent_tree_data.tree_id;
+
+    AXNodeData parent_root;
+    parent_root.id = 1;
+    parent_root.role = ax::mojom::Role::kRootWebArea;
+    parent_root.child_ids = {2, 3, 4};
+
+    AXNodeData before;
+    before.id = 2;
+    before.role = ax::mojom::Role::kButton;
+
+    AXNodeData host;
+    host.id = 3;
+    host.role = ax::mojom::Role::kGenericContainer;
+    host.AddState(ax::mojom::State::kIgnored);
+    host.AddChildTreeId(child_tree_data_.tree_id);
+
+    AXNodeData after;
+    after.id = 4;
+    after.role = ax::mojom::Role::kButton;
+
+    AXTreeUpdate parent_update;
+    parent_update.root_id = parent_root.id;
+    parent_update.nodes = {parent_root, before, host, after};
+    parent_update.has_tree_data = true;
+    parent_update.tree_data = parent_tree_data;
+
+    AXNodeData child_root;
+    child_root.id = 1;
+    child_root.role = ax::mojom::Role::kRootWebArea;
+
+    child_update_.root_id = child_root.id;
+    child_update_.nodes = {child_root};
+    child_update_.has_tree_data = true;
+    child_update_.tree_data = child_tree_data_;
+
+    parent_manager_ = std::make_unique<TestSingleAXTreeManager>(
+        std::make_unique<AXTree>(parent_update));
+    ConnectChildTree();
+  }
+
+  void ConnectChildTree() {
+    child_manager_ = std::make_unique<ConnectableAXTreeManager>(
+        std::make_unique<AXTree>(child_update_));
+    child_manager_->ConnectToParentTree();
+  }
+
+  AXNode* ParentRoot() const { return parent_manager_->GetRoot(); }
+  AXNode* Before() const { return parent_manager_->GetTree()->GetFromId(2); }
+  AXNode* Host() const { return parent_manager_->GetTree()->GetFromId(3); }
+  AXNode* After() const { return parent_manager_->GetTree()->GetFromId(4); }
+  AXNode* ChildRoot() const { return child_manager_->GetRoot(); }
+
+  AXTreeData child_tree_data_;
+  AXTreeUpdate child_update_;
+  std::unique_ptr<TestSingleAXTreeManager> parent_manager_;
+  std::unique_ptr<ConnectableAXTreeManager> child_manager_;
+};
+
+TEST_F(AXNodeIgnoredChildTreeHostTest, AnIgnoredHostIsTransparentInItsTree) {
+  EXPECT_EQ(2u, ParentRoot()->GetUnignoredChildCount());
+  EXPECT_EQ(Before(), ParentRoot()->GetUnignoredChildAtIndex(0));
+  EXPECT_EQ(After(), ParentRoot()->GetUnignoredChildAtIndex(1));
+  EXPECT_EQ(nullptr, ParentRoot()->GetUnignoredChildAtIndex(2));
+}
+
+TEST_F(AXNodeIgnoredChildTreeHostTest, TheHostedRootTakesThePlaceOfItsHost) {
+  EXPECT_EQ(3u, ParentRoot()->GetUnignoredChildCountCrossingTreeBoundary());
+  EXPECT_EQ(ChildRoot(),
+            ParentRoot()->GetUnignoredChildAtIndexCrossingTreeBoundary(1));
+  EXPECT_EQ(1u, ChildRoot()->GetUnignoredIndexInParentCrossingTreeBoundary());
+}
+
+TEST_F(AXNodeIgnoredChildTreeHostTest, OnlyTheCrossingWalkSeesALoneHost) {
+  AXNodeData only_host;
+  only_host.id = 1;
+  only_host.role = ax::mojom::Role::kRootWebArea;
+  only_host.child_ids = {3};
+  AXTreeUpdate update;
+  update.nodes = {only_host};
+  ASSERT_TRUE(parent_manager_->GetTree()->Unserialize(update));
+
+  EXPECT_EQ(0u, ParentRoot()->GetUnignoredChildCount());
+  EXPECT_EQ(nullptr, ParentRoot()->GetFirstUnignoredChild());
+  EXPECT_EQ(nullptr, ParentRoot()->GetLastUnignoredChild());
+
+  EXPECT_EQ(1u, ParentRoot()->GetUnignoredChildCountCrossingTreeBoundary());
+  EXPECT_EQ(ChildRoot(),
+            ParentRoot()->GetFirstUnignoredChildCrossingTreeBoundary());
+  EXPECT_EQ(ChildRoot(),
+            ParentRoot()->GetLastUnignoredChildCrossingTreeBoundary());
+}
+
+TEST_F(AXNodeIgnoredChildTreeHostTest, UnignoredSiblingsSkipTheHost) {
+  EXPECT_EQ(After(), Before()->GetNextUnignoredSibling());
+  EXPECT_EQ(Before(), After()->GetPreviousUnignoredSibling());
+}
+
+TEST_F(AXNodeIgnoredChildTreeHostTest, AHostedTreeMovesTheSiblingsAfterIt) {
+  EXPECT_EQ(1u, After()->GetUnignoredIndexInParent());
+  EXPECT_EQ(2u, After()->GetUnignoredIndexInParentCrossingTreeBoundary());
+  EXPECT_EQ(0u, Before()->GetUnignoredIndexInParentCrossingTreeBoundary());
+}
+
+TEST_F(AXNodeIgnoredChildTreeHostTest, CrossingSiblingsReachTheHostedRoot) {
+  EXPECT_EQ(ChildRoot(),
+            Before()->GetNextUnignoredSiblingCrossingTreeBoundary());
+  EXPECT_EQ(ChildRoot(),
+            After()->GetPreviousUnignoredSiblingCrossingTreeBoundary());
+}
+
+TEST_F(AXNodeIgnoredChildTreeHostTest,
+       TheHostedRootWalksBackToItsHostsSiblings) {
+  EXPECT_EQ(Before(),
+            ChildRoot()->GetPreviousUnignoredSiblingCrossingTreeBoundary());
+  EXPECT_EQ(After(),
+            ChildRoot()->GetNextUnignoredSiblingCrossingTreeBoundary());
+}
+
+TEST_F(AXNodeIgnoredChildTreeHostTest, TheCrossingIteratorGivesTheHostedRoot) {
+  std::vector<AXNodeID> children;
+  for (auto it = ParentRoot()->UnignoredChildrenCrossingTreeBoundaryBegin(),
+            end = ParentRoot()->UnignoredChildrenCrossingTreeBoundaryEnd();
+       it != end; ++it) {
+    children.push_back(it->id());
+  }
+
+  ASSERT_EQ(3u, children.size());
+  EXPECT_EQ(Before()->id(), children[0]);
+  EXPECT_EQ(ChildRoot(),
+            ParentRoot()->GetUnignoredChildAtIndexCrossingTreeBoundary(1));
+  EXPECT_EQ(After()->id(), children[2]);
+}
+
+TEST_F(AXNodeIgnoredChildTreeHostTest, TheIteratorNeverLeavesItsOwnTree) {
+  for (auto it = ParentRoot()->UnignoredChildrenBegin(),
+            end = ParentRoot()->UnignoredChildrenEnd();
+       it != end; ++it) {
+    EXPECT_EQ(ParentRoot()->tree(), it->tree());
+  }
+}
+
+TEST_F(AXNodeIgnoredChildTreeHostTest, HostedRootSkipsItsHostGoingUp) {
+  EXPECT_EQ(ParentRoot(),
+            ChildRoot()->GetUnignoredParentCrossingTreeBoundary());
+}
+
+TEST_F(AXNodeIgnoredChildTreeHostTest, AHostThatBridgesToNothingStaysHidden) {
+  child_manager_.reset();
+
+  EXPECT_EQ(2u, ParentRoot()->GetUnignoredChildCount());
+  EXPECT_EQ(2u, ParentRoot()->GetUnignoredChildCountCrossingTreeBoundary());
+  EXPECT_EQ(Before(), ParentRoot()->GetFirstUnignoredChild());
+  EXPECT_EQ(After(), ParentRoot()->GetLastUnignoredChild());
+  EXPECT_EQ(After(), Before()->GetNextUnignoredSibling());
+  EXPECT_EQ(After(), Before()->GetNextUnignoredSiblingCrossingTreeBoundary());
+}
+
+TEST_F(AXNodeIgnoredChildTreeHostTest, TheHostedRootComesBack) {
+  child_manager_.reset();
+  ASSERT_EQ(2u, ParentRoot()->GetUnignoredChildCountCrossingTreeBoundary());
+
+  ConnectChildTree();
+
+  EXPECT_EQ(3u, ParentRoot()->GetUnignoredChildCountCrossingTreeBoundary());
+  EXPECT_EQ(ChildRoot(),
+            ParentRoot()->GetUnignoredChildAtIndexCrossingTreeBoundary(1));
+}
+
+TEST_F(AXNodeIgnoredChildTreeHostTest, TheTreeKnowsItsHosts) {
+  EXPECT_TRUE(parent_manager_->GetTree()->HasIgnoredChildTreeHosts());
+  EXPECT_THAT(parent_manager_->GetTree()->ignored_child_tree_host_ids(),
+              ElementsAre(Host()->id()));
+
+  // A tree that holds web content holds no such host.
+  EXPECT_FALSE(child_manager_->GetTree()->HasIgnoredChildTreeHosts());
+}
+
+TEST_F(AXNodeIgnoredChildTreeHostTest, AHostThatStopsBeingIgnoredLeavesTheSet) {
+  AXNodeData exposed = Host()->data();
+  exposed.RemoveState(ax::mojom::State::kIgnored);
+  AXTreeUpdate update;
+  update.nodes = {exposed};
+  ASSERT_TRUE(parent_manager_->GetTree()->Unserialize(update));
+
+  EXPECT_FALSE(parent_manager_->GetTree()->HasIgnoredChildTreeHosts());
+}
+
+TEST_F(AXNodeIgnoredChildTreeHostTest, AHostThatGoesAwayLeavesTheSet) {
+  AXNodeData without_host;
+  without_host.id = 1;
+  without_host.role = ax::mojom::Role::kRootWebArea;
+  without_host.child_ids = {2, 4};
+  AXTreeUpdate update;
+  update.nodes = {without_host};
+  ASSERT_TRUE(parent_manager_->GetTree()->Unserialize(update));
+
+  EXPECT_FALSE(parent_manager_->GetTree()->HasIgnoredChildTreeHosts());
+}
+
+TEST_F(AXNodeIgnoredChildTreeHostTest, AnUnignoredHostKeepsItsOwnPlace) {
+  AXNodeData exposed = Host()->data();
+  exposed.RemoveState(ax::mojom::State::kIgnored);
+  AXTreeUpdate update;
+  update.nodes = {exposed};
+  ASSERT_TRUE(parent_manager_->GetTree()->Unserialize(update));
+
+  EXPECT_EQ(3u, ParentRoot()->GetUnignoredChildCount());
+  EXPECT_EQ(Host(), ParentRoot()->GetUnignoredChildAtIndex(1));
+  EXPECT_EQ(Host(),
+            ParentRoot()->GetUnignoredChildAtIndexCrossingTreeBoundary(1));
+  EXPECT_EQ(ChildRoot(),
+            Host()->GetUnignoredChildAtIndexCrossingTreeBoundary(0));
 }
 
 TEST(AXNodeTest, GetValueForControlTextField) {
@@ -950,11 +1186,11 @@ TEST(AXNodeTest, DescendantOfNonAtomicTextField) {
 
   EXPECT_TRUE(tree.GetFromId(spin_button_2.id)->data().IsSpinnerTextField());
   EXPECT_TRUE(tree.GetFromId(spin_button_2.id)->data().IsTextField());
-  EXPECT_FALSE(
-      tree.GetFromId(spin_button_3.id)->data().IsSpinnerTextField());
+  EXPECT_FALSE(tree.GetFromId(spin_button_3.id)->data().IsSpinnerTextField());
   EXPECT_FALSE(tree.GetFromId(spin_button_3.id)->data().IsTextField());
   EXPECT_TRUE(tree.GetFromId(spin_button_4.id)->data().IsSpinnerTextField());
-  EXPECT_FALSE(tree.GetFromId(generic_container_5.id)->data().IsSpinnerTextField());
+  EXPECT_FALSE(
+      tree.GetFromId(generic_container_5.id)->data().IsSpinnerTextField());
 }
 
 TEST(AXNodeTest, MenuItemCheckboxPosInSet) {
