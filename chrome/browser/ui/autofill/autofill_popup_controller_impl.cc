@@ -484,7 +484,8 @@ void AutofillPopupControllerImpl::UpdateDataListValues(
 
 bool AutofillPopupControllerImpl::IsViewVisibilityAcceptingThresholdEnabled()
     const {
-  return !disable_threshold_for_testing_;
+  return !disable_threshold_for_testing_ &&
+         ShouldResetIdleBarrier(trigger_source_);
 }
 
 bool AutofillPopupControllerImpl::IsSearching() const {
