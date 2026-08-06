@@ -78,7 +78,7 @@ function onLoad() {
   gl.useProgram(program);
 
   // Make the memory pool, if possible:
-  // ::partition_alloc::internal::MaxDirectMapped.
+  // ::partition_alloc::MaxAllocationSize.
   // = 2 GB - 2 MB.
   // 64KB Wasm page size)
   //
