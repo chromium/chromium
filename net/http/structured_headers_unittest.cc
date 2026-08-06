@@ -50,8 +50,9 @@ TEST_P(StructuredHeadersLenientTest, ByteSequenceWhitespace) {
   // in its synthesized padding logic.
   std::optional<ParameterizedItem> result = ParseItem(": Zm9v   :");
   ASSERT_TRUE(result.has_value());
-  EXPECT_TRUE(result->item.is_byte_sequence());
-  EXPECT_EQ(result->item.GetString(), "foo");
+  const std::string* value = result->item.GetIfByteSequence();
+  ASSERT_TRUE(value);
+  EXPECT_EQ(*value, "foo");
 
   // Replicate Abseil's ascii_isspace behavior, which includes vertical tab
   // (0x0b). The raw length between colons must be a multiple of 4 so that
@@ -68,8 +69,9 @@ TEST_P(StructuredHeadersLenientTest, ByteSequenceDotAsPadding) {
   // Legacy Quiche pads to "Zm9.". Standard SH would require ":Zm9=:".
   std::optional<ParameterizedItem> result = ParseItem(":Zm9.:");
   ASSERT_TRUE(result.has_value());
-  EXPECT_TRUE(result->item.is_byte_sequence());
-  EXPECT_EQ(result->item.GetString(), "fo");
+  const std::string* value = result->item.GetIfByteSequence();
+  ASSERT_TRUE(value);
+  EXPECT_EQ(*value, "fo");
 }
 
 void ParseItemParity(const std::string_view input) {
