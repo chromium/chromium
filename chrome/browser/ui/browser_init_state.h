@@ -9,6 +9,7 @@
 #include <string>
 
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -42,6 +43,9 @@ class BrowserInitState {
   static const BrowserInitState* From(const BrowserWindowInterface* browser);
 
   const Browser::CreateParams& create_params() const { return create_params_; }
+  const BrowserWindowCreateParams& browser_window_create_params() const {
+    return browser_window_create_params_;
+  }
 
   CreationSource creation_source() const { return creation_source_; }
 
@@ -94,6 +98,7 @@ class BrowserInitState {
  private:
   // This Browser's create params.
   const Browser::CreateParams create_params_;
+  const BrowserWindowCreateParams browser_window_create_params_;
 
   // Whether this Browser should be omitted from being saved/restored by session
   // restore.
