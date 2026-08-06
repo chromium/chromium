@@ -70,12 +70,13 @@ void VerifyMessageSignature(const net::HttpRequestHeaders& extra_headers,
       << "Invalid sha-256 format in Content-Digest header";
   ASSERT_EQ(sha256_member.member.size(), 1u)
       << "Invalid sha-256 format in Content-Digest header";
-  const auto& sha256_item = sha256_member.member[0].item;
-  ASSERT_TRUE(sha256_item.is_byte_sequence())
+  const std::string* sha256_byte_sequence =
+      sha256_member.member[0].item.GetIfByteSequence();
+  ASSERT_TRUE(sha256_byte_sequence)
       << "sha-256 in Content-Digest header is not a byte sequence";
   if (!post_data.empty()) {
     std::string expected_hash = crypto::SHA256HashString(post_data);
-    ASSERT_EQ(sha256_item.GetString(), expected_hash)
+    ASSERT_EQ(*sha256_byte_sequence, expected_hash)
         << "Content-Digest hash mismatch with post_data";
   }
 
@@ -103,32 +104,35 @@ void VerifyMessageSignature(const net::HttpRequestHeaders& extra_headers,
   ASSERT_NE(kty_it, sig_member.params.end())
       << "Missing 'kty' parameter in Signature-Key";
   const net::structured_headers::Item& kty_item = kty_it->second;
-  ASSERT_TRUE(kty_item.is_string()) << "'kty' parameter is not a string";
-  std::string kty = kty_item.GetString();
+  const std::string* kty = kty_item.GetIfString();
+  ASSERT_TRUE(kty) << "'kty' parameter is not a string";
 
   std::optional<crypto::keypair::PublicKey> public_key;
   crypto::sign::SignatureKind sig_kind;
   sdjwt::Jwk jwk;
-  jwk.kty = kty;
+  jwk.kty = *kty;
 
-  if (kty == "OKP") {
+  if (*kty == "OKP") {
     auto crv_it = std::ranges::find_if(sig_member.params, [](const auto& pair) {
       return pair.first == "crv";
     });
     ASSERT_NE(crv_it, sig_member.params.end())
         << "Missing 'crv' parameter in Signature-Key";
-    jwk.crv = crv_it->second.GetString();
+    const std::string* crv = crv_it->second.GetIfString();
+    ASSERT_TRUE(crv) << "'crv' parameter is not a string";
+    jwk.crv = *crv;
 
     auto x_it = std::ranges::find_if(
         sig_member.params, [](const auto& pair) { return pair.first == "x"; });
     ASSERT_NE(x_it, sig_member.params.end())
         << "Missing 'x' parameter in Signature-Key";
-    std::string base64url_x = x_it->second.GetString();
-    jwk.x = base64url_x;
+    const std::string* base64url_x = x_it->second.GetIfString();
+    ASSERT_TRUE(base64url_x) << "'x' parameter is not a string";
+    jwk.x = *base64url_x;
 
     std::string x_bytes;
     ASSERT_TRUE(base::Base64UrlDecode(
-        base64url_x, base::Base64UrlDecodePolicy::IGNORE_PADDING, &x_bytes))
+        *base64url_x, base::Base64UrlDecodePolicy::IGNORE_PADDING, &x_bytes))
         << "Failed to decode 'x' parameter";
     ASSERT_EQ(x_bytes.size(), 32u) << "Invalid 'x' length";
     std::array<uint8_t, 32> public_key_array;
@@ -136,33 +140,35 @@ void VerifyMessageSignature(const net::HttpRequestHeaders& extra_headers,
     public_key =
         crypto::keypair::PublicKey::FromEd25519PublicKey(public_key_array);
     sig_kind = crypto::sign::SignatureKind::ED25519;
-  } else if (kty == "RSA") {
+  } else if (*kty == "RSA") {
     auto n_it = std::ranges::find_if(
         sig_member.params, [](const auto& pair) { return pair.first == "n"; });
     ASSERT_NE(n_it, sig_member.params.end())
         << "Missing 'n' parameter in Signature-Key";
-    std::string base64url_n = n_it->second.GetString();
-    jwk.n = base64url_n;
+    const std::string* base64url_n = n_it->second.GetIfString();
+    ASSERT_TRUE(base64url_n) << "'n' parameter is not a string";
+    jwk.n = *base64url_n;
 
     auto e_it = std::ranges::find_if(
         sig_member.params, [](const auto& pair) { return pair.first == "e"; });
     ASSERT_NE(e_it, sig_member.params.end())
         << "Missing 'e' parameter in Signature-Key";
-    std::string base64url_e = e_it->second.GetString();
-    jwk.e = base64url_e;
+    const std::string* base64url_e = e_it->second.GetIfString();
+    ASSERT_TRUE(base64url_e) << "'e' parameter is not a string";
+    jwk.e = *base64url_e;
 
     std::string n_bytes, e_bytes;
     ASSERT_TRUE(base::Base64UrlDecode(
-        base64url_n, base::Base64UrlDecodePolicy::IGNORE_PADDING, &n_bytes))
+        *base64url_n, base::Base64UrlDecodePolicy::IGNORE_PADDING, &n_bytes))
         << "Failed to decode 'n' parameter";
     ASSERT_TRUE(base::Base64UrlDecode(
-        base64url_e, base::Base64UrlDecodePolicy::IGNORE_PADDING, &e_bytes))
+        *base64url_e, base::Base64UrlDecodePolicy::IGNORE_PADDING, &e_bytes))
         << "Failed to decode 'e' parameter";
     public_key = crypto::keypair::PublicKey::FromRsaPublicKeyComponents(
         base::as_byte_span(n_bytes), base::as_byte_span(e_bytes));
     sig_kind = crypto::sign::SignatureKind::RSA_PKCS1_SHA256;
   } else {
-    FAIL() << "Unsupported kty: " << kty;
+    FAIL() << "Unsupported kty: " << *kty;
   }
 
   ASSERT_TRUE(public_key.has_value()) << "Failed to create public key";
@@ -190,12 +196,11 @@ void VerifyMessageSignature(const net::HttpRequestHeaders& extra_headers,
   std::vector<std::string> expected_components = {
       "@method", "@authority", "@path", "content-digest", "signature-key"};
   for (size_t i = 0; i < expected_components.size(); ++i) {
-    const auto& item = input_sig_member.member[i].item;
-    ASSERT_TRUE(item.is_string())
-        << "Component in Signature-Input is not a string";
-    ASSERT_EQ(item.GetString(), expected_components[i])
+    const auto* str = input_sig_member.member[i].item.GetIfString();
+    ASSERT_TRUE(str) << "Component in Signature-Input is not a string";
+    ASSERT_EQ(*str, expected_components[i])
         << "Component in Signature-Input mismatch. Expected "
-        << expected_components[i] << ", got " << item.GetString();
+        << expected_components[i] << ", got " << *str;
   }
 
   auto created_it = std::ranges::find_if(
@@ -203,10 +208,8 @@ void VerifyMessageSignature(const net::HttpRequestHeaders& extra_headers,
       [](const auto& pair) { return pair.first == "created"; });
   ASSERT_NE(created_it, input_sig_member.params.end())
       << "Missing 'created' parameter in Signature-Input";
-  const net::structured_headers::Item& created_item = created_it->second;
-  ASSERT_TRUE(created_item.is_integer())
-      << "'created' parameter is not an integer";
-  int64_t created_time = created_item.GetInteger();
+  const int64_t* created_time = created_it->second.GetIfInteger();
+  ASSERT_TRUE(created_time) << "'created' parameter is not an integer";
 
   // 4. Verify Signature
   std::optional<std::string> signature_header =
@@ -224,10 +227,9 @@ void VerifyMessageSignature(const net::HttpRequestHeaders& extra_headers,
   ASSERT_FALSE(sig_member_val.member_is_inner_list)
       << "Invalid Signature format";
   ASSERT_EQ(sig_member_val.member.size(), 1u) << "Invalid Signature format";
-  const net::structured_headers::Item& sig_item = sig_member_val.member[0].item;
-  ASSERT_TRUE(sig_item.is_byte_sequence())
-      << "Signature item is not a byte sequence";
-  std::string signature_bytes = sig_item.GetString();
+  const std::string* signature_bytes =
+      sig_member_val.member[0].item.GetIfByteSequence();
+  ASSERT_TRUE(signature_bytes) << "Signature item is not a byte sequence";
 
   std::string signature_base = base::StringPrintf(
       "\"@method\": POST\n"
@@ -239,11 +241,11 @@ void VerifyMessageSignature(const net::HttpRequestHeaders& extra_headers,
       "\"content-digest\" \"signature-key\");created=%s",
       authority.c_str(), path.c_str(), content_digest_header->c_str(),
       signature_key_header->c_str(),
-      base::NumberToString(created_time).c_str());
+      base::NumberToString(*created_time).c_str());
 
   ASSERT_TRUE(crypto::sign::Verify(sig_kind, *public_key,
                                    base::as_byte_span(signature_base),
-                                   base::as_byte_span(signature_bytes)))
+                                   base::as_byte_span(*signature_bytes)))
       << "Signature verification failed";
 
   if (out_jwk) {

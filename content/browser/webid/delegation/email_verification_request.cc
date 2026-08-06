@@ -56,7 +56,7 @@ std::string CreateContentDigestHeader(const std::string& post_data) {
   std::optional<std::string> val =
       net::structured_headers::SerializeDictionary(dict);
   CHECK(val);
-  return *val;
+  return *std::move(val);
 }
 
 std::string CreateMessageSignatureKey(const sdjwt::Jwk& public_key) {
@@ -72,7 +72,7 @@ std::string CreateMessageSignatureKey(const sdjwt::Jwk& public_key) {
   member.member.emplace_back(
       net::structured_headers::Item("hwk",
                                     net::structured_headers::Item::kTokenType),
-      params);
+      std::move(params));
   member.member_is_inner_list = false;
 
   net::structured_headers::Dictionary dict;
@@ -81,7 +81,7 @@ std::string CreateMessageSignatureKey(const sdjwt::Jwk& public_key) {
   std::optional<std::string> signature_key_val_opt =
       net::structured_headers::SerializeDictionary(dict);
   CHECK(signature_key_val_opt);
-  return *signature_key_val_opt;
+  return *std::move(signature_key_val_opt);
 }
 
 net::structured_headers::ParameterizedMember CreateMessageSignatureParams(
@@ -152,23 +152,24 @@ std::string CreateMessageSignature(
   std::string signature_base;
   for (const net::structured_headers::ParameterizedItem& param :
        signature_params.member) {
-    std::string component_name = param.item.GetString();
+    const std::string* component_name = param.item.GetIfString();
+    CHECK(component_name);
     std::string component_value;
-    if (component_name == "@method") {
+    if (*component_name == "@method") {
       component_value = "POST";
-    } else if (component_name == "@authority") {
+    } else if (*component_name == "@authority") {
       component_value = authority;
-    } else if (component_name == "@path") {
+    } else if (*component_name == "@path") {
       component_value = issuance_endpoint.path();
-    } else if (component_name == "content-digest") {
+    } else if (*component_name == "content-digest") {
       component_value = content_digest_val;
-    } else if (component_name == "signature-key") {
+    } else if (*component_name == "signature-key") {
       component_value = signature_key_val;
     } else {
       NOTREACHED();
     }
-    base::StringAppendF(&signature_base, "\"%s\": %s\n", component_name.c_str(),
-                        component_value.c_str());
+    base::StringAppendF(&signature_base, "\"%s\": %s\n",
+                        component_name->c_str(), component_value.c_str());
   }
 
   net::structured_headers::List list_wrapper;
@@ -196,7 +197,7 @@ std::string CreateMessageSignature(
   std::optional<std::string> signature_val_opt =
       net::structured_headers::SerializeDictionary(dict);
   CHECK(signature_val_opt);
-  return *signature_val_opt;
+  return *std::move(signature_val_opt);
 }
 
 net::HttpRequestHeaders CreateMessageSignatureHeaders(

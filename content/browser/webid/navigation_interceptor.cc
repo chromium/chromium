@@ -231,22 +231,26 @@ void NavigationInterceptor::OnConnectionStatusHeaderParsed(
     return;
   }
 
-  auto it = result->find("status");
-  if (it != result->end() && it->second.member.size() == 1 &&
-      it->second.member[0].item.is_string() &&
-      it->second.member[0].item.GetString() == "connected") {
-    std::optional<std::string> account_id;
-    auto account_id_it = result->find("account_id");
-    if (account_id_it != result->end() &&
-        account_id_it->second.member.size() == 1 &&
-        account_id_it->second.member[0].item.is_string()) {
-      account_id = account_id_it->second.member[0].item.GetString();
+  auto get_if_string = [&](std::string_view key) -> const std::string* {
+    auto it = result->find(key);
+    // TODO(crbug.com/543284188): Based on the unit tests for the
+    // `Federation-RP-Connection-Status` header, this should probably ensure that the value
+    // isn't an inner list (`!it->second.member_is_inner_list`). As is, it allows a
+    // single-element inner list containing a string.
+    if (it == result->end() || it->second.member.size() != 1) {
+      return nullptr;
     }
+    return it->second.member.front().item.GetIfString();
+  };
 
+  if (const std::string* status = get_if_string("status");
+      status && *status == "connected") {
     // The server can send this header without embedder login request.
     if (net::SchemefulSite::IsSameSite(embedder_login_request->idp_origin(),
                                        url::Origin::Create(intercepted_url))) {
-      if (account_id == embedder_login_request->account_id()) {
+      const std::string* account_id = get_if_string("account_id");
+
+      if (account_id && *account_id == embedder_login_request->account_id()) {
         embedder_login_request->OnFederatedResultReceived(
             FederatedLoginResult::kSuccess);
       } else {
