@@ -8,11 +8,13 @@
 
 #import <optional>
 
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator_event_handler.h"
+#import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
@@ -395,6 +397,50 @@ TEST_F(GeminiContainerMediatorTest, TestDidSwitchToMode) {
 TEST_F(GeminiContainerMediatorTest, TestGeminiLiveUserDidPressStopButton) {
   [mediator_ geminiLiveUserDidPressStopButton];
   EXPECT_TRUE(delegate_.stop_button_pressed_called_);
+}
+
+// Tests that requireFullPageContext is YES when kAppSwitcherAISummarization is
+// enabled and entry point is AppSwitcherAISummarization.
+TEST_F(GeminiContainerMediatorTest,
+       TestRequireFullPageContextEnabledForAppSwitcher) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAppSwitcherAISummarization, kPageActionMenu}, {});
+  base::HistogramTester histogram_tester;
+
+  AppendActiveWebState();
+
+  GeminiStartupState* app_switcher_startup_state = [[GeminiStartupState alloc]
+      initWithEntryPoint:gemini::EntryPoint::AppSwitcherAISummarization];
+
+  GeminiConfiguration* config = [mediator_
+      createGeminiConfigurationForActiveWebState:app_switcher_startup_state
+                              baseViewController:nil];
+  EXPECT_TRUE(config.requireFullPageContext);
+  histogram_tester.ExpectUniqueSample(kRequireFullPageContextHistogram, true,
+                                      1);
+}
+
+// Tests that requireFullPageContext is NO when kAppSwitcherAISummarization is
+// enabled but entry point is not AppSwitcherAISummarization.
+TEST_F(GeminiContainerMediatorTest,
+       TestRequireFullPageContextDisabledForOtherEntryPoints) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAppSwitcherAISummarization, kPageActionMenu}, {});
+  base::HistogramTester histogram_tester;
+
+  AppendActiveWebState();
+
+  GeminiStartupState* promo_startup_state =
+      [[GeminiStartupState alloc] initWithEntryPoint:gemini::EntryPoint::Promo];
+
+  GeminiConfiguration* config =
+      [mediator_ createGeminiConfigurationForActiveWebState:promo_startup_state
+                                         baseViewController:nil];
+  EXPECT_FALSE(config.requireFullPageContext);
+  histogram_tester.ExpectUniqueSample(kRequireFullPageContextHistogram, false,
+                                      1);
 }
 
 }  // namespace

@@ -319,6 +319,9 @@ extern const char kPromptTabsAttachedCountHistogram[];
 // UMA histogram key for IOS.Gemini.Prompt.MultiTabUsed.
 extern const char kPromptMultiTabUsedHistogram[];
 
+// UMA histogram key for IOS.Gemini.RequireFullPageContext.
+extern const char kRequireFullPageContextHistogram[];
+
 // UMA histogram key for IOS.Gemini.Response.GeneratedImage.Included.
 extern const char kResponseGeneratedImageIncluded[];
 
@@ -707,5 +710,8 @@ void RecordGeminiLiveTurnCount(int turn_count);
 // Records the accumulated duration of Gemini Live mode segments within
 // a single Gemini interaction.
 void RecordGeminiLiveAccumulatedDuration(base::TimeDelta duration);
+
+// Records whether full page context is required before initiating the session.
+void RecordRequireFullPageContext(bool require_full_page_context);
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_METRICS_GEMINI_METRICS_H_

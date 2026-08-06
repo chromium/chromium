@@ -120,6 +120,9 @@ class PageContext;
 // Whether the account requires capability-based restriction.
 @property(nonatomic, assign) BOOL needsAccountCapabilityRestriction;
 
+// Whether full page context is required before initiating the Gemini session.
+@property(nonatomic, assign) BOOL requireFullPageContext;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_CONFIGURATION_H_

@@ -62,6 +62,10 @@ class WebStateList;
 - (BOOL)shouldShowSuggestionChipsForEntryPoint:
     (gemini::EntryPoint)entryPoint;
 
+// Returns whether full page context is required for the given entry point.
+- (BOOL)shouldRequireFullPageContextForEntryPoint:
+    (gemini::EntryPoint)entryPoint;
+
 // Currently, `GeminiBrowserAgent` does some of the state cleanup after each
 // floaty dismissal, but some of the cleanup such as releasing the handlers
 // happens on GeminiBrowserAgent destruction.

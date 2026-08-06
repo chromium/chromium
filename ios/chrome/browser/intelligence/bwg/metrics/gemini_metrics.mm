@@ -154,6 +154,9 @@ const char kPromptTabsAttachedCountHistogram[] =
 
 const char kPromptMultiTabUsedHistogram[] = "IOS.Gemini.Prompt.MultiTabUsed";
 
+const char kRequireFullPageContextHistogram[] =
+    "IOS.Gemini.RequireFullPageContext";
+
 const char kResponseGeneratedImageIncluded[] =
     "IOS.Gemini.Response.GeneratedImage.Included";
 
@@ -839,4 +842,9 @@ void RecordGeminiLiveTurnCount(int turn_count) {
 void RecordGeminiLiveAccumulatedDuration(base::TimeDelta duration) {
   base::UmaHistogramLongTimes(kGeminiLiveAccumulatedDurationHistogram,
                               duration);
+}
+
+void RecordRequireFullPageContext(bool require_full_page_context) {
+  base::UmaHistogramBoolean(kRequireFullPageContextHistogram,
+                            require_full_page_context);
 }

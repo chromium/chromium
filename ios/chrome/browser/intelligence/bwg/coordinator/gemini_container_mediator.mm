@@ -11,6 +11,7 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator_event_handler.h"
+#import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_gateway_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_context.h"
@@ -154,6 +155,12 @@
   return shouldShow;
 }
 
+- (BOOL)shouldRequireFullPageContextForEntryPoint:
+    (gemini::EntryPoint)entryPoint {
+  return IsAppSwitcherAISummarizationEnabled() &&
+         entryPoint == gemini::EntryPoint::AppSwitcherAISummarization;
+}
+
 - (void)onFloatyDismiss {
   feature_engagement::Tracker* tracker =
       _profile ? feature_engagement::TrackerFactory::GetForProfile(_profile)
@@ -291,6 +298,9 @@
   }
   config.contextualCueChipLabel = startupState.prepopulatedPrompt;
   config.entryPoint = startupState.entryPoint;
+  config.requireFullPageContext =
+      [self shouldRequireFullPageContextForEntryPoint:startupState.entryPoint];
+  RecordRequireFullPageContext(config.requireFullPageContext);
   config.imageRemixIPHShouldShow =
       startupState.entryPoint == gemini::EntryPoint::ImageRemixIPH;
 
