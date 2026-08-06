@@ -63,9 +63,9 @@ namespace {
 const char kServiceStatusNotifierWatcher[] = "org.kde.StatusNotifierWatcher";
 
 // Interfaces.
-// If/when the StatusNotifierItem spec gets accepted AND widely used, replace
-// "kde" with "freedesktop".
 const char kInterfaceStatusNotifierItem[] = "org.kde.StatusNotifierItem";
+const char kInterfaceStatusNotifierItemFreedesktop[] =
+    "org.freedesktop.StatusNotifierItem";
 const char kInterfaceStatusNotifierWatcher[] = "org.kde.StatusNotifierWatcher";
 
 // Object paths.
@@ -270,24 +270,29 @@ class StatusIconLinuxDbus::Multiplexer {
 
  private:
   friend class base::NoDestructor<Multiplexer>;
+  friend class StatusIconLinuxDbus;
   Multiplexer() = default;
   ~Multiplexer() = default;
 
   void ExportMethods(dbus::Bus* bus) {
     item_ = bus->GetExportedObject(dbus::ObjectPath(kPathStatusNotifierItem));
 
-    item_->ExportMethod(kInterfaceStatusNotifierItem, kMethodActivate,
-                        base::BindRepeating(&Multiplexer::OnActivate),
-                        base::DoNothing());
-    item_->ExportMethod(kInterfaceStatusNotifierItem, kMethodContextMenu,
-                        base::BindRepeating(&Multiplexer::OnContextMenu),
-                        base::DoNothing());
-    item_->ExportMethod(kInterfaceStatusNotifierItem, kMethodScroll,
-                        base::BindRepeating(&Multiplexer::OnScroll),
-                        base::DoNothing());
-    item_->ExportMethod(kInterfaceStatusNotifierItem, kMethodSecondaryActivate,
-                        base::BindRepeating(&Multiplexer::OnSecondaryActivate),
-                        base::DoNothing());
+    for (const char* interface : {kInterfaceStatusNotifierItem,
+                                  kInterfaceStatusNotifierItemFreedesktop}) {
+      item_->ExportMethod(interface, kMethodActivate,
+                          base::BindRepeating(&Multiplexer::OnActivate),
+                          base::DoNothing());
+      item_->ExportMethod(interface, kMethodContextMenu,
+                          base::BindRepeating(&Multiplexer::OnContextMenu),
+                          base::DoNothing());
+      item_->ExportMethod(interface, kMethodScroll,
+                          base::BindRepeating(&Multiplexer::OnScroll),
+                          base::DoNothing());
+      item_->ExportMethod(
+          interface, kMethodSecondaryActivate,
+          base::BindRepeating(&Multiplexer::OnSecondaryActivate),
+          base::DoNothing());
+    }
     item_->ExportMethod(DBUS_INTERFACE_PROPERTIES, "Get",
                         base::BindRepeating(&Multiplexer::OnGetProperty),
                         base::DoNothing());
@@ -383,7 +388,8 @@ class StatusIconLinuxDbus::Multiplexer {
       return;
     }
 
-    if (interface != kInterfaceStatusNotifierItem) {
+    if (interface != kInterfaceStatusNotifierItem &&
+        interface != kInterfaceStatusNotifierItemFreedesktop) {
       std::move(response_sender).Run(nullptr);
       return;
     }
@@ -418,7 +424,11 @@ class StatusIconLinuxDbus::Multiplexer {
       return;
     }
 
-    if (interface != kInterfaceStatusNotifierItem) {
+    // The D-Bus specification allows an empty interface_name in GetAll to
+    // request properties across all interfaces.
+    if (interface != kInterfaceStatusNotifierItem &&
+        interface != kInterfaceStatusNotifierItemFreedesktop &&
+        !interface.empty()) {
       std::move(response_sender).Run(nullptr);
       return;
     }
@@ -435,6 +445,16 @@ class StatusIconLinuxDbus::Multiplexer {
   std::map<std::string, StatusIconLinuxDbus*> icons_;
   scoped_refptr<dbus::ExportedObject> item_;
 };
+
+// static
+void StatusIconLinuxDbus::ExportMultiplexerMethodsForTesting(dbus::Bus* bus) {
+  Multiplexer::Get()->ExportMethods(bus);
+}
+
+// static
+void StatusIconLinuxDbus::UnexportMultiplexerMethodsForTesting(dbus::Bus* bus) {
+  Multiplexer::Get()->UnexportMethods(bus);
+}
 
 StatusIconLinuxDbus::StatusIconLinuxDbus()
     : bus_(dbus_thread_linux::GetSharedSessionBus()),
@@ -489,8 +509,11 @@ void StatusIconLinuxDbus::SetToolTip(const std::u16string& tool_tip) {
       kPropertyToolTip,
       MakeDbusToolTip(base::UTF16ToUTF8(delegate_->GetToolTip())));
   if (auto* multiplexer_item = Multiplexer::GetMultiplexerItem()) {
-    dbus::Signal signal(kInterfaceStatusNotifierItem, kSignalNewToolTip);
-    multiplexer_item->SendSignal(&signal);
+    for (const char* interface : {kInterfaceStatusNotifierItem,
+                                  kInterfaceStatusNotifierItemFreedesktop}) {
+      dbus::Signal signal(interface, kSignalNewToolTip);
+      multiplexer_item->SendSignal(&signal);
+    }
   }
 }
 
@@ -765,8 +788,12 @@ void StatusIconLinuxDbus::SetImageImpl(const gfx::ImageSkia& image,
                            send_signals);
     if (send_signals) {
       if (auto* multiplexer_item = Multiplexer::GetMultiplexerItem()) {
-        dbus::Signal signal(kInterfaceStatusNotifierItem, kSignalNewIcon);
-        multiplexer_item->SendSignal(&signal);
+        for (const char* interface :
+             {kInterfaceStatusNotifierItem,
+              kInterfaceStatusNotifierItemFreedesktop}) {
+          dbus::Signal signal(interface, kSignalNewIcon);
+          multiplexer_item->SendSignal(&signal);
+        }
       }
     }
   }
@@ -785,13 +812,16 @@ void StatusIconLinuxDbus::OnIconFileWritten(const base::FilePath& icon_file) {
                    icon_file_.BaseName().RemoveExtension().value(), false);
 
   if (auto* multiplexer_item = Multiplexer::GetMultiplexerItem()) {
-    dbus::Signal new_icon_theme_path_signal(kInterfaceStatusNotifierItem,
-                                            kSignalNewIconThemePath);
-    dbus::MessageWriter writer(&new_icon_theme_path_signal);
-    writer.AppendString(icon_file_.DirName().value());
-    multiplexer_item->SendSignal(&new_icon_theme_path_signal);
-    dbus::Signal new_icon_signal(kInterfaceStatusNotifierItem, kSignalNewIcon);
-    multiplexer_item->SendSignal(&new_icon_signal);
+    for (const char* interface : {kInterfaceStatusNotifierItem,
+                                  kInterfaceStatusNotifierItemFreedesktop}) {
+      dbus::Signal new_icon_theme_path_signal(interface,
+                                              kSignalNewIconThemePath);
+      dbus::MessageWriter writer(&new_icon_theme_path_signal);
+      writer.AppendString(icon_file_.DirName().value());
+      multiplexer_item->SendSignal(&new_icon_theme_path_signal);
+      dbus::Signal new_icon_signal(interface, kSignalNewIcon);
+      multiplexer_item->SendSignal(&new_icon_signal);
+    }
   }
 }
 
@@ -805,24 +835,30 @@ void StatusIconLinuxDbus::CleanupIconFile() {
 }
 
 void StatusIconLinuxDbus::PropertyUpdated(const std::string& property_name) {
-  dbus::Signal signal(DBUS_INTERFACE_PROPERTIES, "PropertiesChanged");
-  dbus::MessageWriter writer(&signal);
-  writer.AppendString(kInterfaceStatusNotifierItem);
+  auto* multiplexer_item = Multiplexer::GetMultiplexerItem();
+  if (!multiplexer_item) {
+    return;
+  }
 
-  // Changed properties.
-  dbus::MessageWriter array_writer(nullptr);
-  writer.OpenArray("{sv}", &array_writer);
-  dbus::MessageWriter dict_entry_writer(nullptr);
-  array_writer.OpenDictEntry(&dict_entry_writer);
-  dict_entry_writer.AppendString(property_name);
-  properties_[property_name].Write(dict_entry_writer);
-  array_writer.CloseContainer(&dict_entry_writer);
-  writer.CloseContainer(&array_writer);
+  for (const char* interface : {kInterfaceStatusNotifierItem,
+                                kInterfaceStatusNotifierItemFreedesktop}) {
+    dbus::Signal signal(DBUS_INTERFACE_PROPERTIES, "PropertiesChanged");
+    dbus::MessageWriter writer(&signal);
+    writer.AppendString(interface);
 
-  // Invalidated properties.
-  writer.AppendArrayOfStrings({});
+    // Changed properties.
+    dbus::MessageWriter array_writer(nullptr);
+    writer.OpenArray("{sv}", &array_writer);
+    dbus::MessageWriter dict_entry_writer(nullptr);
+    array_writer.OpenDictEntry(&dict_entry_writer);
+    dict_entry_writer.AppendString(property_name);
+    properties_[property_name].Write(dict_entry_writer);
+    array_writer.CloseContainer(&dict_entry_writer);
+    writer.CloseContainer(&array_writer);
 
-  if (auto* multiplexer_item = Multiplexer::GetMultiplexerItem()) {
+    // Invalidated properties.
+    writer.AppendArrayOfStrings({});
+
     multiplexer_item->SendSignal(&signal);
   }
 }

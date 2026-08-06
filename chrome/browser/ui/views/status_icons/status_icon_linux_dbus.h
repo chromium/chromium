@@ -53,6 +53,9 @@ class StatusIconLinuxDbus : public ui::StatusIconLinux,
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
 
+  static void ExportMultiplexerMethodsForTesting(dbus::Bus* bus);
+  static void UnexportMultiplexerMethodsForTesting(dbus::Bus* bus);
+
  private:
   friend class base::RefCounted<StatusIconLinuxDbus>;
 
