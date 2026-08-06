@@ -225,6 +225,18 @@ class CC_EXPORT LayerImpl {
   gfx::Transform DrawTransform() const;
   gfx::Transform ScreenSpaceTransform() const;
 
+  // Returns the visible rect of this layer in layer space.
+  //
+  // Use VisibleLayerRect() when querying the visible rect of a layer that may
+  // not draw content or contribute to a drawn render surface (e.g., a layer
+  // containing tracked element rects, selection handles, or region capture
+  // bounds).
+  //
+  // If `contributes_to_drawn_render_surface()` is true, this returns the cached
+  // `draw_properties().visible_layer_rect`. Otherwise, it dynamically computes
+  // the visible rect on demand using property trees.
+  gfx::Rect VisibleLayerRect() const;
+
   // Setter for draw_properties_.
   void SetVisibleLayerRectForTesting(const gfx::Rect& visible_rect) {
     draw_properties_.visible_layer_rect = visible_rect;
@@ -240,6 +252,12 @@ class CC_EXPORT LayerImpl {
   gfx::Rect visible_drawable_content_rect() const {
     return draw_properties_.visible_drawable_content_rect;
   }
+  // Shortcut accessor for draw_properties_.visible_layer_rect.
+  //
+  // WARNING: This returns the cached value computed during
+  // UpdateDrawProperties(). If `contributes_to_drawn_render_surface()` is
+  // false, this cached rect is NOT updated and will remain empty. When querying
+  // a layer that may not draw content, use VisibleLayerRect() instead.
   gfx::Rect visible_layer_rect() const {
     return draw_properties_.visible_layer_rect;
   }

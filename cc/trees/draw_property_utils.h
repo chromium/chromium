@@ -13,6 +13,7 @@
 #include "cc/layers/layer_collections.h"
 
 namespace gfx {
+class Rect;
 class Transform;
 class Vector2dF;
 }  // namespace gfx
@@ -65,6 +66,9 @@ gfx::Transform CC_EXPORT ScreenSpaceTransform(const Layer* layer,
                                               const TransformTree& tree);
 gfx::Transform CC_EXPORT ScreenSpaceTransform(const LayerImpl* layer,
                                               const TransformTree& tree);
+
+gfx::Rect CC_EXPORT LayerVisibleRect(const LayerImpl* layer,
+                                     PropertyTrees* property_trees);
 
 void CC_EXPORT UpdatePageScaleFactor(PropertyTrees* property_trees,
                                      TransformNode* page_scale_node,
