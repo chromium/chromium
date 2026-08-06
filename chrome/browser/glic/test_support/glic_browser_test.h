@@ -322,6 +322,21 @@ class GlicBrowserTestMixin : public T {
     return WaitForGlicOpen(tab);
   }
 
+  // Simulates a user input submission, triggering OnUserInputSubmitted on the
+  // client handler.
+  void SimulateUserInputSubmitted(
+      GlicInstanceImpl* instance = nullptr,
+      mojom::WebClientMode mode = mojom::WebClientMode::kText) {
+    if (!instance) {
+      instance = GetOnlyGlicInstance();
+    }
+    CHECK(instance);
+    ASSERT_OK(WaitForGlicClient(instance));
+    GlicWebClientAccess* client = instance->host().GetPrimaryWebClient();
+    CHECK(client);
+    client->OnUserInputSubmittedForTesting(mode);
+  }
+
   [[nodiscard]] TestResult<> WaitForInstanceDeletion(
       base::WeakPtr<GlicInstanceImpl> instance) {
     return RunUntilEqual<GlicInstanceImpl*>([&]() { return instance.get(); },
@@ -804,7 +819,6 @@ class GlicBrowserTestMixin : public T {
   }
 
   GURL GetGuestURL() { return glic_test_environment_.GetGuestURL(); }
-
 
   [[nodiscard]] TestResult<void> WaitForGlicClient(
       GlicInstance* instance = nullptr) {

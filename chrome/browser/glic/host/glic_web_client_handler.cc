@@ -1564,6 +1564,10 @@ class GlicWebClientHandler
     web_client_->Invoke(std::move(options), std::move(callback));
   }
 
+  void OnUserInputSubmittedForTesting(mojom::WebClientMode mode) override {
+    OnUserInputSubmitted(mode);
+  }
+
  private:
   glic::mojom::GeminiEnterpriseSettingsPtr GetGeminiEnterpriseSettingsPtr()
       const {

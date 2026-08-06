@@ -57,16 +57,12 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayBrowserTest,
           /*is_using_keyboard=*/false);
 
   // 6. Submit user input and verify metrics.
-  auto& host = instance->host();
-
-  host.instance_metrics_backwards_compatibility().OnUserInputSubmitted(
-      mojom::WebClientMode::kText);
+  SimulateUserInputSubmitted(instance, mojom::WebClientMode::kText);
   histogram_tester.ExpectBucketCount(
       "Glic.Instance.InputSubmitted.SelectionCount", 1, 1);
 
   // Submit another input, should still log 1.
-  host.instance_metrics_backwards_compatibility().OnUserInputSubmitted(
-      mojom::WebClientMode::kText);
+  SimulateUserInputSubmitted(instance, mojom::WebClientMode::kText);
   histogram_tester.ExpectBucketCount(
       "Glic.Instance.InputSubmitted.SelectionCount", 1, 2);
 
@@ -74,8 +70,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayBrowserTest,
   controller->Close();
 
   // Submit another input, should log 0.
-  host.instance_metrics_backwards_compatibility().OnUserInputSubmitted(
-      mojom::WebClientMode::kText);
+  SimulateUserInputSubmitted(instance, mojom::WebClientMode::kText);
   histogram_tester.ExpectBucketCount(
       "Glic.Instance.InputSubmitted.SelectionCount", 0, 1);
   histogram_tester.ExpectTotalCount(
