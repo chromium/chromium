@@ -81,7 +81,7 @@ AtMemoryPromoBubbleView::AtMemoryPromoBubbleView(
   SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  l10n_util::GetStringUTF16(IDS_AT_MEMORY_PROMO_GOT_IT_BUTTON));
   SetButtonStyle(ui::mojom::DialogButton::kOk, ui::ButtonStyle::kProminent);
-  SetButtonStyle(ui::mojom::DialogButton::kCancel, ui::ButtonStyle::kDefault);
+  SetButtonStyle(ui::mojom::DialogButton::kCancel, ui::ButtonStyle::kTonal);
   SetDefaultButton(static_cast<int>(ui::mojom::DialogButton::kNone));
 
   SetAcceptCallback(base::BindOnce(&AtMemoryPromoBubbleView::OnLearnMoreClicked,
