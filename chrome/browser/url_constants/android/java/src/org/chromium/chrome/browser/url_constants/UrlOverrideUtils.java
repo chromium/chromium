@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.url_constants;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -23,13 +24,16 @@ public class UrlOverrideUtils {
 
     /**
      * Returns true if the WebUI NTP override is enabled. This runtime check evaluates to true only
-     * when the WebUI NTP feature or commandline flag is enabled and the user's DSE is Google.
+     * when it's a desktop platform, the WebUI NTP feature is enabled, and the user's DSE is Google.
      *
      * <p>In case the user's DSE changes to a 3P DSE at runtime, then the WebUI NTP override
      * eligibility evaluates to false, and the native NTP is used instead. As of today, the WebUI
      * NTP override only applies to desktop Android platforms.
      */
     public static boolean isWebUiNtpOverrideEnabled() {
+        if (!DeviceInfo.isDesktop()) {
+            return false;
+        }
         if (!ChromeFeatureList.sUseWebUiNtpAndroid.isEnabled()) {
             return false;
         }
