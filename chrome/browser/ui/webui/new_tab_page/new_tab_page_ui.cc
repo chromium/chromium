@@ -163,6 +163,13 @@ using content::WebContents;
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(NewTabPageUI,
                                       kRealboxContextualEntrypointElementId);
 
+// TODO(b/507919199): Remove this definition once Android implements the NTP
+// customize chrome handler.
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CustomizeButtonsHandler,
+                                      kCustomizeChromeButtonElementId);
+#endif
+
 bool NewTabPageUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
@@ -1029,17 +1036,10 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
   OnCustomBackgroundImageUpdated();
   OnLoad();
 
-  // TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
   ui::TrackedElementHandlerDocumentSingleton::Register(
       this, std::vector<ui::ElementIdentifier>{
                 CustomizeButtonsHandler::kCustomizeChromeButtonElementId,
                 NewTabPageUI::kRealboxContextualEntrypointElementId});
-#else
-  ui::TrackedElementHandlerDocumentSingleton::Register(
-      this, std::vector<ui::ElementIdentifier>{
-                NewTabPageUI::kRealboxContextualEntrypointElementId});
-#endif
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(NewTabPageUI)
