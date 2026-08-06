@@ -3416,10 +3416,12 @@ static_library("ui") {
   # chromeos, so the corresponding consent functionality are
   # limited to the same set of platforms.
   if (is_win || is_mac || is_linux || is_chromeos) {
-    sources += [
-      "views/device_signals_consent/consent_dialog_coordinator.cc",
-      "views/device_signals_consent/consent_dialog_coordinator.h",
+    deps += [
+      "//chrome/browser/ui/views/device_signals_consent",
+      "//chrome/browser/ui/views/device_signals_consent:impl",
     ]
+    allow_circular_includes_from +=
+        [ "//chrome/browser/ui/views/device_signals_consent:impl" ]
   }
   if (enable_webui_certificate_viewer) {
     sources += [

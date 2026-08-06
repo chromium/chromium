@@ -750,6 +750,7 @@ source_set("impl") {
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence",
       "//chrome/browser/enterprise/connectors/device_trust/signals",
       "//chrome/browser/enterprise/connectors/device_trust/signals/decorators/common",
+      "//chrome/browser/ui/views/device_signals_consent",
       "//components/device_signals/core/browser",
       "//components/device_signals/core/common",
       "//components/enterprise/device_trust",

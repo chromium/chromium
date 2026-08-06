@@ -65,6 +65,7 @@ source_set("unit_tests") {
       "//base",
       "//chrome/browser/enterprise:impl",
       "//chrome/browser/enterprise/connectors/device_trust/signals:test_support",
+      "//chrome/browser/ui/views/device_signals_consent",
       "//chrome/test:test_support",
       "//components/device_signals/core/browser:test_support",
       "//components/enterprise/device_trust/core:device_trust_connector_service",

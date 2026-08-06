@@ -3198,7 +3198,10 @@ if (!is_android) {
 
     if (is_win || is_mac || is_linux || is_chromeos) {
       sources += [ "../browser/ui/views/device_signals_consent/consent_dialog_browsertest.cc" ]
-      deps += [ "//chrome/browser/ui/views/hats" ]
+      deps += [
+        "//chrome/browser/ui/views/device_signals_consent",
+        "//chrome/browser/ui/views/hats",
+      ]
     }
 
     if (is_win || is_mac || is_linux) {
