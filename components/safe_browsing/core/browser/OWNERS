@@ -6,3 +6,6 @@ per-file credit_card_form*=bcb@chromium.org
 
 per-file suspicious_site_warning_allowlist*=richche@google.com
 per-file suspicious_site_warning_allowlist*=awado@google.com
+
+# HaTS
+per-file safe_browsing_hats_delegate*=nwokedi@chromium.org
