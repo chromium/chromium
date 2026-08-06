@@ -5139,6 +5139,7 @@
                         "MigratedCollectedCookies": "true",
                         "MigratedGoogleApiKeys": "true",
                         "MigratedInstallerDownloader": "true",
+                        "MigratedKnownInterceptionDisclosure": "true",
                         "MigratedObsoleteSystem": "true",
                         "MigratedPageInfo": "true",
                         "MigratedPdf": "true",
