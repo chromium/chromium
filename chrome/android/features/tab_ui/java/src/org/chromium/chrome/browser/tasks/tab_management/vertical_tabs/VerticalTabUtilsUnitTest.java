@@ -89,8 +89,7 @@ public class VerticalTabUtilsUnitTest {
     @Config(qualifiers = "sw600dp")
     public void testIsVerticalTabsEnabled_FalseWhenNotEligible() {
         FeatureOverrides.disable(ChromeFeatureList.ANDROID_VERTICAL_TABS);
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, true);
+        VerticalTabUtils.setVerticalTabsEnabled(true);
         assertFalse(VerticalTabUtils.isVerticalTabsEnabled(mContext));
     }
 
@@ -99,8 +98,7 @@ public class VerticalTabUtilsUnitTest {
     @Config(qualifiers = "sw600dp")
     public void testIsVerticalTabsEnabled_FalseWhenPreferenceDisabled() {
         FeatureOverrides.enable(ChromeFeatureList.ANDROID_VERTICAL_TABS);
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, false);
+        VerticalTabUtils.setVerticalTabsEnabled(false);
         assertFalse(VerticalTabUtils.isVerticalTabsEnabled(mContext));
     }
 
@@ -109,8 +107,7 @@ public class VerticalTabUtilsUnitTest {
     @Config(qualifiers = "sw600dp")
     public void testIsVerticalTabsEnabled_Enabled() {
         FeatureOverrides.enable(ChromeFeatureList.ANDROID_VERTICAL_TABS);
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, true);
+        VerticalTabUtils.setVerticalTabsEnabled(true);
         assertTrue(VerticalTabUtils.isVerticalTabsEnabled(mContext));
     }
 
@@ -192,5 +189,56 @@ public class VerticalTabUtilsUnitTest {
         VerticalTabUtils.recordLayoutToggle(entryPoint, isEnabling);
 
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    @Config(qualifiers = "sw600dp")
+    public void testIsVerticalTabsEnabled_DefaultFalseWhenEligible() {
+        FeatureOverrides.enable(ChromeFeatureList.ANDROID_VERTICAL_TABS);
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS,
+                VerticalTabUtils.ENABLE_BY_DEFAULT_PARAM,
+                false);
+
+        // Preference is not set, should default to false.
+        assertFalse(VerticalTabUtils.isVerticalTabsEnabled(mContext));
+    }
+
+    @Test
+    @SmallTest
+    @Config(qualifiers = "sw600dp")
+    public void testIsVerticalTabsEnabled_DefaultTrueWhenEligible() {
+        FeatureOverrides.enable(ChromeFeatureList.ANDROID_VERTICAL_TABS);
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS,
+                VerticalTabUtils.ENABLE_BY_DEFAULT_PARAM,
+                true);
+
+        // Preference is not set, should default to true when eligible.
+        assertTrue(VerticalTabUtils.isVerticalTabsEnabled(mContext));
+    }
+
+    @Test
+    @SmallTest
+    @Config(qualifiers = "sw600dp")
+    public void testIsVerticalTabsEnabled_RespectsPrefOverDefault() {
+        FeatureOverrides.enable(ChromeFeatureList.ANDROID_VERTICAL_TABS);
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS,
+                VerticalTabUtils.ENABLE_BY_DEFAULT_PARAM,
+                true);
+
+        // Explicitly set preference to false.
+        VerticalTabUtils.setVerticalTabsEnabled(false);
+
+        // Should respect preference (false) over default (true).
+        assertFalse(VerticalTabUtils.isVerticalTabsEnabled(mContext));
+
+        // Explicitly set preference to true.
+        VerticalTabUtils.setVerticalTabsEnabled(true);
+
+        // Should respect preference (true).
+        assertTrue(VerticalTabUtils.isVerticalTabsEnabled(mContext));
     }
 }
