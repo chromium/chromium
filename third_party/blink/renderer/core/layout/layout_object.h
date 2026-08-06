@@ -3745,11 +3745,12 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // object's InvalidatePaint(). It's different from
   // DisplayItemClient::GetPaintInvalidationReason() which is set during
   // PrePaint and cleared in PaintController::FinishCycle().
-  unsigned paint_invalidation_reason_for_pre_paint_ : 5;
+  unsigned paint_invalidation_reason_for_pre_paint_ : 5 =
+      static_cast<unsigned>(PaintInvalidationReason::kNone);
 
   // This is the cached 'position' value of this object
   // (see ComputedStyle::position).
-  unsigned positioned_state_ : 2;  // PositionedState
+  unsigned positioned_state_ : 2 = kIsStaticallyPositioned;  // PositionedState
 
   // `selection_state_` is direct mapping of the DOM selection into the
   // respective LayoutObjects that `CanBeSelectionLeaf()`.
@@ -3757,23 +3758,26 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // account whether such a LayoutObject will be painted. If selection
   // starts/ends in an object that is not painted, we won't be able to record
   // the bounds for composited selection state that is pushed to cc.
-  unsigned selection_state_ : 3;            // SelectionState
-  unsigned selection_state_for_paint_ : 3;  // SelectionState
+  unsigned selection_state_ : 3 = static_cast<unsigned>(SelectionState::kNone);
+  unsigned selection_state_for_paint_ : 3 =
+      static_cast<unsigned>(SelectionState::kNone);
 
   // Reasons for the full subtree invalidation.
   unsigned subtree_paint_property_update_reasons_
-      : kSubtreePaintPropertyUpdateReasonsBitfieldWidth;
+      : kSubtreePaintPropertyUpdateReasonsBitfieldWidth =
+          static_cast<unsigned>(SubtreePaintPropertyUpdateReason::kNone);
 
   // For LayoutBox. It's updated during PrePaint.
-  unsigned background_paint_location_ : 2;  // BackgroundPaintLocation.
+  unsigned background_paint_location_ : 2 =
+      kBackgroundPaintInBorderBoxSpace;  // BackgroundPaintLocation.
 
-  unsigned overflow_clip_axes_ : 2;
+  unsigned overflow_clip_axes_ : 2 = kNoOverflowClip;
 
 #if DCHECK_IS_ON()
-  unsigned has_ax_object_ : 1;
-  unsigned set_needs_layout_forbidden_ : 1;
-  unsigned as_image_observer_count_ : 20;
+  unsigned has_ax_object_ : 1 = false;
+  unsigned set_needs_layout_forbidden_ : 1 = false;
   unsigned is_in_detached_non_dom_tree_ : 1 = false;
+  unsigned as_image_observer_count_ : 20 = 0u;
 #endif
 
   // Typically indicates that this object has had its style changed, and

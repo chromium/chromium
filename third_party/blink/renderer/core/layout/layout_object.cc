@@ -456,26 +456,8 @@ LayoutBlockFlow* LayoutObject::CreateBlockFlowOrListItem(
 }
 
 LayoutObject::LayoutObject(Node* node)
-    : paint_invalidation_reason_for_pre_paint_(
-          static_cast<unsigned>(PaintInvalidationReason::kNone)),
-      positioned_state_(kIsStaticallyPositioned),
-      selection_state_(static_cast<unsigned>(SelectionState::kNone)),
-      selection_state_for_paint_(static_cast<unsigned>(SelectionState::kNone)),
-      subtree_paint_property_update_reasons_(
-          static_cast<unsigned>(SubtreePaintPropertyUpdateReason::kNone)),
-      background_paint_location_(kBackgroundPaintInBorderBoxSpace),
-      overflow_clip_axes_(kNoOverflowClip),
-#if DCHECK_IS_ON()
-      has_ax_object_(false),
-      set_needs_layout_forbidden_(false),
-      as_image_observer_count_(0),
-#endif
-      is_anonymous_(!node),
-      style_(nullptr),
+    : is_anonymous_(!node),
       node_(node),
-      parent_(nullptr),
-      previous_(nullptr),
-      next_(nullptr),
       fragment_(MakeGarbageCollected<FragmentDataList>()) {
 #if DCHECK_IS_ON()
   fragment_->SetIsFirst();
