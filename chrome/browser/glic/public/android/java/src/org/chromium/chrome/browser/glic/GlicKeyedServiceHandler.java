@@ -78,6 +78,27 @@ public final class GlicKeyedServiceHandler {
     }
 
     /**
+     * Invokes the GLIC service, opening the panel with the given tab as context and prepopulating
+     * the prompt box.
+     *
+     * @param profile The current profile.
+     * @param tab The {@link Tab} to target.
+     * @param text The text prompt to populate.
+     * @param invocationSource How the UI was triggered.
+     * @return true if the service was successfully invoked.
+     */
+    public static boolean invokeWithPrompt(
+            Profile profile, Tab tab, String text, @GlicInvocationSource int invocationSource) {
+        GlicKeyedService service = GlicKeyedServiceFactory.getForProfile(profile);
+        if (service == null) {
+            return false;
+        }
+
+        service.invokeWithPrompt(tab, text, invocationSource);
+        return true;
+    }
+
+    /**
      * Invokes the GLIC service, opening the panel with the given tab as context (no auto-submit).
      *
      * @param profile The current profile.
