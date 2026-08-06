@@ -6713,6 +6713,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5980" label="UAReplaceEndAddListener"/>
   <int value="5981" label="AdImageHDR"/>
   <int value="5982" label="AdVideoHDR"/>
+  <int value="5983" label="LocalNetworkAccessShouldTreatAsPublicAddressCsp"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

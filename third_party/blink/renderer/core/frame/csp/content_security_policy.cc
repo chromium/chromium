@@ -352,6 +352,9 @@ void ContentSecurityPolicy::ReportUseCounters(
     const Vector<network::mojom::blink::ContentSecurityPolicyPtr>& policies) {
   for (const auto& policy : policies) {
     Count(GetUseCounterType(policy->header->type));
+    if (policy->treat_as_public_address) {
+      Count(WebFeature::kLocalNetworkAccessShouldTreatAsPublicAddressCsp);
+    }
     if (CSPDirectiveListAllowDynamic(*policy,
                                      CSPDirectiveName::ScriptSrcAttr) ||
         CSPDirectiveListAllowDynamic(*policy,

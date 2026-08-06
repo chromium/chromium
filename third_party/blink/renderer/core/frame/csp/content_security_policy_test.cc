@@ -1440,6 +1440,32 @@ TEST_F(ContentSecurityPolicyTest, UnsafeHashesMetric) {
   }
 }
 
+TEST_F(ContentSecurityPolicyTest, TreatAsPublicAddressMetric) {
+  struct TestCase {
+    const char* header;
+    bool expected_use_counted;
+  } cases[] = {
+      {"script-src 'self'", false},
+      {"treat-as-public-address", true},
+  };
+
+  for (const auto& test : cases) {
+    SCOPED_TRACE(testing::Message() << "Header: `" << test.header << "`");
+    csp = MakeGarbageCollected<ContentSecurityPolicy>();
+    csp->AddPolicies(ParseContentSecurityPolicies(
+        test.header, ContentSecurityPolicyType::kEnforce,
+        ContentSecurityPolicySource::kHTTP, *secure_origin));
+    auto dummy = std::make_unique<DummyPageHolder>();
+    csp->BindToDelegate(
+        dummy->GetFrame().DomWindow()->GetContentSecurityPolicyDelegate());
+
+    EXPECT_EQ(
+        test.expected_use_counted,
+        dummy->GetDocument().IsUseCounted(
+            WebFeature::kLocalNetworkAccessShouldTreatAsPublicAddressCsp));
+  }
+}
+
 TEST_F(ContentSecurityPolicyTest, UrlEvalHashesMetric) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({network::features::kCSPScriptSrcHashesInV1},
