@@ -3630,6 +3630,25 @@ TEST_P(WebMediaPlayerImplBackgroundBehaviorTest, AudioOnly_Remute) {
   EXPECT_TRUE(ShouldPausePlaybackWhenHidden());
 }
 
+TEST_P(WebMediaPlayerImplBackgroundBehaviorTest,
+       AudioVideo_MutedWithoutMediaSuspend) {
+  base::test::ScopedFeatureList scoped_background_audio_flag{
+      media::kPauseMutedBackgroundAudio};
+  SCOPED_TRACE(testing::Message() << PrintValues());
+  EXPECT_CALL(client_, WasAlwaysMuted())
+      .WillOnce(Return(true))
+      .WillRepeatedly(Return(false));
+  SetMetadata(true, true);
+  SetVolume(0.0);
+  // When IsMediaSuspendOn() is false (e.g., desktop or Android large form
+  // factor), kPauseMutedBackgroundAudio should not pause muted audio+video
+  // playback if background video playback is enabled.
+  if (!IsMediaSuspendOn() && IsBackgroundVideoPlaybackEnabled() &&
+      !IsFrameHiddenAndShouldPauseWhenHidden()) {
+    EXPECT_FALSE(ShouldPausePlaybackWhenHidden());
+  }
+}
+
 TEST_P(WebMediaPlayerImplBackgroundBehaviorTest, AudioOnly) {
   SCOPED_TRACE(testing::Message() << PrintValues());
   // Audio only players should pause if they are muted and not captured.
