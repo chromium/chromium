@@ -237,8 +237,8 @@ class AtMemoryManager : public CreditCardAccessManager::Observer {
       std::unique_ptr<AtMemoryMetricsRecorder> metrics,
       base::expected<EntityInstance, AutofillAiAccessManager::FailureReason>
           result,
-      bool did_fetch_from_server,
-      bool reauth_attempted);
+      bool reauth_attempted,
+      bool did_fetch_from_server);
 
   // Encapsulates active session state for an AtMemory UI interaction.
   struct SessionState {

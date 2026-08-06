@@ -37,8 +37,8 @@ class AutofillAiAccessManager {
 
   using OnEntityInstanceFetchedCallback = base::OnceCallback<void(
       base::expected<EntityInstance, FailureReason> result,
-      bool did_fetch_from_server,
-      bool reauth_attempted)>;
+      bool reauth_attempted,
+      bool did_fetch_from_server)>;
 
   explicit AutofillAiAccessManager(BrowserAutofillManager* manager);
   AutofillAiAccessManager(const AutofillAiAccessManager&) = delete;

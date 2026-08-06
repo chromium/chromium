@@ -844,8 +844,8 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_AttributeSuccess) {
         .WillOnce([&](EntityInstance entity, bool will_fill,
                       AutofillAiAccessManager::OnEntityInstanceFetchedCallback
                           callback) {
-          std::move(callback).Run(entity, /*did_fetch_from_server=*/true,
-                                  /*reauth_attempted=*/false);
+          std::move(callback).Run(entity, /*reauth_attempted=*/false,
+                                  /*did_fetch_from_server=*/true);
           return true;
         });
     EXPECT_CALL(autofill_client(),
@@ -1139,8 +1139,8 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_FetchFailed) {
         std::move(callback).Run(
             base::unexpected(
                 AutofillAiAccessManager::FailureReason::kFetchFailed),
-            /*did_fetch_from_server=*/true,
-            /*reauth_attempted=*/false);
+            /*reauth_attempted=*/false,
+            /*did_fetch_from_server=*/true);
         return true;
       });
 

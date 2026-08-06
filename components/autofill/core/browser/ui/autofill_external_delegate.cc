@@ -121,8 +121,8 @@ void OnEntityInstanceFetched(
     const FieldTypeSet& ai_field_types,
     base::expected<EntityInstance, AutofillAiAccessManager::FailureReason>
         result,
-    bool did_fetch_from_server,
-    bool reauth_attempted) {
+    bool reauth_attempted,
+    bool did_fetch_from_server) {
   if (!manager) {
     return;
   }

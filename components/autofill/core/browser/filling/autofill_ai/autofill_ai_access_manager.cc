@@ -47,10 +47,10 @@ bool AutofillAiAccessManager::FetchEntityInstance(
       [](base::WeakPtr<AutofillAiAccessManager> self,
          OnEntityInstanceFetchedCallback on_fetched_callback,
          base::expected<EntityInstance, FailureReason> result,
-         bool did_fetch_from_server, bool reauth_attempted) {
+         bool reauth_attempted, bool did_fetch_from_server) {
         if (self) {
           std::move(on_fetched_callback)
-              .Run(std::move(result), did_fetch_from_server, reauth_attempted);
+              .Run(std::move(result), reauth_attempted, did_fetch_from_server);
         }
       },
       weak_ptr_factory_.GetWeakPtr(), std::move(on_fetched_callback));
@@ -159,8 +159,8 @@ void AutofillAiAccessManager::MaybeUnmaskServerEntity(
     bool reauth_attempted) {
   if (!should_fetch || !result.has_value()) {
     std::move(on_fetched_callback)
-        .Run(std::move(result), /*did_fetch_from_server=*/false,
-             reauth_attempted);
+        .Run(std::move(result), reauth_attempted,
+             /*did_fetch_from_server=*/false);
     return;
   }
 
@@ -179,12 +179,12 @@ void AutofillAiAccessManager::MaybeUnmaskServerEntity(
         }
         if (fetched_entity) {
           std::move(on_fetched_callback)
-              .Run(std::move(*fetched_entity),
-                   /*did_fetch_from_server=*/true, reauth_attempted);
+              .Run(std::move(*fetched_entity), reauth_attempted,
+                   /*did_fetch_from_server=*/true);
         } else {
           std::move(on_fetched_callback)
               .Run(base::unexpected(FailureReason::kFetchFailed),
-                   /*did_fetch_from_server=*/true, reauth_attempted);
+                   reauth_attempted, /*did_fetch_from_server=*/true);
         }
       },
       weak_ptr_factory_.GetWeakPtr(), std::move(on_fetched_callback),
