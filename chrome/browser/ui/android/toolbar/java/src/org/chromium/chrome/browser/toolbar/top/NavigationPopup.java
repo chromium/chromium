@@ -321,6 +321,8 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
 
     private void initListMenuHost(View anchorView) {
         mListMenuHost = new ListMenuHost(anchorView, null);
+        mListMenuHost.setMenuMaxWidth(calculateMaxWidthPx(anchorView.getRootView()));
+        mListMenuHost.tryToFitLargestItem(true);
         mListMenuHost.setDelegate(createListMenuDelegate(), false);
         mListMenuHost.addPopupListener(
                 new ListMenuHost.PopupMenuShownListener() {
@@ -332,6 +334,14 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
                         onDismiss();
                     }
                 });
+    }
+
+    private int calculateMaxWidthPx(View rootView) {
+        Resources res = mContext.getResources();
+        int viewportWidthPx = rootView.getWidth();
+        int maxWidthPx = res.getDimensionPixelSize(R.dimen.navigation_popup_tablet_max_width);
+        int gutterPx = res.getDimensionPixelSize(R.dimen.navigation_popup_tablet_width_margin);
+        return Math.min(viewportWidthPx - 2 * gutterPx, maxWidthPx);
     }
 
     private ListMenuDelegate createListMenuDelegate() {
