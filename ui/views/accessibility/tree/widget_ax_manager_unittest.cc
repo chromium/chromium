@@ -684,6 +684,121 @@ TEST_F(WidgetAXManagerTest,
   EXPECT_EQ(api.ax_tree_manager()->ax_tree()->GetFromId(child_id), nullptr);
 }
 
+// A view either shows a subtree (through the child tree id attribute) or its
+// own children. This test validates that adding a child tree id removes the
+// known children from the cache, and removing it adds the view's children back
+// into it.
+TEST_F(WidgetAXManagerTest, SendPendingUpdate_CacheFollowsChildTreeID) {
+  View* host = widget()->GetRootView()->AddChildView(std::make_unique<View>());
+  View* child = host->AddChildView(std::make_unique<View>());
+  View* grandchild = child->AddChildView(std::make_unique<View>());
+
+  WidgetAXManagerTestApi api(manager());
+  api.Enable();
+
+  const ui::AXNodeID child_id =
+      static_cast<ui::AXNodeID>(child->GetViewAccessibility().GetUniqueId());
+  const ui::AXNodeID grandchild_id = static_cast<ui::AXNodeID>(
+      grandchild->GetViewAccessibility().GetUniqueId());
+  EXPECT_NE(api.cache()->Get(child_id), nullptr);
+  EXPECT_NE(api.cache()->Get(grandchild_id), nullptr);
+
+  host->GetViewAccessibility().SetChildTreeID(
+      ui::AXTreeID::CreateNewAXTreeID());
+  api.WaitForNextSerialization();
+
+  EXPECT_EQ(api.cache()->Get(child_id), nullptr);
+  EXPECT_EQ(api.cache()->Get(grandchild_id), nullptr);
+  EXPECT_EQ(api.ax_tree_manager()->ax_tree()->GetFromId(child_id), nullptr);
+  EXPECT_EQ(api.ax_tree_manager()->ax_tree()->GetFromId(grandchild_id),
+            nullptr);
+
+  host->GetViewAccessibility().RemoveChildTreeID();
+  api.WaitForNextSerialization();
+
+  EXPECT_NE(api.cache()->Get(child_id), nullptr);
+  EXPECT_NE(api.cache()->Get(grandchild_id), nullptr);
+  EXPECT_NE(api.ax_tree_manager()->ax_tree()->GetFromId(child_id), nullptr);
+  EXPECT_NE(api.ax_tree_manager()->ax_tree()->GetFromId(grandchild_id),
+            nullptr);
+}
+
+// A view either shows nothing (when marked as a leaf) or its own children. This
+// test validates that marking a view as a leaf removes the known children from
+// the cache, and unmarking it adds the view's children back into it.
+TEST_F(WidgetAXManagerTest, SendPendingUpdate_CacheFollowsLeafState) {
+  View* host = widget()->GetRootView()->AddChildView(std::make_unique<View>());
+  View* child = host->AddChildView(std::make_unique<View>());
+  View* grandchild = child->AddChildView(std::make_unique<View>());
+
+  WidgetAXManagerTestApi api(manager());
+  api.Enable();
+
+  const ui::AXNodeID child_id =
+      static_cast<ui::AXNodeID>(child->GetViewAccessibility().GetUniqueId());
+  const ui::AXNodeID grandchild_id = static_cast<ui::AXNodeID>(
+      grandchild->GetViewAccessibility().GetUniqueId());
+  EXPECT_NE(api.cache()->Get(child_id), nullptr);
+  EXPECT_NE(api.cache()->Get(grandchild_id), nullptr);
+
+  host->GetViewAccessibility().SetIsLeaf(true);
+  api.WaitForNextSerialization();
+
+  EXPECT_EQ(api.cache()->Get(child_id), nullptr);
+  EXPECT_EQ(api.cache()->Get(grandchild_id), nullptr);
+  EXPECT_EQ(api.ax_tree_manager()->ax_tree()->GetFromId(child_id), nullptr);
+  EXPECT_EQ(api.ax_tree_manager()->ax_tree()->GetFromId(grandchild_id),
+            nullptr);
+
+  host->GetViewAccessibility().SetIsLeaf(false);
+  api.WaitForNextSerialization();
+
+  EXPECT_NE(api.cache()->Get(child_id), nullptr);
+  EXPECT_NE(api.cache()->Get(grandchild_id), nullptr);
+  EXPECT_NE(api.ax_tree_manager()->ax_tree()->GetFromId(child_id), nullptr);
+  EXPECT_NE(api.ax_tree_manager()->ax_tree()->GetFromId(grandchild_id),
+            nullptr);
+}
+
+// A view either shows its virtual children or its own children. This test
+// validates that adding the first virtual child removes the known children from
+// the cache, and removing the last one adds the view's children back into it.
+TEST_F(WidgetAXManagerTest, SendPendingUpdate_CacheFollowsVirtualChildren) {
+  View* host = widget()->GetRootView()->AddChildView(std::make_unique<View>());
+  View* child = host->AddChildView(std::make_unique<View>());
+  View* grandchild = child->AddChildView(std::make_unique<View>());
+
+  WidgetAXManagerTestApi api(manager());
+  api.Enable();
+
+  const ui::AXNodeID child_id =
+      static_cast<ui::AXNodeID>(child->GetViewAccessibility().GetUniqueId());
+  const ui::AXNodeID grandchild_id = static_cast<ui::AXNodeID>(
+      grandchild->GetViewAccessibility().GetUniqueId());
+  EXPECT_NE(api.cache()->Get(child_id), nullptr);
+  EXPECT_NE(api.cache()->Get(grandchild_id), nullptr);
+
+  auto virtual_child = std::make_unique<AXVirtualView>();
+  AXVirtualView* virtual_child_ptr = virtual_child.get();
+  host->GetViewAccessibility().AddVirtualChildView(std::move(virtual_child));
+  api.WaitForNextSerialization();
+
+  EXPECT_EQ(api.cache()->Get(child_id), nullptr);
+  EXPECT_EQ(api.cache()->Get(grandchild_id), nullptr);
+  EXPECT_EQ(api.ax_tree_manager()->ax_tree()->GetFromId(child_id), nullptr);
+  EXPECT_EQ(api.ax_tree_manager()->ax_tree()->GetFromId(grandchild_id),
+            nullptr);
+
+  host->GetViewAccessibility().RemoveVirtualChildView(virtual_child_ptr);
+  api.WaitForNextSerialization();
+
+  EXPECT_NE(api.cache()->Get(child_id), nullptr);
+  EXPECT_NE(api.cache()->Get(grandchild_id), nullptr);
+  EXPECT_NE(api.ax_tree_manager()->ax_tree()->GetFromId(child_id), nullptr);
+  EXPECT_NE(api.ax_tree_manager()->ax_tree()->GetFromId(grandchild_id),
+            nullptr);
+}
+
 TEST_F(WidgetAXManagerTest, SendPendingUpdate_SendsSerializedUpdates) {
   WidgetAXManagerTestApi api(manager());
 

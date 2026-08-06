@@ -869,6 +869,9 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // Recursively calls OnVirtualViewRemovedFromWidget for all virtual children.
   void OnVirtualViewRemovedFromWidget();
 
+  void NotifyChildrenAdded();
+  void NotifyChildrenRemoved();
+
   virtual void NotifyDataChanged();
 
   // Weak. Owns this.
