@@ -180,29 +180,34 @@ bool ToolbarIconContainerView::GetHighlighted() const {
     return false;
   }
 
-  if (IsMouseHovered() && (!main_item_ || !main_item_->IsMouseHovered())) {
+  const views::Widget* widget = GetWidget();
+  const bool is_widget_active = !widget || widget->ShouldPaintAsActive();
+
+  if (is_widget_active && IsMouseHovered() &&
+      (!main_item_ || !main_item_->IsMouseHovered())) {
     return true;
   }
 
-  // Focused, pressed or hovered children should trigger the highlight.
+  // Focused, pressed or hovered children should trigger the highlight when the
+  // widget is active. Highlighted buttons (e.g., anchored dialogs) trigger the
+  // highlight regardless of widget activation state.
   for (const views::View* child : children()) {
     if (child == main_item_) {
       continue;
     }
-    if (child->HasFocus()) {
-      return true;
-    }
     const views::Button* button = views::Button::AsButton(child);
-    if (!button) {
-      continue;
-    }
-    if (button->GetState() == views::Button::ButtonState::STATE_PRESSED ||
-        button->GetState() == views::Button::ButtonState::STATE_HOVERED) {
+    if (button && highlighted_buttons_.contains(button)) {
       return true;
     }
-    // The container should also be highlighted if a dialog is anchored to.
-    if (highlighted_buttons_.contains(button)) {
-      return true;
+    if (is_widget_active) {
+      if (child->HasFocus()) {
+        return true;
+      }
+      if (button &&
+          (button->GetState() == views::Button::ButtonState::STATE_PRESSED ||
+           button->GetState() == views::Button::ButtonState::STATE_HOVERED)) {
+        return true;
+      }
     }
   }
 
@@ -256,6 +261,19 @@ void ToolbarIconContainerView::AddedToWidget() {
   // Add an observer to reset the animation if the browser window is restored,
   // preventing spurious animation. (See crbug.com/40706372)
   restore_observer_ = std::make_unique<WidgetRestoreObserver>(this);
+  widget_observation_.Observe(GetWidget());
+}
+
+void ToolbarIconContainerView::RemovedFromWidget() {
+  widget_observation_.Reset();
+}
+
+void ToolbarIconContainerView::OnWidgetActivationChanged(views::Widget* widget,
+                                                         bool active) {
+  if (widget != GetWidget()) {
+    return;
+  }
+  UpdateHighlight();
 }
 
 void ToolbarIconContainerView::UpdateHighlight() {

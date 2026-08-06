@@ -1272,3 +1272,51 @@ TEST_F(ExtensionsToolbarDesktopWithPermittedSitesUnitTest,
   // is already tested, regardless of whether permitted sites are supported or
   // not.
 }
+
+class ExtensionsToolbarDesktopAccessControlDisabledUnitTest
+    : public ExtensionsToolbarUnitTest {
+ public:
+  ExtensionsToolbarDesktopAccessControlDisabledUnitTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        extensions_features::kExtensionsMenuAccessControl);
+  }
+  ExtensionsToolbarDesktopAccessControlDisabledUnitTest(
+      const ExtensionsToolbarDesktopAccessControlDisabledUnitTest&) = delete;
+  ExtensionsToolbarDesktopAccessControlDisabledUnitTest& operator=(
+      const ExtensionsToolbarDesktopAccessControlDisabledUnitTest&) = delete;
+  ~ExtensionsToolbarDesktopAccessControlDisabledUnitTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that when #extensions-menu-access-control is disabled, hovering over a
+// pinned extension highlights the container and button and deactivating the
+// browser widget clears container highlight.
+TEST_F(ExtensionsToolbarDesktopAccessControlDisabledUnitTest,
+       HighlightClearedOnDeactivation) {
+  auto extension = InstallExtension("Extension");
+  auto* toolbar_model = ToolbarActionsModel::Get(profile());
+  toolbar_model->SetActionVisibility(extension->id(), true);
+  WaitForAnimation();
+
+  ToolbarActionView* action_view =
+      extensions_container()->GetViewForId(extension->id());
+  ASSERT_TRUE(action_view);
+
+  // Activate the widget.
+  views::Widget* widget = extensions_container()->GetWidget();
+  widget->OnNativeWidgetActivationChanged(true);
+  EXPECT_TRUE(widget->ShouldPaintAsActive());
+
+  // Hover over the pinned extension action.
+  action_view->SetState(views::Button::ButtonState::STATE_HOVERED);
+  EXPECT_EQ(action_view->GetState(), views::Button::ButtonState::STATE_HOVERED);
+  EXPECT_TRUE(extensions_container()->GetHighlighted());
+
+  // Deactivate the widget.
+  widget->OnNativeWidgetActivationChanged(false);
+
+  // Verify container highlight is cleared.
+  EXPECT_FALSE(extensions_container()->GetHighlighted());
+}

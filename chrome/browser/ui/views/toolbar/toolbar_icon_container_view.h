@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_delegate.h"
@@ -16,10 +17,12 @@
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view.h"
+#include "ui/views/widget/widget_observer.h"
 
 // A general view container for any type of toolbar icons.
 class ToolbarIconContainerView : public views::View,
-                                 public views::ViewObserver {
+                                 public views::ViewObserver,
+                                 public views::WidgetObserver {
   METADATA_HEADER(ToolbarIconContainerView, views::View)
 
  public:
@@ -96,6 +99,10 @@ class ToolbarIconContainerView : public views::View,
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   void AddedToWidget() override;
+  void RemovedFromWidget() override;
+
+  // views::WidgetObserver:
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 
   void UpdateHighlight();
 
@@ -118,6 +125,9 @@ class ToolbarIconContainerView : public views::View,
 
   // Tracks when the widget is restored and resets the layout.
   std::unique_ptr<WidgetRestoreObserver> restore_observer_;
+
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_{this};
 
   std::list<base::CallbackListSubscription> subscriptions_;
 

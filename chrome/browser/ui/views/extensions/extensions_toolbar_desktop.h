@@ -41,7 +41,6 @@ class ExtensionsMenuCoordinator;
 class ExtensionsToolbarDesktop : public ToolbarIconContainerView,
                                  public ExtensionsContainerViews,
                                  public ToolbarActionView::Delegate,
-                                 public views::WidgetObserver,
                                  public ExtensionsToolbarViewModel::Delegate,
                                  public ExtensionsToolbarViewModel::Observer {
   METADATA_HEADER(ExtensionsToolbarDesktop, ToolbarIconContainerView)

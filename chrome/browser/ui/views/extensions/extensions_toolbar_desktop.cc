@@ -1036,7 +1036,10 @@ views::View::DropCallback ExtensionsToolbarDesktop::GetDropCallback(
 void ExtensionsToolbarDesktop::OnWidgetDestroying(views::Widget* widget) {
   auto iter =
       std::ranges::find(anchored_widgets_, widget, &AnchoredWidget::widget);
-  CHECK(iter != anchored_widgets_.end());
+  if (iter == anchored_widgets_.end()) {
+    ToolbarIconContainerView::OnWidgetDestroying(widget);
+    return;
+  }
   iter->widget->RemoveObserver(this);
   const std::string extension_id = std::move(iter->extension_id);
   anchored_widgets_.erase(iter);
