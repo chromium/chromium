@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_list.h"
+#include "base/memory/weak_ptr.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/browser/contextual_tasks/aim_message_poster.h"
@@ -29,8 +31,13 @@
 // Handles Mojo connection requests from the Contextual Tasks extension
 // document, implementing composebox and searchbox page handler interfaces.
 
+namespace omnibox {
+struct InputState;
+}  // namespace omnibox
+
 namespace contextual_search {
 class ContextualSearchSessionHandle;
+class InputStateModel;
 }  // namespace contextual_search
 
 namespace content {
@@ -209,6 +216,14 @@ class ContextualTasksExtensionHandler
       this};
 
   mojo::Remote<searchbox::mojom::Page> searchbox_page_;
+
+  void InitializeInputStateModel();
+  void OnInputStateChanged(const omnibox::InputState& state);
+  base::WeakPtr<contextual_search::InputStateModel>
+  GetOrCreateInputStateModel();
+
+  base::WeakPtr<contextual_search::InputStateModel> input_state_model_;
+  base::CallbackListSubscription input_state_subscription_;
 
   std::optional<base::Uuid> task_id_;
   omnibox::ToolMode active_tool_ = omnibox::TOOL_MODE_UNSPECIFIED;

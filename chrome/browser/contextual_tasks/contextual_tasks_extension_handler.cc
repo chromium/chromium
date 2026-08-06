@@ -8,6 +8,7 @@
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -15,8 +16,10 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
+#include "components/contextual_search/input_state_model.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_overlay_invocation_source.h"
+#include "components/omnibox/common/input_state.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
@@ -56,6 +59,8 @@ void ContextualTasksExtensionHandler::CreatePageHandler(
   searchbox_page_.Bind(std::move(searchbox_page));
   searchbox_handler_receiver_.reset();
   searchbox_handler_receiver_.Bind(std::move(searchbox_handler));
+
+  InitializeInputStateModel();
 }
 
 void ContextualTasksExtensionHandler::BindContextualTasksFactory(
@@ -207,7 +212,14 @@ void ContextualTasksExtensionHandler::WaitForTabFaviconLoad(
 }
 void ContextualTasksExtensionHandler::GetInputState(
     GetInputStateCallback callback) {
-  std::move(callback).Run(std::nullopt);
+  if (!input_state_model_) {
+    InitializeInputStateModel();
+  }
+  if (input_state_model_) {
+    std::move(callback).Run(input_state_model_->GetInputState());
+  } else {
+    std::move(callback).Run(std::nullopt);
+  }
 }
 void ContextualTasksExtensionHandler::NotifySessionStarted() {}
 void ContextualTasksExtensionHandler::NotifySessionAbandoned() {}
@@ -409,3 +421,54 @@ LensSearchController* ContextualTasksExtensionHandler::GetLensSearchController()
   return LensSearchController::FromTabWebContents(active_tab_contents);
 }
 #endif
+
+void ContextualTasksExtensionHandler::InitializeInputStateModel() {
+  input_state_model_ = GetOrCreateInputStateModel();
+  if (!input_state_model_) {
+    return;
+  }
+
+  content::WebContents* active_tab_contents = GetActiveTabWebContents();
+  if (active_tab_contents) {
+    Profile* profile =
+        Profile::FromBrowserContext(active_tab_contents->GetBrowserContext());
+    if (profile) {
+      input_state_model_->SetPrefService(profile->GetPrefs());
+    }
+  }
+
+  input_state_subscription_ = input_state_model_->subscribe(
+      base::BindRepeating(&ContextualTasksExtensionHandler::OnInputStateChanged,
+                          base::Unretained(this)));
+  input_state_model_->Initialize();
+}
+
+void ContextualTasksExtensionHandler::OnInputStateChanged(
+    const omnibox::InputState& state) {
+  if (searchbox_page_) {
+    searchbox_page_->OnInputStateChanged(state);
+  }
+}
+
+base::WeakPtr<contextual_search::InputStateModel>
+ContextualTasksExtensionHandler::GetOrCreateInputStateModel() {
+  auto* session_handle = GetOrCreateContextualSessionHandle();
+  if (!session_handle) {
+    return nullptr;
+  }
+  content::WebContents* active_tab_contents = GetActiveTabWebContents();
+  if (!active_tab_contents) {
+    return nullptr;
+  }
+  auto* user_data =
+      contextual_tasks::ContextualTasksWebContentsUserData::FromWebContents(
+          active_tab_contents);
+  if (!user_data) {
+    contextual_tasks::ContextualTasksWebContentsUserData::CreateForWebContents(
+        active_tab_contents);
+    user_data =
+        contextual_tasks::ContextualTasksWebContentsUserData::FromWebContents(
+            active_tab_contents);
+  }
+  return user_data->GetOrCreateInputStateModel(*session_handle);
+}

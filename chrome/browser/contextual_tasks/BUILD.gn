@@ -147,6 +147,7 @@ source_set("impl") {
   deps = [
     ":contextual_tasks",
     ":ui",
+    ":user_data",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/contextual_search",

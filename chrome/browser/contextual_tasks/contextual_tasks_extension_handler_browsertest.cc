@@ -152,4 +152,20 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
   run_loop.Run();
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
+                       GetInputState) {
+  base::RunLoop run_loop;
+
+  static_cast<searchbox::mojom::PageHandler*>(handler_)->GetInputState(
+      base::BindLambdaForTesting(
+          [&](const std::optional<omnibox::InputState>& state) {
+            // Since we are mocking the session, we expect a valid model to be
+            // created and a default InputState to be returned (not nullopt).
+            EXPECT_TRUE(state.has_value());
+            run_loop.Quit();
+          }));
+
+  run_loop.Run();
+}
+
 }  // namespace contextual_tasks
