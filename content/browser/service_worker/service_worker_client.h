@@ -395,6 +395,18 @@ class CONTENT_EXPORT ServiceWorkerClient final
   bool is_inherited() const { return is_inherited_; }
   void SetInherited() { is_inherited_ = true; }
 
+  // A client hosted by a privileged WebContents (see //chrome's
+  // PrivilegedWebContents) that forbids service worker control is permanently
+  // ineligible to be controlled by a service worker (see
+  // IsEligibleForServiceWorkerController). The bit is set for window clients at
+  // response commit and inherited by worker clients from their creator.
+  bool disallows_service_worker_control() const {
+    return disallows_service_worker_control_;
+  }
+  void SetDisallowsServiceWorkerControl() {
+    disallows_service_worker_control_ = true;
+  }
+
   const base::WeakPtr<ServiceWorkerContextCore>& context() const {
     return context_;
   }
@@ -607,6 +619,11 @@ class CONTENT_EXPORT ServiceWorkerClient final
 
   // Become true if the container is inherited by other container.
   bool is_inherited_ = false;
+
+  // Set once for a client hosted by a privileged WebContents that forbids
+  // service worker control; makes the client permanently ineligible to be
+  // controlled. See disallows_service_worker_control().
+  bool disallows_service_worker_control_ = false;
 
   // The observer for the running status change.
   // It is used for notifying the ServiceWorker running status change to

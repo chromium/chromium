@@ -24,6 +24,7 @@
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_security_utils.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/worker_host/dedicated_worker_host.h"
 #include "content/browser/worker_host/dedicated_worker_service_impl.h"
 #include "content/browser/worker_host/shared_worker_host.h"
@@ -504,6 +505,25 @@ ServiceWorkerClient::CommitResponse(
     if (rfh) {
       rfh->AddServiceWorkerClient(client_uuid(),
                                   weak_ptr_factory_.GetWeakPtr());
+      // A window client hosted by a privileged WebContents (see //chrome's
+      // PrivilegedWebContents) that forbids service worker control is
+      // permanently ineligible to be controlled by a service worker. This is
+      // determined here, at response commit, because that is the first point
+      // where the client's RenderFrameHost (and thus its WebContents) is known.
+      // Interception of the navigation itself is prevented separately, at
+      // navigation start (NavigationRequest sets skip_service_worker); this bit
+      // additionally blocks the non-interception control paths (ClaimClients,
+      // registration/controller inheritance), so a privileged client can never
+      // become controlled.
+      if (WebContentsImpl* web_contents =
+              WebContentsImpl::FromRenderFrameHostImpl(rfh)) {
+        const std::optional<WebContents::PrivilegedParams>& privileged_params =
+            web_contents->privileged_params();
+        if (privileged_params &&
+            privileged_params->disallow_service_worker_control) {
+          SetDisallowsServiceWorkerControl();
+        }
+      }
     }
   }
 
@@ -736,6 +756,12 @@ void ServiceWorkerClient::SetControllerRegistration(
 
 bool ServiceWorkerClient::IsEligibleForServiceWorkerController() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // A client hosted by a privileged WebContents that forbids service worker
+  // control is permanently ineligible; this dominates every other check.
+  if (disallows_service_worker_control_) {
+    return false;
+  }
 
   if (!url_.is_valid()) {
     return false;
@@ -1188,6 +1214,14 @@ void ServiceWorkerClient::InheritControllerFrom(
   if (client_url.SchemeIsBlob()) {
     service_worker_security_utils::CheckOnUpdateUrls(client_url,
                                                      creator_host.key());
+  }
+
+  // Inherit the creator's hard service-worker ineligibility. When set, the
+  // creator is itself uncontrolled, so the controller-inheritance below is a
+  // no-op (there is no controller to inherit), and the new client stays
+  // permanently ineligible.
+  if (creator_host.disallows_service_worker_control()) {
+    SetDisallowsServiceWorkerControl();
   }
 
   // Let `scope_match_url_for_client_` be the creator's url for scope match
