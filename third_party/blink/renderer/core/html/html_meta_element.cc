@@ -770,7 +770,7 @@ void HTMLMetaElement::ProcessContent() {
 
 bool HTMLMetaElement::IsAllowOrigins() const {
   const AtomicString& allow_origins =
-      FastGetAttribute(html_names::kAlloworiginsAttr);
+      FastGetAttribute(html_names::kContentAttr);
   if (allow_origins.IsNull()) {
     return false;
   }

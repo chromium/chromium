@@ -416,9 +416,8 @@ TEST_F(HTMLMetaElementSimTest, ResponsiveEmbeddedSizingAllowOrigins) {
 
     String meta_tag;
     if (test.allow_origins_attr) {
-      meta_tag =
-          StrCat({R"(<meta name="responsive-embedded-sizing" alloworigins=")",
-                  test.allow_origins_attr, R"(">)"});
+      meta_tag = StrCat({R"(<meta name="responsive-embedded-sizing" content=")",
+                         test.allow_origins_attr, R"(">)"});
     } else {
       meta_tag = R"(<meta name="responsive-embedded-sizing">)";
     }
@@ -463,7 +462,7 @@ TEST_F(HTMLMetaElementSimTest, ResponsiveEmbeddedSizingAllowOriginsHttp) {
   test::RunPendingTasks();
 
   child_frame_resource.Complete(
-      R"(<head><meta name="responsive-embedded-sizing" alloworigins="https:"></head>)");
+      R"(<head><meta name="responsive-embedded-sizing" content="https:"></head>)");
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
