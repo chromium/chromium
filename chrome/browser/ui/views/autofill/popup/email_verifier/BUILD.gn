@@ -1,0 +1,31 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+source_set("email_verifier") {
+  public = [ "email_verification_popup_view.h" ]
+  sources = [ "email_verification_popup_view.cc" ]
+
+  public_deps = [
+    "//base",
+    "//components/favicon_base",
+    "//net",
+    "//ui/views",
+  ]
+
+  deps = [
+    "//chrome/browser/favicon",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/autofill",
+    "//chrome/browser/ui/views:layout_provider",
+    "//components/favicon/core",
+    "//components/strings:components_strings_grit",
+    "//components/url_formatter",
+    "//components/vector_icons",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/gfx",
+  ]
+}

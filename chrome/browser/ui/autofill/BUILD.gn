@@ -312,6 +312,7 @@ source_set("impl") {
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts/api:toasts",
       "//chrome/browser/ui/user_education",
+      "//chrome/browser/ui/views/autofill/popup/email_verifier",
       "//chrome/browser/ui/webauthn",
       "//chrome/browser/ui/webui/signin:login_ui_service",
       "//components/autofill/core/browser",
