@@ -98,13 +98,22 @@ export class SettingsMemoryPageElement extends SettingsMemoryPageElementBase {
         loadTimeData.getString('memorySaverLearnMoreUrl'));
   }
 
-  // <if expr="_google_chrome">
-  protected onSendFeedback_(e: Event) {
-    e.stopPropagation();
+  protected showSendFeedbackButton_(): boolean {
+    // <if expr="_google_chrome">
+    return true;
+    // </if>
+    // <if expr="not _google_chrome">
+    return false;
+    // </if>
+  }
+
+  protected onSendFeedback_(_e: Event) {
+    // <if expr="_google_chrome">
+    _e.stopPropagation();
     PerformanceBrowserProxyImpl.getInstance().openFeedbackDialog(
         PerformanceFeedbackCategory.TABS);
+    // </if>
   }
-  // </if>
 }
 
 declare global {
@@ -112,7 +121,5 @@ declare global {
     'settings-memory-page': SettingsMemoryPageElement;
   }
 }
-
-export type MemoryPageElement = SettingsMemoryPageElement;
 
 customElements.define(SettingsMemoryPageElement.is, SettingsMemoryPageElement);

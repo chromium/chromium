@@ -1,7 +1,12 @@
-<!-- #html_wrapper_imports_start
-import type {ExceptionEntry} from './exception_entry.js';
-#html_wrapper_imports_end -->
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import type {ExceptionListElement} from './exception_list.js';
+
+export function getHtml(this: ExceptionListElement) {
+  return html`<!--_html_template_start_-->
 <div class="cr-row continuation">
   <div class="cr-padded-text">
     $i18n{tabDiscardingExceptionsHeader}
@@ -66,4 +71,5 @@ ${this.showEditDialog_ ? html`
   <tab-discard-exception-edit-dialog
       @close="${this.onEditDialogClose_}" .ruleToEdit="${this.selectedRule_}">
   </tab-discard-exception-edit-dialog>
-` : ''}
+` : ''}<!--_html_template_end_-->`;
+}

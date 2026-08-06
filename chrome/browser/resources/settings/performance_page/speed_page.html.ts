@@ -1,12 +1,16 @@
-<!-- #html_wrapper_imports_start
-import {NetworkPredictionOptions} from './constants.js';
-#html_wrapper_imports_end -->
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import type {SpeedPageElement} from './speed_page.js';
+import {NetworkPredictionOptions} from './constants.js';
+
+export function getHtml(this: SpeedPageElement) {
+  return html`<!--_html_template_start_-->
 <settings-section
-<if expr="_google_chrome">
-    show-send-feedback-button
+    ?show-send-feedback-button="${this.showSendFeedbackButton_()}"
     @send-feedback="${this.onSendFeedback_}"
-</if>
     page-title="$i18n{speedPageTitle}">
 
   <settings-toggle-button id="preloadingToggle"
@@ -124,4 +128,5 @@ import {NetworkPredictionOptions} from './constants.js';
       </settings-dropdown-menu>
     </div>
   ` : ''}
-</settings-section>
+</settings-section><!--_html_template_end_-->`;
+}

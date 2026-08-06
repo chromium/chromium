@@ -1,12 +1,16 @@
-<!-- #html_wrapper_imports_start
-import {BatterySaverModeState} from './performance_metrics_proxy.js';
-#html_wrapper_imports_end -->
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import type {SettingsBatteryPageElement} from './battery_page.js';
+import {BatterySaverModeState} from './performance_metrics_proxy.js';
+
+export function getHtml(this: SettingsBatteryPageElement) {
+  return html`<!--_html_template_start_-->
 <settings-section
-<if expr="_google_chrome">
-    show-send-feedback-button
+    ?show-send-feedback-button="${this.showSendFeedbackButton_()}"
     @send-feedback="${this.onSendFeedback_}"
-</if>
     page-title="$i18n{batteryPageTitle}">
   <if expr="is_chromeos">
   ${this.isBatterySaverModeManagedByOs_ ? html`
@@ -47,4 +51,5 @@ import {BatterySaverModeState} from './performance_metrics_proxy.js';
       </div>
     </cr-collapse>
   ` : ''}
-</settings-section>
+</settings-section><!--_html_template_end_-->`;
+}

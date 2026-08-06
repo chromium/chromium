@@ -1,8 +1,14 @@
-<settings-section
-<if expr="_google_chrome">
-    show-send-feedback-button
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PerformancePageElement} from './performance_page.js';
+
+export function getHtml(this: PerformancePageElement) {
+  return html`<!--_html_template_start_--><settings-section
+    ?show-send-feedback-button="${this.showSendFeedbackButton_()}"
     @send-feedback="${this.onSendFeedback_}"
-</if>
     page-title="$i18n{generalPageTitle}">
   <settings-toggle-button id="performanceInterventionToggleButton"
       @change="${this.onPerformanceInterventionToggleButtonChange_}"
@@ -27,3 +33,5 @@
   <tab-discard-exception-list id="exceptionList">
   </tab-discard-exception-list>
 </settings-section>
+<!--_html_template_end_-->`;
+}
