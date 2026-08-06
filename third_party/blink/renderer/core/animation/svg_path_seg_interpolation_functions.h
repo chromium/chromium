@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_SVG_PATH_SEG_INTERPOLATION_FUNCTIONS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_SVG_PATH_SEG_INTERPOLATION_FUNCTIONS_H_
 
-#include <memory>
 #include "third_party/blink/renderer/core/animation/interpolable_value.h"
 #include "third_party/blink/renderer/core/svg/svg_path_data.h"
 

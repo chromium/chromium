@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_GAP_DATA_LIST_INTERPOLATION_FUNCTIONS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_GAP_DATA_LIST_INTERPOLATION_FUNCTIONS_H_
 
-#include <memory>
-
 #include "third_party/blink/renderer/core/animation/interpolation_value.h"
 
 namespace blink {
