@@ -29,7 +29,6 @@ _GRD_SKIP_LIST = {
     # These have special generated usage that static analysis can't detect, so
     # just skip them.
     pathlib.Path('components', 'printing_component_strings.grdp'),
-    pathlib.Path('components', 'privacy_sandbox_chrome_strings.grdp'),
     pathlib.Path('third_party', 'blink', 'public', 'strings',
                  'permission_element_strings.grd'),
     pathlib.Path('third_party', 'libaddressinput', 'chromium',

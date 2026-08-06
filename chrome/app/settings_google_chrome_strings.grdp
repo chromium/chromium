@@ -170,10 +170,6 @@
     If you also share Chrome usage reports, those reports include the URLs you visit
   </message>
 
-  <!-- Privacy Sandbox -->
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_MEASUREMENT_DIALOG_DESCRIPTION" desc="A description of the Ad measurement API. * “Ad measurement” is the name of an API in this context. We don’t use “API” with the user, but they need to know that there is something called “A measurement” and what it does. * “sites you visit”: call the API to get information. The actor is the site, not Chrome. * “restricts cross-site tracking”: Today, with 3rd-party cookies, ad measurement technologies can inadvertently (and intentionally) share considerable information from one site to another). This feature restricts that sharing in order to improve the user’s privacy.">
-    Ad measurement allows sites you visit to request information from Chrome that helps the site measure the performance of their ads. Ad measurement restricts cross-site tracking by transferring as little information as possible between sites.
-  </message>
 
   <!-- Safety check -->
   <message name="IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_SETTING_SUBLABEL" desc="By default Chrome auto-revokes (disables) permissions (e.g. Camera, Location, etc.) for websites that were not visited for a while. This sublabel is for the toggle that allows users to switch off/on this functionality.">
