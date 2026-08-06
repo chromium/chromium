@@ -159,7 +159,7 @@ class GradientBubbleFrameView : public views::BubbleFrameView {
     background_flags.setAntiAlias(true);
     background_flags.setStyle(cc::PaintFlags::kFill_Style);
     background_flags.setColor(
-        GetColorProvider()->GetColor(ui::kColorTextfieldBackground));
+        GetColorProvider()->GetColor(kColorActorUiHandoffButtonBackground));
     paint_canvas->drawRRect(background_rrect, background_flags);
   }
 
@@ -177,7 +177,7 @@ std::unique_ptr<views::FrameView> CreateHandoffButtonFrameView(
   const gfx::RoundedCornersF corners(kHandoffButtonCornerRadius);
   auto frame_view = std::make_unique<GradientBubbleFrameView>(
       total_insets, views::BubbleBorder::Arrow::NONE, corners);
-  frame_view->SetBackgroundColor(ui::kColorTextfieldBackground);
+  frame_view->SetBackgroundColor(kColorActorUiHandoffButtonBackground);
   return frame_view;
 }
 
@@ -263,7 +263,7 @@ void HandoffButtonController::UpdateState(HandoffButtonState state,
       icon = ImageModel::FromVectorIcon(
           features::IsRoundedIconsEnabled() ? vector_icons::kPauseFilledIcon
                                             : vector_icons::kPauseOldIcon,
-          ::ui::kColorLabelForeground, kHandoffButtonIconSize);
+          kColorActorUiHandoffButtonForeground, kHandoffButtonIconSize);
       break;
     case kClient:
       text = l10n_util::GetStringUTF16(IDS_HANDOFF_GIVE_TASK_BACK_LABEL);
@@ -273,7 +273,7 @@ void HandoffButtonController::UpdateState(HandoffButtonState state,
           features::IsRoundedIconsEnabled()
               ? vector_icons::kPlayArrowFilledFlippableIcon
               : vector_icons::kPlayArrowOldIcon,
-          ::ui::kColorLabelForeground, kHandoffButtonIconSize);
+          kColorActorUiHandoffButtonForeground, kHandoffButtonIconSize);
       break;
   }
 
@@ -315,9 +315,9 @@ void HandoffButtonController::CreateAndShowButton(
       text);
   button_view_ = button_view.get();
   button_view_->SetAccessibleDescription(a11y_text);
-  button_view_->SetEnabledTextColors(::ui::kColorLabelForeground);
+  button_view_->SetEnabledTextColors(kColorActorUiHandoffButtonForeground);
   button_view_->SetTextColor(views::Button::STATE_DISABLED,
-                             ::ui::kColorLabelForeground);
+                             kColorActorUiHandoffButtonForeground);
   button_view_->SetImageModel(views::Button::STATE_NORMAL, icon);
   button_view_->SetProperty(views::kElementIdentifierKey,
                             kHandoffButtonElementId);

@@ -11,6 +11,7 @@
 #include "chrome/browser/actor/ui/actor_ui_window_controller.h"
 #include "chrome/browser/actor/ui/test_support/mock_actor_ui_tab_controller.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
@@ -20,6 +21,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event_utils.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/test/button_test_api.h"
@@ -310,6 +312,21 @@ TEST_F(HandoffButtonControllerTest, HandlesNullTabControllerOnHover) {
   // crash even with a null tab controller.
   controller_->TestUpdateButtonHoverStatus(true);
   controller_->TestUpdateButtonHoverStatus(false);
+}
+
+TEST_F(HandoffButtonControllerTest, ColorTokensHaveSufficientContrast) {
+  const ::ui::ColorProvider* color_provider =
+      parent_widget_->GetColorProvider();
+  ASSERT_TRUE(color_provider);
+
+  SkColor bg_color =
+      color_provider->GetColor(kColorActorUiHandoffButtonBackground);
+  SkColor fg_color =
+      color_provider->GetColor(kColorActorUiHandoffButtonForeground);
+
+  // Assert foreground text/icon and background have sufficient contrast ratio
+  // (>= 3.0f).
+  EXPECT_GE(color_utils::GetContrastRatio(fg_color, bg_color), 3.0f);
 }
 
 }  // namespace

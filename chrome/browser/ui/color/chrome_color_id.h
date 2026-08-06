@@ -29,7 +29,9 @@
   E_CPONLY(kColorAppMenuYourChromeBackground) \
   E_CPONLY(kColorAppMenuToolsAndActionsBackground) \
   /* Actor UI colors.*/ \
+  E_CPONLY(kColorActorUiHandoffButtonBackground) \
   E_CPONLY(kColorActorUiHandoffButtonBorder) \
+  E_CPONLY(kColorActorUiHandoffButtonForeground) \
   E_CPONLY(kColorActorUiOverlayBorder) \
   E_CPONLY(kColorActorUiOverlayBorderGlow) \
   E_CPONLY(kColorActorUiScrimStart) \
