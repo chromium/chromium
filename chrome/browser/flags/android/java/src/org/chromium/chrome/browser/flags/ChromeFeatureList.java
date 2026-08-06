@@ -1117,7 +1117,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sMoveToFrontInLaunchIntentDispatcher =
             newCachedFlag(
                     MOVE_TO_FRONT_IN_LAUNCH_INTENT_DISPATCHER,
-                    /* defaultValue= */ false,
+                    /* defaultValue= */ true,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sMultiInstanceSharedPrefsMigration =
             newCachedFlag(MULTI_INSTANCE_SHARED_PREFS_MIGRATION, true);
