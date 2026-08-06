@@ -4762,6 +4762,18 @@ const FeatureEntry::FeatureVariation kDictationVariations[] = {
      nullptr}};
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+const FeatureEntry::FeatureParam
+    kAutofillEnableResurrectingPaymentsUsersSecurity[] = {
+        {"autofill_enable_resurrecting_payments_churned_users_treatment", "1"}};
+const FeatureEntry::FeatureParam
+    kAutofillEnableResurrectingPaymentsUsersConvenience[] = {
+        {"autofill_enable_resurrecting_payments_churned_users_treatment", "2"}};
+const FeatureEntry::FeatureVariation
+    kAutofillEnableResurrectingPaymentsUsersVariations[] = {
+        {"Security", kAutofillEnableResurrectingPaymentsUsersSecurity, nullptr},
+        {"Convenience", kAutofillEnableResurrectingPaymentsUsersConvenience,
+         nullptr}};
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -13445,8 +13457,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableResurrectingPaymentsUsersName,
      flag_descriptions::kAutofillEnableResurrectingPaymentsUsersDescription,
      kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableResurrectingPaymentsUsers)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         autofill::features::kAutofillEnableResurrectingPaymentsUsers,
+         kAutofillEnableResurrectingPaymentsUsersVariations,
+         "AutofillEnableResurrectingPaymentsUsers")},
 
 #if BUILDFLAG(IS_WIN)
     {"antivirus-telemetry-for-downloads",
