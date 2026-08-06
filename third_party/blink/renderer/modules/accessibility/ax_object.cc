@@ -7555,22 +7555,40 @@ void AXObject::GetRelativeBounds(AXObject** out_container,
       // If it's a popup, account for the popup window's offset.
       auto& chrome_client = view->GetPage()->GetChromeClient();
       if (chrome_client.IsPopup()) {
-        gfx::Rect frame_rect = view->FrameToScreen(view->DeprecatedFrameRect());
-        LocalFrameView* root_view =
+        gfx::Rect frame_rect;
+        LocalFrameView* reference_view =
             AXObjectCache().GetDocument().GetFrame()->View();
-        gfx::Rect root_frame_rect =
-            root_view->FrameToScreen(root_view->DeprecatedFrameRect());
-        // If a color picker popup is found inside of an iframe, account for the
-        // distance from the current frame to the parent frame.
-        auto* owner_element = chrome_client.GetPopupClientOwnerElement();
-        if (auto* input_element = DynamicTo<HTMLInputElement>(owner_element)) {
-          if (input_element->FormControlType() ==
-              FormControlType::kInputColor) {
-            gfx::Point origin(root_frame_rect.origin());
-            owner_element->GetDocument()
-                .GetFrame()
-                ->AdjustOffsetByAncestorFrames(&origin);
-            root_frame_rect.set_origin(origin);
+        gfx::Rect reference_frame_rect;
+        if (RuntimeEnabledFeatures::AvoidEmbeddedContentViewLocationEnabled()) {
+          frame_rect = view->FrameToScreen(gfx::Rect(view->Size()));
+          // TODO(crbug.com/398893928): Remove the conditions for color input
+          // elements because the logic applies to all popups.
+          if (auto* input_element = DynamicTo<HTMLInputElement>(
+                  chrome_client.GetPopupClientOwnerElement())) {
+            if (input_element->FormControlType() ==
+                FormControlType::kInputColor) {
+              reference_view = input_element->GetDocument().GetFrame()->View();
+            }
+          }
+          reference_frame_rect =
+              reference_view->FrameToScreen(gfx::Rect(reference_view->Size()));
+        } else {
+          frame_rect = view->FrameToScreen(view->DeprecatedFrameRect());
+          reference_frame_rect = reference_view->FrameToScreen(
+              reference_view->DeprecatedFrameRect());
+          // If a color picker popup is found inside of an iframe, account for
+          // the distance from the current frame to the parent frame.
+          auto* owner_element = chrome_client.GetPopupClientOwnerElement();
+          if (auto* input_element =
+                  DynamicTo<HTMLInputElement>(owner_element)) {
+            if (input_element->FormControlType() ==
+                FormControlType::kInputColor) {
+              gfx::Point origin(reference_frame_rect.origin());
+              owner_element->GetDocument()
+                  .GetFrame()
+                  ->DeprecatedAdjustOffsetByAncestorFrames(&origin);
+              reference_frame_rect.set_origin(origin);
+            }
           }
         }
 
@@ -7580,9 +7598,9 @@ void AXObject::GetRelativeBounds(AXObject** out_container,
         float scale_factor =
             view->GetPage()->GetChromeClient().WindowToViewportScalar(
                 layout_object->GetFrame(), 1.0f);
-        out_bounds_in_container.set_origin(
-            gfx::PointF(scale_factor * (frame_rect.x() - root_frame_rect.x()),
-                        scale_factor * (frame_rect.y() - root_frame_rect.y())));
+        out_bounds_in_container.set_origin(gfx::PointF(
+            scale_factor * (frame_rect.x() - reference_frame_rect.x()),
+            scale_factor * (frame_rect.y() - reference_frame_rect.y())));
       }
     }
     return;

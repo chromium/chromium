@@ -445,7 +445,7 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   GetDeprecatedFencedFrameMode() const;
 
   // Iterates through the frame owner's ancestor nodes and adjusts the offset.
-  void AdjustOffsetByAncestorFrames(gfx::Point* origin_point);
+  void DeprecatedAdjustOffsetByAncestorFrames(gfx::Point* origin_point);
 
   // Checks whether this frame is a descendant of other.
   bool IsDescendantOf(const Frame* other) const;

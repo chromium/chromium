@@ -1021,7 +1021,8 @@ void Frame::DetachFromParent() {
   Parent()->RemoveChild(this);
 }
 
-void Frame::AdjustOffsetByAncestorFrames(gfx::Point* origin_point) {
+void Frame::DeprecatedAdjustOffsetByAncestorFrames(gfx::Point* origin_point) {
+  CHECK(!RuntimeEnabledFeatures::AvoidEmbeddedContentViewLocationEnabled());
   CHECK(origin_point);
   Frame* current_frame = this;
   while (current_frame->Owner()) {

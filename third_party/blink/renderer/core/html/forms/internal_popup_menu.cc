@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/layout/custom_scrollbar.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page_popup.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
@@ -790,18 +791,30 @@ void InternalPopupMenu::SetMenuListOptionsBoundsInAXTree(
   popup_origin.Offset(-widget_view_rect.x(), -widget_view_rect.y());
   popup_origin = widget->DIPsToRoundedBlinkSpace(popup_origin);
 
-  // Factor in the scroll offset of the select's window.
-  LocalDOMWindow* window = owner_element_->GetDocument().domWindow();
-  const float page_zoom_factor =
-      owner_element_->GetDocument().GetFrame()->LayoutZoomFactor();
-  popup_origin.Offset(window->scrollX() * page_zoom_factor,
-                      window->scrollY() * page_zoom_factor);
+  if (RuntimeEnabledFeatures::AvoidEmbeddedContentViewLocationEnabled()) {
+    if (const auto* layout_view =
+            owner_element_->GetDocument().GetLayoutView()) {
+      popup_origin = ToRoundedPoint(layout_view->AbsoluteToLocalPoint(
+          gfx::PointF(popup_origin),
+          kTraverseDocumentBoundaries | kApplyRemoteViewportTransform));
+      popup_origin = layout_view->GetFrameView()->FrameToDocument(popup_origin);
+    }
+  } else {
+    // Factor in the scroll offset of the select's window.
+    LocalDOMWindow* window = owner_element_->GetDocument().domWindow();
+    const float page_zoom_factor =
+        owner_element_->GetDocument().GetFrame()->LayoutZoomFactor();
+    popup_origin.Offset(window->scrollX() * page_zoom_factor,
+                        window->scrollY() * page_zoom_factor);
 
-  // We need to make sure we take into account any iframes. Since OOPIF and
-  // srcdoc iframes aren't allowed to access the root viewport, we need to
-  // iterate through the frame owner's parent nodes and accumulate the offsets.
-  owner_element_->GetDocument().GetFrame()->AdjustOffsetByAncestorFrames(
-      &popup_origin);
+    // We need to make sure we take into account any iframes. Since OOPIF and
+    // srcdoc iframes aren't allowed to access the root viewport, we need to
+    // iterate through the frame owner's parent nodes and accumulate the
+    // offsets.
+    owner_element_->GetDocument()
+        .GetFrame()
+        ->DeprecatedAdjustOffsetByAncestorFrames(&popup_origin);
+  }
 
   for (auto& option_bounds : options_bounds) {
     option_bounds.Offset(popup_origin.x(), popup_origin.y());
