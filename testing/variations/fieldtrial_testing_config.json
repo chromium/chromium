@@ -1515,7 +1515,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AndroidVerticalTabs",
-                        "EnableAndroidSidePanel",
                         "IPH_AndroidVerticalTabsPromo"
                     ]
                 },
@@ -1530,7 +1529,6 @@
                     },
                     "enable_features": [
                         "AndroidVerticalTabs",
-                        "EnableAndroidSidePanel",
                         "IPH_AndroidVerticalTabsPromo"
                     ]
                 },
@@ -1541,7 +1539,6 @@
                     },
                     "enable_features": [
                         "AndroidVerticalTabs",
-                        "EnableAndroidSidePanel",
                         "IPH_AndroidVerticalTabsPromo"
                     ]
                 }
@@ -10000,6 +9997,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EnableAiSubscriptionAvatarRing"
+                    ]
+                }
+            ]
+        }
+    ],
+    "EnableAndroidSidePanel": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableAndroidSidePanel"
                     ]
                 }
             ]
