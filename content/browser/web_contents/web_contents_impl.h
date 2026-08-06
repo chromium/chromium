@@ -2488,9 +2488,14 @@ class CONTENT_EXPORT WebContentsImpl
       delegated_ink_point_renderer_;
 
   // The visibility of the WebContents. Initialized from
-  // |CreateParams::initially_hidden|. Updated from
+  // `CreateParams::initially_hidden` and
+  // `CreateParams::initially_hidden_but_painting`. Updated from
   // UpdateWebContentsVisibility(), WasShown(), WasHidden(), WasOccluded().
   Visibility visibility_ = Visibility::VISIBLE;
+
+  // Whether this WebContents was created with
+  // `CreateParams::initially_hidden_but_painting`.
+  bool initially_hidden_but_painting_ = false;
 
   // Whether there has been a call to UpdateWebContentsVisibility(VISIBLE).
   bool did_first_set_visible_ = false;

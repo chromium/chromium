@@ -253,6 +253,10 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
     // True if the contents should be initially hidden.
     bool initially_hidden = false;
 
+    // True if the contents should initially be hidden but continue painting
+    // until shown. Mutually exclusive with `initially_hidden`.
+    bool initially_hidden_but_painting = false;
+
     // Returns true if the WebContents is never user-visible, thus the renderer
     // need never produce pixels for display.
     bool is_never_composited = false;

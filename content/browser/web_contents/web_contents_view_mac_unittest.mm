@@ -98,6 +98,24 @@ TEST_F(WebContentsViewMacTest, StartDragging_DisallowedByPolicy) {
   EXPECT_TRUE(fake_client().was_called());
 }
 
+TEST_F(WebContentsViewMacTest, InitiallyHiddenButPaintingNativeView) {
+  WebContents::CreateParams params(browser_context());
+  params.initially_hidden_but_painting = true;
+  std::unique_ptr<TestWebContents> web_contents(
+      TestWebContents::Create(params));
+
+  EXPECT_TRUE([web_contents->GetNativeView().GetNativeNSView() isHidden]);
+}
+
+TEST_F(WebContentsViewMacTest, InitiallyHiddenNativeView) {
+  WebContents::CreateParams params(browser_context());
+  params.initially_hidden = true;
+  std::unique_ptr<TestWebContents> web_contents(
+      TestWebContents::Create(params));
+
+  EXPECT_TRUE([web_contents->GetNativeView().GetNativeNSView() isHidden]);
+}
+
 TEST_F(WebContentsViewMacTest, DragPromisedFileTo_ImageDrag) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());

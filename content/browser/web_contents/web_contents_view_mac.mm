@@ -407,6 +407,9 @@ void WebContentsViewMac::CreateView(gfx::NativeView context) {
   in_process_ns_view_bridge_ =
       std::make_unique<remote_cocoa::WebContentsNSViewBridge>(ns_view_id_,
                                                               this);
+  if (web_contents_->GetVisibility() == Visibility::HIDDEN) {
+    in_process_ns_view_bridge_->SetVisible(false);
+  }
 
   drag_dest_ = [[WebDragDest alloc] initWithWebContentsImpl:web_contents_];
   if (delegate_)
@@ -758,6 +761,9 @@ void WebContentsViewMac::ViewsHostableAttach(
 
     remote_cocoa_application->CreateWebContentsNSView(
         ns_view_id_, std::move(stub_host), std::move(stub_ns_view_receiver));
+    if (web_contents_->GetVisibility() == Visibility::HIDDEN) {
+      remote_ns_view_->SetVisible(false);
+    }
     remote_ns_view_->SetParentNSView(views_host_->GetNSViewId());
 
     // Because this view is being displayed from a remote process, reset the

@@ -2086,6 +2086,25 @@ TEST_F(WebContentsImplTest, UpdateWebContentsVisibility) {
   EXPECT_EQ(Visibility::HIDDEN, contents()->GetVisibility());
 }
 
+TEST_F(WebContentsImplTest, InitiallyHiddenButPainting) {
+  WebContents::CreateParams params(browser_context());
+  params.initially_hidden_but_painting = true;
+  std::unique_ptr<TestWebContents> web_contents(
+      TestWebContents::Create(params));
+
+  EXPECT_EQ(Visibility::HIDDEN, web_contents->GetVisibility());
+  EXPECT_EQ(PageVisibilityState::kHiddenButPainting,
+            web_contents->GetPageVisibilityState());
+
+  web_contents->UpdateWebContentsVisibility(Visibility::VISIBLE);
+  EXPECT_EQ(PageVisibilityState::kVisible,
+            web_contents->GetPageVisibilityState());
+
+  web_contents->UpdateWebContentsVisibility(Visibility::HIDDEN);
+  EXPECT_EQ(PageVisibilityState::kHidden,
+            web_contents->GetPageVisibilityState());
+}
+
 TEST_F(WebContentsImplTest, VideoPictureInPictureStaysVisibleIfHidden) {
   // Entering video Picture in Picture then hiding keeps the view visible.
   TestRenderWidgetHostView* view = static_cast<TestRenderWidgetHostView*>(
