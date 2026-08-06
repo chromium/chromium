@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -20,6 +21,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "base/version.h"
 #include "chrome/updater/get_updater_scope.h"
 #include "chrome/updater/util/path_util.h"
@@ -78,8 +80,14 @@ void WebView2ProgressWnd::UpdateUI(const std::string& status_text,
     return;
   }
 
+  std::optional<std::string> json_status = base::WriteJson(status_text);
+  if (!json_status) {
+    LOG(ERROR) << "Failed to encode status text to JSON.";
+    return;
+  }
+
   browser_->ExecuteScript(base::UTF8ToWide(base::StrCat(
-      {"updateUI('", status_text, "', ", base::NumberToString(progress_pos),
+      {"updateUI(", *json_status, ", ", base::NumberToString(progress_pos),
        ", ", (is_marquee ? "true" : "false"), ")"})));
 }
 
