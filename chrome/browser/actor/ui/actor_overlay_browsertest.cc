@@ -765,6 +765,46 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayMagicCursorTest,
   EXPECT_FALSE(has_class);
 }
 
+IN_PROC_BROWSER_TEST_F(ActorOverlayTest,
+                       OverlayWebViewIsTransparentAfterNavigation) {
+  Profile* const profile = browser()->GetProfile();
+  ActorUiStateManagerInterface* state_manager =
+      ActorKeyedService::Get(profile)->GetActorUiStateManager();
+  ASSERT_NE(state_manager, nullptr);
+  tabs::TabHandle tab_handle = browser()->GetActiveTabInterface()->GetHandle();
+  TestFuture<ActionResultPtr> result;
+  state_manager->OnUiEvent(StartingToActOnTab(tab_handle, TaskId(1)),
+                           result.GetCallback());
+  ExpectOkResult(result);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return IsActorOverlayVisible(browser()); }));
+  content::WebContents* overlay_web_contents =
+      GetActorOverlayWebViewWebContents(browser());
+  ASSERT_NE(overlay_web_contents, nullptr);
+
+  // 1. Assert that the browser-side RenderWidgetHostView is transparent
+  // immediately upon navigation commit (before WaitForLoadStop). Without
+  // rwhv->SetBackgroundColor(SK_ColorTRANSPARENT) in PrimaryPageChanged,
+  // the newly created view defaults to opaque white.
+  content::RenderWidgetHostView* rwhv =
+      overlay_web_contents->GetRenderWidgetHostView();
+  ASSERT_NE(rwhv, nullptr);
+  EXPECT_EQ(rwhv->GetBackgroundColor(), SK_ColorTRANSPARENT);
+
+  // 2. Wait for the overlay WebUI document to finish loading.
+  EXPECT_TRUE(content::WaitForLoadStop(overlay_web_contents));
+
+  // 3. Assert that Blink's document background color is transparent after load.
+  // Without web_contents()->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT) in
+  // ShowUI, Blink renders a solid white document canvas (SK_ColorWHITE).
+  EXPECT_EQ(overlay_web_contents->GetBackgroundColor(), SK_ColorTRANSPARENT);
+
+  // 4. Assert that the RenderWidgetHostView remains transparent after load.
+  rwhv = overlay_web_contents->GetRenderWidgetHostView();
+  ASSERT_NE(rwhv, nullptr);
+  EXPECT_EQ(rwhv->GetBackgroundColor(), SK_ColorTRANSPARENT);
+}
+
 class ActorOverlayDisabledTest : public InProcessBrowserTest {
  public:
   void SetUp() override {

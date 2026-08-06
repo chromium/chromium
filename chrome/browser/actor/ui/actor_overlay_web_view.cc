@@ -46,6 +46,7 @@ void ActorOverlayWebView::ShowUI(tabs::TabInterface* tab,
   webui::SetTabInterface(web_contents(), tab);
 
   // Make the view background transparent so it can act as an overlay.
+  web_contents()->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
   content::RenderWidgetHostView* rwhv =
       web_contents()->GetRenderWidgetHostView();
   if (rwhv) {
@@ -128,6 +129,12 @@ actor::ui::ActorOverlayUI* ActorOverlayWebView::GetWebUi() {
 }
 
 void ActorOverlayWebView::PrimaryPageChanged(content::Page& page) {
+  content::RenderWidgetHostView* rwhv =
+      web_contents()->GetRenderWidgetHostView();
+  if (rwhv) {
+    rwhv->SetBackgroundColor(SK_ColorTRANSPARENT);
+  }
+
   if (pending_webui_init_callbacks_.empty()) {
     return;
   }
