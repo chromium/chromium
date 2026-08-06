@@ -64,5 +64,7 @@ BASE_FEATURE(kPaymentRequestMandatoryPaymentAppUi,
 
 BASE_FEATURE(kPaymentHandlerCameraAccess, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPaymentHandlerCameraAccessUx, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace payments

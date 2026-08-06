@@ -4054,6 +4054,12 @@ inline constexpr char kPaymentHandlerCameraAccessName[] =
 inline constexpr char kPaymentHandlerCameraAccessDescription[] =
     "Enables camera access in web-based Payment Handlers on desktop.";
 
+inline constexpr char kPaymentHandlerCameraAccessUxName[] =
+    "Payment Handler Camera Access UX";
+inline constexpr char kPaymentHandlerCameraAccessUxDescription[] =
+    "Enables camera access with integrated permission prompt and "
+    "capture indicator in web-based Payment Handlers on desktop.";
+
 inline constexpr char kDeduplicateNativePaymentAppsName[] =
     "Enables de-duplication of Payment Request native payment apps";
 inline constexpr char kDeduplicateNativePaymentAppsDescription[] =

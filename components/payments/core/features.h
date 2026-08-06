@@ -63,6 +63,10 @@ BASE_DECLARE_FEATURE(kPaymentRequestMandatoryPaymentAppUi);
 // Used to control whether camera access is allowed in Payment Handler windows.
 BASE_DECLARE_FEATURE(kPaymentHandlerCameraAccess);
 
+// Used to control whether camera access with interactive permission prompt
+// and indicator is allowed in Payment Handler windows.
+BASE_DECLARE_FEATURE(kPaymentHandlerCameraAccessUx);
+
 }  // namespace features
 }  // namespace payments
 

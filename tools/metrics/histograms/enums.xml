@@ -9964,6 +9964,7 @@ from previous Chrome versions.
   <int value="-1454859000" label="ChromeNativeUrlOverriding:enabled"/>
   <int value="-1454479680" label="FileHandlingAPI:enabled"/>
   <int value="-1454397907" label="OptimizationHints:disabled"/>
+  <int value="-1454368758" label="PaymentHandlerCameraAccessUx:disabled"/>
   <int value="-1454327921"
       label="PageInfoAboutThisSiteKeepSidePanelOnSameTabNavs:disabled"/>
   <int value="-1454278433" label="ReduceIPAddressChangeNotification:enabled"/>
@@ -19822,6 +19823,7 @@ from previous Chrome versions.
   <int value="1656768789" label="EnableGetDebugdLogsInParallel:enabled"/>
   <int value="1657713458" label="disable-virtual-keyboard-overscroll"/>
   <int value="1658361127" label="PerformanceNavigateSystemEntropy:enabled"/>
+  <int value="1658484049" label="PaymentHandlerCameraAccessUx:enabled"/>
   <int value="1658644418" label="disable-app-list-voice-search"/>
   <int value="1658656322" label="IncognitoDownloadsWarning:enabled"/>
   <int value="1658676520" label="AsynchronousScannerDiscovery:disabled"/>
