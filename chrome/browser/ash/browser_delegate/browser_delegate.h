@@ -102,6 +102,10 @@ class BrowserDelegate {
   // Returns the non-empty browser application id, if applicable.
   virtual std::optional<webapps::AppId> GetAppId() const = 0;
 
+  // Returns the user-defined window title if one is set. If a title is
+  // returned, the string is never empty.
+  virtual std::optional<std::string> GetUserDefinedWindowTitle() const = 0;
+
   // Returns whether the browser is a web app window/pop-up.
   virtual bool IsWebApp() const = 0;
 

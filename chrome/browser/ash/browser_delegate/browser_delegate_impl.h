@@ -35,6 +35,7 @@ class BrowserDelegateImpl : public BrowserDelegate {
   ui::BaseWindow* GetWindow() const override;
   aura::Window* GetNativeWindow() const override;
   std::optional<webapps::AppId> GetAppId() const override;
+  std::optional<std::string> GetUserDefinedWindowTitle() const override;
   bool IsWebApp() const override;
   const SystemWebAppDelegate* GetSWADelegate() const override;
   bool IsClosing() const override;

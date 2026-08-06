@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+#include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -126,6 +127,13 @@ std::optional<webapps::AppId> BrowserDelegateImpl::GetAppId() const {
   std::string app_id = web_app::GetAppIdFromApplicationName(
       BrowserInitState::From(&*browser_)->create_params().app_name);
   return app_id.empty() ? std::nullopt : std::optional<webapps::AppId>(app_id);
+}
+
+std::optional<std::string> BrowserDelegateImpl::GetUserDefinedWindowTitle()
+    const {
+  const std::string& title =
+      CHECK_DEREF(WindowMetadataController::From(&*browser_)).user_title();
+  return title.empty() ? std::nullopt : std::optional<std::string>(title);
 }
 
 bool BrowserDelegateImpl::IsWebApp() const {
