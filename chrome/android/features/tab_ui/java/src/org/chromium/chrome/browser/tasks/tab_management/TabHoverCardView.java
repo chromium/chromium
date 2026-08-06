@@ -28,7 +28,9 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.tabs.TabAlert;
 
 import java.util.function.Supplier;
 
@@ -41,6 +43,7 @@ public class TabHoverCardView extends FrameLayout {
     private ViewGroup mContentView;
     private TextView mTitleView;
     private TextView mUrlView;
+    private TextViewWithCompoundDrawables mAlertStatusView;
     private TextView mMemoryUsageView;
     private TabThumbnailView mThumbnailView;
     private @Nullable TabModelSelector mTabModelSelector;
@@ -60,6 +63,7 @@ public class TabHoverCardView extends FrameLayout {
         mContentView = findViewById(R.id.content_view);
         mTitleView = mContentView.findViewById(R.id.title);
         mUrlView = mContentView.findViewById(R.id.url);
+        mAlertStatusView = mContentView.findViewById(R.id.alert_status);
         mMemoryUsageView = mContentView.findViewById(R.id.memory_usage);
         mThumbnailView = mContentView.findViewById(R.id.thumbnail);
         maybeUpdateBackgroundOnLowEndDevice();
@@ -87,6 +91,33 @@ public class TabHoverCardView extends FrameLayout {
             url = url.replaceFirst("/$", "");
         }
         mUrlView.setText(url);
+
+        @Nullable
+        @TabAlert
+        Integer alertState = hoveredTab.getAlertState();
+        boolean showAlert = false;
+        if (alertState != null) {
+            showAlert = true;
+            switch (alertState) {
+                case TabAlert.ACTOR_ACCESSING -> {
+                    mAlertStatusView.setText(R.string.tooltip_tab_alert_state_actor_accessing);
+                    mAlertStatusView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                            R.drawable.ic_arrow_selector_spark_16dp, 0, 0, 0);
+                }
+                case TabAlert.GLIC_ACCESSING -> {
+                    mAlertStatusView.setText(R.string.tooltip_tab_alert_state_glic_accessing);
+                    mAlertStatusView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                            R.drawable.ic_spark_4c_16dp, 0, 0, 0);
+                }
+                case TabAlert.GLIC_SHARING -> {
+                    mAlertStatusView.setText(R.string.tooltip_tab_alert_state_glic_sharing);
+                    mAlertStatusView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                            R.drawable.ic_spark_4c_16dp, 0, 0, 0);
+                }
+                default -> showAlert = false;
+            }
+        }
+        mAlertStatusView.setVisibility(showAlert ? VISIBLE : GONE);
 
         mMemoryUsageView.setVisibility(GONE);
         hoveredTab.getMemoryUsageBytes(
@@ -152,6 +183,8 @@ public class TabHoverCardView extends FrameLayout {
         mTitleView.setTextColor(
                 TabUiThemeProvider.getTabHoverCardTextColorPrimary(getContext(), incognito));
         mUrlView.setTextColor(
+                TabUiThemeProvider.getTabHoverCardTextColorSecondary(getContext(), incognito));
+        mAlertStatusView.setTextColor(
                 TabUiThemeProvider.getTabHoverCardTextColorSecondary(getContext(), incognito));
         mMemoryUsageView.setTextColor(
                 TabUiThemeProvider.getTabHoverCardTextColorSecondary(getContext(), incognito));

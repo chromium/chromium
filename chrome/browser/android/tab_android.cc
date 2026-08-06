@@ -35,6 +35,8 @@
 #include "chrome/browser/browser_about_handler.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/glic/browser_ui/glic_tab_indicator_helper.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/notifications/notification_permission_context.h"
 #include "chrome/browser/profiles/profile.h"
@@ -421,6 +423,10 @@ void TabAndroid::InitWebContents(
   ShowBadFlagsPrompt(web_contents());
 
   MediaStateObserver::CreateForWebContents(web_contents_.get());
+  if (glic::GlicEnabling::IsProfileEligible(profile())) {
+    glic_tab_indicator_helper_ =
+        std::make_unique<glic::GlicTabIndicatorHelper>(this);
+  }
   tab_alert_controller_ = std::make_unique<tabs::TabAlertController>(*this);
 
   for (Observer& observer : observers_) {
@@ -701,6 +707,7 @@ tabs::TabDestroyStatus TabAndroid::DestroyWebContents() {
     return DestroyWebContentsSlowShutdown();
   }
 
+  glic_tab_indicator_helper_.reset();
   tab_alert_controller_.reset();
   tab_features_.reset();
   web_contents_.reset();
@@ -733,6 +740,7 @@ std::unique_ptr<content::WebContents> TabAndroid::ReleaseWebContentsInternal(
     bool clear_delegate) {
   WillRemoveWebContentsFromTab(web_contents(), clear_delegate);
 
+  glic_tab_indicator_helper_.reset();
   tab_alert_controller_.reset();
   tab_features_.reset();
   std::unique_ptr<content::WebContents> released_contents =

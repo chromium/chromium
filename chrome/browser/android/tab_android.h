@@ -57,6 +57,10 @@ namespace sync_sessions {
 class SyncedTabDelegate;
 }  // namespace sync_sessions
 
+namespace glic {
+class GlicTabIndicatorHelper;
+}
+
 namespace tabs {
 class TabAlertController;
 class TabCollection;
@@ -370,6 +374,7 @@ class TabAndroid : public tabs::TabInterface,
       will_detach_callback_list_;
   base::RepeatingCallbackList<void(TabInterface*)> did_insert_callback_list_;
 
+  std::unique_ptr<glic::GlicTabIndicatorHelper> glic_tab_indicator_helper_;
   std::unique_ptr<tabs::TabAlertController> tab_alert_controller_;
   const base::WeakPtr<Profile> profile_;
   ui::UnownedUserDataHost unowned_user_data_host_;

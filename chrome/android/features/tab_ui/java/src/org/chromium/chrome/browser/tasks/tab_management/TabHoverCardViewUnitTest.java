@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.tabs.TabAlert;
 import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link TabHoverCardView}. */
@@ -85,6 +86,7 @@ public class TabHoverCardViewUnitTest {
     private TabThumbnailView mThumbnailView;
     private TextView mTitleView;
     private TextView mUrlView;
+    private TextView mAlertStatusView;
     private TextView mMemoryUsageView;
     private Context mContext;
     private Bitmap mBitmap;
@@ -104,6 +106,7 @@ public class TabHoverCardViewUnitTest {
         mThumbnailView = mTabHoverCardView.findViewById(R.id.thumbnail);
         mTitleView = mTabHoverCardView.findViewById(R.id.title);
         mUrlView = mTabHoverCardView.findViewById(R.id.url);
+        mAlertStatusView = mTabHoverCardView.findViewById(R.id.alert_status);
         mMemoryUsageView = mTabHoverCardView.findViewById(R.id.memory_usage);
 
         mContext = mTabHoverCardView.getContext();
@@ -166,6 +169,38 @@ public class TabHoverCardViewUnitTest {
                 "Thumbnail image bitmap is incorrect.",
                 mBitmap,
                 ((BitmapDrawable) mThumbnailView.getDrawable()).getBitmap());
+    }
+
+    @Test
+    public void show_AlertStatus() {
+        var url = JUnitTestGURLs.EXAMPLE_URL;
+        var title = "Tab 1";
+        when(mHoveredTab.getTitle()).thenReturn(title);
+        when(mHoveredTab.getUrl()).thenReturn(url);
+        when(mHoveredTab.getId()).thenReturn(1);
+        when(mHoveredTab.getAlertState()).thenReturn(TabAlert.GLIC_SHARING);
+
+        mTabHoverCardView.show(mHoveredTab, 10f, 20f);
+
+        assertEquals(
+                "Alert status view should be visible.",
+                View.VISIBLE,
+                mAlertStatusView.getVisibility());
+        assertEquals(
+                "Alert status text is incorrect.",
+                mContext.getString(R.string.tooltip_tab_alert_state_glic_sharing),
+                mAlertStatusView.getText().toString());
+        assertNotNull(
+                "Alert status icon should be present.",
+                mAlertStatusView.getCompoundDrawablesRelative()[0]);
+
+        // Verify alert status is gone when tab has no alert.
+        when(mHoveredTab.getAlertState()).thenReturn(null);
+        mTabHoverCardView.show(mHoveredTab, 10f, 20f);
+        assertEquals(
+                "Alert status view should be hidden when alert state is null.",
+                View.GONE,
+                mAlertStatusView.getVisibility());
     }
 
     @Test
@@ -354,6 +389,10 @@ public class TabHoverCardViewUnitTest {
                 "URL text color is incorrect.",
                 mContext.getColor(R.color.default_text_color_secondary_light),
                 mUrlView.getCurrentTextColor());
+        assertEquals(
+                "Alert status text color is incorrect.",
+                mContext.getColor(R.color.default_text_color_secondary_light),
+                mAlertStatusView.getCurrentTextColor());
 
         // Test standard colors.
         mTabHoverCardView.updateHoverCardColors(false);
@@ -372,6 +411,10 @@ public class TabHoverCardViewUnitTest {
                 "URL text color is incorrect.",
                 SemanticColorUtils.getDefaultTextColorSecondary(mContext),
                 mUrlView.getCurrentTextColor());
+        assertEquals(
+                "Alert status text color is incorrect.",
+                SemanticColorUtils.getDefaultTextColorSecondary(mContext),
+                mAlertStatusView.getCurrentTextColor());
     }
 
     @Test
@@ -435,8 +478,12 @@ public class TabHoverCardViewUnitTest {
                 R.id.thumbnail,
                 mContentView.getChildAt(2).getId());
         assertEquals(
-                "Component at index 3 should be the memory usage.",
-                R.id.memory_usage,
+                "Component at index 3 should be the alert status.",
+                R.id.alert_status,
                 mContentView.getChildAt(3).getId());
+        assertEquals(
+                "Component at index 4 should be the memory usage.",
+                R.id.memory_usage,
+                mContentView.getChildAt(4).getId());
     }
 }

@@ -58,6 +58,22 @@ found in the LICENSE file.
             android:src="@color/thumbnail_placeholder_on_primary_bg"/>
 
         <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+            android:id="@+id/alert_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/tab_hover_card_text_content_margin"
+            android:layout_marginEnd="@dimen/tab_hover_card_text_content_margin"
+            android:layout_marginBottom="@dimen/tab_hover_card_text_content_margin"
+            android:ellipsize="end"
+            android:visibility="gone"
+            android:textDirection="locale"
+            android:drawablePadding="8dp"
+            android:gravity="center_vertical"
+            app:drawableWidth="16dp"
+            app:drawableHeight="16dp"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
+
+        <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
             android:id="@+id/memory_usage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

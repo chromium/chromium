@@ -7,10 +7,10 @@
   <message name="IDS_GLIC_TASK_WAITING_FOR_CONSENT_SUBTITLE" desc="Subtitle of task in task list bubble showing that the task is waiting for user consent.">
     Working on your task
   </message>
-  <message name="IDS_TOOLTIP_TAB_ALERT_STATE_GLIC_ACCESSING" desc="Extra tool tip text, when the tab's context is being shared with Gemini">
+  <message name="IDS_TOOLTIP_TAB_ALERT_STATE_GLIC_ACCESSING" desc="Extra tool tip text, when the tab's context is being shared with Gemini" formatter_data="android_java">
     You're sharing this tab with Gemini
   </message>
-  <message name="IDS_TOOLTIP_TAB_ALERT_STATE_GLIC_SHARING" desc="Extra tool tip text, when the tab's context is being shared with Gemini">
+  <message name="IDS_TOOLTIP_TAB_ALERT_STATE_GLIC_SHARING" desc="Extra tool tip text, when the tab's context is being shared with Gemini" formatter_data="android_java">
     You're sharing this tab with Gemini
   </message>
   <message name="IDS_TOOLTIP_GLIC_CLOSE" desc="The tooltip for the close button within the Glic nudge button." formatter_data="android_java">

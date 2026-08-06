@@ -453,6 +453,8 @@ if (is_android) {
       "//chrome/browser:browser_public_dependencies",
       "//chrome/browser/accessibility/accessibility_prefs",
       "//chrome/browser/android/webapk:webapk_sources",
+      "//chrome/browser/glic/browser_ui",
+      "//chrome/browser/ui/tabs/alert:tab_alert",
     ]
 
     deps = [
@@ -508,6 +510,7 @@ if (is_android) {
       "//chrome/browser/gesturenav/android:impl",
       "//chrome/browser/glic/android",
       "//chrome/browser/glic/android:jni_headers",
+      "//chrome/browser/glic/browser_ui:impl",
       "//chrome/browser/keyboard_accessory/android",
       "//chrome/browser/keyboard_accessory/android:impl",
       "//chrome/browser/language/android:jni_headers",
