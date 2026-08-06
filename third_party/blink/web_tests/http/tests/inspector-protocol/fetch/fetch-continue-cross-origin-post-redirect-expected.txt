@@ -1,0 +1,8 @@
+Tests that Fetch.continueRequest can continue a POST navigation that is redirected cross-origin.
+
+Continuing POST http://127.0.0.1:8000/inspector-protocol/fetch/resources/redirect-307.php?http://localhost:8000/inspector-protocol/network/resources/echo-headers.php?headers=REQUEST_METHOD:HTTP_ORIGIN
+Continuing POST http://localhost:8000/inspector-protocol/network/resources/echo-headers.php?headers=REQUEST_METHOD:HTTP_ORIGIN
+
+Destination saw:
+REQUEST_METHOD: POST HTTP_ORIGIN: null
+
