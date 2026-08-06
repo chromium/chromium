@@ -54,11 +54,31 @@ void OnContactsSelected(
 
 }  // namespace
 
+// static
+void ContactsManagerImpl::Create(
+    RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<blink::mojom::ContactsManager> receiver) {
+  CHECK(render_frame_host);
+  new ContactsManagerImpl(*render_frame_host, std::move(receiver),
+                          CreateProvider(*render_frame_host));
+}
+
+// static
+ContactsManagerImpl* ContactsManagerImpl::CreateForTesting(
+    RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<blink::mojom::ContactsManager> receiver,
+    std::unique_ptr<ContactsProvider> provider) {
+  CHECK(render_frame_host);
+  return new ContactsManagerImpl(*render_frame_host, std::move(receiver),
+                                 std::move(provider));
+}
+
 ContactsManagerImpl::ContactsManagerImpl(
     RenderFrameHost& render_frame_host,
-    mojo::PendingReceiver<blink::mojom::ContactsManager> receiver)
+    mojo::PendingReceiver<blink::mojom::ContactsManager> receiver,
+    std::unique_ptr<ContactsProvider> provider)
     : DocumentService(render_frame_host, std::move(receiver)),
-      contacts_provider_(CreateProvider(render_frame_host)) {
+      contacts_provider_(std::move(provider)) {
   CHECK(!render_frame_host.IsInLifecycleState(
       RenderFrameHost::LifecycleState::kPrerendering));
   source_id_ = render_frame_host.GetPageUkmSourceId();
@@ -73,6 +93,12 @@ void ContactsManagerImpl::Select(bool multiple,
                                  bool include_addresses,
                                  bool include_icons,
                                  SelectCallback mojom_callback) {
+  if (!render_frame_host().IsActive() ||
+      !render_frame_host().IsInPrimaryMainFrame()) {
+    std::move(mojom_callback).Run(std::nullopt);
+    return;
+  }
+
   if (contacts_provider_) {
     contacts_provider_->Select(
         multiple, include_names, include_emails, include_tel, include_addresses,

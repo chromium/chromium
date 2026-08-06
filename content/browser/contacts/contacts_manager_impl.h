@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_CONTACTS_CONTACTS_MANAGER_IMPL_H_
 
 #include "content/browser/contacts/contacts_provider.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/document_service.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/contacts/contacts_manager.mojom.h"
@@ -14,17 +15,17 @@ namespace content {
 
 class RenderFrameHost;
 
-class ContactsManagerImpl
+class CONTENT_EXPORT ContactsManagerImpl
     : public DocumentService<blink::mojom::ContactsManager> {
  public:
   static void Create(
       RenderFrameHost* render_frame_host,
-      mojo::PendingReceiver<blink::mojom::ContactsManager> receiver) {
-    CHECK(render_frame_host);
-    // The object is bound to the lifetime of `render_frame_host`'s logical
-    // document by virtue of being a `DocumentService` implementation.
-    new ContactsManagerImpl(*render_frame_host, std::move(receiver));
-  }
+      mojo::PendingReceiver<blink::mojom::ContactsManager> receiver);
+
+  static ContactsManagerImpl* CreateForTesting(
+      RenderFrameHost* render_frame_host,
+      mojo::PendingReceiver<blink::mojom::ContactsManager> receiver,
+      std::unique_ptr<ContactsProvider> provider);
 
   ContactsManagerImpl(const ContactsManagerImpl&) = delete;
   ContactsManagerImpl& operator=(const ContactsManagerImpl&) = delete;
@@ -42,7 +43,8 @@ class ContactsManagerImpl
  private:
   explicit ContactsManagerImpl(
       RenderFrameHost& render_frame_host,
-      mojo::PendingReceiver<blink::mojom::ContactsManager> receiver);
+      mojo::PendingReceiver<blink::mojom::ContactsManager> receiver,
+      std::unique_ptr<ContactsProvider> provider);
 
   std::unique_ptr<ContactsProvider> contacts_provider_;
 

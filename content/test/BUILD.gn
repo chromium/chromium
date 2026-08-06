@@ -2606,6 +2606,7 @@ test("content_unittests") {
     "../browser/code_cache/dedicated_task_runner_for_resource_unittest.cc",
     "../browser/code_cache/generated_code_cache_unittest.cc",
     "../browser/code_cache/simple_lru_cache_unittest.cc",
+    "../browser/contacts/contacts_manager_impl_unittest.cc",
     "../browser/content_index/content_index_database_unittest.cc",
     "../browser/content_index/content_index_service_impl_unittest.cc",
     "../browser/cookie_store/cookie_store_manager_unittest.cc",
