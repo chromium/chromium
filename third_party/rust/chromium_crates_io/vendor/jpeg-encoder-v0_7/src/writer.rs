@@ -1,5 +1,5 @@
 use crate::EncodingError;
-use crate::encoder::Component;
+use crate::encoder::{AlignedBlock, Component};
 use crate::huffman::{CodingClass, HuffmanTable};
 use crate::marker::{Marker, SOFType};
 use crate::quantization::QuantizationTable;
@@ -330,12 +330,12 @@ impl<W: JfifWrite> JfifWriter<W> {
 
     pub fn write_block(
         &mut self,
-        block: &[i16; 64],
+        block: &AlignedBlock,
         prev_dc: i16,
         dc_table: &HuffmanTable,
         ac_table: &HuffmanTable,
     ) -> Result<(), EncodingError> {
-        self.write_dc(block[0], prev_dc, dc_table)?;
+        self.write_dc(block.data[0], prev_dc, dc_table)?;
         self.write_ac_block(block, 1, 64, ac_table)
     }
 
@@ -355,14 +355,14 @@ impl<W: JfifWrite> JfifWriter<W> {
 
     pub fn write_ac_block(
         &mut self,
-        block: &[i16; 64],
+        block: &AlignedBlock,
         start: usize,
         end: usize,
         ac_table: &HuffmanTable,
     ) -> Result<(), EncodingError> {
         let mut zero_run = 0;
 
-        for &value in &block[start..end] {
+        for &value in &block.data[start..end] {
             if value == 0 {
                 zero_run += 1;
             } else {

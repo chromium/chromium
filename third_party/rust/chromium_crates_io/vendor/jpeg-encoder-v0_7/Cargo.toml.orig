@@ -1,6 +1,6 @@
 [package]
 name = "jpeg-encoder"
-version = "0.7.0"
+version = "0.7.1"
 authors = ["Volker Ströbel <volkerstroebel@mysurdity.de>"]
 edition = "2024"
 license = "(MIT OR Apache-2.0) AND IJG"

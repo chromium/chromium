@@ -42,7 +42,7 @@ mod marker;
 mod quantization;
 mod writer;
 
-pub use encoder::{ColorType, Encoder, JpegColorType, SamplingFactor};
+pub use encoder::{ChromaSubsamplingMethod, ColorType, Encoder, JpegColorType, SamplingFactor};
 pub use error::EncodingError;
 pub use image_buffer::{ImageBuffer, cmyk_to_ycck, rgb_to_ycbcr};
 pub use quantization::QuantizationTableType;
@@ -71,7 +71,9 @@ pub use avx2::RgbImageAVX2;
 #[cfg(test)]
 mod tests {
     use crate::image_buffer::rgb_to_ycbcr;
-    use crate::{ColorType, Encoder, QuantizationTableType, SamplingFactor};
+    use crate::{
+        ChromaSubsamplingMethod, ColorType, Encoder, QuantizationTableType, SamplingFactor,
+    };
     use jpeg_decoder::{Decoder, ImageInfo, PixelFormat};
 
     use alloc::boxed::Box;
@@ -268,6 +270,37 @@ mod tests {
         let mut result = Vec::new();
         let mut encoder = Encoder::new(&mut result, 100);
         encoder.set_sampling_factor(SamplingFactor::F_2_2);
+        encoder
+            .encode(&data, width, height, ColorType::Rgb)
+            .unwrap();
+
+        check_result(data, width, height, &mut result, PixelFormat::RGB24);
+    }
+
+    #[test]
+    fn test_rgb_2_2_box_average() {
+        let (data, width, height) = create_test_img_rgb();
+
+        let mut result = Vec::new();
+        let mut encoder = Encoder::new(&mut result, 100);
+        encoder.set_sampling_factor(SamplingFactor::F_2_2);
+        encoder.set_chroma_subsampling_method(ChromaSubsamplingMethod::Average);
+        encoder
+            .encode(&data, width, height, ColorType::Rgb)
+            .unwrap();
+
+        check_result(data, width, height, &mut result, PixelFormat::RGB24);
+    }
+
+    #[test]
+    fn test_rgb_2_2_box_average_progressive() {
+        let (data, width, height) = create_test_img_rgb();
+
+        let mut result = Vec::new();
+        let mut encoder = Encoder::new(&mut result, 100);
+        encoder.set_sampling_factor(SamplingFactor::F_2_2);
+        encoder.set_chroma_subsampling_method(ChromaSubsamplingMethod::Average);
+        encoder.set_progressive(true);
         encoder
             .encode(&data, width, height, ColorType::Rgb)
             .unwrap();

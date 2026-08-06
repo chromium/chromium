@@ -34,6 +34,24 @@ pub enum JpegColorType {
     Ycck,
 }
 
+#[derive(Copy, Clone)]
+#[repr(C, align(32))]
+pub(crate) struct AlignedBlock {
+    pub data: [i16; 64],
+}
+
+impl AlignedBlock {
+    pub const fn new(data: [i16; 64]) -> Self {
+        AlignedBlock { data }
+    }
+}
+
+impl Default for AlignedBlock {
+    fn default() -> Self {
+        AlignedBlock { data: [0i16; 64] }
+    }
+}
+
 impl JpegColorType {
     pub(crate) fn get_num_components(self) -> usize {
         use JpegColorType::*;
@@ -169,6 +187,15 @@ impl SamplingFactor {
     }
 }
 
+/// Method for reducing each chroma block to a single sample when subsampling
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ChromaSubsamplingMethod {
+    /// Use the top-left pixel of each block (fastest, default)
+    Nearest,
+    /// Box-average each block, matching libjpeg's `h2v2_downsample`
+    Average,
+}
+
 pub(crate) struct Component {
     pub id: u8,
     pub quantization_table: u8,
@@ -202,6 +229,7 @@ pub struct Encoder<W: JfifWrite> {
     huffman_tables: [(HuffmanTable, HuffmanTable); 2],
 
     sampling_factor: SamplingFactor,
+    chroma_subsampling_method: ChromaSubsamplingMethod,
 
     progressive_scans: Option<u8>,
 
@@ -249,6 +277,7 @@ impl<W: JfifWrite> Encoder<W> {
             quantization_tables,
             huffman_tables,
             sampling_factor,
+            chroma_subsampling_method: ChromaSubsamplingMethod::Nearest,
             progressive_scans: None,
             restart_interval: None,
             optimize_huffman_table: false,
@@ -268,6 +297,16 @@ impl<W: JfifWrite> Encoder<W> {
         self.density
     }
 
+    /// Set quality setting. Quality must be between 1 and 100 where 100 is the highest image quality.
+    pub fn set_quality(&mut self, quality: u8) {
+        self.quality = quality;
+    }
+
+    /// Get quality setting
+    pub fn quality(&self) -> u8 {
+        self.quality
+    }
+
     /// Set chroma subsampling factor
     pub fn set_sampling_factor(&mut self, sampling: SamplingFactor) {
         self.sampling_factor = sampling;
@@ -276,6 +315,16 @@ impl<W: JfifWrite> Encoder<W> {
     /// Get chroma subsampling factor
     pub fn sampling_factor(&self) -> SamplingFactor {
         self.sampling_factor
+    }
+
+    /// Set the chroma subsampling method
+    pub fn set_chroma_subsampling_method(&mut self, method: ChromaSubsamplingMethod) {
+        self.chroma_subsampling_method = method;
+    }
+
+    /// Get the chroma subsampling method
+    pub fn chroma_subsampling_method(&self) -> ChromaSubsamplingMethod {
+        self.chroma_subsampling_method
     }
 
     /// Set quantization tables for luma and chroma components
@@ -378,7 +427,7 @@ impl<W: JfifWrite> Encoder<W> {
         const MARKER: &[u8; 12] = b"ICC_PROFILE\0";
         const MAX_CHUNK_LENGTH: usize = 65535 - 2 - 12 - 2;
 
-        let num_chunks = ceil_div(data.len(), MAX_CHUNK_LENGTH);
+        let num_chunks = data.len().div_ceil(MAX_CHUNK_LENGTH);
 
         // Sequence number is stored as a byte and starts with 1
         if num_chunks >= 255 {
@@ -692,8 +741,8 @@ impl<W: JfifWrite> Encoder<W> {
         let width = image.width();
         let height = image.height();
 
-        let num_cols = ceil_div(usize::from(width), 8 * max_h_sampling);
-        let num_rows = ceil_div(usize::from(height), 8 * max_v_sampling);
+        let num_cols = usize::from(width).div_ceil(8 * max_h_sampling);
+        let num_rows = usize::from(height).div_ceil(8 * max_v_sampling);
 
         let buffer_width = num_cols * 8 * max_h_sampling;
         let buffer_size = buffer_width * 8 * max_v_sampling;
@@ -739,20 +788,32 @@ impl<W: JfifWrite> Encoder<W> {
                 }
 
                 for (i, component) in self.components.iter().enumerate() {
+                    let h_stride = max_h_sampling / component.horizontal_sampling_factor as usize;
+                    let v_stride = max_v_sampling / component.vertical_sampling_factor as usize;
+                    let average = self.chroma_subsampling_method
+                        == ChromaSubsamplingMethod::Average
+                        && (h_stride > 1 || v_stride > 1);
+
                     for v_offset in 0..component.vertical_sampling_factor as usize {
                         for h_offset in 0..component.horizontal_sampling_factor as usize {
-                            let mut block = get_block(
-                                &row[i],
-                                block_x * 8 * max_h_sampling + (h_offset * 8),
-                                v_offset * 8,
-                                max_h_sampling / component.horizontal_sampling_factor as usize,
-                                max_v_sampling / component.vertical_sampling_factor as usize,
-                                buffer_width,
-                            );
+                            let bx = block_x * 8 * max_h_sampling + (h_offset * 8);
+                            let by = v_offset * 8;
+                            let mut block = if average {
+                                get_block_averaged(
+                                    &row[i],
+                                    bx,
+                                    by,
+                                    h_stride,
+                                    v_stride,
+                                    buffer_width,
+                                )
+                            } else {
+                                get_block(&row[i], bx, by, h_stride, v_stride, buffer_width)
+                            };
 
                             OP::fdct(&mut block);
 
-                            let mut q_block = [0i16; 64];
+                            let mut q_block = AlignedBlock::default();
 
                             OP::quantize_block(
                                 &block,
@@ -767,7 +828,7 @@ impl<W: JfifWrite> Encoder<W> {
                                 &self.huffman_tables[component.ac_huffman_table as usize].1,
                             )?;
 
-                            prev_dc[i] = q_block[0];
+                            prev_dc[i] = q_block.data[0];
                         }
                     }
                 }
@@ -827,7 +888,7 @@ impl<W: JfifWrite> Encoder<W> {
                     &self.huffman_tables[component.ac_huffman_table as usize].1,
                 )?;
 
-                prev_dc = block[0];
+                prev_dc = block.data[0];
 
                 if restart_interval > 0 {
                     if restarts_to_go == 0 {
@@ -883,12 +944,12 @@ impl<W: JfifWrite> Encoder<W> {
                 }
 
                 self.writer.write_dc(
-                    block[0],
+                    block.data[0],
                     prev_dc,
                     &self.huffman_tables[component.dc_huffman_table as usize].0,
                 )?;
 
-                prev_dc = block[0];
+                prev_dc = block.data[0];
 
                 if restart_interval > 0 {
                     if restarts_to_go == 0 {
@@ -960,14 +1021,14 @@ impl<W: JfifWrite> Encoder<W> {
         &mut self,
         image: &I,
         q_tables: &[QuantizationTable; 2],
-    ) -> [Vec<[i16; 64]>; 4] {
+    ) -> [Vec<AlignedBlock>; 4] {
         let width = image.width();
         let height = image.height();
 
         let (max_h_sampling, max_v_sampling) = self.get_max_sampling_size();
 
-        let num_cols = ceil_div(usize::from(width), 8 * max_h_sampling) * max_h_sampling;
-        let num_rows = ceil_div(usize::from(height), 8 * max_v_sampling) * max_v_sampling;
+        let num_cols = usize::from(width).div_ceil(8 * max_h_sampling) * max_h_sampling;
+        let num_rows = usize::from(height).div_ceil(8 * max_v_sampling) * max_v_sampling;
 
         debug_assert!(num_cols > 0);
         debug_assert!(num_rows > 0);
@@ -991,8 +1052,8 @@ impl<W: JfifWrite> Encoder<W> {
             }
         }
 
-        let num_cols = ceil_div(usize::from(width), 8);
-        let num_rows = ceil_div(usize::from(height), 8);
+        let num_cols = usize::from(width).div_ceil(8);
+        let num_rows = usize::from(height).div_ceil(8);
 
         debug_assert!(num_cols > 0);
         debug_assert!(num_rows > 0);
@@ -1003,26 +1064,28 @@ impl<W: JfifWrite> Encoder<W> {
             let h_scale = max_h_sampling / component.horizontal_sampling_factor as usize;
             let v_scale = max_v_sampling / component.vertical_sampling_factor as usize;
 
-            let cols = ceil_div(num_cols, h_scale);
-            let rows = ceil_div(num_rows, v_scale);
+            let cols = num_cols.div_ceil(h_scale);
+            let rows = num_rows.div_ceil(v_scale);
 
             debug_assert!(cols > 0);
             debug_assert!(rows > 0);
 
+            let average = self.chroma_subsampling_method == ChromaSubsamplingMethod::Average
+                && (h_scale > 1 || v_scale > 1);
+
             for block_y in 0..rows {
                 for block_x in 0..cols {
-                    let mut block = get_block(
-                        &row[i],
-                        block_x * 8 * h_scale,
-                        block_y * 8 * v_scale,
-                        h_scale,
-                        v_scale,
-                        buffer_width,
-                    );
+                    let bx = block_x * 8 * h_scale;
+                    let by = block_y * 8 * v_scale;
+                    let mut block = if average {
+                        get_block_averaged(&row[i], bx, by, h_scale, v_scale, buffer_width)
+                    } else {
+                        get_block(&row[i], bx, by, h_scale, v_scale, buffer_width)
+                    };
 
                     OP::fdct(&mut block);
 
-                    let mut q_block = [0i16; 64];
+                    let mut q_block = AlignedBlock::default();
 
                     OP::quantize_block(
                         &block,
@@ -1037,7 +1100,7 @@ impl<W: JfifWrite> Encoder<W> {
         blocks
     }
 
-    fn init_block_buffers(&mut self, buffer_size: usize) -> [Vec<[i16; 64]>; 4] {
+    fn init_block_buffers(&mut self, buffer_size: usize) -> [Vec<AlignedBlock>; 4] {
         // To simplify the code and to give the compiler more infos to optimize stuff we always initialize 4 components
         // Resource overhead should be minimal because an empty Vec doesn't allocate
 
@@ -1065,7 +1128,7 @@ impl<W: JfifWrite> Encoder<W> {
     }
 
     // Create new huffman tables optimized for this image
-    fn optimize_huffman_table(&mut self, blocks: &[Vec<[i16; 64]>; 4]) {
+    fn optimize_huffman_table(&mut self, blocks: &[Vec<AlignedBlock>; 4]) {
         // TODO: Find out if it's possible to reuse some code from the writer
 
         let max_tables = self.components.len().min(2) as u8;
@@ -1088,7 +1151,7 @@ impl<W: JfifWrite> Encoder<W> {
                     debug_assert!(!blocks[i].is_empty());
 
                     for block in &blocks[i] {
-                        let value = block[0];
+                        let value = block.data[0];
                         let diff = value - prev_dc;
                         let num_bits = get_num_bits(diff);
 
@@ -1120,7 +1183,7 @@ impl<W: JfifWrite> Encoder<W> {
                             for block in &blocks[i] {
                                 let mut zero_run = 0;
 
-                                for &value in &block[start..end] {
+                                for &value in &block.data[start..end] {
                                     if value == 0 {
                                         zero_run += 1;
                                     } else {
@@ -1146,7 +1209,7 @@ impl<W: JfifWrite> Encoder<W> {
                         for block in &blocks[i] {
                             let mut zero_run = 0;
 
-                            for &value in &block[1..] {
+                            for &value in &block.data[1..] {
                                 if value == 0 {
                                     zero_run += 1;
                                 } else {
@@ -1208,7 +1271,7 @@ fn get_block(
     col_stride: usize,
     row_stride: usize,
     width: usize,
-) -> [i16; 64] {
+) -> AlignedBlock {
     let mut block = [0i16; 64];
 
     for y in 0..8 {
@@ -1220,11 +1283,41 @@ fn get_block(
         }
     }
 
-    block
+    AlignedBlock::new(block)
 }
 
-fn ceil_div(value: usize, div: usize) -> usize {
-    value / div + usize::from(value % div != 0)
+fn get_block_averaged(
+    data: &[u8],
+    start_x: usize,
+    start_y: usize,
+    col_stride: usize,
+    row_stride: usize,
+    width: usize,
+) -> AlignedBlock {
+    let mut block = [0i16; 64];
+    let n = col_stride * row_stride;
+    // Alternate the rounding bias per column as libjpeg does (see jcsample.c)
+    let bias_even = (n - 1) / 2;
+    let bias_odd = n / 2;
+
+    for y in 0..8 {
+        for x in 0..8 {
+            let ix = start_x + (x * col_stride);
+            let iy = start_y + (y * row_stride);
+
+            let mut sum = 0usize;
+            for dy in 0..row_stride {
+                for dx in 0..col_stride {
+                    sum += data[(iy + dy) * width + (ix + dx)] as usize;
+                }
+            }
+
+            let bias = if x & 1 == 0 { bias_even } else { bias_odd };
+            block[y * 8 + x] = ((sum + bias) / n) as i16 - 128;
+        }
+    }
+
+    AlignedBlock::new(block)
 }
 
 fn get_num_bits(mut value: i16) -> u8 {
@@ -1244,15 +1337,15 @@ fn get_num_bits(mut value: i16) -> u8 {
 
 pub(crate) trait Operations {
     #[inline(always)]
-    fn fdct(data: &mut [i16; 64]) {
+    fn fdct(data: &mut AlignedBlock) {
         fdct(data);
     }
 
     #[inline(always)]
-    fn quantize_block(block: &[i16; 64], q_block: &mut [i16; 64], table: &QuantizationTable) {
+    fn quantize_block(block: &AlignedBlock, q_block: &mut AlignedBlock, table: &QuantizationTable) {
         for i in 0..64 {
             let z = ZIGZAG[i] as usize & 0x3f;
-            q_block[i] = table.quantize(block[z], z);
+            q_block.data[i] = table.quantize(block.data[z], z);
         }
     }
 }
@@ -1265,9 +1358,40 @@ impl Operations for DefaultOperations {}
 mod tests {
     use alloc::vec;
 
-    use crate::encoder::get_num_bits;
+    use crate::encoder::{get_block, get_block_averaged, get_num_bits};
     use crate::writer::get_code;
     use crate::{Encoder, SamplingFactor};
+
+    #[test]
+    fn test_get_block_averaged_2x2() {
+        // Every 2x2 block is {0, 252, 0, 252}; averages to 126.
+        let width = 16;
+        let mut data = vec![0u8; width * 16];
+        for (i, v) in data.iter_mut().enumerate() {
+            *v = if (i % width) % 2 == 0 { 0 } else { 252 };
+        }
+
+        let nearest = get_block(&data, 0, 0, 2, 2, width);
+        let averaged = get_block_averaged(&data, 0, 0, 2, 2, width);
+
+        assert!(nearest.data.iter().all(|&v| v == -128));
+        assert!(averaged.data.iter().all(|&v| v == 126 - 128));
+    }
+
+    #[test]
+    fn test_get_block_averaged_dithers_bias() {
+        // Every 2x2 block averages to 1.5; bias dither rounds to 1 on even cols, 2 on odd.
+        let width = 16;
+        let mut data = vec![0u8; width * 16];
+        for (i, v) in data.iter_mut().enumerate() {
+            *v = if (i % width) % 2 == 0 { 1 } else { 2 };
+        }
+
+        let averaged = get_block_averaged(&data, 0, 0, 2, 2, width);
+        assert_eq!(averaged.data[0], 1 - 128);
+        assert_eq!(averaged.data[1], 2 - 128);
+        assert_eq!(averaged.data[8], 1 - 128);
+    }
 
     #[test]
     fn test_get_num_bits() {

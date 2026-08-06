@@ -25,6 +25,8 @@ use core::arch::x86_64::{
     _mm256_unpacklo_epi16, _mm256_unpacklo_epi32,
 };
 
+use crate::encoder::AlignedBlock;
+
 const CONST_BITS: i32 = 13;
 const PASS1_BITS: i32 = 2;
 
@@ -57,14 +59,14 @@ const DESCALE_P1: i32 = CONST_BITS - PASS1_BITS;
 const DESCALE_P2: i32 = CONST_BITS + PASS1_BITS;
 
 #[inline(always)]
-pub fn fdct_avx2(data: &mut [i16; 64]) {
+pub fn fdct_avx2(data: &mut AlignedBlock) {
     unsafe {
         fdct_avx2_internal(data);
     }
 }
 
 #[target_feature(enable = "avx2")]
-fn fdct_avx2_internal(data: &mut [i16; 64]) {
+fn fdct_avx2_internal(data: &mut AlignedBlock) {
     #[target_feature(enable = "avx2")]
     #[allow(non_snake_case)]
     #[inline]
@@ -419,6 +421,8 @@ fn fdct_avx2_internal(data: &mut [i16; 64]) {
 
         (t1, t2, t3, t4)
     }
+
+    let data = &mut data.data;
 
     let ymm4 = avx_load(&data[0..16]);
     let ymm5 = avx_load(&data[16..32]);

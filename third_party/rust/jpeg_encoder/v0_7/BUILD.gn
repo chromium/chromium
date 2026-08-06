@@ -35,7 +35,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "jpeg-encoder"
   cargo_pkg_description = "JPEG encoder"
   cargo_pkg_repository = "https://github.com/vstroebel/jpeg-encoder"
-  cargo_pkg_version = "0.7.0"
+  cargo_pkg_version = "0.7.1"
 
   allow_unsafe = true
 
