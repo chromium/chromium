@@ -9,14 +9,14 @@
 #include <string>
 #include <vector>
 
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync_device_info/device_info.h"
 #include "ui/actions/action_id.h"
 #include "ui/base/models/image_model.h"
 #include "url/gurl.h"
-
-class Browser;
 
 // Represents a single item in the Recent Tabs hierarchy (header, command,
 // tab, window, group, split, or device).
@@ -96,12 +96,16 @@ class RecentTabItem {
 class RecentTabsBuilder {
  public:
   // Builds and returns the complete list of recent tabs entries for a browser.
-  static std::vector<RecentTabItem> BuildRecentTabs(Browser* browser);
+  static std::vector<RecentTabItem> BuildRecentTabs(
+      Profile* profile,
+      BrowserWindowFeatures* feature);
 
   // Helper methods for building subsets of entries:
-  static std::vector<RecentTabItem> BuildHistoryEntries(Browser* browser);
-  static std::vector<RecentTabItem> BuildLocalEntries(Browser* browser);
-  static std::vector<RecentTabItem> BuildRemoteEntries(Browser* browser);
+  static std::vector<RecentTabItem> BuildHistoryEntries(
+      Profile* profile,
+      BrowserWindowFeatures* feature);
+  static std::vector<RecentTabItem> BuildLocalEntries(Profile* profile);
+  static std::vector<RecentTabItem> BuildRemoteEntries(Profile* profile);
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_RECENT_TABS_BUILDER_H_

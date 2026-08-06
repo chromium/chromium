@@ -23,7 +23,6 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/recent_tabs_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
@@ -46,7 +45,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/color/color_id.h"
 #include "ui/gfx/favicon_size.h"
 
 namespace {
@@ -89,8 +87,7 @@ const gfx::VectorIcon& GetDeviceIcon(
   }
 }
 
-RecentTabItem BuildTabItem(const sessions::tab_restore::Tab& tab,
-                           Browser* browser) {
+RecentTabItem BuildTabItem(const sessions::tab_restore::Tab& tab) {
   const sessions::SerializedNavigationEntry& current_navigation =
       tab.navigations.at(tab.normalized_navigation_index());
   std::u16string title =
@@ -117,8 +114,7 @@ RecentTabItem BuildTabItem(const sessions::tab_restore::Tab& tab,
   return item;
 }
 
-RecentTabItem BuildWindowItem(const sessions::tab_restore::Window& window,
-                              Browser* browser) {
+RecentTabItem BuildWindowItem(const sessions::tab_restore::Window& window) {
   std::u16string label = l10n_util::GetPluralStringFUTF16(
       IDS_RECENTLY_CLOSED_WINDOW, static_cast<int>(window.tabs.size()));
 
@@ -137,14 +133,13 @@ RecentTabItem BuildWindowItem(const sessions::tab_restore::Window& window,
   window_item.add_child(std::move(restore_cmd));
 
   for (const auto& tab : window.tabs) {
-    window_item.add_child(BuildTabItem(*tab, browser));
+    window_item.add_child(BuildTabItem(*tab));
   }
 
   return window_item;
 }
 
-RecentTabItem BuildGroupItem(const sessions::tab_restore::Group& group,
-                             Browser* browser) {
+RecentTabItem BuildGroupItem(const sessions::tab_restore::Group& group) {
   std::u16string item_label =
       GetGroupItemLabel(group.visual_data.title(), group.tabs.size());
   const ui::ColorId color_id =
@@ -167,14 +162,13 @@ RecentTabItem BuildGroupItem(const sessions::tab_restore::Group& group,
   group_item.add_child(std::move(restore_cmd));
 
   for (const auto& tab : group.tabs) {
-    group_item.add_child(BuildTabItem(*tab, browser));
+    group_item.add_child(BuildTabItem(*tab));
   }
 
   return group_item;
 }
 
-RecentTabItem BuildSplitItem(const sessions::tab_restore::Split& split,
-                             Browser* browser) {
+RecentTabItem BuildSplitItem(const sessions::tab_restore::Split& split) {
   std::u16string item_label =
       l10n_util::GetStringUTF16(IDS_RECENTLY_CLOSED_SPLIT);
 
@@ -199,7 +193,7 @@ RecentTabItem BuildSplitItem(const sessions::tab_restore::Split& split,
   split_item.add_child(std::move(restore_cmd));
 
   for (const auto& tab : split.tabs) {
-    split_item.add_child(BuildTabItem(*tab, browser));
+    split_item.add_child(BuildTabItem(*tab));
   }
 
   return split_item;
@@ -216,21 +210,22 @@ RecentTabItem& RecentTabItem::operator=(RecentTabItem&&) = default;
 RecentTabItem::~RecentTabItem() = default;
 
 std::vector<RecentTabItem> RecentTabsBuilder::BuildRecentTabs(
-    Browser* browser) {
+    Profile* profile,
+    BrowserWindowFeatures* feature) {
   std::vector<RecentTabItem> items;
-  if (!browser) {
+  if (!profile || !feature) {
     return items;
   }
 
-  auto history_items = BuildHistoryEntries(browser);
+  auto history_items = BuildHistoryEntries(profile, feature);
   items.insert(items.end(), std::make_move_iterator(history_items.begin()),
                std::make_move_iterator(history_items.end()));
 
-  auto local_items = BuildLocalEntries(browser);
+  auto local_items = BuildLocalEntries(profile);
   items.insert(items.end(), std::make_move_iterator(local_items.begin()),
                std::make_move_iterator(local_items.end()));
 
-  auto remote_items = BuildRemoteEntries(browser);
+  auto remote_items = BuildRemoteEntries(profile);
   items.insert(items.end(), std::make_move_iterator(remote_items.begin()),
                std::make_move_iterator(remote_items.end()));
 
@@ -238,9 +233,10 @@ std::vector<RecentTabItem> RecentTabsBuilder::BuildRecentTabs(
 }
 
 std::vector<RecentTabItem> RecentTabsBuilder::BuildHistoryEntries(
-    Browser* browser) {
+    Profile* profile,
+    BrowserWindowFeatures* feature) {
   std::vector<RecentTabItem> items;
-  if (!browser) {
+  if (!profile || !feature) {
     return items;
   }
 
@@ -254,9 +250,8 @@ std::vector<RecentTabItem> RecentTabsBuilder::BuildHistoryEntries(
       ui::kColorMenuIcon, gfx::kFaviconSize));
   items.push_back(std::move(history));
 
-  if (browser->GetFeatures().side_panel_ui()) {
-    if (HistoryClustersSidePanelCoordinator::IsSupported(
-            browser->GetProfile())) {
+  if (feature->side_panel_ui()) {
+    if (HistoryClustersSidePanelCoordinator::IsSupported(profile)) {
       RecentTabItem clusters(
           RecentTabItem::Type::kCommand,
           l10n_util::GetStringUTF16(IDS_HISTORY_CLUSTERS_SHOW_SIDE_PANEL));
@@ -269,8 +264,7 @@ std::vector<RecentTabItem> RecentTabsBuilder::BuildHistoryEntries(
       items.push_back(std::move(clusters));
     }
 
-    if (TabsFromOtherDevicesSidePanelCoordinator::IsSupported(
-            browser->GetProfile())) {
+    if (TabsFromOtherDevicesSidePanelCoordinator::IsSupported(profile)) {
       RecentTabItem other_devices(
           RecentTabItem::Type::kCommand,
           l10n_util::GetStringUTF16(
@@ -288,14 +282,14 @@ std::vector<RecentTabItem> RecentTabsBuilder::BuildHistoryEntries(
 }
 
 std::vector<RecentTabItem> RecentTabsBuilder::BuildLocalEntries(
-    Browser* browser) {
+    Profile* profile) {
   std::vector<RecentTabItem> items;
-  if (!browser) {
+  if (!profile) {
     return items;
   }
 
   sessions::TabRestoreService* service =
-      TabRestoreServiceFactory::GetForProfile(browser->GetProfile());
+      TabRestoreServiceFactory::GetForProfile(profile);
 
   items.emplace_back(RecentTabItem::Type::kHeader,
                      l10n_util::GetStringUTF16(IDS_RECENT_TABS));
@@ -309,25 +303,25 @@ std::vector<RecentTabItem> RecentTabsBuilder::BuildLocalEntries(
       case sessions::tab_restore::Type::TAB: {
         const auto& tab =
             static_cast<const sessions::tab_restore::Tab&>(*entry);
-        items.push_back(BuildTabItem(tab, browser));
+        items.push_back(BuildTabItem(tab));
         break;
       }
       case sessions::tab_restore::Type::WINDOW: {
         const auto& window =
             static_cast<const sessions::tab_restore::Window&>(*entry);
-        items.push_back(BuildWindowItem(window, browser));
+        items.push_back(BuildWindowItem(window));
         break;
       }
       case sessions::tab_restore::Type::GROUP: {
         const auto& group =
             static_cast<const sessions::tab_restore::Group&>(*entry);
-        items.push_back(BuildGroupItem(group, browser));
+        items.push_back(BuildGroupItem(group));
         break;
       }
       case sessions::tab_restore::Type::SPLIT: {
         const auto& split =
             static_cast<const sessions::tab_restore::Split&>(*entry);
-        items.push_back(BuildSplitItem(split, browser));
+        items.push_back(BuildSplitItem(split));
         break;
       }
     }
@@ -338,23 +332,23 @@ std::vector<RecentTabItem> RecentTabsBuilder::BuildLocalEntries(
 }
 
 std::vector<RecentTabItem> RecentTabsBuilder::BuildRemoteEntries(
-    Browser* browser) {
+    Profile* profile) {
   std::vector<RecentTabItem> items;
-  if (!browser) {
+  if (!profile) {
     return items;
   }
 
 #if !BUILDFLAG(IS_CHROMEOS)
   if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     syncer::SyncService* sync_service =
-        SyncServiceFactory::GetForProfile(browser->GetProfile());
+        SyncServiceFactory::GetForProfile(profile);
     if (!sync_service ||
         !signin_util::IsSyncingUserSelectableTypesAllowedByPolicy(
             sync_service, {syncer::UserSelectableType::kTabs})) {
       return items;
     }
     signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(browser->GetProfile());
+        IdentityManagerFactory::GetForProfile(profile);
     switch (signin_util::GetSignedInState(identity_manager)) {
       case signin_util::SignedInState::kSignedIn:
       case signin_util::SignedInState::kSignInPending:
@@ -376,8 +370,7 @@ std::vector<RecentTabItem> RecentTabsBuilder::BuildRemoteEntries(
                      l10n_util::GetStringUTF16(IDS_YOUR_DEVICES));
 
   sync_sessions::SessionSyncService* session_sync_service =
-      SessionSyncServiceFactory::GetInstance()->GetForProfile(
-          browser->GetProfile());
+      SessionSyncServiceFactory::GetInstance()->GetForProfile(profile);
   sync_sessions::OpenTabsUIDelegate* open_tabs =
       session_sync_service ? session_sync_service->GetOpenTabsUIDelegate()
                            : nullptr;
