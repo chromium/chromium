@@ -48,7 +48,6 @@ PolicyContainerPolicies MakeTestPolicies() {
   return PolicyContainerPolicies(
       network::mojom::ReferrerPolicy::kAlways,
       network::mojom::IPAddressSpace::kPublic,
-      /*allow_non_secure_local_network_access*/ true,
       /*is_web_secure_context=*/true, network::ConnectionAllowlists(),
       std::move(csp_list), network::CrossOriginOpenerPolicy(),
       network::CrossOriginEmbedderPolicy(), network::DocumentIsolationPolicy(),
@@ -104,19 +103,6 @@ TEST_F(NavigationPolicyContainerBuilderTest, SetIPAddressSpace) {
 
   PolicyContainerPolicies expected_policies;
   expected_policies.ip_address_space = network::mojom::IPAddressSpace::kPublic;
-
-  EXPECT_EQ(builder.DeliveredPoliciesForTesting(), expected_policies);
-}
-
-// Verifies that SetLocalNetworkAccessNonSecureContextAllowed sets
-// allow_non_secure_local_network_access in the builder's
-// delivered policies.
-TEST_F(NavigationPolicyContainerBuilderTest, SetLNANonSecureContextAllowed) {
-  NavigationPolicyContainerBuilder builder(nullptr, nullptr);
-  builder.SetLocalNetworkAccessNonSecureContextAllowed(true);
-
-  PolicyContainerPolicies expected_policies;
-  expected_policies.allow_non_secure_local_network_access = true;
 
   EXPECT_EQ(builder.DeliveredPoliciesForTesting(), expected_policies);
 }

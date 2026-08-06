@@ -189,7 +189,6 @@ Policy ApplyFeatureStateToPolicy(FeatureState feature_state,
 Policy DeriveLocalNetworkAccessRequestPolicy(
     AddressSpace ip_address_space,
     bool is_web_secure_context,
-    bool allow_on_non_secure_context,
     RequestContext local_network_request_context) {
   // Disable LNA checks entirely when running with `--disable-web-security`.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -203,11 +202,8 @@ Policy DeriveLocalNetworkAccessRequestPolicy(
   FeatureState feature_state =
       FeatureStateForContext(local_network_request_context);
 
-  // For LNA, if allow_on_non_secure_context is true, derive the policy as if it
-  // is a secure context.
   Policy policy =
-      is_web_secure_context || (local_network_access_checks_enabled &&
-                                allow_on_non_secure_context)
+      is_web_secure_context
           ? DerivePolicyForSecureContext(ip_address_space,
                                          local_network_access_checks_enabled)
           : DerivePolicyForNonSecureContext(
@@ -222,7 +218,6 @@ Policy DeriveLocalNetworkAccessRequestPolicy(
     RequestContext local_network_request_context) {
   return DeriveLocalNetworkAccessRequestPolicy(
       policies.ip_address_space, policies.is_web_secure_context,
-      policies.allow_non_secure_local_network_access,
       local_network_request_context);
 }
 

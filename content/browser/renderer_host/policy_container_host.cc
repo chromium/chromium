@@ -127,7 +127,6 @@ PolicyContainerPolicies::PolicyContainerPolicies() = default;
 PolicyContainerPolicies::PolicyContainerPolicies(
     network::mojom::ReferrerPolicy referrer_policy,
     network::mojom::IPAddressSpace ip_address_space,
-    bool allow_non_secure_local_network_access,
     bool is_web_secure_context,
     network::ConnectionAllowlists connection_allowlists,
     std::vector<network::mojom::ContentSecurityPolicyPtr>
@@ -144,8 +143,6 @@ PolicyContainerPolicies::PolicyContainerPolicies(
     const std::optional<AgentClusterKey::CrossOriginIsolationKey>& coi_key)
     : referrer_policy(referrer_policy),
       ip_address_space(ip_address_space),
-      allow_non_secure_local_network_access(
-          allow_non_secure_local_network_access),
       is_web_secure_context(is_web_secure_context),
       connection_allowlists(std::move(connection_allowlists)),
       content_security_policies(std::move(content_security_policies)),
@@ -167,7 +164,6 @@ PolicyContainerPolicies::PolicyContainerPolicies(
     bool is_web_secure_context)
     : PolicyContainerPolicies(policies.referrer_policy,
                               policies.ip_address_space,
-                              /*allow_non_secure_local_network_access=*/false,
                               is_web_secure_context,
                               policies.connection_allowlists,
                               mojo::Clone(policies.content_security_policies),
@@ -189,7 +185,6 @@ PolicyContainerPolicies::PolicyContainerPolicies(
     : PolicyContainerPolicies(
           network::mojom::ReferrerPolicy::kDefault,
           CalculateIPAddressSpace(url, response_head, client),
-          /*allow_non_secure_local_network_access=*/false,
           network::IsUrlPotentiallyTrustworthy(url),
           response_head->parsed_headers->connection_allowlists,
           mojo::Clone(response_head->parsed_headers->content_security_policy),
@@ -219,12 +214,12 @@ PolicyContainerPolicies::~PolicyContainerPolicies() = default;
 
 PolicyContainerPolicies PolicyContainerPolicies::Clone() const {
   return PolicyContainerPolicies(
-      referrer_policy, ip_address_space, allow_non_secure_local_network_access,
-      is_web_secure_context, connection_allowlists,
-      mojo::Clone(content_security_policies), cross_origin_opener_policy,
-      cross_origin_embedder_policy, mojo::Clone(document_isolation_policy),
-      integrity_policy, integrity_policy_report_only, sandbox_flags,
-      is_credentialless, can_navigate_top_without_user_gesture,
+      referrer_policy, ip_address_space, is_web_secure_context,
+      connection_allowlists, mojo::Clone(content_security_policies),
+      cross_origin_opener_policy, cross_origin_embedder_policy,
+      mojo::Clone(document_isolation_policy), integrity_policy,
+      integrity_policy_report_only, sandbox_flags, is_credentialless,
+      can_navigate_top_without_user_gesture,
       cross_origin_isolation_enabled_by_dip,
       cross_origin_isolation_key_override);
 }
@@ -243,11 +238,6 @@ void PolicyContainerPolicies::AddContentSecurityPolicies(
 
 blink::mojom::PolicyContainerPoliciesPtr
 PolicyContainerPolicies::ToMojoPolicyContainerPolicies() const {
-  // TODO(crbug.com/395895368): add allow_non_secure_local_network_access to the
-  // mojo container in
-  // third_party/blink/public/mojom/frame/policy_container.mojom if it is
-  // necessary for Service workers (see https://crrev.com/c/3885147 for how it
-  // was done in PNA).
   return blink::mojom::PolicyContainerPolicies::New(
       connection_allowlists, cross_origin_embedder_policy, integrity_policy,
       integrity_policy_report_only, referrer_policy,

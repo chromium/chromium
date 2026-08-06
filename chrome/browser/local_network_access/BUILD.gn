@@ -29,7 +29,6 @@ if (!is_android) {
       "local_network_access_browsertest_base.cc",
       "local_network_access_browsertest_base.h",
       "local_network_access_counters_browsertest.cc",
-      "local_network_access_deprecation_browsertest.cc",
       "local_network_access_iframe_browsertest.cc",
       "local_network_access_policies_browsertest.cc",
       "local_network_access_prompt_browsertest.cc",

@@ -4928,7 +4928,7 @@ enum WebFeature {
   kMessageEventDataBeforeSameSiteOrigin = 5614,
   kMessageEventDataBeforeCrossSiteOrigin = 5615,
   kMessageEventDataBeforeOpaqueOrigin = 5616,
-  kLocalNetworkAccessNonSecureContextAllowedDeprecationTrial = 5617,
+  kOBSOLETE_LocalNetworkAccessNonSecureContextAllowedDeprecationTrial = 5617,
   kCSPUrlHashes = 5618,
   kCSPEvalHashes = 5619,
   kOBSOLETE_WebAppManifestNameLocalized = 5620,

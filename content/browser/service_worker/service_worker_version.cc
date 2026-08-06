@@ -2513,7 +2513,6 @@ ServiceWorkerVersion::BuildClientSecurityState() const {
       local_network_access_request_policy =
           DeriveLocalNetworkAccessRequestPolicy(
               policies.ip_address_space, policies.is_web_secure_context,
-              policies.allow_non_secure_local_network_access,
               LocalNetworkAccessRequestContext::kWorker);
 
   // Check for policy overrides on LNA. For service workers, we apply

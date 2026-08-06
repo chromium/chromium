@@ -6344,7 +6344,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5615" label="MessageEventDataBeforeCrossSiteOrigin"/>
   <int value="5616" label="MessageEventDataBeforeOpaqueOrigin"/>
   <int value="5617"
-      label="LocalNetworkAccessNonSecureContextAllowedDeprecationTrial"/>
+      label="OBSOLETE_LocalNetworkAccessNonSecureContextAllowedDeprecationTrial"/>
   <int value="5618" label="CSPUrlHashes"/>
   <int value="5619" label="CSPEvalHashes"/>
   <int value="5620" label="OBSOLETE_WebAppManifestNameLocalized"/>
