@@ -1078,8 +1078,9 @@ TEST_F(AISummarizerManifestTest, CanCreateAndCreateWithManifestAutoPreference) {
   EXPECT_TRUE(result.has_value());
 }
 
+// TODO(crbug.com/543507245): Flaky.
 TEST_F(AISummarizerManifestTest,
-       CanCreateAndCreateWithManifestCapabilityPreference) {
+       DISABLED_CanCreateAndCreateWithManifestCapabilityPreference) {
   fake_manifest_broker_->client().RequestAssetsFor("summarizer_api");
   base::RunLoop().RunUntilIdle();
 
