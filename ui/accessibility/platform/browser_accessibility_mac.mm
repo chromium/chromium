@@ -39,11 +39,21 @@ BrowserAccessibilityCocoa* BrowserAccessibilityMac::GetNativeWrapper() const {
 }
 
 void BrowserAccessibilityMac::OnDataChanged() {
+  const bool had_native_wrapper = GetNativeWrapper() != nil;
   BrowserAccessibility::OnDataChanged();
+  if (had_native_wrapper && GetNativeWrapper() &&
+      !features::IsMacAccessibilityOptimizeChildrenChangedEnabled()) {
+    [GetNativeWrapper() childrenChanged];
+  }
+}
+
+void BrowserAccessibilityMac::UpdatePlatformNode() {
+  if (!ShouldHavePlatformNode()) {
+    platform_node_.reset();
+    return;
+  }
   if (!GetNativeWrapper()) {
     CreatePlatformNodes();
-  } else if (!features::IsMacAccessibilityOptimizeChildrenChangedEnabled()) {
-    [GetNativeWrapper() childrenChanged];
   }
 }
 

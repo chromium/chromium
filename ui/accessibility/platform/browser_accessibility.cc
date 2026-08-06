@@ -136,10 +136,22 @@ bool BrowserAccessibility::IsValid() const {
 
 void BrowserAccessibility::OnDataChanged() {
   DCHECK(IsValid()) << "Invalid node: " << *this;
+  // See `ShouldHavePlatformNode` for an explanation on why it must be ignored
+  // if false.
+  DCHECK(ShouldHavePlatformNode() || node()->IsIgnored())
+      << "Only an ignored node may go without a platform node: " << *this;
+  UpdatePlatformNode();
+}
+
+bool BrowserAccessibility::ShouldHavePlatformNode() const {
+  return true;
 }
 
 bool BrowserAccessibility::CanFireEvents() const {
-  return node()->CanFireEvents();
+  // A platform event names a platform node, thus a BrowserAccessibility that
+  // owns none can fire no event. Each platform gives the node of an event to
+  // its own API, and it has no result to give for a node that is not there.
+  return ShouldHavePlatformNode() && node()->CanFireEvents();
 }
 
 AXPlatformNode* BrowserAccessibility::GetAXPlatformNode() const {

@@ -12,6 +12,7 @@
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
 #include "ui/accessibility/platform/browser_accessibility_manager_win.h"
+#include "ui/accessibility/platform/browser_accessibility_win.h"
 #include "ui/accessibility/platform/test_ax_node_id_delegate.h"
 #include "ui/accessibility/platform/test_ax_node_wrapper.h"
 #include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
@@ -274,6 +275,170 @@ TEST_F(BrowserAccessibilityManagerWinTest,
   EXPECT_EQ(BrowserAccessibilityManagerWin::GetCheckedStateChangedUiaProperty(
                 *toggle_button_node),
             UIA_ToggleToggleStatePropertyId);
+}
+
+namespace {
+
+// Lets a test choose whether a node owns a platform node. See
+// BrowserAccessibility::ShouldHavePlatformNode for details.
+class TogglablePlatformNodeBrowserAccessibilityWin
+    : public BrowserAccessibilityWin {
+ public:
+  TogglablePlatformNodeBrowserAccessibilityWin(
+      BrowserAccessibilityManager* manager,
+      AXNode* node)
+      : BrowserAccessibilityWin(manager, node) {}
+
+  bool ShouldHavePlatformNode() const override { return should_have_; }
+
+  void SetShouldHavePlatformNode(bool value) {
+    should_have_ = value;
+    UpdatePlatformNode();
+  }
+
+ private:
+  bool should_have_ = true;
+};
+
+}  // namespace
+
+class BrowserAccessibilityPlatformNodeWinTest
+    : public BrowserAccessibilityManagerWinTest {
+ protected:
+  std::unique_ptr<TogglablePlatformNodeBrowserAccessibilityWin> MakeNode() {
+    AXNodeData root;
+    root.id = 1;
+    root.role = ax::mojom::Role::kRootWebArea;
+    root.child_ids = {2};
+
+    // Only an ignored node may go without a platform node.
+    AXNodeData ignored_child;
+    ignored_child.id = 2;
+    ignored_child.role = ax::mojom::Role::kGenericContainer;
+    ignored_child.AddState(ax::mojom::State::kIgnored);
+    ignored_child.child_ids = {3};
+
+    // A node below the ignored one keeps the root off the bottom of the tree.
+    // ATK gives no object to the child of a leaf.
+    AXNodeData grandchild;
+    grandchild.id = 3;
+    grandchild.role = ax::mojom::Role::kButton;
+
+    manager_.reset(BrowserAccessibilityManager::Create(
+        MakeAXTreeUpdateForTesting(root, ignored_child, grandchild),
+        node_id_delegate_, test_browser_accessibility_delegate_.get()));
+    auto node = std::make_unique<TogglablePlatformNodeBrowserAccessibilityWin>(
+        manager_.get(), manager_->GetFromID(2)->node());
+    // The manager does this for every wrapper that it creates.
+    node->OnDataChanged();
+    return node;
+  }
+
+  std::unique_ptr<BrowserAccessibilityManager> manager_;
+};
+
+TEST_F(BrowserAccessibilityPlatformNodeWinTest, ANodeOwnsAPlatformNodeByDefault) {
+  std::unique_ptr<TogglablePlatformNodeBrowserAccessibilityWin> node =
+      MakeNode();
+
+  EXPECT_TRUE(node->ShouldHavePlatformNode());
+  EXPECT_TRUE(node->GetAXPlatformNode());
+  EXPECT_TRUE(node->GetNativeViewAccessible());
+}
+
+TEST_F(BrowserAccessibilityPlatformNodeWinTest, ANodeCanOwnNoPlatformNode) {
+  std::unique_ptr<TogglablePlatformNodeBrowserAccessibilityWin> node =
+      MakeNode();
+  node->SetShouldHavePlatformNode(false);
+
+  EXPECT_FALSE(node->GetAXPlatformNode());
+  EXPECT_FALSE(node->GetNativeViewAccessible());
+}
+
+// An event names a platform node, thus a node that owns none can fire none.
+// The Windows override gives an event to a node below a collapsed select, and
+// to a node that changed its ignored state, thus it must test this first.
+TEST_F(BrowserAccessibilityPlatformNodeWinTest, NoPlatformNodeFiresNoEvent) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {2};
+
+  AXNodeData collapsed_select;
+  collapsed_select.id = 2;
+  collapsed_select.role = ax::mojom::Role::kComboBoxSelect;
+  collapsed_select.AddState(ax::mojom::State::kCollapsed);
+  collapsed_select.child_ids = {3};
+
+  AXNodeData option;
+  option.id = 3;
+  option.role = ax::mojom::Role::kMenuListOption;
+
+  std::unique_ptr<BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManager::Create(
+          MakeAXTreeUpdateForTesting(root, collapsed_select, option),
+          node_id_delegate_, test_browser_accessibility_delegate_.get()));
+
+  auto node = std::make_unique<TogglablePlatformNodeBrowserAccessibilityWin>(
+      manager.get(), manager->GetFromID(3)->node());
+  node->OnDataChanged();
+
+  // The option is inside a leaf, thus the base class alone would give it no
+  // event, and only the collapsed select keeps it able to fire one.
+  ASSERT_TRUE(node->IsChildOfLeaf());
+  ASSERT_TRUE(node->GetCollapsedMenuListSelectAncestor());
+  ASSERT_TRUE(node->CanFireEvents());
+
+  node->SetShouldHavePlatformNode(false);
+
+  EXPECT_FALSE(node->CanFireEvents());
+}
+
+TEST_F(BrowserAccessibilityPlatformNodeWinTest, EveryAccessorIsSafeWithNoPlatformNode) {
+  std::unique_ptr<TogglablePlatformNodeBrowserAccessibilityWin> node =
+      MakeNode();
+  node->SetShouldHavePlatformNode(false);
+
+  EXPECT_TRUE(node->GetHypertext().empty());
+  node->UpdatePlatformAttributes();
+  node->OnLocationChanged();
+  node->OnDataChanged();
+}
+
+TEST_F(BrowserAccessibilityPlatformNodeWinTest, APlatformNodeComesBack) {
+  std::unique_ptr<TogglablePlatformNodeBrowserAccessibilityWin> node =
+      MakeNode();
+  node->SetShouldHavePlatformNode(false);
+  ASSERT_FALSE(node->GetAXPlatformNode());
+
+  node->SetShouldHavePlatformNode(true);
+
+  EXPECT_TRUE(node->GetAXPlatformNode());
+  EXPECT_TRUE(node->GetNativeViewAccessible());
+}
+
+TEST_F(BrowserAccessibilityPlatformNodeWinTest, RepeatedChangesAreSafe) {
+  std::unique_ptr<TogglablePlatformNodeBrowserAccessibilityWin> node =
+      MakeNode();
+
+  for (int i = 0; i < 3; ++i) {
+    node->SetShouldHavePlatformNode(false);
+    ASSERT_FALSE(node->GetAXPlatformNode()) << "iteration " << i;
+
+    node->SetShouldHavePlatformNode(true);
+    ASSERT_TRUE(node->GetAXPlatformNode()) << "iteration " << i;
+  }
+}
+
+TEST_F(BrowserAccessibilityPlatformNodeWinTest, RepeatedUpdatesKeepOnePlatformNode) {
+  std::unique_ptr<TogglablePlatformNodeBrowserAccessibilityWin> node =
+      MakeNode();
+  AXPlatformNode* first = node->GetAXPlatformNode();
+
+  node->UpdatePlatformNode();
+  node->UpdatePlatformNode();
+
+  EXPECT_EQ(first, node->GetAXPlatformNode());
 }
 
 }  // namespace ui

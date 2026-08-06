@@ -18,6 +18,16 @@
 
 namespace ui {
 
+namespace {
+
+// Returns the ATK node of `node`, or nullptr when `node` owns no platform node.
+// An ATK event needs an ATK node, thus each caller drops the event instead.
+AXPlatformNodeAuraLinux* GetAtkNode(BrowserAccessibility* node) {
+  return node ? ToBrowserAccessibilityAuraLinux(node)->GetNode() : nullptr;
+}
+
+}  // namespace
+
 // static
 BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
     const AXTreeUpdate& initial_tree,
@@ -159,8 +169,9 @@ void BrowserAccessibilityManagerAuraLinux::FireAriaCurrentChangedEvent(
 
 void BrowserAccessibilityManagerAuraLinux::FireEvent(BrowserAccessibility* node,
                                                      ax::mojom::Event event) {
-  ToBrowserAccessibilityAuraLinux(node)->GetNode()->NotifyAccessibilityEvent(
-      event);
+  if (AXPlatformNodeAuraLinux* atk_node = GetAtkNode(node)) {
+    atk_node->NotifyAccessibilityEvent(event);
+  }
 }
 
 void BrowserAccessibilityManagerAuraLinux::FireSourceEvent(
@@ -169,6 +180,10 @@ void BrowserAccessibilityManagerAuraLinux::FireSourceEvent(
     int action_request_id) {
   BrowserAccessibilityManager::FireSourceEvent(event_type, node,
                                                action_request_id);
+
+  if (!GetAtkNode(node)) {
+    return;
+  }
 
   switch (event_type) {
     case ax::mojom::Event::kScrolledToAnchor:
@@ -254,6 +269,9 @@ void BrowserAccessibilityManagerAuraLinux::FireGeneratedEvent(
 
   BrowserAccessibility* wrapper = GetFromAXNode(node);
   DCHECK(wrapper);
+  if (!GetAtkNode(wrapper)) {
+    return;
+  }
   switch (event_type) {
     case AXEventGenerator::Event::ACTIVE_DESCENDANT_CHANGED:
       FireEvent(wrapper, ax::mojom::Event::kActiveDescendantChanged);
@@ -441,14 +459,12 @@ void BrowserAccessibilityManagerAuraLinux::FireAriaNotificationEvent(
   DCHECK(node);
 
   // Only newer Atk versions support the notification signal type.
-  if (ShouldExposeExtraAnnouncementNodes()) {
-    ToBrowserAccessibilityAuraLinux(
-        node->GetExtraAnnouncementNode(priority_property))
-        ->GetNode()
-        ->OnAriaNotificationPosted(announcement, priority_property);
-  } else {
-    ToBrowserAccessibilityAuraLinux(node)->GetNode()->OnAriaNotificationPosted(
-        announcement, priority_property);
+  BrowserAccessibility* target =
+      ShouldExposeExtraAnnouncementNodes()
+          ? node->GetExtraAnnouncementNode(priority_property)
+          : node;
+  if (AXPlatformNodeAuraLinux* atk_node = GetAtkNode(target)) {
+    atk_node->OnAriaNotificationPosted(announcement, priority_property);
   }
 }
 
@@ -524,7 +540,9 @@ void BrowserAccessibilityManagerAuraLinux::OnSubtreeWillBeDeleted(
   BrowserAccessibility* obj = GetFromAXNode(node);
   if (!CanEmitChildrenChanged(obj))
     return;
-  ToBrowserAccessibilityAuraLinux(obj)->GetNode()->OnSubtreeWillBeDeleted();
+  if (AXPlatformNodeAuraLinux* atk_node = GetAtkNode(obj)) {
+    atk_node->OnSubtreeWillBeDeleted();
+  }
 }
 
 void BrowserAccessibilityManagerAuraLinux::OnAtomicUpdateFinished(

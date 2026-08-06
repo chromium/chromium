@@ -27,17 +27,29 @@ BrowserAccessibilityIOS::BrowserAccessibilityIOS(
 BrowserAccessibilityIOS::~BrowserAccessibilityIOS() = default;
 
 void BrowserAccessibilityIOS::OnDataChanged() {
-  BrowserAccessibility::OnDataChanged();
-
+  // BrowserAccessibility::OnDataChanged is responsible for creating the
+  // AXPlatformNode (through UpdatePlatformNode), and this event should be fired
+  // before the node gets created. This is the wrong location for this event to
+  // be fired from, though, and the TODO mentioned below should fix this by
+  // moving this to BrowserAccessibilityIOS::FireGeneratedEvent.
   if (platform_node_) {
     // TODO(crbug.com/336611337): Investigate why this needs to be called
     // unconditionally rather than just for children changes.
     [base::apple::ObjCCastStrict<AXPlatformNodeUIKitElement>(
         platform_node_->GetNativeViewAccessible().Get()) childrenChanged];
-    return;
   }
 
-  CreatePlatformNode();
+  BrowserAccessibility::OnDataChanged();
+}
+
+void BrowserAccessibilityIOS::UpdatePlatformNode() {
+  if (!ShouldHavePlatformNode()) {
+    platform_node_.reset();
+    return;
+  }
+  if (!platform_node_) {
+    CreatePlatformNode();
+  }
 }
 
 size_t BrowserAccessibilityIOS::PlatformChildCount() const {

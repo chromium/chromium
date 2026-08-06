@@ -1362,18 +1362,13 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_previousSibling(
   if (!node)
     return E_INVALIDARG;
 
-  BrowserAccessibilityWin* const owner = GetOwner();
-  std::optional<size_t> index_in_parent = std::nullopt;
-  if (owner->PlatformGetParent()) {
-    index_in_parent = GetIndexInParent();
-  }
-  if (!index_in_parent.has_value() || index_in_parent.value() == 0) {
+  BrowserAccessibilityComWin* sibling = ToBrowserAccessibilityComWin(
+      GetOwner()->InternalGetPreviousSibling());
+  if (!sibling) {
     *node = NULL;
     return S_FALSE;
   }
-
-  *node = ToBrowserAccessibilityComWin(owner->InternalGetPreviousSibling())
-              ->NewReference();
+  *node = sibling->NewReference();
   return S_OK;
 }
 
@@ -1388,20 +1383,13 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_nextSibling(
   if (!node)
     return E_INVALIDARG;
 
-  BrowserAccessibilityWin* const owner = GetOwner();
-  std::optional<size_t> index_in_parent = std::nullopt;
-  if (owner->PlatformGetParent()) {
-    index_in_parent = GetIndexInParent();
-  }
-  if (!index_in_parent.has_value() ||
-      (index_in_parent.value() + 1) >=
-          owner->PlatformGetParent()->InternalChildCount()) {
+  BrowserAccessibilityComWin* sibling =
+      ToBrowserAccessibilityComWin(GetOwner()->InternalGetNextSibling());
+  if (!sibling) {
     *node = NULL;
     return S_FALSE;
   }
-
-  *node = ToBrowserAccessibilityComWin(owner->InternalGetNextSibling())
-              ->NewReference();
+  *node = sibling->NewReference();
   return S_OK;
 }
 

@@ -14,6 +14,7 @@
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_auralinux.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
+#include "ui/accessibility/platform/browser_accessibility_auralinux.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/accessibility/platform/test_ax_node_id_delegate.h"
 #include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
@@ -208,6 +209,137 @@ TEST_F(BrowserAccessibilityManagerAuraLinuxTest,
 
   aura_linux_manager->FireSelectedEvent(option_without_selected_state);
   EXPECT_FALSE(saw_selected);
+}
+
+namespace {
+
+// Lets a test choose whether a node owns a platform node. See
+// BrowserAccessibility::ShouldHavePlatformNode for details.
+class TogglablePlatformNodeBrowserAccessibilityAuraLinux
+    : public BrowserAccessibilityAuraLinux {
+ public:
+  TogglablePlatformNodeBrowserAccessibilityAuraLinux(
+      BrowserAccessibilityManager* manager,
+      AXNode* node)
+      : BrowserAccessibilityAuraLinux(manager, node) {}
+
+  bool ShouldHavePlatformNode() const override { return should_have_; }
+
+  void SetShouldHavePlatformNode(bool value) {
+    should_have_ = value;
+    UpdatePlatformNode();
+  }
+
+ private:
+  bool should_have_ = true;
+};
+
+}  // namespace
+
+class BrowserAccessibilityPlatformNodeAuraLinuxTest
+    : public BrowserAccessibilityManagerAuraLinuxTest {
+ protected:
+  std::unique_ptr<TogglablePlatformNodeBrowserAccessibilityAuraLinux>
+  MakeNode() {
+    AXNodeData root;
+    root.id = 1;
+    root.role = ax::mojom::Role::kRootWebArea;
+    root.child_ids = {2};
+
+    // Only an ignored node may go without a platform node.
+    AXNodeData ignored_child;
+    ignored_child.id = 2;
+    ignored_child.role = ax::mojom::Role::kGenericContainer;
+    ignored_child.AddState(ax::mojom::State::kIgnored);
+    ignored_child.child_ids = {3};
+
+    // A node below the ignored one keeps the root off the bottom of the tree.
+    // ATK gives no object to the child of a leaf.
+    AXNodeData grandchild;
+    grandchild.id = 3;
+    grandchild.role = ax::mojom::Role::kButton;
+
+    manager_.reset(BrowserAccessibilityManager::Create(
+        MakeAXTreeUpdateForTesting(root, ignored_child, grandchild),
+        node_id_delegate_, test_browser_accessibility_delegate_.get()));
+    auto node = std::make_unique<
+        TogglablePlatformNodeBrowserAccessibilityAuraLinux>(
+        manager_.get(), manager_->GetFromID(2)->node());
+    // The manager does this for every wrapper that it creates.
+    node->OnDataChanged();
+    return node;
+  }
+
+  std::unique_ptr<BrowserAccessibilityManager> manager_;
+};
+
+TEST_F(BrowserAccessibilityPlatformNodeAuraLinuxTest,
+       ANodeOwnsAPlatformNodeByDefault) {
+  std::unique_ptr<TogglablePlatformNodeBrowserAccessibilityAuraLinux> node =
+      MakeNode();
+
+  EXPECT_TRUE(node->ShouldHavePlatformNode());
+  EXPECT_TRUE(node->GetAXPlatformNode());
+  EXPECT_TRUE(node->GetNativeViewAccessible());
+}
+
+TEST_F(BrowserAccessibilityPlatformNodeAuraLinuxTest,
+       ANodeCanOwnNoPlatformNode) {
+  std::unique_ptr<TogglablePlatformNodeBrowserAccessibilityAuraLinux> node =
+      MakeNode();
+  node->SetShouldHavePlatformNode(false);
+
+  EXPECT_FALSE(node->GetAXPlatformNode());
+  EXPECT_FALSE(node->GetNativeViewAccessible());
+}
+
+TEST_F(BrowserAccessibilityPlatformNodeAuraLinuxTest,
+       EveryAccessorIsSafeWithNoPlatformNode) {
+  std::unique_ptr<TogglablePlatformNodeBrowserAccessibilityAuraLinux> node =
+      MakeNode();
+  node->SetShouldHavePlatformNode(false);
+
+  EXPECT_TRUE(node->GetHypertext().empty());
+  EXPECT_TRUE(node->ComputeTextAttributes().empty());
+  node->UpdatePlatformAttributes();
+  node->OnDataChanged();
+}
+
+TEST_F(BrowserAccessibilityPlatformNodeAuraLinuxTest, APlatformNodeComesBack) {
+  std::unique_ptr<TogglablePlatformNodeBrowserAccessibilityAuraLinux> node =
+      MakeNode();
+  node->SetShouldHavePlatformNode(false);
+  ASSERT_FALSE(node->GetAXPlatformNode());
+
+  node->SetShouldHavePlatformNode(true);
+
+  EXPECT_TRUE(node->GetAXPlatformNode());
+  EXPECT_TRUE(node->GetNativeViewAccessible());
+}
+
+TEST_F(BrowserAccessibilityPlatformNodeAuraLinuxTest, RepeatedChangesAreSafe) {
+  std::unique_ptr<TogglablePlatformNodeBrowserAccessibilityAuraLinux> node =
+      MakeNode();
+
+  for (int i = 0; i < 3; ++i) {
+    node->SetShouldHavePlatformNode(false);
+    ASSERT_FALSE(node->GetAXPlatformNode()) << "iteration " << i;
+
+    node->SetShouldHavePlatformNode(true);
+    ASSERT_TRUE(node->GetAXPlatformNode()) << "iteration " << i;
+  }
+}
+
+TEST_F(BrowserAccessibilityPlatformNodeAuraLinuxTest,
+       RepeatedUpdatesKeepOnePlatformNode) {
+  std::unique_ptr<TogglablePlatformNodeBrowserAccessibilityAuraLinux> node =
+      MakeNode();
+  AXPlatformNode* first = node->GetAXPlatformNode();
+
+  node->UpdatePlatformNode();
+  node->UpdatePlatformNode();
+
+  EXPECT_EQ(first, node->GetAXPlatformNode());
 }
 
 }  // namespace ui

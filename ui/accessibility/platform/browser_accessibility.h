@@ -102,6 +102,25 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibility
 
   BrowserAccessibility* PlatformGetParent() const;
 
+  // Returns true when this node needs an AXPlatformNode to represent it.
+  //
+  // Only an ignored node may return false. `AXPlatformNodeDelegate` walks the
+  // tree through `gfx::NativeViewAccessible`, and a node with no platform node
+  // gives none. The walk stops at such a node instead of stepping over it, thus
+  // it loses the children and the later siblings of that node. The unignored
+  // walk behind this delegate never gives an ignored node, thus only an ignored
+  // node is safe with no platform node.
+  //
+  // TODO(crbug.com/540914690): Take the platform node away from every ignored
+  // node, and then remove this function. The rule becomes universal at that
+  // point, thus no caller needs to ask.
+  virtual bool ShouldHavePlatformNode() const;
+
+  // Creates or destroys this node's AXPlatformNode so that it exists exactly
+  // when ShouldHavePlatformNode() is true. Subclasses that own a platform node
+  // must override this, and must tolerate not owning one.
+  virtual void UpdatePlatformNode() {}
+
   // The following methods are virtual so that they can be overridden on Mac to
   // take into account the "extra Mac nodes".
   //

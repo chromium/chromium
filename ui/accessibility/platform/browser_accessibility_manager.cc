@@ -2181,7 +2181,7 @@ void BrowserAccessibilityManager::CollectChangedNodesAndParentsForAtomicUpdate(
 
     if (!changed_node->IsIgnored()) {
       BrowserAccessibility* obj = GetFromAXNode(changed_node);
-      if (obj) {
+      if (obj && obj->GetAXPlatformNode()) {
         nodes_needing_update->insert(obj->GetAXPlatformNode());
       }
     }
@@ -2197,7 +2197,7 @@ void BrowserAccessibilityManager::CollectChangedNodesAndParentsForAtomicUpdate(
     // each embedded object character offset.
     if (changed_node->data().role != ax::mojom::Role::kInlineTextBox) {
       BrowserAccessibility* parent_obj = GetFromAXNode(parent);
-      if (parent_obj) {
+      if (parent_obj && parent_obj->GetAXPlatformNode()) {
         nodes_needing_update->insert(parent_obj->GetAXPlatformNode());
       }
     }
@@ -2212,8 +2212,9 @@ void BrowserAccessibilityManager::CollectChangedNodesAndParentsForAtomicUpdate(
     }
 
     BrowserAccessibility* editable_root_obj = GetFromAXNode(editable_root);
-    if (editable_root_obj)
+    if (editable_root_obj && editable_root_obj->GetAXPlatformNode()) {
       nodes_needing_update->insert(editable_root_obj->GetAXPlatformNode());
+    }
   }
 }
 

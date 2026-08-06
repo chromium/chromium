@@ -131,6 +131,134 @@ void MakeTable(AXTreeUpdate* initial_state,
 
 }  // namespace
 
+namespace {
+
+// Lets a test choose whether a node owns a platform node. See
+// BrowserAccessibility::ShouldHavePlatformNode for details.
+class TogglablePlatformNodeBrowserAccessibilityMac
+    : public BrowserAccessibilityMac {
+ public:
+  TogglablePlatformNodeBrowserAccessibilityMac(
+      BrowserAccessibilityManager* manager,
+      AXNode* node)
+      : BrowserAccessibilityMac(manager, node) {}
+
+  bool ShouldHavePlatformNode() const override { return should_have_; }
+
+  void SetShouldHavePlatformNode(bool value) {
+    should_have_ = value;
+    UpdatePlatformNode();
+  }
+
+ private:
+  bool should_have_ = true;
+};
+
+}  // namespace
+
+class BrowserAccessibilityPlatformNodeMacTest : public CocoaTest {
+ protected:
+  std::unique_ptr<TogglablePlatformNodeBrowserAccessibilityMac> MakeNode() {
+    AXNodeData root;
+    root.id = 1;
+    root.role = ax::mojom::Role::kRootWebArea;
+    root.child_ids = {2};
+
+    // Only an ignored node may go without a platform node.
+    AXNodeData ignored_child;
+    ignored_child.id = 2;
+    ignored_child.role = ax::mojom::Role::kGenericContainer;
+    ignored_child.AddState(ax::mojom::State::kIgnored);
+    ignored_child.child_ids = {3};
+
+    // A node below the ignored one keeps the root off the bottom of the tree.
+    // ATK gives no object to the child of a leaf.
+    AXNodeData grandchild;
+    grandchild.id = 3;
+    grandchild.role = ax::mojom::Role::kButton;
+
+    manager_ = std::make_unique<BrowserAccessibilityManagerMac>(
+        MakeAXTreeUpdateForTesting(root, ignored_child, grandchild),
+        node_id_delegate_, nullptr);
+    auto node = std::make_unique<TogglablePlatformNodeBrowserAccessibilityMac>(
+        manager_.get(), manager_->GetFromID(2)->node());
+    // The manager does this for every wrapper that it creates.
+    node->OnDataChanged();
+    return node;
+  }
+
+  TestAXNodeIdDelegate node_id_delegate_;
+  std::unique_ptr<BrowserAccessibilityManager> manager_;
+  const base::test::SingleThreadTaskEnvironment task_environment_;
+};
+
+TEST_F(BrowserAccessibilityPlatformNodeMacTest, ANodeOwnsAPlatformNodeByDefault) {
+  std::unique_ptr<TogglablePlatformNodeBrowserAccessibilityMac> node =
+      MakeNode();
+
+  EXPECT_TRUE(node->ShouldHavePlatformNode());
+  EXPECT_TRUE(node->GetAXPlatformNode());
+  EXPECT_TRUE(node->GetNativeViewAccessible());
+}
+
+TEST_F(BrowserAccessibilityPlatformNodeMacTest, ANodeCanOwnNoPlatformNode) {
+  std::unique_ptr<TogglablePlatformNodeBrowserAccessibilityMac> node =
+      MakeNode();
+  node->SetShouldHavePlatformNode(false);
+
+  EXPECT_FALSE(node->GetAXPlatformNode());
+  EXPECT_FALSE(node->GetNativeViewAccessible());
+}
+
+TEST_F(BrowserAccessibilityPlatformNodeMacTest, EveryAccessorIsSafeWithNoPlatformNode) {
+  std::unique_ptr<TogglablePlatformNodeBrowserAccessibilityMac> node =
+      MakeNode();
+  node->SetShouldHavePlatformNode(false);
+
+  // Each of these reads the tree, not the platform node that is gone.
+  EXPECT_EQ(1u, node->PlatformChildCount());
+  EXPECT_TRUE(node->PlatformGetFirstChild());
+  EXPECT_TRUE(node->PlatformGetLastChild());
+  node->OnDataChanged();
+}
+
+TEST_F(BrowserAccessibilityPlatformNodeMacTest, APlatformNodeComesBack) {
+  std::unique_ptr<TogglablePlatformNodeBrowserAccessibilityMac> node =
+      MakeNode();
+  node->SetShouldHavePlatformNode(false);
+  ASSERT_FALSE(node->GetAXPlatformNode());
+
+  node->SetShouldHavePlatformNode(true);
+
+  EXPECT_TRUE(node->GetAXPlatformNode());
+  EXPECT_TRUE(node->GetNativeViewAccessible());
+}
+
+TEST_F(BrowserAccessibilityPlatformNodeMacTest, RepeatedChangesAreSafe) {
+  std::unique_ptr<TogglablePlatformNodeBrowserAccessibilityMac> node =
+      MakeNode();
+
+  for (int i = 0; i < 3; ++i) {
+    node->SetShouldHavePlatformNode(false);
+    ASSERT_FALSE(node->GetAXPlatformNode()) << "iteration " << i;
+
+    node->SetShouldHavePlatformNode(true);
+    ASSERT_TRUE(node->GetAXPlatformNode()) << "iteration " << i;
+  }
+}
+
+TEST_F(BrowserAccessibilityPlatformNodeMacTest, RepeatedUpdatesKeepOnePlatformNode) {
+  std::unique_ptr<TogglablePlatformNodeBrowserAccessibilityMac> node =
+      MakeNode();
+  AXPlatformNode* first = node->GetAXPlatformNode();
+
+  node->UpdatePlatformNode();
+  node->UpdatePlatformNode();
+
+  EXPECT_EQ(first, node->GetAXPlatformNode());
+}
+
+
 class BrowserAccessibilityMacTest : public CocoaTest {
  public:
   void SetUp() override {
