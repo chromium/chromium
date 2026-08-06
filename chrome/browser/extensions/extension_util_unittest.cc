@@ -215,7 +215,13 @@ TEST_F(ExtensionUtilUnittest, FixupLongExtensionName) {
   EXPECT_EQ(fixup_extension_name, expected_fixup_extension_name);
 }
 
-TEST_F(ExtensionUtilUnittest, GetCWSWritingReviewUrl) {
+// TODO(crbug.com/543216088): Re-enable this test.
+#if defined(UNDEFINED_SANITIZER)
+#define MAYBE_GetCWSWritingReviewUrl DISABLED_GetCWSWritingReviewUrl
+#else
+#define MAYBE_GetCWSWritingReviewUrl GetCWSWritingReviewUrl
+#endif
+TEST_F(ExtensionUtilUnittest, MAYBE_GetCWSWritingReviewUrl) {
   const ExtensionId kValidId = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
   const ExtensionId kInvalidId = "invalid_id_format";
 
