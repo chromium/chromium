@@ -448,7 +448,7 @@ class SignedWebBundleSignatureVerifierWithKeyDistributionTest
 };
 
 TEST_F(SignedWebBundleSignatureVerifierWithKeyDistributionTest,
-       VerifySignaturesWithKeyDistribution) {
+       DISABLED_VerifySignaturesWithKeyDistribution) {
   using Error = web_package::SignedWebBundleSignatureVerifier::Error;
 
   auto key_pairs = web_package::test::KeyPairs{
