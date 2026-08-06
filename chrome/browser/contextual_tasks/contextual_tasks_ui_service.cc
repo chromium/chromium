@@ -2808,7 +2808,7 @@ void ContextualTasksUiService::StartTaskUiInSidePanelImpl(
       pending_session_handles_.emplace(task_id, std::move(session_handle));
     }
     controller->Show(/*transition_from_tab=*/false, options.entry_point,
-                     options.use_no_animation);
+                     options.use_no_animation, options.open_time_ticks);
 
     InitializeTaskInSidePanel(controller->GetActiveWebContents(), task_id,
                               nullptr);

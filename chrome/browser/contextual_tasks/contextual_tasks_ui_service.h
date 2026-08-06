@@ -79,6 +79,7 @@ struct StartTaskUiOptions {
       omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT;
   bool use_mstk_for_task_association = false;
   bool use_no_animation = false;
+  std::optional<base::TimeTicks> open_time_ticks = std::nullopt;
 };
 
 // A service used to coordinate all of the side panel instances showing an AI

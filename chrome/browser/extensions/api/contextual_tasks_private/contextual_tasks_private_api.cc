@@ -121,6 +121,8 @@ ContextualTasksPrivateLaunchPanelInNewTabFunction::
 
 ExtensionFunction::ResponseAction
 ContextualTasksPrivateLaunchPanelInNewTabFunction::Run() {
+  base::TimeTicks open_time_ticks = base::TimeTicks::Now();
+
   std::optional<api::contextual_tasks_private::LaunchPanelInNewTab::Params>
       params =
           api::contextual_tasks_private::LaunchPanelInNewTab::Params::Create(
@@ -254,6 +256,7 @@ ContextualTasksPrivateLaunchPanelInNewTabFunction::Run() {
               omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_AIO_LINK,
           .use_mstk_for_task_association = true,
           .use_no_animation = use_no_animation,
+          .open_time_ticks = open_time_ticks,
       });
 
   return RespondNow(NoArguments());

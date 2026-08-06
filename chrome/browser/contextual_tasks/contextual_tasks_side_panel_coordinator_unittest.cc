@@ -268,6 +268,17 @@ class ContextualTasksSidePanelCoordinatorTest : public testing::Test {
     coordinator_->task_id_to_web_contents_cache_.clear();
   }
 
+  void SetCacheItemEntrySourceForTesting(
+      base::Uuid task_id,
+      ContextualTasksPanelController::EntrySource entry_source,
+      base::TimeTicks open_time_ticks) {
+    auto it = coordinator_->task_id_to_web_contents_cache_.find(task_id);
+    if (it != coordinator_->task_id_to_web_contents_cache_.end()) {
+      it->second->entry_source = entry_source;
+      it->second->open_time_ticks = open_time_ticks;
+    }
+  }
+
   size_t GetNumberOfActiveTasksForTesting(base::Uuid task_id) {
     return coordinator_->task_id_to_web_contents_cache_.count(task_id);
   }
@@ -343,6 +354,12 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest, GetActiveEntrySource) {
       omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
 
   EXPECT_EQ(ContextualTasksPanelController::EntrySource::kOther,
+            coordinator_->GetActiveEntrySource());
+
+  coordinator_->Show(
+      false, omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_AIO_LINK);
+
+  EXPECT_EQ(ContextualTasksPanelController::EntrySource::kAioToCobr,
             coordinator_->GetActiveEntrySource());
 }
 
@@ -796,6 +813,125 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
   EXPECT_EQ(0,
             user_action_tester.GetActionCount(
                 "ContextualTasks.SidePanel.UserAction.Close.AiModeLinkClick"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "ContextualTasks.SidePanel.UserAction.Close.AioToCobr"));
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Session.Duration.AioToCobr", 0);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       CloseSidePanelLogsMetrics_AioToCobr) {
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+
+  // Show the side panel with DESKTOP_CHROME_COBROWSE_AIO_LINK entry point.
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_AIO_LINK);
+
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Session.Duration.AioToCobr", 0);
+
+  // Call Close() programmatically (simulating framework close).
+  coordinator_->Close();
+
+  // Trigger the close event via user action (simulating UI transition
+  // completion).
+  coordinator_->OnSurfaceStateChanged(
+      ContextualTasksPanelHost::SurfaceState::kClosed,
+      ContextualTasksPanelHost::StateChangeReason::kUserAction);
+
+  // Verify that the AioToCobr close metric and session duration were recorded.
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "ContextualTasks.SidePanel.UserAction.Close.AioToCobr"));
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SidePanel.UserAction.Close.AioToCobr", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Session.Duration.AioToCobr", 1);
+
+  // Verify that other close metrics were NOT recorded.
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "ContextualTasks.SidePanel.UserAction.Close.LensOverlay"));
+  EXPECT_EQ(0,
+            user_action_tester.GetActionCount(
+                "ContextualTasks.SidePanel.UserAction.Close.AiModeLinkClick"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "ContextualTasks.SidePanel.UserAction.Close.Other"));
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       CloseSidePanelLogsMetrics_AioToCobr_CustomOpenTime) {
+  base::HistogramTester histogram_tester;
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+
+  base::TimeTicks open_time = base::TimeTicks::Now() - base::Seconds(3);
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_AIO_LINK,
+      /*use_no_animation=*/false, open_time);
+
+  coordinator_->Close();
+
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Session.Duration.AioToCobr", 1);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       DestructorLogsMetrics_AioToCobr) {
+  base::HistogramTester histogram_tester;
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_AIO_LINK);
+
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Session.Duration.AioToCobr", 0);
+
+  // Resetting coordinator triggers the destructor which records session end
+  // metrics.
+  mock_panel_host_ = nullptr;
+  coordinator_.reset();
+
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Session.Duration.AioToCobr", 1);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       CleanUpUnusedWebContentsLogsMetrics_AioToCobr) {
+  base::HistogramTester histogram_tester;
+  ClearCacheForTesting();
+
+  EXPECT_CALL(*mock_controller_, GetTabsAssociatedWithTask(_))
+      .WillRepeatedly(Return(std::vector<SessionID>{}));
+  EXPECT_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillRepeatedly(Return(std::nullopt));
+
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  CreateCachedWebContentsForTesting(task_id, /*is_open=*/false);
+  SetCacheItemEntrySourceForTesting(
+      task_id, ContextualTasksPanelController::EntrySource::kAioToCobr,
+      base::TimeTicks::Now());
+
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Session.Duration.AioToCobr", 0);
+
+  // Clean up unused web contents (task has no associated tabs and is not
+  // active).
+  CleanUpUnusedWebContents();
+
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Session.Duration.AioToCobr", 1);
 }
 
 TEST_F(ContextualTasksSidePanelCoordinatorTest,

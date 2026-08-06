@@ -84,6 +84,9 @@ class ContextualTasksSidePanelCoordinator
     // The entry source that triggered this task's panel.
     ContextualTasksPanelController::EntrySource entry_source =
         ContextualTasksPanelController::EntrySource::kOther;
+
+    // The time when this task's panel was opened.
+    base::TimeTicks open_time_ticks;
   };
 
   DECLARE_USER_DATA(ContextualTasksSidePanelCoordinator);
@@ -110,9 +113,11 @@ class ContextualTasksSidePanelCoordinator
   void AddObserver(ContextualTasksPanelController::Observer* observer) override;
   void RemoveObserver(
       ContextualTasksPanelController::Observer* observer) override;
-  void Show(bool transition_from_tab,
-            omnibox::ChromeAimEntryPoint entry_point,
-            bool use_no_animation = false) override;
+  void Show(
+      bool transition_from_tab,
+      omnibox::ChromeAimEntryPoint entry_point,
+      bool use_no_animation = false,
+      std::optional<base::TimeTicks> open_time_ticks = std::nullopt) override;
   void Close() override;
   void OpenInZeroState() override;
   bool IsPanelOpenForContextualTask() const override;

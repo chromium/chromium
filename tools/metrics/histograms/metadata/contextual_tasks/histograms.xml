@@ -505,6 +505,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContextualTasks.Session.Duration.AioToCobr" units="ms"
+    expires_after="2027-01-03">
+  <owner>juanmojica@google.com</owner>
+  <owner>mercerd@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when a cobrowsing session opened via AIO2Cobr (AI Overviews to
+    CoBrowse) flows is closed or ended. Measures the time elapsed from when the
+    cobrowse panel was opened until it was closed.
+  </summary>
+</histogram>
+
 <histogram name="ContextualTasks.SidePanel.UserAction.Close.AiModeLinkClick"
     enum="Boolean" expires_after="2027-06-18">
   <owner>nguyenbryan@chromium.org</owner>
@@ -512,6 +524,18 @@ chromium-metrics-reviews@google.com.
   <summary>
     Recorded when the user clicks the side panel close button, for sessions that
     were entered due to a link click from AI mode. Always recorded as true.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.SidePanel.UserAction.Close.AioToCobr"
+    enum="Boolean" expires_after="2027-06-18">
+  <owner>juanmojica@google.com</owner>
+  <owner>mercerd@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when the user clicks the side panel close button, for sessions that
+    were entered via AIO2Cobr (AI Overviews to CoBrowse) flows. Always recorded
+    as true.
   </summary>
 </histogram>
 
