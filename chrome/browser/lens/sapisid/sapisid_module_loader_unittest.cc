@@ -11,10 +11,13 @@ namespace sapisid {
 
 TEST(SapisidModuleLoaderTest, LoadLibrary) {
   const auto& library = SapisidModuleLoader::GetInstance()->library();
-  // Since the Base CL does not fetch the internal module (data_deps is commented out
-  // to avoid CQ Cq-Depend limitations), the library should gracefully fail to load
-  // everywhere, whether branded or unbranded.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // On branded builds, the library should be correctly built.
+  EXPECT_TRUE(library.is_valid());
+#else
+  // Unbranded builds definitely shouldn't find it.
   EXPECT_FALSE(library.is_valid());
+#endif
 }
 
 }  // namespace sapisid
