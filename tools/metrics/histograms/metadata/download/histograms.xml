@@ -172,13 +172,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.ApiFunctions" enum="DownloadFunctions"
-    expires_after="2026-07-05">
+    expires_after="2027-01-05">
   <owner>dtrainor@chromium.org</owner>
   <owner>xinghuilu@chromium.org</owner>
+  <owner>yawfrempong@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Downloads extension API function calls. Warning: this histogram was expired
-    from 2020-03-08 to 2022-08-02; data may be missing.
+    from 2020-03-08 to 2022-08-02 and 2026-07-05 to 2026-08-04; data may be
+    missing.
   </summary>
 </histogram>
 
@@ -1225,8 +1227,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.UserValidatedDangerousDownload.DownloadsPage"
-    enum="DownloadItem.DangerType" expires_after="2026-08-30">
-  <owner>chlily@chromium.org</owner>
+    enum="DownloadItem.DangerType" expires_after="2027-03-02">
+  <owner>yawfrempong@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     User chose to save a download which was marked dangerous or suspicious from
