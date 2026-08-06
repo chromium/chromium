@@ -70,11 +70,11 @@ export class ComposeboxToolChipElement extends I18nMixinLit
 
     switch (this.inputState.activeTool) {
       case ToolMode.kDeepSearch:
-        return 'composebox:deepSearch';
+        return 'composebox:travel-explore';
       case ToolMode.kImageGen:
-        return 'composebox:nanoBanana';
+        return 'composebox:nanoBanana-custom';
       case ToolMode.kCanvas:
-        return 'composebox:canvas';
+        return 'composebox:draft-spark';
       default:
         return '';
     }

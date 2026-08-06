@@ -12,7 +12,7 @@ export function getHtml(this: ThreadsRailElement) {
     <!-- Note: The icon is the same as the one used for AI Mode, but exposed to
          non-branded chrome builds as well. -->
     <cr-icon-button id="showHistoryButton"
-        iron-icon="composebox:threadsHistory"
+        iron-icon="composebox:notes-spark"
         @click="${this.onShowHistoryClick_}"
         title="${this.i18n('aimThreadsHistoryLabel')}">
     </cr-icon-button>

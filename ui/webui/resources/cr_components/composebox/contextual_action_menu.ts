@@ -201,19 +201,19 @@ export class ContextualActionMenuElement extends
       [
         ToolMode.kImageGen,
         {
-          icon: 'composebox:nanoBanana',
+          icon: 'composebox:nanoBanana-custom',
         },
       ],
       [
         ToolMode.kDeepSearch,
         {
-          icon: 'composebox:deepSearch',
+          icon: 'composebox:travel-explore',
         },
       ],
       [
         ToolMode.kCanvas,
         {
-          icon: 'composebox:canvas',
+          icon: 'composebox:draft-spark',
         },
       ],
     ]);
@@ -226,25 +226,25 @@ export class ContextualActionMenuElement extends
       [
         ModelMode.kGeminiRegular,
         {
-          icon: 'composebox:regularModel',
+          icon: 'composebox:bolt',
         },
       ],
       [
         ModelMode.kGeminiProAutoroute,
         {
-          icon: 'composebox:autoModel',
+          icon: 'composebox:autorenew',
         },
       ],
       [
         ModelMode.kGeminiPro,
         {
-          icon: 'composebox:thinkingModel',
+          icon: 'composebox:timer',
         },
       ],
       [
         ModelMode.kGeminiProNoGenUi,
         {
-          icon: 'composebox:thinkingModel',
+          icon: 'composebox:timer',
         },
       ],
     ]);

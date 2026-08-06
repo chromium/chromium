@@ -24,7 +24,7 @@ export function getHtml(this: ContextualActionMenuElement) {
                   aria-checked="true"
                   ?disabled="${this.isShareTabsTriggerDisabled_()}"
                   @click="${this.onSmartTabSharingItemClick_}">
-                <cr-icon icon="composebox:shareTabs"></cr-icon>
+                <cr-icon icon="composebox:tab"></cr-icon>
                 <span class="tab-title">
                   ${this.i18n('stsMegaplusShareRelevantOpenTabs')}</span>
                 <cr-icon class="share-tabs-check" icon="cr:check"></cr-icon>
@@ -38,7 +38,7 @@ export function getHtml(this: ContextualActionMenuElement) {
                   @pointerenter="${this.onShareTabsRowPointerenter_}"
                   @pointerleave="${this.onShareTabsRowPointerleave_}"
                   @keydown="${this.onShareTabsRowKeydown_}">
-                <cr-icon icon="composebox:shareTabs"></cr-icon>
+                <cr-icon icon="composebox:tab"></cr-icon>
                 <span class="tab-title">
                   ${this.sharingTabsText_}
                 </span>
@@ -138,11 +138,11 @@ export function getHtml(this: ContextualActionMenuElement) {
                 ${this.enableMultiTabSelection_ ? html`
                   ${(this.isTabSelected_(tab)) ? html`
                     <cr-icon class="multi-tab-icon"
-                        icon="composebox:checkCircle" id="multi-tab-check">
+                        icon="composebox:check-circle-filled" id="multi-tab-check">
                           </cr-icon>
                   ` : html`
                     <cr-icon class="multi-tab-icon"
-                        icon="composebox:addCircle" id="multi-tab-add">
+                        icon="composebox:add-circle" id="multi-tab-add">
                           </cr-icon>
                   `}
                 ` : ''}
@@ -159,7 +159,7 @@ export function getHtml(this: ContextualActionMenuElement) {
       <button id="imageUpload" class="dropdown-item" role="menuitem"
           @click="${this.onImageUploadClick_}"
           ?disabled="${this.isInputTypeDisabled_(InputType.kLensImage)}">
-        <cr-icon icon="composebox:imageUpload"></cr-icon>
+        <cr-icon icon="composebox:add-photo-alternate"></cr-icon>
         ${this.getInputTypeLabel_(InputType.kLensImage)}
       </button>` : ''}
     ${this.isInputTypeAllowed_(InputType.kLensFile) ? html`
@@ -167,14 +167,14 @@ export function getHtml(this: ContextualActionMenuElement) {
           role="menuitem"
           @click="${this.onFileUploadClick_}"
           ?disabled="${this.isInputTypeDisabled_(InputType.kLensFile)}">
-      <cr-icon icon="composebox:fileUpload"></cr-icon>
+      <cr-icon icon="composebox:attach-file"></cr-icon>
       ${this.getInputTypeLabel_(InputType.kLensFile)}
     </button>`: ''}
     ${this.isInputTypeAllowed_(InputType.kDrive) ? html`
       <button id="driveUpload" class="dropdown-item" role="menuitem"
           @click="${this.onDriveUploadClick_}"
           ?disabled="${this.isInputTypeDisabled_(InputType.kDrive)}">
-        <cr-icon icon="composebox:driveUpload"></cr-icon>
+        <cr-icon icon="composebox:drive"></cr-icon>
         ${this.getInputTypeLabel_(InputType.kDrive)}
       </button>` : ''}
 

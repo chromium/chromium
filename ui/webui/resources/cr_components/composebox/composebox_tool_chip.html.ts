@@ -23,7 +23,7 @@ export function getHtml(this: ComposeboxToolChipElement) {
     ${this.getToolChipLabel_()}
   </div>
   <cr-icon class="close-icon" id="rightCloseIcon"
-          icon="aim:closeSmall" slot="suffix-icon"></cr-icon>
+          icon="aim:close-small" slot="suffix-icon"></cr-icon>
 </cr-button>`;
   // clang-format on
 }

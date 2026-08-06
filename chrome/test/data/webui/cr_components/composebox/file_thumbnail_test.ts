@@ -116,7 +116,7 @@ suite('ComposeboxFileThumbnailTest', () => {
     const icon = fileThumbnailElement.shadowRoot.querySelector<CrIconElement>(
         '.pdf-icon');
     assertTrue(!!icon);
-    assertEquals(icon.icon, 'thumbnail:pdf');
+    assertEquals(icon.icon, 'thumbnail:drive-pdf');
   });
 
   test('display document file (flag enabled) for non-pdf', async () => {
@@ -140,7 +140,7 @@ suite('ComposeboxFileThumbnailTest', () => {
     const icon = fileThumbnailElement.shadowRoot.querySelector<CrIconElement>(
         '.document-icon');
     assertTrue(!!icon);
-    assertEquals(icon.icon, 'thumbnail:document');
+    assertEquals(icon.icon, 'thumbnail:attach-file');
   });
 
   test('display pdf file (flag enabled)', async () => {
@@ -164,7 +164,7 @@ suite('ComposeboxFileThumbnailTest', () => {
     const icon = fileThumbnailElement.shadowRoot.querySelector<CrIconElement>(
         '.pdf-icon');
     assertTrue(!!icon);
-    assertEquals(icon.icon, 'thumbnail:pdf');
+    assertEquals(icon.icon, 'thumbnail:drive-pdf');
   });
 
   test('display document file (flag enabled) for google doc', async () => {

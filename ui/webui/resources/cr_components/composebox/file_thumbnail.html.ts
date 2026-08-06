@@ -170,8 +170,8 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
             ` : html`
               <cr-icon icon="${
                   this.shouldUsePdfIcon_() ?
-                      'thumbnail:pdf' :
-                      'thumbnail:document'}"
+                      'thumbnail:drive-pdf' :
+                      'thumbnail:attach-file'}"
                   class="${
                   this.shouldUsePdfIcon_() ?
                       'pdf-icon' :
