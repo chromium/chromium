@@ -18,8 +18,6 @@ BASE_DECLARE_FEATURE(kEnableTabSharingProtection);
 
 BASE_DECLARE_FEATURE(kEnterpriseTabTitleReporting);
 
-BASE_DECLARE_FEATURE(kEnableDlpFileSystemApi);
-
 }  // namespace enterprise_data_protection
 
 #endif  // CHROME_BROWSER_ENTERPRISE_DATA_PROTECTION_DATA_PROTECTION_FEATURES_H_

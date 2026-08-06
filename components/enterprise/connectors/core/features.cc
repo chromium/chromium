@@ -50,4 +50,6 @@ BASE_FEATURE(kEnableAuditOnlyNetworkRequestConnector,
 
 BASE_FEATURE(kContentAnalysisClipboardCopy, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableDlpFileSystemApi, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace enterprise_connectors

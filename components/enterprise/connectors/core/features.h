@@ -56,6 +56,9 @@ BASE_DECLARE_FEATURE(kEnableAuditOnlyNetworkRequestConnector);
 // Controls whether copy to clipboard is enabled for content analysis.
 BASE_DECLARE_FEATURE(kContentAnalysisClipboardCopy);
 
+// Controls whether virtual file DLP scanning is enabled.
+BASE_DECLARE_FEATURE(kEnableDlpFileSystemApi);
+
 }  // namespace enterprise_connectors
 
 #endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_FEATURES_H_

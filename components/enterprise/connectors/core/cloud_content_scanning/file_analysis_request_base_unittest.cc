@@ -649,4 +649,90 @@ TEST_F(FileAnalysisRequestBaseTest, VirtualFilesOnChromeOS) {
 #endif
 }
 
+class FileAnalysisRequestBaseVirtualFileTest
+    : public FileAnalysisRequestBaseTest,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  bool should_check_virtual_files() const { return std::get<0>(GetParam()); }
+  bool is_virtual_file() const { return std::get<1>(GetParam()); }
+
+  void SetUp() override {
+    FileAnalysisRequestBaseTest::SetUp();
+
+    if (should_check_virtual_files()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          enterprise_connectors::kEnableDlpFileSystemApi);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          enterprise_connectors::kEnableDlpFileSystemApi);
+    }
+
+    FileAnalysisRequestBase::SetIsVirtualFileForTesting(is_virtual_file());
+  }
+
+  void TearDown() override {
+    FileAnalysisRequestBase::SetIsVirtualFileForTesting(false);
+    FileAnalysisRequestBaseTest::TearDown();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(FileAnalysisRequestBaseVirtualFileTest, LargeFileNoHashAndFileTooLarge) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  const size_t kLargeFileSize = 251 * 1024 * 1024;  // 251MB
+  base::FilePath file_path = temp_dir.GetPath().AppendASCII("large.pdf");
+  {
+    base::File file(file_path,
+                    base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+    ASSERT_TRUE(file.SetLength(kLargeFileSize));
+  }
+
+  auto request = MakeRequest(file_path, file_path.BaseName(),
+                             /*delay_opening_file=*/false, "", false,
+                             /*force_sync_hash_computation=*/false);
+
+  base::test::TestFuture<ScanRequestUploadResult, BinaryUploadRequest::Data>
+      future;
+  request->GetRequestData(future.GetCallback());
+
+  auto [result, data] = future.Take();
+
+  EXPECT_EQ(result, ScanRequestUploadResult::kFileTooLarge);
+  EXPECT_EQ(data.size, kLargeFileSize);
+  EXPECT_TRUE(data.hash.empty());
+  EXPECT_EQ(data.mime_type, "application/pdf");
+}
+
+TEST_P(FileAnalysisRequestBaseVirtualFileTest,
+       SmallFileComputesHashAndSuccess) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  std::string contents = "Small file content for scanning unit test.";
+  base::FilePath file_path = temp_dir.GetPath().AppendASCII("small.pdf");
+  ASSERT_TRUE(base::WriteFile(file_path, contents));
+
+  auto request = MakeRequest(file_path, file_path.BaseName(),
+                             /*delay_opening_file=*/false, "", false, true);
+
+  base::test::TestFuture<ScanRequestUploadResult, BinaryUploadRequest::Data>
+      future;
+  request->GetRequestData(future.GetCallback());
+
+  auto [result, data] = future.Take();
+
+  EXPECT_EQ(result, ScanRequestUploadResult::kSuccess);
+  EXPECT_EQ(data.size, contents.size());
+  EXPECT_FALSE(data.hash.empty());
+  EXPECT_EQ(data.mime_type, "application/pdf");
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         FileAnalysisRequestBaseVirtualFileTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
+
 }  // namespace enterprise_connectors

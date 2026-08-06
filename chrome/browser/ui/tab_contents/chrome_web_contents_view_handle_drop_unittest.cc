@@ -37,6 +37,7 @@
 #include "components/enterprise/connectors/core/cloud_content_scanning/clipboard_request_handler.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/file_analysis_request_base.h"
+#include "components/enterprise/connectors/core/features.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -48,7 +49,6 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
-#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "content/public/browser/storage_partition.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #endif
@@ -301,10 +301,10 @@ class ChromeWebContentsViewDelegateHandleOnPerformingDrop
   void SetUp() override {
     if (IsDlpFileSystemApiEnabled()) {
       scoped_feature_list_.InitAndEnableFeature(
-          enterprise_data_protection::kEnableDlpFileSystemApi);
+          enterprise_connectors::kEnableDlpFileSystemApi);
     } else {
       scoped_feature_list_.InitAndDisableFeature(
-          enterprise_data_protection::kEnableDlpFileSystemApi);
+          enterprise_connectors::kEnableDlpFileSystemApi);
     }
 #if BUILDFLAG(IS_CHROMEOS)
     storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
