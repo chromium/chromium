@@ -409,12 +409,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Actor.NavigationGating.ConfirmedListSize2" units="origins"
-    expires_after="2026-08-02">
+    expires_after="2026-02-02">
   <owner>dylancutler@google.com</owner>
   <owner>johannhof@google.com</owner>
   <summary>
     Records the size of the list of origins that the user confirmed the actor
     can interact with. Recorded at the end of every task.
+
+    Warning: this histogram was expired from 2026-08-02 to 2026-08-25; data may
+    be missing.
   </summary>
 </histogram>
 
