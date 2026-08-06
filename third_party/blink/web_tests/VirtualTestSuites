@@ -2984,11 +2984,12 @@
       "Win"
     ],
     "bases": [
-      "external/wpt/speculation-rules/prerender/cross-origin-iframe-prerender.https.html"
+      "external/wpt/speculation-rules/prerender/cross-origin-iframe-prerender.https.html",
+      "external/wpt/speculation-rules/prerender/cross-origin-iframe-prerender-nesting.https.html"
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=Prerender2CrossOriginIframes"
+      "--enable-features=Prerender2CrossOriginIframes:nesting/true"
     ],
     "owners": [
       "nhiroki@chromium.org",

@@ -78,6 +78,9 @@ CONTENT_EXPORT extern const base::FeatureParam<std::string>
 CONTENT_EXPORT extern const base::FeatureParam<int>
     kPrerender2ReuseInitiatorProcessMaxReuseCount;
 
+CONTENT_EXPORT extern const base::FeatureParam<bool>
+    kPrerender2CrossOriginIframesNesting;
+
 CONTENT_EXPORT bool UsePrefetchPrerenderIntegration();
 }  // namespace features
 

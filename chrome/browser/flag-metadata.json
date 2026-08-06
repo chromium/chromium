@@ -8283,7 +8283,7 @@
       "yoichio@chromium.org",
       "//content/browser/preloading/prerender/OWNERS"
     ],
-    "expiry_milestone": 152
+    "expiry_milestone": 158
   },
   {
     "name": "prerender2-reuse-host",
