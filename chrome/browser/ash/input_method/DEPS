@@ -17,7 +17,6 @@ include_rules = [
   "+chrome/browser/manta",
   "+chrome/browser/metrics",
   "+chrome/browser/profiles",
-  "+chrome/browser/signin",
   "+chrome/browser/ui/ash/input_method",
   "+chrome/browser/ui/ash/keyboard",
   "+chrome/browser/ui/aura/accessibility",
