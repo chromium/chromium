@@ -88,6 +88,11 @@ class MockContextualTasksUiService : public ContextualTasksUiService {
               (const GURL&, BrowserWindowInterface*),
               (override));
   MOCK_METHOD(bool, IsAiUrl, (const GURL&), (override));
+  MOCK_METHOD(bool,
+              IsSidePanelOpenAndRequestInSidePanel,
+              (content::WebContents*),
+              (override));
+
   MOCK_METHOD(bool, IsSearchResultsUrl, (const GURL&), (override));
   MOCK_METHOD(bool, IsGoogleCaptchaUrl, (const GURL&), (override));
   MOCK_METHOD(bool, IsUrlForPrimaryAccount, (const GURL&), (override));

@@ -27,6 +27,7 @@
 #include "chrome/browser/content_settings/mixed_content_settings_tab_helper.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/content_settings/sound_content_setting_observer.h"
+#include "chrome/browser/contextual_tasks/aim_user_agent_tab_helper.h"
 #include "chrome/browser/external_protocol/external_protocol_observer.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/file_system_access/file_system_access_features.h"
@@ -114,6 +115,7 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/compose/buildflags.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/download/content/factory/navigation_monitor_factory.h"
 #include "components/download/content/public/download_navigation_observer.h"
@@ -281,7 +283,6 @@
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/contextual_tasks/search_ai_mode_promo_tab_helper.h"
-#include "components/contextual_tasks/public/features.h"
 #include "components/signin/public/base/signin_switches.h"
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
@@ -605,6 +606,9 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   SafetyTipWebContentsObserver::CreateForWebContents(web_contents);
   SearchEngineTabHelper::CreateForWebContents(web_contents);
+  if (contextual_tasks::IsContextualTasksUIEnabled()) {
+    contextual_tasks::AimUserAgentTabHelper::CreateForWebContents(web_contents);
+  }
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (base::FeatureList::IsEnabled(switches::kEnableSearchAIModeSigninPromo) &&
       base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks)) {
