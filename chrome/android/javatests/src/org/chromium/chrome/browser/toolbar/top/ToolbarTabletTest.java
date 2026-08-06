@@ -42,6 +42,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.content_public.browser.HostZoomMap;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -96,6 +97,7 @@ public class ToolbarTabletTest {
         ChromeFeatureList.HOME_BUTTON_REMOVAL
                 + ":keep_home_button_on_ntp/true/set_default_to_false_on_homepage_on_desktop/false"
     })
+    @DisableFeatures(SigninFeatures.ENABLE_AI_SUBSCRIPTION_AVATAR_RING)
     public void testLastOmniboxButtonFocus_notClipped_withHomeButtonRemovalKeepOnNtp()
             throws IOException {
         testLastOmniboxButtonFocus_notClippedImpl("last_button_focused_with_home_button_removal");

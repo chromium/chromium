@@ -10,6 +10,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import androidx.appcompat.content.res.AppCompatResources;
@@ -28,6 +29,8 @@ import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.subscription_eligibility.SubscriptionEligibilityService;
+import org.chromium.chrome.browser.subscription_eligibility.SubscriptionEligibilityServiceFactory;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
@@ -50,6 +53,7 @@ import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -195,6 +199,7 @@ final class SigninButtonMediator
                 updateButtonState();
                 break;
             case PrimaryAccountChangeEvent.Type.CLEARED:
+                mIdentityError = UserActionableError.NONE;
                 updateButtonState();
                 break;
             case PrimaryAccountChangeEvent.Type.NONE:
@@ -291,9 +296,7 @@ final class SigninButtonMediator
         if (!showSigninText) {
             mModel.set(
                     SigninButtonProperties.BUTTON_AVATAR,
-                    profileData != null
-                            ? profileData.getImage()
-                            : AppCompatResources.getDrawable(mContext, R.drawable.account_circle));
+                    profileData != null ? profileData.getImage() : getPlaceholderImage());
             mModel.set(
                     SigninButtonProperties.AVATAR_TINT,
                     profileData != null ? null : mActivityFocusTint);
@@ -338,9 +341,28 @@ final class SigninButtonMediator
         mSigninManager = IdentityServicesProvider.get().getSigninManager(profile);
         assumeNonNull(mSigninManager).addSignInStateObserver(this);
 
-        mProfileDataCache =
-                ProfileDataCache.createWithoutBadge(
-                        mContext, mIdentityManager, R.dimen.toolbar_identity_disc_size);
+        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_AI_SUBSCRIPTION_AVATAR_RING)) {
+            SubscriptionEligibilityService subscriptionEligibilityService =
+                    SubscriptionEligibilityServiceFactory.getForProfile(profile);
+
+            int aiTierRingThicknessPx =
+                    mContext.getResources()
+                            .getDimensionPixelSize(R.dimen.ai_tier_ring_thickness_identity_disc);
+            int aiTierImageSizePx =
+                    mContext.getResources()
+                            .getDimensionPixelSize(R.dimen.toolbar_identity_disc_size_with_ring);
+            mProfileDataCache =
+                    ProfileDataCache.createWithAiTierRing(
+                            mContext,
+                            mIdentityManager,
+                            subscriptionEligibilityService,
+                            aiTierImageSizePx,
+                            aiTierRingThicknessPx);
+        } else {
+            mProfileDataCache =
+                    ProfileDataCache.createWithoutBadge(
+                            mContext, mIdentityManager, R.dimen.toolbar_identity_disc_size);
+        }
         mProfileDataCache.addObserver(this);
         mSyncService = SyncServiceFactory.getForProfile(profile);
         if (mSyncService != null) {
@@ -451,5 +473,22 @@ final class SigninButtonMediator
         setProfile(null);
         mProfileSupplier.removeObserver(mProfileSupplierObserver);
         mThemeColorProvider.removeTintObserver(this);
+    }
+
+    private Drawable getPlaceholderImage() {
+        Drawable accountCircle =
+                AppCompatResources.getDrawable(mContext, R.drawable.account_circle);
+        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_AI_SUBSCRIPTION_AVATAR_RING)) {
+            int aiTierRingThicknessPx =
+                    mContext.getResources()
+                            .getDimensionPixelSize(R.dimen.ai_tier_ring_thickness_identity_disc);
+            int aiTierImageSizePx =
+                    mContext.getResources()
+                            .getDimensionPixelSize(R.dimen.toolbar_identity_disc_size_with_ring);
+
+            return ProfileDataCache.getPlaceholderImageWithAiTierRingPadding(
+                    mContext, accountCircle, aiTierImageSizePx, aiTierRingThicknessPx);
+        }
+        return accountCircle;
     }
 }

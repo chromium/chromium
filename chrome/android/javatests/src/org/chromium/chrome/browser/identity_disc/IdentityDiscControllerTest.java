@@ -221,20 +221,8 @@ public class IdentityDiscControllerTest {
     public void testIdentityDiscWithNavigation() {
         // User is signed in.
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
-        String expectedContentDescription =
-                mActivityTestRule
-                        .getActivity()
-                        .getString(
-                                R.string
-                                        .accessibility_toolbar_btn_identity_disc_with_name_and_email,
-                                TestAccounts.ACCOUNT1.getFullName(),
-                                TestAccounts.ACCOUNT1.getEmail());
-
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.optional_toolbar_button),
-                        isDisplayed(),
-                        withContentDescription(expectedContentDescription)));
+        String contentDescription = getContentDescriptionWithNameAndEmail(TestAccounts.ACCOUNT1);
+        waitForVisibleIdentityDisc(contentDescription);
 
         // Identity Disc should be hidden on navigation away from NTP.
         leaveNtp();
@@ -243,7 +231,7 @@ public class IdentityDiscControllerTest {
                         matches(
                                 anyOf(
                                         withEffectiveVisibility(ViewMatchers.Visibility.GONE),
-                                        not(withContentDescription(expectedContentDescription)))));
+                                        not(withContentDescription(contentDescription)))));
     }
 
     @Test
@@ -338,19 +326,7 @@ public class IdentityDiscControllerTest {
     public void testIdentityDiscSignedIn() {
         // Identity Disc should be shown on sign-in state change with a NTP refresh.
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
-        String expectedContentDescription =
-                mActivityTestRule
-                        .getActivity()
-                        .getString(
-                                R.string
-                                        .accessibility_toolbar_btn_identity_disc_with_name_and_email,
-                                TestAccounts.ACCOUNT1.getFullName(),
-                                TestAccounts.ACCOUNT1.getEmail());
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.optional_toolbar_button),
-                        isDisplayed(),
-                        withContentDescription(expectedContentDescription)));
+        waitForVisibleIdentityDisc(getContentDescriptionWithNameAndEmail(TestAccounts.ACCOUNT1));
 
         mSigninTestRule.signOut();
         ViewUtils.waitForVisibleView(
@@ -631,6 +607,18 @@ public class IdentityDiscControllerTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
+    @EnableFeatures(SigninFeatures.ENABLE_AI_SUBSCRIPTION_AVATAR_RING)
+    @UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testIdentityDisc_signedOut_aiTierRingEnabled(boolean nightModeEnabled)
+            throws IOException {
+        mRenderTestRule.render(
+                mActivityTestRule.getActivity().findViewById(R.id.optional_toolbar_button),
+                "identity_disc_signed_out_ai_tier_ring_enabled");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
     @UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     // Specifies the test to run only with the GMS Core version greater than or equal to 24w15 which
     // is the min version that supports split stores UPM backend, to avoid
@@ -639,19 +627,7 @@ public class IdentityDiscControllerTest {
     public void testIdentityDisc_signedIn(boolean nightModeEnabled) throws IOException {
         // Sign-in and wait for the user profile image to appear.
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
-        String expectedContentDescription =
-                mActivityTestRule
-                        .getActivity()
-                        .getString(
-                                R.string
-                                        .accessibility_toolbar_btn_identity_disc_with_name_and_email,
-                                TestAccounts.ACCOUNT1.getFullName(),
-                                TestAccounts.ACCOUNT1.getEmail());
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.optional_toolbar_button),
-                        isDisplayed(),
-                        withContentDescription(expectedContentDescription)));
+        waitForVisibleIdentityDisc(getContentDescriptionWithNameAndEmail(TestAccounts.ACCOUNT1));
 
         // Test the profile image shown in signed-in state to ensure the image is not tinted
         // accidentally.
@@ -672,25 +648,39 @@ public class IdentityDiscControllerTest {
             throws IOException {
         // Sign-in and wait for the user profile image to appear.
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
-        String expectedContentDescription =
-                mActivityTestRule
-                        .getActivity()
-                        .getString(
-                                R.string
-                                        .accessibility_toolbar_btn_identity_disc_with_name_and_email,
-                                TestAccounts.ACCOUNT1.getFullName(),
-                                TestAccounts.ACCOUNT1.getEmail());
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.optional_toolbar_button),
-                        isDisplayed(),
-                        withContentDescription(expectedContentDescription)));
+        waitForVisibleIdentityDisc(getContentDescriptionWithNameAndEmail(TestAccounts.ACCOUNT1));
 
         // Test the profile image shown in signed-in state to ensure the image is not tinted
         // accidentally.
         mRenderTestRule.render(
                 mActivityTestRule.getActivity().findViewById(R.id.optional_toolbar_button),
                 "identity_disc_signed_in_no_identity_error");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @EnableFeatures(SigninFeatures.ENABLE_AI_SUBSCRIPTION_AVATAR_RING)
+    @UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
+    public void testIdentityDisc_signedIn_aiTierRingEnabled(boolean nightModeEnabled)
+            throws IOException {
+        // Sign-in and wait for the user profile image to appear.
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+        waitForVisibleIdentityDisc(getContentDescriptionWithNameAndEmail(TestAccounts.ACCOUNT1));
+
+        // Set the pref natively to trigger the AI tier ring.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PrefService prefService =
+                            UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
+                    prefService.setInteger("sync.ai_subscription_tier", 1);
+                });
+
+        // Test the profile image shown in signed-in state with the ring.
+        mRenderTestRule.render(
+                mActivityTestRule.getActivity().findViewById(R.id.optional_toolbar_button),
+                "identity_disc_signed_in_with_ai_tier_ring");
     }
 
     @Test
@@ -728,6 +718,54 @@ public class IdentityDiscControllerTest {
         mRenderTestRule.render(
                 mActivityTestRule.getActivity().findViewById(R.id.optional_toolbar_button),
                 "identity_disc_signed_in_identity_error_exist");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @EnableFeatures(SigninFeatures.ENABLE_AI_SUBSCRIPTION_AVATAR_RING)
+    @UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
+    public void testIdentityDisc_signedIn_aiTierRingEnabled_identityErrorExist(
+            boolean nightModeEnabled) throws IOException {
+        // Fake an identity error.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
+                    SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
+                    fakeSyncServiceImpl.setRequiresClientUpgrade(true);
+                });
+
+        // Sign-in and wait for the user profile image to appear.
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+
+        // Set the pref natively to trigger the AI tier ring.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PrefService prefService =
+                            UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
+                    prefService.setInteger("sync.ai_subscription_tier", 1);
+                });
+
+        String expectedContentDescription =
+                mActivityTestRule
+                        .getActivity()
+                        .getString(
+                                R.string
+                                        .accessibility_toolbar_btn_identity_disc_error_with_name_and_email,
+                                TestAccounts.ACCOUNT1.getFullName(),
+                                TestAccounts.ACCOUNT1.getEmail());
+        ViewUtils.waitForVisibleView(
+                allOf(
+                        withId(R.id.optional_toolbar_button),
+                        isDisplayed(),
+                        withContentDescription(expectedContentDescription)));
+
+        // Test the profile image shown with an error badge in signed-in state when an identity
+        // error exist and AI tier ring is enabled.
+        mRenderTestRule.render(
+                mActivityTestRule.getActivity().findViewById(R.id.optional_toolbar_button),
+                "identity_disc_signed_in_ai_tier_ring_enabled_identity_error_exist");
     }
 
     @Test
@@ -814,5 +852,22 @@ public class IdentityDiscControllerTest {
 
     private PrimaryAccountChangeEvent newSigninEvent(int eventType) {
         return new PrimaryAccountChangeEvent(eventType);
+    }
+
+    private String getContentDescriptionWithNameAndEmail(AccountInfo accountInfo) {
+        return mActivityTestRule
+                .getActivity()
+                .getString(
+                        R.string.accessibility_toolbar_btn_identity_disc_with_name_and_email,
+                        accountInfo.getFullName(),
+                        accountInfo.getEmail());
+    }
+
+    private void waitForVisibleIdentityDisc(String contentDescription) {
+        ViewUtils.waitForVisibleView(
+                allOf(
+                        withId(R.id.optional_toolbar_button),
+                        isDisplayed(),
+                        withContentDescription(contentDescription)));
     }
 }
