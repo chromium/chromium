@@ -630,6 +630,10 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
         // - If we transition to a SHOWN state, the browser also needs to update the offsets,
         // otherwise the animation to show the controls will start with a frame where the controls
         // are fully visible.
+        if (constraints == BrowserControlsState.HIDDEN) {
+            return true;
+        }
+
         boolean areControlsOffscreen = false;
         if (getControlsPosition() == ControlsPosition.TOP) {
             areControlsOffscreen = getContentOffset() == getTopControlsMinHeight();
@@ -637,9 +641,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
             areControlsOffscreen = getBottomContentOffset() == getBottomControlsMinHeight();
         }
 
-        return (areControlsOffscreen
-                && (constraints == BrowserControlsState.HIDDEN
-                        || constraints == BrowserControlsState.SHOWN));
+        return (areControlsOffscreen && constraints == BrowserControlsState.SHOWN);
     }
 
     @Override

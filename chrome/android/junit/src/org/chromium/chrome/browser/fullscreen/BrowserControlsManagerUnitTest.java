@@ -16,6 +16,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -973,6 +974,36 @@ public class BrowserControlsManagerUnitTest {
         assertEquals(0, mBrowserControlsManager.getTopControlOffset());
         assertEquals(0, mBrowserControlsManager.getBottomControlOffset());
         assertNull(mBrowserControlsManager.getControlsAnimatorForTesting());
+    }
+
+    @Test
+    public void testOffsetTagsChanged_HiddenConstraints_UpdatesOffsetsEvenWhenOnScreen() {
+        remakeWithoutSpy();
+        notifyAddTab(mTab);
+        mActivityTabProvider.setForTesting(mTab);
+        mBrowserControlsManager.addObserver(mBrowserControlsStateProviderObserver);
+
+        // Put controls on-screen at TOP position (not scrolled offscreen).
+        mBrowserControlsManager.setControlsPosition(
+                ControlsPosition.TOP, 0, TOOLBAR_HEIGHT, 0, 0, 0, 0);
+        ShadowLooper.idleMainLooper();
+
+        // When constraints transition to HIDDEN, shouldUpdateOffsets must be true so the
+        // compositor layer does not stay drawn at y = 0.
+        mBrowserControlsManager
+                .getTabControlsObserverForTesting()
+                .onOffsetTagsInfoChanged(
+                        mTab,
+                        new BrowserControlsOffsetTagsInfo(),
+                        new BrowserControlsOffsetTagsInfo(),
+                        BrowserControlsState.HIDDEN);
+
+        verify(mBrowserControlsStateProviderObserver)
+                .onOffsetTagsInfoChanged(
+                        any(BrowserControlsOffsetTagsInfo.class),
+                        any(BrowserControlsOffsetTagsInfo.class),
+                        eq(BrowserControlsState.HIDDEN),
+                        eq(true));
     }
 
     private void verifyUpdateOffsetTagDefinitions(
