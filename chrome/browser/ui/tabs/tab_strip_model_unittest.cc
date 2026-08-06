@@ -1464,6 +1464,153 @@ TEST_F(TabStripModelTest, FocusModeSessionDurationHistogramOnSwitchGroup) {
   histogram_tester.ExpectTotalCount("TabGroups.Focus.SessionDuration", 2);
 }
 
+TEST_F(TabStripModelTest,
+       FocusModePinnedTabsUsageHistogramRecordedWhenPinnedTabsPresent) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kTabGroupsFocusing,
+      {{features::kTabGroupsFocusingPinnedTabs.name, "true"}});
+
+  TestTabStripModelDelegate delegate;
+  TabStripModel model(&delegate, profile());
+  base::HistogramTester histogram_tester;
+
+  model.AppendWebContents(CreateWebContents(), true);
+  model.AppendWebContents(CreateWebContents(), true);
+  model.AppendWebContents(CreateWebContents(), true);
+
+  model.SetTabPinned(0, true);
+  const tab_groups::TabGroupId group = model.AddToNewGroup({1, 2});
+
+  // Focus group.
+  model.SetFocusedGroup(group);
+  EXPECT_EQ(model.GetFocusedGroup(), group);
+
+  // Activate pinned tab (activation 1).
+  model.ActivateTabAt(0);
+
+  // Switch back to a normal tab.
+  model.ActivateTabAt(1);
+
+  // Activate pinned tab again (activation 2).
+  model.ActivateTabAt(0);
+
+  // Exit focus mode.
+  model.SetFocusedGroup(std::nullopt);
+
+  histogram_tester.ExpectTotalCount("TabGroups.Focus.SessionDuration", 1);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Focus.PinnedTabActivationsPerSession", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Focus.PinnedTabActivatedInSession", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Focus.PinnedTabExistedInSession", true, 1);
+}
+
+TEST_F(TabStripModelTest,
+       FocusModePinnedTabsUsageHistogramZeroActivationsWhenUntouched) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kTabGroupsFocusing,
+      {{features::kTabGroupsFocusingPinnedTabs.name, "true"}});
+
+  TestTabStripModelDelegate delegate;
+  TabStripModel model(&delegate, profile());
+  base::HistogramTester histogram_tester;
+
+  model.AppendWebContents(CreateWebContents(), true);
+  model.AppendWebContents(CreateWebContents(), true);
+  model.AppendWebContents(CreateWebContents(), true);
+
+  model.SetTabPinned(0, true);
+  const tab_groups::TabGroupId group = model.AddToNewGroup({1, 2});
+
+  model.SetFocusedGroup(group);
+
+  // Switch between tabs within the group without touching pinned tab 0.
+  model.ActivateTabAt(1);
+  model.ActivateTabAt(2);
+
+  model.SetFocusedGroup(std::nullopt);
+
+  histogram_tester.ExpectTotalCount("TabGroups.Focus.SessionDuration", 1);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Focus.PinnedTabActivationsPerSession", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Focus.PinnedTabActivatedInSession", false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Focus.PinnedTabExistedInSession", true, 1);
+}
+
+TEST_F(TabStripModelTest,
+       FocusModePinnedTabsUsageHistogramRecordedWhenNoPinnedTabsPresent) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kTabGroupsFocusing,
+      {{features::kTabGroupsFocusingPinnedTabs.name, "true"}});
+
+  TestTabStripModelDelegate delegate;
+  TabStripModel model(&delegate, profile());
+  base::HistogramTester histogram_tester;
+
+  model.AppendWebContents(CreateWebContents(), true);
+  model.AppendWebContents(CreateWebContents(), true);
+  model.AppendWebContents(CreateWebContents(), true);
+
+  const tab_groups::TabGroupId group = model.AddToNewGroup({0, 1});
+
+  model.SetFocusedGroup(group);
+
+  // Switch between tabs within the group.
+  model.ActivateTabAt(1);
+
+  model.SetFocusedGroup(std::nullopt);
+
+  histogram_tester.ExpectTotalCount("TabGroups.Focus.SessionDuration", 1);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Focus.PinnedTabActivationsPerSession", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Focus.PinnedTabActivatedInSession", false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Focus.PinnedTabExistedInSession", false, 1);
+}
+
+TEST_F(TabStripModelTest,
+       FocusModePinnedTabsUsageHistogramPinnedTabAddedDuringSession) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kTabGroupsFocusing,
+      {{features::kTabGroupsFocusingPinnedTabs.name, "true"}});
+
+  TestTabStripModelDelegate delegate;
+  TabStripModel model(&delegate, profile());
+  base::HistogramTester histogram_tester;
+
+  model.AppendWebContents(CreateWebContents(), true);
+  model.AppendWebContents(CreateWebContents(), true);
+  model.AppendWebContents(CreateWebContents(), true);
+
+  const tab_groups::TabGroupId group = model.AddToNewGroup({1, 2});
+
+  model.SetFocusedGroup(group);
+
+  // Pin a tab while focus mode is active.
+  model.SetTabPinned(0, true);
+
+  // Activate the newly pinned tab.
+  model.ActivateTabAt(0);
+
+  model.SetFocusedGroup(std::nullopt);
+
+  histogram_tester.ExpectTotalCount("TabGroups.Focus.SessionDuration", 1);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Focus.PinnedTabActivationsPerSession", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Focus.PinnedTabActivatedInSession", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Focus.PinnedTabExistedInSession", true, 1);
+}
+
 TEST_F(TabStripModelTest, RemovingLastTabOfFocusedGroupUnsetsFocus) {
   TestTabStripModelDelegate delegate;
   TabStripModel model(&delegate, profile());

@@ -930,6 +930,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TabGroups.Focus.PinnedTabActivatedInSession" enum="Boolean"
+    expires_after="2027-02-06">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Recorded when the user exits Tab Groups Focus Mode. Records true if a pinned
+    tab was activated at least once during the focus mode session, and false
+    otherwise.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.Focus.PinnedTabActivationsPerSession"
+    units="activations" expires_after="2027-02-06">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Recorded when the user exits Tab Groups Focus Mode. Records the number of
+    times a pinned tab was activated during the focus mode session.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.Focus.PinnedTabExistedInSession" enum="Boolean"
+    expires_after="2027-02-06">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Recorded when the user exits Tab Groups Focus Mode. Records true if at least
+    one pinned tab existed in the tab strip at any point during the focus mode
+    session, and false otherwise.
+  </summary>
+</histogram>
+
 <histogram name="TabGroups.Focus.SessionDuration" units="ms"
     expires_after="2027-02-04">
   <owner>kunaldaftari@google.com</owner>

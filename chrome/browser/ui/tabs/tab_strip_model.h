@@ -942,6 +942,11 @@ class TabStripModel {
   void NotifyTabGroupFocusChanged(
       const std::optional<tab_groups::TabGroupId>& old_focused_group);
 
+  // Logs metrics when the focused tab group changes.
+  void LogTabGroupFocusMetrics(
+      const std::optional<tab_groups::TabGroupId>& old_focused_group,
+      const std::optional<tab_groups::TabGroupId>& new_focused_group);
+
   // Notify observers that a `group` was created.
   void NotifyTabGroupVisualsChanged(const tab_groups::TabGroupId& group_id,
                                     TabGroupChange::VisualsChange visuals);
@@ -1481,6 +1486,14 @@ class TabStripModel {
 
   // Timestamp when the current focus mode session began, if active.
   std::optional<base::TimeTicks> focus_mode_session_start_time_;
+
+  // Number of times a pinned tab was activated during the current focus mode
+  // session.
+  int focus_mode_pinned_tab_activations_ = 0;
+
+  // Tracks whether any pinned tabs were present during the current focus mode
+  // session.
+  bool had_pinned_tabs_in_focus_session_ = false;
 
   base::WeakPtrFactory<TabStripModel> weak_factory_{this};
 };

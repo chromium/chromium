@@ -649,6 +649,9 @@ gfx::Range TabStripModel::InsertDetachedSplitTabAt(
     bool pinned,
     std::optional<tab_groups::TabGroupId> group_id) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
+  if (pinned && selection_model_.focused_group().has_value()) {
+    had_pinned_tabs_in_focus_session_ = true;
+  }
   CHECK(std::holds_alternative<std::unique_ptr<tabs::SplitTabCollection>>(
       split->collection_));
 
@@ -2250,20 +2253,42 @@ void TabStripModel::NotifyTabGroupFocusChanged(
   const std::optional<tab_groups::TabGroupId> new_focused_group =
       selection_model_.focused_group();
   if (old_focused_group != new_focused_group) {
-    if (old_focused_group.has_value() &&
-        focus_mode_session_start_time_.has_value()) {
+    LogTabGroupFocusMetrics(old_focused_group, new_focused_group);
+
+    for (auto& observer : observers_) {
+      observer.OnTabGroupFocusChanged(new_focused_group, old_focused_group);
+    }
+  }
+}
+
+void TabStripModel::LogTabGroupFocusMetrics(
+    const std::optional<tab_groups::TabGroupId>& old_focused_group,
+    const std::optional<tab_groups::TabGroupId>& new_focused_group) {
+  if (old_focused_group.has_value()) {
+    if (focus_mode_session_start_time_.has_value()) {
       base::UmaHistogramLongTimes(
           "TabGroups.Focus.SessionDuration",
           base::TimeTicks::Now() - *focus_mode_session_start_time_);
       focus_mode_session_start_time_.reset();
     }
-    if (new_focused_group.has_value()) {
-      focus_mode_session_start_time_ = base::TimeTicks::Now();
-    }
 
-    for (auto& observer : observers_) {
-      observer.OnTabGroupFocusChanged(new_focused_group, old_focused_group);
-    }
+    base::UmaHistogramBoolean(
+        "TabGroups.Focus.PinnedTabExistedInSession",
+        had_pinned_tabs_in_focus_session_ || IndexOfFirstNonPinnedTab() > 0);
+    base::UmaHistogramCounts100(
+        "TabGroups.Focus.PinnedTabActivationsPerSession",
+        focus_mode_pinned_tab_activations_);
+    base::UmaHistogramBoolean("TabGroups.Focus.PinnedTabActivatedInSession",
+                              focus_mode_pinned_tab_activations_ > 0);
+
+    focus_mode_pinned_tab_activations_ = 0;
+    had_pinned_tabs_in_focus_session_ = false;
+  }
+
+  if (new_focused_group.has_value()) {
+    focus_mode_session_start_time_ = base::TimeTicks::Now();
+    focus_mode_pinned_tab_activations_ = 0;
+    had_pinned_tabs_in_focus_session_ = (IndexOfFirstNonPinnedTab() > 0);
   }
 }
 
@@ -3624,6 +3649,9 @@ int TabStripModel::InsertTabAtImpl(
 
   const bool active = (add_types & ADD_ACTIVE) != 0 || empty();
   const bool pin = (add_types & ADD_PINNED) != 0;
+  if (pin && selection_model_.focused_group().has_value()) {
+    had_pinned_tabs_in_focus_session_ = true;
+  }
   index = ConstrainInsertionIndex(index, pin);
 
   tabs::TabModel* const active_tab_model = GetActiveTabModel();
@@ -3971,6 +3999,15 @@ TabStripSelectionChange TabStripModel::SetSelection(
   if (!triggered_by_other_operation &&
       (selection.active_tab_changed() || selection.selection_changed())) {
     if (selection.active_tab_changed()) {
+      if (selection_model_.focused_group().has_value()) {
+        if (IndexOfFirstNonPinnedTab() > 0) {
+          had_pinned_tabs_in_focus_session_ = true;
+        }
+        if (selection.new_tab && selection.new_tab->IsPinned()) {
+          focus_mode_pinned_tab_activations_++;
+        }
+      }
+
       // Start measuring the tab switch compositing time. This must be the first
       // thing in this block so that the start time is saved before any changes
       // that might affect compositing.
@@ -5152,6 +5189,10 @@ void TabStripModel::SetTabsPinned(std::vector<int> indices, bool pinned) {
 }
 
 int TabStripModel::SetTabPinnedImpl(int index, bool pinned) {
+  if (pinned && selection_model_.focused_group().has_value()) {
+    had_pinned_tabs_in_focus_session_ = true;
+  }
+
   const int final_index =
       pinned ? IndexOfFirstNonPinnedTab() : IndexOfFirstNonPinnedTab() - 1;
 
@@ -5161,6 +5202,9 @@ int TabStripModel::SetTabPinnedImpl(int index, bool pinned) {
 
 void TabStripModel::SetSplitPinnedImpl(tabs::SplitTabCollection* split,
                                        bool pinned) {
+  if (pinned && selection_model_.focused_group().has_value()) {
+    had_pinned_tabs_in_focus_session_ = true;
+  }
   static constexpr tabs::TabCollection::TypeEnumSet kRetainCollectionTypes = {
       tabs::TabCollection::Type::SPLIT};
   std::vector<tabs::TabInterface*> tabs = split->GetTabsRecursive();
