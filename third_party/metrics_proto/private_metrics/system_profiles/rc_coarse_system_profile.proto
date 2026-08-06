@@ -19,7 +19,7 @@ option features.enum_type = CLOSED;
 // System profile for PUMA for Regional Capabilities. All fields in this proto
 // should be populated by the client before sending the report.
 //
-// Next tag: 6
+// Next tag: 7
 message RcCoarseSystemProfile {
   Platform platform = 1;
 

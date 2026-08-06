@@ -665,6 +665,12 @@ message SystemProfileProto {
       // The extra error code reported by the product updater on its last run.
       // This will typically be a Win32 error code.
       int32 last_extra_error = 5;
+
+      // A hash of the cohort identifier of this product, excluding
+      // non-assignment information. The hash function is Chromium's
+      // PersistentHash. This is meant to be the same as the value emitted to
+      // the UMA histogram `GoogleUpdate.InstallDetails.UpdateCohortId`.
+      fixed32 cohort_hash = 6;
     }
 
     ProductInfo google_update_status = 4;
