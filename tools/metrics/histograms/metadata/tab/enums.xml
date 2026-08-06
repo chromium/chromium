@@ -485,6 +485,19 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Skipped (Empty URL)"/>
 </enum>
 
+<!-- LINT.IfChange(TabSearchCloseAction) -->
+
+<enum name="TabSearchCloseAction">
+  <int value="0" label="No action taken"/>
+  <int value="1" label="Closed tab"/>
+  <int value="2" label="Opened recent tab"/>
+  <int value="3" label="Switched tab"/>
+  <int value="4" label="Opened recent tab and closed tab"/>
+  <int value="5" label="Switched tab and closed tab"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webui/tab_search/tab_search_page_handler.h:TabSearchCloseAction) -->
+
 <enum name="TabSearchOpenActions">
   <int value="0" label="User opened the Tab Search UI via a mouse click"/>
   <int value="1" label="User opened the Tab Search UI via keyboard navigation"/>

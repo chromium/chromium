@@ -18,6 +18,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -289,6 +290,7 @@ class TabSearchPageHandlerTest : public InProcessBrowserTest {
   Browser* browser5() { return browser5_; }
 
   TestTabSearchPageHandler* handler() { return handler_.get(); }
+  void reset_handler() { handler_.reset(); }
   void FireTimer() { handler_->mock_debounce_timer()->Fire(); }
   bool IsTimerRunning() { return handler_->mock_debounce_timer()->IsRunning(); }
 
@@ -1539,6 +1541,151 @@ IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerSplitViewTest,
 
   EXPECT_CALL(page_, TabUpdated(_)).Times(testing::AnyNumber());
   EXPECT_CALL(page_, TabsRemoved(_)).Times(testing::AnyNumber());
+}
+
+IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest,
+                       CloseActionHistogram_NoAction) {
+  base::HistogramTester histogram_tester;
+  reset_handler();
+  histogram_tester.ExpectUniqueSample("Tabs.TabSearch.CloseAction2",
+                                      TabSearchCloseAction::kNoAction, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest,
+                       CloseActionHistogram_CloseTab) {
+  AddTabWithTitle(browser1(), tab_url1_, kTabName1);
+  int32_t tab_id =
+      browser1()->tab_strip_model()->GetTabAtIndex(0)->GetHandle().raw_value();
+  handler()->CloseTab(tab_id);
+
+  base::HistogramTester histogram_tester;
+  reset_handler();
+  histogram_tester.ExpectUniqueSample("Tabs.TabSearch.CloseAction2",
+                                      TabSearchCloseAction::kCloseTab, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest,
+                       CloseActionHistogram_SwitchTab) {
+  AddTabWithTitle(browser1(), tab_url1_, kTabName1);
+  int32_t tab_id =
+      browser1()->tab_strip_model()->GetTabAtIndex(0)->GetHandle().raw_value();
+  auto switch_to_tab_info = tab_search::mojom::SwitchToTabInfo::New();
+  switch_to_tab_info->tab_id = tab_id;
+  handler()->SwitchToTab(std::move(switch_to_tab_info));
+
+  base::HistogramTester histogram_tester;
+  reset_handler();
+  histogram_tester.ExpectUniqueSample("Tabs.TabSearch.CloseAction2",
+                                      TabSearchCloseAction::kSwitchTab, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest,
+                       CloseActionHistogram_CloseThenSwitchTab) {
+  AddTabWithTitle(browser1(), tab_url1_, kTabName1);
+  AddTabWithTitle(browser1(), tab_url2_, kTabName2);
+  int32_t tab_id1 =
+      browser1()->tab_strip_model()->GetTabAtIndex(0)->GetHandle().raw_value();
+  int32_t tab_id2 =
+      browser1()->tab_strip_model()->GetTabAtIndex(1)->GetHandle().raw_value();
+
+  handler()->CloseTab(tab_id1);
+
+  auto switch_to_tab_info = tab_search::mojom::SwitchToTabInfo::New();
+  switch_to_tab_info->tab_id = tab_id2;
+  handler()->SwitchToTab(std::move(switch_to_tab_info));
+
+  base::HistogramTester histogram_tester;
+  reset_handler();
+  histogram_tester.ExpectUniqueSample(
+      "Tabs.TabSearch.CloseAction2",
+      TabSearchCloseAction::kSwitchTabAndCloseTab, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest,
+                       CloseActionHistogram_OpenRecentTab) {
+  AddTabWithTitle(browser1(), tab_url1_, kTabName1);
+  AddTabWithTitle(browser1(), tab_url2_, kTabName2);
+  sessions::TabRestoreService* tab_restore_service =
+      TabRestoreServiceFactory::GetForProfile(profile1());
+  int32_t tab_id =
+      browser1()->tab_strip_model()->GetTabAtIndex(0)->GetHandle().raw_value();
+  handler()->CloseTab(tab_id);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return tab_restore_service->entries().size() >= 1u; }));
+
+  handler()->BeforeBubbleWidgetShowed();
+
+  int32_t session_id = tab_restore_service->entries().front()->id.id();
+  handler()->OpenRecentlyClosedEntry(session_id);
+
+  base::HistogramTester histogram_tester;
+  reset_handler();
+  histogram_tester.ExpectUniqueSample("Tabs.TabSearch.CloseAction2",
+                                      TabSearchCloseAction::kOpenRecentTab, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest,
+                       CloseActionHistogram_CloseThenOpenRecentTab) {
+  AddTabWithTitle(browser1(), tab_url1_, kTabName1);
+  AddTabWithTitle(browser1(), tab_url2_, kTabName2);
+  sessions::TabRestoreService* tab_restore_service =
+      TabRestoreServiceFactory::GetForProfile(profile1());
+
+  int32_t tab_id1 =
+      browser1()->tab_strip_model()->GetTabAtIndex(0)->GetHandle().raw_value();
+  handler()->CloseTab(tab_id1);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return tab_restore_service->entries().size() >= 1u; }));
+
+  handler()->BeforeBubbleWidgetShowed();
+
+  int32_t tab_id2 =
+      browser1()->tab_strip_model()->GetTabAtIndex(0)->GetHandle().raw_value();
+  handler()->CloseTab(tab_id2);
+
+  int32_t session_id = tab_restore_service->entries().front()->id.id();
+  handler()->OpenRecentlyClosedEntry(session_id);
+
+  base::HistogramTester histogram_tester;
+  reset_handler();
+  histogram_tester.ExpectUniqueSample(
+      "Tabs.TabSearch.CloseAction2",
+      TabSearchCloseAction::kOpenRecentTabAndCloseTab, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest,
+                       CloseActionHistogram_MultipleSessionsWithCaching) {
+  base::HistogramTester histogram_tester;
+
+  // Session 1: Before showing bubble
+  handler()->BeforeBubbleWidgetShowed();
+  AddTabWithTitle(browser1(), tab_url1_, kTabName1);
+  int32_t tab_id1 =
+      browser1()->tab_strip_model()->GetTabAtIndex(0)->GetHandle().raw_value();
+  handler()->CloseTab(tab_id1);
+
+  // Bubble closes (visibility becomes HIDDEN)
+  handler()->OnVisibilityChanged(content::Visibility::HIDDEN);
+
+  histogram_tester.ExpectBucketCount("Tabs.TabSearch.CloseAction2",
+                                     TabSearchCloseAction::kCloseTab, 1);
+
+  // Session 2: Bubble re-opened (preloaded/cached)
+  handler()->BeforeBubbleWidgetShowed();
+  int32_t open_tab_id =
+      browser1()->tab_strip_model()->GetTabAtIndex(0)->GetHandle().raw_value();
+  auto switch_to_tab_info = tab_search::mojom::SwitchToTabInfo::New();
+  switch_to_tab_info->tab_id = open_tab_id;
+  handler()->SwitchToTab(std::move(switch_to_tab_info));
+
+  // Bubble closes again (visibility becomes HIDDEN)
+  handler()->OnVisibilityChanged(content::Visibility::HIDDEN);
+
+  histogram_tester.ExpectBucketCount("Tabs.TabSearch.CloseAction2",
+                                     TabSearchCloseAction::kCloseTab, 1);
+  histogram_tester.ExpectBucketCount("Tabs.TabSearch.CloseAction2",
+                                     TabSearchCloseAction::kSwitchTab, 1);
+  histogram_tester.ExpectTotalCount("Tabs.TabSearch.CloseAction2", 2);
 }
 
 }  // namespace
