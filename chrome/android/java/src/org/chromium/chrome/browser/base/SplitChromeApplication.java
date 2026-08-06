@@ -26,7 +26,6 @@ import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.IdentifierNameString;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.InitializeFeatureList;
 import org.chromium.chrome.modules.on_demand.OnDemandModule;
@@ -232,29 +231,24 @@ public class SplitChromeApplication extends SplitCompatApplication {
                     }
                 });
 
-        if (ChromeFeatureList.sLoadNativeEarly.isEnabled()
-                && !CommandLine.getInstance()
-                        .hasSwitch(ChromeSwitches.DISABLE_NATIVE_INITIALIZATION)) {
+        if (!CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_NATIVE_INITIALIZATION)) {
             LibraryLoader.getInstance().ensureInitialized();
 
-            if (ChromeFeatureList.sInitFeatureListEarly.getValue()) {
-                if (BuildConfig.IS_FOR_TEST) {
-                    // For test builds, we should initialize the feature list early to apply the
-                    // fieldtrial_testing_config.json.
-                    ContextUtils.sDoFeatureListInitHookForTesting =
-                            InitializeFeatureList::initializeFeatureList;
-                } else if (!BuildConfig.IS_CHROME_BRANDED
-                        || !VariationsSeedFetcher.shouldFetchSeed()) {
-                    // For non-Chrome branded builds, we should initialize the feature list early to
-                    // apply the fieldtrial_testing_config.json. Otherwise, we should initialize the
-                    // feature list early in non-first run when we are not fetching the first run
-                    // variations seed.
-                    long startTimeMs = SystemClock.uptimeMillis();
-                    InitializeFeatureList.initializeFeatureList();
-                    long endTimeMs = SystemClock.uptimeMillis();
-                    RecordHistogram.recordTimesHistogram(
-                            "Startup.Android.InitializeFeatureListTime", endTimeMs - startTimeMs);
-                }
+            if (BuildConfig.IS_FOR_TEST) {
+                // For test builds, we should initialize the feature list early to apply the
+                // fieldtrial_testing_config.json.
+                ContextUtils.sDoFeatureListInitHookForTesting =
+                        InitializeFeatureList::initializeFeatureList;
+            } else if (!BuildConfig.IS_CHROME_BRANDED || !VariationsSeedFetcher.shouldFetchSeed()) {
+                // For non-Chrome branded builds, we should initialize the feature list early to
+                // apply the fieldtrial_testing_config.json. Otherwise, we should initialize the
+                // feature list early in non-first run when we are not fetching the first run
+                // variations seed.
+                long startTimeMs = SystemClock.uptimeMillis();
+                InitializeFeatureList.initializeFeatureList();
+                long endTimeMs = SystemClock.uptimeMillis();
+                RecordHistogram.recordTimesHistogram(
+                        "Startup.Android.InitializeFeatureListTime", endTimeMs - startTimeMs);
             }
         }
     }

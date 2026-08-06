@@ -515,7 +515,6 @@ public abstract class ChromeFeatureList {
     public static final String LOADING_PREDICTOR_LIMIT_PRECONNECT_SOCKET_COUNT =
             "LoadingPredictorLimitPreconnectSocketCount";
     public static final String LOAD_ALL_TABS_AT_STARTUP = "LoadAllTabsAtStartup";
-    public static final String LOAD_NATIVE_EARLY = "LoadNativeEarly";
     public static final String LOCAL_NETWORK_ACCESS = "LocalNetworkAccessChecks";
     public static final String LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2 =
             "LockTopControlsOnLargeTabletsV2";
@@ -1090,8 +1089,6 @@ public abstract class ChromeFeatureList {
                     LOAD_ALL_TABS_AT_STARTUP,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
-    public static final CachedFlag sLoadNativeEarly =
-            newCachedFlag(LOAD_NATIVE_EARLY, /* defaultValue= */ true);
     public static final CachedFlag sLockTopControlsOnLargeTabletsV2 =
             newCachedFlag(
                     LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2,
@@ -1418,7 +1415,6 @@ public abstract class ChromeFeatureList {
                     sLaunchCauseScreenOffFix,
                     sLensSendRawFileMediaTypes,
                     sLoadAllTabsAtStartup,
-                    sLoadNativeEarly,
                     sLockTopControlsOnLargeTabletsV2,
                     sMaliciousApkDownloadCheck,
                     sMigrateManagementToWebUIOnMobile,
@@ -1896,9 +1892,6 @@ public abstract class ChromeFeatureList {
                             "set_default_to_false_on_homepage_on_desktop",
                             true);
 
-    public static final BooleanCachedFeatureParam sInitFeatureListEarly =
-            newBooleanCachedFeatureParam(LOAD_NATIVE_EARLY, "init_feature_list_early", true);
-
     public static final BooleanCachedFeatureParam sTabGroupListContainment =
             newBooleanCachedFeatureParam(
                     GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE, "tab_group_list_containment", true);
@@ -2077,7 +2070,6 @@ public abstract class ChromeFeatureList {
                     sHomeButtonRemovalEverywhere,
                     sHomeButtonRemovalKeepOnNtp,
                     sHomeButtonRemovalSetDefaultToFalseOnHomepageOnDesktop,
-                    sInitFeatureListEarly,
                     sLockTopControlsForceAdjustHeightOnStartup,
                     sLowMemoryDeviceThresholdMb,
                     sMaliciousApkDownloadCheckTelemetryOnly,

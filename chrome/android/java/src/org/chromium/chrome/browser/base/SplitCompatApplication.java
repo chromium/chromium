@@ -204,24 +204,16 @@ public class SplitCompatApplication extends Application {
         LibraryLoader.getInstance().setLinkerImplementation(ProductConfig.USE_CHROMIUM_LINKER);
         ResourceBundle.setAvailablePakLocales(ProductConfig.LOCALES);
 
-        // Renderer and GPU processes have command line passed to them via IPC
-        // (see ChildProcessService.java).
-        if (isBrowserProcess && ChromeFeatureList.sLoadNativeEarly.isEnabled()) {
+        if (isBrowserProcess) {
+            // Renderer and GPU processes have command line passed to them via IPC
+            // (see ChildProcessService.java).
             CommandLineInitUtil.initCommandLine(
                     COMMAND_LINE_FILE, SplitCompatApplication::shouldUseDebugFlags);
-        }
-
-        if (isBrowserProcess
-                && ChromeFeatureList.sLoadNativeEarly.isEnabled()
-                && ChromeFeatureList.sInitFeatureListEarly.getValue()) {
             PathUtils.setPrivateDataDirectorySuffix(PRIVATE_DATA_DIRECTORY_SUFFIX);
             // Register for activity lifecycle callbacks. Must be done before any activities are
             // created and is needed only by processes that use the ApplicationStatus api (which
             // for Chrome is just the browser process).
             ApplicationStatus.initialize(this);
-        }
-
-        if (isBrowserProcess) {
             performBrowserProcessPreloading(context);
         }
 
@@ -234,28 +226,8 @@ public class SplitCompatApplication extends Application {
             checkAppBeingReplaced();
             DexFixer.scheduleDexFix();
 
-            if (!ChromeFeatureList.sLoadNativeEarly.isEnabled()
-                    || !ChromeFeatureList.sInitFeatureListEarly.getValue()) {
-                PathUtils.setPrivateDataDirectorySuffix(PRIVATE_DATA_DIRECTORY_SUFFIX);
-            }
-
-            // Renderer and GPU processes have command line passed to them via IPC
-            // (see ChildProcessService.java).
-            if (!ChromeFeatureList.sLoadNativeEarly.isEnabled()) {
-                CommandLineInitUtil.initCommandLine(
-                        COMMAND_LINE_FILE, SplitCompatApplication::shouldUseDebugFlags);
-            }
-
             TraceEvent.maybeEnableEarlyTracing(/* readCommandLine= */ true);
             TraceEvent.begin(ATTACH_BASE_CONTEXT_EVENT);
-
-            // Register for activity lifecycle callbacks. Must be done before any activities are
-            // created and is needed only by processes that use the ApplicationStatus api (which
-            // for Chrome is just the browser process).
-            if (!ChromeFeatureList.sLoadNativeEarly.isEnabled()
-                    || !ChromeFeatureList.sInitFeatureListEarly.getValue()) {
-                ApplicationStatus.initialize(this);
-            }
 
             ColdStartTracker.initialize();
 

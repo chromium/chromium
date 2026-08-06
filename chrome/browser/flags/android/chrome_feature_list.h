@@ -217,7 +217,6 @@ BASE_DECLARE_FEATURE(kLaunchCauseScreenOffFix);
 BASE_DECLARE_FEATURE(kLensOnQuickActionSearchWidget);
 BASE_DECLARE_FEATURE(kLinkHoverStatusBar);
 BASE_DECLARE_FEATURE(kLoadAllTabsAtStartup);
-BASE_DECLARE_FEATURE(kLoadNativeEarly);
 BASE_DECLARE_FEATURE(kLocationBarModelOptimizations);
 BASE_DECLARE_FEATURE(kLockTopControlsOnLargeTabletsV2);
 BASE_DECLARE_FEATURE(kLongScreenshotsLenientMemoryCheck);
@@ -396,11 +395,6 @@ inline constexpr base::FeatureParam<int> kProtectRecentlyVisibleTabDuration(
     &kProtectRecentlyVisibleTab,
     "duration_in_seconds",
     /*default_value=*/base::Minutes(10).InSeconds());
-
-inline constexpr base::FeatureParam<bool> kInitFeatureListEarly(
-    &kLoadNativeEarly,
-    "init_feature_list_early",
-    /*default_value=*/true);
 
 inline constexpr base::FeatureParam<int>
     kReadAloudAudioOverviewsSpeedAdditionPercentage(
