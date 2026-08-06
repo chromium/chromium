@@ -7,6 +7,44 @@ import("//chrome/browser/buildflags.gni")
 assert(!is_android)
 assert(!is_chromeos)
 
+source_set("shortcuts") {
+  public = [ "create_desktop_shortcut.h" ]
+  public_deps = [
+    "//base",
+    "//ui/base",
+    "//ui/base/interaction",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "create_desktop_shortcut.cc",
+    "create_desktop_shortcut_delegate.cc",
+    "create_desktop_shortcut_delegate.h",
+  ]
+  public_deps = [
+    ":shortcuts",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [
+    "//chrome/app:branded_strings",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/picture_in_picture",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/shortcuts",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/dialogs:browser_dialogs",
+    "//chrome/browser/ui/views/controls",
+    "//components/constrained_window",
+    "//components/prefs",
+    "//components/web_modal",
+    "//content/public/browser",
+    "//ui/gfx",
+    "//ui/views",
+    "//url",
+  ]
+}
+
 source_set("test_support") {
   testonly = true
 
@@ -20,6 +58,7 @@ source_set("test_support") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps = [
+    ":impl",
     "//chrome/browser",
     "//chrome/browser:platform_util_internal",
     "//chrome/browser/shortcuts:test_support",
@@ -41,6 +80,8 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps = [
+    ":impl",
+    ":shortcuts",
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/picture_in_picture:test_support_ui",
     "//chrome/browser/profiles:misc",
