@@ -74,7 +74,7 @@ String ConsumeName(CSSTokenizerInputStream& input) {
 
 // https://drafts.csswg.org/css-syntax/#would-start-an-identifier
 bool NextCharsAreIdentifier(UChar first, const CSSTokenizerInputStream& input) {
-  UChar second = input.PeekWithoutReplacement(0);
+  UChar second = input.NextInputChar();
   if (IsNameStartCodePoint(first) || TwoCharsAreValidEscape(first, second)) {
     return true;
   }

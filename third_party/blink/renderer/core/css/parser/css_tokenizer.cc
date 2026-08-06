@@ -104,7 +104,7 @@ CSSParserToken CSSTokenizer::HyphenMinus(UChar cc) {
 }
 
 CSSParserToken CSSTokenizer::Hash(UChar cc) {
-  UChar next_char = input_.PeekWithoutReplacement(0);
+  UChar next_char = input_.NextInputChar();
   if (IsNameCodePoint(next_char) ||
       TwoCharsAreValidEscape(next_char, input_.PeekWithoutReplacement(1))) {
     HashTokenType type =

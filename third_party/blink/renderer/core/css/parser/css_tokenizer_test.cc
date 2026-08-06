@@ -273,6 +273,8 @@ TEST(CSSTokenizerTest, IdentToken) {
   TEST_TOKENS(FromUChar32(0x12345), Ident(FromUChar32(0x12345)));
   TEST_TOKENS(String(base::span_from_cstring("\0")),
               Ident(FromUChar32(0xFFFD)));
+  TEST_TOKENS(String(base::span_from_cstring("-\0")),
+              Ident("-" + FromUChar32(0xFFFD)));
   TEST_TOKENS(String(base::span_from_cstring("ab\0c")),
               Ident("ab" + FromUChar32(0xFFFD) + "c"));
   TEST_TOKENS(String(base::span_from_cstring("ab\0c")),
@@ -333,6 +335,8 @@ TEST(CSSTokenizerTest, AtKeywordToken) {
   TEST_TOKENS("@---", AtKeyword("---"));
   TEST_TOKENS("@\\ ", AtKeyword(" "));
   TEST_TOKENS("@-\\ ", AtKeyword("- "));
+  TEST_TOKENS(String(base::span_from_cstring("@-\0")),
+              AtKeyword("-" + FromUChar32(0xFFFD)));
   TEST_TOKENS("@@", Delim('@'), Delim('@'));
   TEST_TOKENS("@2", Delim('@'), Number(kIntegerValueType, 2, kNoSign));
   TEST_TOKENS("@-1", Delim('@'), Number(kIntegerValueType, -1, kMinusSign));
@@ -393,6 +397,10 @@ TEST(CSSTokenizerTest, HashToken) {
   TEST_TOKENS("#FF7700", GetHash("FF7700", kHashTokenId));
   TEST_TOKENS("#3377FF", GetHash("3377FF", kHashTokenUnrestricted));
   TEST_TOKENS("#\\ ", GetHash(" ", kHashTokenId));
+  TEST_TOKENS(String(base::span_from_cstring("#\0")),
+              GetHash(FromUChar32(0xFFFD), kHashTokenId));
+  TEST_TOKENS(String(base::span_from_cstring("#-\0")),
+              GetHash("-" + FromUChar32(0xFFFD), kHashTokenId));
   TEST_TOKENS("# ", Delim('#'), Whitespace());
   TEST_TOKENS("#\\\n", Delim('#'), Delim('\\'), Whitespace());
   TEST_TOKENS("#\\\r\n", Delim('#'), Delim('\\'), Whitespace());
@@ -442,6 +450,8 @@ TEST(CSSTokenizerTest, DimensionToken) {
   TEST_TOKENS("4e3e2", Dimension(kNumberValueType, 4000, "e2"));
   TEST_TOKENS("0x10px", Dimension(kIntegerValueType, 0, "x10px"));
   TEST_TOKENS("4unit ", Dimension(kIntegerValueType, 4, "unit"), Whitespace());
+  TEST_TOKENS(String(base::span_from_cstring("1-\0")),
+              Dimension(kIntegerValueType, 1, "-" + FromUChar32(0xFFFD)));
   TEST_TOKENS("5e+", Dimension(kIntegerValueType, 5, "e"), Delim('+'));
   TEST_TOKENS("2e.5", Dimension(kIntegerValueType, 2, "e"),
               Number(kNumberValueType, 0.5, kNoSign));
