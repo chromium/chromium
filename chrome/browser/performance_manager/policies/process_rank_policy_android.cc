@@ -357,10 +357,6 @@ void ProcessRankPolicyAndroid::UpdateProcessRank(const PageNode* page_node) {
   if (importance >= content::ChildProcessImportance::NOT_PERCEPTIBLE) {
     if (is_not_perceptible_importance_supported_) {
       subframe_importance = content::ChildProcessImportance::NOT_PERCEPTIBLE;
-    } else if (base::FeatureList::IsEnabled(
-                   chrome::android::kProtectedTabsAndroid) &&
-               chrome::android::kFallbackToModerateParam.Get()) {
-      subframe_importance = content::ChildProcessImportance::MODERATE;
     }
   }
   web_contents->SetPrimaryPageImportance(importance, subframe_importance);
@@ -393,28 +389,22 @@ content::ChildProcessImportance ProcessRankPolicyAndroid::CalculateRank(
     return content::ChildProcessImportance::MODERATE;
   }
 
-  if (!base::FeatureList::IsEnabled(chrome::android::kProtectedTabsAndroid) ||
-      !is_not_perceptible_importance_supported_) {
+  if (!is_not_perceptible_importance_supported_) {
     const PageLiveStateDecorator::Data* live_state_data =
         PageLiveStateDecorator::Data::FromPageNode(page_node);
     if (live_state_data && live_state_data->IsActiveTab()) {
       return content::ChildProcessImportance::MODERATE;
     }
+    return content::ChildProcessImportance::NORMAL;
   }
 
-  if (base::FeatureList::IsEnabled(chrome::android::kProtectedTabsAndroid)) {
-    DiscardEligibilityPolicy* eligibility_policy =
-        DiscardEligibilityPolicy::GetFromGraph(GetOwningGraph());
-    CHECK(eligibility_policy);
-    if (eligibility_policy->CanDiscard(
-            page_node, DiscardEligibilityPolicy::DiscardReason::PROACTIVE) !=
-        CanDiscardResult::kEligible) {
-      if (is_not_perceptible_importance_supported_) {
-        return content::ChildProcessImportance::NOT_PERCEPTIBLE;
-      } else if (chrome::android::kFallbackToModerateParam.Get()) {
-        return content::ChildProcessImportance::MODERATE;
-      }
-    }
+  DiscardEligibilityPolicy* eligibility_policy =
+      DiscardEligibilityPolicy::GetFromGraph(GetOwningGraph());
+  CHECK(eligibility_policy);
+  if (eligibility_policy->CanDiscard(
+          page_node, DiscardEligibilityPolicy::DiscardReason::PROACTIVE) !=
+      CanDiscardResult::kEligible) {
+    return content::ChildProcessImportance::NOT_PERCEPTIBLE;
   }
 
   return content::ChildProcessImportance::NORMAL;

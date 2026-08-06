@@ -8423,15 +8423,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "protected-tabs-android",
-    "owners": [
-      "kawasin@google.com",
-      "davidriley@google.com",
-      "clank-performance-team@google.com"
-    ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "pull-to-refresh",
     "owners": [ "afakhry@chromium.org", "tclaiborne@chromium.org" ],
     "expiry_milestone": 99

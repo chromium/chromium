@@ -323,16 +323,12 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostCreateThreads() {
 
   g_browser_process->profile_manager()->AddObserver(this);
 
-#if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(chrome::android::kProtectedTabsAndroid)) {
-    // performance_manager::policies::DiscardEligibilityPolicy requires
-    // performance_manager::user_tuning::ProfileDiscardOptOutListHelper.
-    profile_discard_opt_out_list_helper_ = std::make_unique<
-        performance_manager::user_tuning::ProfileDiscardOptOutListHelper>();
-  }
-#else
+  // performance_manager::policies::DiscardEligibilityPolicy requires
+  // performance_manager::user_tuning::ProfileDiscardOptOutListHelper.
   profile_discard_opt_out_list_helper_ = std::make_unique<
       performance_manager::user_tuning::ProfileDiscardOptOutListHelper>();
+
+#if !BUILDFLAG(IS_ANDROID)
 
   // Only create the per-origin force foreground priority list helper if the
   // policy to force foreground priority for all tabs is disabled. If that
