@@ -60,8 +60,13 @@ class SodaSpeechRecognitionEngineImplTest
   void FillRecognitionExpectResults(
       std::vector<media::mojom::WebSpeechRecognitionResultPtr>& results,
       const char* transcription,
-      bool is_final);
-  void SendSpeechResult(const char* result, bool is_final);
+      bool is_final,
+      std::optional<base::TimeDelta> audio_start_time = std::nullopt,
+      std::optional<base::TimeDelta> audio_end_time = std::nullopt);
+  void SendSpeechResult(
+      const char* result,
+      bool is_final,
+      std::optional<media::TimingInformation> timing_info = std::nullopt);
   void SendTranscriptionError();
   void ExpectResultsReceived(
       const std::vector<media::mojom::WebSpeechRecognitionResultPtr>& results);
@@ -163,10 +168,14 @@ void SodaSpeechRecognitionEngineImplTest::SendDummyAudioChunk() {
 void SodaSpeechRecognitionEngineImplTest::FillRecognitionExpectResults(
     std::vector<media::mojom::WebSpeechRecognitionResultPtr>& results,
     const char* transcription,
-    bool is_final) {
+    bool is_final,
+    std::optional<base::TimeDelta> audio_start_time,
+    std::optional<base::TimeDelta> audio_end_time) {
   results.push_back(media::mojom::WebSpeechRecognitionResult::New());
   media::mojom::WebSpeechRecognitionResultPtr& result = results.back();
   result->is_provisional = !is_final;
+  result->audio_start_time = audio_start_time;
+  result->audio_end_time = audio_end_time;
 
   media::mojom::SpeechRecognitionHypothesisPtr hypothesis =
       media::mojom::SpeechRecognitionHypothesis::New();
@@ -175,11 +184,13 @@ void SodaSpeechRecognitionEngineImplTest::FillRecognitionExpectResults(
   result->hypotheses.push_back(std::move(hypothesis));
 }
 
-void SodaSpeechRecognitionEngineImplTest::SendSpeechResult(const char* result,
-                                                           bool is_final) {
+void SodaSpeechRecognitionEngineImplTest::SendSpeechResult(
+    const char* result,
+    bool is_final,
+    std::optional<media::TimingInformation> timing_info) {
   base::RunLoop loop;
   mock_service_->SendSpeechRecognitionResult(
-      media::SpeechRecognitionResult(result, is_final));
+      media::SpeechRecognitionResult(result, is_final, std::move(timing_info)));
   loop.RunUntilIdle();
 }
 
@@ -208,6 +219,10 @@ bool SodaSpeechRecognitionEngineImplTest::ResultsAreEqual(
   for (; it_a != a.end() && it_b != b.end(); ++it_a, ++it_b) {
     if ((*it_a)->is_provisional != (*it_b)->is_provisional ||
         (*it_a)->hypotheses.size() != (*it_b)->hypotheses.size()) {
+      return false;
+    }
+    if ((*it_a)->audio_start_time != (*it_b)->audio_start_time ||
+        (*it_a)->audio_end_time != (*it_b)->audio_end_time) {
       return false;
     }
     for (size_t i = 0; i < (*it_a)->hypotheses.size(); ++i) {
@@ -362,6 +377,35 @@ TEST_F(SodaSpeechRecognitionEngineImplTest, UpdateRecognitionContext) {
   EXPECT_CALL(*mock_service_, UpdateRecognitionContext(context));
   client_under_test_->UpdateRecognitionContext(context);
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(SodaSpeechRecognitionEngineImplTest,
+       SpeechRecognitionResultsWithTiming) {
+  SpeechRecognitionSessionConfig config;
+  client_under_test_ = CreateSpeechRecognition(
+      config, fake_speech_recognition_mgr_delegate_.get(), true);
+  ASSERT_TRUE(client_under_test_->Initialize());
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(recognition_ready_);
+
+  EXPECT_CALL(*mock_service_, SendAudioToSpeechRecognitionService(_, _))
+      .Times(1);
+
+  client_under_test_->StartRecognition();
+  SendDummyAudioChunk();
+
+  media::TimingInformation timing_info;
+  timing_info.audio_start_time = base::Seconds(1);
+  timing_info.audio_end_time = base::Seconds(3);
+
+  std::vector<media::mojom::WebSpeechRecognitionResultPtr> expected_results;
+  FillRecognitionExpectResults(expected_results, kFirstSpeechResult, false,
+                               timing_info.audio_start_time,
+                               timing_info.audio_end_time);
+
+  SendSpeechResult(kFirstSpeechResult, /*is_final=*/false, timing_info);
+
+  ExpectResultsReceived(expected_results);
 }
 
 }  // namespace content
