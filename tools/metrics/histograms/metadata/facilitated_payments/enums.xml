@@ -113,6 +113,7 @@ reviewer.
 
 <enum name="FacilitatedPayments.EwalletNewAccountLinkingFlowExitedReason">
   <int value="0" label="No supported eWallet creation option"/>
+  <int value="1" label="Multiple supported eWallet creation options found"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:EwalletNewAccountLinkingFlowExitedReason) -->

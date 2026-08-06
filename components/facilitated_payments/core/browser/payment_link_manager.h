@@ -33,10 +33,6 @@ namespace optimization_guide {
 class OptimizationGuideDecider;
 }
 
-namespace autofill {
-class Ewallet;
-}
-
 namespace payments::facilitated {
 
 // The different types of FOP that can be selected by the user.
@@ -69,9 +65,10 @@ struct SelectedFopData {
   const std::string activity_name;
 };
 
+enum class AvailableEwalletsConfiguration;
+class EwalletAccountLinkingManager;
 class FacilitatedPaymentsClient;
 class FacilitatedPaymentsInitiatePaymentResponseDetails;
-enum class AvailableEwalletsConfiguration;
 
 // A cross-platform interface that manages the push payment flow triggered by
 // payment links. It is owned by `FacilitatedPaymentsDriver`.
@@ -105,6 +102,8 @@ class PaymentLinkManager {
 
   // Determines and populates the list of supported eWallets for a payment link.
   void RetrieveSupportedEwallets(const GURL& payment_link_url);
+
+  void TriggerEwalletAccountLinkingFlow();
 
   // Performs various specific pre-checks for the A2A flow.
   bool CanTriggerAppPaymentFlow(const GURL& page_url);
@@ -260,6 +259,10 @@ class PaymentLinkManager {
 
   // Strike database used to check whether to prompt the FOP selector or not.
   std::unique_ptr<PaymentLinkSuggestionStrikeDatabase> strike_database_;
+
+  // Manages the new account linking flow for unlinked eWallets.
+  std::unique_ptr<EwalletAccountLinkingManager>
+      ewallet_account_linking_manager_;
 
   base::WeakPtrFactory<PaymentLinkManager> weak_ptr_factory_{this};
 };

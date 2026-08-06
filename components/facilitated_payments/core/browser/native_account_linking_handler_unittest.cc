@@ -30,6 +30,7 @@ using ::testing::Return;
 
 class TestNativeAccountLinkingHandler : public NativeAccountLinkingHandler {
  public:
+  using NativeAccountLinkingHandler::FetchClientToken;
   using NativeAccountLinkingHandler::InitiateAccountLinkingNetworkCall;
   using NativeAccountLinkingHandler::ShowAccountLinkingPrompt;
 

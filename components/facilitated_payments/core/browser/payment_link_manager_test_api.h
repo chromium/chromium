@@ -47,6 +47,11 @@ class PaymentLinkManagerTestApi {
     payment_link_manager_->is_payment_app_available_ = is_payment_app_available;
   }
 
+  void set_api_client_creator(
+      FacilitatedPaymentsApiClientCreator api_client_creator) {
+    payment_link_manager_->api_client_creator_ = std::move(api_client_creator);
+  }
+
   bool is_device_bound() {
     return payment_link_manager_->is_device_bound_for_logging_;
   }

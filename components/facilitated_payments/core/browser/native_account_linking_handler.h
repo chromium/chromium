@@ -38,9 +38,6 @@ class NativeAccountLinkingHandler {
   NativeAccountLinkingHandler& operator=(const NativeAccountLinkingHandler&) =
       delete;
 
-  // Starts fetching the client token from GMSCore.
-  void FetchClientToken();
-
   // Called when the user accepts the account linking prompt.
   virtual void OnAccepted();
 
@@ -55,6 +52,8 @@ class NativeAccountLinkingHandler {
   virtual void DismissPrompt();
 
  protected:
+  // Starts fetching the client token from GMSCore.
+  void FetchClientToken();
   // Virtual hook for subclasses to provide specific prompt configuration data.
   // Return std::nullopt to prevent the generic prompt from showing (useful
   // for subclasses that manage their own UI flows entirely).

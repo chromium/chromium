@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "components/autofill/core/browser/data_model/payments/ewallet.h"
 #include "components/facilitated_payments/core/browser/account_linking_result.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/native_account_linking_handler.h"
@@ -24,8 +25,18 @@ class EwalletAccountLinkingManager : public NativeAccountLinkingHandler {
  public:
   EwalletAccountLinkingManager(
       FacilitatedPaymentsClient* client,
-      FacilitatedPaymentsApiClientCreator api_client_creator);
+      FacilitatedPaymentsApiClientCreator api_client_creator,
+      const autofill::Ewallet& ewallet_creation_option);
   ~EwalletAccountLinkingManager() override;
+
+  // Gracefully handles UI teardown and cancels any pending async network
+  // callbacks (e.g., GetDetailsForCreatePaymentInstrument) to prevent crashes.
+  // Must be explicitly called before destroying the manager or restarting
+  // a new account linking flow to ensure any active UI prompts are dismissed.
+  void DismissAndCancel();
+
+  // Kicks off the asynchronous account linking network flow.
+  void TriggerAccountLinking();
 
   EwalletAccountLinkingManager(const EwalletAccountLinkingManager&) = delete;
   EwalletAccountLinkingManager& operator=(const EwalletAccountLinkingManager&) =
@@ -47,6 +58,8 @@ class EwalletAccountLinkingManager : public NativeAccountLinkingHandler {
   base::WeakPtr<NativeAccountLinkingHandler> GetWeakPtr() override;
 
  private:
+  const autofill::Ewallet ewallet_creation_option_;
+
   base::WeakPtrFactory<EwalletAccountLinkingManager> weak_ptr_factory_{this};
 };
 

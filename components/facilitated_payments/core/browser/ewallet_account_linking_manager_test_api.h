@@ -43,6 +43,10 @@ class EwalletAccountLinkingManagerTestApi {
     return manager_->GetHistogramSuffix();
   }
 
+  base::WeakPtr<NativeAccountLinkingHandler> GetWeakPtr() {
+    return manager_->GetWeakPtr();
+  }
+
  private:
   const raw_ptr<EwalletAccountLinkingManager> manager_;
 };

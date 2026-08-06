@@ -26,10 +26,17 @@ class EwalletAccountLinkingManagerTest : public testing::Test {
  public:
   EwalletAccountLinkingManagerTest() {
     manager_ = std::make_unique<EwalletAccountLinkingManager>(
-        &client_, /*api_client_creator=*/base::BindRepeating(
+        &client_, /*api_client_creator=*/
+        base::BindRepeating(
             []() -> std::unique_ptr<FacilitatedPaymentsApiClient> {
               return nullptr;
-            }));
+            }),
+        autofill::Ewallet(/*instrument_id=*/0, /*nickname=*/u"",
+                          /*display_icon_url=*/GURL(),
+                          /*ewallet_name=*/u"eWallet",
+                          /*account_display_name=*/u"",
+                          /*supported_payment_link_uris=*/{},
+                          /*is_fido_enrolled=*/false));
 
     payments_network_interface_ =
         std::make_unique<MockFacilitatedPaymentsNetworkInterface>(
@@ -182,6 +189,23 @@ TEST_F(EwalletAccountLinkingManagerTest, CreateAccountLinkingParams) {
   EXPECT_EQ(params->fop_type, FacilitatedPaymentsType::kEwallet);
   EXPECT_EQ(params->fop_display_name, u"eWallet");
   EXPECT_EQ(params->strike_count, 0);
+}
+
+TEST_F(EwalletAccountLinkingManagerTest, DismissAndCancel_InvalidatesWeakPtrs) {
+  base::WeakPtr<NativeAccountLinkingHandler> weak_ptr =
+      test_api(*manager_).GetWeakPtr();
+  EXPECT_TRUE(weak_ptr);
+  manager_->DismissAndCancel();
+  EXPECT_FALSE(weak_ptr);
+}
+
+TEST_F(EwalletAccountLinkingManagerTest,
+       DismissAndCancel_DismissesPromptIfShowing) {
+  EXPECT_CALL(client_, ShowAccountLinkingPrompt(_, _, _, _));
+  test_api(*manager_).DoOnGetDetailsForCreatePaymentInstrumentResponse(true);
+
+  EXPECT_CALL(client_, DismissPrompt());
+  manager_->DismissAndCancel();
 }
 
 }  // namespace

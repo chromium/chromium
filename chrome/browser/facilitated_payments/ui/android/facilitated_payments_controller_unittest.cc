@@ -226,8 +226,8 @@ TEST_F(FacilitatedPaymentsControllerTest,
   controller_->ShowAccountLinkingPrompt(
       params, base::DoNothing(), base::DoNothing(), mock_on_dismissed.Get());
 
-  // Second call while the first prompt is still showing should drop the
-  // callbacks entirely and NOT show the prompt again.
+  // Second call while the first prompt is still showing should be dropped
+  // and NOT show the prompt again, nor should it trigger teardown callbacks.
   base::MockCallback<base::OnceCallback<void()>> mock_on_dismissed2;
   EXPECT_CALL(mock_on_dismissed2, Run()).Times(0);
   controller_->ShowAccountLinkingPrompt(

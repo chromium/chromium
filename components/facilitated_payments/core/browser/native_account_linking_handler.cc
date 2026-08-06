@@ -26,16 +26,6 @@ NativeAccountLinkingHandler::NativeAccountLinkingHandler(
 
 NativeAccountLinkingHandler::~NativeAccountLinkingHandler() = default;
 
-void NativeAccountLinkingHandler::FetchClientToken() {
-  if (!GetApiClient()) {
-    OnAccountLinkingResult(AccountLinkingResult{});
-    return;
-  }
-  GetApiClient()->GetClientToken(
-      base::BindOnce(&NativeAccountLinkingHandler::OnClientTokenReceived,
-                     GetWeakPtr(), base::TimeTicks::Now()));
-}
-
 void NativeAccountLinkingHandler::OnClientTokenReceived(
     base::TimeTicks start_time,
     std::vector<uint8_t> client_token) {
@@ -97,6 +87,16 @@ void NativeAccountLinkingHandler::InvokeInstrumentManager(
       primary_account, action_token,
       base::BindOnce(&NativeAccountLinkingHandler::OnAccountLinkingResult,
                      GetWeakPtr()));
+}
+
+void NativeAccountLinkingHandler::FetchClientToken() {
+  if (!GetApiClient()) {
+    OnAccountLinkingResult(AccountLinkingResult{});
+    return;
+  }
+  GetApiClient()->GetClientToken(
+      base::BindOnce(&NativeAccountLinkingHandler::OnClientTokenReceived,
+                     GetWeakPtr(), base::TimeTicks::Now()));
 }
 
 void NativeAccountLinkingHandler::ShowAccountLinkingPrompt() {
