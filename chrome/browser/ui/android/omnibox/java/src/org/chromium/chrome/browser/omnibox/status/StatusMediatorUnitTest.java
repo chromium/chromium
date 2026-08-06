@@ -66,6 +66,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxSta
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator.PageInfoAction;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.omnibox.status.StatusView.IconTransitionType;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -139,6 +140,7 @@ public final class StatusMediatorUnitTest {
     private ArgumentCaptor<org.chromium.base.Callback<StatusIconResource>> mFaviconCallbackCaptor;
 
     private Context mContext;
+    private OmniboxResourceProvider mResourceProvider;
     private PropertyModel mModel;
     private StatusMediator mMediator;
     private WindowAndroid mWindowAndroid;
@@ -180,10 +182,12 @@ public final class StatusMediatorUnitTest {
         mContext =
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
+        mResourceProvider = new OmniboxResourceProvider(mContext, BrandedColorScheme.APP_DEFAULT);
         mWindowAndroid = new WindowAndroid(mContext, /* occlusionTrackingAllowed= */ false);
         mModel = new PropertyModel(StatusProperties.ALL_KEYS);
         mMediator =
                 new StatusMediator(
+                        mResourceProvider,
                         mModel,
                         mContext,
                         mLocationBarDataProvider,
@@ -430,6 +434,7 @@ public final class StatusMediatorUnitTest {
                 "Incorrect color for paint preview status text",
                 MaterialColors.getColor(mContext, R.attr.colorPrimary, TAG),
                 mModel.get(StatusProperties.VERBOSE_STATUS_TEXT_COLOR));
+        mResourceProvider.setBrandedColorScheme(BrandedColorScheme.LIGHT_BRANDED_THEME);
         mMediator.setBrandedColorScheme(BrandedColorScheme.LIGHT_BRANDED_THEME);
         assertEquals(
                 "Incorrect color for paint preview status text",
@@ -440,6 +445,7 @@ public final class StatusMediatorUnitTest {
 
         // When only offline is enabled, it should be shown.
         mMediator.updateVerboseStatus(ConnectionSecurityLevel.SECURE, true, false);
+        mResourceProvider.setBrandedColorScheme(BrandedColorScheme.DARK_BRANDED_THEME);
         mMediator.setBrandedColorScheme(BrandedColorScheme.DARK_BRANDED_THEME);
         assertEquals(
                 "Incorrect text for offline page status text",
@@ -449,6 +455,7 @@ public final class StatusMediatorUnitTest {
                 "Incorrect color for offline page status text",
                 mContext.getColor(R.color.locationbar_status_offline_color_light),
                 mModel.get(StatusProperties.VERBOSE_STATUS_TEXT_COLOR));
+        mResourceProvider.setBrandedColorScheme(BrandedColorScheme.LIGHT_BRANDED_THEME);
         mMediator.setBrandedColorScheme(BrandedColorScheme.LIGHT_BRANDED_THEME);
         assertEquals(
                 "Incorrect color for offline page status text",

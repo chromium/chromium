@@ -92,6 +92,7 @@ public class StatusMediator
     private final OneshotSupplier<TemplateUrlService> mTemplateUrlServiceSupplier;
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private final Context mContext;
+    private final OmniboxResourceProvider mResourceProvider;
     private final LocationBarDataProvider mLocationBarDataProvider;
     private final PermissionStatusHandler mPermissionStatusHandler;
     private final Handler mIconTaskHandler = new Handler();
@@ -144,6 +145,7 @@ public class StatusMediator
     private @DrawableRes int mStatusIconOverrideResId = Resources.ID_NULL;
 
     /**
+     * @param resourceProvider Provides omnibox-specific resources.
      * @param model The {@link PropertyModel} for this mediator.
      * @param context The {@link Context} for this Status component.
      * @param locationBarDataProvider Provides data to the location bar.
@@ -159,6 +161,7 @@ public class StatusMediator
      * @param previewMatchUrlSupplier Holds the url of a preview match, null otherwise.
      */
     public StatusMediator(
+            OmniboxResourceProvider resourceProvider,
             PropertyModel model,
             Context context,
             LocationBarDataProvider locationBarDataProvider,
@@ -172,6 +175,7 @@ public class StatusMediator
             NonNullObservableSupplier<Integer> fuseboxLayoutModeSupplier,
             Runnable onPlusButtonClicked) {
         mContext = context;
+        mResourceProvider = resourceProvider;
         initBackgroundDrawables(context);
         mModel = model;
         mModel.set(StatusProperties.USE_WIDE_STATUS_ICON, false);
@@ -485,8 +489,7 @@ public class StatusMediator
 
     /** Update color theme for all status components. */
     private void updateColorTheme() {
-        final @ColorInt int separatorColor =
-                OmniboxResourceProvider.getStatusSeparatorColor(mContext, mBrandedColorScheme);
+        final @ColorInt int separatorColor = mResourceProvider.getStatusSeparatorColor();
         mModel.set(StatusProperties.SEPARATOR_COLOR, separatorColor);
         mNavigationIconTintRes = ThemeUtils.getThemedToolbarIconTintRes(mBrandedColorScheme);
 
@@ -500,10 +503,10 @@ public class StatusMediator
 
     private @ColorInt int getTextColor() {
         if (mPageIsPaintPreview) {
-            return OmniboxResourceProvider.getStatusPreviewTextColor(mContext, mBrandedColorScheme);
+            return mResourceProvider.getStatusPreviewTextColor();
         }
         if (mPageIsOffline) {
-            return OmniboxResourceProvider.getStatusOfflineTextColor(mContext, mBrandedColorScheme);
+            return mResourceProvider.getStatusOfflineTextColor();
         }
         return 0;
     }

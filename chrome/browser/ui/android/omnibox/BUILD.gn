@@ -554,7 +554,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/omnibox/status/SiteControlsIphControllerUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/status/StatusMediatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/styles/OmniboxImageSupplierUnitTest.java",
-    "java/src/org/chromium/chrome/browser/omnibox/styles/OmniboxResourceProviderTest.java",
+    "java/src/org/chromium/chrome/browser/omnibox/styles/OmniboxResourceProviderUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/styles/ResourceCacheUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/styles/SuggestionSpannableUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/AutocompleteCoordinatorUnitTest.java",

@@ -284,31 +284,52 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         return getSuggestionUrlTextColor(mContext, getBrandedColorScheme());
     }
 
-    /**
-     * Get status separator color.
-     *
-     * @see #getStatusSeparatorColor(Context, ...)
-     */
+    /** Get status separator color. */
     public @ColorInt int getStatusSeparatorColor() {
-        return getStatusSeparatorColor(mContext, getBrandedColorScheme());
+        @ColorRes
+        int res =
+                switch (mBrandedColorScheme) {
+                    case BrandedColorScheme.LIGHT_BRANDED_THEME ->
+                            R.color.locationbar_status_separator_color_dark;
+                    case BrandedColorScheme.DARK_BRANDED_THEME ->
+                            R.color.locationbar_status_separator_color_light;
+                    case BrandedColorScheme.INCOGNITO ->
+                            R.color.locationbar_status_separator_color_incognito;
+                    default -> 0;
+                };
+        return res != 0 ? mCache.getColor(res) : mCache.getColorAttr(R.attr.colorOutline);
     }
 
-    /**
-     * Get status preview text color.
-     *
-     * @see #getStatusPreviewTextColor(Context, ...)
-     */
+    /** Get status preview text color. */
     public @ColorInt int getStatusPreviewTextColor() {
-        return getStatusPreviewTextColor(mContext, getBrandedColorScheme());
+        @ColorRes
+        int res =
+                switch (mBrandedColorScheme) {
+                    case BrandedColorScheme.LIGHT_BRANDED_THEME ->
+                            R.color.locationbar_status_preview_color_dark;
+                    case BrandedColorScheme.DARK_BRANDED_THEME ->
+                            R.color.locationbar_status_preview_color_light;
+                    case BrandedColorScheme.INCOGNITO ->
+                            R.color.locationbar_status_preview_color_incognito;
+                    default -> 0;
+                };
+        return res != 0 ? mCache.getColor(res) : mCache.getColorAttr(R.attr.colorPrimary);
     }
 
-    /**
-     * Get status offline text color.
-     *
-     * @see #getStatusOfflineTextColor(Context, ...)
-     */
+    /** Get status offline text color. */
     public @ColorInt int getStatusOfflineTextColor() {
-        return getStatusOfflineTextColor(mContext, getBrandedColorScheme());
+        @ColorRes
+        int res =
+                switch (mBrandedColorScheme) {
+                    case BrandedColorScheme.LIGHT_BRANDED_THEME ->
+                            R.color.locationbar_status_offline_color_dark;
+                    case BrandedColorScheme.DARK_BRANDED_THEME ->
+                            R.color.locationbar_status_offline_color_light;
+                    case BrandedColorScheme.INCOGNITO ->
+                            R.color.locationbar_status_offline_color_incognito;
+                    default -> R.color.default_text_color_secondary_list;
+                };
+        return mCache.getColor(res);
     }
 
     /**
@@ -959,69 +980,6 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
                         ? context.getColor(R.color.suggestion_url_color_incognito)
                         : SemanticColorUtils.getDefaultTextColorLink(context);
         return color;
-    }
-
-    /**
-     * Returns the separator line color for the status view.
-     *
-     * @param context The context to retrieve the resources from.
-     * @param brandedColorScheme The {@link BrandedColorScheme}.
-     * @return Status view separator color.
-     */
-    public static @ColorInt int getStatusSeparatorColor(
-            Context context, @BrandedColorScheme int brandedColorScheme) {
-        if (brandedColorScheme == BrandedColorScheme.LIGHT_BRANDED_THEME) {
-            return context.getColor(R.color.locationbar_status_separator_color_dark);
-        }
-        if (brandedColorScheme == BrandedColorScheme.DARK_BRANDED_THEME) {
-            return context.getColor(R.color.locationbar_status_separator_color_light);
-        }
-        if (brandedColorScheme == BrandedColorScheme.INCOGNITO) {
-            return context.getColor(R.color.locationbar_status_separator_color_incognito);
-        }
-        return MaterialColors.getColor(context, R.attr.colorOutline, TAG);
-    }
-
-    /**
-     * Returns the preview text color for the status view.
-     *
-     * @param context The context to retrieve the resources from.
-     * @param brandedColorScheme The {@link BrandedColorScheme}.
-     * @return Status view preview text color.
-     */
-    public static @ColorInt int getStatusPreviewTextColor(
-            Context context, @BrandedColorScheme int brandedColorScheme) {
-        if (brandedColorScheme == BrandedColorScheme.LIGHT_BRANDED_THEME) {
-            return context.getColor(R.color.locationbar_status_preview_color_dark);
-        }
-        if (brandedColorScheme == BrandedColorScheme.DARK_BRANDED_THEME) {
-            return context.getColor(R.color.locationbar_status_preview_color_light);
-        }
-        if (brandedColorScheme == BrandedColorScheme.INCOGNITO) {
-            return context.getColor(R.color.locationbar_status_preview_color_incognito);
-        }
-        return MaterialColors.getColor(context, R.attr.colorPrimary, TAG);
-    }
-
-    /**
-     * Returns the offline text color for the status view.
-     *
-     * @param context The context to retrieve the resources from.
-     * @param brandedColorScheme The {@link BrandedColorScheme}.
-     * @return Status view offline text color.
-     */
-    public static @ColorInt int getStatusOfflineTextColor(
-            Context context, @BrandedColorScheme int brandedColorScheme) {
-        if (brandedColorScheme == BrandedColorScheme.LIGHT_BRANDED_THEME) {
-            return context.getColor(R.color.locationbar_status_offline_color_dark);
-        }
-        if (brandedColorScheme == BrandedColorScheme.DARK_BRANDED_THEME) {
-            return context.getColor(R.color.locationbar_status_offline_color_light);
-        }
-        if (brandedColorScheme == BrandedColorScheme.INCOGNITO) {
-            return context.getColor(R.color.locationbar_status_offline_color_incognito);
-        }
-        return context.getColor(R.color.default_text_color_secondary_list);
     }
 
     /** Returns the background color for suggestions in the given color scheme and context. */

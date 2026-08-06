@@ -464,6 +464,7 @@ public class LocationBarCoordinator
         StatusView statusView = mLocationBarLayout.findViewById(R.id.location_bar_status);
         mStatusCoordinator =
                 new StatusCoordinator(
+                        mResourceProvider,
                         isTabletWindow(),
                         statusView,
                         locationBarDataProvider,

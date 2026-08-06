@@ -41,12 +41,13 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /** Tests for {@link OmniboxResourceProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class OmniboxResourceProviderTest {
+public class OmniboxResourceProviderUnitTest {
     private static final String TAG = "ORPTest";
 
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
     private @ColorInt int mDefaultColor;
     private Context mContext;
+    private OmniboxResourceProvider mProvider;
 
     @Before
     public void setUp() {
@@ -56,6 +57,7 @@ public class OmniboxResourceProviderTest {
                                 ContextUtils.getApplicationContext(),
                                 R.style.Theme_BrowserUI_DayNight));
         mDefaultColor = ChromeColors.getDefaultThemeColor(mContext, /* isIncognito= */ false);
+        mProvider = new OmniboxResourceProvider(mContext, BrandedColorScheme.APP_DEFAULT);
     }
 
     @Test
@@ -307,26 +309,26 @@ public class OmniboxResourceProviderTest {
                 mContext.getColor(R.color.locationbar_status_separator_color_incognito);
         final int defaultColor = MaterialColors.getColor(mContext, R.attr.colorOutline, TAG);
 
+        mProvider.setBrandedColorScheme(BrandedColorScheme.LIGHT_BRANDED_THEME);
         assertEquals(
                 "Wrong status separator color for LIGHT_THEME.",
                 darkColor,
-                OmniboxResourceProvider.getStatusSeparatorColor(
-                        mContext, BrandedColorScheme.LIGHT_BRANDED_THEME));
+                mProvider.getStatusSeparatorColor());
+        mProvider.setBrandedColorScheme(BrandedColorScheme.DARK_BRANDED_THEME);
         assertEquals(
                 "Wrong status separator color for DARK_THEME.",
                 lightColor,
-                OmniboxResourceProvider.getStatusSeparatorColor(
-                        mContext, BrandedColorScheme.DARK_BRANDED_THEME));
+                mProvider.getStatusSeparatorColor());
+        mProvider.setBrandedColorScheme(BrandedColorScheme.INCOGNITO);
         assertEquals(
                 "Wrong status separator color for INCOGNITO.",
                 incognitoColor,
-                OmniboxResourceProvider.getStatusSeparatorColor(
-                        mContext, BrandedColorScheme.INCOGNITO));
+                mProvider.getStatusSeparatorColor());
+        mProvider.setBrandedColorScheme(BrandedColorScheme.APP_DEFAULT);
         assertEquals(
                 "Wrong status separator color for DEFAULT.",
                 defaultColor,
-                OmniboxResourceProvider.getStatusSeparatorColor(
-                        mContext, BrandedColorScheme.APP_DEFAULT));
+                mProvider.getStatusSeparatorColor());
     }
 
     @Test
@@ -337,26 +339,26 @@ public class OmniboxResourceProviderTest {
                 mContext.getColor(R.color.locationbar_status_preview_color_incognito);
         final int defaultColor = MaterialColors.getColor(mContext, R.attr.colorPrimary, TAG);
 
+        mProvider.setBrandedColorScheme(BrandedColorScheme.LIGHT_BRANDED_THEME);
         assertEquals(
                 "Wrong status preview text color for LIGHT_THEME.",
                 darkColor,
-                OmniboxResourceProvider.getStatusPreviewTextColor(
-                        mContext, BrandedColorScheme.LIGHT_BRANDED_THEME));
+                mProvider.getStatusPreviewTextColor());
+        mProvider.setBrandedColorScheme(BrandedColorScheme.DARK_BRANDED_THEME);
         assertEquals(
                 "Wrong status preview text color for DARK_THEME.",
                 lightColor,
-                OmniboxResourceProvider.getStatusPreviewTextColor(
-                        mContext, BrandedColorScheme.DARK_BRANDED_THEME));
+                mProvider.getStatusPreviewTextColor());
+        mProvider.setBrandedColorScheme(BrandedColorScheme.INCOGNITO);
         assertEquals(
                 "Wrong status preview text color for INCOGNITO.",
                 incognitoColor,
-                OmniboxResourceProvider.getStatusPreviewTextColor(
-                        mContext, BrandedColorScheme.INCOGNITO));
+                mProvider.getStatusPreviewTextColor());
+        mProvider.setBrandedColorScheme(BrandedColorScheme.APP_DEFAULT);
         assertEquals(
                 "Wrong status preview text color for DEFAULT.",
                 defaultColor,
-                OmniboxResourceProvider.getStatusPreviewTextColor(
-                        mContext, BrandedColorScheme.APP_DEFAULT));
+                mProvider.getStatusPreviewTextColor());
     }
 
     @Test
@@ -368,26 +370,26 @@ public class OmniboxResourceProviderTest {
         final int defaultColor =
                 MaterialColors.getColor(mContext, R.attr.colorOnSurfaceVariant, TAG);
 
+        mProvider.setBrandedColorScheme(BrandedColorScheme.LIGHT_BRANDED_THEME);
         assertEquals(
                 "Wrong status offline text color for LIGHT_THEME.",
                 darkColor,
-                OmniboxResourceProvider.getStatusOfflineTextColor(
-                        mContext, BrandedColorScheme.LIGHT_BRANDED_THEME));
+                mProvider.getStatusOfflineTextColor());
+        mProvider.setBrandedColorScheme(BrandedColorScheme.DARK_BRANDED_THEME);
         assertEquals(
                 "Wrong status offline text color for DARK_THEME.",
                 lightColor,
-                OmniboxResourceProvider.getStatusOfflineTextColor(
-                        mContext, BrandedColorScheme.DARK_BRANDED_THEME));
+                mProvider.getStatusOfflineTextColor());
+        mProvider.setBrandedColorScheme(BrandedColorScheme.INCOGNITO);
         assertEquals(
                 "Wrong status offline text color for INCOGNITO.",
                 incognitoColor,
-                OmniboxResourceProvider.getStatusOfflineTextColor(
-                        mContext, BrandedColorScheme.INCOGNITO));
+                mProvider.getStatusOfflineTextColor());
+        mProvider.setBrandedColorScheme(BrandedColorScheme.APP_DEFAULT);
         assertEquals(
                 "Wrong status offline text color for DEFAULT.",
                 defaultColor,
-                OmniboxResourceProvider.getStatusOfflineTextColor(
-                        mContext, BrandedColorScheme.APP_DEFAULT));
+                mProvider.getStatusOfflineTextColor());
     }
 
     @Test
