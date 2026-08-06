@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {Action, AutocompleteMatch, AutocompleteResult, OmniboxPopupSelection} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {KeywordType, SelectionDirection, SelectionLineState, SelectionStep} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
@@ -80,10 +81,10 @@ type Constructor<T> = new (...args: any[]) => T;
 type AbstractConstructor<T> = abstract new (...args: any[]) => T;
 
 export interface SearchboxSelectionMixinInterface {
-  get isAimButtonVisible(): boolean;
-  get showContextEntrypoint(): boolean;
+  isAimButtonVisible: boolean;
+  showContextEntrypoint: boolean;
 
-  get selection(): OmniboxPopupSelection;
+  selection: OmniboxPopupSelection;
   setSelection(selection: OmniboxPopupSelection): void;
 
   getAvailableSelections(result: AutocompleteResult|null):
@@ -93,16 +94,21 @@ export interface SearchboxSelectionMixinInterface {
       result: AutocompleteResult|null, from: OmniboxPopupSelection,
       direction: SelectionDirection,
       step: SelectionStep): OmniboxPopupSelection;
+
+  onSelectionChanged(e: CustomEvent<{value: OmniboxPopupSelection}>): void;
+  isAiModeVirtualFocused(): boolean;
 }
 
-export const SearchboxSelectionMixin = <T extends Constructor<HTMLElement>>(
+export type SearchboxSelectionMixinBase = CrLitElement;
+
+export const SearchboxSelectionMixin = <
+    T extends Constructor<SearchboxSelectionMixinBase>>(
     superClass: T): T&AbstractConstructor<SearchboxSelectionMixinInterface> => {
   abstract class SearchboxSelectionMixin extends superClass implements
       SearchboxSelectionMixinInterface {
     private selection_: OmniboxPopupSelection = kDefaultSelection;
 
     abstract get isAimButtonVisible(): boolean;
-
     abstract get showContextEntrypoint(): boolean;
 
     get selection(): OmniboxPopupSelection {
@@ -110,7 +116,22 @@ export const SearchboxSelectionMixin = <T extends Constructor<HTMLElement>>(
     }
 
     setSelection(selection: OmniboxPopupSelection) {
+      if (selectionsEqual(this.selection_, selection)) {
+        return;
+      }
+
+      const oldSelection = this.selection_;
       this.selection_ = selection;
+
+      this.requestUpdate('selection', oldSelection);
+    }
+
+    onSelectionChanged(e: CustomEvent<{value: OmniboxPopupSelection}>) {
+      this.setSelection(e.detail.value);
+    }
+
+    isAiModeVirtualFocused(): boolean {
+      return this.selection_.state === SelectionLineState.kFocusedButtonAim;
     }
 
     getAvailableSelections(result: AutocompleteResult|null):
