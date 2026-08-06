@@ -195,6 +195,13 @@ void AddWindowClient(
     const base::WeakPtr<ServiceWorkerVersion>& controller,
     std::vector<blink::mojom::ServiceWorkerClientInfoPtr>* clients) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // A client in a privileged WebContents (see //chrome's PrivilegedWebContents)
+  // that forbids service worker control is invisible to service workers: it
+  // cannot be controlled and is not enumerable via Clients.matchAll(), even
+  // with includeUncontrolled.
+  if (service_worker_client.disallows_service_worker_control()) {
+    return;
+  }
   if (!service_worker_client.IsContainerForWindowClient()) {
     return;
   }
@@ -260,6 +267,11 @@ void AddNonWindowClient(
     blink::mojom::ServiceWorkerClientType client_type,
     std::vector<blink::mojom::ServiceWorkerClientInfoPtr>* out_clients) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // A worker client that inherited ineligibility from a privileged WebContents
+  // (see AddWindowClient) is likewise invisible to service workers.
+  if (service_worker_client.disallows_service_worker_control()) {
+    return;
+  }
   if (service_worker_client.GetClientType() ==
       blink::mojom::ServiceWorkerClientType::kWindow) {
     return;

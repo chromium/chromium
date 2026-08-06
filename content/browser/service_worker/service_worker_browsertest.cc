@@ -1196,6 +1196,57 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
       privileged_main->GetLastCommittedServiceWorkerClient()->controller());
 }
 
+// A window client hosted by a privileged WebContents that disallows service
+// worker control is invisible to a same-origin service worker's
+// clients.matchAll({includeUncontrolled: true}); an ordinary same-origin client
+// remains visible.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
+                       PrivilegedWebContentsHiddenFromMatchAll) {
+  StartServerAndNavigateToSetup();
+  const GURL ordinary_url =
+      embedded_test_server()->GetURL("/service_worker/empty.html");
+  const GURL privileged_url =
+      embedded_test_server()->GetURL("/service_worker/empty.html?privileged");
+
+  // An ordinary tab registers a worker that reports window clients, and waits
+  // for it to become active.
+  EXPECT_TRUE(NavigateToURL(shell(), ordinary_url));
+  EXPECT_EQ("ok", EvalJs(shell(), R"(
+    (async () => {
+      await navigator.serviceWorker.register('matchall_windows_worker.js');
+      await navigator.serviceWorker.ready;
+      return 'ok';
+    })()
+  )"));
+
+  // A privileged WebContents at a distinct same-origin, in-scope URL.
+  WebContents::CreateParams params(
+      shell()->web_contents()->GetBrowserContext());
+  WebContents::PrivilegedParams marker;
+  marker.feature_id = 42;
+  marker.disallow_service_worker_control = true;
+  params.privileged_params = marker;
+  std::unique_ptr<WebContents> privileged(WebContents::Create(params));
+  ASSERT_TRUE(NavigateToURL(privileged.get(), privileged_url));
+
+  // Ask the worker to enumerate window clients and report their URLs. The
+  // ordinary client is present; the privileged client is not.
+  const std::string urls = EvalJs(shell(), R"(
+    (async () => {
+      const reg = await navigator.serviceWorker.ready;
+      const list = await new Promise((resolve) => {
+        navigator.serviceWorker.addEventListener(
+            'message', (e) => resolve(e.data), {once: true});
+        reg.active.postMessage('list');
+      });
+      return list.join(',');
+    })()
+  )")
+                               .ExtractString();
+  EXPECT_THAT(urls, ::testing::HasSubstr(ordinary_url.spec()));
+  EXPECT_THAT(urls, ::testing::Not(::testing::HasSubstr("?privileged")));
+}
+
 // A WebContents created with PrivilegedParams
 // (`disallow_service_worker_control`) must not be able to register a service
 // worker or reach a registration; an ordinary WebContents at the same URL still
