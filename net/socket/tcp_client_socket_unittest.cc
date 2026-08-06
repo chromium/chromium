@@ -20,6 +20,9 @@
 #include "base/test/power_monitor_test.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif
 #include "build/build_config.h"
 #include "net/base/features.h"
 #include "net/base/ip_address.h"
@@ -878,6 +881,53 @@ TEST_P(TCPClientSocketTest, SuspendDuringReadAndWrite) {
 }
 
 #endif  // defined(TCP_CLIENT_SOCKET_OBSERVES_SUSPEND)
+
+#if BUILDFLAG(IS_WIN)
+TEST_P(TCPClientSocketTest, ClosedLoopbackPortFailsFast) {
+  if (base::win::GetVersion() < base::win::Version::WIN10_RS3) {
+    GTEST_SKIP() << "Windows 10 RS3 or later is required for this test.";
+  }
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kEnableWindowsTcpLoopbackFastFail);
+
+  // Bind and unbind a socket to find an available, closed port.
+  uint16_t port = 0;
+  {
+    TCPServerSocket server_socket(nullptr, NetLogSource());
+    ASSERT_THAT(server_socket.Listen(IPEndPoint(IPAddress::IPv4Localhost(), 0),
+                                     1, std::nullopt),
+                IsOk());
+    IPEndPoint server_address;
+    ASSERT_THAT(server_socket.GetLocalAddress(&server_address), IsOk());
+    port = server_address.port();
+  }
+
+  IPEndPoint closed_address(IPAddress::IPv4Localhost(), port);
+  TCPClientSocket socket(AddressList(closed_address),
+                         /*socket_performance_watcher=*/nullptr,
+                         /*network_quality_estimator=*/nullptr,
+                         /*net_log=*/nullptr, NetLogSource(),
+                         handles::kInvalidNetworkHandle);
+
+  base::TimeTicks start = base::TimeTicks::Now();
+  TestCompletionCallback connect_callback;
+  int connect_result = socket.Connect(connect_callback.callback());
+  if (connect_result == ERR_IO_PENDING) {
+    connect_result = connect_callback.WaitForResult();
+  }
+  base::TimeTicks end = base::TimeTicks::Now();
+
+  EXPECT_EQ(ERR_CONNECTION_REFUSED, connect_result);
+
+  // A connection to a closed loopback port on Windows shouldn't trigger the
+  // 2-second SYN retransmission timeout. It should fail fast enough that it
+  // doesn't exceed the IPv6 fallback timer (which is what causes the delay in
+  // TransportConnectJob).
+  EXPECT_LT(end - start, net::features::kIPv6FallbackTime.Get());
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 INSTANTIATE_TEST_SUITE_P(Any,
                          TCPClientSocketTest,

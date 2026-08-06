@@ -1026,4 +1026,9 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    &kMaxDelayForBrokenAlternativeService,
                    base::Days(2));
 
+#if BUILDFLAG(IS_WIN)
+BASE_FEATURE(kEnableWindowsTcpLoopbackFastFail,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 }  // namespace net::features

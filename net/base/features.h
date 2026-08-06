@@ -1039,6 +1039,11 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
     base::TimeDelta,
     kMaxDelayForBrokenAlternativeServiceParam);
 
+#if BUILDFLAG(IS_WIN)
+// Disables SYN retransmissions for TCP loopback connections on Windows.
+NET_EXPORT BASE_DECLARE_FEATURE(kEnableWindowsTcpLoopbackFastFail);
+#endif
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

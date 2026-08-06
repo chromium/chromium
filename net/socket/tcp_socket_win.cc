@@ -1052,6 +1052,25 @@ int TCPSocketWin::DoConnect() {
                sizeof(randomize_port));
   }
 
+  // Disable SYN retransmissions for loopback connections.
+  // Windows retransmits the SYN packet multiple times before reporting
+  // an ECONNREFUSED for a closed port, resulting in a ~2s delay.
+  // On a real network, a lost SYN is recoverable, but on loopback
+  // there is no medium to lose a SYN on, so retransmission is pure cost.
+  // See: https://daniel.haxx.se/blog/2024/08/14/slow-tcp-connect-on-windows/
+  if (base::FeatureList::IsEnabled(features::kEnableWindowsTcpLoopbackFastFail) &&
+      peer_address_->address().IsLoopback() &&
+      base::win::GetVersion() >= base::win::Version::WIN10_RS3) {
+    TCP_INITIAL_RTO_PARAMETERS retransmit_ioctl = {0};
+    retransmit_ioctl.Rtt = TCP_INITIAL_RTO_DEFAULT_RTT;
+    retransmit_ioctl.MaxSynRetransmissions =
+        TCP_INITIAL_RTO_NO_SYN_RETRANSMISSIONS;
+    DWORD bytes_returned = 0;
+    WSAIoctl(socket_, SIO_TCP_INITIAL_RTO, &retransmit_ioctl,
+             sizeof(retransmit_ioctl), nullptr, 0, &bytes_returned, nullptr,
+             nullptr);
+  }
+
   if (!connect(socket_, storage.addr(), storage.addr_len)) {
     // Connected without waiting!
     //
