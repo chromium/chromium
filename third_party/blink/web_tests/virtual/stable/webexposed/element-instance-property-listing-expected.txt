@@ -770,6 +770,7 @@ html element input
     property autocomplete
     property checkValidity
     property checked
+    property createValueRange
     property defaultChecked
     property defaultValue
     property dirName
@@ -1117,6 +1118,7 @@ html element textarea
     property autocomplete
     property checkValidity
     property cols
+    property createValueRange
     property defaultValue
     property dirName
     property disabled

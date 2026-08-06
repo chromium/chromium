@@ -4465,10 +4465,10 @@
     {
       // The OpaqueRange interface provides a live AbstractRange subtype
       // for encapsulated content within <textarea> and <input> elements.
-      // crbug.com/421421332
+      // "This can be removed in M155. crbug.com/421421332
       name: "OpaqueRange",
       public: true,
-      status: "experimental",
+      status: "stable",
     },
     {
       // Restrict popover invoker lookup to the same TreeScope as the element.
