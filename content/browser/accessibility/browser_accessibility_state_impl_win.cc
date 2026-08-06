@@ -443,7 +443,8 @@ class BrowserAccessibilityStateImplWin : public BrowserAccessibilityStateImpl {
  private:
   void OnDiscoveredAssistiveTech(
       const std::vector<AssistiveTechInfo>& discovered_ats);
-  void MaybeCreateUiaClientInfoSource(ui::AXMode new_mode);
+  // Starts or stops monitoring for client disconnections.
+  void SynchronizeUiaClientInfoSource(ui::AXMode new_mode);
 
   base::CallbackListSubscription hwnd_subscription_;
 
@@ -465,10 +466,14 @@ BrowserAccessibilityStateImplWin::BrowserAccessibilityStateImplWin() {
   }
 }
 
-void BrowserAccessibilityStateImplWin::MaybeCreateUiaClientInfoSource(
+void BrowserAccessibilityStateImplWin::SynchronizeUiaClientInfoSource(
     ui::AXMode new_mode) {
-  if (uia_client_info_source_ ||
-      (new_mode & kTrackedUiaClientProcessModes).is_mode_off()) {
+  if ((new_mode & kTrackedUiaClientProcessModes).is_mode_off()) {
+    uia_client_info_source_.reset();
+    return;
+  }
+
+  if (uia_client_info_source_) {
     return;
   }
 
@@ -483,7 +488,7 @@ void BrowserAccessibilityStateImplWin::MaybeCreateUiaClientInfoSource(
 void BrowserAccessibilityStateImplWin::RecordPlatformClientHistograms(
     ui::AXMode old_mode,
     ui::AXMode new_mode) {
-  MaybeCreateUiaClientInfoSource(new_mode);
+  SynchronizeUiaClientInfoSource(new_mode);
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&QueryAndRecordUiaClientProcessHistogramsForModeChange,
