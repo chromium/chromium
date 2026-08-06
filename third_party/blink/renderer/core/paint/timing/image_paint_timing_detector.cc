@@ -179,6 +179,13 @@ void ImagePaintTimingDetector::AssignPaintTimeToRegisteredQueuedRecords(
   }
 }
 
+void ImagePaintTimingDetector::QueueToMeasurePaintTime(ImageRecord* record) {
+  CHECK(record);
+  record->SetFrameIndex(frame_index_);
+  images_queued_for_paint_time_.push_back(record);
+  added_entry_in_latest_frame_ = true;
+}
+
 void ImagePaintTimingDetector::NotifyInteractionTriggeredVideoSrcChange(
     const LayoutObject& object) {
   // The `MediaTiming` parameter ignored when computing the hash for video
@@ -234,9 +241,15 @@ bool ImagePaintTimingDetector::RecordImage(
   // the first paint after being sufficiently loaded is still pending.
   ImageRecord* record = GetPendingImage(record_id_hash);
 
-  // If the image was already processed and has either finished loading or
-  // wasn't previously needed, there's nothing to do.
-  if (!record && recorded_images_.Contains(record_id_hash)) {
+  // Skip measuring content that was already fully measured.
+  //  - `record` is null: we aren't actively measuring this content, but we
+  //    need to check the historical `recorded_images_` set to see if this is
+  //    new or old content.
+  //  - `record` is non-null: we are still actively measuring this content, but
+  //    if the record was (recently) marked as sufficiently loaded, then we're
+  //    just waiting for presentation time.
+  if ((!record && recorded_images_.Contains(record_id_hash)) ||
+      (record && record->IsLoaded())) {
     return false;
   }
 
@@ -309,29 +322,47 @@ bool ImagePaintTimingDetector::RecordImage(
 
   CHECK(record);
 
-  // If this frame is the first painted frame for animated content, mark it and
-  // call `QueueToMeasurePaintTime` (eventually) to measure it.
-  // This mechanism works a bit differently for images and video.
-  // The stored value may or may not be exposed as the `renderTime` depending on
-  // flags.
-  if (media_timing.IsPaintedFirstFrame()) {
-    OnFirstAnimatedFramePainted(record_id_hash);
+  // TODO(crbug.com/540021702): Due to races with the poster image, the
+  // `media_timing` might not match the `record`'s `MediaTiming`. In that case,
+  // we erroneously fall through to the first animated frame case below.
+  bool is_video = !media_timing.GetFirstVideoFrameTime().is_null() &&
+                  &media_timing == record->GetMediaTiming();
+
+  // If this is the first frame of an animated image, we need the paint and
+  // presentation time of this paint, in addition to when it becomes
+  // sufficiently loaded, which could be this frame or a later one.
+  //
+  // TODO(crbug.com/449779010): Enable ReportFirstFrameTimeAsRenderTime and
+  // track a single paint time for animated images/videos.
+  if (!is_video && media_timing.IsPaintedFirstFrame() &&
+      !record->HasFirstAnimatedFrameTime()) {
+    // Note that if `record` is already queued for first animated frame time,
+    // this will get ignored in `AssignPaintTimeToRegisteredQueuedRecords()`.
+    record->SetIsFirstAnimatedFramePaintTimingQueued(true);
+    QueueToMeasurePaintTime(record);
   }
 
-  // TODO(crbug.com/372929290): This next check will pass when <video> content
-  // has loaded just the first frame of video.  This is likely unexpected, and
-  // should likely have been handled in the if block for `IsPaintedFirstFrame`,
-  // above.
-  if (!record->IsLoaded() && media_timing.IsSufficientContentLoadedForPaint()) {
-    OnImageLoaded(record, style_image);
-    CHECK(added_entry_in_latest_frame_);
-
-    if (SoftNavigationContext* context = record->GetSoftNavigationContext()) {
-      context->AddPaintedArea(record);
-    }
-    return true;
+  // Check if the image is "sufficiently loaded", which is the signal we use to
+  // consider the image as ready for reporting.
+  if (!media_timing.IsSufficientContentLoadedForPaint()) {
+    // The first video frame should always be considered sufficiently loaded.
+    CHECK(!is_video);
+    return false;
   }
-  return false;
+
+  record->MarkLoaded();
+  if (is_video) {
+    SetVideoFirstAnimatedFrameTime(record);
+  } else {
+    SetLoadTime(record, style_image);
+  }
+
+  if (SoftNavigationContext* context = record->GetSoftNavigationContext()) {
+    context->AddPaintedArea(record);
+  }
+
+  QueueToMeasurePaintTime(record);
+  return true;
 }
 
 void ImagePaintTimingDetector::NotifyImageFinished(
@@ -369,39 +400,30 @@ void ImagePaintTimingDetector::ReportLargestIgnoredImage() {
   QueueToMeasurePaintTime(record);
 }
 
-void ImagePaintTimingDetector::OnFirstAnimatedFramePainted(
-    MediaRecordIdHash record_id_hash) {
-  ImageRecord* record = GetPendingImage(record_id_hash);
-  DCHECK(record);
-  if (record->GetMediaTiming() &&
-      !record->GetMediaTiming()->GetFirstVideoFrameTime().is_null()) {
-    // If this is a video record, then we can get the first frame time from the
-    // MediaTiming object, and can use that to set the first frame time in the
-    // ImageRecord object.
-    record->SetFirstAnimatedFrameTime(
-        record->GetMediaTiming()->GetFirstVideoFrameTime());
-    if (RuntimeEnabledFeatures::ReportFirstFrameTimeAsRenderTimeEnabled()) {
-      base::TimeTicks paint_time = record->FirstAnimatedFrameTime();
-      // TODO(crbug.com/383568320): this timestamp it not specified, and it's
-      // not clear how it should be coarsened.
-      LocalDOMWindow* window =
-          paint_timing_detector_->GetPaintTiming().GetDocument()->domWindow();
-      DOMHighResTimeStamp dom_timestamp =
-          DOMWindowPerformance::performance(CHECK_DEREF(window))
-              ->MonotonicTimeToDOMHighResTimeStamp(paint_time);
-      record->SetPaintTime(paint_time,
-                           DOMPaintTimingInfo{dom_timestamp, dom_timestamp});
-    }
-  } else if (!record->HasFirstAnimatedFrameTime()) {
-    // Otherwise, this is an animated image, and so we should wait for the
-    // presentation callback to fire to set the first frame presentation time.
-    record->SetIsFirstAnimatedFramePaintTimingQueued(true);
-    QueueToMeasurePaintTime(record);
+void ImagePaintTimingDetector::SetVideoFirstAnimatedFrameTime(
+    ImageRecord* record) {
+  CHECK(record->GetMediaTiming());
+  record->SetFirstAnimatedFrameTime(
+      record->GetMediaTiming()->GetFirstVideoFrameTime());
+
+  // Without this feature, the paint time will be set based on the next frame.
+  if (!RuntimeEnabledFeatures::ReportFirstFrameTimeAsRenderTimeEnabled()) {
+    return;
   }
+  base::TimeTicks paint_time = record->FirstAnimatedFrameTime();
+  // TODO(crbug.com/383568320): this timestamp it not specified, and it's
+  // not clear how it should be coarsened.
+  LocalDOMWindow* window =
+      paint_timing_detector_->GetPaintTiming().GetDocument()->domWindow();
+  DOMHighResTimeStamp dom_timestamp =
+      DOMWindowPerformance::performance(CHECK_DEREF(window))
+          ->MonotonicTimeToDOMHighResTimeStamp(paint_time);
+  record->SetPaintTime(paint_time,
+                       DOMPaintTimingInfo{dom_timestamp, dom_timestamp});
 }
 
-void ImagePaintTimingDetector::OnImageLoaded(ImageRecord* record,
-                                             const StyleImage* style_image) {
+void ImagePaintTimingDetector::SetLoadTime(ImageRecord* record,
+                                           const StyleImage* style_image) {
   if (!style_image) {
     auto it = image_finished_times_.find(record->Hash());
     if (it != image_finished_times_.end()) {
@@ -414,8 +436,6 @@ void ImagePaintTimingDetector::OnImageLoaded(ImageRecord* record,
     record->SetLoadTime(ImageElementTiming::From(CHECK_DEREF(window))
                             .GetBackgroundImageLoadTime(style_image));
   }
-  record->MarkLoaded();
-  QueueToMeasurePaintTime(record);
 }
 
 ImageRecord* ImagePaintTimingDetector::RemoveRecord(
