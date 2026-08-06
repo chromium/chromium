@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/test_omnibox_view.h"
@@ -14,7 +15,9 @@
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller_test_support.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -213,6 +216,83 @@ TEST_F(OmniboxPopupHandlerTest, RevertSequenceGuard) {
   handler_->Revert(/*sequence_number=*/1);
   EXPECT_FALSE(omnibox_controller->edit_model()->user_input_in_progress());
 
+  handler_.reset();
+}
+
+TEST_F(OmniboxPopupHandlerTest, OnPasteSequenceGuard) {
+  auto client = std::make_unique<TestOmniboxClient>();
+  auto pref_service = std::make_unique<TestingPrefServiceSimple>();
+  omnibox::RegisterProfilePrefs(pref_service->registry());
+  EXPECT_CALL(*client, GetPrefs())
+      .WillRepeatedly(testing::Return(pref_service.get()));
+  auto omnibox_controller =
+      std::make_unique<OmniboxController>(std::move(client));
+  auto test_omnibox_view =
+      std::make_unique<TestOmniboxView>(omnibox_controller.get());
+  omnibox_controller->edit_model()->set_view(test_omnibox_view.get());
+  testing::NiceMock<MockOmniboxPopupPage> local_page;
+  handler_ = std::make_unique<OmniboxPopupHandler>(
+      mojo::PendingReceiver<omnibox_popup::mojom::PageHandler>(),
+      local_page.BindAndGetRemote(), web_contents(), omnibox_controller.get());
+
+  handler_->SetInputState("test", gfx::Range(0, 0),
+                          /*user_input_in_progress=*/false, /*full_url=*/"",
+                          /*is_focused=*/true, /*permanent_display_text=*/"",
+                          /*show_full_url=*/false, /*query_zps=*/false);
+
+  // A call with stale sequence number 0 should be discarded.
+  handler_->OnPaste("pasted text", gfx::Range(11, 11), /*sequence_number=*/0);
+  EXPECT_FALSE(omnibox_controller->edit_model()->user_input_in_progress());
+  EXPECT_EQ(omnibox_controller->edit_model()->user_text(), u"");
+
+  handler_.reset();
+}
+
+TEST_F(OmniboxPopupHandlerTest, OnPasteUpdatesEditModel) {
+  base::HistogramTester histogram_tester;
+  auto omnibox_controller = std::make_unique<OmniboxController>(
+      std::make_unique<TestOmniboxClient>());
+  auto mock_edit_model =
+      std::make_unique<testing::NiceMock<MockOmniboxEditModel>>(
+          omnibox_controller.get());
+  auto* mock_edit_model_ptr = mock_edit_model.get();
+  omnibox_controller->SetEditModelForTesting(std::move(mock_edit_model));
+
+  testing::NiceMock<MockOmniboxPopupPage> local_page;
+  handler_ = std::make_unique<OmniboxPopupHandler>(
+      mojo::PendingReceiver<omnibox_popup::mojom::PageHandler>(),
+      local_page.BindAndGetRemote(), web_contents(), omnibox_controller.get());
+
+  handler_->SetInputState("test", gfx::Range(0, 0),
+                          /*user_input_in_progress=*/false, /*full_url=*/"",
+                          /*is_focused=*/true, /*permanent_display_text=*/"",
+                          /*show_full_url=*/false, /*query_zps=*/false);
+
+  // OnPaste with valid sequence number 1 should:
+  // 1. Invoke model->OnPaste() (recording Omnibox.Paste histogram).
+  // 2. Invoke model->OnAfterPossibleChange() with appropriate state changes.
+  // 3. Invoke model->OnChanged() when something changed.
+  EXPECT_CALL(*mock_edit_model_ptr, OnPaste())
+      .WillOnce([mock_edit_model_ptr]() {
+        mock_edit_model_ptr->OmniboxEditModel::OnPaste();
+      });
+  EXPECT_CALL(
+      *mock_edit_model_ptr,
+      OnAfterPossibleChange(
+          testing::AllOf(
+              testing::Field(&OmniboxView::StateChanges::text_differs, true),
+              testing::Field(&OmniboxView::StateChanges::new_selection,
+                             gfx::Range(19, 19))),
+          /*allow_keyword_ui_change=*/true))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*mock_edit_model_ptr, OnChanged()).Times(1);
+
+  handler_->OnPaste("https://example.com", gfx::Range(19, 19),
+                    /*sequence_number=*/1);
+  histogram_tester.ExpectBucketCount("Omnibox.Paste", 1, 1);
+
+  // Reset the handler to avoid dangling raw_ptr to the local
+  // omnibox_controller.
   handler_.reset();
 }
 

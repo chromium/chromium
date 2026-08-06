@@ -101,6 +101,23 @@ class FullWebUIOmniboxInteractiveTest
                  InAnyContext(WaitForWebUIInputValue(text)));
   }
 
+  auto PasteWebUIText(const std::string& text) {
+    return Steps(InAnyContext(ExecuteJsAt(kPopupWebView, kWebUIInput,
+                                          base::StringPrintf(R"(el => {
+                const data = new DataTransfer();
+                data.setData('text/plain', '%s');
+                const event = new ClipboardEvent('paste', {
+                  clipboardData: data,
+                  bubbles: true,
+                  cancelable: true,
+                  composed: true,
+                });
+                el.dispatchEvent(event);
+              })",
+                                                             text.c_str()))),
+                 InAnyContext(WaitForWebUIInputValue(text)));
+  }
+
   auto ClearWebUIText() {
     return Steps(InAnyContext(ExecuteJsAt(kPopupWebView, kWebUIInput,
                                           R"(el => {
@@ -558,4 +575,15 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
       // restoration.
       WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
                            "(el) => el && !el.dropdownIsVisible"));
+}
+
+// Verifies that pasting text into the full WebUI Omnibox records the
+// Omnibox.Paste metric and opens autocomplete suggestions.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest, OnPaste) {
+  base::HistogramTester histogram_tester;
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      PasteWebUIText("example.com"), WaitForWebUIInputValue("example.com"),
+      CheckWebUIInputFocus(true),
+      Do([&]() { histogram_tester.ExpectBucketCount("Omnibox.Paste", 1, 1); }));
 }
