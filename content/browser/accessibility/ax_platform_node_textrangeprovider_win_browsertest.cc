@@ -1027,6 +1027,68 @@ IN_PROC_BROWSER_TEST_F(
   ExpectSingleIntSafeArray(V_ARRAY(value.ptr()), AnnotationType_SpellingError);
 }
 
+IN_PROC_BROWSER_TEST_F(
+    AXPlatformNodeTextRangeProviderWinBrowserTestWithInternals,
+    GetAttributeValueSpellingAnnotationInMultilineTextarea) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!DOCTYPE html>
+      <html>
+        <body>
+          <textarea id="textarea"
+                    aria-label="textarea_text">correct&#10;mikjake</textarea>
+        </body>
+      </html>
+  )HTML");
+
+  ui::BrowserAccessibility* text_area_node =
+      FindNode(ax::mojom::Role::kTextField, "textarea_text");
+  ASSERT_NE(nullptr, text_area_node);
+  EXPECT_TRUE(text_area_node->IsLeaf());
+  EXPECT_EQ(0u, text_area_node->PlatformChildCount());
+
+  ASSERT_TRUE(ExecJs(shell()->web_contents(), R"JS(
+      const textarea = document.getElementById('textarea');
+      textarea.focus();
+      const innerEditor = internals.innerEditorElement(textarea);
+      const misspelling = 'mikjake';
+      const walker =
+          document.createTreeWalker(innerEditor, NodeFilter.SHOW_TEXT);
+      let text;
+      while ((text = walker.nextNode())) {
+        if (text.textContent.includes(misspelling)) {
+          break;
+        }
+      }
+      const start = text.textContent.indexOf(misspelling);
+      const range = document.createRange();
+      range.setStart(text, start);
+      range.setEnd(text, start + misspelling.length);
+      internals.setMarker(document, range, 'spelling');
+  )JS"));
+
+  while (!HasMarkerDescendant(*text_area_node)) {
+    AccessibilityNotificationWaiter waiter(shell()->web_contents());
+    ASSERT_TRUE(waiter.WaitForNotification());
+  }
+
+  ComPtr<ITextRangeProvider> document_range;
+  GetTextRangeProviderFromTextNode(*text_area_node, &document_range);
+  ASSERT_NE(nullptr, document_range.Get());
+
+  base::win::ScopedBstr misspelling(L"mikjake");
+  ComPtr<ITextRangeProvider> misspelled_range;
+  ASSERT_HRESULT_SUCCEEDED(document_range->FindText(misspelling.Get(), false,
+                                                    false, &misspelled_range));
+  ASSERT_NE(nullptr, misspelled_range.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(misspelled_range, L"mikjake");
+
+  base::win::ScopedVariant value;
+  EXPECT_HRESULT_SUCCEEDED(misspelled_range->GetAttributeValue(
+      UIA_AnnotationTypesAttributeId, value.Receive()));
+  ASSERT_EQ(value.type(), VT_ARRAY | VT_I4);
+  ExpectSingleIntSafeArray(V_ARRAY(value.ptr()), AnnotationType_SpellingError);
+}
+
 // With a non-atomic text field, the read-only attribute should be determined
 // based on the content editable root node's editable state.
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
@@ -4833,6 +4895,112 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
 
   AssertMoveByUnitForMarkup(TextUnit_Character, html_markup,
                             {L"A", L"B", L"\n", L"C", L"D"});
+}
+
+// Regression test for crbug.com/503691212. A spelling marker on a soft-wrapped
+// word must be queried with offsets translated from the inline text box to its
+// platform static-text ancestor.
+IN_PROC_BROWSER_TEST_F(
+    AXPlatformNodeTextRangeProviderWinBrowserTestWithInternals,
+    AnnotationTypesSpellingOnWrappedLine) {
+  constexpr char kText[] =
+      "This is not a spelling mistake. This is not a spelling mistake. "
+      "This is not a spelling This is not a spelling mistake. This is not a "
+      "spelling mistake. This is not a spelling This is not a spelling "
+      "mistake. This is not a spelling mistake. This is not a spellin mikate.";
+
+  LoadInitialAccessibilityTreeFromHtml(std::string(R"HTML(<!DOCTYPE html>
+          <html>
+          <body>
+            <div id="editor" contenteditable="true"
+                 style="width: 200px; font: 16px/20px monospace;">)HTML") +
+                                       kText + R"HTML(</div>
+          </body>
+          </html>)HTML");
+
+  ui::BrowserAccessibility* static_text =
+      FindNode(ax::mojom::Role::kStaticText, kText);
+  ASSERT_NE(nullptr, static_text);
+  ASSERT_GT(static_text->InternalChildCount(), 1u);
+  const std::string last_inline_text =
+      static_text->InternalGetChild(static_text->InternalChildCount() - 1)
+          ->GetData()
+          .GetStringAttribute(ax::mojom::StringAttribute::kName);
+  ASSERT_FALSE(last_inline_text.empty());
+
+  ASSERT_TRUE(ExecJs(shell()->web_contents(), JsReplace(R"JS(
+      const editor = document.getElementById('editor');
+      editor.focus();
+      const text = editor.firstChild;
+      const misspelling = 'mikate';
+      const start = text.textContent.indexOf(misspelling);
+      const range = document.createRange();
+      range.setStart(text, start);
+      range.setEnd(text, start + misspelling.length);
+      internals.setMarker(document, range, 'spelling');
+
+      const lastInlineText = $1;
+      const lastLineStart = text.textContent.lastIndexOf(lastInlineText);
+      const lastLineRange = document.createRange();
+      lastLineRange.setStart(text, lastLineStart);
+      lastLineRange.setEnd(text, lastLineStart + lastInlineText.length);
+      internals.setMarker(document, lastLineRange, 'spelling');
+  )JS",
+                                                        last_inline_text)));
+
+  while (!HasMarkerDescendant(*static_text)) {
+    AccessibilityNotificationWaiter waiter(shell()->web_contents());
+    ASSERT_TRUE(waiter.WaitForNotification());
+  }
+
+  ComPtr<ITextRangeProvider> document_range;
+  GetTextRangeProviderFromTextNode(*GetRootAndAssertNonNull(), &document_range);
+  ASSERT_NE(nullptr, document_range.Get());
+
+  base::win::ScopedBstr misspelling(L"mikate");
+  ComPtr<ITextRangeProvider> misspelled_range;
+  ASSERT_HRESULT_SUCCEEDED(document_range->FindText(misspelling.Get(), false,
+                                                    false, &misspelled_range));
+  ASSERT_NE(nullptr, misspelled_range.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(misspelled_range, L"mikate");
+
+  base::win::ScopedVariant annotation_result;
+  ASSERT_HRESULT_SUCCEEDED(misspelled_range->GetAttributeValue(
+      UIA_AnnotationTypesAttributeId, annotation_result.Receive()));
+  ASSERT_EQ(annotation_result.type(), VT_ARRAY | VT_I4);
+  ExpectSingleIntSafeArray(V_ARRAY(annotation_result.ptr()),
+                           AnnotationType_SpellingError);
+
+  base::win::ScopedBstr unmarked_text(
+      L"This is not a spelling mistake. This is not a spelling mistake.");
+  ComPtr<ITextRangeProvider> unmarked_range;
+  ASSERT_HRESULT_SUCCEEDED(document_range->FindText(unmarked_text.Get(), false,
+                                                    false, &unmarked_range));
+  ASSERT_NE(nullptr, unmarked_range.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(
+      unmarked_range,
+      L"This is not a spelling mistake. This is not a spelling mistake.");
+
+  base::win::ScopedVariant unmarked_annotation_result;
+  ASSERT_HRESULT_SUCCEEDED(unmarked_range->GetAttributeValue(
+      UIA_AnnotationTypesAttributeId, unmarked_annotation_result.Receive()));
+  EXPECT_EQ(unmarked_annotation_result.type(), VT_EMPTY);
+
+  base::win::ScopedBstr mixed_text(base::ASCIIToWide(kText));
+  ComPtr<ITextRangeProvider> mixed_range;
+  ASSERT_HRESULT_SUCCEEDED(
+      document_range->FindText(mixed_text.Get(), false, false, &mixed_range));
+  ASSERT_NE(nullptr, mixed_range.Get());
+
+  base::win::ScopedVariant mixed_annotation_result;
+  ASSERT_HRESULT_SUCCEEDED(mixed_range->GetAttributeValue(
+      UIA_AnnotationTypesAttributeId, mixed_annotation_result.Receive()));
+  ASSERT_EQ(mixed_annotation_result.type(), VT_UNKNOWN);
+  ComPtr<IUnknown> expected_mixed_value;
+  ASSERT_HRESULT_SUCCEEDED(
+      UiaGetReservedMixedAttributeValue(&expected_mixed_value));
+  EXPECT_EQ(V_UNKNOWN(mixed_annotation_result.ptr()),
+            expected_mixed_value.Get());
 }
 
 }  // namespace content
