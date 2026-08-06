@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -247,13 +248,23 @@ TEST_F(ValuableSyncBridgeTest, IsEntityDataValid_ImportConstraints) {
   order.mutable_order_date()->set_day(30);
   order.mutable_order_date()->set_month(1);
   order.mutable_order_date()->set_year(2026);
-  EXPECT_TRUE(
-      bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(specifics)));
+  {
+    base::HistogramTester histogram_tester;
+    EXPECT_TRUE(
+        bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(specifics)));
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Ai.ImportConstraintsMet.WalletSync.Order", true, 1);
+  }
 
   // Without an order date, expect the specifics to be considered invalid.
   order.clear_order_date();
-  EXPECT_FALSE(
-      bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(specifics)));
+  {
+    base::HistogramTester histogram_tester;
+    EXPECT_FALSE(
+        bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(specifics)));
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Ai.ImportConstraintsMet.WalletSync.Order", false, 1);
+  }
 }
 
 #if !BUILDFLAG(IS_IOS)

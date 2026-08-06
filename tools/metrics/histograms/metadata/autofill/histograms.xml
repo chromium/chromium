@@ -1754,6 +1754,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="EntityRecordType" variants="Autofill.Ai.EntityRecordType"/>
 </histogram>
 
+<histogram name="Autofill.Ai.ImportConstraintsMet.WalletSync{EntityType}"
+    enum="Boolean" expires_after="2026-11-30">
+  <owner>fleimgruber@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records whether import constraints are met for entities received through
+    AUTOFILL_VALUABLE from Wallet. Recorded in the bridge's IsEntityDataValid()
+    when data arrives from sync.
+  </summary>
+  <token key="EntityType" variants="Autofill.Ai.EntityType"/>
+</histogram>
+
 <histogram
     name="Autofill.Ai.KeyMetrics{KeyMetric}{EntityGranularity}{EntityRecordType}{Profile}"
     enum="Boolean" expires_after="2026-12-12">
