@@ -18,6 +18,7 @@ import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.TimeUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -68,6 +69,13 @@ public class ExtensionsMenuCoordinator
         implements Destroyable,
                 ExtensionsToolbarBridge.Observer,
                 ExtensionsToolbarBridge.MenuDelegate {
+    /**
+     * Threshold to ignore click events on the menu button immediately following a popup dismissal.
+     * Touch-down on the button dismisses the popup, and the subsequent touch-up generates a click
+     * event that should not immediately re-open the menu.
+     */
+    private static final long CLICK_TO_DISMISS_THRESHOLD_MS = 200;
+
     private final Context mContext;
     private final ListMenu mExtensionsMenu;
     private final ListMenuButton mExtensionsMenuButton;
@@ -96,6 +104,7 @@ public class ExtensionsMenuCoordinator
     private final ModalDialogManager mModalDialogManager;
 
     @Nullable @VisibleForTesting ExtensionsMenuMediator mMediator;
+    private long mLastDismissalTimeMs;
 
     /**
      * Constructor.
@@ -176,6 +185,13 @@ public class ExtensionsMenuCoordinator
         // Menu mediator is created when menu is triggered.
         mExtensionsMenuButton.setOnClickListener(
                 (view) -> {
+                    // Ignore clicks triggered by the touch-up of the gesture that just dismissed
+                    // the menu.
+                    if (mLastDismissalTimeMs != 0
+                            && TimeUtils.elapsedRealtimeMillis() - mLastDismissalTimeMs
+                                    < CLICK_TO_DISMISS_THRESHOLD_MS) {
+                        return;
+                    }
                     TrackerFactory.getTrackerForProfile(mProfile)
                             .notifyEvent(EventConstants.EXTENSIONS_MENU_BUTTON_CLICKED);
                     createMediator();
@@ -188,6 +204,7 @@ public class ExtensionsMenuCoordinator
 
                     @Override
                     public void onPopupMenuDismissed() {
+                        mLastDismissalTimeMs = TimeUtils.elapsedRealtimeMillis();
                         mMenuButtonPinningDelegate.requestLayoutWithViewUtils();
                         destroyMediator();
                         mExtensionModels.clear();

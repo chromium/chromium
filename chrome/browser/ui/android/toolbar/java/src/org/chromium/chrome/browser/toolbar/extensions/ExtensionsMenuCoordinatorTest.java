@@ -210,6 +210,40 @@ public class ExtensionsMenuCoordinatorTest {
         verify(shownListener).onPopupMenuShown();
     }
 
+    /**
+     * Tests that clicking the extensions menu button when the menu is open dismisses the menu and
+     * does not immediately re-open it.
+     */
+    @Test
+    public void testClickMenuButtonWhileOpen_DismissesAndDoesNotReopen() {
+        ListMenuHost.PopupMenuShownListener shownListener =
+                mock(ListMenuHost.PopupMenuShownListener.class);
+        mExtensionsMenuButton.addPopupListener(shownListener);
+
+        // Click opens the menu.
+        mExtensionsMenuButton.performClick();
+        triggerOnMediatorReady();
+        verify(shownListener, times(1)).onPopupMenuShown();
+
+        // Simulate clicking the button again while the menu is open:
+        // Popup is dismissed (dismissal triggers onPopupMenuDismissed).
+        mExtensionsMenuButton.dismiss();
+        verify(shownListener, times(1)).onPopupMenuDismissed();
+
+        // Extensions menu is clicked again, but should not be shown again.
+        mExtensionsMenuButton.performClick();
+        verify(shownListener, times(1)).onPopupMenuShown();
+
+        // Advance the clock by 250ms to pass the 200ms cooldown.
+        mExtensionsMenuButton.postDelayed(() -> {}, 250);
+        ShadowLooper.idleMainLooper();
+
+        // A subsequent click should open it again.
+        mExtensionsMenuButton.performClick();
+        triggerOnMediatorReady();
+        verify(shownListener, times(2)).onPopupMenuShown();
+    }
+
     /** Tests that the extensions menu can be dismissed by clicking the close button. */
     @Test
     public void testCloseMenu() {
