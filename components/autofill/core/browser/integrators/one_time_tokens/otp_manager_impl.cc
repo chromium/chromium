@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_phish_guard_delegate.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
@@ -52,6 +53,7 @@ OtpManagerImpl::OtpManagerImpl(BrowserAutofillManager& owner,
 OtpManagerImpl::~OtpManagerImpl() = default;
 
 void OtpManagerImpl::GetOtpSuggestions(
+    const url::Origin& origin,
     OtpManagerImpl::GetOtpSuggestionsCallback callback) {
   // TODO(crbug.com/415273270) This is just a hack to prepopulate the OTPs in
   // case no real backend is triggered. The feature definition should migrate to
@@ -62,6 +64,9 @@ void OtpManagerImpl::GetOtpSuggestions(
     return;
   }
 
+  // TODO(crbug.com/415273270): Do not fill OTP suggestions into opaque origin
+  // iframes.
+  last_pending_field_origin_ = origin;
   last_pending_get_suggestions_callback_ = std::move(callback);
 
   // This queries OTPs from the backend and calls `OnOneTimeTokenReceived` to
@@ -169,6 +174,7 @@ void OtpManagerImpl::OnOneTimeTokenReceived(
         "Autofill.OneTimeTokens.PhishGuard.CheckPerformed", true);
     delegate->StartOtpPhishGuardCheck(
         owner_->client().GetLastCommittedPrimaryMainFrameURL(),
+        last_pending_field_origin_.GetURL(),
         base::BindOnce(
             [](base::WeakPtr<OtpManagerImpl> self, OneTimeToken token,
                bool is_phishing_site) {

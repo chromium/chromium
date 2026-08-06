@@ -16,11 +16,13 @@ class OtpPhishGuardDelegate {
  public:
   virtual ~OtpPhishGuardDelegate() = default;
 
-  // Checks if the given `url` is a phishing site. `callback` is run with the
-  // result.
+  // Checks if the given URLs are safe from phishing or other threats.
+  // `callback` is run with `is_phishing` (true if phishing/unsafe, false if
+  // safe).
   virtual void StartOtpPhishGuardCheck(
-      const GURL& url,
-      base::OnceCallback<void(bool)> callback) = 0;
+      const GURL& main_frame_url,
+      const GURL& frame_to_fill_url,
+      base::OnceCallback<void(bool is_phishing)> callback) = 0;
 };
 
 }  // namespace autofill

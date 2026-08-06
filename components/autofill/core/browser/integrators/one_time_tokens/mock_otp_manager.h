@@ -7,6 +7,7 @@
 
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_manager.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill {
@@ -20,7 +21,8 @@ class MockOtpManager : public OtpManager {
 
   MOCK_METHOD(void,
               GetOtpSuggestions,
-              (OtpManager::GetOtpSuggestionsCallback callback),
+              (const url::Origin& origin,
+               OtpManager::GetOtpSuggestionsCallback callback),
               (override));
 };
 

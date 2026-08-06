@@ -49,7 +49,8 @@ TEST_F(OtpSuggestionGeneratorTest, GenerateOtpSuggestions) {
   form_structure.field(0)->SetTypeTo(AutofillType(ONE_TIME_CODE), std::nullopt);
 
   EXPECT_CALL(otp_manager(), GetOtpSuggestions)
-      .WillOnce([](OtpManager::GetOtpSuggestionsCallback callback) {
+      .WillOnce([](const url::Origin& origin,
+                   OtpManager::GetOtpSuggestionsCallback callback) {
         std::move(callback).Run(std::vector<std::string>{"123456"});
       });
 

@@ -1511,6 +1511,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
       return;
     }
     otp_manager_->GetOtpSuggestions(
+        field.origin(),
         std::move(generate_suggestions_and_maybe_show_ui_phase2));
     return;
   }
