@@ -53,7 +53,6 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
-import org.chromium.chrome.browser.customtabs.features.CustomTabNavigationBarController;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabHistoryIphController;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -172,16 +171,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
 
         mSession = getIntentDataProvider().getSession();
 
-        boolean drawEdgeToEdge =
-                mEdgeToEdgeControllerSupplier.get() != null
-                        && mEdgeToEdgeControllerSupplier.get().isDrawingToEdge()
-                        && mEdgeToEdgeControllerSupplier.get().isPageOptedIntoEdgeToEdge();
-        var systemBarColorHelper =
-                getEdgeToEdgeManager() != null
-                        ? getEdgeToEdgeManager().getEdgeToEdgeSystemBarColorHelper()
-                        : null;
-        CustomTabNavigationBarController.update(
-                getWindow(), getIntentDataProvider(), this, drawEdgeToEdge, systemBarColorHelper);
+        updateNavigationBarColor();
 
         mTimeoutHandler.restoreInstanceState(savedInstanceState);
     }

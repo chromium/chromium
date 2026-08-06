@@ -327,6 +327,10 @@ BASE_DECLARE_FEATURE(kUserFeedbackAllowedPolicy);
 BASE_DECLARE_FEATURE(kVerifyStartupSigninState);
 BASE_DECLARE_FEATURE(kVirtualKeyboardResizesContentTransientOvershootFix);
 BASE_DECLARE_FEATURE(kVirtualKeyboardTransientInnerHeightFix);
+// TODO(crbug.com/543076349): When removing this flag, move navigation bar color
+// setup to BaseCustomTabActivity#performPreInflationStartup() and remove the
+// calls from CustomTabActivity and finishNativeInitialization().
+BASE_DECLARE_FEATURE(kWebAppNavigationBarThemeColor);
 BASE_DECLARE_FEATURE(kWebAppShortEdgesCutoutMode);
 BASE_DECLARE_FEATURE(kWebOtpCrossDeviceSimpleString);
 BASE_DECLARE_FEATURE(kWebUiAndroidTheming);

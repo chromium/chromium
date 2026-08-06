@@ -239,6 +239,15 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
 
         @Override
         public @Nullable Integer getNavigationBarColor() {
+            // The web app manifest has no dedicated navigation bar color, so when the developer
+            // specified a theme color we reuse it for the navigation bar to keep it consistent
+            // with the status bar. Without a custom theme color we leave the navigation bar to the
+            // platform default.
+            if (mHasCustomToolbarColor
+                    && ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.WEB_APP_NAVIGATION_BAR_THEME_COLOR)) {
+                return mToolbarColor;
+            }
             return null;
         }
 

@@ -9,6 +9,7 @@ import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_M
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import android.content.Intent;
@@ -50,6 +51,19 @@ public class WebappIntentDataProviderTest {
                 /* hasCustomDarkToolbarColor= */ false,
                 /* shareData= */ null,
                 webappExtras,
+                /* webApkExtras= */ null);
+    }
+
+    private WebappIntentDataProvider buildWebAppIntentDataProviderWithThemeColor(
+            int toolbarColor, boolean hasCustomToolbarColor) {
+        return new WebappIntentDataProvider(
+                mIntent,
+                toolbarColor,
+                hasCustomToolbarColor,
+                Color.BLACK,
+                /* hasCustomDarkToolbarColor= */ false,
+                /* shareData= */ null,
+                buildWebAppExtras(DisplayMode.STANDALONE),
                 /* webApkExtras= */ null);
     }
 
@@ -166,6 +180,43 @@ public class WebappIntentDataProviderTest {
                 "Should resolve to minimal ui",
                 DisplayMode.MINIMAL_UI,
                 intentDataProvider.getResolvedDisplayMode());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.WEB_APP_NAVIGATION_BAR_THEME_COLOR)
+    public void testNavigationBarColor_UsesThemeColorWhenFeatureEnabled() {
+        var intentDataProvider =
+                buildWebAppIntentDataProviderWithThemeColor(
+                        Color.RED, /* hasCustomToolbarColor= */ true);
+
+        assertEquals(
+                "Navigation bar should use the manifest theme color",
+                Integer.valueOf(Color.RED),
+                intentDataProvider.getLightColorProvider().getNavigationBarColor());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.WEB_APP_NAVIGATION_BAR_THEME_COLOR)
+    public void testNavigationBarColor_NullWhenNoCustomThemeColor() {
+        var intentDataProvider =
+                buildWebAppIntentDataProviderWithThemeColor(
+                        Color.WHITE, /* hasCustomToolbarColor= */ false);
+
+        assertNull(
+                "Navigation bar color should be unset when no theme color is specified",
+                intentDataProvider.getLightColorProvider().getNavigationBarColor());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.WEB_APP_NAVIGATION_BAR_THEME_COLOR)
+    public void testNavigationBarColor_NullWhenFeatureDisabled() {
+        var intentDataProvider =
+                buildWebAppIntentDataProviderWithThemeColor(
+                        Color.RED, /* hasCustomToolbarColor= */ true);
+
+        assertNull(
+                "Navigation bar color should be unset when the feature is disabled",
+                intentDataProvider.getLightColorProvider().getNavigationBarColor());
     }
 
     @Test
