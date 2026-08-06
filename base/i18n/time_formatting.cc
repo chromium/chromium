@@ -279,7 +279,7 @@ std::string TimeFormatHTTP(Time time) {
   const i18n::TimeZone gmt = i18n::TimeZone::GMT();
   static constexpr i18n::LanguageTag en_us = i18n::GetKnownLanguageTag("en-US");
   std::string day_of_week = base::UTF16ToUTF8(GetDateTimeFormatter().Format(
-      time, en_us, i18n::datetime_options::E::Short().with_time_zone(gmt)));
+      time, en_us, i18n::datetime_options::E::Medium().with_time_zone(gmt)));
   std::string month_long = base::UTF16ToUTF8(GetDateTimeFormatter().Format(
       time, en_us, i18n::datetime_options::M::Medium().with_time_zone(gmt)));
   Time::Exploded exploded;

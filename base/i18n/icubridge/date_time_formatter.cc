@@ -305,10 +305,15 @@ std::u16string GetDaySkeleton(const std::string& skeleton,
 }
 
 std::u16string GetWeekDaySkeleton(const std::string& skeleton,
-                                  DateTimeFormatterOptions::ItemLength length,
-                                  SkeletonOptions options) {
-  if (!options.has_weekday) {
+                                  DateTimeFormatterOptions options,
+                                  SkeletonOptions skeleton_options) {
+  if (!skeleton_options.has_weekday) {
     return u"";
+  }
+  if (options.format_identifier ==
+          DateTimeFormatterOptions::FormatIdentifier::kE &&
+      options.length == DateTimeFormatterOptions::ItemLength::kShort) {
+    return u"EEEEE";
   }
   char weekday_symbol = 'E';
   size_t e_count = std::ranges::count(skeleton, 'E');
@@ -346,7 +351,7 @@ icu::UnicodeString GetFormattedSkeleton(
   if (skeleton_options.has_weekday) {
     // Max between 1u and weekday_count is used to force its presence.
     output_skeleton.append(
-        GetWeekDaySkeleton(skeleton, options.length, skeleton_options));
+        GetWeekDaySkeleton(skeleton, options, skeleton_options));
   }
   if (options.year_style == DateTimeFormatterOptions::YearStyle::kWithEra) {
     output_skeleton += "G";
