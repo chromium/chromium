@@ -1124,5 +1124,38 @@ extern const base::FeatureParam<bool> kLensOnlySendAaiExcludeRawAndDriveFiles;
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOnlySendAaiExcludeRawAndDriveFilesEnabled();
 
+// Enables Identity Delegation for Lens Composebox requests.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensComposeboxIdentityDelegation);
+
+COMPONENT_EXPORT(LENS_FEATURES)
+extern const base::FeatureParam<std::string>
+    kLensComposeboxIdentityDelegationClusterInfoEndpointUrl;
+
+COMPONENT_EXPORT(LENS_FEATURES)
+extern const base::FeatureParam<std::string>
+    kLensComposeboxIdentityDelegationEndpointUrl;
+
+COMPONENT_EXPORT(LENS_FEATURES)
+extern const base::FeatureParam<std::string>
+    kLensComposeboxIdentityDelegationUploadChunkEndpointUrl;
+
+COMPONENT_EXPORT(LENS_FEATURES)
+bool UseIdentityDelegationForLensComposeboxRequests();
+
+// Returns the finch configured endpoint URL for the cluster info request for
+// composebox.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern std::string GetLensComposeboxClusterInfoEndpointUrl();
+
+// Returns the finch configured endpoint URL for the Lens composebox.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern std::string GetLensComposeboxEndpointUrl();
+
+// Returns the finch configured upload chunk endpoint URL for the Lens
+// composebox.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern std::string GetLensComposeboxUploadChunkEndpointUrl();
+
 }  // namespace lens::features
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

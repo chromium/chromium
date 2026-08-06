@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -1298,6 +1299,49 @@ bool IsLensOnlySendAaiForModalityChipsEnabled() {
 
 bool IsLensOnlySendAaiExcludeRawAndDriveFilesEnabled() {
   return kLensOnlySendAaiExcludeRawAndDriveFiles.Get();
+}
+
+BASE_FEATURE(kLensComposeboxIdentityDelegation,
+             "LensComposeboxIdentityDelegation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<std::string>
+    kLensComposeboxIdentityDelegationClusterInfoEndpointUrl{
+        &kLensComposeboxIdentityDelegation,
+        "lens-composebox-cluster-info-endpoint-url",
+        "https://lensfrontend-pa.clients6.google.com/v1/gsessionid"};
+
+constexpr base::FeatureParam<std::string>
+    kLensComposeboxIdentityDelegationEndpointUrl{
+        &kLensComposeboxIdentityDelegation, "lens-composebox-endpoint-url",
+        "https://lensfrontend-pa.clients6.google.com/v1/crupload"};
+
+constexpr base::FeatureParam<std::string>
+    kLensComposeboxIdentityDelegationUploadChunkEndpointUrl{
+        &kLensComposeboxIdentityDelegation,
+        "lens-composebox-upload-chunk-endpoint-url",
+        "https://lensfrontend-pa.clients6.google.com/v1/uploadChunk"};
+
+bool UseIdentityDelegationForLensComposeboxRequests() {
+  return base::FeatureList::IsEnabled(kLensComposeboxIdentityDelegation);
+}
+
+std::string GetLensComposeboxClusterInfoEndpointUrl() {
+  return UseIdentityDelegationForLensComposeboxRequests()
+             ? kLensComposeboxIdentityDelegationClusterInfoEndpointUrl.Get()
+             : kLensOverlayClusterInfoEndpointUrl.Get();
+}
+
+std::string GetLensComposeboxEndpointUrl() {
+  return UseIdentityDelegationForLensComposeboxRequests()
+             ? kLensComposeboxIdentityDelegationEndpointUrl.Get()
+             : kLensOverlayEndpointUrl.Get();
+}
+
+std::string GetLensComposeboxUploadChunkEndpointUrl() {
+  return UseIdentityDelegationForLensComposeboxRequests()
+             ? kLensComposeboxIdentityDelegationUploadChunkEndpointUrl.Get()
+             : kLensOverlayUploadChunkEndpointUrl.Get();
 }
 
 }  // namespace lens::features
