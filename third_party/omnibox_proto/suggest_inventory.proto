@@ -15,7 +15,7 @@ package omnibox;
 
 // This enum can switch the inventory of suggestions that are shown dynamically
 // based on the SBS entry point.
-// Next ID: 10
+// Next ID: 13
 enum SuggestInventory {
   SUGGEST_INVENTORY_DEFAULT = 0;
 
@@ -33,4 +33,8 @@ enum SuggestInventory {
   SUGGEST_INVENTORY_AI_HP_SIMPLIFY_CHIP = 7;
   SUGGEST_INVENTORY_AI_HP_IFL = 8;
   SUGGEST_INVENTORY_AI_HP_RESERVATIONS = 9;
+  SUGGEST_INVENTORY_BRAINSTORM = 10;
+  SUGGEST_INVENTORY_HELP_ME_LEARN = 11;
+  SUGGEST_INVENTORY_WRITE_OR_EDIT = 12;
 }
+
