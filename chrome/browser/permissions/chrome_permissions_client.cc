@@ -768,18 +768,10 @@ std::optional<GURL> ChromePermissionsClient::GetCanonicalOriginOverride(
 
   // Contextual Tasks:
   // Transform chrome:// origins to the DSE origin so that permissions are
-  // stored under and shared with the DSE. If the embedder is contextual tasks
-  // without the requester being the contextual tasks, do not override the URL.
-  // Only if the embedder is the contextual tasks AND the requester is the
-  // contextual tasks, override the canonical origin to be 'google.com'.
-  if (embedder == GetContextualTasksOrigin()) {
-    if (requester == GetContextualTasksOrigin()) {
-      return GURL(UIThreadSearchTermsData().GoogleBaseURLValue())
-          .DeprecatedGetOriginAsURL();
-    }
-    // The contextual tasks WebUI does not allow 3P origins and there is no
-    // plan to. It is therefore okay to return requesting_origin here.
-    return requesting_origin;
+  // stored under and shared with the DSE.
+  if (embedder == requester && embedder == GetContextualTasksOrigin()) {
+    return GURL(UIThreadSearchTermsData().GoogleBaseURLValue())
+        .DeprecatedGetOriginAsURL();
   }
 
   // Omnibox:
