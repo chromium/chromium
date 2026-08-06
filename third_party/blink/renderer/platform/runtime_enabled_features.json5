@@ -6430,7 +6430,7 @@
     {
       // https://crbug.com/41492459
       name: "TextOverflowString",
-      status: "test",
+      status: "experimental",
     },
     {
       name: "TextScaleMetaTag",
