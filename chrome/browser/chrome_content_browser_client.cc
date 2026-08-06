@@ -863,14 +863,21 @@ GURL ReplaceURLHostAndPath(const GURL& url,
   return url.ReplaceComponents(replacements);
 }
 
-bool IsIsolatedWebAppUrl(const GURL& url) {
+bool IsIsolatedWebAppOrigin(const url::Origin& origin) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-  return url.SchemeIs(webapps::kIsolatedAppScheme);
+  return origin.scheme() == webapps::kIsolatedAppScheme;
 #else
   return false;
 #endif
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+bool IsIsolatedWebAppUrl(const GURL& url) {
+  return url.SchemeIs(webapps::kIsolatedAppScheme);
+}
+#endif
 
 // Handles the rewriting of the new tab page URL based on group policy.
 bool HandleNewTabPageLocationOverride(
@@ -1803,7 +1810,7 @@ ChromeContentBrowserClient::GetStoragePartitionConfigForSite(
     BUILDFLAG(IS_CHROMEOS)
   if (content::SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
           browser_context, site)) {
-    CHECK(url::Origin::Create(site).scheme() == webapps::kIsolatedAppScheme);
+    CHECK(IsIsolatedWebAppUrl(site));
     ASSIGN_OR_RETURN(const auto iwa_url_info,
                      web_app::IsolatedWebAppUrlInfo::Create(site), [&](auto) {
                        LOG(ERROR) << "Invalid isolated-app URL: " << site;
@@ -2751,7 +2758,7 @@ bool ChromeContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
 
   // Convert |url| to an origin to resolve blob: URLs.
   auto origin = url::Origin::Create(url);
-  if (origin.scheme() == webapps::kIsolatedAppScheme) {
+  if (IsIsolatedWebAppOrigin(origin)) {
     return true;
   }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
@@ -6204,8 +6211,7 @@ void ChromeContentBrowserClient::
     // origin if it is set. We only care about enforcing same-origin checks
     // for IWA-to-IWA cross-origin requests (to prevent asset exfiltration),
     // so we only set app_origin if the initiator is an IWA.
-    if (request_initiator &&
-        request_initiator->scheme() == webapps::kIsolatedAppScheme) {
+    if (request_initiator && IsIsolatedWebAppOrigin(*request_initiator)) {
       app_origin = request_initiator;
     }
     bool enforce_same_origin = false;
@@ -6521,9 +6527,8 @@ void ChromeContentBrowserClient::
     auto* rph = content::RenderProcessHost::FromID(render_process_id);
     content::BrowserContext* browser_context = rph->GetBrowserContext();
     DCHECK(browser_context);
-    bool is_initiator_iwa =
-        request_initiator_origin.has_value() &&
-        request_initiator_origin->scheme() == webapps::kIsolatedAppScheme;
+    bool is_initiator_iwa = request_initiator_origin.has_value() &&
+                            IsIsolatedWebAppOrigin(*request_initiator_origin);
     if (content::AreIsolatedWebAppsEnabled(browser_context) &&
         !browser_context->ShutdownStarted() && is_initiator_iwa) {
       if (frame_host != nullptr) {
@@ -7036,7 +7041,7 @@ bool ChromeContentBrowserClient::IsSecurityLevelAcceptableForWebAuthn(
 #if !BUILDFLAG(IS_ANDROID)
   // For IWAs, WebAuthn is only enabled together with the remote
   // desktop client override enterprise policy.
-  if (caller_origin.scheme() == webapps::kIsolatedAppScheme) {
+  if (IsIsolatedWebAppOrigin(caller_origin)) {
     return base::FeatureList::IsEnabled(
         device::kWebAuthnIWARemoteDesktopAllowedOriginsPolicy);
   }
@@ -7867,6 +7872,8 @@ bool ChromeContentBrowserClient::IsClipboardPasteAllowed(
   // (2) granted web permission, ...
   content::BrowserContext* browser_context =
       render_frame_host->GetBrowserContext();
+  const url::Origin& main_frame_origin =
+      render_frame_host->GetMainFrame()->GetLastCommittedOrigin();
   content::PermissionController* permission_controller =
       browser_context->GetPermissionController();
   blink::mojom::PermissionStatus status =
@@ -7884,14 +7891,13 @@ bool ChromeContentBrowserClient::IsClipboardPasteAllowed(
     // via context menus, background UIs, or standalone windows where the page
     // lacks focus (including in automated browser tests).
     //
-    // We check the main frame's committed origin URL (rather than
+    // We check the main frame's committed origin directly (rather than
     // GetLastCommittedURL) to preserve origin inheritance for initial empty
     // documents (e.g., about:blank popups created by trusted system apps),
     // while ensuring sandboxed frames with opaque origins evaluate to an empty
-    // GURL and are safely excluded (see docs/security/origin-vs-url.md).
-    const GURL& url =
-        render_frame_host->GetMainFrame()->GetLastCommittedOrigin().GetURL();
-    if (content::HasWebUIScheme(url) || IsIsolatedWebAppUrl(url) ||
+    // scheme and are safely excluded (see docs/security/origin-vs-url.md).
+    if (content::HasWebUIOrigin(main_frame_origin) ||
+        IsIsolatedWebAppOrigin(main_frame_origin) ||
         render_frame_host->IsFocused()) {
       return true;
     }
@@ -7901,12 +7907,10 @@ bool ChromeContentBrowserClient::IsClipboardPasteAllowed(
   // (3) origination directly from a Chrome extension, ...
   Profile* profile = Profile::FromBrowserContext(browser_context);
   DCHECK(profile);
-  const GURL& url =
-      render_frame_host->GetMainFrame()->GetLastCommittedOrigin().GetURL();
   auto* registry = extensions::ExtensionRegistry::Get(profile);
-  if (url.SchemeIs(extensions::kExtensionScheme)) {
+  if (main_frame_origin.scheme() == extensions::kExtensionScheme) {
     return URLHasExtensionPermission(extensions::ProcessMap::Get(profile),
-                                     registry, url,
+                                     registry, main_frame_origin.GetURL(),
                                      render_frame_host->GetProcess()->GetID(),
                                      APIPermissionID::kClipboardRead);
   }
@@ -8066,7 +8070,7 @@ void ChromeContentBrowserClient::
   // IWA Service Workers need to be explicitly granted access to their origin
   // because isolated-app: isn't a web-safe scheme that can be accessed by
   // default.
-  if (script_url.SchemeIs(webapps::kIsolatedAppScheme)) {
+  if (IsIsolatedWebAppUrl(script_url)) {
     ChildProcessSecurityPolicy::GetInstance()->GrantRequestOrigin(
         child_id, url::Origin::Create(script_url));
   }
@@ -8541,7 +8545,7 @@ ChromeContentBrowserClient::GetAlternativeErrorPageOverrideInfo(
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
   if (content::AreIsolatedWebAppsEnabled(browser_context) &&
-      url.SchemeIs(webapps::kIsolatedAppScheme)) {
+      IsIsolatedWebAppUrl(url)) {
     content::mojom::AlternativeErrorPageOverrideInfoPtr
         alternative_error_page_override_info =
             web_app::MaybeGetIsolatedWebAppErrorPageInfo(
