@@ -340,6 +340,11 @@ void HTMLFormElement::ScheduleDeclarativeWebMCPToolRegistration() {
   if (!RuntimeEnabledFeatures::WebMCPEnabled(GetExecutionContext())) {
     return;
   }
+  // Declarative WebMCP tools require an active frame to bind to the browser
+  // process. If the document has no frame, there is nothing to schedule.
+  if (!GetDocument().GetFrame()) {
+    return;
+  }
   // The `<form>` must have *both* the `toolname` and `tooldescription`
   // attributes, and the form must be document-connected, to qualify for
   // declarative WebMCP inclusion.
