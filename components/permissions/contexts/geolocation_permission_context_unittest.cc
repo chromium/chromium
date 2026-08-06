@@ -25,7 +25,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/with_feature_override.h"
 #include "base/time/clock.h"
@@ -238,6 +237,11 @@ class GeolocationPermissionContextTestsBase
   raw_ptr<ContentSettingsPattern> expected_primary_pattern_ = nullptr;
   raw_ptr<ContentSettingsPattern> expected_secondary_pattern_ = nullptr;
   std::vector<std::string> events_;
+
+#if BUILDFLAG(IS_ANDROID)
+  base::AutoReset<bool> enable_all_android_permissions_for_testing_ =
+      EnableAllAndroidPermissionsForTesting();
+#endif
 };
 
 GeolocationPermissionContextTestsBase::GeolocationPermissionContextTestsBase() =

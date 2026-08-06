@@ -301,9 +301,9 @@ class PermissionUmaUtil {
   // Permission Element. The passed in `permission` must be such that
   // PermissionUtil::IsPermission(permission) returns true.
   static void RecordElementAnchoredPermissionPromptAction(
-      const std::vector<std::unique_ptr<PermissionRequest>>& requests,
-      const std::vector<base::SafeRef<permissions::PermissionRequest>>&
-          screen_requests,
+      const PermissionRequest& first_request,
+      RequestTypeForUma permission,
+      RequestTypeForUma screen_permission,
       ElementAnchoredBubbleAction action,
       ElementAnchoredBubbleVariant variant,
       int screen_counter,

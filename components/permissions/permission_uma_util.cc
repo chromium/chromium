@@ -32,6 +32,7 @@
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_data.h"
+#include "components/permissions/permission_uma_constants.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
 #include "components/permissions/prediction_service/prediction_common.h"
@@ -2243,26 +2244,23 @@ PermissionUmaUtil::GetDaysSinceUnusedSitePermissionRevocation(
 
 // static
 void PermissionUmaUtil::RecordElementAnchoredPermissionPromptAction(
-    const std::vector<std::unique_ptr<PermissionRequest>>& requests,
-    const std::vector<base::SafeRef<permissions::PermissionRequest>>&
-        screen_requests,
+    const PermissionRequest& first_request,
+    RequestTypeForUma permission,
+    RequestTypeForUma screen_permission,
     ElementAnchoredBubbleAction action,
     ElementAnchoredBubbleVariant variant,
     int screen_counter,
     const GURL& requesting_origin,
     content::BrowserContext* browser_context) {
-  CHECK(requests.size());
-  CHECK(screen_requests.size());
   auto first_request_type =
-      RequestTypeToContentSettingsType(requests[0]->request_type());
+      RequestTypeToContentSettingsType(first_request.request_type());
   PermissionsClient::Get()->GetUkmSourceId(
       first_request_type.value(), browser_context,
-      content::RenderFrameHost::FromID(requests[0]->get_requesting_frame_id()),
+      content::RenderFrameHost::FromID(first_request.get_requesting_frame_id()),
       requesting_origin,
       base::BindOnce(&RecordElementAnchoredPermissionPromptActionUkm,
-                     PermissionUtil::GetUmaValueForRequests(requests),
-                     PermissionUtil::GetUmaValueForRequests(screen_requests),
-                     action, variant, screen_counter));
+                     permission, screen_permission, action, variant,
+                     screen_counter));
 }
 
 // static

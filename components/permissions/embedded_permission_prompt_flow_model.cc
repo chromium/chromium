@@ -10,6 +10,7 @@
 #include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/permission_uma_constants.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permissions_client.h"
 #include "components/permissions/resolvers/permission_prompt_options.h"
@@ -36,7 +37,6 @@ bool CanGroupVariants(Variant a, Variant b) {
       (a == Variant::kAsk && b == Variant::kPreviouslyDenied)) {
     return true;
   }
-
   return (a == b);
 }
 
@@ -72,16 +72,37 @@ EmbeddedPermissionPromptFlowModel::EmbeddedPermissionPromptFlowModel(
     content::WebContents* web_contents,
     PermissionPrompt::Delegate* delegate)
     : delegate_(delegate), web_contents_(web_contents) {}
+
 EmbeddedPermissionPromptFlowModel::~EmbeddedPermissionPromptFlowModel() =
     default;
 
+EmbeddedPermissionPromptFlowModel::PromptContentScrim*
+EmbeddedPermissionPromptFlowModel::EnsureContentScrim() {
+  if (!content_scrim_) {
+    content_scrim_ = PromptContentScrim::Create(web_contents_, this);
+  }
+  return content_scrim_.get();
+}
+
+// static
+std::unique_ptr<EmbeddedPermissionPromptFlowModel::PromptContentScrim>
+EmbeddedPermissionPromptFlowModel::PromptContentScrim::Create(
+    content::WebContents* web_contents,
+    EmbeddedPermissionPromptFlowModel* flow_model) {
+  return PermissionsClient::Get()->CreatePromptContentScrim(web_contents,
+                                                            flow_model);
+}
+
 EmbeddedPermissionPromptFlowModel::Variant
 EmbeddedPermissionPromptFlowModel::DeterminePromptVariant(
-    PermissionSetting setting,
-    const content_settings::SettingInfo& info,
-    ContentSettingsType type) {
-  // If the administrator blocked the permission, there is nothing the user can
-  // do. Presenting them with a different screen in unproductive.
+    const PermissionRequest* request) const {
+  ContentSettingsType type = request->GetContentSettingsType();
+  auto* map = PermissionsClient::Get()->GetSettingsMap(
+      web_contents()->GetBrowserContext());
+  content_settings::SettingInfo info;
+  PermissionSetting setting = map->GetPermissionSetting(
+      request->requesting_origin(), request->embedding_origin(), type, &info);
+
   if (PermissionsClient::Get()->IsPermissionBlockedByDevicePolicy(
           web_contents(), setting, info, type)) {
     return Variant::kAdministratorDenied;
@@ -101,15 +122,9 @@ EmbeddedPermissionPromptFlowModel::DeterminePromptVariant(
     return Variant::kOsPrompt;
   }
 #else
-  // Determine if we can directly show one of the OS views. The "System
-  // Settings" view is higher priority then all the other remaining options,
-  // whereas the "OS Prompt" view is only higher priority then the views that
-  // are associated with a site-level allowed state.
-  // TODO(crbug.com/40275129): Handle going to Windows settings.
   if (PermissionsClient::Get()->IsSystemDenied(type)) {
     return Variant::kOsSystemSettings;
   }
-
   if (permission_info->delegate().IsAnyPermissionAllowed(setting) &&
       PermissionsClient::Get()->CanPromptSystemPermission(type)) {
     return Variant::kOsPrompt;
@@ -131,49 +146,48 @@ EmbeddedPermissionPromptFlowModel::DeterminePromptVariant(
   }
 }
 
-void EmbeddedPermissionPromptFlowModel::PrioritizeAndMergeNewVariant(
-    EmbeddedPermissionPromptFlowModel::Variant new_variant,
-    ContentSettingsType new_type) {
-  // The new variant can be grouped with the already existing one.
-  if (CanGroupVariants(prompt_variant_, new_variant)) {
-    prompt_types_.insert(new_type);
-    prompt_variant_ = std::max(prompt_variant_, new_variant);
+void EmbeddedPermissionPromptFlowModel::CalculateCurrentVariant(
+    std::vector<std::unique_ptr<PermissionRequest>>& requests) {
+  if (overall_request_type_for_uma_ == RequestTypeForUma::UNKNOWN) {
+    overall_request_type_for_uma_ =
+        PermissionUtil::GetUmaValueForRequests(requests);
+  }
+
+  for (auto& request : postponed_requests_) {
+    requests.push_back(std::move(request));
+  }
+  postponed_requests_.clear();
+
+  if (requests.empty()) {
+    prompt_variant_ = Variant::kUninitialized;
     return;
   }
 
-  // The existing variant is higher priority than the new one.
-  if (prompt_variant_ > new_variant) {
-    return;
-  }
+  Variant highest_priority_variant = Variant::kUninitialized;
 
-  // The new variant has higher priority than the existing one.
-  prompt_types_.clear();
-  prompt_types_.insert(new_type);
-  prompt_variant_ = new_variant;
-}
-
-void EmbeddedPermissionPromptFlowModel::CalculateCurrentVariant() {
-  Clear();
-  auto* map = PermissionsClient::Get()->GetSettingsMap(
-      web_contents()->GetBrowserContext());
-  content_settings::SettingInfo info;
-
-  for (const auto& request : delegate_->Requests()) {
-    ContentSettingsType type = request->GetContentSettingsType();
-    PermissionSetting setting =
-        map->GetPermissionSetting(delegate_->GetRequestingOrigin(),
-                                  delegate_->GetEmbeddingOrigin(), type, &info);
-    Variant current_request_variant =
-        DeterminePromptVariant(setting, info, type);
-    PrioritizeAndMergeNewVariant(current_request_variant, type);
-  }
-
-  const auto& requests = delegate_->Requests();
   for (const auto& request : requests) {
-    if (prompt_types_.contains(request->GetContentSettingsType())) {
-      requests_.push_back(request->GetSafeRef());
+    Variant request_variant = DeterminePromptVariant(request.get());
+    if (CanGroupVariants(highest_priority_variant, request_variant)) {
+      highest_priority_variant =
+          std::max(highest_priority_variant, request_variant);
+    } else if (request_variant > highest_priority_variant) {
+      highest_priority_variant = request_variant;
     }
   }
+
+  std::vector<std::unique_ptr<permissions::PermissionRequest>> active_requests;
+
+  for (auto& request : requests) {
+    Variant request_variant = DeterminePromptVariant(request.get());
+    if (CanGroupVariants(highest_priority_variant, request_variant)) {
+      active_requests.push_back(std::move(request));
+    } else {
+      postponed_requests_.push_back(std::move(request));
+    }
+  }
+
+  requests = std::move(active_requests);
+  prompt_variant_ = highest_priority_variant;
 }
 
 void EmbeddedPermissionPromptFlowModel::PrecalculateVariantsForMetrics() {
@@ -244,11 +258,9 @@ void EmbeddedPermissionPromptFlowModel::RecordPermissionActionUKM(
   DCHECK_LE(prompt_screen_counter_for_metrics_, kScreenCounterMaximum);
 
   permissions::PermissionUmaUtil::RecordElementAnchoredPermissionPromptAction(
-      // This represents all the requests for the entire prompt.
-      delegate_->Requests(),
-      // This only contains the requests for the currently active screen, which
-      // could sometimes be a subset of all requests for the entire prompt.
-      requests(), action, GetElementAnchoredBubbleVariant(prompt_variant()),
+      *delegate_->Requests()[0], overall_request_type_for_uma_,
+      PermissionUtil::GetUmaValueForRequests(delegate_->Requests()), action,
+      GetElementAnchoredBubbleVariant(prompt_variant()),
       prompt_screen_counter_for_metrics_, delegate_->GetRequestingOrigin(),
       delegate_->GetAssociatedWebContents()->GetBrowserContext());
 
@@ -284,28 +296,31 @@ EmbeddedPermissionPromptFlowModel::GetPromptVariants() const {
   return variants;
 }
 
-void EmbeddedPermissionPromptFlowModel::SetDelegateAction(
-    DelegateAction action,
-    const PromptOptions& prompt_options) {
-  if (action_.has_value()) {
-    return;
-  }
+void EmbeddedPermissionPromptFlowModel::DismissScrim() {
+  PermissionUmaUtil::RecordElementAnchoredBubbleDismiss(
+      delegate_->Requests(), DismissedReason::kDismissedScrim);
+  RecordOsMetrics(OsScreenAction::kDismissedScrim);
+  RecordPermissionActionUKM(ElementAnchoredBubbleAction::kDismissedScrim);
 
-  action_ = action;
-  switch (action) {
-    case DelegateAction::kAllow:
-      delegate_->Accept(prompt_options);
-      break;
-    case DelegateAction::kAllowThisTime:
-      delegate_->AcceptThisTime(prompt_options);
-      break;
-    case DelegateAction::kDeny:
-      delegate_->Deny(prompt_options);
-      break;
-    case DelegateAction::kDismiss:
-      delegate_->Dismiss(prompt_options);
-      break;
-  }
+  PrecalculateVariantsForMetrics();
+
+  CHECK_NE(delegate_->Requests()[0]->GetContentSettingsType(),
+           ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
+
+  delegate_->Dismiss(/*prompt_options=*/std::monostate());
+}
+
+PermissionPrompt::Delegate*
+EmbeddedPermissionPromptFlowModel::GetPermissionPromptDelegate() const {
+  return delegate_;
+}
+
+std::vector<std::unique_ptr<PermissionRequest>>
+EmbeddedPermissionPromptFlowModel::TakePostponedRequests() {
+  std::vector<std::unique_ptr<PermissionRequest>> postponed_requests =
+      std::move(postponed_requests_);
+  postponed_requests_.clear();
+  return postponed_requests;
 }
 
 }  // namespace permissions

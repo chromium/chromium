@@ -999,6 +999,15 @@ ChromePermissionsClient::CreatePrompt(
     permissions::PermissionPrompt::Delegate* delegate) {
   return CreatePermissionPrompt(web_contents, delegate);
 }
+
+std::unique_ptr<
+    permissions::EmbeddedPermissionPromptFlowModel::PromptContentScrim>
+ChromePermissionsClient::CreatePromptContentScrim(
+    content::WebContents* web_contents,
+    permissions::EmbeddedPermissionPromptFlowModel* flow_model) {
+  CHECK(web_contents);
+  return CreatePermissionPromptContentScrim(*web_contents, flow_model);
+}
 #endif
 
 bool ChromePermissionsClient::HasDevicePermission(

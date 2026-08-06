@@ -54,9 +54,6 @@ std::optional<gfx::Rect> PermissionPromptAndroid::GetViewBoundsInScreen()
   return std::nullopt;
 }
 
-bool PermissionPromptAndroid::ShouldFinalizeRequestAfterDecided() const {
-  return true;
-}
 
 std::vector<permissions::ElementAnchoredBubbleVariant>
 PermissionPromptAndroid::GetPromptVariants() const {

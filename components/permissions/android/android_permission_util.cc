@@ -34,6 +34,7 @@ namespace permissions {
 namespace {
 
 bool g_is_system_location_setting_enabled_for_test = false;
+bool g_are_all_android_permissions_enabled_for_test = false;
 
 // Returns whether the Android location setting is enabled/disabled.
 bool IsSystemLocationSettingEnabled() {
@@ -171,6 +172,10 @@ bool CanRequestSystemPermissionsForBluetooth(
 
 bool HasSystemPermission(ContentSettingsType type,
                          content::WebContents* web_contents) {
+  if (g_are_all_android_permissions_enabled_for_test) {
+    return true;
+  }
+
   if (!web_contents || !web_contents->GetNativeView()) {
     return false;
   }
@@ -218,6 +223,11 @@ void RequestLocationServices(content::WebContents* web_contents) {
 
 base::AutoReset<bool> EnableSystemLocationSettingForTesting() {
   return base::AutoReset<bool>(&g_is_system_location_setting_enabled_for_test,
+                               true);
+}
+
+base::AutoReset<bool> EnableAllAndroidPermissionsForTesting() {
+  return base::AutoReset<bool>(&g_are_all_android_permissions_enabled_for_test,
                                true);
 }
 

@@ -36,74 +36,43 @@ EmbeddedPermissionPrompt::EmbeddedPermissionPrompt(
     content::WebContents* web_contents,
     permissions::PermissionPrompt::Delegate* delegate)
     : PermissionPromptDesktop(web_contents, delegate), delegate_(delegate) {
-  if (browser()) {
-    if (auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser())) {
-      if (auto* focus_manager = browser_view->GetFocusManager()) {
-        previously_focused_view_tracker_.SetView(
-            focus_manager->GetFocusedView());
-      }
-    }
-  }
-
-  prompt_model_ =
-      std::make_unique<permissions::EmbeddedPermissionPromptFlowModel>(
-          web_contents, delegate);
-  CloseCurrentViewAndMaybeShowNext(/*first_prompt=*/true);
-}
-
-EmbeddedPermissionPrompt::~EmbeddedPermissionPrompt() {
-  CloseViewAndScrim();
-}
-
-void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
-    bool first_prompt) {
-  if (!first_prompt) {
-    CloseView();
-  }
-
-  prompt_model_->CalculateCurrentVariant();
+  prompt_model_ = delegate_->GetEmbeddedPromptFlowModel();
+  CHECK(prompt_model_);
 
   EmbeddedPermissionPromptBaseView* prompt_view = nullptr;
 
   switch (prompt_variant()) {
     case Variant::kAsk:
       prompt_view = new EmbeddedPermissionPromptAskView(
-          web_contents(), weak_factory_.GetWeakPtr());
+          web_contents, weak_factory_.GetWeakPtr());
       break;
     case Variant::kPreviouslyGranted:
-      if (first_prompt) {
-        prompt_view = new EmbeddedPermissionPromptPreviouslyGrantedView(
-            web_contents(), weak_factory_.GetWeakPtr());
-      } else {
-        FinalizePrompt();
-        return;
-      }
+      prompt_view = new EmbeddedPermissionPromptPreviouslyGrantedView(
+          web_contents, weak_factory_.GetWeakPtr());
       break;
     case Variant::kPreviouslyDenied:
       prompt_view = new EmbeddedPermissionPromptPreviouslyDeniedView(
-          web_contents(), weak_factory_.GetWeakPtr());
+          web_contents, weak_factory_.GetWeakPtr());
       break;
     case Variant::kOsPrompt:
       prompt_view = new EmbeddedPermissionPromptShowSystemPromptView(
-          web_contents(), weak_factory_.GetWeakPtr());
+          web_contents, weak_factory_.GetWeakPtr());
       prompt_model_->StartFirstDisplayTime();
-      // This view has no buttons, so the OS level prompt should be triggered at
-      // the same time as the |EmbeddedPermissionPromptShowSystemPromptView|.
       PromptForOsPermission();
       break;
     case Variant::kOsSystemSettings:
       prompt_view = new EmbeddedPermissionPromptSystemSettingsView(
-          web_contents(), weak_factory_.GetWeakPtr());
+          web_contents, weak_factory_.GetWeakPtr());
       prompt_model_->StartFirstDisplayTime();
       break;
     case Variant::kAdministratorGranted:
       prompt_view = new EmbeddedPermissionPromptPolicyView(
-          web_contents(), weak_factory_.GetWeakPtr(),
+          web_contents, weak_factory_.GetWeakPtr(),
           /*is_permission_allowed=*/true);
       break;
     case Variant::kAdministratorDenied:
       prompt_view = new EmbeddedPermissionPromptPolicyView(
-          web_contents(), weak_factory_.GetWeakPtr(),
+          web_contents, weak_factory_.GetWeakPtr(),
           /*is_permission_allowed=*/false);
       break;
     case Variant::kUninitialized:
@@ -114,48 +83,29 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
 
   if (prompt_view) {
     prompt_view_tracker_.SetView(prompt_view);
-    if (!content_scrim_widget_) {
-      scoped_ignore_input_events_ =
-          web_contents()->IgnoreInputEvents(std::nullopt);
-      // Creating the widget will display it. That's why we create it only if
-      // the tab can show modal UI.
-
-      // Permission prompts from side panels/omnibox popup do not have a
-      // `TabInterface`, but there is never a concern with showing a modal on
-      // them because if they can request permission, they are open and
-      // available to have a modal to show on top of them unlike tabs, which can
-      // be switched between. This function is only called after embedded
-      // permission prompt has been chosen as the prompt type. Embedded
-      // permission prompt path is not run for WebUIs like omnibox popup/side
-      // panels if the omnibox embedded permission flag is not enabled, so, in
-      // those cases, accessing a null `TabInterface` is avoided.
-      if (!permissions::PermissionsClient::Get()
-               ->IsPrivilegedInternalWebUIForUIRouting(web_contents())) {
-        tabs::TabInterface* tab =
-            tabs::TabInterface::GetFromContents(web_contents());
-        scoped_tab_modal_ui_ = tab->ShowModalUI();
-      }
-
-      content_scrim_widget_ =
-          EmbeddedPermissionPromptContentScrimView::CreateScrimWidget(
-              weak_factory_.GetWeakPtr(),
-              SkColorSetA(web_contents()->GetColorProvider().GetColor(
-                              ui::kColorRefNeutral20),
-                          0.8 * SK_AlphaOPAQUE),
-              /*should_dismiss_on_click=*/true);
+    permissions::EmbeddedPermissionPromptFlowModel::PromptContentScrim* scrim =
+        prompt_model_->EnsureContentScrim();
+    views::Widget* scrim_widget = nullptr;
+    if (scrim) {
+      scrim_widget = static_cast<EmbeddedPermissionPromptContentScrim*>(scrim)
+                         ->GetWidget();
     }
-    // If the tab/native view is closed, the `content_scrim_widget_` may be
+    // If the tab/native view is closed, the `scrim_widget` may be
     // nullptr. In this scenario, skip showing the prompt.
-    if (!content_scrim_widget_) {
+    if (!scrim_widget) {
       return;
     }
-    prompt_view->UpdateAnchor(content_scrim_widget_.get());
+    prompt_view->UpdateAnchor(scrim_widget);
     prompt_view->Show();
   }
 
   if (prompt_view->GetWidget()) {
     prompt_view->GetWidget()->UpdateAccessibleNameForRootView();
   }
+}
+
+EmbeddedPermissionPrompt::~EmbeddedPermissionPrompt() {
+  CloseView();
 }
 
 EmbeddedPermissionPrompt::TabSwitchingBehavior
@@ -168,9 +118,6 @@ EmbeddedPermissionPrompt::GetPromptDisposition() const {
   return permissions::PermissionPromptDisposition::ELEMENT_ANCHORED_BUBBLE;
 }
 
-bool EmbeddedPermissionPrompt::ShouldFinalizeRequestAfterDecided() const {
-  return false;
-}
 
 std::vector<permissions::ElementAnchoredBubbleVariant>
 EmbeddedPermissionPrompt::GetPromptVariants() const {
@@ -213,10 +160,7 @@ void EmbeddedPermissionPrompt::Allow() {
   CHECK_NE(delegate()->Requests()[0]->GetContentSettingsType(),
            ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
 
-  prompt_model_->SetDelegateAction(
-      permissions::EmbeddedPermissionPromptFlowModel::DelegateAction::kAllow,
-      /*prompt_options=*/std::monostate());
-  CloseCurrentViewAndMaybeShowNext(/*first_prompt=*/false);
+  delegate()->Accept(/*prompt_options=*/std::monostate());
 }
 
 void EmbeddedPermissionPrompt::AllowThisTime() {
@@ -231,11 +175,7 @@ void EmbeddedPermissionPrompt::AllowThisTime() {
   CHECK_NE(delegate()->Requests()[0]->GetContentSettingsType(),
            ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
 
-  prompt_model_->SetDelegateAction(
-      permissions::EmbeddedPermissionPromptFlowModel::DelegateAction::
-          kAllowThisTime,
-      /*prompt_options=*/std::monostate());
-  CloseCurrentViewAndMaybeShowNext(/*first_prompt=*/false);
+  delegate()->AcceptThisTime(/*prompt_options=*/std::monostate());
 }
 
 void EmbeddedPermissionPrompt::Dismiss() {
@@ -254,10 +194,7 @@ void EmbeddedPermissionPrompt::Dismiss() {
   CHECK_NE(delegate()->Requests()[0]->GetContentSettingsType(),
            ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
 
-  prompt_model_->SetDelegateAction(
-      permissions::EmbeddedPermissionPromptFlowModel::DelegateAction::kDismiss,
-      /*prompt_options=*/std::monostate());
-  FinalizePrompt();
+  delegate()->Dismiss(/*prompt_options=*/std::monostate());
 }
 
 void EmbeddedPermissionPrompt::Acknowledge() {
@@ -271,10 +208,7 @@ void EmbeddedPermissionPrompt::Acknowledge() {
   CHECK_NE(delegate()->Requests()[0]->GetContentSettingsType(),
            ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
 
-  prompt_model_->SetDelegateAction(
-      permissions::EmbeddedPermissionPromptFlowModel::DelegateAction::kDismiss,
-      /*prompt_options=*/std::monostate());
-  FinalizePrompt();
+  delegate()->Dismiss(/*prompt_options=*/std::monostate());
 }
 
 void EmbeddedPermissionPrompt::StopAllowing() {
@@ -289,10 +223,7 @@ void EmbeddedPermissionPrompt::StopAllowing() {
   CHECK_NE(delegate()->Requests()[0]->GetContentSettingsType(),
            ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
 
-  prompt_model_->SetDelegateAction(
-      permissions::EmbeddedPermissionPromptFlowModel::DelegateAction::kDeny,
-      /*prompt_options=*/std::monostate());
-  FinalizePrompt();
+  delegate()->Deny(/*prompt_options=*/std::monostate());
 }
 
 void EmbeddedPermissionPrompt::ShowSystemSettings() {
@@ -322,7 +253,7 @@ void EmbeddedPermissionPrompt::SystemPermissionsNoLongerDenied() {
         permissions::EmbeddedPermissionPromptFlowModel::Variant::
             kOsSystemSettings);
   prompt_model_->PrecalculateVariantsForMetrics();
-  CloseCurrentViewAndMaybeShowNext(/*first_prompt=*/false);
+  delegate_->AdvanceOrFinalizeEmbeddedPromptFlow();
 }
 
 base::WeakPtr<permissions::PermissionPrompt::Delegate>
@@ -330,42 +261,18 @@ EmbeddedPermissionPrompt::GetPermissionPromptDelegate() const {
   return delegate_->GetWeakPtr();
 }
 
-const std::vector<base::SafeRef<permissions::PermissionRequest>>&
-EmbeddedPermissionPrompt::Requests() const {
-  return prompt_model_->requests();
-}
-
-void EmbeddedPermissionPrompt::DismissScrim() {
-  permissions::PermissionUmaUtil::RecordElementAnchoredBubbleDismiss(
-      delegate()->Requests(), permissions::DismissedReason::kDismissedScrim);
-  prompt_model_->RecordOsMetrics(permissions::OsScreenAction::kDismissedScrim);
-  prompt_model_->RecordPermissionActionUKM(
-      permissions::ElementAnchoredBubbleAction::kDismissedScrim);
-
-  prompt_model_->PrecalculateVariantsForMetrics();
-
-  // GEOLOCATION_WITH_OPTIONS is currently not supported on desktop.
-  //
-  // TODO(crbug.com/430494523): Plumb through the selected PromptOptions once it
-  // is.
-  CHECK_NE(delegate()->Requests()[0]->GetContentSettingsType(),
-           ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
-
-  prompt_model_->SetDelegateAction(
-      permissions::EmbeddedPermissionPromptFlowModel::DelegateAction::kDismiss,
-      /*prompt_options=*/std::monostate());
-  FinalizePrompt();
-}
-
 void EmbeddedPermissionPrompt::PromptForOsPermission() {
-  const auto& prompt_types = prompt_model_->prompt_types();
+  const auto& requests = delegate()->Requests();
   // We currently support <=2 grouped permissions.
-  CHECK_LE(prompt_types.size(), 2U);
+  CHECK_LE(requests.size(), 2U);
 
-  std::vector<ContentSettingsType> types(prompt_types.begin(),
-                                         prompt_types.end());
+  std::vector<ContentSettingsType> types;
+  types.reserve(requests.size());
+  for (const auto& request : requests) {
+    types.push_back(request->GetContentSettingsType());
+  }
 
-  for (unsigned int idx = 0; idx < types.size(); idx++) {
+  for (size_t idx = 0; idx < types.size(); idx++) {
     system_permission_settings::Request(
         types[idx],
         base::BindOnce(
@@ -425,7 +332,7 @@ void EmbeddedPermissionPrompt::OnRequestSystemPermissionResponse(
     // Do not finalize request until all the necessary system permissions are
     // granted.
     if (other_permission_determined) {
-      FinalizePrompt();
+      delegate_->AdvanceOrFinalizeEmbeddedPromptFlow();
     }
 }
 
@@ -435,60 +342,5 @@ void EmbeddedPermissionPrompt::CloseView() {
     prompt_view->PrepareToClose();
     prompt_view->GetWidget()->Close();
     prompt_view_tracker_.SetView(nullptr);
-    prompt_model_->Clear();
   }
-}
-
-void EmbeddedPermissionPrompt::CloseViewAndScrim() {
-  CloseView();
-
-  if (content_scrim_widget_) {
-    content_scrim_widget_->Close();
-    content_scrim_widget_ = nullptr;
-    scoped_ignore_input_events_.reset();
-  }
-
-  scoped_tab_modal_ui_.reset();
-}
-
-void EmbeddedPermissionPrompt::FocusThenClose() {
-  // The native Browser UI (the Omnibox) does not have web contents like web
-  // pages do. If OS restores focus to the WebContents when the prompt closes,
-  // it steals focus from the Omnibox, which triggers `OnKillFocus`
-  // and incorrectly collapses the omnibox popup and therefore voice search.
-  views::View* previously_focused_view =
-      previously_focused_view_tracker_.view();
-  // Reset to avoid reuse and any re-entrancy.
-  previously_focused_view_tracker_.SetView(nullptr);
-
-  // Only restore focus if the view still exists, is still drawn on screen,
-  // and is still capable of receiving focus.
-  if (previously_focused_view && previously_focused_view->IsDrawn() &&
-      previously_focused_view->IsFocusable()) {
-    previously_focused_view->RequestFocus();
-  } else if (web_contents()) {
-    // Focus must be restored to the browser before the prompt widget is
-    // destroyed to ensure the OS properly targets the browser window when the
-    // prompt closes instead of an available window (which, with status race
-    // conditions caused by the prompt, does not include Chrome sometimes). This
-    // is a particular bug related to how native Windows handles focus after an
-    // ambiguous focus release.
-    web_contents()->Focus();
-  }
-
-  CloseViewAndScrim();
-}
-
-void EmbeddedPermissionPrompt::FinalizePrompt() {
-  FocusThenClose();
-
-  // If by this point we've not sent an action to the delegate, send a dismiss
-  // action.
-  if (!prompt_model_->HasDelegateActionSet()) {
-    prompt_model_->SetDelegateAction(
-        permissions::EmbeddedPermissionPromptFlowModel::DelegateAction::
-            kDismiss,
-        /*prompt_options=*/std::monostate());
-  }
-  delegate_->FinalizeCurrentRequests();
 }

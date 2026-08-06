@@ -224,6 +224,13 @@ std::unique_ptr<PermissionPrompt> PermissionsClient::CreatePrompt(
 }
 #endif
 
+std::unique_ptr<EmbeddedPermissionPromptFlowModel::PromptContentScrim>
+PermissionsClient::CreatePromptContentScrim(
+    content::WebContents* web_contents,
+    EmbeddedPermissionPromptFlowModel* flow_model) {
+  return nullptr;
+}
+
 bool PermissionsClient::HasDevicePermission(ContentSettingsType type) const {
   return true;
 }

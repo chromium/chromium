@@ -67,10 +67,6 @@ PermissionPromptNotificationsMac::GetViewBoundsInScreen() const {
   return std::nullopt;
 }
 
-bool PermissionPromptNotificationsMac::ShouldFinalizeRequestAfterDecided()
-    const {
-  return true;
-}
 
 std::vector<permissions::ElementAnchoredBubbleVariant>
 PermissionPromptNotificationsMac::GetPromptVariants() const {

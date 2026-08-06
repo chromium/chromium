@@ -13,6 +13,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/favicon/core/favicon_service.h"
+#include "components/permissions/embedded_permission_prompt_flow_model.h"
 #include "components/permissions/features.h"
 #include "components/permissions/origin_keyed_permission_action_service.h"
 #include "components/permissions/permission_prompt.h"
@@ -322,6 +323,10 @@ class PermissionsClient {
       content::WebContents* web_contents,
       PermissionPrompt::Delegate* delegate);
 #endif
+
+  virtual std::unique_ptr<EmbeddedPermissionPromptFlowModel::PromptContentScrim>
+  CreatePromptContentScrim(content::WebContents* web_contents,
+                           EmbeddedPermissionPromptFlowModel* flow_model);
 
   // Returns true if the browser has the necessary permission(s) from the
   // platform to provide a particular permission-gated capability to sites. This

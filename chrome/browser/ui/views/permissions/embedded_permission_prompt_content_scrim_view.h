@@ -6,17 +6,26 @@
 #define CHROME_BROWSER_UI_VIEWS_PERMISSIONS_EMBEDDED_PERMISSION_PROMPT_CONTENT_SCRIM_VIEW_H_
 
 #include <memory>
+#include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_view_delegate.h"
+#include "components/permissions/embedded_permission_prompt_flow_model.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view.h"
+#include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
+
+namespace tabs {
+class ScopedTabModalUI;
+}  // namespace tabs
 
 // The view class, which is owned by the `EmbeddedPermissionPrompt`, applies a
 // scrim to the contents view on the root window while the permission prompt is
@@ -50,7 +59,7 @@ class EmbeddedPermissionPromptContentScrimView
   };
 
   EmbeddedPermissionPromptContentScrimView(base::WeakPtr<Delegate> delegate,
-                                           content::WebContents* web_contents,
+                                           content::WebContents& web_contents,
                                            bool should_dismiss_on_click);
 
   ~EmbeddedPermissionPromptContentScrimView() override;
@@ -84,6 +93,44 @@ class EmbeddedPermissionPromptContentScrimView
       widget_observation_{this};
   base::WeakPtr<Delegate> delegate_;
   bool should_dismiss_on_click_;
+};
+
+// The concrete implementation of `permissions::PromptContentScrim` that creates
+// and owns the content scrim widget, modal UI state, and input event
+// blocking across multiple prompts during an embedded permission prompt flow.
+class EmbeddedPermissionPromptContentScrim
+    : public permissions::EmbeddedPermissionPromptFlowModel::PromptContentScrim,
+      public EmbeddedPermissionPromptContentScrimView::Delegate {
+ public:
+  EmbeddedPermissionPromptContentScrim(
+      content::WebContents& web_contents,
+      permissions::EmbeddedPermissionPromptFlowModel* flow_model);
+  ~EmbeddedPermissionPromptContentScrim() override;
+  EmbeddedPermissionPromptContentScrim(
+      const EmbeddedPermissionPromptContentScrim&) = delete;
+  EmbeddedPermissionPromptContentScrim& operator=(
+      const EmbeddedPermissionPromptContentScrim&) = delete;
+
+  // EmbeddedPermissionPromptContentScrimView::Delegate:
+  void DismissScrim() override;
+  base::WeakPtr<permissions::PermissionPrompt::Delegate>
+  GetPermissionPromptDelegate() const override;
+
+  views::Widget* GetWidget() { return content_scrim_widget_.get(); }
+
+ private:
+  void FocusThenClose();
+
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
+  raw_ptr<permissions::EmbeddedPermissionPromptFlowModel> flow_model_ = nullptr;
+  std::unique_ptr<views::Widget> content_scrim_widget_;
+  views::ViewTracker previously_focused_view_tracker_;
+  std::unique_ptr<tabs::ScopedTabModalUI> scoped_tab_modal_ui_;
+  std::optional<content::WebContents::ScopedIgnoreInputEvents>
+      scoped_ignore_input_events_;
+
+  base::WeakPtrFactory<EmbeddedPermissionPromptContentScrim> weak_factory_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_EMBEDDED_PERMISSION_PROMPT_CONTENT_SCRIM_VIEW_H_

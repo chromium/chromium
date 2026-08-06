@@ -49,9 +49,6 @@ std::optional<gfx::Rect> MockPermissionPrompt::GetViewBoundsInScreen() const {
   return std::make_optional<gfx::Rect>(100, 100, 100, 100);
 }
 
-bool MockPermissionPrompt::ShouldFinalizeRequestAfterDecided() const {
-  return true;
-}
 
 std::vector<permissions::ElementAnchoredBubbleVariant>
 MockPermissionPrompt::GetPromptVariants() const {

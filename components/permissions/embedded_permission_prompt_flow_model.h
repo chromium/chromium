@@ -5,15 +5,18 @@
 #ifndef COMPONENTS_PERMISSIONS_EMBEDDED_PERMISSION_PROMPT_FLOW_MODEL_H_
 #define COMPONENTS_PERMISSIONS_EMBEDDED_PERMISSION_PROMPT_FLOW_MODEL_H_
 
+#include <memory>
 #include <optional>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_request.h"
+#include "components/permissions/permission_uma_constants.h"
 #include "components/permissions/request_type.h"
 
 namespace content {
@@ -28,6 +31,18 @@ namespace permissions {
 // logic to find the correct screen to show the user.
 class EmbeddedPermissionPromptFlowModel {
  public:
+  // This class is the platform-independent interface through which the prompt
+  // flow model communicates with the scrim UI surface.
+  class PromptContentScrim {
+   public:
+    // Create and display a platform-specific scrim.
+    static std::unique_ptr<PromptContentScrim> Create(
+        content::WebContents* web_contents,
+        EmbeddedPermissionPromptFlowModel* flow_model);
+
+    virtual ~PromptContentScrim() = default;
+  };
+
   EmbeddedPermissionPromptFlowModel(content::WebContents* web_contents,
                                     PermissionPrompt::Delegate* delegate);
   ~EmbeddedPermissionPromptFlowModel();
@@ -66,49 +81,22 @@ class EmbeddedPermissionPromptFlowModel {
     kAdministratorDenied = 7,
   };
 
-  // Define the unique delegate action owned by this model.
-  enum class DelegateAction {
-    kAllow,
-    kAllowThisTime,
-    kDeny,
-    kDismiss,
-  };
+  // Calculate the variant of `request` based on the current state of
+  // browser (content settings) and device (settings and policies).
+  Variant DeterminePromptVariant(const PermissionRequest* request) const;
 
-  // Calculate the variant of given type based on the current state of browser
-  // (content settings) and device (settings and policies).
-  Variant DeterminePromptVariant(PermissionSetting setting,
-                                 const content_settings::SettingInfo& info,
-                                 ContentSettingsType type);
-
-  // Compare current variant with the new one based on the prioty order,
-  // grouping if necessary.
-  void PrioritizeAndMergeNewVariant(Variant new_variant,
-                                    ContentSettingsType type);
+  // Calculate the current prompt variant for `requests` and
+  // `postponed_requests_`, keeping active matching requests in `requests` and
+  // buffering postponed requests in `postponed_requests_`.
+  void CalculateCurrentVariant(
+      std::vector<std::unique_ptr<PermissionRequest>>& requests);
 
   content::WebContents* web_contents() const { return web_contents_; }
 
-  // Calculate the current prompt variant for the ongoing permission requests.
-  void CalculateCurrentVariant();
-
   Variant prompt_variant() const { return prompt_variant_; }
+  void set_prompt_variant(Variant variant) { prompt_variant_ = variant; }
 
-  std::vector<permissions::ElementAnchoredBubbleVariant> GetPromptVariants()
-      const;
-
-  const std::set<ContentSettingsType>& prompt_types() const {
-    return prompt_types_;
-  }
-
-  const std::vector<base::SafeRef<permissions::PermissionRequest>>& requests()
-      const {
-    return requests_;
-  }
-
-  void Clear() {
-    requests_.clear();
-    prompt_variant_ = Variant::kUninitialized;
-    prompt_types_.clear();
-  }
+  std::vector<ElementAnchoredBubbleVariant> GetPromptVariants() const;
 
   void StartFirstDisplayTime() {
     current_variant_first_display_time_ = base::Time::Now();
@@ -118,22 +106,21 @@ class EmbeddedPermissionPromptFlowModel {
 
   void RecordOsMetrics(permissions::OsScreenAction action);
 
-  void RecordPermissionActionUKM(
-      permissions::ElementAnchoredBubbleAction action);
+  void RecordPermissionActionUKM(ElementAnchoredBubbleAction action);
 
   void RecordElementAnchoredBubbleVariantUMA(Variant variant);
 
-  void SetDelegateAction(DelegateAction action,
-                         const PromptOptions& prompt_options);
+  void DismissScrim();
+  PermissionPrompt::Delegate* GetPermissionPromptDelegate() const;
 
-  bool HasDelegateActionSet() const { return action_.has_value(); }
+  PromptContentScrim* EnsureContentScrim();
+  PromptContentScrim* prompt_content_scrim() { return content_scrim_.get(); }
+
+  std::vector<std::unique_ptr<PermissionRequest>> TakePostponedRequests();
 
  private:
   Variant prompt_variant_ = Variant::kUninitialized;
   raw_ptr<PermissionPrompt::Delegate> delegate_;
-
-  std::set<ContentSettingsType> prompt_types_;
-  std::vector<base::SafeRef<permissions::PermissionRequest>> requests_;
 
   raw_ptr<content::WebContents> web_contents_;
 
@@ -145,7 +132,13 @@ class EmbeddedPermissionPromptFlowModel {
 
   base::Time current_variant_first_display_time_;
 
-  std::optional<DelegateAction> action_ = std::nullopt;
+  // Holds requests that have been postponed by CalculateCurrentVariant().
+  std::vector<std::unique_ptr<PermissionRequest>> postponed_requests_;
+
+  // Overall request type for UMA for all requests processed by this flow.
+  RequestTypeForUma overall_request_type_for_uma_ = RequestTypeForUma::UNKNOWN;
+
+  std::unique_ptr<PromptContentScrim> content_scrim_;
 
   base::WeakPtrFactory<EmbeddedPermissionPromptFlowModel> weak_factory_{this};
 };

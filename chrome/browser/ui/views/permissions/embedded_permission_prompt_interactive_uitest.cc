@@ -420,7 +420,6 @@ class EmbeddedPermissionPromptInteractiveTest
                       permissions::PermissionRequestManager::FromWebContents(
                           browser()->tab_strip_model()->GetActiveWebContents());
                   manager->Dismiss(/*prompt_options=*/std::monostate());
-                  manager->FinalizeCurrentRequests();
                 })));
 
     RunTestSequence(std::move(steps));
@@ -1194,7 +1193,6 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
 
         // Need to close the permission prompt before the test shuts down.
         manager->Dismiss(/*prompt_options=*/std::monostate());
-        manager->FinalizeCurrentRequests();
       }));
 }
 
@@ -1216,7 +1214,6 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
 
         // Need to close the permission prompt before the test shuts down.
         manager->Dismiss(/*prompt_options=*/std::monostate());
-        manager->FinalizeCurrentRequests();
       }));
 }
 
@@ -1339,7 +1336,6 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPositioningInteractiveTest,
               permissions::PermissionRequestManager::FromWebContents(
                   browser()->tab_strip_model()->GetActiveWebContents());
           manager->Dismiss(/*prompt_options=*/std::monostate());
-          manager->FinalizeCurrentRequests();
 
           zoom::ZoomController* zoom_controller =
               zoom::ZoomController::FromWebContents(
@@ -1400,7 +1396,6 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPositioningInteractiveTest,
               permissions::PermissionRequestManager::FromWebContents(
                   browser()->tab_strip_model()->GetActiveWebContents());
           manager->Dismiss(/*prompt_options=*/std::monostate());
-          manager->FinalizeCurrentRequests();
         }));
   }
 }
@@ -1582,7 +1577,6 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
         auto* manager = permissions::PermissionRequestManager::FromWebContents(
             browser()->tab_strip_model()->GetActiveWebContents());
         manager->Dismiss(/*prompt_options=*/std::monostate());
-        manager->FinalizeCurrentRequests();
       }));
 }
 
@@ -1638,7 +1632,6 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
         auto* manager = permissions::PermissionRequestManager::FromWebContents(
             browser()->tab_strip_model()->GetActiveWebContents());
         manager->Dismiss(/*prompt_options=*/std::monostate());
-        manager->FinalizeCurrentRequests();
       }));
 }
 
@@ -1743,7 +1736,7 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
 
   TestScrimDelegate delegate;
   auto scrim_view = std::make_unique<EmbeddedPermissionPromptContentScrimView>(
-      delegate.GetWeakPtr(), test_web_contents.get(),
+      delegate.GetWeakPtr(), *test_web_contents.get(),
       /*should_dismiss_on_click=*/true);
 
   // The scrim's layer rounded corner radius should match the radii of the

@@ -85,7 +85,8 @@ class PermissionRequest {
 
   virtual ~PermissionRequest();
 
-  GURL requesting_origin() const { return data_->requesting_origin; }
+  const GURL& requesting_origin() const { return data_->requesting_origin; }
+  const GURL& embedding_origin() const { return data_->embedding_origin; }
   RequestType request_type() const;
 
   // Whether |this| and |other_request| are duplicates and therefore don't both

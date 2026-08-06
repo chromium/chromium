@@ -10,6 +10,7 @@
 #include <optional>
 #include <string>
 
+#include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/permissions/permission_actions_history_factory.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_state.h"
+#include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -55,6 +57,10 @@
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+#include "components/permissions/android/android_permission_util.h"
 #endif
 
 class PermissionRequestManagerTest
@@ -314,6 +320,13 @@ TEST_F(PermissionRequestManagerTest, UMAForMergedDeniedBubble) {
 }
 
 TEST_F(PermissionRequestManagerTest, TestEmbargoForEmbeddedPermissionRequest) {
+#if BUILDFLAG(IS_ANDROID)
+  base::AutoReset<bool> enable_android_permissions =
+      permissions::EnableAllAndroidPermissionsForTesting();
+#endif
+  system_permission_settings::ScopedSettingsForTesting scoped_system_permission(
+      ContentSettingsType::MEDIASTREAM_CAMERA, /*blocked=*/false);
+
   GURL url(permissions::MockPermissionRequest::kDefaultOrigin);
   permissions::RequestType request_type =
       permissions::RequestType::kCameraStream;

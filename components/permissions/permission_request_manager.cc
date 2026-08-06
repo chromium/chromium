@@ -30,9 +30,11 @@
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/constants.h"
+#include "components/permissions/embedded_permission_prompt_flow_model.h"
 #include "components/permissions/features.h"
 #include "components/permissions/origin_keyed_permission_action_service.h"
 #include "components/permissions/permission_actions_history.h"
@@ -775,28 +777,43 @@ void PermissionRequestManager::Ignore(const PromptOptions& prompt_options) {
 
 void PermissionRequestManager::FinalizeCurrentRequests() {
   CHECK(IsRequestInProgress());
-  ResetViewStateForCurrentRequest();
-  base::AutoReset<bool> block_preempt(&can_preempt_current_request_, false);
-
-  //  Erase the request from |validated_requests_| before its destruction
-  //  during requests_.clear() at the end of this function.
-  for (const auto& request : requests_) {
-    std::erase(validated_requests_, *request);
-    request_sources_map_.erase(base::raw_ref(*request));
-    FinishRequestIncludingDuplicates(request.get());
+  std::vector<std::unique_ptr<PermissionRequest>> postponed_requests;
+  if (embedded_prompt_flow_model_) {
+    postponed_requests = embedded_prompt_flow_model_->TakePostponedRequests();
   }
+  ResetViewStateForCurrentRequest();
 
-  // No need to execute the preignore logic as we canceling currently active
-  // requests anyway.
-  preignore_timer_.Stop();
+  {
+    base::AutoReset<bool> block_preempt(&can_preempt_current_request_, false);
 
-  // We have no need to block preemption anymore.
-  std::ignore = std::move(block_preempt);
+    //  Erase the request from |validated_requests_| before its destruction
+    //  during requests_.clear() at the end of this function.
+    for (const auto& request : requests_) {
+      std::erase(validated_requests_, *request);
+      request_sources_map_.erase(base::raw_ref(*request));
+      FinishRequestIncludingDuplicates(request.get());
+    }
+
+    // No need to execute the preignore logic as we canceling currently active
+    // requests anyway.
+    preignore_timer_.Stop();
+  }
 
   requests_.clear();
 
   for (Observer& observer : observer_list_) {
     observer.OnRequestsFinalized();
+  }
+
+  // If there are any postponed requests from an embedded permission prompt,
+  // make sure they are resolved.
+  if (!postponed_requests.empty()) {
+    for (auto& request : postponed_requests) {
+      StorePermissionActionForUMA(request->requesting_origin(),
+                                  request->request_type(),
+                                  PermissionAction::DISMISSED);
+      FinalizeAndCancelRequest(*request);
+    }
   }
   ScheduleDequeueRequestIfNeeded();
 }
@@ -886,6 +903,14 @@ bool PermissionRequestManager::RecreateView() {
   const bool should_do_auto_response_for_testing =
       (current_request_prompt_disposition_ ==
        PermissionPromptDisposition::MAC_OS_PROMPT);
+  if (IsCurrentRequestEmbeddedPermissionElementInitiated()) {
+    if (!embedded_prompt_flow_model_) {
+      embedded_prompt_flow_model_ =
+          std::make_unique<EmbeddedPermissionPromptFlowModel>(web_contents(),
+                                                              this);
+    }
+    CalculateCurrentVariantForEmbeddedPrompt();
+  }
   view_ = view_factory_.Run(web_contents(), this);
   if (!view_) {
     current_request_prompt_disposition_ =
@@ -900,7 +925,6 @@ bool PermissionRequestManager::RecreateView() {
     NotifyPromptRecreateFailed();
     return false;
   }
-
   current_request_prompt_disposition_ = view_->GetPromptDisposition();
   current_request_pepc_prompt_position_ = view_->GetPromptPosition();
   SetCurrentRequestsInitialStatuses();
@@ -917,6 +941,39 @@ bool PermissionRequestManager::RecreateView() {
 
 const PermissionPrompt* PermissionRequestManager::GetCurrentPrompt() const {
   return view_.get();
+}
+
+EmbeddedPermissionPromptFlowModel*
+PermissionRequestManager::GetEmbeddedPromptFlowModel() const {
+  return embedded_prompt_flow_model_.get();
+}
+
+void PermissionRequestManager::CalculateCurrentVariantForEmbeddedPrompt() {
+  CHECK(embedded_prompt_flow_model_);
+  embedded_prompt_flow_model_->CalculateCurrentVariant(requests_);
+}
+
+void PermissionRequestManager::AdvanceOrFinalizeEmbeddedPromptFlow() {
+  CHECK(embedded_prompt_flow_model_);
+
+  CalculateCurrentVariantForEmbeddedPrompt();
+  using Variant = EmbeddedPermissionPromptFlowModel::Variant;
+  const Variant variant = embedded_prompt_flow_model_->prompt_variant();
+  if (variant != Variant::kPreviouslyGranted &&
+      variant != Variant::kUninitialized) {
+    if (view_) {
+      DeletePrompt();
+    }
+    RecreateView();
+    return;
+  }
+
+  // Make sure all request callbacks run. If a request was already accepted,
+  // this won't do anything for that request.
+  for (const std::unique_ptr<PermissionRequest>& request : requests_) {
+    request->Cancelled(/*is_final_decision=*/false);
+  }
+  FinalizeCurrentRequests();
 }
 
 GeolocationAccuracy
@@ -1280,6 +1337,7 @@ void PermissionRequestManager::ResetViewStateForCurrentRequest() {
   if (view_) {
     DeletePrompt();
   }
+  embedded_prompt_flow_model_.reset();
 }
 
 bool PermissionRequestManager::ShouldRecordUmaForCurrentPrompt() const {
@@ -1396,9 +1454,16 @@ void PermissionRequestManager::CurrentRequestsDecided(
     }
   }
 
-  if (ShouldFinalizeRequestAfterDecided(permission_action)) {
-    FinalizeCurrentRequests();
+  if (auto_response_for_test_ == NONE && embedded_prompt_flow_model_ &&
+      (permission_action == PermissionAction::GRANTED ||
+       permission_action == PermissionAction::GRANTED_ONCE)) {
+    // If an embedded permission prompt was granted, we might need to display
+    // additional variants of the prompt for the same requests.
+    AdvanceOrFinalizeEmbeddedPromptFlow();
+    return;
   }
+
+  FinalizeCurrentRequests();
 }
 
 void PermissionRequestManager::CleanUpRequests() {
@@ -1836,21 +1901,6 @@ bool PermissionRequestManager::IsCurrentRequestExclusiveAccess() const {
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
-bool PermissionRequestManager::ShouldFinalizeRequestAfterDecided(
-    PermissionAction action) const {
-  // If the action is IGNORED, it is not coming from the prompt itself but
-  // rather from external circumstance (like tab switching) and therefore
-  // |view_->ShouldFinalizeRequestAfterDecided| is not queried.
-
-  // If there is an autoresponse set, or there is no |view_|, finalize the
-  // request since there won't be a separate |FinalizeCurrentRequests()| call.
-  if (action == PermissionAction::IGNORED || auto_response_for_test_ != NONE ||
-      !view_) {
-    return true;
-  }
-
-  return view_->ShouldFinalizeRequestAfterDecided();
-}
 
 PermissionEmbargoStatus
 PermissionRequestManager::RecordActionAndGetEmbargoStatus(

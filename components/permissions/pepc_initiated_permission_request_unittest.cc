@@ -34,6 +34,10 @@
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-forward.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/permissions/android/android_permission_util.h"
+#endif
+
 namespace permissions {
 
 namespace {
@@ -188,6 +192,10 @@ class PEPCInitiatedPermissionRequestTest
   std::unique_ptr<base::RunLoop> permission_request_callback_loop_;
   TestPermissionsClient client_;
   base::test::ScopedFeatureList scoped_feature_list_;
+#if BUILDFLAG(IS_ANDROID)
+  base::AutoReset<bool> enable_all_android_permissions_for_testing_ =
+      EnableAllAndroidPermissionsForTesting();
+#endif
 };
 
 TEST_F(PEPCInitiatedPermissionRequestTest, PEPCRequestWhenSettingAllowed) {

@@ -2588,6 +2588,7 @@ TEST_F(PermissionRequestManagerTest, PEPCRequestNeverQuiet) {
       prompt_factory_->RequestTypeSeen(pepc_request_state.request_type));
   EXPECT_FALSE(manager_->ShouldCurrentRequestUseQuietUI());
   Accept();
+  manager_->FinalizeCurrentRequests();
 
   // Regular request is quieted by selector.
   MockPermissionRequest::MockPermissionRequestState request_state;

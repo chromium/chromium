@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/permissions/embedded_permission_prompt_flow_model.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_request_queue.h"
@@ -48,6 +49,7 @@ class MockPermissionRequestManager;
 }  // namespace test
 
 namespace permissions {
+class EmbeddedPermissionPromptFlowModel;
 class PermissionRequest;
 enum class PermissionAction;
 enum class PermissionPromptDisposition;
@@ -212,6 +214,10 @@ class PermissionRequestManager
   content::WebContents* GetAssociatedWebContents() override;
   bool RecreateView() override;
   const PermissionPrompt* GetCurrentPrompt() const override;
+  EmbeddedPermissionPromptFlowModel* GetEmbeddedPromptFlowModel()
+      const override;
+  void CalculateCurrentVariantForEmbeddedPrompt() override;
+  void AdvanceOrFinalizeEmbeddedPromptFlow() override;
   // Returns true if there is a request in progress that is initiated by an
   // embedded permission element.
   bool IsCurrentRequestEmbeddedPermissionElementInitiated() const;
@@ -416,9 +422,8 @@ class PermissionRequestManager
   void ResetViewStateForCurrentRequest();
 
   // Records metrics and informs embargo and autoblocker about the requests
-  // being decided. Based on |view_->ShouldFinalizeRequestAfterDecided()| it
-  // will also call |FinalizeCurrentRequests()|. Otherwise a separate
-  // |FinalizeCurrentRequests()| call must be made to release the |view_|.
+  // being decided and calls |FinalizeCurrentRequests()| or advances embedded
+  // flow.
   void CurrentRequestsDecided(PermissionAction permission_action,
                               const PromptOptions& prompt_options);
 
@@ -493,10 +498,6 @@ class PermissionRequestManager
   // access.
   bool IsCurrentRequestExclusiveAccess() const;
 
-  // Returns true when the current request should be finalized together with the
-  // permission decision.
-  bool ShouldFinalizeRequestAfterDecided(PermissionAction action) const;
-
   // Calculate and record the PermissionEmbargoStatus.
   PermissionEmbargoStatus RecordActionAndGetEmbargoStatus(
       content::BrowserContext* browser_context,
@@ -537,6 +538,8 @@ class PermissionRequestManager
   // the object alive. The infobar system hides the actual infobar UI and modals
   // prevent tab switching.
   std::unique_ptr<PermissionPrompt> view_;
+  std::unique_ptr<EmbeddedPermissionPromptFlowModel>
+      embedded_prompt_flow_model_;
 
   // The disposition for the currently active permission prompt, if any.
   // Recorded separately because the `view_` might not be available at prompt

@@ -53,8 +53,10 @@ class PermissionResolver {
       const PermissionSetting& previous_setting,
       const PermissionPromptDecision& decision,
       std::optional<GeolocationPromptType> prompt_type = std::nullopt) const {
-    return ComputePermissionDecisionResultInternal(previous_setting, decision,
-                                                   prompt_type);
+    return decision.overall_decision == PermissionDecision::kNone
+               ? previous_setting
+               : ComputePermissionDecisionResultInternal(previous_setting,
+                                                         decision, prompt_type);
   }
 
   // Determines the `PromptParameters` for the current request given the

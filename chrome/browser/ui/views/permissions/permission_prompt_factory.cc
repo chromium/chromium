@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt.h"
+#include "chrome/browser/ui/views/permissions/embedded_permission_prompt_content_scrim_view.h"
 #include "chrome/browser/ui/views/permissions/exclusive_access_permission_prompt.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_chip.h"
@@ -206,6 +207,11 @@ bool CanCurrentRequestUseModalUI(
               /*already_overrode_requester=*/true)) {
     return true;
   }
+  if (delegate->GetEmbeddedPromptFlowModel() &&
+      delegate->GetEmbeddedPromptFlowModel()->prompt_content_scrim()) {
+    // We are already displaying the scrim for an embedded permission prompt.
+    return true;
+  }
   return tabs::TabInterface::GetFromContents(web_contents)->CanShowModalUI();
 }
 
@@ -231,7 +237,6 @@ std::unique_ptr<permissions::PermissionPrompt> CreateNormalPrompt(
     content::WebContents* web_contents,
     permissions::PermissionPrompt::Delegate* delegate) {
   DCHECK(!delegate->ShouldCurrentRequestUseQuietUI());
-
   if (ShouldCurrentRequestUseExclusiveAccessUI(delegate)) {
     return CanCurrentRequestUseModalUI(web_contents, delegate)
                ? std::make_unique<ExclusiveAccessPermissionPrompt>(web_contents,
@@ -330,4 +335,13 @@ std::unique_ptr<permissions::PermissionPrompt> CreatePermissionPrompt(
   }
 
   return prompt;
+}
+
+std::unique_ptr<
+    permissions::EmbeddedPermissionPromptFlowModel::PromptContentScrim>
+CreatePermissionPromptContentScrim(
+    content::WebContents& web_contents,
+    permissions::EmbeddedPermissionPromptFlowModel* flow_model) {
+  return std::make_unique<EmbeddedPermissionPromptContentScrim>(web_contents,
+                                                                flow_model);
 }

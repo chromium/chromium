@@ -12,6 +12,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/permissions/embedded_permission_prompt_flow_model.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/permission_uma_constants.h"
@@ -152,6 +153,11 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
   std::unique_ptr<permissions::PermissionPrompt> CreatePrompt(
       content::WebContents* web_contents,
       permissions::PermissionPrompt::Delegate* delegate) override;
+  std::unique_ptr<
+      permissions::EmbeddedPermissionPromptFlowModel::PromptContentScrim>
+  CreatePromptContentScrim(
+      content::WebContents* web_contents,
+      permissions::EmbeddedPermissionPromptFlowModel* flow_model) override;
 #endif
 
   bool HasDevicePermission(ContentSettingsType type) const override;

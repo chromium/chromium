@@ -93,13 +93,11 @@ void EmbeddedPermissionRequestCallbackWrapper(
   DCHECK(!results.empty());
   DCHECK_EQ(initial_statuses.size(), results.size());
 
-  bool all_unchanged = true;
-  for (size_t i = 0; i < results.size(); ++i) {
-    if (initial_statuses[i] != results[i].status) {
-      all_unchanged = false;
-      break;
-    }
-  }
+  bool all_unchanged = std::ranges::all_of(
+      std::views::zip(initial_statuses, results), [](const auto& item) {
+        const auto& [initial_status, result] = item;
+        return initial_status == result.status;
+      });
 
   if (all_unchanged) {
     // If the permission status did not change, the user dismissed the prompt

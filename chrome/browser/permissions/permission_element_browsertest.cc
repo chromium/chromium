@@ -139,7 +139,6 @@ class PermissionElementBrowserTestBase
         position);
 
     permission_request_manager->Dismiss(/*prompt_options=*/std::monostate());
-    permission_request_manager->FinalizeCurrentRequests();
   }
 
   void WaitForDevtoolsIssue(const std::string& expected_issue_type) {
@@ -439,7 +438,6 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
   auto* permission_request_manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents());
   permission_request_manager->Dismiss(/*prompt_options=*/std::monostate());
-  permission_request_manager->FinalizeCurrentRequests();
   WaitForDismissEvent("microphone");
 
   permission_request_manager->set_auto_response_for_test(

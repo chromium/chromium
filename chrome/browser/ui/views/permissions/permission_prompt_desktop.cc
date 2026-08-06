@@ -62,9 +62,6 @@ views::Widget* PermissionPromptDesktop::GetPromptBubbleWidgetForTesting() {
   return nullptr;
 }
 
-bool PermissionPromptDesktop::ShouldFinalizeRequestAfterDecided() const {
-  return true;
-}
 
 std::vector<permissions::ElementAnchoredBubbleVariant>
 PermissionPromptDesktop::GetPromptVariants() const {
