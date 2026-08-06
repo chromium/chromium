@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -30,6 +31,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -38,6 +41,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -45,18 +49,17 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.browser_ui.settings.PaddedItemDecorationWithDivider;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.sync.SyncService;
-import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link SettingsHostFragment}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(qualifiers = "sw600dp")
+@Config(qualifiers = "w720dp-h1024dp")
 @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_MULTI_COLUMN})
 public class SettingsHostFragmentTest {
     @Rule
-    public ActivityScenarioRule<TestActivity> mActivityScenarios =
-            new ActivityScenarioRule<>(TestActivity.class);
+    public ActivityScenarioRule<TestChromeBaseAppCompatActivity> mActivityScenarios =
+            new ActivityScenarioRule<>(TestChromeBaseAppCompatActivity.class);
 
-    private TestActivity mActivity;
+    private TestChromeBaseAppCompatActivity mActivity;
     private SettingsHostFragment mSettingsHostFragment;
 
     /** Subclass SettingsHostFragment to mock initial fragment instantiation. */
@@ -71,7 +74,13 @@ public class SettingsHostFragmentTest {
     public void setUp() {
         mActivityScenarios
                 .getScenario()
-                .onActivity(activity -> mActivity = (TestActivity) activity);
+                .onActivity(
+                        activity -> {
+                            mActivity = activity;
+                            ApplicationStatus.onStateChangeForTesting(
+                                    activity, ActivityState.RESUMED);
+                        });
+        ProfileManager.setLastUsedProfileForTesting(mock(Profile.class));
         IdentityServicesProvider.setSigninManagerForTesting(mock(SigninManager.class));
         TemplateUrlServiceFactory.setInstanceForTesting(mock(TemplateUrlService.class));
         SyncServiceFactory.setInstanceForTesting(mock(SyncService.class));
@@ -330,6 +339,60 @@ public class SettingsHostFragmentTest {
                 hasPaddedDecoration);
     }
 
+    @Test
+    public void testSetDependencyProvider_appliesDependenciesToExistingChildFragments() {
+        attachHostFragment();
+        TestMainSettings mainSettings = new TestMainSettings();
+        mSettingsHostFragment.showFragment(
+                mainSettings, /* addToBackStack= */ false, /* tag= */ null);
+        mSettingsHostFragment.getChildFragmentManager().executePendingTransactions();
+
+        FragmentDependencyProvider mockProvider = mock(FragmentDependencyProvider.class);
+        mSettingsHostFragment.setDependencyProvider(mockProvider);
+
+        verify(mockProvider)
+                .attachDependencies(mSettingsHostFragment.getChildFragmentManager(), mainSettings);
+    }
+
+    @Test
+    public void testActivityRecreation_themeSwitch_populatesDependenciesOnRestoredFragments() {
+        attachHostFragment();
+        TestMainSettings mainSettings = new TestMainSettings();
+        mSettingsHostFragment.showFragment(
+                mainSettings, /* addToBackStack= */ false, /* tag= */ null);
+        mSettingsHostFragment.getChildFragmentManager().executePendingTransactions();
+
+        // Simulate activity recreation (e.g. OS theme switch or screen rotation).
+        mActivityScenarios.getScenario().recreate();
+
+        mActivityScenarios
+                .getScenario()
+                .onActivity(
+                        activity -> {
+                            var manager = activity.getSupportFragmentManager();
+                            SettingsHostFragment restoredHost =
+                                    (SettingsHostFragment)
+                                            manager.findFragmentByTag(
+                                                    SettingsHostFragment.SETTINGS_NATIVE_PAGE_TAG);
+                            assertNotNull("Restored host fragment should exist", restoredHost);
+
+                            Fragment restoredChild = restoredHost.getActiveFragment();
+                            assertNotNull("Restored child fragment should exist", restoredChild);
+                            assertTrue(
+                                    "Restored child fragment should be MainSettings",
+                                    restoredChild instanceof MainSettings);
+
+                            MainSettings restoredMain = (MainSettings) restoredChild;
+                            assertNotNull("Profile should be set", restoredMain.getProfile());
+                            assertNotNull(
+                                    "ModalDialogManagerSupplier should be set",
+                                    restoredMain.getModalDialogManagerSupplierForTesting());
+                            assertNotNull(
+                                    "ModalDialogManager should be present",
+                                    restoredMain.getModalDialogManagerSupplierForTesting().get());
+                        });
+    }
+
     /** A test PreferenceFragmentCompat subclass. */
     public static class TestPreferenceFragment extends PreferenceFragmentCompat {
         @Override
@@ -366,6 +429,7 @@ public class SettingsHostFragmentTest {
 
         public TestMainSettings() {
             setProfile(mMockProfile);
+            setSkipUpdatePreferencesForTesting(true);
         }
 
         @Override

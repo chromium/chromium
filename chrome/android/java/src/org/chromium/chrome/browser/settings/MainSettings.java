@@ -199,6 +199,11 @@ public class MainSettings extends ChromeBaseSettingsFragment
         mSnackbarManagerSupplier = snackbarManagerSupplier;
     }
 
+    public MonotonicObservableSupplier<ModalDialogManager>
+            getModalDialogManagerSupplierForTesting() {
+        return mModalDialogManagerSupplier;
+    }
+
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         createPreferences();

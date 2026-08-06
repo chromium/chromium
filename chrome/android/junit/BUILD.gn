@@ -1558,6 +1558,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/settings/SettingsNavigationImplTest.java",
       "src/org/chromium/chrome/browser/settings/SettingsPageFragmentDelegateImplTest.java",
       "src/org/chromium/chrome/browser/settings/SettingsPageUnitTest.java",
+      "src/org/chromium/chrome/browser/settings/TestChromeBaseAppCompatActivity.java",
       "src/org/chromium/chrome/browser/settings/WideDisplayPaddingApplierTest.java",
       "src/org/chromium/chrome/browser/settings/search/SettingsSearchCoordinatorUnitTest.java",
     ]

@@ -102,6 +102,11 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
     @Override
     public void onFragmentAttached(
             FragmentManager fragmentManager, Fragment fragment, Context unusedContext) {
+        attachDependencies(fragmentManager, fragment);
+    }
+
+    /** Attaches dependencies to a fragment. */
+    public void attachDependencies(FragmentManager fragmentManager, Fragment fragment) {
         // Common dependencies attachments.
         if (fragment instanceof ProfileDependentSetting) {
             ((ProfileDependentSetting) fragment).setProfile(mProfile);
