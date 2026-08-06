@@ -150,12 +150,13 @@ void LensSearchboxHandler::QueryAutocomplete(
     uint32_t cursor_position,
     omnibox::SuggestInventory suggest_inventory,
     bool is_on_focus,
-    const std::string& keyword) {
+    const std::string& keyword,
+    searchbox::mojom::InputMethod input_method) {
   lens_searchbox_client_->OnTextModified();
 
   SearchboxHandler::QueryAutocomplete(
       query_id, input, prevent_inline_autocomplete, cursor_position,
-      suggest_inventory, is_on_focus, keyword);
+      suggest_inventory, is_on_focus, keyword, input_method);
 }
 
 void LensSearchboxHandler::SetInputText(const std::string& input_text) {

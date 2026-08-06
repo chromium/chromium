@@ -37,7 +37,8 @@ class LensSearchboxHandler : public SearchboxHandler {
                          uint32_t cursor_position,
                          omnibox::SuggestInventory suggest_inventory,
                          bool is_on_focus,
-                         const std::string& keyword) override;
+                         const std::string& keyword,
+                         searchbox::mojom::InputMethod input_method) override;
   void DeleteAutocompleteMatch(uint8_t line, const GURL& url) override {}
   void ExecuteAction(uint8_t line,
                      uint8_t action_index,

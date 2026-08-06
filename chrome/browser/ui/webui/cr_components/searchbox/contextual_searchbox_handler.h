@@ -180,7 +180,8 @@ class ContextualSearchboxHandler
                          uint32_t cursor_position,
                          omnibox::SuggestInventory suggest_inventory,
                          bool is_on_focus,
-                         const std::string& keyword) override;
+                         const std::string& keyword,
+                         searchbox::mojom::InputMethod input_method) override;
 
 #if !BUILDFLAG(IS_ANDROID)
   // drive_picker_host::mojom::DrivePickerResultHandler:

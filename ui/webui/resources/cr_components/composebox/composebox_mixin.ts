@@ -996,12 +996,11 @@ export const ComposeboxEmbedderMixin =
               this.smartComposeStats.acceptedCount++;
               this.smartComposeStats.charactersAccepted +=
                   this.smartComposeInlineHint.length;
-              this.getSearchboxHandler().setInputMethod(
-                  InputMethod.kSmartCompose);
               this.input = this.input + this.smartComposeInlineHint;
               this.smartComposeInlineHint = '';
               e.preventDefault();
-              this.queryAutocomplete(/* clearMatches= */ false);
+              this.queryAutocomplete(
+                  /* clearMatches= */ false, InputMethod.kSmartCompose);
             }
             return;
           }
@@ -2024,7 +2023,9 @@ export const ComposeboxEmbedderMixin =
           };
         }
 
-        queryAutocomplete(clearMatches: boolean) {
+        queryAutocomplete(
+            clearMatches: boolean,
+            inputMethod: InputMethod = InputMethod.kKeyboard) {
           if (clearMatches) {
             this.clearAutocompleteMatches();
           }
@@ -2044,7 +2045,7 @@ export const ComposeboxEmbedderMixin =
               this.activeQueryId, this.input,
               /*preventInlineAutocomplete=*/ false, cursorPosition,
               this.suggestInventory ?? SuggestInventory.kDefault,
-              /*isOnFocus=*/ !this.input, /*keyword=*/ '');
+              /*isOnFocus=*/ !this.input, /*keyword=*/ '', inputMethod);
         }
 
         clearAutocompleteMatches() {
@@ -2927,7 +2928,7 @@ export interface ComposeboxEmbedderMixinInterface extends I18nMixinLitInterface,
   hasFiles(): boolean;
   hasTabs(): boolean;
   resetSmartComposeStats(): void;
-  queryAutocomplete(clearMatches: boolean): void;
+  queryAutocomplete(clearMatches: boolean, inputMethod?: InputMethod): void;
   clearAutocompleteMatches(): void;
   computeSubmitEnabled(): boolean;
   hasValidQuery(): boolean;

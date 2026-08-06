@@ -1104,7 +1104,8 @@ void SearchboxHandler::QueryAutocomplete(
     uint32_t cursor_position,
     omnibox::SuggestInventory suggest_inventory,
     bool is_on_focus,
-    const std::string& keyword) {
+    const std::string& keyword,
+    searchbox::mojom::InputMethod input_method) {
   current_query_id_ = query_id;
 
   std::u16string input_with_keyword = input;
@@ -1182,10 +1183,10 @@ void SearchboxHandler::QueryAutocomplete(
   autocomplete_input.set_input_state(GetInputState());
   autocomplete_input.set_previous_query(GetPreviousQuery());
   autocomplete_input.set_suggest_inventory(suggest_inventory);
-  // Reset input method on browser so the UI doesn't have to send another
-  // mojom request to clear it.
-  autocomplete_input.set_input_method(input_method_);
-  input_method_ = omnibox::metrics::ChromeSearchboxStats::KEYBOARD;
+  // TODO(crbug.com/543112749): Support other input methods for Smart Compose.
+  autocomplete_input.set_input_method(
+      static_cast<omnibox::metrics::ChromeSearchboxStats::InputMethod>(
+          input_method));
 
   if (base::FeatureList::IsEnabled(
           omnibox::kWebUISearchboxWithoutModelController)) {
@@ -1196,15 +1197,7 @@ void SearchboxHandler::QueryAutocomplete(
   }
 }
 
-void SearchboxHandler::SetInputMethod(
-    searchbox::mojom::InputMethod input_method) {
-  input_method_ =
-      static_cast<omnibox::metrics::ChromeSearchboxStats::InputMethod>(
-          input_method);
-}
-
 void SearchboxHandler::StopAutocomplete(bool clear_result) {
-  input_method_ = omnibox::metrics::ChromeSearchboxStats::KEYBOARD;
   if (base::FeatureList::IsEnabled(
           omnibox::kWebUISearchboxWithoutModelController)) {
     autocomplete_controller()->Stop(clear_result
