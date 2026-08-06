@@ -329,6 +329,11 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
 
   source->AddBoolean("ntpRealboxNextEnabled",
                      ntp_realbox::IsNtpRealboxNextEnabled(profile));
+  // Fusebox being enabled on the NTP is the same as realbox next being
+  // enabled. Add this param for reusable components that shouldn't rely on NTP
+  // specific booleans.
+  source->AddBoolean("isFuseboxEnabled",
+                     ntp_realbox::IsNtpRealboxNextEnabled(profile));
   source->AddBoolean("searchboxCyclingPlaceholders",
                      ntp_realbox::IsNtpRealboxNextEnabled(profile) &&
                          base::FeatureList::IsEnabled(

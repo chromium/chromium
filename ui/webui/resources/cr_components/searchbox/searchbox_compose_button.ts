@@ -84,9 +84,10 @@ export class SearchboxComposeButtonElement extends
         type: Boolean,
         reflect: true,
       },
-      ntpRealboxNextEnabled_: {
+      isFuseboxEnabled_: {
         type: Boolean,
         reflect: true,
+        attribute: 'is-fusebox-enabled',
       },
       energyEffectAnimationEnabled_: {
         type: Boolean,
@@ -110,8 +111,8 @@ export class SearchboxComposeButtonElement extends
       loadTimeData.getString('searchboxComposeButtonIcon') :
       '//resources/cr_components/searchbox/icons/search_spark.svg';
 
-  protected accessor ntpRealboxNextEnabled_: boolean =
-      loadTimeData.getBoolean('ntpRealboxNextEnabled');
+  protected accessor isFuseboxEnabled_: boolean =
+      loadTimeData.getBoolean('isFuseboxEnabled');
 
   protected accessor energyEffectAnimationEnabled_: boolean =
       loadTimeData.getBoolean('energyEffectAnimationEnabled');
@@ -127,7 +128,7 @@ export class SearchboxComposeButtonElement extends
 
   override firstUpdated() {
     if (this.$.glowAnimationWrapper) {
-      if (this.ntpRealboxNextEnabled_) {
+      if (this.isFuseboxEnabled_) {
         this.$.glowAnimationWrapper.addEventListener(
             'mouseenter', this.onMouseEnter_);
         this.$.glowAnimationWrapper.addEventListener(

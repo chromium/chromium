@@ -101,7 +101,8 @@ export class OmniboxEverywhereOmniboxElement extends
         reflect: true,
       },
       composeButtonEnabled: {type: Boolean, reflect: true},
-      ntpRealboxNextEnabled: {type: Boolean, reflect: true},
+      profileAvatarUrl_: {type: String},
+      isFuseboxEnabled: {type: Boolean, reflect: true},
       contextMenuGlifAnimationState: {
         type: String,
         reflect: true,
@@ -139,8 +140,10 @@ export class OmniboxEverywhereOmniboxElement extends
   accessor inVoiceSearchMode: boolean = false;
   protected accessor composeButtonEnabled: boolean =
       loadTimeData.getBoolean('searchboxShowComposeEntrypoint');
-  protected accessor ntpRealboxNextEnabled: boolean =
-      loadTimeData.getBoolean('ntpRealboxNextEnabled');
+  protected accessor profileAvatarUrl_: string =
+      loadTimeData.getString('profileAvatarUrl');
+  protected accessor isFuseboxEnabled: boolean =
+      loadTimeData.getBoolean('isFuseboxEnabled');
   accessor contextMenuGlifAnimationState: GlifAnimationState =
       GlifAnimationState.STARTED;
   protected accessor inputState_: InputState|null = null;
@@ -266,7 +269,7 @@ export class OmniboxEverywhereOmniboxElement extends
     if (this.placeholderText) {
       return this.placeholderText;
     }
-    if (this.ntpRealboxNextEnabled) {
+    if (this.isFuseboxEnabled) {
       return this.i18n('searchBoxHintAskOrType');
     }
     return this.i18n('searchBoxHint');
