@@ -655,6 +655,13 @@ void WebView::NotifyAccessibilityWebContentsChanged() {
     } else {
       GetViewAccessibility().RemoveChildTreeID();
     }
+
+    // The WebView is the ignored host of the web content accessibility tree.
+    // It shouldn't be exposed to platform APIs.
+    if (ViewAccessibility::IsViewsAccessibilityTreeEnabled()) {
+      GetViewAccessibility().SetIsIgnored(
+          GetViewAccessibility().GetChildTreeID() != ui::AXTreeIDUnknown());
+    }
   }
   NotifyAccessibilityEventDeprecated(ax::mojom::Event::kChildrenChanged, false);
 }
