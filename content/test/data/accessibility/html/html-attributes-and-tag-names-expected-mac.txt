@@ -5,5 +5,5 @@ AXWebArea AXTitle='Hello World'
 ++++AXStaticText AXValue='Paragraph'
 ++AXGroup
 ++++AXTextField
-++AXButton AXDescription='c'
+++AXButton AXDescription='c' AXTitle='c'
 ++AXButton AXTitle='Click'

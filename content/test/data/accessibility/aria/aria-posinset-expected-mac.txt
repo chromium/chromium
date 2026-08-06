@@ -18,7 +18,7 @@ AXWebArea AXRoleDescription='HTML content'
 ++AXStaticText AXRoleDescription='text' AXValue='Apple'
 ++AXRadioButton AXRoleDescription='radio button' AXValue=0
 ++AXStaticText AXRoleDescription='text' AXValue='Banana'
-++AXGroup AXSubrole=AXFieldset AXDescription='Cake' AXRoleDescription='group'
+++AXGroup AXSubrole=AXFieldset AXDescription='Cake' AXRoleDescription='group' AXTitle='Cake'
 ++++AXGroup AXRoleDescription='group'
 ++++++AXStaticText AXRoleDescription='text' AXValue='Cake'
 ++++AXRadioButton AXRoleDescription='radio button' AXTitle='Chiffon cakes' AXValue=1

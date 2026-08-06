@@ -406,15 +406,12 @@ TEST_F(AXNativeWidgetMacTest, TextfieldGenericAttributes) {
   // NSAccessibilityTitleAttribute, NSAccessibilityLabelAttribute.
   // https://developer.apple.com/documentation/appkit/nsaccessibilityprotocol
   // * accessibilityTitle() returns the title of the accessibility element,
-  //   for example a button's visible text.
+  //   equivalent to the accessible name calculation.
   // * accessibilityLabel() returns a short description of the accessibility
-  //   element.
-  // Textfield::SetAssociatedLabel() is what should be used if the textfield
-  // has a visible label. Because AddChildTextfield() uses
-  // GetViewAccessibility().SetName() to set the accessible name to a
-  // flat string, the title should be exposed via accessibilityLabel() instead
-  // of accessibilityTitle();
-  EXPECT_NSEQ(@"", ax_obj.accessibilityTitle);
+  //   element and does not have a direct analog in web accessibility but must
+  //   return the accessible name calculation for for some elements for
+  //   backwards compatibility with older VoiceOver versions (< macOS 27).
+  EXPECT_NSEQ(kTestTitle, ax_obj.accessibilityTitle);
   EXPECT_NSEQ(kTestTitle, ax_obj.accessibilityLabel);
   EXPECT_NSEQ(kTestStringValue, ax_obj.accessibilityValue);
 

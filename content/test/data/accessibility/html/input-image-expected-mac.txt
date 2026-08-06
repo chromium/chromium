@@ -1,3 +1,3 @@
 AXWebArea AXRoleDescription='HTML content'
 ++AXGroup AXRoleDescription='group'
-++++AXButton AXDescription='Submit' AXRoleDescription='button'
+++++AXButton AXDescription='Submit' AXRoleDescription='button' AXTitle='Submit'

@@ -1,4 +1,4 @@
 AXWebArea AXRoleDescription='HTML content'
-++AXGroup AXSubrole=AXApplicationLog AXARIABusy=1 AXDescription='Busy log' AXRoleDescription='log'
-++AXGroup AXSubrole=AXApplicationLog AXDescription='Not-busy log' AXRoleDescription='log'
+++AXGroup AXSubrole=AXApplicationLog AXARIABusy=1 AXDescription='Busy log' AXRoleDescription='log' AXTitle='Busy log'
+++AXGroup AXSubrole=AXApplicationLog AXDescription='Not-busy log' AXRoleDescription='log' AXTitle='Not-busy log'
 ++AXGroup AXSubrole=AXEmptyGroup AXARIABusy=1 AXRoleDescription='group'

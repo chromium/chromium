@@ -1,1 +1,1 @@
-AXLink AXDescription='My name is Eli the weird. (QED)'
+AXLink AXDescription='My name is Eli the weird. (QED)' AXTitle='My name is Eli the weird. (QED)'

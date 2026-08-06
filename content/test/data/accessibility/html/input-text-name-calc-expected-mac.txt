@@ -1,14 +1,14 @@
 AXWebArea
-++AXTextField AXDescription='Title0'
+++AXTextField AXDescription='Title0' AXTitle='Title0'
 ++AXTextField AXTitle='Label1'
-++AXTextField AXDescription='AriaLabel2'
+++AXTextField AXDescription='AriaLabel2' AXTitle='AriaLabel2'
 ++AXTextField AXTitle='LabelledBy3'
 ++AXTextField
 ++AXTextField
 ++AXTextField
-++AXTextField AXDescription='Title5'
+++AXTextField AXDescription='Title5' AXTitle='Title5'
 ++AXTextField AXTitle='LabelledBy6'
-++AXTextField AXDescription='AriaLabel7'
+++AXTextField AXDescription='AriaLabel7' AXTitle='AriaLabel7'
 ++AXGroup
 ++++AXGroup
 ++++++AXStaticText AXValue='Label1'

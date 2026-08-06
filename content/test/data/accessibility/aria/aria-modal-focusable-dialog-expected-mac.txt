@@ -1,6 +1,6 @@
 AXWebArea
 ++AXGroup AXSubrole=AXApplicationDialog
 ++++AXStaticText AXValue='Nonmodal'
-++AXGroup AXSubrole=AXApplicationDialog AXDescription='modal dialog'
+++AXGroup AXSubrole=AXApplicationDialog AXDescription='modal dialog' AXTitle='modal dialog'
 ++++AXStaticText AXValue='Focusable'
-++AXButton AXDescription='not in tree'
+++AXButton AXDescription='not in tree' AXTitle='not in tree'

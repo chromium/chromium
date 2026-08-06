@@ -15,12 +15,12 @@ AXWebArea
 ++++++AXDateField AXTitle='Date:'
 ++++++++AXGroup
 ++++++++++AXGroup
-++++++++++++AXIncrementor AXDescription='Month Date:' AXValue=0
+++++++++++++AXIncrementor AXDescription='Month Date:' AXTitle='Month Date:' AXValue=0
 ++++++++++++AXStaticText AXValue='/'
-++++++++++++AXIncrementor AXDescription='Day Date:' AXValue=0
+++++++++++++AXIncrementor AXDescription='Day Date:' AXTitle='Day Date:' AXValue=0
 ++++++++++++AXStaticText AXValue='/'
-++++++++++++AXIncrementor AXDescription='Year Date:' AXValue=0
-++++++++AXPopUpButton AXDescription='Show date picker Date:'
+++++++++++++AXIncrementor AXDescription='Year Date:' AXTitle='Year Date:' AXValue=0
+++++++++AXPopUpButton AXDescription='Show date picker Date:' AXTitle='Show date picker Date:'
 ++++AXGroup
 ++++++AXStaticText AXValue='Datetime: '
 ++++++AXTextField AXTitle='Datetime:'
@@ -29,18 +29,18 @@ AXWebArea
 ++++++AXDateField AXTitle='Datetime-local:'
 ++++++++AXGroup
 ++++++++++AXGroup
-++++++++++++AXIncrementor AXDescription='Month Datetime-local:' AXValue=0
+++++++++++++AXIncrementor AXDescription='Month Datetime-local:' AXTitle='Month Datetime-local:' AXValue=0
 ++++++++++++AXStaticText AXValue='/'
-++++++++++++AXIncrementor AXDescription='Day Datetime-local:' AXValue=0
+++++++++++++AXIncrementor AXDescription='Day Datetime-local:' AXTitle='Day Datetime-local:' AXValue=0
 ++++++++++++AXStaticText AXValue='/'
-++++++++++++AXIncrementor AXDescription='Year Datetime-local:' AXValue=0
+++++++++++++AXIncrementor AXDescription='Year Datetime-local:' AXTitle='Year Datetime-local:' AXValue=0
 ++++++++++++AXStaticText AXValue=', '
-++++++++++++AXIncrementor AXDescription='Hours Datetime-local:' AXValue=0
+++++++++++++AXIncrementor AXDescription='Hours Datetime-local:' AXTitle='Hours Datetime-local:' AXValue=0
 ++++++++++++AXStaticText AXValue=':'
-++++++++++++AXIncrementor AXDescription='Minutes Datetime-local:' AXValue=0
+++++++++++++AXIncrementor AXDescription='Minutes Datetime-local:' AXTitle='Minutes Datetime-local:' AXValue=0
 ++++++++++++AXStaticText AXValue=' '
-++++++++++++AXIncrementor AXDescription='AM/PM Datetime-local:' AXValue=0
-++++++++AXPopUpButton AXDescription='Show local date and time picker Datetime-local:'
+++++++++++++AXIncrementor AXDescription='AM/PM Datetime-local:' AXTitle='AM/PM Datetime-local:' AXValue=0
+++++++++AXPopUpButton AXDescription='Show local date and time picker Datetime-local:' AXTitle='Show local date and time picker Datetime-local:'
 ++++AXGroup
 ++++++AXStaticText AXValue='Email: '
 ++++++AXTextField AXTitle='Email:'
@@ -64,10 +64,10 @@ AXWebArea
 ++++++AXDateField AXTitle='Month:'
 ++++++++AXGroup
 ++++++++++AXGroup
-++++++++++++AXIncrementor AXDescription='Month Month:' AXValue=0
+++++++++++++AXIncrementor AXDescription='Month Month:' AXTitle='Month Month:' AXValue=0
 ++++++++++++AXStaticText AXValue=' '
-++++++++++++AXIncrementor AXDescription='Year Month:' AXValue=0
-++++++++AXPopUpButton AXDescription='Show month picker Month:'
+++++++++++++AXIncrementor AXDescription='Year Month:' AXTitle='Year Month:' AXValue=0
+++++++++AXPopUpButton AXDescription='Show month picker Month:' AXTitle='Show month picker Month:'
 ++++AXGroup
 ++++++AXStaticText AXValue='Number: '
 ++++++AXIncrementor AXTitle='Number:'
@@ -98,12 +98,12 @@ AXWebArea
 ++++++AXTimeField AXTitle='Time:'
 ++++++++AXGroup
 ++++++++++AXGroup
-++++++++++++AXIncrementor AXDescription='Hours Time:' AXValue=0
+++++++++++++AXIncrementor AXDescription='Hours Time:' AXTitle='Hours Time:' AXValue=0
 ++++++++++++AXStaticText AXValue=':'
-++++++++++++AXIncrementor AXDescription='Minutes Time:' AXValue=0
+++++++++++++AXIncrementor AXDescription='Minutes Time:' AXTitle='Minutes Time:' AXValue=0
 ++++++++++++AXStaticText AXValue=' '
-++++++++++++AXIncrementor AXDescription='AM/PM Time:' AXValue=0
-++++++++AXPopUpButton AXDescription='Show time picker Time:'
+++++++++++++AXIncrementor AXDescription='AM/PM Time:' AXTitle='AM/PM Time:' AXValue=0
+++++++++AXPopUpButton AXDescription='Show time picker Time:' AXTitle='Show time picker Time:'
 ++++AXGroup
 ++++++AXStaticText AXValue='Url: '
 ++++++AXTextField AXTitle='Url:'
@@ -113,7 +113,7 @@ AXWebArea
 ++++++++AXGroup
 ++++++++++AXGroup
 ++++++++++++AXStaticText AXValue='Week '
-++++++++++++AXIncrementor AXDescription='Week Week:' AXValue=0
+++++++++++++AXIncrementor AXDescription='Week Week:' AXTitle='Week Week:' AXValue=0
 ++++++++++++AXStaticText AXValue=', '
-++++++++++++AXIncrementor AXDescription='Year Week:' AXValue=0
-++++++++AXPopUpButton AXDescription='Show week picker Week:'
+++++++++++++AXIncrementor AXDescription='Year Week:' AXTitle='Year Week:' AXValue=0
+++++++++AXPopUpButton AXDescription='Show week picker Week:' AXTitle='Show week picker Week:'

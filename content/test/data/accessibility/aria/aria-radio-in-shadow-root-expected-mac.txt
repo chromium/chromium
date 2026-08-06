@@ -1,23 +1,23 @@
 AXWebArea AXLinkedUIElements=[]
-++AXRadioGroup AXDescription='Group One' AXLinkedUIElements=[]
+++AXRadioGroup AXDescription='Group One' AXLinkedUIElements=[] AXTitle='Group One'
 ++++AXHeading AXLinkedUIElements=[] AXTitle='Group One' AXValue=1
 ++++++AXStaticText AXLinkedUIElements=[] AXValue='Group One'
 ++++AXRadioButton AXLinkedUIElements=[:5, :6, :7] AXTitle='Red' AXValue=1
 ++++AXRadioButton AXLinkedUIElements=[:5, :6, :7] AXTitle='Green' AXValue=0
 ++++AXRadioButton AXLinkedUIElements=[:5, :6, :7] AXTitle='Blue' AXValue=0
-++AXRadioGroup AXDescription='Group Two' AXLinkedUIElements=[]
+++AXRadioGroup AXDescription='Group Two' AXLinkedUIElements=[] AXTitle='Group Two'
 ++++AXHeading AXLinkedUIElements=[] AXTitle='Group Two' AXValue=1
 ++++++AXStaticText AXLinkedUIElements=[] AXValue='Group Two'
 ++++AXRadioButton AXLinkedUIElements=[:11, :12, :13] AXTitle='Red' AXValue=1
 ++++AXRadioButton AXLinkedUIElements=[:11, :12, :13] AXTitle='Green' AXValue=0
 ++++AXRadioButton AXLinkedUIElements=[:11, :12, :13] AXTitle='Blue' AXValue=0
-++AXRadioGroup AXDescription='Group with aria-setsize and aria-posinset' AXLinkedUIElements=[]
+++AXRadioGroup AXDescription='Group with aria-setsize and aria-posinset' AXLinkedUIElements=[] AXTitle='Group with aria-setsize and aria-posinset'
 ++++AXHeading AXLinkedUIElements=[] AXTitle='Group with aria-setsize and aria-posinset' AXValue=1
 ++++++AXStaticText AXLinkedUIElements=[] AXValue='Group with aria-setsize and aria-posinset'
 ++++AXRadioButton AXLinkedUIElements=[:17, :18, :19] AXTitle='Red' AXValue=1
 ++++AXRadioButton AXLinkedUIElements=[:17, :18, :19] AXTitle='Green' AXValue=0
 ++++AXRadioButton AXLinkedUIElements=[:17, :18, :19] AXTitle='Blue' AXValue=0
-++AXGroup AXSubrole=AXApplicationGroup AXDescription='Checkbox Group One' AXLinkedUIElements=[]
+++AXGroup AXSubrole=AXApplicationGroup AXDescription='Checkbox Group One' AXLinkedUIElements=[] AXTitle='Checkbox Group One'
 ++++AXHeading AXLinkedUIElements=[] AXTitle='Checkbox Group One' AXValue=1
 ++++++AXStaticText AXLinkedUIElements=[] AXValue='Checkbox Group One'
 ++++AXCheckBox AXLinkedUIElements=[] AXTitle='Red' AXValue=1

@@ -9,7 +9,7 @@ AXWebArea
 ++++++AXButton AXTitle='hello world'
 ++++AXStaticText AXCustomActionNamesForTesting=['search engine'] AXValue='Item 2search engine'
 ++++++AXStaticText AXValue='Item 2'
-++++++AXLink AXDescription='search engine'
+++++++AXLink AXDescription='search engine' AXTitle='search engine'
 ++++++++AXStaticText AXValue='search engine'
 ++AXMenu
 ++++AXMenuItem AXCustomActionNamesForTesting=['hello world'] AXTitle='File1 hello world'
@@ -17,7 +17,7 @@ AXWebArea
 ++++++AXButton AXTitle='hello world'
 ++++AXMenuItem AXCustomActionNamesForTesting=['search engine'] AXTitle='File2search engine'
 ++++++AXStaticText AXValue='File2'
-++++++AXLink AXDescription='search engine'
+++++++AXLink AXDescription='search engine' AXTitle='search engine'
 ++++++++AXStaticText AXValue='search engine'
 ++AXMenu
 ++++AXMenuItem AXCustomActionNamesForTesting=['Save'] AXTitle='Download Save'

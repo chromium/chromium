@@ -1,12 +1,12 @@
 AXWebArea
 ++AXGroup
 ++++AXStaticText AXValue='All of the following '
-++++AXLink AXDescription='links'
+++++AXLink AXDescription='links' AXTitle='links'
 ++++++AXStaticText AXValue='links'
 ++++AXStaticText AXValue=' are included '
-++++AXLink AXDescription='within'
+++++AXLink AXDescription='within' AXTitle='within'
 ++++++AXStaticText AXValue='within'
 ++++AXStaticText AXValue=' one '
-++++AXLink AXDescription='span'
+++++AXLink AXDescription='span' AXTitle='span'
 ++++++AXStaticText AXValue='span'
 ++++AXStaticText AXValue='.'

@@ -1,7 +1,7 @@
 AXWebArea
 ++AXGroup
-++++AXList AXDescription='selection_list'
-++++++AXGroup AXSubrole=AXApplicationGroup AXDescription='Enabled'
+++++AXList AXDescription='selection_list' AXTitle='selection_list'
+++++++AXGroup AXSubrole=AXApplicationGroup AXDescription='Enabled' AXTitle='Enabled'
 ++++++++AXStaticText AXValue='One'
 ++++++++AXStaticText AXValue='Two'
 ++++++++AXStaticText AXValue='Three'
