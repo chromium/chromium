@@ -327,6 +327,14 @@ public class LogoContainerViewBinderUnitTest {
 
     @Test
     @SmallTest
+    public void testSetLogoTopPadding() {
+        mLogoModel.set(LogoProperties.LOGO_TOP_PADDING, 15);
+        LogoView childLogoView = mLogoContainerView.findViewById(R.id.search_provider_logo);
+        assertEquals(15, childLogoView.getPaddingTop());
+    }
+
+    @Test
+    @SmallTest
     public void testSetLogoBottomMargin() {
         mLogoModel.set(LogoProperties.LOGO_BOTTOM_MARGIN, 20);
         MarginLayoutParams params = (MarginLayoutParams) mLogoContainerView.getLayoutParams();

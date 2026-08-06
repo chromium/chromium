@@ -985,6 +985,7 @@ if (is_android) {
       "//chrome/browser/composeplate/android:java",
       "//chrome/browser/ntp_customization:ntp_customization_test_support_java",
       "//chrome/browser/segmentation_platform:client_util_java",
+      "//chrome/browser/ui/android/logo:utils_java",
       "//third_party/android_deps:com_airbnb_android_lottie_java",
     ]
   }

@@ -23,6 +23,8 @@ class LogoContainerViewBinder
             logoContainerView.setAlpha(model.get(LogoProperties.ALPHA));
         } else if (LogoProperties.LOGO_TOP_MARGIN == propertyKey) {
             logoContainerView.setLogoTopMargin(model.get(LogoProperties.LOGO_TOP_MARGIN));
+        } else if (LogoProperties.LOGO_TOP_PADDING == propertyKey) {
+            logoContainerView.setLogoTopPadding(model.get(LogoProperties.LOGO_TOP_PADDING));
         } else if (LogoProperties.LOGO_BOTTOM_MARGIN == propertyKey) {
             logoContainerView.setLogoBottomMargin(model.get(LogoProperties.LOGO_BOTTOM_MARGIN));
         } else if (LogoProperties.LOGO_HEIGHT == propertyKey) {

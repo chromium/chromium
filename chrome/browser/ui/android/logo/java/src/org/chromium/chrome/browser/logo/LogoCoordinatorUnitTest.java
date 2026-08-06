@@ -36,12 +36,14 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.logo.LogoUtils.DoodleSize;
+import org.chromium.chrome.browser.ntp.NewTabPageUtils.PaddingStyle;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.policy.NtpCustomizationPolicyManager;
@@ -354,6 +356,28 @@ public class LogoCoordinatorUnitTest {
         verify(mLogoContainerView, never()).setDoodleSize(LogoUtils.DoodleSize.TABLET_SPLIT_SCREEN);
     }
 
+    @Test
+    public void testConstructor_auroraPaddingStyleMediumOrLarge_onPhones() {
+        verifyLogoTopPadding(PaddingStyle.MEDIUM, /* expectPaddingSet= */ true);
+        clearInvocations(mLogoContainerView);
+        verifyLogoTopPadding(PaddingStyle.LARGE, /* expectPaddingSet= */ true);
+    }
+
+    @Test
+    public void testConstructor_auroraPaddingStyleSmallOrDefault_onPhones() {
+        verifyLogoTopPadding(PaddingStyle.SMALL, /* expectPaddingSet= */ false);
+        clearInvocations(mLogoContainerView);
+        verifyLogoTopPadding(PaddingStyle.DEFAULT, /* expectPaddingSet= */ false);
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    public void testConstructor_auroraPaddingStyleMediumOrLarge_onTablets() {
+        verifyLogoTopPadding(PaddingStyle.MEDIUM, /* expectPaddingSet= */ false);
+        clearInvocations(mLogoContainerView);
+        verifyLogoTopPadding(PaddingStyle.LARGE, /* expectPaddingSet= */ false);
+    }
+
     private LogoCoordinator createLogoCoordinator() {
         LogoCoordinator coordinator =
                 new LogoCoordinator(
@@ -376,5 +400,18 @@ public class LogoCoordinatorUnitTest {
         mLogoCoordinator.updateDoodleOnTablet(showingNonStandardGoogleLogo);
 
         verify(mLogoContainerView).setDoodleSize(expectedDoodleSize);
+    }
+
+    private void verifyLogoTopPadding(@PaddingStyle int paddingStyle, boolean expectPaddingSet) {
+        FeatureOverrides.overrideParam(ChromeFeatureList.NTP_AURORA, "padding_style", paddingStyle);
+
+        clearInvocations(mLogoContainerView);
+        createLogoCoordinator();
+
+        if (expectPaddingSet) {
+            verify(mLogoContainerView).setLogoTopPadding(0);
+        } else {
+            verify(mLogoContainerView, never()).setLogoTopPadding(anyInt());
+        }
     }
 }

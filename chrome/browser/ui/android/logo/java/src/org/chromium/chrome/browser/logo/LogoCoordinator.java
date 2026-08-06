@@ -21,6 +21,8 @@ import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
+import org.chromium.chrome.browser.ntp.NewTabPageUtils;
+import org.chromium.chrome.browser.ntp.NewTabPageUtils.PaddingStyle;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
@@ -29,6 +31,7 @@ import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThem
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -84,6 +87,12 @@ public class LogoCoordinator {
 
         mLogoView = parentView.findViewById(R.id.logo_container_view);
         PropertyModelChangeProcessor.create(mLogoModel, mLogoView, new LogoContainerViewBinder());
+
+        @PaddingStyle int paddingStyle = NewTabPageUtils.getPaddingStyleForAurora();
+        if ((paddingStyle == PaddingStyle.MEDIUM || paddingStyle == PaddingStyle.LARGE)
+                && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
+            mLogoModel.set(LogoProperties.LOGO_TOP_PADDING, 0);
+        }
 
         Drawable defaultGoogleLogoDrawable = getGoogleLogoDrawable(context);
         mLogoColor =

@@ -43,6 +43,7 @@ android_library("java") {
     ":utils_java",
     "//base:base_java",
     "//build/android:build_java",
+    "//chrome/android:new_tab_page_utils_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/ntp_customization:java",
     "//chrome/browser/preferences:java",
@@ -86,6 +87,7 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable/ic_google_logo.xml",
     "java/res/layout/logo_view_layout.xml",
+    "java/res/values-land/dimens.xml",
     "java/res/values-sw600dp/dimens.xml",
     "java/res/values/dimens.xml",
     "java/res/values/ids.xml",

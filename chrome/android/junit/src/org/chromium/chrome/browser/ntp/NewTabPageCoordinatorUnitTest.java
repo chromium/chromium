@@ -34,6 +34,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -42,6 +44,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.FakeTimeTestRule;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -61,6 +64,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.logo.LogoCoordinator;
+import org.chromium.chrome.browser.logo.LogoUtils;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.ntp.NewTabPage.NtpScrollListener;
 import org.chromium.chrome.browser.ntp.search.SearchBoxCoordinator;
@@ -91,7 +95,10 @@ import org.chromium.chrome.test.util.browser.offlinepages.FakeOfflinePageBridge;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
+import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
+import org.chromium.components.browser_ui.widget.displaystyle.VerticalDisplayStyle;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -155,6 +162,7 @@ public class NewTabPageCoordinatorUnitTest {
     @Mock private View mMockSearchBoxView;
     @Mock private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
     @Mock private RecyclerView mRecyclerView;
+    @Captor private ArgumentCaptor<DisplayStyleObserver> mDisplayStyleObserverCaptor;
 
     private Activity mActivity;
     private NewTabPageLayout mNewTabPageLayout;
@@ -199,6 +207,10 @@ public class NewTabPageCoordinatorUnitTest {
         when(mTab.getProfile()).thenReturn(mProfile);
         when(mProfile.isOffTheRecord()).thenReturn(false);
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
+        when(mUiConfig.getCurrentDisplayStyle())
+                .thenReturn(
+                        new UiConfig.DisplayStyle(
+                                HorizontalDisplayStyle.REGULAR, VerticalDisplayStyle.REGULAR));
 
         mVisibilityDelegate =
                 new BrowserStateBrowserControlsVisibilityDelegate(
@@ -412,6 +424,10 @@ public class NewTabPageCoordinatorUnitTest {
     }
 
     private void createCoordinator() {
+        createCoordinator(/* isLff= */ false);
+    }
+
+    private void createCoordinator(boolean isLff) {
         mNewTabPageLayout =
                 (NewTabPageLayout)
                         LayoutInflater.from(mActivity)
@@ -431,7 +447,7 @@ public class NewTabPageCoordinatorUnitTest {
                         mBottomSheetController,
                         mModalDialogManager,
                         mSnackbarManager,
-                        /* isLff= */ false,
+                        isLff,
                         mTabStripHeightSupplier,
                         new OneshotSupplierImpl<>(),
                         mHomeSurfaceTracker,
@@ -1027,5 +1043,56 @@ public class NewTabPageCoordinatorUnitTest {
         NtpCustomizationConfigManager.setInstanceForTesting(configManager);
         configManager.setBackgroundTypeForTesting(
                 NtpCustomizationUtils.NtpBackgroundType.IMAGE_FROM_DISK);
+    }
+
+    @Test
+    public void testOnDisplayStyleChanged_Phone_NonDefault() {
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.NTP_AURORA, "padding_style", NewTabPageUtils.PaddingStyle.MEDIUM);
+        createCoordinator(/* isLff= */ false);
+        verify(mUiConfig).addObserver(mDisplayStyleObserverCaptor.capture());
+        setupMockSubCoordinators();
+        verify(mMockLogo, never()).setTopMargin(anyInt());
+
+        mDisplayStyleObserverCaptor.getValue().onDisplayStyleChanged(null);
+
+        Resources resources = mActivity.getResources();
+        int expectedTopMargin = LogoUtils.getTopMarginForLogo(resources);
+        verify(mMockLogo).setTopMargin(eq(expectedTopMargin));
+    }
+
+    @Test
+    public void testOnDisplayStyleChanged_Phone_Default() {
+        createCoordinator(/* isLff= */ false);
+        verify(mUiConfig, never()).addObserver(any());
+    }
+
+    @Test
+    @Config(qualifiers = "land")
+    public void testOnDisplayStyleChanged_Phone_Landscape_NonDefault() {
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.NTP_AURORA, "padding_style", NewTabPageUtils.PaddingStyle.LARGE);
+        createCoordinator(/* isLff= */ false);
+        verify(mUiConfig).addObserver(mDisplayStyleObserverCaptor.capture());
+        setupMockSubCoordinators();
+        verify(mMockLogo, never()).setTopMargin(anyInt());
+
+        mDisplayStyleObserverCaptor.getValue().onDisplayStyleChanged(null);
+
+        Resources resources = mActivity.getResources();
+        int expectedTopMargin = LogoUtils.getTopMarginForLogo(resources);
+        verify(mMockLogo).setTopMargin(eq(expectedTopMargin));
+    }
+
+    @Test
+    public void testOnDisplayStyleChanged_Tablet() {
+        createCoordinator(/* isLff= */ true);
+        verify(mUiConfig).addObserver(mDisplayStyleObserverCaptor.capture());
+        setupMockSubCoordinators();
+        verify(mMockLogo, never()).updateDoodleOnTablet(anyBoolean());
+
+        mDisplayStyleObserverCaptor.getValue().onDisplayStyleChanged(null);
+
+        verify(mMockLogo).updateDoodleOnTablet(anyBoolean());
     }
 }

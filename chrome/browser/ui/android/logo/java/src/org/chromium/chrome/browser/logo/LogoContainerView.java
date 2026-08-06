@@ -104,6 +104,14 @@ public class LogoContainerView extends FrameLayout {
         mLogoView.setLogoTopMargin(topMargin);
     }
 
+    void setLogoTopPadding(int topPadding) {
+        mLogoView.setPaddingRelative(
+                mLogoView.getPaddingStart(),
+                topPadding,
+                mLogoView.getPaddingEnd(),
+                mLogoView.getPaddingBottom());
+    }
+
     void setLogoBottomMargin(int bottomMargin) {
         MarginLayoutParams marginLayoutParams = (MarginLayoutParams) getLayoutParams();
         marginLayoutParams.bottomMargin = bottomMargin;
