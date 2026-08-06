@@ -76,6 +76,18 @@ message PromptApiMetadata {
   // If the provided value is largest than the max value, they will be clamped.
   SamplingParams max_sampling_params = 3 [features = { field_presence: EXPLICIT }];
 
+  // A list of custom presets for sampling configuration.
+  repeated SamplingPreset sampling_presets = 4;
+
+  // Represents a custom sampling parameter mapping configuration.
+  message SamplingPreset {
+    string name = 1 [features = { field_presence: EXPLICIT }];
+
+    uint32 top_k = 2 [features = { field_presence: EXPLICIT }];
+
+    float temperature = 3 [features = { field_presence: EXPLICIT }];
+  }
+
   reserved 2;
 }
 

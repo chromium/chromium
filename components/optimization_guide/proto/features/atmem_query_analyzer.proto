@@ -37,6 +37,9 @@ message AtmemQueryAnalyzerRequest {
 
   // The title of the main frame the user was on when they entered the query.
   string title = 3 [features = { field_presence: IMPLICIT }];
+
+  // The current relative date in ISO 8601 YYYY-MM-DD format.
+  string current_date = 4 [features = { field_presence: IMPLICIT }];
 }
 
 // Output data for the AtMemory query analyzer feature.
