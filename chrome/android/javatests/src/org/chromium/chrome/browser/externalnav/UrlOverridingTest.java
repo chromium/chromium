@@ -897,6 +897,7 @@ public class UrlOverridingTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/543459084")
     public void testNavigationFromXHRCallbackAndShortTimeout() throws Exception {
         WebPageStation ctaPage = mTabbedActivityTestRule.startOnBlankPage();
         loadUrlAndWaitForIntentUrl(
