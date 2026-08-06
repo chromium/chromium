@@ -62,8 +62,10 @@ void FakeConnectionManager::SetMidCommitObserver(
   mid_commit_observer_ = observer;
 }
 
-HttpResponse FakeConnectionManager::PostBuffer(const std::string& buffer_in,
-                                               std::string* buffer_out) {
+HttpResponse FakeConnectionManager::PostBuffer(
+    const std::string& buffer_in,
+    std::string* buffer_out,
+    const signin::AccessTokenInfo& access_token_info) {
   ClientToServerMessage post;
   if (!post.ParseFromString(buffer_in) || !post.has_protocol_version() ||
       !post.has_api_key() || !post.has_bag_of_chips()) {
@@ -78,13 +80,13 @@ HttpResponse FakeConnectionManager::PostBuffer(const std::string& buffer_in,
   sync_pb::ClientToServerResponse client_to_server_response;
   client_to_server_response.Clear();
 
-  if (!IsAccessTokenValid()) {
+  if (!IsAccessTokenInfoValid(access_token_info)) {
     return HttpResponse::ForNetError(net::HTTP_UNAUTHORIZED);
   }
 
-  if (GetAccessToken() != kValidAccessToken) {
+  if (access_token_info.token != kValidAccessToken) {
     // Simulate server-side auth failure.
-    ClearAccessToken();
+    ClearCachedAccessToken();
     return HttpResponse::ForNetError(net::HTTP_UNAUTHORIZED);
   }
 

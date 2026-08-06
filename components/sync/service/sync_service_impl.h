@@ -194,6 +194,8 @@ class SyncServiceImpl : public SyncService,
   void OnBackedOffTypesChanged() override;
   void OnInvalidationStatusChanged() override;
   void OnNewInvalidatedDataTypes() override;
+  void FetchAccessToken(
+      base::OnceCallback<void(signin::AccessTokenInfo)> callback) override;
 
   // DataTypeManagerObserver implementation.
   void OnConfigureDone(const DataTypeManager::ConfigureResult& result) override;

@@ -154,6 +154,9 @@ class SyncEngineImpl : public SyncEngine,
 
   void OnCookieJarChangedDoneOnFrontendLoop(base::OnceClosure callback);
 
+  void FetchAccessTokenOnFrontendLoop(
+      base::OnceCallback<void(signin::AccessTokenInfo)> callback);
+
   // Called on each device infos change and might be called more than once with
   // the same `active_devices`.
   void OnActiveDevicesChanged();

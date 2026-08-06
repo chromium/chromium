@@ -25,6 +25,7 @@ namespace syncer {
 class ExtensionsActivity;
 class DataTypeRegistry;
 class ServerConnectionManager;
+class SyncAccessTokenFetcher;
 
 // Default number of items a client can commit in a single message.
 constexpr int kDefaultMaxCommitBatchSize = 25;
@@ -48,7 +49,8 @@ class SyncCycleContext {
                    const std::string& cache_guid,
                    const std::string& birthday,
                    const std::string& bag_of_chips,
-                   base::TimeDelta poll_interval);
+                   base::TimeDelta poll_interval,
+                   SyncAccessTokenFetcher* sync_access_token_fetcher);
 
   SyncCycleContext(const SyncCycleContext&) = delete;
   SyncCycleContext& operator=(const SyncCycleContext&) = delete;
@@ -121,6 +123,10 @@ class SyncCycleContext {
         std::move(active_devices_invalidation_info);
   }
 
+  SyncAccessTokenFetcher* sync_access_token_fetcher() {
+    return sync_access_token_fetcher_;
+  }
+
  private:
   base::ObserverList<SyncEngineEventListener> listeners_;
 
@@ -151,6 +157,8 @@ class SyncCycleContext {
   const raw_ptr<DebugInfoGetter, DanglingUntriaged> debug_info_getter_;
 
   const raw_ptr<DataTypeRegistry> data_type_registry_;
+
+  const raw_ptr<SyncAccessTokenFetcher> sync_access_token_fetcher_;
 
   // Satus information to be sent up to the server.
   sync_pb::ClientStatus client_status_;

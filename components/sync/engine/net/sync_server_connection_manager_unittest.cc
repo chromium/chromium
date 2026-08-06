@@ -213,4 +213,33 @@ TEST(SyncServerConnectionManagerTest, FailPostWithTimedOut) {
   EXPECT_EQ(HttpResponse::CONNECTION_UNAVAILABLE, http_response.server_status);
 }
 
+TEST(SyncServerConnectionManagerTest, PostBufferWithPropagatedToken) {
+  CancelationSignal signal;
+  SyncServerConnectionManager server(
+      GURL("https://server"),
+      std::make_unique<FailingHttpPostFactory>(net::ERR_TIMED_OUT), &signal);
+
+  std::string buffer_out;
+  HttpResponse http_response = server.PostBufferWithAccessToken(
+      "", &buffer_out, CreateValidAccessTokenInfo());
+
+  // Because the propagated token is valid, it proceeds to make the HTTP
+  // request, which fails with CONNECTION_UNAVAILABLE instead of
+  // SYNC_AUTH_ERROR.
+  EXPECT_EQ(HttpResponse::CONNECTION_UNAVAILABLE, http_response.server_status);
+}
+
+TEST(SyncServerConnectionManagerTest, PostBufferWithExpiredPropagatedToken) {
+  CancelationSignal signal;
+  SyncServerConnectionManager server(
+      GURL("https://server"),
+      std::make_unique<FailingHttpPostFactory>(net::ERR_TIMED_OUT), &signal);
+
+  std::string buffer_out;
+  HttpResponse http_response = server.PostBufferWithAccessToken(
+      "", &buffer_out, CreateExpiredAccessTokenInfo());
+
+  EXPECT_EQ(HttpResponse::SYNC_AUTH_ERROR, http_response.server_status);
+}
+
 }  // namespace syncer

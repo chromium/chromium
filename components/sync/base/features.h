@@ -225,6 +225,10 @@ BASE_DECLARE_FEATURE(kSyncDeviceInfoUseWallClockTimer);
 // server.
 BASE_DECLARE_FEATURE(kSyncValidateAccessToken);
 
+// If enabled, use the access token propagated from SyncSchedulerImpl through
+// SyncCycle rather than reading from ServerConnectionManager's cache.
+BASE_DECLARE_FEATURE(kSyncUsePropagatedAccessToken);
+
 // If enabled, Sync invalidations will bypass the scheduler on Android.
 BASE_DECLARE_FEATURE(kSyncInvalidationsBypassScheduler);
 

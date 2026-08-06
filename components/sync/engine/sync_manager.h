@@ -37,6 +37,7 @@ class CancelationSignal;
 class EngineComponentsFactory;
 class ExtensionsActivity;
 class ProtocolEvent;
+class SyncAccessTokenFetcher;
 class SyncCycleSnapshot;
 struct SyncStatus;
 
@@ -100,6 +101,8 @@ class SyncManager {
     //
     // Must outlive SyncManager.
     raw_ptr<CancelationSignal> cancelation_signal = nullptr;
+
+    raw_ptr<SyncAccessTokenFetcher> sync_access_token_fetcher = nullptr;
 
     // Define the polling interval. Must not be zero.
     base::TimeDelta poll_interval;

@@ -655,6 +655,12 @@ void SyncEngineImpl::OnCookieJarChangedDoneOnFrontendLoop(
   std::move(callback).Run();
 }
 
+void SyncEngineImpl::FetchAccessTokenOnFrontendLoop(
+    base::OnceCallback<void(signin::AccessTokenInfo)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  host_->FetchAccessToken(std::move(callback));
+}
+
 void SyncEngineImpl::OnActiveDevicesChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sync_task_runner_->PostTask(

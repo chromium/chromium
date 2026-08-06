@@ -82,7 +82,8 @@ class LoopbackServerTest : public testing::Test {
   static bool CallPostAndProcessHeaders(ServerConnectionManager* scm,
                                         const ClientToServerMessage& msg,
                                         ClientToServerResponse* response) {
-    return SyncerProtoUtil::PostAndProcessHeaders(scm, msg, response);
+    return SyncerProtoUtil::PostAndProcessHeaders(scm, msg, response,
+                                                  signin::AccessTokenInfo());
   }
 
  protected:

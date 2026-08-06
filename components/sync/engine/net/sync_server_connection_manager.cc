@@ -134,15 +134,13 @@ SyncServerConnectionManager::~SyncServerConnectionManager() = default;
 
 HttpResponse SyncServerConnectionManager::PostBuffer(
     const std::string& buffer_in,
-    std::string* buffer_out) {
-  const bool is_access_token_valid = IsAccessTokenValid();
+    std::string* buffer_out,
+    const signin::AccessTokenInfo& access_token_info) {
+  const bool is_access_token_valid = IsAccessTokenInfoValid(access_token_info);
   base::UmaHistogramBoolean("Sync.URLFetchAccessToken", is_access_token_valid);
 
   if (!is_access_token_valid) {
-    ClearAccessToken();
-
-    // Return an auth error in case the access token is invalid (e.g. expired),
-    // so the access token will be renewed.
+    ClearCachedAccessToken();
     return HttpResponse::ForHttpStatusCode(net::HTTP_UNAUTHORIZED);
   }
 
@@ -156,10 +154,10 @@ HttpResponse SyncServerConnectionManager::PostBuffer(
   // Note that the post may be aborted by now, which will just cause Init to
   // fail with CONNECTION_UNAVAILABLE.
   HttpResponse http_response = connection->PostRequestAndDownloadResponse(
-      sync_request_url_, GetAccessToken(), buffer_in, buffer_out);
+      sync_request_url_, access_token_info.token, buffer_in, buffer_out);
 
   if (http_response.server_status == HttpResponse::SYNC_AUTH_ERROR) {
-    ClearAccessToken();
+    ClearCachedAccessToken();
   }
 
   return http_response;

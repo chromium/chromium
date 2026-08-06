@@ -36,7 +36,8 @@ class TestEngineComponentsFactory : public EngineComponentsFactory {
       const std::string& cache_guid,
       const std::string& store_birthday,
       const std::string& bag_of_chips,
-      base::TimeDelta poll_interval) override;
+      base::TimeDelta poll_interval,
+      SyncAccessTokenFetcher* sync_access_token_fetcher) override;
 };
 
 }  // namespace syncer

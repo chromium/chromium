@@ -121,6 +121,7 @@ static_library("engine") {
     "required_passphrase_verifier.h",
     "shutdown_reason.cc",
     "shutdown_reason.h",
+    "sync_access_token_fetcher.h",
     "sync_credentials.h",
     "sync_cycle_event.cc",
     "sync_cycle_event.h",

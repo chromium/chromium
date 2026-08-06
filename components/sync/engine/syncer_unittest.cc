@@ -138,7 +138,8 @@ class SyncerTest : public testing::Test,
   void OnMigrationRequested(DataTypeSet types) override {}
 
   void ResetCycle() {
-    cycle_ = std::make_unique<SyncCycle>(context_.get(), this);
+    cycle_ = std::make_unique<SyncCycle>(context_.get(), this,
+                                         signin::AccessTokenInfo());
   }
 
   bool SyncShareNudge() {
@@ -179,7 +180,8 @@ class SyncerTest : public testing::Test,
         mock_server_.get(), extensions_activity_.get(), listeners,
         debug_info_getter_.get(), data_type_registry_.get(), local_cache_guid(),
         mock_server_->store_birthday(), "fake_bag_of_chips",
-        /*poll_interval=*/base::Minutes(30));
+        /*poll_interval=*/base::Minutes(30),
+        /*sync_access_token_fetcher=*/nullptr);
     auto syncer = std::make_unique<Syncer>(&cancelation_signal_);
     // The syncer is destroyed with the scheduler that owns it.
     syncer_ = syncer.get();

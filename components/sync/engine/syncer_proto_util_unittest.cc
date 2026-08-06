@@ -8,8 +8,10 @@
 #include <vector>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/sync/base/features.h"
 #include "components/sync/engine/cycle/sync_cycle_context.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
@@ -75,7 +77,8 @@ class SyncerProtoUtilTest : public testing::Test {
         /*cache_guid=*/"",
         /*birthday=*/"",
         /*bag_of_chips=*/"",
-        /*poll_internal=*/base::Seconds(1));
+        /*poll_internal=*/base::Seconds(1),
+        /*sync_access_token_fetcher=*/nullptr);
   }
 
   SyncCycleContext* context() { return context_.get(); }
@@ -196,15 +199,49 @@ TEST_F(SyncerProtoUtilTest, PostAndProcessHeaders) {
   base::HistogramTester histogram_tester;
   FakeConnectionManager dcm;
   dcm.FailNextPostBufferToPathCall();
-  EXPECT_FALSE(SyncerProtoUtil::PostAndProcessHeaders(&dcm, msg, &response));
+  EXPECT_FALSE(SyncerProtoUtil::PostAndProcessHeaders(
+      &dcm, msg, &response, signin::AccessTokenInfo()));
   EXPECT_EQ(1, histogram_tester.GetBucketCount(
                    "Sync.PostedClientToServerMessage",
                    /*sample=*/ClientToServerMessage::GET_UPDATES));
 
-  EXPECT_TRUE(SyncerProtoUtil::PostAndProcessHeaders(&dcm, msg, &response));
+  EXPECT_TRUE(SyncerProtoUtil::PostAndProcessHeaders(
+      &dcm, msg, &response, signin::AccessTokenInfo()));
   EXPECT_EQ(2, histogram_tester.GetBucketCount(
                    "Sync.PostedClientToServerMessage",
                    /*sample=*/ClientToServerMessage::GET_UPDATES));
+}
+
+TEST_F(SyncerProtoUtilTest, PostAndProcessHeadersWithPropagatedToken) {
+  base::test::ScopedFeatureList feature_list(kSyncUsePropagatedAccessToken);
+
+  ClientToServerMessage msg;
+  SyncerProtoUtil::SetProtocolVersion(&msg);
+  msg.set_share("required");
+  msg.set_message_contents(ClientToServerMessage::GET_UPDATES);
+
+  // Add fields required for FakeConnectionManager.
+  msg.mutable_get_updates();
+  msg.set_api_key("api_key");
+  msg.mutable_bag_of_chips();
+
+  sync_pb::ClientToServerResponse response;
+  FakeConnectionManager dcm;
+  // Clear the cached token to ensure PostAndProcessHeaders relies on the
+  // propagated access token rather than cached auth.
+  dcm.SetAccessTokenInfo(signin::AccessTokenInfo());
+
+  // Calling PostAndProcessHeaders with an empty token should fail due to auth
+  // error.
+  EXPECT_FALSE(SyncerProtoUtil::PostAndProcessHeaders(
+      &dcm, msg, &response, signin::AccessTokenInfo()));
+
+  // Calling PostAndProcessHeaders with a valid token should succeed.
+  signin::AccessTokenInfo valid_token;
+  valid_token.token = "AccessToken";
+  valid_token.expiration_time = base::Time::Now() + base::Hours(1);
+  EXPECT_TRUE(SyncerProtoUtil::PostAndProcessHeaders(&dcm, msg, &response,
+                                                     valid_token));
 }
 
 }  // namespace syncer

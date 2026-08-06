@@ -98,16 +98,18 @@ ServerConnectionManager::ServerConnectionManager()
 
 ServerConnectionManager::~ServerConnectionManager() = default;
 
+// TODO(crbug.com/539471945): do not cache the access token when
+// kSyncUsePropagatedAccessToken is enabled.
 bool ServerConnectionManager::SetAccessTokenInfo(
     const signin::AccessTokenInfo& access_token_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  access_token_info_ = access_token_info;
-  if (IsAccessTokenValid()) {
+  cached_access_token_info_ = access_token_info;
+  if (IsAccessTokenInfoValid(cached_access_token_info_)) {
     return true;
   }
 
-  ClearAccessToken();
+  ClearCachedAccessToken();
 
   // The token was probably expired. Notify sync frontend again to request new
   // token, otherwise backend will stay in SYNC_AUTH_ERROR state while frontend
@@ -116,32 +118,30 @@ bool ServerConnectionManager::SetAccessTokenInfo(
   return false;
 }
 
-bool ServerConnectionManager::HasAccessToken() const {
+bool ServerConnectionManager::HasCachedAccessToken() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return !access_token_info_.token.empty();
+  return !cached_access_token_info_.token.empty();
 }
 
-void ServerConnectionManager::ClearAccessToken() {
-  access_token_info_ = signin::AccessTokenInfo();
+void ServerConnectionManager::ClearCachedAccessToken() {
+  cached_access_token_info_ = signin::AccessTokenInfo();
 }
 
-std::string ServerConnectionManager::GetAccessToken() const {
-  return access_token_info_.token;
-}
-
-bool ServerConnectionManager::IsAccessTokenValid() const {
-  if (access_token_info_.token.empty()) {
+// static
+bool ServerConnectionManager::IsAccessTokenInfoValid(
+    const signin::AccessTokenInfo& access_token_info) {
+  if (access_token_info.token.empty()) {
     return false;
   }
 
   // Assume the token is valid if the expiration time is not set or the
   // validation feature is disabled.
-  if (access_token_info_.expiration_time.is_null() ||
+  if (access_token_info.expiration_time.is_null() ||
       !base::FeatureList::IsEnabled(kSyncValidateAccessToken)) {
     return true;
   }
 
-  return access_token_info_.expiration_time > base::Time::Now();
+  return access_token_info.expiration_time > base::Time::Now();
 }
 
 void ServerConnectionManager::SetServerResponse(
@@ -166,13 +166,23 @@ void ServerConnectionManager::NotifyStatusChanged() {
   }
 }
 
+HttpResponse ServerConnectionManager::PostBufferWithAccessToken(
+    const std::string& buffer_in,
+    std::string* buffer_out,
+    const signin::AccessTokenInfo& access_token_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  HttpResponse http_response =
+      PostBuffer(buffer_in, buffer_out, access_token_info);
+  SetServerResponse(http_response);
+  return server_response_;
+}
+
 HttpResponse ServerConnectionManager::PostBufferWithCachedAuth(
     const std::string& buffer_in,
     std::string* buffer_out) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  HttpResponse http_response = PostBuffer(buffer_in, buffer_out);
-  SetServerResponse(http_response);
-  return server_response_;
+  return PostBufferWithAccessToken(buffer_in, buffer_out,
+                                   cached_access_token_info_);
 }
 
 void ServerConnectionManager::AddListener(

@@ -56,8 +56,10 @@ class FakeConnectionManager : public ServerConnectionManager {
   ~FakeConnectionManager() override;
 
   // Overridden ServerConnectionManager functions.
-  HttpResponse PostBuffer(const std::string& buffer_in,
-                          std::string* buffer_out) override;
+  HttpResponse PostBuffer(
+      const std::string& buffer_in,
+      std::string* buffer_out,
+      const signin::AccessTokenInfo& access_token_info) override;
 
   // Control of commit response.
   // NOTE: Commit callback is invoked only once then reset.
@@ -236,7 +238,7 @@ class FakeConnectionManager : public ServerConnectionManager {
   // Adds a new progress marker to the last update.
   sync_pb::DataTypeProgressMarker* AddUpdateProgressMarker();
 
-  void ResetAccessToken() { ClearAccessToken(); }
+  void ResetAccessToken() { ClearCachedAccessToken(); }
 
  private:
   sync_pb::SyncEntity* AddUpdateFull(const std::string& id,

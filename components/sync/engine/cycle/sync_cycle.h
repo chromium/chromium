@@ -13,6 +13,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/engine/cycle/status_controller.h"
 #include "components/sync/engine/cycle/sync_cycle_context.h"
@@ -84,7 +85,9 @@ class SyncCycle {
     virtual ~Delegate() = default;
   };
 
-  SyncCycle(SyncCycleContext* context, Delegate* delegate);
+  SyncCycle(SyncCycleContext* context,
+            Delegate* delegate,
+            signin::AccessTokenInfo access_token_info);
 
   SyncCycle(const SyncCycle&) = delete;
   SyncCycle& operator=(const SyncCycle&) = delete;
@@ -113,12 +116,19 @@ class SyncCycle {
     return status_controller_.get();
   }
 
+  const signin::AccessTokenInfo& access_token_info() const {
+    return access_token_info_;
+  }
+
  private:
   // The context for this cycle, guaranteed to outlive `this`.
   const raw_ptr<SyncCycleContext, DanglingUntriaged> context_;
 
   // The delegate for this cycle, must never be null.
   const raw_ptr<Delegate> delegate_;
+
+  // The access token info for this cycle.
+  const signin::AccessTokenInfo access_token_info_;
 
   // Our controller for various status and error counters.
   std::unique_ptr<StatusController> status_controller_;

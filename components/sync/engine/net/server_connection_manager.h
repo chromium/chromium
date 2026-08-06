@@ -95,7 +95,14 @@ class ServerConnectionManager {
   virtual ~ServerConnectionManager();
 
   // POSTs `buffer_in` and reads the body of the response into `buffer_out`.
-  // Uses the currently set access token in the headers.
+  // Uses the given `access_token_info` or the cached one in the headers.
+  HttpResponse PostBufferWithAccessToken(
+      const std::string& buffer_in,
+      std::string* buffer_out,
+      const signin::AccessTokenInfo& access_token_info);
+
+  // POSTs `buffer_in` and reads the body of the response into `buffer_out`.
+  // Uses the cached access token in the headers.
   HttpResponse PostBufferWithCachedAuth(const std::string& buffer_in,
                                         std::string* buffer_out);
 
@@ -117,13 +124,13 @@ class ServerConnectionManager {
     return server_response_.http_status_code;
   }
 
-  // Sets a new access token. If `access_token_info` is empty, the current token
+  // Sets a new access token. If `access_token_info` is empty, the cached token
   // is invalidated and cleared. Returns false if the server is in
   // authentication error state.
   bool SetAccessTokenInfo(const signin::AccessTokenInfo& access_token_info);
 
-  // Returns true if the current access token is not empty.
-  bool HasAccessToken() const;
+  // Returns true if the cached access token is not empty.
+  bool HasCachedAccessToken() const;
 
  protected:
   // Updates `server_response_` and notifies listeners if the server status
@@ -132,22 +139,24 @@ class ServerConnectionManager {
 
   // Internal PostBuffer base function which subclasses are expected to
   // implement.
-  virtual HttpResponse PostBuffer(const std::string& buffer_in,
-                                  std::string* buffer_out) = 0;
+  virtual HttpResponse PostBuffer(
+      const std::string& buffer_in,
+      std::string* buffer_out,
+      const signin::AccessTokenInfo& access_token_info) = 0;
 
-  // Clears the current access token.
-  void ClearAccessToken();
+  // Clears the current cached access token.
+  void ClearCachedAccessToken();
 
-  // Returns the current raw access token, empty if there is no valid token.
-  std::string GetAccessToken() const;
-
-  bool IsAccessTokenValid() const;
+  // Returns true if `access_token_info` has a non-empty token and is not
+  // expired (unless token validation is disabled via kSyncValidateAccessToken).
+  static bool IsAccessTokenInfoValid(
+      const signin::AccessTokenInfo& access_token_info);
 
  private:
   void NotifyStatusChanged();
 
   // The access token to use in authenticated requests.
-  signin::AccessTokenInfo access_token_info_;
+  signin::AccessTokenInfo cached_access_token_info_;
 
   base::ObserverList<ServerConnectionEventListener> listeners_;
 

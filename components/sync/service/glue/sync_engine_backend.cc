@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -14,11 +15,13 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/sync/base/custom_passphrase_bootstrap_token.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/legacy_directory_deletion.h"
 #include "components/sync/base/sync_invalidation_adapter.h"
 #include "components/sync/base/sync_stop_metadata_fate.h"
@@ -318,6 +321,9 @@ void SyncEngineBackend::DoInitialize(
   args.cache_guid = restored_local_transport_data.cache_guid;
   args.birthday = restored_local_transport_data.birthday;
   args.bag_of_chips = restored_local_transport_data.bag_of_chips;
+  if (base::FeatureList::IsEnabled(kSyncUsePropagatedAccessToken)) {
+    args.sync_access_token_fetcher = this;
+  }
   sync_manager_->Init(&args);
 
   LoadAndConnectNigoriController();
@@ -635,6 +641,17 @@ void SyncEngineBackend::LoadAndConnectNigoriController() {
   DCHECK_EQ(nigori_controller_->state(), DataTypeController::MODEL_LOADED);
   sync_manager_->GetDataTypeConnector()->ConnectDataType(
       NIGORI, nigori_controller_->Connect());
+}
+
+void SyncEngineBackend::FetchAccessToken(
+    base::OnceCallback<void(signin::AccessTokenInfo)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(base::FeatureList::IsEnabled(kSyncUsePropagatedAccessToken));
+
+  base::OnceCallback<void(signin::AccessTokenInfo)> reply_callback =
+      base::BindPostTaskToCurrentDefault(std::move(callback));
+  host_.Call(FROM_HERE, &SyncEngineImpl::FetchAccessTokenOnFrontendLoop,
+             std::move(reply_callback));
 }
 
 }  // namespace syncer

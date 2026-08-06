@@ -19,6 +19,7 @@
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/data_type_configurer.h"
 #include "components/sync/engine/shutdown_reason.h"
+#include "components/sync/engine/sync_access_token_fetcher.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/engine/sync_engine.h"
 #include "components/sync/engine/sync_manager.h"
@@ -31,7 +32,8 @@ class DataTypeController;
 class SyncEngineImpl;
 
 class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
-                          public SyncManager::Observer {
+                          public SyncManager::Observer,
+                          public SyncAccessTokenFetcher {
  public:
   using AllNodesCallback = base::OnceCallback<void(base::ListValue)>;
 
@@ -184,6 +186,10 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   // device if reflections are disabled).
   void DoOnActiveDevicesChanged(
       ActiveDevicesInvalidationInfo active_devices_invalidation_info);
+
+  // SyncAccessTokenFetcher implementation.
+  void FetchAccessToken(
+      base::OnceCallback<void(signin::AccessTokenInfo)> callback) override;
 
  private:
   friend class base::RefCountedThreadSafe<SyncEngineBackend>;

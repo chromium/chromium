@@ -18,14 +18,19 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "components/sync/base/extensions_activity.h"
+#include "components/sync/base/features.h"
 #include "components/sync/engine/backoff_delay_provider.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/data_type_activation_response.h"
+#include "components/sync/engine/sync_access_token_fetcher.h"
 #include "components/sync/test/data_type_test_util.h"
 #include "components/sync/test/fake_connection_manager.h"
 #include "components/sync/test/fake_data_type_processor.h"
@@ -173,6 +178,17 @@ class MockSyncer : public Syncer {
   MOCK_METHOD(bool, PollSyncShare, (DataTypeSet, SyncCycle*), (override));
 };
 
+class MockSyncAccessTokenFetcher : public SyncAccessTokenFetcher {
+ public:
+  MockSyncAccessTokenFetcher() = default;
+  ~MockSyncAccessTokenFetcher() override = default;
+
+  MOCK_METHOD(void,
+              FetchAccessToken,
+              (base::OnceCallback<void(signin::AccessTokenInfo)> callback),
+              (override));
+};
+
 std::unique_ptr<DataTypeActivationResponse> MakeFakeActivationResponse(
     DataType data_type) {
   auto response = std::make_unique<DataTypeActivationResponse>();
@@ -187,6 +203,18 @@ MockSyncer::MockSyncer() : Syncer(nullptr) {}
 using SyncShareTimes = std::vector<TimeTicks>;
 
 static const size_t kMinNumSamples = 5;
+
+signin::AccessTokenInfo CreateValidAccessTokenInfo(
+    const std::string& token = "test_access_token") {
+  signin::AccessTokenInfo token_info;
+  token_info.token = token;
+  token_info.expiration_time = base::Time::Now() + base::Hours(1);
+  return token_info;
+}
+
+MATCHER_P(SyncCycleHasAccessToken, expected_token, "") {
+  return arg->access_token_info().token == expected_token;
+}
 
 }  // namespace
 
@@ -235,7 +263,8 @@ class SyncSchedulerImplTest : public testing::Test {
         std::vector<SyncEngineEventListener*>(), nullptr,
         data_type_registry_.get(), "fake_cache_guid", "fake_birthday",
         "fake_bag_of_chips",
-        /*poll_interval=*/base::Minutes(30));
+        /*poll_interval=*/base::Minutes(30),
+        /*sync_access_token_fetcher=*/nullptr);
     context_->set_notifications_enabled(true);
     context_->set_account_name("Test");
     RebuildScheduler();
@@ -253,6 +282,20 @@ class SyncSchedulerImplTest : public testing::Test {
         "TestSyncScheduler", BackoffDelayProvider::FromDefaults(), context(),
         std::move(syncer), false);
     SetDefaultLocalChangeNudgeDelays();
+  }
+
+  void RebuildSchedulerWithAccessTokenFetcher(
+      SyncAccessTokenFetcher* access_token_fetcher) {
+    scheduler_.reset();
+    context_ = std::make_unique<SyncCycleContext>(
+        connection_.get(), extensions_activity_.get(),
+        std::vector<SyncEngineEventListener*>(), nullptr,
+        data_type_registry_.get(), "fake_cache_guid", "fake_birthday",
+        "fake_bag_of_chips",
+        /*poll_interval=*/base::Minutes(30), access_token_fetcher);
+    context_->set_notifications_enabled(true);
+    context_->set_account_name("Test");
+    RebuildScheduler();
   }
 
   SyncSchedulerImpl* scheduler() { return scheduler_.get(); }
@@ -295,7 +338,7 @@ class SyncSchedulerImplTest : public testing::Test {
     scheduler()->Start(SyncScheduler::CONFIGURATION_MODE, base::Time());
   }
 
-  void StartSyncScheduler(base::Time last_poll_time) {
+  void StartSyncScheduler(base::Time last_poll_time = base::Time()) {
     scheduler()->Start(SyncScheduler::NORMAL_MODE, last_poll_time);
   }
 
@@ -1838,6 +1881,182 @@ TEST_F(SyncSchedulerImplTest, InterleavedNudgesStillRestart) {
   EXPECT_TRUE(BlockTimerIsRunning());
   EXPECT_LT(base::Seconds(50), GetPendingWakeupTimerDelay());
   EXPECT_TRUE(scheduler()->IsGlobalBackoff());
+}
+
+TEST_F(SyncSchedulerImplTest, PropagatedAccessTokenInNudge) {
+  base::test::ScopedFeatureList feature_list(kSyncUsePropagatedAccessToken);
+
+  testing::NiceMock<MockSyncAccessTokenFetcher> fetcher;
+  EXPECT_CALL(fetcher, FetchAccessToken)
+      .WillOnce(base::test::RunOnceCallback<0>(
+          CreateValidAccessTokenInfo("propagated_access_token")));
+
+  RebuildSchedulerWithAccessTokenFetcher(&fetcher);
+  scheduler()->ForceShortNudgeDelayForTest();
+
+  SyncShareTimes times;
+  EXPECT_CALL(
+      *syncer(),
+      NormalSyncShare(_, _, SyncCycleHasAccessToken("propagated_access_token")))
+      .WillOnce(DoAll(SimulateNormalSuccess, RecordSyncShare(&times, true)));
+
+  StartSyncScheduler();
+  scheduler()->ScheduleLocalNudge(THEMES);
+  RunLoop();
+}
+
+TEST_F(SyncSchedulerImplTest, CoalesceInFlightAccessTokenRequests) {
+  base::test::ScopedFeatureList feature_list(kSyncUsePropagatedAccessToken);
+
+  base::OnceCallback<void(signin::AccessTokenInfo)> pending_callback;
+  testing::NiceMock<MockSyncAccessTokenFetcher> fetcher;
+  EXPECT_CALL(fetcher, FetchAccessToken)
+      .WillOnce(MoveArg<0>(&pending_callback));
+
+  RebuildSchedulerWithAccessTokenFetcher(&fetcher);
+  scheduler()->ForceShortNudgeDelayForTest();
+
+  SyncShareTimes times;
+  EXPECT_CALL(
+      *syncer(),
+      NormalSyncShare(_, _, SyncCycleHasAccessToken("propagated_access_token")))
+      .WillOnce(DoAll(SimulateNormalSuccess, RecordSyncShare(&times, true)));
+
+  StartSyncScheduler();
+  scheduler()->ScheduleLocalNudge(THEMES);
+  task_environment_.FastForwardBy(base::Milliseconds(10));
+  ASSERT_TRUE(pending_callback);
+
+  // Verify that FetchAccessToken was called once and will not be called again.
+  testing::Mock::VerifyAndClearExpectations(&fetcher);
+  EXPECT_CALL(fetcher, FetchAccessToken(_)).Times(0);
+
+  // Schedule additional nudges while the access token request is pending.
+  // FetchAccessToken should not be called again.
+  scheduler()->ScheduleLocalNudge(HISTORY);
+  scheduler()->ScheduleLocalNudge(BOOKMARKS);
+
+  // Fulfilling the token request should trigger a single sync cycle.
+  std::move(pending_callback)
+      .Run(CreateValidAccessTokenInfo("propagated_access_token"));
+  EXPECT_EQ(1u, times.size());
+}
+
+TEST_F(SyncSchedulerImplTest, PropagatedAccessTokenInConfiguration) {
+  base::test::ScopedFeatureList feature_list(kSyncUsePropagatedAccessToken);
+
+  testing::NiceMock<MockSyncAccessTokenFetcher> fetcher;
+  EXPECT_CALL(fetcher, FetchAccessToken)
+      .WillOnce(base::test::RunOnceCallback<0>(
+          CreateValidAccessTokenInfo("propagated_config_access_token")));
+
+  RebuildSchedulerWithAccessTokenFetcher(&fetcher);
+
+  SyncShareTimes times;
+  EXPECT_CALL(
+      *syncer(),
+      ConfigureSyncShare(
+          _, _, SyncCycleHasAccessToken("propagated_config_access_token")))
+      .WillOnce(DoAll(SimulateConfigureSuccess, RecordSyncShare(&times, true)));
+
+  StartSyncConfiguration();
+
+  base::MockOnceClosure ready_task;
+  EXPECT_CALL(ready_task, Run);
+  scheduler()->ScheduleConfiguration(sync_pb::SyncEnums::RECONFIGURATION,
+                                     {THEMES}, ready_task.Get());
+  PumpLoop();
+}
+
+TEST_F(SyncSchedulerImplTest, PropagatedAccessTokenInPoll) {
+  base::test::ScopedFeatureList feature_list(kSyncUsePropagatedAccessToken);
+
+  testing::NiceMock<MockSyncAccessTokenFetcher> fetcher;
+  EXPECT_CALL(fetcher, FetchAccessToken)
+      .WillOnce(base::test::RunOnceCallback<0>(
+          CreateValidAccessTokenInfo("propagated_poll_access_token")));
+
+  RebuildSchedulerWithAccessTokenFetcher(&fetcher);
+
+  SyncShareTimes times;
+  EXPECT_CALL(
+      *syncer(),
+      PollSyncShare(_, SyncCycleHasAccessToken("propagated_poll_access_token")))
+      .WillOnce(DoAll(SimulatePollSuccess, RecordSyncShare(&times, true)));
+
+  StartSyncScheduler(/*last_poll_time=*/base::Time::Now() - base::Hours(24));
+  PumpLoop();
+}
+
+TEST_F(SyncSchedulerImplTest, StopCancelsInFlightAccessTokenFetch) {
+  base::test::ScopedFeatureList feature_list(kSyncUsePropagatedAccessToken);
+
+  base::OnceCallback<void(signin::AccessTokenInfo)> pending_callback;
+  testing::NiceMock<MockSyncAccessTokenFetcher> fetcher;
+  EXPECT_CALL(fetcher, FetchAccessToken)
+      .WillOnce(MoveArg<0>(&pending_callback));
+
+  RebuildSchedulerWithAccessTokenFetcher(&fetcher);
+  scheduler()->ForceShortNudgeDelayForTest();
+
+  EXPECT_CALL(*syncer(), NormalSyncShare).Times(0);
+
+  StartSyncScheduler();
+  scheduler()->ScheduleLocalNudge(THEMES);
+  task_environment_.FastForwardBy(base::Milliseconds(10));
+  ASSERT_TRUE(pending_callback);
+
+  // Stop scheduler while the token fetch is in flight.
+  scheduler()->Stop();
+
+  // Fulfill the callback after Stop(). Because weak pointers are invalidated
+  // and pending_access_token_request_backoff_ is reset in Stop(), this should
+  // be a no-op.
+  std::move(pending_callback).Run(CreateValidAccessTokenInfo());
+
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(SyncSchedulerImplTest, NoCachedAccessToken) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kSyncUsePropagatedAccessToken);
+
+  // Clear cached access token in connection manager.
+  connection()->SetAccessTokenInfo(signin::AccessTokenInfo());
+  ASSERT_FALSE(connection()->HasCachedAccessToken());
+
+  EXPECT_CALL(*syncer(), NormalSyncShare).Times(0);
+
+  StartSyncScheduler();
+  scheduler()->ScheduleLocalNudge(THEMES);
+  PumpLoop();
+}
+
+TEST_F(SyncSchedulerImplTest, CanRunJobWithoutCachedAccessToken) {
+  base::test::ScopedFeatureList feature_list(kSyncUsePropagatedAccessToken);
+
+  // Clear cached access token in connection manager to verify that
+  // CanRunJobNow() does not block when the feature is enabled.
+  connection()->SetAccessTokenInfo(signin::AccessTokenInfo());
+  ASSERT_FALSE(connection()->HasCachedAccessToken());
+
+  testing::NiceMock<MockSyncAccessTokenFetcher> fetcher;
+  EXPECT_CALL(fetcher, FetchAccessToken)
+      .WillOnce(base::test::RunOnceCallback<0>(
+          CreateValidAccessTokenInfo("propagated_access_token")));
+
+  RebuildSchedulerWithAccessTokenFetcher(&fetcher);
+  scheduler()->ForceShortNudgeDelayForTest();
+
+  SyncShareTimes times;
+  EXPECT_CALL(
+      *syncer(),
+      NormalSyncShare(_, _, SyncCycleHasAccessToken("propagated_access_token")))
+      .WillOnce(DoAll(SimulateNormalSuccess, RecordSyncShare(&times, true)));
+
+  StartSyncScheduler();
+  scheduler()->ScheduleLocalNudge(THEMES);
+  RunLoop();
 }
 
 }  // namespace syncer

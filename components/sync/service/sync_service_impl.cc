@@ -1243,6 +1243,23 @@ void SyncServiceImpl::OnNewInvalidatedDataTypes() {
   NotifyObservers();
 }
 
+void SyncServiceImpl::FetchAccessToken(
+    base::OnceCallback<void(signin::AccessTokenInfo)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!auth_manager_) {
+    std::move(callback).Run(signin::AccessTokenInfo());
+    return;
+  }
+
+  // TODO(crbug.com/539471945): Actually request an access token here in
+  // follow-up CLs instead of relying on the cached credentials from
+  // SyncAuthManager. For now, this step uses the same token as before, but
+  // propagates it from a different source (SyncCycle instead of
+  // ServerConnectionManager's cache).
+  std::move(callback).Run(auth_manager_->GetCredentials().access_token_info);
+}
+
 void SyncServiceImpl::OnConfigureDone(
     const DataTypeManager::ConfigureResult& result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1365,6 +1382,8 @@ void SyncServiceImpl::SyncAuthCredentialsChanged() {
   } else {
     // If the engine already exists, just propagate the new credentials.
     SyncCredentials credentials = auth_manager_->GetCredentials();
+    // TODO(crbug.com/539471945): do not update credentials if
+    // kSyncUsePropagatedAccessToken is enabled.
     if (credentials.access_token_info.token.empty()) {
       engine_->InvalidateCredentials();
     } else {

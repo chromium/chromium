@@ -17,7 +17,8 @@ LoopbackConnectionManager::~LoopbackConnectionManager() = default;
 
 HttpResponse LoopbackConnectionManager::PostBuffer(
     const std::string& buffer_in,
-    std::string* buffer_out) {
+    std::string* buffer_out,
+    const signin::AccessTokenInfo& access_token_info) {
   buffer_out->clear();
 
   sync_pb::ClientToServerMessage message;
