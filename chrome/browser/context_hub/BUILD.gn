@@ -39,9 +39,15 @@ source_set("context_hub") {
     "//components/optimization_guide/core",
     "//components/personal_context/core",
     "//components/personal_context/proto:personal_context_proto",
+    "//components/tab_groups",
   ]
 
-  deps = [ "//sql" ]
+  deps = [
+    "//chrome/browser/tab_group_sync",
+    "//chrome/browser/tab_group_sync:factories",
+    "//components/saved_tab_groups/public",
+    "//sql",
+  ]
 }
 
 source_set("unit_tests") {
@@ -58,6 +64,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//components/optimization_guide/core:test_support",
     "//components/personal_context/core:test_support",
+    "//components/saved_tab_groups/test_support:test_support",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

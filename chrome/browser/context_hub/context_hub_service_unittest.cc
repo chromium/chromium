@@ -25,6 +25,11 @@
 #include "components/personal_context/core/context_memory_error.h"
 #include "components/personal_context/core/mock_personal_context_service.h"
 #include "components/personal_context/proto/features/auto_todos.pb.h"
+#include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "components/saved_tab_groups/public/saved_tab_group_tab.h"
+#include "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
+#include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
+#include "components/tab_groups/tab_group_color.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -59,6 +64,7 @@ class ContextHubServiceTest : public testing::Test {
   ContextHubServiceTest()
       : service_(&mock_personal_context_service_,
                  &mock_remote_model_executor_,
+                 &fake_tab_group_sync_service_,
                  std::make_unique<InMemoryMemoryBank>(),
                  std::make_unique<InMemoryTabGroupStore>(),
                  /*context_hub_backend=*/nullptr,
@@ -79,6 +85,7 @@ class ContextHubServiceTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   personal_context::MockPersonalContextService mock_personal_context_service_;
   optimization_guide::MockRemoteModelExecutor mock_remote_model_executor_;
+  tab_groups::FakeTabGroupSyncService fake_tab_group_sync_service_;
   ContextHubService service_;
 };
 
@@ -325,8 +332,7 @@ TEST_F(ContextHubServiceTest, GroupTabs_WithTabs) {
   EXPECT_EQ(ungrouped_tabs[0].id, 5);
 
   base::test::TestFuture<std::vector<TabGroupEntry>> stored_groups_future;
-  service_.GetTabGroups(
-      stored_groups_future.GetCallback());
+  service_.GetTabGroups(stored_groups_future.GetCallback());
   EXPECT_THAT(
       stored_groups_future.Get(),
       ElementsAre(
@@ -395,12 +401,12 @@ TEST_F(ContextHubServiceTest, ChatHistory_LRUEviction) {
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       browser::context_hub::mojom::kAutoTabGroups,
       {{features::kMaxTabGroupChatHistoryTurns.name, "3"}});
-  ContextHubService service(&mock_personal_context_service_,
-                            &mock_remote_model_executor_,
-                            std::make_unique<InMemoryMemoryBank>(),
-                            std::make_unique<InMemoryTabGroupStore>(),
-                            /*context_hub_backend=*/nullptr,
-                            std::make_unique<InMemoryAutoTodosStore>());
+  ContextHubService service(
+      &mock_personal_context_service_, &mock_remote_model_executor_,
+      &fake_tab_group_sync_service_, std::make_unique<InMemoryMemoryBank>(),
+      std::make_unique<InMemoryTabGroupStore>(),
+      /*context_hub_backend=*/nullptr,
+      std::make_unique<InMemoryAutoTodosStore>());
 
   for (size_t i = 0; i < 4; ++i) {
     service.AddTabGroupChatHistoryTurn(
@@ -611,11 +617,12 @@ TEST_F(ContextHubServiceTest, UpdateAutoTodo) {
   entry.title = "Initial Title";
   entry.status = AutoTodoEntry::Status::kActive;
 
-  EXPECT_CALL(observer,
-              OnAutoTodosChanged(ElementsAre(AllOf(
-                  Field(&AutoTodoEntry::id, "todo_1"),
-                  Field(&AutoTodoEntry::title, "Initial Title"),
-                  Field(&AutoTodoEntry::status, AutoTodoEntry::Status::kActive)))));
+  EXPECT_CALL(
+      observer,
+      OnAutoTodosChanged(ElementsAre(AllOf(
+          Field(&AutoTodoEntry::id, "todo_1"),
+          Field(&AutoTodoEntry::title, "Initial Title"),
+          Field(&AutoTodoEntry::status, AutoTodoEntry::Status::kActive)))));
 
   base::test::TestFuture<bool> add_future;
   service_.UpdateAutoTodo(entry, add_future.GetCallback());
@@ -626,11 +633,12 @@ TEST_F(ContextHubServiceTest, UpdateAutoTodo) {
   updated_entry.title = "Updated Title";
   updated_entry.status = AutoTodoEntry::Status::kCompleted;
 
-  EXPECT_CALL(observer,
-              OnAutoTodosChanged(ElementsAre(AllOf(
-                  Field(&AutoTodoEntry::id, "todo_1"),
-                  Field(&AutoTodoEntry::title, "Updated Title"),
-                  Field(&AutoTodoEntry::status, AutoTodoEntry::Status::kCompleted)))));
+  EXPECT_CALL(
+      observer,
+      OnAutoTodosChanged(ElementsAre(AllOf(
+          Field(&AutoTodoEntry::id, "todo_1"),
+          Field(&AutoTodoEntry::title, "Updated Title"),
+          Field(&AutoTodoEntry::status, AutoTodoEntry::Status::kCompleted)))));
 
   base::test::TestFuture<bool> update_future;
   service_.UpdateAutoTodo(updated_entry, update_future.GetCallback());
@@ -694,6 +702,189 @@ TEST_F(ContextHubServiceTest, GetAutoTodos) {
   EXPECT_EQ(items[1].status, AutoTodoEntry::Status::kActive);
   EXPECT_FLOAT_EQ(items[1].importance_score, 0.8f);
   EXPECT_TRUE(items[1].is_first_party());
+}
+
+TEST_F(ContextHubServiceTest, ConfirmAllTabGroups_EmptyGroups) {
+  base::test::TestFuture<bool, std::vector<base::Uuid>> future;
+  service_.ConfirmAllTabGroups(future.GetCallback());
+  auto [success, added_group_guids] = future.Take();
+  EXPECT_TRUE(success);
+  EXPECT_TRUE(added_group_guids.empty());
+}
+
+TEST_F(ContextHubServiceTest, GetConfirmedTabGroups) {
+  tab_groups::SavedTabGroup group(u"Test Group",
+                                  tab_groups::TabGroupColorId::kBlue, {},
+                                  /*position=*/std::nullopt);
+  tab_groups::SavedTabGroupTab tab(GURL("https://example.com"), u"Example",
+                                   group.saved_guid(), /*position=*/0);
+  group.AddTabLocally(tab);
+  fake_tab_group_sync_service_.AddGroup(group);
+
+  std::vector<TabGroupEntry> groups =
+      service_.GetConfirmedTabGroups();
+  ASSERT_EQ(groups.size(), 1u);
+  EXPECT_EQ(groups[0].id, group.saved_guid().AsLowercaseString());
+  EXPECT_EQ(groups[0].label, "Test Group");
+  ASSERT_EQ(groups[0].tabs.size(), 1u);
+  EXPECT_EQ(groups[0].tabs[0].title, "Example");
+  EXPECT_EQ(groups[0].tabs[0].url, GURL("https://example.com"));
+
+  std::optional<TabGroupEntry> fetched_group =
+      service_.GetConfirmedTabGroup(group.saved_guid());
+  ASSERT_TRUE(fetched_group.has_value());
+  EXPECT_EQ(fetched_group->id, group.saved_guid().AsLowercaseString());
+  EXPECT_EQ(fetched_group->tabs.size(), 1u);
+}
+
+TEST_F(ContextHubServiceTest, ConfirmAllTabGroups_Success) {
+  std::vector<TabData> input_tabs = {
+      {1, "Tab 1", GURL("https://example1.com")},
+      {2, "Tab 2", GURL("https://example2.com")}};
+
+  EXPECT_CALL(
+      mock_remote_model_executor_,
+      ExecuteModel(optimization_guide::ModelBasedCapabilityKey::kContextHub, _,
+                   _, _))
+      .WillOnce([](optimization_guide::ModelBasedCapabilityKey feature,
+                   const google::protobuf::MessageLite& request_metadata,
+                   const optimization_guide::ModelExecutionOptions& options,
+                   optimization_guide::
+                       OptimizationGuideModelExecutionResultCallback callback) {
+        optimization_guide::proto::ContextHubResponse response;
+        optimization_guide::proto::GroupResponse* group_response =
+            response.mutable_group_response();
+        optimization_guide::proto::TabGroupMinimal* group1 =
+            group_response->add_minimal_tab_groups();
+        group1->set_label("Unconfirmed Group");
+        group1->add_tab_ids(1);
+        group1->add_tab_ids(2);
+
+        optimization_guide::proto::Any any_response;
+        any_response.set_type_url(
+            "type.googleapis.com/optimization_guide.proto.ContextHubResponse");
+        response.SerializeToString(any_response.mutable_value());
+
+        std::move(callback).Run(
+            optimization_guide::OptimizationGuideModelExecutionResult(
+                base::ok(std::move(any_response)), nullptr),
+            nullptr);
+      });
+
+  base::test::TestFuture<std::vector<TabGroupEntry>, std::vector<TabData>>
+      group_future;
+  service_.GroupTabs(
+      std::move(input_tabs), "",
+      group_future
+          .GetCallback<std::vector<TabGroupEntry>, std::vector<TabData>>());
+  EXPECT_TRUE(group_future.Wait());
+
+  base::test::TestFuture<bool, std::vector<base::Uuid>> confirm_future;
+  service_.ConfirmAllTabGroups(confirm_future.GetCallback());
+  auto [success, added_guids] = confirm_future.Take();
+
+  EXPECT_TRUE(success);
+  ASSERT_EQ(added_guids.size(), 1u);
+
+  // Verify group is now in sync service
+  auto confirmed_groups = fake_tab_group_sync_service_.GetAllGroups();
+  ASSERT_EQ(confirmed_groups.size(), 1u);
+  EXPECT_EQ(confirmed_groups[0].saved_guid(), added_guids[0]);
+
+  // Verify store is cleared
+  base::test::TestFuture<std::vector<TabGroupEntry>> stored_groups_future;
+  service_.GetTabGroups(stored_groups_future.GetCallback());
+  EXPECT_TRUE(stored_groups_future.Get().empty());
+}
+
+TEST_F(ContextHubServiceTest, TabGroupStore_Null) {
+  ContextHubService service_null_store(
+      &mock_personal_context_service_, &mock_remote_model_executor_,
+      &fake_tab_group_sync_service_, std::make_unique<InMemoryMemoryBank>(),
+      /*tab_group_store=*/nullptr,
+      /*context_hub_backend=*/nullptr,
+      std::make_unique<InMemoryAutoTodosStore>());
+
+  base::test::TestFuture<std::vector<TabGroupEntry>> get_future;
+  service_null_store.GetTabGroups(get_future.GetCallback());
+  EXPECT_TRUE(get_future.Get().empty());
+
+  base::test::TestFuture<void> delete_future;
+  service_null_store.DeleteAllTabGroups(delete_future.GetCallback());
+  EXPECT_TRUE(delete_future.Wait());
+
+  base::test::TestFuture<bool, std::vector<base::Uuid>> confirm_future;
+  service_null_store.ConfirmAllTabGroups(confirm_future.GetCallback());
+  auto [success, added_guids] = confirm_future.Take();
+  EXPECT_FALSE(success);
+  EXPECT_TRUE(added_guids.empty());
+}
+
+TEST_F(ContextHubServiceTest, GetConfirmedTabGroup_NotFound) {
+  EXPECT_FALSE(service_.GetConfirmedTabGroup(base::Uuid::GenerateRandomV4())
+                   .has_value());
+}
+
+TEST_F(ContextHubServiceTest, GetLocalGroupIdForConfirmedGroup) {
+  tab_groups::SavedTabGroup group(u"Test Group",
+                                  tab_groups::TabGroupColorId::kBlue, {},
+                                  /*position=*/std::nullopt);
+  tab_groups::LocalTabGroupID local_id =
+      tab_groups::test::GenerateRandomTabGroupID();
+  group.SetLocalGroupId(local_id);
+  fake_tab_group_sync_service_.AddGroup(group);
+
+  auto result = service_.GetLocalGroupIdForConfirmedGroup(group.saved_guid());
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), local_id);
+
+  EXPECT_FALSE(
+      service_.GetLocalGroupIdForConfirmedGroup(base::Uuid::GenerateRandomV4())
+          .has_value());
+}
+
+TEST_F(ContextHubServiceTest, RemoveConfirmedTabGroup) {
+  tab_groups::SavedTabGroup group(u"Test Group",
+                                  tab_groups::TabGroupColorId::kBlue, {},
+                                  /*position=*/std::nullopt);
+  fake_tab_group_sync_service_.AddGroup(group);
+
+  EXPECT_TRUE(service_.RemoveConfirmedTabGroup(group.saved_guid()));
+  EXPECT_TRUE(fake_tab_group_sync_service_.GetAllGroups().empty());
+
+  EXPECT_FALSE(
+      service_.RemoveConfirmedTabGroup(base::Uuid::GenerateRandomV4()));
+}
+
+TEST_F(ContextHubServiceTest, RemoveAllConfirmedTabGroups) {
+  tab_groups::SavedTabGroup group1(u"Group 1",
+                                   tab_groups::TabGroupColorId::kBlue, {},
+                                   /*position=*/std::nullopt);
+  tab_groups::SavedTabGroup group2(u"Group 2",
+                                   tab_groups::TabGroupColorId::kRed, {},
+                                   /*position=*/std::nullopt);
+  fake_tab_group_sync_service_.AddGroup(group1);
+  fake_tab_group_sync_service_.AddGroup(group2);
+  ASSERT_EQ(fake_tab_group_sync_service_.GetAllGroups().size(), 2u);
+
+  EXPECT_TRUE(service_.RemoveAllConfirmedTabGroups());
+  EXPECT_TRUE(fake_tab_group_sync_service_.GetAllGroups().empty());
+}
+
+TEST_F(ContextHubServiceTest, ConnectLocalTabGroup) {
+  tab_groups::SavedTabGroup group(u"Test Group",
+                                  tab_groups::TabGroupColorId::kBlue, {},
+                                  /*position=*/std::nullopt);
+  fake_tab_group_sync_service_.AddGroup(group);
+
+  tab_groups::LocalTabGroupID local_id =
+      tab_groups::test::GenerateRandomTabGroupID();
+  service_.ConnectLocalTabGroup(group.saved_guid(), local_id);
+
+  auto updated_group = service_.GetConfirmedTabGroup(group.saved_guid());
+  ASSERT_TRUE(updated_group.has_value());
+  EXPECT_EQ(service_.GetLocalGroupIdForConfirmedGroup(group.saved_guid()),
+            local_id);
 }
 
 }  // namespace

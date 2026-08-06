@@ -28,6 +28,7 @@ class ContextHubServiceFactoryTest : public testing::Test {
  protected:
   void SetUp() override {
     testing::Test::SetUp();
+    ContextHubServiceFactory::GetInstance();
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(

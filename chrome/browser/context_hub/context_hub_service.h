@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/types/id_type.h"
+#include "base/uuid.h"
 #include "chrome/browser/context_hub/auto_todos/auto_todos_store.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank.h"
 #include "chrome/browser/context_hub/tab_group_store/tab_group_entry.h"
@@ -24,6 +25,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/proto/features/context_hub.pb.h"
 #include "components/personal_context/core/personal_context_types.h"
+#include "components/saved_tab_groups/public/types.h"
 #include "url/gurl.h"
 
 namespace optimization_guide {
@@ -35,6 +37,10 @@ struct OptimizationGuideModelExecutionResult;
 namespace personal_context {
 class PersonalContextService;
 }  // namespace personal_context
+
+namespace tab_groups {
+class TabGroupSyncService;
+}  // namespace tab_groups
 
 namespace context_hub {
 
@@ -52,6 +58,7 @@ class ContextHubService : public KeyedService, public AutoTodosStore::Observer {
       personal_context::PersonalContextService* personal_context_service,
       optimization_guide::RemoteModelExecutor*
           optimization_guide_remote_model_executor,
+      tab_groups::TabGroupSyncService* tab_group_sync_service,
       std::unique_ptr<MemoryBank> memory_bank,
       std::unique_ptr<TabGroupStore> tab_group_store,
       std::unique_ptr<ContextHubBackend> context_hub_backend,
@@ -152,11 +159,51 @@ class ContextHubService : public KeyedService, public AutoTodosStore::Observer {
                              const std::string& user_command,
                              MemoryBankChatCallback callback);
 
+  using ConfirmAllTabGroupsCallback =
+      base::OnceCallback<void(bool success,
+                              std::vector<base::Uuid> added_group_guids)>;
+  // Commits all unconfirmed tab groups to Chrome's native TabGroupSyncService as
+  // confirmed groups and clears in-memory storage.
+  void ConfirmAllTabGroups(ConfirmAllTabGroupsCallback callback);
+  // Returns all confirmed tab groups for the current profile.
+  std::vector<TabGroupEntry> GetConfirmedTabGroups() const;
+  // Returns the confirmed tab group for the given group_guid.
+  std::optional<TabGroupEntry> GetConfirmedTabGroup(
+      const base::Uuid& group_guid) const;
+  // Returns the local tab group ID for the confirmed group with the given
+  // group_guid.
+  std::optional<tab_groups::LocalTabGroupID> GetLocalGroupIdForConfirmedGroup(
+      const base::Uuid& group_guid) const;
+  // Removes the confirmed tab group with the specified group_guid.
+  // Returns true if the group was found and removed, false otherwise.
+  bool RemoveConfirmedTabGroup(const base::Uuid& group_guid);
+  // Removes all confirmed tab groups.
+  bool RemoveAllConfirmedTabGroups();
+  // Connects a local tab group to the confirmed tab group with group_guid.
+  void ConnectLocalTabGroup(const base::Uuid& group_guid,
+                            const tab_groups::LocalTabGroupID& local_id);
+
   base::WeakPtr<ContextHubService> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
 
  private:
+  // Adds a TabGroupEntry to TabGroupSyncService and returns its SavedTabGroup
+  // GUID if successful, or std::nullopt if conversion failed.
+  std::optional<base::Uuid> AddTabGroupToSyncService(
+      const TabGroupEntry& entry);
+
+  // Adds multiple TabGroupEntries to TabGroupSyncService and returns the added
+  // GUIDs.
+  std::vector<base::Uuid> AddTabGroupsToSyncService(
+      base::span<const TabGroupEntry> entries);
+
+  // Callback invoked when all tab groups are fetched from the store to confirm
+  // them into TabGroupSyncService.
+  void OnAllTabGroupsFetchedForConfirmation(
+      ConfirmAllTabGroupsCallback callback,
+      std::vector<TabGroupEntry> groups);
+
   // Callback invoked when memory bank entries are fetched for a chat request.
   void OnMemoryBankEntriesFetched(const std::string& user_command,
                                   MemoryBankChatCallback callback,
@@ -190,6 +237,8 @@ class ContextHubService : public KeyedService, public AutoTodosStore::Observer {
       personal_context_service_;
   const raw_ref<optimization_guide::RemoteModelExecutor>
       optimization_guide_remote_model_executor_;
+  const raw_ref<tab_groups::TabGroupSyncService>
+      tab_group_sync_service_;
 
   using TabGroupChatHistoryTurnId =
       base::IdType64<class TabGroupChatHistoryTurnIdTag>;
