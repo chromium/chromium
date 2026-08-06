@@ -64,8 +64,40 @@ std::optional<uint8_t> AthmTestIssuer::Verify(
   return result.metadata;
 }
 
-std::optional<AthmTestIssuer::ClientRequest>
-AthmTestIssuer::CreateClientRequest() const {
+// --- AthmTestClient ---
+
+// static
+std::optional<AthmTestClient> AthmTestClient::Create(
+    base::span<const uint8_t> public_key,
+    base::span<const uint8_t> public_key_proof,
+    uint8_t num_buckets,
+    base::span<const uint8_t> deployment_id) {
+  AthmClientParams params =
+      athm_client_params(num_buckets, base::SpanToRustSlice(deployment_id));
+  if (params.status != AthmStatus::Ok) {
+    return std::nullopt;
+  }
+
+  return AthmTestClient(base::ToVector(public_key),
+                        base::ToVector(public_key_proof),
+                        base::ToVector(params.params));
+}
+
+AthmTestClient::AthmTestClient(std::vector<uint8_t> public_key,
+                               std::vector<uint8_t> public_key_proof,
+                               std::vector<uint8_t> params)
+    : public_key_(std::move(public_key)),
+      public_key_proof_(std::move(public_key_proof)),
+      params_(std::move(params)) {}
+
+AthmTestClient::~AthmTestClient() = default;
+AthmTestClient::AthmTestClient(const AthmTestClient&) = default;
+AthmTestClient& AthmTestClient::operator=(const AthmTestClient&) = default;
+AthmTestClient::AthmTestClient(AthmTestClient&&) = default;
+AthmTestClient& AthmTestClient::operator=(AthmTestClient&&) = default;
+
+std::optional<AthmTestClient::ClientRequest>
+AthmTestClient::CreateClientRequest() const {
   AthmClientRequest bridge_result = athm_client_request(
       base::SpanToRustSlice(public_key_),
       base::SpanToRustSlice(public_key_proof_), base::SpanToRustSlice(params_));
@@ -76,7 +108,7 @@ AthmTestIssuer::CreateClientRequest() const {
                        .request = base::ToVector(bridge_result.request)};
 }
 
-std::optional<std::vector<uint8_t>> AthmTestIssuer::FinalizeToken(
+std::optional<std::vector<uint8_t>> AthmTestClient::FinalizeToken(
     const ClientRequest& client_request,
     base::span<const uint8_t> response) const {
   AthmBytesResult result = athm_client_finalize(

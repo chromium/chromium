@@ -34,9 +34,10 @@ std::vector<uint8_t> DeploymentId(const std::string& s) {
 // redemption (the client touches only public material, the issuer holds the
 // secret key) and returns the recovered metadata, or nullopt if any step fails.
 std::optional<uint8_t> RunRoundtrip(const AthmTestIssuer& issuer,
+                                    const AthmTestClient& client,
                                     uint8_t metadata) {
-  std::optional<AthmTestIssuer::ClientRequest> request =
-      issuer.CreateClientRequest();
+  std::optional<AthmTestClient::ClientRequest> request =
+      client.CreateClientRequest();
   if (!request) {
     return std::nullopt;
   }
@@ -46,7 +47,7 @@ std::optional<uint8_t> RunRoundtrip(const AthmTestIssuer& issuer,
     return std::nullopt;
   }
   std::optional<std::vector<uint8_t>> token =
-      issuer.FinalizeToken(*request, *response);
+      client.FinalizeToken(*request, *response);
   if (!token) {
     return std::nullopt;
   }
@@ -56,12 +57,19 @@ std::optional<uint8_t> RunRoundtrip(const AthmTestIssuer& issuer,
 TEST(AthmTestIssuerTest, IssuanceRedemptionRoundtrip) {
   std::optional<AthmTestIssuer> issuer = AthmTestIssuer::Create(
       /*num_buckets=*/4, DeploymentId("pvt-issuer-test"));
+
   ASSERT_TRUE(issuer.has_value());
   EXPECT_THAT(issuer->public_key(), testing::Not(testing::IsEmpty()));
   EXPECT_THAT(issuer->public_key_proof(), testing::Not(testing::IsEmpty()));
   EXPECT_THAT(issuer->params(), testing::Not(testing::IsEmpty()));
 
-  std::optional<uint8_t> recovered = RunRoundtrip(*issuer, /*metadata=*/3);
+  std::optional<AthmTestClient> client = AthmTestClient::Create(
+      issuer->public_key(), issuer->public_key_proof(), /*num_buckets=*/4,
+      DeploymentId("pvt-issuer-test"));
+  ASSERT_TRUE(client.has_value());
+
+  std::optional<uint8_t> recovered =
+      RunRoundtrip(*issuer, *client, /*metadata=*/3);
   ASSERT_TRUE(recovered.has_value());
   EXPECT_EQ(int{*recovered}, 3);
 }
@@ -75,8 +83,13 @@ TEST_P(AthmTestIssuerBucketTest, MetadataRoundtrips) {
       AthmTestIssuer::Create(kBucketCount, DeploymentId("buckets"));
   ASSERT_TRUE(issuer.has_value());
 
+  std::optional<AthmTestClient> client =
+      AthmTestClient::Create(issuer->public_key(), issuer->public_key_proof(),
+                             kBucketCount, DeploymentId("buckets"));
+  ASSERT_TRUE(client.has_value());
+
   const uint8_t metadata = GetParam();
-  std::optional<uint8_t> recovered = RunRoundtrip(*issuer, metadata);
+  std::optional<uint8_t> recovered = RunRoundtrip(*issuer, *client, metadata);
   ASSERT_TRUE(recovered.has_value()) << "metadata=" << int{metadata};
   EXPECT_EQ(int{*recovered}, int{metadata});
 }
@@ -120,10 +133,14 @@ TEST(AthmTestIssuerTest, ClientRequestsAreFreshlyBlinded) {
       AthmTestIssuer::Create(/*num_buckets=*/4, DeploymentId("blinding"));
   ASSERT_TRUE(issuer.has_value());
 
-  std::optional<AthmTestIssuer::ClientRequest> first =
-      issuer->CreateClientRequest();
-  std::optional<AthmTestIssuer::ClientRequest> second =
-      issuer->CreateClientRequest();
+  std::optional<AthmTestClient> client =
+      AthmTestClient::Create(issuer->public_key(), issuer->public_key_proof(),
+                             /*num_buckets=*/4, DeploymentId("blinding"));
+  ASSERT_TRUE(client.has_value());
+  std::optional<AthmTestClient::ClientRequest> first =
+      client->CreateClientRequest();
+  std::optional<AthmTestClient::ClientRequest> second =
+      client->CreateClientRequest();
   ASSERT_TRUE(first.has_value());
   ASSERT_TRUE(second.has_value());
   EXPECT_THAT(first->context, testing::Not(testing::IsEmpty()));
@@ -137,14 +154,19 @@ TEST(AthmTestIssuerTest, TamperedTokenDoesNotVerify) {
       AthmTestIssuer::Create(/*num_buckets=*/4, DeploymentId("tamper"));
   ASSERT_TRUE(issuer.has_value());
 
-  std::optional<AthmTestIssuer::ClientRequest> request =
-      issuer->CreateClientRequest();
+  std::optional<AthmTestClient> client =
+      AthmTestClient::Create(issuer->public_key(), issuer->public_key_proof(),
+                             /*num_buckets=*/4, DeploymentId("tamper"));
+  ASSERT_TRUE(client.has_value());
+
+  std::optional<AthmTestClient::ClientRequest> request =
+      client->CreateClientRequest();
   ASSERT_TRUE(request.has_value());
   std::optional<std::vector<uint8_t>> response =
       issuer->Issue(request->request, /*hidden_metadata=*/2);
   ASSERT_TRUE(response.has_value());
   std::optional<std::vector<uint8_t>> token =
-      issuer->FinalizeToken(*request, *response);
+      client->FinalizeToken(*request, *response);
   ASSERT_TRUE(token.has_value());
   ASSERT_EQ(issuer->Verify(*token), std::optional<uint8_t>(2));
 
@@ -166,19 +188,22 @@ TEST(AthmTestIssuerTest, WrongIssuerKeyDoesNotVerify) {
   ASSERT_TRUE(issuer_a.has_value());
   ASSERT_TRUE(issuer_b.has_value());
 
-  std::optional<AthmTestIssuer::ClientRequest> request =
-      issuer_a->CreateClientRequest();
+  std::optional<AthmTestClient> client_a = AthmTestClient::Create(
+      issuer_a->public_key(), issuer_a->public_key_proof(),
+      /*num_buckets=*/4, DeploymentId("cross-key"));
+  ASSERT_TRUE(client_a.has_value());
+  std::optional<AthmTestClient::ClientRequest> request =
+      client_a->CreateClientRequest();
   ASSERT_TRUE(request.has_value());
   std::optional<std::vector<uint8_t>> response =
       issuer_a->Issue(request->request, /*hidden_metadata=*/1);
   ASSERT_TRUE(response.has_value());
   std::optional<std::vector<uint8_t>> token =
-      issuer_a->FinalizeToken(*request, *response);
+      client_a->FinalizeToken(*request, *response);
   ASSERT_TRUE(token.has_value());
 
   EXPECT_EQ(issuer_a->Verify(*token), std::optional<uint8_t>(1));
   EXPECT_FALSE(issuer_b->Verify(*token).has_value());
 }
-
 }  // namespace
 }  // namespace private_verification_tokens

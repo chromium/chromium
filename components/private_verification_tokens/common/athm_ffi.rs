@@ -45,6 +45,13 @@ mod ffi {
         OperationFailed,
     }
 
+    // Client params. Field is the serialized wire encoding of the
+    // ATHM params object. Valid only when `status` is `OK`.
+    struct AthmClientParams {
+        status: AthmStatus,
+        params: Vec<u8>,
+    }
+
     /// Server (issuer) key material. Each field is the serialized wire encoding
     /// of the corresponding ATHM object. Valid only when `status` is `Ok`.
     struct AthmKeyMaterial {
@@ -100,6 +107,10 @@ mod ffi {
 
         // --- Client side (only public material) ---
 
+        /// Generates client params for `n_buckets` metadata buckets under
+        /// `deployment_id`.
+        fn athm_client_params(n_buckets: u8, deployment_id: &[u8]) -> AthmClientParams;
+
         /// Builds a blinded token request from the issuer's public material.
         fn athm_client_request(
             public_key: &[u8],
@@ -148,6 +159,18 @@ fn err_request(status: AthmStatus) -> ffi::AthmClientRequest {
 
 fn err_verify(status: AthmStatus) -> ffi::AthmVerifyResult {
     ffi::AthmVerifyResult { status, metadata: 0 }
+}
+
+fn err_client_params(status: AthmStatus) -> ffi::AthmClientParams {
+    ffi::AthmClientParams { status, params: Vec::new() }
+}
+
+fn athm_client_params(n_buckets: u8, deployment_id: &[u8]) -> ffi::AthmClientParams {
+    let params = match Params::new(n_buckets, deployment_id.to_vec()) {
+        Ok(params) => params,
+        Err(_) => return err_client_params(AthmStatus::InvalidInput),
+    };
+    ffi::AthmClientParams { status: AthmStatus::Ok, params: encode(&params) }
 }
 
 fn athm_key_gen(n_buckets: u8, deployment_id: &[u8]) -> ffi::AthmKeyMaterial {

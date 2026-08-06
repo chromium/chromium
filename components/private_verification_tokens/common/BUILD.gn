@@ -212,6 +212,7 @@ if (enable_rust) {
     sources = [ "athm_test_issuer_unittest.cc" ]
     deps = [
       ":athm_test_issuer",
+      "//base",
       "//testing/gmock",
       "//testing/gtest",
     ]
