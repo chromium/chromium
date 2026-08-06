@@ -5,7 +5,6 @@ include_rules = [
   "+chrome/browser/ash/system_web_apps",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
-  "+chrome/browser/signin",
   "+chrome/browser/ui/ash/graduation",
   "+chrome/browser/ui/ash/shelf",
   "+chrome/browser/ui/ash/system_web_apps",
