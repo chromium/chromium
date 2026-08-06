@@ -110,7 +110,6 @@
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 #import "ios/chrome/browser/composebox/public/composebox_focus_params.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
-#import "ios/chrome/browser/content_suggestions/tips/coordinator/tips_passwords_coordinator.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/contextual_panel/coordinator/contextual_sheet_coordinator.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_constants.h"
@@ -152,8 +151,6 @@
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/intelligence/actor/coordinator/actor_overlay_coordinator.h"
-#import "ios/chrome/browser/intelligence/enhanced_calendar/coordinator/enhanced_calendar_coordinator.h"
-#import "ios/chrome/browser/intelligence/enhanced_calendar/model/enhanced_calendar_configuration.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_coordinator.h"
@@ -181,8 +178,6 @@
 #import "ios/chrome/browser/passwords/password_breach/coordinator/password_protection_coordinator.h"
 #import "ios/chrome/browser/passwords/password_breach/coordinator/password_protection_coordinator_delegate.h"
 #import "ios/chrome/browser/passwords/password_suggestion/coordinator/password_suggestion_coordinator.h"
-#import "ios/chrome/browser/phone_number/ui_bundled/add_contacts_coordinator.h"
-#import "ios/chrome/browser/phone_number/ui_bundled/country_code_picker_coordinator.h"
 #import "ios/chrome/browser/picture_in_picture/coordinator/picture_in_picture_coordinator.h"
 #import "ios/chrome/browser/picture_in_picture/public/picture_in_picture_configuration.h"
 #import "ios/chrome/browser/popup_menu/coordinator/popup_menu_coordinator.h"
@@ -247,7 +242,6 @@
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_share_url_command.h"
 #import "ios/chrome/browser/shared/public/commands/actor_overlay_commands.h"
-#import "ios/chrome/browser/shared/public/commands/add_contacts_commands.h"
 #import "ios/chrome/browser/shared/public/commands/auto_deletion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -257,11 +251,9 @@
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_commands.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
-#import "ios/chrome/browser/shared/public/commands/country_code_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/docking_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/download_list_commands.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
-#import "ios/chrome/browser/shared/public/commands/enhanced_calendar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/enterprise_commands.h"
 #import "ios/chrome/browser/shared/public/commands/file_upload_panel_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
@@ -306,9 +298,7 @@
 #import "ios/chrome/browser/shared/public/commands/synced_set_up_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
-#import "ios/chrome/browser/shared/public/commands/tips_passwords_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
-#import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/web_content_commands.h"
 #import "ios/chrome/browser/shared/public/commands/welcome_back_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
@@ -360,7 +350,6 @@
 #import "ios/chrome/browser/toolbar/coordinator/main_toolbar_coordinator.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/accessory/toolbar_accessory_presenter.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
-#import "ios/chrome/browser/unit_conversion/ui_bundled/unit_conversion_coordinator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -415,7 +404,6 @@ const char kChromeAppStoreUrl[] =
 @interface BrowserCoordinator () <
     ActivityServiceCommands,
     ActorOverlayCommands,
-    AddContactsCommands,
     AppLauncherTabHelperBrowserPresentationProvider,
     AutoDeletionCommands,
     AutofillAddCreditCardCoordinatorDelegate,
@@ -427,7 +415,6 @@ const char kChromeAppStoreUrl[] =
     CollaborationGroupCommands,
     ContextualPanelEntrypointIPHCommands,
     ContextualSheetCommands,
-    CountryCodePickerCommands,
     DefaultBrowserGenericPromoCommands,
     DefaultBrowserPromoNonModalCommands,
     DefaultPromoNonModalPresentationDelegate,
@@ -435,7 +422,6 @@ const char kChromeAppStoreUrl[] =
     DownloadListCommands,
     DriveFilePickerCommands,
     EditMenuBuilder,
-    EnhancedCalendarCommands,
     EnterpriseCommands,
     EnterprisePromptCoordinatorDelegate,
     FileUploadPanelCommands,
@@ -491,10 +477,7 @@ const char kChromeAppStoreUrl[] =
     SyncedSetUpCoordinatorDelegate,
     TabPickerCommands,
     TextZoomCommands,
-    TipsPasswordsCommands,
-    TipsPasswordsCoordinatorDelegate,
     TrustedVaultReauthenticationCoordinatorDelegate,
-    UnitConversionCommands,
     URLLoadingDelegate,
     WebContentCommands,
     WebNavigationNTPDelegate,
@@ -706,10 +689,6 @@ const char kChromeAppStoreUrl[] =
 // Coordinator for Text Zoom.
 @property(nonatomic, strong) TextZoomCoordinator* textZoomCoordinator;
 
-// Coordinator in charge of presenting a unit converter.
-@property(nonatomic, strong)
-    UnitConversionCoordinator* unitConversionCoordinator;
-
 // Opens downloaded Vcard.
 @property(nonatomic, strong) VcardCoordinator* vcardCoordinator;
 
@@ -771,8 +750,6 @@ const char kChromeAppStoreUrl[] =
   LayoutGuideCenter* _layoutGuideCenter;
   raw_ptr<WebNavigationBrowserAgent> _webNavigationBrowserAgent;
   raw_ptr<UrlLoadingBrowserAgent> _urlLoadingBrowserAgent;
-  AddContactsCoordinator* _addContactsCoordinator;
-  CountryCodePickerCoordinator* _countryCodePickerCoordinator;
   OmniboxPositionChoiceCoordinator* _omniboxPositionChoiceCoordinator;
   std::unique_ptr<WebUsageEnablerBrowserAgentObserverBridge>
       _webUsageEnablerObserver;
@@ -807,15 +784,11 @@ const char kChromeAppStoreUrl[] =
   EnhancedSafeBrowsingPromoCoordinator* _enhancedSafeBrowsingPromoCoordinator;
   PriceTrackingPromoCoordinator* _priceTrackingPromoCoordinator;
   TabGroupsPromoCoordinator* _tabGroupsPromoCoordinator;
-  TipsPasswordsCoordinator* _tipsPasswordsCoordinator;
   AutoDeletionCoordinator* _autoDeletionCoordinator;
   TrustedVaultReauthenticationCoordinator*
       _trustedVaultReauthenticationCoordinator;
   SyncPresenterCompletionCallback
       _trustedVaultReauthenticationCoordinatorCompletion;
-
-  // The coordinator for the Enhanced Calendar feature UI (bottom sheet).
-  EnhancedCalendarCoordinator* _enhancedCalendarCoordinator;
 
   // Coordinator that handles confirmation dialog when the last tab of a shared
   // group is closed.
@@ -1372,7 +1345,6 @@ const char kChromeAppStoreUrl[] =
     @protocol(DefaultBrowserPromoNonModalCommands),
     @protocol(DownloadListCommands),
     @protocol(DriveFilePickerCommands),
-    @protocol(EnhancedCalendarCommands),
     @protocol(PromosManagerCommands),
     @protocol(FileUploadPanelCommands),
     @protocol(FindInPageCommands),
@@ -1396,15 +1368,11 @@ const char kChromeAppStoreUrl[] =
     @protocol(SyncPresenterCommands),
     @protocol(TabPickerCommands),
     @protocol(TextZoomCommands),
-    @protocol(TipsPasswordsCommands),
     @protocol(WebContentCommands),
     @protocol(DefaultBrowserGenericPromoCommands),
     @protocol(MiniMapCommands),
     @protocol(ParentAccessCommands),
     @protocol(ReminderNotificationsCommands),
-    @protocol(UnitConversionCommands),
-    @protocol(AddContactsCommands),
-    @protocol(CountryCodePickerCommands),
     @protocol(WhatsNewCommands),
     @protocol(GoogleOneCommands),
     @protocol(LevelUpCommands),
@@ -1978,23 +1946,11 @@ const char kChromeAppStoreUrl[] =
   [self.saveToPhotosCoordinator stop];
   self.saveToPhotosCoordinator = nil;
 
-  [self.unitConversionCoordinator stop];
-  self.unitConversionCoordinator = nil;
-
   [self.nonModalSignInPromoCoordinator stop];
   self.nonModalSignInPromoCoordinator = nil;
 
-  [_tipsPasswordsCoordinator stop];
-  _tipsPasswordsCoordinator = nil;
-
-  [_addContactsCoordinator stop];
-  _addContactsCoordinator = nil;
-
   [_quickDeleteCoordinator stop];
   _quickDeleteCoordinator = nil;
-
-  [_enhancedCalendarCoordinator stop];
-  _enhancedCalendarCoordinator = nil;
 
   [_lastTabClosingAlert stop];
   _lastTabClosingAlert = nil;
@@ -3267,21 +3223,12 @@ const char kChromeAppStoreUrl[] =
 
   [self hidePriceTrackedItems];
 
-  [self.unitConversionCoordinator stop];
-  self.unitConversionCoordinator = nil;
-
   [self stopRepostFormCoordinator];
 
   [_formInputAccessoryCoordinator clearPresentedState];
 
   [_quickDeleteCoordinator stop];
   _quickDeleteCoordinator = nil;
-
-  [_addContactsCoordinator stop];
-  _addContactsCoordinator = nil;
-
-  [_countryCodePickerCoordinator stop];
-  _countryCodePickerCoordinator = nil;
 
   [_lastTabClosingAlert stop];
   _lastTabClosingAlert = nil;
@@ -3626,21 +3573,6 @@ const char kChromeAppStoreUrl[] =
   _actorOverlayCoordinator = nil;
 }
 
-#pragma mark - EnhancedCalendarCommands
-
-- (void)showEnhancedCalendarWithConfig:
-    (EnhancedCalendarConfiguration*)enhancedCalendarConfig {
-  _enhancedCalendarCoordinator = [[EnhancedCalendarCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser
-          enhancedCalendarConfig:enhancedCalendarConfig];
-  [_enhancedCalendarCoordinator start];
-}
-
-- (void)hideEnhancedCalendarBottomSheet {
-  [_enhancedCalendarCoordinator stop];
-  _enhancedCalendarCoordinator = nil;
-}
 #pragma mark - ReaderModeCommands
 
 - (void)showReaderModeFromAccessPoint:(ReaderModeAccessPoint)accessPoint {
@@ -3836,36 +3768,6 @@ const char kChromeAppStoreUrl[] =
   // is sufficient to call `StartFinding()` directly on the Find tab helper of
   // the current web state.
   helper->StartFinding(@"");
-}
-
-#pragma mark - AddContactsCommands
-
-- (void)presentAddContactsForPhoneNumber:(NSString*)phoneNumber {
-  _addContactsCoordinator = [[AddContactsCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser
-                     phoneNumber:phoneNumber];
-  [_addContactsCoordinator start];
-}
-
-- (void)hideAddContacts {
-  [_addContactsCoordinator stop];
-  _addContactsCoordinator = nil;
-}
-
-#pragma mark - CountryCodePickerCommands
-
-- (void)presentCountryCodePickerForPhoneNumber:(NSString*)phoneNumber {
-  _countryCodePickerCoordinator = [[CountryCodePickerCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser];
-  _countryCodePickerCoordinator.phoneNumber = phoneNumber;
-  [_countryCodePickerCoordinator start];
-}
-
-- (void)hideCountryCodePicker {
-  [_countryCodePickerCoordinator stop];
-  _countryCodePickerCoordinator = nil;
 }
 
 #pragma mark - PromosManagerCommands
@@ -4077,24 +3979,6 @@ const char kChromeAppStoreUrl[] =
   [self stopTabPickerCoordinator];
 }
 
-#pragma mark - TipsPasswordsCommands
-
-- (void)showPasswordsTipForIdentifier:
-    (segmentation_platform::TipIdentifier)identifier {
-  [_tipsPasswordsCoordinator stop];
-  _tipsPasswordsCoordinator = [[TipsPasswordsCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser
-                      identifier:identifier];
-  _tipsPasswordsCoordinator.delegate = self;
-  [_tipsPasswordsCoordinator start];
-}
-
-- (void)dismissPasswordsTip {
-  [_tipsPasswordsCoordinator stop];
-  _tipsPasswordsCoordinator = nil;
-}
-
 #pragma mark - TextZoomCommands
 
 - (void)openTextZoom {
@@ -4143,25 +4027,6 @@ const char kChromeAppStoreUrl[] =
   textZoomCoordinator.presenter = _toolbarAccessoryPresenter;
 
   return textZoomCoordinator;
-}
-
-#pragma mark - UnitConversionCommands
-
-- (void)presentUnitConversionForSourceUnit:(NSUnit*)sourceUnit
-                           sourceUnitValue:(double)sourceUnitValue
-                                  location:(CGPoint)location {
-  self.unitConversionCoordinator = [[UnitConversionCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser
-                      sourceUnit:sourceUnit
-                 sourceUnitValue:sourceUnitValue
-                        location:location];
-  [self.unitConversionCoordinator start];
-}
-
-- (void)hideUnitConversion {
-  [self.unitConversionCoordinator stop];
-  self.unitConversionCoordinator = nil;
 }
 
 #pragma mark - URLLoadingDelegate
@@ -5769,14 +5634,6 @@ const char kChromeAppStoreUrl[] =
     (PasskeyWelcomeScreenCoordinator*)coordinator {
   CHECK_EQ(coordinator, _passkeyWelcomeScreenCoordinator);
   [self stopPasskeyWelcomeScreenCoordinator];
-}
-
-#pragma mark - TipsPasswordsCoordinatorDelegate
-
-- (void)tipsPasswordsCoordinatorDidFinish:
-    (TipsPasswordsCoordinator*)coordinator {
-  CHECK_EQ(coordinator, _tipsPasswordsCoordinator);
-  [self dismissPasswordsTip];
 }
 
 #pragma mark - DownloadListCommands
