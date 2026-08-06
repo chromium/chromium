@@ -414,6 +414,7 @@ after discussions on the right group.
       <annotation id="enterprise_skills_fetcher"/>
       <annotation id="iwa_dev_ui_update_manifest"/>
       <annotation id="notebooks_service_create_notebook"/>
+      <annotation id="notebooks_service_create_notebook_source"/>
     </sender>
   </group>
   <group name="Admin Features">

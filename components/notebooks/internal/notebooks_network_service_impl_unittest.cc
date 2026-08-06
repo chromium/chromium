@@ -11,6 +11,8 @@
 
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
+#include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -137,19 +139,6 @@ class NotebooksNetworkServiceImplTest : public testing::Test {
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<TestNotebooksNetworkServiceImpl> service_;
 };
-
-TEST_F(NotebooksNetworkServiceImplTest, CreateNotebookSourceSmoke) {
-  bool callback_called = false;
-  service_->CreateNotebookSource(
-      "container_id", "item_id",
-      base::BindLambdaForTesting(
-          [&](std::unique_ptr<NotebooksNetworkService::LoadResult> result) {
-            callback_called = true;
-          }));
-  task_environment_.RunUntilIdle();
-  EXPECT_FALSE(
-      callback_called);  // Currently does nothing, so callback not called.
-}
 
 // Test that CreateEndpointFetcher constructs the fetcher correctly.
 TEST_F(NotebooksNetworkServiceImplTest, CreateEndpointFetcher) {
@@ -309,6 +298,122 @@ TEST_F(NotebooksNetworkServiceImplTest, CreateNotebook_NullResponse) {
           }));
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(callback_called);
+}
+
+TEST_F(NotebooksNetworkServiceImplTest, CreateNotebookSource_Success) {
+  std::string url_source_suffix = "sources";
+  std::string url_path_prefix = "/v1/notebooks";
+  std::string base_url = base::StrCat({"https://example.com", url_path_prefix});
+  std::string source_result = "source_result";
+  net::HttpStatusCode status_code = net::HTTP_OK;
+  EnableNotebooksFeature(base_url, url_source_suffix, "chrome");
+  service_->set_fake_response(CreateResponse(status_code, source_result));
+
+  base::RunLoop run_loop;
+  std::string notebook_id = "1234";
+  std::string source_id = "5678";
+  service_->CreateNotebookSource(
+      notebook_id, source_id,
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<NotebooksNetworkService::LoadResult> result) {
+            ASSERT_TRUE(result);
+            EXPECT_EQ(result->status,
+                      NotebooksNetworkService::NetworkLoaderStatus::kSuccess);
+            EXPECT_EQ(result->network_error_code, status_code);
+            EXPECT_EQ(result->result_bytes, source_result);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  std::string expected_url_path =
+      base::StrCat({url_path_prefix, "/", notebook_id, "/", url_source_suffix,
+                    "/", source_id});
+  EXPECT_EQ(service_->last_url().path(), expected_url_path);
+
+  std::optional<base::DictValue> dict = base::JSONReader::ReadDict(
+      service_->last_post_data(), base::JSON_PARSE_RFC);
+  ASSERT_TRUE(dict.has_value());
+  const base::DictValue* external_id = dict->FindDict("external_identifier");
+  ASSERT_TRUE(external_id);
+  const std::string* id = external_id->FindString("id");
+  ASSERT_TRUE(id);
+  EXPECT_EQ(*id, source_id);
+}
+
+TEST_F(NotebooksNetworkServiceImplTest, CreateNotebookSource_EscapesIds) {
+  std::string url_source_suffix = "sources";
+
+  EnableNotebooksFeature("https://example.com", url_source_suffix, "chrome");
+  service_->set_fake_response(CreateResponse(net::HTTP_OK, "ok"));
+
+  base::RunLoop run_loop;
+  service_->CreateNotebookSource(
+      "notebooks/123", "tabs?456",
+      base::BindLambdaForTesting(
+          [&run_loop](
+              std::unique_ptr<NotebooksNetworkService::LoadResult> result) {
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  EXPECT_EQ(service_->last_url().path(),
+            base::StrCat({"/", "notebooks%2F123", "/", url_source_suffix, "/",
+                          "tabs%3F456"}));
+}
+
+TEST_F(NotebooksNetworkServiceImplTest, CreateNotebookSource_NoSourceSuffix) {
+  EnableNotebooksFeature("https://validbaseurl.com", "sources", "chrome");
+
+  base::RunLoop run_loop;
+  service_->CreateNotebookSource(
+      "", "",
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<NotebooksNetworkService::LoadResult> result) {
+            EXPECT_FALSE(result);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+TEST_F(NotebooksNetworkServiceImplTest, CreateNotebookSource_EmptyIdArguments) {
+  EnableNotebooksFeature("https://validbaseurl.com", "", "chrome");
+
+  base::RunLoop run_loop;
+  service_->CreateNotebookSource(
+      "test_notebook_id", "test_source_id",
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<NotebooksNetworkService::LoadResult> result) {
+            EXPECT_FALSE(result);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+TEST_F(NotebooksNetworkServiceImplTest, CreateNotebookSource_InvalidURL) {
+  EnableNotebooksFeature("://invalid", "sources", "chrome");
+
+  base::RunLoop run_loop;
+  service_->CreateNotebookSource(
+      "test_notebook_id", "test_source_id",
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<NotebooksNetworkService::LoadResult> result) {
+            EXPECT_FALSE(result);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+TEST_F(NotebooksNetworkServiceImplTest,
+       CreateNotebookSource_FeatureNotEnabled) {
+  base::RunLoop run_loop;
+  service_->CreateNotebookSource(
+      "test_notebook_id", "test_source_id",
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<NotebooksNetworkService::LoadResult> result) {
+            EXPECT_FALSE(result);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
 }
 
 }  // namespace

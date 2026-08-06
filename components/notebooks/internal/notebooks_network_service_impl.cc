@@ -13,7 +13,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/json/json_writer.h"
-#include "base/notimplemented.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -39,6 +39,8 @@ namespace notebooks {
 namespace {
 
 const char kNotebookDisplayNameFieldName[] = "display_name";
+const char kExternalIdentifierFieldName[] = "external_identifier";
+const char kExternalIdentifierIdFieldName[] = "id";
 const char kProvenanceOriginProductIdQueryParamName[] =
     "provenance.origin_product_type";
 const char kClientInfoApplicationPlatformQueryParamName[] =
@@ -65,6 +67,62 @@ const net::NetworkTrafficAnnotationTag kCreateNotebookTrafficAnnotation =
           type: USER_CONTENT
         }
         last_reviewed: "2026-07-15"
+        internal {
+          contacts {
+            email: "chrome-ai-productivity-eng@google.com"
+          }
+          contacts {
+            email: "woodchip@chromium.org"
+          }
+        }
+      }
+      policy {
+        cookies_allowed: NO
+        setting:
+          "This feature can be disabled in Chrome settings by toggling off "
+          "'History and tabs' under 'You and Google' > 'In your Google "
+          "Account'."
+        chrome_policy {
+          SyncDisabled {
+            SyncDisabled: true
+          }
+        }
+        chrome_policy {
+          SyncTypesListDisabled {
+            SyncTypesListDisabled {
+              entries: "tabs"
+            }
+          }
+        }
+        chrome_policy {
+          GenAiDefaultSettings {
+            GenAiDefaultSettings: 2
+          }
+        }
+      })");
+
+const net::NetworkTrafficAnnotationTag kCreateNotebookSourceTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation(
+        "notebooks_service_create_notebook_source",
+        R"(
+      semantics {
+        sender: "Notebooks Service Create Notebook Source"
+        description:
+          "Chrome feature that adds a tab source to a notebook. A notebook is "
+          "a container for tab and user-uploaded sources that provides "
+          "functionality for users to make queries and generate artifacts "
+          "based on said sources."
+        trigger: "User opens a new tab inside an existing notebook."
+        data:
+          "The OAuth token for the signed in account, the tab identifier "
+          "string, and the string identifier for the notebook to which the "
+          "source is being added."
+        destination: GOOGLE_OWNED_SERVICE
+        user_data {
+          type: ACCESS_TOKEN
+          type: SENSITIVE_URL
+        }
+        last_reviewed: "2026-07-20"
         internal {
           contacts {
             email: "chrome-ai-productivity-eng@google.com"
@@ -235,21 +293,55 @@ void NotebooksNetworkServiceImpl::CreateNotebook(
   base::DictValue request;
   request.Set(kNotebookDisplayNameFieldName, notebook_display_name);
   std::optional<std::string> request_string = base::WriteJson(request);
-  std::unique_ptr<EndpointFetcher> endpoint_fetcher =
-      CreateEndpointFetcher(service_url, request_string.value_or(""),
-                            kCreateNotebookTrafficAnnotation);
-  auto* const fetcher_ptr = endpoint_fetcher.get();
-  fetcher_ptr->Fetch(base::BindPostTaskToCurrentDefault(
-      base::BindOnce(&NotebooksNetworkServiceImpl::OnDownloadComplete,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(endpoint_fetcher))));
+  FetchInternal(service_url, request_string.value_or(""),
+                kCreateNotebookTrafficAnnotation, std::move(callback));
 }
 
 void NotebooksNetworkServiceImpl::CreateNotebookSource(
     std::string_view notebook_id,
     std::string_view source_id,
     NetworkLoaderCallback callback) {
-  NOTIMPLEMENTED();
+  const std::string& source_url_suffix =
+      features::kNotebookSourceURLSuffix.Get();
+  GURL service_url;
+  bool required_fields_present =
+      !(notebook_id.empty() || source_id.empty() || source_url_suffix.empty());
+  if (required_fields_present) {
+    service_url = ConstructServiceURL(base::StrCat(
+        {"/", base::EscapeAllExceptUnreserved(notebook_id), "/",
+         source_url_suffix, "/", base::EscapeAllExceptUnreserved(source_id)}));
+  }
+  if (!required_fields_present || !service_url.is_valid()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), nullptr));
+    return;
+  }
+
+  base::DictValue external_id;
+  external_id.Set(kExternalIdentifierIdFieldName, source_id);
+
+  // TODO(crbug.com/531809229): Add actual source content such as MIME type or
+  // page URL.
+  base::DictValue request;
+  request.Set(kExternalIdentifierFieldName, std::move(external_id));
+
+  std::optional<std::string> request_string = base::WriteJson(request);
+  FetchInternal(service_url, request_string.value_or(""),
+                kCreateNotebookSourceTrafficAnnotation, std::move(callback));
+}
+
+void NotebooksNetworkServiceImpl::FetchInternal(
+    const GURL& url,
+    const std::string& post_data,
+    const net::NetworkTrafficAnnotationTag& annotation_tag,
+    NetworkLoaderCallback callback) {
+  std::unique_ptr<endpoint_fetcher::EndpointFetcher> endpoint_fetcher =
+      CreateEndpointFetcher(url, post_data, annotation_tag);
+  auto* const fetcher_ptr = endpoint_fetcher.get();
+  fetcher_ptr->Fetch(base::BindPostTaskToCurrentDefault(
+      base::BindOnce(&NotebooksNetworkServiceImpl::OnDownloadComplete,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(endpoint_fetcher))));
 }
 
 void NotebooksNetworkServiceImpl::OnDownloadComplete(
