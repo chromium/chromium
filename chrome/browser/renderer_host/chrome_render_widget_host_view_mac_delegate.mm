@@ -9,7 +9,6 @@
 #include "base/auto_reset.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/actor/ui/actor_overlay_ui.h"
-#include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/profiles/profile.h"
@@ -168,10 +167,7 @@
   }
   auto* swiping_control =
       history_swiper::HistorySwipingControl::FromWebContents(webContents);
-  if (swiping_control && !swiping_control->ShouldAllowHistorySwiping()) {
-    return NO;
-  }
-  return !DevToolsWindow::IsDevToolsWindow(webContents);
+  return !swiping_control || swiping_control->ShouldAllowHistorySwiping();
 }
 
 - (NSView*)viewThatWantsHistoryOverlay {

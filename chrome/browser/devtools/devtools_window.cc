@@ -40,6 +40,9 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/renderer_host/chrome_render_widget_host_view_mac_history_swiping_control.h"
+#endif
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
@@ -1275,6 +1278,11 @@ DevToolsWindow::DevToolsWindow(
   // so that it shows up in the task manager.
   task_manager::WebContentsTags::CreateForDevToolsContents(main_web_contents_);
 
+#if BUILDFLAG(IS_MAC)
+  history_swiper::HistorySwipingControl::CreateForWebContents(
+      main_web_contents_, base::BindRepeating([] { return false; }));
+#endif
+
   std::vector<base::RepeatingCallback<void(DevToolsWindow*)>> copy(
       GetCreationCallbacks());
   for (const auto& callback : copy) {
@@ -1605,6 +1613,11 @@ void DevToolsWindow::WebContentsCreated(
     // UserData so that it shows up in the task manager.
     task_manager::WebContentsTags::CreateForDevToolsContents(
         toolbox_web_contents_);
+
+#if BUILDFLAG(IS_MAC)
+    history_swiper::HistorySwipingControl::CreateForWebContents(
+        toolbox_web_contents_, base::BindRepeating([] { return false; }));
+#endif
 
     // The toolbox holds a placeholder for the inspected WebContents. When the
     // placeholder is resized, a frame is requested. The inspected WebContents
