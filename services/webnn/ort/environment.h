@@ -143,7 +143,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) Environment
  private:
   static base::expected<scoped_refptr<Environment>, std::string> Create(
       const base::flat_map<std::string, mojom::EpPackageInfoPtr>&
-          ep_package_info_map);
+          ep_package_info_map) EXCLUSIVE_LOCKS_REQUIRED(GetLock());
 
   static base::expected<scoped_refptr<Environment>, std::string>
   CreateForCompilerProcess(const base::FilePath& ep_library_path,
