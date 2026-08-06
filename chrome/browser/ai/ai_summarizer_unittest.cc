@@ -10,6 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/protobuf_matchers.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -1012,13 +1013,13 @@ TEST_F(AISummarizerManifestTest,
 
   fake_manifest_broker_->client().RequestAssetsFor(
       "summarizer_small_expert_model");
-  base::RunLoop().RunUntilIdle();
-
-  base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
-  GetAIManagerInterface()->CanCreateSummarizer(options.Clone(),
-                                               future.GetCallback());
-  EXPECT_EQ(future.Get(),
-            blink::mojom::ModelAvailabilityCheckResult::kAvailable);
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+    GetAIManagerInterface()->CanCreateSummarizer(options.Clone(),
+                                                 future.GetCallback());
+    return future.Get() ==
+           blink::mojom::ModelAvailabilityCheckResult::kAvailable;
+  }));
 
   TestCreateSummarizerClient summarizer_client;
   GetAIManagerRemote()->CreateSummarizer(
@@ -1059,15 +1060,13 @@ TEST_F(AISummarizerManifestTest, CanCreateAndCreateWithManifestAutoPreference) {
 
   // Now request assets for summarizer_api, and it should return kAvailable.
   fake_manifest_broker_->client().RequestAssetsFor("summarizer_api");
-  // Advance the event loop so that the fake manifest broker can finish
-  // processing the asset request before we check the availability again.
-  base::RunLoop().RunUntilIdle();
-
-  base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
-  GetAIManagerInterface()->CanCreateSummarizer(options.Clone(),
-                                               future.GetCallback());
-  EXPECT_EQ(future.Get(),
-            blink::mojom::ModelAvailabilityCheckResult::kAvailable);
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+    GetAIManagerInterface()->CanCreateSummarizer(options.Clone(),
+                                                 future.GetCallback());
+    return future.Get() ==
+           blink::mojom::ModelAvailabilityCheckResult::kAvailable;
+  }));
 
   TestCreateSummarizerClient summarizer_client;
   GetAIManagerRemote()->CreateSummarizer(
@@ -1082,17 +1081,17 @@ TEST_F(AISummarizerManifestTest, CanCreateAndCreateWithManifestAutoPreference) {
 TEST_F(AISummarizerManifestTest,
        DISABLED_CanCreateAndCreateWithManifestCapabilityPreference) {
   fake_manifest_broker_->client().RequestAssetsFor("summarizer_api");
-  base::RunLoop().RunUntilIdle();
-
   auto options = GetDefaultOptions();
   options->preference = blink::mojom::PerformancePreference::kCapability;
   options->output_language = blink::mojom::AILanguageCode::New("en");
 
-  base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
-  GetAIManagerInterface()->CanCreateSummarizer(options.Clone(),
-                                               future.GetCallback());
-  EXPECT_EQ(future.Get(),
-            blink::mojom::ModelAvailabilityCheckResult::kAvailable);
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+    GetAIManagerInterface()->CanCreateSummarizer(options.Clone(),
+                                                 future.GetCallback());
+    return future.Get() ==
+           blink::mojom::ModelAvailabilityCheckResult::kAvailable;
+  }));
 
   TestCreateSummarizerClient summarizer_client;
   GetAIManagerRemote()->CreateSummarizer(
@@ -1324,15 +1323,12 @@ TEST_F(AISummarizerManifestTest,
       kAIApiFoundationalModel, {{"model_version", "v4"}});
 
   fake_manifest_broker_->client().RequestAssetsFor("summarizer_gemma4");
-  base::RunLoop().RunUntilIdle();
-
-  // Verify CanCreateSummarizer check passes successfully for default options
-  // mapping to gemma4. We requested assets only for summarizer_gemma4,
-  // so receiving kAvailable implicitly verifies the correct use case mapping.
-  base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
-  ai_manager_->CanCreateSummarizer(GetDefaultOptions(), future.GetCallback());
-  EXPECT_EQ(future.Get(),
-            blink::mojom::ModelAvailabilityCheckResult::kAvailable);
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+    ai_manager_->CanCreateSummarizer(GetDefaultOptions(), future.GetCallback());
+    return future.Get() ==
+           blink::mojom::ModelAvailabilityCheckResult::kAvailable;
+  }));
 
   // Verify CreateSummarizer can retrieve the model successfully.
   TestCreateSummarizerClient create_summarizer_client;

@@ -12,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/protobuf_matchers.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -865,13 +866,12 @@ TEST_F(AIWriterManifestTest, CanCreateAndCreateWithManifestGemma4) {
 
   ASSERT_TRUE(fake_manifest_broker_);
   fake_manifest_broker_->client().RequestAssetsFor("writing_assistance_gemma4");
-  base::RunLoop().RunUntilIdle();
-
-  // Verify CanCreateWriter check passes successfully.
-  base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
-  ai_manager_->CanCreateWriter(GetDefaultOptions(), future.GetCallback());
-  EXPECT_EQ(future.Get(),
-            blink::mojom::ModelAvailabilityCheckResult::kAvailable);
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+    ai_manager_->CanCreateWriter(GetDefaultOptions(), future.GetCallback());
+    return future.Get() ==
+           blink::mojom::ModelAvailabilityCheckResult::kAvailable;
+  }));
 
   // Verify CreateWriter can retrieve the model successfully.
   TestCreateWriterClient create_writer_client;
