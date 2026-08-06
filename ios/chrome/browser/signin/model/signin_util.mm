@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/signin/model/signin_util.h"
 
+#import "base/check.h"
 #import "base/check_is_test.h"
 #import "base/containers/to_vector.h"
 #import "base/functional/callback_helpers.h"
@@ -20,10 +21,15 @@
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/signin_util_internal.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
+#import "ios/chrome/browser/subscription_eligibility/model/subscription_eligibility_service_factory.h"
 #import "ios/public/provider/chrome/browser/signin/signin_error_api.h"
 #import "ios/public/provider/chrome/browser/signin/signin_identity_api.h"
 
@@ -110,7 +116,8 @@ bool ShouldHandleSigninError(NSError* error) {
          ios::provider::SigninErrorCategory::kUserCancellationError;
 }
 
-CGSize GetSizeForIdentityAvatarSize(IdentityAvatarSize avatar_size) {
+CGSize GetSizeForIdentityAvatarSize(IdentityAvatarSize avatar_size,
+                                    AITierRingSize ring_size) {
   CGFloat size = 0;
   switch (avatar_size) {
     case IdentityAvatarSize::TableViewIcon:
@@ -127,6 +134,15 @@ CGSize GetSizeForIdentityAvatarSize(IdentityAvatarSize avatar_size) {
       break;
   }
   DCHECK_NE(size, 0);
+  if (IsAiAvatarRingIosEnabled()) {
+    switch (ring_size) {
+      case AITierRingSize::kNoRing:
+      case AITierRingSize::kImageSize:
+        break;
+      case AITierRingSize::kViewSize:
+        size -= (2 * (kAiTierRingWidth + kAiTierAndAvatarDistance));
+    }
+  }
   return CGSizeMake(size, size);
 }
 

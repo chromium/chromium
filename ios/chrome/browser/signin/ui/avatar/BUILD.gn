@@ -1,0 +1,17 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("avatar") {
+  sources = [
+    "ai_tier_avatar_view.h",
+    "ai_tier_avatar_view.mm",
+    "ai_tier_ring_image_view.h",
+    "ai_tier_ring_image_view.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/signin/model:constants",
+    "//ios/public/provider/chrome/browser/intelligence/signin",
+  ]
+}

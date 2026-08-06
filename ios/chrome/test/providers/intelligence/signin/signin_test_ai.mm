@@ -16,7 +16,7 @@ NSString* GetAITierName(int ai_tier) {
 }
 
 UIImage* GetPremiumRingImage() {
-  return [UIImage imageNamed:@"premium_ring"];
+  return [UIImage imageNamed:@"premium_disk"];
 }
 
 }  // namespace ios::provider

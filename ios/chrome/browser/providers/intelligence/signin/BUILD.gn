@@ -6,6 +6,7 @@ source_set("signin") {
   sources = [ "chromium_signin_ai.mm" ]
   deps = [
     "resources",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/public/provider/chrome/browser/intelligence/signin",
     "//ios/web",
     "//url",

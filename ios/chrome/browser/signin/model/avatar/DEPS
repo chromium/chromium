@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/subscription_eligibility/subscription_eligibility_service.h",
+  "+ios/chrome/browser/subscription_eligibility/model/subscription_eligibility_service_factory.h",
+]

@@ -8,3 +8,5 @@ NSString* const kGoogleServiceAuthErrorState = @"GoogleServiceAuthErrorState";
 NSString* const kSystemIdentityManagerErrorDomain =
     @"SystemIdentityManagerErrorDomain";
 NSString* const kAuthenticationErrorDomain = @"ChromeSigninError";
+NSString* const kPremiumAvatarRingAccessibilityIdentifier =
+    @"kPremiumAvatarRingAccessibilityIdentifier";

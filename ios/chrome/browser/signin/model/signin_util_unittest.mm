@@ -6,12 +6,14 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
 #import "google_apis/gaia/core_account_id.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/account_capabilities_fetcher_ios.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
@@ -151,4 +153,34 @@ TEST_F(SigninUtilTest, RunSystemCapabilitiesPrefetchMultipleIdentities) {
   EXPECT_TRUE(fake_system_identity_manager()
                   ->GetVisibleCapabilities(identity2)
                   .AreAllCapabilitiesKnown());
+}
+
+TEST_F(SigninUtilTest, GetSizeForIdentityAvatarSize) {
+  // The avatar should be its default size.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(kAiAvatarRingIos);
+    EXPECT_EQ(GetSizeForIdentityAvatarSize(IdentityAvatarSize::Large,
+                                           AITierRingSize::kNoRing)
+                  .width,
+              48.0);
+  }
+  // The avatar should be its default size as the ring is around it.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(kAiAvatarRingIos);
+    EXPECT_EQ(GetSizeForIdentityAvatarSize(IdentityAvatarSize::Large,
+                                           AITierRingSize::kImageSize)
+                  .width,
+              48.0);
+  }
+  // The avatar should be smaller so that the ring takes the usual avatar size.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(kAiAvatarRingIos);
+    EXPECT_EQ(GetSizeForIdentityAvatarSize(IdentityAvatarSize::Large,
+                                           AITierRingSize::kViewSize)
+                  .width,
+              38.0);
+  }
 }
