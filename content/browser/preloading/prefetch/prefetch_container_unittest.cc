@@ -132,7 +132,7 @@ class PrefetchContainerTestBase : public PrefetchingMetricsTestBase,
                       CreateBrowserInitiatedWithoutWebContentsOffTheMainThread(
                           test_fixture->browser_context()->GetWeakPtr(), url,
                           PrefetchType(PreloadingTriggerType::kEmbedder,
-                                       /*use_prefetch_proxy=*/true),
+                                       /*use_prefetch_proxy=*/false),
                           test::kPreloadingEmbedderHistogramSuffixForTesting,
                           blink::mojom::Referrer(),
                           /*javascript_enabled=*/true,
@@ -389,7 +389,7 @@ TEST_P(PrefetchContainerTest, CreatePrefetchContainer_Embedder_PrePrefetch) {
   EXPECT_EQ(prefetch_container->GetURL(), GURL("https://test.com"));
   EXPECT_EQ(prefetch_container->request().prefetch_type(),
             PrefetchType(PreloadingTriggerType::kEmbedder,
-                         /*use_prefetch_proxy=*/true));
+                         /*use_prefetch_proxy=*/false));
   EXPECT_EQ(prefetch_container->key(),
             PrefetchKey(std::nullopt, GURL("https://test.com")));
   EXPECT_FALSE(prefetch_container->GetNonRedirectHead());
