@@ -160,6 +160,7 @@ if (!is_android) {
       "//chrome/browser/ui/toolbar/cast",
       "//chrome/browser/ui/toolbar/chrome_labs",
       "//chrome/browser/ui/user_education",
+      "//chrome/browser/ui/views/bookmarks",
       "//chrome/browser/ui/views/commerce",
       "//chrome/browser/ui/views/download",
       "//chrome/browser/ui/views/file_system_access",
@@ -3566,44 +3567,6 @@ static_library("ui") {
       "views/autofill/save_address_profile_view.h",
       "views/autofill/update_address_profile_view.cc",
       "views/autofill/update_address_profile_view.h",
-      "views/bookmarks/bookmark_account_storage_move_dialog.cc",
-      "views/bookmarks/bookmark_account_storage_move_dialog.h",
-      "views/bookmarks/bookmark_account_storage_move_dialog_delegate.cc",
-      "views/bookmarks/bookmark_account_storage_move_dialog_delegate.h",
-      "views/bookmarks/bookmark_bar_view.cc",
-      "views/bookmarks/bookmark_bar_view.h",
-      "views/bookmarks/bookmark_bubble_view.cc",
-      "views/bookmarks/bookmark_bubble_view.h",
-      "views/bookmarks/bookmark_button.cc",
-      "views/bookmarks/bookmark_button.h",
-      "views/bookmarks/bookmark_button_util.cc",
-      "views/bookmarks/bookmark_button_util.h",
-      "views/bookmarks/bookmark_context_menu.cc",
-      "views/bookmarks/bookmark_context_menu.h",
-      "views/bookmarks/bookmark_drag_drop_views.cc",
-      "views/bookmarks/bookmark_editor_view.cc",
-      "views/bookmarks/bookmark_editor_view.h",
-      "views/bookmarks/bookmark_menu_button_base.cc",
-      "views/bookmarks/bookmark_menu_button_base.h",
-      "views/bookmarks/bookmark_menu_controller_observer.h",
-      "views/bookmarks/bookmark_menu_controller_views.cc",
-      "views/bookmarks/bookmark_menu_controller_views.h",
-      "views/bookmarks/bookmark_menu_delegate.cc",
-      "views/bookmarks/bookmark_menu_delegate.h",
-      "views/bookmarks/bookmark_page_action_controller.cc",
-      "views/bookmarks/bookmark_page_action_controller.h",
-      "views/bookmarks/saved_tab_groups/saved_tab_group_bar.cc",
-      "views/bookmarks/saved_tab_groups/saved_tab_group_bar.h",
-      "views/bookmarks/saved_tab_groups/saved_tab_group_button.cc",
-      "views/bookmarks/saved_tab_groups/saved_tab_group_button.h",
-      "views/bookmarks/saved_tab_groups/saved_tab_group_drag_data.cc",
-      "views/bookmarks/saved_tab_groups/saved_tab_group_drag_data.h",
-      "views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.cc",
-      "views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h",
-      "views/bookmarks/saved_tab_groups/saved_tab_group_overflow_button.cc",
-      "views/bookmarks/saved_tab_groups/saved_tab_group_overflow_button.h",
-      "views/bookmarks/saved_tab_groups/saved_tab_group_tabs_menu_model.cc",
-      "views/bookmarks/saved_tab_groups/saved_tab_group_tabs_menu_model.h",
       "views/browser_commands_views.cc",
       "views/browser_dialogs_views.cc",
       "views/bubble_anchor_util_views.cc",
@@ -4186,6 +4149,9 @@ static_library("ui") {
       "//chrome/browser/ui/views/apps/app_info_dialog",
       "//chrome/browser/ui/views/apps/app_info_dialog:impl",
       "//chrome/browser/ui/views/autofill:delete_address_profile_dialog_view",
+      "//chrome/browser/ui/views/bookmarks",
+      "//chrome/browser/ui/views/bookmarks:impl",
+      "//chrome/browser/ui/views/bookmarks/saved_tab_groups:impl",
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/views/commerce",
       "//chrome/browser/ui/views/commerce:impl",
@@ -4395,6 +4361,21 @@ static_library("ui") {
       # TODO(crbug.com/353332589): Remove this circular dependency when the
       # following headers get componentized:
       # c/b/ui/browser.h
+      # c/b/ui/browser_command_controller.h
+      # c/b/ui/browser_window.h
+      # c/b/ui/views/frame/browser_view.h, themed_background.h
+      "//chrome/browser/ui/views/bookmarks:impl",
+
+      # TODO(crbug.com/353332589): Remove this circular dependency when the
+      # following headers get componentized:
+      # c/b/ui/browser_command_controller.h
+      # c/b/ui/browser_window.h
+      # c/b/ui/views/frame/browser_view.h
+      "//chrome/browser/ui/views/bookmarks/saved_tab_groups:impl",
+
+      # TODO(crbug.com/353332589): Remove this circular dependency when the
+      # following headers get componentized:
+      # c/b/ui/browser.h
       # c/b/ui/views/frame/browser_view.h, contents_web_view.h
       # c/b/ui/views/theme_copying_widget.h
       "//chrome/browser/ui/views/omnibox:impl",
@@ -4519,7 +4500,6 @@ static_library("ui") {
       # TODO(crbug.com/451609048): Remove this circular dependency when the
       # following headers get componentized:
       # - c/b/ui/browser_commands.h
-      # - c/b/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h
       # - c/b/ui/views/frame/browser_view.h
       # - c/b/ui/views/tab_search_bubble_host.h
       "//chrome/browser/ui/views/tabs/shared:impl",
@@ -4704,8 +4684,6 @@ static_library("ui") {
       sources += [
         "views/autofill/address_sign_in_promo_view.cc",
         "views/autofill/address_sign_in_promo_view.h",
-        "views/bookmarks/bookmark_sign_in_promo_bubble_view.cc",
-        "views/bookmarks/bookmark_sign_in_promo_bubble_view.h",
       ]
     }
 

@@ -53,6 +53,7 @@
 #include "ui/events/test/test_event.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/button/menu_button.h"
 #include "ui/views/test/button_test_api.h"
 
 namespace {

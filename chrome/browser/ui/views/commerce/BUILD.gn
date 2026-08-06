@@ -79,6 +79,7 @@ source_set("unit_tests") {
     "//chrome/browser/commerce",
     "//chrome/browser/sync",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/views/bookmarks",
     "//chrome/test:test_support",
     "//components/commerce/core:feature_list",
     "//components/commerce/core:pref_names",

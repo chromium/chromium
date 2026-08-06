@@ -46,6 +46,8 @@ source_set("impl") {
     "//chrome/browser/ui/tabs/saved_tab_groups",
     "//chrome/browser/ui/toolbar/pinned_toolbar",
     "//chrome/browser/ui/user_education",
+    "//chrome/browser/ui/views/bookmarks",
+    "//chrome/browser/ui/views/bookmarks/saved_tab_groups",
     "//chrome/browser/ui/views/frame",
     "//chrome/browser/ui/views/tabs/organizer",
     "//chrome/browser/ui/views/toolbar",

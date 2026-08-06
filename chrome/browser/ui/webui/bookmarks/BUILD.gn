@@ -31,6 +31,7 @@ if (!is_android) {
       "//chrome/browser/sync",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/views/bookmarks",
       "//chrome/browser/ui/webui:favicon_source",
       "//chrome/browser/ui/webui:metrics_handler",
       "//chrome/browser/ui/webui:plural_string_handler",

@@ -34,6 +34,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/tooltip_manager.h"
+#include "ui/views/widget/widget.h"
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

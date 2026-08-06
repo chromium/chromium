@@ -173,6 +173,8 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/ui",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_menu",
+    "//chrome/browser/ui/views/bookmarks",
+    "//chrome/browser/ui/views/bookmarks/saved_tab_groups",
     "//chrome/browser/ui/views/tabs/common",
     "//chrome/browser/ui/views/tabs/common:interactive_ui_tests",
     "//chrome/browser/ui/views/tabs/organizer",

@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
-#include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_bar.h"
 
 // Used to access private state of BookmarkBarView for testing.
 class BookmarkBarViewTestHelper {

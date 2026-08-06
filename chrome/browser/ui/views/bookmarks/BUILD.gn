@@ -3,11 +3,150 @@
 # found in the LICENSE file.
 
 import("//build/config/ui.gni")
+import("//chrome/common/features.gni")
 
 assert(toolkit_views)
 
 source_set("bookmark_bar_view_observer") {
   sources = [ "bookmark_bar_view_observer.h" ]
+}
+
+source_set("bookmarks") {
+  public = [
+    "bookmark_account_storage_move_dialog.h",
+    "bookmark_account_storage_move_dialog_delegate.h",
+    "bookmark_bar_view.h",
+    "bookmark_bubble_view.h",
+    "bookmark_button.h",
+    "bookmark_button_util.h",
+    "bookmark_context_menu.h",
+    "bookmark_editor_view.h",
+    "bookmark_menu_button_base.h",
+    "bookmark_menu_controller_observer.h",
+    "bookmark_menu_controller_views.h",
+    "bookmark_menu_delegate.h",
+    "bookmark_page_action_controller.h",
+  ]
+
+  if (enable_dice_support) {
+    public += [ "bookmark_sign_in_promo_bubble_view.h" ]
+  }
+
+  public_deps = [
+    ":bookmark_bar_view_observer",
+    "//base",
+    "//chrome/browser/bookmarks",
+    "//chrome/browser/preloading",
+    "//chrome/browser/ui/bookmarks",
+    "//chrome/browser/ui/page_action:icon_type",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:tab_enums",
+    "//chrome/browser/ui/toolbar",
+    "//chrome/browser/ui/views",
+    "//chrome/browser/ui/views/location_bar",
+    "//chrome/browser/ui/views/page_action",
+    "//components/bookmarks/browser",
+    "//components/prefs",
+    "//content/public/browser",
+    "//ui/accessibility",
+    "//ui/base",
+    "//ui/base/dragdrop/mojom",
+    "//ui/base/mojom",
+    "//ui/base/unowned_user_data",
+    "//ui/compositor",
+    "//ui/gfx/animation",
+    "//ui/gfx/geometry",
+    "//ui/menus",
+    "//ui/views",
+    "//url",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "bookmark_account_storage_move_dialog.cc",
+    "bookmark_account_storage_move_dialog_delegate.cc",
+    "bookmark_bar_view.cc",
+    "bookmark_bubble_view.cc",
+    "bookmark_button.cc",
+    "bookmark_button_util.cc",
+    "bookmark_context_menu.cc",
+    "bookmark_drag_drop_views.cc",
+    "bookmark_editor_view.cc",
+    "bookmark_menu_button_base.cc",
+    "bookmark_menu_controller_views.cc",
+    "bookmark_menu_delegate.cc",
+    "bookmark_page_action_controller.cc",
+  ]
+
+  if (enable_dice_support) {
+    sources += [ "bookmark_sign_in_promo_bubble_view.cc" ]
+  }
+
+  deps = [
+    ":bookmarks",
+    "//chrome/app:command_ids",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/bookmarks",
+    "//chrome/browser/commerce",
+    "//chrome/browser/favicon",
+    "//chrome/browser/feature_engagement",
+    "//chrome/browser/image_fetcher",
+    "//chrome/browser/page_image_service",
+    "//chrome/browser/predictors",
+    "//chrome/browser/prefs",
+    "//chrome/browser/preloading/bookmarkbar_preload",
+    "//chrome/browser/preloading/prerender",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
+    "//chrome/browser/tab_group_sync",
+    "//chrome/browser/ui:browser_actions",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:chrome_pages",
+    "//chrome/browser/ui:layout_constants",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui:view_ids",
+    "//chrome/browser/ui/desktop_to_mobile_promos:controller",
+    "//chrome/browser/ui/desktop_to_mobile_promos:service",
+    "//chrome/browser/ui/dialogs",
+    "//chrome/browser/ui/signin",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/tabs:tabs_public",
+    "//chrome/browser/ui/user_education",
+    "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/views/bookmarks/saved_tab_groups",
+    "//chrome/browser/ui/views/bookmarks/saved_tab_groups:impl",
+    "//chrome/browser/ui/views/commerce",
+    "//chrome/browser/ui/views/toolbar",
+    "//chrome/common:constants",
+    "//chrome/common:non_code_constants",
+    "//components/bookmarks/managed",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:metrics",
+    "//components/commerce/core:shopping_service",
+    "//components/constrained_window",
+    "//components/desktop_to_mobile_promos",
+    "//components/favicon/core",
+    "//components/feature_engagement/public",
+    "//components/image_fetcher/core",
+    "//components/page_image_service",
+    "//components/policy/core/common:common_constants",
+    "//components/profile_metrics",
+    "//components/saved_tab_groups/public",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/sync",
+    "//components/tabs:public",
+    "//components/url_formatter",
+    "//components/vector_icons",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//extensions/common",
+    "//services/network:network_service",
+    "//skia",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("test_support") {
@@ -24,4 +163,118 @@ source_set("test_support") {
     "//components/signin/public/identity_manager:test_support",
     "//ui/gfx:test_support",
   ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "bookmark_bar_view_test_helper.h",
+    "bookmark_bar_view_unittest.cc",
+    "bookmark_button_unittest.cc",
+    "bookmark_context_menu_unittest.cc",
+    "bookmark_editor_view_unittest.cc",
+    "bookmark_page_action_controller_unittest.cc",
+  ]
+
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
+  deps = [
+    ":bookmarks",
+    ":test_support",
+    "//chrome/browser/bookmarks",
+    "//chrome/browser/bookmarks:test_support",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/page_action:test_support",
+    "//chrome/test:test_support",
+    "//components/bookmarks/managed",
+    "//components/tabs:test_support",
+    "//ui/base/clipboard:clipboard_test_support",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "bookmark_account_storage_move_dialog_browsertest.cc",
+    "bookmark_bar_view_browsertest.cc",
+    "bookmark_bar_view_test_helper.h",
+    "bookmark_bubble_view_browsertest.cc",
+    "bookmark_editor_view_browsertest.cc",
+    "bookmark_menu_delegate_browsertest.cc",
+  ]
+
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
+  deps = [
+    ":bookmarks",
+    ":test_support",
+    "//chrome/browser/bookmarks",
+    "//chrome/browser/bookmarks:test_support",
+    "//chrome/browser/favicon",
+    "//chrome/browser/preloading/bookmarkbar_preload",
+    "//chrome/browser/tab_group_sync:factories",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/commerce:test_support",
+    "//chrome/browser/ui/views/commerce",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//chrome/test/user_education",
+    "//components/bookmarks/managed",
+    "//components/commerce/core:shopping_service_test_support",
+    "//components/saved_tab_groups/test_support",
+    "//components/user_education/views",
+    "//ui/events:test_support",
+  ]
+}
+
+if (!is_chromeos_device) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [
+      "bookmark_account_storage_move_dialog_interactive_uitest.cc",
+      "bookmark_bar_view_event_interactive_uitest.cc",
+      "bookmark_bar_view_interactive_uitest.cc",
+      "bookmark_bar_view_test_helper.h",
+      "bookmark_bubble_view_interactive_uitest.cc",
+    ]
+
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
+    deps = [
+      ":bookmarks",
+      ":test_support",
+      "//chrome/browser:chrome_content_browser_client",
+      "//chrome/browser/apps/app_service",
+      "//chrome/browser/apps/app_service/publishers",
+      "//chrome/browser/bookmarks",
+      "//chrome/browser/bookmarks:test_support",
+      "//chrome/browser/collaboration/messaging",
+      "//chrome/browser/data_sharing",
+      "//chrome/browser/favicon",
+      "//chrome/browser/gcm",
+      "//chrome/browser/tab_group_sync:factories",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/actions",
+      "//chrome/browser/ui/tabs:tab_menu",
+      "//chrome/browser/ui/views/commerce",
+      "//chrome/browser/ui/views/data_sharing",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//chrome/test/user_education",
+      "//components/commerce/core:shopping_service_test_support",
+      "//components/favicon/content",
+      "//ui/base:ozone_buildflags",
+      "//ui/events:test_support",
+    ]
+
+    if (use_ozone) {
+      # bookmark_bar_view_event_interactive_uitest.cc includes
+      # ui/ozone/public/ozone_platform.h behind BUILDFLAG(IS_OZONE).
+      deps += [ "//ui/ozone" ]
+    }
+  }
 }

@@ -77,6 +77,8 @@ source_set("toolbar") {
     "//chrome/browser/ui/toolbar/pinned_toolbar",
     "//chrome/browser/ui/views",
     "//chrome/browser/ui/views/app_menu",
+    "//chrome/browser/ui/views/bookmarks",
+    "//chrome/browser/ui/views/bookmarks/saved_tab_groups",
     "//chrome/browser/ui/views/frame",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//chrome/browser/ui/views/glic",
