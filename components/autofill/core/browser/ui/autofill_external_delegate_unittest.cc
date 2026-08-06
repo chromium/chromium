@@ -4258,7 +4258,8 @@ TEST_F(AutofillExternalDelegateTest, ShouldDiscardOutdatedSuggestions) {
 }
 #endif
 
-// Tests that @memory search results use the kReplaceAtMemoryTrigger action.
+// Tests that @memory search results use the kReplaceSelectionForAtMemory
+// action.
 TEST_F(AutofillExternalDelegateTest, AtMemorySearchResult_UsesSpecialAction) {
   StartAtMemorySession();
   Suggestion suggestion(u"some result", SuggestionType::kAtMemorySearchResult);
@@ -4269,8 +4270,8 @@ TEST_F(AutofillExternalDelegateTest, AtMemorySearchResult_UsesSpecialAction) {
   EXPECT_CALL(
       autofill_manager(),
       FillOrPreviewField(mojom::ActionPersistence::kPreview,
-                         mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
-                         std::u16string(u"pasted text"),
+                         mojom::FieldActionType::kReplaceSelectionForAtMemory,
+                         _, _, std::u16string(u"pasted text"),
                          FillingProduct::kAtMemory, _));
   external_delegate().DidSelectSuggestion(suggestion);
 
@@ -4278,8 +4279,8 @@ TEST_F(AutofillExternalDelegateTest, AtMemorySearchResult_UsesSpecialAction) {
   EXPECT_CALL(
       autofill_manager(),
       FillOrPreviewField(mojom::ActionPersistence::kFill,
-                         mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
-                         std::u16string(u"pasted text"),
+                         mojom::FieldActionType::kReplaceSelectionForAtMemory,
+                         _, _, std::u16string(u"pasted text"),
                          FillingProduct::kAtMemory, _));
   external_delegate().DidAcceptSuggestion(
       suggestion, SuggestionPosition{.multi_index = {0}});
@@ -4346,8 +4347,8 @@ TEST_F(AutofillExternalDelegateTest, AtMemorySearchResult_RevealsIban) {
   EXPECT_CALL(
       autofill_manager(),
       FillOrPreviewField(mojom::ActionPersistence::kFill,
-                         mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
-                         iban.value(), FillingProduct::kAtMemory, _));
+                         mojom::FieldActionType::kReplaceSelectionForAtMemory,
+                         _, _, iban.value(), FillingProduct::kAtMemory, _));
 
   external_delegate().DidAcceptSuggestion(
       suggestion, SuggestionPosition{.multi_index = {0}});
@@ -4384,8 +4385,8 @@ TEST_F(AutofillExternalDelegateTest, AtMemorySearchResult_RevealsCreditCard) {
   EXPECT_CALL(
       autofill_manager(),
       FillOrPreviewField(mojom::ActionPersistence::kFill,
-                         mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
-                         card.number(), FillingProduct::kAtMemory, _));
+                         mojom::FieldActionType::kReplaceSelectionForAtMemory,
+                         _, _, card.number(), FillingProduct::kAtMemory, _));
 
   external_delegate().DidAcceptSuggestion(
       suggestion, SuggestionPosition{.multi_index = {0}});
@@ -4418,8 +4419,8 @@ TEST_F(AutofillExternalDelegateTest, AtMemorySearchResult_RevealsAutofillAi) {
   EXPECT_CALL(
       autofill_manager(),
       FillOrPreviewField(mojom::ActionPersistence::kFill,
-                         mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
-                         passport_attribute->GetCompleteRawInfo(),
+                         mojom::FieldActionType::kReplaceSelectionForAtMemory,
+                         _, _, passport_attribute->GetCompleteRawInfo(),
                          FillingProduct::kAtMemory, _));
 
   external_delegate().DidAcceptSuggestion(
@@ -4464,8 +4465,8 @@ TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
   EXPECT_CALL(
       autofill_manager(),
       FillOrPreviewField(mojom::ActionPersistence::kFill,
-                         mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
-                         passport_attribute->GetCompleteRawInfo(),
+                         mojom::FieldActionType::kReplaceSelectionForAtMemory,
+                         _, _, passport_attribute->GetCompleteRawInfo(),
                          FillingProduct::kAtMemory, _));
 
   external_delegate().DidAcceptSuggestion(

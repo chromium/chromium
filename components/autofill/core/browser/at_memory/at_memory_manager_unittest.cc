@@ -647,7 +647,7 @@ TEST_F(AtMemoryManagerTest, FlightReservation_ValueAndLabelFormatting) {
   EXPECT_CALL(
       autofill_manager(),
       FillOrPreviewField(mojom::ActionPersistence::kFill,
-                         mojom::FieldActionType::kReplaceAtMemoryTrigger,
+                         mojom::FieldActionType::kReplaceSelectionForAtMemory,
                          form_id, field_id, Eq(u"2024-06-07 3:30 PM"),
                          FillingProduct::kAtMemory, _));
 
@@ -854,8 +854,8 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_AttributeSuccess) {
     EXPECT_CALL(
         autofill_manager(),
         FillOrPreviewField(mojom::ActionPersistence::kFill,
-                           mojom::FieldActionType::kReplaceAtMemoryTrigger, _,
-                           _, passport_attribute->GetCompleteRawInfo(),
+                           mojom::FieldActionType::kReplaceSelectionForAtMemory,
+                           _, _, passport_attribute->GetCompleteRawInfo(),
                            FillingProduct::kAtMemory, _));
   }
 
@@ -928,12 +928,13 @@ TEST_F(AtMemoryManagerTest, FillSensitivePersonalContextData_Success) {
     EXPECT_CALL(autofill_client(),
                 HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
                                 std::optional(FillingProduct::kAtMemory)));
-    EXPECT_CALL(autofill_manager(),
-                FillOrPreviewField(
-                    mojom::ActionPersistence::kFill,
-                    mojom::FieldActionType::kReplaceAtMemoryTrigger, form_id,
-                    field_id, std::u16string(u"unmasked_passport_1234"),
-                    FillingProduct::kAtMemory, std::optional<FieldType>()));
+    EXPECT_CALL(
+        autofill_manager(),
+        FillOrPreviewField(
+            mojom::ActionPersistence::kFill,
+            mojom::FieldActionType::kReplaceSelectionForAtMemory, form_id,
+            field_id, std::u16string(u"unmasked_passport_1234"),
+            FillingProduct::kAtMemory, std::optional<FieldType>()));
   }
 
   EXPECT_EQ(manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
@@ -993,12 +994,13 @@ TEST_F(AtMemoryManagerTest,
     EXPECT_CALL(autofill_client(),
                 HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
                                 std::optional(FillingProduct::kAtMemory)));
-    EXPECT_CALL(autofill_manager(),
-                FillOrPreviewField(
-                    mojom::ActionPersistence::kFill,
-                    mojom::FieldActionType::kReplaceAtMemoryTrigger, form_id,
-                    field_id, std::u16string(u"unmasked_passport_1234"),
-                    FillingProduct::kAtMemory, std::optional<FieldType>()));
+    EXPECT_CALL(
+        autofill_manager(),
+        FillOrPreviewField(
+            mojom::ActionPersistence::kFill,
+            mojom::FieldActionType::kReplaceSelectionForAtMemory, form_id,
+            field_id, std::u16string(u"unmasked_passport_1234"),
+            FillingProduct::kAtMemory, std::optional<FieldType>()));
   }
 
   EXPECT_EQ(manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
@@ -1204,8 +1206,8 @@ TEST_F(AtMemoryManagerTest, FillCreditCard_Success) {
   EXPECT_CALL(
       autofill_manager(),
       FillOrPreviewField(mojom::ActionPersistence::kFill,
-                         mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
-                         card.number(), FillingProduct::kAtMemory, _));
+                         mojom::FieldActionType::kReplaceSelectionForAtMemory,
+                         _, _, card.number(), FillingProduct::kAtMemory, _));
 
   task_environment_.FastForwardBy(base::Seconds(60));
 
@@ -1258,8 +1260,8 @@ TEST_F(AtMemoryManagerTest, FillCreditCard_AsyncSuccess) {
     EXPECT_CALL(
         autofill_manager(),
         FillOrPreviewField(mojom::ActionPersistence::kFill,
-                           mojom::FieldActionType::kReplaceAtMemoryTrigger, _,
-                           _, card.number(), FillingProduct::kAtMemory, _));
+                           mojom::FieldActionType::kReplaceSelectionForAtMemory,
+                           _, _, card.number(), FillingProduct::kAtMemory, _));
   }
 
   EXPECT_EQ(manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
@@ -1488,8 +1490,8 @@ TEST_F(AtMemoryManagerTest, FillIban_Success) {
     EXPECT_CALL(
         autofill_manager(),
         FillOrPreviewField(mojom::ActionPersistence::kFill,
-                           mojom::FieldActionType::kReplaceAtMemoryTrigger, _,
-                           _, iban.value(), FillingProduct::kAtMemory, _));
+                           mojom::FieldActionType::kReplaceSelectionForAtMemory,
+                           _, _, iban.value(), FillingProduct::kAtMemory, _));
   }
 
   EXPECT_EQ(manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
@@ -1874,8 +1876,8 @@ TEST_F(AtMemoryManagerTest, FillNonSensitiveData_Success) {
   EXPECT_CALL(
       autofill_manager(),
       FillOrPreviewField(mojom::ActionPersistence::kFill,
-                         mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
-                         expected_value, FillingProduct::kAtMemory, _));
+                         mojom::FieldActionType::kReplaceSelectionForAtMemory,
+                         _, _, expected_value, FillingProduct::kAtMemory, _));
 
   task_environment_.FastForwardBy(base::Seconds(60));
 
@@ -2246,12 +2248,12 @@ TEST_F(AtMemoryManagerTest, RemoteSensitiveMainValue_Obfuscated) {
   EXPECT_EQ(primary_payload.value, u"987654321");
 
   // 3. Verify Preview and Fill of the Primary Suggestion.
-  EXPECT_CALL(
-      autofill_manager(),
-      FillOrPreviewField(mojom::ActionPersistence::kPreview,
-                         mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
-                         GetObfuscatedValue(u"987654321", kVisibleSuffixLength),
-                         FillingProduct::kAtMemory, _));
+  EXPECT_CALL(autofill_manager(),
+              FillOrPreviewField(
+                  mojom::ActionPersistence::kPreview,
+                  mojom::FieldActionType::kReplaceSelectionForAtMemory, _, _,
+                  GetObfuscatedValue(u"987654321", kVisibleSuffixLength),
+                  FillingProduct::kAtMemory, _));
 
   manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kPreview,
                                       form_id, field_id, final_suggestions[0]);
@@ -2269,7 +2271,7 @@ TEST_F(AtMemoryManagerTest, RemoteSensitiveMainValue_Obfuscated) {
   EXPECT_CALL(autofill_manager(),
               FillOrPreviewField(
                   mojom::ActionPersistence::kFill,
-                  mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
+                  mojom::FieldActionType::kReplaceSelectionForAtMemory, _, _,
                   std::u16string(u"987654321"), FillingProduct::kAtMemory, _));
 
   manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill, form_id,
@@ -2387,12 +2389,12 @@ TEST_F(AtMemoryManagerTest, RemoteSensitiveMetadata_Obfuscated) {
   EXPECT_EQ(child_payload.value, u"987654321");
 
   // 4. Verify Preview and Fill of the Child Suggestion.
-  EXPECT_CALL(
-      autofill_manager(),
-      FillOrPreviewField(mojom::ActionPersistence::kPreview,
-                         mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
-                         GetObfuscatedValue(u"987654321", kVisibleSuffixLength),
-                         FillingProduct::kAtMemory, _));
+  EXPECT_CALL(autofill_manager(),
+              FillOrPreviewField(
+                  mojom::ActionPersistence::kPreview,
+                  mojom::FieldActionType::kReplaceSelectionForAtMemory, _, _,
+                  GetObfuscatedValue(u"987654321", kVisibleSuffixLength),
+                  FillingProduct::kAtMemory, _));
 
   manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kPreview,
                                       form_id, field_id,
@@ -2417,7 +2419,7 @@ TEST_F(AtMemoryManagerTest, RemoteSensitiveMetadata_Obfuscated) {
   EXPECT_CALL(autofill_manager(),
               FillOrPreviewField(
                   mojom::ActionPersistence::kFill,
-                  mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
+                  mojom::FieldActionType::kReplaceSelectionForAtMemory, _, _,
                   std::u16string(u"987654321"), FillingProduct::kAtMemory, _));
 
   manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill, form_id,
@@ -2501,8 +2503,8 @@ TEST_F(AtMemoryManagerTest, FillNonSensitiveCreditCard) {
   EXPECT_CALL(
       autofill_manager(),
       FillOrPreviewField(mojom::ActionPersistence::kFill,
-                         mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
-                         card.GetRawInfo(CREDIT_CARD_NAME_FULL),
+                         mojom::FieldActionType::kReplaceSelectionForAtMemory,
+                         _, _, card.GetRawInfo(CREDIT_CARD_NAME_FULL),
                          FillingProduct::kAtMemory, _));
 
   task_environment_.FastForwardBy(base::Seconds(60));
@@ -2553,8 +2555,8 @@ TEST_F(AtMemoryManagerTest, FillNonSensitiveAutofillAi) {
   EXPECT_CALL(
       autofill_manager(),
       FillOrPreviewField(mojom::ActionPersistence::kFill,
-                         mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
-                         expected_value, FillingProduct::kAtMemory, _));
+                         mojom::FieldActionType::kReplaceSelectionForAtMemory,
+                         _, _, expected_value, FillingProduct::kAtMemory, _));
 
   task_environment_.FastForwardBy(base::Seconds(60));
 

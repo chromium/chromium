@@ -518,10 +518,17 @@ enum FormActionType {
 
 // The possible actions that Autofill can perform on fields.
 enum FieldActionType {
-  kReplaceAll,              // Replace the field's current value.
-  kReplaceSelection,        // Replace only the currently selected text.
-  kSelectAll,               // Selects all the text within this field.
-  kReplaceAtMemoryTrigger,  // Replaces the "@@" trigger preceding the cursor.
+  // Replace the field's current value.
+  kReplaceAll,
+  // Replace only the currently selected text. This may use smart replace, which
+  // may insert spaces around the value.
+  kReplaceSelection,
+  // Replaces the text that was selected at the time AtMemory was triggered
+  // according to AutofillAgent's bookkeeping. This may use smart replace, which
+  // may insert spaces around the value.
+  kReplaceSelectionForAtMemory,
+  // Selects all the text within this field.
+  kSelectAll,
 };
 
 // LINT.IfChange(AutofillSuggestionTriggerSource)

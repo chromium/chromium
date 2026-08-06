@@ -502,8 +502,9 @@ IsAsync AtMemoryManager::FillOrPreviewSearchResult(
   switch (action_persistence) {
     case mojom::ActionPersistence::kPreview:
       owner_->FillOrPreviewField(
-          action_persistence, mojom::FieldActionType::kReplaceAtMemoryTrigger,
-          form_id, field_id,
+          action_persistence,
+          mojom::FieldActionType::kReplaceSelectionForAtMemory, form_id,
+          field_id,
           MaybeObfuscateValue(payload.value, payload.memory_data_type,
                               payload.is_personal_context_sourced),
           FillingProduct::kAtMemory,
@@ -583,8 +584,8 @@ IsAsync AtMemoryManager::FillSearchResult(
       }
       owner_->FillOrPreviewField(
           mojom::ActionPersistence::kFill,
-          mojom::FieldActionType::kReplaceAtMemoryTrigger, form_id, field_id,
-          payload.value, FillingProduct::kAtMemory,
+          mojom::FieldActionType::kReplaceSelectionForAtMemory, form_id,
+          field_id, payload.value, FillingProduct::kAtMemory,
           /*field_type_used=*/std::nullopt);
       return IsAsync(false);
     }
@@ -597,8 +598,8 @@ IsAsync AtMemoryManager::FillSearchResult(
       }
       owner_->FillOrPreviewField(
           mojom::ActionPersistence::kFill,
-          mojom::FieldActionType::kReplaceAtMemoryTrigger, form_id, field_id,
-          payload.value, FillingProduct::kAtMemory,
+          mojom::FieldActionType::kReplaceSelectionForAtMemory, form_id,
+          field_id, payload.value, FillingProduct::kAtMemory,
           /*field_type_used=*/std::nullopt);
       return IsAsync(false);
     }
@@ -654,8 +655,8 @@ IsAsync AtMemoryManager::FillSearchResult(
       }
       owner_->FillOrPreviewField(
           mojom::ActionPersistence::kFill,
-          mojom::FieldActionType::kReplaceAtMemoryTrigger, form_id, field_id,
-          payload.value, FillingProduct::kAtMemory,
+          mojom::FieldActionType::kReplaceSelectionForAtMemory, form_id,
+          field_id, payload.value, FillingProduct::kAtMemory,
           /*field_type_used=*/std::nullopt);
       return IsAsync(false);
     }
@@ -668,8 +669,8 @@ IsAsync AtMemoryManager::FillSearchResult(
       }
       owner_->FillOrPreviewField(
           mojom::ActionPersistence::kFill,
-          mojom::FieldActionType::kReplaceAtMemoryTrigger, form_id, field_id,
-          payload.value, FillingProduct::kAtMemory,
+          mojom::FieldActionType::kReplaceSelectionForAtMemory, form_id,
+          field_id, payload.value, FillingProduct::kAtMemory,
           /*field_type_used=*/std::nullopt);
       return IsAsync(false);
     }
@@ -974,7 +975,7 @@ IsAsync AtMemoryManager::FillIban(
             }
             manager->owner_->FillOrPreviewField(
                 mojom::ActionPersistence::kFill,
-                mojom::FieldActionType::kReplaceAtMemoryTrigger, form_id,
+                mojom::FieldActionType::kReplaceSelectionForAtMemory, form_id,
                 field_id, *unmasked_value, FillingProduct::kAtMemory,
                 /*field_type_used=*/std::nullopt);
           },
@@ -1081,7 +1082,7 @@ IsAsync AtMemoryManager::FillCreditCard(
 
             manager->owner_->FillOrPreviewField(
                 mojom::ActionPersistence::kFill,
-                mojom::FieldActionType::kReplaceAtMemoryTrigger, form_id,
+                mojom::FieldActionType::kReplaceSelectionForAtMemory, form_id,
                 field_id, fill_value, FillingProduct::kAtMemory,
                 /*field_type_used=*/std::nullopt);
           },
@@ -1149,11 +1150,11 @@ void AtMemoryManager::OnSensitivePersonalContextDataFetched(
     metrics->MarkFilled();
   }
 
-  owner_->FillOrPreviewField(mojom::ActionPersistence::kFill,
-                             mojom::FieldActionType::kReplaceAtMemoryTrigger,
-                             form_id, field_id, *result,
-                             FillingProduct::kAtMemory,
-                             /*field_type_used=*/std::nullopt);
+  owner_->FillOrPreviewField(
+      mojom::ActionPersistence::kFill,
+      mojom::FieldActionType::kReplaceSelectionForAtMemory, form_id, field_id,
+      *result, FillingProduct::kAtMemory,
+      /*field_type_used=*/std::nullopt);
 }
 
 IsAsync AtMemoryManager::FillSensitiveAutofillAiOrPersonalContextData(
@@ -1250,7 +1251,7 @@ void AtMemoryManager::OnAutofillAiFetched(
 
   owner_->FillOrPreviewField(
       mojom::ActionPersistence::kFill,
-      mojom::FieldActionType::kReplaceAtMemoryTrigger, form_id, field_id,
+      mojom::FieldActionType::kReplaceSelectionForAtMemory, form_id, field_id,
       std::move(*attribute_fill_value), FillingProduct::kAtMemory,
       /*field_type_used=*/std::nullopt);
 }
