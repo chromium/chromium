@@ -586,7 +586,6 @@ Non poderás gardar máis ata que elimines uns cantos. Se pechas a sesión agora
 <translation id="7288567540154601580">Pestanas e extensións</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium recomenda que a quites}other{Chromium recomenda que as quites}}</translation>
 <translation id="7296334833518879294">Para compartir o audio do sistema, abre a configuración do sistema e activa o permiso System Audio Recording Only (Só gravación de audio do sistema) para Chromium. Terás que reiniciar Chromium.</translation>
-<translation id="7309928523159922338">A medición dos anuncios permite que os sitios que visites lle soliciten a Chromium información que lles axude a medir o rendemento dos seus anuncios. Ademais, restrinxe o seguimento en varios sitios, dado que se transfire a menor cantidade posible de información entre eles.</translation>
 <translation id="731795002583552498">Actualizando Chromium</translation>
 <translation id="7318036098707714271">O teu ficheiro de preferencias está danado ou non é válido.
 

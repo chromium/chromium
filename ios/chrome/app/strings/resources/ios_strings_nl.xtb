@@ -725,6 +725,7 @@
 <translation id="340669334496430859">Laatst gewijzigd</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 okt 2023</translation>
+<translation id="3419787211763835342">Help ons verbeterd automatisch invullen te verbeteren</translation>
 <translation id="3426715535827854458">Optie verbergen voor Werkbalk verbergen</translation>
 <translation id="3435738964857648380">Beveiliging</translation>
 <translation id="3441673211568148613">Houd je browsen privé</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">Telefoon</translation>
 <translation id="4380677808580146413">Selecteren</translation>
 <translation id="4389019817280890563">Tik om de taal te wijzigen.</translation>
+<translation id="4390649422783033958">Ingelogd als <ph name="USER_NAME" />. <ph name="USER_EMAIL" />, Google-lidmaatschap. Accountmenu openen.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{Na 1 dag}other{Na {COUNT} dagen}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 tabblad}other{# tabbladen}}</translation>
 <translation id="4404790787924017676">Krijg meldingen over prijsdalingen voor producten die je volgt</translation>
@@ -1365,6 +1367,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="5559567453458728487">Converteer meeteenheden die op internet zijn gevonden</translation>
 <translation id="5560088892362098740">Vervaldatum</translation>
 <translation id="556042886152191864">Knop</translation>
+<translation id="5563910365456880646">sinds je 'Een foto gebruiken om te zoeken met Google Lens' hebt afgerond</translation>
 <translation id="5565871407246142825">Creditcards</translation>
 <translation id="5567439033041178034">MEER INFORMATIE</translation>
 <translation id="5578795271662203820">Zoeken op <ph name="SEARCH_ENGINE" /> naar afbeelding</translation>
@@ -1815,6 +1818,7 @@ Wissel naar <ph name="OTHER_EMAIL" /> om door te gaan vanaf je computer. Je krij
 <translation id="6930162026494574854">Vertaalinstellingen opnieuw instellen</translation>
 <translation id="6930799952781667037">Tik om over te schakelen naar deze taal.</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
+<translation id="6937083164784433305">{count,plural, =1{Je hebt 1 foto gebruikt om te zoeken}other{Je hebt # foto's gebruikt om te zoeken}}</translation>
 <translation id="693761253105515415">Toegangscode instellen</translation>
 <translation id="6945221475159498467">Selecteren</translation>
 <translation id="6946722113367118030">Denken</translation>
@@ -2020,6 +2024,7 @@ Wissel naar <ph name="OTHER_EMAIL" /> om door te gaan vanaf je computer. Je krij
 <translation id="7662316065255305764">Site-informatie</translation>
 <translation id="7665369617277396874">Account toevoegen</translation>
 <translation id="7666861622396822790">Je kunt dit beheren in <ph name="BEGIN_LINK" />Contentinstellingen<ph name="END_LINK" />.</translation>
+<translation id="7669448795744969014">Ingelogd als <ph name="USER_EMAIL" />, Google-lidmaatschap. Accountmenu openen.</translation>
 <translation id="7669493687462784703">Doorgaan met het downloaden van een configuratieprofiel van <ph name="WEBSITE" />?</translation>
 <translation id="7673346542062368520">Swipe naar links om in de incognitomodus te browsen.</translation>
 <translation id="7679915578945954324">Siteadressen gekopieerd</translation>

@@ -584,7 +584,6 @@ Bookmark baru tidak dapat disimpan di akun hingga Anda menghapus beberapa bookma
 <translation id="7288567540154601580">Tab &amp; ekstensi</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium merekomendasikan agar Anda menghapusnya}other{Chromium merekomendasikan agar Anda menghapusnya}}</translation>
 <translation id="7296334833518879294">Untuk membagikan audio sistem, buka Setelan Sistem dan izinkan 'Hanya Perekaman Audio Sistem' untuk Chromium. Kemudian, Anda harus memulai ulang Chromium.</translation>
-<translation id="7309928523159922338">Pengukuran iklan memungkinkan situs yang Anda buka untuk meminta informasi dari Chromium yang membantu situs mengukur performa iklannya. Pengukuran iklan membatasi pelacakan lintas situs dengan mentransfer sesedikit mungkin informasi antar-situs.</translation>
 <translation id="731795002583552498">Memperbarui Chromium</translation>
 <translation id="7318036098707714271">File preferensi Anda rusak atau tidak valid.
 

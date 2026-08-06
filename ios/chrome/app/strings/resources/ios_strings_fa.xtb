@@ -725,6 +725,7 @@
 <translation id="340669334496430859">تاریخ آخرین تغییر</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">۲۵ اکتبر ۲۰۲۳</translation>
+<translation id="3419787211763835342">کمک به بهبود تکمیل خودکار بهبودیافته</translation>
 <translation id="3426715535827854458">پنهان کردن «پنهان کردن نوارابزار»</translation>
 <translation id="3435738964857648380">امنیت</translation>
 <translation id="3441673211568148613">مرورتان را خصوصی نگه دارید</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">تلفن</translation>
 <translation id="4380677808580146413">انتخاب</translation>
 <translation id="4389019817280890563">برای تغییر زبان، تک‌ضرب بزنید.</translation>
+<translation id="4390649422783033958">‏به‌عنوان <ph name="USER_NAME" /> به سیستم وارد شده‌اید. ‫<ph name="USER_EMAIL" />، عضویت Google. منوِ حساب را باز کنید.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{پس‌از ۱ روز}one{پس‌از {COUNT} روز}other{پس‌از {COUNT} روز}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{‫۱ زبانه}one{‫# زبانه}other{‫# زبانه}}</translation>
 <translation id="4404790787924017676">دریافت اعلان‌های کاهش قیمت برای محصولاتی که پیگیری می‌کنید</translation>
@@ -1365,6 +1367,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="5559567453458728487">تبدیل واحدهای اندازه‌گیری پیداشده در وب</translation>
 <translation id="5560088892362098740">تاریخ انقضا</translation>
 <translation id="556042886152191864">دکمه</translation>
+<translation id="5563910365456880646">‏از زمان تکمیل «استفاده از عکس برای جستجو با لنز Google»</translation>
 <translation id="5565871407246142825">کارت‌های اعتباری</translation>
 <translation id="5567439033041178034">بیشتر بدانید</translation>
 <translation id="5578795271662203820">جستجوی <ph name="SEARCH_ENGINE" /> برای این تصویر</translation>
@@ -1815,6 +1818,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6930162026494574854">‏بازنشانی کردن تنظیمات «ترجمه Google»</translation>
 <translation id="6930799952781667037">برای تغییر به این زبان، تک‌ضرب بزنید.</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />، <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
+<translation id="6937083164784433305">{count,plural, =1{از ۱ عکس برای جستجو استفاده کردید}one{از # عکس برای جستجو استفاده کردید}other{از # عکس برای جستجو استفاده کردید}}</translation>
 <translation id="693761253105515415">تنظیم کردن گذرنویسه</translation>
 <translation id="6945221475159498467">انتخاب</translation>
 <translation id="6946722113367118030">درحال فکر کردن</translation>
@@ -2020,6 +2024,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7662316065255305764">اطلاعات سایت</translation>
 <translation id="7665369617277396874">افزودن حساب</translation>
 <translation id="7666861622396822790">می‌توانید این گزینه را در <ph name="BEGIN_LINK" />تنظیمات محتوا<ph name="END_LINK" /> مدیریت کنید.</translation>
+<translation id="7669448795744969014">‏وارد شده به سیستم با <ph name="USER_EMAIL" />، عضویت Google. منوِ حساب را باز کنید.</translation>
 <translation id="7669493687462784703">بارگیری نمایه پیکربندی از <ph name="WEBSITE" /> ادامه یابد؟</translation>
 <translation id="7673346542062368520">برای مرور در «حالت ناشناس»، می‌توانید تند به‌چپ بکشید.</translation>
 <translation id="7679915578945954324">نشانی‌های سایت کپی شد</translation>

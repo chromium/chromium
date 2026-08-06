@@ -85,6 +85,7 @@
 <translation id="1310482092992808703">將分頁加入群組</translation>
 <translation id="1318262688555255786">分享「<ph name="PAGE_TITLE" />」的網頁連結，來源：<ph name="PAGE_URL" /></translation>
 <translation id="1327257854815634930">導覽記錄開咗</translation>
+<translation id="1330043879670259913">為確保你在 Chrome 上的工作成果安全，你的機構將可在你登入 Chrome 時查看或管理特定資料。瞭解詳情</translation>
 <translation id="1331212799747679585">無法更新 Chrome。其他選項</translation>
 <translation id="1332501820983677155">Google Chrome 功能快速鍵</translation>
 <translation id="1333491156693005331">最近檢查過</translation>
@@ -1166,6 +1167,7 @@
 <translation id="5869522115854928033">已儲存的密碼</translation>
 <translation id="5870416898561279542">重複或閒置 <ph name="DAYS_INACTIVE" /> 天的分頁和群組會移到這裡，<ph name="AUTODELETE_SECTION" />。你可隨時在「<ph name="DECLUTTER_SETTINGS_TITLE" />」中變更此設定。</translation>
 <translation id="5885378508678660271">通知 <ph name="SEPARATOR" /> 此網站不安全，因此 Chrome 已移除有關權限</translation>
+<translation id="5896944002928653773">閂咗企業訊號免責聲明頁底面板</translation>
 <translation id="5899667542927581604">冇密鑰嘅工作表已經閂咗</translation>
 <translation id="5907542076239273525">書籤已儲存至「<ph name="FOLDER_NAME" />」</translation>
 <translation id="5911301511366365629"><ph name="TAB_TITLE" />，揀咗播緊音訊嘅無痕式分頁</translation>
@@ -1256,6 +1258,7 @@
 <translation id="6251449557817521191">在此查看 Chrome 記錄</translation>
 <translation id="6254139308321626268">你正在檢視 PDF 檔案</translation>
 <translation id="6255809143828972562">透過 Chrome 工具，你可安全瀏覽網絡，一切盡在掌握</translation>
+<translation id="6259107733340311168">企業訊號免責聲明頁底面板宜家顯示喺成個畫面</translation>
 <translation id="6260260490042862943">網站控制項</translation>
 <translation id="6264376385120300461">仍要下載</translation>
 <translation id="6264485186158353794">返回安全連線</translation>

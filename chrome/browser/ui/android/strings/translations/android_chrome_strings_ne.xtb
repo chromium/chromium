@@ -85,6 +85,7 @@
 <translation id="1310482092992808703">ट्याबहरू समूहबद्ध गर्नुहोस्</translation>
 <translation id="1318262688555255786">वेबपेज <ph name="PAGE_TITLE" /> को लिंक सेयर गर्नुहोस्। स्रोत: <ph name="PAGE_URL" /></translation>
 <translation id="1327257854815634930">नेभिगेसनको इतिहास खोलियो</translation>
+<translation id="1330043879670259913">Chrome मा तपाईंले गरेको काम सुरक्षित राख्न तपाईंले Chrome मा साइन इन गरेका बेला तपाईंको सङ्गठनले निश्चित जानकारी हेर्न वा व्यवस्थापन गर्न सक्ने छ। थप जान्नुहोस्</translation>
 <translation id="1331212799747679585">Chrome अद्यावधिक गर्न सकिँदैन। थप विकल्पहरू</translation>
 <translation id="1332501820983677155">Google Chrome को विशेषताका सर्टकटहरू</translation>
 <translation id="1333491156693005331">हालसालै जाँचिएको</translation>
@@ -1165,6 +1166,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="5869522115854928033">बचत गरिएका पासवर्डहरू</translation>
 <translation id="5870416898561279542"><ph name="DAYS_INACTIVE" /> दिनदेखि प्रयोग नगरिएका वा दोहोरिएका ट्याब तथा समूहहरू सारेर यहाँ लगिन्छन्<ph name="AUTODELETE_SECTION" />। तपाईं जुनसुकै बेला <ph name="DECLUTTER_SETTINGS_TITLE" /> मा गई यसलाई परिवर्तन गर्न सक्नुहुन्छ।</translation>
 <translation id="5885378508678660271">नोटिफिकेसन <ph name="SEPARATOR" /> यो साइट खतरनाक भएकाले Chrome ले यसलाई दिइएका यी अनुमति रद्द गरेको छ</translation>
+<translation id="5896944002928653773">इन्टरप्राइज सिग्नलसम्बन्धी डिस्क्लेमर भएको पुछारको पाना बन्द गरिएको छ</translation>
 <translation id="5899667542927581604">कुनै पनि पासकी सिट बन्द गरिएको छैन</translation>
 <translation id="5907542076239273525">यो बुकमार्क <ph name="FOLDER_NAME" /> मा सेभ गरिएको छ</translation>
 <translation id="5911301511366365629"><ph name="TAB_TITLE" />, चयन गरिएको अडिबल इन्कोग्निटो ट्याब</translation>
@@ -1255,6 +1257,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6251449557817521191">यहाँ गई Chrome को ब्राउजिङ हिस्ट्री हेर्नुहोस्</translation>
 <translation id="6254139308321626268">तपाईं PDF फाइल हेर्दै हेर्नुहुन्छ</translation>
 <translation id="6255809143828972562">तपाईं Chrome का टुलहरू प्रयोग गरी सुरक्षित तरिकाले ब्राउज गर्न र आफ्नो जानकारी आफ्नै नियन्त्रणमा राख्न सक्नुहुन्छ</translation>
+<translation id="6259107733340311168">इन्टरप्राइज सिग्नलसम्बन्धी डिस्क्लेमर भएको पुछारको पाना पूरै स्क्रिनमा खोलिएको छ</translation>
 <translation id="6260260490042862943">साइटसम्बन्धी कन्ट्रोलहरू</translation>
 <translation id="6264376385120300461">जे भए पनि डाउनलोड गर्नुहोस्</translation>
 <translation id="6264485186158353794">सुरक्षामा फर्कनुहोस्</translation>

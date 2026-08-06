@@ -725,6 +725,7 @@
 <translation id="340669334496430859">Сүүлд өөрчилсөн</translation>
 <translation id="3409785640040772790">Газрын зураг</translation>
 <translation id="3416023309465857378">2023 оны 10-р сарын 25</translation>
+<translation id="3419787211763835342">Сайжруулсан автоматаар бөглөлтийг сайжруулахад туслах</translation>
 <translation id="3426715535827854458">Хэрэгслийн мөрийг нуух</translation>
 <translation id="3435738964857648380">Нууцлал</translation>
 <translation id="3441673211568148613">Үзсэн зүйлээ хувийн байлгаарай</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">Утас</translation>
 <translation id="4380677808580146413">Сонгох</translation>
 <translation id="4389019817280890563">Хэл солихын тулд товшино уу.</translation>
+<translation id="4390649422783033958"><ph name="USER_NAME" />-р нэвтэрсэн. <ph name="USER_EMAIL" />, Google-н гишүүнчлэл. Бүртгэлийн цэсийг нээнэ үү.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{1 хоногийн дараа}other{{COUNT} хоногийн дараа}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 таб}other{# таб}}</translation>
 <translation id="4404790787924017676">Мөшгөдөг бүтээгдэхүүнийхээ үнэ буурсан талаарх дохиог аваарай</translation>
@@ -1365,6 +1367,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="5559567453458728487">Вебээс олдсон хэмжилтийн нэгжүүдийг хөрвүүлнэ</translation>
 <translation id="5560088892362098740">Дуусах огноо</translation>
 <translation id="556042886152191864">Товч</translation>
+<translation id="5563910365456880646">"Google Lens-р хайхад зураг ашиглах"-ыг дуусгаснаас хойш</translation>
 <translation id="5565871407246142825">Зээлийн картууд</translation>
 <translation id="5567439033041178034">ИЛҮҮ ИХИЙГ МЭДЭЖ АВАХ</translation>
 <translation id="5578795271662203820">Энэ зургийг <ph name="SEARCH_ENGINE" />-ээс хайна уу</translation>
@@ -1815,6 +1818,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6930162026494574854">Орчуулгын тохиргоог шинэчлэх</translation>
 <translation id="6930799952781667037">Энэ хэл рүү өөрчлөхийн тулд товшино уу.</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
+<translation id="6937083164784433305">{count,plural, =1{Та хайхад 1 зураг ашигласан}other{Та хайхад # зураг ашигласан}}</translation>
 <translation id="693761253105515415">Нууц код тохируулна уу</translation>
 <translation id="6945221475159498467">Сонгох</translation>
 <translation id="6946722113367118030">Бодож буй</translation>
@@ -2020,6 +2024,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7662316065255305764">Сайтын мэдээлэл</translation>
 <translation id="7665369617277396874">Бүртгэл нэмэх</translation>
 <translation id="7666861622396822790">Та үүнийг <ph name="BEGIN_LINK" />Контентын тохиргоонд<ph name="END_LINK" /> удирдах боломжтой.</translation>
+<translation id="7669448795744969014"><ph name="USER_EMAIL" />-р Google-н гишүүнчлэлийн эрхтэйгээр нэвтэрсэн. Бүртгэлийн цэсийг нээнэ үү.</translation>
 <translation id="7669493687462784703"><ph name="WEBSITE" />-н тохируулгын профайлыг үргэлжлүүлэн татах уу?</translation>
 <translation id="7673346542062368520">Та Нууцлалтай горимд үзэхийн тулд зүүн тийш шудрах боломжтой.</translation>
 <translation id="7679915578945954324">Сайтын хаягийг хуулсан</translation>

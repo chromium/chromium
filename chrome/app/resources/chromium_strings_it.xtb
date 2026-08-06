@@ -583,7 +583,6 @@ Non è possibile salvare nuovi preferiti nel tuo account finché non ne elimini 
 <translation id="7288567540154601580">Schede ed estensioni</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium ti consiglia di rimuoverla}other{Chromium ti consiglia di rimuoverle}}</translation>
 <translation id="7296334833518879294">Per condividere l'audio di sistema, apri Impostazioni di sistema e consenti "Registrazione solo audio di sistema" per Chromium. Dovrai quindi riavviare Chromium.</translation>
-<translation id="7309928523159922338">Ad measurement consente ai siti che visiti di chiedere a Chromium informazioni che li aiutino a valutare il rendimento dei loro annunci. Ad measurement limita il tracciamento tra siti trasferendo il minor numero possibile di informazioni tra i siti.</translation>
 <translation id="731795002583552498">Aggiornamento di Chromium in corso</translation>
 <translation id="7318036098707714271">Il file delle preferenze è danneggiato o non valido.
 

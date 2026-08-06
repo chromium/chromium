@@ -725,6 +725,7 @@
 <translation id="340669334496430859">Τελευταία τροποποίηση</translation>
 <translation id="3409785640040772790">Χάρτες</translation>
 <translation id="3416023309465857378">25 Οκτωβρίου 2023</translation>
+<translation id="3419787211763835342">Συμβάλετε στη βελτίωση της βελτιωμένης αυτόματης συμπλήρωσης</translation>
 <translation id="3426715535827854458">Απόκρυψη της επιλογής "Απόκρυψη της γραμμής εργαλείων"</translation>
 <translation id="3435738964857648380">Ασφάλεια</translation>
 <translation id="3441673211568148613">Διατηρήστε την περιήγησή σας ιδιωτική</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">Τηλέφωνο</translation>
 <translation id="4380677808580146413">Επιλογή</translation>
 <translation id="4389019817280890563">Πατήστε για αλλαγή γλώσσας.</translation>
+<translation id="4390649422783033958">Συνδεθήκατε ως <ph name="USER_NAME" />. <ph name="USER_EMAIL" />, με συνδρομή Google. Άνοιγμα μενού λογαριασμού.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{Μετά από 1 ημέρα}other{Μετά από {COUNT} ημέρες}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 καρτέλα}other{# καρτέλες}}</translation>
 <translation id="4404790787924017676">Λάβετε ειδοποιήσεις για πτώσεις τιμών για προϊόντα που παρακολουθείτε</translation>
@@ -1365,6 +1367,7 @@
 <translation id="5559567453458728487">Μετατροπή μονάδων μέτρησης που υπάρχουν στον ιστό</translation>
 <translation id="5560088892362098740">Ημερομηνία λήξης</translation>
 <translation id="556042886152191864">Κουμπί</translation>
+<translation id="5563910365456880646">από την ολοκλήρωση της ενέργειας "Χρήση φωτογραφίας για αναζήτηση με το Google Lens"</translation>
 <translation id="5565871407246142825">Πιστωτικές κάρτες</translation>
 <translation id="5567439033041178034">ΜΑΘΕΤΕ ΠΕΡΙΣΣΟΤΕΡΑ</translation>
 <translation id="5578795271662203820">Αναζήτηση <ph name="SEARCH_ENGINE" /> για την εικόνα</translation>
@@ -1816,6 +1819,7 @@
 <translation id="6930162026494574854">Επαν. ρυθμ. μετάφ.</translation>
 <translation id="6930799952781667037">Πατήστε για αλλαγή σε αυτήν τη γλώσσα.</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
+<translation id="6937083164784433305">{count,plural, =1{Χρησιμοποιήσατε 1 φωτογραφία για αναζήτηση}other{Χρησιμοποιήσατε # φωτογραφίες για αναζήτηση}}</translation>
 <translation id="693761253105515415">Ορισμός κωδικού πρόσβασης</translation>
 <translation id="6945221475159498467">Επιλογή</translation>
 <translation id="6946722113367118030">Σκέψη</translation>
@@ -2021,6 +2025,7 @@
 <translation id="7662316065255305764">Πληροφορίες ιστοτόπου</translation>
 <translation id="7665369617277396874">Προσθήκη λογαριασμού</translation>
 <translation id="7666861622396822790">Μπορείτε να διαχειριστείτε αυτή την επιλογή στις <ph name="BEGIN_LINK" />Ρυθμίσεις περιεχομένου<ph name="END_LINK" />.</translation>
+<translation id="7669448795744969014">Συνδεθήκατε ως <ph name="USER_EMAIL" />: με συνδρομή Google. Άνοιγμα μενού λογαριασμού.</translation>
 <translation id="7669493687462784703">Συνέχιση λήψης ενός προφίλ διαμόρφωσης από <ph name="WEBSITE" />;</translation>
 <translation id="7673346542062368520">Μπορείτε να σύρετε προς τα αριστερά για ανώνυμη περιήγηση.</translation>
 <translation id="7679915578945954324">Οι διευθύνσεις ιστοτόπων αντιγράφηκαν</translation>

@@ -85,6 +85,7 @@
 <translation id="1310482092992808703">ჩანართების დაჯგუფება</translation>
 <translation id="1318262688555255786">გააზიარეთ ვებგვერდის „<ph name="PAGE_TITLE" />“ ბმული. წყარო: <ph name="PAGE_URL" /></translation>
 <translation id="1327257854815634930">ნავიგაციის ისტორია გახსნილია</translation>
+<translation id="1330043879670259913">Chrome-ში თქვენი სამუშაოს დასაცავად, თქვენს ორგანიზაციას შეეძლება გარკვეული ინფორმაციის ნახვა ან მართვა, როდესაც Chrome-ში შესული ხართ. შეიტყვეთ მეტი</translation>
 <translation id="1331212799747679585">Chrome-ის განახლება ვერ მოხერხდა. დამატებითი ვარიანტები</translation>
 <translation id="1332501820983677155">Google Chrome-ის ფუნქციების მალსახმობები</translation>
 <translation id="1333491156693005331">ახლახან შემოწმდა</translation>
@@ -1166,6 +1167,7 @@
 <translation id="5869522115854928033">შენახული პაროლები</translation>
 <translation id="5870416898561279542">დუბლირებული ან <ph name="DAYS_INACTIVE" /> დღის განმავლობაში გამოუყენებელი ჯგუფები გადმოტანილია აქ <ph name="AUTODELETE_SECTION" />. ამის შესაცვლელად ნებისმიერ დროს გახსენით <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5885378508678660271">შეტყობინებები <ph name="SEPARATOR" /> Chrome-მა ამოშალა ეს ნებართვები, რადგან ეს საიტი სახიფათოა</translation>
+<translation id="5896944002928653773">ორგანიზაციის სიგნალების პასუხისმგებლობის უარყოფის ქვედა ფურცელი დახურულია</translation>
 <translation id="5899667542927581604">წვდომის გასაღებების არარსებობის ფურცელი დახურულია</translation>
 <translation id="5907542076239273525">სანიშნე შენახულია საქაღალდეში „<ph name="FOLDER_NAME" />“.</translation>
 <translation id="5911301511366365629"><ph name="TAB_TITLE" />, არჩეულია ინკოგნიტო ჩანართი კონტენტის მოსასმენად</translation>
@@ -1256,6 +1258,7 @@
 <translation id="6251449557817521191">იხილეთ Chrome-ის ისტორია აქ</translation>
 <translation id="6254139308321626268">თქვენ ათვალიერებთ PDF ფაილს</translation>
 <translation id="6255809143828972562">Chrome-ში არსებული ხელსაწყოები დაგეხმარებათ, უსაფრთხოდ დაათვალიეროთ ვები და შეინარჩუნოთ კონტროლი</translation>
+<translation id="6259107733340311168">ორგანიზაციის სიგნალების პასუხისმგებლობის უარყოფის ქვედა ფურცელი გაიხსნა სრულ სიმაღლეზე</translation>
 <translation id="6260260490042862943">საიტის მართვის საშუალებები</translation>
 <translation id="6264376385120300461">მაინც ჩამოტვირთვა</translation>
 <translation id="6264485186158353794">უსაფრთხოებაზე დაბრუნება</translation>

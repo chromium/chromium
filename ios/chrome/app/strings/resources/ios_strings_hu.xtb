@@ -725,6 +725,7 @@
 <translation id="340669334496430859">Utolsó módosítás</translation>
 <translation id="3409785640040772790">Térkép</translation>
 <translation id="3416023309465857378">2023. október 25.</translation>
+<translation id="3419787211763835342">Segítsen a továbbfejlesztett automatikus kitöltés javításában</translation>
 <translation id="3426715535827854458">Eszköztár elrejtése</translation>
 <translation id="3435738964857648380">Biztonság</translation>
 <translation id="3441673211568148613">A böngészés privát jellegének megőrzése</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380677808580146413">Kiválasztás</translation>
 <translation id="4389019817280890563">Koppintson a nyelv módosításához.</translation>
+<translation id="4390649422783033958">A következőként van bejelentkezve: <ph name="USER_NAME" />. <ph name="USER_EMAIL" />, Google-tagság Fiókhoz tartozó menü megnyitása.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{1 nap után}other{{COUNT} nap után}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 lap}other{# lap}}</translation>
 <translation id="4404790787924017676">Árcsökkenési értesítéseket kaphat az Ön által nyomon követett termékekkel kapcsolatban</translation>
@@ -1365,6 +1367,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="5559567453458728487">Az interneten talált mértékegységek konvertálása</translation>
 <translation id="5560088892362098740">Lejárati dátum</translation>
 <translation id="556042886152191864">Gomb</translation>
+<translation id="5563910365456880646">a „Kép használata a Google Lens segítségével való kereséshez” elvégzése óta</translation>
 <translation id="5565871407246142825">Hitelkártyák</translation>
 <translation id="5567439033041178034">TOVÁBBI INFORMÁCIÓ</translation>
 <translation id="5578795271662203820">A kép keresése a(z) <ph name="SEARCH_ENGINE" /> keresővel</translation>
@@ -1815,6 +1818,7 @@ Ha a számítógépén szeretné folytatni, váltson a következőre: <ph name="
 <translation id="6930162026494574854">Fordítási beállítások visszaállítása</translation>
 <translation id="6930799952781667037">Koppintson a nyelv módosításához.</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
+<translation id="6937083164784433305">{count,plural, =1{1 fotót használt a kereséshez}other{# fotót használt a kereséshez}}</translation>
 <translation id="693761253105515415">Biztonsági kód beállítása</translation>
 <translation id="6945221475159498467">Kiválasztás</translation>
 <translation id="6946722113367118030">Töprengés</translation>
@@ -2020,6 +2024,7 @@ Ha a számítógépén szeretné folytatni, váltson a következőre: <ph name="
 <translation id="7662316065255305764">Webhelyadatok</translation>
 <translation id="7665369617277396874">Fiók hozzáadása</translation>
 <translation id="7666861622396822790">Ezt a <ph name="BEGIN_LINK" />Tartalombeállítások<ph name="END_LINK" /> között kezelheti.</translation>
+<translation id="7669448795744969014">Bejelentkezve mint <ph name="USER_EMAIL" />, Google-tagság. Fiókhoz tartozó menü megnyitása.</translation>
 <translation id="7669493687462784703">Folytatja a konfigurációs profil letöltését a(z) <ph name="WEBSITE" /> webhelyről?</translation>
 <translation id="7673346542062368520">Balra csúsztatva inkognitó módban böngészhet.</translation>
 <translation id="7679915578945954324">Webhelycímek másolva</translation>

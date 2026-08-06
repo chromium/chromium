@@ -725,6 +725,7 @@
 <translation id="340669334496430859">上次修改时间</translation>
 <translation id="3409785640040772790">地图</translation>
 <translation id="3416023309465857378">2023 年 10 月 25 日</translation>
+<translation id="3419787211763835342">帮助改进增强型自动填充功能</translation>
 <translation id="3426715535827854458">隐藏“隐藏工具栏”</translation>
 <translation id="3435738964857648380">安全</translation>
 <translation id="3441673211568148613">让浏览记录不留痕迹</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">电话</translation>
 <translation id="4380677808580146413">选择</translation>
 <translation id="4389019817280890563">点按此行即可更改语言。</translation>
+<translation id="4390649422783033958">登录身份为：<ph name="USER_NAME" />。<ph name="USER_EMAIL" />，Google 会员。打开账号菜单。</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{1 天后}other{{COUNT} 天后}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 个标签页}other{# 个标签页}}</translation>
 <translation id="4404790787924017676">获取所跟踪商品的降价提醒</translation>
@@ -1365,6 +1367,7 @@
 <translation id="5559567453458728487">转换在网上找到的计量单位</translation>
 <translation id="5560088892362098740">到期日期</translation>
 <translation id="556042886152191864">按钮</translation>
+<translation id="5563910365456880646">自完成“使用照片通过 Google 智能镜头进行搜索”以来</translation>
 <translation id="5565871407246142825">信用卡</translation>
 <translation id="5567439033041178034">了解详情</translation>
 <translation id="5578795271662203820">在<ph name="SEARCH_ENGINE" />中搜索此图片</translation>
@@ -1815,6 +1818,7 @@
 <translation id="6930162026494574854">重置翻译设置</translation>
 <translation id="6930799952781667037">点按此行即可更改为对应的语言。</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />，<ph name="EMAIL" />。<ph name="MANAGED_STATUS" />。</translation>
+<translation id="6937083164784433305">{count,plural, =1{您使用了 1 张照片进行搜索}other{您使用了 # 张照片进行搜索}}</translation>
 <translation id="693761253105515415">设置密码</translation>
 <translation id="6945221475159498467">选择</translation>
 <translation id="6946722113367118030">做思考状</translation>
@@ -2020,6 +2024,7 @@
 <translation id="7662316065255305764">网站信息</translation>
 <translation id="7665369617277396874">添加账号</translation>
 <translation id="7666861622396822790">您可在<ph name="BEGIN_LINK" />内容设置<ph name="END_LINK" />中进行管理。</translation>
+<translation id="7669448795744969014">登录身份为：<ph name="USER_EMAIL" />，Google 会员。打开账号菜单。</translation>
 <translation id="7669493687462784703">要继续从 <ph name="WEBSITE" /> 下载配置文件吗？</translation>
 <translation id="7673346542062368520">向左滑动即可在无痕模式下浏览内容。</translation>
 <translation id="7679915578945954324">已复制网址</translation>

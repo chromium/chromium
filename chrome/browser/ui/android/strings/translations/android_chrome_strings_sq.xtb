@@ -85,6 +85,7 @@
 <translation id="1310482092992808703">Grupo skedat</translation>
 <translation id="1318262688555255786">Ndaj lidhjen në faqen e uebit <ph name="PAGE_TITLE" />. Burimi: <ph name="PAGE_URL" /></translation>
 <translation id="1327257854815634930">Historiku i navigimit është i hapur</translation>
+<translation id="1330043879670259913">Për të siguruar punën tënde në Chrome, organizata jote do të mund të shikojë ose të menaxhojë informacione të caktuara kur je i identifikuar në Chrome. Mëso më shumë</translation>
 <translation id="1331212799747679585">Chrome nuk mund të përditësohet. Më shumë opsione</translation>
 <translation id="1332501820983677155">Shkurtoret e funksioneve të Google Chrome</translation>
 <translation id="1333491156693005331">Kontrolluar së fundi</translation>
@@ -1166,6 +1167,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="5869522115854928033">Fjalëkalimet e ruajtura</translation>
 <translation id="5870416898561279542">Skedat dhe grupet dublikatë ose ato që nuk janë përdorur për <ph name="DAYS_INACTIVE" /> ditë zhvendosen këtu<ph name="AUTODELETE_SECTION" />. Këtë mund ta ndryshosh në çdo kohë te "<ph name="DECLUTTER_SETTINGS_TITLE" />".</translation>
 <translation id="5885378508678660271">Njoftimet <ph name="SEPARATOR" /> Chrome i hoqi këto leje sepse ky sajt është i rrezikshëm</translation>
+<translation id="5896944002928653773">Fleta e poshtme e mohimit të përgjegjësisë për sinjalet e ndërmarrjes u mbyll</translation>
 <translation id="5899667542927581604">Nuk është mbyllur asnjë fletë e çelësave të kalimit</translation>
 <translation id="5907542076239273525">Faqeshënuesi u ruajt te "<ph name="FOLDER_NAME" />"</translation>
 <translation id="5911301511366365629"><ph name="TAB_TITLE" />, skeda "e fshehtë" e zgjedhur duke luajtur audion</translation>
@@ -1256,6 +1258,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="6251449557817521191">Shiko historikun e Chrome këtu</translation>
 <translation id="6254139308321626268">Po shikon një skedar PDF</translation>
 <translation id="6255809143828972562">Me veglat nga Chrome, mund të shfletosh në mënyrë të sigurt dhe të qëndrosh në kontroll</translation>
+<translation id="6259107733340311168">Fleta e poshtme e mohimit të përgjegjësisë për sinjalet e ndërmarrjes u hap në lartësi të plotë</translation>
 <translation id="6260260490042862943">Kontrollet e sajtit</translation>
 <translation id="6264376385120300461">Shkarkoje gjithsesi</translation>
 <translation id="6264485186158353794">Kthehu aty ku je i sigurt</translation>

@@ -725,6 +725,7 @@
 <translation id="340669334496430859">Poslednja izmena</translation>
 <translation id="3409785640040772790">Mape</translation>
 <translation id="3416023309465857378">25. oktobar 2023.</translation>
+<translation id="3419787211763835342">Pomozite nam da unapredimo poboljšano automatsko popunjavanje</translation>
 <translation id="3426715535827854458">Sakrij traku s alatkama</translation>
 <translation id="3435738964857648380">Bezbednost</translation>
 <translation id="3441673211568148613">Zaštitite privatnost pregledanja</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380677808580146413">Izaberi</translation>
 <translation id="4389019817280890563">Dodirnite da biste promenili jezik</translation>
+<translation id="4390649422783033958">Prijavljeni ste kao <ph name="USER_NAME" />. <ph name="USER_EMAIL" />, sa Google pretplatom. Otvorite meni naloga.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{Posle 1 dana}one{Posle {COUNT} dana}few{Posle {COUNT} dana}other{Posle {COUNT} dana}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 kartica}one{# kartica}few{# kartice}other{# kartica}}</translation>
 <translation id="4404790787924017676">Dobijajte obaveštenja o sniženjima za proizvode koje pratite</translation>
@@ -1365,6 +1367,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="5559567453458728487">Konvertuj merne jedinice koje se nalaze na vebu</translation>
 <translation id="5560088892362098740">Datum isteka</translation>
 <translation id="556042886152191864">Dugme</translation>
+<translation id="5563910365456880646">od završetka zadatka „Koristite sliku za pretragu pomoću Google objektiva“</translation>
 <translation id="5565871407246142825">Kreditne kartice</translation>
 <translation id="5567439033041178034">SAZNAJTE VIŠE</translation>
 <translation id="5578795271662203820">Potraži ovu sliku na <ph name="SEARCH_ENGINE" />-u</translation>
@@ -1815,6 +1818,7 @@ Da biste nastavili sa računara, pređite na <ph name="OTHER_EMAIL" />. Dobiće
 <translation id="6930162026494574854">Resetuj podešavanja Prevodioca</translation>
 <translation id="6930799952781667037">Dodirnite da biste promenili jezik na ovaj.</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
+<translation id="6937083164784433305">{count,plural, =1{Koristili ste 1 sliku za pretragu}one{Koristili ste # sliku za pretragu}few{Koristili ste # slike za pretragu}other{Koristili ste # slika za pretragu}}</translation>
 <translation id="693761253105515415">Podesite šifru</translation>
 <translation id="6945221475159498467">Izaberi</translation>
 <translation id="6946722113367118030">Razmišlja</translation>
@@ -2020,6 +2024,7 @@ Da biste nastavili sa računara, pređite na <ph name="OTHER_EMAIL" />. Dobiće
 <translation id="7662316065255305764">Informacije o sajtu</translation>
 <translation id="7665369617277396874">Dodajte nalog</translation>
 <translation id="7666861622396822790">Ovim možete da upravljate u <ph name="BEGIN_LINK" />Podešavanjima sadržaja<ph name="END_LINK" />.</translation>
+<translation id="7669448795744969014">Prijavljeni ste kao <ph name="USER_EMAIL" />, sa Google pretplatom. Otvorite meni naloga.</translation>
 <translation id="7669493687462784703">Želite da nastavite sa preuzimanjem profila konfiguracije sa <ph name="WEBSITE" />?</translation>
 <translation id="7673346542062368520">Možete da prevučete ulevo da biste pregledali u režimu bez arhiviranja.</translation>
 <translation id="7679915578945954324">Adrese sajtova su kopirane</translation>

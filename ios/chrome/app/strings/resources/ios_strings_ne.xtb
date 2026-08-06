@@ -725,6 +725,7 @@
 <translation id="340669334496430859">पछिल्लो पटक परिमार्जन गरिएको समय</translation>
 <translation id="3409785640040772790">नक्सा</translation>
 <translation id="3416023309465857378">अक्टोबर २५, २०२३</translation>
+<translation id="3419787211763835342">अटोफिल गर्ने परिष्कृत सुविधाको गुणस्तर सुधार गर्न मद्दत गर्नुहोस्</translation>
 <translation id="3426715535827854458">टुलबार लुकाउनुहोस्</translation>
 <translation id="3435738964857648380">सुरक्षा</translation>
 <translation id="3441673211568148613">आफ्नो ब्राउजिङ गोप्य राख्नुहोस्</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">फोन</translation>
 <translation id="4380677808580146413">चयन गर्नुहोस्</translation>
 <translation id="4389019817280890563">भाषा परिवर्तन गर्न ट्याप गर्नुहोस्।</translation>
+<translation id="4390649422783033958"><ph name="USER_NAME" /> का रूपमा साइन इन गरिएको छ। <ph name="USER_EMAIL" />, Google को सदस्यता। खाताको मेनु खोल्नुहोस्।</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{१ दिनपछि}other{{COUNT} दिनपछि}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{एउटा ट्याब}other{# वटा ट्याब}}</translation>
 <translation id="4404790787924017676">आफूले ट्र्याक गरेका उत्पादनको मूल्य घट्दा अलर्टहरू प्राप्त गर्नुहोस्</translation>
@@ -1365,6 +1367,7 @@
 <translation id="5559567453458728487">यसले वेबपेजहरूमा भेट्टिएका मापनका एकाइहरू रूपान्तरण गर्छ</translation>
 <translation id="5560088892362098740">म्याद सकिने मिति</translation>
 <translation id="556042886152191864">बटन</translation>
+<translation id="5563910365456880646">"Google लेन्स प्रयोग गरी फोटोमार्फत खोज्नुहोस्" पूरा गरेपछि</translation>
 <translation id="5565871407246142825">क्रेडिट कार्डहरू</translation>
 <translation id="5567439033041178034">थप जान्नुहोस्</translation>
 <translation id="5578795271662203820">यस छविको लागि <ph name="SEARCH_ENGINE" /> खोज्नुहोस्</translation>
@@ -1815,6 +1818,7 @@
 <translation id="6930162026494574854">अनुवाद गर्नेसम्बन्धी सेटिङ रिसेट गर्नुहोस्</translation>
 <translation id="6930799952781667037">यसलाई यो भाषामा परिवर्तन गर्न ट्याप गर्नुहोस्।</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />। <ph name="MANAGED_STATUS" />।</translation>
+<translation id="6937083164784433305">{count,plural, =1{तपाईंले खोज्नका निम्ति एउटा फोटो प्रयोग गर्नुभएको छ}other{तपाईंले खोज्नका निम्ति # वटा फोटो प्रयोग गर्नुभएको छ}}</translation>
 <translation id="693761253105515415">कुनै पासकोड सेट गर्नुहोस्</translation>
 <translation id="6945221475159498467">चयन गर्नुहोस्</translation>
 <translation id="6946722113367118030">सोचिरहेको</translation>
@@ -2020,6 +2024,7 @@
 <translation id="7662316065255305764">साइटसम्बन्धी जानकारी</translation>
 <translation id="7665369617277396874">खाता हाल्नुहोस्</translation>
 <translation id="7666861622396822790">तपाईं <ph name="BEGIN_LINK" />सामग्रीसम्बन्धी सेटिङ<ph name="END_LINK" />मा गई यो कुरा व्यवस्थापन गर्न सक्नुहुन्छ।</translation>
+<translation id="7669448795744969014"><ph name="USER_EMAIL" /> का रूपमा साइन इन गरिएको छ, Google को सदस्यता। खाताको मेनु खोल्नुहोस्।</translation>
 <translation id="7669493687462784703"><ph name="WEBSITE" /> बाट कन्फिगुरेसन प्रोफाइल डाउनलोड गरिराख्ने हो?</translation>
 <translation id="7673346542062368520">तपाईं इन्कोग्निटोमा ब्राउज गर्न बायाँतिर स्वाइप गर्न सक्नुहुन्छ।</translation>
 <translation id="7679915578945954324">साइटका ठेगानाहरू कपी गरिए</translation>

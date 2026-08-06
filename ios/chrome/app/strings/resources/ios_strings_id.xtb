@@ -725,6 +725,7 @@
 <translation id="340669334496430859">Terakhir Diubah</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 Oktober 2023</translation>
+<translation id="3419787211763835342">Bantu tingkatkan kualitas isi otomatis yang ditingkatkan</translation>
 <translation id="3426715535827854458">Sembunyikan Sembunyikan Toolbar</translation>
 <translation id="3435738964857648380">Keamanan</translation>
 <translation id="3441673211568148613">Jaga privasi penjelajahan Anda</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">Ponsel</translation>
 <translation id="4380677808580146413">Pilih</translation>
 <translation id="4389019817280890563">Ketuk untuk mengubah bahasa.</translation>
+<translation id="4390649422783033958">Login sebagai <ph name="USER_NAME" />. <ph name="USER_EMAIL" />, langganan Google. Buka menu akun.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{Setelah 1 hari}other{Setelah {COUNT} hari}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 tab}other{# tab}}</translation>
 <translation id="4404790787924017676">Dapatkan notifikasi penurunan harga untuk produk yang Anda pantau</translation>
@@ -1365,6 +1367,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5559567453458728487">Mengonversi unit pengukuran yang ditemukan di web</translation>
 <translation id="5560088892362098740">Tanggal Habis Masa Berlaku</translation>
 <translation id="556042886152191864">Tombol</translation>
+<translation id="5563910365456880646">sejak menyelesaikan "Gunakan foto untuk menelusuri dengan Google Lens"</translation>
 <translation id="5565871407246142825">Kartu kredit</translation>
 <translation id="5567439033041178034">PELAJARI LEBIH LANJUT</translation>
 <translation id="5578795271662203820">Telusuri <ph name="SEARCH_ENGINE" /> untuk gambar ini</translation>
@@ -1815,6 +1818,7 @@ Untuk melanjutkan dari komputer, beralihlah ke <ph name="OTHER_EMAIL" />. Anda a
 <translation id="6930162026494574854">Reset setelan Terjemahan</translation>
 <translation id="6930799952781667037">Ketuk untuk mengubahnya ke bahasa ini.</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
+<translation id="6937083164784433305">{count,plural, =1{Anda menggunakan 1 foto untuk menelusuri}other{Anda menggunakan # foto untuk menelusuri}}</translation>
 <translation id="693761253105515415">Setel kode sandi</translation>
 <translation id="6945221475159498467">Pilih</translation>
 <translation id="6946722113367118030">Berpikir</translation>
@@ -2020,6 +2024,7 @@ Untuk melanjutkan dari komputer, beralihlah ke <ph name="OTHER_EMAIL" />. Anda a
 <translation id="7662316065255305764">Informasi Situs</translation>
 <translation id="7665369617277396874">Tambahkan akun</translation>
 <translation id="7666861622396822790">Anda dapat mengelolanya di <ph name="BEGIN_LINK" />Setelan Konten<ph name="END_LINK" />.</translation>
+<translation id="7669448795744969014">Login sebagai <ph name="USER_EMAIL" />, langganan Google. Buka menu akun.</translation>
 <translation id="7669493687462784703">Lanjutkan mendownload profil konfigurasi dari <ph name="WEBSITE" />?</translation>
 <translation id="7673346542062368520">Anda dapat menggeser ke kiri untuk menjelajah dalam mode Samaran.</translation>
 <translation id="7679915578945954324">Alamat situs disalin</translation>

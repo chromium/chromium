@@ -85,6 +85,7 @@
 <translation id="1310482092992808703">Agrupar pestanas</translation>
 <translation id="1318262688555255786">Compartir a ligazón á páxina web <ph name="PAGE_TITLE" />. Fonte: <ph name="PAGE_URL" /></translation>
 <translation id="1327257854815634930">O historial de navegación está aberto</translation>
+<translation id="1330043879670259913">Para protexer o teu traballo en Chrome, a túa organización poderá ver ou xestionar certa información cando teñas a sesión iniciada na plataforma. Máis información</translation>
 <translation id="1331212799747679585">Chrome non se pode actualizar. Máis opcións</translation>
 <translation id="1332501820983677155">Atallos das funcións de Google Chrome</translation>
 <translation id="1333491156693005331">Comprobado recentemente</translation>
@@ -1166,6 +1167,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="5869522115854928033">Contrasinais gardados</translation>
 <translation id="5870416898561279542">As pestanas e grupos duplicados ou os que non se usen durante <ph name="DAYS_INACTIVE" /> días moveranse aquí<ph name="AUTODELETE_SECTION" />. Podes cambiar esta opción cando queiras en <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5885378508678660271">Notificacións <ph name="SEPARATOR" /> Chrome quitou estes permisos porque este sitio é perigoso</translation>
+<translation id="5896944002928653773">Panel inferior da sección de exención de responsabilidade polas sinais de empresa pechado</translation>
 <translation id="5899667542927581604">Non se pechou ningunha folla de claves de acceso</translation>
 <translation id="5907542076239273525">O marcador gardouse en <ph name="FOLDER_NAME" /></translation>
 <translation id="5911301511366365629"><ph name="TAB_TITLE" />, pestana do modo de incógnito con son seleccionada</translation>
@@ -1256,6 +1258,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6251449557817521191">Consulta o historial de Chrome aquí</translation>
 <translation id="6254139308321626268">Estás vendo un ficheiro PDF</translation>
 <translation id="6255809143828972562">Coas ferramentas de Chrome, podes navegar de maneira segura e manter o control</translation>
+<translation id="6259107733340311168">Panel inferior da sección de exención de responsabilidade pola sinais de empresa aberto a altura completa</translation>
 <translation id="6260260490042862943">Controis do sitio</translation>
 <translation id="6264376385120300461">Descargar de todos os modos</translation>
 <translation id="6264485186158353794">Volver para estar a salvo</translation>

@@ -725,6 +725,7 @@
 <translation id="340669334496430859">অন্তিমবাৰ সংশোধন কৰাৰ সময়</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">২৫ অক্টোবৰ, ২০২৩</translation>
+<translation id="3419787211763835342">অধিক উন্নত অট’ফিল উন্নত কৰাত সহায় কৰক</translation>
 <translation id="3426715535827854458">টুলবাৰ লুকুৱাওক</translation>
 <translation id="3435738964857648380">সুৰক্ষা</translation>
 <translation id="3441673211568148613">আপোনাৰ ব্ৰাউজিং ব্যক্তিগত কৰি ৰাখক</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">ফ'ন</translation>
 <translation id="4380677808580146413">বাছনি কৰক</translation>
 <translation id="4389019817280890563">ভাষা সলনি কৰিবলৈ টিপক।</translation>
+<translation id="4390649422783033958"><ph name="USER_NAME" /> হিচাপে ছাইন ইন কৰা আছে। <ph name="USER_EMAIL" />, Googleৰ মেম্বাৰশ্বিপ। একাউণ্টৰ মেনু খোলক।</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{১ দিনৰ পাছত}one{{COUNT} দিনৰ পাছত}other{{COUNT} দিনৰ পাছত}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{১ টা টেব}one{# টা টেব}other{# টা টেব}}</translation>
 <translation id="4404790787924017676">আপুনি ট্ৰেক কৰা প্ৰ’ডাক্টসমূহৰ মূল্য কমিলে সতৰ্কবাৰ্তা লাভ কৰক</translation>
@@ -1365,6 +1367,7 @@
 <translation id="5559567453458728487">ৱেবত পোৱা জোখ-মাখ একক ৰূপান্তৰ কৰক</translation>
 <translation id="5560088892362098740">ম্যাদ উকলাৰ তাৰিখ</translation>
 <translation id="556042886152191864">বুটাম</translation>
+<translation id="5563910365456880646">"Google Lensৰ জৰিয়তে সন্ধান কৰিবলৈ এখন ফট’ ব্যৱহাৰ কৰক" কাৰ্যটো সম্পূৰ্ণ কৰাৰ পৰা</translation>
 <translation id="5565871407246142825">ক্ৰেডিট কাৰ্ড</translation>
 <translation id="5567439033041178034">অধিক জানক</translation>
 <translation id="5578795271662203820">এই ছবিৰ বাবে <ph name="SEARCH_ENGINE" />ত সন্ধান কৰক</translation>
@@ -1815,6 +1818,7 @@
 <translation id="6930162026494574854">অনুবাদৰ ছেটিং ৰিছেট কৰক</translation>
 <translation id="6930799952781667037">এই ভাষাটোলৈ সলনি কৰিবলৈ টিপক।</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />। <ph name="MANAGED_STATUS" />।</translation>
+<translation id="6937083164784433305">{count,plural, =1{আপুনি সন্ধান কৰিবলৈ ১ খন ফট’ ব্যৱহাৰ কৰিছে}one{আপুনি সন্ধান কৰিবলৈ # খন ফট’ ব্যৱহাৰ কৰিছে}other{আপুনি সন্ধান কৰিবলৈ # খন ফট’ ব্যৱহাৰ কৰিছে}}</translation>
 <translation id="693761253105515415">এটা পাছক’ড ছেট কৰক</translation>
 <translation id="6945221475159498467">বাছনি কৰক</translation>
 <translation id="6946722113367118030">ভাবি থকা</translation>
@@ -2020,6 +2024,7 @@
 <translation id="7662316065255305764">ছাইটৰ তথ্য</translation>
 <translation id="7665369617277396874">একাউণ্ট যোগ কৰক</translation>
 <translation id="7666861622396822790">আপুনি এইটো <ph name="BEGIN_LINK" />সমলৰ ছেটিঙ<ph name="END_LINK" />ত পৰিচালনা কৰিব পাৰে।</translation>
+<translation id="7669448795744969014"><ph name="USER_EMAIL" /> হিচাপে ছাইন ইন কৰা আছে, Googleৰ মেম্বাৰশ্বিপ। একাউণ্টৰ মেনু খোলক।</translation>
 <translation id="7669493687462784703"><ph name="WEBSITE" />ৰ পৰা কনফিগাৰেশ্বন প্ৰ’ফাইল ডাউনল’ড কৰাটো অব্যাহত ৰাখিবনে?</translation>
 <translation id="7673346542062368520">আপুনি ইনক’গনিট’ত ব্ৰাউজ কৰিবলৈ বাওঁফালে ছোৱাইপ কৰিব পাৰে।</translation>
 <translation id="7679915578945954324">ছাইটৰ ঠিকনা প্ৰতিলিপি কৰা হৈছে</translation>

@@ -85,6 +85,7 @@
 <translation id="1310482092992808703">Združi zavihke</translation>
 <translation id="1318262688555255786">Deljenje povezave do spletne strani <ph name="PAGE_TITLE" />. Vir: <ph name="PAGE_URL" /></translation>
 <translation id="1327257854815634930">Zgodovina krmarjenja je odprta</translation>
+<translation id="1330043879670259913">Zaradi zaščite vašega dela v Chromu si bo organizacija lahko ogledala nekatere podatke ali jih upravljala, ko boste prijavljeni v Chrome. Več o tem</translation>
 <translation id="1331212799747679585">Posodobitev Chroma ni mogoča. Več možnosti.</translation>
 <translation id="1332501820983677155">Bližnjice za funkcije Google Chroma</translation>
 <translation id="1333491156693005331">Nedavno preverjeno</translation>
@@ -1166,6 +1167,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5869522115854928033">Shranjena gesla</translation>
 <translation id="5870416898561279542">Sem so premaknjeni podvojeni zavihki in skupine ali elementi, ki jih niste uporabljali toliko več dni (<ph name="DAYS_INACTIVE" />): <ph name="AUTODELETE_SECTION" />. To lahko kadar koli spremenite tu: <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5885378508678660271">Obvestila <ph name="SEPARATOR" /> Chrome je odstranil ta dovoljenja, ker je to spletno mesto nevarno</translation>
+<translation id="5896944002928653773">Razdelek na dnu zaslona z izjavo o signalih za podjetja je zaprt</translation>
 <translation id="5899667542927581604">List brez ključev za dostop je bil zaprt</translation>
 <translation id="5907542076239273525">Zaznamek je shranjen v mapi <ph name="FOLDER_NAME" /></translation>
 <translation id="5911301511366365629"><ph name="TAB_TITLE" />, izbrani anonimni zavihek z zvokom</translation>
@@ -1256,6 +1258,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6251449557817521191">Tukaj si lahko ogledate zgodovino uporabe Chroma</translation>
 <translation id="6254139308321626268">Ogledujete si datoteko PDF</translation>
 <translation id="6255809143828972562">S Chromovimi orodji lahko varno brskate in imate nadzor</translation>
+<translation id="6259107733340311168">Razdelek na dnu zaslona z izjavo o signalih za podjetja je odprt pri polni višini</translation>
 <translation id="6260260490042862943">Kontrolniki spletnega mesta</translation>
 <translation id="6264376385120300461">Vseeno prenesi</translation>
 <translation id="6264485186158353794">Nazaj na varno</translation>

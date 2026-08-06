@@ -85,6 +85,7 @@
 <translation id="1310482092992808703">Згрупаваць укладкі</translation>
 <translation id="1318262688555255786">Абагуліць спасылку на вэб-старонку "<ph name="PAGE_TITLE" />". Крыніца: <ph name="PAGE_URL" />.</translation>
 <translation id="1327257854815634930">Гісторыя навігацыі адкрыта</translation>
+<translation id="1330043879670259913">Каб зрабіць вашу працу ў Chrome бяспечнай, арганізацыя зможа праглядаць пэўную інфармацыю і кіраваць ёй, калі вы ўвайшлі ў Chrome. Даведацца больш</translation>
 <translation id="1331212799747679585">Немагчыма абнавіць Chrome. Дадатковыя параметры</translation>
 <translation id="1332501820983677155">Спалучэнні клавіш для функцый Google Chrome</translation>
 <translation id="1333491156693005331">Нядаўна праверана</translation>
@@ -1166,6 +1167,7 @@
 <translation id="5869522115854928033">Захаваныя паролі</translation>
 <translation id="5870416898561279542">Сюды перамяшчаюцца копіі ўкладак і груп, а таксама ўкладкі і групы, якія не выкарыстоўваліся на працягу <ph name="DAYS_INACTIVE" /> сут<ph name="AUTODELETE_SECTION" />. Каб змяніць гэты параметр, перайдзіце ў <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5885378508678660271">Апавяшчэнні <ph name="SEPARATOR" /> Браўзер Chrome адклікаў гэтыя дазволы, бо гэты сайт небяспечны</translation>
+<translation id="5896944002928653773">Ніжні аркуш "Адмова ад адказнасці за сігналы арганізацыі" закрыты</translation>
 <translation id="5899667542927581604">Аркуш з інфармацыяй пра адсутнасць ключоў доступу закрыты</translation>
 <translation id="5907542076239273525">Закладка захавана ў папку "<ph name="FOLDER_NAME" />"</translation>
 <translation id="5911301511366365629"><ph name="TAB_TITLE" />, выбраная ўкладка ў рэжыме інкогніта з уключаным гукам</translation>
@@ -1256,6 +1258,7 @@
 <translation id="6251449557817521191">Тут – ваша гісторыя Chrome</translation>
 <translation id="6254139308321626268">Вы праглядаеце файл PDF</translation>
 <translation id="6255809143828972562">Інструменты Chrome абараняюць вашы даныя пры рабоце ў інтэрнэце</translation>
+<translation id="6259107733340311168">Ніжні аркуш "Адмова ад адказнасці за сігналы арганізацыі" адкрыты на ўсю вышыню</translation>
 <translation id="6260260490042862943">Налады сайтаў</translation>
 <translation id="6264376385120300461">Усё роўна спампаваць</translation>
 <translation id="6264485186158353794">Назад да бяспечнага карыстання</translation>

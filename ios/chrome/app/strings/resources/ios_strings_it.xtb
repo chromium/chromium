@@ -725,6 +725,7 @@
 <translation id="340669334496430859">Ultima modifica</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 ott 2023</translation>
+<translation id="3419787211763835342">Contribuisci a migliorare la compilazione automatica avanzata</translation>
 <translation id="3426715535827854458">Nascondi Nascondi barra degli strumenti</translation>
 <translation id="3435738964857648380">Sicurezza</translation>
 <translation id="3441673211568148613">Mantieni privata la navigazione</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">Telefono</translation>
 <translation id="4380677808580146413">Seleziona</translation>
 <translation id="4389019817280890563">Tocca per modificare la lingua.</translation>
+<translation id="4390649422783033958">Accesso eseguito come <ph name="USER_NAME" />. <ph name="USER_EMAIL" />, abbonamento Google Apri il menu dell'account.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{Dopo 1 giorno}other{Dopo {COUNT} giorni}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 scheda}other{# schede}}</translation>
 <translation id="4404790787924017676">Ricevi avvisi relativi ai cali di prezzo per i prodotti che monitori</translation>
@@ -1365,6 +1367,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5559567453458728487">Converti le unità di misura trovate sul web</translation>
 <translation id="5560088892362098740">Data di scadenza</translation>
 <translation id="556042886152191864">Pulsante</translation>
+<translation id="5563910365456880646">da quando hai completato "Usa una foto per la ricerca con Google Lens"</translation>
 <translation id="5565871407246142825">Carte di credito</translation>
 <translation id="5567439033041178034">ULTERIORI INFORMAZIONI</translation>
 <translation id="5578795271662203820">Cerca questa immagine su <ph name="SEARCH_ENGINE" /></translation>
@@ -1815,6 +1818,7 @@ Per continuare dal computer, passa a <ph name="OTHER_EMAIL" />. Potrai usare le 
 <translation id="6930162026494574854">Reimposta impostazioni traduzione</translation>
 <translation id="6930799952781667037">Tocca per passare a questa lingua.</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
+<translation id="6937083164784433305">{count,plural, =1{Hai utilizzato 1 foto per la ricerca}other{Hai utilizzato # foto per la ricerca}}</translation>
 <translation id="693761253105515415">Imposta un passcode</translation>
 <translation id="6945221475159498467">Seleziona</translation>
 <translation id="6946722113367118030">Faccina che pensa</translation>
@@ -2020,6 +2024,7 @@ Per continuare dal computer, passa a <ph name="OTHER_EMAIL" />. Potrai usare le 
 <translation id="7662316065255305764">Informazioni sito</translation>
 <translation id="7665369617277396874">Aggiungi account</translation>
 <translation id="7666861622396822790">Puoi gestire questa preferenza nelle <ph name="BEGIN_LINK" />Impostazioni dei contenuti<ph name="END_LINK" />.</translation>
+<translation id="7669448795744969014">Hai fatto l'accesso come <ph name="USER_EMAIL" />, abbonamento Google. Apri il menu dell'account.</translation>
 <translation id="7669493687462784703">Vuoi continuare a scaricare un profilo di configurazione da <ph name="WEBSITE" />?</translation>
 <translation id="7673346542062368520">Puoi scorrere verso sinistra per navigare in incognito.</translation>
 <translation id="7679915578945954324">Indirizzi dei siti copiati</translation>

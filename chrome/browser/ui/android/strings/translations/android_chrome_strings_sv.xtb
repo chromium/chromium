@@ -85,6 +85,7 @@
 <translation id="1310482092992808703">Gruppera flikar</translation>
 <translation id="1318262688555255786">Dela länk till webbsidan <ph name="PAGE_TITLE" />. Källa: <ph name="PAGE_URL" /></translation>
 <translation id="1327257854815634930">Navigeringshistoriken har öppnats</translation>
+<translation id="1330043879670259913">För att skydda ditt arbete i Chrome kan organisationen visa eller hantera viss information när du är inloggad i Chrome. Läs mer</translation>
 <translation id="1331212799747679585">Det går inte att uppdatera Chrome. Fler alternativ</translation>
 <translation id="1332501820983677155">Kortkommandon för funktioner i Google Chrome</translation>
 <translation id="1333491156693005331">Kontrollerades nyligen</translation>
@@ -1167,6 +1168,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5869522115854928033">Sparade lösenord</translation>
 <translation id="5870416898561279542">Dubbla eller oanvända flikar som inte har använts på <ph name="DAYS_INACTIVE" /> dagar flyttas hit<ph name="AUTODELETE_SECTION" />. Du kan när som helst ändra detta i <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5885378508678660271">Aviseringar <ph name="SEPARATOR" /> Chrome har tagit bort dessa behörigheter eftersom den här webbplatsen är farlig</translation>
+<translation id="5896944002928653773">Arket för ansvarsfriskrivning för företagssignaler på nedre delen av skärmen har stängts</translation>
 <translation id="5899667542927581604">Inget nyckelark har stängts</translation>
 <translation id="5907542076239273525">Bokmärket har sparats i <ph name="FOLDER_NAME" /></translation>
 <translation id="5911301511366365629"><ph name="TAB_TITLE" />, vald inkognitoflik med ljud</translation>
@@ -1257,6 +1259,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6251449557817521191">Visa Chrome-historiken här</translation>
 <translation id="6254139308321626268">Du ser en PDF-fil</translation>
 <translation id="6255809143828972562">Med verktyg från Chrome kan du surfa säkert och behålla kontrollen</translation>
+<translation id="6259107733340311168">Arket för ansvarsfriskrivning för företagssignaler på nedre delen av skärmen har öppnats över hela skärmen</translation>
 <translation id="6260260490042862943">Webbplatskontroller</translation>
 <translation id="6264376385120300461">Ladda ned ändå</translation>
 <translation id="6264485186158353794">Tillbaka till säker webbplats</translation>

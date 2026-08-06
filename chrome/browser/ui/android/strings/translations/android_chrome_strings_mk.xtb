@@ -85,6 +85,7 @@
 <translation id="1310482092992808703">Групирај картички</translation>
 <translation id="1318262688555255786">Споделете го линкот до веб-страницата <ph name="PAGE_TITLE" />. Извор: <ph name="PAGE_URL" /></translation>
 <translation id="1327257854815634930">Отворена е историјата на навигација</translation>
+<translation id="1330043879670259913">За заштита на вашата работа на Chrome, вашата организација ќе може да прегледува или да управува со одредени податоци кога сте најавени на Chrome. Дознајте повеќе</translation>
 <translation id="1331212799747679585">Chrome не може да се ажурира. Повеќе опции</translation>
 <translation id="1332501820983677155">Кратенки за функциите на Google Chrome</translation>
 <translation id="1333491156693005331">Проверено неодамна</translation>
@@ -1166,6 +1167,7 @@
 <translation id="5869522115854928033">Зачувани лозинки</translation>
 <translation id="5870416898561279542">Дупликат картичките и групите или оние што не се користеле <ph name="DAYS_INACTIVE" /> дена се преместуваат овде<ph name="AUTODELETE_SECTION" />. Ова може да го промените кога сакате во <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5885378508678660271">Известувања <ph name="SEPARATOR" /> Chrome ги отстрани дозволиве бидејќи сајтов е опасен</translation>
+<translation id="5896944002928653773">Долниот лист со оградување за сигналите на претпријатието е затворен</translation>
 <translation id="5899667542927581604">Нема лист со криптографски клучеви што е затворен</translation>
 <translation id="5907542076239273525">Обележувачот е зачуван во „<ph name="FOLDER_NAME" />“</translation>
 <translation id="5911301511366365629"><ph name="TAB_TITLE" />, избрана картичка „Инкогнито“ со пуштен звук</translation>
@@ -1256,6 +1258,7 @@
 <translation id="6251449557817521191">Прегледајте ја вашата историја на Chrome тука</translation>
 <translation id="6254139308321626268">Прегледувате PDF-датотека</translation>
 <translation id="6255809143828972562">Со алатките од Chrome, може да прелистувате безбедно и да ја контролирате ситуацијата</translation>
+<translation id="6259107733340311168">Долниот лист со оградување за сигналите на претпријатието е отворен на целосна висина</translation>
 <translation id="6260260490042862943">Контроли за сајтот</translation>
 <translation id="6264376385120300461">Сепак преземи</translation>
 <translation id="6264485186158353794">Назад во безбедност</translation>

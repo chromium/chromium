@@ -85,6 +85,7 @@
 <translation id="1310482092992808703">Өтмөктөрдү топтоо</translation>
 <translation id="1318262688555255786"><ph name="PAGE_TITLE" /> веб-баракчасынын шилтемесин бөлүшүңүз. Булагы: <ph name="PAGE_URL" /></translation>
 <translation id="1327257854815634930">Чабыттоо таржымалы ачылды</translation>
+<translation id="1330043879670259913">Chrome'догу жумушуңузду коргоо үчүн уюмуңуз Chrome'го кирип турганыңызда айрым маалыматты көрүп же тескей алат. Кеңири маалымат</translation>
 <translation id="1331212799747679585">Chrome жаңырбай жатат. Кошумча параметрлер</translation>
 <translation id="1332501820983677155">Google Chrome функциясынын кыска жолдору</translation>
 <translation id="1333491156693005331">Жакында текшерилди</translation>
@@ -1166,6 +1167,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5869522115854928033">Сакталган сырсөздөр</translation>
 <translation id="5870416898561279542">Окшош өтмөктөр жана топтор же <ph name="DAYS_INACTIVE" /> күндөн бери колдонулбагандар бул жерге жылдырылат<ph name="AUTODELETE_SECTION" />. Бул параметрди өзгөрткүңүз келсе, бул жерге өтүңүз:<ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5885378508678660271">Билдирмелер <ph name="SEPARATOR" /> Бул сайт кооптуу болгондуктан, Chrome бул уруксаттарды өчүрдү</translation>
+<translation id="5896944002928653773">Ишкана сигналдарынын эскертүүсү камтылган ылдыйкы экран жабылды</translation>
 <translation id="5899667542927581604">Бир да киргизүүчү ачкычтардын бети жабылган жок</translation>
 <translation id="5907542076239273525">Кыстарма <ph name="FOLDER_NAME" /> папкасына сакталды</translation>
 <translation id="5911301511366365629">Тандалган <ph name="TAB_TITLE" /> өтмөгүндө үн иштетилген жана ал жашыруун өтмөк</translation>
@@ -1256,6 +1258,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6251449557817521191">Chrome'до көрүлгөн вебсайттарды бул жерден көрүңүз</translation>
 <translation id="6254139308321626268">PDF файлын көрүп жатасыз</translation>
 <translation id="6255809143828972562">Chrome'дун куралдары менен коопсуз серептеп, баарын көзөмөлдөй аласыз</translation>
+<translation id="6259107733340311168">Ишкана сигналдарынын эскертүүсү камтылган ылдыйкы экран толук экранда ачылды</translation>
 <translation id="6260260490042862943">Сайтты башкаруу элементтери</translation>
 <translation id="6264376385120300461">Баары бир жүктөп алуу</translation>
 <translation id="6264485186158353794">Коопсуздукка кайтуу</translation>

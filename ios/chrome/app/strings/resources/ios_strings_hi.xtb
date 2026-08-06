@@ -725,6 +725,7 @@
 <translation id="340669334496430859">आइटम में पिछली बार कब बदलाव किया गया</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 अक्टूबर, 2023</translation>
+<translation id="3419787211763835342">बेहतर ऑटोफ़िल की सुविधा को सुधारने में मदद करें</translation>
 <translation id="3426715535827854458">'टूलबार छिपाएं' को छिपाएं</translation>
 <translation id="3435738964857648380">सुरक्षा</translation>
 <translation id="3441673211568148613">अपनी ब्राउज़िंग को निजी रखें</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">फ़ोन</translation>
 <translation id="4380677808580146413">चुनें</translation>
 <translation id="4389019817280890563">भाषा बदलने के लिए टैप करें.</translation>
+<translation id="4390649422783033958"><ph name="USER_NAME" /> के तौर पर साइन इन किया गया. <ph name="USER_EMAIL" /> ने Google की सेवा के लिए पैसे चुकाकर सदस्यता ली है. खाता मेन्यू खोलें.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{1 दिन बाद}one{{COUNT} दिन बाद}other{{COUNT} दिनों बाद}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 टैब}one{# टैब}other{# टैब}}</translation>
 <translation id="4404790787924017676">ट्रैक किए जा रहे प्रॉडक्ट की कीमत में कमी आने पर सूचनाएं पाएं</translation>
@@ -1365,6 +1367,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="5559567453458728487">वेब पर मिले मेज़रमेंट की इकाइयों को बदलना</translation>
 <translation id="5560088892362098740">समयसीमा समाप्ति तारीख</translation>
 <translation id="556042886152191864">बटन</translation>
+<translation id="5563910365456880646">"Google Lens की मदद से खोजने के लिए किसी फ़ोटो का इस्तेमाल करें" को पूरा करने के बाद से</translation>
 <translation id="5565871407246142825">क्रेडिट कार्ड</translation>
 <translation id="5567439033041178034">और जानें</translation>
 <translation id="5578795271662203820">इस इमेज के लिए <ph name="SEARCH_ENGINE" /> पर खोजें</translation>
@@ -1815,6 +1818,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="6930162026494574854">अनुवाद करने की सेटिंग रीसेट करें</translation>
 <translation id="6930799952781667037">इस भाषा को बदलने के लिए टैप करें.</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
+<translation id="6937083164784433305">{count,plural, =1{आपने खोजने के लिए 1 फ़ोटो का इस्तेमाल किया}one{आपने खोजने के लिए # फ़ोटो का इस्तेमाल किया}other{आपने खोजने के लिए # फ़ोटो का इस्तेमाल किया}}</translation>
 <translation id="693761253105515415">पासकोड (पासवर्ड) सेट करें</translation>
 <translation id="6945221475159498467">चुनें</translation>
 <translation id="6946722113367118030">सोचते हुए</translation>
@@ -2020,6 +2024,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="7662316065255305764">साइट की जानकारी</translation>
 <translation id="7665369617277396874">खाता जोड़ें</translation>
 <translation id="7666861622396822790"><ph name="BEGIN_LINK" />कॉन्टेंट सेटिंग<ph name="END_LINK" /> में जाकर, इसे मैनेज किया जा सकता है.</translation>
+<translation id="7669448795744969014">आपने Google की सेवा के लिए पैसे चुकाकर ली गई सदस्यता वाले <ph name="USER_EMAIL" /> खाते के तौर पर साइन इन किया है. खाता मेन्यू खोलें.</translation>
 <translation id="7669493687462784703">क्या आपको <ph name="WEBSITE" /> से कॉन्फ़िगरेशन प्रोफ़ाइल को डाउनलोड करना है?</translation>
 <translation id="7673346542062368520">गुप्त मोड में ब्राउज़ करने के लिए, बाईं ओर स्वाइप किया जा सकता है.</translation>
 <translation id="7679915578945954324">साइट के पते कॉपी किए गए</translation>

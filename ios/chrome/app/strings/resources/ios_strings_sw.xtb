@@ -725,6 +725,7 @@
 <translation id="340669334496430859">Ilibadilishwa Mara ya Mwisho</translation>
 <translation id="3409785640040772790">Ramani</translation>
 <translation id="3416023309465857378">Tarehe 25 Oktoba, 2023</translation>
+<translation id="3419787211763835342">Saidia kuboresha kipengele cha kujaza kiotomatiki kulikoboreshwa</translation>
 <translation id="3426715535827854458">Ficha chaguo la Kuficha Upau wa Vidhibiti</translation>
 <translation id="3435738964857648380">Usalama</translation>
 <translation id="3441673211568148613">Weka hali yako ya kuvinjari iwe ya faragha</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">Simu</translation>
 <translation id="4380677808580146413">Chagua</translation>
 <translation id="4389019817280890563">Gusa ili ubadilishe lugha.</translation>
+<translation id="4390649422783033958">Umeingia katika akaunti ukitumia <ph name="USER_NAME" />. <ph name="USER_EMAIL" />, uanachama wa Google. Fungua menyu ya akaunti.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{Baada ya siku 1}other{Baada ya siku {COUNT}}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{Kichupo 1}other{Vichupo #}}</translation>
 <translation id="4404790787924017676">Pokea arifa za punguzo la bei za bidhaa unazofuatilia</translation>
@@ -1365,6 +1367,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="5559567453458728487">Geuza vipimo vinavyopatikana kwenye wavuti</translation>
 <translation id="5560088892362098740">Tarehe ya Mwisho wa Matumizi</translation>
 <translation id="556042886152191864">Kitufe</translation>
+<translation id="5563910365456880646">tangu ulipokamilisha "Tumia picha kutafuta ukitumia Lenzi ya Google"</translation>
 <translation id="5565871407246142825">Kadi za malipo</translation>
 <translation id="5567439033041178034">PATA MAELEZO ZAIDI</translation>
 <translation id="5578795271662203820">Tafuta picha hii kwenye <ph name="SEARCH_ENGINE" /></translation>
@@ -1815,6 +1818,7 @@ Ili uendelee kwenye kompyuta yako, badilisha utumie <ph name="OTHER_EMAIL" />. U
 <translation id="6930162026494574854">Weka upya mipangilio ya Tafsiri</translation>
 <translation id="6930799952781667037">Gusa ili utumie lugha hii.</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
+<translation id="6937083164784433305">{count,plural, =1{Umetumia picha 1 kutafuta}other{Umetumia picha # kutafuta}}</translation>
 <translation id="693761253105515415">Weka namba ya siri</translation>
 <translation id="6945221475159498467">Chagua</translation>
 <translation id="6946722113367118030">Kutafakari</translation>
@@ -2020,6 +2024,7 @@ Ili uendelee kwenye kompyuta yako, badilisha utumie <ph name="OTHER_EMAIL" />. U
 <translation id="7662316065255305764">Maelezo ya Tovuti</translation>
 <translation id="7665369617277396874">Ongeza akaunti</translation>
 <translation id="7666861622396822790">Unaweza kudhibiti hili kwenye <ph name="BEGIN_LINK" />Mipangilio ya Maudhui<ph name="END_LINK" />.</translation>
+<translation id="7669448795744969014">Umeingia ukitumia akaunti ya <ph name="USER_EMAIL" />, uanachama kwenye Google. Fungua menyu ya akaunti.</translation>
 <translation id="7669493687462784703">Ungependa kuendelea kupakua wasifu wa kuweka mipangilio kwenye <ph name="WEBSITE" />?</translation>
 <translation id="7673346542062368520">Unaweza kutelezesha kidole kushoto ili uvinjari katika Hali ya faraghani.</translation>
 <translation id="7679915578945954324">Anwani za tovuti zimenakiliwa</translation>

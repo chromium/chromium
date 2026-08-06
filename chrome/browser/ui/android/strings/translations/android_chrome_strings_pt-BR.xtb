@@ -1433,7 +1433,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6858893072923394368">Adicionar página…</translation>
 <translation id="6864459304226931083">Baixar imagem</translation>
 <translation id="686490460830618322">Página de filtro de apps</translation>
-<translation id="6865313869410766144">Preenchimento automático de dados de formulário</translation>
+<translation id="6865313869410766144">Dados de preenchimento automático de formulários</translation>
 <translation id="6867400383614725881">Nova guia anônima</translation>
 <translation id="686899695320434745">Endereços não são criptografados com sua senha longa. Isso permite que você os use em outros serviços do Google.</translation>
 <translation id="6870625088374152862">Conta conectada: <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -1532,6 +1532,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7182520625618447753">Mude a posição da barra de endereço para a parte de cima ou de baixo da tela e personalize sua experiência de navegação</translation>
 <translation id="7183517696921903380">A página de filtro de apps está aberta.</translation>
 <translation id="7186568385131859684">Controle como o histórico de navegação é usado com seus outros dados nos Serviços do Google</translation>
+<translation id="7189516830800112767">{NUM_TABS,plural, =1{Pressione ^W outra vez para fechar a guia fixada}one{Pressione ^W outra vez para fechar a guia fixada}other{Pressione ^W outra vez para fechar as guias fixadas}}</translation>
 <translation id="7190921792980745354">Bloquear <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191430249889272776">Guia aberta no plano de fundo.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Mude essa senha imediatamente}one{Mude essa senha imediatamente}other{Mude essas senhas imediatamente}}</translation>

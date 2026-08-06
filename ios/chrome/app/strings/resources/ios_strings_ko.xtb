@@ -725,6 +725,7 @@
 <translation id="340669334496430859">마지막으로 수정한 날짜</translation>
 <translation id="3409785640040772790">지도</translation>
 <translation id="3416023309465857378">2023년 10월 25일</translation>
+<translation id="3419787211763835342">향상된 자동 완성 개선에 참여하기</translation>
 <translation id="3426715535827854458">툴바 숨기기</translation>
 <translation id="3435738964857648380">보안</translation>
 <translation id="3441673211568148613">인터넷 사용 기록을 비공개로 유지하세요.</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">전화</translation>
 <translation id="4380677808580146413">선택</translation>
 <translation id="4389019817280890563">언어를 변경하려면 탭하세요.</translation>
+<translation id="4390649422783033958"><ph name="USER_NAME" /> 계정으로 로그인되었습니다. Google 멤버십입니다(<ph name="USER_EMAIL" />). 계정 메뉴를 엽니다.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{1일 후}other{{COUNT}일 후}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{탭 1개}other{탭 #개}}</translation>
 <translation id="4404790787924017676">추적하는 제품의 가격 인하 알림 받기</translation>
@@ -1365,6 +1367,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="5559567453458728487">웹에서 찾은 측정 단위 변환</translation>
 <translation id="5560088892362098740">만료일</translation>
 <translation id="556042886152191864">버튼</translation>
+<translation id="5563910365456880646">'사진을 사용하여 Google 렌즈로 검색'을 완료한 이후</translation>
 <translation id="5565871407246142825">신용카드</translation>
 <translation id="5567439033041178034">자세히 알아보기</translation>
 <translation id="5578795271662203820"><ph name="SEARCH_ENGINE" />에서 이 이미지 검색</translation>
@@ -1815,6 +1818,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6930162026494574854">번역 설정 재설정</translation>
 <translation id="6930799952781667037">이 언어로 변경하려면 탭하세요.</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
+<translation id="6937083164784433305">{count,plural, =1{사진 1개를 사용하여 검색했습니다}other{사진 #개를 사용하여 검색했습니다}}</translation>
 <translation id="693761253105515415">비밀번호 설정</translation>
 <translation id="6945221475159498467">선택</translation>
 <translation id="6946722113367118030">생각 중</translation>
@@ -2020,6 +2024,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="7662316065255305764">사이트 정보</translation>
 <translation id="7665369617277396874">계정 추가</translation>
 <translation id="7666861622396822790"><ph name="BEGIN_LINK" />콘텐츠 설정<ph name="END_LINK" />에서 관리할 수 있습니다.</translation>
+<translation id="7669448795744969014">Google 멤버십(<ph name="USER_EMAIL" />)으로 로그인되었습니다. 계정 메뉴를 엽니다.</translation>
 <translation id="7669493687462784703"><ph name="WEBSITE" />에서 구성 프로필을 계속 다운로드하시겠습니까?</translation>
 <translation id="7673346542062368520">왼쪽으로 스와이프하여 시크릿 모드에서 탐색할 수 있습니다.</translation>
 <translation id="7679915578945954324">사이트 주소 복사됨</translation>

@@ -725,6 +725,7 @@
 <translation id="340669334496430859">છેલ્લે આ સમયે ફેરફાર કર્યો</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 ઑક્ટોબર, 2023</translation>
+<translation id="3419787211763835342">ઑટોમૅટિક રીતે ભરવાની બહેતર સુવિધાને વધુ સારી બનાવવામાં મદદ કરો</translation>
 <translation id="3426715535827854458">'ટૂલબાર છુપાવો' છુપાવો</translation>
 <translation id="3435738964857648380">સુરક્ષા</translation>
 <translation id="3441673211568148613">તમારા બ્રાઉઝિંગને ખાનગી રાખો</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">ફોન</translation>
 <translation id="4380677808580146413">પસંદ કરો</translation>
 <translation id="4389019817280890563">ભાષા બદલવા માટે ટૅપ કરો.</translation>
+<translation id="4390649422783033958"><ph name="USER_NAME" /> તરીકે સાઇન ઇન કર્યું. Googleની મેમ્બરશિપ ધરાવતા <ph name="USER_EMAIL" />. એકાઉન્ટ મેનૂ ખોલો.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{1 દિવસ પછી}one{{COUNT} દિવસ પછી}other{{COUNT} દિવસ પછી}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 ટૅબ}one{# ટૅબ}other{# ટૅબ}}</translation>
 <translation id="4404790787924017676">તમે ટ્રૅક કરો છો તે પ્રોડક્ટની કિંમતમાં ઘટાડા વિશેના અલર્ટ મેળવો</translation>
@@ -1365,6 +1367,7 @@
 <translation id="5559567453458728487">વેબ પર મળેલા માપના એકમોનું રૂપાંતરણ કરો</translation>
 <translation id="5560088892362098740">સમાપ્તિ તારીખ</translation>
 <translation id="556042886152191864">બટન</translation>
+<translation id="5563910365456880646">"Google Lens વડે શોધવા માટે ફોટોનો ઉપયોગ કરો" સુવિધા પૂર્ણ કર્યા પછી</translation>
 <translation id="5565871407246142825">ક્રેડિટ કાર્ડ્સ</translation>
 <translation id="5567439033041178034">વધુ જાણો</translation>
 <translation id="5578795271662203820">આ છબી માટે <ph name="SEARCH_ENGINE" /> માં શોધો</translation>
@@ -1815,6 +1818,7 @@
 <translation id="6930162026494574854">અનુવાદ સેટિંગ રીસેટ કરો</translation>
 <translation id="6930799952781667037">આ ભાષા પર બદલવા માટે ટૅપ કરો.</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
+<translation id="6937083164784433305">{count,plural, =1{શોધવા માટે તમે 1 ફોટોનો ઉપયોગ કર્યો}one{શોધવા માટે તમે # ફોટોનો ઉપયોગ કર્યો}other{શોધવા માટે તમે # ફોટાનો ઉપયોગ કર્યો}}</translation>
 <translation id="693761253105515415">કોઈ પાસકોડ સેટ કરો</translation>
 <translation id="6945221475159498467">પસંદ કરો</translation>
 <translation id="6946722113367118030">વિચાર કરતો ચહેરો</translation>
@@ -2020,6 +2024,7 @@
 <translation id="7662316065255305764">સાઇટની માહિતી</translation>
 <translation id="7665369617277396874">એકાઉન્ટ ઉમેરો</translation>
 <translation id="7666861622396822790">તમે આને <ph name="BEGIN_LINK" />કન્ટેન્ટ સેટિંગ<ph name="END_LINK" />માં મેનેજ કરી શકો છો.</translation>
+<translation id="7669448795744969014">Googleની મેમ્બરશિપ ધરાવતા <ph name="USER_EMAIL" /> તરીકે સાઇન ઇન કર્યું. એકાઉન્ટ મેનૂ ખોલો.</translation>
 <translation id="7669493687462784703"><ph name="WEBSITE" />માંથી કન્ફિગ્યુરેશન પ્રોફાઇલ ડાઉનલોડ કરવાનું ચાલુ રાખીએ?</translation>
 <translation id="7673346542062368520">છૂપા મોડમાં બ્રાઉઝ કરવા માટે તમે ડાબી તરફ સ્વાઇપ કરી શકો છો.</translation>
 <translation id="7679915578945954324">સાઇટના ઍડ્રેસ કૉપિ કર્યા</translation>

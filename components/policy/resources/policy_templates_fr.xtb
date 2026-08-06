@@ -1458,6 +1458,24 @@ Remarque : Bloquer des URL internes chrome://* et chrome-untrusted://* peut ent
 <translation id="1962273523772270623">Autoriser la collecte des journaux d'événements WebRTC à partir des services Google</translation>
 <translation id="1962864958436828230">Définir la taille minimale liée à la restriction du presse-papiers pour prévenir les fuites de données</translation>
 <translation id="1963986268950915756">Autoriser les utilisateurs à installer des applications Web depuis le navigateur</translation>
+<translation id="1964128875283181035">Liste de formats d'URL. Les requêtes réseau initiées à partir de sites desservis par des origines qui figurent sur la liste ne sont pas soumises aux vérifications de l‘<ph name="LOCAL_NETWORK_ACCESS" />.
+
+Pour les origines autres que celles représentées par les formats spécifiés ici, la configuration personnelle de l'utilisateur s'applique.
+
+Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns/.
+
+Pour connaître les restrictions concernant l‘<ph name="LOCAL_NETWORK_ACCESS" />, consultez https://wicg.github.io/local-network-access/.
+
+Plusieurs règles listent des origines qui ont un impact sur les requêtes adressées à des points de terminaison du réseau local et à l'appareil local. Ces règles s'appliquent selon l'ordre de priorité suivant si une origine figure sur la liste de formats d'URL de plusieurs d'entre elles :
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LoopbackNetworkBlockedForUrls
+  - LoopbackNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls
+  - DeviceLocalNetworkAccessBlockedForUrls
+  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="1964191545419036999">Galerie (disponible depuis la version 117)</translation>
 <translation id="1964634611280150550">Mode navigation privée désactivé</translation>
 <translation id="1964985353230379667">Indique la configuration suggérée de <ph name="KRB5_CONFIG" /> pour les nouvelles demandes créées manuellement.
@@ -2048,6 +2066,7 @@ Cette règle nécessite une licence <ph name="CHROME_ENTERPRISE_PREMIUM_NAME" />
 <translation id="230713790688681130">Activer la disposition de clavier Hindi InScript</translation>
 <translation id="2307496301287881990">Transmettre des états liés aux affichages et aux graphiques</translation>
 <translation id="2308084581803907194">Complexité élevée</translation>
+<translation id="2308557460534055666">Règle de configuration du connecteur Chrome Enterprise <ph name="ON_DATA_COPIED_ENTERPRISE_CONNECTOR" /></translation>
 <translation id="2308899582897965249">Désactiver l'impression silencieuse</translation>
 <translation id="2309284543927494965">Bloquer les mises à jour</translation>
 <translation id="2309341709647905294">Ne pas signaler les informations sur les périphériques branchés à l'appareil</translation>
@@ -3022,6 +3041,23 @@ Les niveaux de complexité sont basés sur les métriques de qualité des mots d
 
 Consultez l'article du centre d'aide pour obtenir des explications détaillées sur ce qu'implique chaque niveau pour les codes et les mots de passe.</translation>
 <translation id="2926813071464307947">Désactiver le bac à sable du conteneur d'appli de moteur de rendu</translation>
+<translation id="2928782459146756987">Liste des paramètres des services des connecteurs <ph name="PRODUCT_NAME" /> Enterprise à appliquer au connecteur Enterprise <ph name="ON_DATA_COPIED_ENTERPRISE_CONNECTOR" />, qui se déclenche lorsque des données sont copiées dans le presse-papiers depuis <ph name="PRODUCT_NAME" />.
+
+Les champs "<ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />" et "<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" />" permettent de déterminer si le connecteur doit envoyer des données en vue d'une analyse lorsque celles-ci sont copiées à partir d'une page spécifique, ainsi que les tags à inclure dans la demande d'analyse de ces données. Un tag correspondant à un format "enable" sera inclus dans la demande d'analyse si l'URL de la page suit un format associé à ce tag, à condition qu'aucun format "disable" associé à ce même tag ne corresponde à l'URL de la page. L'analyse a lieu si au moins un tag doit être inclus dans la demande.
+
+Le champ "<ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" />" indique à quel fournisseur de services d'analyse correspondent les paramètres.
+
+Si la valeur du champ "<ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" />" est 1, <ph name="PRODUCT_NAME" /> attend de recevoir une réponse du service d'analyse avant d'autoriser le presse-papiers de l'OS à accéder aux données. Pour toute autre valeur entière, <ph name="PRODUCT_NAME" /> autorise le presse-papiers de l'OS à accéder immédiatement aux données.
+
+Si la valeur du champ "<ph name="ENTERPRISE_CONNECTOR_DEFAULT_ACTION_FIELD" />" est "block", <ph name="PRODUCT_NAME" /> n'autorise pas le presse-papiers de l'OS à accéder aux données si une erreur survient pendant la communication avec le service d'analyse. Pour toute autre valeur, <ph name="PRODUCT_NAME" /> autorise le presse-papiers de l'OS à accéder aux données.
+
+Le champ "<ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" />" indique la taille minimale (en octets) que les données copiées depuis <ph name="PRODUCT_NAME" /> doivent atteindre ou dépasser pour être analysées. Si ce champ n'est pas renseigné, la valeur par défaut est de 100 octets.
+
+Le champ "<ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" />" permet d'indiquer les tags pour lesquels le connecteur doit demander à l'utilisateur d'expliquer pourquoi une analyse entraînant l'affichage d'un avertissement est ignorée. Si ce champ n'est pas renseigné, nous partons du principe qu'aucune justification n'est requise.
+
+Le champ "<ph name="ENTERPRISE_CONNECTOR_VERIFICATION_FIELD" />" permet aux administrateurs de configurer des exigences de validation spécifiques à la plate-forme.
+
+Cette règle nécessite un réglage supplémentaire pour être appliquée. Pour en savoir plus, consultez la page https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting.</translation>
 <translation id="2930792103747180259">Désactivée : la récupération en arrière-plan à partir des service workers est autorisée sans restriction.</translation>
 <translation id="2931888116345994552">Active la mise à jour de tous les composants de <ph name="PRODUCT_NAME" /> si la règle n'est pas configurée ou qu'elle est activée.
 
@@ -4169,6 +4205,7 @@ Si le résultat de la vérification n'est pas concluant pour une connexion, l'er
           </translation>
 <translation id="3677660004554019617">Ne pas autoriser l'arrière-plan de visioconférence par IA générative</translation>
 <translation id="3678069907945250643">Autoriser l'accès à Google Photos depuis l'appli de personnalisation</translation>
+<translation id="3682200407044593844">Remplacer les mappages d'espace d'adressage IP sur l'appareil</translation>
 <translation id="3685979383016152590">Cette règle permet de désigner la règle d'accès qui s'applique à la configuration groupée des imprimantes, en déterminant les imprimantes soumises à la règle <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> qui sont accessibles aux utilisateurs.
 
       * <ph name="PRINTERS_BLOCKLIST" /> (valeur  0) utilise <ph name="PRINTERS_BULK_BLOCKLIST" /> pour limiter l'accès aux imprimantes spécifiées
@@ -4571,6 +4608,23 @@ Sur les plates-formes de bureau, le téléchargement du modèle peut également 
       Si cette règle est activée, l'utilisateur est invité à sélectionner un certificat client chaque fois que la règle de sélection automatique établit une correspondance avec plusieurs certificats.
       Si cette règle est désactivée ou n'est pas configurée, l'utilisateur ne peut être invité que si la règle de sélection automatique n'établit de correspondance avec aucun certificat.</translation>
 <translation id="3947897854999940598">Spécifier le modèle d'URI du résolveur DNS-over-HTTPS souhaité avec les informations d'identification</translation>
+<translation id="394949637082417941">Vous pouvez utiliser cette option pour traiter certaines plages d'adresses internes comme "publiques" sur l'ensemble de l'appareil, afin qu'elles ne soient pas soumises aux vérifications de l‘<ph name="LOCAL_NETWORK_ACCESS" />. À l'inverse, cette option peut être utilisée pour traiter certaines plages d'adresses publiques susceptibles d'être utilisées en interne comme "locales", afin qu'elles soient protégées par des vérifications de l‘<ph name="LOCAL_NETWORK_ACCESS" />.
+
+Les remplacements d'espace d'adressage IP prennent deux formes :
+
+[cidr]=[public|local|loopback]
+
+où [cidr] est une plage d'adresses IP au format CIDR (voir la section 3.1 sur https://tools.ietf.org/html/rfc4632 pour IPv4 et la section 2.3 sur https://tools.ietf.org/html/rfc4291 pour IPv6). Les adresses IPv6 doivent être spécifiées au format URL-safe (entre crochets). Les remplacements CIDR s'appliquent à tous les ports.
+
+ou
+
+[adresse IP]:[port]=[public|local|bouclage]
+
+Pour en savoir plus sur l‘<ph name="LOCAL_NETWORK_ACCESS" />, consultez https://wicg.github.io/local-network-access/ et https://developer.chrome.com/blog/local-network-access.
+
+Les remplacements de la règle LocalNetworkAccessIpAddressSpaceOverrides prévalent sur les remplacements définis par cette règle.
+
+Les remplacements du commutateur de ligne de commande --ip-address-space-overrides prévalent sur les remplacements définis par les règles.</translation>
 <translation id="3949642828552641632">Autoriser le flux <ph name="CLOUD_UPLOAD_NAME" /> pour <ph name="GOOGLE_DRIVE_NAME" /> et <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="3950110092991281616">Activer l'authentification ambiante seulement pour les sessions standards.</translation>
 <translation id="3950239119790560549">Mettre à jour les restrictions de temps</translation>
@@ -5011,6 +5065,24 @@ Les domaines dont le format est incorrect seront ignorés.</translation>
 <translation id="4238777612788632629">Relancer rapidement si obsolète</translation>
 <translation id="4239720644496144453">Le cache n'est pas utilisé pour les applications Android. Si plusieurs utilisateurs installent la même application Android, celle-ci sera à nouveau téléchargée pour chacun d'eux.</translation>
 <translation id="4239949495354048254">Autoriser l'importation de fichiers dans Gemini dans Chrome.</translation>
+<translation id="424049794524032498">Liste de formats d'URL. Les requêtes réseau initiées à partir de sites Web desservis par des origines qui figurent sur la liste ne sont pas autorisées à émettre de requêtes d’<ph name="LOCAL_NETWORK_ACCESS" /> dans toutes les sessions sur l'appareil.
+
+Pour les origines autres que celles représentées par les formats spécifiés ici, la configuration de la session ou du profil s'applique.
+
+Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns/.
+
+Pour connaître les restrictions concernant l‘<ph name="LOCAL_NETWORK_ACCESS" />, consultez https://wicg.github.io/local-network-access/.
+
+Plusieurs règles listent des origines qui ont un impact sur les requêtes adressées à des points de terminaison du réseau local et à l'appareil local. Ces règles s'appliquent selon l'ordre de priorité suivant si une origine figure sur la liste de formats d'URL de plusieurs d'entre elles :
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LoopbackNetworkBlockedForUrls
+  - LoopbackNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls
+  - DeviceLocalNetworkAccessBlockedForUrls
+  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="4242583077375244471">Si cette règle est activée, <ph name="PRODUCT_NAME" /> vérifie les certificats des serveurs à l'aide de l'outil de vérification intégré et utilise le Chrome Root Store comme source de confiance publique.
 
 Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> utilise l'outil de vérification des certificats du système et les certificats racines du système.
@@ -6969,6 +7041,23 @@ Plusieurs règles listent des origines qui ont un impact sur les requêtes adres
 
       La valeur de cette règle doit être indiquée en jours.</translation>
 <translation id="5457065417344056871">Activer le mode Invité dans le navigateur</translation>
+<translation id="5457999916455787365">Vous pouvez utiliser cette option pour traiter certaines plages d'adresses internes comme "publiques", afin qu'elles ne soient pas soumises aux vérifications de l‘<ph name="LOCAL_NETWORK_ACCES" />. À l'inverse, cette option peut être utilisée pour traiter certaines plages d'adresses publiques susceptibles d'être utilisées en interne comme "locales", afin qu'elles soient protégées par des vérifications de l‘<ph name="LOCAL_NETWORK_ACCESS" />.
+
+Les remplacements d'espace d'adressage IP prennent deux formes :
+
+[cidr]=[public|local|loopback]
+
+où [cidr] est une plage d'adresses IP au format CIDR (voir la section 3.1 sur https://tools.ietf.org/html/rfc4632 pour IPv4 et la section 2.3 sur https://tools.ietf.org/html/rfc4291 pour IPv6). Les adresses IPv6 doivent être spécifiées au format URL-safe (entre crochets). Les remplacements CIDR s'appliquent à tous les ports.
+
+ou
+
+[adresse IP]:[port]=[public|local|bouclage]
+
+Pour en savoir plus sur l‘<ph name="LOCAL_NETWORK_ACCESS" />, consultez https://wicg.github.io/local-network-access/ et https://developer.chrome.com/blog/local-network-access.
+
+Les remplacements de cette règle prévalent sur les remplacements définis par DeviceLocalNetworkAccessIpAddressSpaceOverrides.
+
+Les remplacements du commutateur de ligne de commande --ip-address-space-overrides prévalent sur les remplacements définis par les règles.</translation>
 <translation id="545817252640069915">Activer l'interception de connexion</translation>
 <translation id="5460797984317417682">Activer l'affichage de l'alerte plein écran</translation>
 <translation id="5462898272514237681">Contrôler l'accès de <ph name="PRODUCT_OS_NAME" /> aux services de localisation Google</translation>
@@ -7054,6 +7143,22 @@ Si <ph name="NTPCARDSVISIBLE" /> est désactivé, la carte SharePoint et OneDriv
 <translation id="5519619299971727565">Désactiver les rapports d'utilisation des applis Linux</translation>
 <translation id="5521035900165046997">Activer les rapports Bluetooth de l'appareil</translation>
 <translation id="5521875416764302911">Empêcher les utilisateurs de se connecter à <ph name="PRODUCT_NAME" /></translation>
+<translation id="5523077138980091816">Liste de formats d'URL. Les requêtes réseau initiées à partir de sites desservis par des origines qui figurent sur la liste et adressées à des points de terminaison du réseau local ne sont pas soumises aux vérifications de l‘<ph name="LOCAL_NETWORK_ACCESS" />.
+
+Pour les origines autres que celles représentées par les formats spécifiés ici, la configuration personnelle de l'utilisateur s'applique.
+
+Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns/.
+
+Pour connaître les restrictions concernant l‘<ph name="LOCAL_NETWORK_ACCESS" />, consultez https://wicg.github.io/local-network-access/.
+
+Plusieurs règles listent des origines qui ont un impact sur les requêtes adressées à des points de terminaison du réseau local. Ces règles s'appliquent selon l'ordre de priorité suivant si une origine figure sur la liste de formats d'URL de plusieurs d'entre elles :
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls
+  - DeviceLocalNetworkAccessBlockedForUrls
+  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="552607466422196365">Désactiver <ph name="DBSC_FEATURE_NAME" />.</translation>
 <translation id="5526184558582921522">Autoriser les requêtes au serveur Quirks et le téléchargement potentiel de fichiers de configuration spécifiques au matériel</translation>
 <translation id="5526701598901867718">Tous les types de chiffrement (option non sécurisée)</translation>
@@ -7879,6 +7984,24 @@ Si cette règle est définie sur "False", l'attribution à l'extension dans le p
 Si la règle est définie sur "True" ou n'est pas configurée, les enseignants peuvent utiliser une liste d'élèves de Google Classroom.
 
 Si la règle est définie sur "False", les enseignants ne peuvent pas accéder à cette fonctionnalité.</translation>
+<translation id="606337187257433827">Liste de formats d'URL. Les requêtes réseau initiées à partir de sites Web desservis par des origines qui figurent sur la liste ne sont pas autorisées à émettre de requêtes d‘<ph name="LOCAL_NETWORK_ACCESS" />.
+
+Pour les origines autres que celles représentées par les formats spécifiés ici, la configuration personnelle de l'utilisateur s'applique.
+
+Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns/.
+
+Pour connaître les restrictions concernant l‘<ph name="LOCAL_NETWORK_ACCESS" />, consultez https://wicg.github.io/local-network-access/.
+
+Plusieurs règles listent des origines qui ont un impact sur les requêtes adressées à des points de terminaison du réseau local et à l'appareil local. Ces règles s'appliquent selon l'ordre de priorité suivant si une origine figure sur la liste de formats d'URL de plusieurs d'entre elles :
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LoopbackNetworkBlockedForUrls
+  - LoopbackNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls
+  - DeviceLocalNetworkAccessBlockedForUrls
+  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="6066761914755798079">Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> est activée, la règle <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> vous permet de spécifier l'URL du moteur de recherche pour fournir des suggestions de recherche. L'URL doit inclure la chaîne <ph name="SEARCH_TERM_MARKER" />, qui sera remplacée dans la requête par les termes de recherche de l'utilisateur.
 
       Vous pouvez spécifier cette URL comme suit : <ph name="GOOGLE_SUGGEST_SEARCH_URL" />.</translation>
@@ -8306,6 +8429,22 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 
       Remarque : <ph name="DEVICE_LOGIN_SCREEN_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> remplace cette règle si l'ancienne est définie.</translation>
 <translation id="6315039134652691025">Les utilisateurs ne peuvent pas importer les données de navigation existantes dans leur profil géré</translation>
+<translation id="6316247387848694915">Liste de formats d'URL. Les requêtes réseau initiées à partir de sites Web desservis par des origines qui figurent sur la liste et adressées à des points de terminaison du réseau local ne sont pas autorisées à émettre de requêtes d‘<ph name="LOCAL_NETWORK_ACCESS" />.
+
+Pour les origines autres que celles représentées par les formats spécifiés ici, la configuration personnelle de l'utilisateur s'applique.
+
+Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns/.
+
+Pour connaître les restrictions concernant l‘<ph name="LOCAL_NETWORK_ACCESS" />, consultez https://wicg.github.io/local-network-access/.
+
+Plusieurs règles listent des origines qui ont un impact sur les requêtes adressées à des points de terminaison du réseau local. Ces règles s'appliquent selon l'ordre de priorité suivant si une origine figure sur la liste de formats d'URL de plusieurs d'entre elles :
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls
+  - DeviceLocalNetworkAccessBlockedForUrls
+  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="6316678265585263617">Permet à <ph name="PRODUCT_NAME" /> de choisir l'approche à utiliser</translation>
 <translation id="6316885783540658874">Cette règle détermine si l'implémentation de <ph name="AES_KL_NAME" /> est activée pour le chiffrement du stockage de l'utilisateur sur les écrans d'accueil des utilisateurs <ph name="DM_CRYPT" /> sur Chrome OS si celui-ci est compatible.
 
@@ -9500,6 +9639,7 @@ Si cette règle n'est pas configurée pour un site, alors la règle <ph name="DE
 <translation id="7030205756530739128">La règle "<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" />" permet de personnaliser le pourcentage à partir duquel la batterie doit commencer à se recharger (si la règle "<ph name="DEVICE_BATTERY_CHARGE_MODE_NAME" />" est définie sur "<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />"). La valeur de cette règle doit être inférieure d'au moins cinq points par rapport à celle de la règle "<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />".
 
       Si cette règle n'est pas configurée, le mode standard de recharge de la batterie est appliqué.</translation>
+<translation id="7030213287413687536">Autoriser les sites à adresser des requêtes réseau aux appareils locaux et aux points de terminaison du réseau local sur l'appareil</translation>
 <translation id="7030407698292813622">Autorise les requêtes DNS pour d'autres types d'enregistrements DNS</translation>
 <translation id="7030632236140191991">Liste des paramètres des services des connecteurs Chrome Enterprise à appliquer au connecteur Enterprise <ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" />, qui se déclenche lorsque des données sont collées dans Chrome depuis le presse-papiers ou lorsque du contenu Web est ajouté par glisser-déposer.
 
@@ -10689,6 +10829,22 @@ Remarque : Cette règle ne s'applique qu'aux plates-formes compatibles avec les
       La règle <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> est prioritaire sur cette règle et peut réactiver le mode navigation privée pour des URL spécifiques. Lorsque le mode navigation privée est désactivé par cette règle et qu'une liste d'autorisation est fournie, le mode navigation privée n'est disponible que pour les URL correspondant à la liste d'autorisation, tandis que toutes les autres pages sont bloquées.
 
       Remarque : Sur iOS, si cette règle est modifiée en cours de session, la modification ne prend effet qu'au redémarrage du navigateur.</translation>
+<translation id="7753487237310360952">Liste de formats d'URL. Les requêtes réseau initiées à partir de sites Web desservis par des origines qui figurent sur la liste ne sont pas soumises aux vérifications de l‘<ph name="LOCAL_NETWORK_ACCESS" /> pour toutes les sessions sur l'appareil.
+
+Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns/.
+
+Pour connaître les restrictions concernant l‘<ph name="LOCAL_NETWORK_ACCESS" />, consultez https://wicg.github.io/local-network-access/.
+
+Plusieurs règles listent des origines qui ont un impact sur les requêtes adressées à des points de terminaison du réseau local et à l'appareil local. Ces règles s'appliquent selon l'ordre de priorité suivant si une origine figure sur la liste de formats d'URL de plusieurs d'entre elles :
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LoopbackNetworkBlockedForUrls
+  - LoopbackNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls
+  - DeviceLocalNetworkAccessBlockedForUrls
+  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="7753678409577376761">Activer le point d'entrée de la barre d'outils pour accéder aux fonctionnalités expérimentales du navigateur</translation>
 <translation id="7754704193130578113">Toujours demander où enregistrer les fichiers</translation>
 <translation id="7754893969683595513">Cette règle permet d'indiquer, en millisecondes, la fréquence à laquelle le service de gestion des appareils est interrogé en vue d'obtenir des informations sur les règles relatives aux utilisateurs. Les valeurs valides sont comprises entre 1 800 000 (30 minutes) et 86,4 millions (1 jour). Toute valeur en dehors de cette plage sera remplacée par la valeur minimale ou maximale la plus proche autorisée.
@@ -12435,6 +12591,7 @@ Cette règle ne contrôle que <ph name="ARC_VM" /> sur <ph name="PRODUCT_OS_FLEX
 <translation id="8911736066340032670">Transmettre des informations liées à l'affichage (comme la fréquence d'actualisation) et aux graphiques (la version du pilote, par exemple).
 
       Si la règle est définie sur "False" ou n'est pas définie, les états liés aux affichages et aux graphiques ne sont pas transmis. Si elle est définie sur "True", ils sont envoyés.</translation>
+<translation id="8912595396523313912">Empêcher les sites d'adresser des requêtes réseau à des appareils locaux et à des points de terminaison du réseau local sur l'appareil</translation>
 <translation id="891435090623616439">codée comme une chaîne JSON, pour plus de détails voir <ph name="COMPLEX_POLICIES_URL" /></translation>
 <translation id="8916106787085606382">Ne pas supprimer window.name lorsque la navigation est de premier niveau et intersites, et échange BrowsingContextGroup.</translation>
 <translation id="8917070657147922192">Autoriser les utilisateurs à gérer les certificats CA installés.</translation>

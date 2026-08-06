@@ -85,6 +85,7 @@
 <translation id="1310482092992808703">टैब को समूह में लगाएं</translation>
 <translation id="1318262688555255786"><ph name="PAGE_TITLE" /> वेबपेज का लिंक शेयर करें. सोर्स: <ph name="PAGE_URL" /></translation>
 <translation id="1327257854815634930">नेविगेशन का इतिहास अपने पूरे आकार में खुला हुआ है</translation>
+<translation id="1330043879670259913">Chrome पर आपके काम को सुरक्षित रखने के लिए, Chrome में आपके साइन इन करने पर आपका संगठन कुछ खास जानकारी देख पाएगा या उसे मैनेज कर सकेगा. ज़्यादा जानें</translation>
 <translation id="1331212799747679585">Chrome अपडेट नहीं किया जा सकता. ज़्यादा विकल्प</translation>
 <translation id="1332501820983677155">Google Chrome सुविधा शॉर्टकट</translation>
 <translation id="1333491156693005331">हाल ही में जांच की गई</translation>
@@ -1166,6 +1167,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="5869522115854928033">सेव किए गए पासवर्ड</translation>
 <translation id="5870416898561279542">डुप्लीकेट या <ph name="DAYS_INACTIVE" /> दिनों से इस्तेमाल नहीं किए गए टैब या ग्रुप को यहां मूव कर दिया जाता है <ph name="AUTODELETE_SECTION" />. <ph name="DECLUTTER_SETTINGS_TITLE" /> में जाकर, इसे किसी भी समय बदला जा सकता है.</translation>
 <translation id="5885378508678660271">सूचनाएं <ph name="SEPARATOR" /> Chrome ने इस साइट के लिए यह अनुमति हटा दी है, क्योंकि यह सुरक्षित नहीं है</translation>
+<translation id="5896944002928653773">एंटरप्राइज़ सिग्नल के डिसक्लेमर वाली बॉटम शीट बंद की गई</translation>
 <translation id="5899667542927581604">कोई पासकी शीट बंद नहीं की गई</translation>
 <translation id="5907542076239273525">बुकमार्क को <ph name="FOLDER_NAME" /> में सेव किया गया</translation>
 <translation id="5911301511366365629"><ph name="TAB_TITLE" />, चुना गया ऐसा गुप्त टैब जिसमें ऑडियो चल रहा है</translation>
@@ -1256,6 +1258,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="6251449557817521191">Chrome का अपना पूरा इतिहास यहां देखें</translation>
 <translation id="6254139308321626268">PDF फ़ाइल देखी जा रही है</translation>
 <translation id="6255809143828972562">Chrome के टूल के ज़रिए सुरक्षित तरीके से ब्राउज़िंग की जा सकती है. साथ ही, अपना डेटा भी कंट्रोल किया जा सकता है</translation>
+<translation id="6259107733340311168">एंटरप्राइज़ सिग्नल के डिसक्लेमर वाली बॉटम शीट, पूरी स्क्रीन पर खोली गई</translation>
 <translation id="6260260490042862943">साइट कंट्रोल</translation>
 <translation id="6264376385120300461">फिर भी डाउनलोड करें</translation>
 <translation id="6264485186158353794">वापस सुरक्षित पेज पर जाएं</translation>

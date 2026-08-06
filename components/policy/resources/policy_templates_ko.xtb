@@ -1479,6 +1479,24 @@ false로 설정되면 사용자 식별을 위해 사용할 수 있는 정보가 
 <translation id="1962273523772270623">Google 서비스의 WebRTC 이벤트 로그 수집 허용</translation>
 <translation id="1962864958436828230">데이터 유출 방지를 위한 클립보드 제한용 최소 크기 한도 설정</translation>
 <translation id="1963986268950915756">브라우저에서 사용자 웹 앱 설치 사용 설정</translation>
+<translation id="1964128875283181035">URL 패턴 목록입니다. 일치하는 출처에 의해 게재된 웹사이트에서 시작한 네트워크 요청은 <ph name="LOCAL_NETWORK_ACCESS" /> 확인 대상이 아닙니다.
+
+여기에 명시된 패턴에 해당하지 않는 출처에는 사용자의 개인 설정이 적용됩니다.
+
+유효한 URL 패턴에 관한 자세한 내용은 https://chromeenterprise.google/policies/url-patterns/ 페이지를 참고하세요.
+
+<ph name="LOCAL_NETWORK_ACCESS" /> 제한사항에 관한 내용은 https://wicg.github.io/local-network-access/ 페이지를 참고하세요.
+
+로컬 기기 및 로컬 네트워크 엔드포인트에 대한 요청에 영향을 미치는 출처를 나열하는 정책이 여러 개 있습니다. 출처가 다음 정책 중 둘 이상과 일치하는 경우 정책은 다음 순서로 우선 적용됩니다.
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LoopbackNetworkBlockedForUrls
+  - LoopbackNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls
+  - DeviceLocalNetworkAccessBlockedForUrls
+  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="1964191545419036999">갤러리(버전 117부터 지원됨)</translation>
 <translation id="1964634611280150550">시크릿 모드 사용이 중지됨</translation>
 <translation id="1964985353230379667">수동으로 생성된 새 티켓의 <ph name="KRB5_CONFIG" /> 추천 구성을 지정합니다.
@@ -2069,6 +2087,7 @@ Chrome 앱은 ID(예: pjkljhegncpnkpknbcohdijeoejaedia)로, Android 앱은 패�
 <translation id="230713790688681130">힌디어 인스크립트 레이아웃 사용 설정</translation>
 <translation id="2307496301287881990">디스플레이 및 그래픽 상태 보고</translation>
 <translation id="2308084581803907194">높은 복잡성</translation>
+<translation id="2308557460534055666"><ph name="ON_DATA_COPIED_ENTERPRISE_CONNECTOR" /> Chrome Enterprise 커넥터의 구성 정책</translation>
 <translation id="2308899582897965249">자동 인쇄 사용 중지</translation>
 <translation id="2309284543927494965">업데이트 차단</translation>
 <translation id="2309341709647905294">기기에 연결된 주변기기 관련 정보 보고 안함</translation>
@@ -3055,6 +3074,23 @@ Chrome에서 퍼스트 파티 세트 관련 통합을 지원하는지 제어합�
 
 각 수준에서 PIN 및 비밀번호에 어떤 내용이 포함되는지 자세히 알아보려면 고객센터 도움말을 참고하세요.</translation>
 <translation id="2926813071464307947">렌더러 앱 컨테이너 샌드박스 사용 안함</translation>
+<translation id="2928782459146756987"><ph name="ON_DATA_COPIED_ENTERPRISE_CONNECTOR" /> Enterprise 커넥터에 적용할 <ph name="PRODUCT_NAME" /> Enterprise 커넥터 서비스 설정의 목록으로, <ph name="PRODUCT_NAME" />에서 클립보드로 데이터가 복사될 때 실행됩니다.
+
+<ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 필드는 데이터가 특정 페이지에서 복사되었을 때 커넥터가 분석을 위해 데이터를 전송할지와 데이터 분석 요청에 어떤 태그를 포함할지 결정하는 데 사용됩니다. 페이지 URL이 특정 태그와 연결된 패턴과 일치하면 'enable' 패턴에 해당하는 태그가 분석 요청에 포함되지만, 이 태그의 'disable' 패턴 중에서 페이지 URL과 일치하는 것이 없어야 합니다. 하나 이상의 태그가 요청에 포함되면 분석이 실시됩니다.
+
+<ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> 필드는 설정에 해당하는 분석 서비스 제공업체를 나타냅니다.
+
+<ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> 필드가 1로 설정되면 <ph name="PRODUCT_NAME" />에서 OS 클립보드에 데이터 액세스 권한을 부여하기 전에 분석 서비스의 응답을 받을 때까지 대기합니다. 다른 정숫값으로 설정되면 <ph name="PRODUCT_NAME" />에서 OS 클립보드에 데이터 액세스 권한을 즉시 부여합니다.
+
+<ph name="ENTERPRISE_CONNECTOR_DEFAULT_ACTION_FIELD" /> 필드가 BLOCK으로 설정되어 있으면 분석 서비스와 통신하는 중에 오류가 발생할 경우 <ph name="PRODUCT_NAME" />에서 OS 클립보드에 데이터 액세스 권한을 부여하지 않습니다. 다른 값으로 설정되면 <ph name="PRODUCT_NAME" />에서 OS 클립보드에 데이터 액세스 권한을 부여합니다.
+
+<ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> 필드는 <ph name="PRODUCT_NAME" />에서 복사되는 데이터의 최소 크기(바이트)로, 스캔하기 위해서는 데이터 크기가 이보다 크거나 같아야 합니다. 필드를 설정하지 않으면 기본값은 100바이트입니다.
+
+<ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> 필드는 사용자가 우회 가능 경고가 표시되는 스캔을 우회하려면 커넥터에서 근거를 입력해야 하는 태그를 결정하는 데 사용됩니다. 필드를 설정하지 않으면 근거가 필요하지 않은 것으로 간주합니다.
+
+관리자는 <ph name="ENTERPRISE_CONNECTOR_VERIFICATION_FIELD" /> 필드를 사용하여 플랫폼별 인증 요구사항을 구성할 수 있습니다.
+
+이 정책을 적용하려면 추가 설정이 필요합니다. https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting 페이지에서 자세히 알아보세요.</translation>
 <translation id="2930792103747180259">사용 중지됨: 서비스 워커의 백그라운드 가져오기가 제한 없이 허용됩니다.</translation>
 <translation id="2931888116345994552">설정하지 않거나 사용 설정하면 <ph name="PRODUCT_NAME" />의 모든 구성요소에 구성요소 업데이트를 사용합니다.
 
@@ -4225,6 +4261,7 @@ HTTPS용 RSA 인증서에 두 가지를 모두 포함해야 합니다.</translat
           </translation>
 <translation id="3677660004554019617">생성형 AI VC 배경 허용 안함</translation>
 <translation id="3678069907945250643">맞춤설정 앱에서 Google 포토 액세스 허용</translation>
+<translation id="3682200407044593844">기기에서 IP 주소 공간 매핑을 재정의합니다</translation>
 <translation id="3685979383016152590">정책을 설정하면 일괄 프린터 설정에 적용할 액세스 정책이 지정되므로 사용자에게 제공할 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />의 프린터를 제어할 수 있습니다.
 
       * <ph name="PRINTERS_BLOCKLIST" />(값 0)은 <ph name="PRINTERS_BULK_BLOCKLIST" />를 사용하여 특정 프린터의 액세스를 제한합니다.
@@ -4628,6 +4665,23 @@ HTTPS용 RSA 인증서에 두 가지를 모두 포함해야 합니다.</translat
       정책을 사용으로 설정하면 자동 선택 정책과 일치하는 인증서가 여러 개 있을 때마다 사용자에게 클라이언트 인증서를 선택하라는 메시지가 표시됩니다.
       정책을 사용 안함으로 설정하거나 설정하지 않으면 자동 선택과 일치하는 인증서가 없을 때만 사용자에게 메시지가 표시됩니다.</translation>
 <translation id="3947897854999940598">원하는 DNS-over-HTTPS 리졸버의 URI 템플릿을 ID 정보로 지정</translation>
+<translation id="394949637082417941">이 정책은 <ph name="LOCAL_NETWORK_ACCESS" /> 검사를 받지 않도록 기기 전체에서 특정 내부 주소 범위를 '공개'로 취급하는 데 사용할 수 있습니다. 반대로, 내부적으로 사용될 수 있는 특정 공개 주소 범위를 '로컬'로 처리하여 <ph name="LOCAL_NETWORK_ACCESS" /> 검사로 보호하는 데 사용할 수 있습니다.
+
+IP 주소 공간 재정의에는 두 가지 형식이 있습니다.
+
+[cidr]=[public|local|loopback]
+
+여기서 [cidr]은 CIDR 표기법의 IP 주소 범위입니다(IPv4의 경우 https://tools.ietf.org/html/rfc4632의 3.1 섹션, IPv6의 경우 https://tools.ietf.org/html/rfc4291의 2.3 섹션 참고). IPv6 주소는 URL 안전(괄호로 묶인) 형식으로 지정되어야 합니다. CIDR 재정의는 모든 포트에 적용됩니다.
+
+또는
+
+[IP 주소]:[포트]=[public|local|loopback]
+
+<ph name="LOCAL_NETWORK_ACCESS" />에 관한 자세한 내용은 https://wicg.github.io/local-network-access/ 및 https://developer.chrome.com/blog/local-network-access 페이지를 참고하세요.
+
+LocalNetworkAccessIpAddressSpaceOverrides 정책의 재정의가 이 정책에서 설정한 재정의보다 우선 적용됩니다.
+
+명령줄 스위치(--ip-address-space-overrides)의 재정의가 정책에서 설정한 재정의보다 우선 적용됩니다.</translation>
 <translation id="3949642828552641632"><ph name="GOOGLE_DRIVE_NAME" /> 및 <ph name="GOOGLE_WORKSPACE_NAME" />의 <ph name="CLOUD_UPLOAD_NAME" /> 흐름 허용</translation>
 <translation id="3950110092991281616">일반 세션에서만 수동 인증을 사용 설정합니다.</translation>
 <translation id="3950239119790560549">시간제한 업데이트</translation>
@@ -5068,6 +5122,24 @@ URL 패턴은 <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" />와 충�
 <translation id="4238777612788632629">오래된 경우 빠르게 다시 실행</translation>
 <translation id="4239720644496144453">이 캐시는 Android 앱에 사용되지 않습니다. 여러 사용자가 동일한 Android 앱을 설치하는 경우 앱이 각 사용자마다 새로 다운로드됩니다.</translation>
 <translation id="4239949495354048254">Chrome의 Gemini에 파일 업로드를 허용합니다.</translation>
+<translation id="424049794524032498">URL 패턴 목록입니다. 일치하는 출처에 의해 게재된 웹사이트에서 시작한 네트워크 요청은 기기의 모든 세션에서 <ph name="LOCAL_NETWORK_ACCESS" /> 요청을 발행할 수 없습니다.
+
+여기에 명시된 패턴에 해당하지 않는 출처에는 세션 또는 프로필 구성이 적용됩니다.
+
+유효한 URL 패턴에 관한 자세한 내용은 https://chromeenterprise.google/policies/url-patterns/ 페이지를 참고하세요.
+
+<ph name="LOCAL_NETWORK_ACCESS" /> 제한사항에 관한 내용은 https://wicg.github.io/local-network-access/ 페이지를 참고하세요.
+
+로컬 기기 및 로컬 네트워크 엔드포인트에 대한 요청에 영향을 미치는 출처를 나열하는 정책이 여러 개 있습니다. 출처가 다음 정책 중 둘 이상과 일치하는 경우 정책은 다음 순서로 우선 적용됩니다.
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LoopbackNetworkBlockedForUrls
+  - LoopbackNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls
+  - DeviceLocalNetworkAccessBlockedForUrls
+  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="4242583077375244471">정책을 사용 설정하면 <ph name="PRODUCT_NAME" />에서
 Chrome Root Store를 공개 신뢰의 소스로 사용하는 내장된
 인증서 확인 기능으로 서버 인증서를 인증합니다.
@@ -7071,6 +7143,23 @@ false로 설정되면 기능에 액세스할 수 없습니다.</translation>
 
       정책 값은 일 단위로 지정해야 합니다.</translation>
 <translation id="5457065417344056871">브라우저에서 게스트 모드 사용</translation>
+<translation id="5457999916455787365">이 정책은 <ph name="LOCAL_NETWORK_ACCES" /> 검사를 받지 않도록 특정 내부 주소 범위를 '공개'로 처리하는 데 사용할 수 있습니다. 반대로, 내부적으로 사용될 수 있는 특정 공개 주소 범위를 '로컬'로 처리하여 <ph name="LOCAL_NETWORK_ACCESS" /> 검사로 보호하는 데 사용할 수 있습니다.
+
+IP 주소 공간 재정의에는 두 가지 형식이 있습니다.
+
+[cidr]=[public|local|loopback]
+
+여기서 [cidr]은 CIDR 표기법의 IP 주소 범위입니다(IPv4의 경우 https://tools.ietf.org/html/rfc4632의 3.1 섹션, IPv6의 경우 https://tools.ietf.org/html/rfc4291의 2.3 섹션 참고). IPv6 주소는 URL 안전(괄호로 묶인) 형식으로 지정되어야 합니다. CIDR 재정의는 모든 포트에 적용됩니다.
+
+또는
+
+[IP 주소]:[포트]=[public|local|loopback]
+
+<ph name="LOCAL_NETWORK_ACCESS" />에 관한 자세한 내용은 https://wicg.github.io/local-network-access/ 및 https://developer.chrome.com/blog/local-network-access 페이지를 참고하세요.
+
+이 정책의 재정의가 DeviceLocalNetworkAccessIpAddressSpaceOverrides에서 설정한 재정의보다 우선 적용됩니다.
+
+명령줄 스위치(--ip-address-space-overrides)의 재정의가 정책에서 설정한 재정의보다 우선 적용됩니다.</translation>
 <translation id="545817252640069915">로그인 가로채기 사용 설정</translation>
 <translation id="5460797984317417682">전체 화면 알림 사용 설정</translation>
 <translation id="5462898272514237681">Google 위치 서비스에 대한 <ph name="PRODUCT_OS_NAME" /> 액세스 제어</translation>
@@ -7156,6 +7245,22 @@ Microsoft SharePoint 및 OneDrive 카드에는 추가 관리자 구성이 필요
 <translation id="5519619299971727565">Linux 앱 사용량 보고 사용 중지</translation>
 <translation id="5521035900165046997">기기 블루투스 정보 보고 사용 설정</translation>
 <translation id="5521875416764302911">사용자가 <ph name="PRODUCT_NAME" />에 로그인하지 못하도록 차단</translation>
+<translation id="5523077138980091816">URL 패턴 목록입니다. 로컬 네트워크 엔드포인트와 일치하는 출처에 의해 게재된 웹사이트에서 시작한 네트워크 요청은 <ph name="LOCAL_NETWORK_ACCESS" /> 확인 대상이 아닙니다.
+
+여기에 명시된 패턴에 해당하지 않는 출처에는 사용자의 개인 설정이 적용됩니다.
+
+유효한 URL 패턴에 관한 자세한 내용은 https://chromeenterprise.google/policies/url-patterns/ 페이지를 참고하세요.
+
+<ph name="LOCAL_NETWORK_ACCESS" /> 제한사항에 관한 내용은 https://wicg.github.io/local-network-access/ 페이지를 참고하세요.
+
+로컬 네트워크 엔드포인트에 대한 요청에 영향을 미치는 출처를 나열하는 정책이 여러 개 있습니다. 출처가 다음 정책 중 둘 이상과 일치하는 경우 정책은 다음 순서로 우선 적용됩니다.
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls
+  - DeviceLocalNetworkAccessBlockedForUrls
+  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="552607466422196365"><ph name="DBSC_FEATURE_NAME" /> 기능을 사용 중지합니다.</translation>
 <translation id="5526184558582921522">Quirks 서버로 쿼리 및 잠재적인 하드웨어별 구성 파일 다운로드 허용</translation>
 <translation id="5526701598901867718">모두(안전하지 않음)</translation>
@@ -8001,6 +8106,24 @@ URL이 <ph name="AUTOMATIC_DOWNLOADS_ALLOWED_FOR_URLS_POLICY_NAME" /> 및 <ph na
 값이 True로 설정되거나 값이 설정되지 않은 경우 Google 클래스룸 수업 출석부를 사용할 수 있습니다.
 
 false로 설정되면 기능에 액세스할 수 없습니다.</translation>
+<translation id="606337187257433827">URL 패턴 목록입니다. 일치하는 출처에 의해 게재된 웹사이트에서 시작한 네트워크 요청은 <ph name="LOCAL_NETWORK_ACCESS" /> 요청을 발행할 수 없습니다.
+
+여기에 명시된 패턴에 해당하지 않는 출처에는 사용자의 개인 설정이 적용됩니다.
+
+유효한 URL 패턴에 관한 자세한 내용은 https://chromeenterprise.google/policies/url-patterns/ 페이지를 참고하세요.
+
+<ph name="LOCAL_NETWORK_ACCESS" /> 제한사항에 관한 내용은 https://wicg.github.io/local-network-access/ 페이지를 참고하세요.
+
+로컬 기기 및 로컬 네트워크 엔드포인트에 대한 요청에 영향을 미치는 출처를 나열하는 정책이 여러 개 있습니다. 출처가 다음 정책 중 둘 이상과 일치하는 경우 정책은 다음 순서로 우선 적용됩니다.
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LoopbackNetworkBlockedForUrls
+  - LoopbackNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls
+  - DeviceLocalNetworkAccessBlockedForUrls
+  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="6066761914755798079"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />가 사용 설정되어 있는 경우 <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" />을 설정하여 추천 검색어를 제공할 때 사용할 검색엔진의 URL을 지정합니다. URL은 <ph name="SEARCH_TERM_MARKER" /> 문자열을 포함해야 하며, 이 문자열은 쿼리 시 사용자의 검색어로 대체됩니다.
 
       Google 검색 URL은 <ph name="GOOGLE_SUGGEST_SEARCH_URL" />로 지정할 수 있습니다.</translation>
@@ -8430,6 +8553,22 @@ Origin-Agent-Cluster: 헤더가 설정되지 않았을 때 M111의 기본값은 
 
       참고: <ph name="DEVICE_LOGIN_SCREEN_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />가 지정된 경우 이 정책을 재정의합니다.</translation>
 <translation id="6315039134652691025">사용자가 기존 인터넷 사용 기록을 관리 프로필에 가져올 수 없음</translation>
+<translation id="6316247387848694915">URL 패턴 목록입니다. 로컬 네트워크 엔드포인트와 일치하는 출처에 의해 게재된 웹사이트에서 시작한 네트워크 요청은 <ph name="LOCAL_NETWORK_ACCESS" /> 요청을 발행할 수 없습니다.
+
+여기에 명시된 패턴에 해당하지 않는 출처에는 사용자의 개인 설정이 적용됩니다.
+
+유효한 URL 패턴에 관한 자세한 내용은 https://chromeenterprise.google/policies/url-patterns/ 페이지를 참고하세요.
+
+<ph name="LOCAL_NETWORK_ACCESS" /> 제한사항에 관한 내용은 https://wicg.github.io/local-network-access/ 페이지를 참고하세요.
+
+로컬 네트워크 엔드포인트에 대한 요청에 영향을 미치는 출처를 나열하는 정책이 여러 개 있습니다. 출처가 다음 정책 중 둘 이상과 일치하는 경우 정책은 다음 순서로 우선 적용됩니다.
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls
+  - DeviceLocalNetworkAccessBlockedForUrls
+  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="6316678265585263617"><ph name="PRODUCT_NAME" />에서 사용할 접근 방식을 결정하도록 허용합니다.</translation>
 <translation id="6316885783540658874">이 정책은 ChromeOS에서 <ph name="DM_CRYPT" /> 사용자 홈의 사용자 저장용량 암호화에 <ph name="AES_KL_NAME" /> 구현이 지원되는 경우 이를 사용할지 제어합니다.
 
@@ -9649,6 +9788,7 @@ JavaScript 최적화 정책 예외는 사이트 세부사항에서만 시행됩�
 <translation id="7030205756530739128"><ph name="DEVICE_BATTERY_CHARGE_MODE_NAME" />를 <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />으로 설정하고 <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" />을 설정하면 배터리 충전 백분율을 기준으로 배터리 충전 시작 시기가 맞춤설정됩니다. 값은 <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />보다 최소 5퍼센트 포인트 낮아야 합니다.
 
       정책을 설정하지 않으면 표준 배터리 충전 모드가 적용됩니다.</translation>
+<translation id="7030213287413687536">사이트에서 로컬 기기 및 기기의 로컬 네트워크 엔드포인트로 네트워크 요청을 보낼 수 있도록 허용합니다</translation>
 <translation id="7030407698292813622">추가적인 DNS 유형의 DNS 쿼리 허용</translation>
 <translation id="7030632236140191991"><ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" /> Enterprise 커넥터에 적용할 Chrome Enterprise 커넥터 서비스 설정의 목록으로, 클립보드에서 붙여넣거나 웹 콘텐츠를 드래그 앤 드롭하는 방법으로 Chrome에 데이터가 입력될 때 실행됩니다.
 
@@ -10868,6 +11008,22 @@ URL 패턴은 <ph name="WEB_PRINTING_BLOCKED_FOR_URLS_POLICY_NAME" /> 정책과 
       <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> 정책이 이 정책보다 우선 적용되며, 특정 URL에 시크릿 모드를 다시 사용 설정할 수 있습니다. 허용 목록이 제공될 때 이 정책에 의해 시크릿 모드가 사용 중지되면, 허용 목록과 일치하는 URL에만 시크릿 모드를 사용할 수 있으며 다른 모든 페이지는 차단됩니다.
 
       참고: iOS에서 세션 도중에 정책이 변경될 경우 다시 시작해야만 변경 사항이 적용됩니다.</translation>
+<translation id="7753487237310360952">URL 패턴 목록입니다. 일치하는 출처에 의해 게재된 웹사이트에서 시작한 네트워크 요청은 기기의 모든 세션에서 <ph name="LOCAL_NETWORK_ACCESS" /> 검사 대상이 아닙니다.
+
+유효한 URL 패턴에 관한 자세한 내용은 https://chromeenterprise.google/policies/url-patterns/ 페이지를 참고하세요.
+
+<ph name="LOCAL_NETWORK_ACCESS" /> 제한사항에 관한 내용은 https://wicg.github.io/local-network-access/ 페이지를 참고하세요.
+
+로컬 기기 및 로컬 네트워크 엔드포인트에 대한 요청에 영향을 미치는 출처를 나열하는 정책이 여러 개 있습니다. 출처가 다음 정책 중 둘 이상과 일치하는 경우 정책은 다음 순서로 우선 적용됩니다.
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LoopbackNetworkBlockedForUrls
+  - LoopbackNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls
+  - DeviceLocalNetworkAccessBlockedForUrls
+  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="7753678409577376761">브라우저 실험 기능 툴바 진입점 사용 설정</translation>
 <translation id="7754704193130578113">다운로드 전에 각 파일의 저장 위치 확인</translation>
 <translation id="7754893969683595513">정책을 설정하면 기기 관리 서비스에서 사용자 정책 정보를 검색하는 시간(밀리초)을 지정할 수 있습니다. 유효한 값은 30분(1,800,000밀리초)에서 1일(86,400,000밀리초) 사이이며 이 범위에 포함되지 않는 모든 값은 각 경곗값으로 고정됩니다.
@@ -12657,6 +12813,7 @@ https://chromeenterprise.google/policies/url-patterns 페이지를 참고하세�
       정책이 false로 설정되거나 설정되지 않으면 디스플레이 및
       그래픽 상태가 보고되지 않습니다. true로 설정되면 디스플레이 및 그래픽 상태가
       보고됩니다.</translation>
+<translation id="8912595396523313912">사이트에서 로컬 기기 및 기기의 로컬 네트워크 엔드포인트로 네트워크 요청을 보내는 것을 차단합니다.</translation>
 <translation id="891435090623616439">JSON 문자열로 인코딩됨, 자세한 내용은 <ph name="COMPLEX_POLICIES_URL" /> 참조</translation>
 <translation id="8916106787085606382">크로스 사이트 최상위 탐색이고 BrowsingContextGroup을 교체할 때 window.name을 삭제하지 않습니다.</translation>
 <translation id="8917070657147922192">사용자가 설치된 CA 인증을 관리하도록 허용합니다.</translation>

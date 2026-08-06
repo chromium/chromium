@@ -725,6 +725,7 @@
 <translation id="340669334496430859">Pēdējoreiz mainīts</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">2023. gada 25. oktobris</translation>
+<translation id="3419787211763835342">Palīdziet pilnveidot uzlaboto automātisko aizpildi</translation>
 <translation id="3426715535827854458">Paslēpt rīkjoslu</translation>
 <translation id="3435738964857648380">Drošība</translation>
 <translation id="3441673211568148613">Saglabājiet pārlūkošanas konfidencialitāti</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">Tālrunis</translation>
 <translation id="4380677808580146413">Atlasīt</translation>
 <translation id="4389019817280890563">Pieskarieties, lai mainītu valodu.</translation>
+<translation id="4390649422783033958">Jūs esat pierakstījies kā <ph name="USER_NAME" />. <ph name="USER_EMAIL" />, Google abonements. Atvērt konta izvēlni.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{Pēc 1 dienas}zero{Pēc {COUNT} dienām}one{Pēc {COUNT} dienas}other{Pēc {COUNT} dienām}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 cilne}zero{# ciļņu}one{# cilne}other{# cilnes}}</translation>
 <translation id="4404790787924017676">Saņemiet paziņojumus par izsekoto produktu cenu kritumu.</translation>
@@ -1365,6 +1367,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="5559567453458728487">Pārveidot tīmeklī atrastās mērvienības</translation>
 <translation id="5560088892362098740">Derīguma termiņš</translation>
 <translation id="556042886152191864">Poga</translation>
+<translation id="5563910365456880646">no tā brīža, kad tika pabeigta darbība “Fotoattēla izmantošana meklēšanai ar Google Lens”</translation>
 <translation id="5565871407246142825">Kredītkartes</translation>
 <translation id="5567439033041178034">UZZINĀT VAIRĀK</translation>
 <translation id="5578795271662203820">Meklēt šo attēlu ar <ph name="SEARCH_ENGINE" /></translation>
@@ -1815,6 +1818,7 @@ Lai turpinātu datorā, pārslēdzieties uz kontu <ph name="OTHER_EMAIL" />. Jū
 <translation id="6930162026494574854">Tulkošanas iestatījumu atiestatīšana</translation>
 <translation id="6930799952781667037">Pieskarieties, lai mainītu uz šo valodu.</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
+<translation id="6937083164784433305">{count,plural, =1{Meklēšanai izmantojāt vienu fotoattēlu}zero{Meklēšanai izmantojāt # fotoattēlus}one{Meklēšanai izmantojāt # fotoattēlu}other{Meklēšanai izmantojāt # fotoattēlus}}</translation>
 <translation id="693761253105515415">Iestatiet piekļuves kodu</translation>
 <translation id="6945221475159498467">Atlasīt</translation>
 <translation id="6946722113367118030">Domāšana</translation>
@@ -2020,6 +2024,7 @@ Lai turpinātu datorā, pārslēdzieties uz kontu <ph name="OTHER_EMAIL" />. Jū
 <translation id="7662316065255305764">Vietnes informācija</translation>
 <translation id="7665369617277396874">Pievienot kontu</translation>
 <translation id="7666861622396822790">Varat to pārvaldīt <ph name="BEGIN_LINK" />satura iestatījumos<ph name="END_LINK" />.</translation>
+<translation id="7669448795744969014">Veikta pierakstīšanās kā lietotājam <ph name="USER_EMAIL" />, un jums ir Google abonements. Atvērt konta izvēlni.</translation>
 <translation id="7669493687462784703">Vai turpināt konfigurācijas profila lejupielādi no vietnes <ph name="WEBSITE" />?</translation>
 <translation id="7673346542062368520">Varat vilkt pa kreisi, lai pārlūkotu inkognito režīmā.</translation>
 <translation id="7679915578945954324">Vietņu adreses ir nokopētas.</translation>

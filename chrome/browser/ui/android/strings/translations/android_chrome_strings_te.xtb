@@ -85,6 +85,7 @@
 <translation id="1310482092992808703">ట్యాబ్‌లను గుంపుగా చేయి</translation>
 <translation id="1318262688555255786"><ph name="PAGE_TITLE" /> వెబ్‌పేజీకి లింక్‌ను షేర్ చేయండి. సోర్స్: <ph name="PAGE_URL" /></translation>
 <translation id="1327257854815634930">నావిగేషన్ హిస్టరీ తెరిచి ఉంది</translation>
+<translation id="1330043879670259913">Chromeలో మీ వర్క్‌ను సురక్షితంగా ఉంచేందుకు, మీరు Chromeకు సైన్-ఇన్ చేసినప్పుడు మీ సంస్థ నిర్దిష్ట సమాచారాన్ని చూడగలదు లేదా మేనేజ్ చేయగలదు. మరింత తెలుసుకోండి</translation>
 <translation id="1331212799747679585">Chromeని అప్‌డేట్ చేయడం సాధ్యపడదు. మరిన్ని ఆప్షన్‌లు</translation>
 <translation id="1332501820983677155">Google Chrome లక్షణ షార్ట్‌కట్‌లు</translation>
 <translation id="1333491156693005331">ఇటీవల చెక్ చేసింది</translation>
@@ -1166,6 +1167,7 @@
 <translation id="5869522115854928033">సేవ్  చేసిన పాస్‌వర్డ్‌లు</translation>
 <translation id="5870416898561279542">డూప్లికేట్ ట్యాబ్‌లు, గ్రూప్‌లు లేదా <ph name="DAYS_INACTIVE" /> రోజులుగా ఉపయోగించనివి ఇక్కడికి తరలించబడతాయి<ph name="AUTODELETE_SECTION" />. మీరు దీన్ని ఏ సమయంలోనైనా <ph name="DECLUTTER_SETTINGS_TITLE" />‌లో మార్చవచ్చు.</translation>
 <translation id="5885378508678660271">నోటిఫికేషన్‌లు <ph name="SEPARATOR" /> ఈ సైట్ ప్రమాదకరమైనది కాబట్టి Chrome ఈ అనుమతులను తీసివేసింది</translation>
+<translation id="5896944002928653773">ఎంటర్‌ప్రైజ్ సిగ్నల్స్ నిరాకరణ దిగువున ఉన్న షీట్ క్లోజ్ అయింది</translation>
 <translation id="5899667542927581604">పాస్-కీల షీట్ ఏదీ మూసివేయబడలేదు</translation>
 <translation id="5907542076239273525">బుక్‌మార్క్ <ph name="FOLDER_NAME" />‌కు సేవ్ అయ్యింది</translation>
 <translation id="5911301511366365629">ఎంచుకున్న <ph name="TAB_TITLE" /> ట్యాబ్, అజ్ఞాత మోడ్‌లో ఆడియోను ప్లే చేస్తుంది</translation>
@@ -1254,6 +1256,7 @@
 <translation id="6251449557817521191">మీ Chrome హిస్టరీని ఇక్కడ చూడండి</translation>
 <translation id="6254139308321626268">మీరు PDF ఫైల్‌ని చూస్తున్నారు</translation>
 <translation id="6255809143828972562">Chromeకు సంబంధించిన టూల్స్‌తో, మీరు సురక్షితంగా బ్రౌజ్ చేయవచ్చు, అలాగే కంట్రోల్‌లో ఉండవచ్చు</translation>
+<translation id="6259107733340311168">ఎంటర్‌ప్రైజ్ సిగ్నల్స్ నిరాకరణకు సంబంధించిన దిగువున ఉన్న షీట్ పూర్తి స్క్రీన్‌లో తెరుచుకుంది</translation>
 <translation id="6260260490042862943">సైట్ కంట్రోల్స్</translation>
 <translation id="6264376385120300461">ఏదేమైనా డౌన్‌లోడ్ చేయండి</translation>
 <translation id="6264485186158353794">భద్రతకు తిరిగి వెళ్ళు</translation>

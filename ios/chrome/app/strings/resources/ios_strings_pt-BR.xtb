@@ -454,6 +454,7 @@
 <translation id="2422174748424038845">Se você excluir o grupo, todos vão perder imediatamente o acesso ao grupo de guias "<ph name="GROUP_NAME" />" e ele será excluído de todos os dispositivos.</translation>
 <translation id="2424805048070062787">Continuar nesta guia</translation>
 <translation id="2426805022920575512">Escolher outra conta</translation>
+<translation id="2428543302546523788">Mostrar links quando o modo de leitura estiver ativado</translation>
 <translation id="243275146591958220">Cancelar download</translation>
 <translation id="2434405374328098816">Você já salvou uma senha para "<ph name="USERNAME" />" em <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Role a tela para a esquerda para navegar no modo de navegação anônima.</translation>
@@ -468,6 +469,7 @@
 <translation id="2470654816840674524">O que posso fazer com o Gemini no Chrome?</translation>
 <translation id="2473876017985765807">Você já salvou uma senha em <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Você pode definir um lembrete para rever esta página mais tarde</translation>
+<translation id="2476554421818031422">Você está ajudando a melhorar o preenchimento automático aprimorado</translation>
 <translation id="2479148705183875116">Acessar as configurações</translation>
 <translation id="2482878487686419369">Notificações</translation>
 <translation id="2484459871750294497">Como posso ativar esse recurso?</translation>
@@ -2068,6 +2070,7 @@ Para continuar pelo computador, mude para <ph name="OTHER_EMAIL" />. Você vai r
 <translation id="78146569776629510">Downloads</translation>
 <translation id="7815852444315004084">Ocultar por enquanto</translation>
 <translation id="7825973332242257878">Grupos de guias</translation>
+<translation id="7828344837949522075">Mostrar sugestão</translation>
 <translation id="7839994177130598711">Os membros da sua família agora podem usar seu nome de usuário e sua senha ao fazer login em <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> com o Gerenciador de senhas do Google.</translation>
 <translation id="7841180087127694526">Pesquisar texto copiado</translation>
 <translation id="7841418003178675048">Escolha quais cards vão aparecer na página "Nova guia".</translation>

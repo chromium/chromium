@@ -585,7 +585,6 @@
 <translation id="7288567540154601580">分頁和擴充程式</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium 建議你移除此擴充程式}other{Chromium 建議你移除這些擴充程式}}</translation>
 <translation id="7296334833518879294">如要分享系統音訊，請開啟「系統設定」並允許 Chromium「只錄製系統音訊」。你將需要重新啟動 Chromium。</translation>
-<translation id="7309928523159922338">「廣告評估」允許您瀏覽的網站向 Chromium 要求資料，以便評估廣告的效益。「廣告評估」會透過盡量減少在網站之間傳送的資料，從而限制跨網站追蹤功能。</translation>
 <translation id="731795002583552498">正在更新 Chromium</translation>
 <translation id="7318036098707714271">您的偏好設定檔案已損毀或無效。
 

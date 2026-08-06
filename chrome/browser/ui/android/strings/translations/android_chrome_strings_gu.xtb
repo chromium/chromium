@@ -85,6 +85,7 @@
 <translation id="1310482092992808703">ટૅબનું ગ્રૂપ બનાવો</translation>
 <translation id="1318262688555255786">વેબપેજ <ph name="PAGE_TITLE" />ની લિંક શેર કરો. સૉર્સ: <ph name="PAGE_URL" /></translation>
 <translation id="1327257854815634930">નૅવિગેશન ઇતિહાસ ખુલ્લો છે</translation>
+<translation id="1330043879670259913">Chrome પર તમારા કાર્યને સુરક્ષિત રાખવા માટે, જ્યારે તમે Chromeમાં સાઇન ઇન કરેલું હોય, ત્યારે તમારી સંસ્થા અમુક માહિતી જોઈ શકે છે અથવા તેને મેનેજ કરી શકશે. વધુ જાણો</translation>
 <translation id="1331212799747679585">Chrome અપડેટ કરી શકાતું નથી. વધુ વિકલ્પો</translation>
 <translation id="1332501820983677155">Google Chrome સુવિધાના શૉર્ટકટ્સ</translation>
 <translation id="1333491156693005331">તાજેતરમાં ચેક કર્યું</translation>
@@ -1166,6 +1167,7 @@
 <translation id="5869522115854928033">સાચવેલા પાસવર્ડ્સ</translation>
 <translation id="5870416898561279542">ડુપ્લિકેટ ટૅબ અને ગ્રૂપ અથવા <ph name="DAYS_INACTIVE" /> દિવસથી ઉપયોગમાં ન લેવાયેલા ટૅબ અને ગ્રૂપને અહીં ખસેડવામાં આવે છે<ph name="AUTODELETE_SECTION" />. <ph name="DECLUTTER_SETTINGS_TITLE" />માં તમે આને કોઈપણ સમયે બદલી શકો છો.</translation>
 <translation id="5885378508678660271">નોટિફિકેશન <ph name="SEPARATOR" /> Chrome દ્વારા આ પરવાનગીઓ કાઢી નાખવામાં આવી કારણ કે આ સાઇટ જોખમી છે</translation>
+<translation id="5896944002928653773">એન્ટરપ્રાઇઝ સિગ્નલ સંબંધિત અસ્વીકાર બોટમ શીટ બંધ કરવામાં આવી છે</translation>
 <translation id="5899667542927581604">કોઈ પાસકી શીટ બંધ ન હતી</translation>
 <translation id="5907542076239273525"><ph name="FOLDER_NAME" />માં બુકમાર્ક સાચવવામાં આવ્યું</translation>
 <translation id="5911301511366365629"><ph name="TAB_TITLE" />, પસંદ કરેલું સાંભળી શકાય તેવું છૂપું ટૅબ</translation>
@@ -1256,6 +1258,7 @@
 <translation id="6251449557817521191">તમારો Chrome ઇતિહાસ અહીં જુઓ</translation>
 <translation id="6254139308321626268">તમે કોઈ PDF ફાઇલ જોઈ રહ્યાં છો</translation>
 <translation id="6255809143828972562">Chromeના ટૂલ વડે, તમે સલામત રીતે બ્રાઉઝ કરી શકો છો તેમજ નિયંત્રણ જાળવી શકો છો</translation>
+<translation id="6259107733340311168">એન્ટરપ્રાઇઝ સિગ્નલ સંબંધિત અસ્વીકાર બોટમ શીટ સંપૂર્ણ ઊંચાઈએ ખોલી</translation>
 <translation id="6260260490042862943">સાઇટના નિયંત્રણો</translation>
 <translation id="6264376385120300461">તેમ છતાં ડાઉનલોડ કરો</translation>
 <translation id="6264485186158353794">સુરક્ષા પર પાછા</translation>

@@ -725,6 +725,7 @@
 <translation id="340669334496430859">അവസാനം പരിഷ്‌കരിച്ചത്</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">2023 ഒക്‌ടോബർ 25</translation>
+<translation id="3419787211763835342">'മെച്ചപ്പെടുത്തിയ സ്വയമേവ പൂരിപ്പിക്കൽ' മെച്ചപ്പെടുത്താൻ സഹായിക്കൂ</translation>
 <translation id="3426715535827854458">'ടൂൾബാർ മറയ്ക്കുക' മറയ്ക്കുക</translation>
 <translation id="3435738964857648380">സുരക്ഷ</translation>
 <translation id="3441673211568148613">നിങ്ങളുടെ ബ്രൗസിംഗ് സ്വകാര്യമായി നിലനിർത്തുക</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">ഫോൺ</translation>
 <translation id="4380677808580146413">തിരഞ്ഞെടുക്കുക</translation>
 <translation id="4389019817280890563">ഭാഷ മാറ്റാൻ ടാപ്പ് ചെയ്യുക.</translation>
+<translation id="4390649422783033958"><ph name="USER_NAME" /> എന്നയാളായി സൈൻ ഇൻ ചെയ്‌തു. <ph name="USER_EMAIL" />, Google അംഗത്വം. അക്കൗണ്ട് മെനു തുറക്കുക.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{ഒരു ദിവസത്തിന് ശേഷം}other{{COUNT} ദിവസത്തിന് ശേഷം}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{ഒരു ടാബ്}other{# ടാബുകൾ}}</translation>
 <translation id="4404790787924017676">നിങ്ങൾ ട്രാക്ക് ചെയ്യുന്ന ഉൽപ്പന്നങ്ങളുടെ വിലക്കുറവുമായി ബന്ധപ്പെട്ട അലേർട്ടുകൾ നേടുക</translation>
@@ -1365,6 +1367,7 @@
 <translation id="5559567453458728487">വെബിൽ കാണുന്ന മെഷർമെന്റ് യൂണിറ്റുകൾ കൺവേർട്ട് ചെയ്യുക</translation>
 <translation id="5560088892362098740">കാലഹരണപ്പെടല്‍ തീയതി</translation>
 <translation id="556042886152191864">ബട്ടൺ</translation>
+<translation id="5563910365456880646">"Google Lens ഉപയോഗിച്ച് തിരയാൻ ഒരു ഫോട്ടോ ഉപയോഗിക്കുക" പൂർത്തിയാക്കിയതിന് ശേഷം</translation>
 <translation id="5565871407246142825">ക്രെഡിറ്റ് കാര്‍ഡുകള്‍</translation>
 <translation id="5567439033041178034">കൂടുതലറിയുക</translation>
 <translation id="5578795271662203820">ഈ ചിത്രത്തിനായി <ph name="SEARCH_ENGINE" />-ൽ തിരയുക</translation>
@@ -1815,6 +1818,7 @@
 <translation id="6930162026494574854">വിവർത്തന ക്രമീകരണം റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="6930799952781667037">ഈ ഭാഷയിലേക്ക് മാറ്റാൻ ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
+<translation id="6937083164784433305">{count,plural, =1{തിരയാൻ നിങ്ങൾ ഒരു ഫോട്ടോ ഉപയോഗിച്ചു}other{തിരയാൻ നിങ്ങൾ # ഫോട്ടോകൾ ഉപയോഗിച്ചു}}</translation>
 <translation id="693761253105515415">പാസ്‌കോഡ് സജ്ജീകരിക്കുക</translation>
 <translation id="6945221475159498467">തിരഞ്ഞെടുക്കുക</translation>
 <translation id="6946722113367118030">ചിന്തിക്കൽ</translation>
@@ -2020,6 +2024,7 @@
 <translation id="7662316065255305764">സൈറ്റ് വിവരങ്ങൾ</translation>
 <translation id="7665369617277396874">അക്കൗണ്ട് ചേർക്കുക</translation>
 <translation id="7666861622396822790">ഇത് നിങ്ങൾക്ക് <ph name="BEGIN_LINK" />ഉള്ളടക്ക ക്രമീകരണത്തിൽ<ph name="END_LINK" /> മാനേജ് ചെയ്യാം.</translation>
+<translation id="7669448795744969014"><ph name="USER_EMAIL" /> ആയി (Google അംഗത്വം സഹിതം) സൈൻ ഇൻ ചെയ്തു. അക്കൗണ്ട് മെനു തുറക്കുക.</translation>
 <translation id="7669493687462784703"><ph name="WEBSITE" /> എന്നതിൽ നിന്ന് കോൺഫിഗറേഷൻ പ്രൊഫൈൽ ഡൗൺലോഡ് ചെയ്യുന്നത് തുടരണോ?</translation>
 <translation id="7673346542062368520">അദൃശ്യ മോഡിൽ ബ്രൗസ് ചെയ്യാൻ നിങ്ങൾക്ക് ഇടത്തേക്ക് സ്വൈപ്പ് ചെയ്യാം.</translation>
 <translation id="7679915578945954324">സൈറ്റ് വിലാസങ്ങൾ പകർത്തി</translation>

@@ -725,6 +725,7 @@
 <translation id="340669334496430859">ਪਿਛਲੀ ਵਾਰ ਸੋਧਣ ਦਾ ਸਮਾਂ</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 ਅਕਤੂਬਰ 2023</translation>
+<translation id="3419787211763835342">ਵਿਸਤ੍ਰਿਤ ਆਟੋਫਿਲ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰੋ</translation>
 <translation id="3426715535827854458">'ਟੂਲਬਾਰ ਲੁਕਾਓ' ਨੂੰ ਲੁਕਾਓ</translation>
 <translation id="3435738964857648380">ਸੁਰੱਖਿਆ</translation>
 <translation id="3441673211568148613">ਆਪਣੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਨਿੱਜੀ ਰੱਖੋ</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">ਫ਼ੋਨ</translation>
 <translation id="4380677808580146413">ਚੁਣੋ</translation>
 <translation id="4389019817280890563">ਭਾਸ਼ਾ ਬਦਲਣ ਲਈ ਟੈਪ ਕਰੋ।</translation>
+<translation id="4390649422783033958"><ph name="USER_NAME" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਗਿਆ। <ph name="USER_EMAIL" />, Google ਮੈਂਬਰਸ਼ਿਪ। ਖਾਤਾ ਮੀਨੂ ਖੋਲ੍ਹੋ।</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{1 ਦਿਨ ਬਾਅਦ}one{{COUNT} ਦਿਨ ਬਾਅਦ}other{{COUNT} ਦਿਨਾਂ ਬਾਅਦ}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 ਟੈਬ}one{# ਟੈਬ}other{# ਟੈਬਾਂ}}</translation>
 <translation id="4404790787924017676">ਤੁਹਾਡੇ ਵੱਲੋਂ ਟਰੈਕ ਕੀਤੇ ਜਾਣ ਵਾਲੇ ਉਤਪਾਦਾਂ ਲਈ ਕੀਮਤਾਂ ਘਟਣ ਸੰਬੰਧੀ ਅਲਰਟ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
@@ -1365,6 +1367,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="5559567453458728487">ਵੈੱਬ 'ਤੇ ਮਿਲੀਆਂ ਮਾਪ ਇਕਾਈਆਂ ਨੂੰ ਰੂਪਾਂਤਰਿਤ ਕਰੋ</translation>
 <translation id="5560088892362098740">ਮਿਆਦ ਸਮਾਪਤੀ ਦੀ ਮਿਤੀ</translation>
 <translation id="556042886152191864">ਬਟਨ</translation>
+<translation id="5563910365456880646">"Google Lens ਨਾਲ ਖੋਜਣ ਲਈ ਫ਼ੋਟੋ ਦੀ ਵਰਤੋਂ ਕਰੋ" ਨੂੰ ਪੂਰਾ ਕਰਨ ਤੋਂ ਬਾਅਦ</translation>
 <translation id="5565871407246142825">ਕ੍ਰੈਡਿਟ ਕਾਰਡ</translation>
 <translation id="5567439033041178034">ਹੋਰ ਜਾਣੋ</translation>
 <translation id="5578795271662203820">ਇਸ ਚਿੱਤਰ ਲਈ <ph name="SEARCH_ENGINE" /> ਖੋਜੋ</translation>
@@ -1815,6 +1818,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="6930162026494574854">ਅਨੁਵਾਦ ਸੈਟਿੰਗਾਂ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="6930799952781667037">ਇਸ ਭਾਸ਼ਾ ਨੂੰ ਬਦਲਣ ਲਈ ਟੈਪ ਕਰੋ।</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />। <ph name="MANAGED_STATUS" />।</translation>
+<translation id="6937083164784433305">{count,plural, =1{ਤੁਸੀਂ ਖੋਜਣ ਲਈ 1 ਫ਼ੋਟੋ ਦੀ ਵਰਤੋਂ ਕੀਤੀ}one{ਤੁਸੀਂ ਖੋਜਣ ਲਈ # ਫ਼ੋਟੋ ਦੀ ਵਰਤੋਂ ਕੀਤੀ}other{ਤੁਸੀਂ ਖੋਜਣ ਲਈ # ਫ਼ੋਟੋਆਂ ਦੀ ਵਰਤੋਂ ਕੀਤੀ}}</translation>
 <translation id="693761253105515415">ਕੋਈ ਪਾਸਕੋਡ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="6945221475159498467">ਚੁਣੋ</translation>
 <translation id="6946722113367118030">ਸੋਚਣਾ</translation>
@@ -2020,6 +2024,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="7662316065255305764">ਸਾਈਟ ਜਾਣਕਾਰੀ</translation>
 <translation id="7665369617277396874">ਖਾਤਾ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="7666861622396822790">ਤੁਸੀਂ <ph name="BEGIN_LINK" />ਸਮੱਗਰੀ ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਜਾ ਕੇ ਇਸਦਾ ਪ੍ਰਬੰਧਨ ਕਰ ਸਕਦੇ ਹੋ।</translation>
+<translation id="7669448795744969014"><ph name="USER_EMAIL" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਹਨ, Google ਮੈਂਬਰਸ਼ਿਪ। ਖਾਤਾ ਮੀਨੂ ਖੋਲ੍ਹੋ।</translation>
 <translation id="7669493687462784703">ਕੀ <ph name="WEBSITE" /> ਤੋਂ ਸੰਰੂਪਣ ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਡਾਊਨਲੋਡ ਕਰਨਾ ਜਾਰੀ ਰੱਖਣਾ ਹੈ?</translation>
 <translation id="7673346542062368520">ਤੁਸੀਂ ਇਨਕੋਗਨਿਟੋ ਵਿੱਚ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਲਈ ਖੱਬੇ ਸਵਾਈਪ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="7679915578945954324">ਸਾਈਟ ਦੇ ਪਤੇ ਕਾਪੀ ਕੀਤੇ ਗਏ</translation>

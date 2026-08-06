@@ -85,6 +85,7 @@
 <translation id="1310482092992808703">Grupiraj kartice</translation>
 <translation id="1318262688555255786">Podijelite vezu na web-stranicu <ph name="PAGE_TITLE" />. Izvor: <ph name="PAGE_URL" /></translation>
 <translation id="1327257854815634930">Otvorena je povijest navigacije</translation>
+<translation id="1330043879670259913">Da bi se zaštitio vaš rad u Chromeu, vaša će organizacija moći pregledavati određene podatke ili upravljati njima kad ste prijavljeni u Chrome. Saznajte više</translation>
 <translation id="1331212799747679585">Chrome se ne može ažurirati. Više opcija</translation>
 <translation id="1332501820983677155">Prečaci za značajke Google Chromea</translation>
 <translation id="1333491156693005331">Nedavno provjereno</translation>
@@ -1166,6 +1167,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="5869522115854928033">Spremljene zaporke</translation>
 <translation id="5870416898561279542">Duplicirane kartice i grupe ili one koje se ne upotrebljavaju <ph name="DAYS_INACTIVE" /> dan(a) premještaju se ovdje<ph name="AUTODELETE_SECTION" />. To uvijek možete promijeniti u odjeljku <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5885378508678660271">Obavijesti <ph name="SEPARATOR" /> Chrome je uklonio ta dopuštenja jer je ova web-lokacija opasna</translation>
+<translation id="5896944002928653773">Zatvorena je donja tablica s odricanjem odgovornosti za signale poduzeća.</translation>
 <translation id="5899667542927581604">Nije zatvoren nijedan list pristupnih ključeva</translation>
 <translation id="5907542076239273525">Oznaka je spremljena u mapu <ph name="FOLDER_NAME" /></translation>
 <translation id="5911301511366365629"><ph name="TAB_TITLE" />, odabrana anonimna kartica koja reproducira zvuk</translation>
@@ -1256,6 +1258,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="6251449557817521191">Ovdje možete pregledati svoju Chromeovu povijest</translation>
 <translation id="6254139308321626268">Pregledavate PDF datoteku</translation>
 <translation id="6255809143828972562">Uz Chromeove alate možete sigurno pregledavati i zadržati kontrolu</translation>
+<translation id="6259107733340311168">Donja tablica s odricanjem odgovornosti za poslovne signale otvorena je u punoj visini.</translation>
 <translation id="6260260490042862943">Kontrole web-lokacije</translation>
 <translation id="6264376385120300461">Svejedno preuzmi</translation>
 <translation id="6264485186158353794">Natrag na sigurno</translation>

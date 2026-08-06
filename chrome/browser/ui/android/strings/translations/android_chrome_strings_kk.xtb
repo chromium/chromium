@@ -85,6 +85,7 @@
 <translation id="1310482092992808703">Қойындыларды топтау</translation>
 <translation id="1318262688555255786"><ph name="PAGE_TITLE" /> веб-бетінің сілтемесін бөліседі. Дереккөз: <ph name="PAGE_URL" /></translation>
 <translation id="1327257854815634930">Навигация тарихы ашылды.</translation>
+<translation id="1330043879670259913">Chrome-ға кірген кезіңізде, Chrome-дағы жұмысыңызды қорғау үшін ұйымыңыз белгілі бір ақпаратты көре алады немесе басқара алады. Толық ақпарат</translation>
 <translation id="1331212799747679585">Chrome браузерін жаңарту мүмкін емес. Басқа опциялар</translation>
 <translation id="1332501820983677155">Google Chrome функциясының пернелер тіркесімі</translation>
 <translation id="1333491156693005331">Жақында тексерілді.</translation>
@@ -1166,6 +1167,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="5869522115854928033">Сақталған құпия сөздер</translation>
 <translation id="5870416898561279542">Қайталанатын немесе <ph name="DAYS_INACTIVE" /> күн бойы қолданылмаған қойындылар мен топтар осы жерге көшіріледі <ph name="AUTODELETE_SECTION" />. Мұны <ph name="DECLUTTER_SETTINGS_TITLE" /> бөлімінде кез келген уақытта өзгерте аласыз.</translation>
 <translation id="5885378508678660271">Хабарландырулар <ph name="SEPARATOR" /> Chrome бұл рұқсаттарды өшірді, себебі бұл сайт қауіпті.</translation>
+<translation id="5896944002928653773">Корпоративтік сигналдарға қатысты жауапкершіліктен бас тарту туралы төменгі парақша жабылды.</translation>
 <translation id="5899667542927581604">Кіру кілттерінің ешқандай парағы жабылмады.</translation>
 <translation id="5907542076239273525">Бетбелгі <ph name="FOLDER_NAME" /> қалтасына сақталды.</translation>
 <translation id="5911301511366365629"><ph name="TAB_TITLE" />, таңдалған дыбыстық инкогнито қойындысы</translation>
@@ -1256,6 +1258,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="6251449557817521191">Chrome тарихын осы жерден көру</translation>
 <translation id="6254139308321626268">PDF файлын көріп жатырсыз.</translation>
 <translation id="6255809143828972562">Chrome-дағы құралдар көмегімен браузерді қауіпсіз қолданып, барлығын басқаруға болады.</translation>
+<translation id="6259107733340311168">Корпоративтік сигналдарға қатысты жауапкершіліктен бас тарту туралы төменгі парақша толығымен ашылды.</translation>
 <translation id="6260260490042862943">Сайтты басқару элементтері</translation>
 <translation id="6264376385120300461">Сонда да жүктеп алу</translation>
 <translation id="6264485186158353794">Қауіпсіз аймаққа қайту</translation>

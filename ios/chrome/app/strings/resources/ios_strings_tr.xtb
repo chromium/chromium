@@ -725,6 +725,7 @@
 <translation id="340669334496430859">En Son Değişiklik Zamanı</translation>
 <translation id="3409785640040772790">Haritalar</translation>
 <translation id="3416023309465857378">25 Ekim 2023</translation>
+<translation id="3419787211763835342">Gelişmiş otomatik doldurma özelliğinin iyileştirilmesine yardım edin</translation>
 <translation id="3426715535827854458">Araç Çubuğunu Gizle</translation>
 <translation id="3435738964857648380">Güvenlik</translation>
 <translation id="3441673211568148613">Tarama işlemlerinizi gizli tutun</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380677808580146413">Seç</translation>
 <translation id="4389019817280890563">Dili değiştirmek için dokunun.</translation>
+<translation id="4390649422783033958"><ph name="USER_NAME" /> olarak oturum açtınız. <ph name="USER_EMAIL" />, Google üyeliği. Hesap menüsünü açın.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{1 gün sonra}other{{COUNT} gün sonra}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 sekme}other{# sekme}}</translation>
 <translation id="4404790787924017676">Takip ettiğiniz ürünlerle ilgili fiyat düşüşü uyarıları alın</translation>
@@ -1365,6 +1367,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="5559567453458728487">Web'de bulunan ölçüm birimlerini dönüştürün</translation>
 <translation id="5560088892362098740">Son Kullanma Tarihi</translation>
 <translation id="556042886152191864">Düğme</translation>
+<translation id="5563910365456880646">"Google Lens ile arama yapmak için fotoğraf kullanın" görevini tamamladığınızdan bu yana</translation>
 <translation id="5565871407246142825">Kredi kartları</translation>
 <translation id="5567439033041178034">DAHA FAZLA BİLGİ EDİNİN</translation>
 <translation id="5578795271662203820">Bu resmi, <ph name="SEARCH_ENGINE" /> üzerinde ara</translation>
@@ -1815,6 +1818,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="6930162026494574854">Çeviri ayarlarını sıfırla</translation>
 <translation id="6930799952781667037">Bu dile değiştirmek için dokunun.</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
+<translation id="6937083164784433305">{count,plural, =1{Arama yapmak için 1 fotoğraf kullandınız}other{Arama yapmak için # fotoğraf kullandınız}}</translation>
 <translation id="693761253105515415">Şifre kodu ayarlayın</translation>
 <translation id="6945221475159498467">Seç</translation>
 <translation id="6946722113367118030">Düşünme</translation>
@@ -2020,6 +2024,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="7662316065255305764">Site Bilgileri</translation>
 <translation id="7665369617277396874">Hesap ekle</translation>
 <translation id="7666861622396822790">Bunu <ph name="BEGIN_LINK" />İçerik Ayarları<ph name="END_LINK" /> bölümünden yönetebilirsiniz.</translation>
+<translation id="7669448795744969014"><ph name="USER_EMAIL" /> olarak oturum açıldı (Google üyeliği). Hesap menüsünü açın.</translation>
 <translation id="7669493687462784703"><ph name="WEBSITE" /> sitesinden yapılandırma profili indirme işlemine devam edilsin mi?</translation>
 <translation id="7673346542062368520">Gizli modda göz atmak için sola kaydırabilirsiniz.</translation>
 <translation id="7679915578945954324">Site adresleri kopyalandı</translation>

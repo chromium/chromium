@@ -725,6 +725,7 @@
 <translation id="340669334496430859">Oxirgi oʻzgarish</translation>
 <translation id="3409785640040772790">Xaritalar</translation>
 <translation id="3416023309465857378">2023-yil 25-oktabr</translation>
+<translation id="3419787211763835342">Yaxshilangan avtomatik kiritishni yaxshilashga yordam bering</translation>
 <translation id="3426715535827854458">Asboblar panelini berkitish</translation>
 <translation id="3435738964857648380">Xavfsizlik</translation>
 <translation id="3441673211568148613">Internetni maxfiy kezing</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380677808580146413">Tanlash</translation>
 <translation id="4389019817280890563">Tilni almashtirish uchun bosing.</translation>
+<translation id="4390649422783033958"><ph name="USER_NAME" /> sifatida kirgansiz. <ph name="USER_EMAIL" />, Google obunasi. Hisob menyusini ochish.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{1 kundan keyin}other{{COUNT} kundan keyin}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 ta varaq}other{# ta varaq}}</translation>
 <translation id="4404790787924017676">Kuzatuvdagi mahsulotlar narxi tushganda xabar olish</translation>
@@ -1365,6 +1367,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="5559567453458728487">Internetda topilgan oʻlchov birliklarini oʻgirish</translation>
 <translation id="5560088892362098740">Tugash muddati</translation>
 <translation id="556042886152191864">Tugma</translation>
+<translation id="5563910365456880646">“Google Lens yordamida surat bilan qidirish” tugallanganidan beri</translation>
 <translation id="5565871407246142825">Bank kartalari</translation>
 <translation id="5567439033041178034">BATAFSIL</translation>
 <translation id="5578795271662203820">Bu rasmni <ph name="SEARCH_ENGINE" />‘dan qidirish</translation>
@@ -1815,6 +1818,7 @@ Kompyuterda davom etish uchun <ph name="OTHER_EMAIL" /> hisobiga almashtiring. B
 <translation id="6930162026494574854">Tarjima sozlamalarini tozalash</translation>
 <translation id="6930799952781667037">Tilni tanlash uchun bosing.</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
+<translation id="6937083164784433305">{count,plural, =1{Qidirish uchun 1 ta surat ishlatdingiz}other{Qidirish uchun # ta surat ishlatdingiz}}</translation>
 <translation id="693761253105515415">Maxfiy kodni belgilang</translation>
 <translation id="6945221475159498467">Tanlash</translation>
 <translation id="6946722113367118030">Oʻychan</translation>
@@ -2020,6 +2024,7 @@ Kompyuterda davom etish uchun <ph name="OTHER_EMAIL" /> hisobiga almashtiring. B
 <translation id="7662316065255305764">Sayt haqida</translation>
 <translation id="7665369617277396874">Hisob kiritish</translation>
 <translation id="7666861622396822790">Buni <ph name="BEGIN_LINK" />Kontent sozlamalari<ph name="END_LINK" /> orqali boshqarish mumkin.</translation>
+<translation id="7669448795744969014"><ph name="USER_EMAIL" /> hisobidan kirilgan, Google obunasi bor. Hisob menyusini ochish.</translation>
 <translation id="7669493687462784703"><ph name="WEBSITE" /> konfiguratsiya profilini yuklab olish davom ettirilsinmi?</translation>
 <translation id="7673346542062368520">Inkognito rejimiga oʻtish uchun chapga suring.</translation>
 <translation id="7679915578945954324">Sayt manzillari nusxalandi</translation>

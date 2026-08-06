@@ -85,6 +85,7 @@
 <translation id="1310482092992808703">จัดกลุ่มแท็บ</translation>
 <translation id="1318262688555255786">แชร์ลิงก์ไปยังหน้าเว็บ <ph name="PAGE_TITLE" /> แหล่งที่มา: <ph name="PAGE_URL" /></translation>
 <translation id="1327257854815634930">ประวัติการนำทางเปิดอยู่</translation>
+<translation id="1330043879670259913">องค์กรของคุณจะดูหรือจัดการข้อมูลบางอย่างได้เพื่อรักษาความปลอดภัยให้กับการทำงานของคุณใน Chrome เมื่อคุณลงชื่อเข้าใช้ Chrome ดูข้อมูลเพิ่มเติม</translation>
 <translation id="1331212799747679585">อัปเดต Chrome ไม่ได้ ตัวเลือกอื่นๆ</translation>
 <translation id="1332501820983677155">แป้นพิมพ์ลัดสำหรับฟีเจอร์ของ Google Chrome</translation>
 <translation id="1333491156693005331">ตรวจสอบเมื่อเร็วๆ นี้</translation>
@@ -1166,6 +1167,7 @@
 <translation id="5869522115854928033">รหัสผ่านที่บันทึกไว้</translation>
 <translation id="5870416898561279542">แท็บและกลุ่มที่ซ้ำกันหรือไม่ได้ใช้งานเป็นเวลา <ph name="DAYS_INACTIVE" /> วันจะย้ายมาที่นี่<ph name="AUTODELETE_SECTION" /> คุณเปลี่ยนตัวเลือกนี้ได้ทุกเมื่อใน<ph name="DECLUTTER_SETTINGS_TITLE" /></translation>
 <translation id="5885378508678660271">การแจ้งเตือน <ph name="SEPARATOR" /> Chrome นำสิทธิ์เหล่านี้ออกเนื่องจากเว็บไซต์นี้อันตราย</translation>
+<translation id="5896944002928653773">Bottom Sheet ข้อจำกัดความรับผิดเกี่ยวกับสัญญาณ Enterprise ปิดอยู่</translation>
 <translation id="5899667542927581604">ไม่ได้ปิดชีตพาสคีย์ใดๆ</translation>
 <translation id="5907542076239273525">บันทึกบุ๊กมาร์กไปยัง <ph name="FOLDER_NAME" /> แล้ว</translation>
 <translation id="5911301511366365629"><ph name="TAB_TITLE" />, แท็บที่ไม่ระบุตัวตนที่เลือกซึ่งมีเสียง</translation>
@@ -1256,6 +1258,7 @@
 <translation id="6251449557817521191">ดูประวัติการเข้าชมใน Chrome ที่นี่</translation>
 <translation id="6254139308321626268">คุณกำลังดูไฟล์ PDF</translation>
 <translation id="6255809143828972562">เครื่องมือจาก Chrome ช่วยให้คุณท่องเว็บได้อย่างปลอดภัยและควบคุมได้ตามต้องการ</translation>
+<translation id="6259107733340311168">Bottom Sheet ข้อจำกัดความรับผิดเกี่ยวกับสัญญาณ Enterprise เปิดอยู่แบบเต็มความสูง</translation>
 <translation id="6260260490042862943">ตัวควบคุมเว็บไซต์</translation>
 <translation id="6264376385120300461">ดาวน์โหลดต่อไป</translation>
 <translation id="6264485186158353794">กลับสู่ความปลอดภัย</translation>

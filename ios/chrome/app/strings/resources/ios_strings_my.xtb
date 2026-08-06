@@ -725,6 +725,7 @@
 <translation id="340669334496430859">နောက်ဆုံး မွမ်းမံခဲ့ချိန်</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">၂၀၂၃ ခုနှစ် အောက်တိုဘာ ၂၅ ရက်</translation>
+<translation id="3419787211763835342">အဆင့်မြင့် အော်တိုဖြည့်ခြင်း ပိုကောင်းလာအောင် ကူညီပါ</translation>
 <translation id="3426715535827854458">"ကိရိယာဘား ဖျောက်ရန်" ကို ဖျောက်ရန်</translation>
 <translation id="3435738964857648380">လုံခြုံရေး</translation>
 <translation id="3441673211568148613">သင်ဘရောက်စ်လုပ်သည့်အရာကို သီးသန့်အမြဲထားရန်</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">ဖုန်း</translation>
 <translation id="4380677808580146413">ရွေးရန်</translation>
 <translation id="4389019817280890563">ဘာသာစကားပြောင်းရန်အတွက် တို့ပါ</translation>
+<translation id="4390649422783033958"><ph name="USER_NAME" /> အဖြစ် လက်မှတ်ထိုးဝင်ထားသည်။ <ph name="USER_EMAIL" />၊ Google အဖွဲ့ဝင်။ အကောင့်မီနူး ဖွင့်ပါ။</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{၁ ရက် ကြာပြီးနောက်}other{{COUNT} ရက် ကြာပြီးနောက်}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{တဘ် ၁ ခု}other{တဘ် # ခု}}</translation>
 <translation id="4404790787924017676">သင်ခြေရာခံနေသည့် ကုန်ပစ္စည်းများအတွက် ဈေးကျသည့် သတိပေးချက်များ ရယူပါ</translation>
@@ -1364,6 +1366,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="5559567453458728487">ဝဘ်ပေါ်တွင် တွေ့ရသော ရလဒ်ကောင်းတိုင်းတာမှု ယူနစ်များ</translation>
 <translation id="5560088892362098740">သက်တမ်း ကုန်ဆုံးမည့်ရက်</translation>
 <translation id="556042886152191864">ခလုတ်</translation>
+<translation id="5563910365456880646">“Google Lens ဖြင့် ရှာဖွေရန် ဓာတ်ပုံသုံးပါ” ကို လုပ်ဆောင်ပြီးနောက်</translation>
 <translation id="5565871407246142825">အကြွေး ကဒ်များ</translation>
 <translation id="5567439033041178034">ပိုမိုသင်ယူရန်</translation>
 <translation id="5578795271662203820"><ph name="SEARCH_ENGINE" /> က ဒီပုံအတွက် ရှာဖွေနေ</translation>
@@ -1814,6 +1817,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="6930162026494574854">ဘာသာပြန် ဆက်တင်များ ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="6930799952781667037">ဤဘာသာစကားသို့ ပြောင်းရန် တို့ပါ</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />၊ <ph name="EMAIL" />။ <ph name="MANAGED_STATUS" />။</translation>
+<translation id="6937083164784433305">{count,plural, =1{ရှာဖွေရန် ဓာတ်ပုံ ၁ ပုံ သုံးထားသည်}other{ရှာဖွေရန် ဓာတ်ပုံ # ပုံ သုံးထားသည်}}</translation>
 <translation id="693761253105515415">လျှို့ဝှက်ကုဒ် သတ်မှတ်ခြင်း</translation>
 <translation id="6945221475159498467">ရွေးရန်</translation>
 <translation id="6946722113367118030">စဉ်းစားခြင်း</translation>
@@ -2019,6 +2023,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="7662316065255305764">ဝဘ်ဆိုက်အချက်အလက်</translation>
 <translation id="7665369617277396874">အကောင့် ထည့်ရန်</translation>
 <translation id="7666861622396822790">၎င်းကို <ph name="BEGIN_LINK" />အကြောင်းအရာ ဆက်တင်များ<ph name="END_LINK" /> တွင် စီမံနိုင်သည်။</translation>
+<translation id="7669448795744969014"><ph name="USER_EMAIL" /> အဖြစ် လက်မှတ်ထိုးဝင်ထားသည်။ Google အဖွဲ့ဝင်။ အကောင့်မီနူး ဖွင့်ပါ။</translation>
 <translation id="7669493687462784703"><ph name="WEBSITE" /> ထံမှ စီစဉ်သတ်မှတ်ချက်ပရိုဖိုင်ကို ဒေါင်းလုဒ်ဆက်လုပ်မလား။</translation>
 <translation id="7673346542062368520">ရုပ်ဖျက်မုဒ်တွင် ဘရောက်စ်လုပ်ရန် ဘယ်ဘက်သို့ ပွတ်ဆွဲနိုင်သည်။</translation>
 <translation id="7679915578945954324">ဝဘ်ဆိုက်လိပ်စာ မိတ္တူကူးပြီးပြီ</translation>

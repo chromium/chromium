@@ -725,6 +725,7 @@
 <translation id="340669334496430859">Վերջերս փոփոխված</translation>
 <translation id="3409785640040772790">Քարտեզներ</translation>
 <translation id="3416023309465857378">Հոկ 25, 2023</translation>
+<translation id="3419787211763835342">Օգնեք զարգացնել բարելավված ինքնալրացումը</translation>
 <translation id="3426715535827854458">Թաքցնել գործիքագոտին</translation>
 <translation id="3435738964857648380">Անվտանգություն</translation>
 <translation id="3441673211568148613">Ձեր դիտարկումը գաղտնի պահեք</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">Հեռախոս</translation>
 <translation id="4380677808580146413">Ընտրել</translation>
 <translation id="4389019817280890563">Հպեք՝ լեզուն փոխելու համար։</translation>
+<translation id="4390649422783033958">Դուք մուտք եք գործել որպես <ph name="USER_NAME" />։ <ph name="USER_EMAIL" />, Google-ի բաժանորդագրություն։ Բացել հաշվի ընտրացանկը։</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{1 օր հետո}one{{COUNT} օր հետո}other{{COUNT} օր հետո}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 ներդիր}one{# ներդիր}other{# ներդիր}}</translation>
 <translation id="4404790787924017676">Ստացեք այն ապրանքների գնիջեցման մասին ծանուցումները, որոնց հետևում եք</translation>
@@ -1365,6 +1367,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="5559567453458728487">Փոխարկել չափման միավորները վեբ էջերում</translation>
 <translation id="5560088892362098740">Գործողության ժամկետի սպառման ամսաթիվը</translation>
 <translation id="556042886152191864">Կոճակ</translation>
+<translation id="5563910365456880646">«Օգտագործեք լուսանկար՝ Google Տեսապակու միջոցով որոնելու համար» դասի ավարտից հետո</translation>
 <translation id="5565871407246142825">Վարկային քարտեր</translation>
 <translation id="5567439033041178034">ԻՄԱՆԱԼ ԱՎԵԼԻՆ</translation>
 <translation id="5578795271662203820">Որոնել այս պատկերը <ph name="SEARCH_ENGINE" />-ում</translation>
@@ -1815,6 +1818,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6930162026494574854">Զրոյացնել Translate-ի կարգավորումները</translation>
 <translation id="6930799952781667037">Հպեք՝ այս լեզուն փոխելու համար։</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />։ <ph name="MANAGED_STATUS" />։</translation>
+<translation id="6937083164784433305">{count,plural, =1{Դուք 1 լուսանկար եք օգտագործել որոնման համար}one{Դուք # լուսանկար եք օգտագործել որոնման համար}other{Դուք # լուսանկար եք օգտագործել որոնման համար}}</translation>
 <translation id="693761253105515415">Սահմանեք անցակոդ</translation>
 <translation id="6945221475159498467">Ընտրել</translation>
 <translation id="6946722113367118030">Մտածող</translation>
@@ -2020,6 +2024,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7662316065255305764">Տեղեկություններ կայքի մասին</translation>
 <translation id="7665369617277396874">Ավելացնել հաշիվ</translation>
 <translation id="7666861622396822790">Սա կարող եք կառավարել <ph name="BEGIN_LINK" />Բովանդակության կարգավորումներում<ph name="END_LINK" />։</translation>
+<translation id="7669448795744969014">Մուտք եք գործել որպես <ph name="USER_EMAIL" />, Google-ի բաժանորդագրություն։ Բացել հաշվի ընտրացանկը։</translation>
 <translation id="7669493687462784703">Շարունակե՞լ կազմաձևման պրոֆիլի ներբեռնումը <ph name="WEBSITE" /> կայքից։</translation>
 <translation id="7673346542062368520">Կարող եք մատը սահեցնել ձախ՝ ինկոգնիտո ռեժիմում դիտարկելու համար։</translation>
 <translation id="7679915578945954324">Կայքի հասցեները պատճենվեցին</translation>

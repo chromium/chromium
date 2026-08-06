@@ -1420,6 +1420,24 @@ Click-to-Call 機能を有効にします。この機能により、ログイン
 <translation id="1962273523772270623">Google サービスからの WebRTC イベントログの収集を許可する</translation>
 <translation id="1962864958436828230">データ漏洩防止のクリップボード制限の最小サイズを設定する</translation>
 <translation id="1963986268950915756">ユーザーがブラウザからウェブアプリをインストールできるようにする</translation>
+<translation id="1964128875283181035">URL パターンのリストを指定します。このリストのパターンと一致するオリジンのウェブサイトで発行されたネットワーク リクエストに対して、<ph name="LOCAL_NETWORK_ACCESS" /> のチェックを行いません。
+
+このリストのパターンと一致しないオリジンについては、ユーザーの個人設定が適用されます。
+
+有効な URL パターンについて詳しくは、https://chromeenterprise.google/policies/url-patterns/ をご覧ください。
+
+<ph name="LOCAL_NETWORK_ACCESS" /> の制限については、https://wicg.github.io/local-network-access/ をご覧ください。
+
+ローカル デバイスとローカル ネットワーク エンドポイントへのリクエストを許可またはブロックするオリジンを指定するポリシーは複数あります。オリジンが以下の複数のポリシーと一致する場合、ポリシーは次の優先順位で適用されます。
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LoopbackNetworkBlockedForUrls
+  - LoopbackNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls
+  - DeviceLocalNetworkAccessBlockedForUrls
+  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="1964191545419036999">ギャラリー（バージョン 117 以降でサポート）</translation>
 <translation id="1964634611280150550">シークレット モードを無効にする</translation>
 <translation id="1964985353230379667">手動で作成された新しいチケットの <ph name="KRB5_CONFIG" /> 推奨構成を指定します。
@@ -1977,6 +1995,7 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
 <translation id="230713790688681130">ヒンディー語（字母）レイアウトを有効にする</translation>
 <translation id="2307496301287881990">ディスプレイとグラフィックのステータスを報告する</translation>
 <translation id="2308084581803907194">複雑さのレベル: 高</translation>
+<translation id="2308557460534055666"><ph name="ON_DATA_COPIED_ENTERPRISE_CONNECTOR" /> Chrome Enterprise Connectors の設定ポリシー</translation>
 <translation id="2308899582897965249">サイレント印刷を無効にする</translation>
 <translation id="2309284543927494965">アップデートをブロックする</translation>
 <translation id="2309341709647905294">デバイスに接続されている周辺機器に関する情報を報告しない</translation>
@@ -2928,6 +2947,23 @@ WebSocket 以外のリクエストの上限を変更するには、<ph name="MAX
 
 PIN とパスワードの複雑さの各レベルについて、詳しくはヘルプセンターの記事をご確認ください。</translation>
 <translation id="2926813071464307947">レンダラアプリ コンテナのサンドボックスを無効にする</translation>
+<translation id="2928782459146756987"><ph name="ON_DATA_COPIED_ENTERPRISE_CONNECTOR" /> Enterprise Connectors に適用する <ph name="PRODUCT_NAME" /> Enterprise Connectors サービス設定のリストです。<ph name="PRODUCT_NAME" /> からクリップボードにデータがコピーされた場合に呼び出されます。
+
+<ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> フィールドは、特定のページからコピーされたデータをコネクタで分析のため送信すべきかどうかと、そのデータの分析リクエストにどのタグを含めるかを判別する際に使用されます。「有効」パターンに該当するタグは、ページの URL がそのタグに関連付けられているパターンと一致し、同じタグの「無効」パターンとは一致しない場合に分析リクエストに含められます。分析は、リクエストにタグが少なくとも 1 つ含まれる場合に行われます。
+
+<ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> フィールドでは、この設定が対応している分析サービス プロバイダを指定します。
+
+<ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> フィールドを 1 に設定した場合、<ph name="PRODUCT_NAME" /> は分析サービスからの応答を待ってから、OS のクリップボードにデータへのアクセスを許可します。その他の整数値を設定した場合、<ph name="PRODUCT_NAME" /> は OS のクリップボードにデータへのアクセスを直ちに許可します。
+
+<ph name="ENTERPRISE_CONNECTOR_DEFAULT_ACTION_FIELD" /> フィールドを「block」に設定した場合、<ph name="PRODUCT_NAME" /> は分析サービスとの通信中にエラーが発生した際、OS のクリップボードに対してデータへのアクセスを許可しません。その他の値を設定した場合、<ph name="PRODUCT_NAME" /> は OS のクリップボードに対してデータへのアクセスを許可します。
+
+<ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> フィールドは、<ph name="PRODUCT_NAME" /> からコピーされたデータの最小サイズ（バイト数）がこの値以上でないとスキャンできないことを示します。このフィールドを未設定のままにした場合は、デフォルト値の 100 バイトが使用されます。
+
+<ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> フィールドでは、分析リクエストに含まれるタグのうち、「バイパス可能」警告が表示された時点でユーザーがスキャン チェックのバイパスを選択した場合に、その理由を入力するよう求めるタグを指定します。このフィールドを設定しない場合、理由の入力は不要とみなされます。
+
+<ph name="ENTERPRISE_CONNECTOR_VERIFICATION_FIELD" /> フィールドでは、管理者がプラットフォーム固有の確認要件を設定できます。
+
+このポリシーを適用するには、追加の設定が必要です。詳しくは https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting をご確認ください。</translation>
 <translation id="2930792103747180259">無効: Service Worker からのバックグラウンド フェッチを制限なしで許可する。</translation>
 <translation id="2931888116345994552">このポリシーを未設定のままか有効に設定した場合、<ph name="PRODUCT_NAME" /> のすべてのコンポーネントでコンポーネントの更新が有効になります。
 
@@ -4061,6 +4097,7 @@ HTTPS 用の RSA 証明書に両方を含める必要があります。</transla
           </translation>
 <translation id="3677660004554019617">生成 AI ビデオ通話背景を許可しない</translation>
 <translation id="3678069907945250643">カスタマイズ アプリから Google フォトへのアクセスを許可する</translation>
+<translation id="3682200407044593844">デバイスで IP アドレス空間のマッピングをオーバーライドする</translation>
 <translation id="3685979383016152590">このポリシーでは、プリンタの一括設定に適用するアクセス ポリシーを指定して、ユーザーが <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> のどのプリンタを使用できるかを制御できます。
 
       * <ph name="PRINTERS_BLOCKLIST" />（値 0）: <ph name="PRINTERS_BULK_BLOCKLIST" /> を使用して指定プリンタへのアクセスを制限します
@@ -4464,6 +4501,23 @@ Protected Audience API のサポート終了により、このポリシーは <p
       このポリシーを有効に設定した場合は、自動選択ポリシーが複数の証明書と一致した場合に常にクライアント証明書を選択するよう求めるメッセージがユーザーに表示されます。
       このポリシーを無効に設定するか未設定のままにした場合は、自動選択と一致する証明書がない場合のみユーザーにメッセージが表示されます。</translation>
 <translation id="3947897854999940598">希望の DNS-over-HTTPS リゾルバの URI テンプレートと ID 情報を指定する</translation>
+<translation id="394949637082417941">特定の内部アドレス範囲をデバイス全体で「公開」として扱い、<ph name="LOCAL_NETWORK_ACCESS" /> のチェックが行われないようにするために使用できます。もしくは、内部で使用される可能性のある特定の公開アドレス範囲を「ローカル」として扱い、<ph name="LOCAL_NETWORK_ACCESS" /> のチェックで保護されるようにすることもできます。
+
+IP アドレス空間のオーバーライドには次の 2 つの形式があります。
+
+[cidr]=[public|local|loopback]
+
+[cidr] は CIDR 表記の IP アドレス範囲です（IPv4 の場合は https://tools.ietf.org/html/rfc4632 のセクション 3.1、IPv6 の場合は https://tools.ietf.org/html/rfc4291 のセクション 2.3 をご覧ください）。IPv6 アドレスは、URL セーフ（かっこ付き）の形式で指定する必要があります。CIDR のオーバーライドはすべてのポートに適用されます。
+
+または
+
+[ip-address]:[port]=[public|local|loopback]
+
+<ph name="LOCAL_NETWORK_ACCESS" /> について詳しくは、https://wicg.github.io/local-network-access/ および https://developer.chrome.com/blog/local-network-access をご覧ください。
+
+ポリシー LocalNetworkAccessIpAddressSpaceOverrides によるオーバーライドは、このポリシーで設定されたオーバーライドより優先されます。
+
+コマンドライン スイッチ --ip-address-space-overrides によるオーバーライドは、ポリシーで設定されたオーバーライドより優先されます。</translation>
 <translation id="3949642828552641632"><ph name="GOOGLE_DRIVE_NAME" />と <ph name="GOOGLE_WORKSPACE_NAME" /> の<ph name="CLOUD_UPLOAD_NAME" /> フローを許可する</translation>
 <translation id="3950110092991281616">標準のセッションでのみ、アンビエント認証を有効にします。</translation>
 <translation id="3950239119790560549">時間に関する制約を更新する</translation>
@@ -4900,6 +4954,24 @@ URL パターンは、<ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> 
 <translation id="4238777612788632629">バージョンが古い場合に再起動を促す</translation>
 <translation id="4239720644496144453">キャッシュは Android アプリには使用されません。複数のユーザーが同じ Android アプリをインストールする場合、アプリはユーザーごとに新しくダウンロードされます。</translation>
 <translation id="4239949495354048254">Gemini in Chrome へのファイルのアップロードを許可する。</translation>
+<translation id="424049794524032498">URL パターンのリストを指定します。このリストのパターンと一致するオリジンのウェブサイトに対して、デバイス上のすべてのセッションで <ph name="LOCAL_NETWORK_ACCESS" /> のネットワーク リクエストの発行をブロックします。
+
+このリストのパターンと一致しないオリジンについては、セッションまたはプロファイルの設定が適用されます。
+
+有効な URL パターンについて詳しくは、https://chromeenterprise.google/policies/url-patterns/ をご覧ください。
+
+<ph name="LOCAL_NETWORK_ACCESS" /> の制限については、https://wicg.github.io/local-network-access/ をご覧ください。
+
+ローカル デバイスとローカル ネットワーク エンドポイントへのリクエストを許可またはブロックするオリジンを指定するポリシーは複数あります。オリジンが以下の複数のポリシーと一致する場合、ポリシーは次の優先順位で適用されます。
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LoopbackNetworkBlockedForUrls
+  - LoopbackNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls
+  - DeviceLocalNetworkAccessBlockedForUrls
+  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="4242583077375244471">このポリシーを有効に設定した場合、<ph name="PRODUCT_NAME" /> は組み込みの証明書確認機能を使用してサーバー証明書の確認を行います。その際、Chrome Root Store がパブリック トラストのソースとして使用されます。
 
 このポリシーを無効に設定した場合、<ph name="PRODUCT_NAME" /> はシステムの証明書確認機能とシステムのルート証明書を使用します。
@@ -6740,6 +6812,23 @@ false に設定した場合、教師はこの機能にアクセスできませ�
 
       ポリシーの値は日数で指定します。</translation>
 <translation id="5457065417344056871">ブラウザでゲストモードを有効にする</translation>
+<translation id="5457999916455787365">特定の内部アドレス範囲を「公開」として扱い、<ph name="LOCAL_NETWORK_ACCES" /> のチェックが行われないようにするために使用できます。もしくは、内部で使用される可能性のある特定の公開アドレス範囲を「ローカル」として扱い、<ph name="LOCAL_NETWORK_ACCESS" /> のチェックで保護されるようにすることもできます。
+
+IP アドレス空間のオーバーライドには次の 2 つの形式があります。
+
+[cidr]=[public|local|loopback]
+
+[cidr] は CIDR 表記の IP アドレス範囲です（IPv4 の場合は https://tools.ietf.org/html/rfc4632 のセクション 3.1、IPv6 の場合は https://tools.ietf.org/html/rfc4291 のセクション 2.3 をご覧ください）。IPv6 アドレスは、URL セーフ（かっこ付き）の形式で指定する必要があります。CIDR のオーバーライドはすべてのポートに適用されます。
+
+または
+
+[ip-address]:[port]=[public|local|loopback]
+
+<ph name="LOCAL_NETWORK_ACCESS" /> について詳しくは、https://wicg.github.io/local-network-access/ および https://developer.chrome.com/blog/local-network-access をご覧ください。
+
+このポリシーによるオーバーライドは、DeviceLocalNetworkAccessIpAddressSpaceOverrides で設定されたオーバーライドより優先されます。
+
+コマンドライン スイッチ --ip-address-space-overrides によるオーバーライドは、ポリシーで設定されたオーバーライドより優先されます。</translation>
 <translation id="545817252640069915">ログイン インターセプトを有効にする</translation>
 <translation id="5460797984317417682">全画面表示の警告を有効にする</translation>
 <translation id="5462898272514237681">Google 位置情報サービスへの <ph name="PRODUCT_OS_NAME" /> のアクセスを管理する</translation>
@@ -6821,6 +6910,22 @@ Microsoft SharePoint と OneDrive のカードには、追加の管理者設定�
 <translation id="5519619299971727565">Linux アプリの使用状況に関するレポートを無効にする</translation>
 <translation id="5521035900165046997">デバイスの Bluetooth 情報レポートを有効にする</translation>
 <translation id="5521875416764302911">ユーザーに <ph name="PRODUCT_NAME" /> へのログインを許可しない</translation>
+<translation id="5523077138980091816">URL パターンのリストを指定します。このリストのパターンと一致するオリジンのウェブサイトで発行されたローカル ネットワーク エンドポイントへのネットワーク リクエストに対して、<ph name="LOCAL_NETWORK_ACCESS" /> のチェックを行いません。
+
+このリストのパターンと一致しないオリジンについては、ユーザーの個人設定が適用されます。
+
+有効な URL パターンについて詳しくは、https://chromeenterprise.google/policies/url-patterns/ をご覧ください。
+
+<ph name="LOCAL_NETWORK_ACCESS" /> の制限については、https://wicg.github.io/local-network-access/ をご覧ください。
+
+ローカル ネットワーク エンドポイントへのリクエストを許可またはブロックするオリジンを指定するポリシーは複数あります。オリジンが以下の複数のポリシーと一致する場合、ポリシーは次の優先順位で適用されます。
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls
+  - DeviceLocalNetworkAccessBlockedForUrls
+  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="552607466422196365"><ph name="DBSC_FEATURE_NAME" /> を無効にする。</translation>
 <translation id="5526184558582921522">Quirks サーバーへのクエリの送信と、必要に応じたハードウェア固有の設定ファイルのダウンロードを許可する</translation>
 <translation id="5526701598901867718">すべて（安全ではありません）</translation>
@@ -7626,6 +7731,24 @@ URL が <ph name="AUTOMATIC_DOWNLOADS_ALLOWED_FOR_URLS_POLICY_NAME" /> と <ph n
 値を true に設定するか未設定のままにした場合、教師は Google Classroom のクラス名簿を使用できます。
 
 false に設定した場合、教師はこの機能にアクセスできません。</translation>
+<translation id="606337187257433827">URL パターンのリストを指定します。このリストのパターンと一致するオリジンのウェブサイトに対して、<ph name="LOCAL_NETWORK_ACCESS" /> のネットワーク リクエストの発行をブロックします。
+
+このリストのパターンと一致しないオリジンについては、ユーザーの個人設定が適用されます。
+
+有効な URL パターンについて詳しくは、https://chromeenterprise.google/policies/url-patterns/ をご覧ください。
+
+<ph name="LOCAL_NETWORK_ACCESS" /> の制限については、https://wicg.github.io/local-network-access/ をご覧ください。
+
+ローカル デバイスとローカル ネットワーク エンドポイントへのリクエストを許可またはブロックするオリジンを指定するポリシーは複数あります。オリジンが以下の複数のポリシーと一致する場合、ポリシーは次の優先順位で適用されます。
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LoopbackNetworkBlockedForUrls
+  - LoopbackNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls
+  - DeviceLocalNetworkAccessBlockedForUrls
+  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="6066761914755798079"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> がオンの場合に、<ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> では、検索候補を表示する検索エンジンの URL を指定できます。この URL には <ph name="SEARCH_TERM_MARKER" /> という文字列を含めます。この文字列は、クエリの送信時にユーザーが指定した検索キーワードに置き換えられます。
 
       Google の検索 URL は次のように指定できます。<ph name="GOOGLE_SUGGEST_SEARCH_URL" /></translation>
@@ -8037,6 +8160,22 @@ Origin-Agent-Cluster HTTP ヘッダーは、オリジンキー エージェン�
 
       設定しない場合、ログイン画面で画面キーボードは無効になります。ユーザーはいつでも有効にでき、ユーザーが切り替わってもその状態がログイン画面で保持されます。注: <ph name="DEVICE_LOGIN_SCREEN_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> が指定されている場合はこのポリシーより優先されます。</translation>
 <translation id="6315039134652691025">ユーザーは管理対象プロファイルに既存の閲覧データを取り込めない</translation>
+<translation id="6316247387848694915">URL パターンのリストを指定します。このリストのパターンと一致するオリジンのウェブサイトに対して、ローカル ネットワーク エンドポイントへの <ph name="LOCAL_NETWORK_ACCESS" /> のネットワーク リクエストの発行をブロックします。
+
+このリストのパターンと一致しないオリジンについては、ユーザーの個人設定が適用されます。
+
+有効な URL パターンについて詳しくは、https://chromeenterprise.google/policies/url-patterns/ をご覧ください。
+
+<ph name="LOCAL_NETWORK_ACCESS" /> の制限については、https://wicg.github.io/local-network-access/ をご覧ください。
+
+ローカル ネットワーク エンドポイントへのリクエストを許可またはブロックするオリジンを指定するポリシーは複数あります。オリジンが以下の複数のポリシーと一致する場合、ポリシーは次の優先順位で適用されます。
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls
+  - DeviceLocalNetworkAccessBlockedForUrls
+  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="6316678265585263617"><ph name="PRODUCT_NAME" /> がどちらの方法を使用するかを決定できるようにする</translation>
 <translation id="6316885783540658874">このポリシーでは、ChromeOS の <ph name="DM_CRYPT" /> ユーザーホームにおけるユーザー ストレージの暗号化（サポートされている場合）で <ph name="AES_KL_NAME" /> の実装を有効にするかどうかを制御します。このポリシーは、暗号化に <ph name="DM_CRYPT" /> を使用するユーザーホームにのみ適用されます。従来の（<ph name="DM_CRYPT" /> を使用していない）ユーザーホームでは <ph name="AES_KL_NAME" /> の使用がサポートされておらず、デフォルトでは <ph name="AES_NI_NAME" /> が使用されます。ポリシーの値を変更した場合、既存の <ph name="DM_CRYPT" /> ユーザーホームは、<ph name="AES_ALGORITHM_NAME" /> の実装に対応しているため、ポリシーで設定された暗号化実装を使用してアクセスされます。ポリシーを無効または未設定のままにした場合、<ph name="DM_CRYPT" /> ユーザーホームにおけるユーザー ストレージの暗号化ではデフォルトで <ph name="AES_NI_NAME" /> が使用されます。</translation>
 <translation id="6316971721180184579">バッテリー残量低下時のサウンドを無効にする</translation>
@@ -9185,6 +9324,7 @@ JavaScript の最適化ポリシーの例外は、サイトの詳細レベル（
 <translation id="7030205756530739128"><ph name="DEVICE_BATTERY_CHARGE_MODE_NAME" /> が <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" /> に設定されている場合、バッテリーの充電率（%）に基づいて充電を開始するタイミングを <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> の設定によってカスタマイズできます。この値には <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> より 5% 以上低い値を指定してください。
 
       このポリシーを未設定のままにした場合、標準のバッテリー充電モードが適用されます。</translation>
+<translation id="7030213287413687536">デバイスでローカル デバイスとローカル ネットワーク エンドポイントへのネットワーク リクエストを許可するサイトを指定する</translation>
 <translation id="7030407698292813622">その他の DNS レコードタイプの DNS クエリを許可する</translation>
 <translation id="7030632236140191991"><ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" /> Enterprise コネクタに適用する Chrome Enterprise Connectors サービス設定のリストで、Chrome でクリップボードからデータが入力された場合、またはウェブ コンテンツがドラッグ＆ドロップされた場合に呼び出されます。
 
@@ -10314,6 +10454,22 @@ URL パターンは、<ph name="WEB_PRINTING_BLOCKED_FOR_URLS_POLICY_NAME" /> �
       <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> ポリシーは、このポリシーよりも優先され、特定の URL に対してシークレット モードを例外的に有効にできます。許可リストを指定し、このポリシーでシークレット モードを無効にした場合、許可リストに一致する URL に対してのみシークレット モードが使用可能になり、他のすべてのページはブロックされます。
 
       注: iOS では、セッション中にポリシーを変更した場合、再起動するまで変更後のポリシーは有効になりません。</translation>
+<translation id="7753487237310360952">URL パターンのリストを指定します。このリストのパターンと一致するオリジンのウェブサイトで発行されたネットワーク リクエストに対しては、デバイス上のすべてのセッションで <ph name="LOCAL_NETWORK_ACCESS" /> のチェックを行いません。
+
+有効な URL パターンについて詳しくは、https://chromeenterprise.google/policies/url-patterns/ をご覧ください。
+
+<ph name="LOCAL_NETWORK_ACCESS" /> の制限については、https://wicg.github.io/local-network-access/ をご覧ください。
+
+ローカル デバイスとローカル ネットワーク エンドポイントへのリクエストを許可またはブロックするオリジンを指定するポリシーは複数あります。オリジンが以下の複数のポリシーと一致する場合、ポリシーは次の優先順位で適用されます。
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LoopbackNetworkBlockedForUrls
+  - LoopbackNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls
+  - DeviceLocalNetworkAccessBlockedForUrls
+  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="7753678409577376761">ブラウザの試験運用版機能のツールバー エントリポイントを有効にする</translation>
 <translation id="7754704193130578113">ダウンロード前に各ファイルの保存場所を確認する</translation>
 <translation id="7754893969683595513">このポリシーでは、デバイス管理サービスにユーザー ポリシー情報を照会する間隔（ミリ秒単位）を指定できます。有効な値の範囲は 1,800,000（30 分）～86,400,000（1 日）です。この範囲外の値を指定すると、最も近い範囲内の値に修正されます。
@@ -12023,6 +12179,7 @@ M119 よりデフォルトで無効になります）。
       このポリシーを false に設定するか未設定のままにした場合、
       ディスプレイとグラフィックのステータスは報告されません。このポリシーを true に設定した場合は、
       ディスプレイとグラフィックのステータスが報告されます。</translation>
+<translation id="8912595396523313912">デバイスでローカル デバイスとローカル ネットワーク エンドポイントへのネットワーク リクエストをブロックするサイトを指定する</translation>
 <translation id="891435090623616439">JSON 文字列としてのエンコードについて詳しくは、<ph name="COMPLEX_POLICIES_URL" /> をご覧ください</translation>
 <translation id="8916106787085606382">トップレベルのクロスサイト ナビゲーションで window.name を消去せずに BrowsingContextGroup を切り替える。</translation>
 <translation id="8917070657147922192">インストール済み CA 証明書の管理をユーザーに許可する。</translation>

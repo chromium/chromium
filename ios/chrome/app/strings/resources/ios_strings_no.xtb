@@ -725,6 +725,7 @@
 <translation id="340669334496430859">Sist endret</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25. oktober 2023</translation>
+<translation id="3419787211763835342">Bidra til å gjøre forbedret autofyll bedre</translation>
 <translation id="3426715535827854458">Skjul verktøylinjen</translation>
 <translation id="3435738964857648380">Sikkerhet</translation>
 <translation id="3441673211568148613">Hold surfingen din privat</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380677808580146413">Velg</translation>
 <translation id="4389019817280890563">Trykk for å bytte språk.</translation>
+<translation id="4390649422783033958">Logget på som <ph name="USER_NAME" />. <ph name="USER_EMAIL" />, Google-medlem. Åpne kontomenyen.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{Etter 1 dag}other{Etter {COUNT} dager}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 fane}other{# faner}}</translation>
 <translation id="4404790787924017676">Få varsler om avslag på produkter du sporer</translation>
@@ -1365,6 +1367,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5559567453458728487">Konverter måleenheter som blir funnet på nettet</translation>
 <translation id="5560088892362098740">Utløpsdato</translation>
 <translation id="556042886152191864">Knapp</translation>
+<translation id="5563910365456880646">siden du fullførte «Bruk et bilde til å søke med Google Lens»</translation>
 <translation id="5565871407246142825">Kredittkort</translation>
 <translation id="5567439033041178034">FINN UT MER</translation>
 <translation id="5578795271662203820">Søk etter dette bildet i <ph name="SEARCH_ENGINE" /></translation>
@@ -1815,6 +1818,7 @@ Bytt til <ph name="OTHER_EMAIL" /> for å fortsette fra datamaskinen. Du får pa
 <translation id="6930162026494574854">Tilbakestill innstillingene for oversetting</translation>
 <translation id="6930799952781667037">Trykk for å bytte til dette språket.</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
+<translation id="6937083164784433305">{count,plural, =1{Du har brukt 1 bilde til å søke}other{Du har brukt # bilder til å søke}}</translation>
 <translation id="693761253105515415">Angi adgangskode</translation>
 <translation id="6945221475159498467">Velg</translation>
 <translation id="6946722113367118030">Tenkende</translation>
@@ -2020,6 +2024,7 @@ Bytt til <ph name="OTHER_EMAIL" /> for å fortsette fra datamaskinen. Du får pa
 <translation id="7662316065255305764">Opplysninger om nettstedet</translation>
 <translation id="7665369617277396874">Legg til konto</translation>
 <translation id="7666861622396822790">Du kan administrere dette i <ph name="BEGIN_LINK" />innholdsinnstillingene<ph name="END_LINK" />.</translation>
+<translation id="7669448795744969014">Logget på som <ph name="USER_EMAIL" />, Google-medlem. Åpne kontomenyen.</translation>
 <translation id="7669493687462784703">Vil du fortsette å laste ned en konfigurasjonsprofil fra <ph name="WEBSITE" />?</translation>
 <translation id="7673346542062368520">Du kan sveipe til venstre for å surfe i inkognitomodus.</translation>
 <translation id="7679915578945954324">Nettadressene er kopiert</translation>

@@ -85,6 +85,7 @@
 <translation id="1310482092992808703">Gruppér faner</translation>
 <translation id="1318262688555255786">Del linken til nettsiden <ph name="PAGE_TITLE" />. Kilde: <ph name="PAGE_URL" /></translation>
 <translation id="1327257854815634930">Navigasjonsloggen er åpnet</translation>
+<translation id="1330043879670259913">For å sikre arbeidet ditt i Chrome kan organisasjonen din se eller administrere bestemt informasjon når du er logget på Chrome. Finn ut mer</translation>
 <translation id="1331212799747679585">Kan ikke oppdatere Chrome. Flere alternativer</translation>
 <translation id="1332501820983677155">Hurtigtaster for funksjoner i Google Chrome.</translation>
 <translation id="1333491156693005331">Sjekket nylig</translation>
@@ -1166,6 +1167,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="5869522115854928033">Lagrede passord</translation>
 <translation id="5870416898561279542">Dupliserte faner og grupper eller faner og grupper som ikke er brukt på <ph name="DAYS_INACTIVE" /> dager, flyttes hit<ph name="AUTODELETE_SECTION" />. Du kan når som helst endre dette i <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5885378508678660271">Varsler <ph name="SEPARATOR" /> Chrome har fjernet disse tillatelsene fordi dette nettstedet er farlig</translation>
+<translation id="5896944002928653773">Feltet nederst med ansvarsfraskrivelsen for Enterprise-signaler er lukket</translation>
 <translation id="5899667542927581604">Arket for ingen passnøkler er lukket</translation>
 <translation id="5907542076239273525">Bokmerket er lagret i <ph name="FOLDER_NAME" /></translation>
 <translation id="5911301511366365629"><ph name="TAB_TITLE" />, valgt inkognitofane med lyd</translation>
@@ -1256,6 +1258,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6251449557817521191">Se Chrome-loggen din her</translation>
 <translation id="6254139308321626268">Du ser på en PDF-fil</translation>
 <translation id="6255809143828972562">Med verktøy fra Chrome kan du surfe trygt og ha kontroll</translation>
+<translation id="6259107733340311168">Feltet nederst for ansvarsfraskrivelsen for Enterprise-signaler er åpnet i full høyde</translation>
 <translation id="6260260490042862943">Nettstedskontroller</translation>
 <translation id="6264376385120300461">Last ned likevel</translation>
 <translation id="6264485186158353794">Tilbake til trygg grunn</translation>

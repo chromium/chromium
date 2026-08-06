@@ -725,6 +725,7 @@
 <translation id="340669334496430859">Dernière modification</translation>
 <translation id="3409785640040772790">Google Maps</translation>
 <translation id="3416023309465857378">25 octobre 2023</translation>
+<translation id="3419787211763835342">Nous aider à améliorer le remplissage automatique amélioré</translation>
 <translation id="3426715535827854458">Masquer l'option Masquer la barre d'outils</translation>
 <translation id="3435738964857648380">Sécurité</translation>
 <translation id="3441673211568148613">Gardez votre navigation privée</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">Numéro de téléphone</translation>
 <translation id="4380677808580146413">Sélectionner</translation>
 <translation id="4389019817280890563">Toucher pour changer la langue.</translation>
+<translation id="4390649422783033958">Connecté en tant que <ph name="USER_NAME" />. <ph name="USER_EMAIL" />, avec abonnement à Google. Ouvrez le menu du compte.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{Après 1 jour}one{Après {COUNT} jour}other{Après {COUNT} jours}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 onglet}one{# onglet}other{# onglets}}</translation>
 <translation id="4404790787924017676">Recevez des alertes de baisse de prix pour les produits que vous suivez</translation>
@@ -1365,6 +1367,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5559567453458728487">Convertir les unités de mesure trouvées sur le Web</translation>
 <translation id="5560088892362098740">Date d'expiration</translation>
 <translation id="556042886152191864">Bouton</translation>
+<translation id="5563910365456880646">depuis que vous avez terminé la tâche « Utiliser une photo pour effectuer une recherche avec Lentille Google »</translation>
 <translation id="5565871407246142825">Cartes de crédit</translation>
 <translation id="5567439033041178034">EN SAVOIR PLUS</translation>
 <translation id="5578795271662203820">Rechercher cette image avec <ph name="SEARCH_ENGINE" /></translation>
@@ -1815,6 +1818,7 @@ Pour continuer à partir de votre ordinateur, passez à <ph name="OTHER_EMAIL" /
 <translation id="6930162026494574854">Réinitialiser les paramètres de Traduction</translation>
 <translation id="6930799952781667037">Toucher pour changer la langue en celle-ci.</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
+<translation id="6937083164784433305">{count,plural, =1{Vous avez utilisé 1 photo pour effectuer une recherche}one{Vous avez utilisé # photo pour effectuer une recherche}other{Vous avez utilisé # photos pour effectuer une recherche}}</translation>
 <translation id="693761253105515415">Définir un code d'accès</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
 <translation id="6946722113367118030">Pensif</translation>
@@ -2020,6 +2024,7 @@ Pour continuer à partir de votre ordinateur, passez à <ph name="OTHER_EMAIL" /
 <translation id="7662316065255305764">Renseignements sur le site</translation>
 <translation id="7665369617277396874">Ajouter un compte</translation>
 <translation id="7666861622396822790">Vous pouvez gérer cela dans les <ph name="BEGIN_LINK" />paramètres de contenu<ph name="END_LINK" />.</translation>
+<translation id="7669448795744969014">Connecté en tant que <ph name="USER_EMAIL" />, avec abonnement à Google. Ouvrez le menu du compte.</translation>
 <translation id="7669493687462784703">Continuer à télécharger un profil de configuration à partir de <ph name="WEBSITE" />?</translation>
 <translation id="7673346542062368520">Vous pouvez balayer l'écran vers la gauche pour naviguer en mode Navigation privée.</translation>
 <translation id="7679915578945954324">Adresses de site copiées</translation>

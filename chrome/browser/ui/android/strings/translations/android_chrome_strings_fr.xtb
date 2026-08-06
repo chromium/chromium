@@ -85,6 +85,7 @@
 <translation id="1310482092992808703">Regrouper les onglets</translation>
 <translation id="1318262688555255786">Partager le lien vers la page Web <ph name="PAGE_TITLE" />. Source : <ph name="PAGE_URL" />.</translation>
 <translation id="1327257854815634930">Historique de navigation ouvert</translation>
+<translation id="1330043879670259913">Pour sécuriser votre travail sur Chrome, votre organisation pourra afficher ou gérer certaines informations lorsque vous serez connecté à Chrome. En savoir plus</translation>
 <translation id="1331212799747679585">Impossible de mettre à jour Chrome. Plus d'options</translation>
 <translation id="1332501820983677155">Raccourcis liés aux fonctionnalités de Google Chrome</translation>
 <translation id="1333491156693005331">Vérifié récemment</translation>
@@ -1166,6 +1167,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="5869522115854928033">Mots de passe enregistrés</translation>
 <translation id="5870416898561279542">Les onglets et groupes en double ou inutilisés depuis <ph name="DAYS_INACTIVE" /> jours sont déplacés ici<ph name="AUTODELETE_SECTION" />. Vous pouvez modifier cela à tout moment dans les <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5885378508678660271">Notifications <ph name="SEPARATOR" /> Chrome a supprimé ces autorisations, car ce site est dangereux</translation>
+<translation id="5896944002928653773">La bottom sheet de l'avis de non-responsabilité concernant les signaux Enterprise est fermée</translation>
 <translation id="5899667542927581604">Aucune feuille de clés d'accès n'a été fermée</translation>
 <translation id="5907542076239273525">Favori enregistré dans <ph name="FOLDER_NAME" /></translation>
 <translation id="5911301511366365629"><ph name="TAB_TITLE" />, onglet de navigation privée sélectionné avec audio</translation>
@@ -1256,6 +1258,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6251449557817521191">Consultez votre historique Chrome ici</translation>
 <translation id="6254139308321626268">Vous consultez un fichier PDF</translation>
 <translation id="6255809143828972562">Avec les outils de Chrome, vous pouvez naviguer de façon sécurisée et garder le contrôle</translation>
+<translation id="6259107733340311168">La bottom sheet de la clause de non-responsabilité concernant les signaux Enterprise est ouverte à pleine hauteur</translation>
 <translation id="6260260490042862943">Commandes du site</translation>
 <translation id="6264376385120300461">Télécharger quand même</translation>
 <translation id="6264485186158353794">Revenir en lieu sûr</translation>

@@ -85,6 +85,7 @@
 <translation id="1310482092992808703">タブをグループ化</translation>
 <translation id="1318262688555255786">ウェブページ「<ph name="PAGE_TITLE" />」へのリンクを共有します。ソース: <ph name="PAGE_URL" /></translation>
 <translation id="1327257854815634930">ナビゲーション履歴が開いています</translation>
+<translation id="1330043879670259913">Chrome での作業を保護するため、Chrome へのログイン中、組織は特定の情報を表示または管理できます。詳細</translation>
 <translation id="1331212799747679585">Chrome を更新できません。その他のオプション</translation>
 <translation id="1332501820983677155">Google Chrome 機能のショートカット</translation>
 <translation id="1333491156693005331">最近確認済み</translation>
@@ -1166,6 +1167,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="5869522115854928033">保存したパスワード</translation>
 <translation id="5870416898561279542">重複しているタブとグループや <ph name="DAYS_INACTIVE" /> 日間使用していないタブとグループはここに移動され、<ph name="AUTODELETE_SECTION" />。これは [<ph name="DECLUTTER_SETTINGS_TITLE" />] でいつでも変更できます。</translation>
 <translation id="5885378508678660271">通知 <ph name="SEPARATOR" /> このサイトは危険なため、権限を削除しました</translation>
+<translation id="5896944002928653773">Enterprise シグナルに関する免責事項のボトムシートは閉じています</translation>
 <translation id="5899667542927581604">閉じられたパスキー シートはありません</translation>
 <translation id="5907542076239273525">ブックマークを <ph name="FOLDER_NAME" /> に保存しました</translation>
 <translation id="5911301511366365629"><ph name="TAB_TITLE" />、選択された音声ありのシークレット タブ</translation>
@@ -1256,6 +1258,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="6251449557817521191">Chrome 履歴がここに表示されます</translation>
 <translation id="6254139308321626268">PDF ファイルを表示しています</translation>
 <translation id="6255809143828972562">Chrome のツールを使って、自分で管理しながら安全にブラウジングできます</translation>
+<translation id="6259107733340311168">Enterprise シグナルに関する免責事項のボトムシートが画面全体に表示されています</translation>
 <translation id="6260260490042862943">サイトの設定</translation>
 <translation id="6264376385120300461">ダウンロードを続行</translation>
 <translation id="6264485186158353794">セキュリティで保護されたページに戻る</translation>

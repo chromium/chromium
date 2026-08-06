@@ -725,6 +725,7 @@
 <translation id="340669334496430859">చివరిగా ఎడిట్ చేసినది</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">అక్టో 25, 2023</translation>
+<translation id="3419787211763835342">మెరుగైన ఆటోఫిల్‌ను మెరుగుపరచడంలో సహాయపడండి</translation>
 <translation id="3426715535827854458">టూల్‌బార్‌ను దాచండి</translation>
 <translation id="3435738964857648380">భద్రత</translation>
 <translation id="3441673211568148613">మీ బ్రౌజింగ్‌ను ప్రైవేట్‌గా ఉంచండి</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">ఫోన్</translation>
 <translation id="4380677808580146413">ఎంచుకోండి</translation>
 <translation id="4389019817280890563">భాషను మార్చడానికి నొక్కండి.</translation>
+<translation id="4390649422783033958"><ph name="USER_NAME" />‌గా సైన్ ఇన్ చేశారు. <ph name="USER_EMAIL" />, Google మెంబర్‌షిప్. ఖాతా మెనూను తెరవండి.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{1 రోజు తర్వాత}other{{COUNT} రోజుల తర్వాత}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 ట్యాబ్}other{# ట్యాబ్‌లు}}</translation>
 <translation id="4404790787924017676">మీరు ట్రాక్ చేసే ప్రోడక్ట్‌ల కోసం ధర తగ్గుదల అలర్ట్‌లను పొందండి</translation>
@@ -1365,6 +1367,7 @@
 <translation id="5559567453458728487">వెబ్‌లో కనుగొనబడిన మెజర్‌మెంట్ యూనిట్‌లను మార్చండి</translation>
 <translation id="5560088892362098740">గడువు ముగింపు తేదీ</translation>
 <translation id="556042886152191864">బటన్</translation>
+<translation id="5563910365456880646">"Google Lensతో సెర్చ్ చేయడానికి ఫోటోను ఉపయోగించండి"ని పూర్తి చేసినప్పటి నుండి</translation>
 <translation id="5565871407246142825">క్రెడిట్ కార్డ్‌లు</translation>
 <translation id="5567439033041178034">మరింత తెలుసుకోండి</translation>
 <translation id="5578795271662203820">ఈ చిత్రం కోసం <ph name="SEARCH_ENGINE" />లో వెతకండి</translation>
@@ -1815,6 +1818,7 @@
 <translation id="6930162026494574854">అనువాద సెట్టింగ్‌లను రీసెట్ చేయండి</translation>
 <translation id="6930799952781667037">ఈ భాషకు మార్చడానికి నొక్కండి.</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
+<translation id="6937083164784433305">{count,plural, =1{సెర్చ్ చేయడానికి మీరు 1 ఫోటోను ఉపయోగించారు}other{మీరు సెర్చ్ చేయడానికి # ఫోటోలను ఉపయోగించారు}}</translation>
 <translation id="693761253105515415">పాస్‌కోడ్‌ను సెట్ చేయండి</translation>
 <translation id="6945221475159498467">ఎంచుకోండి</translation>
 <translation id="6946722113367118030">ఆలోచించడం</translation>
@@ -2020,6 +2024,7 @@
 <translation id="7662316065255305764">సైట్ సమాచారం</translation>
 <translation id="7665369617277396874">ఖాతాను జోడించండి</translation>
 <translation id="7666861622396822790">మీరు దీన్ని <ph name="BEGIN_LINK" />కంటెంట్ సెట్టింగ్‌లు<ph name="END_LINK" />లో మేనేజ్ చేయవచ్చు.</translation>
+<translation id="7669448795744969014">Google మెంబర్‌షిప్‌ ఉన్న <ph name="USER_EMAIL" />గా సైన్ ఇన్ చేశారు. ఖాతా మెనూను తెరవండి.</translation>
 <translation id="7669493687462784703"><ph name="WEBSITE" /> నుండి కాన్ఫిగరేషన్ ప్రొఫైల్‌ను డౌన్‌లోడ్ చేయడాన్ని కొనసాగించాలా?</translation>
 <translation id="7673346542062368520">మీరు అజ్ఞాతంలో బ్రౌజ్ చేయడానికి ఎడమ వైపునకు స్వైప్ చేయవచ్చు.</translation>
 <translation id="7679915578945954324">సైట్ అడ్రస్‌లు కాపీ చేయబడ్డాయి</translation>

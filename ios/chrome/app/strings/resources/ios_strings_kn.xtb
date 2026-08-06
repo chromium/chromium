@@ -725,6 +725,7 @@
 <translation id="340669334496430859">ಕೊನೆಯದಾಗಿ ಮಾರ್ಪಡಿಸಿರುವುದು</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 ಅಕ್ಟೋಬರ್ 2023</translation>
+<translation id="3419787211763835342">ವರ್ಧಿಸಿದ ಆಟೋಫಿಲ್ ಅನ್ನು ಸುಧಾರಿಸಲು ಸಹಾಯ ಮಾಡಿ</translation>
 <translation id="3426715535827854458">ಟೂಲ್‌ಬಾರ್ ಅನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="3435738964857648380">ಭದ್ರತೆ</translation>
 <translation id="3441673211568148613">ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಅನ್ನು ಖಾಸಗಿಯಾಗಿ ಇರಿಸಿ</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">ಫೋನ್</translation>
 <translation id="4380677808580146413">ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="4389019817280890563">ಭಾಷೆಯನ್ನು ಬದಲಾಯಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
+<translation id="4390649422783033958"><ph name="USER_NAME" /> ಆಗಿ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗಿದೆ. <ph name="USER_EMAIL" />, Google ಸದಸ್ಯತ್ವ. ಖಾತೆಯ ಮೆನುವನ್ನು ತೆರೆಯಿರಿ.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{1 ದಿನದ ನಂತರ}one{{COUNT} ದಿನಗಳ ನಂತರ}other{{COUNT} ದಿನಗಳ ನಂತರ}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 ಟ್ಯಾಬ್}one{# ಟ್ಯಾಬ್‌ಗಳು}other{# ಟ್ಯಾಬ್‌ಗಳು}}</translation>
 <translation id="4404790787924017676">ನೀವು ಟ್ರ್ಯಾಕ್ ಮಾಡುವ ಉತ್ಪನ್ನಗಳ ದರ ಇಳಿಕೆಯ ಎಚ್ಚರಿಕೆಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
@@ -1365,6 +1367,7 @@
 <translation id="5559567453458728487">ವೆಬ್‌ನಲ್ಲಿ ಕಂಡುಬರುವ ಮಾಪನ ಯೂನಿಟ್‌ಗಳನ್ನು ಪರಿವರ್ತಿಸಿ</translation>
 <translation id="5560088892362098740">ಅವಧಿ ಮುಗಿಯುವ ದಿನಾಂಕ</translation>
 <translation id="556042886152191864">ಬಟನ್</translation>
+<translation id="5563910365456880646">"Google Lens ಮೂಲಕ ಹುಡುಕಲು ಫೋಟೋವನ್ನು ಬಳಸಿ" ಪೂರ್ಣಗೊಳಿಸಿದ ನಂತರದಿಂದ</translation>
 <translation id="5565871407246142825">ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್‌ಗಳು</translation>
 <translation id="5567439033041178034">ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="5578795271662203820">ಈ ಚಿತ್ರಕ್ಕಾಗಿ <ph name="SEARCH_ENGINE" /> ನಲ್ಲಿ ಹುಡುಕಾಡಿ</translation>
@@ -1815,6 +1818,7 @@
 <translation id="6930162026494574854">ಅನುವಾದ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ರೀಸೆಟ್‌ ಮಾಡಿ</translation>
 <translation id="6930799952781667037">ಈ ಭಾಷೆಯನ್ನು ಬದಲಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
+<translation id="6937083164784433305">{count,plural, =1{ಹುಡುಕಲು ನೀವು 1 ಫೋಟೋವನ್ನು ಬಳಸಿದ್ದೀರಿ}one{ಹುಡುಕಲು ನೀವು # ಫೋಟೋಗಳನ್ನು ಬಳಸಿದ್ದೀರಿ}other{ಹುಡುಕಲು ನೀವು # ಫೋಟೋಗಳನ್ನು ಬಳಸಿದ್ದೀರಿ}}</translation>
 <translation id="693761253105515415">ಪಾಸ್‌ಕೋಡ್‌ ಅನ್ನು ಸೆಟ್‌ ಮಾಡಿ</translation>
 <translation id="6945221475159498467">ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="6946722113367118030">ಆಲೋಚಿಸುವುದು</translation>
@@ -2020,6 +2024,7 @@
 <translation id="7662316065255305764">ಸೈಟ್ ಮಾಹಿತಿ</translation>
 <translation id="7665369617277396874">ಖಾತೆಯನ್ನು ಸೇರಿಸು</translation>
 <translation id="7666861622396822790">ನೀವು ಇದನ್ನು <ph name="BEGIN_LINK" />ಕಂಟೆಂಟ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು<ph name="END_LINK" /> ನಲ್ಲಿ ನಿರ್ವಹಿಸಬಹುದು.</translation>
+<translation id="7669448795744969014"><ph name="USER_EMAIL" />, Google ಸದಸ್ಯತ್ವ ಎಂಬುದಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗಿದೆ. ಖಾತೆಯ ಮೆನುವನ್ನು ತೆರೆಯಿರಿ.</translation>
 <translation id="7669493687462784703"><ph name="WEBSITE" /> ನಿಂದ ಕಾನ್ಫಿಗರೇಶನ್ ಪ್ರೊಫೈಲ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡುವುದನ್ನು ಮುಂದುವರಿಸಬೇಕೆ?</translation>
 <translation id="7673346542062368520">ಅಜ್ಞಾತದಲ್ಲಿ ಬ್ರೌಸ್ ಮಾಡಲು ನೀವು ಎಡಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡಬಹುದು.</translation>
 <translation id="7679915578945954324">ಸೈಟ್ ವಿಳಾಸಗಳನ್ನು ಕಾಪಿ ಮಾಡಲಾಗಿದೆ</translation>

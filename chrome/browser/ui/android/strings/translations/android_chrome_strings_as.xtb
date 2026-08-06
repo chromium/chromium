@@ -85,6 +85,7 @@
 <translation id="1310482092992808703">টেববোৰ একগোট কৰক</translation>
 <translation id="1318262688555255786">ৱেবপৃষ্ঠাখনত <ph name="PAGE_TITLE" /> লিংক শ্বেয়াৰ কৰক। উৎস: <ph name="PAGE_URL" /></translation>
 <translation id="1327257854815634930">নেভিগেশ্বন ইতিহাস খোলা আছে</translation>
+<translation id="1330043879670259913">Chromeত আপোনাৰ কাম সুৰক্ষিত কৰিবলৈ, আপুনি Chromeত ছাইন ইন হৈ থাকিলে আপোনাৰ প্ৰতিষ্ঠানে কিছুমান নিৰ্দিষ্ট তথ্য চাব বা পৰিচালনা কৰিব পাৰিব। অধিক জানক</translation>
 <translation id="1331212799747679585">Chrome আপডে’ট কৰিব নোৱাৰি। অধিক বিকল্প</translation>
 <translation id="1332501820983677155">Google Chromeৰ সুবিধাৰ শ্বৰ্টকাট</translation>
 <translation id="1333491156693005331">শেহতীয়াকৈ পৰীক্ষা কৰা হৈছে</translation>
@@ -1166,6 +1167,7 @@
 <translation id="5869522115854928033">ছেভ কৰা পাছৱৰ্ডসমূহ</translation>
 <translation id="5870416898561279542"><ph name="DAYS_INACTIVE" /> দিনৰ বাবে ব্যৱহাৰ নকৰা ডুপ্লিকেট টেব আৰু গোটসমূহ বা সেইসমূহ ইয়ালৈ স্থানান্তৰ কৰা হয়<ph name="AUTODELETE_SECTION" />। আপুনি এইটো যিকোনো সময়তে <ph name="DECLUTTER_SETTINGS_TITLE" />ত সলনি কৰিব পাৰে।</translation>
 <translation id="5885378508678660271">জাননী <ph name="SEPARATOR" /> এই ছাইটটো বিপজ্জনক হোৱাৰ বাবে Chromeএ এই অনুমতিসমূহ আঁতৰাইছে</translation>
+<translation id="5896944002928653773">এণ্টাৰপ্ৰাইজ ছিগনেলৰ অস্বীকাৰমূলক ঘোষণাৰ তলৰ শ্বীটখন বন্ধ কৰা হৈছে</translation>
 <translation id="5899667542927581604">কোনো পাছকীৰ শ্বীট বন্ধ কৰা হোৱা নাই</translation>
 <translation id="5907542076239273525"><ph name="FOLDER_NAME" />ত বুকমাৰ্ক ছেভ কৰা হৈছে</translation>
 <translation id="5911301511366365629"><ph name="TAB_TITLE" />, বাছনি কৰা অডিঅ’ প্লে’ হৈ থকা ইনক’গ্নিট’ টেব</translation>
@@ -1256,6 +1258,7 @@
 <translation id="6251449557817521191">ইয়াত আপোনাৰ Chromeৰ ইতিহাস চাওক</translation>
 <translation id="6254139308321626268">আপুনি এটা PDF ফাইল চাই আছে</translation>
 <translation id="6255809143828972562">Chromeৰ সঁজুলিৰ জৰিয়তে, আপুনি সুৰক্ষিতভাৱে ব্ৰাউজ কৰি নিয়ন্ত্ৰণত থাকিব পাৰে</translation>
+<translation id="6259107733340311168">এণ্টাৰপ্ৰাইজ ছিগনেলৰ অস্বীকাৰমূলক ঘোষণাৰ তলৰ শ্বীটখন পূৰ্ণ উচ্চতাত খোলা হৈছে</translation>
 <translation id="6260260490042862943">ছাইটৰ নিয়ন্ত্ৰণ</translation>
 <translation id="6264376385120300461">তথাপি ডাউনল’ড কৰক</translation>
 <translation id="6264485186158353794">পূৰ্বৱৰ্তী পৃষ্ঠাটোলৈ উভতি যাওক</translation>

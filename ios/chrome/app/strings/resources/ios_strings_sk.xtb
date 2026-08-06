@@ -725,6 +725,7 @@
 <translation id="340669334496430859">Naposledy zmenené</translation>
 <translation id="3409785640040772790">Mapy</translation>
 <translation id="3416023309465857378">25. október 2023</translation>
+<translation id="3419787211763835342">Pomôžte zlepšiť vylepšené automatické dopĺňanie</translation>
 <translation id="3426715535827854458">Skryť panel s nástrojmi</translation>
 <translation id="3435738964857648380">Zabezpečenie</translation>
 <translation id="3441673211568148613">Zachovajte si prehliadanie súkromné</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">Telefón</translation>
 <translation id="4380677808580146413">Vybrať</translation>
 <translation id="4389019817280890563">Klepnutím zmeníte jazyk.</translation>
+<translation id="4390649422783033958">Prihlásili ste sa ako <ph name="USER_NAME" />. <ph name="USER_EMAIL" />, členstvo na Googli. Otvorte ponuku účtu.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{Po 1 dni}few{Po {COUNT} dňoch}many{Po {COUNT} dňa}other{Po {COUNT} dňoch}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 karta}few{# karty}many{# tabs}other{# kariet}}</translation>
 <translation id="4404790787924017676">Dostávajte upozornenia na pokles cien produktov, ktoré sledujete</translation>
@@ -1365,6 +1367,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5559567453458728487">Konvertovať merné jednotky nájdené na internete</translation>
 <translation id="5560088892362098740">Dátum vypršania platnosti</translation>
 <translation id="556042886152191864">Tlačidlo</translation>
+<translation id="5563910365456880646">od dokončenia úlohy „Vyhľadávajte podľa fotky pomocou funkcie Google Lens“</translation>
 <translation id="5565871407246142825">Kreditné karty</translation>
 <translation id="5567439033041178034">VIAC INFORMÁCIÍ</translation>
 <translation id="5578795271662203820">Hľadať obrázok v službe <ph name="SEARCH_ENGINE" /></translation>
@@ -1815,6 +1818,7 @@ Ak chcete pokračovať v počítači, prepnite na účet <ph name="OTHER_EMAIL"
 <translation id="6930162026494574854">Obnoviť nastavenia Prekladača</translation>
 <translation id="6930799952781667037">Klepnutím prepnete na tento jazyk.</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
+<translation id="6937083164784433305">{count,plural, =1{Pri vyhľadávaní ste použili 1 fotku}few{Pri vyhľadávaní ste použili # fotky}many{You used # photos to search}other{Pri vyhľadávaní ste použili # fotiek}}</translation>
 <translation id="693761253105515415">Nastavte vstupný kód</translation>
 <translation id="6945221475159498467">Vybrať</translation>
 <translation id="6946722113367118030">Zamyslená tvár</translation>
@@ -2020,6 +2024,7 @@ Ak chcete pokračovať v počítači, prepnite na účet <ph name="OTHER_EMAIL"
 <translation id="7662316065255305764">Informácie o webe</translation>
 <translation id="7665369617277396874">Pridať účet</translation>
 <translation id="7666861622396822790">Môžete to spravovať v sekcii <ph name="BEGIN_LINK" />Nastavenia obsahu<ph name="END_LINK" />.</translation>
+<translation id="7669448795744969014">Prihlásili ste sa ako <ph name="USER_EMAIL" />, členstvo na Googli. Otvorte ponuku účtu.</translation>
 <translation id="7669493687462784703">Chcete pokračovať v sťahovaní konfiguračného profilu z webu <ph name="WEBSITE" />?</translation>
 <translation id="7673346542062368520">Ak chcete prehliadať v režime inkognito, potiahnite doľava.</translation>
 <translation id="7679915578945954324">Adresy webových stránok boli skopírované</translation>

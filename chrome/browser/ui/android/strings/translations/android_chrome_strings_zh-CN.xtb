@@ -85,6 +85,7 @@
 <translation id="1310482092992808703">将标签页分组</translation>
 <translation id="1318262688555255786">分享指向“<ph name="PAGE_TITLE" />”网页的链接。来源：<ph name="PAGE_URL" /></translation>
 <translation id="1327257854815634930">导航历史记录已打开</translation>
+<translation id="1330043879670259913">为了保障您在 Chrome 上的工作安全，当您登录 Chrome 后，您的组织将能够查看或管理某些信息。了解详情</translation>
 <translation id="1331212799747679585">Chrome 无法更新。更多选项</translation>
 <translation id="1332501820983677155">Google Chrome 功能快捷键</translation>
 <translation id="1333491156693005331">近期检查过</translation>
@@ -1166,6 +1167,7 @@
 <translation id="5869522115854928033">已保存的密码</translation>
 <translation id="5870416898561279542">重复的标签页和分组或已闲置 <ph name="DAYS_INACTIVE" /> 天的标签页和分组会移至此处，<ph name="AUTODELETE_SECTION" />。您随时可在<ph name="DECLUTTER_SETTINGS_TITLE" />中更改此设置。</translation>
 <translation id="5885378508678660271">通知 <ph name="SEPARATOR" /> Chrome 撤消了这些权限，因为此网站具有危险性</translation>
+<translation id="5896944002928653773">企业信号免责声明底部动作条已关闭</translation>
 <translation id="5899667542927581604">未关闭任何通行密钥表格</translation>
 <translation id="5907542076239273525">书签已保存到“<ph name="FOLDER_NAME" />”中。</translation>
 <translation id="5911301511366365629"><ph name="TAB_TITLE" />，已选择的无痕式标签页，正在播放音频</translation>
@@ -1256,6 +1258,7 @@
 <translation id="6251449557817521191">在此处查看您的 Chrome 历史记录</translation>
 <translation id="6254139308321626268">您正在查看 PDF 文件</translation>
 <translation id="6255809143828972562">借助 Chrome 中的工具，您可以安全地浏览并掌控个人数据的安全</translation>
+<translation id="6259107733340311168">企业信号免责声明底部动作条已以最大高度打开</translation>
 <translation id="6260260490042862943">网站控件</translation>
 <translation id="6264376385120300461">仍然下载</translation>
 <translation id="6264485186158353794">返回安全连接</translation>

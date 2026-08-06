@@ -85,6 +85,7 @@
 <translation id="1310482092992808703">جمع علامات التبويب</translation>
 <translation id="1318262688555255786">يؤدي النقر على الزرّ إلى مشاركة رابط صفحة الويب "<ph name="PAGE_TITLE" />". المصدر: <ph name="PAGE_URL" /></translation>
 <translation id="1327257854815634930">يتم فتح سجلّ التنقُّل.</translation>
+<translation id="1330043879670259913">‏لحماية عملك على Chrome، ستتمكّن مؤسستك من الاطّلاع على بعض المعلومات أو إدارتها بعد تسجيل دخولك إلى Chrome. مزيد من المعلومات</translation>
 <translation id="1331212799747679585">‏يتعذَّر تحديث Chrome. يُرجى الاطِّلاع على مزيد من الخيارات</translation>
 <translation id="1332501820983677155">‏اختصارات ميزات Google Chrome</translation>
 <translation id="1333491156693005331">تم التحقّق منه مؤخرًا</translation>
@@ -1167,6 +1168,7 @@
 <translation id="5869522115854928033">كلمات المرور المحفوظة</translation>
 <translation id="5870416898561279542">يتم نقل علامات التبويب والمجموعات المكرّرة أو غير المستخدَمة لمدة <ph name="DAYS_INACTIVE" /> يوم إلى هنا <ph name="AUTODELETE_SECTION" />. يمكنك تعديل هذا الإعداد في أي وقت من خلال <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5885378508678660271">‏الإشعارات <ph name="SEPARATOR" /> أزال Chrome هذه الأذونات لأنّ هذا الموقع الإلكتروني خطير</translation>
+<translation id="5896944002928653773">تم إغلاق البطاقة السفلية لبيان إخلاء المسؤولية بشأن الإشارات المؤسسية</translation>
 <translation id="5899667542927581604">تمّ إغلاق صفحة "ما من مفاتيح مرور"</translation>
 <translation id="5907542076239273525">تم حفظ الإشارة المرجعية في "<ph name="FOLDER_NAME" />"</translation>
 <translation id="5911301511366365629">‫"<ph name="TAB_TITLE" />"، علامة تبويب تشغِّل صوتًا وتم اختيارها في "وضع التصفّح المتخفي"</translation>
@@ -1257,6 +1259,7 @@
 <translation id="6251449557817521191">‏عرض سجلّ Chrome هنا</translation>
 <translation id="6254139308321626268">‏يتم الآن عرض ملف PDF</translation>
 <translation id="6255809143828972562">‏باستخدام أدوات من Chrome، يمكنك التصفّح بأمان والتحكّم في بياناتك بشكل كامل</translation>
+<translation id="6259107733340311168">فُتحَت بطول الشاشة البطاقة السفلية لبيان إخلاء المسؤولية بشأن الإشارات المؤسسية</translation>
 <translation id="6260260490042862943">عناصر التحكّم في الموقع</translation>
 <translation id="6264376385120300461">التنزيل على أيّ حال</translation>
 <translation id="6264485186158353794">الرجوع</translation>

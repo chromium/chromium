@@ -80,7 +80,6 @@
 <translation id="1049743911850919806">التصفح المتخفي</translation>
 <translation id="1049795001945932310">إ&amp;عدادات اللغة</translation>
 <translation id="1050693411695664090">ضعيفة</translation>
-<translation id="1050765387089990494">اكتب ردًا مختصرًا ومهذبًا لرفض دعوة</translation>
 <translation id="1053226848101751430">تم حذف الإدخال</translation>
 <translation id="1054048317165655285">إكمال الإعداد على هاتفك</translation>
 <translation id="1054153489933238809">فتح الصورة الأصلية في علامة تبويب جديدة</translation>
@@ -111,7 +110,6 @@
 <translation id="1070705170564860382">جارٍ الفتح في متصفِّح بديل خلال <ph name="COUNTDOWN_SECONDS" /> ثانية</translation>
 <translation id="1071661533099313342">فصل طرق العرض</translation>
 <translation id="1072700771426194907">‏تم التعرّف على جهاز USB</translation>
-<translation id="1073951898092443918">أعِد كتابة رسالتي الإلكترونية من خلال تعديل الأسلوب ليكون أكثر إقناعًا</translation>
 <translation id="1075920807995555452">‏يمكنك تشغيل الأدوات وأدوات التحرير وبرامج IDE في بيئة تديرها مؤسستك على <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="1076176485976385390">التنقُّل بين الصفحات باستخدام مؤشر النص</translation>
 <translation id="1076730357641144594">يمكنك الاطّلاع على مفاتيح المرور المحفوظة وإدارتها من خلال "<ph name="GOOGLE_PASSWORD_MANAGER" />"</translation>
@@ -172,7 +170,6 @@
 <translation id="1118428905044642028">كلمات المرور وميزة "الملء التلقائي"</translation>
 <translation id="111897705806685148">استخدام مفتاح مرور من جهاز آخر</translation>
 <translation id="1119447706177454957">خطأ داخلي</translation>
-<translation id="1121990216147052230">أريد إنشاء قائمة مهام</translation>
 <translation id="1122068467107743258">العمل</translation>
 <translation id="1122198203221319518">&amp;الأدوات</translation>
 <translation id="1122656823581975100">{NUM_SITES,plural, =1{تم العثور على كلمة مرور واحدة محتمَل تعرّضها للاختراق.}zero{تم العثور على {NUM_SITES} كلمة مرور محتمَل تعرّضها للاختراق.}two{تم العثور على كلمتَي مرور ({NUM_SITES}) محتمَل تعرّضهما للاختراق.}few{تم العثور على {NUM_SITES} كلمات مرور محتمَل تعرّضها للاختراق.}many{تم العثور على {NUM_SITES} كلمة مرور محتمَل تعرّضها للاختراق.}other{تم العثور على {NUM_SITES} كلمة مرور محتمَل تعرّضها للاختراق.}}</translation>
@@ -367,8 +364,6 @@
 <translation id="1256143630373008432">تعذّر الاختبار الذاتي</translation>
 <translation id="1257336506558170607">تصدير الشهادة التي تم اختيارها</translation>
 <translation id="1258491128795710625">الميزات الجديدة</translation>
-<translation id="1259438590315804994">صِغ مقدمة لرسالة تعريفية تسلّط الضوء على مهاراتي وخبراتي لدور محدّد</translation>
-<translation id="1259474203619072905">أريد العثور على مقهى هادئ</translation>
 <translation id="1260451001046713751">السماح دائمًا بعرض النوافذ المنبثقة وعمليات إعادة التوجيه من الموقع <ph name="HOST" /></translation>
 <translation id="1261380933454402672">معتدل</translation>
 <translation id="1262395978737369974">‏المواقع الإلكترونية المسموح لها دائمًا باستخدام ميزة تحسين JavaScript</translation>
@@ -661,7 +656,6 @@
 <translation id="1506187449813838456">زيادة درجة الصوت</translation>
 <translation id="1507170440449692343">تم حظر دخول هذه الصفحة إلى الكاميرا التابعة لك.</translation>
 <translation id="1507246803636407672">إل&amp;غاء</translation>
-<translation id="1508605873202255562">أريد إنشاء جدول بيانات مخصّص لتتبُّع التقدّم لمساعدتي في تحقيق أهدافي</translation>
 <translation id="1508931164824684991">‏السماح للمواقع الإلكترونية باستخدام JavaScript</translation>
 <translation id="1509163368529404530">استعادة المجموعة</translation>
 <translation id="1509281256533087115">‏الوصول إلى أي <ph name="DEVICE_NAME_AND_VENDOR" /> عبر USB</translation>
@@ -718,7 +712,6 @@
 <translation id="1549788673239553762">يريد <ph name="APP_NAME" /> الوصول إلى <ph name="VOLUME_NAME" />. قد يعدّل أو يحذف ملفاتك.</translation>
 <translation id="1549966883323105187">الوصول بسرعة إلى كلمات المرور المحفوظة</translation>
 <translation id="1550656959113606473">‏إعدادات Chrome التلقائية</translation>
-<translation id="1550906923175308360">أنشِئ لي قائمة مهام لليوم لمساعدتي في إنجاز أعمالي</translation>
 <translation id="1552301827267621511">غيرت الإضافة "<ph name="EXTENSION_NAME" />" البحث لاستخدام <ph name="SEARCH_PROVIDER_DOMAIN" />.</translation>
 <translation id="1552752544932680961">إدارة الإضافة</translation>
 <translation id="1553538517812678578">غير محدودة</translation>
@@ -1023,7 +1016,6 @@
 <translation id="1781553166608855614">لغة التحدّث</translation>
 <translation id="1781771911845953849">الحسابات والمزامنة</translation>
 <translation id="1782101999402987960">لقد حظر المشرف التحديثات.</translation>
-<translation id="1784449499499574899">أريد اختصار رسالتي الإلكترونية</translation>
 <translation id="1784707308176068866">التشغيل في الخلفية عندما يطلبه تطبيق تعاون أصلي</translation>
 <translation id="1784849162047402014">مساحة القرص الموجودة على الجهاز منخفضة.</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{سيؤدي إلغاء تثبيت "<ph name="APP_NAME" />" إلى إلغاء تثبيت هذا التطبيق أيضًا:}zero{سيؤدي إلغاء تثبيت "<ph name="APP_NAME" />" إلى إلغاء تثبيت التطبيقات التالية أيضًا:}two{سيؤدي إلغاء تثبيت "<ph name="APP_NAME" />" إلى إلغاء تثبيت التطبيقَين التاليَين أيضًا:}few{سيؤدي إلغاء تثبيت "<ph name="APP_NAME" />" إلى إلغاء تثبيت التطبيقات التالية أيضًا:}many{سيؤدي إلغاء تثبيت "<ph name="APP_NAME" />" إلى إلغاء تثبيت التطبيقات التالية أيضًا:}other{سيؤدي إلغاء تثبيت "<ph name="APP_NAME" />" إلى إلغاء تثبيت التطبيقات التالية أيضًا:}}</translation>
@@ -1237,7 +1229,6 @@
 <translation id="1940221956626514677">تخصيص شريط الأدوات</translation>
 <translation id="1940546824932169984">الأجهزة المتصلة</translation>
 <translation id="194081218158106711">جارٍ التحقق من تغيير كلمة المرور...</translation>
-<translation id="1940937679128415504">هل هناك أي طاولات متاحة في مطاعم قريبة الليلة؟</translation>
 <translation id="1941410638996203291">وقت البدء: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">الإصدار: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">‏ضبطَ المشرف إعدادات حسابك لربطه بخدمة Microsoft OneDrive تلقائيًا، ولكن حدث خطأ.</translation>
@@ -1287,7 +1278,6 @@
 <translation id="1979582938184524893">الاختيار اليدوي للمعلومات الشخصية التي تريد تضمينها</translation>
 <translation id="197989455406964291">‏لا يدعم KDC (مركز توزيع المفاتيح) نوع التشفير</translation>
 <translation id="1980168597243156">محطة فضائية</translation>
-<translation id="1980625250417123895">أريد تبادل الأفكار معي</translation>
 <translation id="1981434377190976112">الاطّلاع على جميع بياناتك على جميع المواقع الإلكترونية</translation>
 <translation id="1982445813182156480">إرسال الرسائل إلى أجهزة البلوتوث واستلامها منها باستخدام المقابس</translation>
 <translation id="1982851102516626421">لقد سجّلت الخروج من حسابك</translation>
@@ -1327,7 +1317,6 @@
 <translation id="2012935757369720523">حذف الملف</translation>
 <translation id="2014495120525813351">‏السماح لـ Gemini Spark بالتصفّح على هذا الجهاز</translation>
 <translation id="2016473077102413275">لن تعمل الميزات التي تحتاج إلى استخدام الصور.</translation>
-<translation id="2017251371756906434">أريد إنشاء قائمة بقالة</translation>
 <translation id="2017334798163366053">إيقاف جمع بيانات مستوى الأداء</translation>
 <translation id="2017770349934140286">‏سيتم حذف Google Play والتطبيقات التي تم تنزيلها من جهاز Chromebook هذا.
     <ph name="LINE_BREAKS1" />
@@ -1620,7 +1609,6 @@
 <translation id="224835741840550119">تنظيف الجهاز</translation>
 <translation id="2249111429176737533">فتح كنافذة ذات علامة تبويب</translation>
 <translation id="2249605167705922988">مثال: 1-5، 8، 11-13</translation>
-<translation id="2249635629516220541">تخصيص المعلومات التي تستخدمها المواقع الإلكترونية لعرض الإعلانات لك</translation>
 <translation id="2250153645770828940">حذف القاموس</translation>
 <translation id="22505994009453896">التحكّم في مؤشر الماوس باستخدام لوحة مفاتيح رقمية</translation>
 <translation id="2250624716625396929">تستخدم علامة التبويب هذه الكاميرا والميكروفون.</translation>
@@ -1721,7 +1709,6 @@
 <translation id="2327920026543055248">إدخال <ph name="CHARACTER" /> حرف/رقم من إجمالي <ph name="TOTAL" /></translation>
 <translation id="2328474416100889417">سيفقد جميع المستخدمين على الفور إمكانية الوصول إلى مجموعة علامات التبويب "<ph name="GROUP_NAME" />"، وسيتم إيقاف جميع روابط الدعوة</translation>
 <translation id="2328773543844041445">توسيع علامات التبويب تلقائيًا عند التمرير فوقها</translation>
-<translation id="2330159380157777735">أريد إنشاء مسوّدة لخطة درس</translation>
 <translation id="2330182457402792918">اختيار الملفات التي يمكن لهذا الموقع الإلكتروني قراءتها</translation>
 <translation id="2332115969598251205">يتعذّر تحميل الأجهزة المحفوظة في <ph name="PRIMARY_EMAIL" />. يُرجى التحقّق من اتصال الإنترنت وإعادة المحاولة.</translation>
 <translation id="2332131598580221120">عرض في المتجر</translation>
@@ -1753,6 +1740,7 @@
 <translation id="2352662711729498748">&lt; 1 ميغابايت</translation>
 <translation id="2353168619378866466">فتح المجموعة</translation>
 <translation id="2353297238722298836">تم السماح باستخدام الكاميرا والميكروفون</translation>
+<translation id="2353682139907904963">تثبيت الإضافات الجديدة في شريط الأدوات</translation>
 <translation id="2353910600995338714">تم التصدير بنجاح.</translation>
 <translation id="2355477091455974894">خيارات توفير الطاقة</translation>
 <translation id="2355604387869345912">تفعيل ميزة "التوصيل الفوري"</translation>
@@ -2042,7 +2030,6 @@
 <translation id="2568774940984945469">حاوية شريط المعلومات</translation>
 <translation id="257088987046510401">المظاهر</translation>
 <translation id="2572032849266859634">تم منح إذن دخول للقراءة فقط إلى <ph name="VOLUME_NAME" />.</translation>
-<translation id="2572277925482605243">ساعِدني في الاستعداد لمحادثة صعبة</translation>
 <translation id="2573147659521059501">عدد علامات التبويب: <ph name="NUM" /></translation>
 <translation id="2573276323521243649">الرجوع من صفحة اختيار الأفاتار</translation>
 <translation id="2573831315551295105">تخصيص مفتاح تحكّم للإجراء "<ph name="ACTION" />"</translation>
@@ -2133,7 +2120,6 @@
 <translation id="2641174089709899456">تذكير: التصفُّح المستند إلى الذكاء الاصطناعي في متناول يدك</translation>
 <translation id="2642111877055905627">كرة القدم</translation>
 <translation id="2642206811783203764">على <ph name="SITE_NAME" /> دائمًا</translation>
-<translation id="2643064289437760082">يمكنك في أي وقت حذف بيانات "قياس أداء الإعلانات" عن طريق حذف بيانات التصفّح.</translation>
 <translation id="2643379881528582459">‏إذا رصد Chromium أنّ إحدى كلمات المرور الخاصة بك قد تم الكشف عنها للجميع بعد عملية اختراق للبيانات، يمكن أن يقترح عليك تغييرها بالنيابة عنك في حال سجّلت الدخول إلى حسابك</translation>
 <translation id="2643698698624765890">يمكنك إدارة الإضافات من خلال النقر على "الإضافات" في القائمة "نافذة".</translation>
 <translation id="2643967675101729581">تاريخ الانتهاء:</translation>
@@ -2536,7 +2522,6 @@
 <translation id="2939908794993783865">المزيد من المواقع الإلكترونية غير النشطة</translation>
 <translation id="2939938020978911855">عرض أجهزة بلوتوث المُتاحة</translation>
 <translation id="2941112035454246133">منخفضة</translation>
-<translation id="2942170180325421996">ساعِدني في حسم نقاش مع صديق من خلال تقديم تحليل موضوعي يستند إلى البيانات ويعرض وجهتَي النظر بإنصاف</translation>
 <translation id="2942560570858569904">جارٍ الانتظار...</translation>
 <translation id="2942581856830209953">تخصيص هذه الصفحة</translation>
 <translation id="2942707801577151363">‏بإمكانك فتح ملفات Word وExcel وPowerPoint وتعديلها وحفظها. قد يكون عليك الاشتراك للاستفادة من بعض الميزات.</translation>
@@ -2852,7 +2837,6 @@
 <translation id="3179982752812949580">خط النص</translation>
 <translation id="31806439105337256">عرض علامات التبويب عموديًا</translation>
 <translation id="3180990259147710757">تحريك الفك إلى اليسار</translation>
-<translation id="3181307292207270140">‏أبحث عن مقهى مريح يمكنني فيه الاسترخاء قليلاً والقراءة وإنجاز بعض الأعمال. هل يمكنك العثور على أماكن قريبة معروفة بأنّها هادئة ومريحة، وبها شبكة Wi-Fi موثوقة؟</translation>
 <translation id="3181825792072797598">تفعيل المزامنة</translation>
 <translation id="3181954750937456830">التصفُّح الآمن (يحميك ويحمي جهازك من المواقع الإلكترونية الضارة)</translation>
 <translation id="3182749001423093222">التدقيق الإملائي</translation>
@@ -2866,7 +2850,6 @@
     فإذا نسيته، عليك إعادة ضبط هذا الجهاز على الإعدادات الأصلية باستخدام ميزة Powerwash وإعداده مرة أخرى.</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{تم حظر هذا التطبيق}zero{تم حظر بعض التطبيقات}two{تم حظر هذين التطبيقين}few{تم حظر بعض التطبيقات}many{تم حظر بعض التطبيقات}other{تم حظر بعض التطبيقات}}</translation>
 <translation id="3185454065699440434">السماح بالإضافات على <ph name="SITE_NAME" /></translation>
-<translation id="3187472288455401631">قياس أداء الإعلانات</translation>
 <translation id="3187556136478864255">‏هل يمكنك رؤية جهاز البث في
     <ph name="BEGIN_LINK" />
     تطبيق Google Home<ph name="END_LINK" />؟</translation>
@@ -2994,7 +2977,6 @@
 <translation id="3290249595466894471">يُرسِل هذا الوضع أيضًا عددًا قليلاً من الصفحات وعمليات التنزيل وأنشطة الإضافات ومعلومات النظام للمساعدة في اكتشاف التهديدات الجديدة.</translation>
 <translation id="3292966601422448005">إنّ الأذونات الممنوحة لـ "<ph name="APP_NAME" />" سيتم منحها أيضًا لتطبيقاته المثبَّتة.</translation>
 <translation id="3293080634164207409">إضافة علامات تبويب</translation>
-<translation id="3293181007446299124">يتم الحفاظ على خصوصية سجلّ التصفُّح في جهازك ويتم تأخير إرسال التقارير بهدف حماية هويتك.</translation>
 <translation id="329324683265785818">‏اختصار لوحة المفاتيح المخصّص للتشغيل/الإيقاف المؤقت: k</translation>
 <translation id="3293644607209440645">إرسال هذه الصفحة</translation>
 <translation id="3294437725009624529">ضيف</translation>
@@ -3152,7 +3134,6 @@
 <translation id="3415580428903497523">استخدام الشهادات المُخزَّنة على الجهاز التي تم استيرادها من نظام التشغيل</translation>
 <translation id="341589277604221596">عرض ميزة "النسخ النصي التلقائي" باللغة <ph name="LANGUAGE" /></translation>
 <translation id="3416468988018290825">‏عرض عناوين URL الكاملة دائمًا</translation>
-<translation id="3417390269491141648">قارِن بين خيارات خطتي الصحية ووضِّح الاختلافات الرئيسية بينها</translation>
 <translation id="3417835166382867856">البحث في علامات التبويب</translation>
 <translation id="3417836307470882032">التوقيت العسكري</translation>
 <translation id="3418798368381485936">لا يمكنك تسجيل الدخول باستخدام هذا الحساب</translation>
@@ -3302,6 +3283,7 @@
 <translation id="3525606571546393707">جرِّب فتح الملف من مجلد آخر، أو اختَر "الفتح في المحرِّر الأساسي" لاستخدام خيارات العرض والتعديل المحدودة.</translation>
 <translation id="3526034519184079374">يتعذَّر الاطِّلاع على بيانات "المواقع" أو تغييرها</translation>
 <translation id="3527085408025491307">المجلد</translation>
+<translation id="3527473647192919613">نافذة تصفّح معزول جديدة</translation>
 <translation id="3528498924003805721">أهداف الاختصارات</translation>
 <translation id="3529851166527095708">العناوين والمزيد</translation>
 <translation id="3530919970074558307">إلغاء التركيز على المجموعة</translation>
@@ -3462,7 +3444,6 @@
 <translation id="3647654707956482440">يتعذّر استخدام هذا الرابط. يُرجى التحقق من الرابط بحثًا عن الأخطاء الإملائية أو استخدام رابط آخر ثم إعادة المحاولة.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{تم استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}zero{تم استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}two{تم استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}few{تم استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}many{تم استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}other{تم استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">تم اكتشاف <ph name="USB_DEVICE_NAME" /></translation>
-<translation id="3648667207586409316">ما هي بعض الإجراءات التي يمكنني اتخاذها للمساعدة في تقليل التوتر؟</translation>
 <translation id="3650845953328929506">تحميل السجلّ مُعلّق.</translation>
 <translation id="3651488188562686558">‏قطع الاتصال بشبكة Wi-Fi</translation>
 <translation id="3652181838577940678">تحديد مكان الأزرار على قلم الشاشة</translation>
@@ -3668,7 +3649,6 @@
 <translation id="3786224729726357296">حذف البيانات والأذونات الخاصة بالموقع الإلكتروني <ph name="SITE" /></translation>
 <translation id="3786834302860277193">إظهار التسطير للنص التجميعي</translation>
 <translation id="3786890785076278600">خط ثابت</translation>
-<translation id="3787429331139352881">أعِد كتابة النص التالي بأسلوب احترافي ومهذب وواضح ومناسب لبيئة العمل. حافِظ على جوهر الرسالة الأصلية مع تحسين الأسلوب ليكون مناسبًا للجمهور التنفيذي: [يُرجى إدخال النص هنا]</translation>
 <translation id="3787434344076711519">في انتظار الترجمة</translation>
 <translation id="3789432704615470433">‏ملفات SharePoint وOneDrive</translation>
 <translation id="3789841737615482174">تثبيت</translation>
@@ -3718,7 +3698,6 @@
 <translation id="3812525830114410218">شهادة سيئة</translation>
 <translation id="3813296892522778813">‏يمكنك الانتقال إلى <ph name="BEGIN_LINK_CHROMIUM" />مساعدة Google Chrome<ph name="END_LINK_CHROMIUM" /> إذا لم تتمكن من العثور عما تبحث عنه</translation>
 <translation id="3813358687923336574">اللغة المستخدمة لترجمة الصفحات وميزة "معلومات سريعة"</translation>
-<translation id="3813458570141926987">‏تضم هذه القائمة المواضيع التي استنتَج Chrome اهتمامك بها استنادًا إلى سجلّ التصفُّح الأخير.</translation>
 <translation id="3815668647912194650">يمكنك الاحتفاظ بهذه المجموعة لإضافة علامات تبويب إليها لاحقًا، أو مغادرتها إذا لم تعُد بحاجة إليها.</translation>
 <translation id="3816118180265633665">‏ألوان Chrome</translation>
 <translation id="3817524650114746564">فتح إعدادات الخادم الوكيل الخاصة بالكمبيوتر</translation>
@@ -3818,7 +3797,6 @@
 <translation id="3880513902716032002">يتم بشكل مسبق تحميل بعض الصفحات التي تنتقل إليها.</translation>
 <translation id="3884152383786131369">سيستخدم محتوى الويب المتوفّر بلغات متعدّدة أول لغة معتمَدة من القائمة. وستتم مزامنة هذه الإعدادات المفضّلة مع إعدادات المتصفّح. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">يتولّى مشرفك إدارة التحديثات.</translation>
-<translation id="3887764720741098847">المعلومات المحفوظة</translation>
 <translation id="3888501106166145415">‏شبكات Wi-Fi المرتبطة</translation>
 <translation id="3890064827463908288">‏تفعيل ميزة "مزامنة Chrome" لاستخدام "مزامنة الواي فاي"</translation>
 <translation id="389313931326656921">تخصيص مفتاح تحكّم للإجراء "التالي"</translation>
@@ -3956,7 +3934,6 @@
 <translation id="3987544746655539083">مواصلة حظر هذا الموقع الإلكتروني من الوصول إلى موقعك الجغرافي</translation>
 <translation id="3987993985790029246">نسخ الرابط</translation>
 <translation id="3988124842897276887">‏علامة التبويب هذه متصلة بجهاز USB.</translation>
-<translation id="3988734044246990738">ساعِدني في إنشاء قائمة بمستلزمات رحلتي القادمة للتأكّد من عدم نسيان الأمور المهمة</translation>
 <translation id="3989635538409502728">تسجيل الخروج</translation>
 <translation id="399179161741278232">المستوردة</translation>
 <translation id="3992008114154328194">جارٍ تنزيل "<ph name="FILE_NAME" />"، <ph name="STATUS" /></translation>
@@ -3994,7 +3971,6 @@
 <translation id="4021941025609472374">إغلاق علامات التبويب على اليسار</translation>
 <translation id="4022426551683927403">إ&amp;ضافة إلى القاموس</translation>
 <translation id="4024768890073681126">يتولّى أحد والدَيك إدارة متصفِّحك.</translation>
-<translation id="4024795508424217012">ساعِدني في صياغة ردّ</translation>
 <translation id="4025039777635956441">كتم صوت الموقع الإلكتروني المحدد</translation>
 <translation id="402707738228916911">تم تلقي تعليمات "<ph name="AUTHORIZE_INSTRUCTION_NAME" />".</translation>
 <translation id="4027569221211770437">مجلد "<ph name="FOLDER_TITLE" />"</translation>
@@ -4013,7 +3989,6 @@
 <translation id="4039966970282098406">يمكنك إدارة خصوصيتك من خلال التحكّم في إمكانية الوصول إلى الميكروفون والكاميرا وغير ذلك</translation>
 <translation id="4040041015953651705">لغة النص المطلوب ترجمته</translation>
 <translation id="4040854068229263729">الإ&amp;زالة من القاموس</translation>
-<translation id="4042611013811262481">أنشِئ قائمة تسوّق استنادًا إلى وصفة طعام أو خطة وجبات</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{الخروج من الصفحة}zero{الخروج من صفحة}two{الخروج من الصفحتين}few{الخروج من صفحات}many{الخروج من صفحة}other{الخروج من صفحة}}</translation>
 <translation id="4042941173059740150">المتابعة إلى <ph name="SITE_ETLD_PLUS_ONE" /> باستخدام <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">حجم مؤشر الماوس</translation>
@@ -4239,7 +4214,6 @@
 <translation id="4235965441080806197">إلغاء تسجيل الدخول</translation>
 <translation id="4235976607074422892">سرعة الانتقال للأعلى أو للأسفل</translation>
 <translation id="4236163961381003811">الاطّلاع على مزيد من الإضافات</translation>
-<translation id="4238607350028440048">ساعدني في التدرُّب على مقابلة، من خلال طرح أسئلة عليّ كما لو أنّك مدير توظيف</translation>
 <translation id="4241140145060464825">محتوى التطبيق</translation>
 <translation id="4241224519481557898">الفئة</translation>
 <translation id="4242245038391716252">‏تم التنزيل بواسطة الإضافة: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
@@ -4251,7 +4225,6 @@
 <translation id="4243624244759495699"><ph name="LOCALE" />، الدرجة <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">العثور على المزيد من تطبيقات قلم الشاشة</translation>
 <translation id="4246980464509998944">التعليقات الإضافية:</translation>
-<translation id="42481816218163154">أريد إنشاء روتين صباحي لمدة 15 دقيقة يساعدني على بدء يومي بشكل أكثر سلاسة. يجب تضمين تمرين لليقظة والوعي التام</translation>
 <translation id="4248401726442101648">لم يتم توصيل أي كاميرات.</translation>
 <translation id="4249116869350613769">توفير شحن البطارية</translation>
 <translation id="4249373718504745892">تم حظر دخول هذه الصفحة إلى الكاميرا والميكروفون التابعين لك.</translation>
@@ -4260,7 +4233,6 @@
 <translation id="4250596587221570622">اختيار مظهر لملفك الشخصي</translation>
 <translation id="4250680216510889253">لا</translation>
 <translation id="4251243704979202079">سيتمكّن <ph name="ORIGIN" /> من عرض الملفات الموجودة في "<ph name="FOLDERNAME" />" وإنشاء نُسخ منها</translation>
-<translation id="4251676308358173916">ساعدني في إنشاء تمرين لكامل الجسم لمدة 10 دقائق. أريد التركيز على القوة والقدرة على التحمّل والمرونة</translation>
 <translation id="4252899949534773101">البلوتوث غير مُفعَّل</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - تمت مشاركة محتوى علامة التبويب</translation>
 <translation id="4253168017788158739">ملاحظة</translation>
@@ -4299,7 +4271,6 @@
 <translation id="4276390967705106170">الفتح في علامة تبويب متصفِّح جديدة</translation>
 <translation id="4276598757692536305">‏ملف PPD للطابعة</translation>
 <translation id="4277434192562187284">‏مصدر ملفات XML للإعدادات</translation>
-<translation id="4277442707759481607">أنشِئ أسئلة تدريبية لاختبار معرفتي بموضوع معيّن</translation>
 <translation id="4278390842282768270">مسموح به</translation>
 <translation id="4279129444466079448">‏يمكنك تثبيت <ph name="PROFILE_LIMIT" /> ملف شخصي لبطاقة eSIM كحد أقصى على هذا الجهاز. لإضافة ملف شخصي آخر، عليك أولاً إزالة أحد الملفات الشخصية الحالية.</translation>
 <translation id="427987768447457592">مجموعة علامات تبويب جديدة</translation>
@@ -4399,7 +4370,6 @@
 <translation id="435185728237714178">الانتقال إلى تطبيق "<ph name="APP_NAME" />" لإدارة التطبيقات التي يتم تثبيتها وبثّها</translation>
 <translation id="4352913519324947509">لم يتم تغيير كلمة المرور، ولكن ما زال بإمكانك الوصول إلى الموقع الإلكتروني باستخدام كلمة المرور الحالية</translation>
 <translation id="4354073718307267720">طلب الإذن عند محاولة موقع إلكتروني إنشاء خريطة ثلاثية الأبعاد للبيئة المحيطة بك أو تتبُّع موضع الكاميرا</translation>
-<translation id="435434000498374342">أنشِئ جدول تدريب لمدة 8 أسابيع لشخص مبتدئ تمامًا يريد الجري لمسافة 5 كيلومترات. يجب أن يتضمّن الجدول فترات متناوبة من المشي والجري، وأيامًا مخصّصة للاستراحة</translation>
 <translation id="4354344420232759511">ستظهر المواقع التي تزورها هنا.</translation>
 <translation id="4356100841225547054">إيقاف الصوت</translation>
 <translation id="4357583358198801992">عرض مجموعات علامات التبويب</translation>
@@ -4431,7 +4401,6 @@
 <translation id="4377363674125277448">هناك مشكلة مع شهادة الخادم.</translation>
 <translation id="437809255587011096">الإعلان عن نمط النص</translation>
 <translation id="4378154925671717803">هاتف</translation>
-<translation id="4378221908737133050">أريد قائمة تحقّق لتنظيف منزلي بشكل شامل</translation>
 <translation id="4378308539633073595">التمرير للأمام</translation>
 <translation id="4378363201814870400">يمكنك إدارة معلومات الملء التلقائي لتصفّح الإنترنت بشكل أسرع، مثل كلمات المرور وطرق الدفع والعناوين وبطاقات تعريف الهوية</translation>
 <translation id="4378551569595875038">جارٍ الاتصال...</translation>
@@ -4451,7 +4420,6 @@
 <translation id="4385985255515673508">{NUM_EXTENSIONS,plural, =1{تم إيقاف هذه الإضافة لأنّها أصبحت غير متوافقة}zero{تم إيقاف هذه الإضافات لأنّها أصبحت غير متوافقة}two{تم إيقاف هاتين الإضافتين لأنّهما أصبحتا غير متوافقتين}few{تم إيقاف هذه الإضافات لأنّها أصبحت غير متوافقة}many{تم إيقاف هذه الإضافات لأنّها أصبحت غير متوافقة}other{تم إيقاف هذه الإضافات لأنّها أصبحت غير متوافقة}}</translation>
 <translation id="4386435410933281983">يتعذَّر الحفظ. يُرجى إعادة المحاولة</translation>
 <translation id="4386604394450371010">نظرة عامة</translation>
-<translation id="4387362115623213806">ساعِدني في صياغة ردّ مهذّب للاعتذار عن ترتيبات لقاء</translation>
 <translation id="4387890294700445764">كلمات مرور محتمَل تعرّضها للاختراق</translation>
 <translation id="4388650384344483842">يجب استخدام 8 أحرف على الأقل.</translation>
 <translation id="4388700905120039425">{COUNT,plural, =1{كلمة المرور للموقع الإلكتروني <ph name="URL" />}zero{كلمات المرور للموقع الإلكتروني <ph name="URL" /> ({COUNT})}two{كلمات المرور للموقع الإلكتروني <ph name="URL" /> ({COUNT})}few{كلمات المرور للموقع الإلكتروني <ph name="URL" /> ({COUNT})}many{كلمات المرور للموقع الإلكتروني <ph name="URL" /> ({COUNT})}other{كلمات المرور للموقع الإلكتروني <ph name="URL" /> ({COUNT})}}</translation>
@@ -4530,7 +4498,6 @@
 <translation id="4437879751057074691">اقتراح حفظ كلمات المرور ومفاتيح المرور</translation>
 <translation id="4437947179446780764">إضافة مقدِّم خدمة مخصّص لنظام أسماء النطاقات</translation>
 <translation id="4438043733494739848">شفاف</translation>
-<translation id="4439665841041786039">هل يمكنك مساعدتي في تبادل الأفكار لحلّ مشكلتي؟</translation>
 <translation id="4441147046941420429">للمواصلة، يُرجى إزالة مفتاح الأمان من جهازك، ثم إعادة إدخاله ولمسه.</translation>
 <translation id="444134486829715816">توسيع...</translation>
 <translation id="4441928470323187829">ثبَّت المشرف هذه الإضافة.</translation>
@@ -4585,25 +4552,21 @@
 <translation id="4500114933761911433">تعطّل <ph name="PLUGIN_NAME" />.</translation>
 <translation id="4500647907053779331">ترجمة النص المُحدَّد إلى اللغة <ph name="LANGUAGE" /></translation>
 <translation id="4501530680793980440">تأكيد الإزالة</translation>
-<translation id="4501939680615452918">أريد البحث عن طاولات متاحة في مطاعم رائجة</translation>
 <translation id="4502423230170890588">إزالة من هذا الجهاز</translation>
 <translation id="4502477450742595012">انقر بزر الماوس الأيمن على علامة تبويب واختَر "إضافة علامة تبويب إلى المجموعة الجديدة".</translation>
 <translation id="4503362512377701151">‏تظهر لك مجموعات علامات التبويب المُستخدمة مؤخرًا لمساعدتك في المتابعة من حيث توقفت.
         <ph name="BREAK" />
         <ph name="BREAK" />
         يمكنك إدارة الإعدادات من قائمة البطاقة أو الاطّلاع على المزيد من الخيارات عند النقر على الزر "تخصيص Chrome".</translation>
-<translation id="4503459574136856756">أعِد كتابة سيرتي الذاتية لتصبح أكثر احترافية</translation>
 <translation id="4504940961672722399">استخدم هذه الإضافة بالنقر على هذا الرمز أو بالضغط على <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="4505469832694348179">‏يمكنك تنزيل Chrome باستخدام رمز الاستجابة السريعة هذا، ثم تسجيل الدخول إلى حسابك على Google.</translation>
 <translation id="450552327874992444">تمت إضافة الكلمة مُسبَقًا.</translation>
-<translation id="4506763601327080673">أريد إنشاء مسوّدة مخطَّط</translation>
 <translation id="4507373251891673233">لقد حظرت جميع الإضافات من الوصول إلى الموقع الإلكتروني <ph name="HOST" />.</translation>
 <translation id="4507401683427517298">انقر على "إضافة اختصار".</translation>
 <translation id="4508265954913339219">تعذّر إتمام عملية التفعيل</translation>
 <translation id="4508765956121923607">عرض الم&amp;صدر</translation>
 <translation id="4509277363725254222">‏عند مشاركة نسخة من <ph name="BEGIN_BOLD_USERNAME" />اسم المستخدم<ph name="END_BOLD_USERNAME" /> و<ph name="BEGIN_BOLD_PASSWORD" />كلمة المرور<ph name="END_BOLD_PASSWORD" />، يمكن لأحد أفراد عائلتك ملء هذه البيانات باستخدام "مدير كلمات المرور في Google".</translation>
 <translation id="4509421746503122514">إعادة التشغيل للتحديث</translation>
-<translation id="4509741852167209430">تتم مشاركة أنواع محدودة من البيانات بين المواقع الإلكترونية لقياس أداء إعلاناتها، مثل ما إذا كان قد تم إجراء عملية شراء بعد زيارة موقع إلكتروني.</translation>
 <translation id="4510195992002502722">تعذّر إرسال الملاحظات. جارٍ إعادة المحاولة...</translation>
 <translation id="4511344327646819192">لمنع الآخرين من استخدام كلمة مرورك، عليك تغييرها من خلال <ph name="WEBSITE" />.</translation>
 <translation id="4513072860957814107">&amp;حذف بيانات التصفّح…</translation>
@@ -4803,7 +4766,6 @@
 <translation id="4665446389743427678">سيتم حذف جميع البيانات المُخزَّنة من خلال <ph name="SITE" />.</translation>
 <translation id="4666472247053585787">استخدام <ph name="DEVICE_TYPE" /> في الاطّلاع على الإشعارات من هاتفك</translation>
 <translation id="4666911709726371538">المزيد من التطبيقات</translation>
-<translation id="4668279686271488041">يتم بانتظام حذف بيانات "قياس أداء الإعلانات" من جهازك.</translation>
 <translation id="4668929960204016307">،</translation>
 <translation id="4668936527507421457">يجب أن يستخدم رقم التعريف الشخصي أرقامًا فقط</translation>
 <translation id="4670909875730475086">تم تثبيت "<ph name="APP_NAME" />" على جهازك بنجاح.</translation>
@@ -4866,7 +4828,6 @@
 <translation id="4711638718396952945">استعادة الإعدادات</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">حذف البيانات عند إغلاق جميع النوافذ</translation>
-<translation id="4714279348049646935">‏أريد احتساب المعدّل التراكمي (GPA) من خلال ترجيح الساعات المعتمدة ومستويات الدورات التعليمية، وقيم نقاط الدرجات</translation>
 <translation id="4714414859110184926">الوصول إلى مفاتيح المرور</translation>
 <translation id="4715631922189108923">تعديل اسم المستخدم</translation>
 <translation id="47158868804223727">انقر على اسم المجموعة لتوسيعها أو تصغيرها.</translation>
@@ -4925,7 +4886,6 @@
 <translation id="4759202969060787081">عدم فتح الملف</translation>
 <translation id="4759238208242260848">عمليات التنزيل</translation>
 <translation id="4761104368405085019">استخدام الميكروفون</translation>
-<translation id="4762155283275129615">أريد اختصار رسالتي الإلكترونية من خلال التركيز على النقاط الأساسية</translation>
 <translation id="4762489666082647806">لون مؤشر الماوس</translation>
 <translation id="4762718786438001384">مساحة القرص على الجهاز منخفضة للغاية</translation>
 <translation id="4762849514113423887">كلمة المرور غير صحيحة. يُرجى إعادة المحاولة.</translation>
@@ -5140,7 +5100,6 @@
 <translation id="4906490889887219338">إعداد خوادم مشاركة الملفات على الشبكة أو إدارتها <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">إعادة ضبط على الإعدادات التلقائية</translation>
 <translation id="4907129260985716018">اختيار الوقت الذي يمكن للإضافة فيه قراءة بيانات الموقع الإلكتروني وتغييرها</translation>
-<translation id="4908123261203588878">أريد معرفة معلومات عن النجوم</translation>
 <translation id="4908811072292128752">فتح علامة تبويب جديدة لتصفح موقعي ويب في وقت واحد</translation>
 <translation id="4910241725741323970">سَبَق تثبيت هذا التطبيق</translation>
 <translation id="4912643508233590958">عمليات التنشيط من الوضع بعيد</translation>
@@ -5275,7 +5234,6 @@
 <translation id="5015344424288992913">إثبات هوية الخادم الوسيط...</translation>
 <translation id="5016305686459575361">من خلال توصيل هاتفك، يمكنك إجراء ما يلي:</translation>
 <translation id="5016491575926936899">يمكنك إرسال رسائل نصية من جهاز الكمبيوتر ومشاركة اتصالك بالإنترنت والرد على إشعارات المحادثات وفتح قفل جهاز <ph name="DEVICE_TYPE" /> باستخدام هاتفك.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
-<translation id="5016793191388570244">أريد إنشاء برنامج ممتع لمشاهدة عدة أفلام في عطلة نهاية الأسبوع. اقترِح موضوعًا و4 أفلام على الأقل يجب مشاهدتها، ووجبات خفيفة مناسبة لتناولها أثناء المشاهدة</translation>
 <translation id="5017250179386090956">جارٍ تنزيل ملفات التعليقات التوضيحية للعقدة الرئيسية</translation>
 <translation id="5017529052065664584">آخر 15 دقيقة</translation>
 <translation id="5018207570537526145">فتح الموقع الإلكتروني الخاص بالإضافة</translation>
@@ -5288,7 +5246,6 @@
 <translation id="5022206631034207923">قفل الشاشة، عناصر التحكّم</translation>
 <translation id="5024511550058813796">سيظهر لك سجلّ التصفّح على جميع الأجهزة التي تتم مزامنة حسابك معها، ما يعني أنه يمكنك مواصلة التصفّح من حيث توقفت.</translation>
 <translation id="5024992827689317672">تم حذف البيانات</translation>
-<translation id="5026121202864677765">أريد كتابة رسالة طلب عمل</translation>
 <translation id="5026492829171796515">‏تسجيل الدخول لإضافة حساب Google</translation>
 <translation id="5026806129670917316">‏تفعيل شبكة Wi-Fi</translation>
 <translation id="5026874946691314267">عدم إظهار هذه الإشعارات مرة أخرى</translation>
@@ -5442,7 +5399,6 @@
 <translation id="514387318601895731">النظر للأسفل</translation>
 <translation id="5143960098217235598">يترتب على ذلك منح إذن الوصول إلى الميكروفون لكلّ من التطبيقات والمواقع الإلكترونية المسموح لها بذلك وخدمات النظام</translation>
 <translation id="5144815231216017543">alt + <ph name="TOP_ROW_KEY" /></translation>
-<translation id="5146031810732101666">ساعِدني في حلّ مشكلة</translation>
 <translation id="5146235736676876345">الاختيار الذاتي</translation>
 <translation id="5146896637028965135">صوت النظام</translation>
 <translation id="5147113439721488265">اقتراح</translation>
@@ -5459,7 +5415,6 @@
 <translation id="5154917547274118687">الذاكرة</translation>
 <translation id="5155299520372681119">انتهت صلاحية تحميل الملف وتمت إزالته.</translation>
 <translation id="5156638757840305347">يتم تمييز المؤشر عند ظهوره أو تحريكه.</translation>
-<translation id="5156995531130738884">صِغ خطة درس تتضمّن جلسة تفاعلية لصفّي</translation>
 <translation id="5157250307065481244">عرض تفاصيل الموقع الإلكتروني</translation>
 <translation id="5159094275429367735">‏إعداد نظام التشغيل Crostini</translation>
 <translation id="5159236862360390997">سيتم عرض سلسلة من فقاعات المساعدة التي تتضمّن تعليمات.
@@ -5517,7 +5472,6 @@
 <translation id="5195074424945754995">‏لن يؤدي فرض فتح عناوين URL المتوافقة مع هذه القواعد إلى تبديل المتصفِّح، ويمكن فتح هذه العناوين في متصفِّح <ph name="BROWSER_NAME" /> أو متصفِّح <ph name="ALTERNATIVE_BROWSER_NAME" /> البديل.</translation>
 <translation id="5196790039230503600">استخدِم الإيماءة، ثم حرِّك رأسك لإظهار المكان الذي تريد إفلات العنصر فيه ثمّ استخدِمها مرة أخرى لإفلاته.</translation>
 <translation id="5197255632782567636">الإنترنت</translation>
-<translation id="5197384040493814274">قدِّم لي بعض النصائح التي تساعدني على الترويج لعلامتي التجارية، مع تضمين نصائح حول كيفية تحسين موقعي الإلكتروني</translation>
 <translation id="5199729219167945352">التجارب</translation>
 <translation id="5200191131577845078">تم السماح بإرسال الإشعارات من <ph name="DOMAIN" /></translation>
 <translation id="5200680225062692606">بصمة الإصبع مقفلة. للمتابعة، أدخِل كلمة المرور.</translation>
@@ -5556,7 +5510,6 @@
 <translation id="5226253862147382094">‏مراجعة التعديلات التي تم إجراؤها على الشعار وعنوان URL</translation>
 <translation id="5226514125747186">تظهر دائرة منقَّطة حول رموز الموقع الإلكتروني. <ph name="BEGIN_LINK" />مزيد من المعلومات عن علامات التبويب غير النشطة<ph name="END_LINK" /></translation>
 <translation id="5226731562812684363">لا يُسمح للمواقع الإلكترونية باستخدام موقعك الجغرافي</translation>
-<translation id="5226979307236834587">كيف يمكنني رفض الخطط بطريقة مهذبة؟</translation>
 <translation id="5227679487546032910">الأفاتار التلقائي باللون الأزرق المخضر</translation>
 <translation id="5228245824943774148">هناك <ph name="NUM_DEVICES_CONNECTED" /> جهاز متصل.</translation>
 <translation id="5228704301508740018">{GROUP_COUNT,plural, =1{هل تريد إلغاء تجميع مجموعة علامات التبويب؟}zero{هل تريد إلغاء تجميع مجموعات علامات التبويب؟}two{هل تريد إلغاء تجميع مجموعتَي علامات التبويب؟}few{هل تريد إلغاء تجميع مجموعات علامات التبويب؟}many{هل تريد إلغاء تجميع مجموعات علامات التبويب؟}other{هل تريد إلغاء تجميع مجموعات علامات التبويب؟}}</translation>
@@ -5631,7 +5584,6 @@
 <translation id="5290322819358431297">الملء التلقائي لكلمات المرور</translation>
 <translation id="52912272896845572">ملف المفتاح الخاص غير صالح.</translation>
 <translation id="5293043095535566171">هل تريد السماح بالوصول إلى الموقع الجغرافي؟</translation>
-<translation id="5293160437421672778">ابحث عن مطاعم مناسبة للعائلة تتيح إجراء الحجوزات. يجب أن يكون بها قائمة طعام للأطفال وأن تكون أجواؤها مريحة</translation>
 <translation id="5293170712604732402">استعادة الإعدادات إلى الوضع التلقائي الأصلي</translation>
 <translation id="5294068591166433464">‏إذا حاول موقع إلكتروني سرقة كلمة المرور، أو إذا نزّلت ملفًا ضارًا، قد يرسِل Chrome أيضًا عناوين URL، بما في ذلك أجزاء من محتوى الصفحة، إلى Google.</translation>
 <translation id="5294618183559481278">‏يستخدم جهاز <ph name="DEVICE_TYPE" /> أداة استشعار مدمجة لرصد مَن ينظر إلى شاشة جهازك. تتم معالجة جميع البيانات فورًا على جهازك، ثم حذفها. ولا يتم مطلقًا إرسال بيانات جهاز الاستشعار إلى Google. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
@@ -5837,6 +5789,7 @@
 <translation id="5463348003600590648">إيقاف الاقتراحات</translation>
 <translation id="5463625433003343978">جارٍ البحث عن أجهزة...</translation>
 <translation id="5463856536939868464">قائمة تحتوي على إشارات مخفية</translation>
+<translation id="5465214111614807935">نافذة &amp;تصفّح معزول جديدة</translation>
 <translation id="5466374726908360271">ل&amp;صق وبحث عن "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="5466721587278161554">يتم حفظ مجموعات علامات التبويب في شريط الإشارات وقائمة التطبيقات ويتم تعديلها على جميع الأجهزة التي سجّلت الدخول عليها في حال تفعيل المزامنة</translation>
 <translation id="5467207440419968613">تم حظر إذن <ph name="PERMISSION_1" /> وإذن <ph name="PERMISSION_2" />.</translation>
@@ -5947,7 +5900,6 @@
 <translation id="5548075230008247516">تم إلغاء اختيار كل الإشارات المرجعية وتم الخروج من وضع التحديد.</translation>
 <translation id="554810465530189549">عدم عرض القائمة العائمة عند تحديد النص</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" وعلامة تبويب واحدة أخرى}two{"<ph name="TAB_TITLE" />" وعلامتا تبويب أخريان}few{"<ph name="TAB_TITLE" />" و# علامات تبويب أخرى}many{"<ph name="TAB_TITLE" />" و# علامة تبويب أخرى}other{"<ph name="TAB_TITLE" />" و# علامة تبويب أخرى}}</translation>
-<translation id="554868699913876106">أريد صياغة جدول تدريب لمدة 8 أسابيع للجري لمسافة 5 كيلومترات</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5551573675707792127">لوحة المفاتيح وإدخال النص</translation>
 <translation id="5551753770140674714">‏تم تشفير بياناتك باستخدام عبارة مرور المزامنة. ولا يتضمَّن ذلك طرق الدفع والعناوين من Google Pay.</translation>
@@ -6014,7 +5966,6 @@
 <translation id="5596627076506792578">خيارات إضافية</translation>
 <translation id="5600706100022181951">سيستهلك تنزيل التحديث <ph name="UPDATE_SIZE_MB" /> ميغابايت من بيانات الجوّال. هل ترغب في المتابعة؟</translation>
 <translation id="5601503069213153581">رقم التعريف الشخصي</translation>
-<translation id="5601519850195445492">أنشِئ روتين تمارين رياضية لمدة 10 دقائق يمكنني ممارسته في غرفتي، بدون تضمين القفز أو حركات تسبّب ضوضاء</translation>
 <translation id="5601833336918638013">عدم السماح للمواقع الإلكترونية بالبحث عن أجهزة تتضمّن بلوتوث</translation>
 <translation id="5602586420788540146">فتح في مجموعة علامات تبويب جديدة</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{تم حظر هذه الإضافة}zero{تم حظر هذه الإضافات}two{تم حظر هاتين الإضافتين}few{تم حظر هذه الإضافات}many{تم حظر هذه الإضافات}other{تم حظر هذه الإضافات}}</translation>
@@ -6147,7 +6098,6 @@
 <translation id="5720729194423017301">اختصارات للمواقع الإلكترونية ومحركات البحث</translation>
 <translation id="572155275267014074">‏إعدادات Android</translation>
 <translation id="5722086096420375088">أخضر وأبيض</translation>
-<translation id="5722778418591961221">أريد التخطيط لروتين لياقة بدنية في المنزل يساعدني في تحقيق أهدافي</translation>
 <translation id="572328651809341494">علامات التبويب الأخيرة</translation>
 <translation id="5723508132121499792">ليس هناك تطبيقات خلفية قيد التشغيل</translation>
 <translation id="5724723163580775373">تركيز على نطاق كبير</translation>
@@ -6540,7 +6490,6 @@
 <translation id="6027143200498653403">عندما تطرح أسئلة حول السجلّ، يمكنك الحصول على إجابات عن معلومات محدّدة من صفحة زرتها</translation>
 <translation id="6027945736510816438">هل كنت تقصد <ph name="WEBSITE" />؟</translation>
 <translation id="6028117231645531007">إضافة بصمة الإصبع</translation>
-<translation id="6030719887161080597">إدارة المعلومات التي تستخدمها المواقع الإلكترونية لقياس أداء الإعلانات</translation>
 <translation id="6031600495088157824">خيارات الإدخال في شريط الأدوات</translation>
 <translation id="6032715498678347852">للسماح للإضافة بالوصول إلى بيانات هذا الموقع الإلكتروني، انقر على الإضافة.</translation>
 <translation id="6037727536002947990">متنزّه "صهيون" الوطني</translation>
@@ -6649,7 +6598,6 @@
 <translation id="6124650939968185064">تعتمد الإضافات التالية على هذه الإضافة:</translation>
 <translation id="6124698108608891449">يحتاج هذا الموقع الإلكتروني إلى مزيد من الأذونات.</translation>
 <translation id="6125202119952209826">الانضمام إلى مجموعة علامات التبويب التي تضمّ "<ph name="OWNER_FIRST_NAME" />"</translation>
-<translation id="6125627875118714946">ساعِدني في التخطيط لاستراحة من الحياة الرقمية</translation>
 <translation id="6125639926370653692">قمر</translation>
 <translation id="6126601353087978360">يُرجى إدخال ملاحظاتك هنا:</translation>
 <translation id="6127292407256937949">الصوت مفعَّل. انقر لإيقافه.</translation>
@@ -6735,6 +6683,7 @@
 <translation id="6185151644843671709">تم حفظ مفتاح المرور وإنشاء رقم تعريف شخصي</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{‏تم حفظ كلمة مرور واحدة وعناصر أخرى على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google. وسيؤدي ذلك إلى حذف أي عناصر مكرّرة.}zero{‏تم حفظ {PASSWORD_COUNT} كلمة مرور وعناصر أخرى على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google. وسيؤدي ذلك إلى حذف أي عناصر مكرّرة.}two{‏تم حفظ كلمتَي مرور ({PASSWORD_COUNT}) وعناصر أخرى على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google. وسيؤدي ذلك إلى حذف أي عناصر مكرّرة.}few{‏تم حفظ {PASSWORD_COUNT} كلمات مرور وعناصر أخرى على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google. وسيؤدي ذلك إلى حذف أي عناصر مكرّرة.}many{‏تم حفظ {PASSWORD_COUNT} كلمة مرور وعناصر أخرى على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google. وسيؤدي ذلك إلى حذف أي عناصر مكرّرة.}other{‏تم حفظ {PASSWORD_COUNT} كلمة مرور وعناصر أخرى على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google. وسيؤدي ذلك إلى حذف أي عناصر مكرّرة.}}</translation>
 <translation id="6186177419203903310">‏سيؤدي هذا الإجراء إلى تفعيل الإشعارات لجميع أجهزة USB الملحقة الجديدة في النظام. هل فعلاً تريد المتابعة؟</translation>
+<translation id="6188822118034543225">يمكنك استخدام قائمة "تقسيم العرض" للتبديل بين التنسيقات المتجاورة والمكدسة.</translation>
 <translation id="6190953336330058278">تطبيقات "مركز التحكم بالهاتف"</translation>
 <translation id="6192333916571137726">ملف تحميل</translation>
 <translation id="6192413564913825901">النقل إلى مجلد "كل الإشارات المرجعية"</translation>
@@ -6752,7 +6701,6 @@
 <translation id="6201345951596836663">تم نسخ الرابط</translation>
 <translation id="6202935572248792580">تم منح إذن الوصول إلى الميكروفون. عليك توصيل ميكروفون بجهازك.</translation>
 <translation id="6203247599828309566">لقد حفظت ملاحظة بشأن كلمة مرور على هذا الموقع الإلكتروني. لعرضها، انقر على رمز المفتاح.</translation>
-<translation id="6205314730813004066">الخصوصية في عرض الإعلانات</translation>
 <translation id="6205993460077903908">‫<ph name="WINDOW_TITLE" /> - يتم التسجيل من الميكروفون.</translation>
 <translation id="6206199626856438589">سيتم تسجيل خروجك من المواقع الإلكترونية المُدرَجة، بما فيها تلك المواقع في علامات التبويب المفتوحة.</translation>
 <translation id="6206311232642889873">نس&amp;خ صورة</translation>
@@ -6850,7 +6798,6 @@
 <translation id="6271824294945464304">مشاركة كلمة المرور</translation>
 <translation id="6273677812470008672">الجودة</translation>
 <translation id="6274089201566806618">جارٍ الاتصال بجهاز "<ph name="HOST_DEVICE_NAME" />"</translation>
-<translation id="6274108044476515407">يعتمد ظهور إعلانات مخصّصة أو غير مخصّصة على عدة عوامل، منها هذه الإعدادات و<ph name="BEGIN_LINK1" />الإعلانات المقترَحة من المواقع الإلكترونية<ph name="LINK_END1" /> و<ph name="BEGIN_LINK2" />إعدادات ملفات تعريف الارتباط<ph name="LINK_END2" /> وما إذا كان الموقع الإلكتروني الذي تعرضه يخصِّص الإعلانات. <ph name="BEGIN_LINK3" />مزيد من المعلومات حول إدارة الخصوصية في عرض الإعلانات<ph name="LINK_END3" /></translation>
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="627581157848786026">الاطّلاع على علامات التبويب من الأجهزة الأخرى</translation>
 <translation id="6277105963844135994">انتهاء مهلة الشبكة</translation>
@@ -6895,7 +6842,6 @@
 <translation id="6308937455967653460">حف&amp;ظ الرابط باسم...</translation>
 <translation id="6309443618838462258">لا يسمح المشرف باستخدام أسلوب الإدخال هذا.</translation>
 <translation id="6309510305002439352">تم إيقاف الميكروفون</translation>
-<translation id="6309662731179180634">أريدك أن تختبر معلوماتي حول موضوع معيّن</translation>
 <translation id="6310141306111263820">‏تعذّر تثبيت الملف التعريفي لشريحة eSIM. للحصول على المساعدة، يُرجى التواصل مع مشغّل شبكة الجوّال.</translation>
 <translation id="6310767550430673871">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{إزالة إضافة واحدة والبيانات التي حفظتها على هذا الجهاز}zero{إزالة {ACCOUNT_EXTENSIONS_COUNT} إضافة والبيانات التي حفظتها على هذا الجهاز}two{إزالة إضافتَين ({ACCOUNT_EXTENSIONS_COUNT}) والبيانات التي حفظتها على هذا الجهاز}few{إزالة {ACCOUNT_EXTENSIONS_COUNT} إضافات والبيانات التي حفظتها على هذا الجهاز}many{إزالة {ACCOUNT_EXTENSIONS_COUNT} إضافة والبيانات التي حفظتها على هذا الجهاز}other{إزالة {ACCOUNT_EXTENSIONS_COUNT} إضافة والبيانات التي حفظتها على هذا الجهاز}}</translation>
 <translation id="6313950457058510656">إيقاف "التوصيل الفوري"</translation>
@@ -6944,7 +6890,6 @@
 <translation id="635100112331897007">‏عرض جميع سياسات Chrome</translation>
 <translation id="6351178441572658285">لغات التطبيقات</translation>
 <translation id="6352992678231622317">تم نقل علامة التبويب إلى الأسفل</translation>
-<translation id="635394585025793320">أريد أن أُبهر شخصاً ما. ابحث عن طاولات متاحة لشخصَين في المطاعم الرائجة الآن</translation>
 <translation id="6355632359041940003">تولّي المهمة</translation>
 <translation id="6356537493253478650">هادئ</translation>
 <translation id="63566973648609420">‏لا يمكن لأحد قراءة بياناتك المشفرة سوى من لديه عبارة المرور التي تستخدمها. ولا يتم إرسال عبارة المرور إلى شركة Google أو تخزينها لديها. إذا نسيت عبارة المرور أو رغبت في تغيير هذا الإعداد، فسيلزمك <ph name="BEGIN_LINK" />إعادة ضبط المزامنة<ph name="END_LINK" />.</translation>
@@ -6977,6 +6922,7 @@
 <translation id="6379228010899751161">يُرجى إثبات هويتك للتأكّد من أنّه يمكنك استخدام كلمات المرور في حسابك (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="6379827283296619736">لا، أريد مواصلة استخدام ملف العمل هذا</translation>
 <translation id="6380618366311601172">‏لن يتمكّن Gemini من إكمال المهام التي تتطلّب تسجيل الدخول على <ph name="DOMAIN" />.</translation>
+<translation id="6383321659284013430">نافذة &amp;تصفّح معزول جديدة</translation>
 <translation id="6383382161803538830">وضع القراءة غير متاح على هذه الصفحة</translation>
 <translation id="638418309848716977">الروابط المتوافقة</translation>
 <translation id="6384275966486438344">تغيير إعدادات البحث لـ: <ph name="SEARCH_HOST" /></translation>
@@ -7148,7 +7094,6 @@
 <translation id="6519437681804756269">[<ph name="TIMESTAMP" />]
         <ph name="FILE_INFO" />
         <ph name="EVENT_NAME" /></translation>
-<translation id="6520031894252870394">أريد أفكار فريدة بشأن الهدايا</translation>
 <translation id="6520087076882753524">‏يمكنك عرض كلمات المرور المحفوظة وإدارتها من خلال "مدير كلمات المرور في Google".</translation>
 <translation id="6520115099532274511">‏‫<ph name="SITE" /> بحاجة إلى إثبات هويتك. أدخِل رقم التعريف الشخصي لخدمة "مدير كلمات المرور في Google" المكوَّن من أحرف أبجدية رقمية</translation>
 <translation id="6520876759015997832">‏نتيجة البحث <ph name="LIST_POSITION" /> من <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. يُرجى الضغط على Enter للانتقال إلى القسم.</translation>
@@ -7201,7 +7146,6 @@
 <translation id="6557199166823345360">أضِف المزيد من التفاصيل أو اطرح سؤالاً حول اختيارك لتحسين عملية البحث</translation>
 <translation id="6557290421156335491">اختصاراتي</translation>
 <translation id="6558098963164662391">الإ&amp;زالة من القاموس</translation>
-<translation id="6558249393995317167">هل يمكنك توضيح مراحل حياة النجوم بالتفصيل؟</translation>
 <translation id="6560061709899140565">عرض جلسات البثّ الأخرى</translation>
 <translation id="656065428026159829">عرض المزيد</translation>
 <translation id="6561877237303825108">قد يكون نوع الملف (<ph name="TYPE" />) هذا خطيرًا. لذا يُرجى عدم حفظ هذا الملف إلا إذا كان <ph name="ORIGIN" /> موثوقًا</translation>
@@ -7304,7 +7248,6 @@
 <translation id="6624036901798307345">في وضع الجهاز اللوحي، انقر على زر شريط أدوات عدّاد علامات التبويب لفتح شريط علامات التبويب الجديد الذي يعرض الصور المصغّرة لكل علامة تبويب.</translation>
 <translation id="6624538059730609162">إغلاق العرض الأيمن</translation>
 <translation id="6624687053722465643">الطعم اللذيذ</translation>
-<translation id="6625629379283886932">أريد تعلّم كيفية إنشاء التعليمات البرمجية</translation>
 <translation id="6626581113916585374">وضع التأثيرات</translation>
 <translation id="6627743754845412571">المواقع الإلكترونية التي لا يُسمح لها بتتبُّع حركات يديك</translation>
 <translation id="6628316682330029452">تُحدد شهادات العميل هويتك أمام الخوادم الأخرى.</translation>
@@ -7443,6 +7386,7 @@
 <translation id="6729280095610283088">شُعاع من الشفق القطبي فوق غابة</translation>
 <translation id="6729493062119577923">سجلّ نشاط مجموعة علامات التبويب المشترَكة</translation>
 <translation id="6730744976532805323">‏تتم مشاركة علامة التبويب الحالية مع Gemini، حتى عند التبديل بين علامات التبويب</translation>
+<translation id="6731848763586448407">حان وقت تجربة ميزة "تقسيم العرض المكدس"</translation>
 <translation id="6734178081670810314">‫<ph name="EXTENSION_OR_APP_NAME" /> (رقم التعريف: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">العنوان</translation>
 <translation id="6737663862851963468">‏إزالة تذكرة Kerberos</translation>
@@ -7645,13 +7589,11 @@
 <translation id="6873156759937047811">رقم التعريف الشخصي:</translation>
 <translation id="6873571253135628430">تغيير أذونات الموقع الإلكتروني</translation>
 <translation id="6874986444867497677">تعذَّر إكمال التثبيت. يُرجى إعادة المحاولة أو إغلاق هذه النافذة.</translation>
-<translation id="6875515581501280009">أنشِئ لي خطة واقعية للابتعاد عن الأجهزة الرقمية في عطلة نهاية الأسبوع هذه</translation>
 <translation id="6876155724392614295">دراجة</translation>
 <translation id="6876469544038980967">غير مفيد</translation>
 <translation id="6878422606530379992">استخدام أجهزة الاستشعار مسموح به</translation>
 <translation id="6878862640969460273">شاشة أفقية</translation>
 <translation id="6880587130513028875">تم منع عرض الصور في هذه الصفحة.</translation>
-<translation id="6883606786470492001">يمكنك إدارة مواضيع الإعلانات والإعدادات الأخرى للحدّ من المعلومات التي يمكن للمواقع الإلكترونية معرفتها عنك لعرض إعلانات مخصّصة لك</translation>
 <translation id="6884474387073389421">هل تريد فعلاً حذف بيانات تسجيل الدخول المحدَّدة؟</translation>
 <translation id="6884763350679569586">رقم التعريف الشخصي فقط</translation>
 <translation id="6885338910541974777">تعذَّر تشغيل برنامج التثبيت الخاص بالتطبيق.</translation>
@@ -7779,9 +7721,7 @@
 <translation id="6981982820502123353">تسهيل الاستخدام</translation>
 <translation id="6983507711977005608">قطع الاتصال بشبكة "التوصيل الفوري"</translation>
 <translation id="6983890893900549383">Escape</translation>
-<translation id="6984095691972094111">أحاول تعلُّم لغة جديدة. أنشِئ اختبارًا لمساعدتي في التدرُّب على المفردات والقواعد النحوية</translation>
 <translation id="698428203349952091">إضافة الموقع الإلكتروني إلى قائمة المواقع الإلكترونية غير المسموح بها</translation>
-<translation id="698450079873764780">ساعِدني في الاستعداد لمحادثة صعبة من خلال تقمُّص الأدوار معي، حتى أتمكّن من التدرّب على ردودي</translation>
 <translation id="6985235333261347343">‏عامل استرداد مفتاح Microsoft</translation>
 <translation id="698524779381350301">السماح بالوصول إلى المواقع التالية تلقائيًا</translation>
 <translation id="6985607387932385770">الطابعات</translation>
@@ -7800,7 +7740,6 @@
 <translation id="6997707937646349884">على أجهزتك:</translation>
 <translation id="6998036632333022623">‏تتم مشاركة علامات تبويب مع Google</translation>
 <translation id="6999956497249459195">مجموعة جديدة</translation>
-<translation id="7000094925113284872">أريد تحديد مراحل حياة النجم</translation>
 <translation id="7000206553895739324">تم توصيل <ph name="PRINTER_NAME" /> ولكنها بحاجة إلى الضبط</translation>
 <translation id="7000347579424117903">‏تضمين مفتاحي Ctrl، أو Alt، أو مفتاح البحث</translation>
 <translation id="7001397294201412227">استخدام هاتف أو جهاز لوحي أو مفتاح أمان</translation>
@@ -7919,7 +7858,6 @@
 <translation id="7088434364990739311">تعذّر بدء التحقق من التحديثات (رمز الخطأ <ph name="ERROR" />).</translation>
 <translation id="7088960765736518739">الوصول عبر مفتاح تبديل</translation>
 <translation id="7089253021944603172">علامة التبويب نشطة مجددًا</translation>
-<translation id="7090698782953528257">ساعِدني في تمثيل دالة بيانيًا لتوضيح المعادلة الرياضية ومعاينة شكل المنحنى</translation>
 <translation id="7090714929377281710">إيقاف نقطة الاتصال تلقائيًا</translation>
 <translation id="7092452922791061650">انقر بزر الماوس الأيمن على علامة التبويب هذه واختَر "إضافة علامة التبويب الحالية إلى وضع تقسيم العرض الجديد"</translation>
 <translation id="7092504544229909737">‏لا يمكن استخدام هذا الحساب مع تطبيقات Android</translation>
@@ -7927,7 +7865,6 @@
 <translation id="7093866338626856921">تبادل البيانات مع الأجهزة المسماه: <ph name="HOSTNAMES" /></translation>
 <translation id="7094768688212290897">الهرم الأكبر في الجيزة</translation>
 <translation id="7094834615934458012">هل المطلوب السماح لهذا الموقع الإلكتروني بتعديل الملفات؟</translation>
-<translation id="709604659664854823">أريد العثور على حجوزات في اللحظة الأخيرة في مطاعم قريبة الليلة</translation>
 <translation id="7096904522553867921">يمكنك إعادة علامات التبويب إلى الأعلى من خلال النقر بزر الماوس الأيمن على أي علامة تبويب واختيار "عرض علامات التبويب أفقيًا"</translation>
 <translation id="7098389117866926363">‏جهاز USB-C (المنفذ الأيسر في الخلف)</translation>
 <translation id="7098447629416471489">ستظهر هنا محركات البحث المحفوظة الأخرى</translation>
@@ -8297,7 +8234,6 @@
 <translation id="7387107590792462040">يُرجى الانتظار إلى أن تنتهي عملية التثبيت الجارية.</translation>
 <translation id="7387273928653486359">مقبولة</translation>
 <translation id="7387951778417998929">لاستخدام محرّك بحث غير محرّك البحث التلقائي، اكتب اختصاره في شريط العناوين متبوعًا باختصار لوحة المفاتيح المفضَّل لديك. ويمكنك أيضًا تغيير محرّك البحث التلقائي من هنا.</translation>
-<translation id="7388615499319468910">يمكن للمواقع الإلكترونية والمعلنين الاطّلاع على أداء إعلاناتهم. هذا الإعداد غير مفعَّل.</translation>
 <translation id="738903649531469042">إضافة علامة التبويب إلى قائمة القراءة</translation>
 <translation id="7389615853658756494">تغييرها على الموقع الإلكتروني</translation>
 <translation id="7392118418926456391">تعذّر فحص الفيروسات</translation>
@@ -8584,14 +8520,12 @@
 <translation id="7612989789287281429">جارٍ تسجيل الدخول…</translation>
 <translation id="76131528886466333">‏تثبيت إضافة "بحث Google" لمتصفّح Microsoft Edge</translation>
 <translation id="7615365294369022248">حدث خطأ أثناء إضافة حساب</translation>
-<translation id="7615588229248133259">ساعِدني في إعادة كتابة بعض النصوص لتكون أكثر احترافية</translation>
 <translation id="7616964248951412133">تستخدم المواقع الإلكترونية هذه الميزة للوصول إلى إدخالات الماوس واستخدامها، مثل الألعاب أو تطبيقات سطح المكتب البعيد</translation>
 <translation id="7617263010641145920">‏تفعيل "متجر Play"</translation>
 <translation id="7617648809369507487">استخدام طريقة أقل بروزًا لإرسال الإشعارات</translation>
 <translation id="7620049858153799769">‏في إطار جهود تحسين Gemini، قد يطّلع فريق من المراجعين على المحادثات المتعلّقة بعلامات التبويب التي تمت مشاركتها.</translation>
 <translation id="7620083113061729689">مزامنة السجلّ</translation>
 <translation id="7620616707541471029">اختيار حساب للمتابعة</translation>
-<translation id="7621546470643449009">أنشِئ دليلاً للمبتدئين حول رصد النجوم لمساعدتي في معرفة ما يجب البحث عنه في السماء ليلاً، مع تضمين 3 مجموعات نجمية يسهل التعرّف عليها</translation>
 <translation id="7621595347123595643">لن تتمكّن من استرداد البيانات المحلّية في حال نسيان كلمة المرور أو رقم التعريف الشخصي.</translation>
 <translation id="762200934554267613">السماح للمواقع الإلكترونية بطلب الوصول إلى التطبيقات والخدمات الأخرى على هذا الجهاز</translation>
 <translation id="7622768823216805500">تعمل المواقع الإلكترونية عادةً على تثبيت معالجات الدفع لتتيح ميزات التسوّق، مثل الدفع بسهولة.</translation>
@@ -8645,7 +8579,6 @@
 <translation id="7659154729610375585">هل تريد الخروج من وضع التصفُّح المتخفي على أي حال؟</translation>
 <translation id="7659336857671800422">الاطّلاع على دليل الخصوصية</translation>
 <translation id="7660146600670077843">انقر بزر الماوس الأيمن على علامة تبويب واختَر "إضافة علامة تبويب إلى المجموعة الجديدة".</translation>
-<translation id="7661440329832413796">‏ساعِدني في تعلّم البرمجة بلغة Python</translation>
 <translation id="7662535435481776002">فاتح منخفض التباين</translation>
 <translation id="7663719505383602579">المتلقي: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">اختصارات لوحة المفاتيح المتوفّرة</translation>
@@ -8706,7 +8639,6 @@
 <translation id="7697109152153663933">انقر على "كلمات المرور والملء التلقائي".</translation>
 <translation id="769824636077131955">إنّ حجم هذا المستند كبير بدرجة يتعذّر معها إجراء فحص الأمان. يمكنك طباعة مستندات يصل حجمها إلى 50 ميغابايت.</translation>
 <translation id="7698507637739331665">تم حظر بعض العناصر</translation>
-<translation id="7699509138503320152">أريد إعادة كتابة رسالتي الإلكترونية لتكون أكثر إقناعًا</translation>
 <translation id="7700516433658473670">الطابعات والماسحات الضوئية</translation>
 <translation id="7700873336634517379">لا، أريد مواصلة استخدام ملف المؤسسة التعليمية هذا</translation>
 <translation id="7701040980221191251">ما مِن بيانات</translation>
@@ -8877,7 +8809,6 @@
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">ستظهر هنا الكلمات المُخصصة المحفوظة</translation>
 <translation id="7834832693620032149">لمشاركة الصوت، يُرجى مشاركة علامة تبويب أو نافذة بدلاً من ذلك</translation>
-<translation id="7836577093182643605">تضم هذه القائمة المواضيع التي حظرتها ولا تريد مشاركتها مع المواقع الإلكترونية.</translation>
 <translation id="7836850009646241041">يُرجى محاولة لمس مفتاح الأمان مرة أخرى.</translation>
 <translation id="7838838951812478896">تعذّر حفظ الشبكة "<ph name="NETWORK_NAME" />" من الجهاز <ph name="DEVICE_NAME" /></translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{تم إرسال <ph name="ATTACHMENTS" /> إلى <ph name="DEVICE_NAME" />}zero{تم إرسال <ph name="ATTACHMENTS" /> إلى <ph name="DEVICE_NAME" />}two{تم إرسال <ph name="ATTACHMENTS" /> إلى <ph name="DEVICE_NAME" />}few{تم إرسال <ph name="ATTACHMENTS" /> إلى <ph name="DEVICE_NAME" />}many{تم إرسال <ph name="ATTACHMENTS" /> إلى <ph name="DEVICE_NAME" />}other{تم إرسال <ph name="ATTACHMENTS" /> إلى <ph name="DEVICE_NAME" />}}</translation>
@@ -9091,7 +9022,6 @@
 ملف المفتاح: <ph name="KEY_FILE" />
 
 احتفظ بملف المفتاح في مكان آمن، حيث ستحتاج إليه لإنشاء إصدارات جديدة من إضافتك.</translation>
-<translation id="7999482381722829925">أنشِئ قائمة تحقّق مرتّبة حسب الأولوية لتنظيف غرف المنزل بعمق، مع التركيز على الأماكن التي لا يتم الانتباه إليها غالبًا</translation>
 <translation id="8000020256436988724">شريط الأدوات</translation>
 <translation id="800117767980299235">تمييز النص المقروء</translation>
 <translation id="8001561107130904792">مشاركة محتوى الصفحة</translation>
@@ -9276,7 +9206,6 @@
 <translation id="8134188842648614148">‫"<ph name="PROFILE_NAME" />" • "<ph name="TIER_NAME" />"</translation>
 <translation id="8135557862853121765"><ph name="NUM_KILOBYTES" /> ‏                 كيلوبايت</translation>
 <translation id="8136269678443988272">أرقام التعريف الشخصية التي أدخلتها غير متطابقة</translation>
-<translation id="8137185688006450980">أريد مقارنة خيارات خطط الرعاية الصحية</translation>
 <translation id="8137559199583651773">إدارة الإضافات</translation>
 <translation id="8137711267692884979">{NUM_EXTENSIONS,plural, =1{مراجعة إضافة واحدة قد تكون غير آمنة}zero{مراجعة {NUM_EXTENSIONS} إضافة قد تكون غير آمنة}two{مراجعة إضافتَين ({NUM_EXTENSIONS}) قد تكونان غير آمنتَين}few{مراجعة {NUM_EXTENSIONS} إضافات قد تكون غير آمنة}many{مراجعة {NUM_EXTENSIONS} إضافة قد تكون غير آمنة}other{مراجعة {NUM_EXTENSIONS} إضافة قد تكون غير آمنة}}</translation>
 <translation id="8138217203226449454">هل كنت تقصد تغيير مُوفِّر خدمة البحث؟</translation>
@@ -9322,7 +9251,6 @@
 <translation id="8168435359814927499">المحتوى</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{إضافة علامة التبويب إلى قائمة القراءة}zero{إضافة علامات التبويب إلى قائمة القراءة}two{إضافة علامتَي التبويب إلى قائمة القراءة}few{إضافة علامات التبويب إلى قائمة القراءة}many{إضافة علامات التبويب إلى قائمة القراءة}other{إضافة علامات التبويب إلى قائمة القراءة}}</translation>
 <translation id="8172303073969862496">الجانب الأيمن</translation>
-<translation id="8172809706700703589">أريد إنشاء قائمة بمستلزمات رحلتي</translation>
 <translation id="8174047975335711832">معلومات عن الجهاز</translation>
 <translation id="8176332201990304395">زهري وأبيض</translation>
 <translation id="8176529144855282213">لتفعيل إمكانية الوصول إلى الميكروفون، عليك تشغيل الميكروفون باستخدام الزر اليدوي على جهازك.</translation>
@@ -9436,7 +9364,6 @@
 <translation id="8256319818471787266">اللامع</translation>
 <translation id="8257950718085972371">متابعة حظر الدخول إلى الكاميرا</translation>
 <translation id="8258027225380843424">تم الاستيراد</translation>
-<translation id="8258311291367036761">هل يمكنك مساعدتي في التفكير مليًا في أمر ما؟</translation>
 <translation id="8259048637628995340">‏اربط هاتفك الذي يعمل بنظام تشغيل Android للحصول على تجربة استخدام سلسة</translation>
 <translation id="8260177673299865994">تحسين حماية عمليات التنزيل</translation>
 <translation id="8260864402787962391">الماوس</translation>
@@ -9471,7 +9398,6 @@
 <translation id="8280848878018088610">أمواج تتصادم في البحر ومدينة وقلعة خياليتان في الخلفية، في أجواء مظلمة</translation>
 <translation id="828180235270931531">الطابعات الأخرى المتاحة</translation>
 <translation id="8281886186245836920">التخطّي</translation>
-<translation id="8283946103133796868">‏أريد احتساب المعدّل التراكمي (GPA) المرجَّح</translation>
 <translation id="8284279544186306258">جميع مواقع <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">الترجمة والشرح</translation>
 <translation id="8285625579699113397">حسابك</translation>
@@ -9537,7 +9463,6 @@
 <translation id="8327544198829180337">إغلاق هذا العرض</translation>
 <translation id="8328228852664998535">في حال المتابعة، سيتم حذف كلمات المرور ومفاتيح المرور والبيانات الأخرى نهائيًا من "<ph name="BRAND" />". ولن يتم حذف أي حسابات أنشأتها للمواقع الإلكترونية أو التطبيقات.</translation>
 <translation id="8328777765163860529">إغلاق الكل</translation>
-<translation id="8329314618548024109">اطرح عليّ أسئلة حول شعوري، واستخدِم إجاباتي لإنشاء قائمة تشغيل مخصّصة تناسب حالتي المزاجية</translation>
 <translation id="8330617762701840933">قائمة المواقع الإلكترونية التي تتم إعادة توجيهها إلى المتصفِّح البديل</translation>
 <translation id="8330689128072902965">يمكن لجهات الاتصال القريبة مشاركة المحتوى معك. انقر لتغيير هذه الإعدادات.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{نوع الملف المتوافق: <ph name="FILE_TYPE1" />}=2{نوعا الملفات المتوافقان: <ph name="FILE_TYPE1" /> و<ph name="FILE_TYPE2" />}=3{أنواع الملفات المتوافقة: <ph name="FILE_TYPE1" /> و<ph name="FILE_TYPE2" /> و<ph name="FILE_TYPE3" />}=4{أنواع الملفات المتوافقة: <ph name="FILE_TYPE1" /> و<ph name="FILE_TYPE2" /> و<ph name="FILE_TYPE3" /> و<ph name="FILE_TYPE4" />}zero{أنواع الملفات المتوافقة: <ph name="FILE_TYPE1" /> و<ph name="FILE_TYPE2" /> و<ph name="FILE_TYPE3" /> و<ph name="FILE_TYPE4" /> (<ph name="LINK" />و{OVERFLOW_COUNT} نوع آخر<ph name="END_LINK" />)}few{أنواع الملفات المتوافقة: <ph name="FILE_TYPE1" /> و<ph name="FILE_TYPE2" /> و<ph name="FILE_TYPE3" /> و<ph name="FILE_TYPE4" /> (<ph name="LINK" />و{OVERFLOW_COUNT} أنواع أخرى<ph name="END_LINK" />)}many{أنواع الملفات المتوافقة: <ph name="FILE_TYPE1" /> و<ph name="FILE_TYPE2" /> و<ph name="FILE_TYPE3" /> و<ph name="FILE_TYPE4" /> (<ph name="LINK" />و{OVERFLOW_COUNT} نوعًا آخر<ph name="END_LINK" />)}other{أنواع الملفات المتوافقة: <ph name="FILE_TYPE1" /> و<ph name="FILE_TYPE2" /> و<ph name="FILE_TYPE3" /> و<ph name="FILE_TYPE4" /> (<ph name="LINK" />و{OVERFLOW_COUNT} نوع آخر<ph name="END_LINK" />)}}</translation>
@@ -9774,7 +9699,6 @@
 <translation id="8520238089740349550">تعذَّر التنزيل - تم حظر التنزيل على الجهاز</translation>
 <translation id="8520408093016204772">يمكنك تخزين كلمات المرور والإشارات المرجعية والإعدادات</translation>
 <translation id="8523493869875972733">الإبقاء على التغييرات</translation>
-<translation id="8523574453888018351">أريد تعلُّم لغة جديدة</translation>
 <translation id="8523849605371521713">تمت الإضافة من قبل السياسة</translation>
 <translation id="8524594273111932386">مفتاح البحث + السهم المتّجه للأسفل</translation>
 <translation id="8524817717332153865">‏تم إيقاف الكاميرا والميكروفون في إعدادات نظام Mac</translation>
@@ -9788,7 +9712,6 @@
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">التصفُّح الآمن مفعّل</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{ستظل علامات التبويب مفتوحة على هذا الجهاز، ولكن سيتم حذف المجموعة من جميع الأجهزة حيث تم تسجيل الدخول إلى الحساب <ph name="EMAIL" />}zero{ستظل علامات التبويب مفتوحة على هذا الجهاز، ولكن سيتم حذف المجموعات من جميع الأجهزة حيث تم تسجيل الدخول إلى الحساب <ph name="EMAIL" />}two{ستظل علامات التبويب مفتوحة على هذا الجهاز، ولكن سيتم حذف المجموعتَين من جميع الأجهزة حيث تم تسجيل الدخول إلى الحساب <ph name="EMAIL" />}few{ستظل علامات التبويب مفتوحة على هذا الجهاز، ولكن سيتم حذف المجموعات من جميع الأجهزة حيث تم تسجيل الدخول إلى الحساب <ph name="EMAIL" />}many{ستظل علامات التبويب مفتوحة على هذا الجهاز، ولكن سيتم حذف المجموعات من جميع الأجهزة حيث تم تسجيل الدخول إلى الحساب <ph name="EMAIL" />}other{ستظل علامات التبويب مفتوحة على هذا الجهاز، ولكن سيتم حذف المجموعات من جميع الأجهزة حيث تم تسجيل الدخول إلى الحساب <ph name="EMAIL" />}}</translation>
-<translation id="8534333267675998827">أريد تمثيل معادلة رياضية مرئيًا</translation>
 <translation id="8535005006684281994">‏عنوان URL لتجديد شهادة Netscape</translation>
 <translation id="8536810348276651776">‏يؤدي هذا الخيار إلى تسجيل خروجك من معظم المواقع الإلكترونية. ستظل مُسجلاً الدخول إلى حسابك على Google لكي تسري إعدادات Family Link لمتصفِّح Chrome.</translation>
 <translation id="8536956381488731905">إصدار صوت عند الضغط على مفتاح</translation>
@@ -9822,7 +9745,6 @@
 <translation id="8557100046150195444">استخدِم بصمة الإصبع للمتابعة</translation>
 <translation id="8557856025359704738">سيتم إجراء عملية التنزيل التالية في <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
 <translation id="8559858985063901027">مفاتيح المرور</translation>
-<translation id="8559961053328923750">‏يحد متصفِّح Chrome من إجمالي البيانات التي يمكن للمواقع الإلكترونية مشاركتها من خلال المتصفّح لقياس أداء الإعلانات.</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{فتح كل العناوين في &amp;نافذة جديدة}=1{فتح في &amp;نافذة جديدة}two{فتح كِلا العنوانَين ({COUNT}) في &amp;نافذة جديدة}few{فتح كل الـ ({COUNT}) عناوين في &amp;نافذة جديدة}many{فتح كل الـ ({COUNT}) عنوانًا في &amp;نافذة جديدة}other{فتح كل الـ ({COUNT}) عنوان في &amp;نافذة جديدة}}</translation>
 <translation id="8561206103590473338">فيل</translation>
 <translation id="8561565784790166472">يُرجى المتابعة مع توخّي الحذر</translation>
@@ -10136,7 +10058,6 @@
 <translation id="8797459392481275117">عدم ترجمة هذا الموقع مطلقًا</translation>
 <translation id="8798099450830957504">التلقائي</translation>
 <translation id="8800034312320686233">هل الموقع الإلكتروني لا يعمل؟</translation>
-<translation id="8803251172194676606">أريد تصميم برنامج لياقة بدنية مخصّصًا</translation>
 <translation id="8803526663383843427">عندما يكون الإعداد مفعَّلاً</translation>
 <translation id="8803953437405899238">يمكنك فتح علامة تبويب جديدة بنقرة واحدة</translation>
 <translation id="8804419452060773146">يتم فتحه في</translation>
@@ -10194,7 +10115,6 @@
 <translation id="8841884135319684422">إنهاء المهمّة</translation>
 <translation id="8842594465773264717">حذف بصمة الإصبع هذه</translation>
 <translation id="8845001906332463065">الحصول على مساعدة</translation>
-<translation id="8845586173202501576">أريد إنشاء جدول زمني للدراسة لمدة 7 أيام للاستعداد لامتحاني القادم باستخدام تقنية "بومودورو" والتكرار المتباعد، علمًا بأنّني لا أريد الدراسة بشكل مكثّف في اليوم السابق للاختبار، لذا احرِص على أن يتضمّن اليوم السابق مراجعة خفيفة وقسطًا كافيًا من النوم</translation>
 <translation id="8846132060409673887">قراءة نموذج هذا الكمبيوتر والشركة المصنِّعة</translation>
 <translation id="8846239054091760429">ميزة "الصوت الأحادي" وأصوات بدء التشغيل وميزة "النسخ النصي التلقائي" وغيرها</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -10241,7 +10161,6 @@
 <translation id="8875736897340638404">اختَر مستوى الظهور.</translation>
 <translation id="8876307312329369159">لا يمكن تغيير هذا الإعداد في جلسة تجريبية.</translation>
 <translation id="8876965259056847565">تستخدم ميزة "<ph name="FEATURE_NAME" />" تقنية البلوتوث للعثور على الأجهزة المجاورة.</translation>
-<translation id="8877356245007430672">أريد إنشاء قائمة تشغيل تناسب مزاجي</translation>
 <translation id="8877448029301136595">[الدليل الأصل]</translation>
 <translation id="8879284080359814990">إ&amp;ظهار كعلامة تبويب</translation>
 <translation id="8879921471468674457">تذكّر معلومات تسجيل الدخول</translation>
@@ -10249,7 +10168,6 @@
 <translation id="8880054210564666174">تعذَّر تنزيل قائمة جهات الاتصال. يُرجى التحقُّق من الاتصال بالشبكة أو <ph name="LINK_BEGIN" />إعادة المحاولة<ph name="LINK_END" />.</translation>
 <translation id="8881020143150461183">يُرجى إعادة المحاولة. للحصول على الدعم الفني، يُرجى التواصل مع <ph name="CARRIER_NAME" />.</translation>
 <translation id="8881641623099832249">‏لا يمكن لهذا الحساب استخدام Gemini</translation>
-<translation id="888169490072887292">أريد البحث عن مطاعم مناسبة للعائلات وتقدّم قوائم طعام للأطفال</translation>
 <translation id="888256071122006425">إعدادات الماوس ولوحة اللمس</translation>
 <translation id="8884264823507872907">هل المطلوب إنشاء ملف عمل جديد؟</translation>
 <translation id="8884570509232205463">يتم قفل جهازك الآن في <ph name="UNLOCK_TIME" />.</translation>
@@ -10272,10 +10190,8 @@
 <translation id="8898786835233784856">اختيار علامة التبويب التالية</translation>
 <translation id="8898790559170352647">‏إضافة حسابك على Microsoft</translation>
 <translation id="8898822736010347272">‏إرسال عناوين URL الخاصّة ببعض الصفحات التي تزورها، وعدد محدود من معلومات النظام، وبعض أنواع محتوى الصفحات إلى Google، وذلك للمساعدة على اكتشاف التهديدات الجديدة وتوفير الحماية لجميع المستخدمين على الويب</translation>
-<translation id="8899299346165404002">صِغ مسودة لمخطط ينظّم أفكاري في تنسيق واضح وموجز</translation>
 <translation id="8899851313684471736">&amp;فتح الرّابط في نافذة جديدة</translation>
 <translation id="8900413463156971200">تفعيل شبكة الجوّال</translation>
-<translation id="8901147364315347044">أريد أفكارًا لاختيار هدايا فريدة لشخص ما، استنادًا إلى هواياته واهتماماته التي سأشاركها معك</translation>
 <translation id="8902667442496790482">فتح إعدادات سماع الاختيار</translation>
 <translation id="8903733144777177139">تم حظر الوصول إلى الميكروفون.</translation>
 <translation id="8904787158537906492">تم نسخ الرابط إلى الحافظة</translation>
@@ -10428,7 +10344,6 @@
 <translation id="9009369504041480176">جارٍ تحميل (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009707268312089299">‏الشهادات المستورَدة من Windows</translation>
 <translation id="9009708085379296446">هل كنت تقصد تغيير هذه الصفحة؟</translation>
-<translation id="9010187979699879769">أريد إنشاء جدول زمني للدراسة</translation>
 <translation id="9010845741772269259">إضافة طُرق الدفع</translation>
 <translation id="9011262023858991985">بث محتوى علامة التبويب هذه</translation>
 <translation id="9011393886518328654">ملاحظات الإصدار</translation>
@@ -10448,7 +10363,6 @@
 <translation id="9021662811137657072">تم اكتشاف فيروس</translation>
 <translation id="902236149563113779">تتبّع المواقع الإلكترونية عادةً موضع الكاميرا لتتيح ميزات الواقع المعزّز، مثل اتجاهات الألعاب أو التنبيه.</translation>
 <translation id="9022847679183471841">يتم الآن استخدام هذا الحساب فعلاً على هذا الكمبيوتر من قبل <ph name="AVATAR_NAME" />.</translation>
-<translation id="9022871169049522985">يمكن للمواقع الإلكترونية والمعلنين قياس أداء إعلاناتهم.</translation>
 <translation id="9023015617655685412">وضع إشارة مرجعية لعلامة التبويب هذه</translation>
 <translation id="902319268551617004">يمكنك مسح رمز الاستجابة السريعة ضوئيًا باستخدام كاميرا الجهاز أو عن طريق إدخال رمز التفعيل المُقدَّم من مشغِّل شبكة الجوّال.</translation>
 <translation id="9023723490232936872">تشيتشن إيتزا</translation>
@@ -10554,7 +10468,6 @@
 <translation id="910000385680858937">تم منح إذن الوصول إلى الميكروفون: <ph name="PERMISSION_DETAILS" />. عليك توصيل ميكروفون بجهازك.</translation>
 <translation id="9100416672768993722">‏للتبديل إلى آخر أسلوب إدخال تم استخدامه، يمكنك الضغط على <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />مفتاح المسافة<ph name="END_SPACE" /><ph name="END_SHORTCUT" />.</translation>
 <translation id="9100765901046053179">الإعدادات المتقدمة</translation>
-<translation id="9102864637938129124">يمكن للمواقع الإلكترونية والمعلنين الاطّلاع على أداء إعلاناتهم. هذا الإعداد مفعَّل.</translation>
 <translation id="9103341231213089378">‏لبث المحتوى، يجب منح Chrome إذن الوصول من خلال: "<ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" />" &gt; "الشبكة المحلية" &gt; Chrome</translation>
 <translation id="9103868373786083162">اضغط للرجوع، وقائمة السياقات لمشاهدة السجلّ.</translation>
 <translation id="9107096627210171112">ترجمة…</translation>

@@ -725,6 +725,7 @@
 <translation id="340669334496430859">ბოლო ცვლილება</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 ოქტ, 2023</translation>
+<translation id="3419787211763835342">დაგვეხმარეთ გაუმჯობესებული ავტომატური შევსების დახვეწაში</translation>
 <translation id="3426715535827854458">ხელსაწყოთა ზოლის დამალვის დამალვა</translation>
 <translation id="3435738964857648380">უსაფრთხოება</translation>
 <translation id="3441673211568148613">შეინარჩუნეთ კონფიდენციალურობა დათვალიერებისას</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">ტელეფონი</translation>
 <translation id="4380677808580146413">არჩევა</translation>
 <translation id="4389019817280890563">შეეხეთ ენის შესაცვლელად.</translation>
+<translation id="4390649422783033958">შესული ხართ, როგორც <ph name="USER_NAME" />. <ph name="USER_EMAIL" />, Google-ის წევრი. ანგარიშის მენიუს გახსნა.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{1 დღის შემდეგ}other{{COUNT} დღის შემდეგ}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 ჩანართი}other{# ჩანართი}}</translation>
 <translation id="4404790787924017676">მიიღეთ გაფრთხილებები თქვენ მიერ თვალმიდევნებული პროდუქტების ფასების დაწევის შესახებ</translation>
@@ -1365,6 +1367,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="5559567453458728487">ვებში ნაპოვნი საზომი ერთეულების გარდაქმნა</translation>
 <translation id="5560088892362098740">მოქმედების ვადის გასვლის თარიღი</translation>
 <translation id="556042886152191864">ღილაკი</translation>
+<translation id="5563910365456880646">მას შემდეგ, რაც შეასრულეთ „ფოტოს გამოყენება Google Lens-ით ძიებისთვის“</translation>
 <translation id="5565871407246142825">საკრედიტო ბარათები</translation>
 <translation id="5567439033041178034">შეიტყვეთ მეტი</translation>
 <translation id="5578795271662203820">ამ გამოსახულების ძიება <ph name="SEARCH_ENGINE" />-ში</translation>
@@ -1815,6 +1818,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="6930162026494574854">თარგმნის პარამეტრების განულება</translation>
 <translation id="6930799952781667037">შეეხეთ ამ ენის შესაცვლელად.</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
+<translation id="6937083164784433305">{count,plural, =1{თქვენ ძიებისთვის გამოიყენეთ 1 ფოტო}other{თქვენ ძიებისთვის გამოიყენეთ # ფოტო}}</translation>
 <translation id="693761253105515415">დააყენეთ საიდუმლო კოდი</translation>
 <translation id="6945221475159498467">არჩევა</translation>
 <translation id="6946722113367118030">ფიქრი</translation>
@@ -2020,6 +2024,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="7662316065255305764">საიტის ინფორმაცია</translation>
 <translation id="7665369617277396874">ანგარიშის დამატება</translation>
 <translation id="7666861622396822790">აღნიშნულის მართვა შეგიძლიათ <ph name="BEGIN_LINK" />კონტენტის პარამეტრებიდან<ph name="END_LINK" />.</translation>
+<translation id="7669448795744969014">შესული ხართ, როგორც <ph name="USER_EMAIL" />, Google-ის წევრი. ანგარიშის მენიუს გახსნა.</translation>
 <translation id="7669493687462784703">გსურთ, გააგრძელოთ კონფიგურაციის პროფილის ჩამოტვირთვა <ph name="WEBSITE" />-იდან?</translation>
 <translation id="7673346542062368520">ვების ინკოგნიტო რეჟიმში დასათვალიერებლად შეგიძლიათ გადაფურცლოთ მარცხნივ.</translation>
 <translation id="7679915578945954324">საიტების მისამართები დაკოპირდა</translation>

@@ -725,6 +725,7 @@
 <translation id="340669334496430859">Huling Binago</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">Okt 25, 2023</translation>
+<translation id="3419787211763835342">Tumulong na ayusin pa ang pinahusay na autofill</translation>
 <translation id="3426715535827854458">I-hide ang Toolbar na I-hide</translation>
 <translation id="3435738964857648380">Seguridad</translation>
 <translation id="3441673211568148613">Panatilihing pribado ang iyong pag-browse</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">Telepono</translation>
 <translation id="4380677808580146413">Pumili</translation>
 <translation id="4389019817280890563">I-tap para baguhin ang wika.</translation>
+<translation id="4390649422783033958">Naka-sign in bilang <ph name="USER_NAME" />. <ph name="USER_EMAIL" />, membership sa Google. Buksan ang menu ng account.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{Pagkalipas ng 1 araw}one{Pagkalipas ng {COUNT} araw}other{Pagkalipas ng {COUNT} na araw}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 tab}one{# tab}other{# na tab}}</translation>
 <translation id="4404790787924017676">Makatanggap ng mga alerto sa pagbaba ng presyo para sa mga produktong sinusubaybayan mo</translation>
@@ -1365,6 +1367,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="5559567453458728487">Mag-convert ng mga unit ng pagsukat na makikita sa web</translation>
 <translation id="5560088892362098740">Petsa ng Pag-expire</translation>
 <translation id="556042886152191864">Pindutan</translation>
+<translation id="5563910365456880646">mula nang makumpleto ang "Gumamit ng larawan para maghanap gamit ang Google Lens"</translation>
 <translation id="5565871407246142825">Mga credit card</translation>
 <translation id="5567439033041178034">MATUTO PA</translation>
 <translation id="5578795271662203820">Hanapin sa <ph name="SEARCH_ENGINE" /> ang larawan</translation>
@@ -1815,6 +1818,7 @@ Para magpatuloy mula sa iyong computer, lumipat sa <ph name="OTHER_EMAIL" />. Ma
 <translation id="6930162026494574854">I-reset ang Mga setting ng pagsasalin</translation>
 <translation id="6930799952781667037">I-tap para baguhin ang wikang ito.</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
+<translation id="6937083164784433305">{count,plural, =1{Gumamit ka ng 1 larawan para maghanap}one{Gumamit ka ng # larawan para maghanap}other{Gumamit ka ng # na larawan para maghanap}}</translation>
 <translation id="693761253105515415">Magtakda ng passcode</translation>
 <translation id="6945221475159498467">Pumili</translation>
 <translation id="6946722113367118030">Nag-iisip</translation>
@@ -2020,6 +2024,7 @@ Para magpatuloy mula sa iyong computer, lumipat sa <ph name="OTHER_EMAIL" />. Ma
 <translation id="7662316065255305764">Impormasyon ng Site</translation>
 <translation id="7665369617277396874">Magdagdag ng account</translation>
 <translation id="7666861622396822790">Mapapamahalaan mo ito sa <ph name="BEGIN_LINK" />Mga Setting ng Content<ph name="END_LINK" />.</translation>
+<translation id="7669448795744969014">Naka-sign in bilang si <ph name="USER_EMAIL" />, membership sa Google. Buksan ang menu ng account.</translation>
 <translation id="7669493687462784703">Ipagpatuloy ang pag-download ng profile ng configuration mula sa <ph name="WEBSITE" />?</translation>
 <translation id="7673346542062368520">Puwede kang mag-swipe pakaliwa para mag-browse sa Incognito.</translation>
 <translation id="7679915578945954324">Nakopya ang address ng site</translation>

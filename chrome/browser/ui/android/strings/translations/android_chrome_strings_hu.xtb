@@ -85,6 +85,7 @@
 <translation id="1310482092992808703">Lapok csoportosítása</translation>
 <translation id="1318262688555255786">A következő weboldalra mutató link megosztása: <ph name="PAGE_TITLE" />. Forrás: <ph name="PAGE_URL" /></translation>
 <translation id="1327257854815634930">Megnyitotta a navigációs előzményeket</translation>
+<translation id="1330043879670259913">A Chrome-ban végzett munka biztonsága érdekében a szervezete képes lehet bizonyos információk megtekintésére vagy kezelésére, amikor Ön be van jelentkezve a Chrome-ba. További információ</translation>
 <translation id="1331212799747679585">A Chrome frissítése nem lehetséges. További lehetőségek</translation>
 <translation id="1332501820983677155">A Google Chrome-funkciók billentyűparancsai</translation>
 <translation id="1333491156693005331">Nemrég ellenőrizve</translation>
@@ -1166,6 +1167,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5869522115854928033">Mentett jelszavak</translation>
 <translation id="5870416898561279542">Az ismétlődő lapok és csoportok, valamint a(z) <ph name="DAYS_INACTIVE" /> napja nem használt lapok ide kerülnek,<ph name="AUTODELETE_SECTION" /> A <ph name="DECLUTTER_SETTINGS_TITLE" /> között ez bármikor módosítható.</translation>
 <translation id="5885378508678660271">Értesítések <ph name="SEPARATOR" /> A Chrome eltávolította ezeket az engedélyeket, mert ez a webhely veszélyes</translation>
+<translation id="5896944002928653773">A vállalati jelekre vonatkozó felelősségkizárás alsó lapja bezárva</translation>
 <translation id="5899667542927581604">„Nincs azonosítókulcs” munkalap bezárva</translation>
 <translation id="5907542076239273525">Könyvjelző mentve ide: <ph name="FOLDER_NAME" /></translation>
 <translation id="5911301511366365629"><ph name="TAB_TITLE" />, kiválasztott, hangot lejátszó inkognitó lap</translation>
@@ -1256,6 +1258,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6251449557817521191">Itt tekintheti meg Chrome-előzményeit</translation>
 <translation id="6254139308321626268">Jelenleg PDF-fájlt tekint meg</translation>
 <translation id="6255809143828972562">A Chrome eszközeivel biztonságosan böngészhet, és kézben tarthatja az irányítást</translation>
+<translation id="6259107733340311168">A vállalati jelekre vonatkozó felelősségkizárás alsó lapja teljes magasságban megnyitva</translation>
 <translation id="6260260490042862943">Webhelyvezérlők</translation>
 <translation id="6264376385120300461">Letöltés mindenképpen</translation>
 <translation id="6264485186158353794">Vissza a biztonsághoz</translation>

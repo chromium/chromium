@@ -85,6 +85,7 @@
 <translation id="1310482092992808703">Grupează file</translation>
 <translation id="1318262688555255786">Trimite linkul spre pagina web <ph name="PAGE_TITLE" />. Sursă: <ph name="PAGE_URL" /></translation>
 <translation id="1327257854815634930">Istoricul de navigare este deschis</translation>
+<translation id="1330043879670259913">Pentru a-ți proteja activitatea în Chrome, organizația ta va putea să vadă sau să gestioneze anumite informații când te conectezi la Chrome. Află mai multe</translation>
 <translation id="1331212799747679585">Chrome nu se poate actualiza. Mai multe opțiuni</translation>
 <translation id="1332501820983677155">Comenzi rapide pentru funcțiile Google Chrome</translation>
 <translation id="1333491156693005331">Verificat recent</translation>
@@ -1166,6 +1167,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="5869522115854928033">Parole salvate</translation>
 <translation id="5870416898561279542">Filele și grupurile dublură sau cele nefolosite timp de <ph name="DAYS_INACTIVE" /> zile sunt mutate aici<ph name="AUTODELETE_SECTION" />. Poți modifica oricând opțiunea din <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5885378508678660271">Notificări <ph name="SEPARATOR" /> Chrome a eliminat aceste permisiuni deoarece site-ul este periculos</translation>
+<translation id="5896944002928653773">Foaia din partea de jos cu clauza de declinare a responsabilității privind semnalele de companie este închisă</translation>
 <translation id="5899667542927581604">Nu s-a închis nicio foaie cu chei de acces</translation>
 <translation id="5907542076239273525">Marcajul s-a salvat în <ph name="FOLDER_NAME" /></translation>
 <translation id="5911301511366365629"><ph name="TAB_TITLE" />, filă incognito selectată cu sunet</translation>
@@ -1256,6 +1258,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6251449557817521191">Consultă istoricul Chrome aici</translation>
 <translation id="6254139308321626268">Se afișează un fișier PDF</translation>
 <translation id="6255809143828972562">Cu instrumentele din Chrome, navighezi în siguranță și deții controlul</translation>
+<translation id="6259107733340311168">Foaia din partea de jos cu clauza de declinare a responsabilității privind semnalele de companie este deschisă la înălțime completă</translation>
 <translation id="6260260490042862943">Comenzi pentru site</translation>
 <translation id="6264376385120300461">Descarcă oricum</translation>
 <translation id="6264485186158353794">Înapoi la zona sigură</translation>

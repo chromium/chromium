@@ -85,6 +85,7 @@
 <translation id="1310482092992808703">ਟੈਬਾਂ ਦਾ ਗਰੁੱਪ ਬਣਾਓ</translation>
 <translation id="1318262688555255786">ਵੈੱਬ-ਪੰਨੇ <ph name="PAGE_TITLE" /> ਦਾ ਲਿੰਕ ਸਾਂਝਾ ਕਰੋ। ਸਰੋਤ: <ph name="PAGE_URL" /></translation>
 <translation id="1327257854815634930">ਨੈਵੀਗੇਸ਼ਨ ਇਤਿਹਾਸ ਖੁੱਲ੍ਹਾ ਹੋਇਆ ਹੈ</translation>
+<translation id="1330043879670259913">Chrome 'ਤੇ ਤੁਹਾਡੇ ਕੰਮ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਲਈ, ਤੁਹਾਡੀ ਸੰਸਥਾ ਤੁਹਾਡੇ ਵੱਲੋਂ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ 'ਤੇ ਕੁਝ ਖਾਸ ਜਾਣਕਾਰੀ ਨੂੰ ਦੇਖ ਸਕੇਗੀ ਜਾਂ ਉਸਦਾ ਪ੍ਰਬੰਧਨ ਕਰ ਸਕੇਗੀ। ਹੋਰ ਜਾਣੋ</translation>
 <translation id="1331212799747679585">Chrome ਅੱਪਡੇਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਹੋਰ ਵਿਕਲਪ</translation>
 <translation id="1332501820983677155">Google Chrome ਵਿਸ਼ੇਸ਼ਤਾ ਸ਼ਾਰਟਕੱਟ</translation>
 <translation id="1333491156693005331">ਹਾਲ ਹੀ ਵਿੱਚ ਜਾਂਚ ਕੀਤੀ ਗਈ</translation>
@@ -1166,6 +1167,7 @@
 <translation id="5869522115854928033">ਸੁਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ</translation>
 <translation id="5870416898561279542">ਡੁਪਲੀਕੇਟ ਟੈਬਾਂ ਅਤੇ ਗਰੁੱਪਾਂ ਜਾਂ <ph name="DAYS_INACTIVE" /> ਦਿਨਾਂ ਤੋਂ ਨਾ ਵਰਤੀਆਂ ਗਈਆਂ ਟੈਬਾਂ ਅਤੇ ਗਰੁੱਪਾਂ ਨੂੰ ਇੱਥੇ ਲਿਜਾਇਆ ਜਾਂਦਾ ਹੈ<ph name="AUTODELETE_SECTION" />। ਤੁਸੀਂ ਕਿਸੇ ਵੇਲੇ ਵੀ <ph name="DECLUTTER_SETTINGS_TITLE" /> ਵਿੱਚ ਜਾ ਕੇ ਇਸਨੂੰ ਬਦਲ ਸਕਦੇ ਹੋ।</translation>
 <translation id="5885378508678660271">ਸੂਚਨਾਵਾਂ <ph name="SEPARATOR" /> Chrome ਵੱਲੋਂ ਇਨ੍ਹਾਂ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ ਕਿਉਂਕਿ ਇਹ ਸਾਈਟ ਖਤਰਨਾਕ ਹੈ</translation>
+<translation id="5896944002928653773">ਐਂਟਰਪ੍ਰਾਈਜ਼ ਸਿਗਨਲਾਂ ਸੰਬੰਧੀ ਬੇਦਾਵਾ ਹੇਠਲੀ ਸ਼ੀਟ ਬੰਦ ਹੈ</translation>
 <translation id="5899667542927581604">ਕਿਸੇ ਵੀ ਪਾਸਕੀ ਸ਼ੀਟ ਨੂੰ ਬੰਦ ਨਹੀਂ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5907542076239273525">ਬੁੱਕਮਾਰਕ ਨੂੰ <ph name="FOLDER_NAME" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5911301511366365629"><ph name="TAB_TITLE" />, ਚੁਣੀ ਗਈ ਅਜਿਹੀ ਇਨਕੋਗਨਿਟੋ ਟੈਬ, ਜੋ ਸੁਣਨਯੋਗ ਹੈ</translation>
@@ -1256,6 +1258,7 @@
 <translation id="6251449557817521191">ਆਪਣਾ Chrome ਇਤਿਹਾਸ ਇੱਥੇ ਦੇਖੋ</translation>
 <translation id="6254139308321626268">ਤੁਸੀਂ ਇੱਕ PDF ਫ਼ਾਈਲ ਦੇਖ ਰਹੇ ਹੋ</translation>
 <translation id="6255809143828972562">Chrome ਤੋਂ ਟੂਲਾਂ ਨਾਲ, ਤੁਸੀਂ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਬ੍ਰਾਊਜ਼ ਕਰ ਸਕਦੇ ਹੋ ਅਤੇ ਖੁਦ ਕੰਟਰੋਲ ਕਰ ਸਕਦੇ ਹੋ</translation>
+<translation id="6259107733340311168">ਐਂਟਰਪ੍ਰਾਈਜ਼ ਸਿਗਨਲਾਂ ਸੰਬੰਧੀ ਜ਼ਿੰਮੇਵਾਰੀ ਤੋਂ ਬੇਦਾਵਾ ਦੇਣ ਵਾਲੀ ਹੇਠਲੀ ਸ਼ੀਟ ਪੂਰੀ ਉਚਾਈ ਤੱਕ ਖੁੱਲ੍ਹੀ ਹੈ</translation>
 <translation id="6260260490042862943">ਸਾਈਟ ਕੰਟਰੋਲ</translation>
 <translation id="6264376385120300461">ਫਿਰ ਵੀ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
 <translation id="6264485186158353794">ਸੁਰੱਖਿਆ 'ਤੇ ਵਾਪਸ ਜਾਓ</translation>

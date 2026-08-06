@@ -725,6 +725,7 @@
 <translation id="340669334496430859">Laas gewysig</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 Oktober 2023</translation>
+<translation id="3419787211763835342">Help om gevorderde outovul te verbeter</translation>
 <translation id="3426715535827854458">Versteek Versteek nutsbalk</translation>
 <translation id="3435738964857648380">Sekuriteit</translation>
 <translation id="3441673211568148613">Hou jou blaaiery privaat</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">Foon</translation>
 <translation id="4380677808580146413">Kies</translation>
 <translation id="4389019817280890563">Tik om taal te verander.</translation>
+<translation id="4390649422783033958">Aangemeld as <ph name="USER_NAME" />. <ph name="USER_EMAIL" />, Google-lidmaatskap. Maak rekeningkieslys oop.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{Ná 1 dag}other{Ná {COUNT} dae}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 oortjie}other{# oortjies}}</translation>
 <translation id="4404790787924017676">Kry opletberigte oor prysverlagings vir produkte wat jy naspoor</translation>
@@ -1365,6 +1367,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="5559567453458728487">Skakel metingeenhede om wat op die web gevind word</translation>
 <translation id="5560088892362098740">Vervaldatum</translation>
 <translation id="556042886152191864">Knoppie</translation>
+<translation id="5563910365456880646">sedert jy “Gebruik ’n foto om met Google Lens te soek” voltooi het</translation>
 <translation id="5565871407246142825">Kredietkaarte</translation>
 <translation id="5567439033041178034">KOM MEER TE WETE</translation>
 <translation id="5578795271662203820">Deursoek <ph name="SEARCH_ENGINE" /> vir hierdie prent</translation>
@@ -1815,6 +1818,7 @@ Skakel oor na <ph name="OTHER_EMAIL" /> om van jou rekenaar af voort te gaan. Jy
 <translation id="6930162026494574854">Stel Vertaal-instellings terug</translation>
 <translation id="6930799952781667037">Tik om na hierdie taal te verander.</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
+<translation id="6937083164784433305">{count,plural, =1{Jy het 1 foto gebruik om te soek}other{Jy het # foto’s gebruik om te soek}}</translation>
 <translation id="693761253105515415">Stel ’n wagkode</translation>
 <translation id="6945221475159498467">Kies</translation>
 <translation id="6946722113367118030">Dink</translation>
@@ -2020,6 +2024,7 @@ Skakel oor na <ph name="OTHER_EMAIL" /> om van jou rekenaar af voort te gaan. Jy
 <translation id="7662316065255305764">Werfinligting</translation>
 <translation id="7665369617277396874">Voeg rekening by</translation>
 <translation id="7666861622396822790">Jy kan dit in <ph name="BEGIN_LINK" />Inhoudinstellings<ph name="END_LINK" /> bestuur.</translation>
+<translation id="7669448795744969014">Aangemeld as <ph name="USER_EMAIL" />, Google-lidmaatskap. Maak rekeningkieslys oop.</translation>
 <translation id="7669493687462784703">Gaan voort met die aflaai van ’n opstellingprofiel vanaf <ph name="WEBSITE" />?</translation>
 <translation id="7673346542062368520">Jy kan ook links swiep om in Incognito te blaai.</translation>
 <translation id="7679915578945954324">Werfadresse is gekopieer</translation>

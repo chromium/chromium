@@ -85,6 +85,7 @@
 <translation id="1310482092992808703">Групиране на раздели</translation>
 <translation id="1318262688555255786">Споделяне на връзка към уеб страницата <ph name="PAGE_TITLE" />. Източник: <ph name="PAGE_URL" /></translation>
 <translation id="1327257854815634930">Историята на навигацията е отворена</translation>
+<translation id="1330043879670259913">За да защити работата ви в Chrome, организацията ви ще може да преглежда или управлява определена информация, когато сте влезли в профила си в браузъра. Научете повече</translation>
 <translation id="1331212799747679585">Chrome не може да се актуализира. Още опции</translation>
 <translation id="1332501820983677155">Комбинации за функции на Google Chrome</translation>
 <translation id="1333491156693005331">Наскоро бе извършена проверка</translation>
@@ -1166,6 +1167,7 @@
 <translation id="5869522115854928033">Запазени пароли</translation>
 <translation id="5870416898561279542">Дублираните раздели и групи или тези, които не са използвани от <ph name="DAYS_INACTIVE" /> дни, се преместват тук<ph name="AUTODELETE_SECTION" />. Можете да промените това по всяко време от „<ph name="DECLUTTER_SETTINGS_TITLE" />“.</translation>
 <translation id="5885378508678660271">Известия <ph name="SEPARATOR" /> Chrome премахна тези разрешения, защото сайтът е опасен</translation>
+<translation id="5896944002928653773">Долният лист с отказ от отговорност за корпоративните сигнали е затворен</translation>
 <translation id="5899667542927581604">Долният лист без налични ключове за достъп бе затворен</translation>
 <translation id="5907542076239273525">Отметката е запазена в папката „<ph name="FOLDER_NAME" />“</translation>
 <translation id="5911301511366365629"><ph name="TAB_TITLE" /> – избран раздел в режим „инкогнито“, който възпроизвежда звук</translation>
@@ -1256,6 +1258,7 @@
 <translation id="6251449557817521191">Вижте историята си в Chrome тук</translation>
 <translation id="6254139308321626268">Преглеждате PDF файл</translation>
 <translation id="6255809143828972562">С помощта на инструментите от Chrome можете да сърфирате безопасно и да запазите контрол</translation>
+<translation id="6259107733340311168">Долният лист с отказ от отговорност за корпоративните сигнали е отворен на пълната височина</translation>
 <translation id="6260260490042862943">Контроли за сайта</translation>
 <translation id="6264376385120300461">Изтегляне въпреки това</translation>
 <translation id="6264485186158353794">Назад към безопасната страница</translation>

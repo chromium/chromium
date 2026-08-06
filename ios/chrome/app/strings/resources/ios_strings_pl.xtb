@@ -725,6 +725,7 @@
 <translation id="340669334496430859">Ostatnia modyfikacja</translation>
 <translation id="3409785640040772790">Mapy</translation>
 <translation id="3416023309465857378">25 października 2023 r.</translation>
+<translation id="3419787211763835342">Pomóż nam poprawić ulepszone autouzupełnianie</translation>
 <translation id="3426715535827854458">Ukryj pasek narzędzi Ukryj</translation>
 <translation id="3435738964857648380">Bezpieczeństwo</translation>
 <translation id="3441673211568148613">Zadbaj o prywatność podczas przeglądania</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380677808580146413">Zaznacz</translation>
 <translation id="4389019817280890563">Kliknij, by zmienić język.</translation>
+<translation id="4390649422783033958">Zalogowano jako <ph name="USER_NAME" />. <ph name="USER_EMAIL" />, subskrypcja Google. Otwórz menu konta.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{Po 1 dniu}few{Po {COUNT} dniach}many{Po {COUNT} dniach}other{Po {COUNT} dnia}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 karta}few{# karty}many{# kart}other{# karty}}</translation>
 <translation id="4404790787924017676">Otrzymuj alerty o obniżkach cen produktów, które śledzisz</translation>
@@ -1365,6 +1367,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5559567453458728487">Przelicz jednostki miary znalezione w internecie</translation>
 <translation id="5560088892362098740">Data ważności</translation>
 <translation id="556042886152191864">Przycisk</translation>
+<translation id="5563910365456880646">od ukończenia zadania „Użyj zdjęcia, aby wyszukać za pomocą Obiektywu Google”</translation>
 <translation id="5565871407246142825">Karty kredytowe</translation>
 <translation id="5567439033041178034">WIĘCEJ INFORMACJI</translation>
 <translation id="5578795271662203820">Szukaj tej grafiki w <ph name="SEARCH_ENGINE" /></translation>
@@ -1815,6 +1818,7 @@ Aby kontynuować na komputerze, przełącz się na <ph name="OTHER_EMAIL" />. B�
 <translation id="6930162026494574854">Zresetuj ustawienia tłumaczenia</translation>
 <translation id="6930799952781667037">Kliknij, by zmienić na ten język.</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
+<translation id="6937083164784433305">{count,plural, =1{Do wyszukiwania użyto 1 zdjęcia}few{Do wyszukiwania użyto # zdjęć}many{Do wyszukiwania użyto # zdjęć}other{Do wyszukiwania użyto # zdjęcia}}</translation>
 <translation id="693761253105515415">Ustaw kod dostępu</translation>
 <translation id="6945221475159498467">Wybierz</translation>
 <translation id="6946722113367118030">Myślenie</translation>
@@ -2020,6 +2024,7 @@ Aby kontynuować na komputerze, przełącz się na <ph name="OTHER_EMAIL" />. B�
 <translation id="7662316065255305764">Informacje o witrynie</translation>
 <translation id="7665369617277396874">Dodaj konto</translation>
 <translation id="7666861622396822790">Możesz to zmienić w <ph name="BEGIN_LINK" />Ustawieniach treści<ph name="END_LINK" />.</translation>
+<translation id="7669448795744969014">Zalogowano jako <ph name="USER_EMAIL" />, subskrypcja Google. Otwórz menu konta.</translation>
 <translation id="7669493687462784703">Kontynuować pobieranie profilu konfiguracji ze strony <ph name="WEBSITE" />?</translation>
 <translation id="7673346542062368520">Aby przeglądać treści w trybie incognito, możesz przesunąć palcem w lewo.</translation>
 <translation id="7679915578945954324">Adresy witryn zostały skopiowane</translation>

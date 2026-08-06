@@ -725,6 +725,7 @@
 <translation id="340669334496430859">கடைசியாக மாற்றப்பட்டவை</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">அக். 25, 2023</translation>
+<translation id="3419787211763835342">மேம்பட்ட தானியங்கு நிரப்பலை மேம்படுத்த உதவுங்கள்</translation>
 <translation id="3426715535827854458">இந்த விருப்பத்தை மறை</translation>
 <translation id="3435738964857648380">பாதுகாப்பு</translation>
 <translation id="3441673211568148613">உங்கள் பிரவுசிங் தரவைத் தனிப்பட்டதாக வைத்திருக்கலாம்</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">மொபைல்</translation>
 <translation id="4380677808580146413">தேர்ந்தெடு</translation>
 <translation id="4389019817280890563">மொழியை மாற்ற தட்டவும்.</translation>
+<translation id="4390649422783033958">உள்நுழைந்துள்ள கணக்கு: <ph name="USER_NAME" />. <ph name="USER_EMAIL" /> கணக்கிற்கு Google மெம்பர்ஷிப் உள்ளது. கணக்கு மெனுவைத் திறக்கும்.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{1 நாளுக்குப் பிறகு}other{{COUNT} நாட்களுக்குப் பிறகு}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 பக்கம்}other{# பக்கங்கள்}}</translation>
 <translation id="4404790787924017676">நீங்கள் கண்காணிக்கும் தயாரிப்புகளின் விலை குறைவது தொடர்பான விழிப்பூட்டல்களைப் பெறலாம்</translation>
@@ -1365,6 +1367,7 @@
 <translation id="5559567453458728487">இணையத்தில் கண்டறிந்த அளவீட்டு யூனிட்களை மாற்றும்</translation>
 <translation id="5560088892362098740">காலாவதியாகும் தேதி</translation>
 <translation id="556042886152191864">பட்டன்</translation>
+<translation id="5563910365456880646">"Google Lens மூலம் தேட படத்தைப் பயன்படுத்துதல்" என்பதை நிறைவுசெய்ததில் இருந்து</translation>
 <translation id="5565871407246142825">கிரெடிட் கார்டுகள்</translation>
 <translation id="5567439033041178034">மேலும் அறிக</translation>
 <translation id="5578795271662203820">இந்தப் படத்திற்கு <ph name="SEARCH_ENGINE" /> இல் தேடவும்</translation>
@@ -1815,6 +1818,7 @@
 <translation id="6930162026494574854">மொழிபெயர்ப்பு அமைப்புகளை மீட்டமை</translation>
 <translation id="6930799952781667037">இந்த மொழிக்கு மாற்ற தட்டவும்.</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
+<translation id="6937083164784433305">{count,plural, =1{தேடலுக்கு 1 படத்தைப் பயன்படுத்தியுள்ளீர்கள்}other{தேடலுக்கு # படங்களைப் பயன்படுத்தியுள்ளீர்கள்}}</translation>
 <translation id="693761253105515415">கடவுக்குறியீட்டை அமையுங்கள்</translation>
 <translation id="6945221475159498467">தேர்ந்தெடு</translation>
 <translation id="6946722113367118030">யோசிக்கும் ஈமோஜி</translation>
@@ -2020,6 +2024,7 @@
 <translation id="7662316065255305764">தளம் குறித்த தகவல்கள்</translation>
 <translation id="7665369617277396874">கணக்கைச் சேர்</translation>
 <translation id="7666861622396822790"><ph name="BEGIN_LINK" />உள்ளடக்க அமைப்புகள்<ph name="END_LINK" /> என்பதில் இதை நீங்கள் நிர்வகிக்கலாம்.</translation>
+<translation id="7669448795744969014">Google மெம்பர்ஷிப் உள்ள <ph name="USER_EMAIL" /> என்ற கணக்கில் உள்நுழைந்துள்ளீர்கள். கணக்கு மெனுவைத் திறக்கும்.</translation>
 <translation id="7669493687462784703"><ph name="WEBSITE" /> தளத்திலிருந்து உள்ளமைவுச் சுயவிவரத்தைப் பதிவிறக்குவதைத் தொடரவா?</translation>
 <translation id="7673346542062368520">மறைநிலையில் உலாவ இடதுபுறம் ஸ்வைப் செய்யலாம்.</translation>
 <translation id="7679915578945954324">தள முகவரிகள் நகலெடுக்கப்பட்டன</translation>

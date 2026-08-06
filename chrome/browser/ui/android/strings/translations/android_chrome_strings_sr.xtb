@@ -85,6 +85,7 @@
 <translation id="1310482092992808703">Групиши картице</translation>
 <translation id="1318262688555255786">Делите линк до веб-странице <ph name="PAGE_TITLE" />. Извор: <ph name="PAGE_URL" /></translation>
 <translation id="1327257854815634930">Историја навигације је отворена</translation>
+<translation id="1330043879670259913">Да би заштитила ваш рад у Chrome-у, организација ће моћи да прегледа одређене информације или управља њима ако сте пријављени у Chrome. Сазнајте више</translation>
 <translation id="1331212799747679585">Chrome не може да се ажурира. Још опција</translation>
 <translation id="1332501820983677155">Пречице за Google Chrome функције</translation>
 <translation id="1333491156693005331">Недавно проверено</translation>
@@ -1166,6 +1167,7 @@ Google налог можда има друге облике историје п�
 <translation id="5869522115854928033">Сачуване лозинке</translation>
 <translation id="5870416898561279542">Дуплe картицe и групe или оне које се не користе <ph name="DAYS_INACTIVE" /> дана премештају се овде<ph name="AUTODELETE_SECTION" />. То можете да промените у било ком тренутку у одељку <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5885378508678660271">Обавештења <ph name="SEPARATOR" /> Chrome је уклонио ове дозволе јер је овај сајт опасан</translation>
+<translation id="5896944002928653773">Затворена је доња табела са одрицањем одговорности за сигнале предузећа</translation>
 <translation id="5899667542927581604">Ниједна табела са приступним кључевима није затворена</translation>
 <translation id="5907542076239273525">Обележивач је сачуван у фолдеру <ph name="FOLDER_NAME" /></translation>
 <translation id="5911301511366365629"><ph name="TAB_TITLE" />, изабрана картица без архивирања са звуком</translation>
@@ -1256,6 +1258,7 @@ Google налог можда има друге облике историје п�
 <translation id="6251449557817521191">Овде прегледајте историју Chrome-а</translation>
 <translation id="6254139308321626268">Прегледате PDF фајл</translation>
 <translation id="6255809143828972562">Помоћу Chrome алатки можете безбедно да прегледате и задржите контролу</translation>
+<translation id="6259107733340311168">Доња табела са одрицањем одговорности за сигнале предузећа отворена је на целом екрану</translation>
 <translation id="6260260490042862943">Контроле сајта</translation>
 <translation id="6264376385120300461">Ипак преузми</translation>
 <translation id="6264485186158353794">Назад на безбедно</translation>

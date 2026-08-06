@@ -725,6 +725,7 @@
 <translation id="340669334496430859">上次修改時間</translation>
 <translation id="3409785640040772790">地圖</translation>
 <translation id="3416023309465857378">2023 年 10 月 25 日</translation>
+<translation id="3419787211763835342">協助改善強化版自動填入功能</translation>
 <translation id="3426715535827854458">隱藏「隱藏工具列」</translation>
 <translation id="3435738964857648380">安全性</translation>
 <translation id="3441673211568148613">保護瀏覽隱私</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">電話</translation>
 <translation id="4380677808580146413">選取</translation>
 <translation id="4389019817280890563">輕觸即可變更語言。</translation>
+<translation id="4390649422783033958">目前登入的帳戶是<ph name="USER_NAME" />。<ph name="USER_EMAIL" />，Google 會員。開啟帳戶選單。</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{1 天後}other{{COUNT} 天後}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 個分頁}other{# 個分頁}}</translation>
 <translation id="4404790787924017676">取得追蹤產品的降價快訊</translation>
@@ -1365,6 +1367,7 @@
 <translation id="5559567453458728487">轉換在網頁上偵測到的計量單位</translation>
 <translation id="5560088892362098740">到期日</translation>
 <translation id="556042886152191864">按鈕</translation>
+<translation id="5563910365456880646">自完成「使用 Google 智慧鏡頭透過相片搜尋」以來</translation>
 <translation id="5565871407246142825">信用卡</translation>
 <translation id="5567439033041178034">瞭解詳情</translation>
 <translation id="5578795271662203820">透過 <ph name="SEARCH_ENGINE" /> 搜尋這張圖片</translation>
@@ -1815,6 +1818,7 @@
 <translation id="6930162026494574854">重設翻譯設定</translation>
 <translation id="6930799952781667037">輕觸即可變更為這個語言。</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />，<ph name="EMAIL" />，<ph name="MANAGED_STATUS" />。</translation>
+<translation id="6937083164784433305">{count,plural, =1{你使用了 1 張相片進行搜尋}other{你使用了 # 張相片進行搜尋}}</translation>
 <translation id="693761253105515415">請設定螢幕解鎖密碼</translation>
 <translation id="6945221475159498467">選取</translation>
 <translation id="6946722113367118030">思考</translation>
@@ -2020,6 +2024,7 @@
 <translation id="7662316065255305764">網站資訊</translation>
 <translation id="7665369617277396874">新增帳戶</translation>
 <translation id="7666861622396822790">你可以前往<ph name="BEGIN_LINK" />內容設定<ph name="END_LINK" />進行管理。</translation>
+<translation id="7669448795744969014">目前登入的帳戶是<ph name="USER_EMAIL" />，Google 會員。開啟帳戶選單。</translation>
 <translation id="7669493687462784703">要繼續從「<ph name="WEBSITE" />」下載組態設定檔嗎？</translation>
 <translation id="7673346542062368520">向左滑動即可使用無痕模式瀏覽。</translation>
 <translation id="7679915578945954324">已複製網址</translation>

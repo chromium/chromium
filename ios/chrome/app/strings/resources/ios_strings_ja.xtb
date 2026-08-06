@@ -725,6 +725,7 @@
 <translation id="340669334496430859">最終更新日</translation>
 <translation id="3409785640040772790">マップ</translation>
 <translation id="3416023309465857378">2023 年 10 月 25 日</translation>
+<translation id="3419787211763835342">高精度の自動入力の改善にご協力ください</translation>
 <translation id="3426715535827854458">[ツールバーを隠す] を非表示</translation>
 <translation id="3435738964857648380">セキュリティ</translation>
 <translation id="3441673211568148613">ブラウジングのプライバシーを保護</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">電話</translation>
 <translation id="4380677808580146413">選択</translation>
 <translation id="4389019817280890563">タップして言語を変更できます。</translation>
+<translation id="4390649422783033958"><ph name="USER_NAME" />（<ph name="USER_EMAIL" />、Google メンバーシップ）としてログインしています。アカウント メニューを開きます。</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{1 日後}other{{COUNT} 日後}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 件のタブ}other{# 件のタブ}}</translation>
 <translation id="4404790787924017676">トラッキングしている商品の値下げアラートが表示されます</translation>
@@ -1365,6 +1367,7 @@
 <translation id="5559567453458728487">ウェブで見つかった測定単位を変換する</translation>
 <translation id="5560088892362098740">有効期限</translation>
 <translation id="556042886152191864">ボタン</translation>
+<translation id="5563910365456880646">「Google レンズでの写真を使用した検索」を完了してから</translation>
 <translation id="5565871407246142825">クレジットカード</translation>
 <translation id="5567439033041178034">詳しく見る</translation>
 <translation id="5578795271662203820">この画像を <ph name="SEARCH_ENGINE" /> で検索</translation>
@@ -1815,6 +1818,7 @@
 <translation id="6930162026494574854">翻訳設定をリセット</translation>
 <translation id="6930799952781667037">タップしてこの言語を変更できます。</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />、<ph name="EMAIL" />。<ph name="MANAGED_STATUS" />。</translation>
+<translation id="6937083164784433305">{count,plural, =1{1 枚の写真を使用して検索しました}other{# 枚の写真を使用して検索しました}}</translation>
 <translation id="693761253105515415">パスコードの設定</translation>
 <translation id="6945221475159498467">選択</translation>
 <translation id="6946722113367118030">考えている</translation>
@@ -2020,6 +2024,7 @@
 <translation id="7662316065255305764">サイト情報</translation>
 <translation id="7665369617277396874">アカウントを追加</translation>
 <translation id="7666861622396822790">これは [<ph name="BEGIN_LINK" />コンテンツの設定<ph name="END_LINK" />] で管理できます。</translation>
+<translation id="7669448795744969014"><ph name="USER_EMAIL" />（Google メンバーシップ）としてログインしています。アカウント メニューを開きます。</translation>
 <translation id="7669493687462784703"><ph name="WEBSITE" /> の設定プロファイルのダウンロードを続行しますか？</translation>
 <translation id="7673346542062368520">左にスワイプすると、シークレット モードでブラウジングできます。</translation>
 <translation id="7679915578945954324">サイトのアドレスをコピーしました</translation>

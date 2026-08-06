@@ -725,6 +725,7 @@
 <translation id="340669334496430859">መጨረሻ የተቀየረው</translation>
 <translation id="3409785640040772790">ካርታዎች</translation>
 <translation id="3416023309465857378">ኦክቶበር 25 2023</translation>
+<translation id="3419787211763835342">የተሻሻለ ራስ-ሙላን ለማሻሻል ያግዙ</translation>
 <translation id="3426715535827854458">የመሣሪያ አሞሌን ደብቅ ደብቅ</translation>
 <translation id="3435738964857648380">የደህንነት ጥበቃ</translation>
 <translation id="3441673211568148613">የእርስዎን አሰሳ ግላዊ አድርገው ይቆዩ</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">ስልክ</translation>
 <translation id="4380677808580146413">ምረጥ</translation>
 <translation id="4389019817280890563">ቋንቋን ለመለወጥ መታ ያድርጉ።</translation>
+<translation id="4390649422783033958">እንደ <ph name="USER_NAME" /> ሆነው ገብተዋል። <ph name="USER_EMAIL" />፣ የGoogle አባልነት። የመለያ ምናሌን ይክፈቱ።</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{ከ1 ቀን በኋላ}one{ከ{COUNT} ቀን በኋላ}other{ከ{COUNT} ቀናት በኋላ}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 ትር}one{# ትር}other{# ትሮች}}</translation>
 <translation id="4404790787924017676">ለሚከታተሏቸው ምርቶች የዋጋ ቅነሳ ማንቂያዎችን ያግኙ</translation>
@@ -1365,6 +1367,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="5559567453458728487">በድር ላይ የተገኙ የልወጣ መለኪያ አሃዶችን ይቀይሩ</translation>
 <translation id="5560088892362098740">አገልግሎቱ የሚያበቃበት ቀን</translation>
 <translation id="556042886152191864">አዘራር</translation>
+<translation id="5563910365456880646">«በGoogle ሌንስ ለመፈለግ ፎቶ ይጠቀሙ» የሚለውን ካጠናቀቁበት ጊዜ ጀምሮ</translation>
 <translation id="5565871407246142825">ክሬዲት ካርዶች</translation>
 <translation id="5567439033041178034">ተጨማሪ ለመረዳት</translation>
 <translation id="5578795271662203820">ይህንን ምስል <ph name="SEARCH_ENGINE" /> ላይ ይፈልጉት</translation>
@@ -1815,6 +1818,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6930162026494574854">የትርጉም ቅንብሮችን ዳግም አስጀምር</translation>
 <translation id="6930799952781667037">ወደዚህ ቋንቋ ለመለወጥ መታ ያድርጉ።</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />፣ <ph name="EMAIL" />። <ph name="MANAGED_STATUS" />።</translation>
+<translation id="6937083164784433305">{count,plural, =1{ለመፈለግ 1 ፎቶ ተጠቅመዋል}one{ለመፈለግ # ፎቶ ተጠቅመዋል}other{ለመፈለግ # ፎቶዎችን ተጠቅመዋል}}</translation>
 <translation id="693761253105515415">የይለፍ ኮድ ያዋቅሩ</translation>
 <translation id="6945221475159498467">ይምረጡ</translation>
 <translation id="6946722113367118030">በማሰብ ላይ</translation>
@@ -2020,6 +2024,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7662316065255305764">የጣቢያ መረጃ</translation>
 <translation id="7665369617277396874">መለያ ያክሉ</translation>
 <translation id="7666861622396822790">ይህን <ph name="BEGIN_LINK" />የይዘት ቅንብሮች<ph name="END_LINK" /> ውስጥ ማስተዳደር ይችላሉ።</translation>
+<translation id="7669448795744969014">እንደ <ph name="USER_EMAIL" />፣ የGoogle አባልነት ገብተዋል። የመለያ ምናሌን ይክፈቱ።</translation>
 <translation id="7669493687462784703">የውቅረት መገለጫን ከ<ph name="WEBSITE" /> ማውረድ ይቀጥል?</translation>
 <translation id="7673346542062368520">ማንነት የማያሳውቅ ውስጥ ለማሰስ ወደ ግራ ማንሸራተት ይችላሉ።</translation>
 <translation id="7679915578945954324">የድር ጣቢያ አድራሻዎች ተቀድተዋል</translation>

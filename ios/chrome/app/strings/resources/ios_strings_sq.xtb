@@ -725,6 +725,7 @@
 <translation id="340669334496430859">Ndryshuar për herë të fundit</translation>
 <translation id="3409785640040772790">Hartat</translation>
 <translation id="3416023309465857378">25 tetor 2023</translation>
+<translation id="3419787211763835342">Ndihmo në përmirësimin e plotësimit automatik të përmirësuar</translation>
 <translation id="3426715535827854458">Fshih shiritin e veglave</translation>
 <translation id="3435738964857648380">Siguria</translation>
 <translation id="3441673211568148613">Mbaje shfletimin privat</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">Telefoni</translation>
 <translation id="4380677808580146413">Zgjidh</translation>
 <translation id="4389019817280890563">Trokit për ta ndryshuar gjuhën.</translation>
+<translation id="4390649422783033958">Identifikuar si <ph name="USER_NAME" />. <ph name="USER_EMAIL" />, anëtarësim në Google. Hap menynë e llogarisë.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{Pas 1 dite}other{Pas {COUNT} ditësh}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 skedë}other{# skeda}}</translation>
 <translation id="4404790787924017676">Merr sinjalizime për rëniet e çmimeve për produktet që monitoron</translation>
@@ -1365,6 +1367,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5559567453458728487">Konverto njësitë matëse të gjetura në ueb</translation>
 <translation id="5560088892362098740">Data e skadimit</translation>
 <translation id="556042886152191864">Buton</translation>
+<translation id="5563910365456880646">që nga përfundimi i "Përdor një fotografi për të kërkuar me 'Lenten e Google'"</translation>
 <translation id="5565871407246142825">Karta e kreditit</translation>
 <translation id="5567439033041178034">MËSO MË SHUMË</translation>
 <translation id="5578795271662203820">Kërko në <ph name="SEARCH_ENGINE" /> për këtë imazh</translation>
@@ -1815,6 +1818,7 @@ Për të vazhduar nga kompjuteri, kalo te <ph name="OTHER_EMAIL" />. Do të marr
 <translation id="6930162026494574854">Rivendos cilësimet e "Përkthe"</translation>
 <translation id="6930799952781667037">Trokit për ta ndryshuar në këtë gjuhë.</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
+<translation id="6937083164784433305">{count,plural, =1{Ke përdorur 1 fotografi për të kërkuar}other{Ke përdorur # fotografi për të kërkuar}}</translation>
 <translation id="693761253105515415">Cakto një kod kalimi</translation>
 <translation id="6945221475159498467">Përzgjidhe</translation>
 <translation id="6946722113367118030">Duke menduar</translation>
@@ -2020,6 +2024,7 @@ Për të vazhduar nga kompjuteri, kalo te <ph name="OTHER_EMAIL" />. Do të marr
 <translation id="7662316065255305764">Informacionet rreth sajtit</translation>
 <translation id="7665369617277396874">Shto një llogari</translation>
 <translation id="7666861622396822790">Mund ta menaxhosh këtë te <ph name="BEGIN_LINK" />Cilësimet e përmbajtjes<ph name="END_LINK" />.</translation>
+<translation id="7669448795744969014">Identifikuar si <ph name="USER_EMAIL" />, anëtarësim në Google. Hap menynë e llogarisë.</translation>
 <translation id="7669493687462784703">Të vazhdohet shkarkimi i një profili konfigurimi nga <ph name="WEBSITE" />?</translation>
 <translation id="7673346542062368520">Mund të rrëshqasësh shpejt majtas për të shfletuar në modalitetin "I fshehtë".</translation>
 <translation id="7679915578945954324">Adresat e sajteve u kopjuan</translation>

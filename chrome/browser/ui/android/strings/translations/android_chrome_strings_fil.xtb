@@ -85,6 +85,7 @@
 <translation id="1310482092992808703">Igrupo ang mga tab</translation>
 <translation id="1318262688555255786">I-share ang link sa webpage <ph name="PAGE_TITLE" />. Source: <ph name="PAGE_URL" /></translation>
 <translation id="1327257854815634930">Nakabukas ang history ng pag-navigate</translation>
+<translation id="1330043879670259913">Para ma-secure ang iyong trabaho sa Chrome, matitingnan o mapapamahalaan ng organisasyon mo ang ilang partikular na impormasyon kapag naka-sign in ka sa Chrome. Matuto pa</translation>
 <translation id="1331212799747679585">Hindi ma-update ang Chrome. Higit pang opsyon</translation>
 <translation id="1332501820983677155">Mga shortcut ng feature ng Google Chrome</translation>
 <translation id="1333491156693005331">Sinuri kamakailan</translation>
@@ -1166,6 +1167,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5869522115854928033">Mga naka-save na password</translation>
 <translation id="5870416898561279542">Ililipat dito ang mga duplicate na tab at grupo o ang mga hindi ginamit sa loob ng <ph name="DAYS_INACTIVE" /> (na) araw<ph name="AUTODELETE_SECTION" />. Puwede mo itong baguhin anumang oras sa <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5885378508678660271">Mga Notification <ph name="SEPARATOR" /> Inalis ng Chrome ang mga pahintulot na ito dahil mapanganib ang site na ito</translation>
+<translation id="5896944002928653773">Isinara ang bottom sheet ng disclaimer ng mga signal ng enterprise</translation>
 <translation id="5899667542927581604">Isinara ang sheet na walang passkey</translation>
 <translation id="5907542076239273525">Na-save ang bookmark sa <ph name="FOLDER_NAME" /></translation>
 <translation id="5911301511366365629"><ph name="TAB_TITLE" />, Piniling Tab na Incognito na May Naririnig na Audio</translation>
@@ -1256,6 +1258,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6251449557817521191">Tingnan ang iyong history sa Chrome dito</translation>
 <translation id="6254139308321626268">Tumitingin ka ng PDF file</translation>
 <translation id="6255809143828972562">Gamit ang mga tool mula sa Chrome, makakapag-browse ka nang ligtas at mananatili kang may kontrol</translation>
+<translation id="6259107733340311168">Binuksan nang buo ang bottom sheet ng disclaimer ng mga signal ng enterprise</translation>
 <translation id="6260260490042862943">Mga kontrol ng site</translation>
 <translation id="6264376385120300461">I-download pa rin</translation>
 <translation id="6264485186158353794">Bumalik sa safety</translation>

@@ -85,6 +85,7 @@
 <translation id="1310482092992808703">Grupkan tab</translation>
 <translation id="1318262688555255786">Bagikan link ke halaman web <ph name="PAGE_TITLE" />. Sumber: <ph name="PAGE_URL" /></translation>
 <translation id="1327257854815634930">Histori navigasi terbuka</translation>
+<translation id="1330043879670259913">Untuk mengamankan pekerjaan di Chrome, organisasi Anda akan dapat melihat atau mengelola informasi tertentu saat Anda login ke Chrome. Pelajari lebih lanjut</translation>
 <translation id="1331212799747679585">Chrome tidak dapat diupdate. Opsi lainnya</translation>
 <translation id="1332501820983677155">Pintasan fitur Google Chrome</translation>
 <translation id="1333491156693005331">Baru saja diperiksa</translation>
@@ -1166,6 +1167,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="5869522115854928033">Sandi tersimpan</translation>
 <translation id="5870416898561279542">Tab dan grup duplikat atau yang tidak digunakan selama <ph name="DAYS_INACTIVE" /> hari akan dipindahkan ke sini<ph name="AUTODELETE_SECTION" />. Anda dapat mengubahnya kapan saja di <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5885378508678660271">Notifikasi <ph name="SEPARATOR" /> Chrome menghapus izin ini karena situs ini berbahaya</translation>
+<translation id="5896944002928653773">Panel bawah pernyataan penyangkalan sinyal perusahaan ditutup</translation>
 <translation id="5899667542927581604">Sheet tidak ada kunci sandi ditutup</translation>
 <translation id="5907542076239273525">Bookmark disimpan ke <ph name="FOLDER_NAME" /></translation>
 <translation id="5911301511366365629"><ph name="TAB_TITLE" />, Tab Samaran Bersuara yang Dipilih</translation>
@@ -1256,6 +1258,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6251449557817521191">Lihat Histori Chrome Anda di sini</translation>
 <translation id="6254139308321626268">Anda sedang melihat file PDF</translation>
 <translation id="6255809143828972562">Dengan alat dari Chrome, Anda dapat menjelajah dengan aman dan tetap memegang kendali</translation>
+<translation id="6259107733340311168">Panel bawah pernyataan penyangkalan sinyal perusahaan dibuka sepenuhnya</translation>
 <translation id="6260260490042862943">Kontrol situs</translation>
 <translation id="6264376385120300461">Tetap download</translation>
 <translation id="6264485186158353794">Kembali agar aman</translation>

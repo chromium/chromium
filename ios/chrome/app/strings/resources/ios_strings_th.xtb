@@ -725,6 +725,7 @@
 <translation id="340669334496430859">แก้ไขล่าสุด</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 ต.ค. 2023</translation>
+<translation id="3419787211763835342">ช่วยปรับปรุงการป้อนข้อความอัตโนมัติที่ดียิ่งขึ้น</translation>
 <translation id="3426715535827854458">ซ่อนตัวเลือกซ่อนแถบเครื่องมือ</translation>
 <translation id="3435738964857648380">ความปลอดภัย</translation>
 <translation id="3441673211568148613">รักษาความเป็นส่วนตัวในการท่องเว็บ</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">โทรศัพท์</translation>
 <translation id="4380677808580146413">เลือก</translation>
 <translation id="4389019817280890563">แตะเพื่อเปลี่ยนภาษา</translation>
+<translation id="4390649422783033958">ลงชื่อเข้าใช้ด้วย <ph name="USER_NAME" /> <ph name="USER_EMAIL" /> การเป็นสมาชิก Google เปิดเมนูบัญชี</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{หลังจาก 1 วัน}other{หลังจาก {COUNT} วัน}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 แท็บ}other{# แท็บ}}</translation>
 <translation id="4404790787924017676">รับการแจ้งเตือนเมื่อราคาสินค้าที่ติดตามต่ำลง</translation>
@@ -1365,6 +1367,7 @@
 <translation id="5559567453458728487">แปลงหน่วยวัดที่พบในเว็บ</translation>
 <translation id="5560088892362098740">วันที่หมดอายุ</translation>
 <translation id="556042886152191864">ปุ่ม</translation>
+<translation id="5563910365456880646">นับตั้งแต่ทำ "ใช้รูปภาพเพื่อค้นหาด้วย Google Lens" เสร็จ</translation>
 <translation id="5565871407246142825">บัตรเครดิต</translation>
 <translation id="5567439033041178034">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="5578795271662203820">ค้นหาภาพนี้ใน <ph name="SEARCH_ENGINE" /></translation>
@@ -1815,6 +1818,7 @@
 <translation id="6930162026494574854">รีเซ็ตการตั้งค่าการแปล</translation>
 <translation id="6930799952781667037">แตะเพื่อเปลี่ยนเป็นภาษานี้</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" /> <ph name="MANAGED_STATUS" /></translation>
+<translation id="6937083164784433305">{count,plural, =1{คุณใช้รูปภาพ 1 รูปในการค้นหา}other{คุณใช้รูปภาพ # รูปในการค้นหา}}</translation>
 <translation id="693761253105515415">ตั้งรหัสผ่าน</translation>
 <translation id="6945221475159498467">เลือก</translation>
 <translation id="6946722113367118030">ใช้ความคิด</translation>
@@ -2020,6 +2024,7 @@
 <translation id="7662316065255305764">ข้อมูลเว็บไซต์</translation>
 <translation id="7665369617277396874">เพิ่มบัญชี</translation>
 <translation id="7666861622396822790">คุณจัดการตัวเลือกนี้ได้ใน<ph name="BEGIN_LINK" />การตั้งค่าเนื้อหา<ph name="END_LINK" /></translation>
+<translation id="7669448795744969014">ลงชื่อเข้าใช้ด้วย <ph name="USER_EMAIL" />, สมาชิก Google เปิดเมนูบัญชี</translation>
 <translation id="7669493687462784703">ดาวน์โหลดโปรไฟล์การกำหนดค่าจาก <ph name="WEBSITE" /> ต่อไหม</translation>
 <translation id="7673346542062368520">คุณสามารถปัดไปทางซ้ายเพื่อท่องเว็บในโหมดไม่ระบุตัวตน</translation>
 <translation id="7679915578945954324">คัดลอกที่อยู่เว็บไซต์แล้ว</translation>

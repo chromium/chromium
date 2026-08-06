@@ -584,7 +584,6 @@ Nu poți salva marcaje noi în cont până când nu ștergi câteva. Dacă te de
 <translation id="7288567540154601580">File și extensii</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium recomandă să o elimini}few{Chromium recomandă să le elimini.}other{Chromium recomandă să le elimini.}}</translation>
 <translation id="7296334833518879294">Pentru a permite accesul la conținutul audio de pe sistem, deschide Setările de sistem și permite Înregistrarea audio numai de pe sistem pentru Chromium. Apoi va trebui să repornești Chromium.</translation>
-<translation id="7309928523159922338">Ad measurement le dă site-urilor pe care le accesezi posibilitatea de a solicita informații de la Chromium care le ajută să măsoare performanța anunțurilor asociate. Ad measurement restricționează urmărirea pe mai multe site-uri prin transferul câtor mai puține informații între site-uri.</translation>
 <translation id="731795002583552498">Chromium se actualizează</translation>
 <translation id="7318036098707714271">Fișierul de preferințe este fie deteriorat, fie nevalid.
 

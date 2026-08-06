@@ -725,6 +725,7 @@
 <translation id="340669334496430859">ແກ້ໄຂຫຼ້າສຸດ</translation>
 <translation id="3409785640040772790">ແຜນທີ່</translation>
 <translation id="3416023309465857378">25 ຕຸລາ 2023</translation>
+<translation id="3419787211763835342">ຊ່ວຍປັບປຸງການຕື່ມຂໍ້ມູນອັດຕະໂນມັດທີ່ປັບປຸງໃຫ້ດີຂຶ້ນ</translation>
 <translation id="3426715535827854458">ເຊື່ອງແຖບເຄື່ອງມືເຊື່ອງ</translation>
 <translation id="3435738964857648380">ຄວາມ​ປອດ​ໄພ</translation>
 <translation id="3441673211568148613">ຮັກສາຄວາມເປັນສ່ວນຕົວໃນການເລືອກເບິ່ງຂອງທ່ານ</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">ໂທລະ​ສັບ</translation>
 <translation id="4380677808580146413">ເລືອກ</translation>
 <translation id="4389019817280890563">ແຕະເພື່ອປ່ຽນພາສາ.</translation>
+<translation id="4390649422783033958">ເຂົ້າສູ່ລະບົບໃນຊື່ <ph name="USER_NAME" />. <ph name="USER_EMAIL" />, ການເປັນສະມາຊິກ Google. ເປີດເມນູບັນຊີ.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{ຫຼັງຈາກ 1 ມື້}other{ຫຼັງຈາກ {COUNT} ມື້}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 ແຖບ}other{# ແຖບ}}</translation>
 <translation id="4404790787924017676">ຮັບແຈ້ງເຕືອນລາຄາລົງສຳລັບສິນຄ້າທີ່ທ່ານຕິດຕາມ</translation>
@@ -1365,6 +1367,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="5559567453458728487">ການວັດແທກການປ່ຽນຄ່າໜ່ວຍຖືກພົບຢູ່ເວັບ</translation>
 <translation id="5560088892362098740">ວັນທີໝົດອາຍຸ</translation>
 <translation id="556042886152191864">ປຸ່ມ</translation>
+<translation id="5563910365456880646">ນັບຕັ້ງແຕ່ເຮັດ "ໃຊ້ຮູບພາບເພື່ອຊອກຫາດ້ວຍ Google Lens" ສຳເລັດ</translation>
 <translation id="5565871407246142825">ບັດ​ເຄຣ​ດິດ</translation>
 <translation id="5567439033041178034">ຮຽນ​ຮູ້​ເພີ່ມ​ເຕີມ​</translation>
 <translation id="5578795271662203820">ຄົ້ນ​ຫາ <ph name="SEARCH_ENGINE" /> ​ຮູບ​ນີ້</translation>
@@ -1815,6 +1818,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6930162026494574854">ຣີເຊັດການຕັ້ງຄ່າການແປ</translation>
 <translation id="6930799952781667037">ແຕະເພື່ອປ່ຽນເປັນພາສານີ້.</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
+<translation id="6937083164784433305">{count,plural, =1{ທ່ານໃຊ້ຮູບພາບ 1 ຮູບເພື່ອຊອກຫາ}other{ທ່ານໃຊ້ຮູບພາບ # ຮູບເພື່ອຊອກຫາ}}</translation>
 <translation id="693761253105515415">ຕັ້ງລະຫັດ</translation>
 <translation id="6945221475159498467">ເລືອກ</translation>
 <translation id="6946722113367118030">ກຳລັງຄິດ</translation>
@@ -2020,6 +2024,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7662316065255305764">ຂໍ້ມູນເວັບໄຊ</translation>
 <translation id="7665369617277396874">ເພີ່ມ​ບັນ​ຊີ</translation>
 <translation id="7666861622396822790">ທ່ານສາມາດຈັດການສິ່ງນີ້ໄດ້ໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າເນື້ອຫາ<ph name="END_LINK" />.</translation>
+<translation id="7669448795744969014">ເຂົ້າສູ່ລະບົບໃນຊື່ <ph name="USER_EMAIL" />, ສະມາຊິກ Google. ເປີດເມນູບັນຊີ.</translation>
 <translation id="7669493687462784703">ສືບຕໍ່ດາວໂຫຼດໂປຣໄຟລ໌ການຕັ້ງຄ່າຈາກ <ph name="WEBSITE" /> ບໍ?</translation>
 <translation id="7673346542062368520">ທ່ານສາມາດປັດຊ້າຍເພື່ອທ່ອງເວັບໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ.</translation>
 <translation id="7679915578945954324">ສຳເນົາທີ່ຢູ່ເວັບໄຊແລ້ວ</translation>

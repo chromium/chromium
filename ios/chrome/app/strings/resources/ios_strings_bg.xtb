@@ -725,6 +725,7 @@
 <translation id="340669334496430859">Последна промяна</translation>
 <translation id="3409785640040772790">Карти</translation>
 <translation id="3416023309465857378">25 октомври 2023 г.</translation>
+<translation id="3419787211763835342">Помогнете за усъвършенстването на подобреното автоматично попълване</translation>
 <translation id="3426715535827854458">Скриване на опцията „Скриване на лентата с инструменти“</translation>
 <translation id="3435738964857648380">Сигурност</translation>
 <translation id="3441673211568148613">Запазете сърфирането си частно</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">Телефон</translation>
 <translation id="4380677808580146413">Избиране</translation>
 <translation id="4389019817280890563">Докоснете за смяна на езика.</translation>
+<translation id="4390649422783033958">Влезли сте като <ph name="USER_NAME" />. <ph name="USER_EMAIL" />, членство в Google. Отваряне на менюто на профила.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{След 1 ден}other{След {COUNT} дни}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 раздел}other{# раздела}}</translation>
 <translation id="4404790787924017676">Получавайте сигнали за понижение на цената за продукти, които следите</translation>
@@ -1365,6 +1367,7 @@
 <translation id="5559567453458728487">Преобразуване на мерни единици, намерени в мрежата</translation>
 <translation id="5560088892362098740">Дата на изтичане</translation>
 <translation id="556042886152191864">Бутон</translation>
+<translation id="5563910365456880646">откакто завършихте урока за използване на снимка за търсене с Google Обектив</translation>
 <translation id="5565871407246142825">Кредитни карти</translation>
 <translation id="5567439033041178034">НАУЧЕТЕ ПОВЕЧЕ</translation>
 <translation id="5578795271662203820">Търсене на изображението със: <ph name="SEARCH_ENGINE" /></translation>
@@ -1815,6 +1818,7 @@
 <translation id="6930162026494574854">Настр. за Преводач: Нулир.</translation>
 <translation id="6930799952781667037">Докоснете за използване на съответния език.</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
+<translation id="6937083164784433305">{count,plural, =1{Използвахте 1 снимка за търсене}other{Използвахте # снимки за търсене}}</translation>
 <translation id="693761253105515415">Задаване на код за достъп</translation>
 <translation id="6945221475159498467">Избиране</translation>
 <translation id="6946722113367118030">Замислено лице</translation>
@@ -2020,6 +2024,7 @@
 <translation id="7662316065255305764">Информация за сайта</translation>
 <translation id="7665369617277396874">Добавяне на профил</translation>
 <translation id="7666861622396822790">Можете да управлявате това в <ph name="BEGIN_LINK" />Настройки за съдържанието<ph name="END_LINK" />.</translation>
+<translation id="7669448795744969014">Влезли сте като <ph name="USER_EMAIL" />, членство в Google. Отваряне на менюто на профила.</translation>
 <translation id="7669493687462784703">Да продължи ли изтеглянето на конфигурационен профил от <ph name="WEBSITE" />?</translation>
 <translation id="7673346542062368520">Можете да прекарате пръст наляво, за да сърфирате в режим „инкогнито“.</translation>
 <translation id="7679915578945954324">Адресите на сайтовете са копирани</translation>

@@ -725,6 +725,7 @@
 <translation id="340669334496430859">Naposledy upraveno</translation>
 <translation id="3409785640040772790">Mapy</translation>
 <translation id="3416023309465857378">25. října 2023</translation>
+<translation id="3419787211763835342">Pomozte vylepšené automatické vyplňování zlepšovat</translation>
 <translation id="3426715535827854458">Skrýt možnost Skrýt lištu</translation>
 <translation id="3435738964857648380">Zabezpečení</translation>
 <translation id="3441673211568148613">Chraňte při prohlížení své soukromí</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380677808580146413">Vybrat</translation>
 <translation id="4389019817280890563">Klepnutím změníte jazyk</translation>
+<translation id="4390649422783033958">Jste přihlášeni jako <ph name="USER_NAME" />. <ph name="USER_EMAIL" />, členství Google. Otevřít nabídku účtu.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{Po 1 dni}few{Po {COUNT} dnech}many{Po {COUNT} dne}other{Po {COUNT} dnech}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 karta}few{# karty}many{# karty}other{# karet}}</translation>
 <translation id="4404790787924017676">Odebírat upozornění na pokles cen u produktů, které sledujete</translation>
@@ -1365,6 +1367,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="5559567453458728487">Převádět měrné jednotky nalezené na webech</translation>
 <translation id="5560088892362098740">Datum konce platnosti</translation>
 <translation id="556042886152191864">Tlačítko</translation>
+<translation id="5563910365456880646">od dokončení kurzu vyhledávání pomocí fotek přes Google Lens</translation>
 <translation id="5565871407246142825">Platební karty</translation>
 <translation id="5567439033041178034">DALŠÍ INFORMACE</translation>
 <translation id="5578795271662203820">Hledat obrázek pomocí <ph name="SEARCH_ENGINE" /></translation>
@@ -1815,6 +1818,7 @@ Pokud chcete pokračovat z počítače, přepněte na <ph name="OTHER_EMAIL" />
 <translation id="6930162026494574854">Obnovit nastavení překladače</translation>
 <translation id="6930799952781667037">Klepnutím přepnete na tento jazyk.</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
+<translation id="6937083164784433305">{count,plural, =1{K vyhledávání jste použili 1 fotku}few{K vyhledávání jste použili # fotky}many{K vyhledávání jste použili # fotky}other{K vyhledávání jste použili # fotek}}</translation>
 <translation id="693761253105515415">Nastavte heslo</translation>
 <translation id="6945221475159498467">Vybrat</translation>
 <translation id="6946722113367118030">Přemýšlení</translation>
@@ -2020,6 +2024,7 @@ Pokud chcete pokračovat z počítače, přepněte na <ph name="OTHER_EMAIL" />
 <translation id="7662316065255305764">Informace o webu</translation>
 <translation id="7665369617277396874">Přidat účet</translation>
 <translation id="7666861622396822790">Toto můžete spravovat v <ph name="BEGIN_LINK" />Nastavení obsahu<ph name="END_LINK" />.</translation>
+<translation id="7669448795744969014">Jste přihlášeni jako <ph name="USER_EMAIL" />, máte členství Google. Otevřít nabídku účtu.</translation>
 <translation id="7669493687462784703">Pokračovat ve stahování konfiguračního profilu z webu <ph name="WEBSITE" />?</translation>
 <translation id="7673346542062368520">Přejetím prstem doleva si web můžete prohlížet v anonymním režimu.</translation>
 <translation id="7679915578945954324">Adresy webu byly zkopírovány</translation>
