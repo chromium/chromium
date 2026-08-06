@@ -5,17 +5,20 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_WHATS_NEW_COMMANDS_H_
 #define IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_WHATS_NEW_COMMANDS_H_
 
+@protocol PromosManagerUIHandler;
+
 // Commands related to What's new.
 @protocol WhatsNewCommands
 
 // Shows what's new.
 - (void)showWhatsNew;
 
+// Shows what's new and will display a promo afterwards.
+- (void)showWhatsNewWithPromosUIHandler:
+    (id<PromosManagerUIHandler>)promosUIHandler;
+
 // Dismisses what's new.
 - (void)dismissWhatsNew;
-
-// Shows what's new IPH.
-- (void)showWhatsNewIPH;
 
 @end
 

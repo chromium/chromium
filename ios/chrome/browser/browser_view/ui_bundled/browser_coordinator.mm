@@ -44,9 +44,6 @@
 #import "components/send_tab_to_self/features.h"
 #import "components/send_tab_to_self/metrics_util.h"
 #import "components/signin/public/base/signin_metrics.h"
-#import "components/supervised_user/core/browser/supervised_user_utils.h"
-#import "components/supervised_user/core/common/features.h"
-#import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "components/sync/service/sync_service.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
@@ -138,7 +135,6 @@
 #import "ios/chrome/browser/enterprise/enterprise_dialog/coordinator/enterprise_dialog_coordinator.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_util.h"
-#import "ios/chrome/browser/file_upload_panel/coordinator/file_upload_panel_coordinator.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
 #import "ios/chrome/browser/first_run/omnibox_position/coordinator/omnibox_position_choice_coordinator.h"
 #import "ios/chrome/browser/fullscreen/coordinator/fullscreen_coordinator.h"
@@ -150,14 +146,12 @@
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
-#import "ios/chrome/browser/intelligence/actor/coordinator/actor_overlay_coordinator.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_coordinator.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_view_finder_coordinator.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/lens_overlay/public/lens_overlay_availability.h"
-#import "ios/chrome/browser/level_up/coordinator/level_up_coordinator.h"
 #import "ios/chrome/browser/main/coordinator/browser_layout_coordinator.h"
 #import "ios/chrome/browser/main/ui/browser_layout_view_controller.h"
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
@@ -241,7 +235,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/tab_utils.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_share_url_command.h"
-#import "ios/chrome/browser/shared/public/commands/actor_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/auto_deletion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -255,20 +248,17 @@
 #import "ios/chrome/browser/shared/public/commands/download_list_commands.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/enterprise_commands.h"
-#import "ios/chrome/browser/shared/public/commands/file_upload_panel_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/google_one_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
-#import "ios/chrome/browser/shared/public/commands/level_up_commands.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/chrome/browser/shared/public/commands/new_tab_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/non_modal_signin_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
-#import "ios/chrome/browser/shared/public/commands/parent_access_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_breach_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_protection_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_suggestion_commands.h"
@@ -328,7 +318,6 @@
 #import "ios/chrome/browser/spotlight_debugger/ui_bundled/spotlight_debugger_coordinator.h"
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator.h"
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator_delegate.h"
-#import "ios/chrome/browser/supervised_user/coordinator/parent_access_coordinator.h"
 #import "ios/chrome/browser/sync/model/sync_error_browser_agent.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/synced_set_up/coordinator/synced_set_up_coordinator.h"
@@ -373,7 +362,6 @@
 #import "ios/chrome/browser/webui/model/net_export_tab_helper_delegate.h"
 #import "ios/chrome/browser/webui/ui_bundled/net_export_coordinator.h"
 #import "ios/chrome/browser/welcome_back/coordinator/welcome_back_coordinator.h"
-#import "ios/chrome/browser/whats_new/coordinator/whats_new_coordinator.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -403,7 +391,6 @@ const char kChromeAppStoreUrl[] =
 
 @interface BrowserCoordinator () <
     ActivityServiceCommands,
-    ActorOverlayCommands,
     AppLauncherTabHelperBrowserPresentationProvider,
     AutoDeletionCommands,
     AutofillAddCreditCardCoordinatorDelegate,
@@ -424,11 +411,9 @@ const char kChromeAppStoreUrl[] =
     EditMenuBuilder,
     EnterpriseCommands,
     EnterprisePromptCoordinatorDelegate,
-    FileUploadPanelCommands,
     FindInPageCommands,
     GoogleOneCommands,
     IOSPasskeyClientCommands,
-    LevelUpCommands,
     MiniMapCommands,
     NetExportTabHelperDelegate,
     NewTabPageCommands,
@@ -436,7 +421,6 @@ const char kChromeAppStoreUrl[] =
     NonModalSignInPromoCoordinatorDelegate,
     NotificationsOptInCoordinatorDelegate,
     OverscrollActionsControllerDelegate,
-    ParentAccessCommands,
     PasskeyWelcomeScreenCoordinatorDelegate,
     PasswordBreachCommands,
     PasswordControllerDelegate,
@@ -482,8 +466,7 @@ const char kChromeAppStoreUrl[] =
     WebContentCommands,
     WebNavigationNTPDelegate,
     WebUsageEnablerBrowserAgentObserving,
-    WelcomeBackPromoCommands,
-    WhatsNewCommands>
+    WelcomeBackPromoCommands>
 
 // Whether the coordinator is started.
 @property(nonatomic, assign, getter=isStarted) BOOL started;
@@ -606,10 +589,6 @@ const char kChromeAppStoreUrl[] =
 // Coordinator for new tab pages.
 @property(nonatomic, strong) NewTabPageCoordinator* NTPCoordinator;
 
-// Coordinator to display local web approvals parent access UI in a bottom
-// sheet.
-@property(nonatomic, strong) ParentAccessCoordinator* parentAccessCoordinator;
-
 // Coordinator for the PassKit UI presentation.
 @property(nonatomic, strong) PassKitCoordinator* passKitCoordinator;
 
@@ -692,12 +671,6 @@ const char kChromeAppStoreUrl[] =
 // Opens downloaded Vcard.
 @property(nonatomic, strong) VcardCoordinator* vcardCoordinator;
 
-// The coordinator used for What's New feature.
-@property(nonatomic, strong) WhatsNewCoordinator* whatsNewCoordinator;
-
-// The coordinator used for Level Up feature.
-@property(nonatomic, strong) LevelUpCoordinator* levelUpCoordinator;
-
 // The manager used to display a default browser promo.
 @property(nonatomic, strong) DefaultBrowserGenericPromoCoordinator*
     defaultBrowserGenericPromoCoordinator;
@@ -754,8 +727,6 @@ const char kChromeAppStoreUrl[] =
   std::unique_ptr<WebUsageEnablerBrowserAgentObserverBridge>
       _webUsageEnablerObserver;
   ContextualSheetCoordinator* _contextualSheetCoordinator;
-  API_AVAILABLE(ios(18.4))
-  FileUploadPanelCoordinator* _fileUploadPanelCoordinator;
   RootDriveFilePickerCoordinator* _driveFilePickerCoordinator;
   GoogleOneCoordinator* _googleOneCoordinator;
 
@@ -840,8 +811,6 @@ const char kChromeAppStoreUrl[] =
   // The coordinator showing the multimodal composebox menu.
   ComposeboxMenuCoordinator* _composeboxMenuCoordinator;
 
-  // The coordinator showing the Actor overlay.
-  ActorOverlayCoordinator* _actorOverlayCoordinator;
 }
 
 #pragma mark - SnackbarCoordinatorDelegate
@@ -1335,7 +1304,6 @@ const char kChromeAppStoreUrl[] =
   // handlers.
   NSArray<Protocol*>* protocols = @[
     @protocol(ActivityServiceCommands),
-    @protocol(ActorOverlayCommands),
     @protocol(AutoDeletionCommands),
     @protocol(AutofillCommands),
     @protocol(BrowserCoordinatorCommands),
@@ -1346,7 +1314,6 @@ const char kChromeAppStoreUrl[] =
     @protocol(DownloadListCommands),
     @protocol(DriveFilePickerCommands),
     @protocol(PromosManagerCommands),
-    @protocol(FileUploadPanelCommands),
     @protocol(FindInPageCommands),
     @protocol(IOSPasskeyClientCommands),
     @protocol(CobaltCommands),
@@ -1371,11 +1338,8 @@ const char kChromeAppStoreUrl[] =
     @protocol(WebContentCommands),
     @protocol(DefaultBrowserGenericPromoCommands),
     @protocol(MiniMapCommands),
-    @protocol(ParentAccessCommands),
     @protocol(ReminderNotificationsCommands),
-    @protocol(WhatsNewCommands),
     @protocol(GoogleOneCommands),
-    @protocol(LevelUpCommands),
     @protocol(WelcomeBackPromoCommands),
     @protocol(DockingPromoCommands),
     @protocol(EnterpriseCommands),
@@ -1777,8 +1741,6 @@ const char kChromeAppStoreUrl[] =
 
   /* RepostFormCoordinator is created and started by a delegate method */
 
-  /* WhatsNewCoordinator is created and started by a BrowserCommand */
-
   /* NonModalSignInPromoCoordinator is created and started by a BrowserCommand
    */
 
@@ -1821,9 +1783,6 @@ const char kChromeAppStoreUrl[] =
 
 // Stops child coordinators.
 - (void)stopChildCoordinators {
-  [_actorOverlayCoordinator stop];
-  _actorOverlayCoordinator = nil;
-
   [self.ARQuickLookCoordinator stop];
   self.ARQuickLookCoordinator = nil;
 
@@ -1912,12 +1871,6 @@ const char kChromeAppStoreUrl[] =
 
   [self stopSendTabToSelf];
 
-  [self.whatsNewCoordinator stop];
-  self.whatsNewCoordinator = nil;
-
-  [self.levelUpCoordinator stop];
-  self.levelUpCoordinator = nil;
-
   [_pictureInPictureCoordinator stop];
   _pictureInPictureCoordinator = nil;
 
@@ -1973,9 +1926,6 @@ const char kChromeAppStoreUrl[] =
   [self hideCobalt];
   [self hideCobaltAlert];
   [self hideCobaltPopup];
-  if (@available(iOS 18.4, *)) {
-    [self hideFileUploadPanel];
-  }
   [self hideContextualSheet];
   [self dismissEditAddressBottomSheet];
   [self dismissLensPromo];
@@ -3168,9 +3118,6 @@ const char kChromeAppStoreUrl[] =
   [self hideCobalt];
   [self hideCobaltAlert];
   [self hideCobaltPopup];
-  if (@available(iOS 18.4, *)) {
-    [self hideFileUploadPanel];
-  }
   if (IsDownloadListEnabled()) {
     [self hideDownloadList];
   }
@@ -3555,24 +3502,6 @@ const char kChromeAppStoreUrl[] =
   [_driveFilePickerCoordinator start];
 }
 
-#pragma mark - ActorOverlayCommands
-
-- (void)showActorOverlayForWebState:(web::WebState*)webState {
-  if (_actorOverlayCoordinator) {
-    [self hideActorOverlay];
-  }
-  _actorOverlayCoordinator = [[ActorOverlayCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser
-                        webState:webState];
-  [_actorOverlayCoordinator start];
-}
-
-- (void)hideActorOverlay {
-  [_actorOverlayCoordinator stop];
-  _actorOverlayCoordinator = nil;
-}
-
 #pragma mark - ReaderModeCommands
 
 - (void)showReaderModeFromAccessPoint:(ReaderModeAccessPoint)accessPoint {
@@ -3647,28 +3576,6 @@ const char kChromeAppStoreUrl[] =
 - (void)hideReaderModeBlurOverlay {
   [_readerModeBlurOverlayCoordinator stop];
   _readerModeBlurOverlayCoordinator = nil;
-}
-
-#pragma mark - FileUploadPanelCommands
-
-- (void)showFileUploadPanel API_AVAILABLE(ios(18.4)) {
-  ChooseFileTabHelper* tabHelper =
-      ChooseFileTabHelper::FromWebState(self.activeWebState);
-  if (!tabHelper || !tabHelper->IsChoosingFiles()) {
-    return;
-  }
-  if (_fileUploadPanelCoordinator) {
-    return;
-  }
-  _fileUploadPanelCoordinator = [[FileUploadPanelCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser];
-  [_fileUploadPanelCoordinator start];
-}
-
-- (void)hideFileUploadPanel API_AVAILABLE(ios(18.4)) {
-  [_fileUploadPanelCoordinator stop];
-  _fileUploadPanelCoordinator = nil;
 }
 
 #pragma mark - FindInPageCommands
@@ -3814,9 +3721,10 @@ const char kChromeAppStoreUrl[] =
 }
 
 - (void)showWhatsNewPromo {
-  [self showWhatsNew];
-  self.whatsNewCoordinator.promosUIHandler = self.promosManagerCoordinator;
-  self.whatsNewCoordinator.shouldShowBubblePromoOnDismiss = YES;
+  id<WhatsNewCommands> whatsNewHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), WhatsNewCommands);
+  [whatsNewHandler
+      showWhatsNewWithPromosUIHandler:self.promosManagerCoordinator];
 }
 
 - (void)showDefaultBrowserPromo {
@@ -4117,50 +4025,6 @@ const char kChromeAppStoreUrl[] =
   // Disconnect the presenter from the context to cancel active overlays.
   OverlayPresenter::FromBrowser(self.browser, OverlayModality::kInfobarBanner)
       ->SetPresentationContext(nullptr);
-}
-
-#pragma mark - ParentAccessCommands
-
-- (void)
-    showParentAccessBottomSheetForWebState:(web::WebState*)webState
-                                 targetURL:(const GURL&)targetURL
-                   filteringBehaviorReason:
-                       (supervised_user::FilteringBehaviorReason)
-                           filteringBehaviorReason
-                                completion:
-                                    (void (^)(
-                                        supervised_user::LocalApprovalResult,
-                                        std::optional<
-                                            supervised_user::
-                                                LocalWebApprovalErrorType>))
-                                        completion {
-  if (!supervised_user::IsLocalWebApprovalsEnabled()) {
-    return;
-  }
-
-  if (self.activeWebState != webState) {
-    // Do not show the sheet if the current tab is not the one where the
-    // user initiated parent local web approvals.
-    return;
-  }
-  // Close parent access local web approval if it was already opened for another
-  // URL.
-  if (self.parentAccessCoordinator) {
-    [self.parentAccessCoordinator stop];
-  }
-
-  self.parentAccessCoordinator = [[ParentAccessCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser
-                       targetURL:targetURL
-         filteringBehaviorReason:filteringBehaviorReason
-                      completion:completion];
-  [self.parentAccessCoordinator start];
-}
-
-- (void)hideParentAccessBottomSheet {
-  [self.parentAccessCoordinator stop];
-  self.parentAccessCoordinator = nil;
 }
 
 #pragma mark - PasswordBreachCommands
@@ -5458,41 +5322,6 @@ const char kChromeAppStoreUrl[] =
   };
   [self.viewController dismissViewControllerAnimated:YES
                                           completion:dismissalCompletion];
-}
-
-#pragma mark - WhatsNewCommands
-
-- (void)showWhatsNew {
-  self.whatsNewCoordinator = [[WhatsNewCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser];
-  [self.whatsNewCoordinator start];
-}
-
-- (void)dismissWhatsNew {
-  if (self.whatsNewCoordinator) {
-    [self.whatsNewCoordinator stop];
-    self.whatsNewCoordinator = nil;
-  }
-}
-
-#pragma mark - LevelUpCommands
-
-- (void)showLevelUp {
-  self.levelUpCoordinator =
-      [[LevelUpCoordinator alloc] initWithBaseViewController:self.viewController
-                                                     browser:self.browser];
-  [self.levelUpCoordinator start];
-}
-
-- (void)dismissLevelUp {
-  [self.levelUpCoordinator stop];
-  self.levelUpCoordinator = nil;
-}
-
-- (void)showWhatsNewIPH {
-  [HandlerForProtocol(_dispatcher, HelpCommands)
-      presentInProductHelpWithType:InProductHelpType::kWhatsNew];
 }
 
 #pragma mark - DockingPromoCommands
