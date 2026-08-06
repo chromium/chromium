@@ -140,12 +140,16 @@ void CubicBezierTimingFunction::Range(double* min_value,
   const double solution1 = bezier_->bezier().range_min();
   const double solution2 = bezier_->bezier().range_max();
 
+  // We use the default epsilon of the gfx::CubicBezier which is 1e-7. This is
+  // sufficient since in most cases, we expect newton's method to exceed the
+  // given epsilon. Leaving several bits of room means that bisection fallback
+  // won't suffer instabilities caused by floating-point imprecision.
+  double epsilon = gfx::CubicBezier::GetDefaultEpsilon();
+
   // Since our input values can be out of the range 0->1 so we must also
   // consider the minimum and maximum points.
-  double solution_min = bezier_->bezier().SolveWithEpsilon(
-      *min_value, std::numeric_limits<double>::epsilon());
-  double solution_max = bezier_->bezier().SolveWithEpsilon(
-      *max_value, std::numeric_limits<double>::epsilon());
+  double solution_min = bezier_->bezier().SolveWithEpsilon(*min_value, epsilon);
+  double solution_max = bezier_->bezier().SolveWithEpsilon(*max_value, epsilon);
   *min_value = std::min(std::min(solution_min, solution_max), 0.0);
   *max_value = std::max(std::max(solution_min, solution_max), 1.0);
   *min_value = std::min(std::min(*min_value, solution1), solution2);
