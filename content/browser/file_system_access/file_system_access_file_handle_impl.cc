@@ -474,7 +474,7 @@ void FileSystemAccessFileHandleImpl::IsSameEntryImpl(
     IsSameEntryCallback callback,
     FileSystemAccessTransferTokenImpl* other) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!other) {
+  if (!other || other->origin() != context().storage_key.origin()) {
     std::move(callback).Run(
         file_system_access_error::FromStatus(
             blink::mojom::FileSystemAccessStatus::kOperationFailed),

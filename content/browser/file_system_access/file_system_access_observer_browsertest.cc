@@ -1691,4 +1691,185 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverCrossOriginTokenBypassTest,
             blink::mojom::FileSystemAccessStatus::kInvalidArgument);
 }
 
+// Checks that a possible-child transfer token from a different origin cannot
+// be resolved against a directory handle from the calling origin.
+IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverCrossOriginTokenBypassTest,
+                       ResolveRefusesCrossOriginChildToken) {
+  base::FilePath parent_dir_path;
+  base::FilePath child_file_path;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(base::CreateTemporaryDirInDir(
+        temp_dir_.GetPath(), FILE_PATH_LITERAL("parent"), &parent_dir_path));
+    ASSERT_TRUE(
+        base::CreateTemporaryFileInDir(parent_dir_path, &child_file_path));
+  }
+
+  // First origin site.
+  GURL url_first = GetURL("a.com", "/title1.html");
+  const url::Origin origin_first = url::Origin::Create(url_first);
+  const blink::StorageKey key_first =
+      blink::StorageKey::CreateFirstParty(origin_first);
+  // Second origin site.
+  GURL url_second = GetURL("b.com", "/title1.html");
+  const url::Origin origin_second = url::Origin::Create(url_second);
+  const blink::StorageKey key_second =
+      blink::StorageKey::CreateFirstParty(origin_second);
+  ASSERT_NE(origin_first, origin_second);
+
+  ASSERT_TRUE(NavigateToURL(shell(), url_first));
+  RenderFrameHost* rfh = shell()->web_contents()->GetPrimaryMainFrame();
+  ASSERT_TRUE(rfh);
+
+  auto* manager = GetManager();
+  ASSERT_TRUE(manager);
+
+  // First origin owns a file handle whose path is inside second origin's
+  // directory.
+  const storage::FileSystemURL first_file_url =
+      manager->CreateFileSystemURLFromPath(PathInfo(child_file_path));
+  auto first_read_grant =
+      base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
+          FixedFileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
+          PathInfo(child_file_path));
+  auto first_write_grant =
+      base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
+          FixedFileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
+          PathInfo(child_file_path));
+  FileSystemAccessManagerImpl::SharedHandleState first_handle_state(
+      first_read_grant, first_write_grant);
+  FileSystemAccessManagerImpl::BindingContext first_context(
+      key_first, url_first, rfh->GetGlobalId());
+  auto first_file_handle = std::make_unique<FileSystemAccessFileHandleImpl>(
+      manager, first_context, first_file_url, /*display_name=*/"",
+      first_handle_state);
+
+  // Transfer token for first origin's file, registered in the manager.
+  mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token_remote;
+  manager->CreateTransferToken(*first_file_handle,
+                               token_remote.InitWithNewPipeAndPassReceiver());
+
+  // Second origin owns the parent directory handle.
+  const storage::FileSystemURL second_dir_url =
+      manager->CreateFileSystemURLFromPath(PathInfo(parent_dir_path));
+  auto second_read_grant =
+      base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
+          FixedFileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
+          PathInfo(parent_dir_path));
+  auto second_write_grant =
+      base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
+          FixedFileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
+          PathInfo(parent_dir_path));
+  FileSystemAccessManagerImpl::SharedHandleState second_handle_state(
+      second_read_grant, second_write_grant);
+  FileSystemAccessManagerImpl::BindingContext second_context(
+      key_second, url_second, rfh->GetGlobalId());
+  auto second_dir_handle =
+      std::make_unique<FileSystemAccessDirectoryHandleImpl>(
+          manager, second_context, second_dir_url, second_handle_state);
+
+  // Call Resolve() on second origin's directory handle with first origin's
+  // file transfer token as the possible child.
+  base::RunLoop run_loop;
+  blink::mojom::FileSystemAccessStatus resolve_status;
+  std::optional<std::vector<std::string>> resolve_path;
+  static_cast<blink::mojom::FileSystemAccessDirectoryHandle*>(
+      second_dir_handle.get())
+      ->Resolve(std::move(token_remote),
+                base::BindLambdaForTesting(
+                    [&](blink::mojom::FileSystemAccessErrorPtr result,
+                        const std::optional<std::vector<std::string>>& path) {
+                      resolve_status = result->status;
+                      resolve_path = path;
+                      run_loop.Quit();
+                    }));
+  run_loop.Run();
+
+  // ResolveImpl must reject the mismatch when the token origin does not match
+  // the caller's binding context origin.
+  EXPECT_EQ(resolve_status,
+            blink::mojom::FileSystemAccessStatus::kOperationFailed);
+  EXPECT_FALSE(resolve_path.has_value());
+}
+
+// Checks that a transfer token from a different origin cannot be used with
+// FileSystemFileHandle::isSameEntry() to check against another origin's handle.
+IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverCrossOriginTokenBypassTest,
+                       IsSameEntryRefusesCrossOriginToken) {
+  base::FilePath file_path;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(
+        base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &file_path));
+  }
+
+  // First origin site.
+  GURL url_first = GetURL("a.com", "/title1.html");
+  const url::Origin origin_first = url::Origin::Create(url_first);
+  const blink::StorageKey key_first =
+      blink::StorageKey::CreateFirstParty(origin_first);
+  // Second origin site.
+  GURL url_second = GetURL("b.com", "/title1.html");
+  const url::Origin origin_second = url::Origin::Create(url_second);
+  const blink::StorageKey key_second =
+      blink::StorageKey::CreateFirstParty(origin_second);
+  ASSERT_NE(origin_first, origin_second);
+
+  ASSERT_TRUE(NavigateToURL(shell(), url_first));
+  RenderFrameHost* rfh = shell()->web_contents()->GetPrimaryMainFrame();
+  ASSERT_TRUE(rfh);
+
+  auto* manager = GetManager();
+  ASSERT_TRUE(manager);
+
+  const storage::FileSystemURL file_url =
+      manager->CreateFileSystemURLFromPath(PathInfo(file_path));
+  auto read_grant = base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
+      FixedFileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
+      PathInfo(file_path));
+  auto write_grant = base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
+      FixedFileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
+      PathInfo(file_path));
+  FileSystemAccessManagerImpl::SharedHandleState handle_state(read_grant,
+                                                              write_grant);
+
+  // Both origins independently hold a file handle to the same underlying file.
+  FileSystemAccessManagerImpl::BindingContext first_context(
+      key_first, url_first, rfh->GetGlobalId());
+  auto first_file_handle = std::make_unique<FileSystemAccessFileHandleImpl>(
+      manager, first_context, file_url, /*display_name=*/"", handle_state);
+
+  FileSystemAccessManagerImpl::BindingContext second_context(
+      key_second, url_second, rfh->GetGlobalId());
+  auto second_file_handle = std::make_unique<FileSystemAccessFileHandleImpl>(
+      manager, second_context, file_url, /*display_name=*/"", handle_state);
+
+  // Transfer token for first origin's file, registered in the manager.
+  mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token_remote;
+  manager->CreateTransferToken(*first_file_handle,
+                               token_remote.InitWithNewPipeAndPassReceiver());
+
+  // Call IsSameEntry() on second origin's file handle with first origin's
+  // transfer token.
+  base::RunLoop run_loop;
+  blink::mojom::FileSystemAccessStatus status;
+  bool is_same = false;
+  static_cast<blink::mojom::FileSystemAccessFileHandle*>(
+      second_file_handle.get())
+      ->IsSameEntry(
+          std::move(token_remote),
+          base::BindLambdaForTesting(
+              [&](blink::mojom::FileSystemAccessErrorPtr result, bool same) {
+                status = result->status;
+                is_same = same;
+                run_loop.Quit();
+              }));
+  run_loop.Run();
+
+  // IsSameEntryImpl must reject the mismatch when the token origin does not
+  // match the caller's binding context origin.
+  EXPECT_EQ(status, blink::mojom::FileSystemAccessStatus::kOperationFailed);
+  EXPECT_FALSE(is_same);
+}
+
 }  // namespace content
