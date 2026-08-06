@@ -913,6 +913,14 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         if (mDelegate.getWebContents() != null) {
             registerWebContentsObserver(mDelegate.getWebContents());
             mWebContentsObserver.onVisibilityChanged(Visibility.VISIBLE);
+
+            assumeNonNull(mDelegate.getWebContents().getViewAndroidDelegate()).addObserver(this);
+            ViewGroup newContainer =
+                    (ViewGroup)
+                            mDelegate.getWebContents().getViewAndroidDelegate().getContainerView();
+            if (mView != newContainer) {
+                updateContainerViewInternal(newContainer);
+            }
         }
 
         refreshNativeState();
@@ -968,6 +976,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
     @Override
     public void onUpdateContainerView(@Nullable ViewGroup view) {
+        updateContainerViewInternal(view);
+    }
+
+    private void updateContainerViewInternal(@Nullable ViewGroup view) {
         // When the ContainerView is updated, we must update the |mView| variable and remove all
         // previous references to it. We clear the AccessibilityEventDispatcher queue, which may
         // have posted Runnable(s) to the old view. We also clear the AccessibilityNodeInfo cache
@@ -997,6 +1009,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 WindowEventObserverManager.from(webContents).removeObserver(this);
                 webContents.removeUserData(WebContentsAccessibilityImpl.class);
             }
+            assumeNonNull(webContents.getViewAndroidDelegate()).removeObserver(this);
         }
         TraceEvent.end("WebContentsAccessibilityImpl.destroy");
     }
