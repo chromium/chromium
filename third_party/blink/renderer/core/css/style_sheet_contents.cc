@@ -663,7 +663,7 @@ static bool ChildRulesHaveFailedOrCanceledSubresources(
       case StyleRuleBase::kFunction:
       case StyleRuleBase::kPositionTry:
       case StyleRuleBase::kCustomMedia:
-      case StyleRuleBase::kRoute:
+      case StyleRuleBase::kLocation:
         break;
       case StyleRuleBase::kResult:
       case StyleRuleBase::kApplyMixin:

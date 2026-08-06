@@ -52,9 +52,9 @@
 #include "third_party/blink/renderer/core/css/style_rule_function_declarations.h"
 #include "third_party/blink/renderer/core/css/style_rule_import.h"
 #include "third_party/blink/renderer/core/css/style_rule_keyframe.h"
+#include "third_party/blink/renderer/core/css/style_rule_location.h"
 #include "third_party/blink/renderer/core/css/style_rule_namespace.h"
 #include "third_party/blink/renderer/core/css/style_rule_nested_declarations.h"
-#include "third_party/blink/renderer/core/css/style_rule_route.h"
 #include "third_party/blink/renderer/core/css/style_rule_view_transition.h"
 #include "third_party/blink/renderer/core/css/style_scope.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
@@ -918,8 +918,8 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRuleContents(
       return ConsumePageRule(stream);
     case CSSAtRuleID::kCSSAtRuleProperty:
       return ConsumePropertyRule(stream);
-    case CSSAtRuleID::kCSSAtRuleRoute:
-      return ConsumeRouteRule(stream);
+    case CSSAtRuleID::kCSSAtRuleLocation:
+      return ConsumeLocationRule(stream);
     case CSSAtRuleID::kCSSAtRuleNavigation:
       return ConsumeNavigationRule(stream, nesting_type,
                                    parent_rule_for_nesting);
@@ -1962,7 +1962,8 @@ StyleRuleProperty* CSSParserImpl::ConsumePropertyRule(
   return rule;
 }
 
-StyleRuleRoute* CSSParserImpl::ConsumeRouteRule(CSSParserTokenStream& stream) {
+StyleRuleLocation* CSSParserImpl::ConsumeLocationRule(
+    CSSParserTokenStream& stream) {
   // Parse the prelude.
   wtf_size_t prelude_offset_start = stream.LookAheadOffset();
   const CSSParserToken& name_token = stream.Peek();
@@ -1971,29 +1972,29 @@ StyleRuleRoute* CSSParserImpl::ConsumeRouteRule(CSSParserTokenStream& stream) {
   if (name_token.GetType() == kIdentToken) {
     name = name_token.Value().ToString();
     if (!name.starts_with("--")) {
-      ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleRoute);
+      ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleLocation);
       return nullptr;
     }
   } else {
-    ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleRoute);
+    ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleLocation);
     return nullptr;
   }
   stream.ConsumeIncludingWhitespace();
   wtf_size_t prelude_offset_end = stream.LookAheadOffset();
   if (!ConsumeEndOfPreludeForAtRuleWithBlock(stream,
-                                             CSSAtRuleID::kCSSAtRuleRoute)) {
+                                             CSSAtRuleID::kCSSAtRuleLocation)) {
     return nullptr;
   }
 
   // Parse the actual block.
   CSSParserTokenStream::BlockGuard guard(stream);
   if (observer_) {
-    observer_->StartRuleHeader(StyleRule::kRoute, prelude_offset_start);
+    observer_->StartRuleHeader(StyleRule::kLocation, prelude_offset_start);
     observer_->EndRuleHeader(prelude_offset_end);
     observer_->StartRuleBody(stream.Offset());
   }
 
-  ConsumeBlockContents(stream, StyleRule::kRoute, CSSNestingType::kNone,
+  ConsumeBlockContents(stream, StyleRule::kLocation, CSSNestingType::kNone,
                        /*parent_rule_for_nesting=*/nullptr,
                        /*nested_declarations_start_index=*/kNotFound,
                        /*child_rules=*/nullptr);
@@ -2005,7 +2006,7 @@ StyleRuleRoute* CSSParserImpl::ConsumeRouteRule(CSSParserTokenStream& stream) {
   // TODO(crbug.com/436805487): Honor [ <pattern-descriptors> |
   // <init-descriptors> ] (it should either be a URLPattern, OR init
   // descriptors, not a combination).
-  return MakeGarbageCollected<StyleRuleRoute>(
+  return MakeGarbageCollected<StyleRuleLocation>(
       name, CreateCSSPropertyValueSet(parsed_properties_, context_->Mode(),
                                       context_->GetDocument()));
 }
@@ -3331,7 +3332,7 @@ bool CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
   bool parsing_descriptor =
       rule_type == StyleRule::kFontFace ||
       rule_type == StyleRule::kFontPaletteValues ||
-      rule_type == StyleRule::kProperty || rule_type == StyleRule::kRoute ||
+      rule_type == StyleRule::kProperty || rule_type == StyleRule::kLocation ||
       rule_type == StyleRule::kCounterStyle ||
       rule_type == StyleRule::kViewTransition ||
       rule_type == StyleRule::kFunction || rule_type == StyleRule::kMixin;

@@ -2,15 +2,15 @@
 <title>@navigation(to) and @navigation(at) in onnavigate, precommitHandler, and handler()</title>
 <link rel="help" href="https://drafts.csswg.org/css-navigation-1/#at-navigation">
 <style>
-  @route --rte {
+  @location --loc {
     pattern: url-pattern("/aaaaa");
   }
-  @navigation(to: --rte) {
+  @navigation(to: --loc) {
     body {
       background: #00ff00;
     }
   }
-  @navigation(at: --rte) {
+  @navigation(at: --loc) {
     body {
       color: #ff00ff;
     }

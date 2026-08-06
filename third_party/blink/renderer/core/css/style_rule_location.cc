@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/css/style_rule_route.h"
+#include "third_party/blink/renderer/core/css/style_rule_location.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_urlpatterninit_usvstring.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_url_pattern_init.h"
@@ -16,8 +16,9 @@
 
 namespace blink {
 
-StyleRuleRoute::StyleRuleRoute(const String& name, CSSPropertyValueSet* values)
-    : StyleRuleBase(kRoute),
+StyleRuleLocation::StyleRuleLocation(const String& name,
+                                     CSSPropertyValueSet* values)
+    : StyleRuleBase(kLocation),
       name_(name),
       pattern_(DynamicTo<CSSURLPatternValue>(
           values->GetPropertyCSSValue(CSSPropertyID::kPattern))),
@@ -38,10 +39,10 @@ StyleRuleRoute::StyleRuleRoute(const String& name, CSSPropertyValueSet* values)
   DCHECK(name.starts_with("--"));
 }
 
-StyleRuleRoute::StyleRuleRoute(const StyleRuleRoute& other)
+StyleRuleLocation::StyleRuleLocation(const StyleRuleLocation& other)
     : StyleRuleBase(other), name_(other.name_) {}
 
-void StyleRuleRoute::TraceAfterDispatch(Visitor* v) const {
+void StyleRuleLocation::TraceAfterDispatch(Visitor* v) const {
   v->Trace(pattern_);
   v->Trace(protocol_);
   v->Trace(hostname_);
@@ -53,7 +54,7 @@ void StyleRuleRoute::TraceAfterDispatch(Visitor* v) const {
   StyleRuleBase::TraceAfterDispatch(v);
 }
 
-void StyleRuleRoute::CreateRouteIfNeeded(Document* document) const {
+void StyleRuleLocation::CreateRouteIfNeeded(Document* document) const {
   if (!document) {
     return;
   }

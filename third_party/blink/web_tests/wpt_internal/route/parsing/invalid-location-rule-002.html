@@ -3,33 +3,33 @@
 <link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
 <link rel="help" href="https://drafts.csswg.org/css-navigation-1/#at-navigation">
 <style>
-  @route --rte {
+  @location --loc {
     pattern: url-pattern("/somewhere/");
   }
   @navigation incorrect { #canary { height: 1px; } }
-  @navigation (at: --rte) incorrect { #canary { height: 2px; } }
-  @navigation (at: --rte) (at: --rte) { #canary { height: 3px; } }
-  @navigation (at: --rte at: --rte) { #canary { height: 4px; } }
-  @navigation (at: --rte at: --rte) incorrect { #canary { height: 5px; } }
-  @navigation (at: --rte) incorrect { #canary { height: 6px; } }
-  @navigation (at: --rte at: --rte) { #canary { height: 7px; } }
-  @navigation (at: --rte at: --rte) incorrect { #canary { height: 8px; } }
+  @navigation (at: --loc) incorrect { #canary { height: 2px; } }
+  @navigation (at: --loc) (at: --loc) { #canary { height: 3px; } }
+  @navigation (at: --loc at: --loc) { #canary { height: 4px; } }
+  @navigation (at: --loc at: --loc) incorrect { #canary { height: 5px; } }
+  @navigation (at: --loc) incorrect { #canary { height: 6px; } }
+  @navigation (at: --loc at: --loc) { #canary { height: 7px; } }
+  @navigation (at: --loc at: --loc) incorrect { #canary { height: 8px; } }
   @navigation (at: from:) { #canary { height: 9px; } }
   @navigation (at: from:) incorrect { #canary { height: 10px; } }
   @navigation (at: from: whatever) { #canary { height: 11px; } }
   @navigation (at: from: whatever) incorrect { #canary { height: 12px; } }
-  @navigation incorrect (at: --rte) { #canary { height: 13px; } }
-  @navigation incorrect (at: --rte) incorrect { #canary { height: 14px; } }
+  @navigation incorrect (at: --loc) { #canary { height: 13px; } }
+  @navigation incorrect (at: --loc) incorrect { #canary { height: 14px; } }
   @navigation (over:) incorrect { #canary { height: 15px; } }
   @navigation (over: rainbow) incorrect { #canary { height: 16px; } }
   @navigation (over:) { #canary { height: 17px; } }
   @navigation (over: rainbow) { #canary { height: 18px; } }
   @navigation incorrect (over: rainbow) incorrect { #canary { height: 19px; } }
-  @navigation (--rte) { #canary { height: 20px; } }
+  @navigation (--loc) { #canary { height: 20px; } }
   @navigation (url-pattern("*")) { #canary { height: 21px; } }
 
   /* Sanity check. This one should match. */
-  @navigation (at: --rte) {
+  @navigation (at: --loc) {
     #sanityCheck { color: lime; }
   }
 </style>

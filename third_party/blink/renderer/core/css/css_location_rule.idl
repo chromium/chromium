@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://drafts.csswg.org/css-navigation-1/#at-ruledef-navigation
+// https://drafts.csswg.org/css-navigation-1/#at-ruledef-location
 
 [Exposed=Window, RuntimeEnabled=RouteMatching]
-interface CSSRouteRule : CSSRule {};
+interface CSSLocationRule : CSSRule {};

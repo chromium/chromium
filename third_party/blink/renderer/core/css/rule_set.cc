@@ -57,8 +57,8 @@
 #include "third_party/blink/renderer/core/css/style_rule_font_palette_values.h"
 #include "third_party/blink/renderer/core/css/style_rule_function_declarations.h"
 #include "third_party/blink/renderer/core/css/style_rule_import.h"
+#include "third_party/blink/renderer/core/css/style_rule_location.h"
 #include "third_party/blink/renderer/core/css/style_rule_nested_declarations.h"
-#include "third_party/blink/renderer/core/css/style_rule_route.h"
 #include "third_party/blink/renderer/core/css/style_rule_view_transition.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -986,9 +986,9 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
                    style_scope);
     } else if (auto* page_rule = DynamicTo<StyleRulePage>(rule)) {
       AddPageRule(page_rule, cascade_layer);
-    } else if (auto* route_rule = DynamicTo<StyleRuleRoute>(rule)) {
-      // TODO(crbug.com/436805487): Support removal of @route rules too.
-      route_rule->CreateRouteIfNeeded(medium.GetMediaValues().GetDocument());
+    } else if (auto* location_rule = DynamicTo<StyleRuleLocation>(rule)) {
+      // TODO(crbug.com/436805487): Support removal of @location rules too.
+      location_rule->CreateRouteIfNeeded(medium.GetMediaValues().GetDocument());
     } else if (auto* navigation_rule = DynamicTo<StyleRuleNavigation>(rule)) {
       const NavigationQuery& query = navigation_rule->GetNavigationQuery();
       if (query.Evaluate(medium.GetMediaValues().GetDocument())) {

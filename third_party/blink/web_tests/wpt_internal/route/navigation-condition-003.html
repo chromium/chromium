@@ -1,19 +1,19 @@
 <!DOCTYPE html>
-<title>@navigation rules with expressions, using @route</title>
+<title>@navigation rules with expressions, using @location</title>
 <link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
 <link rel="help" href="https://drafts.csswg.org/css-navigation-1/#at-navigation">
-<link rel="help" href="https://drafts.csswg.org/css-navigation-1/#at-route">
+<link rel="help" href="https://drafts.csswg.org/css-navigation-1/#at-location">
 <style>
   /* Assuming here that "route" is part of the test path. */
-  @route --r1 {
+  @location --r1 {
     pattern: url-pattern("/*/route/*");
   }
 
-  @route --r2 {
+  @location --r2 {
     pattern: url-pattern("should-not-match");
   }
 
-  @route --r3 {
+  @location --r3 {
     protocol: "http*";
   }
 
@@ -161,5 +161,5 @@
     for (const elm of document.querySelectorAll(".nomatches > div")) {
       assert_equals(elm.offsetHeight, 0, `Should not match ${elm.id}`);
     }
-  }, "conditions, routes defined by @route");
+  }, "conditions, locations defined by @location");
 </script>

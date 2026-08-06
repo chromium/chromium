@@ -15,7 +15,7 @@
 
 namespace blink {
 
-const Route* RouteLocation::FindOrCreateRoute(Document& document) const {
+const Route* NavigationLocation::FindOrCreateRoute(Document& document) const {
   if (type_ == kUrlPattern || type_ == kUrl) {
     // url-pattern() and url() become anonymous routes. One route for each
     // unique entry.
@@ -29,12 +29,12 @@ const Route* RouteLocation::FindOrCreateRoute(Document& document) const {
     case kUrl:
     case kUrlPattern:
       return route_map->FindAnonymousRoute(value_);
-    case kRouteName:
+    case kLocationName:
       return route_map->FindRoute(value_);
   }
 }
 
-bool RouteLocation::CheckSelectorMatch(
+bool NavigationLocation::CheckSelectorMatch(
     const Element& element,
     std::optional<NavigationPreposition> preposition) const {
   const auto* anchor = DynamicTo<HTMLAnchorElement>(&element);
@@ -47,7 +47,7 @@ bool RouteLocation::CheckSelectorMatch(
          (!preposition || route->Matches(*preposition));
 }
 
-void RouteLocation::SerializeTo(StringBuilder& builder) const {
+void NavigationLocation::SerializeTo(StringBuilder& builder) const {
   DCHECK(!value_.IsNull());
   switch (type_) {
     case kUrlPattern:
@@ -60,19 +60,19 @@ void RouteLocation::SerializeTo(StringBuilder& builder) const {
       SerializeString(value_, builder);
       builder.Append(")");
       break;
-    case kRouteName:
+    case kLocationName:
       SerializeIdentifier(value_, builder);
       break;
   }
 }
 
 void NavigationLocationTestExpression::Trace(Visitor* visitor) const {
-  visitor->Trace(route_location_);
+  visitor->Trace(navigation_location_);
   NavigationTestExpression::Trace(visitor);
 }
 
 bool NavigationLocationTestExpression::Matches(Document& document) const {
-  const Route* route = route_location_->FindOrCreateRoute(document);
+  const Route* route = navigation_location_->FindOrCreateRoute(document);
   return route && route->Matches(preposition_);
 }
 
@@ -80,7 +80,7 @@ void NavigationLocationTestExpression::SerializeTo(
     StringBuilder& builder) const {
   SerializePrepositionTo(preposition_, builder);
   builder.Append(": ");
-  route_location_->SerializeTo(builder);
+  navigation_location_->SerializeTo(builder);
 }
 
 void NavigationLocationTestExpression::SerializePrepositionTo(
@@ -100,15 +100,15 @@ void NavigationLocationTestExpression::SerializePrepositionTo(
 }
 
 void NavigationLocationBetweenTestExpression::Trace(Visitor* visitor) const {
-  visitor->Trace(route_location1_);
-  visitor->Trace(route_location2_);
+  visitor->Trace(navigation_location1_);
+  visitor->Trace(navigation_location2_);
   NavigationTestExpression::Trace(visitor);
 }
 
 bool NavigationLocationBetweenTestExpression::Matches(
     Document& document) const {
-  const Route* route1 = route_location1_->FindOrCreateRoute(document);
-  const Route* route2 = route_location2_->FindOrCreateRoute(document);
+  const Route* route1 = navigation_location1_->FindOrCreateRoute(document);
+  const Route* route2 = navigation_location2_->FindOrCreateRoute(document);
   if (!route1 || !route2) {
     return false;
   }
@@ -121,9 +121,9 @@ bool NavigationLocationBetweenTestExpression::Matches(
 void NavigationLocationBetweenTestExpression::SerializeTo(
     StringBuilder& builder) const {
   builder.Append("between: ");
-  route_location1_->SerializeTo(builder);
+  navigation_location1_->SerializeTo(builder);
   builder.Append(" and ");
-  route_location2_->SerializeTo(builder);
+  navigation_location2_->SerializeTo(builder);
 }
 
 bool NavigationPhaseTestExpression::Matches(Document& document) const {

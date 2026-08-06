@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <style>
-  @route --rte {
+  @location --loc {
     search: "target";
   }
 
-  @navigation (to: --rte) {
+  @navigation (to: --loc) {
     #elm {
       --matches-to: yes;
     }
@@ -14,7 +14,7 @@
     }
   }
 
-  @navigation (from: --rte) {
+  @navigation (from: --loc) {
     #elm {
       --matches-from: yes;
     }

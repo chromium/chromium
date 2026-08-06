@@ -738,6 +738,9 @@ interface CSSLayerStatementRule : CSSRule
     attribute @@toStringTag
     getter nameList
     method constructor
+interface CSSLocationRule : CSSRule
+    attribute @@toStringTag
+    method constructor
 interface CSSMarginRule : CSSRule
     attribute @@toStringTag
     getter name
@@ -1045,9 +1048,6 @@ interface CSSRotate : CSSTransformComponent
     setter x
     setter y
     setter z
-interface CSSRouteRule : CSSRule
-    attribute @@toStringTag
-    method constructor
 interface CSSRule
     attribute @@toStringTag
     attribute CHARSET_RULE

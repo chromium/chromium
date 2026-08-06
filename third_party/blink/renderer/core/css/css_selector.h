@@ -46,7 +46,7 @@ namespace blink {
 class CSSParserContext;
 class CSSSelectorList;
 class Document;
-class RouteLocation;
+class NavigationLocation;
 class StyleRule;
 
 // This class represents a simple selector for a StyleRule.
@@ -423,7 +423,7 @@ class CORE_EXPORT CSSSelector {
     kPseudoOverscrollBackdrop,
     kPseudoOverscrollOpen,
 
-    // :link-to(<route-location>)
+    // :link-to(<navigation-location>)
     kPseudoLinkTo,
 
     // https://drafts.csswg.org/selectors/#video-state
@@ -541,11 +541,11 @@ class CORE_EXPORT CSSSelector {
   const CSSSelectorList* SelectorList() const {
     return HasRareData() ? data_.rare_data_->selector_list_.Get() : nullptr;
   }
-  const RouteLocation* GetRouteLocation() const {
+  const NavigationLocation* GetNavigationLocation() const {
     if (!HasRareData()) {
       return nullptr;
     }
-    return data_.rare_data_->route_location_.Get();
+    return data_.rare_data_->navigation_location_.Get();
   }
   unsigned NthAValue() const {
     CHECK_EQ(GetPseudoType(), kPseudoNthChild);
@@ -588,7 +588,7 @@ class CORE_EXPORT CSSSelector {
   void SetArgument(const AtomicString&);
   void SetArgumentList(std::unique_ptr<Vector<AtomicString>>);
   void SetSelectorList(CSSSelectorList*);
-  void SetRouteLocation(RouteLocation*);
+  void SetNavigationLocation(NavigationLocation*);
   void SetIdentList(std::unique_ptr<Vector<AtomicString>>);
   void SetContainsPseudoInsideHasPseudoClass();
   void SetContainsComplexLogicalCombinationsInsideHasPseudoClass();
@@ -847,7 +847,7 @@ class CORE_EXPORT CSSSelector {
     std::unique_ptr<Vector<AtomicString>> argument_list_;  // Used for :lang
     Member<CSSSelectorList>
         selector_list_;  // Used :is, :not, :-webkit-any, etc.
-    Member<RouteLocation> route_location_;  // Used for :link-to().
+    Member<NavigationLocation> navigation_location_;  // Used for :link-to().
     std::unique_ptr<Vector<AtomicString>>
         ident_list_;  // Used for ::part(), :active-view-transition-type().
 

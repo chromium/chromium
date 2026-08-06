@@ -1317,7 +1317,7 @@ function main(metadata) {
       case CSSRule::kFunctionRule:
       case CSSRule::kCustomMediaRule:
       case CSSRule::kContentsMixinRule:
-      case CSSRule::kRouteRule:
+      case CSSRule::kLocationRule:
         break;
 
       // FIXME(sesse): We can reference external resources in a @contents

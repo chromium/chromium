@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
 #include "third_party/blink/renderer/core/css/css_layer_block_rule.h"
 #include "third_party/blink/renderer/core/css/css_layer_statement_rule.h"
+#include "third_party/blink/renderer/core/css/css_location_rule.h"
 #include "third_party/blink/renderer/core/css/css_margin_rule.h"
 #include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/css_media_rule.h"
@@ -50,7 +51,6 @@
 #include "third_party/blink/renderer/core/css/css_position_try_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_rule.h"
 #include "third_party/blink/renderer/core/css/css_result_rule.h"
-#include "third_party/blink/renderer/core/css/css_route_rule.h"
 #include "third_party/blink/renderer/core/css/css_scope_rule.h"
 #include "third_party/blink/renderer/core/css/css_starting_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
@@ -75,9 +75,9 @@
 #include "third_party/blink/renderer/core/css/style_rule_function_declarations.h"
 #include "third_party/blink/renderer/core/css/style_rule_import.h"
 #include "third_party/blink/renderer/core/css/style_rule_keyframe.h"
+#include "third_party/blink/renderer/core/css/style_rule_location.h"
 #include "third_party/blink/renderer/core/css/style_rule_namespace.h"
 #include "third_party/blink/renderer/core/css/style_rule_nested_declarations.h"
-#include "third_party/blink/renderer/core/css/style_rule_route.h"
 #include "third_party/blink/renderer/core/css/style_rule_view_transition.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -128,8 +128,8 @@ void StyleRuleBase::Trace(Visitor* visitor) const {
     case kProperty:
       To<StyleRuleProperty>(this)->TraceAfterDispatch(visitor);
       return;
-    case kRoute:
-      To<StyleRuleRoute>(this)->TraceAfterDispatch(visitor);
+    case kLocation:
+      To<StyleRuleLocation>(this)->TraceAfterDispatch(visitor);
       return;
     case kNavigation:
       To<StyleRuleNavigation>(this)->TraceAfterDispatch(visitor);
@@ -233,8 +233,8 @@ void StyleRuleBase::FinalizeGarbageCollectedObject() {
     case kProperty:
       To<StyleRuleProperty>(this)->~StyleRuleProperty();
       return;
-    case kRoute:
-      To<StyleRuleRoute>(this)->~StyleRuleRoute();
+    case kLocation:
+      To<StyleRuleLocation>(this)->~StyleRuleLocation();
       return;
     case kNavigation:
       To<StyleRuleNavigation>(this)->~StyleRuleNavigation();
@@ -344,9 +344,9 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
       rule = MakeGarbageCollected<CSSMarginRule>(To<StyleRulePageMargin>(self),
                                                  parent_sheet);
       break;
-    case kRoute:
-      rule = MakeGarbageCollected<CSSRouteRule>(To<StyleRuleRoute>(self),
-                                                parent_sheet);
+    case kLocation:
+      rule = MakeGarbageCollected<CSSLocationRule>(To<StyleRuleLocation>(self),
+                                                   parent_sheet);
       break;
     case kNavigation:
       rule = MakeGarbageCollected<CSSNavigationRule>(
@@ -665,8 +665,9 @@ StyleRuleBase* StyleRuleBase::Clone(
     case kMedia:
       return CloneGroupRule(To<StyleRuleMedia>(this), new_parent,
                             mixin_parameter_bindings);
-    case kRoute:
-      return MakeGarbageCollected<StyleRuleRoute>(To<StyleRuleRoute>(*this));
+    case kLocation:
+      return MakeGarbageCollected<StyleRuleLocation>(
+          To<StyleRuleLocation>(*this));
     case kNavigation:
       return CloneGroupRule(To<StyleRuleNavigation>(this), new_parent,
                             mixin_parameter_bindings);

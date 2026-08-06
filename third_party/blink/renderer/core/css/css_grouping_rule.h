@@ -159,12 +159,12 @@ constexpr bool IsCSSGroupingRuleType(CSSRule::Type type) {
     case CSSRule::kKeyframeRule:
     case CSSRule::kKeyframesRule:
     case CSSRule::kLayerStatementRule:
+    case CSSRule::kLocationRule:
     case CSSRule::kMarginRule:
     case CSSRule::kNamespaceRule:
     case CSSRule::kNestedDeclarationsRule:
     case CSSRule::kPositionTryRule:
     case CSSRule::kPropertyRule:
-    case CSSRule::kRouteRule:
     case CSSRule::kStyleRule:
     case CSSRule::kViewTransitionRule:
       // go/keep-sorted end

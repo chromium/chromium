@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_RULE_ROUTE_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_RULE_ROUTE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_RULE_LOCATION_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_RULE_LOCATION_H_
 
 #include "third_party/blink/renderer/core/css/style_rule.h"
 
@@ -14,11 +14,11 @@ class CSSStringValue;
 class CSSURLPatternValue;
 class Document;
 
-// https://drafts.csswg.org/css-navigation-1/#at-route
-class CORE_EXPORT StyleRuleRoute : public StyleRuleBase {
+// https://drafts.csswg.org/css-navigation-1/#at-location
+class CORE_EXPORT StyleRuleLocation : public StyleRuleBase {
  public:
-  StyleRuleRoute(const String& name, CSSPropertyValueSet*);
-  StyleRuleRoute(const StyleRuleRoute&);
+  StyleRuleLocation(const String& name, CSSPropertyValueSet*);
+  StyleRuleLocation(const StyleRuleLocation&);
 
   void TraceAfterDispatch(Visitor*) const;
 
@@ -40,12 +40,12 @@ class CORE_EXPORT StyleRuleRoute : public StyleRuleBase {
 };
 
 template <>
-struct DowncastTraits<StyleRuleRoute> {
+struct DowncastTraits<StyleRuleLocation> {
   static bool AllowFrom(const StyleRuleBase& rule) {
-    return rule.IsRouteRule();
+    return rule.IsLocationRule();
   }
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_RULE_ROUTE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_RULE_LOCATION_H_

@@ -1404,9 +1404,9 @@ void CSSSelector::SerializeSimpleSelector(StringBuilder& builder,
         break;
       }
       case kPseudoLinkTo: {
-        DCHECK(GetRouteLocation());
+        DCHECK(GetNavigationLocation());
         builder.Append("(");
-        GetRouteLocation()->SerializeTo(builder);
+        GetNavigationLocation()->SerializeTo(builder);
         builder.Append(")");
         break;
       }
@@ -1620,9 +1620,9 @@ void CSSSelector::SetSelectorList(CSSSelectorList* selector_list) {
   data_.rare_data_->selector_list_ = selector_list;
 }
 
-void CSSSelector::SetRouteLocation(RouteLocation* location) {
+void CSSSelector::SetNavigationLocation(NavigationLocation* location) {
   CreateRareData();
-  data_.rare_data_->route_location_ = location;
+  data_.rare_data_->navigation_location_ = location;
 }
 
 void CSSSelector::SetContainsPseudoInsideHasPseudoClass() {
@@ -2183,7 +2183,7 @@ void CSSSelector::Trace(Visitor* visitor) const {
 
 void CSSSelector::RareData::Trace(Visitor* visitor) const {
   visitor->Trace(selector_list_);
-  visitor->Trace(route_location_);
+  visitor->Trace(navigation_location_);
 }
 
 const CSSSelector* CSSSelector::SelectorListOrParent() const {

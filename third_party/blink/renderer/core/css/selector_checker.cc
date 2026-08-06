@@ -2278,9 +2278,9 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
 bool SelectorChecker::CheckPseudoLinkTo(const SelectorCheckingContext& context,
                                         MatchResult& result) const {
   DCHECK(context.selector);
-  DCHECK(context.selector->GetRouteLocation());
+  DCHECK(context.selector->GetNavigationLocation());
   Element& element = GetCandidateElement(context, result);
-  return context.selector->GetRouteLocation()->CheckSelectorMatch(element);
+  return context.selector->GetNavigationLocation()->CheckSelectorMatch(element);
 }
 
 bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,

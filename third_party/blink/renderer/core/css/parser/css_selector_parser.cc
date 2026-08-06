@@ -2054,12 +2054,13 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream,
       if (!RuntimeEnabledFeatures::RouteMatchingEnabled()) {
         return false;
       }
-      if (RouteLocation* location = NavigationParser::ParseLocation(stream)) {
+      if (NavigationLocation* location =
+              NavigationParser::ParseLocation(stream)) {
         stream.ConsumeWhitespace();
         if (!stream.AtEnd()) {
           return false;
         }
-        selector.SetRouteLocation(location);
+        selector.SetNavigationLocation(location);
         output_.push_back(std::move(selector));
         return true;
       }

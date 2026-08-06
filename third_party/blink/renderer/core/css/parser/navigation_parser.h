@@ -14,9 +14,9 @@
 namespace blink {
 
 class CSSParserTokenStream;
+class NavigationLocation;
 class NavigationQuery;
 class NavigationTestExpression;
-class RouteLocation;
 
 class NavigationParser : public ConditionalParser {
  public:
@@ -27,7 +27,7 @@ class NavigationParser : public ConditionalParser {
   static NavigationTestExpression* ParseNavigationTest(CSSParserTokenStream&);
 
   static NavigationQuery* ParseQuery(CSSParserTokenStream&);
-  static RouteLocation* ParseLocation(CSSParserTokenStream&);
+  static NavigationLocation* ParseLocation(CSSParserTokenStream&);
   static std::optional<NavigationPreposition> ParsePrepositionIdent(
       CSSParserToken);
 

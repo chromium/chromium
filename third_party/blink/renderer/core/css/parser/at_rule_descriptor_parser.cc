@@ -298,8 +298,8 @@ CSSValue* ConsumeDescriptor(StyleRule::RuleType rule_type,
     case StyleRule::kMixin:
       return Parser::ParseAtFunctionOrMixinDescriptor(rule_type, id, stream,
                                                       context);
-    case StyleRule::kRoute:
-      return Parser::ParseAtRouteDescriptor(id, stream, context);
+    case StyleRule::kLocation:
+      return Parser::ParseAtLocationDescriptor(id, stream, context);
     case StyleRule::kCharset:
     case StyleRule::kContainer:
     case StyleRule::kStyle:
@@ -599,7 +599,7 @@ CSSValue* AtRuleDescriptorParser::ParseAtFunctionOrMixinDescriptor(
                                                            &context);
 }
 
-CSSValue* AtRuleDescriptorParser::ParseAtRouteDescriptor(
+CSSValue* AtRuleDescriptorParser::ParseAtLocationDescriptor(
     AtRuleDescriptorID id,
     CSSParserTokenStream& stream,
     const CSSParserContext& context) {

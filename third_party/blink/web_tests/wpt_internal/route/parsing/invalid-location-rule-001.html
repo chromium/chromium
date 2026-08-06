@@ -1,35 +1,35 @@
 <!DOCTYPE html>
-<title>Invalid @route rule declarations</title>
+<title>Invalid @location rule declarations</title>
 <link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
 <link rel="help" href="https://wicg.github.io/declarative-partial-updates/css-route-matching/">
 <style>
-  @route incorrect {}
+  @location incorrect {}
   .parseme {}
-  @route (incorrect) {}
+  @location (incorrect) {}
   .parseme {}
-  @route (--rte) incorrect {}
+  @location (--loc) incorrect {}
   .parseme {}
-  @route (--rte) (--rte) {}
+  @location (--loc) (--loc) {}
   .parseme {}
-  @route (--rte --rte) incorrect {}
+  @location (--loc --loc) incorrect {}
   .parseme {}
-  @route (at: --rte) incorrect {}
+  @location (at: --loc) incorrect {}
   .parseme {}
-  @route (at: --rte --rte) incorrect {}
+  @location (at: --loc --loc) incorrect {}
   .parseme {}
-  @route (at: from:) incorrect {}
+  @location (at: from:) incorrect {}
   .parseme {}
-  @route (at: from: whatever) incorrect {}
+  @location (at: from: whatever) incorrect {}
   .parseme {}
-  @route incorrect (--rte) {}
+  @location incorrect (--loc) {}
   .parseme {}
-  @route incorrect (at: --rte) incorrect {}
+  @location incorrect (at: --loc) incorrect {}
   .parseme {}
-  @route (over:) incorrect {}
+  @location (over:) incorrect {}
   .parseme {}
-  @route (over: rainbow) incorrect {}
+  @location (over: rainbow) incorrect {}
   .parseme {}
-  @route incorrect (over: rainbow) incorrect {}
+  @location incorrect (over: rainbow) incorrect {}
   .parseme {}
 </style>
 <script src="/resources/testharness.js"></script>
@@ -44,5 +44,5 @@
       assert_true(rule instanceof CSSStyleRule);
       assert_equals(rule.selectorText, ".parseme");
     }
-  }, "Invalid @route");
+  }, "Invalid @location");
 </script>
