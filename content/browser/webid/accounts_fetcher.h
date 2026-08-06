@@ -15,6 +15,7 @@
 #include "content/browser/webid/identity_provider_info.h"
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/webid/native_idp_fetcher.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -146,6 +147,12 @@ class CONTENT_EXPORT AccountsFetcher {
       FetchStatus status,
       IdpNetworkRequestManager::AccountsResponse accounts);
 
+  void OnNativeAccountsFetched(std::unique_ptr<IdentityProviderInfo> idp_info,
+                               std::optional<bool> old_idp_signin_status,
+                               FetchStatus status,
+                               base::TimeTicks accounts_fetched_time,
+                               NativeIdpFetcher::FetchResult result);
+
   void OnAccountsFetchSucceeded(
       std::unique_ptr<IdentityProviderInfo> idp_info,
       FetchStatus status,
@@ -238,6 +245,7 @@ class CONTENT_EXPORT AccountsFetcher {
   int num_pending_requests_ = 0;
   std::vector<Result> results_;
   base::TimeTicks well_known_and_config_fetched_time_;
+  base::flat_map<GURL, std::unique_ptr<NativeIdpFetcher>> native_idp_fetchers_;
 
   base::WeakPtrFactory<AccountsFetcher> weak_ptr_factory_{this};
 };

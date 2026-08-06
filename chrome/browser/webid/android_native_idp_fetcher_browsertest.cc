@@ -35,9 +35,10 @@ IN_PROC_BROWSER_TEST_F(AndroidNativeIdpFetcherTest, ResolveAndFetch) {
   fetcher->FetchAccounts(GURL("https://idp.example/fedcm/accounts"),
                          future.GetCallback());
   ASSERT_TRUE(future.Get().has_value());
-  ASSERT_EQ(
-      "{\"accounts_url\":\"https://idp.example/fedcm/accounts\"}Hello world!",
-      future.Get().value());
+  // TestIdP echoes back the request ("https://idp.example/fedcm/accounts")
+  // and appends "Hello world!" in its reply Bundle.
+  ASSERT_EQ("https://idp.example/fedcm/accountsHello world!",
+            future.Get().value());
 }
 
 IN_PROC_BROWSER_TEST_F(AndroidNativeIdpFetcherTest, ResolveUnverifiedOrigin) {

@@ -65,14 +65,26 @@ public class TestIdP extends Service {
 
             if (msg.what == MSG_FEDCM_REQUEST) {
                 Messenger replyTo = msg.replyTo;
-                String request = msg.getData().getString("request");
+                Bundle data = msg.getData();
+                String url = data.getString("url");
+                StringBuilder extraInfo = new StringBuilder();
+                if (data != null) {
+                    java.util.List<String> keys = new java.util.ArrayList<>(data.keySet());
+                    java.util.Collections.sort(keys);
+                    for (String key : keys) {
+                        if (!"url".equals(key)) {
+                            extraInfo.append(":").append(data.getString(key));
+                        }
+                    }
+                }
+                final String replyString = url + extraInfo.toString() + "Hello world!";
 
                 mExecutor.execute(
                         () -> {
                             Message replyMsg = Message.obtain();
                             replyMsg.what = MSG_FEDCM_RESPONSE;
                             Bundle bundle = new Bundle();
-                            bundle.putString("reply", request + "Hello world!");
+                            bundle.putString("reply", replyString);
                             replyMsg.setData(bundle);
                             try {
                                 Log.v(TAG, "Replying!");

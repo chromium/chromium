@@ -7,14 +7,18 @@
 #include <algorithm>
 #include <set>
 
+#include "base/json/json_reader.h"
 #include "content/browser/webid/config_fetcher.h"
 #include "content/browser/webid/flags.h"
+#include "content/browser/webid/idp_accounts_parser.h"
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/browser/webid/mappers.h"
 #include "content/browser/webid/metrics.h"
 #include "content/browser/webid/webid_utils.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/webid/federated_identity_permission_context_delegate.h"
+#include "net/http/http_status_code.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 
 namespace content::webid {
@@ -379,6 +383,29 @@ void AccountsFetcher::OnAccountsResponseReceived(
       permission_delegate_);
 
   if (status.parse_status != ParseStatus::kSuccess) {
+    if (IsFedCmNativeIdPsEnabled() && GetContentClient()->browser()) {
+      auto fetcher_it = native_idp_fetchers_.find(idp_config_url);
+      if (fetcher_it == native_idp_fetchers_.end()) {
+        std::unique_ptr<NativeIdpFetcher> fetcher =
+            GetContentClient()->browser()->CreateNativeIdpFetcher(
+                url::Origin::Create(idp_config_url));
+        if (fetcher) {
+          fetcher_it =
+              native_idp_fetchers_.emplace(idp_config_url, std::move(fetcher))
+                  .first;
+        }
+      }
+      if (fetcher_it != native_idp_fetchers_.end()) {
+        GURL accounts_endpoint = idp_info->endpoints.accounts;
+        fetcher_it->second->FetchAccounts(
+            accounts_endpoint,
+            base::BindOnce(&AccountsFetcher::OnNativeAccountsFetched,
+                           weak_ptr_factory_.GetWeakPtr(), std::move(idp_info),
+                           old_idp_signin_status, status,
+                           accounts_fetched_time));
+        return;
+      }
+    }
     auto [result, token_status] =
         AccountParseStatusToRequestResultAndTokenStatus(status.parse_status);
     HandleAccountsFetchFailure(std::move(idp_info), old_idp_signin_status,
@@ -429,6 +456,58 @@ void AccountsFetcher::OnAccountsResponseReceived(
 
   OnAccountsFetchSucceeded(std::move(idp_info), status, std::move(accounts),
                            std::move(filtered_accounts), accounts_fetched_time);
+}
+
+void AccountsFetcher::OnNativeAccountsFetched(
+    std::unique_ptr<IdentityProviderInfo> idp_info,
+    std::optional<bool> old_idp_signin_status,
+    FetchStatus fetch_status,
+    base::TimeTicks accounts_fetched_time,
+    NativeIdpFetcher::FetchResult fetch_result) {
+  if (!fetch_result.has_value()) {
+    // TODO(crbug.com/465181345): Add dedicated Native IDP error metrics to
+    // differentiate fetch_result.error() from HTTP fetch status errors.
+    auto [result, token_status] =
+        AccountParseStatusToRequestResultAndTokenStatus(
+            fetch_status.parse_status);
+    HandleAccountsFetchFailure(std::move(idp_info), old_idp_signin_status,
+                               result, token_status, fetch_status,
+                               std::vector<IdentityRequestAccountPtr>(),
+                               accounts_fetched_time);
+    return;
+  }
+
+  std::optional<base::DictValue> dict =
+      base::JSONReader::ReadDict(fetch_result.value(), base::JSON_PARSE_RFC);
+  if (!dict) {
+    auto [result, token_status] =
+        AccountParseStatusToRequestResultAndTokenStatus(
+            ParseStatus::kInvalidResponseError);
+    HandleAccountsFetchFailure(
+        std::move(idp_info), old_idp_signin_status, result, token_status,
+        {ParseStatus::kInvalidResponseError, net::HTTP_OK},
+        std::vector<IdentityRequestAccountPtr>(), accounts_fetched_time);
+    return;
+  }
+
+  IdpAccountsParser::ParseResult parse_result =
+      IdpAccountsParser::ParseAccounts(*dict);
+  if (!parse_result.has_value()) {
+    auto [result, token_status] =
+        AccountParseStatusToRequestResultAndTokenStatus(
+            ParseStatus::kInvalidResponseError);
+    HandleAccountsFetchFailure(
+        std::move(idp_info), old_idp_signin_status, result, token_status,
+        {ParseStatus::kInvalidResponseError, net::HTTP_OK},
+        std::vector<IdentityRequestAccountPtr>(), accounts_fetched_time);
+    return;
+  }
+
+  IdpNetworkRequestManager::AccountsResponse response;
+  response.accounts = std::move(*parse_result);
+  OnAccountsResponseReceived(std::move(idp_info),
+                             {ParseStatus::kSuccess, net::HTTP_OK},
+                             std::move(response));
 }
 
 void AccountsFetcher::OnAccountsFetchSucceeded(

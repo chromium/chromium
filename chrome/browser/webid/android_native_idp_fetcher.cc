@@ -28,7 +28,7 @@ void AndroidNativeIdpFetcher::FetchAccounts(const GURL& accounts_url,
   }
   pending_callback_ = std::move(callback);
 
-  std::string request = "{\"accounts_url\":\"" + accounts_url.spec() + "\"}";
+  std::string request = accounts_url.spec();
 
   resolver_->Resolve(idp_origin_,
                      base::BindOnce(&AndroidNativeIdpFetcher::OnOriginResolved,

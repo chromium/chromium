@@ -39,7 +39,7 @@ public class IdentityProviderService extends Handler implements ServiceConnectio
     // intent filter.
     private static final String FEDCM_BOUND_SERVICE_INTENT_ACTION = "org.w3.FedCM";
     // Keys for the request and reply strings in the message bundles.
-    private static final String FEDCM_BOUND_SERVICE_INTENT_REQUEST = "request";
+    private static final String FEDCM_BOUND_SERVICE_INTENT_URL = "url";
     private static final String FEDCM_BOUND_SERVICE_INTENT_REPLY = "reply";
     // The message code that the recipient can use to identify the request and
     // response message.
@@ -75,7 +75,7 @@ public class IdentityProviderService extends Handler implements ServiceConnectio
         ComponentName name = new ComponentName(packageName, serviceName);
         intent.setComponent(name);
 
-        Log.d(TAG, "Binding service: " + packageName + "/" + serviceName);
+        Log.d(TAG, "Binding service: %s/%s", packageName, serviceName);
         boolean binding = context.bindService(intent, this, Context.BIND_AUTO_CREATE);
 
         if (!binding) {
@@ -123,7 +123,7 @@ public class IdentityProviderService extends Handler implements ServiceConnectio
         Message msg = Message.obtain();
         msg.what = MSG_FEDCM_REQUEST;
         Bundle bundle = new Bundle();
-        bundle.putString(FEDCM_BOUND_SERVICE_INTENT_REQUEST, request);
+        bundle.putString(FEDCM_BOUND_SERVICE_INTENT_URL, request);
         msg.setData(bundle);
         Messenger responseMessenger = new Messenger(this);
         msg.replyTo = responseMessenger;
