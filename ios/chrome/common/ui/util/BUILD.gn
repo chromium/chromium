@@ -27,7 +27,6 @@ source_set("util") {
     "//base",
     "//ios/chrome/common:constants",
     "//ios/chrome/common/ui/colors",
-    "//ui/gfx/ios:uikit_util",
   ]
 }
 

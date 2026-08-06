@@ -225,9 +225,7 @@ source_set("coordinator") {
     "//ios/chrome/common:timing",
     "//ios/chrome/common/ui/util",
     "//ios/web/public",
-    "//ios/web/public/navigation",
     "//ui/base",
-    "//ui/gfx/ios:uikit_util",
   ]
 }
 
@@ -372,7 +370,6 @@ source_set("ntp_internal") {
     "//ios/web/public",
     "//ios/web/public/navigation",
     "//ui/base",
-    "//ui/gfx/ios:uikit_util",
     "//url",
   ]
   frameworks = [

@@ -30,7 +30,6 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/base/resource/resource_bundle.h"
-#import "ui/gfx/ios/uikit_util.h"
 #import "ui/gfx/scoped_cg_context_save_gstate_mac.h"
 
 void SetA11yLabelAndUiAutomationName(

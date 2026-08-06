@@ -124,7 +124,6 @@ source_set("grid_ui") {
     "//ios/web/public",
     "//net",
     "//ui/base",
-    "//ui/gfx/ios:uikit_util",
     "//url",
   ]
 }

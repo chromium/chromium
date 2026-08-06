@@ -20,7 +20,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state_id.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-#import "ui/gfx/ios/uikit_util.h"
 
 namespace {
 

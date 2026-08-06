@@ -16,7 +16,6 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ui/base/device_form_factor.h"
-#import "ui/gfx/ios/uikit_util.h"
 
 namespace {
 const CGFloat kVerticalOffset = 6;

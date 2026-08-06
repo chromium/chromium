@@ -63,7 +63,6 @@ source_set("ui_util") {
     "//ios/chrome/common/ui/util",
     "//ios/components/ui_util",
     "//ui/base",
-    "//ui/gfx/ios:uikit_util",
   ]
   frameworks = [ "UIKit.framework" ]
 }
