@@ -105,27 +105,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//third_party/blink/renderer/platform/graphics/canvas_hibernation_handler.h:CanvasHibernationEvent) -->
 
-<enum name="CanvasOverdrawOp">
-  <int value="0" label="None (should have 0 counts)"/>
-  <int value="1" label="Total ops"/>
-  <int value="2" label="ClearRect op"/>
-  <int value="3" label="(Obsolete) FillRect op. Deprecated as of 2021-10."/>
-  <int value="4" label="(Obsolete) PutImageData op. Deprecated as of 2021-10."/>
-  <int value="5" label="DrawImage op"/>
-  <int value="6" label="ContextReset op"/>
-  <int value="7"
-      label="(Obsolete) ClearForSrcBlendMode op. Deprecated as of 2021-10."/>
-  <int value="8"
-      label="(Obsolete) Has opaque shader. Deprecated as of 2021-10."/>
-  <int value="9" label="Has transform"/>
-  <int value="10"
-      label="(Obsolete) Has source-over blend mode. Deprecated as of 2021-10."/>
-  <int value="11"
-      label="(Obsolete) Has clear blend mode. Deprecated as of 2021-10."/>
-  <int value="13" label="Has clip"/>
-  <int value="14" label="Has transform and clip"/>
-</enum>
-
 <enum name="CanvasResourceProviderType">
   <int value="0" label="Texture"/>
   <int value="1" label="Bitmap"/>

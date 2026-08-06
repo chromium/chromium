@@ -454,15 +454,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.Canvas.OverdrawOp" enum="CanvasOverdrawOp"
-    expires_after="2024-04-01">
-  <owner>junov@chromium.org</owner>
-  <owner>fserb@chromium.org</owner>
-  <summary>
-    Counts 2d canvas draw operations that trigger the overdraw optimization.
-  </summary>
-</histogram>
-
 <histogram name="Blink.Canvas.RasterDuration{BlinkCanvasRasterDurationType}"
     units="microseconds" expires_after="2027-01-03">
   <owner>aaronhk@chromium.org</owner>

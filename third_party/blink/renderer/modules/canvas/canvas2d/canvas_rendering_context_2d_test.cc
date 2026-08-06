@@ -655,26 +655,6 @@ bool SetUpFullAccelerationAndCcLayer(HTMLCanvasElement& canvas_element,
   return canvas_element.GetOrCreateCcLayerForCanvas2DIfNeeded() != nullptr;
 }
 
-//============================================================================
-
-MATCHER_P(OverdrawOpAreMatcher, expected_overdraw_ops, "") {
-  constexpr int last_bucket =
-      static_cast<int>(BaseRenderingContext2D::OverdrawOp::kMaxValue);
-  for (int bucket = 0; bucket <= last_bucket; ++bucket) {
-    SCOPED_TRACE(Message() << "Checking overdraw bucket: " << bucket);
-    arg.ExpectBucketCount(
-        "Blink.Canvas.OverdrawOp", bucket,
-        static_cast<base::HistogramBase::Count32>(expected_overdraw_ops.count(
-            static_cast<BaseRenderingContext2D::OverdrawOp>(bucket))));
-  }
-  return true;
-}
-
-template <typename... Args>
-testing::Matcher<base::HistogramTester> OverdrawOpAre(Args... args) {
-  return OverdrawOpAreMatcher(
-      std::unordered_set<BaseRenderingContext2D::OverdrawOp>{args...});
-}
 
 // Matches an object (e.g. ContentResourceProvider) that has `IsValid()` ==
 // true.
@@ -836,7 +816,6 @@ TEST_P(CanvasRenderingContext2DTest, GetImageWithAccelerationDisabled) {
 TEST_P(CanvasRenderingContext2DTest, FillRect_FullCoverage) {
   // Fill rect no longer supports overdraw optimizations
   // Reason: low real world incidence not worth the test overhead.
-  base::HistogramTester histogram_tester;
   CreateContext(kNonOpaque);
   CanvasElement().SetSize(gfx::Size(10, 10));
 
@@ -849,11 +828,9 @@ TEST_P(CanvasRenderingContext2DTest, FillRect_FullCoverage) {
           PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(3, 3, 1, 1), FillFlags()),
           PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(-1, -1, 12, 12),
                                 FillFlags()))));
-  EXPECT_THAT(histogram_tester, OverdrawOpAre());
 }
 
 TEST_P(CanvasRenderingContext2DTest, ClearRect_ExactCoverage) {
-  base::HistogramTester histogram_tester;
   CreateContext(kNonOpaque);
   CanvasElement().SetSize(gfx::Size(10, 10));
 
@@ -863,13 +840,9 @@ TEST_P(CanvasRenderingContext2DTest, ClearRect_ExactCoverage) {
   EXPECT_THAT(Context2D()->FlushCanvas(FlushReason::kOther),
               Optional(RecordedOpsAre(PaintOpEq<DrawRectOp>(
                   SkRect::MakeXYWH(0, 0, 10, 10), ClearRectFlags()))));
-  EXPECT_THAT(histogram_tester,
-              OverdrawOpAre(BaseRenderingContext2D::OverdrawOp::kTotal,
-                            BaseRenderingContext2D::OverdrawOp::kClearRect));
 }
 
 TEST_P(CanvasRenderingContext2DTest, ClearRect_PartialCoverage) {
-  base::HistogramTester histogram_tester;
   CreateContext(kNonOpaque);
   CanvasElement().SetSize(gfx::Size(10, 10));
 
@@ -882,13 +855,11 @@ TEST_P(CanvasRenderingContext2DTest, ClearRect_PartialCoverage) {
           PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(3, 3, 1, 1), FillFlags()),
           PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(0, 0, 9, 9),
                                 ClearRectFlags()))));
-  EXPECT_THAT(histogram_tester, OverdrawOpAre());
 }
 
 TEST_P(CanvasRenderingContext2DTest, ClearRect_InsideLayer) {
   // Overdraw is not currently implemented when layers are opened.
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
-  base::HistogramTester histogram_tester;
   CreateContext(kNonOpaque);
   CanvasElement().SetSize(gfx::Size(10, 10));
 
@@ -912,13 +883,11 @@ TEST_P(CanvasRenderingContext2DTest, ClearRect_InsideLayer) {
                                     ClearRectFlags()),
               PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(3, 3, 3, 3), FillFlags()),
               PaintOpEq<RestoreOp>()))));
-  EXPECT_THAT(histogram_tester, OverdrawOpAre());
 }
 
 TEST_P(CanvasRenderingContext2DTest, ClearRect_InsideNestedLayer) {
   // Overdraw is not currently implemented when layers are opened.
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
-  base::HistogramTester histogram_tester;
   CreateContext(kNonOpaque);
   CanvasElement().SetSize(gfx::Size(10, 10));
 
@@ -948,11 +917,9 @@ TEST_P(CanvasRenderingContext2DTest, ClearRect_InsideNestedLayer) {
                                     ClearRectFlags()),
               PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(4, 4, 4, 4), FillFlags()),
               PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()))));
-  EXPECT_THAT(histogram_tester, OverdrawOpAre());
 }
 
 TEST_P(CanvasRenderingContext2DTest, ClearRect_GlobalAlpha) {
-  base::HistogramTester histogram_tester;
   CreateContext(kNonOpaque);
   CanvasElement().SetSize(gfx::Size(10, 10));
 
@@ -963,13 +930,9 @@ TEST_P(CanvasRenderingContext2DTest, ClearRect_GlobalAlpha) {
   EXPECT_THAT(Context2D()->FlushCanvas(FlushReason::kOther),
               Optional(RecordedOpsAre(PaintOpEq<DrawRectOp>(
                   SkRect::MakeXYWH(0, 0, 10, 10), ClearRectFlags()))));
-  EXPECT_THAT(histogram_tester,
-              OverdrawOpAre(BaseRenderingContext2D::OverdrawOp::kTotal,
-                            BaseRenderingContext2D::OverdrawOp::kClearRect));
 }
 
 TEST_P(CanvasRenderingContext2DTest, ClearRect_TransparentGradient) {
-  base::HistogramTester histogram_tester;
   CreateContext(kNonOpaque);
   CanvasElement().SetSize(gfx::Size(10, 10));
 
@@ -982,13 +945,9 @@ TEST_P(CanvasRenderingContext2DTest, ClearRect_TransparentGradient) {
   EXPECT_THAT(Context2D()->FlushCanvas(FlushReason::kOther),
               Optional(RecordedOpsAre(PaintOpEq<DrawRectOp>(
                   SkRect::MakeXYWH(0, 0, 10, 10), ClearRectFlags()))));
-  EXPECT_THAT(histogram_tester,
-              OverdrawOpAre(BaseRenderingContext2D::OverdrawOp::kTotal,
-                            BaseRenderingContext2D::OverdrawOp::kClearRect));
 }
 
 TEST_P(CanvasRenderingContext2DTest, ClearRect_Filter) {
-  base::HistogramTester histogram_tester;
   CreateContext(kNonOpaque);
   CanvasElement().SetSize(gfx::Size(10, 10));
 
@@ -1002,13 +961,9 @@ TEST_P(CanvasRenderingContext2DTest, ClearRect_Filter) {
   EXPECT_THAT(Context2D()->FlushCanvas(FlushReason::kOther),
               Optional(RecordedOpsAre(PaintOpEq<DrawRectOp>(
                   SkRect::MakeXYWH(0, 0, 10, 10), ClearRectFlags()))));
-  EXPECT_THAT(histogram_tester,
-              OverdrawOpAre(BaseRenderingContext2D::OverdrawOp::kTotal,
-                            BaseRenderingContext2D::OverdrawOp::kClearRect));
 }
 
 TEST_P(CanvasRenderingContext2DTest, ClearRect_TransformPartialCoverage) {
-  base::HistogramTester histogram_tester;
   CreateContext(kNonOpaque);
   CanvasElement().SetSize(gfx::Size(10, 10));
 
@@ -1023,11 +978,9 @@ TEST_P(CanvasRenderingContext2DTest, ClearRect_TransformPartialCoverage) {
           PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(3, 3, 1, 1), FillFlags()),
           PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(0, 0, 10, 10),
                                 ClearRectFlags()))));
-  EXPECT_THAT(histogram_tester, OverdrawOpAre());
 }
 
 TEST_P(CanvasRenderingContext2DTest, ClearRect_TransformCompleteCoverage) {
-  base::HistogramTester histogram_tester;
   CreateContext(kNonOpaque);
   CanvasElement().SetSize(gfx::Size(10, 10));
 
@@ -1043,14 +996,9 @@ TEST_P(CanvasRenderingContext2DTest, ClearRect_TransformCompleteCoverage) {
                                                0, 0, 0, 1)),
                   PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(-1, -1, 10, 10),
                                         ClearRectFlags()))));
-  EXPECT_THAT(histogram_tester,
-              OverdrawOpAre(BaseRenderingContext2D::OverdrawOp::kTotal,
-                            BaseRenderingContext2D::OverdrawOp::kClearRect,
-                            BaseRenderingContext2D::OverdrawOp::kHasTransform));
 }
 
 TEST_P(CanvasRenderingContext2DTest, ClearRect_IgnoreCompositeOp) {
-  base::HistogramTester histogram_tester;
   CreateContext(kNonOpaque);
   CanvasElement().SetSize(gfx::Size(10, 10));
 
@@ -1061,13 +1009,9 @@ TEST_P(CanvasRenderingContext2DTest, ClearRect_IgnoreCompositeOp) {
   EXPECT_THAT(Context2D()->FlushCanvas(FlushReason::kOther),
               Optional(RecordedOpsAre(PaintOpEq<DrawRectOp>(
                   SkRect::MakeXYWH(0, 0, 10, 10), ClearRectFlags()))));
-  EXPECT_THAT(histogram_tester,
-              OverdrawOpAre(BaseRenderingContext2D::OverdrawOp::kTotal,
-                            BaseRenderingContext2D::OverdrawOp::kClearRect));
 }
 
 TEST_P(CanvasRenderingContext2DTest, ClearRect_Clipped) {
-  base::HistogramTester histogram_tester;
   CreateContext(kNonOpaque);
   CanvasElement().SetSize(gfx::Size(10, 10));
 
@@ -1083,11 +1027,9 @@ TEST_P(CanvasRenderingContext2DTest, ClearRect_Clipped) {
           PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(3, 3, 1, 1), FillFlags()),
           PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(0, 0, 10, 10),
                                 ClearRectFlags()))));
-  EXPECT_THAT(histogram_tester, OverdrawOpAre());
 }
 
 TEST_P(CanvasRenderingContext2DTest, DrawImage_ExactCoverage) {
-  base::HistogramTester histogram_tester;
   CreateContext(kNonOpaque);
   CanvasElement().SetSize(gfx::Size(10, 10));
 
@@ -1098,13 +1040,9 @@ TEST_P(CanvasRenderingContext2DTest, DrawImage_ExactCoverage) {
 
   EXPECT_THAT(Context2D()->FlushCanvas(FlushReason::kOther),
               Optional(RecordedOpsAre(PaintOpIs<DrawImageRectOp>())));
-  EXPECT_THAT(histogram_tester,
-              OverdrawOpAre(BaseRenderingContext2D::OverdrawOp::kTotal,
-                            BaseRenderingContext2D::OverdrawOp::kDrawImage));
 }
 
 TEST_P(CanvasRenderingContext2DTest, DrawImage_Magnified) {
-  base::HistogramTester histogram_tester;
   CreateContext(kNonOpaque);
   CanvasElement().SetSize(gfx::Size(10, 10));
 
@@ -1115,13 +1053,9 @@ TEST_P(CanvasRenderingContext2DTest, DrawImage_Magnified) {
 
   EXPECT_THAT(Context2D()->FlushCanvas(FlushReason::kOther),
               Optional(RecordedOpsAre(PaintOpIs<DrawImageRectOp>())));
-  EXPECT_THAT(histogram_tester,
-              OverdrawOpAre(BaseRenderingContext2D::OverdrawOp::kTotal,
-                            BaseRenderingContext2D::OverdrawOp::kDrawImage));
 }
 
 TEST_P(CanvasRenderingContext2DTest, DrawImage_GlobalAlpha) {
-  base::HistogramTester histogram_tester;
   CreateContext(kNonOpaque);
   CanvasElement().SetSize(gfx::Size(10, 10));
 
@@ -1134,11 +1068,9 @@ TEST_P(CanvasRenderingContext2DTest, DrawImage_GlobalAlpha) {
   EXPECT_THAT(Context2D()->FlushCanvas(FlushReason::kOther),
               Optional(RecordedOpsAre(PaintOpIs<DrawRectOp>(),
                                       PaintOpIs<DrawImageRectOp>())));
-  EXPECT_THAT(histogram_tester, OverdrawOpAre());
 }
 
 TEST_P(CanvasRenderingContext2DTest, DrawImage_TransparentBitmap) {
-  base::HistogramTester histogram_tester;
   CreateContext(kNonOpaque);
   CanvasElement().SetSize(gfx::Size(10, 10));
 
@@ -1150,11 +1082,9 @@ TEST_P(CanvasRenderingContext2DTest, DrawImage_TransparentBitmap) {
   EXPECT_THAT(Context2D()->FlushCanvas(FlushReason::kOther),
               Optional(RecordedOpsAre(PaintOpIs<DrawRectOp>(),
                                       PaintOpIs<DrawImageRectOp>())));
-  EXPECT_THAT(histogram_tester, OverdrawOpAre());
 }
 
 TEST_P(CanvasRenderingContext2DTest, DrawImage_Filter) {
-  base::HistogramTester histogram_tester;
   CreateContext(kNonOpaque);
   CanvasElement().SetSize(gfx::Size(10, 10));
 
@@ -1177,7 +1107,6 @@ TEST_P(CanvasRenderingContext2DTest, DrawImage_Filter) {
                   PaintOpIs<SetMatrixOp>(), PaintOpIs<SaveLayerOp>(),
                   PaintOpIs<SetMatrixOp>(), PaintOpIs<DrawImageRectOp>(),
                   PaintOpIs<RestoreOp>(), PaintOpIs<SetMatrixOp>())));
-  EXPECT_THAT(histogram_tester, OverdrawOpAre());
 }
 
 TEST_P(CanvasRenderingContext2DTest, DrawImage_PartialCoverage1) {
@@ -1197,7 +1126,6 @@ TEST_P(CanvasRenderingContext2DTest, DrawImage_PartialCoverage1) {
 }
 
 TEST_P(CanvasRenderingContext2DTest, DrawImage_PartialCoverage2) {
-  base::HistogramTester histogram_tester;
   CreateContext(kNonOpaque);
   CanvasElement().SetSize(gfx::Size(10, 10));
 
@@ -1209,11 +1137,9 @@ TEST_P(CanvasRenderingContext2DTest, DrawImage_PartialCoverage2) {
   EXPECT_THAT(Context2D()->FlushCanvas(FlushReason::kOther),
               Optional(RecordedOpsAre(PaintOpIs<DrawRectOp>(),
                                       PaintOpIs<DrawImageRectOp>())));
-  EXPECT_THAT(histogram_tester, OverdrawOpAre());
 }
 
 TEST_P(CanvasRenderingContext2DTest, DrawImage_FullCoverage) {
-  base::HistogramTester histogram_tester;
   CreateContext(kNonOpaque);
   CanvasElement().SetSize(gfx::Size(10, 10));
 
@@ -1224,13 +1150,9 @@ TEST_P(CanvasRenderingContext2DTest, DrawImage_FullCoverage) {
 
   EXPECT_THAT(Context2D()->FlushCanvas(FlushReason::kOther),
               Optional(RecordedOpsAre(PaintOpIs<DrawImageRectOp>())));
-  EXPECT_THAT(histogram_tester,
-              OverdrawOpAre(BaseRenderingContext2D::OverdrawOp::kTotal,
-                            BaseRenderingContext2D::OverdrawOp::kDrawImage));
 }
 
 TEST_P(CanvasRenderingContext2DTest, DrawImage_TransformFullCoverage) {
-  base::HistogramTester histogram_tester;
   CreateContext(kNonOpaque);
   CanvasElement().SetSize(gfx::Size(10, 10));
 
@@ -1243,14 +1165,9 @@ TEST_P(CanvasRenderingContext2DTest, DrawImage_TransformFullCoverage) {
   EXPECT_THAT(Context2D()->FlushCanvas(FlushReason::kOther),
               Optional(RecordedOpsAre(PaintOpIs<SetMatrixOp>(),
                                       PaintOpIs<DrawImageRectOp>())));
-  EXPECT_THAT(histogram_tester,
-              OverdrawOpAre(BaseRenderingContext2D::OverdrawOp::kTotal,
-                            BaseRenderingContext2D::OverdrawOp::kDrawImage,
-                            BaseRenderingContext2D::OverdrawOp::kHasTransform));
 }
 
 TEST_P(CanvasRenderingContext2DTest, DrawImage_TransformPartialCoverage) {
-  base::HistogramTester histogram_tester;
   CreateContext(kNonOpaque);
   CanvasElement().SetSize(gfx::Size(10, 10));
 
@@ -1264,11 +1181,9 @@ TEST_P(CanvasRenderingContext2DTest, DrawImage_TransformPartialCoverage) {
               Optional(RecordedOpsAre(PaintOpIs<TranslateOp>(),  //
                                       PaintOpIs<DrawRectOp>(),   //
                                       PaintOpIs<DrawImageRectOp>())));
-  EXPECT_THAT(histogram_tester, OverdrawOpAre());
 }
 
 TEST_P(CanvasRenderingContext2DTest, DrawImage_TransparenBitmapOpaqueGradient) {
-  base::HistogramTester histogram_tester;
   CreateContext(kNonOpaque);
   CanvasElement().SetSize(gfx::Size(10, 10));
 
@@ -1283,12 +1198,10 @@ TEST_P(CanvasRenderingContext2DTest, DrawImage_TransparenBitmapOpaqueGradient) {
   EXPECT_THAT(Context2D()->FlushCanvas(FlushReason::kOther),
               Optional(RecordedOpsAre(PaintOpIs<DrawRectOp>(),
                                       PaintOpIs<DrawImageRectOp>())));
-  EXPECT_THAT(histogram_tester, OverdrawOpAre());
 }
 
 TEST_P(CanvasRenderingContext2DTest,
        DrawImage_OpaqueBitmapTransparentGradient) {
-  base::HistogramTester histogram_tester;
   CreateContext(kNonOpaque);
   CanvasElement().SetSize(gfx::Size(10, 10));
 
@@ -1302,15 +1215,11 @@ TEST_P(CanvasRenderingContext2DTest,
 
   EXPECT_THAT(Context2D()->FlushCanvas(FlushReason::kOther),
               Optional(RecordedOpsAre(PaintOpIs<DrawImageRectOp>())));
-  EXPECT_THAT(histogram_tester,
-              OverdrawOpAre(BaseRenderingContext2D::OverdrawOp::kTotal,
-                            BaseRenderingContext2D::OverdrawOp::kDrawImage));
 }
 
 TEST_P(CanvasRenderingContext2DTest, DrawImage_CopyPartialCoverage) {
   // The 'copy' blend mode no longer trigger the overdraw optimization
   // Reason: low real-world incidence, test overhead not justified.
-  base::HistogramTester histogram_tester;
   CreateContext(kNonOpaque);
   CanvasElement().SetSize(gfx::Size(10, 10));
 
@@ -1325,13 +1234,11 @@ TEST_P(CanvasRenderingContext2DTest, DrawImage_CopyPartialCoverage) {
                   // Copy composite op clears the frame before each draw ops.
                   PaintOpIs<DrawColorOp>(), PaintOpIs<DrawRectOp>(),
                   PaintOpIs<DrawColorOp>(), PaintOpIs<DrawImageRectOp>())));
-  EXPECT_THAT(histogram_tester, OverdrawOpAre());
 }
 
 TEST_P(CanvasRenderingContext2DTest, DrawImage_CopyTransformPartialCoverage) {
   // Overdraw optimizations with the 'copy' composite operation are no longer
   // supported. Reason: low real-world incidence, test overhead not justified.
-  base::HistogramTester histogram_tester;
   CreateContext(kNonOpaque);
   CanvasElement().SetSize(gfx::Size(10, 10));
 
@@ -1348,11 +1255,9 @@ TEST_P(CanvasRenderingContext2DTest, DrawImage_CopyTransformPartialCoverage) {
                   // Copy composite op clears the frame before each draw ops.
                   PaintOpIs<DrawColorOp>(), PaintOpIs<DrawRectOp>(),
                   PaintOpIs<DrawColorOp>(), PaintOpIs<DrawImageRectOp>())));
-  EXPECT_THAT(histogram_tester, OverdrawOpAre());
 }
 
 TEST_P(CanvasRenderingContext2DTest, DrawImage_Clipped) {
-  base::HistogramTester histogram_tester;
   CreateContext(kNonOpaque);
   CanvasElement().SetSize(gfx::Size(10, 10));
 
@@ -1367,11 +1272,9 @@ TEST_P(CanvasRenderingContext2DTest, DrawImage_Clipped) {
               Optional(RecordedOpsAre(PaintOpIs<ClipRectOp>(),  //
                                       PaintOpIs<DrawRectOp>(),  //
                                       PaintOpIs<DrawImageRectOp>())));
-  EXPECT_THAT(histogram_tester, OverdrawOpAre());
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated, PutImageData_FullCoverage) {
-  base::HistogramTester histogram_tester;
   CreateContext(kNonOpaque);
   CanvasElement().SetSize(gfx::Size(10, 10));
 
@@ -1397,11 +1300,9 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, PutImageData_FullCoverage) {
   // `putImageData` overdraw isn't handled by
   // `BaseRenderingContext2D::CheckOverdraw` like other draw operations, so the
   // histograms aren't updated.
-  EXPECT_THAT(histogram_tester, OverdrawOpAre());
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated, PutImageData_PartialCoverage) {
-  base::HistogramTester histogram_tester;
   CreateContext(kNonOpaque);
   CanvasElement().SetSize(gfx::Size(10, 10));
 
@@ -1429,13 +1330,11 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, PutImageData_PartialCoverage) {
   // `putImageData` overdraw isn't handled by
   // `BaseRenderingContext2D::CheckOverdraw` like other draw operations, so the
   // histograms aren't updated.
-  EXPECT_THAT(histogram_tester, OverdrawOpAre());
 }
 
 TEST_P(CanvasRenderingContext2DTest, Path_FullCoverage) {
   // This case is an overdraw but the current detection logic rejects all
   // paths.
-  base::HistogramTester histogram_tester;
   CreateContext(kNonOpaque);
   CanvasElement().SetSize(gfx::Size(10, 10));
 
@@ -1446,7 +1345,6 @@ TEST_P(CanvasRenderingContext2DTest, Path_FullCoverage) {
   EXPECT_THAT(Context2D()->FlushCanvas(FlushReason::kOther),
               Optional(RecordedOpsAre(PaintOpIs<DrawRectOp>(),
                                       PaintOpIs<DrawPathOp>())));
-  EXPECT_THAT(histogram_tester, OverdrawOpAre());
 }
 
 //==============================================================================

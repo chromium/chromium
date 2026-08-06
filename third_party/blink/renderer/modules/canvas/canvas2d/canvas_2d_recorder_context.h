@@ -359,33 +359,10 @@ class MODULES_EXPORT Canvas2DRecorderContext : public CanvasPath {
   };
 
   enum class OverdrawOp {
-    // Must remain in sync with CanvasOverdrawOp defined in
-    // tools/metrics/histograms/enums.xml
-    //
-    // Note: Several enum values are now obsolete because the use cases they
-    // covered were removed because they had low incidence rates in real-world
-    // web content.
-
-    kNone = 0,  // Not used in histogram
-
-    kTotal = 1,  // Counts total number of overdraw optimization hits.
-
-    // Ops. These are mutually exclusive for a given overdraw hit.
-    kClearRect = 2,
-    // kFillRect = 3,  // Removed due to low incidence
-    // kPutImageData = 4,  // Removed due to low incidence
-    kDrawImage = 5,
-    kContextReset = 6,
-    // kClearForSrcBlendMode = 7,  // Removed due to low incidence
-
-    // Modifiers
-    kHasTransform = 9,
-    // kSourceOverBlendMode = 10,  // Removed due to low incidence
-    // kClearBlendMode = 11,  // Removed due to low incidence
-    kHasClip = 12,
-    kHasClipAndTransform = 13,
-
-    kMaxValue = kHasClipAndTransform,
+    kNone = 0,
+    kClearRect,
+    kDrawImage,
+    kContextReset,
   };
 
   struct UsageCounters {
@@ -805,28 +782,6 @@ ALWAYS_INLINE void Canvas2DRecorderContext::CheckOverdraw(
   if (host) {  // CSS paint use cases not counted.
     UseCounter::Count(GetTopExecutionContext(),
                       WebFeature::kCanvasRenderingContext2DHasOverdraw);
-    UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.OverdrawOp", overdraw_op);
-    UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.OverdrawOp", OverdrawOp::kTotal);
-  }
-
-  // We only hit the kHasTransform bucket if the op is affected by transforms.
-  if (overdraw_op == OverdrawOp::kClearRect ||
-      overdraw_op == OverdrawOp::kDrawImage) {
-    const CanvasRenderingContext2DState& state = GetState();
-    bool has_clip = state.HasClip();
-    bool has_transform = !state.GetTransform().IsIdentity();
-    if (has_clip && has_transform) {
-      UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.OverdrawOp",
-                                OverdrawOp::kHasClipAndTransform);
-    }
-    if (has_clip) {
-      UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.OverdrawOp",
-                                OverdrawOp::kHasClip);
-    }
-    if (has_transform) {
-      UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.OverdrawOp",
-                                OverdrawOp::kHasTransform);
-    }
   }
 
   Recorder()->RestartCurrentLayer();
