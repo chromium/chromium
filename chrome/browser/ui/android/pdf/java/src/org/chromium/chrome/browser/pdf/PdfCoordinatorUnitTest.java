@@ -652,7 +652,7 @@ public class PdfCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2 + ":enable_form_filling/true")
     @Config(shadows = {ShadowEditablePdfViewerFragment.class, ShadowPdfView.class})
     public void testFormFillingEnabledWhenInlinePdfV2IsEnabled() {
         createPdfCoordinator();
@@ -684,6 +684,25 @@ public class PdfCoordinatorUnitTest {
         mPdfCoordinator.mChromePdfViewerFragment.onLoadDocumentSuccess(pdfDocument);
         assertFalse(
                 "Form filling should not be enabled on reload when edit mode is true",
+                shadowPdfView.isFormFillingEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2 + ":enable_form_filling/false")
+    @Config(shadows = {ShadowEditablePdfViewerFragment.class, ShadowPdfView.class})
+    public void testFormFillingDisabledWhenFormFillingParamIsDisabled() {
+        createPdfCoordinator();
+        mPdfCoordinator.mChromePdfViewerFragment.onPdfViewCreated(mPdfView);
+        ShadowPdfView shadowPdfView = Shadow.extract(mPdfView);
+        assertFalse(
+                "Form filling should not be enabled when enable_form_filling is" + " false",
+                shadowPdfView.isFormFillingEnabled());
+
+        PdfDocument pdfDocument = Mockito.mock(PdfDocument.class);
+        mPdfCoordinator.mChromePdfViewerFragment.onLoadDocumentSuccess(pdfDocument);
+        assertFalse(
+                "Form filling should still not be enabled after document load success when"
+                        + " enable_form_filling is false",
                 shadowPdfView.isFormFillingEnabled());
     }
 

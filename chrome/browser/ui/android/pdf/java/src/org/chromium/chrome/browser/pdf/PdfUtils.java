@@ -492,6 +492,16 @@ public class PdfUtils {
         return isInlinePdfV2Enabled() && ChromeFeatureList.sInlinePdfV2Download.isEnabled();
     }
 
+    /**
+     * Checks whether form filling for inline PDF V2 feature is enabled.
+     *
+     * @return {@code true} if form filling for inline PDF V2 feature is enabled, {@code false}
+     *     otherwise.
+     */
+    public static boolean isInlinePdfV2FormFillingEnabled() {
+        return isInlinePdfV2Enabled() && ChromeFeatureList.sInlinePdfV2EnableFormFilling.getValue();
+    }
+
     /** Returns {@code true} if {@link PdfViewFragment} is reused on activity restart. */
     public static boolean isReuseFragmentEnabled() {
         return ChromeFeatureList.sPdfReuseFragment.isEnabled();

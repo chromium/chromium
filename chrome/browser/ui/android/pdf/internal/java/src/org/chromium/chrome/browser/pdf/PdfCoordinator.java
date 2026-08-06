@@ -322,7 +322,8 @@ public class PdfCoordinator
 
             if (getView() != null && mViewTag != null) getView().setTag(mViewTag);
             if (PdfUtils.isInlinePdfV2Enabled()) {
-                pdfView.setFormFillingEnabled(!isEditModeEnabled());
+                pdfView.setFormFillingEnabled(
+                        PdfUtils.isInlinePdfV2FormFillingEnabled() && !isEditModeEnabled());
             }
             maybeSetupPdfView();
         }
@@ -789,7 +790,8 @@ public class PdfCoordinator
             super.onLoadDocumentSuccess(pdfDocument);
             maybeHideToolBoxForUnsupportedEdit();
             if (PdfUtils.isInlinePdfV2Enabled() && mPdfView != null) {
-                mPdfView.setFormFillingEnabled(!isEditModeEnabled());
+                mPdfView.setFormFillingEnabled(
+                        PdfUtils.isInlinePdfV2FormFillingEnabled() && !isEditModeEnabled());
             }
             if (mRestorePositionPending && mPdfView != null) {
                 mRestorePositionPending = false;

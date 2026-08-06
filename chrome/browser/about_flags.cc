@@ -2811,6 +2811,12 @@ const FeatureEntry::FeatureVariation kTabStorageSqlitePrototypeVariations[] = {
      kTabStorageSqlitePrototypeAuthoritativeReads, nullptr},
     {"- Full Migration", kTabStorageSqlitePrototypeFullMigration, nullptr}};
 
+const FeatureEntry::FeatureParam kPdfV2EnableFormFillingParam[] = {
+    {"enable_form_filling", "true"}};
+
+const FeatureEntry::FeatureVariation kInlinePdfV2Variations[] = {
+    {"with form filling", kPdfV2EnableFormFillingParam, nullptr}};
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam kRenderDocument_Subframe[] = {
@@ -7570,7 +7576,9 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(IS_ANDROID)
     {"inline-pdf-v2", flag_descriptions::kInlinePdfV2Name,
      flag_descriptions::kInlinePdfV2Description, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kInlinePdfV2)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kInlinePdfV2,
+                                    kInlinePdfV2Variations,
+                                    "InlinePdfV2")},
     {"inline-pdf-v2-incognito", flag_descriptions::kInlinePdfV2IncognitoName,
      flag_descriptions::kInlinePdfV2IncognitoDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kInlinePdfV2Incognito)},

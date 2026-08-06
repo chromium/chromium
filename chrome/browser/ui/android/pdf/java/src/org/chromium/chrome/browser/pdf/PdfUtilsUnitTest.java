@@ -586,6 +586,32 @@ public class PdfUtilsUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testIsInlinePdfV2FormFillingEnabled_FeatureDisabled() {
+        Assert.assertFalse(PdfUtils.isInlinePdfV2FormFillingEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2 + ":enable_form_filling/false")
+    @Config(
+            sdk = Build.VERSION_CODES.S,
+            shadows = {PdfUtilsUnitTest.ShadowSdkExtensions.class})
+    public void testIsInlinePdfV2FormFillingEnabled_ParamDisabled() {
+        ShadowSdkExtensions.setExtensionVersion(13);
+        Assert.assertFalse(PdfUtils.isInlinePdfV2FormFillingEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2 + ":enable_form_filling/true")
+    @Config(
+            sdk = Build.VERSION_CODES.S,
+            shadows = {PdfUtilsUnitTest.ShadowSdkExtensions.class})
+    public void testIsInlinePdfV2FormFillingEnabled_ParamEnabled() {
+        ShadowSdkExtensions.setExtensionVersion(13);
+        Assert.assertTrue(PdfUtils.isInlinePdfV2FormFillingEnabled());
+    }
+
+    @Test
     @Config(sdk = Build.VERSION_CODES.R)
     public void testShouldOpenPdfInline_LowSdk() {
         PdfUtils.setShouldOpenPdfInlineForTesting(false);
