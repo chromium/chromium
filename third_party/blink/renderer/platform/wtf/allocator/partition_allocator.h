@@ -27,7 +27,7 @@ class WTF_EXPORT PartitionAllocator {
 
   template <typename T>
   static size_t MaxElementCountInBackingStore() {
-    return partition_alloc::MaxDirectMapped() / sizeof(T);
+    return partition_alloc::MaxAllocationSize() / sizeof(T);
   }
 
   template <typename T>
