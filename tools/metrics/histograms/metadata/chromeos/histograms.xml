@@ -2108,7 +2108,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Inputs.AutoRepeatUsage" units="key_event"
-    expires_after="2026-06-22">
+    expires_after="2027-06-22">
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -2401,7 +2401,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Inputs.Touchscreen.Connected.Configuration"
-    enum="TouchscreenConfiguration" expires_after="2026-06-28">
+    enum="TouchscreenConfiguration" expires_after="2027-06-28">
   <owner>jimmyxgong@chromium.org</owner>
   <owner>longbowei@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -2413,7 +2413,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Inputs.Touchscreen.Connected.External.Count"
-    units="touchscreens" expires_after="2026-06-28">
+    units="touchscreens" expires_after="2027-06-28">
   <owner>jimmyxgong@chromium.org</owner>
   <owner>longbowei@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
