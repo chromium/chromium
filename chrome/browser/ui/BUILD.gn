@@ -4677,8 +4677,6 @@ static_library("ui") {
         "views/frame/opaque_browser_frame_view_layout.h",
         "views/frame/opaque_browser_frame_view_layout_delegate.cc",
         "views/frame/opaque_browser_frame_view_layout_delegate.h",
-        "views/policy/idle_dialog_view.cc",
-        "views/policy/idle_dialog_view.h",
         "views/screen_capture_notification_ui_views.cc",
         "views/shortcuts/create_desktop_shortcut.cc",
         "views/shortcuts/create_desktop_shortcut.h",
@@ -4688,7 +4686,14 @@ static_library("ui") {
       deps += [
         "//chrome/browser/shortcuts",
         "//chrome/browser/ui/views/policy:enterprise_startup_dialog",
+        "//chrome/browser/ui/views/policy:idle_dialog",
         "//ui/views/window/vector_icons",
+      ]
+      allow_circular_includes_from += [
+        # Circular dependency exists because the following header is not yet
+        # componentized: c/b/ui/idle_dialog.h (IdleDialogView implements
+        # IdleDialog::Show and includes idle_dialog.h)
+        "//chrome/browser/ui/views/policy:idle_dialog",
       ]
     }
 
