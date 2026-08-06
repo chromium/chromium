@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.tab_bottom_sheet;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.res.Configuration;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -19,6 +21,12 @@ import org.chromium.ui.base.WindowAndroid;
 /** Utility methods used by the Tab Bottom Sheet components. */
 @NullMarked
 public final class TabBottomSheetUtils {
+    // Values are not final and may need tuning.
+    public static final float FULL_HEIGHT_RATIO = 0.7f;
+    public static final float SMALL_SCREEN_HEIGHT_RATIO = 0.9f;
+    public static final String FULL_HEIGHT_RATIO_PARAM = "full_height_ratio";
+    public static final String HALF_HEIGHT_RATIO_PARAM = "half_height_ratio";
+
     private static final UnownedUserDataKey<TabBottomSheetManager> MANAGER_KEY =
             new UnownedUserDataKey<>();
     private static final UnownedUserDataKey<CoBrowseViewFactory> FACTORY_KEY =
@@ -33,6 +41,32 @@ public final class TabBottomSheetUtils {
     public static boolean canResizeWebView() {
         return isTabBottomSheetEnabled()
                 && ChromeFeatureList.sTabBottomSheetResizeWebview.isEnabled();
+    }
+
+    /** Returns the full height ratio for the Tab Bottom Sheet. */
+    public static float getFullHeightRatio() {
+        if (ChromeFeatureList.sTabBottomSheetFullHeight.isEnabled()) {
+            return (float)
+                    ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
+                            ChromeFeatureList.TAB_BOTTOM_SHEET_FULL_HEIGHT,
+                            FULL_HEIGHT_RATIO_PARAM,
+                            FULL_HEIGHT_RATIO);
+        }
+        return FULL_HEIGHT_RATIO;
+    }
+
+    /**
+     * Returns the default height ratio for the Tab Bottom Sheet.
+     *
+     * @param context The {@link Context} to retrieve configuration from.
+     * @param isKeyboardShowing Whether the soft keyboard is currently showing.
+     */
+    public static float getDefaultHeightRatio(Context context, boolean isKeyboardShowing) {
+        Configuration configuration = context.getResources().getConfiguration();
+        if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            return SMALL_SCREEN_HEIGHT_RATIO;
+        }
+        return isKeyboardShowing ? SMALL_SCREEN_HEIGHT_RATIO : getFullHeightRatio();
     }
 
     /**

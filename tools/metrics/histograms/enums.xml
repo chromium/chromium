@@ -10873,6 +10873,7 @@ from previous Chrome versions.
   <int value="-1171556368" label="SyncPollImmediatelyOnEveryStartup2:disabled"/>
   <int value="-1170286604" label="Commander:disabled"/>
   <int value="-1170030520" label="WebUIOmniboxAimPopup:enabled"/>
+  <int value="-1169743270" label="TabBottomSheetFullHeight:enabled"/>
   <int value="-1169571217" label="SharingDesktopScreenshotsEdit:disabled"/>
   <int value="-1168910727"
       label="enable-experimental-accessibility-language-detection-dynamic"/>
@@ -13149,6 +13150,7 @@ from previous Chrome versions.
   <int value="-453577040" label="DevToolsInstrumentationBreakpoints:enabled"/>
   <int value="-453506590" label="MediaLinkHelpers:disabled"/>
   <int value="-452734575" label="ArcExtendInputAnrTimeout:enabled"/>
+  <int value="-452215482" label="TabBottomSheetHalfHeight:disabled"/>
   <int value="-451898735" label="private-aggregation-developer-mode"/>
   <int value="-450976085"
       label="AutofillSaveCreditCardUsesImprovedMessaging:disabled"/>
@@ -16346,6 +16348,7 @@ from previous Chrome versions.
   <int value="566031886" label="DIPS:disabled"/>
   <int value="566805495" label="FriendlierErrorDialog:enabled"/>
   <int value="567368307" label="enable-experimental-canvas-features"/>
+  <int value="567374256" label="TabBottomSheetFullHeight:disabled"/>
   <int value="567862349"
       label="CrOSLateBootCrasProcessorDedicatedThread:disabled"/>
   <int value="568784148" label="CentralizedInfoBarFramework:disabled"/>
@@ -19531,6 +19534,7 @@ from previous Chrome versions.
   <int value="1559034872" label="AutofillPrefilledFields:enabled"/>
   <int value="1559812394" label="ToolbarPinning:enabled"/>
   <int value="1560188739" label="reader-mode-heuristics"/>
+  <int value="1560361199" label="TabBottomSheetHalfHeight:enabled"/>
   <int value="1560607634" label="ExtensionsCollapseMainMenu:enabled"/>
   <int value="1561281771" label="PriceTrackingIconColors:enabled"/>
   <int value="1562855415" label="WebRtcUseMinMaxVEADimensions:disabled"/>

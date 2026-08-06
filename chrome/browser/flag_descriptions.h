@@ -6429,6 +6429,18 @@ inline constexpr char kTabBottomSheetName[] = "Tab bottom sheet";
 inline constexpr char kTabBottomSheetDescription[] =
     "Enables the tab bottom sheet feature.";
 
+inline constexpr char kTabBottomSheetFullHeightName[] =
+    "Tab bottom sheet - Full height ratio";
+inline constexpr char kTabBottomSheetFullHeightDescription[] =
+    "Allows configuring the full height ratio of the tab bottom sheet. "
+    "Disabling this flag will use the pre-existing default value.";
+
+inline constexpr char kTabBottomSheetHalfHeightName[] =
+    "Tab bottom sheet - Half height ratio";
+inline constexpr char kTabBottomSheetHalfHeightDescription[] =
+    "Allows configuring the half height ratio of the tab bottom sheet. "
+    "Disabling this flag will use the pre-existing default value.";
+
 inline constexpr char kTabAndroidGracefulShutdownName[] =
     "Tab Android Graceful Shutdown";
 inline constexpr char kTabAndroidGracefulShutdownDescription[] =

@@ -56,10 +56,6 @@ public class TabBottomSheetCoordinator {
     private static final float FLING_VELOCITY_THRESHOLD_DP = 50f;
     private static final float SCROLL_DISTANCE_THRESHOLD_DP = 100f;
 
-    // Can be modified later to be set dynamically based on device
-    private static final float FULL_HEIGHT_RATIO = 0.7f;
-    private static final float SMALL_SCREEN_HEIGHT_RATIO = 0.9f;
-
     // Interface used by the manager to monitor events related to the state of the
     // bottom sheet.
     interface SheetEventsCallback {
@@ -223,7 +219,7 @@ public class TabBottomSheetCoordinator {
         mSheetContent =
                 provider.createContent(
                         mContentView,
-                        FULL_HEIGHT_RATIO,
+                        TabBottomSheetUtils.getFullHeightRatio(),
                         mCoBrowseViews.getBackgroundColor(),
                         mContentView
                                 .getResources()
@@ -694,11 +690,7 @@ public class TabBottomSheetCoordinator {
     }
 
     private float getDefaultHeightRatio() {
-        Configuration configuration = mContext.getResources().getConfiguration();
-        if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            return SMALL_SCREEN_HEIGHT_RATIO;
-        }
-        return isKeyboardShowing() ? SMALL_SCREEN_HEIGHT_RATIO : FULL_HEIGHT_RATIO;
+        return TabBottomSheetUtils.getDefaultHeightRatio(mContext, isKeyboardShowing());
     }
 
     private void updateRoundingEdges() {

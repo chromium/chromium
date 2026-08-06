@@ -123,6 +123,13 @@ public abstract class TabBottomSheetContent implements BottomSheetContent {
 
     @Override
     public float getHalfHeightRatio() {
+        if (ChromeFeatureList.sTabBottomSheetHalfHeight.isEnabled()) {
+            return (float)
+                    ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
+                            ChromeFeatureList.TAB_BOTTOM_SHEET_HALF_HEIGHT,
+                            "half_height_ratio",
+                            mFullHeightRatio);
+        }
         // TODO(crbug.com/502611927): Update this for AIM.
         return (ChromeFeatureList.sTabBottomSheet.isEnabled()
                         && ChromeFeatureList.sTabBottomSheetResizeWebview.isEnabled())
