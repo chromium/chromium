@@ -5,8 +5,6 @@
 #ifndef ASH_WEBUI_SCANNER_FEEDBACK_UI_SCANNER_FEEDBACK_UNTRUSTED_UI_H_
 #define ASH_WEBUI_SCANNER_FEEDBACK_UI_SCANNER_FEEDBACK_UNTRUSTED_UI_H_
 
-#include <memory>
-
 #include "ash/webui/common/chrome_os_webui_config.h"
 #include "ash/webui/scanner_feedback_ui/mojom/scanner_feedback_ui.mojom-forward.h"
 #include "ash/webui/scanner_feedback_ui/scanner_feedback_page_handler.h"

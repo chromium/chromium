@@ -5,8 +5,6 @@
 #ifndef ASH_WEBUI_SHORTCUT_CUSTOMIZATION_UI_SHORTCUT_CUSTOMIZATION_APP_UI_H_
 #define ASH_WEBUI_SHORTCUT_CUSTOMIZATION_UI_SHORTCUT_CUSTOMIZATION_APP_UI_H_
 
-#include <memory>
-
 #include "ash/accelerators/accelerator_prefs.h"
 #include "ash/webui/common/mojom/shortcut_input_provider.mojom.h"
 #include "ash/webui/shortcut_customization_ui/backend/search/search.mojom.h"

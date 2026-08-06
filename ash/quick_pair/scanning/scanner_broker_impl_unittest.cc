@@ -5,6 +5,7 @@
 #include "ash/quick_pair/scanning/scanner_broker_impl.h"
 
 #include <memory>
+#include <string>
 
 #include "ash/quick_pair/common/constants.h"
 #include "ash/quick_pair/common/device.h"

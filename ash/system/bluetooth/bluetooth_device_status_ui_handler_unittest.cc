@@ -4,6 +4,8 @@
 
 #include "ash/system/bluetooth/bluetooth_device_status_ui_handler.h"
 
+#include <memory>
+
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/fake_hats_bluetooth_revamp_trigger_impl.h"
 #include "ash/public/cpp/hats_bluetooth_revamp_trigger.h"

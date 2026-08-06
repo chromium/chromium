@@ -5,8 +5,6 @@
 #ifndef ASH_WEBUI_OS_FEEDBACK_UI_OS_FEEDBACK_UNTRUSTED_UI_H_
 #define ASH_WEBUI_OS_FEEDBACK_UI_OS_FEEDBACK_UNTRUSTED_UI_H_
 
-#include <memory>
-
 #include "content/public/browser/webui_config.h"
 #include "ui/webui/untrusted_web_ui_controller.h"
 

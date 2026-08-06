@@ -4,6 +4,8 @@
 
 #include "ash/shelf/shelf_shutdown_confirmation_bubble.h"
 
+#include <string>
+
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/shelf/login_shelf_button.h"
 #include "ash/strings/grit/ash_strings.h"

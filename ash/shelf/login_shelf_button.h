@@ -5,8 +5,6 @@
 #ifndef ASH_SHELF_LOGIN_SHELF_BUTTON_H_
 #define ASH_SHELF_LOGIN_SHELF_BUTTON_H_
 
-#include <string>
-
 #include "ash/ash_export.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/shelf/shelf.h"

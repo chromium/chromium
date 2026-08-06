@@ -5,7 +5,7 @@
 #ifndef ASH_PUBLIC_CPP_FAKE_HATS_BLUETOOTH_REVAMP_TRIGGER_IMPL_H_
 #define ASH_PUBLIC_CPP_FAKE_HATS_BLUETOOTH_REVAMP_TRIGGER_IMPL_H_
 
-#include <memory>
+#include <cstddef>
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/hats_bluetooth_revamp_trigger.h"
