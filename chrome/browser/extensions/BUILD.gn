@@ -2583,6 +2583,9 @@ source_set("browser_tests") {
     "//ui/webui:buildflags",
     "//ui/webui:test_support",
   ]
+  if (enable_extensions) {
+    deps += [ "//chrome/browser/ui/views/supervised_user" ]
+  }
 
   public_deps = []
 

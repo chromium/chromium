@@ -377,6 +377,9 @@ if (!is_android) {
       "//ui/events:test_support",
       "//url",
     ]
+    if (enable_extensions) {
+      deps += [ "//chrome/browser/ui/views/supervised_user" ]
+    }
 
     if (is_chromeos) {
       deps += [

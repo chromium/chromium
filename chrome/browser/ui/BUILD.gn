@@ -2305,16 +2305,20 @@ static_library("ui") {
   }
 
   if (enable_extensions) {
-    sources += [
-      "views/supervised_user/parent_permission_dialog_view.cc",
-      "views/supervised_user/parent_permission_dialog_view.h",
-    ]
-
     public_deps += [ "//chrome/browser/ui/supervised_user" ]
 
     deps += [
       "//chrome/browser/extensions/api/web_navigation",
+      "//chrome/browser/ui/views/supervised_user",
+      "//chrome/browser/ui/views/supervised_user:impl",
       "//chromeos/ui/vector_icons",
+    ]
+
+    allow_circular_includes_from += [
+      # parent_permission_dialog_view:impl includes headers from
+      # //chrome/browser/ui (e.g. extension_permissions_view.h) that can't be
+      # split out yet.
+      "//chrome/browser/ui/views/supervised_user:impl",
     ]
   }
 
