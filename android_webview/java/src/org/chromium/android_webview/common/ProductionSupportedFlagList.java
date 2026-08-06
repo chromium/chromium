@@ -198,6 +198,10 @@ public final class ProductionSupportedFlagList {
                         + " contention, but should regularize the timing of client rendering."),
         Flag.baseFeature(NetFeatures.TRY_QUIC_BY_DEFAULT, "Allow sending QUIC connection options."),
         Flag.baseFeature(
+                "PqcCupSigning",
+                "Controls whether Client Update Protocol (CUP) signing uses the Post-Quantum "
+                        + "Cryptography (PQC) ML-DSA44 key instead of ECDSA."),
+        Flag.baseFeature(
                 NetFeatures.USE_NEW_ALPS_CODEPOINT_QUIC,
                 "Enables using the new ALPS codepoint to negotiate application settings for QUIC."),
         Flag.baseFeature(
