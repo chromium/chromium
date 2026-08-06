@@ -879,6 +879,7 @@ void SelectorQuery::BuildCompounds(const CSSSelector* first_selector) {
     const Compound& compound = compounds_[compound_idx];
     // The document and element are unknown here, so use a conservative test.
     if (compound.id_needed || (compound.attr_needed == html_names::kIdAttr &&
+                               !compound.attr_value.empty() &&
                                !compound.match_type_case_insensitive &&
                                !compound.legacy_case_insensitive)) {
       last_compound_with_id_selector_ = compound_idx;
