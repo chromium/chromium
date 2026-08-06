@@ -43,9 +43,10 @@ class BookmarksView {
   virtual bool IsPermanentNode(const bookmarks::BookmarkNode* node) const = 0;
   virtual mojom::PermanentFolderType GetPermanentFolderType(
       const bookmarks::BookmarkNode* node) const = 0;
-  virtual base::Uuid GetUuid(const bookmarks::BookmarkNode* node) const = 0;
+  // Returns the API UUID for `node`. `node` must not be null.
+  virtual base::Uuid GetUuid(const bookmarks::BookmarkNode* node) = 0;
   virtual bool IsSynced(const bookmarks::BookmarkNode* node) const = 0;
-  virtual const BookmarkEventTranslator& GetEventTranslator() const = 0;
+  virtual BookmarkEventTranslator& GetEventTranslator() = 0;
 
   // Hierarchical mutations (all indices are visual view indices).
   virtual const bookmarks::BookmarkNode* AddURL(

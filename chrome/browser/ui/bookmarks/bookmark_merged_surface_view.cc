@@ -133,10 +133,8 @@ BookmarkMergedSurfaceView::GetPermanentFolderType(
 }
 
 base::Uuid BookmarkMergedSurfaceView::GetUuid(
-    const bookmarks::BookmarkNode* node) const {
-  if (!node) {
-    return base::Uuid();
-  }
+    const bookmarks::BookmarkNode* node) {
+  CHECK(node);
   if (node == synthetic_root_node_.get()) {
     return synthetic_root_node_->uuid();
   }
@@ -151,8 +149,8 @@ bool BookmarkMergedSurfaceView::IsSynced(
   return !service_->bookmark_model()->IsLocalOnlyNode(*node);
 }
 
-const bookmarks_api::BookmarkEventTranslator&
-BookmarkMergedSurfaceView::GetEventTranslator() const {
+bookmarks_api::BookmarkEventTranslator&
+BookmarkMergedSurfaceView::GetEventTranslator() {
   return translator_;
 }
 
@@ -314,7 +312,9 @@ void BookmarkMergedSurfaceView::BookmarkNodeFaviconChanged(
 void BookmarkMergedSurfaceView::BookmarkParentFolderChildrenReordered(
     const BookmarkParentFolder& folder) {}
 
-void BookmarkMergedSurfaceView::BookmarkAllUserNodesRemoved() {}
+void BookmarkMergedSurfaceView::BookmarkAllUserNodesRemoved() {
+  Notify(translator_.OnAllUserBookmarksRemoved());
+}
 
 void BookmarkMergedSurfaceView::ExtensiveBookmarkChangesBeginning() {
   // Extensive changes are handled internally by queueing events.

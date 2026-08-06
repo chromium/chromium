@@ -51,10 +51,9 @@ class BookmarkMergedSurfaceView : public bookmarks_api::BookmarksView,
   bool IsPermanentNode(const bookmarks::BookmarkNode* node) const override;
   bookmarks_api::mojom::PermanentFolderType GetPermanentFolderType(
       const bookmarks::BookmarkNode* node) const override;
-  base::Uuid GetUuid(const bookmarks::BookmarkNode* node) const override;
+  base::Uuid GetUuid(const bookmarks::BookmarkNode* node) override;
   bool IsSynced(const bookmarks::BookmarkNode* node) const override;
-  const bookmarks_api::BookmarkEventTranslator& GetEventTranslator()
-      const override;
+  bookmarks_api::BookmarkEventTranslator& GetEventTranslator() override;
   const bookmarks::BookmarkNode* AddURL(const bookmarks::BookmarkNode* parent,
                                         size_t index,
                                         const std::u16string& title,

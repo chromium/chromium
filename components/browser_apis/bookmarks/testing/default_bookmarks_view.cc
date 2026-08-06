@@ -15,30 +15,6 @@
 
 namespace bookmarks_api {
 
-namespace {
-
-const bookmarks::BookmarkNode* FindNodeById(
-    const bookmarks::BookmarkModel* model,
-    int64_t id) {
-  if (!model) {
-    return nullptr;
-  }
-  if (model->account_bookmark_bar_node() &&
-      model->account_bookmark_bar_node()->id() == id) {
-    return model->account_bookmark_bar_node();
-  }
-  if (model->account_other_node() && model->account_other_node()->id() == id) {
-    return model->account_other_node();
-  }
-  if (model->account_mobile_node() &&
-      model->account_mobile_node()->id() == id) {
-    return model->account_mobile_node();
-  }
-  return nullptr;
-}
-
-}  // namespace
-
 DefaultBookmarksView::DefaultBookmarksView(
     bookmarks::BookmarkModel* model,
     bookmarks::ManagedBookmarkService* managed_service)
@@ -82,23 +58,28 @@ std::vector<const bookmarks::BookmarkNode*> DefaultBookmarksView::GetChildren(
 
 std::optional<const bookmarks::BookmarkNode*>
 DefaultBookmarksView::FindNodeByUuid(const base::Uuid& uuid) const {
-  if (std::optional<int64_t> override_id =
-          uuid_mapper_.MaybeGetIdFromUuidOverride(uuid)) {
-    const bookmarks::BookmarkNode* found = FindNodeById(model_, *override_id);
-    if (found) {
-      return found;
-    }
+  std::optional<BookmarkIdTuple> tuple = uuid_mapper_.MaybeGetModelId(uuid);
+  if (!tuple) {
+    return std::nullopt;
   }
 
-  const bookmarks::BookmarkNode* node = model_->GetNodeByUuid(
-      uuid,
-      bookmarks::BookmarkModel::NodeTypeForUuidLookup::kLocalOrSyncableNodes);
-  if (!node) {
-    node = model_->GetNodeByUuid(
-        uuid, bookmarks::BookmarkModel::NodeTypeForUuidLookup::kAccountNodes);
+  // According to specs, we should attempt to lookup the account nodes first.
+  auto* account_node = model_->GetNodeByUuid(
+      tuple->uuid(),
+      bookmarks::BookmarkModel::NodeTypeForUuidLookup::kAccountNodes);
+  if (account_node && account_node->id() == tuple->id()) {
+    return account_node;
   }
-  return node ? std::optional<const bookmarks::BookmarkNode*>(node)
-              : std::nullopt;
+
+  // Then fallback to local nodes.
+  auto* local_node = model_->GetNodeByUuid(
+      tuple->uuid(),
+      bookmarks::BookmarkModel::NodeTypeForUuidLookup::kLocalOrSyncableNodes);
+  if (local_node && local_node->id() == tuple->id()) {
+    return local_node;
+  }
+
+  return std::nullopt;
 }
 
 bool DefaultBookmarksView::IsPermanentNode(
@@ -148,11 +129,8 @@ void DefaultBookmarksView::RegisterAccountNodeOverrides() {
   }
 }
 
-base::Uuid DefaultBookmarksView::GetUuid(
-    const bookmarks::BookmarkNode* node) const {
-  if (!node) {
-    return base::Uuid();
-  }
+base::Uuid DefaultBookmarksView::GetUuid(const bookmarks::BookmarkNode* node) {
+  CHECK(node);
   return uuid_mapper_.GetUuidFor(node);
 }
 
@@ -160,8 +138,7 @@ bool DefaultBookmarksView::IsSynced(const bookmarks::BookmarkNode* node) const {
   return !model_->IsLocalOnlyNode(*node);
 }
 
-const BookmarkEventTranslator& DefaultBookmarksView::GetEventTranslator()
-    const {
+BookmarkEventTranslator& DefaultBookmarksView::GetEventTranslator() {
   return translator_;
 }
 
@@ -259,6 +236,7 @@ void DefaultBookmarksView::BookmarkNodeRemoved(
     const base::Location& location) {
   std::vector<mojom::BookmarksEventPtr> events;
   events.push_back(translator_.OnNodeRemoved(node));
+  uuid_mapper_.RemoveNode(node);
   Notify(std::move(events));
 }
 
@@ -282,6 +260,7 @@ void DefaultBookmarksView::BookmarkNodeChildrenReordered(
 void DefaultBookmarksView::BookmarkAllUserNodesRemoved(
     const std::set<GURL>& removed_urls,
     const base::Location& location) {
+  uuid_mapper_.ClearAllExcept(GetChildren(GetRootNode()));
   Notify(translator_.OnAllUserBookmarksRemoved());
 }
 

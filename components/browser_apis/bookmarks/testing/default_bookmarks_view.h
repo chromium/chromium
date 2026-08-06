@@ -56,9 +56,9 @@ class DefaultBookmarksView : public BookmarksView,
   bool IsPermanentNode(const bookmarks::BookmarkNode* node) const override;
   mojom::PermanentFolderType GetPermanentFolderType(
       const bookmarks::BookmarkNode* node) const override;
-  base::Uuid GetUuid(const bookmarks::BookmarkNode* node) const override;
+  base::Uuid GetUuid(const bookmarks::BookmarkNode* node) override;
   bool IsSynced(const bookmarks::BookmarkNode* node) const override;
-  const BookmarkEventTranslator& GetEventTranslator() const override;
+  BookmarkEventTranslator& GetEventTranslator() override;
   const bookmarks::BookmarkNode* AddURL(const bookmarks::BookmarkNode* parent,
                                         size_t index,
                                         const std::u16string& title,

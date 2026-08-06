@@ -4,7 +4,6 @@
 
 module bookmarks_api.mojom;
 
-
 import "mojo/public/mojom/base/empty.mojom";
 import "mojo/public/mojom/base/error.mojom";
 import "mojo/public/mojom/base/uuid.mojom";
@@ -18,6 +17,13 @@ enum PermanentFolderType {
   kOther,
   kMobile,
   kManaged,
+};
+
+// Represents legacy information for a bookmark node.
+// This is used to support backward compatibility with Extension APIs
+// that still rely on integer IDs.
+struct LegacyFields {
+  int64? id;
 };
 
 // Represents the root node of the bookmarks hierarchy.
@@ -34,13 +40,16 @@ union BookmarkNode {
 
 // Represents a url node.
 struct Url {
-  // Not set if creating a new resource.
+  // Not set if creating a new resource. Readonly field.
   mojo_base.mojom.Uuid? id;
+  // Readonly.
+  LegacyFields? legacy;
   string title;
   url.mojom.Url url;
+  // Readonly.
   url.mojom.Url? favicon_url;
   // True if the bookmark is synced to the account storage (i.e. it is not a
-  // local-only node).
+  // local-only node). Readonly.
   bool is_synced;
 };
 
@@ -48,11 +57,14 @@ struct Url {
 struct Folder {
   // Not set if creating a new resource.
   mojo_base.mojom.Uuid? id;
+  LegacyFields? legacy;
   string title;
   array<BookmarkNode> children;
+  // Denotes whether this is a permanent node. If this field is not set, this
+  // folder is not a permanent node. Readonly.
   PermanentFolderType? permanent_folder_type;
   // True if the folder is synced to the account storage (i.e. it is not a
-  // local-only node).
+  // local-only node). Readonly.
   bool is_synced;
 };
 

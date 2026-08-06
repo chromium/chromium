@@ -41,6 +41,7 @@ export class BookmarksElement extends CrLitElement implements
       children: [],
       permanentFolderType: null,
       isSynced: false,
+      legacy: null,
     },
   };
 
@@ -66,6 +67,7 @@ export class BookmarksElement extends CrLitElement implements
           children: snapshot.root.children.map(folder => ({folder})),
           permanentFolderType: null,
           isSynced: false,
+          legacy: null,
         },
       };
       this.receiver_.$.bindHandle(snapshot.stream.handle);

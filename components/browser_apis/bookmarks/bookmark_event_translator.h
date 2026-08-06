@@ -23,7 +23,7 @@ namespace bookmarks_api {
 // Helper class to translate BookmarkModel/View changes to Mojo events.
 class BookmarkEventTranslator {
  public:
-  explicit BookmarkEventTranslator(const BookmarksView* view);
+  explicit BookmarkEventTranslator(BookmarksView* view);
   ~BookmarkEventTranslator();
 
   BookmarkEventTranslator(const BookmarkEventTranslator&) = delete;
@@ -33,26 +33,26 @@ class BookmarkEventTranslator {
   void Init();
 
   // Conversion helpers.
-  mojom::BookmarkNodePtr ConvertNode(const bookmarks::BookmarkNode* node) const;
-  mojom::RootNodePtr ConvertRootNode(const bookmarks::BookmarkNode* node) const;
-  mojom::FolderPtr ConvertFolderNode(const bookmarks::BookmarkNode* node) const;
+  mojom::BookmarkNodePtr ConvertNode(const bookmarks::BookmarkNode* node);
+  mojom::RootNodePtr ConvertRootNode(const bookmarks::BookmarkNode* node);
+  mojom::FolderPtr ConvertFolderNode(const bookmarks::BookmarkNode* node);
 
   // Event builders.
   mojom::BookmarksEventPtr CreateAddedEvent(
       const bookmarks::BookmarkNode* parent,
-      size_t index) const;
+      size_t index);
 
   mojom::BookmarksEventPtr CreateRemovedEvent(
-      const bookmarks::BookmarkNode* node) const;
+      const bookmarks::BookmarkNode* node);
 
   mojom::BookmarksEventPtr CreateMovedEvent(
       const bookmarks::BookmarkNode* old_parent,
       size_t old_index,
       const bookmarks::BookmarkNode* new_parent,
-      size_t new_index) const;
+      size_t new_index);
 
   mojom::BookmarksEventPtr CreateChangedEvent(
-      const bookmarks::BookmarkNode* node) const;
+      const bookmarks::BookmarkNode* node);
 
   // Instance methods that manage snapshot tracking and translation for
   // removals, reordering, and clearing all user nodes.
@@ -66,7 +66,7 @@ class BookmarkEventTranslator {
  private:
   class FolderSnapshot;
 
-  raw_ptr<const BookmarksView> view_;
+  raw_ptr<BookmarksView> view_;
   std::unique_ptr<FolderSnapshot> snapshot_;
 };
 

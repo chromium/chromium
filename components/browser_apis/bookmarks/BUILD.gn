@@ -73,6 +73,7 @@ source_set("unit_tests") {
 
   sources = [
     "bookmark_event_translator_unittest.cc",
+    "bookmark_uuid_mapper_unittest.cc",
     "bookmarks_service_impl_unittest.cc",
   ]
 
