@@ -85,6 +85,7 @@ class OmniboxAutofillBubbleController;
 class OmniboxAutofillPageActionController;
 class PaymentsChurnedUsersBubbleController;
 class PaymentsChurnedUsersPageActionController;
+class WalletReminderNoticePageActionController;
 }  // namespace autofill
 
 namespace actor {
@@ -603,6 +604,10 @@ class TabFeatures {
   // autofill if they have turned it off.
   std::unique_ptr<autofill::PaymentsChurnedUsersBubbleController>
       payments_churned_users_bubble_controller_;
+
+  // Responsible for managing the "Wallet Reminder Notice" page action.
+  std::unique_ptr<autofill::WalletReminderNoticePageActionController>
+      wallet_reminder_notice_page_action_controller_;
 
   std::unique_ptr<AskBeforeHttpDialogController>
       ask_before_http_dialog_controller_;
