@@ -50,6 +50,7 @@
       initWithAtMemoryQueryService:atMemoryQueryService
                           webState:webState];
   _mediator.fillHandler = self.fillHandler;
+  _mediator.consumer = _atMemorySearchViewController;
 
   [self.baseNavigationController
       pushViewController:_atMemorySearchViewController

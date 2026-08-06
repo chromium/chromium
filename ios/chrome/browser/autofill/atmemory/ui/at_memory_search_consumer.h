@@ -35,6 +35,9 @@ enum class AtMemoryErrorType {
 // Sets the progress indicator while fetching results from Gemini.
 - (void)setFetchingSubtitle;
 
+// Sets whether the informational notice is visible.
+- (void)setNoticeVisible:(BOOL)noticeVisible;
+
 // TODO(crbug.com/540877897): Will be implemented once the backend is ready.
 // Sets the previously filled results on the same page.
 - (void)setRecentFills;
