@@ -458,7 +458,11 @@ export class OmniboxPopupSearchboxElement extends
   }
 
   override async onInputWrapperKeydown(e: KeyboardEvent) {
-    if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) {
+    // If the input is already selected, 'ArrowLeft', 'ArrowRight', 'Home',
+    // 'End' should collapse the selection. If `Shift` is held, skip this
+    // behavior and let Blink handle it.
+    if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key) &&
+        !e.shiftKey) {
       const input = this.getInputElement().inputElement;
       if (input.selectionStart === 0 &&
           input.selectionEnd === input.value.length) {
