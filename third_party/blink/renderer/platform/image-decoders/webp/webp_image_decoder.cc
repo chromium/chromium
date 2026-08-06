@@ -509,7 +509,7 @@ void WEBPImageDecoder::ReadColorProfile() {
   wtf_size_t profile_size =
       base::checked_cast<wtf_size_t>(chunk_iterator.chunk.size);
 
-  if (auto profile = ColorProfile::Create(
+  if (auto profile = skia::ColorProfile::Make(
           UNSAFE_TODO(base::span(chunk_iterator.chunk.bytes, profile_size)))) {
     if (profile->IsRGB()) {
       SetEmbeddedColorProfile(std::move(profile));

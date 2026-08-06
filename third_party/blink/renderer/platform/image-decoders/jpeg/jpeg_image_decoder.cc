@@ -473,12 +473,12 @@ class JPEGImageReader final {
         // Allow color management of the decoded RGBA pixels if possible.
         if (!decoder_->IgnoresColorSpace()) {
           // Extract the ICC profile data without copying it (the function
-          // ColorProfile::Create will make its own copy).
+          // ColorProfile::Make will make its own copy).
           auto profile_data =
               metadata_decoder_->getICCProfileData(/*copyData=*/false);
           if (profile_data) {
-            std::unique_ptr<ColorProfile> profile =
-                ColorProfile::Create(skia::as_byte_span(*profile_data));
+            sk_sp<skia::ColorProfile> profile =
+                skia::ColorProfile::Make(skia::as_byte_span(*profile_data));
             if (profile) {
               switch (info_.jpeg_color_space) {
                 case JCS_CMYK:

@@ -125,7 +125,7 @@ bool JXLImageDecoder::SetBasicInfo() {
   // Extract ICC color profile.
   rust::Slice<const uint8_t> icc_data = (*scanner_)->get_icc_profile();
   if (!IgnoresColorSpace() && !icc_data.empty()) {
-    auto profile = ColorProfile::Create(icc_data);
+    auto profile = skia::ColorProfile::Make(icc_data);
     if (profile) {
       SetEmbeddedColorProfile(std::move(profile));
     }

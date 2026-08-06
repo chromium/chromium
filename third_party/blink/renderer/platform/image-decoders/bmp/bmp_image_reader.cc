@@ -392,15 +392,14 @@ bool BMPImageReader::ReadInfoHeader() {
         profile.trc[2].table_entries = 0;
         profile.trc[2].parametric = fxpt16dot16_to_fn(ReadUint32(104));
 
-        parent_->SetEmbeddedColorProfile(
-            std::make_unique<ColorProfile>(profile));
+        parent_->SetEmbeddedColorProfile(skia::ColorProfile::Make(profile));
         break;
       }
 
       case kLcssRGB:               // sRGB
       case kLcsWindowsColorSpace:  // "The Windows default color space" (sRGB)
         parent_->SetEmbeddedColorProfile(
-            std::make_unique<ColorProfile>(*skcms_sRGB_profile()));
+            skia::ColorProfile::Make(*skcms_sRGB_profile()));
         break;
 
       case kProfileEmbedded:  // Embedded ICC profile
@@ -531,7 +530,7 @@ bool BMPImageReader::ProcessEmbeddedColorProfile() {
       base::HeapArray<uint8_t>::WithSize(info_header_.profile_size);
   base::span<const uint8_t> buffer = fast_reader_.GetConsecutiveData(
       info_header_.profile_data, info_header_.profile_size, owned_buffer);
-  auto profile = ColorProfile::Create(buffer);
+  auto profile = skia::ColorProfile::Make(buffer);
   if (!profile) {
     return parent_->SetFailed();
   }
