@@ -3688,6 +3688,7 @@ interface WorkerNavigator
     getter appVersion
     getter connection
     getter deviceMemory
+    getter globalPrivacyControl
     getter gpu
     getter hardwareConcurrency
     getter language

@@ -3584,6 +3584,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter appVersion
 [Worker]     getter connection
 [Worker]     getter deviceMemory
+[Worker]     getter globalPrivacyControl
 [Worker]     getter gpu
 [Worker]     getter hardwareConcurrency
 [Worker]     getter language

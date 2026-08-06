@@ -33,6 +33,7 @@ PASS window.cached_navigator.cookieEnabled is false
 PASS window.cached_navigator.cpuPerformance is window.navigator.cpuPerformance
 PASS window.cached_navigator.deviceMemory is window.navigator.deviceMemory
 PASS window.cached_navigator.doNotTrack is null
+PASS window.cached_navigator.globalPrivacyControl is false
 PASS window.cached_navigator.hardwareConcurrency is window.navigator.hardwareConcurrency
 PASS window.cached_navigator.language is window.navigator.language
 PASS window.cached_navigator.maxTouchPoints is 0

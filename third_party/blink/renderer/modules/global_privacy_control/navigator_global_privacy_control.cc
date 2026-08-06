@@ -14,9 +14,6 @@ namespace blink {
 namespace NavigatorGlobalPrivacyControl {
 
 bool globalPrivacyControl(NavigatorBase& navigator) {
-  // TODO(crbug.com/40745270): Currently, the GPC signal is controlled by a
-  // feature flag, when a user facing setting is added, this should be modified
-  // to use frame cached value.
   return IsGlobalPrivacyControlEnabled();
 }
 

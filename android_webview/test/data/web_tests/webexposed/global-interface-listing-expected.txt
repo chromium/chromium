@@ -6695,6 +6695,7 @@ interface Navigator
     getter deviceMemory
     getter doNotTrack
     getter geolocation
+    getter globalPrivacyControl
     getter gpu
     getter hardwareConcurrency
     getter ink

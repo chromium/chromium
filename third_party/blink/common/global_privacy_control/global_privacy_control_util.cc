@@ -21,8 +21,13 @@ inline constexpr double kGlobalPrivacyControlSourceHistogramSampleProbability =
 }  // namespace
 
 bool IsGlobalPrivacyControlEnabled() {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kGlobalPrivacyControlForce)) {
+    return true;
+  }
+  // TODO(crbug.com/40745270): Also use pref to inform whether to enable.
   return base::FeatureList::IsEnabled(
-      blink::features::kGlobalPrivacyControlForce);
+      blink::features::kGlobalPrivacyControlTest);
 }
 
 void MaybeRecordGlobalPrivacyControlSourceMetric(
