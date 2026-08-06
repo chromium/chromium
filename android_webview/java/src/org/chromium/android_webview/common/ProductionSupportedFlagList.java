@@ -1444,6 +1444,16 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "StructuredHeadersInRust",
                 "Enables the Rust-based structured headers parser instead of C++."),
+        Flag.baseFeature(
+                NetFeatures.INITIAL_DELAY_FOR_BROKEN_ALTERNATIVE_SERVICE,
+                "Controls initial delay for broken alternative services."),
+        Flag.baseFeature(
+                NetFeatures.MAX_DELAY_FOR_BROKEN_ALTERNATIVE_SERVICE,
+                "Controls maximum delay for broken alternative services."),
+        Flag.baseFeature(
+                NetFeatures.PERSIST_BROKEN_ALTERNATIVE_SERVICES,
+                "Controls whether broken alternative services should be persisted to disk"
+                        + " cache."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
