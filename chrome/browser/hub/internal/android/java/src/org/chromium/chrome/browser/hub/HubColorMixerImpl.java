@@ -44,6 +44,8 @@ public class HubColorMixerImpl implements HubColorMixer {
     private final Callback<Boolean> mOnHubVisibilityObserver = this::onHubVisibilityChange;
     private final Callback<Pane> mOnFocusedPaneObserver =
             (Callback<Pane>) this::onFocusedPaneChange;
+    private final OverviewModeAlphaObserver mOverviewModeAlphaObserver =
+            this::onOverviewModeAlphaChanged;
     private final Callback<@Nullable ColorBlendProgress> mOnSwipeAnimationProgressObserver =
             this::onSwipeAnimationProgressChanged;
     private final NonNullObservableSupplier<Boolean> mHubVisibilitySupplier;
@@ -161,11 +163,13 @@ public class HubColorMixerImpl implements HubColorMixer {
 
     @Override
     public OverviewModeAlphaObserver getOverviewModeAlphaObserver() {
-        return alpha -> {
-            mOverviewColorAlpha = (float) alpha;
-            @ColorInt int color = mOverviewColorSupplier.get();
-            processOverviewColor(color, mOverviewColorAlpha);
-        };
+        return mOverviewModeAlphaObserver;
+    }
+
+    private void onOverviewModeAlphaChanged(double alpha) {
+        mOverviewColorAlpha = (float) alpha;
+        @ColorInt int color = mOverviewColorSupplier.get();
+        processOverviewColor(color, mOverviewColorAlpha);
     }
 
     private void onSwipeAnimationProgressChanged(@Nullable ColorBlendProgress progress) {
