@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/path_service.h"
+#include "base/scoped_observation.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -20,12 +22,15 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "content/browser/process_lock.h"
+#include "content/browser/security/cpsp/child_process_security_policy_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/worker_host/shared_worker_service_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/client_certificate_delegate.h"
+#include "content/public/browser/dedicated_worker_service.h"
+#include "content/public/browser/shared_worker_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -46,6 +51,7 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_response_headers.h"
 #include "net/ssl/client_cert_identity.h"
 #include "net/ssl/ssl_server_config.h"
 #include "net/test/embedded_test_server/connection_tracker.h"
@@ -59,6 +65,8 @@
 #include "services/network/public/mojom/connection_change_observer_client.mojom.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/parsed_headers.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
@@ -77,6 +85,90 @@ const char kNoCookie[] = "None";
 bool SupportsSharedWorker() {
   return base::FeatureList::IsEnabled(blink::features::kSharedWorker);
 }
+
+// Writes a worker script response with the given `url_list` populated in the
+// service worker URL list of the response head.
+void WriteWorkerScriptResponseWithServiceWorkerUrlList(
+    network::mojom::URLLoaderClient* client,
+    const std::vector<GURL>& url_list) {
+  static constexpr char kBody[] = "postMessage('done');";
+  auto response = network::mojom::URLResponseHead::New();
+  response->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      "HTTP/1.1 200 OK\nContent-Type: text/javascript\n\n");
+  response->mime_type = "text/javascript";
+  response->was_fetched_via_service_worker = true;
+  response->url_list_via_service_worker = url_list;
+  response->parsed_headers = network::mojom::ParsedHeaders::New();
+
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  EXPECT_EQ(mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle),
+            MOJO_RESULT_OK);
+  if (producer_handle.is_valid()) {
+    EXPECT_EQ(
+        producer_handle->WriteAllData(base::byte_span_from_cstring(kBody)),
+        MOJO_RESULT_OK);
+  }
+  producer_handle.reset();
+
+  client->OnReceiveResponse(std::move(response), std::move(consumer_handle),
+                            std::nullopt);
+  network::URLLoaderCompletionStatus status;
+  status.error_code = net::OK;
+  status.decoded_body_length = base::ByteSize(sizeof(kBody) - 1);
+  client->OnComplete(status);
+}
+
+// Records final response URLs reported for newly created workers.
+class WorkerFinalResponseURLObserver : public DedicatedWorkerService::Observer,
+                                       public SharedWorkerService::Observer {
+ public:
+  explicit WorkerFinalResponseURLObserver(StoragePartition* storage_partition) {
+    dedicated_worker_observation_.Observe(
+        storage_partition->GetDedicatedWorkerService());
+    shared_worker_observation_.Observe(
+        storage_partition->GetSharedWorkerService());
+  }
+
+  const std::vector<GURL>& final_response_urls() const {
+    return final_response_urls_;
+  }
+
+  // DedicatedWorkerService::Observer:
+  void OnWorkerCreated(const blink::DedicatedWorkerToken&,
+                       ChildProcessId,
+                       const url::Origin&,
+                       DedicatedWorkerCreator) override {}
+  void OnBeforeWorkerDestroyed(const blink::DedicatedWorkerToken&,
+                               DedicatedWorkerCreator) override {}
+  void OnFinalResponseURLDetermined(const blink::DedicatedWorkerToken&,
+                                    const GURL& url) override {
+    final_response_urls_.push_back(url);
+  }
+
+  // SharedWorkerService::Observer:
+  void OnWorkerCreated(const blink::SharedWorkerToken&,
+                       ChildProcessId,
+                       const url::Origin&,
+                       const base::UnguessableToken&) override {}
+  void OnBeforeWorkerDestroyed(const blink::SharedWorkerToken&) override {}
+  void OnFinalResponseURLDetermined(const blink::SharedWorkerToken&,
+                                    const GURL& url) override {
+    final_response_urls_.push_back(url);
+  }
+  void OnClientAdded(const blink::SharedWorkerToken&,
+                     GlobalRenderFrameHostId) override {}
+  void OnClientRemoved(const blink::SharedWorkerToken&,
+                       GlobalRenderFrameHostId) override {}
+
+ private:
+  std::vector<GURL> final_response_urls_;
+  base::ScopedObservation<DedicatedWorkerService,
+                          DedicatedWorkerService::Observer>
+      dedicated_worker_observation_{this};
+  base::ScopedObservation<SharedWorkerService, SharedWorkerService::Observer>
+      shared_worker_observation_{this};
+};
 
 }  // namespace
 
@@ -312,6 +404,100 @@ IN_PROC_BROWSER_TEST_F(WorkerTest, HttpPageCantCreateFileWorker) {
       "workerUrl=" + base::EscapeQueryParamValue(
                          GetTestFileURL("worker_common.js").spec(), true));
   RunTest(url, /*expect_failure=*/true);
+}
+
+// Tests that a dedicated worker main script response whose service worker
+// supplied URL list resolves to a URL that the worker process cannot commit
+// is rejected.
+IN_PROC_BROWSER_TEST_F(WorkerTest,
+                       DedicatedWorkerRejectsNonCommittableFinalResponseUrl) {
+  const GURL main_url = ssl_server()->GetURL("a.test", "/title1.html");
+  const GURL worker_url = ssl_server()->GetURL("a.test", "/workers/worker.js");
+  const GURL non_committable_url("file:///non_committable_path");
+
+  WorkerFinalResponseURLObserver observer(shell()
+                                              ->web_contents()
+                                              ->GetBrowserContext()
+                                              ->GetDefaultStoragePartition());
+
+  URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](URLLoaderInterceptor::RequestParams* params) {
+        if (params->url_request.url != worker_url) {
+          return false;
+        }
+        WriteWorkerScriptResponseWithServiceWorkerUrlList(
+            params->client.get(), {non_committable_url});
+        return true;
+      }));
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  EXPECT_FALSE(ChildProcessSecurityPolicyImpl::GetInstance()->CanCommitURL(
+      shell()
+          ->web_contents()
+          ->GetPrimaryMainFrame()
+          ->GetProcess()
+          ->GetDeprecatedID(),
+      non_committable_url));
+
+  EXPECT_EQ("error", EvalJs(shell(), R"(
+    new Promise(resolve => {
+      const worker = new Worker('/workers/worker.js');
+      worker.onerror = () => resolve('error');
+      worker.onmessage = e => resolve(e.data);
+    })
+  )"));
+
+  // The worker process is not allowed to commit `non_committable_url`, so it
+  // must not have been adopted as the worker's final response URL.
+  EXPECT_TRUE(observer.final_response_urls().empty())
+      << "unexpected final response URL: "
+      << observer.final_response_urls().front();
+}
+
+// Same as DedicatedWorkerRejectsNonCommittableFinalResponseUrl, but for shared
+// workers.
+IN_PROC_BROWSER_TEST_F(WorkerTest,
+                       SharedWorkerRejectsNonCommittableFinalResponseUrl) {
+  if (!SupportsSharedWorker()) {
+    return;
+  }
+
+  const GURL main_url = ssl_server()->GetURL("a.test", "/title1.html");
+  const GURL worker_url = ssl_server()->GetURL("a.test", "/workers/worker.js");
+  const GURL non_committable_url("file:///non_committable_path");
+
+  WorkerFinalResponseURLObserver observer(shell()
+                                              ->web_contents()
+                                              ->GetBrowserContext()
+                                              ->GetDefaultStoragePartition());
+
+  URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](URLLoaderInterceptor::RequestParams* params) {
+        if (params->url_request.url != worker_url) {
+          return false;
+        }
+        WriteWorkerScriptResponseWithServiceWorkerUrlList(
+            params->client.get(), {non_committable_url});
+        return true;
+      }));
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  EXPECT_EQ("error", EvalJs(shell(), R"(
+    new Promise(resolve => {
+      const worker = new SharedWorker('/workers/worker.js');
+      worker.onerror = () => resolve('error');
+      worker.port.onmessage = e => resolve(e.data);
+    })
+  )"));
+
+  // The worker process is not allowed to commit `non_committable_url`, so it
+  // must not have been adopted as the worker's final response URL.
+  EXPECT_TRUE(observer.final_response_urls().empty())
+      << "unexpected final response URL: "
+      << observer.final_response_urls().front();
+  EXPECT_FALSE(GetSharedWorkerHost(worker_url));
 }
 
 IN_PROC_BROWSER_TEST_F(WorkerTest, MultipleWorkers) {
