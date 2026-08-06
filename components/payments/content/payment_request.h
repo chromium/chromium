@@ -69,6 +69,7 @@ class PaymentRequest : public content::DocumentService<mojom::PaymentRequest>,
     virtual void OnPayCalled() = 0;
     virtual void OnAbortCalled() = 0;
     virtual void OnInternalError() = 0;
+    virtual void OnPaymentRequestStateInitDone(PaymentRequestState* state) {}
     virtual void OnCompleteCalled() {}
 
    protected:

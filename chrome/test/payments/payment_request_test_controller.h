@@ -77,6 +77,13 @@ class PaymentRequestTestController {
   void SetTwaPaymentApp(const std::string& method_name,
                         const std::string& response);
 
+  void SetBypassUserInteractionForTesting() {
+    bypass_user_interaction_for_testing_ = true;
+  }
+  bool bypass_user_interaction_for_testing() const {
+    return bypass_user_interaction_for_testing_;
+  }
+
   // Gets the WebContents of the Payment Handler for testing purpose, or null if
   // nonexistent. To guarantee a non-null return, this function should be called
   // only if: 1) PaymentRequest UI is opening. 2) PaymentHandler is opening.
@@ -160,6 +167,7 @@ class PaymentRequestTestController {
   std::vector<AppDescription> app_descriptions_;
   std::optional<bool> is_shipping_section_visible_;
   std::optional<bool> is_contact_section_visible_;
+  bool bypass_user_interaction_for_testing_ = false;
 
 #if !BUILDFLAG(IS_ANDROID)
   void UpdateDelegateFactory();

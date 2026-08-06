@@ -157,6 +157,10 @@ void PaymentRequestBrowserTestBase::SetBrowserWindowSizeCheckEnabled() {
   is_browser_window_size_check_enabled_ = true;
 }
 
+void PaymentRequestBrowserTestBase::SetBypassUserInteractionForTesting() {
+  bypass_user_interaction_for_testing_ = true;
+}
+
 void PaymentRequestBrowserTestBase::OnCanMakePaymentCalled() {
   if (event_waiter_) {
     event_waiter_->OnEvent(DialogEvent::CAN_MAKE_PAYMENT_CALLED);
@@ -200,6 +204,14 @@ void PaymentRequestBrowserTestBase::OnAbortCalled() {
 void PaymentRequestBrowserTestBase::OnInternalError() {
   if (event_waiter_) {
     event_waiter_->OnEvent(DialogEvent::INTERNAL_ERROR);
+  }
+}
+
+void PaymentRequestBrowserTestBase::OnPaymentRequestStateInitDone(
+    PaymentRequestState* state) {
+  if (state) {
+    state->set_bypass_user_interaction_for_testing(
+        bypass_user_interaction_for_testing_);
   }
 }
 

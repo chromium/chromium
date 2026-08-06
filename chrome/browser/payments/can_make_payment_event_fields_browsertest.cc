@@ -16,9 +16,8 @@ namespace payments {
 
 class CanMakePaymentEventFieldsTest
     : public PaymentRequestPlatformBrowserTestBase {
- public:
-  CanMakePaymentEventFieldsTest() = default;
-  ~CanMakePaymentEventFieldsTest() override = default;
+ protected:
+  CanMakePaymentEventFieldsTest() { SetBypassUserInteractionForTesting(); }
 
   bool GetValueOf(const std::string& js) {
     return content::EvalJs(GetActiveWebContents(), js).ExtractBool();

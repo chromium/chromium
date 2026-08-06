@@ -56,7 +56,9 @@ class PaymentRequestPaymentAppTest : public PaymentRequestBrowserTestBase {
       : alicepay_(net::EmbeddedTestServer::TYPE_HTTPS),
         bobpay_(net::EmbeddedTestServer::TYPE_HTTPS),
         frankpay_(net::EmbeddedTestServer::TYPE_HTTPS),
-        kylepay_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+        kylepay_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    SetBypassUserInteractionForTesting();
+  }
 
   permissions::PermissionRequestManager* GetPermissionRequestManager() {
     return permissions::PermissionRequestManager::FromWebContents(

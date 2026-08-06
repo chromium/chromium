@@ -60,8 +60,11 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerUiBrowserTest,
 // Test that PaymentRequest allows one call to show() without a user activation.
 class PaymentRequestActivationlessShowTest
     : public PaymentRequestPlatformBrowserTestBase {
- public:
  protected:
+  PaymentRequestActivationlessShowTest() {
+    SetBypassUserInteractionForTesting();
+  }
+
   void ExpectEvent2(JourneyLogger::Event2 event, bool expected) {
     std::vector<base::Bucket> buckets =
         histogram_tester_.GetAllSamples("PaymentRequest.Events2");

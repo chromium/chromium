@@ -269,6 +269,10 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
 
   void set_user_interaction_in_web_payment_app(bool user_interaction);
 
+  void set_bypass_user_interaction_for_testing(bool bypass) {
+    bypass_user_interaction_for_testing_ = bypass;
+  }
+
   const std::string& GetApplicationLocale();
   autofill::PersonalDataManager* GetPersonalDataManager();
 
@@ -374,6 +378,10 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
 
   // Whether the user has interacted with the web payment app.
   bool user_interaction_in_web_payment_app_ = false;
+
+  // Whether to bypass user interaction requirement for tests.
+  // Note: This does not apply to secure payment confirmation.
+  bool bypass_user_interaction_for_testing_ = false;
 
   const std::string app_locale_;
 

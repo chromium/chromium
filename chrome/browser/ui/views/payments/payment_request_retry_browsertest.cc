@@ -10,7 +10,10 @@
 
 namespace payments {
 
-using PaymentRequestRetryTest = PaymentRequestBrowserTestBase;
+class PaymentRequestRetryTest : public PaymentRequestBrowserTestBase {
+ protected:
+  PaymentRequestRetryTest() { SetBypassUserInteractionForTesting(); }
+};
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestRetryTest,
                        DoNotAllowPaymentInstrumentChange) {

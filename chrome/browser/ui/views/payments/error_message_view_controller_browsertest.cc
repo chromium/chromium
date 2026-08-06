@@ -21,7 +21,10 @@ namespace payments {
 constexpr std::string_view kPaymentAppOrigin = "payment_app.com";
 constexpr std::string_view kMerchantOrigin = "merchant.com";
 
-using PaymentRequestErrorMessageTest = PaymentRequestBrowserTestBase;
+class PaymentRequestErrorMessageTest : public PaymentRequestBrowserTestBase {
+ protected:
+  PaymentRequestErrorMessageTest() { SetBypassUserInteractionForTesting(); }
+};
 
 // Testing the use of the complete('fail') JS API and the error message.
 IN_PROC_BROWSER_TEST_F(PaymentRequestErrorMessageTest, CompleteFail) {
@@ -139,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestErrorMessageTest,
 }
 
 class PaymentRequestErrorMessageMandatoryUiEnabledTest
-    : public PaymentRequestErrorMessageTest {
+    : public PaymentRequestBrowserTestBase {
  protected:
   PaymentRequestErrorMessageMandatoryUiEnabledTest() {
     scoped_feature_list_.InitAndEnableFeature(

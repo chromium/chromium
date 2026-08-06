@@ -45,6 +45,8 @@ class PaymentRequestPlatformBrowserTestBase
   void SetUpInProcessBrowserTestFixture() override;
   void TearDownInProcessBrowserTestFixture() override;
 
+  void SetBypassUserInteractionForTesting();
+
   // Navigates |window| to the URL to a server based on the given |file_path|
   // (relative to components/test/data/payments) using |hostname| or 127.0.0.1.
   void NavigateTo(const std::string& file_path);

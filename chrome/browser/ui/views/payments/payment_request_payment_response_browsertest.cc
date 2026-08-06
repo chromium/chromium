@@ -14,8 +14,13 @@
 
 namespace payments {
 
+class PaymentRequestPaymentResponseTest : public PaymentRequestBrowserTestBase {
+ protected:
+  PaymentRequestPaymentResponseTest() { SetBypassUserInteractionForTesting(); }
+};
+
 using PaymentRequestPaymentResponseShippingAddressTest =
-    PaymentRequestBrowserTestBase;
+    PaymentRequestPaymentResponseTest;
 
 // Tests that the PaymentResponse contains all the required fields for a
 // shipping address and shipping option.
@@ -58,7 +63,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentResponseShippingAddressTest,
 }
 
 using PaymentRequestPaymentResponseAllContactDetailsTest =
-    PaymentRequestBrowserTestBase;
+    PaymentRequestPaymentResponseTest;
 
 // Tests that the PaymentResponse contains all the required fields for contact
 // details when all three details are requested.
@@ -152,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 using PaymentRequestPaymentResponseOneContactDetailTest =
-    PaymentRequestBrowserTestBase;
+    PaymentRequestPaymentResponseTest;
 
 // Tests that the PaymentResponse contains all the required fields for contact
 // details when all ont detail is requested.

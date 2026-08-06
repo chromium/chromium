@@ -28,6 +28,7 @@ namespace payments {
 class PaymentHandlerMissingIconTest : public PaymentRequestBrowserTestBase {
  protected:
   PaymentHandlerMissingIconTest() {
+    SetBypassUserInteractionForTesting();
     scoped_feature_list_.InitAndEnableFeature(
         features::kAllowJITInstallationWhenAppIconIsMissing);
   }

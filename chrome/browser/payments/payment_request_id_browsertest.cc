@@ -9,7 +9,10 @@
 
 namespace payments {
 
-using PaymentRequestIdTest = PaymentRequestPlatformBrowserTestBase;
+class PaymentRequestIdTest : public PaymentRequestPlatformBrowserTestBase {
+ protected:
+  PaymentRequestIdTest() { SetBypassUserInteractionForTesting(); }
+};
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestIdTest, ResponseIdEqualsRequestId) {
   NavigateTo("a.com", "/payment_request_id_test.html");

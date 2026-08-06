@@ -39,7 +39,13 @@ std::string GetLocale() {
   PaymentRequestContactInfoEditorTest
 #endif
 
-using MAYBE_PaymentRequestContactInfoEditorTest = PaymentRequestBrowserTestBase;
+class MAYBE_PaymentRequestContactInfoEditorTest
+    : public PaymentRequestBrowserTestBase {
+ protected:
+  MAYBE_PaymentRequestContactInfoEditorTest() {
+    SetBypassUserInteractionForTesting();
+  }
+};
 
 IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestContactInfoEditorTest, HappyPath) {
   // Installs two apps so that the Payment Request UI will be shown.

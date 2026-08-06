@@ -13,8 +13,13 @@
 
 namespace payments {
 
-using PaymentRequestOrderSummaryViewControllerTest =
-    PaymentRequestBrowserTestBase;
+class PaymentRequestOrderSummaryViewControllerTest
+    : public PaymentRequestBrowserTestBase {
+ protected:
+  PaymentRequestOrderSummaryViewControllerTest() {
+    SetBypassUserInteractionForTesting();
+  }
+};
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestOrderSummaryViewControllerTest,
                        EnterKeyCompletesPayment) {

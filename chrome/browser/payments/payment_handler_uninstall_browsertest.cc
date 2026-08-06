@@ -12,8 +12,7 @@ namespace {
 class PaymentHandlerUninstallTest
     : public PaymentRequestPlatformBrowserTestBase {
  protected:
-  PaymentHandlerUninstallTest() = default;
-  ~PaymentHandlerUninstallTest() override = default;
+  PaymentHandlerUninstallTest() { SetBypassUserInteractionForTesting(); }
 
   void SetUpOnMainThread() override {
     PaymentRequestPlatformBrowserTestBase::SetUpOnMainThread();

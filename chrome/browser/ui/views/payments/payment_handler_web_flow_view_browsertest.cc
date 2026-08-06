@@ -196,7 +196,10 @@ struct WindowCloseTestParams {
 // PaymentHandler UI can handle different post-window-close actions correctly.
 class PaymentHandlerWindowCloseTest
     : public PaymentRequestBrowserTestBase,
-      public testing::WithParamInterface<WindowCloseTestParams> {};
+      public testing::WithParamInterface<WindowCloseTestParams> {
+ protected:
+  PaymentHandlerWindowCloseTest() { SetBypassUserInteractionForTesting(); }
+};
 
 IN_PROC_BROWSER_TEST_P(PaymentHandlerWindowCloseTest, WindowCloseIsIgnored) {
   const WindowCloseTestParams& params = GetParam();

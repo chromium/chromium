@@ -26,7 +26,13 @@ int toInt(Event2 event) {
 
 }  // namespace
 
-using PaymentRequestCompletionStatusMetricsTest = PaymentRequestBrowserTestBase;
+class PaymentRequestCompletionStatusMetricsTest
+    : public PaymentRequestBrowserTestBase {
+ protected:
+  PaymentRequestCompletionStatusMetricsTest() {
+    SetBypassUserInteractionForTesting();
+  }
+};
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest, Completed) {
   base::HistogramTester histogram_tester;

@@ -36,7 +36,9 @@ class PaymentRequestCanMakePaymentMetricsTest
 
  protected:
   PaymentRequestCanMakePaymentMetricsTest()
-      : nickpay_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+      : nickpay_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    SetBypassUserInteractionForTesting();
+  }
 
   void SetUpOnMainThread() override {
     PaymentRequestBrowserTestBase::SetUpOnMainThread();

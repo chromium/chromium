@@ -24,7 +24,7 @@ class PaymentRequestShowPromiseTest : public PaymentRequestBrowserTestBase {
       const PaymentRequestShowPromiseTest&) = delete;
 
  protected:
-  PaymentRequestShowPromiseTest() = default;
+  PaymentRequestShowPromiseTest() { SetBypassUserInteractionForTesting(); }
   ~PaymentRequestShowPromiseTest() override = default;
 
   // Installs the payment handler for window.location.origin payment method that

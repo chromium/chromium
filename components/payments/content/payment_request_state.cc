@@ -734,14 +734,14 @@ bool PaymentRequestState::GetHasEnrolledInstrumentValue() const {
 }
 
 bool PaymentRequestState::user_interaction_in_web_payment_app() const {
-  // Bypass user interaction check in Chrome/Web driver testing environment by
-  // always returning true. These flags are set by chrome driver launcher:
-  // chrome/test/chromedriver/chrome_launcher.cc
-  // TODO(b/525805587): Investigate if user activation can be blessed in the
-  // browser tests, instead of setting flags in the command line.
+  // Bypass user interaction check in Chrome/WebDriver testing environments
+  // (flags set by chromedriver launcher in
+  // chrome/test/chromedriver/chrome_launcher.cc) or when explicitly requested
+  // for testing.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kEnableAutomation) ||
-      command_line->GetSwitchValueASCII(switches::kTestType) == kWebDriver) {
+      command_line->GetSwitchValueASCII(switches::kTestType) == kWebDriver ||
+      bypass_user_interaction_for_testing_) {
     return true;
   }
   return user_interaction_in_web_payment_app_;

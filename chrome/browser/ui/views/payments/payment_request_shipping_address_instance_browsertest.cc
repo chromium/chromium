@@ -11,7 +11,13 @@
 namespace payments {
 namespace {
 
-using PaymentRequestShippingAddressInstanceTest = PaymentRequestBrowserTestBase;
+class PaymentRequestShippingAddressInstanceTest
+    : public PaymentRequestBrowserTestBase {
+ protected:
+  PaymentRequestShippingAddressInstanceTest() {
+    SetBypassUserInteractionForTesting();
+  }
+};
 
 // If the page creates multiple PaymentRequest objects, it should not crash.
 IN_PROC_BROWSER_TEST_F(PaymentRequestShippingAddressInstanceTest,

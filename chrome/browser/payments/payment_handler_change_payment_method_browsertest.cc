@@ -25,7 +25,12 @@ struct TestCase {
 
 class PaymentHandlerChangePaymentMethodTest
     : public PaymentRequestPlatformBrowserTestBase,
-      public testing::WithParamInterface<TestCase> {};
+      public testing::WithParamInterface<TestCase> {
+ protected:
+  PaymentHandlerChangePaymentMethodTest() {
+    SetBypassUserInteractionForTesting();
+  }
+};
 
 IN_PROC_BROWSER_TEST_P(PaymentHandlerChangePaymentMethodTest, Test) {
   NavigateTo("a.com", "/change_payment_method.html");

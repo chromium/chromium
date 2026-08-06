@@ -127,7 +127,7 @@ struct ResponseEntry {
 class PaymentRequestConnectionAllowlistBrowserTest
     : public base::test::WithFeatureOverride,
       public PaymentRequestPlatformBrowserTestBase {
- public:
+ protected:
   PaymentRequestConnectionAllowlistBrowserTest()
       : base::test::WithFeatureOverride(
             features::kPaymentRequestUseRendererUrlLoader) {
@@ -136,6 +136,7 @@ class PaymentRequestConnectionAllowlistBrowserTest
         {network::features::kConnectionAllowlists,
          features::kAllowJITInstallationWhenAppIconIsMissing},
         /*disabled_features=*/{});
+    SetBypassUserInteractionForTesting();
   }
 
   ~PaymentRequestConnectionAllowlistBrowserTest() override = default;

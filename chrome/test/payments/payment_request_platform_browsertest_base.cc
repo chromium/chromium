@@ -44,6 +44,11 @@ void PaymentRequestPlatformBrowserTestBase::SetUpCommandLine(
   mock_cert_verifier_.SetUpCommandLine(command_line);
 }
 
+void PaymentRequestPlatformBrowserTestBase::
+    SetBypassUserInteractionForTesting() {
+  test_controller_.SetBypassUserInteractionForTesting();
+}
+
 void PaymentRequestPlatformBrowserTestBase::SetUpOnMainThread() {
   mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
 

@@ -12,7 +12,10 @@
 
 namespace payments {
 
-using PaymentRequestNoUpdateWithTest = PaymentRequestBrowserTestBase;
+class PaymentRequestNoUpdateWithTest : public PaymentRequestBrowserTestBase {
+ protected:
+  PaymentRequestNoUpdateWithTest() { SetBypassUserInteractionForTesting(); }
+};
 
 // A merchant that does not listen to shipping address update events will not
 // cause timeouts in UI.

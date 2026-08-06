@@ -21,7 +21,9 @@ class PaymentHandlerJustInTimeInstallationTest
   PaymentHandlerJustInTimeInstallationTest()
       : kylepay_server_(net::EmbeddedTestServer::TYPE_HTTPS),
         henrypay_server_(net::EmbeddedTestServer::TYPE_HTTPS),
-        harry_example_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+        harry_example_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    SetBypassUserInteractionForTesting();
+  }
 
   ~PaymentHandlerJustInTimeInstallationTest() override = default;
 

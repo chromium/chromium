@@ -19,6 +19,7 @@ using IconInstall = test::PaymentAppInstallUtil::IconInstall;
 
 class IgnorePaymentMethodTest : public PaymentRequestPlatformBrowserTestBase {
  protected:
+  IgnorePaymentMethodTest() { SetBypassUserInteractionForTesting(); }
   void SetUpOnMainThread() override {
     PaymentRequestPlatformBrowserTestBase::SetUpOnMainThread();
 

@@ -17,12 +17,15 @@ using Event2 = payments::JourneyLogger::Event2;
 
 class JourneyLoggerTest : public PaymentRequestPlatformBrowserTestBase {
  public:
-  JourneyLoggerTest() : gpay_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
-
   JourneyLoggerTest(const JourneyLoggerTest&) = delete;
   JourneyLoggerTest& operator=(const JourneyLoggerTest&) = delete;
 
   ~JourneyLoggerTest() override = default;
+
+ protected:
+  JourneyLoggerTest() : gpay_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    SetBypassUserInteractionForTesting();
+  }
 
   void PreRunTestOnMainThread() override {
     PaymentRequestPlatformBrowserTestBase::PreRunTestOnMainThread();

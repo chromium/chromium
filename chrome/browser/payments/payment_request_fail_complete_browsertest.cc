@@ -9,8 +9,11 @@
 
 namespace payments {
 
-class PaymentRequetFailCompleteTest
+class PaymentRequestFailCompleteTest
     : public PaymentRequestPlatformBrowserTestBase {
+ protected:
+  PaymentRequestFailCompleteTest() { SetBypassUserInteractionForTesting(); }
+
  private:
   // PaymentRequestTestObserver:
   void OnErrorDisplayed() override {
@@ -19,7 +22,7 @@ class PaymentRequetFailCompleteTest
   }
 };
 
-IN_PROC_BROWSER_TEST_F(PaymentRequetFailCompleteTest, TransactionFailed) {
+IN_PROC_BROWSER_TEST_F(PaymentRequestFailCompleteTest, TransactionFailed) {
   NavigateTo("a.com", "/payment_request_fail_complete_test.html");
   GURL method = https_server()->GetURL("b.com", "/nickpay.test/pay");
   std::string fail_complete = content::JsReplace(

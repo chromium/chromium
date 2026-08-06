@@ -19,7 +19,7 @@ class PaymentRequestUpdateWithTest : public PaymentRequestBrowserTestBase {
       delete;
 
  protected:
-  PaymentRequestUpdateWithTest() = default;
+  PaymentRequestUpdateWithTest() { SetBypassUserInteractionForTesting(); }
 
   void RunJavaScriptFunctionToOpenPaymentRequestUI(
       const std::string& function_name,

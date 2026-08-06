@@ -75,6 +75,12 @@ class PaymentRequestTestController::ObserverConverter
   void OnAbortCalled() override { controller_->OnAbortCalled(); }
   void OnCompleteCalled() override { controller_->OnCompleteCalled(); }
   void OnInternalError() override { controller_->OnInternalError(); }
+  void OnPaymentRequestStateInitDone(PaymentRequestState* state) override {
+    if (state && controller_) {
+      state->set_bypass_user_interaction_for_testing(
+          controller_->bypass_user_interaction_for_testing());
+    }
+  }
 
   // PaymentUIObserver:
   void OnUIDisplayed() const override { controller_->OnUIDisplayed(); }

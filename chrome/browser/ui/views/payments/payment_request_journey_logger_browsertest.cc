@@ -32,8 +32,13 @@ int toInt(Event2 event) {
 
 }  // namespace
 
+class PaymentRequestJourneyLoggerTest : public PaymentRequestBrowserTestBase {
+ protected:
+  PaymentRequestJourneyLoggerTest() { SetBypassUserInteractionForTesting(); }
+};
+
 using PaymentRequestJourneyLoggerSelectedPaymentAppTest =
-    PaymentRequestBrowserTestBase;
+    PaymentRequestJourneyLoggerTest;
 
 // Tests that the selected app metric is correctly logged when the
 // Payment Request is completed with a payment handler.
@@ -81,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestJourneyLoggerSelectedPaymentAppTest,
 }
 
 using PaymentRequestJourneyLoggerNoSupportedPaymentMethodTest =
-    PaymentRequestBrowserTestBase;
+    PaymentRequestJourneyLoggerTest;
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestJourneyLoggerNoSupportedPaymentMethodTest,
                        OnlyBobpaySupported) {
@@ -120,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestJourneyLoggerNoSupportedPaymentMethodTest,
 }
 
 using PaymentRequestJourneyLoggerMultipleShowTest =
-    PaymentRequestBrowserTestBase;
+    PaymentRequestJourneyLoggerTest;
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestJourneyLoggerMultipleShowTest,
                        ShowSameRequest) {
@@ -274,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestJourneyLoggerMultipleShowTest,
 }
 
 using PaymentRequestJourneyLoggerAllSectionStatsTest =
-    PaymentRequestBrowserTestBase;
+    PaymentRequestJourneyLoggerTest;
 
 // Tests that the correct PaymentRequest.Events metrics are logged when a
 // Payment Request is completed.
@@ -377,7 +382,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestJourneyLoggerAllSectionStatsTest,
 }
 
 using PaymentRequestJourneyLoggerNoShippingSectionStatsTest =
-    PaymentRequestBrowserTestBase;
+    PaymentRequestJourneyLoggerTest;
 
 // Tests that the correct PaymentRequest.Events metrics are logged when a
 // Payment Request is completed.
@@ -476,7 +481,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestJourneyLoggerNoShippingSectionStatsTest,
 }
 
 using PaymentRequestJourneyLoggerNoContactDetailSectionStatsTest =
-    PaymentRequestBrowserTestBase;
+    PaymentRequestJourneyLoggerTest;
 
 // Tests that the correct PaymentRequest.Events metrics are logged when a
 // Payment Request is completed.
@@ -576,7 +581,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(buckets[0].min & toInt(Event2::kCouldNotShow));
 }
 
-using PaymentRequestNotShownTest = PaymentRequestBrowserTestBase;
+using PaymentRequestNotShownTest = PaymentRequestJourneyLoggerTest;
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestNotShownTest, OnlyNotShownMetricsLogged) {
   // Installs two apps so that canMakePayment is true.
@@ -618,7 +623,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestNotShownTest, OnlyNotShownMetricsLogged) {
 }
 
 using PaymentRequestCompleteSuggestionsForEverythingTest =
-    PaymentRequestBrowserTestBase;
+    PaymentRequestJourneyLoggerTest;
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestCompleteSuggestionsForEverythingTest,
                        UserHadCompleteSuggestionsForEverything) {
@@ -802,7 +807,7 @@ class PaymentRequestIframeTest : public PaymentRequestBrowserTestBase {
   PaymentRequestIframeTest& operator=(const PaymentRequestIframeTest&) = delete;
 
  protected:
-  PaymentRequestIframeTest() = default;
+  PaymentRequestIframeTest() { SetBypassUserInteractionForTesting(); }
 
   void PreRunTestOnMainThread() override {
     InProcessBrowserTest::PreRunTestOnMainThread();

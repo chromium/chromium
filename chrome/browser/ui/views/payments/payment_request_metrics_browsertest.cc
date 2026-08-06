@@ -21,7 +21,7 @@ class PaymentRequestMetricsTest : public PaymentRequestBrowserTestBase {
       delete;
 
  protected:
-  PaymentRequestMetricsTest() = default;
+  PaymentRequestMetricsTest() { SetBypassUserInteractionForTesting(); }
 
   void OpenPaymentRequestDialog() {
     // Installs two apps so that the Payment Request UI will be shown.
