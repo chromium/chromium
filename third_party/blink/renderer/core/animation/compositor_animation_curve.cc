@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/typed_interpolation_value.h"
+#include "third_party/blink/renderer/core/css/css_color_mix_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 
 namespace blink {
@@ -41,6 +42,12 @@ bool IsStyleDependent(const CSSValue* css_value) {
         StyleColor::IsSystemColorIncludingDeprecated(value_id)) {
       return true;
     }
+  }
+
+  if (css_value->IsColorMixValue()) {
+    const auto* color_mix = To<cssvalue::CSSColorMixValue>(css_value);
+    return IsStyleDependent(&color_mix->Color1()) ||
+           IsStyleDependent(&color_mix->Color2());
   }
 
   return false;
