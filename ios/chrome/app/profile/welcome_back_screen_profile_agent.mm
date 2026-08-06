@@ -20,7 +20,6 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
-#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/public/best_features_item.h"
 #import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_session_durations_service.h"
@@ -29,6 +28,7 @@
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
@@ -48,6 +48,8 @@ constexpr uint32_t kActiveDaysTrackingWindow = 29;
 // Histogram names.
 const char kWelcomeBackActiveDaysInPast28DaysHistogram[] =
     "IOS.WelcomeBack.ActiveDaysInPast28Days";
+const char kWelcomeBackActiveDaysInPast28DaysForInactivesHistogram[] =
+    "IOS.WelcomeBack.ActiveDaysInPast28DaysForInactives";
 const char kWelcomeBackDaysSinceActiveHistogram[] =
     "IOS.WelcomeBack.DaysSinceActive";
 const char kWelcomeBackDaysSinceActiveNotFeatureFlagGuardedHistogram[] =
@@ -58,11 +60,7 @@ const char kWelcomeBackPromoRegistrationMissingFeatureHistogram[] =
     "IOS.WelcomeBack.PromoRegistration.MissingFeature";
 }  // namespace
 
-@implementation WelcomeBackScreenProfileAgent {
-  // Whether the agent has started an asynchronous initialization flow. If YES,
-  // cleanup is deferred until the async flow completes.
-  BOOL _asyncInitializationInProgress;
-}
+@implementation WelcomeBackScreenProfileAgent
 
 #pragma mark - ProfileStateObserver
 
@@ -79,7 +77,6 @@ const char kWelcomeBackPromoRegistrationMissingFeatureHistogram[] =
   [self recordDaysSinceActiveHistogramWithName:
             kWelcomeBackDaysSinceActiveNotFeatureFlagGuardedHistogram];
 
-  _asyncInitializationInProgress = NO;
   switch (GetWelcomeBackScreenVariationType()) {
     case WelcomeBackScreenVariationType::kDisabled:
       break;
@@ -97,17 +94,13 @@ const char kWelcomeBackPromoRegistrationMissingFeatureHistogram[] =
       break;
   }
 
-  // Defer cleanup if `maybeRegisterPromo` initiated an asynchronous flow.
-  if (!_asyncInitializationInProgress) {
-    [self cleanup];
-  }
+  [self cleanup];
 }
 
 #pragma mark - Private
 
 // Evaluates Welcome Back promo registration criteria. Registers or
-// deregisters the promo accordingly, or defers evaluation if the feature
-// engagement tracker needs to be initialized.
+// deregisters the promo accordingly.
 - (void)maybeRegisterPromo {
   // Mark Autofill feature as used if the Credential Provider Extension is
   // enabled on startup.
@@ -121,26 +114,12 @@ const char kWelcomeBackPromoRegistrationMissingFeatureHistogram[] =
             kWelcomeBackDaysSinceActiveHistogram];
 
   if (ShouldWelcomeBackUseActiveDays()) {
-    ProfileIOS* profile = self.profileState.profile;
-    feature_engagement::Tracker* tracker =
-        profile ? feature_engagement::TrackerFactory::GetForProfile(profile)
-                : nullptr;
-    if (!tracker) {
-      base::UmaHistogramEnumeration(
-          kWelcomeBackPromoRegistrationResultHistogram,
-          WelcomeBackPromoRegistrationResult::kFailureTrackerInitialization);
-      return;
-    }
-
-    // Wait for the tracker to be fully initialized.
-    __weak WelcomeBackScreenProfileAgent* weakSelf = self;
-    tracker->AddOnInitializedCallback(base::BindOnce(^(BOOL success) {
-      [weakSelf onTrackerInitialized:success];
-    }));
-    // Set to YES to signal to `didTransitionToInitStage` that an async flow has
-    // started, deferring immediate cleanup. The async callback will handle
-    // cleanup when complete.
-    _asyncInitializationInProgress = YES;
+    const int activeDaysInPast28Days =
+        GetApplicationContext()->GetLocalState()->GetInteger(
+            prefs::kLastRecordedActiveDaysInPast28Days);
+    WelcomeBackPromoRegistrationResult result =
+        [self promoRegistrationResultWithActiveDays:activeDaysInPast28Days];
+    [self handlePromoRegistrationResult:result];
     return;
   }
 
@@ -164,49 +143,9 @@ const char kWelcomeBackPromoRegistrationMissingFeatureHistogram[] =
   [self handlePromoRegistrationResult:result];
 }
 
-// Helper called when the feature engagement tracker has been initialized.
-- (void)onTrackerInitialized:(BOOL)success {
-  ProfileIOS* profile = self.profileState.profile;
-  feature_engagement::Tracker* tracker =
-      profile ? feature_engagement::TrackerFactory::GetForProfile(profile)
-              : nullptr;
-  if (!success || !tracker) {
-    [self cleanup];
-    base::UmaHistogramEnumeration(
-        kWelcomeBackPromoRegistrationResultHistogram,
-        WelcomeBackPromoRegistrationResult::kFailureTrackerInitialization);
-    return;
-  }
-
-  // Only log metrics and evaluate registration if Welcome Back is enabled and
-  // the Best Features First Run screen is disabled.
-  if (!IsWelcomeBackEnabled() ||
-      base::FeatureList::IsEnabled(first_run::kBestFeaturesScreenInFirstRun)) {
-    [self cleanup];
-    return;
-  }
-
-  // Query the number of days with at least one active session in the last 28
-  // days.
-  int activeDaysInPast28Days = -1;
-  for (const auto& [config, count] : tracker->ListEvents(
-           feature_engagement::kIPHiOSActiveDaysTrackingFeature)) {
-    if (config.name == feature_engagement::events::kChromeActiveSessionDay) {
-      if (config.window == kActiveDaysTrackingWindow) {
-        activeDaysInPast28Days = count;
-        break;
-      }
-    }
-  }
-
-  WelcomeBackPromoRegistrationResult result =
-      [self promoRegistrationResultWithActiveDays:activeDaysInPast28Days];
-  [self handlePromoRegistrationResult:result];
-  [self cleanup];
-}
-
 // Evaluates the active days count and logs/returns the corresponding
-// registration outcome.
+// registration outcome. Also logs UMA metrics for active days and registration
+// result; should only be called once per session evaluation.
 - (WelcomeBackPromoRegistrationResult)promoRegistrationResultWithActiveDays:
     (int)days {
   WelcomeBackPromoRegistrationResult result;
@@ -219,6 +158,9 @@ const char kWelcomeBackPromoRegistrationMissingFeatureHistogram[] =
   } else if (days < 0) {
     result = WelcomeBackPromoRegistrationResult::kFailureTrackerInitialization;
   } else if (days <= 1) {
+    base::UmaHistogramExactLinear(
+        kWelcomeBackActiveDaysInPast28DaysForInactivesHistogram, days,
+        kActiveDaysTrackingWindow);
     if (GetWelcomeBackEligibleItems().size() >= kMinEligibleFeatures) {
       result = WelcomeBackPromoRegistrationResult::kSuccess;
     } else {
