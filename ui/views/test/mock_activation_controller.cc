@@ -4,10 +4,13 @@
 
 #include "ui/views/test/mock_activation_controller.h"
 
+#include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/views/buildflags.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_activation_delegate.h"
 
@@ -55,6 +58,10 @@ void SetActivationState(Widget* widget, bool active) {
 MockActivationController::MockActivationController(
     bool allow_in_interactive_ui_tests) {
   CHECK(allow_in_interactive_ui_tests || !ui_controls::IsUIControlsEnabled());
+  const auto widgets = WidgetTest::GetAllWidgets();
+  CHECK(widgets.empty())
+      << "MockActivationController created when widgets already exist: "
+      << base::JoinString(base::ToVector(widgets, &Widget::GetName), ", ");
 }
 
 MockActivationController::~MockActivationController() {

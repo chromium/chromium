@@ -111,10 +111,9 @@ TEST_F(DesktopWidgetTestTest, GetAllWidgets) {
 }
 #if defined(USE_MOCK_ACTIVATION_CONTROLLER)
 TEST_F(DesktopWidgetTestTest, MockActivationControllerDeactivateDestroy) {
+  views::test::MockActivationController controller;
   Widget* widget1 = CreateTopLevelNativeWidget();
   Widget* widget2 = CreateTopLevelNativeWidget();
-
-  views::test::MockActivationController controller;
 
   widget1->Show();
   controller.MaybeActivate(widget1, true);
@@ -138,10 +137,9 @@ TEST_F(DesktopWidgetTestTest, MockActivationControllerDeactivateDestroy) {
 }
 
 TEST_F(DesktopWidgetTestTest, MockActivationControllerKeepTrackOfDeactivated) {
+  views::test::MockActivationController controller;
   Widget* widget1 = CreateTopLevelNativeWidget();
   Widget* widget2 = CreateTopLevelNativeWidget();
-
-  views::test::MockActivationController controller;
 
   widget1->Show();
   controller.MaybeActivate(widget1, true);

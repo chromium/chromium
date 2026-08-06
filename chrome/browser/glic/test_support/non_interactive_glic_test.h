@@ -34,6 +34,8 @@ class NonInteractiveGlicTest
                          const GlicTestEnvironmentConfig& glic_config);
   ~NonInteractiveGlicTest() override;
 
+  void SetUp() override;
+
   void SetUpOnMainThread() override;
 
   void TearDownOnMainThread() override;

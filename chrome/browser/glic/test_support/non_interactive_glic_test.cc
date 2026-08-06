@@ -27,16 +27,19 @@ NonInteractiveGlicTest::NonInteractiveGlicTest(
 
 NonInteractiveGlicTest::~NonInteractiveGlicTest() = default;
 
+void NonInteractiveGlicTest::SetUp() {
+#if defined(USE_MOCK_ACTIVATION_CONTROLLER)
+  activation_controller_ =
+      std::make_unique<views::test::MockActivationController>();
+#endif
+  test::InteractiveGlicTestMixin<InteractiveBrowserTest>::SetUp();
+}
+
 void NonInteractiveGlicTest::SetUpOnMainThread() {
   test::InteractiveGlicTestMixin<InteractiveBrowserTest>::SetUpOnMainThread();
 
   // Initialize testing mode after browser startup is complete.
   GlicFocusedBrowserManagerImpl::SetTestingModeForTesting(true);
-
-#if defined(USE_MOCK_ACTIVATION_CONTROLLER)
-  activation_controller_ =
-      std::make_unique<views::test::MockActivationController>();
-#endif
 }
 
 void NonInteractiveGlicTest::TearDownOnMainThread() {
