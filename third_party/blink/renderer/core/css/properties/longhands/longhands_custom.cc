@@ -2974,7 +2974,7 @@ CSSValue* ConsumeCounterContent(CSSParserTokenStream& stream,
                                 CSSParserLocalContext& local_context,
                                 bool counters) {
   CSSCustomIdentValue* identifier;
-  CSSCustomIdentValue* list_style = nullptr;
+  CSSValue* list_style = nullptr;
   CSSStringValue* separator = nullptr;
 
   {
@@ -3006,6 +3006,11 @@ CSSValue* ConsumeCounterContent(CSSParserTokenStream& stream,
         list_style =
             MakeGarbageCollected<CSSCustomIdentValue>(AtomicString("none"));
         stream.ConsumeIncludingWhitespace();
+      } else if (CSSValue* symbols =
+                     css_parsing_utils::ConsumeCounterStyleSymbolsFunction(
+                         stream)) {
+        context.Count(WebDXFeature::kDRAFT_Symbols);
+        list_style = symbols;
       } else {
         list_style =
             css_parsing_utils::ConsumeCounterStyleName(stream, context);
@@ -3189,9 +3194,15 @@ void Content::ApplyValue(StyleResolverState& state,
     } else if (const auto* counter_value =
                    DynamicTo<cssvalue::CSSCounterContentValue>(item.Get())) {
       next_content = MakeGarbageCollected<CounterContentData>(
-          AtomicString(counter_value->Identifier()), counter_value->ListStyle(),
+          AtomicString(counter_value->Identifier()),
+          counter_value->ListStyleIsSymbolsFunction()
+              ? g_empty_atom
+              : counter_value->ListStyleName(),
           AtomicString(counter_value->Separator()),
-          counter_value->GetTreeScope());
+          counter_value->GetTreeScope(),
+          counter_value->ListStyleIsSymbolsFunction()
+              ? &counter_value->ListStyleSymbolsFunction()
+              : nullptr);
     } else if (auto* item_identifier_value =
                    DynamicTo<CSSIdentifierValue>(item.Get())) {
       QuoteType quote_type;
@@ -3240,9 +3251,14 @@ void Content::ApplyValue(StyleResolverState& state,
               DynamicTo<cssvalue::CSSCounterContentValue>(item.Get())) {
         alt_content = MakeGarbageCollected<AltCounterContentData>(
             AtomicString(counter_value->Identifier()),
-            counter_value->ListStyle(),
+            counter_value->ListStyleIsSymbolsFunction()
+                ? g_empty_atom
+                : counter_value->ListStyleName(),
             AtomicString(counter_value->Separator()),
-            counter_value->GetTreeScope());
+            counter_value->GetTreeScope(),
+            counter_value->ListStyleIsSymbolsFunction()
+                ? &counter_value->ListStyleSymbolsFunction()
+                : nullptr);
       } else {
         alt_content = MakeGarbageCollected<AltTextContentData>(
             GetStringFromCSSStringValue(*item, state, builder));

@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_CONTENT_DATA_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/css_symbols_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
@@ -39,6 +40,7 @@
 
 namespace blink {
 
+class CounterStyle;
 class LayoutObject;
 class TreeScope;
 class StyleEngine;
@@ -241,29 +243,37 @@ struct CounterData {
   CounterData(const AtomicString& identifier,
               const AtomicString& style,
               const AtomicString& separator,
-              const TreeScope* tree_scope)
+              const TreeScope* tree_scope,
+              const CounterStyle* symbols_counter_style = nullptr)
       : identifier(identifier),
         list_style(style),
         separator(separator),
-        tree_scope(tree_scope) {}
+        tree_scope(tree_scope),
+        symbols_counter_style(symbols_counter_style) {}
 
-  void Trace(Visitor* v) const { v->Trace(tree_scope); }
+  void Trace(Visitor*) const;
 
   AtomicString identifier;
   AtomicString list_style;
   AtomicString separator;
   Member<const TreeScope> tree_scope;
+
+  // The anonymous counter style built eagerly from a symbols() function; null
+  // for a named <counter-style>. It is the source of truth for the symbols()
+  // computed value.
+  Member<const CounterStyle> symbols_counter_style;
 };
 
 class CounterContentData : public ContentData {
   friend class ContentData;
 
  public:
-  CounterContentData(const AtomicString& identifier,
-                     const AtomicString& style,
-                     const AtomicString& separator,
-                     const TreeScope* tree_scope)
-      : counter_data_(identifier, style, separator, tree_scope) {}
+  CounterContentData(
+      const AtomicString& identifier,
+      const AtomicString& style,
+      const AtomicString& separator,
+      const TreeScope* tree_scope,
+      const cssvalue::CSSSymbolsValue* list_style_symbols_function = nullptr);
 
   explicit CounterContentData(CounterData counter_data)
       : counter_data_(std::move(counter_data)) {}
@@ -276,6 +286,13 @@ class CounterContentData : public ContentData {
   const AtomicString& Separator() const { return counter_data_.separator; }
   const TreeScope* GetTreeScope() const { return counter_data_.tree_scope; }
 
+  const CounterStyle* GetSymbolsCounterStyle() const {
+    return counter_data_.symbols_counter_style.Get();
+  }
+
+  const CounterStyle& ResolveCounterStyle(
+      const StyleEngine& style_engine) const;
+
   void Trace(Visitor*) const override;
 
   String DebugString() const override { return "<counter>"; }
@@ -286,16 +303,7 @@ class CounterContentData : public ContentData {
   }
 
  protected:
-  bool Equals(const ContentData& data) const override {
-    const auto* other = DynamicTo<CounterContentData>(data);
-    if (!other) {
-      return false;
-    }
-    return Identifier() == other->Identifier() &&
-           ListStyle() == other->ListStyle() &&
-           Separator() == other->Separator() &&
-           GetTreeScope() == other->GetTreeScope();
-  }
+  bool Equals(const ContentData& data) const override;
 
   CounterData counter_data_;
 };

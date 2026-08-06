@@ -24,6 +24,8 @@
 
 #include <memory>
 
+#include "base/memory/values_equivalent.h"
+#include "third_party/blink/renderer/core/css/counter_style.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
@@ -119,9 +121,52 @@ LayoutObject* CounterContentData::CreateLayoutObject(
   return layout_object;
 }
 
+void CounterData::Trace(Visitor* visitor) const {
+  visitor->Trace(tree_scope);
+  visitor->Trace(symbols_counter_style);
+}
+
+CounterContentData::CounterContentData(
+    const AtomicString& identifier,
+    const AtomicString& style,
+    const AtomicString& separator,
+    const TreeScope* tree_scope,
+    const cssvalue::CSSSymbolsValue* list_style_symbols_function)
+    : counter_data_(identifier,
+                    style,
+                    separator,
+                    tree_scope,
+                    list_style_symbols_function
+                        ? CounterStyle::CreateAnonymousCounterStyle(
+                              *list_style_symbols_function)
+                        : nullptr) {}
+
 void CounterContentData::Trace(Visitor* visitor) const {
   visitor->Trace(counter_data_);
   ContentData::Trace(visitor);
+}
+
+bool CounterContentData::Equals(const ContentData& data) const {
+  const auto* other = DynamicTo<CounterContentData>(data);
+  if (!other) {
+    return false;
+  }
+  return Identifier() == other->Identifier() &&
+         ListStyle() == other->ListStyle() &&
+         Separator() == other->Separator() &&
+         GetTreeScope() == other->GetTreeScope() &&
+         base::ValuesEquivalent(GetSymbolsCounterStyle(),
+                                other->GetSymbolsCounterStyle());
+}
+
+const CounterStyle& CounterContentData::ResolveCounterStyle(
+    const StyleEngine& style_engine) const {
+  // A symbols() function supplies its counter style inline, with no name;
+  // otherwise the value names a <counter-style> to resolve in scope.
+  if (const CounterStyle* symbols_style = GetSymbolsCounterStyle()) {
+    return *symbols_style;
+  }
+  return style_engine.FindCounterStyleAcrossScopes(ListStyle(), GetTreeScope());
 }
 
 LayoutObject* AltCounterContentData::CreateLayoutObject(
@@ -135,8 +180,7 @@ void AltCounterContentData::UpdateText(
     const LayoutObject& content_generating_object) {
   Vector<int> counter_values = context.GetCounterValues(
       content_generating_object, Identifier(), Separator().IsNull());
-  const CounterStyle& counter_style =
-      style_engine.FindCounterStyleAcrossScopes(ListStyle(), GetTreeScope());
+  const CounterStyle& counter_style = ResolveCounterStyle(style_engine);
   String text = LayoutCounter::GenerateCounterText(std::move(counter_values),
                                                    &counter_style, Separator());
   SetText(std::move(text));

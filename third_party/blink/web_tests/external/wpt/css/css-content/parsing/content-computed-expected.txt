@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
+Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Property content value 'open-quote "hello" "world" close-quote'
   assert_equals: expected "open-quote \\"hello\\" \\"world\\" close-quote" but got "open-quote \\"helloworld\\" close-quote"
 [FAIL] Property content value 'open-quote "hello" "world" close-quote / "alt text"'

@@ -109,8 +109,7 @@ const CounterStyle* LayoutCounter::NullableCounterStyle() const {
   if (counter_->ListStyle() == keywords::kNone) {
     return nullptr;
   }
-  return &GetDocument().GetStyleEngine().FindCounterStyleAcrossScopes(
-      counter_->ListStyle(), counter_->GetTreeScope());
+  return &counter_->ResolveCounterStyle(GetDocument().GetStyleEngine());
 }
 
 bool LayoutCounter::IsDirectionalSymbolMarker() const {

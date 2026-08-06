@@ -3495,8 +3495,13 @@ CSSValue* CounterValueFromCounterData(const ContentData& content_data) {
   auto* identifier =
       MakeGarbageCollected<CSSCustomIdentValue>(counter.Identifier());
   auto* separator = MakeGarbageCollected<CSSStringValue>(counter.Separator());
-  auto* list_style =
-      MakeGarbageCollected<CSSCustomIdentValue>(counter.ListStyle());
+  // A symbols() function supplies its counter style inline; otherwise the
+  // value names a <counter-style>.
+  const CounterStyle* symbols_style = counter.GetSymbolsCounterStyle();
+  const CSSValue* list_style =
+      symbols_style
+          ? ComputedStyleUtils::ValueForSymbolsFunction(*symbols_style)
+          : MakeGarbageCollected<CSSCustomIdentValue>(counter.ListStyle());
   return MakeGarbageCollected<cssvalue::CSSCounterContentValue>(
       identifier, list_style, separator);
 }

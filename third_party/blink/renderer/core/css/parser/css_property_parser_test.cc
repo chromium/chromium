@@ -282,6 +282,25 @@ TEST(CSSPropertyParserTest, ListStyleTypeSymbolsFunctionUseCounter) {
   EXPECT_TRUE(doc->IsWebDXFeatureCounted(WebDXFeature::kDRAFT_Symbols));
 }
 
+TEST(CSSPropertyParserTest, CounterWithSymbolsFunctionUseCounter) {
+  ScopedCSSCounterStyleSymbolsFunctionForTest scoped_feature(true);
+  test::TaskEnvironment task_environment;
+  auto dummy_holder = std::make_unique<DummyPageHolder>(gfx::Size(500, 500));
+  Document* doc = &dummy_holder->GetDocument();
+  Page::InsertOrdinaryPageForTesting(&dummy_holder->GetPage());
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kSecureContext, doc);
+
+  // A counter() without symbols() does not trigger the use counter.
+  CSSParser::ParseSingleValue(CSSPropertyID::kContent, "counter(c)", context);
+  EXPECT_FALSE(doc->IsWebDXFeatureCounted(WebDXFeature::kDRAFT_Symbols));
+
+  // A counter() using symbols() as its counter style triggers the use counter.
+  CSSParser::ParseSingleValue(CSSPropertyID::kContent,
+                              "counter(c, symbols(\"a\"))", context);
+  EXPECT_TRUE(doc->IsWebDXFeatureCounted(WebDXFeature::kDRAFT_Symbols));
+}
+
 TEST(CSSPropertyParserTest, GradientUseCount) {
   test::TaskEnvironment task_environment;
   auto dummy_page_holder =

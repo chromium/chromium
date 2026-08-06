@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_string_value.h"
+#include "third_party/blink/renderer/core/css/css_symbols_value.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -33,28 +34,51 @@ namespace cssvalue {
 
 class CSSCounterContentValue : public CSSValue {
  public:
+  // `list_style` is the <counter-style> argument: either a
+  // <counter-style-name> (a `CSSCustomIdentValue`) or a symbols() function (a
+  // `CSSSymbolsValue`).
   CSSCounterContentValue(const CSSCustomIdentValue* identifier,
-                         const CSSCustomIdentValue* list_style,
+                         const CSSValue* list_style,
                          const CSSStringValue* separator)
       : CSSValue(kCounterContentClass),
         identifier_(identifier),
         list_style_(list_style),
         separator_(separator) {
-    // There's no way to define a counter() function value where the identifiers
-    // are associated with different tree scopes.
-    DCHECK_EQ(identifier->IsScopedValue(), list_style->IsScopedValue());
-    DCHECK_EQ(identifier->GetTreeScope(), list_style->GetTreeScope());
-    needs_tree_scope_population_ = !list_style->IsScopedValue();
+    if (list_style->IsSymbolsValue()) {
+      // A symbols() function is a self-contained inline value with no tree
+      // scope of its own, so only the identifier can carry a scope; base
+      // tree-scope population on it alone.
+      needs_tree_scope_population_ = !identifier->IsScopedValue();
+    } else {
+      // There's no way to define a counter() function value where the
+      // identifiers are associated with different tree scopes.
+      DCHECK_EQ(identifier->IsScopedValue(), list_style->IsScopedValue());
+      DCHECK_EQ(identifier->GetTreeScope(),
+                To<CSSCustomIdentValue>(list_style)->GetTreeScope());
+      needs_tree_scope_population_ = !list_style->IsScopedValue();
+    }
   }
 
   const String& Identifier() const { return identifier_->Value(); }
-  const AtomicString& ListStyle() const { return list_style_->Value(); }
+  bool ListStyleIsSymbolsFunction() const {
+    return list_style_->IsSymbolsValue();
+  }
+  // Only valid when the <counter-style> is a name, not a symbols() function;
+  // callers must guard with `!ListStyleIsSymbolsFunction()`.
+  const AtomicString& ListStyleName() const {
+    return To<CSSCustomIdentValue>(*list_style_).Value();
+  }
+  // Only valid when the <counter-style> is a symbols() function, not a name;
+  // callers must guard with `ListStyleIsSymbolsFunction()`.
+  const CSSSymbolsValue& ListStyleSymbolsFunction() const {
+    return To<CSSSymbolsValue>(*list_style_);
+  }
   const String& Separator() const { return separator_->Value(); }
-  const TreeScope* GetTreeScope() const { return list_style_->GetTreeScope(); }
+  const TreeScope* GetTreeScope() const { return identifier_->GetTreeScope(); }
 
   bool Equals(const CSSCounterContentValue& other) const {
     return Identifier() == other.Identifier() &&
-           ListStyle() == other.ListStyle() &&
+           base::ValuesEquivalent(list_style_, other.list_style_) &&
            Separator() == other.Separator() &&
            IsScopedValue() == other.IsScopedValue() &&
            GetTreeScope() == other.GetTreeScope();
@@ -70,7 +94,7 @@ class CSSCounterContentValue : public CSSValue {
 
  private:
   Member<const CSSCustomIdentValue> identifier_;  // string
-  Member<const CSSCustomIdentValue> list_style_;  // ident
+  Member<const CSSValue> list_style_;  // <counter-style-name> or symbols()
   Member<const CSSStringValue> separator_;        // string
 };
 

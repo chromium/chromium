@@ -143,6 +143,48 @@ TEST_F(AccessibilityTest, TextAlternativeFromPopoverTargetAttribute) {
   ASSERT_EQ("Button", ax_button->ComputedName());
 }
 
+// Regression test for the symbols() function in the counter() alt-text path.
+// The CSS alt text uses the inline symbols() counter style, not the 'decimal'
+// fallback.
+TEST_F(AccessibilityTest, CSSAltTextCounterWithSymbolsFunction) {
+  ScopedCSSCounterStyleSymbolsFunctionForTest scoped_feature(true);
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        #target { counter-reset: c 1; }
+        #target::before {
+          content: "x" / counter(c, symbols('A' 'B' 'C'));
+        }
+      </style>
+      <div id="target"></div>)HTML");
+
+  const AXObject* before = GetAXObjectByElementId("target", kPseudoIdBefore);
+  ASSERT_NE(nullptr, before);
+  // With counter value 1 and the symbolic system, the alt text is "A". If the
+  // symbols() style were ignored (resolving to 'decimal'), it would be "1".
+  EXPECT_EQ("A", before->ComputedName());
+}
+
+// Regression test for the symbols() function in the counters() alt-text path.
+// counters() (with a separator) also uses the inline symbols() counter style,
+// not the 'decimal' fallback.
+TEST_F(AccessibilityTest, CSSAltTextCountersWithSymbolsFunction) {
+  ScopedCSSCounterStyleSymbolsFunctionForTest scoped_feature(true);
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        #target { counter-reset: c 2; }
+        #target::before {
+          content: "x" / counters(c, '.', symbols('A' 'B' 'C'));
+        }
+      </style>
+      <div id="target"></div>)HTML");
+
+  const AXObject* before = GetAXObjectByElementId("target", kPseudoIdBefore);
+  ASSERT_NE(nullptr, before);
+  // With counter value 2 and the symbolic system, the alt text is "B". If the
+  // symbols() style were ignored (resolving to 'decimal'), it would be "2".
+  EXPECT_EQ("B", before->ComputedName());
+}
+
 TEST_F(AccessibilityTest, TextOffsetInFormattingContextWithLayoutBr) {
   SetBodyInnerHTML(R"HTML(
       <p>
