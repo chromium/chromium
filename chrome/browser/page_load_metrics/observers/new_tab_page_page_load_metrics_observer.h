@@ -8,7 +8,7 @@
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 
 // NewTabPagePageLoadMetricsObserver records performance metrics,
-// such as NewTabPage.LoadTime.FirstContentfulPaint and
+// such as NewTabPage.LoadTime.FirstContentfulPaint2 and
 // NewTabPage.LoadTime.LargestContentfulPaint for the new tab page.
 class NewTabPagePageLoadMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {

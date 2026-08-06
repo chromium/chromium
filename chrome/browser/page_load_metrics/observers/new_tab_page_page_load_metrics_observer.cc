@@ -10,12 +10,20 @@
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace {
 
 const char kNewTabPageFirstContentfulPaintHistogram[] =
-    "NewTabPage.LoadTime.FirstContentfulPaint";
+    "NewTabPage.LoadTime.FirstContentfulPaint2";
 const char kNewTabPageLargestContentfulPaintHistogram[] =
     "NewTabPage.LoadTime.LargestContentfulPaint";
+#if BUILDFLAG(IS_ANDROID)
+const char kNewTabPageFirstContentfulPaintLegacyHistogram[] =
+    "NewTabPage.LoadTime.FirstContentfulPaint";
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -77,6 +85,15 @@ void NewTabPagePageLoadMetricsObserver::OnFirstContentfulPaintInPage(
   CHECK(timing.paint_timing->first_contentful_paint);
   PAGE_LOAD_HISTOGRAM(kNewTabPageFirstContentfulPaintHistogram,
                       *timing.paint_timing->first_contentful_paint);
+#if BUILDFLAG(IS_ANDROID)
+  // Keep collecting this histogram for Android desktop to avoid losing data.
+  // TODO(crbug.com/531793117): Remove this histogram once we have finished
+  // the study for Android desktop.
+  if (base::android::device_info::is_desktop()) {
+    PAGE_LOAD_HISTOGRAM(kNewTabPageFirstContentfulPaintLegacyHistogram,
+                        *timing.paint_timing->first_contentful_paint);
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
