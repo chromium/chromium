@@ -4,8 +4,10 @@
 
 use cxx::UniquePtr;
 use std::collections::{BTreeMap, BTreeSet, HashMap};
+use std::path::PathBuf;
 use std::sync::{LazyLock, Mutex, MutexGuard};
 
+use base_file_path::ffi::FilePath;
 use content_browser_id_types::BrowsingInstanceId;
 use storage_common::FileSystemType;
 use unguessable_token::UnguessableToken;
@@ -20,11 +22,15 @@ use crate::process_state::ProcessStateMaps;
 mod ffi {
     #![allow(unsafe_code)]
     unsafe extern "C++" {
+        include!("base/files/file_path.rs.h");
         include!("base/unguessable_token.h");
         include!("url/origin.rs.h");
         include!("content/browser/isolated_origin_util.h");
         include!("storage/common/file_system/file_system_types.h");
         include!("content/public/browser/browsing_instance_id.h");
+
+        #[namespace = "base"]
+        type FilePath = base_file_path::ffi::FilePath;
 
         #[namespace = "base"]
         type UnguessableToken = unguessable_token::UnguessableToken;
@@ -119,6 +125,10 @@ mod ffi {
             is_global_walk_or_frame_removal: bool,
         );
         fn erase_origin_agent_cluster_state(browsing_instance_id: BrowsingInstanceId);
+
+        fn grant_file_for_browser_upload(owner_token: UnguessableToken, file: &FilePath);
+        fn revoke_file_for_browser_upload(owner_token: UnguessableToken);
+        fn can_read_file_for_browser_upload(file: &FilePath) -> bool;
     }
 
     // Tracks the state of an Origin-Agent-Cluster request for a particular
@@ -456,6 +466,35 @@ fn erase_origin_agent_cluster_state(browsing_instance_id: BrowsingInstanceId) {
     cpsp.origin_agent_cluster_states_by_browsing_instance.remove(&browsing_instance_id);
 }
 
+fn grant_file_for_browser_upload(owner_token: UnguessableToken, file: &FilePath) {
+    let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
+    cpsp.browser_granted_files.entry(file.to_path_buf()).or_default().push(owner_token);
+}
+
+fn revoke_file_for_browser_upload(owner_token: UnguessableToken) {
+    let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
+    cpsp.browser_granted_files.retain(|_, tokens| {
+        tokens.retain(|token| *token != owner_token);
+        !tokens.is_empty()
+    });
+}
+
+fn can_read_file_for_browser_upload(file: &FilePath) -> bool {
+    let cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
+    #[cfg(unix)]
+    {
+        // On Unix, `as_path()` provides a zero-copy `&Path` reference to the
+        // underlying bytes in `FilePath`, avoiding a heap allocation.
+        cpsp.browser_granted_files.contains_key(file.as_path())
+    }
+    #[cfg(windows)]
+    {
+        // Windows paths require converting UTF-16 to WTF-8, which allocates a
+        // `PathBuf`.
+        cpsp.browser_granted_files.contains_key(&file.to_path_buf())
+    }
+}
+
 /// Defines a global policy object that tracks security information for child
 /// processes as well as global security state. This is intended to primarily be
 /// used for access checks on renderer processes but may eventually be used for
@@ -532,6 +571,22 @@ pub struct ChildProcessSecurityPolicyImpl {
         BrowsingInstanceId,
         BTreeMap<cxx::UniquePtr<ffi::Origin>, ffi::OriginAgentClusterIsolationState>,
     >,
+
+    /// Tracks files that the browser process has granted permission to the
+    /// network service to upload on the user's behalf.
+    ///
+    /// Each file path maps to a list of tokens representing the active requests
+    /// that have been granted access to this file. A token is added when a
+    /// request is created, and it is removed from all associated file paths
+    /// when the request is destroyed. Access is allowed as long as the file is
+    /// present in this map.
+    ///
+    /// `PathBuf` is used as the key instead of `base::FilePath` as it is Rust's
+    /// native path type, providing standard hashing and equality and avoiding
+    /// heap-allocating a `cxx::UniquePtr` wrapper for each entry. It also
+    /// enables a zero-copy `&Path` lookup optimization in
+    /// `can_read_file_for_browser_upload` on Unix platforms.
+    browser_granted_files: HashMap<PathBuf, Vec<UnguessableToken>>,
 }
 
 impl ChildProcessSecurityPolicyImpl {
@@ -546,6 +601,7 @@ impl ChildProcessSecurityPolicyImpl {
             file_system_policy_map: BTreeMap::new(),
             origin_agent_cluster_opt_ins_and_outs: BTreeMap::new(),
             origin_agent_cluster_states_by_browsing_instance: BTreeMap::new(),
+            browser_granted_files: HashMap::new(),
         }
     }
 

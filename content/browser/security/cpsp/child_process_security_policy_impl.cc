@@ -1933,11 +1933,28 @@ bool ChildProcessSecurityPolicyImpl::CanReadFile(ChildProcessId child_id,
 void ChildProcessSecurityPolicyImpl::GrantFileForBrowserUpload(
     const base::UnguessableToken& owner_token,
     const base::FilePath& file) {
+  RUST_CPP_VOID_FUNCTION(
+      rust::child_process_security_policy::grant_file_for_browser_upload(
+          owner_token, file),
+      GrantFileForBrowserUpload_Cpp(owner_token, file));
+}
+
+void ChildProcessSecurityPolicyImpl::GrantFileForBrowserUpload_Cpp(
+    const base::UnguessableToken& owner_token,
+    const base::FilePath& file) {
   base::AutoLock lock(lock_);
   browser_granted_files_[file].push_back(owner_token);
 }
 
 void ChildProcessSecurityPolicyImpl::RevokeFileForBrowserUpload(
+    const base::UnguessableToken& owner_token) {
+  RUST_CPP_VOID_FUNCTION(
+      rust::child_process_security_policy::revoke_file_for_browser_upload(
+          owner_token),
+      RevokeFileForBrowserUpload_Cpp(owner_token));
+}
+
+void ChildProcessSecurityPolicyImpl::RevokeFileForBrowserUpload_Cpp(
     const base::UnguessableToken& owner_token) {
   base::AutoLock lock(lock_);
   for (auto it = browser_granted_files_.begin();
@@ -1952,6 +1969,14 @@ void ChildProcessSecurityPolicyImpl::RevokeFileForBrowserUpload(
 }
 
 bool ChildProcessSecurityPolicyImpl::CanReadFileForBrowserUpload(
+    const base::FilePath& file) {
+  RUST_CPP_RETURN_FUNCTION(
+      rust::child_process_security_policy::can_read_file_for_browser_upload(
+          file),
+      CanReadFileForBrowserUpload_Cpp(file));
+}
+
+bool ChildProcessSecurityPolicyImpl::CanReadFileForBrowserUpload_Cpp(
     const base::FilePath& file) {
   base::AutoLock lock(lock_);
   return browser_granted_files_.contains(file);

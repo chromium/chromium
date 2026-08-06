@@ -474,13 +474,18 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // destroyed.
   void GrantFileForBrowserUpload(const base::UnguessableToken& owner_token,
                                  const base::FilePath& file);
+  void GrantFileForBrowserUpload_Cpp(const base::UnguessableToken& owner_token,
+                                     const base::FilePath& file);
 
   // Revokes all file accesses previously granted to the specific owner_token.
   void RevokeFileForBrowserUpload(const base::UnguessableToken& owner_token);
+  void RevokeFileForBrowserUpload_Cpp(
+      const base::UnguessableToken& owner_token);
 
   // Verifies whether the browser process has granted the network service
   // permission to upload the given file.
   bool CanReadFileForBrowserUpload(const base::FilePath& file);
+  bool CanReadFileForBrowserUpload_Cpp(const base::FilePath& file);
 
   // Pseudo schemes are treated differently than other schemes because they
   // cannot be requested like normal URLs.  There is no mechanism for revoking
