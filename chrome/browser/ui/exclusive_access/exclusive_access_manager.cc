@@ -67,9 +67,13 @@ const ExclusiveAccessManager* ExclusiveAccessManager::From(
 
 ExclusiveAccessManager::ExclusiveAccessManager(
     BrowserWindowInterface* browser,
-    ExclusiveAccessContext* exclusive_access_context)
+    ExclusiveAccessContext* exclusive_access_context,
+    chrome::BrowserCommandController* browser_command_controller,
+    BookmarkBarController* bookmark_bar_controller)
     : exclusive_access_context_(exclusive_access_context),
-      fullscreen_controller_(this),
+      fullscreen_controller_(this,
+                             browser_command_controller,
+                             bookmark_bar_controller),
       keyboard_lock_controller_(this),
       pointer_lock_controller_(this),
       exclusive_access_controllers_({&fullscreen_controller_,
@@ -83,7 +87,10 @@ ExclusiveAccessManager::ExclusiveAccessManager(
 
 ExclusiveAccessManager::ExclusiveAccessManager(
     ExclusiveAccessContext* exclusive_access_context)
-    : ExclusiveAccessManager(nullptr, exclusive_access_context) {}
+    : ExclusiveAccessManager(nullptr,
+                             exclusive_access_context,
+                             nullptr,
+                             nullptr) {}
 
 ExclusiveAccessManager::~ExclusiveAccessManager() = default;
 

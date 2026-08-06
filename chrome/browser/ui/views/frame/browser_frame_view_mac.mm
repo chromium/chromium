@@ -303,7 +303,10 @@ void BrowserFrameViewMac::UpdateFullscreenTopUI() {
 
   // Notify browser that top ui state has been changed so that we can update
   // the bookmark bar state as well.
-  browser->FullscreenTopUIStateChanged();
+  browser->GetFeatures()
+      .exclusive_access_manager()
+      ->fullscreen_controller()
+      ->FullscreenTopUIStateChanged();
 
   // Re-layout if toolbar style changes in fullscreen mode.
   if (browser_widget()->IsFullscreen()) {

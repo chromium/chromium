@@ -139,7 +139,10 @@ void FullscreenControllerTestWindow::ChangeWindowFullscreenState() {
 
   // Emit a change event from every state to ensure the Fullscreen Controller
   // handles it in all circumstances.
-  browser_->WindowFullscreenStateChanged();
+  browser_->GetFeatures()
+      .exclusive_access_manager()
+      ->fullscreen_controller()
+      ->WindowFullscreenStateChanged();
 }
 
 void FullscreenControllerTestWindow::EnterFullscreen() {

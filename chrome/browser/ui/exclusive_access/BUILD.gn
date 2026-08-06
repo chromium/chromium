@@ -74,6 +74,7 @@ source_set("exclusive_access") {
     deps += [
       "//chrome/browser:browser_process",
       "//chrome/browser/ui/blocked_content",
+      "//chrome/browser/ui/bookmarks",
     ]
   }
 }

@@ -747,8 +747,8 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
   }
 
   exclusive_access_manager_ = std::make_unique<ExclusiveAccessManager>(
-      browser,
-      BrowserWindow::FromBrowser(browser)->GetExclusiveAccessContext());
+      browser, BrowserWindow::FromBrowser(browser)->GetExclusiveAccessContext(),
+      browser_command_controller_.get(), bookmark_bar_controller_.get());
 
   // Must be after exclusive_access_manager_ and
   // desktop_browser_window_capabilities_.

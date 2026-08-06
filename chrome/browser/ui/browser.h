@@ -333,13 +333,6 @@ class Browser : public TabStripModelObserver,
 
   // External state change handling ////////////////////////////////////////////
 
-  // Invoked at the end of a fullscreen transition.
-  void WindowFullscreenStateChanged();
-
-  // Only used on Mac. Called when the top ui style has been changed since this
-  // may trigger bookmark bar state change.
-  void FullscreenTopUIStateChanged();
-
   // Called by Navigate() when a navigation has occurred in a tab in
   // this Browser. Updates the UI for the start of this navigation.
   void UpdateUIForNavigationInTab(content::WebContents* contents,

@@ -2257,7 +2257,10 @@ void BrowserView::FullscreenStateChanged() {
 
 #endif  // BUILDFLAG(IS_MAC)
 
-  browser_->WindowFullscreenStateChanged();
+  browser_->GetFeatures()
+      .exclusive_access_manager()
+      ->fullscreen_controller()
+      ->WindowFullscreenStateChanged();
 
   if (base::FeatureList::IsEnabled(features::kAsyncFullscreenWindowState)) {
     ToolbarSizeChanged(false);

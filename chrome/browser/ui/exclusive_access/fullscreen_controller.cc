@@ -18,6 +18,9 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
+#include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_tab_params.h"
@@ -68,8 +71,13 @@ bool IsAnotherScreen(const WebContents& web_contents,
 
 }  // namespace
 
-FullscreenController::FullscreenController(ExclusiveAccessManager* manager)
-    : ExclusiveAccessControllerBase(manager) {}
+FullscreenController::FullscreenController(
+    ExclusiveAccessManager* manager,
+    chrome::BrowserCommandController* browser_command_controller,
+    BookmarkBarController* bookmark_bar_controller)
+    : ExclusiveAccessControllerBase(manager),
+      browser_command_controller_(browser_command_controller),
+      bookmark_bar_controller_(bookmark_bar_controller) {}
 
 FullscreenController::~FullscreenController() = default;
 
@@ -412,6 +420,24 @@ void FullscreenController::WindowFullscreenStateChanged() {
     popunder_preventer_.reset();
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  if (browser_command_controller_) {
+    browser_command_controller_->FullscreenStateChanged();
+  }
+  if (bookmark_bar_controller_) {
+    bookmark_bar_controller_->UpdateBookmarkBarState(
+        BookmarkBarController::StateChangeReason::kToggleFullscreen);
+  }
+}
+
+void FullscreenController::FullscreenTopUIStateChanged() {
+  if (browser_command_controller_) {
+    browser_command_controller_->FullscreenStateChanged();
+  }
+  if (bookmark_bar_controller_) {
+    bookmark_bar_controller_->UpdateBookmarkBarState(
+        BookmarkBarController::StateChangeReason::kToolbarOptionChange);
+  }
 }
 
 void FullscreenController::RunOrDeferUntilTransitionIsComplete(

@@ -735,22 +735,6 @@ void Browser::OnWindowCloseComplete() {
 ////////////////////////////////////////////////////////////////////////////////
 // Browser, Tab adding/showing functions:
 
-void Browser::WindowFullscreenStateChanged() {
-  GetFeatures()
-      .exclusive_access_manager()
-      ->fullscreen_controller()
-      ->WindowFullscreenStateChanged();
-  chrome::BrowserCommandController::From(this)->FullscreenStateChanged();
-  BookmarkBarController::From(this)->UpdateBookmarkBarState(
-      BookmarkBarController::StateChangeReason::kToggleFullscreen);
-}
-
-void Browser::FullscreenTopUIStateChanged() {
-  chrome::BrowserCommandController::From(this)->FullscreenStateChanged();
-  BookmarkBarController::From(this)->UpdateBookmarkBarState(
-      BookmarkBarController::StateChangeReason::kToolbarOptionChange);
-}
-
 void Browser::UpdateUIForNavigationInTab(WebContents* contents,
                                          ui::PageTransition transition,
                                          NavigateParams::WindowAction action,

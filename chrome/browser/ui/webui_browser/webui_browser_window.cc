@@ -636,7 +636,10 @@ void WebUIBrowserWindow::ProcessFullscreen(bool fullscreen) {
     page->OnFullscreenModeChanged(fullscreen, context);
   }
 
-  browser_->WindowFullscreenStateChanged();
+  browser_->GetFeatures()
+      .exclusive_access_manager()
+      ->fullscreen_controller()
+      ->WindowFullscreenStateChanged();
 }
 
 void WebUIBrowserWindow::DeleteBrowserWindow() {

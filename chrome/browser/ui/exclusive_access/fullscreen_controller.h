@@ -20,6 +20,12 @@
 #include "ui/display/types/display_constants.h"
 #include "url/origin.h"
 
+class BookmarkBarController;
+
+namespace chrome {
+class BrowserCommandController;
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 class PopunderPreventer;
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -58,7 +64,10 @@ class RenderFrameHost;
 // This class implements fullscreen behaviour.
 class FullscreenController : public ExclusiveAccessControllerBase {
  public:
-  explicit FullscreenController(ExclusiveAccessManager* manager);
+  FullscreenController(
+      ExclusiveAccessManager* manager,
+      chrome::BrowserCommandController* browser_command_controller,
+      BookmarkBarController* bookmark_bar_controller);
 
   FullscreenController(const FullscreenController&) = delete;
   FullscreenController& operator=(const FullscreenController&) = delete;
@@ -161,10 +170,12 @@ class FullscreenController : public ExclusiveAccessControllerBase {
   void ExitExclusiveAccessIfNecessary() override;
   // Callbacks /////////////////////////////////////////////////////////////////
 
-  // Called by Browser::WindowFullscreenStateChanged. This is called
-  // as fullscreen mode is toggled, and after the transition animation
-  // completes.
+  // Invoked at the end of a fullscreen transition.
   void WindowFullscreenStateChanged();
+
+  // Only used on Mac. Called when the top ui style has been changed since this
+  // may trigger bookmark bar state change.
+  void FullscreenTopUIStateChanged();
 
   // Runs the given closure unless a fullscreen transition is currently in
   // progress. If a transition is in progress, the execution of the closure is
@@ -277,6 +288,9 @@ class FullscreenController : public ExclusiveAccessControllerBase {
 
   // This is used for accessing HistoryService.
   base::CancelableTaskTracker task_tracker_;
+
+  const raw_ptr<chrome::BrowserCommandController> browser_command_controller_;
+  const raw_ptr<BookmarkBarController> bookmark_bar_controller_;
 
   base::WeakPtrFactory<FullscreenController> weak_ptr_factory_{this};
 };
