@@ -25,6 +25,7 @@ source_set("on_device_category_classifier") {
     "//components/passage_embeddings/core",
     "//components/ukm/ios:ukm_url_recorder",
     "//ios/chrome/browser/intelligence/actor/tools/model:page_stability",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/intelligence/proto_wrappers",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/shared/model/profile",
