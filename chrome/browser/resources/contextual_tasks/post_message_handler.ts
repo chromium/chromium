@@ -7,11 +7,8 @@ import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
+import {HANDSHAKE_INTERVAL_MS, MAX_HANDSHAKE_ATTEMPTS} from './utils.js';
 import type {WebViewType} from './web_view_type.js';
-
-const HANDSHAKE_INTERVAL_MS = 10;
-// 3000 * 10ms = 30 seconds.
-const MAX_HANDSHAKE_ATTEMPTS = 3000;
 
 export interface Rect {
   top: number;

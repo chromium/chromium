@@ -107,3 +107,8 @@ export function getArrayBufferFromBigBuffer(bigBuffer: BigBuffer): ArrayBuffer {
   }
   throw new Error('Invalid BigBuffer');
 }
+
+export const HANDSHAKE_INTERVAL_MS = 10;
+export const HANDSHAKE_TIMEOUT_MS = 30000;
+export const MAX_HANDSHAKE_ATTEMPTS =
+    HANDSHAKE_TIMEOUT_MS / HANDSHAKE_INTERVAL_MS;

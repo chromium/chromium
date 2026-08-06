@@ -6,7 +6,7 @@ import '/strings.m.js';
 import 'chrome://contextual-tasks/composebox.js';
 
 import {ExtensionBrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
-import {getArrayBufferFromBigBuffer, isGoogleOrigin} from 'chrome://contextual-tasks/utils.js';
+import {getArrayBufferFromBigBuffer, HANDSHAKE_INTERVAL_MS, isGoogleOrigin, MAX_HANDSHAKE_ATTEMPTS} from 'chrome://contextual-tasks/utils.js';
 
 declare global {
   interface Window {
@@ -52,8 +52,9 @@ async function initHandshake() {
     }
   }
 
+  let handshakeAttempts = 0;
+
   // Start sending handshake ping on interval
-  // TODO: Add a max-handshake-attempt mechanism.
   handshakeIntervalId = setInterval(() => {
     if (handshakeCompleted) {
       if (handshakeIntervalId) {
@@ -61,9 +62,17 @@ async function initHandshake() {
       }
       return;
     }
+    if (handshakeAttempts >= MAX_HANDSHAKE_ATTEMPTS) {
+      console.warn('Max handshake attempts reached. Stopping.');
+      if (handshakeIntervalId) {
+        clearInterval(handshakeIntervalId);
+      }
+      return;
+    }
+    handshakeAttempts++;
     const destOrigin = targetOrigin || '*';
     window.parent.postMessage(messageArray, destOrigin);
-  }, 100);
+  }, HANDSHAKE_INTERVAL_MS);
 }
 
 // Listen for messages from GWS parent frame
