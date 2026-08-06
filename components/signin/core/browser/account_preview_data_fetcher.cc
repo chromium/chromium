@@ -153,39 +153,32 @@ std::string_view GetBaseUrl(version_info::Channel channel) {
   return kStagingPreviewUrl;
 }
 
+}  // namespace
+
 // The list of data types to fetch statistics for. This list explicitly requests
 // only the data types currently used by metrics.
-// The comma-separated integer values map to the data type's specifics field.
-// 31729: AUTOFILL
-// 32904: BOOKMARKS
-// 37702: PREFERENCES
-// 41210: THEMES
-// 45873: PASSWORDS
-// 48119: EXTENSIONS
-// 48364: APPS
-// 50119: SESSIONS
-// 154522: DEVICE_INFO
-// 330441: AUTOFILL_WALLET_METADATA
-// 411028: READING_LIST
-// 1164238: AUTOFILL_WALLET_CREDENTIAL
-GURL GetStatsUrlForChannel(version_info::Channel channel) {
+GURL AccountPreviewDataFetcher::GetStatsUrlForChannel(
+    version_info::Channel channel) {
   GURL url(
       base::StrCat({GetBaseUrl(channel), "/dataTypes/-/dataTypesStatistics"}));
-  for (int data_type : signin::kRequestedDataTypes) {
-    url = net::AppendQueryParameter(url, "dataTypes",
-                                    base::NumberToString(data_type));
+  for (syncer::DataType data_type : signin::kRequestedDataTypes) {
+    url = net::AppendQueryParameter(
+        url, "dataTypes",
+        base::NumberToString(
+            syncer::GetSpecificsFieldNumberFromDataType(data_type)));
   }
   return url;
 }
 
-GURL GetPreviewsUrlForChannel(version_info::Channel channel) {
-  // ID: 154522 is specific to DEVICE_INFO.
-  // TODO(crbug.com/510760810): Fix parsing to match DEVICE_INFO results.
+GURL AccountPreviewDataFetcher::GetPreviewsUrlForChannel(
+    version_info::Channel channel) {
+  // Requesting only DEVICE_INFO.
   return GURL(base::StrCat(
-      {GetBaseUrl(channel), "/dataTypes/154522/entitiesPreviews"}));
+      {GetBaseUrl(channel), "/dataTypes/",
+       base::NumberToString(
+           syncer::GetSpecificsFieldNumberFromDataType(syncer::DEVICE_INFO)),
+       "/entitiesPreviews"}));
 }
-
-}  // namespace
 
 AccountPreviewDataFetcher::AccountPreviewDataFetcher(
     const GaiaId& gaia_id,

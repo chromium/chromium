@@ -18,6 +18,7 @@
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "url/gurl.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -30,9 +31,13 @@ class IdentityManager;
 
 // Test and production exposed list of data types restricted for the statistics
 // API.
-inline constexpr int kRequestedDataTypes[] = {
-    31729, 32904, 37702,  41210,  45873,  48119,
-    48364, 50119, 154522, 330441, 411028, 1164238,
+inline constexpr syncer::DataType kRequestedDataTypes[] = {
+    syncer::AUTOFILL,     syncer::BOOKMARKS,
+    syncer::PREFERENCES,  syncer::THEMES,
+    syncer::PASSWORDS,    syncer::EXTENSIONS,
+    syncer::APPS,         syncer::SESSIONS,
+    syncer::DEVICE_INFO,  syncer::AUTOFILL_WALLET_METADATA,
+    syncer::READING_LIST, syncer::AUTOFILL_WALLET_CREDENTIAL,
 };
 
 // Helper class to fetch account preview data from the Sync Preview API.
@@ -71,6 +76,9 @@ class AccountPreviewDataFetcher {
 
   void Start();
   bool is_started() const { return is_started_; }
+
+  static GURL GetStatsUrlForChannel(version_info::Channel channel);
+  static GURL GetPreviewsUrlForChannel(version_info::Channel channel);
 
  private:
   void OnAccessTokenReceived(GoogleServiceAuthError error,

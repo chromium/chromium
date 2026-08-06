@@ -19,20 +19,25 @@ std::string FormatStatsJson(const DataTypeCounts& counts) {
       R"({
     "dataTypeStatistics": [
       {
-        "name": "dataTypes/32904/dataTypeStatistics",
+        "name": "dataTypes/%d/dataTypeStatistics",
         "count": "%d"
       },
       {
-        "name": "dataTypes/45873/dataTypeStatistics",
+        "name": "dataTypes/%d/dataTypeStatistics",
         "count": "%d"
       },
       {
-        "name": "dataTypes/963985/dataTypeStatistics",
+        "name": "dataTypes/%d/dataTypeStatistics",
         "count": "%d"
       }
     ]
   })",
-      counts.bookmark_count, counts.password_count, counts.history_count);
+      syncer::GetSpecificsFieldNumberFromDataType(syncer::BOOKMARKS),
+      counts.bookmark_count,
+      syncer::GetSpecificsFieldNumberFromDataType(syncer::PASSWORDS),
+      counts.password_count,
+      syncer::GetSpecificsFieldNumberFromDataType(syncer::HISTORY),
+      counts.history_count);
 }
 
 std::string FormatPreviewsJson(const std::vector<std::string>& domains) {
@@ -68,10 +73,22 @@ void SimulateSuccessfulPreviewsFetch(
     network::TestURLLoaderFactory* test_url_loader_factory,
     const std::vector<std::string>& domains) {
   EXPECT_TRUE(test_url_loader_factory->SimulateResponseForPendingRequest(
-      kTestPreviewsUrl, FormatPreviewsJson(domains)));
+      GetTestPreviewsUrl(), FormatPreviewsJson(domains)));
 }
 
 }  // namespace
+
+std::string GetTestStatsUrl() {
+  return AccountPreviewDataFetcher::GetStatsUrlForChannel(
+             version_info::Channel::UNKNOWN)
+      .spec();
+}
+
+std::string GetTestPreviewsUrl() {
+  return AccountPreviewDataFetcher::GetPreviewsUrlForChannel(
+             version_info::Channel::UNKNOWN)
+      .spec();
+}
 
 void MockSuccessfulStatsFetch(
     network::TestURLLoaderFactory* test_url_loader_factory,
@@ -83,7 +100,7 @@ void MockSuccessfulStatsFetch(
 void MockSuccessfulPreviewsFetch(
     network::TestURLLoaderFactory* test_url_loader_factory,
     const std::vector<std::string>& domains) {
-  test_url_loader_factory->AddResponse(kTestPreviewsUrl,
+  test_url_loader_factory->AddResponse(GetTestPreviewsUrl(),
                                        FormatPreviewsJson(domains));
 }
 
@@ -107,7 +124,7 @@ void MockFailedPreviewsFetch(
     network::TestURLLoaderFactory* test_url_loader_factory,
     net::Error error_code) {
   network::URLLoaderCompletionStatus status(error_code);
-  test_url_loader_factory->AddResponse(GURL(kTestPreviewsUrl),
+  test_url_loader_factory->AddResponse(GURL(GetTestPreviewsUrl()),
                                        network::mojom::URLResponseHead::New(),
                                        "", status);
 }

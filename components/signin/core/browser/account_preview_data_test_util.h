@@ -8,11 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string_number_conversions.h"
 #include "components/signin/core/browser/account_preview_data_fetcher.h"
 #include "net/base/net_errors.h"
-#include "net/base/url_util.h"
-#include "url/gurl.h"
 
 namespace network {
 class TestURLLoaderFactory;
@@ -21,19 +18,8 @@ class TestURLLoaderFactory;
 namespace signin {
 
 // In tests, we dynamically build the URL to represent the same appended params.
-inline std::string GetTestStatsUrl() {
-  GURL url(
-      "https://alpha-chromesyncpreview-googleapis.pa.sandbox.google.com/v1/"
-      "dataTypes/-/dataTypesStatistics");
-  for (int data_type : signin::kRequestedDataTypes) {
-    url = net::AppendQueryParameter(url, "dataTypes",
-                                    base::NumberToString(data_type));
-  }
-  return url.spec();
-}
-inline constexpr char kTestPreviewsUrl[] =
-    "https://alpha-chromesyncpreview-googleapis.pa.sandbox.google.com/v1/"
-    "dataTypes/154522/entitiesPreviews";
+std::string GetTestStatsUrl();
+std::string GetTestPreviewsUrl();
 
 // Subset of all data types for testing purposes.
 struct DataTypeCounts {

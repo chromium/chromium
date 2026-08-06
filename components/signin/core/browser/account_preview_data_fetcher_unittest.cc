@@ -304,7 +304,8 @@ TEST_F(AccountPreviewDataFetcherTest, PreviewsInvalidJson) {
       identity_test_env_.MakeAccountAvailable("user@gmail.com");
 
   MockSuccessfulStatsFetch(&test_url_loader_factory_, {.password_count = 10});
-  test_url_loader_factory_.AddResponse(kTestPreviewsUrl, "{ invalid json }");
+  test_url_loader_factory_.AddResponse(GetTestPreviewsUrl(),
+                                       "{ invalid json }");
 
   base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>>
       future;
