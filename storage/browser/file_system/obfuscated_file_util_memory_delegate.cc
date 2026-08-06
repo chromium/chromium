@@ -36,7 +36,7 @@ bool IsMemoryAvailable(size_t required_memory) {
 #else
   uint64_t max_allocatable =
       std::min(base::SysInfo::AmountOfAvailablePhysicalMemory().InBytes(),
-               static_cast<uint64_t>(partition_alloc::MaxDirectMapped()));
+               static_cast<uint64_t>(partition_alloc::MaxAllocationSize()));
 
   return max_allocatable >= required_memory;
 #endif
@@ -555,10 +555,10 @@ int ObfuscatedFileUtilMemoryDelegate::WriteFile(
 // If required memory is bigger than half of the max allocatable memory block,
 // reserve first to avoid STL getting more than required memory.
 // See crbug.com/1043914 for more context.
-// |MaxDirectMapped| function is not implemented on FUCHSIA, yet.
+// |MaxAllocationSize| function is not implemented on FUCHSIA, yet.
 // (crbug.com/986608)
 #if !BUILDFLAG(IS_FUCHSIA)
-    if (last_position >= partition_alloc::MaxDirectMapped() / 2) {
+    if (last_position >= partition_alloc::MaxAllocationSize() / 2) {
       // TODO(crbug.com/40669351): Allocated memory is rounded up to
       // 100MB blocks to reduce memory allocation delays. Switch to a more
       // proper container to remove this dependency.
