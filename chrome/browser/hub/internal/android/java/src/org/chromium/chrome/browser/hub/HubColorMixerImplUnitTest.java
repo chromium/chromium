@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
@@ -178,7 +179,7 @@ public class HubColorMixerImplUnitTest {
         mHubColorMixer.processStateChange(HUB_SHOWN);
         assertFalse(mHubColorMixer.getOverviewMode());
 
-        verify(mColorBlend).createAnimationForTransition(anyInt(), anyInt());
+        verify(mColorBlend).updateProgress(anyInt(), anyInt(), anyFloat());
     }
 
     @Test
@@ -298,10 +299,9 @@ public class HubColorMixerImplUnitTest {
         reset(mAnimatorSetBuilder, mAnimationHandler);
         mFocusedPaneSupplier.set(mPane1);
         RobolectricUtil.runAllBackgroundAndUi();
-        verify(mAnimatorSetBuilder).setNewColorScheme(HubColorScheme.DEFAULT);
-        verify(mAnimatorSetBuilder).setPreviousColorScheme(HubColorScheme.DEFAULT);
-        verify(mAnimatorSetBuilder).build();
-        verify(mAnimationHandler).startAnimation(any());
+        verify(mAnimatorSetBuilder)
+                .updateColorBlendProgress(HubColorScheme.DEFAULT, HubColorScheme.DEFAULT, 1.0f);
+        verify(mAnimationHandler, never()).startAnimation(any());
 
         reset(mAnimatorSetBuilder, mAnimationHandler);
         mFocusedPaneSupplier.set(mPane2);

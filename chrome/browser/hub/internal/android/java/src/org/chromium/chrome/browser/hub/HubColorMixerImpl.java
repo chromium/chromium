@@ -220,6 +220,12 @@ public class HubColorMixerImpl implements HubColorMixer {
         int prevColorScheme =
                 mColorSchemeUpdate == null ? newColorScheme : mColorSchemeUpdate.newColorScheme;
 
+        if (prevColorScheme == newColorScheme) {
+            mAnimatorSetBuilder.updateColorBlendProgress(newColorScheme, newColorScheme, 1.0f);
+            mColorSchemeUpdate = new HubColorSchemeUpdate(newColorScheme, prevColorScheme);
+            return;
+        }
+
         AnimatorSet animatorSet =
                 mAnimatorSetBuilder
                         .setNewColorScheme(newColorScheme)
