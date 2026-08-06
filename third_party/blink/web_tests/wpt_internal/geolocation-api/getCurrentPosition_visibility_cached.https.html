@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<meta charset='utf-8'>
+<title>Geolocation Test: getCurrentPosition cached position and visibilityState changes</title>
+<link rel='help' href='http://www.w3.org/TR/geolocation-API/#get-current-position'>
+<meta name="timeout" content="long">
+<script src='/resources/testharness.js'></script>
+<script src='/resources/testharnessreport.js'></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<p>Clear all Geolocation permissions before running this test. If prompted for permission, please allow.</p>
+<div id='log'></div>
+
+<script type="module">
+import {GeolocationMock} from './resources/geolocation-mock.js';
+
+await test_driver.set_permission({name: 'geolocation'}, 'granted', true);
+
+promise_test(async t => {
+  const mock = new GeolocationMock();
+  mock.setGeolocationPermission(true);
+  mock.setGeolocationPosition(31.478, -0.166, 100);
+
+  assert_equals(document.visibilityState, "visible");
+
+  // Prime cached position while visible.
+  const initial_position = await new Promise((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(resolve, reject, {maximumAge: 100000});
+  });
+  assert_equals(initial_position.coords.latitude, 31.478);
+
+  // Hide the tab.
+  const changed = new Promise(resolve => document.addEventListener("visibilitychange", resolve, {once:true}));
+  testRunner.setMainWindowHidden(true);
+  await changed;
+  assert_equals(document.visibilityState, "hidden");
+
+  // Add a getCurrentPosition request while hidden that allows cached position.
+  const cached_promise = new Promise((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(resolve, reject, {maximumAge: 100000, timeout: 5000});
+  });
+
+  // Unhide the tab.
+  const changed2 = new Promise(resolve => document.addEventListener("visibilitychange", resolve, {once:true}));
+  testRunner.setMainWindowHidden(false);
+  await changed2;
+  assert_equals(document.visibilityState, "visible");
+
+  const pos = await cached_promise;
+  assert_equals(pos.coords.latitude, 31.478, "Pending request should be satisfied with cached position upon unhiding");
+}, "getCurrentPosition added while hidden is satisfied with cached position upon unhiding");
+</script>

@@ -190,6 +190,7 @@ class CORE_EXPORT Geolocation final
   }
 
   void StopTimers();
+  void StartTimers();
 
   // Runs the success callbacks on all notifiers. A position must be available
   // and the user must have given permission.
