@@ -1321,7 +1321,7 @@ bool EditingStyle::ElementIsStyledSpanOrHtmlEquivalent(
     return element_is_span_or_element_equivalent;
   }
 
-  unsigned matched_attributes = 0;
+  wtf_size_t matched_attributes = 0;
   const HeapVector<Member<HtmlAttributeEquivalent>>&
       html_attribute_equivalents = HtmlAttributeEquivalents();
   for (const auto& equivalent : html_attribute_equivalents) {
@@ -1538,8 +1538,8 @@ void EditingStyle::MergeStyle(const CSSPropertyValueSet* style,
     return;
   }
 
-  unsigned property_count = style->PropertyCount();
-  for (unsigned i = 0; i < property_count; ++i) {
+  wtf_size_t property_count = style->PropertyCount();
+  for (wtf_size_t i = 0; i < property_count; ++i) {
     const CSSPropertyValue& property = style->PropertyAt(i);
     const CSSValue* value =
         mutable_style_->GetPropertyCSSValue(property.PropertyID());
@@ -1569,7 +1569,7 @@ void EditingStyle::MergeStyle(const CSSPropertyValueSet* style,
 
 static MutableCSSPropertyValueSet* StyleFromMatchedRulesForElement(
     Element* element,
-    unsigned rules_to_include) {
+    uint32_t rules_to_include) {
   auto* style =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLQuirksMode);
   StyleRuleList* matched_rules =
@@ -1580,7 +1580,7 @@ static MutableCSSPropertyValueSet* StyleFromMatchedRulesForElement(
     // merges and the overall time consumption.
     style = MakeGarbageCollected<MutableCSSPropertyValueSet>(
         matched_rules->at(0)->Properties());
-    for (unsigned i = 1; i < matched_rules->size(); ++i) {
+    for (wtf_size_t i = 1; i < matched_rules->size(); ++i) {
       style->MergeAndOverrideOnConflict(&matched_rules->at(i)->Properties());
     }
   }
@@ -1589,7 +1589,7 @@ static MutableCSSPropertyValueSet* StyleFromMatchedRulesForElement(
 
 const CSSPropertyValueSet* EditingStyle::MatchedRulesStyleForElement(
     Element* element,
-    unsigned rules_to_include) {
+    uint32_t rules_to_include) {
   return StyleFromMatchedRulesForElement(element, rules_to_include);
 }
 
@@ -1618,8 +1618,8 @@ void EditingStyle::MergeStyleFromRulesForSerialization(Element* element) {
   auto* from_computed_style =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLQuirksMode);
   {
-    unsigned property_count = mutable_style_->PropertyCount();
-    for (unsigned i = 0; i < property_count; ++i) {
+    wtf_size_t property_count = mutable_style_->PropertyCount();
+    for (wtf_size_t i = 0; i < property_count; ++i) {
       const CSSPropertyValue& property = mutable_style_->PropertyAt(i);
       const CSSValue& value = property.Value();
       const auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value);
@@ -1655,9 +1655,9 @@ void EditingStyle::MergeStyleFromRulesForSerialization(Element* element) {
 static void RemovePropertiesInStyle(
     MutableCSSPropertyValueSet* style_to_remove_properties_from,
     CSSPropertyValueSet* style) {
-  unsigned property_count = style->PropertyCount();
+  wtf_size_t property_count = style->PropertyCount();
   Vector<const CSSProperty*> properties_to_remove(property_count);
-  for (unsigned i = 0; i < property_count; ++i) {
+  for (wtf_size_t i = 0; i < property_count; ++i) {
     // TODO(crbug.com/980160): Remove access to static Variable instance.
     properties_to_remove[i] =
         &CSSProperty::Get(style->PropertyAt(i).PropertyID());

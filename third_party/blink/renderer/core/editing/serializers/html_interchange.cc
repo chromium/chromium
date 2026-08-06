@@ -46,7 +46,7 @@ String ConvertHtmlTextToInterchangeFormat(
   }
 
   const char kConvertedSpaceString[] = "<span>\xA0</span>";
-  static_assert((static_cast<unsigned char>('\xA0') == uchar::kNoBreakSpace),
+  static_assert((static_cast<LChar>('\xA0') == uchar::kNoBreakSpace),
                 "\\xA0 should be non-breaking space");
 
   StringBuilder s;

@@ -41,34 +41,34 @@ namespace {
 // The below code was adapted from the WebKit file webview.cpp
 //
 
-const unsigned kCtrlKey = WebInputEvent::kControlKey;
-const unsigned kAltKey = WebInputEvent::kAltKey;
-const unsigned kShiftKey = WebInputEvent::kShiftKey;
-const unsigned kMetaKey = WebInputEvent::kMetaKey;
+const uint32_t kCtrlKey = WebInputEvent::kControlKey;
+const uint32_t kAltKey = WebInputEvent::kAltKey;
+const uint32_t kShiftKey = WebInputEvent::kShiftKey;
+const uint32_t kMetaKey = WebInputEvent::kMetaKey;
 #if BUILDFLAG(IS_MAC)
 // Aliases for the generic key defintions to make kbd shortcuts definitions more
 // readable on OS X.
-const unsigned kOptionKey = kAltKey;
+const uint32_t kOptionKey = kAltKey;
 
 // Do not use this constant for anything but cursor movement commands. Keys
 // with cmd set have their |isSystemKey| bit set, so chances are the shortcut
 // will not be executed. Another, less important, reason is that shortcuts
 // defined in the layoutObject do not blink the menu item that they triggered.
 // See http://crbug.com/25856 and the bugs linked from there for details.
-const unsigned kCommandKey = kMetaKey;
+const uint32_t kCommandKey = kMetaKey;
 #endif
 
 // Keys with special meaning. These will be delegated to the editor using
 // the execCommand() method
 struct KeyboardCodeKeyDownEntry {
-  unsigned virtual_key;
-  unsigned modifiers;
+  uint32_t virtual_key;
+  uint32_t modifiers;
   const char* name;
 };
 
 struct KeyboardCodeKeyPressEntry {
-  unsigned char_code;
-  unsigned modifiers;
+  uint32_t char_code;
+  uint32_t modifiers;
   const char* name;
 };
 
@@ -78,7 +78,7 @@ struct KeyboardCodeKeyPressEntry {
 // locale.
 struct DomKeyKeyDownEntry {
   const char* key;
-  unsigned modifiers;
+  uint32_t modifiers;
   const char* name;
 };
 
@@ -206,7 +206,7 @@ const DomKeyKeyDownEntry kDomKeyKeyDownEntries[] = {
 #undef OPTION_OR_CTRL_KEY
 
 const char* LookupCommandNameFromDomKeyKeyDown(const String& key,
-                                               unsigned modifiers) {
+                                               uint32_t modifiers) {
   // This table is not likely to grow, so sequential search is fine here.
   for (const auto& entry : kDomKeyKeyDownEntries) {
     if (key == entry.key && modifiers == entry.modifiers)
@@ -263,7 +263,7 @@ const char* EditingBehavior::InterpretKeyEvent(const KeyboardEvent& event,
     }
   }
 
-  unsigned modifiers =
+  uint32_t modifiers =
       key_event->GetModifiers() & (kShiftKey | kAltKey | kCtrlKey | kMetaKey);
 
   auto FindName = [=](HashMap<int, const char*>* map, int code) -> const char* {

@@ -183,18 +183,18 @@ class CORE_EXPORT TextOffsetMapping final {
   int ComputeTextOffset(const PositionInFlatTree&) const;
 
   // Returns position before |offset| in |text16_|
-  PositionInFlatTree GetPositionBefore(unsigned offset) const;
+  PositionInFlatTree GetPositionBefore(wtf_size_t offset) const;
 
   // Returns position after |offset| in |text16_|
-  PositionInFlatTree GetPositionAfter(unsigned offset) const;
+  PositionInFlatTree GetPositionAfter(wtf_size_t offset) const;
 
   // Returns a range specified by |start| and |end| offset in |text16_|.
-  EphemeralRangeInFlatTree ComputeRange(unsigned start, unsigned end) const;
+  EphemeralRangeInFlatTree ComputeRange(wtf_size_t start, wtf_size_t end) const;
 
   // Returns an offset in |text16_| before non-whitespace character from
   // |offset|, inclusive, otherwise returns |text16_.length()|.
   // This function is used for computing trailing whitespace after word.
-  unsigned FindNonWhitespaceCharacterFrom(unsigned offset) const;
+  wtf_size_t FindNonWhitespaceCharacterFrom(wtf_size_t offset) const;
 
   // Helper functions to construct |TextOffsetMapping|.
 

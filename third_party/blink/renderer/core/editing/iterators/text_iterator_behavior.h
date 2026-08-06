@@ -85,7 +85,7 @@ class CORE_EXPORT TextIteratorBehavior final {
 
  private:
   union {
-    unsigned all;
+    uint32_t all;
     struct {
       bool does_not_break_at_replaced_element : 1;
       bool emits_characters_between_all_visible_positions : 1;

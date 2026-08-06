@@ -11,24 +11,24 @@ namespace blink {
 
 TextSegments::Finder::Position::Position() = default;
 
-TextSegments::Finder::Position::Position(unsigned offset, Type type)
+TextSegments::Finder::Position::Position(wtf_size_t offset, Type type)
     : offset_(offset), type_(type) {
   DCHECK_NE(type, kNone);
 }
 
 // static
 TextSegments::Finder::Position TextSegments::Finder::Position::Before(
-    unsigned offset) {
+    wtf_size_t offset) {
   return Position(offset, kBefore);
 }
 
 // static
 TextSegments::Finder::Position TextSegments::Finder::Position::After(
-    unsigned offset) {
+    wtf_size_t offset) {
   return Position(offset, kAfter);
 }
 
-unsigned TextSegments::Finder::Position::Offset() const {
+wtf_size_t TextSegments::Finder::Position::Offset() const {
   DCHECK(type_ == kBefore || type_ == kAfter) << type_;
   return offset_;
 }
@@ -43,7 +43,7 @@ PositionInFlatTree TextSegments::FindBoundaryForward(
   for (auto inline_contents : TextOffsetMapping::ForwardRangeOf(position)) {
     const TextOffsetMapping mapping(inline_contents);
     const String text = mapping.GetText();
-    const unsigned offset =
+    const wtf_size_t offset =
         is_start_contents ? mapping.ComputeTextOffset(position) : 0;
     is_start_contents = false;
     const TextSegments::Finder::Position result = finder->Find(text, offset);
@@ -67,9 +67,9 @@ PositionInFlatTree TextSegments::FindBoundaryBackward(
   for (auto inline_contents : TextOffsetMapping::BackwardRangeOf(position)) {
     const TextOffsetMapping mapping(inline_contents);
     const String text = mapping.GetText();
-    const unsigned offset = is_start_contents
-                                ? mapping.ComputeTextOffset(position)
-                                : mapping.GetText().length();
+    const wtf_size_t offset = is_start_contents
+                                  ? mapping.ComputeTextOffset(position)
+                                  : mapping.GetText().length();
     is_start_contents = false;
     const TextSegments::Finder::Position result = finder->Find(text, offset);
     if (result.IsBefore())

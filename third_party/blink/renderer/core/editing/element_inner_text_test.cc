@@ -76,7 +76,7 @@ class TextVisitorImpl : public TextVisitor {
   explicit TextVisitorImpl(VisitedNodes& nodes) : nodes_(nodes) {}
 
   // TextVisitor:
-  void WillVisit(const Node& element, unsigned offset) override {
+  void WillVisit(const Node& element, wtf_size_t offset) override {
     nodes_.insert(&element);
   }
 

@@ -100,6 +100,7 @@
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 
 namespace blink {
@@ -999,7 +1000,7 @@ const ComputedStyle* GetComputedStyleForElementOrLayoutObject(
 String StringWithRebalancedWhitespace(const StringView& string,
                                       bool start_is_start_of_paragraph,
                                       bool should_emit_nbs_pbefore_end) {
-  unsigned length = string.length();
+  wtf_size_t length = string.length();
 
   StringBuilder rebalanced_string;
   rebalanced_string.ReserveCapacity(length);
@@ -1017,11 +1018,12 @@ String StringWithRebalancedWhitespace(const StringView& string,
   return rebalanced_string.ToString();
 }
 
-String RepeatString(const String& string, unsigned count) {
+String RepeatString(const String& string, wtf_size_t count) {
   StringBuilder builder;
   builder.ReserveCapacity(string.length() * count);
-  for (unsigned counter = 0; counter < count; ++counter)
+  for (wtf_size_t counter = 0; counter < count; ++counter) {
     builder.Append(string);
+  }
   return builder.ToString();
 }
 
@@ -1487,8 +1489,7 @@ Position ComputePositionForNodeRemoval(const Position& position,
     case PositionAnchorType::kOffsetInAnchor:
       container_node = position.ComputeContainerNode();
       if (container_node == node.parentNode() &&
-          static_cast<unsigned>(position.OffsetInContainerNode()) >
-              node.NodeIndex()) {
+          position.OffsetInContainerNode() > node.NodeIndex()) {
         return Position(container_node, position.OffsetInContainerNode() - 1);
       }
       if (!container_node ||

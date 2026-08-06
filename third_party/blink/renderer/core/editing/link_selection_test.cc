@@ -31,7 +31,7 @@ namespace blink {
 class LinkSelectionTestBase : public testing::Test {
  protected:
   enum DragFlag { kSendDownEvent = 1, kSendUpEvent = 1 << 1 };
-  using DragFlags = unsigned;
+  using DragFlags = uint8_t;
 
   void EmulateMouseDrag(const gfx::Point& down_point,
                         const gfx::Point& up_point,

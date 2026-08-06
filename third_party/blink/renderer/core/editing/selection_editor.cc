@@ -261,8 +261,7 @@ static Position ComputePositionForNodeInsertion(const Position& position,
     // Increase the offset value when new node is inserted before the current
     // position.
     if (container_node == node.parentNode() &&
-        static_cast<unsigned>(position.OffsetInContainerNode()) >
-            node.NodeIndex()) {
+        position.OffsetInContainerNode() > node.NodeIndex()) {
       return Position(container_node, position.OffsetInContainerNode() + 1);
     }
   }
@@ -389,9 +388,9 @@ void SelectionEditor::NodeWillBeRemoved(Node& node_to_be_removed) {
 static Position UpdatePositionAfterAdoptingTextReplacement(
     const Position& position,
     CharacterData* node,
-    unsigned offset,
-    unsigned old_length,
-    unsigned new_length) {
+    wtf_size_t offset,
+    wtf_size_t old_length,
+    wtf_size_t new_length) {
   if (position.AnchorNode() != node)
     return position;
 
@@ -428,9 +427,9 @@ static Position UpdatePositionAfterAdoptingTextReplacement(
 }
 
 void SelectionEditor::DidUpdateCharacterData(CharacterData* node,
-                                             unsigned offset,
-                                             unsigned old_length,
-                                             unsigned new_length) {
+                                             wtf_size_t offset,
+                                             wtf_size_t old_length,
+                                             wtf_size_t new_length) {
   // The fragment check is a performance optimization. See
   // http://trac.webkit.org/changeset/30062.
   if (selection_.IsNone() || !node || !node->isConnected()) {
@@ -448,7 +447,7 @@ static Position UpdatePostionAfterAdoptingTextNodesMerged(
     const Position& position,
     const Text& merged_node,
     const NodeWithIndex& node_to_be_removed_with_index,
-    unsigned old_length) {
+    wtf_size_t old_length) {
   Node* const anchor_node = position.AnchorNode();
   const Node& node_to_be_removed = node_to_be_removed_with_index.GetNode();
   switch (position.AnchorType()) {
@@ -481,7 +480,7 @@ static Position UpdatePostionAfterAdoptingTextNodesMerged(
 void SelectionEditor::DidMergeTextNodes(
     const Text& merged_node,
     const NodeWithIndex& node_to_be_removed_with_index,
-    unsigned old_length) {
+    wtf_size_t old_length) {
   if (selection_.IsNone()) {
     DidFinishDomMutation();
     return;
@@ -504,7 +503,7 @@ static Position UpdatePostionAfterAdoptingTextNodeSplit(
   // See:
   // http://www.w3.org/TR/DOM-Level-2-Traversal-Range/ranges.html#Level-2-Range-Mutation
   wtf_size_t position_offset = position.OffsetInContainerNode();
-  unsigned old_length = old_node.length();
+  wtf_size_t old_length = old_node.length();
   if (position_offset <= old_length)
     return position;
   return Position(To<Text>(old_node.nextSibling()),

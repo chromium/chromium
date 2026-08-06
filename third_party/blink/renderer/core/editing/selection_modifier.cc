@@ -54,7 +54,7 @@ namespace {
 
 // There are some cases where |SelectionModifier::ModifyWithPageGranularity()|
 // enters an infinite loop. Work around it by hard-limiting the iteration.
-const unsigned kMaxIterationForPageGranularityMovement = 1024;
+const wtf_size_t kMaxIterationForPageGranularityMovement = 1024;
 
 VisiblePositionInFlatTree LeftBoundaryOfLine(const VisiblePositionInFlatTree& c,
                                              TextDirection direction) {
@@ -1048,7 +1048,7 @@ bool SelectionModifier::ModifyWithPageGranularity(
 
   VisiblePositionInFlatTree result;
   VisiblePositionInFlatTree next;
-  unsigned iteration_count = 0;
+  wtf_size_t iteration_count = 0;
   for (VisiblePositionInFlatTree p = pos;
        iteration_count < kMaxIterationForPageGranularityMovement; p = next) {
     ++iteration_count;

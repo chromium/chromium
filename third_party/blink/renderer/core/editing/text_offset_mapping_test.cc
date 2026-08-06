@@ -639,7 +639,7 @@ TEST_F(TextOffsetMappingTest, ComputeTextOffsetWithBrokenImage) {
         TextOffsetMapping::FindBackwardInlineContents(position)}) {
     const TextOffsetMapping mapping(inline_contents);
     const String text = mapping.GetText();
-    const unsigned offset = mapping.ComputeTextOffset(position);
+    const wtf_size_t offset = mapping.ComputeTextOffset(position);
     EXPECT_LE(offset, text.length());
     EXPECT_EQ("A,B", text);
     EXPECT_EQ(2u, offset);

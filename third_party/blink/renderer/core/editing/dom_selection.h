@@ -63,14 +63,14 @@ class CORE_EXPORT DomSelection final : public ScriptWrappable,
   // Safari Selection Object API
   // These methods return the valid equivalents of internal editing positions.
   Node* baseNode() const;
-  unsigned baseOffset() const;
+  wtf_size_t baseOffset() const;
   Node* extentNode() const;
-  unsigned extentOffset() const;
+  wtf_size_t extentOffset() const;
   String type() const;
   void setBaseAndExtent(Node* base_node,
-                        unsigned base_offset,
+                        wtf_size_t base_offset,
                         Node* extent_node,
-                        unsigned extent_offset,
+                        wtf_size_t extent_offset,
                         ExceptionState& = ASSERT_NO_EXCEPTION);
   void modify(const String& alter,
               const String& direction,
@@ -83,16 +83,16 @@ class CORE_EXPORT DomSelection final : public ScriptWrappable,
   // reflect expansion.
   // These methods return the valid equivalents of internal editing positions.
   Node* anchorNode() const;
-  unsigned anchorOffset() const;
+  wtf_size_t anchorOffset() const;
   Node* focusNode() const;
-  unsigned focusOffset() const;
+  wtf_size_t focusOffset() const;
   bool isCollapsed() const;
-  unsigned rangeCount() const;
-  void collapse(Node*, unsigned offset, ExceptionState&);
+  wtf_size_t rangeCount() const;
+  void collapse(Node*, wtf_size_t offset, ExceptionState&);
   void collapseToEnd(ExceptionState&);
   void collapseToStart(ExceptionState&);
-  void extend(Node*, unsigned offset, ExceptionState&);
-  Range* getRangeAt(unsigned, ExceptionState&) const;
+  void extend(Node*, wtf_size_t offset, ExceptionState&);
+  Range* getRangeAt(wtf_size_t, ExceptionState&) const;
   void removeRange(Range*, ExceptionState&);
   void removeAllRanges();
   void addRange(Range*);
@@ -138,7 +138,7 @@ class CORE_EXPORT DomSelection final : public ScriptWrappable,
   bool IsAnchorFirstInSelection() const;
 
   Node* ShadowAdjustedNode(const Position&) const;
-  unsigned ShadowAdjustedOffset(const Position&) const;
+  wtf_size_t ShadowAdjustedOffset(const Position&) const;
 
   bool IsValidForPosition(Node*) const;
 

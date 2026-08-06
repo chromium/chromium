@@ -92,8 +92,8 @@ struct LayoutSelectionStatus {
   DISALLOW_NEW();
 
  public:
-  LayoutSelectionStatus(unsigned passed_start,
-                        unsigned passed_end,
+  LayoutSelectionStatus(wtf_size_t passed_start,
+                        wtf_size_t passed_end,
                         SelectSoftLineBreak passed_line_break)
       : start(passed_start), end(passed_end), line_break(passed_line_break) {
     DCHECK_LE(start, end);
@@ -106,8 +106,8 @@ struct LayoutSelectionStatus {
            line_break == other.line_break;
   }
 
-  unsigned start;
-  unsigned end;
+  wtf_size_t start;
+  wtf_size_t end;
   SelectSoftLineBreak line_break;
 };
 
@@ -117,8 +117,8 @@ struct LayoutTextSelectionStatus {
   STACK_ALLOCATED();
 
  public:
-  LayoutTextSelectionStatus(unsigned passed_start,
-                            unsigned passed_end,
+  LayoutTextSelectionStatus(wtf_size_t passed_start,
+                            wtf_size_t passed_end,
                             SelectionIncludeEnd passed_include_end)
       : start(passed_start), end(passed_end), include_end(passed_include_end) {
     DCHECK_LE(start, end);
@@ -129,8 +129,8 @@ struct LayoutTextSelectionStatus {
   }
   bool IsEmpty() const { return start == 0 && end == 0; }
 
-  unsigned start;
-  unsigned end;
+  wtf_size_t start;
+  wtf_size_t end;
   SelectionIncludeEnd include_end;
 };
 
@@ -343,7 +343,7 @@ class CORE_EXPORT FrameSelection final
   // Returns the fragment-local character offset of the character covered by
   // the block caret within |cursor|'s current text fragment, or std::nullopt
   // if the block caret does not overlap this fragment.
-  std::optional<unsigned> ComputeBlockCaretCharacterOffset(
+  std::optional<wtf_size_t> ComputeBlockCaretCharacterOffset(
       const InlineCursor& cursor) const;
 
   // Notifications from the Document.
@@ -351,12 +351,12 @@ class CORE_EXPORT FrameSelection final
   void DidChangeChildren(const ContainerNode::ChildrenChange& change);
   void DidMergeTextNodes(const Text& merged_node,
                          const NodeWithIndex& node_to_be_removed_with_index,
-                         unsigned old_length);
+                         wtf_size_t old_length);
   void DidSplitTextNode(const Text&);
   void DidUpdateCharacterData(CharacterData*,
-                              unsigned offset,
-                              unsigned old_length,
-                              unsigned new_length);
+                              wtf_size_t offset,
+                              wtf_size_t old_length,
+                              wtf_size_t new_length);
   void NodeChildrenWillBeRemoved(ContainerNode&);
   void NodeWillBeRemoved(Node&);
 

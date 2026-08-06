@@ -118,7 +118,7 @@ Node* DomSelection::anchorNode() const {
   return nullptr;
 }
 
-unsigned DomSelection::anchorOffset() const {
+wtf_size_t DomSelection::anchorOffset() const {
   TemporaryRange temp_range(this, PrimaryRangeOrNull());
   if (temp_range.GetRange()) {
     if (!DomWindow() || IsAnchorFirstInSelection()) {
@@ -140,7 +140,7 @@ Node* DomSelection::focusNode() const {
   return nullptr;
 }
 
-unsigned DomSelection::focusOffset() const {
+wtf_size_t DomSelection::focusOffset() const {
   TemporaryRange temp_range(this, PrimaryRangeOrNull());
   if (temp_range.GetRange()) {
     if (!DomWindow() || IsAnchorFirstInSelection()) {
@@ -155,7 +155,7 @@ Node* DomSelection::baseNode() const {
   return anchorNode();
 }
 
-unsigned DomSelection::baseOffset() const {
+wtf_size_t DomSelection::baseOffset() const {
   return anchorOffset();
 }
 
@@ -163,7 +163,7 @@ Node* DomSelection::extentNode() const {
   return focusNode();
 }
 
-unsigned DomSelection::extentOffset() const {
+wtf_size_t DomSelection::extentOffset() const {
   return focusOffset();
 }
 
@@ -221,7 +221,7 @@ String DomSelection::direction() const {
   return "backward";
 }
 
-unsigned DomSelection::rangeCount() const {
+wtf_size_t DomSelection::rangeCount() const {
   if (!IsAvailable())
     return 0;
   if (DocumentCachedRange())
@@ -246,7 +246,7 @@ unsigned DomSelection::rangeCount() const {
 
 // https://www.w3.org/TR/selection-api/#dom-selection-collapse
 void DomSelection::collapse(Node* node,
-                            unsigned offset,
+                            wtf_size_t offset,
                             ExceptionState& exception_state) {
   if (!IsAvailable())
     return;
@@ -366,9 +366,9 @@ void DomSelection::empty() {
 
 // https://www.w3.org/TR/selection-api/#dom-selection-setbaseandextent
 void DomSelection::setBaseAndExtent(Node* base_node,
-                                    unsigned base_offset,
+                                    wtf_size_t base_offset,
                                     Node* extent_node,
-                                    unsigned extent_offset,
+                                    wtf_size_t extent_offset,
                                     ExceptionState& exception_state) {
   if (!IsAvailable())
     return;
@@ -514,7 +514,7 @@ void DomSelection::modify(const String& alter_string,
 
 // https://www.w3.org/TR/selection-api/#dom-selection-extend
 void DomSelection::extend(Node* node,
-                          unsigned offset,
+                          wtf_size_t offset,
                           ExceptionState& exception_state) {
   DCHECK(node);
   if (!IsAvailable())
@@ -588,7 +588,7 @@ void DomSelection::extend(Node* node,
       SetSelectionOptions::Builder().SetIsDirectional(true).Build());
 }
 
-Range* DomSelection::getRangeAt(unsigned index,
+Range* DomSelection::getRangeAt(wtf_size_t index,
                                 ExceptionState& exception_state) const {
   if (!IsAvailable())
     return nullptr;
@@ -658,7 +658,7 @@ Position DomSelection::Rescope(
     return Position();
   }
   Node* node = position.ComputeContainerNode();
-  unsigned offset = position.ComputeOffsetInContainerNode();
+  wtf_size_t offset = position.ComputeOffsetInContainerNode();
   // 3. & 5. While node is a node, node's root is a shadow root, and
   // node's root is not a shadow-including inclusive ancestor of any of
   // shadowRoots, repeat these steps:
@@ -817,7 +817,7 @@ bool DomSelection::containsNode(const Node* n, bool allow_partial) const {
   if (DomWindow()->document() != n->GetDocument())
     return false;
 
-  unsigned node_index = n->NodeIndex();
+  wtf_size_t node_index = n->NodeIndex();
 
   // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.
@@ -919,7 +919,7 @@ Node* DomSelection::ShadowAdjustedNode(const Position& position) const {
   return adjusted_node->ParentOrShadowHostNode();
 }
 
-unsigned DomSelection::ShadowAdjustedOffset(const Position& position) const {
+wtf_size_t DomSelection::ShadowAdjustedOffset(const Position& position) const {
   if (position.IsNull())
     return 0;
 

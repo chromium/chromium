@@ -183,7 +183,7 @@ class CORE_EXPORT EditingStyle final : public GarbageCollected<EditingStyle> {
   // attribute, only its matched stylesheet rules.
   static const CSSPropertyValueSet* MatchedRulesStyleForElement(
       Element* element,
-      unsigned rules_to_include);
+      wtf_size_t rules_to_include);
 
  private:
   void Init(Node*, PropertiesToInclude);
