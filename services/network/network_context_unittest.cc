@@ -13143,6 +13143,71 @@ TEST_F(ConnectionAllowlistReportingTest,
       nonce, allowed_url, nak));
   VerifyReports(network_context.get(), {});
 }
+
+// When the enforced allowlist is null, all network requests and redirects are
+// allowed. This can happen when the response does not have the
+// "Connection-Allowlist" but the "Connection-Allowlist-Report-Only" header.
+TEST_F(ConnectionAllowlistReportingTest,
+       ConnectionAllowlistsReporting_NullEnforcedAllowlist) {
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithReporting();
+
+  base::UnguessableToken nonce = base::UnguessableToken::Create();
+  GURL allowed_url("https://allowed.example.com");
+
+  network::ConnectionAllowlist report_only;
+  report_only.allowlist.push_back(allowed_url.spec());
+  report_only.reporting_endpoint = "report-only-endpoint";
+
+  RestrictNetworkForIdWithAllowlists(network_context.get(), nonce,
+                                     /*enforced=*/std::nullopt,
+                                     std::move(report_only));
+
+  net::NetworkAnonymizationKey nak =
+      net::NetworkAnonymizationKey::CreateTransient();
+
+  GURL url("https://any.arbitrary.me");
+
+  // All network requests and redirects are allowed.
+  EXPECT_TRUE(network_context->IsNetworkForNetworkRestrictionsIdAndUrlAllowed(
+      nonce, url, nak, /*is_redirect=*/false));
+  EXPECT_TRUE(network_context->IsNetworkForNetworkRestrictionsIdAndUrlAllowed(
+      nonce, url, nak, /*is_redirect=*/true));
+}
+
+// When the enforced allowlist has an empty list of patterns, all network
+// requests and redirects are blocked.
+TEST_F(ConnectionAllowlistReportingTest,
+       ConnectionAllowlistsReporting_EmptyPatternEnforcedAllowlist) {
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithReporting();
+
+  base::UnguessableToken nonce = base::UnguessableToken::Create();
+  GURL allowed_url("https://allowed.example.com");
+
+  // The enforced allowlist has an empty list of patterns.
+  network::ConnectionAllowlist enforced;
+  enforced.allowlist = {};
+
+  network::ConnectionAllowlist report_only;
+  report_only.allowlist.push_back(allowed_url.spec());
+  report_only.reporting_endpoint = "report-only-endpoint";
+
+  RestrictNetworkForIdWithAllowlists(network_context.get(), nonce,
+                                     std::move(enforced),
+                                     std::move(report_only));
+
+  net::NetworkAnonymizationKey nak =
+      net::NetworkAnonymizationKey::CreateTransient();
+
+  GURL url("https://any.arbitrary.me");
+
+  // All network requests and redirects are blocked.
+  EXPECT_FALSE(network_context->IsNetworkForNetworkRestrictionsIdAndUrlAllowed(
+      nonce, url, nak, /*is_redirect=*/false));
+  EXPECT_FALSE(network_context->IsNetworkForNetworkRestrictionsIdAndUrlAllowed(
+      nonce, url, nak, /*is_redirect=*/true));
+}
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
 class EarlyCookieLoadOnPreconnectTest : public NetworkContextTest {
