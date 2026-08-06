@@ -627,7 +627,6 @@ public class StatusMediator
             mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ false);
             tintRes = mNavigationIconTintRes;
             iconRes = R.drawable.search_spark_black_24dp;
-            descRes = R.string.accessibility_omnibox_open_context_popup;
             doubleTapDescriptionRes = Resources.ID_NULL;
         } else if (mFuseboxLayoutModeSupplier.get() == FuseboxLayoutMode.TOOLBAR
                 && (mFuseboxStateSupplier.get() == FuseboxState.COMPACT
