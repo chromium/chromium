@@ -12,6 +12,7 @@
 #include "base/base_paths.h"
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -458,6 +459,9 @@ void InstallerDownloaderController::OnDownloadCompleted(
   base::UmaHistogramBoolean("Windows.InstallerDownloader.DownloadSucceed",
                             success);
   model_->PreventFutureDisplay();
+  if (success) {
+    model_->RecordDownloadCompleted();
+  }
 }
 
 void InstallerDownloaderController::SetActiveWebContentsCallbackForTesting(

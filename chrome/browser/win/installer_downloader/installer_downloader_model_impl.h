@@ -63,10 +63,14 @@ class InstallerDownloaderModelImpl : public InstallerDownloaderModel {
   bool CanShowInfobar() const override;
   void IncrementShowCount() override;
   void PreventFutureDisplay() override;
+  void RecordDownloadCompleted() override;
   bool ShouldByPassEligibilityCheck() const override;
 
  private:
   std::optional<base::FilePath> GetInstallerDestination() const;
+
+  bool IsCurrentCycleFinished() const;
+  int GetCurrentCycle() const;
 
   // Invoked when the installer download started.
   void OnInstallerDownloadCreated(const base::FilePath& expected_path,

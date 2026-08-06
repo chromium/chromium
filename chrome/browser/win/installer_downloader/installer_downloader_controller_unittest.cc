@@ -17,6 +17,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_constants.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_model.h"
@@ -57,6 +58,7 @@ class MockInstallerDownloaderModel : public InstallerDownloaderModel {
   MOCK_METHOD(bool, CanShowInfobar, (), (const, override));
   MOCK_METHOD(void, IncrementShowCount, (), (override));
   MOCK_METHOD(void, PreventFutureDisplay, (), (override));
+  MOCK_METHOD(void, RecordDownloadCompleted, (), (override));
   MOCK_METHOD(bool, ShouldByPassEligibilityCheck, (), (const, override));
 };
 
@@ -398,6 +400,7 @@ TEST_F(InstallerDownloaderControllerTest,
   ASSERT_TRUE(completion_callback);
 
   EXPECT_CALL(*mock_model_, PreventFutureDisplay()).Times(1);
+  EXPECT_CALL(*mock_model_, RecordDownloadCompleted()).Times(1);
   std::move(completion_callback).Run(/*success=*/true);
 }
 

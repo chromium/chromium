@@ -25,6 +25,22 @@ inline constexpr char kInstallerDownloaderPreventFutureDisplay[] =
 inline constexpr char kInstallerDownloaderBypassEligibilityCheck[] =
     "installer_downloader.bypass_eligibility_check_for_testing";
 
+// Int browser local state that stores how many re-engagement campaign cycles
+// have been started for the user.
+inline constexpr char kInstallerDownloaderCycleCount[] =
+    "installer_downloader.cycle_count";
+
+// Bool browser local state that indicates whether the installer download was
+// completed successfully, permanently suppressing future displays across all
+// re-engagement cycles.
+inline constexpr char kInstallerDownloaderDownloadCompleted[] =
+    "installer_downloader.download_completed";
+
+// Int browser local state that stores the total number of times the installer
+// downloader infobar has been shown across all cycles.
+inline constexpr char kInstallerDownloaderTotalShowCount[] =
+    "installer_downloader.total_show_count";
+
 }  // namespace installer_downloader::prefs
 
 #endif  // CHROME_BROWSER_WIN_INSTALLER_DOWNLOADER_INSTALLER_DOWNLOADER_PREF_NAMES_H_

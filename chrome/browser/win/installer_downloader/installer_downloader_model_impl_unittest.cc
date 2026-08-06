@@ -12,7 +12,9 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/win/cloud_synced_folder_checker.h"
+#include "chrome/browser/win/installer_downloader/installer_downloader_feature.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_pref_names.h"
 #include "chrome/browser/win/installer_downloader/system_info_provider.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -138,6 +140,172 @@ TEST_F(InstallerDownloaderModelTest, PreventFutureDisplayMethodWorks) {
   EXPECT_TRUE(GetLocalState().GetBoolean(
       prefs::kInstallerDownloaderPreventFutureDisplay));
   EXPECT_FALSE(model_->CanShowInfobar());
+}
+
+TEST_F(InstallerDownloaderModelTest,
+       ReengagementEnabledBypassesPreventFutureDisplayAfterCooldown) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kInstallerDownloaderReengagement,
+      {{"MaxCycleCount", "3"}, {"ReengagementCooldownDays", "60"}});
+
+  GetLocalState().SetBoolean(prefs::kInstallerDownloaderPreventFutureDisplay,
+                             true);
+  GetLocalState().SetInteger(prefs::kInstallerDownloaderInfobarShowCount, 1);
+  GetLocalState().SetTime(prefs::kInstallerDownloaderInfobarLastShowTime,
+                          base::Time::Now() - base::Days(61));
+
+  EXPECT_TRUE(model_->CanShowInfobar());
+}
+
+TEST_F(InstallerDownloaderModelTest,
+       ReengagementEnabledRespectsCooldownPeriodBetweenCycles) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kInstallerDownloaderReengagement,
+      {{"MaxCycleCount", "3"}, {"ReengagementCooldownDays", "60"}});
+
+  GetLocalState().SetBoolean(prefs::kInstallerDownloaderPreventFutureDisplay,
+                             true);
+  GetLocalState().SetInteger(prefs::kInstallerDownloaderInfobarShowCount, 1);
+  GetLocalState().SetTime(prefs::kInstallerDownloaderInfobarLastShowTime,
+                          base::Time::Now() - base::Days(10));
+
+  EXPECT_FALSE(model_->CanShowInfobar());
+}
+
+TEST_F(InstallerDownloaderModelTest,
+       ReengagementEnabledStartsNewCycleAfterCooldown) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kInstallerDownloaderReengagement,
+      {{"MaxCycleCount", "3"}, {"ReengagementCooldownDays", "60"}});
+
+  GetLocalState().SetBoolean(prefs::kInstallerDownloaderPreventFutureDisplay,
+                             false);
+  GetLocalState().SetInteger(prefs::kInstallerDownloaderInfobarShowCount, 3);
+  GetLocalState().SetTime(prefs::kInstallerDownloaderInfobarLastShowTime,
+                          base::Time::Now() - base::Days(61));
+
+  EXPECT_TRUE(model_->CanShowInfobar());
+  model_->IncrementShowCount();
+  EXPECT_EQ(2, GetLocalState().GetInteger(
+                   prefs::kInstallerDownloaderCycleCount));
+  EXPECT_EQ(1, GetLocalState().GetInteger(
+                   prefs::kInstallerDownloaderInfobarShowCount));
+  EXPECT_FALSE(GetLocalState().GetBoolean(
+                   prefs::kInstallerDownloaderPreventFutureDisplay));
+}
+
+TEST_F(InstallerDownloaderModelTest,
+       ReengagementEnabledAllowsUpToThreeShowsWithinCycle) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kInstallerDownloaderReengagement,
+      {{"MaxCycleCount", "3"}, {"ReengagementCooldownDays", "60"}});
+
+  // User is in Cycle 2.
+  GetLocalState().SetInteger(prefs::kInstallerDownloaderCycleCount, 2);
+  GetLocalState().SetBoolean(prefs::kInstallerDownloaderPreventFutureDisplay,
+                             false);
+  GetLocalState().SetInteger(prefs::kInstallerDownloaderInfobarShowCount, 1);
+
+  // Show 1 in Cycle 2 was shown. Still eligible for Show 2 in this cycle.
+  EXPECT_TRUE(model_->CanShowInfobar());
+  model_->IncrementShowCount();
+  EXPECT_EQ(2, GetLocalState().GetInteger(
+                   prefs::kInstallerDownloaderCycleCount));
+  EXPECT_EQ(2, GetLocalState().GetInteger(
+                   prefs::kInstallerDownloaderInfobarShowCount));
+
+  // Still eligible for Show 3 in this cycle.
+  EXPECT_TRUE(model_->CanShowInfobar());
+  model_->IncrementShowCount();
+  EXPECT_EQ(2, GetLocalState().GetInteger(
+                   prefs::kInstallerDownloaderCycleCount));
+  EXPECT_EQ(3, GetLocalState().GetInteger(
+                   prefs::kInstallerDownloaderInfobarShowCount));
+
+  // Cycle 2 is now finished (reached limit of 3 shows). Cannot show immediately.
+  EXPECT_FALSE(model_->CanShowInfobar());
+}
+
+TEST_F(InstallerDownloaderModelTest,
+       ReengagementEnabledRespectsMaxCycleCount) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kInstallerDownloaderReengagement,
+      {{"MaxCycleCount", "3"}, {"ReengagementCooldownDays", "60"}});
+
+  GetLocalState().SetBoolean(prefs::kInstallerDownloaderPreventFutureDisplay,
+                             true);
+  GetLocalState().SetInteger(prefs::kInstallerDownloaderCycleCount, 3);
+  GetLocalState().SetInteger(prefs::kInstallerDownloaderInfobarShowCount, 1);
+  GetLocalState().SetTime(prefs::kInstallerDownloaderInfobarLastShowTime,
+                          base::Time::Now() - base::Days(61));
+
+  EXPECT_FALSE(model_->CanShowInfobar());
+}
+
+TEST_F(InstallerDownloaderModelTest,
+       DownloadCompletedPermanentlyStopsDisplays) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kInstallerDownloaderReengagement,
+      {{"MaxCycleCount", "3"}, {"ReengagementCooldownDays", "60"}});
+
+  GetLocalState().SetBoolean(prefs::kInstallerDownloaderPreventFutureDisplay,
+                             true);
+  GetLocalState().SetInteger(prefs::kInstallerDownloaderInfobarShowCount, 1);
+  GetLocalState().SetTime(prefs::kInstallerDownloaderInfobarLastShowTime,
+                          base::Time::Now() - base::Days(61));
+
+  EXPECT_TRUE(model_->CanShowInfobar());
+  model_->RecordDownloadCompleted();
+  EXPECT_FALSE(model_->CanShowInfobar());
+}
+
+TEST_F(InstallerDownloaderModelTest, TotalShowCountIncrementedAcrossCycles) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kInstallerDownloaderReengagement,
+      {{"MaxCycleCount", "3"}, {"ReengagementCooldownDays", "60"}});
+
+  // Start from clean slate.
+  GetLocalState().SetInteger(prefs::kInstallerDownloaderTotalShowCount, 0);
+  GetLocalState().SetInteger(prefs::kInstallerDownloaderInfobarShowCount, 0);
+  GetLocalState().SetInteger(prefs::kInstallerDownloaderCycleCount, 0);
+
+  // Cycle 1, Show 1
+  model_->IncrementShowCount();
+  EXPECT_EQ(1, GetLocalState().GetInteger(
+                   prefs::kInstallerDownloaderTotalShowCount));
+  EXPECT_EQ(1, GetLocalState().GetInteger(
+                   prefs::kInstallerDownloaderInfobarShowCount));
+
+  // Cycle 1, Show 2
+  model_->IncrementShowCount();
+  EXPECT_EQ(2, GetLocalState().GetInteger(
+                   prefs::kInstallerDownloaderTotalShowCount));
+  EXPECT_EQ(2, GetLocalState().GetInteger(
+                   prefs::kInstallerDownloaderInfobarShowCount));
+
+  // Simulate cycle finish (dismissed)
+  model_->PreventFutureDisplay();
+
+  // Fast forward past cooldown
+  GetLocalState().SetTime(prefs::kInstallerDownloaderInfobarLastShowTime,
+                          base::Time::Now() - base::Days(61));
+
+  // Cycle 2, Show 1 (which is total show 3)
+  EXPECT_TRUE(model_->CanShowInfobar());
+  model_->IncrementShowCount();
+  EXPECT_EQ(3, GetLocalState().GetInteger(
+                   prefs::kInstallerDownloaderTotalShowCount));
+  EXPECT_EQ(1, GetLocalState().GetInteger(
+                   prefs::kInstallerDownloaderInfobarShowCount));
+  EXPECT_EQ(2, GetLocalState().GetInteger(
+                   prefs::kInstallerDownloaderCycleCount));
 }
 
 // This test verifies that when the Os version is ineligible, no additional
