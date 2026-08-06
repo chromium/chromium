@@ -8,8 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <memory>
-
 #include "base/base_export.h"
 #include "base/containers/span.h"
 #include "base/memory/aligned_memory.h"

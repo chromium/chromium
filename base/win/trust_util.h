@@ -5,8 +5,6 @@
 #ifndef BASE_WIN_TRUST_UTIL_H_
 #define BASE_WIN_TRUST_UTIL_H_
 
-#include <string>
-
 #include "base/base_export.h"
 #include "base/files/file_path.h"
 #include "base/win/scoped_wintrust_data.h"

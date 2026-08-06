@@ -8,8 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <array>
-
 #include "base/base_export.h"
 #include "base/containers/span.h"
 
