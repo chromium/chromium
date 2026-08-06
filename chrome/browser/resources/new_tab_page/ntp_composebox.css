@@ -119,9 +119,9 @@ cr-composebox-submit::part(submit) {
   flex-direction: row;
 }
 
-:host([submit-enabled]) cr-composebox-submit::part(submit) {
+:host([submit-enabled][searchbox-next-enabled]) cr-composebox-submit::part(submit) {
   inset-inline-end: 0;
-  margin-block: 12px 2px;
+  margin-block: 12px 4px;
   margin-inline: auto 10px;
   position: relative;
 }
