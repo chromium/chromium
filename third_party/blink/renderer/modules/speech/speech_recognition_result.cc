@@ -30,10 +30,9 @@
 namespace blink {
 
 namespace {
-// Quantize timestamps to 2ms precision to mitigate fingerprinting risks.
-constexpr base::TimeDelta kFuzzInterval = base::Milliseconds(2);
-
-double FuzzTimestamp(base::TimeDelta time) {
+double FuzzTimestamp(const base::TimeDelta& time) {
+  // Quantize timestamps to 2ms precision to mitigate fingerprinting risks.
+  constexpr base::TimeDelta kFuzzInterval = base::Milliseconds(2);
   return time.FloorToMultiple(kFuzzInterval).InMillisecondsF();
 }
 }  // namespace
