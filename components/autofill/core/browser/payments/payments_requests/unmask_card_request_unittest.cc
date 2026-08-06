@@ -115,10 +115,10 @@ TEST_F(UnmaskCardRequestTest, FidoChallengeReturned_ParseResponse) {
   GetRequest()->ParseResponse(response->GetDict());
 
   const UnmaskResponseDetails& response_details = GetParsedResponse();
-  EXPECT_EQ("fake_context_token", response_details.context_token);
+  EXPECT_EQ(response_details.context_token, "fake_context_token");
   // Verify the FIDO request challenge is correctly parsed.
-  EXPECT_EQ("fake_fido_challenge",
-            *response_details.fido_request_options.FindString("challenge"));
+  EXPECT_EQ(*response_details.fido_request_options.FindString("challenge"),
+            "fake_fido_challenge");
 
   // Verify that the response is considered complete.
   EXPECT_TRUE(GetRequest()->IsResponseComplete());
@@ -263,10 +263,10 @@ TEST_P(VirtualCardUnmaskCardRequestTest,
   GetRequest()->ParseResponse(response->GetDict());
 
   const UnmaskResponseDetails& response_details = GetParsedResponse();
-  EXPECT_EQ("fake_context_token", response_details.context_token);
+  EXPECT_EQ(response_details.context_token, "fake_context_token");
   // Verify the FIDO request challenge is correctly parsed.
-  EXPECT_EQ("fake_fido_challenge",
-            *response_details.fido_request_options.FindString("challenge"));
+  EXPECT_EQ(*response_details.fido_request_options.FindString("challenge"),
+            "fake_fido_challenge");
 
   // Verify the six (or seven, if 3DS is enabled) challenge options are two SMS
   // OTP challenge options, two CVC challenge options, two email OTP challenge
@@ -278,62 +278,62 @@ TEST_P(VirtualCardUnmaskCardRequestTest,
 
   const CardUnmaskChallengeOption& challenge_option_1 =
       response_details.card_unmask_challenge_options[0];
-  EXPECT_EQ(CardUnmaskChallengeOptionType::kSmsOtp, challenge_option_1.type);
-  EXPECT_EQ("fake_challenge_id_1", challenge_option_1.id.value());
-  EXPECT_EQ(u"(***)-***-1234", challenge_option_1.challenge_info);
-  EXPECT_EQ(6u, challenge_option_1.challenge_input_length);
+  EXPECT_EQ(challenge_option_1.type, CardUnmaskChallengeOptionType::kSmsOtp);
+  EXPECT_EQ(challenge_option_1.id.value(), "fake_challenge_id_1");
+  EXPECT_EQ(challenge_option_1.challenge_info, u"(***)-***-1234");
+  EXPECT_EQ(challenge_option_1.challenge_input_length, 6u);
 
   const CardUnmaskChallengeOption& challenge_option_2 =
       response_details.card_unmask_challenge_options[1];
-  EXPECT_EQ(CardUnmaskChallengeOptionType::kSmsOtp, challenge_option_2.type);
-  EXPECT_EQ("fake_challenge_id_2", challenge_option_2.id.value());
-  EXPECT_EQ(u"(***)-***-5678", challenge_option_2.challenge_info);
-  EXPECT_EQ(5u, challenge_option_2.challenge_input_length);
+  EXPECT_EQ(challenge_option_2.type, CardUnmaskChallengeOptionType::kSmsOtp);
+  EXPECT_EQ(challenge_option_2.id.value(), "fake_challenge_id_2");
+  EXPECT_EQ(challenge_option_2.challenge_info, u"(***)-***-5678");
+  EXPECT_EQ(challenge_option_2.challenge_input_length, 5u);
 
   const CardUnmaskChallengeOption& challenge_option_3 =
       response_details.card_unmask_challenge_options[2];
-  EXPECT_EQ(CardUnmaskChallengeOptionType::kCvc, challenge_option_3.type);
-  EXPECT_EQ("fake_challenge_id_3", challenge_option_3.id.value());
+  EXPECT_EQ(challenge_option_3.type, CardUnmaskChallengeOptionType::kCvc);
+  EXPECT_EQ(challenge_option_3.id.value(), "fake_challenge_id_3");
   EXPECT_EQ(challenge_option_3.challenge_info,
             u"This is the 3-digit code on the back of your card");
-  EXPECT_EQ(3u, challenge_option_3.challenge_input_length);
-  EXPECT_EQ(CvcPosition::kBackOfCard, challenge_option_3.cvc_position);
+  EXPECT_EQ(challenge_option_3.challenge_input_length, 3u);
+  EXPECT_EQ(challenge_option_3.cvc_position, CvcPosition::kBackOfCard);
 
   const CardUnmaskChallengeOption& challenge_option_4 =
       response_details.card_unmask_challenge_options[3];
-  EXPECT_EQ(CardUnmaskChallengeOptionType::kCvc, challenge_option_4.type);
-  EXPECT_EQ("fake_challenge_id_4", challenge_option_4.id.value());
+  EXPECT_EQ(challenge_option_4.type, CardUnmaskChallengeOptionType::kCvc);
+  EXPECT_EQ(challenge_option_4.id.value(), "fake_challenge_id_4");
   EXPECT_EQ(challenge_option_4.challenge_info,
             u"This is the 4-digit code on the front of your card");
-  EXPECT_EQ(4u, challenge_option_4.challenge_input_length);
-  EXPECT_EQ(CvcPosition::kFrontOfCard, challenge_option_4.cvc_position);
+  EXPECT_EQ(challenge_option_4.challenge_input_length, 4u);
+  EXPECT_EQ(challenge_option_4.cvc_position, CvcPosition::kFrontOfCard);
 
   const CardUnmaskChallengeOption& challenge_option_5 =
       response_details.card_unmask_challenge_options[4];
-  EXPECT_EQ(CardUnmaskChallengeOptionType::kEmailOtp, challenge_option_5.type);
-  EXPECT_EQ("fake_challenge_id_5", challenge_option_5.id.value());
-  EXPECT_EQ(u"a******b@google.com", challenge_option_5.challenge_info);
-  EXPECT_EQ(6u, challenge_option_5.challenge_input_length);
+  EXPECT_EQ(challenge_option_5.type, CardUnmaskChallengeOptionType::kEmailOtp);
+  EXPECT_EQ(challenge_option_5.id.value(), "fake_challenge_id_5");
+  EXPECT_EQ(challenge_option_5.challenge_info, u"a******b@google.com");
+  EXPECT_EQ(challenge_option_5.challenge_input_length, 6u);
 
   const CardUnmaskChallengeOption& challenge_option_6 =
       response_details.card_unmask_challenge_options[5];
-  EXPECT_EQ(CardUnmaskChallengeOptionType::kEmailOtp, challenge_option_6.type);
-  EXPECT_EQ("fake_challenge_id_6", challenge_option_6.id.value());
-  EXPECT_EQ(u"c******d@google.com", challenge_option_6.challenge_info);
-  EXPECT_EQ(4u, challenge_option_6.challenge_input_length);
+  EXPECT_EQ(challenge_option_6.type, CardUnmaskChallengeOptionType::kEmailOtp);
+  EXPECT_EQ(challenge_option_6.id.value(), "fake_challenge_id_6");
+  EXPECT_EQ(challenge_option_6.challenge_info, u"c******d@google.com");
+  EXPECT_EQ(challenge_option_6.challenge_input_length, 4u);
 
   if (IsVcn3dsEnabled()) {
     const CardUnmaskChallengeOption& challenge_option_7 =
         response_details.card_unmask_challenge_options[6];
-    EXPECT_EQ(CardUnmaskChallengeOptionType::kThreeDomainSecure,
-              challenge_option_7.type);
-    EXPECT_EQ("fake_challenge_id_7", challenge_option_7.id.value());
+    EXPECT_EQ(challenge_option_7.type,
+              CardUnmaskChallengeOptionType::kThreeDomainSecure);
+    EXPECT_EQ(challenge_option_7.id.value(), "fake_challenge_id_7");
     EXPECT_EQ(GURL("https://example.com/"),
               challenge_option_7.vcn_3ds_metadata->url_to_open);
-    EXPECT_EQ("token",
-              challenge_option_7.vcn_3ds_metadata->success_query_param_name);
-    EXPECT_EQ("failure",
-              challenge_option_7.vcn_3ds_metadata->failure_query_param_name);
+    EXPECT_EQ(challenge_option_7.vcn_3ds_metadata->success_query_param_name,
+              "token");
+    EXPECT_EQ(challenge_option_7.vcn_3ds_metadata->failure_query_param_name,
+              "failure");
     EXPECT_EQ(
         l10n_util::GetStringUTF16(
             IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_THREE_DOMAIN_SECURE_CHALLENGE_INFO),
