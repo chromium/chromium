@@ -18445,9 +18445,7 @@
                         "ime_allowlist": "[\"xkb:es::spa\"]"
                     },
                     "enable_features": [
-                        "OrcaDogfood",
-                        "OrcaInternationalize",
-                        "OrcaUseL10nStrings"
+                        "OrcaDogfood"
                     ]
                 },
                 {

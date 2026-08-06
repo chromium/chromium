@@ -11,8 +11,6 @@ namespace ash::input_method {
 
 std::string GetSystemLocale();
 
-bool ShouldUseL10nStrings();
-
 }  // namespace ash::input_method
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_HELPERS_H_

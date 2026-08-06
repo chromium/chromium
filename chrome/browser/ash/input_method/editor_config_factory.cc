@@ -13,8 +13,6 @@
 namespace ash::input_method {
 namespace {
 
-constexpr char kDefaultLanguageCode[] = "en";
-
 orca::mojom::EditorConfigPtr EnglishConfig() {
   std::vector<orca::mojom::PresetTextQueryType> allowed;
   if (base::FeatureList::IsEnabled(features::kOrcaElaborate)) {
@@ -37,9 +35,7 @@ orca::mojom::EditorConfigPtr EnglishConfig() {
   }
   return orca::mojom::EditorConfig::New(
       /*allowed_types=*/std::move(allowed),
-      /*language_code=*/ShouldUseL10nStrings()
-          ? GetSystemLocale()
-          : std::string(kDefaultLanguageCode));
+      /*language_code=*/GetSystemLocale());
 }
 
 orca::mojom::EditorConfigPtr InternationalizedConfig() {
@@ -64,9 +60,7 @@ orca::mojom::EditorConfigPtr InternationalizedConfig() {
   }
   return orca::mojom::EditorConfig::New(
       /*allowed_types=*/std::move(allowed),
-      /*language_code=*/ShouldUseL10nStrings()
-          ? GetSystemLocale()
-          : std::string(kDefaultLanguageCode));
+      /*language_code=*/GetSystemLocale());
 }
 
 }  // namespace

@@ -6,30 +6,14 @@
 
 #include <string>
 
-#include "base/containers/fixed_flat_set.h"
 #include "chrome/browser/browser_process.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "ui/gfx/range/range.h"
 
 namespace ash::input_method {
-
-namespace {
-
-constexpr auto kAllowedLanguagesForShowingL10nStrings =
-    base::MakeFixedFlatSet<std::string_view>({"de", "en", "en-GB", "fr", "ja"});
-
-}
 
 std::string GetSystemLocale() {
   return g_browser_process != nullptr
              ? g_browser_process->GetApplicationLocale()
              : "";
-}
-
-bool ShouldUseL10nStrings() {
-  return chromeos::features::IsOrcaUseL10nStringsEnabled() ||
-         (chromeos::features::IsOrcaInternationalizeEnabled() &&
-          kAllowedLanguagesForShowingL10nStrings.contains(GetSystemLocale()));
 }
 
 }  // namespace ash::input_method

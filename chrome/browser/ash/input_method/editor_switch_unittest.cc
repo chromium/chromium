@@ -677,8 +677,7 @@ TEST_P(EditorSwitchDenylistTest, IsBlockedWhenVisitingUrlInDenylist) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{chromeos::features::kOrca,
-                            chromeos::features::kFeatureManagementOrca,
-                            chromeos::features::kOrcaInternationalize},
+                            chromeos::features::kFeatureManagementOrca},
       /*disabled_features=*/{ash::features::kOrcaUseAccountCapabilities,
                              ash::features::kOrcaOnWorkspace});
   ScopedBrowserLocale browser_locale("en");
