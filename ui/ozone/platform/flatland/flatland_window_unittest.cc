@@ -15,6 +15,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/fuchsia/koid.h"
 #include "base/fuchsia/scoped_service_publisher.h"

@@ -7,7 +7,6 @@
 
 #include <fuchsia/ui/views/cpp/fidl.h>
 #include <lib/zx/eventpair.h>
-#include <utility>
 
 #include "base/component_export.h"
 
