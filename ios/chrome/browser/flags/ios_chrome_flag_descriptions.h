@@ -52,10 +52,6 @@ inline constexpr char kAiAvatarRingIosName[] = "AiAvatarRing";
 inline constexpr char kAiAvatarRingIosDescription[] =
     "Display a ring around the avatar if the primary account has a AI Tier";
 
-inline constexpr char kAimCobrowseHeaderName[] = "AimCobrowseHeader";
-inline constexpr char kAimCobrowseHeaderDescription[] =
-    "Changes the design of the AIM cobrowse header.";
-
 inline constexpr char kAimUrlNavigationFetchEnabledName[] =
     "AimUrlNavigationFetchEnabled";
 inline constexpr char kAimUrlNavigationFetchEnabledDescription[] =

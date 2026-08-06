@@ -804,14 +804,6 @@ BASE_DECLARE_FEATURE(kDisableComposeboxFromAIMNTP);
 // Returns true if the DisableComposeboxFromAIMNTP feature is enabled.
 bool IsDisableComposeboxFromAIMNTPEnabled();
 
-extern const char kAIMCobrowseHeaderParam[];
-extern const char kAIMCobrowseHeaderParamOptionA[];
-extern const char kAIMCobrowseHeaderParamOptionB[];
-extern const char kAIMCobrowseHeaderParamOptionC[];
-
-// Variation for the Cobrowse header.
-BASE_DECLARE_FEATURE(kAIMCobrowseHeader);
-
 // Enables recording the number of recent days with active sessions.
 BASE_DECLARE_FEATURE(kRecordRecentActiveDays);
 
