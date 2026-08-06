@@ -563,6 +563,11 @@ void ReadAnythingUntrustedPageHandler::TreeRemoved(ui::AXTreeID ax_tree_id) {
 
 void ReadAnythingUntrustedPageHandler::GetDependencyParserModel(
     GetDependencyParserModelCallback callback) {
+  if (!features::IsReadAnythingReadAloudPhraseHighlightingEnabled()) {
+    std::move(callback).Run(base::File());
+    return;
+  }
+
   DependencyParserModelLoader* loader =
       DependencyParserModelLoaderFactory::GetForProfile(profile_);
   if (!loader) {

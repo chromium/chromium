@@ -2491,24 +2491,27 @@ void ReadAnythingAppController::OnConnected() {
 
   // Asynchronously check the availability of the sequence-bound dependency
   // parser model used by phrase-based highlighting.
-  read_aloud_model_.GetDependencyParserModel()
-      .AsyncCall(&DependencyParserModel::IsAvailable)
-      .Then(base::BindOnce(&ReadAnythingAppController::
-                               OnDependencyParserModelAvailabilityChecked,
-                           weak_ptr_factory_.GetWeakPtr()));
+  if (features::IsReadAnythingReadAloudPhraseHighlightingEnabled()) {
+    read_aloud_model_.GetDependencyParserModel()
+        .AsyncCall(&DependencyParserModel::IsAvailable)
+        .Then(base::BindOnce(&ReadAnythingAppController::
+                                 OnDependencyParserModelAvailabilityChecked,
+                             weak_ptr_factory_.GetWeakPtr()));
+  }
+  SetDistillationState(
+      read_anything::mojom::ReadAnythingDistillationState::kNotAttempted);
 }
 
 void ReadAnythingAppController::OnDependencyParserModelAvailabilityChecked(
     bool is_available) {
-  if (is_available) {
+  if (!features::IsReadAnythingReadAloudPhraseHighlightingEnabled() ||
+      is_available) {
     return;
   }
 
   page_handler_->GetDependencyParserModel(
       base::BindOnce(&ReadAnythingAppController::UpdateDependencyParserModel,
                      weak_ptr_factory_.GetWeakPtr()));
-  SetDistillationState(
-      read_anything::mojom::ReadAnythingDistillationState::kNotAttempted);
 }
 
 void ReadAnythingAppController::OnCopy() const {

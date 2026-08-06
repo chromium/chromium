@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -2828,6 +2829,47 @@ TEST_F(ReadAnythingAppControllerTest,
   model.AsyncCall(&DependencyParserModel::IsAvailable)
       .Then(future.GetCallback());
   EXPECT_FALSE(future.Get());
+}
+
+TEST_F(
+    ReadAnythingAppControllerTest,
+    OnDependencyParserModelAvailabilityChecked_Unavailable_RequestsModelWithoutChangingDistillationState) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kReadAnythingReadAloudPhraseHighlighting);
+
+  // Set distillation state to an active state.
+  model().set_distillation_state(
+      read_anything::mojom::ReadAnythingDistillationState::
+          kDistillationWithContent);
+
+  EXPECT_CALL(page_handler_, GetDependencyParserModel(testing::_))
+      .Times(1)
+      .WillOnce(base::test::RunOnceCallback<0>(base::File()));
+  EXPECT_CALL(page_handler_, OnDistillationStateChanged(testing::_)).Times(0);
+
+  controller().OnDependencyParserModelAvailabilityChecked(
+      /*is_available=*/false);
+  page_handler_.FlushForTesting();
+
+  // Distillation state should remain unchanged.
+  EXPECT_EQ(model().distillation_state(),
+            read_anything::mojom::ReadAnythingDistillationState::
+                kDistillationWithContent);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnDependencyParserModelAvailabilityChecked_FeatureDisabled_DoesNothing) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kReadAnythingReadAloudPhraseHighlighting);
+
+  EXPECT_CALL(page_handler_, GetDependencyParserModel(testing::_)).Times(0);
+  EXPECT_CALL(page_handler_, OnDistillationStateChanged(testing::_)).Times(0);
+
+  controller().OnDependencyParserModelAvailabilityChecked(
+      /*is_available=*/false);
+  page_handler_.FlushForTesting();
 }
 
 TEST_F(ReadAnythingAppControllerTest,
