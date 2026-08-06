@@ -21,6 +21,9 @@ class AutofillClient;
 class AutofillField;
 class EntityInstance;
 
+// Returns whether `attributes` satisfy at least one import constraint of
+// `entity_type`. If `entity_type` specifies no import constraints, returns
+// true.
 bool AttributesMeetImportConstraints(EntityType entity_type,
                                      DenseSet<AttributeType> attributes);
 

@@ -417,7 +417,8 @@ class EntityType final {
   // An import constraint is a precondition for importing an EntityInstance on
   // form submission or from 1P sources: it is a set of attributes all of which
   // the instance must set.
-  // At least one of the import constraints must be satisfied.
+  // If no import constraints are specified, constraints are trivially met.
+  // Otherwise, at least one of the import constraints must be satisfied.
   //
   // For example, for a passport the import constraints may be {number} and
   // {name, country}. Then it suffices for an instances to define either the

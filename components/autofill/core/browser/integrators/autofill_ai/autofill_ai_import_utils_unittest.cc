@@ -484,5 +484,21 @@ TEST_F(AutofillAiImportUtilsTest, MaybeGetLocalizedDate) {
   }
 }
 
+// Tests that if an entity type specifies no import constraints,
+// AttributesMeetImportConstraints returns true.
+TEST(AttributesMeetImportConstraintsTest, EmptyImportConstraints) {
+  EntityType flight_reservation =
+      EntityType(EntityTypeName::kFlightReservation);
+  ASSERT_TRUE(flight_reservation.import_constraints().empty());
+  DenseSet<AttributeType> empty_attributes;
+  DenseSet<AttributeType> any_attributes{
+      AttributeType(kFlightReservationConfirmationCode)};
+
+  EXPECT_TRUE(
+      AttributesMeetImportConstraints(flight_reservation, empty_attributes));
+  EXPECT_TRUE(
+      AttributesMeetImportConstraints(flight_reservation, any_attributes));
+}
+
 }  // namespace
 }  // namespace autofill

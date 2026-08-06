@@ -63,7 +63,8 @@ bool IsEntityImportable(const AutofillClient& client,
 
 bool AttributesMeetImportConstraints(EntityType entity_type,
                                      DenseSet<AttributeType> attributes) {
-  return std::ranges::any_of(entity_type.import_constraints(),
+  return entity_type.import_constraints().empty() ||
+         std::ranges::any_of(entity_type.import_constraints(),
                              [&](const DenseSet<AttributeType>& constraint) {
                                return attributes.contains_all(constraint);
                              });
