@@ -13,6 +13,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.ResolveInfo;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
@@ -165,6 +166,14 @@ public class WebappsUtilsTest {
         homeResolveInfo.activityInfo.name = "LauncherActivity";
         mShadowPackageManager.addResolveInfoForIntent(homeIntent, homeResolveInfo);
 
+        Intent installIntent = new Intent("com.android.launcher.action.INSTALL_SHORTCUT");
+        installIntent.setPackage(launcherPackage);
+        ResolveInfo receiverResolveInfo = new ResolveInfo();
+        receiverResolveInfo.activityInfo = new ActivityInfo();
+        receiverResolveInfo.activityInfo.packageName = launcherPackage;
+        receiverResolveInfo.activityInfo.name = "InstallShortcutReceiver";
+        mShadowPackageManager.addResolveInfoForIntent(installIntent, receiverResolveInfo);
+
         Bitmap icon = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
         Intent intent = new Intent(Intent.ACTION_VIEW);
 
@@ -178,5 +187,111 @@ public class WebappsUtilsTest {
         assertEquals("title", broadcast.getStringExtra(Intent.EXTRA_SHORTCUT_NAME));
         assertEquals(intent, broadcast.getParcelableExtra(Intent.EXTRA_SHORTCUT_INTENT));
         assertEquals(icon, broadcast.getParcelableExtra(Intent.EXTRA_SHORTCUT_ICON));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Webapp"})
+    public void
+            testIsAddToHomeIntentSupported_ShortcutManagerNotSupported_ReceiverInDifferentSystemPackage() {
+        mShadowShortcutManager.setIsRequestPinShortcutSupported(false);
+
+        // Set up default launcher that DOES NOT support shortcuts.
+        String launcherPackage = "com.example.launcher";
+        Intent homeIntent = new Intent(Intent.ACTION_MAIN);
+        homeIntent.addCategory(Intent.CATEGORY_HOME);
+        ResolveInfo homeResolveInfo = new ResolveInfo();
+        homeResolveInfo.activityInfo = new ActivityInfo();
+        homeResolveInfo.activityInfo.packageName = launcherPackage;
+        homeResolveInfo.activityInfo.name = "LauncherActivity";
+        mShadowPackageManager.addResolveInfoForIntent(homeIntent, homeResolveInfo);
+
+        // Register a system receiver in a different package.
+        String systemReceiverPackage = "com.oem.system.receiver";
+        Intent installIntent = new Intent("com.android.launcher.action.INSTALL_SHORTCUT");
+        ResolveInfo receiverResolveInfo = new ResolveInfo();
+        receiverResolveInfo.activityInfo = new ActivityInfo();
+        receiverResolveInfo.activityInfo.packageName = systemReceiverPackage;
+        receiverResolveInfo.activityInfo.name = "InstallShortcutReceiver";
+        receiverResolveInfo.activityInfo.applicationInfo = new ApplicationInfo();
+        receiverResolveInfo.activityInfo.applicationInfo.flags = ApplicationInfo.FLAG_SYSTEM;
+        mShadowPackageManager.addResolveInfoForIntent(installIntent, receiverResolveInfo);
+
+        assertTrue(WebappsUtils.isAddToHomeIntentSupported());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Webapp"})
+    public void
+            testAddShortcutToHomescreen_ShortcutManagerNotSupported_TargetedToSystemReceiverPackage() {
+        mShadowShortcutManager.setIsRequestPinShortcutSupported(false);
+
+        // Set up default launcher that DOES NOT support shortcuts.
+        String launcherPackage = "com.example.launcher";
+        Intent homeIntent = new Intent(Intent.ACTION_MAIN);
+        homeIntent.addCategory(Intent.CATEGORY_HOME);
+        ResolveInfo homeResolveInfo = new ResolveInfo();
+        homeResolveInfo.activityInfo = new ActivityInfo();
+        homeResolveInfo.activityInfo.packageName = launcherPackage;
+        homeResolveInfo.activityInfo.name = "LauncherActivity";
+        mShadowPackageManager.addResolveInfoForIntent(homeIntent, homeResolveInfo);
+
+        // Register a system receiver in a different package.
+        String systemReceiverPackage = "com.oem.system.receiver";
+        Intent installIntent = new Intent("com.android.launcher.action.INSTALL_SHORTCUT");
+        ResolveInfo receiverResolveInfo = new ResolveInfo();
+        receiverResolveInfo.activityInfo = new ActivityInfo();
+        receiverResolveInfo.activityInfo.packageName = systemReceiverPackage;
+        receiverResolveInfo.activityInfo.name = "InstallShortcutReceiver";
+        receiverResolveInfo.activityInfo.applicationInfo = new ApplicationInfo();
+        receiverResolveInfo.activityInfo.applicationInfo.flags = ApplicationInfo.FLAG_SYSTEM;
+        mShadowPackageManager.addResolveInfoForIntent(installIntent, receiverResolveInfo);
+
+        Bitmap icon = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+
+        WebappsUtils.addShortcutToHomescreen("id", "title", icon, false, intent);
+
+        List<Intent> broadcasts = mShadowApplication.getBroadcastIntents();
+        assertEquals(1, broadcasts.size());
+        Intent broadcast = broadcasts.get(0);
+        assertEquals("com.android.launcher.action.INSTALL_SHORTCUT", broadcast.getAction());
+        assertEquals(
+                systemReceiverPackage, broadcast.getPackage()); // Should target system receiver
+        assertEquals("title", broadcast.getStringExtra(Intent.EXTRA_SHORTCUT_NAME));
+        assertEquals(intent, broadcast.getParcelableExtra(Intent.EXTRA_SHORTCUT_INTENT));
+        assertEquals(icon, broadcast.getParcelableExtra(Intent.EXTRA_SHORTCUT_ICON));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Webapp"})
+    public void
+            testIsAddToHomeIntentSupported_ShortcutManagerNotSupported_ReceiverInDifferentNonSystemPackage() {
+        mShadowShortcutManager.setIsRequestPinShortcutSupported(false);
+
+        // Set up default launcher that DOES NOT support shortcuts.
+        String launcherPackage = "com.example.launcher";
+        Intent homeIntent = new Intent(Intent.ACTION_MAIN);
+        homeIntent.addCategory(Intent.CATEGORY_HOME);
+        ResolveInfo homeResolveInfo = new ResolveInfo();
+        homeResolveInfo.activityInfo = new ActivityInfo();
+        homeResolveInfo.activityInfo.packageName = launcherPackage;
+        homeResolveInfo.activityInfo.name = "LauncherActivity";
+        mShadowPackageManager.addResolveInfoForIntent(homeIntent, homeResolveInfo);
+
+        // Register a NON-system receiver in a different package.
+        String nonSystemReceiverPackage = "com.thirdparty.app";
+        Intent installIntent = new Intent("com.android.launcher.action.INSTALL_SHORTCUT");
+        ResolveInfo receiverResolveInfo = new ResolveInfo();
+        receiverResolveInfo.activityInfo = new ActivityInfo();
+        receiverResolveInfo.activityInfo.packageName = nonSystemReceiverPackage;
+        receiverResolveInfo.activityInfo.name = "InstallShortcutReceiver";
+        receiverResolveInfo.activityInfo.applicationInfo = new ApplicationInfo();
+        // Do NOT set FLAG_SYSTEM
+        mShadowPackageManager.addResolveInfoForIntent(installIntent, receiverResolveInfo);
+
+        assertFalse(WebappsUtils.isAddToHomeIntentSupported());
     }
 }
