@@ -519,24 +519,30 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Accelerators.ActivateDeskByIndex"
-    enum="ActivateDeskByIndex" expires_after="2026-05-11">
+    enum="ActivateDeskByIndex" expires_after="2027-05-11">
   <owner>jimmyxgong@chromium.org</owner>
   <owner>longbowei@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
     Record which desk the user switches to. Fires when the user switches desk to
     a specific index using a keyboard shortcut.
+
+    Warning: this histogram was expired from 2026-05-11 to 2026-08-06; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Ash.Accelerators.OverviewBasedScreenshot.{ActionName}"
-    enum="OverviewBasedScreenshotKeyboardType" expires_after="2026-05-11">
+    enum="OverviewBasedScreenshotKeyboardType" expires_after="2027-05-11">
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
     Record which type of keyboard activates a given screenshot action utilizing
     the overview key. The options are [Non-ChromeOS Keyboard, ChromeOS Keyboard
     with a screenshot key, or ChromeOS Keyboard without a screesnhot key].
+
+    Warning: this histogram was expired from 2026-05-11 to 2026-08-06; data may
+    be missing.
   </summary>
   <token key="ActionName">
     <variant name="TakePartialScreenshot"/>
@@ -546,10 +552,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Accelerators.TogglePicker.Action"
-    enum="TogglePickerAction" expires_after="2026-05-11">
+    enum="TogglePickerAction" expires_after="2027-05-11">
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
-  <summary>Action triggered by pressing toggle picker accelerator.</summary>
+  <summary>
+    Action triggered by pressing toggle picker accelerator.
+
+    Warning: this histogram was expired from 2026-05-11 to 2026-08-06; data may
+    be missing.
+  </summary>
 </histogram>
 
 <histogram name="Ash.Accelerators.WindowSnap"
