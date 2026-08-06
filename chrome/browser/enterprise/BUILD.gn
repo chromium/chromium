@@ -256,7 +256,6 @@ source_set("enterprise") {
 
   if (is_linux || is_win || is_mac || is_chromeos) {
     public += [
-      "connectors/device_trust/device_trust_connector_service.h",
       "connectors/device_trust/device_trust_connector_service_factory.h",
       "connectors/device_trust/device_trust_service.h",
       "connectors/device_trust/device_trust_service_factory.h",
@@ -273,6 +272,7 @@ source_set("enterprise") {
       "//components/device_signals/core/browser",
       "//components/device_signals/core/common",
       "//components/enterprise/device_trust",
+      "//components/enterprise/device_trust/core:device_trust_connector_service",
       "//components/enterprise/device_trust/core/attestation",
     ]
   }
@@ -622,9 +622,6 @@ source_set("impl") {
       "//chromeos/components/mgs",
       "//chromeos/dbus/constants",
       "//components/device_signals/core/browser/ash",
-      "//components/enterprise/device_trust/core/attestation/proto:attestation_ca_proto",
-      "//components/enterprise/device_trust/core/attestation/proto:google_key_proto",
-      "//components/enterprise/device_trust/core/attestation/proto:interface_proto",
       "//ui/strings:ui_strings__strings_grit",
     ]
   }
@@ -744,7 +741,6 @@ source_set("impl") {
 
   if (is_linux || is_win || is_mac || is_chromeos) {
     sources += [
-      "connectors/device_trust/device_trust_connector_service.cc",
       "connectors/device_trust/device_trust_connector_service_factory.cc",
       "connectors/device_trust/device_trust_service.cc",
       "connectors/device_trust/device_trust_service_factory.cc",
@@ -763,6 +759,7 @@ source_set("impl") {
       "//components/device_signals/core/browser",
       "//components/device_signals/core/common",
       "//components/enterprise/device_trust",
+      "//components/enterprise/device_trust/core:device_trust_connector_service",
       "//components/enterprise/device_trust/core/attestation",
       "//components/enterprise/device_trust/core/attestation:types",
     ]

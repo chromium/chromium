@@ -25,8 +25,8 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service_factory.h"
+#include "components/enterprise/device_trust/core/device_trust_connector_service.h"  // nogncheck
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace enterprise_signals {

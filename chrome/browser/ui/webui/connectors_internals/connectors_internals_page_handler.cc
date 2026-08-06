@@ -16,7 +16,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/client_certificates/certificate_provisioning_service_factory.h"
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service_factory.h"
@@ -45,6 +44,7 @@
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_android.h"
 #else
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
+#include "components/enterprise/device_trust/core/device_trust_connector_service.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_MAC)

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ASH_ASH_ATTESTATION_POLICY_OBSERVER_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ASH_ASH_ATTESTATION_POLICY_OBSERVER_H_
 
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
+#include "components/enterprise/device_trust/core/device_trust_connector_service.h"
 
 namespace enterprise_connectors {
 

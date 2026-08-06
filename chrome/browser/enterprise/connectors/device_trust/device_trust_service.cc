@@ -8,12 +8,12 @@
 #include "base/json/json_reader.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/enterprise/device_trust/core/attestation/attestation_service.h"
 #include "components/enterprise/device_trust/core/attestation/attestation_utils.h"
 #include "components/enterprise/device_trust/core/attestation/signals_type.h"
 #include "components/enterprise/device_trust/core/common_types.h"
+#include "components/enterprise/device_trust/core/device_trust_connector_service.h"
 #include "components/enterprise/device_trust/core/signals/signals_service.h"
 #include "components/prefs/pref_service.h"
 

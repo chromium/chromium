@@ -6,8 +6,8 @@
 
 #include "base/no_destructor.h"
 #include "build/build_config.h"
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/enterprise/device_trust/core/device_trust_connector_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

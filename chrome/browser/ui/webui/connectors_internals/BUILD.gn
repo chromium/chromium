@@ -43,4 +43,7 @@ source_set("connectors_internals") {
   if (is_mac) {
     deps += [ "//chrome/browser/enterprise/connectors/device_trust/key_management/core/mac" ]
   }
+  if (is_linux || is_win || is_mac || is_chromeos) {
+    deps += [ "//components/enterprise/device_trust/core:device_trust_connector_service" ]
+  }
 }
