@@ -106,10 +106,11 @@
   <div class="indented-app-details update-section">
     <div class="update-info">
       [[i18n('appManagementAppDetailsVersion', app.version)]]
-      <div class="last-check-text">
+      <div class="last-check-text" aria-live="polite" aria-atomic="true">
         [[getUpdateStatusString_(updateState_)]]
         <template is="dom-if" if="[[isChecking_(updateState_)]]">
-          <paper-spinner-lite active class="spinner"></paper-spinner-lite>
+          <paper-spinner-lite active class="spinner" aria-hidden="true">
+          </paper-spinner-lite>
         </template>
       </div>
     </div>
@@ -124,9 +125,10 @@
   <!-- Update Found Dialog -->
   <template is="dom-if" if="[[showUpdateFoundDialog_]]" restamp>
     <cr-dialog show-on-attach id="updateFoundDialog"
-      close-text="[[i18n('close')]]" on-close="onUpdateFoundDialogClose_">
+      close-text="[[i18n('close')]]" on-close="onUpdateFoundDialogClose_"
+      aria-describedby="updateFoundDialogBody">
       <div slot="title">[[i18n('appManagementUpdateFoundDialogTitle')]]</div>
-      <div slot="body">
+      <div slot="body" id="updateFoundDialogBody">
         [[getUpdateFoundDialogBody_(hasOpenWindows_, availableUpdateVersion_,
         app.title)]]
       </div>
