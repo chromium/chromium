@@ -2807,8 +2807,10 @@ public class ToolbarManager
         if (!mToolbar.shouldShowGlicToolbarButton()) return;
         if (!GlicUtils.isTabEligibleForGlicIph(tab)) return;
 
-        View anchorView = assumeNonNull(mToolbar.getGlicActionChipView());
-        if (anchorView.getVisibility() != View.VISIBLE || !anchorView.isAttachedToWindow()) {
+        View anchorView = mToolbar.getGlicActionChipView();
+        if (anchorView == null
+                || anchorView.getVisibility() != View.VISIBLE
+                || !anchorView.isAttachedToWindow()) {
             return;
         }
 
