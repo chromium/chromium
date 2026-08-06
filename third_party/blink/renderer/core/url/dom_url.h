@@ -33,13 +33,13 @@
 #include "third_party/blink/renderer/core/url/dom_origin_utils.h"
 #include "third_party/blink/renderer/core/url/dom_url_utils.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
+class Blob;
 class ExceptionState;
 class ExecutionContext;
 class URLRegistrable;
@@ -71,6 +71,7 @@ class CORE_EXPORT DOMURL final : public ScriptWrappable,
   static bool canParse(const String& url);
   static bool canParse(const String& url, const String& base);
 
+  static String CreatePublicURL(ExecutionContext*, Blob*);
   static String CreatePublicURL(ExecutionContext*, URLRegistrable*);
 
   KURL Url() const override { return url_; }

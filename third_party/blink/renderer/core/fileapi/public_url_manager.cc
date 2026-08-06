@@ -26,36 +26,30 @@
 
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
 
-#include "base/feature_list.h"
+#include "base/check.h"
 #include "base/notreached.h"
-#include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "net/base/features.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-#include "third_party/blink/public/common/blob/blob_utils.h"
-#include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
-#include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink.h"
-#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/fileapi/url_registry.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
-#include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/blob/blob_url.h"
 #include "third_party/blink/renderer/platform/blob/blob_url_null_origin_map.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/task_type_names.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 namespace {
 
-static void RemoveFromNullOriginMapIfNecessary(const KURL& blob_url) {
+void RemoveFromNullOriginMapIfNecessary(const KURL& blob_url) {
   DCHECK(blob_url.ProtocolIs("blob"));
   if (BlobURL::GetOrigin(blob_url) == "null")
     BlobURLNullOriginMap::GetInstance()->Remove(blob_url);
@@ -145,36 +139,56 @@ mojom::blink::BlobURLStore& PublicURLManager::GetBlobURLStore() {
 }
 
 String PublicURLManager::RegisterURL(URLRegistrable* registrable) {
-  if (is_stopped_)
+  if (is_stopped_) {
     return String();
+  }
+  CHECK(registrable);
 
-  const KURL& url =
-      BlobURL::CreatePublicURL(GetExecutionContext()->GetSecurityOrigin());
-  DCHECK(!url.IsEmpty());
+  const KURL url = GenerateURL();
   const String& url_string = url.GetString();
 
-  if (registrable->IsMojoBlob()) {
-    mojo::PendingRemote<mojom::blink::Blob> blob_remote;
-    mojo::PendingReceiver<mojom::blink::Blob> blob_receiver =
-        blob_remote.InitWithNewPipeAndPassReceiver();
+  URLRegistry* registry = &registrable->Registry();
+  registry->RegisterURL(url, registrable);
+  url_to_registry_.insert(url_string, registry);
 
-    GetBlobURLStore().Register(std::move(blob_remote), url);
+  return CompleteRegistration(url);
+}
 
-    mojo_urls_.insert(url_string);
-    registrable->CloneMojoBlob(std::move(blob_receiver));
-  } else {
-    URLRegistry* registry = &registrable->Registry();
-    registry->RegisterURL(url, registrable);
-    url_to_registry_.insert(url_string, registry);
+String PublicURLManager::RegisterURL(Blob* blob) {
+  if (is_stopped_) {
+    return String();
   }
+  CHECK(blob);
 
+  const KURL url = GenerateURL();
+  const String& url_string = url.GetString();
+
+  mojo::PendingRemote<mojom::blink::Blob> blob_remote;
+  mojo::PendingReceiver<mojom::blink::Blob> blob_receiver =
+      blob_remote.InitWithNewPipeAndPassReceiver();
+
+  GetBlobURLStore().Register(std::move(blob_remote), url);
+
+  mojo_urls_.insert(url_string);
+  blob->CloneMojoBlob(std::move(blob_receiver));
+
+  return CompleteRegistration(url);
+}
+
+KURL PublicURLManager::GenerateURL() const {
+  KURL url =
+      BlobURL::CreatePublicURL(GetExecutionContext()->GetSecurityOrigin());
+  DCHECK(!url.IsEmpty());
+  return url;
+}
+
+String PublicURLManager::CompleteRegistration(const KURL& url) {
   SecurityOrigin* mutable_origin =
       GetExecutionContext()->GetMutableSecurityOrigin();
   if (mutable_origin->SerializesAsNull()) {
     BlobURLNullOriginMap::GetInstance()->Add(url, mutable_origin);
   }
-
-  return url_string;
+  return url.GetString();
 }
 
 void PublicURLManager::Revoke(const KURL& url) {

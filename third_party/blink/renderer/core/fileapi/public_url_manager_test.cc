@@ -4,21 +4,26 @@
 
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
 
+#include <memory>
+#include <utility>
+
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "net/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/fileapi/url_registry.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/blob/testing/fake_blob.h"
 #include "third_party/blink/renderer/platform/blob/testing/fake_blob_url_store.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 namespace {
@@ -27,25 +32,12 @@ using mojom::blink::BlobURLStore;
 
 class TestURLRegistrable : public URLRegistrable {
  public:
-  TestURLRegistrable(
-      URLRegistry* registry,
-      mojo::PendingRemote<mojom::blink::Blob> blob = mojo::NullRemote())
-      : registry_(registry), blob_(std::move(blob)) {}
+  explicit TestURLRegistrable(URLRegistry& registry) : registry_(registry) {}
 
-  URLRegistry& Registry() const override { return *registry_; }
-
-  bool IsMojoBlob() override { return bool{blob_}; }
-
-  void CloneMojoBlob(
-      mojo::PendingReceiver<mojom::blink::Blob> receiver) override {
-    if (!blob_)
-      return;
-    blob_->Clone(std::move(receiver));
-  }
+  URLRegistry& Registry() const override { return registry_; }
 
  private:
-  URLRegistry* const registry_;
-  mojo::Remote<mojom::blink::Blob> blob_;
+  URLRegistry& registry_;
 };
 
 class FakeURLRegistry : public URLRegistry {
@@ -119,9 +111,9 @@ class PublicURLManagerTest : public testing::Test {
   mojo::AssociatedReceiver<BlobURLStore> url_store_receiver_;
 };
 
-TEST_F(PublicURLManagerTest, RegisterNonMojoBlob) {
+TEST_F(PublicURLManagerTest, RegisterURLRegistrable) {
   FakeURLRegistry registry;
-  TestURLRegistrable registrable(&registry);
+  TestURLRegistrable registrable(registry);
   String url = url_manager().RegisterURL(&registrable);
   ASSERT_EQ(1u, registry.registrations.size());
   EXPECT_EQ(0u, url_store_.registrations.size());
@@ -137,18 +129,17 @@ TEST_F(PublicURLManagerTest, RegisterNonMojoBlob) {
   EXPECT_FALSE(SecurityOrigin::CreateFromString(url)->IsSameOriginWith(
       GetExecutionContext()->GetSecurityOrigin()));
   url_store_receiver_.FlushForTesting();
-  // Even though this was not a mojo blob, the PublicURLManager might not know
-  // that, so still expect a revocation on the mojo interface.
+  // Revoke() forwards the URL to BlobURLStore even though it was registered
+  // with URLRegistry.
   ASSERT_EQ(1u, url_store_.revocations.size());
   EXPECT_EQ(url, url_store_.revocations[0]);
 }
 
-TEST_F(PublicURLManagerTest, RegisterMojoBlob) {
-  FakeURLRegistry registry;
-  TestURLRegistrable registrable(&registry, CreateMojoBlob("id"));
-  String url = url_manager().RegisterURL(&registrable);
+TEST_F(PublicURLManagerTest, RegisterBlob) {
+  Blob* blob = MakeGarbageCollected<Blob>(
+      BlobDataHandle::Create("id", "", 0, CreateMojoBlob("id")));
+  String url = url_manager().RegisterURL(blob);
 
-  EXPECT_EQ(0u, registry.registrations.size());
   ASSERT_EQ(1u, url_store_.registrations.size());
   EXPECT_EQ(url, url_store_.registrations.begin()->key);
 
@@ -187,7 +178,7 @@ TEST_F(PublicURLManagerTest, RevokeInvalidURL) {
   url_manager().Revoke(fragment_url);
   url_manager().Revoke(invalid_origin_url);
   url_store_receiver_.FlushForTesting();
-  // Both should have been silently ignored.
+  // All three should have been silently ignored.
   EXPECT_TRUE(url_store_.revocations.empty());
 }
 
