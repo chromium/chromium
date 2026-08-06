@@ -1484,30 +1484,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.PeerConnection.IPv4Interfaces" units="units"
-    expires_after="2024-09-01">
-  <owner>danilchap@chromium.org</owner>
-  <owner>webrtc-dev@chromium.org</owner>
-  <summary>
-    Number of IPv4 network interfaces discovered in a PeerConnection Session.
-
-    Warning: This histogram was expired from M81 to M110 Canary (2022-10-29).
-    Data may be missing.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.PeerConnection.IPv6Interfaces" units="units"
-    expires_after="2024-09-01">
-  <owner>danilchap@chromium.org</owner>
-  <owner>webrtc-dev@chromium.org</owner>
-  <summary>
-    Number of IPv6 network interfaces discovered in a PeerConnection Session.
-
-    Warning: This histogram was expired from M81 to M110 Canary (2022-10-29).
-    Data may be missing.
-  </summary>
-</histogram>
-
 <histogram name="WebRTC.PeerConnection.Latency.Network" units="microseconds"
     expires_after="2024-09-15">
   <owner>handellm@google.com</owner>
