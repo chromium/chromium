@@ -6,7 +6,7 @@ import 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 
 import type {OmniboxPopupPageRemote} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import {omniboxPopupBrowserProxyFactory, OmniboxPopupPageHandlerRemote, SearchboxBrowserProxy} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
-import type {OmniboxContextualEntrypointButtonElement, OmniboxPopupAppElement} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
+import type {OmniboxPopupAppElement, OmniboxPopupContextualEntrypointButtonElement} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {RenderType, SelectionDirection, SelectionLineState, SelectionStep, SideType} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -19,13 +19,13 @@ import {$$, eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-
 import {createDefaultInputState, TestSearchboxBrowserProxy} from './test_searchbox_browser_proxy.js';
 
 function getContextualEntrypointButton(appElement: OmniboxPopupAppElement):
-    OmniboxContextualEntrypointButtonElement {
+    OmniboxPopupContextualEntrypointButtonElement {
   const popupEntrypoint = $$(appElement, 'omnibox-popup-contextual-entrypoint');
   assertTrue(!!popupEntrypoint);
   const contextualEntrypoint =
-      $$(popupEntrypoint, 'omnibox-contextual-entrypoint-button');
+      $$(popupEntrypoint, 'omnibox-popup-contextual-entrypoint-button');
   assertTrue(!!contextualEntrypoint);
-  return contextualEntrypoint as OmniboxContextualEntrypointButtonElement;
+  return contextualEntrypoint as OmniboxPopupContextualEntrypointButtonElement;
 }
 
 suite('AppTest', function() {
@@ -257,8 +257,9 @@ suite('AppTest', function() {
       assertFalse(!!$$(localApp, 'omnibox-popup-contextual-entrypoint'));
     });
 
-    // TODO(b/539623520): Move to `omnibox_contextual_entrypoint_test.ts`. Left
-    // here for now to verify refactor (b/539624759).
+    // TODO(b/539623520): Move to
+    // `omnibox_popup_contextual_entrypoint_button_test.ts`. Left here for now
+    // to verify refactor (b/539624759).
     test('OnShowCallsBlur', async () => {
       // Arrange: Focus the button and confirm it's focused.
       const contextualEntrypoint = getContextualEntrypointButton(localApp);
@@ -300,8 +301,9 @@ suite('AppTest', function() {
       assertFalse(!!$$(localApp, 'omnibox-popup-contextual-entrypoint'));
     });
 
-    // TODO(b/539623520): Move to `omnibox_contextual_entrypoint_test.ts`. Left
-    // here for now to verify refactor (b/539624759).
+    // TODO(b/539623520): Move to
+    // `omnibox_popup_contextual_entrypoint_button_test.ts`. Left here for now
+    // to verify refactor (b/539624759).
     test('ShowContextButtonText', async () => {
       let contextualEntrypoint = getContextualEntrypointButton(localApp);
       const innerEntrypoint = $$(
@@ -333,8 +335,9 @@ suite('AppTest', function() {
       assertEquals('Add tabs and more', description.textContent.trim());
     });
 
-    // TODO(b/539623520): Move to `omnibox_contextual_entrypoint_test.ts`. Left
-    // here for now to verify refactor (b/539624759).
+    // TODO(b/539623520): Move to
+    // `omnibox_popup_contextual_entrypoint_button_test.ts`. Left here for now
+    // to verify refactor (b/539624759).
     test('ContextMenuEntrypointMenuOpenWorkaround', async () => {
       const contextualEntrypoint = getContextualEntrypointButton(localApp);
       const innerEntrypoint = $$(
@@ -410,7 +413,7 @@ suite('AppTest', function() {
           $$(localApp, 'omnibox-popup-contextual-entrypoint');
       assertTrue(!!popupEntrypoint);
       const contextualEntrypoint =
-          $$(popupEntrypoint, 'omnibox-contextual-entrypoint-button');
+          $$(popupEntrypoint, 'omnibox-popup-contextual-entrypoint-button');
       assertFalse(!!contextualEntrypoint);
     });
   });

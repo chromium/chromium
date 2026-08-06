@@ -11,13 +11,14 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 
-import {getHtml} from './omnibox_contextual_entrypoint_button.html.js';
 import type {BrowserProxy} from './omnibox_popup.mojom-webui.js';
 import {browserProxyFactory} from './omnibox_popup.mojom-webui.js';
+import {getHtml} from './omnibox_popup_contextual_entrypoint_button.html.js';
 
-export class OmniboxContextualEntrypointButtonElement extends CrLitElement {
+export class OmniboxPopupContextualEntrypointButtonElement extends
+    CrLitElement {
   static get is() {
-    return 'omnibox-contextual-entrypoint-button';
+    return 'omnibox-popup-contextual-entrypoint-button';
   }
 
   override render() {
@@ -148,11 +149,11 @@ export class OmniboxContextualEntrypointButtonElement extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'omnibox-contextual-entrypoint-button':
-        OmniboxContextualEntrypointButtonElement;
+    'omnibox-popup-contextual-entrypoint-button':
+        OmniboxPopupContextualEntrypointButtonElement;
   }
 }
 
 customElements.define(
-    OmniboxContextualEntrypointButtonElement.is,
-    OmniboxContextualEntrypointButtonElement);
+    OmniboxPopupContextualEntrypointButtonElement.is,
+    OmniboxPopupContextualEntrypointButtonElement);

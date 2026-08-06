@@ -5,8 +5,8 @@
 import './aim_app.js';
 import './app.js';
 import './full_app.js';
-import './omnibox_contextual_entrypoint_button.js';
 import './omnibox_popup_contextual_entrypoint.js';
+import './omnibox_popup_contextual_entrypoint_button.js';
 
 export {ComposeboxProxyImpl} from '//resources/cr_components/composebox/composebox_proxy.js';
 export {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
@@ -14,9 +14,9 @@ export {OmniboxAimAppElement} from './aim_app.js';
 export {OmniboxPopupAppElement} from './app.js';
 export {OmniboxFullAppElement} from './full_app.js';
 export {OmniboxComposeboxElement} from './omnibox_composebox.js';
-export {OmniboxContextualEntrypointButtonElement} from './omnibox_contextual_entrypoint_button.js';
 export {browserProxyFactory as omniboxPopupBrowserProxyFactory, OmniboxEscapeAction, type OmniboxInputState, PageCallbackRouter as OmniboxPopupPageCallbackRouter, PageHandlerRemote as OmniboxPopupPageHandlerRemote, PageRemote as OmniboxPopupPageRemote} from './omnibox_popup.mojom-webui.js';
 export {browserProxyFactory as aimBrowserProxyFactory, PageCallbackRouter as OmniboxPopupAimPageCallbackRouter, PageHandlerRemote as OmniboxPopupAimPageHandlerRemote, PageRemote as OmniboxPopupAimPageRemote} from './omnibox_popup_aim.mojom-webui.js';
 export {OmniboxPopupContextualEntrypointElement} from './omnibox_popup_contextual_entrypoint.js';
+export {OmniboxPopupContextualEntrypointButtonElement} from './omnibox_popup_contextual_entrypoint_button.js';
 export {OmniboxPopupSearchboxElement} from './omnibox_popup_searchbox.js';
 export {sanitizeTextForPaste, stripJavascriptSchemas} from './utils.js';

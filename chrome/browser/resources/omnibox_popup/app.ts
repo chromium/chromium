@@ -26,8 +26,8 @@ import type {WindowOpenDisposition} from '//resources/mojo/ui/base/mojom/window_
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import type {OmniboxContextualEntrypointButtonElement} from './omnibox_contextual_entrypoint_button.js';
 import type {OmniboxPopupContextualEntrypointElement} from './omnibox_popup_contextual_entrypoint.js';
+import type {OmniboxPopupContextualEntrypointButtonElement} from './omnibox_popup_contextual_entrypoint_button.js';
 
 // 675px ~= 449px (--cr-realbox-primary-side-min-width) * 1.5 + some margin.
 const canShowSecondarySideMediaQueryList =
@@ -294,7 +294,7 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
   }
 
   private getContextualEntrypointButton_():
-      OmniboxContextualEntrypointButtonElement|null {
+      OmniboxPopupContextualEntrypointButtonElement|null {
     if (this.showContextEntrypoint_ && !this.shouldHideEntrypointButton_()) {
       return this.shadowRoot
                  .querySelector<OmniboxPopupContextualEntrypointElement>(
