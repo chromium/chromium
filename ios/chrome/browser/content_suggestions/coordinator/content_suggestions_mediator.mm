@@ -103,10 +103,12 @@
   if (!self.consumer) {
     return;
   }
-  MostVisitedTilesConfig* mvtConfig =
-      self.mostVisitedTilesMediator.mostVisitedConfig;
-  if (mvtConfig) {
-    [self.consumer setMostVisitedTilesConfig:mvtConfig];
+  if (!IsNTPRedesignEnabled()) {
+    MostVisitedTilesConfig* mvtConfig =
+        self.mostVisitedTilesMediator.mostVisitedConfig;
+    if (mvtConfig) {
+      [self.consumer setMostVisitedTilesConfig:mvtConfig];
+    }
   }
 }
 

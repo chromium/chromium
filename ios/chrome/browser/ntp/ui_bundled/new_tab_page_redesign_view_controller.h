@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/content_suggestions/ui/content_suggestions_consumer.h"
 #import "ios/chrome/browser/content_suggestions/ui/user_account_image_update_delegate.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/fakebox_buttons_snapshot_provider.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_consumer.h"
@@ -23,7 +24,8 @@
 
 // View controller shell for the New Tab Page Redesign.
 @interface NewTabPageRedesignViewController
-    : UIViewController <FakeboxButtonsSnapshotProvider,
+    : UIViewController <ContentSuggestionsConsumer,
+                        FakeboxButtonsSnapshotProvider,
                         NewTabPageConsumer,
                         NewTabPageHeaderConsumer,
                         NewTabPageHeaderViewDelegate,
@@ -50,9 +52,6 @@
 
 // The search engine/Doodle logo view.
 @property(nonatomic, strong) UIView* searchEngineLogoView;
-
-// The Most Visited Tiles (MVTs) view controller.
-@property(nonatomic, strong) UIViewController* mostVisitedViewController;
 
 // The Magic Stack view controller.
 @property(nonatomic, strong) UIViewController* magicStackViewController;

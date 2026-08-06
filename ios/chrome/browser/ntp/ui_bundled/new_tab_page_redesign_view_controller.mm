@@ -7,6 +7,8 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_redesign_view_controller.h"
 
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_module_container.h"
+#import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_config.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_framing_coordinates.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_image_view.h"
@@ -109,6 +111,9 @@ constexpr CGFloat kHintLabelYOffset = -1.0;
 // Properties conformed to by `NewTabPageConsumer`
 @property(nonatomic, assign, readwrite) CGFloat collectionShiftingOffset;
 @property(nonatomic, assign, readwrite) BOOL scrolledToMinimumHeight;
+
+// The Most Visited Tiles (MVTs) view.
+@property(nonatomic, strong) UIView* mostVisitedView;
 
 // Private helpers
 - (void)handleTraitChanges;
@@ -303,8 +308,8 @@ constexpr CGFloat kHintLabelYOffset = -1.0;
 
   [self refreshFakeboxContent];
 
-  if (_mostVisitedViewController) {
-    [self embedMostVisitedViewController];
+  if (self.mostVisitedView) {
+    [self embedMostVisitedView];
   }
 
   if (_searchEngineLogoView) {
@@ -400,7 +405,7 @@ constexpr CGFloat kHintLabelYOffset = -1.0;
   self.searchEngineLogoView = nil;
   self.NTPContentDelegate = nil;
   self.NTPShortcutsHandler = nil;
-  self.mostVisitedViewController = nil;
+  self.mostVisitedView = nil;
   self.magicStackViewController = nil;
   [self setFeedViewController:nil];
   [_bottomSheetViewController invalidate];
@@ -563,36 +568,30 @@ constexpr CGFloat kHintLabelYOffset = -1.0;
   }
 }
 
-- (void)setMostVisitedViewController:
-    (UIViewController*)mostVisitedViewController {
-  if (_mostVisitedViewController == mostVisitedViewController) {
+- (void)setMostVisitedView:(UIView*)mostVisitedView {
+  if (_mostVisitedView == mostVisitedView) {
     return;
   }
-  if (_mostVisitedViewController) {
-    [_mostVisitedViewController willMoveToParentViewController:nil];
-    [_mostVisitedViewController.view removeFromSuperview];
-    [_mostVisitedViewController removeFromParentViewController];
+  if (_mostVisitedView) {
+    [_mostVisitedView removeFromSuperview];
   }
-  _mostVisitedViewController = mostVisitedViewController;
-  if (self.isViewLoaded && _mostVisitedViewController) {
-    [self embedMostVisitedViewController];
+  _mostVisitedView = mostVisitedView;
+  if (self.isViewLoaded && _mostVisitedView) {
+    [self embedMostVisitedView];
   }
-}
-
-- (void)embedMostVisitedViewController {
-  if (!_mostVisitedViewController || !_mostVisitedContainerView) {
-    return;
-  }
-  [self addChildViewController:_mostVisitedViewController];
-  _mostVisitedViewController.view.translatesAutoresizingMaskIntoConstraints =
-      NO;
-  [_mostVisitedContainerView addSubview:_mostVisitedViewController.view];
-  AddSameConstraints(_mostVisitedViewController.view,
-                     _mostVisitedContainerView);
-  [_mostVisitedViewController didMoveToParentViewController:self];
 }
 
 #pragma mark - Private
+
+// Add _mostVisitedView to the view hierarchy.
+- (void)embedMostVisitedView {
+  if (!_mostVisitedView || !_mostVisitedContainerView) {
+    return;
+  }
+  _mostVisitedView.translatesAutoresizingMaskIntoConstraints = NO;
+  [_mostVisitedContainerView addSubview:_mostVisitedView];
+  AddSameConstraints(_mostVisitedView, _mostVisitedContainerView);
+}
 
 - (void)addSearchEngineLogoView {
   if (!_searchEngineLogoView || !_bottomSheetViewController.view) {
@@ -662,6 +661,16 @@ constexpr CGFloat kHintLabelYOffset = -1.0;
     return safeAreaTop + kLogoTopMargin + logoHeight + kLogoToOmniboxSpacing;
   }
   return screenHeight * 0.35;
+}
+
+#pragma mark - ContentSuggestionsConsumer
+
+- (void)setMostVisitedTilesConfig:(MostVisitedTilesConfig*)config {
+  MagicStackModuleContainer* container =
+      [[MagicStackModuleContainer alloc] initWithFrame:CGRectZero noInset:YES];
+  [container configureWithConfig:config];
+
+  self.mostVisitedView = container;
 }
 
 #pragma mark - SearchEngineLogoConsumer

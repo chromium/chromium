@@ -332,30 +332,33 @@ using segmentation_platform::TipIdentifier;
 
   NSMutableArray* moduleMediators = [NSMutableArray array];
 
-  _mostVisitedTilesMediator = [[MostVisitedTilesMediator alloc]
-      initWithMostVisitedSite:std::move(mostVisitedFactory)
-               historyService:historyService
-                  prefService:prefs
-             largeIconService:largeIconService
-               largeIconCache:cache
-       URLLoadingBrowserAgent:UrlLoadingBrowserAgent::FromBrowser(self.browser)
-        accountManagerService:accountManagerService
-            engagementTracker:engagementTracker
-            layoutGuideCenter:LayoutGuideCenterForBrowser(self.browser)];
-  _mostVisitedTilesMediator.contentSuggestionsDelegate = self.delegate;
-  _mostVisitedTilesMediator.contentSuggestionsMetricsRecorder =
-      self.contentSuggestionsMetricsRecorder;
-  _mostVisitedTilesMediator.actionFactory = [[BrowserActionFactory alloc]
-      initWithBrowser:self.browser
-             scenario:kMenuScenarioHistogramMostVisitedEntry];
-  _mostVisitedTilesMediator.snackbarHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), SnackbarCommands);
-  _mostVisitedTilesMediator.helpHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands);
-  _mostVisitedTilesMediator.NTPActionsDelegate = self.NTPActionsDelegate;
-  [moduleMediators addObject:_mostVisitedTilesMediator];
-  self.contentSuggestionsMediator.mostVisitedTilesMediator =
-      _mostVisitedTilesMediator;
+  if (!IsNTPRedesignEnabled()) {
+    _mostVisitedTilesMediator = [[MostVisitedTilesMediator alloc]
+        initWithMostVisitedSite:std::move(mostVisitedFactory)
+                 historyService:historyService
+                    prefService:prefs
+               largeIconService:largeIconService
+                 largeIconCache:cache
+         URLLoadingBrowserAgent:UrlLoadingBrowserAgent::FromBrowser(
+                                    self.browser)
+          accountManagerService:accountManagerService
+              engagementTracker:engagementTracker
+              layoutGuideCenter:LayoutGuideCenterForBrowser(self.browser)];
+    _mostVisitedTilesMediator.contentSuggestionsDelegate = self.delegate;
+    _mostVisitedTilesMediator.contentSuggestionsMetricsRecorder =
+        self.contentSuggestionsMetricsRecorder;
+    _mostVisitedTilesMediator.actionFactory = [[BrowserActionFactory alloc]
+        initWithBrowser:self.browser
+               scenario:kMenuScenarioHistogramMostVisitedEntry];
+    _mostVisitedTilesMediator.snackbarHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), SnackbarCommands);
+    _mostVisitedTilesMediator.helpHandler =
+        HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands);
+    _mostVisitedTilesMediator.NTPActionsDelegate = self.NTPActionsDelegate;
+    [moduleMediators addObject:_mostVisitedTilesMediator];
+    self.contentSuggestionsMediator.mostVisitedTilesMediator =
+        _mostVisitedTilesMediator;
+  }
 
   _shortcutsMediator = [[ShortcutsMediator alloc]
       initWithReadingListModel:readingListModel
@@ -537,7 +540,9 @@ using segmentation_platform::TipIdentifier;
 
   _magicStackCollectionView = [[MagicStackCollectionViewController alloc] init];
   _magicStackCollectionView.audience = self;
-  _mostVisitedTilesMediator.consumer = self.contentSuggestionsViewController;
+  if (!IsNTPRedesignEnabled()) {
+    _mostVisitedTilesMediator.consumer = self.contentSuggestionsViewController;
+  }
 
   self.contentSuggestionsMediator.magicStackConsumer =
       _magicStackCollectionView;
@@ -546,8 +551,10 @@ using segmentation_platform::TipIdentifier;
   [self.browser->GetCommandDispatcher()
       startDispatchingToTarget:self
                    forProtocol:@protocol(ContentSuggestionsCommands)];
-  _mostVisitedTilesMediator.contentSuggestionsHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ContentSuggestionsCommands);
+  if (!IsNTPRedesignEnabled()) {
+    _mostVisitedTilesMediator.contentSuggestionsHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), ContentSuggestionsCommands);
+  }
 }
 
 - (void)stop {
@@ -562,8 +569,10 @@ using segmentation_platform::TipIdentifier;
   _tipsMediator = nil;
   [_setUpListMediator disconnect];
   _setUpListMediator = nil;
-  [_mostVisitedTilesMediator disconnect];
-  _mostVisitedTilesMediator = nil;
+  if (!IsNTPRedesignEnabled()) {
+    [_mostVisitedTilesMediator disconnect];
+    _mostVisitedTilesMediator = nil;
+  }
   [_tabResumptionMediator disconnect];
   _tabResumptionMediator = nil;
   [_magicStackRankingModel disconnect];
@@ -605,7 +614,9 @@ using segmentation_platform::TipIdentifier;
 - (void)refresh {
   [_magicStackCollectionView reset];
   // Refresh in case there are new MVT to show.
-  [_mostVisitedTilesMediator refreshMostVisitedTiles];
+  if (!IsNTPRedesignEnabled()) {
+    [_mostVisitedTilesMediator refreshMostVisitedTiles];
+  }
   [_safetyCheckMediator reset];
   [_priceTrackingPromoMediator reset];
   [_magicStackRankingModel fetchLatestMagicStackRanking];
@@ -669,7 +680,9 @@ using segmentation_platform::TipIdentifier;
   }
   PinnedSiteFormViewController* viewController =
       [[PinnedSiteFormViewController alloc] initWithAction:action forItem:item];
-  viewController.mutator = _mostVisitedTilesMediator;
+  if (!IsNTPRedesignEnabled()) {
+    viewController.mutator = _mostVisitedTilesMediator;
+  }
   UINavigationController* navController = [[UINavigationController alloc]
       initWithRootViewController:viewController];
   navController.modalPresentationStyle = UIModalPresentationFormSheet;
@@ -906,7 +919,9 @@ using segmentation_platform::TipIdentifier;
 - (void)neverShowModuleType:(ContentSuggestionsModuleType)type {
   switch (type) {
     case ContentSuggestionsModuleType::kMostVisited:
-      [_mostVisitedTilesMediator disableModule];
+      if (!IsNTPRedesignEnabled()) {
+        [_mostVisitedTilesMediator disableModule];
+      }
       break;
     case ContentSuggestionsModuleType::kTabResumption:
       [_tabResumptionMediator disableModule];

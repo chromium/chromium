@@ -19,6 +19,8 @@
 #import "components/feed/core/v2/public/ios/pref_names.h"
 #import "components/feed/feed_feature_list.h"
 #import "components/image_fetcher/ios/ios_image_data_fetcher_wrapper.h"
+#import "components/keyed_service/core/service_access_type.h"
+#import "components/ntp_tiles/most_visited_sites.h"
 #import "components/ntp_tiles/pref_names.h"
 #import "components/omnibox/browser/aim_eligibility_service.h"
 #import "components/omnibox/common/omnibox_features.h"
@@ -52,7 +54,10 @@
 #import "ios/chrome/browser/content_suggestions/coordinator/content_suggestions_mediator.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_collection_view.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_smart_stack_layout.h"
+#import "ios/chrome/browser/content_suggestions/most_visited_tiles/coordinator/most_visited_tiles_mediator.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_collection_utils.h"
+#import "ios/chrome/browser/content_suggestions/ui/content_suggestions_commands.h"
+#import "ios/chrome/browser/content_suggestions/ui/content_suggestions_consumer.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/link_preview/link_preview_coordinator.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_observer_bridge.h"
@@ -60,12 +65,17 @@
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_observer.h"
 #import "ios/chrome/browser/discover_feed/model/feed_constants.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_cache_factory.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/google/model/google_logo_service_factory.h"
+#import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_coordinator.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_delegate.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
+#import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
+#import "ios/chrome/browser/menu/ui_bundled/menu_histograms.h"
 #import "ios/chrome/browser/metrics/model/activity_reporter.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
@@ -100,6 +110,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_url_loader_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_utils.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_view_controller.h"
+#import "ios/chrome/browser/ntp_tiles/model/ios_most_visited_sites_factory.h"
 #import "ios/chrome/browser/omnibox/model/placeholder_service/placeholder_service.h"
 #import "ios/chrome/browser/omnibox/model/placeholder_service/placeholder_service_factory.h"
 #import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
@@ -294,6 +305,8 @@
 @implementation NewTabPageCoordinator {
   // IdentityManager for the primary account info.
   raw_ptr<signin::IdentityManager> _identityManager;
+  // Mediator for the Most Visited Tiles.
+  MostVisitedTilesMediator* _mostVisitedTilesMediator;
   // Coordinator in charge of handling sharing use cases.
   SharingCoordinator* _sharingCoordinator;
   // Coordinator for presenting the Home customization menu.
@@ -417,6 +430,11 @@
 }
 
 - (void)stop {
+  if (IsNTPRedesignEnabled()) {
+    [_mostVisitedTilesMediator disconnect];
+    _mostVisitedTilesMediator = nil;
+  }
+
   if (!self.started) {
     return;
   }
@@ -847,6 +865,48 @@
   self.contentSuggestionsCoordinator.NTPActionsDelegate = self;
   self.contentSuggestionsCoordinator.homeStartDataSource = self;
   self.contentSuggestionsCoordinator.customizationDelegate = self;
+  if (IsNTPRedesignEnabled()) {
+    ProfileIOS* profile = self.profile;
+    favicon::LargeIconService* largeIconService =
+        IOSChromeLargeIconServiceFactory::GetForProfile(profile);
+    LargeIconCache* cache =
+        IOSChromeLargeIconCacheFactory::GetForProfile(profile);
+    std::unique_ptr<ntp_tiles::MostVisitedSites> mostVisitedFactory =
+        IOSMostVisitedSitesFactory::NewForBrowserState(profile);
+    history::HistoryService* historyService =
+        ios::HistoryServiceFactory::GetForProfile(
+            profile, ServiceAccessType::EXPLICIT_ACCESS);
+    feature_engagement::Tracker* engagementTracker =
+        feature_engagement::TrackerFactory::GetForProfile(profile);
+    ChromeAccountManagerService* accountManagerService =
+        ChromeAccountManagerServiceFactory::GetForProfile(profile);
+
+    _mostVisitedTilesMediator = [[MostVisitedTilesMediator alloc]
+        initWithMostVisitedSite:std::move(mostVisitedFactory)
+                 historyService:historyService
+                    prefService:profile->GetPrefs()
+               largeIconService:largeIconService
+                 largeIconCache:cache
+         URLLoadingBrowserAgent:UrlLoadingBrowserAgent::FromBrowser(
+                                    self.browser)
+          accountManagerService:accountManagerService
+              engagementTracker:engagementTracker
+              layoutGuideCenter:LayoutGuideCenterForBrowser(self.browser)];
+    _mostVisitedTilesMediator.contentSuggestionsDelegate =
+        self.contentSuggestionsCoordinator.delegate;
+    // TODO(crbug.com/1444140): Pass a real metrics recorder instead of nil.
+    _mostVisitedTilesMediator.contentSuggestionsMetricsRecorder = nil;
+    _mostVisitedTilesMediator.actionFactory = [[BrowserActionFactory alloc]
+        initWithBrowser:self.browser
+               scenario:kMenuScenarioHistogramMostVisitedEntry];
+    _mostVisitedTilesMediator.snackbarHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), SnackbarCommands);
+    _mostVisitedTilesMediator.helpHandler =
+        HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands);
+    _mostVisitedTilesMediator.NTPActionsDelegate = self;
+    _mostVisitedTilesMediator.consumer = self.NTPRedesignViewController;
+  }
+
   [self.contentSuggestionsCoordinator start];
 }
 
@@ -912,8 +972,6 @@
     self.NTPRedesignViewController.NTPContentDelegate = self;
     self.NTPRedesignViewController.headerCommandsHandler = self;
     self.NTPRedesignViewController.feedViewController = self.feedViewController;
-    self.NTPRedesignViewController.mostVisitedViewController =
-        self.contentSuggestionsCoordinator.viewController;
     self.NTPRedesignViewController.magicStackViewController =
         self.contentSuggestionsCoordinator.magicStackCollectionView;
     MagicStackSmartStackLayout* customLayout =
