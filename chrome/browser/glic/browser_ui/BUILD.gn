@@ -21,6 +21,7 @@ source_set("browser_ui") {
   public_deps = [
     "//chrome/browser/actor",
     "//chrome/browser/actor/ui",
+    "//chrome/browser/actor/ui/task_list_bubble:delegate",
     "//chrome/browser/glic",
     "//chrome/browser/glic:mojo_bindings",
     "//chrome/browser/tab_list",

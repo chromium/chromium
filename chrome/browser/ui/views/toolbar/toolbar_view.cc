@@ -942,6 +942,15 @@ void ToolbarView::ShowActorTaskListBubble() {
       glic_actor_task_icon());
 }
 
+void ToolbarView::CloseActorTaskListBubble() {
+  NOTIMPLEMENTED();
+}
+
+bool ToolbarView::IsActorTaskListBubbleShowing() {
+  NOTIMPLEMENTED();
+  return false;
+}
+
 void ToolbarView::FinalizeHideGlicActorTaskIcon() {
   if (!glic_button_ || !glic_actor_task_icon_ ||
       !glic_actor_button_container_) {

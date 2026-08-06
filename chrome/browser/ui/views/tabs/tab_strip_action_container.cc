@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/actor/ui/actor_ui_metrics.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
@@ -473,6 +474,15 @@ void TabStripActionContainer::ShowActorTaskListBubble() {
   }
   ActorTaskListBubbleController::From(browser_window_interface_)
       ->ShowBubble(glic_actor_task_icon());
+}
+
+void TabStripActionContainer::CloseActorTaskListBubble() {
+  NOTIMPLEMENTED();
+}
+
+bool TabStripActionContainer::IsActorTaskListBubbleShowing() {
+  NOTIMPLEMENTED();
+  return false;
 }
 
 void TabStripActionContainer::ShowGlicActorNudge(

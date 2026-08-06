@@ -8,6 +8,8 @@
 #include <optional>
 #include <string>
 
+#include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller_delegate.h"
+
 namespace glic {
 
 // Details needed for showing a nudge.
@@ -33,9 +35,9 @@ struct NudgeParams {
 
 // Delegate interface for the UI container that houses GlicButton and
 // GlicActorTaskIcon.
-class GlicSplitButtonDelegate {
+class GlicSplitButtonDelegate : public ActorTaskListBubbleControllerDelegate {
  public:
-  virtual ~GlicSplitButtonDelegate();
+  ~GlicSplitButtonDelegate() override;
 
   // Methods related to glic nudge.
 
@@ -67,8 +69,10 @@ class GlicSplitButtonDelegate {
   // Update the nudge button "pressed state".
   virtual void SetGlicActorNudgePressedState(bool pressed);
 
-  // Show the task list bubble anchored to the button.
-  virtual void ShowActorTaskListBubble();
+  // ActorTaskListBubbleControllerDelegate:
+  void ShowActorTaskListBubble() override;
+  void CloseActorTaskListBubble() override;
+  bool IsActorTaskListBubbleShowing() override;
 
   // Methods related to glic button visibility and glic panel visibility
 

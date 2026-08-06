@@ -127,6 +127,8 @@ class TabStripActionContainer : public views::View,
   void TriggerGlicActorNudge(const std::u16string& nudge_text) override;
   void SetGlicActorNudgePressedState(bool pressed) override;
   void ShowActorTaskListBubble() override;
+  void CloseActorTaskListBubble() override;
+  bool IsActorTaskListBubbleShowing() override;
 
   views::FlexLayoutView* glic_actor_button_container();
   void ShowGlicActorNudge(const std::u16string& nudge_text);
