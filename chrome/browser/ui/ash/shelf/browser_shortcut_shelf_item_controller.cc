@@ -32,6 +32,7 @@
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
+#include "components/user_manager/user_names.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/extension_prefs.h"
@@ -307,8 +308,8 @@ BrowserShortcutShelfItemController::GetAppMenuItems(
       auto* tab = browser->GetActiveWebContents();
       const gfx::Image& icon =
           ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-              (browser->GetBrowser().GetProfile() &&
-               browser->GetBrowser().GetProfile()->IsIncognitoProfile())
+              (browser->IsOffTheRecord() &&
+               browser->GetAccountId() != user_manager::GuestAccountId())
                   ? IDR_ASH_SHELF_LIST_INCOGNITO_BROWSER
                   : IDR_ASH_SHELF_LIST_BROWSER);
 

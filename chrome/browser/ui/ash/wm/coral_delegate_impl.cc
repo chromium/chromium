@@ -169,7 +169,7 @@ ash::BrowserDelegate* FindTabOnDeskAtIndex(const GURL& url,
           return ash::BrowserController::kContinueIteration;
         }
 
-        if (browser.GetBrowser().GetProfile()->IsIncognitoProfile()) {
+        if (browser.IsOffTheRecord()) {
           return ash::BrowserController::kContinueIteration;
         }
 
