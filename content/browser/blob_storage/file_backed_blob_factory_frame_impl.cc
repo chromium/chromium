@@ -28,8 +28,8 @@ FileBackedBlobFactoryFrameImpl::FileBackedBlobFactoryFrameImpl(
 
 GURL FileBackedBlobFactoryFrameImpl::GetCurrentUrl() {
   // TODO(b/276857839): handling of fenced frames is still in discussion. For
-  // now we use an invalid GURL as destination URL. This will allow access to
-  // unrestricted files but block access to restricted ones.
+  // now we use an invalid GURL as destination URL, which causes file access to
+  // be denied when a ScopedFileAccessDelegate is installed.
   if (render_frame_host().IsNestedWithinFencedFrame()) {
     return GURL();
   }

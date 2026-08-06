@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
+#include "base/test/test_future.h"
+#include "components/file_access/scoped_file_access.h"
 #include "components/file_access/test/mock_scoped_file_access_delegate.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
@@ -18,6 +20,8 @@
 #include "mojo/public/cpp/system/functions.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_data_handle.h"
+#include "storage/browser/blob/blob_data_item.h"
+#include "storage/browser/blob/blob_data_snapshot.h"
 #include "storage/browser/blob/blob_storage_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/blob/data_element.mojom.h"
@@ -255,6 +259,64 @@ TEST_F(FileBackedBlobFactoryWorkerImplTest,
   expected_blob_data.set_content_type(kType);
 
   EXPECT_EQ(expected_blob_data, *handle->CreateSnapshot());
+}
+
+TEST_F(FileBackedBlobFactoryWorkerImplTest,
+       Register_InvalidUrlWithScopedFileAccessDelegate) {
+  file_access::MockScopedFileAccessDelegate scoped_file_access_delegate;
+  EXPECT_CALL(scoped_file_access_delegate, CreateFileAccessCallback).Times(0);
+
+  // Model a worker bound for an opaque origin: the URL passed to
+  // BindReceiver() is invalid.
+  mojo::Remote<blink::mojom::FileBackedBlobFactory> factory;
+  factory_impl_->BindReceiver(factory.BindNewPipeAndPassReceiver(), GURL());
+
+  const base::FilePath path = base::FilePath(TEST_PATH("/dir/testfile"));
+
+  ChildProcessSecurityPolicyImpl::GetInstance()->GrantReadFile(process_id_,
+                                                               path);
+  EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->CanReadFile(
+      process_id_, path));
+
+  auto element =
+      blink::mojom::DataElementFile::New(path, kOffset, kSize, std::nullopt);
+
+  mojo::Remote<blink::mojom::Blob> blob;
+  factory->RegisterBlob(blob.BindNewPipeAndPassReceiver(), kId, kType,
+                        std::move(element));
+  factory.FlushForTesting();
+  blob.FlushForTesting();
+
+  EXPECT_TRUE(bad_messages_.empty());
+
+  auto* blob_storage_context =
+      ChromeBlobStorageContext::GetFor(&context_)->context();
+
+  std::unique_ptr<storage::BlobDataHandle> handle =
+      blob_storage_context->GetBlobDataFromUUID(kId);
+  WaitForBlobCompletion(handle.get());
+
+  EXPECT_FALSE(handle->IsBroken());
+  EXPECT_EQ(storage::BlobStatus::DONE, handle->GetBlobStatus());
+
+  // Because the destination URL is unknown, the registered file item must
+  // carry an explicit access callback that denies access rather than leaving
+  // the decision to the default access path.
+  std::unique_ptr<storage::BlobDataSnapshot> snapshot =
+      handle->CreateSnapshot();
+  EXPECT_EQ(1u, snapshot->items().size());
+  if (snapshot->items().size() != 1u) {
+    return;
+  }
+  auto file_access = snapshot->items()[0]->file_access();
+  EXPECT_FALSE(file_access.is_null());
+  if (file_access.is_null()) {
+    return;
+  }
+
+  base::test::TestFuture<file_access::ScopedFileAccess> future;
+  file_access.Run({path}, future.GetCallback());
+  EXPECT_FALSE(future.Take().is_allowed());
 }
 
 TEST_F(FileBackedBlobFactoryWorkerImplTest, MultipleBindings) {

@@ -5,6 +5,8 @@
 #include "content/browser/blob_storage/file_backed_blob_factory_frame_impl.h"
 
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "components/file_access/scoped_file_access.h"
 #include "components/file_access/test/mock_scoped_file_access_delegate.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
@@ -16,6 +18,8 @@
 #include "mojo/public/cpp/system/functions.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_data_handle.h"
+#include "storage/browser/blob/blob_data_item.h"
+#include "storage/browser/blob/blob_data_snapshot.h"
 #include "storage/browser/blob/blob_storage_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/blob/data_element.mojom.h"
@@ -300,6 +304,68 @@ TEST_F(FileBackedBlobFactoryFrameImplTest,
   EXPECT_TRUE(bad_messages_.empty());
   EXPECT_EQ(GURL(kSubframeUrl), captured_destination);
   EXPECT_NE(GURL(kMainFrameUrl), captured_destination);
+}
+
+TEST_F(FileBackedBlobFactoryFrameImplTest,
+       Register_FencedFrameWithScopedFileAccessDelegate) {
+  main_test_rfh()->InitializeRenderFrameIfNeeded();
+  TestRenderFrameHost* fenced_rfh = main_test_rfh()->AppendFencedFrame();
+  EXPECT_TRUE(fenced_rfh);
+  if (!fenced_rfh) {
+    return;
+  }
+  fenced_rfh->SetLastCommittedUrl(GURL(kSubframeUrl));
+
+  mojo::AssociatedRemote<blink::mojom::FileBackedBlobFactory> fenced_factory;
+  FileBackedBlobFactoryFrameImpl::CreateForCurrentDocument(
+      fenced_rfh, fenced_factory.BindNewEndpointAndPassDedicatedReceiver());
+
+  file_access::MockScopedFileAccessDelegate scoped_file_access_delegate;
+  EXPECT_CALL(scoped_file_access_delegate, CreateFileAccessCallback).Times(0);
+
+  const base::FilePath path = base::FilePath(TEST_PATH("/dir/testfile"));
+  ChildProcessSecurityPolicyImpl::GetInstance()->GrantReadFile(
+      fenced_rfh->GetProcess()->GetID(), path);
+  EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->CanReadFile(
+      fenced_rfh->GetProcess()->GetID(), path));
+
+  auto element =
+      blink::mojom::DataElementFile::New(path, kOffset, kSize, std::nullopt);
+
+  mojo::Remote<blink::mojom::Blob> blob;
+  fenced_factory->RegisterBlob(blob.BindNewPipeAndPassReceiver(), kId, kType,
+                               std::move(element));
+  fenced_factory.FlushForTesting();
+  blob.FlushForTesting();
+
+  EXPECT_TRUE(bad_messages_.empty());
+
+  auto* blob_storage_context =
+      ChromeBlobStorageContext::GetFor(main_test_rfh()->GetBrowserContext())
+          ->context();
+
+  std::unique_ptr<storage::BlobDataHandle> handle =
+      blob_storage_context->GetBlobDataFromUUID(kId);
+  WaitForBlobCompletion(handle.get());
+
+  EXPECT_FALSE(handle->IsBroken());
+  EXPECT_EQ(storage::BlobStatus::DONE, handle->GetBlobStatus());
+
+  std::unique_ptr<storage::BlobDataSnapshot> snapshot =
+      handle->CreateSnapshot();
+  EXPECT_EQ(1u, snapshot->items().size());
+  if (snapshot->items().size() != 1u) {
+    return;
+  }
+  auto file_access = snapshot->items()[0]->file_access();
+  EXPECT_FALSE(file_access.is_null());
+  if (file_access.is_null()) {
+    return;
+  }
+
+  base::test::TestFuture<file_access::ScopedFileAccess> future;
+  file_access.Run({path}, future.GetCallback());
+  EXPECT_FALSE(future.Take().is_allowed());
 }
 
 }  // namespace content
