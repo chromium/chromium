@@ -390,6 +390,7 @@ NetworkService::NetworkService(
     : net_log_(net::NetLog::Get()),
       registry_(std::move(registry)),
       time_to_first_context_timer_(base::ElapsedTimer()) {
+  TRACE_EVENT0("loading", "NetworkService::NetworkService");
   DCHECK(!g_network_service);
   g_network_service = this;
 

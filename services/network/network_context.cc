@@ -44,6 +44,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
@@ -743,6 +744,7 @@ NetworkContext::NetworkContext(
       prefetch_cache_(prefetch_enabled_ ? std::make_unique<PrefetchCache>()
                                         : nullptr),
       variations_headers_(std::move(params_->initial_variations_headers)) {
+  TRACE_EVENT0("loading", "NetworkContext::NetworkContext");
 
   if (features::ShouldBindNetworkContextDirectReceiver()) {
     receiver_.emplace<DirectReceiver>(mojo::DirectReceiverKey{}, this);
@@ -958,6 +960,7 @@ NetworkContext::NetworkContext(
            net::handles::kInvalidNetworkHandle)),
       prefetch_cache_(prefetch_enabled_ ? std::make_unique<PrefetchCache>()
                                         : nullptr) {
+  TRACE_EVENT0("loading", "NetworkContext::NetworkContext");
 
   if (features::ShouldBindNetworkContextDirectReceiver()) {
     receiver_.emplace<DirectReceiver>(mojo::DirectReceiverKey{}, this);
@@ -3582,6 +3585,7 @@ void NetworkContext::EnsureMounted(network::TransferableDirectory* directory) {
 #endif  // BUILDFLAG(IS_DIRECTORY_TRANSFER_REQUIRED)
 
 void NetworkContext::InitializeCorsParams() {
+  TRACE_EVENT0("loading", "NetworkContext::InitializeCorsParams");
   for (const auto& pattern : params_->cors_origin_access_list) {
     cors_origin_access_list_.SetAllowListForOrigin(pattern->source_origin,
                                                    pattern->allow_patterns);
@@ -4030,6 +4034,7 @@ bool NetworkContext::IsHostResolutionForNetworkRestrictionsIdAndHostAllowed(
 }
 
 void NetworkContext::InitializePrefetchURLLoaderFactory() {
+  TRACE_EVENT0("loading", "NetworkContext::InitializePrefetchURLLoaderFactory");
   auto pending_receiver =
       prefetch_url_loader_factory_remote_.BindNewPipeAndPassReceiver();
   CreateURLLoaderFactory(std::move(pending_receiver),
