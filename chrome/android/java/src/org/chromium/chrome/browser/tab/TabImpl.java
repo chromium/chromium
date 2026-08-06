@@ -327,6 +327,7 @@ class TabImpl implements Tab, TabInternal {
     private @Nullable Token mTabGroupId;
     private boolean mTabHasSensitiveContent;
     private boolean mIsPinned;
+    private @Nullable @TabAlert Integer mAlertState;
     private @MediaState int mMediaState;
     private @TabUserAgent int mUserAgent = TabUserAgent.DEFAULT;
 
@@ -3065,8 +3066,17 @@ class TabImpl implements Tab, TabInternal {
 
     @Override
     public @Nullable @TabAlert Integer getAlertState() {
-        if (mNativeTabAndroid == 0) return null;
-        return TabImplJni.get().getAlertState(mNativeTabAndroid);
+        return mAlertState;
+    }
+
+    @CalledByNative
+    public void onAlertStateChanged(
+            @JniType("std::optional<int32_t>") @Nullable @TabAlert Integer alertState) {
+        if (Objects.equals(mAlertState, alertState)) return;
+        mAlertState = alertState;
+        for (TabObserver observer : mObservers) {
+            observer.onAlertStateChanged(this, alertState);
+        }
     }
 
     @Override
@@ -3283,11 +3293,6 @@ class TabImpl implements Tab, TabInternal {
         void initializeAutofillIfNecessary(long nativeTabAndroid);
 
         void getMemoryUsageBytes(long nativeTabAndroid, Callback<Long> callback);
-
-        @JniType("std::optional<int>")
-        @Nullable
-        @TabAlert
-        Integer getAlertState(long nativeTabAndroid);
 
         void updateDelegates(
                 long nativeTabAndroid,

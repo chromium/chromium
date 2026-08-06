@@ -53,6 +53,7 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -70,6 +71,7 @@ public class TabHoverCardViewUnitTest {
 
     @Captor private ArgumentCaptor<Callback<Bitmap>> mGetThumbnailCallbackCaptor;
     @Captor private ArgumentCaptor<Callback<Long>> mMemoryUsageCallbackCaptor;
+    @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
     @Mock private Tab mHoveredTab;
     @Mock private TabModelSelector mTabModelSelector;
@@ -485,5 +487,45 @@ public class TabHoverCardViewUnitTest {
                 "Component at index 4 should be the memory usage.",
                 R.id.memory_usage,
                 mContentView.getChildAt(4).getId());
+    }
+
+    @Test
+    public void testLiveUpdatesWhileShowing() {
+        var url = JUnitTestGURLs.EXAMPLE_URL;
+        var title = "Tab 1";
+        when(mHoveredTab.getTitle()).thenReturn(title);
+        when(mHoveredTab.getUrl()).thenReturn(url);
+        when(mHoveredTab.getId()).thenReturn(1);
+        when(mHoveredTab.getAlertState()).thenReturn(null);
+
+        mTabHoverCardView.show(mHoveredTab, 10f, 20f);
+        verify(mHoveredTab).addObserver(mTabObserverCaptor.capture());
+        TabObserver observer = mTabObserverCaptor.getValue();
+
+        assertEquals(
+                "Alert status view should be initially hidden.",
+                View.GONE,
+                mAlertStatusView.getVisibility());
+
+        // Live update alert status.
+        observer.onAlertStateChanged(mHoveredTab, TabAlert.GLIC_ACCESSING);
+        assertEquals(
+                "Alert status view should be visible after update.",
+                View.VISIBLE,
+                mAlertStatusView.getVisibility());
+        assertEquals(
+                "Alert status text is incorrect after update.",
+                mContext.getString(R.string.tooltip_tab_alert_state_glic_accessing),
+                mAlertStatusView.getText().toString());
+
+        // Live update title.
+        when(mHoveredTab.getTitle()).thenReturn("Updated Title");
+        observer.onTitleUpdated(mHoveredTab);
+        assertEquals(
+                "Title text should be updated.", "Updated Title", mTitleView.getText().toString());
+
+        // Hide card should remove observer.
+        mTabHoverCardView.hide();
+        verify(mHoveredTab).removeObserver(observer);
     }
 }

@@ -9,7 +9,6 @@ import androidx.annotation.Nullable;
 import com.google.common.collect.Lists;
 
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.components.tabs.TabAlert;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
@@ -32,7 +31,6 @@ public class MockTab extends TabImpl {
     private boolean mIsCustomTab;
 
     private Integer mParentId;
-    private @Nullable @TabAlert Integer mAlertState;
 
     /** Create a new Tab for testing and initializes Tab UserData objects. */
     public static MockTab createAndInitialize(int id, Profile profile) {
@@ -230,20 +228,6 @@ public class MockTab extends TabImpl {
     @Override
     public void setTitle(String title) {
         super.setTitle(title);
-    }
-
-    @Override
-    public @Nullable @TabAlert Integer getAlertState() {
-        return mAlertState;
-    }
-
-    /**
-     * Sets the alert state return value for testing.
-     *
-     * @param alertState The {@link TabAlert} state or null to clear.
-     */
-    public void setAlertState(@Nullable @TabAlert Integer alertState) {
-        mAlertState = alertState;
     }
 
     public List<TabObserver> getObservers() {

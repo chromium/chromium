@@ -24,7 +24,9 @@ import org.chromium.base.SysUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
@@ -52,6 +54,8 @@ public class TabHoverCardView extends FrameLayout {
     private @Nullable TabModelSelector mTabModelSelector;
     private @Nullable Callback<TabModel> mCurrentTabModelObserver;
     private @Nullable TabContentManager mTabContentManager;
+    private @Nullable Tab mHoveredTab;
+    private @Nullable TabObserver mHoveredTabObserver;
 
     private int mLastHoveredTabId = INVALID_TAB_ID;
     private boolean mIsShowing;
@@ -81,49 +85,17 @@ public class TabHoverCardView extends FrameLayout {
      */
     public void show(@Nullable Tab hoveredTab, float x, float y) {
         if (hoveredTab == null) return;
+        if (mHoveredTab != hoveredTab) {
+            unsubscribeFromTab();
+            mHoveredTab = hoveredTab;
+            mHoveredTab.addObserver(getTabObserver());
+        }
         mLastHoveredTabId = hoveredTab.getId();
         mIsShowing = true;
 
         mTitleView.setText(hoveredTab.getTitle());
-        String url = hoveredTab.getUrl().getHost();
-        // If the URL is a Chrome scheme, display the GURL spec instead of the host. For e.g., use
-        // chrome://newtab instead of just newtab on the hover card.
-        if (UrlUtilities.isInternalScheme(hoveredTab.getUrl())) {
-            url = hoveredTab.getUrl().getSpec();
-            // GURL#getSpec() returns a string with a trailing "/", remove this.
-            url = url.replaceFirst("/$", "");
-        }
-        mUrlView.setText(url);
-
-        @Nullable
-        @TabAlert
-        Integer alertState = hoveredTab.getAlertState();
-        boolean showAlert = false;
-        if (alertState != null) {
-            showAlert = true;
-            @ColorInt int accentColor = SemanticColorUtils.getDefaultIconColorAccent1(getContext());
-            ColorStateList accentTintList = ColorStateList.valueOf(accentColor);
-            mAlertStatusView.setDrawableTintColor(accentTintList);
-            switch (alertState) {
-                case TabAlert.ACTOR_ACCESSING -> {
-                    mAlertStatusView.setText(R.string.tooltip_tab_alert_state_actor_accessing);
-                    mAlertStatusView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                            R.drawable.ic_arrow_selector_spark_16dp, 0, 0, 0);
-                }
-                case TabAlert.GLIC_ACCESSING -> {
-                    mAlertStatusView.setText(R.string.tooltip_tab_alert_state_glic_accessing);
-                    mAlertStatusView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                            R.drawable.ic_screensaver_auto_16dp, 0, 0, 0);
-                }
-                case TabAlert.GLIC_SHARING -> {
-                    mAlertStatusView.setText(R.string.tooltip_tab_alert_state_glic_sharing);
-                    mAlertStatusView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                            R.drawable.ic_screensaver_auto_16dp, 0, 0, 0);
-                }
-                default -> showAlert = false;
-            }
-        }
-        mAlertStatusView.setVisibility(showAlert ? VISIBLE : GONE);
+        updateUrlView(hoveredTab);
+        updateAlertStatusView(hoveredTab.getAlertState());
 
         mMemoryUsageView.setVisibility(GONE);
         hoveredTab.getMemoryUsageBytes(
@@ -151,6 +123,7 @@ public class TabHoverCardView extends FrameLayout {
 
     /** Hide the tab hover card. */
     public void hide() {
+        unsubscribeFromTab();
         mIsShowing = false;
         setVisibility(GONE);
         mThumbnailView.setImageDrawable(null);
@@ -201,6 +174,7 @@ public class TabHoverCardView extends FrameLayout {
     }
 
     public void destroy() {
+        unsubscribeFromTab();
         if (mTabModelSelector != null) {
             assumeNonNull(mCurrentTabModelObserver);
             mTabModelSelector.getCurrentTabModelSupplier().removeObserver(mCurrentTabModelObserver);
@@ -212,6 +186,84 @@ public class TabHoverCardView extends FrameLayout {
         if (!SysUtils.isLowEndDevice()) return;
         mContentView.setBackgroundResource(R.drawable.popup_bg_8dp);
         setBackground(null);
+    }
+
+    private void unsubscribeFromTab() {
+        if (mHoveredTab != null && mHoveredTabObserver != null) {
+            mHoveredTab.removeObserver(mHoveredTabObserver);
+            mHoveredTab = null;
+        }
+    }
+
+    private TabObserver getTabObserver() {
+        if (mHoveredTabObserver == null) {
+            mHoveredTabObserver =
+                    new EmptyTabObserver() {
+                        @Override
+                        public void onAlertStateChanged(
+                                Tab tab, @Nullable @TabAlert Integer alertState) {
+                            if (tab.getId() == mLastHoveredTabId && mIsShowing) {
+                                updateAlertStatusView(alertState);
+                            }
+                        }
+
+                        @Override
+                        public void onTitleUpdated(Tab tab) {
+                            if (tab.getId() == mLastHoveredTabId && mIsShowing) {
+                                mTitleView.setText(tab.getTitle());
+                            }
+                        }
+
+                        @Override
+                        public void onUrlUpdated(Tab tab) {
+                            if (tab.getId() == mLastHoveredTabId && mIsShowing) {
+                                updateUrlView(tab);
+                            }
+                        }
+                    };
+        }
+        return mHoveredTabObserver;
+    }
+
+    private void updateUrlView(Tab hoveredTab) {
+        String url = hoveredTab.getUrl().getHost();
+        // If the URL is a Chrome scheme, display the GURL spec instead of the host. For e.g., use
+        // chrome://newtab instead of just newtab on the hover card.
+        if (UrlUtilities.isInternalScheme(hoveredTab.getUrl())) {
+            url = hoveredTab.getUrl().getSpec();
+            // GURL#getSpec() returns a string with a trailing "/", remove this.
+            url = url.replaceFirst("/$", "");
+        }
+        mUrlView.setText(url);
+    }
+
+    private void updateAlertStatusView(@Nullable @TabAlert Integer alertState) {
+        boolean showAlert = false;
+        if (alertState != null) {
+            showAlert = true;
+            @ColorInt int accentColor = SemanticColorUtils.getDefaultIconColorAccent1(getContext());
+            ColorStateList accentTintList = ColorStateList.valueOf(accentColor);
+            mAlertStatusView.setDrawableTintColor(accentTintList);
+            switch (alertState) {
+                case TabAlert.ACTOR_ACCESSING -> {
+                    mAlertStatusView.setText(R.string.tooltip_tab_alert_state_actor_accessing);
+                    mAlertStatusView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                            R.drawable.ic_arrow_selector_spark_16dp, 0, 0, 0);
+                }
+                case TabAlert.GLIC_ACCESSING -> {
+                    mAlertStatusView.setText(R.string.tooltip_tab_alert_state_glic_accessing);
+                    mAlertStatusView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                            R.drawable.ic_screensaver_auto_16dp, 0, 0, 0);
+                }
+                case TabAlert.GLIC_SHARING -> {
+                    mAlertStatusView.setText(R.string.tooltip_tab_alert_state_glic_sharing);
+                    mAlertStatusView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                            R.drawable.ic_screensaver_auto_16dp, 0, 0, 0);
+                }
+                default -> showAlert = false;
+            }
+        }
+        mAlertStatusView.setVisibility(showAlert ? VISIBLE : GONE);
     }
 
     private void updateThumbnail(Tab hoveredTab, float hoverCardWidthPx) {

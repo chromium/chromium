@@ -62,6 +62,7 @@ class GlicTabIndicatorHelper;
 }
 
 namespace tabs {
+enum class TabAlert;
 class TabAlertController;
 class TabCollection;
 class TabFeatures;
@@ -210,7 +211,7 @@ class TabAndroid : public tabs::TabInterface,
   void InitializeAutofillIfNecessary();
   void GetMemoryUsageBytes(JNIEnv* env,
                            const base::android::JavaRef<jobject>& j_callback);
-  std::optional<int> GetAlertState(JNIEnv* env);
+  void OnAlertStateChanged(std::optional<tabs::TabAlert> alert_state);
   void UpdateDelegates(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jweb_contents_delegate,
@@ -376,6 +377,7 @@ class TabAndroid : public tabs::TabInterface,
 
   std::unique_ptr<glic::GlicTabIndicatorHelper> glic_tab_indicator_helper_;
   std::unique_ptr<tabs::TabAlertController> tab_alert_controller_;
+  base::CallbackListSubscription alert_to_show_subscription_;
   const base::WeakPtr<Profile> profile_;
   ui::UnownedUserDataHost unowned_user_data_host_;
   base::WeakPtrFactory<TabAndroid> weak_ptr_factory_{this};

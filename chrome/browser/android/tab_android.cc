@@ -71,6 +71,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/supports_handles.h"
+#include "components/tabs/public/tab_alert.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
@@ -428,21 +429,24 @@ void TabAndroid::InitWebContents(
         std::make_unique<glic::GlicTabIndicatorHelper>(this);
   }
   tab_alert_controller_ = std::make_unique<tabs::TabAlertController>(*this);
+  alert_to_show_subscription_ =
+      tab_alert_controller_->AddAlertToShowChangedCallback(base::BindRepeating(
+          &TabAndroid::OnAlertStateChanged, base::Unretained(this)));
+  OnAlertStateChanged(tab_alert_controller_->GetAlertToShow());
 
   for (Observer& observer : observers_) {
     observer.OnInitWebContents(this);
   }
 }
 
-std::optional<int> TabAndroid::GetAlertState(JNIEnv* env) {
-  if (!tab_alert_controller_) {
-    return std::nullopt;
-  }
-  std::optional<tabs::TabAlert> alert = tab_alert_controller_->GetAlertToShow();
-  if (!alert.has_value()) {
-    return std::nullopt;
-  }
-  return std::to_underlying(*alert);
+void TabAndroid::OnAlertStateChanged(
+    std::optional<tabs::TabAlert> alert_state) {
+  JNIEnv* env = AttachCurrentThread();
+  std::optional<int32_t> alert_val =
+      alert_state.has_value()
+          ? std::make_optional<int32_t>(std::to_underlying(*alert_state))
+          : std::nullopt;
+  Java_TabImpl_onAlertStateChanged(env, GetJavaObject(env), alert_val);
 }
 
 void TabAndroid::GetMemoryUsageBytes(
@@ -708,6 +712,7 @@ tabs::TabDestroyStatus TabAndroid::DestroyWebContents() {
   }
 
   glic_tab_indicator_helper_.reset();
+  alert_to_show_subscription_ = {};
   tab_alert_controller_.reset();
   tab_features_.reset();
   web_contents_.reset();
@@ -741,6 +746,7 @@ std::unique_ptr<content::WebContents> TabAndroid::ReleaseWebContentsInternal(
   WillRemoveWebContentsFromTab(web_contents(), clear_delegate);
 
   glic_tab_indicator_helper_.reset();
+  alert_to_show_subscription_ = {};
   tab_alert_controller_.reset();
   tab_features_.reset();
   std::unique_ptr<content::WebContents> released_contents =

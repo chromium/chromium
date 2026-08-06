@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInf
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.components.find_in_page.FindMatchRectsDetails;
 import org.chromium.components.find_in_page.FindNotificationDetails;
+import org.chromium.components.tabs.TabAlert;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
@@ -458,4 +459,12 @@ public interface TabObserver {
      * @param isPinned boolean indicator to represent whether tab is pinned or unpinned.
      */
     default void onTabPinnedStateChanged(Tab tab, boolean isPinned) {}
+
+    /**
+     * Called when the alert state of the tab changes.
+     *
+     * @param tab The notifying {@link Tab}.
+     * @param alertState The {@link TabAlert} state of the tab, or {@code null} if no alerts apply.
+     */
+    default void onAlertStateChanged(Tab tab, @Nullable @TabAlert Integer alertState) {}
 }
