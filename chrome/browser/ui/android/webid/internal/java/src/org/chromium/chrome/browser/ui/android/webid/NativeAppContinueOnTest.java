@@ -146,7 +146,7 @@ public class NativeAppContinueOnTest {
     }
 
     @Test
-    public void testNativeFlowIgnoresResult() {
+    public void testSuccessfulNativeFlow() {
         registerFakeApp(IDP_PACKAGE, "application/web-identity+json");
 
         // Mock WindowAndroid.showIntent to simulate success and return token
@@ -171,11 +171,9 @@ public class NativeAppContinueOnTest {
 
         mCoordinator.showModalDialog(CONTINUE_URL);
 
-        // Verify that native app result is NOT propagated and it treats as
-        // dismissed
-        // TODO(crbug.com/521864267): add support for allowing the result to
-        // propagate.
-        verify(mMockDelegate).onDismissed(any(Integer.class));
+        // Verify that native app result is propagated
+        verify(mMockDelegate).onNativeAppResult("success_token");
+        verify(mMockDelegate, never()).onDismissed(any(Integer.class));
         assertNull(mShadowActivity.getNextStartedActivity());
     }
 
@@ -194,6 +192,7 @@ public class NativeAppContinueOnTest {
 
         mCoordinator.showModalDialog(CONTINUE_URL);
 
+        verify(mMockDelegate, never()).onNativeAppResult(any(String.class));
         verify(mMockDelegate).onDismissed(any(Integer.class));
     }
 

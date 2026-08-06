@@ -282,6 +282,13 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     }
 
     @Override
+    public void onNativeAppResult(String token) {
+        if (mNativeView != 0) {
+            AccountSelectionBridgeJni.get().onNativeAppResult(mNativeView, token);
+        }
+    }
+
+    @Override
     public void onModalDialogClosed() {
         mAccountSelectionComponent.onModalDialogClosed();
     }
@@ -316,5 +323,8 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
         void onMoreDetails(long nativeAccountSelectionViewAndroid);
 
         void onAccountsDisplayed(long nativeAccountSelectionViewAndroid);
+
+        void onNativeAppResult(
+                long nativeAccountSelectionViewAndroid, @JniType("std::string") String token);
     }
 }

@@ -61,6 +61,9 @@ public interface AccountSelectionComponent {
 
         /** Called to associate the popup with the delegate. */
         void setPopupComponent(AccountSelectionComponent popupComponent);
+
+        /** Called when the native app returns a token result. */
+        void onNativeAppResult(String token);
     }
 
     /**

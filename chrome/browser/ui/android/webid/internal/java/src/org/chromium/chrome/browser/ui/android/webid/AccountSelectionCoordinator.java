@@ -459,8 +459,15 @@ public class AccountSelectionCoordinator
 
         @Override
         public void onIntentCompleted(int resultCode, @Nullable Intent data) {
-            // TODO(crbug.com/521864267): return the result to the RP.
-            mDelegate.onDismissed(IdentityRequestDialogDismissReason.OTHER);
+            String token = null;
+            if (data != null) {
+                token = data.getStringExtra("token");
+            }
+            if (token == null || resultCode != Activity.RESULT_OK) {
+                mDelegate.onDismissed(IdentityRequestDialogDismissReason.OTHER);
+            } else {
+                mDelegate.onNativeAppResult(token);
+            }
             mMediator.onModalDialogClosed();
         }
     }

@@ -6628,6 +6628,48 @@ TEST_F(RequestTest, ContinuationPopupCallingClose) {
   histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.TurnaroundTime", 0);
 }
 
+// Test the continuation popup being resolved by a native app token response.
+TEST_F(RequestTest, ContinuationPopupNativeAppToken) {
+  RequestParameters parameters = kDefaultRequestParameters;
+
+  MockConfiguration config = kConfigurationValid;
+  // Expect an access token to be produced, rather the typical idtoken.
+  config.token = "a-native-token";
+
+  // Set up the network expectations to return a "continue_on" response
+  // rather than the typical idtoken response.
+  GURL continue_on = GURL(kProviderUrlFull).Resolve("/more-permissions.php");
+  config.continue_on = std::move(continue_on);
+
+  // Set up the UI dialog controller to show a pop-up window, rather
+  // than the typical mediated authorization prompt that generates
+  // an idtoken.
+  auto dialog_controller =
+      std::make_unique<TestDialogController>(kConfigurationValid);
+  base::WeakPtr<TestDialogController> weak_dialog_controller =
+      dialog_controller->AsWeakPtr();
+  SetDialogController(std::move(dialog_controller));
+
+  // When the pop-up window is opened, resolve it by
+  // invoking the token_callback with our token.
+  std::unique_ptr<WebContents> modal(CreateTestWebContents());
+  EXPECT_CALL(*weak_dialog_controller, ShowModalDialog)
+      .WillOnce(::testing::WithArg<4>(
+          [&modal](
+              IdentityRequestDialogController::TokenCallback token_callback) {
+            std::move(token_callback).Run("a-native-token");
+            return modal.get();
+          }));
+
+  RequestExpectations expectations = {
+      RequestTokenStatus::kSuccess, FederatedRequestResult::kSuccess,
+      /*standalone_console_message=*/std::nullopt,
+      /*selected_idp_config_url=*/kProviderUrlFull};
+
+  RunTest(parameters, expectations, config);
+  ExpectStatusMetrics(TokenStatus::kSuccessUsingIdentityProviderResolve);
+}
+
 // Test successful AuthZ request that request the opening of pop-up
 // windows.
 TEST_F(RequestTest, FailsLoadingAContinueOnForADifferentOrigin) {

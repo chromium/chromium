@@ -978,7 +978,7 @@ TEST_F(IdentityDialogControllerTest, ActorLoginContinuation) {
 
   controller->ShowModalDialog(GURL("https://idp.example/login"),
                               blink::mojom::RpMode::kActive, base::DoNothing(),
-                              base::DoNothing());
+                              base::DoNothing(), base::DoNothing());
 }
 
 class IdentityDialogControllerTestWithOptimizationDisabled
@@ -1104,7 +1104,7 @@ TEST_F(IdentityDialogControllerTest, ShowModalDialogNotGuardedByActorTask) {
 
   controller->ShowModalDialog(GURL("https://idp.example/login"),
                               blink::mojom::RpMode::kActive, base::DoNothing(),
-                              base::DoNothing());
+                              base::DoNothing(), base::DoNothing());
 }
 
 TEST_F(IdentityDialogControllerTest, PassiveModeNotGuardedByActorTask) {

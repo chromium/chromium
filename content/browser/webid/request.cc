@@ -1523,7 +1523,9 @@ void Request::ShowModalDialog(DialogType dialog_type,
       base::BindOnce(&Request::OnDialogDismissed,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(create_registry_async, weak_ptr_factory_.GetWeakPtr(),
-                     idp_config_url));
+                     idp_config_url),
+      base::BindOnce(&Request::OnIntentResolved,
+                     weak_ptr_factory_.GetWeakPtr()));
   did_show_ui_ = true;
   // This may be null on Android, as the method cannot return the WebContents of
   // the CCT that will be created.
@@ -2183,6 +2185,12 @@ void Request::OnOriginMismatch(Method method,
       method_string, actual.Serialize().c_str(), expected.Serialize().c_str());
   render_frame_host().AddMessageToConsole(
       blink::mojom::ConsoleMessageLevel::kError, error_messsage);
+}
+
+void Request::OnIntentResolved(const std::string& token) {
+  blink::mojom::ResolveTokenParamsPtr params =
+      blink::mojom::ResolveTokenParams::NewToken(base::Value(token));
+  OnResolve(config_url_, std::nullopt, std::move(params));
 }
 
 FederatedApiPermissionStatus Request::GetApiPermissionStatus() {

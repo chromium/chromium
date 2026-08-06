@@ -314,10 +314,15 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   virtual void ShowUrl(LinkType type, const GURL& url);
 
   // Show a modal dialog that loads content from the IdP.
+  // `dismiss_callback` is called when the dialog is dismissed or closed without
+  // completing. `on_shown_async` is called when the modal WebContents surface
+  // is created asynchronously. `token_callback` is called when a native
+  // application completes the flow directly and returns an identity token.
   virtual WebContents* ShowModalDialog(const GURL& url,
                                        blink::mojom::RpMode rp_mode,
                                        DismissCallback dismiss_callback,
-                                       ShownModalAsyncCallback on_shown_async);
+                                       ShownModalAsyncCallback on_shown_async,
+                                       TokenCallback token_callback);
 
   // Closes the modal dialog.
   virtual void CloseModalDialog();

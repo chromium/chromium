@@ -25,10 +25,13 @@
 #include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/result.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/webid/federated_embedder_login_request.h"
 #include "content/public/browser/webid/identity_credential_source.h"
 #include "third_party/blink/public/mojom/webid/federated_request.mojom-shared.h"
+#include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
+#include "url/origin.h"
 
 // We add nognchecks on these includes so that Android bots do not fail
 // dependency checks.
@@ -434,6 +437,12 @@ void IdentityDialogController::OnAccountsDisplayed() {
   std::move(on_accounts_displayed_).Run();
 }
 
+void IdentityDialogController::OnNativeAppResult(const std::string& token) {
+  if (on_token_) {
+    std::move(on_token_).Run(token);
+  }
+}
+
 void IdentityDialogController::OnAccountSelected(
     const GURL& idp_config_url,
     const std::string& account_id,
@@ -513,8 +522,10 @@ content::WebContents* IdentityDialogController::ShowModalDialog(
     blink::mojom::RpMode rp_mode,
     DismissCallback dismiss_callback,
     content::IdentityRequestDialogController::ShownModalAsyncCallback
-        on_shown_async) {
+        on_shown_async,
+    TokenCallback token_callback) {
   on_dismiss_ = std::move(dismiss_callback);
+  on_token_ = std::move(token_callback);
   rp_mode_ = rp_mode;
   if (!TrySetAccountView()) {
     NotifyEmbedderOfResult(FederatedLoginResult::kFrameNotActive);

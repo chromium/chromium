@@ -160,7 +160,8 @@ WebContents* FakeIdentityRequestDialogController::ShowModalDialog(
     const GURL& url,
     blink::mojom::RpMode rp_mode,
     DismissCallback dismiss_callback,
-    ShownModalAsyncCallback on_shown_async) {
+    ShownModalAsyncCallback on_shown_async,
+    TokenCallback token_callback) {
   if (!web_contents_) {
     return nullptr;
   }

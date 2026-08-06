@@ -76,6 +76,7 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
                     const GURL& idp_login_url);
   void OnMoreDetails(JNIEnv* env);
   void OnAccountsDisplayed(JNIEnv* env);
+  void OnNativeAppResult(JNIEnv* env, const std::string& token);
 
  private:
   // Returns either true if the java counterpart of this bridge is initialized

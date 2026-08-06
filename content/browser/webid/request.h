@@ -119,8 +119,10 @@ class CONTENT_EXPORT Request
                         const url::Origin& expected,
                         const url::Origin& actual) override;
 
-  // AutofillSource:
-  const std::optional<std::vector<scoped_refptr<IdentityRequestAccount>>>
+  void OnIntentResolved(const std::string& token);
+
+  // content::webid::AutofillSource
+  const std::optional<std::vector<IdentityRequestAccountPtr>>
   GetAutofillSuggestions() const override;
   void NotifyAutofillSuggestionAccepted(
       const GURL& idp,
