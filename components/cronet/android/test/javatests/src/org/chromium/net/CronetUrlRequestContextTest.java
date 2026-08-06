@@ -526,8 +526,9 @@ public class CronetUrlRequestContextTest {
                                 traceNetLogSystemPropertyValue == null
                                         ? Map.of()
                                         : Map.of(
-                                                CronetLibraryLoader
-                                                        .TRACE_NET_LOG_SYSTEM_PROPERTY_KEY,
+                                                // LINT.IfChange(trace_netlog_property)
+                                                "debug.cronet.trace_netlog",
+                                                // LINT.ThenChange(//components/cronet/android/java/src/org/chromium/net/impl/DebugFlags.java:trace_netlog_property)
                                                 traceNetLogSystemPropertyValue));
                 var withBuildOverride =
                         new AndroidOsBuild.WithOverrideForTesting(

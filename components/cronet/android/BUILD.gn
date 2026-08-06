@@ -641,6 +641,7 @@ android_library("cronet_impl_native_java") {
     "java/src/org/chromium/net/impl/CronetUploadDataStream.java",
     "java/src/org/chromium/net/impl/CronetUrlRequest.java",
     "java/src/org/chromium/net/impl/CronetUrlRequestContext.java",
+    "java/src/org/chromium/net/impl/DebugFlags.java",
     "java/src/org/chromium/net/impl/NativeCronetEngineBuilderImpl.java",
     "java/src/org/chromium/net/impl/NativeCronetProvider.java",
     "java/src/org/chromium/net/impl/ProxyCallbackRequestImpl.java",

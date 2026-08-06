@@ -5,7 +5,6 @@
 package org.chromium.net.impl;
 
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
 import android.os.ConditionVariable;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -71,9 +70,6 @@ public class CronetLibraryLoader {
     private static final ConditionVariable sWaitForLibLoad = new ConditionVariable();
 
     private static final ConditionVariable sHttpFlagsLoaded = new ConditionVariable();
-
-    @VisibleForTesting
-    public static final String TRACE_NET_LOG_SYSTEM_PROPERTY_KEY = "debug.cronet.trace_netlog";
 
     /**
      * This method will be called by the Zygote pre-fork to preload the native code. Which means
@@ -240,49 +236,6 @@ public class CronetLibraryLoader {
         return sInitThread.getLooper() == Looper.myLooper();
     }
 
-    private static @NetLogCaptureMode int getTraceNetLogCaptureMode() {
-        @NetLogCaptureMode int traceNetLogCaptureMode = NetLogCaptureMode.HEAVILY_REDACTED;
-        var requestedTraceNetLogCaptureMode =
-                AndroidOsSystemProperties.get(
-                        TRACE_NET_LOG_SYSTEM_PROPERTY_KEY, "heavily_redacted");
-        if (requestedTraceNetLogCaptureMode.equals("heavily_redacted")) {
-            traceNetLogCaptureMode = NetLogCaptureMode.HEAVILY_REDACTED;
-        } else if (requestedTraceNetLogCaptureMode.equals("on")) {
-            // Note DEFAULT is mapped to "on", not "default", to avoid confusion with regard to
-            // the default value of the system property.
-            traceNetLogCaptureMode = NetLogCaptureMode.DEFAULT;
-        } else if (requestedTraceNetLogCaptureMode.equals("include_sensitive")) {
-            traceNetLogCaptureMode = NetLogCaptureMode.INCLUDE_SENSITIVE;
-        } else if (requestedTraceNetLogCaptureMode.equals("everything")) {
-            traceNetLogCaptureMode = NetLogCaptureMode.EVERYTHING;
-        } else {
-            Log.w(
-                    TAG,
-                    "Unknown value for %s system property, ignoring: %s",
-                    TRACE_NET_LOG_SYSTEM_PROPERTY_KEY,
-                    requestedTraceNetLogCaptureMode);
-        }
-
-        if (traceNetLogCaptureMode > NetLogCaptureMode.HEAVILY_REDACTED) {
-            final var buildType = AndroidOsBuild.get().getType();
-            if (!buildType.equals("userdebug")
-                    && !buildType.equals("eng")
-                    && (ContextUtils.getApplicationContext().getApplicationInfo().flags
-                                    & ApplicationInfo.FLAG_DEBUGGABLE)
-                            == 0) {
-                Log.w(
-                        TAG,
-                        "Ignoring requested Cronet trace netlog capture mode (%s=%s) because"
-                                + " neither the device nor app are debuggable",
-                        TRACE_NET_LOG_SYSTEM_PROPERTY_KEY,
-                        requestedTraceNetLogCaptureMode);
-                traceNetLogCaptureMode = NetLogCaptureMode.HEAVILY_REDACTED;
-            }
-        }
-
-        return traceNetLogCaptureMode;
-    }
-
     /**
      * Runs Cronet initialization tasks on the init thread. Ensures that HTTP flags are loaded, the
      * NetworkChangeNotifier is initialzied and the init thread native MessageLoop is initialized.
@@ -305,7 +258,7 @@ public class CronetLibraryLoader {
                     new RegistrationPolicyAlwaysRegister(), /* forceUpdateNetworkState= */ false);
 
             CronetPccAuditLogger.initialize();
-            final var traceNetLogCaptureMode = getTraceNetLogCaptureMode();
+            final var traceNetLogCaptureMode = DebugFlags.getTraceNetLogCaptureMode();
 
             try (var libLoadTraceEvent =
                     ScopedSysTraceEvent.scoped(
