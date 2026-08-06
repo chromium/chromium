@@ -125,6 +125,42 @@ TEST_F(AutofillSettingsTableViewControllerTest,
                           0);
 }
 
+// Test model when Autofill AI is allowed by policy and enabled, with Private AI
+// feature enabled.
+TEST_F(AutofillSettingsTableViewControllerTest, TestModelWithPrivateAiEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      autofill::features::kAutofillAiUsePrivateAi);
+
+  AutofillSettingsTableViewController* view_controller =
+      base::apple::ObjCCastStrict<AutofillSettingsTableViewController>(
+          controller());
+
+  [view_controller setEnhancedAutofillEnabled:YES];
+  [view_controller setAutofillAIAllowedByPolicy:YES];
+  [view_controller reloadData];
+
+  EXPECT_EQ(3, NumberOfSections());
+
+  // Section 0: Switches
+  EXPECT_EQ(1, NumberOfItemsInSection(0));
+  CheckSwitchCellStateAndTextWithId(YES, IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE_V2,
+                                    0, 0);
+  CheckSectionFooterWithId(IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL_V2, 0);
+
+  // Section 1: When On
+  EXPECT_EQ(1, NumberOfItemsInSection(1));
+  CheckSectionHeaderWithId(IDS_SETTINGS_AUTOFILL_AI_WHEN_ON, 1);
+  CheckTextCellTextWithId(
+      IDS_SETTINGS_AUTOFILL_AI_WHEN_ON_CAN_FILL_DIFFICULT_FIELDS, 1, 0);
+
+  // Section 2: Things to Consider
+  EXPECT_EQ(1, NumberOfItemsInSection(2));
+  CheckSectionHeaderWithId(IDS_SETTINGS_AUTOFILL_AI_THINGS_TO_CONSIDER, 2);
+  CheckTextCellTextWithId(IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_DATA_USAGE_V2, 2,
+                          0);
+}
+
 // Test model when Autofill AI is allowed by policy and enabled, with the new
 // title feature disabled.
 TEST_F(AutofillSettingsTableViewControllerTest,

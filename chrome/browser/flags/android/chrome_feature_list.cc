@@ -122,6 +122,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill::features::kAutofillAiReauthRequired,
     &autofill::features::kAutofillAiShowDialogInSettingsWhenUpstreamingFails,
     &autofill::features::kAutofillAiShowWalletDisabledBanner,
+    &autofill::features::kAutofillAiUsePrivateAi,
     &autofill::features::kAutofillAiWalletPrivatePassesDeepLink,
     &autofill::features::kAutofillAiWalletShopping,
     &autofill::features::kAutofillAiWithDataSchema,

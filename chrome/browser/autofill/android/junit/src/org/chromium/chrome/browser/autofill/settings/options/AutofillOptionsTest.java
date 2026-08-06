@@ -33,6 +33,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.autofill.AutofillManager;
+import android.widget.TextView;
 
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
@@ -105,7 +106,8 @@ import org.chromium.ui.text.SpanApplier;
 @DisableFeatures({
     ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
     ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED,
-    ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
+    ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID,
+    ChromeFeatureList.AUTOFILL_AI_USE_PRIVATE_AI
 })
 public class AutofillOptionsTest {
     private static final String SKIP_ALL_CHECKS_PARAM_VALUE = "skip_all_checks";
@@ -955,6 +957,9 @@ public class AutofillOptionsTest {
         assertEquals(
                 View.VISIBLE,
                 thingsToConsider.findViewById(R.id.info_item_summary_2).getVisibility());
+        assertEquals(
+                getString(R.string.settings_autofill_ai_enterprise_logging_managed_disabled),
+                ((TextView) thingsToConsider.findViewById(R.id.info_item_summary_2)).getText());
     }
 
     @Test
@@ -975,6 +980,113 @@ public class AutofillOptionsTest {
         preference.onBindViewHolder(holder);
 
         View thingsToConsider = holder.findViewById(R.id.autofill_ai_things_to_consider);
+        assertEquals(
+                View.GONE, thingsToConsider.findViewById(R.id.info_item_summary_2).getVisibility());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_USE_PRIVATE_AI)
+    public void testAutofillAiStrings_PrivateAiDisabled() {
+        doReturn(true).when(mMockEntityDataManager).getIsAutofillAiAllowedByEnterprisePolicy();
+
+        new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
+                .initializeNow();
+
+        @StringRes
+        int expectedTitle =
+                ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.AUTOFILL_AI_ONLINE_MODEL_TOGGLE_NEW_TITLE)
+                        ? R.string.settings_autofill_ai_page_title_v2
+                        : R.string.settings_autofill_ai_page_title;
+        assertEquals(getString(expectedTitle), mFragment.getAutofillAiCategory().getTitle());
+
+        AutofillAiPreference preference = (AutofillAiPreference) mFragment.getAutofillAiSwitch();
+        assertEquals(getString(expectedTitle), preference.getTitle());
+
+        PreferenceViewHolder holder =
+                PreferenceViewHolder.createInstanceForTests(
+                        mFragment
+                                .getLayoutInflater()
+                                .inflate(R.layout.autofill_ai_preference, null));
+        preference.onBindViewHolder(holder);
+
+        assertEquals(
+                getString(R.string.settings_autofill_ai_toggle_sub_label), preference.getSummary());
+
+        View whenOn = holder.findViewById(R.id.autofill_ai_when_on);
+        TextView whenOnTitle = whenOn.findViewById(R.id.info_item_title);
+        TextView whenOnSummary = whenOn.findViewById(R.id.info_item_summary);
+        assertEquals(getString(R.string.settings_autofill_ai_when_on), whenOnTitle.getText());
+        assertEquals(
+                getString(R.string.settings_autofill_ai_when_on_can_fill_difficult_fields),
+                whenOnSummary.getText());
+
+        View thingsToConsider = holder.findViewById(R.id.autofill_ai_things_to_consider);
+        TextView considerTitle = thingsToConsider.findViewById(R.id.info_item_title);
+        TextView considerSummary = thingsToConsider.findViewById(R.id.info_item_summary);
+        assertEquals(
+                getString(R.string.settings_autofill_ai_things_to_consider),
+                considerTitle.getText());
+        assertEquals(
+                getString(R.string.settings_autofill_ai_to_consider_data_usage),
+                considerSummary.getText());
+        assertEquals(
+                View.GONE, thingsToConsider.findViewById(R.id.info_item_summary_2).getVisibility());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
+        ChromeFeatureList.AUTOFILL_AI_USE_PRIVATE_AI
+    })
+    public void testAutofillAiStrings_PrivateAiEnabled() {
+        doReturn(true).when(mMockEntityDataManager).getIsAutofillAiAllowedByEnterprisePolicy();
+
+        new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
+                .initializeNow();
+
+        @StringRes
+        int expectedTitle =
+                ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.AUTOFILL_AI_ONLINE_MODEL_TOGGLE_NEW_TITLE)
+                        ? R.string.settings_autofill_ai_page_title_v2
+                        : R.string.settings_autofill_ai_page_title;
+        assertEquals(getString(expectedTitle), mFragment.getAutofillAiCategory().getTitle());
+
+        AutofillAiPreference preference = (AutofillAiPreference) mFragment.getAutofillAiSwitch();
+        assertEquals(getString(expectedTitle), preference.getTitle());
+
+        PreferenceViewHolder holder =
+                PreferenceViewHolder.createInstanceForTests(
+                        mFragment
+                                .getLayoutInflater()
+                                .inflate(R.layout.autofill_ai_preference, null));
+        preference.onBindViewHolder(holder);
+
+        assertEquals(
+                getString(R.string.settings_autofill_ai_toggle_sub_label_v2),
+                preference.getSummary());
+
+        View whenOn = holder.findViewById(R.id.autofill_ai_when_on);
+        TextView whenOnTitle = whenOn.findViewById(R.id.info_item_title);
+        TextView whenOnSummary = whenOn.findViewById(R.id.info_item_summary);
+        assertEquals(getString(R.string.settings_autofill_ai_when_on), whenOnTitle.getText());
+        assertEquals(
+                getString(R.string.settings_autofill_ai_when_on_can_fill_difficult_fields),
+                whenOnSummary.getText());
+
+        View thingsToConsider = holder.findViewById(R.id.autofill_ai_things_to_consider);
+        TextView considerTitle = thingsToConsider.findViewById(R.id.info_item_title);
+        TextView considerSummary = thingsToConsider.findViewById(R.id.info_item_summary);
+        assertEquals(
+                getString(R.string.settings_autofill_ai_things_to_consider),
+                considerTitle.getText());
+        assertEquals(
+                getString(R.string.settings_autofill_ai_to_consider_data_usage_v2),
+                considerSummary.getText());
         assertEquals(
                 View.GONE, thingsToConsider.findViewById(R.id.info_item_summary_2).getVisibility());
     }

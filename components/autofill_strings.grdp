@@ -1798,23 +1798,26 @@
   <message name="IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_DATA_USAGE" desc="Bullet 1 of 2 that appears beneath the 'Things to consider' title. The point of this bullet is to convey to the user the types of data that get shared with Google to support this feature. There are 2 data types: 1) 'the page’s URL' and 2) 'content', by which we mean the words, visuals, and layout of the pages the user visits. This notion that Google is considering 'page content' is new. We want to lead with 'To offer suggestions' even though it might be a bit grammatically awkward, because we want to express the need / value before explaining the data that gets shared." formatter_data="android_java">
     To offer suggestions and improve this feature, the page’s URL and content are shared with Google
   </message>
+  <message name="IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_DATA_USAGE_V2" desc="Bullet 1 of 2 that appears beneath the 'Things to consider' title. The point of this bullet is to convey to the user the types of data that get shared with Google to support this feature. There are 2 data types: 1) 'the page’s URL' and 2) 'content', by which we mean the words, visuals, and layout of the pages the user visits. Crucially, we convey to users that this data is shared privately and they cannot be reviewed by anyone." formatter_data="android_java">
+    The content and URLs of the pages you visit can be processed in a private space in the cloud
+  </message>
   <if expr="_google_chrome">
-    <message name="IDS_SETTINGS_AUTOFILL_AI_DESCRIPTION" desc="The description of the smarter form understanding button on chrome://settings/autofill." formatter_data="android_java">
+    <message name="IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL" desc="The description of the setting. By 'understand forms better', we mean that when a user submits a form on a website, and if they're using smarter form understanding, this feature can offer to save the user's submitted info. When Chrome saves that info, we save the submitted values and consider the page context." formatter_data="android_java">
       Chrome understands forms better and can autofill them faster for you
     </message>
-    <message name="IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL" desc="The description of the setting. By 'understand forms better', we mean that when a user submits a form on a website, and if they're using smarter form understanding, this feature can offer to save the user's submitted info. When Chrome saves that info, we save the submitted values and consider the page context.">
-      Chrome understands forms better and can autofill them faster for you
+    <message name="IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL_V2" desc="The description of the setting. This explains to users that Google can process page data in Google servers as a way to provide a better experience. Importantly, it mentions that this is done safely and cannot be viewed by anyone." formatter_data="android_java">
+      Help Chrome better understand and fill complex forms by securely processing data on Google's servers. Your info remains private and isn't reviewed by anyone.
     </message>
     <message name="IDS_SETTINGS_AUTOFILL_AI_WHEN_ON_CAN_FILL_DIFFICULT_FIELDS" desc="Bullet point that appears beneath appears beneath the 'When on' title when seeing the Smarter Form Understanding description page. This string explains one of the advantages users will get from enabling the feature and serves as a way to incentivize the user to do so." formatter_data="android_java">
       Chrome can autofill difficult fields that standard autofill might miss
     </message>
   </if>
   <if expr="not _google_chrome">
-    <message name="IDS_SETTINGS_AUTOFILL_AI_DESCRIPTION" desc="The description of the smarter form understanding button on chrome://settings/autofill." formatter_data="android_java">
+    <message name="IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL" desc="The description of the setting. By 'understand forms better', we mean that when a user submits a form on a website, and if they're using smarter form understanding, this feature can offer to save the user's submitted info. When Chromium saves that info, we save the submitted values and consider the page context." formatter_data="android_java">
       Chromium understands forms better and can autofill them faster for you
     </message>
-    <message name="IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL" desc="The description of the setting. By 'understand forms better', we mean that when a user submits a form on a website, and if they're using smarter form understanding, this feature can offer to save the user's submitted info. When Chromium saves that info, we save the submitted values and consider the page context.">
-      Chromium understands forms better and can autofill them faster for you
+    <message name="IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL_V2" desc="The description of the setting. This explains to users that Google can process page data in Google servers as a way to provide a better experience. Importantly, it mentions that this is done safely and cannot be viewed by anyone." formatter_data="android_java">
+      Help Chromium better understand and fill complex forms by securely processing data on Google's servers. Your info remains private and isn't reviewed by anyone.
     </message>
     <message name="IDS_SETTINGS_AUTOFILL_AI_WHEN_ON_CAN_FILL_DIFFICULT_FIELDS" desc="Bullet point that appears beneath the 'When on' title when seeing the Smarter Form Understanding description page. This string explains one of the advantages users will get from enabling the feature and serves as a way to incentivize the user to do so." formatter_data="android_java">
       Chromium can autofill difficult fields that standard autofill might miss

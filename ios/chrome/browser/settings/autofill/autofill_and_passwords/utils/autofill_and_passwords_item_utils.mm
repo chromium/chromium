@@ -221,8 +221,10 @@ TableViewSwitchItem* EnhancedAutofillSwitchItem(NSInteger itemType,
 TableViewHeaderFooterItem* EnhancedAutofillSwitchFooter(NSInteger itemType) {
   TableViewLinkHeaderFooterItem* footer =
       [[TableViewLinkHeaderFooterItem alloc] initWithType:itemType];
-  footer.text =
-      l10n_util::GetNSString(IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL);
+  footer.text = l10n_util::GetNSString(
+      base::FeatureList::IsEnabled(autofill::features::kAutofillAiUsePrivateAi)
+          ? IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL_V2
+          : IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL);
   return footer;
 }
 
@@ -253,7 +255,10 @@ TableViewHeaderFooterItem* EnhancedAutofillThingsToConsiderSectionHeader(
 
 TableViewDetailIconItem* EnhancedAutofillDataUsageItem(NSInteger itemType) {
   return EnhancedAutofillDetailItem(
-      itemType, IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_DATA_USAGE,
+      itemType,
+      base::FeatureList::IsEnabled(autofill::features::kAutofillAiUsePrivateAi)
+          ? IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_DATA_USAGE_V2
+          : IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_DATA_USAGE,
       MakeSymbolMonochrome(GetBrandedGoogleServicesSymbol()));
 }
 

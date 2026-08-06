@@ -1809,7 +1809,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       {"autofillAiAuthenticationToggleSubtitle",
        IDS_SETTINGS_AUTOFILL_AI_AUTHENTICATION_TOGGLE_SUBTITLE},
       {"autofillAiManageYourInfo", IDS_AUTOFILL_MANAGE_YOUR_INFO_LINK},
-      {"autofillAiToggleSubLabel", IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL},
       {"suggestionsFromGeminiQualityLoggingTitle",
        IDS_SETTINGS_SUGGESTIONS_FROM_GEMINI_QUALITY_LOGGING_TITLE},
       {"suggestionsFromGeminiQualityLoggingSubtitle",
@@ -1830,8 +1829,7 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_AUTOFILL_AI_WHEN_ON_CAN_FILL_DIFFICULT_FIELDS},
       {"autofillAiWhenOnUseToFill",
        IDS_SETTINGS_AUTOFILL_AI_WHEN_ON_USE_TO_FILL},
-      {"autofillAiToConsiderDataUsage",
-       IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_DATA_USAGE},
+
       {"autofillAiEntityInstancesNone",
        IDS_SETTINGS_AUTOFILL_AI_ENTITY_INSTANCES_NONE},
       {"autofillAiMoreActionsForEntityInstance",
@@ -2006,6 +2004,16 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
           autofill::features::kAutofillAiOnlineModelToggleNewTitle)
           ? IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE_V2
           : IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE);
+  html_source->AddLocalizedString(
+      "autofillAiToggleSubLabel",
+      base::FeatureList::IsEnabled(autofill::features::kAutofillAiUsePrivateAi)
+          ? IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL_V2
+          : IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL);
+  html_source->AddLocalizedString(
+      "autofillAiToConsiderDataUsage",
+      base::FeatureList::IsEnabled(autofill::features::kAutofillAiUsePrivateAi)
+          ? IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_DATA_USAGE_V2
+          : IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_DATA_USAGE);
 
   html_source->AddBoolean(
       "emailVerificationProtocolEnabled",
