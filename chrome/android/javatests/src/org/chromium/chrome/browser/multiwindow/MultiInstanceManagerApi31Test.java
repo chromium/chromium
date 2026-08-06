@@ -399,7 +399,6 @@ public class MultiInstanceManagerApi31Test {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/543094240")
     public void testOpenUrlsInOtherWindow_RegularWindow_CreatesSingleWindowWithMultipleTabs() {
         ChromeTabbedActivity targetActivity =
                 openUrlsInOtherWindowForTesting(
@@ -465,6 +464,12 @@ public class MultiInstanceManagerApi31Test {
                                                                 /* preferNew= */ true,
                                                                 isIncognito,
                                                                 openInTabGroup)));
+        CriteriaHelper.pollUiThread(
+                () ->
+                        Criteria.checkThat(
+                                "Activity tab should be non-null.",
+                                targetActivity.getActivityTab(),
+                                notNullValue()));
         mExtraActivities.add(targetActivity);
         return targetActivity;
     }
