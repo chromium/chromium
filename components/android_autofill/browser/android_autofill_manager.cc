@@ -259,8 +259,7 @@ void AndroidAutofillManager::FillOrPreviewForm(
   driver().ApplyFormAction(mojom::FormActionType::kFill, action_persistence,
                            fields, FillId::Create(),
                            /*supports_refill=*/false, triggered_origin,
-                           field_type_map,
-                           /*section_for_clear_form_on_ios=*/Section());
+                           field_type_map);
   // We do not call OnAutofillProfileOrCreditCardFormFilled() because WebView
   // doesn't have AutofillProfile or CreditCard.
   if (auto* logger = GetEventFormLogger(field_type_group)) {

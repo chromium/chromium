@@ -72,7 +72,6 @@ class Section;
 }
 
 - (void)fillData:(const std::vector<autofill::FormFieldData::FillData>&)fields
-           section:(const autofill::Section&)section
            inFrame:(web::WebFrame*)frame
     withActionType:(autofill::mojom::FormActionType)actionType {
 }

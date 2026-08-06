@@ -111,8 +111,7 @@ class MockAutofillDriver : public TestAutofillDriver {
                const FillId& fill_id,
                bool supports_refill,
                const url::Origin& triggered_origin,
-               (const absl::flat_hash_map<FieldGlobalId, FieldType>&),
-               (const Section&)),
+               (const absl::flat_hash_map<FieldGlobalId, FieldType>&)),
               (override));
   MOCK_METHOD(void,
               ApplyFieldAction,
@@ -226,15 +225,15 @@ class FormFillerTest
     // autofilled in this call of FillOrPreviewForm (% fields not filled due
     // to the iframe security policy).
     EXPECT_CALL(autofill_driver(), ApplyFormAction)
-        .WillOnce([&filled_fields](
-                      mojom::FormActionType, mojom::ActionPersistence,
-                      base::span<const FormFieldData> data, const FillId&, bool,
-                      const url::Origin&,
-                      const absl::flat_hash_map<FieldGlobalId, FieldType>&,
-                      const Section&) mutable {
-          filled_fields = base::ToVector(data);
-          return base::ToVector(filled_fields, &FormFieldData::global_id);
-        })
+        .WillOnce(
+            [&filled_fields](
+                mojom::FormActionType, mojom::ActionPersistence,
+                base::span<const FormFieldData> data, const FillId&, bool,
+                const url::Origin&,
+                const absl::flat_hash_map<FieldGlobalId, FieldType>&) mutable {
+              filled_fields = base::ToVector(data);
+              return base::ToVector(filled_fields, &FormFieldData::global_id);
+            })
         .WillRepeatedly({});
     trigger(form);
     // Copy the filled data into the form.
@@ -309,8 +308,7 @@ class FormFillerTest
                       mojom::FormActionType, mojom::ActionPersistence,
                       base::span<const FormFieldData> data, const FillId&, bool,
                       const url::Origin&,
-                      const absl::flat_hash_map<FieldGlobalId, FieldType>&,
-                      const Section&) {
+                      const absl::flat_hash_map<FieldGlobalId, FieldType>&) {
           filled_fields = base::ToVector(data);
           return base::ToVector(data, &FormFieldData::global_id);
         });
@@ -487,8 +485,7 @@ TEST_F(FormFillerTest, UndoPreviewDoesNotChangeTheCache) {
       .WillRepeatedly([](mojom::FormActionType, mojom::ActionPersistence,
                          base::span<const FormFieldData> fields, const FillId&,
                          bool, const url::Origin&,
-                         const absl::flat_hash_map<FieldGlobalId, FieldType>&,
-                         const Section&) {
+                         const absl::flat_hash_map<FieldGlobalId, FieldType>&) {
         return base::flat_set<FieldGlobalId>(
             base::ToVector(fields, &FormFieldData::global_id));
       });
@@ -1922,7 +1919,7 @@ TEST_F(FormFillerTest, FillOrPreviewForm_WithBlockedFields) {
       ApplyFormAction(_, _,
                       ElementsAre(HasFieldId(form.fields()[0].global_id()),
                                   HasFieldId(form.fields()[1].global_id())),
-                      _, _, _, _, _))
+                      _, _, _, _))
       .WillOnce(Return(std::vector<FieldGlobalId>{
           form.fields()[0].global_id(), form.fields()[1].global_id()}));
 
@@ -1987,7 +1984,7 @@ TEST_F(FormFillerTest, Refill_UsesBlockedFields) {
       ApplyFormAction(_, _,
                       ElementsAre(HasFieldId(form.fields()[0].global_id()),
                                   HasFieldId(form.fields()[2].global_id())),
-                      _, _, _, _, _))
+                      _, _, _, _))
       .WillOnce(Return(std::vector<FieldGlobalId>{
           form.fields()[0].global_id(), form.fields()[2].global_id()}));
 
@@ -2136,8 +2133,7 @@ TEST_F(FormFillerTest, RefillSkipsSensitiveFieldsIfNotFilledInitially) {
                     mojom::ActionPersistence action_persistence,
                     base::span<const FormFieldData> data, const FillId& fill_id,
                     bool supports_refill, const url::Origin& triggered_origin,
-                    const absl::flat_hash_map<FieldGlobalId, FieldType>&,
-                    const Section&) {
+                    const absl::flat_hash_map<FieldGlobalId, FieldType>&) {
         EXPECT_TRUE(data.empty());
         return std::vector<FieldGlobalId>{};
       });
@@ -2334,8 +2330,7 @@ TEST_P(RefillTest_SuppressAutomaticRefills, SuppressAutomaticRefills) {
                 base::span<const FormFieldData> data, const FillId& fill_id,
                 bool supports_refill, const url::Origin& triggered_origin,
                 const absl::flat_hash_map<FieldGlobalId, FieldType>&
-                    field_type_map,
-                const Section& section_for_clear_form_on_ios) {
+                    field_type_map) {
               mock_form_filler().SuppressAutomaticRefills(
                   should_suppress_automatic_refills() ? fill_id
                                                       : FillId::Create());

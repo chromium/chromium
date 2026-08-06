@@ -91,13 +91,10 @@ MockAutofillDriver::MockAutofillDriver(TestAutofillClient* client)
                  base::span<const FormFieldData> data, const FillId& fill_id,
                  bool supports_refill, const url::Origin& triggered_origin,
                  const absl::flat_hash_map<FieldGlobalId, FieldType>&
-                     field_type_map,
-                 const Section& section_for_clear_form_on_ios)
-              -> base::flat_set<FieldGlobalId> {
+                     field_type_map) -> base::flat_set<FieldGlobalId> {
             return TestAutofillDriver::ApplyFormAction(
                 action_type, action_persistence, data, fill_id, supports_refill,
-                triggered_origin, field_type_map,
-                section_for_clear_form_on_ios);
+                triggered_origin, field_type_map);
           });
 }
 

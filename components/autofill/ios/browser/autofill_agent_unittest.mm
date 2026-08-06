@@ -254,19 +254,18 @@ TEST_F(AutofillAgentTest,
   fill_data.push_back(autofill::FormFieldData::FillData(field));
 
   [autofill_agent_ fillData:fill_data
-                    section:Section()
                     inFrame:fake_web_frames_manager_->GetMainWebFrame()
              withActionType:autofill::mojom::FormActionType::kFill];
   fake_web_state_.WasShown();
 
   EXPECT_EQ(u"__gCrWeb.callFunctionInGcrWeb('autofill', 'fillForm', "
             u"[{\"fields\":{\"2\":{\"hostFormId\":0,\"isAutofilled\":true,"
-            u"\"section\":\"-default\",\"value\":\"number_value\"},"
-            u"\"3\":{\"hostFormId\":0,\"isAutofilled\":true,\"section\":"
-            u"\"-default\",\"value\":\"name_value\"},\"4\":{\"hostFormId\":0,"
-            u"\"isAutofilled\":false,\"section\":\"-default\","
+            u"\"value\":\"number_value\"},"
+            u"\"3\":{\"hostFormId\":0,\"isAutofilled\":true,"
+            u"\"value\":\"name_value\"},\"4\":{\"hostFormId\":0,"
+            u"\"isAutofilled\":false,"
             u"\"value\":\"01\"},\"5\":{\"hostFormId\":0,\"isAutofilled\":true,"
-            u"\"section\":\"-default\",\"value\":\"\"}}}]);",
+            u"\"value\":\"\"}}}]);",
             fake_main_frame_->GetLastJavaScriptCall());
 }
 
@@ -934,7 +933,6 @@ TEST_F(AutofillAgentTest, FillData_UpdateWithResults) {
 
   // Fill form data.
   [autofill_agent_ fillData:fields
-                    section:Section()
                     inFrame:fake_main_frame_
              withActionType:autofill::mojom::FormActionType::kFill];
 
@@ -978,7 +976,6 @@ TEST_F(AutofillAgentTest, FillData_UnknowFieldIdInResults) {
 
   // Fill form data.
   [autofill_agent_ fillData:fields
-                    section:Section()
                     inFrame:fake_main_frame_
              withActionType:autofill::mojom::FormActionType::kFill];
 

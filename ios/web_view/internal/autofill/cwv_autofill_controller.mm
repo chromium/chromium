@@ -905,11 +905,9 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
 #pragma mark - AutofillDriverIOSBridge
 
 - (void)fillData:(const std::vector<autofill::FormFieldData::FillData>&)fields
-           section:(const autofill::Section&)section
            inFrame:(web::WebFrame*)frame
     withActionType:(autofill::mojom::FormActionType)actionType {
   [_autofillAgent fillData:fields
-                   section:section
                    inFrame:frame
             withActionType:(autofill::mojom::FormActionType::kFill)];
 }

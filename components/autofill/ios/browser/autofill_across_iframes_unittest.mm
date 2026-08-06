@@ -654,11 +654,10 @@ class AutofillAcrossIframesTest : public AutofillTestWithWebState {
     url::Origin trigger_origin = trigger_frame->GetSecurityOrigin();
     base::flat_set<FieldGlobalId> filled_field_ids =
         GetDriverForFrame(trigger_frame)
-            ->ApplyFormAction(mojom::FormActionType::kFill,
-                              mojom::ActionPersistence::kFill, fields,
-                              FillId::Create(),
-                              /*supports_refill=*/false, trigger_origin,
-                              field_type_map, Section());
+            ->ApplyFormAction(
+                mojom::FormActionType::kFill, mojom::ActionPersistence::kFill,
+                fields, FillId::Create(),
+                /*supports_refill=*/false, trigger_origin, field_type_map);
 
     // Verify that filled fields correspond to the expected ones by comparing
     // their global ids.
@@ -1034,8 +1033,7 @@ TEST_F(AutofillAcrossIframesTest, Fill_MainFrameForm) {
   main_frame_driver()->ApplyFormAction(
       mojom::FormActionType::kFill, mojom::ActionPersistence::kFill,
       form.fields(), FillId::Create(),
-      /*supports_refill=*/false, form.main_frame_origin(), field_type_map,
-      Section());
+      /*supports_refill=*/false, form.main_frame_origin(), field_type_map);
 
   ASSERT_TRUE(main_frame_manager().WaitForFormsFilled(1));
   ASSERT_EQ(main_frame_manager().filled_forms().size(), 1u);
@@ -1101,7 +1099,7 @@ TEST_F(AutofillAcrossIframesTest, Fill_MultiFrameForm) {
       main_frame_driver()->ApplyFormAction(
           mojom::FormActionType::kFill, mojom::ActionPersistence::kFill, fields,
           FillId::Create(), /*supports_refill=*/false, form.main_frame_origin(),
-          field_type_map, Section());
+          field_type_map);
 
   EXPECT_THAT(filled_field_ids, UnorderedElementsAre(name_field->global_id(),
                                                      phone_field->global_id()));
@@ -1510,7 +1508,7 @@ TEST_F(AutofillAcrossIframesTest, UpdateOnFrameDeletion) {
   ASSERT_THAT(main_frame_driver()->ApplyFormAction(
                   mojom::FormActionType::kFill, mojom::ActionPersistence::kFill,
                   fields, FillId::Create(), /*supports_refill=*/false,
-                  form.main_frame_origin(), field_type_map, Section()),
+                  form.main_frame_origin(), field_type_map),
               SizeIs(1));
 
   // Wait on the fill to be done.
@@ -1813,7 +1811,7 @@ TEST_F(AutofillAcrossIframesTest, FrameDoubleRegistration_Unregister) {
                   mojom::FormActionType::kFill, mojom::ActionPersistence::kFill,
                   fields_to_fill, FillId::Create(),
                   /*supports_refill=*/false, browser_form.main_frame_origin(),
-                  field_type_map, Section()),
+                  field_type_map),
               UnorderedElementsAre(phone_field->global_id()));
 
   main_frame_manager().ResetTestState();

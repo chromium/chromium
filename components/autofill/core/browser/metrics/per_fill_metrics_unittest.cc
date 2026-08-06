@@ -209,8 +209,7 @@ TEST_F(PerFillMetricsTest, ModifiedFieldsCount) {
                    mojom::ActionPersistence action_persistence,
                    base::span<const FormFieldData> data, const FillId& fill_id,
                    bool supports_refill, const url::Origin& triggered_origin,
-                   const absl::flat_hash_map<FieldGlobalId, FieldType>&,
-                   const Section&) {
+                   const absl::flat_hash_map<FieldGlobalId, FieldType>&) {
         return base::ToVector(data, &FormFieldData::global_id);
       });
 

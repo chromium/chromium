@@ -140,8 +140,7 @@ class TestActorContentAutofillDriver : public TestContentAutofillDriver {
        const FillId& fill_id,
        bool supports_refill,
        const url::Origin& triggered_origin,
-       (const absl::flat_hash_map<FieldGlobalId, FieldType>& field_type_map),
-       const Section& section_for_clear_form_on_ios),
+       (const absl::flat_hash_map<FieldGlobalId, FieldType>& field_type_map)),
       (override));
 };
 
@@ -180,13 +179,11 @@ class ActorOneTimeTokenFillingServiceImplTest
                            const FillId& fill_id, bool supports_refill,
                            const url::Origin& triggered_origin,
                            const absl::flat_hash_map<FieldGlobalId, FieldType>&
-                               field_type_map,
-                           const Section& section_for_clear_form_on_ios) {
+                               field_type_map) {
           base::flat_set<FieldGlobalId> filled_fields =
               driver().TestContentAutofillDriver::ApplyFormAction(
                   action_type, action_persistence, fields, fill_id,
-                  supports_refill, triggered_origin, field_type_map,
-                  section_for_clear_form_on_ios);
+                  supports_refill, triggered_origin, field_type_map);
           for (const FormFieldData& field : fields) {
             if (filled_fields.contains(field.global_id())) {
               last_filled_values_[field.global_id()] = field.value();

@@ -456,7 +456,6 @@ bool HasGuid(const Suggestion::Payload& payload) {
 #pragma mark - AutofillDriverIOSBridge
 
 - (void)fillData:(const std::vector<autofill::FormFieldData::FillData>&)fields
-           section:(const Section&)section
            inFrame:(web::WebFrame*)frame
     withActionType:(autofill::mojom::FormActionType)actionType {
   base::DictValue fieldsData;
@@ -465,7 +464,6 @@ bool HasGuid(const Suggestion::Payload& payload) {
   for (const auto& field : fields) {
     base::DictValue fieldData;
     fieldData.Set("value", field.value);
-    fieldData.Set("section", section.ToString());
     fieldData.Set("hostFormId", static_cast<int>(*field.host_form_id));
     fieldData.Set("isAutofilled", field.is_autofilled);
     fieldsData.Set(NumberToString(*field.renderer_id), std::move(fieldData));

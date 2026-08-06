@@ -112,8 +112,8 @@ class AutofillDriverIOS final : public AutofillDriver,
       const FillId& fill_id,
       bool supports_refill,
       const url::Origin& triggered_origin,
-      const absl::flat_hash_map<FieldGlobalId, FieldType>& field_type_map,
-      const Section& section_for_clear_form_on_ios) override;
+      const absl::flat_hash_map<FieldGlobalId, FieldType>& field_type_map)
+      override;
   void ApplyFieldAction(mojom::FieldActionType action_type,
                         mojom::ActionPersistence action_persistence,
                         const FieldGlobalId& field_id,

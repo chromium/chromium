@@ -829,7 +829,7 @@ void FormFiller::UndoAutofill(mojom::ActionPersistence action_persistence,
   manager_->driver().ApplyFormAction(
       mojom::FormActionType::kUndo, action_persistence, result_fields,
       FillId::Create(), /*supports_refill=*/false, url::Origin(),
-      /*field_type_map=*/{}, /*section_for_clear_form_on_ios=*/Section());
+      /*field_type_map=*/{});
 }
 
 void FormFiller::FillOrPreviewField(mojom::ActionPersistence action_persistence,
@@ -939,10 +939,8 @@ void FormFiller::FillOrPreviewForm(
   base::flat_set<FieldGlobalId> safe_filled_field_ids =
       manager_->driver().ApplyFormAction(
           mojom::FormActionType::kFill, action_persistence, result_fields,
-          fill_id,
-          /*supports_refill=*/may_refill_in_future, trigger_field.origin(),
-          filled_field_types,
-          /*section_for_clear_form_on_ios=*/trigger_field.section());
+          fill_id, /*supports_refill=*/may_refill_in_future,
+          trigger_field.origin(), filled_field_types);
 
   // This will hold the cached version of `result_fields`.
   std::vector<const AutofillField*> safe_filled_fields =

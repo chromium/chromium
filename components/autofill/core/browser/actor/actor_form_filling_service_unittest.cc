@@ -918,10 +918,10 @@ TEST_F(ActorFormFillingServiceTest, FillOrPreview) {
   // TODO(crbug.com/480936584): Expect actual fields to be previewed/filled
   // instead of passing `_` when the splitting logic is finalized.
   EXPECT_CALL(driver(), ApplyFormAction(_, mojom::ActionPersistence::kPreview,
-                                        _, _, _, _, _, _))
+                                        _, _, _, _, _))
       .Times(1);
   EXPECT_CALL(driver(), ApplyFormAction(_, mojom::ActionPersistence::kFill, _,
-                                        _, _, _, _, _))
+                                        _, _, _, _))
       .Times(1);
 
   ASSERT_EQ(manager().last_trigger_field_id(), FieldGlobalId());

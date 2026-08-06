@@ -770,8 +770,7 @@ class MockAutofillDriver : public TestAutofillDriver {
                const FillId& fill_id,
                bool supports_refill,
                const url::Origin& triggered_origin,
-               (const absl::flat_hash_map<FieldGlobalId, FieldType>&),
-               (const Section&)),
+               (const absl::flat_hash_map<FieldGlobalId, FieldType>&)),
               (override));
   MOCK_METHOD(void,
               ApplyFieldAction,
@@ -1108,8 +1107,7 @@ class BrowserAutofillManagerTest
                       base::span<const FormFieldData> data,
                       const FillId& fill_id, bool supports_refill,
                       const url::Origin& triggered_origin,
-                      const absl::flat_hash_map<FieldGlobalId, FieldType>&,
-                      const Section&) {
+                      const absl::flat_hash_map<FieldGlobalId, FieldType>&) {
           filled_fields = std::vector<FormFieldData>(data.begin(), data.end());
           return base::MakeFlatSet<FieldGlobalId>(data, {},
                                                   &FormFieldData::global_id);
@@ -7109,7 +7107,7 @@ TEST_F(BrowserAutofillManagerOtpSuggestionsTest, OtpFilling) {
   EXPECT_CALL(autofill_driver(),
               ApplyFormAction(mojom::FormActionType::kFill,
                               mojom::ActionPersistence::kFill, _, _, _, _,
-                              expected_types, _))
+                              expected_types))
       .WillOnce(DoAll(SaveArgElementsTo<2>(&filled_fields),
                       Return(base::flat_set<FieldGlobalId>{})));
 
@@ -7189,7 +7187,7 @@ TEST_F(BrowserAutofillManagerTest, FillOrPreviewForm_BlockedFields) {
   EXPECT_CALL(autofill_driver(),
               ApplyFormAction(mojom::FormActionType::kFill,
                               mojom::ActionPersistence::kFill, _, _, _, _,
-                              expected_types, _));
+                              expected_types));
 
   autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form.global_id(),
@@ -7223,7 +7221,7 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_CALL(autofill_driver(),
               ApplyFormAction(mojom::FormActionType::kFill,
                               mojom::ActionPersistence::kFill, _, _, _, _,
-                              expected_types, _));
+                              expected_types));
 
   autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form.global_id(),

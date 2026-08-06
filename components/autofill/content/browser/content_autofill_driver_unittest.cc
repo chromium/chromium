@@ -722,7 +722,7 @@ TEST_F(ContentAutofillDriverTestWithAddressForm,
   driver().browser_events().ApplyFormAction(
       mojom::FormActionType::kFill, mojom::ActionPersistence::kFill,
       address_form().fields(), FillId::Create(),
-      /*supports_refill=*/false, triggered_origin, field_type_map(), Section());
+      /*supports_refill=*/false, triggered_origin, field_type_map());
 
   run_loop.RunUntilIdle();
 
@@ -749,7 +749,7 @@ TEST_F(ContentAutofillDriverTestWithAddressForm,
   driver().browser_events().ApplyFormAction(
       mojom::FormActionType::kFill, mojom::ActionPersistence::kPreview,
       address_form().fields(), FillId::Create(),
-      /*supports_refill=*/false, triggered_origin, field_type_map(), Section());
+      /*supports_refill=*/false, triggered_origin, field_type_map());
 
   run_loop.RunUntilIdle();
 

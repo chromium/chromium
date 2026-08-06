@@ -295,13 +295,12 @@ function fillForm(data) {
 
     modifiedForms.add(fieldData.hostFormId);
 
-    (function(_element, _value, _section, _isAutofilled, _delay) {
+    (function(_element, _value, _isAutofilled, _delay) {
       window.setTimeout(function() {
         fillUtil.setInputElementValue(_value, _element, function() {
           if (_isAutofilled) {
             _element.setAttribute('chrome-autofilled', '');
             _element.isAutofilled = true;
-            _element.autofillSection = _section;
             _element.addEventListener('input', controlElementInputListener_);
           } else {
             _element.removeAttribute('chrome-autofilled');
@@ -310,8 +309,7 @@ function fillForm(data) {
           }
         });
       }, _delay);
-    })(element, fieldData.value, fieldData.section, fieldData.isAutofilled,
-       delay);
+    })(element, fieldData.value, fieldData.isAutofilled, delay);
     delay += delayBetweenFieldFillingMs;
     filledElements[fillUtil.getUniqueID(element)] = fieldData.value;
   }

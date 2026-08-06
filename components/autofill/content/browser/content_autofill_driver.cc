@@ -518,8 +518,7 @@ base::flat_set<FieldGlobalId> ContentAutofillDriver::ApplyFormAction(
     const FillId& fill_id,
     bool supports_refill,
     const url::Origin& triggered_origin,
-    const absl::flat_hash_map<FieldGlobalId, FieldType>& field_type_map,
-    const Section& section_for_clear_form_on_ios) {
+    const absl::flat_hash_map<FieldGlobalId, FieldType>& field_type_map) {
   // If this driver is active, then its main frame is identical to the main
   // frame at the time the form was received from a renderer and their origins
   // are the same.
