@@ -15,7 +15,6 @@
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/substitution.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
 #include "components/optimization_guide/proto/substitution.pb.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
@@ -54,7 +53,8 @@ template <class T>
 double GetLanguageReliabilityThreshold(const T& check,
                                        ResponseCompleteness completeness) {
   if (!check.has_language_check()) {
-    return features::GetOnDeviceModelLanguageDetectionMinimumReliability();
+    constexpr double kDefaultLanguageReliabilityThreshold = 0.8;
+    return kDefaultLanguageReliabilityThreshold;
   }
   if (completeness == ResponseCompleteness::kComplete ||
       !check.language_check().has_partial_threshold()) {

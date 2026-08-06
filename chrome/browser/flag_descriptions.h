@@ -4694,10 +4694,6 @@ inline constexpr char kTabGroupHoverCardsName[] =
 inline constexpr char kTabGroupHoverCardsDescription[] =
     "Enables hover cards for tab group headers in the tab strip.";
 
-inline constexpr char kTextSafetyClassifierName[] = "Text Safety Classifier";
-inline constexpr char kTextSafetyClassifierDescription[] =
-    "Enables text safety classifier for on-device models";
-
 inline constexpr char kThreeButtonPasswordSaveDialogName[] =
     "Three Button Password Save Dialog";
 inline constexpr char kThreeButtonPasswordSaveDialogDescription[] =

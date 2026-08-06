@@ -27,7 +27,6 @@ ScopedModelBrokerFeatureList::ScopedModelBrokerFeatureList() {
        {features::kOnDeviceModelPerformanceParams,
         {{"compatible_on_device_performance_classes", "3,4,5,6"},
          {"compatible_low_tier_on_device_performance_classes", "3"}}},
-       {features::kTextSafetyClassifier, {}},
        {features::kOnDeviceModelValidation,
         {{"on_device_model_validation_delay", "0"}}}},
       {});

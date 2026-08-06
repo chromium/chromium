@@ -80,8 +80,6 @@ BASE_DECLARE_FEATURE(kModelQualityLogging);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kLogOnDeviceMetricsOnStartup);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-BASE_DECLARE_FEATURE(kTextSafetyClassifier);
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kTextSafetyScanLanguageDetection);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kOnDeviceModelFetchPerformanceClassEveryStartup);
@@ -390,20 +388,6 @@ bool IsFreeDiskSpaceTooLowForOnDeviceModelCachesBuild(
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool IsFreeDiskSpaceSufficientForBackgroundOnDeviceModelInstall(
     base::ByteSize free_disk_space_bytes);
-
-// Returns true if unsafe content should be removed.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool GetOnDeviceModelRetractUnsafeContent();
-
-// Whether we should initiate download of the text safety classifier model.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool ShouldUseTextSafetyClassifierModel();
-
-// This is the minimum required reliability threshold for language detection to
-// be considered reliable enough for the text safety classifier. Clamped to the
-// range [0, 1].
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-double GetOnDeviceModelLanguageDetectionMinimumReliability();
 
 // These params configure the repetition checker. See HasRepeatingSuffix() in
 // repetition_checker.h for explanation. A value of 2 for num repeats and 16 for

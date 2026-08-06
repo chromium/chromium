@@ -9,7 +9,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test.pb.h"
 #include "base/test/test_future.h"
@@ -88,7 +87,7 @@ TEST_F(OnDeviceAssetManagerTest,
   EXPECT_TRUE(IsSupplementalModelRegistered());
 }
 
-TEST_F(OnDeviceAssetManagerTest, RegistersTextSafetyModelIfEnabled) {
+TEST_F(OnDeviceAssetManagerTest, RegistersTextSafetyModel) {
   CreateAssetManager();
 
   // Text safety model should not be registered until the base model is ready.
@@ -97,14 +96,6 @@ TEST_F(OnDeviceAssetManagerTest, RegistersTextSafetyModelIfEnabled) {
   InstallBaseModel();
 
   EXPECT_TRUE(IsSupplementalModelRegistered());
-}
-
-TEST_F(OnDeviceAssetManagerTest, DoesNotRegisterTextSafetyIfNotEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({}, {features::kTextSafetyClassifier});
-  InstallBaseModel();
-  CreateAssetManager();
-  EXPECT_FALSE(IsSupplementalModelRegistered());
 }
 
 TEST_F(OnDeviceAssetManagerTest, DoesNotNotifyServiceControllerWrongTarget) {

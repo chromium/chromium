@@ -48,7 +48,7 @@ void SafetyClient::MaybeUpdateSafetyModel(
 
 base::expected<std::unique_ptr<SafetyChecker>, OnDeviceModelEligibilityReason>
 SafetyClient::MakeSafetyChecker(mojom::OnDeviceFeature feature, bool can_skip) {
-  if (!features::ShouldUseTextSafetyClassifierModel() || can_skip) {
+  if (can_skip) {
     // Construct a dummy checker that always passes all checks.
     return std::make_unique<SafetyChecker>(nullptr, SafetyConfig());
   }

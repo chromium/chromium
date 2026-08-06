@@ -6934,14 +6934,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
-                    "params": {
-                        "on_device_retract_unsafe_content": "false",
-                        "on_device_text_safety_token_interval": "10"
-                    },
                     "enable_features": [
                         "OptimizationGuideComposeOnDeviceEval",
-                        "OptimizationGuideOnDeviceModel",
-                        "TextSafetyClassifier"
+                        "OptimizationGuideOnDeviceModel"
                     ]
                 }
             ]

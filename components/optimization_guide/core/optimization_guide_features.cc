@@ -107,9 +107,6 @@ BASE_FEATURE(kOptimizationGuideOnDeviceModel,
 // metrics.
 BASE_FEATURE(kLogOnDeviceMetricsOnStartup, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Whether to download the text safety classifier model.
-BASE_FEATURE(kTextSafetyClassifier, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Whether to scan the full text when running the language detection in the text
 // safety classifier.
 BASE_FEATURE(kTextSafetyScanLanguageDetection,
@@ -572,25 +569,6 @@ bool IsFreeDiskSpaceSufficientForBackgroundOnDeviceModelInstall(
     base::ByteSize free_disk_space_bytes) {
   return GetDiskSpaceRequiredForBackgroundOnDeviceModelInstall() <=
          free_disk_space_bytes;
-}
-
-bool GetOnDeviceModelRetractUnsafeContent() {
-  static const base::FeatureParam<bool>
-      kOnDeviceModelShouldRetractUnsafeContent{
-          &kTextSafetyClassifier, "on_device_retract_unsafe_content", true};
-  return kOnDeviceModelShouldRetractUnsafeContent.Get();
-}
-
-bool ShouldUseTextSafetyClassifierModel() {
-  return base::FeatureList::IsEnabled(kTextSafetyClassifier);
-}
-
-double GetOnDeviceModelLanguageDetectionMinimumReliability() {
-  static const base::FeatureParam<double>
-      kOnDeviceModelLanguageDetectionMinimumReliability{
-          &kTextSafetyClassifier,
-          "on_device_language_detection_minimum_reliability", 0.8};
-  return kOnDeviceModelLanguageDetectionMinimumReliability.Get();
 }
 
 int GetOnDeviceModelNumRepeats() {
