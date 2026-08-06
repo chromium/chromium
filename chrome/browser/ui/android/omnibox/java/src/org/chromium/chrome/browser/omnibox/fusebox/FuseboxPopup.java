@@ -169,7 +169,7 @@ class FuseboxPopup {
         initializeItem(
                 mGalleryButton,
                 R.string.omnibox_navattach_gallery,
-                R.drawable.photo_24dp,
+                R.drawable.add_photo_alternate_24dp,
                 R.string.accessibility_omnibox_add_images);
         initializeItem(
                 mFileButton,
