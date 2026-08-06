@@ -100,6 +100,7 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
         {
           header: {
             title: loadTimeData.getString('lineFocusLabel'),
+            shortcut: loadTimeData.getString('lineFocusShortcutLabel'),
             separator: false,
           },
           items: this.toggleOptions_,

@@ -9671,10 +9671,16 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <message name="IDS_READING_MODE_TOOLTIP" desc="Tooltip for the reading mode feature, which gives users an accessible reading experience.">
           Reading mode (<ph name="READING_MODE_SHORTCUT">$1<ex>⌥⌘R</ex></ph>)
         </message>
+        <message name="IDS_READING_MODE_LINE_FOCUS_SHORTCUT_LABEL" desc="Keyboard shortcut for turning on and off the line focus feature in Reading mode.">
+          ⌥L
+        </message>
       </if>
       <if expr="not is_macosx">
         <message name="IDS_READING_MODE_TOOLTIP" desc="Tooltip for the reading mode feature, which gives users an accessible reading experience.">
           Reading mode (<ph name="READING_MODE_SHORTCUT">$1<ex>Alt+Shift+R</ex></ph>)
+        </message>
+        <message name="IDS_READING_MODE_LINE_FOCUS_SHORTCUT_LABEL" desc="Keyboard shortcut for turning on and off the line focus feature in Reading mode.">
+          Alt+L
         </message>
       </if>
       <message name="IDS_READING_MODE_NOT_SELECTABLE_HEADER" desc="Header for reading mode when the current webpage cannot be opened in reading mode, even when selecting text.">

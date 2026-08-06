@@ -34,13 +34,22 @@
   display: none;
 }
 
-.header-style {
-  display: grid;
+.header-container {
   align-items: center;
-  font-size: 13px;
+  display: flex;
   height: 32px;
-  padding-inline-start: 20px;
+  justify-content: space-between;
+  padding-inline: 20px;
+}
+
+.header-style {
+  font-size: 13px;
   font-weight: 700;
+}
+
+.shortcut-text {
+  color: var(--on-surface-subtle-text-color);
+  font-size: 13px;
 }
 
 .check-mark {

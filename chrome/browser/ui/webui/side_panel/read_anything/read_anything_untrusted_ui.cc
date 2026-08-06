@@ -116,6 +116,7 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
        IDS_READING_MODE_LINE_FOCUS_ON_LABEL_SCREENREADER},
       {"turnHighlightOff", IDS_READING_MODE_TURN_HIGHLIGHT_OFF},
       {"turnHighlightOn", IDS_READING_MODE_TURN_HIGHLIGHT_ON},
+      {"lineFocusShortcutLabel", IDS_READING_MODE_LINE_FOCUS_SHORTCUT_LABEL},
       {"lineSpacingStandardTitle", IDS_READING_MODE_SPACING_COMBOBOX_STANDARD},
       {"lineSpacingLooseTitle", IDS_READING_MODE_SPACING_COMBOBOX_LOOSE},
       {"lineSpacingVeryLooseTitle",

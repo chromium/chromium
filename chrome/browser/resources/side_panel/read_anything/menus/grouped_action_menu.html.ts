@@ -20,11 +20,15 @@ export function getHtml(this: GroupedActionMenuElement) {
           aria-owns="${this.getAriaOwns_(groupIndex, group.items.length)}">
       </span>
       <hr class="sp-hr has-separator-${group.header.separator}">
-      <span
-          class="header-style"
-          role="heading">
-          ${group.header.title}
-      </span>
+      <div class="header-container">
+        <span
+            class="header-style"
+            role="heading">
+            ${group.header.title}
+        </span>
+        ${group.header.shortcut ? html`
+            <span class="shortcut-text">${group.header.shortcut}</span>` : ``}
+      </div>
       ${group.items.map((item, itemIndex) => html`
         <button
             id="group-${groupIndex}-item-${itemIndex}"

@@ -6,6 +6,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import type {LineFocusMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {LineFocusMovement, LineFocusStyle, ReadAnythingSettingsChange, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -36,7 +37,11 @@ suite('LineFocusMenuElement', () => {
     assertCheckMarksForDropdown(lineFocusMenu);
   });
 
-
+  test('has header shortcut', () => {
+    assertEquals(
+        loadTimeData.getString('lineFocusShortcutLabel'),
+        lineFocusMenu.$.menu.menuGroups[0]!.header.shortcut);
+  });
 
   test('line focus style prop update changes selected items', async () => {
     const window = LineFocusStyle.MEDIUM_WINDOW;
