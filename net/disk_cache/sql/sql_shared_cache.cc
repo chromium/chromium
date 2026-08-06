@@ -334,6 +334,49 @@ void SqlSharedCache::DeleteEntries(
       .Then(std::move(callback));
 }
 
+void SqlSharedCache::Read(
+    const CacheEntryKey& entry_key,
+    SqlSharedCacheRowId shared_cache_row_id,
+    int body_size,
+    int64_t offset,
+    scoped_refptr<net::IOBuffer> buffer,
+    SqlPersistentStore::ReadResultOrErrorCallback callback) {
+  if (!isolated_database_) {
+    std::move(callback).Run(
+        base::unexpected(SqlPersistentStore::Error::kNotFound));
+    return;
+  }
+  if (offset > std::numeric_limits<int>::max()) {
+    std::move(callback).Run(
+        base::unexpected(SqlPersistentStore::Error::kFailedToExecute));
+    return;
+  }
+  int offset_int = static_cast<int>(offset);
+  isolated_database_.AsyncCall(&SqlSharedCacheIsolatedDatabase::Read)
+      .WithArgs(entry_key, shared_cache_row_id, body_size, offset_int, buffer)
+      .Then(base::BindOnce(&SqlSharedCache::OnIsolatedDatabaseRead,
+                           weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void SqlSharedCache::OnIsolatedDatabaseRead(
+    SqlPersistentStore::ReadResultOrErrorCallback callback,
+    SqlSharedCacheIsolatedDatabase::ReadResultOrError result) {
+  if (result.has_value()) {
+    std::move(callback).Run(result.value());
+  } else {
+    SqlPersistentStore::Error store_error;
+    switch (result.error()) {
+      case SqlSharedCacheIsolatedDatabase::Error::kEntryNotFound:
+        store_error = SqlPersistentStore::Error::kNotFound;
+        break;
+      default:
+        store_error = SqlPersistentStore::Error::kFailedToExecute;
+        break;
+    }
+    std::move(callback).Run(base::unexpected(store_error));
+  }
+}
+
 void SqlSharedCache::GetBlobHandle(
     const CacheEntryKey& entry_key,
     SqlSharedCacheRowId shared_cache_row_id,

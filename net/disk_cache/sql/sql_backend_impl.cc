@@ -41,6 +41,8 @@
 #include "net/disk_cache/sql/sql_async_task_token.h"
 #include "net/disk_cache/sql/sql_entry_impl.h"
 #include "net/disk_cache/sql/sql_persistent_store.h"
+#include "net/disk_cache/sql/sql_shared_cache.h"
+#include "net/disk_cache/sql/sql_shared_cache_manager.h"
 #include "sql_backend_constants.h"
 
 namespace disk_cache {
@@ -380,9 +382,15 @@ class SqlBackendImpl::IteratorImpl : public Backend::Iterator {
     backend_->ApplyInFlightEntryModifications(entry_info.key, entry_info.info);
 
     // If the entry is not active, create a new `SqlEntryImpl`.
+    auto db_handle =
+        base::MakeRefCounted<EntryDbHandle>(entry_info.info.res_id);
+    if (entry_info.info.shared_cache_resource_id.has_value()) {
+      db_handle->set_shared_cache_resource_id(
+          *entry_info.info.shared_cache_resource_id);
+      // For faster entry iteration, we don't retrieve shared_cache_blob_handle.
+    }
     scoped_refptr<SqlEntryImpl> new_entry = base::MakeRefCounted<SqlEntryImpl>(
-        backend_, entry_info.key,
-        base::MakeRefCounted<EntryDbHandle>(entry_info.info.res_id),
+        backend_, entry_info.key, std::move(db_handle),
         entry_info.info.last_used, entry_info.info.body_end,
         entry_info.info.head);
     new_entry->AddRef();
@@ -1025,10 +1033,20 @@ void SqlBackendImpl::OnEntryOperationFinished(
   SqlPersistentStore::EntryInfo& entry_info = *result;
   ApplyInFlightEntryModifications(key, entry_info);
 
+  auto db_handle = base::MakeRefCounted<EntryDbHandle>(entry_info.res_id);
+  if (entry_info.shared_cache_resource_id.has_value()) {
+    CHECK(entry_info.shared_cache_handle);
+    CHECK(entry_info.shared_cache_blob_handle);
+    db_handle->set_shared_cache_resource_id(
+        *entry_info.shared_cache_resource_id);
+    db_handle->SetSharedCacheHandle(std::move(entry_info.shared_cache_handle));
+    db_handle->SetSharedCacheBlobHandle(
+        std::move(entry_info.shared_cache_blob_handle));
+  }
+
   // Create a new SqlEntryImpl instance.
   scoped_refptr<SqlEntryImpl> new_entry = base::MakeRefCounted<SqlEntryImpl>(
-      weak_factory_.GetWeakPtr(), key,
-      base::MakeRefCounted<EntryDbHandle>(entry_info.res_id),
+      weak_factory_.GetWeakPtr(), key, std::move(db_handle),
       entry_info.last_used, entry_info.body_end, entry_info.head);
 
   // Add a reference for passing to the `callback`.
@@ -1417,10 +1435,44 @@ void SqlBackendImpl::HandleReadEntryDataOperation(
     std::move(callback).Run(base::unexpected(*db_handle->GetError()));
     return;
   }
-  store_->ReadEntryData(
-      key, *db_handle->GetResId(), offset, buffer, buf_len, body_end,
-      sparse_reading,
-      std::move(callback).Then(OnceClosureWithBoundArgs(std::move(handle))));
+  if (!db_handle->shared_cache_resource_id().has_value()) {
+    store_->ReadEntryData(
+        key, *db_handle->GetResId(), offset, buffer, buf_len, body_end,
+        sparse_reading,
+        std::move(callback).Then(OnceClosureWithBoundArgs(std::move(handle))));
+    return;
+  }
+  int bytes_to_read = std::max(
+      int64_t{0}, std::min(static_cast<int64_t>(buf_len), body_end - offset));
+  CHECK_GE(buffer->size(), bytes_to_read);
+  if (buffer->size() != bytes_to_read) {
+    buffer = base::MakeRefCounted<net::DrainableIOBuffer>(std::move(buffer),
+                                                          bytes_to_read);
+  }
+
+  store_->GetSharedCacheManager()->GetCacheByDbId(
+      db_handle->shared_cache_resource_id()->db_id,
+      base::BindOnce(
+          [](const CacheEntryKey& key, SqlSharedCacheRowId shared_cache_row_id,
+             int64_t body_end, int64_t offset,
+             scoped_refptr<net::IOBuffer> buffer,
+             SqlPersistentStore::ReadResultOrErrorCallback callback,
+             scoped_refptr<SqlSharedCacheHandle> shared_cache) {
+            if (!shared_cache || !*shared_cache) {
+              std::move(callback).Run(
+                  base::unexpected(SqlPersistentStore::Error::kNotFound));
+              return;
+            }
+            (*shared_cache)
+                ->Read(key, shared_cache_row_id,
+                       base::checked_cast<int>(body_end), offset, buffer,
+                       std::move(callback).Then(base::OnceClosure(
+                           base::DoNothingWithBoundArgs(shared_cache))));
+          },
+          key, db_handle->shared_cache_resource_id()->row_id, body_end, offset,
+          std::move(buffer),
+          std::move(callback).Then(
+              OnceClosureWithBoundArgs(std::move(handle)))));
 }
 
 RangeResult SqlBackendImpl::GetEntryAvailableRange(

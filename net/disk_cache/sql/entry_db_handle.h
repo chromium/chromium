@@ -12,6 +12,8 @@
 #include "base/sequence_checker.h"
 #include "net/base/net_export.h"
 #include "net/disk_cache/sql/sql_persistent_store.h"
+#include "net/disk_cache/sql/sql_shared_cache_blob_handle.h"
+#include "net/disk_cache/sql/sql_shared_cache_handle.h"
 
 namespace disk_cache {
 
@@ -50,6 +52,32 @@ class NET_EXPORT_PRIVATE EntryDbHandle
   void MarkAsCreated(SqlPersistentStore::ResId res_id);
   void MarkAsErrorOccurred(SqlPersistentStore::Error error);
 
+  void set_shared_cache_resource_id(
+      std::optional<SqlSharedCacheResourceId> shared_cache_resource_id);
+  const std::optional<SqlSharedCacheResourceId>& shared_cache_resource_id()
+      const;
+
+  // For entries whose body has been moved to the shared cache,
+  // `shared_cache_resource_id` is always set.
+  // However, while `shared_cache_handle` and `shared_cache_blob_handle` are
+  // set for explicitly opened entries, they are NOT set for entries retrieved
+  // via entry iteration. This is a deliberate optimization to keep iteration
+  // fast.
+  //
+  // `EntryDbHandle` holds a `shared_cache_handle` to open the corresponding
+  // shared cache DB as early as possible and keep it open for the lifetime of
+  // the entry in memory.
+  //
+  // Additionally, `EntryDbHandle` holds a `shared_cache_blob_handle` to keep
+  // the underlying `sql::StreamingBlobHandle` alive within the
+  // `SqlSharedCacheIsolatedDatabase`, avoiding the overhead of repeated DB
+  // lookups.
+  void SetSharedCacheHandle(
+      scoped_refptr<SqlSharedCacheHandle> shared_cache_handle);
+
+  void SetSharedCacheBlobHandle(
+      scoped_refptr<SqlSharedCacheBlobHandle> shared_cache_blob_handle);
+
   std::optional<SqlPersistentStore::ResId> GetResId() const;
   std::optional<SqlPersistentStore::Error> GetError() const;
 
@@ -73,6 +101,11 @@ class NET_EXPORT_PRIVATE EntryDbHandle
       data_;
 
   State state_;
+
+  std::optional<SqlSharedCacheResourceId> shared_cache_resource_id_;
+
+  scoped_refptr<SqlSharedCacheHandle> shared_cache_handle_;
+  scoped_refptr<SqlSharedCacheBlobHandle> shared_cache_blob_handle_;
 
   // True if this entry has been marked for deletion.
   bool doomed_ = false;

@@ -265,14 +265,13 @@ void SqlPersistentStore::OnOpenEntryFinished(CacheEntryKey key,
   }
   EntryInfo entry_info = std::move(*result);
 
-  // If the entry does not use shared cache or manager is missing, return
-  // `entry_info` immediately.
-  if (!entry_info.shared_cache_resource_id.has_value() ||
-      !shared_cache_manager_) {
+  // If the entry does not use shared cache, return `entry_info` immediately.
+  if (!entry_info.shared_cache_resource_id.has_value()) {
     std::move(callback).Run(std::move(entry_info));
     return;
   }
 
+  CHECK(shared_cache_manager_);
   SqlSharedCacheDbId db_id = entry_info.shared_cache_resource_id->db_id;
   SqlSharedCacheRowId row_id = entry_info.shared_cache_resource_id->row_id;
   int body_size = base::saturated_cast<int>(entry_info.body_end);

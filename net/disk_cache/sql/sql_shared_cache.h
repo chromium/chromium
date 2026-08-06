@@ -108,6 +108,16 @@ class NET_EXPORT_PRIVATE SqlSharedCache {
           void(base::expected<void, SqlSharedCacheIsolatedDatabase::Error>)>
           callback);
 
+  // Asynchronously reads entry body data from the shared cache isolated
+  // database into `buffer` starting at `offset`. `body_size` is the total body
+  // size used to validate the read range.
+  void Read(const CacheEntryKey& entry_key,
+            SqlSharedCacheRowId shared_cache_row_id,
+            int body_size,
+            int64_t offset,
+            scoped_refptr<net::IOBuffer> buffer,
+            SqlPersistentStore::ReadResultOrErrorCallback callback);
+
   // Asynchronously retrieves a `SqlSharedCacheBlobHandle` for a shared cache
   // entry.
   void GetBlobHandle(
@@ -196,6 +206,10 @@ class NET_EXPORT_PRIVATE SqlSharedCache {
   void OnCopyEntryComplete();
   void OnCopyEntryFailed();
   void FinishCopy();
+
+  void OnIsolatedDatabaseRead(
+      SqlPersistentStore::ReadResultOrErrorCallback callback,
+      SqlSharedCacheIsolatedDatabase::ReadResultOrError result);
 
   const std::string nik_string_;
   const raw_ref<SqlPersistentStore> store_;

@@ -30,6 +30,8 @@
 #include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_isolation_key.h"
+#include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
 #include "net/disk_cache/backend_cleanup_tracker.h"
 #include "net/disk_cache/disk_cache_test_util.h"
@@ -37,11 +39,15 @@
 #include "net/disk_cache/sql/sql_async_task_manager.h"
 #include "net/disk_cache/sql/sql_backend_constants.h"
 #include "net/disk_cache/sql/sql_entry_impl.h"
+#include "net/disk_cache/sql/sql_shared_cache.h"
+#include "net/disk_cache/sql/sql_shared_cache_handle.h"
+#include "net/disk_cache/sql/sql_shared_cache_manager.h"
 #include "net/test/gtest_util.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 using net::test::IsError;
 using net::test::IsOk;
@@ -167,6 +173,75 @@ class SqlBackendImplTest : public testing::Test {
     base::test::TestFuture<SqlPersistentStore::Error> future;
     store->MaybeLoadInMemoryIndex(future.GetCallback());
     return future.Get() == SqlPersistentStore::Error::kOk;
+  }
+
+  SqlSharedCacheResourceId CreateEntryInSharedCache(SqlBackendImpl& backend,
+                                                    std::string_view key,
+                                                    std::string_view data) {
+    TestEntryResultCompletionCallback cb_create;
+    disk_cache::EntryResult create_result =
+        cb_create.GetResult(backend.CreateEntry(std::string(key), net::HIGHEST,
+                                                cb_create.callback()));
+    EXPECT_THAT(create_result.net_error(), IsOk());
+    auto* entry = create_result.ReleaseEntry();
+    CHECK(entry);
+
+    auto write_buf = base::MakeRefCounted<net::IOBufferWithSize>(data.size());
+    write_buf->span().copy_from(base::as_byte_span(data));
+    net::TestCompletionCallback cb_write;
+    EXPECT_EQ(
+        cb_write.GetResult(entry->WriteData(1, 0, write_buf.get(), data.size(),
+                                            cb_write.callback(), false)),
+        static_cast<int>(data.size()));
+    entry->Close();
+    backend.RunUntilAllTasksCompleteForTest();
+
+    CacheEntryKey cache_key{std::string(key)};
+
+    auto* store = backend.GetSqlStoreForTest();
+    base::test::TestFuture<SqlPersistentStore::EntryInfoOrError> open_future;
+    store->OpenEntry(cache_key, open_future.GetCallback());
+    auto open_res = open_future.Take();
+    CHECK(open_res.has_value());
+    SqlPersistentStore::ResId res_id = open_res->res_id;
+
+    auto* manager = store->GetSharedCacheManager();
+    CHECK(manager);
+
+    net::NetworkIsolationKey nik(net::SchemefulSite(GURL("https://foo.test")),
+                                 net::SchemefulSite(GURL("https://bar.test")));
+    base::test::TestFuture<scoped_refptr<SqlSharedCacheHandle>> handle_future;
+    manager->GetCacheByNik(nik, /*require_shared_cache_db_id=*/true,
+                           handle_future.GetCallback());
+    scoped_refptr<SqlSharedCacheHandle> handle = handle_future.Take();
+    CHECK(handle);
+    CHECK((*handle)->shared_cache_db_id().has_value());
+    SqlSharedCacheDbId db_id = *(*handle)->shared_cache_db_id();
+
+    auto headers = base::MakeRefCounted<net::IOBufferWithSize>(4);
+    headers->span().copy_from(base::span<const uint8_t>({1, 2, 3, 4}));
+    auto body = base::MakeRefCounted<net::IOBufferWithSize>(data.size());
+    body->span().copy_from(base::as_byte_span(data));
+
+    base::test::TestFuture<base::expected<
+        SqlSharedCacheRowId, SqlSharedCacheIsolatedDatabase::Error>>
+        insert_future;
+    (*handle)
+        ->isolated_database_for_testing()
+        .AsyncCall(&SqlSharedCacheIsolatedDatabase::Insert)
+        .WithArgs(cache_key, headers, data.size(), body)
+        .Then(insert_future.GetCallback());
+    backend.RunUntilAllTasksCompleteForTest();
+    auto insert_res = insert_future.Take();
+    CHECK(insert_res.has_value());
+    SqlSharedCacheRowId row_id = *insert_res;
+
+    const SqlSharedCacheResourceId shared_resource_id{db_id, row_id};
+    base::test::TestFuture<SqlPersistentStore::Error> move_future;
+    store->MoveBlobsToSharedCache(cache_key, res_id, shared_resource_id,
+                                  move_future.GetCallback());
+    EXPECT_EQ(move_future.Get(), SqlPersistentStore::Error::kOk);
+    return shared_resource_id;
   }
 
   // Gets the total size of all entries.
@@ -3691,6 +3766,173 @@ TEST_F(SqlBackendImplTest, SparseDataExceedsMaxFileSizeBackwards) {
       0);
 
   entry->Close();
+}
+
+TEST_F(SqlBackendImplTest, ReadFromSharedCacheViaOpenEntry) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      net::features::kRendererAccessibleHttpCache);
+  auto backend = CreateBackendAndInit();
+  EXPECT_TRUE(LoadInMemoryIndex(*backend));
+
+  const std::string kKey = "shared-cache-key";
+  const std::string kData = "Data stored in shared cache";
+
+  SqlSharedCacheResourceId expected_resource_id =
+      CreateEntryInSharedCache(*backend, kKey, kData);
+  ASSERT_TRUE(expected_resource_id.db_id.value());
+
+  // Now open the entry using OpenEntry.
+  TestEntryResultCompletionCallback cb_open;
+  disk_cache::EntryResult open_result = cb_open.GetResult(
+      backend->OpenEntry(kKey, net::HIGHEST, cb_open.callback()));
+  ASSERT_THAT(open_result.net_error(), IsOk());
+  auto* opened_entry = open_result.ReleaseEntry();
+  ASSERT_TRUE(opened_entry);
+
+  // Check db_handle has shared_cache_resource_id.
+  auto* opened_sql_entry = static_cast<SqlEntryImpl*>(opened_entry);
+  EXPECT_TRUE(
+      opened_sql_entry->db_handle()->shared_cache_resource_id().has_value());
+  EXPECT_EQ(opened_sql_entry->db_handle()->shared_cache_resource_id()->db_id,
+            expected_resource_id.db_id);
+  EXPECT_EQ(opened_sql_entry->db_handle()->shared_cache_resource_id()->row_id,
+            expected_resource_id.row_id);
+
+  // Read data stream 1 from opened entry and verify content matches kData.
+  auto read_buf = base::MakeRefCounted<net::IOBufferWithSize>(kData.size());
+  net::TestCompletionCallback cb_read;
+  EXPECT_EQ(cb_read.GetResult(opened_entry->ReadData(
+                1, 0, read_buf.get(), kData.size(), cb_read.callback())),
+            static_cast<int>(kData.size()));
+  EXPECT_EQ(std::string_view(read_buf->data(), kData.size()), kData);
+
+  opened_entry->Close();
+  backend->RunUntilAllTasksCompleteForTest();
+}
+
+TEST_F(SqlBackendImplTest, ReadFromSharedCacheViaOpenNextEntry) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      net::features::kRendererAccessibleHttpCache);
+  auto backend = CreateBackendAndInit();
+  EXPECT_TRUE(LoadInMemoryIndex(*backend));
+
+  const std::string kKey = "shared-cache-iter-key";
+  const std::string kData = "Data stored in shared cache for iterator";
+
+  SqlSharedCacheResourceId expected_resource_id =
+      CreateEntryInSharedCache(*backend, kKey, kData);
+  ASSERT_TRUE(expected_resource_id.db_id.value());
+
+  // Open entry via iterator (CreateIterator & OpenNextEntry).
+  auto iterator = backend->CreateIterator();
+  ASSERT_TRUE(iterator);
+
+  TestEntryResultCompletionCallback cb_next;
+  disk_cache::EntryResult next_result =
+      cb_next.GetResult(iterator->OpenNextEntry(cb_next.callback()));
+  ASSERT_THAT(next_result.net_error(), IsOk());
+  auto* next_entry = next_result.ReleaseEntry();
+  ASSERT_TRUE(next_entry);
+  EXPECT_EQ(next_entry->GetKey(), kKey);
+
+  // Check db_handle has shared_cache_resource_id.
+  auto* next_sql_entry = static_cast<SqlEntryImpl*>(next_entry);
+  EXPECT_TRUE(
+      next_sql_entry->db_handle()->shared_cache_resource_id().has_value());
+  EXPECT_EQ(next_sql_entry->db_handle()->shared_cache_resource_id()->db_id,
+            expected_resource_id.db_id);
+  EXPECT_EQ(next_sql_entry->db_handle()->shared_cache_resource_id()->row_id,
+            expected_resource_id.row_id);
+
+  // Read data stream 1 from iterator-opened entry and verify content matches
+  // kData.
+  auto read_buf = base::MakeRefCounted<net::IOBufferWithSize>(kData.size());
+  net::TestCompletionCallback cb_read;
+  EXPECT_EQ(cb_read.GetResult(next_entry->ReadData(
+                1, 0, read_buf.get(), kData.size(), cb_read.callback())),
+            static_cast<int>(kData.size()));
+  EXPECT_EQ(std::string_view(read_buf->data(), kData.size()), kData);
+
+  next_entry->Close();
+  backend->RunUntilAllTasksCompleteForTest();
+}
+
+TEST_F(SqlBackendImplTest, ReadFromSharedCacheWithLargerBuffer) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      net::features::kRendererAccessibleHttpCache);
+  auto backend = CreateBackendAndInit();
+  EXPECT_TRUE(LoadInMemoryIndex(*backend));
+
+  const std::string kKey = "shared-cache-drainable-key";
+  const std::string kData = "0123456789";
+
+  SqlSharedCacheResourceId expected_resource_id =
+      CreateEntryInSharedCache(*backend, kKey, kData);
+  ASSERT_TRUE(expected_resource_id.db_id.value());
+
+  TestEntryResultCompletionCallback cb_open;
+  disk_cache::EntryResult open_result = cb_open.GetResult(
+      backend->OpenEntry(kKey, net::HIGHEST, cb_open.callback()));
+  ASSERT_THAT(open_result.net_error(), IsOk());
+  auto* opened_entry = open_result.ReleaseEntry();
+  ASSERT_TRUE(opened_entry);
+
+  // Pass a buffer larger than kData.size() (20 bytes > 10 bytes) to ensure
+  // buffer->size() != bytes_to_read branch is taken.
+  auto read_buf = base::MakeRefCounted<net::IOBufferWithSize>(20);
+  net::TestCompletionCallback cb_read;
+  EXPECT_EQ(cb_read.GetResult(opened_entry->ReadData(1, 0, read_buf.get(), 20,
+                                                     cb_read.callback())),
+            static_cast<int>(kData.size()));
+  EXPECT_EQ(std::string_view(read_buf->data(), kData.size()), kData);
+
+  opened_entry->Close();
+  backend->RunUntilAllTasksCompleteForTest();
+}
+
+TEST_F(SqlBackendImplTest, ReadFromSharedCacheHandleNotFound) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      net::features::kRendererAccessibleHttpCache);
+  auto backend = CreateBackendAndInit();
+  EXPECT_TRUE(LoadInMemoryIndex(*backend));
+
+  const std::string kKey = "shared-cache-not-found-key";
+  const std::string kData = "Data in shared cache";
+
+  SqlSharedCacheResourceId expected_resource_id =
+      CreateEntryInSharedCache(*backend, kKey, kData);
+  ASSERT_TRUE(expected_resource_id.db_id.value());
+
+  TestEntryResultCompletionCallback cb_open;
+  disk_cache::EntryResult open_result = cb_open.GetResult(
+      backend->OpenEntry(kKey, net::HIGHEST, cb_open.callback()));
+  ASSERT_THAT(open_result.net_error(), IsOk());
+  auto* opened_entry = open_result.ReleaseEntry();
+  ASSERT_TRUE(opened_entry);
+
+  // Set a non-existent shared_cache_resource_id so GetCacheByDbId will fail and
+  // pass a null handle.
+  auto* opened_sql_entry = static_cast<SqlEntryImpl*>(opened_entry);
+  opened_sql_entry->db_handle()->set_shared_cache_resource_id(
+      SqlSharedCacheResourceId{SqlSharedCacheDbId(9999),
+                               SqlSharedCacheRowId(1)});
+
+  auto read_buf = base::MakeRefCounted<net::IOBufferWithSize>(kData.size());
+  net::TestCompletionCallback cb_read;
+  int read_res = opened_entry->ReadData(1, 0, read_buf.get(), kData.size(),
+                                        cb_read.callback());
+  if (read_res == net::ERR_IO_PENDING) {
+    backend->RunUntilAllTasksCompleteForTest();
+    read_res = cb_read.WaitForResult();
+  }
+  EXPECT_EQ(read_res, net::ERR_FAILED);
+
+  opened_entry->Close();
+  backend->RunUntilAllTasksCompleteForTest();
 }
 
 }  // namespace
