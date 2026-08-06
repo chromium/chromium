@@ -108,6 +108,7 @@ public class HistorySyncFirstRunFragment extends Fragment
                         SigninAccessPoint.START_PAGE,
                         false,
                         false,
+                        /* isFre= */ true,
                         null);
     }
 

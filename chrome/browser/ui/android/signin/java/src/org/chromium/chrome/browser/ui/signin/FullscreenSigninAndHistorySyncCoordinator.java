@@ -459,6 +459,7 @@ public final class FullscreenSigninAndHistorySyncCoordinator extends SigninAndHi
                         mSigninAccessPoint,
                         /* showEmailInFooter= */ !mDidShowSignin,
                         /* shouldSignOutOnDecline= */ shouldSignOutOnDecline,
+                        /* isFre= */ false,
                         null);
     }
 }

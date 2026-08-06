@@ -779,6 +779,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
                         mSigninAccessPoint,
                         showEmailInFooter,
                         shouldSignOutOnDecline,
+                        /* isFre= */ false,
                         null);
         assert mDialogModel != null;
         mHistorySyncCoordinator.maybeRecreateView();
