@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -76,6 +77,13 @@ public class WebViewResizingHelperUnitTest {
         mActivityScenarioRule.getScenario().onActivity(activity -> mContext = activity);
         mView = new View(mContext);
         when(mMockThinWebView.getView()).thenReturn(mView);
+        doAnswer(
+                        invocation -> {
+                            ((Runnable) invocation.getArgument(0)).run();
+                            return null;
+                        })
+                .when(mMockThinWebView)
+                .runOnNextFrame(any());
 
         when(mMockWindowAndroid.getWindow()).thenReturn(mMockWindow);
         when(mMockWindowAndroid.getInsetObserver()).thenReturn(mMockInsetObserver);
@@ -136,6 +144,36 @@ public class WebViewResizingHelperUnitTest {
 
         lock.unlock();
         assertEquals(1000, layoutParams.height);
+        assertEquals(View.VISIBLE, mView.getVisibility());
+    }
+
+    @Test
+    public void testDisableResizingMode_WaitsForNextFrame() {
+        mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
+        mView.layout(0, 0, 100, 200);
+        FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
+        View placeholder = container.getChildAt(0);
+
+        // Override runOnNextFrame behavior to not automatically run.
+        doAnswer(invocation -> null).when(mMockThinWebView).runOnNextFrame(any());
+
+        WebViewResizingHelper.ResizeLock lock = mHelper.requestResize();
+        assertEquals(View.VISIBLE, placeholder.getVisibility());
+
+        ArgumentCaptor<Runnable> frameCallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
+
+        container.measure(
+                View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(200, View.MeasureSpec.EXACTLY));
+        container.layout(0, 0, 100, 200);
+
+        lock.unlock();
+
+        // Verify runOnNextFrame was registered.
+        verify(mMockThinWebView).runOnNextFrame(frameCallbackCaptor.capture());
+
+        // Run the frame callback and verify view visibility.
+        frameCallbackCaptor.getValue().run();
         assertEquals(View.VISIBLE, mView.getVisibility());
     }
 
