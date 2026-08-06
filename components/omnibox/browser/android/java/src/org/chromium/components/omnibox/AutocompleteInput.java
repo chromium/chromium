@@ -78,6 +78,52 @@ public class AutocompleteInput implements UserData {
         int STANDBY_NO_FOCUS = 3;
     }
 
+    /**
+     * Represents the visual presentation state of the Omnibox UI during a session.
+     *
+     * <p>DisplayState separates how the Omnibox is visually drawn from whether autocomplete queries
+     * are actively being fetched (which is tracked by {@link AutocompleteState}).
+     */
+    @IntDef({
+        DisplayState.WEBSITE,
+        DisplayState.DRAFTING_NO_FOCUS,
+        DisplayState.DRAFTING,
+        DisplayState.SUGGESTIONS
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @Target({ElementType.TYPE_USE})
+    public @interface DisplayState {
+        /**
+         * Disengaged web page view with no active Omnibox input session. Entered when browsing
+         * normal web content without URL bar interaction.
+         */
+        int WEBSITE = 0;
+
+        /**
+         * Active input session retaining draft text, but disengaged (no keyboard/focus ring, and
+         * text selection is not drawn). Entered when focus is lost due to clicking on the content
+         * area while modifications to the url text are present. While a selection should be saved,
+         * it will not be drawn.
+         */
+        int DRAFTING_NO_FOCUS = 1;
+
+        /**
+         * Active input session retaining draft text where text selection and/or cursor is drawn,
+         * but the suggestions popover is hidden. Entered when the URL bar first gains focus before
+         * suggestions arrive, or when suggestions drop to zero. Preserved across tab switches so
+         * backgrounded tabs restore in drafting mode without reopening the popover until new
+         * suggestions are received.
+         */
+        int DRAFTING = 2;
+
+        /**
+         * Active input session showing the suggestions popover dropdown list (or expanded Fusebox
+         * UI in AI mode). Entered when autocomplete suggestions are received or an expanded AI mode
+         * session is active.
+         */
+        int SUGGESTIONS = 3;
+    }
+
     public static class SiteSearchData {
         public final String keyword;
         public final String fullName;
@@ -139,6 +185,8 @@ public class AutocompleteInput implements UserData {
     private final SettableNonNullObservableSupplier<@AutocompleteState Integer>
             mAutocompleteStateSupplier =
                     ObservableSuppliers.createNonNull(AutocompleteState.ENABLED);
+    private final SettableNonNullObservableSupplier<@DisplayState Integer> mDisplayStateSupplier =
+            ObservableSuppliers.createNonNull(DisplayState.WEBSITE);
     private TextSelection mSelection;
     private @RefineActionUsage int mRefineActionUsage;
     private boolean mSuggestionsListScrolled;
@@ -197,6 +245,7 @@ public class AutocompleteInput implements UserData {
         mAllowExactKeywordMatch = other.mAllowExactKeywordMatch;
         mHasAttachments = other.mHasAttachments;
         mAutocompleteStateSupplier.set(other.getAutocompleteState());
+        mDisplayStateSupplier.set(other.getDisplayState());
         mSelection = other.mSelection; // Copied.
         mRefineActionUsage = other.mRefineActionUsage;
         mSuggestionsListScrolled = other.mSuggestionsListScrolled;
@@ -636,6 +685,7 @@ public class AutocompleteInput implements UserData {
         mUrlFocusTime = 0;
         mSuggestionsListScrolled = false;
         mAutocompleteStateSupplier.set(AutocompleteState.ENABLED);
+        mDisplayStateSupplier.set(DisplayState.WEBSITE);
 
         return this;
     }
@@ -685,6 +735,22 @@ public class AutocompleteInput implements UserData {
     /** Sets the {@link AutocompleteState}. */
     public AutocompleteInput setAutocompleteState(@AutocompleteState int state) {
         mAutocompleteStateSupplier.set(state);
+        return this;
+    }
+
+    /** Returns the current {@link DisplayState}. */
+    public @DisplayState int getDisplayState() {
+        return mDisplayStateSupplier.get();
+    }
+
+    /** Returns the supplier for the {@link DisplayState}. */
+    public NonNullObservableSupplier<@DisplayState Integer> getDisplayStateSupplier() {
+        return mDisplayStateSupplier;
+    }
+
+    /** Sets the {@link DisplayState}. */
+    public AutocompleteInput setDisplayState(@DisplayState int displayState) {
+        mDisplayStateSupplier.set(displayState);
         return this;
     }
 

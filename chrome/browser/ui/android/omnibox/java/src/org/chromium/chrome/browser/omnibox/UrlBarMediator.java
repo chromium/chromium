@@ -119,6 +119,18 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
         assert delegate != null;
         UrlBarData data = delegate.getUrlBarDataForCurrentInput();
         setUrlBarData(data, ScrollType.SCROLL_TO_BEGINNING, mCurrentInput.getSelection());
+        if (mCurrentInput.hasPreviewText()) {
+            String userText = mCurrentInput.getUserText();
+            String previewText = mCurrentInput.getPreviewText();
+            if (previewText.startsWith(userText)) {
+                String inlineAutocomplete = previewText.substring(userText.length());
+                setAutocompleteText(
+                        userText,
+                        inlineAutocomplete,
+                        /* additionalText= */ null,
+                        /* siteSearchLabel= */ null);
+            }
+        }
     }
 
     @EnsuresNonNullIf("mCurrentInput")

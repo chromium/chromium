@@ -319,6 +319,12 @@ public class SpannableAutocompleteEditTextModel
         KeyEvent dispatchedEvent = translateKeyEvent(event);
 
         if (mInputConnection == null) {
+            // Hardware typing bypasses IME batch edits when mInputConnection is null. Mark
+            // mLastEditWasTyping so onTextChanged recognizes edits as user typing.
+            if (dispatchedEvent.getAction() == KeyEvent.ACTION_DOWN
+                    && dispatchedEvent.isPrintingKey()) {
+                setLastEditWasTyping(true);
+            }
             return mDelegate.super_dispatchKeyEvent(dispatchedEvent);
         }
 
@@ -445,8 +451,10 @@ public class SpannableAutocompleteEditTextModel
         if (DEBUG) Log.i(TAG, "onTextChanged: " + text);
         mSpanCursorController.reflectTextUpdateInState(mCurrentState, text);
         if (mBatchEditNestCount > 0) return; // let endBatchEdit() handles changes from IME.
-        // An external change such as text paste occurred.
-        mLastEditWasTyping = false;
+        if (!mLastEditWasTyping && !mIgnoreTextChangeFromAutocomplete) {
+            // An external change such as text paste occurred.
+            mLastEditWasTyping = false;
+        }
         clearAutocompleteTextAndUpdateSpanCursor();
     }
 

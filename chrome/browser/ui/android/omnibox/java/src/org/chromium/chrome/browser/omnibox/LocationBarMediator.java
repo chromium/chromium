@@ -123,6 +123,7 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
+import org.chromium.components.omnibox.AutocompleteInput.DisplayState;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
@@ -254,8 +255,8 @@ class LocationBarMediator
     private final FuseboxCoordinator mFuseboxCoordinator;
     private final Callback<@AutocompleteRequestType Integer> mAutocompleteRequestTypeObserver =
             this::onAutocompleteRequestTypeChanged;
-    private Callback<@AutocompleteState Integer> mAutocompleteStateObserver =
-            this::onAutocompleteStateChanged;
+    private final Callback<@DisplayState Integer> mDisplayStateObserver =
+            this::onDisplayStateChanged;
     private final SettableMonotonicObservableSupplier<SearchEngineService>
             mSearchEngineServiceSupplier = ObservableSuppliers.createMonotonic();
     private final ButtonToolbarWidthConsumer mBookmarkButtonToolbarWidthConsumer;
@@ -667,6 +668,7 @@ class LocationBarMediator
                 beginInput(
                         new AutocompleteInput(OmniboxFocusReason.KEYBOARD_NAVIGATION_FOCUS)
                                 .setAutocompleteState(AutocompleteState.STANDBY)
+                                .setDisplayState(DisplayState.DRAFTING)
                                 .setSelection(TextSelection.SELECT_ALL));
             } else {
                 FuseboxSessionState session = FuseboxSessionState.from(mLocationBarDataProvider);
@@ -681,6 +683,13 @@ class LocationBarMediator
         }
 
         if (!mUrlFocusedWithoutAnimations) handleUrlFocusAnimation(hasFocus);
+
+        // Upgrade to at least DRAFTING because we have focus now.
+        if (mCurrentInput != null && hasFocus) {
+            if (mCurrentInput.getDisplayState() != DisplayState.SUGGESTIONS) {
+                mCurrentInput.setDisplayState(DisplayState.DRAFTING);
+            }
+        }
 
         if (hasFocus
                 && mLocationBarDataProvider.hasTab()
@@ -863,6 +872,7 @@ class LocationBarMediator
             mCurrentInput
                     .setRequestType(AutocompleteRequestType.SEARCH)
                     .setAutocompleteState(AutocompleteState.STANDBY)
+                    .setDisplayState(DisplayState.DRAFTING)
                     .setUserText(mCurrentInput.getInitialUserText());
             mUrlCoordinator.setUrlBarData(
                     getUrlBarDataForCurrentInput(mCurrentInput),
@@ -1021,6 +1031,13 @@ class LocationBarMediator
                     mAutocompleteCoordinator.getCurrentNativeAutocompleteResult(),
                     profile,
                     mLocationBarDataProvider.getTab());
+        }
+
+        boolean isAimRequest = ToolModeUtils.isAimRequest(mCurrentInput.getRequestType());
+        if (hasSuggestions || isAimRequest) {
+            mCurrentInput.setDisplayState(DisplayState.SUGGESTIONS);
+        } else if (mCurrentInput.getDisplayState() == DisplayState.SUGGESTIONS) {
+            mCurrentInput.setDisplayState(DisplayState.DRAFTING);
         }
 
         mUrlCoordinator.onUrlBarSuggestionsChanged(
@@ -1406,7 +1423,7 @@ class LocationBarMediator
         // If we're switching tab (active -> active), just reanchor observer.
         if (mCurrentInput != null) {
             mCurrentInput.getRequestTypeSupplier().removeObserver(mAutocompleteRequestTypeObserver);
-            mCurrentInput.getAutocompleteStateSupplier().removeObserver(mAutocompleteStateObserver);
+            mCurrentInput.getDisplayStateSupplier().removeObserver(mDisplayStateObserver);
         }
         // To avoid the async gap between now and on activate, null out here as well.
         setAttachmentModelList(null);
@@ -2238,6 +2255,9 @@ class LocationBarMediator
     }
 
     private void onFuseboxStateChanged(@FuseboxState int state) {
+        if (mCurrentInput != null && state == FuseboxState.EXPANDED) {
+            mCurrentInput.setDisplayState(DisplayState.SUGGESTIONS);
+        }
         updateNavigateButtonVisibility();
         mLocationBarLayout.onFuseboxStateChanged(state);
     }
@@ -2525,8 +2545,8 @@ class LocationBarMediator
         mSelectionController.reset();
     }
 
-    private void onAutocompleteStateChanged(@AutocompleteState int state) {
-        if (state == AutocompleteState.ENABLED) {
+    private void onDisplayStateChanged(@DisplayState int displayState) {
+        if (displayState == DisplayState.SUGGESTIONS) {
             mSelectionController.setSelectionMode(LocationBarSelectionController.Mode.WRAPPING);
         } else {
             mSelectionController.setSelectionMode(LocationBarSelectionController.Mode.SATURATING);
@@ -2542,7 +2562,7 @@ class LocationBarMediator
 
         boolean shouldBeInPopover =
                 mCurrentInput != null
-                        && mCurrentInput.getAutocompleteState() == AutocompleteState.ENABLED
+                        && mCurrentInput.getDisplayState() == DisplayState.SUGGESTIONS
                         && isPopover;
 
         if (shouldBeInPopover && !isParentedToSuggestionsContainer()) {
@@ -2769,7 +2789,7 @@ class LocationBarMediator
     private void updateShowStandbyRing() {
         boolean showStandbyRing =
                 mCurrentInput != null
-                        && mCurrentInput.getAutocompleteState() == AutocompleteState.STANDBY
+                        && mCurrentInput.getDisplayState() == DisplayState.DRAFTING
                         && mSelectionController.getSelectedView() == mUrlBarSelectableView
                         && mWindowHasFocusSupplier.get();
         mLocationBarLayout.setShowStandbyRing(showStandbyRing);
@@ -2779,13 +2799,14 @@ class LocationBarMediator
     public Boolean handleEscPress() {
         if (mCurrentInput == null) return false;
 
-        if (mCurrentInput.getAutocompleteState() == AutocompleteState.ENABLED) {
+        if (mCurrentInput.getDisplayState() == DisplayState.SUGGESTIONS) {
             if (mCurrentInput.hasPreviewText()) {
                 mCurrentInput.commitPreviewText();
             }
             mCurrentInput
                     .setRequestType(AutocompleteRequestType.SEARCH)
-                    .setAutocompleteState(AutocompleteState.STANDBY);
+                    .setAutocompleteState(AutocompleteState.STANDBY)
+                    .setDisplayState(DisplayState.DRAFTING);
             // TODO(https://crbug.com/534359434): Remove bespoke update calls.
             updateButtonVisibility();
         } else if (!TextUtils.equals(
@@ -2937,6 +2958,9 @@ class LocationBarMediator
         input.setPageClassification(mLocationBarDataProvider.getPageClassification(false));
         input.setPageUrl(mLocationBarDataProvider.getCurrentGurl());
         input.setPageTitle(mLocationBarDataProvider.getTitle());
+        if (input.getDisplayState() == DisplayState.WEBSITE) {
+            input.setDisplayState(DisplayState.DRAFTING);
+        }
 
         var state = FuseboxSessionState.from(mLocationBarDataProvider);
         if (state == null) return;
@@ -2955,7 +2979,7 @@ class LocationBarMediator
         @FuseboxLayoutMode
         int layoutMode = mFuseboxCoordinator.getFuseboxLayoutModeSupplier().get();
         boolean isPopover = layoutMode == FuseboxLayoutMode.SUGGESTIONS_POPOVER;
-        if (input.getAutocompleteState() == AutocompleteState.ENABLED
+        if (input.getDisplayState() == DisplayState.SUGGESTIONS
                 && (mUrlFocusedWithoutAnimations
                         || (isPopover && !isParentedToSuggestionsContainer()))
                 && !mIsReparenting) {
@@ -2974,6 +2998,12 @@ class LocationBarMediator
 
         AutocompleteInput input = mCurrentInput;
         mCurrentInput = null;
+
+        // Step down SUGGESTIONS -> DRAFTING when suspending input (e.g. tab switch)
+        // so that backgrounded sessions retain their drafting state with popover hidden.
+        if (input.getDisplayState() == DisplayState.SUGGESTIONS) {
+            input.setDisplayState(DisplayState.DRAFTING);
+        }
 
         if (input.getAutocompleteState() == AutocompleteState.ENABLED && input.hasPreviewText()) {
             // TODO(https://crbug.com/540458873): Should not commit preview text here, but instead
@@ -3040,13 +3070,13 @@ class LocationBarMediator
                 .getRequestTypeSupplier()
                 .addSyncObserverAndCallIfNonNull(mAutocompleteRequestTypeObserver);
         mCurrentInput
-                .getAutocompleteStateSupplier()
-                .addSyncObserverAndCallIfNonNull(mAutocompleteStateObserver);
+                .getDisplayStateSupplier()
+                .addSyncObserverAndCallIfNonNull(mDisplayStateObserver);
     }
 
     private void disconnectObservers(AutocompleteInput input) {
         input.getRequestTypeSupplier().removeObserver(mAutocompleteRequestTypeObserver);
-        input.getAutocompleteStateSupplier().removeObserver(mAutocompleteStateObserver);
+        input.getDisplayStateSupplier().removeObserver(mDisplayStateObserver);
     }
 
     @Override
@@ -3498,10 +3528,5 @@ class LocationBarMediator
     @Override
     public @Nullable AutocompleteInput getAutocompleteInputForTesting() {
         return mCurrentInput;
-    }
-
-    /* package */ void setAutocompleteStateObserverForTesting(
-            Callback<@AutocompleteState Integer> observer) {
-        mAutocompleteStateObserver = observer;
     }
 }

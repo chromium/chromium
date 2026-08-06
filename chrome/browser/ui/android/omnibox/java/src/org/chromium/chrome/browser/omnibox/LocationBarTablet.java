@@ -689,10 +689,13 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
         LinearLayout.LayoutParams parentParams =
                 (LinearLayout.LayoutParams) mHolder.getLayoutParams();
         boolean isPopoverMode = mLayoutMode == FuseboxLayoutMode.SUGGESTIONS_POPOVER;
-        if (!mShowStandbyRing
-                && (mFuseboxState == FuseboxState.COMPACT
-                        || mFuseboxState == FuseboxState.EXPANDED
-                        || mIsReparentedToPopover)) {
+        boolean isToolbarFuseboxActive =
+                !isPopoverMode
+                        && (mFuseboxState == FuseboxState.COMPACT
+                                || mFuseboxState == FuseboxState.EXPANDED);
+        boolean shouldExpandLayout =
+                !mShowStandbyRing && (mIsReparentedToPopover || isToolbarFuseboxActive);
+        if (shouldExpandLayout) {
             parentParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
             int expansionPx = isPopoverMode ? 0 : mLocationBarTabletFuseboxPopupInset;
             int additionalWidth =
@@ -747,7 +750,8 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
         MarginLayoutParams statusViewLayoutParams =
                 (MarginLayoutParams) mStatusView.getLayoutParams();
         Resources resources = getResources();
-        if (state == FuseboxState.COMPACT && !mShowStandbyRing && !mIsReparentedToPopover) {
+        boolean isPopoverMode = mLayoutMode == FuseboxLayoutMode.SUGGESTIONS_POPOVER;
+        if (state == FuseboxState.COMPACT && !mShowStandbyRing && !isPopoverMode) {
             // In the compact fusebox state, the location bar is taller than its inner background,
             // creating the appearance of vertical misalignment. We resolve this by translating
             // constituent views to be centered withing the 56 dp inner background, shifting them
