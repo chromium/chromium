@@ -5,6 +5,7 @@
 #include "remoting/host/mojo_caller_security_checker.h"
 
 #include <memory>
+#include <string>
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/files/file_path.h"
