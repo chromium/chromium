@@ -78,8 +78,8 @@ public class AtMemoryBottomSheetCoordinator {
 
     public void show(List<AutofillSuggestion> suggestions) {
         mBottomSheetController.addObserver(mBottomSheetObserver);
+        mMediator.show(suggestions);
         if (mBottomSheetController.requestShowContent(mContent, /* animate= */ true)) {
-            mMediator.show(suggestions);
             expand(/* expandInFullHeight= */ true);
         } else {
             onDismissed();
