@@ -681,7 +681,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     private CallbackController mCallbackController = new CallbackController();
     private TabbedModeTabDelegateFactory mTabDelegateFactory;
     private ReadingListBackPressHandler mReadingListBackPressHandler;
-    private MinimizeAppAndCloseTabBackPressHandler mMinimizeAppAndCloseTabBackPressHandler;
+    private @Nullable MinimizeAppAndCloseTabBackPressHandler
+            mMinimizeAppAndCloseTabBackPressHandler;
     private HomeSurfaceTracker mHomeSurfaceTracker;
     private final TabSwitcherBackPressHandlerManager mDragHandlerManager =
             new TabSwitcherBackPressHandlerManager();
@@ -774,10 +775,13 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                                 mRootUiCoordinator != null
                                         ? mRootUiCoordinator.getDesktopWindowStateManager()
                                         : null);
-        mBackPressManager.setFallbackOnBackPressed(
-                () -> {
-                    minimizeAppAndCloseTabOnBackPress(getActivityTab());
-                });
+        // On desktop Android, OS back presses should not close tabs or minimize the Chrome app.
+        if (!shouldUseDesktopBackConventions()) {
+            mBackPressManager.setFallbackOnBackPressed(
+                    () -> {
+                        minimizeAppAndCloseTabOnBackPress(getActivityTab());
+                    });
+        }
 
         if (IncognitoUtils.shouldOpenIncognitoAsWindow() && !mHasIncognitoExtra) {
             // Ensure that Incognito extras have been checked.
@@ -4857,6 +4861,11 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         return false;
     }
 
+    private boolean shouldUseDesktopBackConventions() {
+        return ChromeFeatureList.sBackGestureReflectsDesktopBehavior.isEnabled()
+                && DeviceInfo.isDesktop();
+    }
+
     private void initializeBackPressHandlers() {
         // Initialize some back press handlers early to reduce code duplication.
         mReadingListBackPressHandler =
@@ -4871,7 +4880,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             mBackPressManager.addHandler(
                     mReadingListBackPressHandler, BackPressHandler.Type.SHOW_READING_LIST);
         }
-        if (mMinimizeAppAndCloseTabBackPressHandler == null) {
+        // On desktop Android, OS back presses should not close tabs or minimize the Chrome app,
+        // so we skip creating and registering this handler.
+        if (!shouldUseDesktopBackConventions() && mMinimizeAppAndCloseTabBackPressHandler == null) {
             mMinimizeAppAndCloseTabBackPressHandler =
                     new MinimizeAppAndCloseTabBackPressHandler(
                             getActivityTabProvider().asObservable(),

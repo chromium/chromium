@@ -43,6 +43,7 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -51,6 +52,7 @@ import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -83,6 +85,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
@@ -653,6 +656,7 @@ public class ChromeTabbedActivityTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP)
     public void testBackShouldCloseTab() {
         mActivityTestRule.getTestServer(); // Triggers the lazy initialization of the test server.
         Tab tab =
@@ -675,6 +679,7 @@ public class ChromeTabbedActivityTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP)
     public void testBackShouldCloseTab_FromChromeUIWithParent() {
         mActivityTestRule.getTestServer();
         Tab tabWithParent =
@@ -707,6 +712,7 @@ public class ChromeTabbedActivityTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP)
     public void testBackShouldCloseTab_Collaboration() {
         mActivityTestRule.getTestServer(); // Triggers the lazy initialization of the test server.
         Tab tab =
@@ -1360,5 +1366,16 @@ public class ChromeTabbedActivityTest {
         mActivityTestRule.loadUrl(ntpUrl);
         Tab tab = ThreadUtils.runOnUiThreadBlocking(() -> mActivity.getActivityTab());
         ChromeTabUtils.waitForTabPageLoaded(tab, ntpUrl);
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.DESKTOP)
+    @EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFLECTS_DESKTOP_BEHAVIOR})
+    public void testBackGestureReflectsDesktopBehavior() {
+        BackPressManager manager = mActivity.getBackPressManagerForTesting();
+        Assert.assertNull(
+                "MinimizeAppAndCloseTabBackPressHandler should be null on Desktop Android.",
+                manager.getHandlersForTesting()[BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB]);
     }
 }

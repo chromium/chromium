@@ -8,8 +8,8 @@ import android.text.Spanned;
 import android.text.style.ClickableSpan;
 import android.widget.TextView;
 
-import androidx.test.espresso.Espresso;
 import androidx.test.filters.LargeTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -224,8 +224,9 @@ public final class SubresourceFilterTest {
         tabCreatedCallback.waitForCallback(
                 "Never received tab created event", currentTabCreatedCallbackCount);
 
-        // Press the back button to go to the original tab where the dialog was shown.
-        Espresso.pressBack();
+        // Close the tab to go back to the original tab where the dialog was shown.
+        ChromeTabUtils.closeCurrentTab(
+                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
 
         CriteriaHelper.pollUiThread(
                 () -> {
