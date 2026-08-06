@@ -809,9 +809,11 @@ void View::RemoveLayerFromRegions(ui::Layer* old_layer) {
   RemoveLayerFromRegionsKeepInLayerTree(old_layer);
 
   // Note that |old_layer| may have already been removed from its parent.
-  ui::Layer* parent_layer = layer()->parent();
-  if (parent_layer && parent_layer == old_layer->parent()) {
-    parent_layer->Remove(old_layer);
+  if (layer()) {
+    ui::Layer* parent_layer = layer()->parent();
+    if (parent_layer && parent_layer == old_layer->parent()) {
+      parent_layer->Remove(old_layer);
+    }
   }
 
   CreateOrDestroyLayer();
@@ -829,9 +831,8 @@ void View::RemoveLayerFromRegionsKeepInLayerTree(ui::Layer* old_layer) {
         old_layer->RemoveObserver(this);
         return true;
       };
-  const bool layer_removed =
-      remove_layer(layers_below_) || remove_layer(layers_above_);
-  DCHECK(layer_removed) << "Attempted to remove a layer that was never added.";
+  remove_layer(layers_below_);
+  remove_layer(layers_above_);
 }
 
 std::vector<ui::Layer*> View::GetLayersInOrder(ViewLayer view_layer) {
