@@ -20,6 +20,10 @@ class MockPehLauncher : public PehLauncher {
               IsBinaryVerified,
               (const base::FilePath& binary_path),
               (override));
+  MOCK_METHOD(base::Version,
+              GetBinaryVersion,
+              (const base::FilePath& peh_binary_path),
+              (override));
   MOCK_METHOD(base::Process,
               LaunchProcess,
               (const base::CommandLine& cmd_line,

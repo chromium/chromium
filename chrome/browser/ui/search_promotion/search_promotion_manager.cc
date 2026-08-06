@@ -245,7 +245,7 @@ void SearchPromotionManager::RunRegisterTask(
   }
 
   task_runner_ = create_task_runner_callback_.Run();
-  task_runner_->Run(std::move(task),
+  task_runner_->Run(std::move(task), /*min_version=*/"0.0.0.0",
                     base::BindOnce(&SearchPromotionManager::OnTaskCompleted,
                                    weak_ptr_factory_.GetWeakPtr()));
 }

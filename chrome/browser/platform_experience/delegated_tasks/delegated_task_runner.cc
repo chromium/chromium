@@ -7,6 +7,7 @@
 #include <windows.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -64,12 +65,19 @@ DelegatedTaskRunner::~DelegatedTaskRunner() {
 }
 
 void DelegatedTaskRunner::Run(std::unique_ptr<DelegatedTask> task,
+                              std::string_view min_version,
                               DelegatedTaskCompletionCallback callback) {
   CHECK(task_start_time_.is_null());
 
   task_ = std::move(task);
   task_start_time_ = base::TimeTicks::Now();
   completion_callback_ = std::move(callback);
+  min_version_ = base::Version(min_version);
+  if (!min_version_.IsValid()) {
+    CleanupAndReturnResult(
+        base::unexpected(DelegatedTaskStatus::kUnsupportedVersion));
+    return;
+  }
 
   // Start the timeout timer from task initialization so the timeout duration
   // and recorded `execution_time` track the same time slice from task start.
@@ -104,6 +112,21 @@ void DelegatedTaskRunner::OnBinaryVerificationComplete(
   if (!is_verified) {
     CleanupAndReturnResult(
         base::unexpected(DelegatedTaskStatus::kPehValidationFailure));
+    return;
+  }
+
+  peh_launcher_.AsyncCall(&PehLauncher::GetBinaryVersion)
+      .WithArgs(peh_binary_path)
+      .Then(base::BindOnce(&DelegatedTaskRunner::OnBinaryVersionRetrieved,
+                           weak_factory_.GetWeakPtr(), peh_binary_path));
+}
+
+void DelegatedTaskRunner::OnBinaryVersionRetrieved(
+    const base::FilePath& peh_binary_path,
+    const base::Version& version) {
+  if (!version.IsValid() || version < min_version_) {
+    CleanupAndReturnResult(
+        base::unexpected(DelegatedTaskStatus::kUnsupportedVersion));
     return;
   }
 

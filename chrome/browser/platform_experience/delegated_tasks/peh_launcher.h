@@ -7,6 +7,7 @@
 
 #include "base/files/file_path.h"
 #include "base/process/process.h"
+#include "base/version.h"
 
 namespace base {
 class CommandLine;
@@ -33,6 +34,10 @@ class PehLauncher {
   // Returns true if the binary is valid and trusted (or in non-official
   // builds).
   virtual bool IsBinaryVerified(const base::FilePath& binary_path);
+
+  // Returns the version of the PEH binary at `peh_binary_path`.
+  // Returns an invalid version if the file is missing or has no version info.
+  virtual base::Version GetBinaryVersion(const base::FilePath& peh_binary_path);
 
   // Launches the process specified by `cmd_line` with `options`.
   virtual base::Process LaunchProcess(const base::CommandLine& cmd_line,

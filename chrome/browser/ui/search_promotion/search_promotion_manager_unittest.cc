@@ -537,9 +537,10 @@ TEST_F(SearchPromotionManagerTaskRunnerTest, PerformArmASuccess) {
       {{"arm", "arm_a"}, {"store_url", "https://google.com/store"}});
 
   base::test::TestFuture<void> future;
-  EXPECT_CALL(*mock_runner_, Run(testing::_, testing::_))
+  EXPECT_CALL(*mock_runner_, Run(testing::_, testing::_, testing::_))
       .WillOnce(
           [&](std::unique_ptr<platform_experience::DelegatedTask> task,
+              std::string_view min_version,
               platform_experience::DelegatedTaskCompletionCallback callback) {
             std::move(callback).Run({});
             future.GetCallback().Run();
@@ -558,9 +559,10 @@ TEST_F(SearchPromotionManagerTaskRunnerTest, PerformArmBSuccess) {
        {"instructions_url", "https://google.com/instructions"}});
 
   base::test::TestFuture<void> future;
-  EXPECT_CALL(*mock_runner_, Run(testing::_, testing::_))
+  EXPECT_CALL(*mock_runner_, Run(testing::_, testing::_, testing::_))
       .WillOnce(
           [&](std::unique_ptr<platform_experience::DelegatedTask> task,
+              std::string_view min_version,
               platform_experience::DelegatedTaskCompletionCallback callback) {
             std::move(callback).Run({});
             future.GetCallback().Run();
@@ -577,7 +579,8 @@ TEST_F(SearchPromotionManagerTaskRunnerTest, InvalidAndEmptyPostInstallUrl) {
         feature_engagement::kIPHSearchPromotionFeature,
         {{"arm", "arm_a"}, {"store_url", "1234"}});
 
-    EXPECT_CALL(*mock_runner_, Run(testing::_, testing::_)).Times(0);
+    EXPECT_CALL(*mock_runner_, Run(testing::_, testing::_, testing::_))
+        .Times(0);
 
     manager()->OnPromoAccepted();
   }
@@ -588,7 +591,8 @@ TEST_F(SearchPromotionManagerTaskRunnerTest, InvalidAndEmptyPostInstallUrl) {
         feature_engagement::kIPHSearchPromotionFeature,
         {{"arm", "arm_a"}, {"store_url", ""}});
 
-    EXPECT_CALL(*mock_runner_, Run(testing::_, testing::_)).Times(0);
+    EXPECT_CALL(*mock_runner_, Run(testing::_, testing::_, testing::_))
+        .Times(0);
 
     manager()->OnPromoAccepted();
   }
@@ -599,7 +603,7 @@ TEST_F(SearchPromotionManagerTaskRunnerTest, PromoFeatureDisabled) {
   feature_list.InitAndDisableFeature(
       feature_engagement::kIPHSearchPromotionFeature);
 
-  EXPECT_CALL(*mock_runner_, Run(testing::_, testing::_)).Times(0);
+  EXPECT_CALL(*mock_runner_, Run(testing::_, testing::_, testing::_)).Times(0);
 
   manager()->OnPromoAccepted();
 }

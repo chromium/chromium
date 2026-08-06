@@ -118,6 +118,13 @@ TEST_F(PehLauncherTest, IsBinaryVerified) {
 #endif
 }
 
+TEST_F(PehLauncherTest, GetBinaryVersion_NotFound) {
+  PehLauncher launcher;
+  base::Version version =
+      launcher.GetBinaryVersion(base::FilePath(L"does_not_exist.exe"));
+  EXPECT_FALSE(version.IsValid());
+}
+
 }  // namespace
 
 }  // namespace platform_experience

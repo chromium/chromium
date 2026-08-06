@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PLATFORM_EXPERIENCE_DELEGATED_TASKS_DELEGATED_TASK_RUNNER_H_
 
 #include <memory>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -13,6 +14,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "base/version.h"
 #include "base/win/object_watcher.h"
 #include "chrome/browser/platform_experience/delegated_tasks/delegated_task.h"
 
@@ -50,7 +52,11 @@ class DelegatedTaskRunner : public base::win::ObjectWatcher::Delegate {
 
   // Runs the provided task and asynchronously returns the task completion
   // result in the `callback`.
+  // `min_version` enforces a minimum binary version requirement for PEH. It
+  // is mandatory and must be a valid version string (e.g. "152.0.0.0").
+  // An invalid version string will cause the task to fail immediately.
   virtual void Run(std::unique_ptr<DelegatedTask> task,
+                   std::string_view min_version,
                    DelegatedTaskCompletionCallback callback);
 
  private:
@@ -58,6 +64,8 @@ class DelegatedTaskRunner : public base::win::ObjectWatcher::Delegate {
   void OnBinaryPathRetrieved(const base::FilePath& peh_binary_path);
   void OnBinaryVerificationComplete(const base::FilePath& peh_binary_path,
                                     bool is_verified);
+  void OnBinaryVersionRetrieved(const base::FilePath& peh_binary_path,
+                                const base::Version& version);
 
   void CleanupAndReturnResult(
       DelegatedTaskExitCodeOrStatus exit_code_or_status);
@@ -69,6 +77,7 @@ class DelegatedTaskRunner : public base::win::ObjectWatcher::Delegate {
   base::Process process_;
   base::win::ObjectWatcher watcher_;
   DelegatedTaskCompletionCallback completion_callback_;
+  base::Version min_version_;
 
   std::unique_ptr<DelegatedTask> task_;
   base::SequenceBound<std::unique_ptr<PehLauncher>> peh_launcher_;
