@@ -279,6 +279,20 @@ interface DeviceBoundSessionManager {
                       CookieOptions cookie_options)
       => (array<DeviceBoundSessionError> session_results,
           array<CookieInclusionStatus> cookie_results);
+
+  // Asynchronously inspects all Device Bound Sessions whose scope includes
+  // `url`. For sessions whose bound cookie is expiring within the next 120s
+  // (`kProactiveRefreshThreshold`), initiates a background refresh without
+  // deferring a live network request.
+  //
+  // Returns:
+  // - `results`: Outcome of each prewarm attempt.
+  // - `earliest_next_refresh_time`: The timestamp when the earliest matching
+  //   session will enter its proactive refresh window (`cookie_expiry - 120s`).
+  //   If no sessions match or exist, returns null.
+  PrewarmSessionsForUrl(url.mojom.Url url)
+      => (array<DeviceBoundSessionRefreshResult> results,
+          mojo_base.mojom.Time? earliest_next_refresh_time);
 };
 
 // Observer that is notified on use of a device bound session.

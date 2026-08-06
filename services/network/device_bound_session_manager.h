@@ -11,7 +11,6 @@
 #include "base/functional/callback_helpers.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/bindings/remote_set.h"
 #include "net/device_bound_sessions/session_display.h"
 #include "net/device_bound_sessions/session_error.h"
 #include "services/network/public/mojom/device_bound_sessions.mojom.h"
@@ -60,6 +59,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) DeviceBoundSessionManager
       const std::vector<net::CanonicalCookie>& cookies_to_set,
       const net::CookieOptions& cookie_options,
       CreateBoundSessionsCallback callback) override;
+  // Evaluates and prewarms DBSC sessions matching `url` by delegating to the
+  // underlying SessionService.
+  void PrewarmSessionsForUrl(const GURL& url,
+                             PrewarmSessionsForUrlCallback callback) override;
 
  private:
   // State associated with a DeviceBoundSessionAccessObserver.

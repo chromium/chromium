@@ -682,6 +682,115 @@ TEST_F(DeviceBoundSessionManagerTest, AddEventObserverAndInitialDisplays) {
                                   Session::Id(session_id_2)))))));
 }
 
+TEST_F(DeviceBoundSessionManagerTest,
+       PrewarmSessionsForUrl_NoMatchingSessions) {
+  base::test::TestFuture<
+      const std::vector<net::device_bound_sessions::RefreshResult>&,
+      std::optional<base::Time>>
+      future;
+  manager().PrewarmSessionsForUrl(GURL("https://example.com/test"),
+                                  future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_TRUE(future.Get<0>().empty());
+  EXPECT_FALSE(future.Get<1>().has_value());
+}
+
+TEST_F(DeviceBoundSessionManagerTest,
+       PrewarmSessionsForUrl_WithMatchingSession) {
+  GURL url("https://example.com/path");
+  base::test::TestFuture<
+      const std::vector<net::device_bound_sessions::SessionError::ErrorType>&,
+      std::vector<net::CookieInclusionStatus>>
+      create_future;
+  manager().CreateBoundSessions(
+      {{
+          .session_id = "session123",
+          .fetcher_url = url,
+          .refresh_url = "https://example.com/refresh",
+          .scope =
+              {
+                  .include_site = true,
+                  .origin = url::Origin::Create(url).Serialize(),
+              },
+          .credentials = {{.name = "test_cookie", .attributes = "secure"}},
+          .allowed_refresh_initiators = {"example.com"},
+      }},
+      GetWrappedKey(), {}, net::CookieOptions(), create_future.GetCallback());
+  ASSERT_TRUE(create_future.Wait());
+  EXPECT_THAT(
+      create_future.Get<0>(),
+      ElementsAre(
+          net::device_bound_sessions::SessionError::ErrorType::kSuccess));
+
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
+      "session123", "https://example.com/refresh", "https://example.com");
+
+  base::test::TestFuture<
+      const std::vector<net::device_bound_sessions::RefreshResult>&,
+      std::optional<base::Time>>
+      prewarm_future;
+  manager().PrewarmSessionsForUrl(url, prewarm_future.GetCallback());
+  EXPECT_TRUE(prewarm_future.Wait());
+  EXPECT_THAT(
+      prewarm_future.Get<0>(),
+      ElementsAre(net::device_bound_sessions::RefreshResult::kRefreshed));
+  EXPECT_FALSE(prewarm_future.Get<1>().has_value());
+}
+
+TEST_F(DeviceBoundSessionManagerTest, PrewarmSessionsForUrl_FreshCookies) {
+  GURL url("https://example.com/path");
+  net::CookieInclusionStatus status;
+  auto cookie = net::CanonicalCookie::Create(
+      url, "test_cookie=v; Secure; Max-Age=500", base::Time::Now(),
+      std::nullopt, std::nullopt, net::CookieSourceType::kHTTP, &status);
+  ASSERT_TRUE(cookie);
+
+  net::CookieOptions cookie_options;
+  cookie_options.set_include_httponly();
+  cookie_options.set_same_site_cookie_context(
+      net::CookieOptions::SameSiteCookieContext::MakeInclusive());
+
+  base::test::TestFuture<
+      const std::vector<net::device_bound_sessions::SessionError::ErrorType>&,
+      std::vector<net::CookieInclusionStatus>>
+      create_future;
+  manager().CreateBoundSessions(
+      {{
+          .session_id = "session123",
+          .fetcher_url = url,
+          .refresh_url = "https://example.com/refresh",
+          .scope =
+              {
+                  .include_site = true,
+                  .origin = url::Origin::Create(url).Serialize(),
+              },
+          .credentials = {{.name = "test_cookie", .attributes = "secure"}},
+          .allowed_refresh_initiators = {"example.com"},
+      }},
+      GetWrappedKey(), {*cookie}, cookie_options, create_future.GetCallback());
+  ASSERT_TRUE(create_future.Wait());
+  EXPECT_THAT(
+      create_future.Get<0>(),
+      ElementsAre(
+          net::device_bound_sessions::SessionError::ErrorType::kSuccess));
+
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
+      "session123", "https://example.com/refresh", "https://example.com");
+
+  base::test::TestFuture<
+      const std::vector<net::device_bound_sessions::RefreshResult>&,
+      std::optional<base::Time>>
+      prewarm_future;
+  manager().PrewarmSessionsForUrl(url, prewarm_future.GetCallback());
+  EXPECT_TRUE(prewarm_future.Wait());
+  EXPECT_THAT(prewarm_future.Get<0>(),
+              ElementsAre(net::device_bound_sessions::RefreshResult::
+                              kInScopeRefreshNotYetNeeded));
+  ASSERT_TRUE(prewarm_future.Get<1>().has_value());
+  EXPECT_NEAR((*prewarm_future.Get<1>() - base::Time::Now()).InSecondsF(),
+              380.0, 2.0);
+}
+
 }  // namespace
 
 }  // namespace network

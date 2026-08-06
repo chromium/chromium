@@ -14,6 +14,7 @@
 #include "net/device_bound_sessions/session_params.h"
 #include "net/device_bound_sessions/session_service.h"
 #include "services/network/cookie_manager.h"
+#include "services/network/public/cpp/device_bound_sessions_mojom_traits.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 
 namespace network {
@@ -211,6 +212,25 @@ void DeviceBoundSessionManager::OnCreateBoundSessionsAdded(
   }
 }
 
+void DeviceBoundSessionManager::PrewarmSessionsForUrl(
+    const GURL& url,
+    PrewarmSessionsForUrlCallback callback) {
+  if (!service_) {
+    std::move(callback).Run({}, std::nullopt);
+    return;
+  }
+  service_->PrewarmSessionsForUrl(
+      url, base::BindOnce(
+               [](PrewarmSessionsForUrlCallback callback,
+                  net::device_bound_sessions::SessionPrewarmResult result) {
+                 std::move(callback).Run(
+                     result.results,
+                     result.earliest_next_refresh_time.is_max()
+                         ? std::nullopt
+                         : std::optional(result.earliest_next_refresh_time));
+               },
+               std::move(callback)));
+}
 void DeviceBoundSessionManager::RemoveAccessObserver(
     AccessObserverRegistration* registration) {
   std::erase_if(access_observer_registrations_,
