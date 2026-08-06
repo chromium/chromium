@@ -70,6 +70,10 @@ class ManifestBrokerState final : public OnDeviceCapability,
   void ResetModelCrashCount() override;
   void AddObserver(
       mojo::PendingRemote<mojom::ModelBrokerDebugObserver> observer) override;
+  void AddAssetDownloadObserver(
+      const std::string& asset_name,
+      mojo::PendingRemote<on_device_model::mojom::DownloadObserver> observer)
+      override;
 
   PerformanceClassifier& performance_classifier() {
     return performance_classifier_;

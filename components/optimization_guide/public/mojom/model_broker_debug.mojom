@@ -48,6 +48,10 @@ struct BrokerAssetInfo {
   // Some description of a problem encountered with this asset.
   // This is intended for display to the user, verbatim.
   string? error;
+  // The number of bytes downloaded so far.
+  uint64 bytes_downloaded;
+  // The total number of bytes to download.
+  uint64 bytes_total;
 };
 
 // Information about a use case the broker supports.
@@ -113,5 +117,7 @@ interface ModelBrokerDebug {
 
   // Adds an observer to listen for changes to the broker's internal state.
   AddObserver(pending_remote<ModelBrokerDebugObserver> observer);
-};
 
+  // Adds an observer to track the download progress of a specific asset.
+  AddAssetDownloadObserver(string asset_name, pending_remote<on_device_model.mojom.DownloadObserver> observer);
+};

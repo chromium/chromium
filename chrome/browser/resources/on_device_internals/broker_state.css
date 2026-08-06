@@ -57,3 +57,9 @@ h2 {
 a {
   color: var(--cr-link-color);
 }
+
+.progress-text {
+  font-variant-numeric: tabular-nums;
+  display: inline-block;
+  min-width: 150px;
+}

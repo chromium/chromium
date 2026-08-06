@@ -30,14 +30,17 @@
 #include "base/version.h"
 #include "build/branding_buildflags.h"
 #include "components/crx_file/id_util.h"
+#include "components/optimization_guide/core/model_execution/component_download_observer.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_download_progress_manager.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_names.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/public/mojom/model_broker_debug.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/update_client/crx_update_item.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace optimization_guide {
@@ -335,6 +338,27 @@ ManifestAssetManager::~ManifestAssetManager() {
               perfetto::TerminatingFlow::FromPointer(this));
 }
 
+std::optional<std::string> ManifestAssetManager::GetCrxIdForAsset(
+    const std::string& asset_name) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!factory_) {
+    return std::nullopt;
+  }
+
+  const auto& on_demand_components =
+      factory_->manifest().GetAssets().on_demand_components();
+  auto it = on_demand_components.find(asset_name);
+  if (it == on_demand_components.end()) {
+    return std::nullopt;
+  }
+
+  std::vector<uint8_t> public_key_hash;
+  if (!base::HexStringToBytes(it->second.public_key(), &public_key_hash)) {
+    return std::nullopt;
+  }
+  return crx_file::id_util::GenerateIdFromHash(public_key_hash);
+}
+
 void ManifestAssetManager::AddDownloadProgressObserver(
     const std::string& use_case,
     mojo::PendingRemote<on_device_model::mojom::DownloadObserver> observer) {
@@ -352,15 +376,9 @@ void ManifestAssetManager::AddDownloadProgressObserver(
 
   base::flat_set<std::string> component_ids;
   for (const auto& asset_id : *required_assets) {
-    const auto& on_demand_components =
-        factory_->manifest().GetAssets().on_demand_components();
-    auto it = on_demand_components.find(asset_id);
-    if (it != on_demand_components.end()) {
-      std::vector<uint8_t> public_key_hash;
-      if (base::HexStringToBytes(it->second.public_key(), &public_key_hash)) {
-        component_ids.insert(
-            crx_file::id_util::GenerateIdFromHash(public_key_hash));
-      }
+    auto crx_id = GetCrxIdForAsset(asset_id);
+    if (crx_id) {
+      component_ids.insert(*crx_id);
     }
   }
 
@@ -370,6 +388,27 @@ void ManifestAssetManager::AddDownloadProgressObserver(
         component_update_service_, std::move(component_ids));
   }
   progress_manager->AddObserver(std::move(observer));
+}
+
+void ManifestAssetManager::AddAssetDownloadObserver(
+    const std::string& asset_name,
+    mojo::PendingRemote<on_device_model::mojom::DownloadObserver> observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!component_update_service_) {
+    return;
+  }
+
+  auto crx_id = GetCrxIdForAsset(asset_name);
+  if (!crx_id) {
+    return;
+  }
+
+  auto& tracker = asset_download_observers_[*crx_id];
+  if (!tracker) {
+    tracker = std::make_unique<ComponentDownloadObserver>(
+        component_update_service_, *crx_id);
+  }
+  tracker->AddObserver(std::move(observer));
 }
 
 void ManifestAssetManager::UpdateSolutionFactory(
@@ -738,7 +777,22 @@ std::vector<mojom::BrokerAssetInfoPtr> ManifestAssetManager::GetBrokerAssets()
   for (const auto& [public_key, context] : ledger_.contexts()) {
     const proto::OnDemandComponent* component =
         factory_->manifest().GetAssetByPublicKey(public_key);
-    assets.push_back(context.ToBrokerAssetInfo(component));
+    auto asset_info = context.ToBrokerAssetInfo(component);
+
+    // Fetch initial download progress if available.
+    if (component_update_service_) {
+      std::vector<uint8_t> hash;
+      if (base::HexStringToBytes(public_key, &hash)) {
+        std::string crx_id = crx_file::id_util::GenerateIdFromHash(hash);
+        if (auto progress =
+                GetDownloadProgress(component_update_service_, crx_id)) {
+          asset_info->bytes_downloaded = progress->first;
+          asset_info->bytes_total = progress->second;
+        }
+      }
+    }
+
+    assets.push_back(std::move(asset_info));
   }
   return assets;
 }

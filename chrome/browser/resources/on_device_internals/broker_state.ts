@@ -8,9 +8,11 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './broker_state.css.js';
 import {getHtml} from './broker_state.html.js';
+import {DownloadObserverReceiver} from './download_observer.mojom-webui.js';
+import type {DownloadObserverInterface} from './download_observer.mojom-webui.js';
 import {ModelUnavailableReason} from './model_broker.mojom-webui.js';
 import {BrokerAssetState, ModelBrokerDebugObserverReceiver, ModelBrokerDebugRemote} from './model_broker_debug.mojom-webui.js';
-import type {BrokerStateInfo} from './model_broker_debug.mojom-webui.js';
+import type {BrokerAssetInfo, BrokerStateInfo} from './model_broker_debug.mojom-webui.js';
 import {browserProxyFactory} from './on_device_internals_page.mojom-webui.js';
 import type {BrowserProxy} from './on_device_internals_page.mojom-webui.js';
 
@@ -67,6 +69,8 @@ export class OnDeviceInternalsBrokerStateElement extends CrLitElement {
   private proxy_: BrowserProxy = browserProxyFactory.getInstance();
   private brokerDebug_ = new ModelBrokerDebugRemote();
   private brokerObserverReceiver_ = new ModelBrokerDebugObserverReceiver(this);
+  private downloadObservers_: Map<string, AssetDownloadObserverImpl> =
+      new Map();
 
   constructor() {
     super();
@@ -81,8 +85,38 @@ export class OnDeviceInternalsBrokerStateElement extends CrLitElement {
     this.getBrokerState_();
   }
 
+  updateAssetProgress(
+      assetName: string, downloadedBytes: bigint, totalBytes: bigint) {
+    const asset = this.state_.assets.find(a => a.name === assetName);
+    if (asset) {
+      asset.bytesDownloaded = downloadedBytes;
+      asset.bytesTotal = totalBytes;
+      this.state_ = {...this.state_};
+    }
+  }
+
   private async getBrokerState_() {
     this.state_ = (await this.brokerDebug_.getStateInfo()).state;
+    this.bindDownloadObservers_();
+  }
+
+  private bindDownloadObservers_() {
+    for (const asset of this.state_.assets) {
+      const isDownloading =
+          asset.state === BrokerAssetState.kBackgroundInstalling ||
+          asset.state === BrokerAssetState.kForegroundInstalling;
+
+      if (isDownloading && !this.downloadObservers_.has(asset.name)) {
+        const observer = new AssetDownloadObserverImpl(this, asset.name);
+        this.downloadObservers_.set(asset.name, observer);
+        this.brokerDebug_.addAssetDownloadObserver(
+            asset.name, observer.getReceiver().$.bindNewPipeAndPassRemote());
+      } else if (!isDownloading && this.downloadObservers_.has(asset.name)) {
+        // Clean up connection once the asset is no longer actively downloading.
+        this.downloadObservers_.get(asset.name)!.getReceiver().$.close();
+        this.downloadObservers_.delete(asset.name);
+      }
+    }
   }
 
   protected async onUninstallModelsClick_() {
@@ -138,6 +172,58 @@ export class OnDeviceInternalsBrokerStateElement extends CrLitElement {
       default:
         return 'Unknown';
     }
+  }
+
+  protected formatBytes(bytes: bigint): string {
+    const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+    let val = Number(bytes);
+    let pow = 0;
+    while (val >= 1024 && pow < units.length - 1) {
+      val /= 1024;
+      pow++;
+    }
+    return `${val.toFixed(1)} ${units[pow]}`;
+  }
+
+  protected getProgressValue(asset: BrokerAssetInfo): number {
+    if (asset.bytesTotal > 0n) {
+      return Number(asset.bytesDownloaded);
+    }
+    return asset.state === BrokerAssetState.kReady ? 1 : 0;
+  }
+
+  protected getProgressMax(asset: BrokerAssetInfo): number {
+    if (asset.bytesTotal > 0n) {
+      return Number(asset.bytesTotal);
+    }
+    return 1;
+  }
+
+  protected getProgressText(asset: BrokerAssetInfo): string {
+    if (asset.bytesTotal > 0n) {
+      return `${this.formatBytes(asset.bytesDownloaded)} / ` +
+          `${this.formatBytes(asset.bytesTotal)}`;
+    }
+    return asset.state === BrokerAssetState.kReady ? '100%' : '0%';
+  }
+}
+
+class AssetDownloadObserverImpl implements DownloadObserverInterface {
+  private receiver_: DownloadObserverReceiver;
+
+  constructor(
+      private element_: OnDeviceInternalsBrokerStateElement,
+      private assetName_: string) {
+    this.receiver_ = new DownloadObserverReceiver(this);
+  }
+
+  getReceiver(): DownloadObserverReceiver {
+    return this.receiver_;
+  }
+
+  onDownloadProgressUpdate(downloadedBytes: bigint, totalBytes: bigint) {
+    this.element_.updateAssetProgress(
+        this.assetName_, downloadedBytes, totalBytes);
   }
 }
 

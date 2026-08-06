@@ -266,6 +266,12 @@ void ModelBrokerState::AddObserver(
   debug_observers_.Add(std::move(observer));
 }
 
+void ModelBrokerState::AddAssetDownloadObserver(
+    const std::string& asset_name,
+    mojo::PendingRemote<on_device_model::mojom::DownloadObserver> observer) {
+  download_progress_manager_.AddObserver(std::move(observer));
+}
+
 void ModelBrokerState::StateChanged(MaybeOnDeviceModelComponentState) {
   for (auto& observer : debug_observers_) {
     observer->OnBrokerStateChanged();

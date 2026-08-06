@@ -90,6 +90,14 @@ void ManifestBrokerState::AddDownloadProgressObserver(
   }
 }
 
+void ManifestBrokerState::AddAssetDownloadObserver(
+    const std::string& asset_name,
+    mojo::PendingRemote<on_device_model::mojom::DownloadObserver> observer) {
+  if (asset_manager_) {
+    asset_manager_->AddAssetDownloadObserver(asset_name, std::move(observer));
+  }
+}
+
 void ManifestBrokerState::BindModelBroker(
     mojo::PendingReceiver<mojom::ModelBroker> receiver) {
   if (!features::IsOnDeviceExecutionEnabled()) {

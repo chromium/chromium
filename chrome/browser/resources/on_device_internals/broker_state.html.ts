@@ -61,6 +61,7 @@ export function getHtml(this: OnDeviceInternalsBrokerStateElement) {
             <th>Name</th>
             <th>Version</th>
             <th>State</th>
+            <th>Progress</th>
             <th>Error</th>
           </tr>
         </thead>
@@ -70,6 +71,13 @@ export function getHtml(this: OnDeviceInternalsBrokerStateElement) {
               <td>${asset.name}</td>
               <td>${asset.version || 'N/A'}</td>
               <td>${this.assetStateToString(asset.state)}</td>
+              <td>
+                <progress value="${this.getProgressValue(asset)}"
+                    max="${this.getProgressMax(asset)}"></progress>
+                <span class="progress-text">
+                  ${this.getProgressText(asset)}
+                </span>
+              </td>
               <td>${asset.error || 'None'}</td>
             </tr>
           `)}

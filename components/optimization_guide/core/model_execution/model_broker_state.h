@@ -90,6 +90,10 @@ class ModelBrokerState final
   void ResetModelCrashCount() override;
   void AddObserver(
       mojo::PendingRemote<mojom::ModelBrokerDebugObserver> observer) override;
+  void AddAssetDownloadObserver(
+      const std::string& asset_name,
+      mojo::PendingRemote<on_device_model::mojom::DownloadObserver> observer)
+      override;
 
   // OnDeviceModelComponentStateManager::Observer:
   void StateChanged(MaybeOnDeviceModelComponentState) override;

@@ -724,4 +724,10 @@ void ModelBrokerAndroid::AddObserver(
   // Not yet implemented on Android.
 }
 
+void ModelBrokerAndroid::AddAssetDownloadObserver(
+    const std::string& asset_name,
+    mojo::PendingRemote<on_device_model::mojom::DownloadObserver> observer) {
+  // Not yet implemented on Android.
+}
+
 }  // namespace optimization_guide

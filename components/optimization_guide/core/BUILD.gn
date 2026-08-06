@@ -203,6 +203,8 @@ source_set("core_util") {
 source_set("model_execution") {
   # TODO: crbug.com/421262905 - Should not need these without model_execution
   sources = [
+    "model_execution/component_download_observer.cc",
+    "model_execution/component_download_observer.h",
     "model_execution/optimization_guide_model_execution_error.cc",
     "model_execution/optimization_guide_model_execution_error.h",
     "model_execution/remote_model_executor.cc",
@@ -220,12 +222,14 @@ source_set("model_execution") {
     ":features",
     "//base",
     "//base/version_info",
+    "//components/component_updater",
     "//components/optimization_guide:optimization_guide_buildflags",
     "//components/optimization_guide/optimization_guide_internals/webui:mojo_bindings",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/optimization_guide/public/mojom",
     "//components/policy/core/common",
     "//components/prefs",
+    "//components/update_client",
     "//components/variations/net",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
@@ -424,6 +428,7 @@ if (build_with_model_execution) {
     ]
     deps = [
       ":features",
+      ":model_execution",
       ":ondevice",
       "//base",
       "//build:branding_buildflags",
@@ -433,6 +438,7 @@ if (build_with_model_execution) {
       "//components/optimization_guide/proto:optimization_guide_proto",
       "//components/optimization_guide/public/mojom",
       "//components/prefs",
+      "//components/update_client",
       "//services/on_device_model/public/cpp",
     ]
   }

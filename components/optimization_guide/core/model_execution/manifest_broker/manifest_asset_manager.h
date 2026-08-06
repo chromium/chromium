@@ -25,6 +25,7 @@
 #include "base/version.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/crx_file/id_util.h"
+#include "components/optimization_guide/core/model_execution/component_download_observer.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_monitor.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_solution_factory.h"
@@ -84,6 +85,11 @@ class ManifestAssetManager : public UsageTracker::Observer {
       const std::string& use_case,
       mojo::PendingRemote<on_device_model::mojom::DownloadObserver> observer);
 
+  // Add download progress observer for the given asset.
+  void AddAssetDownloadObserver(
+      const std::string& asset_name,
+      mojo::PendingRemote<on_device_model::mojom::DownloadObserver> observer);
+
   // Tells the manager to begin providing assets to a new solution factory.
   // The `solution_factory` must not be null.
   // The asset manager will take the following actions in order, potentially
@@ -126,6 +132,10 @@ class ManifestAssetManager : public UsageTracker::Observer {
 
   // Uninstalls all models and clears active/background download requirements.
   void UninstallModels();
+
+  // Helper to resolve an asset name to its CRX ID.
+  std::optional<std::string> GetCrxIdForAsset(
+      const std::string& asset_name) const;
 
  private:
   enum class ComponentState {
@@ -269,6 +279,9 @@ class ManifestAssetManager : public UsageTracker::Observer {
   std::unordered_map<std::string,
                      std::unique_ptr<OnDeviceModelDownloadProgressManager>>
       progress_managers_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  std::map<std::string, std::unique_ptr<ComponentDownloadObserver>>
+      asset_download_observers_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Tracks the free disk space and the last time it was evaluated.
   struct DiskSpaceStatus {
