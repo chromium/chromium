@@ -1243,7 +1243,7 @@ static bool IsHitCandidateForDepthOrder(
           child_z_offset = pt3.z();
         }
       }
-      if (child_z_offset < 0) {
+      if (child_z_offset < *z_offset) {
         return false;
       }
     } else {

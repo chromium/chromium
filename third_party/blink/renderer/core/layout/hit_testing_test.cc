@@ -484,4 +484,42 @@ TEST_F(HitTestingTest, OcclusionHitTestWith3DTransform) {
   EXPECT_EQ(result.InnerNode(), target);
 }
 
+TEST_F(HitTestingTest, OcclusionHitTestWithFlattenedPreserve3DOccluder) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    div {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+    }
+    #target {
+      background: green;
+    }
+    #occluder {
+      background: red;
+      transform: translateZ(-10px);
+      transform-style: preserve-3d;
+    }
+    </style>
+    <div id=target></div>
+    <div id=occluder></div>
+  )HTML");
+
+  Element* target = GetElementById("target");
+  Element* occluder = GetElementById("occluder");
+
+  // The occluder paints on top of the target because the parent stacking
+  // context is flat (its translateZ is flattened away, and it comes later in
+  // DOM order).
+  HitTestResult result = HitTestForOcclusion(*target);
+  EXPECT_EQ(result.InnerNode(), occluder);
+
+  // Same with a positive z offset.
+  occluder->SetInlineStyleProperty(CSSPropertyID::kTransform,
+                                   "translateZ(10px)");
+  UpdateAllLifecyclePhasesForTest();
+  result = HitTestForOcclusion(*target);
+  EXPECT_EQ(result.InnerNode(), occluder);
+}
+
 }  // namespace blink
