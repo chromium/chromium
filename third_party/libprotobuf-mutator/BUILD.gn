@@ -74,7 +74,6 @@ fuzzable_proto_library("lpm_test_fuzzer_proto") {
     "test_fuzzer/imported_publicly.proto",
     "test_fuzzer/test_fuzzer_input.proto",
   ]
-  use_experimental_fuzzable_proto = true
 }
 
 # Wrapper group that provides protobuf_full to fuzzing and test targets without

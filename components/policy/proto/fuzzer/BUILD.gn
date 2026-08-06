@@ -20,7 +20,6 @@ fuzzable_proto_library("policy_common_definitions_full_runtime_proto") {
   proto_out_dir = "components/policy/proto/fuzzer"
 
   sources = [ "../policy_common_definitions.proto" ]
-  use_experimental_fuzzable_proto = true
 }
 
 fuzzable_proto_library("cloud_policy_full_runtime_proto") {
@@ -29,7 +28,6 @@ fuzzable_proto_library("cloud_policy_full_runtime_proto") {
   sources = [ "$root_gen_dir/components/policy/proto/cloud_policy.proto" ]
 
   import_dirs = [ "//components/policy/proto" ]
-  use_experimental_fuzzable_proto = true
 
   proto_deps = [ "//components/policy:policy_code_generate" ]
   deps = [ ":policy_common_definitions_full_runtime_proto" ]
@@ -41,5 +39,4 @@ fuzzable_proto_library("chrome_device_policy_full_runtime_proto") {
   sources = [ "../chrome_device_policy.proto" ]
 
   deps = [ ":policy_common_definitions_full_runtime_proto" ]
-  use_experimental_fuzzable_proto = true
 }

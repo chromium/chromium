@@ -12,5 +12,4 @@ fuzzable_proto_library("proto") {
     "accessibility_mojom.proto",
     "exo_messages.proto",
   ]
-  use_experimental_fuzzable_proto = true
 }

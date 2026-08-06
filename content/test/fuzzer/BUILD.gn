@@ -73,7 +73,6 @@ fuzzer_test("renderer_proto_tree_fuzzer") {
 fuzzable_proto_library("html_tree_proto") {
   sources = [ "html_tree.proto" ]
   testonly = true
-  use_experimental_fuzzable_proto = true
 }
 
 fuzzer_test("signed_exchange_envelope_fuzzer") {
@@ -417,7 +416,6 @@ if (use_fuzzing_engine_with_lpm) {
   fuzzable_proto_library("related_website_sets_proto") {
     sources =
         [ "../../browser/first_party_sets/test/related_website_sets.proto" ]
-    use_experimental_fuzzable_proto = true
   }
 }
 

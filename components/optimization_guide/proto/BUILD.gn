@@ -114,8 +114,6 @@ fuzzable_proto_library("optimization_guide_proto") {
     "//third_party/metrics_proto",
   ]
   import_dirs = [ "//third_party/metrics_proto/" ]
-
-  use_experimental_fuzzable_proto = true
 }
 
 # Proto extras for optimization_guide_proto. This is not meant to be a complete

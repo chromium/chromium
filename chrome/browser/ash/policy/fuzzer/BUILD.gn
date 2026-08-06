@@ -50,7 +50,6 @@ if (use_fuzzing_engine_with_lpm) {
 
   fuzzable_proto_library("policy_fuzzer_proto") {
     sources = [ "policy_fuzzer.proto" ]
-    use_experimental_fuzzable_proto = true
 
     import_dirs = [
       # Add the fuzzable (full-protobuf) .pb.h files into include directories.

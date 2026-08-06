@@ -600,7 +600,6 @@ fuzzable_proto_library("sqlite3_lpm_fuzzer_input") {
     "fuzz/sql_queries.proto",
     "fuzz/sql_query_grammar.proto",
   ]
-  use_experimental_fuzzable_proto = true
 }
 
 # Generates a good corpus for the sqlite_lpm_fuzzer

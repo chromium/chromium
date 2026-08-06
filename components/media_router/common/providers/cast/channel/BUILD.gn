@@ -146,7 +146,6 @@ if (use_fuzzing_engine) {
     ]
     proto_out_dir =
         "components/media_router/common/providers/cast/channel/fuzz_proto"
-    use_experimental_fuzzable_proto = true
   }
 
   protoc_convert("cast_auth_util_fuzzer_convert_corpus") {

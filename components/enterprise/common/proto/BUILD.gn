@@ -11,7 +11,6 @@ fuzzable_proto_library("browser_events_proto") {
   sources = [ "synced/browser_events.proto" ]
 
   deps = [ "//components/safe_browsing/core/common/proto:csd_proto" ]
-  use_experimental_fuzzable_proto = true
 }
 
 proto_extras("browser_events_proto_extras") {
@@ -29,7 +28,6 @@ fuzzable_proto_library("connectors_proto") {
   sources = [ "connectors.proto" ]
 
   deps = [ "//components/safe_browsing/core/common/proto:csd_proto" ]
-  use_experimental_fuzzable_proto = true
 }
 
 proto_extras("connectors_proto_extras") {
@@ -50,7 +48,6 @@ proto_library("dlp_policy_event_proto") {
 fuzzable_proto_library("extension_install_events") {
   proto_in_dir = "//"
   sources = [ "synced/extension_install_events.proto" ]
-  use_experimental_fuzzable_proto = true
 }
 
 proto_extras("extension_install_events_extras") {
@@ -71,7 +68,6 @@ proto_library("legacy_tech_events_proto") {
 fuzzable_proto_library("policy_validation_report") {
   proto_in_dir = "//"
   sources = [ "synced/policy_validation_report.proto" ]
-  use_experimental_fuzzable_proto = true
 }
 
 proto_extras("policy_validation_report_extras") {
@@ -82,7 +78,6 @@ proto_extras("policy_validation_report_extras") {
 fuzzable_proto_library("saas_usage_report_event") {
   proto_in_dir = "//"
   sources = [ "synced/saas_usage_report_event.proto" ]
-  use_experimental_fuzzable_proto = true
 }
 
 proto_extras("saas_usage_report_event_extras") {
@@ -94,7 +89,6 @@ proto_extras("saas_usage_report_event_extras") {
 fuzzable_proto_library("google3_protos") {
   proto_in_dir = "//"
   sources = [ "google3_protos.proto" ]
-  use_experimental_fuzzable_proto = true
 }
 
 proto_extras("google3_protos_extras") {
@@ -113,7 +107,6 @@ fuzzable_proto_library("chrome_reporting_entity") {
     ":saas_usage_report_event",
     "//components/reporting/proto:record_proto",
   ]
-  use_experimental_fuzzable_proto = true
 }
 
 proto_extras("chrome_reporting_entity_extras") {
@@ -144,7 +137,6 @@ fuzzable_proto_library("upload_request_response") {
     ":chrome_reporting_entity",
     ":google3_protos",
   ]
-  use_experimental_fuzzable_proto = true
 }
 
 proto_extras("upload_request_response_extras") {

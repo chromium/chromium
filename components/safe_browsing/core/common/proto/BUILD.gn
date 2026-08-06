@@ -19,7 +19,6 @@ import("//third_party/protobuf/proto_library.gni")
 fuzzable_proto_library("csd_proto") {
   proto_in_dir = "//"
   sources = [ "csd.proto" ]
-  use_experimental_fuzzable_proto = true
 }
 
 proto_extras("csd_proto_extras") {
@@ -42,7 +41,6 @@ fuzzable_proto_library("realtimeapi_proto") {
     ":csd_proto",
     "//components/enterprise/common/proto:connectors_proto",
   ]
-  use_experimental_fuzzable_proto = true
 }
 
 proto_extras("realtimeapi_proto_extras") {
@@ -62,7 +60,6 @@ fuzzable_proto_library("client_model_proto") {
   proto_in_dir = "//"
   sources = [ "client_model.proto" ]
   deps = [ ":csd_proto" ]
-  use_experimental_fuzzable_proto = true
 }
 
 proto_library("safebrowsingv5_proto") {

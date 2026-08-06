@@ -326,7 +326,6 @@ if (use_fuzzing_engine_with_lpm) {
     sources = [ "fuzzers/create_trials_from_seed_test_case.proto" ]
     deps = [ "//components/variations/proto" ]
     proto_in_dir = "//"
-    use_experimental_fuzzable_proto = true
   }
 
   fuzzer_test("create_trial_from_study_fuzzer") {

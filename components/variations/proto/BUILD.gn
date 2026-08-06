@@ -28,7 +28,6 @@ fuzzable_proto_library("proto") {
     "variations_seed.proto",
   ]
   proto_in_dir = "//"
-  use_experimental_fuzzable_proto = true
 }
 
 proto_library("client_variations_proto") {
