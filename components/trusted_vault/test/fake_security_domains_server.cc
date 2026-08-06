@@ -207,14 +207,21 @@ FakeSecurityDomainsServer::HandleRequest(
       GetFullJoinSecurityDomainsURLForTesting(server_url_,
                                               SecurityDomainId::kChromeSync)) {
     response = HandleJoinSecurityDomainsRequest(http_request);
-  } else if (base::StartsWith(
-                 http_request.GetURL().spec(),
-                 server_url_.spec() + kSecurityDomainMemberNamePrefix)) {
-    response = HandleGetSecurityDomainMemberRequest(http_request);
   } else if (http_request.GetURL() ==
              GetFullGetSecurityDomainURLForTesting(
                  server_url_, SecurityDomainId::kChromeSync)) {
     response = HandleGetSecurityDomainRequest(http_request);
+  } else if (base::StartsWith(
+                 http_request.GetURL().spec(),
+                 server_url_.spec() + kSecurityDomainMemberNamePrefix)) {
+    std::string member_public_key =
+        GetPublicKeyFromGetSecurityDomainMemberRequestURL(http_request.GetURL(),
+                                                          server_url_);
+    if (member_public_key.empty()) {
+      response = HandleListSecurityDomainMembersRequest(http_request);
+    } else {
+      response = HandleGetSecurityDomainMemberRequest(http_request);
+    }
   } else {
     base::AutoLock autolock(lock_);
     DVLOG(1) << "Unknown request url: " << http_request.GetURL().spec();
@@ -396,18 +403,70 @@ FakeSecurityDomainsServer::HandleJoinSecurityDomainsRequest(
     return CreateErrorResponse(net::HTTP_BAD_REQUEST);
   }
 
-  if (state_.current_epoch == 0) {
-    // Simulate generation of random epoch when security domain just created.
-    DCHECK(state_.public_key_to_shared_keys.empty());
-    state_.current_epoch = 100;
-  }
-
-  state_.public_key_to_shared_keys[member.public_key()] =
+  std::vector<trusted_vault_pb::SharedMemberKey> shared_keys =
       std::vector<trusted_vault_pb::SharedMemberKey>(
           deserialized_content.shared_member_key().begin(),
           deserialized_content.shared_member_key().end());
+
+  if (state_.current_epoch == kUnknownConstantKeyVersion) {
+    // Simulate generation of random epoch when security domain just created.
+    DCHECK(state_.public_key_to_shared_keys.empty());
+    state_.current_epoch = 100;
+
+    // Make sure that the shared key epoch is correct, even if the client sent
+    // an unknown constant key version for security domain creation.
+    for (auto& shared_key : shared_keys) {
+      if (shared_key.epoch() == kUnknownConstantKeyVersion) {
+        shared_key.set_epoch(state_.current_epoch);
+      }
+    }
+  }
+
+  state_.public_key_to_shared_keys[member.public_key()] = shared_keys;
+  state_.public_key_to_member_type[member.public_key()] = member.member_type();
   return CreateHttpResponseForSuccessfulJoinSecurityDomainsRequest(
       state_.current_epoch);
+}
+
+std::unique_ptr<net::test_server::HttpResponse>
+FakeSecurityDomainsServer::HandleListSecurityDomainMembersRequest(
+    const net::test_server::HttpRequest& http_request) {
+  base::AutoLock autolock(lock_);
+  trusted_vault_pb::ListSecurityDomainMembersResponse response_pb;
+  const std::string security_domain_name =
+      GetSecurityDomainPath(SecurityDomainId::kChromeSync);
+
+  for (const auto& [public_key, shared_keys] :
+       state_.public_key_to_shared_keys) {
+    trusted_vault_pb::SecurityDomainMember* member =
+        response_pb.add_security_domain_members();
+
+    std::string encoded_public_key;
+    base::Base64UrlEncode(public_key, base::Base64UrlEncodePolicy::OMIT_PADDING,
+                          &encoded_public_key);
+    member->set_name(kSecurityDomainMemberNamePrefix + encoded_public_key);
+    member->set_public_key(public_key);
+
+    auto type_it = state_.public_key_to_member_type.find(public_key);
+    if (type_it != state_.public_key_to_member_type.end()) {
+      member->set_member_type(type_it->second);
+    } else {
+      member->set_member_type(
+          trusted_vault_pb::SecurityDomainMember::MEMBER_TYPE_PHYSICAL_DEVICE);
+    }
+
+    trusted_vault_pb::SecurityDomainMember::SecurityDomainMembership*
+        membership = member->add_memberships();
+    membership->set_security_domain(security_domain_name);
+    for (const trusted_vault_pb::SharedMemberKey& shared_key : shared_keys) {
+      *membership->add_keys() = shared_key;
+    }
+  }
+
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_code(net::HTTP_OK);
+  response->set_content(response_pb.SerializeAsString());
+  return response;
 }
 
 std::unique_ptr<net::test_server::HttpResponse>

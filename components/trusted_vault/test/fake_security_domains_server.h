@@ -83,6 +83,10 @@ class FakeSecurityDomainsServer {
       const net::test_server::HttpRequest& http_request);
 
   std::unique_ptr<net::test_server::HttpResponse>
+  HandleListSecurityDomainMembersRequest(
+      const net::test_server::HttpRequest& http_request);
+
+  std::unique_ptr<net::test_server::HttpResponse>
   HandleGetSecurityDomainMemberRequest(
       const net::test_server::HttpRequest& http_request);
 
@@ -104,6 +108,9 @@ class FakeSecurityDomainsServer {
     // Maps members public key to shared keys that belong to this member.
     std::map<std::string, std::vector<trusted_vault_pb::SharedMemberKey>>
         public_key_to_shared_keys;
+    // Maps members public key to member type.
+    std::map<std::string, trusted_vault_pb::SecurityDomainMember::MemberType>
+        public_key_to_member_type;
     // Maps members public key to rotation proofs of members shared keys.
     std::map<std::string, std::vector<trusted_vault_pb::RotationProof>>
         public_key_to_rotation_proofs;

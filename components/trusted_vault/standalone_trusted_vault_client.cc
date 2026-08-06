@@ -320,6 +320,8 @@ void StandaloneTrustedVaultClient::FetchKeys(
     base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)> cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(backend_);
+  // TODO(crbug.com/40255601): consider notifying observers when FetchKeys()
+  // downloads new keys from the server.
   backend_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&StandaloneTrustedVaultBackend::FetchKeys, backend_,

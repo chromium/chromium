@@ -105,6 +105,7 @@ if (!is_android && !is_ios) {
       "recovery_key_store_connection_unittest.cc",
       "securebox_unittest.cc",
       "standalone_trusted_vault_backend_unittest.cc",
+      "standalone_trusted_vault_client_unittest.cc",
       "standalone_trusted_vault_server_constants_unittest.cc",
       "standalone_trusted_vault_storage_unittest.cc",
       "trusted_vault_access_token_fetcher_frontend_unittest.cc",
@@ -125,6 +126,8 @@ if (!is_android && !is_ios) {
       "//components/trusted_vault/proto",
       "//google_apis",
       "//google_apis:test_support",
+      "//services/network:network_service",
+      "//services/network:test_support",
       "//testing/gmock",
       "//testing/gtest",
     ]
