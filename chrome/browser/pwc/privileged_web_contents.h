@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "chrome/browser/pwc/pwc_component_policy.h"
+#include "content/public/browser/preloading.h"
+#include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/web_contents_delegate.h"
 
 namespace content {
@@ -54,6 +56,16 @@ class PrivilegedWebContents : public content::WebContentsDelegate {
   content::WebContents* web_contents() { return web_contents_.get(); }
   const PwcComponentPolicy& policy() const { return policy_; }
   PrivilegedComponent component() const { return policy_.component(); }
+
+  // content::WebContentsDelegate:
+  // Privileged content never prerenders: a prerendered page is activated into
+  // the primary main frame without running navigation throttles, which would
+  // let an off-allowlist page bypass PwcNavigationThrottle. Disabling
+  // prerendering outright is the primary defense (the throttle also covers the
+  // prerendered main frame as defense in depth).
+  content::PreloadingEligibility IsPrerender2Supported(
+      content::WebContents& web_contents,
+      content::PreloadingTriggerType trigger_type) override;
 
  private:
   PrivilegedWebContents(PrivilegedComponent component,

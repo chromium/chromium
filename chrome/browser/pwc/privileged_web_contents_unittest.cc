@@ -11,10 +11,13 @@
 #include "chrome/browser/pwc/pwc_component_policy.h"
 #include "chrome/browser/pwc/pwc_features.mojom-features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "content/public/browser/preloading.h"
+#include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -73,6 +76,19 @@ TEST_F(PrivilegedWebContentsTest, FromWebContentsIsNullForOrdinaryContents) {
   // The harness's own WebContents is not owned by a PrivilegedWebContents.
   EXPECT_EQ(PrivilegedWebContents::FromWebContents(web_contents()), nullptr);
   EXPECT_EQ(PrivilegedWebContents::FromWebContents(nullptr), nullptr);
+}
+
+TEST_F(PrivilegedWebContentsTest, DisablesPrerendering) {
+  std::unique_ptr<PrivilegedWebContents> pwc = PrivilegedWebContents::Create(
+      PrivilegedComponent::kTestComponent, profile(), MakeTestDelegate());
+  content::WebContents* web_contents = pwc->web_contents();
+  // A privileged WebContents never supports prerendering: a prerendered page is
+  // activated into the primary main frame without running navigation throttles,
+  // which would let an off-allowlist page bypass PwcNavigationThrottle.
+  EXPECT_EQ(
+      content::PreloadingEligibility::kPreloadingUnsupportedByWebContents,
+      web_contents->GetDelegate()->IsPrerender2Supported(
+          *web_contents, content::PreloadingTriggerType::kSpeculationRule));
 }
 
 TEST_F(PrivilegedWebContentsTest, DestructionIsClean) {

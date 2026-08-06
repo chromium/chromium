@@ -95,4 +95,13 @@ PrivilegedWebContents::~PrivilegedWebContents() {
   web_contents_.reset();
 }
 
+content::PreloadingEligibility PrivilegedWebContents::IsPrerender2Supported(
+    content::WebContents& web_contents,
+    content::PreloadingTriggerType trigger_type) {
+  // Never prerender inside a PrivilegedWebContents. See the header for why.
+  // Note this also matches the WebContentsDelegate default, but is stated
+  // explicitly so the security property does not depend on the default.
+  return content::PreloadingEligibility::kPreloadingUnsupportedByWebContents;
+}
+
 }  // namespace pwc
