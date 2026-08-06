@@ -420,12 +420,6 @@ public class WebappLauncherActivity extends Activity {
     private static void launchAfterDelay(Context appContext, Intent intent, int launchDelayMs) {
         new Handler()
                 .postDelayed(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                IntentUtils.safeStartActivity(appContext, intent);
-                            }
-                        },
-                        launchDelayMs);
+                        () -> IntentUtils.safeStartActivity(appContext, intent), launchDelayMs);
     }
 }

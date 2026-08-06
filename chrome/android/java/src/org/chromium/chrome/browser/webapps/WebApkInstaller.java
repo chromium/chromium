@@ -157,13 +157,7 @@ public class WebApkInstaller {
             return;
         }
 
-        Callback<Integer> callback =
-                new Callback<>() {
-                    @Override
-                    public void onResult(Integer result) {
-                        WebApkInstaller.this.notify(result);
-                    }
-                };
+        Callback<Integer> callback = this::notify;
         mInstallDelegate.updateAsync(packageName, version, title, token, callback);
     }
 
