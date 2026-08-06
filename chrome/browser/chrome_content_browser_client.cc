@@ -1812,7 +1812,8 @@ ChromeContentBrowserClient::GetStoragePartitionConfigForSite(
           browser_context, site)) {
     CHECK(IsIsolatedWebAppUrl(site));
     ASSIGN_OR_RETURN(const auto iwa_url_info,
-                     web_app::IsolatedWebAppUrlInfo::Create(site), [&](auto) {
+                     web_app::IsolatedWebAppUrlInfo::Create(site),
+                     [&](const auto&) {
                        LOG(ERROR) << "Invalid isolated-app URL: " << site;
                        return default_storage_partition_config;
                      });
