@@ -1327,20 +1327,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="WebRTC.PeerConnection.ConnectionState"
-    enum="IceConnectionStates" expires_after="2024-05-05">
-  <owner>danilchap@chromium.org</owner>
-  <owner>webrtc-dev@chromium.org</owner>
-  <summary>
-    Counters of ICE Connection states. These values are logged when the
-    PeerConnection gets into that state for the first time or after the ICE
-    restart.
-
-    Warning: This histogram was expired from 2022-08-21 to 2022-10-29. Data may
-    be missing.
-  </summary>
-</histogram>
-
 <histogram name="WebRTC.PeerConnection.CryptexUsage"
     enum="PeerConnectionCryptexUsage" expires_after="2027-02-15">
   <owner>danilchap@chromium.org</owner>

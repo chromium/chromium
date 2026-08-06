@@ -157,16 +157,6 @@ chromium-metrics-reviews@google.com.
   <int value="23" label="host(public)_host(named)"/>
 </enum>
 
-<enum name="IceConnectionStates">
-  <int value="0" label="IceConnectionNew"/>
-  <int value="1" label="IceConnectionChecking"/>
-  <int value="2" label="IceConnectionConnected"/>
-  <int value="3" label="IceconnectionCompleted"/>
-  <int value="4" label="IceconnectionFailed"/>
-  <int value="5" label="IceconnectionDisconnected"/>
-  <int value="6" label="IceconnectionClosed"/>
-</enum>
-
 <enum name="IpAddressType">
   <int value="0" label="Unknown"/>
   <int value="1" label="Any"/>
