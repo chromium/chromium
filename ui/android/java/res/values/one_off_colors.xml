@@ -231,4 +231,10 @@ found in the LICENSE file.
     <!-- Colors used for the Glic/Actor take over button glow. -->
     <color name="actor_button_glow_soft">#4D0B57D0</color>
     <color name="actor_button_glow_strong">#800B57D0</color>
+
+    <!-- Colors used for google logo-->
+    <color name="google_logo_light_red" tools:ignore="UnusedResources">#FC413D</color>
+    <color name="google_logo_light_yellow" tools:ignore="UnusedResources">#FFBE00</color>
+    <color name="google_logo_light_green" tools:ignore="UnusedResources">#00AF57</color>
+    <color name="google_logo_light_blue" tools:ignore="UnusedResources">@color/spark_blue_gradient_mid</color>
 </resources>

@@ -19,6 +19,7 @@ found in the LICENSE file.
         android:layout_width="wrap_content"
         android:layout_height="@dimen/ntp_logo_height"
         android:layout_gravity="center_horizontal"
+        android:paddingTop="@dimen/ntp_logo_padding_top"
         android:layout_marginTop="@dimen/ntp_logo_margin_top"
         android:adjustViewBounds="true"/>
 
