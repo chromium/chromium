@@ -546,14 +546,8 @@ class WebViewAPIAutosizeHeightTest
   bool use_device_scale_factor() const { return std::get<0>(GetParam()); }
   bool auto_size_enabled() const { return std::get<1>(GetParam()); }
   const char* test_name() const {
-    if (!auto_size_enabled()) {
-      return "testAutosizeHeightFeatureDisabled";
-    }
-#if BUILDFLAG(IS_CHROMEOS)
-    return "testAutosizeHeightFeatureEnabledOverlayScrollbar";
-#else
-    return "testAutosizeHeightFeatureEnabled";
-#endif
+    return auto_size_enabled() ? "testAutosizeHeightFeatureEnabled"
+                               : "testAutosizeHeightFeatureDisabled";
   }
 };
 

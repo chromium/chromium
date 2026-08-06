@@ -1500,14 +1500,9 @@ class WebViewSizeTestAutosizeHeight
   bool use_device_scale_factor() const { return std::get<2>(GetParam()); }
 
   const char* test_name() const {
-    if (!auto_size_uses_scroll_width_for_overflow_enabled()) {
-      return "testAutosizeHeightFeatureDisabled";
-    }
-#if BUILDFLAG(IS_CHROMEOS)
-    return "testAutosizeHeightFeatureEnabledOverlayScrollbar";
-#else
-    return "testAutosizeHeightFeatureEnabled";
-#endif
+    return auto_size_uses_scroll_width_for_overflow_enabled()
+               ? "testAutosizeHeightFeatureEnabled"
+               : "testAutosizeHeightFeatureDisabled";
   }
 
  private:
