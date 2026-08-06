@@ -157,10 +157,11 @@ class ResourceFetcherTestBase : public testing::Test {
     void WillSendRequest(const ResourceRequest& request,
                          const ResourceResponse& redirect_response,
                          ResourceType,
-                         const ResourceLoaderOptions&,
+                         const ResourceLoaderOptions& options,
                          RenderBlockingBehavior,
                          const Resource*) override {
       request_ = PartialResourceRequest(request);
+      world_for_csp_ = options.world_for_csp;
     }
     void DidChangePriority(uint64_t identifier,
                            ResourceLoadPriority,
@@ -196,12 +197,24 @@ class ResourceFetcherTestBase : public testing::Test {
     const std::optional<PartialResourceRequest>& GetLastRequest() const {
       return request_;
     }
+    const DOMWrapperWorld* GetLastWorldForCsp() const {
+      return world_for_csp_.Get();
+    }
 
-    void ClearLastRequest() { request_ = std::nullopt; }
+    void ClearLastRequest() {
+      request_ = std::nullopt;
+      world_for_csp_ = nullptr;
+    }
+
+    void Trace(Visitor* visitor) const override {
+      visitor->Trace(world_for_csp_);
+      ResourceLoadObserver::Trace(visitor);
+    }
 
    private:
     std::optional<PartialResourceRequest> request_;
     bool interested_in_all_requests_ = false;
+    Member<const DOMWrapperWorld> world_for_csp_;
   };
 
  protected:
@@ -1193,6 +1206,77 @@ TEST_P(ResourceFetcherTest, StaleWhileRevalidate) {
       observer->GetLastRequest();
   ASSERT_TRUE(swr_request.has_value());
   EXPECT_EQ(ResourceLoadPriority::kVeryLow, swr_request->Priority());
+  platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
+  EXPECT_FALSE(MemoryCache::Get()->Contains(resource));
+}
+
+TEST_P(ResourceFetcherTest, StaleWhileRevalidatePropagatesIsolatedWorld) {
+  scoped_refptr<const SecurityOrigin> source_origin =
+      SecurityOrigin::CreateUniqueOpaque();
+  auto* observer = MakeGarbageCollected<TestResourceLoadObserver>();
+  MockFetchContext* context = MakeGarbageCollected<MockFetchContext>();
+  auto* fetcher = CreateFetcher(
+      *MakeGarbageCollected<TestResourceFetcherProperties>(source_origin),
+      context);
+  fetcher->SetResourceLoadObserver(observer);
+
+  KURL url("http://127.0.0.1:8000/foo.html");
+  FetchParameters fetch_params =
+      FetchParameters::CreateForTest(ResourceRequest(url));
+  DOMWrapperWorld* isolated_world = DOMWrapperWorld::EnsureIsolatedWorld(
+      /*v8::Isolate=*/nullptr, blink::kIsolatedWorldIdLimit - 1);
+  fetch_params.MutableOptions().world_for_csp = isolated_world;
+
+  ResourceResponse response(url);
+  response.SetHttpStatusCode(200);
+  response.SetHttpHeaderField(
+      http_names::kCacheControl,
+      AtomicString("max-age=0, stale-while-revalidate=40"));
+
+  platform_->GetURLLoaderMockFactory()->RegisterURL(
+      url, WrappedResourceResponse(response),
+      test::PlatformTestDataPath(kTestResourceFilename));
+  Resource* resource = MockResource::Fetch(fetch_params, fetcher, nullptr);
+  ASSERT_TRUE(resource);
+
+  platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
+  EXPECT_TRUE(resource->IsLoaded());
+  EXPECT_TRUE(MemoryCache::Get()->Contains(resource));
+  EXPECT_EQ(isolated_world, observer->GetLastWorldForCsp());
+
+  ResourceRequest resource_request(url);
+  resource_request.SetRequestContext(
+      mojom::blink::RequestContextType::INTERNAL);
+  FetchParameters fetch_params2 =
+      FetchParameters::CreateForTest(std::move(resource_request));
+  fetch_params2.MutableOptions().world_for_csp = isolated_world;
+  Resource* new_resource = MockResource::Fetch(fetch_params2, fetcher, nullptr);
+  EXPECT_EQ(resource, new_resource);
+  platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
+  EXPECT_TRUE(resource->IsLoaded());
+  EXPECT_EQ(isolated_world, observer->GetLastWorldForCsp());
+
+  // Advance the clock, make sure the original resource gets removed from the
+  // memory cache after the revalidation completes.
+  task_environment_.AdvanceClock(base::Seconds(1));
+  ResourceResponse revalidate_response(url);
+  revalidate_response.SetHttpStatusCode(200);
+  platform_->GetURLLoaderMockFactory()->UnregisterURL(url);
+  platform_->GetURLLoaderMockFactory()->RegisterURL(
+      url, WrappedResourceResponse(revalidate_response),
+      test::PlatformTestDataPath(kTestResourceFilename));
+  new_resource = MockResource::Fetch(fetch_params2, fetcher, nullptr);
+  EXPECT_EQ(resource, new_resource);
+  EXPECT_TRUE(MemoryCache::Get()->Contains(resource));
+  observer->ClearLastRequest();
+
+  static_cast<scheduler::FakeTaskRunner*>(fetcher->GetTaskRunner().get())
+      ->AdvanceTimeAndRun(base::Seconds(0));
+  std::optional<PartialResourceRequest> swr_request =
+      observer->GetLastRequest();
+  ASSERT_TRUE(swr_request.has_value());
+  EXPECT_EQ(ResourceLoadPriority::kVeryLow, swr_request->Priority());
+  EXPECT_EQ(isolated_world, observer->GetLastWorldForCsp());
   platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
   EXPECT_FALSE(MemoryCache::Get()->Contains(resource));
 }
