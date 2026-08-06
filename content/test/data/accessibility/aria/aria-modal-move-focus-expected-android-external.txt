@@ -1,0 +1,5 @@
+WebView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++AlertDialog supplementalDescription:"Nonmodal" actions:[AX_FOCUS] bundle:[chromeRole="dialog"]
+++Button text:"Outer Button" clickable focusable focused actions:[CLEAR_FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button"]
+++AlertDialog supplementalDescription:"modal dialog" actions:[AX_FOCUS] bundle:[chromeRole="dialog"]
+++++Button text:"Inner Button" clickable focusable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button"]

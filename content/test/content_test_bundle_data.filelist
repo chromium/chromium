@@ -1516,6 +1516,7 @@ data/accessibility/aria/aria-mismatched-table-attr-expected-mac.txt
 data/accessibility/aria/aria-mismatched-table-attr-expected-uia-win.txt
 data/accessibility/aria/aria-mismatched-table-attr-expected-win.txt
 data/accessibility/aria/aria-mismatched-table-attr.html
+data/accessibility/aria/aria-modal-close-visibility-hidden-expected-android-external.txt
 data/accessibility/aria/aria-modal-close-visibility-hidden-expected-mac.txt
 data/accessibility/aria/aria-modal-close-visibility-hidden.html
 data/accessibility/aria/aria-modal-expected-android-external.txt
@@ -1525,10 +1526,13 @@ data/accessibility/aria/aria-modal-expected-win.txt
 data/accessibility/aria/aria-modal-focusable-dialog-expected-android.txt
 data/accessibility/aria/aria-modal-focusable-dialog-expected-mac.txt
 data/accessibility/aria/aria-modal-focusable-dialog.html
+data/accessibility/aria/aria-modal-layered-expected-android-external.txt
 data/accessibility/aria/aria-modal-layered-expected-mac.txt
 data/accessibility/aria/aria-modal-layered.html
+data/accessibility/aria/aria-modal-move-focus-expected-android-external.txt
 data/accessibility/aria/aria-modal-move-focus-expected-mac.txt
 data/accessibility/aria/aria-modal-move-focus.html
+data/accessibility/aria/aria-modal-remove-parent-container-expected-android-external.txt
 data/accessibility/aria/aria-modal-remove-parent-container-expected-mac.txt
 data/accessibility/aria/aria-modal-remove-parent-container.html
 data/accessibility/aria/aria-modal-unhidden-expected-auralinux.txt

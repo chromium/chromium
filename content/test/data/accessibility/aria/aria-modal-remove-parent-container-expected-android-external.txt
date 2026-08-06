@@ -1,0 +1,2 @@
+WebView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++Button text:"Should be in tree" clickable focusable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button"]

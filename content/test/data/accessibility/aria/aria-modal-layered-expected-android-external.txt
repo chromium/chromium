@@ -1,0 +1,3 @@
+WebView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++AlertDialog supplementalDescription:"modal level 2" actions:[AX_FOCUS] bundle:[chromeRole="dialog"]
+++++Button text:"Button 2" clickable focusable focused actions:[CLEAR_FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button"]
