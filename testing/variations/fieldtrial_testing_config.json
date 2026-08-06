@@ -5115,7 +5115,8 @@
                         "MigratedInstallerDownloader": "true",
                         "MigratedObsoleteSystem": "true",
                         "MigratedPageInfo": "true",
-                        "MigratedPdf": "true"
+                        "MigratedPdf": "true",
+                        "MigratedPinInfoBar": "true"
                     },
                     "enable_features": [
                         "CentralizedInfoBarFramework"
