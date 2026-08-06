@@ -161,6 +161,42 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, TextfieldAccessibility) {
   EXPECT_EQ(u"New value", textfield->GetText());
 }
 
+TEST_F(ViewAXPlatformNodeDelegateWinTest,
+       TextfieldCharacterNavigationIgnoresAnnotations) {
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams init_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
+  widget->Init(std::move(init_params));
+
+  View* content = widget->SetContentsView(std::make_unique<View>());
+  Textfield* textfield = content->AddChildView(std::make_unique<Textfield>());
+  textfield->SetText(u"hello world");
+
+  ComPtr<IRawElementProviderSimple> textfield_provider =
+      GetIRawElementProviderSimple(textfield);
+  ComPtr<ITextProvider> text_provider;
+  ASSERT_HRESULT_SUCCEEDED(textfield_provider->GetPatternProvider(
+      UIA_TextPatternId, &text_provider));
+
+  ComPtr<ITextRangeProvider> text_range_provider;
+  ASSERT_HRESULT_SUCCEEDED(
+      text_provider->get_DocumentRange(&text_range_provider));
+
+  ScopedVariant annotation_types;
+  ASSERT_HRESULT_SUCCEEDED(text_range_provider->GetAttributeValue(
+      UIA_AnnotationTypesAttributeId, annotation_types.Receive()));
+  EXPECT_EQ(VT_EMPTY, annotation_types.type());
+
+  int units_moved = 0;
+  ASSERT_HRESULT_SUCCEEDED(text_range_provider->MoveEndpointByUnit(
+      TextPatternRangeEndpoint_End, TextUnit_Character, -10, &units_moved));
+  EXPECT_EQ(-10, units_moved);
+
+  ScopedBstr text;
+  ASSERT_HRESULT_SUCCEEDED(text_range_provider->GetText(-1, text.Receive()));
+  EXPECT_STREQ(L"h", text.Get());
+}
+
 TEST_F(ViewAXPlatformNodeDelegateWinTest, TextfieldAssociatedLabel) {
   auto widget = std::make_unique<Widget>();
   Widget::InitParams init_params = CreateParams(
