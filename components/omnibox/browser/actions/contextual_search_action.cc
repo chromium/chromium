@@ -145,7 +145,9 @@ const gfx::VectorIcon& ContextualSearchOpenLensAction::GetVectorIcon() const {
                  .open_lens_action_ui_tweaks
              ? vector_icons::kGoogleLensLogoIcon
              : (omnibox::kAskGSwapIcon.Get()
-                    ? omnibox::kSearchSparkIcon
+                    ? (features::IsRoundedIconsEnabled()
+                           ? omnibox::kSearchSparkIcon
+                           : omnibox::kSearchSparkOldIcon)
                     : vector_icons::kGoogleLensMonochromeLogoIcon);
 
 #else

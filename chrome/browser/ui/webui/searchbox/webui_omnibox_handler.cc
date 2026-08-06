@@ -331,7 +331,9 @@ WebuiOmniboxHandler::CreateAutocompleteMatch(
   if (mojom_match &&
       match.suggestion_group_id == omnibox::GroupId::GROUP_CONTEXTUAL_SEARCH) {
     mojom_match.value()->icon_path =
-        searchbox_internal::kReplyRotated180IconResourceName;
+        omnibox::kAskGSwapIcon.Get()
+            ? searchbox_internal::kSearchSparkIconResourceName
+            : searchbox_internal::kReplyRotated180IconResourceName;
   }
 
   if (mojom_match) {
