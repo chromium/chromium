@@ -348,6 +348,7 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
         run.style.font_name = styles[i].font_name;
         run.style.font_weight = styles[i].font_weight;
         run.style.is_italic = styles[i].is_italic;
+        run.style.font_weight = styles[i].font_weight;
       }
       if (i < bounds.size()) {
         run.bounds = bounds[i];
@@ -1324,6 +1325,192 @@ TEST_F(PdfAccessibilityTreeTest,
   const ui::AXNode* block3 = page->GetChildAtIndex(2u);
   ASSERT_NE(nullptr, block3);
   EXPECT_EQ(ax::mojom::Role::kParagraph, block3->GetRole());
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicFontWeightHeading) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo weight_style;
+  weight_style.font_weight = 600;
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style;
+  normal_style.font_weight = 400;
+
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{10.0f, 10.0f, 10.0f, 10.0f},
+      {weight_style, normal_style, normal_style, normal_style},
+      MakeCharVector({"WeightHeading", "body1", "body2", "end"}));
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(4u, page->GetChildCount());
+
+  // Valid font weight (< 700) run: promoted to heading
+  const ui::AXNode* block1 = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, block1);
+  EXPECT_EQ(ax::mojom::Role::kHeading, block1->GetRole());
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicFontNameHeading) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo bold_name_style;
+  bold_name_style.font_weight = 0;
+  bold_name_style.font_name = "Helvetica-Bold";
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style;
+  normal_style.font_weight = 400;
+  normal_style.font_name = "Helvetica-Regular";
+
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{10.0f, 10.0f, 10.0f, 10.0f, 10.0f},
+      {bold_name_style, normal_style, normal_style, normal_style, normal_style},
+      MakeCharVector({"FontNameHeading", "body1", "body2", "body3", "end"}));
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(5u, page->GetChildCount());
+
+  // Run with "Helvetica-Bold" font name and font_weight == 0: promoted to
+  // heading
+  const ui::AXNode* block1 = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, block1);
+  EXPECT_EQ(ax::mojom::Role::kHeading, block1->GetRole());
+
+  // Normal run: remains paragraph
+  const ui::AXNode* block2 = page->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, block2);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, block2->GetRole());
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicHeadingBreakOnFontNameMismatch) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo bold_style_font1;
+  bold_style_font1.font_weight = 700;
+  bold_style_font1.font_name = "Arial";
+
+  chrome_pdf::AccessibilityTextStyleInfo bold_style_font2;
+  bold_style_font2.font_weight = 700;
+  bold_style_font2.font_name = "TimesNewRoman";
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style;
+  normal_style.font_weight = 400;
+  normal_style.font_name = "Arial";
+
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{10.0f, 10.0f, 10.0f, 10.0f, 10.0f},
+      {bold_style_font1, bold_style_font2, normal_style, normal_style,
+       normal_style},
+      MakeCharVector({"HeadingOne", "HeadingTwo", "body1", "body2", "end"}));
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(5u, page->GetChildCount());
+
+  // First bold run (Arial): promoted to heading
+  const ui::AXNode* block1 = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, block1);
+  EXPECT_EQ(ax::mojom::Role::kHeading, block1->GetRole());
+
+  // Second bold run (TimesNewRoman): should break into a separate heading block
+  // because font_name differs from run 1.
+  const ui::AXNode* block2 = page->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, block2);
+  EXPECT_EQ(ax::mojom::Role::kHeading, block2->GetRole());
+  EXPECT_NE(block1, block2);
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicBodyTextFontNameChangeDoesNotBreak) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style_font1;
+  normal_style_font1.font_name = "Arial";
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style_font2;
+  normal_style_font2.font_name = "TimesNewRoman";
+
+  // Three body text runs on the same line (y = 0.0f) with font_name change.
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{10.0f, 10.0f, 10.0f},
+      {normal_style_font1, normal_style_font2, normal_style_font1},
+      MakeCharVector({"body1", "body2", "body3"}),
+      /*bounds=*/
+      {gfx::RectF(0.0f, 0.0f, 50.0f, 10.0f),
+       gfx::RectF(60.0f, 0.0f, 50.0f, 10.0f),
+       gfx::RectF(120.0f, 0.0f, 50.0f, 10.0f)});
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  // Font name change in body text on the same line should NOT break into
+  // multiple blocks.
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  const ui::AXNode* block = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, block);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, block->GetRole());
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicHeadingBreakOnItalicStyleMismatch) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo bold_style;
+  bold_style.font_weight = 700;
+  bold_style.is_italic = false;
+
+  chrome_pdf::AccessibilityTextStyleInfo bold_italic_style;
+  bold_italic_style.font_weight = 700;
+  bold_italic_style.is_italic = true;
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style;
+  normal_style.font_weight = 400;
+
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{10.0f, 10.0f, 10.0f, 10.0f, 10.0f},
+      {bold_style, bold_italic_style, normal_style, normal_style, normal_style},
+      MakeCharVector(
+          {"BoldHeading", "BoldItalicHeading", "body1", "body2", "end"}));
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(5u, page->GetChildCount());
+
+  // First heading run (bold): promoted to heading
+  const ui::AXNode* block1 = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, block1);
+  EXPECT_EQ(ax::mojom::Role::kHeading, block1->GetRole());
+
+  // Second heading run (bold italic): breaks into a separate heading block due
+  // to italic style mismatch
+  const ui::AXNode* block2 = page->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, block2);
+  EXPECT_EQ(ax::mojom::Role::kHeading, block2->GetRole());
+  EXPECT_NE(block1, block2);
 }
 
 class PdfAccessibilityTreeStructuredModeTest

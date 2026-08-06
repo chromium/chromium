@@ -1,0 +1,27 @@
+pdfRoot name='PDF document containing 1 page' restriction=readOnly
+++region name='Page 1' restriction=readOnly isPageBreakingObject=true
+++++paragraph restriction=readOnly
+++++++staticText name='This is body text line one.<newline>This is body text line two.<newline>' restriction=readOnly
+++++++++inlineTextBox name='This is body text line one.<newline>' restriction=readOnly
+++++++++inlineTextBox name='This is body text line two.<newline>' restriction=readOnly
+++++heading restriction=readOnly
+++++++staticText name='Heading By Weight<newline>' restriction=readOnly
+++++++++inlineTextBox name='Heading By Weight<newline>' restriction=readOnly
+++++paragraph restriction=readOnly
+++++++staticText name='Body text below weight heading.<newline>' restriction=readOnly
+++++++++inlineTextBox name='Body text below weight heading.<newline>' restriction=readOnly
+++++heading restriction=readOnly
+++++++staticText name='Heading By Name<newline>' restriction=readOnly
+++++++++inlineTextBox name='Heading By Name<newline>' restriction=readOnly
+++++paragraph restriction=readOnly
+++++++staticText name='Body text below name heading.<newline>' restriction=readOnly
+++++++++inlineTextBox name='Body text below name heading.<newline>' restriction=readOnly
+++++heading restriction=readOnly
+++++++staticText name='ALL CAPS BOLD HEADING<newline>' restriction=readOnly
+++++++++inlineTextBox name='ALL CAPS BOLD HEADING<newline>' restriction=readOnly
+++++heading restriction=readOnly
+++++++staticText name='ALL CAPS NORMAL HEADING<newline>' restriction=readOnly
+++++++++inlineTextBox name='ALL CAPS NORMAL HEADING<newline>' restriction=readOnly
+++++paragraph restriction=readOnly
+++++++staticText name='Trailing body text.' restriction=readOnly
+++++++++inlineTextBox name='Trailing body text.' restriction=readOnly

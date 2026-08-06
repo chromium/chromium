@@ -1,0 +1,18 @@
+[document frame] name='PDF document containing 1 page'
+++[landmark] name='Page 1'
+++++[paragraph]
+++++++[static] name='This is body text line one.<newline>This is body text line two.<newline>'
+++++[heading]
+++++++[static] name='Heading By Weight<newline>'
+++++[paragraph]
+++++++[static] name='Body text below weight heading.<newline>'
+++++[heading]
+++++++[static] name='Heading By Name<newline>'
+++++[paragraph]
+++++++[static] name='Body text below name heading.<newline>'
+++++[heading]
+++++++[static] name='ALL CAPS BOLD HEADING<newline>'
+++++[heading]
+++++++[static] name='ALL CAPS NORMAL HEADING<newline>'
+++++[paragraph]
+++++++[static] name='Trailing body text.'

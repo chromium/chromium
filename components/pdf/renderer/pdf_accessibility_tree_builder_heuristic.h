@@ -58,6 +58,10 @@ enum class HeadingClassifier {
   kBoldStyle,
   // Classified because all characters are uppercase.
   kAllUppercase,
+  // Classified due to semi-bold font weight (600).
+  kSemiBoldWeight,
+  // Classified by looking at the font name to determine styling.
+  kFontName,
 };
 
 // Bundles raw page layout data (text runs, characters, start indices) used by

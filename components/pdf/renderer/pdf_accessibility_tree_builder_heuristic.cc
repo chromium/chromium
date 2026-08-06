@@ -8,6 +8,7 @@
 #include <cmath>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check.h"
@@ -67,6 +68,10 @@ constexpr int kLargestStyledHeadingLevel = 3;
 
 // The smallest heading level allowed (corresponds to <h6>).
 constexpr int kSmallestHeadingLevel = 6;
+
+// Font weight for semi-bold text. Used to determine if the run could be a
+// heading.
+constexpr int kSemiBoldWeight = 600;
 
 // This class is used as part of our heuristic to determine which text runs live
 // on the same "line".  As we process runs, we keep a weighted average of the
@@ -204,6 +209,29 @@ bool IsAllUppercase(base::span<const chrome_pdf::AccessibilityCharInfo> chars) {
   return has_cased_letter;
 }
 
+// Returns whether a font name indicates a bold, semi-bold, black, or heavy
+// heading font style based on delimited font style patterns (e.g. "-bold").
+bool IsHeadingFontName(std::string_view font_name) {
+  static constexpr std::string_view kHeadingPatterns[] = {
+      "-bold",      ",bold",      " bold",     "+bold",      "-semibold",
+      ",semibold",  " semibold",  "+semibold", "-demi",      ",demi",
+      " demi",      "+demi",      "-black",    ",black",     " black",
+      "+black",     "-blk",       ",blk",      " blk",       "+blk",
+      "-heavy",     ",heavy",     " heavy",    "+heavy",     "-extrabld",
+      ",extrabld",  " extrabld",  "+extrabld", "-ultrabold", ",ultrabold",
+      " ultrabold", "+ultrabold",
+  };
+
+  std::string lower_font_name = base::ToLowerASCII(font_name);
+  for (std::string_view pattern : kHeadingPatterns) {
+    if (lower_font_name.contains(pattern)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 void ComputeParagraphAndHeadingThresholds(
     const std::vector<chrome_pdf::AccessibilityTextRunInfo>& text_runs,
     float* out_heading_font_size_threshold,
@@ -329,6 +357,13 @@ base::span<const chrome_pdf::AccessibilityCharInfo> GetTextRunChars(
   return base::span(layout.chars).subspan(start_index, len);
 }
 
+bool AreStylesAndFontsEquivalent(
+    const chrome_pdf::AccessibilityTextStyleInfo& style1,
+    const chrome_pdf::AccessibilityTextStyleInfo& style2) {
+  return PdfAccessibilityTreeBuilder::AreStylesEquivalent(style1, style2) &&
+         style1.font_name == style2.font_name;
+}
+
 HeadingClassifier GetHeadingClassifier(
     const chrome_pdf::AccessibilityTextRunInfo& text_run,
     base::span<const chrome_pdf::AccessibilityCharInfo> text_run_chars,
@@ -340,12 +375,27 @@ HeadingClassifier GetHeadingClassifier(
     return HeadingClassifier::kNone;
   }
 
+  // Check all-caps before bold styling because if a run has both, the all caps
+  // classification should take precedence.
+  if (IsAllUppercase(text_run_chars)) {
+    return HeadingClassifier::kAllUppercase;
+  }
+
   if (PdfAccessibilityTreeBuilder::IsBoldStyle(style)) {
     return HeadingClassifier::kBoldStyle;
   }
 
-  if (IsAllUppercase(text_run_chars)) {
-    return HeadingClassifier::kAllUppercase;
+  // `IsBoldStyle()` above is only true for weight >= 700, but semi-bold text
+  // runs can still be headings.
+  if (PdfAccessibilityTreeBuilder::GetFontWeight(style) >= kSemiBoldWeight) {
+    return HeadingClassifier::kSemiBoldWeight;
+  }
+
+  // Not every PDF specifies its /FontWeight or /StemV properly. If none of the
+  // above cases apply, check the font name which will often include the word
+  // "bold" or similar.
+  if (IsHeadingFontName(style.font_name)) {
+    return HeadingClassifier::kFontName;
   }
 
   return HeadingClassifier::kNone;
@@ -364,30 +414,37 @@ bool BreakParagraph(uint32_t text_run_index,
                     HeadingClassifier heading_classifier,
                     const PageLayoutData& layout,
                     const HeuristicThresholds& thresholds) {
+  const chrome_pdf::AccessibilityTextRunInfo& current_run =
+      layout.text_runs[text_run_index];
+  const chrome_pdf::AccessibilityTextRunInfo& next_run =
+      layout.text_runs[text_run_index + 1];
+
   // Use line spacing to determine where to break body text.
   if (!features::IsPdfAccessibilityHeuristicEnhancementsEnabled() ||
       heading_classifier == HeadingClassifier::kNone) {
-    float line_spacing = fabsf(layout.text_runs[text_run_index + 1].bounds.y() -
-                               layout.text_runs[text_run_index].bounds.y());
-    return (
-        (thresholds.paragraph_spacing_threshold > 0 &&
-         line_spacing > thresholds.paragraph_spacing_threshold) ||
-        (thresholds.paragraph_spacing_threshold == 0 &&
-         line_spacing > kParagraphLineSpacingRatio *
-                            layout.text_runs[text_run_index].bounds.height()));
+    float line_spacing = fabsf(next_run.bounds.y() - current_run.bounds.y());
+    if (thresholds.paragraph_spacing_threshold > 0) {
+      return line_spacing > thresholds.paragraph_spacing_threshold;
+    }
+
+    // If there's no threshold, that means there weren't enough lines to compute
+    // an accurate median, so compare against the line size instead.
+    return line_spacing >
+           kParagraphLineSpacingRatio * current_run.bounds.height();
   }
 
-  // Use heading level and classifier to determine where to break headings. i.e.
-  // if the next run is the same heading level as the current run, and has the
-  // same classifier don't break. If the heading levels are the same, but the
-  // classifier is different (e.g. the first heading is bolded and the next one
-  // is all caps), do break the headings up.
+  // Always break headings at style changes.
+  if (!AreStylesAndFontsEquivalent(current_run.style, next_run.style)) {
+    return true;
+  }
+
+  // For font-size classified headings, break if the next run has a different
+  // heading level.
   int current_level =
       block_node->GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel);
   if (heading_classifier == HeadingClassifier::kFontSize) {
     int next_level = GetHeadingLevelFromSize(
-        *thresholds.heading_font_size_mapping,
-        layout.text_runs[text_run_index + 1].style.font_size);
+        *thresholds.heading_font_size_mapping, next_run.style.font_size);
     return current_level != next_level;
   }
 

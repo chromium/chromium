@@ -1,0 +1,133 @@
+{{header}}
+{{object 1 0}} <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+{{object 2 0}} <<
+  /Type /Pages
+  /MediaBox [0 0 300 300]
+  /Count 1
+  /Kids [3 0 R]
+>>
+endobj
+{{object 3 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Resources <<
+    /Font <<
+      /F1 4 0 R % Normal font, Times-Roman
+      /F2 5 0 R % Semi-bold font by weight (600), name: MySemiBoldFont
+      /F3 7 0 R % Font with heading name: Helvetica-Semibold, weight 400
+      /F4 9 0 R % Bold font: MyBoldFont, weight 700
+    >>
+  >>
+  /Contents 11 0 R
+>>
+endobj
+{{object 4 0}} <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Times-Roman
+>>
+endobj
+{{object 5 0}} <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /MySemiBoldFont
+  /FontDescriptor 6 0 R
+>>
+endobj
+{{object 6 0}} <<
+  /Type /FontDescriptor
+  /FontName /MySemiBoldFont
+  /FontWeight 600
+  /StemV 80
+  /Flags 0
+>>
+endobj
+{{object 7 0}} <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Helvetica-Semibold
+  /FontDescriptor 8 0 R
+>>
+endobj
+{{object 8 0}} <<
+  /Type /FontDescriptor
+  /FontName /Helvetica-Semibold
+  /FontWeight 400
+  /StemV 80
+  /Flags 0
+>>
+endobj
+{{object 9 0}} <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /MyBoldFont
+  /FontDescriptor 10 0 R
+>>
+endobj
+{{object 10 0}} <<
+  /Type /FontDescriptor
+  /FontName /MyBoldFont
+  /FontWeight 700
+  /StemV 120
+  /Flags 0
+>>
+endobj
+{{object 11 0}} <<
+  {{streamlen}}
+>>
+stream
+BT
+/F1 10 Tf
+1 0 0 1 10 250 Tm
+(This is body text line one.) Tj
+ET
+BT
+/F1 10 Tf
+1 0 0 1 10 230 Tm
+(This is body text line two.) Tj
+ET
+BT
+/F2 12 Tf
+1 0 0 1 10 190 Tm
+(Heading By Weight) Tj
+ET
+BT
+/F1 10 Tf
+1 0 0 1 10 170 Tm
+(Body text below weight heading.) Tj
+ET
+BT
+/F3 12 Tf
+1 0 0 1 10 130 Tm
+(Heading By Name) Tj
+ET
+BT
+/F1 10 Tf
+1 0 0 1 10 110 Tm
+(Body text below name heading.) Tj
+ET
+BT
+/F4 12 Tf
+1 0 0 1 10 70 Tm
+(ALL CAPS BOLD HEADING) Tj
+ET
+BT
+/F1 12 Tf
+1 0 0 1 10 50 Tm
+(ALL CAPS NORMAL HEADING) Tj
+ET
+BT
+/F1 10 Tf
+1 0 0 1 10 30 Tm
+(Trailing body text.) Tj
+ET
+endstream
+endobj
+{{xref}}
+{{trailer}}
+{{startxref}}
+%%EOF
