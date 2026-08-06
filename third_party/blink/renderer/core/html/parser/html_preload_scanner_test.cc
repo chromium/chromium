@@ -1002,6 +1002,34 @@ TEST_F(HTMLPreloadScannerTest, testPicture) {
     Test(test_case);
 }
 
+TEST_F(HTMLPreloadScannerTest, testPictureVoidChildren) {
+  PreloadScannerTestCase test_cases[] = {
+      // Void elements cannot contain the <img>, so it remains a direct
+      // <picture> child and uses the picked <source>.
+      {"http://example.test",
+       "<picture><source srcset='srcset_bla.gif'><br><img "
+       "src='bla.gif'></picture>",
+       "srcset_bla.gif", "http://example.test/", ResourceType::kImage, 0},
+      {"http://example.test",
+       "<picture><source srcset='srcset_bla.gif'><br><img></picture>",
+       "srcset_bla.gif", "http://example.test/", ResourceType::kImage, 0},
+      {"http://example.test",
+       "<picture><source srcset='srcset_bla.gif'><wbr><img "
+       "src='bla.gif'></picture>",
+       "srcset_bla.gif", "http://example.test/", ResourceType::kImage, 0},
+      // A non-void element may contain the <img>, so the scanner
+      // conservatively stops treating it as a picture child.
+      {"http://example.test",
+       "<picture><source srcset='srcset_bla.gif'><div><img "
+       "src='bla.gif'></div></picture>",
+       "bla.gif", "http://example.test/", ResourceType::kImage, 0},
+  };
+
+  for (const auto& test_case : test_cases) {
+    Test(test_case);
+  }
+}
+
 TEST_F(HTMLPreloadScannerTest, testContext) {
   ContextTestCase test_cases[] = {
       {"http://example.test",
