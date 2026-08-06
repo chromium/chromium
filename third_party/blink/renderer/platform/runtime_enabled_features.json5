@@ -7295,6 +7295,10 @@
       },
     },
     {
+      name: "WebSpeechTimestamps",
+      status: "experimental",
+    },
+    {
       name: "WebSpeechUnspokenPunctuation",
       status: {
         "Win": "stable",
