@@ -223,7 +223,6 @@ class alignas(internal::kPartitionCachelineSize)
 #endif  // PA_BUILDFLAG(USE_PARTITION_COOKIE)
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     bool brp_enabled_ = false;
-    size_t in_slot_metadata_size = 0;
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
     internal::pool_handle pool_handle = internal::pool_handle::kNullPoolHandle;
