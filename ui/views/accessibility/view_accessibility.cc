@@ -1801,33 +1801,34 @@ void ViewAccessibility::UpdateInvisibleState() {
 
 void ViewAccessibility::SetChildTreeID(ui::AXTreeID tree_id) {
   CHECK(view_);
-  if (tree_id != ui::AXTreeIDUnknown()) {
-    // The child tree hides the children. Notify before the attribute changes,
-    // while GetChildren still returns them.
-    NotifyChildrenRemoved();
+  CHECK_NE(tree_id, ui::AXTreeIDUnknown())
+      << "Call RemoveChildTreeID to remove the bridge to a child tree.";
 
-    data_.AddChildTreeId(tree_id);
+  // The child tree hides the children. Notify before the attribute changes,
+  // while GetChildren still returns them.
+  NotifyChildrenRemoved();
 
-    const views::Widget* widget = GetWidget();
-    if (widget && widget->GetNativeView() && display::Screen::Get()) {
-      // TODO(accessibility): There potentially could be an issue where the
-      // device scale factor changes from the time the tree ID is set to the
-      // time `GetAccessibleNodeData` is queried. If this ever pops up, a
-      // potential solution could be to make ViewAccessibility a DisplayObserver
-      // and add `this` as an observer when the tree ID is set. Then, when the
-      // display changes, we can update the scale factor in the cache, probably
-      // by implementing `OnDisplayMetricsChanged`.
-      const float scale_factor =
-          display::Screen::Get()
-              ->GetDisplayNearestView(widget->GetNativeView())
-              .device_scale_factor();
-      SetChildTreeScaleFactor(scale_factor);
-    }
+  data_.AddChildTreeId(tree_id);
 
-    OnStringAttributeChanged(ax::mojom::StringAttribute::kChildTreeId,
-                             tree_id.ToString());
-    NotifyDataChanged();
+  const views::Widget* widget = GetWidget();
+  if (widget && widget->GetNativeView() && display::Screen::Get()) {
+    // TODO(accessibility): There potentially could be an issue where the
+    // device scale factor changes from the time the tree ID is set to the
+    // time `GetAccessibleNodeData` is queried. If this ever pops up, a
+    // potential solution could be to make ViewAccessibility a DisplayObserver
+    // and add `this` as an observer when the tree ID is set. Then, when the
+    // display changes, we can update the scale factor in the cache, probably
+    // by implementing `OnDisplayMetricsChanged`.
+    const float scale_factor =
+        display::Screen::Get()
+            ->GetDisplayNearestView(widget->GetNativeView())
+            .device_scale_factor();
+    SetChildTreeScaleFactor(scale_factor);
   }
+
+  OnStringAttributeChanged(ax::mojom::StringAttribute::kChildTreeId,
+                           tree_id.ToString());
+  NotifyDataChanged();
 }
 
 ui::AXTreeID ViewAccessibility::GetChildTreeID() const {

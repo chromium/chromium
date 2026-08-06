@@ -450,6 +450,25 @@ TEST_F(WebViewUnitTest, AccessibilityDisconnectsFocusAndAXTree) {
   EXPECT_EQ(test_web_view, focus_manager->GetFocusedView());
 }
 
+// A web view bridges to the tree of its web contents through the child tree id
+// attribute. This test validates that losing the web contents removes that
+// bridge.
+TEST_F(WebViewUnitTest, RemovesTheBridgeWithoutWebContents) {
+  const std::unique_ptr<content::WebContents> web_contents =
+      CreateTestWebContents();
+  WebView* test_web_view = web_view();
+  test_web_view->SetWebContents(web_contents.get());
+
+  // Set the bridge directly, since we can't commit a navigation from here.
+  test_web_view->GetViewAccessibility().SetChildTreeID(
+      ui::AXTreeID::CreateNewAXTreeID());
+
+  test_web_view->SetWebContents(nullptr);
+
+  EXPECT_EQ(ui::AXTreeIDUnknown(),
+            test_web_view->GetViewAccessibility().GetChildTreeID());
+}
+
 // Verifies that there is no crash in WebView destructor
 // if WebView is already removed from Widget.
 TEST_F(WebViewUnitTest, DetachedWebViewDestructor) {

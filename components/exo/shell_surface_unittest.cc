@@ -51,6 +51,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/capture_client_observer.h"
@@ -3961,6 +3962,22 @@ TEST_F(ShellSurfaceTest, AccessibleProperties) {
                            .BuildShellSurface();
   EXPECT_EQ(shell_surface->GetViewAccessibility().GetCachedRole(),
             ax::mojom::Role::kClient);
+}
+
+// A shell surface bridges to the tree of an Android application through the
+// child tree id attribute. This test validates that an unknown ID removes that
+// bridge.
+TEST_F(ShellSurfaceTest, SetChildAxTreeIdRemovesTheBridge) {
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
+
+  shell_surface->SetChildAxTreeId(ui::AXTreeID::CreateNewAXTreeID());
+  EXPECT_NE(ui::AXTreeIDUnknown(),
+            shell_surface->GetViewAccessibility().GetChildTreeID());
+
+  shell_surface->SetChildAxTreeId(ui::AXTreeIDUnknown());
+  EXPECT_EQ(ui::AXTreeIDUnknown(),
+            shell_surface->GetViewAccessibility().GetChildTreeID());
 }
 
 TEST_F(ShellSurfaceTest, OverlayCanResize) {

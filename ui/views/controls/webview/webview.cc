@@ -648,8 +648,13 @@ void WebView::NotifyAccessibilityWebContentsChanged() {
   if (!lock_child_ax_tree_id_override_) {
     content::RenderFrameHost* rfh =
         web_contents() ? web_contents()->GetPrimaryMainFrame() : nullptr;
-    GetViewAccessibility().SetChildTreeID(rfh ? rfh->GetAXTreeID()
-                                              : ui::AXTreeIDUnknown());
+    const ui::AXTreeID child_tree_id =
+        rfh ? rfh->GetAXTreeID() : ui::AXTreeIDUnknown();
+    if (child_tree_id != ui::AXTreeIDUnknown()) {
+      GetViewAccessibility().SetChildTreeID(child_tree_id);
+    } else {
+      GetViewAccessibility().RemoveChildTreeID();
+    }
   }
   NotifyAccessibilityEventDeprecated(ax::mojom::Event::kChildrenChanged, false);
 }

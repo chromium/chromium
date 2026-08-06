@@ -843,7 +843,12 @@ void ShellSurfaceBase::UpdateTopInset() {
 }
 
 void ShellSurfaceBase::SetChildAxTreeId(ui::AXTreeID child_ax_tree_id) {
-  GetViewAccessibility().SetChildTreeID(child_ax_tree_id);
+  if (child_ax_tree_id != ui::AXTreeIDUnknown()) {
+    GetViewAccessibility().SetChildTreeID(child_ax_tree_id);
+  } else {
+    GetViewAccessibility().RemoveChildTreeID();
+  }
+
   this->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kChildrenChanged,
                                            false);
 }
