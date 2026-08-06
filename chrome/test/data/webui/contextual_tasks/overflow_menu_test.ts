@@ -285,7 +285,7 @@ suite('OverflowMenuTest', () => {
       assertTrue(!!helpButton);
 
       helpButton.click();
-      await proxy.handler.whenCalled('openOnboardingHelpUi');
+      await proxy.handler.whenCalled('openOverflowMenuHelpUi');
     });
 
     test('handles feedback click', async () => {

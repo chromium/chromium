@@ -226,6 +226,7 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
       'openFeedbackUi',
       'openMyActivityUi',
       'openOnboardingHelpUi',
+      'openOverflowMenuHelpUi',
       'openUrl',
       'reopenTabs',
       'setTaskId',
@@ -332,6 +333,10 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
 
   openOnboardingHelpUi() {
     this.methodCalled('openOnboardingHelpUi');
+  }
+
+  openOverflowMenuHelpUi() {
+    this.methodCalled('openOverflowMenuHelpUi');
   }
 
   openUrl(url: Url|string, disposition: number) {
