@@ -26,6 +26,10 @@ namespace features {
 void RegisterWhatsNewModules(whats_new::WhatsNewRegistry* registry) {
   // Register modules here.
 
+  // M142
+  registry->RegisterModule(WhatsNewModule("SideBySide", "agale@google.com",
+                                          BrowserCommand::kOpenSplitView));
+
   // M147
   registry->RegisterModule(WhatsNewModule(tabs::kVerticalTabsLaunch,
                                           "charlesmeng@google.com",
