@@ -144,7 +144,7 @@ public class WebViewResizingHelper {
                 res.getDimensionPixelSize(R.dimen.tab_bottom_sheet_resizing_fade_offset);
         mMinHeight = res.getDimensionPixelSize(R.dimen.tab_bottom_sheet_peek_height_total);
         mResizingContainer.addView(mResizingPlaceholder);
-        mResizingPlaceholder.setVisibility(View.GONE);
+        mResizingPlaceholder.setVisibility(View.INVISIBLE);
 
         ColorDrawable background = new ColorDrawable();
         background.setColor(backgroundColor);
@@ -199,7 +199,7 @@ public class WebViewResizingHelper {
     public void reset() {
         mResizingContainer.removeAllViews();
         mResizingContainer.addView(mResizingPlaceholder);
-        mResizingPlaceholder.setVisibility(View.GONE);
+        mResizingPlaceholder.setVisibility(View.INVISIBLE);
         mThinWebView = null;
         mIsViewportSizeFixed = false;
         mPauseInsetUpdates = false;
