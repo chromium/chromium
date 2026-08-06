@@ -2277,6 +2277,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SidePanel.Android.{SidePanelEntry}.OnWillAutoClose"
+    enum="Boolean" expires_after="2027-01-31">
+  <owner>mschillaci@google.com</owner>
+  <owner>linyuh@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Records when the side panel has been automatically closed because the window
+    was resized to be too small. Recorded when the user resizes the window.
+  </summary>
+  <token key="SidePanelEntry" variants="SidePanelEntry"/>
+</histogram>
+
+<histogram name="SidePanel.Android.{SidePanelEntry}.OnWillAutoRestore"
+    enum="Boolean" expires_after="2027-01-31">
+  <owner>mschillaci@google.com</owner>
+  <owner>linyuh@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Records when the side panel has been automatically restored because the
+    window was resized to be big enough again. Recorded when the user resizes
+    the window.
+  </summary>
+  <token key="SidePanelEntry" variants="SidePanelEntry"/>
+</histogram>
+
 <histogram name="SidePanel.ReadAnything.ShownDurationMax1Day" units="ms"
     expires_after="2026-12-27">
   <owner>alfredohiguera@google.com</owner>

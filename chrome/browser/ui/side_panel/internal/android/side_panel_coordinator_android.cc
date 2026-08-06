@@ -13,6 +13,8 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
@@ -44,6 +46,20 @@ const gfx::Rect kNoBounds(kInvalidCoordinate,
                           kInvalidCoordinate,
                           kInvalidCoordinate,
                           kInvalidCoordinate);
+constexpr char kAndroidSidePanelHistogramPrefix[] = "SidePanel.Android";
+
+void RecordAutoCloseOrRestoreMetric(SidePanelEntry* entry, bool is_auto_close) {
+  if (!entry) {
+    return;
+  }
+  std::string_view entry_name =
+      SidePanelEntryIdToHistogramName(entry->key().id());
+  std::string_view action =
+      is_auto_close ? ".OnWillAutoClose" : ".OnWillAutoRestore";
+  base::UmaHistogramBoolean(
+      base::StrCat({kAndroidSidePanelHistogramPrefix, ".", entry_name, action}),
+      true);
+}
 }  // namespace
 
 using jni_zero::AttachCurrentThread;
@@ -309,6 +325,9 @@ void SidePanelCoordinatorAndroid::OnWillAutoClose() {
   has_insufficient_space_ = true;
 
   if (IsSidePanelShowing() && state_ != SidePanelState::kClosing) {
+    RecordAutoCloseOrRestoreMetric(GetEntryForCurrentKeyNonNull(),
+                                   /*is_auto_close=*/true);
+
     deferred_entry_tracker_.AddActiveEntries();
 
     // TODO(crbug.com/527985639): Rename `kWindowResized` as
@@ -343,6 +362,8 @@ void SidePanelCoordinatorAndroid::OnWillAutoRestore() {
           active_tab->GetHandle());
 
   if (key_to_show) {
+    RecordAutoCloseOrRestoreMetric(GetEntryForUniqueKey(*key_to_show),
+                                   /*is_auto_close=*/false);
     Show(*key_to_show, SidePanelOpenTrigger::kWindowResized,
          /*suppress_animations=*/true);
   }
