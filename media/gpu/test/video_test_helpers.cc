@@ -712,10 +712,13 @@ scoped_refptr<VideoFrame> AlignedDataHelper::CreateVideoFrameFromVideoFrameData(
       return nullptr;
     }
 
+    const auto color_space = si_format->is_multi_plane()
+                                 ? gfx::ColorSpace::CreateREC709()
+                                 : gfx::ColorSpace::CreateSRGB();
     const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
                           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
     auto shared_image = test_sii_->CreateSharedImage(
-        {*si_format, layout_->coded_size(), gfx::ColorSpace(),
+        {*si_format, layout_->coded_size(), color_space,
          gpu::SharedImageUsageSet(si_usage), "AlignedDataHelper"},
         gpu::kNullSurfaceHandle,
         gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
@@ -724,9 +727,13 @@ scoped_refptr<VideoFrame> AlignedDataHelper::CreateVideoFrameFromVideoFrameData(
       LOG(ERROR) << "Failed to create a mappable shared image.";
       return nullptr;
     }
-    return media::VideoFrame::WrapMappableSharedImage(
+    auto video_frame = media::VideoFrame::WrapMappableSharedImage(
         std::move(shared_image), test_sii_->GenVerifiedSyncToken(),
         base::NullCallback(), visible_rect_, natural_size_, frame_timestamp);
+    if (video_frame) {
+      video_frame->set_color_space(color_space);
+    }
+    return video_frame;
   } else {
     const auto& shmem_region = video_frame_data.shmem_region;
     auto dup_region = shmem_region.Duplicate();
