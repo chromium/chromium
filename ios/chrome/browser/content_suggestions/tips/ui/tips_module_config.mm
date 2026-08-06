@@ -377,8 +377,7 @@ std::optional<SymbolConfig> GetBadgeSymbolConfigForTip(TipIdentifier tip,
 #pragma mark - Private
 
 - (UIImage*)productImage {
-  return [UIImage imageWithData:self.productImageData
-                          scale:[UIScreen mainScreen].scale];
+  return [UIImage imageWithData:self.productImageData];
 }
 
 @end
