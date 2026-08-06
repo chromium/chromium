@@ -33,6 +33,7 @@
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type_util.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/personal_context/core/personal_context_debug_features.h"
 #include "components/personal_context/core/personal_context_service.h"
@@ -418,23 +419,21 @@ std::vector<MemorySearchResult> RankResults(
 // their corresponding primary attribute is present in the set.
 std::vector<MemoryDataType> RationalizeFetchPlanDataTypes(
     const std::vector<MemoryDataType>& data_types) {
-  base::flat_set<MemoryDataType> present_types(data_types);
+  DenseSet<MemoryDataType> present_types(data_types);
+
   std::vector<MemoryDataType> rationalized;
-  base::flat_set<MemoryDataType> seen;
+  DenseSet<MemoryDataType> seen;
   for (MemoryDataType type : data_types) {
     if (type == MemoryDataType::kUnknown) {
       continue;
     }
 
     if (std::optional<AttributeType> attribute_type = ToAttributeType(type)) {
-      AttributeType primary_type =
+      const AttributeType primary_type =
           GetPrimaryAttributeType(attribute_type->entity_type());
-      if (attribute_type != primary_type) {
-        MemoryDataType primary_memory_type =
-            AttributeTypeToMemoryDataType(primary_type);
-        if (present_types.contains(primary_memory_type)) {
-          continue;
-        }
+      if (attribute_type != primary_type &&
+          present_types.contains(AttributeTypeToMemoryDataType(primary_type))) {
+        continue;
       }
     }
 
