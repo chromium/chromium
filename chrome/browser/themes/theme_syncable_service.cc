@@ -112,8 +112,7 @@ const char ThemeSyncableService::kSyncEntityTitle[] = "Current Theme";
 void MigrateSyncingThemePrefsToNonSyncingIfNeeded(PrefService* prefs) {
   const bool pref_registered =
       prefs->FindPreference(prefs::kSyncingThemePrefsMigratedToNonSyncing);
-  base::UmaHistogramBoolean("Theme.ThemePrefMigration.PrefRegistered",
-                            pref_registered);
+
   // TODO(crbug.com/476288050): Investigate why the pref can not be registered
   // at this point.
   if (!pref_registered) {
