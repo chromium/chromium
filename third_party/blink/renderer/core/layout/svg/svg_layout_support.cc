@@ -149,7 +149,7 @@ bool SVGLayoutSupport::MapToVisualRectInAncestorSpace(
 
   gfx::RectF adjusted_rect;
   if (filter_skipped &&
-      !(visual_rect_flags & VisualRectFlags::kIgnoreFilters)) {
+      !visual_rect_flags.Has(VisualRectFlag::kIgnoreFilters)) {
     adjusted_rect = MapToSVGRootIncludingFilter(object, local_visual_rect);
   } else {
     adjusted_rect = root_border_box_transform.MapRect(local_visual_rect);
@@ -167,7 +167,7 @@ bool SVGLayoutSupport::MapToVisualRectInAncestorSpace(
   // Apply initial viewport clip.
   if (svg_root.ClipsToContentBox()) {
     PhysicalRect clip_rect(svg_root.OverflowClipRect());
-    if (visual_rect_flags & kEdgeInclusive) {
+    if (visual_rect_flags.Has(VisualRectFlag::kEdgeInclusive)) {
       if (!result_rect.InclusiveIntersect(clip_rect))
         return false;
     } else {

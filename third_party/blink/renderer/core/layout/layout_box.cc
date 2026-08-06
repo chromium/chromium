@@ -1886,7 +1886,7 @@ bool LayoutBox::ApplyBoxClips(
     TransformState::TransformAccumulation accumulation,
     VisualRectFlags visual_rect_flags) const {
   NOT_DESTROYED();
-  if (visual_rect_flags & VisualRectFlags::kSkipAncestorAndViewportClips) {
+  if (visual_rect_flags.Has(VisualRectFlag::kSkipAncestorAndViewportClips)) {
     return true;
   }
   transform_state.Flatten();
@@ -1898,7 +1898,7 @@ bool LayoutBox::ApplyBoxClips(
   // receive CSS clip but for whom the current object is not in the containing
   // block chain.
   PhysicalRect clip_rect = ClippingRect();
-  if (visual_rect_flags & kEdgeInclusive) {
+  if (visual_rect_flags.Has(VisualRectFlag::kEdgeInclusive)) {
     does_intersect = rect.InclusiveIntersect(clip_rect);
   } else {
     rect.Intersect(clip_rect);
@@ -2967,7 +2967,7 @@ bool LayoutBox::MapToVisualRectInAncestorSpaceInternal(
   if (ancestor == this)
     return true;
 
-  if (!(visual_rect_flags & kIgnoreFilters)) {
+  if (!visual_rect_flags.Has(VisualRectFlag::kIgnoreFilters)) {
     InflateVisualRectForFilter(transform_state);
   }
 
@@ -2984,7 +2984,8 @@ bool LayoutBox::MapToVisualRectInAncestorSpaceInternal(
     container_offset += AnchorPositionScrollTranslationOffset();
   }
 
-  if (skip_info.FilterSkipped() && !(visual_rect_flags & kIgnoreFilters)) {
+  if (skip_info.FilterSkipped() &&
+      !visual_rect_flags.Has(VisualRectFlag::kIgnoreFilters)) {
     InflateVisualRectForFilterUnderContainer(transform_state, *container,
                                              ancestor);
   }

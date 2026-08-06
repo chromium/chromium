@@ -2556,15 +2556,13 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // return value will be true only if the clipped rect has non-zero area.
   // See the documentation for PhysicalRect::InclusiveIntersect for more
   // information.
-  bool MapToVisualRectInAncestorSpace(
-      const LayoutBoxModelObject* ancestor,
-      PhysicalRect&,
-      VisualRectFlags = kDefaultVisualRectFlags) const;
+  bool MapToVisualRectInAncestorSpace(const LayoutBoxModelObject* ancestor,
+                                      PhysicalRect&,
+                                      VisualRectFlags = {}) const;
 
-  bool MapToVisualRectInAncestorSpace(
-      const LayoutBoxModelObject* ancestor,
-      gfx::RectF&,
-      VisualRectFlags = kDefaultVisualRectFlags) const;
+  bool MapToVisualRectInAncestorSpace(const LayoutBoxModelObject* ancestor,
+                                      gfx::RectF&,
+                                      VisualRectFlags = {}) const;
 
   // Do not call this method directly. Call mapToVisualRectInAncestorSpace
   // instead.
@@ -2578,10 +2576,9 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // ancestor was skipped, returns nullptr. If PropertyTreeState* is non-null,
   // it will be populated with paint property nodes suitable for mapping upward
   // from the coordinate system of the property container.
-  const LayoutObject* GetPropertyContainer(
-      AncestorSkipInfo*,
-      PropertyTreeStateOrAlias* = nullptr,
-      VisualRectFlags = kDefaultVisualRectFlags) const;
+  const LayoutObject* GetPropertyContainer(AncestorSkipInfo*,
+                                           PropertyTreeStateOrAlias* = nullptr,
+                                           VisualRectFlags = {}) const;
 
   // Do a rect-based hit test with this object as the stop node.
   HitTestResult HitTestForOcclusion(const PhysicalRect&) const;

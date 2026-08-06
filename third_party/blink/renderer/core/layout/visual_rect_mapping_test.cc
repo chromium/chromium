@@ -69,8 +69,8 @@ class VisualRectMappingTest : public PaintTestConfigurations,
     const FragmentData& fragment_data = object.FirstFragment();
     if (fragment_data.HasLocalBorderBoxProperties()) {
       auto local_rect_copy = local_rect;
-      object.MapToVisualRectInAncestorSpace(&ancestor, local_rect_copy,
-                                            kUseGeometryMapper);
+      object.MapToVisualRectInAncestorSpace(
+          &ancestor, local_rect_copy, {VisualRectFlag::kUseGeometryMapper});
       geometry_mapper_rect.SetRect(gfx::RectF(local_rect_copy));
     }
 
@@ -116,7 +116,7 @@ class VisualRectMappingTest : public PaintTestConfigurations,
     EXPECT_EQ(expected_retval,
               object->MapToVisualRectInAncestorSpace(
                   ancestor, result,
-                  static_cast<VisualRectFlags>(flags | kUseGeometryMapper)));
+                  base::Union(flags, {VisualRectFlag::kUseGeometryMapper})));
     EXPECT_EQ(result, expected);
   }
 };
@@ -156,8 +156,8 @@ TEST_P(VisualRectMappingTest, LayoutText) {
   EXPECT_EQ(rect, PhysicalRect(0, 10, 20, 40));
 
   rect = PhysicalRect(0, 60, 80, 0);
-  EXPECT_TRUE(
-      text->MapToVisualRectInAncestorSpace(container, rect, kEdgeInclusive));
+  EXPECT_TRUE(text->MapToVisualRectInAncestorSpace(
+      container, rect, {VisualRectFlag::kEdgeInclusive}));
   rect.Move(-PhysicalOffset(container->ScrolledContentOffset()));
   EXPECT_EQ(rect, PhysicalRect(0, 10, 80, 0));
 }
@@ -193,8 +193,8 @@ TEST_P(VisualRectMappingTest, LayoutTextContainerFlippedWritingMode) {
   EXPECT_EQ(rect, PhysicalRect(0, 10, 20, 40));
 
   rect = PhysicalRect(0, 60, 80, 0);
-  EXPECT_TRUE(
-      text->MapToVisualRectInAncestorSpace(container, rect, kEdgeInclusive));
+  EXPECT_TRUE(text->MapToVisualRectInAncestorSpace(
+      container, rect, {VisualRectFlag::kEdgeInclusive}));
   rect.Move(-PhysicalOffset(container->ScrolledContentOffset()));
   EXPECT_EQ(rect, PhysicalRect(0, 10, 80, 0));
 }
@@ -231,8 +231,8 @@ TEST_P(VisualRectMappingTest, LayoutInline) {
   CheckPaintInvalidationVisualRect(*leaf, GetLayoutView(), PhysicalRect());
 
   rect = PhysicalRect(0, 60, 80, 0);
-  EXPECT_TRUE(
-      leaf->MapToVisualRectInAncestorSpace(container, rect, kEdgeInclusive));
+  EXPECT_TRUE(leaf->MapToVisualRectInAncestorSpace(
+      container, rect, {VisualRectFlag::kEdgeInclusive}));
   rect.Move(-PhysicalOffset(container->ScrolledContentOffset()));
   EXPECT_EQ(rect, PhysicalRect(0, 10, 80, 0));
 }
@@ -272,8 +272,8 @@ TEST_P(VisualRectMappingTest, LayoutInlineContainerFlippedWritingMode) {
   CheckPaintInvalidationVisualRect(*leaf, GetLayoutView(), PhysicalRect());
 
   rect = PhysicalRect(0, 60, 80, 0);
-  EXPECT_TRUE(
-      leaf->MapToVisualRectInAncestorSpace(container, rect, kEdgeInclusive));
+  EXPECT_TRUE(leaf->MapToVisualRectInAncestorSpace(
+      container, rect, {VisualRectFlag::kEdgeInclusive}));
   rect.Move(-PhysicalOffset(container->ScrolledContentOffset()));
   EXPECT_EQ(rect, PhysicalRect(0, 10, 80, 0));
 }
@@ -320,7 +320,8 @@ TEST_P(VisualRectMappingTest, SkipAncestorAndViewportClipFlag) {
 
   PhysicalRect unclipped = local_rect;
   EXPECT_TRUE(target->MapToVisualRectInAncestorSpace(
-      &GetLayoutView(), unclipped, kSkipAncestorAndViewportClips));
+      &GetLayoutView(), unclipped,
+      {VisualRectFlag::kSkipAncestorAndViewportClips}));
   // Skipping ancestor clips should report the target's full rect relative to
   // the viewport rather than the 20x20 clipped region.
   EXPECT_EQ(unclipped, PhysicalRect(50, 55, 80, 80));
@@ -329,8 +330,8 @@ TEST_P(VisualRectMappingTest, SkipAncestorAndViewportClipFlag) {
   PhysicalRect unclipped_fast = local_rect;
   EXPECT_TRUE(target->MapToVisualRectInAncestorSpace(
       &GetLayoutView(), unclipped_fast,
-      static_cast<VisualRectFlags>(kSkipAncestorAndViewportClips |
-                                   kUseGeometryMapper)));
+      {VisualRectFlag::kSkipAncestorAndViewportClips,
+       VisualRectFlag::kUseGeometryMapper}));
   EXPECT_EQ(unclipped_fast, PhysicalRect(50, 55, 80, 80));
 }
 
@@ -400,7 +401,7 @@ TEST_P(VisualRectMappingTest, SkipAncestorAndViewportClipFlagViewportSpace) {
 
   PhysicalRect unclipped = local_rect;
   EXPECT_TRUE(target->MapToVisualRectInAncestorSpace(
-      nullptr, unclipped, kSkipAncestorAndViewportClips));
+      nullptr, unclipped, {VisualRectFlag::kSkipAncestorAndViewportClips}));
   // The block is positioned at (-30, -35) relative to the viewport once the
   // ancestor offsets are applied. Skipping clips should expose the entire rect
   // even though none of it is currently visible.
@@ -410,8 +411,8 @@ TEST_P(VisualRectMappingTest, SkipAncestorAndViewportClipFlagViewportSpace) {
   PhysicalRect unclipped_fast = local_rect;
   EXPECT_TRUE(target->MapToVisualRectInAncestorSpace(
       nullptr, unclipped_fast,
-      static_cast<VisualRectFlags>(kSkipAncestorAndViewportClips |
-                                   kUseGeometryMapper)));
+      {VisualRectFlag::kSkipAncestorAndViewportClips,
+       VisualRectFlag::kUseGeometryMapper}));
   EXPECT_EQ(unclipped_fast, PhysicalRect(-30, -35, 40, 40));
 }
 
@@ -473,15 +474,15 @@ TEST_P(VisualRectMappingTest, SkipAncestorAndViewportClipsInSubframe) {
 
   PhysicalRect unclipped = local_rect;
   EXPECT_TRUE(target->MapToVisualRectInAncestorSpace(
-      nullptr, unclipped, kSkipAncestorAndViewportClips));
+      nullptr, unclipped, {VisualRectFlag::kSkipAncestorAndViewportClips}));
   EXPECT_EQ(unclipped, PhysicalRect(-20, -30, 80, 80));
 
   // Check again, using geometry mapper (fast path).
   PhysicalRect unclipped_fast = local_rect;
   EXPECT_TRUE(target->MapToVisualRectInAncestorSpace(
       nullptr, unclipped_fast,
-      static_cast<VisualRectFlags>(kSkipAncestorAndViewportClips |
-                                   kUseGeometryMapper)));
+      {VisualRectFlag::kSkipAncestorAndViewportClips,
+       VisualRectFlag::kUseGeometryMapper}));
   EXPECT_EQ(unclipped_fast, PhysicalRect(-20, -30, 80, 80));
 }
 
@@ -520,16 +521,16 @@ TEST_P(VisualRectMappingTest, RegressionTest_SkipAncestorClipExpansion) {
 
   // Slow path.
   PhysicalRect slow_result = local_rect;
-  child->MapToVisualRectInAncestorSpace(To<LayoutBoxModelObject>(grandparent),
-                                        slow_result,
-                                        kSkipAncestorAndViewportClips);
+  child->MapToVisualRectInAncestorSpace(
+      To<LayoutBoxModelObject>(grandparent), slow_result,
+      {VisualRectFlag::kSkipAncestorAndViewportClips});
 
   // Fast path (GeometryMapper).
   PhysicalRect fast_result = local_rect;
   child->MapToVisualRectInAncestorSpace(
       To<LayoutBoxModelObject>(grandparent), fast_result,
-      static_cast<VisualRectFlags>(kSkipAncestorAndViewportClips |
-                                   kUseGeometryMapper));
+      {VisualRectFlag::kSkipAncestorAndViewportClips,
+       VisualRectFlag::kUseGeometryMapper});
 
   EXPECT_NEAR(slow_result.Width().ToFloat(), 20.0f, 0.1f);
   EXPECT_NEAR(slow_result.Height().ToFloat(), 20.0f, 0.1f);
@@ -580,8 +581,8 @@ TEST_P(VisualRectMappingTest, LayoutView) {
                                    PhysicalRect());
 
   rect = PhysicalRect(4, 60, 0, 80);
-  EXPECT_TRUE(frame_text->MapToVisualRectInAncestorSpace(frame_container, rect,
-                                                         kEdgeInclusive));
+  EXPECT_TRUE(frame_text->MapToVisualRectInAncestorSpace(
+      frame_container, rect, {VisualRectFlag::kEdgeInclusive}));
   EXPECT_EQ(rect, PhysicalRect(4, 13, 0, 37));
 }
 
@@ -1414,7 +1415,7 @@ TEST_P(VisualRectMappingTest, FixedContentsInIframe) {
 
   CheckMapToVisualRectInAncestorSpace(PhysicalRect(0, 0, 400, 300),
                                       PhysicalRect(0, 0, 400, 300), fixed,
-                                      root_view, kDefaultVisualRectFlags, true);
+                                      root_view, {}, true);
 
   ChildDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, 50), mojom::blink::ScrollType::kProgrammatic,
@@ -1425,7 +1426,7 @@ TEST_P(VisualRectMappingTest, FixedContentsInIframe) {
   // have changed.
   CheckMapToVisualRectInAncestorSpace(PhysicalRect(0, 0, 400, 300),
                                       PhysicalRect(0, 0, 400, 300), fixed,
-                                      root_view, kDefaultVisualRectFlags, true);
+                                      root_view, {}, true);
 }
 
 TEST_P(VisualRectMappingTest, FixedContentsWithScrollOffset) {
@@ -1447,7 +1448,7 @@ TEST_P(VisualRectMappingTest, FixedContentsWithScrollOffset) {
 
   CheckMapToVisualRectInAncestorSpace(PhysicalRect(0, 0, 400, 300),
                                       PhysicalRect(0, -10, 400, 300), fixed,
-                                      ancestor, kDefaultVisualRectFlags, true);
+                                      ancestor, {}, true);
 
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, 50), mojom::blink::ScrollType::kProgrammatic,
@@ -1458,7 +1459,7 @@ TEST_P(VisualRectMappingTest, FixedContentsWithScrollOffset) {
   // visual rect.
   CheckMapToVisualRectInAncestorSpace(PhysicalRect(0, 0, 400, 300),
                                       PhysicalRect(0, 40, 400, 300), fixed,
-                                      ancestor, kDefaultVisualRectFlags, true);
+                                      ancestor, {}, true);
 }
 
 TEST_P(VisualRectMappingTest, FixedContentsUnderViewWithScrollOffset) {
@@ -1473,9 +1474,9 @@ TEST_P(VisualRectMappingTest, FixedContentsUnderViewWithScrollOffset) {
 
   auto* fixed = GetLayoutObjectByElementId("fixed");
 
-  CheckMapToVisualRectInAncestorSpace(
-      PhysicalRect(0, 0, 400, 300), PhysicalRect(0, 0, 400, 300), fixed,
-      fixed->View(), kDefaultVisualRectFlags, true);
+  CheckMapToVisualRectInAncestorSpace(PhysicalRect(0, 0, 400, 300),
+                                      PhysicalRect(0, 0, 400, 300), fixed,
+                                      fixed->View(), {}, true);
 
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, 50), mojom::blink::ScrollType::kProgrammatic,
@@ -1484,9 +1485,9 @@ TEST_P(VisualRectMappingTest, FixedContentsUnderViewWithScrollOffset) {
 
   // Results of mapping to ancestor are in absolute coordinates of the
   // ancestor. Therefore a fixed-position element is (reverse) offset by scroll.
-  CheckMapToVisualRectInAncestorSpace(
-      PhysicalRect(0, 0, 400, 300), PhysicalRect(0, 50, 400, 300), fixed,
-      fixed->View(), kDefaultVisualRectFlags, true);
+  CheckMapToVisualRectInAncestorSpace(PhysicalRect(0, 0, 400, 300),
+                                      PhysicalRect(0, 50, 400, 300), fixed,
+                                      fixed->View(), {}, true);
 }
 
 TEST_P(VisualRectMappingTest, InclusiveIntersect) {
@@ -1503,21 +1504,20 @@ TEST_P(VisualRectMappingTest, InclusiveIntersect) {
   auto* ancestor = GetLayoutBoxByElementId("ancestor");
   auto* child = GetLayoutBoxByElementId("child");
 
-  CheckMapToVisualRectInAncestorSpace(PhysicalRect(0, 0, 10, 10),
-                                      PhysicalRect(50, 0, 0, 10), child,
-                                      ancestor, kEdgeInclusive, true);
+  CheckMapToVisualRectInAncestorSpace(
+      PhysicalRect(0, 0, 10, 10), PhysicalRect(50, 0, 0, 10), child, ancestor,
+      {VisualRectFlag::kEdgeInclusive}, true);
 
   CheckMapToVisualRectInAncestorSpace(PhysicalRect(1, 1, 10, 10),
                                       PhysicalRect(), child, ancestor,
-                                      kEdgeInclusive, false);
+                                      {VisualRectFlag::kEdgeInclusive}, false);
 
   CheckMapToVisualRectInAncestorSpace(PhysicalRect(1, 1, 10, 10),
                                       PhysicalRect(1, 1, 10, 10), child, child,
-                                      kEdgeInclusive, true);
+                                      {VisualRectFlag::kEdgeInclusive}, true);
 
-  CheckMapToVisualRectInAncestorSpace(PhysicalRect(0, 0, 10, 10),
-                                      PhysicalRect(), child, ancestor,
-                                      kDefaultVisualRectFlags, false);
+  CheckMapToVisualRectInAncestorSpace(
+      PhysicalRect(0, 0, 10, 10), PhysicalRect(), child, ancestor, {}, false);
 }
 
 TEST_P(VisualRectMappingTest, Perspective) {
@@ -1579,9 +1579,9 @@ TEST_P(VisualRectMappingTest, MapToVisualRectFastPathMapsToViewport) {
   auto* target = To<LayoutBlock>(GetLayoutObjectByElementId("target"));
   ASSERT_TRUE(target);
   gfx::RectF rect(0, 0, 60, 40);
-  constexpr auto kMapperFlags =
-      static_cast<VisualRectFlags>(kIgnoreFilters | kUseGeometryMapper |
-                                   kVisualRectApplyRemoteViewportTransform);
+  constexpr VisualRectFlags kMapperFlags = {
+      VisualRectFlag::kIgnoreFilters, VisualRectFlag::kUseGeometryMapper,
+      VisualRectFlag::kApplyRemoteViewportTransform};
 
   bool intersects = false;
   ASSERT_TRUE(target->MapToVisualRectInAncestorSpaceInternalFastPath(
@@ -1670,17 +1670,20 @@ TEST_P(VisualRectMappingTest, IgnoreFilters) {
   PhysicalRect expected_without_filter = input;
   PhysicalRect expected_with_filter(-3, -3, 56, 56);
   CheckMapToVisualRectInAncestorSpace(input, expected_without_filter, child,
-                                      filter, kDefaultVisualRectFlags, true);
+                                      filter, {}, true);
   CheckMapToVisualRectInAncestorSpace(input, expected_without_filter, child,
-                                      filter, kIgnoreFilters, true);
+                                      filter, {VisualRectFlag::kIgnoreFilters},
+                                      true);
   CheckMapToVisualRectInAncestorSpace(input, expected_with_filter, child,
-                                      parent, kDefaultVisualRectFlags, true);
+                                      parent, {}, true);
   CheckMapToVisualRectInAncestorSpace(input, expected_without_filter, child,
-                                      parent, kIgnoreFilters, true);
+                                      parent, {VisualRectFlag::kIgnoreFilters},
+                                      true);
   CheckMapToVisualRectInAncestorSpace(input, expected_with_filter, filter,
-                                      parent, kDefaultVisualRectFlags, true);
+                                      parent, {}, true);
   CheckMapToVisualRectInAncestorSpace(input, expected_without_filter, filter,
-                                      parent, kIgnoreFilters, true);
+                                      parent, {VisualRectFlag::kIgnoreFilters},
+                                      true);
 }
 
 TEST_P(VisualRectMappingTest, NestedTransformsFastVsSlowPath) {
@@ -1713,9 +1716,8 @@ TEST_P(VisualRectMappingTest, NestedTransformsFastVsSlowPath) {
   auto* child = GetLayoutObjectByElementId("child");
   ASSERT_TRUE(child);
 
-  constexpr VisualRectFlags kGeomFlags = static_cast<VisualRectFlags>(
-      kUseGeometryMapper | kDefaultVisualRectFlags);
-  constexpr VisualRectFlags kNonMapperFlags = kDefaultVisualRectFlags;
+  constexpr VisualRectFlags kGeomFlags = {VisualRectFlag::kUseGeometryMapper};
+  constexpr VisualRectFlags kNonMapperFlags;
   PhysicalRect local_rect(0, 0, 100, 100);
 
   // GeometryMapper path (expected reference).
@@ -1755,9 +1757,8 @@ TEST_P(VisualRectMappingTest, SVGTransformsFastVsSlowPath) {
   auto* green_box = GetLayoutObjectByElementId("green_box");
   ASSERT_TRUE(green_box);
 
-  constexpr VisualRectFlags kGeomFlags = static_cast<VisualRectFlags>(
-      kUseGeometryMapper | kDefaultVisualRectFlags);
-  constexpr VisualRectFlags kNonMapperFlags = kDefaultVisualRectFlags;
+  constexpr VisualRectFlags kGeomFlags = {VisualRectFlag::kUseGeometryMapper};
+  constexpr VisualRectFlags kNonMapperFlags;
   PhysicalRect local_rect(0, 0, 20, 20);
 
   // GeometryMapper path (expected reference).
@@ -1823,11 +1824,11 @@ TEST_P(VisualRectMappingTest, NestedTransformsGeometryMapperFlag) {
   PhysicalRect local_rect(0, 0, 100, 100);
   PhysicalRect mapper_rect = local_rect;
   ASSERT_TRUE(grandchild->MapToVisualRectInAncestorSpace(
-      To<LayoutBoxModelObject>(grandparent), mapper_rect, kUseGeometryMapper));
+      To<LayoutBoxModelObject>(grandparent), mapper_rect,
+      {VisualRectFlag::kUseGeometryMapper}));
   PhysicalRect slow_rect = local_rect;
   ASSERT_TRUE(grandchild->MapToVisualRectInAncestorSpace(
-      To<LayoutBoxModelObject>(grandparent), slow_rect,
-      kDefaultVisualRectFlags));
+      To<LayoutBoxModelObject>(grandparent), slow_rect, {}));
   EXPECT_NEAR(mapper_rect.X().ToFloat(), slow_rect.X().ToFloat(), 0.1f);
   EXPECT_NEAR(mapper_rect.Y().ToFloat(), slow_rect.Y().ToFloat(), 0.1f);
   EXPECT_NEAR(mapper_rect.Width().ToFloat(), slow_rect.Width().ToFloat(), 0.1f);
@@ -1866,9 +1867,8 @@ TEST_P(VisualRectMappingTest, NestedTransformsComposeAngles) {
   auto* child = GetLayoutObjectByElementId("child");
   ASSERT_TRUE(child);
 
-  constexpr VisualRectFlags kGeomFlags = static_cast<VisualRectFlags>(
-      kUseGeometryMapper | kDefaultVisualRectFlags);
-  constexpr VisualRectFlags kNonMapperFlags = kDefaultVisualRectFlags;
+  constexpr VisualRectFlags kGeomFlags = {VisualRectFlag::kUseGeometryMapper};
+  constexpr VisualRectFlags kNonMapperFlags;
   PhysicalRect local_rect(0, 0, 100, 50);
 
   PhysicalRect mapper_rect = local_rect;
@@ -1918,9 +1918,8 @@ TEST_P(VisualRectMappingTest, NestedTransformsFractionalPositionSnapsOnce) {
   auto* child = GetLayoutObjectByElementId("child");
   ASSERT_TRUE(child);
 
-  constexpr VisualRectFlags kGeomFlags = static_cast<VisualRectFlags>(
-      kUseGeometryMapper | kDefaultVisualRectFlags);
-  constexpr VisualRectFlags kNonMapperFlags = kDefaultVisualRectFlags;
+  constexpr VisualRectFlags kGeomFlags = {VisualRectFlag::kUseGeometryMapper};
+  constexpr VisualRectFlags kNonMapperFlags;
   PhysicalRect local_rect(0, 0, 40, 30);
 
   PhysicalRect mapper_rect = local_rect;
@@ -1988,13 +1987,15 @@ TEST_P(VisualRectMappingTest, FractionalSnapping) {
   EXPECT_EQ(PhysicalRect(75, 0, 100, 100), b_visual_rect_slow);
 
   PhysicalRect a_visual_rect_mapper = a_local_rect;
-  EXPECT_TRUE(a->MapToVisualRectInAncestorSpace(
-      &GetLayoutView(), a_visual_rect_mapper, kUseGeometryMapper));
+  EXPECT_TRUE(
+      a->MapToVisualRectInAncestorSpace(&GetLayoutView(), a_visual_rect_mapper,
+                                        {VisualRectFlag::kUseGeometryMapper}));
   EXPECT_EQ(PhysicalRect(25, 0, 100, 100), a_visual_rect_mapper);
 
   PhysicalRect b_visual_rect_mapper = b_local_rect;
-  EXPECT_TRUE(b->MapToVisualRectInAncestorSpace(
-      &GetLayoutView(), b_visual_rect_mapper, kUseGeometryMapper));
+  EXPECT_TRUE(
+      b->MapToVisualRectInAncestorSpace(&GetLayoutView(), b_visual_rect_mapper,
+                                        {VisualRectFlag::kUseGeometryMapper}));
   EXPECT_EQ(PhysicalRect(75, 0, 100, 100), b_visual_rect_mapper);
 }
 
@@ -2033,15 +2034,16 @@ TEST_P(VisualRectMappingTest,
   auto* target = GetLayoutObjectByElementId("target");
   ASSERT_TRUE(target);
 
-  constexpr VisualRectFlags kBaseFlags = static_cast<VisualRectFlags>(
-      kIgnoreFilters | kVisualRectApplyRemoteViewportTransform);
+  constexpr VisualRectFlags kBaseFlags = {
+      VisualRectFlag::kIgnoreFilters,
+      VisualRectFlag::kApplyRemoteViewportTransform};
 
   gfx::RectF slow_path_rect(0, 0, 50, 50);
   ASSERT_TRUE(target->MapToVisualRectInAncestorSpace(nullptr, slow_path_rect,
                                                      kBaseFlags));
 
   constexpr VisualRectFlags kGeomFlags =
-      static_cast<VisualRectFlags>(kBaseFlags | kUseGeometryMapper);
+      base::Union(kBaseFlags, {VisualRectFlag::kUseGeometryMapper});
   gfx::RectF geometry_mapper_rect(0, 0, 50, 50);
   ASSERT_TRUE(target->MapToVisualRectInAncestorSpace(
       nullptr, geometry_mapper_rect, kGeomFlags));
@@ -2109,15 +2111,16 @@ TEST_P(VisualRectMappingTest,
   auto* target = GetLayoutObjectByElementId("target");
   ASSERT_TRUE(target);
 
-  constexpr VisualRectFlags kBaseFlags = static_cast<VisualRectFlags>(
-      kIgnoreFilters | kVisualRectApplyRemoteViewportTransform);
+  constexpr VisualRectFlags kBaseFlags = {
+      VisualRectFlag::kIgnoreFilters,
+      VisualRectFlag::kApplyRemoteViewportTransform};
 
   gfx::RectF slow_path_rect(0, 0, 50, 50);
   ASSERT_TRUE(target->MapToVisualRectInAncestorSpace(nullptr, slow_path_rect,
                                                      kBaseFlags));
 
   constexpr VisualRectFlags kGeomFlags =
-      static_cast<VisualRectFlags>(kBaseFlags | kUseGeometryMapper);
+      base::Union(kBaseFlags, {VisualRectFlag::kUseGeometryMapper});
   gfx::RectF geometry_mapper_rect(0, 0, 50, 50);
   ASSERT_TRUE(target->MapToVisualRectInAncestorSpace(
       nullptr, geometry_mapper_rect, kGeomFlags));

@@ -243,9 +243,10 @@ String ConvertNodeTextToUtf8(const AtomicString& node_text) {
 // - Viewport mapping: positions relative to the window/viewport origin.
 constexpr MapCoordinatesFlags kMapToViewportFlags =
     kTraverseDocumentBoundaries | kApplyRemoteViewportTransform;
-constexpr VisualRectFlags kVisualRectFlags = static_cast<VisualRectFlags>(
-    kUseGeometryMapper | kVisualRectApplyRemoteViewportTransform |
-    kIgnoreFilters);
+constexpr VisualRectFlags kVisualRectFlags = {
+    VisualRectFlag::kUseGeometryMapper,
+    VisualRectFlag::kApplyRemoteViewportTransform,
+    VisualRectFlag::kIgnoreFilters};
 
 constexpr float kHeading1FontSizeMultiplier = 2;
 constexpr float kHeading3FontSizeMultiplier = 1.17;
@@ -445,8 +446,8 @@ gfx::Rect LocalToOuterBoundingBox(const LayoutObject& object,
   gfx::RectF unclipped_box = local_bounding_box;
   const bool mapped_outer = object.MapToVisualRectInAncestorSpace(
       nullptr, unclipped_box,
-      static_cast<VisualRectFlags>(kVisualRectFlags |
-                                   kSkipAncestorAndViewportClips));
+      base::Union(kVisualRectFlags,
+                  {VisualRectFlag::kSkipAncestorAndViewportClips}));
   if (!mapped_outer || unclipped_box.IsEmpty()) {
     return gfx::Rect();
   }
@@ -521,8 +522,9 @@ bool IsReachableInOverflowContainer(const LayoutObject& object,
               LayoutObject::IncludeDescendants(false)));
 
   [[maybe_unused]] const bool mapped_to_container =
-      object.MapToVisualRectInAncestorSpace(&overflow_container, local_box,
-                                            kSkipAncestorAndViewportClips);
+      object.MapToVisualRectInAncestorSpace(
+          &overflow_container, local_box,
+          {VisualRectFlag::kSkipAncestorAndViewportClips});
   DCHECK(mapped_to_container);
 
   const PhysicalRect object_rect(ToEnclosingRect(local_box));

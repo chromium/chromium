@@ -2387,12 +2387,12 @@ bool ApplyViewportClippingAndOffsets(gfx::RectF& rect,
   // callers can compute both unclipped and clipped rectangles using the same
   // mapping pipeline.
   const bool apply_local_root_clip =
-      !(visual_rect_flags & VisualRectFlags::kSkipAncestorAndViewportClips) &&
-      !(visual_rect_flags & kDontApplyMainFrameOverflowClip);
+      !visual_rect_flags.Has(VisualRectFlag::kSkipAncestorAndViewportClips) &&
+      !visual_rect_flags.Has(VisualRectFlag::kDontApplyMainFrameOverflowClip);
 
   if (apply_local_root_clip) {
     PhysicalRect viewport_rect = layout_view.ViewRect();
-    if (visual_rect_flags & kEdgeInclusive) {
+    if (visual_rect_flags.Has(VisualRectFlag::kEdgeInclusive)) {
       if (!physical_rect.InclusiveIntersect(viewport_rect)) {
         rect = gfx::RectF();
         intersects = false;
@@ -2414,7 +2414,8 @@ bool ApplyViewportClippingAndOffsets(gfx::RectF& rect,
   }
   if (!frame_view->MapToVisualRectInRemoteRootFrame(
           physical_rect, apply_local_root_clip,
-          visual_rect_flags & kVisualRectApplyRemoteViewportTransform)) {
+          visual_rect_flags.Has(
+              VisualRectFlag::kApplyRemoteViewportTransform))) {
     return false;
   }
   rect = gfx::RectF(physical_rect);
@@ -2458,7 +2459,7 @@ bool LayoutObject::MapToVisualRectInAncestorSpaceInternalFastPath(
       map_to_viewport ? layout_view : ancestor_or_null_for_viewport;
 
   intersects = true;
-  if (!(visual_rect_flags & kUseGeometryMapper) ||
+  if (!visual_rect_flags.Has(VisualRectFlag::kUseGeometryMapper) ||
       !ancestor->FirstFragment().HasLocalBorderBoxProperties()) {
     return false;
   }
@@ -2605,7 +2606,7 @@ const LayoutObject* LayoutObject::GetPropertyContainer(
     if (property_container == this) {
       *container_properties = FirstFragment().LocalBorderBoxProperties();
 
-      if (visual_rect_flags & kIgnoreLocalClipPath) {
+      if (visual_rect_flags.Has(VisualRectFlag::kIgnoreLocalClipPath)) {
         if (auto* properties =
                 property_container->FirstFragment().PaintProperties()) {
           if (auto* clip_path_clip = properties->ClipPathClip()) {

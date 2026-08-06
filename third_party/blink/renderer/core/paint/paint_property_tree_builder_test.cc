@@ -102,8 +102,8 @@ void PaintPropertyTreeBuilderTest::SetUp() {
     if ((source_object)->HasLayer() && (ancestor)->HasLayer()) {               \
       auto actual = LocalVisualRect(*(source_object));                         \
       (source_object)                                                          \
-          ->MapToVisualRectInAncestorSpace(ancestor, actual,                   \
-                                           kUseGeometryMapper);                \
+          ->MapToVisualRectInAncestorSpace(                                    \
+              ancestor, actual, {VisualRectFlag::kUseGeometryMapper});         \
       SCOPED_TRACE("GeometryMapper: ");                                        \
       EXPECT_EQ(expected, actual);                                             \
     }                                                                          \

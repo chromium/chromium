@@ -79,6 +79,7 @@ _CONFIG = [
             'base::CPU',
             'base::Days',
             'base::DefaultTickClock',
+            'base::Difference',  # for base::EnumSet.
             'base::ElapsedTimer',
             'base::EnumSet',
             'base::expected',
@@ -107,6 +108,7 @@ _CONFIG = [
             'base::IdTypeU32',
             'base::IdTypeU64',
             'base::InheritThreadType',
+            'base::Intersection',  # for base::EnumSet.
             'base::JobDelegate',
             'base::JobHandle',
             'base::KiBS',
@@ -188,6 +190,7 @@ _CONFIG = [
             'base::unexpected',
             'base::UnguessableToken',
             'base::UnguessableTokenHash',
+            'base::Union',  # for base::EnumSet.
             'base::UnlocalizedTimeFormatWithPattern',
             'base::Uuid',
             'base::ValuesEquivalent',

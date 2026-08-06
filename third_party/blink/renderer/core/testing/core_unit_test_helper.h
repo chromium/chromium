@@ -207,7 +207,7 @@ constexpr PhysicalRect::PhysicalRect(int left, int top, int width, int height)
 // changes. The rect is in the coordinate space of the document's scrolling
 // contents. This method deals with outlines and overflow.
 PhysicalRect VisualRectInDocument(const LayoutObject& object,
-                                  VisualRectFlags = kDefaultVisualRectFlags);
+                                  VisualRectFlags = {});
 
 // Returns the rect that should have raster invalidated whenever the specified
 // object changes. The rect is in the object's local physical coordinate space.
