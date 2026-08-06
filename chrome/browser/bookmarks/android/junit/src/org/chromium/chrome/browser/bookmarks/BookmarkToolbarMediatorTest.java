@@ -79,7 +79,7 @@ import java.util.function.BooleanSupplier;
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@DisableFeatures({ChromeFeatureList.BOOKMARKS_DESKTOP_LAYOUT})
+@DisableFeatures({ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT})
 public class BookmarkToolbarMediatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -252,7 +252,7 @@ public class BookmarkToolbarMediatorTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.BOOKMARKS_DESKTOP_LAYOUT})
+    @DisableFeatures({ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT})
     public void testNavigationButton_topLevelFolder_mobile() {
         DeviceInfo.setIsDesktopForTesting(false);
         mMediator.onFolderStateSet(mBookmarkModel.getMobileFolderId());
@@ -260,7 +260,7 @@ public class BookmarkToolbarMediatorTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.BOOKMARKS_DESKTOP_LAYOUT})
+    @EnableFeatures({ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT})
     public void testNavigationButton_topLevelFolder_desktop() {
         DeviceInfo.setIsDesktopForTesting(true);
         mMediator.onFolderStateSet(mBookmarkModel.getMobileFolderId());
@@ -268,7 +268,7 @@ public class BookmarkToolbarMediatorTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.BOOKMARKS_DESKTOP_LAYOUT})
+    @EnableFeatures({ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT})
     public void testNavigationButton_readingListFolder_desktop() {
         DeviceInfo.setIsDesktopForTesting(true);
         mMediator.onFolderStateSet(mBookmarkModel.getLocalOrSyncableReadingListFolder());
@@ -276,7 +276,7 @@ public class BookmarkToolbarMediatorTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.BOOKMARKS_DESKTOP_LAYOUT})
+    @EnableFeatures({ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT})
     public void testNavigationButton_subFolder_desktop() {
         DeviceInfo.setIsDesktopForTesting(true);
         BookmarkId subFolderId =

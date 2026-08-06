@@ -43,7 +43,7 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
-@DisableFeatures(ChromeFeatureList.BOOKMARKS_DESKTOP_LAYOUT)
+@DisableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT)
 public class BookmarkSearchBoxRowRenderTest {
     @ClassParameter
     private static final List<ParameterSet> sClassParams = new NightModeParams().getParameters();

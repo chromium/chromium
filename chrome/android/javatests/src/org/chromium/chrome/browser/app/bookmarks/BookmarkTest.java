@@ -167,7 +167,7 @@ import java.util.stream.IntStream;
 @ImportantFormFactors(DeviceFormFactor.ONLY_TABLET)
 // TODO(crbug.com/40899175): Investigate batching.
 @DoNotBatch(reason = "BookmarkTest has behaviours and thus can't be batched.")
-@DisableFeatures({ChromeFeatureList.BOOKMARKS_DESKTOP_LAYOUT})
+@DisableFeatures({ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT})
 public class BookmarkTest {
     private static final String TEST_PAGE_URL_GOOGLE = "/chrome/test/data/android/google.html";
     private static final String TEST_PAGE_TITLE_GOOGLE = "The Google";
@@ -2387,7 +2387,7 @@ public class BookmarkTest {
     @Test
     @MediumTest
     @Restriction({DeviceFormFactor.ONLY_TABLET})
-    @EnableFeatures({ChromeFeatureList.BOOKMARKS_DESKTOP_LAYOUT})
+    @EnableFeatures({ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT})
     public void testDesktopLayout_InitRedirectsFromRoot() throws Exception {
         DeviceInfo.setIsDesktopForTesting(true);
         try {
@@ -2420,7 +2420,7 @@ public class BookmarkTest {
     @Test
     @MediumTest
     @Restriction({DeviceFormFactor.ONLY_TABLET})
-    @EnableFeatures({ChromeFeatureList.BOOKMARKS_DESKTOP_LAYOUT})
+    @EnableFeatures({ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT})
     public void testDesktopLayout_NoBackButtonForTopLevelFolders() throws Exception {
         DeviceInfo.setIsDesktopForTesting(true);
         try {

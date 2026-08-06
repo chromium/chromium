@@ -98,7 +98,7 @@ import java.util.concurrent.ExecutionException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @ImportantFormFactors(DeviceFormFactor.ONLY_TABLET)
 @DoNotBatch(reason = "BookmarkTest has behaviours and thus can't be batched.")
-@DisableFeatures({ChromeFeatureList.BOOKMARKS_DESKTOP_LAYOUT})
+@DisableFeatures({ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT})
 public class ReadingListTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =

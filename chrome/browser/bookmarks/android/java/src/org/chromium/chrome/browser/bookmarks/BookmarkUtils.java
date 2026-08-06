@@ -938,7 +938,7 @@ public class BookmarkUtils {
      * @return Whether the desktop bookmarks layout is enabled.
      */
     public static boolean isDesktopBookmarksLayoutEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.BOOKMARKS_DESKTOP_LAYOUT)
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT)
                 && DeviceInfo.isDesktop();
     }
 

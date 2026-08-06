@@ -232,6 +232,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidBricksNativePage,
     &kAndroidContextMenuDisabledMenuItems,
     &kAndroidContextMenuNewActions,
+    &kAndroidDesktopBookmarkLayout,
     &kAndroidDesktopBookmarkPopup,
     &kAndroidDeviceSignalsDisclaimer,
     &kAndroidElegantTextHeight,
@@ -284,7 +285,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kBookmarkPaneAndroid,
     &kBookmarksBarContextMenu,
     &kBookmarksBarNTP,
-    &kBookmarksDesktopLayout,
     &kBottomSheetAsBrowserControls,
     &kBottomSheetOnDesktopWindowing,
     &kBrowserControlsDebugging,
@@ -619,6 +619,7 @@ BASE_FEATURE(kAndroidBottomBar, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidBricksNativePage, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidContextMenuDisabledMenuItems, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidContextMenuNewActions, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kAndroidDesktopBookmarkLayout, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidDesktopBookmarkPopup, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables additional text shown during profile creation for managed users,
 // informing them about device signal collection for security purposes.
@@ -673,7 +674,6 @@ BASE_FEATURE(kBlockIntentsWhileLocked, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kBookmarkPaneAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kBookmarksBarContextMenu, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kBookmarksBarNTP, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kBookmarksDesktopLayout, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kBottomSheetAsBrowserControls, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kBottomSheetOnDesktopWindowing, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kBrowserControlsDebugging, base::FEATURE_DISABLED_BY_DEFAULT);

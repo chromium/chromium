@@ -64,7 +64,7 @@ import org.chromium.ui.base.DeviceInput;
 @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
 // TODO(crbug.com/40899175): Investigate batching.
 @DoNotBatch(reason = "Test has side-effects (bookmarks, pageloads) and thus can't be batched.")
-@DisableFeatures({ChromeFeatureList.BOOKMARKS_DESKTOP_LAYOUT})
+@DisableFeatures({ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT})
 public class BookmarkTabletTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
