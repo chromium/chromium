@@ -9,6 +9,9 @@
 #include <vector>
 
 #include "base/containers/to_vector.h"
+#include "base/i18n/icubridge/date_time_formatter.h"
+#include "base/i18n/icubridge/icu_bridge.h"
+#include "base/i18n/tag_converters.h"
 #include "base/i18n/time_formatting.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -134,6 +137,19 @@ std::optional<std::u16string> FormatShortDate(
   return std::nullopt;
 }
 
+// Formats a `base::Time` time-of-day for the given `app_locale`, falling back
+// to the process default locale if parsing fails.
+std::u16string FormatTimeOfDay(base::Time time, std::string_view app_locale) {
+  if (std::optional<base::i18n::LanguageTag> tag =
+          base::i18n::GetLanguageTagFromString(app_locale)) {
+    return base::i18n::IcuBridge::GetInstance().date_time_formatter().Format(
+        time, *tag,
+        base::i18n::datetime_options::T::Short().with_time_precision(
+            base::i18n::DateTimeFormatterOptions::TimePrecision::kMinute));
+  }
+  return base::TimeFormatTimeOfDay(time);
+}
+
 std::u16string FormatTypedValue(
     const personal_context::proto::TypedValue& typed_value,
     std::string_view app_locale) {
@@ -170,7 +186,8 @@ std::u16string FormatTypedValue(
       };
       base::Time time;
       if (base::Time::FromLocalExploded(exploded, &time)) {
-        return base::StrCat({date_str, u" ", base::TimeFormatTimeOfDay(time)});
+        return base::StrCat(
+            {date_str, u" ", FormatTimeOfDay(time, app_locale)});
       }
       return date_str;
     }

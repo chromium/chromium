@@ -437,9 +437,12 @@ TEST(MemoryDataTypeUtilTest, ConvertToMemorySearchResultDateTime) {
   date_time->set_hours(14);
   date_time->set_minutes(30);
 
-  // ICU inserts a "narrow space" between the time and the "PM".
+  // ICU inserts a "narrow space" between the time and the "PM" for 12h locales.
   EXPECT_EQ(ConvertToMemorySearchResult(proto_result, "en-US").value,
             u"2026-12-31 2:30\u202FPM");
+  // 24h locale formatting (German).
+  EXPECT_EQ(ConvertToMemorySearchResult(proto_result, "de").value,
+            u"2026-12-31 14:30");
 }
 
 // Tests formatting of DateTime attribute values when FromLocalExploded fails
