@@ -22,6 +22,7 @@ import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.InsetDrawable;
 import android.view.InputDevice;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -1388,8 +1389,10 @@ public class TabVerticalViewBinderUnitTest {
 
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.RAIL_COLLAPSE_STATE);
 
+        int expectedHeight =
+                mItemView.getResources().getDimensionPixelSize(R.dimen.vertical_tab_item_height);
         assertEquals(ViewGroup.LayoutParams.MATCH_PARENT, mItemView.getLayoutParams().width);
-        assertEquals(ViewGroup.LayoutParams.WRAP_CONTENT, mItemView.getLayoutParams().height);
+        assertEquals(expectedHeight, mItemView.getLayoutParams().height);
 
         assertEquals(View.VISIBLE, mTitleView.getVisibility());
         assertEquals("Google", mTitleView.getText());
@@ -1490,6 +1493,15 @@ public class TabVerticalViewBinderUnitTest {
         int expectedMargin =
                 TabVerticalViewBinder.getCollapsedChildMarginStart(headerView.getContext());
         assertEquals(expectedMargin, lp.getMarginStart());
+
+        // Verify chevron is centered within the collapsed square
+        headerView.measure(
+                View.MeasureSpec.makeMeasureSpec(expectedSize, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(expectedSize, View.MeasureSpec.EXACTLY));
+        headerView.layout(0, 0, expectedSize, expectedSize);
+        View chevron = headerView.findViewById(R.id.expand_chevron);
+        int expectedChevronLeft = (expectedSize - chevron.getMeasuredWidth()) / 2;
+        assertEquals(expectedChevronLeft, chevron.getLeft());
     }
 
     @Test
@@ -1507,8 +1519,10 @@ public class TabVerticalViewBinderUnitTest {
         TabVerticalViewBinder.bindTabGroupHeader(
                 mModel, headerView, TabProperties.RAIL_COLLAPSE_STATE);
 
+        int expectedHeight =
+                headerView.getResources().getDimensionPixelSize(R.dimen.vertical_tab_item_height);
         assertEquals(ViewGroup.LayoutParams.MATCH_PARENT, headerView.getLayoutParams().width);
-        assertEquals(ViewGroup.LayoutParams.WRAP_CONTENT, headerView.getLayoutParams().height);
+        assertEquals(expectedHeight, headerView.getLayoutParams().height);
         assertEquals(View.VISIBLE, titleView.getVisibility());
         assertEquals("My Group", titleView.getText());
 
@@ -1608,6 +1622,135 @@ public class TabVerticalViewBinderUnitTest {
         assertNotEquals(View.VISIBLE, mMediaIndicatorView.getVisibility());
         assertNotEquals(View.VISIBLE, spinner.getVisibility());
         assertEquals(View.VISIBLE, mFaviconView.getVisibility());
+    }
+
+    @Test
+    @SmallTest
+    public void testTabItemDimensions_TabletVsNonTablet() {
+        // Touch tablet device (default in setUp, loads values-sw600dp)
+        int expectedTouchPadding =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_item_padding_vertical);
+        int expectedTouchInset =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_item_touch_target_inset);
+        int expectedTouchHeight =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.vertical_tab_item_height);
+        int expectedTouchMarginBottom =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_item_margin_bottom);
+        int expectedTouchPinnedHeight =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_height);
+        int expectedTouchCollapsedSize =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_item_collapsed_size);
+
+        assertEquals(2, expectedTouchPadding);
+        assertEquals(2, expectedTouchInset);
+        assertEquals(40, expectedTouchHeight);
+        assertEquals(0, expectedTouchMarginBottom);
+        assertEquals(36, expectedTouchPinnedHeight);
+        assertEquals(36, expectedTouchCollapsedSize);
+
+        // Non-tablet device (loads values)
+        android.content.res.Configuration config =
+                new android.content.res.Configuration(mActivity.getResources().getConfiguration());
+        config.smallestScreenWidthDp = 320;
+        android.content.Context nonTabletContext = mActivity.createConfigurationContext(config);
+
+        int expectedDefaultPadding =
+                nonTabletContext
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_item_padding_vertical);
+        int expectedDefaultInset =
+                nonTabletContext
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_item_touch_target_inset);
+        int expectedDefaultHeight =
+                nonTabletContext
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_item_height);
+        int expectedDefaultMarginBottom =
+                nonTabletContext
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_item_margin_bottom);
+        int expectedDefaultPinnedHeight =
+                nonTabletContext
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_height);
+        int expectedDefaultCollapsedSize =
+                nonTabletContext
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_item_collapsed_size);
+
+        assertEquals(0, expectedDefaultPadding);
+        assertEquals(0, expectedDefaultInset);
+        assertEquals(32, expectedDefaultHeight);
+        assertEquals(4, expectedDefaultMarginBottom);
+        assertEquals(32, expectedDefaultPinnedHeight);
+        assertEquals(32, expectedDefaultCollapsedSize);
+    }
+
+    @Test
+    @SmallTest
+    public void testParentPadding_Tablet() {
+        mModel.set(TabProperties.RAIL_COLLAPSE_STATE, RailCollapseState.EXPANDED);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.RAIL_COLLAPSE_STATE);
+        int expectedTouchPadding =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_item_padding_vertical);
+        assertEquals(0, mItemView.getPaddingLeft());
+        assertEquals(expectedTouchPadding, mItemView.getPaddingTop());
+        assertEquals(expectedTouchPadding, mItemView.getPaddingBottom());
+        assertTrue(mItemView.getBackground() instanceof InsetDrawable);
+
+        ViewGroup headerView = inflateGroupHeaderView();
+        TabVerticalViewBinder.bindTabGroupHeader(
+                mModel, headerView, TabProperties.RAIL_COLLAPSE_STATE);
+        headerView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        headerView.layout(0, 0, 100, 100);
+        int expectedTouchPaddingHorizontal =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_item_padding_horizontal);
+        assertEquals(expectedTouchPaddingHorizontal, headerView.getPaddingStart());
+        assertEquals(expectedTouchPadding, headerView.getPaddingTop());
+        assertEquals(expectedTouchPadding, headerView.getPaddingBottom());
+        assertTrue(headerView.getBackground() instanceof InsetDrawable);
+    }
+
+    @Test
+    @SmallTest
+    public void testRowBottomMargin_Tablet() {
+        mModel.set(TabProperties.RAIL_COLLAPSE_STATE, RailCollapseState.EXPANDED);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.RAIL_COLLAPSE_STATE);
+        ViewGroup.MarginLayoutParams params =
+                (ViewGroup.MarginLayoutParams) mItemView.getLayoutParams();
+        assertEquals(0, params.bottomMargin);
+    }
+
+    @Test
+    @SmallTest
+    public void testPinnedTabSize_Tablet() {
+        ViewGroup pinnedView = inflatePinnedTabView();
+        pinnedView.setLayoutParams(
+                new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        mModel.set(TabProperties.RAIL_COLLAPSE_STATE, RailCollapseState.EXPANDED);
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.RAIL_COLLAPSE_STATE);
+        int expectedTouchPinnedHeight =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_height);
+        assertEquals(expectedTouchPinnedHeight, pinnedView.getLayoutParams().height);
     }
 
     private ViewGroup inflatePinnedTabView() {

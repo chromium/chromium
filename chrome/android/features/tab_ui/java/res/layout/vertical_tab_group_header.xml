@@ -7,9 +7,9 @@ found in the LICENSE file.
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="@dimen/vertical_tab_item_height"
     android:orientation="horizontal"
-    android:gravity="center_vertical"
+    android:gravity="center"
     android:paddingStart="@dimen/vertical_tab_item_padding_horizontal"
     android:paddingEnd="@dimen/vertical_tab_item_padding_horizontal"
     android:paddingTop="@dimen/vertical_tab_item_padding_vertical"

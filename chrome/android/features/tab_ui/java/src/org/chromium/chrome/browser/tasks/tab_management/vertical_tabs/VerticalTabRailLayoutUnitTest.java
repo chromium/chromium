@@ -16,6 +16,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.res.ColorStateList;
+import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.view.DragEvent;
 import android.view.InputDevice;
@@ -37,7 +38,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureOverrides;
@@ -52,7 +52,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link VerticalTabRailLayout} and {@link VerticalTabListViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class VerticalTabRailLayoutUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -70,6 +69,11 @@ public class VerticalTabRailLayoutUnitTest {
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        Configuration config = mActivity.getResources().getConfiguration();
+        config.smallestScreenWidthDp = 600;
+        mActivity
+                .getResources()
+                .updateConfiguration(config, mActivity.getResources().getDisplayMetrics());
         IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(false);
 
         mRailLayout =
@@ -352,5 +356,49 @@ public class VerticalTabRailLayoutUnitTest {
         // When shouldOpenIncognitoAsWindow is true, updateIncognitoColors returns early without
         // overriding background or tints.
         assertNull(mRailLayout.getBackground());
+    }
+
+    @Test
+    @SmallTest
+    public void testButtonDimensions_TabletVsNonTablet() {
+        // Touch tablet device (default in setUp, loads values-sw600dp)
+        int expectedTouchButtonSize =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tabs_header_button_size);
+        int expectedTouchNewTabHeight =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tabs_new_tab_button_height);
+
+        assertEquals(36, expectedTouchButtonSize);
+        assertEquals(36, expectedTouchNewTabHeight);
+
+        VerticalTabListViewBinder.updateButtonSizes(mRailLayout);
+        View collapseButton = mRailLayout.findViewById(R.id.collapse_button);
+        assertEquals(expectedTouchButtonSize, collapseButton.getLayoutParams().width);
+        assertEquals(expectedTouchButtonSize, collapseButton.getLayoutParams().height);
+
+        View newTabButton = mRailLayout.findViewById(R.id.new_tab_button);
+        assertEquals(expectedTouchNewTabHeight, newTabButton.getLayoutParams().height);
+
+        // Non-tablet device (loads values)
+        Configuration nonTabletConfig =
+                new Configuration(mActivity.getResources().getConfiguration());
+        nonTabletConfig.smallestScreenWidthDp = 320;
+        android.content.Context nonTabletContext =
+                mActivity.createConfigurationContext(nonTabletConfig);
+
+        int expectedDefaultButtonSize =
+                nonTabletContext
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tabs_header_button_size);
+        int expectedDefaultNewTabHeight =
+                nonTabletContext
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tabs_new_tab_button_height);
+
+        assertEquals(32, expectedDefaultButtonSize);
+        assertEquals(32, expectedDefaultNewTabHeight);
     }
 }

@@ -7,4 +7,14 @@ found in the LICENSE file.
 <resources>
     <!-- Dimens for pinned tab strip -->
     <dimen name="pinned_tab_strip_item_min_width">186dp</dimen>
+
+    <!-- Dimens for vertical tabs on tablet -->
+    <dimen name="vertical_tab_item_height">40dp</dimen>
+    <dimen name="vertical_tab_item_padding_vertical">2dp</dimen>
+    <dimen name="vertical_tab_item_touch_target_inset">2dp</dimen>
+    <dimen name="vertical_tab_item_margin_bottom">0dp</dimen>
+    <dimen name="vertical_tab_item_collapsed_size">36dp</dimen>
+    <dimen name="vertical_tab_pinned_item_height">36dp</dimen>
+    <dimen name="vertical_tabs_new_tab_button_height">36dp</dimen>
+    <dimen name="vertical_tabs_header_button_size">36dp</dimen>
 </resources>
