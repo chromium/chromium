@@ -89,6 +89,7 @@ class NetworkThrottlingObserver;
 class PowerMetricsReporter;
 class RendererFreezer;
 class ReportControllerInitializer;
+class ScreenLockerController;
 class SessionTerminationManager;
 class ShortcutMappingPrefService;
 class ShutdownPolicyForwarder;
@@ -322,6 +323,8 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
 #if BUILDFLAG(USE_CUPS)
   std::unique_ptr<ash::LocalPrinter> local_printer_;
 #endif
+
+  std::unique_ptr<ScreenLockerController> screen_locker_controller_;
 
   base::WeakPtrFactory<ChromeBrowserMainPartsAsh> weak_ptr_factory_{this};
 };

@@ -10,6 +10,8 @@ static_library("lock") {
   sources = [
     "screen_locker.cc",
     "screen_locker.h",
+    "screen_locker_controller.cc",
+    "screen_locker_controller.h",
     "views_screen_locker.cc",
     "views_screen_locker.h",
   ]

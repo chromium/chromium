@@ -71,6 +71,7 @@ include_rules = [
   "+chrome/browser/tracing",
   "+chrome/browser/ui/ash/assistant",
   "+chrome/browser/ui/ash/keyboard",
+  "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/ash/session",
   "+chrome/browser/ui/webui/ash/emoji",
   "+chrome/common/chrome_constants.h",

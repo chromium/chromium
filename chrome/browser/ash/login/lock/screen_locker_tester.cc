@@ -15,6 +15,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
+#include "chrome/browser/ash/login/lock/screen_locker_controller.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -86,9 +87,11 @@ class LoginAttemptObserver : public AuthStatusConsumer {
 ScreenLockerTester::ScopedRequestLockScreenOverride::
     ScopedRequestLockScreenOverride()
     : fake_session_manager_client_(
-          CHECK_DEREF(FakeSessionManagerClient::Get())) {
+          CHECK_DEREF(FakeSessionManagerClient::Get())),
+      screen_locker_controller_(ScreenLockerController::Get()) {
   fake_session_manager_client_->set_on_request_lock_screen_callback(
-      base::BindRepeating(&ScreenLocker::HandleShowLockScreenRequest));
+      base::BindRepeating(&ScreenLockerController::HandleShowLockScreenRequest,
+                          base::Unretained(&screen_locker_controller_.get())));
 }
 
 ScreenLockerTester::ScopedRequestLockScreenOverride::

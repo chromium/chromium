@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
+#include "chrome/browser/ash/login/lock/screen_locker_controller.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
@@ -369,7 +370,7 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, LockScreenWhileAddingUser) {
             session_manager::SessionState::LOGIN_SECONDARY);
   base::RunLoop().RunUntilIdle();
 
-  ScreenLocker::HandleShowLockScreenRequest();
+  ScreenLockerController::Get().HandleShowLockScreenRequest();
 }
 
 }  // namespace ash

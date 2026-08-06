@@ -14,6 +14,7 @@ class AccountId;
 namespace ash {
 
 class FakeSessionManagerClient;
+class ScreenLockerController;
 
 // ScreenLockerTester provides a high-level API to test the lock screen.
 // Must be created after the SessionManager is initialized.
@@ -26,7 +27,8 @@ class ScreenLockerTester {
   // plumbing for browser tests.
   class ScopedRequestLockScreenOverride {
    public:
-    // FakeSessionManagerClient must outlive this instance.
+    // FakeSessionManagerClient and ScreenLockerController must outlive this
+    // instance.
     ScopedRequestLockScreenOverride();
     ScopedRequestLockScreenOverride(const ScopedRequestLockScreenOverride&) =
         delete;
@@ -36,6 +38,7 @@ class ScreenLockerTester {
 
    private:
     const raw_ref<FakeSessionManagerClient> fake_session_manager_client_;
+    const raw_ref<ScreenLockerController> screen_locker_controller_;
   };
 
   ScreenLockerTester();

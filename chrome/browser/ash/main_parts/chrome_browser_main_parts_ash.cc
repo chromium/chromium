@@ -110,6 +110,7 @@
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
+#include "chrome/browser/ash/login/lock/screen_locker_controller.h"
 #include "chrome/browser/ash/login/login_screen_extensions_storage_cleaner.h"
 #include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/osauth/chrome_auth_parts.h"
@@ -184,6 +185,7 @@
 #include "chrome/browser/tracing/chrome_tracing_delegate.h"
 #include "chrome/browser/ui/ash/assistant/assistant_browser_delegate_impl.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
+#include "chrome/browser/ui/ash/login/user_adding_screen.h"
 #include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_ui.h"
 #include "chrome/common/chrome_constants.h"
@@ -967,7 +969,10 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   // Enable per-user metrics support as soon as user_manager is created.
   g_browser_process->metrics_service()->InitPerUserMetrics();
 
-  ScreenLocker::InitClass();
+  screen_locker_controller_ = std::make_unique<ScreenLockerController>(
+      session_termination_manager_.get(),
+      session_manager::SessionManager::Get(), user_manager::UserManager::Get(),
+      UserAddingScreen::Get());
 
   // This forces the ProfileManager to be created and register for the
   // notification it needs to track the logged in user.
@@ -1674,9 +1679,7 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   renderer_freezer_.reset();
   fast_transition_observer_.reset();
   network_throttling_observer_.reset();
-  if (pre_profile_init_called_) {
-    ScreenLocker::ShutDownClass();
-  }
+  screen_locker_controller_.reset();
   low_disk_notification_.reset();
   smart_charging_manager_.reset();
   adaptive_screen_brightness_manager_.reset();

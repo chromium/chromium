@@ -41,6 +41,7 @@ class PrefChangeRegistrar;
 namespace ash {
 
 class Authenticator;
+class ScreenLockerController;
 class ViewsScreenLocker;
 
 // ScreenLocker displays the lock UI and takes care of authenticating the user
@@ -91,15 +92,6 @@ class ScreenLocker
   // the same login events that ScreenLocker does.
   void SetLoginStatusConsumer(AuthStatusConsumer* consumer);
 
-  // Initialize or uninitialize the ScreenLocker class. It observes
-  // SessionManager so that the screen locker accepts lock requests only after a
-  // user has logged in.
-  static void InitClass();
-  static void ShutDownClass();
-
-  // Handles a request from the session manager to show the lock screen.
-  static void HandleShowLockScreenRequest();
-
   // Show the screen locker.
   static void Show();
 
@@ -116,6 +108,9 @@ class ScreenLocker
  private:
   friend class base::DeleteHelper<ScreenLocker>;
   friend class ScreenLockerTester;
+
+  // TODO(crbug.com/539761804): For `ScheduleDeletion`.
+  friend class ScreenLockerController;
 
   // Track the type of the authentication that the user used to unlock the lock
   // screen.
@@ -189,6 +184,7 @@ class ScreenLocker
   void ScreenLockReady();
 
   // Called when screen locker is safe to delete.
+  // TODO(crbug.com/539761804): Make ScreenLockerController own this object.
   static void ScheduleDeletion();
 
   // Returns true if `account_id` is found among logged in users.

@@ -5,7 +5,8 @@
 #include "chrome/browser/ash/dbus/screen_lock_service_provider.h"
 
 #include "base/functional/bind.h"
-#include "chrome/browser/ash/login/lock/screen_locker.h"
+#include "base/logging.h"
+#include "chrome/browser/ash/login/lock/screen_locker_controller.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -38,9 +39,11 @@ void ScreenLockServiceProvider::OnExported(const std::string& interface_name,
 void ScreenLockServiceProvider::ShowLockScreen(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
+  VLOG(1) << "Received ShowLockScreen request from session manager";
   // Please add any additional logic to
-  // ScreenLocker::HandleShowLockScreenRequest() instead of placing it here.
-  ScreenLocker::HandleShowLockScreenRequest();
+  // ScreenLockerController::HandleShowLockScreenRequest() instead of placing
+  // it here.
+  ScreenLockerController::Get().HandleShowLockScreenRequest();
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
 
