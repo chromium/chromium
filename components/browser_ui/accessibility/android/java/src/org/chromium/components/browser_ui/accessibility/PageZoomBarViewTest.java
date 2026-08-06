@@ -162,6 +162,11 @@ public class PageZoomBarViewTest {
                     public boolean isCurrentTabNull() {
                         return false;
                     }
+
+                    @Override
+                    public boolean isActivityFocused() {
+                        return true;
+                    }
                 };
 
         ThreadUtils.runOnUiThreadBlocking(
