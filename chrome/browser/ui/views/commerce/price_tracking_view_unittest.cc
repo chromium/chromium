@@ -10,8 +10,9 @@
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/local_or_syncable_bookmark_sync_service_factory.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_test_widget.h"
+#include "chrome/test/views/chrome_views_test_base.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -35,10 +36,24 @@ const char kTestURL[] = "about:blank";
 const uint64_t kProductClusterId = 12345L;
 }  // namespace
 
-class PriceTrackingViewTest : public BrowserWithTestWindowTest {
+class PriceTrackingViewTest : public ChromeViewsTestBase {
  public:
   void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
+    ChromeViewsTestBase::SetUp();
+
+    TestingProfile::Builder profile_builder;
+    profile_builder.AddTestingFactories(
+        IdentityTestEnvironmentProfileAdaptor::
+            GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
+                {TestingProfile::TestingFactory{
+                     BookmarkModelFactory::GetInstance(),
+                     BookmarkModelFactory::GetDefaultFactory()},
+                 TestingProfile::TestingFactory{
+                     commerce::ShoppingServiceFactory::GetInstance(),
+                     base::BindRepeating([](content::BrowserContext* context) {
+                       return commerce::MockShoppingService::Build();
+                     })}}));
+    profile_ = profile_builder.Build();
 
     anchor_widget_ = std::make_unique<ChromeTestWidget>();
     views::Widget::InitParams widget_params(
@@ -51,22 +66,12 @@ class PriceTrackingViewTest : public BrowserWithTestWindowTest {
   void TearDown() override {
     price_tracking_view_ = nullptr;
     anchor_widget_.reset();
+    profile_.reset();
 
-    BrowserWithTestWindowTest::TearDown();
+    ChromeViewsTestBase::TearDown();
   }
 
-  TestingProfile::TestingFactories GetTestingFactories() override {
-    return IdentityTestEnvironmentProfileAdaptor::
-        GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
-            {TestingProfile::TestingFactory{
-                 BookmarkModelFactory::GetInstance(),
-                 BookmarkModelFactory::GetDefaultFactory()},
-             TestingProfile::TestingFactory{
-                 commerce::ShoppingServiceFactory::GetInstance(),
-                 base::BindRepeating([](content::BrowserContext* context) {
-                   return commerce::MockShoppingService::Build();
-                 })}});
-  }
+  Profile* profile() { return profile_.get(); }
 
   void SetUpDependencies() {
     bookmarks::BookmarkModel* bookmark_model =
@@ -77,16 +82,14 @@ class PriceTrackingViewTest : public BrowserWithTestWindowTest {
     LocalOrSyncableBookmarkSyncServiceFactory::GetForProfile(profile())
         ->SetIsTrackingMetadataForTesting();
 
-    bookmarks::AddIfNotBookmarked(bookmark_model, GURL(kTestURL),
-                                  std::u16string());
+    const bookmarks::BookmarkNode* node = bookmarks::AddIfNotBookmarked(
+        bookmark_model, GURL(kTestURL), std::u16string());
 
-    commerce::AddProductBookmark(bookmark_model, u"title", GURL(kTestURL), 0,
-                                 false);
+    commerce::AddProductInfoToExistingBookmark(bookmark_model, node, u"title",
+                                               0);
   }
 
   PriceTrackingView* CreateViewAndShow(bool is_price_track_enabled) {
-    SkBitmap bitmap;
-    bitmap.allocN32Pixels(1, 1);
     commerce::ProductInfo info;
     info.product_cluster_id.emplace(kProductClusterId);
     auto price_tracking_View = std::make_unique<PriceTrackingView>(
@@ -134,6 +137,7 @@ class PriceTrackingViewTest : public BrowserWithTestWindowTest {
   raw_ptr<PriceTrackingView> price_tracking_view_;
 
  private:
+  std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<views::Widget> anchor_widget_;
 };
 
