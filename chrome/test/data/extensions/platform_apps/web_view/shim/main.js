@@ -4100,6 +4100,8 @@ async function testWebRequestOnErrorOccurredNavigation() {
 embedder.test.testList = {
   'testAllowTransparencyAttribute': testAllowTransparencyAttribute,
   'testAutosizeHeightFeatureEnabled': () => testAutosizeHeight(210),
+  'testAutosizeHeightFeatureEnabledOverlayScrollbar': () =>
+      testAutosizeHeight(200),
   'testAutosizeHeightFeatureDisabled': () => testAutosizeHeight(200),
   'testAutosizeAfterNavigation': testAutosizeAfterNavigation,
   'testAutosizeBeforeNavigation': testAutosizeBeforeNavigation,

@@ -1961,6 +1961,8 @@ embedder.test.testList = {
   'testAutosizeAfterNavigation': testAutosizeAfterNavigation,
   'testAutosizeBeforeNavigation': testAutosizeBeforeNavigation,
   'testAutosizeHeightFeatureEnabled': () => testAutosizeHeight(210),
+  'testAutosizeHeightFeatureEnabledOverlayScrollbar': () =>
+      testAutosizeHeight(200),
   'testAutosizeHeightFeatureDisabled': () => testAutosizeHeight(200),
   'testAutosizeRemoveAttributes': testAutosizeRemoveAttributes,
   'testAutosizeWithPartialAttributes': testAutosizeWithPartialAttributes,

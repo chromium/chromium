@@ -89,16 +89,21 @@ bool FrameViewAutoSizeInfo::AutoSizeIfNeeded() {
   int height = document_layout_box->ScrollHeight().ToInt();
   gfx::Size new_size(width, height);
 
+  const bool uses_overlay_scrollbars =
+      RuntimeEnabledFeatures::AutoSizeUsesScrollWidthForOverflowEnabled() &&
+      layout_viewport->GetLayoutBox()->UsesOverlayScrollbars();
+
   // Check to see if a scrollbar is needed for a given dimension and
   // if so, increase the other dimension to account for the scrollbar.
   // Since the dimensions are only for the view rectangle, once a
   // dimension exceeds the maximum, there is no need to increase it further.
-  if (new_size.width() > max_auto_size_.width()) {
+  if (new_size.width() > max_auto_size_.width() && !uses_overlay_scrollbars) {
     new_size.Enlarge(0, layout_viewport->HypotheticalScrollbarThickness(
                             kHorizontalScrollbar));
     // Don't bother checking for a vertical scrollbar because the width is at
     // already greater the maximum.
   } else if (new_size.height() > max_auto_size_.height() &&
+             !uses_overlay_scrollbars &&
              (RuntimeEnabledFeatures::
                   AutoSizeUsesScrollWidthForOverflowEnabled() ||
               // If we have a real vertical scrollbar, it's already included in
