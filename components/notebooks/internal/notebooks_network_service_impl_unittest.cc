@@ -5,12 +5,23 @@
 #include "components/notebooks/internal/notebooks_network_service_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <utility>
 
+#include "base/functional/callback.h"
+#include "base/json/json_reader.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/values.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
+#include "components/notebooks/public/features.h"
+#include "components/notebooks/public/notebooks_network_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "net/base/url_util.h"
+#include "net/http/http_status_code.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -21,15 +32,71 @@ namespace notebooks {
 
 namespace {
 
+class FakeEndpointFetcher : public endpoint_fetcher::EndpointFetcher {
+ public:
+  FakeEndpointFetcher(
+      const net::NetworkTrafficAnnotationTag& annotation_tag,
+      std::unique_ptr<endpoint_fetcher::EndpointResponse> response)
+      : endpoint_fetcher::EndpointFetcher(annotation_tag),
+        response_(std::move(response)) {}
+
+  ~FakeEndpointFetcher() override = default;
+
+  void Fetch(endpoint_fetcher::EndpointFetcherCallback callback) override {
+    std::move(callback).Run(std::move(response_));
+  }
+
+ private:
+  std::unique_ptr<endpoint_fetcher::EndpointResponse> response_;
+};
+
 class TestNotebooksNetworkServiceImpl : public NotebooksNetworkServiceImpl {
  public:
   TestNotebooksNetworkServiceImpl(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager* identity_manager)
-      : NotebooksNetworkServiceImpl(url_loader_factory, identity_manager) {}
+      : NotebooksNetworkServiceImpl(std::move(url_loader_factory),
+                                    identity_manager) {}
 
-  // Expose the protected method for testing.
+  ~TestNotebooksNetworkServiceImpl() override = default;
+
+  void set_fake_response(
+      std::unique_ptr<endpoint_fetcher::EndpointResponse> response) {
+    fake_response_ = std::move(response);
+  }
+
+  void set_use_real_endpoint_fetcher(bool use_real) {
+    use_real_endpoint_fetcher_ = use_real;
+  }
+
+  const GURL& last_url() const { return last_url_; }
+  const std::string& last_post_data() const { return last_post_data_; }
+
+  // Expose the method for testing.
   using NotebooksNetworkServiceImpl::CreateEndpointFetcher;
+  std::unique_ptr<endpoint_fetcher::EndpointFetcher> CreateEndpointFetcher(
+      const GURL& url,
+      const std::string& post_data,
+      const net::NetworkTrafficAnnotationTag& annotation_tag) override {
+    last_url_ = url;
+    last_post_data_ = post_data;
+
+    if (use_real_endpoint_fetcher_) {
+      return NotebooksNetworkServiceImpl::CreateEndpointFetcher(url, post_data,
+                                                                annotation_tag);
+    }
+
+    return std::make_unique<FakeEndpointFetcher>(annotation_tag,
+                                                 std::move(fake_response_));
+  }
+
+  using NotebooksNetworkServiceImpl::ConstructServiceURL;
+
+ private:
+  bool use_real_endpoint_fetcher_ = false;
+  GURL last_url_;
+  std::string last_post_data_;
+  std::unique_ptr<endpoint_fetcher::EndpointResponse> fake_response_;
 };
 
 class NotebooksNetworkServiceImplTest : public testing::Test {
@@ -44,26 +111,32 @@ class NotebooksNetworkServiceImplTest : public testing::Test {
         identity_test_env_.identity_manager());
   }
 
+  void EnableNotebooksFeature(const std::string& base_url,
+                              const std::string& source_suffix,
+                              const std::string& product_id) {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kNotebooks, {{"notebooks_api_base_url", base_url},
+                               {"notebook_source_url_suffix", source_suffix},
+                               {"provenance_origin_product_id", product_id}});
+  }
+
+  std::unique_ptr<endpoint_fetcher::EndpointResponse> CreateResponse(
+      int http_status_code,
+      const std::string& response_body) {
+    auto response = std::make_unique<endpoint_fetcher::EndpointResponse>();
+    response->http_status_code = http_status_code;
+    response->response = response_body;
+    return response;
+  }
+
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<TestNotebooksNetworkServiceImpl> service_;
 };
-
-// Smoke test to ensure methods can be called without crashing.
-TEST_F(NotebooksNetworkServiceImplTest, CreateNotebookSmoke) {
-  bool callback_called = false;
-  service_->CreateNotebook(
-      "display_name",
-      base::BindLambdaForTesting(
-          [&](std::unique_ptr<NotebooksNetworkService::LoadResult> result) {
-            callback_called = true;
-          }));
-  task_environment_.RunUntilIdle();
-  EXPECT_FALSE(
-      callback_called);  // Currently does nothing, so callback not called.
-}
 
 TEST_F(NotebooksNetworkServiceImplTest, CreateNotebookSourceSmoke) {
   bool callback_called = false;
@@ -81,6 +154,7 @@ TEST_F(NotebooksNetworkServiceImplTest, CreateNotebookSourceSmoke) {
 // Test that CreateEndpointFetcher constructs the fetcher correctly.
 TEST_F(NotebooksNetworkServiceImplTest, CreateEndpointFetcher) {
   GURL test_url("https://example.com");
+  service_->set_use_real_endpoint_fetcher(true);
   std::string test_data = "test_post_data";
 
   std::unique_ptr<endpoint_fetcher::EndpointFetcher> fetcher =
@@ -89,6 +163,152 @@ TEST_F(NotebooksNetworkServiceImplTest, CreateEndpointFetcher) {
 
   ASSERT_TRUE(fetcher);
   EXPECT_EQ(fetcher->GetUrlForTesting(), test_url.spec());
+}
+
+TEST_F(NotebooksNetworkServiceImplTest, ConstructServiceURL_NoPathSuccess) {
+  std::string base_url = "https://example.com/v1/notebooks";
+  std::string product_id = "chrome";
+  EnableNotebooksFeature(base_url, "sources", product_id);
+
+  GURL constructed_url = service_->ConstructServiceURL("");
+
+  EXPECT_TRUE(constructed_url.spec().starts_with(base_url));
+  std::string actual_product_id;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(
+      constructed_url, "provenance.origin_product_type", &actual_product_id));
+  EXPECT_EQ(actual_product_id, product_id);
+}
+
+TEST_F(NotebooksNetworkServiceImplTest, ConstructServiceURL_FeatureNotEnabled) {
+  GURL constructed_url = service_->ConstructServiceURL("");
+
+  EXPECT_EQ(constructed_url, GURL());
+}
+
+TEST_F(NotebooksNetworkServiceImplTest, CreateNotebook_InvalidURL) {
+  EnableNotebooksFeature("://invalid", "sources", "chrome");
+
+  base::RunLoop run_loop;
+  service_->CreateNotebook(
+      "test_notebook",
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<NotebooksNetworkService::LoadResult> result) {
+            EXPECT_FALSE(result);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+TEST_F(NotebooksNetworkServiceImplTest, CreateNotebook_FeatureNotEnabled) {
+  base::RunLoop run_loop;
+  service_->CreateNotebook(
+      "test_notebook",
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<NotebooksNetworkService::LoadResult> result) {
+            EXPECT_FALSE(result);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+TEST_F(NotebooksNetworkServiceImplTest, CreateNotebook_Success) {
+  std::string product_id = "chrome";
+  std::string notebook_display_name = "My notebook";
+  EnableNotebooksFeature("https://example.com/v1/notebooks", "sources",
+                         product_id);
+  service_->set_fake_response(CreateResponse(net::HTTP_OK, "response_body"));
+
+  base::RunLoop run_loop;
+  service_->CreateNotebook(
+      notebook_display_name,
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<NotebooksNetworkService::LoadResult> result) {
+            ASSERT_TRUE(result);
+            EXPECT_EQ(result->status,
+                      NotebooksNetworkService::NetworkLoaderStatus::kSuccess);
+            EXPECT_EQ(result->network_error_code, net::HTTP_OK);
+            EXPECT_EQ(result->result_bytes, "response_body");
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  GURL expected_url = service_->ConstructServiceURL("");
+  GURL actual_url = service_->last_url();
+  EXPECT_EQ(expected_url, actual_url);
+
+  std::optional<base::DictValue> dict = base::JSONReader::ReadDict(
+      service_->last_post_data(), base::JSON_PARSE_RFC);
+  ASSERT_TRUE(dict.has_value());
+  const std::string* display_name = dict->FindString("display_name");
+  ASSERT_TRUE(display_name);
+  EXPECT_EQ(*display_name, notebook_display_name);
+}
+
+TEST_F(NotebooksNetworkServiceImplTest, CreateNotebook_TransientFailure) {
+  std::string server_error = "server_error";
+  EnableNotebooksFeature("https://example.com/v1/notebooks", "sources",
+                         "chrome");
+  service_->set_fake_response(
+      CreateResponse(net::HTTP_INTERNAL_SERVER_ERROR, server_error));
+
+  base::RunLoop run_loop;
+  service_->CreateNotebook(
+      "My Notebook",
+      base::BindLambdaForTesting(
+          [&, server_error](
+              std::unique_ptr<NotebooksNetworkService::LoadResult> result) {
+            ASSERT_TRUE(result);
+            EXPECT_EQ(result->status,
+                      NotebooksNetworkService::NetworkLoaderStatus::
+                          kTransientFailure);
+            EXPECT_EQ(result->network_error_code,
+                      net::HTTP_INTERNAL_SERVER_ERROR);
+            EXPECT_EQ(result->result_bytes, server_error);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+TEST_F(NotebooksNetworkServiceImplTest, CreateNotebook_PersistentFailure) {
+  std::string bad_request_error = "bad_request";
+  EnableNotebooksFeature("https://example.com/v1/notebooks", "sources",
+                         "chrome");
+  service_->set_fake_response(
+      CreateResponse(net::HTTP_BAD_REQUEST, bad_request_error));
+
+  base::RunLoop run_loop;
+  service_->CreateNotebook(
+      "My Notebook",
+      base::BindLambdaForTesting(
+          [&, bad_request_error](
+              std::unique_ptr<NotebooksNetworkService::LoadResult> result) {
+            ASSERT_TRUE(result);
+            EXPECT_EQ(result->status,
+                      NotebooksNetworkService::NetworkLoaderStatus::
+                          kPersistentFailure);
+            EXPECT_EQ(result->network_error_code, net::HTTP_BAD_REQUEST);
+            EXPECT_EQ(result->result_bytes, bad_request_error);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+TEST_F(NotebooksNetworkServiceImplTest, CreateNotebook_NullResponse) {
+  EnableNotebooksFeature("https://example.com/v1/notebooks", "sources",
+                         "chrome");
+  service_->set_fake_response(nullptr);
+
+  bool callback_called = false;
+  service_->CreateNotebook(
+      "My Notebook",
+      base::BindLambdaForTesting(
+          [&callback_called](
+              std::unique_ptr<NotebooksNetworkService::LoadResult> result) {
+            callback_called = true;
+            EXPECT_FALSE(result);
+          }));
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(callback_called);
 }
 
 }  // namespace

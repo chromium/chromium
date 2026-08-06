@@ -11,8 +11,6 @@
 
 #include "base/functional/callback_forward.h"
 
-class GURL;
-
 namespace notebooks {
 
 // Class for making notebook-related network requests.

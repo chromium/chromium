@@ -1,6 +1,8 @@
 include_rules = [
   "+components/endpoint_fetcher",
   "+components/signin/public",
+  "+net/base",
+  "+net/http",
   "+net/traffic_annotation",
   "+services/network/public",
 ]
