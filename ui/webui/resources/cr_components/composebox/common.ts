@@ -6,7 +6,7 @@ import {ComposeboxContextAddedMethod} from '//resources/cr_components/search/con
 import {assertNotReachedCase} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {TabAttachmentSource} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {DriveUploadError, SuggestInventory} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {DriveUploadError, SearchContextAttachment, SuggestInventory} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
@@ -264,6 +264,23 @@ export function hasOnlySuggestedTabs(
   for (const file of files.values()) {
     if (file.inputType !== InputType.kBrowserTab ||
         !isSuggestedOrigin(file.origin)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+export function hasOnlySuggestedTabAttachments(
+    attachments: SearchContextAttachment[]): boolean {
+  if (attachments.length === 0) {
+    return false;
+  }
+  for (const attachment of attachments) {
+    if (!attachment.tabAttachment) {
+      return false;
+    }
+    const origin = mapMojoSourceToOrigin(attachment.tabAttachment.source);
+    if (!isSuggestedOrigin(origin)) {
       return false;
     }
   }

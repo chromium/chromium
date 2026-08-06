@@ -49,6 +49,7 @@ suite('OmniboxComposeboxTest', () => {
 
     loadTimeData.overrideValues({
       composeboxShowZps: true,
+      askGBlockZeroStateSuggestions: false,
     });
 
     testProxy = new TestSearchboxBrowserProxy();
@@ -379,6 +380,96 @@ suite('OmniboxComposeboxTest', () => {
         initialCallCount + 1,
         testProxy.handler.getCallCount('queryAutocomplete'));
   });
+
+  test(
+      'addSearchContext skips autocomplete query for tab when flag is enabled' +
+          ' and source is suggested',
+      async () => {
+        loadTimeData.overrideValues({askGBlockZeroStateSuggestions: true});
+
+        const initialCallCount =
+            testProxy.handler.getCallCount('queryAutocomplete');
+        const context = {
+          input: '',
+          attachments: [{
+            tabAttachment: {
+              tabId: 42,
+              title: 'Google',
+              url: 'https://google.com',
+              source: TabAttachmentSource.kAutoAdded,
+            },
+          }],
+          toolMode: 0,
+        };
+
+        omniboxComposebox.addSearchContext(context as unknown as SearchContext);
+        await microtasksFinished();
+
+        // Verify query was SKIPPED
+        assertEquals(
+            initialCallCount,
+            testProxy.handler.getCallCount('queryAutocomplete'));
+      });
+
+  test(
+      'addSearchContext does NOT skip autocomplete query for tab when flag' +
+          ' is disabled',
+      async () => {
+        loadTimeData.overrideValues({askGBlockZeroStateSuggestions: false});
+
+        const initialCallCount =
+            testProxy.handler.getCallCount('queryAutocomplete');
+        const context = {
+          input: '',
+          attachments: [{
+            tabAttachment: {
+              tabId: 42,
+              title: 'Google',
+              url: 'https://google.com',
+              source: TabAttachmentSource.kAutoAdded,
+            },
+          }],
+          toolMode: 0,
+        };
+
+        omniboxComposebox.addSearchContext(context as unknown as SearchContext);
+        await microtasksFinished();
+
+        // Verify query was NOT skipped
+        assertEquals(
+            initialCallCount + 1,
+            testProxy.handler.getCallCount('queryAutocomplete'));
+      });
+
+  test(
+      'addSearchContext does NOT skip autocomplete query for tab when source' +
+          ' is NOT suggested',
+      async () => {
+        loadTimeData.overrideValues({askGBlockZeroStateSuggestions: true});
+
+        const initialCallCount =
+            testProxy.handler.getCallCount('queryAutocomplete');
+        const context = {
+          input: '',
+          attachments: [{
+            tabAttachment: {
+              tabId: 42,
+              title: 'Google',
+              url: 'https://google.com',
+              source: TabAttachmentSource.kContextMenu,
+            },
+          }],
+          toolMode: 0,
+        };
+
+        omniboxComposebox.addSearchContext(context as unknown as SearchContext);
+        await microtasksFinished();
+
+        // Verify query was NOT skipped
+        assertEquals(
+            initialCallCount + 1,
+            testProxy.handler.getCallCount('queryAutocomplete'));
+      });
 
   test(
       'Carousel renders when files are present, hides when empty', async () => {

@@ -1032,7 +1032,8 @@ const FeatureEntry::FeatureParam
         {"Omnibox_AskGCurrentTabChip", "false"},
         {"Omnibox_AskGLensIcon", "true"},
         {"Omnibox_AskGLensSearchHintText", "false"},
-        {"Omnibox_AskGComposeboxLensChip", "false"}};
+        {"Omnibox_AskGComposeboxLensChip", "false"},
+        {"Omnibox_AskGBlockZeroStateSuggestions", "false"}};
 const FeatureEntry::FeatureParam
     kWebUiOmniboxAskGAboutThisPageCobrowsePlusVisualSelection[] = {
         {"Omnibox_AskGCoBrowse", "false"},
@@ -1044,7 +1045,8 @@ const FeatureEntry::FeatureParam
         {"Omnibox_AskGCurrentTabChip", "false"},
         {"Omnibox_AskGLensIcon", "false"},
         {"Omnibox_AskGLensSearchHintText", "false"},
-        {"Omnibox_AskGComposeboxLensChip", "false"}};
+        {"Omnibox_AskGComposeboxLensChip", "false"},
+        {"Omnibox_AskGBlockZeroStateSuggestions", "false"}};
 const FeatureEntry::FeatureParam
     kWebUiOmniboxAskGAboutThisPageOmniboxComposebox[] = {
         {"Omnibox_AskGCoBrowse", "false"},
@@ -1056,7 +1058,8 @@ const FeatureEntry::FeatureParam
         {"Omnibox_AskGCurrentTabChip", "false"},
         {"Omnibox_AskGLensIcon", "false"},
         {"Omnibox_AskGLensSearchHintText", "true"},
-        {"Omnibox_AskGComposeboxLensChip", "true"}};
+        {"Omnibox_AskGComposeboxLensChip", "true"},
+        {"Omnibox_AskGBlockZeroStateSuggestions", "true"}};
 const FeatureEntry::FeatureParam
     kWebUiOmniboxAskGAboutThisPageOmniboxComposeboxAndLensEntrypoint[] = {
         {"Omnibox_AskGCoBrowse", "false"},
@@ -1068,7 +1071,8 @@ const FeatureEntry::FeatureParam
         {"Omnibox_AskGCurrentTabChip", "false"},
         {"Omnibox_AskGLensIcon", "true"},
         {"Omnibox_AskGLensSearchHintText", "false"},
-        {"Omnibox_AskGComposeboxLensChip", "false"}};
+        {"Omnibox_AskGComposeboxLensChip", "false"},
+        {"Omnibox_AskGBlockZeroStateSuggestions", "true"}};
 const FeatureEntry::FeatureParam
     kWebUiOmniboxAskGAboutThisPageOmniboxChipComposeboxAndLensEntrypoint[] = {
         {"Omnibox_AskGCoBrowse", "false"},
@@ -1080,7 +1084,8 @@ const FeatureEntry::FeatureParam
         {"Omnibox_AskGCurrentTabChip", "true"},
         {"Omnibox_AskGLensIcon", "true"},
         {"Omnibox_AskGLensSearchHintText", "false"},
-        {"Omnibox_AskGComposeboxLensChip", "false"}};
+        {"Omnibox_AskGComposeboxLensChip", "false"},
+        {"Omnibox_AskGBlockZeroStateSuggestions", "true"}};
 
 const FeatureEntry::FeatureVariation
     kWebUiOmniboxAskGAboutThisPageVariations[] = {
