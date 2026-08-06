@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
+#include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/tabs/split_tab_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar_controller_util.h"
@@ -463,6 +464,8 @@ void WebUIToolbarWebView::AddedToWidget() {
 
 void WebUIToolbarWebView::OnThemeChanged() {
   views::View::OnThemeChanged();
+  UpdateProfileThemeColors(browser_->GetBrowserForMigrationOnly(),
+                           GetColorProvider());
   avatar_control_.UpdateIcon();
   if (location_bar_) {
     location_bar_->OnThemeChanged();
@@ -471,6 +474,7 @@ void WebUIToolbarWebView::OnThemeChanged() {
     pinned_toolbar_actions_.OnThemeChanged();
   }
   extensions_container_.OnThemeChanged();
+  icon_table_.OnThemeChanged();
 }
 
 gfx::Size WebUIToolbarWebView::GetMinimumSize() const {

@@ -95,6 +95,10 @@ class IconTable {
   // since icon IDs are never reused.
   std::vector<toolbar_ui_api::mojom::IconUpdatePtr> TakePendingUpdates();
 
+  // Inform IconTable that the theme has changed. This may necessitate
+  // icon updates to update icon colors.
+  void OnThemeChanged();
+
   // Normally trying to rasterize a vector icon rather than mapping it results
   // in a DCHECK. This disables this behavior for tests.
   void PermitFallbackVectorRasterizationForTesting() {

@@ -397,6 +397,7 @@ class IconTable::ProviderImpl : public toolbar_ui_api::IconHandle::Provider {
         name_or_url_ = webui::EncodePNGAndMakeDataURI(
             image_model_->Rasterize(icon_table_->delegate_->GetColorProvider()),
             scale_factor);
+        rasterized_scale_ = scale_factor;
       }
     } else if (image_model_ && image_model_->IsVectorIcon()) {
       ui::ColorVariant color_variant = image_model_->GetVectorIcon().color();
@@ -410,6 +411,8 @@ class IconTable::ProviderImpl : public toolbar_ui_api::IconHandle::Provider {
   const std::optional<ui::ImageModel>& MaybeImageModel() {
     return image_model_;
   }
+
+  void ForceRerasterize() { rasterized_scale_.reset(); }
 
  private:
   ~ProviderImpl() override {
@@ -584,6 +587,15 @@ IconTable::TakePendingUpdates() {
 
   pending_updates_.clear();
   return updates;
+}
+
+void IconTable::OnThemeChanged() {
+  // In the rare event of a theme change, update all icons as their colors
+  // likely changed.
+  for (auto& kv : registered_icons_) {
+    kv.second->ForceRerasterize();
+    pending_updates_.insert(kv.first);
+  }
 }
 
 toolbar_ui_api::IconHandle IconTable::AddRegistration(

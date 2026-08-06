@@ -354,6 +354,93 @@ TEST_F(IconTableTest, Colors) {
                                     MatchesIconUpdate(std::ref(expected_i3))));
 }
 
+TEST_F(IconTableTest, OnThemeChanged) {
+  // Register a rasterized bitmap icon (need_rasterize = true)
+  toolbar_ui_api::IconHandle i1 = icon_table_.RegisterImageModel(
+      ui::ImageModel::FromVectorIcon(vector_icons::kCardboardFilledIcon));
+  ASSERT_FALSE(i1.is_null());
+
+  // Register a mapped vector icon with a color provider color
+  toolbar_ui_api::IconHandle i2 =
+      icon_table_.RegisterImageModel(ui::ImageModel::FromVectorIcon(
+          vector_icons::kPasswordManagerIcon, ui::kColorIcon));
+  ASSERT_FALSE(i2.is_null());
+
+  // Consume initial pending updates
+  auto expected_i2_initial = toolbar_ui_api::mojom::IconUpdate::New(
+      2u, "webui-toolbar:password_manager", IconType::kIconSet,
+      /*color=*/SK_ColorBLUE);
+
+  EXPECT_THAT(icon_table_.TakePendingUpdates(),
+              testing::UnorderedElementsAre(
+                  MatchesBitmapIconUpdate(1u),
+                  MatchesIconUpdate(std::ref(expected_i2_initial))));
+  EXPECT_TRUE(icon_table_.TakePendingUpdates().empty());
+
+  // Update color provider colors to simulate a theme change (e.g. dark mode)
+  color_provider_.SetColorForTesting(ui::kColorIcon, SK_ColorRED);
+
+  // Notify icon table that the theme changed
+  icon_table_.OnThemeChanged();
+
+  // Verify TakePendingUpdates() re-evaluates all registered icons and returns
+  // updated rasterization / color data for both bitmap and vector icons.
+  auto expected_i2_updated = toolbar_ui_api::mojom::IconUpdate::New(
+      2u, "webui-toolbar:password_manager", IconType::kIconSet,
+      /*color=*/SK_ColorRED);
+
+  EXPECT_THAT(icon_table_.TakePendingUpdates(),
+              testing::UnorderedElementsAre(
+                  MatchesBitmapIconUpdate(1u),
+                  MatchesIconUpdate(std::ref(expected_i2_updated))));
+
+  // A subsequent call to TakePendingUpdates() without changes must be empty,
+  // confirming rasterized_scale_ was maintained and pending updates cleared.
+  EXPECT_TRUE(icon_table_.TakePendingUpdates().empty());
+}
+
+TEST_F(IconTableTest, ForceRerasterize) {
+  // Register a rasterized bitmap icon whose rasterization depends on
+  // GetColorProvider().
+  toolbar_ui_api::IconHandle i1 =
+      icon_table_.RegisterImageModel(ui::ImageModel::FromVectorIcon(
+          vector_icons::kCardboardFilledIcon, ui::kColorIcon));
+  ASSERT_FALSE(i1.is_null());
+
+  // First call to TakePendingUpdates() invokes ToMojom(), rasterizing with
+  // initial colors and setting rasterized_scale_.
+  auto updates1 = icon_table_.TakePendingUpdates();
+  ASSERT_EQ(1u, updates1.size());
+  std::string initial_png_data_url = updates1[0]->icon_url_or_name.value();
+  EXPECT_TRUE(base::StartsWith(initial_png_data_url, "data:image/png;base64"));
+
+  // Change ColorProvider colors to simulate theme switch.
+  color_provider_.SetColorForTesting(ui::kColorIcon, SK_ColorGREEN);
+
+  // Calling ToMojom() when rasterized_scale_ matches scale_factor_ must reuse
+  // initial_png_data_url without re-rasterizing.
+  auto full_state_before_reraster = icon_table_.GetFullState();
+  ASSERT_EQ(1u, full_state_before_reraster.size());
+  EXPECT_EQ(initial_png_data_url,
+            full_state_before_reraster[0]->icon_url_or_name.value());
+
+  // Trigger OnThemeChanged() which calls ForceRerasterize(), resetting
+  // rasterized_scale_.
+  icon_table_.OnThemeChanged();
+
+  // TakePendingUpdates() now re-rasterizes with the updated ColorProvider
+  // color.
+  auto updates2 = icon_table_.TakePendingUpdates();
+  ASSERT_EQ(1u, updates2.size());
+  std::string rerasterized_png_data_url = updates2[0]->icon_url_or_name.value();
+  EXPECT_TRUE(
+      base::StartsWith(rerasterized_png_data_url, "data:image/png;base64"));
+
+  // Verify that re-rasterization generated a new PNG data URL matching the new
+  // color.
+  EXPECT_NE(initial_png_data_url, rerasterized_png_data_url);
+}
+
 TEST_F(IconTableTest, AllSecurityIconsAreMapped) {
   const security_state::SecurityLevel levels[] = {
       security_state::NONE,
