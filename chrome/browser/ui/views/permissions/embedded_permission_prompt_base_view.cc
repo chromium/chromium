@@ -86,14 +86,6 @@ int GetPermissionIconSize() {
   return 20;
 }
 
-views::View* GetContentsWebView(gfx::NativeWindow native_window) {
-  auto* tracker = views::ElementTrackerViews::GetInstance();
-  auto* widget = views::Widget::GetWidgetForNativeWindow(native_window);
-  return tracker->GetFirstMatchingView(
-      ContentsWebView::kContentsWebViewElementId,
-      tracker->GetContextForWidget(widget));
-}
-
 }  // namespace
 
 EmbeddedPermissionPromptBaseView::EmbeddedPermissionPromptBaseView(
@@ -125,17 +117,6 @@ EmbeddedPermissionPromptBaseView::EmbeddedPermissionPromptBaseView(
           .value_or(1.0f);
   element_rect_ = gfx::ScaleToEnclosedRect(element_rect_, 1.f / scale_factor);
 
-  // Convert the position into screen coordinates.
-  auto* content_view = GetContentsWebView(GetNativeWindow());
-  if (content_view) {
-    views::View::ConvertRectToScreen(content_view, &element_rect_);
-  } else if (web_contents) {
-    // Set default coordinates for `omnibox` (does not have `context_view`),
-    // or other surfaces without a `permission` html element based on web
-    // contents.
-    element_rect_.Offset(
-        web_contents->GetContainerBounds().origin().OffsetFromOrigin());
-  }
 }
 
 EmbeddedPermissionPromptBaseView::~EmbeddedPermissionPromptBaseView() {
@@ -464,21 +445,26 @@ gfx::Rect EmbeddedPermissionPromptBaseView::GetBubbleBounds() {
   gfx::Rect container_bounds = web_contents->GetContainerBounds();
   gfx::Rect prompt_bounds;
 
+  // Convert `element_rect_` (web-contents-relative) to screen coordinates
+  // dynamically
+  gfx::Rect screen_element_rect = element_rect_;
+  screen_element_rect.Offset(container_bounds.origin().OffsetFromOrigin());
+
   // TODO(crbug.com/537445211): Clean up dead `kNearElement` experiment logic.
   if (GetPromptPosition() == PermissionElementPromptPosition::kNearElement) {
     // First, attempt to position the prompt below the PEPC, if it would not
     // overflow the container bounds.
     prompt_bounds = gfx::Rect(
-        element_rect_.bottom_center().x() - default_bounds.width() / 2,
-        element_rect_.bottom_center().y(), default_bounds.width(),
+        screen_element_rect.bottom_center().x() - default_bounds.width() / 2,
+        screen_element_rect.bottom_center().y(), default_bounds.width(),
         default_bounds.height());
 
     if (prompt_bounds.x() < container_bounds.x()) {
       // Align the prompt on the left side of the element.
-      prompt_bounds.set_x(element_rect_.x());
+      prompt_bounds.set_x(screen_element_rect.x());
     } else if (prompt_bounds.right() > container_bounds.right()) {
       // Align the prompt on the right side of the element.
-      prompt_bounds.set_x(element_rect_.right() - default_bounds.width());
+      prompt_bounds.set_x(screen_element_rect.right() - default_bounds.width());
     }
 
     if (container_bounds.Contains(prompt_bounds)) {
@@ -487,17 +473,17 @@ gfx::Rect EmbeddedPermissionPromptBaseView::GetBubbleBounds() {
 
     // Second, attempt to position the prompt above the PEPC, if it would not
     // overflow the container bounds.
-    prompt_bounds =
-        gfx::Rect(element_rect_.top_center().x() - default_bounds.width() / 2,
-                  element_rect_.top_center().y() - default_bounds.height(),
-                  default_bounds.width(), default_bounds.height());
+    prompt_bounds = gfx::Rect(
+        screen_element_rect.top_center().x() - default_bounds.width() / 2,
+        screen_element_rect.top_center().y() - default_bounds.height(),
+        default_bounds.width(), default_bounds.height());
 
     if (prompt_bounds.x() < container_bounds.x()) {
       // Align the prompt on the left side of the element.
-      prompt_bounds.set_x(element_rect_.x());
+      prompt_bounds.set_x(screen_element_rect.x());
     } else if (prompt_bounds.right() > container_bounds.right()) {
       // Align the prompt on the right side of the element.
-      prompt_bounds.set_x(element_rect_.right() - default_bounds.width());
+      prompt_bounds.set_x(screen_element_rect.right() - default_bounds.width());
     }
 
     if (container_bounds.Contains(prompt_bounds)) {
