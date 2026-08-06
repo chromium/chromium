@@ -70,6 +70,11 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupAimTest, ContextualEntrypoint) {
           "mocha.run();");
 }
 
+IN_PROC_BROWSER_TEST_F(OmniboxPopupAimTest, PopupContextualEntrypoint) {
+  RunTest("omnibox_popup/omnibox_popup_contextual_entrypoint_test.js",
+          "mocha.run();");
+}
+
 // TODO(crbug.com/519692372): Investigate why this fails on ChromeOS.
 // TODO(crbug.com/532163956): Flaky on Linux Debug.
 #if BUILDFLAG(IS_CHROMEOS) || (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
