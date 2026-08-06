@@ -140,20 +140,20 @@
   <p>The per-document set is capped at 20000 words and 128 bytes per word. Once the
      cap is reached, further additions are <b>silently dropped</b>.</p>
   <p>Field A contains <span class="word">zzzzzqqqqq</span>; field B contains
-     <span class="word">capword</span>. Both start squiggled.</p>
+     <span class="word">capwordzz</span>. Both start squiggled.</p>
   <div id="field4" class="editable" spellcheck="true" contenteditable>zzzzzqqqqq is misspelled.</div>
-  <div id="field4b" class="editable" spellcheck="true" contenteditable>capword is misspelled.</div>
+  <div id="field4b" class="editable" spellcheck="true" contenteditable>capwordzz is misspelled.</div>
   <button data-add='["zzzzzqqqqq"]'>A: addWords(["zzzzzqqqqq"])</button>
   <button id="bulk-add">Fill cap: addWords(21000 words + 1 over-long word)</button>
-  <button data-add='["capword"]'>B: addWords(["capword"])</button>
+  <button data-add='["capwordzz"]'>B: addWords(["capwordzz"])</button>
   <ol>
     <li><b>Below the cap.</b> Click <b>A: addWords(["zzzzzqqqqq"])</b>. Its squiggle
         should clear &mdash; the dictionary works normally below the cap.</li>
     <li><b>Fill the cap.</b> Click <b>Fill cap</b>. The page must not throw and must
         stay responsive, and the DevTools console should show exactly one warning:
         <i>&ldquo;per-document word limit reached&hellip;&rdquo;</i></li>
-    <li><b>Above the cap.</b> Click <b>B: addWords(["capword"])</b>. The squiggle on
-        <span class="word">capword</span> should <b>stay</b> &mdash; the word is
+    <li><b>Above the cap.</b> Click <b>B: addWords(["capwordzz"])</b>. The squiggle on
+        <span class="word">capwordzz</span> should <b>stay</b> &mdash; the word is
         rejected because the per-document set is full. (If it clears, the cap is not
         being enforced.)</li>
   </ol>
