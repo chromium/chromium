@@ -7,6 +7,11 @@ package org.chromium.chrome.browser.toolbar.top;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThan;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.util.Batch.PER_CLASS;
 
@@ -22,7 +27,6 @@ import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,9 +38,12 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -50,6 +57,9 @@ import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHistory;
 import org.chromium.content_public.browser.test.mock.MockNavigationController;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 import java.util.List;
@@ -59,6 +69,7 @@ import java.util.concurrent.ExecutionException;
 @Batch(PER_CLASS)
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DisableFeatures(ChromeFeatureList.NAVIGATION_LIST_MENU)
 public class NavigationPopupTest {
     @Rule
     public AutoResetCtaTransitTestRule mActivityTestRule =
@@ -183,8 +194,8 @@ public class NavigationPopupTest {
 
         ThreadUtils.runOnUiThreadBlocking((Runnable) () -> popup.performItemClick(1));
 
-        Assert.assertFalse("Popup did not hide as expected.", popup.isShowing());
-        Assert.assertEquals(
+        assertFalse("Popup did not hide as expected.", popup.isShowing());
+        assertEquals(
                 "Popup attempted to navigate to the wrong index", 5, controller.mNavigatedIndex);
     }
 
@@ -201,8 +212,8 @@ public class NavigationPopupTest {
                     View view =
                             list.getAdapter().getView(list.getAdapter().getCount() - 1, null, list);
                     TextView text = view.findViewById(R.id.entry_title);
-                    Assert.assertNotNull(text);
-                    Assert.assertEquals(
+                    assertNotNull(text);
+                    assertEquals(
                             text.getResources().getString(R.string.show_full_history),
                             text.getText().toString());
                 });
@@ -221,11 +232,11 @@ public class NavigationPopupTest {
                     View view =
                             list.getAdapter().getView(list.getAdapter().getCount() - 1, null, list);
                     TextView text = view.findViewById(R.id.entry_title);
-                    Assert.assertNotNull(text);
-                    Assert.assertNotEquals(
+                    assertNotNull(text);
+                    assertNotEquals(
                             text.getResources().getString(R.string.show_full_history),
                             text.getText().toString());
-                    Assert.assertEquals(controller.getEntryCount(), list.getAdapter().getCount());
+                    assertEquals(controller.getEntryCount(), list.getAdapter().getCount());
                 });
     }
 
@@ -248,7 +259,7 @@ public class NavigationPopupTest {
                                         0)));
         // Use incognito so that the menu won't contain the "Show all history" option.
         final ListPopupWindow popup = showPopup(controller, /* isOffTheRecord= */ true);
-        Assert.assertEquals(mMinWidth, popup.getWidth());
+        assertEquals(mMinWidth, popup.getWidth());
     }
 
     @Test
@@ -282,7 +293,7 @@ public class NavigationPopupTest {
                                         0,
                                         0)));
         final ListPopupWindow popup = showPopup(controller, /* isOffTheRecord= */ false);
-        Assert.assertEquals(mMaxWidth, popup.getWidth());
+        assertEquals(mMaxWidth, popup.getWidth());
     }
 
     @Test
@@ -310,37 +321,111 @@ public class NavigationPopupTest {
                                         0,
                                         0)));
         final ListPopupWindow popup = showPopup(controller, /* isOffTheRecord= */ false);
-        Assert.assertEquals(screenWidthForTest - mMargin, popup.getWidth());
+        assertEquals(screenWidthForTest - mMargin, popup.getWidth());
 
         // Clean up.
         displayMetrics.widthPixels = savedScreenWidth;
     }
 
+    private NavigationPopup createAndShowPopup(
+            NavigationController controller, boolean isOffTheRecord) {
+        Profile profile =
+                isOffTheRecord
+                        ? ProfileManager.getLastUsedRegularProfile().getPrimaryOtrProfile(true)
+                        : ProfileManager.getLastUsedRegularProfile();
+        NavigationPopup popup =
+                new NavigationPopup(
+                        profile,
+                        mActivityTestRule.getActivity(),
+                        controller,
+                        NavigationPopup.Type.TABLET_FORWARD,
+                        mActivityTestRule.getActivity().getActivityTabProvider(),
+                        (tab) ->
+                                HistoryManagerUtils.showHistoryManager(
+                                        mActivityTestRule.getActivity(), tab, profile));
+        popup.show(
+                mActivityTestRule.getActivity().getToolbarManager().getToolbarLayoutForTesting());
+        return popup;
+    }
+
     private ListPopupWindow showPopup(NavigationController controller, boolean isOffTheRecord)
             throws ExecutionException {
         return ThreadUtils.runOnUiThreadBlocking(
+                () -> createAndShowPopup(controller, isOffTheRecord).getPopupForTesting());
+    }
+
+    private NavigationPopup showListMenuPopup(
+            NavigationController controller, boolean isOffTheRecord) throws ExecutionException {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> createAndShowPopup(controller, isOffTheRecord));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Navigation"})
+    @EnableFeatures(ChromeFeatureList.NAVIGATION_LIST_MENU)
+    public void testItemSelection_ListMenu() throws ExecutionException {
+        final TestNavigationController controller = new TestNavigationController();
+        final NavigationPopup popup = showListMenuPopup(controller, false);
+        assertTrue("ListItems should be populated", popup.getListItemsForTesting().size() > 0);
+
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Profile profile =
-                            isOffTheRecord
-                                    ? ProfileManager.getLastUsedRegularProfile()
-                                            .getPrimaryOtrProfile(true)
-                                    : ProfileManager.getLastUsedRegularProfile();
-                    NavigationPopup popup =
-                            new NavigationPopup(
-                                    profile,
-                                    mActivityTestRule.getActivity(),
-                                    controller,
-                                    NavigationPopup.Type.TABLET_FORWARD,
-                                    mActivityTestRule.getActivity().getActivityTabProvider(),
-                                    (tab) ->
-                                            HistoryManagerUtils.showHistoryManager(
-                                                    mActivityTestRule.getActivity(), tab, profile));
-                    popup.show(
+                    PropertyModel model = popup.getListItemsForTesting().get(1).model;
+                    int index = model.get(ListMenuItemProperties.MENU_ITEM_ID);
+                    int order = model.get(ListMenuItemProperties.ORDER);
+                    popup.handleItemClickForTesting(index, order);
+                });
+
+        assertEquals(
+                "Popup attempted to navigate to the wrong index", 5, controller.mNavigatedIndex);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Navigation"})
+    @EnableFeatures(ChromeFeatureList.NAVIGATION_LIST_MENU)
+    public void testShowAllHistory_ListMenu() throws ExecutionException {
+        final TestNavigationController controller = new TestNavigationController();
+        final NavigationPopup popup = showListMenuPopup(controller, false);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ModelList listItems = popup.getListItemsForTesting();
+                    assertTrue("ListItems should be populated", listItems.size() > 0);
+                    PropertyModel lastItem = listItems.get(listItems.size() - 1).model;
+                    CharSequence text = lastItem.get(ListMenuItemProperties.TITLE);
+                    assertNotNull(text);
+                    assertEquals(
                             mActivityTestRule
                                     .getActivity()
-                                    .getToolbarManager()
-                                    .getToolbarLayoutForTesting());
-                    return popup.getPopupForTesting();
+                                    .getResources()
+                                    .getString(R.string.show_full_history),
+                            text.toString());
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Navigation"})
+    @EnableFeatures(ChromeFeatureList.NAVIGATION_LIST_MENU)
+    public void testPopupForIncognito_ListMenu() throws ExecutionException {
+        final TestNavigationController controller = new TestNavigationController();
+        final NavigationPopup popup = showListMenuPopup(controller, true);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ModelList listItems = popup.getListItemsForTesting();
+                    assertTrue("ListItems should be populated", listItems.size() > 0);
+                    PropertyModel lastItem = listItems.get(listItems.size() - 1).model;
+                    CharSequence text = lastItem.get(ListMenuItemProperties.TITLE);
+                    assertNotNull(text);
+                    assertNotEquals(
+                            mActivityTestRule
+                                    .getActivity()
+                                    .getResources()
+                                    .getString(R.string.show_full_history),
+                            text.toString());
                 });
     }
 }

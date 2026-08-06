@@ -200,6 +200,15 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
         return mPopup;
     }
 
+    ModelList getListItemsForTesting() {
+        return mListItems;
+    }
+
+    void handleItemClickForTesting(int index, int position) {
+        handleItemClick(index, position);
+        if (mListMenuHost != null) mListMenuHost.dismiss();
+    }
+
     private String buildComputedAction(String action) {
         return (mType == Type.TABLET_FORWARD ? "ForwardMenu_" : "BackMenu_") + action;
     }
