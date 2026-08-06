@@ -543,11 +543,10 @@ public class AutofillTestHelper {
             int callCount = mOnPersonalDataChangedHelper.getCallCount();
             boolean isDataLoaded =
                     runOnUiThreadBlocking(
-                            () -> {
-                                return getPersonalDataManagerForLastUsedProfile()
-                                        .registerDataObserver(
-                                                mOnPersonalDataChangedHelper::notifyCalled);
-                            });
+                            () ->
+                                    getPersonalDataManagerForLastUsedProfile()
+                                            .registerDataObserver(
+                                                    mOnPersonalDataChangedHelper::notifyCalled));
             if (isDataLoaded) return;
             mOnPersonalDataChangedHelper.waitForCallback(callCount);
         } catch (TimeoutException e) {

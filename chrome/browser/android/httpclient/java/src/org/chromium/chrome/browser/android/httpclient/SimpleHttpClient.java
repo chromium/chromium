@@ -113,17 +113,16 @@ public class SimpleHttpClient implements Destroyable {
 
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
-                () -> {
-                    SimpleHttpClientJni.get()
-                            .sendNetworkRequest(
-                                    mNativeBridge,
-                                    gurl,
-                                    requestType,
-                                    body,
-                                    headers,
-                                    annotation.getHashCode(),
-                                    responseConsumer);
-                });
+                () ->
+                        SimpleHttpClientJni.get()
+                                .sendNetworkRequest(
+                                        mNativeBridge,
+                                        gurl,
+                                        requestType,
+                                        body,
+                                        headers,
+                                        annotation.getHashCode(),
+                                        responseConsumer));
     }
 
     /**

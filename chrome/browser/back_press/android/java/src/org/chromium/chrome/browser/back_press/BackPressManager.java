@@ -481,13 +481,7 @@ public class BackPressManager implements Destroyable, BackPressHandlerRegistry {
     @VisibleForTesting
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     void createOnSystemNavigationCallback() {
-        mOnSystemNavigationCallback =
-                new OnBackInvokedCallback() {
-                    @Override
-                    public void onBackInvoked() {
-                        onSystemNavigationInternal();
-                    }
-                };
+        mOnSystemNavigationCallback = this::onSystemNavigationInternal;
     }
 
     @Override

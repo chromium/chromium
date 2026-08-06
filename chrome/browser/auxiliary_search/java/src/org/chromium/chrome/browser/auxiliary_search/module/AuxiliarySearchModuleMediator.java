@@ -100,22 +100,18 @@ public class AuxiliarySearchModuleMediator {
 
         mModel.set(
                 AuxiliarySearchModuleProperties.MODULE_SECOND_BUTTON_ON_CLICK_LISTENER,
-                view -> {
-                    onButtonClicked(ClickInfo.OPT_IN);
-                });
+                _ -> onButtonClicked(ClickInfo.OPT_IN));
     }
 
     /** Sets the default opt out card with "No thanks" and "Turn on" buttons. */
     private void setDefaultOptOutCard() {
         mModel.set(
                 AuxiliarySearchModuleProperties.MODULE_FIRST_BUTTON_ON_CLICK_LISTENER,
-                view -> {
-                    onButtonClicked(ClickInfo.OPT_OUT);
-                });
+                _ -> onButtonClicked(ClickInfo.OPT_OUT));
 
         mModel.set(
                 AuxiliarySearchModuleProperties.MODULE_SECOND_BUTTON_ON_CLICK_LISTENER,
-                view -> {
+                _ -> {
                     AuxiliarySearchConfigManager.getInstance().notifyShareTabsStateChanged(true);
                     onButtonClicked(ClickInfo.TURN_ON);
                 });

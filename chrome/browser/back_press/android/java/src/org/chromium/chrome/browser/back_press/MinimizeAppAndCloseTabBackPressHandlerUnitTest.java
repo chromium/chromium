@@ -159,10 +159,7 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
                 HistogramWatcher.newBuilder()
                         .expectNoRecords(MinimizeAppAndCloseTabBackPressHandler.HISTOGRAM)
                         .build();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mActivityTabSupplier.set(mTab);
-                });
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivityTabSupplier.set(mTab));
         Mockito.when(mShouldCloseTab.test(mTab)).thenReturn(false);
 
         Assert.assertFalse(

@@ -87,9 +87,7 @@ public class BackPressManagerTest {
         BackPressManager manager = new BackPressManager();
         EmptyBackPressHandler h1 = ThreadUtils.runOnUiThreadBlocking(EmptyBackPressHandler::new);
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    manager.addHandler(h1, BackPressHandler.Type.FIND_TOOLBAR);
-                });
+                () -> manager.addHandler(h1, BackPressHandler.Type.FIND_TOOLBAR));
 
         triggerBackPressWithoutAssertionError(manager);
 
@@ -108,10 +106,7 @@ public class BackPressManagerTest {
 
         histogramWatcher =
                 HistogramWatcher.newBuilder().expectNoRecords(BackPressManager.HISTOGRAM).build();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    h1.getHandleBackPressChangedSupplier().set(false);
-                });
+        ThreadUtils.runOnUiThreadBlocking(() -> h1.getHandleBackPressChangedSupplier().set(false));
         triggerBackPressWithoutAssertionError(manager);
         histogramWatcher.assertExpected(
                 "Handler's histogram should be not recorded if it is not executed");

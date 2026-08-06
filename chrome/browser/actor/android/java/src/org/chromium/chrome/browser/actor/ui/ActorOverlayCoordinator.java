@@ -19,8 +19,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ActorKeyedService;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
 import org.chromium.chrome.browser.actor.ActorTask;
-import org.chromium.chrome.browser.actor.ActorTaskId;
-import org.chromium.chrome.browser.actor.ActorTaskState;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -174,14 +172,7 @@ public class ActorOverlayCoordinator {
         mActorKeyedService = ActorKeyedServiceFactory.getForProfile(profile);
         if (mActorKeyedService == null) return;
 
-        mActorObserver =
-                new ActorKeyedService.Observer() {
-                    @Override
-                    public void onTaskStateChanged(
-                            @ActorTaskId int taskId, @ActorTaskState int newState) {
-                        mMediator.onTaskStateChanged();
-                    }
-                };
+        mActorObserver = (_, _) -> mMediator.onTaskStateChanged();
         mActorKeyedService.addObserver(mActorObserver);
     }
 

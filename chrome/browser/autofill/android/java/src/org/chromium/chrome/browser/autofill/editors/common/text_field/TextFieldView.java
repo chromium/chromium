@@ -101,19 +101,16 @@ public class TextFieldView extends FrameLayout implements FieldView {
                 });
 
         mInput.setOnFocusChangeListener(
-                new OnFocusChangeListener() {
-                    @Override
-                    public void onFocusChange(View v, boolean hasFocus) {
-                        mInFocusChange = true;
-                        mEditorFieldModel.set(FOCUSED, hasFocus);
-                        mInFocusChange = false;
+                (View _, boolean hasFocus) -> {
+                    mInFocusChange = true;
+                    mEditorFieldModel.set(FOCUSED, hasFocus);
+                    mInFocusChange = false;
 
-                        if (!hasFocus && mValidator != null) {
-                            // Validate the field when the user de-focuses it.
-                            // We do not validate the form initially when all of the fields are
-                            // empty to avoid showing error messages in all of the fields.
-                            mValidator.validate(mEditorFieldModel);
-                        }
+                    if (!hasFocus && mValidator != null) {
+                        // Validate the field when the user de-focuses it.
+                        // We do not validate the form initially when all of the fields are
+                        // empty to avoid showing error messages in all of the fields.
+                        mValidator.validate(mEditorFieldModel);
                     }
                 });
 

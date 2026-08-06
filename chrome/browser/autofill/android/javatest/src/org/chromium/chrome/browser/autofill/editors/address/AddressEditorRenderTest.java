@@ -22,6 +22,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -196,16 +197,10 @@ public class AddressEditorRenderTest {
                     when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(mAccountInfo);
                 });
 
-        doAnswer(
-                        invocation -> {
-                            return (String) invocation.getArguments()[0];
-                        })
+        doAnswer((InvocationOnMock invocation) -> invocation.getArguments()[0])
                 .when(mPhoneNumberUtilJni)
                 .formatForDisplay(anyString(), anyString());
-        doAnswer(
-                        invocation -> {
-                            return (String) invocation.getArguments()[0];
-                        })
+        doAnswer((InvocationOnMock invocation) -> invocation.getArguments()[0])
                 .when(mPhoneNumberUtilJni)
                 .formatForResponse(anyString());
         when(mPhoneNumberUtilJni.isPossibleNumber(anyString(), anyString())).thenReturn(true);

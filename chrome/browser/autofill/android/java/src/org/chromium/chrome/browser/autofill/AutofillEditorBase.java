@@ -147,22 +147,13 @@ public abstract class AutofillEditorBase extends Fragment
     /** Initializes the buttons within the layout. */
     protected void initializeButtons(View layout) {
         Button button = layout.findViewById(R.id.button_secondary);
-        button.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        finishPage();
-                    }
-                });
+        button.setOnClickListener(_ -> finishPage());
 
         button = (Button) layout.findViewById(R.id.button_primary);
         button.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (saveEntry()) {
-                            finishPage();
-                        }
+                _ -> {
+                    if (saveEntry()) {
+                        finishPage();
                     }
                 });
         button.setEnabled(false);

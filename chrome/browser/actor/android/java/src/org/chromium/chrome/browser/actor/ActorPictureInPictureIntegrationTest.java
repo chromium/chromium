@@ -107,10 +107,9 @@ public class ActorPictureInPictureIntegrationTest {
         // In a real scenario, this is triggered by onPictureInPictureModeChanged,
         // but we can invoke the internal logic directly for the integration test.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mController.onPictureInPictureEvent(
-                            PictureInPictureDelegate.Event.ENTERED, null);
-                });
+                () ->
+                        mController.onPictureInPictureEvent(
+                                PictureInPictureDelegate.Event.ENTERED, null));
 
         // Verify offscreen rendering is active.
         assertTrue(mTab.getIsOffscreenRenderingSupplier().get());
@@ -123,16 +122,13 @@ public class ActorPictureInPictureIntegrationTest {
 
         // Simulate exiting PiP.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mController.onPictureInPictureEvent(
-                            PictureInPictureDelegate.Event.EXITED, null);
-                });
+                () ->
+                        mController.onPictureInPictureEvent(
+                                PictureInPictureDelegate.Event.EXITED, null));
 
         // Verify restoration.
         assertFalse(mTab.getIsOffscreenRenderingSupplier().get());
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    assertEquals(originalWindow, webContents.getTopLevelNativeWindow());
-                });
+                () -> assertEquals(originalWindow, webContents.getTopLevelNativeWindow()));
     }
 }

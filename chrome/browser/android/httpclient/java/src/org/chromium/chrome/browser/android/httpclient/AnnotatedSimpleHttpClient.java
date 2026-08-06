@@ -57,12 +57,11 @@ public class AnnotatedSimpleHttpClient implements ChromeHttpClient {
                                     body,
                                     headers,
                                     mAnnotation,
-                                    (HttpResponse response) -> {
-                                        callback.accept(
-                                                getStatusCode(response),
-                                                response.mBody,
-                                                response.mHeaders);
-                                    });
+                                    (HttpResponse response) ->
+                                            callback.accept(
+                                                    getStatusCode(response),
+                                                    response.mBody,
+                                                    response.mHeaders));
                 });
     }
 

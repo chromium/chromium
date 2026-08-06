@@ -90,10 +90,7 @@ public class ChromeOriginVerifierJunitTest {
                 mUid);
 
         ChromeOriginVerifierJni.setInstanceForTesting(mMockChromeOriginVerifierJni);
-        Mockito.doAnswer(
-                        args -> {
-                            return 100L;
-                        })
+        Mockito.doAnswer(_ -> 100L)
                 .when(mMockChromeOriginVerifierJni)
                 .init(Mockito.any(), Mockito.any());
 

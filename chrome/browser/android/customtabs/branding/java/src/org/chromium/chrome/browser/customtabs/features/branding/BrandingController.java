@@ -197,10 +197,7 @@ public class BrandingController {
         if (mToolbarBrandingDelegate == null) return;
         mToolbarBrandingDelegate.showBrandingLocationBar();
 
-        Runnable hideToolbarBranding =
-                () -> {
-                    mToolbarBrandingDelegate.showRegularToolbar();
-                };
+        Runnable hideToolbarBranding = () -> mToolbarBrandingDelegate.showRegularToolbar();
         PostTask.postDelayedTask(
                 TaskTraits.UI_DEFAULT,
                 mCallbackController.makeCancelable(hideToolbarBranding),

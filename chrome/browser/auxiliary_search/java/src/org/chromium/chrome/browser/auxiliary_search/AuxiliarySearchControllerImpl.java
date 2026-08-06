@@ -222,9 +222,7 @@ public class AuxiliarySearchControllerImpl
                     }
                 };
         Callback<Boolean> onFaviconDonationCompleteCallback =
-                (success) -> {
-                    recordDonationTimeAndResults(startTimeMs, success);
-                };
+                (Boolean success) -> recordDonationTimeAndResults(startTimeMs, success);
 
         // Donates the list of entries without favicons.
         mDonor.donateEntries(entries, counts, onDonationCompleteCallback);
@@ -300,10 +298,7 @@ public class AuxiliarySearchControllerImpl
         long startTimeMs = TimeUtils.uptimeMillis();
 
         mHasDeletingTask = true;
-        if (!mDonor.deleteAll(
-                (success) -> {
-                    onAllTabDeleted(success, startTimeMs);
-                })) {
+        if (!mDonor.deleteAll((Boolean success) -> onAllTabDeleted(success, startTimeMs))) {
             mHasDeletingTask = false;
         }
     }

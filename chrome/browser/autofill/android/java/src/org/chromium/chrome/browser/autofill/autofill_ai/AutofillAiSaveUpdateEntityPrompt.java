@@ -311,10 +311,7 @@ public class AutofillAiSaveUpdateEntityPrompt implements EntityEditorCoordinator
                                 "<link>",
                                 "</link>",
                                 new ChromeClickableSpan(
-                                        mContext,
-                                        view -> {
-                                            mController.onWalletLinkClicked();
-                                        })));
+                                        mContext, _ -> mController.onWalletLinkClicked())));
         sourceNoticeView.setText(sourceNoticeWithLink, TextView.BufferType.SPANNABLE);
         sourceNoticeView.setMovementMethod(LinkMovementMethod.getInstance());
     }
