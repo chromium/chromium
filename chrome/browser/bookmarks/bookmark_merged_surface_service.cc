@@ -265,7 +265,7 @@ BookmarkMergedSurfaceService::GetParentForManagedNode(
 void BookmarkMergedSurfaceService::Move(const bookmarks::BookmarkNode* node,
                                         const BookmarkParentFolder& new_parent,
                                         size_t index,
-                                        Browser* browser) {
+                                        BrowserWindowInterface* browser) {
   CHECK(node);
   CHECK(loaded());
   CHECK(!IsParentFolderManaged(new_parent));

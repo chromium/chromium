@@ -500,7 +500,7 @@ void BookmarksPageHandler::DropBookmarks(const std::string& folder_id,
                      /*index=*/parent_node->children().size(),
                      /*copy=*/false,
                      chrome::BookmarkReorderDropTarget::kBookmarkSidePanel,
-                     browser_window_interface_->GetBrowserForMigrationOnly());
+                     browser_window_interface_);
 }
 
 void BookmarksPageHandler::ExecuteOpenInNewTabCommand(

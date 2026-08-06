@@ -148,7 +148,7 @@ class BookmarkMergedSurfaceServiceTest : public testing::Test {
     return managed_bookmark_service_->managed_node();
   }
 
-  void PerformMoveAction(Browser* browser,
+  void PerformMoveAction(BrowserWindowInterface* browser,
                          const bookmarks::BookmarkNode* node,
                          const bookmarks::BookmarkNode* target_node,
                          size_t index) {

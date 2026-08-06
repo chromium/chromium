@@ -120,7 +120,7 @@ ui::mojom::DragOperation BookmarkUIOperationsHelper::DropBookmarks(
     size_t index,
     bool copy,
     chrome::BookmarkReorderDropTarget target,
-    Browser* browser) {
+    BrowserWindowInterface* browser) {
   CHECK(target_parent());
   CHECK(!target_parent()->IsManaged());
   if (!data.IsFromProfilePath(profile->GetPath())) {
@@ -462,7 +462,7 @@ void BookmarkUIOperationsHelperNonMergedSurfaces::MoveBookmarkNodeData(
     const bookmarks::BookmarkNodeData& data,
     const base::FilePath& profile_path,
     size_t index_to_add_at,
-    Browser* browser) {
+    BrowserWindowInterface* browser) {
   const BookmarkNode* parent = parent_node();
   if (!parent) {
     return;
@@ -615,7 +615,7 @@ void BookmarkUIOperationsHelperMergedSurfaces::MoveBookmarkNodeData(
     const bookmarks::BookmarkNodeData& data,
     const base::FilePath& profile_path,
     size_t index_to_add_at,
-    Browser* browser) {
+    BrowserWindowInterface* browser) {
   if (!target_parent_) {
     return;
   }

@@ -27,7 +27,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_ui_operations_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -158,7 +158,7 @@ void CheckSelectionIsValid(
 BookmarkContextMenuController::BookmarkContextMenuController(
     gfx::NativeWindow parent_window,
     BookmarkContextMenuControllerDelegate* delegate,
-    Browser* browser,
+    BrowserWindowInterface* browser,
     Profile* profile,
     BookmarkLaunchLocation opened_from,
     const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&

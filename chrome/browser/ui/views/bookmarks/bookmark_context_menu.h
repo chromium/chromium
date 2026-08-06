@@ -13,7 +13,7 @@
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/views/controls/menu/menu_delegate.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace views {
 class MenuRunner;
@@ -44,7 +44,7 @@ class BookmarkContextMenu : public BookmarkContextMenuControllerDelegate,
   // |browser| is used to open bookmarks as well as the bookmark manager, and
   // is NULL in tests.
   BookmarkContextMenu(views::Widget* parent_widget,
-                      Browser* browser,
+                      BrowserWindowInterface* browser,
                       Profile* profile,
                       BookmarkLaunchLocation opened_from,
                       const std::vector<raw_ptr<const bookmarks::BookmarkNode,

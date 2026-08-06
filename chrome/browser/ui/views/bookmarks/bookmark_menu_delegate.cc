@@ -161,7 +161,7 @@ class BookmarkModelDropObserver : public BookmarkMergedSurfaceServiceObserver {
             .DropBookmarks(browser_->GetProfile(), drop_data_,
                            index_to_drop_at_, copy,
                            chrome::BookmarkReorderDropTarget::kBookmarkMenu,
-                           browser_->GetBrowserForMigrationOnly());
+                           browser_.get());
   }
 
  private:
@@ -656,8 +656,8 @@ void BookmarkMenuDelegate::RunContextMenuAt(
 
   bookmark_context_menu_observation_.Reset();
   context_menu_ = std::make_unique<BookmarkContextMenu>(
-      parent_, browser_->GetBrowserForMigrationOnly(), profile_, location_,
-      nodes, close_on_remove, can_paste);
+      parent_, browser_, profile_, location_, nodes, close_on_remove,
+      can_paste);
   bookmark_context_menu_observation_.Observe(context_menu_.get());
   context_menu_->RunMenuAt(p, source_type);
 }

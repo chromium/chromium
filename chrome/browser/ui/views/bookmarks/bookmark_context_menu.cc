@@ -44,7 +44,7 @@ BookmarkContextMenuObserver::~BookmarkContextMenuObserver() = default;
 
 BookmarkContextMenu::BookmarkContextMenu(
     views::Widget* parent_widget,
-    Browser* browser,
+    BrowserWindowInterface* browser,
     Profile* profile,
     BookmarkLaunchLocation opened_from,
     const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&

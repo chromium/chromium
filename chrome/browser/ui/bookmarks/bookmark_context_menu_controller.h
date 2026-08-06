@@ -17,7 +17,7 @@
 #include "ui/gfx/native_ui_types.h"
 #include "ui/menus/simple_menu_model.h"
 
-class Browser;
+class BrowserWindowInterface;
 class Profile;
 
 class BookmarkMergedSurfaceService;
@@ -59,7 +59,7 @@ class BookmarkContextMenuController
   BookmarkContextMenuController(
       gfx::NativeWindow parent_window,
       BookmarkContextMenuControllerDelegate* delegate,
-      Browser* browser,
+      BrowserWindowInterface* browser,
       Profile* profile,
       BookmarkLaunchLocation opened_from,
       const std::vector<raw_ptr<const bookmarks::BookmarkNode,
@@ -137,7 +137,7 @@ class BookmarkContextMenuController
 
   gfx::NativeWindow parent_window_;
   raw_ptr<BookmarkContextMenuControllerDelegate> delegate_;
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<BrowserWindowInterface> browser_;
   raw_ptr<Profile> profile_;
   const BookmarkLaunchLocation opened_from_;
   std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>

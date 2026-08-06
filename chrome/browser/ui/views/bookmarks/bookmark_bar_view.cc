@@ -1579,9 +1579,9 @@ void BookmarkBarView::RunContextMenuAt(std::vector<int64_t> node_ids,
 
   context_menu_observation_.Reset();
   context_menu_ = std::make_unique<BookmarkContextMenu>(
-      GetWidget(), browser_->GetBrowserForMigrationOnly(),
-      browser_->GetProfile(), BookmarkLaunchLocation::kAttachedBar,
-      ToRawPtrVector(nodes), close_on_remove, can_paste);
+      GetWidget(), browser_, browser_->GetProfile(),
+      BookmarkLaunchLocation::kAttachedBar, ToRawPtrVector(nodes),
+      close_on_remove, can_paste);
   context_menu_observation_.Observe(context_menu_.get());
   context_menu_->RunMenuAt(point, source_type);
 }
@@ -2396,7 +2396,7 @@ void BookmarkBarView::PerformDrop(
                                                &parent_folder)
           .DropBookmarks(browser_->GetProfile(), data, index, copy,
                          chrome::BookmarkReorderDropTarget::kBookmarkBarView,
-                         browser_->GetBrowserForMigrationOnly());
+                         browser_);
 }
 
 int BookmarkBarView::GetDropLocationModelIndexForTesting() const {
