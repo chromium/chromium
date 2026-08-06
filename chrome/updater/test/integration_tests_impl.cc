@@ -1678,8 +1678,13 @@ void RunRecoveryComponent(UpdaterScope scope,
                           const std::string& app_id,
                           const base::Version& version) {
   base::CommandLine command(GetSetupExecutablePath());
-  command.AppendSwitchUTF8(kBrowserVersionSwitch, version.GetString());
-  command.AppendSwitchUTF8(kAppGuidSwitch, app_id);
+  command.AppendSwitch(kRecoverSwitch);
+  if (version.IsValid()) {
+    command.AppendSwitchUTF8(kBrowserVersionSwitch, version.GetString());
+  }
+  if (!app_id.empty()) {
+    command.AppendSwitchUTF8(kAppGuidSwitch, app_id);
+  }
   int exit_code = -1;
   Run(scope, command, &exit_code);
   ASSERT_EQ(exit_code, kErrorOk);
