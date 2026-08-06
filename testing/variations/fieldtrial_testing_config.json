@@ -18095,6 +18095,24 @@
             ]
         }
     ],
+    "OmniboxWebUIDeferShowUntilVisualStateReady": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260805",
+                    "enable_features": [
+                        "OmniboxWebUIDeferShowUntilVisualStateReady"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxWebUIPopupMarkAsHiddenMacOS": [
         {
             "platforms": [
