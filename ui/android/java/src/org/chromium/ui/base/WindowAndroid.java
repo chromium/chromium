@@ -106,8 +106,6 @@ public class WindowAndroid
 
     private static int sOccludedCount;
 
-    private static ThreadUtils.@Nullable ThreadChecker sThreadChecker;
-
     private static long sTotalOccludedPixels;
     private static long sAccumulatedPixelMilliseconds;
     private static long sLastPixelUpdateTimeMs;
@@ -378,10 +376,6 @@ public class WindowAndroid
             boolean activityTopResumedSupported,
             boolean occlusionTrackingAllowed) {
 
-        if (sThreadChecker == null) {
-            sThreadChecker = new ThreadUtils.ThreadChecker();
-        }
-
         // When the first occlusion tracked window is created, start periodic metrics collection.
         if (occlusionTrackingAllowed
                 && UiAndroidFeatureList.sAndroidWindowOcclusion.isEnabled()
@@ -538,7 +532,7 @@ public class WindowAndroid
      * @param isOcclusionTracked Whether occlusion is tracked for this window.
      */
     public void setIsOcclusionTracked(boolean isOcclusionTracked) {
-        assumeNonNull(sThreadChecker).assertOnValidThread();
+        ThreadUtils.assertOnUiThread();
         assert !shouldTrackOcclusionWithTrustedPresentationApi();
         mIsOcclusionTracked = isOcclusionTracked;
     }
@@ -557,7 +551,7 @@ public class WindowAndroid
      */
     public void setOccluded(
             boolean isOccluded, @Nullable Rect windowBounds, @Nullable Region visibleRegion) {
-        assumeNonNull(sThreadChecker).assertOnValidThread();
+        ThreadUtils.assertOnUiThread();
         // If the Trusted Presentation API is already tracking occlusion, it takes precedence.
         if (!mOcclusionTrackingAllowed || shouldTrackOcclusionWithTrustedPresentationApi()) {
             return;
