@@ -56,8 +56,10 @@ source_set("model") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/snackbar",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/snackbar/ui_bundled/ui",
     "//ios/chrome/browser/tab_picker/public",
     "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser/bwg:gemini_api",
     "//ios/web/public",
   ]
