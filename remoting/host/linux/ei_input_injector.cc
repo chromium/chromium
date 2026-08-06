@@ -81,6 +81,7 @@ void EiInputInjector::InjectKeyEvent(const protocol::KeyEvent& event) {
 
     if (caps_lock.has_value() &&
         *caps_lock != lock_state_tracker_->GetCapsLockState()) {
+      VLOG(3) << "Toggling CapsLock.";
       ei_session_->InjectKeyEvent(kCapsLockUsbKeyCode, true);
       ei_session_->InjectKeyEvent(kCapsLockUsbKeyCode, false);
       lock_state_tracker_->SetExpectedCapsLockState(*caps_lock);
@@ -92,6 +93,7 @@ void EiInputInjector::InjectKeyEvent(const protocol::KeyEvent& event) {
     if (event.has_num_lock_state()) {
       bool num_lock = event.num_lock_state();
       if (num_lock != lock_state_tracker_->GetNumLockState()) {
+        VLOG(3) << "Toggling NumLock.";
         ei_session_->InjectKeyEvent(kNumLockUsbKeyCode, true);
         ei_session_->InjectKeyEvent(kNumLockUsbKeyCode, false);
         lock_state_tracker_->SetExpectedNumLockState(num_lock);
@@ -107,6 +109,7 @@ void EiInputInjector::InjectKeyEvent(const protocol::KeyEvent& event) {
       return;
     }
   }
+  VLOG(3) << "Injecting key " << (event.pressed() ? "down" : "up") << " event.";
   ei_session_->InjectKeyEvent(event.usb_keycode(), event.pressed());
   if (event.pressed()) {
     // Immediately release non-modifier keys to avoid unwanted auto-repeat.
@@ -196,6 +199,8 @@ void EiInputInjector::InjectMouseEvent(const protocol::MouseEvent& event) {
       if (!stream) {
         LOG(ERROR) << "Unexpected screen ID: " << screen_id;
       } else {
+        VLOG(3) << "Moving mouse to " << event.fractional_coordinate().x()
+                << "," << event.fractional_coordinate().y();
         ei_session_->InjectAbsolutePointerMove(
             stream->mapping_id(), event.fractional_coordinate().x(),
             event.fractional_coordinate().y());
@@ -203,6 +208,9 @@ void EiInputInjector::InjectMouseEvent(const protocol::MouseEvent& event) {
       }
     }
   } else if (event.has_delta_x() || event.has_delta_y()) {
+    VLOG(3) << "Moving mouse by "
+            << (event.has_delta_x() ? event.delta_x() : 0) << ","
+            << (event.has_delta_y() ? event.delta_y() : 0);
     ei_session_->InjectRelativePointerMove(
         event.has_delta_x() ? event.delta_x() : 0,
         event.has_delta_y() ? event.delta_y() : 0);
@@ -210,6 +218,8 @@ void EiInputInjector::InjectMouseEvent(const protocol::MouseEvent& event) {
   }
 
   if (event.has_button() && event.has_button_down()) {
+    VLOG(3) << "Button " << event.button() << " received, sending "
+            << (event.button_down() ? "down " : "up ") << event.button();
     ei_session_->InjectButton(event.button(), event.button_down());
     event_sent = true;
   }
