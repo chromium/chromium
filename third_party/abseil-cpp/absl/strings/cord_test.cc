@@ -1629,8 +1629,8 @@ TEST_P(CordTest, CompareRandomComparisons) {
   for (int i = 0; i < kIters; i++) {
     absl::Cord c, d;
     for (int j = 0; j < (i % 7) + 1; j++) {
-      c.Append(a[GetUniformRandomUpTo(&rng, ABSL_ARRAYSIZE(a))]);
-      d.Append(a[GetUniformRandomUpTo(&rng, ABSL_ARRAYSIZE(a))]);
+      c.Append(a[GetUniformRandomUpTo(&rng, std::size(a))]);
+      d.Append(a[GetUniformRandomUpTo(&rng, std::size(a))]);
     }
     std::bernoulli_distribution coin_flip(0.5);
     MaybeHarden(c);

@@ -252,6 +252,60 @@ TEST(RawHashSetLayout, Large) {
 #endif  // defined(ABSL_INTERNAL_HASHTABLEZ_SAMPLE)
 }
 
+TEST(BlockedInfoTest, ConstructFromComponents) {
+  constexpr BlockedInfo info(10, 2);
+  EXPECT_EQ(info.log2_period(), 10);
+  EXPECT_EQ(info.tail_blocked(), 2);
+
+  constexpr BlockedInfo info_zero(0, 0);
+  EXPECT_EQ(info_zero.log2_period(), 0);
+  EXPECT_EQ(info_zero.tail_blocked(), 0);
+
+  constexpr BlockedInfo info_max(63, 3);
+  EXPECT_EQ(info_max.log2_period(), 63);
+  EXPECT_EQ(info_max.tail_blocked(), 3);
+}
+
+TEST(BlockedInfoTest, BlockedBefore) {
+  constexpr BlockedInfo info3(3, 0);
+  EXPECT_EQ(info3.blocked_before(0), 0);
+  EXPECT_EQ(info3.blocked_before(7), 0);
+  EXPECT_EQ(info3.blocked_before(8), 1);
+  EXPECT_EQ(info3.blocked_before(15), 1);
+  EXPECT_EQ(info3.blocked_before(16), 2);
+  EXPECT_EQ(info3.blocked_before(24), 3);
+  EXPECT_EQ(info3.blocked_before(100), 12);
+
+  constexpr BlockedInfo info0(0, 0);
+  EXPECT_EQ(info0.blocked_before(0), 0);
+  EXPECT_EQ(info0.blocked_before(5), 5);
+  EXPECT_EQ(info0.blocked_before(10), 10);
+
+  constexpr BlockedInfo info4(4, 1);
+  EXPECT_EQ(info4.blocked_before(0), 0);
+  EXPECT_EQ(info4.blocked_before(15), 0);
+  EXPECT_EQ(info4.blocked_before(16), 1);
+  EXPECT_EQ(info4.blocked_before(31), 1);
+  EXPECT_EQ(info4.blocked_before(32), 2);
+}
+
+TEST(BlockedInfoTest, TotalBlockedCount) {
+  constexpr BlockedInfo info(3, 2);
+  EXPECT_EQ(info.total_blocked_count(0), 2);
+  EXPECT_EQ(info.total_blocked_count(7), 2);
+  EXPECT_EQ(info.total_blocked_count(8), 3);
+  EXPECT_EQ(info.total_blocked_count(15), 3);
+  EXPECT_EQ(info.total_blocked_count(31), 5);
+
+  constexpr BlockedInfo info_zero(0, 0);
+  EXPECT_EQ(info_zero.total_blocked_count(0), 0);
+  EXPECT_EQ(info_zero.total_blocked_count(15), 15);
+
+  constexpr BlockedInfo info_tail(5, 3);
+  EXPECT_EQ(info_tail.total_blocked_count(31), 3);
+  EXPECT_EQ(info_tail.total_blocked_count(63), 4);
+}
+
 class GrowthInfoAllocator {
  public:
   explicit GrowthInfoAllocator(size_t capacity) {
@@ -582,25 +636,49 @@ TEST(Util, SizeToCapacitySmallValues) {
   EXPECT_EQ(SizeToCapacity(4), 7);
   EXPECT_EQ(SizeToCapacity(5), 7);
   EXPECT_EQ(SizeToCapacity(6), 7);
+  EXPECT_EQ(SizeToCapacity(14), 15);
+  EXPECT_EQ(SizeToCapacity(15), 31);
+  EXPECT_EQ(SizeToCapacity(28), 31);
+  EXPECT_EQ(SizeToCapacity(29), 31);
+  EXPECT_EQ(SizeToCapacity(30), 31);
+  EXPECT_EQ(SizeToCapacity(31), 63);
+  EXPECT_EQ(SizeToCapacity(56), 63);
   if (Group::kWidth == 16) {
     EXPECT_EQ(SizeToCapacity(7), 7);
-    EXPECT_EQ(SizeToCapacity(14), 15);
+    EXPECT_EQ(SizeToCapacity(57), 63);
+    EXPECT_EQ(SizeToCapacity(60), 63);
+    EXPECT_EQ(SizeToCapacity(61), 63);
+    EXPECT_EQ(SizeToCapacity(62), 63);
   } else {
     EXPECT_EQ(SizeToCapacity(7), 15);
+    EXPECT_EQ(SizeToCapacity(57), 127);
   }
 }
 
 TEST(Util, CapacityToGrowthSmallValues) {
   EXPECT_EQ(CapacityToGrowth(1), 1);
   EXPECT_EQ(CapacityToGrowth(3), 3);
+  EXPECT_EQ(CapacityToGrowth(15), 14);
+  EXPECT_EQ(CapacityToGrowth(31), 30);
   if (Group::kWidth == 16) {
     EXPECT_EQ(CapacityToGrowth(7), 7);
+    EXPECT_EQ(CapacityToGrowth(31), 30);
+    EXPECT_EQ(CapacityToGrowth(63), 62);
   } else {
     EXPECT_EQ(CapacityToGrowth(7), 6);
+    EXPECT_EQ(CapacityToGrowth(63), 56);
   }
-  EXPECT_EQ(CapacityToGrowth(15), 14);
-  EXPECT_EQ(CapacityToGrowth(31), 28);
-  EXPECT_EQ(CapacityToGrowth(63), 56);
+  EXPECT_EQ(CapacityToGrowth(127), 112);
+}
+
+TEST(Table, ReserveGroupWidthCapacity) {
+  absl::flat_hash_set<int> set;
+  set.reserve(Group::kWidth * 2 - 2);
+  EXPECT_EQ(set.capacity(), Group::kWidth * 2 - 1);
+  set.reserve(Group::kWidth * 2 - 1);
+  EXPECT_EQ(set.capacity(), Group::kWidth * 4 - 1);
+  set.reserve(Group::kWidth * 4 - 2);
+  EXPECT_EQ(set.capacity(), Group::kWidth * 4 - 1);
 }
 
 TEST(Util, GrowthAndCapacity) {

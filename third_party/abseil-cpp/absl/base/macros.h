@@ -43,6 +43,9 @@
 // Returns the number of elements in an array as a compile-time constant, which
 // can be used in defining new arrays. If you use this macro on a pointer by
 // mistake, you will get a compile-time error.
+//
+// NOTE: Avoid using this macro. Instead, use std::size(a) if possible, or
+// std::extent_v<decltype(a)> otherwise.
 #define ABSL_ARRAYSIZE(array) \
   (sizeof(::absl::macros_internal::ArraySizeHelper(array)))
 

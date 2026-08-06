@@ -161,7 +161,7 @@ TEST(ChiSquareTest, CalcChiSquare) {
   for (const auto& spec : specs) {
     SCOPED_TRACE(spec.line);
     double chi_square = 0;
-    for (int i = 0; i < spec.expected.size(); ++i) {
+    for (size_t i = 0; i < spec.expected.size(); ++i) {
       const double diff = spec.actual[i] - spec.expected[i];
       chi_square += (diff * diff) / spec.expected[i];
     }
@@ -295,7 +295,7 @@ TEST(ChiSquareTest, TableData) {
       /*100*/ {118.498, 124.342, 129.561, 135.807, 149.449} /**/};
 
   //    0.90      0.95     0.975      0.99     0.999
-  for (int i = 0; i < ABSL_ARRAYSIZE(data); i++) {
+  for (size_t i = 0; i < std::size(data); i++) {
     const double E = 0.0001;
     EXPECT_NEAR(ChiSquarePValue(data[i][0], i + 1), 0.10, E)
         << i << " " << data[i][0];

@@ -973,6 +973,7 @@ static bool ParseUnnamedTypeName(State *state) {
 
   // Unnamed type local to function or class.
   if (ParseTwoCharToken(state, "Ut") && Optional(ParseNumber(state, &which)) &&
+      which >= -1 &&                                   // Don't print garbage.
       which <= std::numeric_limits<int>::max() - 2 &&  // Don't overflow.
       ParseOneCharToken(state, '_')) {
     MaybeAppend(state, "{unnamed type#");
@@ -988,6 +989,7 @@ static bool ParseUnnamedTypeName(State *state) {
       ZeroOrMore(ParseTemplateParamDecl, state) &&
       OneOrMore(ParseType, state) && RestoreAppend(state, copy.append) &&
       ParseOneCharToken(state, 'E') && Optional(ParseNumber(state, &which)) &&
+      which >= -1 &&                                   // Don't print garbage.
       which <= std::numeric_limits<int>::max() - 2 &&  // Don't overflow.
       ParseOneCharToken(state, '_')) {
     MaybeAppend(state, "{lambda()#");

@@ -471,6 +471,31 @@ TEST(Demangle, AvoidSignedOverflowForUnfortunateParameterNumbers) {
   EXPECT_STREQ(tmp, "S::f()::{default arg#1}::{lambda()#1}::operator()()");
 }
 
+TEST(Demangle, NegativeUnnamedTypeNumbers) {
+  char tmp[100];
+
+  // An omitted <number> denotes index 1 and is left as the -1 sentinel.
+  ASSERT_TRUE(Demangle("_ZUt_", tmp, sizeof(tmp)));
+  EXPECT_STREQ(tmp, "{unnamed type#1}");
+  ASSERT_TRUE(Demangle("_ZUlvE_", tmp, sizeof(tmp)));
+  EXPECT_STREQ(tmp, "{lambda()#1}");
+
+  // Reject an explicitly negative <number>.  Left unstrained, <number> + 2 is
+  // negative, and MaybeAppendDecimal emits (val % 10) + '0' per digit, which
+  // for a negative val yields characters below '0'.
+  ASSERT_FALSE(Demangle("_ZUtn3_", tmp, sizeof(tmp)));
+  ASSERT_FALSE(Demangle("_ZUlvEn3_", tmp, sizeof(tmp)));
+
+  // ParseNumber truncates to int, so an in-range-looking <number> can also
+  // arrive negative.
+  ASSERT_FALSE(Demangle("_ZUt2147483648_", tmp, sizeof(tmp)));
+  ASSERT_FALSE(Demangle("_ZUlvE2147483648_", tmp, sizeof(tmp)));
+
+  // The largest <number> whose index still fits in an int is unaffected.
+  ASSERT_TRUE(Demangle("_ZUt2147483645_", tmp, sizeof(tmp)));
+  EXPECT_STREQ(tmp, "{unnamed type#2147483647}");
+}
+
 TEST(Demangle, SubstpackNotationForTroublesomeTemplatePack) {
   char tmp[100];
 

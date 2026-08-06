@@ -1264,6 +1264,9 @@ TEST(PrecombineLengthMix, ShortStringCollision) {
 #if defined(__wasm__)
   GTEST_SKIP() << "Fails flakily on wasm due to no ASLR and 32-bit size_t.";
 #endif
+#if defined(__ANDROID__) && defined(__arm__)
+  GTEST_SKIP() << "Fails on 32-bit Android due to layout changes.";
+#endif
   std::string s1 = "00";
   std::string s2 = "000";
   constexpr char kMinChar = 0;

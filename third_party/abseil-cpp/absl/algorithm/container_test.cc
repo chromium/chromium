@@ -111,8 +111,7 @@ TEST_F(NonMutatingTest, Distance) {
             static_cast<size_t>(absl::c_distance(container_)));
   EXPECT_EQ(sequence_.size(), static_cast<size_t>(absl::c_distance(sequence_)));
   EXPECT_EQ(vector_.size(), static_cast<size_t>(absl::c_distance(vector_)));
-  EXPECT_EQ(ABSL_ARRAYSIZE(array_),
-            static_cast<size_t>(absl::c_distance(array_)));
+  EXPECT_EQ(std::size(array_), static_cast<size_t>(absl::c_distance(array_)));
 
   // Works with a temporary argument.
   EXPECT_EQ(vector_.size(),

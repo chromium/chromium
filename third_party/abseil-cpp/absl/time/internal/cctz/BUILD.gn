@@ -91,7 +91,10 @@ absl_test("time_zone_format_test") {
 }
 
 absl_test("time_zone_lookup_test") {
-  sources = [ "src/time_zone_lookup_test.cc" ]
+  sources = [
+    "src/time_zone_lookup_test.cc",
+    "src/tzfile.h",
+  ]
   deps = [
     ":civil_time",
     ":test_time_zone_names",
@@ -108,4 +111,16 @@ absl_test("time_zone_name_win_test") {
   if (is_win) {
     sources = [ "src/time_zone_name_win_test.cc" ]
   }
+}
+
+absl_test("time_zone_posix_test") {
+  sources = [
+    "src/time_zone_posix.h",
+    "src/time_zone_posix_test.cc",
+  ]
+  deps = [
+    ":civil_time",
+    ":time_zone",
+    "//third_party/abseil-cpp/absl/base:config",
+  ]
 }

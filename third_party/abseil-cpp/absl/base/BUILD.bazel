@@ -1090,8 +1090,8 @@ cc_library(
         "@do_not_use_for_gloop_visibility_only//gloop/perftools/tracing:__subpackages__",
     ],
     deps = [
-        "//absl/base:config",
-        "//absl/base:core_headers",
+        ":config",
+        ":core_headers",
     ],
 )
 
