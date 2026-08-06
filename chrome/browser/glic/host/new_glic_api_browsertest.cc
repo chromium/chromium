@@ -15,6 +15,7 @@
 #include "base/test/scoped_logging_settings.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -750,7 +751,7 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetPanelStateAttached) {
 #define MAYBE_testGetPanelStateAttachedHidden testGetPanelStateAttachedHidden
 #endif
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, MAYBE_testGetPanelStateAttachedHidden) {
-  ASSERT_OK(OpenGlicForActiveTab());
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
 
   // Save first tab.
   tabs::TabInterface* first_tab = GetTabListInterface()->GetActiveTab();
@@ -761,6 +762,9 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, MAYBE_testGetPanelStateAttachedHidden) {
   CreateAndActivateTab(
       embedded_test_server()->GetURL("/glic/browser_tests/test.html"));
   ContinueJsTest();
+  ASSERT_OK(RunUntilEqual(
+      [&]() { return instance->host().web_client_contents()->GetVisibility(); },
+      content::Visibility::HIDDEN));
 
   // Open the first tab again, it should send the attached state.
   ActivateTab(first_tab);
@@ -770,6 +774,8 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, MAYBE_testGetPanelStateAttachedHidden) {
   ASSERT_OK(OpenGlicForActiveTab());
 #endif
   ContinueJsTest();
+  EXPECT_EQ(instance->host().web_client_contents()->GetVisibility(),
+            content::Visibility::VISIBLE);
 }
 
 #if defined(NOT_VETTED_ON_ANDROID)

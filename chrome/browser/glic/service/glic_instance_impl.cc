@@ -244,6 +244,10 @@ tabs::TabInterface* GlicInstanceImpl::GetTabFromEmbedderKey(
 
 void GlicInstanceImpl::NotifyVisibilityChange() {
   instance_metrics_.OnVisibilityChanged(HasActiveEmbedder());
+  if (IsShowing()) {
+    // OnAllEmbeddersInactive calls SetDebouncedVisibility(false).
+    host_.SetDebouncedVisibility(true);
+  }
   for (tabs::TabInterface* tab : GetSharingManagerInternal().GetPinnedTabs()) {
     if (auto* helper = GlicInstanceHelper::From(tab)) {
       helper->OnPinnedInstanceVisibilityChanged(this);
@@ -539,6 +543,7 @@ void GlicInstanceImpl::Show(ShowOptions options) {
   }
 
   embedder_to_show->Show(options);
+  host_.SetWebContentsVisibilityOverride(std::nullopt);
   // WARNING: Show() may result in deleting the embedder! Check if the embedder
   // is still active before calling Focus().
   if (options.focus_on_show && IsActiveEmbedder(new_key)) {
@@ -1386,7 +1391,6 @@ void GlicInstanceImpl::MaybeShowHostUi(
   VLOG(2) << "Glic [InstanceImpl] MaybeShowHostUi, id=" << id_.value();
 
   host_.SetDelegate(delegate);
-  host_.SetWebContentsVisibility(content::Visibility::VISIBLE);
   host_.NotifyWindowIntentToShow();
 
   NotifyPanelWillOpen(invocation_source, prompt_suggestion, fre_override);
@@ -1895,14 +1899,8 @@ void GlicInstanceImpl::MaybeActivateForegroundEmbedder() {
 void GlicInstanceImpl::OnAllEmbeddersInactive() {
   TRACE_EVENT("glic", "GlicInstanceImpl::OnAllEmbeddersInactive");
 
-  if (base::FeatureList::IsEnabled(
-          features::kGlicSetWebContentsVisibilityWhenToggling)) {
-    // Make WebContents hidden to avoid frame production and reduce the priority
-    // of its renderer processes.
-    host_.SetWebContentsVisibility(content::Visibility::HIDDEN);
-  }
-
   NotifyInstanceActivationChanged(false);
+  host_.SetDebouncedVisibility(false);
   if (actor_task_manager_) {
     // Attempt to show toast on UI deactivated (and not replaced by anything
     // else).

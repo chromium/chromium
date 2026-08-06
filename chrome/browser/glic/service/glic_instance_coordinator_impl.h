@@ -246,8 +246,8 @@ class GlicInstanceCoordinatorImpl
       size_t limit,
       base::TimeDelta max_time_since_active) const;
 
-  // GlicInstanceCoordinatorMetrics::DataProvider implementation
-  std::vector<InstanceWebContents> GetAllUnhibernatedWebContents() override;
+  std::vector<GlicInstanceCoordinatorMetrics::DataProvider::InstanceWebContents>
+  GetAllUnhibernatedWebContents() override;
 
   void OnInstanceActuatingChanged(bool actuating);
 

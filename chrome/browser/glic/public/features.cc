@@ -201,11 +201,6 @@ BASE_FEATURE(kGlicShowForSignedOut,
 #endif
 );
 
-// Killswitch that controls whether to update the WebContents visibility state
-// when toggling the Glic panel.
-BASE_FEATURE(kGlicSetWebContentsVisibilityWhenToggling,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kGlicProcessCounterAbuseVerdict,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicNoWebUiLoader, base::FEATURE_DISABLED_BY_DEFAULT);

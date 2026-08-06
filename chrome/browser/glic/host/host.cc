@@ -204,6 +204,11 @@ Host::PanelWillOpenOptions::PanelWillOpenOptions(PanelWillOpenOptions&&) =
 Host::PanelWillOpenOptions& Host::PanelWillOpenOptions::operator=(
     PanelWillOpenOptions&&) = default;
 
+void Host::SetDebouncedVisibility(bool is_visible) {
+  debounced_visibility_ = is_visible;
+  UpdateVisibility();
+}
+
 void Host::PanelWillOpen(mojom::InvocationSource invocation_source,
                          PanelWillOpenOptions options) {
   VLOG(1) << "Glic [Host] PanelWillOpen";
@@ -497,10 +502,37 @@ content::WebContents* Host::webui_contents() const {
   return contents_ ? contents_->web_contents() : nullptr;
 }
 
-void Host::SetWebContentsVisibility(content::Visibility visibility) {
-  if (contents_ && contents_->web_contents()) {
+void Host::SetWebContentsVisibilityOverride(
+    std::optional<content::Visibility> visibility_override) {
+  visibility_override_ = visibility_override;
+  UpdateVisibility();
+}
+
+void Host::UpdateVisibility() {
+  content::Visibility visibility = GetExpectedVisibility();
+  if (web_contents_visibility_ == visibility) {
+    return;
+  }
+  web_contents_visibility_ = visibility;
+  if (contents_) {
     contents_->SetVisibility(visibility);
   }
+  if (content::WebContents* client_contents = web_client_contents()) {
+    client_contents->UpdateWebContentsVisibility(visibility);
+  }
+}
+
+content::Visibility Host::GetExpectedVisibility() const {
+  if (visibility_override_.has_value()) {
+    return visibility_override_.value();
+  }
+  if (!contents_) {
+    return content::Visibility::HIDDEN;
+  }
+  if (debounced_visibility_) {
+    return content::Visibility::VISIBLE;
+  }
+  return content::Visibility::HIDDEN;
 }
 
 content::WebContents* Host::web_client_contents() const {

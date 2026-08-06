@@ -117,10 +117,6 @@ BASE_DECLARE_FEATURE(kGlicOptInImpressionMetrics);
 BASE_DECLARE_FEATURE(kGlicContentsInitiallyHidden);
 BASE_DECLARE_FEATURE(kGlicShowForSignedOut);
 
-BASE_DECLARE_FEATURE(kGlicSetWebContentsVisibilityWhenToggling);
-
-BASE_DECLARE_FEATURE(kGlicSetWebContentsVisibilityWhenToggling);
-
 BASE_DECLARE_FEATURE(kGlicAnchorEntryPointForOnboardedUsers);
 BASE_DECLARE_FEATURE(kGlicProcessCounterAbuseVerdict);
 BASE_DECLARE_FEATURE(kGlicNoWebUiLoader);
