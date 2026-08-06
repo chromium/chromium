@@ -59,6 +59,12 @@ class CC_MOJO_EMBEDDER_EXPORT VizLayerContext
                          viz::ClientResourceProvider& resource_provider,
                          gpu::SharedImageInterface* shared_image_interface,
                          bool update_damage) override;
+  void SetUnboundedFrameSinkId(
+      const viz::FrameSinkId& frame_sink_id,
+      const viz::LocalSurfaceId& local_surface_id) override;
+  void SetUnboundedLocalSurfaceId(
+      const viz::LocalSurfaceId& local_surface_id) override;
+  void DismissUnboundedFrameSink() override;
 
   // viz::mojom::LayerContextClient:
   void OnRequestCommitForFrame(const viz::BeginFrameArgs& args) override;

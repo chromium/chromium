@@ -47,6 +47,11 @@ class FakeLayerContext : public mojom::LayerContext {
   void UpdateDisplayTiling(mojom::TilingPtr tiling) override;
   void SetTargetLocalSurfaceId(
       const LocalSurfaceId& target_local_surface_id) override;
+  void SetUnboundedFrameSinkId(const FrameSinkId& frame_sink_id,
+                               const LocalSurfaceId& local_surface_id) override;
+  void SetUnboundedLocalSurfaceId(
+      const LocalSurfaceId& local_surface_id) override;
+  void DismissUnboundedFrameSink() override;
 
   mojom::LayerTreeUpdatePtr last_update_;
   base::OnceClosure on_update_display_tree_;

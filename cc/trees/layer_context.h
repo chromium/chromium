@@ -23,6 +23,7 @@ class SharedImageInterface;
 
 namespace viz {
 class ClientResourceProvider;
+class FrameSinkId;
 class LocalSurfaceId;
 }  // namespace viz
 
@@ -63,6 +64,14 @@ class CC_EXPORT LayerContext {
       viz::ClientResourceProvider& resource_provider,
       gpu::SharedImageInterface* shared_image_interface,
       bool update_damage) = 0;
+
+  // Callbacks for unbounded element frames.
+  virtual void SetUnboundedFrameSinkId(
+      const viz::FrameSinkId& frame_sink_id,
+      const viz::LocalSurfaceId& local_surface_id) {}
+  virtual void SetUnboundedLocalSurfaceId(
+      const viz::LocalSurfaceId& local_surface_id) {}
+  virtual void DismissUnboundedFrameSink() {}
 };
 
 }  // namespace cc

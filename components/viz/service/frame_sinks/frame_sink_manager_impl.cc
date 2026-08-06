@@ -861,6 +861,33 @@ void FrameSinkManagerImpl::OnCapturerConnectionLost(
   video_capturers_.erase(capturer);
 }
 
+bool FrameSinkManagerImpl::IsValidUnboundedFrameSinkId(
+    const FrameSinkId& parent_frame_sink_id,
+    const FrameSinkId& unbounded_frame_sink_id) const {
+  // Unbounded surface FrameSinkIds are allocated by the browser process, so
+  // they must not use the renderer's own client_id namespace.
+  if (unbounded_frame_sink_id.client_id() == parent_frame_sink_id.client_id()) {
+    return false;
+  }
+  // Check the hierarchy tree to verify unbounded_frame_sink_id belongs to the
+  // frame sink hierarchy.
+  if (ChildContains(parent_frame_sink_id, unbounded_frame_sink_id)) {
+    return true;
+  }
+  FrameSinkId root_id = parent_frame_sink_id;
+  while (!root_sink_map_.contains(root_id)) {
+    FrameSinkId oldest_parent = GetOldestParentByChildFrameId(root_id);
+    if (!oldest_parent.is_valid()) {
+      break;
+    }
+    root_id = oldest_parent;
+  }
+  if (root_id != parent_frame_sink_id && root_id.is_valid()) {
+    return ChildContains(root_id, unbounded_frame_sink_id);
+  }
+  return false;
+}
+
 bool FrameSinkManagerImpl::ChildContains(
     const FrameSinkId& child_frame_sink_id,
     const FrameSinkId& search_frame_sink_id) const {

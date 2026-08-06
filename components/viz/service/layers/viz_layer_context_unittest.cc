@@ -51,6 +51,15 @@ void FakeLayerContext::UpdateDisplayTiling(mojom::TilingPtr tiling) {
 void FakeLayerContext::SetTargetLocalSurfaceId(
     const LocalSurfaceId& target_local_surface_id) {}
 
+void FakeLayerContext::SetUnboundedFrameSinkId(
+    const FrameSinkId& frame_sink_id,
+    const LocalSurfaceId& local_surface_id) {}
+
+void FakeLayerContext::SetUnboundedLocalSurfaceId(
+    const LocalSurfaceId& local_surface_id) {}
+
+void FakeLayerContext::DismissUnboundedFrameSink() {}
+
 FakeCompositorFrameSink::FakeCompositorFrameSink(
     FakeLayerContext* layer_context)
     : layer_context_(layer_context) {}

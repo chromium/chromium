@@ -155,6 +155,9 @@ class CC_EXPORT Proxy {
   virtual void SetUnboundedFrameSink(
       std::unique_ptr<LayerTreeFrameSink> unbounded_frame_sink,
       const viz::LocalSurfaceId& local_surface_id) {}
+  virtual void SetUnboundedFrameSinkId(
+      const viz::FrameSinkId& frame_sink_id,
+      const viz::LocalSurfaceId& local_surface_id) {}
   virtual void DismissUnboundedFrameSink() {}
   virtual void SetUnboundedLocalSurfaceId(
       const viz::LocalSurfaceId& local_surface_id) {}

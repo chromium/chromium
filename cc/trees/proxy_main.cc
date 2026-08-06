@@ -650,6 +650,18 @@ void ProxyMain::SetUnboundedFrameSink(
                      std::move(unbounded_frame_sink), local_surface_id));
 }
 
+void ProxyMain::SetUnboundedFrameSinkId(
+    const viz::FrameSinkId& frame_sink_id,
+    const viz::LocalSurfaceId& local_surface_id) {
+  DCHECK(IsMainThread());
+  DCHECK(layer_tree_host_->GetSettings().enable_unbounded_element);
+  CHECK(base::FeatureList::IsEnabled(features::kTreesInViz));
+  ImplThreadTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&ProxyImpl::SetUnboundedFrameSinkId,
+                                base::Unretained(proxy_impl_.get()),
+                                frame_sink_id, local_surface_id));
+}
+
 void ProxyMain::DismissUnboundedFrameSink() {
   DCHECK(IsMainThread());
   DCHECK(layer_tree_host_->GetSettings().enable_unbounded_element);

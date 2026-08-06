@@ -547,6 +547,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void SetUnboundedFrameSink(
       std::unique_ptr<LayerTreeFrameSink> unbounded_frame_sink,
       const viz::LocalSurfaceId& local_surface_id);
+  void SetUnboundedFrameSinkId(const viz::FrameSinkId& frame_sink_id,
+                               const viz::LocalSurfaceId& local_surface_id);
   void DismissUnboundedFrameSink();
   void SetUnboundedLocalSurfaceId(const viz::LocalSurfaceId& local_surface_id);
 
@@ -1391,6 +1393,9 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   uint32_t dump_compositor_frame_end_ = 0;
 
   std::unique_ptr<UnboundedFrameSinkHandler> unbounded_frame_sink_handler_;
+
+  viz::FrameSinkId unbounded_frame_sink_id_;
+  viz::LocalSurfaceId unbounded_local_surface_id_;
 
   // Must be the last member to ensure this is destroyed first in the
   // destruction order and invalidates all weak pointers.

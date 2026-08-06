@@ -36,6 +36,7 @@ struct LayerContextSettings {
   bool enable_backface_visibility_interop;
   bool enable_fluent_scrollbar;
   bool enable_fluent_overlay_scrollbar;
+  bool enable_unbounded_element;
 };
 
 struct CompositorFrameSinkParams {

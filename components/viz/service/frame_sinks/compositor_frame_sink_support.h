@@ -115,6 +115,17 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   FrameSinkManagerImpl* frame_sink_manager() { return frame_sink_manager_; }
   BeginFrameSource* begin_frame_source() { return begin_frame_source_; }
 
+  void set_resource_return_delegate(LayerContextImpl* delegate) {
+    resource_return_delegate_ = delegate;
+  }
+  LayerContextImpl* resource_return_delegate() const {
+    return resource_return_delegate_;
+  }
+
+  base::WeakPtr<CompositorFrameSinkSupport> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
   const FrameTimingDetailsMap& timing_details() {
     return frame_timing_details_;
   }
@@ -367,6 +378,8 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
 
   const raw_ptr<FrameSinkManagerImpl> frame_sink_manager_;
   const raw_ptr<SurfaceManager> surface_manager_;
+
+  raw_ptr<LayerContextImpl> resource_return_delegate_ = nullptr;
 
   const FrameSinkId frame_sink_id_;
   SurfaceId last_activated_surface_id_;

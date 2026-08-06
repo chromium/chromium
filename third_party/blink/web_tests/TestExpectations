@@ -263,7 +263,7 @@ crbug.com/508672616 wpt_internal/html/rendering/unbounded-element/* [ Failure ]
 
 # Enabled virtual suite tests should pass:
 crbug.com/508672616 virtual/unbounded-element/wpt_internal/html/rendering/unbounded-element/* [ Pass ]
-
+crbug.com/508672616 virtual/unbounded-element-with-treesinviz/wpt_internal/html/rendering/unbounded-element/* [ Pass ]
 
 # ====== END Unbounded Element tests ======
 

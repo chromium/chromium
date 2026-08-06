@@ -73,6 +73,16 @@ class UnboundedElementBrowserTestBase : public ContentBrowserTest {
     ContentBrowserTest::TearDownOnMainThread();
   }
 
+  UnboundedSurfaceWindow* GetActiveWindow() {
+    if (!base::test::RunUntil([&]() {
+          return primary_main_frame_host()->GetUnboundedSurfaceWindow() !=
+                 nullptr;
+        })) {
+      return nullptr;
+    }
+    return primary_main_frame_host()->GetUnboundedSurfaceWindow();
+  }
+
 #if defined(USE_AURA)
   // Native widget destruction is async with Aura, hence we define helpers to
   // wait for destruction.
@@ -113,6 +123,7 @@ class UnboundedElementBrowserTestBase : public ContentBrowserTest {
   }
 
   void WaitForFrameReady() {
+    ASSERT_NE(GetActiveWindow(), nullptr);
     WaitForHitTestData(primary_main_frame_host());
     MainThreadFrameObserver frame_observer(
         primary_main_frame_host()->GetRenderWidgetHost());
@@ -120,7 +131,8 @@ class UnboundedElementBrowserTestBase : public ContentBrowserTest {
   }
 };
 
-class UnboundedElementBrowserTest : public UnboundedElementBrowserTestBase {
+class UnboundedElementBrowserTest : public UnboundedElementBrowserTestBase,
+                                    public testing::WithParamInterface<bool> {
  public:
   UnboundedElementBrowserTest() = default;
   ~UnboundedElementBrowserTest() override = default;
@@ -129,10 +141,16 @@ class UnboundedElementBrowserTest : public UnboundedElementBrowserTestBase {
     // TODO(crbug.com/508672616): Not yet implemented on Android/iOS.
     GTEST_SKIP();
 #else
-    feature_list_.InitWithFeatures(
-        {blink::features::kUnboundedElement,
-         blink::features::kUnboundedElementOnTheOpenWeb},
-        {::features::kTreesInViz});
+    std::vector<base::test::FeatureRef> enabled_features = {
+        blink::features::kUnboundedElement,
+        blink::features::kUnboundedElementOnTheOpenWeb};
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (GetParam()) {
+      enabled_features.push_back(::features::kTreesInViz);
+    } else {
+      disabled_features.push_back(::features::kTreesInViz);
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
     UnboundedElementBrowserTestBase::SetUp();
 #endif
   }
@@ -141,7 +159,7 @@ class UnboundedElementBrowserTest : public UnboundedElementBrowserTestBase {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, ActivationPreconditions) {
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest, ActivationPreconditions) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -159,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, ActivationPreconditions) {
                                       EXECUTE_SCRIPT_NO_USER_GESTURE));
 }
 
-IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
                        WebUIPrivilegedBypassesUserActivation) {
   GURL webui_url = GURL(std::string(kChromeUIScheme) + "://" +
                         std::string(kChromeUIGpuHost));
@@ -189,7 +207,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
                               EXECUTE_SCRIPT_NO_USER_GESTURE));
 }
 
-IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, AncestorClipping) {
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest, AncestorClipping) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -217,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, AncestorClipping) {
       EvalJs(primary_main_frame_host(), "window.__clicked").ExtractBool());
 }
 
-IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, InputEventRouting) {
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest, InputEventRouting) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -244,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, InputEventRouting) {
   EXPECT_EQ(50, EvalJs(primary_main_frame_host(), "window.__mouse_y"));
 }
 
-IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, InputEventRoutingTouch) {
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest, InputEventRoutingTouch) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -285,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, InputEventRoutingTouch) {
   EXPECT_EQ(50, EvalJs(primary_main_frame_host(), "window.__touch_y"));
 }
 
-IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, LightDismissEscKey) {
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest, LightDismissEscKey) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -303,8 +321,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, LightDismissEscKey) {
       "getComputedStyle(document.getElementById('target')).visibility";
   EXPECT_EQ("visible", EvalJs(primary_main_frame_host(), get_style));
 
-  UnboundedSurfaceWindow* window =
-      primary_main_frame_host()->GetUnboundedSurfaceWindow();
+  UnboundedSurfaceWindow* window = GetActiveWindow();
   ASSERT_TRUE(window);
   auto tracker = CreateDestructionTracker(*window);
 
@@ -317,7 +334,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, LightDismissEscKey) {
   WaitForDestruction(std::move(tracker));
 }
 
-IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, LightDismissClickOutside) {
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest, LightDismissClickOutside) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -335,8 +352,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, LightDismissClickOutside) {
       "getComputedStyle(document.getElementById('target')).visibility";
   EXPECT_EQ("visible", EvalJs(primary_main_frame_host(), get_style));
 
-  UnboundedSurfaceWindow* window =
-      primary_main_frame_host()->GetUnboundedSurfaceWindow();
+  UnboundedSurfaceWindow* window = GetActiveWindow();
   ASSERT_TRUE(window);
   auto tracker = CreateDestructionTracker(*window);
 
@@ -348,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, LightDismissClickOutside) {
   WaitForDestruction(std::move(tracker));
 }
 
-IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, PopoverInsideUnbounded) {
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest, PopoverInsideUnbounded) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -372,7 +388,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, PopoverInsideUnbounded) {
                   .ExtractBool());
 }
 
-IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, CompositorPopupAllocation) {
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest, CompositorPopupAllocation) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -386,15 +402,14 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, CompositorPopupAllocation) {
   EXPECT_TRUE(ExecJs(primary_main_frame_host(), script));
   WaitForFrameReady();
 
-  UnboundedSurfaceWindow* window =
-      primary_main_frame_host()->GetUnboundedSurfaceWindow();
+  UnboundedSurfaceWindow* window = GetActiveWindow();
   ASSERT_TRUE(window);
   gfx::Rect bounds = window->GetBounds();
   EXPECT_EQ(100, bounds.width());
   EXPECT_EQ(100, bounds.height());
 }
 
-IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, VisualOverflowBounds) {
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest, VisualOverflowBounds) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -409,15 +424,14 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, VisualOverflowBounds) {
   EXPECT_TRUE(ExecJs(primary_main_frame_host(), script));
   WaitForFrameReady();
 
-  UnboundedSurfaceWindow* window =
-      primary_main_frame_host()->GetUnboundedSurfaceWindow();
+  UnboundedSurfaceWindow* window = GetActiveWindow();
   ASSERT_TRUE(window);
   gfx::Rect bounds = window->GetBounds();
   EXPECT_EQ(150, bounds.width());
   EXPECT_EQ(150, bounds.height());
 }
 
-IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
                        RequestWithEmptyBoundsThrowsException) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
@@ -435,7 +449,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
   EXPECT_EQ("NotSupportedError", EvalJs(primary_main_frame_host(), script));
 }
 
-IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
                        RequestWithoutAttributeThrowsException) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
@@ -464,7 +478,7 @@ class UnboundedElementHighDPIBrowserTest : public UnboundedElementBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(UnboundedElementHighDPIBrowserTest,
+IN_PROC_BROWSER_TEST_P(UnboundedElementHighDPIBrowserTest,
                        CompositorPopupAllocationHighDPI) {
 #if BUILDFLAG(IS_OZONE)
   if (ui::OzonePlatform::RunningOnWaylandForTest()) {
@@ -486,8 +500,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementHighDPIBrowserTest,
   EXPECT_TRUE(ExecJs(primary_main_frame_host(), script));
   WaitForFrameReady();
 
-  UnboundedSurfaceWindow* window =
-      primary_main_frame_host()->GetUnboundedSurfaceWindow();
+  UnboundedSurfaceWindow* window = GetActiveWindow();
   ASSERT_TRUE(window);
 
   float dsf = primary_main_frame_host()
@@ -501,7 +514,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementHighDPIBrowserTest,
   EXPECT_EQ(100, bounds.height());
 }
 
-IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
                        VisualOverflowBoundsAndMasking) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
@@ -531,16 +544,14 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
     window.getComputedStyle(document.querySelector('.item')).visibility;
   )"));
 
-  RenderFrameHostImpl* rfh =
-      static_cast<RenderFrameHostImpl*>(primary_main_frame_host());
-  UnboundedSurfaceWindow* window = rfh->GetUnboundedSurfaceWindow();
+  UnboundedSurfaceWindow* window = GetActiveWindow();
   ASSERT_TRUE(window);
   gfx::Rect popup_bounds = window->GetBounds();
   EXPECT_GE(popup_bounds.width(), 200);
   EXPECT_GE(popup_bounds.height(), 90);
 }
 
-IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, PopupInputEventRouting) {
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest, PopupInputEventRouting) {
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/508672616): Not yet working on ChromeOS due to Aura/Ash
   // popup container positioning and coordinate conversion issues.
@@ -567,9 +578,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, PopupInputEventRouting) {
   EXPECT_TRUE(ExecJs(primary_main_frame_host(), script));
   WaitForFrameReady();
 
-  RenderFrameHostImpl* rfh =
-      static_cast<RenderFrameHostImpl*>(primary_main_frame_host());
-  UnboundedSurfaceWindow* window = rfh->GetUnboundedSurfaceWindow();
+  UnboundedSurfaceWindow* window = GetActiveWindow();
   ASSERT_TRUE(window);
 
   blink::WebMouseEvent event(blink::WebInputEvent::Type::kMouseMove,
@@ -593,7 +602,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, PopupInputEventRouting) {
 #endif
 }
 
-IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
                        PopupOutsideViewportInputEventRouting) {
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/508672616): Not yet working on ChromeOS due to Aura/Ash
@@ -626,9 +635,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
   EXPECT_TRUE(ExecJs(primary_main_frame_host(), script));
   WaitForFrameReady();
 
-  RenderFrameHostImpl* rfh =
-      static_cast<RenderFrameHostImpl*>(primary_main_frame_host());
-  UnboundedSurfaceWindow* window = rfh->GetUnboundedSurfaceWindow();
+  UnboundedSurfaceWindow* window = GetActiveWindow();
   ASSERT_TRUE(window);
 
   blink::WebMouseEvent event(blink::WebInputEvent::Type::kMouseMove,
@@ -656,7 +663,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
 #endif
 }
 
-IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
                        InputEventRoutingWithScroll) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
@@ -697,7 +704,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
 
 // TODO(crbug.com/508672616): Unbounded elements within frames are not yet
 // working properly.
-IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
                        DISABLED_IframeInputEventRouting) {
   GURL url(embedded_test_server()->GetURL("/page_with_iframe.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
@@ -743,7 +750,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
   EXPECT_EQ(130, EvalJs(iframe, "window.__mouse_y"));
 }
 
-IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, DynamicBoundsSync) {
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest, DynamicBoundsSync) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -794,7 +801,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, DynamicBoundsSync) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
                        NestedChildBoundsExpansionTriggersRedraw) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
@@ -838,7 +845,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
   EXPECT_EQ(200, window->GetBounds().width());
 }
 
-IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
                        AnimatedChildWithBoxShadowSubmitsFrame) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
@@ -897,7 +904,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
                        IframeDeletionDoesNotDismissUnboundedSurface) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
@@ -913,8 +920,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
   EXPECT_TRUE(ExecJs(primary_main_frame_host(), script));
   WaitForFrameReady();
 
-  UnboundedSurfaceWindow* window =
-      primary_main_frame_host()->GetUnboundedSurfaceWindow();
+  UnboundedSurfaceWindow* window = GetActiveWindow();
   ASSERT_TRUE(window);
   EXPECT_TRUE(window->is_valid());
 
@@ -925,7 +931,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
   EXPECT_TRUE(window->is_valid());
 }
 
-IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
                        DoesNotStealFocusWhenOpened) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
@@ -944,10 +950,9 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
     c.showUnboundedElement();
   )";
   EXPECT_TRUE(ExecJs(primary_main_frame_host(), script));
-
   WaitForFrameReady();
-  UnboundedSurfaceWindow* window =
-      primary_main_frame_host()->GetUnboundedSurfaceWindow();
+
+  UnboundedSurfaceWindow* window = GetActiveWindow();
   ASSERT_TRUE(window);
   EXPECT_TRUE(window->is_valid());
 
@@ -959,7 +964,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
                         "document.getElementById('i').value"));
 }
 
-IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, CloseOnWindowFocusLost) {
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest, CloseOnWindowFocusLost) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -975,7 +980,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, CloseOnWindowFocusLost) {
 
   RenderFrameHostImpl* rfh =
       static_cast<RenderFrameHostImpl*>(primary_main_frame_host());
-  UnboundedSurfaceWindow* window = rfh->GetUnboundedSurfaceWindow();
+  UnboundedSurfaceWindow* window = GetActiveWindow();
   ASSERT_TRUE(window);
   EXPECT_TRUE(window->is_valid());
   auto tracker = CreateDestructionTracker(*window);
@@ -993,7 +998,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, CloseOnWindowFocusLost) {
   WaitForDestruction(std::move(tracker));
 }
 
-IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
                        MultipleUnboundedElementsDismissesFirst) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
@@ -1024,7 +1029,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
             EvalJs(primary_main_frame_host(), script).ExtractString());
 }
 
-IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
                        DisplayNoneDismissesSurface) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
@@ -1066,6 +1071,12 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
                    "document.getElementById('wrapper').matches(':unbounded')"));
   WaitForDestruction(std::move(tracker));
 }
+
+INSTANTIATE_TEST_SUITE_P(All, UnboundedElementBrowserTest, testing::Bool());
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         UnboundedElementHighDPIBrowserTest,
+                         testing::Bool());
 
 struct UnboundedElementPermutationTestParams {
   bool unbounded_element_base_feature;

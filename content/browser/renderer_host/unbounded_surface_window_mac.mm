@@ -125,6 +125,10 @@ gfx::NativeWindow UnboundedSurfaceWindowMac::GetNativeWindow() const {
 }
 
 UnboundedSurfaceWindowMac::~UnboundedSurfaceWindowMac() {
+  if (parent_view_ && parent_view_->host()) {
+    GetHostFrameSinkManager()->UnregisterFrameSinkHierarchy(
+        parent_view_->host()->GetFrameSinkId(), frame_sink_id_);
+  }
   if (recyclable_compositor_) {
     GetHostFrameSinkManager()->UnregisterFrameSinkHierarchy(
         recyclable_compositor_->compositor()->frame_sink_id(), frame_sink_id_);
@@ -233,6 +237,10 @@ void UnboundedSurfaceWindowMac::InitWindow(const gfx::Rect& bounds_in_screen) {
 
   GetHostFrameSinkManager()->RegisterFrameSinkHierarchy(
       recyclable_compositor_->compositor()->frame_sink_id(), frame_sink_id_);
+  if (parent_view_ && parent_view_->host()) {
+    GetHostFrameSinkManager()->RegisterFrameSinkHierarchy(
+        parent_view_->host()->GetFrameSinkId(), frame_sink_id_);
+  }
 
   root_layer_->SetShowSurface(
       viz::SurfaceId(frame_sink_id_, GetLocalSurfaceId()),

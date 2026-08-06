@@ -26,6 +26,7 @@
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_timeline.h"
 #include "cc/animation/keyframe_effect.h"
+#include "cc/base/features.h"
 #include "cc/debug/layer_tree_debug_state.h"
 #include "cc/debug/rendering_stats_instrumentation.h"
 #include "cc/input/browser_controls_offset_manager.h"
@@ -100,6 +101,7 @@ cc::LayerTreeSettings GetDisplayTreeSettings(
   settings.enable_fluent_scrollbar = remote_settings->enable_fluent_scrollbar;
   settings.enable_fluent_overlay_scrollbar =
       remote_settings->enable_fluent_overlay_scrollbar;
+  settings.enable_unbounded_element = remote_settings->enable_unbounded_element;
   return settings;
 }
 
@@ -1702,6 +1704,50 @@ base::expected<void, std::string> DeserializeAnimationUpdates(
   return base::ok();
 }
 
+class DirectLayerTreeFrameSink : public cc::LayerTreeFrameSink {
+ public:
+  DirectLayerTreeFrameSink(base::WeakPtr<CompositorFrameSinkSupport> support,
+                           const LocalSurfaceId& local_surface_id)
+      : support_(std::move(support)), local_surface_id_(local_surface_id) {}
+  ~DirectLayerTreeFrameSink() override = default;
+
+  // cc::LayerTreeFrameSink overrides:
+  void SetLocalSurfaceId(const LocalSurfaceId& local_surface_id) override {
+    local_surface_id_ = local_surface_id;
+  }
+
+  void SubmitCompositorFrame(CompositorFrame frame,
+                             bool hit_test_data_changed) override {
+    if (!support_) {
+      std::vector<ReturnedResource> returned_resources =
+          TransferableResource::ReturnResources(frame.resource_list);
+      if (!returned_resources.empty() && client_) {
+        client_->ReclaimResources(std::move(returned_resources));
+      }
+      return;
+    }
+    support_->MaybeSubmitCompositorFrame(local_surface_id_, std::move(frame),
+                                         std::nullopt, 0);
+  }
+
+  void DidNotProduceFrame(const BeginFrameAck& ack,
+                          cc::FrameSkippedReason reason) override {
+    if (support_) {
+      support_->DidNotProduceFrame(ack);
+    }
+  }
+
+  void NotifyNewLocalSurfaceIdExpectedWhilePaused() override {
+    if (support_) {
+      support_->NotifyNewLocalSurfaceIdExpectedWhilePaused();
+    }
+  }
+
+ private:
+  const base::WeakPtr<CompositorFrameSinkSupport> support_;
+  LocalSurfaceId local_surface_id_;
+};
+
 }  // namespace
 
 LayerContextImpl::LayerContextImpl(CompositorFrameSinkSupport* compositor_sink,
@@ -1758,6 +1804,7 @@ LayerContextImpl::LayerContextImpl(
 }
 
 LayerContextImpl::~LayerContextImpl() {
+  ResetBoundUnboundedFrameSink();
   DoReturnResources();
   host_impl_->ReleaseLayerTreeFrameSink();
 }
@@ -2013,6 +2060,7 @@ void LayerContextImpl::UpdateDisplayTree(mojom::LayerTreeUpdatePtr update) {
 
 base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
     mojom::LayerTreeUpdatePtr update) {
+  TryBindUnboundedFrameSink();
   TRACE_EVENT0("viz", "LayerContextImpl::DoUpdateDisplayTree");
   cc::LayerTreeImpl& layers = *host_impl_->active_tree();
   cc::PropertyTrees& property_trees = *layers.property_trees();
@@ -2527,6 +2575,88 @@ base::expected<void, std::string> LayerContextImpl::DoSetTargetLocalSurfaceId(
   }
   host_impl_->SetTargetLocalSurfaceId(target_local_surface_id);
   return base::ok();
+}
+
+void LayerContextImpl::SetUnboundedFrameSinkId(
+    const FrameSinkId& frame_sink_id,
+    const LocalSurfaceId& local_surface_id) {
+  // Unbounded surface FrameSinkIds are allocated by the browser process, so
+  // they must not use the renderer's own client_id namespace.
+  if (frame_sink_id.client_id() ==
+      compositor_sink_->frame_sink_id().client_id()) {
+    HandleBadMojoMessage("SetUnboundedFrameSinkId",
+                         "Invalid client_id for Unbounded Element");
+    return;
+  }
+  pending_unbounded_frame_sink_id_ = frame_sink_id;
+  pending_unbounded_local_surface_id_ = local_surface_id;
+  TryBindUnboundedFrameSink();
+}
+
+void LayerContextImpl::ResetBoundUnboundedFrameSink() {
+  if (bound_unbounded_frame_sink_id_.is_valid()) {
+    if (auto* support =
+            compositor_sink_->frame_sink_manager()->GetFrameSinkForId(
+                bound_unbounded_frame_sink_id_)) {
+      support->set_resource_return_delegate(nullptr);
+    }
+    bound_unbounded_frame_sink_id_ = FrameSinkId();
+  }
+  unbounded_support_.reset();
+}
+
+void LayerContextImpl::SetUnboundedLocalSurfaceId(
+    const LocalSurfaceId& local_surface_id) {
+  if (pending_unbounded_frame_sink_id_.is_valid()) {
+    pending_unbounded_local_surface_id_ = local_surface_id;
+  } else {
+    host_impl_->SetUnboundedLocalSurfaceId(local_surface_id);
+  }
+}
+
+void LayerContextImpl::DismissUnboundedFrameSink() {
+  ResetBoundUnboundedFrameSink();
+  pending_unbounded_frame_sink_id_ = FrameSinkId();
+  pending_unbounded_local_surface_id_ = LocalSurfaceId();
+  host_impl_->DismissUnboundedFrameSink();
+}
+
+void LayerContextImpl::TryBindUnboundedFrameSink() {
+  if (!pending_unbounded_frame_sink_id_.is_valid()) {
+    return;
+  }
+  if (!compositor_sink_->frame_sink_manager()->IsValidUnboundedFrameSinkId(
+          compositor_sink_->frame_sink_id(),
+          pending_unbounded_frame_sink_id_)) {
+    return;
+  }
+  if (bound_unbounded_frame_sink_id_.is_valid()) {
+    ResetBoundUnboundedFrameSink();
+    host_impl_->DismissUnboundedFrameSink();
+  }
+  CompositorFrameSinkSupport* support =
+      compositor_sink_->frame_sink_manager()->GetFrameSinkForId(
+          pending_unbounded_frame_sink_id_);
+  if (!support) {
+    // When TreesInViz is enabled, the browser process does not create a
+    // CompositorFrameSink via IPC for unbounded elements. Auto-instantiate an
+    // internal CompositorFrameSinkSupport here so Viz can composite and
+    // render the unbounded element's surface.
+    CHECK(base::FeatureList::IsEnabled(features::kTreesInViz));
+    unbounded_support_ = std::make_unique<CompositorFrameSinkSupport>(
+        /*client=*/nullptr, compositor_sink_->frame_sink_manager(),
+        pending_unbounded_frame_sink_id_, /*is_root=*/false);
+    support = unbounded_support_.get();
+  }
+  DCHECK(!support->resource_return_delegate());
+  support->set_resource_return_delegate(this);
+  bound_unbounded_frame_sink_id_ = pending_unbounded_frame_sink_id_;
+  auto direct_sink = std::make_unique<DirectLayerTreeFrameSink>(
+      support->GetWeakPtr(), pending_unbounded_local_surface_id_);
+  host_impl_->SetUnboundedFrameSink(std::move(direct_sink),
+                                    pending_unbounded_local_surface_id_);
+  pending_unbounded_frame_sink_id_ = FrameSinkId();
+  pending_unbounded_local_surface_id_ = LocalSurfaceId();
 }
 
 }  // namespace viz

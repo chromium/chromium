@@ -4612,6 +4612,10 @@ bool LayerTreeHostImpl::InitializeFrameSink(
   has_valid_layer_tree_frame_sink_ = true;
   if (settings_.TreesInVizInClientProcess()) {
     layer_context_ = layer_tree_frame_sink_->CreateLayerContext(*this);
+    if (unbounded_frame_sink_id_.is_valid()) {
+      layer_context_->SetUnboundedFrameSinkId(unbounded_frame_sink_id_,
+                                              unbounded_local_surface_id_);
+    }
   }
 
   UpdateRasterCapabilities();
@@ -6398,9 +6402,30 @@ void LayerTreeHostImpl::SetUnboundedFrameSink(
                                               local_surface_id);
 }
 
+void LayerTreeHostImpl::SetUnboundedFrameSinkId(
+    const viz::FrameSinkId& frame_sink_id,
+    const viz::LocalSurfaceId& local_surface_id) {
+  DCHECK(task_runner_provider_->IsImplThread());
+  CHECK(base::FeatureList::IsEnabled(features::kTreesInViz));
+  CHECK(settings_.TreesInVizInClientProcess());
+  unbounded_frame_sink_id_ = frame_sink_id;
+  unbounded_local_surface_id_ = local_surface_id;
+  if (layer_context_) {
+    layer_context_->SetUnboundedFrameSinkId(frame_sink_id, local_surface_id);
+  }
+}
+
 void LayerTreeHostImpl::DismissUnboundedFrameSink() {
   DCHECK(task_runner_provider_->IsImplThread() ||
          !task_runner_provider_->HasImplThread());
+  if (settings_.TreesInVizInClientProcess()) {
+    unbounded_frame_sink_id_ = viz::FrameSinkId();
+    unbounded_local_surface_id_ = viz::LocalSurfaceId();
+    if (layer_context_) {
+      layer_context_->DismissUnboundedFrameSink();
+    }
+    return;
+  }
   if (unbounded_frame_sink_handler_) {
     unbounded_frame_sink_handler_->DismissFrameSink();
   }
@@ -6409,6 +6434,13 @@ void LayerTreeHostImpl::DismissUnboundedFrameSink() {
 void LayerTreeHostImpl::SetUnboundedLocalSurfaceId(
     const viz::LocalSurfaceId& local_surface_id) {
   DCHECK(task_runner_provider_->IsImplThread());
+  if (settings_.TreesInVizInClientProcess()) {
+    unbounded_local_surface_id_ = local_surface_id;
+    if (layer_context_) {
+      layer_context_->SetUnboundedLocalSurfaceId(local_surface_id);
+    }
+    return;
+  }
   if (unbounded_frame_sink_handler_) {
     unbounded_frame_sink_handler_->SetLocalSurfaceId(local_surface_id);
   }

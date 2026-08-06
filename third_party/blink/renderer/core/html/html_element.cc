@@ -1670,17 +1670,6 @@ ScriptPromise<IDLUndefined> HTMLElement::showUnboundedElement(
     return promise;
   }
 
-  // TODO(crbug.com/508672616): the unbounded element API does not work when
-  // the TreesInViz feature is enabled. There are various CHECKs that enforce
-  // this. So we need to reject here.
-  if (base::FeatureList::IsEnabled(::features::kTreesInViz)) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotSupportedError,
-        "The unbounded element API doesn't support the TreesInViz feature. "
-        "Please disable it with `--disable-features=TreesInViz`."));
-    return promise;
-  }
-
   SetUnboundedElementActive(true);
 
   mojo::PendingAssociatedRemote<mojom::blink::UnboundedSurfaceHost> host_remote;

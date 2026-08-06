@@ -4978,6 +4978,19 @@
     "expires": "Jan 1, 2027"
   },
   {
+    "prefix": "unbounded-element-with-treesinviz",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["wpt_internal/html/rendering/unbounded-element"],
+    "args": [
+      "--enable-features=UnboundedElement,UnboundedElementOnTheOpenWeb,TreesInViz",
+      "--force-device-scale-factor=1.5"
+    ],
+    "owners": [
+      "masonf@chromium.org"
+    ],
+    "expires": "Jan 1, 2027"
+  },
+  {
     "prefix": "canvas-draw-element-image-hardware-video",
     "owners": ["paint-dev@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],

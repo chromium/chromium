@@ -66,6 +66,9 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   void SetUnboundedFrameSink(
       std::unique_ptr<LayerTreeFrameSink> unbounded_frame_sink,
       const viz::LocalSurfaceId& local_surface_id) override;
+  void SetUnboundedFrameSinkId(
+      const viz::FrameSinkId& frame_sink_id,
+      const viz::LocalSurfaceId& local_surface_id) override;
   void DismissUnboundedFrameSink() override;
   void SetUnboundedLocalSurfaceId(
       const viz::LocalSurfaceId& local_surface_id) override;

@@ -401,6 +401,14 @@ void ProxyImpl::SetUnboundedFrameSink(
                                     local_surface_id);
 }
 
+void ProxyImpl::SetUnboundedFrameSinkId(
+    const viz::FrameSinkId& frame_sink_id,
+    const viz::LocalSurfaceId& local_surface_id) {
+  DCHECK(IsImplThread());
+  CHECK(base::FeatureList::IsEnabled(features::kTreesInViz));
+  host_impl_->SetUnboundedFrameSinkId(frame_sink_id, local_surface_id);
+}
+
 void ProxyImpl::DismissUnboundedFrameSink() {
   DCHECK(IsImplThread());
   host_impl_->DismissUnboundedFrameSink();

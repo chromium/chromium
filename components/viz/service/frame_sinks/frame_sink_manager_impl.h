@@ -172,6 +172,13 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   void UnregisterFrameSinkHierarchy(
       const FrameSinkId& parent_frame_sink_id,
       const FrameSinkId& child_frame_sink_id) override;
+  // Returns true if `unbounded_frame_sink_id` is a valid target for an
+  // unbounded surface under `parent_frame_sink_id`. This checks that the ID is
+  // registered in Viz by the Browser process or is a registered descendant
+  // in the frame sink hierarchy of `parent_frame_sink_id`.
+  bool IsValidUnboundedFrameSinkId(
+      const FrameSinkId& parent_frame_sink_id,
+      const FrameSinkId& unbounded_frame_sink_id) const;
   void AddVideoDetectorObserver(
       mojo::PendingRemote<mojom::VideoDetectorObserver> observer) override;
   void CreateVideoCapturer(

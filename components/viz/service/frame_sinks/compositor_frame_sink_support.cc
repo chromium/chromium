@@ -465,6 +465,12 @@ void CompositorFrameSinkSupport::ReturnResources(
     return;
   }
 
+  if (resource_return_delegate_) {
+    CHECK(base::FeatureList::IsEnabled(features::kTreesInViz));
+    resource_return_delegate_->ReceiveReturnsFromParent(std::move(resources));
+    return;
+  }
+
   if (layer_context_) {
     // Resource management is delegated to LayerContext when it's in use.
     layer_context_->ReceiveReturnsFromParent(std::move(resources));
@@ -772,6 +778,7 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
     }
     std::vector<ui::LatencyInfo>().swap(frame.metadata.latency_info);
   }
+
   for (ui::LatencyInfo& latency : frame.metadata.latency_info) {
     if (latency.latency_components().size() > 0) {
       latency.AddLatencyNumberWithTimestamp(

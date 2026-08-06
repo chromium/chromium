@@ -25,6 +25,7 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/display_color_spaces.mojom";
 import "ui/gfx/mojom/overlay_transform.mojom";
 import "ui/gfx/mojom/delegated_ink_metadata.mojom";
+import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
 import "ui/latency/mojom/latency_info.mojom";
 
 // Describes a request to create or delete a UIResource in the service-side
@@ -277,6 +278,16 @@ interface LayerContext {
 
   // Sets the target LocalSurfaceId to unthrottle drawing for.
   SetTargetLocalSurfaceId(LocalSurfaceId target_local_surface_id);
+
+  // Propagates the unbounded surface's FrameSinkId and LocalSurfaceId.
+  SetUnboundedFrameSinkId(FrameSinkId frame_sink_id,
+      LocalSurfaceId local_surface_id);
+
+  // Updates the LocalSurfaceId for the unbounded surface.
+  SetUnboundedLocalSurfaceId(LocalSurfaceId local_surface_id);
+
+  // Deactivates and cleans up the unbounded frame sink.
+  DismissUnboundedFrameSink();
 };
 
 // Provides feedback from a GPU-side LayerTreeHostImpl to its corresponding

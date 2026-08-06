@@ -156,6 +156,11 @@ class VIZ_SERVICE_EXPORT LayerContextImpl
   void UpdateDisplayTiling(mojom::TilingPtr tiling) override;
   void SetTargetLocalSurfaceId(
       const LocalSurfaceId& target_local_surface_id) override;
+  void SetUnboundedFrameSinkId(const FrameSinkId& frame_sink_id,
+                               const LocalSurfaceId& local_surface_id) override;
+  void SetUnboundedLocalSurfaceId(
+      const LocalSurfaceId& local_surface_id) override;
+  void DismissUnboundedFrameSink() override;
 
   // Return any resources pending in |resources_to_return_| to the LayerContext
   // client, via the frame sink.
@@ -186,6 +191,14 @@ class VIZ_SERVICE_EXPORT LayerContextImpl
 
   raw_ptr<cc::LayerTreeFrameSinkClient> frame_sink_client_ = nullptr;
   const std::unique_ptr<VizLayerTreeHostImpl> host_impl_;
+
+  void TryBindUnboundedFrameSink();
+  void ResetBoundUnboundedFrameSink();
+
+  FrameSinkId pending_unbounded_frame_sink_id_;
+  LocalSurfaceId pending_unbounded_local_surface_id_;
+  FrameSinkId bound_unbounded_frame_sink_id_;
+  std::unique_ptr<CompositorFrameSinkSupport> unbounded_support_;
 
   // Must be the last member to ensure this is destroyed first in the
   // destruction order and invalidates all weak pointers.

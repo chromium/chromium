@@ -2195,6 +2195,15 @@ void LayerTreeHost::SetUnboundedFrameSink(
                                 local_surface_id);
 }
 
+void LayerTreeHost::SetUnboundedFrameSinkId(
+    const viz::FrameSinkId& frame_sink_id,
+    const viz::LocalSurfaceId& local_surface_id) {
+  DCHECK(settings_.enable_unbounded_element);
+  DCHECK(IsMainThread());
+  CHECK(base::FeatureList::IsEnabled(features::kTreesInViz));
+  proxy_->SetUnboundedFrameSinkId(frame_sink_id, local_surface_id);
+}
+
 void LayerTreeHost::DismissUnboundedFrameSink() {
   DCHECK(settings_.enable_unbounded_element);
   DCHECK(IsMainThread());
