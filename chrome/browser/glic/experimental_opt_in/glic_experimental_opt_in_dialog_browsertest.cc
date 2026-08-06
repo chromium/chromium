@@ -1184,31 +1184,19 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest,
   EXPECT_EQ(browser()->tab_strip_model()->active_index(), 1);
 }
 
-// TODO(crbug.com/542691173):
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_GetOrCreateSuitableWebContents_TargetInBackgroundWindow \
-  DISABLED_GetOrCreateSuitableWebContents_TargetInBackgroundWindow
-#else
-#define MAYBE_GetOrCreateSuitableWebContents_TargetInBackgroundWindow \
-  GetOrCreateSuitableWebContents_TargetInBackgroundWindow
-#endif
 IN_PROC_BROWSER_TEST_F(
     GlicExperimentalOptInTest,
-    MAYBE_GetOrCreateSuitableWebContents_TargetInBackgroundWindow) {
+    GetOrCreateSuitableWebContents_TargetInBackgroundWindow) {
   // 1. We start with browser() (Window A, active).
   // It has 1 tab (not matching).
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
 
   // 2. Create Window B (background window).
-  BrowserWindowInterface* window_b = CreateBrowserWindow(GetProfile());
-  ASSERT_TRUE(window_b);
+  BrowserWindowInterface* window_b = CreateAdditionalBrowserWindow();
 
   // Ensure Window A is active.
-  {
-    ui_test_utils::BrowserDidBecomeActiveWaiter waiter(browser());
-    browser()->GetWindow()->Activate();
-    waiter.Wait();
-  }
+  browser()->GetWindow()->Activate();
+  ASSERT_OK(WaitForWindowActive(browser()));
 
   // 3. Add suitable tab to Window B.
   GURL fallback_url(
@@ -1219,11 +1207,8 @@ IN_PROC_BROWSER_TEST_F(
   content::TestNavigationObserver observer(triggering_contents);
   observer.Wait();
   // Ensure Window A is still active overall.
-  {
-    ui_test_utils::BrowserDidBecomeActiveWaiter waiter(browser());
-    browser()->GetWindow()->Activate();
-    waiter.Wait();
-  }
+  browser()->GetWindow()->Activate();
+  ASSERT_OK(WaitForWindowActive(browser()));
 
   // 4. Call GetOrCreateSuitableWebContents.
   content::WebContents* web_contents =

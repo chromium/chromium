@@ -42,6 +42,7 @@
 #include "chrome/browser/glic/test_support/test_result.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui_provider.h"
 #include "chrome/common/chrome_switches.h"
@@ -174,6 +175,12 @@ template <typename Trigger>
   return false;
 }
 
+[[nodiscard]] inline TestResult<> WaitForWindowActive(
+    BrowserWindowInterface* browser) {
+  return RunUntilEqual([&]() { return browser->GetWindow()->IsActive(); }, true,
+                       "Window did not become active");
+}
+
 [[nodiscard]] inline TestResult<> WaitForSidePanelState(
     tabs::TabInterface* tab,
     GlicSidePanelCoordinator::State expected_state) {
@@ -245,15 +252,22 @@ class GlicBrowserTestMixin : public T {
     if (!glic::GlicEnabling::IsOsVersionSupported()) {
       GTEST_SKIP() << "OS version not supported by Glic";
     }
+#if defined(USE_MOCK_ACTIVATION_CONTROLLER)
+    // Instantiate the MockActivationController early before calling T::SetUp().
+    // During T::SetUp(), InProcessBrowserTest creates and shows the default
+    // startup browser window. If the mock controller is already active at that
+    // time, DesktopWindowTreeHostPlatform skips acquiring its native
+    // paint-as-active lock. This prevents the default window from being
+    // permanently locked active, allowing mock deactivation to work correctly
+    // during the test.
+    activation_controller_ =
+        std::make_unique<views::test::MockActivationController>();
+#endif
     T::SetUp();
   }
 
   void SetUpOnMainThread() override {
     T::SetUpOnMainThread();
-#if defined(USE_MOCK_ACTIVATION_CONTROLLER)
-    activation_controller_ =
-        std::make_unique<views::test::MockActivationController>();
-#endif
 
     // Disable side panel animations on supported platforms.
     if (IsSidePanelEnabled()) {
@@ -270,7 +284,6 @@ class GlicBrowserTestMixin : public T {
         ->GetBrowserWindowInterface()
         ->GetWindow()
         ->Activate();
-    LOG(INFO) << "GlicBrowserTest: done setting up";
   }
 
   void TearDownOnMainThread() override {
@@ -298,6 +311,15 @@ class GlicBrowserTestMixin : public T {
   [[nodiscard]] TestResult<GlicInstanceImpl*> OpenGlicForActiveTab() {
     ToggleGlicForActiveTab(/*prevent_close=*/true);
     return WaitForGlicOpen(T::GetTabListInterface()->GetActiveTab());
+  }
+
+  // Opens the Glic UI on the given tab and returns the instance.
+  [[nodiscard]] TestResult<GlicInstanceImpl*> OpenGlicForTab(
+      tabs::TabInterface* tab) {
+    auto* service = GlicKeyedService::Get(T::GetProfile());
+    service->ToggleUI(tab->GetBrowserWindowInterface(), /*prevent_close=*/true,
+                      mojom::InvocationSource::kTopChromeButton);
+    return WaitForGlicOpen(tab);
   }
 
   [[nodiscard]] TestResult<> WaitForInstanceDeletion(
@@ -544,6 +566,29 @@ class GlicBrowserTestMixin : public T {
     T::GetTabListInterface()->ActivateTab(new_tab->GetHandle());
     CHECK(content::WaitForLoadStop(new_tab->GetContents()));
     return new_tab;
+  }
+
+  // Creates a new browser window and returns it. On Desktop, it will also
+  // automatically create a blank tab.
+  // TODO(crbug.com/530318599): CreateBrowserWindow() does not create a tab on
+  // Desktop. Fix the Desktop implementation of CreateBrowserWindow() to match
+  // Android, then remove the #if/#else and just use the #if part.
+  [[nodiscard]] BrowserWindowInterface* CreateAdditionalBrowserWindow() {
+    BrowserWindowInterface* browser = nullptr;
+#if BUILDFLAG(IS_ANDROID)
+    BrowserWindowCreateParams create_params = BrowserWindowCreateParams(
+        BrowserWindowInterface::Type::TYPE_NORMAL, *T::GetProfile(),
+        /*from_user_gesture=*/false);
+    base::test::TestFuture<BrowserWindowInterface*> future;
+    CreateBrowserWindow(std::move(create_params), future.GetCallback());
+    browser = future.Get();
+#else
+    browser = T::CreateBrowser(T::GetProfile());
+#endif
+    CHECK(browser);
+    CHECK(WaitForWindowActive(browser).has_value());
+    CHECK(TabListInterface::From(browser)->GetActiveTab());
+    return browser;
   }
 
   content::Visibility GetContentsVisibility(GlicInstanceImpl* instance) {

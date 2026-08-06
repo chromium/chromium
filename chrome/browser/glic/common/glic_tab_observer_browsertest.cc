@@ -20,11 +20,11 @@
 #include "base/types/expected_macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/tabs/public/tab_interface.h"
@@ -168,7 +168,8 @@ class GlicTabEventCollector {
   base::test::TestFuture<void> condition_met_signal_;
 };
 
-class GlicTabObserverBrowserTest : public PlatformBrowserTest {
+class GlicTabObserverBrowserTest
+    : public glic::GlicBrowserTestMixin<PlatformBrowserTest> {
  public:
   GlicTabObserverBrowserTest() = default;
 
@@ -198,16 +199,7 @@ class GlicTabObserverBrowserTest : public PlatformBrowserTest {
   }
 
   BrowserWindowInterface* CreateNewWindowWithTab() {
-    BrowserWindowInterface* window = glic::CreateBrowserWindow(GetProfile());
-    CHECK(window);
-    TabListInterface* tab_list = TabListInterface::From(window);
-    CHECK(tab_list);
-    tabs::TabInterface* active_tab = tab_list->GetActiveTab();
-    if (!active_tab) {
-      active_tab = CreateTab(tab_list);
-    }
-    CHECK(active_tab);
-    return window;
+    return CreateAdditionalBrowserWindow();
   }
 
 #if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
@@ -296,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(GlicTabObserverBrowserTest, ObservesTabCreation) {
   // Open Tab 3
   tabs::TabInterface* third_tab = CreateTab();
   ASSERT_OK_AND_ASSIGN(creation, collector.WaitForCreation());
-  EXPECT_NE(creation.new_tab, nullptr);
+  ASSERT_TRUE(creation.new_tab);
   EXPECT_EQ(creation.old_tab.get(), second_tab);
   EXPECT_EQ(creation.new_tab.get(), third_tab);
 }
@@ -305,15 +297,11 @@ IN_PROC_BROWSER_TEST_F(GlicTabObserverBrowserTest,
                        ObservesTabCreationInNewWindow) {
   GlicTabEventCollector collector(GetProfile());
 
-  BrowserWindowInterface* new_window = glic::CreateBrowserWindow(GetProfile());
-  ASSERT_TRUE(new_window);
-
-  TabListInterface* new_tab_list = TabListInterface::From(new_window);
-  ASSERT_TRUE(new_tab_list);
-  CreateTab(new_tab_list);
+  BrowserWindowInterface* new_window = CreateAdditionalBrowserWindow();
 
   ASSERT_OK_AND_ASSIGN(auto creation, collector.WaitForCreation());
   EXPECT_NE(creation.new_tab, nullptr);
+  EXPECT_EQ(creation.new_tab->GetBrowserWindowInterface(), new_window);
 }
 
 // Mobile Android does not support programmatically creating separate browser
