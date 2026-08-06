@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/features.h"
@@ -451,6 +452,7 @@ KeepAliveURLLoader::KeepAliveURLLoader(
                                   // `this` owns `request_trackers_`, so it is
                                   // safe to use.
                                   base::Unretained(this)))),
+      browser_context_(CHECK_DEREF(storage_partition->browser_context())),
       storage_partition_(storage_partition),
       initial_url_(resource_request.url),
       last_url_(resource_request.url),
@@ -471,6 +473,9 @@ KeepAliveURLLoader::KeepAliveURLLoader(
   if (IsFetchLater()) {
     base::UmaHistogramBoolean("FetchLater.Browser.Total", true);
   }
+
+  GetContentClient()->browser()->OnFetchKeepAliveRequestCreated(
+      *browser_context_);
 }
 
 void KeepAliveURLLoader::Start() {
@@ -537,6 +542,8 @@ KeepAliveURLLoader::~KeepAliveURLLoader() {
   if (IsStarted()) {
     GetContentClient()->browser()->OnKeepaliveRequestFinished();
   }
+  GetContentClient()->browser()->OnFetchKeepAliveRequestDestroyed(
+      *browser_context_);
 }
 
 void KeepAliveURLLoader::set_on_delete_callback(

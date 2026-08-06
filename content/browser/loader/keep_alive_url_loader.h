@@ -15,6 +15,7 @@
 
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -47,6 +48,7 @@ class URLLoaderThrottle;
 
 namespace content {
 
+class BrowserContext;
 class KeepAliveRequestTracker;
 class KeepAliveRequestBrowserTestBase;
 class KeepAliveURLLoaderService;
@@ -461,6 +463,12 @@ class CONTENT_EXPORT KeepAliveURLLoader
 
   // The trackers to record the browser-side UKM metrics for this request.
   std::vector<std::unique_ptr<KeepAliveRequestTracker>> request_trackers_;
+
+  // The BrowserContext that owns `storage_partition_`. Cached because
+  // `StoragePartitionImpl::~StoragePartitionImpl()` clears its BrowserContext
+  // pointer in the destructor body before member destruction tears down the
+  // KeepAliveURLLoaderService that owns this loader.
+  const raw_ref<BrowserContext> browser_context_;
 
   // The StoragePartition that initiates this loader.
   // It is ensured to outlive this because it owns KeepAliveURLLoaderService
