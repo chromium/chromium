@@ -3,24 +3,33 @@
 // found in the LICENSE file.
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/about_flags.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
+#include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_prefs.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_item_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/unexpire_flags.h"
+#include "components/prefs/pref_service.h"
+#include "components/user_education/views/new_badge_label.h"
 #include "components/version_info/channel.h"
 #include "components/webui/flags/feature_entry_macros.h"
+#include "components/webui/flags/flags_state.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/events/base_event_utils.h"
@@ -30,6 +39,7 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/test/button_test_api.h"
+#include "ui/views/test/widget_test.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/test/base/scoped_channel_override.h"
@@ -213,5 +223,183 @@ class ChromeLabsMultipleFeaturesUiTest : public DialogBrowserTest {
 IN_PROC_BROWSER_TEST_F(ChromeLabsMultipleFeaturesUiTest, InvokeUi_default) {
   ShowAndVerifyUi();
 }
+
+namespace {
+
+const char kTestFeatureWithVariationId[] = "feature-2";
+const char kThirdTestFeatureId[] = "feature-3";
+const char kExpiredFlagTestFeatureId[] = "expired-feature";
+
+BASE_FEATURE(kTestFeature2, "FeatureName2", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTestFeature3, "FeatureName3", base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kExpiredFlagTestFeature,
+             "Expired",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const flags_ui::FeatureEntry::FeatureParam kTestVariationOther2[] = {
+    {"Param1", "Value"}};
+const flags_ui::FeatureEntry::FeatureVariation kTestVariations2[] = {
+    {"Description", kTestVariationOther2, nullptr}};
+
+std::vector<LabInfo> TestLabInfo() {
+  std::vector<LabInfo> test_feature_info;
+  test_feature_info.emplace_back(kFirstTestFeatureId, u"", u"", "",
+                                 version_info::Channel::STABLE);
+
+  std::vector<std::u16string> variation_descriptions = {u"Description"};
+
+  test_feature_info.emplace_back(kTestFeatureWithVariationId, u"", u"", "",
+                                 version_info::Channel::STABLE,
+                                 variation_descriptions);
+
+  test_feature_info.emplace_back(kThirdTestFeatureId, u"", u"", "",
+                                 version_info::Channel::STABLE);
+
+  test_feature_info.emplace_back(kExpiredFlagTestFeatureId, u"", u"", "",
+                                 version_info::Channel::STABLE);
+
+  return test_feature_info;
+}
+
+base::Time g_mock_time;
+base::Time MockTimeNow() {
+  return g_mock_time;
+}
+
+}  // namespace
+
+class ChromeLabsCoordinatorBrowserTest : public InProcessBrowserTest {
+ public:
+  ChromeLabsCoordinatorBrowserTest()
+      :
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        channel_override_(chrome::ScopedChannelOverride(
+            chrome::ScopedChannelOverride::Channel::kDev)),
+#endif
+        scoped_feature_entries_(
+            {{kFirstTestFeatureId, "", "",
+              flags_ui::FlagsState::GetCurrentPlatform(),
+              FEATURE_VALUE_TYPE(kTestFeature1)},
+             {kTestFeatureWithVariationId, "", "",
+              flags_ui::FlagsState::GetCurrentPlatform(),
+              FEATURE_WITH_PARAMS_VALUE_TYPE(kTestFeature2,
+                                             kTestVariations2,
+                                             "TestTrial")},
+             // kThirdTestFeatureId will be the Id of a FeatureEntry that is
+             // not compatible with the current platform.
+             {kThirdTestFeatureId, "", "", 0,
+              FEATURE_VALUE_TYPE(kTestFeature3)},
+             {kExpiredFlagTestFeatureId, "", "",
+              flags_ui::FlagsState::GetCurrentPlatform(),
+              FEATURE_VALUE_TYPE(kExpiredFlagTestFeature)}}) {
+    flags::testing::SetFlagExpiration(kExpiredFlagTestFeatureId, 0);
+    scoped_chrome_labs_model_data_.SetModelDataForTesting(TestLabInfo());
+    ForceChromeLabsActivationForTesting();
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
+        chrome_labs_prefs::kBrowserLabsEnabledEnterprisePolicy, true);
+    PinnedToolbarActionsModel* const actions_model =
+        PinnedToolbarActionsModel::Get(browser()->GetProfile());
+    actions_model->UpdatePinnedState(kActionShowChromeLabs, true);
+    if (!features::IsWebUIPinnedToolbarActionsEnabled()) {
+      views::test::WaitForAnimatingLayoutManager(
+          static_cast<PinnedToolbarActionsContainer*>(
+              BrowserView::GetBrowserViewForBrowser(browser())
+                  ->toolbar_button_provider()
+                  ->GetPinnedToolbarActions()));
+    }
+    chrome_labs_coordinator_ = ChromeLabsCoordinator::From(browser());
+  }
+
+  void TearDownOnMainThread() override {
+    if (chrome_labs_coordinator_ && chrome_labs_coordinator_->BubbleExists()) {
+      chrome_labs_coordinator_->Hide();
+    }
+    about_flags::GetCurrentFlagsState()->Reset();
+    chrome_labs_coordinator_ = nullptr;
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
+  views::View* chrome_labs_menu_item_container() {
+    return chrome_labs_coordinator_->GetChromeLabsBubbleView()
+        ->GetMenuItemContainerForTesting();
+  }
+
+  ChromeLabsItemView* first_lab_item() {
+    views::View* menu_items = chrome_labs_menu_item_container();
+    return static_cast<ChromeLabsItemView*>(
+        menu_items->children().front().get());
+  }
+
+ protected:
+  ScopedChromeLabsModelDataForTesting scoped_chrome_labs_model_data_;
+  raw_ptr<ChromeLabsCoordinator> chrome_labs_coordinator_ = nullptr;
+
+ private:
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  chrome::ScopedChannelOverride channel_override_;
+#endif
+  about_flags::testing::ScopedFeatureEntries scoped_feature_entries_;
+};
+
+IN_PROC_BROWSER_TEST_F(ChromeLabsCoordinatorBrowserTest, ShowBubbleTest) {
+  chrome_labs_coordinator_->Show();
+  EXPECT_TRUE(chrome_labs_coordinator_->BubbleExists());
+
+  views::test::WidgetDestroyedWaiter first_destroyed_waiter(
+      chrome_labs_coordinator_->GetChromeLabsBubbleView()->GetWidget());
+  chrome_labs_coordinator_->Hide();
+  first_destroyed_waiter.Wait();
+  EXPECT_FALSE(chrome_labs_coordinator_->BubbleExists());
+  chrome_labs_coordinator_->Show();
+  // The bubble can be closed by the user clicking off of the bubble.
+  views::test::WidgetDestroyedWaiter second_destroyed_waiter(
+      chrome_labs_coordinator_->GetChromeLabsBubbleView()->GetWidget());
+  chrome_labs_coordinator_->GetChromeLabsBubbleView()->GetWidget()->Close();
+  second_destroyed_waiter.Wait();
+  EXPECT_FALSE(chrome_labs_coordinator_->BubbleExists());
+}
+
+// This test checks the new badge shows and that after 8 days the new badge is
+// not showing anymore.
+IN_PROC_BROWSER_TEST_F(ChromeLabsCoordinatorBrowserTest, NewBadgeTest) {
+  g_mock_time = base::Time::Now();
+  base::subtle::ScopedTimeClockOverrides time_overrides(&MockTimeNow, nullptr,
+                                                        nullptr);
+  chrome_labs_coordinator_->Show();
+  EXPECT_TRUE(first_lab_item()->GetNewBadgeForTesting()->GetDisplayNewBadge());
+  views::test::WidgetDestroyedWaiter destroyed_waiter(
+      chrome_labs_coordinator_->GetChromeLabsBubbleView()->GetWidget());
+  chrome_labs_coordinator_->Hide();
+  destroyed_waiter.Wait();
+  constexpr base::TimeDelta kDelay = base::Days(8);
+  g_mock_time += kDelay;
+  chrome_labs_coordinator_->Show();
+  EXPECT_FALSE(first_lab_item()->GetNewBadgeForTesting()->GetDisplayNewBadge());
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+
+// OwnerFlagsStorage on build bots works the same way as the non-owner version
+// since we don't have the session manager daemon to write and sign the proto
+// blob. This test just opens and closes the bubble to make sure there are no
+// crashes.
+IN_PROC_BROWSER_TEST_F(ChromeLabsCoordinatorBrowserTest,
+                       ShowBubbleWhenUserIsOwner) {
+  chrome_labs_coordinator_->Show(
+      ChromeLabsCoordinator::ShowUserType::kChromeOsOwnerUserType);
+  views::test::WidgetDestroyedWaiter destroyed_waiter(
+      chrome_labs_coordinator_->GetChromeLabsBubbleView()->GetWidget());
+  chrome_labs_coordinator_->Hide();
+  destroyed_waiter.Wait();
+  chrome_labs_coordinator_->Show(
+      ChromeLabsCoordinator::ShowUserType::kChromeOsOwnerUserType);
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #endif  // !BUILDFLAG(IS_CHROMEOS) || !BUILDFLAG(GOOGLE_CHROME_BRANDING)
