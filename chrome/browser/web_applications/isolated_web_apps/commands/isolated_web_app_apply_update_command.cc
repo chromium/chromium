@@ -274,7 +274,7 @@ void IsolatedWebAppApplyUpdateCommand::FinalizeUpdate(
 
   install_update_job_ = std::make_unique<FinalizeInstallOrUpdateJob>(
       profile(), lock_.get(), lock_.get(), install_info,
-      FinalizeJobOptions::ForUpdate(),
+      FinalizeJobOptions::ForSilentUpdate(),
       std::make_unique<UpdateIsolationDataDelegate>());
   install_update_job_->Start(
       base::BindOnce(&IsolatedWebAppApplyUpdateCommand::OnFinalized,

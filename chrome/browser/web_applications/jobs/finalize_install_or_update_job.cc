@@ -303,7 +303,12 @@ FinalizeInstallOrUpdateJob::FinalizeInstallOrUpdateJob(
       web_app_info_(web_app_info.Clone()),
       app_id_(GenerateAppIdFromManifestId(web_app_info_.manifest_id())),
       options_(options),
-      finalizer_delegate_(std::move(finalizer_delegate)) {}
+      finalizer_delegate_(std::move(finalizer_delegate)) {
+  // Silent updates should always overwrite existing manifest fields.
+  if (options_.is_silent_update) {
+    CHECK(options_.overwrite_existing_manifest_fields);
+  }
+}
 
 FinalizeInstallOrUpdateJob::~FinalizeInstallOrUpdateJob() = default;
 
@@ -317,7 +322,7 @@ void FinalizeInstallOrUpdateJob::Start(InstallFinalizedCallback callback) {
   callback_ = std::move(callback);
   webapps::ManifestId manifest_id = web_app_info_.manifest_id();
 
-  if (options_.is_update) {
+  if (options_.is_silent_update) {
     const WebApp* existing_web_app = registrar().GetAppById(app_id_);
     if (!existing_web_app ||
         existing_web_app->is_from_sync_and_pending_installation()) {
@@ -372,7 +377,7 @@ void FinalizeInstallOrUpdateJob::OnOriginAssociationValidated(
     OriginAssociations validated_origin_associations) {
   const WebApp* existing_web_app = registrar().GetAppById(app_id_);
 
-  if (options_.is_update) {
+  if (options_.is_silent_update) {
     if (!existing_web_app ||
         existing_web_app->is_from_sync_and_pending_installation()) {
       CHECK_EQ(app_id_, existing_web_app->app_id());
@@ -389,7 +394,7 @@ void FinalizeInstallOrUpdateJob::OnOriginAssociationValidated(
   if (existing_web_app) {
     web_app = std::make_unique<WebApp>(*existing_web_app);
   } else {
-    CHECK(!options_.is_update);
+    CHECK(!options_.is_silent_update);
     // TODO(crbug.com/344718166): Ensure that manifest_id corresponds to app_id
     // here.
     web_app = std::make_unique<WebApp>(
@@ -437,13 +442,13 @@ void FinalizeInstallOrUpdateJob::OnOriginAssociationValidated(
     finalizer_delegate_->ConfigureCustomFields(web_app.get(), web_app_info_);
   }
 
-  if (!options_.is_update) {
+  if (!options_.is_silent_update) {
     SetWebAppFieldsForInstall(web_app.get(), existing_web_app, now_time);
   }
 
   if (options_.install_state !=
           proto::InstallState::INSTALLED_WITH_OS_INTEGRATION &&
-      !options_.is_update) {
+      !options_.is_silent_update) {
     DCHECK(!(options_.add_to_applications_menu || options_.add_to_desktop ||
              options_.add_to_quick_launch_bar))
         << "Cannot create os hooks for a non-fully installed app";
@@ -460,8 +465,11 @@ void FinalizeInstallOrUpdateJob::OnOriginAssociationValidated(
 
   // Ensure that the pending update info is always reset whenever Finalize*() is
   // called, to ensure that the state of icons on disk or new installs do not
-  // have left over pending updates.
-  if (options_.overwrite_existing_manifest_fields) {
+  // have left over pending updates. This should not be reset during silent
+  // updates, as ManifestUpdateJob manages pending_update_info itself after
+  // finalize finishes.
+  if (options_.overwrite_existing_manifest_fields &&
+      !options_.is_silent_update) {
     web_app->SetPendingUpdateInfo(std::nullopt);
   }
 
@@ -487,8 +495,8 @@ void FinalizeInstallOrUpdateJob::OnOriginAssociationValidated(
   CHECK_EQ(web_app_info_.shortcuts_menu_item_infos.size(),
            web_app_info_.shortcuts_menu_icon_bitmaps.size());
 
-  if (options_.overwrite_existing_manifest_fields || options_.is_update ||
-      !existing_web_app) {
+  if (options_.overwrite_existing_manifest_fields ||
+      options_.is_silent_update || !existing_web_app) {
     SetWebAppManifestFieldsAndWriteData(std::move(web_app),
                                         std::move(commit_callback));
   } else {
@@ -502,7 +510,7 @@ void FinalizeInstallOrUpdateJob::SetWebAppFieldsForInstall(
     WebApp* web_app,
     const WebApp* existing_web_app,
     const base::Time now_time) {
-  CHECK(!options_.is_update);
+  CHECK(!options_.is_silent_update);
 
   // The UI may initiate a full install to overwrite the existing
   // non-locally-installed app. Therefore, `install_state` can be
@@ -761,7 +769,7 @@ void FinalizeInstallOrUpdateJob::OnDatabaseCommitCompleted(
   }
 
   std::optional<SynchronizeOsOptions> synchronize_options;
-  if (!options_.is_update) {
+  if (!options_.is_silent_update) {
     install_manager().NotifyWebAppInstalled(app_id_);
 
     synchronize_options.emplace();
@@ -797,7 +805,7 @@ void FinalizeInstallOrUpdateJob::OnDatabaseCommitCompleted(
   // If the app being updated was installed by default and not also manually
   // installed by the user or an enterprise policy, disable os integration.
   should_skip_os_integration_on_manifest_update =
-      options_.is_update &&
+      options_.is_silent_update &&
       registrar().GetInstallState(app_id_) ==
           proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION;
 #endif  // !BUILDFLAG(IS_CHROMEOS)
@@ -826,18 +834,18 @@ void FinalizeInstallOrUpdateJob::OnHooksFinished() {
   // installation.
   if (registrar().GetInstallState(app_id_) ==
           proto::InstallState::INSTALLED_WITH_OS_INTEGRATION &&
-      !options_.is_update) {
+      !options_.is_silent_update) {
     callback_ = std::move(callback_).Then(base::BindOnce(
         &FinalizeInstallOrUpdateJob::NotifyWebAppInstalledWithOsHooks,
         provider_, app_id_));
   }
 
-  if (options_.is_update) {
+  if (options_.is_silent_update) {
     install_manager().NotifyWebAppManifestUpdated(app_id_);
   }
 
   RunCallbackAndResetLock(
-      app_id_, options_.is_update
+      app_id_, options_.is_silent_update
                    ? webapps::InstallResultCode::kSuccessAlreadyInstalled
                    : webapps::InstallResultCode::kSuccessNewInstall);
 }

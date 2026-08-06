@@ -827,8 +827,8 @@ TEST_F(FinalizeInstallOrUpdateJobTest, OnWebAppManifestUpdatedTriggered) {
       /*overwrite_existing_manifest_fields=*/true,
       webapps::WebappInstallSource::EXTERNAL_POLICY);
 
-  FinalizeInstallResult result =
-      AwaitFinalizeInstallOrUpdate(*info, FinalizeJobOptions::ForUpdate());
+  FinalizeInstallResult result = AwaitFinalizeInstallOrUpdate(
+      *info, FinalizeJobOptions::ForSilentUpdate());
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessAlreadyInstalled, result.code);
   EXPECT_TRUE(install_manager_observer_->web_app_manifest_updated_called());
@@ -844,8 +844,8 @@ TEST_F(FinalizeInstallOrUpdateJobTest, ManifestUpdateOsIntegrationDefaultApps) {
   EXPECT_EQ(proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
             registrar().GetInstallState(app_id));
 
-  FinalizeInstallResult result =
-      AwaitFinalizeInstallOrUpdate(*info, FinalizeJobOptions::ForUpdate());
+  FinalizeInstallResult result = AwaitFinalizeInstallOrUpdate(
+      *info, FinalizeJobOptions::ForSilentUpdate());
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessAlreadyInstalled, result.code);
   EXPECT_TRUE(install_manager_observer_->web_app_manifest_updated_called());
@@ -872,8 +872,8 @@ TEST_F(FinalizeInstallOrUpdateJobTest, InstallOsHooksDisabledForDefaultApps) {
   PopulateFileHandlerInfoFromManifest(file_handlers, info->start_url(),
                                       info.get());
 
-  FinalizeInstallResult result =
-      AwaitFinalizeInstallOrUpdate(*info, FinalizeJobOptions::ForUpdate());
+  FinalizeInstallResult result = AwaitFinalizeInstallOrUpdate(
+      *info, FinalizeJobOptions::ForSilentUpdate());
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessAlreadyInstalled, result.code);
 }
@@ -901,8 +901,8 @@ TEST_F(FinalizeInstallOrUpdateJobTest, MigrationSourceChangeSchedulesSync) {
       MigrationBehavior::kSuggest);
   info->migration_sources = {source};
 
-  FinalizeInstallResult result =
-      AwaitFinalizeInstallOrUpdate(*info, FinalizeJobOptions::ForUpdate());
+  FinalizeInstallResult result = AwaitFinalizeInstallOrUpdate(
+      *info, FinalizeJobOptions::ForSilentUpdate());
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessAlreadyInstalled, result.code);
 }
@@ -935,8 +935,8 @@ TEST_F(FinalizeInstallOrUpdateJobTest,
   invalid_bitmaps.any[16] = bitmap;
   info->shortcuts_menu_icon_bitmaps = {valid_bitmaps, invalid_bitmaps};
 
-  FinalizeInstallResult result =
-      AwaitFinalizeInstallOrUpdate(*info, FinalizeJobOptions::ForUpdate());
+  FinalizeInstallResult result = AwaitFinalizeInstallOrUpdate(
+      *info, FinalizeJobOptions::ForSilentUpdate());
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessAlreadyInstalled, result.code);
 
@@ -978,8 +978,8 @@ TEST_F(FinalizeInstallOrUpdateJobTest,
       provider().origin_association_manager())
       .SetData(data);
 
-  FinalizeInstallResult result =
-      AwaitFinalizeInstallOrUpdate(*info, FinalizeJobOptions::ForUpdate());
+  FinalizeInstallResult result = AwaitFinalizeInstallOrUpdate(
+      *info, FinalizeJobOptions::ForSilentUpdate());
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessAlreadyInstalled, result.code);
 

@@ -425,7 +425,7 @@ void ManifestUpdateJob::FinalizeUpdateIfSilentChangesExist() {
   if (silently_update_app_identity_) {
     install_update_job_ = std::make_unique<FinalizeInstallOrUpdateJob>(
         profile_.get(), &lock_.get(), &lock_resources_.get(),
-        *new_install_info_, FinalizeJobOptions::ForUpdate());
+        *new_install_info_, FinalizeJobOptions::ForSilentUpdate());
     install_update_job_->Start(
         base::BindOnce(&ManifestUpdateJob::UpdateFinalizedWritePendingInfo,
                        weak_factory_.GetWeakPtr(), std::nullopt,
@@ -458,7 +458,7 @@ void ManifestUpdateJob::FinalizeUpdateIfSilentChangesExist() {
 
     install_update_job_ = std::make_unique<FinalizeInstallOrUpdateJob>(
         profile_.get(), &lock_.get(), &lock_resources_.get(),
-        *new_install_info_, FinalizeJobOptions::ForUpdate());
+        *new_install_info_, FinalizeJobOptions::ForSilentUpdate());
     install_update_job_->Start(base::BindOnce(
         &ManifestUpdateJob::UpdateFinalizedWritePendingInfo,
         weak_factory_.GetWeakPtr(), std::move(pending_update_info),
@@ -583,7 +583,7 @@ void ManifestUpdateJob::OnImageDiffComputedFinalizeUpdate(
   if (silent_update_required_) {
     install_update_job_ = std::make_unique<FinalizeInstallOrUpdateJob>(
         profile_.get(), &lock_.get(), &lock_resources_.get(),
-        *new_install_info_, FinalizeJobOptions::ForUpdate());
+        *new_install_info_, FinalizeJobOptions::ForSilentUpdate());
     install_update_job_->Start(
         base::BindOnce(&ManifestUpdateJob::UpdateFinalizedWritePendingInfo,
                        weak_factory_.GetWeakPtr(),

@@ -62,11 +62,11 @@ struct FinalizeJobOptions {
   ~FinalizeJobOptions();
   FinalizeJobOptions(const FinalizeJobOptions&);
 
-  static FinalizeJobOptions ForUpdate() {
-    // Dummy WebAppInstallSource
+  static FinalizeJobOptions ForSilentUpdate() {
+    // Dummy WebAppInstallSource, and always override manifest fields.
     auto options = FinalizeJobOptions(webapps::WebappInstallSource::MIGRATION);
-    options.is_update = true;
-    options.overwrite_existing_manifest_fields = false;
+    options.is_silent_update = true;
+    options.overwrite_existing_manifest_fields = true;
     return options;
   }
 
@@ -99,7 +99,11 @@ struct FinalizeJobOptions {
   // do not validate even if scope_extensions has valid entries.
   bool skip_origin_association_validation = false;
 
-  bool is_update = false;
+  // Updates that are applied via user intervention do not go through the
+  // `FinalizeInstallOrUpdateJob`, and do their own thing to populate the web
+  // app metadata. As such, this job ONLY runs for silent updates if an update
+  // is triggered.
+  bool is_silent_update = false;
 };
 
 // A finalizer job for the installation or update process, represents the last
