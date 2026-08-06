@@ -6,7 +6,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/apple/foundation_util.h"
+#import "ios/chrome/browser/shared/ui/buildflags.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 namespace {
@@ -127,6 +130,121 @@ TEST_F(GeminiUIUtilsTest, ContentHeightForViewMeasurement) {
   CGFloat constrained_height = [GeminiUIUtils contentHeightForView:label
                                                 withContainerWidth:100];
   EXPECT_GT(constrained_height, unconstrained_height);
+}
+
+// Tests that attributedStringByReplacingWord returns an attributed string with
+// the expected font, replacing the target word with a valid image attachment.
+TEST_F(GeminiUIUtilsTest, AttributedStringByReplacingWord) {
+  UIFont* font = [UIFont systemFontOfSize:17];
+  NSString* text = @"Test Gemini Title";
+  NSArray<UIColor*>* colors = @[
+    [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:1.0],
+    [UIColor colorWithRed:0.0 green:0.0 blue:1.0 alpha:1.0]
+  ];
+  NSAttributedString* attrString =
+      [GeminiUIUtils attributedStringByReplacingWord:@"Gemini"
+                                              inText:text
+                                                font:font
+                                              colors:colors];
+  ASSERT_NE(attrString, nil);
+
+  // Check font attribute on the first character.
+  UIFont* resultFont = [attrString attribute:NSFontAttributeName
+                                     atIndex:0
+                              effectiveRange:nil];
+  EXPECT_NSEQ(resultFont, font);
+
+  // "Gemini" (6 chars) is replaced by an inline attachment character (1 char),
+  // so the resulting string length is 12 (17 - 6 + 1).
+  EXPECT_EQ(attrString.length, 12u);
+
+  // Index 5 is where "Gemini" started after "Test ".
+  NSRange attachmentRange = NSMakeRange(NSNotFound, 0);
+  id attachment = [attrString attribute:NSAttachmentAttributeName
+                                atIndex:5
+                         effectiveRange:&attachmentRange];
+  ASSERT_NE(attachment, nil);
+  EXPECT_EQ(attachmentRange.location, 5u);
+  EXPECT_EQ(attachmentRange.length, 1u);
+  EXPECT_TRUE([attachment isKindOfClass:[NSTextAttachment class]]);
+  NSTextAttachment* textAttachment =
+      base::apple::ObjCCast<NSTextAttachment>(attachment);
+  EXPECT_NE(textAttachment.image, nil);
+  EXPECT_GT(textAttachment.image.size.width, 0);
+  EXPECT_GT(textAttachment.image.size.height, 0);
+
+  // Check the exact string contents after replacement (\uFFFC represents the
+  // inline attachment character).
+  NSString* expectedString =
+      [NSString stringWithFormat:@"Test %C Title", (unichar)0xFFFC];
+  EXPECT_NSEQ(attrString.string, expectedString);
+}
+
+// Tests that attributedStringWithGradientGeminiForTitle replaces "Gemini" on
+// branded builds and returns plain attributed text on non-branded builds.
+TEST_F(GeminiUIUtilsTest, AttributedStringWithGradientGeminiForTitle) {
+  UIFont* font = [UIFont systemFontOfSize:17];
+  NSString* title = @"Test Gemini Title";
+  NSAttributedString* attrString =
+      [GeminiUIUtils attributedStringWithGradientGeminiForTitle:title
+                                                           font:font];
+  ASSERT_NE(attrString, nil);
+
+  // Check font attribute on the first character.
+  UIFont* resultFont = [attrString attribute:NSFontAttributeName
+                                     atIndex:0
+                              effectiveRange:nil];
+  EXPECT_NSEQ(resultFont, font);
+
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
+  // On branded builds, "Gemini" (6 chars) is replaced by an inline attachment
+  // character (1 char), so the resulting string length is 12 (17 - 6 + 1).
+  EXPECT_EQ(attrString.length, 12u);
+
+  NSRange attachmentRange = NSMakeRange(NSNotFound, 0);
+  id attachment = [attrString attribute:NSAttachmentAttributeName
+                                atIndex:5
+                         effectiveRange:&attachmentRange];
+  ASSERT_NE(attachment, nil);
+  EXPECT_EQ(attachmentRange.location, 5u);
+  EXPECT_EQ(attachmentRange.length, 1u);
+  EXPECT_TRUE([attachment isKindOfClass:[NSTextAttachment class]]);
+#else
+  // On non-branded builds, the title is untouched.
+  EXPECT_EQ(attrString.length, 17u);
+  EXPECT_NSEQ(attrString.string, title);
+#endif
+}
+
+// Tests that attributedStringByReplacingWord handles a non-matching targetWord
+// gracefully without altering the string.
+TEST_F(GeminiUIUtilsTest, AttributedStringByReplacingWordEdgeCases) {
+  UIFont* font = [UIFont systemFontOfSize:20.0];
+  NSArray<UIColor*>* colors = @[
+    [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:1.0],
+    [UIColor colorWithRed:0.0 green:0.0 blue:1.0 alpha:1.0]
+  ];
+
+  // Non-matching targetWord returns un-modified plain attributed string.
+  NSAttributedString* missingWordAttr =
+      [GeminiUIUtils attributedStringByReplacingWord:@"MissingWord"
+                                              inText:@"Hello Gemini"
+                                                font:font
+                                              colors:colors];
+  ASSERT_NE(missingWordAttr, nil);
+  EXPECT_NSEQ(@"Hello Gemini", missingWordAttr.string);
+}
+
+// Tests that attributedStringWithGradientGeminiForTitle returns nil when given
+// a nil title or font.
+TEST_F(GeminiUIUtilsTest, AttributedStringWithGradientGeminiNilCheck) {
+  UIFont* font = [UIFont systemFontOfSize:20.0];
+  EXPECT_EQ(nil,
+            [GeminiUIUtils attributedStringWithGradientGeminiForTitle:nil
+                                                                 font:font]);
+  EXPECT_EQ(nil,
+            [GeminiUIUtils attributedStringWithGradientGeminiForTitle:@"Title"
+                                                                 font:nil]);
 }
 
 }  // namespace
