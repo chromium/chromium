@@ -16,7 +16,6 @@
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_metrics_utils.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
