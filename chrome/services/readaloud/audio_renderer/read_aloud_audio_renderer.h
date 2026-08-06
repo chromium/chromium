@@ -5,6 +5,8 @@
 #ifndef CHROME_SERVICES_READALOUD_AUDIO_RENDERER_READ_ALOUD_AUDIO_RENDERER_H_
 #define CHROME_SERVICES_READALOUD_AUDIO_RENDERER_READ_ALOUD_AUDIO_RENDERER_H_
 
+#include <atomic>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
@@ -70,7 +72,7 @@ class ReadAloudAudioRenderer final
   // SetPlaybackRate()), read on the real-time audio thread during Render().
   // Using an atomic or a simple variable is safe because the parameter changes
   // are simple writes and we do not require strict synchronization.
-  double playback_rate_ = 1.0;
+  std::atomic<double> playback_rate_ = 1.0;
 
   media::NullMediaLog media_log_;
   media::AudioRendererAlgorithm algorithm_;

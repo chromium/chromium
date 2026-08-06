@@ -61,8 +61,8 @@ int ReadAloudAudioRenderer::Render(base::TimeDelta delay,
   }
 
   // 2. Call FillBuffer to fill the destination bus.
-  int frames_written =
-      algorithm_.FillBuffer(dest, 0, dest->frames(), playback_rate_);
+  int frames_written = algorithm_.FillBuffer(
+      dest, 0, dest->frames(), playback_rate_.load(std::memory_order_relaxed));
 
   // 3. Zero out any remaining frames if we underflowed.
   if (frames_written < dest->frames()) {
@@ -74,7 +74,7 @@ int ReadAloudAudioRenderer::Render(base::TimeDelta delay,
 
 void ReadAloudAudioRenderer::SetPlaybackRate(double rate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  playback_rate_ = rate;
+  playback_rate_.store(rate, std::memory_order_relaxed);
 }
 
 void ReadAloudAudioRenderer::OnRenderError() {
