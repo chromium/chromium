@@ -69,7 +69,7 @@ public class CopyLinkToHighlightTest {
                 mDelegate.getAdditionalMenuItems(
                         MenuType.DROPDOWN,
                         /* isSelectionPassword= */ false,
-                        /* isSelectionReadOnly= */ false,
+                        /* isSelectionReadOnly= */ true,
                         "selected text");
         assertTrue(hasCopyLinkToHighlight(items));
     }
@@ -81,7 +81,7 @@ public class CopyLinkToHighlightTest {
                 mDelegate.getAdditionalMenuItems(
                         MenuType.DROPDOWN,
                         /* isSelectionPassword= */ false,
-                        /* isSelectionReadOnly= */ false,
+                        /* isSelectionReadOnly= */ true,
                         "");
         assertFalse(hasCopyLinkToHighlight(items));
     }
@@ -93,8 +93,20 @@ public class CopyLinkToHighlightTest {
                 mDelegate.getAdditionalMenuItems(
                         MenuType.DROPDOWN,
                         /* isSelectionPassword= */ true,
-                        /* isSelectionReadOnly= */ false,
+                        /* isSelectionReadOnly= */ true,
                         "*password*");
+        assertFalse(hasCopyLinkToHighlight(items));
+    }
+
+    @Test
+    public void testGetAdditionalMenuItems_EditableText() {
+        FeatureOverrides.overrideFlag(ChromeFeatureList.COPY_LINK_TO_HIGHLIGHT, true);
+        List<SelectionMenuItem> items =
+                mDelegate.getAdditionalMenuItems(
+                        MenuType.DROPDOWN,
+                        /* isSelectionPassword= */ false,
+                        /* isSelectionReadOnly= */ false,
+                        "selected text");
         assertFalse(hasCopyLinkToHighlight(items));
     }
 

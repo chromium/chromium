@@ -104,7 +104,8 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
         if (menuType == MenuType.DROPDOWN
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.COPY_LINK_TO_HIGHLIGHT)
                 && !selectedText.isEmpty()
-                && !isSelectionPassword) {
+                && !isSelectionPassword
+                && isSelectionReadOnly) {
             SelectionMenuItem copyLinkItem =
                     new SelectionMenuItem.Builder(R.string.contextmenu_copy_link_to_highlight)
                             .setId(R.id.contextmenu_copy_link_to_highlight)
