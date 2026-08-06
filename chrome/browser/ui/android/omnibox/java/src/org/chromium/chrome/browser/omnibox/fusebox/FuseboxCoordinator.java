@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Rect;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
@@ -469,6 +470,26 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
             return;
         }
         mModel.get(FuseboxProperties.ACTIVATION_CHIP_CLICKED).run();
+    }
+
+    /**
+     * Handle a key event by activating it or changing the currently keyboard-selected view; returns
+     * true if a view was selected or activated.
+     */
+    public boolean handleKeyEvent(int keyCode, KeyEvent event) {
+        return mMediator != null && mMediator.handleKeyEvent(keyCode, event);
+    }
+
+    /** Set the first attachment as selected. Does nothing if there are not attachments. */
+    public void selectFirstAttachment() {
+        if (mMediator == null) return;
+        mMediator.selectFirstAttachment();
+    }
+
+    /** Set the last attachment as selected. Does nothing if there are not attachments. */
+    public void selectLastAttachment() {
+        if (mMediator == null) return;
+        mMediator.selectLastAttachment();
     }
 
     // TemplateUrlServiceObserver

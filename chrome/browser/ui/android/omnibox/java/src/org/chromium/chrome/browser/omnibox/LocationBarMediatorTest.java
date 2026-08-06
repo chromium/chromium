@@ -3863,6 +3863,58 @@ public class LocationBarMediatorTest {
     }
 
     @Test
+    public void testHandleKeyNavigationEventDelegateToFusebox() {
+        doReturn(KeyEvent.KEYCODE_TAB).when(mKeyEvent).getKeyCode();
+        doReturn(true).when(mKeyEvent).hasNoModifiers();
+        doReturn(KeyEvent.ACTION_DOWN).when(mKeyEvent).getAction();
+
+        doReturn(View.VISIBLE).when(mUrlBar).getVisibility();
+        doReturn(View.VISIBLE).when(mPlusButton).getVisibility();
+        doReturn(View.VISIBLE).when(mDeleteButton).getVisibility();
+        doReturn(View.GONE).when(mActivationChip).getVisibility();
+        doReturn(true).when(mAutocompleteCoordinator).isServingSuggestions();
+        mHasAttachmentsSupplier.set(true);
+
+        var input = mSessionState.getAutocompleteInput();
+        input.setRequestType(AutocompleteRequestType.SEARCH).setUserText("user text");
+        mMediator.beginInput(input);
+
+        LocationBarSelectionController selectionController =
+                mMediator.getSelectionControllerForTesting();
+
+        // Position 0: UrlBar
+        // Position 1: DeleteButton (ActivationChip is GONE)
+        // Position 2: FuseboxAttachments
+
+        // Move to DeleteButton
+        assertTrue(mMediator.handleKeyNavigationEvent(KeyEvent.KEYCODE_TAB, mKeyEvent));
+        assertEquals(1, selectionController.getPosition().intValue());
+
+        // Move to FuseboxAttachments
+        assertTrue(mMediator.handleKeyNavigationEvent(KeyEvent.KEYCODE_TAB, mKeyEvent));
+        assertEquals(2, selectionController.getPosition().intValue());
+        verify(mFuseboxCoordinator).selectFirstAttachment();
+
+        // Test delegation of key event to FuseboxCoordinator when FuseboxAttachments is selected
+        doReturn(true).when(mFuseboxCoordinator).handleKeyEvent(KeyEvent.KEYCODE_TAB, mKeyEvent);
+        assertTrue(mMediator.handleKeyNavigationEvent(KeyEvent.KEYCODE_TAB, mKeyEvent));
+        verify(mFuseboxCoordinator).handleKeyEvent(KeyEvent.KEYCODE_TAB, mKeyEvent);
+
+        // Test moving backwards to FuseboxAttachments
+        doReturn(false).when(mFuseboxCoordinator).handleKeyEvent(KeyEvent.KEYCODE_TAB, mKeyEvent);
+        doReturn(false).when(mKeyEvent).hasNoModifiers();
+        doReturn(true).when(mKeyEvent).hasModifiers(KeyEvent.META_SHIFT_ON);
+
+        // Move from AutocompleteList (Position 3) back to FuseboxAttachments (Position 2)
+        selectionController.selectAutocompleteList();
+        assertEquals(3, selectionController.getPosition().intValue());
+
+        assertTrue(mMediator.handleKeyNavigationEvent(KeyEvent.KEYCODE_TAB, mKeyEvent));
+        assertEquals(2, selectionController.getPosition().intValue());
+        verify(mFuseboxCoordinator).selectLastAttachment();
+    }
+
+    @Test
     public void testHandleKeyNavigationEvent_ctrlTab_notHandled() {
         doReturn(KeyEvent.KEYCODE_TAB).when(mKeyEvent).getKeyCode();
         doReturn(false).when(mKeyEvent).hasNoModifiers();

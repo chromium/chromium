@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox.fusebox;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** The properties associated with a single fusebox attachment item. */
@@ -24,5 +25,11 @@ class FuseboxAttachmentProperties {
     public static final WritableObjectPropertyKey<Runnable> ON_REMOVE =
             new WritableObjectPropertyKey<>();
 
-    public static final PropertyKey[] ALL_KEYS = {ATTACHMENT, COLOR_SCHEME, ON_REMOVE};
+    /** Whether the remove button should be selected. */
+    public static WritableBooleanPropertyKey REMOVE_BUTTON_SELECTED =
+            new WritableBooleanPropertyKey();
+
+    public static final PropertyKey[] ALL_KEYS = {
+        ATTACHMENT, COLOR_SCHEME, ON_REMOVE, REMOVE_BUTTON_SELECTED
+    };
 }

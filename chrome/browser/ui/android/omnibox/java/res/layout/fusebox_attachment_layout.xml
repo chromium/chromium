@@ -69,6 +69,7 @@ found in the LICENSE file.
         android:layout_height="@dimen/fusebox_attachment_item_height"
         android:layout_gravity="end"
         android:padding="@dimen/fusebox_attachment_close_padding"
+        android:foreground="@drawable/remove_button_focus_ring"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/acc_remove_attachment"
         android:scaleType="fitCenter"

@@ -104,6 +104,14 @@ public abstract class SelectionController {
         setPosition(mDefaultPosition);
     }
 
+    public void selectFirstItem() {
+        setPosition(0);
+    }
+
+    public void selectLastItem() {
+        setPosition(getItemCount() - 1);
+    }
+
     /** Returns the maximum valid position the SelectionController can assume. */
     protected abstract int getItemCount();
 

@@ -632,4 +632,16 @@ public class SelectionControllerUnitTest {
         verifyPositionReset(c, 0);
         assertTrue(c.isParkedAtSentinel());
     }
+
+    @Test
+    public void testSelectFirstAndLastAttachment() {
+        var c = createTestController(Mode.WRAPPING_WITH_SENTINEL);
+        when(c.getItemCount()).thenReturn(3);
+
+        c.selectFirstItem();
+        assertEquals(0, c.getPosition().intValue());
+
+        c.selectLastItem();
+        assertEquals(2, c.getPosition().intValue());
+    }
 }

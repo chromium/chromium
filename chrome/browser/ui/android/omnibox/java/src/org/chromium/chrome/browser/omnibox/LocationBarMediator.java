@@ -267,6 +267,7 @@ class LocationBarMediator
     private final HintTextUpdater mHintTextUpdater;
 
     private SelectableView mUrlBarSelectableView;
+    private SelectableView mFuseboxAttachmentsSelectableView;
     private boolean mWaitingForInitialUrl;
     private @Nullable Boolean mIsLensOnOmniboxEnabled;
     private @Nullable ViewGroup mToolbarParent;
@@ -536,6 +537,20 @@ class LocationBarMediator
                     }
                 };
 
+        mFuseboxAttachmentsSelectableView =
+                new SelectableView() {
+                    @Override
+                    public boolean isVisible() {
+                        return mFuseboxCoordinator.getHasAttachmentsSupplier().get();
+                    }
+
+                    @Override
+                    public void setSelected(boolean isSelected) {}
+
+                    @Override
+                    public void handleActivationEvent(KeyEvent event) {}
+                };
+
         List<SelectableView> selectableViews =
                 List.of(
                         mUrlBarSelectableView,
@@ -543,6 +558,7 @@ class LocationBarMediator
                                 mLocationBarLayout.getActivationChip(),
                                 mFuseboxCoordinator::onActivationChipSelectionChanged),
                         wrapSelectableView(mLocationBarLayout.getDeleteButton()),
+                        mFuseboxAttachmentsSelectableView,
                         autocompleteSelectableView,
                         wrapSelectableView(
                                 mLocationBarLayout.findViewById(R.id.fusebox_plus_button)),
@@ -2644,6 +2660,11 @@ class LocationBarMediator
             mUrlCoordinator.maybeAcceptInlineSuggestion(event);
         }
 
+        if (mSelectionController.getSelectedView() == mFuseboxAttachmentsSelectableView) {
+            boolean fuseboxHandled = mFuseboxCoordinator.handleKeyEvent(keyCode, event);
+            if (fuseboxHandled) return true;
+        }
+
         boolean isTypedStateConventionalRequest =
                 mCurrentInput != null
                         && !mCurrentInput.isInZeroPrefixContext()
@@ -2698,6 +2719,10 @@ class LocationBarMediator
                 if (!autocompleteHasSelectableItems) {
                     mSelectionController.selectPreviousItem();
                 }
+                mAutocompleteCoordinator.selectLastItem();
+            } else if (mSelectionController.getSelectedView()
+                    == mFuseboxAttachmentsSelectableView) {
+                mFuseboxCoordinator.selectLastAttachment();
             }
         } else if (isForwardTab) {
             if (!mSelectionController.selectNextItem()) return false;
@@ -2718,6 +2743,9 @@ class LocationBarMediator
                     // its own nested selection, we re-handle the event.
                     mAutocompleteCoordinator.handleKeyEvent(keyCode, event);
                 }
+            } else if (mSelectionController.getSelectedView()
+                    == mFuseboxAttachmentsSelectableView) {
+                mFuseboxCoordinator.selectFirstAttachment();
             }
         }
 

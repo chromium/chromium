@@ -50,6 +50,9 @@ class FuseboxAttachmentViewBinder {
             view.findViewById(R.id.attachment_remove_button)
                     .setOnClickListener(
                             v -> model.get(FuseboxAttachmentProperties.ON_REMOVE).run());
+        } else if (propertyKey == FuseboxAttachmentProperties.REMOVE_BUTTON_SELECTED) {
+            view.findViewById(R.id.attachment_remove_button)
+                    .setSelected(model.get(FuseboxAttachmentProperties.REMOVE_BUTTON_SELECTED));
         }
     }
 
