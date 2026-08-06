@@ -287,5 +287,46 @@ TEST_F(ArcBootPhaseMonitorBridgeTest, TestRecordUMA_AppRequested) {
   EXPECT_EQ(0, app_requested_in_session_records().back());
 }
 
+// Tests that OnBootCompleted() is idempotent and subsequent calls are ignored.
+TEST_F(ArcBootPhaseMonitorBridgeTest, TestBootCompleted_Idempotent) {
+  TestObserverImpl observer(this);
+  boot_phase_monitor_bridge()->AddObserver(&observer);
+  EXPECT_EQ(0U, on_boot_completed_counter());
+  EXPECT_EQ(0U, record_uma_counter());
+
+  // First call should complete boot and notify observers.
+  boot_phase_monitor_bridge()->OnBootCompleted();
+  EXPECT_EQ(1U, on_boot_completed_counter());
+  EXPECT_EQ(0U, record_uma_counter());
+
+  // Subsequent calls must be ignored.
+  boot_phase_monitor_bridge()->OnBootCompleted();
+  EXPECT_EQ(1U, on_boot_completed_counter());
+  EXPECT_EQ(0U, record_uma_counter());
+
+  boot_phase_monitor_bridge()->RemoveObserver(&observer);
+}
+
+// Tests that OnBootCompleted() idempotency works correctly when UMA recording
+// is pending, and that session reset (e.g. stop/restart) clears the completed
+// state.
+TEST_F(ArcBootPhaseMonitorBridgeTest, TestBootCompleted_IdempotentWithReset) {
+  boot_phase_monitor_bridge()->RecordFirstAppLaunchDelayUMAForTesting();
+  EXPECT_EQ(0U, record_uma_counter());
+
+  boot_phase_monitor_bridge()->OnBootCompleted();
+  EXPECT_EQ(1U, record_uma_counter());
+
+  // Duplicate call should be ignored and not record UMA again.
+  boot_phase_monitor_bridge()->OnBootCompleted();
+  EXPECT_EQ(1U, record_uma_counter());
+
+  // Resetting session state should clear boot_completed_, allowing a new boot
+  // completion.
+  boot_phase_monitor_bridge()->OnArcSessionStopped(ArcStopReason::SHUTDOWN);
+  boot_phase_monitor_bridge()->OnBootCompleted();
+  EXPECT_EQ(1U, record_uma_counter());
+}
+
 }  // namespace
 }  // namespace arc

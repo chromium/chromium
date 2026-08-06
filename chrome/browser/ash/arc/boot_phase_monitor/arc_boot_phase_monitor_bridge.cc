@@ -147,6 +147,12 @@ void ArcBootPhaseMonitorBridge::RemoveObserver(Observer* observer) {
 void ArcBootPhaseMonitorBridge::OnBootCompleted() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   VLOG(2) << "OnBootCompleted";
+
+  if (boot_completed_) {
+    VLOG(1) << "OnBootCompleted called when boot is already completed.";
+    return;
+  }
+
   boot_completed_ = true;
 
   ash::SessionManagerClient::Get()->EmitArcBooted(
