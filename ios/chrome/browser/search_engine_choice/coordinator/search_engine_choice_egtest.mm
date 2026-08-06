@@ -7,6 +7,7 @@
 #import "components/regional_capabilities/regional_capabilities_switches.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #import "components/search_engines/search_engines_switches.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/search_engine_choice/test/search_engine_choice_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/search_engine_choice/ui/search_engine_choice_constants.h"
@@ -18,6 +19,7 @@
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 @interface SearchEngineTestCase : ChromeTestCase
 @end
@@ -275,6 +277,42 @@
   // Verify that the snackbar is not displayed.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::SnackbarViewMatcher()]
       assertWithMatcher:grey_nil()];
+}
+
+// Tests that tapping "Learn More" in Waffle program displays the Learn More
+// screen with the Waffle third paragraph text.
+- (void)testLearnMoreWaffle {
+  // Check that the choice screen is shown.
+  [SearchEngineChoiceEarlGreyUI verifySearchEngineChoiceScreenIsDisplayed];
+  // Open the Learn More dialog.
+  id<GREYMatcher> learnMoreLinkMatcher =
+      grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
+                     IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE_INFO_LINK)),
+                 grey_sufficientlyVisible(), nil);
+  [[[EarlGrey selectElementWithMatcher:learnMoreLinkMatcher]
+      assertWithMatcher:grey_notNil()] performAction:grey_tap()];
+  // Verify the Learn More view was presented.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      grey_accessibilityID(
+                          kSearchEngineChoiceLearnMoreAccessibilityIdentifier)];
+
+  // Expand the bottom sheet to largeDetent by swiping up on the sheet view.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kSearchEngineChoiceLearnMoreAccessibilityIdentifier)]
+      performAction:grey_swipeSlowInDirection(kGREYDirectionUp)];
+
+  // Verify the Waffle third paragraph text is present.
+  NSString* waffleText = l10n_util::GetNSString(
+      IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_BODY_THIRD_PARAGRAPH);
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ContainsPartialText(
+                                          waffleText)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Close the Learn More dialog.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
+      performAction:grey_tap()];
 }
 
 @end

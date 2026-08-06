@@ -103,6 +103,7 @@ source_set("eg2_tests") {
     "//components/regional_capabilities",
     "//components/search_engines",
     "//components/signin/public/base:signin_switches",
+    "//components/strings",
     "//components/variations",
     "//ios/chrome/browser/first_run/test:eg2_tests",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
@@ -114,5 +115,6 @@ source_set("eg2_tests") {
     "//ios/chrome/common/ui/promo_style:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
   ]
 }
