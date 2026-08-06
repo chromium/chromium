@@ -520,6 +520,11 @@ RegionalCapabilitiesService::GetChoiceScreenDesign() {
               IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE_INFO_LINK_A11Y_LABEL,
           .subtitle_2_string_id =
               IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE_WITH_DEFINITION2,
+          .learn_more_third_paragraph_string_id =
+              base::FeatureList::IsEnabled(
+                  switches::kSearchEngineChoiceScreenSnackbar)
+                  ? IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_BODY_THIRD_PARAGRAPH_INSTRUCTIVE
+                  : IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_BODY_THIRD_PARAGRAPH,
       };
 #else
       NOTREACHED();
@@ -532,6 +537,8 @@ RegionalCapabilitiesService::GetChoiceScreenDesign() {
               IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE_INFO_LINK,
           .subtitle_1_learn_more_a11y_string_id =
               IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE_INFO_LINK_A11Y_LABEL,
+          .learn_more_third_paragraph_string_id =
+              IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_BODY_THIRD_PARAGRAPH,
       };
   }
   NOTREACHED();
