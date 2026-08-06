@@ -40,6 +40,11 @@ namespace blink {
   void V8ThrowException::Throw##blinkErrorType(v8::Isolate* isolate,     \
                                                const String& message) {  \
     ThrowException(isolate, Create##blinkErrorType(isolate, message));   \
+  }                                                                      \
+                                                                         \
+  void V8ThrowException::Throw##blinkErrorType(v8::Isolate* isolate,     \
+                                               const char* message) {    \
+    Throw##blinkErrorType(isolate, String(message));                     \
   }
 
 DEFINE_CREATE_AND_THROW_ERROR_FUNC(Error, Error, "Error")
