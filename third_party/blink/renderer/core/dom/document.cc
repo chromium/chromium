@@ -367,6 +367,7 @@
 #include "third_party/blink/renderer/core/trustedtypes/trusted_html.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/core/view_transition/page_reveal_event.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_skip_reason.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/core/xml/parser/xml_document_parser.h"
@@ -3394,8 +3395,10 @@ void Document::Shutdown() {
   // Because the document view transition supplement can get destroyed before
   // the execution context notification, we should clean up the transition
   // objects here.
-  ViewTransitionUtils::ForEachTransition(
-      *this, [](ViewTransition& transition) { transition.SkipTransition(); });
+  ViewTransitionUtils::ForEachTransition(*this, [](ViewTransition& transition) {
+    transition.SkipTransition(ViewTransition::PromiseResponse::kRejectAbort,
+                              ViewTransitionSkipReason::kContextDestroyed);
+  });
 
   // Preserve the global custom element registry on the TreeScope before the
   // window reference is cleared. This ensures that

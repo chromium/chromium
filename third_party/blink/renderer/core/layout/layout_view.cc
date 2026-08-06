@@ -68,6 +68,7 @@
 #include "third_party/blink/renderer/core/paint/view_painter.h"
 #include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_skip_reason.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
@@ -581,7 +582,9 @@ PhysicalRect LayoutView::ViewRect() const {
         // layout is deferred during a resize or rotation, causing a temporary
         // mismatch. We need skip the transition which would have happened later
         // anyway.
-        transition->SkipTransitionSoon();
+        transition->SkipTransitionSoon(
+            ViewTransition::PromiseResponse::kRejectInvalidState,
+            ViewTransitionSkipReason::kSnapshotRootChangedSize);
         return PhysicalRect(PhysicalOffset(),
                             PhysicalSize(frame_view_->Size()));
       }

@@ -8727,6 +8727,28 @@ Called by update_use_counter_css.py.-->
   <int value="9" label="Browser injected speculation rules failed parsing"/>
 </enum>
 
+<enum name="ViewTransitionSkipReason">
+  <int value="0" label="Expected"/>
+  <int value="1" label="UserSkipped"/>
+  <int value="2" label="NewTransitionStarted"/>
+  <int value="3" label="DocumentHidden"/>
+  <int value="4" label="NoView"/>
+  <int value="5" label="Timeout"/>
+  <int value="6" label="UnsupportedCapture"/>
+  <int value="7" label="CaptureFailed"/>
+  <int value="8" label="StartFailed"/>
+  <int value="9" label="SnapshotRootChangedSize"/>
+  <int value="10" label="ContextDestroyed"/>
+  <int value="11" label="CompositorCommit"/>
+  <int value="12" label="NavigationAborted"/>
+  <int value="13" label="OptInDisabled"/>
+  <int value="14" label="PageAlreadyRevealed"/>
+  <int value="15" label="IncompatibleStyle"/>
+  <int value="16" label="PostPrePaintFailed"/>
+  <int value="17" label="DuplicateTag"/>
+  <int value="18" label="NavigationTransitionActive"/>
+</enum>
+
 <!-- LINT.IfChange(WebDXFeatureObserver) -->
 
 <enum name="WebDXFeatureObserver">

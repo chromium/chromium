@@ -284,6 +284,7 @@
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_names.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_pseudo_element_base.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_skip_reason.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_transition_element.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
@@ -13100,7 +13101,9 @@ void Element::UpdateTransitionPseudoElements(
         GetPseudoElement(kPseudoIdViewTransition);
     if (transition && transition->HasIncompatibleStyle() &&
         !transition->IsDone()) {
-      transition->SkipTransitionSoon();
+      transition->SkipTransitionSoon(
+          ViewTransition::PromiseResponse::kRejectInvalidState,
+          ViewTransitionSkipReason::kIncompatibleStyle);
       transition = nullptr;
     }
     if (old_transition_pseudo &&

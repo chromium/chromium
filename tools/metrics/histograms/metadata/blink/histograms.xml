@@ -6059,6 +6059,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.ViewTransitions.SkipReason"
+    enum="ViewTransitionSkipReason" expires_after="2027-08-05">
+  <owner>vmpstr@chromium.org</owner>
+  <owner>rendering-core-dev@chromium.org</owner>
+  <summary>
+    Recorded when a view transition is skipped or aborted, logging the reason
+    for the skip.
+  </summary>
+</histogram>
+
 <histogram name="Blink.VisualUpdateDelay.UpdateTime{BlinkUpdateTimeSuffixes}"
     units="microseconds" expires_after="2026-09-12">
   <owner>szager@chromium.org</owner>

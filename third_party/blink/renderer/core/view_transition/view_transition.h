@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_request_forward.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_skip_reason.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_style_tracker.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
@@ -46,6 +47,15 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
                                    public ChromeClient::CommitObserver {
  public:
   using PassKey = base::PassKey<ViewTransition>;
+
+  // Indicates how the promise should be handled.
+  enum class PromiseResponse {
+    kResolve,
+    kRejectAbort,
+    kRejectInvalidState,
+    kRejectTimeout
+  };
+
   class Delegate {
    public:
     virtual ~Delegate() = default;
@@ -71,6 +81,8 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   static ViewTransition* CreateSkipped(
       Element*,
       V8ViewTransitionCallback*,
+      PromiseResponse response,
+      ViewTransitionSkipReason reason,
       const std::optional<Vector<String>>& types = std::nullopt);
 
   // Creates a ViewTransition to cache the state of a Document before a
@@ -267,18 +279,13 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   // block concept, has up to date style.
   void UpdateSnapshotContainingBlockStyle();
 
-  // Indicates how the promise should be handled.
-  enum class PromiseResponse {
-    kResolve,
-    kRejectAbort,
-    kRejectInvalidState,
-    kRejectTimeout
-  };
-  void SkipTransition(PromiseResponse response = PromiseResponse::kRejectAbort);
+  void SkipTransition(PromiseResponse response,
+                      ViewTransitionSkipReason reason);
 
   // This can be called inside of the lifecycle. It will skip the transition
   // whenever view transition steps are run within the lifecycle.
-  void SkipTransitionSoon();
+  void SkipTransitionSoon(PromiseResponse response,
+                          ViewTransitionSkipReason reason);
 
   // Dispatched when the promise returned from the author's update callback has
   // resolved and start phase of the animation can be initiated. Note: this is
@@ -505,6 +512,9 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   bool dom_callback_succeeded_ = false;
   bool first_animating_frame_ = true;
   bool pending_skip_view_transitions_ = false;
+  PromiseResponse pending_skip_response_ = PromiseResponse::kRejectAbort;
+  ViewTransitionSkipReason pending_skip_reason_ =
+      ViewTransitionSkipReason::kExpected;
   bool capture_rects_received_ = false;
 
   int wait_until_pending_promise_count_ = 0;

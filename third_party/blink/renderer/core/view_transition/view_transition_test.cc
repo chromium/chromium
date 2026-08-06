@@ -15,11 +15,13 @@
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_view_transition_callback.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
@@ -40,6 +42,7 @@
 #include "third_party/blink/renderer/core/timing/layout_shift.h"
 #include "third_party/blink/renderer/core/view_transition/dom_view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/scoped_view_transition.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_skip_reason.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_test_utils.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_transition_element.h"
@@ -138,8 +141,10 @@ class ViewTransitionTest : public testing::Test,
 
   void FinishTransition() {
     auto* transition = ViewTransitionUtils::GetTransition(GetDocument());
-    if (transition)
-      transition->SkipTransition();
+    if (transition) {
+      transition->SkipTransition(ViewTransition::PromiseResponse::kRejectAbort,
+                                 ViewTransitionSkipReason::kUserSkipped);
+    }
   }
 
   bool ShouldCompositeForViewTransition(Element* e) {
@@ -619,6 +624,126 @@ TEST_P(ViewTransitionTest, Abandon) {
 
   finished_tester.WaitUntilSettled();
   EXPECT_TRUE(finished_tester.IsFulfilled());
+}
+
+TEST_P(ViewTransitionTest, SkipReasonUserSkipped) {
+  base::HistogramTester histogram_tester;
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
+
+  MockFunctionScope funcs(script_state);
+  auto* callback = V8ViewTransitionCallback::Create(
+      funcs.ExpectCall()->ToV8Function(script_state));
+
+  auto* transition = ViewTransitionSupplement::startViewTransition(
+      script_state, GetDocument(), callback, IGNORE_EXCEPTION_FOR_TESTING);
+  ScriptPromiseTester ready_tester(script_state,
+                                   transition->ready(script_state));
+  ScriptPromiseTester finished_tester(script_state,
+                                      transition->finished(script_state));
+
+  transition->skipTransition();
+  test::RunPendingTasks();
+
+  ready_tester.WaitUntilSettled();
+  EXPECT_TRUE(ready_tester.IsRejected());
+  DOMException* exception = V8DOMException::ToWrappable(
+      script_state->GetIsolate(), ready_tester.Value().V8Value());
+  ASSERT_TRUE(exception);
+  EXPECT_EQ(exception->message(),
+            "Transition was skipped. skipTransition() called");
+
+  finished_tester.WaitUntilSettled();
+  EXPECT_TRUE(finished_tester.IsFulfilled());
+
+  histogram_tester.ExpectUniqueSample("Blink.ViewTransitions.SkipReason",
+                                      ViewTransitionSkipReason::kUserSkipped,
+                                      1);
+}
+
+TEST_P(ViewTransitionTest, SkipReasonNewTransitionStarted) {
+  base::HistogramTester histogram_tester;
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
+
+  MockFunctionScope funcs(script_state);
+  auto* callback1 = V8ViewTransitionCallback::Create(
+      funcs.ExpectCall()->ToV8Function(script_state));
+  auto* callback2 = V8ViewTransitionCallback::Create(
+      funcs.ExpectCall()->ToV8Function(script_state));
+
+  auto* transition1 = ViewTransitionSupplement::startViewTransition(
+      script_state, GetDocument(), callback1, IGNORE_EXCEPTION_FOR_TESTING);
+  ScriptPromiseTester ready_tester1(script_state,
+                                    transition1->ready(script_state));
+  ScriptPromiseTester finished_tester1(script_state,
+                                       transition1->finished(script_state));
+
+  auto* transition2 = ViewTransitionSupplement::startViewTransition(
+      script_state, GetDocument(), callback2, IGNORE_EXCEPTION_FOR_TESTING);
+  ScriptPromiseTester finished_tester2(script_state,
+                                       transition2->finished(script_state));
+
+  transition2->skipTransition();
+  test::RunPendingTasks();
+
+  ready_tester1.WaitUntilSettled();
+  EXPECT_TRUE(ready_tester1.IsRejected());
+  DOMException* exception1 = V8DOMException::ToWrappable(
+      script_state->GetIsolate(), ready_tester1.Value().V8Value());
+  ASSERT_TRUE(exception1);
+  EXPECT_EQ(exception1->message(),
+            "Transition was skipped. New ViewTransition started");
+
+  finished_tester1.WaitUntilSettled();
+  EXPECT_TRUE(finished_tester1.IsFulfilled());
+
+  finished_tester2.WaitUntilSettled();
+  EXPECT_TRUE(finished_tester2.IsFulfilled());
+
+  histogram_tester.ExpectBucketCount(
+      "Blink.ViewTransitions.SkipReason",
+      ViewTransitionSkipReason::kNewTransitionStarted, 1);
+}
+
+TEST_P(ViewTransitionTest, SkipReasonDocumentHidden) {
+  base::HistogramTester histogram_tester;
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
+
+  GetDocument().GetPage()->SetVisibilityState(
+      mojom::blink::PageVisibilityState::kHidden, true);
+
+  MockFunctionScope funcs(script_state);
+  auto* callback = V8ViewTransitionCallback::Create(
+      funcs.ExpectCall()->ToV8Function(script_state));
+
+  auto* transition = ViewTransitionSupplement::startViewTransition(
+      script_state, GetDocument(), callback, IGNORE_EXCEPTION_FOR_TESTING);
+  ScriptPromiseTester ready_tester(script_state,
+                                   transition->ready(script_state));
+  ScriptPromiseTester finished_tester(script_state,
+                                      transition->finished(script_state));
+
+  test::RunPendingTasks();
+
+  ready_tester.WaitUntilSettled();
+  EXPECT_TRUE(ready_tester.IsRejected());
+  DOMException* exception = V8DOMException::ToWrappable(
+      script_state->GetIsolate(), ready_tester.Value().V8Value());
+  ASSERT_TRUE(exception);
+  EXPECT_EQ(exception->message(),
+            "Transition was aborted because of invalid state. Document hidden");
+
+  finished_tester.WaitUntilSettled();
+  EXPECT_TRUE(finished_tester.IsFulfilled());
+
+  GetDocument().GetPage()->SetVisibilityState(
+      mojom::blink::PageVisibilityState::kVisible, false);
+
+  histogram_tester.ExpectUniqueSample("Blink.ViewTransitions.SkipReason",
+                                      ViewTransitionSkipReason::kDocumentHidden,
+                                      1);
 }
 
 TEST_P(ViewTransitionTest, ScopedElementRemoved) {

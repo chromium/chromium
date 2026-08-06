@@ -156,9 +156,13 @@ ViewTransition* ViewTransition::CreateFromScript(
 ViewTransition* ViewTransition::CreateSkipped(
     Element* element,
     V8ViewTransitionCallback* callback,
+    PromiseResponse response,
+    ViewTransitionSkipReason reason,
     const std::optional<Vector<String>>& types) {
-  return MakeGarbageCollected<ViewTransition>(PassKey(), element, callback,
-                                              types);
+  auto* transition =
+      MakeGarbageCollected<ViewTransition>(PassKey(), element, callback, types);
+  transition->SkipTransition(response, reason);
+  return transition;
 }
 
 ViewTransition::ViewTransition(PassKey,
@@ -195,15 +199,14 @@ ViewTransition::ViewTransition(PassKey,
                                const std::optional<Vector<String>>& types)
     : ExecutionContextLifecycleObserver(element->GetExecutionContext()),
       creation_type_(CreationType::kScript),
-      document_(element->GetDocument()),
-      scope_(element->IsDocumentElement() ? nullptr : element),
+      document_(&element->GetDocument()),
+      scope_(element),
       has_document_scope_(element->IsDocumentElement()),
       script_delegate_(MakeGarbageCollected<DOMViewTransition>(
           element->GetExecutionContext(),
           *this,
           update_dom_callback)) {
   InitTypes(types.value_or(Vector<String>()));
-  SkipTransition();
 }
 
 // static
@@ -303,12 +306,19 @@ ViewTransition::ViewTransition(PassKey,
   ProcessCurrentState();
 }
 
-void ViewTransition::SkipTransition(PromiseResponse response) {
+void ViewTransition::SkipTransition(PromiseResponse response,
+                                    ViewTransitionSkipReason reason) {
   DCHECK_NE(response, PromiseResponse::kResolve);
   pending_skip_view_transitions_ = false;
+  pending_skip_reason_ = ViewTransitionSkipReason::kExpected;
   if (IsTerminalState(state_)) {
     return;
   }
+
+  TRACE_EVENT1("blink", "ViewTransition::SkipTransition", "reason",
+               SkipReasonToString(reason));
+
+  UMA_HISTOGRAM_ENUMERATION("Blink.ViewTransitions.SkipReason", reason);
 
   // If we already started processing the transition (i.e. we're beyond capture
   // tag discovery), then send a release directive. We don't do this, if we're
@@ -355,7 +365,7 @@ void ViewTransition::SkipTransition(PromiseResponse response) {
   // down and script specific callbacks don't need to be dispatched in that
   // case.
   if (script_delegate_) {
-    script_delegate_->DidSkipTransition(response);
+    script_delegate_->DidSkipTransition(response, reason);
   }
 
   // This should be the last call in this function to avoid erroneously checking
@@ -363,8 +373,11 @@ void ViewTransition::SkipTransition(PromiseResponse response) {
   AdvanceTo(State::kAborted);
 }
 
-void ViewTransition::SkipTransitionSoon() {
+void ViewTransition::SkipTransitionSoon(PromiseResponse response,
+                                        ViewTransitionSkipReason reason) {
   pending_skip_view_transitions_ = true;
+  pending_skip_response_ = response;
+  pending_skip_reason_ = reason;
 }
 
 bool ViewTransition::AdvanceTo(State state) {
@@ -576,7 +589,8 @@ void ViewTransition::ProcessCurrentState() {
         }
 
         if (UnsupportedCapture()) {
-          SkipTransition(PromiseResponse::kRejectInvalidState);
+          SkipTransition(PromiseResponse::kRejectInvalidState,
+                         ViewTransitionSkipReason::kUnsupportedCapture);
           break;
         }
 
@@ -603,7 +617,8 @@ void ViewTransition::ProcessCurrentState() {
                 cc::BrowserControlsState::kHidden &&
             creation_type_ == CreationType::kForSnapshot;
         if (!style_tracker_->Capture(snap_browser_controls)) {
-          SkipTransition(PromiseResponse::kRejectInvalidState);
+          SkipTransition(PromiseResponse::kRejectInvalidState,
+                         ViewTransitionSkipReason::kCaptureFailed);
           break;
         }
 
@@ -754,7 +769,8 @@ void ViewTransition::ProcessCurrentState() {
         // Animation and subsequent steps require us to have a view. If after
         // running the callbacks, we don't have a view, skip the transition.
         if (!document_->View()) {
-          SkipTransition();
+          SkipTransition(PromiseResponse::kRejectAbort,
+                         ViewTransitionSkipReason::kNoView);
           break;
         }
 
@@ -774,7 +790,8 @@ void ViewTransition::ProcessCurrentState() {
         // horizontally overflowing element expanding the size of the frame
         // view). See also: https://crbug.com/1454207.
         if (style_tracker_->SnapshotRootDidChangeSize()) {
-          SkipTransition(PromiseResponse::kRejectInvalidState);
+          SkipTransition(PromiseResponse::kRejectInvalidState,
+                         ViewTransitionSkipReason::kSnapshotRootChangedSize);
           break;
         }
 
@@ -785,7 +802,8 @@ void ViewTransition::ProcessCurrentState() {
 
       case State::kAnimateRequestPending:
         if (UnsupportedCapture() || !style_tracker_->Start()) {
-          SkipTransition(PromiseResponse::kRejectInvalidState);
+          SkipTransition(PromiseResponse::kRejectInvalidState,
+                         ViewTransitionSkipReason::kStartFailed);
           break;
         }
 
@@ -956,7 +974,8 @@ void ViewTransition::ContextDestroyed() {
   script_delegate_.Clear();
 
   // TODO(khushalsagar): This needs to be called for pages entering BFCache.
-  SkipTransition(PromiseResponse::kRejectAbort);
+  SkipTransition(PromiseResponse::kRejectAbort,
+                 ViewTransitionSkipReason::kContextDestroyed);
 }
 
 void ViewTransition::NotifyCaptureFinished(
@@ -1082,7 +1101,8 @@ void ViewTransition::NotifyDOMCallbackFinished(bool success) {
   bool process_next_state = AdvanceTo(State::kDOMCallbackFinished);
   DCHECK(process_next_state);
   if (!success) {
-    SkipTransition(PromiseResponse::kRejectAbort);
+    SkipTransition(PromiseResponse::kRejectAbort,
+                   ViewTransitionSkipReason::kUserSkipped);
   }
   ProcessCurrentState();
 
@@ -1196,10 +1216,12 @@ void ViewTransition::RunViewTransitionStepsOutsideMainFrame() {
     return;
   }
 
-  if (pending_skip_view_transitions_ ||
-      (state_ == State::kAnimating && style_tracker_ &&
-       !style_tracker_->RunPostPrePaintSteps())) {
-    SkipTransition(PromiseResponse::kRejectInvalidState);
+  if (pending_skip_view_transitions_) {
+    SkipTransition(pending_skip_response_, pending_skip_reason_);
+  } else if (state_ == State::kAnimating && style_tracker_ &&
+             !style_tracker_->RunPostPrePaintSteps()) {
+    SkipTransition(PromiseResponse::kRejectInvalidState,
+                   ViewTransitionSkipReason::kPostPrePaintFailed);
   }
 }
 
@@ -1220,11 +1242,14 @@ void ViewTransition::RunViewTransitionStepsDuringMainFrame() {
     ProcessCurrentState();
   }
 
-  if (pending_skip_view_transitions_ ||
-      (style_tracker_ &&
-       document_->Lifecycle().GetState() >= DocumentLifecycle::kPrePaintClean &&
-       !style_tracker_->RunPostPrePaintSteps())) {
-    SkipTransition(PromiseResponse::kRejectInvalidState);
+  if (pending_skip_view_transitions_) {
+    SkipTransition(pending_skip_response_, pending_skip_reason_);
+  } else if (style_tracker_ &&
+             document_->Lifecycle().GetState() >=
+                 DocumentLifecycle::kPrePaintClean &&
+             !style_tracker_->RunPostPrePaintSteps()) {
+    SkipTransition(PromiseResponse::kRejectInvalidState,
+                   ViewTransitionSkipReason::kPostPrePaintFailed);
   }
 }
 
@@ -1355,7 +1380,8 @@ void ViewTransition::OnRenderingPausedTimeout() {
   }
 
   ResumeRendering();
-  SkipTransition(PromiseResponse::kRejectTimeout);
+  SkipTransition(PromiseResponse::kRejectTimeout,
+                 ViewTransitionSkipReason::kTimeout);
   AdvanceTo(State::kTimedOut);
 }
 

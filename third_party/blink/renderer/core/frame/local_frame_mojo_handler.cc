@@ -75,6 +75,7 @@
 #include "third_party/blink/renderer/core/script_tools/model_context_supplement.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/view_transition/page_swap_event.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_skip_reason.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_timing_utils.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
@@ -1414,7 +1415,8 @@ void LocalFrameMojoHandler::NotifyViewTransitionAbortedToOldDocument() {
   if (auto* transition =
           ViewTransitionUtils::GetOutgoingCrossDocumentTransition(
               *frame_->GetDocument())) {
-    transition->SkipTransition();
+    transition->SkipTransition(ViewTransition::PromiseResponse::kRejectAbort,
+                               ViewTransitionSkipReason::kNavigationAborted);
   }
 }
 
