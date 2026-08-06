@@ -477,6 +477,18 @@ void FileSystemAccessHandleBase::DidResolveTokenToMove(
     return;
   }
 
+  // Moving into a readable directory would make the entry readable through that
+  // directory's read grant. Require read access to the source so an entry whose
+  // read grant was revoked (e.g. by remove()) cannot regain read access this
+  // way. See crbug.com/523741272.
+  if (dir_handle->GetReadPermissionStatus() ==
+          blink::mojom::PermissionStatus::GRANTED &&
+      GetReadPermissionStatus() != blink::mojom::PermissionStatus::GRANTED) {
+    std::move(callback).Run(file_system_access_error::FromStatus(
+        blink::mojom::FileSystemAccessStatus::kPermissionDenied));
+    return;
+  }
+
   storage::FileSystemURL dest_url;
   blink::mojom::FileSystemAccessErrorPtr error =
       dir_handle->GetChildURL(new_entry_name, &dest_url);

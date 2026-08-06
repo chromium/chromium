@@ -920,6 +920,63 @@ TEST_F(FileSystemAccessFileHandleImplMoveTest, HasDestWriteAccess) {
   EXPECT_TRUE(base::PathExists(renamed_file));
 }
 
+// A write-only source handle (e.g. one whose read grant was revoked by
+// remove()) must not be moved into a directory the site can read.
+// See crbug.com/523741272.
+TEST_F(FileSystemAccessFileHandleImplMoveTest, NoReadAccess) {
+  base::FilePath dest_dir;
+  ASSERT_TRUE(base::CreateTemporaryDirInDir(
+      dir_.GetPath(), FILE_PATH_LITERAL("dest"), &dest_dir));
+  base::FilePath file;
+  ASSERT_TRUE(base::CreateTemporaryFileInDir(dir_.GetPath(), &file));
+  base::FilePath renamed_file = dest_dir.AppendASCII("new_name.txt");
+
+  auto dest_dir_handle =
+      GetDirectoryHandleWithPermissions(dest_dir, /*read_grant=*/allow_grant_,
+                                        /*write_grant=*/allow_grant_);
+  auto handle = GetHandleWithPermissions(file, /*read_grant=*/deny_grant_,
+                                         /*write_grant=*/allow_grant_);
+
+  mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> dir_remote;
+  manager_->CreateTransferToken(*dest_dir_handle,
+                                dir_remote.InitWithNewPipeAndPassReceiver());
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
+  handle->Move(std::move(dir_remote), renamed_file.BaseName().AsUTF8Unsafe(),
+               future.GetCallback());
+  EXPECT_EQ(future.Get()->status, FileSystemAccessStatus::kPermissionDenied);
+  EXPECT_TRUE(base::PathExists(file));
+  EXPECT_FALSE(base::PathExists(renamed_file));
+}
+
+// A write-only source handle may still be moved into a write-only directory.
+// The destination has no read grant, so the moved file cannot become readable.
+TEST_F(FileSystemAccessFileHandleImplMoveTest, NoReadAccessWriteOnlyDest) {
+  base::FilePath dest_dir;
+  ASSERT_TRUE(base::CreateTemporaryDirInDir(
+      dir_.GetPath(), FILE_PATH_LITERAL("dest"), &dest_dir));
+  base::FilePath file;
+  ASSERT_TRUE(base::CreateTemporaryFileInDir(dir_.GetPath(), &file));
+  base::FilePath renamed_file = dest_dir.AppendASCII("new_name.txt");
+
+  auto dest_dir_handle =
+      GetDirectoryHandleWithPermissions(dest_dir, /*read_grant=*/deny_grant_,
+                                        /*write_grant=*/allow_grant_);
+  auto handle = GetHandleWithPermissions(file, /*read_grant=*/deny_grant_,
+                                         /*write_grant=*/allow_grant_);
+
+  mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> dir_remote;
+  manager_->CreateTransferToken(*dest_dir_handle,
+                                dir_remote.InitWithNewPipeAndPassReceiver());
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
+  handle->Move(std::move(dir_remote), renamed_file.BaseName().AsUTF8Unsafe(),
+               future.GetCallback());
+  EXPECT_EQ(future.Get()->status, FileSystemAccessStatus::kOk);
+  EXPECT_FALSE(base::PathExists(file));
+  EXPECT_TRUE(base::PathExists(renamed_file));
+}
+
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(FileSystemAccessFileHandleImplMoveTest,
        ContentUriRenameMoveNotSupported) {
@@ -2002,8 +2059,12 @@ class FileSystemAccessFileHandleImplMoveWriteModeTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Verifies that move() on a file handle requests the correct permission
-// mode depending on whether the kFileSystemAccessWriteMode feature is enabled.
+// Verifies that move() into a readable destination directory requests the
+// correct source permissions. When kFileSystemAccessWriteMode is disabled the
+// source is gated on read+write, so read is prompted. When enabled the source
+// is gated on write, and read access is checked to prevent moving a
+// read-revoked object to a destination that has read grants.
+// See crbug.com/523741272.
 TEST_P(FileSystemAccessFileHandleImplMoveWriteModeTest,
        RequestsCorrectPermissions) {
   auto handle = CreateHandle();
@@ -2014,6 +2075,9 @@ TEST_P(FileSystemAccessFileHandleImplMoveWriteModeTest,
     SetUpGrantExpectations(*mock_read_grant_, PermissionStatus::GRANTED,
                            FileSystemAccessPermissionGrant::
                                PermissionRequestOutcome::kUserGranted);
+  } else {
+    EXPECT_CALL(*mock_read_grant_, GetStatus())
+        .WillRepeatedly(testing::Return(PermissionStatus::GRANTED));
   }
   SetUpGrantExpectations(
       *mock_write_grant_, PermissionStatus::GRANTED,

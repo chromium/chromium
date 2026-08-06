@@ -204,15 +204,15 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessFileHandleImplWriteModeBrowserTest,
                      "})()"));
 }
 
-// Verifies that `move()` on a local FS requests the correct permission mode
-// depending on whether the `kFileSystemAccessWriteMode` feature is enabled.
+// Verifies that `move()` on a local FS requests read-write permission on the
+// source, regardless of the `kFileSystemAccessWriteMode` feature.
 IN_PROC_BROWSER_TEST_P(FileSystemAccessFileHandleImplWriteModeBrowserTest,
                        Local_Move_RequestsCorrectPermissions) {
   CreateTestFileAndDirectory(temp_dir_.GetPath(), "test file");
 
   // Calling the above setup method creates two shared handle states.
   ExpectGetPermissionStatusAndReturnGranted(
-      GetParam().expected_mode,
+      FileSystemAccessPermissionMode::kReadWrite,
       /*expected_shared_handle_state_count=*/2u);
 
   EXPECT_TRUE(ExecJs(shell(), R"((async () => {
@@ -220,9 +220,8 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessFileHandleImplWriteModeBrowserTest,
   })())"));
 }
 
-// Verifies that `move()` on a sandboxed FS requests the correct permission
-// mode depending on whether the `kFileSystemAccessWriteMode` feature is
-// enabled.
+// Verifies that `move()` on a sandboxed FS requests read-write permission on
+// the source, regardless of the `kFileSystemAccessWriteMode` feature.
 IN_PROC_BROWSER_TEST_P(FileSystemAccessFileHandleImplWriteModeBrowserTest,
                        Sandboxed_Move_RequestsCorrectPermissions) {
   ASSERT_TRUE(NavigateToURL(shell(), test_url_));
@@ -235,7 +234,8 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessFileHandleImplWriteModeBrowserTest,
       await writable.close();
     })())"));
 
-  ExpectGetPermissionStatusAndReturnGranted(GetParam().expected_mode);
+  ExpectGetPermissionStatusAndReturnGranted(
+      FileSystemAccessPermissionMode::kReadWrite);
 
   EXPECT_TRUE(ExecJs(shell(), R"((async () => {
       await self.fileHandle.move(self.sandboxDir);

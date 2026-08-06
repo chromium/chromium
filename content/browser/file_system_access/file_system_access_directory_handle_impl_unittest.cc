@@ -30,6 +30,7 @@
 #include "content/browser/file_system_access/mock_file_system_access_permission_grant.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "content/public/test/browser_task_environment.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/test_file_system_context.h"
@@ -563,6 +564,34 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, ContentUri_InvalidName) {
   }
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+// A write-only source directory handle (e.g. one whose read grant was revoked
+// by remove()) must not be moved into a directory the site can read.
+// See crbug.com/523741272.
+TEST_F(FileSystemAccessDirectoryHandleImplTest, MoveNoReadAccess) {
+  base::FilePath source_dir = dir_.GetPath().AppendASCII("source");
+  ASSERT_TRUE(base::CreateDirectory(source_dir));
+  base::FilePath dest_dir = dir_.GetPath().AppendASCII("dest");
+  ASSERT_TRUE(base::CreateDirectory(dest_dir));
+  base::FilePath moved_dir = dest_dir.AppendASCII("moved");
+
+  auto dest_dir_handle =
+      GetHandleWithPermissions(dest_dir, /*read=*/true, /*write=*/true);
+  auto handle =
+      GetHandleWithPermissions(source_dir, /*read=*/false, /*write=*/true);
+
+  mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> dest_token;
+  manager_->CreateTransferToken(*dest_dir_handle,
+                                dest_token.InitWithNewPipeAndPassReceiver());
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
+  handle->Move(std::move(dest_token), moved_dir.BaseName().AsUTF8Unsafe(),
+               future.GetCallback());
+  EXPECT_EQ(future.Get()->status,
+            blink::mojom::FileSystemAccessStatus::kPermissionDenied);
+  EXPECT_TRUE(base::DirectoryExists(source_dir));
+  EXPECT_FALSE(base::DirectoryExists(moved_dir));
+}
 
 // Tests for `FileSystemAccessDirectoryHandleImpl::Remove()`.
 class FileSystemAccessDirectoryHandleImplRemoveTest
