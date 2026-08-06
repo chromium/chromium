@@ -70,6 +70,11 @@ class TestAutofillClientForAccessManager : public TestAutofillClient {
 class AutofillAiAccessManagerTest : public testing::Test {
  public:
   AutofillAiAccessManagerTest() : client_(&mock_authenticator_) {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kAutofillAiWithDataSchema,
+         features::kAutofillAiReauthRequired,
+         features::kAutofillAiWalletPrivatePasses},
+        /*disabled_features=*/{});
     personal_context_manager_ = std::make_unique<
         NiceMock<MockAutofillAiPersonalContextAccessManager>>();
     client_.set_personal_context_access_manager(
@@ -126,8 +131,7 @@ class AutofillAiAccessManagerTest : public testing::Test {
   std::unique_ptr<device_reauth::MockDeviceAuthenticator> mock_authenticator_;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kAutofillAiWithDataSchema};
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_environment_;
@@ -166,9 +170,6 @@ TEST_F(AutofillAiAccessManagerTest, NoReauthRequired_LocalEntity) {
 // FetchEntityInstance triggers re-auth, returns true (async), and fills the
 // entity.
 TEST_F(AutofillAiAccessManagerTest, ReauthRequired_ReauthAccepted) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kAutofillAiReauthRequired);
-
   EntityInstance passport = test::GetPassportEntityInstance();
   AddOrUpdateEntityInstance(passport);
 
@@ -198,9 +199,6 @@ TEST_F(AutofillAiAccessManagerTest, ReauthRequired_ReauthAccepted) {
 // Tests that when re-authentication is required and rejected,
 // FetchEntityInstance invokes the callback with FailureReason::kReauthFailed.
 TEST_F(AutofillAiAccessManagerTest, ReauthRequired_ReauthRejected) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kAutofillAiReauthRequired);
-
   EntityInstance passport = test::GetPassportEntityInstance();
   AddOrUpdateEntityInstance(passport);
 
@@ -233,9 +231,6 @@ TEST_F(AutofillAiAccessManagerTest, ReauthRequired_ReauthRejected) {
 // Personal Context entity, kReauthFailed is logged to the Unmask.Result metric.
 TEST_F(AutofillAiAccessManagerTest,
        ReauthRequired_ReauthRejected_PersonalContext) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kAutofillAiReauthRequired);
-
   EntityInstance passport = test::GetPassportEntityInstance(
       {.record_type = EntityInstance::RecordType::kPersonalContext});
   AddOrUpdateEntityInstance(passport);
@@ -271,9 +266,6 @@ TEST_F(AutofillAiAccessManagerTest,
 // Tests that when re-authentication is required but the device does not support
 // screen lock, FetchEntityInstance assumes success to avoid blocking the user.
 TEST_F(AutofillAiAccessManagerTest, ReauthRequired_NoAuthenticator) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kAutofillAiReauthRequired);
-
   EntityInstance passport = test::GetPassportEntityInstance();
   AddOrUpdateEntityInstance(passport);
 
@@ -302,11 +294,6 @@ TEST_F(AutofillAiAccessManagerTest, ReauthRequired_NoAuthenticator) {
 // Tests that when unmasking a server entity successfully, the unmasked entity
 // is passed to the callback.
 TEST_F(AutofillAiAccessManagerTest, ServerFetch_Success) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kAutofillAiWalletPrivatePasses},
-      {features::kAutofillAiReauthRequired});
-
   EntityInstance full_passport = test::GetPassportEntityInstance(
       {.record_type = EntityInstance::RecordType::kServerWallet});
   EntityInstance masked_passport = test::MaskEntityInstance(full_passport);
@@ -333,11 +320,6 @@ TEST_F(AutofillAiAccessManagerTest, ServerFetch_Success) {
 // Tests that when unmasking a server entity fails, FailureReason::kFetchFailed
 // is passed to the callback.
 TEST_F(AutofillAiAccessManagerTest, ServerFetch_Failure) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kAutofillAiWalletPrivatePasses},
-      {features::kAutofillAiReauthRequired});
-
   EntityInstance full_passport = test::GetPassportEntityInstance(
       {.record_type = EntityInstance::RecordType::kServerWallet});
   EntityInstance masked_passport = test::MaskEntityInstance(full_passport);
@@ -369,12 +351,6 @@ TEST_F(AutofillAiAccessManagerTest, ServerFetch_Failure) {
 // succeed, FetchEntityInstance runs both flows and invokes the callback with
 // the final unmasked entity.
 TEST_F(AutofillAiAccessManagerTest, ReauthAndServerFetch_Success) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kAutofillAiReauthRequired,
-       features::kAutofillAiWalletPrivatePasses},
-      {});
-
   EntityInstance full_passport = test::GetPassportEntityInstance(
       {.record_type = EntityInstance::RecordType::kServerWallet});
   EntityInstance masked_passport = test::MaskEntityInstance(full_passport);
@@ -411,12 +387,6 @@ TEST_F(AutofillAiAccessManagerTest, ReauthAndServerFetch_Success) {
 // re-auth succeeds but server unmasking fails, FetchEntityInstance invokes the
 // callback with FailureReason::kFetchFailed.
 TEST_F(AutofillAiAccessManagerTest, ReauthAndServerFetch_ServerFetchFailure) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kAutofillAiReauthRequired,
-       features::kAutofillAiWalletPrivatePasses},
-      {});
-
   EntityInstance full_passport = test::GetPassportEntityInstance(
       {.record_type = EntityInstance::RecordType::kServerWallet});
   EntityInstance masked_passport = test::MaskEntityInstance(full_passport);
@@ -454,9 +424,6 @@ TEST_F(AutofillAiAccessManagerTest, ReauthAndServerFetch_ServerFetchFailure) {
 // Tests that calling Reset() cancels the pending authenticator and invalidates
 // all pending callbacks.
 TEST_F(AutofillAiAccessManagerTest, ResetCancelsPendingOperations) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kAutofillAiReauthRequired);
-
   EntityInstance passport = test::GetPassportEntityInstance();
   AddOrUpdateEntityInstance(passport);
 
@@ -488,9 +455,6 @@ TEST_F(AutofillAiAccessManagerTest, ResetCancelsPendingOperations) {
 // Tests that when unmasking a personal context entity successfully, the
 // unmasked entity is passed to the callback.
 TEST_F(AutofillAiAccessManagerTest, PersonalContextFetch_Success) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kAutofillAiReauthRequired);
-
   mock_authenticator_ =
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
   EXPECT_CALL(*mock_authenticator_, CanAuthenticateWithBiometricOrScreenLock)
@@ -526,9 +490,6 @@ TEST_F(AutofillAiAccessManagerTest, PersonalContextFetch_Success) {
 // Tests that when unmasking a personal context entity fails,
 // FailureReason::kFetchFailed is passed to the callback.
 TEST_F(AutofillAiAccessManagerTest, PersonalContextFetch_Failure) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kAutofillAiReauthRequired);
-
   mock_authenticator_ =
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
   EXPECT_CALL(*mock_authenticator_, CanAuthenticateWithBiometricOrScreenLock)
@@ -566,9 +527,6 @@ TEST_F(AutofillAiAccessManagerTest, PersonalContextFetch_Failure) {
 // Tests that when AutofillAiPersonalContextAccessManager is not available,
 // unmasking fails with FailureReason::kFetchFailed.
 TEST_F(AutofillAiAccessManagerTest, PersonalContextFetch_NoManager) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kAutofillAiReauthRequired);
-
   mock_authenticator_ =
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
   EXPECT_CALL(*mock_authenticator_, CanAuthenticateWithBiometricOrScreenLock)
