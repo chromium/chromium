@@ -144,6 +144,7 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
   base::CallbackListSubscription GetLensSuggestInputsWhenReady(
       LensOverlaySuggestInputsCallback callback) const override;
   base::WeakPtr<AutocompleteProviderClient> GetWeakPtr() override;
+  bool IsWebUiNtpEnabledForDesktopAndroid() const override;
 
   // OmniboxAction::Client:
   void OpenSharingHub() override;

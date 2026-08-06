@@ -43,6 +43,7 @@
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/ai_mode_button_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -737,6 +738,11 @@ ChromeAutocompleteProviderClient::GetLensSuggestInputsWhenReady(
 base::WeakPtr<AutocompleteProviderClient>
 ChromeAutocompleteProviderClient::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+bool ChromeAutocompleteProviderClient::IsWebUiNtpEnabledForDesktopAndroid()
+    const {
+  return search::IsWebUiNtpEnabledForDesktopAndroid();
 }
 
 void ChromeAutocompleteProviderClient::OpenSharingHub() {
