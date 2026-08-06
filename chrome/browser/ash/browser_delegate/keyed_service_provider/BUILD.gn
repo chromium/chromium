@@ -1,0 +1,26 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+group("keyed_service_provider") {
+  public_deps = [ ":identity_manager_provider_impl" ]
+}
+
+source_set("identity_manager_provider_impl") {
+  sources = [
+    "identity_manager_provider_impl.cc",
+    "identity_manager_provider_impl.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/profiles",
+    "//chrome/browser/signin",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/signin:identity_manager_provider",
+  ]
+
+  visibility = [ ":keyed_service_provider" ]
+}

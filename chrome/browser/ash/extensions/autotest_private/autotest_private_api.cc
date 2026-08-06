@@ -129,7 +129,6 @@
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/policy/chrome_policy_conversions_client.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
@@ -147,12 +146,14 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/extensions/api/autotest_private.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/default_pinned_apps/default_pinned_apps.h"
 #include "chromeos/ash/components/metrics/login_event_recorder.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h"
 #include "chromeos/ash/experiences/arc/mojom/power.mojom.h"
@@ -5741,9 +5742,9 @@ ExtensionFunction::ResponseAction AutotestPrivateGetAccessTokenFunction::Run() {
           &AutotestPrivateGetAccessTokenFunction::RespondWithTimeoutError,
           this));
 
-  Profile* profile = Profile::FromBrowserContext(browser_context());
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
+      ash::IdentityManagerProvider::Get().Find(
+          CHECK_DEREF(ash::AnnotatedAccountId::Get(browser_context())));
   OAuth2AccessTokenManager::ScopeSet scopes(
       params->access_token_params.scopes.begin(),
       params->access_token_params.scopes.end());

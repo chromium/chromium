@@ -1,0 +1,15 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+static_library("identity_manager_provider") {
+  public = [ "identity_manager_provider.h" ]
+  sources = [ "identity_manager_provider.cc" ]
+
+  deps = [
+    "//base",
+    "//components/signin/public/identity_manager",
+  ]
+}
