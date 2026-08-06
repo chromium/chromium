@@ -1561,4 +1561,60 @@ TEST_F(ContextualTasksUiTest, CreateToolbarPageHandlerRebindTest) {
                                std::move(handler_receiver2));
 }
 
+TEST_F(ContextualTasksUiTest,
+       FrameNavObserver_DidFinishNavigation_SearchToZeroState_ResetsTaskId) {
+  MockTaskInfoDelegate delegate;
+  std::optional<base::Uuid> task_id = base::Uuid::ParseCaseInsensitive(kUuid);
+  std::optional<std::string> thread_id = std::nullopt;
+  std::optional<std::string> title = std::nullopt;
+
+  SetupMockDelegate(&delegate, task_id, thread_id, title);
+  auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
+      embedded_web_contents_.get(), service_for_nav_.get(),
+      contextual_tasks_service_.get(), &delegate);
+
+  // 1. Navigate to a search URL (without mtid).
+  // This simulates the state where a search was performed but no thread ID
+  // was associated yet.
+  GURL search_url(kAiPageUrl);
+  search_url = net::AppendQueryParameter(search_url, "q", "test");
+
+  // We don't expect OnTaskChanged or UpdateThreadForTask because it returns
+  // early.
+  EXPECT_CALL(*service_for_nav_, OnTaskChanged(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(*contextual_tasks_service_, UpdateThreadForTask(_, _, _, _, _))
+      .Times(0);
+
+  std::unique_ptr<content::MockNavigationHandle> nav_handle1 =
+      CreateMockNavigationHandle(search_url);
+  observer->DidFinishNavigation(nav_handle1.get());
+
+  // Verify that the observer's last committed URL is updated.
+  EXPECT_EQ(observer->last_committed_url(), search_url);
+
+  // 2. Navigate to zero state (e.g. clicking "New Thread").
+  // This should trigger a task change because we transition from search to zero
+  // state, even though the previous task had no thread ID.
+  GURL zero_state_url(kAiPageUrl);
+
+  base::Uuid new_task_id =
+      base::Uuid::ParseCaseInsensitive("20000000-0000-0000-0000-000000000000");
+  contextual_tasks::ContextualTask new_task(new_task_id);
+  EXPECT_CALL(*contextual_tasks_service_, CreateTask())
+      .WillOnce(Return(new_task));
+
+  // We expect OnTaskChanged to be called with the new task ID.
+  EXPECT_CALL(*service_for_nav_,
+              OnTaskChanged(_, _, Optional(task_id.value()),
+                            Optional(new_task_id), /*is_shown_in_tab=*/false))
+      .Times(1);
+  EXPECT_CALL(delegate, PrepareForTaskChange()).Times(1);
+
+  std::unique_ptr<content::MockNavigationHandle> nav_handle2 =
+      CreateMockNavigationHandle(zero_state_url);
+  observer->DidFinishNavigation(nav_handle2.get());
+
+  observer.reset();
+}
+
 }  // namespace contextual_tasks
