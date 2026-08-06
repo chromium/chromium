@@ -619,8 +619,20 @@ ci.thin_tester(
                 mixins = "mac_26_arm64",
                 remove_mixins = "mac_26_vm_optional",
             ),
-            "browser_tests": targets.remove(
-                reason = "https://crbug.com/1406364",
+            "browser_tests": targets.per_test_modification(
+                mixins = [
+                    targets.mixin(
+                        args = [
+                            "--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac26-arm64-rel.browser_tests.filter",
+                        ],
+                        swarming = targets.swarming(
+                            shards = 25,
+                        ),
+                    ),
+                    "mac_26_arm64",
+                    "ci_only",
+                ],
+                remove_mixins = "mac_26_vm_optional",
             ),
             # TODO(crbug.com/436628295): test fails on VM
             "chromedriver_py_tests_headless_shell": targets.per_test_modification(
