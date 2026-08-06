@@ -131,8 +131,6 @@ class IOSFamilyLinkUserMetricsProviderTest : public PlatformTest {
   raw_ptr<ProfileIOS> default_profile_;
 
   IOSFamilyLinkUserMetricsProvider metrics_provider_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      supervised_user::kSupervisedUserUseUrlFilteringService};
 };
 
 TEST_F(IOSFamilyLinkUserMetricsProviderTest,

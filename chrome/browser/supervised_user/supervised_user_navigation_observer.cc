@@ -101,19 +101,14 @@ SupervisedUserNavigationObserver::SupervisedUserNavigationObserver(
           *web_contents),
       content::WebContentsObserver(web_contents),
       receivers_(web_contents, this) {
+  url_filtering_service_observation_.Observe(
+      supervised_user_url_filtering_service());
+
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/543033880): Extract this feature to a separate class.
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
-  if (base::FeatureList::IsEnabled(
-          supervised_user::kSupervisedUserUseUrlFilteringService)) {
-    url_filtering_service_observation_.Observe(
-        supervised_user_url_filtering_service());
-  } else {
-    supervised_user_service_observation_.Observe(
-        supervised_user::SupervisedUserServiceFactory::GetForProfile(profile));
-  }
-
-#if BUILDFLAG(IS_ANDROID)
   pref_change_registrar_.Init(profile->GetPrefs());
   pref_change_registrar_.Add(
       policy::policy_prefs::kForceGoogleSafeSearch,

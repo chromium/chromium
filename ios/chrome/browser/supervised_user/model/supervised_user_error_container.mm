@@ -59,21 +59,11 @@ SupervisedUserErrorContainer::SupervisedUserErrorContainer(
               GetForProfile(
                   ProfileIOS::FromBrowserState(web_state->GetBrowserState()))),
       web_state_(web_state) {
-  if (base::FeatureList::IsEnabled(
-          supervised_user::kSupervisedUserUseUrlFilteringService)) {
-    url_filtering_service_observation_.Observe(
-        &supervised_user_url_filtering_service_.get());
-  } else {
-    supervised_user_service_->AddObserver(this);
-  }
+  url_filtering_service_observation_.Observe(
+      &supervised_user_url_filtering_service_.get());
 }
 
-SupervisedUserErrorContainer::~SupervisedUserErrorContainer() {
-  if (!base::FeatureList::IsEnabled(
-          supervised_user::kSupervisedUserUseUrlFilteringService)) {
-    supervised_user_service_->RemoveObserver(this);
-  }
-}
+SupervisedUserErrorContainer::~SupervisedUserErrorContainer() = default;
 
 SupervisedUserErrorContainer::SupervisedUserErrorInfo::SupervisedUserErrorInfo(
     supervised_user::WebFilteringResult filtering_result,
@@ -169,10 +159,6 @@ void SupervisedUserErrorContainer::URLFilterCheckCallback(
                                                  /*check_for_repost=*/true);
     }
   }
-}
-
-void SupervisedUserErrorContainer::OnURLFilterChanged() {
-  OnUrlFilteringServiceChanged();
 }
 
 void SupervisedUserErrorContainer::OnUrlFilteringServiceChanged() {

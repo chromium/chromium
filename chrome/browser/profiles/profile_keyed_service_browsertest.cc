@@ -209,7 +209,6 @@ class ProfileKeyedServiceBrowserTest : public InProcessBrowserTest {
           omnibox::kOnDeviceHeadProviderNonIncognito,
           switches::kSyncEnableBookmarksInTransportMode,
           contextual_tasks::kContextualTasks,
-          supervised_user::kSupervisedUserUseUrlFilteringService,
         },
         {});
     // clang-format on

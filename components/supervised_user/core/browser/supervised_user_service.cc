@@ -41,12 +41,6 @@ namespace supervised_user {
 namespace {
 using base::UserMetricsAction;
 
-// All prefs that configure the url filter.
-std::array<const char*, 4> kUrlFilterSettingsPrefs = {
-    prefs::kDefaultSupervisedUserFilteringBehavior,
-    prefs::kSupervisedUserSafeSites, prefs::kSupervisedUserManualHosts,
-    prefs::kSupervisedUserManualURLs};
-
 // Helper that extracts custodian data from given preferences.
 std::optional<Custodian> GetCustodianFromPrefs(
     const PrefService& user_prefs,
@@ -167,9 +161,6 @@ void SupervisedUserService::OnSupervisedUserIdChanged() {
 }
 
 void SupervisedUserService::OnFamilyLinkParentalControlsEnabled() {
-  // Remove the handlers of the disabled parental controls mode.
-  RemoveURLFilterPrefChangeHandlers();
-
   // Also disables incognito mode.
   SetSettingsServiceActive(true);
   remote_web_approvals_manager_.AddApprovalRequestCreator(
@@ -180,45 +171,16 @@ void SupervisedUserService::OnFamilyLinkParentalControlsEnabled() {
   // consists of multiple prefs changing at once but producing separate
   // notifications).
   AddCustodianPrefChangeHandlers();
-
-  if (!base::FeatureList::IsEnabled(kSupervisedUserUseUrlFilteringService)) {
-    // Add handler at the end to avoid multiple notifications.
-    AddURLFilterPrefChangeHandlers();
-
-    // Synchronize the filter.
-    UpdateURLFilter();
-  }
 }
 
 void SupervisedUserService::OnFamilyLinkParentalControlsDisabled() {
   // Start with removing handlers, to avoid multiple notifications from pref
   // status changes from the settings service.
-  RemoveURLFilterPrefChangeHandlers();
   RemoveCustodianPrefChangeHandlers();
 
   // All disabling operations are idempotent.
   SetSettingsServiceActive(false);
   remote_web_approvals_manager_.ClearApprovalRequestsCreators();
-
-  if (!base::FeatureList::IsEnabled(kSupervisedUserUseUrlFilteringService)) {
-    // Add handler at the end to avoid multiple notifications.
-    AddURLFilterPrefChangeHandlers();
-
-    // Synchronize the filter.
-    UpdateURLFilter();
-  }
-}
-
-void SupervisedUserService::AddURLFilterPrefChangeHandlers() {
-  // TODO(crbug.com/465666528: remove this handler and registrar when cleaning
-  // up the flag.
-  CHECK(!base::FeatureList::IsEnabled(kSupervisedUserUseUrlFilteringService));
-  url_filter_pref_change_registrar_.Init(&user_prefs_.get());
-  for (const char* const pref : kUrlFilterSettingsPrefs) {
-    url_filter_pref_change_registrar_.Add(
-        pref, base::BindRepeating(&SupervisedUserService::OnURLFilterChanged,
-                                  base::Unretained(this)));
-  }
 }
 
 void SupervisedUserService::AddCustodianPrefChangeHandlers() {
@@ -229,10 +191,6 @@ void SupervisedUserService::AddCustodianPrefChangeHandlers() {
         base::BindRepeating(&SupervisedUserService::OnCustodianInfoChanged,
                             base::Unretained(this)));
   }
-}
-
-void SupervisedUserService::RemoveURLFilterPrefChangeHandlers() {
-  url_filter_pref_change_registrar_.RemoveAll();
 }
 
 void SupervisedUserService::RemoveCustodianPrefChangeHandlers() {
@@ -249,30 +207,6 @@ void SupervisedUserService::OnIncognitoModeAvailabilityChanged() {
 
 void SupervisedUserService::OnCustodianInfoChanged() {
   observer_list_.Notify(&SupervisedUserServiceObserver::OnCustodianInfoChanged);
-}
-
-void SupervisedUserService::OnURLFilterChanged(const std::string& pref_name) {
-  const PrefService::Preference* pref_value =
-      user_prefs_->FindPreference(pref_name);
-  CHECK(pref_value->IsManagedByCustodian() || pref_value->IsDefaultValue())
-      << "Url filter setting `" << pref_name
-      << "` can only be dynamically changed by managed user infrastructure.";
-  UpdateURLFilter(pref_name);
-}
-
-void SupervisedUserService::UpdateURLFilter(
-    std::optional<std::string> pref_name) {
-  // These prefs hold complex data structures that need to be updated.
-  if (pref_name.value_or(prefs::kSupervisedUserManualHosts) ==
-      prefs::kSupervisedUserManualHosts) {
-    url_filter_->UpdateManualHosts();
-  }
-  if (pref_name.value_or(prefs::kSupervisedUserManualURLs) ==
-      prefs::kSupervisedUserManualURLs) {
-    url_filter_->UpdateManualUrls();
-  }
-
-  observer_list_.Notify(&SupervisedUserServiceObserver::OnURLFilterChanged);
 }
 
 void SupervisedUserService::Shutdown() {

@@ -98,11 +98,7 @@ SupervisedUserMetricsService::SupervisedUserMetricsService(
       synthetic_field_trial_delegate_(
           std::move(synthetic_field_trial_delegate)) {
   DCHECK(pref_service_);
-  if (base::FeatureList::IsEnabled(kSupervisedUserUseUrlFilteringService)) {
-    url_filtering_service_observation_.Observe(&url_filtering_service);
-  } else {
-    supervised_user_service_observation_.Observe(&supervised_user_service);
-  }
+  url_filtering_service_observation_.Observe(&url_filtering_service);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   CHECK(extensions_metrics_delegate_)
@@ -163,23 +159,6 @@ void SupervisedUserMetricsService::OnDeviceParentalControlsChanged(
     const DeviceParentalControls& device_parental_controls) {
   device_parental_controls.RegisterDeviceLevelSyntheticFieldTrials(
       *synthetic_field_trial_delegate_);
-
-  if (!base::FeatureList::IsEnabled(kSupervisedUserUseUrlFilteringService)) {
-    // This might be also called from OnURLFilterChanged() for the very same
-    // change (eg. if browser filter has changed, triggering url filtering
-    // changes) but that's not problematic (in metrics' context) since this
-    // recording is idempotent (subsequent emits within the same day are
-    // squashed).
-    // Code paths that use kSupervisedUserUseUrlFilteringService already
-    // correctly emit web-filtering metric events originating from device
-    // parental control changes as events from higher level services; and
-    // OnDeviceParentalControlsChanged will only handle device-specific changes.
-    TryEmittingMetricsAndRecordCurrentDay();
-  }
-}
-
-void SupervisedUserMetricsService::OnURLFilterChanged() {
-  OnUrlFilteringServiceChanged();
 }
 
 void SupervisedUserMetricsService::OnUrlFilteringServiceChanged() {

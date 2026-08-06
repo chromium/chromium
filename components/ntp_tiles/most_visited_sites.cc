@@ -202,18 +202,10 @@ MostVisitedSites::MostVisitedSites(
       is_observing_(false) {
   DCHECK(prefs_);
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  if (base::FeatureList::IsEnabled(
-          supervised_user::kSupervisedUserUseUrlFilteringService)) {
-    if (supervised_user_url_filtering_service_) {
-      url_filtering_service_observation_.Observe(
-          supervised_user_url_filtering_service);
-    }
-  } else {
-    if (supervised_user_service_) {
-      supervised_user_service_observation_.Observe(supervised_user_service_);
-    }
+  if (supervised_user_url_filtering_service_) {
+    url_filtering_service_observation_.Observe(
+        supervised_user_url_filtering_service);
   }
-
 #endif
 }
 

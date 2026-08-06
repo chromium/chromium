@@ -200,21 +200,16 @@ SupervisedUserUrlFilteringService::~SupervisedUserUrlFilteringService() =
     default;
 
 WebFilterType SupervisedUserUrlFilteringService::GetWebFilterType() const {
-  if (base::FeatureList::IsEnabled(kSupervisedUserUseUrlFilteringService)) {
-    return AggregateWebFilterType(*device_parental_controls_url_filter_,
-                                  *supervised_user_service_->GetURLFilter());
-  }
-  return supervised_user_service_->GetURLFilter()->GetWebFilterType();
+  return AggregateWebFilterType(*device_parental_controls_url_filter_,
+                                *supervised_user_service_->GetURLFilter());
 }
 
 WebFilteringResult SupervisedUserUrlFilteringService::GetFilteringBehavior(
     const GURL& url) const {
-  if (base::FeatureList::IsEnabled(kSupervisedUserUseUrlFilteringService)) {
-    WebFilteringResult device_filtering_result =
-        device_parental_controls_url_filter_->GetFilteringBehavior(url);
-    CHECK(device_filtering_result.IsAllowed())
-        << "Device filtering always passes synchronous checks.";
-  }
+  WebFilteringResult device_filtering_result =
+      device_parental_controls_url_filter_->GetFilteringBehavior(url);
+  CHECK(device_filtering_result.IsAllowed())
+      << "Device filtering always passes synchronous checks.";
   return supervised_user_service_->GetURLFilter()->GetFilteringBehavior(url);
 }
 
@@ -231,17 +226,12 @@ void SupervisedUserUrlFilteringService::GetFilteringBehavior(
       base::BindOnce(&SupervisedUserUrlFilteringService::NotifyUrlChecked,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  if (base::FeatureList::IsEnabled(kSupervisedUserUseUrlFilteringService)) {
-    device_parental_controls_url_filter_->GetFilteringBehavior(
-        url, skip_manual_parent_filter,
-        base::BindOnce(&OnFirstFilteringBehaviorResult, url,
-                       skip_manual_parent_filter, std::move(callback), options,
-                       supervised_user_service_->GetURLFilter()->GetWeakPtr()),
-        options);
-    return;
-  }
-  supervised_user_service_->GetURLFilter()->GetFilteringBehavior(
-      url, skip_manual_parent_filter, std::move(callback), options);
+  device_parental_controls_url_filter_->GetFilteringBehavior(
+      url, skip_manual_parent_filter,
+      base::BindOnce(&OnFirstFilteringBehaviorResult, url,
+                     skip_manual_parent_filter, std::move(callback), options,
+                     supervised_user_service_->GetURLFilter()->GetWeakPtr()),
+      options);
 }
 
 // Version of the above method that for use in subframe context.
@@ -258,18 +248,12 @@ void SupervisedUserUrlFilteringService::GetFilteringBehaviorForSubFrame(
       base::BindOnce(&SupervisedUserUrlFilteringService::NotifyUrlChecked,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  if (base::FeatureList::IsEnabled(kSupervisedUserUseUrlFilteringService)) {
-    device_parental_controls_url_filter_->GetFilteringBehaviorForSubFrame(
-        url, main_frame_url,
-        base::BindOnce(&OnFirstFilteringBehaviorResultForSubFrame, url,
-                       main_frame_url, std::move(callback), options,
-                       supervised_user_service_->GetURLFilter()->GetWeakPtr()),
-        options);
-    return;
-  }
-
-  supervised_user_service_->GetURLFilter()->GetFilteringBehaviorForSubFrame(
-      url, main_frame_url, std::move(callback), options);
+  device_parental_controls_url_filter_->GetFilteringBehaviorForSubFrame(
+      url, main_frame_url,
+      base::BindOnce(&OnFirstFilteringBehaviorResultForSubFrame, url,
+                     main_frame_url, std::move(callback), options,
+                     supervised_user_service_->GetURLFilter()->GetWeakPtr()),
+      options);
 }
 
 void SupervisedUserUrlFilteringService::NotifyUrlChecked(

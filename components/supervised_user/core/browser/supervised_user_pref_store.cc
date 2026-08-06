@@ -87,13 +87,6 @@ FamilyLinkSettingsPrefMappingEntry kFamilyLinkWebFilteringPrefMapping[] = {
 }  // namespace
 
 void SetSupervisedUserPrefStoreDefaults(PrefValueMap& pref_values) {
-  if (!base::FeatureList::IsEnabled(
-          supervised_user::kSupervisedUserUseUrlFilteringService)) {
-    pref_values.SetInteger(
-        prefs::kDefaultSupervisedUserFilteringBehavior,
-        static_cast<int>(supervised_user::FilteringBehavior::kAllow));
-    pref_values.SetBoolean(prefs::kSupervisedUserSafeSites, true);
-  }
 
   pref_values.SetBoolean(policy::policy_prefs::kHideWebStoreIcon, false);
   pref_values.SetBoolean(feed::prefs::kEnableSnippets, false);
@@ -257,17 +250,6 @@ void SupervisedUserPrefStore::RecreatePreferences() {
   if (device_parental_controls_state_.is_safe_search_forced) {
     // kForceGoogleSafeSearch=true is also the most restrictive setting.
     prefs_->SetBoolean(policy::policy_prefs::kForceGoogleSafeSearch, true);
-  }
-
-  // Web filtering prefs are being deprecated: only merge them if device
-  // parental controls are mutually exclusive with family link settings and new
-  // way of delivering the web filtering settings is not enabled.
-  if (!is_family_link_settings_service_active &&
-      !base::FeatureList::IsEnabled(
-          supervised_user::kSupervisedUserUseUrlFilteringService)) {
-    if (device_parental_controls_state_.is_web_filtering_enabled) {
-      prefs_->SetBoolean(prefs::kSupervisedUserSafeSites, true);
-    }
   }
 
   // Unset `old_prefs` means that this is the first notification from the

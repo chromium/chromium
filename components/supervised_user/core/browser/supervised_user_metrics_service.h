@@ -15,7 +15,6 @@
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/supervised_user/core/browser/device_parental_controls.h"
-#include "components/supervised_user/core/browser/supervised_user_service_observer.h"
 #include "components/supervised_user/core/browser/supervised_user_synthetic_field_trial_service_delegate.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "supervised_user_service.h"
@@ -34,7 +33,6 @@ class FamilyLinkUrlFilter;
 // Records metrics daily, or when the SupervisedUserService changes.
 class SupervisedUserMetricsService
     : public KeyedService,
-      public SupervisedUserServiceObserver,
       public SupervisedUserUrlFilteringService::Observer {
  public:
   // Delegate for recording metrics relating to extensions for supervised users
@@ -69,9 +67,6 @@ class SupervisedUserMetricsService
   void Shutdown() override;
 
  private:
-  // SupervisedUserServiceObserver:
-  void OnURLFilterChanged() override;
-
   // SupervisedUserUrlFilteringService::Observer:
   void OnUrlFilteringServiceChanged() override;
 
@@ -109,9 +104,6 @@ class SupervisedUserMetricsService
   std::optional<WebFilterType> last_recorded_family_link_web_filter_type_;
   std::optional<FamilyLinkUrlFilter::Statistics> last_recorded_statistics_;
   std::optional<WebFilterType> last_recorded_supervised_user_web_filter_type_;
-
-  base::ScopedObservation<SupervisedUserService, SupervisedUserServiceObserver>
-      supervised_user_service_observation_{this};
   base::ScopedObservation<SupervisedUserUrlFilteringService,
                           SupervisedUserUrlFilteringService::Observer>
       url_filtering_service_observation_{this};

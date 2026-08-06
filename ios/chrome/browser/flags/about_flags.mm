@@ -1973,12 +1973,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          supervised_user::kSupervisedUserEmitLogRecordSeparately)},
-    {"supervised-user-use-url-filtering-service",
-     flag_descriptions::kSupervisedUserUseUrlFilteringServiceName,
-     flag_descriptions::kSupervisedUserUseUrlFilteringServiceDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         supervised_user::kSupervisedUserUseUrlFilteringService)},
     {"lens-fetch-srp-api-enabled",
      flag_descriptions::kLensFetchSrpApiEnabledName,
      flag_descriptions::kLensFetchSrpApiEnabledDescription, flags_ui::kOsIos,

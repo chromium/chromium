@@ -282,13 +282,8 @@ TEST_F(SupervisedUserPrefStoreTest, CreatePrefStoreAfterInitialization) {
 
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(SupervisedUserPrefStoreTest,
-       ContentFiltersServiceEnablesBrowserFilters) {
-  // TODO(crbug.com/519472830): Replace with equivalent test for the url service
-  // With this flag enabled, the prefs no longer exist: their equivalents are
-  // set via the url filtering service.
+       ContentFiltersServiceControlsIncognitoMode) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      supervised_user::kSupervisedUserUseUrlFilteringService);
 
   SupervisedUserPrefStoreFixture fixture(&service_, device_parental_controls_);
   EXPECT_FALSE(fixture.initialization_completed());
@@ -301,9 +296,6 @@ TEST_F(SupervisedUserPrefStoreTest,
       fixture.changed_prefs()->FindIntByDottedPath(
           policy::policy_prefs::kIncognitoModeAvailability),
       Optional(static_cast<int>(policy::IncognitoModeAvailability::kDisabled)));
-  EXPECT_THAT(fixture.changed_prefs()->FindBoolByDottedPath(
-                  prefs::kSupervisedUserSafeSites),
-              Optional(true));
 
   // The other filter is not affecting incognito mode.
   device_parental_controls_.SetSearchContentFiltersEnabledForTesting(false);

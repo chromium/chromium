@@ -159,9 +159,6 @@ class SupervisedUserNavigationObserver
   void OnForceGoogleSafeSearchChanged(std::string_view safe_search_pref_name);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  base::ScopedObservation<supervised_user::SupervisedUserService,
-                          SupervisedUserServiceObserver>
-      supervised_user_service_observation_{this};
   base::ScopedObservation<
       supervised_user::SupervisedUserUrlFilteringService,
       supervised_user::SupervisedUserUrlFilteringService::Observer>

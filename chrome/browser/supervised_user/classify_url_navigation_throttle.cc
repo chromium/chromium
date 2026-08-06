@@ -244,32 +244,17 @@ std::string ClassifyUrlNavigationThrottle::GetInterstitialHTML(
     bool already_sent_request,
     bool is_main_frame) const {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(kSupervisedUserUseUrlFilteringService)) {
-    switch (result.interstitial_mode) {
-      case InterstitialMode::kLearnMoreInterstitial:
-        return SupervisedUserInterstitial::GetHTMLContentsWithoutApprovals(
-            result.url, g_browser_process->GetApplicationLocale());
-      case InterstitialMode::kParentalReviewInterstitial:
-        return SupervisedUserInterstitial::GetHTMLContentsWithApprovals(
-            supervised_user_service(), result.reason, already_sent_request,
-            is_main_frame, g_browser_process->GetApplicationLocale());
-      default:
-        NOTREACHED();
-    }
-  } else {
-    Profile* profile = Profile::FromBrowserContext(
-        navigation_handle()->GetWebContents()->GetBrowserContext());
-
-    // Family link supervised users should not see local supervision
-    // interstitials. Other users can see these interstitials if they have local
-    // supervision enabled.
-    if (!IsSubjectToParentalControls(*profile->GetPrefs()) &&
-        g_browser_process->device_parental_controls().IsWebFilteringEnabled()) {
+  switch (result.interstitial_mode) {
+    case InterstitialMode::kLearnMoreInterstitial:
       return SupervisedUserInterstitial::GetHTMLContentsWithoutApprovals(
           result.url, g_browser_process->GetApplicationLocale());
-    }
+    case InterstitialMode::kParentalReviewInterstitial:
+      return SupervisedUserInterstitial::GetHTMLContentsWithApprovals(
+          supervised_user_service(), result.reason, already_sent_request,
+          is_main_frame, g_browser_process->GetApplicationLocale());
+    default:
+      NOTREACHED();
   }
-
 #endif
   SCOPED_CRASH_KEY_BOOL(
       "SupervisedUser", "dpc_web_filter_enabled",

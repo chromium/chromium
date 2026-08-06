@@ -34,12 +34,6 @@ BASE_DECLARE_FEATURE(kEnableSupervisedUserVersionSignOutDialog);
 // approval request.
 BASE_DECLARE_FEATURE(kLocalWebApprovalsWidgetSupportsUrlPayload);
 
-// SupervisedUserUrlFilteringService does not use the PrefService indirection
-// (specifically, the SupervisedUserPrefStore) to get the URL filtering
-// settings. When enabled, all url filtering settings are read directly from the
-// related supervision services.
-BASE_DECLARE_FEATURE(kSupervisedUserUseUrlFilteringService);
-
 // When enabled, the supervised user log record will emit the device
 // log record separately. When disabled, the system assumes that the device log
 // record is mutually exclusive with the account/policy based log record.

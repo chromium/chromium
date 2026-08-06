@@ -577,8 +577,7 @@ class
  protected:
   void SetUpFeatureList() override {
     scoped_feature_list_.InitWithFeatureStates(
-        {{kSupervisedUserUseUrlFilteringService, true},
-         {kSupervisedUserEmitLogRecordSeparately, false}});
+        {{kSupervisedUserEmitLogRecordSeparately, false}});
   }
 
   void CreateProfiles(std::size_t count) {

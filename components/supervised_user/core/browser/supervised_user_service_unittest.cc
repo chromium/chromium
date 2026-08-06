@@ -420,9 +420,6 @@ class SupervisedUserServiceLocallySupervisedWebFilterTypeTransitionsTest
         *supervised_user_test_environment_->pref_service());
   }
 
- private:
-  base::test::ScopedFeatureList feature_list_{
-      kSupervisedUserUseUrlFilteringService};
 };
 
 // All enabled -> only browser filter enabled -> all disabled -> only search
@@ -513,29 +510,5 @@ TEST_F(SupervisedUserServiceLocallySupervisedWebFilterTypeTransitionsTest,
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// TODO(crbug.com/1364589): Failing consistently on linux-chromeos-dbg
-// due to failed timezone conversion assertion.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_DeprecatedFilterPolicy DISABLED_DeprecatedFilterPolicy
-#else
-#define MAYBE_DeprecatedFilterPolicy DeprecatedFilterPolicy
-#endif
-TEST_F(SupervisedUserServiceTest, MAYBE_DeprecatedFilterPolicy) {
-  // This test will no longer make sense when the feature is enabled, because
-  // kSupervisedUserUseUrlFilteringService feature is removing the web-filtering
-  // related prefs.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kSupervisedUserUseUrlFilteringService);
-
-  Initialize(InitialSupervisionState::kFamilyLinkDefault);
-  ASSERT_EQ(supervised_user_test_environment_->pref_service()->GetInteger(
-                prefs::kDefaultSupervisedUserFilteringBehavior),
-            static_cast<int>(FilteringBehavior::kAllow));
-  EXPECT_DCHECK_DEATH(
-      supervised_user_test_environment_->pref_service_syncable()
-          ->SetSupervisedUserPref(
-              prefs::kDefaultSupervisedUserFilteringBehavior,
-              /* SupervisedUserURLFilter::WARN */ base::Value(1)));
-}
 }  // namespace
 }  // namespace supervised_user

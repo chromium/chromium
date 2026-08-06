@@ -10,9 +10,7 @@
 #import "base/memory/raw_ref.h"
 #import "base/memory/weak_ptr.h"
 #import "base/scoped_observation.h"
-#import "components/security_interstitials/core/controller_client.h"
 #import "components/supervised_user/core/browser/supervised_user_interstitial.h"
-#import "components/supervised_user/core/browser/supervised_user_service_observer.h"
 #import "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "ios/components/security_interstitials/ios_blocking_page_controller_client.h"
@@ -41,7 +39,6 @@ using RequestUrlAccessRemoteCallback = base::OnceCallback<void(bool)>;
 // interstitial functionality and error page.
 class SupervisedUserErrorContainer
     : public web::WebStateUserData<SupervisedUserErrorContainer>,
-      public SupervisedUserServiceObserver,
       public supervised_user::SupervisedUserUrlFilteringService::Observer {
  public:
   SupervisedUserErrorContainer(SupervisedUserErrorContainer& other);
@@ -94,8 +91,6 @@ class SupervisedUserErrorContainer
   // Checks if the `url` host has been already requested for approval.
   bool IsRemoteApprovalPendingForUrl(const GURL& url);
 
-  // SupervisedUserServiceObserver override:
-  void OnURLFilterChanged() override;
   void OnUrlFilteringServiceChanged() override;
 
   // Sets the parent access bottom sheet CommandDispatcher.

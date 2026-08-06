@@ -73,8 +73,6 @@ BASE_FEATURE(kEnableSupervisedUserVersionSignOutDialog,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kSupervisedUserUseUrlFilteringService,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSupervisedUserEmitLogRecordSeparately,
              base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace supervised_user

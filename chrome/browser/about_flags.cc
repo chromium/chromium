@@ -11365,13 +11365,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          supervised_user::kSupervisedUserEmitLogRecordSeparately)},
 
-    {"supervised-user-use-url-filtering-service",
-     flag_descriptions::kSupervisedUserUseUrlFilteringServiceName,
-     flag_descriptions::kSupervisedUserUseUrlFilteringServiceDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         supervised_user::kSupervisedUserUseUrlFilteringService)},
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
     {"autofill-enable-amount-extraction-testing",

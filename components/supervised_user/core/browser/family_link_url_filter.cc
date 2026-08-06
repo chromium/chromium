@@ -110,33 +110,6 @@ WebFilteringResult::Callback WrapCallbackWithMetrics(
                         options);
 }
 
-bool AreUrlFilterPrefsDefault(const PrefService& pref_service) {
-  return pref_service.FindPreference(prefs::kSupervisedUserManualHosts)
-             ->IsDefaultValue() &&
-         pref_service.FindPreference(prefs::kSupervisedUserManualURLs)
-             ->IsDefaultValue() &&
-         pref_service.FindPreference(prefs::kSupervisedUserSafeSites)
-             ->IsDefaultValue() &&
-         pref_service
-             .FindPreference(prefs::kDefaultSupervisedUserFilteringBehavior)
-             ->IsDefaultValue();
-}
-
-// Returns true when the pref configuration suggests that filtering settings are
-// unset.
-bool FilterIsDisabled(const PrefService& pref_service) {
-  return AreUrlFilterPrefsDefault(pref_service);
-}
-
-FilteringBehavior GetDefaultFilteringBehavior(const PrefService& pref_service) {
-  int behavior_value =
-      pref_service.GetInteger(prefs::kDefaultSupervisedUserFilteringBehavior);
-  DCHECK(behavior_value == static_cast<int>(FilteringBehavior::kAllow) ||
-         behavior_value == static_cast<int>(FilteringBehavior::kBlock))
-      << "SupervisedUserURLFilter value not supported: " << behavior_value;
-  return static_cast<FilteringBehavior>(behavior_value);
-}
-
 bool IsSameDomain(const GURL& url1, const GURL& url2) {
   return net::registry_controlled_domains::SameDomainOrHost(
       url1, url2, EXCLUDE_PRIVATE_REGISTRIES);
@@ -305,13 +278,11 @@ FamilyLinkUrlFilter::FamilyLinkUrlFilter(
       delegate_(std::move(delegate)),
       async_url_checker_(std::make_unique<safe_search_api::URLChecker>(
           std::move(url_checker_client))) {
-  if (base::FeatureList::IsEnabled(kSupervisedUserUseUrlFilteringService)) {
-    family_link_settings_subscription_ =
-        family_link_settings_service.SubscribeForSettingsChange(
-            base::BindRepeating(
-                &FamilyLinkUrlFilter::OnFamilyLinkSettingsChanged,
-                base::Unretained(this)));
-  }
+  family_link_settings_subscription_ =
+      family_link_settings_service.SubscribeForSettingsChange(
+          base::BindRepeating(
+              &FamilyLinkUrlFilter::OnFamilyLinkSettingsChanged,
+              base::Unretained(this)));
 }
 
 FamilyLinkUrlFilter::~FamilyLinkUrlFilter() {
@@ -451,13 +422,8 @@ WebFilteringResult FamilyLinkUrlFilter::GetFilteringBehavior(
   }
 
   // Fall back to the default behavior.
-  if (base::FeatureList::IsEnabled(kSupervisedUserUseUrlFilteringService)) {
-    return {url, family_link_settings_service_->GetDefaultFilteringBehavior(),
-            FilteringBehaviorReason::DEFAULT};
-  } else {
-    return {url, GetDefaultFilteringBehavior(user_prefs_.get()),
-            FilteringBehaviorReason::DEFAULT};
-  }
+  return {url, family_link_settings_service_->GetDefaultFilteringBehavior(),
+          FilteringBehaviorReason::DEFAULT};
 }
 
 // There may be conflicting patterns, say, "allow *.google.com" and "block
@@ -630,22 +596,10 @@ void FamilyLinkUrlFilter::UpdateManualHosts() {
   blocked_host_list_.clear();
   allowed_host_list_.clear();
 
-  if (base::FeatureList::IsEnabled(kSupervisedUserUseUrlFilteringService)) {
-    FamilyLinkSettingsService::HostExceptions host_exceptions =
-        family_link_settings_service_->GetHostExceptions();
-    blocked_host_list_ = std::move(host_exceptions.blocked_hosts);
-    allowed_host_list_ = std::move(host_exceptions.allowed_hosts);
-  } else {
-    for (auto&& [host, value] :
-         user_prefs_->GetDict(prefs::kSupervisedUserManualHosts)) {
-      DCHECK(value.is_bool());
-      if (value.GetIfBool().value_or(false)) {
-        allowed_host_list_.emplace(host);
-      } else {
-        blocked_host_list_.emplace(host);
-      }
-    }
-  }
+  FamilyLinkSettingsService::HostExceptions host_exceptions =
+      family_link_settings_service_->GetHostExceptions();
+  blocked_host_list_ = std::move(host_exceptions.blocked_hosts);
+  allowed_host_list_ = std::move(host_exceptions.allowed_hosts);
 
   statistics_.blocked_hosts_count = blocked_host_list_.size();
   statistics_.allowed_hosts_count = allowed_host_list_.size();
@@ -657,27 +611,12 @@ void FamilyLinkUrlFilter::UpdateManualUrls() {
   statistics_.blocked_urls_count = 0;
   statistics_.allowed_urls_count = 0;
 
-  if (base::FeatureList::IsEnabled(kSupervisedUserUseUrlFilteringService)) {
-    url_map_ = family_link_settings_service_->GetUrlExceptions();
-    for (auto&& [url, value] : url_map_) {
-      if (value) {
-        statistics_.allowed_urls_count++;
-      } else {
-        statistics_.blocked_urls_count++;
-      }
-    }
-  } else {
-    for (auto&& [url, value] :
-         user_prefs_->GetDict(prefs::kSupervisedUserManualURLs)) {
-      DCHECK(value.is_bool());
-      // TODO(crbug.com/417951669): Remove overly defensive reads.
-      const bool is_allowed = value.GetIfBool().value_or(false);
-      url_map_[GURL(url)] = is_allowed;
-      if (is_allowed) {
-        statistics_.allowed_urls_count++;
-      } else {
-        statistics_.blocked_urls_count++;
-      }
+  url_map_ = family_link_settings_service_->GetUrlExceptions();
+  for (auto&& [url, value] : url_map_) {
+    if (value) {
+      statistics_.allowed_urls_count++;
+    } else {
+      statistics_.blocked_urls_count++;
     }
   }
 }
@@ -688,26 +627,7 @@ FamilyLinkUrlFilter::Statistics FamilyLinkUrlFilter::GetFilteringStatistics()
 }
 
 WebFilterType FamilyLinkUrlFilter::GetWebFilterType() const {
-  if (base::FeatureList::IsEnabled(kSupervisedUserUseUrlFilteringService)) {
-    return family_link_settings_service_->GetWebFilterType();
-  }
-
-  // LINT.IfChange(GetWebFilterType)
-  if (FilterIsDisabled(user_prefs_.get())) {
-    return WebFilterType::kDisabled;
-  }
-
-  // If the default filtering behavior is not block, it means the web filter
-  // was set to either "allow all sites" or "try to block mature sites".
-  if (GetDefaultFilteringBehavior(user_prefs_.get()) ==
-      FilteringBehavior::kBlock) {
-    return WebFilterType::kCertainSites;
-  }
-
-  return supervised_user::IsSafeSitesEnabled(user_prefs_.get())
-             ? WebFilterType::kTryToBlockMatureSites
-             : WebFilterType::kAllowAllSites;
-  // LINT.ThenChange(//components/supervised_user/core/browser/supervised_user_settings_service.cc:GetWebFilterType)
+  return family_link_settings_service_->GetWebFilterType();
 }
 
 void FamilyLinkUrlFilter::RunAsyncChecker(

@@ -46,31 +46,22 @@ struct WebFilterTypeTestParams {
   WebFilterType family_link;
   WebFilterType device;
   WebFilterType result;
-  // Special exceptions for few cases that have different behavior in the MVP
-  // implementation of the URL filtering service (which is ignoring device
-  // settings in favor of family link settings).
-  std::optional<WebFilterType> mvp_result;
 };
 
 class SupervisedUserUrlFilteringServiceWebFilterTypeAndroidTest
-    : public WithFeatureOverrideAndParamInterface<WebFilterTypeTestParams>,
-      public SupervisedUserUrlFilteringServiceTestBase {
- protected:
-  SupervisedUserUrlFilteringServiceWebFilterTypeAndroidTest()
-      : WithFeatureOverrideAndParamInterface(
-            kSupervisedUserUseUrlFilteringService) {}
-};
+    : public testing::WithParamInterface<WebFilterTypeTestParams>,
+      public SupervisedUserUrlFilteringServiceTestBase {};
 
 TEST_P(SupervisedUserUrlFilteringServiceWebFilterTypeAndroidTest,
        WebFilterTypeTest) {
-  if (GetTestCase().family_link != WebFilterType::kDisabled) {
+  if (GetParam().family_link != WebFilterType::kDisabled) {
     EnableParentalControls(*test_environment().pref_service());
-    test_environment().SetWebFilterType(GetTestCase().family_link);
+    test_environment().SetWebFilterType(GetParam().family_link);
   }
 
   AndroidParentalControls& parental_controls =
       test_environment().device_parental_controls();
-  switch (GetTestCase().device) {
+  switch (GetParam().device) {
     case WebFilterType::kTryToBlockMatureSites:
       parental_controls.SetSearchContentFiltersEnabledForTesting(false);
       parental_controls.SetBrowserContentFiltersEnabledForTesting(true);
@@ -87,17 +78,8 @@ TEST_P(SupervisedUserUrlFilteringServiceWebFilterTypeAndroidTest,
       NOTREACHED() << "Not supported by Android parental controls.";
   }
 
-  if (!IsFeatureEnabled() &&
-      GetTestCase().mvp_result.has_value()) {
-    // MVP implementation (pre-feature)didn't allow for specific combinations of
-    // settings and ignored the device settings in favor of the family link
-    // settings.
-    EXPECT_EQ(*GetTestCase().mvp_result,
-              test_environment().url_filtering_service()->GetWebFilterType());
-  } else {
-    EXPECT_EQ(GetTestCase().result,
-              test_environment().url_filtering_service()->GetWebFilterType());
-  }
+  EXPECT_EQ(GetParam().result,
+            test_environment().url_filtering_service()->GetWebFilterType());
 }
 
 const WebFilterTypeTestParams kWebFilterTypeTestParams[] = {
@@ -118,13 +100,11 @@ const WebFilterTypeTestParams kWebFilterTypeTestParams[] = {
     {.test_name = "TryToBlockMatureSites_4",
      .family_link = WebFilterType::kCertainSites,
      .device = WebFilterType::kTryToBlockMatureSites,
-     .result = WebFilterType::kTryToBlockMatureSites,
-     .mvp_result = WebFilterType::kCertainSites},
+     .result = WebFilterType::kTryToBlockMatureSites},
     {.test_name = "TryToBlockMatureSites_5",
      .family_link = WebFilterType::kAllowAllSites,
      .device = WebFilterType::kTryToBlockMatureSites,
-     .result = WebFilterType::kTryToBlockMatureSites,
-     .mvp_result = WebFilterType::kAllowAllSites},
+     .result = WebFilterType::kTryToBlockMatureSites},
     {.test_name = "TryToBlockMatureSites_6",
      .family_link = WebFilterType::kDisabled,
      .device = WebFilterType::kTryToBlockMatureSites,
@@ -152,8 +132,7 @@ const WebFilterTypeTestParams kWebFilterTypeTestParams[] = {
     {.test_name = "AllowAllSites_3",
      .family_link = WebFilterType::kDisabled,
      .device = WebFilterType::kAllowAllSites,
-     .result = WebFilterType::kAllowAllSites,
-     .mvp_result = WebFilterType::kDisabled},
+     .result = WebFilterType::kAllowAllSites},
 
     // Then both disabled, the result is kDisabled.
     {.test_name = "Disabled_1",
@@ -165,14 +144,11 @@ const WebFilterTypeTestParams kWebFilterTypeTestParams[] = {
 INSTANTIATE_TEST_SUITE_P(
     ,
     SupervisedUserUrlFilteringServiceWebFilterTypeAndroidTest,
-    testing::Combine(testing::Bool(),
-                     testing::ValuesIn(kWebFilterTypeTestParams)),
+    testing::ValuesIn(kWebFilterTypeTestParams),
     [](const testing::TestParamInfo<
         SupervisedUserUrlFilteringServiceWebFilterTypeAndroidTest::ParamType>&
            info) {
-      return std::string(std::get<0>(info.param) ? "With" : "Without") +
-             std::string(kSupervisedUserUseUrlFilteringService.name) + "_" +
-             std::get<1>(info.param).test_name;
+      return info.param.test_name;
     });
 
 // This suite simply proves that the sync filtering behavior is not affected
@@ -180,19 +156,15 @@ INSTANTIATE_TEST_SUITE_P(
 // sync filtering behavior, see family link specific suites
 // (family_link*unittest.cc).
 class SupervisedUserUrlFilteringServiceSyncBehaviorAndroidTest
-    : public ::base::test::WithFeatureOverride,
-      public SupervisedUserUrlFilteringServiceTestBase {
+    : public SupervisedUserUrlFilteringServiceTestBase {
  protected:
-  SupervisedUserUrlFilteringServiceSyncBehaviorAndroidTest()
-      : ::base::test::WithFeatureOverride(
-            kSupervisedUserUseUrlFilteringService) {}
   WebFilteringResult GetSyncFilteringBehavior(std::string_view url) {
     return test_environment().url_filtering_service()->GetFilteringBehavior(
         GURL(url));
   }
 };
 
-TEST_P(SupervisedUserUrlFilteringServiceSyncBehaviorAndroidTest,
+TEST_F(SupervisedUserUrlFilteringServiceSyncBehaviorAndroidTest,
        EnabledDeviceParentalControls_DontAffectSyncBehavior) {
   EnableParentalControls(*test_environment().pref_service());
   test_environment().SetWebFilterType(WebFilterType::kCertainSites);
@@ -215,16 +187,9 @@ TEST_P(SupervisedUserUrlFilteringServiceSyncBehaviorAndroidTest,
   EXPECT_FALSE(GetSyncFilteringBehavior("http://example.com").IsAllowed());
 }
 
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    SupervisedUserUrlFilteringServiceSyncBehaviorAndroidTest);
-
 class SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest
-    : public ::base::test::WithFeatureOverride,
-      public SupervisedUserUrlFilteringServiceTestBase {
+    : public SupervisedUserUrlFilteringServiceTestBase {
  protected:
-  SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest()
-      : ::base::test::WithFeatureOverride(
-            kSupervisedUserUseUrlFilteringService) {}
   void GetAsyncFilteringBehavior(const GURL& url,
                                  WebFilteringResult::Callback callback) {
     test_environment().url_filtering_service()->GetFilteringBehavior(
@@ -241,7 +206,7 @@ class SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest
   }
 };
 
-TEST_P(SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest,
+TEST_F(SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest,
        OnlyFamilyLinkFilterIsUsed) {
   EnableParentalControls(*test_environment().pref_service());
   ASSERT_FALSE(
@@ -278,12 +243,8 @@ TEST_P(SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest,
       SupervisedUserFilterTopLevelResult::kAllow, 2);
 }
 
-TEST_P(SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest,
-       OnlyDeviceParentalControlsFilterIsUsed_ExperimentalOnly) {
-  if (!GetParam()) {
-    GTEST_SKIP() << "Legacy behavior uses family link kids api client.";
-  }
-
+TEST_F(SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest,
+       OnlyDeviceParentalControlsFilterIsUsed) {
   test_environment()
       .device_parental_controls()
       .SetBrowserContentFiltersEnabledForTesting(true);
@@ -319,57 +280,8 @@ TEST_P(SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest,
       SupervisedUserFilterTopLevelResult::kAllow, 2);
 }
 
-TEST_P(SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest,
-       OnlyDeviceParentalControlsFilterIsUsed_LegacyOnly) {
-  if (GetParam()) {
-    GTEST_SKIP() << "Experimental behavior uses device parental controls kids "
-                    "api client.";
-  }
-
-  test_environment()
-      .device_parental_controls()
-      .SetBrowserContentFiltersEnabledForTesting(true);
-
-  GURL url = GURL("http://example.com");
-  EXPECT_CALL(test_environment().family_link_url_checker_client(),
-              CheckURL(url, _))
-      .Times(1);
-  test_environment().family_link_url_checker_client().ScheduleResolution(
-      safe_search_api::ClientClassification::kAllowed);
-
-  // Device-specific client is not used (instead, family link client is used in
-  // non-euc mode).
-  EXPECT_CALL(test_environment().device_parental_controls_url_checker_client(),
-              CheckURL(url, _))
-      .Times(0);
-  GetAsyncFilteringBehavior(
-      url, base::BindLambdaForTesting([](WebFilteringResult result) {
-        EXPECT_TRUE(result.IsAllowed());
-      }));
-  GetAsyncFilteringBehaviorForSubFrame(
-      url, base::BindLambdaForTesting([](WebFilteringResult result) {
-        EXPECT_TRUE(result.IsAllowed());
-      }));
-
-  // Histograms are recorded twice (for main frame and subframe checks).
-  histogram_tester().ExpectUniqueSample(
-      "SupervisedUsers.All.TopLevelFilteringResult.Default",
-      SupervisedUserFilterTopLevelResult::kAllow, 2);
-
-  // In legacy mode, the family link client was used in lieu of device
-  // parental controls.
-  histogram_tester().ExpectUniqueSample(
-      "SupervisedUsers.Account.TopLevelFilteringResult.Default",
-      SupervisedUserFilterTopLevelResult::kAllow, 2);
-}
-
-TEST_P(SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest,
-       DeviceParenalControlsHavePriorityOverFamilyLink_ExperimentalOnly) {
-  if (!GetParam()) {
-    GTEST_SKIP() << "Legacy behavior doesn't allow for two systems to be "
-                    "enabled at the same time.";
-  }
-
+TEST_F(SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest,
+       DeviceParenalControlsHavePriorityOverFamilyLink) {
   // Both systems are enabled.
   EnableParentalControls(*test_environment().pref_service());
   test_environment()
@@ -408,13 +320,8 @@ TEST_P(SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest,
       SupervisedUserFilterTopLevelResult::kBlockSafeSites, 2);
 }
 
-TEST_P(SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest,
-       FamilyLinkIsFallbackToDeviceParentalControls_ExperimentalOnly) {
-  if (!GetParam()) {
-    GTEST_SKIP() << "Legacy behavior doesn't allow for two systems to be "
-                    "enabled at the same time.";
-  }
-
+TEST_F(SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest,
+       FamilyLinkIsFallbackToDeviceParentalControls) {
   // Both systems are enabled.
   EnableParentalControls(*test_environment().pref_service());
   test_environment()
@@ -459,9 +366,5 @@ TEST_P(SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest,
       "SupervisedUsers.Account.TopLevelFilteringResult.Default",
       SupervisedUserFilterTopLevelResult::kBlockSafeSites, 2);
 }
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest);
-
 }  // namespace
 }  // namespace supervised_user

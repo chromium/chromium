@@ -1863,13 +1863,6 @@ inline constexpr char kSupervisedUserEmitLogRecordSeparatelyDescription[] =
     "Emit supervised user log record separately for Family Link and device "
     "parental controls users (no user-visible effect).";
 
-inline constexpr char kSupervisedUserUseUrlFilteringServiceName[] =
-    "Use URL filtering service";
-inline constexpr char kSupervisedUserUseUrlFilteringServiceDescription[] =
-    "Use the SupervisedUserUrlFilteringService to get URL filtering settings "
-    "directly from supervision services instead of using PrefService (no "
-    "user-visible effect).";
-
 inline constexpr char kSupportGoogleOneDeepLinkName[] =
     "Support Google One Deep Link";
 inline constexpr char kSupportGoogleOneDeepLinkDescription[] =

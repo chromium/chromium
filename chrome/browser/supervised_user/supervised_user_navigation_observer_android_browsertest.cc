@@ -63,12 +63,10 @@ TestCase kTestCases[] = {
 // kSupervisedUserUseUrlFilteringService, which should be neutral in any setting
 // to this test.
 class SupervisedUserNavigationObserverAndroidBrowserTest
-    : public WithFeatureOverrideAndParamInterface<TestCase>,
-      public SupervisedUserBrowserTestBase {
+    : public SupervisedUserBrowserTestBase,
+      public testing::WithParamInterface<TestCase> {
  protected:
-  SupervisedUserNavigationObserverAndroidBrowserTest()
-      : WithFeatureOverrideAndParamInterface<TestCase>(
-            kSupervisedUserUseUrlFilteringService) {
+  SupervisedUserNavigationObserverAndroidBrowserTest() {
 #if BUILDFLAG(IS_ANDROID)
     // On Android, we disable the feature that automatically scales web content
     // because it is not meaningful and would change expected values.
@@ -101,7 +99,7 @@ class SupervisedUserNavigationObserverAndroidBrowserTest
         }));
     ASSERT_TRUE(embedded_test_server()->Start());
 
-    if (GetTestCase().start_with_family_link_enabled) {
+    if (GetParam().start_with_family_link_enabled) {
       // For Family Link users, we need to do a few tweaks:
       // 1. Set the URL classification to "allow all" mode so that the system
       // won't try to classify google.com (blocking the navigation).
@@ -163,7 +161,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserNavigationObserverAndroidBrowserTest,
 // supervised user pref store by device parental controls.
 IN_PROC_BROWSER_TEST_P(SupervisedUserNavigationObserverAndroidBrowserTest,
                        InactiveSupervisedUserSettingsCantVetoSafeSearch) {
-  if (GetTestCase().start_with_family_link_enabled) {
+  if (GetParam().start_with_family_link_enabled) {
     GTEST_SKIP() << "This test specifically tests what happens when the Family "
                     "Link parental controls are enabled after Device Parental "
                     "Controls were set.";
@@ -236,14 +234,10 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserNavigationObserverAndroidBrowserTest,
 INSTANTIATE_TEST_SUITE_P(
     ,
     SupervisedUserNavigationObserverAndroidBrowserTest,
-    testing::Combine(testing::Bool(), testing::ValuesIn(kTestCases)),
+    testing::ValuesIn(kTestCases),
     [](const testing::TestParamInfo<
         SupervisedUserNavigationObserverAndroidBrowserTest::ParamType>& info) {
-      bool feature_enabled = std::get<0>(info.param);
-      TestCase test_case = std::get<1>(info.param);
-      return base::StrCat({feature_enabled ? "With" : "Without",
-                           kSupervisedUserUseUrlFilteringService.name, "_",
-                           test_case.test_label});
+      return info.param.test_label;
     });
 
 // Tests if no-approval interstitial is shown when the browser content filter
@@ -270,8 +264,7 @@ class SupervisedUserNavigationObserverNoApprovalsInterstitialAndroidBrowserTest
     // On Android, we disable the feature that automatically scales web content
     // because it is not meaningful and would change expected values.
     scoped_feature_list_.InitWithFeatureStates(
-        {{ features::kAndroidDesktopZoomScaling,
-           false }});
+        {{features::kAndroidDesktopZoomScaling, false}});
 #endif  // BUILDFLAG(IS_ANDROID)
   }
 
@@ -429,17 +422,10 @@ TestCase kTestCasesNoApprovalsInterstitial[] = {
 INSTANTIATE_TEST_SUITE_P(
     ,
     SupervisedUserNavigationObserverNoApprovalsInterstitialAndroidBrowserTest,
-    testing::Combine(testing::Bool(),
-                     testing::ValuesIn(kTestCasesNoApprovalsInterstitial)),
+    testing::ValuesIn(kTestCasesNoApprovalsInterstitial),
     [](const testing::TestParamInfo<
         SupervisedUserNavigationObserverNoApprovalsInterstitialAndroidBrowserTest::
-            ParamType>& info) {
-      bool feature_enabled = std::get<0>(info.param);
-      TestCase test_case = std::get<1>(info.param);
-      return base::StrCat({feature_enabled ? "With" : "Without",
-                           kSupervisedUserUseUrlFilteringService.name, "_",
-                           test_case.test_label});
-    });
+            ParamType>& info) { return info.param.test_label; });
 
 }  // namespace
 }  // namespace supervised_user

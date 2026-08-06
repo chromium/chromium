@@ -160,20 +160,6 @@ class SupervisedUserService : public KeyedService {
   // Handler when supervision is disabled. Intentionally idempotent.
   void OnFamilyLinkParentalControlsDisabled();
 
-  // Single handler for all url filter changes.
-  // If present, `pref_name` indicates the actual pref that changed and might
-  // dispatch additional work to the URL filter (eg. to update its internal data
-  // structures). When `pref_name` is absent, the filter will refresh the data
-  // structures unconditionally.
-  void UpdateURLFilter(std::optional<std::string> pref_name = std::nullopt);
-
-  // Interface for the above suitable for pref change registrar.
-  void OnURLFilterChanged(const std::string& pref_name);
-
-  // Adds url filtering change handlers, originating from Family Link.
-  void AddURLFilterPrefChangeHandlers();
-  // Removes all url filtering change handlers. Intentionally idempotent.
-  void RemoveURLFilterPrefChangeHandlers();
   // Add or remove all pref handlers related to custodians. The removal method
   // is intentionally idempotent.
   void AddCustodianPrefChangeHandlers();
@@ -199,11 +185,6 @@ class SupervisedUserService : public KeyedService {
 
   // Registrar for core prefs that drive this service.
   PrefChangeRegistrar main_pref_change_registrar_;
-  // Registrar for preferences that drive URL filtering. All prefs except for
-  // the safe sites mode are observed only when the profile is subject to
-  // parental controls. The safe sites pref is observed at all times, with
-  // varying handlers for enabled or disabled parental controls.
-  PrefChangeRegistrar url_filter_pref_change_registrar_;
   // Registrar for preferences that control custodian data. They're observed
   // only when the profile is subject to parental controls.
   PrefChangeRegistrar custodian_pref_change_registrar_;

@@ -499,9 +499,6 @@ class MostVisitedSites :
   raw_ptr<const supervised_user::SupervisedUserUrlFilteringService>
       supervised_user_url_filtering_service_;
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  base::ScopedObservation<supervised_user::SupervisedUserService,
-                          SupervisedUserServiceObserver>
-      supervised_user_service_observation_{this};
   base::ScopedObservation<
       supervised_user::SupervisedUserUrlFilteringService,
       supervised_user::SupervisedUserUrlFilteringService::Observer>

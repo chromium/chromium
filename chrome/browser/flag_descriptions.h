@@ -8760,13 +8760,6 @@ inline constexpr char kSupervisedUserEmitLogRecordSeparatelyDescription[] =
     "Emits one log record per each supervision type, instead of a single "
     "combined value. No user-visible effect on other platforms than Android.";
 
-inline constexpr char kSupervisedUserUseUrlFilteringServiceName[] =
-    "Use URL filtering service";
-inline constexpr char kSupervisedUserUseUrlFilteringServiceDescription[] =
-    "Use the SupervisedUserUrlFilteringService to get URL filtering settings "
-    "directly from supervision services instead of using PrefService. No "
-    "user-visible effect on other platforms than Android.";
-
 inline constexpr char kVariationsSeedCorpusName[] = "Variations seed corpus";
 inline constexpr char kVariationsSeedCorpusDescription[] =
     "The value of the 'corpus' parameter in the variations seed request. "
