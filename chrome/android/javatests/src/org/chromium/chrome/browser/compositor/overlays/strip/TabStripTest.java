@@ -4,18 +4,8 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-
-import static org.hamcrest.CoreMatchers.allOf;
-
 import static org.chromium.chrome.test.util.ChromeTabUtils.getIndexOnUiThread;
 import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.view.MotionEvent;
 import android.view.View;
@@ -44,7 +34,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -59,8 +48,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
-import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
-import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.TabStripUtils;
 import org.chromium.content_public.browser.test.util.DOMUtils;
@@ -442,66 +429,6 @@ public class TabStripTest {
     }
 
     /** Tests that selecting "Close all tabs" from the tab menu closes all tabs. */
-    @Test
-    @LargeTest
-    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    @Feature({"TabStrip"})
-    @DisableFeatures({ChromeFeatureList.ANDROID_CONTEXT_MENU_NEW_ACTIONS})
-    public void testCloseAllTabsFromTabMenuClosesAllTabs() {
-        Assert.assertEquals(
-                "Initial window count is unexpected.",
-                1,
-                ApplicationStatus.getRunningActivities().size());
-
-        // 1. Create a new window with two tabs.
-        WebPageStation page = mActivityTestRule.startOnBlankPage();
-        RegularNewTabPageStation newWindowNtp = page.openNewWindowFast();
-        newWindowNtp = newWindowNtp.openNewTabFast();
-        Assert.assertEquals(
-                "Window count is incorrect.", 2, ApplicationStatus.getRunningActivities().size());
-        mActivityTestRule
-                .getActivityTestRule()
-                .setActivity(
-                        (ChromeTabbedActivity) ApplicationStatus.getLastTrackedFocusedActivity());
-        Assert.assertEquals(
-                "Second activity should be the focused activity.",
-                mActivityTestRule.getActivity(),
-                newWindowNtp.getActivity());
-        Assert.assertEquals(
-                "Second activity should have 2 tabs.",
-                2,
-                getTabCountOnUiThread(
-                        mActivityTestRule.getActivity().getTabModelSelector().getModel(false)));
-
-        // 2. Open the tab context menu on the first tab.
-        int tabSelectionId =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () ->
-                                mActivityTestRule
-                                        .getActivity()
-                                        .getCurrentTabModel()
-                                        .getTabAt(0)
-                                        .getId());
-        showTabContextMenu(/* incognito= */ false, tabSelectionId);
-
-        // 3. Invoke "close all tabs" menu action.
-        triggerCloseAllTabsFromMenu(/* incognito= */ false);
-
-        // Verify that the second window is closed.
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    int state =
-                            ApplicationStatus.getStateForActivity(mActivityTestRule.getActivity());
-                    return state == ActivityState.DESTROYED;
-                });
-        mActivityTestRule
-                .getActivityTestRule()
-                .setActivity(
-                        (ChromeTabbedActivity) ApplicationStatus.getLastTrackedFocusedActivity());
-        Assert.assertEquals(
-                "Window count is incorrect.", 1, ApplicationStatus.getRunningActivities().size());
-    }
-
     /**
      * Tests that pressing the incognito toggle button properly switches between the incognito and
      * normal TabStrips.
@@ -642,162 +569,6 @@ public class TabStripTest {
                         (ChromeTabbedActivity) ApplicationStatus.getLastTrackedFocusedActivity());
         Assert.assertFalse(
                 "Expected normal strip to be active",
-                mActivityTestRule
-                        .getActivity()
-                        .getTabModelSelector()
-                        .isIncognitoBrandedModelSelected());
-        Assert.assertEquals(
-                "Expected normal strip to have 1 tab",
-                1,
-                getTabCountOnUiThread(
-                        mActivityTestRule.getActivity().getTabModelSelector().getModel(false)));
-        Assert.assertEquals(
-                "There should be only one window",
-                1,
-                ApplicationStatus.getRunningActivities().size());
-    }
-
-    /**
-     * Tests that closing all incognito tab properly closes the incognito TabStrip and switches to
-     * the normal TabStrip.
-     */
-    @Test
-    @LargeTest
-    @Feature({"TabStrip"})
-    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    // TODO(crbug.com/435241931): Remove this test once desktop-like incognito window feature is
-    // launched.
-    @DisableFeatures({
-        ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW,
-        ChromeFeatureList.ANDROID_CONTEXT_MENU_NEW_ACTIONS
-    })
-    public void testCloseAllIncognitoTabsFromTabMenu() {
-        // 1. Create two incognito tabs.
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        Assert.assertFalse(
-                "Expected normal strip to be selected",
-                mActivityTestRule.getActivity().getTabModelSelector().isIncognitoSelected());
-        mActivityTestRule.newIncognitoTabFromMenu();
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        mActivityTestRule.newIncognitoTabFromMenu();
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        Assert.assertTrue(
-                "Expected incognito strip to be selected",
-                mActivityTestRule.getActivity().getTabModelSelector().isIncognitoSelected());
-        Assert.assertEquals(
-                "Expected incognito strip to have 2 tabs",
-                2,
-                getTabCountOnUiThread(
-                        mActivityTestRule.getActivity().getTabModelSelector().getModel(true)));
-
-        // 2. Open the tab context menu.
-        int tabSelectionId =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () ->
-                                TabModelUtils.getCurrentTab(
-                                                mActivityTestRule
-                                                        .getActivity()
-                                                        .getTabModelSelector()
-                                                        .getModel(true))
-                                        .getId());
-        showTabContextMenu(/* incognito= */ true, tabSelectionId);
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-
-        // 3. Invoke "Close all tabs" menu action; block until action is completed.
-        triggerCloseAllTabsFromMenu(/* incognito= */ true);
-
-        // 4. Ensure all incognito tabs were closed and TabStrip is switched to normal.
-        Assert.assertFalse(
-                "Expected normal strip to be selected",
-                mActivityTestRule.getActivity().getTabModelSelector().isIncognitoSelected());
-        Assert.assertEquals(
-                "Expected normal strip to have 1 tab",
-                1,
-                getTabCountOnUiThread(
-                        mActivityTestRule.getActivity().getTabModelSelector().getModel(false)));
-        Assert.assertEquals(
-                "Expected incognito strip to have no tabs",
-                0,
-                getTabCountOnUiThread(
-                        mActivityTestRule.getActivity().getTabModelSelector().getModel(true)));
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"TabStrip"})
-    @Restriction({
-        DeviceFormFactor.TABLET_OR_DESKTOP,
-        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
-        DeviceRestriction.RESTRICTION_TYPE_NON_FOLDABLE
-    })
-    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
-    @DisableFeatures({ChromeFeatureList.ANDROID_CONTEXT_MENU_NEW_ACTIONS})
-    public void testCloseAllIncognitoTabsFromTabMenu_OpenIncognitoAsNewWindow() {
-        // Create a regular window and verify.
-        ChromeTabbedActivity regularActivity = mActivityTestRule.getActivity();
-        Assert.assertFalse(
-                "Expected normal strip to be selected",
-                regularActivity.getTabModelSelector().isIncognitoSelected());
-        Assert.assertEquals(
-                "There should be only one window",
-                1,
-                ApplicationStatus.getRunningActivities().size());
-
-        // Open two incognito tabs in a new window.
-        WebPageStation page = mActivityTestRule.startOnBlankPage();
-        IncognitoNewTabPageStation incognitoNtp = page.openNewIncognitoTabOrWindowFast();
-        incognitoNtp = incognitoNtp.openNewIncognitoTabFast();
-
-        // Verify incognito tabs are opened in a new window.
-        Assert.assertEquals(
-                "Incognito tab should be opened as a new window",
-                2,
-                ApplicationStatus.getRunningActivities().size());
-        mActivityTestRule
-                .getActivityTestRule()
-                .setActivity(
-                        (ChromeTabbedActivity) ApplicationStatus.getLastTrackedFocusedActivity());
-        Assert.assertEquals(
-                "Expected incognito activity is the focused activity",
-                mActivityTestRule.getActivity(),
-                incognitoNtp.getActivity());
-        Assert.assertEquals(
-                "Expected incognito strip to have 2 tabs",
-                2,
-                getTabCountOnUiThread(
-                        mActivityTestRule.getActivity().getTabModelSelector().getModel(true)));
-
-        // Open "close all tabs" menu
-        int tabSelectionId =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () ->
-                                mActivityTestRule
-                                        .getActivity()
-                                        .getCurrentTabModel()
-                                        .getTabAt(0)
-                                        .getId());
-        showTabContextMenu(/* incognito= */ true, tabSelectionId);
-
-        // Invoke menu action; block until action is completed
-        triggerCloseAllTabsFromMenu(/* incognito= */ true);
-
-        // Verify incognito window is closed.
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    int state =
-                            ApplicationStatus.getStateForActivity(mActivityTestRule.getActivity());
-                    return state == ActivityState.DESTROYED;
-                },
-                "Activity did destroy in time");
-
-        // Ensure the incognito window/activity are closed and only the normal window/activity is
-        // still active.
-        mActivityTestRule
-                .getActivityTestRule()
-                .setActivity(
-                        (ChromeTabbedActivity) ApplicationStatus.getLastTrackedFocusedActivity());
-        Assert.assertFalse(
-                "Expected normal strip to be selected",
                 mActivityTestRule
                         .getActivity()
                         .getTabModelSelector()
@@ -1553,22 +1324,6 @@ public class TabStripTest {
                 });
     }
 
-    private void showTabContextMenu(final boolean incognito, final int id) {
-        var instrumentation = InstrumentationRegistry.getInstrumentation();
-
-        selectTab(incognito, id);
-
-        StripLayoutTab tab =
-                TabStripUtils.findStripLayoutTab(mActivityTestRule.getActivity(), incognito, id);
-        final float x = tab.getDrawX() + tab.getWidth() / 2;
-        final float y = tab.getDrawY() + tab.getHeight() / 2;
-
-        final StripLayoutHelperManager manager =
-                mActivityTestRule.getActivity().getLayoutManager().getStripLayoutHelperManager();
-        instrumentation.runOnMainSync(() -> manager.simulateLongPress(x, y));
-        onViewWaiting(allOf(withId(R.id.tab_group_action_menu_list), isDisplayed()));
-    }
-
     /**
      * Compares a TabView with the corresponding model Tab. This tries to compare as many features
      * as possible making sure the TabView properly mirrors the Tab it represents.
@@ -1875,18 +1630,5 @@ public class TabStripTest {
                                             mActivityTestRule.getActivityTab().getView()),
                             Matchers.is(expectsShown));
                 });
-    }
-
-    private void triggerCloseAllTabsFromMenu(boolean incognito) {
-        String closeAllTabsLabel =
-                mActivityTestRule
-                        .getActivity()
-                        .getResources()
-                        .getString(
-                                incognito
-                                        ? R.string.menu_close_all_incognito_tabs
-                                        : R.string.menu_close_all_tabs);
-        onView(withText(closeAllTabsLabel)).check(matches(isDisplayed()));
-        onView(withText(closeAllTabsLabel)).perform(click());
     }
 }

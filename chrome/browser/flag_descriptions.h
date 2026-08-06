@@ -5439,11 +5439,6 @@ inline constexpr char kAndroidContextMenuDisabledMenuItemsName[] =
 inline constexpr char kAndroidContextMenuDisabledMenuItemsDescription[] =
     "Disables specific context menu items.";
 
-inline constexpr char kAndroidContextMenuNewActionsName[] =
-    "Android context menu new actions";
-inline constexpr char kAndroidContextMenuNewActionsDescription[] =
-    "Adds new context menu actions.";
-
 inline constexpr char kAndroidDesktopBookmarkPopupName[] =
     "Android Desktop Bookmark Popup";
 inline constexpr char kAndroidDesktopBookmarkPopupDescription[] =

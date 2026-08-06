@@ -40,7 +40,6 @@ BASE_DECLARE_FEATURE(kAndroidAtomsLogging);
 BASE_DECLARE_FEATURE(kAndroidBottomBar);
 BASE_DECLARE_FEATURE(kAndroidBricksNativePage);
 BASE_DECLARE_FEATURE(kAndroidContextMenuDisabledMenuItems);
-BASE_DECLARE_FEATURE(kAndroidContextMenuNewActions);
 BASE_DECLARE_FEATURE(kAndroidDesktopBookmarkLayout);
 BASE_DECLARE_FEATURE(kAndroidDesktopBookmarkPopup);
 BASE_DECLARE_FEATURE(kAndroidDeviceSignalsDisclaimer);

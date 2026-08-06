@@ -360,9 +360,6 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                 unmuteSiteItemCallback(tabModel, tabs);
             } else if (menuId == R.id.close_tab) {
                 closeTabItemCallback(tabModel, tabs, listViewTouchTracker, tabClosingSource);
-            } else if (menuId == R.id.close_all_tabs_menu_id
-                    || menuId == R.id.close_all_incognito_tabs_menu_id) {
-                closeAllTabsItemCallback(tabModel, tabClosingSource);
             } else if (menuId == R.id.close_other_tabs_menu_id) {
                 closeOtherTabsItemCallback(
                         tabModel, tabIds, listViewTouchTracker, tabClosingSource);
@@ -467,17 +464,6 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                 .closeTabs(
                         TabClosureParams.closeTabs(tabs)
                                 .allowUndo(allowUndo)
-                                .tabClosingSource(tabClosingSource)
-                                .build(),
-                        /* allowDialog= */ true);
-    }
-
-    private static void closeAllTabsItemCallback(
-            TabModel tabModel, @TabClosingSource int tabClosingSource) {
-        tabModel.getTabRemover()
-                .closeTabs(
-                        TabClosureParams.closeAllTabs()
-                                .hideTabGroups(true)
                                 .tabClosingSource(tabClosingSource)
                                 .build(),
                         /* allowDialog= */ true);
@@ -682,9 +668,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
 
     private void buildMenuActionItemsForSingleTab(
             ModelList itemList, AnchorInfo anchorInfo, List<Tab> tabs, boolean isIncognito) {
-        if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled()) {
-            itemList.add(createNewTabDirectionalItem(isIncognito));
-        }
+        itemList.add(createNewTabDirectionalItem(isIncognito));
         itemList.add(createMoveToTabGroupItem(tabs, isIncognito));
         if (TabGroupUtils.isAnyTabInGroup(tabs)) {
             itemList.add(createRemoveFromTabGroupItem(tabs, isIncognito));
@@ -701,43 +685,30 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
             // Share is only available for single tab selection.
             itemList.add(createShareItem(isIncognito));
         }
-        if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled()) {
-            itemList.add(createDuplicateTabsItem(isIncognito));
-        }
+        itemList.add(createDuplicateTabsItem(isIncognito));
         itemList.add(createPinUnpinTabItem(tabs, isIncognito));
         itemList.add(createMuteUnmuteSiteItem(tabs, isIncognito));
-        if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled()) {
-            itemList.add(buildMenuDivider(isIncognito));
-        }
+        itemList.add(buildMenuDivider(isIncognito));
         if (ChromeFeatureList.sAndroidContextMenuDisabledMenuItems.isEnabled() && !isIncognito) {
             itemList.add(createAddTabToReadingListItem(anchorInfo));
         }
-        if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled() && !isIncognito) {
-            if (shouldShowSendTabToSelfMenuItem(tabs.get(0))) {
-                itemList.add(createSendTabToSelfMenuItem());
-                itemList.add(buildMenuDivider(isIncognito));
-            }
+        if (!isIncognito && shouldShowSendTabToSelfMenuItem(tabs.get(0))) {
+            itemList.add(createSendTabToSelfMenuItem());
+            itemList.add(buildMenuDivider(isIncognito));
         }
         addVerticalTabsItems(itemList, isIncognito);
         itemList.add(createCloseItem(isIncognito));
-        if (!ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled()) {
-            itemList.add(createCloseAllTabsItem(isIncognito));
+        if (getTabModel().getCount() > 1) {
+            itemList.add(createCloseOtherTabsItem(isIncognito));
         }
-        if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled()) {
-            if (getTabModel().getCount() > 1) {
-                itemList.add(createCloseOtherTabsItem(isIncognito));
-            }
-            if (canCloseTabsToTheRight(anchorInfo)) {
-                itemList.add(createCloseTabsDirectionalItem(isIncognito));
-            }
+        if (canCloseTabsToTheRight(anchorInfo)) {
+            itemList.add(createCloseTabsDirectionalItem(isIncognito));
         }
     }
 
     private void buildMenuActionItemsForMultipleTabs(
             ModelList itemList, AnchorInfo anchorInfo, List<Tab> tabs, boolean isIncognito) {
-        if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled()) {
-            itemList.add(createNewTabDirectionalItem(isIncognito));
-        }
+        itemList.add(createNewTabDirectionalItem(isIncognito));
         itemList.add(createMoveToTabGroupItem(tabs, isIncognito));
         if (TabGroupUtils.isAnyTabInGroup(tabs)) {
             itemList.add(createRemoveFromTabGroupItem(tabs, isIncognito));
@@ -748,26 +719,20 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         List<ListItem> reorderItems = createReorderItems(anchorInfo, isIncognito);
         if (!reorderItems.isEmpty()) itemList.addAll(reorderItems);
         itemList.add(buildMenuDivider(isIncognito));
-        if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled()) {
-            itemList.add(createDuplicateTabsItem(isIncognito));
-        }
+        itemList.add(createDuplicateTabsItem(isIncognito));
         itemList.add(createPinUnpinTabItem(tabs, isIncognito));
         itemList.add(createMuteUnmuteSiteItem(tabs, isIncognito));
-        if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled()) {
-            itemList.add(buildMenuDivider(isIncognito));
-        }
+        itemList.add(buildMenuDivider(isIncognito));
         if (ChromeFeatureList.sAndroidContextMenuDisabledMenuItems.isEnabled() && !isIncognito) {
             itemList.add(createAddTabToReadingListItem(anchorInfo));
         }
         addVerticalTabsItems(itemList, isIncognito);
         itemList.add(createCloseItem(isIncognito));
-        if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled()) {
-            if (getTabModel().getCount() > anchorInfo.getAllTabIds().size()) {
-                itemList.add(createCloseOtherTabsItem(isIncognito));
-            }
-            if (canCloseTabsToTheRight(anchorInfo)) {
-                itemList.add(createCloseTabsDirectionalItem(isIncognito));
-            }
+        if (getTabModel().getCount() > anchorInfo.getAllTabIds().size()) {
+            itemList.add(createCloseOtherTabsItem(isIncognito));
+        }
+        if (canCloseTabsToTheRight(anchorInfo)) {
+            itemList.add(createCloseTabsDirectionalItem(isIncognito));
         }
     }
 
@@ -1064,14 +1029,6 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
 
     private ListItem createCloseItem(boolean isIncognito) {
         return buildListItem(R.string.close, R.id.close_tab, isIncognito);
-    }
-
-    private ListItem createCloseAllTabsItem(boolean isIncognito) {
-        int stringRes =
-                isIncognito ? R.string.menu_close_all_incognito_tabs : R.string.menu_close_all_tabs;
-        int menuRes =
-                isIncognito ? R.id.close_all_incognito_tabs_menu_id : R.id.close_all_tabs_menu_id;
-        return buildListItem(stringRes, menuRes, isIncognito);
     }
 
     private static void recordMenuAction(
