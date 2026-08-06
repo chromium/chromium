@@ -265,6 +265,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                                 dynamicRectProvider)
                         .addOnDismissListener(this::onContextPopupDismissed)
                         .setOutsideTouchable(true)
+                        .setFocusable(true)
                         .setAnimateFromAnchor(true)
                         .setPreferredHorizontalOrientation(HorizontalOrientation.LAYOUT_DIRECTION)
                         .setViewportRectProvider(mViewportRectProvider)
@@ -524,11 +525,13 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     @VisibleForTesting
     void onContextPopupDismissed() {
         if (mViewHolder == null || mViewHolder.plusButton == null) return;
-        mViewHolder.plusButton.requestFocus();
-        mViewHolder.plusButton.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+        boolean actionTaken = mMediator != null && mMediator.wasActionTaken();
+        if (!actionTaken) {
+            mViewHolder.plusButton.requestFocus();
+            mViewHolder.plusButton.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+        }
         if (mOnInteractionCompletedCallback != null) {
-            mOnInteractionCompletedCallback.onResult(
-                    mMediator != null && mMediator.wasActionTaken());
+            mOnInteractionCompletedCallback.onResult(actionTaken);
         }
     }
 

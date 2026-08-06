@@ -8,8 +8,6 @@ import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
-import android.view.accessibility.AccessibilityEvent;
-import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ImageView;
 import android.widget.PopupWindow.OnDismissListener;
 import android.widget.TextView;
@@ -40,12 +38,6 @@ import java.util.Set;
 /** A popup for the Fusebox component. */
 @NullMarked
 class FuseboxPopup {
-    /**
-     * Delay (in milliseconds) between calling up the popup window and requesting focus for
-     * accessibility. This is needed because Popup views are not shown instantaneously.
-     */
-    private static final int ACCESSIBILITY_VIEW_FOCUS_DELAY_MS = 500;
-
     /* package */ final AnchoredPopupWindow mPopupWindow;
     /* package */ final ViewGroup mViewGroup;
     /* package */ final FuseboxScrollView mScrollView;
@@ -208,12 +200,6 @@ class FuseboxPopup {
     /** Show the popup window. */
     void show() {
         mPopupWindow.show();
-        // TODO(crbug.com/470324794): This isn't right. Figure out why AnchoredPopupWindow won't
-        // focus views for us.
-        PostTask.postDelayedTask(
-                TaskTraits.UI_DEFAULT,
-                this::focusFirstViewForAccessibility,
-                ACCESSIBILITY_VIEW_FOCUS_DELAY_MS);
     }
 
     /**
@@ -295,41 +281,6 @@ class FuseboxPopup {
         if (a11yRes != 0) {
             item.setContentDescription(item.getContext().getString(a11yRes));
         }
-    }
-
-    /**
-     * Focuses for accessibility the first view marked as important for accessibility.
-     *
-     * <p>This is important because Android Popup windows are not focused for accessibility by
-     * default and do not automatically move the Accessibility focus when called up.
-     *
-     * <p>TODO(crbug.com/470324794): This isn't right. Figure out why AnchoredPopupWindow won't
-     * focus views for us.
-     */
-    @SuppressWarnings("AccessibilityFocus")
-    void focusFirstViewForAccessibility() {
-        View viewForAccessibility = findFirstViewForAccessibility(mViewGroup);
-        if (viewForAccessibility == null) return;
-
-        // Move focus to the view, emitting event.
-        viewForAccessibility.requestFocus();
-        viewForAccessibility.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
-        viewForAccessibility.performAccessibilityAction(
-                AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS, null);
-    }
-
-    private @Nullable View findFirstViewForAccessibility(View view) {
-        if (view.getVisibility() != View.VISIBLE) return null;
-        if (view.isImportantForAccessibility()) return view;
-
-        if (view instanceof ViewGroup) {
-            ViewGroup viewGroup = (ViewGroup) view;
-            for (int i = 0; i < viewGroup.getChildCount(); i++) {
-                View result = findFirstViewForAccessibility(viewGroup.getChildAt(i));
-                if (result != null) return result;
-            }
-        }
-        return null;
     }
 
     /** Dismiss the popup window. */
