@@ -46,6 +46,9 @@ public class HubColorMixerRegistrationHelper {
      * @param blend The blend to register.
      */
     public void registerBlend(HubViewColorBlend blend) {
+        if (mRegisteredBlends.contains(blend)) {
+            return;
+        }
         mRegisteredBlends.add(blend);
         if (mColorMixer != null) {
             mColorMixer.registerBlend(blend);

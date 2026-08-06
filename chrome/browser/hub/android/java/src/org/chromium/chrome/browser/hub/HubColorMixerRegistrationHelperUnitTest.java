@@ -49,6 +49,14 @@ public class HubColorMixerRegistrationHelperUnitTest {
     }
 
     @Test
+    public void testRegisterBlend_duplicateIgnored() {
+        mHelper.setColorMixer(mColorMixer1);
+        mHelper.registerBlend(mBlend1);
+        mHelper.registerBlend(mBlend1);
+        verify(mColorMixer1).registerBlend(mBlend1);
+    }
+
+    @Test
     public void testSetColorMixer_registersExisting() {
         mHelper.registerBlend(mBlend1);
         mHelper.registerBlend(mBlend2);
