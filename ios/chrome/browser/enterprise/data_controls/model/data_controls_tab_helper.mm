@@ -254,6 +254,15 @@ void DataControlsTabHelper::PasteIfAllowedByDataControls(
 void DataControlsTabHelper::PasteIfAllowedByContentAnalysis(
     base::OnceCallback<void(bool)> callback,
     enterprise_connectors::RequestHandlerResult result) {
+  // Pasteboard content changed because the user copied new content before
+  // content analysis was done, the old paste event is stale and should be
+  // discarded.
+  if (paste_event_state_ == PasteEventState::kPasteEventStale) {
+    FinishPaste(std::move(callback), /*verdict_or_scan_success=*/false,
+                /*analysis_warn_bypassed=*/false);
+    return;
+  }
+
   using enterprise_connectors::RequestHandlerResultActionLevel;
   RequestHandlerResultActionLevel action_level = ResultToActionLevel(result);
 
@@ -359,6 +368,7 @@ void DataControlsTabHelper::RunPastedContentAnalysis(
       base::BindOnce(&DataControlsTabHelper::PasteIfAllowedByContentAnalysis,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 
+  paste_event_state_ = PasteEventState::kWaitingScanDecision;
   pasteboard_content_handler_->StartContentAnalysisRequest();
 }
 
@@ -599,6 +609,12 @@ void DataControlsTabHelper::OnPasteboardContentChanged() {
     case PasteEventState::kDisplayingWarningDialog:
       [enterprise_handler_ dismissEnterpriseWarningDialog];
       paste_event_state_ = PasteEventState::kIdle;
+      break;
+    case PasteEventState::kWaitingScanDecision:
+      paste_event_state_ = PasteEventState::kPasteEventStale;
+      break;
+    case PasteEventState::kPasteEventStale:
+      // Do nothing as we have not received a Scan Result yet.
       break;
   }
 }

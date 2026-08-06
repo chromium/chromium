@@ -129,6 +129,54 @@ class DataControlsTabHelperTest : public PlatformTest {
     return result;
   }
 
+  void SetUpMockClipboardRequestHandlerToTriggerPasteboardChange() {
+    // Set up the mock clipboard request handler factory to wrap the completion
+    // callback. This allows us to trigger a pasteboard change after the request
+    // handler is fully created and the scan has started, ensuring the state is
+    // `kWaitingScanDecision` when the change occurs.
+    enterprise_connectors::ClipboardRequestHandler::SetFactoryForTesting(
+        base::BindRepeating(
+            [](DataControlsTabHelper* tab_helper,
+               enterprise_connectors::TriggeredRule::Action action,
+               enterprise_connectors::ContentAnalysisInfoBase*
+                   content_analysis_info,
+               enterprise_connectors::BinaryUploadService* upload_service,
+               enterprise_connectors::ReportingEventRouter* router, GURL url,
+               enterprise_connectors::ClipboardRequestHandler::Type type,
+               enterprise_connectors::DeepScanAccessPoint access_point,
+               enterprise_connectors::ContentMetaData::CopiedTextSource
+                   clipboard_source,
+               std::string source_content_area_email,
+               std::string content_transfer_method, std::string data,
+               enterprise_connectors::ClipboardRequestHandler::
+                   CompletionCallback callback,
+               enterprise_connectors::BinaryUploadRequest::
+                   BrowserPolicyConnectorGetter policy_getter) {
+              auto wrapped_callback = base::BindOnce(
+                  [](DataControlsTabHelper* tab_helper,
+                     enterprise_connectors::ClipboardRequestHandler::
+                         CompletionCallback original_callback,
+                     enterprise_connectors::RequestHandlerResult result) {
+                    // Manually invoke the observer to simulate synchronous
+                    // notification, guaranteeing it hits the
+                    // `kWaitingScanDecision` state.
+                    tab_helper->OnPasteboardContentChanged();
+                    std::move(original_callback).Run(result);
+                  },
+                  tab_helper, std::move(callback));
+
+              return enterprise_connectors::
+                  CreateTestClipboardRequestHandlerIOS(
+                      action, content_analysis_info, upload_service, router,
+                      std::move(url), type, access_point,
+                      std::move(clipboard_source),
+                      std::move(source_content_area_email),
+                      std::move(content_transfer_method), std::move(data),
+                      std::move(wrapped_callback), std::move(policy_getter));
+            },
+            tab_helper(), enterprise_connectors::TriggeredRule::WARN));
+  }
+
   void SetCopyFromOsClipboardBlockRule() {
     SetDataControls(profile_->GetTestingPrefService(), {R"({
                           "sources": {
@@ -1839,6 +1887,28 @@ TEST_F(DataControlsTabHelperTest,
   EXPECT_FALSE(future.Get());
 
   [(OCMockObject*)snackbar_handler verify];
+
+  enterprise_connectors::ClipboardRequestHandler::ResetFactoryForTesting();
+}
+// Tests that a paste is blocked if the pasteboard content changes during a
+// scan.
+TEST_F(DataControlsTabHelperTest,
+       ShouldAllowPaste_PasteboardContentChangedDuringScan) {
+  feature_list_.InitAndEnableFeature(
+      enterprise_connectors::kEnableBulkDataEntryConnectorIOS);
+  SetBulkDataEntryRule();
+
+  // Ensure pasteboard has some content to trigger analysis.
+  UIPasteboard.generalPasteboard.string = @"test string";
+
+  SetUpMockClipboardRequestHandlerToTriggerPasteboardChange();
+
+  base::test::TestFuture<bool> future;
+  tab_helper()->ShouldAllowPaste(future.GetCallback());
+
+  // Wait for the scan to finish. The paste should be blocked because the event
+  // became stale.
+  EXPECT_FALSE(future.Get());
 
   enterprise_connectors::ClipboardRequestHandler::ResetFactoryForTesting();
 }
