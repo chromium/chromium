@@ -58,7 +58,7 @@
         class="hr"
         hidden="[[!signinAvailable_]]"
         disabled="[[syncFirstSetupInProgress_]]"
-        pref="{{prefs.signin.allowed_on_next_startup}}"
+        pref-key="signin.allowed_on_next_startup"
         label="$i18n{signinAllowedTitle}"
         sub-label="$i18n{signinAllowedDescription}"
         on-settings-boolean-control-change="onSigninAllowedChange_"
@@ -96,7 +96,7 @@
 </if><!-- _google_chrome -->
     <settings-toggle-button id="urlCollectionToggle"
         class="hr"
-        pref="{{prefs.url_keyed_anonymized_data_collection.enabled}}"
+        pref-key="url_keyed_anonymized_data_collection.enabled"
         label="$i18n{urlKeyedAnonymizedDataCollection}"
         sub-label="$i18n{urlKeyedAnonymizedDataCollectionDesc}">
     </settings-toggle-button>
@@ -104,11 +104,12 @@
 <if expr="not is_chromeos">
     <settings-toggle-button id="spellCheckControl"
         class="hr"
-        pref="{{prefs.spellcheck.use_spelling_service}}"
+        pref-key="spellcheck.use_spelling_service"
         on-settings-boolean-control-change="onUseSpellingServiceToggle_"
         label="$i18n{spellingPref}"
         sub-label="$i18n{spellingDescription}"
-        hidden="[[!showSpellCheckControlToggle_(prefs.spellcheck.dictionaries)]]">
+        hidden="[[!showSpellCheckControlToggle_(
+            spellCheckDictionariesPref_.value)]]">
     </settings-toggle-button>
 </if>
 <if expr="is_chromeos">
@@ -118,7 +119,8 @@
         class="hr"
         label="$i18n{spellingPref}"
         sub-label="$i18n{spellingDescription}"
-        hidden="[[!showSpellCheckControlLink_(prefs.spellcheck.dictionaries)]]"
+        hidden="[[!showSpellCheckControlLink_(
+            spellCheckDictionariesPref_.value)]]"
         on-click="onUseSpellingServiceLinkClick_" external>
     </cr-link-row>
 </if><!-- chromeos -->
@@ -126,7 +128,7 @@
     <template is="dom-if" if="[[showSearchSuggestToggle_()]]" restamp>
       <settings-toggle-button id="searchSuggestToggle"
           class="hr"
-          pref="{{prefs.search.suggest_enabled}}"
+          pref-key="search.suggest_enabled"
           label="$i18n{searchSuggestPref}"
           sub-label="$i18n{searchSuggestPrefDesc}">
       </settings-toggle-button>
@@ -151,7 +153,7 @@
           class="hr"
           label="$i18n{priceEmailNotificationsPref}"
           sub-label="[[getPriceEmailNotificationsPrefDesc_(syncStatus)]]"
-          pref="{{prefs.price_tracking.email_notifications_enabled}}">
+          pref-key="price_tracking.email_notifications_enabled">
       </settings-toggle-button>
     </template>
 

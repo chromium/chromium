@@ -60,8 +60,7 @@
     <div slot="view" id="people">
       <template is="dom-if" if="[[renderPlugin_(
           routes_.PEOPLE, lastRoute_, inSearchMode_)]]">
-        <settings-people-page-index prefs="{{prefs}}"
-            in-search-mode="[[inSearchMode_]]">
+        <settings-people-page-index in-search-mode="[[inSearchMode_]]">
         </settings-people-page-index>
       </template>
     </div>

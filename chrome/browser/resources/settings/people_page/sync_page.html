@@ -76,7 +76,7 @@
     <template is="dom-if" if="[[shouldShowSyncAccountControl_(
         syncStatus_.syncSystemEnabled)]]">
       <settings-sync-account-control embedded-in-subpage
-          sync-status="[[syncStatus_]]" prefs="{{prefs}}"
+          sync-status="[[syncStatus_]]"
           promo-label-with-account=
               "$i18n{peopleSignInSyncPagePromptSecondaryWithAccount}"
           promo-label-with-no-account=
@@ -213,7 +213,7 @@
         $i18n{nonPersonalizedServicesSectionLabel}
       </h2>
     </div>
-    <settings-personalization-options class="list-frame" prefs="{{prefs}}"
+    <settings-personalization-options class="list-frame"
         sync-status="[[syncStatus_]]">
     </settings-personalization-options>
 

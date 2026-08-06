@@ -7,9 +7,12 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {dashToCamelCase, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {BrowserProfile, ImportDataBrowserProxy, SettingsCheckboxElement, SettingsImportDataDialogElement} from 'chrome://settings/lazy_load.js';
 import {ImportDataBrowserProxyImpl, ImportDataStatus} from 'chrome://settings/lazy_load.js';
+import {PrefService, PrefsBrowserProxy} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
+
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
 // clang-format on
 
@@ -85,27 +88,33 @@ suite('ImportDataDialog', function() {
     };
   }
 
-  const prefs: {[key: string]: chrome.settingsPrivate.PrefObject} = {};
-  ['import_dialog_history',
-   'import_dialog_bookmarks',
-   'import_dialog_saved_passwords',
-   'import_dialog_search_engine',
-   'import_dialog_autofill_form_data',
-  ].forEach(function(name) {
-    prefs[name] = createBooleanPref(name);
-  });
+  function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
+    return [
+      createBooleanPref('import_dialog_history'),
+      createBooleanPref('import_dialog_bookmarks'),
+      createBooleanPref('import_dialog_saved_passwords'),
+      createBooleanPref('import_dialog_search_engine'),
+      createBooleanPref('import_dialog_autofill_form_data'),
+      createBooleanPref('bookmark_bar.show_on_all_tabs'),
+    ];
+  }
 
   let dialog: SettingsImportDataDialogElement;
   let browserProxy: TestImportDataBrowserProxy;
+  let prefsBrowserProxy: TestPrefsBrowserProxy;
 
   setup(async function() {
+    prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+
     browserProxy = new TestImportDataBrowserProxy();
     browserProxy.setBrowserProfiles(browserProfiles);
     ImportDataBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     dialog = document.createElement('settings-import-data-dialog');
-    dialog.set('prefs', prefs);
     document.body.appendChild(dialog);
+    await PrefService.getInstance().whenInitialized();
     await browserProxy.whenCalled('initializeImportDialog');
     assertTrue(dialog.$.dialog.open);
     flush();
@@ -150,11 +159,19 @@ suite('ImportDataDialog', function() {
     });
   });
 
+  const prefNames = [
+    'import_dialog_history',
+    'import_dialog_bookmarks',
+    'import_dialog_saved_passwords',
+    'import_dialog_search_engine',
+    'import_dialog_autofill_form_data',
+  ];
+
   test('ImportButton', async function() {
     assertFalse(dialog.$.import.disabled);
 
     // Flip all prefs to false.
-    for (const key of Object.keys(prefs)) {
+    for (const key of prefNames) {
       await ensureSettingsCheckboxCheckedStatus(key, false);
     }
     assertTrue(dialog.$.import.disabled);
@@ -240,7 +257,7 @@ suite('ImportDataDialog', function() {
 
   test('ImportFromBrowserProfileWithUnsupportedOption', async function() {
     // Flip all prefs to true.
-    for (const key of Object.keys(prefs)) {
+    for (const key of prefNames) {
       await ensureSettingsCheckboxCheckedStatus(key, true);
     }
 
@@ -251,7 +268,7 @@ suite('ImportDataDialog', function() {
     const [actualIndex, types] = await browserProxy.whenCalled('importData');
     assertEquals(expectedIndex, actualIndex);
 
-    Object.keys(prefs).forEach(function(prefName) {
+    prefNames.forEach(function(prefName) {
       // import_dialog_history is unsupported and hidden
       assertEquals(prefName !== 'import_dialog_history', types[prefName]);
     });

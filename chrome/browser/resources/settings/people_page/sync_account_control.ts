@@ -14,8 +14,6 @@ import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '/shared/settings/people_page/profile_info_browser_proxy.js';
-import '../icons.html.js';
-import '/shared/settings/prefs/prefs.js';
 import '../settings_shared.css.js';
 
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
@@ -25,7 +23,7 @@ import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bund
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {ChromeSigninAccessPoint, StoredAccount, SyncBrowserProxy, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {SignedInState, StatusAction, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
@@ -48,8 +46,8 @@ enum PromoType {
   SYNC = 'sync',
 }
 
-const SettingsSyncAccountControlElementBase =
-    WebUiListenerMixin(PrefsMixin(RouteObserverMixin(PolymerElement)));
+const SettingsSyncAccountControlElementBase = WebUiListenerMixin(
+    PrefServiceObserverMixin(RouteObserverMixin(PolymerElement)));
 
 export class SettingsSyncAccountControlElement extends
     SettingsSyncAccountControlElementBase {
@@ -169,6 +167,8 @@ export class SettingsSyncAccountControlElement extends
         type: String,
         reflectToAttribute: true,
       },
+
+      signinAllowedOnNextStartupPref_: Object,
     };
   }
 
@@ -195,6 +195,8 @@ export class SettingsSyncAccountControlElement extends
   declare private shouldShowAvatarRow_: boolean;
   declare private subLabel_: string;
   declare private showSetupButtons_: boolean;
+  declare private signinAllowedOnNextStartupPref_:
+      chrome.settingsPrivate.PrefObject<boolean>|undefined;
   // <if expr="not is_chromeos">
   declare private shouldShowSigninPausedButtons_: boolean;
   private signinPausedImpressionRecorded_: boolean = false;
@@ -207,6 +209,9 @@ export class SettingsSyncAccountControlElement extends
 
   override connectedCallback() {
     super.connectedCallback();
+
+    this.mirrorPref(
+        'signin.allowed_on_next_startup', 'signinAllowedOnNextStartupPref_');
 
     this.syncBrowserProxy_.getStoredAccounts().then(
         this.handleStoredAccounts_.bind(this));
@@ -454,11 +459,11 @@ export class SettingsSyncAccountControlElement extends
    * either a first setup flow or chrome sign-in being disabled.
    */
   private shouldDisableSyncButton_(): boolean {
-    if (this.prefs === undefined) {
+    if (!this.signinAllowedOnNextStartupPref_) {
       return this.computeShowSetupButtons_();
     }
     return !this.syncStatus || !!this.syncStatus.firstSetupInProgress ||
-        !this.getPref('signin.allowed_on_next_startup').value;
+        !this.signinAllowedOnNextStartupPref_.value;
   }
 
   /**

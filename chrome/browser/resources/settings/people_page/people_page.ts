@@ -80,13 +80,6 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
 
   static get properties() {
     return {
-      /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
 
       /**
        * This flag is used to conditionally show a set of new sign-in UIs to the
@@ -198,7 +191,6 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     };
   }
 
-  declare prefs: Record<string, unknown>;
   declare private signinAllowed_: boolean;
   declare private isDasherlessProfile_: boolean;
   declare syncStatus: SyncStatus|null;

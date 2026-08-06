@@ -29,11 +29,11 @@
         <div hidden$="[[!hasImportStatus_(
             importStatusEnum_.SUCCEEDED, importStatus_)]]">
           <cr-icon id="successIcon" icon="cr:check-circle"></cr-icon>
-          <div hidden$="[[!prefs.import_dialog_bookmarks.value]]">
+          <div hidden="[[!importDialogBookmarksPref_.value]]">
             <div class="description">$i18n{importSuccess}</div>
             <settings-toggle-button
                 label="$i18n{showBookmarksBar}"
-                pref="{{prefs.bookmark_bar.show_on_all_tabs}}">
+                pref-key="bookmark_bar.show_on_all_tabs">
             </settings-toggle-button>
           </div>
         </div>
@@ -61,27 +61,27 @@
           <div>
             <settings-checkbox id="importDialogHistory"
                 hidden="[[!selected_.history]]"
-                pref="{{prefs.import_dialog_history}}"
+                pref-key="import_dialog_history"
                 label="$i18n{importHistory}" no-set-pref>
             </settings-checkbox>
             <settings-checkbox id="importDialogBookmarks"
                 hidden="[[!selected_.favorites]]"
-                pref="{{prefs.import_dialog_bookmarks}}"
+                pref-key="import_dialog_bookmarks"
                 label="$i18n{importFavorites}" no-set-pref>
             </settings-checkbox>
             <settings-checkbox id="importDialogSavedPasswords"
                 hidden="[[!selected_.passwords]]"
-                pref="{{prefs.import_dialog_saved_passwords}}"
+                pref-key="import_dialog_saved_passwords"
                 label="$i18n{importPasswords}" no-set-pref>
             </settings-checkbox>
             <settings-checkbox id="importDialogSearchEngine"
                 hidden="[[!selected_.search]]"
-                pref="{{prefs.import_dialog_search_engine}}"
+                pref-key="import_dialog_search_engine"
                 label="$i18n{importSearch}" no-set-pref>
             </settings-checkbox>
             <settings-checkbox id="importDialogAutofillFormData"
                 hidden="[[!selected_.autofillFormData]]"
-                pref="{{prefs.import_dialog_autofill_form_data}}"
+                pref-key="import_dialog_autofill_form_data"
                 label="$i18n{importAutofillFormData}" no-set-pref>
             </settings-checkbox>
           </div>

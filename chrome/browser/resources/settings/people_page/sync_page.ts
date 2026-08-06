@@ -85,13 +85,6 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
 
   static get properties() {
     return {
-      /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
 
       focusConfig: {
         type: Object,
@@ -221,7 +214,6 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     ];
   }
 
-  declare prefs: Record<string, unknown>;
   declare focusConfig: FocusConfig;
   declare private pageStatus_: PageStatus;
   declare syncPrefs?: SyncPrefs;

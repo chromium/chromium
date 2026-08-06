@@ -78,7 +78,6 @@
             syncStatus.syncSystemEnabled, syncStatus.signedInStatus)]]" restamp>
           <settings-sync-account-control
               sync-status="[[syncStatus]]"
-              prefs="{{prefs}}"
               promo-label-with-account="$i18n{peopleSignInPrompt}"
               promo-label-with-no-account="$i18n{peopleSignInPrompt}"
               promo-secondary-label-with-account=
@@ -207,7 +206,7 @@
     </template>
 
     <template is="dom-if" if="[[showImportDataDialog_]]" restamp>
-      <settings-import-data-dialog prefs="{{prefs}}"
+      <settings-import-data-dialog
           on-close="onImportDataDialogClosed_">
       </settings-import-data-dialog>
     </template>

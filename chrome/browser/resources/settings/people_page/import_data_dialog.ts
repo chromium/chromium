@@ -17,7 +17,8 @@ import '../controls/settings_toggle_button.js';
 import '../settings_vars.css.js';
 import '../i18n_setup.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -42,7 +43,7 @@ export interface SettingsImportDataDialogElement {
 }
 
 const SettingsImportDataDialogElementBase =
-    WebUiListenerMixin(I18nMixin(PrefsMixin(PolymerElement)));
+    WebUiListenerMixin(I18nMixin(PrefServiceObserverMixin(PolymerElement)));
 
 export class SettingsImportDataDialogElement extends
     SettingsImportDataDialogElementBase {
@@ -57,6 +58,8 @@ export class SettingsImportDataDialogElement extends
   static get properties() {
     return {
       browserProfiles_: Array,
+
+      importDialogBookmarksPref_: Object,
 
       selected_: {
         type: Object,
@@ -88,6 +91,8 @@ export class SettingsImportDataDialogElement extends
   }
 
   declare private browserProfiles_: BrowserProfile[];
+  declare private importDialogBookmarksPref_:
+      chrome.settingsPrivate.PrefObject<boolean>|undefined;
   declare private selected_: BrowserProfile;
   declare private noImportDataTypeSelected_: boolean;
   declare private importStatus_: ImportDataStatus;
@@ -102,6 +107,14 @@ export class SettingsImportDataDialogElement extends
 
   override connectedCallback() {
     super.connectedCallback();
+
+    this.mirrorPref('import_dialog_bookmarks', 'importDialogBookmarksPref_');
+
+    PrefService.getInstance().whenInitialized().then(() => {
+      if (this.isConnected) {
+        this.updateImportDataTypesSelected_();
+      }
+    });
 
     this.browserProxy_.initializeImportDialog().then(data => {
       if (!this.isConnected) {

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
-import '/shared/settings/prefs/prefs.js';
 import './people_page.js';
 import '../settings_shared.css.js';
 
@@ -42,8 +41,6 @@ export class SettingsPeoplePageIndexElement extends
 
   static get properties() {
     return {
-      prefs: Object,
-
       routes_: {
         type: Object,
         value: () => routes,
@@ -57,7 +54,6 @@ export class SettingsPeoplePageIndexElement extends
     };
   }
 
-  declare prefs: Record<string, unknown>;
   declare private routes_: SettingsRoutes;
 
   declare private replaceSyncPromosWithSignInPromos_: boolean;

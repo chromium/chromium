@@ -8,8 +8,7 @@
     route-path$="[[routePath]]">
   <template is="dom-if" if="[[shouldShowPageContents_(syncStatus_,
       syncStatus_.signedInState)]]" restamp>
-    <settings-personalization-options prefs="{{prefs}}"
-        sync-status="[[syncStatus_]]">
+    <settings-personalization-options sync-status="[[syncStatus_]]">
     </settings-personalization-options>
   </template>
 </settings-subpage>

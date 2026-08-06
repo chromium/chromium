@@ -7,14 +7,17 @@ import 'chrome://settings/settings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsSyncAccountControlElement} from 'chrome://settings/settings.js';
-import {loadTimeData, resetRouterForTesting, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {loadTimeData, PrefService, PrefsBrowserProxy, resetRouterForTesting, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
+
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
+
 // <if expr="not is_chromeos">
 import type {CrActionMenuElement, StoredAccount} from 'chrome://settings/settings.js';
 import {ChromeSigninAccessPoint, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 // </if>
 import {simulateStoredAccounts} from './sync_test_util.js';
@@ -27,6 +30,17 @@ suite('SyncAccountControl', function() {
   let testElement: SettingsSyncAccountControlElement;
 
   setup(async function() {
+    const prefsBrowserProxy = new TestPrefsBrowserProxy([
+      {
+        key: 'signin.allowed_on_next_startup',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: true,
+      },
+    ]);
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    await PrefService.getInstance().whenInitialized();
+
     loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: false});
     resetRouterForTesting();
 
@@ -39,12 +53,6 @@ suite('SyncAccountControl', function() {
       signedInState: SignedInState.SYNCING,
       signedInUsername: 'foo@foo.com',
       statusAction: StatusAction.NO_ACTION,
-    };
-    testElement.prefs = {
-      signin: {
-        allowed_on_next_startup:
-            {type: chrome.settingsPrivate.PrefType.BOOLEAN, value: true},
-      },
     };
 
     document.body.appendChild(testElement);
@@ -584,11 +592,12 @@ suite('SyncAccountControl', function() {
     assertFalse(isChildVisible(testElement, '#sync-error-button'));
   });
 
-  test('signinButtonDisabled', function() {
+  test('signinButtonDisabled', async function() {
     // Ensure that the sync button is disabled when signin is disabled.
     assertFalse(testElement.$.signIn.disabled);
-    testElement.setPrefValue('signin.allowed_on_next_startup', false);
-    flush();
+    PrefService.getInstance().setPrefValue(
+        'signin.allowed_on_next_startup', false);
+    await microtasksFinished();
     assertTrue(testElement.$.signIn.disabled);
   });
 
@@ -689,6 +698,17 @@ suite('SyncAccountControlHideBanner', function() {
   let testElement: SettingsSyncAccountControlElement;
 
   setup(async function() {
+    const prefsBrowserProxy = new TestPrefsBrowserProxy([
+      {
+        key: 'signin.allowed_on_next_startup',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: true,
+      },
+    ]);
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    await PrefService.getInstance().whenInitialized();
+
     browserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(browserProxy);
 
@@ -700,12 +720,6 @@ suite('SyncAccountControlHideBanner', function() {
     testElement.syncStatus = {
       signedInState: SignedInState.SIGNED_OUT,
       statusAction: StatusAction.NO_ACTION,
-    };
-    testElement.prefs = {
-      signin: {
-        allowed_on_next_startup:
-            {type: chrome.settingsPrivate.PrefType.BOOLEAN, value: true},
-      },
     };
 
     document.body.appendChild(testElement);
