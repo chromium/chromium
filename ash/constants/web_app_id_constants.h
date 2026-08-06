@@ -178,6 +178,18 @@ inline constexpr char kPlayBooksAppId[] = "jglfhlbohpgcbefmhdmpancnijacbbji";
 inline constexpr char kPrintManagementAppId[] =
     "fglkccnmnaankjodgccmiodmlkpaiodc";
 
+// Generated as: web_app::GenerateAppId(/*manifest_id=*/std::nullopt, GURL(
+//     "chrome-untrusted://projector/"))
+// LINT.IfChange
+inline constexpr char kChromeUIUntrustedProjectorSwaAppId[] =
+    "hohmppfoilmflgicnofelkdablfahbnl";
+
+// Also update the Projector app id in the file below.
+// LINT.ThenChange(
+// src/platform/tast-tests/src/chromiumos/tast/local/apps/apps.go)
+inline constexpr char kChromeUIUntrustedProjectorPwaUrl[] =
+    "https://screencast.apps.chrome";
+
 // Generated as:web_app::GenerateAppId(/*manifest_id=*/std::nullopt, GURL(
 //      "chrome://recorder-app/"))
 inline constexpr char kRecorderAppId[] = "aegafoechlhchmknlbhmofidaodfkhhk";

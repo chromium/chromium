@@ -20,7 +20,6 @@
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/user_education/user_education_util.h"
 #include "ash/user_education/welcome_tour/welcome_tour_metrics.h"
-#include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"

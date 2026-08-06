@@ -45,7 +45,6 @@ source_set("app_service") {
     deps += [
       "//ash/public/cpp",
       "//ash/strings",
-      "//ash/webui/projector_app/public/cpp",
       "//chrome/browser/apps/almanac_api_client",
       "//chrome/browser/apps/browser_instance",
       "//chrome/browser/ash/file_manager",

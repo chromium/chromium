@@ -11,7 +11,6 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/webui/mall/app_id.h"
-#include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/no_destructor.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"

@@ -11,21 +11,12 @@ const char kChromeUIProjectorAnnotatorHost[] = "projector-annotator";
 
 // content::WebUIDataSource::CreateAndAdd() requires trailing slash.
 const char kChromeUIUntrustedProjectorUrl[] = "chrome-untrusted://projector/";
-const char kChromeUIUntrustedProjectorPwaUrl[] =
-    "https://screencast.apps.chrome";
 
 const char kChromeUIUntrustedAnnotatorUrl[] =
     "chrome-untrusted://projector-annotator/";
 
 const char kChromeUITrustedProjectorSwaAppIdDeprecated[] =
     "nblbgfbmjfjaeonhjnbbkabkdploocij";
-
-// LINT.IfChange
-const char kChromeUIUntrustedProjectorSwaAppId[] =
-    "hohmppfoilmflgicnofelkdablfahbnl";
-// Also update the Projector app id in the file below.
-// LINT.ThenChange(
-// src/platform/tast-tests/src/chromiumos/tast/local/apps/apps.go)
 
 const base::FilePath::CharType kProjectorMetadataFileExtension[] =
     FILE_PATH_LITERAL(".projector");

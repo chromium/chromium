@@ -13,10 +13,6 @@ extern const char kChromeUIProjectorAppHost[];
 extern const char kChromeUIProjectorAnnotatorHost[];
 
 extern const char kChromeUIUntrustedProjectorUrl[];
-extern const char kChromeUIUntrustedProjectorPwaUrl[];
-
-// The ID of the Projector SWA.
-extern const char kChromeUIUntrustedProjectorSwaAppId[];
 
 // The deprecated app-id of the Projector SWA.
 extern const char kChromeUITrustedProjectorSwaAppIdDeprecated[];
