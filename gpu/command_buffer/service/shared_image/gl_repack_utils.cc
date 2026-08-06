@@ -8,7 +8,6 @@
 
 #include "base/bits.h"
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "gpu/command_buffer/service/shared_image/copy_image_plane.h"
 #include "third_party/skia/include/core/SkPixmap.h"
@@ -31,20 +30,29 @@ std::vector<uint8_t> RepackPixelDataAsRgb(const gfx::Size& size,
   size_t dst_stride =
       base::bits::AlignUp<size_t>(size.width() * kDstBytesPerPixel, 4);
   std::vector<uint8_t> dst_data(dst_stride * size.height());
+  base::span<uint8_t> dst_span(dst_data);
+
+  const size_t src_payload_bytes = size.width() * kSrcBytesPerPixel;
+  const size_t dst_payload_bytes = size.width() * kDstBytesPerPixel;
 
   for (int y = 0; y < size.height(); ++y) {
+    base::span<const uint8_t> src_row =
+        src_data.subspan(y * src_stride, src_payload_bytes);
+    base::span<uint8_t> dst_row =
+        dst_span.subspan(y * dst_stride, dst_payload_bytes);
     for (int x = 0; x < size.width(); ++x) {
-      auto* src =
-          &UNSAFE_TODO(src_data[y * src_stride + x * kSrcBytesPerPixel]);
-      auto* dst = &dst_data[y * dst_stride + x * kDstBytesPerPixel];
+      base::span<const uint8_t, kSrcBytesPerPixel> src =
+          src_row.take_first<kSrcBytesPerPixel>();
+      base::span<uint8_t, kDstBytesPerPixel> dst =
+          dst_row.take_first<kDstBytesPerPixel>();
       if (src_is_bgrx) {
-        dst[0] = UNSAFE_TODO(src[2]);
-        UNSAFE_TODO(dst[1]) = UNSAFE_TODO(src[1]);
-        UNSAFE_TODO(dst[2]) = src[0];
+        dst[0] = src[2];
+        dst[1] = src[1];
+        dst[2] = src[0];
       } else {
         dst[0] = src[0];
-        UNSAFE_TODO(dst[1]) = UNSAFE_TODO(src[1]);
-        UNSAFE_TODO(dst[2]) = UNSAFE_TODO(src[2]);
+        dst[1] = src[1];
+        dst[2] = src[2];
       }
     }
   }
