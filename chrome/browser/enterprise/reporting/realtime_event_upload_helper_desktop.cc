@@ -34,18 +34,6 @@ RealtimeEventUploadHelper::~RealtimeEventUploadHelper() = default;
 
 std::optional<RealtimeEventUploadHelper::ReportingContext>
 RealtimeEventUploadHelper::PrepareUpload(bool per_profile) {
-  // For new realtime reporting features, we only support the Protobuf pipeline.
-  // Therefore, if kUploadRealtimeReportingEventsUsingProto is not enabled, we
-  // must abort the upload entirely to prevent crashing the underlying
-  // CloudPolicyClient, which strictly enforces this flag.
-  if (!base::FeatureList::IsEnabled(
-          policy::kUploadRealtimeReportingEventsUsingProto)) {
-    VLOG_POLICY(1, REPORTING)
-        << "Real time reporting proto feature is not enabled. Skipping "
-        << reporting_scope_ << " " << event_name_ << " report upload.";
-    return std::nullopt;
-  }
-
   enterprise_connectors::RealtimeReportingClientBase*
       real_time_reporting_client = GetRealTimeReportingClient();
 
@@ -74,9 +62,7 @@ bool RealtimeEventUploadHelper::IsRealTimeReportingClientAvailable() const {
 }
 
 bool RealtimeEventUploadHelper::IsEligibleForUpload(bool per_profile) const {
-  return base::FeatureList::IsEnabled(
-             policy::kUploadRealtimeReportingEventsUsingProto) &&
-         GetDMToken(per_profile).has_value();
+  return GetDMToken(per_profile).has_value();
 }
 std::optional<std::string> RealtimeEventUploadHelper::GetDMToken(
     bool per_profile) const {

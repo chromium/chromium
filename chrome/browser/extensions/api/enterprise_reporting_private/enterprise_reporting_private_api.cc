@@ -62,11 +62,6 @@ namespace {
 using TriggeredRuleInfo = ::chrome::cros::reporting::proto::TriggeredRuleInfo;
 using MatchedDetector = ::chrome::cros::reporting::proto::MatchedDetector;
 
-// Constants used to build the report of a data masking event.
-constexpr char kKeyDetectorId[] = "detectorId";
-constexpr char kKeyDisplayName[] = "displayName";
-constexpr char kKeyDetectorType[] = "detectorType";
-constexpr char kKeyMatchedDetectors[] = "matchedDetectors";
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -77,25 +72,6 @@ const char kEndpointVerificationStoreFailed[] =
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
-std::string EventResultToString(
-    api::enterprise_reporting_private::EventResult event_result) {
-  // Make sure the values returned by this function match the names in
-  // google3/chrome/cros/reporting/api/proto/browser_events.proto
-  if (event_result == api::enterprise_reporting_private::EventResult::kNone) {
-    return "EVENT_RESULT_UNKNOWN";
-  }
-  return ToString(event_result);
-}
-
-std::string DetectorTypeToString(
-    api::enterprise_reporting_private::DetectorType detector_type) {
-  // Make sure the values returned by this function match the names in
-  // google3/chrome/cros/reporting/api/proto/browser_events.proto
-  if (detector_type == api::enterprise_reporting_private::DetectorType::kNone) {
-    return "DETECTOR_TYPE_UNSPECIFIED";
-  }
-  return ToString(detector_type);
-}
 
 MatchedDetector::DetectorType ConvertToDetectorTypeProto(
     api::enterprise_reporting_private::DetectorType detector_type) {
@@ -175,63 +151,24 @@ void ReportDataMaskingEvent(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          policy::kUploadRealtimeReportingEventsUsingProto)) {
-    chrome::cros::reporting::proto::DlpSensitiveDataEvent sensitive_data_event;
-    sensitive_data_event.set_url(data_masking_event.url);
-    sensitive_data_event.set_tab_url(data_masking_event.url);
-    sensitive_data_event.set_event_result(
-        ConvertToEventResultProto(data_masking_event.event_result));
-    *sensitive_data_event.mutable_triggered_rule_info() =
-        GetTriggeredRuleInfo(data_masking_event.triggered_rule_info);
-    sensitive_data_event.set_profile_identifier(
-        reporting_client->GetProfileIdentifier());
-    sensitive_data_event.set_profile_user_name(
-        reporting_client->GetProfileUserName());
+  chrome::cros::reporting::proto::DlpSensitiveDataEvent sensitive_data_event;
+  sensitive_data_event.set_url(data_masking_event.url);
+  sensitive_data_event.set_tab_url(data_masking_event.url);
+  sensitive_data_event.set_event_result(
+      ConvertToEventResultProto(data_masking_event.event_result));
+  *sensitive_data_event.mutable_triggered_rule_info() =
+      GetTriggeredRuleInfo(data_masking_event.triggered_rule_info);
+  sensitive_data_event.set_profile_identifier(
+      reporting_client->GetProfileIdentifier());
+  sensitive_data_event.set_profile_user_name(
+      reporting_client->GetProfileUserName());
 
-    chrome::cros::reporting::proto::Event event;
-    *event.mutable_sensitive_data_event() = sensitive_data_event;
-    *event.mutable_time() =
-        enterprise_connectors::ToProtoTimestamp(base::Time::Now());
+  chrome::cros::reporting::proto::Event event;
+  *event.mutable_sensitive_data_event() = sensitive_data_event;
+  *event.mutable_time() =
+      enterprise_connectors::ToProtoTimestamp(base::Time::Now());
 
-    reporting_client->ReportEvent(std::move(event), settings.value());
-  } else {
-    base::DictValue event;
-    event.Set(enterprise_connectors::kKeyUrl, data_masking_event.url);
-    event.Set(enterprise_connectors::kKeyTabUrl,
-              std::move(data_masking_event.url));
-    event.Set(enterprise_connectors::kKeyEventResult,
-              EventResultToString(data_masking_event.event_result));
-
-    base::ListValue triggered_rule_info;
-    triggered_rule_info.reserve(data_masking_event.triggered_rule_info.size());
-    for (auto& rule : data_masking_event.triggered_rule_info) {
-      base::DictValue triggered_rule;
-      triggered_rule.Set(enterprise_connectors::kKeyTriggeredRuleId,
-                         std::move(rule.rule_id));
-      triggered_rule.Set(enterprise_connectors::kKeyTriggeredRuleName,
-                         std::move(rule.rule_name));
-
-      base::ListValue matched_detectors;
-      for (auto& detector : rule.matched_detectors) {
-        base::DictValue detector_value;
-        detector_value.Set(kKeyDetectorId, std::move(detector.detector_id));
-        detector_value.Set(kKeyDisplayName, std::move(detector.display_name));
-        detector_value.Set(kKeyDetectorType,
-                           DetectorTypeToString(detector.detector_type));
-        matched_detectors.Append(std::move(detector_value));
-      }
-      triggered_rule.Set(kKeyMatchedDetectors, std::move(matched_detectors));
-
-      triggered_rule_info.Append(std::move(triggered_rule));
-    }
-    event.Set(enterprise_connectors::kKeyTriggeredRuleInfo,
-              std::move(triggered_rule_info));
-
-    reporting_client->ReportRealtimeEvent(
-        enterprise_connectors::kKeySensitiveDataEvent,
-        std::move(settings.value()), std::move(event));
-  }
+  reporting_client->ReportEvent(std::move(event), settings.value());
 }
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
