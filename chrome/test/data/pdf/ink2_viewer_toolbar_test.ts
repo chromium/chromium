@@ -211,7 +211,32 @@ chrome.test.runTests([
     // Exiting presentation mode should re-enable annotation mode.
     document.exitFullscreen();
     await eventToPromise('fullscreenchange', viewer.$.scroller);
+    await microtasksFinished();
     chrome.test.assertEq(AnnotationMode.DRAW, viewerToolbar.annotationMode);
+
+    chrome.test.succeed();
+  },
+  async function testPresentationModeExitsTextAnnotationMode() {
+    // Check toggling presentation mode when text annotation mode is enabled.
+    viewerToolbar.setAnnotationMode(AnnotationMode.TEXT);
+    await microtasksFinished();
+    chrome.test.assertEq(AnnotationMode.TEXT, viewerToolbar.annotationMode);
+
+    // Entering presentation mode should disable text annotation mode.
+    await enterFullscreenWithUserGesture();
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
+
+    // Exiting presentation mode should re-enable text annotation mode.
+    document.exitFullscreen();
+    await eventToPromise('fullscreenchange', viewer.$.scroller);
+    await microtasksFinished();
+    chrome.test.assertEq(AnnotationMode.TEXT, viewerToolbar.annotationMode);
+
+    // Re-enable draw mode for subsequent tests.
+    viewerToolbar.setAnnotationMode(AnnotationMode.DRAW);
+    await microtasksFinished();
+    chrome.test.assertEq(AnnotationMode.DRAW, viewerToolbar.annotationMode);
+
     chrome.test.succeed();
   },
   // Test the behavior of the undo and redo buttons.
