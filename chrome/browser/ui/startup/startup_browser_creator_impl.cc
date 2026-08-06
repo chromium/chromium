@@ -751,10 +751,10 @@ Browser* StartupBrowserCreatorImpl::RestoreOrCreateBrowser(
       restore_options |= SessionRestore::RESTORE_APPS;
     }
 
-    browser = SessionRestore::RestoreSession(profile_, nullptr, restore_options,
-                                             tabs);
-    if (browser) {
-      return browser;
+    BrowserWindowInterface* browser_window = SessionRestore::RestoreSession(
+        profile_, nullptr, restore_options, tabs);
+    if (browser_window) {
+      return browser_window->GetBrowserForMigrationOnly();
     }
   } else if (behavior == BrowserOpenBehavior::USE_EXISTING ||
              behavior ==

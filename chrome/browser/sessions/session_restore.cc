@@ -58,7 +58,6 @@
 #include "chrome/browser/sessions/session_service_lookup.h"
 #include "chrome/browser/sessions/session_service_utils.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_tabrestore.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -320,7 +319,7 @@ void ReportRestoredWindowCreated(aura::Window* window) {
 class SessionRestoreImpl : public BrowserCollectionObserver {
  public:
   SessionRestoreImpl(Profile* profile,
-                     Browser* browser,
+                     BrowserWindowInterface* browser,
                      bool synchronous,
                      bool clobber_existing_tab,
                      bool always_create_tabbed_browser,
@@ -1463,7 +1462,7 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
   raw_ptr<Profile> profile_;
 
   // The first browser to restore to, may be null.
-  raw_ptr<Browser, DanglingUntriaged> browser_;
+  raw_ptr<BrowserWindowInterface, DanglingUntriaged> browser_;
 
   // Whether or not restore is synchronous.
   const bool synchronous_;
@@ -1534,9 +1533,9 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
 // SessionRestore -------------------------------------------------------------
 
 // static
-Browser* SessionRestore::RestoreSession(
+BrowserWindowInterface* SessionRestore::RestoreSession(
     Profile* profile,
-    Browser* browser,
+    BrowserWindowInterface* browser,
     SessionRestore::BehaviorBitmask behavior,
     const StartupTabs& startup_tabs) {
 #if DCHECK_IS_ON()
@@ -1568,9 +1567,7 @@ Browser* SessionRestore::RestoreSession(
       (behavior & ALWAYS_CREATE_TABBED_BROWSER) != 0,
       (behavior & RESTORE_APPS) != 0, (behavior & RESTORE_BROWSER) != 0,
       /* log_event */ true, startup_tabs);
-  BrowserWindowInterface* restored_browser = restorer->Restore();
-  return restored_browser ? restored_browser->GetBrowserForMigrationOnly()
-                          : nullptr;
+  return restorer->Restore();
 }
 
 // static
@@ -1629,10 +1626,10 @@ void SessionRestore::RestoreForeignSessionWindows(
     std::vector<const sessions::SessionWindow*>::const_iterator end,
     base::OnceCallback<void(std::vector<BrowserWindowInterface*>)> callback) {
   StartupTabs startup_tabs;
-  SessionRestoreImpl restorer(
-      profile, static_cast<Browser*>(nullptr), true, false, true,
-      /* restore_apps */ false, /* restore_browser */ true,
-      /* log_event */ false, startup_tabs);
+  SessionRestoreImpl restorer(profile, nullptr, true, false, true,
+                              /* restore_apps */ false,
+                              /* restore_browser */ true,
+                              /* log_event */ false, startup_tabs);
   std::vector<BrowserWindowInterface*> windows =
       restorer.RestoreForeignSession(begin, end);
   std::move(callback).Run(std::move(windows));
@@ -1649,8 +1646,7 @@ WebContents* SessionRestore::RestoreForeignSessionTab(
           source_web_contents);
   Profile* profile = browser->GetProfile();
   StartupTabs startup_tabs;
-  SessionRestoreImpl restorer(profile, browser->GetBrowserForMigrationOnly(),
-                              true, false, false,
+  SessionRestoreImpl restorer(profile, browser, true, false, false,
                               /* restore_apps */ false,
                               /* restore_browser */ true,
                               /* log_event */ false, startup_tabs);

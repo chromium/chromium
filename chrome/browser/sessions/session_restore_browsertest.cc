@@ -2166,11 +2166,11 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestorePinnedSelectedTab) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(new_browser, GetUrl3()));
 
   // Restore the session again, clobbering the existing tab.
-  SessionRestore::RestoreSession(
-      profile, new_browser->GetBrowserForMigrationOnly(),
-      SessionRestore::CLOBBER_CURRENT_TAB | SessionRestore::SYNCHRONOUS |
-          SessionRestore::RESTORE_BROWSER,
-      StartupTabs());
+  SessionRestore::RestoreSession(profile, new_browser,
+                                 SessionRestore::CLOBBER_CURRENT_TAB |
+                                     SessionRestore::SYNCHRONOUS |
+                                     SessionRestore::RESTORE_BROWSER,
+                                 StartupTabs());
 
   // The pinned tab is the selected tab.
   ASSERT_EQ(2, new_browser->GetTabStripModel()->count());
@@ -2269,11 +2269,11 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, ClobberRestoreTest) {
       new_browser->GetTabStripModel()->GetWebContentsAt(0));
 
   // Restore the session again, clobbering the existing tab.
-  SessionRestore::RestoreSession(
-      profile, new_browser->GetBrowserForMigrationOnly(),
-      SessionRestore::CLOBBER_CURRENT_TAB | SessionRestore::SYNCHRONOUS |
-          SessionRestore::RESTORE_BROWSER,
-      StartupTabs());
+  SessionRestore::RestoreSession(profile, new_browser,
+                                 SessionRestore::CLOBBER_CURRENT_TAB |
+                                     SessionRestore::SYNCHRONOUS |
+                                     SessionRestore::RESTORE_BROWSER,
+                                 StartupTabs());
 
   // Wait until the existing tab finished closing.
   existing_tab_destroyed_watcher.Wait();
