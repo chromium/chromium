@@ -275,21 +275,22 @@ void LayoutTable::RemoveChild(LayoutObject* child) {
 void LayoutTable::StyleDidChange(
     StyleDifference diff,
     const ComputedStyle* old_style,
+    const ComputedStyle& new_style,
     const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
   // StyleDifference handles changes in table-layout, border-spacing.
   if (old_style) {
     bool borders_changed =
-        !old_style->BorderVisuallyEqual(StyleRef()) ||
-        old_style->GetWritingDirection() != StyleRef().GetWritingDirection() ||
-        old_style->IsFixedTableLayout() != StyleRef().IsFixedTableLayout() ||
-        old_style->EmptyCells() != StyleRef().EmptyCells();
+        !old_style->BorderVisuallyEqual(new_style) ||
+        old_style->GetWritingDirection() != new_style.GetWritingDirection() ||
+        old_style->IsFixedTableLayout() != new_style.IsFixedTableLayout() ||
+        old_style->EmptyCells() != new_style.EmptyCells();
     bool collapse_changed =
-        StyleRef().BorderCollapse() != old_style->BorderCollapse();
+        new_style.BorderCollapse() != old_style->BorderCollapse();
     if (borders_changed || collapse_changed)
       GridBordersChanged();
   }
-  LayoutBlock::StyleDidChange(diff, old_style, style_change_context);
+  LayoutBlock::StyleDidChange(diff, old_style, new_style, style_change_context);
 }
 
 LayoutBox* LayoutTable::CreateAnonymousBoxWithSameTypeAs(

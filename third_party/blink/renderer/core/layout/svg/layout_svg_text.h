@@ -59,6 +59,7 @@ class LayoutSVGText final : public LayoutSVGBlock {
       IncludeDescendants include_descendants) const override;
   void StyleDidChange(StyleDifference,
                       const ComputedStyle* old_style,
+                      const ComputedStyle& new_style,
                       const StyleChangeContext&) override;
   void WillBeDestroyed() override;
   bool NodeAtPoint(HitTestResult& result,

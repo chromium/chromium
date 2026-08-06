@@ -200,6 +200,7 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
  protected:
   void StyleDidChange(StyleDifference,
                       const ComputedStyle* old_style,
+                      const ComputedStyle& new_style,
                       const StyleChangeContext&) override;
   bool RespectsCSSOverflow() const override;
 

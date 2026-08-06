@@ -130,13 +130,14 @@ AffineTransform LayoutSVGViewportContainer::ComputeViewboxTransform() const {
 void LayoutSVGViewportContainer::StyleDidChange(
     StyleDifference diff,
     const ComputedStyle* old_style,
+    const ComputedStyle& new_style,
     const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutSVGTransformableContainer::StyleDidChange(diff, old_style,
+  LayoutSVGTransformableContainer::StyleDidChange(diff, old_style, new_style,
                                                   style_change_context);
 
   if (old_style && (SVGLayoutSupport::IsOverflowHidden(*old_style) !=
-                    SVGLayoutSupport::IsOverflowHidden(StyleRef()))) {
+                    SVGLayoutSupport::IsOverflowHidden(new_style))) {
     // See NeedsOverflowClip() in PaintPropertyTreeBuilder for the reason.
     SetNeedsPaintPropertyUpdate();
   }

@@ -650,9 +650,11 @@ void LayoutBox::StyleWillChange(StyleDifference diff,
 
 void LayoutBox::StyleDidChange(StyleDifference diff,
                                const ComputedStyle* old_style,
+                               const ComputedStyle& new_style,
                                const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutBoxModelObject::StyleDidChange(diff, old_style, style_change_context);
+  LayoutBoxModelObject::StyleDidChange(diff, old_style, new_style,
+                                       style_change_context);
 
   // Reflection works through PaintLayer. Some child classes e.g. LayoutSVGBlock
   // don't create layers and ignore reflections.
@@ -666,7 +668,6 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
   // scroll offset may be outside the normal min/max range of the scrollable
   // area, which is weird but OK, because the scrollable area will update its
   // min/max in updateAfterLayout().
-  const ComputedStyle& new_style = StyleRef();
   if (IsScrollContainer() && old_style &&
       old_style->EffectiveZoom() != new_style.EffectiveZoom()) {
     PaintLayerScrollableArea* scrollable_area = GetScrollableArea();
@@ -779,14 +780,14 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
 
   if (diff.NeedsFullLayout()) {
     if (IsValidColumnSpannerInTree(*old_style) !=
-        IsValidColumnSpannerInTree(StyleRef())) {
+        IsValidColumnSpannerInTree(new_style)) {
       MarkParentForSpannerOrOutOfFlowPositionedChange();
     }
   }
 
   // Update the script style map, from the new computed style.
   if (IsCustomItem())
-    GetCustomLayoutChild()->styleMap()->UpdateStyle(GetDocument(), StyleRef());
+    GetCustomLayoutChild()->styleMap()->UpdateStyle(GetDocument(), new_style);
 }
 
 void LayoutBox::UpdateShapeOutsideInfoAfterStyleChange(

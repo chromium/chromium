@@ -74,9 +74,10 @@ LayoutReplaced::~LayoutReplaced() = default;
 void LayoutReplaced::StyleDidChange(
     StyleDifference diff,
     const ComputedStyle* old_style,
+    const ComputedStyle& new_style,
     const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutBox::StyleDidChange(diff, old_style, style_change_context);
+  LayoutBox::StyleDidChange(diff, old_style, new_style, style_change_context);
 
   // Replaced elements can have border-radius clips without clipping overflow;
   // the overflow clipping case is already covered in LayoutBox::StyleDidChange
@@ -86,7 +87,7 @@ void LayoutReplaced::StyleDidChange(
 
   const float old_zoom = old_style ? old_style->EffectiveZoom()
                                    : ComputedStyleInitialValues::InitialZoom();
-  if (StyleRef().EffectiveZoom() != old_zoom) {
+  if (new_style.EffectiveZoom() != old_zoom) {
     NaturalSizeChanged();
   }
 }

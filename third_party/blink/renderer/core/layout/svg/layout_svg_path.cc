@@ -71,27 +71,28 @@ LayoutSVGPath::~LayoutSVGPath() = default;
 void LayoutSVGPath::StyleDidChange(
     StyleDifference diff,
     const ComputedStyle* old_style,
+    const ComputedStyle& new_style,
     const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutSVGShape::StyleDidChange(diff, old_style, style_change_context);
+  LayoutSVGShape::StyleDidChange(diff, old_style, new_style,
+                                 style_change_context);
   SVGResources::UpdateMarkers(*this, old_style);
   if (old_style) {
-    const ComputedStyle& style = StyleRef();
-    if (PathGeometryChanged(*old_style, style)) {
+    if (PathGeometryChanged(*old_style, new_style)) {
       SetNeedsShapeUpdate();
     }
     // If the presence of markers changed, a shape update is needed to update
     // the marker positions.
-    if (old_style->HasMarkers() != style.HasMarkers()) {
+    if (old_style->HasMarkers() != new_style.HasMarkers()) {
       SetNeedsShapeUpdate();
     }
     // If any marker changed, bounds need to be recomputed.
     if (!base::ValuesEquivalent(old_style->MarkerStartResource(),
-                                style.MarkerStartResource()) ||
+                                new_style.MarkerStartResource()) ||
         !base::ValuesEquivalent(old_style->MarkerMidResource(),
-                                style.MarkerMidResource()) ||
+                                new_style.MarkerMidResource()) ||
         !base::ValuesEquivalent(old_style->MarkerEndResource(),
-                                style.MarkerEndResource())) {
+                                new_style.MarkerEndResource())) {
       SetNeedsBoundariesUpdate();
     }
   }

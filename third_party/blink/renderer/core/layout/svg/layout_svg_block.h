@@ -87,6 +87,7 @@ class LayoutSVGBlock : public LayoutBlockFlow {
   bool UpdateTransformAfterLayout(const SVGLayoutInfo&, bool bounds_changed);
   void StyleDidChange(StyleDifference,
                       const ComputedStyle* old_style,
+                      const ComputedStyle& new_style,
                       const StyleChangeContext&) override;
   bool ShouldBeHandledAsFloating(const ComputedStyle&) const override {
     NOT_DESTROYED();

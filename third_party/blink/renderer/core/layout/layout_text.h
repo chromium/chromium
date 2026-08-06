@@ -382,6 +382,7 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 
   void StyleDidChange(StyleDifference,
                       const ComputedStyle* old_style,
+                      const ComputedStyle& new_style,
                       const StyleChangeContext&) override;
 
   void InLayoutNGInlineFormattingContextWillChange(bool) final;

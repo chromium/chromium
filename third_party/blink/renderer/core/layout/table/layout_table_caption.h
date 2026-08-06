@@ -33,6 +33,7 @@ class CORE_EXPORT LayoutTableCaption final : public LayoutBlockFlow {
 
   void StyleDidChange(StyleDifference diff,
                       const ComputedStyle* old_style,
+                      const ComputedStyle& new_style,
                       const StyleChangeContext&) override;
 
  private:

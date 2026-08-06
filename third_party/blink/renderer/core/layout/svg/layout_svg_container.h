@@ -57,6 +57,7 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
   void Paint(const PaintInfo&) const override;
   void StyleDidChange(StyleDifference,
                       const ComputedStyle* old_style,
+                      const ComputedStyle& new_style,
                       const StyleChangeContext&) override;
   void SetNeedsTransformUpdate() override;
   bool IsObjectBoundingBoxValid() const {

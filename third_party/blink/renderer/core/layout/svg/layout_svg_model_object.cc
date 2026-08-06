@@ -160,9 +160,11 @@ void LayoutSVGModelObject::ImageChanged(WrappedImagePtr image,
 void LayoutSVGModelObject::StyleDidChange(
     StyleDifference diff,
     const ComputedStyle* old_style,
+    const ComputedStyle& new_style,
     const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutObject::StyleDidChange(diff, old_style, style_change_context);
+  LayoutObject::StyleDidChange(diff, old_style, new_style,
+                               style_change_context);
 
   if (diff.NeedsFullLayout()) {
     if (diff.transform_changed) {
@@ -170,8 +172,7 @@ void LayoutSVGModelObject::StyleDidChange(
     }
   }
 
-  SetHasTransformRelatedProperty(
-      StyleRef().HasTransformRelatedPropertyForSVG());
+  SetHasTransformRelatedProperty(new_style.HasTransformRelatedPropertyForSVG());
 
   SVGResources::UpdateEffects(*this, diff, old_style);
 
@@ -182,12 +183,12 @@ void LayoutSVGModelObject::StyleDidChange(
     if (diff.blend_mode_changed) {
       DCHECK(IsBlendingAllowed());
       Parent()->DescendantIsolationRequirementsChanged(
-          StyleRef().HasBlendMode() ? kDescendantIsolationRequired
-                                    : kDescendantIsolationNeedsUpdate);
+          new_style.HasBlendMode() ? kDescendantIsolationRequired
+                                   : kDescendantIsolationNeedsUpdate);
     }
-    if ((StyleRef().HasCurrentTransformRelatedAnimation() &&
+    if ((new_style.HasCurrentTransformRelatedAnimation() &&
          !old_style->HasCurrentTransformRelatedAnimation()) ||
-        (StyleRef().HasNonIdentityTransformOperation() &&
+        (new_style.HasNonIdentityTransformOperation() &&
          !old_style->HasNonIdentityTransformOperation())) {
       Parent()->SetSVGDescendantMayHaveTransformRelatedOperations();
     }

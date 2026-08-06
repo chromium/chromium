@@ -66,6 +66,7 @@ class LayoutSVGModelObject : public LayoutObject {
                           MapCoordinatesFlags) const final;
   void StyleDidChange(StyleDifference,
                       const ComputedStyle* old_style,
+                      const ComputedStyle& new_style,
                       const StyleChangeContext&) override;
 
   SVGElement* GetElement() const {

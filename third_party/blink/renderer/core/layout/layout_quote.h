@@ -93,6 +93,7 @@ class LayoutQuote final : public LayoutInline {
   }
   void StyleDidChange(StyleDifference,
                       const ComputedStyle*,
+                      const ComputedStyle& new_style,
                       const StyleChangeContext&) override;
   void WillBeRemovedFromTree() override;
 

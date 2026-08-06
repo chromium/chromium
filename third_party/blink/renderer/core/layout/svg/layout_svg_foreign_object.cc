@@ -189,13 +189,15 @@ bool LayoutSVGForeignObject::UpdateAfterSVGLayout(
 void LayoutSVGForeignObject::StyleDidChange(
     StyleDifference diff,
     const ComputedStyle* old_style,
+    const ComputedStyle& new_style,
     const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutSVGBlock::StyleDidChange(diff, old_style, style_change_context);
+  LayoutSVGBlock::StyleDidChange(diff, old_style, new_style,
+                                 style_change_context);
 
   float old_zoom = old_style ? old_style->EffectiveZoom()
                              : ComputedStyleInitialValues::InitialZoom();
-  if (StyleRef().EffectiveZoom() != old_zoom) {
+  if (new_style.EffectiveZoom() != old_zoom) {
     // `LocalToSVGParentTransform` has a dependency on zoom which is used for
     // the transform paint property.
     SetNeedsPaintPropertyUpdate();

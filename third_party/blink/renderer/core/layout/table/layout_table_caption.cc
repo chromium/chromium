@@ -22,17 +22,19 @@ LayoutTable* LayoutTableCaption::Table() const {
 void LayoutTableCaption::StyleDidChange(
     StyleDifference diff,
     const ComputedStyle* old_style,
+    const ComputedStyle& new_style,
     const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
   if (LayoutTable* table = Table()) {
     // Modifying the `caption-side` property means that the structure of the
     // table has changed. In this case, we need to repaint the table to ensure
     // the borders are properly updated.
-    if (old_style && old_style->CaptionSide() != StyleRef().CaptionSide()) {
+    if (old_style && old_style->CaptionSide() != new_style.CaptionSide()) {
       table->SetShouldDoFullPaintInvalidation();
     }
   }
-  LayoutBlockFlow::StyleDidChange(diff, old_style, style_change_context);
+  LayoutBlockFlow::StyleDidChange(diff, old_style, new_style,
+                                  style_change_context);
 }
 
 }  // namespace blink

@@ -50,6 +50,7 @@ class CORE_EXPORT LayoutHTMLCanvas final : public LayoutReplaced {
 
   void StyleDidChange(StyleDifference,
                       const ComputedStyle* old_style,
+                      const ComputedStyle& new_style,
                       const StyleChangeContext&) override;
 
   const char* GetName() const override {

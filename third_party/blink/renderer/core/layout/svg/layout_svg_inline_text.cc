@@ -68,12 +68,13 @@ void LayoutSVGInlineText::TextDidChange() {
 void LayoutSVGInlineText::StyleDidChange(
     StyleDifference diff,
     const ComputedStyle* old_style,
+    const ComputedStyle& new_style,
     const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutText::StyleDidChange(diff, old_style, style_change_context);
+  LayoutText::StyleDidChange(diff, old_style, new_style, style_change_context);
   UpdateScaledFont();
 
-  const bool new_collapse = StyleRef().ShouldCollapseWhiteSpaces();
+  const bool new_collapse = new_style.ShouldCollapseWhiteSpaces();
   const bool old_collapse = old_style && old_style->ShouldCollapseWhiteSpaces();
   if (old_collapse != new_collapse) {
     ForceSetText(OriginalText());

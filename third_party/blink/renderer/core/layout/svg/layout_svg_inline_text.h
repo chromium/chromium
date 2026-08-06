@@ -66,6 +66,7 @@ class LayoutSVGInlineText final : public LayoutText {
   void TextDidChange() override;
   void StyleDidChange(StyleDifference,
                       const ComputedStyle*,
+                      const ComputedStyle& new_style,
                       const StyleChangeContext&) override;
   bool IsFontFallbackValid() const override;
   void InvalidateSubtreeLayoutForFontUpdates() override;

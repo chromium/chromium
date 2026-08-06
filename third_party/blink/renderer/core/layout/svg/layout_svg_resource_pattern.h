@@ -64,6 +64,7 @@ class LayoutSVGResourcePattern final : public LayoutSVGResourcePaintServer {
   void WillBeDestroyed() override;
   void StyleDidChange(StyleDifference,
                       const ComputedStyle* old_style,
+                      const ComputedStyle& new_style,
                       const StyleChangeContext&) override;
 
   bool FindCycleFromSelf() const override;

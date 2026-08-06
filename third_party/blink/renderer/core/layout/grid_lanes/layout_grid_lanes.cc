@@ -69,14 +69,13 @@ void LayoutGridLanes::RemoveChild(LayoutObject* child) {
 void LayoutGridLanes::StyleDidChange(
     StyleDifference diff,
     const ComputedStyle* old_style,
+    const ComputedStyle& new_style,
     const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutBlock::StyleDidChange(diff, old_style, style_change_context);
+  LayoutBlock::StyleDidChange(diff, old_style, new_style, style_change_context);
   if (!old_style) {
     return;
   }
-
-  const ComputedStyle& new_style = StyleRef();
 
   // The full direction captures the orientation and the fill/track reverse
   // flags, and the packing mode changes how auto-placed items fill the lanes;

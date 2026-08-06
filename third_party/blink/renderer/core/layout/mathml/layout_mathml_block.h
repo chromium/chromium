@@ -29,6 +29,7 @@ class LayoutMathMLBlock : public LayoutBlock {
   bool CanHaveChildren() const final;
   void StyleDidChange(StyleDifference,
                       const ComputedStyle*,
+                      const ComputedStyle& new_style,
                       const StyleChangeContext&) final;
 
   bool IsMonolithic() const final {

@@ -79,6 +79,7 @@ class LayoutSVGImage final : public LayoutSVGModelObject {
  protected:
   void StyleDidChange(StyleDifference,
                       const ComputedStyle* old_style,
+                      const ComputedStyle& new_style,
                       const StyleChangeContext&) override;
   void WillBeDestroyed() override;
 

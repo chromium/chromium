@@ -39,9 +39,11 @@ void LayoutRubyAsBlock::AddChild(LayoutObject* child,
 void LayoutRubyAsBlock::StyleDidChange(
     StyleDifference diff,
     const ComputedStyle* old_style,
+    const ComputedStyle& new_style,
     const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutBlockFlow::StyleDidChange(diff, old_style, style_change_context);
+  LayoutBlockFlow::StyleDidChange(diff, old_style, new_style,
+                                  style_change_context);
   PropagateStyleToAnonymousChildren();
 
   // Because LayoutInline::AnonymousHasStylePropagationOverride() returns
@@ -50,7 +52,7 @@ void LayoutRubyAsBlock::StyleDidChange(
   if (auto* inline_ruby = FirstChild()) {
     ComputedStyleBuilder new_style_builder =
         GetDocument().GetStyleResolver().CreateAnonymousStyleBuilderWithDisplay(
-            StyleRef(), inline_ruby->StyleRef().Display());
+            new_style, inline_ruby->StyleRef().Display());
     UpdateAnonymousChildStyle(inline_ruby, new_style_builder);
     inline_ruby->SetStyle(new_style_builder.TakeStyle());
   }

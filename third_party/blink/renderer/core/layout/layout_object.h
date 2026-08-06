@@ -3538,6 +3538,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // nullptr the first time this function is called.
   virtual void StyleDidChange(StyleDifference,
                               const ComputedStyle* old_style,
+                              const ComputedStyle& new_style,
                               const StyleChangeContext&);
   void PropagateStyleToAnonymousChildren();
   // Return true for objects that don't want style changes automatically

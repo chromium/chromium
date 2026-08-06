@@ -147,11 +147,11 @@ void LayoutInline::InLayoutNGInlineFormattingContextWillChange(bool new_value) {
 void LayoutInline::StyleDidChange(
     StyleDifference diff,
     const ComputedStyle* old_style,
+    const ComputedStyle& new_style,
     const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutBoxModelObject::StyleDidChange(diff, old_style, style_change_context);
-
-  const ComputedStyle& new_style = StyleRef();
+  LayoutBoxModelObject::StyleDidChange(diff, old_style, new_style,
+                                       style_change_context);
   if (!IsInLayoutNGInlineFormattingContext()) {
     if (!AlwaysCreateLineBoxes()) {
       bool always_create_line_boxes_new =

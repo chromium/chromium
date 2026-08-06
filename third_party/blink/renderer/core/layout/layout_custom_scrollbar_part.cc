@@ -242,9 +242,11 @@ void LayoutCustomScrollbarPart::UpdateFromStyle() {
 void LayoutCustomScrollbarPart::StyleDidChange(
     StyleDifference diff,
     const ComputedStyle* old_style,
+    const ComputedStyle& new_style,
     const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutReplaced::StyleDidChange(diff, old_style, style_change_context);
+  LayoutReplaced::StyleDidChange(diff, old_style, new_style,
+                                 style_change_context);
   if (old_style &&
       (diff.NeedsNormalPaintInvalidation() || diff.NeedsFullLayout())) {
     SetNeedsPaintInvalidation();

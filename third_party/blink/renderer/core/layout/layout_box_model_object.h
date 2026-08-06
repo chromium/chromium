@@ -271,6 +271,7 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
                        StyleChangeContext&) override;
   void StyleDidChange(StyleDifference,
                       const ComputedStyle* old_style,
+                      const ComputedStyle& new_style,
                       const StyleChangeContext&) override;
   virtual bool ComputeCanCompositeBackgroundAttachmentFixed() const {
     NOT_DESTROYED();

@@ -140,6 +140,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
  protected:
   void StyleDidChange(StyleDifference,
                       const ComputedStyle* old_style,
+                      const ComputedStyle& new_style,
                       const StyleChangeContext&) override;
 
   void InvalidateDisplayItemClients(PaintInvalidationReason) const override;

@@ -55,6 +55,7 @@ class LayoutSVGTransformableContainer : public LayoutSVGContainer {
  protected:
   void StyleDidChange(StyleDifference,
                       const ComputedStyle* old_style,
+                      const ComputedStyle& new_style,
                       const StyleChangeContext&) override;
   void WillBeDestroyed() override;
   SVGTransformChange UpdateLocalTransform(

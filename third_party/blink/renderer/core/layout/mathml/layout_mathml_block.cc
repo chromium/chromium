@@ -32,12 +32,13 @@ bool LayoutMathMLBlock::CanHaveChildren() const {
 void LayoutMathMLBlock::StyleDidChange(
     StyleDifference diff,
     const ComputedStyle* old_style,
+    const ComputedStyle& new_style,
     const StyleChangeContext& style_change_context) {
-  LayoutBlock::StyleDidChange(diff, old_style, style_change_context);
+  LayoutBlock::StyleDidChange(diff, old_style, new_style, style_change_context);
   if (!old_style)
     return;
   if (IsA<MathMLUnderOverElement>(GetNode()) &&
-      old_style->MathStyle() != StyleRef().MathStyle()) {
+      old_style->MathStyle() != new_style.MathStyle()) {
     SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
         layout_invalidation_reason::kAttributeChanged);
   }

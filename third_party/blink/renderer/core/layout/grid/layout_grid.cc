@@ -117,13 +117,14 @@ bool LayoutGrid::GridPlacementInputsDidChange(
 void LayoutGrid::StyleDidChange(
     StyleDifference diff,
     const ComputedStyle* old_style,
+    const ComputedStyle& new_style,
     const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutBlock::StyleDidChange(diff, old_style, style_change_context);
+  LayoutBlock::StyleDidChange(diff, old_style, new_style, style_change_context);
   if (!old_style)
     return;
 
-  if (GridPlacementInputsDidChange(StyleRef(), *old_style, diff)) {
+  if (GridPlacementInputsDidChange(new_style, *old_style, diff)) {
     SetGridPlacementDirty(true);
   }
 }

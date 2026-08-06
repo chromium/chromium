@@ -362,6 +362,7 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
  private:
   void StyleDidChange(StyleDifference,
                       const ComputedStyle* old_style,
+                      const ComputedStyle& new_style,
                       const StyleChangeContext&) override;
 
   // Set if laying out with a new initial containing block size, and populated

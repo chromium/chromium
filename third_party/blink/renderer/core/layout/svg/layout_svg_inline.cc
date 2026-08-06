@@ -181,6 +181,7 @@ void LayoutSVGInline::WillBeDestroyed() {
 void LayoutSVGInline::StyleDidChange(
     StyleDifference diff,
     const ComputedStyle* old_style,
+    const ComputedStyle& new_style,
     const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
   if (diff.HasDifference()) {
@@ -189,18 +190,18 @@ void LayoutSVGInline::StyleDidChange(
         diff.SetNeedsFullLayout();
     }
   }
-  LayoutInline::StyleDidChange(diff, old_style, style_change_context);
+  LayoutInline::StyleDidChange(diff, old_style, new_style,
+                               style_change_context);
 
   if (diff.NeedsFullLayout()) {
     // The boundaries affect mask clip and clip path mask/clip.
-    const ComputedStyle& style = StyleRef();
-    if (style.HasMask() || style.HasClipPath()) {
+    if (new_style.HasMask() || new_style.HasClipPath()) {
       SetNeedsPaintPropertyUpdate();
     }
   }
 
   SVGResources::UpdateEffects(*this, diff, old_style);
-  SVGResources::UpdatePaints(*this, old_style, StyleRef());
+  SVGResources::UpdatePaints(*this, old_style, new_style);
 
   if (!Parent())
     return;

@@ -70,23 +70,24 @@ void LayoutSVGFilterPrimitive::WillBeDestroyed() {
 void LayoutSVGFilterPrimitive::StyleDidChange(
     StyleDifference diff,
     const ComputedStyle* old_style,
+    const ComputedStyle& new_style,
     const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
   if (!old_style)
     return;
   auto& element = To<SVGFilterPrimitiveStandardAttributes>(*GetNode());
-  const ComputedStyle& style = StyleRef();
   if (IsA<SVGFEFloodElement>(element) || IsA<SVGFEDropShadowElement>(element)) {
     CheckForColorChange(element, svg_names::kFloodColorAttr, diff,
-                        old_style->FloodColor(), style.FloodColor());
-    if (style.FloodOpacity() != old_style->FloodOpacity())
+                        old_style->FloodColor(), new_style.FloodColor());
+    if (new_style.FloodOpacity() != old_style->FloodOpacity()) {
       element.PrimitiveAttributeChanged(svg_names::kFloodOpacityAttr);
+    }
   } else if (IsA<SVGFEDiffuseLightingElement>(element) ||
              IsA<SVGFESpecularLightingElement>(element)) {
     CheckForColorChange(element, svg_names::kLightingColorAttr, diff,
-                        old_style->LightingColor(), style.LightingColor());
+                        old_style->LightingColor(), new_style.LightingColor());
   }
-  if (style.ColorInterpolationFilters() !=
+  if (new_style.ColorInterpolationFilters() !=
       old_style->ColorInterpolationFilters()) {
     element.PrimitiveAttributeChanged(
         svg_names::kColorInterpolationFiltersAttr);

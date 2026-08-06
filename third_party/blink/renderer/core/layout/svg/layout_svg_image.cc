@@ -64,25 +64,26 @@ void LayoutSVGImage::Trace(Visitor* visitor) const {
 void LayoutSVGImage::StyleDidChange(
     StyleDifference diff,
     const ComputedStyle* old_style,
+    const ComputedStyle& new_style,
     const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
   TransformHelper::UpdateOffsetPath(*GetElement(), old_style);
   transform_uses_reference_box_ =
-      TransformHelper::DependsOnReferenceBox(StyleRef());
+      TransformHelper::DependsOnReferenceBox(new_style);
 
   if (old_style && EverHadLayout()) {
-    const ComputedStyle& style = StyleRef();
-    bool length_attribute_changed = old_style->X() != style.X() ||
-                                    old_style->Y() != style.Y() ||
-                                    old_style->Width() != style.Width() ||
-                                    old_style->Height() != style.Height();
+    bool length_attribute_changed = old_style->X() != new_style.X() ||
+                                    old_style->Y() != new_style.Y() ||
+                                    old_style->Width() != new_style.Width() ||
+                                    old_style->Height() != new_style.Height();
     if (length_attribute_changed) {
       LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(
           *this);
     }
   }
 
-  LayoutSVGModelObject::StyleDidChange(diff, old_style, style_change_context);
+  LayoutSVGModelObject::StyleDidChange(diff, old_style, new_style,
+                                       style_change_context);
 }
 
 void LayoutSVGImage::WillBeDestroyed() {

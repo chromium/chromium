@@ -99,22 +99,22 @@ SVGTransformChange LayoutSVGTransformableContainer::UpdateLocalTransform(
 void LayoutSVGTransformableContainer::StyleDidChange(
     StyleDifference diff,
     const ComputedStyle* old_style,
+    const ComputedStyle& new_style,
     const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutSVGContainer::StyleDidChange(diff, old_style, style_change_context);
-
-  const ComputedStyle& style = StyleRef();
+  LayoutSVGContainer::StyleDidChange(diff, old_style, new_style,
+                                     style_change_context);
 
   // Check for changes to the 'x' or 'y' properties if this is a <use> element.
   SVGElement& element = *GetElement();
   if (old_style && IsA<SVGUseElement>(element)) {
-    if (old_style->X() != style.X() || old_style->Y() != style.Y()) {
+    if (old_style->X() != new_style.X() || old_style->Y() != new_style.Y()) {
       SetNeedsTransformUpdate();
     }
     // Any descendant could use context-fill or context-stroke, so we must
     // repaint the whole subtree.
-    if (old_style->FillPaint() != style.FillPaint() ||
-        old_style->StrokePaint() != style.StrokePaint()) {
+    if (old_style->FillPaint() != new_style.FillPaint() ||
+        old_style->StrokePaint() != new_style.StrokePaint()) {
       SetSubtreeShouldDoFullPaintInvalidation(
           PaintInvalidationReason::kSVGResource);
     }
@@ -122,11 +122,12 @@ void LayoutSVGTransformableContainer::StyleDidChange(
 
   // To support context-fill and context-stroke
   if (IsA<SVGUseElement>(element)) {
-    SVGResources::UpdatePaints(*this, old_style, style);
+    SVGResources::UpdatePaints(*this, old_style, new_style);
   }
 
   TransformHelper::UpdateOffsetPath(element, old_style);
-  SetTransformUsesReferenceBox(TransformHelper::DependsOnReferenceBox(style));
+  SetTransformUsesReferenceBox(
+      TransformHelper::DependsOnReferenceBox(new_style));
 }
 
 void LayoutSVGTransformableContainer::WillBeDestroyed() {

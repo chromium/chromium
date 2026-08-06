@@ -121,19 +121,20 @@ bool LayoutSVGBlock::UpdateTransformAfterLayout(
 void LayoutSVGBlock::StyleDidChange(
     StyleDifference diff,
     const ComputedStyle* old_style,
+    const ComputedStyle& new_style,
     const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutBlockFlow::StyleDidChange(diff, old_style, style_change_context);
-
-  const ComputedStyle& style = StyleRef();
+  LayoutBlockFlow::StyleDidChange(diff, old_style, new_style,
+                                  style_change_context);
 
   // |HasTransformRelatedProperty| is used for compositing so ensure it was
   // correctly set by the call to |StyleDidChange|.
   DCHECK_EQ(HasTransformRelatedProperty(),
-            style.HasTransformRelatedPropertyForSVG());
+            new_style.HasTransformRelatedPropertyForSVG());
 
   TransformHelper::UpdateOffsetPath(*GetElement(), old_style);
-  transform_uses_reference_box_ = TransformHelper::DependsOnReferenceBox(style);
+  transform_uses_reference_box_ =
+      TransformHelper::DependsOnReferenceBox(new_style);
 
   if (diff.NeedsFullLayout()) {
     if (diff.transform_changed) {
@@ -149,13 +150,13 @@ void LayoutSVGBlock::StyleDidChange(
   if (diff.blend_mode_changed) {
     DCHECK(IsBlendingAllowed());
     Parent()->DescendantIsolationRequirementsChanged(
-        style.HasBlendMode() ? kDescendantIsolationRequired
-                             : kDescendantIsolationNeedsUpdate);
+        new_style.HasBlendMode() ? kDescendantIsolationRequired
+                                 : kDescendantIsolationNeedsUpdate);
   }
 
-  if ((style.HasCurrentTransformRelatedAnimation() &&
+  if ((new_style.HasCurrentTransformRelatedAnimation() &&
        !old_style->HasCurrentTransformRelatedAnimation()) ||
-      (style.HasNonIdentityTransformOperation() &&
+      (new_style.HasNonIdentityTransformOperation() &&
        !old_style->HasNonIdentityTransformOperation())) {
     Parent()->SetSVGDescendantMayHaveTransformRelatedOperations();
   }

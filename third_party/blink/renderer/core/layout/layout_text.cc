@@ -201,6 +201,7 @@ bool LayoutText::IsWordBreak() const {
 void LayoutText::StyleDidChange(
     StyleDifference diff,
     const ComputedStyle* old_style,
+    const ComputedStyle& new_style,
     const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
   // There is no need to ever schedule paint invalidations from a style change
@@ -211,8 +212,6 @@ void LayoutText::StyleDidChange(
     SetNeedsLayoutAndIntrinsicWidthsRecalc(
         layout_invalidation_reason::kStyleChange);
   }
-
-  const ComputedStyle& new_style = StyleRef();
   ETextTransform old_transform =
       old_style ? old_style->TextTransform() : ETextTransform::kNone;
   ETextSecurity old_security =

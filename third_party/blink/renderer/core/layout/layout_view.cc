@@ -1048,9 +1048,11 @@ void LayoutView::CacheScrollDimensions() {
 void LayoutView::StyleDidChange(
     StyleDifference diff,
     const ComputedStyle* old_style,
+    const ComputedStyle& new_style,
     const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutBlockFlow::StyleDidChange(diff, old_style, style_change_context);
+  LayoutBlockFlow::StyleDidChange(diff, old_style, new_style,
+                                  style_change_context);
 
   LocalFrame& frame = GetFrameView()->GetFrame();
   VisualViewport& visual_viewport = frame.GetPage()->GetVisualViewport();

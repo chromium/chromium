@@ -157,10 +157,11 @@ HTMLVideoElement* LayoutVideo::VideoElement() const {
 void LayoutVideo::StyleDidChange(
     StyleDifference diff,
     const ComputedStyle* old_style,
+    const ComputedStyle& new_style,
     const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutImage::StyleDidChange(diff, old_style, style_change_context);
-  VideoElement()->StyleDidChange(old_style, StyleRef());
+  LayoutImage::StyleDidChange(diff, old_style, new_style, style_change_context);
+  VideoElement()->StyleDidChange(old_style, new_style);
 }
 
 void LayoutVideo::UpdateFromElement() {

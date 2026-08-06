@@ -53,18 +53,20 @@ LayoutSVGText::LayoutSVGText(Element* element)
 void LayoutSVGText::StyleDidChange(
     StyleDifference diff,
     const ComputedStyle* old_style,
+    const ComputedStyle& new_style,
     const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
   if (needs_text_metrics_update_ && diff.HasDifference() && old_style) {
     diff.SetNeedsFullLayout();
   }
-  LayoutSVGBlock::StyleDidChange(diff, old_style, style_change_context);
-  SVGResources::UpdatePaints(*this, old_style, StyleRef());
+  LayoutSVGBlock::StyleDidChange(diff, old_style, new_style,
+                                 style_change_context);
+  SVGResources::UpdatePaints(*this, old_style, new_style);
 
   if (old_style) {
-    const ComputedStyle& style = StyleRef();
     if (transform_uses_reference_box_ && !needs_transform_update_) {
-      if (TransformHelper::CheckReferenceBoxDependencies(*old_style, style)) {
+      if (TransformHelper::CheckReferenceBoxDependencies(*old_style,
+                                                         new_style)) {
         SetNeedsTransformUpdate();
         SetNeedsPaintPropertyUpdate();
       }

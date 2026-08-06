@@ -88,19 +88,20 @@ LayoutSVGShape::~LayoutSVGShape() = default;
 void LayoutSVGShape::StyleDidChange(
     StyleDifference diff,
     const ComputedStyle* old_style,
+    const ComputedStyle& new_style,
     const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutSVGModelObject::StyleDidChange(diff, old_style, style_change_context);
+  LayoutSVGModelObject::StyleDidChange(diff, old_style, new_style,
+                                       style_change_context);
 
   if (diff.NeedsFullLayout()) {
     SetNeedsBoundariesUpdate();
   }
 
-  const ComputedStyle& style = StyleRef();
-
   TransformHelper::UpdateOffsetPath(*GetElement(), old_style);
-  transform_uses_reference_box_ = TransformHelper::DependsOnReferenceBox(style);
-  SVGResources::UpdatePaints(*this, old_style, style);
+  transform_uses_reference_box_ =
+      TransformHelper::DependsOnReferenceBox(new_style);
+  SVGResources::UpdatePaints(*this, old_style, new_style);
 
   if (old_style) {
     // Most of the stroke attributes (caps, joins, miters, width, etc.) will
@@ -108,16 +109,17 @@ void LayoutSVGShape::StyleDidChange(
     // are a couple of additional properties that *won't* cause a layout, but
     // are significant enough to require invalidating the cache.
     if (!diff.NeedsFullLayout() && stroke_path_cache_) {
-      if (old_style->StrokeDashOffset() != style.StrokeDashOffset() ||
-          old_style->PathLength() != style.PathLength() ||
+      if (old_style->StrokeDashOffset() != new_style.StrokeDashOffset() ||
+          old_style->PathLength() != new_style.PathLength() ||
           !base::ValuesEquivalent(old_style->StrokeDashArray(),
-                                  style.StrokeDashArray())) {
+                                  new_style.StrokeDashArray())) {
         stroke_path_cache_.reset();
       }
     }
 
     if (transform_uses_reference_box_ && !needs_transform_update_) {
-      if (TransformHelper::CheckReferenceBoxDependencies(*old_style, style)) {
+      if (TransformHelper::CheckReferenceBoxDependencies(*old_style,
+                                                         new_style)) {
         SetNeedsTransformUpdate();
         SetNeedsPaintPropertyUpdate();
       }
@@ -130,7 +132,7 @@ void LayoutSVGShape::StyleDidChange(
     // which are zoom-independent, so they would not otherwise notice. Force a
     // shape update here.
     if (RuntimeEnabledFeatures::SvgNewZoomEnabled() &&
-        old_style->EffectiveZoom() != style.EffectiveZoom()) {
+        old_style->EffectiveZoom() != new_style.EffectiveZoom()) {
       SetNeedsShapeUpdate();
     }
   }

@@ -102,14 +102,16 @@ void GetImageSizeChangeTracingData(perfetto::TracedValue context,
 void LayoutImage::StyleDidChange(
     StyleDifference diff,
     const ComputedStyle* old_style,
+    const ComputedStyle& new_style,
     const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutReplaced::StyleDidChange(diff, old_style, style_change_context);
+  LayoutReplaced::StyleDidChange(diff, old_style, new_style,
+                                 style_change_context);
 
   RespectImageOrientationEnum old_orientation =
       old_style ? old_style->ImageOrientation()
                 : ComputedStyleInitialValues::InitialImageOrientation();
-  if (StyleRef().ImageOrientation() != old_orientation) {
+  if (new_style.ImageOrientation() != old_orientation) {
     NaturalSizeChanged();
   }
 
