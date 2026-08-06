@@ -367,6 +367,19 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
         }
     }
 
+    /**
+     * Navigate using the pasted omnibox text, disabling inline autocompletion.
+     *
+     * @param text The pasted text to load.
+     * @param eventTime The timestamp when the navigation was triggered (e.g., uptimeMillis).
+     * @param target The target destination for the navigation (current tab, new tab, new window).
+     */
+    public void loadPastedText(String text, long eventTime, @NavigationTarget int target) {
+        if (mMediator.hasAutocompleteController()) {
+            mMediator.loadPastedText(text, eventTime, target);
+        }
+    }
+
     /** Ends the current omnibox session. */
     public void endInput() {
         mMediator.endInput();

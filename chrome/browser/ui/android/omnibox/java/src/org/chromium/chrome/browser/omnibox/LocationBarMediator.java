@@ -41,6 +41,7 @@ import org.chromium.base.CallbackUtils;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -3215,6 +3216,15 @@ class LocationBarMediator
                                     mUrlCoordinator.getTextWithAutocomplete(), PageTransition.TYPED)
                             .build());
         }
+    }
+
+    @Override
+    public void onPerformPasteAndGo(String text) {
+        if (!mNativeInitialized || mAutocompleteCoordinator == null) return;
+        mAutocompleteCoordinator.loadPastedText(
+                text,
+                TimeUtils.uptimeMillis(),
+                AutocompleteCoordinator.NavigationTarget.CURRENT_TAB);
     }
 
     @Override

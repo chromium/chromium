@@ -20,4 +20,5 @@ found in the LICENSE file.
     <item type="id" name="url_bar_manage_search_engines"/>
     <item type="id" name="url_bar_always_show_ai_mode"/>
     <item type="id" name="url_bar_delete"/>
+    <item type="id" name="url_bar_paste_and_go"/>
 </resources>

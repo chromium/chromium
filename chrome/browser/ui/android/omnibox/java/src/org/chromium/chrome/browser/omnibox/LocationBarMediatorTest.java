@@ -4020,6 +4020,17 @@ public class LocationBarMediatorTest {
     }
 
     @Test
+    public void testOnPerformPasteAndGo() {
+        mMediator.onFinishNativeInitialization();
+        mMediator.onPerformPasteAndGo("pasted text");
+        verify(mAutocompleteCoordinator)
+                .loadPastedText(
+                        eq("pasted text"),
+                        anyLong(),
+                        eq(AutocompleteCoordinator.NavigationTarget.CURRENT_TAB));
+    }
+
+    @Test
     public void testHandleKeyNavigationEvent_ctrlTab_notHandled() {
         doReturn(KeyEvent.KEYCODE_TAB).when(mKeyEvent).getKeyCode();
         doReturn(false).when(mKeyEvent).hasNoModifiers();

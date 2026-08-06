@@ -1525,6 +1525,45 @@ public class UrlBarUnitTest {
     }
 
     @Test
+    public void onTextContextMenuItem_pasteAndGo() {
+        doReturn(true).when(mUrlBar).isFocused();
+        mUrlBar.setText("original text");
+        mUrlBar.setSelection(0, 8);
+        doReturn("pasted url").when(mTextContextMenuDelegate).getTextToPaste();
+
+        assertTrue(mUrlBar.onTextContextMenuItem(R.id.url_bar_paste_and_go));
+
+        assertEquals("pasted url", mUrlBar.getText().toString());
+        assertEquals(10, mUrlBar.getSelectionStart());
+        assertEquals(10, mUrlBar.getSelectionEnd());
+        verify(mUrlBarDelegate).onPerformPasteAndGo("pasted url");
+    }
+
+    @Test
+    public void onTextContextMenuItem_pasteAndGo_unfocused() {
+        doReturn(false).when(mUrlBar).isFocused();
+        mUrlBar.setText("original text");
+        doReturn("pasted").when(mTextContextMenuDelegate).getTextToPaste();
+
+        assertTrue(mUrlBar.onTextContextMenuItem(R.id.url_bar_paste_and_go));
+
+        assertEquals("original text", mUrlBar.getText().toString());
+        verify(mUrlBarDelegate, never()).onPerformPasteAndGo(any());
+    }
+
+    @Test
+    public void onTextContextMenuItem_pasteAndGo_noTextToPaste() {
+        doReturn(true).when(mUrlBar).isFocused();
+        mUrlBar.setText("original text");
+        doReturn(null).when(mTextContextMenuDelegate).getTextToPaste();
+
+        assertTrue(mUrlBar.onTextContextMenuItem(R.id.url_bar_paste_and_go));
+
+        assertEquals("original text", mUrlBar.getText().toString());
+        verify(mUrlBarDelegate, never()).onPerformPasteAndGo(any());
+    }
+
+    @Test
     public void onTextContextMenuItem_delete() {
         mUrlBar.setText("original text");
         mUrlBar.setSelection(0, 8);

@@ -238,7 +238,7 @@ ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::Classify(
 
   inside_synchronous_start_ = true;
   Start(env, nullptr, text, -1, "", GURL(), ::metrics::OmniboxEventProto::OTHER,
-        omnibox::TOOL_MODE_UNSPECIFIED, false, false, false, false);
+        omnibox::TOOL_MODE_UNSPECIFIED, true, false, false, false);
   inside_synchronous_start_ = false;
   DCHECK(autocomplete_controller_->done());
   AutocompleteResult& result =

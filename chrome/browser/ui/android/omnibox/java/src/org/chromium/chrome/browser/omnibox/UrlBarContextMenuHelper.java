@@ -43,6 +43,7 @@ class UrlBarContextMenuHelper {
                     android.R.id.undo,
                     android.R.id.redo,
                     R.id.url_bar_delete,
+                    R.id.url_bar_paste_and_go,
                     R.id.url_bar_always_show_ai_mode,
                     R.id.url_bar_manage_search_engines);
 

@@ -88,6 +88,12 @@ public class UrlBarContextMenuHelperUnitTest {
     }
 
     @Test
+    public void testMenuItemClick_pasteAndGo() {
+        mHelper.onMenuItemClicked(R.id.url_bar_paste_and_go);
+        verify(mDelegate).onTextContextMenuItem(R.id.url_bar_paste_and_go);
+    }
+
+    @Test
     public void testShowListMenu_filtersOutNonAllowedItems() {
         setupMockContextMenu();
         doReturn(android.R.id.button1).when(mCopyMenuItem).getItemId();

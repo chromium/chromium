@@ -36607,6 +36607,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Omnibox.LongPress.PasteAndGo">
+  <owner>mdjones@chromium.org</owner>
+  <owner>lzbylut@google.com</owner>
+  <description>
+    User tapped on the &quot;paste and go&quot; button after long-pressing on
+    the omnibox on Android.
+  </description>
+</action>
+
 <action name="Omnibox.LongPress.Share">
   <owner>mdjones@chromium.org</owner>
   <owner>lzbylut@google.com</owner>

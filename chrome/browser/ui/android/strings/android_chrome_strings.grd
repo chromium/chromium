@@ -5458,6 +5458,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_OMNIBOX_CONTEXT_MENU_DELETE" desc="The text label of the Delete menu item in the omnibox text selection context menu.">
         Delete
       </message>
+      <message name="IDS_OMNIBOX_CONTEXT_MENU_PASTE_AND_GO_TO_COPIED_TEXT" desc="The text label of a menu item in the omnibox text context menu. Selecting it pastes the current clipboard text into the omnibox and immediately navigates to it (or searches for it).">
+        Paste and go to copied text
+      </message>
       <message name="IDS_OMNIBOX_CONFIRM_DELETE" desc="A message within a modal dialog that confirms the user wants to delete a suggestion from the list dropdown in the omnibox">
         Remove suggestion from history?
       </message>
