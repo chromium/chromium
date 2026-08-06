@@ -13,8 +13,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/browser_actuator/public/browser_actuator_service.h"
 #include "components/browser_actuator/public/features.h"
-#include "components/browser_actuator/public/transport_channel.h"
-#include "components/browser_actuator/public/transport_session_registry.h"
 #include "components/sharing_message/proto/sharing_message.pb.h"
 
 BrowserActuatorMessageHandler::BrowserActuatorMessageHandler(Profile* profile)
@@ -70,9 +68,6 @@ void BrowserActuatorMessageHandler::EnsureTransportSessionCreated(
   browser_actuator::BrowserActuatorService* service =
       browser_actuator::BrowserActuatorServiceFactory::GetForProfile(profile_);
   if (service && service->IsInitialized()) {
-    browser_actuator::TransportChannel* channel = service->GetChannel();
-    if (channel && channel->GetSessionRegistry()) {
-      channel->GetSessionRegistry()->GetOrCreateSession(session_id);
-    }
+    service->GetOrCreateSession(session_id);
   }
 }

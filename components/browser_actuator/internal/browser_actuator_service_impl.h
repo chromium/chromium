@@ -6,6 +6,7 @@
 #define COMPONENTS_BROWSER_ACTUATOR_INTERNAL_BROWSER_ACTUATOR_SERVICE_IMPL_H_
 
 #include <memory>
+#include <string_view>
 
 #include "components/browser_actuator/public/browser_actuator_service.h"
 
@@ -25,6 +26,8 @@ class BrowserActuatorServiceImpl : public BrowserActuatorService {
   // BrowserActuatorService implementation.
   bool IsInitialized() const override;
   TransportChannel* GetChannel() override;
+  TransportSession* GetOrCreateSession(std::string_view session_id) override;
+  TransportSession* GetSession(std::string_view session_id) override;
 
  private:
   std::unique_ptr<TransportChannelImpl> channel_;

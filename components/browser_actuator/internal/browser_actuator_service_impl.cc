@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "components/browser_actuator/internal/features.h"
 #include "components/browser_actuator/internal/transport_channel_impl.h"
+#include "components/browser_actuator/public/transport_session_registry.h"
 
 namespace browser_actuator {
 
@@ -26,6 +27,24 @@ bool BrowserActuatorServiceImpl::IsInitialized() const {
 
 TransportChannel* BrowserActuatorServiceImpl::GetChannel() {
   return channel_.get();
+}
+
+TransportSession* BrowserActuatorServiceImpl::GetOrCreateSession(
+    std::string_view session_id) {
+  TransportChannel* channel = GetChannel();
+  if (channel && channel->GetSessionRegistry()) {
+    return channel->GetSessionRegistry()->GetOrCreateSession(session_id);
+  }
+  return nullptr;
+}
+
+TransportSession* BrowserActuatorServiceImpl::GetSession(
+    std::string_view session_id) {
+  TransportChannel* channel = GetChannel();
+  if (channel && channel->GetSessionRegistry()) {
+    return channel->GetSessionRegistry()->GetSession(session_id);
+  }
+  return nullptr;
 }
 
 }  // namespace browser_actuator

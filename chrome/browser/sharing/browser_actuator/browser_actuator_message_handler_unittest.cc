@@ -14,30 +14,13 @@
 #include "chrome/browser/browser_actuator/browser_actuator_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/browser_actuator/public/features.h"
-#include "components/browser_actuator/public/transport_session_registry.h"
 #include "components/browser_actuator/test_support/mock_browser_actuator_service.h"
-#include "components/browser_actuator/test_support/mock_transport_channel.h"
 #include "components/sharing_message/proto/sharing_message.pb.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-
-class MockTransportSessionRegistry
-    : public browser_actuator::TransportSessionRegistry {
- public:
-  MOCK_METHOD(browser_actuator::TransportSession*,
-              GetSession,
-              (std::string_view),
-              (override));
-  MOCK_METHOD(void, AddObserver, (Observer*), (override));
-  MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
-  MOCK_METHOD(browser_actuator::TransportSession*,
-              GetOrCreateSession,
-              (std::string_view),
-              (override));
-};
 
 class BrowserActuatorMessageHandlerTest : public testing::Test {
  public:
@@ -63,10 +46,6 @@ class BrowserActuatorMessageHandlerTest : public testing::Test {
             profile_.get()));
     EXPECT_CALL(*mock_service_, IsInitialized())
         .WillRepeatedly(testing::Return(true));
-    EXPECT_CALL(*mock_service_, GetChannel())
-        .WillRepeatedly(testing::Return(&mock_channel_));
-    EXPECT_CALL(mock_channel_, GetSessionRegistry())
-        .WillRepeatedly(testing::Return(&mock_session_registry_));
 
     handler_ = std::make_unique<BrowserActuatorMessageHandler>(profile_.get());
   }
@@ -74,8 +53,6 @@ class BrowserActuatorMessageHandlerTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
-  browser_actuator::MockTransportChannel mock_channel_;
-  MockTransportSessionRegistry mock_session_registry_;
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<browser_actuator::MockBrowserActuatorService> mock_service_;
   std::unique_ptr<BrowserActuatorMessageHandler> handler_;
@@ -89,8 +66,7 @@ TEST_F(BrowserActuatorMessageHandlerTest, HandlesInitialSharingMessage) {
   message.mutable_server_channel_configuration();
   triggering->mutable_request()->mutable_device_opt_in_request();
 
-  EXPECT_CALL(mock_session_registry_, GetOrCreateSession("test_context_123"))
-      .WillOnce(testing::Return(nullptr));
+  EXPECT_CALL(*mock_service_, GetOrCreateSession("test_context_123"));
 
   base::test::TestFuture<
       std::unique_ptr<components_sharing_message::ResponseMessage>>
@@ -108,7 +84,7 @@ TEST_F(BrowserActuatorMessageHandlerTest, IgnoresNonOptInMessage) {
   message.mutable_server_channel_configuration();
   triggering->mutable_request()->mutable_stop_actuation_request();
 
-  EXPECT_CALL(mock_session_registry_, GetOrCreateSession(testing::_)).Times(0);
+  EXPECT_CALL(*mock_service_, GetOrCreateSession(testing::_)).Times(0);
 
   base::test::TestFuture<
       std::unique_ptr<components_sharing_message::ResponseMessage>>

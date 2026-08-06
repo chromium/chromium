@@ -36,9 +36,9 @@ class BrowserActuatorMessageHandler : public SharingMessageHandler {
   void HandleGlicExperimentalTriggering(
       const components_sharing_message::GlicExperimentalTriggering& triggering);
 
-  // Helper to initialize/get the TransportChannel and TransportSession for
-  // context_id.
-  void EnsureTransportSessionCreated(const std::string& context_id);
+  // Helper to initialize/get the TransportSession for
+  // session_id.
+  void EnsureTransportSessionCreated(const std::string& session_id);
 
   const raw_ptr<Profile> profile_;
 };
