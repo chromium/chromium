@@ -19000,7 +19000,8 @@
                     ],
                     "disable_features": [
                         "ScreenAIPartitionAllocAdvancedChecksEnabled"
-                    ]
+                    ],
+                    "disable_benchmarking": true
                 }
             ]
         }
