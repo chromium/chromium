@@ -8,7 +8,7 @@
  *
  * Unlike the Views version, this does not automatically disappear after the
  * feature is no longer new, so this must be done manually.
- * TODO(crbug.com/361169212): Follow up to integrate with auto-disappear code.
+ * TODO(crbug.com/543113387): Follow up to integrate with auto-disappear code.
  */
 
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
