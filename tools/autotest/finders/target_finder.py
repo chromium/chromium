@@ -95,7 +95,7 @@ def _FindTestTargetsViaGnRefs(out_dir: str, gn_paths: list[str]) -> list[str]:
   ]
 
   is_cpp_only = all(
-      p.endswith(('.cc', '.mm', '.cpp', '.h', '.m')) for p in gn_paths)
+      p.endswith(('.cc', '.mm', '.cpp', '.h', '.m', '.rs')) for p in gn_paths)
   if not is_cpp_only:
     cmd.append('--relation=input')
 

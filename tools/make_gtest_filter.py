@@ -38,8 +38,16 @@ import json
 import re
 import sys
 
+# These regexes are not exhaustive, and should be updated as needed.
+_RX_CC = re.compile(
+    r'^(?:TYPED_)?(?:IN_PROC_BROWSER_)?TEST(_F|_P)?\(\s*(\w+)\s*'
+    r',\s*(\w+)\s*\)',
+    flags=re.DOTALL | re.M)
+_RX_RS = re.compile(r'^\s*#\[gtest\(\s*(\w+)\s*,\s*(\w+)\s*\)\]', flags=re.M)
+
 
 class TrieNode:
+
   def __init__(self):
     # The number of strings which terminated on or underneath this node.
     self.num_strings = 0
@@ -255,18 +263,16 @@ def main():
     else:
       txt = ''.join(list(file_input))
 
-    # This regex is not exhaustive, and should be updated as needed.
-    rx = re.compile(
-        r'^(?:TYPED_)?(?:IN_PROC_BROWSER_)?TEST(_F|_P)?\(\s*(\w+)\s*' + \
-            r',\s*(\w+)\s*\)',
-        flags=re.DOTALL | re.M)
     tests = []
-    for m in rx.finditer(txt):
+    for m in _RX_CC.finditer(txt):
       # Try to include partially disabled tests.
       fixture, test_name = m.group(2), m.group(3)
       fixture = fixture.removeprefix('MAYBE_')
       test_name = test_name.removeprefix('MAYBE_')
-      tests.append(fixture + '.' + test_name)
+      tests.append(f'{fixture}.{test_name}')
+    for m in _RX_RS.finditer(txt):
+      fixture, test_name = m.group(1), m.group(2)
+      tests.append(f'{fixture}.{test_name}')
 
     if args.wildcard_compress:
       test_filters = CompressWithWildcards(tests, args.wildcard_min_depth,

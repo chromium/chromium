@@ -13,10 +13,10 @@ import utils.command_util as command
 import utils.constants as const
 from utils.command_error import CommandError
 
-
 _DIR_SOURCE_ROOT = os.path.normpath(
     os.path.join(os.path.basename(__file__), '../../..'))
-_COMMON_EXTENSIONS = ('.java', '.cc', '.mm', '.h', '.json', '.html', '.ts')
+_COMMON_EXTENSIONS = ('.java', '.cc', '.mm', '.h', '.json', '.html', '.ts',
+                      '.rs')
 
 
 def _CodeSearchFiles(query_args: list[str]) -> list[str]:
@@ -77,16 +77,20 @@ def IsTestFile(file_path: str) -> const.TestValidity:
   if not const.TEST_FILE_NAME_REGEX.match(file_path):
     return const.TestValidity.NOT_A_TEST
 
+  if file_path.endswith(('.cc', '.mm')):
+    test_macro_regex = const.CXX_GTEST_TEST_DEFINITION_MACRO_REGEX
+  elif file_path.endswith('.rs'):
+    test_macro_regex = const.RUST_GTEST_TEST_DEFINITION_MACRO_REGEX
+  elif file_path.endswith('.java'):
+    test_macro_regex = const.JUNIT_TEST_ANNOTATION_REGEX
+  else:
+    return const.TestValidity.MAYBE_A_TEST
+
   # Verify the file contains actual test definitions.
   try:
-    if file_path.endswith(('.cc', '.mm')):
-      content = pathlib.Path(file_path).read_text(encoding='utf-8')
-      if const.GTEST_TEST_DEFINITION_MACRO_REGEX.search(content) is not None:
-        return const.TestValidity.VALID_TEST
-    elif file_path.endswith('.java'):
-      content = pathlib.Path(file_path).read_text(encoding='utf-8')
-      if const.JUNIT_TEST_ANNOTATION_REGEX.search(content) is not None:
-        return const.TestValidity.VALID_TEST
+    content = pathlib.Path(file_path).read_text(encoding='utf-8')
+    if test_macro_regex.search(content) is not None:
+      return const.TestValidity.VALID_TEST
   except IOError:
     pass
 
@@ -273,7 +277,7 @@ def _FindTestForFile(target: os.PathLike[str]) -> str | None:
     # `*_unittest.{cc,mm}` are both possible.
     test_candidates.append(f'{root}_unittest.cc')
     test_candidates.append(f'{root}_unittest.mm')
-  elif ext == '.cc' or ext == '.mm':
+  elif ext in ('.cc', '.mm', '.rs'):
     test_candidates.append(f'{root}_unittest{ext}')
   else:
     return str(target)
@@ -432,13 +436,18 @@ def _FindRelatedTestFiles(impl_path: str,
       check_exts = ['.cc', '.h', '.mm']
       split_pattern = r'_'  # snake_case
       separator = '_'
+    case '.rs':
+      test_exts = ['.rs']
+      check_exts = ['.rs']
+      split_pattern = r'_'  # snake_case
+      separator = '_'
     case '.java':
       test_exts = ['.java']
       check_exts = ['.java']
       split_pattern = r'(?=[A-Z])'  # PascalCase
       separator = ''
     case _:
-      # Only C++ and Java code files are supported.
+      # Only C++, Java, and Rust code files are supported.
       return []
 
   candidates = _GetPotentiallyRelatedTestFiles(basename, test_exts,

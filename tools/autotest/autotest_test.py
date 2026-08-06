@@ -39,6 +39,14 @@ class FindMatchingTestFilesTest(TestCase):
     self.assertEqual(['foo_unittest.cc'],
                      file_finder.FindMatchingTestFiles('foo_unittest.cc'))
 
+  def create_rs_test(self, path):
+    self.fs.create_file(path, contents='#[gtest(A, B)]')
+
+  def test_rs_test(self):
+    self.create_rs_test('foo_unittest.rs')
+    self.assertEqual(['foo_unittest.rs'],
+                     file_finder.FindMatchingTestFiles('foo_unittest.rs'))
+
   def test_mm_test(self):
     self.create_cc_test('foo_unittest.mm')
     self.assertEqual(['foo_unittest.mm'],
@@ -49,6 +57,12 @@ class FindMatchingTestFilesTest(TestCase):
     self.create_cc_test('foo_unittest.cc')
     self.assertEqual(['foo_unittest.cc'],
                      file_finder.FindMatchingTestFiles('foo.cc'))
+
+  def test_rs_alt_test(self):
+    self.fs.create_file('foo.rs')
+    self.create_rs_test('foo_unittest.rs')
+    self.assertEqual(['foo_unittest.rs'],
+                     file_finder.FindMatchingTestFiles('foo.rs'))
 
   def test_cc_maybe_test(self):
     self.fs.create_file('foo_unittest.cc')
@@ -284,7 +298,8 @@ class FindMatchingTestFilesTest(TestCase):
   def test_windows_path_normalization(self):
     with mock.patch.object(file_finder.os.path, 'altsep', '/'), \
          mock.patch.object(file_finder.os.path, 'sep', '\\'), \
-         mock.patch('finders.file_finder._RecursiveMatchFilename') as mock_recursive:
+         mock.patch(
+             'finders.file_finder._RecursiveMatchFilename') as mock_recursive:
 
       mock_recursive.return_value = ([], [])
       with self.assertRaises(AutotestError):
@@ -519,6 +534,13 @@ class FindRelatedTestFilesTest(TestCase):
     self.mock_run_command.side_effect = rg_mock
     results = file_finder._FindRelatedTestFiles('foo.cc')
     self.assertEqual([], results)
+
+  def test_rs_exact_match(self):
+    self.fs.create_file('foo_unittest.rs', contents='#[gtest(A, B)]')
+    self.mock_run_command.return_value = 'foo_unittest.rs'
+
+    results = file_finder._FindRelatedTestFiles('foo.rs')
+    self.assertEqual(['foo_unittest.rs'], results)
 
   def test_java_exact_match(self):
     self.fs.create_file('FooTest.java', contents='@Test')

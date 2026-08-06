@@ -14,14 +14,14 @@ def BuildTestFilter(filenames: list[str], line: int | None) -> str:
   java_files: list[str] = [f for f in filenames if f.endswith('.java')]
   # TODO(crbug.com/434009870): Support EarlGrey tests, which don't use
   # Googletest's macros or pascal case naming convention.
-  cc_files: list[str] = [
-      f for f in filenames if f.endswith('.cc') or f.endswith('_unittest.mm')
+  native_files: list[str] = [
+      f for f in filenames if f.endswith(('.cc', '_unittest.mm', '.rs'))
   ]
   filters: list[str] = []
   if java_files:
     filters.append(BuildJavaTestFilter(java_files))
-  if cc_files:
-    filters.append(BuildCppTestFilter(cc_files, line))
+  if native_files:
+    filters.append(BuildCppTestFilter(native_files, line))
   for regex, gtest_filter in const.SPECIAL_TEST_FILTERS:
     if any(True for f in filenames if regex.match(f)):
       filters.append(gtest_filter)
