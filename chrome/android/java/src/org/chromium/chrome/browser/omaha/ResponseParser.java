@@ -11,6 +11,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omaha.OmahaBase.VersionConfig;
 import org.chromium.chrome.browser.omaha.XMLParser.Node;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 
 /**
  * Parses XML responses from the Omaha Update Server.
@@ -289,8 +290,7 @@ public class ResponseParser {
         if (url == null) return;
 
         // The URL gets a "/" tacked onto it by the server.  Remove it.
-        if (url.endsWith("/")) url = url.substring(0, url.length() - 1);
-        mUrl = url;
+        mUrl = UrlUtilities.stripTrailingSlash(url);
     }
 
     private void parseManifest(Node node) {

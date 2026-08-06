@@ -70,7 +70,7 @@ public class WebsiteAddress implements Comparable<WebsiteAddress>, Serializable 
         // Origin
         if (originOrHostOrPattern.contains(SCHEME_SUFFIX)) {
             Uri uri = Uri.parse(originOrHostOrPattern);
-            String origin = trimTrailingBackslash(originOrHostOrPattern);
+            String origin = UrlUtilities.stripTrailingSlash(originOrHostOrPattern);
             boolean omitProtocolAndPort =
                     UrlConstants.HTTP_SCHEME.equals(uri.getScheme())
                             && (uri.getPort() == -1 || uri.getPort() == 80);
@@ -215,9 +215,5 @@ public class WebsiteAddress implements Comparable<WebsiteAddress>, Serializable 
         return --endIndex > startIndex
                 ? address.substring(startIndex, endIndex).split("\\.")
                 : new String[0];
-    }
-
-    private static String trimTrailingBackslash(String origin) {
-        return origin.endsWith("/") ? origin.substring(0, origin.length() - 1) : origin;
     }
 }

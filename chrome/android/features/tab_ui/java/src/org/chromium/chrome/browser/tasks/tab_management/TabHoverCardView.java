@@ -230,9 +230,7 @@ public class TabHoverCardView extends FrameLayout {
         // If the URL is a Chrome scheme, display the GURL spec instead of the host. For e.g., use
         // chrome://newtab instead of just newtab on the hover card.
         if (UrlUtilities.isInternalScheme(hoveredTab.getUrl())) {
-            url = hoveredTab.getUrl().getSpec();
-            // GURL#getSpec() returns a string with a trailing "/", remove this.
-            url = url.replaceFirst("/$", "");
+            url = UrlUtilities.stripTrailingSlash(hoveredTab.getUrl().getSpec());
         }
         mUrlView.setText(url);
     }

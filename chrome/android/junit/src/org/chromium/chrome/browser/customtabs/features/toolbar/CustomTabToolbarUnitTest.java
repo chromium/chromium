@@ -71,6 +71,7 @@ import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
 import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.ToolbarSnapshotDifference;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -221,7 +222,7 @@ public class CustomTabToolbarUnitTest {
         verify(mLocationBarModel).notifySecurityStateChanged();
         verifyBrowserControlVisibleForRequiredDuration();
         // URL bar truncates trailing /.
-        assertUrlBarShowingText(TEST_URL.getSpec().replaceAll("/$", ""));
+        assertUrlBarShowingText(UrlUtilities.stripTrailingSlash(TEST_URL.getSpec()));
     }
 
     @Test

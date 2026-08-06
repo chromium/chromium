@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.tabs.TabAlert;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -293,7 +294,7 @@ public class TabHoverCardViewUnitTest {
         // Verify chrome:// tab hover card display text.
         assertEquals(
                 "Card URL text is incorrect.",
-                mHoveredTab.getUrl().getSpec().replaceFirst("/$", ""),
+                UrlUtilities.stripTrailingSlash(mHoveredTab.getUrl().getSpec()),
                 mUrlView.getText());
         verify(mTabHoverCardView).setX(10f);
         verify(mTabHoverCardView).setY(20f);
