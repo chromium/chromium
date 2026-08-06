@@ -45,4 +45,11 @@ for file in ${files[@]} ; do
 done
 
 popd
+
+commit_hash=$(git -C /tmp/text rev-parse HEAD)
+commit_date=$(git -C /tmp/text log -1 --format="%cs")
+
 rm -rf /tmp/text
+
+sed -i "s/^Revision: .*/Revision: ${commit_hash}/" third_party/tensorflow-text/README.chromium
+sed -i "s/^Date: .*/Date: ${commit_date}/" third_party/tensorflow-text/README.chromium

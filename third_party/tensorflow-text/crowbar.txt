@@ -1,0 +1,22 @@
+How to update tensorflow-text:
+
+1. Ensure your current working directory is set to the root of the Chromium
+   checkout (src/)
+
+2. Execute the update script to fetch upstream code at the latest commit.
+   `./third_party/tensorflow-text/update.sh`
+
+   This script maintains an allowlist of files needed by Chromium, and updates
+   tensorflow-text by executing the following steps in order:
+   a) Shallow-clones the upstream repository to a temporary folder (/tmp/text).
+   b) Deletes existing code (third_party/tensorflow-text/src/*).
+   c) Copies the allowlisted files to third_party/tensorflow-text/src/.
+   d) Deletes the temporary folder.
+   e) Updates the commit hash and date of the latest commit in README.chromium.
+
+3. Apply the local Chromium patches in third_party/tensorflow-text/patches/:
+   `git apply third_party/tensorflow-text/patches/*.patch`
+
+4. Verify success by building Chrome.
+
+5. Commit and upload to Gerrit for review.
