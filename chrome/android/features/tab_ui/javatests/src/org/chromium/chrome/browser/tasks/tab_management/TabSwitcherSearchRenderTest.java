@@ -82,7 +82,7 @@ public class TabSwitcherSearchRenderTest {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(20) // Adjust suggestion min height.
+                    .setRevision(21) // Updated delete/close button icon.
                     .setBugComponent(Component.UI_BROWSER_MOBILE_TAB_SWITCHER)
                     .build();
 

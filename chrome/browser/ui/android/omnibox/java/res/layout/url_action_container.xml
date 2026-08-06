@@ -82,7 +82,7 @@ found in the LICENSE file.
         android:id="@+id/delete_button"
         android:foreground="@drawable/circle_button_focus_ring"
         android:visibility="gone"
-        android:src="@drawable/btn_delete_24dp"
+        android:src="@drawable/material_ic_close_24dp"
         android:contentDescription="@string/accessibility_toolbar_btn_delete_url"
         android:tooltipText="@string/accessibility_toolbar_btn_delete_url"
         app:layout_constraintTop_toBottomOf="@id/location_bar_attachments"
