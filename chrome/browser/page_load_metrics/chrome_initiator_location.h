@@ -27,7 +27,8 @@ enum class ChromeInitiatorLocation : page_load_metrics::
       kNewTabPage = 2,
       kOmniboxDirectUrlInput = 3,
       kOmniboxDefaultSearchEngine = 4,
-      kMaxValue = kOmniboxDefaultSearchEngine
+      kLinkClick = 5,
+      kMaxValue = kLinkClick
     };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:NavigationInitiatorType)
 
