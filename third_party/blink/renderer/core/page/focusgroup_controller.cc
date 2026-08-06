@@ -4,12 +4,14 @@
 
 #include "third_party/blink/renderer/core/page/focusgroup_controller.h"
 
+#include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
+#include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -91,11 +93,12 @@ bool FocusgroupController::HandleHomeEndKeyboardEvent(KeyboardEvent* event,
   ExecutionContext* context = frame->DomWindow()->GetExecutionContext();
   CHECK(RuntimeEnabledFeatures::FocusgroupEnabled(context));
 
-  if (!frame->GetDocument()) {
+  Document* document = frame->GetDocument();
+  if (!document) {
     return false;
   }
 
-  Element* focused = frame->GetDocument()->FocusedElement();
+  Element* focused = document->FocusedElement();
   if (!focused || focused != event->RawTarget()) {
     return false;
   }
@@ -107,6 +110,11 @@ bool FocusgroupController::HandleHomeEndKeyboardEvent(KeyboardEvent* event,
     return false;
   }
 
+  // Caret browsing handles Home/End in the editor.
+  if (frame->IsCaretBrowsingEnabled()) {
+    return false;
+  }
+
   // Home/End with modifier keys should not trigger focusgroup navigation
   // (e.g., Ctrl+Home scrolls to the document start).
   if (event->ctrlKey() || event->metaKey() || event->shiftKey() ||
@@ -114,18 +122,31 @@ bool FocusgroupController::HandleHomeEndKeyboardEvent(KeyboardEvent* event,
     return false;
   }
 
-  // If the focused element is inside a directional key handler (e.g., text
-  // input), do not intercept Home/End — those keys have native behavior there.
-  if (utils::IsInDirectionalKeyHandler(focused)) {
+  if (focused->editContext()) {
     return false;
   }
 
   Element* owner =
       utils::FindNearestFocusgroupAncestor(focused, FocusgroupType::kLinear);
-  if (!owner) {
+  if (!owner || !utils::IsFocusgroupItemWithOwner(focused, owner)) {
+    return false;
+  }
+
+  // A keydown listener can change editable style before default handling.
+  document->UpdateStyleAndLayoutTreeForElement(
+      focused, DocumentUpdateReason::kFocusgroup);
+  focused = document->FocusedElement();
+  if (!focused || focused != event->RawTarget()) {
     return false;
   }
   if (!utils::IsFocusgroupItemWithOwner(focused, owner)) {
+    return false;
+  }
+
+  // Do not intercept Home/End for editable elements or controls with native
+  // directional-key behavior.
+  if (IsEditable(*focused) ||
+      utils::IsInDirectionalKeyHandlerForAnyAxis(*focused, *owner)) {
     return false;
   }
 

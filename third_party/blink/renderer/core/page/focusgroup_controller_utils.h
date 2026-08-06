@@ -213,6 +213,13 @@ class CORE_EXPORT FocusgroupControllerUtils {
   // focus is within the handler element.
   static bool IsInDirectionalKeyHandler(const Element* element);
 
+  // Returns true if |element| is in a native directional key handler on either
+  // axis, stopping at |focusgroup_owner|. |focusgroup_owner| must own
+  // |element|.
+  static bool IsInDirectionalKeyHandlerForAnyAxis(
+      const Element& element,
+      const Element& focusgroup_owner);
+
   // Returns true if |element| is in a native directional key handler that
   // handles the specified |direction|. This allows per-axis detection, e.g., a
   // horizontal-only scroll container only handles inline (left/right)
@@ -221,8 +228,8 @@ class CORE_EXPORT FocusgroupControllerUtils {
                                         FocusgroupDirection direction);
 
   // Returns the nearest ancestor (or self) that is a native directional key
-  // handler for |element|'s nearest focusgroup owner, or nullptr if none
-  // exists.
+  // handler on an axis enabled by |element|'s nearest focusgroup owner, or
+  // nullptr if none exists.
   static const Element* GetDirectionalKeyHandlerRoot(const Element* element);
 
   // If the document's currently focused element is within a directional key

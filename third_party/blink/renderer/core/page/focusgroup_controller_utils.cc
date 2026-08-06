@@ -154,6 +154,20 @@ class FocusgroupVisualOrderTraversalContext {
       reading_flow_previous_elements_;
 };
 
+const Element* FindDirectionalKeyHandlerRootForAxes(
+    const Element* element,
+    const Element* focusgroup_owner,
+    FocusgroupFlags axes) {
+  const Element* current = element;
+  while (current && current != focusgroup_owner) {
+    if (current->NativeArrowKeyAxes() & axes) {
+      return current;
+    }
+    current = FlatTreeTraversal::ParentElement(*current);
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 FocusgroupDirection FocusgroupControllerUtils::FocusgroupDirectionForEvent(
@@ -446,6 +460,16 @@ bool FocusgroupControllerUtils::IsInDirectionalKeyHandler(
   return GetDirectionalKeyHandlerRoot(element) != nullptr;
 }
 
+bool FocusgroupControllerUtils::IsInDirectionalKeyHandlerForAnyAxis(
+    const Element& element,
+    const Element& focusgroup_owner) {
+  DCHECK(IsFocusgroupItemWithOwner(&element, &focusgroup_owner));
+  constexpr FocusgroupFlags kAllAxes =
+      FocusgroupFlags::kInline | FocusgroupFlags::kBlock;
+  return FindDirectionalKeyHandlerRootForAxes(&element, &focusgroup_owner,
+                                              kAllAxes) != nullptr;
+}
+
 bool FocusgroupControllerUtils::IsInDirectionalKeyHandler(
     const Element& element,
     FocusgroupDirection direction) {
@@ -476,17 +500,8 @@ bool FocusgroupControllerUtils::IsInDirectionalKeyHandler(
     return false;
   }
 
-  // Walk up to find a directional key handler that uses the navigation axis.
-  const Element* current = &element;
-  while (current && current != owner) {
-    FocusgroupFlags native_axes = current->NativeArrowKeyAxes();
-    if (native_axes & direction_axis) {
-      return true;
-    }
-    current = FlatTreeTraversal::ParentElement(*current);
-  }
-
-  return false;
+  return FindDirectionalKeyHandlerRootForAxes(&element, owner,
+                                              direction_axis) != nullptr;
 }
 
 const Element* FocusgroupControllerUtils::GetDirectionalKeyHandlerRoot(
@@ -518,16 +533,7 @@ const Element* FocusgroupControllerUtils::GetDirectionalKeyHandlerRoot(
           ? (flags & (FocusgroupFlags::kInline | FocusgroupFlags::kBlock))
           : (FocusgroupFlags::kInline | FocusgroupFlags::kBlock);
 
-  const Element* current = element;
-  while (current && current != owner) {
-    FocusgroupFlags native_axes = current->NativeArrowKeyAxes();
-    if (native_axes & enabled_axes) {
-      return current;
-    }
-    current = FlatTreeTraversal::ParentElement(*current);
-  }
-
-  return nullptr;
+  return FindDirectionalKeyHandlerRootForAxes(element, owner, enabled_axes);
 }
 
 // static
