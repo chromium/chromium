@@ -605,10 +605,10 @@ def ExtractHistogramsFromXmlTree(
     # Handle enum types.
     if histogram.hasAttribute('enum'):
       enum_name = histogram.getAttribute('enum')
-      if enum_name not in enums:
-        errors.AppendAndLog(f'Unknown enum {enum_name} in histogram {name}.')
-      else:
+      if enum_name in enums:
         histogram_entry['enumDetails'] = enums[enum_name]
+      elif enums:
+        errors.AppendAndLog(f'Unknown enum {enum_name} in histogram {name}.')
 
     # Find <token> tag.
     tokens, token_errors = ExtractTokens(histogram, variants_dict)

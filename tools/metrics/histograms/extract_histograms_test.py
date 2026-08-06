@@ -388,7 +388,7 @@ class ExtractHistogramsTest(unittest.TestCase):
     histogram_with_enum_and_unit = xml.dom.minidom.parseString("""
 <histogram-configuration>
 <histograms>
- <histogram name="Test.Histogram" enum="MyEnumType" unit="things"
+ <histogram name="Test.Histogram" enum="MyEnumType" units="things"
     expires_after="2019-01-01">
   <owner>chrome-metrics-team@google.com</owner>
   <summary> This is a summary </summary>
