@@ -4,14 +4,16 @@
 
 #include "services/webnn/ort/device_allocator.h"
 
+#include <string_view>
+
 #include "base/logging.h"
-#include "base/strings/cstring_view.h"
 #include "services/webnn/ort/environment.h"
 #include "services/webnn/ort/ort_status.h"
 #include "services/webnn/ort/platform_functions_ort.h"
 #include "services/webnn/ort/trivial_model.h"
 #include "services/webnn/public/cpp/execution_providers_info.h"
 #include "third_party/windows_app_sdk_headers/src/inc/abi/winml/winml/onnxruntime_c_api.h"
+#include "third_party/windows_app_sdk_headers/src/inc/abi/winml/winml/onnxruntime_session_options_config_keys.h"
 
 namespace webnn::ort {
 
@@ -21,12 +23,11 @@ namespace {
 // OpenVINO EP is supported. Returns nullptr for unsupported EPs.
 const OrtMemoryInfo* GetMemoryInfo(const OrtApi* ort_api,
                                    const OrtEpDevice* ep_device,
-                                   base::cstring_view ep_name) {
+                                   std::string_view ep_name) {
   if (ep_name == kOpenVINOExecutionProvider) {
     return ort_api->EpDevice_MemoryInfo(ep_device,
                                         OrtDeviceMemoryType_HOST_ACCESSIBLE);
   }
-
   return nullptr;
 }
 
@@ -40,11 +41,9 @@ scoped_refptr<DeviceAllocator> DeviceAllocator::Create(
   const OrtEpDevice* first_selected_device =
       session_options->first_selected_device();
 
-  const char* ep_name = ort_api->EpDevice_EpName(first_selected_device);
-  // SAFETY: ORT guarantees that `ep_name` is valid and null-terminated.
+  std::string_view ep_name = ort_api->EpDevice_EpName(first_selected_device);
   const OrtMemoryInfo* memory_info =
-      GetMemoryInfo(ort_api, first_selected_device,
-                    UNSAFE_BUFFERS(base::cstring_view(ep_name)));
+      GetMemoryInfo(ort_api, first_selected_device, ep_name);
   if (!memory_info) {
     return nullptr;
   }
@@ -52,9 +51,21 @@ scoped_refptr<DeviceAllocator> DeviceAllocator::Create(
   // TODO(crbug.com/519646879): Remove the trivial session once WinML ships
   // ORT 1.27+, which supports getting a shared allocator directly from
   // OrtEnv without creating a session.
+  ScopedOrtSessionOptions cloned_session_options;
+  CHECK_STATUS(ort_api->CloneSessionOptions(
+      session_options->get(),
+      ScopedOrtSessionOptions::Receiver(cloned_session_options).get()));
+  // Model compilation is normally disabled in the GPU process when
+  // `features::kWebNNCompilerProcess` is active, but `kTrivialModel` contains
+  // uncompiled operators and would fail to compile without it, so re-enable it
+  // here temporarily.
+  CHECK_STATUS(ort_api->AddSessionConfigEntry(
+      cloned_session_options.get(), kOrtSessionOptionsDisableModelCompile,
+      "0"));
   ScopedOrtSession trivial_session;
   CHECK_STATUS(ort_api->CreateSessionFromArray(
-      env->get(), kTrivialModel, sizeof(kTrivialModel), session_options->get(),
+      env->get(), kTrivialModel, sizeof(kTrivialModel),
+      cloned_session_options.get(),
       ScopedOrtSession::Receiver(trivial_session).get()));
   CHECK(trivial_session.get());
 

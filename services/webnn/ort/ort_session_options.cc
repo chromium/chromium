@@ -282,7 +282,6 @@ SessionOptions::Create(mojom::CreateContextOptionsPtr context_options,
 scoped_refptr<SessionOptions> SessionOptions::Create(
     const EpDeviceInfo& target_device,
     scoped_refptr<Environment> env) {
-  // This overload is only used by the compiler process.
   CHECK(base::FeatureList::IsEnabled(mojom::features::kWebNNCompilerProcess));
 
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
@@ -307,6 +306,16 @@ scoped_refptr<SessionOptions> SessionOptions::Create(
   // which is intended: the security boundary is not a debug-tunable knob.
   CHECK_STATUS(ort_api->SetSessionGraphOptimizationLevel(session_options.get(),
                                                          ORT_DISABLE_ALL));
+
+  // Disable model compilation in the GPU process, forcing all compilation on
+  // compiling EPs to only happen in the Compiler process. This way a
+  // compromised Compiler process can't cause the high-privilege GPU process to
+  // run less safe code than intended. The Compiler process itself ignores this
+  // setting because it internally overrides the value to 0 via the model
+  // compilation options.
+  // https://github.com/microsoft/onnxruntime/blob/00e575d/onnxruntime/core/session/model_compilation_options.cc#L32
+  CHECK_STATUS(ort_api->AddSessionConfigEntry(
+      session_options.get(), kOrtSessionOptionsDisableModelCompile, "1"));
 
   // Disable CPU EP fallback to ensure the session will be created on the
   // expected EP device.
