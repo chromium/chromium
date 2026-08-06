@@ -15,3 +15,5 @@ per-file ..._fuchsia*=file://build/fuchsia/OWNERS
 # For Fuzzilli-specific changes:
 per-file ...*fuzzilli*=bantikyan@chromium.org
 per-file ...*fuzzilli*=ortuno@chromium.org
+per-file .../*fuzzilli*/*=bantikyan@chromium.org
+per-file .../*fuzzilli*/*=ortuno@chromium.org
