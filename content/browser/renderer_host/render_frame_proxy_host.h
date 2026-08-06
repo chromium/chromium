@@ -311,6 +311,31 @@ class CONTENT_EXPORT RenderFrameProxyHost
   // with.
   AgentSchedulingGroupHost& GetAgentSchedulingGroup();
 
+  // Defines exemptions for `IsRelatedToCurrentFrameHost()` below.
+  enum class CrossBrowsingInstanceExemption {
+    // No exemptions. The proxy and the current frame host must be in related
+    // SiteInstanceGroups (i.e., in the same BrowsingInstance).
+    kNone,
+    // Exempts embedder-to-inner-tree communication. This allows an embedder
+    // page to send certain IPCs (e.g., focus, print) to an inner frame tree
+    // (e.g., <webview> tag or Fenced Frame) even though they are in different
+    // BrowsingInstances.
+    kEmbedderToInnerTree,
+  };
+
+  // Checks if the proxy's SiteInstanceGroup is related to the
+  // SiteInstanceGroup of the current RenderFrameHost. This prevents
+  // a compromised renderer in one BrowsingInstance from acting on a
+  // frame in another BrowsingInstance. This check is required for any
+  // RenderFrameProxyHost IPC-handling function that acts on main frames
+  // and accesses current_frame_host().
+  //
+  // The `exemption` parameter allows specific cross-BrowsingInstance
+  // communication paths (like guest view focus) to bypass this check.
+  bool IsRelatedToCurrentFrameHost(
+      CrossBrowsingInstanceExemption exemption =
+          CrossBrowsingInstanceExemption::kNone) const;
+
   // Needed for tests to be able to swap the implementation and intercept calls.
   mojo::AssociatedReceiver<blink::mojom::RemoteFrameHost>&
   frame_host_receiver_for_testing() {

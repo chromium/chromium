@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/hash/hash.h"
 #include "base/lazy_instance.h"
@@ -76,6 +77,11 @@ TokenFrameMap& GetTokenFrameProxyMap() {
   static base::NoDestructor<TokenFrameMap> token_frame_proxy_map;
   return *token_frame_proxy_map;
 }
+
+// A kill switch for the enforcement of cross-BrowsingInstance checks in
+// RenderFrameProxyHost IPC handlers. See https://crbug.com/495933780.
+BASE_FEATURE(kEnforceCrossBrowsingInstanceChecks,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 
@@ -332,6 +338,50 @@ AgentSchedulingGroupHost& RenderFrameProxyHost::GetAgentSchedulingGroup() {
   return site_instance_group_->agent_scheduling_group();
 }
 
+bool RenderFrameProxyHost::IsRelatedToCurrentFrameHost(
+    CrossBrowsingInstanceExemption exemption) const {
+  if (!base::FeatureList::IsEnabled(kEnforceCrossBrowsingInstanceChecks)) {
+    return true;
+  }
+
+  // This check ensures that an IPC sent via a specific proxy (in the sender's
+  // process) can only affect a target frame if the proxy and the target belong
+  // to the same BrowsingInstance. Normally the active sender frame in this
+  // proxy's process will be in the same SiteInstanceGroup and BCG as this
+  // proxy, but even in compromised renderers we can guarantee that this proxy
+  // is legitimately in the BCG and under the renderer process's control.
+  //
+  // In some cases, it may also be useful to check the BCG of the sender frame
+  // when it will be used in response, such as DidChangeOpener or
+  // RouteMessageEvent.
+  RenderFrameHostImpl* current_rfh = frame_tree_node_->current_frame_host();
+  if (site_instance_group_->IsRelatedSiteInstanceGroup(
+          current_rfh->GetSiteInstance()->group())) {
+    return true;
+  }
+
+  switch (exemption) {
+    case CrossBrowsingInstanceExemption::kNone:
+      break;
+    case CrossBrowsingInstanceExemption::kEmbedderToInnerTree:
+      // An embedder could only target the inner frame tree's main frame. Note
+      // that using GetParent() instead of GetParentOrOuterDocument() allows any
+      // kind of outer-to-inner FrameTree interaction, including both <webview>
+      // tags and fenced frames. This is necessary because certain IPCs (such as
+      // AdvanceFocus) need to work with fenced frames.
+      if (!current_rfh->GetParent()) {
+        if (RenderFrameHostImpl* embedder =
+                current_rfh->GetParentOrOuterDocumentOrEmbedder()) {
+          if (site_instance_group_ == embedder->GetSiteInstance()->group()) {
+            return true;
+          }
+        }
+      }
+      break;
+  }
+  return false;
+}
+
 void RenderFrameProxyHost::SetRenderFrameProxyCreated(bool created) {
   render_frame_proxy_created_ = created;
 
@@ -429,6 +479,9 @@ void RenderFrameProxyHost::Detach() {
 }
 
 void RenderFrameProxyHost::CheckCompleted() {
+  if (!IsRelatedToCurrentFrameHost()) {
+    return;
+  }
   RenderFrameHostImpl* target_rfh = frame_tree_node()->current_frame_host();
   target_rfh->GetAssociatedLocalFrame()->CheckCompleted();
 }
@@ -478,12 +531,22 @@ void RenderFrameProxyHost::DidFocusFrame() {
   // Do not focus inactive RenderFrameHost.
   if (!render_frame_host->IsActive())
     return;
+  // Do not focus a RenderFrameHost in a different BrowsingInstance, except
+  // when focusing an inner FrameTree (e.g., for <webview> tags).
+  if (!IsRelatedToCurrentFrameHost(
+          CrossBrowsingInstanceExemption::kEmbedderToInnerTree)) {
+    return;
+  }
   frame_tree_node_->SetFocusedFrame(site_instance_group());
 }
 
 void RenderFrameProxyHost::CapturePaintPreviewOfCrossProcessSubframe(
     const gfx::Rect& clip_rect,
     const base::UnguessableToken& guid) {
+  if (!IsRelatedToCurrentFrameHost(
+          CrossBrowsingInstanceExemption::kEmbedderToInnerTree)) {
+    return;
+  }
   RenderFrameHostImpl* rfh = frame_tree_node_->current_frame_host();
   // Do not capture paint on behalf of inactive RenderFrameHost.
   if (rfh->IsInactiveAndDisallowActivation(
@@ -747,6 +810,10 @@ void RenderFrameProxyHost::RouteMessageEvent(
 
 void RenderFrameProxyHost::PrintCrossProcessSubframe(const gfx::Rect& rect,
                                                      int32_t document_cookie) {
+  if (!IsRelatedToCurrentFrameHost(
+          CrossBrowsingInstanceExemption::kEmbedderToInnerTree)) {
+    return;
+  }
   RenderFrameHostImpl* rfh = frame_tree_node_->current_frame_host();
   rfh->delegate()->PrintCrossProcessSubframe(rect, document_cookie, rfh);
 }
@@ -758,16 +825,26 @@ void RenderFrameProxyHost::SynchronizeVisualProperties(
 }
 
 void RenderFrameProxyHost::FocusPage() {
+  if (!IsRelatedToCurrentFrameHost()) {
+    return;
+  }
   frame_tree_node_->current_frame_host()->FocusPage();
 }
 
 void RenderFrameProxyHost::TakeFocus(bool reverse) {
+  if (!IsRelatedToCurrentFrameHost()) {
+    return;
+  }
   frame_tree_node_->current_frame_host()->TakeFocus(reverse);
 }
 
 void RenderFrameProxyHost::UpdateTargetURL(
     const GURL& url,
     blink::mojom::RemoteMainFrameHost::UpdateTargetURLCallback callback) {
+  if (!IsRelatedToCurrentFrameHost()) {
+    std::move(callback).Run();
+    return;
+  }
   frame_tree_node_->current_frame_host()->UpdateTargetURL(url,
                                                           std::move(callback));
 }
@@ -785,12 +862,10 @@ void RenderFrameProxyHost::RouteCloseEvent() {
 
   // Tell the active RenderFrameHost to run unload handlers and close, as long
   // as the request came from a RenderFrameHost in the same BrowsingInstance.
-  // We receive this from a WebViewImpl when it receives a request to close
-  // the window containing the active RenderFrameHost. Note that different
-  // BrowsingInstances in the same CoopRelatedGroup should not be able to close
-  // each other's windows, therefore checking IsRelatedSiteInstance() is enough.
-  if (site_instance_group()->IsRelatedSiteInstanceGroup(
-          rfh->GetSiteInstance()->group())) {
+  // We receive this from a WebViewImpl when it receives a request to close the
+  // window containing the active RenderFrameHost. Different BrowsingInstances
+  // should not be able to close each other's windows.
+  if (IsRelatedToCurrentFrameHost()) {
     rfh->ClosePage(RenderFrameHostImpl::ClosePageSource::kRenderer);
   }
 }
@@ -821,11 +896,9 @@ void RenderFrameProxyHost::OpenURL(blink::mojom::OpenURLParamsPtr params) {
   }
 
   // Verify that we are in the same BrowsingInstance as the current
-  // RenderFrameHost. Note that different BrowsingInstances in the same
-  // CoopRelatedGroup should not be able to navigate each other's frames,
-  // therefore checking IsRelatedSiteInstance() is enough.
-  if (!site_instance_group()->IsRelatedSiteInstanceGroup(
-          current_rfh->GetSiteInstance()->group())) {
+  // RenderFrameHost. Different BrowsingInstances should not be able to navigate
+  // each other's frames.
+  if (!IsRelatedToCurrentFrameHost()) {
     return;
   }
 
@@ -922,6 +995,9 @@ void RenderFrameProxyHost::UpdateViewportIntersection(
 
 void RenderFrameProxyHost::DidChangeOpener(
     const std::optional<blink::LocalFrameToken>& opener_frame_token) {
+  if (!IsRelatedToCurrentFrameHost()) {
+    return;
+  }
   // Note that this call internally protects against `opener_frame_token`
   // referring to an inactive frame.
   frame_tree_node_->render_manager()->DidChangeOpener(opener_frame_token,
@@ -931,6 +1007,13 @@ void RenderFrameProxyHost::DidChangeOpener(
 void RenderFrameProxyHost::AdvanceFocus(
     blink::mojom::FocusType focus_type,
     const blink::LocalFrameToken& source_frame_token) {
+  // Do not advance focus into a RenderFrameHost in a different
+  // BrowsingInstance.
+  if (!IsRelatedToCurrentFrameHost(
+          CrossBrowsingInstanceExemption::kEmbedderToInnerTree)) {
+    return;
+  }
+
   // Translate the source RenderFrameHost in this process to its equivalent
   // RenderFrameProxyHost in the target SiteInstanceGroup.  This is needed for
   // continuing the focus traversal from correct place in a parent frame after
