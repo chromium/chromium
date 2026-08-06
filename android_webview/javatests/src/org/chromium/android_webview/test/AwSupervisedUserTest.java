@@ -49,7 +49,9 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -286,6 +288,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({"Prerender2FallbackPrefetchSpecRules"})
     public void testPrerenderDisallowedSiteIsBlocked() throws Throwable {
         mActivityTestRule
                 .getAwSettingsOnUiThread(mAwContents)
@@ -318,6 +321,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @DisabledTest(message = "crbug.com/543291702")
     public void testPrefetchDisallowedSiteIsBlocked() throws Throwable {
         mActivityTestRule
                 .getAwSettingsOnUiThread(mAwContents)
@@ -354,6 +358,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @DisabledTest(message = "crbug.com/543291702")
     public void testSafeSitesCanBePrefetched() throws Throwable {
         mActivityTestRule
                 .getAwSettingsOnUiThread(mAwContents)
