@@ -298,20 +298,23 @@ export enum ContextualSearchInputStateDeletionType {
 
 export function recordEnumerationValue(
     metricName: string, value: number, enumSize: number) {
-  if (chrome.histograms) {
-    chrome.histograms.recordEnumerationValue(metricName, value, enumSize);
+  const metricsService = chrome.histograms || chrome.metricsPrivate;
+  if (metricsService) {
+    metricsService.recordEnumerationValue(metricName, value, enumSize);
   }
 }
 
 export function recordUserAction(metricName: string) {
-  if (chrome.histograms) {
-    chrome.histograms.recordUserAction(metricName);
+  const metricsService = chrome.histograms || chrome.metricsPrivate;
+  if (metricsService) {
+    metricsService.recordUserAction(metricName);
   }
 }
 
 export function recordBoolean(metricName: string, value: boolean) {
-  if (chrome.histograms) {
-    chrome.histograms.recordBoolean(metricName, value);
+  const metricsService = chrome.histograms || chrome.metricsPrivate;
+  if (metricsService) {
+    metricsService.recordBoolean(metricName, value);
   }
 }
 

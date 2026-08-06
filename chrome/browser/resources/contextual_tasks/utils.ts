@@ -5,8 +5,11 @@
 import type {BigBuffer} from 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 
 export function recordAction(actionName: string) {
-  chrome.histograms.recordUserAction(actionName);
-  chrome.histograms.recordBoolean(actionName, true);
+  const metricsService = chrome.histograms || chrome.metricsPrivate;
+  if (metricsService) {
+    metricsService.recordUserAction(actionName);
+    metricsService.recordBoolean(actionName, true);
+  }
 }
 
 export interface UnboundedDialog extends HTMLDialogElement {

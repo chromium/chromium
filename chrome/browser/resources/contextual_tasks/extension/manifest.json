@@ -9,7 +9,8 @@
     "type": "module"
   },
   "permissions": [
-    "contextualTasksPrivate"
+    "contextualTasksPrivate",
+    "metricsPrivate"
   ],
   "host_permissions": [
     "chrome://resources/*"
