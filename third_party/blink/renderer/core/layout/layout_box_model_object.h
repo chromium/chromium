@@ -266,6 +266,7 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
     return ShouldBeHandledAsInline(StyleRef());
   }
   void StyleWillChange(StyleDifference,
+                       const ComputedStyle* old_style,
                        const ComputedStyle& new_style,
                        StyleChangeContext&) override;
   void StyleDidChange(StyleDifference,

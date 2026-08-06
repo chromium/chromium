@@ -3528,13 +3528,14 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     bool did_prevent_spanner_descendants = false;
   };
 
-  // Overrides should call the superclass at the end. style_ will be 0 the
-  // first time this function will be called.
+  // Overrides should call the superclass at the end. `old_style` will be
+  // nullptr the first time this function is called.
   virtual void StyleWillChange(StyleDifference,
+                               const ComputedStyle* old_style,
                                const ComputedStyle& new_style,
                                StyleChangeContext&);
-  // Overrides should call the superclass at the start. |oldStyle| will be 0 the
-  // first time this function is called.
+  // Overrides should call the superclass at the start. `old_style` will be
+  // nullptr the first time this function is called.
   virtual void StyleDidChange(StyleDifference,
                               const ComputedStyle* old_style,
                               const StyleChangeContext&);

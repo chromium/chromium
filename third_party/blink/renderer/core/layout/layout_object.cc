@@ -2989,9 +2989,9 @@ void LayoutObject::SetStyle(const ComputedStyle* style,
 
   StyleChangeContext style_change_context;
 
-  StyleWillChange(diff, *style, style_change_context);
+  const ComputedStyle* old_style = style_.Get();
+  StyleWillChange(diff, old_style, *style, style_change_context);
 
-  const ComputedStyle* old_style = std::move(style_);
   SetStyleInternal(std::move(style));
 
   if (!IsText()) {
@@ -3154,22 +3154,23 @@ void LayoutObject::UpdateFirstLineImageObservers(
 }
 
 void LayoutObject::StyleWillChange(StyleDifference diff,
+                                   const ComputedStyle* old_style,
                                    const ComputedStyle& new_style,
                                    StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
   DCHECK(!IsText());
 
-  if (style_) {
-    bool visibility_changed = style_->Visibility() != new_style.Visibility();
+  if (old_style) {
+    bool visibility_changed = old_style->Visibility() != new_style.Visibility();
     // If our z-index changes value or our visibility changes,
     // we need to dirty our stacking context's z-order list.
     if (visibility_changed ||
-        style_->EffectiveZIndex() != new_style.EffectiveZIndex() ||
-        IsStackingContext(*style_) != IsStackingContext(new_style)) {
+        old_style->EffectiveZIndex() != new_style.EffectiveZIndex() ||
+        IsStackingContext(*old_style) != IsStackingContext(new_style)) {
       GetDocument().SetDraggableRegionsDirty(true);
     }
 
-    if (style_->ContentVisibility() != new_style.ContentVisibility()) {
+    if (old_style->ContentVisibility() != new_style.ContentVisibility()) {
       if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
         if (GetNode()) {
           cache->RemoveSubtree(GetNode(), /* remove_root */ false);
@@ -3199,7 +3200,8 @@ void LayoutObject::StyleWillChange(StyleDifference diff,
   // touchstart handler if the root layout object has non-auto effective touch
   // action.
   const bool is_old_touch_action_auto =
-      style_ ? (style_->EffectiveTouchAction() == TouchAction::kAuto) : true;
+      old_style ? (old_style->EffectiveTouchAction() == TouchAction::kAuto)
+                : true;
   const bool is_new_touch_action_auto =
       new_style.EffectiveTouchAction() == TouchAction::kAuto;
   if (GetNode() && is_old_touch_action_auto != is_new_touch_action_auto) {

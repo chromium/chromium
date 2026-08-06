@@ -627,10 +627,10 @@ void LayoutBox::WillBeRemovedFromTree() {
 }
 
 void LayoutBox::StyleWillChange(StyleDifference diff,
+                                const ComputedStyle* old_style,
                                 const ComputedStyle& new_style,
                                 StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  const ComputedStyle* old_style = Style();
   if (old_style) {
     // When a layout hint happens and an object's position style changes, we
     // have to do a layout to dirty the layout tree using the old position
@@ -644,7 +644,8 @@ void LayoutBox::StyleWillChange(StyleDifference diff,
         IsInsideMulticol() && ShouldPreventColumnSpannerDescendants();
   }
 
-  LayoutBoxModelObject::StyleWillChange(diff, new_style, style_change_context);
+  LayoutBoxModelObject::StyleWillChange(diff, old_style, new_style,
+                                        style_change_context);
 }
 
 void LayoutBox::StyleDidChange(StyleDifference diff,

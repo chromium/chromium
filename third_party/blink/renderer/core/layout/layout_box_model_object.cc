@@ -126,6 +126,7 @@ void LayoutBoxModelObject::WillBeDestroyed() {
 
 void LayoutBoxModelObject::StyleWillChange(
     StyleDifference diff,
+    const ComputedStyle* old_style,
     const ComputedStyle& new_style,
     StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
@@ -133,15 +134,16 @@ void LayoutBoxModelObject::StyleWillChange(
   // descendant PaintLayer's PaintingContainer, so we need to eagerly
   // invalidate the current PaintingContainer chain which may have painted
   // cached subsequences containing this object or descendant objects.
-  if (Style() &&
-      (IsStacked() != IsStacked(new_style) ||
-       IsStackingContext() != IsStackingContext(new_style)) &&
+  if (old_style &&
+      (IsStacked(*old_style) != IsStacked(new_style) ||
+       IsStackingContext(*old_style) != IsStackingContext(new_style)) &&
       // ObjectPaintInvalidator requires this.
       IsRooted()) {
     ObjectPaintInvalidator(*this).SlowSetPaintingLayerNeedsRepaint();
   }
 
-  LayoutObject::StyleWillChange(diff, new_style, style_change_context);
+  LayoutObject::StyleWillChange(diff, old_style, new_style,
+                                style_change_context);
 }
 
 DISABLE_CFI_PERF

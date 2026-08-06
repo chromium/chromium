@@ -374,6 +374,7 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 
   // Explicitly override so that we don't call LayoutObject::StyleWillChange.
   void StyleWillChange(StyleDifference,
+                       const ComputedStyle* old_style,
                        const ComputedStyle& new_style,
                        StyleChangeContext&) override {
     NOT_DESTROYED();

@@ -1163,6 +1163,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   void WillBeRemovedFromTree() override;
 
   void StyleWillChange(StyleDifference,
+                       const ComputedStyle* old_style,
                        const ComputedStyle& new_style,
                        StyleChangeContext&) override;
   void StyleDidChange(StyleDifference,
