@@ -5,7 +5,6 @@
 #include "chrome/browser/dictation/dictation_keyed_service.h"
 
 #include "base/memory/weak_ptr.h"
-#include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -652,8 +651,8 @@ IN_PROC_BROWSER_TEST_F(DictationGlicBrowserTest, BasicStreamFunctions) {
 
   tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
   ASSERT_TRUE(tab);
-  dictation_service().StartSession(*tab, TargetDetails(target_id),
-                                   DictationSessionEntryPoint::kContextMenu);
+  dictation_service().StartSessionForTesting(
+      *tab, TargetDetails(target_id), DictationSessionEntryPoint::kContextMenu);
 
   SessionController* controller = dictation_service().session_controller();
   ASSERT_NE(controller, nullptr);

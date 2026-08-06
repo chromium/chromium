@@ -67,7 +67,7 @@ DictationInteractiveBrowserTestBase::StartSession(
         tabs::TabInterface* tab =
             tabs::TabInterface::GetFromContents(web_contents);
         CHECK(tab);
-        dictation_service().StartSession(
+        dictation_service().StartSessionForTesting(
             *tab, target, DictationSessionEntryPoint::kContextMenu);
         if (dictation_service().session_controller()) {
           last_started_provider_ = static_cast<ListenerStreamProvider*>(

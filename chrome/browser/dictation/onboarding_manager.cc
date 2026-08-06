@@ -72,8 +72,8 @@ void OnboardingManager::OnDialogClosed() {
     if (pending_tab_) {
       CHECK(pending_target_details_);
       CHECK(pending_entry_point_);
-      service_->StartSession(*pending_tab_, *pending_target_details_,
-                             *pending_entry_point_);
+      service_->DidCompleteOnboarding(*pending_tab_, *pending_target_details_,
+                                      *pending_entry_point_);
     }
   }
   pending_tab_.reset();

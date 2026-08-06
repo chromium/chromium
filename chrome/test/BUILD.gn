@@ -8510,6 +8510,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/devtools",
       "//chrome/browser/devtools:interactive_ui_tests",
       "//chrome/browser/devtools:test_support",
+      "//chrome/browser/dictation:interactive_ui_tests",
       "//chrome/browser/download:test_support",
       "//chrome/browser/feedback:feedback_impl",
       "//chrome/browser/feedback:interactive_ui_tests",

@@ -508,6 +508,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // TODO (crbug.com/1251545) : Frame tree node id should only be known for
   // subframes. As such, update this method.
   FrameTreeNodeId GetFrameTreeNodeId() const override;
+  blink::DOMNodeIdType GetFocusedDOMNodeId() const override;
+  EditableLevel GetFocusedEditableLevel() const override;
   const base::UnguessableToken& GetDevToolsFrameToken() override;
   std::optional<base::UnguessableToken> GetEmbeddingToken() override;
   const std::string& GetFrameName() override;
@@ -5067,6 +5069,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // The editability level of the focused element in this frame's document.
   EditableLevel focused_editable_level_ = EditableLevel::kNotEditable;
+
+  // The DOMNodeId of the focused editable element in this frame's document.
+  blink::DOMNodeIdType focused_editable_dom_node_id_;
 
   std::unique_ptr<PendingNavigation> pending_navigate_;
 

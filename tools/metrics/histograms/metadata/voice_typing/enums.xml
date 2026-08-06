@@ -19,6 +19,7 @@ this directory.
 
 <enum name="DictationSessionEntryPoint">
   <int value="0" label="Context Menu"/>
+  <int value="1" label="Hotkey"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/dictation/metrics.h:DictationSessionEntryPoint) -->
@@ -30,6 +31,7 @@ this directory.
   <int value="1" label="Start Button"/>
   <int value="2" label="Focus Change"/>
   <int value="3" label="Context Menu (Existing Session)"/>
+  <int value="4" label="Hotkey (Existing Session)"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/dictation/metrics.h:DictationStreamStartTrigger) -->

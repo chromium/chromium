@@ -45,12 +45,12 @@ class FakeState {
  public:
   std::unique_ptr<LocalHotkeyManager::ScopedHotkeyRegistration>
   CreateScopedHotkeyRegistration(ui::Accelerator accelerator,
-                                 LocalHotkeyManager& hotkey_manager) {
+                                 LocalHotkeyManager& /*hotkey_manager*/) {
     last_registered_accelerator_ = accelerator;
     registration_count_++;
-    auto registration = std::make_unique<FakeScopedHotkeyRegistration>(
-        base::BindOnce(&FakeState::OnRegistrationDestroyed,
-                       base::Unretained(this), accelerator));
+    auto registration =
+        std::make_unique<FakeScopedHotkeyRegistration>(base::BindOnce(
+            &FakeState::OnRegistrationDestroyed, base::Unretained(this)));
     is_registered_ = true;
     return registration;
   }
@@ -64,7 +64,7 @@ class FakeState {
   bool is_registered() const { return is_registered_; }
 
  private:
-  void OnRegistrationDestroyed(ui::Accelerator accelerator) {
+  void OnRegistrationDestroyed() {
     destruction_count_++;
     is_registered_ = false;
   }
@@ -100,6 +100,8 @@ class DictationLocalHotkeyManagerTest : public testing::Test {
           return std::make_unique<MockDictationKeyedService>(
               static_cast<Profile*>(context));
         }));
+    profile_.GetPrefs()->SetBoolean(prefs::kPrefDictationOnboardingCompleted,
+                                    true);
   }
 
   void CreateManager() {
@@ -178,7 +180,7 @@ TEST_F(DictationLocalHotkeyManagerTest, AcceleratorPressedCallsEventHandler) {
   MockDictationKeyedService* mock_service =
       static_cast<MockDictationKeyedService*>(
           DictationKeyedService::Get(&profile_));
-  EXPECT_CALL(*mock_service, OnDictationHotkeyPressed());
+  EXPECT_CALL(*mock_service, ToggleHotkeyHandler());
 
   EXPECT_TRUE(manager_->AcceleratorPressed(accelerator));
 }

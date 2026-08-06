@@ -19,6 +19,7 @@
 #include "build/buildflag.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/back_forward_cache.h"
+#include "content/public/browser/editable_level.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/web_exposed_isolation_level.h"
 #include "content/public/common/bindings_policy.h"
@@ -33,6 +34,7 @@
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-forward.h"
+#include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-forward.h"
@@ -444,6 +446,13 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
   // than the frame hosting content, as explained above. For associating data
   // with a single document, DocumentUserData can be used.
   virtual FrameTreeNodeId GetFrameTreeNodeId() const = 0;
+
+  // Returns the DOMNodeId of the focused editable element in this frame, or
+  // an invalid ID if none is focused or editable.
+  virtual blink::DOMNodeIdType GetFocusedDOMNodeId() const = 0;
+
+  // Returns the editability level of the focused element in this frame.
+  virtual EditableLevel GetFocusedEditableLevel() const = 0;
 
   // Used for devtools instrumentation and trace-ability. The token is
   // propagated to Blink's LocalFrame and both Blink and content/

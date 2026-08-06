@@ -164,7 +164,7 @@ class MockDictationKeyedService : public DictationKeyedService {
   std::unique_ptr<SessionUi> CreateUi(
       SessionController& controller) const override;
 
-  MOCK_METHOD(void, OnDictationHotkeyPressed, (), (override));
+  MOCK_METHOD(void, ToggleHotkeyHandler, (), (override));
 };
 
 }  // namespace dictation

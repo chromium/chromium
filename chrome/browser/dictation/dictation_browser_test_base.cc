@@ -72,8 +72,8 @@ void DictationBrowserTestBase::StartSession(
     const TargetDetails& target_details) {
   tabs::TabInterface* tab = chrome_test_utils::GetActiveTab(this);
   CHECK(tab);
-  dictation_service().StartSession(*tab, target_details,
-                                   DictationSessionEntryPoint::kContextMenu);
+  dictation_service().StartSessionForTesting(
+      *tab, target_details, DictationSessionEntryPoint::kContextMenu);
 }
 
 void DictationBrowserTestBase::StartSession() {

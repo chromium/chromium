@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/accelerators/accelerator.h"
 
@@ -62,8 +61,6 @@ class LocalHotkeyManager : public ui::AcceleratorTarget {
 
   PrefChangeRegistrar pref_registrar_;
   std::unique_ptr<ScopedHotkeyRegistration> hotkey_registration_;
-
-  base::WeakPtrFactory<LocalHotkeyManager> weak_ptr_factory_{this};
 };
 
 }  // namespace dictation

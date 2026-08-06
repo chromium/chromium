@@ -3485,6 +3485,14 @@ FrameTreeNodeId RenderFrameHostImpl::GetFrameTreeNodeId() const {
   return frame_tree_node_->frame_tree_node_id();
 }
 
+blink::DOMNodeIdType RenderFrameHostImpl::GetFocusedDOMNodeId() const {
+  return focused_editable_dom_node_id_;
+}
+
+EditableLevel RenderFrameHostImpl::GetFocusedEditableLevel() const {
+  return focused_editable_level_;
+}
+
 const base::UnguessableToken& RenderFrameHostImpl::GetDevToolsFrameToken() {
   return devtools_frame_token();
 }
@@ -9642,6 +9650,11 @@ void RenderFrameHostImpl::FocusedElementChanged(
     focused_editable_level_ = EditableLevel::kNotEditable;
   }
 
+  focused_editable_dom_node_id_ =
+      (focused_editable_level_ != EditableLevel::kNotEditable)
+          ? editable_dom_node_id
+          : blink::DOMNodeIdType();
+
   // First convert the bounds to root view.
   delegate_->OnFocusedElementChangedInFrame(
       this,
@@ -13838,6 +13851,7 @@ void RenderFrameHostImpl::ResetLoadingState() {
 
 void RenderFrameHostImpl::ClearFocusedElement() {
   focused_editable_level_ = EditableLevel::kNotEditable;
+  focused_editable_dom_node_id_ = blink::DOMNodeIdType();
   GetAssociatedLocalFrame()->ClearFocusedElement();
 }
 
