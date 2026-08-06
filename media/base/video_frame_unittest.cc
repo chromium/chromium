@@ -1072,8 +1072,8 @@ TEST(VideoFrameMetadata, PartialMergeMetadata) {
 }
 
 TEST(VideoFrame, AccessPlaneDataSpans) {
-  for (auto format :
-       {PIXEL_FORMAT_XRGB, PIXEL_FORMAT_I420, PIXEL_FORMAT_NV12}) {
+  for (auto format : {PIXEL_FORMAT_XRGB, PIXEL_FORMAT_I420, PIXEL_FORMAT_NV12,
+                      PIXEL_FORMAT_P010LE}) {
     gfx::Size coded_size(100, 100);
     gfx::Rect visible_rect(10, 10, 60, 20);
     std::vector<uint8_t> pixels;

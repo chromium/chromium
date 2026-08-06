@@ -561,4 +561,78 @@ bool I4xxxPxxToP010(const VideoFrame& src_frame, VideoFrame& dest_frame) {
   return true;
 }
 
+bool Px10ToIx10(const VideoFrame& src_frame, VideoFrame& dest_frame) {
+  DCHECK(src_frame.format() == PIXEL_FORMAT_P010LE ||
+         src_frame.format() == PIXEL_FORMAT_P210LE ||
+         src_frame.format() == PIXEL_FORMAT_P410LE);
+  DCHECK_EQ(src_frame.visible_rect().size(), dest_frame.visible_rect().size());
+
+  if (src_frame.format() == PIXEL_FORMAT_P010LE) {
+    DCHECK_EQ(dest_frame.format(), PIXEL_FORMAT_YUV420P10);
+  } else if (src_frame.format() == PIXEL_FORMAT_P210LE) {
+    DCHECK_EQ(dest_frame.format(), PIXEL_FORMAT_YUV422P10);
+  } else {
+    DCHECK_EQ(dest_frame.format(), PIXEL_FORMAT_YUV444P10);
+  }
+
+  // Px10 formats store samples in the MSBs; planar *P10 formats store them in
+  // the LSBs.
+  constexpr int kDepth = 10;
+
+  const auto src_y = base::subtle::reinterpret_span<const uint16_t>(
+      src_frame.GetVisiblePlaneData(VideoFrame::Plane::kY));
+  auto dst_y = base::subtle::reinterpret_span<uint16_t>(
+      dest_frame.GetWritableVisiblePlaneData(VideoFrame::Plane::kY));
+  libyuv::ConvertToLSBPlane_16(
+      src_y.data(), src_frame.stride(VideoFrame::Plane::kY) / 2, dst_y.data(),
+      dest_frame.stride(VideoFrame::Plane::kY) / 2,
+      dest_frame.visible_rect().width(), dest_frame.visible_rect().height(),
+      kDepth);
+
+  const auto src_uv = base::subtle::reinterpret_span<const uint16_t>(
+      src_frame.GetVisiblePlaneData(VideoFrame::Plane::kUV));
+  auto dst_u = base::subtle::reinterpret_span<uint16_t>(
+      dest_frame.GetWritableVisiblePlaneData(VideoFrame::Plane::kU));
+  auto dst_v = base::subtle::reinterpret_span<uint16_t>(
+      dest_frame.GetWritableVisiblePlaneData(VideoFrame::Plane::kV));
+  libyuv::SplitUVPlane_16(
+      src_uv.data(), src_frame.stride(VideoFrame::Plane::kUV) / 2, dst_u.data(),
+      dest_frame.stride(VideoFrame::Plane::kU) / 2, dst_v.data(),
+      dest_frame.stride(VideoFrame::Plane::kV) / 2,
+      src_frame.GetVisibleColumns(VideoFrame::Plane::kUV),
+      src_frame.GetVisibleRows(VideoFrame::Plane::kUV), kDepth);
+  return true;
+}
+
+bool P010ToNV12x(const VideoFrame& src_frame, VideoFrame& dest_frame) {
+  DCHECK_EQ(src_frame.format(), PIXEL_FORMAT_P010LE);
+  DCHECK(dest_frame.format() == PIXEL_FORMAT_NV12 ||
+         dest_frame.format() == PIXEL_FORMAT_NV12A);
+  DCHECK_EQ(src_frame.visible_rect().size(), dest_frame.visible_rect().size());
+  if (libyuv::P010ToNV12(
+          reinterpret_cast<const uint16_t*>(
+              src_frame.visible_data(VideoFrame::Plane::kY)),
+          src_frame.stride(VideoFrame::Plane::kY) / 2,
+          reinterpret_cast<const uint16_t*>(
+              src_frame.visible_data(VideoFrame::Plane::kUV)),
+          src_frame.stride(VideoFrame::Plane::kUV) / 2,
+          dest_frame.GetWritableVisibleData(VideoFrame::Plane::kY),
+          dest_frame.stride(VideoFrame::Plane::kY),
+          dest_frame.GetWritableVisibleData(VideoFrame::Plane::kUV),
+          dest_frame.stride(VideoFrame::Plane::kUV),
+          dest_frame.visible_rect().width(),
+          dest_frame.visible_rect().height()) != 0) {
+    return false;
+  }
+  if (dest_frame.format() == PIXEL_FORMAT_NV12) {
+    return true;
+  }
+  libyuv::SetPlane(
+      dest_frame.GetWritableVisibleData(VideoFrame::Plane::kATriPlanar),
+      dest_frame.stride(VideoFrame::Plane::kATriPlanar),
+      dest_frame.GetVisibleColumns(VideoFrame::Plane::kATriPlanar),
+      dest_frame.GetVisibleRows(VideoFrame::Plane::kATriPlanar), 255);
+  return true;
+}
+
 }  // namespace media::internals

@@ -99,6 +99,9 @@ bool IsConversionSupported(VideoPixelFormat src, VideoPixelFormat dest) {
     case PIXEL_FORMAT_YUV420AP10:
     case PIXEL_FORMAT_YUV422AP10:
     case PIXEL_FORMAT_YUV444AP10:
+    case PIXEL_FORMAT_P010LE:
+    case PIXEL_FORMAT_P210LE:
+    case PIXEL_FORMAT_P410LE:
       break;
 
     default:
@@ -339,6 +342,8 @@ TEST_P(VideoFrameConverterExtentsTest, ConvertAndScaleExtents) {
       case PIXEL_FORMAT_YUV444AP10:
         return 1023;
       case PIXEL_FORMAT_P010LE:
+      case PIXEL_FORMAT_P210LE:
+      case PIXEL_FORMAT_P410LE:
         return 1023 << 6;  // MSB aligned in 16-bit
       case PIXEL_FORMAT_YUV420P12:
       case PIXEL_FORMAT_YUV422P12:
@@ -432,7 +437,8 @@ constexpr auto kInputFormats = std::to_array<VideoPixelFormat>({
     PIXEL_FORMAT_NV12A,      PIXEL_FORMAT_YUV420P10,  PIXEL_FORMAT_YUV422P10,
     PIXEL_FORMAT_YUV444P10,  PIXEL_FORMAT_YUV420P12,  PIXEL_FORMAT_YUV422P12,
     PIXEL_FORMAT_YUV444P12,  PIXEL_FORMAT_YUV420AP10, PIXEL_FORMAT_YUV422AP10,
-    PIXEL_FORMAT_YUV444AP10,
+    PIXEL_FORMAT_YUV444AP10, PIXEL_FORMAT_P010LE,     PIXEL_FORMAT_P210LE,
+    PIXEL_FORMAT_P410LE,
 });
 
 constexpr auto kOutputFormats = std::to_array<VideoPixelFormat>({

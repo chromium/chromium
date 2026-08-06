@@ -43,6 +43,9 @@ class MEDIA_EXPORT VideoFrameConverter {
   //   * PIXEL_FORMAT_YUV420AP10
   //   * PIXEL_FORMAT_YUV422AP10
   //   * PIXEL_FORMAT_YUV444AP10
+  //   * PIXEL_FORMAT_P010LE
+  //   * PIXEL_FORMAT_P210LE
+  //   * PIXEL_FORMAT_P410LE
   //
   // Output formats:
   //   * PIXEL_FORMAT_I420
@@ -90,6 +93,8 @@ class MEDIA_EXPORT VideoFrameConverter {
                                      VideoFrame& dest_frame);
   EncoderStatus ConvertAndScaleNV12x(const VideoFrame* src_frame,
                                      VideoFrame& dest_frame);
+  EncoderStatus ConvertAndScalePx10(const VideoFrame* src_frame,
+                                    VideoFrame& dest_frame);
   EncoderStatus ConvertAndScaleHBD(const VideoFrame* src_frame,
                                    VideoFrame& dest_frame);
 

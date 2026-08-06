@@ -206,6 +206,7 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
 #else
   static constexpr VideoPixelFormat kDefaultPixelFormat = PIXEL_FORMAT_NV12;
 #endif
+  VideoPixelFormat input_pixel_format_ = kDefaultPixelFormat;
   bool supports_frame_size_change_ = false;
   bool supports_gpu_shared_images_ = false;
 

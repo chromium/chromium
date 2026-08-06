@@ -22,6 +22,8 @@
 #include "media/base/video_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
+#include "ui/gfx/hdr_metadata.h"
+#include "ui/gfx/hdr_metadata_mac.h"
 
 namespace media {
 
@@ -53,6 +55,10 @@ bool IsAcceptableCvPixelFormat(VideoPixelFormat format, OSType cv_format) {
   }
   if (format == PIXEL_FORMAT_NV12A) {
     return cv_format == kCVPixelFormatType_420YpCbCr8VideoRange_8A_TriPlanar;
+  }
+  if (format == PIXEL_FORMAT_P010LE) {
+    return cv_format == kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange ||
+           cv_format == kCVPixelFormatType_420YpCbCr10BiPlanarFullRange;
   }
   return false;
 }
@@ -89,9 +95,28 @@ void SetCvPixelBufferColorSpace(const gfx::ColorSpace& frame_cs,
   }
 }
 
+void SetCvPixelBufferHdrMetadata(const gfx::HDRMetadata& hdr_metadata,
+                                 CVPixelBufferRef pixel_buffer) {
+  if (!hdr_metadata.IsValid()) {
+    return;
+  }
+  if (hdr_metadata.HasMDCV()) {
+    CVBufferSetAttachment(
+        pixel_buffer, kCVImageBufferMasteringDisplayColorVolumeKey,
+        gfx::GenerateMasteringDisplayColorVolume(hdr_metadata).get(),
+        kCVAttachmentMode_ShouldPropagate);
+  }
+  // GenerateContentLightLevelInfo() returns null for a zeroed out CLLI.
+  if (auto clli = gfx::GenerateContentLightLevelInfo(hdr_metadata)) {
+    CVBufferSetAttachment(pixel_buffer, kCVImageBufferContentLightLevelInfoKey,
+                          clli.get(), kCVAttachmentMode_ShouldPropagate);
+  }
+}
+
 void SetCvPixelBufferAttachments(const VideoFrame& frame,
                                  CVPixelBufferRef pixel_buffer) {
   SetCvPixelBufferColorSpace(frame.ColorSpace(), pixel_buffer);
+  SetCvPixelBufferHdrMetadata(frame.hdr_metadata(), pixel_buffer);
 }
 
 void ApplyCvPixelBufferCleanApertureIfNeeded(const VideoFrame& frame,
@@ -180,9 +205,9 @@ base::apple::ScopedCFTypeRef<CVPixelBufferRef> WrapVideoFrameInCVPixelBuffer(
 
   // VideoFrame only supports YUV formats and most of them are 'YVU' ordered,
   // which CVPixelBuffer does not support. This means we effectively can only
-  // represent I420 and NV12 frames. In addition, VideoFrame does not carry
-  // colorimetric information, so this function assumes standard video range
-  // and ITU Rec 709 primaries.
+  // represent I420, NV12, NV12A, and P010 frames. In addition, VideoFrame does
+  // not carry colorimetric information, so this function assumes standard
+  // video range and ITU Rec 709 primaries.
   const VideoPixelFormat video_frame_format = frame->format();
   const bool is_full_range =
       frame->ColorSpace().GetRangeID() == gfx::ColorSpace::RangeID::FULL;
@@ -198,6 +223,10 @@ base::apple::ScopedCFTypeRef<CVPixelBufferRef> WrapVideoFrameInCVPixelBuffer(
       DVLOG(1) << "Full range NV12A is not supported by the OS.";
     }
     cv_format = kCVPixelFormatType_420YpCbCr8VideoRange_8A_TriPlanar;
+  } else if (video_frame_format == PIXEL_FORMAT_P010LE) {
+    cv_format = is_full_range
+                    ? kCVPixelFormatType_420YpCbCr10BiPlanarFullRange
+                    : kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange;
   } else {
     DLOG(ERROR) << "Unsupported frame format: " << video_frame_format;
     return pixel_buffer;

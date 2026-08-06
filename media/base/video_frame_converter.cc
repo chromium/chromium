@@ -68,6 +68,11 @@ EncoderStatus VideoFrameConverter::ConvertAndScale(const VideoFrame& src_frame,
     case PIXEL_FORMAT_NV12A:
       return ConvertAndScaleNV12x(&src_frame, dest_frame);
 
+    case PIXEL_FORMAT_P010LE:
+    case PIXEL_FORMAT_P210LE:
+    case PIXEL_FORMAT_P410LE:
+      return ConvertAndScalePx10(&src_frame, dest_frame);
+
     case PIXEL_FORMAT_YUV420P10:
     case PIXEL_FORMAT_YUV422P10:
     case PIXEL_FORMAT_YUV444P10:
@@ -540,6 +545,53 @@ EncoderStatus VideoFrameConverter::ConvertAndScaleHBD(
   // Down-convert each plane from 16-bit to matching 8-bit destination layout.
   internals::Convert16To8Plane(*src_frame, dest_frame);
   return OkStatus();
+}
+
+EncoderStatus VideoFrameConverter::ConvertAndScalePx10(
+    const VideoFrame* src_frame,
+    VideoFrame& dest_frame) {
+  DCHECK(src_frame->format() == PIXEL_FORMAT_P010LE ||
+         src_frame->format() == PIXEL_FORMAT_P210LE ||
+         src_frame->format() == PIXEL_FORMAT_P410LE);
+
+  dest_frame.set_color_space(src_frame->ColorSpace());
+
+  if (src_frame->format() == PIXEL_FORMAT_P010LE &&
+      (dest_frame.format() == PIXEL_FORMAT_NV12 ||
+       dest_frame.format() == PIXEL_FORMAT_NV12A) &&
+      src_frame->visible_rect().size() == dest_frame.visible_rect().size()) {
+    return internals::P010ToNV12x(*src_frame, dest_frame)
+               ? OkStatus()
+               : EncoderStatus(EncoderStatus::Codes::kFormatConversionError);
+  }
+
+  VideoPixelFormat planar_format = PIXEL_FORMAT_UNKNOWN;
+  switch (src_frame->format()) {
+    case PIXEL_FORMAT_P010LE:
+      planar_format = PIXEL_FORMAT_YUV420P10;
+      break;
+    case PIXEL_FORMAT_P210LE:
+      planar_format = PIXEL_FORMAT_YUV422P10;
+      break;
+    case PIXEL_FORMAT_P410LE:
+      planar_format = PIXEL_FORMAT_YUV444P10;
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  // libyuv has no Px10 scaler; de-interleave then reuse the HBD path.
+  auto planar_frame =
+      CreateTempFrame(planar_format, src_frame->coded_size(),
+                      src_frame->visible_rect(), src_frame->natural_size());
+  if (!planar_frame) {
+    return EncoderStatus::Codes::kScalingError;
+  }
+  if (!internals::Px10ToIx10(*src_frame, *planar_frame)) {
+    return EncoderStatus(EncoderStatus::Codes::kFormatConversionError);
+  }
+  planar_frame->set_color_space(src_frame->ColorSpace());
+  return ConvertAndScaleHBD(planar_frame.get(), dest_frame);
 }
 
 }  // namespace media

@@ -122,7 +122,9 @@ void FillFourColorsFrameYUV(VideoFrame& dest_frame,
          dest_frame.format() == PIXEL_FORMAT_YUV420AP10 ||
          dest_frame.format() == PIXEL_FORMAT_YUV422AP10 ||
          dest_frame.format() == PIXEL_FORMAT_YUV444AP10 ||
-         dest_frame.format() == PIXEL_FORMAT_P010LE)
+         dest_frame.format() == PIXEL_FORMAT_P010LE ||
+         dest_frame.format() == PIXEL_FORMAT_P210LE ||
+         dest_frame.format() == PIXEL_FORMAT_P410LE)
       << "Unsupported pixel format: "
       << VideoPixelFormatToString(dest_frame.format());
 
@@ -146,7 +148,8 @@ void FillFourColorsFrameYUV(VideoFrame& dest_frame,
     output_frame = temp_frame.get();
   } else if (dest_frame.format() == PIXEL_FORMAT_YUV422P10 ||
              dest_frame.format() == PIXEL_FORMAT_YUV422P12 ||
-             dest_frame.format() == PIXEL_FORMAT_YUV422AP10) {
+             dest_frame.format() == PIXEL_FORMAT_YUV422AP10 ||
+             dest_frame.format() == PIXEL_FORMAT_P210LE) {
     temp_frame = VideoFrame::CreateZeroInitializedFrame(
         dest_frame.format() == PIXEL_FORMAT_YUV422AP10 ? PIXEL_FORMAT_I422A
                                                        : PIXEL_FORMAT_I422,
@@ -155,7 +158,8 @@ void FillFourColorsFrameYUV(VideoFrame& dest_frame,
     output_frame = temp_frame.get();
   } else if (dest_frame.format() == PIXEL_FORMAT_YUV444P10 ||
              dest_frame.format() == PIXEL_FORMAT_YUV444P12 ||
-             dest_frame.format() == PIXEL_FORMAT_YUV444AP10) {
+             dest_frame.format() == PIXEL_FORMAT_YUV444AP10 ||
+             dest_frame.format() == PIXEL_FORMAT_P410LE) {
     temp_frame = VideoFrame::CreateZeroInitializedFrame(
         dest_frame.format() == PIXEL_FORMAT_YUV444AP10 ? PIXEL_FORMAT_I444A
                                                        : PIXEL_FORMAT_I444,
@@ -220,40 +224,50 @@ void FillFourColorsFrameYUV(VideoFrame& dest_frame,
             dest_frame.visible_rect().width(),
             dest_frame.visible_rect().height());
       }
-    } else if (dest_frame.format() == PIXEL_FORMAT_P010LE) {
-      auto i010_frame = VideoFrame::CreateFrame(
-          PIXEL_FORMAT_YUV420P10, dest_frame.coded_size(),
-          dest_frame.visible_rect(), dest_frame.natural_size(),
-          base::TimeDelta());
-      CHECK(i010_frame);
-      for (size_t i = 0; i < VideoFrame::NumPlanes(PIXEL_FORMAT_YUV420P10);
-           ++i) {
-        libyuv::Convert8To16Plane(
-            temp_frame->visible_data(i), temp_frame->stride(i),
-            reinterpret_cast<uint16_t*>(i010_frame->GetWritableVisibleData(i)),
-            i010_frame->stride(i) / sizeof(uint16_t), 1024,
-            i010_frame->GetVisibleColumns(i), i010_frame->GetVisibleRows(i));
+    } else if (dest_frame.format() == PIXEL_FORMAT_P010LE ||
+               dest_frame.format() == PIXEL_FORMAT_P210LE ||
+               dest_frame.format() == PIXEL_FORMAT_P410LE) {
+      const VideoPixelFormat planar_format =
+          dest_frame.format() == PIXEL_FORMAT_P010LE
+              ? PIXEL_FORMAT_YUV420P10
+              : (dest_frame.format() == PIXEL_FORMAT_P210LE
+                     ? PIXEL_FORMAT_YUV422P10
+                     : PIXEL_FORMAT_YUV444P10);
+      auto planar_frame = VideoFrame::CreateFrame(
+          planar_format, dest_frame.coded_size(), dest_frame.visible_rect(),
+          dest_frame.natural_size(), base::TimeDelta());
+      CHECK(planar_frame);
+      for (size_t i = 0; i < VideoFrame::NumPlanes(planar_format); ++i) {
+        libyuv::Convert8To16Plane(temp_frame->visible_data(i),
+                                  temp_frame->stride(i),
+                                  reinterpret_cast<uint16_t*>(
+                                      planar_frame->GetWritableVisibleData(i)),
+                                  planar_frame->stride(i) / sizeof(uint16_t),
+                                  1024, planar_frame->GetVisibleColumns(i),
+                                  planar_frame->GetVisibleRows(i));
       }
-      CHECK_EQ(
-          libyuv::I010ToP010(
-              reinterpret_cast<const uint16_t*>(
-                  i010_frame->visible_data(VideoFrame::Plane::kY)),
-              i010_frame->stride(VideoFrame::Plane::kY) / sizeof(uint16_t),
-              reinterpret_cast<const uint16_t*>(
-                  i010_frame->visible_data(VideoFrame::Plane::kU)),
-              i010_frame->stride(VideoFrame::Plane::kU) / sizeof(uint16_t),
-              reinterpret_cast<const uint16_t*>(
-                  i010_frame->visible_data(VideoFrame::Plane::kV)),
-              i010_frame->stride(VideoFrame::Plane::kV) / sizeof(uint16_t),
-              reinterpret_cast<uint16_t*>(
-                  dest_frame.GetWritableVisibleData(VideoFrame::Plane::kY)),
-              dest_frame.stride(VideoFrame::Plane::kY) / sizeof(uint16_t),
-              reinterpret_cast<uint16_t*>(
-                  dest_frame.GetWritableVisibleData(VideoFrame::Plane::kUV)),
-              dest_frame.stride(VideoFrame::Plane::kUV) / sizeof(uint16_t),
-              dest_frame.visible_rect().width(),
-              dest_frame.visible_rect().height()),
-          0);
+      constexpr int kDepth = 10;
+      libyuv::ConvertToMSBPlane_16(
+          reinterpret_cast<const uint16_t*>(
+              planar_frame->visible_data(VideoFrame::Plane::kY)),
+          planar_frame->stride(VideoFrame::Plane::kY) / sizeof(uint16_t),
+          reinterpret_cast<uint16_t*>(
+              dest_frame.GetWritableVisibleData(VideoFrame::Plane::kY)),
+          dest_frame.stride(VideoFrame::Plane::kY) / sizeof(uint16_t),
+          dest_frame.visible_rect().width(), dest_frame.visible_rect().height(),
+          kDepth);
+      libyuv::MergeUVPlane_16(
+          reinterpret_cast<const uint16_t*>(
+              planar_frame->visible_data(VideoFrame::Plane::kU)),
+          planar_frame->stride(VideoFrame::Plane::kU) / sizeof(uint16_t),
+          reinterpret_cast<const uint16_t*>(
+              planar_frame->visible_data(VideoFrame::Plane::kV)),
+          planar_frame->stride(VideoFrame::Plane::kV) / sizeof(uint16_t),
+          reinterpret_cast<uint16_t*>(
+              dest_frame.GetWritableVisibleData(VideoFrame::Plane::kUV)),
+          dest_frame.stride(VideoFrame::Plane::kUV) / sizeof(uint16_t),
+          dest_frame.GetVisibleColumns(VideoFrame::Plane::kUV),
+          dest_frame.GetVisibleRows(VideoFrame::Plane::kUV), kDepth);
     } else {
       int scale = (dest_frame.format() == PIXEL_FORMAT_YUV420P12 ||
                    dest_frame.format() == PIXEL_FORMAT_YUV422P12 ||

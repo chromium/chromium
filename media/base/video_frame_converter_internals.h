@@ -78,6 +78,12 @@ bool NV12xToP010(const VideoFrame& src_frame, VideoFrame& dst_frame);
 // Scaling not supported.
 bool I4xxxPxxToP010(const VideoFrame& src_frame, VideoFrame& dst_frame);
 
+// Scaling not supported.
+bool Px10ToIx10(const VideoFrame& src_frame, VideoFrame& dst_frame);
+
+// Scaling not supported.
+bool P010ToNV12x(const VideoFrame& src_frame, VideoFrame& dst_frame);
+
 }  // namespace media::internals
 
 #endif  // MEDIA_BASE_VIDEO_FRAME_CONVERTER_INTERNALS_H_

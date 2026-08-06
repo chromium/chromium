@@ -80,6 +80,7 @@ class MEDIA_EXPORT H265AnnexBToHevcBitstreamConverter {
   base::flat_map<int, blob> id2sps_;
   base::flat_map<int, blob> id2pps_;
   base::flat_map<int, blob> id2vps_;
+  std::vector<blob> hdr_sei_nalus_;
 
   int active_sps_id_ = -1;
   int active_pps_id_ = -1;

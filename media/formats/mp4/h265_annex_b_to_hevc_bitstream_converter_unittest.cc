@@ -6,14 +6,17 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <string>
 
 #include "base/files/file.h"
 #include "base/path_service.h"
+#include "media/filters/h26x_annex_b_bitstream_builder.h"
 #include "media/formats/mp4/avc.h"
 #include "media/formats/mp4/box_definitions.h"
 #include "media/parsers/h265_parser.h"
+#include "media/parsers/h26x_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -302,6 +305,111 @@ TEST(H265AnnexBToHevcBitstreamConverterTest, Failure) {
     auto status = converter.ConvertChunk(input, output, nullptr, nullptr);
 
     ASSERT_EQ(status.code(), MP4Status::Codes::kInvalidVPS);
+  }
+}
+
+TEST(H265AnnexBToHevcBitstreamConverterTest, HdrPrefixSeiInConfiguration) {
+  constexpr auto vps = std::to_array<uint8_t>(
+      {0x00, 0x00, 0x00, 0x01, 0x40, 0x01, 0x0c, 0x01, 0xff,
+       0xff, 0x22, 0x20, 0x00, 0x00, 0x03, 0x00, 0x90, 0x00,
+       0x00, 0x03, 0x00, 0x00, 0x03, 0x00, 0x99, 0x2c, 0x09});
+  constexpr auto sps = std::to_array<uint8_t>(
+      {0x00, 0x00, 0x00, 0x01, 0x42, 0x01, 0x01, 0x22, 0x20, 0x00, 0x00, 0x03,
+       0x00, 0x90, 0x00, 0x00, 0x03, 0x00, 0x00, 0x03, 0x00, 0x99, 0xa0, 0x01,
+       0xe0, 0x20, 0x02, 0x1c, 0x4d, 0x94, 0xbb, 0xb4, 0xa3, 0x32, 0xaa, 0xc0,
+       0x5a, 0x84, 0x89, 0x04, 0x8a, 0x00, 0x00, 0x07, 0xd0, 0x00, 0x01, 0x86,
+       0xa0, 0xe4, 0x68, 0x7c, 0x95, 0x00, 0x00, 0x89, 0x54, 0x00, 0x00, 0xf7,
+       0x31, 0x00, 0x00, 0x44, 0xaa, 0x00, 0x00, 0x7b, 0x98, 0x88});
+  constexpr auto pps = std::to_array<uint8_t>(
+      {0x00, 0x00, 0x00, 0x01, 0x44, 0x01, 0xc0, 0x72, 0xb0, 0x3b, 0xc4, 0x0c,
+       0x88, 0xc6, 0x70, 0x86, 0x18, 0x82, 0x08, 0x80, 0xc4, 0x10, 0x60, 0xa3,
+       0x81, 0x23, 0x02, 0x06, 0x4c, 0x7f, 0xff, 0xf2, 0x88, 0x11, 0x26, 0x4e,
+       0x4f, 0x27, 0xc4, 0x7e, 0x23, 0xf8, 0x8f, 0xc6, 0x7c, 0x67, 0x84, 0x38,
+       0x43, 0xf1, 0x03, 0x23, 0x30, 0x87, 0x08, 0x78, 0x43, 0xe1, 0x8f, 0xc1,
+       0x07, 0xf0, 0x51, 0xf8, 0x10, 0x3f, 0xff, 0xfc, 0xa3, 0xff, 0xff, 0xff,
+       0xff, 0xff, 0xff, 0xff, 0xff, 0xc7, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+       0xff, 0xff, 0x28, 0x82, 0x12, 0x4c, 0x9c, 0x9e, 0x4f, 0x88, 0xfc, 0x47,
+       0xf1, 0x1f, 0x8c, 0xf8, 0xcf, 0x08, 0x70, 0x87, 0xd6, 0x3f, 0xff, 0xff,
+       0xff, 0xff, 0xff, 0xff, 0xff, 0xfd, 0x55, 0x20});
+  constexpr auto idr = std::to_array<uint8_t>(
+      {0x00, 0x00, 0x00, 0x01, 0x28, 0x01, 0xac, 0x6d, 0xa0, 0x7c, 0x96, 0x84,
+       0xdb, 0xcc, 0xf7, 0x4f, 0x9d, 0xf4, 0x94, 0x85, 0x37, 0x06, 0x66, 0xf8});
+
+  // mastering_display_colour_volume (137) + content_light_level_info (144).
+  constexpr auto kMdcvPayload = std::to_array<uint8_t>(
+      {0x21, 0x34, 0x9b, 0xaa, 0x19, 0x96, 0x08, 0xfc, 0x8a, 0x48, 0x39, 0x08,
+       0x3d, 0x13, 0x40, 0x42, 0x00, 0x98, 0x96, 0x80, 0x00, 0x00, 0x00, 0x32});
+  constexpr auto kClliPayload =
+      std::to_array<uint8_t>({0x03, 0xe8, 0x01, 0x90});
+
+  H26xAnnexBBitstreamBuilder sei_builder(
+      /*insert_emulation_prevention_bytes=*/true);
+  sei_builder.BeginNALU(H265NALU::PREFIX_SEI_NUT);
+  sei_builder.AppendBits(8, 137);
+  sei_builder.AppendBits(8, std::size(kMdcvPayload));
+  for (uint8_t byte : kMdcvPayload) {
+    sei_builder.AppendBits(8, byte);
+  }
+  sei_builder.FinishNALU();
+  sei_builder.BeginNALU(H265NALU::PREFIX_SEI_NUT);
+  sei_builder.AppendBits(8, 144);
+  sei_builder.AppendBits(8, std::size(kClliPayload));
+  for (uint8_t byte : kClliPayload) {
+    sei_builder.AppendBits(8, byte);
+  }
+  sei_builder.FinishNALU();
+  auto sei_data = sei_builder.data();
+
+  std::vector<uint8_t> chunk;
+  chunk.insert(chunk.end(), vps.begin(), vps.end());
+  chunk.insert(chunk.end(), sps.begin(), sps.end());
+  chunk.insert(chunk.end(), pps.begin(), pps.end());
+  chunk.insert(chunk.end(), sei_data.begin(), sei_data.end());
+  chunk.insert(chunk.end(), idr.begin(), idr.end());
+
+  for (bool add_parameter_sets_in_bitstream : {false, true}) {
+    SCOPED_TRACE(add_parameter_sets_in_bitstream);
+    H265AnnexBToHevcBitstreamConverter converter(
+        add_parameter_sets_in_bitstream);
+    std::vector<uint8_t> output;
+    size_t desired_size = 0;
+    bool config_changed = false;
+    auto status =
+        converter.ConvertChunk(chunk, output, &config_changed, &desired_size);
+    ASSERT_EQ(status.code(), MP4Status::Codes::kBufferTooSmall);
+    output.resize(desired_size);
+    status = converter.ConvertChunk(chunk, output, &config_changed, nullptr);
+    ASSERT_TRUE(status.is_ok()) << status.message();
+    EXPECT_TRUE(config_changed);
+
+    const auto& config = converter.GetCurrentConfig();
+    ASSERT_EQ(config.numOfArrays, 4);
+    EXPECT_EQ(config.arrays[0].first_byte & 0x3F, H265NALU::VPS_NUT);
+    EXPECT_EQ(config.arrays[1].first_byte & 0x3F, H265NALU::SPS_NUT);
+    EXPECT_EQ(config.arrays[2].first_byte & 0x3F, H265NALU::PPS_NUT);
+    EXPECT_EQ(config.arrays[3].first_byte, H265NALU::PREFIX_SEI_NUT & 0x3F);
+    ASSERT_EQ(config.arrays[3].units.size(), 2u);
+
+    ASSERT_TRUE(mp4::AVC::ConvertAVCToAnnexBInPlaceForLengthSize4(&output));
+    H265Parser parser;
+    parser.SetStream(output);
+    int prefix_sei_count = 0;
+    while (true) {
+      H265NALU nalu;
+      H265Parser::Result res = parser.AdvanceToNextNALU(&nalu);
+      if (res == H265Parser::kEOStream) {
+        break;
+      }
+      ASSERT_EQ(res, H265Parser::kOk);
+      if (nalu.nal_unit_type != H265NALU::PREFIX_SEI_NUT) {
+        continue;
+      }
+      ++prefix_sei_count;
+      H265SEI sei;
+      ASSERT_EQ(parser.ParseSEI(&sei), H265Parser::kOk);
+      EXPECT_FALSE(sei.msgs.empty());
+    }
+    EXPECT_EQ(prefix_sei_count, 2);
   }
 }
 
