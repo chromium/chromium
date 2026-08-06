@@ -539,7 +539,8 @@ TEST_F(IndigoToolbarTest, Accessibility) {
   views::Button* expand_button = verify_button_a11y(
       IndigoToolbar::kExpandButtonElementId, IDS_INDIGO_TOOLBAR_EXPAND);
   ASSERT_NE(expand_button, nullptr);
-  verify_button_a11y(IndigoToolbar::kCloseButtonElementId, IDS_CLOSE);
+  verify_button_a11y(IndigoToolbar::kCloseButtonElementId,
+                     IDS_INDIGO_TOOLBAR_CLOSE_ACCESSIBLE_NAME);
 
   ui::AXNodeData collapsed_data;
   expand_button->GetViewAccessibility().GetAccessibleNodeData(&collapsed_data);
