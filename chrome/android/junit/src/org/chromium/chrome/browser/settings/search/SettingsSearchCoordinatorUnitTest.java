@@ -114,16 +114,13 @@ public class SettingsSearchCoordinatorUnitTest {
     }
 
     @Test
-    public void testAccessibilityStateChanged_whenMultiColumnSettingsNotAdded_doesNotCrash() {
+    public void
+            testDisableBackgroundTalkbackNavigation_whenMultiColumnSettingsNotAdded_doesNotCrash() {
         // Mock multiColumnSettings to return null (not attached).
         when(mMultiColumnSettings.getChildFragmentManagerOrNull()).thenReturn(null);
 
-        var state =
-                new AccessibilityState.State(
-                        false, false, false, false, false, false, false, false, false);
-
-        // This call should not crash.
-        mCoordinator.onAccessibilityStateChanged(state, state);
+        // This call should not crash even if the fragment manager is null.
+        mCoordinator.disableBackgroundTalkbackNavigation();
     }
 
     @Test

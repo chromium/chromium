@@ -554,7 +554,8 @@ public class SettingsSearchCoordinator
     }
 
     // Prevent TalkBack from navigating background fragments.
-    private void disableBackgroundTalkbackNavigation() {
+    @VisibleForTesting
+    void disableBackgroundTalkbackNavigation() {
         // When a new Fragment is added to (as opposed to replaces) the existing Fragment, it makes
         // the existing one still technically "active" and "visible" in the view hierarchy, which is
         // why TalkBack navigates through it. Same applies when the detail pane slides in and sits
@@ -563,7 +564,9 @@ public class SettingsSearchCoordinator
         // fragments should be disabled.
         // Note that MainSettings in multi-column mode, or single-column mode with the detail pane
         // out of the screen, should be enabled since it is visible.
-        List<Fragment> fragments = assumeNonNull(getSettingsFragmentManager()).getFragments();
+        FragmentManager fm = getSettingsFragmentManager();
+        if (fm == null) return;
+        List<Fragment> fragments = fm.getFragments();
         boolean isHeaderPaneVisible = isShowingMainSettings();
         for (int i = 0; i <= fragments.size() - 2; i++) {
             Fragment f = fragments.get(i);
