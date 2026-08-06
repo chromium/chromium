@@ -254,7 +254,8 @@ bool IncludesValidLoadField(const net::HttpResponseHeaders* headers) {
   if (!item.has_value()) {
     return false;
   }
-  return item->item.is_token() && item->item.GetString() == "load";
+  const std::string* token = item->item.GetIfToken();
+  return token && *token == "load";
 }
 
 int32_t PopulateOptions(int32_t initial_options,

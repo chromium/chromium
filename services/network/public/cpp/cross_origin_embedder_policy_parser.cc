@@ -23,9 +23,9 @@ constexpr char kReportOnlyHeaderName[] =
 // [spec]: https://html.spec.whatwg.org/C/#obtain-an-embedder-policy
 std::pair<mojom::CrossOriginEmbedderPolicyValue, std::optional<std::string>>
 Parse(std::string_view header_value) {
-  using Item = net::structured_headers::Item;
-  const auto item = net::structured_headers::ParseItem(header_value);
-  if (!item || item->item.Type() != net::structured_headers::Item::kTokenType) {
+  auto item = net::structured_headers::ParseItem(header_value);
+  const std::string* token = item ? item->item.GetIfToken() : nullptr;
+  if (!token) {
     return {
         mojom::CrossOriginEmbedderPolicyValue::kNone,
         std::nullopt,
@@ -33,19 +33,20 @@ Parse(std::string_view header_value) {
   }
 
   std::optional<std::string> endpoint;
-  for (const auto& it : item->params) {
-    if (it.first == "report-to" && it.second.Type() == Item::kStringType)
-      endpoint = it.second.GetString();
+  for (auto& [key, value] : item->params) {
+    if (std::string* str = value.GetIfString(); key == "report-to" && str) {
+      endpoint = std::move(*str);
+    }
   }
 
-  if (item->item.GetString() == "require-corp") {
+  if (*token == "require-corp") {
     return {
         mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
         std::move(endpoint),
     };
   }
 
-  if (item->item.GetString() == "credentialless") {
+  if (*token == "credentialless") {
     return {
         mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
         std::move(endpoint),

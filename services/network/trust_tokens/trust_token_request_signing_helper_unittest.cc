@@ -94,10 +94,10 @@ bool ExtractRedemptionRecordsFromHeader(
     return false;
   }
 
-  for (auto& issuer_and_params : *maybe_list) {
-    net::structured_headers::Item& issuer_item =
-        issuer_and_params.member.front().item;
-    if (!issuer_item.is_string()) {
+  for (const auto& issuer_and_params : *maybe_list) {
+    const std::string* issuer_string =
+        issuer_and_params.member.front().item.GetIfString();
+    if (!issuer_string) {
       *error_out = "Non-string item in the RR header's list";
       return false;
     }
@@ -118,23 +118,22 @@ bool ExtractRedemptionRecordsFromHeader(
       return false;
     }
 
-    const net::structured_headers::Item& redemption_record_item =
-        params_for_issuer.front().second;
-    if (!redemption_record_item.is_string()) {
+    const std::string* redemption_record_string =
+        params_for_issuer.front().second.GetIfString();
+    if (!redemption_record_string) {
       *error_out = "Unexpected parameter value type for RR header list item";
       return false;
     }
 
     std::optional<SuitableTrustTokenOrigin> maybe_issuer =
-        SuitableTrustTokenOrigin::Create(GURL(issuer_item.GetString()));
+        SuitableTrustTokenOrigin::Create(GURL(*issuer_string));
     if (!maybe_issuer) {
       *error_out = "Unsuitable Trust Tokens issuer origin in RR header item";
       return false;
     }
 
-    // GetString also gets a byte sequence.
-    redemption_records_per_issuer_out->emplace(
-        std::move(*maybe_issuer), redemption_record_item.GetString());
+    redemption_records_per_issuer_out->emplace(std::move(*maybe_issuer),
+                                               *redemption_record_string);
   }
   return true;
 }

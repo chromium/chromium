@@ -45,14 +45,14 @@ mojom::UnencodedDigestsPtr ParseUnencodedDigestsFromHeaders(
     return parsed_headers;
   }
 
-  for (const auto& entry : dictionary.value()) {
+  for (const auto& [key, value] : dictionary.value()) {
     network::IntegrityMetadata parsed_digest;
     size_t expected_length = 0;
 
-    if (entry.first == kSha256Label) {
+    if (key == kSha256Label) {
       parsed_digest.algorithm = mojom::IntegrityAlgorithm::kSha256;
       expected_length = kSha256DigestLength;
-    } else if (entry.first == kSha512Label) {
+    } else if (key == kSha512Label) {
       parsed_digest.algorithm = mojom::IntegrityAlgorithm::kSha512;
       expected_length = kSha512DigestLength;
     } else {
@@ -64,21 +64,24 @@ mojom::UnencodedDigestsPtr ParseUnencodedDigestsFromHeaders(
     }
 
     // Skip entries that cannot be parsed as byte sequences.
-    if (entry.second.member_is_inner_list || entry.second.member.empty() ||
-        !entry.second.member[0].item.is_byte_sequence()) {
+    const std::string* digest_string =
+        (value.member_is_inner_list || value.member.empty())
+            ? nullptr
+            : value.member.front().item.GetIfByteSequence();
+
+    if (!digest_string) {
       parsed_headers->issues.emplace_back(
           mojom::UnencodedDigestIssue::kIncorrectDigestType);
       continue;
     }
 
     // Store the digest after converting it from a string into a vector.
-    std::string digest_string = entry.second.member[0].item.GetString();
-    if (digest_string.size() != expected_length) {
+    if (digest_string->size() != expected_length) {
       parsed_headers->issues.emplace_back(
           mojom::UnencodedDigestIssue::kIncorrectDigestLength);
       continue;
     }
-    parsed_digest.value.assign(digest_string.begin(), digest_string.end());
+    parsed_digest.value.assign(digest_string->begin(), digest_string->end());
 
     parsed_headers->digests.emplace_back(std::move(parsed_digest));
   }
