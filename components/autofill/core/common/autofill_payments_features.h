@@ -112,6 +112,12 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableWalletBranding);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableWalletBrandingV2);
+#if BUILDFLAG(IS_IOS)
+// When enabled, skips empty CVCs in AutofillWalletCredentialSyncBridge instead
+// of failing a CHECK.
+COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillIgnoreEmptyCvcsInSyncBridge);
+#endif
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillParseVcnCardOnFileStandaloneCvcFields);
 COMPONENT_EXPORT(AUTOFILL)
