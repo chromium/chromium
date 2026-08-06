@@ -259,11 +259,11 @@ export class ActionChipsElement extends CrLitElement {
       };
       contextFiles.push(tabInfo);
     }
-    this.fire('action-chip-click', {
+    this.fire<ActionChipClickDetail>('action-chip-click', {
       suggestion: chip.suggestion,
       files: contextFiles,
-      fuseboxAction: chip.suggestTemplateInfo.fuseboxAction,
-    } as ActionChipClickDetail);
+      fuseboxAction: chip.suggestTemplateInfo.fuseboxAction ?? undefined,
+    });
   }
 
   protected recentTabChipTitle_(chip: ActionChip) {
