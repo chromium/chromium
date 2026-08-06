@@ -44,8 +44,8 @@ String CSSApplyMixinRule::cssText() const {
         result.Append(" ");
         result.Append(rule_text);
       }
-      result.Append(" }");
     }
+    result.Append(" }");
   } else {
     result.Append(';');
   }
