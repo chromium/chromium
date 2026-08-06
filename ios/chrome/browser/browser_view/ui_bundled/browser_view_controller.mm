@@ -701,7 +701,6 @@ bool IsFullscreenNextIAEnabled() {
   [self updateToolbarConstraints];
   [self updateSecondaryToolbarBottomConstraint];
   [self animateTransition];
-  [self invalidateFullscreenInsets];
 }
 
 #pragma mark - Public methods
@@ -1200,6 +1199,7 @@ bool IsFullscreenNextIAEnabled() {
         animateAlongsideTransition:^(
             id<UIViewControllerTransitionCoordinatorContext>) {
           [weakSelf.popupMenuCommandsHandler adjustPopupSize];
+          [weakSelf invalidateFullscreenInsets];
         }
                         completion:nil];
   } else {
