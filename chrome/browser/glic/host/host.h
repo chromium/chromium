@@ -211,8 +211,12 @@ class Host : public GlicSharingManagerProvider {
       glic::mojom::ConversationInfoPtr info,
       mojom::WebClientHandler::SwitchConversationCallback callback);
 
-  // Delete the owned web contents and prepare for destruction.
-  void Shutdown();
+  // Wakes up the host. When awake, the host will maintain a web client.
+  void Awaken();
+  // Frees resources, no longer maintaining the web client.
+  void Hibernate();
+  // Returns true if the host should maintain the web client.
+  bool IsAwake() const;
 
   // Request panel closing.
   void Close();
@@ -221,9 +225,6 @@ class Host : public GlicSharingManagerProvider {
 
   // Called when the WebUI web contents has navigated.
   void OnWebContentsNavigated();
-
-  // Creates the web contents that will own the Glic WebUI.
-  void CreateContents();
 
   // Signals the glic WebUI that the glic window will be shown soon.
   void NotifyWindowIntentToShow();

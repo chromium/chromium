@@ -341,7 +341,7 @@ GlicInstanceImpl::~GlicInstanceImpl() {
   coordinator_delegate_ = nullptr;
   tab_group_binding_.reset();
   // Destroying the web contents may result in calls back here, so do it first.
-  host_.Shutdown();
+  host_.Hibernate();
 
   // Unbind from all embedders to close side panels and prevent dangling ptrs.
   std::vector<EmbedderKey> keys;
@@ -521,7 +521,7 @@ void GlicInstanceImpl::Show(ShowOptions options) {
   } else {
     DeactivateCurrentEmbedder();
     // Ensure that there is a WebContents for the embedder to use.
-    EnsureHostContentsCreated();
+    EnsureHostAwake();
     embedder_to_show = CreateActiveEmbedder(options);
     CHECK(embedder_to_show);
     host_.SetDelegate(embedder_to_show->GetHostEmbedderDelegate());
@@ -1795,7 +1795,7 @@ void GlicInstanceImpl::MaybeInitializeHiddenClient(
     mojom::FreOverride fre_override) {
   if (IsHibernated()) {
     host_.SetDelegate(&empty_embedder_delegate_);
-    EnsureHostContentsCreated();
+    EnsureHostAwake();
   }
 
   NotifyPanelWillOpen(invocation_source, std::nullopt, fre_override);
@@ -2007,26 +2007,26 @@ base::TimeDelta GlicInstanceImpl::GetTimeSinceLastPromptSubmission() const {
 }
 
 bool GlicInstanceImpl::IsHibernated() const {
-  return !host_.webui_contents();
+  return !host_.IsAwake();
 }
 
-void GlicInstanceImpl::EnsureHostContentsCreated() {
+void GlicInstanceImpl::EnsureHostAwake() {
   if (IsHibernated()) {
     if (coordinator_delegate_) {
       coordinator_delegate_->OnInstanceWillAwaken();
     }
-    host_.CreateContents();
+    host_.Awaken();
   }
 }
 
 void GlicInstanceImpl::Hibernate() {
   VLOG(1) << "Glic [InstanceImpl] Hibernate, id=" << id_.value();
   DeactivateCurrentEmbedder();
-  host_.Shutdown();
+  host_.Hibernate();
 }
 
 void GlicInstanceImpl::Shutdown() {
-  host_.Shutdown();
+  host_.Hibernate();
 }
 
 void GlicInstanceImpl::OnTabPinningStatusEvent(tabs::TabInterface* tab,

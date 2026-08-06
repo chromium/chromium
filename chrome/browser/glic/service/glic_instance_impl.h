@@ -402,7 +402,7 @@ class GlicInstanceImpl : public GlicInstance,
   // (!host_.webui_contents()), notifies the coordinator via
   // OnInstanceWillAwaken() and creates the WebUI container. No-op if
   // contents already exist.
-  void EnsureHostContentsCreated();
+  void EnsureHostAwake();
 
   void MaybeActivateForegroundEmbedder();
   void MaybeRemoveBlankInstanceOnClose();

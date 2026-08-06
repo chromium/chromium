@@ -103,7 +103,7 @@ Host::~Host() {
   VLOG(1) << "Glic [Host] Destructor";
   // Destroying the web contents results in calls back to the host, so do that
   // first.
-  Shutdown();
+  Hibernate();
 }
 
 void Host::SetDelegate(EmbedderDelegate* new_delegate) {
@@ -111,14 +111,18 @@ void Host::SetDelegate(EmbedderDelegate* new_delegate) {
   delegate_ = new_delegate;
 }
 
-void Host::Shutdown() {
-  TRACE_EVENT("glic", "Host::Shutdown");
-  VLOG(1) << "Glic [Host] Shutdown";
+void Host::Hibernate() {
+  TRACE_EVENT("glic", "Host::Hibernate");
+  VLOG(1) << "Glic [Host] Hibernate";
 
   web_client_ = nullptr;
   web_client_access_.reset();
   handler_info_.reset();
   contents_.reset();
+}
+
+bool Host::IsAwake() const {
+  return contents_ != nullptr;
 }
 
 bool Host::IsWebContentPresentAndMatches(
@@ -171,8 +175,8 @@ void Host::Reload() {
 
   if (base::FeatureList::IsEnabled(kGlicReloadUsesFreshWebContents)) {
     UnsetWebClient();
-    Shutdown();
-    CreateContents();
+    Hibernate();
+    Awaken();
     delegate_->OnReload();
   } else {
     contents->GetController().Reload(content::ReloadType::BYPASSING_CACHE,
@@ -186,7 +190,7 @@ void Host::OnWebContentsNavigated() {
   }
 }
 
-void Host::CreateContents() {
+void Host::Awaken() {
   if (contents_) {
     return;
   }
