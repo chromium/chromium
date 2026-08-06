@@ -167,6 +167,7 @@ message SuggestTemplateInfo {
     optional TabAttachment tab_attachment = 6;
 
     // This changes what the suggestion text (query) does on click.
+    // LINT.IfChange(QueryActionOverride)
     enum QueryActionOverride {
       // Default implicit behavior: submits the query immediately.
       QUERY_ACTION_DEFAULT = 0;
@@ -178,6 +179,7 @@ message SuggestTemplateInfo {
       // placeholder hint.
       QUERY_ACTION_HINT = 2;
     }
+    // LINT.ThenChange(//components/omnibox/browser/fusebox_action.mojom:QueryActionOverride)
     optional QueryActionOverride query_action_override = 7;
 
     // This changes which searchbox opens on click.

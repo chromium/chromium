@@ -35,6 +35,12 @@ void PrintImpl(const FuseboxAction& action, int indent, std::ostream* os) {
   } else {
     *os << ind << "  preselected_model: null,\n";
   }
+  if (action.query_action_override) {
+    *os << ind << "  query_action_override: "
+        << static_cast<int>(*action.query_action_override) << ",\n";
+  } else {
+    *os << ind << "  query_action_override: null,\n";
+  }
   *os << ind << "}";
 }
 

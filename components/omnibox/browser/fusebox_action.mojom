@@ -7,9 +7,18 @@ module fusebox_action.mojom;
 import "components/omnibox/browser/searchbox.mojom";
 import "components/omnibox/composebox/composebox_query.mojom";
 
+// LINT.IfChange(QueryActionOverride)
+enum QueryActionOverride {
+  kDefault = 0,
+  kPaste = 1,
+  kHint = 2,
+};
+// LINT.ThenChange(//third_party/omnibox_proto/suggest_template_info.proto:QueryActionOverride)
+
 // TODO(crbug.com/539651790): Add more fields to FuseboxAction.
 struct FuseboxAction {
   composebox_query.mojom.ToolMode? preselected_tool;
   searchbox.mojom.SuggestInventory? preferred_inventory;
   composebox_query.mojom.ModelMode? preselected_model;
+  QueryActionOverride? query_action_override;
 };
