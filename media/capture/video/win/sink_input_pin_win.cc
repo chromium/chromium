@@ -130,7 +130,7 @@ bool SinkInputPin::GetValidMediaType(int index, AM_MEDIA_TYPE* media_type) {
   VIDEOINFOHEADER* const pvi =
       reinterpret_cast<VIDEOINFOHEADER*>(media_type->pbFormat);
 
-  UNSAFE_TODO(ZeroMemory(pvi, sizeof(VIDEOINFOHEADER)));
+  *pvi = {};
   pvi->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
   pvi->bmiHeader.biPlanes = 1;
   pvi->bmiHeader.biClrImportant = 0;
