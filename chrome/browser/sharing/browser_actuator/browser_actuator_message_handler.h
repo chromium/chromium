@@ -6,34 +6,41 @@
 #define CHROME_BROWSER_SHARING_BROWSER_ACTUATOR_BROWSER_ACTUATOR_MESSAGE_HANDLER_H_
 
 #include <memory>
+#include <string>
 
-#include "chrome/browser/sharing/glic_experimental_triggering/glic_experimental_triggering_message_handler.h"
+#include "base/memory/raw_ptr.h"
+#include "components/sharing_message/sharing_message_handler.h"
 
-namespace glic {
-class GlicExperimentalTriggeringCoordinator;
-}
+class Profile;
+
+namespace components_sharing_message {
+class GlicExperimentalTriggering;
+}  // namespace components_sharing_message
 
 // Handler for incoming initial SharingMessages for BrowserActuator service.
-// Inherits from GlicExperimentalTriggeringMessageHandler to reuse all initial
-// message validation, logging, and coordinator request processing.
-// Does not send status updates back over the sharing message channel.
-class BrowserActuatorMessageHandler
-    : public GlicExperimentalTriggeringMessageHandler {
+// Processes initial opt-in messages to set up a TransportChannel and
+// TransportSession.
+class BrowserActuatorMessageHandler : public SharingMessageHandler {
  public:
   explicit BrowserActuatorMessageHandler(Profile* profile);
-  BrowserActuatorMessageHandler(
-      Profile* profile,
-      std::unique_ptr<glic::GlicExperimentalTriggeringCoordinator> coordinator);
   BrowserActuatorMessageHandler(const BrowserActuatorMessageHandler&) = delete;
   BrowserActuatorMessageHandler& operator=(
       const BrowserActuatorMessageHandler&) = delete;
   ~BrowserActuatorMessageHandler() override;
 
- protected:
-  // GlicExperimentalTriggeringMessageHandler overrides:
-  void CheckFeatureFlags() const override;
-  glic::GlicExperimentalTriggeringUpdateCallback GetUpdateCallback(
-      components_sharing_message::SharingMessage& message) override;
+  // SharingMessageHandler implementation:
+  void OnMessage(components_sharing_message::SharingMessage message,
+                 DoneCallback done_callback) override;
+
+ private:
+  void HandleGlicExperimentalTriggering(
+      const components_sharing_message::GlicExperimentalTriggering& triggering);
+
+  // Helper to initialize/get the TransportChannel and TransportSession for
+  // context_id.
+  void EnsureTransportSessionCreated(const std::string& context_id);
+
+  const raw_ptr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_SHARING_BROWSER_ACTUATOR_BROWSER_ACTUATOR_MESSAGE_HANDLER_H_

@@ -90,6 +90,7 @@ source_set("unit_tests") {
     ":sharing",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/sharing/browser_actuator:unit_tests",
     "//chrome/common:chrome_features",
     "//components/gcm_driver/instance_id",
     "//components/prefs",

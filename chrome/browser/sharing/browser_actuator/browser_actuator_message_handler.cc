@@ -7,33 +7,72 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "base/feature_list.h"
-#include "base/functional/callback_helpers.h"
-#include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_coordinator.h"
+#include "chrome/browser/browser_actuator/browser_actuator_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/browser_actuator/public/browser_actuator_service.h"
 #include "components/browser_actuator/public/features.h"
+#include "components/browser_actuator/public/transport_channel.h"
+#include "components/browser_actuator/public/transport_session_registry.h"
+#include "components/sharing_message/proto/sharing_message.pb.h"
 
 BrowserActuatorMessageHandler::BrowserActuatorMessageHandler(Profile* profile)
-    : GlicExperimentalTriggeringMessageHandler(profile,
-                                               /*message_sender=*/nullptr) {}
-
-BrowserActuatorMessageHandler::BrowserActuatorMessageHandler(
-    Profile* profile,
-    std::unique_ptr<glic::GlicExperimentalTriggeringCoordinator> coordinator)
-    : GlicExperimentalTriggeringMessageHandler(profile,
-                                               /*message_sender=*/nullptr,
-                                               std::move(coordinator)) {}
+    : profile_(profile) {}
 
 BrowserActuatorMessageHandler::~BrowserActuatorMessageHandler() = default;
 
-void BrowserActuatorMessageHandler::CheckFeatureFlags() const {
-  CHECK(base::FeatureList::IsEnabled(browser_actuator::kBrowserActuator) &&
-        base::FeatureList::IsEnabled(
-            browser_actuator::
-                kEnableBrowserActuatorForGlicExperimentalTriggering));
+void BrowserActuatorMessageHandler::OnMessage(
+    components_sharing_message::SharingMessage message,
+    DoneCallback done_callback) {
+  CHECK(base::FeatureList::IsEnabled(browser_actuator::kBrowserActuator));
+
+  if (message.has_glic_experimental_triggering()) {
+    CHECK(base::FeatureList::IsEnabled(
+        browser_actuator::kEnableBrowserActuatorForGlicExperimentalTriggering));
+    HandleGlicExperimentalTriggering(message.glic_experimental_triggering());
+  }
+
+  // TODO: Add support for future payload types (e.g.
+  // message.has_browser_actuation())
+
+  std::move(done_callback).Run(nullptr);
 }
 
-glic::GlicExperimentalTriggeringUpdateCallback
-BrowserActuatorMessageHandler::GetUpdateCallback(
-    components_sharing_message::SharingMessage&) {
-  return base::DoNothing();
+void BrowserActuatorMessageHandler::HandleGlicExperimentalTriggering(
+    const components_sharing_message::GlicExperimentalTriggering& triggering) {
+  if (!triggering.has_request()) {
+    return;
+  }
+
+  const auto& request = triggering.request();
+  if (!request.has_device_opt_in_request()) {
+    // Ignore non-opt-in messages.
+    return;
+  }
+
+  // For legacy experimental triggering proto, context_id will serve as
+  // session_id.
+  const std::string& session_id = triggering.context_id();
+  if (session_id.empty()) {
+    // Ignore messages without a session ID.
+    return;
+  }
+
+  EnsureTransportSessionCreated(session_id);
+}
+
+void BrowserActuatorMessageHandler::EnsureTransportSessionCreated(
+    const std::string& session_id) {
+  if (!profile_) {
+    return;
+  }
+  browser_actuator::BrowserActuatorService* service =
+      browser_actuator::BrowserActuatorServiceFactory::GetForProfile(profile_);
+  if (service && service->IsInitialized()) {
+    browser_actuator::TransportChannel* channel = service->GetChannel();
+    if (channel && channel->GetSessionRegistry()) {
+      channel->GetSessionRegistry()->GetOrCreateSession(session_id);
+    }
+  }
 }

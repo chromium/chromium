@@ -31,6 +31,11 @@ class TransportSessionRegistry {
 
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
+
+  // Retrieves an existing session by ID or creates a new one if it does not
+  // exist. Returns nullptr if session creation fails (e.g. max capacity
+  // reached).
+  virtual TransportSession* GetOrCreateSession(std::string_view session_id) = 0;
 };
 
 }  // namespace browser_actuator

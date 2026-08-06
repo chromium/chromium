@@ -7,8 +7,6 @@ source_set("browser_actuator") {
 
   public_deps = [
     "//base",
-    "//chrome/browser/glic",
-    "//chrome/browser/sharing/glic_experimental_triggering",
     "//components/sharing_message",
     "//components/sharing_message/proto",
   ]
@@ -19,12 +17,8 @@ source_set("impl") {
 
   deps = [
     ":browser_actuator",
-    "//chrome/browser/actor",
-    "//chrome/browser/glic",
-    "//chrome/browser/glic:impl",
+    "//chrome/browser/browser_actuator",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/sharing/glic_experimental_triggering:impl",
-    "//chrome/common:chrome_features",
     "//components/browser_actuator/public",
   ]
 }
@@ -36,11 +30,10 @@ source_set("unit_tests") {
     ":browser_actuator",
     ":impl",
     "//base/test:test_support",
-    "//chrome/browser/glic",
-    "//chrome/browser/glic:impl",
-    "//chrome/browser/glic/test_support",
+    "//chrome/browser/browser_actuator",
     "//chrome/test:test_support",
     "//components/browser_actuator/public",
+    "//components/browser_actuator/test_support",
     "//components/sharing_message:test_support",
     "//components/sharing_message/proto",
     "//content/test:test_support",
