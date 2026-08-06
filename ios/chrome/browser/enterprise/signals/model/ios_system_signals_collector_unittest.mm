@@ -24,7 +24,7 @@ namespace {
 
 constexpr char kFakeVendorId[] = "fake-vendor-id";
 
-class MockIOSDeviceIdentifierDelegate : public IOSDeviceIdentifierDelegate {
+class MockIOSDeviceIdentifier : public IOSDeviceIdentifierDelegate {
  public:
   MOCK_METHOD(std::string, GetVendorId, (), (override));
 };
@@ -33,7 +33,7 @@ class IOSSystemSignalsCollectorTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
-    auto mock_delegate = std::make_unique<MockIOSDeviceIdentifierDelegate>();
+    auto mock_delegate = std::make_unique<MockIOSDeviceIdentifier>();
     mock_delegate_ptr_ = mock_delegate.get();
     // Default behavior for vendor ID.
     ON_CALL(*mock_delegate_ptr_, GetVendorId())
@@ -55,7 +55,7 @@ class IOSSystemSignalsCollectorTest : public PlatformTest {
   std::unique_ptr<IOSSystemSignalsCollector> collector_;
   // The delegate is owned by the collector, therefore `mock_delegate_ptr_` must
   // be cleaned up before collector_ is destroyed to avoid a dangling pointer.
-  raw_ptr<MockIOSDeviceIdentifierDelegate> mock_delegate_ptr_;
+  raw_ptr<MockIOSDeviceIdentifier> mock_delegate_ptr_;
   id mock_auth_module_;
 };
 

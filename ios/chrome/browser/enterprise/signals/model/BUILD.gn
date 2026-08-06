@@ -2,9 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("signals") {
+source_set("model") {
   sources = [
     "ios_device_identifier_delegate.h",
+    "ios_signals_aggregator_factory.h",
+    "ios_signals_aggregator_factory.mm",
     "ios_system_signals_collector.h",
     "ios_system_signals_collector.mm",
     "profile_signals_collector_ios.h",
@@ -23,20 +25,26 @@ source_set("signals") {
     "//ios/chrome/browser/enterprise/connectors",
     "//ios/chrome/browser/enterprise/identifiers:profile_id_service_factory",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/common/ui/reauthentication",
   ]
 
   frameworks = [ "LocalAuthentication.framework" ]
 }
 
+group("signals") {
+  public_deps = [ ":model" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "ios_signals_aggregator_factory_unittest.mm",
     "ios_system_signals_collector_unittest.mm",
     "profile_signals_collector_ios_unittest.mm",
   ]
   deps = [
-    ":signals",
+    ":model",
     "//base",
     "//base/test:test_support",
     "//components/device_signals/core/browser",

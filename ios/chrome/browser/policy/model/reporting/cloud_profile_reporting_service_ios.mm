@@ -55,7 +55,7 @@ void CloudProfileReportingServiceIOS::CreateReportScheduler() {
   // Only start scheduling reports if kPoliciesEverFetchedWithProfileId is true
   // or when it flips to true.
   params.require_policy_fetch_with_profile_id = true;
-
+  // TODO(crbug.com/421927804): Add signals aggregator here.
   params.profile_request_generator =
       std::make_unique<ChromeProfileRequestGenerator>(
           base::FilePath(SanitizeProfilePath(profile_->GetProfileName())),

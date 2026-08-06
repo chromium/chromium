@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_ENTERPRISE_SIGNALS_IOS_SYSTEM_SIGNALS_COLLECTOR_H_
-#define IOS_CHROME_BROWSER_ENTERPRISE_SIGNALS_IOS_SYSTEM_SIGNALS_COLLECTOR_H_
+#ifndef IOS_CHROME_BROWSER_ENTERPRISE_SIGNALS_MODEL_IOS_SYSTEM_SIGNALS_COLLECTOR_H_
+#define IOS_CHROME_BROWSER_ENTERPRISE_SIGNALS_MODEL_IOS_SYSTEM_SIGNALS_COLLECTOR_H_
 
 #import <memory>
 
@@ -41,4 +41,4 @@ class IOSSystemSignalsCollector : public device_signals::BaseSignalsCollector {
   base::WeakPtrFactory<IOSSystemSignalsCollector> weak_factory_{this};
 };
 
-#endif  // IOS_CHROME_BROWSER_ENTERPRISE_SIGNALS_IOS_SYSTEM_SIGNALS_COLLECTOR_H_
+#endif  // IOS_CHROME_BROWSER_ENTERPRISE_SIGNALS_MODEL_IOS_SYSTEM_SIGNALS_COLLECTOR_H_

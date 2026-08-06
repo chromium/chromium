@@ -1,3 +1,7 @@
 include_rules = [
   "+components/device_signals/core/browser",
+  "+ios/chrome/browser/enterprise/connectors",
+  "+ios/chrome/browser/enterprise/identifiers",
+  "+ios/chrome/browser/signin/model",
+  "+ios/chrome/common/ui/reauthentication",
 ]
