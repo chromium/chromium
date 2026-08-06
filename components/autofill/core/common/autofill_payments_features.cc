@@ -301,6 +301,13 @@ BASE_FEATURE(kAutofillEnableWalletBrandingV2,
 // TODO(crbug.com/526738761): Clean up after launch.
 BASE_FEATURE(kAutofillFixCvcImport, base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_IOS)
+// When enabled, skips empty CVCs in AutofillWalletCredentialSyncBridge instead
+// of failing a CHECK.
+BASE_FEATURE(kAutofillIgnoreEmptyCvcsInSyncBridge,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 // When enabled, Payments Autofill Buy Now Pay Later (BNPL) will use each
 // corresponding issuer's blocklist instead of allowlist to check for website
 // eligibility.
