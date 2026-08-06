@@ -844,6 +844,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/firstrun/FirstRunFilterTouchUnitTest.java",
       "src/org/chromium/chrome/browser/firstrun/FirstRunFlowSequencerTest.java",
       "src/org/chromium/chrome/browser/firstrun/FirstRunIntegrationUnitTest.java",
+      "src/org/chromium/chrome/browser/firstrun/FirstRunUtilsUnitTest.java",
       "src/org/chromium/chrome/browser/firstrun/SkipTosDialogPolicyListenerUnitTest.java",
       "src/org/chromium/chrome/browser/firstrun/TosDialogBehaviorSharedPrefInvalidatorUnitTest.java",
     ]

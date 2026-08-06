@@ -43,6 +43,27 @@ public class FirstRunUtils {
 
     private static final int DEFAULT_SKIP_TOS_EXIT_DELAY_MS = 1000;
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static final List<SafetyPromoCard> ARM_1_CARDS =
+            List.of(
+                    SafetyPromoCard.PASSWORD_MANAGER,
+                    SafetyPromoCard.ENHANCED_SAFE_BROWSING,
+                    SafetyPromoCard.INCOGNITO);
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static final List<SafetyPromoCard> ARM_2_CARDS =
+            List.of(
+                    SafetyPromoCard.HISTORY_QUICK_DELETE,
+                    SafetyPromoCard.ENHANCED_SAFE_BROWSING,
+                    SafetyPromoCard.INCOGNITO);
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static final List<SafetyPromoCard> ARM_3_CARDS =
+            List.of(
+                    SafetyPromoCard.PASSWORD_MANAGER,
+                    SafetyPromoCard.HISTORY_QUICK_DELETE,
+                    SafetyPromoCard.ENHANCED_SAFE_BROWSING);
+
     private static boolean sDisableDelayOnExitFreForTest;
     private static @Nullable Boolean sCctTosDialogEnabledForTesting;
 
@@ -124,18 +145,25 @@ public class FirstRunUtils {
             return false;
         }
         @SafetyFrePromoArm int arm = ChromeFeatureList.sSafetyFrePromoArm.getValue();
-        return arm == SafetyFrePromoArm.ANIMATED_ILLUSTRATION
-                || arm == SafetyFrePromoArm.PASSWORD_MANAGER;
+        return arm != SafetyFrePromoArm.UNDEFINED;
+    }
+
+    public static boolean isCardBasedPromoArm(@SafetyFrePromoArm int arm) {
+        return arm >= SafetyFrePromoArm.PASSWORD_MANAGER
+                && arm <= SafetyFrePromoArm.PASSWORD_MANAGER_AND_HISTORY_QUICK_DELETE;
     }
 
     public static List<SafetyPromoCard> getCardsForSafetyFrePromoArm(@SafetyFrePromoArm int arm) {
-        if (arm == SafetyFrePromoArm.PASSWORD_MANAGER) {
-            return List.of(
-                    SafetyPromoCard.PASSWORD_MANAGER,
-                    SafetyPromoCard.ENHANCED_SAFE_BROWSING,
-                    SafetyPromoCard.INCOGNITO);
+        switch (arm) {
+            case SafetyFrePromoArm.PASSWORD_MANAGER:
+                return ARM_1_CARDS;
+            case SafetyFrePromoArm.HISTORY_QUICK_DELETE:
+                return ARM_2_CARDS;
+            case SafetyFrePromoArm.PASSWORD_MANAGER_AND_HISTORY_QUICK_DELETE:
+                return ARM_3_CARDS;
+            default:
+                return List.of();
         }
-        return List.of();
     }
 
     @NativeMethods

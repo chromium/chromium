@@ -65,7 +65,7 @@ public class SafetyPromoFirstRunFragment extends Fragment implements FirstRunFra
     }
 
     private @LayoutRes int getLayoutId(@SafetyFrePromoArm int arm, boolean useLandscape) {
-        if (arm == SafetyFrePromoArm.PASSWORD_MANAGER) {
+        if (FirstRunUtils.isCardBasedPromoArm(arm)) {
             return useLandscape
                     ? R.layout.safety_promo_fre_cards_landscape_view
                     : R.layout.safety_promo_fre_cards_portrait_view;
@@ -82,7 +82,7 @@ public class SafetyPromoFirstRunFragment extends Fragment implements FirstRunFra
     }
 
     private void setupView(SafetyPromoFirstRunView view, @SafetyFrePromoArm int arm) {
-        if (arm == SafetyFrePromoArm.PASSWORD_MANAGER) {
+        if (FirstRunUtils.isCardBasedPromoArm(arm)) {
             view.setCards(FirstRunUtils.getCardsForSafetyFrePromoArm(arm));
         }
         var pageDelegate = assumeNonNull(getPageDelegate());
