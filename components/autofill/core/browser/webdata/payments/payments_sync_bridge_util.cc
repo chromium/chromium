@@ -879,7 +879,18 @@ AutofillOfferData AutofillOfferDataFromOfferSpecifics(
 sync_pb::AutofillWalletCredentialSpecifics
 AutofillWalletCredentialSpecificsFromStructData(const ServerCvc& server_cvc) {
   sync_pb::AutofillWalletCredentialSpecifics wallet_credential_specifics;
+#if BUILDFLAG(IS_IOS)
+  // TODO(crbug.com/542769367): Downgraded to NotFatalUntil as a short-term
+  // fix for production crashes until root-cause investigation completes.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillIgnoreEmptyCvcsInSyncBridge)) {
+    CHECK(!server_cvc.cvc.empty(), base::NotFatalUntil::M156);
+  } else {
+    CHECK(!server_cvc.cvc.empty());
+  }
+#else
   CHECK(!server_cvc.cvc.empty());
+#endif
   wallet_credential_specifics.set_instrument_id(
       base::NumberToString(server_cvc.instrument_id));
   wallet_credential_specifics.set_cvc(base::UTF16ToUTF8(server_cvc.cvc));

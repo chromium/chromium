@@ -316,6 +316,13 @@ BASE_FEATURE(kAutofillEnableWalletReminderNotice,
 // TODO(crbug.com/526738761): Clean up after launch.
 BASE_FEATURE(kAutofillFixCvcImport, base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_IOS)
+// When enabled, skips empty CVCs in AutofillWalletCredentialSyncBridge instead
+// of failing a CHECK.
+BASE_FEATURE(kAutofillIgnoreEmptyCvcsInSyncBridge,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 // When enabled, card upload legal message lines are parsed for the word
 // "personalization" for feature launch metrics. This flag is temporary, is
 // enabled by default, and functions as a kill switch in case of unexpected
