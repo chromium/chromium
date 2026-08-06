@@ -48,6 +48,10 @@
 @media (forced-colors: active) {
   :host {
     --cr-radio-button-checked-color: SelectedItem;
+    --cr-radio-button-unchecked-color: CanvasText;
+  }
+
+  .disc-wrapper {
     forced-color-adjust: none;
   }
 }
