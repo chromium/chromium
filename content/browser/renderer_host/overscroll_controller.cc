@@ -265,7 +265,9 @@ bool OverscrollController::DispatchEventCompletesAction(
   if (event.GetType() == blink::WebInputEvent::Type::kGestureScrollUpdate) {
     if (overscroll_source_ != OverscrollSource::TOUCHPAD)
       return false;
-    CHECK(IsGestureEventFromTouchpad(event), base::NotFatalUntil::M154);
+    // TODO(crbug.com/542429344): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(IsGestureEventFromTouchpad(event));
     const blink::WebGestureEvent gesture_event =
         static_cast<const blink::WebGestureEvent&>(event);
     if (gesture_event.data.scroll_update.inertial_phase !=
