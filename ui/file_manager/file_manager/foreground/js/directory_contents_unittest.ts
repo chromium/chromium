@@ -8,8 +8,6 @@ import type {VolumeInfo} from '../../background/js/volume_info.js';
 import type {VolumeManager} from '../../background/js/volume_manager.js';
 import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {installMockChrome} from '../../common/js/mock_chrome.js';
-import {RootType} from '../../common/js/volume_manager_types.js';
-
 import {FileFilter, RecentContentScanner} from './directory_contents.js';
 
 /**
@@ -43,16 +41,6 @@ export function setUp() {
  * Check that files are shown or hidden correctly.
  */
 export function testHiddenFiles() {
-  let volumeManagerRootType = RootType.DOWNLOADS;
-  // Create a fake volume manager that provides entry location info.
-  const volumeManager = {
-    getLocationInfo: (_: FileEntry) => {
-      return {
-        rootType: volumeManagerRootType,
-      };
-    },
-  } as VolumeManager;
-
   const entry = (fullPath: string): FileEntry => {
     return {
       name: fullPath.split('/').pop()!,
@@ -61,41 +49,27 @@ export function testHiddenFiles() {
     } as FileEntry;
   };
 
-  // Create a set of entries in root dir, and in /PvmDefault dir.
+  // Create a set of entries in the root and in a subdirectory.
   const entries: FileEntry[] = [];
   for (const e of ['.test', 'test', '$RECYCLE.BIN', '$okForNow', '~okForNow']) {
     entries.push(entry('/' + e));
-    entries.push(entry('/PvmDefault/' + e));
+    entries.push(entry('/folder/' + e));
   }
 
-  const filter = new FileFilter(volumeManager);
+  const filter = new FileFilter();
 
-  // .test should be hidden in any dir.
-  // $RECYCLE.BIN is hidden in downloads:/PvmDefault only.
+  // .test should be hidden in any directory.
   assertFalse(filter.isHiddenFilesVisible());
   let hidden = entries.filter(entry => !filter.filter(entry));
-  assertEquals(3, hidden.length);
+  assertEquals(2, hidden.length);
   assertEquals('/.test', hidden[0]!.fullPath);
-  assertEquals('/PvmDefault/.test', hidden[1]!.fullPath);
-  assertEquals('/PvmDefault/$RECYCLE.BIN', hidden[2]!.fullPath);
+  assertEquals('/folder/.test', hidden[1]!.fullPath);
 
   // No files hidden when we show hidden files.
   filter.setHiddenFilesVisible(true);
   hidden = entries.filter(entry => !filter.filter(entry));
   assertEquals(0, hidden.length);
 
-  // $RECYCLE.BIN is not hidden in other volumes.
-  volumeManagerRootType = 'testroot' as RootType;
-  filter.setHiddenFilesVisible(false);
-  hidden = entries.filter(entry => !filter.filter(entry));
-  assertEquals(2, hidden.length);
-  assertEquals('/.test', hidden[0]!.fullPath);
-  assertEquals('/PvmDefault/.test', hidden[1]!.fullPath);
-
-  // Still no files hidden when we show hidden files.
-  filter.setHiddenFilesVisible(true);
-  hidden = entries.filter(entry => !filter.filter(entry));
-  assertEquals(0, hidden.length);
 }
 
 /**

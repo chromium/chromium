@@ -222,7 +222,7 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
           "various Apps on ChromeOS devices only. The apps platform includes, "
           "but is not limited to, progressive web apps (PWA), Chrome apps, and "
           "apps from the various VMs / GuestOS's: Android (ARC++), Linux "
-          "(Crostini), Windows (Parallels), and Steam (Borealis). Usage "
+          "(Crostini), and Steam (Borealis). Usage "
           "statistics are tied to a pseudonymous machine identifier and not to "
           "your email address."
         trigger:

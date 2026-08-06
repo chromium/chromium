@@ -29,7 +29,7 @@ enum class AppType {
   kCrostini = 3,   // Linux (via Crostini) app.
   kChromeApp = 4,  // Chrome app.
   kWeb = 5,        // Web app.
-  kPluginVm = 6,   // Plugin VM app, see go/pluginvm.
+  kPluginVm = 6,   // Deprecated. Do not reuse this value.
   // kStandaloneBrowser = 7,  // Removed. No longer used.
   kRemote = 8,      // Remote app.
   kBorealis = 9,    // Borealis app, see go/borealis-app.

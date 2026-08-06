@@ -1145,7 +1145,7 @@ CrostiniManager::TerminaFlavor CrostiniManager::GetTerminaFlavor(
 
   termina_flavor = TerminaFlavor::UNKNOWN;
 
-  // We are uninterested in bru and plugin vm types here.
+  // Only Termina guests are relevant here.
   for (const auto& container : container_list) {
     guest_os::GuestId id(container);
     if (id.vm_type == vm_tools::apps::VmType::BAGUETTE) {
@@ -2035,7 +2035,6 @@ void CrostiniManager::ExportDiskImage(guest_os::GuestId vm_id,
   vm_tools::concierge::ExportDiskImageRequest request;
   request.set_vm_name(vm_id.vm_name);
   request.set_cryptohome_id(user_id_hash);
-  // Digest file is only used for pluginVM which will be deprecated soon.
   request.set_generate_sha256_digest(false);
   request.set_force(force);
 
@@ -2130,8 +2129,7 @@ void CrostiniManager::ImportDiskImage(guest_os::GuestId vm_id,
   request.set_vm_name(vm_id.vm_name);
   request.set_cryptohome_id(user_id_hash);
   request.set_vm_type(ToConciergeServiceVmType(vm_id.vm_type));
-  // All vm's are stored in root except pluginvm, which is not supported in this
-  // flow.
+  // All supported VMs are stored in root.
   request.set_storage_location(vm_tools::concierge::STORAGE_CRYPTOHOME_ROOT);
 
   // Blocking calls may not be made from the main thread (base::File() here),

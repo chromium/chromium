@@ -93,7 +93,6 @@ constexpr char kCrostiniMapSharedWithMe[] = "SharedWithMe";
 constexpr char kCrostiniMapShortcutsSharedWithMe[] = "ShortcutsSharedWithMe";
 constexpr char kFolderNameDownloads[] = "Downloads";
 constexpr char kFolderNameMyFiles[] = "MyFiles";
-constexpr char kFolderNamePvmDefault[] = "PvmDefault";
 constexpr char kFolderNameCamera[] = "Camera";
 constexpr char kFolderNameShareCache[] = "ShareCache";
 constexpr char kDisplayNameGoogleDrive[] = "Google Drive";
@@ -279,8 +278,6 @@ std::optional<int> DriveFsFolderToMessageId(std::string folder) {
 std::optional<int> MyFilesFolderToMessageId(std::string folder) {
   if (folder == kFolderNameDownloads) {
     return IDS_FILE_BROWSER_DOWNLOADS_DIRECTORY_LABEL;
-  } else if (folder == kFolderNamePvmDefault) {
-    return IDS_FILE_BROWSER_PLUGIN_VM_DIRECTORY_LABEL;
   } else if (folder == kFolderNameCamera) {
     return IDS_FILE_BROWSER_CAMERA_DIRECTORY_LABEL;
   }

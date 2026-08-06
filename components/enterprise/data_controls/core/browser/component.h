@@ -24,7 +24,7 @@ enum class Component {
   kUnknownComponent,
   kArc,       // ARC++ as a Guest OS.
   kCrostini,  // Crostini as a Guest OS.
-  kPluginVm,  // Plugin VM (Parallels/Windows) as a Guest OS.
+  kPluginVm,  // Deprecated Plugin VM destination. Do not reuse.
   kUsb,       // Removable disk.
   kDrive,     // Google drive for file storage.
   kOneDrive,  // Microsoft OneDrive for file storage.

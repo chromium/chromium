@@ -32,8 +32,6 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
-#include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
-#include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/grit/generated_resources.h"
@@ -60,8 +58,6 @@ namespace ash {
 namespace {
 
 constexpr uint32_t kAllInterfacesMask = ~0U;
-const char16_t kParallelsShortName[] = u"Parallels";
-const char16_t kParallelsName[] = u"Parallels Desktop";
 
 // Not owned locally.
 static CrosUsbDetector* g_cros_usb_detector = nullptr;
@@ -288,19 +284,6 @@ void ShowNotificationForDevice(const std::string& guid,
     settings_sub_page =
         chromeos::settings::mojom::kCrostiniUsbPreferencesSubpagePath;
   }
-  if (plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile())) {
-    vm_name = kParallelsName;
-    vm_name_button_text = kParallelsShortName;
-    rich_notification_data.buttons.emplace_back(
-        message_center::ButtonInfo(l10n_util::GetStringFUTF16(
-            IDS_CROSUSB_NOTIFICATION_BUTTON_CONNECT_TO_VM,
-            vm_name_button_text)));
-    vm_names.emplace_back(plugin_vm::kPluginVmName);
-    vm_names_in_notification.emplace_back(vm_name);
-    settings_sub_page =
-        chromeos::settings::mojom::kPluginVmUsbPreferencesSubpagePath;
-  }
-
   if (IsPlayStoreEnabledWithArcVmForProfile(profile())) {
     vm_name = l10n_util::GetStringUTF16(IDS_CROSUSB_NOTIFICATION_ARCVM);
     vm_name_button_text =
@@ -461,7 +444,6 @@ CrosUsbDetector::CrosUsbDetector() {
 
   CiceroneClient::Get()->AddObserver(this);
   ConciergeClient::Get()->AddVmObserver(this);
-  VmPluginDispatcherClient::Get()->AddObserver(this);
   disks::DiskMountManager::GetInstance()->AddObserver(this);
 }
 
@@ -470,7 +452,6 @@ CrosUsbDetector::~CrosUsbDetector() {
   disks::DiskMountManager::GetInstance()->RemoveObserver(this);
   CiceroneClient::Get()->RemoveObserver(this);
   ConciergeClient::Get()->RemoveVmObserver(this);
-  VmPluginDispatcherClient::Get()->RemoveObserver(this);
   g_cros_usb_detector = nullptr;
 }
 
@@ -542,7 +523,6 @@ bool CrosUsbDetector::ShouldShowNotification(const UsbDevice& device) {
   }
 
   if (!crostini::CrostiniFeatures::Get()->IsEnabled(profile()) &&
-      !plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile()) &&
       !IsPlayStoreEnabledWithArcVmForProfile(profile()) &&
       !bruschetta::IsInstalled(profile(), bruschetta::GetBruschettaAlphaId())) {
     return false;
@@ -598,20 +578,6 @@ void CrosUsbDetector::OnVmStarted(
 void CrosUsbDetector::OnVmStopped(
     const vm_tools::concierge::VmStoppedSignal& signal) {
   DisconnectSharedDevicesOnVmShutdown(signal.name());
-}
-
-void CrosUsbDetector::OnVmToolsStateChanged(
-    const vm_tools::plugin_dispatcher::VmToolsStateChangedSignal& signal) {}
-
-void CrosUsbDetector::OnVmStateChanged(
-    const vm_tools::plugin_dispatcher::VmStateChangedSignal& signal) {
-  if (signal.vm_state() ==
-      vm_tools::plugin_dispatcher::VmState::VM_STATE_RUNNING) {
-    ConnectSharedDevicesOnVmStartup(signal.vm_name());
-  } else if (signal.vm_state() ==
-             vm_tools::plugin_dispatcher::VmState::VM_STATE_STOPPED) {
-    DisconnectSharedDevicesOnVmShutdown(signal.vm_name());
-  }
 }
 
 void CrosUsbDetector::OnMountEvent(

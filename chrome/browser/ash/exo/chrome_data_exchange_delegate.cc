@@ -11,7 +11,6 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/borealis/borealis_util.h"
 #include "content/public/common/drop_data.h"
@@ -80,9 +79,6 @@ ui::EndpointType ChromeDataExchangeDelegate::GetDataTransferEndpointType(
 
   if (crostini::IsCrostiniWindow(top_level_window))
     return ui::EndpointType::kCrostini;
-
-  if (plugin_vm::IsPluginVmAppWindow(top_level_window))
-    return ui::EndpointType::kPluginVm;
 
   return ui::EndpointType::kUnknownVm;
 }

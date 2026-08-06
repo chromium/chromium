@@ -326,7 +326,6 @@ source_set("impl") {
       "//chrome/browser/apps/app_service",
       "//chrome/browser/ash/drive",
       "//chrome/browser/ash/file_manager",
-      "//chrome/browser/ash/plugin_vm",
       "//chrome/browser/ash/policy/dlp",
       "//chrome/browser/ash/policy/skyvault",
       "//chrome/browser/chromeos/policy/dlp",

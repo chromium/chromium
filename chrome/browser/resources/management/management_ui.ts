@@ -119,7 +119,6 @@ export class ManagementUiElement extends ManagementUiElementBase {
 
       customerLogo_: {type: String},
       managementOverview_: {type: String},
-      pluginVmDataCollectionEnabled_: {type: Boolean},
       eolAdminMessage_: {type: String},
       eolMessage_: {type: String},
       showMonitoredNetworkPrivacyDisclosure_: {type: Boolean},
@@ -153,7 +152,6 @@ export class ManagementUiElement extends ManagementUiElementBase {
   protected accessor filesUploadToCloud_: string = '';
   protected accessor customerLogo_: string = '';
   protected accessor managementOverview_: string = '';
-  protected accessor pluginVmDataCollectionEnabled_: boolean = false;
   protected accessor eolAdminMessage_: string = '';
   protected accessor eolMessage_: string = '';
   protected accessor showMonitoredNetworkPrivacyDisclosure_: boolean = false;
@@ -203,12 +201,6 @@ export class ManagementUiElement extends ManagementUiElementBase {
         (reportingInfo: BrowserReportingResponse[]) =>
             this.onProfileReportingInfoReceived_(reportingInfo));
 
-    // <if expr="is_chromeos">
-    this.addWebUiListener(
-        'plugin-vm-data-collection-updated',
-        (enabled: boolean) => this.pluginVmDataCollectionEnabled_ = enabled);
-    // </if>
-
     this.addWebUiListener('managed_data_changed', () => {
       this.updateManagedFields_();
     });
@@ -226,7 +218,6 @@ export class ManagementUiElement extends ManagementUiElementBase {
     });
     // <if expr="is_chromeos">
     this.getDeviceReportingInfo_();
-    this.getPluginVmDataCollectionStatus_();
     this.getLocalTrustRootsInfo_();
     this.getFilesUploadToCloudInfo_();
     // </if>
@@ -326,13 +317,6 @@ export class ManagementUiElement extends ManagementUiElementBase {
     this.browserProxy_.getDeviceReportingInfo().then(reportingInfo => {
       this.deviceReportingInfo_ = reportingInfo;
     });
-  }
-
-  private getPluginVmDataCollectionStatus_() {
-    this.browserProxy_.getPluginVmDataCollectionStatus().then(
-        pluginVmDataCollectionEnabled => {
-          this.pluginVmDataCollectionEnabled_ = pluginVmDataCollectionEnabled;
-        });
   }
 
   /**

@@ -204,9 +204,7 @@ enum TaskResult {
   // The task execution failed.
   failed,
   // No URL is specified.
-  empty,
-  // The task was a |plugin_vm| task, and the file was in an unshared directory
-  failed_plugin_vm_directory_not_shared
+  empty
 };
 
 // Drive share type.
@@ -285,8 +283,7 @@ enum CrostiniEventType {
   enable,
   disable,
   share,
-  unshare,
-  drop_failed_plugin_vm_directory_not_shared
+  unshare
 };
 
 enum ProviderSource {

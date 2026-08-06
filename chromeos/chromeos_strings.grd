@@ -5199,9 +5199,6 @@
         <message name="IDS_TRAFFIC_COUNTERS_CROSVM" desc="Traffic counters related to Crosvm">
           Crosvm
         </message>
-        <message name="IDS_TRAFFIC_COUNTERS_PLUGINVM" desc="Traffic counters related to Pluginvm">
-          Pluginvm
-        </message>
         <message name="IDS_TRAFFIC_COUNTERS_UPDATE_ENGINE" desc="Traffic counters related to Update Engine">
           Update Engine
         </message>

@@ -1,14 +1,5 @@
 [
   {
-    "os": [
-      "chromeos"
-    ],
-    "simple_policy_pref_mapping_test": {
-      "pref_name": "plugin_vm.user_id",
-      "default_value": "",
-      "values_to_test": [
-        "USER_ID"
-      ]
-    }
+    "reason_for_missing_test": "Policy was deprecated in M152."
   }
 ]

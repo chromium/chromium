@@ -7,7 +7,7 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import type {ProgressCenter} from '../../background/js/progress_center.js';
 import type {VolumeInfo} from '../../background/js/volume_info.js';
 import type {VolumeManager} from '../../background/js/volume_manager.js';
-import {executeTask, getDirectory, getFileTasks} from '../../common/js/api.js';
+import {executeTask, getFileTasks} from '../../common/js/api.js';
 import {AsyncQueue} from '../../common/js/async_util.js';
 import {entriesToURLs, isFakeEntry} from '../../common/js/entry_utils.js';
 import {type AnnotatedTask, annotateTasks, getDefaultTask, isFilesAppId, parseActionId} from '../../common/js/file_tasks.js';
@@ -27,8 +27,6 @@ import {USER_CANCELLED} from '../../widgets/xf_password_dialog.js';
 
 import type {DirectoryModel} from './directory_model.js';
 import {type DirectoryChangeTracker} from './directory_model.js';
-import type {FileTransferController} from './file_transfer_controller.js';
-import {PastePlan} from './file_transfer_controller.js';
 import type {MetadataItem} from './metadata/metadata_item.js';
 import type {MetadataModel} from './metadata/metadata_model.js';
 import type {TaskController} from './task_controller.js';
@@ -36,7 +34,6 @@ import {type DropdownItem} from './task_controller.js';
 import type {TaskHistory} from './task_history.js';
 import type {DefaultTaskDialog} from './ui/default_task_dialog.js';
 import type {FileManagerUI} from './ui/file_manager_ui.js';
-import {FilesConfirmDialog} from './ui/files_confirm_dialog.js';
 import {UMA_INDEX_KNOWN_EXTENSIONS} from './uma_enums.gen.js';
 
 /**
@@ -61,7 +58,6 @@ export class FileTasks {
       private volumeManager_: VolumeManager,
       private metadataModel_: MetadataModel,
       private directoryModel_: DirectoryModel, private ui_: FileManagerUI,
-      private fileTransferController_: FileTransferController,
       private entries_: Array<Entry|FilesAppEntry>,
       private resultingTasks_: chrome.fileManagerPrivate.ResultingTasks,
       private defaultTask_: chrome.fileManagerPrivate.FileTask|null,
@@ -78,7 +74,6 @@ export class FileTasks {
   static async create(
       volumeManager: VolumeManager, metadataModel: MetadataModel,
       directoryModel: DirectoryModel, ui: FileManagerUI,
-      fileTransferController: FileTransferController,
       entries: Array<Entry|FilesAppEntry>, taskHistory: TaskHistory,
       progressCenter: ProgressCenter,
       taskController: TaskController): Promise<FileTasks> {
@@ -106,23 +101,21 @@ export class FileTasks {
 
 
     return new FileTasks(
-        volumeManager, metadataModel, directoryModel, ui,
-        fileTransferController, entries, resultingTasks, defaultTask,
-        taskHistory, progressCenter, taskController);
+        volumeManager, metadataModel, directoryModel, ui, entries,
+        resultingTasks, defaultTask, taskHistory, progressCenter,
+        taskController);
   }
 
   /** Creates FileTasks instance based on the data from the Store. */
   static fromStoreTasks(
       tasks: StoreFileTasks, volumeManager: VolumeManager,
       metadataModel: MetadataModel, directoryModel: DirectoryModel,
-      ui: FileManagerUI, fileTransferController: FileTransferController,
-      entries: Entry[], taskHistory: TaskHistory,
+      ui: FileManagerUI, entries: Entry[], taskHistory: TaskHistory,
       progressCenter: ProgressCenter,
       taskController: TaskController): FileTasks {
     return new FileTasks(
-        volumeManager, metadataModel, directoryModel, ui,
-        fileTransferController, entries, tasks, tasks.defaultTask ?? null,
-        taskHistory, progressCenter, taskController);
+        volumeManager, metadataModel, directoryModel, ui, entries, tasks,
+        tasks.defaultTask ?? null, taskHistory, progressCenter, taskController);
   }
 
   get entries(): Array<Entry|FilesAppEntry> {
@@ -305,44 +298,6 @@ export class FileTasks {
     }
   }
 
-  /**
-   * Show dialog when user opens or drags a file with PluginVM and the file
-   * is not in PvmSharedDir or shared with PluginVM. The dialog tells the
-   * user to move or copy the file to PvmSharedDir and offers an action to do
-   * that.
-   *
-   * @param entries Selected entries to be moved or copied.
-   * @param ui FileManager UI to show dialog.
-   * @param moveMessage Message if files are local and can be moved.
-   * @param copyMessage Message if files should be copied.
-   */
-  static showPluginVmNotSharedDialog(
-      entries: Array<Entry|FilesAppEntry>, volumeManager: VolumeManager,
-      metadataModel: MetadataModel, ui: FileManagerUI, moveMessage: string,
-      copyMessage: string, fileTransferController: FileTransferController|null,
-      directoryModel: DirectoryModel) {
-    assert(entries.length > 0);
-    const isMyFiles = isMyFilesEntry(entries[0]!, volumeManager);
-    const dialog = new FilesConfirmDialog(ui.element);
-    dialog.setOkLabel(str(
-        isMyFiles ? 'CONFIRM_MOVE_BUTTON_LABEL' : 'CONFIRM_COPY_BUTTON_LABEL'));
-    dialog.show(isMyFiles ? moveMessage : copyMessage, async () => {
-      if (!fileTransferController) {
-        console.warn('FileTransferController not set');
-        return;
-      }
-
-      const pvmDir = await FileTasks.getPvmSharedDir_(volumeManager);
-
-      assert(volumeManager.getLocationInfo(pvmDir));
-
-      fileTransferController.executePaste(new PastePlan(
-          entries.map(e => e.toURL()), [], pvmDir, metadataModel,
-          /*isMove=*/ isMyFiles));
-      directoryModel.changeDirectoryEntry(pvmDir);
-    });
-  }
-
   /** Executes default task.  */
   async executeDefault(): Promise<void> {
     FileTasks.recordViewingFileTypeUma_(this.volumeManager_, this.entries_);
@@ -493,18 +448,6 @@ export class FileTasks {
               this.ui_.showOpenInOtherDesktopAlert(entries);
             }
           });
-          break;
-        case TaskResult.FAILED_PLUGIN_VM_DIRECTORY_NOT_SHARED:
-          const moveMessage = strf(
-              'UNABLE_TO_OPEN_WITH_PLUGIN_VM_DIRECTORY_NOT_SHARED_MESSAGE',
-              task.title);
-          const copyMessage = strf(
-              'UNABLE_TO_OPEN_WITH_PLUGIN_VM_EXTERNAL_DRIVE_MESSAGE',
-              task.title);
-          FileTasks.showPluginVmNotSharedDialog(
-              entries, this.volumeManager_, this.metadataModel_, this.ui_,
-              moveMessage, copyMessage, this.fileTransferController_,
-              this.directoryModel_);
           break;
         default:
           break;
@@ -815,16 +758,6 @@ export class FileTasks {
         });
   }
 
-  private static async getPvmSharedDir_(volumeManager: VolumeManager):
-      Promise<DirectoryEntry> {
-    const volumeInfo =
-        volumeManager.getCurrentProfileVolumeInfo(VolumeType.DOWNLOADS);
-    if (!volumeInfo) {
-      throw new Error(`Error getting PvmDefault dir`);
-    }
-    return await getDirectory(
-        volumeInfo.fileSystem.root, 'PvmDefault', {create: false});
-  }
 }
 
 /** Dialog types to show a task picker. */
@@ -840,10 +773,4 @@ const OFFICE_EXTENSIONS =
 
 function hasOfficeExtension(entry: Entry|FilesAppEntry): boolean {
   return OFFICE_EXTENSIONS.has(getExtension(entry));
-}
-
-function isMyFilesEntry(
-    entry: Entry|FilesAppEntry, volumeManager: VolumeManager): boolean {
-  const location = volumeManager.getLocationInfo(entry);
-  return !!location && location.rootType === RootType.DOWNLOADS;
 }

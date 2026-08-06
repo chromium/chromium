@@ -144,10 +144,6 @@ export function getHtml(this: ManagementUiElement) {
               </div>
             `)}
           </div>
-          <div class="subtitle"
-              ?hidden="${!this.pluginVmDataCollectionEnabled_}">
-            $i18nRaw{pluginVmDataCollection}
-          </div>
         </section>
       ` : ''}
 </if>

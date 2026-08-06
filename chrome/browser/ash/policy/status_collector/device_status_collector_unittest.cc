@@ -1276,8 +1276,6 @@ class DeviceStatusCollectorTestBase : public testing::Test {
   base::SimpleTestClock test_clock_;
 
   apps::ScopedOmitBorealisAppsForTesting scoped_omit_borealis_apps_for_testing_;
-  apps::ScopedOmitPluginVmAppsForTesting
-      scoped_omit_plugin_vm_apps_for_testing_;
 
   ash::ScopedCrasAudioHandlerForTesting cras_audio_handler_;
 

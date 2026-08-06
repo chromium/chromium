@@ -1288,10 +1288,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("mountCrostiniWithSubFolder"),
         TestCase("enableDisableCrostini"),
         TestCase("sharePathWithCrostini")
-            .FeatureIds({"screenplay-122c00f8-9842-4666-8ca0-b6bf47454551"}),
-        TestCase("pluginVmDirectoryNotSharedErrorDialog"),
-        TestCase("pluginVmFileOnExternalDriveErrorDialog"),
-        TestCase("pluginVmFileDropFailErrorDialog")));
+            .FeatureIds({"screenplay-122c00f8-9842-4666-8ca0-b6bf47454551"})));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     MyFiles, /* my_files.ts */

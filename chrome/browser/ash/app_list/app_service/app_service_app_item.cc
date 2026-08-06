@@ -50,6 +50,7 @@ bool IsNewInstall(const apps::AppUpdate& app_update) {
     case apps::AppType::kUnknown:
     case apps::AppType::kSystemWeb:
     case apps::AppType::kRemote:
+    case apps::AppType::kPluginVm:
       // Chrome, Settings, etc. are built-in.
       return false;
     case apps::AppType::kArc:
@@ -57,7 +58,6 @@ bool IsNewInstall(const apps::AppUpdate& app_update) {
     case apps::AppType::kChromeApp:
     case apps::AppType::kExtension:
     case apps::AppType::kWeb:
-    case apps::AppType::kPluginVm:
     case apps::AppType::kBorealis:
     case apps::AppType::kBruschetta:
       // Other app types are user-installed.

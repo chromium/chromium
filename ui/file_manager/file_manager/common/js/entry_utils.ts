@@ -15,7 +15,7 @@ import type {XfTreeItem} from '../../widgets/xf_tree_item.js';
 import {createDOMError} from './dom_utils.js';
 import type {VolumeEntry} from './files_app_entry_types.js';
 import {EntryList, FakeEntryImpl} from './files_app_entry_types.js';
-import {isArcVmEnabled, isPluginVmEnabled, isSkyvaultV2Enabled} from './flags.js';
+import {isArcVmEnabled, isSkyvaultV2Enabled} from './flags.js';
 import {collator, getEntryLabel} from './translations.js';
 import type {TrashEntry} from './trash.js';
 import {FileErrorToDomError} from './util.js';
@@ -648,7 +648,7 @@ export function urlToEntry(url: string) {
 /**
  * Returns true if the given |entry| matches any of the special entries:
  *
- *  - "My Files"/{Downloads,PvmDefault,Camera} directories, or
+ *  - "My Files"/{Downloads,Camera} directories, or
  *  - "Play Files"/{<any-directory>,DCIM/Camera} directories, or
  *  - "Linux Files" root "/" directory
  *  - "Guest OS" root "/" directory
@@ -684,10 +684,6 @@ export function isNonModifiable(
     const fullPath = entry.fullPath;
 
     if (fullPath === '/Downloads') {
-      return true;
-    }
-
-    if (fullPath === '/PvmDefault' && isPluginVmEnabled()) {
       return true;
     }
 

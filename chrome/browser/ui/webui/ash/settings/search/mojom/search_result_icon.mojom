@@ -62,7 +62,7 @@ enum SearchResultIcon {
   kPenguin,
   kPersonalization,
   kPhone,
-  kPluginVm,
+  kDeprecatedPluginVm,
   kPointingStick,
   kPower,
   kPrinter,

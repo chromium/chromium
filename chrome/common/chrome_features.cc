@@ -1471,11 +1471,6 @@ BASE_FEATURE(kOomIntervention, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kOverridePrefetchOnSingleton, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-// Enable support for "Plugin VMs" on Chrome OS.
-BASE_FEATURE(kPluginVm, base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 // Allows Chrome to do preconnect when prerender fails.
 BASE_FEATURE(kPrerenderFallbackToPreconnect, base::FEATURE_DISABLED_BY_DEFAULT);
 

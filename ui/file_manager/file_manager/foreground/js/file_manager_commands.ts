@@ -1025,7 +1025,7 @@ export class CutCopyCommand extends FilesCommand {
         return false;
       }
 
-      // For MyFiles/Downloads and MyFiles/PluginVm we only allow copy.
+      // For MyFiles/Downloads we only allow copy.
       if (isMove && isNonModifiable(volumeManager, entry)) {
         return false;
       }
@@ -1902,8 +1902,7 @@ export class ManageMirrorsyncCommand extends FilesCommand {
 export class GuestOsShareCommand extends FilesCommand {
   /**
    * @param vmName Name of the vm to share into.
-   * @param typeForStrings VM type to identify the strings used for this VM e.g.
-   *     LINUX or PLUGIN_VM.
+   * @param typeForStrings VM type used to select its translated strings.
    * @param settingsPath Path to the page in settings to manage sharing.
    * @param manageUma MenuCommandsForUma entry this command should emit metrics
    *     under when the toast to manage sharing is clicked on.

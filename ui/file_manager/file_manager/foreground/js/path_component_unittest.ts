@@ -140,7 +140,7 @@ export async function testComputeComponentsFromEntry() {
     ['file', `filesystem:${fakeMyFilesVolumeId}/a/file`],
   ]);
 
-  // Special labels for '/Downloads', '/PvmDefault', '/Camera'.
+  // Special labels for '/Downloads' and '/Camera'.
   await validate('/Downloads/file', [
     [str('DOWNLOADS_DIRECTORY_LABEL'), `filesystem:${fakeMyFilesVolumeId}/`],
     [
@@ -148,14 +148,6 @@ export async function testComputeComponentsFromEntry() {
       `filesystem:${fakeMyFilesVolumeId}/Downloads`,
     ],
     ['file', `filesystem:${fakeMyFilesVolumeId}/Downloads/file`],
-  ]);
-  await validate('/PvmDefault/file', [
-    [str('DOWNLOADS_DIRECTORY_LABEL'), `filesystem:${fakeMyFilesVolumeId}/`],
-    [
-      str('PLUGIN_VM_DIRECTORY_LABEL'),
-      `filesystem:${fakeMyFilesVolumeId}/PvmDefault`,
-    ],
-    ['file', `filesystem:${fakeMyFilesVolumeId}/PvmDefault/file`],
   ]);
   await validate('/Camera/file', [
     [str('DOWNLOADS_DIRECTORY_LABEL'), `filesystem:${fakeMyFilesVolumeId}/`],

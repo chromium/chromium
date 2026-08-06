@@ -89,10 +89,6 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
       chromeos::WaitForServiceToBeAvailableCallback callback) override;
   void SetOomScoreAdj(const std::map<pid_t, int32_t>& pid_to_oom_score_adj,
                       SetOomScoreAdjCallback callback) override;
-  void StartPluginVmDispatcher(const std::string& owner_id,
-                               const std::string& lang,
-                               PluginVmDispatcherCallback callback) override;
-  void StopPluginVmDispatcher(PluginVmDispatcherCallback callback) override;
   void SetRlzPingSent(SetRlzPingSentCallback callback) override;
   void SetSchedulerConfigurationV2(
       const std::string& config_name,

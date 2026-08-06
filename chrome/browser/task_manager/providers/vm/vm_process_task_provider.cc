@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/task_manager/providers/vm/crostini_process_task.h"
-#include "chrome/browser/task_manager/providers/vm/plugin_vm_process_task.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/process_snapshot/process_snapshot_server.h"
 
@@ -55,16 +54,11 @@ ash::ConciergeClient* GetConciergeClient() {
 struct VmProcessData {
   VmProcessData(const std::string& name,
                 const std::string& owner_id,
-                const base::ProcessId& proc_id,
-                bool plugin_vm)
-      : vm_name(name),
-        owner_id(owner_id),
-        pid(proc_id),
-        is_plugin_vm(plugin_vm) {}
+                const base::ProcessId& proc_id)
+      : vm_name(name), owner_id(owner_id), pid(proc_id) {}
   std::string vm_name;
   std::string owner_id;
   base::ProcessId pid;
-  bool is_plugin_vm;
 };
 
 VmProcessTaskProvider::VmProcessTaskProvider()
@@ -127,10 +121,7 @@ void VmProcessTaskProvider::OnListVms(
       auto vm_entry = vms.find(nspid);
       if (vm_entry != vms.end()) {
         auto* vm = vm_entry->second;
-        vm_process_list.emplace_back(
-            vm->name(), vm->owner_id(), entry.pid(),
-            vm->vm_info().vm_type() ==
-                vm_tools::concierge::VmInfo_VmType_PLUGIN_VM);
+        vm_process_list.emplace_back(vm->name(), vm->owner_id(), entry.pid());
       }
     }
   }
@@ -170,15 +161,9 @@ void VmProcessTaskProvider::OnUpdateVmProcessList(
         continue;
 
       // New VM process.
-      if (entry.is_plugin_vm) {
-        auto task = std::make_unique<PluginVmProcessTask>(
-            entry.pid, entry.owner_id, entry.vm_name);
-        task_map_[entry.pid] = std::move(task);
-      } else {
-        auto task = std::make_unique<CrostiniProcessTask>(
-            entry.pid, entry.owner_id, entry.vm_name);
-        task_map_[entry.pid] = std::move(task);
-      }
+      auto task = std::make_unique<CrostiniProcessTask>(
+          entry.pid, entry.owner_id, entry.vm_name);
+      task_map_[entry.pid] = std::move(task);
       NotifyObserverTaskAdded(task_map_[entry.pid].get());
     }
   }

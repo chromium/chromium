@@ -130,7 +130,6 @@ constexpr auto kKnownSettings = base::MakeFixedFlatSet<std::string_view>({
     kKioskCRXManifestUpdateURLIgnored,
     kLoginAuthenticationBehavior,
     kLoginVideoCaptureAllowedUrls,
-    kPluginVmAllowed,
     kPolicyMissingMitigationMode,
     kRebootOnShutdown,
     kReleaseChannel,
@@ -1154,14 +1153,6 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
       new_values_cache->SetValue(
           kDeviceUnaffiliatedCrostiniAllowed,
           base::Value(container.device_unaffiliated_crostini_allowed()));
-    }
-  }
-
-  if (policy.has_plugin_vm_allowed()) {
-    const em::PluginVmAllowedProto& container(policy.plugin_vm_allowed());
-    if (container.has_plugin_vm_allowed()) {
-      new_values_cache->SetValue(kPluginVmAllowed,
-                                 base::Value(container.plugin_vm_allowed()));
     }
   }
 

@@ -97,7 +97,7 @@ enum class NotificationCatalogName {
   kPhoneHubTetherFailed = 77,
   kCapsLock = 78,
   kNightLight = 79,
-  kPluginVMUninstaller = 80,
+  // [Deprecated] kPluginVMUninstaller = 80,
   // [Deprecated] kTPMAutoUpdate = 81,
   kIt2MeConfirmation = 82,
   kHPSNotify = 83,

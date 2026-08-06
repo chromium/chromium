@@ -8,8 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
-#include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
 #include "chrome/browser/ash/usb/cros_usb_detector.h"
 #include "content/public/browser/web_ui_message_handler.h"
 

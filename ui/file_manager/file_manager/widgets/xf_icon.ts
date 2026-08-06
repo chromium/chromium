@@ -339,10 +339,6 @@ function getCSS() {
       -webkit-mask-image: url(../foreground/images/filetype/filetype_pdf.svg);
     }
 
-    :host([type="plugin_vm"]) span {
-      -webkit-mask-image: url(../foreground/images/volumes/plugin_vm_ng.svg);
-    }
-
     :host([type="ppt"]) span {
       -webkit-mask-image: url(../foreground/images/filetype/filetype_ppt.svg);
     }

@@ -85,7 +85,6 @@ source_set("task_manager") {
       "providers/arc/arc_process_task.h",
       "providers/arc/arc_process_task_provider.h",
       "providers/vm/crostini_process_task.h",
-      "providers/vm/plugin_vm_process_task.h",
       "providers/vm/vm_process_task.h",
       "providers/vm/vm_process_task_provider.h",
       "sampling/arc_shared_sampler.h",
@@ -225,7 +224,6 @@ source_set("impl") {
       "providers/arc/arc_process_task.cc",
       "providers/arc/arc_process_task_provider.cc",
       "providers/vm/crostini_process_task.cc",
-      "providers/vm/plugin_vm_process_task.cc",
       "providers/vm/vm_process_task.cc",
       "providers/vm/vm_process_task_provider.cc",
       "sampling/arc_shared_sampler.cc",
@@ -233,7 +231,6 @@ source_set("impl") {
     deps += [
       "//chrome/app/theme:chrome_unscaled_resources_grit",
       "//chrome/browser/ash/crostini",
-      "//chrome/browser/ash/plugin_vm",
       "//chromeos/ash/components/dbus/concierge",
       "//chromeos/ash/experiences/arc:arc_base_utils",
       "//chromeos/ash/experiences/arc/intent_helper",

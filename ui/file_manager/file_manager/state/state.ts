@@ -119,8 +119,6 @@ export enum FileTaskType {
   ARC = 'arc',
   // The task is from a Crostini app.
   CROSTINI = 'crostini',
-  // The task is from a Parallels app.
-  PLUGIN_VM = 'pluginvm',
   // The task is from a Web app/PWA/SWA.
   WEB = 'web',
 }

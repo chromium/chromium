@@ -46,7 +46,7 @@ export function setUp() {
 function getDirectoryModel(): DirectoryModel {
   const volumeManager = new MockVolumeManager();
   MockVolumeManager.installMockSingleton(volumeManager);
-  const fileFilter = new FileFilter(volumeManager);
+  const fileFilter = new FileFilter();
   const metadataModel = new MockMetadataModel({});
   return new DirectoryModel(false, fileFilter, metadataModel, volumeManager);
 }

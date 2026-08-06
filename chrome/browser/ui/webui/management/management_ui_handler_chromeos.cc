@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/floating_sso/floating_sso_service_factory.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ash/net/secure_dns_manager.h"
-#include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler.h"
@@ -465,11 +464,6 @@ void ManagementUIHandlerChromeOS::RegisterMessages() {
           &ManagementUIHandlerChromeOS::HandleGetDeviceReportingInfo,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "getPluginVmDataCollectionStatus",
-      base::BindRepeating(
-          &ManagementUIHandlerChromeOS::HandleGetPluginVmDataCollectionStatus,
-          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
       "getFilesUploadToCloudInfo",
       base::BindRepeating(
           &ManagementUIHandlerChromeOS::HandleGetFilesUploadToCloudInfo,
@@ -636,16 +630,6 @@ void ManagementUIHandlerChromeOS::AddDeskSyncNotice(Profile* profile,
   response->Set("showCookiesNoticeForDeskSync", IsFloatingSsoEnabled(profile));
 }
 
-void ManagementUIHandlerChromeOS::RegisterPrefChange(
-    PrefChangeRegistrar& pref_registrar) {
-  ManagementUIHandler::RegisterPrefChange(pref_registrar);
-  pref_registrar.Add(
-      plugin_vm::prefs::kPluginVmDataCollectionAllowed,
-      base::BindRepeating(
-          &ManagementUIHandlerChromeOS::NotifyPluginVmDataCollectionUpdated,
-          base::Unretained(this)));
-}
-
 base::DictValue ManagementUIHandlerChromeOS::GetContextualManagedData(
     Profile* profile) {
   std::string enterprise_manager = GetDeviceManager();
@@ -755,13 +739,6 @@ void ManagementUIHandlerChromeOS::OnFetchComplete(const GURL& url,
   logo_url_ = url;
   // Fire listener to reload managed data.
   FireWebUIListener("managed_data_changed");
-}
-
-void ManagementUIHandlerChromeOS::NotifyPluginVmDataCollectionUpdated() {
-  FireWebUIListener(
-      "plugin-vm-data-collection-updated",
-      base::Value(Profile::FromWebUI(web_ui())->GetPrefs()->GetBoolean(
-          plugin_vm::prefs::kPluginVmDataCollectionAllowed)));
 }
 
 void ManagementUIHandlerChromeOS::GetManagementStatus(
@@ -939,17 +916,6 @@ void ManagementUIHandlerChromeOS::HandleGetDeviceReportingInfo(
   base::ListValue report_sources = GetDeviceReportingInfo(
       GetDeviceCloudPolicyManager(), Profile::FromWebUI(web_ui()));
   ResolveJavascriptCallback(args[0] /* callback_id */, report_sources);
-}
-
-void ManagementUIHandlerChromeOS::HandleGetPluginVmDataCollectionStatus(
-    const base::ListValue& args) {
-  CHECK_EQ(1U, args.size());
-  base::Value plugin_vm_data_collection_enabled(
-      Profile::FromWebUI(web_ui())->GetPrefs()->GetBoolean(
-          plugin_vm::prefs::kPluginVmDataCollectionAllowed));
-  AllowJavascript();
-  ResolveJavascriptCallback(args[0] /* callback_id */,
-                            plugin_vm_data_collection_enabled);
 }
 
 std::unique_ptr<ManagementUIHandler> ManagementUIHandler::Create(

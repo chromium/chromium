@@ -2819,7 +2819,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="5" label="ARC App"/>
   <int value="6" label="App Service Unknown"/>
   <int value="7" label="Crostini VM"/>
-  <int value="8" label="Plugin VM"/>
+  <int value="8" label="Plugin VM (deprecated)"/>
   <int value="9" label="Borealis"/>
   <int value="10" label="Ash Client Unknown"/>
   <int value="11" label="Ash Capture Mode"/>

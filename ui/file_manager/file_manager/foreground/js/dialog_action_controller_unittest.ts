@@ -54,7 +54,7 @@ export function testFilterFilesWithSpecialCharactersExtension() {
   const dialogType = DialogType.SELECT_SAVEAS_FILE;
   const volumeManager = new MockVolumeManager();
   const fileSelectionHandler = new FakeFileSelectionHandler();
-  const fileFilter = new FileFilter(volumeManager);
+  const fileFilter = new FileFilter();
   const footerElement = constructFooterElement();
 
   new DialogActionController(

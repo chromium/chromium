@@ -26,8 +26,6 @@
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
-#include "chrome/browser/ash/plugin_vm/fake_plugin_vm_features.h"
-#include "chrome/browser/ash/plugin_vm/plugin_vm_test_helper.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
@@ -42,7 +40,6 @@
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
-#include "chromeos/ash/components/dbus/vm_plugin_dispatcher/fake_vm_plugin_dispatcher_client.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/disks/mock_disk_mount_manager.h"
@@ -144,19 +141,14 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
     ash::CiceroneClient::InitializeFake();
     ConciergeClient::InitializeFake();
     SeneschalClient::InitializeFake();
-    VmPluginDispatcherClient::InitializeFake();
     fake_cicerone_client_ = ash::FakeCiceroneClient::Get();
     fake_concierge_client_ = FakeConciergeClient::Get();
-    fake_vm_plugin_dispatcher_client_ =
-        static_cast<FakeVmPluginDispatcherClient*>(
-            VmPluginDispatcherClient::Get());
   }
 
   CrosUsbDetectorTest(const CrosUsbDetectorTest&) = delete;
   CrosUsbDetectorTest& operator=(const CrosUsbDetectorTest&) = delete;
 
   ~CrosUsbDetectorTest() override {
-    VmPluginDispatcherClient::Shutdown();
     SeneschalClient::Shutdown();
     ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
@@ -306,9 +298,6 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
 
   raw_ptr<ash::FakeCiceroneClient, DanglingUntriaged> fake_cicerone_client_;
   raw_ptr<FakeConciergeClient, DanglingUntriaged> fake_concierge_client_;
-  raw_ptr<FakeVmPluginDispatcherClient, DanglingUntriaged>
-      fake_vm_plugin_dispatcher_client_;
-
   TestCrosUsbDeviceObserver usb_device_observer_;
   std::unique_ptr<CrosUsbDetector> cros_usb_detector_;
 
@@ -372,18 +361,7 @@ TEST_F(CrosUsbDetectorTest, NotificationShown) {
   device_manager_.RemoveDevice(device);
   base::RunLoop().RunUntilIdle();
 
-  // Should have 2 buttons when Plugin VM is enabled.
-  plugin_vm::FakePluginVmFeatures plugin_vm_features;
-  plugin_vm_features.set_enabled(true);
-  device_manager_.AddDevice(device);
-  base::RunLoop().RunUntilIdle();
-  notification = display_service_->GetNotification(notification_id);
-  ASSERT_TRUE(notification);
-  EXPECT_EQ(notification->buttons().size(), 2u);
-  device_manager_.RemoveDevice(device);
-  base::RunLoop().RunUntilIdle();
-
-  // Should have 2 buttions when ARCVM is enabled but user disables ARC.
+  // Should have 1 button when ARCVM is enabled but user disables ARC.
   // ARC is disabled by default in test.
   arc::ResetArcAllowedCheckForTesting(profile());
   auto* command_line = base::CommandLine::ForCurrentProcess();
@@ -394,28 +372,28 @@ TEST_F(CrosUsbDetectorTest, NotificationShown) {
   base::RunLoop().RunUntilIdle();
   notification = display_service_->GetNotification(notification_id);
   ASSERT_TRUE(notification);
-  EXPECT_EQ(notification->buttons().size(), 2u);
+  EXPECT_EQ(notification->buttons().size(), 1u);
   device_manager_.RemoveDevice(device);
   base::RunLoop().RunUntilIdle();
 
-  // Should have 3 buttions when ARCVM is enabled and user enables ARC but the
+  // Should have 2 buttons when ARCVM is enabled and user enables ARC but the
   // feature is disabled.
   ASSERT_TRUE(arc::SetArcPlayStoreEnabledForProfile(profile(), true));
   device_manager_.AddDevice(device);
   base::RunLoop().RunUntilIdle();
   notification = display_service_->GetNotification(notification_id);
   ASSERT_TRUE(notification);
-  EXPECT_EQ(notification->buttons().size(), 3u);
+  EXPECT_EQ(notification->buttons().size(), 2u);
   device_manager_.RemoveDevice(device);
   base::RunLoop().RunUntilIdle();
 
-  // Now should have 4 buttons when Bruschetta is enabled.
+  // Now should have 3 buttons when Bruschetta is enabled.
   AddContainerToPrefs(profile(), bruschetta::GetBruschettaAlphaId(), {});
   device_manager_.AddDevice(device);
   base::RunLoop().RunUntilIdle();
   notification = display_service_->GetNotification(notification_id);
   ASSERT_TRUE(notification);
-  EXPECT_EQ(notification->buttons().size(), 4u);
+  EXPECT_EQ(notification->buttons().size(), 3u);
   device_manager_.RemoveDevice(device);
   base::RunLoop().RunUntilIdle();
 }
@@ -1035,19 +1013,6 @@ TEST_F(CrosUsbDetectorTest, SharedDevicesGetAttachedOnStartup) {
   EXPECT_EQ(crostini::kCrostiniDefaultVmName,
             device_info.shared_guest_id->vm_name);
 
-  // VmPluginDispatcherClient::OnVmStateChanged RUNNING should also trigger.
-  vm_tools::plugin_dispatcher::VmStateChangedSignal vm_state_changed_signal;
-  vm_state_changed_signal.set_vm_name(crostini::kCrostiniDefaultVmName);
-  vm_state_changed_signal.set_vm_state(
-      vm_tools::plugin_dispatcher::VmState::VM_STATE_RUNNING);
-  fake_vm_plugin_dispatcher_client_->NotifyVmStateChanged(
-      vm_state_changed_signal);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(2, usb_device_observer_.notify_count());
-  device_info = GetSingleDeviceInfo();
-  EXPECT_TRUE(device_info.shared_guest_id.has_value());
-  EXPECT_EQ(crostini::kCrostiniDefaultVmName,
-            device_info.shared_guest_id->vm_name);
 }
 
 TEST_F(CrosUsbDetectorTest, SwitchDeviceWithAttachSuccess) {

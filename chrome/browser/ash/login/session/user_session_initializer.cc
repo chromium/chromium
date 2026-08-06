@@ -32,8 +32,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/phonehub/phone_hub_manager_factory.h"
-#include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
-#include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
 #include "chrome/browser/ash/policy/reporting/app_install_event_log_manager_wrapper.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -338,11 +336,6 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
     // primary profile.
     phonehub::PhoneHubManagerFactory::GetForProfile(profile);
     eche_app::EcheAppManagerFactory::GetForProfile(profile);
-
-    plugin_vm::PluginVmManager* plugin_vm_manager =
-        plugin_vm::PluginVmManagerFactory::GetForProfile(primary_profile_);
-    if (plugin_vm_manager)
-      plugin_vm_manager->OnPrimaryUserSessionStarted();
 
     VmCameraMicManager::Get()->OnPrimaryUserSessionStarted(primary_profile_);
 

@@ -17,7 +17,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
-#include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -151,10 +150,7 @@ void VmPermissionServiceProvider::RegisterVm(
   }
 
   VmInfo::VmType vm_type;
-  if (request.type() == vm_permission_service::RegisterVmRequest::PLUGIN_VM) {
-    vm_type = VmInfo::VmType::PluginVm;
-  } else if (request.type() ==
-             vm_permission_service::RegisterVmRequest::BOREALIS) {
+  if (request.type() == vm_permission_service::RegisterVmRequest::BOREALIS) {
     vm_type = VmInfo::VmType::Borealis;
   } else if (request.type() ==
              vm_permission_service::RegisterVmRequest::BRUSCHETTA) {
@@ -341,9 +337,6 @@ void VmPermissionServiceProvider::GetPermissions(
 void VmPermissionServiceProvider::UpdateVmPermissions(VmInfo* vm) {
   vm->permission_to_enabled_map.clear();
   switch (vm->type) {
-    case VmInfo::PluginVm:
-      UpdatePluginVmPermissions(vm);
-      break;
     case VmInfo::Borealis:
       UpdateBorealisPermissions(vm);
       break;
@@ -352,25 +345,6 @@ void VmPermissionServiceProvider::UpdateVmPermissions(VmInfo* vm) {
       break;
     case VmInfo::CrostiniVm:
       NOTREACHED();
-  }
-}
-
-void VmPermissionServiceProvider::UpdatePluginVmPermissions(VmInfo* vm) {
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  if (!profile ||
-      ProfileHelper::GetUserIdHashFromProfile(profile) != vm->owner_id) {
-    return;
-  }
-
-  const PrefService* prefs = profile->GetPrefs();
-  if (prefs->GetBoolean(ash::chrome_prefs::kVideoCaptureAllowed)) {
-    vm->permission_to_enabled_map[VmInfo::PermissionCamera] =
-        prefs->GetBoolean(plugin_vm::prefs::kPluginVmCameraAllowed);
-  }
-
-  if (prefs->GetBoolean(ash::chrome_prefs::kAudioCaptureAllowed)) {
-    vm->permission_to_enabled_map[VmInfo::PermissionMicrophone] =
-        prefs->GetBoolean(plugin_vm::prefs::kPluginVmMicAllowed);
   }
 }
 

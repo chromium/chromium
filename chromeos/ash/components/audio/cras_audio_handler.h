@@ -292,7 +292,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
     CHROME = 0,
     ARC,
     VM_TERMINA,
-    VM_PLUGIN,
+    VM_PLUGIN,  // Deprecated Plugin VM client type.
     VM_BOREALIS,
     UNKNOWN,
   };

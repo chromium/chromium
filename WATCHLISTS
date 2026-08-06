@@ -1065,8 +1065,7 @@
       'filepath': 'cicerone'\
                   '|concierge'\
                   '|crostini'\
-                  '|guest_os'\
-                  '|plugin_vm',
+                  '|guest_os',
     },
     'cups_printing' : {
       'filepath': 'chrome/browser/resources/ash/settings/os_printing_page/'\

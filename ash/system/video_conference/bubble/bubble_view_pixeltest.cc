@@ -382,8 +382,8 @@ TEST_P(BubbleViewPixelTest, ReturnToAppLinux) {
 
   controller()->AddMediaApp(CreateFakeMediaApp(
       /*is_capturing_camera=*/true, /*is_capturing_microphone=*/true,
-      /*is_capturing_screen=*/false, /*title=*/u"Parallels",
-      /*url=*/"", /*app_type=*/VideoConferenceAppType::kPluginVm));
+      /*is_capturing_screen=*/false, /*title=*/u"Steam",
+      /*url=*/"", /*app_type=*/VideoConferenceAppType::kBorealis));
 
   // Double click to reset the bubble to show the newly added media app.
   LeftClickOn(toggle_bubble_button);
@@ -392,7 +392,7 @@ TEST_P(BubbleViewPixelTest, ReturnToAppLinux) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("video_conference_tray_linux_bubble_two_app"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 10 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 11 : 1,
       video_conference_tray()->GetBubbleView()));
 }
 

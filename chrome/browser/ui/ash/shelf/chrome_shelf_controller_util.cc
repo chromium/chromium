@@ -153,16 +153,8 @@ bool IsAppPinEditable(apps::AppType app_type,
       }
       return false;
     }
-    case apps::AppType::kPluginVm: {
-      bool show_in_launcher = false;
-      apps::AppServiceProxyFactory::GetForProfile(profile)
-          ->AppRegistryCache()
-          .ForOneApp(
-              app_id, [&show_in_launcher](const apps::AppUpdate& update) {
-                show_in_launcher = update.ShowInLauncher().value_or(false);
-              });
-      return show_in_launcher;
-    }
+    case apps::AppType::kPluginVm:
+      return false;
     case apps::AppType::kCrostini:
     case apps::AppType::kBorealis:
     case apps::AppType::kChromeApp:

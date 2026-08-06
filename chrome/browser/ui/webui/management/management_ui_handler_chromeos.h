@@ -69,9 +69,6 @@ class ManagementUIHandlerChromeOS : public BitmapFetcherDelegate,
   // ChromeOS devices.
   void AddDeskSyncNotice(Profile* profile, base::DictValue* response);
 
-  // ManagementUIHandler
-  void RegisterPrefChange(PrefChangeRegistrar& pref_registrar) override;
-
   std::u16string GetFilesUploadToCloudInfo(Profile* profile);
 
   virtual const ash::SecureDnsManager* GetSecureDnsManager() const;
@@ -89,15 +86,11 @@ class ManagementUIHandlerChromeOS : public BitmapFetcherDelegate,
   // BitmapFetcherDelegate
   void OnFetchComplete(const GURL& url, const SkBitmap* bitmap) override;
 
-  void NotifyPluginVmDataCollectionUpdated();
-
   void GetManagementStatus(Profile* profile, base::DictValue* status) const;
 
   void HandleGetLocalTrustRootsInfo(const base::ListValue& args);
   void HandleGetFilesUploadToCloudInfo(const base::ListValue& args);
   void HandleGetDeviceReportingInfo(const base::ListValue& args);
-  void HandleGetPluginVmDataCollectionStatus(const base::ListValue& args);
-
   bool device_managed_ = false;
 
   GURL logo_url_;

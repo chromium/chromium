@@ -22584,7 +22584,7 @@ Called by update_net_error_codes.py.-->
   <int value="77" label="Phone Hub Tether Failed"/>
   <int value="78" label="Caps Lock"/>
   <int value="79" label="Night Light"/>
-  <int value="80" label="Plugin VM Uninstaller"/>
+  <int value="80" label="(deprecated) Plugin VM Uninstaller"/>
   <int value="81" label="(deprecated) TPM Auto Update"/>
   <int value="82" label="It2Me Confirmation"/>
   <int value="83" label="HPS Notify"/>

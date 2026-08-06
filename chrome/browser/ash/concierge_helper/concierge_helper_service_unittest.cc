@@ -121,14 +121,12 @@ TEST_F(ConciergeHelperServiceTest, TestSetVmCpuRestriction) {
   service()->SetArcVmCpuRestriction(false);
   service()->SetTerminaVmCpuRestriction(true);
   service()->SetTerminaVmCpuRestriction(false);
-  service()->SetPluginVmCpuRestriction(true);
-  service()->SetPluginVmCpuRestriction(false);
 
   task_environment()->RunUntilIdle();
 
   std::vector<vm_tools::concierge::SetVmCpuRestrictionRequest> requests(
       fake_concierge_client()->requests());
-  EXPECT_EQ(6U, requests.size());
+  EXPECT_EQ(4U, requests.size());
 
   EXPECT_EQ(vm_tools::concierge::CPU_CGROUP_ARCVM, requests[0].cpu_cgroup());
   EXPECT_EQ(vm_tools::concierge::CPU_RESTRICTION_BACKGROUND,
@@ -144,12 +142,6 @@ TEST_F(ConciergeHelperServiceTest, TestSetVmCpuRestriction) {
   EXPECT_EQ(vm_tools::concierge::CPU_RESTRICTION_FOREGROUND,
             requests[3].cpu_restriction_state());
 
-  EXPECT_EQ(vm_tools::concierge::CPU_CGROUP_PLUGINVM, requests[4].cpu_cgroup());
-  EXPECT_EQ(vm_tools::concierge::CPU_RESTRICTION_BACKGROUND,
-            requests[4].cpu_restriction_state());
-  EXPECT_EQ(vm_tools::concierge::CPU_CGROUP_PLUGINVM, requests[5].cpu_cgroup());
-  EXPECT_EQ(vm_tools::concierge::CPU_RESTRICTION_FOREGROUND,
-            requests[5].cpu_restriction_state());
 }
 
 // Tests that ConciergeHelperService requests cpu restriction immediately when

@@ -84,10 +84,6 @@ content::WebUIDataSource* CreateAndAddManagementUIHtmlSource(Profile* profile) {
   source->AddString(kManagementReportDlpEvents,
                     l10n_util::GetPluralStringFUTF16(
                         IDS_MANAGEMENT_REPORT_DLP_EVENTS, dlp_events_count));
-  source->AddString("pluginVmDataCollection",
-                    l10n_util::GetStringFUTF16(
-                        IDS_MANAGEMENT_REPORT_PLUGIN_VM,
-                        l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME)));
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   source->AddString("webuiRefresh2026", features::IsWebuiRefresh2026Enabled()

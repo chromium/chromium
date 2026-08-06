@@ -8,8 +8,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
-#include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
-#include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
@@ -128,8 +126,6 @@ void LockToSingleUserManager::AddVmStartingObservers(user_manager::User* user) {
 
   crostini::CrostiniManager::GetForProfile(profile)->AddVmStartingObserver(
       this);
-  plugin_vm::PluginVmManagerFactory::GetForProfile(profile)
-      ->AddVmStartingObserver(this);
 
   GetConciergeClient()->AddVmObserver(this);
 

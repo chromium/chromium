@@ -50,23 +50,20 @@ export function setUp() {
 }
 
 /**
- * Tests init sets crostini and PluginVm enabled status.
+ * Tests that initialization sets the Crostini enabled status.
  */
-export function testInitCrostiniPluginVmEnabled() {
+export function testInitCrostiniEnabled() {
   loadTimeData.overrideValues({'VMS_FOR_SHARING': []});
   crostini.initEnabled();
   assertFalse(crostini.isEnabled('termina'));
-  assertFalse(crostini.isEnabled('PvmDefault'));
 
   loadTimeData.overrideValues({
     'VMS_FOR_SHARING': [
       {'vmName': 'termina', 'containerName': 'penguin'},
-      {'vmName': 'PvmDefault', 'containerName': ''},
     ],
   });
   crostini.initEnabled();
   assertTrue(crostini.isEnabled('termina'));
-  assertTrue(crostini.isEnabled('PvmDefault'));
 }
 
 /**

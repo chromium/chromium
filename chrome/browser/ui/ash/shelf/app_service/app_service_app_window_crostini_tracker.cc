@@ -21,7 +21,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_shelf_utils.h"
-#include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_shelf_controller.h"
@@ -74,7 +73,6 @@ void MoveWindowFromOldDisplayToNewDisplay(aura::Window* window,
 bool ShouldSkipWindow(aura::Window* window) {
   return wm::GetTransientParent(window) ||
          arc::GetWindowTaskOrSessionId(window).has_value() ||
-         plugin_vm::IsPluginVmAppWindow(window) ||
          ash::borealis::IsBorealisWindow(window);
 }
 

@@ -96,7 +96,6 @@ api::processes::ProcessType GetProcessType(
     case task_manager::Task::UNKNOWN:
     case task_manager::Task::ARC:
     case task_manager::Task::CROSTINI:
-    case task_manager::Task::PLUGIN_VM:
     case task_manager::Task::SANDBOX_HELPER:
     case task_manager::Task::ZYGOTE:
       return api::processes::ProcessType::kOther;

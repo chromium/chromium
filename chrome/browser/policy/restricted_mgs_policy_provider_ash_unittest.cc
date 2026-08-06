@@ -55,10 +55,6 @@ std::unique_ptr<PolicyBundle> BuildRestrictedPolicyBundle() {
                  POLICY_SCOPE_USER,
                  POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
                  base::Value(false), nullptr);
-  policy_map.Set(key::kUserPluginVmAllowed, POLICY_LEVEL_MANDATORY,
-                 POLICY_SCOPE_USER,
-                 POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
-                 base::Value(false), nullptr);
   policy_map.Set(key::kAllowDeletingBrowserHistory, POLICY_LEVEL_MANDATORY,
                  POLICY_SCOPE_USER,
                  POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,

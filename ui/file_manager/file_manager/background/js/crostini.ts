@@ -20,11 +20,6 @@ import {RootType} from '../../common/js/volume_manager_types.js';
 const DEFAULT_VM = 'termina';
 
 /**
- * Plugin VM 'PvmDefault'.
- */
-const PLUGIN_VM = 'PvmDefault';
-
-/**
  * Valid root types to their share location.
  */
 const VALID_ROOT_TYPES_FOR_SHARE = new Map<RootType, string>([
@@ -175,8 +170,6 @@ export class Crostini {
           this.unregisterSharedPath(event.vmName, assert(entry));
         }
         break;
-      case CrostiniEventType.DROP_FAILED_PLUGIN_VM_DIRECTORY_NOT_SHARED:
-        break;
       default:
         assertNotReachedCase(event.eventType);
     }
@@ -231,13 +224,6 @@ export class Crostini {
     // TODO(crbug.com/41456343): Sharing Play files root is disallowed until
     // we can ensure it will not also share Downloads.
     if (root === RootType.ANDROID_FILES && entry.fullPath === '/') {
-      return false;
-    }
-
-    // Special case to disallow PluginVm sharing on /MyFiles/PluginVm and
-    // subfolders since it gets shared by default.
-    if (vmName === PLUGIN_VM && root === RootType.DOWNLOADS &&
-        entry.fullPath.split('/')[1] === PLUGIN_VM) {
       return false;
     }
 

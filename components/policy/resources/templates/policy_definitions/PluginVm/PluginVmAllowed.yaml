@@ -1,5 +1,6 @@
 caption: Allow devices to use a <ph name="PLUGIN_VM_NAME">PluginVm</ph> on <ph name="PRODUCT_OS_NAME">$2<ex>Google
   ChromeOS</ex></ph>
+deprecated: true
 desc: |-
   Setting the policy to Enabled turns on <ph name="PLUGIN_VM_NAME">PluginVm</ph> for the device, as long as other settings also allow it. <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME">PluginVmAllowed</ph> and <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME">UserPluginVmAllowed</ph> must be True, and either <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME">PluginVmLicenseKey</ph> or <ph name="PLUGIN_VM_USER_ID_POLICY_NAME">PluginVmUserId</ph> must be set for <ph name="PLUGIN_VM_NAME">PluginVm</ph> to run.
 
@@ -20,7 +21,7 @@ owners:
 schema:
   type: boolean
 supported_on:
-- chrome_os:72-
+- chrome_os:72-151
 tags: []
 type: main
 generate_device_proto: False

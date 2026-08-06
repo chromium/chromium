@@ -20,7 +20,6 @@ constexpr webui::LocalizedString kLocalizedStrings[] = {
     {"TrafficCountersUser", IDS_TRAFFIC_COUNTERS_USER},
     {"TrafficCountersArc", IDS_TRAFFIC_COUNTERS_ARC},
     {"TrafficCountersCrosvm", IDS_TRAFFIC_COUNTERS_CROSVM},
-    {"TrafficCountersPluginvm", IDS_TRAFFIC_COUNTERS_PLUGINVM},
     {"TrafficCountersUpdateEngine", IDS_TRAFFIC_COUNTERS_UPDATE_ENGINE},
     {"TrafficCountersVpn", IDS_TRAFFIC_COUNTERS_VPN},
     {"TrafficCountersSystem", IDS_TRAFFIC_COUNTERS_SYSTEM},

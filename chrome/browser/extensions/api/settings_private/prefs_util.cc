@@ -95,7 +95,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
-#include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/supervised_user_cros_settings_provider.h"
@@ -932,12 +931,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kList;
   (*s_allowlist)[guest_os::prefs::kGuestOSPathsSharedToVms] =
       settings_api::PrefType::kDictionary;
-
-  // Plugin Vm
-  (*s_allowlist)[plugin_vm::prefs::kPluginVmImageExists] =
-      settings_api::PrefType::kBoolean;
-  (*s_allowlist)[plugin_vm::prefs::kPluginVmPrintersAllowed] =
-      settings_api::PrefType::kBoolean;
 
   // Android Apps.
   (*s_allowlist)[arc::prefs::kArcEnabled] = settings_api::PrefType::kBoolean;

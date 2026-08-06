@@ -38,7 +38,6 @@ include_rules = [
   "+chrome/browser/ash/ownership",
   "+chrome/browser/ash/phonehub",
   "+chrome/browser/ash/platform_keys",
-  "+chrome/browser/ash/plugin_vm",
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/printing",
   "+chrome/browser/ash/remote_apps",

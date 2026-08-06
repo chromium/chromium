@@ -41,7 +41,6 @@ include_rules = [
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/net",
   "+chrome/browser/ash/phonehub",
-  "+chrome/browser/ash/plugin_vm",
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/policy/handlers",
   "+chrome/browser/ash/policy/remote_commands",

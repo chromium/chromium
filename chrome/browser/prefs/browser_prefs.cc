@@ -414,7 +414,6 @@
 #include "chrome/browser/ash/net/system_proxy_manager.h"
 #include "chrome/browser/ash/performance/doze_mode_power_status_scheduler.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager_impl.h"
-#include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
@@ -942,6 +941,31 @@ constexpr char kMetricsConsentRestructureFeatureState[] =
 // Deprecated 08/2026.
 constexpr char kPrivacySandboxNotices[] = "privacy_sandbox.notices";
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Deprecated 07/2026.
+inline constexpr char kPluginVmAllowed[] = "plugin_vm.allowed";
+inline constexpr char kPluginVmImage[] = "plugin_vm.image";
+inline constexpr char kPluginVmImageExists[] = "plugin_vm.image_exists";
+inline constexpr char kPluginVmPrintersAllowed[] = "plugin_vm.printers_allowed";
+inline constexpr char kPluginVmCameraAllowed[] = "plugin_vm.camera_allowed";
+inline constexpr char kPluginVmMicAllowed[] = "plugin_vm.mic_allowed";
+inline constexpr char kPluginVmUserId[] = "plugin_vm.user_id";
+inline constexpr char kPluginVmDataCollectionAllowed[] =
+    "plugin_vm.data_collection_allowed";
+inline constexpr char kPluginVmRequiredFreeDiskSpace[] =
+    "plugin_vm.required_free_disk_space";
+inline constexpr char kPluginVmEngagementTimeTotal[] =
+    "plugin_vm.metrics.engagement_time.total";
+inline constexpr char kPluginVmEngagementTimeForeground[] =
+    "plugin_vm.metrics.engagement_time.foreground";
+inline constexpr char kPluginVmEngagementTimeBackground[] =
+    "plugin_vm.metrics.engagement_time.background";
+inline constexpr char kPluginVmEngagementTimeOsVersion[] =
+    "plugin_vm.metrics.engagement_time.os_version";
+inline constexpr char kPluginVmEngagementTimeDayId[] =
+    "plugin_vm.metrics.engagement_time.day_id";
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1268,6 +1292,27 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 08/2026.
   registry->RegisterDictionaryPref(kPrivacySandboxNotices);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Deprecated 07/2026.
+  registry->RegisterBooleanPref(kPluginVmAllowed, false);
+  registry->RegisterDictionaryPref(kPluginVmImage);
+  registry->RegisterBooleanPref(kPluginVmImageExists, false);
+  registry->RegisterBooleanPref(kPluginVmPrintersAllowed, true);
+  registry->RegisterBooleanPref(kPluginVmCameraAllowed, false);
+  registry->RegisterBooleanPref(kPluginVmMicAllowed, false);
+  registry->RegisterStringPref(kPluginVmUserId, std::string());
+  registry->RegisterBooleanPref(kPluginVmDataCollectionAllowed, false);
+  registry->RegisterIntegerPref(kPluginVmRequiredFreeDiskSpace, 20);
+  registry->RegisterTimeDeltaPref(kPluginVmEngagementTimeTotal,
+                                  base::TimeDelta());
+  registry->RegisterTimeDeltaPref(kPluginVmEngagementTimeForeground,
+                                  base::TimeDelta());
+  registry->RegisterTimeDeltaPref(kPluginVmEngagementTimeBackground,
+                                  base::TimeDelta());
+  registry->RegisterStringPref(kPluginVmEngagementTimeOsVersion, std::string());
+  registry->RegisterIntegerPref(kPluginVmEngagementTimeDayId, 0);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace
@@ -1973,7 +2018,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   crostini::prefs::RegisterProfilePrefs(registry);
   flags_ui::PrefServiceFlagsStorage::RegisterProfilePrefs(registry);
   guest_os::prefs::RegisterProfilePrefs(registry);
-  plugin_vm::prefs::RegisterProfilePrefs(registry);
   policy::ArcAppInstallEventLogger::RegisterProfilePrefs(registry);
   policy::AppInstallEventLogManagerWrapper::RegisterProfilePrefs(registry);
   policy::local_auth_factors::RegisterProfilePrefs(registry);
@@ -2550,6 +2594,24 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 08/2026.
   profile_prefs->ClearPref(kPrivacySandboxNotices);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Added 07/2026.
+  profile_prefs->ClearPref(kPluginVmAllowed);
+  profile_prefs->ClearPref(kPluginVmImage);
+  profile_prefs->ClearPref(kPluginVmImageExists);
+  profile_prefs->ClearPref(kPluginVmPrintersAllowed);
+  profile_prefs->ClearPref(kPluginVmCameraAllowed);
+  profile_prefs->ClearPref(kPluginVmMicAllowed);
+  profile_prefs->ClearPref(kPluginVmUserId);
+  profile_prefs->ClearPref(kPluginVmDataCollectionAllowed);
+  profile_prefs->ClearPref(kPluginVmRequiredFreeDiskSpace);
+  profile_prefs->ClearPref(kPluginVmEngagementTimeTotal);
+  profile_prefs->ClearPref(kPluginVmEngagementTimeForeground);
+  profile_prefs->ClearPref(kPluginVmEngagementTimeBackground);
+  profile_prefs->ClearPref(kPluginVmEngagementTimeOsVersion);
+  profile_prefs->ClearPref(kPluginVmEngagementTimeDayId);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

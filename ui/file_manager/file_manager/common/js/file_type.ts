@@ -239,7 +239,6 @@ export function getIconOverrides(
     [RootType.DOWNLOADS]: {
       '/Camera': 'camera-folder',
       '/Downloads': VolumeType.DOWNLOADS,
-      '/PvmDefault': 'plugin_vm',
     },
   };
 

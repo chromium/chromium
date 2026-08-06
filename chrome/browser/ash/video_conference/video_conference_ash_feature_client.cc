@@ -11,7 +11,6 @@
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
 #include "chrome/browser/ash/camera_mic/vm_camera_mic_manager.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
-#include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/prefs/pref_service.h"
@@ -22,7 +21,6 @@ namespace {
 VideoConferenceAshFeatureClient* g_client_instance = nullptr;
 
 constexpr char kCrostiniVmId[] = "Linux";
-constexpr char kPluginVmId[] = "PluginVm";
 constexpr char kBorealisId[] = "Borealis";
 
 // Returns an "Id" as an identifier for the VmType.
@@ -30,8 +28,6 @@ std::string ToVideoConferenceAppId(VmCameraMicManager::VmType vm_type) {
   switch (vm_type) {
     case VmCameraMicManager::VmType::kCrostiniVm:
       return kCrostiniVmId;
-    case VmCameraMicManager::VmType::kPluginVm:
-      return kPluginVmId;
     case VmCameraMicManager::VmType::kBorealis:
       return kBorealisId;
   }
@@ -50,9 +46,8 @@ VideoConferenceAshFeatureClient::VideoConferenceAshFeatureClient(
   // initialization to ensure the states are up-to-date.
   VmCameraMicManager* vm_camera_mic_manager = VmCameraMicManager::Get();
   if (vm_camera_mic_manager) {
-    const std::array<VmCameraMicManager::VmType, 3> vm_types{
+    const std::array<VmCameraMicManager::VmType, 2> vm_types{
         VmCameraMicManager::VmType::kCrostiniVm,
-        VmCameraMicManager::VmType::kPluginVm,
         VmCameraMicManager::VmType::kBorealis};
     const std::array<VmCameraMicManager::DeviceType, 2> device_types{
         VmCameraMicManager::DeviceType::kMic,
@@ -150,12 +145,6 @@ VideoConferenceAshFeatureClient::GetAppPermission(const AppIdString& app_id) {
     permissions.has_microphone_permission =
         prefs->GetBoolean(borealis::prefs::kBorealisMicAllowed);
   }
-  if (app_id == kPluginVmId) {
-    permissions.has_camera_permission =
-        prefs->GetBoolean(plugin_vm ::prefs::kPluginVmCameraAllowed);
-    permissions.has_microphone_permission =
-        prefs->GetBoolean(plugin_vm ::prefs::kPluginVmMicAllowed);
-  }
   return permissions;
 }
 
@@ -163,10 +152,6 @@ apps::AppType VideoConferenceAshFeatureClient::GetAppType(
     const AppIdString& app_id) {
   if (app_id == kCrostiniVmId) {
     return apps::AppType::kCrostini;
-  }
-
-  if (app_id == kPluginVmId) {
-    return apps::AppType::kPluginVm;
   }
 
   if (app_id == kBorealisId) {

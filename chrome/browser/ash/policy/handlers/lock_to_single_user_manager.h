@@ -17,9 +17,9 @@
 
 namespace policy {
 
-// This class observes the UserManager session state, ArcSessionManager,
-// CrostiniManager and PluginVmManager and checks if the device must be locked
-// to a single user mount, if the policy forces it.
+// This class observes the UserManager session state, ArcSessionManager, and
+// CrostiniManager and checks if the device must be locked to a single user
+// mount, if the policy forces it.
 class LockToSingleUserManager final
     : public user_manager::UserManager::UserSessionStateObserver,
       public arc::ArcSessionManagerObserver,

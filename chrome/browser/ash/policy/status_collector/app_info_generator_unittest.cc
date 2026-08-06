@@ -271,8 +271,6 @@ class AppInfoGeneratorTest : public ::testing::Test {
 
  private:
   apps::ScopedOmitBorealisAppsForTesting scoped_omit_borealis_apps_for_testing_;
-  apps::ScopedOmitPluginVmAppsForTesting
-      scoped_omit_plugin_vm_apps_for_testing_;
   content::BrowserTaskEnvironment task_environment_;
   AccountId account_id_;
   std::unique_ptr<TestingProfile> profile_;

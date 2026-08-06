@@ -306,7 +306,6 @@ aggregate_vector_icons("ash_vector_icons") {
     "notification_multi_device_setup.icon",
     "notification_pause.icon",
     "notification_play.icon",
-    "notification_plugin_vm.icon",
     "notification_printing.icon",
     "notification_printing_done.icon",
     "notification_printing_warning.icon",

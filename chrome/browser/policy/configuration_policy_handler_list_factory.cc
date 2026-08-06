@@ -209,7 +209,6 @@
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_prefs.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_policy_handler.h"
-#include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/policy/handlers/camera_save_location_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/configuration_policy_handler_ash.h"
 #include "chrome/browser/ash/policy/handlers/contextual_google_integrations_policies_handler.h"
@@ -1591,21 +1590,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kPrintingSendUsernameAndFilenameEnabled,
     ash::prefs::kPrintingSendUsernameAndFilenameEnabled,
     base::Value::Type::BOOLEAN },
-  { key::kUserPluginVmAllowed,
-    plugin_vm::prefs::kPluginVmAllowed,
-    base::Value::Type::BOOLEAN },
-  { key::kPluginVmImage,
-    plugin_vm::prefs::kPluginVmImage,
-    base::Value::Type::DICT },
-  { key::kPluginVmUserId,
-    plugin_vm::prefs::kPluginVmUserId,
-    base::Value::Type::STRING },
-  { key::kPluginVmDataCollectionAllowed,
-    plugin_vm::prefs::kPluginVmDataCollectionAllowed,
-    base::Value::Type::BOOLEAN },
-  { key::kPluginVmRequiredFreeDiskSpace,
-    plugin_vm::prefs::kPluginVmRequiredFreeDiskSpaceGB,
-    base::Value::Type::INTEGER },
   { key::kDevicePowerPeakShiftEnabled,
     ash::prefs::kPowerPeakShiftEnabled,
     base::Value::Type::BOOLEAN },

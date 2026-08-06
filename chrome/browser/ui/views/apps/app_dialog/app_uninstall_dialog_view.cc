@@ -263,19 +263,12 @@ void AppUninstallDialogView::InitializeView(Profile* profile,
     case apps::AppType::kUnknown:
     case apps::AppType::kRemote:
     case apps::AppType::kExtension:
+    case apps::AppType::kPluginVm:
       NOTREACHED();
     // TODO(crbug.com/376071296): Clean up the switch/case items below.
     case apps::AppType::kArc:
 #if BUILDFLAG(IS_CHROMEOS)
       InitializeViewForArcApp(profile, app_id);
-      break;
-#else
-      NOTREACHED();
-#endif
-    case apps::AppType::kPluginVm:
-#if BUILDFLAG(IS_CHROMEOS)
-      AddSubtitle(
-          l10n_util::GetStringUTF16(IDS_PLUGIN_VM_UNINSTALL_PROMPT_BODY));
       break;
 #else
       NOTREACHED();

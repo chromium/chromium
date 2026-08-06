@@ -42,10 +42,6 @@ extern const ui::ClassProperty<bool>* const kAutoMaximizeXdgShellEnabled;
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 extern const ui::ClassProperty<bool>* const kBlockedForAssistantSnapshotKey;
 
-// Whether holding esc should exit fullscreen. Used by Plugin VM.
-COMPONENT_EXPORT(CHROMEOS_UI_BASE)
-extern const ui::ClassProperty<bool>* const kEscHoldToExitFullscreen;
-
 // Do not exit fullscreen on a screen lock. Note that this property becomes
 // active only if `kUseOverviewToExitFullscreen` is true. Borealis apps set this
 // to avoid exiting fullscreen on a screen lock.

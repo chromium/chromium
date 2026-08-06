@@ -1,5 +1,6 @@
 caption: Allow users to use a <ph name="PLUGIN_VM_NAME">PluginVm</ph> on <ph name="PRODUCT_OS_NAME">$2<ex>Google
   ChromeOS</ex></ph>
+deprecated: true
 default: false
 desc: |-
   Allow this user to run PluginVm.
@@ -21,6 +22,6 @@ owners:
 schema:
   type: boolean
 supported_on:
-- chrome_os:84-
+- chrome_os:84-151
 tags: []
 type: main

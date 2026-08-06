@@ -74,7 +74,6 @@ source_set("management") {
       "//chrome/browser/ash/floating_sso",
       "//chrome/browser/ash/floating_workspace:utils",
       "//chrome/browser/ash/net",
-      "//chrome/browser/ash/plugin_vm",
       "//chrome/browser/ash/policy/core",
       "//chrome/browser/ash/policy/handlers",
       "//chrome/browser/ash/policy/reporting/metrics_reporting",
@@ -88,6 +87,7 @@ source_set("management") {
       "//chrome/browser/net",
       "//chrome/browser/policy:onc",
       "//chromeos/ash/components/browser_context_helper",
+      "//chromeos/ash/components/settings",
       "//net",
       "//ui/chromeos",
     ]

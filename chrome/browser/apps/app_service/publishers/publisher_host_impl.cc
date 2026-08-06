@@ -13,7 +13,6 @@
 #include "chrome/browser/apps/app_service/publishers/bruschetta_apps.h"
 #include "chrome/browser/apps/app_service/publishers/crostini_apps.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps_chromeos.h"
-#include "chrome/browser/apps/app_service/publishers/plugin_vm_apps.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -26,7 +25,6 @@ namespace {
 
 #if BUILDFLAG(IS_CHROMEOS)
 bool g_omit_borealis_apps_for_testing_ = false;
-bool g_omit_plugin_vm_apps_for_testing_ = false;
 
 bool IsKioskSessionProfile(Profile* profile) {
   const user_manager::User* user =
@@ -64,9 +62,6 @@ void PublisherHostImpl::RegisterPublishersForTesting() {
   if (extension_apps_) {
     proxy_->RegisterPublisher(AppType::kExtension, extension_apps_.get());
   }
-  if (plugin_vm_apps_) {
-    proxy_->RegisterPublisher(AppType::kPluginVm, plugin_vm_apps_.get());
-  }
   if (web_apps_) {
     proxy_->RegisterPublisher(AppType::kWeb, web_apps_.get());
   }
@@ -90,7 +85,7 @@ void PublisherHostImpl::Shutdown() {
 void PublisherHostImpl::Initialize() {
 #if BUILDFLAG(IS_CHROMEOS)
   auto* profile = proxy_->profile();
-  // GuestOS and PluginVm apps are not available in kiosk mode.
+  // Guest OS apps are not available in kiosk mode.
   if (!IsKioskSessionProfile(profile)) {
     // TODO(crbug.com/170591339): Allow borealis to provide apps for the
     // non-primary profile.
@@ -106,10 +101,6 @@ void PublisherHostImpl::Initialize() {
     crostini_apps_ = std::make_unique<CrostiniApps>(proxy_);
     crostini_apps_->Initialize();
 
-    if (!g_omit_plugin_vm_apps_for_testing_) {
-      plugin_vm_apps_ = std::make_unique<PluginVmApps>(proxy_);
-      plugin_vm_apps_->Initialize();
-    }
   }
 
   chrome_apps_ =
@@ -141,16 +132,6 @@ ScopedOmitBorealisAppsForTesting::~ScopedOmitBorealisAppsForTesting() {
   g_omit_borealis_apps_for_testing_ = previous_omit_borealis_apps_for_testing_;
 }
 
-ScopedOmitPluginVmAppsForTesting::ScopedOmitPluginVmAppsForTesting()
-    : previous_omit_plugin_vm_apps_for_testing_(
-          g_omit_plugin_vm_apps_for_testing_) {
-  g_omit_plugin_vm_apps_for_testing_ = true;
-}
-
-ScopedOmitPluginVmAppsForTesting::~ScopedOmitPluginVmAppsForTesting() {
-  g_omit_plugin_vm_apps_for_testing_ =
-      previous_omit_plugin_vm_apps_for_testing_;
-}
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace apps

@@ -2062,15 +2062,6 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     }
   }
 
-  if (policy.has_plugin_vm_allowed()) {
-    const em::PluginVmAllowedProto& container(policy.plugin_vm_allowed());
-    if (container.has_plugin_vm_allowed()) {
-      policies->Set(key::kPluginVmAllowed, POLICY_LEVEL_MANDATORY,
-                    POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-                    base::Value(container.plugin_vm_allowed()), nullptr);
-    }
-  }
-
   if (policy.has_device_wifi_allowed()) {
     const em::DeviceWiFiAllowedProto& container(policy.device_wifi_allowed());
     if (container.has_device_wifi_allowed()) {

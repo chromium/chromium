@@ -163,9 +163,6 @@ export class PathComponent {
         if (path === 'Downloads') {
           path = str('DOWNLOADS_DIRECTORY_LABEL');
         }
-        if (path === 'PvmDefault') {
-          path = str('PLUGIN_VM_DIRECTORY_LABEL');
-        }
         if (path === 'Camera') {
           path = str('CAMERA_DIRECTORY_LABEL');
         }

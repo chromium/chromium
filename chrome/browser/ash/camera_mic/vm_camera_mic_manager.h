@@ -22,17 +22,16 @@ class Profile;
 
 namespace ash {
 
-// This class manages camera/mic access (and the access notifications) for VMs
-// (crostini and parallels for now). All of the notifications are sent to the
+// This class manages camera/mic access (and the access notifications) for VMs.
+// All of the notifications are sent to the
 // primary profile since all VMs support only the primary profile. We might need
 // to change this if we extend this class to support the browser, in which case
 // we will also need to make the notification ids different for different
 // profiles.
-class VmCameraMicManager : public media::CameraActiveClientObserver,
-                           public media::CameraPrivacySwitchObserver,
+class VmCameraMicManager : public media::CameraPrivacySwitchObserver,
                            public CrasAudioHandler::AudioObserver {
  public:
-  enum class VmType { kCrostiniVm, kPluginVm, kBorealis };
+  enum class VmType { kCrostiniVm, kBorealis };
 
   enum class DeviceType {
     kMic,
@@ -87,12 +86,6 @@ class VmCameraMicManager : public media::CameraActiveClientObserver,
   class VmInfo;
 
   void MaybeSubscribeToCameraService(bool should_use_cros_camera_service);
-
-  // media::CameraActiveClientObserver
-  void OnActiveClientChange(
-      cros::mojom::CameraClientType type,
-      bool is_new_active_client,
-      const base::flat_set<std::string>& active_device_ids) override;
 
   // media::CameraPrivacySwitchObserver
   void OnCameraHWPrivacySwitchStateChanged(

@@ -576,10 +576,6 @@ inline constexpr char kDeviceAutoUpdateTimeRestrictions[] =
 inline constexpr char kDeviceUnaffiliatedCrostiniAllowed[] =
     "cros.device.unaffiliated_crostini_allowed";
 
-// A boolean pref that indicates whether PluginVm is allowed to run on this
-// device.
-inline constexpr char kPluginVmAllowed[] = "cros.device.plugin_vm_allowed";
-
 // An enum pref specifying the case when device needs to reboot on user sign
 // out.
 inline constexpr char kDeviceRebootOnUserSignout[] =

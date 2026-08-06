@@ -13,7 +13,6 @@ constexpr char kAutofillQueryAnnotationHash[] = "88863520";
 constexpr char kAutofillUploadAnnotationHash[] = "104798869";
 constexpr char kCalendarGetEventsAnnotationHash[] = "86429515";
 constexpr char kChromeFeedbackReportAppAnnotationHash[] = "134729048";
-constexpr char kChromePluginVmApiAnnotationHash[] = "28498700";
 constexpr char kDomainReliabilityReportUploadAnnotationHash[] = "108804096";
 constexpr char kQuickAnswersLoaderAnnotationHash[] = "46208118";
 constexpr char kRemotingLogToServerAnnotationHash[] = "99742369";
@@ -66,10 +65,6 @@ void AnnotationControlProvider::Load() {
   // chrome_feedback_report_app
   annotation_controls_[kChromeFeedbackReportAppAnnotationHash] =
       AnnotationControl().Add(key::kUserFeedbackAllowed, base::Value(false));
-
-  // chrome_plugin_vm_api
-  annotation_controls_[kChromePluginVmApiAnnotationHash] =
-      AnnotationControl().Add(key::kUserPluginVmAllowed, base::Value(false));
 
   // domain_reliability_report_upload
   annotation_controls_[kDomainReliabilityReportUploadAnnotationHash] =

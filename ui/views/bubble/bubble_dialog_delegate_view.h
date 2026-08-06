@@ -74,7 +74,6 @@ class LocationBarBubbleDelegateView;
 class NetworkProfileBubbleView;
 class PageInfoBubbleViewBase;
 class PermissionPromptBaseView;
-class PluginVmInstallerView;
 class ProfileMenuViewBase;
 class RemoveSuggestionBubbleDialogDelegateView;
 class StoragePressureBubbleView;
@@ -864,7 +863,6 @@ class VIEWS_EXPORT BubbleDialogDelegateView : public View,
   friend class ::NetworkProfileBubbleView;
   friend class ::PageInfoBubbleViewBase;
   friend class ::PermissionPromptBaseView;
-  friend class ::PluginVmInstallerView;
   friend class ::ProfileMenuViewBase;
   friend class ::RemoveSuggestionBubbleDialogDelegateView;
   friend class ::StoragePressureBubbleView;

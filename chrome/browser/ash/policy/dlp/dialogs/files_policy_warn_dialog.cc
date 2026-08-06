@@ -68,8 +68,7 @@ const std::u16string GetDestinationComponent(DlpFileDestination destination) {
     case data_controls::Component::kCrostini:
       return l10n_util::GetStringUTF16(IDS_FILE_BROWSER_LINUX_FILES_ROOT_LABEL);
     case data_controls::Component::kPluginVm:
-      return l10n_util::GetStringUTF16(
-          IDS_FILE_BROWSER_PLUGIN_VM_DIRECTORY_LABEL);
+      return l10n_util::GetStringUTF16(IDS_FILE_BROWSER_DLP_COMPONENT_VM);
     case data_controls::Component::kUsb:
       return l10n_util::GetStringUTF16(
           IDS_POLICY_DLP_FILES_DESTINATION_REMOVABLE_STORAGE);

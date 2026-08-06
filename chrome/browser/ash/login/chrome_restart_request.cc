@@ -252,7 +252,6 @@ void DeriveFeatures(base::CommandLine* out_command_line) {
       &features::kAutoNightLight,
       &chromeos::features::kFeatureManagementRoundedWindows,
       &ash::features::kSeamlessRefreshRateSwitching,
-      &::features::kPluginVm,
       &display::features::kCtmColorManagement,
       &display::features::kDrmColorSpaceDefaultIsRec709,
       &display::features::kOledScaleFactorEnabled,

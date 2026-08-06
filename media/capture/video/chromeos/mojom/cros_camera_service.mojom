@@ -23,6 +23,7 @@ enum CameraClientType {
   TESTING = 1,
   CHROME = 2,
   ANDROID = 3,
+  // Legacy name for clients registered through the VM permission service.
   PLUGINVM = 4,
   ASH_CHROME = 5,
   // LACROS_CHROME = 6,  // this value is deprecated, as Lacros was sunsetted

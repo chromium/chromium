@@ -1418,7 +1418,6 @@ source_set("impl") {
       "//chrome/browser/ash/login",
       "//chrome/browser/ash/login/users/avatar",
       "//chrome/browser/ash/platform_keys/key_permissions",
-      "//chrome/browser/ash/plugin_vm",
       "//chrome/browser/ash/policy/core",
       "//chrome/browser/ash/policy/handlers",
       "//chrome/browser/ash/policy/login",

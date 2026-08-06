@@ -215,14 +215,10 @@ export function getEntryLabel(
       }
     }
 
-    // Special case for MyFiles/Downloads, MyFiles/PvmDefault and
-    // MyFiles/Camera.
+    // Special case for MyFiles/Downloads and MyFiles/Camera.
     if (locationInfo && locationInfo.rootType === RootType.DOWNLOADS) {
       if (entry.fullPath === '/Downloads') {
         return str('DOWNLOADS_DIRECTORY_LABEL');
-      }
-      if (entry.fullPath === '/PvmDefault') {
-        return str('PLUGIN_VM_DIRECTORY_LABEL');
       }
       if (entry.fullPath === '/Camera') {
         return str('CAMERA_DIRECTORY_LABEL');

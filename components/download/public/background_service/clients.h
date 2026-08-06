@@ -41,6 +41,7 @@ enum class DownloadClient {
 
   MOUNTAIN_INTERNAL = 4,
 
+  // Deprecated. Do not reuse this value.
   PLUGIN_VM_IMAGE = 5,
 
   OPTIMIZATION_GUIDE_PREDICTION_MODELS = 6,

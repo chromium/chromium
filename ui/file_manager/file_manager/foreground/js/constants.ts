@@ -63,11 +63,6 @@ export const DLP_METADATA_PREFETCH_PROPERTY_NAMES = [
 export const DEFAULT_CROSTINI_VM = 'termina';
 
 /**
- * Name of the Plugin VM: plugin_vm::kPluginVmName.
- */
-export const PLUGIN_VM = 'PvmDefault';
-
-/**
  * Name of the default bruschetta VM: bruschetta::kBruschettaVmName
  */
 export const DEFAULT_BRUSCHETTA_VM = 'bru';
@@ -171,7 +166,6 @@ export const ICON_TYPES = {
   ODFS: 'odfs',
   OPTICAL: 'optical',
   PDF: 'pdf',
-  PLUGIN_VM: 'plugin_vm',
   POWERPOINT: 'ppt',
   RAW: 'raw',
   RECENT: 'recent',

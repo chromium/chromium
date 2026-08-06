@@ -17,7 +17,6 @@ include_rules = [
   "+chrome/browser/ash/drive",
   "+chrome/browser/ash/exo",
   "+chrome/browser/ash/file_manager",
-  "+chrome/browser/ash/plugin_vm",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/smb_client",
   "+chrome/browser/browser_process.h",

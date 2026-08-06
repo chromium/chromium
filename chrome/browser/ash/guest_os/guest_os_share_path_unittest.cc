@@ -26,7 +26,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
-#include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
@@ -41,10 +40,10 @@
 #include "chromeos/ash/components/dbus/seneschal/fake_seneschal_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_service.pb.h"
-#include "chromeos/ash/components/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/session/arc_session_runner.h"
 #include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
@@ -221,7 +220,6 @@ class GuestOsSharePathTest : public testing::Test {
     ash::ConciergeClient::InitializeFake();
     ash::DebugDaemonClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
-    ash::VmPluginDispatcherClient::InitializeFake();
 
     fake_concierge_client_ = ash::FakeConciergeClient::Get();
     fake_seneschal_client_ = ash::FakeSeneschalClient::Get();
@@ -231,7 +229,6 @@ class GuestOsSharePathTest : public testing::Test {
   GuestOsSharePathTest& operator=(const GuestOsSharePathTest&) = delete;
 
   ~GuestOsSharePathTest() override {
-    ash::VmPluginDispatcherClient::Shutdown();
     ash::SeneschalClient::Shutdown();
     ash::DebugDaemonClient::Shutdown();
     ash::ConciergeClient::Shutdown();

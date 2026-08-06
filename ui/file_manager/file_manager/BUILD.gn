@@ -128,7 +128,6 @@ generate_grd("build_static_grdp") {
     "foreground/images/volumes/my_files.svg",
     "foreground/images/volumes/offline.svg",
     "foreground/images/volumes/phone.svg",
-    "foreground/images/volumes/plugin_vm_ng.svg",
     "foreground/images/volumes/recent.svg",
     "foreground/images/volumes/sd.svg",
     "foreground/images/volumes/service_drive.svg",

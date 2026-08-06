@@ -1,4 +1,5 @@
 caption: <ph name="PLUGIN_VM_NAME">PluginVm</ph> image
+deprecated: true
 desc: Setting the policy specifies the <ph name="PLUGIN_VM_NAME">PluginVm</ph> image
   for a user. Specify this policy as a JSON format string, with <ph name="URL_PLUGIN_VM_IMAGE_FIELD">URL</ph>
   stating where to download the image and <ph name="HASH_PLUGIN_VM_IMAGE_FIELD">hash</ph>
@@ -24,6 +25,6 @@ schema:
       type: string
   type: object
 supported_on:
-- chrome_os:72-
+- chrome_os:72-151
 tags: []
 type: dict

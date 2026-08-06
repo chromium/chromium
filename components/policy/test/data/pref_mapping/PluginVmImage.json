@@ -1,17 +1,5 @@
 [
   {
-    "os": [
-      "chromeos"
-    ],
-    "simple_policy_pref_mapping_test": {
-      "pref_name": "plugin_vm.image",
-      "default_value": {},
-      "values_to_test": [
-        {
-          "hash": "842841a4c75a55ad050d686f4ea5f77e83ae059877fe9b6946aa63d3d057ed32",
-          "url": "http://localhost/"
-        }
-      ]
-    }
+    "reason_for_missing_test": "Policy was deprecated in M152."
   }
 ]

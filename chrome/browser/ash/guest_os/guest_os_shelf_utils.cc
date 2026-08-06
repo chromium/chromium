@@ -137,8 +137,6 @@ FindAppIdResult FindAppId(const base::DictValue& prefs,
 // - For Bruschetta app windows: it is the container_token
 // - For Borealis app windows: "borealis"
 // - For all other guest app windows: "termina"
-// Note that PluginVM does not match this prefix since it has a
-// hard-coded window_app_id.
 std::string GetGuestTokenForWindowId(const std::string* window_app_id) {
   if (!window_app_id ||
       !base::StartsWith(*window_app_id, kGuestOsWindowAppIdPrefix,

@@ -95,10 +95,6 @@ void ConciergeHelperService::SetTerminaVmCpuRestriction(bool do_restrict) {
   MakeRestrictionRequest(vm_tools::concierge::CPU_CGROUP_TERMINA, do_restrict);
 }
 
-void ConciergeHelperService::SetPluginVmCpuRestriction(bool do_restrict) {
-  MakeRestrictionRequest(vm_tools::concierge::CPU_CGROUP_PLUGINVM, do_restrict);
-}
-
 // static
 ConciergeHelperServiceFactory* ConciergeHelperServiceFactory::GetInstance() {
   static base::NoDestructor<ConciergeHelperServiceFactory> instance;

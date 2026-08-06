@@ -1,4 +1,5 @@
 caption: <ph name="PLUGIN_VM_NAME">PluginVm</ph> user id
+deprecated: true
 desc: This policy specifies the <ph name="PLUGIN_VM_NAME">PluginVm</ph> licensing
   user id for this device.
 example_value: USER_ID
@@ -12,6 +13,6 @@ schema:
   sensitiveValue: true
   type: string
 supported_on:
-- chrome_os:84-
+- chrome_os:84-151
 tags: []
 type: string

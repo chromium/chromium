@@ -88,7 +88,6 @@
 #include "chrome/browser/ash/dbus/screen_lock_service_provider.h"
 #include "chrome/browser/ash/dbus/smb_fs_service_provider.h"
 #include "chrome/browser/ash/dbus/virtual_file_request_service_provider.h"
-#include "chrome/browser/ash/dbus/vm/plugin_vm_service_provider.h"
 #include "chrome/browser/ash/dbus/vm/vm_applications_service_provider.h"
 #include "chrome/browser/ash/dbus/vm/vm_launch_service_provider.h"
 #include "chrome/browser/ash/dbus/vm/vm_management_service_provider.h"
@@ -394,14 +393,6 @@ class DBusServices {
         CrosDBusService::CreateServiceProviderList(
             std::make_unique<KioskInfoService>()));
 
-    plugin_vm_service_ = CrosDBusService::Create(
-        system_bus, chromeos::kPluginVmServiceName,
-        dbus::ObjectPath(chromeos::kPluginVmServicePath),
-        CrosDBusService::CreateServiceProviderList(
-            std::make_unique<PluginVmServiceProvider>(
-                g_browser_process->platform_part()
-                    ->browser_policy_connector_ash())));
-
     screen_lock_service_ = CrosDBusService::Create(
         system_bus, chromeos::kScreenLockServiceName,
         dbus::ObjectPath(chromeos::kScreenLockServicePath),
@@ -603,7 +594,6 @@ class DBusServices {
     arc_tracing_service_.reset();
     proxy_resolution_service_.reset();
     kiosk_info_service_.reset();
-    plugin_vm_service_.reset();
     printers_service_.reset();
     virtual_file_request_service_.reset();
     component_updater_service_.reset();
@@ -637,7 +627,6 @@ class DBusServices {
  private:
   std::unique_ptr<CrosDBusService> proxy_resolution_service_;
   std::unique_ptr<CrosDBusService> kiosk_info_service_;
-  std::unique_ptr<CrosDBusService> plugin_vm_service_;
   std::unique_ptr<CrosDBusService> printers_service_;
   std::unique_ptr<CrosDBusService> screen_lock_service_;
   std::unique_ptr<CrosDBusService> virtual_file_request_service_;

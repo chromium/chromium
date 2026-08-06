@@ -113,10 +113,6 @@
 #include "chrome/browser/ash/lobster/lobster_service_provider.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/login/wizard_context.h"
-#include "chrome/browser/ash/plugin_vm/plugin_vm_installer.h"
-#include "chrome/browser/ash/plugin_vm/plugin_vm_installer_factory.h"
-#include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
-#include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/power/ml/smart_dim/ml_agent.h"
@@ -144,7 +140,6 @@
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/bruschetta/bruschetta_installer_view.h"
 #include "chrome/browser/ui/views/crostini/crostini_uninstaller_view.h"
-#include "chrome/browser/ui/views/plugin_vm/plugin_vm_installer_view.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_dialog.h"
 #include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_ui.h"
@@ -555,12 +550,6 @@ std::string SetAllowedPref(Profile* profile,
     DCHECK(value.is_bool());
   } else if (pref_name == ash::prefs::kLanguagePreloadEngines) {
     DCHECK(value.is_string());
-  } else if (pref_name == plugin_vm::prefs::kPluginVmCameraAllowed) {
-    DCHECK(value.is_bool());
-  } else if (pref_name == plugin_vm::prefs::kPluginVmMicAllowed) {
-    DCHECK(value.is_bool());
-  } else if (pref_name == plugin_vm::prefs::kPluginVmDataCollectionAllowed) {
-    DCHECK(value.is_bool());
   } else if (pref_name == prefs::kPrintingAPIExtensionsAllowlist) {
     DCHECK(value.is_list());
   } else if (pref_name == quick_answers::prefs::kQuickAnswersEnabled) {
@@ -2673,45 +2662,6 @@ void AutotestPrivateImportCrostiniFunction::CrostiniImported(
   } else {
     Respond(Error("Error importing crostini"));
   }
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// AutotestPrivateSetPluginVMPolicyFunction
-///////////////////////////////////////////////////////////////////////////////
-
-AutotestPrivateSetPluginVMPolicyFunction::
-    ~AutotestPrivateSetPluginVMPolicyFunction() = default;
-
-ExtensionFunction::ResponseAction
-AutotestPrivateSetPluginVMPolicyFunction::Run() {
-  std::optional<api::autotest_private::SetPluginVMPolicy::Params> params =
-      api::autotest_private::SetPluginVMPolicy::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  DVLOG(1) << "AutotestPrivateSetPluginVMPolicyFunction " << params->image_url
-           << ", " << params->image_hash << ", " << params->license_key;
-
-  Profile* profile = Profile::FromBrowserContext(browser_context());
-  plugin_vm::SetFakePluginVmPolicy(profile, params->image_url,
-                                   params->image_hash, params->license_key);
-
-  return RespondNow(NoArguments());
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// AutotestPrivateShowPluginVMInstallerFunction
-///////////////////////////////////////////////////////////////////////////////
-
-AutotestPrivateShowPluginVMInstallerFunction::
-    ~AutotestPrivateShowPluginVMInstallerFunction() = default;
-
-ExtensionFunction::ResponseAction
-AutotestPrivateShowPluginVMInstallerFunction::Run() {
-  DVLOG(1) << "AutotestPrivateShowPluginVMInstallerFunction";
-
-  Profile* profile = Profile::FromBrowserContext(browser_context());
-  plugin_vm::ShowPluginVmInstallerView(profile);
-
-  return RespondNow(NoArguments());
 }
 
 ///////////////////////////////////////////////////////////////////////////////

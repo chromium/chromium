@@ -698,8 +698,8 @@ TEST_F(AppServiceFileTasksTest, FindAppServiceCrostiniApp) {
   EXPECT_FALSE(tasks[0].is_file_extension_match);
 }
 
-// Checks that we can detect when the file paths can/ can't be shared for
-// Crostini and PluginVm.
+// Checks that we can detect when file paths can or cannot be shared with
+// Crostini.
 TEST_F(AppServiceFileTasksTest, CheckPathsCanBeShared) {
   std::string file_name = "foo.txt";
   std::string text_app_id = "Text app";
@@ -768,86 +768,6 @@ TEST_F(AppServiceFileTasksTest, FindAppServiceCrostiniAppWithExtension) {
       FindAppServiceTasks({{file_name, "application/octet-stream"}});
   ASSERT_EQ(1U, tasks.size());
   EXPECT_EQ(app_id, tasks[0].task_descriptor.app_id);
-}
-
-TEST_F(AppServiceFileTasksTest, FindAppServicePluginVmApp) {
-  std::string file_ext = "txt";
-  std::string file_name = "foo." + file_ext;
-  std::string text_app_id = "Text app";
-  AddGuestOsAppWithIntentFilter(text_app_id, apps::AppType::kPluginVm,
-                                CreateExtensionTypeFileIntentFilter(
-                                    apps_util::kIntentActionView, file_ext));
-
-  // Check if the text PluginVm app is returned.
-  std::vector<FullTaskDescriptor> tasks = FindAppServiceTasks({{file_name}});
-  ASSERT_EQ(1U, tasks.size());
-  EXPECT_EQ(text_app_id, tasks[0].task_descriptor.app_id);
-  EXPECT_FALSE(tasks[0].is_generic_file_handler);
-  EXPECT_TRUE(tasks[0].is_file_extension_match);
-}
-
-TEST_F(AppServiceFileTasksTest, FindMultipleAppServicePluginVmApps) {
-  std::string file_ext = "txt";
-  std::string file_name = "foo." + file_ext;
-  std::string app_id_1 = "Text app 1";
-  std::string app_id_2 = "Text app 2";
-  AddGuestOsAppWithIntentFilter(app_id_1, apps::AppType::kPluginVm,
-                                CreateExtensionTypeFileIntentFilter(
-                                    apps_util::kIntentActionView, file_ext));
-  AddGuestOsAppWithIntentFilter(app_id_2, apps::AppType::kPluginVm,
-                                CreateExtensionTypeFileIntentFilter(
-                                    apps_util::kIntentActionView, file_ext));
-
-  // Check if both PluginVm apps are returned.
-  std::vector<FullTaskDescriptor> tasks = FindAppServiceTasks({{file_name}});
-  ASSERT_EQ(2U, tasks.size());
-
-  EXPECT_EQ(app_id_1, tasks[0].task_descriptor.app_id);
-  EXPECT_FALSE(tasks[0].is_generic_file_handler);
-  EXPECT_TRUE(tasks[0].is_file_extension_match);
-
-  EXPECT_EQ(app_id_2, tasks[1].task_descriptor.app_id);
-  EXPECT_FALSE(tasks[1].is_generic_file_handler);
-  EXPECT_TRUE(tasks[1].is_file_extension_match);
-}
-
-TEST_F(AppServiceFileTasksTest,
-       FindAppServicePluginVmApp_IgnoringExtensionCase) {
-  std::string file_ext = "Txt";
-  std::string file_name = "foo.txT";
-  std::string text_app_id = "Text app";
-  AddGuestOsAppWithIntentFilter(text_app_id, apps::AppType::kPluginVm,
-                                CreateExtensionTypeFileIntentFilter(
-                                    apps_util::kIntentActionView, file_ext));
-
-  // Check if the text PluginVm app is returned.
-  std::vector<FullTaskDescriptor> tasks = FindAppServiceTasks({{file_name}});
-  ASSERT_EQ(1U, tasks.size());
-  EXPECT_EQ(text_app_id, tasks[0].task_descriptor.app_id);
-  EXPECT_FALSE(tasks[0].is_generic_file_handler);
-  EXPECT_TRUE(tasks[0].is_file_extension_match);
-}
-
-TEST_F(AppServiceFileTasksTest, NoPluginVmAppsForFileSelection) {
-  std::string image_file_name = "foo.jpeg";
-  std::string image_app_id = "Image app";
-  std::string text_file_name = "foo.txt";
-  std::string text_app_id = "Text app";
-
-  // Add a text-only app and an image-only app.
-  AddGuestOsAppWithIntentFilter(
-      text_app_id, apps::AppType::kPluginVm,
-      CreateExtensionTypeFileIntentFilter(apps_util::kIntentActionView, "txt"));
-  AddGuestOsAppWithIntentFilter(image_app_id, apps::AppType::kPluginVm,
-                                CreateExtensionTypeFileIntentFilter(
-                                    apps_util::kIntentActionView, "jpeg"));
-
-  // Find an app that can open both the text and image file.
-  std::vector<FullTaskDescriptor> tasks =
-      FindAppServiceTasks({{text_file_name}, {image_file_name}});
-
-  // There shouldn't be any apps available.
-  ASSERT_EQ(0U, tasks.size());
 }
 
 TEST_F(AppServiceFileTasksTest, CrositiniTasksControlledByPolicy) {

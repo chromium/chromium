@@ -118,7 +118,7 @@ enum class VideoConferenceAppType {
   kArcApp,
   kAppServiceUnknown,
   kCrostiniVm,
-  kPluginVm,
+  kPluginVm,  // Deprecated. Do not reuse.
   kBorealis,
   kAshClientUnknown,
   kAshCaptureMode,

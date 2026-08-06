@@ -28,7 +28,6 @@ class ConciergeHelperService : public KeyedService {
 
   void SetArcVmCpuRestriction(bool do_restrict);
   void SetTerminaVmCpuRestriction(bool do_restrict);
-  void SetPluginVmCpuRestriction(bool do_restrict);
 };
 
 class ConciergeHelperServiceFactory : public ProfileKeyedServiceFactory {

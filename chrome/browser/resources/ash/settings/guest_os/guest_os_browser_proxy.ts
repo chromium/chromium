@@ -5,8 +5,8 @@
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
 /**
- * @fileoverview A helper object used by the both the Crostini and Plugin VM
- * sections to manage the file sharing and USB sharing.
+ * @fileoverview A helper used by guest OS settings pages to manage file and
+ * USB sharing.
  */
 
 /**

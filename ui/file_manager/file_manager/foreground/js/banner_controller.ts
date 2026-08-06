@@ -20,7 +20,7 @@ import {deviceSlice} from '../../state/ducks/device.js';
 import {DialogType, type State} from '../../state/state.js';
 import {getStore, type Store} from '../../state/store.js';
 
-import {DEFAULT_CROSTINI_VM, PLUGIN_VM} from './constants.js';
+import {DEFAULT_CROSTINI_VM} from './constants.js';
 import type {DirectoryModel} from './directory_model.js';
 import {TAG_NAME as DlpRestrictedBannerName} from './ui/banners/dlp_restricted_banner.js';
 import {TAG_NAME as DriveBulkPinningBannerTagName} from './ui/banners/drive_bulk_pinning_banner.js';
@@ -38,7 +38,7 @@ import {TAG_NAME as InvalidUsbFileSystemBannerTagName} from './ui/banners/invali
 import {TAG_NAME as LocalDiskLowSpaceBannerTagName} from './ui/banners/local_disk_low_space_banner.js';
 import {TAG_NAME as OdfsOfflineBannerTagName} from './ui/banners/odfs_offline_banner.js';
 import {TAG_NAME as PhotosWelcomeBannerTagName} from './ui/banners/photos_welcome_banner.js';
-import {TAG_NAME as SharedWithCrostiniPluginVmBanner} from './ui/banners/shared_with_crostini_pluginvm_banner.js';
+import {TAG_NAME as SharedWithCrostiniBanner} from './ui/banners/shared_with_crostini_banner.js';
 import {TAG_NAME as TrashBannerTagName} from './ui/banners/trash_banner.js';
 import type {Banner} from './ui/banners/types.js';
 import {type AllowedVolumeOrType, BANNER_INFINITE_TIME, BannerEvent, type MinDiskThreshold} from './ui/banners/types.js';
@@ -357,28 +357,14 @@ export class BannerController extends EventTarget {
       this.setStateBannersInOrder([
         DlpRestrictedBannerName,
         InvalidUsbFileSystemBannerTagName,
-        SharedWithCrostiniPluginVmBanner,
+        SharedWithCrostiniBanner,
         TrashBannerTagName,
       ]);
 
-      // Register custom filters that verify whether the currently navigated
-      // path is shared with Crostini, PluginVM or both.
-      this.registerCustomBannerFilter(SharedWithCrostiniPluginVmBanner, {
-        shouldShow: () =>
-            isPathSharedWithVm(
-                this.crostini_, this.currentEntry_, DEFAULT_CROSTINI_VM) &&
-            isPathSharedWithVm(this.crostini_, this.currentEntry_, PLUGIN_VM),
-        context: () => ({type: DEFAULT_CROSTINI_VM + PLUGIN_VM}),
-      });
-      this.registerCustomBannerFilter(SharedWithCrostiniPluginVmBanner, {
+      this.registerCustomBannerFilter(SharedWithCrostiniBanner, {
         shouldShow: () => isPathSharedWithVm(
             this.crostini_, this.currentEntry_, DEFAULT_CROSTINI_VM),
         context: () => ({type: DEFAULT_CROSTINI_VM}),
-      });
-      this.registerCustomBannerFilter(SharedWithCrostiniPluginVmBanner, {
-        shouldShow: () =>
-            isPathSharedWithVm(this.crostini_, this.currentEntry_, PLUGIN_VM),
-        context: () => ({type: PLUGIN_VM}),
       });
 
       this.registerCustomBannerFilter(DriveBulkPinningBannerTagName, {

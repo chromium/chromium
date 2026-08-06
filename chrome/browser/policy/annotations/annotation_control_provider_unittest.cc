@@ -26,10 +26,9 @@ TEST(AnnotationControlProviderTest, ProvidesRequiredControls) {
   EXPECT_THAT(
       actual_controls,
       UnorderedElementsAre(Key("88863520"), Key("104798869"), Key("86429515"),
-                           Key("134729048"), Key("28498700"), Key("108804096"),
-                           Key("46208118"), Key("99742369"), Key("4306022"),
-                           Key("108903331"), Key("50127013"), Key("24186190"),
-                           Key("62443804")));
+                           Key("134729048"), Key("108804096"), Key("46208118"),
+                           Key("99742369"), Key("4306022"), Key("108903331"),
+                           Key("50127013"), Key("24186190"), Key("62443804")));
 }
 
 }  // namespace policy

@@ -64,13 +64,6 @@ export function isArcVmEnabled() {
 }
 
 /**
- * Returns true if PluginVM is enabled.
- */
-export function isPluginVmEnabled() {
-  return isFlagEnabled('PLUGIN_VM_ENABLED');
-}
-
-/**
  * Returns true if SkyVaultV2 flag is enabled.
  */
 export function isSkyvaultV2Enabled() {

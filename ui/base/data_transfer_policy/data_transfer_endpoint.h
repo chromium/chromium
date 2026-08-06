@@ -27,7 +27,7 @@ enum class EndpointType {
   kArc = 4,        // ARC.
   kBorealis = 5,   // Borealis OS.
   kCrostini = 6,   // Crostini.
-  kPluginVm = 7,   // Plugin VM App.
+  kPluginVm = 7,   // Deprecated Plugin VM endpoint. Do not reuse.
 #endif             // BUILDFLAG(IS_CHROMEOS)
 };
 

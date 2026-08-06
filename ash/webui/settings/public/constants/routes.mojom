@@ -112,8 +112,7 @@ enum Subpage {
   kAppManagement = 700,
   kAppDetails = 701,
   kGooglePlayStore = 702,
-  kPluginVmSharedPaths = 703,
-  kPluginVmUsbPreferences = 704,
+  // Values 703 and 704 were used for Plugin VM subpages. Do not reuse.
   // Note: Value 705 was for deprecated kOnStartup. Do not reuse.
   kAppNotifications = 706,
   kArcVmUsbPreferences = 707,
@@ -132,8 +131,6 @@ enum Subpage {
   kBruschettaDetails = 850,
   kBruschettaUsbPreferences = 851,
   kBruschettaManageSharedFolders = 852,
-
-  // Note: Deprecated Plugin VM section has no subpages.
 
   // Date and Time section.
   kTimeZone = 1000,
@@ -265,10 +262,6 @@ const string kAppNotificationsSubpagePath = "app-notifications";
 const string kAppNotificationsManagerSubpagePath = "app-notifications-manager";
 const string kAppDetailsSubpagePath = "app-management/detail";
 const string kGooglePlayStoreSubpagePath = "androidAppsDetails";
-const string kPluginVmSharedPathsSubpagePath =
-    "app-management/pluginVm/sharedPaths";
-const string kPluginVmUsbPreferencesSubpagePath =
-    "app-management/pluginVm/sharedUsbDevices";
 const string kArcVmUsbPreferencesSubpagePath =
      "androidAppsDetails/sharedUsbDevices";
 

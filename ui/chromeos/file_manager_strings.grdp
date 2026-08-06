@@ -131,9 +131,6 @@
   <message name="IDS_FILE_BROWSER_RECENT_EMPTY_DOCUMENTS_FOLDER" desc="Empty state message for document filter in Recent view.">
     No recent documents
   </message>
-  <message name="IDS_FILE_BROWSER_PLUGIN_VM_DIRECTORY_LABEL" desc="Parallels local directory label.">
-    Windows files
-  </message>
   <message name="IDS_FILE_BROWSER_RECENT_ROOT_LABEL" desc="A label for the 'Recent' root which shows files recently modified by the user.">
     Recent
   </message>
@@ -520,29 +517,11 @@
   <message name="IDS_FILE_BROWSER_MANAGE_LINUX_SHARING_BUTTON_LABEL" desc="Label for menu that will take users to the settings page where they can manage which files and folders are shared with the crostini Linux container.">
     Manage Linux sharing
   </message>
-  <message name="IDS_FILE_BROWSER_SHARE_WITH_PLUGIN_VM_BUTTON_LABEL" desc="Label for menu that will share a folder with Parallels.">
-    Share with Parallels Desktop
-  </message>
-  <message name="IDS_FILE_BROWSER_MANAGE_PLUGIN_VM_SHARING_BUTTON_LABEL" desc="Label for menu that will take users to the settings page where they can manage which files and folders are shared with Parallels.">
-    Manage Parallels Desktop sharing
-  </message>
   <message name="IDS_FILE_BROWSER_SHARE_WITH_BRUSCHETTA_BUTTON_LABEL" desc="Label for menu that will share a folder with the VM type codenamed Bruschetta.">
     Share with <ph name="VM_NAME">$1<ex>MyVm</ex></ph>
   </message>
   <message name="IDS_FILE_BROWSER_MANAGE_BRUSCHETTA_SHARING_BUTTON_LABEL" desc="Label for menu that will take users to the settings page where they can manage which files and folders are shared with the VM type codenamed Bruschetta.">
     Manage <ph name="VM_NAME">$1<ex>MyVm</ex></ph> sharing
-  </message>
-  <message name="IDS_FILE_BROWSER_UNABLE_TO_OPEN_WITH_PLUGIN_VM_DIRECTORY_NOT_SHARED_MESSAGE" desc="Body of the dialog shown to users when they try to open a file with an application in a virtual machine, but the file is not in a directory shared into the VM.">
-    To open files with <ph name="APP_NAME">$1<ex>Paint (Windows)</ex></ph>, first move them to the Windows files folder.
-  </message>
-  <message name="IDS_FILE_BROWSER_UNABLE_TO_OPEN_WITH_PLUGIN_VM_EXTERNAL_DRIVE_MESSAGE" desc="Body of the dialog shown to users when they try to open a file with an application in a virtual machine, but the file is on an external drive so isn't accessible from within the VM.">
-    To open files with <ph name="APP_NAME">$1<ex>Paint (Windows)</ex></ph>, first copy them to the Windows files folder.
-  </message>
-  <message name="IDS_FILE_BROWSER_UNABLE_TO_DROP_IN_PLUGIN_VM_DIRECTORY_NOT_SHARED_MESSAGE" desc="Body of the dialog shown to users when they try to drag and drop a file to Parallels, but the file is not in a directory shared into the VM. Do not translate 'Parallels Desktop'">
-    To drop files in Parallels Desktop, the file must be moved to Windows files.
-  </message>
-  <message name="IDS_FILE_BROWSER_UNABLE_TO_DROP_IN_PLUGIN_VM_EXTERNAL_DRIVE_MESSAGE" desc="Body of the dialog shown to users when they try to drag and drop a file to Parallels, but the file is on an external drive so isn't accessible from within the VM. Do not translate 'Parallels Desktop'">
-    To drop files in Parallels Desktop, the file must be copied to Windows files.
   </message>
   <message name="IDS_FILE_BROWSER_TOGGLE_HIDDEN_FILES_COMMAND_LABEL" desc="Label for menu or button with checkmark that toggles visibility of hidden files.">
     Show hidden files
@@ -1361,21 +1340,6 @@
   <message name="IDS_FILE_BROWSER_FOLDER_SHARED_WITH_CROSTINI_PLURAL" desc="Confirmation message shown when a user shares more than 1 folder with the crostini container.">
     <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> folders shared with Linux
   </message>
-  <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_PLUGIN_VM_TITLE" desc="Message title shown when a user shares the root of a volume with Parallels.">
-    Share folder with Parallels Desktop
-  </message>
-  <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_PLUGIN_VM" desc="Confirmation message shown when a user shares the root of a volume with Parallels." >
-    Give Parallels Desktop permission to access files in the <ph name="FOLDER_NAME">$1<ex>Downloads</ex></ph> folder
-  </message>
-  <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_PLUGIN_VM_DRIVE" desc="Confirmation message shown when a user shares the root of a Drive volume (My Drive, Team Drives, Computers) with Parallels.">
-    Give Parallels Desktop permission to access files in your Google Drive. Changes will sync to your other devices.
-  </message>
-  <message name="IDS_FILE_BROWSER_FOLDER_SHARED_WITH_PLUGIN_VM" desc="Confirmation message shown when a user shares a folder with Parallels.">
-    1 folder shared with Parallels Desktop
-  </message>
-  <message name="IDS_FILE_BROWSER_FOLDER_SHARED_WITH_PLUGIN_VM_PLURAL" desc="Confirmation message shown when a user shares more than 1 folder with Parallels.">
-    <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> folders shared with Parallels Desktop
-  </message>
   <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_BRUSCHETTA_TITLE" desc="Message title shown when a user shares the root of a volume with the VM type codenamed Bruschetta.">
     Share folder with <ph name="VM_NAME">$1<ex>MyVm</ex></ph>
   </message>
@@ -1394,13 +1358,6 @@
   <message name="IDS_FILE_BROWSER_MESSAGE_FOLDER_SHARED_WITH_CROSTINI" desc="Message shown in FilesApp message bar when a user has shared a folder with the crostini container.">
     This folder is shared with Linux
   </message>
-  <message name="IDS_FILE_BROWSER_MESSAGE_FOLDER_SHARED_WITH_CROSTINI_AND_PLUGIN_VM" desc="Message shown in FilesApp message bar when a user has shared a folder with the crostini container and with Parallels. Do not translate 'Linux' or 'Parallels Desktop'">
-    This folder is shared with Linux and Parallels Desktop
-  </message>
-  <message name="IDS_FILE_BROWSER_MESSAGE_FOLDER_SHARED_WITH_PLUGIN_VM" desc="Message shown in FilesApp message bar when a user has shared a folder with Parallels. Do not translate 'Parallels Desktop'">
-    This folder is shared with Parallels Desktop
-  </message>
-
   <message name="IDS_FILE_BROWSER_FOLDER" desc="Folder entry type">
     Folder
   </message>
@@ -1710,7 +1667,7 @@
   <message name="IDS_FILE_BROWSER_DLP_COMPONENT_LINUX" desc="Linux component label.">
     Linux
   </message>
-  <message name="IDS_FILE_BROWSER_DLP_COMPONENT_VM" desc="PluginVM component label.">
+  <message name="IDS_FILE_BROWSER_DLP_COMPONENT_VM" desc="Virtual machine component label.">
     virtual machine
   </message>
   <message name="IDS_FILE_BROWSER_DLP_COMPONENT_MICROSOFT_ONEDRIVE" desc="Microsoft OneDrive component label.">

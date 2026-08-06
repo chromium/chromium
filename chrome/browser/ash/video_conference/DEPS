@@ -18,7 +18,6 @@ include_rules = [
   "+chrome/browser/ash/borealis",
   "+chrome/browser/ash/camera_mic",
   "+chrome/browser/ash/crostini",
-  "+chrome/browser/ash/plugin_vm",
   "+chrome/browser/ash/system_web_apps",
   "+chrome/browser/chromeos/video_conference",
   "+chrome/browser/content_settings",

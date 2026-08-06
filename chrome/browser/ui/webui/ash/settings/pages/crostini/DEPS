@@ -14,7 +14,6 @@ include_rules = [
   "+chrome/browser/ash/crostini",
   "+chrome/browser/ash/file_manager",
   "+chrome/browser/ash/guest_os",
-  "+chrome/browser/ash/plugin_vm",
   "+chrome/browser/ash/usb",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/enterprise/browser_management",

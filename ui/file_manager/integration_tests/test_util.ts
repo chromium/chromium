@@ -1572,15 +1572,6 @@ export const ENTRIES = {
     typeText: 'CRDOWNLOAD file',
   }),
 
-  pluginVm: new TestEntryInfo({
-    type: EntryType.DIRECTORY,
-    targetPath: 'PvmDefault',
-    lastModifiedTime: 'Jan 1, 1980, 11:59 PM',
-    nameText: 'Windows Files',
-    sizeText: '--',
-    typeText: 'Folder',
-  }),
-
   invalidLastModifiedDate: new TestEntryInfo({
     type: EntryType.FILE,
     sourceFileName: 'text.txt',

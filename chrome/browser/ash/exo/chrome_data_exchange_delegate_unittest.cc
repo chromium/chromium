@@ -11,7 +11,6 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
-#include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -135,18 +134,6 @@ TEST_F(ChromeDataExchangeDelegateTest, GetDataTransferEndpointType) {
       aura::test::CreateTestWindow({.parent = crostini_toplevel}).release();
   ASSERT_TRUE(crostini::IsCrostiniWindow(crostini_window->GetToplevelWindow()));
 
-  // Plugin VM:
-  aura::Window* plugin_vm_toplevel =
-      aura::test::CreateTestWindow(
-          {.delegate = &delegate_, .parent = &container_window})
-          .release();
-  exo::SetShellApplicationId(plugin_vm_toplevel, "org.chromium.plugin_vm_ui");
-  ASSERT_TRUE(plugin_vm::IsPluginVmAppWindow(plugin_vm_toplevel));
-  aura::Window* plugin_vm_window =
-      aura::test::CreateTestWindow({.parent = plugin_vm_toplevel}).release();
-  ASSERT_TRUE(
-      plugin_vm::IsPluginVmAppWindow(plugin_vm_window->GetToplevelWindow()));
-
   ChromeDataExchangeDelegate data_exchange_delegate;
 
   ui::OSExchangeData os_exchange_data;
@@ -158,9 +145,6 @@ TEST_F(ChromeDataExchangeDelegateTest, GetDataTransferEndpointType) {
       ui::EndpointType::kCrostini,
       data_exchange_delegate.GetDataTransferEndpointType(crostini_window));
 
-  EXPECT_EQ(
-      ui::EndpointType::kPluginVm,
-      data_exchange_delegate.GetDataTransferEndpointType(plugin_vm_window));
 }
 
 TEST_F(ChromeDataExchangeDelegateTest, GetMimeTypeForUriList) {
@@ -170,8 +154,6 @@ TEST_F(ChromeDataExchangeDelegateTest, GetMimeTypeForUriList) {
       data_exchange_delegate.GetMimeTypeForUriList(ui::EndpointType::kArc));
   EXPECT_EQ("text/uri-list", data_exchange_delegate.GetMimeTypeForUriList(
                                  ui::EndpointType::kCrostini));
-  EXPECT_EQ("text/uri-list", data_exchange_delegate.GetMimeTypeForUriList(
-                                 ui::EndpointType::kPluginVm));
 }
 
 TEST_F(ChromeDataExchangeDelegateTest, HasUrlsInPickle) {

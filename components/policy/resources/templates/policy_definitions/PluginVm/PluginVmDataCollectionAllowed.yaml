@@ -1,4 +1,5 @@
 caption: Allow <ph name="PLUGIN_VM_NAME">PluginVm</ph> Product Analytics
+deprecated: true
 desc: |-
   Allow <ph name="PLUGIN_VM_NAME">PluginVm</ph> to collect <ph name="PLUGIN_VM_NAME">PluginVm</ph> usage data.
 
@@ -20,6 +21,6 @@ owners:
 schema:
   type: boolean
 supported_on:
-- chrome_os:85-
+- chrome_os:85-151
 tags: []
 type: main

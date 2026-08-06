@@ -2,7 +2,7 @@
 
 This folder contains the (in-development) public API for Guest OS. Here we
 expose a common API over the different types of Guest OS (Crostini, Borealis,
-Bruschetta, PluginVM, etc) so callers elsewhere in Chrome can support them
+Bruschetta, etc) so callers elsewhere in Chrome can support them
 without being specialised for each specific Guest.
 
 ## Architecture

@@ -26,7 +26,6 @@ include_rules = [
   "+chrome/browser/ash/fusebox",
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/net",
-  "+chrome/browser/ash/plugin_vm",
   "+chrome/browser/ash/policy/dlp",
   "+chrome/browser/ash/policy/handlers",
   "+chrome/browser/ash/power/ml",

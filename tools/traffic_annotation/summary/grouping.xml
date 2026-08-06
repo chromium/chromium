@@ -46,7 +46,6 @@ after discussions on the right group.
       <annotation id="ambient_photo_controller"/>
       <annotation id="arc_auth_code_fetcher"/>
       <annotation id="calendar_get_events"/>
-      <annotation id="chrome_plugin_vm_api"/>
       <annotation id="chromebook_mail_api"/>
       <annotation id="customization_wallpaper_downloader"/>
       <annotation id="edu_account_login_profile_image_fetcher"/>

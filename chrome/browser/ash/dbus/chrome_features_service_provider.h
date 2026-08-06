@@ -32,16 +32,6 @@ namespace ash {
 // % (If |user id hash| is set correctly, returns true if Crostini is enabled
 //    for the user identified by the hash, and false otherwise)
 //
-// IsPluginVmEnabled:
-// % dbus-send --system --type=method_call --print-reply
-//     --dest=org.chromium.ChromeFeaturesService
-//     /org/chromium/ChromeFeaturesService
-//     org.chromium.ChromeFeaturesServiceInterface.IsPluginVmEnabled
-//     string:"|user id hash|"
-//
-// % (If |user id hash| is set correctly, returns true if Plugin VMs are enabled
-//    for the user identified by the hash, and false otherwise)
-//
 // Both methods will return an error if the user ID hash parameter is missing.
 // Passing an empty string as the user ID hash to either method will
 // result in the active user profile being used.
@@ -95,8 +85,6 @@ class ChromeFeaturesServiceProvider
   void IsCryptohomeUserDataAuthKillswitchEnabled(
       dbus::MethodCall* method_call,
       dbus::ExportedObject::ResponseSender response_sender);
-  void IsPluginVmEnabled(dbus::MethodCall* method_call,
-                         dbus::ExportedObject::ResponseSender response_sender);
   void IsVmManagementCliAllowed(
       dbus::MethodCall* method_call,
       dbus::ExportedObject::ResponseSender response_sender);

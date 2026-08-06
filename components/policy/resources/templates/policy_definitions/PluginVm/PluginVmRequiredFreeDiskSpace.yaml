@@ -1,4 +1,5 @@
 caption: Required free disk space for <ph name="PLUGIN_VM_NAME">PluginVm</ph>
+deprecated: true
 desc: |-
   Free disk space (in GB) required to install <ph name="PLUGIN_VM_NAME">PluginVm</ph>.
 
@@ -16,6 +17,6 @@ schema:
   minimum: 0
   type: integer
 supported_on:
-- chrome_os:85-
+- chrome_os:85-151
 tags: []
 type: int

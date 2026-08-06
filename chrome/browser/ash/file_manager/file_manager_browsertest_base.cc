@@ -3909,12 +3909,6 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
-  if (name == "onDropFailedPluginVmDirectoryNotShared") {
-    EventRouterFactory::GetForProfile(profile())
-        ->DropFailedPluginVmDirectoryNotShared();
-    return;
-  }
-
   if (name == "displayEnableDocsOfflineDialog") {
     drive_volume_->DisplayConfirmDialog(drivefs::mojom::DialogReason::New(
         drivefs::mojom::DialogReason::Type::kEnableDocsOffline,

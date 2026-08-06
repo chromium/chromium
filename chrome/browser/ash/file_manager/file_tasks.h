@@ -138,7 +138,7 @@ enum TaskType {
   TASK_TYPE_ARC_APP,
   TASK_TYPE_CROSTINI_APP,
   TASK_TYPE_WEB_APP,
-  TASK_TYPE_PLUGIN_VM_APP,
+  DEPRECATED_TASK_TYPE_PLUGIN_VM_APP,
   TASK_TYPE_BRUSCHETTA_APP,
   // The enum values must be kept in sync with FileManagerTaskType in
   // tools/metrics/histograms/enums.xml. Since enums for histograms are

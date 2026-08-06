@@ -13,7 +13,7 @@ import {getStore} from '../../state/store.js';
 import type {FilesToast} from '../elements/files_toast.js';
 
 import {MenuCommandsForUma, recordMenuItemSelected} from './command_handler.js';
-import {DEFAULT_BRUSCHETTA_VM, DEFAULT_CROSTINI_VM, PLUGIN_VM} from './constants.js';
+import {DEFAULT_BRUSCHETTA_VM, DEFAULT_CROSTINI_VM} from './constants.js';
 /**
  * CrostiniController handles the foreground UI relating to crostini.
  */
@@ -81,12 +81,10 @@ export class CrostiniController {
               });
         };
 
-    const [crostiniShareCount, pluginVmShareCount, bruschettaVmShareCount] =
-        await Promise.all([
-          getSharedPaths(DEFAULT_CROSTINI_VM),
-          getSharedPaths(PLUGIN_VM),
-          getSharedPaths(DEFAULT_BRUSCHETTA_VM),
-        ]);
+    const [crostiniShareCount, bruschettaVmShareCount] = await Promise.all([
+      getSharedPaths(DEFAULT_CROSTINI_VM),
+      getSharedPaths(DEFAULT_BRUSCHETTA_VM),
+    ]);
 
     // Toasts are queued and shown one-at-a-time if multiple apply.
     // TODO(b/260521400): Or at least, they will once this bug is fixed.
@@ -95,11 +93,6 @@ export class CrostiniController {
         'FOLDER_SHARED_WITH_CROSTINI_PLURAL', 'MANAGE_TOAST_BUTTON_LABEL',
         'crostini/sharedPaths',
         MenuCommandsForUma.MANAGE_LINUX_SHARING_TOAST_STARTUP);
-    toast(
-        pluginVmShareCount, 'FOLDER_SHARED_WITH_PLUGIN_VM',
-        'FOLDER_SHARED_WITH_PLUGIN_VM_PLURAL', 'MANAGE_TOAST_BUTTON_LABEL',
-        'app-management/pluginVm/sharedPaths',
-        MenuCommandsForUma.MANAGE_PLUGIN_VM_SHARING_TOAST_STARTUP);
     toast(
         bruschettaVmShareCount, 'FOLDER_SHARED_WITH_BRUSCHETTA',
         'FOLDER_SHARED_WITH_BRUSCHETTA_PLURAL', 'MANAGE_TOAST_BUTTON_LABEL',

@@ -858,19 +858,13 @@ type EntryFilter = (e: UniversalEntry) => boolean;
 const DEFAULT_ANDROID_FOLDERS = ['Documents', 'Movies', 'Music', 'Pictures'];
 
 /**
- * Windows files or folders to hide by default.
- */
-const WINDOWS_HIDDEN = ['$RECYCLE.BIN'];
-
-
-/**
  * This class manages filters and determines a file should be shown or not.
  * When filters are changed, a 'changed' event is fired.
  */
 export class FileFilter extends EventTarget {
   private filters_ = new Map<string, EntryFilter>();
 
-  constructor(private readonly volumeManager_: VolumeManager) {
+  constructor() {
     super();
     /**
      * Setup initial filters.
@@ -901,9 +895,8 @@ export class FileFilter extends EventTarget {
   }
 
   /**
-   * Show/Hide hidden files (i.e. files starting with '.', or other system files
-   * for Windows files). Passing `true` as the `visible` parameters means the
-   * hidden files should be visible to the user.
+   * Show or hide files starting with '.'. Passing `true` as the `visible`
+   * parameter means the hidden files should be visible to the user.
    */
   setHiddenFilesVisible(visible: boolean) {
     if (!visible) {
@@ -918,14 +911,6 @@ export class FileFilter extends EventTarget {
                                 .some(dir => entry.fullPath.startsWith(dir));
         if (insideTrash && !isTrashEntry(entry)) {
           return false;
-        }
-        // Only hide WINDOWS_HIDDEN in downloads:/PvmDefault.
-        if (entry.fullPath.startsWith('/PvmDefault/') &&
-            WINDOWS_HIDDEN.includes(entry.name)) {
-          const info = this.volumeManager_.getLocationInfo(entry);
-          if (info && info.rootType === RootType.DOWNLOADS) {
-            return false;
-          }
         }
         return true;
       });

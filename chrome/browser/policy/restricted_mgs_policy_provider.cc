@@ -75,7 +75,6 @@ void RestrictedMGSPolicyProvider::ApplyRestrictedManagedGuestSessionOverride(
       {key::kKerberosEnabled, base::Value(false)},
       {key::kNetworkFileSharesAllowed, base::Value(false)},
       {key::kUserBorealisAllowed, base::Value(false)},
-      {key::kUserPluginVmAllowed, base::Value(false)},
       {key::kAllowDeletingBrowserHistory, base::Value(true)},
       {key::kCACertificateManagementAllowed,
        base::Value(static_cast<int>(CACertificateManagementPermission::kNone))},

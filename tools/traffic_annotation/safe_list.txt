@@ -103,7 +103,6 @@ missing_new_fields,chrome/browser/ash/login/oobe_quick_start/second_device_auth_
 missing_new_fields,chrome/browser/ash/login/saml/password_sync_token_fetcher.cc
 missing_new_fields,chrome/browser/ash/login/screens/terms_of_service_screen.cc
 missing_new_fields,chrome/browser/ash/login/users/avatar/user_image_loader.cc
-missing_new_fields,chrome/browser/ash/plugin_vm/plugin_vm_license_checker.cc
 missing_new_fields,chrome/browser/ash/policy/remote_commands/screenshot_delegate.cc
 missing_new_fields,chrome/browser/ash/printing/server_printers_fetcher.cc
 missing_new_fields,chrome/browser/ash/remote_apps/remote_apps_manager.cc
@@ -355,7 +354,6 @@ missing_new_fields,chrome/browser/ash/app_list/search/essential_search/socs_cook
 
 # Header files with traffic annotations that existed before the new check was introduced.
 all,chrome/browser/ash/app_list/search/omnibox/omnibox_util.h
-all,chrome/browser/ash/plugin_vm/plugin_vm_util.h
 all,chrome/browser/predictors/predictors_traffic_annotations.h
 all,chromeos/ash/components/boca/gemini/get_gemini_status_request.h
 all,chromeos/ash/components/boca/receiver/get_kiosk_receiver_request.h

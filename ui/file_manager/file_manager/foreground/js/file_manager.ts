@@ -62,7 +62,6 @@ import {EmptyFolderController} from './empty_folder_controller.js';
 import {forceDefaultHandler} from './file_manager_commands_util.js';
 import type {FileSelection} from './file_selection.js';
 import {FileSelectionHandler} from './file_selection.js';
-import {FileTasks} from './file_tasks.js';
 import {FileTransferController} from './file_transfer_controller.js';
 import {FileTypeFiltersController} from './file_type_filters_controller.js';
 import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.js';
@@ -596,10 +595,6 @@ export class FileManager {
         this.appStateController_, this.taskController_);
 
     this.initDataTransferOperations_();
-    fileListPromise.then(() => {
-      this.taskController_!.setFileTransferController(
-          this.fileTransferController_!);
-    });
 
     this.selectionHandler_.onFileSelectionChanged();
     this.ui_.listContainer.endBatchUpdates();
@@ -893,7 +888,7 @@ export class FileManager {
     this.metadataModel_ = MetadataModel.create(this.volumeManager_);
     this.thumbnailModel_ = new ThumbnailModel(this.metadataModel_);
     this.providersModel_ = new ProvidersModel(this.volumeManager_);
-    this.fileFilter_ = new FileFilter(this.volumeManager_);
+    this.fileFilter_ = new FileFilter();
 
     // Set the files-ng class for dialog header styling.
     const dialogHeader = queryRequiredElement('.dialog-header');
@@ -1177,22 +1172,6 @@ export class FileManager {
         this.crostini_.setEnabled(event.vmName, event.containerName, false);
         return this.crostiniController_.redraw();
 
-      // Event is sent when a user drops an unshared file on Plugin VM.
-      // We show the move dialog so the user can move the file or share the
-      // directory.
-      case chrome.fileManagerPrivate.CrostiniEventType
-          .DROP_FAILED_PLUGIN_VM_DIRECTORY_NOT_SHARED:
-        if (this.ui_.dragInProcess) {
-          const moveMessage =
-              str('UNABLE_TO_DROP_IN_PLUGIN_VM_DIRECTORY_NOT_SHARED_MESSAGE');
-          const copyMessage =
-              str('UNABLE_TO_DROP_IN_PLUGIN_VM_EXTERNAL_DRIVE_MESSAGE');
-          FileTasks.showPluginVmNotSharedDialog(
-              this.selectionHandler.selection.entries, this.volumeManager_,
-              this.metadataModel_, this.ui_, moveMessage, copyMessage,
-              this.fileTransferController_, this.directoryModel_);
-        }
-        break;
       default:
         break;
     }

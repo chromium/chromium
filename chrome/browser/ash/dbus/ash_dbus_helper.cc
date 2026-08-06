@@ -76,7 +76,6 @@
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_pkcs11_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/dbus/virtual_file_provider/virtual_file_provider_client.h"
-#include "chromeos/ash/components/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/language_packs/language_pack_manager.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
@@ -208,7 +207,6 @@ void InitializeDBus() {
   InitializeDBusClient<UserDataAuthClient>(bus);
   InitializeDBusClient<UpstartClient>(bus);
   InitializeDBusClient<VirtualFileProviderClient>(bus);
-  InitializeDBusClient<VmPluginDispatcherClient>(bus);
   InitializeDBusClient<chromeos::RegmonClient>(bus);
 
   attestation::AttestationFeatures::Initialize();
@@ -313,7 +311,6 @@ void ShutdownDBus() {
 
   // Other D-Bus clients are shut down, also in reverse order of initialization.
   chromeos::RegmonClient::Shutdown();
-  VmPluginDispatcherClient::Shutdown();
   VirtualFileProviderClient::Shutdown();
   UpstartClient::Shutdown();
   UserDataAuthClient::Shutdown();

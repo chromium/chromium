@@ -21,7 +21,6 @@ import type {XfPasswordDialog} from '../../widgets/xf_password_dialog.js';
 import type {DirectoryModel} from './directory_model.js';
 import type {FileSelection, FileSelectionHandler} from './file_selection.js';
 import {FileTasks, TaskPickerType} from './file_tasks.js';
-import type {FileTransferController} from './file_transfer_controller.js';
 import type {MetadataModel} from './metadata/metadata_model.js';
 import type {MetadataUpdateController} from './metadata_update_controller.js';
 import {EventType, TaskHistory} from './task_history.js';
@@ -38,7 +37,6 @@ interface ExtractingTasks {
 }
 
 export class TaskController {
-  private fileTransferController_: FileTransferController|null = null;
   private taskHistory_: TaskHistory;
   private canExecuteDefaultTask_: boolean = false;
   private shouldHideDefaultTask_: boolean = true;
@@ -111,10 +109,6 @@ export class TaskController {
         this.updateTasks_();
       }
     }
-  }
-
-  setFileTransferController(fileTransferController: FileTransferController) {
-    this.fileTransferController_ = fileTransferController;
   }
 
   /**
@@ -455,8 +449,8 @@ export class TaskController {
     const entries = this.selectionFilesData_.map(fd => fd.entry) as Entry[];
     this.tasks_ = Promise.resolve(FileTasks.fromStoreTasks(
         this.selectionTasks_!, this.volumeManager_, this.metadataModel_,
-        this.directoryModel_, this.ui_, this.fileTransferController_!, entries,
-        this.taskHistory_, this.progressCenter_, this));
+        this.directoryModel_, this.ui_, entries, this.taskHistory_,
+        this.progressCenter_, this));
     return this.tasks_;
   }
 
@@ -543,8 +537,7 @@ export class TaskController {
   async getEntryFileTasks(entry: Entry|FilesAppEntry): Promise<FileTasks> {
     return FileTasks.create(
         this.volumeManager_, this.metadataModel_, this.directoryModel_,
-        this.ui_, this.fileTransferController_!, [entry], this.taskHistory_,
-        this.progressCenter_, this);
+        this.ui_, [entry], this.taskHistory_, this.progressCenter_, this);
   }
 
   async executeEntryTask(entry: Entry) {

@@ -141,7 +141,7 @@ enum SearchResultType {
   ASSISTANT,
   // An OsSettingsResult.
   OS_SETTINGS,
-  // A Plugin VM App Result.
+  // Deprecated Plugin VM app result. Do not reuse.
   PLUGIN_VM_APP,
   // LaCrOS binary. (Deprecated).
   LACROS_DEPRECATED,

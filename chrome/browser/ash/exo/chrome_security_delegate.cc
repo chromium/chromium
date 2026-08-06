@@ -17,8 +17,6 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/exo/chrome_data_exchange_delegate.h"
-#include "chrome/browser/ash/extensions/file_manager/event_router.h"
-#include "chrome/browser/ash/extensions/file_manager/event_router_factory.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
@@ -26,8 +24,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
-#include "chrome/browser/ash/plugin_vm/plugin_vm_files.h"
-#include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
@@ -109,9 +105,6 @@ base::FilePath GetVmMount(const std::string& vm_name) {
   if (vm_name == crostini::kCrostiniDefaultVmName) {
     return crostini::ContainerChromeOSBaseDirectory();
   }
-  if (vm_name == plugin_vm::kPluginVmName) {
-    return plugin_vm::ChromeOSBaseDirectory();
-  }
   return base::FilePath(std::string(kDefaultVmMount));
 }
 
@@ -126,9 +119,8 @@ std::vector<FileInfo> TranslateVMToHost(const std::string& vm_name,
     base::FilePath path = std::move(info.path);
     storage::FileSystemURL url;
 
-    // Convert the VM path to a path in the host if possible (in homedir or
-    // /mnt/chromeos for crostini; in //ChromeOS for Plugin VM), otherwise
-    // prefix with 'vmfile:<vm_name>:' to avoid VMs spoofing host paths.
+    // Convert the VM path to a path in the host if possible. Otherwise, prefix
+    // it with 'vmfile:<vm_name>:' to avoid VMs spoofing host paths.
     // E.g. crostini /etc/mime.types => vmfile:termina:/etc/mime.types.
     if (!vm_name.empty() && vm_name != arc::kArcVmName) {
       if (file_manager::util::ConvertPathInsideVMToFileSystemURL(
@@ -224,40 +216,30 @@ void ShareAndTranslateHostToVM(
   }
 
   if (!paths_to_share.empty()) {
-    if (vm_name != plugin_vm::kPluginVmName) {
-      auto vm_info =
-          guest_os::GuestOsSessionTrackerFactory::GetForProfile(primary_profile)
-              ->GetVmInfo(vm_name);
-      if (!vm_info) {
-        // VM must be running for copy-paste or drag-drop to be happening so
-        // something's gone wrong, skip trying to share and just send the data.
-        std::move(callback).Run(std::move(file_urls));
-        return;
-      }
-      share_path->SharePaths(
-          vm_name, vm_info->seneschal_server_handle(),
-          std::move(paths_to_share),
-          base::BindOnce(
-              [](base::OnceCallback<void(std::vector<std::string>)> callback,
-                 std::vector<std::string> file_urls, bool success,
-                 const std::string& failure_reason) {
-                if (!success) {
-                  LOG(ERROR) << "Error sharing paths: " << failure_reason;
-                }
-
-                // Still send the data, even if sharing failed.
-                std::move(callback).Run(std::move(file_urls));
-              },
-              std::move(callback), std::move(file_urls)));
+    auto vm_info =
+        guest_os::GuestOsSessionTrackerFactory::GetForProfile(primary_profile)
+            ->GetVmInfo(vm_name);
+    if (!vm_info) {
+      // VM must be running for copy-paste or drag-drop to be happening so
+      // something's gone wrong, skip trying to share and just send the data.
+      std::move(callback).Run(std::move(file_urls));
       return;
     }
+    share_path->SharePaths(
+        vm_name, vm_info->seneschal_server_handle(), std::move(paths_to_share),
+        base::BindOnce(
+            [](base::OnceCallback<void(std::vector<std::string>)> callback,
+               std::vector<std::string> file_urls, bool success,
+               const std::string& failure_reason) {
+              if (!success) {
+                LOG(ERROR) << "Error sharing paths: " << failure_reason;
+              }
 
-    // Show FilesApp move-to-windows-files dialog when Plugin VM is not shared.
-    if (auto* event_router =
-            file_manager::EventRouterFactory::GetForProfile(primary_profile)) {
-      event_router->DropFailedPluginVmDirectoryNotShared();
-    }
-    file_urls.clear();
+              // Still send the data, even if sharing failed.
+              std::move(callback).Run(std::move(file_urls));
+            },
+            std::move(callback), std::move(file_urls)));
+    return;
   }
 
   std::move(callback).Run(std::move(file_urls));
@@ -394,8 +376,6 @@ void ChromeSecurityDelegate::SendPickle(ui::EndpointType target,
 std::string ChromeSecurityDelegate::GetVmName(ui::EndpointType target) const {
   if (target == ui::EndpointType::kArc) {
     return arc::kArcVmName;
-  } else if (target == ui::EndpointType::kPluginVm) {
-    return plugin_vm::kPluginVmName;
   }
   return std::string();
 }

@@ -52,7 +52,6 @@
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
-#include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/extensions/api/file_system/chrome_file_system_delegate_ash.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -1184,17 +1183,6 @@ void EventRouter::NotifyDriveConnectionStatusChanged() {
                      FILE_MANAGER_PRIVATE_ON_DRIVE_CONNECTION_STATUS_CHANGED,
                  fmp::OnDriveConnectionStatusChanged::kEventName,
                  fmp::OnDriveConnectionStatusChanged::Create());
-}
-
-void EventRouter::DropFailedPluginVmDirectoryNotShared() {
-  fmp::CrostiniEvent event;
-  event.vm_name = plugin_vm::kPluginVmName;
-  event.event_type =
-      fmp::CrostiniEventType::kDropFailedPluginVmDirectoryNotShared;
-  BroadcastEvent(profile_,
-                 extensions::events::FILE_MANAGER_PRIVATE_ON_CROSTINI_CHANGED,
-                 fmp::OnCrostiniChanged::kEventName,
-                 fmp::OnCrostiniChanged::Create(event));
 }
 
 void EventRouter::OnDriveDialogResult(drivefs::mojom::DialogResult result) {

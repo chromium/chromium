@@ -19,9 +19,6 @@
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
-#include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
-#include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
-#include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/dbus/vm_launch/launch.pb.h"
@@ -64,21 +61,6 @@ void LaunchCrostini(Profile* profile,
             std::move(callback).Run(Success(vm_name, container_name));
           },
           container_id.vm_name, just_termina ? "" : container_id.container_name,
-          std::move(callback)));
-}
-
-void LaunchPluginVm(Profile* profile, LaunchCallback callback) {
-  plugin_vm::PluginVmManagerFactory::GetForProfile(profile)->LaunchPluginVm(
-      base::BindOnce(
-          [](LaunchCallback callback, bool success) {
-            if (!success) {
-              std::move(callback).Run(
-                  base::unexpected("Failed to launch Plugin VM"));
-              return;
-            }
-            std::move(callback).Run(
-                Success(plugin_vm::kPluginVmName, /*container_name=*/""));
-          },
           std::move(callback)));
 }
 
@@ -136,8 +118,6 @@ void EnsureLaunched(const vm_tools::launch::EnsureVmLaunchedRequest& request,
   } else if (main_descriptor == "crostini") {
     LaunchCrostini(profile, /*just_termina=*/false,
                    std::move(response_callback));
-  } else if (main_descriptor == "plugin_vm") {
-    LaunchPluginVm(profile, std::move(response_callback));
   } else if (main_descriptor == "termina") {
     LaunchCrostini(profile, /*just_termina=*/true,
                    std::move(response_callback));

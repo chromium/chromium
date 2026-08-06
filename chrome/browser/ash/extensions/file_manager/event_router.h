@@ -185,10 +185,6 @@ class EventRouter
   // display::DisplayObserver overrides.
   void OnDisplayTabletStateChanged(display::TabletState state) override;
 
-  // Notifies FilesApp that file drop to Plugin VM was not in a shared directory
-  // and failed FilesApp will show the "Move to Windows files" dialog.
-  void DropFailedPluginVmDirectoryNotShared();
-
   // Called by the UI to notify the result of a displayed dialog.
   void OnDriveDialogResult(drivefs::mojom::DialogResult result);
 

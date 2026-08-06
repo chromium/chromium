@@ -42,7 +42,6 @@ class Task {
     GPU,       /* A graphics process. */
     ARC,       /* An ARC process. */
     CROSTINI,  /* A Crostini VM process. */
-    PLUGIN_VM, /* A Plugin VM process. */
     ZYGOTE,    /* A Linux zygote process. */
     UTILITY,   /* A browser utility process. */
 
