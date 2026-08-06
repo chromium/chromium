@@ -11765,54 +11765,56 @@ class GpuInfoUpdateObserver : public GpuDataManagerObserver {
 };
 
 // Checks if RenderInputRouterDelegate mojo connection is reset when GPU process
-// restarts. Disabled due to flake: crbug.com/439855865.
+// restarts.
 IN_PROC_BROWSER_TEST_P(AndroidInputBrowserTest,
-                       DISABLED_RestartingGPUProcessResetsMojoConnection) {
-  base::test::TestTraceProcessor ttp;
-  ttp.StartTrace("viz");
-  RenderFrameSubmissionObserver render_frame_submission_observer(
-      web_contents());
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("foo.com", "/title1.html")));
-  if (render_frame_submission_observer.render_frame_count() == 0) {
-    render_frame_submission_observer.WaitForAnyFrameSubmission();
+                       RestartingGPUProcessResetsMojoConnection) {
+  // Return early if transferring input to Viz isn't supported.
+  if (!input::InputUtils::IsTransferInputToVizSupported()) {
+    return;
   }
 
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("foo.com", "/title1.html")));
+
   base::RunLoop run_loop;
-  // This observer is begin used here to signal if the GPU process has
+  // This observer is being used here to signal if the GPU process has
   // restarted.
   GpuInfoUpdateObserver gpu_observer(run_loop.QuitClosure());
-
-  RenderFrameSubmissionObserver render_frame_submission_observer2(
-      web_contents());
 
   // Kill GPU process explicitly, this should trigger a restart.
   KillGpuProcess();
   run_loop.Run();
 
-  if (render_frame_submission_observer2.render_frame_count() == 0) {
-    render_frame_submission_observer2.WaitForAnyFrameSubmission();
-  }
+  base::test::TestTraceProcessor ttp;
+  ttp.StartTrace("viz");
+
+  // Navigate to URL and synchronize with Viz to verify the mojo connection
+  // is established with the new GPU process.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("bar.com", "/title2.html")));
+  mojo::ScopedAllowSyncCallForTesting allowed_for_testing;
+  bool enabled = false;
+  content::GetHostFrameSinkManager()
+      ->GetFrameSinkManagerTestApi()
+      .GetForceEnableZoomState(GetRenderWidgetHost()->GetFrameSinkId(),
+                               &enabled);
 
   absl::Status status = ttp.StopAndParseTrace();
   ASSERT_TRUE(status.ok()) << status.message();
 
   std::string query = R"(
-    SELECT COUNT(*) AS cnt
+    SELECT (COUNT(*) > 0) AS has_connection
     FROM slice
     WHERE name = 'InputManager::SetupRenderInputRouterDelegateConnection'
-    ORDER BY ts ASC
   )";
   auto result = ttp.RunQuery(query);
   ASSERT_TRUE(result.has_value());
 
-  // `result.value()` would look something like this: {{"cnt"}, {"<num>"}}.
-  EXPECT_THAT(
-      result.value(),
-      testing::ElementsAre(
-          testing::ElementsAre("cnt"),
-          testing::ElementsAre(
-              input::InputUtils::IsTransferInputToVizSupported() ? "2" : "0")));
+  // `result.value()` would look something like this: {{"has_connection"},
+  // {"<num>"}}.
+  EXPECT_THAT(result.value(),
+              testing::ElementsAre(testing::ElementsAre("has_connection"),
+                                   testing::ElementsAre("1")));
 }
 
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTouchActionTest,
