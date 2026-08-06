@@ -1452,8 +1452,7 @@ void BookmarkBarView::OnButtonPressed(const bookmarks::BookmarkNode* node,
   DCHECK(node->is_url());
   RecordAppLaunch(browser_->GetProfile(), node->url());
   bookmarks::OpenAllIfAllowed(
-      browser_->GetBrowserForMigrationOnly(), {node},
-      ui::DispositionFromEventFlags(event.flags()),
+      browser_, {node}, ui::DispositionFromEventFlags(event.flags()),
       bookmarks::OpenAllBookmarksContext::kNone,
       GetInitiatorLocation(ChromeInitiatorLocation::kBookmarkBar),
       {{BookmarkLaunchLocation::kAttachedBar, base::TimeTicks::Now()}});
@@ -1474,8 +1473,7 @@ void BookmarkBarView::OnMenuButtonPressed(const BookmarkParentFolder& folder,
     auto nodes = ToRawPtrVector(bookmark_service_->GetUnderlyingNodes(folder));
 
     bookmarks::OpenAllIfAllowed(
-        browser_->GetBrowserForMigrationOnly(), nodes,
-        ui::DispositionFromEventFlags(event.flags()),
+        browser_, nodes, ui::DispositionFromEventFlags(event.flags()),
         bookmarks::OpenAllBookmarksContext::kNone,
         GetInitiatorLocation(ChromeInitiatorLocation::kBookmarkBar),
         {{BookmarkLaunchLocation::kAttachedBar, base::TimeTicks::Now()}});

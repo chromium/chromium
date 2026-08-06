@@ -25,19 +25,19 @@
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats_tab_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/incognito_allowed_url.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_menu_utils.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -54,6 +54,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/base_window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/window_open_disposition.h"
@@ -91,7 +92,7 @@ using OpenedWebContentsSet = base::flat_set<const content::WebContents*>;
 // `initial_disposition` as a starting point. Returns a reference set of the
 // WebContents created; see OpenedWebContentsSet.
 OpenedWebContentsSet OpenAllHelper(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     std::vector<UrlAndId> bookmark_urls,
     WindowOpenDisposition initial_disposition,
     page_load_metrics::NavigationHandleUserData::InitiatorLocation
@@ -102,8 +103,8 @@ OpenedWebContentsSet OpenAllHelper(
   // We keep track of (potentially) two browsers in addition to the original
   // browser. This allows us to open the URLs in the correct
   // browser depending on the URL type and `initial_disposition`.
-  Browser* regular_browser = nullptr;
-  Browser* incognito_browser = nullptr;
+  BrowserWindowInterface* regular_browser = nullptr;
+  BrowserWindowInterface* incognito_browser = nullptr;
   bookmarks::BookmarkNavigationWrapper nav_wrapper;
   Profile* profile = nullptr;
   if (browser) {
@@ -133,7 +134,7 @@ OpenedWebContentsSet OpenAllHelper(
     // `incognito_browser` nor `regular_browser` is set we use the original
     // browser, but `NavigateTo` can create a new browser
     // depending on the disposition and URL type.
-    Browser* browser_to_use = browser;
+    BrowserWindowInterface* browser_to_use = browser;
     if (opening_urls_in_incognito && url_allowed_in_incognito) {
       if (incognito_browser) {
         browser_to_use = incognito_browser;
@@ -201,19 +202,15 @@ OpenedWebContentsSet OpenAllHelper(
         Profile::FromBrowserContext(opened_tab->GetBrowserContext());
     if (new_tab_profile->IsIncognitoProfile()) {
       if (!incognito_browser) {
-        auto* tab_browser =
+        incognito_browser =
             ProfileBrowserCollection::GetForProfile(new_tab_profile)
                 ->FindBrowserWithTab(opened_tab);
-        incognito_browser =
-            tab_browser ? tab_browser->GetBrowserForMigrationOnly() : nullptr;
       }
     } else {
       if (!regular_browser) {
-        auto* tab_browser =
+        regular_browser =
             ProfileBrowserCollection::GetForProfile(new_tab_profile)
                 ->FindBrowserWithTab(opened_tab);
-        regular_browser =
-            tab_browser ? tab_browser->GetBrowserForMigrationOnly() : nullptr;
       }
     }
 
@@ -294,7 +291,7 @@ void GetURLsAndFoldersForOpenTabs(
 
 
 // Open a folder of bookmarks as tabs.
-void DoOpen(Browser* browser,
+void DoOpen(BrowserWindowInterface* browser,
             std::vector<UrlAndId> url_and_ids_to_open,
             WindowOpenDisposition initial_disposition,
             std::optional<base::Uuid> bookmark_folder_node_id,
@@ -359,7 +356,7 @@ void DoOpen(Browser* browser,
 }
 
 void DoOpenPromptConfirm(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     std::vector<UrlAndId> url_and_ids_to_open,
     WindowOpenDisposition initial_disposition,
     std::optional<base::Uuid> bookmark_folder_node_id,
@@ -380,7 +377,7 @@ void DoOpenPromptConfirm(
 }  // namespace
 
 void OpenAllIfAllowed(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const std::vector<
         raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes,
     WindowOpenDisposition initial_disposition,

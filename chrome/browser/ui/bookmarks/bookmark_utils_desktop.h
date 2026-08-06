@@ -16,7 +16,6 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/native_ui_types.h"
 
-class Browser;
 class BrowserWindowInterface;
 struct NavigateParams;
 class TabGroup;
@@ -75,7 +74,7 @@ extern size_t kNumBookmarkUrlsBeforePrompting;
 // TODO(crbug.com/40914589): This should be made non-optional once all callsites
 // have all the information needed to correctly construct the `launch_action`.
 void OpenAllIfAllowed(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const std::vector<
         raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes,
     WindowOpenDisposition initial_disposition,

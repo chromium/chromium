@@ -473,8 +473,8 @@ void BookmarkMenuDelegate::ExecuteCommand(int id, int mouse_event_flags) {
   std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> selection =
       menu_id_to_node_map_.find(id)->second.GetUnderlyingNodes(
           GetBookmarkMergedSurfaceService());
-  bookmarks::OpenAllIfAllowed(browser_->GetBrowserForMigrationOnly(), selection,
-                              initial_disposition, context);
+  bookmarks::OpenAllIfAllowed(browser_, selection, initial_disposition,
+                              context);
 }
 
 bool BookmarkMenuDelegate::ShouldExecuteCommandWithoutClosingMenu(
