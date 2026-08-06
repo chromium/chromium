@@ -92,10 +92,10 @@ class SessionRestore {
 
   // Restores the last session when the last session crashed. It's a wrapper
   // of function RestoreSession.
-  static void RestoreSessionAfterCrash(Browser* browser);
+  static void RestoreSessionAfterCrash(BrowserWindowInterface* browser);
 
   // Opens the startup pages when the last session crashed.
-  static void OpenStartupPagesAfterCrash(Browser* browser);
+  static void OpenStartupPagesAfterCrash(BrowserWindowInterface* browser);
 
   // Specifically used in the restoration of a foreign session.  This function
   // restores the given session windows to multiple browsers. Takes a callback

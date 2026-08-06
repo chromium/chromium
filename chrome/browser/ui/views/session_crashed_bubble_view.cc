@@ -118,8 +118,7 @@ class SessionCrashedBubbleDelegate : public ui::DialogModelDelegate {
     RecordBubbleHistogramValue(SESSION_CRASHED_BUBBLE_STARTUP_PAGES);
     // Opening tabs has side effects, so it's preferable to do it after the
     // bubble was closed.
-    SessionRestore::OpenStartupPagesAfterCrash(
-        browser->GetBrowserForMigrationOnly());
+    SessionRestore::OpenStartupPagesAfterCrash(browser);
   }
 
   void OnWindowClosing() {
@@ -141,8 +140,7 @@ class SessionCrashedBubbleDelegate : public ui::DialogModelDelegate {
     RecordBubbleHistogramValue(SESSION_CRASHED_BUBBLE_RESTORED);
     // Restoring tabs has side effects, so it's preferable to do it after the
     // bubble was closed.
-    SessionRestore::RestoreSessionAfterCrash(
-        browser->GetBrowserForMigrationOnly());
+    SessionRestore::RestoreSessionAfterCrash(browser);
   }
 
   void MaybeEnableUma() {
