@@ -41,7 +41,6 @@ if (!is_android) {
       "//components/webapps/browser",
       "//components/webapps/common",
       "//components/webapps/isolated_web_apps",
-      "//components/webapps/isolated_web_apps/key_distribution",
       "//content/public/browser",
       "//mojo/public/cpp/bindings",
       "//services/network/public/cpp",

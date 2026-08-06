@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 source_set("key_distribution") {
+  defines = [ "IS_ISOLATED_WEB_APPS_IMPL" ]
+  visibility = [ "//components/webapps/isolated_web_apps/*" ]
   sources = [
     "iwa_key_distribution_histograms.h",
     "iwa_key_distribution_info_provider.cc",
@@ -10,8 +12,8 @@ source_set("key_distribution") {
   ]
   public_deps = [
     "//base",
-    "//components/webapps/isolated_web_apps",
     "//components/webapps/isolated_web_apps/key_distribution/proto",
+    "//components/webapps/isolated_web_apps/public",
   ]
   deps = [
     "//build:chromeos_buildflags",

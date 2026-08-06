@@ -113,7 +113,10 @@ const web_package::SignedWebBundleId& IsolatedWebAppUrlInfo::web_bundle_id()
 
 content::StoragePartitionConfig IsolatedWebAppUrlInfo::storage_partition_config(
     content::BrowserContext* browser_context) const {
-  return iwa_origin_.storage_partition_config(browser_context);
+  return content::StoragePartitionConfig::Create(
+      browser_context, iwa_origin_.GetPartitionDomain(),
+      /*partition_name=*/"",
+      /*in_memory=*/false);
 }
 
 content::StoragePartitionConfig
@@ -122,11 +125,9 @@ IsolatedWebAppUrlInfo::GetStoragePartitionConfigForControlledFrame(
     const std::string& partition_name,
     bool in_memory) const {
   CHECK(!partition_name.empty() || in_memory);
-  return iwa_origin_.storage_partition_config(
-      browser_context, IwaOrigin::StoragePartitionConfigOptions{
-                           .partition_name = partition_name,
-                           .in_memory = in_memory,
-                       });
+  return content::StoragePartitionConfig::Create(
+      browser_context, iwa_origin_.GetPartitionDomain(), partition_name,
+      in_memory);
 }
 
 }  // namespace web_app

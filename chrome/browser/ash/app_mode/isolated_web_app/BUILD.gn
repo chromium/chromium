@@ -46,7 +46,6 @@ static_library("policy_util") {
     "//components/user_manager",
     "//components/web_package",
     "//components/webapps/isolated_web_apps",
-    "//components/webapps/isolated_web_apps:sources",
   ]
 }
 

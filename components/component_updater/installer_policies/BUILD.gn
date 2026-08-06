@@ -44,17 +44,6 @@ static_library("installer_policies_no_content_deps") {
     "//services/network/public/cpp",
   ]
 
-  if (is_chromeos || is_win || is_mac || is_linux) {
-    sources += [
-      "iwa_key_distribution_component_installer_policy.cc",
-      "iwa_key_distribution_component_installer_policy.h",
-    ]
-    deps += [
-      "//components/crx_file",
-      "//components/webapps/isolated_web_apps/key_distribution",
-    ]
-  }
-
   # Disallow depending on content.
   assert_no_deps = [ "//content/public" ]
 }
@@ -78,7 +67,19 @@ static_library("installer_policies_with_content_deps") {
     "//components/omnibox/browser",
     "//components/omnibox/common",
     "//components/optimization_guide/core",
+    "//components/update_client",
   ]
+
+  if (is_chromeos || is_win || is_mac || is_linux) {
+    sources += [
+      "iwa_key_distribution_component_installer_policy.cc",
+      "iwa_key_distribution_component_installer_policy.h",
+    ]
+    deps += [
+      "//components/crx_file",
+      "//components/webapps/isolated_web_apps",
+    ]
+  }
 }
 
 source_set("unit_tests") {

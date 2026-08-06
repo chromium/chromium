@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_READING_RESPONSE_READER_REGISTRY_FACTORY_H_
 #define COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_READING_RESPONSE_READER_REGISTRY_FACTORY_H_
 
+#include "base/component_export.h"
 #include "base/no_destructor.h"
 #include "components/webapps/isolated_web_apps/service/isolated_web_app_browser_context_service_factory.h"
 
@@ -20,7 +21,7 @@ class IsolatedWebAppReaderRegistry;
 // `IsolatedWebAppReaderRegistry` per `Profile` is purely a security measure,
 // which makes sure that the integrity of an Isolated Web App is verified on a
 // per-profile basis.
-class IsolatedWebAppReaderRegistryFactory
+class COMPONENT_EXPORT(ISOLATED_WEB_APPS) IsolatedWebAppReaderRegistryFactory
     : public IsolatedWebAppBrowserContextServiceFactory {
  public:
   IsolatedWebAppReaderRegistryFactory(

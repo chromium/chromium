@@ -8,6 +8,7 @@
 #include <iosfwd>
 #include <string>
 
+#include "base/component_export.h"
 #include "base/types/expected.h"
 
 namespace web_app {
@@ -54,13 +55,17 @@ using IwaUpdateCheckAndPrepareResult =
     base::expected<IwaUpdateCheckAndPrepareSuccess,
                    IwaUpdateCheckAndPrepareError>;
 
+COMPONENT_EXPORT(ISOLATED_WEB_APPS)
 std::string IwaUpdateCheckAndPrepareSuccessToString(
     IwaUpdateCheckAndPrepareSuccess success);
+COMPONENT_EXPORT(ISOLATED_WEB_APPS)
 std::string IwaUpdateCheckAndPrepareErrorToString(
     IwaUpdateCheckAndPrepareError error);
 
+COMPONENT_EXPORT(ISOLATED_WEB_APPS)
 std::ostream& operator<<(std::ostream& os,
                          const IwaUpdateCheckAndPrepareSuccess& success);
+COMPONENT_EXPORT(ISOLATED_WEB_APPS)
 std::ostream& operator<<(std::ostream& os,
                          const IwaUpdateCheckAndPrepareError& error);
 

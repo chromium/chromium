@@ -9,6 +9,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/types/expected.h"
 #include "components/webapps/isolated_web_apps/error/unusable_swbn_file_error.h"
@@ -25,7 +26,7 @@ class BrowserContext;
 
 namespace web_app {
 
-class IsolatedWebAppValidator {
+class COMPONENT_EXPORT(ISOLATED_WEB_APPS) IsolatedWebAppValidator {
  public:
   // Validates that the integrity block of the Isolated Web App contains trusted
   // public keys given the `expected_web_bundle_id`.

@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/component_export.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -33,22 +34,26 @@ namespace web_app {
 
 class IwaSourceProxy;
 
+COMPONENT_EXPORT(ISOLATED_WEB_APPS)
 void CompleteWithGeneratedResponse(
     mojo::Remote<network::mojom::URLLoaderClient> loader_client,
     net::HttpStatusCode http_status_code,
     std::optional<std::string> body = std::nullopt,
     std::string_view content_type = "text/html");
 
+COMPONENT_EXPORT(ISOLATED_WEB_APPS)
 void LogErrorMessageToConsole(
     std::optional<content::FrameTreeNodeId> frame_tree_node_id,
     const std::string& error_message);
 
+COMPONENT_EXPORT(ISOLATED_WEB_APPS)
 void LogErrorAndFail(
     const std::string& error_message,
     const std::optional<content::FrameTreeNodeId>& frame_tree_node_id,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     net::Error err = net::ERR_FAILED);
 
+COMPONENT_EXPORT(ISOLATED_WEB_APPS)
 void HandleProxy(
     content::BrowserContext* browser_context,
     const web_package::SignedWebBundleId& web_bundle_id,

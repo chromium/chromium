@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -34,7 +35,7 @@ namespace web_app {
 // guaranteed to have previously read a valid integrity block and metadata, as
 // well as to have verified that the signatures are valid (unless
 // `skip_signature_verification` is set).
-class IsolatedWebAppResponseReaderFactory {
+class COMPONENT_EXPORT(ISOLATED_WEB_APPS) IsolatedWebAppResponseReaderFactory {
  public:
   explicit IsolatedWebAppResponseReaderFactory(content::BrowserContext*);
   virtual ~IsolatedWebAppResponseReaderFactory();

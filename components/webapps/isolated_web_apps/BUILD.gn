@@ -5,14 +5,17 @@
 assert(is_chromeos || is_win || is_mac || is_linux,
        "components/webapps/isolated_web_apps are no-op on Android or iOS.")
 
-# TODO(crbug.com/536866923): Move source sets to the component.
 component("isolated_web_apps") {
   defines = [ "IS_ISOLATED_WEB_APPS_IMPL" ]
-  public_deps = [ "//components/webapps/isolated_web_apps/public" ]
+  public_deps = [
+    ":sources",
+    "//components/webapps/isolated_web_apps/public",
+  ]
 }
 
 group("sources") {
   public_deps = [
+    ":iwa_client",
     ":scheme",
     "//components/webapps/isolated_web_apps/bundle_operations",
     "//components/webapps/isolated_web_apps/download",
@@ -31,6 +34,8 @@ source_set("scheme") {
 }
 
 source_set("iwa_client") {
+  defines = [ "IS_ISOLATED_WEB_APPS_IMPL" ]
+  visibility = [ "//components/webapps/isolated_web_apps/*" ]
   sources = [
     "client.cc",
     "client.h",
@@ -38,7 +43,6 @@ source_set("iwa_client") {
   public_deps = [
     "//base",
     "//components/web_package",
-    "//components/webapps/isolated_web_apps",
     "//components/webapps/isolated_web_apps/types",
     "//content/public/browser",
     "//services/network/public/cpp",

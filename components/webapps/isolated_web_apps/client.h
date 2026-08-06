@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/types/expected.h"
 #include "base/version.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
@@ -27,7 +28,7 @@ class IwaRuntimeDataProvider;
 
 // This singleton acts as a bridge between the browser-independent IWA layer and
 // the embedder layer (i.e. Chrome).
-class IwaClient {
+class COMPONENT_EXPORT(ISOLATED_WEB_APPS) IwaClient {
  public:
   struct SourceRequestError {
     net::Error net_error;

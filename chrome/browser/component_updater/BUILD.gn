@@ -209,7 +209,7 @@ source_set("impl") {
       "//components/live_caption:constants",
       "//components/live_caption:utils",
       "//components/soda:constants",
-      "//components/webapps/isolated_web_apps/key_distribution",
+      "//components/webapps/isolated_web_apps",
       "//third_party/zxcvbn-cpp",
     ]
   }

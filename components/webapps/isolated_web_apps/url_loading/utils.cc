@@ -22,6 +22,7 @@
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/net_errors.h"
@@ -190,7 +191,10 @@ void HandleProxy(
   DCHECK(!proxy.proxy_url().opaque());
   content::StoragePartition* storage_partition =
       browser_context->GetStoragePartition(
-          IwaOrigin(web_bundle_id).storage_partition_config(browser_context),
+          content::StoragePartitionConfig::Create(
+              browser_context, IwaOrigin(web_bundle_id).GetPartitionDomain(),
+              /*partition_name=*/"",
+              /*in_memory=*/false),
           /*can_create=*/false);
   if (!storage_partition) {
     LogErrorAndFail("Storage not found for Isolated Web App: " +

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/component_export.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 
@@ -18,7 +19,7 @@ namespace web_app {
 // has critical errors (bad signature, wrong format, etc). If such an error
 // occurs we can't do much with it and most probably we should delete
 // the file.
-class UnusableSwbnFileError {
+class COMPONENT_EXPORT(ISOLATED_WEB_APPS) UnusableSwbnFileError {
  public:
   // So far this enum represents every error type that can occur during
   // integrity block and metadata parsing, before responses are read from
@@ -69,8 +70,10 @@ class UnusableSwbnFileError {
   std::string message_;
 };
 
+COMPONENT_EXPORT(ISOLATED_WEB_APPS)
 bool operator==(const UnusableSwbnFileError& lhs,
                 const UnusableSwbnFileError& rhs);
+COMPONENT_EXPORT(ISOLATED_WEB_APPS)
 UnusableSwbnFileError::Error ToErrorEnum(const UnusableSwbnFileError& err);
 }  // namespace web_app
 

@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -27,7 +28,7 @@ class SignedWebBundleId;
 
 namespace web_app {
 
-class IsolatedWebAppURLLoader {
+class COMPONENT_EXPORT(ISOLATED_WEB_APPS) IsolatedWebAppURLLoader {
  public:
   static void CreateAndStart(
       content::BrowserContext* browser_context,

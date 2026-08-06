@@ -601,8 +601,6 @@ source_set("web_applications") {
     "//components/webapps/common",
     "//components/webapps/common:mojo_bindings",
     "//components/webapps/isolated_web_apps",
-    "//components/webapps/isolated_web_apps:iwa_client",
-    "//components/webapps/isolated_web_apps:sources",
     "//components/webapps/services/web_app_origin_association:lib",
     "//content/browser/background_fetch:background_fetch_proto",
     "//content/public/browser",
@@ -729,7 +727,6 @@ source_set("web_applications") {
     "//components/permissions",
     "//components/services/app_service",
     "//components/webapps/isolated_web_apps",
-    "//components/webapps/isolated_web_apps:sources",
   ]
 }
 
@@ -789,7 +786,7 @@ source_set("iwa_types") {
     "//base",
     "//chrome/browser/web_applications/proto",
     "//components/web_package",
-    "//components/webapps/isolated_web_apps/types",
+    "//components/webapps/isolated_web_apps",
     "//url",
   ]
 }
@@ -883,7 +880,7 @@ source_set("web_applications_test_support") {
 
   public_deps = [
     "//components/webapps/common:mojo_bindings",
-    "//components/webapps/isolated_web_apps/key_distribution",
+    "//components/webapps/isolated_web_apps",
     "//components/webapps/isolated_web_apps/key_distribution/proto",
     "//components/webapps/isolated_web_apps/test_support",
   ]
@@ -913,7 +910,6 @@ source_set("web_applications_test_support") {
     "//components/webapps/browser",
     "//components/webapps/common",
     "//components/webapps/isolated_web_apps",
-    "//components/webapps/isolated_web_apps:sources",
     "//content/test:test_support",
     "//services/data_decoder/public/cpp:test_support",
     "//skia",
@@ -1179,7 +1175,6 @@ source_set("web_applications_unit_tests") {
     "//components/webapps/common",
     "//components/webapps/common:mojo_bindings",
     "//components/webapps/isolated_web_apps",
-    "//components/webapps/isolated_web_apps:sources",
     "//components/webapps/isolated_web_apps/test_support",
     "//content/public/browser",
     "//content/public/common",
@@ -1425,7 +1420,6 @@ source_set("web_applications_browser_tests") {
     "//components/webapps/browser:test_support",
     "//components/webapps/common",
     "//components/webapps/isolated_web_apps",
-    "//components/webapps/isolated_web_apps:sources",
     "//components/webapps/isolated_web_apps/test_support",
     "//components/webapps/services/web_app_origin_association/test:test_support",
     "//content/public/browser",
@@ -1516,7 +1510,7 @@ source_set("app_service_browser_tests") {
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//components/webapps/browser",
-    "//components/webapps/isolated_web_apps/key_distribution",
+    "//components/webapps/isolated_web_apps",
     "//components/webapps/isolated_web_apps/test_support",
   ]
 

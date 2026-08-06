@@ -8,6 +8,7 @@
 #include <string>
 #include <variant>
 
+#include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/values.h"
@@ -22,7 +23,7 @@ inline constexpr base::FilePath::CharType kMainSwbnFileName[] =
 
 // An IWA that is stored as a bundle that is managed and owned by the browser.
 // It is located in the profile directory.
-class IwaStorageOwnedBundle {
+class COMPONENT_EXPORT(ISOLATED_WEB_APPS) IwaStorageOwnedBundle {
  public:
   IwaStorageOwnedBundle(std::string dir_name_ascii, bool dev_mode);
   ~IwaStorageOwnedBundle();
@@ -41,12 +42,13 @@ class IwaStorageOwnedBundle {
   bool dev_mode_;
 };
 
+COMPONENT_EXPORT(ISOLATED_WEB_APPS)
 std::ostream& operator<<(std::ostream& os, IwaStorageOwnedBundle location);
 
 // An IWA that is stored as a bundle that is not owned by the browser. It must
 // never be touched (even when uninstalling) and is always located outside of
 // the profile directory.
-class IwaStorageUnownedBundle {
+class COMPONENT_EXPORT(ISOLATED_WEB_APPS) IwaStorageUnownedBundle {
  public:
   explicit IwaStorageUnownedBundle(base::FilePath path);
   ~IwaStorageUnownedBundle();
@@ -62,12 +64,13 @@ class IwaStorageUnownedBundle {
   base::FilePath path_;
 };
 
+COMPONENT_EXPORT(ISOLATED_WEB_APPS)
 std::ostream& operator<<(std::ostream& os, IwaStorageUnownedBundle location);
 
 // An IWA whose source is a virtual bundle served through an HTTP proxy.
 //
 // The proxy origin must never be opaque.
-class IwaStorageProxy {
+class COMPONENT_EXPORT(ISOLATED_WEB_APPS) IwaStorageProxy {
  public:
   explicit IwaStorageProxy(url::Origin proxy_url);
   ~IwaStorageProxy();
@@ -83,6 +86,7 @@ class IwaStorageProxy {
   url::Origin proxy_url_;
 };
 
+COMPONENT_EXPORT(ISOLATED_WEB_APPS)
 std::ostream& operator<<(std::ostream& os, IwaStorageProxy location);
 
 // Represents how the IWA is stored, and is persisted to the Web App database.
@@ -91,7 +95,7 @@ std::ostream& operator<<(std::ostream& os, IwaStorageProxy location);
 // install, update, and serving from a bundle/proxy should have to deal with
 // this. All other code should use the higher-level abstractions defined in
 // `isolated_web_app_source.h`.
-class IsolatedWebAppStorageLocation {
+class COMPONENT_EXPORT(ISOLATED_WEB_APPS) IsolatedWebAppStorageLocation {
  public:
   using OwnedBundle = IwaStorageOwnedBundle;
   using UnownedBundle = IwaStorageUnownedBundle;
@@ -128,6 +132,7 @@ class IsolatedWebAppStorageLocation {
   Variant variant_;
 };
 
+COMPONENT_EXPORT(ISOLATED_WEB_APPS)
 std::ostream& operator<<(std::ostream& os,
                          IsolatedWebAppStorageLocation location);
 

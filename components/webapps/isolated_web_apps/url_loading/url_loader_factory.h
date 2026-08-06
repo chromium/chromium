@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/component_export.h"
 #include "components/webapps/isolated_web_apps/types/source.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -21,7 +22,7 @@ class BrowserContext;
 namespace web_app {
 
 // A URLLoaderFactory used for the isolated-app:// scheme.
-class IsolatedWebAppURLLoaderFactory {
+class COMPONENT_EXPORT(ISOLATED_WEB_APPS) IsolatedWebAppURLLoaderFactory {
  public:
   // Returns a mojo::PendingRemote to a newly constructed URLLoaderFactory
   // for an Isolated Web App.

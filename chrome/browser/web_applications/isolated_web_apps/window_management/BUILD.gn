@@ -15,7 +15,7 @@ source_set("window_management") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
     "//components/keyed_service/core",
-    "//components/webapps/isolated_web_apps/service",
+    "//components/webapps/isolated_web_apps",
   ]
 }
 

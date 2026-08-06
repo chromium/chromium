@@ -276,9 +276,9 @@ TEST_F(IsolatedWebAppStoragePartitionTest, BackwardsCompatible) {
           &testing_profile, partition_domain, /*partition_name=*/"",
           /*in_memory=*/false);
 
-  // Invoke the new impl from the components/ layer.
   content::StoragePartitionConfig new_config =
-      IwaOrigin(test::GetDefaultEd25519WebBundleId())
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+          test::GetDefaultEd25519WebBundleId())
           .storage_partition_config(&testing_profile);
 
   ASSERT_EQ(old_config, new_config);

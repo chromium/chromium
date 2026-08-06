@@ -7,6 +7,7 @@
 
 #include <string_view>
 
+#include "base/component_export.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/types/expected.h"
@@ -24,7 +25,9 @@ E ToErrorEnum(E e) {
 
 // These functions return the names of the histograms where the
 // wrapped in base::expected<> error are logged.
+COMPONENT_EXPORT(ISOLATED_WEB_APPS)
 std::string ToSuccessHistogramName(std::string_view base_name);
+COMPONENT_EXPORT(ISOLATED_WEB_APPS)
 std::string ToErrorHistogramName(std::string_view base_name);
 
 // UMA-logs an error wrapped in base::expected<SuccessType, ErrorType>. It

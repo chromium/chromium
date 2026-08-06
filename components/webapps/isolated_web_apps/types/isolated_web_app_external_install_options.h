@@ -8,6 +8,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/values.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/isolated_web_apps/types/iwa_version.h"
@@ -18,7 +19,7 @@ namespace web_app {
 
 // This class contains all information to install an Isolated Web App via
 // enterprise policy.
-class IsolatedWebAppExternalInstallOptions final {
+class COMPONENT_EXPORT(ISOLATED_WEB_APPS) IsolatedWebAppExternalInstallOptions final {
  public:
   // Creates an instance of the class from existing `web_bundle_id`,
   // `update_manifest_url` and optional version management settings.
@@ -88,6 +89,7 @@ class IsolatedWebAppExternalInstallOptions final {
 
 // Parses valid entries from the IsolatedWebAppInstallForceList policy in their
 // original order. Invalid entries are omitted and logged.
+COMPONENT_EXPORT(ISOLATED_WEB_APPS)
 std::vector<IsolatedWebAppExternalInstallOptions> ParseIwaInstallForceList(
     const base::ListValue& policy_entries);
 

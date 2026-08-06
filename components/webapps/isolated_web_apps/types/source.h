@@ -10,6 +10,7 @@
 #include <type_traits>
 #include <variant>
 
+#include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/types/expected.h"
 #include "base/values.h"
@@ -60,7 +61,7 @@ class IwaSourceBundleProdModeWithFileOp;
 // always dev mode and do not have a file operation):
 class IwaSourceProxy;
 
-class IwaSourceProxy {
+class COMPONENT_EXPORT(ISOLATED_WEB_APPS) IwaSourceProxy {
  public:
   // `explicit_bundle_id` will be used as bundle id for this Web App,
   // instead of randomly generated one. Must be type proxy.
@@ -91,6 +92,7 @@ class IwaSourceProxy {
   // this IWA would have a randomly generated one.
   std::optional<web_package::SignedWebBundleId> explicit_bundle_id_;
 };
+COMPONENT_EXPORT(ISOLATED_WEB_APPS)
 std::ostream& operator<<(std::ostream& os, const IwaSourceProxy& source);
 
 enum class IwaSourceBundleModeAndFileOp {
@@ -101,6 +103,7 @@ enum class IwaSourceBundleModeAndFileOp {
   kProdModeMove,
   // References are not allowed outside of dev mode.
 };
+COMPONENT_EXPORT(ISOLATED_WEB_APPS)
 std::ostream& operator<<(std::ostream& os,
                          IwaSourceBundleModeAndFileOp bundle_mode_and_file_op);
 
@@ -108,6 +111,7 @@ enum class IwaSourceBundleDevFileOp {
   kCopy,
   kMove,
 };
+COMPONENT_EXPORT(ISOLATED_WEB_APPS)
 std::ostream& operator<<(std::ostream& os, IwaSourceBundleDevFileOp file_op);
 
 enum class IwaSourceBundleProdFileOp {
@@ -115,11 +119,12 @@ enum class IwaSourceBundleProdFileOp {
   kMove,
   // References are not allowed outside of dev mode.
 };
+COMPONENT_EXPORT(ISOLATED_WEB_APPS)
 std::ostream& operator<<(std::ostream& os, IwaSourceBundleProdFileOp file_op);
 
 namespace internal {
 
-class IwaSourceBundleBase {
+class COMPONENT_EXPORT(ISOLATED_WEB_APPS) IwaSourceBundleBase {
  public:
   explicit IwaSourceBundleBase(base::FilePath);
   ~IwaSourceBundleBase();
@@ -134,7 +139,8 @@ class IwaSourceBundleBase {
 
 }  // namespace internal
 
-class IwaSourceBundle : public internal::IwaSourceBundleBase {
+class COMPONENT_EXPORT(ISOLATED_WEB_APPS) IwaSourceBundle
+    : public internal::IwaSourceBundleBase {
  public:
   explicit IwaSourceBundle(base::FilePath);
   ~IwaSourceBundle();
@@ -155,9 +161,11 @@ class IwaSourceBundle : public internal::IwaSourceBundleBase {
 
   base::Value ToDebugValue() const;
 };
+COMPONENT_EXPORT(ISOLATED_WEB_APPS)
 std::ostream& operator<<(std::ostream& os, const IwaSourceBundle& source);
 
-class IwaSourceBundleWithMode : public internal::IwaSourceBundleBase {
+class COMPONENT_EXPORT(ISOLATED_WEB_APPS) IwaSourceBundleWithMode
+    : public internal::IwaSourceBundleBase {
  public:
   friend class IwaSourceBundle;
 
@@ -187,10 +195,12 @@ class IwaSourceBundleWithMode : public internal::IwaSourceBundleBase {
  protected:
   bool dev_mode_;
 };
+COMPONENT_EXPORT(ISOLATED_WEB_APPS)
 std::ostream& operator<<(std::ostream& os,
                          const IwaSourceBundleWithMode& source);
 
-class IwaSourceBundleDevMode : public internal::IwaSourceBundleBase {
+class COMPONENT_EXPORT(ISOLATED_WEB_APPS) IwaSourceBundleDevMode
+    : public internal::IwaSourceBundleBase {
  public:
   friend class IwaSourceBundleWithMode;
 
@@ -204,10 +214,12 @@ class IwaSourceBundleDevMode : public internal::IwaSourceBundleBase {
 
   base::Value ToDebugValue() const;
 };
+COMPONENT_EXPORT(ISOLATED_WEB_APPS)
 std::ostream& operator<<(std::ostream& os,
                          const IwaSourceBundleDevMode& source);
 
-class IwaSourceBundleProdMode : public internal::IwaSourceBundleBase {
+class COMPONENT_EXPORT(ISOLATED_WEB_APPS) IwaSourceBundleProdMode
+    : public internal::IwaSourceBundleBase {
  public:
   friend class IwaSourceBundleWithMode;
 
@@ -221,10 +233,12 @@ class IwaSourceBundleProdMode : public internal::IwaSourceBundleBase {
 
   base::Value ToDebugValue() const;
 };
+COMPONENT_EXPORT(ISOLATED_WEB_APPS)
 std::ostream& operator<<(std::ostream& os,
                          const IwaSourceBundleProdMode& source);
 
-class IwaSourceBundleWithModeAndFileOp : public internal::IwaSourceBundleBase {
+class COMPONENT_EXPORT(ISOLATED_WEB_APPS) IwaSourceBundleWithModeAndFileOp
+    : public internal::IwaSourceBundleBase {
  public:
   friend class IwaSourceBundle;
   friend class IwaSourceBundleWithMode;
@@ -252,10 +266,12 @@ class IwaSourceBundleWithModeAndFileOp : public internal::IwaSourceBundleBase {
  protected:
   ModeAndFileOp mode_and_file_op_;
 };
+COMPONENT_EXPORT(ISOLATED_WEB_APPS)
 std::ostream& operator<<(std::ostream& os,
                          const IwaSourceBundleWithModeAndFileOp& source);
 
-class IwaSourceBundleDevModeWithFileOp : public IwaSourceBundleDevMode {
+class COMPONENT_EXPORT(ISOLATED_WEB_APPS) IwaSourceBundleDevModeWithFileOp
+    : public IwaSourceBundleDevMode {
  public:
   friend class IwaSourceBundleWithModeAndFileOp;
 
@@ -273,10 +289,12 @@ class IwaSourceBundleDevModeWithFileOp : public IwaSourceBundleDevMode {
  protected:
   FileOp file_op_;
 };
+COMPONENT_EXPORT(ISOLATED_WEB_APPS)
 std::ostream& operator<<(std::ostream& os,
                          const IwaSourceBundleDevModeWithFileOp& source);
 
-class IwaSourceBundleProdModeWithFileOp : public IwaSourceBundleProdMode {
+class COMPONENT_EXPORT(ISOLATED_WEB_APPS) IwaSourceBundleProdModeWithFileOp
+    : public IwaSourceBundleProdMode {
  public:
   friend class IwaSourceBundleWithModeAndFileOp;
 
@@ -294,10 +312,11 @@ class IwaSourceBundleProdModeWithFileOp : public IwaSourceBundleProdMode {
  protected:
   FileOp file_op_;
 };
+COMPONENT_EXPORT(ISOLATED_WEB_APPS)
 std::ostream& operator<<(std::ostream& os,
                          const IwaSourceBundleProdModeWithFileOp& source);
 
-class IwaSource {
+class COMPONENT_EXPORT(ISOLATED_WEB_APPS) IwaSource {
  public:
   using Variant = std::variant<IwaSourceBundle, IwaSourceProxy>;
 
@@ -326,9 +345,10 @@ class IwaSource {
  private:
   Variant variant_;
 };
+COMPONENT_EXPORT(ISOLATED_WEB_APPS)
 std::ostream& operator<<(std::ostream& os, const IwaSource& source);
 
-class IwaSourceWithMode {
+class COMPONENT_EXPORT(ISOLATED_WEB_APPS) IwaSourceWithMode {
  public:
   friend class IwaSource;
 
@@ -372,9 +392,10 @@ class IwaSourceWithMode {
  private:
   Variant variant_;
 };
+COMPONENT_EXPORT(ISOLATED_WEB_APPS)
 std::ostream& operator<<(std::ostream& os, const IwaSourceWithMode& source);
 
-class IwaSourceDevMode {
+class COMPONENT_EXPORT(ISOLATED_WEB_APPS) IwaSourceDevMode {
  public:
   friend class IwaSourceWithMode;
 
@@ -413,9 +434,10 @@ class IwaSourceDevMode {
  private:
   Variant variant_;
 };
+COMPONENT_EXPORT(ISOLATED_WEB_APPS)
 std::ostream& operator<<(std::ostream& os, const IwaSourceDevMode& source);
 
-class IwaSourceProdMode {
+class COMPONENT_EXPORT(ISOLATED_WEB_APPS) IwaSourceProdMode {
  public:
   friend class IwaSourceWithMode;
 
@@ -456,9 +478,10 @@ class IwaSourceProdMode {
  private:
   Variant variant_;
 };
+COMPONENT_EXPORT(ISOLATED_WEB_APPS)
 std::ostream& operator<<(std::ostream& os, const IwaSourceProdMode& source);
 
-class IwaSourceWithModeAndFileOp {
+class COMPONENT_EXPORT(ISOLATED_WEB_APPS) IwaSourceWithModeAndFileOp {
  public:
   friend class IwaSource;
   friend class IwaSourceWithMode;
@@ -493,10 +516,11 @@ class IwaSourceWithModeAndFileOp {
  private:
   Variant variant_;
 };
+COMPONENT_EXPORT(ISOLATED_WEB_APPS)
 std::ostream& operator<<(std::ostream& os,
                          const IwaSourceWithModeAndFileOp& source);
 
-class IwaSourceDevModeWithFileOp {
+class COMPONENT_EXPORT(ISOLATED_WEB_APPS) IwaSourceDevModeWithFileOp {
  public:
   friend class IwaSourceDevMode;
   friend class IwaSourceWithModeAndFileOp;
@@ -525,10 +549,11 @@ class IwaSourceDevModeWithFileOp {
  private:
   Variant variant_;
 };
+COMPONENT_EXPORT(ISOLATED_WEB_APPS)
 std::ostream& operator<<(std::ostream& os,
                          const IwaSourceDevModeWithFileOp& source);
 
-class IwaSourceProdModeWithFileOp {
+class COMPONENT_EXPORT(ISOLATED_WEB_APPS) IwaSourceProdModeWithFileOp {
  public:
   friend class IwaSourceProdMode;
   friend class IwaSourceWithModeAndFileOp;
@@ -558,6 +583,7 @@ class IwaSourceProdModeWithFileOp {
  private:
   Variant variant_;
 };
+COMPONENT_EXPORT(ISOLATED_WEB_APPS)
 std::ostream& operator<<(std::ostream& os,
                          const IwaSourceProdModeWithFileOp& source);
 

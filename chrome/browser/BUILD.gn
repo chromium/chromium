@@ -1315,7 +1315,7 @@ source_set("core") {
       "//components/soda",
       "//components/soda:constants",
       "//components/soda:utils",
-      "//components/webapps/isolated_web_apps/key_distribution",
+      "//components/webapps/isolated_web_apps",
     ]
   }
 
@@ -1368,8 +1368,6 @@ source_set("core") {
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/ui/web_applications:impl",
       "//chrome/browser/ui/webui/util",
-      "//components/webapps/isolated_web_apps:scheme",
-      "//components/webapps/isolated_web_apps/url_loading",
     ]
   }
 

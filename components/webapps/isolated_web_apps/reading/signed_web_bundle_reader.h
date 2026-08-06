@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/sequence_checker.h"
@@ -50,7 +51,7 @@ namespace web_app {
 // password, and fragment before looking up the corresponding response inside
 // the Signed Web Bundle. This is the same behavior as with unsigned Web
 // Bundles (see `content::WebBundleReader`).
-class SignedWebBundleReader {
+class COMPONENT_EXPORT(ISOLATED_WEB_APPS) SignedWebBundleReader {
  public:
   using Result = base::expected<std::unique_ptr<SignedWebBundleReader>,
                                 UnusableSwbnFileError>;
@@ -139,7 +140,7 @@ class SignedWebBundleReader {
 // are the enterprise policy, a distributor store, etc.
 // Integrity check of the .swbn file without knowing the expected ID makes no
 // sense as an attacker can resign the tampered bundle with their private key.
-class UnsecureReader {
+class COMPONENT_EXPORT(ISOLATED_WEB_APPS) UnsecureReader {
  public:
   UnsecureReader(const UnsecureReader&) = delete;
   UnsecureReader& operator=(const UnsecureReader&) = delete;
@@ -166,7 +167,8 @@ class UnsecureReader {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-class UnsecureSignedWebBundleIdReader : public UnsecureReader {
+class COMPONENT_EXPORT(ISOLATED_WEB_APPS) UnsecureSignedWebBundleIdReader
+    : public UnsecureReader {
  public:
   using WebBundleIdCallback = base::OnceCallback<void(
       base::expected<web_package::SignedWebBundleId, UnusableSwbnFileError>)>;
