@@ -1285,8 +1285,7 @@ void GaiaScreenHandler::StartClearingCookies(
   cookies_cleared_ = false;
   LOG_ASSERT(Profile::FromWebUI(web_ui()) ==
              Profile::FromBrowserContext(
-                 BrowserContextHelper::Get()
-                     ->DeprecatedGetOrCreateSigninBrowserContext()));
+                 BrowserContextHelper::Get()->GetSigninBrowserContext()));
   SigninProfileHandler::Get()->ClearSigninProfile(
       base::BindOnce(&GaiaScreenHandler::OnCookiesCleared,
                      weak_factory_.GetWeakPtr(), std::move(on_clear_callback)));
