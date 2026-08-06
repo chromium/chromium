@@ -43,26 +43,26 @@ bool PDFiumPermissions::HasPermission(DocumentPermission permission) const {
   if (permissions_handler_revision_ == 2) {
     // Security handler revision 2 rules are simple.
     switch (permission) {
-      case DocumentPermission::kCopy:
-      case DocumentPermission::kCopyAccessible:
-        // Check the same copy bit for all copying permissions.
-        return HasPermissionBits(kPDFPermissionBit05CopyMask);
       case DocumentPermission::kPrintLowQuality:
       case DocumentPermission::kPrintHighQuality:
         // Check the same printing bit for all printing permissions.
         return HasPermissionBits(kPDFPermissionBit03PrintMask);
+      case DocumentPermission::kCopy:
+      case DocumentPermission::kCopyAccessible:
+        // Check the same copy bit for all copying permissions.
+        return HasPermissionBits(kPDFPermissionBit05CopyMask);
     }
     NOTREACHED();
   } else {
     // Security handler revision 3+ have different rules for interpreting the
     // bits in `permission_bits_`.
     switch (permission) {
+      case DocumentPermission::kPrintLowQuality:
+        return HasPermissionBits(kPDFPermissionBit03PrintMask);
       case DocumentPermission::kCopy:
         return HasPermissionBits(kPDFPermissionBit05CopyMask);
       case DocumentPermission::kCopyAccessible:
         return HasPermissionBits(kPDFPermissionBit10CopyAccessibleMask);
-      case DocumentPermission::kPrintLowQuality:
-        return HasPermissionBits(kPDFPermissionBit03PrintMask);
       case DocumentPermission::kPrintHighQuality:
         return HasPermissionBits(kPDFPermissionBit03PrintMask |
                                  kPDFPermissionBit12PrintHighQualityMask);

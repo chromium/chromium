@@ -121,9 +121,9 @@ enum class FontMappingMode {
 };
 
 enum class DocumentPermission {
+  kPrintLowQuality,
   kCopy,
   kCopyAccessible,
-  kPrintLowQuality,
   kPrintHighQuality,
 };
 
