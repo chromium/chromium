@@ -30,6 +30,7 @@
 #include "services/webnn/public/cpp/webnn_device_util.h"
 #include "services/webnn/public/mojom/webnn_service_introspection.mojom-forward.h"
 #include "services/webnn/webnn_switches.h"
+#include "third_party/windows_app_sdk_headers/src/inc/abi/winml/winml/onnxruntime_ep_device_ep_metadata_keys.h"
 
 namespace webnn::ort {
 
@@ -638,6 +639,13 @@ bool EpDeviceSupportsOfflineCompilation(const OrtEpDevice* ep_device) {
             << DeviceTypeToString(device_type);
     return false;
   }
+  // An empty `device_ids` span means all device IDs for this device type are
+  // supported (e.g. the WebGPU EP's vendor-agnostic generic virtual GPU
+  // device), so skip the concrete device ID allowlist check.
+  if (support_it->device_ids.empty()) {
+    return true;
+  }
+
   uint32_t device_id = ort_api->HardwareDevice_DeviceId(hardware_device);
   if (!std::ranges::contains(support_it->device_ids, device_id)) {
     VLOG(2) << "[WebNN] [" << ep_name
@@ -646,6 +654,45 @@ bool EpDeviceSupportsOfflineCompilation(const OrtEpDevice* ep_device) {
     return false;
   }
   return true;
+}
+
+// Returns true if `ep_name` backs a generic virtual device for `device_type`,
+// i.e. it is vendor-agnostic (`vendor_id` == 0) and its
+// `OfflineCompilationSupport` allows all device IDs (empty `device_ids`).
+bool EpSupportsGenericVirtualDevice(std::string_view ep_name,
+                                    mojom::Device device_type) {
+  auto ep_it = kKnownEPs.find(ep_name);
+  if (ep_it == kKnownEPs.end()) {
+    return false;
+  }
+  if (ep_it->second.vendor_id != 0) {
+    return false;
+  }
+  const auto& offline_support = ep_it->second.offline_compilation_support;
+  auto support_it = std::ranges::find(offline_support, device_type,
+                                      &OfflineCompilationSupport::device_type);
+  return support_it != offline_support.end() && support_it->device_ids.empty();
+}
+
+// Returns true if `ep_device` is backed by a virtual (non-hardware) device,
+// as indicated by the ORT `is_virtual` hardware device metadata.
+bool IsVirtualDevice(const OrtEpDevice* ep_device) {
+  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
+
+  const OrtHardwareDevice* hardware_device =
+      ort_api->EpDevice_Device(ep_device);
+  CHECK(hardware_device);
+  const OrtKeyValuePairs* device_metadata =
+      ort_api->HardwareDevice_Metadata(hardware_device);
+  CHECK(device_metadata);
+
+  auto [keys, values] = GetKeyValueSpans(ort_api, device_metadata);
+  for (auto [key, value] : std::views::zip(keys, values)) {
+    if (std::string_view(key) == kOrtHardwareDevice_MetadataKey_IsVirtual) {
+      return std::string_view(value) == "1";
+    }
+  }
+  return false;
 }
 
 }  // namespace
@@ -996,32 +1043,59 @@ const OrtEpDevice* Environment::FindRegisteredEpDevice(
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
   base::span<const OrtEpDevice* const> registered_ep_devices =
       GetRegisteredEpDevices();
-  for (const auto* ep_device : registered_ep_devices) {
-    CHECK(ep_device);
-    std::string_view registered_ep_name = ort_api->EpDevice_EpName(ep_device);
-    if (registered_ep_name != device_info.ep_name) {
-      continue;
-    }
+
+  // Returns true if `ep_device`'s EP name and hardware device type both match
+  // `device_info`.
+  auto matches_ep_and_type = [&](const OrtEpDevice* ep_device) {
+    return ort_api->EpDevice_EpName(ep_device) == device_info.ep_name &&
+           ort_api->HardwareDevice_Type(ort_api->EpDevice_Device(ep_device)) ==
+               WebnnToOrtDeviceType(device_info.device_type);
+  };
+
+  // Returns true if `ep_device` additionally matches the hardware vendor ID and
+  // device ID of `device_info` (an exact hardware match).
+  auto matches_hardware_ids = [&](const OrtEpDevice* ep_device) {
     const OrtHardwareDevice* hardware_device =
         ort_api->EpDevice_Device(ep_device);
-    uint32_t registered_device_id =
-        ort_api->HardwareDevice_DeviceId(hardware_device);
-    if (registered_device_id != device_info.device_id) {
+    return ort_api->HardwareDevice_DeviceId(hardware_device) ==
+               device_info.device_id &&
+           ort_api->HardwareDevice_VendorId(hardware_device) ==
+               device_info.vendor_id;
+  };
+
+  // Some EPs (e.g. the WebGPU EP) back a generic virtual device (vendor-
+  // agnostic, with an empty `OfflineCompilationSupport::device_ids`). In the
+  // sandboxed Compiler process only that virtual device is registered, and its
+  // IDs won't match the real IDs in `device_info`, so prefer it and match on
+  // EP name and device type only.
+  const bool ep_supports_generic_virtual_device =
+      EpSupportsGenericVirtualDevice(device_info.ep_name,
+                                     device_info.device_type);
+
+  const OrtEpDevice* exactly_matched_device = nullptr;
+  for (const auto* ep_device : registered_ep_devices) {
+    CHECK(ep_device);
+    if (!matches_ep_and_type(ep_device)) {
       continue;
     }
-    uint32_t registered_vendor_id =
-        ort_api->HardwareDevice_VendorId(hardware_device);
-    if (registered_vendor_id != device_info.vendor_id) {
-      continue;
-    }
-    const OrtHardwareDeviceType registered_device_type =
-        ort_api->HardwareDevice_Type(hardware_device);
-    if (registered_device_type ==
-        WebnnToOrtDeviceType(device_info.device_type)) {
+    // Prefer the generic virtual device and return as soon as one is found.
+    if (ep_supports_generic_virtual_device && IsVirtualDevice(ep_device)) {
       return ep_device;
     }
+    // Otherwise remember the exact hardware match. This is the only match for
+    // non-generic EPs, and the fallback for generic virtual EPs when no virtual
+    // device is registered: either in the GPU process, whose environment never
+    // enables virtual devices, or in the Compiler process when virtual devices
+    // are disabled for testing via --webnn-ort-disable-virtual-devices (usually
+    // together with --disable-webnn-compiler-sandbox, since reaching the actual
+    // hardware is otherwise blocked by the compiler sandbox). Matching the
+    // hardware IDs also correctly disambiguates multiple real devices of the
+    // same type (e.g. integrated vs discrete GPU).
+    if (matches_hardware_ids(ep_device)) {
+      exactly_matched_device = ep_device;
+    }
   }
-  return nullptr;
+  return exactly_matched_device;
 }
 
 std::vector<mojom::WebNNExecutionProviderDetailsPtr>

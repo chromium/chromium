@@ -21,7 +21,8 @@ namespace webnn {
 struct OfflineCompilationSupport {
   // The supported device type.
   mojom::Device device_type;
-  // Supported device IDs corresponding to the device type.
+  // Supported device IDs corresponding to the device type. An empty span means
+  // all device IDs of `device_type` are supported.
   base::raw_span<const uint32_t> device_ids;
   // Libraries that must be preloaded before sandbox lockdown. This list should
   // only contain workarounds when compiling a graph has issues to load a
@@ -51,6 +52,20 @@ inline constexpr OfflineCompilationSupport kOpenVINOOfflineCompilation[] = {
                 // issue.
                 "openvino_intel_npu_compiler.dll",
             },
+    },
+};
+
+// The WebGPU EP is vendor-agnostic and backs a generic virtual GPU device, so
+// it supports offline compilation for any GPU regardless of device ID. The
+// default empty `device_ids` span expresses that "any device ID" support.
+// Combined with the EP-level `vendor_id` of 0, this represents a
+// vendor-agnostic generic virtual device, which is only registered when the
+// environment is created with "allow_virtual_devices" enabled; device matching
+// in the sandboxed Compiler process then resolves the target to that virtual
+// device.
+inline constexpr OfflineCompilationSupport kWebGpuOfflineCompilation[] = {
+    {
+        .device_type = mojom::Device::kGpu,
     },
 };
 
@@ -287,6 +302,7 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<std::string_view,
                     {.key = "ep.webgpuexecutionprovider.enableInt64",
                      .value = "1"},
                 },
+            .offline_compilation_support = internal::kWebGpuOfflineCompilation,
         },
     },
 });
