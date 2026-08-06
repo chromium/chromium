@@ -338,6 +338,66 @@ public class CustomTabActivityNavigationControllerTest {
     }
 
     @Test
+    public void reparentsWithoutFinishing_WhenOpenInBrowserCalled_AndIsWebappWithChildTab() {
+        // Follow-up for crbug.com/41495930: when the in-app browser of an installed
+        // webapp shows a child tab (target="_blank"), "Open in browser" should move
+        // the actual tab to the browser (preserving its state) and return the webapp
+        // to its own tab, without finishing the activity.
+        ExternalNavigationDelegateImpl.setWillChromeHandleIntentHookForTesting(intent -> true);
+        when(env.intentDataProvider.getActivityType()).thenReturn(ActivityType.WEBAPP);
+        when(mTabController.getTabCount()).thenReturn(2);
+        ArgumentCaptor<Runnable> callbackCaptor = ArgumentCaptor.forClass(Runnable.class);
+        doNothing()
+                .when(mTabController)
+                .detachAndStartReparenting(any(), any(), callbackCaptor.capture());
+
+        mNavigationController.openCurrentUrlInBrowser();
+
+        verify(env.activity, never()).startActivity(any(), any());
+        verify(mTabController).detachAndStartReparenting(any(), any(), any());
+        // The webapp must stay alive, even once reparenting completes.
+        callbackCaptor.getValue().run();
+        verify(mFinishHandler, never()).onFinish(anyInt(), anyBoolean());
+    }
+
+    @Test
+    public void reparentsWithoutFinishing_WhenOpenInBrowserCalled_AndIsWebApkWithChildTab() {
+        ExternalNavigationDelegateImpl.setWillChromeHandleIntentHookForTesting(intent -> true);
+        when(env.intentDataProvider.getActivityType()).thenReturn(ActivityType.WEB_APK);
+        when(mTabController.getTabCount()).thenReturn(2);
+        ArgumentCaptor<Runnable> callbackCaptor = ArgumentCaptor.forClass(Runnable.class);
+        doNothing()
+                .when(mTabController)
+                .detachAndStartReparenting(any(), any(), callbackCaptor.capture());
+
+        mNavigationController.openCurrentUrlInBrowser();
+
+        verify(env.activity, never()).startActivity(any(), any());
+        verify(mTabController).detachAndStartReparenting(any(), any(), any());
+        callbackCaptor.getValue().run();
+        verify(mFinishHandler, never()).onFinish(anyInt(), anyBoolean());
+    }
+
+    @Test
+    public void reparentsWithoutFinishing_WhenOpenInBrowserCalled_AndIsTwaWithChildTab() {
+        ExternalNavigationDelegateImpl.setWillChromeHandleIntentHookForTesting(intent -> true);
+        when(env.intentDataProvider.getActivityType())
+                .thenReturn(ActivityType.TRUSTED_WEB_ACTIVITY);
+        when(mTabController.getTabCount()).thenReturn(2);
+        ArgumentCaptor<Runnable> callbackCaptor = ArgumentCaptor.forClass(Runnable.class);
+        doNothing()
+                .when(mTabController)
+                .detachAndStartReparenting(any(), any(), callbackCaptor.capture());
+
+        mNavigationController.openCurrentUrlInBrowser();
+
+        verify(env.activity, never()).startActivity(any(), any());
+        verify(mTabController).detachAndStartReparenting(any(), any(), any());
+        callbackCaptor.getValue().run();
+        verify(mFinishHandler, never()).onFinish(anyInt(), anyBoolean());
+    }
+
+    @Test
     public void observerDefaultsToOS_WhenOnlyOneTabRemains() {
         CustomTabActivityNavigationController.enablePredictiveBackGestureForTesting();
         when(mTabController.onlyOneTabRemaining()).thenReturn(false);

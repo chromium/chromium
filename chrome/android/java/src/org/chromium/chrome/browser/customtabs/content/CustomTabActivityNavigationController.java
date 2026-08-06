@@ -387,6 +387,11 @@ public class CustomTabActivityNavigationController
                 !mIntentDataProvider.isTrustedWebActivity()
                         && !mIntentDataProvider.isWebappOrWebApkActivity();
 
+        // A TWA/Webapp/WebAPK can still hand the tab over to the browser when it is a
+        // separate child tab (e.g. created by target="_blank"): the tab model then falls
+        // back to the app's own tab, so the activity stays alive without finishing.
+        boolean canReparentKeepingActivity = !canFinishActivity && mTabController.getTabCount() > 1;
+
         willChromeHandleIntent |=
                 ExternalNavigationDelegateImpl.willChromeHandleIntent(intent, true);
 
@@ -409,16 +414,20 @@ public class CustomTabActivityNavigationController
             IntentUtils.addTrustedIntentExtras(intent);
             mActivity.startActivity(intent, startActivityOptions);
             finish(FinishReason.OPEN_IN_BROWSER);
-        } else if (canFinishActivity && willChromeHandleIntent) {
+        } else if ((canFinishActivity || canReparentKeepingActivity) && willChromeHandleIntent) {
             Activity adjacentActivity = MultiWindowUtils.getForegroundWindowActivity(mActivity);
-            if (adjacentActivity != null) {
+            if (canFinishActivity && adjacentActivity != null) {
                 openInAdjacentActivity(tab, adjacentActivity);
-            } else {
+            } else if (canFinishActivity) {
                 // Remove observer to not trigger finishing in onAllTabsClosed() callback - we'll
                 // use reparenting finish callback instead.
                 mTabProvider.removeObserver(mTabObserver);
                 mTabController.detachAndStartReparenting(
                         intent, startActivityOptions, () -> finish(REPARENTING));
+            } else {
+                // Move the in-app browser tab to the browser; the tab model swaps back to
+                // the web app's own tab, keeping the app and its state alive.
+                mTabController.detachAndStartReparenting(intent, startActivityOptions, () -> {});
             }
         } else {
             if (mIntentDataProvider.isInfoPage()) {
