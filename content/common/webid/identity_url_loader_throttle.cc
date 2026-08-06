@@ -8,14 +8,17 @@
 #include <string_view>
 
 #include "base/auto_reset.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_split.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "components/network_session_configurator/common/network_switches.h"
 #include "content/common/features.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "net/cert/cert_status_flags.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -136,6 +139,12 @@ void IdentityUrlLoaderThrottle::HandleResponseOrRedirect(
     bool* defer) {
   url::Origin idp_origin = url::Origin::Create(response_url);
   if (!network::IsOriginPotentiallyTrustworthy(idp_origin)) {
+    return;
+  }
+
+  if (net::IsCertStatusError(response_head.cert_status) &&
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kIgnoreCertificateErrors)) {
     return;
   }
 

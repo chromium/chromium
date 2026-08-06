@@ -224,6 +224,7 @@ source_set("common") {
     "//build:branding_buildflags",
     "//components/discardable_memory/common",
     "//components/input",
+    "//components/network_session_configurator/common",
     "//components/services/filesystem/public/mojom",
     "//components/tracing:tracing_config",
     "//content:content_resources",
