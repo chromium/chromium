@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+const SCRIPT_URL = '_test_resources/api_test/webnavigation/framework.js';
+const loadScript = chrome.test.loadScript(SCRIPT_URL);
+
 // There is no DOMContentLoaded event on restoring from the cache.
 function cacheRestoreNavigationOrder(prefix) {
   return [
@@ -11,7 +14,7 @@ function cacheRestoreNavigationOrder(prefix) {
   ];
 }
 
-onload = async function() {
+loadScript.then(async function() {
   const tab = await promise(chrome.tabs.create, {url: 'about:blank'});
   const config = await promise(chrome.test.getConfig);
   const port = config.testServer.port;
@@ -208,4 +211,4 @@ onload = async function() {
       chrome.tabs.update(tab.id, {url: urlA});
     },
   ]);
-};
+});

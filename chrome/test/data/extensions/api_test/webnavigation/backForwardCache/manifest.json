@@ -4,7 +4,7 @@
   "manifest_version": 3,
   "description": "Tests the webNavigation API events with the back forward cache.",
   "background": {
-    "service_worker": "test_forwardBack.html"
+    "service_worker": "test_forwardBack.js"
   },
   "permissions": ["webNavigation", "tabs"]
 }

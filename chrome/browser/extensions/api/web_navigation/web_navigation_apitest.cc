@@ -307,12 +307,15 @@ class WebNavigationApiTest : public ExtensionApiTest {
   WebNavigationApiTest& operator=(const WebNavigationApiTest&) = delete;
 
  protected:
+  void SetUpOnMainThread() override {
+    ExtensionApiTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+  }
+
   void SetUpInProcessBrowserTestFixture() override {
     ExtensionApiTest::SetUpInProcessBrowserTestFixture();
 
     FrameNavigationState::set_allow_extension_scheme(true);
-
-    host_resolver()->AddRule("*", "127.0.0.1");
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -335,7 +338,7 @@ class WebNavigationApiBackForwardCacheTest : public WebNavigationApiTest {
  public:
   WebNavigationApiBackForwardCacheTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        content::GetBasicBackForwardCacheFeatureForTesting(
+        content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(
             {{features::kBackForwardCache, {}}}),
         content::GetDefaultDisabledBackForwardCacheFeaturesForTesting());
   }
@@ -573,9 +576,7 @@ IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, ForwardBack) {
   ASSERT_TRUE(RunTest("webnavigation/forwardBack")) << message_;
 }
 
-// TODO(crbug.com/40221198): Flaky on several platforms.
-IN_PROC_BROWSER_TEST_F(WebNavigationApiBackForwardCacheTest,
-                       DISABLED_ForwardBack) {
+IN_PROC_BROWSER_TEST_F(WebNavigationApiBackForwardCacheTest, ForwardBack) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webnavigation/backForwardCache")) << message_;
 }
