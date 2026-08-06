@@ -96,6 +96,8 @@ struct EnterpriseProxyService::PendingAuthRequest {
   ProvisioningDomainProxyConfig::ProxyEndpoint proxy_endpoint;
 };
 
+EnterpriseProxyService::EnterpriseProxyService() = default;
+
 EnterpriseProxyService::EnterpriseProxyService(
     PrefService* pref_service,
     EnterpriseNetworkAuthService* auth_service,
@@ -161,6 +163,7 @@ EnterpriseProxyService::FindMatchingProxyEndpoint(
 net::ProxyConfig::DynamicRoutingConfig
 EnterpriseProxyService::GetDynamicRoutingConfig() const {
   net::ProxyConfig::DynamicRoutingConfig merged_config;
+  merged_config.is_update_in_progress = IsRefreshInProgress();
   for (const auto& domain_manager : provisioning_domain_managers_) {
     net::ProxyConfig::DynamicRoutingConfig domain_config =
         domain_manager->fetched_config().ToDynamicRoutingConfig();
@@ -256,6 +259,7 @@ void EnterpriseProxyService::Shutdown() {
   refreshing_managers_.clear();
   provisioning_domain_observations_.RemoveAllObservations();
   provisioning_domain_managers_.clear();
+  observers_.Notify(&Observer::OnEnterpriseProxyServiceDestroyed);
   observers_.Clear();
 }
 
@@ -282,15 +286,8 @@ void EnterpriseProxyService::OnProvisioningDomainStateChanged(
 
   const size_t new_count = refreshing_managers_.size();
 
-  if (old_count == 0 && new_count > 0) {
-    observers_.Notify(&Observer::OnDynamicProxyConfigsUpdateInProgress);
-    return;
-  }
-
-  if (old_count > 0 && new_count == 0) {
-    const std::vector<ProvisioningDomainProxyConfig> configs =
-        GetProvisioningDomainConfigs();
-    observers_.Notify(&Observer::OnAllDynamicProxyConfigsResolved, configs);
+  if ((old_count == 0 || new_count == 0) && old_count != new_count) {
+    observers_.Notify(&Observer::OnDynamicProxyConfigsStatusChanged);
   }
 }
 

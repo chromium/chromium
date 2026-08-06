@@ -16,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/buildflag.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_service.h"
@@ -35,8 +36,17 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(ENTERPRISE_PROXY)
+#include "components/enterprise/net/core/enterprise_proxy_service.h"
+#include "components/enterprise/net/core/mock_enterprise_proxy_service.h"
+#endif  // BUILDFLAG(ENTERPRISE_PROXY)
+
 using testing::_;
 using testing::Mock;
+
+#if BUILDFLAG(ENTERPRISE_PROXY)
+using enterprise_net::MockEnterpriseProxyService;
+#endif  // BUILDFLAG(ENTERPRISE_PROXY)
 
 namespace {
 
@@ -108,7 +118,12 @@ class PrefProxyConfigTrackerImplTest : public testing::Test {
         .WillByDefault(testing::ReturnRef(empty_policy_map_));
     proxy_config_tracker_ = std::make_unique<PrefProxyConfigTrackerImpl>(
         pref_service_.get(), base::SingleThreadTaskRunner::GetCurrentDefault(),
-        policy_service_);
+        policy_service_
+#if BUILDFLAG(ENTERPRISE_PROXY)
+        ,
+        enterprise_proxy_service_
+#endif  // BUILDFLAG(ENTERPRISE_PROXY)
+    );
     proxy_config_service_ =
         proxy_config_tracker_->CreateTrackingProxyConfigService(
             std::unique_ptr<net::ProxyConfigService>(delegate_service_));
@@ -127,6 +142,21 @@ class PrefProxyConfigTrackerImplTest : public testing::Test {
   std::unique_ptr<net::ProxyConfigService> proxy_config_service_;
   net::ProxyConfigWithAnnotation fixed_config_;
   std::unique_ptr<PrefProxyConfigTrackerImpl> proxy_config_tracker_;
+#if BUILDFLAG(ENTERPRISE_PROXY)
+  testing::NiceMock<MockEnterpriseProxyService> mock_enterprise_proxy_service_;
+  raw_ptr<enterprise_net::EnterpriseProxyService> enterprise_proxy_service_ =
+      &mock_enterprise_proxy_service_;
+  void SetActiveDynamicRoutingConfig(
+      const net::ProxyConfig::DynamicRoutingConfig& config) {
+    EXPECT_CALL(mock_enterprise_proxy_service_, GetDynamicRoutingConfig())
+        .WillRepeatedly(testing::Return(config));
+    mock_enterprise_proxy_service_.NotifyObservers();
+  }
+#else
+  void SetActiveDynamicRoutingConfig(
+      const net::ProxyConfig::DynamicRoutingConfig& config) {}
+#endif  // BUILDFLAG(ENTERPRISE_PROXY)
+
   policy::PolicyMap empty_policy_map_;
   testing::NiceMock<policy::MockPolicyService> mock_policy_service_;
   raw_ptr<policy::PolicyService> policy_service_ = &mock_policy_service_;
@@ -1210,5 +1240,89 @@ TEST_F(PrefProxyConfigOverrideRulesTest, InvalidDictsInList) {
   EXPECT_EQ(rule.dns_conditions.at(0).result,
             net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kResolved);
 }
+
+#if BUILDFLAG(ENTERPRISE_PROXY)
+TEST_F(PrefProxyConfigTrackerImplTest, DynamicRoutingConfigStatusChanged) {
+  InitConfigService(net::ProxyConfigService::CONFIG_UNSET);
+
+  MockObserver observer;
+  proxy_config_service_->AddObserver(&observer);
+
+  auto update_and_capture =
+      [&](const net::ProxyConfig::DynamicRoutingConfig& config) {
+        base::RunLoop run_loop;
+        net::ProxyConfigWithAnnotation captured_config;
+        EXPECT_CALL(observer,
+                    OnProxyConfigChanged(testing::_,
+                                         net::ProxyConfigService::CONFIG_VALID))
+            .WillOnce(
+                [&](const net::ProxyConfigWithAnnotation& cfg,
+                    net::ProxyConfigService::ConfigAvailability availability) {
+                  captured_config = cfg;
+                  run_loop.Quit();
+                });
+
+        SetActiveDynamicRoutingConfig(config);
+        run_loop.Run();
+        return captured_config;
+      };
+
+  // Dynamic routing update with in_progress = true.
+  net::ProxyConfig::DynamicRoutingConfig in_progress_config;
+  in_progress_config.is_update_in_progress = true;
+  net::ProxyConfigWithAnnotation captured_in_progress =
+      update_and_capture(in_progress_config);
+  EXPECT_TRUE(captured_in_progress.value()
+                  .dynamic_routing_config()
+                  .is_update_in_progress);
+  EXPECT_TRUE(captured_in_progress.value()
+                  .dynamic_routing_config()
+                  .routing_rules.empty());
+
+  // Another dynamic routing update but with in_progress = false.
+  net::ProxyConfig::DynamicRoutingConfig resolved_config;
+  resolved_config.is_update_in_progress = false;
+  net::ProxyConfig::DynamicRoutingRule rule;
+  rule.proxy_list.AddProxyChain(net::ProxyUriToProxyChain(
+      "https://proxy.example.com:443", net::ProxyServer::SCHEME_HTTPS));
+  resolved_config.routing_rules.push_back(rule);
+  net::ProxyConfigWithAnnotation captured_resolved =
+      update_and_capture(resolved_config);
+  EXPECT_FALSE(
+      captured_resolved.value().dynamic_routing_config().is_update_in_progress);
+  EXPECT_EQ(
+      1u,
+      captured_resolved.value().dynamic_routing_config().routing_rules.size());
+
+  // Policy pref change combined with active dynamic routing rules.
+  {
+    base::RunLoop run_loop;
+    net::ProxyConfigWithAnnotation captured_config;
+    EXPECT_CALL(
+        observer,
+        OnProxyConfigChanged(testing::_, net::ProxyConfigService::CONFIG_VALID))
+        .WillOnce(
+            [&](const net::ProxyConfigWithAnnotation& config,
+                net::ProxyConfigService::ConfigAvailability availability) {
+              captured_config = config;
+              run_loop.Quit();
+            });
+
+    pref_service_->SetManagedPref(
+        proxy_config::prefs::kProxy,
+        std::make_unique<base::Value>(ProxyConfigDictionary::CreateFixedServers(
+            "http://policy-proxy.example.com:8080", std::string())));
+    run_loop.Run();
+
+    EXPECT_EQ(net::ProxyConfig::ProxyRules::Type::PROXY_LIST,
+              captured_config.value().proxy_rules().type);
+    EXPECT_EQ(
+        1u,
+        captured_config.value().dynamic_routing_config().routing_rules.size());
+  }
+
+  proxy_config_service_->RemoveObserver(&observer);
+}
+#endif
 
 }  // namespace

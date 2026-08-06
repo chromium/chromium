@@ -63,6 +63,11 @@ enum ConfigState {
   // CONFIG_POLICY). This state indicates that the override layer is active.
   CONFIG_POLICY_OVERRIDE,
   CONFIG_EXTENSION_OVERRIDE,
+  // Configuration includes dynamic routing rules from the
+  // ProxyProvisioningDomains policy preference. These rules are evaluated
+  // first for matching URLs. If no dynamic routing rule matches, proxy
+  // resolution falls back to DIRECT or the underlying OS system proxy.
+  CONFIG_POLICY_DYNAMIC_ROUTING,
 };
 
 // Constants for string values used to specify the proxy mode through externally

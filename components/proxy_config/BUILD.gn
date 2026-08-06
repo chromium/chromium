@@ -22,6 +22,7 @@ component("proxy_config") {
 
   deps = [
     "//base",
+    "//components/enterprise/net/core",
     "//components/policy:generated",
     "//components/policy/core/browser",
     "//components/policy/core/common",
@@ -68,6 +69,9 @@ source_set("unit_tests") {
     ":proxy_config",
     "//base",
     "//base/test:test_support",
+    "//components/enterprise/buildflags",
+    "//components/enterprise/net/core",
+    "//components/enterprise/net/core:test_support",
     "//components/policy:generated",
     "//components/policy/core/browser",
     "//components/policy/core/browser:test_support",

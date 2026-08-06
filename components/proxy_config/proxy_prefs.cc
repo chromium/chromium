@@ -73,6 +73,8 @@ std::string ConfigStateToDebugString(ConfigState state) {
       return "config_policy_override";
     case CONFIG_EXTENSION_OVERRIDE:
       return "config_extension_override";
+    case CONFIG_POLICY_DYNAMIC_ROUTING:
+      return "config_policy_dynamic_routing";
   }
   NOTREACHED();
 }

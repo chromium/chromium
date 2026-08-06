@@ -231,6 +231,9 @@ class NET_EXPORT ProxyConfig {
 
     bool operator==(const DynamicRoutingRule& other) const;
 
+    // Creates a base::DictValue dump of this dynamic routing rule.
+    base::DictValue ToDict() const;
+
     bool MatchesDestination(const GURL& url) const;
 
     ProxyHostMatchingRules destination_matchers;
@@ -249,6 +252,7 @@ class NET_EXPORT ProxyConfig {
 
     bool operator==(const DynamicRoutingConfig& other) const = default;
 
+    bool is_update_in_progress = false;
     std::vector<DynamicRoutingRule> routing_rules;
   };
 
@@ -261,6 +265,9 @@ class NET_EXPORT ProxyConfig {
 
   // Returns true if the given config is equivalent to this config.
   bool Equals(const ProxyConfig& other) const;
+
+  // Returns true if the given config is equivalent ignoring dynamic routing.
+  bool EqualsIgnoringDynamicRouting(const ProxyConfig& other) const;
 
   // Returns true if this config contains any "automatic" settings. See the
   // class description for what that means.

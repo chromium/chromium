@@ -125,6 +125,11 @@ class EnterpriseNetworkAuthService : public KeyedService {
   // callbacks with TokenFetchError::kCanceled.
   void ClearPendingTokenFetches();
 
+ protected:
+  // Protected constructor for test doubles (e.g.
+  // MockEnterpriseNetworkAuthService).
+  EnterpriseNetworkAuthService();
+
  private:
   void StartAccessTokenFetch(signin::OAuthConsumerId consumer_id,
                              AccessTokenCallback callback);

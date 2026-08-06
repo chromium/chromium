@@ -301,6 +301,30 @@ bool SetProxyOverrideRules(const PrefService* pref_service,
   return true;
 }
 
+// Returns true if the proxy config contains active dynamic routing rules or
+// an in-progress update.
+bool HasDynamicProxyRules(const net::ProxyConfig& config) {
+  return !config.dynamic_routing_config().routing_rules.empty() ||
+         config.dynamic_routing_config().is_update_in_progress;
+}
+
+// Returns true if the proxy config contains explicit proxy rules (Proxy
+// Override Rules or PvD dynamic routing rules) that should overlay baseline
+// configs.
+bool HasExplicitProxyRules(const net::ProxyConfig& config) {
+  return !config.proxy_override_rules().empty() || HasDynamicProxyRules(config);
+}
+
+// Returns true if `active_config` has dynamic routing rules that need to be
+// attached to `config`.
+bool ShouldAttachDynamicRoutingRules(
+    const net::ProxyConfig& config,
+    const net::ProxyConfig::DynamicRoutingConfig& active_config) {
+  return !HasDynamicProxyRules(config) &&
+         (!active_config.routing_rules.empty() ||
+          active_config.is_update_in_progress);
+}
+
 }  // namespace
 
 BASE_FEATURE(kEnableProxyOverrideRules, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -452,6 +476,24 @@ PrefProxyConfigTrackerImpl::PrefProxyConfigTrackerImpl(
   }
 }
 
+#if BUILDFLAG(ENTERPRISE_PROXY)
+PrefProxyConfigTrackerImpl::PrefProxyConfigTrackerImpl(
+    PrefService* pref_service,
+    scoped_refptr<base::SingleThreadTaskRunner>
+        proxy_config_service_task_runner,
+    policy::PolicyService* policy_service,
+    enterprise_net::EnterpriseProxyService* enterprise_proxy_service)
+    : PrefProxyConfigTrackerImpl(pref_service,
+                                 proxy_config_service_task_runner,
+                                 policy_service) {
+  if (enterprise_proxy_service) {
+    enterprise_proxy_observation_.Observe(enterprise_proxy_service);
+    active_dynamic_routing_config_ =
+        enterprise_proxy_observation_.GetSource()->GetDynamicRoutingConfig();
+  }
+}
+#endif  // BUILDFLAG(ENTERPRISE_PROXY)
+
 PrefProxyConfigTrackerImpl::~PrefProxyConfigTrackerImpl() {
   DCHECK(pref_service_ == nullptr);
 }
@@ -475,12 +517,16 @@ void PrefProxyConfigTrackerImpl::DetachFromPrefService() {
   proxy_prefs_.RemoveAll();
   pref_service_ = nullptr;
   proxy_config_service_impl_ = nullptr;
+#if BUILDFLAG(ENTERPRISE_PROXY)
+  enterprise_proxy_observation_.Reset();
+#endif  // BUILDFLAG(ENTERPRISE_PROXY)
 }
 
 // static
 bool PrefProxyConfigTrackerImpl::PrefPrecedes(
     ProxyPrefs::ConfigState config_state) {
   return config_state == ProxyPrefs::CONFIG_POLICY ||
+         config_state == ProxyPrefs::CONFIG_POLICY_DYNAMIC_ROUTING ||
          config_state == ProxyPrefs::CONFIG_EXTENSION ||
          config_state == ProxyPrefs::CONFIG_OTHER_PRECEDE;
 }
@@ -513,12 +559,17 @@ PrefProxyConfigTrackerImpl::GetEffectiveProxyConfig(
   }
 
   *effective_config_state = ProxyPrefs::CONFIG_SYSTEM;
-  if (pref_config.value().proxy_override_rules().empty()) {
+  if (!HasExplicitProxyRules(pref_config.value())) {
     *effective_config = system_config;
   } else {
+    // When system proxy settings are active, overlay explicit rules (Proxy
+    // Override Rules and PvD dynamic routing rules) onto the baseline system
+    // configuration.
     net::ProxyConfig new_config = system_config.value();
     new_config.set_proxy_override_rules(
         pref_config.value().proxy_override_rules());
+    new_config.set_dynamic_routing_config(
+        pref_config.value().dynamic_routing_config());
     *effective_config = net::ProxyConfigWithAnnotation(
         new_config, system_config.traffic_annotation());
   }
@@ -606,16 +657,37 @@ ProxyPrefs::ConfigState PrefProxyConfigTrackerImpl::GetProxyConfig(
 void PrefProxyConfigTrackerImpl::OnProxyConfigChanged(
     ProxyPrefs::ConfigState config_state,
     const net::ProxyConfigWithAnnotation& config) {
+  net::ProxyConfigWithAnnotation config_with_dynamic_routes = config;
+
+  if (ShouldAttachDynamicRoutingRules(config.value(),
+                                      active_dynamic_routing_config_)) {
+    // When no other proxy rules (e.g. CONFIG_UNSET), create proxy config with
+    // DIRECT and CONFIG_POLICY_DYNAMIC_ROUTING state. This ensures transmission
+    // to the Network Process and fallback to DIRECT connection (or system OS
+    // proxy if configured), in cases such as  the clearing of proxy
+    // preferences.
+    if (config_state == ProxyPrefs::CONFIG_UNSET) {
+      config_with_dynamic_routes =
+          net::ProxyConfigWithAnnotation::CreateDirect();
+      config_state = ProxyPrefs::CONFIG_POLICY_DYNAMIC_ROUTING;
+    }
+
+    net::ProxyConfig pc = config_with_dynamic_routes.value();
+    pc.set_dynamic_routing_config(active_dynamic_routing_config_);
+    config_with_dynamic_routes = net::ProxyConfigWithAnnotation(
+        pc, config_with_dynamic_routes.traffic_annotation());
+  }
+
   // If the configuration hasn't changed, do nothing.
   if (active_config_state_ == config_state &&
       (active_config_state_ == ProxyPrefs::CONFIG_UNSET ||
-       active_config_.value().Equals(config.value()))) {
+       active_config_.value().Equals(config_with_dynamic_routes.value()))) {
     return;
   }
 
   active_config_state_ = config_state;
   if (active_config_state_ != ProxyPrefs::CONFIG_UNSET) {
-    active_config_ = config;
+    active_config_ = config_with_dynamic_routes;
   }
 
   if (!proxy_config_service_impl_) {
@@ -629,15 +701,33 @@ void PrefProxyConfigTrackerImpl::OnProxyConfigChanged(
   // ProxyConfigServiceImpl into the tracker, and make the class talk over the
   // Mojo pipe directly, at that point.
   if (!proxy_config_service_task_runner_) {
-    proxy_config_service_impl_->UpdateProxyConfig(config_state, config);
+    proxy_config_service_impl_->UpdateProxyConfig(config_state,
+                                                  config_with_dynamic_routes);
     return;
   }
 
   proxy_config_service_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ProxyConfigServiceImpl::UpdateProxyConfig,
-                     proxy_config_service_impl_, config_state, config));
+      FROM_HERE, base::BindOnce(&ProxyConfigServiceImpl::UpdateProxyConfig,
+                                proxy_config_service_impl_, config_state,
+                                config_with_dynamic_routes));
 }
+
+#if BUILDFLAG(ENTERPRISE_PROXY)
+void PrefProxyConfigTrackerImpl::OnDynamicProxyConfigsStatusChanged() {
+  if (!enterprise_proxy_observation_.GetSource()) {
+    return;
+  }
+  active_dynamic_routing_config_ =
+      enterprise_proxy_observation_.GetSource()->GetDynamicRoutingConfig();
+  net::ProxyConfigWithAnnotation config;
+  ProxyPrefs::ConfigState config_state = GetProxyConfig(&config);
+  OnProxyConfigChanged(config_state, config);
+}
+
+void PrefProxyConfigTrackerImpl::OnEnterpriseProxyServiceDestroyed() {
+  enterprise_proxy_observation_.Reset();
+}
+#endif  // BUILDFLAG(ENTERPRISE_PROXY)
 
 bool PrefProxyConfigTrackerImpl::PrefConfigToNetConfig(
     const ProxyConfigDictionary& proxy_dict,

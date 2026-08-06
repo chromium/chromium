@@ -48,13 +48,14 @@ class EnterpriseProxyService : public KeyedService,
  public:
   class Observer : public base::CheckedObserver {
    public:
-    // Called when dynamic proxy route configurations have been resolved.
-    virtual void OnAllDynamicProxyConfigsResolved(
-        const std::vector<ProvisioningDomainProxyConfig>& configs) = 0;
+    // Called when dynamic proxy route status changes (e.g. refresh starts or
+    // completes, or dynamic routing rules update).
+    virtual void OnDynamicProxyConfigsStatusChanged() = 0;
 
-    // Called when dynamic proxy route updates start and no refresh was
-    // previously in progress.
-    virtual void OnDynamicProxyConfigsUpdateInProgress() = 0;
+    // Called during Shutdown(), used by non-keyed service classes (e.g.
+    // PrefProxyConfigTrackerImpl) to maintain lifetime and reset their
+    // ScopedObservation before the service is destroyed.
+    virtual void OnEnterpriseProxyServiceDestroyed() {}
   };
 
   using GetURLLoaderFactoryCallback =
@@ -71,8 +72,8 @@ class EnterpriseProxyService : public KeyedService,
 
   ~EnterpriseProxyService() override;
 
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
+  virtual void AddObserver(Observer* observer);
+  virtual void RemoveObserver(Observer* observer);
 
   // Returns the list of current PvD configs with their states.
   std::vector<ProvisioningDomainProxyConfig> GetProvisioningDomainConfigs()
@@ -91,8 +92,14 @@ class EnterpriseProxyService : public KeyedService,
   // Returns the `net::ProxyConfig::DynamicRoutingConfig` concatenated
   // from all valid active Provisioning Domain configs, with ordering strictly
   // preserved and all browser-side PvD metadata removed.
-  net::ProxyConfig::DynamicRoutingConfig GetDynamicRoutingConfig() const;
+  virtual net::ProxyConfig::DynamicRoutingConfig GetDynamicRoutingConfig()
+      const;
 
+ protected:
+  // Protected constructor for test doubles (e.g. MockEnterpriseProxyService).
+  EnterpriseProxyService();
+
+ public:
   // LINT.IfChange(ProxyAuthChallengeResult)
   enum class ProxyAuthChallengeResult {
     // No applicable rule for the destination URL & proxy pair

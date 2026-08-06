@@ -47,11 +47,7 @@ class MockObserver : public EnterpriseProxyService::Observer {
   MockObserver() = default;
   ~MockObserver() override = default;
 
-  MOCK_METHOD(void,
-              OnAllDynamicProxyConfigsResolved,
-              (const std::vector<ProvisioningDomainProxyConfig>& configs),
-              (override));
-  MOCK_METHOD(void, OnDynamicProxyConfigsUpdateInProgress, (), (override));
+  MOCK_METHOD(void, OnDynamicProxyConfigsStatusChanged, (), (override));
 };
 
 constexpr char kTestDomain1[] = "domain1.example.com";
@@ -233,26 +229,24 @@ TEST_F(EnterpriseProxyServiceTest, MultiDomainServiceLifecycle) {
   testing::InSequence seq;
 
   // Phase 1 Expectations: Initial 3 domains policy set.
-  EXPECT_CALL(observer, OnDynamicProxyConfigsUpdateInProgress()).Times(1);
-  EXPECT_CALL(observer, OnAllDynamicProxyConfigsResolved(testing::_))
-      .WillOnce([&](const std::vector<ProvisioningDomainProxyConfig>& configs) {
-        ASSERT_EQ(3u, configs.size());
-        EXPECT_EQ(kTestDomain1, configs[0].pvd_id);
-        EXPECT_EQ(ProvisioningDomainProxyConfig::State::kValid,
-                  configs[0].state);
-
-        EXPECT_EQ(kTestDomain2, configs[1].pvd_id);
-        EXPECT_EQ(ProvisioningDomainProxyConfig::State::kValid,
-                  configs[1].state);
-
-        EXPECT_EQ(kTestFailDomain, configs[2].pvd_id);
-        EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedTransient,
-                  configs[2].state);
+  EXPECT_CALL(observer, OnDynamicProxyConfigsStatusChanged())
+      .WillOnce([&]() {
+        EXPECT_TRUE(service_->GetDynamicRoutingConfig().is_update_in_progress);
+      })
+      .WillOnce([&]() {
+        EXPECT_FALSE(service_->GetDynamicRoutingConfig().is_update_in_progress);
+        EXPECT_EQ(2u, service_->GetDynamicRoutingConfig().routing_rules.size());
       });
 
   // Phase 2 Expectations: Policy update reducing to 1 domain.
-  EXPECT_CALL(observer, OnDynamicProxyConfigsUpdateInProgress()).Times(1);
-  EXPECT_CALL(observer, OnAllDynamicProxyConfigsResolved(testing::_)).Times(1);
+  EXPECT_CALL(observer, OnDynamicProxyConfigsStatusChanged())
+      .WillOnce([&]() {
+        EXPECT_TRUE(service_->GetDynamicRoutingConfig().is_update_in_progress);
+      })
+      .WillOnce([&]() {
+        EXPECT_FALSE(service_->GetDynamicRoutingConfig().is_update_in_progress);
+        EXPECT_EQ(1u, service_->GetDynamicRoutingConfig().routing_rules.size());
+      });
 
   // Set 3 policy domains and run pending tasks to execute initial fetch calls.
   SetPolicyDomains({kTestDomain1, kTestDomain2, kTestFailDomain});
@@ -365,9 +359,24 @@ TEST_F(EnterpriseProxyServiceTest, SingleDomainLifecycleAndStateTransitions) {
 
   testing::InSequence seq;
 
+  auto expect_refresh_cycle = [&](size_t expected_rules) {
+    EXPECT_CALL(observer, OnDynamicProxyConfigsStatusChanged())
+        .WillOnce([&]() {
+          EXPECT_TRUE(service_->IsRefreshInProgress());
+          EXPECT_TRUE(
+              service_->GetDynamicRoutingConfig().is_update_in_progress);
+        })
+        .WillOnce([&, expected_rules]() {
+          EXPECT_FALSE(service_->IsRefreshInProgress());
+          EXPECT_FALSE(
+              service_->GetDynamicRoutingConfig().is_update_in_progress);
+          EXPECT_EQ(expected_rules,
+                    service_->GetDynamicRoutingConfig().routing_rules.size());
+        });
+  };
+
   // A successful fetch following the initial policy value set.
-  EXPECT_CALL(observer, OnDynamicProxyConfigsUpdateInProgress()).Times(1);
-  EXPECT_CALL(observer, OnAllDynamicProxyConfigsResolved(testing::_)).Times(1);
+  expect_refresh_cycle(1u);
 
   SetPolicyDomains({kTestDomain1});
   ASSERT_TRUE(
@@ -389,8 +398,7 @@ TEST_F(EnterpriseProxyServiceTest, SingleDomainLifecycleAndStateTransitions) {
 
   // Two force refreshes (to test that inflight-fetches are cancelled), which
   // results in a transient failure.
-  EXPECT_CALL(observer, OnDynamicProxyConfigsUpdateInProgress()).Times(1);
-  EXPECT_CALL(observer, OnAllDynamicProxyConfigsResolved(testing::_)).Times(1);
+  expect_refresh_cycle(1u);
 
   service_->ForceRefreshAllConfigs();
   ASSERT_TRUE(
@@ -432,10 +440,9 @@ TEST_F(EnterpriseProxyServiceTest, SingleDomainLifecycleAndStateTransitions) {
       service_->GetDynamicRoutingConfig();
   EXPECT_EQ(1u, merged_config.routing_rules.size());
 
-  // A successful force-fetch following the transient failure, which is
+  // A successful force-fetch following the initial transient failure, which is
   // successful and recovered configs.
-  EXPECT_CALL(observer, OnDynamicProxyConfigsUpdateInProgress()).Times(1);
-  EXPECT_CALL(observer, OnAllDynamicProxyConfigsResolved(testing::_)).Times(1);
+  expect_refresh_cycle(1u);
   service_->ForceRefreshAllConfigs();
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return service_->IsRefreshInProgress(); }));

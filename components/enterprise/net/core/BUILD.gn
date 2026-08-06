@@ -68,6 +68,7 @@ source_set("unit_tests") {
     ]
     deps += [
       ":core",
+      ":test_support",
       "//base",
       "//base/test:test_support",
       "//components/enterprise/browser/identifiers",
@@ -80,5 +81,28 @@ source_set("unit_tests") {
       "//testing/gmock",
       "//testing/gtest",
     ]
+  }
+}
+
+static_library("test_support") {
+  testonly = true
+  public = []
+  sources = []
+  public_deps = [
+    ":core",
+    "//base",
+    "//testing/gmock",
+  ]
+
+  if (enterprise_proxy) {
+    public += [
+      "mock_enterprise_network_auth_service.h",
+      "mock_enterprise_proxy_service.h",
+    ]
+    sources += [
+      "mock_enterprise_network_auth_service.cc",
+      "mock_enterprise_proxy_service.cc",
+    ]
+    public_deps += [ "//net" ]
   }
 }

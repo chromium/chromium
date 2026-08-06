@@ -99,6 +99,8 @@ EnterpriseNetworkAuthService::PendingTokenFetch::operator=(
     PendingTokenFetch&&) noexcept = default;
 EnterpriseNetworkAuthService::PendingTokenFetch::~PendingTokenFetch() = default;
 
+EnterpriseNetworkAuthService::EnterpriseNetworkAuthService() = default;
+
 EnterpriseNetworkAuthService::EnterpriseNetworkAuthService(
     signin::IdentityManager* identity_manager,
     PrefService* pref_service,

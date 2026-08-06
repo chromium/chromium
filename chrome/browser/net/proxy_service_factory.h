@@ -19,6 +19,10 @@ namespace policy {
 class PolicyService;
 }
 
+namespace enterprise_net {
+class EnterpriseProxyService;
+}
+
 class ProxyServiceFactory {
  public:
   ProxyServiceFactory() = delete;
@@ -36,9 +40,11 @@ class ProxyServiceFactory {
   // settings. This tracker should be used if the profile's preferences should
   // be respected. On ChromeOS's signin screen this is for example not the case.
   static std::unique_ptr<PrefProxyConfigTracker>
-  CreatePrefProxyConfigTrackerOfProfile(PrefService* profile_prefs,
-                                        PrefService* local_state_prefs,
-                                        policy::PolicyService* policy_service);
+  CreatePrefProxyConfigTrackerOfProfile(
+      PrefService* profile_prefs,
+      PrefService* local_state_prefs,
+      policy::PolicyService* policy_service,
+      enterprise_net::EnterpriseProxyService* enterprise_proxy_service);
 
   // Creates a PrefProxyConfigTracker that tracks local state only. This tracker
   // should be used for the system request context and the signin screen
