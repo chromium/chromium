@@ -656,7 +656,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
   // JavaScript cannot allocate bigger ArrayBuffers anyways. Only with
   // WebAssembly it is possible to allocate bigger ArrayBuffers.
   static constexpr size_t kMaximumSupportedArrayBufferSize =
-      ::partition_alloc::internal::MaxDirectMapped();
+      ::partition_alloc::MaxAllocationSize();
 
  protected:
   // Implementation helpers.
