@@ -72,8 +72,10 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/unowned_inner_web_contents_client.h"
 #include "content/public/browser/web_contents.h"
@@ -2286,6 +2288,34 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // ...and therefore never shares a renderer process with the privileged one.
   EXPECT_NE(privileged->GetPrimaryMainFrame()->GetProcess(),
             ordinary_main_frame->GetProcess());
+}
+
+// The privileged bit is reachable through the public
+// RenderProcessHost::IsPrivileged() helper; it is false for ordinary content.
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       PrivilegedExposedViaPublicApis) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url = embedded_test_server()->GetURL("/title1.html");
+  BrowserContext* browser_context =
+      shell()->web_contents()->GetBrowserContext();
+
+  WebContents::CreateParams privileged_create_params(browser_context);
+  WebContents::PrivilegedParams marker;
+  marker.feature_id = 42;
+  privileged_create_params.privileged_params = marker;
+  std::unique_ptr<WebContents> privileged(
+      WebContents::Create(privileged_create_params));
+  ASSERT_TRUE(NavigateToURL(privileged.get(), url));
+  EXPECT_TRUE(privileged->IsPrivileged());
+  EXPECT_TRUE(privileged->GetPrimaryMainFrame()->GetProcess()->IsPrivileged());
+
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+  EXPECT_FALSE(shell()->web_contents()->IsPrivileged());
+  EXPECT_FALSE(shell()
+                   ->web_contents()
+                   ->GetPrimaryMainFrame()
+                   ->GetProcess()
+                   ->IsPrivileged());
 }
 
 // A WebContents created with PrivilegedParams marks every frame it hosts

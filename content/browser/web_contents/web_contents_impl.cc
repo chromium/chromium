@@ -10913,6 +10913,10 @@ std::optional<int64_t> WebContentsImpl::GetPrivilegedContentsFeatureId() {
   return std::nullopt;
 }
 
+bool WebContentsImpl::IsPrivileged() {
+  return privileged_params_.has_value();
+}
+
 bool WebContentsImpl::DoesWebContentsDisallowServiceWorkerControl() {
   return privileged_params_ &&
          privileged_params_->disallow_service_worker_control;

@@ -247,6 +247,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   bool IsForTopChromeWebUI() const override;
   bool ShouldSendGpuChannelEarly() const override;
   bool IsForGuestsOnly() override;
+  bool IsPrivileged() override;
   bool IsJitDisabled() override;
   bool AreV8OptimizationsDisabled() override;
   bool DisallowV8FeatureFlagOverrides() override;
@@ -989,6 +990,13 @@ class CONTENT_EXPORT RenderProcessHostImpl
     // Indicates that this RenderProcessHost is hosting a Top Chrome WebUI.
     // Only used on desktop.
     kForTopChromeWebUI = 1 << 5,
+
+    // Indicates that this RenderProcessHost is exclusively hosting privileged
+    // contents (a WebContents created with PrivilegedParams). This flag is set
+    // at process creation, before the process lock is applied, so that code
+    // running during process setup (e.g. delivery of extension content scripts)
+    // can already tell that the process is privileged.
+    kPrivileged = 1 << 6,
   };
 
 #if BUILDFLAG(IS_ANDROID)

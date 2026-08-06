@@ -207,6 +207,10 @@ bool MockRenderProcessHost::IsForGuestsOnly() {
   return is_for_guests_only_;
 }
 
+bool MockRenderProcessHost::IsPrivileged() {
+  return GetProcessLock().is_privileged();
+}
+
 bool MockRenderProcessHost::IsJitDisabled() {
   return false;
 }

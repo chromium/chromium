@@ -1629,6 +1629,9 @@ RenderProcessHost* RenderProcessHostImpl::CreateRenderProcessHost(
     if (site_instance->IsPdf()) {
       flags |= RenderProcessFlags::kPdf;
     }
+    if (site_instance->IsPrivileged()) {
+      flags |= RenderProcessFlags::kPrivileged;
+    }
     if (site_instance->AreV8OptimizationsDisabled()) {
       flags |= RenderProcessFlags::kV8OptimizationsDisabled;
     }
@@ -3646,6 +3649,15 @@ bool RenderProcessHostImpl::IsForGuestsOnly() {
   return !!(flags_ & RenderProcessFlags::kForGuestsOnly);
 }
 
+bool RenderProcessHostImpl::IsPrivileged() {
+  // The flag is set at process creation (before the process lock is applied),
+  // so that this returns true even before LockProcessIfNeeded() runs. The lock
+  // is also checked as a fallback for processes that become privileged without
+  // going through CreateRenderProcessHost() (e.g. in tests).
+  return !!(flags_ & RenderProcessFlags::kPrivileged) ||
+         GetProcessLock().is_privileged();
+}
+
 bool RenderProcessHostImpl::IsForTopChromeWebUI() const {
   return (flags_ & RenderProcessFlags::kForTopChromeWebUI) != 0;
 }
@@ -4942,6 +4954,15 @@ bool RenderProcessHostImpl::IsSuitableHost(
   // PDF and non-PDF content cannot share processes.
   if (host->IsPdf() != site_info.is_pdf())
     return false;
+
+  // Privileged and non-privileged content cannot share processes. This also
+  // ensures a privileged SiteInstance always gets a freshly created process
+  // (which carries the kPrivileged flag) rather than reusing a spare or
+  // existing process.
+  if (host->IsPrivileged() !=
+      site_info.embedder_isolation_info().is_privileged()) {
+    return false;
+  }
 
   ProcessLock process_lock = host->GetProcessLock();
 

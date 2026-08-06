@@ -637,9 +637,15 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::MaybeTakeSpare(
       //    WebUIs need their processes created with their SiteInstance so that
       //    the kForTopChromeWebUI flag is correctly set on the
       //    RenderProcessHost.
+      // 5. The SiteInstance is for privileged content (a WebContents created
+      //    with PrivilegedParams). Like Top Chrome WebUI, privileged content
+      //    needs its process created with its SiteInstance so that the
+      //    kPrivileged flag is set on the RenderProcessHost (an unlocked spare
+      //    would otherwise be taken and then rejected as an unsuitable host).
       site_instance->HasProcess() ||
       !site_instance->CanAssociateWithSpareProcess() ||
-      site_instance->GetSecurityPrincipal().IsGuest()
+      site_instance->GetSecurityPrincipal().IsGuest() ||
+      site_instance->GetSiteInfo().embedder_isolation_info().is_privileged()
 #if !BUILDFLAG(IS_ANDROID)
       || GetContentClient()->browser()->IsTopChromeWebUIURL(
              site_instance->GetSecurityPrincipal().GetDeprecatedSiteURL())

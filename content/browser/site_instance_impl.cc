@@ -1150,6 +1150,10 @@ bool SiteInstanceImpl::IsPdf() {
   return site_info_.is_pdf();
 }
 
+bool SiteInstanceImpl::IsPrivileged() {
+  return site_info_.embedder_isolation_info().is_privileged();
+}
+
 std::string SiteInstanceImpl::GetPartitionDomain(
     StoragePartitionImpl* storage_partition) {
   auto storage_partition_config = site_info_.GetStoragePartitionConfig();

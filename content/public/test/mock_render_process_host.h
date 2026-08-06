@@ -94,6 +94,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   bool IsForTopChromeWebUI() const override;
   bool ShouldSendGpuChannelEarly() const override;
   bool IsForGuestsOnly() override;
+  bool IsPrivileged() override;
   bool IsJitDisabled() override;
   bool AreV8OptimizationsDisabled() override;
   void SetAreV8OptimizationsDisabled(bool disabled);

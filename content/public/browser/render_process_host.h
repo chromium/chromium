@@ -250,6 +250,13 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Listener,
   // non-guest RenderFrames in the same process if IsForGuestsOnly() is false.
   virtual bool IsForGuestsOnly() = 0;
 
+  // Indicates whether the current RenderProcessHost hosts privileged content
+  // (a WebContents created with PrivilegedParams). Privileged content always
+  // requires a dedicated process, so a process either hosts only privileged
+  // content or none. This is set when the process is created, before the
+  // process lock is applied, so it is reliable during process setup.
+  virtual bool IsPrivileged() = 0;
+
   // Indicates whether the current RenderProcessHost is running with JavaScript
   // JIT disabled.
   virtual bool IsJitDisabled() = 0;

@@ -156,6 +156,15 @@ class CONTENT_EXPORT ProcessLock {
     return site_info_.has_value() && site_info_->IsGuest();
   }
 
+  // Returns whether this ProcessLock is used for a privileged process (e.g.,
+  // for a WebContents created with PrivilegedParams). Privileged content always
+  // requires a dedicated process, so such a process hosts only privileged
+  // content.
+  bool is_privileged() const {
+    return site_info_.has_value() &&
+           site_info_->embedder_isolation_info().is_privileged();
+  }
+
   // Returns whether this ProcessLock is used for a process that exclusively
   // hosts content inside a <fencedframe>.
   bool is_fenced() const {

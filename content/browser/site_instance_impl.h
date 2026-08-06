@@ -333,6 +333,10 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // Returns true if this SiteInstance is for a site that contains PDF contents.
   bool IsPdf();
 
+  // Returns true if this SiteInstance is for privileged contents (a WebContents
+  // created with PrivilegedParams).
+  bool IsPrivileged();
+
   // Set the web site that this SiteInstance is rendering pages for.
   // This includes the scheme and registered domain, but not the port.  If the
   // URL does not have a valid registered domain, then the full hostname is
