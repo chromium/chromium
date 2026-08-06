@@ -393,10 +393,7 @@ ntp-lens-upload-dialog {
   position: absolute;
   position-anchor: --dialog-anchor;
   top: anchor(top);
-}
-
-#composeboxDialog::backdrop {
-  display: none;
+  z-index: 100;
 }
 
 #undoToast {

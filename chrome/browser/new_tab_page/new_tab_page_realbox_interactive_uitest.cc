@@ -275,9 +275,16 @@ class NtpRealboxUiTestBase
   }
 
   auto WaitForDialogStateChange(const DeepQuery& where, bool expected_open) {
-    return WaitForJsConditionAt(
-        kNtpElementId, where,
-        expected_open ? "(el) => el && el.open" : "(el) => el && !el.open");
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kDialogStateChangeEvent);
+    WebContentsInteractionTestUtil::StateChange state_change;
+    state_change.event = kDialogStateChangeEvent;
+    state_change.where = where;
+    state_change.type =
+        expected_open
+            ? WebContentsInteractionTestUtil::StateChange::Type::kExists
+            : WebContentsInteractionTestUtil::StateChange::Type::kDoesNotExist;
+
+    return WaitForStateChange(kNtpElementId, state_change);
   }
 
   auto WaitForElementVisibilityChange(const DeepQuery& where,
@@ -874,6 +881,9 @@ IN_PROC_BROWSER_TEST_F(NtpRealboxTabFlyoverInteractiveTest,
                   "el => el.click()"),
       // Wait for the WebUI menu trigger to render and click/hover it.
       WaitForElementToRender(kNtpElementId, kShareTabsTrigger),
+      ExecuteJsAt(kNtpElementId, kShareTabsTrigger,
+                  "el => el.dispatchEvent(new MouseEvent('mouseover', "
+                  "{bubbles: true}))"),
       MoveMouseTo(kNtpElementId, kShareTabsTrigger),
       // Set pointerOverFlyout_ to true via JS to prevent the flyout from
       // closing due to async mouse move events in tests.
