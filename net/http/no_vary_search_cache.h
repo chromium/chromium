@@ -262,14 +262,37 @@ class NET_EXPORT_PRIVATE NoVarySearchCache {
       absl::node_hash_map<HttpNoVarySearchData, Queries>;
   using BaseUrlToNVSDataMap =
       absl::node_hash_map<std::string, NVSDataToQueriesMap>;
-  using CachePartitionKeyToBaseUrlMap =
-      absl::node_hash_map<std::string, BaseUrlToNVSDataMap>;
+  struct Partition : public base::LinkNode<Partition> {
+    Partition();
+    ~Partition();
+    Partition(const Partition&) = delete;
+    Partition& operator=(const Partition&) = delete;
+    Partition(Partition&&);
+    Partition& operator=(Partition&&) = delete;
 
-  // Erases an entry from the cache if `size_ > max_size_`.
-  void EvictIfOverfull();
+    void MoveToHead(base::LinkedList<Partition>& linked_list);
+
+    // lru.tail() is the least-recently-used Query.
+    base::LinkedList<Query> lru;
+    BaseUrlToNVSDataMap base_url_map;
+    size_t size = 0u;
+  };
+  friend struct PickleTraits<NoVarySearchCache::Partition>;
+
+  using CachePartitionKeyToPartitionMap =
+      absl::node_hash_map<std::string, Partition>;
+
+  // Erases entries from the cache if `size_ > max_size_`, if
+  // `partitions_.size() > max_partitions_`, or if `current_partition` exceeds
+  // `max_partition_size_`.
+  void EvictIfOverfull(Partition* current_partition = nullptr);
 
   // Erases `query_string` from the cache.
   void EraseQuery(Query* query_string);
+
+  // Recalculates `max_partition_size_` and `max_partitions_` from feature
+  // parameters and clamps them against `max_size_`.
+  void UpdateLimits();
 
   // Inserts `query` or marks it as used in the cache, evicting an older entry
   // if necessary to make space. `journal` is notified if set.
@@ -319,16 +342,22 @@ class NET_EXPORT_PRIVATE NoVarySearchCache {
   //   Base URL (std::string) ->
   //     NVS data (NoVarySearchData) ->
   //       Canonicalized query (std::string) -> Query object
-  CachePartitionKeyToBaseUrlMap partitions_;
+  CachePartitionKeyToPartitionMap partitions_;
 
-  // lru_.tail() is the least-recently-used Query.
-  base::LinkedList<Query> lru_;
+  // partition_lru_.tail() is the least-recently-used Partition.
+  base::LinkedList<Partition> partition_lru_;
 
   // The number of Query objects in the cache.
   size_t size_ = 0u;
 
   // Query objects will be evicted to avoid exceeding `max_size_`.
   size_t max_size_;
+
+  // Maximum number of entries allowed in a single partition.
+  size_t max_partition_size_;
+
+  // Maximum number of partitions allowed in the cache.
+  size_t max_partitions_;
 
   // An object to be notified about changes to this cache.
   raw_ptr<Journal> journal_ = nullptr;
@@ -344,6 +373,19 @@ struct NET_EXPORT_PRIVATE PickleTraits<NoVarySearchCache> {
       base::PickleIterator& iter);
 
   static size_t PickleSize(const NoVarySearchCache& cache);
+};
+
+// Specialization of PickleTraits needed for serializing and deserializing
+// NoVarySearchCache::Partition objects.
+template <>
+struct NET_EXPORT_PRIVATE PickleTraits<NoVarySearchCache::Partition> {
+  static void Serialize(base::Pickle& pickle,
+                        const NoVarySearchCache::Partition& partition);
+
+  static std::optional<NoVarySearchCache::Partition> Deserialize(
+      base::PickleIterator& iter);
+
+  static size_t PickleSize(const NoVarySearchCache::Partition& partition);
 };
 
 }  // namespace net

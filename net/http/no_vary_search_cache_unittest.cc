@@ -535,6 +535,171 @@ TEST_P(NoVarySearchCacheTest, DifferentNIK) {
   }
 }
 
+TEST_P(NoVarySearchCacheTest, PerPartitionSizeLimitEnforced) {
+  if (!HttpCache::IsSplitCacheEnabled()) {
+    GTEST_SKIP() << "Requires distinct cache partitions.";
+  }
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kHttpCacheNoVarySearch,
+        {{features::kHttpCacheNoVarySearchCacheMaxEntries.name, "10"},
+         {features::kHttpCacheNoVarySearchCacheMaxPartitionEntries.name, "2"},
+         {features::kHttpCacheNoVarySearchCacheMaxPartitions.name, "10"}}}},
+      {});
+
+  NoVarySearchCache custom_cache(10);
+  const SchemefulSite site_a(GURL("https://a.test/"));
+  const SchemefulSite site_b(GURL("https://b.test/"));
+  const NetworkIsolationKey nik_a(site_a, site_a);
+  const NetworkIsolationKey nik_b(site_b, site_b);
+
+  const auto url_a = [](size_t i) {
+    return GURL("https://a.test/" + base::NumberToString(i));
+  };
+  const auto url_b = [](size_t i) {
+    return GURL("https://b.test/" + base::NumberToString(i));
+  };
+
+  for (size_t i = 0; i < 3; ++i) {
+    custom_cache.MaybeInsert(TestRequest(url_a(i), nik_a),
+                             TestHeaders("params"));
+  }
+  EXPECT_EQ(custom_cache.size(), 2u);
+  EXPECT_FALSE(custom_cache.Lookup(TestRequest(url_a(0), nik_a)));
+  EXPECT_TRUE(custom_cache.Lookup(TestRequest(url_a(1), nik_a)));
+  EXPECT_TRUE(custom_cache.Lookup(TestRequest(url_a(2), nik_a)));
+
+  for (size_t i = 0; i < 2; ++i) {
+    custom_cache.MaybeInsert(TestRequest(url_b(i), nik_b),
+                             TestHeaders("params"));
+  }
+  EXPECT_EQ(custom_cache.size(), 4u);
+  EXPECT_TRUE(custom_cache.Lookup(TestRequest(url_b(0), nik_b)));
+  EXPECT_TRUE(custom_cache.Lookup(TestRequest(url_b(1), nik_b)));
+}
+
+TEST_P(NoVarySearchCacheTest, MaxPartitionsLimitEnforced) {
+  if (!HttpCache::IsSplitCacheEnabled()) {
+    GTEST_SKIP() << "Requires distinct cache partitions.";
+  }
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kHttpCacheNoVarySearch,
+        {{features::kHttpCacheNoVarySearchCacheMaxEntries.name, "100"},
+         {features::kHttpCacheNoVarySearchCacheMaxPartitionEntries.name, "10"},
+         {features::kHttpCacheNoVarySearchCacheMaxPartitions.name, "2"}}}},
+      {});
+
+  NoVarySearchCache custom_cache(100);
+  const auto make_nik = [](size_t i) {
+    const SchemefulSite site(
+        GURL("https://site" + base::NumberToString(i) + ".test/"));
+    return NetworkIsolationKey(site, site);
+  };
+  const auto make_url = [](size_t i) {
+    return GURL("https://site" + base::NumberToString(i) + ".test/res");
+  };
+
+  custom_cache.MaybeInsert(TestRequest(make_url(0), make_nik(0)),
+                           TestHeaders("key-order"));
+  custom_cache.MaybeInsert(TestRequest(make_url(1), make_nik(1)),
+                           TestHeaders("key-order"));
+  EXPECT_EQ(custom_cache.size(), 2u);
+
+  custom_cache.MaybeInsert(TestRequest(make_url(2), make_nik(2)),
+                           TestHeaders("key-order"));
+  EXPECT_EQ(custom_cache.size(), 2u);
+  EXPECT_FALSE(custom_cache.Lookup(TestRequest(make_url(0), make_nik(0))));
+  EXPECT_TRUE(custom_cache.Lookup(TestRequest(make_url(1), make_nik(1))));
+  EXPECT_TRUE(custom_cache.Lookup(TestRequest(make_url(2), make_nik(2))));
+}
+
+TEST_P(NoVarySearchCacheTest, LookupUpdatesPartitionLru) {
+  if (!HttpCache::IsSplitCacheEnabled()) {
+    GTEST_SKIP() << "Requires distinct cache partitions.";
+  }
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kHttpCacheNoVarySearch,
+        {{features::kHttpCacheNoVarySearchCacheMaxEntries.name, "100"},
+         {features::kHttpCacheNoVarySearchCacheMaxPartitionEntries.name, "10"},
+         {features::kHttpCacheNoVarySearchCacheMaxPartitions.name, "2"}}}},
+      {});
+
+  NoVarySearchCache custom_cache(100);
+  const auto make_nik = [](size_t i) {
+    const SchemefulSite site(
+        GURL("https://site" + base::NumberToString(i) + ".test/"));
+    return NetworkIsolationKey(site, site);
+  };
+  const auto make_url = [](size_t i) {
+    return GURL("https://site" + base::NumberToString(i) + ".test/res");
+  };
+
+  custom_cache.MaybeInsert(TestRequest(make_url(0), make_nik(0)),
+                           TestHeaders("key-order"));
+  custom_cache.MaybeInsert(TestRequest(make_url(1), make_nik(1)),
+                           TestHeaders("key-order"));
+  EXPECT_EQ(custom_cache.size(), 2u);
+
+  // Lookup partition 0 to make it the most recently used.
+  EXPECT_TRUE(custom_cache.Lookup(TestRequest(make_url(0), make_nik(0))));
+
+  // Insert into partition 2, which should evict partition 1 instead of 0.
+  custom_cache.MaybeInsert(TestRequest(make_url(2), make_nik(2)),
+                           TestHeaders("key-order"));
+  EXPECT_EQ(custom_cache.size(), 2u);
+
+  EXPECT_TRUE(custom_cache.Lookup(TestRequest(make_url(0), make_nik(0))));
+  EXPECT_FALSE(custom_cache.Lookup(TestRequest(make_url(1), make_nik(1))));
+  EXPECT_TRUE(custom_cache.Lookup(TestRequest(make_url(2), make_nik(2))));
+}
+
+TEST_P(NoVarySearchCacheTest, LeastRecentlyUsedPartitionEvictedWhenFull) {
+  if (!HttpCache::IsSplitCacheEnabled()) {
+    GTEST_SKIP() << "Requires distinct cache partitions.";
+  }
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kHttpCacheNoVarySearch,
+        {{features::kHttpCacheNoVarySearchCacheMaxEntries.name, "10"},
+         {features::kHttpCacheNoVarySearchCacheMaxPartitionEntries.name, "2"},
+         {features::kHttpCacheNoVarySearchCacheMaxPartitions.name, "5"}}}},
+      {});
+
+  NoVarySearchCache custom_cache(10);
+
+  const auto make_nik = [](size_t i) {
+    const SchemefulSite site(
+        GURL("https://site" + base::NumberToString(i) + ".test/"));
+    return NetworkIsolationKey(site, site);
+  };
+  const auto make_url = [](size_t i, size_t j) {
+    return GURL("https://site" + base::NumberToString(i) + ".test/res" +
+                base::NumberToString(j));
+  };
+
+  for (size_t i = 0; i < 5; ++i) {
+    custom_cache.MaybeInsert(TestRequest(make_url(i, 0), make_nik(i)),
+                             TestHeaders("key-order"));
+    custom_cache.MaybeInsert(TestRequest(make_url(i, 1), make_nik(i)),
+                             TestHeaders("key-order"));
+  }
+  EXPECT_EQ(custom_cache.size(), 10u);
+
+  custom_cache.MaybeInsert(TestRequest(make_url(5, 0), make_nik(5)),
+                           TestHeaders("key-order"));
+
+  EXPECT_FALSE(custom_cache.Lookup(TestRequest(make_url(0, 0), make_nik(0))));
+  EXPECT_FALSE(custom_cache.Lookup(TestRequest(make_url(0, 1), make_nik(0))));
+  EXPECT_TRUE(custom_cache.Lookup(TestRequest(make_url(1, 0), make_nik(1))));
+  EXPECT_TRUE(custom_cache.Lookup(TestRequest(make_url(5, 0), make_nik(5))));
+}
+
 TEST_P(NoVarySearchCacheTest, DifferentURL) {
   const GURL url1("https://example.com/a?a=b");
   const GURL url2("https://example.com/b?a=b");

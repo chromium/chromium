@@ -24,6 +24,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected_macros.h"
+#include "net/base/features.h"
 #include "net/base/pickle.h"
 #include "net/base/pickle_base_types.h"
 #include "net/http/http_cache.h"
@@ -185,9 +186,12 @@ class NoVarySearchCache::Query final : public base::LinkNode<Query> {
 
   // Moves this object to the head of `linked_list`.
   void MoveToHead(base::LinkedList<Query>& linked_list) {
-    auto* head = linked_list.head();
-    if (head != this) {
-      MoveBeforeNode(linked_list.head()->value());
+    auto* head_node = linked_list.head();
+    if (head_node != this) {
+      if (next()) {
+        RemoveFromList();
+      }
+      InsertBefore(head_node);
     }
   }
 
@@ -297,22 +301,47 @@ NoVarySearchCache::Queries::~Queries() = default;
 
 NoVarySearchCache::Queries::Queries(Queries&&) = default;
 
+NoVarySearchCache::Partition::Partition() = default;
+NoVarySearchCache::Partition::~Partition() {
+  if (next()) {
+    CHECK(previous());
+    RemoveFromList();
+  }
+}
+
+NoVarySearchCache::Partition::Partition(Partition&&) = default;
+
+void NoVarySearchCache::Partition::MoveToHead(
+    base::LinkedList<Partition>& linked_list) {
+  auto* head_node = linked_list.head();
+  if (head_node != this) {
+    if (next()) {
+      RemoveFromList();
+    }
+    InsertBefore(head_node);
+  }
+}
+
 NoVarySearchCache::NoVarySearchCache(size_t max_size) : max_size_(max_size) {
   CHECK_GE(max_size_, 1u);
   // We can't serialize if `max_size` won't fit in an int.
   CHECK(base::IsValueInRangeForNumericType<int>(max_size));
+
+  UpdateLimits();
 }
 
 NoVarySearchCache::NoVarySearchCache(NoVarySearchCache&& rhs)
     : partitions_(std::move(rhs.partitions_)),
-      lru_(std::move(rhs.lru_)),
+      partition_lru_(std::move(rhs.partition_lru_)),
       size_(std::exchange(rhs.size_, 0u)),
-      max_size_(rhs.max_size_) {}
+      max_size_(rhs.max_size_),
+      max_partition_size_(rhs.max_partition_size_),
+      max_partitions_(rhs.max_partitions_) {}
 
 NoVarySearchCache::~NoVarySearchCache() {
   partitions_.clear();
-  // Clearing the map should have freed all the Query objects.
-  CHECK(lru_.empty());
+  // Clearing the map should have freed all the Partition and Query objects.
+  CHECK(partition_lru_.empty());
 }
 
 std::optional<NoVarySearchCache::LookupResult> NoVarySearchCache::Lookup(
@@ -344,7 +373,8 @@ std::optional<NoVarySearchCache::LookupResult> NoVarySearchCache::Lookup(
     return std::nullopt;
   }
 
-  auto& [cache_partition_key_ref, base_url_map] = *partition_it;
+  auto& [cache_partition_key_ref, partition] = *partition_it;
+  auto& base_url_map = partition.base_url_map;
 
   const std::string_view base_url_view = ExtractBaseURL(url);
   const auto base_url_map_it = base_url_map.find(base_url_view);
@@ -370,8 +400,9 @@ std::optional<NoVarySearchCache::LookupResult> NoVarySearchCache::Lookup(
     return std::nullopt;
   }
 
-  // This is a hit. Move to head of `lru_` list.
-  best_match->MoveToHead(lru_);
+  // This is a hit. Move partition and query to head of their LRU lists.
+  partition.MoveToHead(partition_lru_);
+  best_match->MoveToHead(partition.lru);
 
   return LookupResult(best_match->ReconstructOriginalURL(base_url_ref),
                       best_match->CreateEraseHandle());
@@ -413,8 +444,9 @@ bool NoVarySearchCache::ClearData(UrlFilterType filter_type,
   // then erase them.
   // TODO(https://crbug.com/382394774): Make this algorithm more efficient.
   std::vector<Query*> pending_erase;
-  for (auto& [cache_partition_key, base_url_map] : partitions_) {
-    for (auto& [base_url_ref, nvs_data_to_queries_map] : base_url_map) {
+  for (auto& [cache_partition_key, partition] : partitions_) {
+    for (auto& [base_url_ref, nvs_data_to_queries_map] :
+         partition.base_url_map) {
       const GURL base_url(base_url_ref);
       CHECK(base_url.is_valid());
       // DoesUrlMatchFilter() only looks at the origin of the URL, which is why
@@ -481,7 +513,8 @@ void NoVarySearchCache::ReplayErase(const std::string& partition_key,
     return;
   }
 
-  BaseUrlToNVSDataMap& base_url_map = map_it->second;
+  Partition& partition = map_it->second;
+  BaseUrlToNVSDataMap& base_url_map = partition.base_url_map;
 
   const auto base_url_it = base_url_map.find(base_url);
   if (base_url_it == base_url_map.end()) {
@@ -518,21 +551,24 @@ void NoVarySearchCache::ReplayErase(const std::string& partition_key,
 }
 
 void NoVarySearchCache::MergeFrom(const NoVarySearchCache& newer) {
-  // We cannot use ForEachQuery() here as we need to iterate through the
-  // `lru_` linked list in reverse order.
-  const auto& newer_lru = newer.lru_;
-  for (auto* node = newer_lru.tail(); node != newer_lru.end();
-       node = node->previous()) {
-    Query* query = node->value();
-    const Queries& queries = query->queries();
-    const std::string& base_url = *queries.base_url_ptr;
-    std::optional<std::string> query_string = query->query();
-    CHECK(!query_string || query_string->find('#') == std::string::npos);
+  for (auto* part_node = newer.partition_lru_.tail();
+       part_node != newer.partition_lru_.end();
+       part_node = part_node->previous()) {
+    const Partition* partition = part_node->value();
+    for (auto* query_node = partition->lru.tail();
+         query_node != partition->lru.end();
+         query_node = query_node->previous()) {
+      Query* query = query_node->value();
+      const Queries& queries = query->queries();
+      const std::string& base_url = *queries.base_url_ptr;
+      std::optional<std::string> query_string = query->query();
+      CHECK(!query_string || query_string->find('#') == std::string::npos);
 
-    // Pass `journal_` so the merged entries are journalled as insertions.
-    ReconstructURLAndDoInsert(*queries.cache_partition_key_ptr, base_url,
-                              *queries.nvs_data_ptr, std::move(query_string),
-                              query->update_time(), journal_);
+      // Pass `journal_` so the merged entries are journalled as insertions.
+      ReconstructURLAndDoInsert(*queries.cache_partition_key_ptr, base_url,
+                                *queries.nvs_data_ptr, std::move(query_string),
+                                query->update_time(), journal_);
+    }
   }
 }
 
@@ -541,23 +577,56 @@ void NoVarySearchCache::SetMaxSize(size_t max_size) {
     return;
   }
   CHECK_GE(max_size, 1u);
-  // Evict entries while size_ > max_size_.
   max_size_ = max_size;
-  while (size_ > max_size_) {
-    EraseQuery(lru_.tail()->value());
+  UpdateLimits();
+
+  for (auto* node = partition_lru_.tail(); node != partition_lru_.end();) {
+    Partition* partition = node->value();
+    node = node->previous();
+    while (partition->size > max_partition_size_) {
+      CHECK(!partition->lru.empty());
+      EraseQuery(partition->lru.tail()->value());
+    }
   }
+
+  EvictIfOverfull(nullptr);
+}
+
+void NoVarySearchCache::UpdateLimits() {
+  size_t max_partition_entries =
+      features::kHttpCacheNoVarySearchCacheMaxPartitionEntries.Get();
+  max_partition_size_ =
+      (max_partition_entries > 0 && max_partition_entries < max_size_)
+          ? max_partition_entries
+          : max_size_;
+
+  size_t max_partitions =
+      features::kHttpCacheNoVarySearchCacheMaxPartitions.Get();
+  max_partitions_ = (max_partitions > 0 && max_partitions < max_size_)
+                        ? max_partitions
+                        : max_size_;
 }
 
 bool NoVarySearchCache::IsTopLevelMapEmptyForTesting() const {
   return partitions_.empty();
 }
 
-void NoVarySearchCache::EvictIfOverfull() {
-  CHECK_LE(size_, max_size_ + 1);
-  if (size_ == max_size_ + 1) {
-    // This happens when an entry is added when the cache is already full.
-    // Remove an entry to make `size_` == `max_size_` again.
-    EraseQuery(lru_.tail()->value());
+void NoVarySearchCache::EvictIfOverfull(Partition* current_partition) {
+  if (current_partition) {
+    while (current_partition->size > max_partition_size_) {
+      CHECK(!current_partition->lru.empty());
+      EraseQuery(current_partition->lru.tail()->value());
+    }
+  }
+  // TODO(crbug.com/382394774): When `partitions_.size() >
+  // max_partitions_`, we evict queries one by one until the entire LRU
+  // partition is empty and removed. Consider optimizing this by dropping the
+  // entire partition at once.
+  while (size_ > max_size_ || partitions_.size() > max_partitions_) {
+    Partition* lru_partition = partition_lru_.tail()->value();
+    CHECK(lru_partition);
+    CHECK(!lru_partition->lru.empty());
+    EraseQuery(lru_partition->lru.tail()->value());
   }
 }
 
@@ -565,6 +634,13 @@ void NoVarySearchCache::EraseQuery(Query* query) {
   CHECK_GT(size_, 0u);
   --size_;
   Queries& queries = query->queries();
+  const std::string& partition_key = *queries.cache_partition_key_ptr;
+  const auto partition_it = partitions_.find(partition_key);
+  CHECK(partition_it != partitions_.end());
+  Partition& partition = partition_it->second;
+  CHECK_GT(partition.size, 0u);
+  --partition.size;
+
   const std::string& canonicalized_query = query->canonicalized_query();
   const auto query_map_it = queries.query_map.find(canonicalized_query);
   CHECK(query_map_it != queries.query_map.end());
@@ -577,11 +653,8 @@ void NoVarySearchCache::EraseQuery(Query* query) {
   // map. First we have to find its parent map.
   const HttpNoVarySearchData& nvs_data = *queries.nvs_data_ptr;
   const std::string& base_url = *queries.base_url_ptr;
-  const std::string& partition_key = *queries.cache_partition_key_ptr;
 
-  const auto partition_it = partitions_.find(partition_key);
-  CHECK(partition_it != partitions_.end());
-  auto& base_url_map = partition_it->second;
+  auto& base_url_map = partition.base_url_map;
   const auto base_url_it = base_url_map.find(base_url);
   CHECK(base_url_it != base_url_map.end());
   NVSDataToQueriesMap& nvs_data_to_queries_map = base_url_it->second;
@@ -609,9 +682,11 @@ void NoVarySearchCache::DoInsert(const GURL& url,
                                  base::Time update_time,
                                  Journal* journal) {
   auto [partition_it, partition_inserted] =
-      partitions_.try_emplace(std::move(partition_key), BaseUrlToNVSDataMap());
-  auto& [cache_partition_key_ref, base_url_map] = *partition_it;
+      partitions_.try_emplace(std::move(partition_key), Partition());
+  auto& [cache_partition_key_ref, partition] = *partition_it;
+  auto& base_url_map = partition.base_url_map;
   CHECK(partition_inserted || !base_url_map.empty());
+  partition.MoveToHead(partition_lru_);
 
   auto [base_url_it, base_url_inserted] =
       base_url_map.try_emplace(std::move(base_url), NVSDataToQueriesMap());
@@ -651,7 +726,7 @@ void NoVarySearchCache::DoInsert(const GURL& url,
     if (query_ptr->query() == query) {
       // It's an exact match. Just mark as freshly updated and used.
       query_ptr->set_update_time(update_time);
-      query_ptr->MoveToHead(lru_);
+      query_ptr->MoveToHead(partition.lru);
 
       call_journal(query_ptr->query());
 
@@ -661,15 +736,18 @@ void NoVarySearchCache::DoInsert(const GURL& url,
     // Otherwise, replace it with a newly-created Query.
     query_ptr = nullptr;
     CHECK_GT(size_, 0u);
+    CHECK_GT(partition.size, 0u);
     --size_;
+    --partition.size;
   }
   auto& [canonicalized_query_ref, query_ptr] = *query_it;
-  query_ptr = Query::CreateAndInsert(std::move(query), lru_, update_time,
-                                     &canonicalized_query_ref, &queries);
-  CHECK_LE(size_, max_size_);
+  query_ptr =
+      Query::CreateAndInsert(std::move(query), partition.lru, update_time,
+                             &canonicalized_query_ref, &queries);
   ++size_;
+  ++partition.size;
   call_journal(query_ptr->query());
-  EvictIfOverfull();
+  EvictIfOverfull(&partition);
 }
 
 void NoVarySearchCache::ReconstructURLAndDoInsert(
@@ -799,12 +877,13 @@ std::optional<NoVarySearchCache> PickleTraits<NoVarySearchCache>::Deserialize(
   }
 
   using Query = NoVarySearchCache::Query;
-  // Get a list of every Query object in the map so that we can sort
-  // them to reconstruct the `lru_` list. std::multimap is used here as a
-  // workaround for the excessive binary size cost of std::sort.
-  std::multimap<base::Time, Query*> all_queries;
-  for (auto& [cache_partition_key, base_url_map] : cache.partitions_) {
-    for (auto& [base_url_ref, nvs_data_to_queries_map] : base_url_map) {
+  using Partition = NoVarySearchCache::Partition;
+  std::multimap<base::Time, Partition*> all_partitions;
+  size_t total_size = 0;
+  for (auto& [cache_partition_key, partition] : cache.partitions_) {
+    std::multimap<base::Time, Query*> partition_queries;
+    for (auto& [base_url_ref, nvs_data_to_queries_map] :
+         partition.base_url_map) {
       for (auto& [nvs_data, queries] : nvs_data_to_queries_map) {
         queries.nvs_data_ptr = &nvs_data;
         queries.base_url_ptr = &base_url_ref;
@@ -812,19 +891,27 @@ std::optional<NoVarySearchCache> PickleTraits<NoVarySearchCache>::Deserialize(
         for (auto& [canonicalized_query, query_ptr] : queries.query_map) {
           query_ptr->set_canonicalized_query(&canonicalized_query);
           query_ptr->set_queries(&queries);
-          all_queries.emplace(query_ptr->update_time(), query_ptr.get());
+          partition_queries.emplace(query_ptr->update_time(), query_ptr.get());
         }
       }
     }
+    for (auto [_, qs] : partition_queries) {
+      qs->InsertBefore(partition.lru.head());
+    }
+    partition.size = partition_queries.size();
+    total_size += partition.size;
+    base::Time latest_time;
+    if (!partition.lru.empty()) {
+      latest_time = partition.lru.head()->value()->update_time();
+    }
+    all_partitions.emplace(latest_time, &partition);
   }
-  if (size != all_queries.size()) {
+  if (size != total_size) {
     return std::nullopt;
   }
 
-  // Insert each entry at the head of the list, so that the oldest entry ends
-  // up at the tail.
-  for (auto [_, qs] : all_queries) {
-    qs->InsertBefore(cache.lru_.head());
+  for (auto [_, part] : all_partitions) {
+    part->InsertBefore(cache.partition_lru_.head());
   }
 
   return cache;
@@ -835,6 +922,27 @@ size_t PickleTraits<NoVarySearchCache>::PickleSize(
     const NoVarySearchCache& cache) {
   // `size_` and `max_size_` are pickled as ints.
   return EstimatePickleSize(int{}, int{}, cache.partitions_);
+}
+
+void PickleTraits<NoVarySearchCache::Partition>::Serialize(
+    base::Pickle& pickle,
+    const NoVarySearchCache::Partition& partition) {
+  WriteToPickle(pickle, partition.base_url_map);
+}
+
+std::optional<NoVarySearchCache::Partition> PickleTraits<
+    NoVarySearchCache::Partition>::Deserialize(base::PickleIterator& iter) {
+  NoVarySearchCache::Partition partition;
+  if (!ReadPickleInto(iter, partition.base_url_map) ||
+      partition.base_url_map.empty()) {
+    return std::nullopt;
+  }
+  return partition;
+}
+
+size_t PickleTraits<NoVarySearchCache::Partition>::PickleSize(
+    const NoVarySearchCache::Partition& partition) {
+  return EstimatePickleSize(partition.base_url_map);
 }
 
 }  // namespace net

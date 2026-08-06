@@ -667,6 +667,16 @@ BASE_FEATURE_PARAM(size_t,
                    "max_entries",
                    1000);
 
+BASE_FEATURE_PARAM(size_t,
+                   kHttpCacheNoVarySearchCacheMaxPartitionEntries,
+                   &kHttpCacheNoVarySearch,
+                   100);
+
+BASE_FEATURE_PARAM(size_t,
+                   kHttpCacheNoVarySearchCacheMaxPartitions,
+                   &kHttpCacheNoVarySearch,
+                   100);
+
 BASE_FEATURE_PARAM(bool,
                    kHttpCacheNoVarySearchPersistenceEnabled,
                    &kHttpCacheNoVarySearch,
