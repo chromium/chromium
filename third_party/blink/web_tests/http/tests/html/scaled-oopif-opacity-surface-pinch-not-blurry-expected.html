@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+  <style>* { margin: 0; }</style>
+  <body>
+    <!-- Same-process iframe so the layout matches the OOPIF test exactly. -->
+    <iframe style="border: none; width: 150px; height: 50px;"
+            srcdoc="<!doctype html><body style='margin:0'><div style='opacity:0.99'><div style='will-change:transform'>This is some text</div><div style='will-change:transform'>This is some text</div></div>"></iframe>
+  </body>
+  <script>
+    if (window.internals) {
+      internals.setPageScaleFactorLimits(1, 4);
+      internals.setPageScaleFactor(4);
+    }
+  </script>
+</html>

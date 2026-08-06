@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<head>
+  <style>
+  * {
+      margin: 0;
+    }
+  </style>
+</head>
+<!-- An opacity of 0.99 with two composited descendants forces a non-root
+     opacity render surface, into which the text is rendered. -->
+<div style="opacity: 0.99">
+  <div style="will-change: transform">This is some text</div>
+  <div style="will-change: transform">This is some text</div>
+</div>

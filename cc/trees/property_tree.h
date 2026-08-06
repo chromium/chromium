@@ -249,6 +249,15 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
   }
   float device_scale_factor() const { return device_scale_factor_; }
 
+  // Embedder magnification of an OOPIF. Like page_scale_factor for the main
+  // frame, it scales raster and non-root effect surfaces but not geometry.
+  void set_external_page_scale_factor(float external_page_scale_factor) {
+    external_page_scale_factor_ = external_page_scale_factor;
+  }
+  float external_page_scale_factor() const {
+    return external_page_scale_factor_;
+  }
+
   void SetRootScaleAndTransform(float device_scale_factor,
                                 const gfx::Transform& device_transform);
   void set_device_transform_scale_factor(float device_transform_scale_factor) {
@@ -388,6 +397,9 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
   float page_scale_factor_;
   float device_scale_factor_;
   float device_transform_scale_factor_;
+  // Used to size an OOPIF's non-root effect surfaces to match its magnified
+  // raster density; see external_page_scale_factor().
+  float external_page_scale_factor_;
   std::vector<int> nodes_affected_by_outer_viewport_bounds_delta_;
   std::vector<int> nodes_affected_by_safe_area_inset_bottom_;
   std::vector<TransformCachedNodeData> cached_data_;

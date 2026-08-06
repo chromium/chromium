@@ -23,6 +23,16 @@ std::atomic<bool> s_is_eligible_for_throttle_main_frame_to_60hz = false;
 BASE_FEATURE(kComputeRasterTranslateForExternalScale,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, non-root effect render surfaces (opacity/filter/mask) inside an
+// OOPIF magnified by its embedder are allocated at the external page scale
+// factor, matching the raster (picture layer) resolution. Without this, such a
+// surface's backing is sized at the un-magnified resolution, so the crisp
+// raster tiles drawn into it are downsampled and then upsampled again when the
+// magnified surface is composited, making text inside the effect look blurry.
+// The OOPIF's root surface is intentionally left un-magnified.
+BASE_FEATURE(kSizeOopifEffectSurfacesAtExternalScale,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kDeferImplInvalidation, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // TODO(crbug.com/446920991): Reduce back to 1 frame delay once we have a

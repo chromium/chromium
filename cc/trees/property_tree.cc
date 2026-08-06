@@ -16,6 +16,7 @@
 
 #include "base/check_op.h"
 #include "base/debug/crash_logging.h"
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
@@ -79,7 +80,8 @@ TransformTree::TransformTree(PropertyTrees* property_trees)
     : PropertyTree<TransformNode>(property_trees),
       page_scale_factor_(1.f),
       device_scale_factor_(1.f),
-      device_transform_scale_factor_(1.f) {
+      device_transform_scale_factor_(1.f),
+      external_page_scale_factor_(1.f) {
   cached_data_.push_back(TransformCachedNodeData());
 }
 
@@ -173,6 +175,7 @@ void TransformTree::clear() {
   page_scale_factor_ = 1.f;
   device_scale_factor_ = 1.f;
   device_transform_scale_factor_ = 1.f;
+  external_page_scale_factor_ = 1.f;
   nodes_affected_by_outer_viewport_bounds_delta_.clear();
   nodes_affected_by_safe_area_inset_bottom_.clear();
   cached_data_.clear();
@@ -255,6 +258,7 @@ void TransformTree::CopyFromPreservingNodes(const TransformTree& other) {
   page_scale_factor_ = other.page_scale_factor_;
   device_scale_factor_ = other.device_scale_factor_;
   device_transform_scale_factor_ = other.device_transform_scale_factor_;
+  external_page_scale_factor_ = other.external_page_scale_factor_;
   nodes_affected_by_outer_viewport_bounds_delta_ =
       other.nodes_affected_by_outer_viewport_bounds_delta_;
   nodes_affected_by_safe_area_inset_bottom_ =
@@ -1088,6 +1092,7 @@ bool TransformTree::operator==(const TransformTree& other) const {
          device_scale_factor_ == other.device_scale_factor() &&
          device_transform_scale_factor_ ==
              other.device_transform_scale_factor() &&
+         external_page_scale_factor_ == other.external_page_scale_factor() &&
          nodes_affected_by_outer_viewport_bounds_delta_ ==
              other.nodes_affected_by_outer_viewport_bounds_delta() &&
          cached_data_ == other.cached_data() &&
@@ -1277,6 +1282,23 @@ void EffectTree::UpdateSurfaceContentsScale(EffectNode* effect_node) {
   const gfx::Vector2dF old_scale = effect_node->surface_contents_scale;
   effect_node->surface_contents_scale = gfx::ComputeTransform2dScaleComponents(
       transform_tree.ToScreen(transform_node.id), layer_scale_factor);
+
+  // external_page_scale_factor is the embedder's magnification of this OOPIF
+  // (like page_scale_factor for the main frame): it raises raster/backing
+  // resolution, not on-screen geometry. surface_contents_scale is a backing
+  // resolution too, so scaling it here only sharpens the effect surface's
+  // backing without changing where or how large it draws. Do this for non-root
+  // effect surfaces (mirroring PictureLayerImpl::UpdateIdealScales) so their
+  // backing matches raster density; otherwise the crisp tiles are downsampled
+  // into an un-magnified backing and upsampled when composited, blurring text.
+  // The root surface is left un-magnified: it defines the OOPIF's submitted
+  // frame size, which the embedder magnifies.
+  if (effect_node->id != kContentsRootPropertyNodeId &&
+      base::FeatureList::IsEnabled(
+          features::kSizeOopifEffectSurfacesAtExternalScale)) {
+    effect_node->surface_contents_scale.Scale(
+        transform_tree.external_page_scale_factor());
+  }
 
   // To avoid seams we apply only scale as draw transform instead of raster
   // content transform.

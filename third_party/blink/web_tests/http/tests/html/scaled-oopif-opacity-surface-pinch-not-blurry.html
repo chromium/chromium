@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <!-- The embedder magnifies the OOPIF via pinch zoom (a page scale factor)
+       rather than a CSS transform, with no iframe scale set in the main
+       document. A non-root opacity render surface inside the OOPIF must still
+       be rasterized at the embedder's scale so that its text stays crisp. -->
+  <style>* { margin: 0; }</style>
+  <script src="/js-test-resources/gesture-util.js"></script>
+  <body>
+    <!-- Loading the iframe from localhost, a cross-origin URL, makes it an
+         OOPIF. -->
+    <iframe src="http://localhost:8080/html/resources/opacity-surface-oopif-text.html"
+            style="border: none; width: 150px; height: 50px;"></iframe>
+  </body>
+  <script>
+    if (window.testRunner) {
+      testRunner.waitUntilDone();
+    }
+    onload = async () => {
+      if (window.internals) {
+        internals.setPageScaleFactorLimits(1, 4);
+      }
+      // Magnify the OOPIF by pinch-zooming to a page scale factor of 4 with a
+      // real two-finger touch gesture, anchored at the top-left origin so the
+      // visual viewport offset stays at (0, 0) and matches the reference.
+      await waitForCompositorCommit();
+      await pinchBy(4, 0, 0, SPEED_INSTANT, GestureSourceType.TOUCH_INPUT);
+      await waitFor(() => { return window.visualViewport.scale >= 3.98; });
+      // Wait for the pinch scale to propagate cross-process to the OOPIF and
+      // for it to re-raster and resubmit its effect surface at the external
+      // scale before capturing.
+      await waitForCompositorCommit();
+      await waitForCompositorCommit();
+      if (window.testRunner) {
+        testRunner.notifyDone();
+      }
+    }
+  </script>
+</html>

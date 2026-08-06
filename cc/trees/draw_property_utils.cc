@@ -1754,6 +1754,8 @@ void CalculateDrawProperties(
       gfx::RectF(layer_tree_impl->GetDeviceViewport()));
   property_trees->transform_tree_mutable().SetRootScaleAndTransform(
       layer_tree_impl->device_scale_factor(), layer_tree_impl->DrawTransform());
+  property_trees->transform_tree_mutable().set_external_page_scale_factor(
+      layer_tree_impl->external_page_scale_factor());
   UpdatePropertyTreesAndRenderSurfaces(layer_tree_impl, property_trees);
 
   {
