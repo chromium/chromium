@@ -1244,12 +1244,13 @@ DeveloperPrivateAddHostPermissionFunction::Run() {
   }
 
   URLPatternSet new_host_permissions({*pattern});
+  URLPatternSet new_host_permissions_clone = new_host_permissions.Clone();
   PermissionsUpdater(browser_context())
       .GrantRuntimePermissions(
           *extension,
           PermissionSet(APIPermissionSet(), ManifestPermissionSet(),
-                        new_host_permissions.Clone(),
-                        new_host_permissions.Clone()),
+                        std::move(new_host_permissions_clone),
+                        std::move(new_host_permissions)),
           base::BindOnce(&DeveloperPrivateAddHostPermissionFunction::
                              OnRuntimePermissionsGranted,
                          this));
@@ -1289,11 +1290,13 @@ DeveloperPrivateRemoveHostPermissionFunction::Run() {
   }
 
   URLPatternSet host_permissions_to_remove({*pattern});
+  URLPatternSet host_permissions_to_remove_clone =
+      host_permissions_to_remove.Clone();
   std::unique_ptr<const PermissionSet> permissions_to_remove =
       PermissionSet::CreateIntersection(
           PermissionSet(APIPermissionSet(), ManifestPermissionSet(),
-                        host_permissions_to_remove.Clone(),
-                        host_permissions_to_remove.Clone()),
+                        std::move(host_permissions_to_remove_clone),
+                        std::move(host_permissions_to_remove)),
           *manager->GetRevokablePermissions(*extension),
           URLPatternSet::IntersectionBehavior::kDetailed);
   if (permissions_to_remove->IsEmpty()) {
