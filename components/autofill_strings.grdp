@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
 
-  <!-- TODO(crbug.com/40266549): Remove when Undo launches on iOS. -->
-  <message name="IDS_AUTOFILL_CLEAR_FORM_MENU_ITEM" desc="iOS: The entry in the suggestions keyboard accessory that clears an auto-filled form.">
-    Clear form
-  </message>
-
   <message name="IDS_AUTOFILL_UNDO_MENU_ITEM" desc="The entry in the suggestions dropdown that undoes the last filling operation on a field.">
     Undo autofill
   </message>

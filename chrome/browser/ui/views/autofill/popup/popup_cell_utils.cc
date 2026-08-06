@@ -149,7 +149,6 @@ std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
     // Generic icons start
     case Suggestion::Icon::kAccount:
     case Suggestion::Icon::kAndroidMessages:
-    case Suggestion::Icon::kClear:
     case Suggestion::Icon::kCode:
     case Suggestion::Icon::kDelete:
     case Suggestion::Icon::kDevice:
@@ -455,11 +454,6 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
       return ImageModelFromVectorIcon(::features::IsRoundedIconsEnabled()
                                           ? kCreditCardIcon
                                           : kCreditCardOldIcon,
-                                      kIconSize);
-    case Suggestion::Icon::kClear:
-      return ImageModelFromVectorIcon(::features::IsRoundedIconsEnabled()
-                                          ? kBackspaceFilledIcon
-                                          : kBackspaceOldIcon,
                                       kIconSize);
     case Suggestion::Icon::kCode:
       return ImageModelFromVectorIcon(::features::IsRoundedIconsEnabled()

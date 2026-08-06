@@ -48,7 +48,6 @@ aggregate_vector_icons("chrome_vector_icons") {
     "autorenew_old.icon",
     "back_arrow_touch_old.icon",
     "backspace_filled.icon",
-    "backspace_old.icon",
     "battery_saver_refresh_custom.icon",
     "bolt.icon",
     "bolt_old.icon",

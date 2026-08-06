@@ -336,7 +336,6 @@ int CreditCard::IconResourceId(Suggestion::Icon icon) {
     case Suggestion::Icon::kAccount:
     case Suggestion::Icon::kCardGenericSpark:
     case Suggestion::Icon::kCardGenericVector:
-    case Suggestion::Icon::kClear:
     case Suggestion::Icon::kCode:
     case Suggestion::Icon::kDelete:
     case Suggestion::Icon::kDevice:

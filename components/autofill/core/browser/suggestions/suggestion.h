@@ -381,8 +381,6 @@ struct Suggestion {
     // Generic icons start
     kAccount,
     kAndroidMessages,
-    // TODO(crbug.com/40266549): Rename to Undo.
-    kClear,
     kCode,
     kDelete,
     kDevice,
