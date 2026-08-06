@@ -4,14 +4,38 @@
 
 module remoting.mojom;
 
-// Main process interface used by the Daemon to bootstrap the Peer Connection
-// process.
+// Interface implemented in the high-privilege daemon process (`DaemonProcess`).
+// Used by the Network process to spawn or bootstrap a Peer Connection session.
 //
-// Callee: Untrusted PC Process.
-// Caller: Privileged Daemon Process.
+// Callee: High-privilege Daemon Process (`remoting::DaemonProcess`).
+// Caller: Trusted Network Process (`remoting::IpcPeerSessionFactory`).
+[EnableIf=is_win|is_linux]
+interface PeerSessionManager {
+  // Launches a peer session and binds `peer_session_receiver`.
+  LaunchPeerSession(
+      pending_receiver<PeerSession> peer_session_receiver);
+};
+
+// A session interface implemented by the Peer Connection process.
+// If the caller drops the remote, the disconnect handler terminates the Peer
+// Connection process.
+//
+// More methods will be added to this interface in subsequent CLs.
+//
+// Callee: Untrusted Peer Connection Process (`PeerConnectionProcess`).
+// Caller: Network Process (`IpcPeerSession`).
+[EnableIf=is_win|is_linux]
+interface PeerSession {
+  // TODO(crbug.com/382291480): Add methods for session control, capturer
+  // management, and WebRTC signaling.
+};
+
+// Associated interface used by the Daemon to control the PC process.
+//
+// Callee: Untrusted Peer Connection Process (`PeerConnectionProcess`).
+// Caller: Privileged Daemon Process (`remoting::DaemonProcess`).
 [EnableIf=is_win|is_linux]
 interface PeerConnectionProcessControl {
-  // Passes the desktop pipe (connected to the Desktop Process) to the PC
-  // process.
-  ConnectDesktopChannel(handle<message_pipe> desktop_pipe);
+  // Binds the `PeerSession` receiver in the PC process.
+  BindPeerSession(pending_receiver<PeerSession> session_receiver);
 };

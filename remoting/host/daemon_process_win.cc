@@ -132,7 +132,7 @@ class DaemonProcessWin : public DaemonProcess {
       const mojom::DesktopSessionOptions& options) override;
   void LaunchNetworkProcess() override;
   std::unique_ptr<WorkerProcessLauncher::Delegate>
-  CreatePeerConnectionProcessLauncherDelegate(int terminal_id) override;
+  CreatePeerConnectionProcessLauncherDelegate() override;
 
   bool OnInitAfterChannelConnected(int32_t peer_pid) override;
 
@@ -218,7 +218,7 @@ void DaemonProcessWin::LaunchNetworkProcess() {
 }
 
 std::unique_ptr<WorkerProcessLauncher::Delegate>
-DaemonProcessWin::CreatePeerConnectionProcessLauncherDelegate(int terminal_id) {
+DaemonProcessWin::CreatePeerConnectionProcessLauncherDelegate() {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
   base::FilePath host_binary;

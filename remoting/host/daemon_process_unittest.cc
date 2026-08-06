@@ -97,7 +97,7 @@ class MockDaemonProcess : public DaemonProcess {
 
   MOCK_METHOD(std::unique_ptr<WorkerProcessLauncher::Delegate>,
               CreatePeerConnectionProcessLauncherDelegate,
-              (int),
+              (),
               (override));
 };
 
@@ -321,26 +321,14 @@ TEST_F(DaemonProcessTest, InvalidConnectTerminal) {
 }
 
 TEST_F(DaemonProcessTest, LaunchPeerConnectionProcess) {
-  base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
-      kEnablePeerConnectionProcessSwitch);
-
   InSequence s;
   EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_));
-  EXPECT_CALL(*daemon_process_, CreatePeerConnectionProcessLauncherDelegate(_))
+  EXPECT_CALL(*daemon_process_, CreatePeerConnectionProcessLauncherDelegate())
       .WillOnce(testing::ReturnNull());
-  EXPECT_CALL(*daemon_process_, SendTerminalDisconnected(_, _, _, _));
 
   StartDaemonProcess();
 
-  int id = terminal_id_++;
-  daemon_process_->CreateDesktopSession(
-      id, mojo::NullReceiver(), mojo::NullRemote(), CreateSessionOptions());
-  EXPECT_EQ(desktop_sessions().size(), 1u);
-  EXPECT_EQ(id, desktop_sessions().begin()->second->id());
-
-  daemon_process_->CloseDesktopSession(id);
-  EXPECT_TRUE(desktop_sessions().empty());
+  daemon_process_->LaunchPeerSession(mojo::NullReceiver());
 }
 
 }  // namespace remoting

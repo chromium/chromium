@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/host/mojom/peer_session.mojom.h"
 #include "remoting/host/worker_process_ipc_delegate.h"
@@ -28,10 +29,10 @@ namespace remoting {
 // process for a single desktop session.
 class PeerConnectionProcessHandler : public WorkerProcessIpcDelegate {
  public:
-  using StoppedCallback = base::OnceCallback<void(int)>;
+  using StoppedCallback =
+      base::OnceCallback<void(base::WeakPtr<PeerConnectionProcessHandler>)>;
 
   PeerConnectionProcessHandler(
-      int terminal_id,
       scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
       std::unique_ptr<WorkerProcessLauncher::Delegate> launcher_delegate,
       StoppedCallback stopped_callback);
@@ -42,9 +43,8 @@ class PeerConnectionProcessHandler : public WorkerProcessIpcDelegate {
 
   ~PeerConnectionProcessHandler() override;
 
-  // Connects the desktop pipe to the Peer Connection process. If the process is
-  // not yet launched, the pipe is buffered.
-  void ConnectDesktopChannel(mojo::ScopedMessagePipeHandle desktop_pipe);
+  // Binds the `PeerSession` receiver in the PC process.
+  void BindPeerSession(mojo::PendingReceiver<mojom::PeerSession> receiver);
 
   // Crashes the Peer Connection process.
   void Crash(const base::Location& location);
@@ -60,14 +60,13 @@ class PeerConnectionProcessHandler : public WorkerProcessIpcDelegate {
  private:
   void CloseSelf();
 
-  int terminal_id_;
   scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner_;
   std::unique_ptr<WorkerProcessLauncher> launcher_;
   StoppedCallback stopped_callback_;
 
   mojo::AssociatedRemote<mojom::PeerConnectionProcessControl>
       pc_process_control_;
-  mojo::ScopedMessagePipeHandle desktop_pipe_;
+  mojo::PendingReceiver<mojom::PeerSession> pending_session_receiver_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -88,7 +88,7 @@ class DaemonProcessLinux : public DaemonProcess {
       const mojom::DesktopSessionOptions& options) override;
   void LaunchNetworkProcess() override;
   std::unique_ptr<WorkerProcessLauncher::Delegate>
-  CreatePeerConnectionProcessLauncherDelegate(int terminal_id) override;
+  CreatePeerConnectionProcessLauncherDelegate() override;
 
   void OnStartDesktopSessionFactoryResult(
       base::expected<void, Loggable> result);
@@ -171,8 +171,7 @@ void DaemonProcessLinux::LaunchNetworkProcess() {
 }
 
 std::unique_ptr<WorkerProcessLauncher::Delegate>
-DaemonProcessLinux::CreatePeerConnectionProcessLauncherDelegate(
-    int terminal_id) {
+DaemonProcessLinux::CreatePeerConnectionProcessLauncherDelegate() {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
   base::FilePath this_exe;

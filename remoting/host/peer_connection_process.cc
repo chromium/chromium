@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/process/process.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ipc/ipc_channel_proxy.h"
@@ -60,11 +61,23 @@ void PeerConnectionProcess::OnAssociatedInterfaceRequest(
   }
 }
 
-void PeerConnectionProcess::ConnectDesktopChannel(
-    mojo::ScopedMessagePipeHandle desktop_pipe) {
+void PeerConnectionProcess::BindPeerSession(
+    mojo::PendingReceiver<mojom::PeerSession> session_receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  VLOG(1) << "PeerConnectionProcess::ConnectDesktopChannel received.";
-  desktop_pipe_ = std::move(desktop_pipe);
+  session_receiver_.Bind(std::move(session_receiver));
+  session_receiver_.set_disconnect_handler(base::BindOnce(
+      &PeerConnectionProcess::OnSessionDisconnected, base::Unretained(this)));
+}
+
+void PeerConnectionProcess::OnSessionDisconnected() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  LOG(INFO)
+      << "PeerSession dropped by Network process; shutting down PC process.";
+  if (on_shutdown_for_testing_) {
+    std::move(on_shutdown_for_testing_).Run();
+    return;
+  }
+  base::Process::TerminateCurrentProcessImmediately(0);
 }
 
 void PeerConnectionProcess::OnChannelError() {
@@ -73,7 +86,7 @@ void PeerConnectionProcess::OnChannelError() {
 
   daemon_channel_.reset();
   control_receiver_.reset();
-  desktop_pipe_.reset();
+  session_receiver_.reset();
 
   caller_task_runner_ = nullptr;
   io_task_runner_ = nullptr;

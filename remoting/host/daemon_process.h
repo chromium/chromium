@@ -12,8 +12,11 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
+#include "base/containers/flat_set.h"
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -28,6 +31,7 @@
 #include "remoting/host/host_status_observer.h"
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
+#include "remoting/host/mojom/peer_session.mojom.h"
 #include "remoting/host/mojom/remoting_host.mojom.h"
 #include "remoting/host/worker_process_ipc_delegate.h"
 #include "remoting/host/worker_process_launcher.h"
@@ -54,6 +58,7 @@ class DaemonProcess : public ConfigWatcher::Delegate,
                       public WorkerProcessIpcDelegate,
                       public HostStatusObserver,
                       public mojom::DesktopSessionManager,
+                      public mojom::PeerSessionManager,
                       public mojom::ChromotingHostServices {
  public:
   using StoppedCallback = base::OnceCallback<void(int /*exit_code*/)>;
@@ -96,6 +101,10 @@ class DaemonProcess : public ConfigWatcher::Delegate,
                                     ErrorCode error_code,
                                     const std::string& error_details,
                                     const SourceLocation& error_location);
+
+  // mojom::PeerSessionManager implementation.
+  void LaunchPeerSession(
+      mojo::PendingReceiver<mojom::PeerSession> peer_session_receiver) override;
 
   // Called when a desktop integration process attaches to |terminal_id|.
   // |desktop_pipe| specifies the client end of the desktop pipe. Returns true
@@ -175,7 +184,7 @@ class DaemonProcess : public ConfigWatcher::Delegate,
   // Factory method implemented by platform subclasses to create their
   // specific launcher delegate.
   virtual std::unique_ptr<WorkerProcessLauncher::Delegate>
-  CreatePeerConnectionProcessLauncherDelegate(int terminal_id) = 0;
+  CreatePeerConnectionProcessLauncherDelegate() = 0;
 
   // Virtual for testing.
   virtual void SendHostConfigToNetworkProcess(
@@ -228,16 +237,17 @@ class DaemonProcess : public ConfigWatcher::Delegate,
       mojo::PendingRemote<mojom::DesktopSessionEvents> events_remote,
       mojom::DesktopSessionOptionsPtr options) override;
 
-  // Launches the peer connection process for |terminal_id| and establishes an
-  // IPC channel with it.
-  void LaunchPeerConnectionProcess(int terminal_id);
+  // Launches a peer connection process and establishes an IPC channel with it.
+  // Returns a pointer to the created handler, or nullptr if creation failed.
+  PeerConnectionProcessHandler* LaunchPeerConnectionProcess();
 
-  // Closes the peer connection process for |terminal_id|.
-  void ClosePeerConnectionProcess(int terminal_id);
+  // Called when a peer connection process stops.
+  void OnPeerConnectionProcessStopped(
+      base::WeakPtr<PeerConnectionProcessHandler> handler);
 
-  // Tracks active peer connection process launchers. The keys are
-  // `terminal_id`.
-  std::map<int, std::unique_ptr<PeerConnectionProcessHandler>>
+  // Tracks active peer connection process launchers.
+  base::flat_set<std::unique_ptr<PeerConnectionProcessHandler>,
+                 base::UniquePtrComparator>
       peer_connection_launchers_;
 
   // Binds associated interfaces to the network process launcher.
@@ -280,6 +290,8 @@ class DaemonProcess : public ConfigWatcher::Delegate,
 
   mojo::AssociatedReceiver<mojom::DesktopSessionManager>
       desktop_session_manager_{this};
+  mojo::AssociatedReceiver<mojom::PeerSessionManager> peer_session_manager_{
+      this};
   mojo::AssociatedReceiver<mojom::HostStatusObserver> host_status_observer_{
       this};
 

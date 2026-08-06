@@ -7,11 +7,14 @@
 
 #include <memory>
 
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "ipc/ipc_listener.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/host/mojom/peer_session.mojom.h"
 
@@ -29,7 +32,8 @@ namespace remoting {
 // and hosts the WebRTC connection (signaling and data channels). It
 // communicates with the privileged Daemon process via Mojo IPC.
 class PeerConnectionProcess : public IPC::Listener,
-                              public mojom::PeerConnectionProcessControl {
+                              public mojom::PeerConnectionProcessControl,
+                              public mojom::PeerSession {
  public:
   PeerConnectionProcess(
       scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
@@ -49,12 +53,18 @@ class PeerConnectionProcess : public IPC::Listener,
       mojo::ScopedInterfaceEndpointHandle handle) override;
 
   // mojom::PeerConnectionProcessControl implementation.
-  void ConnectDesktopChannel(
-      mojo::ScopedMessagePipeHandle desktop_pipe) override;
+  void BindPeerSession(
+      mojo::PendingReceiver<mojom::PeerSession> session_receiver) override;
+
+  void set_on_shutdown_for_testing(base::OnceClosure callback) {
+    on_shutdown_for_testing_ = std::move(callback);
+  }
 
  private:
   // IPC::Listener implementation.
   void OnChannelError() override;
+
+  void OnSessionDisconnected();
 
   scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
@@ -63,10 +73,9 @@ class PeerConnectionProcess : public IPC::Listener,
 
   mojo::AssociatedReceiver<mojom::PeerConnectionProcessControl>
       control_receiver_{this};
+  mojo::Receiver<mojom::PeerSession> session_receiver_{this};
 
-  // Buffered desktop pipe (in case it is passed but we don't have a session
-  // yet). This will be passed to PeerSession once it is initialized.
-  mojo::ScopedMessagePipeHandle desktop_pipe_;
+  base::OnceClosure on_shutdown_for_testing_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<PeerConnectionProcess> weak_factory_{this};
