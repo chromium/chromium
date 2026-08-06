@@ -62,10 +62,11 @@ class BookmarkSearchBoxRowViewBinder {
                     wrapCallback(
                             model, BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TOGGLE_CALLBACK);
             shoppingChip.setOnClickListener(
-                    (View v) -> {
-                        onToggle.onResult(
-                                !model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_SELECTED));
-                    });
+                    (_) ->
+                            onToggle.onResult(
+                                    !model.get(
+                                            BookmarkSearchBoxRowProperties
+                                                    .SHOPPING_CHIP_SELECTED)));
         } else if (key == BookmarkSearchBoxRowProperties.SHOPPING_CHIP_SELECTED) {
             shoppingChip.setSelected(
                     model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_SELECTED));

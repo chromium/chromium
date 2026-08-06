@@ -203,11 +203,6 @@ public class BookmarkBarVisibilityProvider {
     }
 
     @Nullable PrefObserver getPrefObserverForTesting() {
-        return new PrefObserver() {
-            @Override
-            public void onPreferenceChange() {
-                processPrefChange();
-            }
-        };
+        return this::processPrefChange;
     }
 }

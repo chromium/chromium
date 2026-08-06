@@ -171,14 +171,13 @@ public class BookmarkSaveFlowCoordinator implements ActivityStateListener {
             boolean wasBookmarkMoved,
             boolean isNewBookmark) {
         mBookmarkModel.finishLoadingBookmarkModel(
-                () -> {
-                    show(
-                            bookmarkId,
-                            fromExplicitTrackUi,
-                            wasBookmarkMoved,
-                            isNewBookmark,
-                            mBookmarkModel.getPowerBookmarkMeta(bookmarkId));
-                });
+                () ->
+                        show(
+                                bookmarkId,
+                                fromExplicitTrackUi,
+                                wasBookmarkMoved,
+                                isNewBookmark,
+                                mBookmarkModel.getPowerBookmarkMeta(bookmarkId)));
     }
 
     void show(

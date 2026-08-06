@@ -50,6 +50,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -1124,15 +1125,14 @@ public class TabBottomSheetCoordinatorUnitTest {
 
     private void setupMockContentProvider() {
         doAnswer(
-                        invocation -> {
-                            return new TestTabBottomSheetContent(
-                                    invocation.getArgument(0),
-                                    invocation.getArgument(1),
-                                    invocation.getArgument(2),
-                                    invocation.getArgument(3),
-                                    invocation.getArgument(4),
-                                    invocation.getArgument(5));
-                        })
+                        (InvocationOnMock invocation) ->
+                                new TestTabBottomSheetContent(
+                                        invocation.getArgument(0),
+                                        invocation.getArgument(1),
+                                        invocation.getArgument(2),
+                                        invocation.getArgument(3),
+                                        invocation.getArgument(4),
+                                        invocation.getArgument(5)))
                 .when(mMockContentProvider)
                 .createContent(
                         any(View.class),

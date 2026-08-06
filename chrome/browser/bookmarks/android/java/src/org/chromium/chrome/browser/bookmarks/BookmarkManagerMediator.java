@@ -1169,10 +1169,9 @@ class BookmarkManagerMediator
 
     private void updateAllLocations() {
         Predicate<ListItem> locationPredicate =
-                (listItem) -> {
-                    return isBookmarkRowType(listItem.type)
-                            && isMovable(mBookmarkModel, listItem.model);
-                };
+                (ListItem listItem) ->
+                        isBookmarkRowType(listItem.type)
+                                && isMovable(mBookmarkModel, listItem.model);
         int startIndex = firstIndexWithPredicate(0, mModelList.size(), 1, locationPredicate);
         int lastIndex = firstIndexWithPredicate(mModelList.size() - 1, -1, -1, locationPredicate);
         if (startIndex < 0 || lastIndex < 0) {
@@ -1325,12 +1324,7 @@ class BookmarkManagerMediator
 
     int getBookmarkItemStartIndex() {
         return firstIndexWithPredicate(
-                0,
-                mModelList.size(),
-                1,
-                (listItem) -> {
-                    return isBookmarkRowType(listItem.type);
-                });
+                0, mModelList.size(), 1, (ListItem listItem) -> isBookmarkRowType(listItem.type));
     }
 
     int getBookmarkItemEndIndex() {
@@ -1338,9 +1332,7 @@ class BookmarkManagerMediator
                 mModelList.size() - 1,
                 -1,
                 -1,
-                (listItem) -> {
-                    return isBookmarkRowType(listItem.type);
-                });
+                (ListItem listItem) -> isBookmarkRowType(listItem.type));
     }
 
     /**
@@ -1897,9 +1889,7 @@ class BookmarkManagerMediator
         }
 
         mShoppingService.getAllPriceTrackedBookmarks(
-                (bookmarks) -> {
-                    updateFilterAvailability(!bookmarks.isEmpty());
-                });
+                (List<BookmarkId> bookmarks) -> updateFilterAvailability(!bookmarks.isEmpty()));
     }
 
     private void updateFilterAvailability(boolean shoppingFilterAvailable) {

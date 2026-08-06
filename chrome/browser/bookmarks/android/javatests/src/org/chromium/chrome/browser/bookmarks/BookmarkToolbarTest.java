@@ -203,10 +203,7 @@ public class BookmarkToolbarTest {
         }
         mActivityMonitorList.clear();
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mWindowAndroid.destroy();
-                });
+        ThreadUtils.runOnUiThreadBlocking(() -> mWindowAndroid.destroy());
     }
 
     private void initializeNormal() {

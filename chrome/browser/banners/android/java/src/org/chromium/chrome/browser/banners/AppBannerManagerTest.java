@@ -155,10 +155,7 @@ public class AppBannerManagerTest {
                     null,
                     mInstallIntent);
             PostTask.runOrPostTask(
-                    TaskTraits.UI_DEFAULT,
-                    () -> {
-                        mObserver.onAppDetailsRetrieved(mAppData);
-                    });
+                    TaskTraits.UI_DEFAULT, () -> mObserver.onAppDetailsRetrieved(mAppData));
         }
 
         @Override
@@ -192,9 +189,7 @@ public class AppBannerManagerTest {
         mDetailsDelegate = new MockAppDetailsDelegate();
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    AppBannerManager.setAppDetailsDelegate(mDetailsDelegate);
-                });
+                () -> AppBannerManager.setAppDetailsDelegate(mDetailsDelegate));
 
         AppBannerManager.ignoreChromeChannelForTesting();
         AppBannerManager.setOverrideSegmentationResultForTesting(true);
@@ -212,10 +207,7 @@ public class AppBannerManagerTest {
 
     @After
     public void tearDown() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    AppBannerManager.setAppDetailsDelegate(null);
-                });
+        ThreadUtils.runOnUiThreadBlocking(() -> AppBannerManager.setAppDetailsDelegate(null));
         mDetailsDelegate = null;
     }
 
@@ -230,10 +222,9 @@ public class AppBannerManagerTest {
 
     private void waitForAppBannerPipelineStatus(Tab tab, int expectedValue) {
         CriteriaHelper.pollUiThread(
-                () -> {
-                    return getAppBannerManager(tab.getWebContents()).getPipelineStatusForTesting()
-                            == expectedValue;
-                });
+                () ->
+                        getAppBannerManager(tab.getWebContents()).getPipelineStatusForTesting()
+                                == expectedValue);
     }
 
     private void navigateToUrlAndWaitForBannerManager(
@@ -258,19 +249,18 @@ public class AppBannerManagerTest {
             ChromeActivityTestRule<? extends ChromeActivity> rule,
             final boolean isProbablyPromotable) {
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Assert.assertEquals(
-                            AppBannerManager.isProbablyPromotable(
-                                    rule.getActivity().getActivityTab().getWebContents()),
-                            isProbablyPromotable);
-                });
+                () ->
+                        Assert.assertEquals(
+                                AppBannerManager.isProbablyPromotable(
+                                        rule.getActivity().getActivityTab().getWebContents()),
+                                isProbablyPromotable));
     }
 
     private void waitUntilBottomSheetStatus(@BottomSheetController.SheetState int status) {
         CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(mBottomSheetController.getSheetState(), Matchers.is(status));
-                });
+                () ->
+                        Criteria.checkThat(
+                                mBottomSheetController.getSheetState(), Matchers.is(status)));
     }
 
     private void waitUntilNoDialogsShowing(final Tab tab) throws Exception {
@@ -716,10 +706,9 @@ public class AppBannerManagerTest {
 
         // Dismiss the bottom sheet.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mBottomSheetController.hideContent(
-                            mBottomSheetController.getCurrentSheetContent(), false);
-                });
+                () ->
+                        mBottomSheetController.hideContent(
+                                mBottomSheetController.getCurrentSheetContent(), false));
 
         waitUntilBottomSheetStatus(BottomSheetController.SheetState.HIDDEN);
 
@@ -787,10 +776,9 @@ public class AppBannerManagerTest {
 
         // Dismiss the bottom sheet.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mBottomSheetController.hideContent(
-                            mBottomSheetController.getCurrentSheetContent(), false);
-                });
+                () ->
+                        mBottomSheetController.hideContent(
+                                mBottomSheetController.getCurrentSheetContent(), false));
 
         waitUntilBottomSheetStatus(BottomSheetController.SheetState.HIDDEN);
 
@@ -815,10 +803,9 @@ public class AppBannerManagerTest {
 
         // Dismiss the bottom sheet after expanding it.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mBottomSheetController.hideContent(
-                            mBottomSheetController.getCurrentSheetContent(), false);
-                });
+                () ->
+                        mBottomSheetController.hideContent(
+                                mBottomSheetController.getCurrentSheetContent(), false));
         waitUntilBottomSheetStatus(BottomSheetController.SheetState.HIDDEN);
 
         // Waiting two months shouldn't be long enough.
@@ -873,11 +860,10 @@ public class AppBannerManagerTest {
                 backgroundTab, AppBannerManagerState.PENDING_PROMPT_NOT_CANCELED);
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Assert.assertEquals(
-                            BottomSheetController.SheetState.HIDDEN,
-                            mBottomSheetController.getSheetState());
-                });
+                () ->
+                        Assert.assertEquals(
+                                BottomSheetController.SheetState.HIDDEN,
+                                mBottomSheetController.getSheetState()));
     }
 
     @Test

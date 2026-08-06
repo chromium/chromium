@@ -105,11 +105,11 @@ public class BookmarkPopupMediator {
                                         item,
                                         /* imageSize= */ 0,
                                         mCallbackController.makeCancelable(
-                                                (Drawable drawable) -> {
-                                                    mPropertyModel.set(
-                                                            BookmarkPopupProperties.IMAGE_DRAWABLE,
-                                                            drawable);
-                                                }));
+                                                (Drawable drawable) ->
+                                                        mPropertyModel.set(
+                                                                BookmarkPopupProperties
+                                                                        .IMAGE_DRAWABLE,
+                                                                drawable)));
                             }
                         }));
     }

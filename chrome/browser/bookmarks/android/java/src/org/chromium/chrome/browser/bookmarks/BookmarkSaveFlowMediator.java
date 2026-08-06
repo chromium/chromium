@@ -251,10 +251,9 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
 
     private void bindImage(BookmarkItem item) {
         Callback<Drawable> callback =
-                drawable -> {
-                    mPropertyModel.set(
-                            ImprovedBookmarkSaveFlowProperties.BOOKMARK_ROW_ICON, drawable);
-                };
+                (Drawable drawable) ->
+                        mPropertyModel.set(
+                                ImprovedBookmarkSaveFlowProperties.BOOKMARK_ROW_ICON, drawable);
 
         mBookmarkImageFetcher.fetchImageForBookmarkWithFaviconFallback(
                 item,

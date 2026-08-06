@@ -26,6 +26,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -113,10 +114,7 @@ public class ImprovedBookmarkRowRenderTest {
         mActivityTestRule.getActivity().setTheme(R.style.Theme_BrowserUI_DayNight);
 
         CurrencyFormatterJni.setInstanceForTesting(mCurrencyFormatterJniMock);
-        doAnswer(
-                        (invocation) -> {
-                            return "$" + invocation.getArgument(1);
-                        })
+        doAnswer((InvocationOnMock invocation) -> "$" + invocation.getArgument(1))
                 .when(mCurrencyFormatterJniMock)
                 .format(anyLong(), any());
 
@@ -205,9 +203,7 @@ public class ImprovedBookmarkRowRenderTest {
     @Feature({"RenderTest"})
     public void testDisabled() throws IOException {
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mModel.set(ImprovedBookmarkRowProperties.ENABLED, false);
-                });
+                () -> mModel.set(ImprovedBookmarkRowProperties.ENABLED, false));
         mRenderTestRule.render(mContentView, "disabled");
     }
 
@@ -232,9 +228,7 @@ public class ImprovedBookmarkRowRenderTest {
     @Feature({"RenderTest"})
     public void testLocalBookmarkItem() throws IOException {
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mModel.set(ImprovedBookmarkRowProperties.IS_LOCAL_BOOKMARK, true);
-                });
+                () -> mModel.set(ImprovedBookmarkRowProperties.IS_LOCAL_BOOKMARK, true));
         mRenderTestRule.render(mContentView, "local_bookmark");
     }
 

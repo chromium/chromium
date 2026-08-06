@@ -10,6 +10,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Pair;
 
+import org.jni_zero.JniType;
+
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.build.annotations.NullMarked;
@@ -148,16 +150,17 @@ public class BookmarkImageFetcher {
         GURL faviconUrl = item.getUrl();
         int faviconDisplaySize = BookmarkViewUtils.getFaviconDisplaySize(mContext.getResources());
         FaviconHelper.FaviconImageCallback faviconCallback =
-                (image, iconUrl) -> {
-                    callback.onResult(
-                            FaviconUtils.getIconDrawableWithFilter(
-                                    image,
-                                    faviconUrl,
-                                    mRoundedIconGenerator,
-                                    mDefaultFaviconHelper,
-                                    mContext,
-                                    faviconDisplaySize));
-                };
+                (Bitmap image,
+                        @JniType("GURL")
+                        GURL _) ->
+                        callback.onResult(
+                                FaviconUtils.getIconDrawableWithFilter(
+                                        image,
+                                        faviconUrl,
+                                        mRoundedIconGenerator,
+                                        mDefaultFaviconHelper,
+                                        mContext,
+                                        faviconDisplaySize));
 
         if (item.isAccountBookmark()) {
             mFaviconHelper.getForeignFaviconImageForURL(

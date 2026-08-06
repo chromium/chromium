@@ -22,6 +22,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmark.BookmarkIterator;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksShim;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -196,10 +197,11 @@ class BookmarkBridge {
                     if (mNativeBookmarkBridge == 0) return;
 
                     provider.getIterator(
-                            (iterator) -> {
-                                PartnerBookmarksShim.kickOffReading(
-                                        ContextUtils.getApplicationContext(), mProfile, iterator);
-                            });
+                            (BookmarkIterator iterator) ->
+                                    PartnerBookmarksShim.kickOffReading(
+                                            ContextUtils.getApplicationContext(),
+                                            mProfile,
+                                            iterator));
                 });
     }
 

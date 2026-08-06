@@ -193,10 +193,9 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
 
         PropertyModel model;
         Runnable exitRunnable =
-                () -> {
-                    CollaborationControllerDelegateImplJni.get()
-                            .runResultCallback(Outcome.SUCCESS, resultCallback);
-                };
+                () ->
+                        CollaborationControllerDelegateImplJni.get()
+                                .runResultCallback(Outcome.SUCCESS, resultCallback);
         if (errorType == Type.UPDATE_CHROME_UI_FOR_VERSION_OUT_OF_DATE) {
             model =
                     VersioningModalDialog.showWithCustomMessage(

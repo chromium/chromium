@@ -530,82 +530,73 @@ class BookmarkBarMediator
     @Override
     public void openInNewTab(BookmarkId id) {
         runIfStillRelevantAfterFinishLoadingBookmarkModel(
-                (profile, model) -> {
-                    mBookmarkOpener.openBookmarksInNewTabs(
-                            List.of(id),
-                            profile.isOffTheRecord(),
-                            TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND);
-                });
+                (Profile profile, BookmarkModel model) ->
+                        mBookmarkOpener.openBookmarksInNewTabs(
+                                List.of(id),
+                                profile.isOffTheRecord(),
+                                TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND));
     }
 
     @Override
     public void openInNewWindow(BookmarkId id) {
         runIfStillRelevantAfterFinishLoadingBookmarkModel(
-                (profile, model) -> {
-                    mBookmarkOpener.openBookmarksInNewWindow(List.of(id), /* incognito= */ false);
-                });
+                (_, _) ->
+                        mBookmarkOpener.openBookmarksInNewWindow(
+                                List.of(id), /* incognito= */ false));
     }
 
     @Override
     public void openInIncognitoWindow(BookmarkId id) {
         runIfStillRelevantAfterFinishLoadingBookmarkModel(
-                (profile, model) -> {
-                    mBookmarkOpener.openBookmarksInNewWindow(List.of(id), /* incognito= */ true);
-                });
+                (_, _) ->
+                        mBookmarkOpener.openBookmarksInNewWindow(
+                                List.of(id), /* incognito= */ true));
     }
 
     @Override
     public void openAll(List<BookmarkId> ids) {
         runIfStillRelevantAfterFinishLoadingBookmarkModel(
-                (profile, model) -> {
-                    mBookmarkOpener.openBookmarksInNewTabs(
-                            ids,
-                            profile.isOffTheRecord(),
-                            TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND);
-                });
+                (Profile profile, BookmarkModel _) ->
+                        mBookmarkOpener.openBookmarksInNewTabs(
+                                ids,
+                                profile.isOffTheRecord(),
+                                TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND));
     }
 
     @Override
     public void openAllInNewWindow(List<BookmarkId> ids) {
         runIfStillRelevantAfterFinishLoadingBookmarkModel(
-                (profile, model) -> {
-                    mBookmarkOpener.openBookmarksInNewWindow(ids, /* incognito= */ false);
-                });
+                (_, _) -> mBookmarkOpener.openBookmarksInNewWindow(ids, /* incognito= */ false));
     }
 
     @Override
     public void openAllInIncognitoWindow(List<BookmarkId> ids) {
         runIfStillRelevantAfterFinishLoadingBookmarkModel(
-                (profile, model) -> {
-                    mBookmarkOpener.openBookmarksInNewWindow(ids, /* incognito= */ true);
-                });
+                (_, _) -> mBookmarkOpener.openBookmarksInNewWindow(ids, /* incognito= */ true));
     }
 
     @Override
     public void openAllInNewTabGroup(List<BookmarkId> ids, @Nullable String title) {
         runIfStillRelevantAfterFinishLoadingBookmarkModel(
-                (profile, model) -> {
-                    mBookmarkOpener.openBookmarksInNewTabGroup(
-                            ids, profile.isOffTheRecord(), title);
-                });
+                (Profile profile, BookmarkModel _) ->
+                        mBookmarkOpener.openBookmarksInNewTabGroup(
+                                ids, profile.isOffTheRecord(), title));
     }
 
     @Override
     public void editBookmark(BookmarkId id) {
         runIfStillRelevantAfterFinishLoadingBookmarkModel(
-                (profile, model) -> {
-                    assertNonNull(mBookmarkManagerOpenerSupplier.get())
-                            .startEditActivity(mActivity, profile, id);
-                });
+                (Profile profile, BookmarkModel _) ->
+                        assertNonNull(mBookmarkManagerOpenerSupplier.get())
+                                .startEditActivity(mActivity, profile, id));
     }
 
     @Override
     public void moveBookmark(BookmarkId id) {
         runIfStillRelevantAfterFinishLoadingBookmarkModel(
-                (profile, model) -> {
-                    assertNonNull(mBookmarkManagerOpenerSupplier.get())
-                            .startFolderPickerActivity(mActivity, profile, id);
-                });
+                (Profile profile, BookmarkModel _) ->
+                        assertNonNull(mBookmarkManagerOpenerSupplier.get())
+                                .startFolderPickerActivity(mActivity, profile, id));
     }
 
     /**
@@ -651,20 +642,18 @@ class BookmarkBarMediator
     @Override
     public void openBookmarksManager(BookmarkId folderId) {
         runIfStillRelevantAfterFinishLoadingBookmarkModel(
-                (profile, model) -> {
-                    assertNonNull(mBookmarkManagerOpenerSupplier.get())
-                            .showBookmarkManager(
-                                    mActivity, mCurrentTabSupplier.get(), profile, folderId);
-                });
+                (Profile profile, BookmarkModel _) ->
+                        assertNonNull(mBookmarkManagerOpenerSupplier.get())
+                                .showBookmarkManager(
+                                        mActivity, mCurrentTabSupplier.get(), profile, folderId));
     }
 
     @Override
     public void toggleBookmarksBar() {
         runIfStillRelevantAfterFinishLoadingBookmarkModel(
-                (profile, model) -> {
-                    BookmarkBarUtils.toggleShowBookmarksBar(
-                            profile, /* fromKeyboardShortcut= */ false);
-                });
+                (Profile profile, BookmarkModel _) ->
+                        BookmarkBarUtils.toggleShowBookmarksBar(
+                                profile, /* fromKeyboardShortcut= */ false));
     }
 
     public void setVisibility(boolean isVisible) {

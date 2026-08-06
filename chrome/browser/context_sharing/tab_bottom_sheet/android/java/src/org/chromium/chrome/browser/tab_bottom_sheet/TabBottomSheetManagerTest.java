@@ -439,9 +439,7 @@ public class TabBottomSheetManagerTest {
                             return supplier;
                         });
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mManager.initReadAloudIntegrationForTesting(readAloudTabSupplier, () -> {});
-                });
+                () -> mManager.initReadAloudIntegrationForTesting(readAloudTabSupplier, () -> {}));
         showBottomSheetAndBlockUntilReady();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -459,16 +457,12 @@ public class TabBottomSheetManagerTest {
     @SmallTest
     public void testReadAloudClosedOnBottomSheetShown() {
         SettableNullableObservableSupplier<Tab> readAloudTabSupplier =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            return ObservableSuppliers.createNullable();
-                        });
+                ThreadUtils.runOnUiThreadBlocking(() -> ObservableSuppliers.createNullable());
         Runnable mockStopPlaybackCallback = mock(Runnable.class);
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mManager.initReadAloudIntegrationForTesting(
-                            readAloudTabSupplier, mockStopPlaybackCallback);
-                });
+                () ->
+                        mManager.initReadAloudIntegrationForTesting(
+                                readAloudTabSupplier, mockStopPlaybackCallback));
 
         // Start read aloud
         ThreadUtils.runOnUiThreadBlocking(
@@ -495,10 +489,7 @@ public class TabBottomSheetManagerTest {
         showBottomSheetAndBlockUntilReady(
                 mockDelegate, /* animate= */ false, /* startsExpanded= */ false);
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mManager.setSheetExpanded(true);
-                });
+        ThreadUtils.runOnUiThreadBlocking(() -> mManager.setSheetExpanded(true));
 
         CriteriaHelper.pollUiThread(
                 () -> verify(mockDelegate, atLeastOnce()).onBottomSheetOpened(true));
@@ -511,9 +502,7 @@ public class TabBottomSheetManagerTest {
         showBottomSheetAndBlockUntilReady(mockDelegate);
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mManager.tryToCloseBottomSheet(/* animate= */ false);
-                });
+                () -> mManager.tryToCloseBottomSheet(/* animate= */ false));
 
         verify(mockDelegate).onBottomSheetClosed();
     }
@@ -544,17 +533,12 @@ public class TabBottomSheetManagerTest {
         showBottomSheetAndBlockUntilReady();
         assertEquals(mManager.getNativeInterfaceDelegateForTesting(), mDelegate);
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mManager.detachNativeInterfaceDelegate(mDelegate);
-                });
+        ThreadUtils.runOnUiThreadBlocking(() -> mManager.detachNativeInterfaceDelegate(mDelegate));
 
         assertEquals(mManager.getNativeInterfaceDelegateForTesting(), null);
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mManager.attachNativeInterfaceDelegateForTesting(mDelegate);
-                });
+                () -> mManager.attachNativeInterfaceDelegateForTesting(mDelegate));
     }
 
     @Test
@@ -567,9 +551,7 @@ public class TabBottomSheetManagerTest {
         CriteriaHelper.pollUiThread(() -> !mManager.isSheetShowing());
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mManager.tryToCloseBottomSheet(/* animate= */ false);
-                });
+                () -> mManager.tryToCloseBottomSheet(/* animate= */ false));
 
         verify(mockDelegate).onBottomSheetClosed();
 
@@ -612,18 +594,14 @@ public class TabBottomSheetManagerTest {
 
         // While suppressed, close the Tab Bottom Sheet via the manager.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mManager.tryToCloseBottomSheet(/* animate= */ false);
-                });
+                () -> mManager.tryToCloseBottomSheet(/* animate= */ false));
 
         // Verify that native got onBottomSheetClosed.
         verify(mockDelegate).onBottomSheetClosed();
 
         // Close the other bottom sheet.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mBottomSheetController.hideContent(otherContent, /* animate= */ false);
-                });
+                () -> mBottomSheetController.hideContent(otherContent, /* animate= */ false));
     }
 
     @Test
@@ -664,10 +642,7 @@ public class TabBottomSheetManagerTest {
         verify(mockDelegate1).onBottomSheetClosed();
         assertEquals(mManager.getNativeInterfaceDelegateForTesting(), mockDelegate2);
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    coBrowseViews2.destroy();
-                });
+        ThreadUtils.runOnUiThreadBlocking(() -> coBrowseViews2.destroy());
     }
 
     @Test

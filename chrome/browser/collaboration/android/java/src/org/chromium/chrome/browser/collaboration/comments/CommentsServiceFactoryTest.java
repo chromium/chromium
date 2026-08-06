@@ -45,15 +45,12 @@ public class CommentsServiceFactoryTest {
         mActivityTestRule.startOnBlankPage();
 
         ThreadUtils.runOnUiThreadBlocking(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        CommentsService commentsService =
-                                CommentsServiceFactory.getForProfile(
-                                        ProfileManager.getLastUsedRegularProfile());
-                        Assert.assertNotNull(commentsService);
-                        Assert.assertEquals(commentsService, testService);
-                    }
+                () -> {
+                    CommentsService commentsService =
+                            CommentsServiceFactory.getForProfile(
+                                    ProfileManager.getLastUsedRegularProfile());
+                    Assert.assertNotNull(commentsService);
+                    Assert.assertEquals(commentsService, testService);
                 });
     }
 
@@ -65,14 +62,11 @@ public class CommentsServiceFactoryTest {
         mActivityTestRule.startOnBlankPage();
 
         ThreadUtils.runOnUiThreadBlocking(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        CommentsService commentsService =
-                                CommentsServiceFactory.getForProfile(
-                                        ProfileManager.getLastUsedRegularProfile());
-                        Assert.assertNotNull(commentsService);
-                    }
+                () -> {
+                    CommentsService commentsService =
+                            CommentsServiceFactory.getForProfile(
+                                    ProfileManager.getLastUsedRegularProfile());
+                    Assert.assertNotNull(commentsService);
                 });
     }
 }

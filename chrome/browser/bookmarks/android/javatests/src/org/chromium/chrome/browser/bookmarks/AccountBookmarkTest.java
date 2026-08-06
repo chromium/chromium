@@ -120,11 +120,10 @@ public class AccountBookmarkTest {
     public void testDefaultFolders() {
         CriteriaHelper.pollUiThread(() -> mBookmarkModel.getAccountMobileFolderId() != null);
         runOnUiThreadBlocking(
-                () -> {
-                    assertEquals(
-                            mBookmarkModel.getAccountMobileFolderId(),
-                            mBookmarkModel.getDefaultBookmarkFolder());
-                });
+                () ->
+                        assertEquals(
+                                mBookmarkModel.getAccountMobileFolderId(),
+                                mBookmarkModel.getDefaultBookmarkFolder()));
     }
 
     private void checkTopLevelAccountFoldersDisplayed() {

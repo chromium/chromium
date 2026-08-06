@@ -143,12 +143,11 @@ public class ImprovedBookmarkSaveFlowRenderTest {
     public void testLongText() throws IOException {
         String folderText = "in really really long, I mean an extremely long folder";
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mModel.set(
-                            ImprovedBookmarkSaveFlowProperties.SUBTITLE,
-                            BookmarkSaveFlowMediator.createHighlightedCharSequence(
-                                    mActivity, new FolderText(folderText, 3, 51)));
-                });
+                () ->
+                        mModel.set(
+                                ImprovedBookmarkSaveFlowProperties.SUBTITLE,
+                                BookmarkSaveFlowMediator.createHighlightedCharSequence(
+                                        mActivity, new FolderText(folderText, 3, 51))));
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         mRenderTestRule.render(mContentView, "long_text");
     }
@@ -161,11 +160,10 @@ public class ImprovedBookmarkSaveFlowRenderTest {
         Bitmap bitmap = Bitmap.createBitmap(bitmapSize, bitmapSize, Bitmap.Config.ARGB_8888);
         bitmap.eraseColor(Color.GREEN);
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mModel.set(
-                            ImprovedBookmarkSaveFlowProperties.BOOKMARK_ROW_ICON,
-                            new BitmapDrawable(mActivity.getResources(), bitmap));
-                });
+                () ->
+                        mModel.set(
+                                ImprovedBookmarkSaveFlowProperties.BOOKMARK_ROW_ICON,
+                                new BitmapDrawable(mActivity.getResources(), bitmap)));
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         mRenderTestRule.render(mContentView, "favicon");
     }

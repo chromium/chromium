@@ -158,10 +158,7 @@ public class AmbientBadgeManagerTest {
                     null,
                     mInstallIntent);
             PostTask.runOrPostTask(
-                    TaskTraits.UI_DEFAULT,
-                    () -> {
-                        mObserver.onAppDetailsRetrieved(mAppData);
-                    });
+                    TaskTraits.UI_DEFAULT, () -> mObserver.onAppDetailsRetrieved(mAppData));
         }
 
         @Override
@@ -193,9 +190,7 @@ public class AmbientBadgeManagerTest {
         mDetailsDelegate = new MockAppDetailsDelegate();
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    AppBannerManager.setAppDetailsDelegate(mDetailsDelegate);
-                });
+                () -> AppBannerManager.setAppDetailsDelegate(mDetailsDelegate));
 
         AppBannerManager.ignoreChromeChannelForTesting();
         AppBannerManager.setOverrideSegmentationResultForTesting(true);
@@ -205,10 +200,7 @@ public class AmbientBadgeManagerTest {
 
     @After
     public void tearDown() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    AppBannerManager.setAppDetailsDelegate(null);
-                });
+        ThreadUtils.runOnUiThreadBlocking(() -> AppBannerManager.setAppDetailsDelegate(null));
         mDetailsDelegate = null;
     }
 
@@ -224,12 +216,11 @@ public class AmbientBadgeManagerTest {
     private void assertAppBannerPipelineStatus(int expectedValue) {
         Tab tab = mTabbedActivityTestRule.getActivityTab();
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Assert.assertEquals(
-                            expectedValue,
-                            getAppBannerManager(tab.getWebContents())
-                                    .getPipelineStatusForTesting());
-                });
+                () ->
+                        Assert.assertEquals(
+                                expectedValue,
+                                getAppBannerManager(tab.getWebContents())
+                                        .getPipelineStatusForTesting()));
     }
 
     private void navigateToUrlAndWaitForBannerManager(
@@ -272,10 +263,9 @@ public class AmbientBadgeManagerTest {
 
     private void waitForBadgeStatus(Tab tab, int expectedValue) {
         CriteriaHelper.pollUiThread(
-                () -> {
-                    return getAppBannerManager(tab.getWebContents()).getBadgeStatusForTesting()
-                            == expectedValue;
-                });
+                () ->
+                        getAppBannerManager(tab.getWebContents()).getBadgeStatusForTesting()
+                                == expectedValue);
     }
 
     private void waitForModalBanner(final ChromeActivity activity) throws Exception {
@@ -492,9 +482,7 @@ public class AmbientBadgeManagerTest {
                                                         MessageIdentifier.INSTALLABLE_AMBIENT_BADGE)
                                                 .get(0)));
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    dispatcher.dismissMessage(model, DismissReason.GESTURE);
-                });
+                () -> dispatcher.dismissMessage(model, DismissReason.GESTURE));
         CriteriaHelper.pollUiThread(
                 () ->
                         Criteria.checkThat(

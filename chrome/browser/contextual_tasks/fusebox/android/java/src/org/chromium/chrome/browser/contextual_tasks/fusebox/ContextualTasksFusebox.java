@@ -19,9 +19,9 @@ import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarEmbedder;
 import org.chromium.chrome.browser.omnibox.LocationBarEmbedderUiOverrides;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
-import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -104,9 +104,8 @@ public class ContextualTasksFusebox {
                         /* shareDelegateSupplier= */ null,
                         /* incognitoStateProvider= */ null,
                         lifecycleDispatcher,
-                        (params, isIncognitoBranded) -> {
-                            return onUrlLoad(params.url, loadUrlCallback);
-                        },
+                        (OmniboxLoadUrlParams params, boolean _) ->
+                                onUrlLoad(params.url, loadUrlCallback),
                         /* backKeyBehavior= */ mBackKeyBehaviorDelegate,
                         /* pageInfoAction= */ (tab, pageInfoHighlight) -> {},
                         /* bringTabGroupToFrontCallback= */ CallbackUtils.emptyCallback(),
@@ -142,14 +141,11 @@ public class ContextualTasksFusebox {
         OmniboxStub stub = mLocationBarCoordinator.getOmniboxStub();
         if (stub != null) {
             stub.addUrlFocusChangeListener(
-                    new UrlFocusChangeListener() {
-                        @Override
-                        public void onUrlFocusChange(boolean hasFocus) {
-                            FuseboxCoordinator coordinator =
-                                    mLocationBarCoordinator.getFuseboxCoordinator();
-                            if (coordinator != null) {
-                                coordinator.onContextualTaskFocusChanged(hasFocus);
-                            }
+                    (boolean hasFocus) -> {
+                        FuseboxCoordinator coordinator =
+                                mLocationBarCoordinator.getFuseboxCoordinator();
+                        if (coordinator != null) {
+                            coordinator.onContextualTaskFocusChanged(hasFocus);
                         }
                     });
         }

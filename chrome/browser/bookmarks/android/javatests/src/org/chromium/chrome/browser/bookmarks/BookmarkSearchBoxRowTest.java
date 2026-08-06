@@ -175,12 +175,11 @@ public class BookmarkSearchBoxRowTest {
         CriteriaHelper.pollUiThread(() -> checkThat(mEditText.hasFocus(), is(true)));
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    KeyUtils.singleKeyEventView(
-                            InstrumentationRegistry.getInstrumentation(),
-                            mEditText,
-                            KeyEvent.KEYCODE_ENTER);
-                });
+                () ->
+                        KeyUtils.singleKeyEventView(
+                                InstrumentationRegistry.getInstrumentation(),
+                                mEditText,
+                                KeyEvent.KEYCODE_ENTER));
         CriteriaHelper.pollUiThread(() -> checkThat(mEditText.hasFocus(), is(false)));
     }
 
