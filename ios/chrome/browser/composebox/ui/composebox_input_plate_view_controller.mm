@@ -71,8 +71,9 @@ const CGFloat kInputPlateShadowRadius = 20.0f;
 const CGFloat kCarouselItemSpacing = 6.0f;
 /// The height of the carousel view.
 const CGFloat kCarouselHeight = 44.0f;
-/// The height of the AIM mode button.
-const CGFloat kAIMButtonHeight = 36.0f;
+/// The size of the AIM mode button.
+const CGFloat kAIMButtonSize = 36.0f;
+const CGFloat kCobrowsePlusButtonWidth = 48.0f;
 /// The corner radius of the favicon in attach current tab action.
 const CGFloat kAttachCurrentTabIconRadius = 2.0f;
 /// The width of the AIM mode button.
@@ -118,7 +119,7 @@ const CGFloat kGenericButtonWidth = 24.0f;
 const CGFloat kGenericButtonHeight = 32.0f;
 /// The dimension of the send button.
 const CGFloat kSendButtonDimension = 36.0f;
-const CGFloat kCobrowseSendButtonDimension = 52.0f;
+const CGFloat kCobrowseSendButtonDimension = 48.0f;
 /// The dimension of the button stack view.
 const CGFloat kButtonStackViewDimension = 36.0f;
 /// Duration of a change in compact mode.
@@ -1229,7 +1230,7 @@ UIImage* SendButtonImage(BOOL highlighted,
       [_aimButton.widthAnchor constraintEqualToConstant:kAIMButtonBaseWidth];
 
   [NSLayoutConstraint activateConstraints:@[
-    [_aimButton.heightAnchor constraintEqualToConstant:kAIMButtonHeight],
+    [_aimButton.heightAnchor constraintEqualToConstant:kAIMButtonSize],
     self.aimButtonWidthConstraint
   ]];
 }
@@ -1248,10 +1249,13 @@ UIImage* SendButtonImage(BOOL highlighted,
   plusButton.accessibilityIdentifier =
       kComposeboxPlusButtonAccessibilityIdentifier;
 
+  CGFloat plusButtonWidth = _entrypoint == ComposeboxEntrypoint::kCobrowse
+                                ? kCobrowsePlusButtonWidth
+                                : kAIMButtonSize;
   [NSLayoutConstraint activateConstraints:@[
     [plusButton.heightAnchor
-        constraintGreaterThanOrEqualToConstant:kAIMButtonHeight],
-    [plusButton.widthAnchor constraintEqualToConstant:kAIMButtonHeight],
+        constraintGreaterThanOrEqualToConstant:kAIMButtonSize],
+    [plusButton.widthAnchor constraintEqualToConstant:plusButtonWidth],
   ]];
 
   if (IsComposeboxPlusButtonBottomSheet()) {
