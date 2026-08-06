@@ -2911,6 +2911,16 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
     }
   }
 
+  // A plugin-intercepted response commits a browser-generated wrapper
+  // document; wrappers that style themselves do so via UA-inserted inline
+  // style attributes, which the intercepted resource's CSP would drop.
+  // Exempt inline style, as `TextDocument` does for the same reason: all
+  // rendered content is inserted by the UA. Everything else the policy
+  // expresses stays enforced.
+  if (response_.InterceptedByPlugin()) {
+    csp->SetOverrideAllowInlineStyle(true);
+  }
+
   content_security_notifier_ =
       HeapMojoRemote<mojom::blink::ContentSecurityNotifier>(
           frame_->DomWindow());

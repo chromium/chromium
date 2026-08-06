@@ -347,7 +347,10 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
   const std::string original_mime_type = response_head->mime_type;
 
   // Tell the navigation system that a plugin intercepted this response, so
-  // it does not trigger a download for unrecognized MIME types.
+  // it does not trigger a download for unrecognized MIME types. Blink also
+  // exempts inline style from CSP on documents committed from such
+  // responses; only set this bit on a navigation response whose body is
+  // replaced by UA-generated markup.
   response_head->intercepted_by_plugin = true;
 
   // For generic MIME handlers, override the MIME type to text/html so the
@@ -369,6 +372,9 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
       extensions::Extension::GetBaseURLFromExtensionId(extension_id).spec() +
       base::Uuid::GenerateRandomV4().AsLowercaseString());
   transferrable_loader->head = std::move(deep_copied_response);
+  // This head is only ever installed as a subresource override for the
+  // handler's stream fetch, never committed as a document, so the CSP
+  // exemption tied to this bit does not apply to it.
   transferrable_loader->head->intercepted_by_plugin = true;
 
   scoped_refptr<extensions::MimeHandlerBodyCache> body_cache;
