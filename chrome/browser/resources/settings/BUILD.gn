@@ -267,6 +267,7 @@ build_webui("build") {
     "a11y_page/a11y_browser_proxy.ts",
     "a11y_page/a11y_page.html.ts",
     "a11y_page/a11y_page.ts",
+    "site_settings/all_sites_icons.html.ts",
     "a11y_page/a11y_page_index.html.ts",
     "a11y_page/a11y_page_index.ts",
     "about_page/about_page_browser_proxy.ts",
@@ -452,7 +453,6 @@ build_webui("build") {
   icons_html_files = [
     "privacy_icons.html",
     "privacy_page/security/fingerprint_icons.html",
-    "site_settings/all_sites_icons.html",
   ]
 
   if (is_chrome_branded) {

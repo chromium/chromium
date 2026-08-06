@@ -503,12 +503,6 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
     }
   }
 
-  protected getShoppingmodeIcon_(): string {
-    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-        'all-sites:shoppingmode' :
-        'all-sites:tag-old';
-  }
-
   protected getAccountCircleIcon_(): string {
     return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
         'privacy:account-circle' :
