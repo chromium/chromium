@@ -967,6 +967,9 @@ void ContentBrowserClient::OpenURL(
 void ContentBrowserClient::CreateThrottlesForNavigation(
     NavigationThrottleRegistry& registry) {}
 
+void ContentBrowserClient::CreateThrottlesForCommitWithoutUrlLoader(
+    NavigationThrottleRegistry& registry) {}
+
 std::vector<std::unique_ptr<CommitDeferringCondition>>
 ContentBrowserClient::CreateCommitDeferringConditionsForNavigation(
     NavigationHandle* navigation_handle,

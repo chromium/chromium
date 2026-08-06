@@ -1604,6 +1604,15 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual void CreateThrottlesForNavigation(
       NavigationThrottleRegistry& registry);
 
+  // Allows the embedder to register NavigationThrottles for a navigation that
+  // commits without a URL loader (e.g. about:blank, about:srcdoc, other
+  // empty-document schemes, and same-document navigations). Such navigations
+  // do not go through CreateThrottlesForNavigation(); a throttle that wants to
+  // observe them (via NavigationThrottle::WillCommitWithoutUrlLoader()) must be
+  // registered here. The default implementation adds nothing.
+  virtual void CreateThrottlesForCommitWithoutUrlLoader(
+      NavigationThrottleRegistry& registry);
+
   // Allows the embedder to register one or more CommitDeferringConditions for
   // the navigation indicated by |navigation_handle|. A
   // CommitDeferringCondition is used to delay committing a navigation until an

@@ -1105,6 +1105,8 @@ class CONTENT_EXPORT WebContentsImpl
       FrameTree& frame_tree) override;
   void CreateThrottlesForNavigation(
       NavigationThrottleRegistry& registry) override;
+  void CreateThrottlesForCommitWithoutUrlLoader(
+      NavigationThrottleRegistry& registry) override;
   std::vector<std::unique_ptr<CommitDeferringCondition>>
   CreateDeferringConditionsForNavigationCommit(
       NavigationHandle& navigation_handle,

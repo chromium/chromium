@@ -12,4 +12,10 @@ class NavigationThrottleRegistry;
 void CreateAndAddChromeThrottlesForNavigation(
     content::NavigationThrottleRegistry& registry);
 
+// Adds the Chrome NavigationThrottles that need to observe navigations which
+// commit without a URL loader (via NavigationThrottle::
+// WillCommitWithoutUrlLoader()).
+void CreateAndAddChromeThrottlesForCommitWithoutUrlLoader(
+    content::NavigationThrottleRegistry& registry);
+
 #endif  // CHROME_BROWSER_CHROME_CONTENT_BROWSER_CLIENT_NAVIGATION_THROTTLE_H_

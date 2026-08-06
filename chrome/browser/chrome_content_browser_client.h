@@ -641,6 +641,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
                                   content::WebContents* web_contents) override;
   void CreateThrottlesForNavigation(
       content::NavigationThrottleRegistry& registry) override;
+  void CreateThrottlesForCommitWithoutUrlLoader(
+      content::NavigationThrottleRegistry& registry) override;
   std::vector<std::unique_ptr<content::CommitDeferringCondition>>
   CreateCommitDeferringConditionsForNavigation(
       content::NavigationHandle* navigation_handle,

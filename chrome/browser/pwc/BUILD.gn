@@ -14,11 +14,13 @@ source_set("pwc") {
   public = [
     "privileged_web_contents.h",
     "pwc_component_policy.h",
+    "pwc_navigation_throttle.h",
   ]
 
   sources = [
     "privileged_web_contents.cc",
     "pwc_component_policy.cc",
+    "pwc_navigation_throttle.cc",
   ]
 
   public_deps = [
@@ -48,4 +50,31 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//url",
   ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = []
+
+  deps = [
+    ":features",
+    ":pwc",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//testing/gtest",
+    "//url",
+  ]
+
+  # PwcNavigationThrottle and its test use desktop-only UI (Browser,
+  # InProcessBrowserTest), so the test is desktop-only.
+  if (!is_android) {
+    sources += [ "pwc_navigation_throttle_browsertest.cc" ]
+    deps += [ "//chrome/browser/ui" ]
+  }
 }

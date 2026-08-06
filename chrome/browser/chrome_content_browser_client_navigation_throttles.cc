@@ -28,6 +28,7 @@
 #include "chrome/browser/preloading/prerender/dse_prewarm_navigation_throttle.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/pwc/pwc_navigation_throttle.h"
 #include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
 #include "chrome/browser/ssl/https_defaulted_callbacks.h"
 #include "chrome/browser/ssl/https_upgrades_navigation_throttle.h"
@@ -612,4 +613,14 @@ void CreateAndAddChromeThrottlesForNavigation(
   dom_distiller::DistillerReferrerThrottle::MaybeCreateAndAdd(registry);
 
   glic::GlicNavigationThrottle::MaybeCreateAndAdd(registry);
+
+  pwc::PwcNavigationThrottle::MaybeCreateAndAdd(registry);
+}
+
+void CreateAndAddChromeThrottlesForCommitWithoutUrlLoader(
+    content::NavigationThrottleRegistry& registry) {
+  // PwcNavigationThrottle must also cancel off-allowlist main-frame
+  // navigations that commit without a URL loader (e.g. a subframe navigating
+  // the main frame to about:blank), which never reach WillStartRequest().
+  pwc::PwcNavigationThrottle::MaybeCreateAndAdd(registry);
 }

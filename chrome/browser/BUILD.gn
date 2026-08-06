@@ -1021,6 +1021,7 @@ source_set("core") {
     "//chrome/browser/profiles:profile_io_data",
     "//chrome/browser/profiles:profiles_extra_parts",
     "//chrome/browser/profiling_host",
+    "//chrome/browser/pwc",
     "//chrome/browser/renderer_host",
     "//chrome/browser/resource_coordinator",
     "//chrome/browser/safe_browsing",

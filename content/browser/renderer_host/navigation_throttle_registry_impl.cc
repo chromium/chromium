@@ -194,6 +194,11 @@ void NavigationThrottleRegistryImpl::
   std::vector<std::unique_ptr<NavigationThrottle>> testing_throttles =
       std::move(throttles_);
 
+  // Let the embedder register throttles that want to observe navigations that
+  // commit without a URL loader (via WillCommitWithoutUrlLoader()).
+  navigation_request_->GetDelegate()->CreateThrottlesForCommitWithoutUrlLoader(
+      *this);
+
   // Defer any same-document subframe history navigations if there is an
   // associated main-frame same-document history navigation in progress, until
   // the main frame has had an opportunity to fire a navigate event in the

@@ -152,6 +152,11 @@ class NavigatorDelegate {
   virtual void CreateThrottlesForNavigation(
       NavigationThrottleRegistry& registry) = 0;
 
+  // Like CreateThrottlesForNavigation(), but for a navigation that commits
+  // without a URL loader (e.g. about:blank and same-document navigations).
+  virtual void CreateThrottlesForCommitWithoutUrlLoader(
+      NavigationThrottleRegistry& registry) = 0;
+
   // Returns commit deferring conditions to add to this navigation.
   virtual std::vector<std::unique_ptr<CommitDeferringCondition>>
   CreateDeferringConditionsForNavigationCommit(

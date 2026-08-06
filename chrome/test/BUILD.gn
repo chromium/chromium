@@ -2172,6 +2172,7 @@ if (!is_android) {
       "//chrome/browser/push_messaging",
       "//chrome/browser/push_messaging:browser_tests",
       "//chrome/browser/push_messaging:service_impl_public",
+      "//chrome/browser/pwc:browser_tests",
       "//chrome/browser/reading_list",
       "//chrome/browser/reduce_accept_language:browser_tests",
       "//chrome/browser/regional_capabilities:browser_tests",

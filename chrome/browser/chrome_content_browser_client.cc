@@ -5574,6 +5574,11 @@ void ChromeContentBrowserClient::CreateThrottlesForNavigation(
   CreateAndAddChromeThrottlesForNavigation(registry);
 }
 
+void ChromeContentBrowserClient::CreateThrottlesForCommitWithoutUrlLoader(
+    content::NavigationThrottleRegistry& registry) {
+  CreateAndAddChromeThrottlesForCommitWithoutUrlLoader(registry);
+}
+
 std::vector<std::unique_ptr<content::CommitDeferringCondition>>
 ChromeContentBrowserClient::CreateCommitDeferringConditionsForNavigation(
     content::NavigationHandle* navigation_handle,

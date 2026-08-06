@@ -10459,6 +10459,15 @@ void WebContentsImpl::CreateThrottlesForNavigation(
   GetContentClient()->browser()->CreateThrottlesForNavigation(registry);
 }
 
+void WebContentsImpl::CreateThrottlesForCommitWithoutUrlLoader(
+    NavigationThrottleRegistry& registry) {
+  OPTIONAL_TRACE_EVENT1(
+      "content", "WebContentsImpl::CreateThrottlesForCommitWithoutUrlLoader",
+      "navigation", registry.GetNavigationHandle());
+  GetContentClient()->browser()->CreateThrottlesForCommitWithoutUrlLoader(
+      registry);
+}
+
 std::vector<std::unique_ptr<CommitDeferringCondition>>
 WebContentsImpl::CreateDeferringConditionsForNavigationCommit(
     NavigationHandle& navigation_handle,
