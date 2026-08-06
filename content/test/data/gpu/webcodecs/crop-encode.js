@@ -6,8 +6,19 @@
 async function main(arg) {
   const frame_width = 640;
   const frame_height = 480;
-  const encoder_width = 160;
-  const encoder_height = 120;
+  // Use one encode size for both hardware and software variants. Some
+  // accelerated encode/decode paths only work above their advertised minimum
+  // dimensions, while 480x360 is still small enough for software and avoids
+  // making the test geometry depend on arg.acceleration.
+  //
+  // Known HW floors:
+  // - D3D11 decode: NVIDIA HEVC 144x144 (VP9/AV1 128x128)
+  // - Android MediaCodec HW preference: 96x96
+  // - Mac VT decode: 16x16 (x86) / 64x64 (ARM)
+  // - VAAPI encode / hybrid-decode: 321x241 (QVGA+1)
+  // - V4L2 mins are driver-reported (default 16x16).
+  const encoder_width = 480;
+  const encoder_height = 360;
   let errors = 0;
 
   const cnv = document.getElementById('cnv');

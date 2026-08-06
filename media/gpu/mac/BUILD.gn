@@ -64,6 +64,7 @@ source_set("mac") {
     "//gpu/command_buffer/service:gles2",
     "//gpu/ipc/service",
     "//media",
+    "//media/gpu:command_buffer_helper",
     "//media/gpu:common",
     "//ui/gfx/geometry",
     "//ui/gl",

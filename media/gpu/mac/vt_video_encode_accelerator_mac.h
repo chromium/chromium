@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/base/bitrate.h"
 #include "media/base/encoder_status.h"
 #include "media/base/mac/videotoolbox_helpers.h"
@@ -25,7 +26,10 @@
 
 namespace media {
 
+class CommandBufferHelper;
 class MediaLog;
+
+struct SharedImageEncodeAccess;
 
 // VideoToolbox.framework implementation of the VideoEncodeAccelerator
 // interface for MacOSX. VideoToolbox makes no guarantees that it is thread
@@ -56,10 +60,17 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
   void Destroy() override;
   void Flush(FlushCallback flush_callback) override;
   bool IsFlushSupported() override;
+  bool IsGpuFrameResizeSupported() override;
+  void SetCommandBufferHelperCB(
+      base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>
+          get_command_buffer_helper_cb,
+      scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner) override;
 
   static double CalculatePsnrForTesting(double mse, VideoPixelFormat format);
 
  private:
+  struct PendingEncode;
+
   // Holds the associated data of a video frame being processed.
   struct InProgressFrameEncode;
 
@@ -97,6 +108,10 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
   // encodes have been completed.
   void MaybeRunFlushCallback();
 
+  // Once the input queue drains, completes all submitted frames and waits for
+  // their encoded output before completing a pending flush.
+  void MaybeFinishFlush();
+
   void SetEncoderColorSpace();
 
   void NotifyErrorStatus(EncoderStatus status);
@@ -104,6 +119,32 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
   base::TimeDelta AssignMonotonicTimestamp();
 
   static double CalculatePsnr(double mse, VideoPixelFormat format);
+
+  void OnCommandBufferHelperAvailable(
+      scoped_refptr<CommandBufferHelper> command_buffer_helper);
+
+  // Submits queued frames in order. An opaque SharedImage at the front waits
+  // for GPU resolve before any later frame can be submitted.
+  void ProcessPendingEncodes();
+
+  // Invoked when a SharedImage-backed frame has been resolved to a
+  // CVPixelBuffer (or failed).
+  void OnSharedImageResolved(
+      base::apple::ScopedCFTypeRef<CVPixelBufferRef> pixel_buffer,
+      scoped_refptr<SharedImageEncodeAccess> si_access,
+      EncoderStatus resolve_status);
+
+  // Submits `pixel_buffer` to VideoToolbox. `si_access` keeps SharedImage read
+  // access alive until InProgressFrameEncode is released.
+  bool EncodeWithPixelBuffer(
+      scoped_refptr<VideoFrame> frame,
+      const VideoEncoder::EncodeOptions& options,
+      base::apple::ScopedCFTypeRef<CVPixelBufferRef> pixel_buffer,
+      scoped_refptr<SharedImageEncodeAccess> si_access);
+
+  void FailPendingEncodes(EncoderStatus status);
+
+  bool CanEncodeOpaqueSharedImage(const VideoFrame& frame) const;
 
   video_toolbox::ScopedVTCompressionSessionRef compression_session_;
 
@@ -148,6 +189,7 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
   // pending encodes have been returned.
   int pending_encodes_ = 0;
   FlushCallback pending_flush_cb_;
+  bool flush_complete_frames_issued_ = false;
 
   // Color space of the first frame sent to Encode().
   std::optional<gfx::ColorSpace> encoder_color_space_;
@@ -157,6 +199,13 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
 
   // Monotonically-growing timestamp that will be assigned to the next frame
   base::TimeDelta next_timestamp_;
+
+  scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
+  scoped_refptr<CommandBufferHelper> command_buffer_helper_;
+  bool command_buffer_helper_failed_ = false;
+
+  // Input frames waiting for in-order submission to VideoToolbox.
+  base::circular_deque<std::unique_ptr<PendingEncode>> pending_encode_queue_;
 
   // Declared last to ensure that all weak pointers are invalidated before
   // other destructors run.

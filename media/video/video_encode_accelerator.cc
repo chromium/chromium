@@ -8,12 +8,14 @@
 
 #include <algorithm>
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/notimplemented.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 
 namespace media {
@@ -253,6 +255,9 @@ bool VideoEncodeAccelerator::IsGpuFrameResizeSupported() {
   // TODO(crbug.com/40164413) Add proper method overrides in
   // MojoVideoEncodeAccelerator and other subclasses that might return true.
   return true;
+#elif BUILDFLAG(IS_APPLE)
+  return base::FeatureList::IsEnabled(
+      kVTVideoEncodeAcceleratorOpaqueSharedImageEncode);
 #else
   return false;
 #endif

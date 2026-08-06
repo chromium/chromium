@@ -407,6 +407,8 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseSecurityLevelWhenCheckingMediaDrmVersion);
 
 #if BUILDFLAG(IS_APPLE)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kVTVideoEncodeAcceleratorCalculatePSNR);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(
+    kVTVideoEncodeAcceleratorOpaqueSharedImageEncode);
 #endif  // BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_CHROMEOS)

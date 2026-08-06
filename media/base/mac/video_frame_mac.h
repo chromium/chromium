@@ -6,6 +6,7 @@
 #define MEDIA_BASE_MAC_VIDEO_FRAME_MAC_H_
 
 #include <CoreVideo/CVPixelBuffer.h>
+#include <IOSurface/IOSurfaceRef.h>
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/memory/scoped_refptr.h"
@@ -18,11 +19,17 @@ class VideoFrame;
 // Wrap a VideoFrame's data in a CVPixelBuffer object. The frame's lifetime is
 // extended for the duration of the pixel buffer's lifetime.
 //
-// The only supported formats are I420 and NV12. Frames with extended pixels
-// (the visible rect's size does not match the coded size) are not supported.
-// If an unsupported frame is specified, null is returned.
+// The only supported formats are I420, NV12, and NV12A. A visible rect smaller
+// than the coded size is represented with a clean-aperture attachment. If an
+// unsupported frame is specified, null is returned.
 MEDIA_EXPORT base::apple::ScopedCFTypeRef<CVPixelBufferRef>
 WrapVideoFrameInCVPixelBuffer(scoped_refptr<VideoFrame> frame);
+
+// Wraps IOSurface in a CVPixelBuffer, validates its format, and applies
+// attachments from frame. Returns null if the IOSurface cannot be wrapped or
+// its pixel format does not match frame.
+MEDIA_EXPORT base::apple::ScopedCFTypeRef<CVPixelBufferRef>
+WrapIOSurfaceInCVPixelBuffer(const VideoFrame& frame, IOSurfaceRef io_surface);
 
 }  // namespace media
 

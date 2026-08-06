@@ -1395,6 +1395,11 @@ BASE_FEATURE(kUseSecurityLevelWhenCheckingMediaDrmVersion,
 BASE_FEATURE(kVTVideoEncodeAcceleratorCalculatePSNR,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables VideoToolbox zero-copy encode of opaque SharedImage-backed
+// VideoFrames.
+BASE_FEATURE(kVTVideoEncodeAcceleratorOpaqueSharedImageEncode,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #endif  // BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_CHROMEOS)
