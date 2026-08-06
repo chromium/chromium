@@ -124,7 +124,6 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "content/child/font_data/font_data_manager.h"
-#include "skia/ext/font_utils.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -222,10 +221,7 @@ RendererBlinkPlatformImpl::RendererBlinkPlatformImpl(
     // single-process environment. In single process, the SkFontMgr is already
     // installed by browser process code at this point.
     if (features::IsFontDataServiceEnabled() && sandboxEnabled()) {
-      sk_sp<font_data_service::FontDataManager> font_data_manager =
-          sk_make_sp<font_data_service::FontDataManager>();
-
-      skia::OverrideDefaultSkFontMgr(font_data_manager);
+      font_data_service::FontDataManager::CreateAndInitialize();
     }
 #endif
   }

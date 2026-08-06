@@ -9,8 +9,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -22,6 +24,7 @@
 #include "content/public/child/child_thread.h"
 #include "skia/ext/font_utils.h"
 #if BUILDFLAG(IS_WIN)
+#include "third_party/blink/public/web/win/web_font_rendering.h"
 #include "third_party/skia/src/ports/SkTypeface_win_dw.h"  // nogncheck
 #endif
 #if BUILDFLAG(ENABLE_FREETYPE)
@@ -85,7 +88,49 @@ FontDataManager::~FontDataManager() = default;
 void FontDataManager::CreateAndInitialize() {
   sk_sp<FontDataManager> font_data_manager = sk_make_sp<FontDataManager>();
 
+#if BUILDFLAG(IS_WIN)
+  if (base::FeatureList::IsEnabled(features::kFontDataManagerPrewarming)) {
+    blink::WebFontRendering::SetFontPrewarmer(font_data_manager.get());
+  }
+#endif
   skia::OverrideDefaultSkFontMgr(font_data_manager);
+}
+
+void FontDataManager::PrewarmFamily(const blink::WebString& family_name) {
+  PrewarmFamilyImpl(family_name, base::OnceClosure());
+}
+
+void FontDataManager::PrewarmFamilyForTesting(  // IN-TEST
+    const blink::WebString& family_name,
+    base::OnceClosure completion_callback) {
+  PrewarmFamilyImpl(family_name, std::move(completion_callback));
+}
+
+void FontDataManager::PrewarmFamilyImpl(const blink::WebString& family_name,
+                                        base::OnceClosure completion_callback) {
+  CHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(base::FeatureList::IsEnabled(features::kFontDataManagerPrewarming));
+  if (family_name.IsEmpty()) {
+    if (completion_callback) {
+      std::move(completion_callback).Run();
+    }
+    return;
+  }
+
+  if (!prewarm_task_runner_) {
+    CHECK(content::ChildThread::Get());
+    InitializePrewarmer();
+  }
+
+  prewarm_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](sk_sp<FontDataManager> font_data_manager, std::string family_name,
+             base::OnceClosure completion_callback) {
+            font_data_manager->PrewarmFamilyOnWorker(
+                std::move(family_name), std::move(completion_callback));
+          },
+          sk_ref_sp(this), family_name.Utf8(), std::move(completion_callback)));
 }
 
 int FontDataManager::onCountFamilies() const {
@@ -298,9 +343,93 @@ void FontDataManager::SetFontServiceForTesting(
   remote.Bind(std::move(font_data_service));
 }
 
+void FontDataManager::InitializePrewarmerForTesting(  // IN-TEST
+    mojo::PendingRemote<font_data_service::mojom::FontDataService>
+        font_data_service) {
+  CHECK(!prewarm_task_runner_);
+  prewarm_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::TaskPriority::USER_VISIBLE, base::MayBlock()});
+  prewarm_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](sk_sp<FontDataManager> font_data_manager,
+             mojo::PendingRemote<font_data_service::mojom::FontDataService>
+                 font_data_service) {
+            font_data_manager->SetFontServiceForTesting(  // IN-TEST
+                std::move(font_data_service));
+          },
+          sk_ref_sp(this), std::move(font_data_service)));
+}
+
+void FontDataManager::ShutdownPrewarmerForTesting(  // IN-TEST
+    base::OnceClosure completion_callback) {
+  CHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(prewarm_task_runner_);
+
+  prewarm_task_runner_->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(
+          [](sk_sp<FontDataManager> font_data_manager) {
+            font_data_manager->font_data_service_slot_.reset();
+          },
+          sk_ref_sp(this)),
+      base::BindOnce(
+          [](sk_sp<FontDataManager> font_data_manager,
+             base::OnceClosure completion_callback) {
+            font_data_manager->prewarm_task_runner_.reset();
+            std::move(completion_callback).Run();
+          },
+          sk_ref_sp(this), std::move(completion_callback)));
+}
+
 size_t FontDataManager::GetMappedFilesCountForTesting() const {
   base::AutoLock locked(mapped_files_lock_);
   return mapped_files_.size();
+}
+
+void FontDataManager::InitializePrewarmer() {
+  CHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(!prewarm_task_runner_);
+  CHECK(base::FeatureList::IsEnabled(features::kFontDataManagerPrewarming));
+
+  prewarm_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::TaskPriority::USER_VISIBLE, base::MayBlock()});
+}
+
+void FontDataManager::PrewarmFamilyOnWorker(
+    std::string family_name,
+    base::OnceClosure completion_callback) {
+  CHECK(base::FeatureList::IsEnabled(features::kFontDataManagerPrewarming));
+  SkFontStyle requested_style;
+  MatchFamilyRequest request(family_name, requested_style.weight(),
+                             requested_style.width(), requested_style.slant());
+  if (TryGetFromCache(request)) {
+    if (completion_callback) {
+      std::move(completion_callback).Run();
+    }
+    return;
+  }
+
+  auto style = mojom::TypefaceStyle::New();
+  style->weight = requested_style.weight();
+  style->width = requested_style.width();
+  style->slant = ConvertToMojomFontStyle(requested_style.slant());
+  GetRemoteFontDataService().MatchFamilyName(
+      family_name, std::move(style),
+      base::BindOnce(
+          [](sk_sp<FontDataManager> font_data_manager,
+             MatchFamilyRequest request, base::OnceClosure completion_callback,
+             mojom::MatchFamilyNameResultPtr match_result) {
+            auto typeface = font_data_manager->CreateTypefaceFromMatchResult(
+                std::move(match_result));
+            if (typeface) {
+              font_data_manager->AddToCache(request, std::move(typeface));
+            }
+            if (completion_callback) {
+              std::move(completion_callback).Run();
+            }
+          },
+          sk_ref_sp(this), std::move(request), std::move(completion_callback)));
 }
 
 font_data_service::mojom::FontDataService&

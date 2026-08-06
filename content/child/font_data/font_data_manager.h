@@ -10,9 +10,11 @@
 #include <string>
 
 #include "base/containers/hashing_lru_cache.h"
+#include "base/functional/callback_forward.h"
 #include "base/hash/hash.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/unguessable_token.h"
@@ -21,6 +23,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/blink/public/platform/web_font_prewarmer.h"
 #include "third_party/freetype_buildflags.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkFontStyle.h"
@@ -42,9 +45,10 @@ namespace font_data_service {
 // Instantiated in the child on startup. Font fallback mechanism is still in
 // place/has not changed.
 //
-// The methods of this class (as imposed by blink requirements) may be called on
-// any thread.
-class CONTENT_EXPORT FontDataManager : public SkFontMgr {
+// The SkFontMgr methods (as imposed by Blink requirements) may be called on any
+// thread. PrewarmFamily() must be called on the renderer main thread.
+class CONTENT_EXPORT FontDataManager : public SkFontMgr,
+                                       public blink::WebFontPrewarmer {
  public:
   FontDataManager();
   FontDataManager(const FontDataManager&) = delete;
@@ -52,6 +56,9 @@ class CONTENT_EXPORT FontDataManager : public SkFontMgr {
   ~FontDataManager() override;
 
   static void CreateAndInitialize();
+
+  // blink::WebFontPrewarmer:
+  void PrewarmFamily(const blink::WebString& family_name) override;
 
   // SkFontMgr:
   int onCountFamilies() const override;
@@ -81,9 +88,22 @@ class CONTENT_EXPORT FontDataManager : public SkFontMgr {
       mojo::PendingRemote<font_data_service::mojom::FontDataService>
           font_data_service);
 
+  void InitializePrewarmerForTesting(
+      mojo::PendingRemote<font_data_service::mojom::FontDataService>
+          font_data_service);
+  void ShutdownPrewarmerForTesting(base::OnceClosure completion_callback);
+  void PrewarmFamilyForTesting(const blink::WebString& family_name,
+                               base::OnceClosure completion_callback);
+
   size_t GetMappedFilesCountForTesting() const;
 
  private:
+  void InitializePrewarmer();
+  void PrewarmFamilyImpl(const blink::WebString& family_name,
+                         base::OnceClosure completion_callback);
+  void PrewarmFamilyOnWorker(std::string family_name,
+                             base::OnceClosure completion_callback);
+
   font_data_service::mojom::FontDataService& GetRemoteFontDataService() const;
 
   sk_sp<SkTypeface> CreateTypefaceFromMatchResult(
@@ -183,6 +203,7 @@ class CONTENT_EXPORT FontDataManager : public SkFontMgr {
   sk_sp<SkFontMgr> custom_fnt_mgr_;
 #endif
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> prewarm_task_runner_;
   mutable base::SequenceLocalStorageSlot<
       mojo::Remote<font_data_service::mojom::FontDataService>>
       font_data_service_slot_;
