@@ -668,6 +668,13 @@ class GlicEnablingProfileReadyStateTestBase
       return;
     }
 
+    // Override platform management to NONE so tests pass consistently on
+    // managed developer machines.
+    scoped_platform_management_override_ =
+        std::make_unique<policy::ScopedManagementServiceOverrideForTesting>(
+            policy::ManagementServiceFactory::GetInstance()->GetForPlatform(),
+            policy::EnterpriseManagementAuthority::NONE);
+
     // Make sure we have a primary account so we don't fail the "capable" check.
     auto* identity_test_env = identity_test_env_adaptor_->identity_test_env();
     AccountInfo account_info = identity_test_env->MakePrimaryAccountAvailable(
@@ -679,6 +686,8 @@ class GlicEnablingProfileReadyStateTestBase
   }
 
  private:
+  std::unique_ptr<policy::ScopedManagementServiceOverrideForTesting>
+      scoped_platform_management_override_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
