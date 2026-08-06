@@ -92,6 +92,14 @@ struct CRYPTO_EXPORT CertifyResponse {
                          const CertifyResponse&) = default;
 };
 
+// Response components extracted from a parsed TPM2_Hash response.
+struct CRYPTO_EXPORT HashResponse {
+  std::vector<uint8_t> digest;
+  std::vector<uint8_t> validation_ticket;
+
+  friend bool operator==(const HashResponse&, const HashResponse&) = default;
+};
+
 // TPM algorithm IDs returned by the parser, solely for telemetry.
 struct CRYPTO_EXPORT SignatureAlgorithms {
   uint16_t sig_alg = 0;
@@ -100,6 +108,16 @@ struct CRYPTO_EXPORT SignatureAlgorithms {
   friend bool operator==(const SignatureAlgorithms&,
                          const SignatureAlgorithms&) = default;
 };
+
+// TPM hierarchy handle constants. See TPM 2.0 Library Part 2, Section 24.
+// Used as the `hierarchy` parameter for `BuildHashCommand` and when validating
+// tickets.
+// kTpmRhOwner (0x40000001) is used for standard keys and mock validation
+// tickets in unit tests.
+inline constexpr uint32_t kTpmRhOwner = 0x40000001;
+// kTpmRhEndorsement (0x4000000b) MUST be used for Windows Attestation Identity
+// Keys (AIKs) in production.
+inline constexpr uint32_t kTpmRhEndorsement = 0x4000000b;
 
 // Builds a serialized TPM2_Certify command buffer.
 //
@@ -118,9 +136,32 @@ CRYPTO_EXPORT std::vector<uint8_t> BuildCertifyCommand(
 // * `response_blob` - The raw byte response from the TPM2_Certify command.
 // * `challenge` - The challenge expected in the attestation's extra data to
 // prevent replay.
+//
+// If the TPM returns an error code, an error of type `kTpmErrorResponse` will
+// be returned containing the error code, and no statement or signature will be
+// extracted.
 CRYPTO_EXPORT TpmParseErrorOr<CertifyResponse> ParseCertifyResponse(
     base::span<const uint8_t> response_blob,
     base::span<const uint8_t> challenge);
+
+// Builds a serialized TPM2_Hash command buffer.
+//
+// * `data` - The byte buffer to be hashed.
+// * `hash_alg` - The TPM algorithm ID of the hash function (e.g. SHA-256).
+// * `hierarchy` - The TPM hierarchy handle for the ticket (e.g. kTpmRhOwner
+// for storage/test tickets, or kTpmRhEndorsement for AIKs).
+CRYPTO_EXPORT std::vector<uint8_t> BuildHashCommand(
+    base::span<const uint8_t> data,
+    uint16_t hash_alg,
+    uint32_t hierarchy);
+
+// Parses a serialized TPM2_Hash response.
+//
+// If the TPM returns an error code, an error of type `kTpmErrorResponse` will
+// be returned containing the error code, and no digest or validation ticket
+// will be extracted.
+CRYPTO_EXPORT TpmParseErrorOr<HashResponse> ParseHashResponse(
+    base::span<const uint8_t> response_blob);
 
 // Parses a serialized `TPMT_SIGNATURE` and returns the signature and hash
 // algorithms used, solely for telemetry.

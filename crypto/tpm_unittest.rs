@@ -347,3 +347,98 @@ fn test_parse_trailing_bytes() {
     let parsed = tpm::parse_tpm_signature(&signature);
     expect_true!(matches!(parsed.status, tpm::ffi::SignatureParseResult::TrailingBytes));
 }
+
+#[gtest(TpmTest, BuildHashCommand)]
+fn test_build_hash_command() {
+    let data = &[1, 2, 3, 4];
+    let hash_alg = tpm::ffi::TpmAlg::TPM_ALG_SHA256.repr;
+    // Note: TPM_RH_OWNER (0x40000001) is used for standard keys and mock validation
+    // tickets in unit tests. By contrast, TPM_RH_ENDORSEMENT (0x4000000b) MUST be
+    // used for Windows Attestation Identity Keys (AIKs) in production.
+    let hierarchy = tpm::TPM_RH_OWNER;
+    let cmd = tpm::build_hash_command(data, hash_alg, hierarchy);
+
+    // Header size (10) + data size prefix (2) + data size (4) + hash_alg (2) +
+    // hierarchy (4) = 22
+    expect_eq!(cmd.len(), 22);
+
+    let mut reader = tpm::Reader::new(&cmd);
+    expect_eq!(reader.read_u16().unwrap(), tpm::TPM_ST_NO_SESSIONS);
+    expect_eq!(reader.read_u32().unwrap(), 22);
+    expect_eq!(reader.read_u32().unwrap(), tpm::TPM_CC_HASH);
+
+    expect_eq!(reader.read_u16().unwrap(), 4);
+    expect_eq!(reader.read_bytes(4).unwrap(), data);
+    expect_eq!(reader.read_u16().unwrap(), hash_alg);
+    expect_eq!(reader.read_u32().unwrap(), hierarchy);
+}
+
+struct HashResponseBuilder {
+    rc: u32,
+    digest: Vec<u8>,
+    ticket_tag: u16,
+    ticket_hierarchy: u32,
+    ticket_digest: Vec<u8>,
+}
+
+impl HashResponseBuilder {
+    fn new() -> Self {
+        Self {
+            rc: 0,
+            digest: vec![1, 2, 3],
+            ticket_tag: tpm::TPM_ST_HASHCHECK,
+            ticket_hierarchy: tpm::TPM_RH_OWNER,
+            ticket_digest: vec![4, 5, 6],
+        }
+    }
+
+    fn build(self) -> Vec<u8> {
+        let digest_len = u16::try_from(self.digest.len()).unwrap();
+        let ticket_digest_len = u16::try_from(self.ticket_digest.len()).unwrap();
+
+        let ticket_size = 2 // tag
+            + 4 // hierarchy
+            + 2 // digest size
+            + ticket_digest_len;
+
+        let payload_size = 2 // digest size
+            + digest_len
+            + ticket_size;
+
+        let total_size = 10 + payload_size;
+
+        let mut writer = tpm::Writer::with_capacity(total_size.into());
+        writer.write_u16(tpm::TPM_ST_NO_SESSIONS);
+        writer.write_u32(total_size.into());
+        writer.write_u32(self.rc);
+
+        if self.rc == 0 {
+            writer.write_tpm2b(&self.digest);
+            writer.write_u16(self.ticket_tag);
+            writer.write_u32(self.ticket_hierarchy);
+            writer.write_tpm2b(&self.ticket_digest);
+        }
+
+        writer.into_inner()
+    }
+}
+
+#[gtest(TpmParserTest, HashHappyPath)]
+fn test_hash_happy_path() {
+    let builder = HashResponseBuilder::new();
+    let resp = builder.build();
+
+    let result = tpm::parse_hash_response(&resp);
+    expect_true!(matches!(result.result, tpm::ffi::ParseResult::Ok));
+    expect_eq!(result.tpm_response_code, 0);
+    expect_eq!(result.digest, &[1, 2, 3]);
+
+    let expected_ticket = {
+        let mut writer = tpm::Writer::new();
+        writer.write_u16(tpm::TPM_ST_HASHCHECK);
+        writer.write_u32(tpm::TPM_RH_OWNER);
+        writer.write_tpm2b(&[4, 5, 6]);
+        writer.into_inner()
+    };
+    expect_eq!(result.validation_ticket, expected_ticket);
+}

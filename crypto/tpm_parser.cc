@@ -164,6 +164,27 @@ TpmParseErrorOr<CertifyResponse> ParseCertifyResponse(
       });
 }
 
+std::vector<uint8_t> BuildHashCommand(base::span<const uint8_t> data,
+                                      uint16_t hash_alg,
+                                      uint32_t hierarchy) {
+  return base::ToVector(
+      build_hash_command(base::SpanToRustSlice(data), hash_alg, hierarchy));
+}
+
+TpmParseErrorOr<HashResponse> ParseHashResponse(
+    base::span<const uint8_t> response_blob) {
+  RawHashResponse raw_response =
+      parse_hash_response(base::SpanToRustSlice(response_blob));
+
+  return MapParseResult(raw_response.result, raw_response.tpm_response_code)
+      .transform([&] {
+        return HashResponse{
+            .digest = base::ToVector(raw_response.digest),
+            .validation_ticket = base::ToVector(raw_response.validation_ticket),
+        };
+      });
+}
+
 SignatureErrorOr<SignatureAlgorithms> GetSignatureAlgorithms(
     base::span<const uint8_t> signature_blob) {
   RawSignatureComponents raw_sig =

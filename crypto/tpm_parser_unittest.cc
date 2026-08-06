@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/containers/span_reader.h"
 #include "base/containers/span_writer.h"
 #include "base/containers/to_vector.h"
 #include "base/test/gmock_expected_support.h"
@@ -27,6 +28,7 @@ namespace crypto::tpm {
 
 using ::base::test::ErrorIs;
 using ::base::test::ValueIs;
+using ::testing::ElementsAre;
 
 namespace {
 
@@ -34,6 +36,16 @@ constexpr uint16_t kTpmAlgRsaSsa = std::to_underlying(TpmAlg::TPM_ALG_RSASSA);
 constexpr uint16_t kTpmAlgEcdsa = std::to_underlying(TpmAlg::TPM_ALG_ECDSA);
 constexpr uint16_t kTpmAlgSha1 = std::to_underlying(TpmAlg::TPM_ALG_SHA1);
 constexpr uint16_t kTpmAlgSha256 = std::to_underlying(TpmAlg::TPM_ALG_SHA256);
+
+constexpr uint32_t kTpmGeneratedValue =
+    std::to_underlying(TpmConstant::TPM_GENERATED_VALUE);
+constexpr uint32_t kTpmCcHash = std::to_underlying(TpmCc::TPM_CC_HASH);
+constexpr uint16_t kTpmStNoSessions =
+    std::to_underlying(TpmSt::TPM_ST_NO_SESSIONS);
+constexpr uint16_t kTpmStAttestCertify =
+    std::to_underlying(TpmSt::TPM_ST_ATTEST_CERTIFY);
+constexpr uint16_t kTpmStHashcheck =
+    std::to_underlying(TpmSt::TPM_ST_HASHCHECK);
 
 constexpr std::array<uint8_t, 4> kChallenge = {1, 2, 3, 4};
 
@@ -143,8 +155,8 @@ std::vector<uint8_t> BuildFakeCertifyResponse(
     base::span<const uint8_t> challenge,
     base::span<const uint8_t> signature,
     uint32_t response_code = 0,
-    uint32_t magic = 0xFF544347,
-    uint16_t type = 0x8017) {
+    uint32_t magic = kTpmGeneratedValue,
+    uint16_t type = kTpmStAttestCertify) {
   std::vector<uint8_t> statement =
       BuildFakeCertifyStatement(challenge, magic, type);
 
@@ -155,7 +167,7 @@ std::vector<uint8_t> BuildFakeCertifyResponse(
 
   std::vector<uint8_t> resp(resp_size);
   base::SpanWriter<uint8_t> writer(resp);
-  writer.WriteU16BigEndian(0x8001);  // tag = TPM_ST_NO_SESSIONS
+  writer.WriteU16BigEndian(kTpmStNoSessions);
   writer.WriteU32BigEndian(resp_size);
   writer.WriteU32BigEndian(response_code);
 
@@ -163,6 +175,40 @@ std::vector<uint8_t> BuildFakeCertifyResponse(
     writer.WriteU16BigEndian(statement.size());
     writer.Write(statement);
     writer.Write(signature);
+  }
+
+  CHECK_EQ(writer.remaining(), 0u);
+  return resp;
+}
+
+std::vector<uint8_t> BuildFakeHashResponse(
+    base::span<const uint8_t> digest,
+    uint16_t ticket_tag,
+    uint32_t ticket_hierarchy,
+    base::span<const uint8_t> ticket_digest,
+    uint32_t response_code = 0) {
+  // TPMT_TK_HASHCHECK size: 2 bytes tag + 4 bytes hierarchy + 2 bytes digest
+  // size prefix + digest.
+  size_t ticket_size = 2 + 4 + 2 + ticket_digest.size();
+  size_t body_size = 2 + digest.size() + ticket_size;
+  uint32_t resp_size = 10;
+  if (response_code == 0) {
+    resp_size += body_size;
+  }
+
+  std::vector<uint8_t> resp(resp_size);
+  base::SpanWriter<uint8_t> writer(resp);
+  writer.WriteU16BigEndian(kTpmStNoSessions);
+  writer.WriteU32BigEndian(resp_size);
+  writer.WriteU32BigEndian(response_code);
+
+  if (response_code == 0) {
+    writer.WriteU16BigEndian(digest.size());
+    writer.Write(digest);
+    writer.WriteU16BigEndian(ticket_tag);
+    writer.WriteU32BigEndian(ticket_hierarchy);
+    writer.WriteU16BigEndian(ticket_digest.size());
+    writer.Write(ticket_digest);
   }
 
   CHECK_EQ(writer.remaining(), 0u);
@@ -337,8 +383,8 @@ TEST(TpmCppParserTest, GetSignatureAlgorithms_UnsupportedHashAlgorithm) {
 
 TEST(TpmCppParserTest, ParseCertifyResponse_Success) {
   auto rsa_priv = test::FixedRsa2048PrivateKeyForTesting();
-  std::vector<uint8_t> statement =
-      BuildFakeCertifyStatement(kChallenge, 0xFF544347, 0x8017);
+  std::vector<uint8_t> statement = BuildFakeCertifyStatement(
+      kChallenge, kTpmGeneratedValue, kTpmStAttestCertify);
   auto sig_bytes =
       sign::Sign(sign::SignatureKind::RSA_PKCS1_SHA256, rsa_priv, statement);
 
@@ -368,8 +414,8 @@ TEST(TpmCppParserTest, ParseCertifyResponse_BadMagic) {
 
 TEST(TpmCppParserTest, ParseCertifyResponse_ChallengeMismatch) {
   auto rsa_priv = test::FixedRsa2048PrivateKeyForTesting();
-  std::vector<uint8_t> statement =
-      BuildFakeCertifyStatement(kChallenge, 0xFF544347, 0x8017);
+  std::vector<uint8_t> statement = BuildFakeCertifyStatement(
+      kChallenge, kTpmGeneratedValue, kTpmStAttestCertify);
   auto sig_bytes =
       sign::Sign(sign::SignatureKind::RSA_PKCS1_SHA256, rsa_priv, statement);
 
@@ -383,8 +429,8 @@ TEST(TpmCppParserTest, ParseCertifyResponse_ChallengeMismatch) {
 
 TEST(TpmCppParserTest, ParseCertifyResponse_TpmError) {
   auto rsa_priv = test::FixedRsa2048PrivateKeyForTesting();
-  std::vector<uint8_t> statement =
-      BuildFakeCertifyStatement(kChallenge, 0xFF544347, 0x8017);
+  std::vector<uint8_t> statement = BuildFakeCertifyStatement(
+      kChallenge, kTpmGeneratedValue, kTpmStAttestCertify);
   auto sig_bytes =
       sign::Sign(sign::SignatureKind::RSA_PKCS1_SHA256, rsa_priv, statement);
 
@@ -394,6 +440,75 @@ TEST(TpmCppParserTest, ParseCertifyResponse_TpmError) {
 
   EXPECT_THAT(
       ParseCertifyResponse(resp, kChallenge),
+      ErrorIs(TpmParseError(TpmParseError::Type::kTpmErrorResponse, 0x100)));
+}
+
+TEST(TpmCppParserTest, BuildHashCommand) {
+  static constexpr uint8_t kData[] = {1, 2, 3, 4};
+  uint16_t hash_alg = kTpmAlgSha256;
+  // Note: kTpmRhOwner (0x40000001) is used for standard keys and mock
+  // validation tickets in unit tests. By contrast, kTpmRhEndorsement
+  // (0x4000000b) MUST be used for Windows Attestation Identity Keys (AIKs) in
+  // production.
+  uint32_t hierarchy = kTpmRhOwner;
+
+  std::vector<uint8_t> cmd = BuildHashCommand(kData, hash_alg, hierarchy);
+  EXPECT_EQ(cmd.size(), 22u);
+
+  base::SpanReader<const uint8_t> reader(cmd);
+  uint16_t tag;
+  uint32_t size, cc;
+  ASSERT_TRUE(reader.ReadU16BigEndian(tag));
+  ASSERT_TRUE(reader.ReadU32BigEndian(size));
+  ASSERT_TRUE(reader.ReadU32BigEndian(cc));
+  EXPECT_EQ(tag, kTpmStNoSessions);
+  EXPECT_EQ(size, 22u);
+  EXPECT_EQ(cc, kTpmCcHash);
+
+  uint16_t data_len;
+  ASSERT_TRUE(reader.ReadU16BigEndian(data_len));
+  EXPECT_EQ(data_len, 4u);
+  auto data_span = reader.Read<4>();
+  ASSERT_TRUE(data_span.has_value());
+  EXPECT_THAT(*data_span, ElementsAre(1, 2, 3, 4));
+
+  uint16_t alg;
+  ASSERT_TRUE(reader.ReadU16BigEndian(alg));
+  EXPECT_EQ(alg, hash_alg);
+
+  uint32_t hier;
+  ASSERT_TRUE(reader.ReadU32BigEndian(hier));
+  EXPECT_EQ(hier, hierarchy);
+}
+
+TEST(TpmCppParserTest, ParseHashResponse_Success) {
+  static constexpr uint8_t kDigest[] = {1, 2, 3};
+  static constexpr uint8_t kTicketDigest[] = {4, 5, 6};
+  std::vector<uint8_t> resp = BuildFakeHashResponse(kDigest, kTpmStHashcheck,
+                                                    kTpmRhOwner, kTicketDigest);
+
+  auto parsed_or_error = ParseHashResponse(resp);
+  ASSERT_OK_AND_ASSIGN(HashResponse parsed, parsed_or_error);
+  EXPECT_THAT(parsed.digest, ElementsAre(1, 2, 3));
+
+  std::vector<uint8_t> expected_ticket = {
+      0x80, 0x24,              // tag
+      0x40, 0x00, 0x00, 0x01,  // hierarchy
+      0x00, 0x03,              // digest size
+      4,    5,    6            // digest
+  };
+  EXPECT_EQ(parsed.validation_ticket, expected_ticket);
+}
+
+TEST(TpmCppParserTest, ParseHashResponse_TpmError) {
+  static constexpr uint8_t kDigest[] = {1, 2, 3};
+  static constexpr uint8_t kTicketDigest[] = {4, 5, 6};
+  std::vector<uint8_t> resp = BuildFakeHashResponse(
+      kDigest, kTpmStHashcheck, kTpmRhOwner, kTicketDigest, 0x100);
+
+  auto parsed_or_error = ParseHashResponse(resp);
+  EXPECT_THAT(
+      parsed_or_error,
       ErrorIs(TpmParseError(TpmParseError::Type::kTpmErrorResponse, 0x100)));
 }
 
