@@ -557,7 +557,9 @@ config("compiler") {
 
     # Enable std::vector []-operator bounds checking.
     cflags_cc += [ "-D__google_stl_debug_vector=1" ]
+  }
 
+  if (is_chromeos || is_fuchsia) {
     # Use -fdebug-types-section to avoid out-of-range relocations
     # (crbug.com/1050819). When using ThinLTO, pass the equivalent
     # to the code generator.
