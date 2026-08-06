@@ -218,7 +218,8 @@ found in the LICENSE file.
 
     <!-- Bookmarks Desktop Layout dimensions -->
     <dimen name="bookmark_desktop_navigation_pane_width">240dp</dimen>
-    <dimen name="bookmark_desktop_navigation_header_top_margin">34dp</dimen>
+    <dimen name="bookmark_desktop_navigation_header_top_margin">24dp</dimen>
+    <dimen name="bookmark_desktop_navigation_header_bot_margin">8dp</dimen>
     <dimen name="bookmark_desktop_navigation_header_start_margin">32dp</dimen>
     <dimen name="bookmark_desktop_navigation_header_end_margin">16dp</dimen>
     <dimen name="bookmark_desktop_navigation_header_bottom_margin">36dp</dimen>

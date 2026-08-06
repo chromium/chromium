@@ -7,10 +7,12 @@ found in the LICENSE file.
 
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    android:baselineAligned="false">
+    android:baselineAligned="false"
+    tools:ignore="NestedWeights">
 
     <!-- Left Navigation Pane -->
     <LinearLayout
@@ -47,11 +49,27 @@ found in the LICENSE file.
     </LinearLayout>
 
     <!-- Right Main Content Pane -->
-    <org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout
-        android:id="@+id/selectable_list"
+    <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:background="@macro/bookmark_desktop_content_pane_bg"
-        android:focusable="false" />
+        android:orientation="vertical"
+        android:background="@macro/bookmark_desktop_content_pane_bg">
+
+        <include
+            layout="@layout/bookmark_search_box_row_desktop"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/bookmark_desktop_navigation_header_top_margin"
+            android:layout_marginBottom="@dimen/bookmark_desktop_navigation_header_bot_margin"
+            android:id="@+id/desktop_search_box_row" />
+
+        <org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout
+            android:id="@+id/selectable_list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:background="@android:color/transparent" />
+    </LinearLayout>
 </LinearLayout>

@@ -206,7 +206,7 @@ public class BookmarkTabletTest {
         onView(allOf(isDescendantOfA(withId(R.id.action_bar)), withText("Mobile bookmarks")))
                 .check(matches(isDisplayed()));
 
-        // After navigating to a new folder, the search bar should be focused again.
+        // After navigating to a new folder, the search bar should not be focused.
         BookmarkTestUtil.getSearchBoxViewInteraction().check(matches(not(isFocused())));
         // And the search text should be cleared.
         BookmarkTestUtil.getSearchBoxViewInteraction().check(matches(withText("")));

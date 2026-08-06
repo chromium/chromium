@@ -74,6 +74,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 import java.util.function.Consumer;
@@ -148,6 +149,7 @@ public class BookmarkManagerCoordinator
     private final @Nullable BackPressManager mBackPressManager;
     private final ComponentCallbacks mComponentCallbacks;
     private @Nullable BookmarkDesktopNavigationCoordinator mDesktopNavigationCoordinator;
+    private @Nullable PropertyModelChangeProcessor mSearchBoxChangeProcessor;
 
     // TODO(https://crbug.com/475144764): Investigate whether activity can be replaced by a Context.
     /**
@@ -321,6 +323,18 @@ public class BookmarkManagerCoordinator
 
         bookmarkDelegateSupplier.set(/* object= */ mMediator);
 
+        if (isDesktopLayoutEnabled) {
+            View searchBoxView = mMainView.findViewById(R.id.desktop_search_box_row);
+            PropertyModel searchBoxPropertyModel = mMediator.getOrCreateSearchBoxPropertyModel();
+            mSearchBoxChangeProcessor =
+                    PropertyModelChangeProcessor.create(
+                            searchBoxPropertyModel,
+                            searchBoxView,
+                            BookmarkSearchBoxRowViewBinder.createViewBinder());
+
+            updateDesktopSearchBoxMargins();
+        }
+
         mMainView.addOnAttachStateChangeListener(this);
 
         mSigninPromoCoordinator =
@@ -406,6 +420,9 @@ public class BookmarkManagerCoordinator
                                     mRecyclerView.getPaddingTop(),
                                     padding,
                                     mRecyclerView.getPaddingBottom());
+
+                            updateDesktopSearchBoxMargins();
+
                             mBookmarkToolbarCoordinator.onConfigurationChanged(newConfig);
                         }
                     }
@@ -420,6 +437,9 @@ public class BookmarkManagerCoordinator
 
     /** Destroys and cleans up itself. This must be called after done using this class. */
     public void onDestroyed() {
+        if (mSearchBoxChangeProcessor != null) {
+            mSearchBoxChangeProcessor.destroy();
+        }
         mContext.unregisterComponentCallbacks(mComponentCallbacks);
         RecordUserAction.record("MobileBookmarkManagerClose");
         mMainView.removeOnAttachStateChangeListener(this);
@@ -689,6 +709,23 @@ public class BookmarkManagerCoordinator
 
     public BookmarkUiPrefs getBookmarkUiPrefsForTesting() {
         return mBookmarkUiPrefs;
+    }
+
+    private void updateDesktopSearchBoxMargins() {
+        View searchBoxView = mMainView.findViewById(R.id.desktop_search_box_row);
+        if (searchBoxView != null) {
+            int padding =
+                    mContext.getResources()
+                            .getDimensionPixelSize(R.dimen.bookmark_desktop_content_padding);
+            int margin =
+                    mContext.getResources()
+                            .getDimensionPixelSize(R.dimen.search_box_embedder_margin_horizontal);
+            ViewGroup.MarginLayoutParams params =
+                    (ViewGroup.MarginLayoutParams) searchBoxView.getLayoutParams();
+            params.setMarginStart(margin + padding);
+            params.setMarginEnd(margin + padding);
+            searchBoxView.setLayoutParams(params);
+        }
     }
 
     private void openSettings() {

@@ -62,6 +62,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
@@ -162,6 +163,7 @@ import java.util.function.Consumer;
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES)
+@DisableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT)
 public class BookmarkManagerMediatorTest {
 
     @Rule(order = Rule.DEFAULT_ORDER - 1)
@@ -1619,6 +1621,28 @@ public class BookmarkManagerMediatorTest {
         verify(mListObserver, never()).onItemRangeRemoved(any(), eq(0), anyInt());
         verify(mListObserver, never()).onItemRangeInserted(any(), eq(0), anyInt());
         verify(mListObserver).onItemRangeChanged(any(), eq(1), anyInt(), any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT)
+    public void testSearchBox_Desktop() {
+        when(mBookmarkModel.searchBookmarks(eq("3"), anyInt()))
+                .thenReturn(Collections.singletonList(mFolderId3));
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+        verifyCurrentViewTypes(
+                ViewType.SEARCH_BOX,
+                ViewType.IMPROVED_BOOKMARK_COMPACT,
+                ViewType.IMPROVED_BOOKMARK_COMPACT);
+
+        PropertyModel searchBoxModel = mMediator.getOrCreateSearchBoxPropertyModel();
+        assertNotNull(searchBoxModel);
+
+        mModelList.addObserver(mListObserver);
+        searchBoxModel
+                .get(BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK)
+                .onResult("3");
+        verifyCurrentViewTypes(ViewType.SEARCH_BOX, ViewType.IMPROVED_BOOKMARK_COMPACT);
     }
 
     @Test

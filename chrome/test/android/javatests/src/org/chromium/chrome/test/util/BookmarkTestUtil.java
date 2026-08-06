@@ -13,6 +13,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.anyOf;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.ViewInteraction;
@@ -166,7 +167,10 @@ public class BookmarkTestUtil {
                         isDescendantOfA(
                                 allOf(
                                         withId(R.id.search_view),
-                                        isDescendantOfA(withId(R.id.bookmark_toolbar))))));
+                                        anyOf(
+                                                isDescendantOfA(withId(R.id.bookmark_toolbar)),
+                                                isDescendantOfA(
+                                                        withId(R.id.desktop_search_box_row)))))));
     }
 
     public static ChromeTabbedActivity waitForTabbedActivity() {

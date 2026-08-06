@@ -12,6 +12,7 @@ import static org.mockito.Mockito.doReturn;
 
 import android.app.Activity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -280,6 +281,24 @@ public class BookmarkManagerCoordinatorTest {
         int expectedPx = Math.round(expectedDp * density);
         assertEquals("Padding start mismatch", expectedPx, recyclerView.getPaddingStart());
         assertEquals("Padding end mismatch", expectedPx, recyclerView.getPaddingEnd());
+
+        View searchBoxView = mCoordinator.getView().findViewById(R.id.desktop_search_box_row);
+        if (searchBoxView != null) {
+            int originalMarginPx =
+                    mActivity
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.search_box_embedder_margin_horizontal);
+            ViewGroup.MarginLayoutParams params =
+                    (ViewGroup.MarginLayoutParams) searchBoxView.getLayoutParams();
+            assertEquals(
+                    "Search box margin start mismatch",
+                    expectedPx + originalMarginPx,
+                    params.getMarginStart());
+            assertEquals(
+                    "Search box margin end mismatch",
+                    expectedPx + originalMarginPx,
+                    params.getMarginEnd());
+        }
     }
 
     @Test
