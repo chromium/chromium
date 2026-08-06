@@ -1633,7 +1633,7 @@ TEST_P(PartitionAllocTest, AllocGetSizeAndStart) {
   }
 
   // Too large allocation.
-  requested_size = MaxDirectMapped() + 1;
+  requested_size = MaxAllocationSize() + 1;
   predicted_capacity =
       allocator.root()->AllocationCapacityFromRequestedSize(requested_size);
   EXPECT_EQ(requested_size, predicted_capacity);
@@ -2876,7 +2876,7 @@ TEST_P(PartitionAllocDeathTest, LargeAllocs) {
   EXPECT_DEATH(allocator.root()->Alloc(static_cast<size_t>(-1), type_name), "");
   // And the smallest allocation we expect to die.
   // TODO(bartekn): Separate into its own test, as it wouldn't run (same below).
-  EXPECT_DEATH(allocator.root()->Alloc(MaxDirectMapped() + 1, type_name), "");
+  EXPECT_DEATH(allocator.root()->Alloc(MaxAllocationSize() + 1, type_name), "");
 }
 
 // These tests don't work deterministically when BRP is enabled on certain

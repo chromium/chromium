@@ -392,18 +392,7 @@ DirectMapAllocationGranularityOffsetMask() {
 // Limit when downsizing a direct mapping using `realloc`:
 constexpr size_t kMinDirectMappedDownsize =
     BucketIndexLookup::kMaxBucketSize + 1;
-// Intentionally set to less than 2GiB to make sure that a 2GiB allocation
-// fails. This is a security choice in Chrome, to help making size_t vs int bugs
-// harder to exploit.
 
-// The definition of MaxDirectMapped does only depend on constants that are
-// unconditionally constexpr. Therefore it is not necessary to use
-// PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR here.
-PA_ALWAYS_INLINE constexpr size_t MaxDirectMapped() {
-  // Subtract kSuperPageSize to accommodate for granularity inside
-  // PartitionRoot::GetDirectMapReservationSize.
-  return (1UL << 31) - kSuperPageSize;
-}
 
 // Max alignment supported by AlignedAlloc().
 // kSuperPageSize alignment can't be easily supported, because each super page
@@ -460,6 +449,29 @@ inline constexpr unsigned char kQuarantinedByte = 0xEF;
 inline constexpr uint64_t kIntendedLeakQuarantineMarker = 0xEBB0000000000000u;
 inline constexpr uint64_t kIntendedLeakQuarantineMask = 0xFFFFFF0000000000u;
 inline constexpr uint8_t kIntendedLeakQuarantineRemainder = 0xEB;
+
+}  // namespace internal
+
+// Intentionally set to less than 2GiB to make sure that a 2GiB allocation
+// fails. This is a security choice in Chrome, to help making size_t vs int bugs
+// harder to exploit.
+//
+// The definition of MaxAllocationSize does only depend on constants that are
+// unconditionally constexpr. Therefore it is not necessary to use
+// PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR here.
+PA_ALWAYS_INLINE constexpr size_t MaxAllocationSize() {
+  // Subtract kSuperPageSize to accommodate for granularity inside
+  // PartitionRoot::GetDirectMapReservationSize.
+  return (1UL << 31) - internal::kSuperPageSize;
+}
+
+namespace internal {
+
+// TODO(https://crbug.com/542850291): Don't use this, it's being
+// removed.
+PA_ALWAYS_INLINE constexpr size_t MaxDirectMapped() {
+  return MaxAllocationSize();
+}
 
 }  // namespace internal
 

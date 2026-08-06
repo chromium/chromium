@@ -187,7 +187,7 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
   PartitionRootLock(root).AssertAcquired();
 
   const bool return_null = ContainsFlags(flags, AllocFlags::kReturnNull);
-  if (raw_size > MaxDirectMapped()) [[unlikely]] {
+  if (raw_size > MaxAllocationSize()) [[unlikely]] {
     if (return_null) {
       return nullptr;
     }

@@ -1474,7 +1474,7 @@ size_t PartitionRoot::AllocationCapacityFromRequestedSize(size_t size) const {
 
   if (!bucket.is_direct_mapped()) [[likely]] {
     size = bucket.slot_size;
-  } else if (size > internal::MaxDirectMapped()) {
+  } else if (size > MaxAllocationSize()) {
     // Too large to allocate => return the size unchanged.
   } else {
     size = GetDirectMapSlotSize(size);

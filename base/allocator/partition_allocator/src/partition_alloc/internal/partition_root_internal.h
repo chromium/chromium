@@ -162,20 +162,20 @@ PartitionRoot::GetDirectMapMetadataAndGuardPagesSize() {
 
 PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 PartitionRoot::GetDirectMapSlotSize(size_t raw_size) {
-  // Caller must check that the size is not above the MaxDirectMapped()
+  // Caller must check that the size is not above the MaxAllocationSize()
   // limit before calling. This also guards against integer overflow in the
   // calculation here.
-  PA_DCHECK(raw_size <= internal::MaxDirectMapped());
+  PA_DCHECK(raw_size <= MaxAllocationSize());
   return partition_alloc::internal::base::bits::AlignUp(
       raw_size, internal::SystemPageSize());
 }
 
 PA_ALWAYS_INLINE size_t
 PartitionRoot::GetDirectMapReservationSize(size_t padded_raw_size) {
-  // Caller must check that the size is not above the MaxDirectMapped()
+  // Caller must check that the size is not above the MaxAllocationSize()
   // limit before calling. This also guards against integer overflow in the
   // calculation here.
-  PA_DCHECK(padded_raw_size <= internal::MaxDirectMapped());
+  PA_DCHECK(padded_raw_size <= MaxAllocationSize());
   return partition_alloc::internal::base::bits::AlignUp(
       padded_raw_size + GetDirectMapMetadataAndGuardPagesSize(),
       internal::DirectMapAllocationGranularity());
@@ -262,7 +262,7 @@ PA_ALWAYS_INLINE bool PartitionRoot::IsDirectMappedBucket(
 }
 template <AllocFlags flags>
 PA_ALWAYS_INLINE bool PartitionRoot::AllocWithMemoryToolProlog(size_t size) {
-  if (size > partition_alloc::internal::MaxDirectMapped()) {
+  if (size > MaxAllocationSize()) {
     if constexpr (ContainsFlags(flags, AllocFlags::kReturnNull)) {
       // Early return indicating not to proceed with allocation
       return false;
@@ -1668,7 +1668,7 @@ void* PartitionRoot::ReallocInline(void* ptr,
     return nullptr;
   }
 
-  if (new_size > internal::MaxDirectMapped()) {
+  if (new_size > MaxAllocationSize()) {
     if constexpr (ContainsFlags(alloc_flags, AllocFlags::kReturnNull)) {
       return nullptr;
     }
