@@ -4,7 +4,9 @@
 
 #include "chrome/browser/media/webrtc/desktop_media_picker_utils.h"
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "media/base/video_util.h"
@@ -29,13 +31,21 @@ gfx::ImageSkia ScaleBitmap(const SkBitmap& bitmap, gfx::Size size) {
   // TODO(crbug.com/41029106): Fix screen/window capturers to capture alpha
   // channel and remove this code. Currently screen/window capturers (at least
   // some implementations) only capture R, G and B channels and set Alpha to 0.
-  uint8_t* pixels_data = reinterpret_cast<uint8_t*>(result.getPixels());
-  for (int y = 0; y < result.height(); ++y) {
-    for (int x = 0; x < result.width(); ++x) {
-      UNSAFE_TODO(
-          pixels_data[result.rowBytes() * y + x * result.bytesPerPixel() + 3]) =
-          0xff;
-    }
+  // ImageSkiaOperations::CreateResizedImage delegates to
+  // ImageOperations::Resize, which either returns an empty bitmap on failure
+  // or guarantees kN32_SkColorType (4 bytes per pixel).
+  CHECK(result.drawsNothing() || result.bytesPerPixel() == 4);
+  const size_t bytes_per_pixel = static_cast<size_t>(result.bytesPerPixel());
+  constexpr size_t kAlphaChannelByteOffset = 3;
+
+  // SAFETY: SkBitmap::computeByteSize() returns the total allocated byte size
+  // of the pixel memory buffer returned by getPixels().
+  auto pixels_span =
+      UNSAFE_BUFFERS(base::span(reinterpret_cast<uint8_t*>(result.getPixels()),
+                                result.computeByteSize()));
+  for (size_t i = kAlphaChannelByteOffset; i < pixels_span.size();
+       i += bytes_per_pixel) {
+    pixels_span[i] = 0xff;
   }
 
   return gfx::ImageSkia::CreateFrom1xBitmap(result);
