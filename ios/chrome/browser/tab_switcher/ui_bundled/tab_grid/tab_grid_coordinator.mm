@@ -2046,8 +2046,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   self.pageActionMenuCoordinator = [[PageActionMenuCoordinator alloc]
       initWithBaseViewController:_viewController
                          browser:browser];
-  self.pageActionMenuCoordinator.pageActionMenuHandler = HandlerForProtocol(
-      self.regularBrowser->GetCommandDispatcher(), PageActionMenuCommands);
   [self.pageActionMenuCoordinator start];
 }
 

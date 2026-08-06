@@ -50,6 +50,9 @@
     ReaderModeOptionsCommands,
     UIAdaptivePresentationControllerDelegate,
     UINavigationControllerDelegate>
+// The dispatcher for commands.
+@property(nonatomic, weak, readonly) id<PageActionMenuCommands>
+    pageActionMenuHandler;
 @end
 
 namespace {
@@ -306,6 +309,11 @@ constexpr NSTimeInterval kEligibilityPollTimeout = 5.0;
 }
 
 #pragma mark - Private
+
+- (id<PageActionMenuCommands>)pageActionMenuHandler {
+  return HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                            PageActionMenuCommands);
+}
 
 // Returns the appropriate detent value for a sheet presentation in `context`.
 - (CGFloat)resolveDetentValueForSheetPresentation:

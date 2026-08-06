@@ -90,6 +90,7 @@
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
 #import "ios/chrome/browser/browser_view/public/browser_view_visibility_state.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_coordinator+Testing.h"
+#import "ios/chrome/browser/browser_view/ui_bundled/browser_modal_host.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_omnibox_state_provider.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_view_controller+private.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_view_controller.h"
@@ -154,7 +155,6 @@
 #import "ios/chrome/browser/intelligence/enhanced_calendar/coordinator/enhanced_calendar_coordinator.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/model/enhanced_calendar_configuration.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
-#import "ios/chrome/browser/intelligence/page_action_menu/coordinator/page_action_menu_coordinator.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_coordinator.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_view_finder_coordinator.h"
@@ -174,8 +174,6 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/overscroll_actions/model/overscroll_actions_tab_helper.h"
 #import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
-#import "ios/chrome/browser/page_info/coordinator/page_info_coordinator.h"
-#import "ios/chrome/browser/page_info/requirements/page_info_presentation.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/credential_suggestion_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/passkey_creation_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/passwords/model/password_controller_delegate.h"
@@ -278,8 +276,6 @@
 #import "ios/chrome/browser/shared/public/commands/non_modal_signin_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
-#import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
-#import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/public/commands/parent_access_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_breach_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_protection_commands.h"
@@ -454,9 +450,6 @@ const char kChromeAppStoreUrl[] =
     NonModalSignInPromoCoordinatorDelegate,
     NotificationsOptInCoordinatorDelegate,
     OverscrollActionsControllerDelegate,
-    PageActionMenuCommands,
-    PageInfoCommands,
-    PageInfoPresentation,
     ParentAccessCommands,
     PasskeyWelcomeScreenCoordinatorDelegate,
     PasswordBreachCommands,
@@ -630,9 +623,6 @@ const char kChromeAppStoreUrl[] =
 // Coordinator for new tab pages.
 @property(nonatomic, strong) NewTabPageCoordinator* NTPCoordinator;
 
-// Coordinator for Page Info UI.
-@property(nonatomic, strong) ChromeCoordinator* pageInfoCoordinator;
-
 // Coordinator to display local web approvals parent access UI in a bottom
 // sheet.
 @property(nonatomic, strong) ParentAccessCoordinator* parentAccessCoordinator;
@@ -753,6 +743,8 @@ const char kChromeAppStoreUrl[] =
 @end
 
 @implementation BrowserCoordinator {
+  // Host for all the modal features.
+  BrowserModalHost* _modalHost;
   // Coordinator for Fullscreen.
   FullscreenCoordinator* _fullscreenCoordinator;
   SigninCoordinator* _signinCoordinator;
@@ -824,9 +816,6 @@ const char kChromeAppStoreUrl[] =
 
   // The coordinator for the Enhanced Calendar feature UI (bottom sheet).
   EnhancedCalendarCoordinator* _enhancedCalendarCoordinator;
-
-  // The coordinator for the page action menu.
-  PageActionMenuCoordinator* _pageActionMenuCoordinator;
 
   // Coordinator that handles confirmation dialog when the last tab of a shared
   // group is closed.
@@ -1011,12 +1000,13 @@ const char kChromeAppStoreUrl[] =
   [self startTabLifeCycleMediator];
 
   [self startDispatchingToProtocols];
+  [self startModalDispatching];
 
   [self createViewControllerDependencies];
 
   [self createViewController];
 
-  [self updateViewControllerDependencies];
+  [self postViewControllerCreationSetup];
 
   // Force the view load at a specific time.
   // TODO(crbug.com/40263730): This should ideally go in createViewController,
@@ -1064,8 +1054,15 @@ const char kChromeAppStoreUrl[] =
   // Copresence is cleaned up (to reduce risk).
   _viewController.geminiHandler = nil;
   [self stopChildCoordinators];
+  [_modalHost clearPresentedState];
   [self destroyViewController];
   [self destroyViewControllerDependencies];
+
+  // The modal host is mostly handling commands, so it must be stopped at the
+  // same time.
+  [_modalHost stopHostingCommandProtocols];
+  _modalHost = nil;
+
   [self.dispatcher stopDispatchingToTarget:self];
   _webUsageEnablerObserver.reset();
   _activityOverlayCallback.RunAndReset();
@@ -1384,8 +1381,6 @@ const char kChromeAppStoreUrl[] =
     @protocol(ReaderModeCommands),
     @protocol(NewTabPageCommands),
     @protocol(NonModalSignInPromoCommands),
-    @protocol(PageActionMenuCommands),
-    @protocol(PageInfoCommands),
     @protocol(PasswordBreachCommands),
     @protocol(PasswordProtectionCommands),
     @protocol(PasswordSuggestionCommands),
@@ -1422,6 +1417,12 @@ const char kChromeAppStoreUrl[] =
   for (Protocol* protocol in protocols) {
     [_dispatcher startDispatchingToTarget:self forProtocol:protocol];
   }
+}
+
+// Starts the dispatching to the command protocols related to modal handling.
+- (void)startModalDispatching {
+  _modalHost = [[BrowserModalHost alloc] initWithBrowser:self.browser];
+  [_modalHost startHostingCommandProtocols];
 }
 
 // Creates the browser view controller dependencies.
@@ -1587,9 +1588,12 @@ const char kChromeAppStoreUrl[] =
   _viewControllerDependencies.safeAreaProvider = _safeAreaProvider;
 }
 
-- (void)updateViewControllerDependencies {
+// Setup step executed after the view controller has been created.
+- (void)postViewControllerCreationSetup {
   TRACE_EVENT("ui", "-[BrowserCoordinator updateViewControllerDependencies]");
   BrowserViewController* viewController = self.viewController;
+  [_modalHost setBaseViewControllerForModals:self.viewController];
+
   _bookmarksCoordinator.baseViewController = viewController;
 
   _toolbarAccessoryPresenter.baseViewController = viewController;
@@ -1863,8 +1867,6 @@ const char kChromeAppStoreUrl[] =
 
   [self.vcardCoordinator stop];
   self.vcardCoordinator = nil;
-
-  [self hidePageInfo];
 
   [self.passKitCoordinator stop];
   self.passKitCoordinator = nil;
@@ -3202,6 +3204,8 @@ const char kChromeAppStoreUrl[] =
 
 - (void)clearPresentedStateWithCompletion:(ProceduralBlock)completion
                            dismissOmnibox:(BOOL)dismissOmnibox {
+  [_modalHost clearPresentedState];
+
   [self stopSaveToPhotos];
   [self hideSaveToDrive];
   [self hideDriveFilePicker];
@@ -3239,8 +3243,6 @@ const char kChromeAppStoreUrl[] =
 
   [self.passwordSuggestionCoordinator stop];
   self.passwordSuggestionCoordinator = nil;
-
-  [self hidePageInfo];
 
   [self.paymentsScanCoordinator stop];
   self.paymentsScanCoordinator = nil;
@@ -3993,46 +3995,6 @@ const char kChromeAppStoreUrl[] =
                          browser:self.browser];
   _dockingPromoCoordinator.promosUIHandler = self.promosManagerCoordinator;
   [_dockingPromoCoordinator start];
-}
-
-#pragma mark - PageActionMenuCommands
-
-- (void)showPageActionMenu {
-  if (!self.activeWebState) {
-    // The page action menu requires an active tab. Return early if there is
-    // none.
-    return;
-  }
-  // TODO(crbug.com/465505528) Propagate page action menu entry point source to
-  // page action menu coordinator.
-  _pageActionMenuCoordinator = [[PageActionMenuCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser];
-  _pageActionMenuCoordinator.pageActionMenuHandler =
-      HandlerForProtocol(self.dispatcher, PageActionMenuCommands);
-  [_pageActionMenuCoordinator start];
-}
-
-- (void)dismissPageActionMenuWithCompletion:(ProceduralBlock)completion {
-  [_pageActionMenuCoordinator stopWithCompletion:completion];
-  _pageActionMenuCoordinator = nil;
-}
-
-#pragma mark - PageInfoCommands
-
-- (void)showPageInfo {
-  PageInfoCoordinator* pageInfoCoordinator = [[PageInfoCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser];
-  pageInfoCoordinator.presentationProvider = self;
-  [self.pageInfoCoordinator stop];
-  self.pageInfoCoordinator = pageInfoCoordinator;
-  [self.pageInfoCoordinator start];
-}
-
-- (void)hidePageInfo {
-  [self.pageInfoCoordinator stop];
-  self.pageInfoCoordinator = nil;
 }
 
 #pragma mark - AutofillSettingsNavigator
@@ -5235,23 +5197,6 @@ const char kChromeAppStoreUrl[] =
 
 - (void)reloadNTPForWebState:(web::WebState*)webState {
   [_NTPCoordinator reload];
-}
-
-#pragma mark - PageInfoPresentation
-
-- (void)presentPageInfoView:(UIView*)pageInfoView {
-  [pageInfoView setFrame:self.viewController.view.bounds];
-  [self.viewController.view addSubview:pageInfoView];
-}
-
-- (void)prepareForPageInfoPresentation {
-  id<BrowserCoordinatorCommands> browserCoordinatorHandler =
-      HandlerForProtocol(self.dispatcher, BrowserCoordinatorCommands);
-  [browserCoordinatorHandler hideComposebox];
-}
-
-- (CGPoint)convertToPresentationCoordinatesForOrigin:(CGPoint)origin {
-  return [self.viewController.view convertPoint:origin fromView:nil];
 }
 
 #pragma mark - PasswordSettingsCoordinatorDelegate

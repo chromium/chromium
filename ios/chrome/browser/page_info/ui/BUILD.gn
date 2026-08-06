@@ -29,7 +29,6 @@ source_set("ui") {
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/page_info/constants",
     "//ios/chrome/browser/page_info/features",
-    "//ios/chrome/browser/page_info/requirements",
     "//ios/chrome/browser/permissions/ui_bundled",
     "//ios/chrome/browser/permissions/ui_bundled:constants",
     "//ios/chrome/browser/permissions/ui_bundled:permission_info",

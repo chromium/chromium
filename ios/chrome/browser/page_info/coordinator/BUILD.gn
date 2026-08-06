@@ -40,7 +40,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/page_info/features",
     "//ios/chrome/browser/page_info/last_visited",
     "//ios/chrome/browser/page_info/model",
-    "//ios/chrome/browser/page_info/requirements",
     "//ios/chrome/browser/page_info/ui",
     "//ios/chrome/browser/permissions/ui_bundled",
     "//ios/chrome/browser/permissions/ui_bundled:permission_info",

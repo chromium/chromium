@@ -16,9 +16,6 @@
 // Coordinator for the page action menu.
 @interface PageActionMenuCoordinator : ChromeCoordinator
 
-// The dispatcher for commands.
-@property(nonatomic, weak) id<PageActionMenuCommands> pageActionMenuHandler;
-
 // Dismisses the menu with a completion block before stopping the coordinator.
 - (void)stopWithCompletion:(ProceduralBlock)completion;
 
