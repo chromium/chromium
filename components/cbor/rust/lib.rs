@@ -50,7 +50,7 @@ mod writer;
 
 pub use constants::MAX_DEPTH;
 pub use reader::{parse_with_config, Config, Error, ParseResult};
-pub use values::{MapEntry, MapKey, MapKeyKind, Value, ValueKind};
+pub use values::{Map, MapEntry, MapKey, MapKeyKind, Value, ValueKind};
 pub use writer::write;
 
 // This code assumes that `usize` fits in a `u64` because it uses `as u64` in a

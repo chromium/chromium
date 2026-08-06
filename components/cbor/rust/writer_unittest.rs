@@ -92,17 +92,20 @@ fn test_write_array() {
 #[gtest(CBORWriterRustTest, TestWriteMap)]
 fn test_write_map() {
     let test_cases = [
-        (Value::Map(vec![]), "a0"),
-        (Value::Map(vec![(MapKey::Int(1), Value::Int(1)).into()]), "a10101"),
-        (Value::Map(vec![(MapKey::Int(-2), Value::Int(1)).into()]), "a12101"),
+        (Value::Map(vec![].into()), "a0"),
+        (Value::Map(vec![(MapKey::Int(1), Value::Int(1)).into()].into()), "a10101"),
+        (Value::Map(vec![(MapKey::Int(-2), Value::Int(1)).into()].into()), "a12101"),
         (
-            Value::Map(vec![
-                (MapKey::Int(1), Value::Int(1)).into(),
-                (MapKey::Int(2), Value::Int(2)).into(),
-            ]),
+            Value::Map(
+                vec![
+                    (MapKey::Int(1), Value::Int(1)).into(),
+                    (MapKey::Int(2), Value::Int(2)).into(),
+                ]
+                .into(),
+            ),
             "a201010202",
         ),
-        (Value::Map(vec![(MapKey::Bytestring(&[0x0a]), Value::Int(1)).into()]), "a1410a01"),
+        (Value::Map(vec![(MapKey::Bytestring(&[0x0a]), Value::Int(1)).into()].into()), "a1410a01"),
     ];
 
     for test in test_cases {
@@ -154,10 +157,10 @@ fn test_write_floats() {
 #[gtest(CBORWriterRustTest, TestWriteMapKeyCanonicalization)]
 fn test_write_map_key_canonicalization() {
     let map = vec![
-        (MapKey::Int(1), Value::Int(4)).into(),      // Major Type 0
-        (MapKey::Int(-1), Value::Int(3)).into(),     // Major Type 1
-        (MapKey::String("c"), Value::Int(2)).into(), // Length 1 should precede length 2
         (MapKey::String("bb"), Value::Int(1)).into(),
+        (MapKey::String("c"), Value::Int(2)).into(), // Length 1 should precede length 2
+        (MapKey::Int(-1), Value::Int(3)).into(),     // Major Type 1
+        (MapKey::Int(1), Value::Int(4)).into(),      // Major Type 0
     ];
 
     // Expected CTAP2 Canonical Order:
@@ -170,5 +173,5 @@ fn test_write_map_key_canonicalization() {
     // Total raw expected payload bytes: a4 01 04 20 03 61 63 02 62 62 62 01
 
     let expected = hex::decode("a40104200361630262626201").unwrap();
-    assert_eq!(write(&Value::Map(map)), expected);
+    assert_eq!(write(&Value::Map(map.into())), expected);
 }

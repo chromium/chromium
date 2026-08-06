@@ -8,7 +8,7 @@ use core::str;
 
 use crate::constants::*;
 use crate::float_conversions::*;
-use crate::values::{MapEntry, MapKey, Value};
+use crate::values::{Map, MapEntry, MapKey, Value};
 
 // LINT.IfChange(Error)
 #[repr(C)]
@@ -256,7 +256,7 @@ fn to_map<'a>(
 
         ret.push(MapEntry { key, value });
     }
-    Ok(Value::Map(ret))
+    Ok(Value::Map(Map::from_sorted_vec_unchecked(ret)))
 }
 
 fn to_simple_value(info: u8, arg: u64, config: &Config) -> Result<Value<'static>, Error> {

@@ -45,43 +45,52 @@ fn test_inputs() {
             "8181818181818181818181818181818181818180",
             Err(Error::TooMuchNesting),
         ),
-        ("a0", Ok(Value::Map(vec![]))),
-        ("a10101", Ok(Value::Map(vec![(MapKey::Int(1), Value::Int(1)).into()]))),
-        ("a12101", Ok(Value::Map(vec![(MapKey::Int(-2), Value::Int(1)).into()]))),
+        ("a0", Ok(Value::Map(vec![].into()))),
+        ("a10101", Ok(Value::Map(vec![(MapKey::Int(1), Value::Int(1)).into()].into()))),
+        ("a12101", Ok(Value::Map(vec![(MapKey::Int(-2), Value::Int(1)).into()].into()))),
         (
             "a201010202",
-            Ok(Value::Map(vec![
-                (MapKey::Int(1), Value::Int(1)).into(),
-                (MapKey::Int(2), Value::Int(2)).into(),
-            ])),
+            Ok(Value::Map(
+                vec![
+                    (MapKey::Int(1), Value::Int(1)).into(),
+                    (MapKey::Int(2), Value::Int(2)).into(),
+                ]
+                .into(),
+            )),
         ),
         (
             "a1410a01",
-            Ok(Value::Map(vec![(
-                MapKey::Bytestring(&[0x0a]),
-                Value::Int(1),
-            ).into()])),
+            Ok(Value::Map(
+                vec![(
+                    MapKey::Bytestring(&[0x0a]),
+                    Value::Int(1),
+                ).into()]
+                .into(),
+            )),
         ),
         // This is a COSE key to check that map ordering works correctly.
         (
             "a501020326200121582009ac4af6a4646b5bfe81c37f751769c768c5c41ffea633dad0f48e6e3bc3e9a0225820269fbe132c40bf11f4de4a92bec527901906fdce98bbed52df9b175b6a4f3808",
-            Ok(Value::Map(vec![
-                (MapKey::Int(1), Value::Int(2)).into(),
-                (MapKey::Int(3), Value::Int(-7)).into(),
-                (MapKey::Int(-1), Value::Int(1)).into(),
-                (
-                    MapKey::Int(-2),
-                    Value::Bytestring(
-                        b"\x09\xac\x4a\xf6\xa4\x64\x6b\x5b\xfe\x81\xc3\x7f\x75\x17\x69\xc7\x68\xc5\xc4\x1f\xfe\xa6\x33\xda\xd0\xf4\x8e\x6e\x3b\xc3\xe9\xa0",
-                    ),
-                ).into(),
-                (
-                    MapKey::Int(-3),
-                    Value::Bytestring(
-                        b"\x26\x9f\xbe\x13\x2c\x40\xbf\x11\xf4\xde\x4a\x92\xbe\xc5\x27\x90\x19\x06\xfd\xce\x98\xbb\xed\x52\xdf\x9b\x17\x5b\x6a\x4f\x38\x08",
-                    ),
-                ).into(),
-            ])),
+            Ok(Value::Map(
+                vec![
+                    (MapKey::Int(1), Value::Int(2)).into(),
+                    (MapKey::Int(3), Value::Int(-7)).into(),
+                    (MapKey::Int(-1), Value::Int(1)).into(),
+                    (
+                        MapKey::Int(-2),
+                        Value::Bytestring(
+                            b"\x09\xac\x4a\xf6\xa4\x64\x6b\x5b\xfe\x81\xc3\x7f\x75\x17\x69\xc7\x68\xc5\xc4\x1f\xfe\xa6\x33\xda\xd0\xf4\x8e\x6e\x3b\xc3\xe9\xa0",
+                        ),
+                    ).into(),
+                    (
+                        MapKey::Int(-3),
+                        Value::Bytestring(
+                            b"\x26\x9f\xbe\x13\x2c\x40\xbf\x11\xf4\xde\x4a\x92\xbe\xc5\x27\x90\x19\x06\xfd\xce\x98\xbb\xed\x52\xdf\x9b\x17\x5b\x6a\x4f\x38\x08",
+                        ),
+                    ).into(),
+                ]
+                .into(),
+            )),
         ),
         (
             "a101a101a101a101a101a101a101a101a101a101a101a101a101a101a101a101a101a101a101a0",
