@@ -25,10 +25,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "components/policy/core/browser/url_list/policy_blocklist_service.h"
 #include "components/policy/core/browser/url_list/url_blocklist_manager.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/request_sender.h"
@@ -130,14 +130,14 @@ TasksClientImpl::TasksFetchState::TasksFetchState() = default;
 TasksClientImpl::TasksFetchState::~TasksFetchState() = default;
 
 TasksClientImpl::TasksClientImpl(
-    PrefService* pref_service,
-    apps::AppServiceProxy* app_service_proxy,
+    const PrefService* pref_service,
+    apps::AppRegistryCache* app_registry_cache,
     PolicyBlocklistService* policy_blocklist_service,
     const TasksClientImpl::CreateRequestSenderCallback&
         create_request_sender_callback,
     net::NetworkTrafficAnnotationTag traffic_annotation_tag)
     : pref_service_(pref_service),
-      app_service_proxy_(app_service_proxy),
+      app_registry_cache_(app_registry_cache),
       policy_blocklist_service_(policy_blocklist_service),
       create_request_sender_callback_(create_request_sender_callback),
       traffic_annotation_tag_(traffic_annotation_tag) {}
@@ -156,11 +156,11 @@ bool TasksClientImpl::IsDisabledByAdmin() const {
   }
 
   // 2) Check if the Calendar app (home app for Tasks) is disabled by policy.
-  if (!app_service_proxy_) {
+  if (!app_registry_cache_) {
     return true;
   }
   auto calendar_app_readiness = apps::Readiness::kUnknown;
-  app_service_proxy_->AppRegistryCache().ForOneApp(
+  app_registry_cache_->ForOneApp(
       ash::kGoogleCalendarAppId,
       [&calendar_app_readiness](const apps::AppUpdate& update) {
         calendar_app_readiness = update.Readiness();

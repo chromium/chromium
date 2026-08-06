@@ -14,16 +14,19 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/api/tasks/tasks_client_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/policy/policy_blocklist_service/ash_policy_blocklist_service_factory.h"
+#include "components/services/app_service/public/cpp/app_service.h"
+#include "components/services/app_service/public/cpp/app_service_registry.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_type.h"
 #include "google_apis/common/auth_service.h"
 #include "google_apis/common/request_sender.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -120,19 +123,18 @@ void ChromeTasksDelegate::UpdateClientForProfileSwitch(
 
   // Do not create a client for guest profiles and don't create a new client for
   // an account that has already been registered.
-  if (user_manager::UserManager::IsInitialized() &&
-      !user_manager::UserManager::Get()->IsLoggedInAsGuest()) {
+  const auto* user = user_manager::UserManager::Get()->FindUser(account_id);
+  if (user->GetType() != user_manager::UserType::kGuest) {
     auto& client = clients_[account_id];
     if (!client) {
       Profile* profile = Profile::FromBrowserContext(
           BrowserContextHelper::Get()->GetBrowserContextByAccountId(
               account_id));
-      apps::AppServiceProxy* app_service_proxy =
-          apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)
-              ? apps::AppServiceProxyFactory::GetForProfile(profile)
-              : nullptr;
+      apps::AppService* app_service =
+          apps::AppServiceRegistry::Get()->Find(account_id);
       client = std::make_unique<TasksClientImpl>(
-          profile->GetPrefs(), app_service_proxy,
+          user->GetProfilePrefs(),
+          (app_service ? &app_service->AppRegistryCache() : nullptr),
           AshPolicyBlocklistServiceFactory::GetForBrowserContext(profile),
           base::BindRepeating(&CreateRequestSenderForClient),
           kTrafficAnnotation);

@@ -195,7 +195,8 @@ class TasksClientImplIsDisabledByAdminTest : public testing::Test {
   TasksClientImpl CreateClientForProfile(Profile* profile) const {
     return TasksClientImpl(
         profile->GetPrefs(),
-        apps::AppServiceProxyFactory::GetForProfile(profile),
+        &apps::AppServiceProxyFactory::GetForProfile(profile)
+             ->AppRegistryCache(),
         AshPolicyBlocklistServiceFactory::GetForBrowserContext(profile),
         base::BindLambdaForTesting(
             [&](signin::OAuthConsumerId oauth_consumer_id,
@@ -299,7 +300,8 @@ class TasksClientImplTest : public testing::Test {
         /*testing_factories=*/{}, url_loader_factory_);
     client_ = std::make_unique<TasksClientImpl>(
         profile->GetPrefs(),
-        apps::AppServiceProxyFactory::GetForProfile(profile),
+        &apps::AppServiceProxyFactory::GetForProfile(profile)
+             ->AppRegistryCache(),
         AshPolicyBlocklistServiceFactory::GetForBrowserContext(profile),
         create_request_sender_callback, TRAFFIC_ANNOTATION_FOR_TESTS);
 

@@ -15,7 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "google_apis/tasks/tasks_api_requests.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -23,6 +22,10 @@
 
 class PolicyBlocklistService;
 class PrefService;
+
+namespace apps {
+class AppRegistryCache;
+}  // namespace apps
 
 namespace base {
 class Time;
@@ -51,9 +54,11 @@ class TasksClientImpl : public TasksClient {
           signin::OAuthConsumerId oauth_consumer_id,
           const net::NetworkTrafficAnnotationTag& traffic_annotation_tag)>;
 
+  // If `pref_service` or `app_registry_cache` is non-null, they must
+  // outlive this instance.
   TasksClientImpl(
-      PrefService* pref_service,
-      apps::AppServiceProxy* app_service_proxy,
+      const PrefService* pref_service,
+      apps::AppRegistryCache* app_registry_cache,
       PolicyBlocklistService* policy_blocklist_service,
       const CreateRequestSenderCallback& create_request_sender_callback,
       net::NetworkTrafficAnnotationTag traffic_annotation_tag);
@@ -253,8 +258,8 @@ class TasksClientImpl : public TasksClient {
   // Returns lazily initialized `request_sender_`.
   google_apis::RequestSender* GetRequestSender();
 
-  const raw_ptr<PrefService> pref_service_;
-  const raw_ptr<apps::AppServiceProxy> app_service_proxy_;
+  const raw_ptr<const PrefService> pref_service_;
+  const raw_ptr<apps::AppRegistryCache> app_registry_cache_;
   const raw_ptr<PolicyBlocklistService> policy_blocklist_service_;
 
   // Callback passed from `GlanceablesKeyedService` that creates

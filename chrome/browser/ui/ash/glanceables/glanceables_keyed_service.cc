@@ -15,6 +15,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ash/api/tasks/tasks_client_impl.h"
 #include "chrome/browser/ui/ash/glanceables/glanceables_classroom_client_impl.h"
 #include "components/account_id/account_id.h"
@@ -84,8 +85,10 @@ GlanceablesKeyedService::GlanceablesKeyedService(
       pref_service, app_service_proxy, policy_blocklist_service,
       base::DefaultClock::GetInstance(), create_request_sender_callback);
   tasks_client_ = std::make_unique<api::TasksClientImpl>(
-      pref_service, app_service_proxy, policy_blocklist_service,
-      create_request_sender_callback, kTasksTrafficAnnotation);
+      pref_service,
+      (app_service_proxy ? &app_service_proxy->AppRegistryCache() : nullptr),
+      policy_blocklist_service, create_request_sender_callback,
+      kTasksTrafficAnnotation);
 
   if (Shell::HasInstance() && Shell::Get()->glanceables_controller()) {
     Shell::Get()->glanceables_controller()->UpdateClientsRegistration(
