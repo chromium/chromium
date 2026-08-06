@@ -8,6 +8,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -228,11 +229,22 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(originator_contents);
 
+  base::MockRepeatingCallback<void(
+      PasswordChangeFromCheckupDelegate::PasswordAutomaticChangeState)>
+      state_change_callback;
+  EXPECT_CALL(state_change_callback, Run(testing::_))
+      .WillRepeatedly(testing::Return());
+  EXPECT_CALL(state_change_callback,
+              Run(PasswordChangeFromCheckupDelegate::
+                      PasswordAutomaticChangeState::kError));
+
   auto delegate = std::make_unique<PasswordChangeFromCheckupDelegate>(
       ChromePasswordManagerClient::FromWebContents(originator_contents));
   GURL url = embedded_test_server()->GetURL("example.com", "/title1.html");
+
   delegate->StartPasswordChangeFlow(CreateCredentialUIEntry(url),
-                                    originator_contents->GetWeakPtr());
+                                    originator_contents->GetWeakPtr(),
+                                    state_change_callback.Get());
   // A new tab for the actuation is opened.
   auto* actuation_tab = browser()->tab_strip_model()->GetActiveTab();
   // Create task and add the tab to it.
@@ -257,6 +269,82 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
     return delegate->GetFindFormTaskState() ==
            actor::ActorTask::State::kCancelled;
   }));
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
+                       VerificationFlowStopsOnUserIntervention) {
+  Profile* profile = browser()->GetProfile();
+  auto* actor_service =
+      actor::ActorKeyedServiceFactory::GetActorKeyedService(profile);
+
+  content::WebContents* original_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  base::MockRepeatingCallback<void(
+      PasswordChangeFromCheckupDelegate::PasswordAutomaticChangeState)>
+      state_change_callback;
+  EXPECT_CALL(state_change_callback, Run(testing::_))
+      .WillRepeatedly(testing::Return());
+  EXPECT_CALL(state_change_callback,
+              Run(PasswordChangeFromCheckupDelegate::
+                      PasswordAutomaticChangeState::kError));
+
+  auto delegate = std::make_unique<PasswordChangeFromCheckupDelegate>(
+      ChromePasswordManagerClient::FromWebContents(original_web_contents));
+  GURL url = embedded_test_server()->GetURL(
+      "example.com", "/password/update_form_empty_fields.html");
+
+  content::TestNavigationObserver observer(url.GetWithEmptyPath());
+  observer.StartWatchingNewWebContents();
+
+  delegate->StartPasswordChangeFlow(CreateCredentialUIEntry(url),
+                                    original_web_contents->GetWeakPtr(),
+                                    state_change_callback.Get());
+
+  auto* actuation_tab = browser()->tab_strip_model()->GetActiveTab();
+
+  actor::TaskId task_id = actor_service->CreateTask(
+      actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
+  actor::ActorTask* task = actor_service->GetTask(task_id);
+  base::test::TestFuture<actor::mojom::ActionResultPtr> add_tab_future;
+  task->AddTab(actuation_tab->GetHandle(), /*stop_task_on_detach=*/true,
+               add_tab_future.GetCallback());
+  EXPECT_TRUE(add_tab_future.Wait());
+  actor_service->NotifyTaskStateChanged(*task);
+
+  observer.Wait();
+
+  content::WebContents* new_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(content::NavigateToURL(new_web_contents, url));
+
+  actor_service->StopTask(task_id,
+                          actor::ActorTask::StoppedReason::kTaskComplete);
+
+  // Wait for the form fields to be filled and form manager to be saved,
+  // which indicates the delegate has transitioned to the verification step.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(
+               new_web_contents,
+               "document.getElementById('new_password_1').value !== ''")
+               .ExtractBool() &&
+           delegate->has_saved_form_manager();
+  }));
+
+  // Simulate verification task creation and interruption.
+  actor::TaskId verification_task_id = actor_service->CreateTask(
+      actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
+  actor::ActorTask* verification_task =
+      actor_service->GetTask(verification_task_id);
+
+  base::test::TestFuture<actor::mojom::ActionResultPtr> add_verif_tab_future;
+  verification_task->AddTab(actuation_tab->GetHandle(),
+                            /*stop_task_on_detach=*/true,
+                            add_verif_tab_future.GetCallback());
+  EXPECT_TRUE(add_verif_tab_future.Wait());
+
+  verification_task->SetState(actor::ActorTask::State::kReflecting);
+  verification_task->Interrupt();
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
