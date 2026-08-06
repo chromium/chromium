@@ -665,8 +665,8 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
         // LocationBar can be in a transient reparenting / activity-recreation state where it is
         // temporarily attached to an unexpected parent, so getLayoutParams() no longer returns
         // FrameLayout.LayoutParams (and mHolder's params are not LinearLayout.LayoutParams).
-        // Casting blindly then throws a ClassCastException. Bail out until the view settles back
-        // into its normal parent; a subsequent layout pass will refresh correctly. The assert
+        // Casting unconditionally then throws a ClassCastException. Bail out until the view settles
+        // back into its normal parent; a subsequent layout pass will refresh correctly. The assert
         // fires in dcheck-enabled builds so we can still collect stack traces for the scenarios
         // that reach this state, while release builds gracefully return.
         if (mHolder == null
