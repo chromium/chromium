@@ -7,20 +7,20 @@
  * languages.
  */
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import '../controls/settings_checkbox_list_entry.js';
 import '../settings_shared.css.js';
 
+import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrSearchFieldElement} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
 import {FindShortcutMixin} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {SettingsCheckboxListEntryElement} from '../controls/settings_checkbox_list_entry.js';
 import {ScrollableMixin} from '../scrollable_mixin.js';
 
 import {getTemplate} from './add_languages_dialog.html.js';
@@ -29,14 +29,8 @@ import {getFullName} from './languages_util.js';
 export interface SettingsAddLanguagesDialogElement {
   $: {
     dialog: CrDialogElement,
+    list: HTMLElement,
     search: CrSearchFieldElement,
-  };
-}
-
-interface Repeaterevent extends Event {
-  target: SettingsCheckboxListEntryElement;
-  model: {
-    item: chrome.languageSettingsPrivate.Language,
   };
 }
 
@@ -84,6 +78,13 @@ export class SettingsAddLanguagesDialogElement extends
   override connectedCallback() {
     super.connectedCallback();
 
+    // TODO(crbug.com/540914692): Workaround for Blink bug, by resetting
+    // focusgroup attribute restores FocusgroupData that was wiped out during
+    // detachment/attachment. Can probably remove this after migrating to Lit,
+    // since detachment/attachment happens due to the parent chain using dom-if.
+    this.$.list.setAttribute(
+        'focusgroup', this.$.list.getAttribute('focusgroup')!);
+
     this.$.dialog.showModal();
   }
 
@@ -127,11 +128,6 @@ export class SettingsAddLanguagesDialogElement extends
     return this.getLanguages_().length;
   }
 
-  /** @return A 1-based index for aria-posinset. */
-  private getAriaPosinset_(index: number): number {
-    return index + 1;
-  }
-
   private getDisplayText_(language: chrome.languageSettingsPrivate.Language):
       string {
     return getFullName(language);
@@ -146,13 +142,11 @@ export class SettingsAddLanguagesDialogElement extends
   }
 
   /** Handler for checking or unchecking a language item. */
-  private onLanguageCheckboxChange_(e: Repeaterevent) {
-    // Add or remove the item to the Set. No need to worry about data binding:
-    // willAdd_ is called to initialize the checkbox state (in case the
-    // iron-list re-uses a previous checkbox), and the checkbox can only be
-    // changed after that by user action.
+  private onLanguageCheckboxChange_(
+      e: DomRepeatEvent<chrome.languageSettingsPrivate.Language>) {
+    const checkbox = e.target as CrCheckboxElement;
     const language = e.model.item;
-    if (e.target.checked) {
+    if (checkbox.checked) {
       this.languagesToAdd_.add(language.code);
     } else {
       this.languagesToAdd_.delete(language.code);

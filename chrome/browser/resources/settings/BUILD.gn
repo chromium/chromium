@@ -93,7 +93,6 @@ build_webui("build") {
     "controls/controlled_button.ts",
     "controls/controlled_radio_button.ts",
     "controls/settings_checkbox.ts",
-    "controls/settings_checkbox_list_entry.ts",
     "controls/settings_radio_group.ts",
     "controls/settings_toggle_button.ts",
     "glic_page/glic_page.ts",

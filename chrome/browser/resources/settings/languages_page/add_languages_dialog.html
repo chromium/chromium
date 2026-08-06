@@ -13,13 +13,20 @@
         padding-inline-end: 0;
       }
 
-      settings-checkbox-list-entry::part(checkbox) {
-        padding-inline-start: 40px;
+      #dialog-title > span,
+      #list {
+        flex: 1;
       }
 
-      #dialog-title > span,
-      iron-list {
-        flex: 1;
+      cr-checkbox {
+        padding-bottom: 7px;
+        padding-inline-end: var(--cr-section-padding);
+        padding-inline-start: 40px;
+        padding-top: 7px;
+      }
+
+      cr-checkbox::part(label-container) {
+        min-width: 0;
       }
     </style>
     <cr-dialog id="dialog" close-text="$i18n{close}">
@@ -32,21 +39,18 @@
         </cr-search-field>
       </div>
       <div id="dialog-body" slot="body" scrollable>
-        <iron-list scroll-target="dialog-body" role="listbox"
-            items="[[getLanguages_(filterValue_)]]">
-          <template>
-            <settings-checkbox-list-entry role="option"
-                checked="[[willAdd_(item.code)]]" tabindex="[[tabIndex]]"
-                aria-posinset$="[[getAriaPosinset_(index)]]"
-                aria-setsize$="[[getLanguagesCount_(filterValue_)]]"
+        <div id="list" role="listbox" focusgroup="listbox block"
+            hidden$="[[!getLanguagesCount_(filterValue_)]]">
+          <template is="dom-repeat" items="[[getLanguages_(filterValue_)]]">
+            <cr-checkbox checked="[[willAdd_(item.code)]]"
                 aria-label="[[i18n('addLanguageAriaLabel', item.displayName)]]"
                 on-change="onLanguageCheckboxChange_">
               <div class="text-elide">
                 [[getDisplayText_(item)]]
               </div>
-            </settings-checkbox-list-entry>
+            </cr-checkbox>
           </template>
-        </iron-list>
+        </div>
       </div>
       <div slot="button-container">
         <cr-button class="cancel-button" on-click="onCancelButtonClick_">

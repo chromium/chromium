@@ -6,11 +6,11 @@
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {LanguageHelper, SettingsAddLanguagesDialogElement, SettingsLanguagesPageElement} from 'chrome://settings/lazy_load.js';
+import type {CrCheckboxElement, LanguageHelper, SettingsAddLanguagesDialogElement, SettingsLanguagesPageElement} from 'chrome://settings/lazy_load.js';
 import {LanguagesBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import type {SettingsCheckboxListEntryElement, CrActionMenuElement, CrButtonElement} from 'chrome://settings/settings.js';
+import type {CrActionMenuElement, CrButtonElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, loadTimeData, convertLanguageCodeForTranslate} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertGE, assertGT, assertLT, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertGE, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
@@ -88,7 +88,7 @@ suite('LanguagesPage', function() {
 
   suite('AddLanguagesDialog', function() {
     let dialog: SettingsAddLanguagesDialogElement;
-    let dialogItems: NodeListOf<SettingsCheckboxListEntryElement>;
+    let dialogItems: NodeListOf<CrCheckboxElement>;
     let addLanguagesButton: CrButtonElement;
     let cancelButton: CrButtonElement;
     let actionButton: CrButtonElement;
@@ -124,7 +124,7 @@ suite('LanguagesPage', function() {
       addLanguagesButton.click();
 
       // The page stamps the dialog, registers listeners, and populates the
-      // iron-list asynchronously at microtask timing, so wait for a new task.
+      // DOM asynchronously at microtask timing, so wait for a new task.
       await whenDialogOpen;
 
       dialog = languagesPage.shadowRoot!.querySelector(
@@ -147,13 +147,9 @@ suite('LanguagesPage', function() {
       assertTrue(!!cancelButton);
       flush();
 
-      // The fixed-height dialog's iron-list should stamp far fewer than
-      // 50 items.
-      dialogItems =
-          dialog.$.dialog.querySelectorAll<SettingsCheckboxListEntryElement>(
-              'settings-checkbox-list-entry:not([hidden])');
+      dialogItems = dialog.$.dialog.querySelectorAll<CrCheckboxElement>(
+          'cr-checkbox:not([hidden])');
       assertGT(dialogItems.length, 1);
-      assertLT(dialogItems.length, 50);
 
       // No languages have been checked, so the action button is disabled.
       assertTrue(actionButton.disabled);
@@ -182,9 +178,9 @@ suite('LanguagesPage', function() {
     test('add languages and cancel', async function() {
       // Check some languages.
       dialogItems[1]!.click();  // en-CA.
-      await dialogItems[1]!.$.checkbox.updateComplete;
+      await dialogItems[1]!.updateComplete;
       dialogItems[2]!.click();  // tk.
-      await dialogItems[2]!.$.checkbox.updateComplete;
+      await dialogItems[2]!.updateComplete;
 
       // Canceling the dialog should close and remove it without enabling
       // the checked languages.
@@ -206,17 +202,17 @@ suite('LanguagesPage', function() {
 
       // Check and uncheck one language.
       dialogItems[0]!.click();
-      await dialogItems[0]!.$.checkbox.updateComplete;
+      await dialogItems[0]!.updateComplete;
       assertFalse(actionButton.disabled);
       dialogItems[0]!.click();
-      await dialogItems[0]!.$.checkbox.updateComplete;
+      await dialogItems[0]!.updateComplete;
       assertTrue(actionButton.disabled);
 
       // Check multiple languages.
       dialogItems[0]!.click();  // en.
-      await dialogItems[0]!.$.checkbox.updateComplete;
+      await dialogItems[0]!.updateComplete;
       dialogItems[2]!.click();  // tk.
-      await dialogItems[2]!.$.checkbox.updateComplete;
+      await dialogItems[2]!.updateComplete;
       assertFalse(actionButton.disabled);
 
       // The action button should close and remove the dialog, enabling the
@@ -237,8 +233,7 @@ suite('LanguagesPage', function() {
       assertTrue(!!searchInput);
 
       const getItems = function() {
-        return dialog.$.dialog.querySelectorAll(
-            'settings-checkbox-list-entry:not([hidden])');
+        return dialog.$.dialog.querySelectorAll('cr-checkbox:not([hidden])');
       };
 
       // Expecting a few languages to be displayed when no query exists.
@@ -263,6 +258,11 @@ suite('LanguagesPage', function() {
       searchInput.setValue('_arc_ime_language_');
       flush();
       assertEquals(0, getItems().length);
+    });
+
+    test('AddLanguagesDialogFocusgroup', function() {
+      const list = dialog.shadowRoot!.querySelector('#list')!;
+      assertEquals('listbox block', list.getAttribute('focusgroup'));
     });
 
     test('Escape key behavior', function() {

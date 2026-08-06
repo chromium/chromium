@@ -78,7 +78,6 @@ export type {PasswordManagerProxy} from './autofill_page/password_manager_proxy.
 export {SettingsAutofillPageElement} from './autofill_page/autofill_page.js';
 export {SettingsAutofillPageIndexElement} from './autofill_page/autofill_page_index.js';
 export {BaseMixin} from './base_mixin.js';
-export {SettingsCheckboxListEntryElement} from './controls/settings_checkbox_list_entry.js';
 // <if expr="not is_chromeos">
 export {DefaultBrowserBrowserProxyImpl} from './default_browser_page/default_browser_browser_proxy.js';
 export type {DefaultBrowserBrowserProxy, DefaultBrowserInfo} from './default_browser_page/default_browser_browser_proxy.js';
