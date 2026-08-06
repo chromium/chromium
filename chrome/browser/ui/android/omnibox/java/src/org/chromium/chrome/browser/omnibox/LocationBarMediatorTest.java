@@ -854,6 +854,25 @@ public class LocationBarMediatorTest {
         assertEquals(3, input.getSelection().to);
     }
 
+    @Test
+    public void testOnUrlTextChanged_resetsActivationChipFocus() {
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+        doReturn(View.VISIBLE).when(mActivationChip).getVisibility();
+
+        var input = mSessionState.getAutocompleteInput();
+        mMediator.beginInput(input);
+
+        LocationBarSelectionController selectionController =
+                mMediator.getSelectionControllerForTesting();
+        assertTrue(selectionController.selectNextItem());
+        verify(mActivationChip).setSelected(true);
+
+        clearInvocations(mActivationChip);
+        mMediator.onUrlTextChanged("test");
+
+        verify(mActivationChip, atLeastOnce()).setSelected(false);
+    }
+
     /** Verifies that typing a space after text triggers site search. */
     @Test
     public void testOnUrlTextChangedTypedSpaceTriggersSiteSearch() {

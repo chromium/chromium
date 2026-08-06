@@ -268,6 +268,7 @@ class LocationBarMediator
 
     private SelectableView mUrlBarSelectableView;
     private SelectableView mFuseboxAttachmentsSelectableView;
+    private SelectableView mActivationChipSelectableView;
     private boolean mWaitingForInitialUrl;
     private @Nullable Boolean mIsLensOnOmniboxEnabled;
     private @Nullable ViewGroup mToolbarParent;
@@ -537,6 +538,11 @@ class LocationBarMediator
                     }
                 };
 
+        mActivationChipSelectableView =
+                wrapSelectableView(
+                        mLocationBarLayout.getActivationChip(),
+                        mFuseboxCoordinator::onActivationChipSelectionChanged);
+
         mFuseboxAttachmentsSelectableView =
                 new SelectableView() {
                     @Override
@@ -554,9 +560,7 @@ class LocationBarMediator
         List<SelectableView> selectableViews =
                 List.of(
                         mUrlBarSelectableView,
-                        wrapSelectableView(
-                                mLocationBarLayout.getActivationChip(),
-                                mFuseboxCoordinator::onActivationChipSelectionChanged),
+                        mActivationChipSelectableView,
                         wrapSelectableView(mLocationBarLayout.getDeleteButton()),
                         mFuseboxAttachmentsSelectableView,
                         autocompleteSelectableView,
@@ -886,6 +890,10 @@ class LocationBarMediator
         }
         updateButtonVisibility();
         if (mCurrentInput == null) return;
+
+        if (mSelectionController.getSelectedView() == mActivationChipSelectableView) {
+            mSelectionController.reset();
+        }
 
         TextSelection selection =
                 new TextSelection(
