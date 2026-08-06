@@ -2901,6 +2901,7 @@ RenderWidgetHostViewAura::~RenderWidgetHostViewAura() {
   delegated_frame_host_.reset();
   window_observer_.reset();
   if (window_) {
+    aura::client::SetFocusChangeObserver(window_, nullptr);
     if (window_->GetHost())
       window_->GetHost()->RemoveObserver(this);
     UnlockPointer();

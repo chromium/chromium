@@ -8,11 +8,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "content/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "content/browser/renderer_host/delegated_frame_host.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -34,7 +36,10 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/switches.h"
+#include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_handler.h"
@@ -1065,5 +1070,128 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraHideCursorOnTypingBrowserTest,
   EXPECT_TRUE(cursor_manager->IsCursorVisible());
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+namespace {
+
+// Observes `window` and synchronously runs `on_destroyed_` from within
+// OnWindowDestroyed(), after the delegate's OnWindowDestroyed() has run
+// (i.e. after ~RenderWidgetHostViewAura()) but before ClearProperties().
+class ScopedWindowDestroyedObserver : public aura::WindowObserver {
+ public:
+  ScopedWindowDestroyedObserver(aura::Window* window,
+                                base::OnceClosure on_destroyed)
+      : window_(window), on_destroyed_(std::move(on_destroyed)) {
+    window_->AddObserver(this);
+  }
+  ~ScopedWindowDestroyedObserver() override {
+    if (window_) {
+      window_->RemoveObserver(this);
+    }
+  }
+
+  void OnWindowDestroyed(aura::Window* window) override {
+    std::move(on_destroyed_).Run();
+    window_ = nullptr;
+  }
+
+ private:
+  raw_ptr<aura::Window> window_;
+  base::OnceClosure on_destroyed_;
+};
+
+}  // namespace
+
+class RenderWidgetHostViewAuraTeardownEventTest : public ContentBrowserTest {
+ public:
+  RenderWidgetHostViewAuraTeardownEventTest() = default;
+  ~RenderWidgetHostViewAuraTeardownEventTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Slow bots are flaky due to slower loading interacting with
+    // deferred commits.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  // Navigates to a page with a <select> element, opens its popup by
+  // focusing it and sending a space key, and returns the popup's
+  // RenderWidgetHostViewAura.
+  RenderWidgetHostViewAura* OpenSelectPopupAndGetAuraView() {
+    const GURL main_url(embedded_test_server()->GetURL(
+        "a.com", "/site_isolation/page-with-select.html"));
+    EXPECT_TRUE(NavigateToURL(shell(), main_url));
+    SimulateEndOfPaintHoldingOnPrimaryMainFrame(shell()->web_contents());
+
+    auto* const contents =
+        static_cast<WebContentsImpl*>(shell()->web_contents());
+    FrameTreeNode* const root = contents->GetPrimaryFrameTree().root();
+    RenderFrameHostImpl* const root_frame_host = root->current_frame_host();
+    RenderProcessHost* const process = root_frame_host->GetProcess();
+
+    // Open the <select> menu by focusing it and sending a space key
+    // at the focused node. This creates a popup widget.
+    input::NativeWebKeyboardEvent event(
+        blink::WebKeyboardEvent::Type::kChar,
+        blink::WebInputEvent::kNoModifiers,
+        blink::WebInputEvent::GetStaticTimeStampForTests());
+    event.text[0] = ' ';
+
+    // This focuses and opens the select box, creating a popup RenderWidget.
+    // We wait for the RenderWidgetHost to be shown.
+    ShowPopupWidgetWaiter filter(contents, root_frame_host);
+    EXPECT_TRUE(ExecJs(root_frame_host, "focusSelectMenu();"));
+    root_frame_host->GetRenderWidgetHost()->ForwardKeyboardEvent(event);
+    filter.Wait();
+
+    // The popup RenderWidget will get its own routing id.
+    const int popup_routing_id = filter.last_routing_id();
+    if (!popup_routing_id) {
+      ADD_FAILURE() << "Popup routing id was not set.";
+      return nullptr;
+    }
+
+    // Grab a pointer to the popup RenderWidget.
+    RenderWidgetHost* const popup_widget_host =
+        RenderWidgetHost::FromID(process->GetDeprecatedID(), popup_routing_id);
+    if (!popup_widget_host ||
+        popup_widget_host == root_frame_host->GetRenderWidgetHost()) {
+      ADD_FAILURE() << "Popup RenderWidgetHost was not created.";
+      return nullptr;
+    }
+
+    return static_cast<RenderWidgetHostViewAura*>(popup_widget_host->GetView());
+  }
+};
+
+// When `RenderWidgetHostViewAura` is destroyed while `window_` is still alive
+// (e.g. owned by its parent in the renderer-exit path), the FocusChangeObserver
+// property on `window_` must be cleared so FocusController cannot reach the
+// freed view via a subsequent focus change (e.g. from Widget::Hide()).
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraTeardownEventTest,
+                       HandleFocusLossWhileTearDown) {
+  RenderWidgetHostViewAura* const aura_view = OpenSelectPopupAndGetAuraView();
+  ASSERT_TRUE(aura_view);
+
+  aura::Window* const window = aura_view->GetNativeView();
+  ASSERT_TRUE(window);
+  ASSERT_EQ(aura::client::GetFocusChangeObserver(window), aura_view);
+
+  // The delegate's OnWindowDestroyed fires before WindowObserver callbacks,
+  // so by the time our observer runs, ~RenderWidgetHostViewAura() has already
+  // executed and the property must be null.
+  bool focus_observer_cleared = false;
+  ScopedWindowDestroyedObserver check(
+      window, base::BindLambdaForTesting([&]() {
+        focus_observer_cleared =
+            (aura::client::GetFocusChangeObserver(window) == nullptr);
+      }));
+
+  aura_view->Shutdown();
+  EXPECT_TRUE(focus_observer_cleared);
+}
 
 }  // namespace content
