@@ -9,6 +9,10 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+namespace autofill {
+struct MemorySearchResult;
+}
+
 @protocol AtMemoryFillCommands;
 
 // Child coordinator for the AtMemory granular fill UI. Managed by
@@ -19,9 +23,11 @@
 // Handler for fill commands.
 @property(nonatomic, weak) id<AtMemoryFillCommands> fillHandler;
 
-- (instancetype)initWithBaseNavigationController:
-                    (UINavigationController*)navigationController
-                                         browser:(Browser*)browser
+- (instancetype)
+    initWithBaseNavigationController:
+        (UINavigationController*)navigationController
+                             browser:(Browser*)browser
+                              result:(const autofill::MemorySearchResult&)result
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

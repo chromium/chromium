@@ -84,12 +84,14 @@
 
 #pragma mark - AtMemorySearchResultCommands
 
-- (void)showAtMemoryGranularFillWithResult:(MemorySearchResult*)result {
+- (void)showAtMemoryGranularFillWithResult:
+    (const autofill::MemorySearchResult&)result {
   [_atMemoryGranularFillCoordinator stop];
 
   _atMemoryGranularFillCoordinator = [[AtMemoryGranularFillCoordinator alloc]
       initWithBaseNavigationController:_navigationController
-                               browser:self.browser];
+                               browser:self.browser
+                                result:result];
   _atMemoryGranularFillCoordinator.fillHandler = self;
   [_atMemoryGranularFillCoordinator start];
 }

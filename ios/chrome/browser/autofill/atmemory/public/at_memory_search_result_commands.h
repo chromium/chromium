@@ -5,13 +5,16 @@
 #ifndef IOS_CHROME_BROWSER_AUTOFILL_ATMEMORY_PUBLIC_AT_MEMORY_SEARCH_RESULT_COMMANDS_H_
 #define IOS_CHROME_BROWSER_AUTOFILL_ATMEMORY_PUBLIC_AT_MEMORY_SEARCH_RESULT_COMMANDS_H_
 
-@class MemorySearchResult;
+namespace autofill {
+struct MemorySearchResult;
+}
 
 // Commands handler for AtMemory search result actions.
 @protocol AtMemorySearchResultCommands <NSObject>
 
 // Shows the AtMemory granular fill UI for the given search result.
-- (void)showAtMemoryGranularFillWithResult:(MemorySearchResult*)result;
+- (void)showAtMemoryGranularFillWithResult:
+    (const autofill::MemorySearchResult&)result;
 
 @end
 

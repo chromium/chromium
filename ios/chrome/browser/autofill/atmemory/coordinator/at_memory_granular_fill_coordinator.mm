@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/autofill/atmemory/coordinator/at_memory_granular_fill_coordinator.h"
 
+#import "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 #import "ios/chrome/browser/autofill/atmemory/coordinator/at_memory_granular_fill_mediator.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_granular_fill_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -14,17 +15,23 @@
   AtMemoryGranularFillViewController* _atMemoryGranularFillViewController;
   // Mediator for the AtMemory granular fill coordinator.
   AtMemoryGranularFillMediator* _mediator;
+  // Search result containing attributes to display.
+  std::optional<autofill::MemorySearchResult> _result;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
 
-- (instancetype)initWithBaseNavigationController:
-                    (UINavigationController*)navigationController
-                                         browser:(Browser*)browser {
+- (instancetype)
+    initWithBaseNavigationController:
+        (UINavigationController*)navigationController
+                             browser:(Browser*)browser
+                              result:
+                                  (const autofill::MemorySearchResult&)result {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
     _baseNavigationController = navigationController;
+    _result = result;
   }
   return self;
 }
@@ -49,6 +56,7 @@
   }
   _atMemoryGranularFillViewController = nil;
   _mediator = nil;
+  _result.reset();
 }
 
 @end
