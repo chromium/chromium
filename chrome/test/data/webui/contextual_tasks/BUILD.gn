@@ -15,6 +15,7 @@ build_webui_tests("build") {
     "app_test.ts",
     "contextual_tasks_webview_browsertest.ts",
     "post_message_handler_test.ts",
+    "utils_test.ts",
     "test_contextual_tasks_browser_proxy.ts",
     "contextual_tasks_test_utils.ts",
     "top_toolbar_test.ts",

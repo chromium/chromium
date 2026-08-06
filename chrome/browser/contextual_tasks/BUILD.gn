@@ -204,6 +204,8 @@ source_set("impl") {
   } else {
     deps += [
       "//chrome/browser/ui:browser_actions",
+      "//chrome/browser/ui/lens",
+      "//chrome/browser/ui/webui:webui_util",
       "//components/policy/core/browser",
     ]
   }
@@ -493,6 +495,7 @@ mojom("mojo_bindings") {
   webui_module_path = "/"
   public_deps = [
     "//mojo/public/mojom/base",
+    "//mojo/public/mojom/base:protobuf_support",
     "//ui/base/mojom",
     "//ui/webui/resources/cr_components/composebox:mojo_bindings",
     "//url/mojom:url_mojom_gurl",
@@ -523,6 +526,7 @@ if (!is_android) {
     sources = [
       "contextual_tasks_composebox_handler_browsertest.cc",
       "contextual_tasks_context_service_browsertest.cc",
+      "contextual_tasks_extension_handler_browsertest.cc",
       "contextual_tasks_page_handler_browsertest.cc",
       "contextual_tasks_ui_browsertest.cc",
       "contextual_tasks_ui_service_browsertest.cc",

@@ -261,3 +261,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, WindowManager) {
   RunTest("contextual_tasks/window_manager_test.js", "mocha.run();");
 }
 #endif
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, Utils) {
+  RunTest("contextual_tasks/utils_test.js", "mocha.run();");
+}

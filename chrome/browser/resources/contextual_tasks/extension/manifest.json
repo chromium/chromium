@@ -36,6 +36,10 @@
         "https://*.corp.google.com/*",
         "https://*.prod.google.com/*",
         "https://*.googlers.com/*"
+// <if expr="not is_official_build">
+        ,"http://localhost/*",
+        "file:///*"
+// </if>
       ]
     }
   ]

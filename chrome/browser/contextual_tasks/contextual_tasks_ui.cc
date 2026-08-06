@@ -166,28 +166,7 @@ bool IsUserFeedbackAllowed(Profile* profile) {
 }
 
 std::string GetEncodedHandshakeMessage() {
-  lens::ClientToAimMessage message;
-  lens::HandshakePing* ping = message.mutable_handshake_ping();
-  ping->add_capabilities(lens::FeatureCapability::DEFAULT);
-  ping->add_capabilities(lens::FeatureCapability::OPEN_THREADS_VIEW);
-  ping->add_capabilities(lens::FeatureCapability::COBROWSING_DISPLAY_CONTROL);
-  if (base::FeatureList::IsEnabled(
-          contextual_tasks::kContextualTasksContextLibrary)) {
-    ping->add_capabilities(lens::FeatureCapability::THREAD_CONTEXT_LIBRARY);
-  }
-  if (base::FeatureList::IsEnabled(
-          contextual_tasks::kEnableNotifyZeroStateRenderedCapability)) {
-    ping->add_capabilities(lens::FeatureCapability::NOTIFY_ZERO_STATE_RENDERED);
-  }
-  if (contextual_tasks::ShouldEnableLockAndUnlockInputCapability()) {
-    ping->add_capabilities(lens::FeatureCapability::UNLOCK_INPUT);
-    ping->add_capabilities(lens::FeatureCapability::LOCK_INPUT);
-  }
-
-  const size_t size = message.ByteSizeLong();
-  std::vector<uint8_t> serialized_message(size);
-  message.SerializeToArray(&serialized_message[0], size);
-  return base::Base64Encode(serialized_message);
+  return base::Base64Encode(contextual_tasks::GetSerializedHandshakeMessage());
 }
 
 void AddDefaultZeroStateStrings(base::DictValue& dict) {

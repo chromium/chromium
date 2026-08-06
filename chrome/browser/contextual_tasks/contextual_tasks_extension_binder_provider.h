@@ -6,11 +6,17 @@
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_EXTENSION_BINDER_PROVIDER_H_
 
 #include "extensions/browser/extension_mojo_binder_registry.h"
+#include "extensions/common/extension_id.h"
+#include "mojo/public/cpp/bindings/binder_map.h"
 
 namespace content {
 class BrowserContext;
 class RenderFrameHost;
 }  // namespace content
+
+namespace extensions {
+class Extension;
+}
 
 namespace contextual_tasks {
 

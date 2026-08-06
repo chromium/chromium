@@ -346,4 +346,31 @@ void UpdatePinButtonVisibilityState(BrowserWindowInterface* browser_window,
 }
 #endif
 
+lens::ClientToAimMessage GetHandshakeMessageProto() {
+  lens::ClientToAimMessage message;
+  lens::HandshakePing* ping = message.mutable_handshake_ping();
+  ping->add_capabilities(lens::FeatureCapability::DEFAULT);
+  ping->add_capabilities(lens::FeatureCapability::OPEN_THREADS_VIEW);
+  ping->add_capabilities(lens::FeatureCapability::COBROWSING_DISPLAY_CONTROL);
+  if (base::FeatureList::IsEnabled(kContextualTasksContextLibrary)) {
+    ping->add_capabilities(lens::FeatureCapability::THREAD_CONTEXT_LIBRARY);
+  }
+  if (base::FeatureList::IsEnabled(kEnableNotifyZeroStateRenderedCapability)) {
+    ping->add_capabilities(lens::FeatureCapability::NOTIFY_ZERO_STATE_RENDERED);
+  }
+  if (ShouldEnableLockAndUnlockInputCapability()) {
+    ping->add_capabilities(lens::FeatureCapability::UNLOCK_INPUT);
+    ping->add_capabilities(lens::FeatureCapability::LOCK_INPUT);
+  }
+  return message;
+}
+
+std::vector<uint8_t> GetSerializedHandshakeMessage() {
+  lens::ClientToAimMessage message = GetHandshakeMessageProto();
+  const size_t size = message.ByteSizeLong();
+  std::vector<uint8_t> serialized_message(size);
+  message.SerializeToArray(serialized_message.data(), size);
+  return serialized_message;
+}
+
 }  // namespace contextual_tasks

@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UTILS_H_
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UTILS_H_
 
+#include <vector>
+
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/contextual_search/contextual_search_context_controller.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "third_party/omnibox_proto/model_mode.pb.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
 
@@ -118,6 +121,14 @@ bool GetEffectivePinState(Profile* profile);
 void UpdatePinButtonVisibilityState(BrowserWindowInterface* browser_window,
                                     bool eligible);
 #endif
+
+// Returns the ClientToAimMessage containing the HandshakePing
+// with supported capabilities.
+lens::ClientToAimMessage GetHandshakeMessageProto();
+
+// Returns the serialized ClientToAimMessage containing the HandshakePing
+// with supported capabilities.
+std::vector<uint8_t> GetSerializedHandshakeMessage();
 
 }  // namespace contextual_tasks
 

@@ -6,6 +6,7 @@ module contextual_tasks.mojom;
 
 import "mojo/public/mojom/base/uuid.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "mojo/public/mojom/base/proto_wrapper.mojom";
 import "url/mojom/url.mojom";
 import "ui/base/mojom/window_open_disposition.mojom";
 
@@ -366,4 +367,86 @@ interface PageHandlerFactory {
   // Create a page handler for the file manager and link it to the UI.
   CreatePageHandler(
       pending_remote<Page> page, pending_receiver<PageHandler> page_handler);
+};
+
+// Used to bootstrap bi-directional communication between the browser and
+// extension.
+interface ExtensionPageHandlerFactory {
+  CreateExtensionPageHandler(
+      pending_remote<ExtensionPage> page,
+      pending_receiver<ExtensionPageHandler> receiver);
+};
+
+// Browser-side handler for requests from the extension frame.
+// Implemented in C++ (ContextualTasksExtensionHandler) and called from
+// HTML/TS client (input_plate.ts) in the extension context.
+// Provides APIs to bootstrap communication and send messages from the webview
+// back to the browser.
+interface ExtensionPageHandler {
+  // Fetches the initial handshake ping message.
+  // Called by the extension JS during initialization to obtain the handshake
+  // message that must be sent to the GWS guest page to establish the channel.
+  //
+  // Returns:
+  // - `message`: A ProtoWrapper containing the serialized
+  //   `lens.ClientToAimMessage` which wraps the `HandshakePing`.
+  GetHandshakeMessage() => (mojo_base.mojom.ProtoWrapper message);
+
+  // Forwards a message received from the webview guest to the browser.
+  // Called by the extension JS when it receives a `message` event from the
+  // embedded <webview> containing data destined for the AIM server.
+  //
+  // Inputs:
+  // - `message`: The raw bytes of the serialized protobuf message from the
+  //   guest.
+  // TODO(crbug.com/462788705): Use `ProtoWrapper` instead of `array<uint8>`
+  OnWebviewMessage(array<uint8> message);
+
+  // Updates the browser with the current active task ID.
+  // Called by the extension JS when the task context changes in the UI.
+  //
+  // Inputs:
+  // - `uuid`: The Uuid of the new active task.
+  SetTaskId(mojo_base.mojom.Uuid uuid);
+};
+
+// Extension-side handler for requests from the browser process.
+// Implemented in HTML/TS (input_plate.ts) and called from C++
+// (ContextualTasksExtensionHandler) to control the extension UI and forward
+// messages from the browser to the webview.
+interface ExtensionPage {
+  // Sends a message from the browser to the extension to be forwarded to GWS.
+  // Called by C++ to deliver data (e.g. from the AIM server) to the guest.
+  //
+  // Inputs:
+  // - `message`: The raw bytes of the serialized protobuf message.
+  // TODO(crbug.com/462788705): Use `ProtoWrapper` instead of `array<uint8>`
+  PostAimMessage(array<uint8> message);
+
+  // Signals to the extension that the handshake with GWS is complete.
+  // Called by C++ after the browser processes the handshake response.
+  OnHandshakeComplete();
+
+  // Called by the browser process (C++) when the AIM server sends a HideInput
+  // command to hide the compose box.
+  HideInput();
+
+  // Called by the browser process (C++) when the AIM server sends a
+  // RestoreInput command to show the compose box.
+  RestoreInput();
+
+  // Called by the browser process (C++) when the AIM server sends an
+  // EnterBasicMode command to enter basic mode.
+  EnterBasicMode();
+
+  // Called by the browser process (C++) when the AIM server sends an
+  // ExitBasicMode command to exit basic mode.
+  ExitBasicMode();
+
+  // Called by the browser process (C++) to lock/disable the input in the WebUI.
+  LockInput();
+
+  // Called by the browser process (C++) to unlock/enable the input in the
+  // WebUI.
+  UnlockInput();
 };

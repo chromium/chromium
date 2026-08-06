@@ -298,15 +298,21 @@ export enum ContextualSearchInputStateDeletionType {
 
 export function recordEnumerationValue(
     metricName: string, value: number, enumSize: number) {
-  chrome.histograms.recordEnumerationValue(metricName, value, enumSize);
+  if (chrome.histograms) {
+    chrome.histograms.recordEnumerationValue(metricName, value, enumSize);
+  }
 }
 
 export function recordUserAction(metricName: string) {
-  chrome.histograms.recordUserAction(metricName);
+  if (chrome.histograms) {
+    chrome.histograms.recordUserAction(metricName);
+  }
 }
 
 export function recordBoolean(metricName: string, value: boolean) {
-  chrome.histograms.recordBoolean(metricName, value);
+  if (chrome.histograms) {
+    chrome.histograms.recordBoolean(metricName, value);
+  }
 }
 
 // TODO(crbug.com/468329884): Consider making this a new contextual entry

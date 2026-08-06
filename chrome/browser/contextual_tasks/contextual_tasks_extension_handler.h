@@ -9,9 +9,9 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/weak_ptr.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
+#include "chrome/browser/contextual_tasks/aim_message_poster.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_types.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
@@ -20,19 +20,52 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/omnibox_proto/model_mode.pb.h"
+#include "third_party/omnibox_proto/tool_mode.pb.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 #include "url/gurl.h"
 
 // Handles Mojo connection requests from the Contextual Tasks extension
 // document, implementing composebox and searchbox page handler interfaces.
+
+namespace contextual_search {
+class ContextualSearchSessionHandle;
+}  // namespace contextual_search
+
+namespace content {
+class WebContents;
+}  // namespace content
+
+class LensSearchController;
 class ContextualTasksExtensionHandler
     : public content::DocumentUserData<ContextualTasksExtensionHandler>,
+      public contextual_tasks::mojom::ExtensionPageHandlerFactory,
+      public contextual_tasks::mojom::ExtensionPageHandler,
       public composebox::mojom::PageHandlerFactory,
       public composebox::mojom::PageHandler,
-      public searchbox::mojom::PageHandler {
+      public searchbox::mojom::PageHandler,
+      public contextual_tasks::AimMessagePoster {
  public:
   ~ContextualTasksExtensionHandler() override;
+
+  // contextual_tasks::AimMessagePoster:
+  void PostAimMessage(const lens::ClientToAimMessage& message) override;
+
+  void BindContextualTasksFactory(
+      mojo::PendingReceiver<
+          contextual_tasks::mojom::ExtensionPageHandlerFactory> receiver);
+
+  // contextual_tasks::mojom::ExtensionPageHandlerFactory:
+  void CreateExtensionPageHandler(
+      mojo::PendingRemote<contextual_tasks::mojom::ExtensionPage> page,
+      mojo::PendingReceiver<contextual_tasks::mojom::ExtensionPageHandler>
+          receiver) override;
+
+  // contextual_tasks::mojom::ExtensionPageHandler:
+  void SetTaskId(const base::Uuid& uuid) override;
+  void OnWebviewMessage(const std::vector<uint8_t>& message) override;
+  void GetHandshakeMessage(GetHandshakeMessageCallback callback) override;
 
   void BindComposeboxFactory(
       mojo::PendingReceiver<composebox::mojom::PageHandlerFactory> receiver);
@@ -62,8 +95,19 @@ class ContextualTasksExtensionHandler
   void OnContextMenuOpened() override;
 
   // searchbox::mojom::PageHandler:
-  // These are stubs required to implement composebox::mojom::PageHandlerFactory
-  // which is shared, but they are not used by the extension composebox.
+  void SubmitQuery(const std::string& query_text,
+                   uint8_t mouse_button,
+                   bool alt_key,
+                   bool ctrl_key,
+                   bool meta_key,
+                   bool shift_key,
+                   bool is_voice_search) override;
+  void SetActiveToolMode(omnibox::ToolMode tool) override;
+  void SetActiveModelMode(omnibox::ModelMode model) override;
+
+  // These are stubs required to implement searchbox::mojom::PageHandler
+  // (which is shared with Realbox) but are not used by the extension
+  // composebox.
   void OnFocusChanged(bool focused) override;
   void QueryAutocomplete(int32_t query_id,
                          const std::u16string& input,
@@ -125,17 +169,8 @@ class ContextualTasksExtensionHandler
                      bool from_automatic_chip) override;
   void DeleteTabContext(int32_t tab_id) override;
   void ClearFiles(bool should_block_auto_suggested_tabs) override;
-  void SubmitQuery(const std::string& query_text,
-                   uint8_t mouse_button,
-                   bool alt_key,
-                   bool ctrl_key,
-                   bool meta_key,
-                   bool shift_key,
-                   bool is_voice_search) override;
   void OpenLensSearch() override;
-  void SetActiveToolMode(omnibox::ToolMode tool) override;
   void RecordToolSelectionAction(omnibox::ToolMode tool) override;
-  void SetActiveModelMode(omnibox::ModelMode model) override;
   void RecordModelSelectionAction(omnibox::ModelMode model) override;
   void ActivateMetricsFunnel(const std::string& funnel_name) override;
   void GetDriveDisclaimerStatus(
@@ -151,6 +186,21 @@ class ContextualTasksExtensionHandler
   explicit ContextualTasksExtensionHandler(content::RenderFrameHost* rfh);
   DOCUMENT_USER_DATA_KEY_DECL();
 
+  content::WebContents* GetActiveTabWebContents() const;
+
+  contextual_search::ContextualSearchSessionHandle*
+  GetOrCreateContextualSessionHandle();
+  std::optional<int64_t> GetActiveTabContextId();
+  std::optional<base::UnguessableToken> GetLensOverlayToken();
+#if !BUILDFLAG(IS_ANDROID)
+  LensSearchController* GetLensSearchController() const;
+#endif
+
+  mojo::Receiver<contextual_tasks::mojom::ExtensionPageHandlerFactory>
+      contextual_tasks_factory_receiver_{this};
+  mojo::Receiver<contextual_tasks::mojom::ExtensionPageHandler>
+      contextual_tasks_handler_receiver_{this};
+  mojo::Remote<contextual_tasks::mojom::ExtensionPage> contextual_tasks_page_;
   mojo::Receiver<composebox::mojom::PageHandlerFactory>
       composebox_factory_receiver_{this};
   mojo::Receiver<composebox::mojom::PageHandler> composebox_handler_receiver_{
@@ -159,6 +209,10 @@ class ContextualTasksExtensionHandler
       this};
 
   mojo::Remote<searchbox::mojom::Page> searchbox_page_;
+
+  std::optional<base::Uuid> task_id_;
+  omnibox::ToolMode active_tool_ = omnibox::TOOL_MODE_UNSPECIFIED;
+  omnibox::ModelMode active_model_ = omnibox::MODEL_MODE_UNSPECIFIED;
 };
 
 #endif  // CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_EXTENSION_HANDLER_H_
