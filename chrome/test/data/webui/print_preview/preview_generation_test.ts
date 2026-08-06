@@ -4,6 +4,7 @@
 
 import type {NativeInitialSettings, PreviewTicket, PrintPreviewAppElement, Settings} from 'chrome://print/print_preview.js';
 import {ColorMode, CustomMarginsOrientation, Destination, DestinationOrigin, Margins, MarginsType, NativeLayerImpl, PluginProxyImpl, ScalingType} from 'chrome://print/print_preview.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -727,5 +728,32 @@ suite('PreviewGenerationTest', function() {
     assertEquals(28, margins.get(o.RIGHT));
     assertEquals(28, margins.get(o.BOTTOM));
     assertEquals(28, margins.get(o.LEFT));
+
+    // Verify a negative margin in the page layout event is still applied to
+    // documentInfo along with the fixed page size metadata.
+    const pageLayout = {
+      marginTop: 0,
+      marginLeft: 0,
+      marginBottom: -2,
+      marginRight: 0,
+      contentWidth: 315,
+      contentHeight: 665,
+      printableAreaX: 0,
+      printableAreaY: 0,
+      printableAreaWidth: 315,
+      printableAreaHeight: 663,
+    };
+    webUIListenerCallback('page-layout-ready', pageLayout, true, false);
+
+    assertEquals(315, page.$.documentInfo.pageSize.width);
+    assertEquals(663, page.$.documentInfo.pageSize.height);
+    assertTrue(page.$.documentInfo.documentSettings.allPagesHaveCustomSize);
+
+    const negativeMargins = page.$.documentInfo.margins;
+    assertTrue(!!negativeMargins);
+    assertEquals(0, negativeMargins.get(o.TOP));
+    assertEquals(0, negativeMargins.get(o.RIGHT));
+    assertEquals(-2, negativeMargins.get(o.BOTTOM));
+    assertEquals(0, negativeMargins.get(o.LEFT));
   });
 });

@@ -920,11 +920,7 @@ void PrintPreviewUI::DidGetDefaultPageLayout(
   // Save printable_area_in_points information for N-up conversion.
   printable_area_ = ToEnclosedRect(printable_area_in_points);
 
-  if (page_layout_in_points->margin_top < 0 ||
-      page_layout_in_points->margin_left < 0 ||
-      page_layout_in_points->margin_bottom < 0 ||
-      page_layout_in_points->margin_right < 0 ||
-      page_layout_in_points->content_width < 0 ||
+  if (page_layout_in_points->content_width < 0 ||
       page_layout_in_points->content_height < 0) {
     // Even though it early returns here, it doesn't block printing the page.
     return;

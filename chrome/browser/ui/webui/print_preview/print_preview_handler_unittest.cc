@@ -1297,6 +1297,61 @@ TEST_F(PrintPreviewHandlerTest, SendPreviewUpdates) {
       base::UnguessableToken::DeserializeFromString(*ui_value);
   ASSERT_TRUE(preview_ui_id.has_value());
 
+  auto create_page_layout = [](double margin_bottom, double content_width,
+                               double content_height) {
+    return mojom::PageSizeMargins::New(content_width, content_height,
+                                       /*margin_top=*/0, /*margin_right=*/0,
+                                       margin_bottom, /*margin_left=*/0);
+  };
+
+  // The event is fired for zero margins and a positive content area.
+  size_t message_count_before_layout = web_ui()->call_data().size();
+  handler()->print_preview_ui()->DidGetDefaultPageLayout(
+      create_page_layout(/*margin_bottom=*/0, /*content_width=*/315,
+                         /*content_height=*/663),
+      gfx::RectF(0, 0, 315, 663),
+      /*all_pages_have_custom_size=*/false,
+      /*all_pages_have_custom_orientation=*/false, preview_request_id);
+  ASSERT_EQ(message_count_before_layout + 1, web_ui()->call_data().size());
+  AssertWebUIEventFired(*web_ui()->call_data().back(), "page-layout-ready");
+
+  // The event is also fired for negative margins and a positive content area.
+  message_count_before_layout = web_ui()->call_data().size();
+  handler()->print_preview_ui()->DidGetDefaultPageLayout(
+      create_page_layout(/*margin_bottom=*/-2, /*content_width=*/315,
+                         /*content_height=*/665),
+      gfx::RectF(0, 0, 315, 663),
+      /*all_pages_have_custom_size=*/true,
+      /*all_pages_have_custom_orientation=*/false, preview_request_id);
+
+  ASSERT_EQ(message_count_before_layout + 1, web_ui()->call_data().size());
+  const content::TestWebUI::CallData& page_layout_data =
+      *web_ui()->call_data().back();
+  AssertWebUIEventFired(page_layout_data, "page-layout-ready");
+  ASSERT_TRUE(page_layout_data.arg2()->is_dict());
+  const base::DictValue& negative_margin_layout =
+      page_layout_data.arg2()->GetDict();
+  EXPECT_EQ(-2,
+            negative_margin_layout.FindDouble(kSettingMarginBottom).value());
+  EXPECT_EQ(315,
+            negative_margin_layout.FindDouble(kSettingContentWidth).value());
+  EXPECT_EQ(665,
+            negative_margin_layout.FindDouble(kSettingContentHeight).value());
+  ASSERT_TRUE(page_layout_data.arg3()->is_bool());
+  EXPECT_TRUE(page_layout_data.arg3()->GetBool());
+  ASSERT_TRUE(page_layout_data.arg4()->is_bool());
+  EXPECT_FALSE(page_layout_data.arg4()->GetBool());
+
+  // The event is not fired for a negative content area.
+  message_count_before_layout = web_ui()->call_data().size();
+  handler()->print_preview_ui()->DidGetDefaultPageLayout(
+      create_page_layout(/*margin_bottom=*/0, /*content_width=*/-1,
+                         /*content_height=*/663),
+      gfx::RectF(0, 0, 315, 663),
+      /*all_pages_have_custom_size=*/false,
+      /*all_pages_have_custom_orientation=*/false, preview_request_id);
+  EXPECT_EQ(message_count_before_layout, web_ui()->call_data().size());
+
   // Simulate renderer responses: PageLayoutReady, PageCountReady,
   // PagePreviewReady, and OnPrintPreviewReady will be called in that order.
   base::DictValue layout;
