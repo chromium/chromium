@@ -40,10 +40,13 @@ source_set("cells") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin/model:constants",
     "//ios/chrome/browser/signin/model:signin_util",
+    "//ios/chrome/browser/signin/model/avatar",
+    "//ios/chrome/browser/signin/ui/avatar",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",
     "//ios/chrome/common/ui/util:image_util",
+    "//ios/public/provider/chrome/browser/intelligence/signin",
     "//ios/public/provider/chrome/browser/signin:signin_resources_api",
     "//ui/base",
   ]

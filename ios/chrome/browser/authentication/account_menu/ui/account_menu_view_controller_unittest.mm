@@ -63,6 +63,9 @@ UIImage* kPrimaryAccountAvatar = [[UIImage alloc] init];
 // Redeclare properties as readwrite for testing.
 @property(nonatomic, strong, readwrite) NSString* primaryAccountEmail;
 @property(nonatomic, strong, readwrite) NSString* primaryAccountUserFullName;
+@property(nonatomic, strong, readwrite) UIImage* primaryAccountAvatar;
+@property(nonatomic, assign, readwrite) BOOL primaryAccountAvatarNeedsRing;
+@property(nonatomic, strong, readwrite) NSString* primaryAccountAITierFullName;
 @end
 
 @implementation FakeAccountMenuDataSource {
@@ -70,6 +73,8 @@ UIImage* kPrimaryAccountAvatar = [[UIImage alloc] init];
 }
 @synthesize primaryAccountEmail = _primaryAccountEmail;
 @synthesize primaryAccountAvatar = _primaryAccountAvatar;
+@synthesize primaryAccountAvatarNeedsRing = _primaryAccountAvatarNeedsRing;
+@synthesize primaryAccountAITierFullName = _primaryAccountAITierFullName;
 @synthesize primaryAccountUserFullName = _primaryAccountUserFullName;
 @synthesize managementDescription = _managementDescription;
 
@@ -80,6 +85,8 @@ UIImage* kPrimaryAccountAvatar = [[UIImage alloc] init];
     _secondaryAccountsGaiaIDs = {kSecondaryIdentity.gaiaId};
     _primaryAccountEmail = kPrimaryIdentity.userEmail;
     _primaryAccountAvatar = kPrimaryAccountAvatar;
+    _primaryAccountAvatarNeedsRing = NO;
+    _primaryAccountAITierFullName = nil;
     _primaryAccountUserFullName = kPrimaryIdentity.userFullName;
     _managementDescription = @"managementDescription";
   }

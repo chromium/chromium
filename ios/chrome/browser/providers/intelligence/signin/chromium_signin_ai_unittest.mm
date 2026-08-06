@@ -21,6 +21,16 @@ TEST_F(ChromiumAITest, TestGetAITierName) {
   EXPECT_NSEQ(@"4", ios::provider::GetAITierName(4));
 }
 
+// Tests that GetAITierFullName returns the expected strings in open source.
+TEST_F(ChromiumAITest, TestGetAITierFullName) {
+  EXPECT_NSEQ(nil, ios::provider::GetAITierFullName(-1));
+  EXPECT_NSEQ(nil, ios::provider::GetAITierFullName(0));
+  EXPECT_NSEQ(@"AI 1", ios::provider::GetAITierFullName(1));
+  EXPECT_NSEQ(@"AI 2", ios::provider::GetAITierFullName(2));
+  EXPECT_NSEQ(@"AI 3", ios::provider::GetAITierFullName(3));
+  EXPECT_NSEQ(@"AI 4", ios::provider::GetAITierFullName(4));
+}
+
 // Tests that GetPremiumRingImage returns a valid image.
 TEST_F(ChromiumAITest, TestGetPremiumRingImage) {
   UIImage* image = ios::provider::GetPremiumRingImage();

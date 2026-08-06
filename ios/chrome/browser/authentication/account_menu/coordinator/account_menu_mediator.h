@@ -19,7 +19,11 @@ class AuthenticationService;
 class ChromeAccountManagerService;
 class GURL;
 class PrefService;
+namespace subscription_eligibility {
+class SubscriptionEligibilityService;
+}  // namespace subscription_eligibility
 namespace signin {
+class AvatarProvider;
 class IdentityManager;
 }  // namespace signin
 namespace syncer {
@@ -49,9 +53,13 @@ class SyncService;
                         authService:(AuthenticationService*)authService
                     identityManager:(signin::IdentityManager*)identityManager
                               prefs:(PrefService*)prefs
+     subscriptionEligibilityService:
+         (subscription_eligibility::SubscriptionEligibilityService*)
+             subscriptionEligibilityService
                         accessPoint:(AccountMenuAccessPoint)accessPoint
                                 URL:(const GURL&)url
                prepareChangeProfile:(ProceduralBlock)prepareChangeProfile
+                     avatarProvider:(signin::AvatarProvider*)avatarProvider
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

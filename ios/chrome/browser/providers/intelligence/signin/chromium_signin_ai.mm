@@ -21,6 +21,14 @@ NSString* GetAITierName(int ai_tier) {
   return [NSString stringWithFormat:@"%d", ai_tier];
 }
 
+NSString* GetAITierFullName(int ai_tier) {
+  NSString* name = GetAITierName(ai_tier);
+  if (!name) {
+    return nil;
+  }
+  return [NSString stringWithFormat:@"AI %@", name];
+}
+
 UIImage* GetPremiumRingImage() {
   return [UIImage imageNamed:@"premium_disk"];
 }
