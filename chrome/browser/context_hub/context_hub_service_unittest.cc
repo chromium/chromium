@@ -657,7 +657,8 @@ TEST_F(ContextHubServiceTest, GetAutoTodos) {
   entry1.status = AutoTodoEntry::Status::kActive;
   entry1.importance_score = 0.8f;
   entry1.data = FirstPartyData{
-      .source_references = {GURL("https://mail.google.com/1")},
+      .source_references = {{.url = GURL("https://mail.google.com/1"),
+                             .subject = "Subject 1"}},
       .actionable_url = GURL("https://example.com/1"),
   };
 

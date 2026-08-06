@@ -10,6 +10,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/browser/context_hub/auto_todos/auto_todo_entry.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-forward.h"
@@ -32,10 +33,56 @@ struct EnumTraits<browser::context_hub::mojom::AutoTodoStatus,
 };
 
 template <>
+struct EnumTraits<browser::context_hub::mojom::AutoTodoGroup,
+                  context_hub::ThirdPartyData::GroupType> {
+  static browser::context_hub::mojom::AutoTodoGroup ToMojom(
+      context_hub::ThirdPartyData::GroupType input);
+  static context_hub::ThirdPartyData::GroupType FromMojom(
+      browser::context_hub::mojom::AutoTodoGroup input);
+};
+
+template <>
+struct StructTraits<browser::context_hub::mojom::GmailReferenceDataView,
+                    context_hub::SourceReference> {
+  static const GURL& message_url(const context_hub::SourceReference& ref) {
+    return ref.url;
+  }
+
+  static const std::string& subject(const context_hub::SourceReference& ref) {
+    return ref.subject;
+  }
+
+  static bool Read(browser::context_hub::mojom::GmailReferenceDataView data,
+                   context_hub::SourceReference* out);
+};
+
+template <>
+struct UnionTraits<browser::context_hub::mojom::SourceReferenceDataView,
+                   context_hub::SourceReference> {
+  static browser::context_hub::mojom::SourceReferenceDataView::Tag GetTag(
+      const context_hub::SourceReference& ref) {
+    return browser::context_hub::mojom::SourceReferenceDataView::Tag::kGmail;
+  }
+
+  static const context_hub::SourceReference& gmail(
+      const context_hub::SourceReference& ref) {
+    return ref;
+  }
+
+  static browser::context_hub::mojom::PhotosReferencePtr photos(
+      const context_hub::SourceReference& ref);
+
+  static bool Read(browser::context_hub::mojom::SourceReferenceDataView data,
+                   context_hub::SourceReference* out);
+};
+
+template <>
 struct StructTraits<browser::context_hub::mojom::FirstPartyDataDataView,
                     context_hub::FirstPartyData> {
-  static std::vector<browser::context_hub::mojom::SourceReferencePtr>
-  source_references(const context_hub::FirstPartyData& first_party);
+  static const std::vector<context_hub::SourceReference>& source_references(
+      const context_hub::FirstPartyData& first_party) {
+    return first_party.source_references;
+  }
 
   static const GURL& actionable_url(
       const context_hub::FirstPartyData& first_party) {
@@ -56,6 +103,11 @@ struct StructTraits<browser::context_hub::mojom::ThirdPartyDataDataView,
   static base::Time last_active_timestamp(
       const context_hub::ThirdPartyData& third_party) {
     return third_party.last_active_timestamp;
+  }
+
+  static context_hub::ThirdPartyData::GroupType group_type(
+      const context_hub::ThirdPartyData& third_party) {
+    return third_party.group_type;
   }
 
   static bool Read(browser::context_hub::mojom::ThirdPartyDataDataView data,

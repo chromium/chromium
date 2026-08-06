@@ -167,7 +167,9 @@ void ContextHubService::OnFirstPartyAutoTodosFetched(
     first_party.actionable_url = GURL(todo.actionable_url());
     for (const auto& ref : todo.source_references()) {
       if (ref.has_gmail()) {
-        first_party.source_references.emplace_back(ref.gmail().message_url());
+        first_party.source_references.push_back(
+            SourceReference{.url = GURL(ref.gmail().message_url()),
+                            .subject = std::string(ref.gmail().subject())});
       }
     }
     entry.data = std::move(first_party);

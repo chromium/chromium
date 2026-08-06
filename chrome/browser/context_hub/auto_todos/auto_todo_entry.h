@@ -16,11 +16,17 @@
 
 namespace context_hub {
 
+// Source reference from which an AutoTodo was generated.
+struct SourceReference {
+  GURL url;
+  std::string subject;
+};
+
 // Data for Gmail-based AutoTodos.
 struct FirstPartyData {
-  // Source URLs (e.g., Gmail message URLs) where the AutoTodo was generated
-  // from.
-  std::vector<GURL> source_references;
+  // Source references (e.g., Gmail message URLs and subjects) where the
+  // AutoTodo was generated from.
+  std::vector<SourceReference> source_references;
 
   // Actionable URL where the user can complete the todo.
   GURL actionable_url;
@@ -28,11 +34,22 @@ struct FirstPartyData {
 
 // Data for Browser tab-based AutoTodos.
 struct ThirdPartyData {
+  enum class GroupType {
+    kNoMatch,
+    kNudgeToClose,
+    kReadingList,
+    kUnfinishedAction,
+    kMaxValue = kUnfinishedAction,
+  };
+
   // Associated tab Session ID.
   int64_t tab_id = 0;
 
   // Timestamp when the associated tab was last active.
   base::Time last_active_timestamp;
+
+  // Type of todo group.
+  GroupType group_type = GroupType::kNoMatch;
 };
 
 // Structure representing an AutoTodo entry stored in the store.
@@ -69,6 +86,13 @@ struct AutoTodoEntry {
   std::optional<int64_t> tab_id() const {
     if (const auto* third_party = std::get_if<ThirdPartyData>(&data)) {
       return third_party->tab_id;
+    }
+    return std::nullopt;
+  }
+
+  std::optional<ThirdPartyData::GroupType> group_type() const {
+    if (const auto* third_party = std::get_if<ThirdPartyData>(&data)) {
+      return third_party->group_type;
     }
     return std::nullopt;
   }

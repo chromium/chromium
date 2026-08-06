@@ -23,8 +23,16 @@ enum AutoTodoStatus {
   kDismissed,
 };
 
+enum AutoTodoGroup {
+  kNoMatch,
+  kNudgeToClose,
+  kReadingList,
+  kUnfinishedAction,
+};
+
 struct GmailReference {
   url.mojom.Url message_url;
+  string subject;
 };
 
 struct PhotosReference {
@@ -50,6 +58,8 @@ struct ThirdPartyData {
   int64 tab_id;
   // Timestamp when the associated tab was last active.
   mojo_base.mojom.Time last_active_timestamp;
+  // The group that this Tab-Todo belongs to.
+  AutoTodoGroup group_type;
 };
 
 union AutoTodoData {

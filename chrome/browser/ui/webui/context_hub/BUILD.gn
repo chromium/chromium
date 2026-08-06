@@ -19,6 +19,18 @@ mojom("mojo_bindings") {
           cpp = "::context_hub::AutoTodoEntry::Status"
         },
         {
+          mojom = "browser.context_hub.mojom.AutoTodoGroup"
+          cpp = "::context_hub::ThirdPartyData::GroupType"
+        },
+        {
+          mojom = "browser.context_hub.mojom.GmailReference"
+          cpp = "::context_hub::SourceReference"
+        },
+        {
+          mojom = "browser.context_hub.mojom.SourceReference"
+          cpp = "::context_hub::SourceReference"
+        },
+        {
           mojom = "browser.context_hub.mojom.FirstPartyData"
           cpp = "::context_hub::FirstPartyData"
         },
