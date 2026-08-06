@@ -121,19 +121,9 @@ ImageTransportSurfaceOverlayMacEGL::ImageTransportSurfaceOverlayMacEGL(
       base::BindRepeating(&SharedContextState::MakeCurrent, context_state,
                           /*surface=*/nullptr, /*needs_gl=*/true);
 
-  // Allows running completion callbacks and presentation callbacks directly
-  // without posting tasks first.
-  bool no_post_task_for_callback = false;
-#if BUILDFLAG(IS_MAC)
-  no_post_task_for_callback =
-      ui::SkipPostTaskForCallbacks() ||
-      ui::DisplayLinkMac::SupportsDisplayLinkMacInBrowser();
-#endif
-
   ca_layer_tree_coordinator_ = std::make_unique<ui::CALayerTreeCoordinator>(
       !av_disabled_at_command_line, std::move(buffer_presented_callback),
-      std::move(gl_make_current_callback), GetMTLDevice(context_state),
-      no_post_task_for_callback);
+      std::move(gl_make_current_callback), GetMTLDevice(context_state));
 
 #if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
   // The BELayerHierarchy needs to be created on a thread that supports
