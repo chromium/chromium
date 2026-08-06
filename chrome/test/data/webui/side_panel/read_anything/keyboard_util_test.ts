@@ -104,24 +104,28 @@ suite('Keyboard utils', () => {
   });
 
   test('isLineFocusShortcut', () => {
-    // Standard 'l'
-    assertTrue(isLineFocusShortcut(new KeyboardEvent('keydown', {key: 'l'})));
-    // Uppercase 'L' (Caps Lock or Shift+L)
-    assertTrue(isLineFocusShortcut(new KeyboardEvent('keydown', {key: 'L'})));
+    // Alt+'l' or Alt+'L'
+    assertTrue(isLineFocusShortcut(
+        new KeyboardEvent('keydown', {key: 'l', altKey: true})));
+    assertTrue(isLineFocusShortcut(
+        new KeyboardEvent('keydown', {key: 'L', altKey: true})));
 
-    // Modifiers should fail
+    // Without Alt should fail
+    assertFalse(isLineFocusShortcut(new KeyboardEvent('keydown', {key: 'l'})));
+
+    // Other modifiers without Alt should fail
     assertFalse(isLineFocusShortcut(
         new KeyboardEvent('keydown', {key: 'l', ctrlKey: true})));
-    assertFalse(isLineFocusShortcut(
-        new KeyboardEvent('keydown', {key: 'l', altKey: true})));
     assertFalse(isLineFocusShortcut(
         new KeyboardEvent('keydown', {key: 'l', metaKey: true})));
     assertFalse(isLineFocusShortcut(
         new KeyboardEvent('keydown', {key: 'l', shiftKey: true})));
 
-    // Other keys should fail
-    assertFalse(isLineFocusShortcut(new KeyboardEvent('keydown', {key: 'k'})));
-    assertFalse(isLineFocusShortcut(new KeyboardEvent('keydown', {key: 'a'})));
+    // Other keys should fail even with Alt
+    assertFalse(isLineFocusShortcut(
+        new KeyboardEvent('keydown', {key: 'k', altKey: true})));
+    assertFalse(isLineFocusShortcut(
+        new KeyboardEvent('keydown', {key: 'a', altKey: true})));
   });
 
   test('isPlayPauseShortcut', () => {
