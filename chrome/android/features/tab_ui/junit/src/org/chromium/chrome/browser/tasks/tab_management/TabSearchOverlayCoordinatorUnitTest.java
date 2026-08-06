@@ -70,7 +70,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
@@ -736,20 +735,21 @@ public class TabSearchOverlayCoordinatorUnitTest {
     }
 
     @Test
-    public void testTabSelectionHidesOverlay() {
+    public void testWindowFocusLost_hidesOverlay() {
         showOverlay();
         assertTrue(mCoordinator.isVisible());
 
-        // Capture the registered TabModelObserver from the mock TabModel.
-        ArgumentCaptor<TabModelObserver> captor = ArgumentCaptor.forClass(TabModelObserver.class);
-        verify(mTabModel).addObserver(captor.capture());
-        TabModelObserver observer = captor.getValue();
-        assertNotNull(observer);
+        mCoordinator.getWindowFocusListenerForTesting().onWindowFocusChanged(false);
 
-        // Trigger didSelectTab.
-        observer.didSelectTab(mTab, TabSelectionType.FROM_USER, Tab.INVALID_TAB_ID);
-
-        // Verify the overlay is hidden.
         assertOverlayHidden();
+    }
+
+    @Test
+    public void testWindowFocusLostWhenHidden_doesNothing() {
+        assertFalse(mCoordinator.isVisible());
+
+        mCoordinator.getWindowFocusListenerForTesting().onWindowFocusChanged(false);
+
+        verify(mLocationBarCoordinator, never()).clearOmniboxFocus();
     }
 }
