@@ -2178,7 +2178,6 @@ interface Document : Node
     method adoptNode
     method append
     method ariaNotify
-    method browsingTopics
     method captureEvents
     method caretPositionFromPoint
     method caretRangeFromPoint
@@ -4524,7 +4523,6 @@ interface HTMLIFrameElement : HTMLElement
     getter allow
     getter allowFullscreen
     getter allowPaymentRequest
-    getter browsingTopics
     getter connectionAllowlist
     getter contentDocument
     getter contentWindow
@@ -4554,7 +4552,6 @@ interface HTMLIFrameElement : HTMLElement
     setter allow
     setter allowFullscreen
     setter allowPaymentRequest
-    setter browsingTopics
     setter connectionAllowlist
     setter credentialless
     setter csp
@@ -4578,7 +4575,6 @@ interface HTMLImageElement : HTMLElement
     getter align
     getter alt
     getter border
-    getter browsingTopics
     getter complete
     getter crossOrigin
     getter currentSrc
@@ -4607,7 +4603,6 @@ interface HTMLImageElement : HTMLElement
     setter align
     setter alt
     setter border
-    setter browsingTopics
     setter crossOrigin
     setter decoding
     setter fetchPriority
@@ -5848,7 +5843,6 @@ interface Image
     getter align
     getter alt
     getter border
-    getter browsingTopics
     getter complete
     getter crossOrigin
     getter currentSrc
@@ -5877,7 +5871,6 @@ interface Image
     setter align
     setter alt
     setter border
-    setter browsingTopics
     setter crossOrigin
     setter decoding
     setter fetchPriority

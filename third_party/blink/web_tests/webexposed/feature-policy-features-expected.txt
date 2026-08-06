@@ -6,7 +6,6 @@ ambient-light-sensor
 aria-notify
 autofill
 autoplay
-browsing-topics
 camera
 captured-surface-control
 ch-device-memory
@@ -54,7 +53,6 @@ gyroscope
 hid
 identity-credentials-get
 idle-detection
-interest-cohort
 keyboard-map
 language-detector
 language-model
