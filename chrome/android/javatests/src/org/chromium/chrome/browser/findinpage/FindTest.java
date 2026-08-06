@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.findinpage;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -17,9 +21,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import androidx.test.espresso.Espresso;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -450,6 +451,27 @@ public class FindTest {
 
         Assert.assertEquals(View.GONE, findToolbar.getVisibility());
         Assert.assertFalse(findQueryText.hasFocus());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"FindInPage"})
+    public void testFindQueryRetainsFocusOnEnter() {
+        mActivityTestRule.loadUrl(mActivityTestRule.getTestServer().getURL(FILEPATH));
+        findInPageFromMenu();
+
+        final EditText findQueryText = getFindQueryText();
+        Assert.assertTrue("FindQuery should have focus initially", findQueryText.hasFocus());
+
+        KeyUtils.singleKeyEventView(
+                InstrumentationRegistry.getInstrumentation(), findQueryText, KeyEvent.KEYCODE_T);
+
+        KeyUtils.singleKeyEventView(
+                InstrumentationRegistry.getInstrumentation(),
+                findQueryText,
+                KeyEvent.KEYCODE_ENTER);
+
+        Assert.assertTrue("FindQuery should retain focus after Enter", findQueryText.hasFocus());
     }
 
     /** Verify "Find in page" isn't dismissed when ESCAPE is pressed w/ modifiers. */

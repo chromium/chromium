@@ -159,6 +159,16 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
         }
 
         @Override
+        public boolean onKeyUp(int keyCode, KeyEvent event) {
+            // Consume Enter key up to prevent default TextView focus navigation to shift to other
+            // active UI components.
+            if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                return true;
+            }
+            return super.onKeyUp(keyCode, event);
+        }
+
+        @Override
         public boolean onTextContextMenuItem(int id) {
             if (id == android.R.id.paste) {
                 ClipboardManager clipboard =
