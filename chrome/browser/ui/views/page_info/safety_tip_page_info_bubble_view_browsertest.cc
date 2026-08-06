@@ -27,6 +27,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
@@ -428,9 +429,12 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 // Ensure normal sites with low engagement are not blocked in incognito.
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                        NoShowOnLowEngagementIncognito) {
-  Browser* incognito_browser = Browser::Create(Browser::CreateParams(
-      browser()->GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
-      true));
+  Browser* incognito_browser =
+      CreateBrowserWindow(BrowserWindowCreateParams(
+                              browser()->GetProfile()->GetPrimaryOTRProfile(
+                                  /*create_if_needed=*/true),
+                              /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   auto kNavigatedUrl = GetURL("site1.com");
   SetEngagementScore(incognito_browser, kNavigatedUrl, kLowEngagement);
   NavigateToURL(incognito_browser, kNavigatedUrl,
@@ -458,9 +462,12 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 // Ensure blocked sites with high engagement are not blocked in incognito.
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                        NoShowOnHighEngagementIncognito) {
-  Browser* incognito_browser = Browser::Create(Browser::CreateParams(
-      browser()->GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
-      true));
+  Browser* incognito_browser =
+      CreateBrowserWindow(BrowserWindowCreateParams(
+                              browser()->GetProfile()->GetPrimaryOTRProfile(
+                                  /*create_if_needed=*/true),
+                              /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   const GURL kNavigatedUrl = GetURL("accounts-google.com");
   SetEngagementScore(incognito_browser, kNavigatedUrl, kHighEngagement);
   NavigateToURL(incognito_browser, kNavigatedUrl,
@@ -509,9 +516,12 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                        DISABLED_ShowOnBlockIncognito) {
   auto kNavigatedUrl = GetURL("accounts-google.com");
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
-  Browser* incognito_browser = Browser::Create(Browser::CreateParams(
-      browser()->GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
-      true));
+  Browser* incognito_browser =
+      CreateBrowserWindow(BrowserWindowCreateParams(
+                              browser()->GetProfile()->GetPrimaryOTRProfile(
+                                  /*create_if_needed=*/true),
+                              /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   NavigateToURL(incognito_browser, kNavigatedUrl,
                 WindowOpenDisposition::CURRENT_TAB);
   EXPECT_TRUE(IsUIShowing());

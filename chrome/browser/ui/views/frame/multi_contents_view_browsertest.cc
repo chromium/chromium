@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -96,10 +97,13 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
                        HandleDropTargetViewLinkDrop_IsSupported) {
   EXPECT_TRUE(multi_contents_view()->IsDragAndDropEnabled());
 
-  Browser::CreateParams app_browser_params =
-      Browser::CreateParams::CreateForApp("AppName", true, gfx::Rect(),
-                                          browser()->GetProfile(), false);
-  Browser* app_browser = Browser::Create(app_browser_params);
+  BrowserWindowCreateParams app_browser_params =
+      BrowserWindowCreateParams::CreateForApp(
+          "AppName",
+          /*trusted_source=*/true, gfx::Rect(), browser()->GetProfile(),
+          /*user_gesture=*/false);
+  Browser* app_browser = CreateBrowserWindow(std::move(app_browser_params))
+                             ->GetBrowserForMigrationOnly();
 
   EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(app_browser)
                    ->multi_contents_view()

@@ -31,6 +31,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/storage_access_api/storage_access_grant_permission_context.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/webid/federated_identity_permission_context.h"
@@ -2997,9 +2998,12 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   // Even though there was previous interaction in the regular profile, requests
   // made by incognito profiles should be denied, due to the top-level user
   // interaction requirement.
-  Browser* incognito_browser = Browser::Create(Browser::CreateParams(
-      browser()->GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
-      /*user_gesture=*/true));
+  Browser* incognito_browser =
+      CreateBrowserWindow(BrowserWindowCreateParams(
+                              browser()->GetProfile()->GetPrimaryOTRProfile(
+                                  /*create_if_needed=*/true),
+                              /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
 
   NavigateToURLWithDisposition(incognito_browser,
                                https_server().GetURL(kHostA, "/iframe.html"),
@@ -3012,9 +3016,12 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest, IncognitoCanUseAPI) {
-  Browser* incognito_browser = Browser::Create(Browser::CreateParams(
-      browser()->GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
-      /*user_gesture=*/true));
+  Browser* incognito_browser =
+      CreateBrowserWindow(BrowserWindowCreateParams(
+                              browser()->GetProfile()->GetPrimaryOTRProfile(
+                                  /*create_if_needed=*/true),
+                              /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
 
   NavigateToURLWithDisposition(incognito_browser,
                                https_server().GetURL(kHostA, "/empty.html"),

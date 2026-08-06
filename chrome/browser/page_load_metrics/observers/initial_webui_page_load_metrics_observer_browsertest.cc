@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
@@ -756,8 +757,10 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIPageLoadMetricsObserverBrowserTest,
   base::HistogramTester histograms;
 
   // Create a new window
-  Browser::CreateParams params(browser()->GetProfile(), true);
-  Browser* new_browser = Browser::Create(params);
+  BrowserWindowCreateParams params(browser()->GetProfile(),
+                                   /*from_user_gesture=*/true);
+  Browser* new_browser =
+      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
 
   auto* manager = InitialWebUIWindowMetricsManager::From(new_browser);
   ASSERT_TRUE(manager);

@@ -72,6 +72,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
@@ -3568,9 +3569,11 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, OmitFromSessionRestore) {
 
   // Make a third window that is omitted from session restore; navigate it to
   // url 3.
-  Browser::CreateParams params(browser()->GetProfile(), true);
+  BrowserWindowCreateParams params(browser()->GetProfile(),
+                                   /*from_user_gesture=*/true);
   params.omit_from_session_restore = true;
-  Browser* browser3 = Browser::Create(params);
+  Browser* browser3 =
+      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
   content::WebContents* tab = chrome::AddSelectedTabWithURL(
       browser3, GURL(GetUrl3()), ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   content::TestNavigationObserver observer(tab);

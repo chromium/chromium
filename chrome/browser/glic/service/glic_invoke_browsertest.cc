@@ -23,6 +23,7 @@
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/common/webui_url_constants.h"
@@ -1076,8 +1077,11 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
                        ResolveTargetSurfaceSkipsAppWindow) {
-  Browser* app_browser = Browser::Create(Browser::CreateParams::CreateForApp(
-      "test_app", true, gfx::Rect(), GetProfile(), true));
+  Browser* app_browser =
+      CreateBrowserWindow(BrowserWindowCreateParams::CreateForApp(
+                              "test_app", /*trusted_source=*/true, gfx::Rect(),
+                              GetProfile(), /*user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   app_browser->GetWindow()->Show();
 
   // 1. DefaultSurface targeting app_browser falls back to a normal browser.

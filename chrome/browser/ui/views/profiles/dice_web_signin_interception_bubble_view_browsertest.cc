@@ -17,6 +17,7 @@
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -479,8 +480,10 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
         run_loop.Quit();
       }));
   run_loop.Run();
-  Browser::CreateParams browser_params(new_profile, /*user_gesture=*/true);
-  Browser* new_browser = Browser::Create(browser_params);
+  BrowserWindowCreateParams browser_params(new_profile,
+                                           /*from_user_gesture=*/true);
+  Browser* new_browser = CreateBrowserWindow(std::move(browser_params))
+                             ->GetBrowserForMigrationOnly();
   new_browser->GetWindow()->Show();
 
   // Create a bubble using the temporary profile, but not attached to its view

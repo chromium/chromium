@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
@@ -42,7 +43,8 @@ void OpenGlicSettingsPageWithPromo(Profile* profile,
     // At this point we don't have a browser window open for profile.
     // User Education resources are initialized when browser view is created,
     // so create a browser window prior to using the service
-    browser = Browser::Create(Browser::CreateParams(profile, true));
+    browser = CreateBrowserWindow(
+        BrowserWindowCreateParams(profile, /*from_user_gesture=*/true));
   }
 
   const bool show_promo_bubble =

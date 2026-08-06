@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
@@ -684,10 +685,12 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
                        RestoreGroupInBrowserThatDoesNotSupportGroups) {
   // Create a browser that does not support groups and try to restore a
   // grouped tab. This should restore the tab and not recreate the group.
-  Browser::CreateParams app_browser_params =
-      Browser::CreateParams::CreateForApp("App Name", true, gfx::Rect(),
-                                          browser()->GetProfile(), false);
-  Browser* app_browser = Browser::Create(app_browser_params);
+  BrowserWindowCreateParams app_browser_params =
+      BrowserWindowCreateParams::CreateForApp(
+          "App Name", /*trusted_source=*/true, gfx::Rect(),
+          browser()->GetProfile(), /*user_gesture=*/false);
+  Browser* app_browser = CreateBrowserWindow(std::move(app_browser_params))
+                             ->GetBrowserForMigrationOnly();
   EXPECT_FALSE(app_browser->tab_strip_model()->group_model());
 
   // Create a tab entry with a group and add it to TabRestoreService directly.

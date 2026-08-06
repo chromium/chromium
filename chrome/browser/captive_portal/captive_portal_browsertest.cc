@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
@@ -3151,7 +3152,9 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, ReloadTimeout) {
 // Disabled:  http://crbug.com/40852453
 IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, DISABLED_TwoWindows) {
   Browser* browser2 =
-      Browser::Create(Browser::CreateParams(browser()->GetProfile(), true));
+      CreateBrowserWindow(BrowserWindowCreateParams(browser()->GetProfile(),
+                                                    /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   // Navigate the new browser window so it'll be shown and we can pick the
   // active window.
   ASSERT_TRUE(

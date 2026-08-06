@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -127,16 +128,17 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, ControllerExistsForNormalBrowsers) {
             nullptr);
 
   // Picture-in-Picture window
-  Browser* const pip_browser =
-      Browser::Create(Browser::CreateParams::CreateForPictureInPicture(
-          "test_app_name", false, profile, false));
+  BrowserWindowInterface* const pip_browser =
+      CreateBrowserWindow(BrowserWindowCreateParams::CreateForPictureInPicture(
+          "test_app_name", /*trusted_source=*/false, profile,
+          /*user_gesture=*/false));
   ASSERT_EQ(ActorUiWindowController::From(pip_browser), nullptr);
   // Tab Interface is null for Picture-in-Picture windows, so we don't test the
   // tab controller's existence.
 
   // DevTools window
-  Browser* const devtools_browser =
-      Browser::Create(Browser::CreateParams::CreateForDevTools(profile));
+  BrowserWindowInterface* const devtools_browser = CreateBrowserWindow(
+      BrowserWindowCreateParams::CreateForDevTools(profile));
   ASSERT_EQ(ActorUiWindowController::From(devtools_browser), nullptr);
   // Tab Interface is null for DevTools windows, so we don't test the tab
   // controller's existence.
@@ -891,16 +893,17 @@ IN_PROC_BROWSER_TEST_F(GlicActorDisabledTest,
             nullptr);
 
   // Picture-in-Picture window
-  Browser* const pip_browser =
-      Browser::Create(Browser::CreateParams::CreateForPictureInPicture(
-          "test_app_name", false, profile, false));
+  BrowserWindowInterface* const pip_browser =
+      CreateBrowserWindow(BrowserWindowCreateParams::CreateForPictureInPicture(
+          "test_app_name", /*trusted_source=*/false, profile,
+          /*user_gesture=*/false));
   ASSERT_EQ(ActorUiWindowController::From(pip_browser), nullptr);
   // Tab Interface is null for Picture-in-Picture windows, so we don't test the
   // tab controller's existence.
 
   // DevTools window
-  Browser* const devtools_browser =
-      Browser::Create(Browser::CreateParams::CreateForDevTools(profile));
+  BrowserWindowInterface* const devtools_browser = CreateBrowserWindow(
+      BrowserWindowCreateParams::CreateForDevTools(profile));
   ASSERT_EQ(ActorUiWindowController::From(devtools_browser), nullptr);
   // Tab Interface is null for DevTools windows, so we don't test the tab
   // controller's existence.

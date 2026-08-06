@@ -131,6 +131,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/trusted_vault/command_line_switches.h"
@@ -499,7 +500,10 @@ Browser* SyncTest::GetBrowser(int index) {
 
 Browser* SyncTest::AddBrowser(int profile_index) {
   Profile* profile = GetProfile(profile_index);
-  browsers_.push_back(Browser::Create(Browser::CreateParams(profile, true)));
+  browsers_.push_back(
+      CreateBrowserWindow(
+          BrowserWindowCreateParams(profile, /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly());
   profiles_.push_back(profile);
   CHECK_EQ(browsers_.size(), profiles_.size());
 
@@ -679,7 +683,10 @@ void SyncTest::InitializeProfile(int index, Profile* profile) {
   profile->AddObserver(this);
 
 #if !BUILDFLAG(IS_ANDROID)
-  browsers_.push_back(Browser::Create(Browser::CreateParams(profile, true)));
+  browsers_.push_back(
+      CreateBrowserWindow(
+          BrowserWindowCreateParams(profile, /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly());
   CHECK_EQ(static_cast<size_t>(index), browsers_.size() - 1);
 
   Browser* browser = browsers_.back();

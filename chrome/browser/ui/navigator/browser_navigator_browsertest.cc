@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
@@ -183,14 +184,19 @@ bool BrowserNavigatorTest::OpenPOSTURLInNewForegroundTabAndGetTitle(
 Browser* BrowserNavigatorTest::CreateEmptyBrowserForType(Browser::Type type,
                                                          Profile* profile) {
   Browser* browser =
-      Browser::Create(Browser::CreateParams(type, profile, true));
+      CreateBrowserWindow(
+          BrowserWindowCreateParams(type, profile, /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   chrome::AddTabAt(browser, GURL(), -1, true);
   return browser;
 }
 
 Browser* BrowserNavigatorTest::CreateEmptyBrowserForApp(Profile* profile) {
-  Browser* browser = Browser::Create(Browser::CreateParams::CreateForApp(
-      "Test", false /* trusted_source */, gfx::Rect(), profile, true));
+  Browser* browser =
+      CreateBrowserWindow(BrowserWindowCreateParams::CreateForApp(
+                              "Test", /*trusted_source=*/false, gfx::Rect(),
+                              profile, /*user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   chrome::AddTabAt(browser, GURL(), -1, true);
   return browser;
 }

@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
@@ -69,11 +70,12 @@ Browser* WebsiteMetricsBrowserTestMixin::CreateBrowser() {
   DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
   auto* const profile = ProfileManager::GetPrimaryUserProfile();
   CHECK(profile);
-  Browser::CreateParams params(profile, /*user_gesture=*/true);
+  BrowserWindowCreateParams params(profile, /*from_user_gesture=*/true);
 
   // Create a new browser instance. The subsequent `BrowserWindow` that was
   // created as part of this instantiation will own the browser instance.
-  Browser* const browser = Browser::Create(params);
+  Browser* const browser =
+      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
   browser->GetWindow()->Show();
   auto* const window = browser->GetWindow()->GetNativeWindow();
   wm::GetActivationClient(window->GetRootWindow())->ActivateWindow(window);

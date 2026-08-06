@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
@@ -310,9 +311,11 @@ class TabSearchPageHandlerTest : public InProcessBrowserTest {
   }
 
  protected:
-  Browser* CreateBrowserForTest(Profile* profile, Browser::Type type) {
-    Browser::CreateParams params(type, profile, true);
-    Browser* browser = Browser::Create(params);
+  Browser* CreateBrowserForTest(Profile* profile,
+                                BrowserWindowInterface::Type type) {
+    BrowserWindowCreateParams params(type, profile, /*from_user_gesture=*/true);
+    Browser* browser =
+        CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
     browser->GetWindow()->Show();
     return browser;
   }

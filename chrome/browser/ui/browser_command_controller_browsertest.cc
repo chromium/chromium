@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
@@ -417,11 +418,12 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
                        OpenDisabledForAppBrowser) {
-  auto params = Browser::CreateParams::CreateForApp(
-      "abcdefghaghpphfffooibmlghaeopach", true /* trusted_source */,
-      gfx::Rect(), /* window_bounts */
-      browser()->GetProfile(), true /* user_gesture */);
-  Browser* browser = Browser::Create(params);
+  auto params = BrowserWindowCreateParams::CreateForApp(
+      "abcdefghaghpphfffooibmlghaeopach", /*trusted_source=*/true,
+      gfx::Rect(), /* window_bounds */
+      browser()->GetProfile(), /*user_gesture=*/true);
+  Browser* browser =
+      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
 
   chrome::BrowserCommandController* commandController =
       chrome::BrowserCommandController::From(browser);
@@ -430,11 +432,12 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
                        NewTabEnabledForAppBrowser) {
-  auto params = Browser::CreateParams::CreateForApp(
-      "abcdefghaghpphfffooibmlghaeopach", true /* trusted_source */,
-      gfx::Rect(), /* window_bounts */
-      browser()->GetProfile(), true /* user_gesture */);
-  Browser* app_browser = Browser::Create(params);
+  auto params = BrowserWindowCreateParams::CreateForApp(
+      "abcdefghaghpphfffooibmlghaeopach", /*trusted_source=*/true,
+      gfx::Rect(), /* window_bounds */
+      browser()->GetProfile(), /*user_gesture=*/true);
+  Browser* app_browser =
+      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
 
   chrome::BrowserCommandController* commandController =
       app_browser->GetFeatures().browser_command_controller();
@@ -443,11 +446,12 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
                        OpenDisabledForAppPopupBrowser) {
-  auto params = Browser::CreateParams::CreateForAppPopup(
-      "abcdefghaghpphfffooibmlghaeopach", true /* trusted_source */,
-      gfx::Rect(), /* window_bounts */
-      browser()->GetProfile(), true /* user_gesture */);
-  Browser* browser = Browser::Create(params);
+  auto params = BrowserWindowCreateParams::CreateForAppPopup(
+      "abcdefghaghpphfffooibmlghaeopach", /*trusted_source=*/true,
+      gfx::Rect(), /* window_bounds */
+      browser()->GetProfile(), /*user_gesture=*/true);
+  Browser* browser =
+      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
 
   chrome::BrowserCommandController* commandController =
       chrome::BrowserCommandController::From(browser);
@@ -457,8 +461,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
                        OpenDisabledForDevToolsBrowser) {
   auto params =
-      Browser::CreateParams::CreateForDevTools(browser()->GetProfile());
-  Browser* browser = Browser::Create(params);
+      BrowserWindowCreateParams::CreateForDevTools(browser()->GetProfile());
+  Browser* browser =
+      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
 
   chrome::BrowserCommandController* commandController =
       chrome::BrowserCommandController::From(browser);

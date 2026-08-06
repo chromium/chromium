@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -164,7 +165,9 @@ IN_PROC_BROWSER_TEST_F(BrowserViewFocusTest, BrowsersRememberFocus) {
 #if BUILDFLAG(IS_WIN)
   // Open a new browser window.
   Browser* browser2 =
-      Browser::Create(Browser::CreateParams(browser()->GetProfile(), true));
+      CreateBrowserWindow(BrowserWindowCreateParams(browser()->GetProfile(),
+                                                    /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   ASSERT_TRUE(browser2);
   chrome::AddTabAt(browser2, GURL(), -1, true);
   browser2->GetWindow()->Show();

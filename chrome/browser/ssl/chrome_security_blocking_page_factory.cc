@@ -469,9 +469,9 @@ void ChromeSecurityBlockingPageFactory::
         ProfileBrowserCollection::GetForProfile(profile)->FindTabbedBrowser();
     // Create browser if not exists.
     if (!browser && GetBrowserWindowCreationStatusForProfile(*profile) ==
-                        Browser::CreationStatus::kOk) {
-      Browser::CreateParams params(profile, /*user_gesture=*/true);
-      browser = Browser::Create(params);
+                        BrowserWindowInterface::CreationStatus::kOk) {
+      BrowserWindowCreateParams params(profile, /*from_user_gesture=*/true);
+      browser = CreateBrowserWindow(std::move(params));
     }
 
     if (browser && browser->GetWindow()) {

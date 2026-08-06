@@ -11,6 +11,7 @@
 #include "chrome/browser/translate/translate_test_utils.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
@@ -88,9 +89,10 @@ class PinnedToolbarActionsContainerBrowserTest : public InProcessBrowserTest {
   }
 
   Browser* CreateBrowser() {
-    Browser::CreateParams params(browser()->GetProfile(),
-                                 true /* user_gesture */);
-    Browser* browser = Browser::Create(params);
+    BrowserWindowCreateParams params(browser()->GetProfile(),
+                                     /*from_user_gesture=*/true);
+    Browser* browser =
+        CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
     browser->GetWindow()->Show();
     return browser;
   }
@@ -137,9 +139,12 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
                        CustomizeToolbarCanNotBeCalledFromIncognitoWindow) {
-  Browser* incognito_browser = Browser::Create(Browser::CreateParams(
-      browser()->GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
-      true));
+  Browser* incognito_browser =
+      CreateBrowserWindow(BrowserWindowCreateParams(
+                              browser()->GetProfile()->GetPrimaryOTRProfile(
+                                  /*create_if_needed=*/true),
+                              /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   AddBlankTabAndShow(incognito_browser);
   auto pinned_button = std::make_unique<PinnedActionToolbarButton>(
       incognito_browser, actions::kActionCut,

@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
@@ -1555,7 +1556,9 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, NoIncognitoPrepopulate) {
   Profile* incognito_profile =
       browser()->GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   Browser* incognito_browser =
-      Browser::Create(Browser::CreateParams(incognito_profile, true));
+      CreateBrowserWindow(BrowserWindowCreateParams(incognito_profile,
+                                                    /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   chrome::AddSelectedTabWithURL(incognito_browser, url,
                                 ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   EXPECT_TRUE(content::WaitForLoadStop(
@@ -1611,10 +1614,12 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, ActivateLinkNavigatesPage) {
 }
 
 IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, FitWindow) {
-  Browser::CreateParams params(Browser::TYPE_POPUP, browser()->GetProfile(),
-                               true);
+  BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_POPUP,
+                                   browser()->GetProfile(),
+                                   /*from_user_gesture=*/true);
   params.initial_bounds = gfx::Rect(0, 0, 100, 500);
-  Browser* popup = Browser::Create(params);
+  Browser* popup =
+      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
   chrome::AddSelectedTabWithURL(popup, GURL(url::kAboutBlankURL),
                                 ui::PAGE_TRANSITION_LINK);
   // Wait for the page to finish loading.

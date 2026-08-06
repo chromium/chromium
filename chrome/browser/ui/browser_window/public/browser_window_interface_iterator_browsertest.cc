@@ -7,6 +7,7 @@
 #include "base/test/run_until.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -35,7 +36,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // Create a second browser window.
   Browser* const browser2 =
-      Browser::Create(Browser::CreateParams(browser()->GetProfile(), true));
+      CreateBrowserWindow(BrowserWindowCreateParams(browser()->GetProfile(),
+                                                    /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   ASSERT_NE(browser2, nullptr);
   browser2->GetWindow()->Show();
 

@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
@@ -125,9 +126,11 @@ IN_PROC_BROWSER_TEST_F(BrowserViewPipTest, DynamicStatePropagation) {
   content::ScopedPipExclusionOverride exclusion_override(false);
 
   // Create a PIP browser.
-  Browser::CreateParams params(Browser::TYPE_PICTURE_IN_PICTURE,
-                               browser()->GetProfile(), true);
-  Browser* pip_browser = Browser::Create(params);
+  BrowserWindowCreateParams params(
+      BrowserWindowInterface::TYPE_PICTURE_IN_PICTURE, browser()->GetProfile(),
+      /*from_user_gesture=*/true);
+  Browser* pip_browser =
+      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
   pip_browser->GetWindow()->Show();
   BrowserView* pip_browser_view =
       BrowserView::GetBrowserViewForBrowser(pip_browser);
@@ -149,9 +152,11 @@ IN_PROC_BROWSER_TEST_F(BrowserViewPipTest, InitialStateVerification) {
   content::ScopedPipExclusionOverride exclusion_override(true);
 
   // Create a PIP browser.
-  Browser::CreateParams params(Browser::TYPE_PICTURE_IN_PICTURE,
-                               browser()->GetProfile(), true);
-  Browser* pip_browser = Browser::Create(params);
+  BrowserWindowCreateParams params(
+      BrowserWindowInterface::TYPE_PICTURE_IN_PICTURE, browser()->GetProfile(),
+      /*from_user_gesture=*/true);
+  Browser* pip_browser =
+      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
   pip_browser->GetWindow()->Show();
   BrowserView* pip_browser_view =
       BrowserView::GetBrowserViewForBrowser(pip_browser);
@@ -177,9 +182,11 @@ IN_PROC_BROWSER_TEST_F(BrowserViewPipDisabledTest, FeatureFlagEnforcement) {
   content::ScopedPipExclusionOverride exclusion_override(false);
 
   // Create a PIP browser.
-  Browser::CreateParams params(Browser::TYPE_PICTURE_IN_PICTURE,
-                               browser()->GetProfile(), true);
-  Browser* pip_browser = Browser::Create(params);
+  BrowserWindowCreateParams params(
+      BrowserWindowInterface::TYPE_PICTURE_IN_PICTURE, browser()->GetProfile(),
+      /*from_user_gesture=*/true);
+  Browser* pip_browser =
+      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
   pip_browser->GetWindow()->Show();
   BrowserView* pip_browser_view =
       BrowserView::GetBrowserViewForBrowser(pip_browser);
@@ -213,9 +220,11 @@ IN_PROC_BROWSER_TEST_F(BrowserViewPipTest, NewWindowInitializationIsolation) {
   content::ScopedPipExclusionOverride exclusion_override(true);
 
   // Create a normal browser.
-  Browser::CreateParams params(Browser::TYPE_NORMAL, browser()->GetProfile(),
-                               true);
-  Browser* new_normal_browser = Browser::Create(params);
+  BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_NORMAL,
+                                   browser()->GetProfile(),
+                                   /*from_user_gesture=*/true);
+  Browser* new_normal_browser =
+      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
   new_normal_browser->GetWindow()->Show();
 
   BrowserView* new_normal_view =
@@ -392,7 +401,9 @@ class TestTabModalConfirmDialogDelegate : public TabModalConfirmDialogDelegate {
 // is invoked on the other.
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, CloseWithTabs) {
   Browser* browser2 =
-      Browser::Create(Browser::CreateParams(browser()->GetProfile(), true));
+      CreateBrowserWindow(BrowserWindowCreateParams(browser()->GetProfile(),
+                                                    /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   chrome::AddTabAt(browser2, GURL(), -1, true);
   chrome::AddTabAt(browser2, GURL(), -1, true);
   TestWebContentsObserver observer(
@@ -405,7 +416,9 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, CloseWithTabs) {
 // BrowserView will destroy.
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, CloseWithTabsStartWithActive) {
   Browser* browser2 =
-      Browser::Create(Browser::CreateParams(browser()->GetProfile(), true));
+      CreateBrowserWindow(BrowserWindowCreateParams(browser()->GetProfile(),
+                                                    /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   chrome::AddTabAt(browser2, GURL(), -1, true);
   chrome::AddTabAt(browser2, GURL(), -1, true);
   browser2->tab_strip_model()->ActivateTabAt(
@@ -1582,7 +1595,8 @@ class TabAddingWidgetObserver : public views::WidgetObserver {
 // ContentsWebView::CloneWebContentsLayer during synchronous widget destruction.
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, CloseWidgetWithTabsNoCrash) {
   BrowserWindowInterface* browser2 =
-      Browser::Create(Browser::CreateParams(browser()->GetProfile(), true));
+      CreateBrowserWindow(BrowserWindowCreateParams(
+          browser()->GetProfile(), /*from_user_gesture=*/true));
   chrome::AddTabAt(browser2, GURL("about:blank"), -1, true);
   EXPECT_EQ(1, browser2->GetTabStripModel()->count());
 

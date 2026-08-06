@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/startup/features.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -938,8 +939,11 @@ IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest, LocalStorageClearedOnStartup) {
 IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest,
                        SessionCookiesBrowserCloseWithPopupOpen) {
   StoreDataWithPage("session_cookies.html");
-  Browser* popup = Browser::Create(Browser::CreateParams(
-      Browser::TYPE_POPUP, browser()->GetProfile(), true));
+  Browser* popup = CreateBrowserWindow(BrowserWindowCreateParams(
+                                           BrowserWindowInterface::TYPE_POPUP,
+                                           browser()->GetProfile(),
+                                           /*from_user_gesture=*/true))
+                       ->GetBrowserForMigrationOnly();
   popup->GetWindow()->Show();
   Browser* new_browser = QuitBrowserAndRestore(browser(), false);
   NavigateAndCheckStoredData(new_browser, "session_cookies.html");
@@ -950,8 +954,11 @@ IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest,
 IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest,
                        SessionCookiesBrowserClosePopupLast) {
   StoreDataWithPage("session_cookies.html");
-  Browser* popup = Browser::Create(Browser::CreateParams(
-      Browser::TYPE_POPUP, browser()->GetProfile(), true));
+  Browser* popup = CreateBrowserWindow(BrowserWindowCreateParams(
+                                           BrowserWindowInterface::TYPE_POPUP,
+                                           browser()->GetProfile(),
+                                           /*from_user_gesture=*/true))
+                       ->GetBrowserForMigrationOnly();
   popup->GetWindow()->Show();
   CloseBrowserSynchronously(browser());
   Browser* new_browser = QuitBrowserAndRestore(popup, false);

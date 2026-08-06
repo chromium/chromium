@@ -20,6 +20,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -141,8 +142,11 @@ bool WebAppBrowserTestBase::NavigateAndAwaitInstallabilityCheck(
 
 Browser* WebAppBrowserTestBase::NavigateInNewWindowAndAwaitInstallabilityCheck(
     const GURL& url) {
-  Browser* new_browser = Browser::Create(
-      Browser::CreateParams(Browser::TYPE_NORMAL, profile(), true));
+  Browser* new_browser =
+      CreateBrowserWindow(BrowserWindowCreateParams(
+                              BrowserWindowInterface::TYPE_NORMAL, profile(),
+                              /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   AddBlankTabAndShow(new_browser);
   NavigateAndAwaitInstallabilityCheck(new_browser, url);
   return new_browser;

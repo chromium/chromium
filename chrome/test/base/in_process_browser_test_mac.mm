@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #import "chrome/browser/ui/cocoa/chrome_command_dispatcher_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -49,7 +50,10 @@ Browser* InProcessBrowserTest::CreateBrowser(Profile* profile) {
   // Making a browser window can cause AppKit to throw objects into the
   // autorelease pool. Flush the pool when this function returns.
   @autoreleasepool {
-    Browser* browser = Browser::Create(Browser::CreateParams(profile, true));
+    Browser* browser =
+        CreateBrowserWindow(
+            BrowserWindowCreateParams(profile, /*from_user_gesture=*/true))
+            ->GetBrowserForMigrationOnly();
     AddBlankTabAndShow(browser);
     return browser;
   }
@@ -64,8 +68,12 @@ Browser* InProcessBrowserTest::CreateIncognitoBrowser(Profile* profile) {
       profile = browser()->GetProfile();
 
     // Create a new browser with using the incognito profile.
-    Browser* incognito = Browser::Create(Browser::CreateParams(
-        profile->GetPrimaryOTRProfile(/*create_if_needed=*/true), true));
+    Browser* incognito =
+        CreateBrowserWindow(
+            BrowserWindowCreateParams(
+                profile->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+                /*from_user_gesture=*/true))
+            ->GetBrowserForMigrationOnly();
     AddBlankTabAndShow(incognito);
     return incognito;
   }
@@ -75,8 +83,11 @@ Browser* InProcessBrowserTest::CreateBrowserForPopup(Profile* profile) {
   // Making a browser window can cause AppKit to throw objects into the
   // autorelease pool. Flush the pool when this function returns.
   @autoreleasepool {
-    Browser* browser = Browser::Create(
-        Browser::CreateParams(Browser::TYPE_POPUP, profile, true));
+    Browser* browser =
+        CreateBrowserWindow(BrowserWindowCreateParams(
+                                BrowserWindowInterface::TYPE_POPUP, profile,
+                                /*from_user_gesture=*/true))
+            ->GetBrowserForMigrationOnly();
     AddBlankTabAndShow(browser);
     return browser;
   }
@@ -87,9 +98,12 @@ Browser* InProcessBrowserTest::CreateBrowserForApp(const std::string& app_name,
   // Making a browser window can cause AppKit to throw objects into the
   // autorelease pool. Flush the pool when this function returns.
   @autoreleasepool {
-    Browser* browser = Browser::Create(Browser::CreateParams::CreateForApp(
-        app_name, /*trusted_source=*/false, gfx::Rect(), profile,
-        /*user_gesture=*/true));
+    Browser* browser =
+        CreateBrowserWindow(BrowserWindowCreateParams::CreateForApp(
+                                app_name, /*trusted_source=*/false, gfx::Rect(),
+                                profile,
+                                /*from_user_gesture=*/true))
+            ->GetBrowserForMigrationOnly();
     AddBlankTabAndShow(browser);
     return browser;
   }

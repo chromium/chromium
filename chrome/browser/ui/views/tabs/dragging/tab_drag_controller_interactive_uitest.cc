@@ -44,6 +44,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
@@ -5422,9 +5423,11 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        NewBrowserWindowState) {
   // Create a browser window whose initial show state is MAXIMIZED.
-  Browser::CreateParams params(browser()->GetProfile(), /*user_gesture=*/false);
+  BrowserWindowCreateParams params(browser()->GetProfile(),
+                                   /*from_user_gesture=*/false);
   params.initial_show_state = ui::mojom::WindowShowState::kMaximized;
-  Browser* browser = Browser::Create(params);
+  Browser* browser =
+      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
   AddBlankTabAndShow(browser);
   AddTabsAndResetBrowser(browser, 1);
 
@@ -6073,10 +6076,12 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
   const std::pair<Display, Display> displays = GetDisplays(screen);
   gfx::Rect work_area = displays.second.work_area();
   work_area.Inset(gfx::Insets::TLBR(20, 20, 60, 20));
-  Browser::CreateParams params(browser()->GetProfile(), true);
+  BrowserWindowCreateParams params(browser()->GetProfile(),
+                                   /*from_user_gesture=*/true);
   params.initial_show_state = ui::mojom::WindowShowState::kNormal;
   params.initial_bounds = work_area;
-  Browser* browser2 = Browser::Create(params);
+  Browser* browser2 =
+      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
   AddBlankTabAndShow(browser2);
 
   TabStrip* tab_strip2 = GetTabStripForBrowser(browser2);

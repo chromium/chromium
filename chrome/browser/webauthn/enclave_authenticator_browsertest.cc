@@ -48,6 +48,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/webauthn/passkey_upgrade_request_controller.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_controller.h"
@@ -2831,10 +2832,13 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, BiometricsInPWA) {
   // When requesting biometrics in a PWA, Touch ID should never be used.
   // Create a Browser of type `TYPE_APP`, like a PWA.
-  Browser* app_browser = Browser::Create(Browser::CreateParams::CreateForApp(
-      "appname", /*trusted_source=*/true, gfx::Rect(0, 0, 500, 500),
-      browser()->GetProfile(),
-      /*user_gesture=*/true));
+  Browser* app_browser =
+      CreateBrowserWindow(BrowserWindowCreateParams::CreateForApp(
+                              "appname", /*trusted_source=*/true,
+                              gfx::Rect(0, 0, 500, 500),
+                              browser()->GetProfile(),
+                              /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   ASSERT_EQ(app_browser->GetType(), Browser::Type::TYPE_APP);
   app_browser->GetWindow()->Show();
 

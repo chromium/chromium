@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
@@ -451,7 +452,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveGroupToExistingWindow) {
 
   // Prepare the target browser (existing window).
   Browser* target_browser =
-      Browser::Create(Browser::CreateParams(browser()->GetProfile(), true));
+      CreateBrowserWindow(BrowserWindowCreateParams(browser()->GetProfile(),
+                                                    /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   ASSERT_TRUE(target_browser);
   AddTabs(target_browser, 1);
 
@@ -505,7 +508,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
 
   // Target browser: 0(active)
   Browser* target_browser =
-      Browser::Create(Browser::CreateParams(browser()->GetProfile(), true));
+      CreateBrowserWindow(BrowserWindowCreateParams(browser()->GetProfile(),
+                                                    /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   AddTabs(target_browser, 1);
   ASSERT_EQ(1, target_browser->tab_strip_model()->count());
 
@@ -532,7 +537,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
 
   // Target browser: 0(active)
   Browser* target_browser =
-      Browser::Create(Browser::CreateParams(browser()->GetProfile(), true));
+      CreateBrowserWindow(BrowserWindowCreateParams(browser()->GetProfile(),
+                                                    /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   AddTabs(target_browser, 1);
   ASSERT_EQ(1, target_browser->tab_strip_model()->count());
 
@@ -565,7 +572,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
 
   // Target browser: 0(active)
   Browser* target_browser =
-      Browser::Create(Browser::CreateParams(browser()->GetProfile(), true));
+      CreateBrowserWindow(BrowserWindowCreateParams(browser()->GetProfile(),
+                                                    /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   AddTabs(target_browser, 1);
   ASSERT_EQ(1, target_browser->tab_strip_model()->count());
 
@@ -596,7 +605,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
 
   // Target browser: 0(active)
   Browser* target_browser =
-      Browser::Create(Browser::CreateParams(browser()->GetProfile(), true));
+      CreateBrowserWindow(BrowserWindowCreateParams(browser()->GetProfile(),
+                                                    /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   AddTabs(target_browser, 1);
   ASSERT_EQ(1, target_browser->tab_strip_model()->count());
 
@@ -693,8 +704,12 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
                        ConvertPopupToTabbedBrowserShutdownRace) {
   // Confirm we do not incorrectly start shutdown when converting a popup into a
   // tab, in the case where the popup is the only active Browser object
-  Browser* popup_browser = Browser::Create(Browser::CreateParams(
-      Browser::TYPE_POPUP, browser()->GetProfile(), true));
+  Browser* popup_browser =
+      CreateBrowserWindow(
+          BrowserWindowCreateParams(BrowserWindowInterface::TYPE_POPUP,
+                                    browser()->GetProfile(),
+                                    /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   chrome::AddTabAt(popup_browser, GURL(url::kAboutBlankURL), -1, true);
   popup_browser->tab_strip_model()->SelectTabAt(0);
   browser()->tab_strip_model()->CloseAllTabs();

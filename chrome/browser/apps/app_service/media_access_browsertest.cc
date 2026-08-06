@@ -14,6 +14,7 @@
 #include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -162,7 +163,9 @@ IN_PROC_BROWSER_TEST_F(MediaAccessExtensionAppsTest,
 IN_PROC_BROWSER_TEST_F(MediaAccessExtensionAppsTest,
                        RequestAccessingForChromeInNewBrowsers) {
   Browser* browser1 =
-      Browser::Create(Browser::CreateParams(browser()->GetProfile(), true));
+      CreateBrowserWindow(BrowserWindowCreateParams(browser()->GetProfile(),
+                                                    /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   ASSERT_TRUE(browser1);
   ASSERT_NE(browser(), browser1);
 

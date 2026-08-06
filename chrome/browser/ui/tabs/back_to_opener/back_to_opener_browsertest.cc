@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/back_to_opener/back_to_opener_controller.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -327,7 +328,9 @@ IN_PROC_BROWSER_TEST_F(BackToOpenerBrowserTest, OpenerMovedToAnotherWindow) {
       browser()->tab_strip_model()->DetachWebContentsAtForInsertion(
           opener_index);
   Browser* new_browser =
-      Browser::Create(Browser::CreateParams(browser()->GetProfile(), true));
+      CreateBrowserWindow(BrowserWindowCreateParams(browser()->GetProfile(),
+                                                    /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   new_browser->tab_strip_model()->InsertWebContentsAt(0, std::move(detached),
                                                       AddTabTypes::ADD_ACTIVE);
 

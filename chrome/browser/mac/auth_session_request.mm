@@ -307,9 +307,11 @@ Browser* AuthSessionRequest::CreateBrowser(
   // this code; if it were restored it would not have the AuthSessionRequest and
   // would not behave correctly.
 
-  Browser::CreateParams params(Browser::TYPE_POPUP, profile, true);
+  BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_POPUP, profile,
+                                   /*from_user_gesture=*/true);
   params.omit_from_session_restore = true;
-  Browser* browser = Browser::Create(params);
+  Browser* browser =
+      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
   chrome::AddTabAt(browser, GURL("about:blank"), -1, true);
   browser->GetWindow()->Show();
 

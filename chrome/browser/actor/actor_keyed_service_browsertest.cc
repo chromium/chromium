@@ -19,6 +19,7 @@
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
@@ -462,7 +463,8 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
   Profile& profile2 =
       profiles::testing::CreateProfileSync(profile_manager, profile_path);
 
-  Browser* browser2 = Browser::Create(Browser::CreateParams(&profile2, true));
+  BrowserWindowInterface* browser2 = CreateBrowserWindow(
+      BrowserWindowCreateParams(&profile2, /*from_user_gesture=*/true));
   chrome::NewTab(browser2, NewTabTypes::kNoUserAction);
   tabs::TabInterface* tab2 = browser2->GetActiveTabInterface();
 
@@ -490,7 +492,8 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
   Profile& profile2 =
       profiles::testing::CreateProfileSync(profile_manager, profile_path);
 
-  Browser* browser2 = Browser::Create(Browser::CreateParams(&profile2, true));
+  BrowserWindowInterface* browser2 = CreateBrowserWindow(
+      BrowserWindowCreateParams(&profile2, /*from_user_gesture=*/true));
   chrome::NewTab(browser2, NewTabTypes::kNoUserAction);
   tabs::TabInterface* tab2 = browser2->GetActiveTabInterface();
 

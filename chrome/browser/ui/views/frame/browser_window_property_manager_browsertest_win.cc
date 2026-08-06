@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/web_applications/extensions/launch.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
@@ -235,10 +236,12 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowPropertyManagerTest, DISABLED_HostedApp) {
 IN_PROC_BROWSER_TEST_F(BrowserWindowPropertyManagerTest,
                        PictureInPictureWithAppName) {
   std::string app_name = "TestAppName";
-  Browser::CreateParams params =
-      Browser::CreateParams::CreateForPictureInPicture(
-          app_name, true, browser()->GetProfile(), true);
-  Browser* pip_browser = Browser::Create(params);
+  BrowserWindowCreateParams params =
+      BrowserWindowCreateParams::CreateForPictureInPicture(
+          app_name, /*trusted_source=*/true, browser()->GetProfile(),
+          /*user_gesture=*/true);
+  Browser* pip_browser =
+      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
   ASSERT_EQ(pip_browser->GetType(),
             BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE);
   ASSERT_EQ(app_name,
@@ -266,10 +269,12 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowPropertyManagerTest,
 
 IN_PROC_BROWSER_TEST_F(BrowserWindowPropertyManagerTest,
                        PictureInPictureWithoutAppName) {
-  Browser::CreateParams params =
-      Browser::CreateParams::CreateForPictureInPicture(
-          "", true, browser()->GetProfile(), true);
-  Browser* pip_browser = Browser::Create(params);
+  BrowserWindowCreateParams params =
+      BrowserWindowCreateParams::CreateForPictureInPicture(
+          "", /*trusted_source=*/true, browser()->GetProfile(),
+          /*user_gesture=*/true);
+  Browser* pip_browser =
+      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
   ASSERT_EQ(pip_browser->GetType(),
             BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE);
   ASSERT_TRUE(

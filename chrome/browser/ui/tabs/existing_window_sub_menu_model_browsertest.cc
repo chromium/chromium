@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -47,20 +48,26 @@ class ExistingWindowSubMenuModelTest : public InProcessBrowserTest {
                            ? browser()->GetProfile()->GetPrimaryOTRProfile(
                                  /*create_if_needed=*/true)
                            : browser()->GetProfile();
-    Browser::Type type = popup ? Browser::TYPE_POPUP : Browser::TYPE_NORMAL;
+    BrowserWindowInterface::Type type =
+        popup ? BrowserWindowInterface::TYPE_POPUP
+              : BrowserWindowInterface::TYPE_NORMAL;
 
     Browser* browser =
-        Browser::Create(Browser::CreateParams(type, profile, true));
+        CreateBrowserWindow(BrowserWindowCreateParams(
+                                type, profile, /*from_user_gesture=*/true))
+            ->GetBrowserForMigrationOnly();
     ActivateBrowser(browser);
     // Self deleting.
     return browser;
   }
 #if BUILDFLAG(IS_CHROMEOS)
   Browser* CreateTestBrowserOnWorkspace(std::string desk_index) {
-    Browser::CreateParams params(Browser::TYPE_NORMAL, browser()->GetProfile(),
-                                 true);
+    BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_NORMAL,
+                                     browser()->GetProfile(),
+                                     /*from_user_gesture=*/true);
     params.initial_workspace = desk_index;
-    Browser* browser = Browser::Create(params);
+    Browser* browser =
+        CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
     ActivateBrowser(browser);
     return browser;
   }

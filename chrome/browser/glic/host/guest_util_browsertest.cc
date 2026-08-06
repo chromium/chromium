@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
@@ -94,12 +95,12 @@ Profile& GetProfile() {
 }
 
 void OpenWebUiWithGuestView(const GURL& host_url) {
-  Browser::CreateParams params =
-      Browser::CreateParams(Browser::Type::TYPE_NORMAL,
-                            /*profile=*/&GetProfile(),
-                            /*user_gesture=*/true);
+  BrowserWindowCreateParams params(BrowserWindowInterface::Type::TYPE_NORMAL,
+                                   /*profile=*/&GetProfile(),
+                                   /*from_user_gesture=*/true);
 
-  auto& new_browser = CHECK_DEREF(Browser::Create(params));
+  Browser& new_browser = CHECK_DEREF(
+      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly());
   new_browser.GetWindow()->Show();
 
   ui_test_utils::NavigateToURLWithDisposition(

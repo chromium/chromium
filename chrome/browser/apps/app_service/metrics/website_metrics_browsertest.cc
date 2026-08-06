@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
@@ -143,11 +144,12 @@ class WebsiteMetricsBrowserTest : public MixinBasedInProcessBrowserTest {
   }
 
   Browser* CreateAppBrowser(const std::string& app_id) {
-    auto params = Browser::CreateParams::CreateForApp(
-        "_crx_" + app_id, true /* trusted_source */,
-        gfx::Rect(), /* window_bounts */
-        profile(), true /* user_gesture */);
-    Browser* browser = Browser::Create(params);
+    auto params = BrowserWindowCreateParams::CreateForApp(
+        "_crx_" + app_id, /*trusted_source=*/true,
+        gfx::Rect(), /*window_bounds*/
+        profile(), /*user_gesture=*/true);
+    Browser* browser =
+        CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
     browser->GetWindow()->Show();
     return browser;
   }

@@ -18,6 +18,7 @@
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_browsertest.h"
@@ -294,9 +295,13 @@ class BrowserNavigatorIwaNewTabTest
 IN_PROC_BROWSER_TEST_P(BrowserNavigatorIwaNewTabTest, NavigateNewTab) {
   EXPECT_NO_FATAL_FAILURE(InstallBundles());
 
-  Browser* iwa_browser = Browser::Create(Browser::CreateParams::CreateForApp(
-      web_app::GenerateApplicationNameFromAppId(url_info1_->app_id()),
-      /*trusted_source=*/false, gfx::Rect(), profile(), /*user_gesture=*/true));
+  Browser* iwa_browser =
+      CreateBrowserWindow(
+          BrowserWindowCreateParams::CreateForApp(
+              web_app::GenerateApplicationNameFromAppId(url_info1_->app_id()),
+              /*trusted_source=*/false, gfx::Rect(), profile(),
+              /*user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
 
   // 1. Navigate a new tab in the in an empty IWA browser to an http: origin.
   //    This should be aborted and instead be opened in the default browser (as

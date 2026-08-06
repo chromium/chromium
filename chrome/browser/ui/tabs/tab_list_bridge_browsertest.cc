@@ -16,6 +16,7 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_test_utils.h"
@@ -658,12 +659,13 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, HighlightTabs) {
 IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest,
                        ContainsTabGroupWhenTabGroupsNotSupported) {
   // App windows don't allow tab groups.
-  Browser::CreateParams params =
-      Browser::CreateParams::CreateForApp("some app", /*trusted_source=*/false,
-                                          gfx::Rect(), browser()->GetProfile(),
-                                          /*user_gesture=*/true);
+  BrowserWindowCreateParams params = BrowserWindowCreateParams::CreateForApp(
+      "some app",
+      /*trusted_source=*/false, gfx::Rect(), browser()->GetProfile(),
+      /*user_gesture=*/true);
   // params.window = window2.release();
-  Browser* browser2 = Browser::Create(params);
+  Browser* browser2 =
+      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
   ui_test_utils::DeprecatedFakeActivateBrowser(browser2);
 
   ASSERT_FALSE(browser2->tab_strip_model()->SupportsTabGroups());

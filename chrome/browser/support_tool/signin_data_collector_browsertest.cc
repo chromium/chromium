@@ -23,6 +23,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/support_tool/data_collector.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/account_id/account_id.h"
 #include "components/feedback/redaction_tool/pii_types.h"
@@ -143,9 +144,12 @@ IN_PROC_BROWSER_TEST_F(SigninDataCollectorBrowserTestAsh, CollectSigninStatus) {
 
 IN_PROC_BROWSER_TEST_F(SigninDataCollectorBrowserTestAsh, FailInIncognitoMode) {
   // Create incognito browser for testing.
-  Browser* incognito_browser = Browser::Create(Browser::CreateParams(
-      browser()->GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
-      true));
+  Browser* incognito_browser =
+      CreateBrowserWindow(BrowserWindowCreateParams(
+                              browser()->GetProfile()->GetPrimaryOTRProfile(
+                                  /*create_if_needed=*/true),
+                              /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
 
   // `SigninDataCollector` for testing.
   SigninDataCollector data_collector(incognito_browser->GetProfile());

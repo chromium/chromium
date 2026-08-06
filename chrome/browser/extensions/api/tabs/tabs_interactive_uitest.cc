@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -248,13 +249,15 @@ void ExtensionWindowLastFocusedTest::ActivateBrowserWindow(
 
 Browser* ExtensionWindowLastFocusedTest::CreateBrowserWithEmptyTab(
     bool as_popup) {
-  Browser* new_browser;
-  if (as_popup) {
-    new_browser = Browser::Create(
-        Browser::CreateParams(Browser::TYPE_POPUP, GetProfile(), true));
-  } else {
-    new_browser = Browser::Create(Browser::CreateParams(GetProfile(), true));
-  }
+  Browser* new_browser =
+      as_popup
+          ? CreateBrowserWindow(BrowserWindowCreateParams(
+                                    BrowserWindowInterface::TYPE_POPUP,
+                                    GetProfile(), /*from_user_gesture=*/true))
+                ->GetBrowserForMigrationOnly()
+          : CreateBrowserWindow(BrowserWindowCreateParams(
+                                    GetProfile(), /*from_user_gesture=*/true))
+                ->GetBrowserForMigrationOnly();
   AddBlankTabAndShow(new_browser);
   return new_browser;
 }

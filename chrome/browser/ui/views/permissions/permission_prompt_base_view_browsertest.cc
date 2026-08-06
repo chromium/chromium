@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/permission_bubble/permission_bubble_test_util.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -127,9 +128,11 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBaseViewBrowserTest,
       BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
 
   // Create a picture-in-picture browser window to request the permission.
-  Browser::CreateParams params(Browser::TYPE_PICTURE_IN_PICTURE, GetProfile(),
-                               true);
-  Browser* pip_browser = Browser::Create(params);
+  BrowserWindowCreateParams params(
+      BrowserWindowInterface::TYPE_PICTURE_IN_PICTURE, GetProfile(),
+      /*from_user_gesture=*/true);
+  Browser* pip_browser =
+      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
   chrome::AddTabAt(pip_browser, GURL(), -1, true);
   pip_browser->GetWindow()->Show();
 

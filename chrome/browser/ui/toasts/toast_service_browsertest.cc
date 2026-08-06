@@ -9,6 +9,7 @@
 #include "chrome/browser/dictation/features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/api/toast_registry.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
@@ -97,8 +98,11 @@ IN_PROC_BROWSER_TEST_F(ToastServiceBrowserTest, ServiceExistForBrowserTypes) {
   EXPECT_TRUE(app_window_features->toast_controller());
 
   Browser* const pip_browser =
-      Browser::Create(Browser::CreateParams::CreateForPictureInPicture(
-          "test_app_name", false, profile, false));
+      CreateBrowserWindow(BrowserWindowCreateParams::CreateForPictureInPicture(
+                              "test_app_name", /*trusted_source=*/false,
+                              profile,
+                              /*user_gesture=*/false))
+          ->GetBrowserForMigrationOnly();
   AddBlankTabAndShow(pip_browser);
   BrowserWindowFeatures* const pip_window_features =
       &pip_browser->GetFeatures();
@@ -106,7 +110,8 @@ IN_PROC_BROWSER_TEST_F(ToastServiceBrowserTest, ServiceExistForBrowserTypes) {
   EXPECT_FALSE(pip_window_features->toast_controller());
 
   Browser* const devtools_browser =
-      Browser::Create(Browser::CreateParams::CreateForDevTools(profile));
+      CreateBrowserWindow(BrowserWindowCreateParams::CreateForDevTools(profile))
+          ->GetBrowserForMigrationOnly();
   AddBlankTabAndShow(devtools_browser);
   BrowserWindowFeatures* const devtools_window_features =
       &devtools_browser->GetFeatures();

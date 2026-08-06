@@ -62,6 +62,7 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
@@ -1602,7 +1603,8 @@ PROFILE_MENU_CLICK_TEST(kActionableItems_MultipleProfiles,
   CreateAdditionalProfile();
   // Open a browser for another profile, and a second browser for the current
   // profile, so the kExitProfileButton is shown.
-  Browser::Create(Browser::CreateParams(other_profile, /*user_gesture=*/true));
+  CreateBrowserWindow(
+      BrowserWindowCreateParams(other_profile, /*from_user_gesture=*/true));
   SetTargetBrowser(CreateBrowser(browser()->GetProfile()));
   RunTest();
 }
@@ -2692,7 +2694,8 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuHatsSurveyTest,
   MockHatsService* other_profile_hats_service = static_cast<MockHatsService*>(
       HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           other_profile, base::BindRepeating(&BuildMockHatsService)));
-  Browser::Create(Browser::CreateParams(other_profile, /*user_gesture=*/true));
+  CreateBrowserWindow(
+      BrowserWindowCreateParams(other_profile, /*from_user_gesture=*/true));
 
   // The survey should be launched for the other profile after switching.
   EXPECT_CALL(
@@ -2821,7 +2824,8 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuHatsSurveyTest,
 
   // Set up another profile.
   Profile* other_profile = CreateAdditionalProfile();
-  Browser::Create(Browser::CreateParams(other_profile, /*user_gesture=*/true));
+  CreateBrowserWindow(
+      BrowserWindowCreateParams(other_profile, /*from_user_gesture=*/true));
 
   // Attempt to select every actionable item in the menu.
   for (const auto& selected_item : kActionableItems_WithAnotherProfile) {

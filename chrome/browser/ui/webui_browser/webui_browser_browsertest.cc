@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -524,8 +525,12 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, SetContentsSizeResizesWindow) {
 
 IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, SetContentsSizeEarlyResizesWindow) {
   // 1) Create a new browser window and add a default tab
-  Browser* new_browser = Browser::Create(Browser::CreateParams(
-      Browser::Type::TYPE_NORMAL, browser()->GetProfile(), true));
+  Browser* new_browser =
+      CreateBrowserWindow(
+          BrowserWindowCreateParams(BrowserWindowInterface::Type::TYPE_NORMAL,
+                                    browser()->GetProfile(),
+                                    /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   chrome::AddTabAt(new_browser, GURL(), -1, true);
 
   auto* window = WebUIBrowserWindow::FromBrowser(new_browser);
@@ -561,8 +566,12 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, DevToolsWindowDoesNotCrash) {
 IN_PROC_BROWSER_TEST_F(WebUIBrowserTest,
                        ActiveTabHasNonZeroSizeOnWindowCreation) {
   // Create a new browser window with a tab.
-  Browser* new_browser = Browser::Create(Browser::CreateParams(
-      Browser::Type::TYPE_NORMAL, browser()->GetProfile(), true));
+  Browser* new_browser =
+      CreateBrowserWindow(
+          BrowserWindowCreateParams(BrowserWindowInterface::Type::TYPE_NORMAL,
+                                    browser()->GetProfile(),
+                                    /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   chrome::AddTabAt(new_browser, GURL(), -1, true);
   new_browser->GetWindow()->Show();
 

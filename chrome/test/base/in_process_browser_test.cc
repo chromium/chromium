@@ -60,6 +60,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
@@ -778,7 +779,10 @@ Browser* InProcessBrowserTest::OpenURLOffTheRecord(Profile* profile,
 // Creates a browser with a single tab (about:blank), waits for the tab to
 // finish loading and shows the browser.
 Browser* InProcessBrowserTest::CreateBrowser(Profile* profile) {
-  Browser* browser = Browser::Create(Browser::CreateParams(profile, true));
+  Browser* browser =
+      CreateBrowserWindow(
+          BrowserWindowCreateParams(profile, /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   AddBlankTabAndShow(browser);
   return browser;
 }
@@ -789,23 +793,33 @@ Browser* InProcessBrowserTest::CreateIncognitoBrowser(Profile* profile) {
     profile = browser()->GetProfile();
   }
   // Create a new browser with using the incognito profile.
-  Browser* incognito = Browser::Create(Browser::CreateParams(
-      profile->GetPrimaryOTRProfile(/*create_if_needed=*/true), true));
+  Browser* incognito = CreateBrowserWindow(BrowserWindowCreateParams(
+                                               profile->GetPrimaryOTRProfile(
+                                                   /*create_if_needed=*/true),
+                                               /*from_user_gesture=*/true))
+                           ->GetBrowserForMigrationOnly();
   AddBlankTabAndShow(incognito);
   return incognito;
 }
 
 Browser* InProcessBrowserTest::CreateBrowserForPopup(Profile* profile) {
-  Browser* browser = Browser::Create(
-      Browser::CreateParams(Browser::TYPE_POPUP, profile, true));
+  Browser* browser =
+      CreateBrowserWindow(
+          BrowserWindowCreateParams(BrowserWindowInterface::TYPE_POPUP, profile,
+                                    /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   AddBlankTabAndShow(browser);
   return browser;
 }
 
 Browser* InProcessBrowserTest::CreateBrowserForApp(const std::string& app_name,
                                                    Profile* profile) {
-  Browser* browser = Browser::Create(Browser::CreateParams::CreateForApp(
-      app_name, false /* trusted_source */, gfx::Rect(), profile, true));
+  Browser* browser =
+      CreateBrowserWindow(BrowserWindowCreateParams::CreateForApp(
+                              app_name, /*trusted_source=*/false, gfx::Rect(),
+                              profile,
+                              /*user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   AddBlankTabAndShow(browser);
   return browser;
 }
@@ -824,7 +838,9 @@ Browser* InProcessBrowserTest::CreateGuestBrowser() {
 
   // Create browser and add tab.
   Browser* browser =
-      Browser::Create(Browser::CreateParams(guest_profile_otr, true));
+      CreateBrowserWindow(BrowserWindowCreateParams(guest_profile_otr,
+                                                    /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   AddBlankTabAndShow(browser);
   return browser;
 }

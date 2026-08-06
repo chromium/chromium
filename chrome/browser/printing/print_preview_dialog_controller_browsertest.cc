@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/browser_manager_service.h"
 #include "chrome/browser/ui/browser_manager_service_factory.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
@@ -213,9 +214,11 @@ class PrintPreviewDialogControllerBrowserTest : public printing::PrintPreviewBro
 
  protected:
   Browser* CreateBrowser(std::unique_ptr<BrowserWindow> window) {
-    Browser::CreateParams params(browser()->GetProfile(), true);
+    BrowserWindowCreateParams params(browser()->GetProfile(),
+                                     /*from_user_gesture=*/true);
     params.window = window.release();
-    Browser* browser = Browser::Create(params);
+    Browser* browser =
+        CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
     browsers_.push_back(browser);
     return browser;
   }

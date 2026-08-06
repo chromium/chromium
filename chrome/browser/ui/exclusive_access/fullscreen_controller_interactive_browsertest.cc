@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
@@ -2110,9 +2111,10 @@ IN_PROC_BROWSER_TEST_F(StartFullscreenInteractiveTest,
   // Create a new browser directly in fullscreen but don't show it yet. This
   // explicitly mimics session restore recovering a fullscreen window better
   // than toggling an unshown browser.
-  Browser::CreateParams params(browser()->GetProfile(), true);
+  BrowserWindowCreateParams params(browser()->GetProfile(),
+                                   /*from_user_gesture=*/true);
   params.initial_show_state = ui::mojom::WindowShowState::kFullscreen;
-  BrowserWindowInterface* new_browser = Browser::Create(params);
+  BrowserWindowInterface* new_browser = CreateBrowserWindow(std::move(params));
 
   // Show the browser and wait for it to become fully initialized.
   AddBlankTabAndShow(new_browser->GetBrowserForMigrationOnly());

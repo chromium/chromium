@@ -67,6 +67,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
@@ -333,8 +334,9 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, OpenURLsPopup) {
   // platform UI toolkit messages, and those messages are not sent during unit
   // testing sessions.
 
-  BrowserWindowInterface* popup = Browser::Create(Browser::CreateParams(
-      Browser::TYPE_POPUP, browser()->GetProfile(), true));
+  BrowserWindowInterface* popup = CreateBrowserWindow(BrowserWindowCreateParams(
+      BrowserWindowInterface::TYPE_POPUP, browser()->GetProfile(),
+      /*from_user_gesture=*/true));
   ASSERT_EQ(popup->GetType(), BrowserWindowInterface::Type::TYPE_POPUP);
 
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
@@ -1354,8 +1356,11 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, StartupPrefSetAsLastAndURLs) {
   SessionStartupPref::SetStartupPref(&profile, startup_pref);
 
   // Open |t3_url| in a tab.
-  Browser* new_browser = Browser::Create(
-      Browser::CreateParams(Browser::TYPE_NORMAL, &profile, true));
+  Browser* new_browser =
+      CreateBrowserWindow(BrowserWindowCreateParams(
+                              BrowserWindowInterface::TYPE_NORMAL, &profile,
+                              /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   TabStripModel* tab_strip_model = new_browser->tab_strip_model();
   ui_test_utils::NavigateToURLWithDisposition(
       new_browser, t3_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -1515,15 +1520,21 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, PRE_UpdateWithTwoProfiles) {
       &profile2, ProfileKeepAliveOrigin::kBrowserWindow);
 
   // Open some urls with the browsers, and close them.
-  Browser* browser1 = Browser::Create(
-      Browser::CreateParams(Browser::TYPE_NORMAL, &profile1, true));
+  Browser* browser1 =
+      CreateBrowserWindow(BrowserWindowCreateParams(
+                              BrowserWindowInterface::TYPE_NORMAL, &profile1,
+                              /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   chrome::NewTab(browser1, NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser1, embedded_test_server()->GetURL("/empty.html")));
   CloseBrowserSynchronously(browser1);
 
-  Browser* browser2 = Browser::Create(
-      Browser::CreateParams(Browser::TYPE_NORMAL, &profile2, true));
+  Browser* browser2 =
+      CreateBrowserWindow(BrowserWindowCreateParams(
+                              BrowserWindowInterface::TYPE_NORMAL, &profile2,
+                              /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   chrome::NewTab(browser2, NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser2, embedded_test_server()->GetURL("/form.html")));
@@ -1649,8 +1660,11 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
   SessionStartupPref::SetStartupPref(&profile_urls, pref_urls);
 
   // Open a page with profile_last.
-  Browser* browser_last = Browser::Create(
-      Browser::CreateParams(Browser::TYPE_NORMAL, &profile_last, true));
+  Browser* browser_last =
+      CreateBrowserWindow(
+          BrowserWindowCreateParams(BrowserWindowInterface::TYPE_NORMAL,
+                                    &profile_last, /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   chrome::NewTab(browser_last, NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser_last, embedded_test_server()->GetURL("/empty.html")));
@@ -1757,12 +1771,20 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, RestoreWithNoStartupWindow) {
       &profile2, ProfileKeepAliveOrigin::kBrowserWindow);
 
   // Open a page with profile1 and profile2.
-  Browser* browser1 = Browser::Create({Browser::TYPE_NORMAL, &profile1, true});
+  Browser* browser1 =
+      CreateBrowserWindow(BrowserWindowCreateParams(
+                              BrowserWindowInterface::TYPE_NORMAL, &profile1,
+                              /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   chrome::NewTab(browser1, NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser1, embedded_test_server()->GetURL("/empty.html")));
 
-  Browser* browser2 = Browser::Create({Browser::TYPE_NORMAL, &profile2, true});
+  Browser* browser2 =
+      CreateBrowserWindow(BrowserWindowCreateParams(
+                              BrowserWindowInterface::TYPE_NORMAL, &profile2,
+                              /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   chrome::NewTab(browser2, NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser2, embedded_test_server()->GetURL("/empty.html")));
@@ -2415,12 +2437,20 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
   DisableWhatsNewPage();
 
   // Open some urls with the browsers, and close them.
-  Browser* browser1 = Browser::Create({Browser::TYPE_NORMAL, &profile1, true});
+  Browser* browser1 =
+      CreateBrowserWindow(BrowserWindowCreateParams(
+                              BrowserWindowInterface::TYPE_NORMAL, &profile1,
+                              /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   chrome::NewTab(browser1, NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser1, embedded_test_server()->GetURL("/title1.html")));
 
-  Browser* browser2 = Browser::Create({Browser::TYPE_NORMAL, &profile2, true});
+  Browser* browser2 =
+      CreateBrowserWindow(BrowserWindowCreateParams(
+                              BrowserWindowInterface::TYPE_NORMAL, &profile2,
+                              /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   chrome::NewTab(browser2, NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser2, embedded_test_server()->GetURL("/title2.html")));
@@ -2685,7 +2715,11 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
 
   // Open some urls with the browsers, and close them.
   SessionServiceFactory::GetForProfileForSessionRestore(&profile1);
-  Browser* browser1 = Browser::Create({Browser::TYPE_NORMAL, &profile1, true});
+  Browser* browser1 =
+      CreateBrowserWindow(BrowserWindowCreateParams(
+                              BrowserWindowInterface::TYPE_NORMAL, &profile1,
+                              /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   chrome::NewTab(browser1, NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser1, embedded_https_test_server().GetURL("/title1.html")));

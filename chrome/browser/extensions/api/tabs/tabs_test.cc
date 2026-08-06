@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
@@ -394,8 +395,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetWindow) {
 
   // Check window type.
   EXPECT_EQ("normal", GetWindowType(browser_window_interface(), extension));
-  Browser* test_browser = Browser::Create(
-      Browser::CreateParams(Browser::TYPE_POPUP, profile(), true));
+  Browser* test_browser =
+      CreateBrowserWindow(BrowserWindowCreateParams(
+                              BrowserWindowInterface::TYPE_POPUP, profile(),
+                              /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   EXPECT_EQ("popup", GetWindowType(test_browser, extension));
   DevToolsWindow* devtools = DevToolsWindowTesting::OpenDevToolsWindowSync(
       GetTabListInterface()->GetTab(0)->GetContents(), false /* is_docked */);
@@ -403,11 +407,17 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetWindow) {
             GetWindowType(DevToolsWindowTesting::Get(devtools)->browser(),
                           extension));
   DevToolsWindowTesting::CloseDevToolsWindowSync(devtools);
-  test_browser = Browser::Create(Browser::CreateParams::CreateForApp(
-      "test-app", true, gfx::Rect(), profile(), true));
+  test_browser = CreateBrowserWindow(BrowserWindowCreateParams::CreateForApp(
+                                         "test-app", /*trusted_source=*/true,
+                                         gfx::Rect(), profile(),
+                                         /*user_gesture=*/true))
+                     ->GetBrowserForMigrationOnly();
   EXPECT_EQ("app", GetWindowType(test_browser, extension));
-  test_browser = Browser::Create(Browser::CreateParams::CreateForAppPopup(
-      "test-app-popup", true, gfx::Rect(), profile(), true));
+  test_browser =
+      CreateBrowserWindow(BrowserWindowCreateParams::CreateForAppPopup(
+                              "test-app-popup", /*trusted_source=*/true,
+                              gfx::Rect(), profile(), /*user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   EXPECT_EQ("popup", GetWindowType(test_browser, extension));
 
   // Incognito.
@@ -1009,8 +1019,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DontCreateTabInClosingPopupWindow) {
   // Test creates new popup window, closes it right away and then tries to open
   // a new tab in it. Tab should not be opened in the popup window, but in a
   // tabbed browser window.
-  Browser* popup_browser = Browser::Create(
-      Browser::CreateParams(Browser::TYPE_POPUP, profile(), true));
+  Browser* popup_browser =
+      CreateBrowserWindow(BrowserWindowCreateParams(
+                              BrowserWindowInterface::TYPE_POPUP, profile(),
+                              /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   int window_id = ExtensionTabUtil::GetWindowId(popup_browser);
   chrome::CloseWindow(popup_browser);
 
@@ -1955,7 +1968,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTestWithApps, MAYBE_FilteredEvents) {
       " \"maxWidth\": 400, \"maxHeight\": 400}}");
 
   Browser* browser_window =
-      Browser::Create(Browser::CreateParams(profile(), true));
+      CreateBrowserWindow(
+          BrowserWindowCreateParams(profile(), /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   AddBlankTabAndShow(browser_window);
 
   DevToolsWindow* devtools_window =

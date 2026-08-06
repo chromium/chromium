@@ -14,6 +14,7 @@
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
@@ -365,17 +366,22 @@ class FooterEnterpriseInteractiveTest : public FooterInteractiveTestBase {
 
     // Create browser and add tab.
     Browser* guest_browser =
-        Browser::Create(Browser::CreateParams(guest_profile_otr, true));
+        CreateBrowserWindow(
+            BrowserWindowCreateParams(guest_profile_otr,
+                                      /*from_user_gesture=*/true))
+            ->GetBrowserForMigrationOnly();
     AddBlankTabAndShow(guest_browser);
     ui_test_utils::BrowserActivationWaiter(guest_browser).WaitForActivation();
     return guest_browser;
   }
 
   Browser* CreateManagedIncognitoBrowser() {
-    Browser* incognito_browser = Browser::Create(
-        Browser::CreateParams(browser()->GetProfile()->GetPrimaryOTRProfile(
-                                  /*create_if_needed=*/true),
-                              true));
+    Browser* incognito_browser =
+        CreateBrowserWindow(BrowserWindowCreateParams(
+                                browser()->GetProfile()->GetPrimaryOTRProfile(
+                                    /*create_if_needed=*/true),
+                                /*from_user_gesture=*/true))
+            ->GetBrowserForMigrationOnly();
     incognito_scoped_browser_management_ =
         std::make_unique<policy::ScopedManagementServiceOverrideForTesting>(
             policy::ManagementServiceFactory::GetForProfile(

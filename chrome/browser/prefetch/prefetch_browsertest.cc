@@ -9,6 +9,7 @@
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -123,7 +124,9 @@ IN_PROC_BROWSER_TEST_F(PrefetchBrowserTest, IncognitoTest) {
   Profile* incognito_profile =
       browser()->GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   Browser* incognito_browser =
-      Browser::Create(Browser::CreateParams(incognito_profile, true));
+      CreateBrowserWindow(BrowserWindowCreateParams(incognito_profile,
+                                                    /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
 
   // Navigate just to have a tab in this window, otherwise there is no
   // WebContents for the incognito browser.

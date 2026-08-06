@@ -8,6 +8,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_manager_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -235,7 +236,9 @@ IN_PROC_BROWSER_TEST_F(BrowserManagerServiceTest,
   ASSERT_NE(otr_profile, nullptr);
 
   Browser* otr_browser =
-      Browser::Create(Browser::CreateParams(otr_profile, true));
+      CreateBrowserWindow(
+          BrowserWindowCreateParams(otr_profile, /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   EXPECT_EQ(global_collection->GetSize(), initial_size + 1);
 
   // Observe the GlobalBrowserCollection to verify close events are emitted.

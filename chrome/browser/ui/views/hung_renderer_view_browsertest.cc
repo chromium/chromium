@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -163,7 +164,9 @@ IN_PROC_BROWSER_TEST_F(HungRendererDialogViewBrowserTest, TwoHungBrowsers) {
       web_contents1->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget();
 
   Browser* browser2 =
-      Browser::Create(Browser::CreateParams(browser1->GetProfile(), true));
+      CreateBrowserWindow(BrowserWindowCreateParams(browser1->GetProfile(),
+                                                    /*from_user_gesture=*/true))
+          ->GetBrowserForMigrationOnly();
   chrome::NewTab(browser2, NewTabTypes::kNoUserAction);
   content::WebContents* web_contents2 =
       browser2->tab_strip_model()->GetActiveWebContents();
