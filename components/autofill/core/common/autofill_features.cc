@@ -868,7 +868,7 @@ BASE_FEATURE(kAutofillReplaceFormElementObserver,
 // Restricts OTP fields detection and fetching to forms that are in a frame
 // with the same TLD+1 as the main frame.
 BASE_FEATURE(kAutofillRestrictOtpToSameTldPlusOne,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // TODO(crbug.com/435646513) - Clean-up after feature lands at 100% Stable.
 // Enables the new experimental server-side signatures for evaluation purposes.
