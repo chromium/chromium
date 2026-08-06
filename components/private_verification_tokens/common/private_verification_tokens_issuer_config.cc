@@ -14,6 +14,7 @@
 #include "base/base64.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
@@ -283,6 +284,36 @@ PrivateVerificationTokensIssuerConfig::LoadFromFile(
 const std::map<url::Origin, IssuerConfig>&
 PrivateVerificationTokensIssuerConfig::config() const {
   return config_;
+}
+
+// static
+scoped_refptr<const PrivateVerificationTokensIssuerConfig>
+PrivateVerificationTokensIssuerConfig::CreateWithCustomIssuer(
+    scoped_refptr<const PrivateVerificationTokensIssuerConfig> base_config,
+    base::DictValue custom_issuer_dict) {
+  std::optional<IssuerConfig> custom_issuer =
+      internal::ParseEntry(custom_issuer_dict);
+  if (!custom_issuer.has_value()) {
+    LOG(WARNING)
+        << "Failed to parse custom PVT issuer from command line dictionary.";
+    return base_config;
+  }
+
+  url::Origin issuer_origin = custom_issuer->public_key.issuer();
+  VLOG(1) << "Custom PVT issuer configured via command line: origin="
+          << issuer_origin.Serialize()
+          << ", batch_size=" << custom_issuer->batch_size
+          << ", version=" << custom_issuer->public_key.version()
+          << ", expiration=" << custom_issuer->public_key.expiration();
+
+  std::map<url::Origin, IssuerConfig> merged_config;
+  if (base_config) {
+    merged_config = base_config->config();
+  }
+  merged_config.insert_or_assign(issuer_origin, std::move(*custom_issuer));
+
+  return base::WrapRefCounted(
+      new PrivateVerificationTokensIssuerConfig(std::move(merged_config)));
 }
 
 }  // namespace private_verification_tokens

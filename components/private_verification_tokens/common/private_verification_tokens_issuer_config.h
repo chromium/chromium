@@ -80,6 +80,14 @@ class PrivateVerificationTokensIssuerConfig
   static scoped_refptr<PrivateVerificationTokensIssuerConfig> LoadFromFile(
       const base::FilePath& path);
 
+  // Creates a new config containing all entries from `base_config` (if
+  // non-null) plus the single custom issuer entry parsed from
+  // `custom_issuer_dict`.
+  static scoped_refptr<const PrivateVerificationTokensIssuerConfig>
+  CreateWithCustomIssuer(
+      scoped_refptr<const PrivateVerificationTokensIssuerConfig> base_config,
+      base::DictValue custom_issuer_dict);
+
   PrivateVerificationTokensIssuerConfig(
       const PrivateVerificationTokensIssuerConfig&) = delete;
   PrivateVerificationTokensIssuerConfig(

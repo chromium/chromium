@@ -947,6 +947,11 @@ BASE_FEATURE(kCookieParseRejectEmptyNameAmbiguous,
 BASE_FEATURE(kEnablePrivateVerificationTokens,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE_PARAM(std::string,
+                   kPrivateVerificationTokensCustomIssuer,
+                   &kEnablePrivateVerificationTokens,
+                   "");
+
 BASE_FEATURE(kAddTLSServerHandshakePadding, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(int,

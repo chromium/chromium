@@ -834,4 +834,64 @@ IN_PROC_BROWSER_TEST_F(PrivateVerificationTokensServiceBrowserTest,
   EXPECT_EQ(service->issuer_config(), config);
 }
 
+class PrivateVerificationTokensServiceCustomIssuerBrowserTest
+    : public PlatformBrowserTest {
+ public:
+  PrivateVerificationTokensServiceCustomIssuerBrowserTest() {
+    const std::vector<uint8_t> serialized_public_key = {1, 2, 3, 4};
+    const std::string encoded_public_key =
+        base::Base64Encode(serialized_public_key);
+    const std::vector<uint8_t> serialized_proof = {5, 6, 7};
+    const std::string encoded_proof = base::Base64Encode(serialized_proof);
+    const std::string custom_issuer_json = base::StringPrintf(
+        R"({
+          "issuerRequestUrl": "https://commandline.example.com/issue",
+          "version": 1,
+          "publicKey": "%s",
+          "publicKeyProof": "%s",
+          "batchSize": 7,
+          "expiration": "2147483647",
+          "redeemers": ["https://s1.commandline.example.com"],
+          "deploymentId": "cmd-deployment-id"
+        })",
+        encoded_public_key.c_str(), encoded_proof.c_str());
+
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        net::features::kEnablePrivateVerificationTokens,
+        {{net::features::kPrivateVerificationTokensCustomIssuer.name,
+          custom_issuer_json}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PrivateVerificationTokensServiceCustomIssuerBrowserTest,
+                       GlobalIssuerConfig_CustomIssuerFromCommandLine) {
+  PrivateVerificationTokensServiceFactory::SetGlobalIssuerConfig(nullptr);
+  auto config =
+      PrivateVerificationTokensServiceFactory::GetGlobalIssuerConfig();
+  ASSERT_TRUE(config);
+  const url::Origin expected_origin =
+      url::Origin::Create(GURL("https://commandline.example.com"));
+  EXPECT_TRUE(config->config().contains(expected_origin));
+
+  const auto& issuer_config = config->config().at(expected_origin);
+  EXPECT_EQ(issuer_config.issuer_request_url,
+            GURL("https://commandline.example.com/issue"));
+  EXPECT_EQ(issuer_config.batch_size, 7);
+  EXPECT_EQ(issuer_config.deployment_id, "cmd-deployment-id");
+  EXPECT_THAT(issuer_config.redeemers,
+              testing::ElementsAre(url::Origin::Create(
+                  GURL("https://s1.commandline.example.com"))));
+
+  const private_verification_tokens::PrivateVerificationTokensPublicKey
+      expected_public_key{expected_origin,
+                          {1, 2, 3, 4},
+                          {5, 6, 7},
+                          base::Time::UnixEpoch() + base::Seconds(2147483647),
+                          1};
+  EXPECT_EQ(issuer_config.public_key, expected_public_key);
+}
+
 }  // namespace

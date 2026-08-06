@@ -608,4 +608,164 @@ TEST_F(PrivateVerificationTokensIssuerConfigTest, LoadFromFile_ValidJson) {
                   url::Origin::Create(GURL("https://s2.example.com"))));
 }
 
+TEST_F(PrivateVerificationTokensIssuerConfigTest,
+       CreateWithCustomIssuer_Valid) {
+  const std::vector<uint8_t> serialized_public_key = {1, 2, 3, 4};
+  const std::string encoded_public_key =
+      base::Base64Encode(serialized_public_key);
+  const std::vector<uint8_t> serialized_proof = {5, 6, 7};
+  const std::string encoded_proof = base::Base64Encode(serialized_proof);
+  const std::string json_entry = base::StringPrintf(
+      R"({
+        "issuerRequestUrl": "https://custom.example.com/issue",
+        "version": 1,
+        "publicKey": "%s",
+        "publicKeyProof": "%s",
+        "batchSize": 4,
+        "expiration": "2147483647",
+        "redeemers": ["https://s1.custom.example.com"],
+        "deploymentId": "test-deployment-id"
+      })",
+      encoded_public_key.c_str(), encoded_proof.c_str());
+
+  std::optional<base::Value> value = base::JSONReader::Read(json_entry, 0);
+  ASSERT_TRUE(value.has_value());
+  ASSERT_TRUE(value->is_dict());
+
+  scoped_refptr<const PrivateVerificationTokensIssuerConfig> config =
+      PrivateVerificationTokensIssuerConfig::CreateWithCustomIssuer(
+          nullptr, value->GetDict().Clone());
+  ASSERT_THAT(config, testing::NotNull());
+  EXPECT_THAT(config->config(), testing::SizeIs(1));
+
+  const url::Origin custom_origin =
+      url::Origin::Create(GURL("https://custom.example.com"));
+  EXPECT_TRUE(config->config().contains(custom_origin));
+  const auto& issuer_config = config->config().at(custom_origin);
+  EXPECT_EQ(issuer_config.issuer_request_url,
+            GURL("https://custom.example.com/issue"));
+  EXPECT_EQ(issuer_config.batch_size, 4);
+  EXPECT_EQ(issuer_config.deployment_id, "test-deployment-id");
+  EXPECT_THAT(issuer_config.redeemers,
+              testing::ElementsAre(
+                  url::Origin::Create(GURL("https://s1.custom.example.com"))));
+
+  const PrivateVerificationTokensPublicKey expected_public_key{
+      custom_origin, serialized_public_key, serialized_proof,
+      base::Time::UnixEpoch() + base::Seconds(2147483647), 1};
+  EXPECT_EQ(issuer_config.public_key, expected_public_key);
+}
+
+TEST_F(PrivateVerificationTokensIssuerConfigTest,
+       CreateWithCustomIssuer_MergeWithBaseConfig) {
+  const std::vector<uint8_t> pk1 = {1, 2, 3};
+  const std::string encoded_pk1 = base::Base64Encode(pk1);
+  const std::vector<uint8_t> proof1 = {4, 5, 6};
+  const std::string encoded_proof1 = base::Base64Encode(proof1);
+  const std::string base_json = base::StringPrintf(
+      R"({
+    "1": {
+      "issuers": [
+        {
+          "issuerRequestUrl": "https://base.com/issue",
+          "version": 1,
+          "publicKey": "%s",
+          "publicKeyProof": "%s",
+          "batchSize": 3,
+          "expiration": "2147483647",
+          "redeemers": ["https://sub.base.com"],
+          "deploymentId": "dep1"
+        }
+      ]
+    }
+  })",
+      encoded_pk1.c_str(), encoded_proof1.c_str());
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath path =
+      temp_dir.GetPath().Append(FILE_PATH_LITERAL("base_config.json"));
+  ASSERT_TRUE(base::WriteFile(path, base_json));
+  scoped_refptr<PrivateVerificationTokensIssuerConfig> base_config =
+      PrivateVerificationTokensIssuerConfig::LoadFromFile(path);
+  ASSERT_THAT(base_config, testing::NotNull());
+
+  const std::vector<uint8_t> pk2 = {7, 8, 9};
+  const std::string encoded_pk2 = base::Base64Encode(pk2);
+  const std::vector<uint8_t> proof2 = {10, 11, 12};
+  const std::string encoded_proof2 = base::Base64Encode(proof2);
+  const std::string custom_entry = base::StringPrintf(
+      R"({
+        "issuerRequestUrl": "https://custom.com/issue",
+        "version": 1,
+        "publicKey": "%s",
+        "publicKeyProof": "%s",
+        "batchSize": 5,
+        "expiration": "2147483647",
+        "redeemers": ["https://sub.custom.com"],
+        "deploymentId": "dep2"
+      })",
+      encoded_pk2.c_str(), encoded_proof2.c_str());
+
+  std::optional<base::Value> value = base::JSONReader::Read(custom_entry, 0);
+  ASSERT_TRUE(value.has_value());
+  ASSERT_TRUE(value->is_dict());
+
+  scoped_refptr<const PrivateVerificationTokensIssuerConfig> merged_config =
+      PrivateVerificationTokensIssuerConfig::CreateWithCustomIssuer(
+          base_config, value->GetDict().Clone());
+  ASSERT_THAT(merged_config, testing::NotNull());
+  EXPECT_THAT(merged_config->config(), testing::SizeIs(2));
+
+  const url::Origin base_origin = url::Origin::Create(GURL("https://base.com"));
+  const url::Origin custom_origin =
+      url::Origin::Create(GURL("https://custom.com"));
+  EXPECT_TRUE(merged_config->config().contains(base_origin));
+  EXPECT_TRUE(merged_config->config().contains(custom_origin));
+
+  // Verify base config entry fields
+  const auto& base_entry = merged_config->config().at(base_origin);
+  EXPECT_EQ(base_entry.issuer_request_url, GURL("https://base.com/issue"));
+  EXPECT_EQ(base_entry.batch_size, 3);
+  EXPECT_EQ(base_entry.deployment_id, "dep1");
+  EXPECT_THAT(
+      base_entry.redeemers,
+      testing::ElementsAre(url::Origin::Create(GURL("https://sub.base.com"))));
+  const PrivateVerificationTokensPublicKey expected_base_pk{
+      base_origin, pk1, proof1,
+      base::Time::UnixEpoch() + base::Seconds(2147483647), 1};
+  EXPECT_EQ(base_entry.public_key, expected_base_pk);
+
+  // Verify custom config entry fields
+  const auto& custom_entry_cfg = merged_config->config().at(custom_origin);
+  EXPECT_EQ(custom_entry_cfg.issuer_request_url,
+            GURL("https://custom.com/issue"));
+  EXPECT_EQ(custom_entry_cfg.batch_size, 5);
+  EXPECT_EQ(custom_entry_cfg.deployment_id, "dep2");
+  EXPECT_THAT(custom_entry_cfg.redeemers,
+              testing::ElementsAre(
+                  url::Origin::Create(GURL("https://sub.custom.com"))));
+  const PrivateVerificationTokensPublicKey expected_custom_pk{
+      custom_origin, pk2, proof2,
+      base::Time::UnixEpoch() + base::Seconds(2147483647), 1};
+  EXPECT_EQ(custom_entry_cfg.public_key, expected_custom_pk);
+}
+
+TEST_F(PrivateVerificationTokensIssuerConfigTest,
+       CreateWithCustomIssuer_InvalidDict) {
+  const std::string invalid_json_entry = R"({
+    "origin": "https://invalid.example.com"
+  })";
+
+  std::optional<base::Value> value =
+      base::JSONReader::Read(invalid_json_entry, 0);
+  ASSERT_TRUE(value.has_value());
+  ASSERT_TRUE(value->is_dict());
+
+  scoped_refptr<const PrivateVerificationTokensIssuerConfig> config =
+      PrivateVerificationTokensIssuerConfig::CreateWithCustomIssuer(
+          nullptr, value->GetDict().Clone());
+  EXPECT_THAT(config, testing::IsNull());
+}
+
 }  // namespace private_verification_tokens
