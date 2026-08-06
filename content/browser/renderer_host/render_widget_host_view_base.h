@@ -195,12 +195,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   virtual ui::FilteredGestureProvider* GetFilteredGestureProviderForTesting();
 
 #if BUILDFLAG(IS_ANDROID)
-  virtual void CopyFromExactSurfaceWithIpcDelay(
-      const gfx::Rect& src_rect,
-      const gfx::Size& output_size,
-      base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback,
-      base::TimeDelta ipc_delay);
-
   // Returns whethere there's a touch sequence active on Viz.
   //  false: There's definitely no active touch sequence on Viz.
   //  true: A touch sequence is likely active on Viz, but could be a false

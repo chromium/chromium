@@ -126,8 +126,7 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
       base::OnceCallback<
           void(const base::expected<viz::CopyOutputBitmapWithMetadata,
                                     viz::CopyOutputResult::Error>&)> callback,
-      bool capture_exact_surface_id,
-      base::TimeDelta ipc_delay);
+      bool capture_exact_surface_id);
   bool CanCopyFromCompositingSurface() const;
 
   // Should only be called when the host has a content layer. Use this for one-

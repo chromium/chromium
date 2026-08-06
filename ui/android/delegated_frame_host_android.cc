@@ -169,8 +169,7 @@ void DelegatedFrameHostAndroid::CopyFromCompositingSurface(
     base::OnceCallback<
         void(const base::expected<viz::CopyOutputBitmapWithMetadata,
                                   viz::CopyOutputResult::Error>&)> callback,
-    bool capture_exact_surface_id,
-    base::TimeDelta ipc_delay) {
+    bool capture_exact_surface_id) {
   DCHECK(CanCopyFromCompositingSurface());
 
   const viz::SurfaceId surface_id(frame_sink_id_, local_surface_id_);
@@ -203,7 +202,6 @@ void DelegatedFrameHostAndroid::CopyFromCompositingSurface(
                     .Run(scoped_bitmap.GetOutScopedBitmapAndMetadata());
               },
               std::move(callback), std::move(keep_surface_alive)));
-  request->set_send_result_delay(ipc_delay);
 
   // The callback must be executed on the UI thread. Since the result callback
   // can be dispatched on any thread by default, explicitly set the result task

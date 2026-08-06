@@ -27,13 +27,6 @@ const double kPercentageOfRamToUse = 0.5;
 
 const base::TimeDelta kInvisibleCacheCleanupDelay = base::Minutes(7);
 
-// SendResult is an expensive operation and the start of a navigation is a busy
-// time. Delaying SendResult reduces chances of contention.
-// The value can be based on human reaction times and LCP latencies and it can
-// be adjusted based on the incidence of the value SentScreenshotRequest in
-// Navigation.GestureTransition.CacheHitOrMissReason.
-const base::TimeDelta kScreenshotSendResultDelay = base::Milliseconds(400);
-
 size_t GetMaxCacheSizeInBytes() {
   constexpr int kLowEndMax = 32 * 1024 * 1024;  // 32MB
   constexpr int kOtherMax = 128 * 1024 * 1024;  // 128MB
@@ -99,11 +92,6 @@ size_t NavigationTransitionConfig::ComputeCacheSizeInBytes() {
 base::TimeDelta
 NavigationTransitionConfig::GetCleanupDelayForInvisibleCaches() {
   return kInvisibleCacheCleanupDelay;
-}
-
-// static
-base::TimeDelta NavigationTransitionConfig::ScreenshotSendResultDelay() {
-  return kScreenshotSendResultDelay;
 }
 
 // static

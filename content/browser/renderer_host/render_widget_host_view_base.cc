@@ -363,18 +363,6 @@ RenderWidgetHostViewBase::GetFilteredGestureProviderForTesting() {
   return nullptr;
 }
 
-#if BUILDFLAG(IS_ANDROID)
-void RenderWidgetHostViewBase::CopyFromExactSurfaceWithIpcDelay(
-    const gfx::Rect& src_rect,
-    const gfx::Size& output_size,
-    base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback,
-    base::TimeDelta ipc_delay) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  std::move(callback).Run(base::unexpected<content::CopyFromSurfaceError>(
-      content::CopyFromSurfaceError::kNotImplemented));
-}
-#endif
-
 std::unique_ptr<viz::ClientFrameSinkVideoCapturer>
 RenderWidgetHostViewBase::CreateVideoCapturer() {
   std::unique_ptr<viz::ClientFrameSinkVideoCapturer> video_capturer =

@@ -1998,8 +1998,7 @@ void RenderWidgetHostViewAndroid::CopyFromSurface(
             std::move(callback).Run(ToCopyFromSurfaceResult(result));
           },
           std::move(callback)),
-      /*capture_exact_surface_id=*/false,
-      /*ipc_delay=*/base::TimeDelta());
+      /*capture_exact_surface_id=*/false);
 }
 
 ui::FilteredGestureProvider*
@@ -2011,15 +2010,6 @@ void RenderWidgetHostViewAndroid::CopyFromExactSurface(
     const gfx::Rect& src_rect,
     const gfx::Size& output_size,
     base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback) {
-  CopyFromExactSurfaceWithIpcDelay(src_rect, output_size, std::move(callback),
-                                   /*ipc_delay=*/base::TimeDelta());
-}
-
-void RenderWidgetHostViewAndroid::CopyFromExactSurfaceWithIpcDelay(
-    const gfx::Rect& src_rect,
-    const gfx::Size& output_size,
-    base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback,
-    base::TimeDelta ipc_delay) {
   CHECK(IsSurfaceAvailableForCopy())
       << "To copy the exact surface, it must be available for copy (embedded "
          "via the browser).";
@@ -2039,7 +2029,7 @@ void RenderWidgetHostViewAndroid::CopyFromExactSurfaceWithIpcDelay(
             std::move(callback).Run(ToCopyFromSurfaceResult(result));
           },
           std::move(callback)),
-      /*capture_exact_surface_id=*/true, ipc_delay);
+      /*capture_exact_surface_id=*/true);
 }
 
 void RenderWidgetHostViewAndroid::CopySharedImageFromExactSurface(

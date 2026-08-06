@@ -43,11 +43,6 @@ BASE_FEATURE(kAndroidDumpForBadCompositedUiState,
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// When there is a screenshot request against a surface, issue the copy request
-// into a shared image.
-BASE_FEATURE(kBackForwardTransitionsSameDocSharedImage,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, each render pass eligible for scanout gets its own BufferQueue.
 // This allows for BufferQueue to be used in scenarios like partial delegated
 // compositing, where no root render pass is present.
@@ -385,11 +380,6 @@ int DrawQuadSplitLimit() {
       kDrawQuadSplitLimit, kDrawQuadSplit, kDefaultDrawQuadSplitLimit);
   return std::clamp(split_limit, kMinDrawQuadSplitLimit,
                     kMaxDrawQuadSplitLimit);
-}
-
-bool IsBackForwardTransitionsSameDocSharedImageEnabled() {
-  return base::FeatureList::IsEnabled(
-      kBackForwardTransitionsSameDocSharedImage);
 }
 
 bool IsDelegatedCompositingEnabled() {
