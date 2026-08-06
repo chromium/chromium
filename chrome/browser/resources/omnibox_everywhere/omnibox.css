@@ -28,6 +28,7 @@
       --color-searchbox-results-foreground, #1f1f1f);
   --color-searchbox-selection-background: rgba(26, 115, 232, 0.2);
   --color-searchbox-selection-foreground: #1f1f1f;
+  --cr-composebox-background-color: var(--color-searchbox-background);
   border: var(--cr-searchbox-border, none);
 
   border-radius: var(--cr-searchbox-border-radius);

@@ -15,7 +15,7 @@ import type {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemot
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSearchboxBrowserProxy} from './test_searchbox_browser_proxy.js';
 
@@ -26,8 +26,10 @@ suite('OmniboxEverywhereOmniboxTest', () => {
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
-      ntpRealboxNextEnabled: true,
+      isFuseboxEnabled: true,
       searchboxVoiceSearch: true,
+      searchboxShowComposeEntrypoint: true,
+      ntpRealboxDynamicAiModeButton: true,
       composeboxContextDragAndDropEnabled: true,
     });
     testProxy = new TestSearchboxBrowserProxy();
@@ -112,6 +114,59 @@ suite('OmniboxEverywhereOmniboxTest', () => {
 
         assertTrue(eventFired);
       });
+
+  test(
+      'configures animated glow and compose button properties correctly',
+      () => {
+        const glow = omnibox.shadowRoot.querySelector('search-animated-glow');
+        assertTrue(!!glow);
+
+        const composeButton =
+            omnibox.shadowRoot.querySelector('#composeButton');
+        assertTrue(!!composeButton);
+      });
+
+  test(
+      'updates has-user-input on compose button when text changes',
+      async () => {
+        const composeButton =
+            omnibox.shadowRoot.querySelector('#composeButton')!;
+        assertTrue(!!composeButton);
+        assertFalse(composeButton.hasAttribute('has-user-input'));
+
+        const input = omnibox.shadowRoot.querySelector('#input')!;
+        input.dispatchEvent(new CustomEvent('searchbox-input-text-updated', {
+          detail: {value: 'test query', isComposing: false},
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        assertTrue(composeButton.hasAttribute('has-user-input'));
+
+        input.dispatchEvent(new CustomEvent('searchbox-input-text-updated', {
+          detail: {value: '', isComposing: false},
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        assertFalse(composeButton.hasAttribute('has-user-input'));
+      });
+
+  test('clicking compose button dispatches open-composebox event', async () => {
+    const whenOpenComposebox = eventToPromise('open-composebox', omnibox);
+
+    const composeButton =
+        omnibox.shadowRoot.querySelector<HTMLElement>('#composeButton')!;
+    assertTrue(!!composeButton);
+    composeButton.dispatchEvent(new CustomEvent('compose-click', {
+      bubbles: true,
+      composed: true,
+    }));
+
+    await whenOpenComposebox;
+  });
 });
 
 suite('OmniboxEverywhereComposeboxTest', () => {
