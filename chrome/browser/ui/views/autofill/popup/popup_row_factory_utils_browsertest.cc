@@ -173,12 +173,23 @@ const Suggestion kBnplSuggestions[] = {
 
 struct AtMemoryTestParam {
   std::string name;
-  Suggestion (*generator)();
+  base::RepeatingCallback<Suggestion()> generator;
 };
 
 const AtMemoryTestParam kAtMemorySuggestions[] = {
     {"AtMemory_source_attribution",
-     &AtMemoryManager::CreateSourceAttributionSuggestion}};
+     base::BindRepeating(&AtMemoryManager::CreateSourceAttributionSuggestion)},
+    {"AtMemory_fetching",
+     base::BindRepeating(&AtMemoryManager::CreateFetchingSuggestion)},
+    {"AtMemory_search_affordance", base::BindRepeating([]() {
+       return AtMemoryManager::CreateSearchAffordanceSuggestion(u"passport");
+     })},
+    {"AtMemory_no_connection", base::BindRepeating([]() {
+       return AtMemoryManager::CreateNoConnectionSuggestion(u"passport");
+     })},
+    {"AtMemory_generic_error",
+     base::BindRepeating(&AtMemoryManager::CreateGenericErrorSuggestion)},
+};
 
 class MockPasswordFaviconLoader : public PasswordFaviconLoader {
  public:
@@ -361,7 +372,7 @@ class AtMemoryCreatePopupRowViewTest
 
 IN_PROC_BROWSER_TEST_P(AtMemoryCreatePopupRowViewTest, SuggestionRowUiTest) {
   const auto& [param, selection] = GetParam();
-  CreateRowView(param.generator(), selection);
+  CreateRowView(param.generator.Run(), selection);
   ShowAndVerifyUi();
 }
 
