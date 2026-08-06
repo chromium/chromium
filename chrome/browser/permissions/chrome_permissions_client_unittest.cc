@@ -260,9 +260,11 @@ TEST_F(ChromePermissionsClientTest, CanBypassEmbeddingOriginCheckWebUI) {
   EXPECT_TRUE(client->CanBypassEmbeddingOriginCheck(
       dummy_requesting, chrome::ChromeUINewTabPageURLAsGURL()));
 
-  // Omnibox Popup & Contextual Tasks:
+  // Omnibox Popup, Omnibox Everywhere & Contextual Tasks:
   EXPECT_TRUE(client->CanBypassEmbeddingOriginCheck(
       dummy_requesting, GURL(chrome::kChromeUIOmniboxPopupURL)));
+  EXPECT_TRUE(client->CanBypassEmbeddingOriginCheck(
+      dummy_requesting, GURL(chrome::kChromeUIOmniboxEverywhereURL)));
   EXPECT_TRUE(client->CanBypassEmbeddingOriginCheck(
       dummy_requesting, GURL(chrome::kChromeUIContextualTasksURL)));
 
@@ -318,6 +320,14 @@ TEST_F(ChromePermissionsClientTest, GetCanonicalOriginOverrideWebUI) {
       client->GetCanonicalOriginOverride(omnibox_url, omnibox_url);
   EXPECT_TRUE(omnibox_override.has_value());
   EXPECT_EQ(omnibox_override->host(), "www.google.com");
+
+  // Omnibox everywhere embedder + requester -> Overridden to DSE (Google)
+  // origin:
+  GURL omnibox_everywhere_url(chrome::kChromeUIOmniboxEverywhereURL);
+  std::optional<GURL> everywhere_override = client->GetCanonicalOriginOverride(
+      omnibox_everywhere_url, omnibox_everywhere_url);
+  EXPECT_TRUE(everywhere_override.has_value());
+  EXPECT_EQ(everywhere_override->host(), "www.google.com");
 
   // Contextual tasks embedder + requester -> Overridden to DSE (Google) origin:
   std::optional<GURL> contextual_override = client->GetCanonicalOriginOverride(
@@ -407,6 +417,15 @@ TEST_F(ChromePermissionsClientTest, IsPrivilegedInternalWebUIWithSubpaths) {
                                        url::Origin::Create(omnibox_subpath));
   EXPECT_TRUE(client->IsPrivilegedInternalWebUI(
       web_contents(), omnibox_subpath, /*already_overrode_requester=*/false));
+  EXPECT_TRUE(client->IsPrivilegedInternalWebUIForUIRouting(web_contents()));
+
+  GURL everywhere_subpath = GURL(chrome::kChromeUIOmniboxEverywhereURL)
+                                .Resolve("subpath/page?param=1#hash");
+  content::OverrideLastCommittedOrigin(web_contents()->GetPrimaryMainFrame(),
+                                       url::Origin::Create(everywhere_subpath));
+  EXPECT_TRUE(
+      client->IsPrivilegedInternalWebUI(web_contents(), everywhere_subpath,
+                                        /*already_overrode_requester=*/false));
   EXPECT_TRUE(client->IsPrivilegedInternalWebUIForUIRouting(web_contents()));
 
   content::OverrideLastCommittedOrigin(

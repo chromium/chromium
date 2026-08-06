@@ -15,7 +15,9 @@
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/permissions/permission_request_manager.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/buildflags/buildflags.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/ozone_buildflags.h"
@@ -28,6 +30,10 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "extensions/browser/view_type_utils.h"
+#endif
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
@@ -270,6 +276,27 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
                            initial_origin;
                   }),
                   InvokeViaHotkey(), CheckWidgetVisible(false));
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest, VoicePermissionState) {
+  OmniboxEverywhereUIManager ui_manager;
+  ui_manager.ShowForProfile(browser()->GetProfile(),
+                            browser()->GetWindow()->GetNativeWindow());
+
+  ASSERT_TRUE(ui_manager.contents_wrapper_for_testing());
+  content::WebContents* contents =
+      ui_manager.contents_wrapper_for_testing()->web_contents();
+  ASSERT_TRUE(contents);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  EXPECT_EQ(extensions::GetViewType(contents),
+            extensions::mojom::ViewType::kComponent);
+#endif
+  EXPECT_TRUE(permissions::PermissionRequestManager::FromWebContents(contents));
+
+  views::test::WidgetDestroyedWaiter waiter(ui_manager.widget());
+  ui_manager.Close();
+  waiter.Wait();
 }
 
 }  // namespace omnibox_everywhere
