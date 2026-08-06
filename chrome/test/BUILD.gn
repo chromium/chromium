@@ -5885,6 +5885,7 @@ test("unit_tests") {
     ]
     deps += [
       "//chrome/browser/compose:unit_tests",
+      "//chrome/browser/ui/views/compose",
       "//chrome/common/compose",
       "//components/compose/core/browser",
       "//components/optimization_guide/core",
@@ -9448,6 +9449,7 @@ if (!is_android && !is_chromeos_device) {
       sources += [ "../browser/ui/views/compose/compose_interactive_uitest.cc" ]
 
       deps += [
+        "//chrome/browser/ui/views/compose",
         "//components/compose/core/browser",
         "//components/compose/core/browser:features",
       ]

@@ -884,6 +884,7 @@ static_library("ui") {
     "//components/language/core/common",
     "//components/language_detection/core",
     "//components/lens",
+    "//components/lens:buildflags",
     "//components/lens:enterprise_policy",
     "//components/live_caption:constants",
     "//components/live_caption:utils",
@@ -4700,17 +4701,12 @@ static_library("ui") {
     }
 
     if (enable_compose) {
-      sources += [
-        "views/compose/chrome_compose_dialog_controller.cc",
-        "views/compose/chrome_compose_dialog_controller.h",
-        "views/compose/compose_dialog_view.cc",
-        "views/compose/compose_dialog_view.h",
-      ]
-
       deps += [
-        "//chrome/browser/renderer_context_menu",
-        "//components/compose/core/browser",
+        "//chrome/browser/ui/views/compose",
+        "//chrome/browser/ui/views/compose:impl",
       ]
+      allow_circular_includes_from +=
+          [ "//chrome/browser/ui/views/compose:impl" ]
     }
 
     if (enable_dice_support) {

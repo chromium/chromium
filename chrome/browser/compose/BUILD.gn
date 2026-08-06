@@ -185,6 +185,7 @@ if (!is_android) {
       "//chrome/browser/ui/hats:test_support",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/views/compose",
       "//chrome/common:constants",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
