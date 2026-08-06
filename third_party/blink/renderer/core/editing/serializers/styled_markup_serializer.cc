@@ -443,9 +443,7 @@ Node* StyledMarkupTraverser<Strategy>::Traverse(Node* start_node,
         continue;
       }
       bool should_skip_unselectable_node = false;
-      if (RuntimeEnabledFeatures::
-              SkipUnselectableContentInSerializationEnabled() &&
-          ShouldSkipUnselectableContent() && n->GetLayoutObject() &&
+      if (ShouldSkipUnselectableContent() && n->GetLayoutObject() &&
           !n->GetLayoutObject()->IsSelectable()) {
         should_skip_unselectable_node = !IsSelectableOrHasSelectableDescendants(
             *n, has_selectable_descendants);

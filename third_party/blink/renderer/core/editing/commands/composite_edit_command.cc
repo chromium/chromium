@@ -1605,9 +1605,7 @@ std::pair<Position, Position> CompositeEditCommand::ComputeNormalizedMoveRange(
   // the end and before the start are treated as though they were rendered.
   Position start = MostForwardCaretPosition(start_of_paragraph);
   Position end = MostBackwardCaretPosition(end_of_paragraph);
-  if (RuntimeEnabledFeatures::
-          AvoidNormalizingVisiblePositionsWhenStartEqualsEndEnabled() &&
-      start_of_paragraph == end_of_paragraph) {
+  if (start_of_paragraph == end_of_paragraph) {
     start = start_of_paragraph;
     end = end_of_paragraph;
   }

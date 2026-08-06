@@ -280,10 +280,7 @@ ReplacementFragment::ReplacementFragment(Document* document,
                                        evt->GetText());
 
     // Fragment may have become trivial after recreation from text
-    if (RuntimeEnabledFeatures::
-            UpdateTrivalTextAfterFragmentCreationFromTextEnabled()) {
-      UpdateTrivialReplacementText();
-    }
+    UpdateTrivialReplacementText();
 
     if (!fragment_->HasChildren())
       return;

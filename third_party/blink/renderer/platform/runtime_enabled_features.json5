@@ -815,13 +815,6 @@
       status: "stable",
     },
     {
-      // If the start and end positions are the same in MoveParagraph,
-      // there is no need to collapse the whitespace between them.
-      // https://crbug.com/406053617
-      name: "AvoidNormalizingVisiblePositionsWhenStartEqualsEnd",
-      status: "stable",
-    },
-    {
       // Disables the synchronous focus blur behavior when a focused form control
       // is disabled.
       name: "AvoidSynchronousBlurOnDisabledAttributeChange",
@@ -1369,14 +1362,6 @@
       name: "ConnectionAllowlistEmbeddedEnforcement",
       origin_trial_feature_name: "ConnectionAllowlistEmbeddedEnforcement",
       status: "experimental",
-    },
-    {
-      // Fix for https://crbug.com/40659076. When enabled, queryCommandState for
-      // 'subscript' or 'superscript' with a caret selection will consider
-      // ancestor <sub> or <sup> elements, matching the behavior for range
-      // selections.
-      name: "ConsiderSubOrSuperScriptAncestorAlignForCaretSelection",
-      status: "stable"
     },
     {
       name: "ContactsManager",
@@ -3090,11 +3075,6 @@
       name: "FixMarkerSuppressionForAppearanceAuto",
     },
     {
-      // crbug.com/411739501
-      name: "FixNextPositionCalculationInInsertList",
-      status: "stable",
-    },
-    {
       // Guard the kStart / kEnd / kStartAndEnd branches of
       // LayoutSelection::ComputeSelectionStatus against std::nullopt
       // start_offset / end_offset in SelectionPaintRange.
@@ -3455,12 +3435,6 @@
     {
       name: "GroupEffect",
       status: "test",
-    },
-    {
-      // Enables Skipping children for invisible select elements containing
-      // non-editable node while calculating end of paragraph.
-      name: "HandleDeletionAtStartAndEndBoundaryContainingHiddenElement",
-      status: "stable",
     },
     {
       name: "HandleDisconnectedSelectionDuringDOMChanges",
@@ -4010,14 +3984,6 @@
       base_feature: "none",
     },
     {
-      // Enables macOS system-level clipboard permission checking using
-      // NSPasteboard.accessBehavior API (available on macOS 15.4+).
-      // This allows web applications to respect user's clipboard privacy
-      // settings in System Settings > Privacy & Security > Clipboard.
-      name: "MacSystemClipboardPermissionCheck",
-      status: {"Mac": "stable", "default": ""},
-    },
-    {
       name: "ManagedConfiguration",
       status: "stable",
     },
@@ -4049,14 +4015,6 @@
       // Enables mirroring for stretchy and large MathML operators when
       // the text direction is right to left.
       name: "MathMLOperatorRTLMirroring",
-      status: "stable",
-    },
-    {
-      // Enables MathML ancestor context preservation during copy-paste
-      // serialization. When enabled, copying partial MathML content includes
-      // the containing <math> element to preserve semantic context and
-      // namespace declarations.
-      name: "MathMLSerializationOnCopy",
       status: "stable",
     },
     {
@@ -5896,11 +5854,6 @@
       name: "SkipTouchEventFilter",
       status: "stable",
     },
-    // Fix for crbug.com/41393366
-    {
-      name: "SkipUnselectableContentInSerialization",
-      status: "stable",
-    },
     {
       // See crbug.com/446113738.
       name: "SkipUnselectableElementsInParagraphBoundary",
@@ -6564,13 +6517,6 @@
       public: true,
     },
     {
-      // Traverse flat tree to find start and end of paragraph in delete
-      // selection to handle slot distribution in details.
-      // See https://crbug.com/413595949
-      name: "TraverseFlatTreeToHandleSlots",
-      status: "stable",
-    },
-    {
       // When enabled, treats the initial navigation to about:blank#fragment in
       // an MHTML document as a cross-document navigation.
       //
@@ -6673,13 +6619,6 @@
     {
       name: "UpdateSelectionOnNodeInsertion"
     },
-    // Fix for https://crbug.com/436624850
-    // Ensures trivial_text_ is updated after fragment creation from text
-    // by calling UpdateTrivialReplacementText()
-    {
-      name: "UpdateTrivalTextAfterFragmentCreationFromText",
-      status: "stable",
-    },
     {
       name: "URLPatternCompareComponent",
       status: "experimental",
@@ -6757,11 +6696,6 @@
       // trial phase while preserving a partner-less-effort path for future
       // deprecation.
       origin_trial_feature_name: "UserMediaElement",
-    },
-    {
-      // Fix for https://crbug.com/421314614
-      name: "UseSelectionInDOMTreeAnchorInExtendSelection",
-      status: "stable"
     },
     {
       name: "UseShadowHostStyleCheckEditable",

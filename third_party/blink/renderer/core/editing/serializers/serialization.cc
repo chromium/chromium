@@ -95,7 +95,6 @@
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_client.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -270,13 +269,11 @@ Element* HighestAncestorToWrapMarkup(
       // Retain MathML structure by including ancestor <math> elements.
       // This ensures that when copying MathML content, the semantic context
       // is preserved even for partial selections within math expressions.
-      if (RuntimeEnabledFeatures::MathMLSerializationOnCopyEnabled()) {
-        if (auto* highest_math_element =
-                To<MathMLElement>(HighestEnclosingNodeOfType(
-                    first_node_position, IsMathmlMathElement,
-                    kCanCrossEditingBoundary))) {
-          special_common_ancestor = highest_math_element;
-        }
+      if (auto* highest_math_element =
+              To<MathMLElement>(HighestEnclosingNodeOfType(
+                  first_node_position, IsMathmlMathElement,
+                  kCanCrossEditingBoundary))) {
+        special_common_ancestor = highest_math_element;
       }
     }
   }

@@ -979,9 +979,7 @@ EditingTriState EditingStyle::TriStateOfStyle(
 
   if (selection.IsCaret()) {
     EditingStyle* style_at_start =
-        RuntimeEnabledFeatures::
-                    ConsiderSubOrSuperScriptAncestorAlignForCaretSelectionEnabled() &&
-                is_vertical_align_
+        is_vertical_align_
             ? EditingStyleUtilities::CreateStyleAtSelectionStart(selection,
                                                                  false, Style())
             : EditingStyleUtilities::CreateStyleAtSelectionStart(selection);

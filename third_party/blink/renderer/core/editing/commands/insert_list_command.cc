@@ -304,9 +304,7 @@ void InsertListCommand::DoApply(EditingState* editing_state) {
       // in order to avoid infinite loop causing a renderer freeze.
       // TODO(crbug.com/417631316): Below change fixes the renderer freeze but
       // it uncovers another bug where the empty span is not unlistified.
-      if (RuntimeEnabledFeatures::
-              FixNextPositionCalculationInInsertListEnabled() &&
-          !start_of_current_paragraph.IsOrphan() &&
+      if (!start_of_current_paragraph.IsOrphan() &&
           start_of_next_paragraph.DeepEquivalent() <=
               start_of_current_paragraph.DeepEquivalent()) {
         start_of_current_paragraph = NextPositionOf(start_of_next_paragraph);

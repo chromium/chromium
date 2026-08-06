@@ -1132,14 +1132,10 @@ void DeleteSelectionCommand::MergeParagraphs(EditingState* editing_state) {
   if (merge_destination.DeepEquivalent() == merge_origin.DeepEquivalent())
     return;
 
-  VisiblePosition start_of_paragraph_to_move = StartOfParagraph(merge_origin);
-  VisiblePosition end_of_paragraph_to_move =
-      EndOfParagraph(merge_origin, kCanSkipOverEditingBoundary);
-  if (RuntimeEnabledFeatures::TraverseFlatTreeToHandleSlotsEnabled()) {
-    start_of_paragraph_to_move = StartOfParagraphInFlatTree(merge_origin);
-    end_of_paragraph_to_move =
-        EndOfParagraphInFlatTree(merge_origin, kCanSkipOverEditingBoundary);
-  }
+  const VisiblePosition start_of_paragraph_to_move =
+      StartOfParagraphInFlatTree(merge_origin);
+  const VisiblePosition end_of_paragraph_to_move =
+      EndOfParagraphInFlatTree(merge_origin, kCanSkipOverEditingBoundary);
 
   if (merge_destination.DeepEquivalent() ==
       end_of_paragraph_to_move.DeepEquivalent())

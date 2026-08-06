@@ -38,9 +38,6 @@ void ClipboardHostImpl::WriteStringToFindPboard(const std::u16string& text) {
 
 void ClipboardHostImpl::GetPlatformPermissionState(
     GetPlatformPermissionStateCallback callback) {
-  // Note: This method is only called when the MacSystemClipboardPermissionCheck
-  // runtime flag is enabled in the renderer process.
-
   // Check macOS system privacy settings for programmatic clipboard access using
   // the accessBehavior property available in macOS 15.4+. These settings only
   // affect programmatic access - direct user actions like ⌘V always work.

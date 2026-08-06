@@ -324,17 +324,14 @@ void ClipboardPromise::HandleReadWithPermission(
   }
 
 #if BUILDFLAG(IS_MAC)
-  // Check macOS platform permission state if the runtime flag is enabled
-  if (RuntimeEnabledFeatures::MacSystemClipboardPermissionCheckEnabled()) {
-    system_clipboard->GetPlatformPermissionState(
-        BindOnce(&ClipboardPromise::OnPlatformPermissionResultForRead,
-                 WrapPersistent(this)));
-    return;
-  }
-#endif
-  // Non-Mac platforms or when flag is disabled proceed directly
+  // Check macOS platform permission state.
+  system_clipboard->GetPlatformPermissionState(
+      BindOnce(&ClipboardPromise::OnPlatformPermissionResultForRead,
+               WrapPersistent(this)));
+#else
   system_clipboard->ReadAvailableCustomAndStandardFormats(BindOnce(
       &ClipboardPromise::OnReadAvailableFormatNames, WrapPersistent(this)));
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 void ClipboardPromise::ResolveRead() {
@@ -478,24 +475,21 @@ void ClipboardPromise::HandleReadTextWithPermission(
   }
 
 #if BUILDFLAG(IS_MAC)
-  // Check macOS platform permission state if the runtime flag is enabled
-  if (RuntimeEnabledFeatures::MacSystemClipboardPermissionCheckEnabled()) {
-    system_clipboard->GetPlatformPermissionState(
-        BindOnce(&ClipboardPromise::OnPlatformPermissionResultForReadText,
-                 WrapPersistent(this)));
-    return;
-  }
-#endif
+  // Check macOS platform permission state.
+  system_clipboard->GetPlatformPermissionState(
+      BindOnce(&ClipboardPromise::OnPlatformPermissionResultForReadText,
+               WrapPersistent(this)));
+#else
   if (RejectIfClipboardChangedSincePasteStart(*system_clipboard)) {
     return;
   }
 
-  // Non-Mac platforms (or after the macOS platform permission check) proceed
-  // directly to an asynchronous OS clipboard read so the renderer main thread
-  // is not blocked. Tracks crbug.com/474131935.
+  // Non-Mac platforms proceed directly to an asynchronous OS clipboard read so
+  // the renderer main thread is not blocked. Tracks crbug.com/474131935.
   system_clipboard->ReadPlainText(
       mojom::blink::ClipboardBuffer::kStandard,
       BindOnce(&ClipboardPromise::OnReadPlainText, WrapPersistent(this)));
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 #if BUILDFLAG(IS_MAC)

@@ -540,12 +540,8 @@ void DomSelection::extend(Node* node,
 
   // 3. Let oldAnchor and oldFocus be the context object's anchor and focus, and
   // let newFocus be the boundary point (node, offset).
-  Position old_anchor(anchorNode(), anchorOffset());
-  if (RuntimeEnabledFeatures::
-          UseSelectionInDOMTreeAnchorInExtendSelectionEnabled()) {
-    old_anchor =
-        Selection().GetSelectionInDomTree().Anchor().ToOffsetInAnchor();
-  }
+  const Position old_anchor =
+      Selection().GetSelectionInDomTree().Anchor().ToOffsetInAnchor();
 
   DCHECK(!old_anchor.IsNull());
   const Position new_focus(node, offset);
