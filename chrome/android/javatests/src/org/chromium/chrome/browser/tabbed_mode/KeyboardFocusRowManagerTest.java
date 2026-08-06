@@ -30,6 +30,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -214,6 +215,7 @@ public class KeyboardFocusRowManagerTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/543500090")
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @Feature("KeyboardShortcuts")
     @EnableFeatures({
