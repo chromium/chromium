@@ -30,7 +30,7 @@ import org.chromium.ui.color.AndroidColorRole;
 import org.chromium.ui.util.ColorUtils;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.WEB_UI_NTP_ANDROID_THEMING)
+@EnableFeatures(ChromeFeatureList.WEB_UI_ANDROID_THEMING)
 public class ColorProviderBridgeImplTest {
 
     private TestActivity mActivity;
@@ -115,7 +115,7 @@ public class ColorProviderBridgeImplTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.WEB_UI_NTP_ANDROID_THEMING)
+    @DisableFeatures(ChromeFeatureList.WEB_UI_ANDROID_THEMING)
     public void testGetThemeColors_FlagDisabled_ReturnsEmptyArray() {
         ColorProviderBridgeImpl bridge = new ColorProviderBridgeImpl();
         long[] result = bridge.getThemeColors(mActivity);
