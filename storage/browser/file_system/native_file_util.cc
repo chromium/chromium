@@ -269,7 +269,7 @@ base::File::Error NativeFileUtil::Touch(const base::FilePath& path,
 base::File::Error NativeFileUtil::Truncate(const base::FilePath& path,
                                            int64_t length) {
 #if BUILDFLAG(IS_ANDROID)
-  if (path.IsContentUri()) {
+  if (path.IsContentUri() || path.IsVirtualDocumentPath()) {
     if (length != 0) {
       return base::File::FILE_ERROR_FAILED;
     }

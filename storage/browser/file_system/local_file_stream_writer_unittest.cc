@@ -98,6 +98,30 @@ TEST_F(ContentUriLocalFileStreamWriterTest, WriteAlwaysTruncates) {
   EXPECT_TRUE(this->FilePathExists(std::string(this->kTestFileName)));
   EXPECT_EQ("foo", this->GetFileContent(std::string(this->kTestFileName)));
 }
+
+TEST_F(ContentUriLocalFileStreamWriterTest,
+       VirtualDocumentPathWriteAlwaysTruncates) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath dir_vp =
+      *base::test::android::GetVirtualDocumentPathFromCacheDirDirectory(
+          temp_dir.GetPath());
+  base::FilePath file_vp = dir_vp.Append("test_file");
+  ASSERT_TRUE(file_vp.IsVirtualDocumentPath());
+
+  base::FilePath file_path = temp_dir.GetPath().AppendASCII("test_file");
+  ASSERT_TRUE(base::WriteFile(file_path, "foobar"));
+
+  auto writer = FileStreamWriter::CreateForLocalFile(
+      file_task_runner(), file_vp, 0, FileStreamWriter::OPEN_EXISTING_FILE);
+
+  EXPECT_EQ(net::OK, WriteStringToWriter(writer.get(), "foo"));
+
+  EXPECT_TRUE(base::PathExists(file_path));
+  std::string content;
+  ASSERT_TRUE(base::ReadFileToString(file_path, &content));
+  EXPECT_EQ("foo", content);
+}
 #endif
 
 }  // namespace storage

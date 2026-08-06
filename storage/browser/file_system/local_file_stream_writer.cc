@@ -125,7 +125,7 @@ int LocalFileStreamWriter::InitiateOpen(base::OnceClosure main_operation) {
     case OPEN_EXISTING_FILE:
       open_flags = kOpenFlagsForWrite;
 #if BUILDFLAG(IS_ANDROID)
-      if (file_path_.IsContentUri()) {
+      if (file_path_.IsContentUri() || file_path_.IsVirtualDocumentPath()) {
         open_flags = kOpenFlagsForWriteContentUri;
       }
 #endif

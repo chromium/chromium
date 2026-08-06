@@ -304,6 +304,26 @@ TEST_F(NativeFileUtilTest, Truncate) {
   EXPECT_EQ(base::File::FILE_OK, NativeFileUtil::Truncate(content_uri, 0));
   EXPECT_TRUE(FileExists(file_name));
   EXPECT_EQ(0, GetSize(file_name));
+
+  // Virtual document paths only support truncate to zero.
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath dir_vp =
+      *base::test::android::GetVirtualDocumentPathFromCacheDirDirectory(
+          temp_dir.GetPath());
+  base::FilePath file_vp = dir_vp.Append("truncated");
+  ASSERT_TRUE(file_vp.IsVirtualDocumentPath());
+
+  base::FilePath file_path = temp_dir.GetPath().AppendASCII("truncated");
+  base::WriteFile(file_path, "foobar");
+  EXPECT_EQ(base::File::FILE_ERROR_FAILED,
+            NativeFileUtil::Truncate(file_vp, 1020));
+  EXPECT_TRUE(base::PathExists(file_path));
+  EXPECT_EQ(6, GetSize(file_path));
+
+  EXPECT_EQ(base::File::FILE_OK, NativeFileUtil::Truncate(file_vp, 0));
+  EXPECT_TRUE(base::PathExists(file_path));
+  EXPECT_EQ(0, GetSize(file_path));
 #endif
 }
 
