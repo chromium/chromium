@@ -18621,7 +18621,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   TestNavigationObserver error_observer(shell()->web_contents());
   controller.LoadPostCommitErrorPage(child, child->GetLastCommittedURL(),
                                      error_html);
-  error_observer.Wait();
+  error_observer.WaitForNavigationFinished();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
   // The post-commit error page committed an error page and sets the last
   // committed URL to about:blank.
@@ -18690,12 +18691,15 @@ IN_PROC_BROWSER_TEST_P(
   TestNavigationObserver error_observer(shell()->web_contents());
   controller.LoadPostCommitErrorPage(child, child->GetLastCommittedURL(),
                                      error_html);
-  error_observer.Wait();
+  error_observer.WaitForNavigationFinished();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
   // The post-commit error page committed an error page and sets the last
   // committed URL to about:blank, which is allowed by CSP because it's the same
   // origin as the main frame (because of origin inheritance). So, the net error
   // code is still ERR_BLOCKED_BY_CLIENT instead of ERR_BLOCKED_BY_CSP.
+  child = static_cast<RenderFrameHostImpl*>(
+      ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0));
   EXPECT_EQ(child->GetLastCommittedURL(), GURL("about:blank"));
   EXPECT_FALSE(error_observer.last_navigation_succeeded());
   EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, error_observer.last_net_error_code());
