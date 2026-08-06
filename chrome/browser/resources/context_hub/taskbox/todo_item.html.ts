@@ -45,12 +45,13 @@ export function getHtml(this: TodoItemElement) {
       <div class="expanded-content">
         <div class="expanded-details">
           <div>Score: ${this.score.toFixed(2)}</div>
-          <div>
-            <span>From:</span>
-            ${this.getReferences().map((ref, index) => html`
-              ${index > 0 ? ', ' : ''}
-              <a href="${ref.url}" target="_blank">${ref.label}</a>
-            `)}
+          <div class="references-section">
+            <span class="references-label">From:</span>
+            <div class="references-list">
+              ${this.getReferences().map(ref => html`
+                <a class="reference-link" href="${ref.url}" target="_blank" title="${ref.label}">${ref.label}</a>
+              `)}
+            </div>
           </div>
         </div>
         <cr-button disabled=true class="dismiss-button" @click="${

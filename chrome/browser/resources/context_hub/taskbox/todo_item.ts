@@ -122,7 +122,7 @@ export class TodoItemElement extends CrLitElement {
         .map(ref => {
           if (ref.gmail) {
             return {
-              label: 'Gmail',
+              label: ref.gmail.subject.trim() || 'Gmail',
               url: ref.gmail.messageUrl,
             };
           }

@@ -73,13 +73,49 @@ cr-expand-button {
   font-size: 14px;
   color: var(--cr-secondary-text-color);
   text-align: start;
+  gap: 16px;
 }
 
-.expanded-content a {
+.expanded-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+}
+
+.references-section {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+}
+
+.references-label {
+  flex-shrink: 0;
+}
+
+.references-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.reference-link {
   color: var(--cr-link-color);
   text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
 }
 
-.expanded-content a:hover {
+.reference-link:hover {
   text-decoration: underline;
+}
+
+.dismiss-button {
+  flex-shrink: 0;
 }
