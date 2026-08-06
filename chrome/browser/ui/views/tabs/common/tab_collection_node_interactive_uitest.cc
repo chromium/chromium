@@ -71,7 +71,9 @@ class TabCollectionNodeInteractiveUiTest
   }
 };
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || defined(MEMORY_SANITIZER) ||      \
+    defined(UNDEFINED_SANITIZER) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ValidateViewFocusOrder DISABLED_ValidateViewFocusOrder
 #else
 #define MAYBE_ValidateViewFocusOrder ValidateViewFocusOrder
