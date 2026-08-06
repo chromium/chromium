@@ -1197,6 +1197,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     // Show the password dialog if it is not already shown. Otherwise, respond
     // to an incorrect password.
     if (!this.showPasswordDialog_) {
+      this.hadPassword_ = true;
       this.showPasswordDialog_ = true;
       this.sendScriptingMessage({type: 'passwordPrompted'});
     } else {
