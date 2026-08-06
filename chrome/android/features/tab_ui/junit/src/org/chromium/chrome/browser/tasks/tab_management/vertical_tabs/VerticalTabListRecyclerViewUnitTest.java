@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_management;
+package org.chromium.chrome.browser.tasks.tab_management.vertical_tabs;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
@@ -15,8 +14,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.view.MotionEvent;
 import android.view.View;
-import android.widget.FrameLayout;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
@@ -29,15 +28,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabRailLayout;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 
-/** Unit tests for {@link TabListRecyclerView}. */
+/** Unit tests for {@link VerticalTabListRecyclerView}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
-public class TabListRecyclerViewUnitTest {
+public class VerticalTabListRecyclerViewUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private static final int DEFAULT_SCROLL_OFFSET = 12345;
     private static final int DEFAULT_SCROLL_RANGE = 54321;
@@ -48,16 +45,12 @@ public class TabListRecyclerViewUnitTest {
     @Mock private View mFirstView;
     @Mock private View mLastView;
 
-    private Context mContext;
-    private TabListRecyclerView mRecyclerView;
+    private VerticalTabListRecyclerView mRecyclerView;
 
     @Before
     public void setUp() {
-        mContext = ApplicationProvider.getApplicationContext();
-        VerticalTabRailLayout parentRailLayout = new VerticalTabRailLayout(mContext, null);
-        mRecyclerView = spy(new TabListRecyclerView(mContext, null));
-        mRecyclerView.setId(R.id.tab_list_recycler_view);
-        parentRailLayout.addView(mRecyclerView);
+        Context context = ApplicationProvider.getApplicationContext();
+        mRecyclerView = spy(new VerticalTabListRecyclerView(context, null));
 
         when(mLayoutManager.canScrollVertically()).thenReturn(true);
         when(mLayoutManager.computeVerticalScrollOffset(any())).thenReturn(DEFAULT_SCROLL_OFFSET);
@@ -71,21 +64,6 @@ public class TabListRecyclerViewUnitTest {
             when(mAdapter.getItemViewType(i)).thenReturn(TabProperties.UiType.TAB);
         }
         doReturn(mAdapter).when(mRecyclerView).getAdapter();
-    }
-
-    @Test
-    public void testComputeVerticalScroll_NotVerticalTabList_DelegatesToSuper() {
-        FrameLayout standardParent = new FrameLayout(mContext);
-        TabListRecyclerView standardRecyclerView = spy(new TabListRecyclerView(mContext, null));
-        standardParent.addView(standardRecyclerView);
-
-        standardRecyclerView.setLayoutManager(mLayoutManager);
-        doReturn(mAdapter).when(standardRecyclerView).getAdapter();
-
-        assertEquals(DEFAULT_SCROLL_OFFSET, standardRecyclerView.computeVerticalScrollOffset());
-        assertEquals(DEFAULT_SCROLL_RANGE, standardRecyclerView.computeVerticalScrollRange());
-        verify(mLayoutManager).computeVerticalScrollOffset(any());
-        verify(mLayoutManager).computeVerticalScrollRange(any());
     }
 
     @Test
@@ -118,7 +96,6 @@ public class TabListRecyclerViewUnitTest {
 
     @Test
     public void testComputeVerticalScrollOffset_ScrolledDown() {
-        // Scroll down 2 regular tabs
         when(mLayoutManager.findFirstVisibleItemPosition()).thenReturn(4);
         when(mLayoutManager.findLastVisibleItemPosition()).thenReturn(7);
         when(mLayoutManager.findViewByPosition(4)).thenReturn(mFirstView);
@@ -135,7 +112,6 @@ public class TabListRecyclerViewUnitTest {
 
     @Test
     public void testComputeVerticalScrollRange_FitsCompletely_HidesScrollbar() {
-        // "Ignore" some items to fit the screen
         when(mAdapter.getItemCount()).thenReturn(4);
         when(mLayoutManager.findFirstVisibleItemPosition()).thenReturn(2);
         when(mLayoutManager.findLastVisibleItemPosition()).thenReturn(3);
@@ -168,27 +144,8 @@ public class TabListRecyclerViewUnitTest {
     }
 
     @Test
-    public void testIsVerticalTabList_InsideVerticalTabRailLayout() {
-        assertTrue(mRecyclerView.isVerticalTabList());
-    }
-
-    @Test
-    public void testIsVerticalTabList_OutsideVerticalTabRailLayout() {
-        FrameLayout standardParent = new FrameLayout(mContext);
-        TabListRecyclerView standardRecyclerView = new TabListRecyclerView(mContext, null);
-        standardRecyclerView.setId(R.id.tab_list_recycler_view);
-        standardParent.addView(standardRecyclerView);
-
-        assertFalse(standardRecyclerView.isVerticalTabList());
-    }
-
-    @Test
-    public void testIsVerticalTabList_WrongId() {
-        VerticalTabRailLayout parentRailLayout = new VerticalTabRailLayout(mContext, null);
-        TabListRecyclerView customRecyclerView = new TabListRecyclerView(mContext, null);
-        customRecyclerView.setId(View.NO_ID);
-        parentRailLayout.addView(customRecyclerView);
-
-        assertFalse(customRecyclerView.isVerticalTabList());
+    public void testOnInterceptHoverEvent_ReturnsFalse() {
+        MotionEvent event = MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_MOVE, 0, 0, 0);
+        assertFalse(mRecyclerView.onInterceptHoverEvent(event));
     }
 }

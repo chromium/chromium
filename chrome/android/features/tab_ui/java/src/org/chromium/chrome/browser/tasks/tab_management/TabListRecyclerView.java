@@ -17,7 +17,6 @@ import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
 
-import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,12 +27,10 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabRailLayout;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.animation.RunOnNextLayout;
 import org.chromium.ui.animation.RunOnNextLayoutDelegate;
@@ -89,14 +86,6 @@ public class TabListRecyclerView extends RecyclerView
         if (mBlockTouchInput) return true;
 
         return super.dispatchTouchEvent(e);
-    }
-
-    @Override
-    public boolean onInterceptHoverEvent(MotionEvent event) {
-        if (ChromeFeatureList.sAndroidVerticalTabs.isEnabled() && isVerticalTabList()) {
-            return false;
-        }
-        return super.onInterceptHoverEvent(event);
     }
 
     @Override
@@ -408,119 +397,7 @@ public class TabListRecyclerView extends RecyclerView
         return super.fling(velocityX, velocityY);
     }
 
-    /**
-     * For vertical tab layout, the non-pinned tab list shares its TabListModel with the pinned tab
-     * strip to preserve 1:1 index alignment with TabModel, inflating pinned tabs as 0-height hidden
-     * placeholders (vertical_tab_pinned_item_hidden).
-     *
-     * <p>Default RecyclerView/LinearLayoutManager super functions calculate scroll offset and range
-     * by multiplying item positions and total item count by an average row height (avgSizePerRow).
-     * Because default super logic assumes all items have uniform visible height, it treats the
-     * 0-height pinned placeholders as full-height items, causing the scrollbar thumb to offset
-     * downward prematurely and misalign at the bottom of the track.
-     *
-     * <p>computeVerticalScrollOffset() and computeVerticalScrollRange() override this behavior by
-     * excluding pinnedCount from position/count calculations and dynamically computing
-     * avgSizePerRow strictly across visible regular tabs to ensure accurate scrollbar positioning
-     * and sizing.
-     */
-    @Override
-    public int computeVerticalScrollOffset() {
-        // Guard execution to vertical tab list layout.
-        if (isVerticalTabList()
-                && getLayoutManager() instanceof LinearLayoutManager linearLayoutManager
-                && getAdapter() != null) {
-            // Count 0-height pinned tabs at the adapter start.
-            int pinnedCount = getPinnedTabsCount();
-            if (pinnedCount > 0) {
-                int firstPos = linearLayoutManager.findFirstVisibleItemPosition();
-                int lastPos = linearLayoutManager.findLastVisibleItemPosition();
-                int startPos = Math.max(firstPos, pinnedCount);
-                View startView = linearLayoutManager.findViewByPosition(startPos);
-                View lastView = linearLayoutManager.findViewByPosition(lastPos);
-
-                if (startView != null && lastView != null && lastPos >= startPos) {
-                    int realFirstPos = startPos - pinnedCount;
-                    int laidOutArea = lastView.getBottom() - startView.getTop();
-                    int itemRange = lastPos - startPos + 1;
-                    float avgSizePerRow = (float) laidOutArea / itemRange;
-                    int topOffset = getPaddingTop() - startView.getTop();
-                    return Math.max(0, Math.round(realFirstPos * avgSizePerRow + topOffset));
-                }
-            }
-        }
-        return super.computeVerticalScrollOffset();
-    }
-
-    @Override
-    public int computeVerticalScrollRange() {
-        // Guard execution to vertical tab list layout.
-        if (isVerticalTabList()
-                && getLayoutManager() instanceof LinearLayoutManager linearLayoutManager
-                && getAdapter() != null) {
-            Adapter<?> adapter = getAdapter();
-            if (adapter.getItemCount() > 0) {
-                // Count 0-height pinned tabs at the adapter start.
-                int pinnedCount = getPinnedTabsCount();
-                if (pinnedCount > 0) {
-                    // Calculate regular tab count (excluding pinned items).
-                    int realItemCount = adapter.getItemCount() - pinnedCount;
-                    int firstPos = linearLayoutManager.findFirstVisibleItemPosition();
-                    int lastPos = linearLayoutManager.findLastVisibleItemPosition();
-                    int startPos = Math.max(firstPos, pinnedCount);
-                    View regularFirstView = linearLayoutManager.findViewByPosition(pinnedCount);
-                    View startView = linearLayoutManager.findViewByPosition(startPos);
-                    View lastView = linearLayoutManager.findViewByPosition(lastPos);
-
-                    boolean fitsCompletely =
-                            regularFirstView != null
-                                    && regularFirstView.getTop() >= getPaddingTop()
-                                    && lastPos == adapter.getItemCount() - 1
-                                    && lastView != null
-                                    && lastView.getBottom() <= getHeight() - getPaddingBottom();
-                    // Hide scrollbar if all regular tabs fit without clipping.
-                    if (fitsCompletely) {
-                        return computeVerticalScrollExtent();
-                    }
-
-                    if (startView != null && lastView != null && lastPos >= startPos) {
-                        int laidOutArea = lastView.getBottom() - startView.getTop();
-                        int laidOutRange = lastPos - startPos + 1;
-                        int totalRange =
-                                Math.round(((float) laidOutArea / laidOutRange) * realItemCount)
-                                        + getPaddingTop()
-                                        + getPaddingBottom();
-                        return Math.max(computeVerticalScrollExtent(), totalRange);
-                    }
-                }
-            }
-        }
-        return super.computeVerticalScrollRange();
-    }
-
     public void setSmoothScrolling(boolean isSmoothScrolling) {
         mIsSmoothScrolling = isSmoothScrolling;
-    }
-
-    /** Returns whether this view is attached as the main recycler view in VerticalTabRailLayout. */
-    @VisibleForTesting
-    public boolean isVerticalTabList() {
-        return getId() == R.id.tab_list_recycler_view
-                && getParent() instanceof VerticalTabRailLayout;
-    }
-
-    private int getPinnedTabsCount() {
-        if (!isVerticalTabList()) return 0;
-        Adapter<?> adapter = getAdapter();
-        if (adapter == null) return 0;
-        int pinnedCount = 0;
-        for (int i = 0; i < adapter.getItemCount(); i++) {
-            if (adapter.getItemViewType(i) == TabProperties.UiType.PINNED_TAB) {
-                pinnedCount++;
-            } else {
-                break;
-            }
-        }
-        return pinnedCount;
     }
 }
