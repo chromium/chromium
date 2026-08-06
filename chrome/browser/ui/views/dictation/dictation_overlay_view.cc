@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/dictation/waveform_view.h"
+#include "chrome/browser/ui/views/dictation/waveform_view_button.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -25,6 +26,7 @@
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view.h"
@@ -41,7 +43,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DictationOverlayView,
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DictationOverlayView,
                                       kWaveformElementIdForTesting);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DictationOverlayView,
-                                      kFinalizingButtonElementIdForTesting);
+                                      kFinalizingImageElementIdForTesting);
 
 namespace {
 
@@ -50,7 +52,10 @@ constexpr int kCornerRadius = 16;
 class DictationOverlayContentsView : public views::View {
   METADATA_HEADER(DictationOverlayContentsView, views::View)
  public:
-  DictationOverlayContentsView() {
+  explicit DictationOverlayContentsView(
+      base::RepeatingClosure toggle_active_stream_callback)
+      : toggle_active_stream_callback_(
+            std::move(toggle_active_stream_callback)) {
     SetProperty(views::kElementIdentifierKey,
                 DictationOverlayView::kViewElementIdForTesting);
 
@@ -59,10 +64,9 @@ class DictationOverlayContentsView : public views::View {
     SetLayoutManager(std::move(layout));
 
     // TODO(b/525859277): Use non-placeholder values.
-    // TODO(b/525859277): Have clicks toggle the active stream.
     auto mic_button = views::ImageButton::CreateIconButton(
-        base::RepeatingClosure(base::DoNothing()), vector_icons::kMicIcon,
-        u"Dictation", views::ImageButton::MaterialIconStyle::kSmall);
+        toggle_active_stream_callback_, vector_icons::kMicIcon, u"Dictation",
+        views::ImageButton::MaterialIconStyle::kSmall);
     mic_button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
     mic_button->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
     mic_button->SetBorder(nullptr);
@@ -72,27 +76,23 @@ class DictationOverlayContentsView : public views::View {
         DictationOverlayView::kMicButtonElementIdForTesting);
     mic_button_ = AddChildView(std::move(mic_button));
 
-    auto waveform_view = std::make_unique<WaveformView>(/*full_size=*/false);
+    auto waveform_view = std::make_unique<WaveformViewButton>(
+        /*full_size=*/false, toggle_active_stream_callback_);
     waveform_view->SetProperty(
         views::kElementIdentifierKey,
         DictationOverlayView::kWaveformElementIdForTesting);
     waveform_view->SetVisible(false);
     waveform_view_ = AddChildView(std::move(waveform_view));
 
-    auto finalizing_button = views::ImageButton::CreateIconButton(
-        base::RepeatingClosure(base::DoNothing()), views::kMoreHorizIcon,
-        u"Dictation", views::ImageButton::MaterialIconStyle::kSmall);
-    finalizing_button->SetImageHorizontalAlignment(
-        views::ImageButton::ALIGN_CENTER);
-    finalizing_button->SetImageVerticalAlignment(
-        views::ImageButton::ALIGN_MIDDLE);
-    finalizing_button->SetBorder(nullptr);
-    finalizing_button->SetPreferredSize(gfx::Size(20, 20));
-    finalizing_button->SetProperty(
+    auto finalizing_image = std::make_unique<views::ImageView>();
+    finalizing_image->SetImage(ui::ImageModel::FromVectorIcon(
+        views::kMoreHorizIcon, ui::kColorIcon, 20));
+    finalizing_image->SetPreferredSize(gfx::Size(20, 20));
+    finalizing_image->SetProperty(
         views::kElementIdentifierKey,
-        DictationOverlayView::kFinalizingButtonElementIdForTesting);
-    finalizing_button->SetVisible(false);
-    finalizing_button_ = AddChildView(std::move(finalizing_button));
+        DictationOverlayView::kFinalizingImageElementIdForTesting);
+    finalizing_image->SetVisible(false);
+    finalizing_image_ = AddChildView(std::move(finalizing_image));
   }
 
   ~DictationOverlayContentsView() override = default;
@@ -124,7 +124,7 @@ class DictationOverlayContentsView : public views::View {
     waveform_view_->SetVisible(waveform_visible);
     waveform_view_->SetState(state);
 
-    finalizing_button_->SetVisible(finalizing_dots_visible);
+    finalizing_image_->SetVisible(finalizing_dots_visible);
 
     PreferredSizeChanged();
   }
@@ -138,10 +138,11 @@ class DictationOverlayContentsView : public views::View {
   UiState state() const { return state_; }
 
  private:
+  base::RepeatingClosure toggle_active_stream_callback_;
   UiState state_ = UiState::kInactive;
   raw_ptr<views::ImageButton> mic_button_ = nullptr;
-  raw_ptr<WaveformView> waveform_view_ = nullptr;
-  raw_ptr<views::ImageButton> finalizing_button_ = nullptr;
+  raw_ptr<WaveformViewButton> waveform_view_ = nullptr;
+  raw_ptr<views::ImageView> finalizing_image_ = nullptr;
 };
 
 BEGIN_METADATA(DictationOverlayContentsView)
@@ -149,13 +150,16 @@ END_METADATA
 
 }  // namespace
 
-DictationOverlayView::DictationOverlayView(gfx::NativeView parent_window)
+DictationOverlayView::DictationOverlayView(
+    gfx::NativeView parent_window,
+    base::RepeatingClosure toggle_active_stream_callback)
     : BubbleDialogDelegate(nullptr,
                            views::BubbleBorder::TOP_LEFT,
                            views::BubbleBorder::STANDARD_SHADOW,
                            /*autosize=*/true) {
   set_parent_window(parent_window);
-  SetContentsView(std::make_unique<DictationOverlayContentsView>());
+  SetContentsView(std::make_unique<DictationOverlayContentsView>(
+      std::move(toggle_active_stream_callback)));
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetShowCloseButton(false);
   set_margins(gfx::Insets(0));
