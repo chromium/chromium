@@ -310,7 +310,9 @@ public interface NativePage {
                         || UrlConstants.BRICKS_JAVA_HOST.equals(host))
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_BRICKS_NATIVE_PAGE)) {
             return NativePageType.BRICKS;
-        } else if (UrlConstants.SETTINGS_HOST.equals(host) && SettingsInTab.isEnabled()) {
+        } else if (UrlConstants.SETTINGS_HOST.equals(host)
+                && SettingsInTab.isEnabled()
+                && !isIncognito) {
             return NativePageType.SETTINGS;
         } else {
             return NativePageType.NONE;

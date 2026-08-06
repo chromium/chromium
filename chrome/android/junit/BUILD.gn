@@ -1254,6 +1254,7 @@ if (is_android) {
 
     deps = [
       ":chrome_junit_tests_helper",
+      "//chrome/browser/settings:settings_in_tab_java",
       "//chrome/browser/ui/android/pdf:pdf_info_java",
     ]
   }

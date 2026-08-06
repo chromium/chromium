@@ -114,6 +114,18 @@ public class NativePageTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @Config(qualifiers = "sw600dp")
+    public void testNativePageType_SettingsInIncognito() {
+        String url = "chrome://settings";
+        GURL gurl = new GURL(url);
+        Assert.assertEquals(
+                "Settings page should not exist in incognito",
+                NativePageType.NONE,
+                NativePage.nativePageType(gurl, null, /* isIncognito= */ true, false, false));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
     @Config(qualifiers = "sw320dp")
     public void testNativePageType_SettingsOnPhone() {
         String url = "chrome://settings";
