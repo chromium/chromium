@@ -992,7 +992,13 @@ public class ChromeAndroidTaskIntegrationTest {
                 /* activity= */ mFreshCtaTransitTestRule.getActivity());
 
         // Assert.
-        assertTrue(ThreadUtils.runOnUiThreadBlocking(chromeAndroidTask::isFullscreen));
+        // The production code relies on WindowInsetsAnimationListener#onEnd to update the window
+        // state to full screen, so we need to wait for the animation here. Otherwise, the test will
+        // be flaky.
+        CriteriaHelper.pollUiThread(
+                chromeAndroidTask::isFullscreen,
+                /* maxTimeoutMs= */ 5000L,
+                /* checkIntervalMs= */ 1000L);
     }
 
     @Test

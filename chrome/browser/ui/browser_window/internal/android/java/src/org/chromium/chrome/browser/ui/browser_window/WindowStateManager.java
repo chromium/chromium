@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
+import android.view.WindowMetrics;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.RequiresApi;
@@ -55,6 +56,7 @@ final class WindowStateManager {
 
     private @WindowState int mWindowState = WindowState.UNKNOWN;
 
+    private @Nullable Float mCurrentDipScale;
     private @Nullable Rect mCurrentBoundsInDp;
     private @Nullable Rect mCurrentBoundsInPx;
     private @Nullable Rect mPreviousBoundsInDp;
@@ -63,8 +65,11 @@ final class WindowStateManager {
     /**
      * Updates the current window state, including bounds.
      *
-     * <p>This method should be called when the window state may have changed, for example, after a
-     * configuration change or when the {@link Activity}'s layout changes.
+     * <p>This method should be called when the window state may have changed, for example, when the
+     * {@link Activity}'s layout changes.
+     *
+     * <p>Calling this method too frequently may cause an ANR due to synchronous IPC, such as when
+     * obtaining {@link WindowMetrics}.
      *
      * @param activity The top {@link Activity} in the window.
      * @param display The {@link DisplayAndroid} the activity is on.
@@ -74,10 +79,11 @@ final class WindowStateManager {
             return;
         }
 
-        // Update the current bounds and the previous bounds.
+        // Update the current bounds, the current scaling factor, and the previous bounds.
+        float dipScale = display.getDipScale();
         Rect newBoundsInPx = activity.getWindowManager().getCurrentWindowMetrics().getBounds();
-        Rect newBoundsInDp =
-                DisplayUtil.scaleToEnclosingRect(newBoundsInPx, 1.0f / display.getDipScale());
+        Rect newBoundsInDp = DisplayUtil.scaleToEnclosingRect(newBoundsInPx, 1.0f / dipScale);
+        mCurrentDipScale = dipScale;
         mPreviousBoundsInDp = mCurrentBoundsInDp;
         mCurrentBoundsInPx = newBoundsInPx;
         mCurrentBoundsInDp = newBoundsInDp;
@@ -122,6 +128,16 @@ final class WindowStateManager {
 
         assert mCurrentBoundsInPx != null : "update() must be called before getCurrentBoundsInPx()";
         return mCurrentBoundsInPx;
+    }
+
+    /** Returns the current scaling factor. */
+    float getCurrentDipScale() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            return 1.0f;
+        }
+
+        assert mCurrentDipScale != null : "update() must be called before getCurrentDipScale()";
+        return mCurrentDipScale;
     }
 
     /**

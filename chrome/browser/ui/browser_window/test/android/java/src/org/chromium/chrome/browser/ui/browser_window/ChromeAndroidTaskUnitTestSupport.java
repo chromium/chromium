@@ -20,12 +20,10 @@ import android.app.ActivityManager.AppTask;
 import android.content.Context;
 import android.graphics.Insets;
 import android.graphics.Rect;
-import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.util.Pair;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
@@ -36,7 +34,6 @@ import androidx.annotation.RequiresApi;
 import androidx.core.view.WindowInsetsControllerCompat;
 
 import org.chromium.base.AconfigFlaggedApiDelegate;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.JniOnceCallback;
 import org.chromium.base.Promise;
 import org.chromium.base.ResettersForTesting;
@@ -60,7 +57,6 @@ import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
-import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.mojom.WindowShowState;
 
 import java.lang.ref.WeakReference;
@@ -165,17 +161,22 @@ public final class ChromeAndroidTaskUnitTestSupport {
         /** Mock {@link WindowManager} for {@link #mMockActivity}. */
         public final WindowManager mMockWindowManager;
 
+        /** Mock {@link Window} for {@link #mMockActivity}. */
+        public final Window mMockWindow;
+
         public ActivityWindowAndroidMocks(
                 ActivityWindowAndroid mockActivityWindowAndroid,
                 Activity mockActivity,
                 ActivityLifecycleDispatcher mockActivityLifecycleDispatcher,
                 DisplayAndroid mockDisplayAndroid,
-                WindowManager mockWindowManager) {
+                WindowManager mockWindowManager,
+                Window mockWindow) {
             mMockActivityWindowAndroid = mockActivityWindowAndroid;
             mMockActivity = mockActivity;
             mMockActivityLifecycleDispatcher = mockActivityLifecycleDispatcher;
             mMockDisplayAndroid = mockDisplayAndroid;
             mMockWindowManager = mockWindowManager;
+            mMockWindow = mockWindow;
         }
     }
 
@@ -394,17 +395,11 @@ public final class ChromeAndroidTaskUnitTestSupport {
         var mockWindowManager = mock(WindowManager.class);
         var mockActivityManager = mock(ActivityManager.class);
         var mockDisplay = mock(DisplayAndroid.class);
-        var mockInsetObserver = mock(InsetObserver.class);
-        // ViewTreeObserver is a final class in Android so it can't be mocked in
-        // tests using the real Android framework.
-        View testRootView;
-        if (Build.FINGERPRINT == null || "robolectric".equals(Build.FINGERPRINT)) {
-            testRootView = mock(View.class);
-            var observer = mock(ViewTreeObserver.class);
-            when(testRootView.getViewTreeObserver()).thenReturn(observer);
-        } else {
-            testRootView = new View(ContextUtils.getApplicationContext());
-        }
+        var mockDecorView = mock(View.class);
+
+        var mockWindow = mock(Window.class);
+        when(mockWindow.getDecorView()).thenReturn(mockDecorView);
+        when(mockActivity.getWindow()).thenReturn(mockWindow);
 
         when(mockActivity.getTaskId()).thenReturn(taskId);
         when(mockActivity.getWindowManager()).thenReturn(mockWindowManager);
@@ -412,13 +407,11 @@ public final class ChromeAndroidTaskUnitTestSupport {
                 .thenReturn(mockActivityManager);
         when(((ActivityLifecycleDispatcherProvider) mockActivity).getLifecycleDispatcher())
                 .thenReturn(mockActivityLifecycleDispatcher);
-        when(mockActivity.findViewById(android.R.id.content)).thenReturn(testRootView);
 
         when(mockDisplay.getDipScale()).thenReturn(1.0f);
 
         when(mockActivityWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mockActivity));
         when(mockActivityWindowAndroid.getDisplay()).thenReturn(mockDisplay);
-        when(mockActivityWindowAndroid.getInsetObserver()).thenReturn(mockInsetObserver);
 
         var mocks =
                 new ActivityWindowAndroidMocks(
@@ -426,7 +419,8 @@ public final class ChromeAndroidTaskUnitTestSupport {
                         mockActivity,
                         mockActivityLifecycleDispatcher,
                         mockDisplay,
-                        mockWindowManager);
+                        mockWindowManager,
+                        mockWindow);
         sActivityWindowAndroidMocks.put(taskId, mocks);
         return mocks;
     }
@@ -593,12 +587,11 @@ public final class ChromeAndroidTaskUnitTestSupport {
         AppHeaderUtils.setAppInDesktopWindowForTesting(true);
 
         // Config system bars behavior.
-        var mockWindow = mock(Window.class);
+        var mockWindow = activityWindowAndroidMocks.mMockWindow;
         var mockWindowInsetsController = mock(WindowInsetsController.class);
         when(mockWindowInsetsController.getSystemBarsBehavior())
                 .thenReturn(WindowInsetsControllerCompat.BEHAVIOR_DEFAULT);
         when(mockWindow.getInsetsController()).thenReturn(mockWindowInsetsController);
-        when(mockActivity.getWindow()).thenReturn(mockWindow);
 
         mockCurrentWindowMetrics(mockWindowManager, currentWindowBoundsInPx);
         mockMaxWindowMetrics(mockWindowManager, fullScreenWindowBoundsInPx, maxTappableInsetsInPx);
