@@ -35,10 +35,28 @@
 
   await createdTargetSession.navigate('https://example.com/index.html');
 
-  const screen = await createdTargetSession.evaluateAsync(async () => {
-    const cs = (await getScreenDetails()).currentScreen;
-    return cs.label;
-  });
+  const screen =
+      await createdTargetSession.evaluateAsync(async (expected_label) => {
+        const sd = await getScreenDetails();
+        // Check if the window is already on the expected screen, since
+        // 'currentscreenchange' event will not fire if the screen did
+        // not change.
+        if (sd.currentScreen.label === expected_label) {
+          return sd.currentScreen.label;
+        }
+        await new Promise(resolve => {
+          const handler = () => {
+            // Ignore any intermediate screen change events until the current
+            // screen matches the expected one.
+            if (sd.currentScreen.label === expected_label) {
+              sd.removeEventListener('currentscreenchange', handler);
+              resolve();
+            }
+          };
+          sd.addEventListener('currentscreenchange', handler);
+        });
+        return sd.currentScreen.label;
+      }, '#2');
 
   // Expect screen #2.
   testRunner.log(`Screen: ${screen}`);
