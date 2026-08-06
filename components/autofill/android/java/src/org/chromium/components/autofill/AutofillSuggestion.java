@@ -340,6 +340,8 @@ public class AutofillSuggestion {
             assert mSuggestionType == SuggestionType.SEPARATOR
                             || mSuggestionType == SuggestionType.PERSONAL_CONTEXT_NOTICE
                             || mSuggestionType == SuggestionType.AT_MEMORY_AI_DISCLOSURE
+                            || mSuggestionType
+                                    == SuggestionType.AUTOFILL_AI_PRIVATE_INFERENCE_NOTICE
                             || !TextUtils.isEmpty(mLabel)
                     : "Only separators and personal context notices may have an empty label.";
             assert (mSubLabel != null)
