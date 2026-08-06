@@ -953,19 +953,23 @@ void AILanguageModel::InitializeSafetyChecksComplete(
   create_client_.set_disconnect_handler(
       base::BindOnce(&AILanguageModel::OnCreateClientDisconnected,
                      weak_ptr_factory_.GetWeakPtr()));
-  if (input) {
-    initial_input_ = input.Clone();
-    initial_session_->Append(
-        MakeAppendOptions(std::move(input),
-                          on_device_model::mojom::InputSource::kUserInput),
-        initial_append_receiver_.BindNewPipeAndPassRemote());
-    initial_append_receiver_.set_disconnect_handler(
-        base::BindOnce(&AILanguageModel::OnInitialAppendDisconnected,
-                       weak_ptr_factory_.GetWeakPtr()));
+  if (!input) {
+    // The empty Append serves purely as an initialization barrier signal to
+    // ensure the ML backend session engine and weights are ready before
+    // resolving the create promise, with zero overhead on token count or
+    // inference compute.
+    input = on_device_model::mojom::Input::New();
   } else {
-    // Proceed with session creation, leaving `initial_input_` null.
-    OnComplete(/*tokens_processed=*/0);
+    initial_input_ = input.Clone();
   }
+
+  initial_session_->Append(
+      MakeAppendOptions(std::move(input),
+                        on_device_model::mojom::InputSource::kUserInput),
+      initial_append_receiver_.BindNewPipeAndPassRemote());
+  initial_append_receiver_.set_disconnect_handler(
+      base::BindOnce(&AILanguageModel::OnInitialAppendDisconnected,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AILanguageModel::OnComplete(uint32_t tokens_processed) {

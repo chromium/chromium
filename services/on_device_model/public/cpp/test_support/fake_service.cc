@@ -339,6 +339,9 @@ void FakeOnDeviceSession::GenerateImpl(
   if (settings_->model_execute_result.empty()) {
     for (const auto& context : context_) {
       std::string text = CtxToString(*context, params_->capabilities);
+      if (text.empty()) {
+        continue;
+      }
       output_token_count += text.size();
       auto chunk = mojom::ResponseChunk::New();
       chunk->text = text;
