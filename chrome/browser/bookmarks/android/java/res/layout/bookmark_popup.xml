@@ -158,21 +158,78 @@ found in the LICENSE file.
     </LinearLayout>
 
     <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/content_bottom_barrier"
+        android:id="@+id/normal_content_bottom_barrier"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:barrierDirection="bottom"
         app:constraint_referenced_ids="bookmark_image_container,folder_picker_row" />
+
+    <!-- Price Tracking Row -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/price_tracking_container"
+        android:visibility="gone"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingVertical="8dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/normal_content_bottom_barrier">
+
+        <ImageView
+            android:id="@+id/price_tracking_image"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/price_tracking_disabled"
+            app:tint="@macro/default_icon_color"
+            android:importantForAccessibility="no"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:orientation="vertical"
+            app:layout_constraintStart_toEndOf="@id/price_tracking_image"
+            app:layout_constraintEnd_toStartOf="@id/price_tracking_switch"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/enable_price_tracking_menu_item"
+                android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/price_tracking_save_flow_notification_switch_subtitle"
+                android:textAppearance="@style/TextAppearance.TextSmall.Secondary" />
+        </LinearLayout>
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/price_tracking_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     <!-- Buttons -->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="@dimen/bookmark_popup_buttons_margin_top"
+        android:layout_marginTop="8dp"
+        app:layout_goneMarginTop="@dimen/bookmark_popup_buttons_margin_top"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/content_bottom_barrier">
+        app:layout_constraintTop_toBottomOf="@id/price_tracking_container">
 
         <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/remove_button"

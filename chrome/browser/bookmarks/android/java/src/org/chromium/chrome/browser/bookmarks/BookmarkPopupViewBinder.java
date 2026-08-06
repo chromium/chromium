@@ -55,6 +55,16 @@ public class BookmarkPopupViewBinder {
             if (scaleType != null) {
                 view.setImageScaleType(scaleType);
             }
+        } else if (key == BookmarkPopupProperties.PRICE_TRACKING_VISIBLE) {
+            view.setPriceTrackingVisible(model.get(BookmarkPopupProperties.PRICE_TRACKING_VISIBLE));
+        } else if (key == BookmarkPopupProperties.PRICE_TRACKING_ENABLED) {
+            view.setPriceTrackingEnabled(model.get(BookmarkPopupProperties.PRICE_TRACKING_ENABLED));
+        } else if (key == BookmarkPopupProperties.PRICE_TRACKING_SWITCH_CHECKED) {
+            view.setPriceTrackingSwitchChecked(
+                    model.get(BookmarkPopupProperties.PRICE_TRACKING_SWITCH_CHECKED));
+        } else if (key == BookmarkPopupProperties.PRICE_TRACKING_SWITCH_LISTENER) {
+            view.setPriceTrackingSwitchListener(
+                    model.get(BookmarkPopupProperties.PRICE_TRACKING_SWITCH_LISTENER));
         }
     }
 }
