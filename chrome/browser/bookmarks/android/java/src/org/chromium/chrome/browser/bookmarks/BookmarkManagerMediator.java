@@ -951,7 +951,15 @@ class BookmarkManagerMediator
             mStateStack.removeLast();
         }
 
-        mStateStack.addLast(state);
+        // If the state is already in the stack, this is a back-navigation.
+        // Pop the forward history to keep our stack synced with tab history.
+        if (mStateStack.contains(state)) {
+            while (!mStateStack.isEmpty() && !mStateStack.peekLast().equals(state)) {
+                mStateStack.removeLast();
+            }
+        } else {
+            mStateStack.addLast(state);
+        }
         notifyUi(state, preserveFolderBookmarksOnEmptySearch);
     }
 
