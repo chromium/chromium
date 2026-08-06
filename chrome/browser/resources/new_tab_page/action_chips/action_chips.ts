@@ -15,6 +15,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {ActionChip, ActionChipsHandlerInterface, PageCallbackRouter} from '../action_chips.mojom-webui.js';
 import {IconType} from '../action_chips.mojom-webui.js';
 import type {FuseboxAction} from '../fusebox_action.mojom-webui.js';
+import {QueryActionOverride} from '../fusebox_action.mojom-webui.js';
 import {WindowProxy} from '../window_proxy.js';
 
 import {getCss} from './action_chips.css.js';
@@ -176,7 +177,7 @@ export class ActionChipsElement extends CrLitElement {
     }
   }
 
-  protected onClick_(e: Event): void {
+  protected onClick_(e: MouseEvent|KeyboardEvent): void {
     const index = Number((e.currentTarget as HTMLElement).dataset['index']);
     const chip = this.actionChips_[index]!;
     switch (chip.suggestTemplateInfo.fuseboxAction?.preselectedTool) {
@@ -204,7 +205,15 @@ export class ActionChipsElement extends CrLitElement {
       default:
         // Do nothing yet...
     }
-    this.onActionChipClick_(chip);
+    this.onActionChipClick_(chip, e);
+  }
+
+  // Auxclick fires for all non-primary mouse buttons. Only handle middle clicks
+  // (button 1) to open in a new background tab, and ignore other buttons.
+  protected onAuxclick_(e: MouseEvent): void {
+    if (e.button === 1) {
+      this.onClick_(e);
+    }
   }
 
   protected onRemoveClick_(e: MouseEvent) {
@@ -245,8 +254,19 @@ export class ActionChipsElement extends CrLitElement {
     return chip.tab ? this.getFaviconUrl_(chip.tab.url) : '';
   }
 
-  private onActionChipClick_(chip: ActionChip) {
+  private onActionChipClick_(chip: ActionChip, e: MouseEvent|KeyboardEvent) {
     recordClick(chip.suggestTemplateInfo.typeIcon);
+    if (chip.suggestTemplateInfo.fuseboxAction?.queryActionOverride ===
+        QueryActionOverride.kDefault) {
+      this.handler.navigateToAim(
+          chip.suggestion, (e as MouseEvent).button || 0, {
+            altKey: e.altKey,
+            ctrlKey: e.ctrlKey,
+            metaKey: e.metaKey,
+            shiftKey: e.shiftKey,
+          });
+      return;
+    }
     const contextFiles: TabUpload[] = [];
     const tab = chip.tab;
     if (tab) {

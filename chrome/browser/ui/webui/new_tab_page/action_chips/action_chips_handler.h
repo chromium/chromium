@@ -59,11 +59,13 @@ class ActionChipsHandler : public action_chips::mojom::ActionChipsHandler
   ActionChipsHandler& operator=(const ActionChipsHandler&) = delete;
   ~ActionChipsHandler() override;
 
+  // action_chips::mojom::ActionChipsHandler:
   void StartActionChipsRetrieval() override;
   void ActivateMetricsFunnel(const std::string& funnel_name) override;
   void SetActionChipsVisibility(bool is_visible) override;
-
-  void NavigateToAim(const std::u16string& query_text);
+  void NavigateToAim(const std::string& query_text,
+                     uint8_t mouse_button,
+                     searchbox::mojom::ActionModifiersPtr modifiers) override;
 
 #if !BUILDFLAG(IS_ANDROID)
   void OnTabStripModelChanged(

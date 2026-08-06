@@ -26,6 +26,7 @@ export function getHtml(this: ActionChipsElement) {
             data-index="${index}"
             title="${this.getChipTitle_(chip)}"
             @click="${this.onClick_}"
+            @auxclick="${this.onAuxclick_}"
             @contextmenu="${this.disablementContextMenuEnabled_ ?
                 this.onContextmenu_ : nothing}">
             <div class="action-chip-icon-container ${
