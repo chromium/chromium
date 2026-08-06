@@ -416,15 +416,15 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         int paddingTopRes;
         int paddingStartRes;
 
-        if (buttonSpec.hasErrorBadge()) {
+        if (buttonSpec.hasAiTierRing()) {
+            paddingBottomRes = R.dimen.optional_toolbar_phone_button_with_ai_ring_padding_vertical;
+            paddingTopRes = R.dimen.optional_toolbar_phone_button_with_ai_ring_padding_vertical;
+            paddingStartRes = R.dimen.optional_toolbar_phone_button_with_ai_ring_padding_start;
+        } else if (buttonSpec.hasErrorBadge()) {
             paddingBottomRes =
                     R.dimen.optional_toolbar_phone_button_with_error_badge_padding_bottom;
             paddingTopRes = R.dimen.toolbar_phone_optional_button_foreground_vertical_padding;
             paddingStartRes = R.dimen.toolbar_phone_optional_button_foreground_start_padding;
-        } else if (buttonSpec.hasAiTierRing()) {
-            paddingBottomRes = R.dimen.optional_toolbar_phone_button_with_ai_ring_padding_vertical;
-            paddingTopRes = R.dimen.optional_toolbar_phone_button_with_ai_ring_padding_vertical;
-            paddingStartRes = R.dimen.optional_toolbar_phone_button_with_ai_ring_padding_start;
         } else {
             paddingBottomRes = R.dimen.toolbar_phone_optional_button_foreground_vertical_padding;
             paddingTopRes = R.dimen.toolbar_phone_optional_button_foreground_vertical_padding;
