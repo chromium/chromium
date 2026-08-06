@@ -8,7 +8,6 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_constants.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -36,9 +35,6 @@ enum class ItemIdentifier {
   kUnsupportedQueryItem,
   kNoticeItem,
 };
-
-// The symbol point size for the empty state background view.
-constexpr CGFloat kEmptyStateSymbolPointSize = 60;
 
 // View states for the AtMemory search table view.
 enum class ViewState {
@@ -186,9 +182,7 @@ enum class ViewState {
 
 // Sets the table view background to the empty state.
 - (void)setEmptyTableViewBackground {
-  // TODO(crbug.com/542258091): Update the image to the correct one.
-  UIImage* image = SymbolWithPointSize(SymbolMagnifyingglassSpark,
-                                       kEmptyStateSymbolPointSize);
+  UIImage* image = [UIImage imageNamed:@"at_memory_empty"];
   [self addEmptyTableViewWithMessage:
             l10n_util::GetNSString(IDS_AUTOFILL_AT_MEMORY_ZERO_STATE_SUBTITLE)
                                image:image];

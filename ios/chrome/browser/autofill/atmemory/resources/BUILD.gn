@@ -1,0 +1,19 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/rules.gni")
+
+bundle_data_xcassets("resources") {
+  catalog = "Assets.xcassets"
+  sources = [
+    "Assets.xcassets/Contents.json",
+    "Assets.xcassets/at_memory_empty.imageset/Contents.json",
+    "Assets.xcassets/at_memory_empty.imageset/at_memory_empty_dark@1x.png",
+    "Assets.xcassets/at_memory_empty.imageset/at_memory_empty_dark@2x.png",
+    "Assets.xcassets/at_memory_empty.imageset/at_memory_empty_dark@3x.png",
+    "Assets.xcassets/at_memory_empty.imageset/at_memory_empty_light@1x.png",
+    "Assets.xcassets/at_memory_empty.imageset/at_memory_empty_light@2x.png",
+    "Assets.xcassets/at_memory_empty.imageset/at_memory_empty_light@3x.png",
+  ]
+}
