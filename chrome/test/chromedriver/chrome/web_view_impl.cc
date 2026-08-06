@@ -2131,7 +2131,9 @@ Status WebViewImpl::CallAsyncFunctionInternal(
   /*is_user_supplied=*/
   async_args.Append(true);
   /*timeout=*/
-  async_args.Append(timeout.InMicrosecondsF());
+  if (!timeout.is_max()) {
+    async_args.Append(timeout.InMicrosecondsF());
+  }
   std::unique_ptr<base::Value> tmp;
   Timeout local_timeout(timeout);
   std::unique_ptr<base::Value> query_value;
