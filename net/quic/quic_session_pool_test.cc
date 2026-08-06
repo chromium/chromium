@@ -6397,6 +6397,7 @@ TEST_P(QuicSessionPoolTest,
   quic_data2.AddReadPause();
   // Stateless reset to receive from the server.
   quic_data2.AddRead(ASYNC, server_maker_.MakeStatelessResetPacket());
+  quic_data2.AddReadPauseForever();
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
