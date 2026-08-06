@@ -565,8 +565,6 @@ final class ChromeAndroidTaskImpl
 
         mState = State.IDLE;
         addActivityScopedObjectsInternal(activityScopedObjects);
-        mWindowStateManager.update(
-                activity, activityScopedObjects.mActivityWindowAndroid.getDisplay());
     }
 
     ChromeAndroidTaskImpl(PendingTaskInfo pendingTaskInfo) {
@@ -632,12 +630,7 @@ final class ChromeAndroidTaskImpl
                 topActivityScopedObjects.mActivity.getIntent(),
                 ChromeAndroidTaskTracker.EXTRA_PENDING_BROWSER_WINDOW_TASK_ID);
 
-        // (2) Make WindowStateManager up-to-date.
-        mWindowStateManager.update(
-                topActivityScopedObjects.mActivity,
-                topActivityScopedObjects.mActivityWindowAndroid.getDisplay());
-
-        // (3) Mark the ChromeAndroidTask as IDLE.
+        // (2) Mark the ChromeAndroidTask as IDLE.
         //
         // Note that this should be done before dispatching pending actions (windowing requests
         // received during the PENDING_CREATE state) since the actions should be performed in the
@@ -645,12 +638,12 @@ final class ChromeAndroidTaskImpl
         mId = getTaskId(topActivityScopedObjects.mActivity);
         mState = State.IDLE;
 
-        // (4) Dispatch pending actions.
+        // (3) Dispatch pending actions.
         @Nullable Rect futureBounds = mPendingActionManager.getFutureBoundsInDp();
         @Nullable Rect futureRestoredBounds = mPendingActionManager.getFutureRestoredBoundsInDp();
         dispatchPendingActions(topActivityScopedObjects, futureBounds, futureRestoredBounds);
 
-        // (5) Invoke the JNI callback for the native CreateBrowserWindow() function.
+        // (4) Invoke the JNI callback for the native CreateBrowserWindow() function.
         JniOnceCallback<Long> taskCreationCallbackForNative =
                 mPendingTaskInfo.mTaskCreationCallbackForNative;
         if (taskCreationCallbackForNative != null) {
@@ -1350,6 +1343,13 @@ final class ChromeAndroidTaskImpl
             assert mId == null;
         }
 
+        // Update WindowStateManager with the initial window state, i.e., when we are about to add
+        // the first Activity to the Task.
+        if (mActivityScopedObjectsDeque.isEmpty()) {
+            mWindowStateManager.update(
+                    getActivity(activityWindowAndroid), activityWindowAndroid.getDisplay());
+        }
+
         // Unregister all listeners for the current top Activity.
         // This must be done before changing mActivityScopedObjectsDeque.
         unregisterListenersForTopActivity();
@@ -1480,9 +1480,6 @@ final class ChromeAndroidTaskImpl
                 .findViewById(android.R.id.content)
                 .getViewTreeObserver()
                 .addOnGlobalLayoutListener(this);
-
-        mWindowStateManager.update(
-                getActivity(topActivityWindowAndroid), topActivityWindowAndroid.getDisplay());
     }
 
     private void unregisterListenersForTopActivity() {
