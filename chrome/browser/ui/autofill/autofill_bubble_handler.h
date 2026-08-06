@@ -136,6 +136,10 @@ class AutofillBubbleHandler {
       content::WebContents* web_contents,
       PaymentsChurnedUsersBubbleController* controller,
       bool is_user_gesture) = 0;
+
+  virtual AutofillBubbleBase* ShowPaymentsChurnedUsersConfirmationBubble(
+      content::WebContents* web_contents,
+      PaymentsChurnedUsersBubbleController* controller) = 0;
 };
 
 }  // namespace autofill

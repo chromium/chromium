@@ -7,7 +7,10 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/autofill/payments/payments_churned_users_bubble_controller.h"
+#include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/browser_resources.h"
@@ -17,6 +20,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace autofill {
@@ -34,6 +38,9 @@ PaymentsChurnedUsersBubbleView::PaymentsChurnedUsersBubbleView(
   SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  l10n_util::GetStringUTF16(
                      IDS_AUTOFILL_CHURNED_USERS_BUBBLE_CANCEL_BUTTON_LABEL));
+  SetAcceptCallbackWithClose(
+      base::BindRepeating(&PaymentsChurnedUsersBubbleView::OnDialogAccepted,
+                          base::Unretained(this)));
   SetShowCloseButton(true);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
@@ -43,6 +50,36 @@ PaymentsChurnedUsersBubbleView::~PaymentsChurnedUsersBubbleView() = default;
 
 void PaymentsChurnedUsersBubbleView::Show(DisplayReason reason) {
   ShowForReason(reason);
+}
+
+bool PaymentsChurnedUsersBubbleView::OnDialogAccepted() {
+  bool did_switch_to_loading_state = false;
+  if (controller_) {
+    SwitchToLoadingState();
+    did_switch_to_loading_state = true;
+    controller_->OnAcceptButton();
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            &PaymentsChurnedUsersBubbleController::ShowConfirmationBubbleView,
+            controller_->GetWeakPtr()),
+        base::Milliseconds(kMillisecondsUntilConfirmationBubbleIsShown));
+  }
+  return !did_switch_to_loading_state;
+}
+
+void PaymentsChurnedUsersBubbleView::SwitchToLoadingState() {
+  if (loading_progress_row_ == nullptr) {
+    return;
+  }
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+
+  loading_throbber_->Start();
+  loading_progress_row_->SetVisible(true);
+  loading_throbber_->GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_CHURNED_USERS_CONFIRMATION_BUBBLE_LOADING_THROBBER_ACCESSIBLE_NAME));
+
+  DialogModelChanged();
 }
 
 void PaymentsChurnedUsersBubbleView::Hide() {
@@ -100,6 +137,25 @@ void PaymentsChurnedUsersBubbleView::WindowClosing() {
   }
 }
 
+std::unique_ptr<views::View>
+PaymentsChurnedUsersBubbleView::CreateLoadingProgressRow() {
+  auto progress_loading_row = std::make_unique<views::BoxLayoutView>();
+
+  // Set `progress_loading_row` initially hidden because it should only be
+  // visible after the user accepts the churned users bubble.
+  progress_loading_row->SetVisible(false);
+
+  progress_loading_row->SetMainAxisAlignment(
+      views::BoxLayout::MainAxisAlignment::kEnd);
+  progress_loading_row->SetInsideBorderInsets(gfx::Insets::TLBR(10, 0, 0, 30));
+
+  loading_throbber_ =
+      progress_loading_row->AddChildView(std::make_unique<views::Throbber>());
+  loading_throbber_->SetID(DialogViewId::LOADING_THROBBER);
+
+  return progress_loading_row;
+}
+
 void PaymentsChurnedUsersBubbleView::Init() {
   SetUseDefaultFillLayout(true);
 
@@ -131,6 +187,9 @@ void PaymentsChurnedUsersBubbleView::Init() {
   AccountInfo account_info = controller_->GetAccountInfo();
   main_content_view->AddChildView(CreateUserAvatarAndEmailView(
       base::UTF8ToUTF16(account_info.email), GetProfileAvatar(account_info)));
+
+  loading_progress_row_ =
+      main_content_view->AddChildView(CreateLoadingProgressRow());
 
   AddChildView(std::move(main_content_view));
 }

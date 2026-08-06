@@ -1462,6 +1462,20 @@
   <message name="IDS_AUTOFILL_CHURNED_USERS_BUBBLE_CONVENIENCE_DESCRIPTION" desc="Convenience description for the payments churned users bubble. On acceptance, payments autofill is turned on for a user and a confirmation bubble is shown.">
     Fill card details automatically when you check out online. Cards are saved in Google Wallet securely.
   </message>
+  <message name="IDS_AUTOFILL_CHURNED_USERS_CONFIRMATION_BUBBLE_TITLE" desc="Title for the churned users confirmation bubble, which comes after the user has accepted the churned users bubble, letting the user know that autofill is turned on.">
+    Autofill turned on
+  </message>
+  <message name="IDS_AUTOFILL_CHURNED_USERS_CONFIRMATION_BUBBLE_LINK_TEXT" desc="Link text in the description for the churned users confirmation bubble, which comes after the user has accepted the churned users bubble, letting the user know that autofill is turned on.">
+    View autofill settings
+  </message>
+  <message name="IDS_AUTOFILL_CHURNED_USERS_CONFIRMATION_BUBBLE_DESCRIPTION" desc="Description for the churned users confirmation bubble, which comes after the user has accepted the churned users bubble, letting the user know that autofill is turned on.">
+    Now you can save payment methods to autofill at checkout in Chrome. <ph name="LINK_TEXT">$1<ex>View autofill settings</ex></ph>
+  </message>
+  <if expr="not is_android">
+    <message name="IDS_AUTOFILL_CHURNED_USERS_CONFIRMATION_BUBBLE_LOADING_THROBBER_ACCESSIBLE_NAME" desc="Accessible name announced by the screenreader for virtual card prompt in loading state showing a throbber." is_accessibility_with_no_ui="true" formatter_data="android_java">
+      Turning on autofill
+    </message>
+  </if>
 
   <!-- Autofill IBAN preferences -->
   <if expr="is_android">

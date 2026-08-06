@@ -103,6 +103,9 @@ class AutofillBubbleHandlerImpl : public AutofillBubbleHandler {
       content::WebContents* web_contents,
       PaymentsChurnedUsersBubbleController* controller,
       bool is_user_gesture) override;
+  AutofillBubbleBase* ShowPaymentsChurnedUsersConfirmationBubble(
+      content::WebContents* web_contents,
+      PaymentsChurnedUsersBubbleController* controller) override;
 
  private:
   // Show the save card and virtual card enrollment confirmation bubble.

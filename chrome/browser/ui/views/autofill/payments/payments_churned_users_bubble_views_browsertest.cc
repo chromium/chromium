@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_churned_users_bubble_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -125,6 +126,17 @@ class PaymentsChurnedUsersBubbleViewsBrowserTest
         controller->GetBubbleViewForTesting());
   }
 
+  AutofillBubbleBase* GetAutofillBubbleView() {
+    PaymentsChurnedUsersBubbleController* controller =
+        PaymentsChurnedUsersBubbleController::From(
+            *browser()->tab_strip_model()->GetActiveTab());
+    if (!controller) {
+      return nullptr;
+    }
+
+    return controller->GetBubbleViewForTesting();
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -154,7 +166,7 @@ IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
   bubble_view->AcceptDialog();
 
   EXPECT_TRUE(accept_future.Wait());
-  EXPECT_FALSE(IsIconVisible());
+  EXPECT_TRUE(base::test::RunUntil([&]() { return !IsIconVisible(); }));
 }
 
 IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
@@ -216,6 +228,32 @@ IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
   ClickOnIcon();
 
   EXPECT_TRUE(IsBubbleShowing());
+}
+
+IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
+                       AcceptanceShowsConfirmationBubble) {
+  ShowBubble();
+
+  PaymentsChurnedUsersBubbleView* bubble_view = GetBubbleView();
+  ASSERT_TRUE(bubble_view);
+
+  // Accept the dialog.
+  bubble_view->AcceptDialog();
+
+  // The confirmation bubble will be shown after a short delay.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    AutofillBubbleBase* current_bubble = GetAutofillBubbleView();
+    if (!current_bubble || current_bubble == bubble_view) {
+      return false;
+    }
+
+    // Check that it's the confirmation bubble by verifying its view ID.
+    auto* location_bar_bubble =
+        static_cast<AutofillLocationBarBubble*>(current_bubble);
+    return location_bar_bubble->GetID() ==
+           DialogViewId::
+               SAVE_PAYMENT_METHOD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUBBLE_VIEWS;
+  }));
 }
 
 }  // namespace autofill

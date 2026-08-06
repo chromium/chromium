@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
@@ -19,7 +18,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/common/url_constants.h"
 #endif
 
 namespace autofill {
@@ -52,6 +52,7 @@ void PaymentsChurnedUsersBubbleController::Show(
     return;
   }
   is_reshow_ = false;
+  is_accepted_ = false;
   accept_callback_ = std::move(accept_callback);
   cancel_callback_ = std::move(cancel_callback);
   closed_callback_ = std::move(closed_callback);
@@ -78,19 +79,18 @@ void PaymentsChurnedUsersBubbleController::OnBubbleClosed(
     PaymentsUiClosedReason closed_reason) {
   ResetBubbleViewAndInformBubbleManager();
 
-  if (closed_reason == PaymentsUiClosedReason::kAccepted ||
-      closed_reason == PaymentsUiClosedReason::kCancelled ||
+  if (is_accepted_ || closed_reason == PaymentsUiClosedReason::kCancelled ||
       closed_reason == PaymentsUiClosedReason::kClosed) {
     should_show_icon_ = false;
   }
 
   UpdatePageActionIcon();
 
-  if (closed_reason == PaymentsUiClosedReason::kAccepted) {
-    if (accept_callback_) {
-      std::move(accept_callback_).Run();
-    }
-  } else if (closed_reason == PaymentsUiClosedReason::kCancelled) {
+  if (is_accepted_) {
+    return;
+  }
+
+  if (closed_reason == PaymentsUiClosedReason::kCancelled) {
     if (cancel_callback_) {
       std::move(cancel_callback_).Run();
     }
@@ -121,6 +121,60 @@ const AccountInfo& PaymentsChurnedUsersBubbleController::GetAccountInfo()
   return account_info_;
 }
 
+void PaymentsChurnedUsersBubbleController::OnAcceptButton() {
+  is_accepted_ = true;
+  // Although the bubble is still present, run the accept callback as the user
+  // has made the decision to turn on payments autofill. The confirmation and
+  // loading is strictly a visual experience, and there is no server call
+  // ongoing.
+  if (accept_callback_) {
+    std::move(accept_callback_).Run();
+  }
+}
+
+void PaymentsChurnedUsersBubbleController::ShowConfirmationBubbleView() {
+  HideBubble(/*initiated_by_bubble_manager=*/false);
+#if !BUILDFLAG(IS_ANDROID)
+  tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents());
+  if (!tab) {
+    return;
+  }
+  BrowserWindowInterface* browser_window = tab->GetBrowserWindowInterface();
+  if (!browser_window) {
+    return;
+  }
+  if (AutofillBubbleBase* bubble_view =
+          AutofillBubbleHandler::Get(browser_window->GetUnownedUserDataHost())
+              ->ShowPaymentsChurnedUsersConfirmationBubble(web_contents(),
+                                                           this)) {
+    SetBubbleView(*bubble_view);
+  }
+#endif
+}
+
+SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
+PaymentsChurnedUsersBubbleController::GetConfirmationUiParams() const {
+  return SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
+      CreateForChurnedUsersAcceptanceSuccess(base::BindRepeating(
+          [](content::WebContents* web_contents) {
+#if !BUILDFLAG(IS_ANDROID)
+            tabs::TabInterface* tab =
+                tabs::TabInterface::GetFromContents(web_contents);
+            if (tab && tab->GetBrowserWindowInterface()) {
+              chrome::ShowSettingsSubPage(tab->GetBrowserWindowInterface(),
+                                          chrome::kPaymentsSubPage);
+            }
+#endif
+          },
+          web_contents()));
+}
+
+base::OnceCallback<void(PaymentsUiClosedReason)>
+PaymentsChurnedUsersBubbleController::GetOnBubbleClosedCallback() {
+  return base::BindOnce(&PaymentsChurnedUsersBubbleController::OnBubbleClosed,
+                        weak_ptr_factory_.GetWeakPtr());
+}
+
 bool PaymentsChurnedUsersBubbleController::CanBeReshown() const {
   return true;
 }
@@ -134,20 +188,23 @@ PaymentsChurnedUsersBubbleController::GetBubbleControllerBaseWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+base::WeakPtr<PaymentsChurnedUsersBubbleController>
+PaymentsChurnedUsersBubbleController::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void PaymentsChurnedUsersBubbleController::DoShowBubble() {
 #if !BUILDFLAG(IS_ANDROID)
-  BrowserWindowInterface* browser =
-      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
-          web_contents());
-  if (!browser) {
+  tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents());
+  if (!tab) {
     return;
   }
-  BrowserWindow* browser_window = BrowserWindow::FromBrowser(browser);
+  BrowserWindowInterface* browser_window = tab->GetBrowserWindowInterface();
   if (!browser_window) {
     return;
   }
   if (AutofillBubbleBase* bubble_view =
-          browser_window->GetAutofillBubbleHandler()
+          AutofillBubbleHandler::Get(browser_window->GetUnownedUserDataHost())
               ->ShowPaymentsChurnedUsersBubble(web_contents(), this,
                                                is_reshow_)) {
     SetBubbleView(*bubble_view);

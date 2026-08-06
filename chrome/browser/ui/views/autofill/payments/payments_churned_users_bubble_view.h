@@ -9,6 +9,11 @@
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/views/autofill/autofill_location_bar_bubble.h"
 
+namespace views {
+class Throbber;
+class View;
+}  // namespace views
+
 namespace autofill {
 
 class PaymentsChurnedUsersBubbleController;
@@ -28,6 +33,8 @@ class PaymentsChurnedUsersBubbleView : public AutofillLocationBarBubble {
   ~PaymentsChurnedUsersBubbleView() override;
 
   void Show(DisplayReason reason);
+  bool OnDialogAccepted();
+  void SwitchToLoadingState();
 
   // AutofillBubbleBase:
   void Hide() override;
@@ -38,7 +45,15 @@ class PaymentsChurnedUsersBubbleView : public AutofillLocationBarBubble {
   void WindowClosing() override;
   void Init() override;
 
+ private:
+  std::unique_ptr<views::View> CreateLoadingProgressRow();
+
   raw_ptr<PaymentsChurnedUsersBubbleController> controller_;
+
+  raw_ptr<views::View> loading_progress_row_ = nullptr;
+  raw_ptr<views::Throbber> loading_throbber_ = nullptr;
+
+  base::WeakPtrFactory<PaymentsChurnedUsersBubbleView> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

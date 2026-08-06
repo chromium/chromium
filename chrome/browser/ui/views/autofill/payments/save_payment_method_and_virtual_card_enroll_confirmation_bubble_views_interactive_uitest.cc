@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/autofill/payments/save_payment_method_and_virtual_card_enroll_confirmation_bubble_views.h"
+
 #include <optional>
 
 #include "base/strings/strcat.h"
@@ -12,7 +14,6 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_bubble_views.h"
-#include "chrome/browser/ui/views/autofill/payments/save_payment_method_and_virtual_card_enroll_confirmation_bubble_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
@@ -25,6 +26,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/widget_test.h"
 
@@ -139,7 +141,7 @@ IN_PROC_BROWSER_TEST_P(SaveCardConfirmationBubbleViewsInteractiveUiTest,
       BubbleView()->GetViewByID(DialogViewId::DESCRIPTION_LABEL)->GetVisible());
   if (IsWalletBrandingEnabled()) {
     EXPECT_EQ(
-        static_cast<views::Label*>(
+        static_cast<views::StyledLabel*>(
             BubbleView()->GetViewByID(DialogViewId::DESCRIPTION_LABEL))
             ->GetText(),
         l10n_util::GetStringUTF16(
@@ -147,7 +149,7 @@ IN_PROC_BROWSER_TEST_P(SaveCardConfirmationBubbleViewsInteractiveUiTest,
                 ? IDS_AUTOFILL_SAVE_CARD_TO_WALLET_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT_V2
                 : IDS_AUTOFILL_SAVE_CARD_TO_WALLET_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT));
     EXPECT_EQ(
-        static_cast<views::Label*>(
+        static_cast<views::StyledLabel*>(
             BubbleView()->GetViewByID(DialogViewId::DESCRIPTION_LABEL))
             ->GetViewAccessibility()
             .GetCachedName(),
@@ -157,13 +159,13 @@ IN_PROC_BROWSER_TEST_P(SaveCardConfirmationBubbleViewsInteractiveUiTest,
                 : IDS_AUTOFILL_SAVE_CARD_TO_WALLET_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT));
   } else {
     EXPECT_EQ(
-        static_cast<views::Label*>(
+        static_cast<views::StyledLabel*>(
             BubbleView()->GetViewByID(DialogViewId::DESCRIPTION_LABEL))
             ->GetText(),
         l10n_util::GetStringUTF16(
             IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT));
     EXPECT_EQ(
-        static_cast<views::Label*>(
+        static_cast<views::StyledLabel*>(
             BubbleView()->GetViewByID(DialogViewId::DESCRIPTION_LABEL))
             ->GetViewAccessibility()
             .GetCachedName(),
@@ -226,7 +228,7 @@ IN_PROC_BROWSER_TEST_P(SaveCardConfirmationBubbleViewsInteractiveUiTest,
   EXPECT_TRUE(
       BubbleView()->GetViewByID(DialogViewId::DESCRIPTION_LABEL)->GetVisible());
   EXPECT_EQ(
-      static_cast<views::Label*>(
+      static_cast<views::StyledLabel*>(
           BubbleView()->GetViewByID(DialogViewId::DESCRIPTION_LABEL))
           ->GetText(),
       l10n_util::GetStringUTF16(
@@ -234,7 +236,7 @@ IN_PROC_BROWSER_TEST_P(SaveCardConfirmationBubbleViewsInteractiveUiTest,
               ? IDS_AUTOFILL_SAVE_CARD_TO_WALLET_CONFIRMATION_FAILURE_DESCRIPTION_TEXT
               : IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_DESCRIPTION_TEXT));
   EXPECT_EQ(
-      static_cast<views::Label*>(
+      static_cast<views::StyledLabel*>(
           BubbleView()->GetViewByID(DialogViewId::DESCRIPTION_LABEL))
           ->GetViewAccessibility()
           .GetCachedName(),
@@ -412,13 +414,13 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(
       BubbleView()->GetViewByID(DialogViewId::DESCRIPTION_LABEL)->GetVisible());
   EXPECT_EQ(
-      static_cast<views::Label*>(
+      static_cast<views::StyledLabel*>(
           BubbleView()->GetViewByID(DialogViewId::DESCRIPTION_LABEL))
           ->GetText(),
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT));
   EXPECT_EQ(
-      static_cast<views::Label*>(
+      static_cast<views::StyledLabel*>(
           BubbleView()->GetViewByID(DialogViewId::DESCRIPTION_LABEL))
           ->GetViewAccessibility()
           .GetCachedName(),
@@ -482,14 +484,14 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(
       BubbleView()->GetViewByID(DialogViewId::DESCRIPTION_LABEL)->GetVisible());
   EXPECT_EQ(
-      static_cast<views::Label*>(
+      static_cast<views::StyledLabel*>(
           BubbleView()->GetViewByID(DialogViewId::DESCRIPTION_LABEL))
           ->GetText(),
       l10n_util::GetStringFUTF16(
           IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_CONFIRMATION_FAILURE_DESCRIPTION_TEXT,
           card.NetworkAndLastFourDigits()));
   EXPECT_EQ(
-      static_cast<views::Label*>(
+      static_cast<views::StyledLabel*>(
           BubbleView()->GetViewByID(DialogViewId::DESCRIPTION_LABEL))
           ->GetViewAccessibility()
           .GetCachedName(),

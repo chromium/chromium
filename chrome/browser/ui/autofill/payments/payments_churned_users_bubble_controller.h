@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
+#include "components/autofill/core/browser/ui/payments/save_payment_method_and_virtual_card_enroll_confirmation_ui_params.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
@@ -16,6 +17,8 @@ class TabInterface;
 }
 
 namespace autofill {
+
+inline constexpr int kMillisecondsUntilConfirmationBubbleIsShown = 1000;
 
 // The experiment arm assigned to the user for the resurrecting churned users
 // experiment. This experiment arm affects the bubble UI.
@@ -59,6 +62,12 @@ class PaymentsChurnedUsersBubbleController
   AutofillEnableResurrectingPaymentsUsersTreatmentArm
   GetAutofillEnableResurrectingPaymentsUsersTreatmentArm() const;
   const AccountInfo& GetAccountInfo() const;
+  void OnAcceptButton();
+  void ShowConfirmationBubbleView();
+  SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
+  GetConfirmationUiParams() const;
+  base::OnceCallback<void(PaymentsUiClosedReason)> GetOnBubbleClosedCallback();
+  base::WeakPtr<PaymentsChurnedUsersBubbleController> GetWeakPtr();
 
   // AutofillBubbleControllerBase:
   void OnBubbleDiscarded() override;
@@ -86,6 +95,12 @@ class PaymentsChurnedUsersBubbleController
   // the page action icon goes away so that the user isn't stuck with the icon
   // and re-showing the bubble in the omnibox.
   bool should_show_icon_ = true;
+
+  // Denotes whether the user has accepted the churned users bubble. Since
+  // there is a loading state that triggers after accepting the churned users
+  // bubble, this variable is used to signal that an acceptance has occurred so
+  // that the bubble is treated as accepted on close.
+  bool is_accepted_ = false;
 
   base::OnceClosure accept_callback_;
   base::OnceClosure cancel_callback_;

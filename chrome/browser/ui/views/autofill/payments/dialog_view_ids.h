@@ -39,6 +39,12 @@ enum DialogViewId : int {
   // The main content view for the main migration dialog.
   MAIN_CONTENT_VIEW_MIGRATION_OFFER_DIALOG,
 
+  // The main content view for the save payment method and virtual card enroll
+  // confirmation bubble.
+  // TODO(crbug.com/524740910): Rename to a more generic name as more projects
+  // (such as churned users) are using this.
+  SAVE_PAYMENT_METHOD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUBBLE_VIEWS,
+
   // The following are views::LabelButton objects (clickable).
   OK_BUTTON,            // Can say [Save], [Next], [Confirm],
                         // or [Done] depending on context
@@ -79,7 +85,7 @@ enum DialogViewId : int {
 
   // The following are views::ImageView objects.
   BUBBLE_TITLE_ICON,  // The icon created in a TitleWithIconAfterLabelView.
-  GPAY_PILL_ICON,    // The GPay pill that appears to the right of upload card
+  GPAY_PILL_ICON,     // The GPay pill that appears to the right of upload card
                       // info.
 };
 

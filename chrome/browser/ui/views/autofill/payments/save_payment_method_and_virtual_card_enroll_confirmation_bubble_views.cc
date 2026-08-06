@@ -15,6 +15,7 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/styled_label.h"
 
 namespace autofill {
 
@@ -103,15 +104,32 @@ void SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews::
 void SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews::Init() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
+  SetID(
+      DialogViewId::
+          SAVE_PAYMENT_METHOD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUBBLE_VIEWS);
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kText, views::DialogContentType::kText));
-  auto description = std::make_unique<views::Label>(
-      ui_params_.description_text, views::style::CONTEXT_DIALOG_BODY_TEXT,
-      views::style::STYLE_SECONDARY);
+  auto description = std::make_unique<views::StyledLabel>();
+  description->SetText(ui_params_.description_text);
+  description->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
+  description->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
   description->SetID(DialogViewId::DESCRIPTION_LABEL);
   description->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  description->SetMultiLine(true);
   description->GetViewAccessibility().SetName(ui_params_.description_text);
+  if (ui_params_.description_text_link_range_and_callback.has_value()) {
+    views::StyledLabel::RangeStyleInfo style_info =
+        views::StyledLabel::RangeStyleInfo::CreateForLink(std::get<2>(
+            ui_params_.description_text_link_range_and_callback.value()));
+    description->AddStyleRange(
+        gfx::Range(
+            std::get<0>(
+                ui_params_.description_text_link_range_and_callback.value())
+                .value(),
+            std::get<1>(
+                ui_params_.description_text_link_range_and_callback.value())
+                .value()),
+        style_info);
+  }
   AddChildView(std::move(description));
 }
 

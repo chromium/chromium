@@ -14,6 +14,8 @@ namespace autofill {
 
 // This class displays a confirmation bubble view after a save card or IBAN
 // upload or virtual card enrollment.
+// TODO(crbug.com/524740910): Rename to a more generic name as more projects
+// (such as churned users) are using this.
 class SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews
     : public AutofillLocationBarBubble {
  public:

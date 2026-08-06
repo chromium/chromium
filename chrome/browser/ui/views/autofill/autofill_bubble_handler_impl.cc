@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_data_controller.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
+#include "chrome/browser/ui/autofill/payments/payments_churned_users_bubble_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
 #include "chrome/browser/ui/autofill/payments/save_iban_ui.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -350,6 +351,20 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowPaymentsChurnedUsersBubble(
   return ShowBubble<PaymentsChurnedUsersBubbleView>(
       toolbar_button_provider_, kActionShowPaymentsChurnedUsersBubble,
       kPaymentsChurnedUsersBubbleId, is_user_gesture, web_contents, controller);
+}
+
+AutofillBubbleBase*
+AutofillBubbleHandlerImpl::ShowPaymentsChurnedUsersConfirmationBubble(
+    content::WebContents* web_contents,
+    PaymentsChurnedUsersBubbleController* controller) {
+  views::BubbleAnchor anchor = toolbar_button_provider_->GetBubbleAnchor(
+      kActionShowPaymentsChurnedUsersBubble);
+  base::OnceCallback<void(PaymentsUiClosedReason)> callback =
+      controller->GetOnBubbleClosedCallback();
+
+  return ShowSaveCardAndVirtualCardEnrollConfirmationBubble(
+      anchor, web_contents, std::move(callback), kPaymentsChurnedUsersBubbleId,
+      controller->GetConfirmationUiParams());
 }
 
 AutofillBubbleBase*
