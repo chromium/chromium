@@ -20,12 +20,14 @@
 #include "base/notimplemented.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/build_config.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
@@ -308,6 +310,15 @@ void AutofillWalletCredentialSyncBridge::ActOnLocalChange(
   switch (change.type()) {
     case ServerCvcChange::ADD:
     case ServerCvcChange::UPDATE:
+#if BUILDFLAG(IS_IOS)
+      // TODO(crbug.com/542769367): Short-term fix for production crash spike
+      // until longer-term investigation of empty CVC entries completes.
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillIgnoreEmptyCvcsInSyncBridge) &&
+          change.data_model().cvc.empty()) {
+        break;
+      }
+#endif
       data->name = base::NumberToString(change.data_model().instrument_id);
       *data->specifics.mutable_autofill_wallet_credential() =
           AutofillWalletCredentialSpecificsFromStructData(change.data_model());
@@ -347,6 +358,15 @@ AutofillWalletCredentialSyncBridge::ConvertToDataBatch(
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const std::unique_ptr<ServerCvc>& server_cvc_from_list :
        server_cvc_list) {
+#if BUILDFLAG(IS_IOS)
+    // TODO(crbug.com/542769367): Short-term fix for production crash spike
+    // until longer-term investigation of empty CVC entries completes.
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillIgnoreEmptyCvcsInSyncBridge) &&
+        server_cvc_from_list->cvc.empty()) {
+      continue;
+    }
+#endif
     auto entity_data = std::make_unique<syncer::EntityData>();
     sync_pb::AutofillWalletCredentialSpecifics wallet_credential_specifics =
         AutofillWalletCredentialSpecificsFromStructData(*server_cvc_from_list);
