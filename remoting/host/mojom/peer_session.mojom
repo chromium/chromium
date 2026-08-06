@@ -4,6 +4,10 @@
 
 module remoting.mojom;
 
+import "remoting/host/mojom/chromoting_host_services.mojom";
+import "remoting/host/mojom/common.mojom";
+import "remoting/host/mojom/desktop_session.mojom";
+
 // Interface implemented in the high-privilege daemon process (`DaemonProcess`).
 // Used by the Network process to spawn or bootstrap a Peer Connection session.
 //
@@ -16,18 +20,51 @@ interface PeerSessionManager {
       pending_receiver<PeerSession> peer_session_receiver);
 };
 
+// LINT.IfChange(peer_session_event_handler)
+// Mirror of remoting::PeerSession::EventHandler.
+// Implemented by the Network process and called by the Peer Connection process.
+[EnableIf=is_win|is_linux]
+interface PeerSessionEventHandler {
+  // Called after all channels have been connected.
+  OnSessionChannelsConnected();
+
+  // Called when the session has closed or failed. `error_details` is a
+  // human-readable diagnostic string intended for logging/debugging only and
+  // must not be parsed programmatically.
+  OnSessionClosed(ProtocolErrorCode error,
+                  string error_details,
+                  SourceLocation error_location);
+
+  // Called on notification of a route change event when a channel is connected.
+  OnSessionRouteChange(string channel_name, TransportRoute route);
+};
+// LINT.ThenChange(//remoting/host/peer_session.h:peer_session_event_handler)
+
 // A session interface implemented by the Peer Connection process.
 // If the caller drops the remote, the disconnect handler terminates the Peer
 // Connection process.
-//
-// More methods will be added to this interface in subsequent CLs.
 //
 // Callee: Untrusted Peer Connection Process (`PeerConnectionProcess`).
 // Caller: Network Process (`IpcPeerSession`).
 [EnableIf=is_win|is_linux]
 interface PeerSession {
-  // TODO(crbug.com/382291480): Add methods for session control, capturer
-  // management, and WebRTC signaling.
+  // Starts the peer session.
+  Start(pending_remote<PeerSessionEventHandler> event_handler,
+        string client_jid,
+        pending_remote<DesktopSession> control_remote,
+        pending_receiver<DesktopSessionEvents> events_receiver,
+        DesktopEnvironmentOptions desktop_environment_options);
+
+  // Disconnects the peer session and tears down transport and desktop
+  // resources. `error_details` is a human-readable diagnostic string intended
+  // for logging/debugging only and must not be parsed programmatically.
+  DisconnectSession(ProtocolErrorCode error,
+                    string error_details,
+                    SourceLocation error_location);
+
+  // Connects a ChromotingSessionServices client.
+  OnSessionServicesClientConnected(
+      pending_receiver<ChromotingSessionServices> receiver);
 };
 
 // Associated interface used by the Daemon to control the PC process.

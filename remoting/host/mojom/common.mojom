@@ -4,6 +4,9 @@
 
 module remoting.mojom;
 
+[EnableIf=is_win|is_linux]
+import "services/network/public/mojom/ip_endpoint.mojom";
+
 // This enum mirrors the remoting::ErrorCode enum.
 enum ProtocolErrorCode {
   kOk = 0,
@@ -48,4 +51,21 @@ struct SourceLocation {
   string? file_name;
   // Line number in the file where the error occurred.
   int32 line_number;
+};
+
+// This enum mirrors the remoting::protocol::TransportRoute::RouteType enum.
+[EnableIf=is_win|is_linux]
+enum TransportRouteType {
+  kUndefined = 0,
+  kDirect = 1,
+  kStun = 2,
+  kRelay = 3,
+};
+
+// This struct mirrors the remoting::protocol::TransportRoute struct.
+[EnableIf=is_win|is_linux]
+struct TransportRoute {
+  TransportRouteType type;
+  network.mojom.IPEndPoint remote_address;
+  network.mojom.IPEndPoint local_address;
 };

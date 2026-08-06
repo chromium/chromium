@@ -328,7 +328,9 @@ TEST_F(DaemonProcessTest, LaunchPeerConnectionProcess) {
 
   StartDaemonProcess();
 
-  daemon_process_->LaunchPeerSession(mojo::NullReceiver());
+  mojo::PendingRemote<mojom::PeerSession> peer_session_remote;
+  daemon_process_->LaunchPeerSession(
+      peer_session_remote.InitWithNewPipeAndPassReceiver());
 }
 
 }  // namespace remoting

@@ -920,7 +920,8 @@ void PeerSessionImpl::OnConnectionClosed(protocol::ErrorCode error,
 
   // Notify the ClientSession that this client is disconnected.
   if (event_handler_) {
-    event_handler_->OnSessionClosed(error, error_details, error_location);
+    event_handler_->OnSessionClosed(error, std::string(error_details),
+                                    error_location);
   }
 }
 

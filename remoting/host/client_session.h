@@ -97,7 +97,7 @@ class ClientSession : public protocol::Session::EventHandler,
   // PeerSession::EventHandler interface.
   void OnSessionChannelsConnected() override;
   void OnSessionClosed(protocol::ErrorCode error,
-                       std::string_view error_details,
+                       const std::string& error_details,
                        const SourceLocation& error_location) override;
   void OnSessionRouteChange(const std::string& channel_name,
                             const protocol::TransportRoute& route) override;

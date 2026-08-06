@@ -13,7 +13,12 @@
 #include "base/task/single_thread_task_runner.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "mojo/public/cpp/system/message_pipe.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "remoting/base/session_policies.h"
+#include "remoting/host/ipc_desktop_environment.h"
+#include "remoting/host/peer_session_impl.h"
+#include "remoting/protocol/ice_config_fetcher.h"
 
 namespace remoting {
 
@@ -69,27 +74,101 @@ void PeerConnectionProcess::BindPeerSession(
       &PeerConnectionProcess::OnSessionDisconnected, base::Unretained(this)));
 }
 
-void PeerConnectionProcess::OnSessionDisconnected() {
+void PeerConnectionProcess::Start(
+    mojo::PendingRemote<mojom::PeerSessionEventHandler> event_handler,
+    const std::string& client_jid,
+    mojo::PendingRemote<mojom::DesktopSession> control_remote,
+    mojo::PendingReceiver<mojom::DesktopSessionEvents> events_receiver,
+    const DesktopEnvironmentOptions& desktop_environment_options) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  LOG(INFO)
-      << "PeerSession dropped by Network process; shutting down PC process.";
-  if (on_shutdown_for_testing_) {
-    std::move(on_shutdown_for_testing_).Run();
+  DCHECK(!peer_session_);
+
+  desktop_session_control_remote_ = std::move(control_remote);
+  desktop_session_events_receiver_ = std::move(events_receiver);
+
+  desktop_environment_factory_ = std::make_unique<IpcDesktopEnvironmentFactory>(
+      caller_task_runner_, io_task_runner_,
+      base::BindRepeating(&PeerConnectionProcess::GetDesktopSession,
+                          base::Unretained(this)));
+
+  // TODO(crbug.com/502281489): Hook up IceConfigFetcher with the Network
+  // process over Mojo.
+  PeerSessionImplFactory peer_session_factory(
+      desktop_environment_factory_.get(),
+      base::BindRepeating([]() -> std::unique_ptr<protocol::IceConfigFetcher> {
+        return nullptr;
+      }));
+
+  peer_session_ = peer_session_factory.Create();
+  if (!peer_session_) {
+    LOG(ERROR) << "Failed to create PeerSession.";
+    Shutdown(1);
     return;
   }
-  base::Process::TerminateCurrentProcessImmediately(0);
+
+  event_handler_.Bind(std::move(event_handler));
+  peer_session_->Start(event_handler_.get(), client_jid,
+                       desktop_environment_options, /*extensions=*/{},
+                       SessionPolicies(), SessionOptions());
+}
+
+void PeerConnectionProcess::DisconnectSession(
+    protocol::ErrorCode error,
+    const std::string& error_details,
+    const SourceLocation& error_location) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (peer_session_) {
+    peer_session_->DisconnectSession(error, error_details, error_location);
+  }
+}
+
+void PeerConnectionProcess::OnSessionServicesClientConnected(
+    mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (peer_session_) {
+    peer_session_->OnSessionServicesClientConnected(std::move(receiver));
+  }
 }
 
 void PeerConnectionProcess::OnChannelError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LOG(ERROR) << "Daemon channel error in PC process. Terminating.";
+  Shutdown(1);
+}
 
-  daemon_channel_.reset();
-  control_receiver_.reset();
-  session_receiver_.reset();
+void PeerConnectionProcess::OnSessionDisconnected() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  LOG(INFO)
+      << "PeerSession dropped by Network process; shutting down PC process.";
+  Shutdown(0);
+}
 
-  caller_task_runner_ = nullptr;
-  io_task_runner_ = nullptr;
+void PeerConnectionProcess::Shutdown(int exit_code) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (on_shutdown_for_testing_) {
+    std::move(on_shutdown_for_testing_).Run();
+    return;
+  }
+  base::Process::TerminateCurrentProcessImmediately(exit_code);
+}
+
+void PeerConnectionProcess::GetDesktopSession(
+    mojo::PendingReceiver<mojom::DesktopSession> control_receiver,
+    mojo::PendingRemote<mojom::DesktopSessionEvents> events_remote,
+    mojom::DesktopSessionOptionsPtr options) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // `options` is safely ignored here because the DesktopSession handles were
+  // pre-created in the network process and the options have already been
+  // evaluated when requesting the session from the daemon process.
+  if (desktop_session_control_remote_.is_valid()) {
+    mojo::FusePipes(std::move(control_receiver),
+                    std::move(desktop_session_control_remote_));
+    mojo::FusePipes(std::move(desktop_session_events_receiver_),
+                    std::move(events_remote));
+  } else {
+    LOG(WARNING) << "GetDesktopSession called when desktop session handles are "
+                 << "already consumed or invalid.";
+  }
 }
 
 }  // namespace remoting

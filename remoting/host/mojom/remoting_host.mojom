@@ -40,24 +40,6 @@ interface RemotingHostControl {
   BindChromotingHostServices(pending_receiver<ChromotingHostServices> receiver);
 };
 
-
-// This enum mirrors the remoting::protocol::TransportRoute::RouteType enum.
-[EnableIf=is_win|is_linux]
-enum TransportRouteType {
-  kUndefined = 0,
-  kDirect = 1,
-  kStun = 2,
-  kRelay = 3,
-};
-
-// This struct mirrors the remoting::protocol::TransportRoute struct.
-[EnableIf=is_win|is_linux]
-struct TransportRoute {
-  TransportRouteType type;
-  network.mojom.IPEndPoint remote_address;
-  network.mojom.IPEndPoint local_address;
-};
-
 // Provides a set of methods to allow the Network process to notify the Daemon
 // process of state. This is typically used for logging and is meant for
 // informational purposes only (i.e. these should not trigger any service-level

@@ -157,7 +157,7 @@ class MockPeerSessionEventHandler : public PeerSession::EventHandler {
   MOCK_METHOD(void,
               OnSessionClosed,
               (protocol::ErrorCode error,
-               std::string_view error_details,
+               const std::string& error_details,
                const SourceLocation& error_location),
               (override));
   MOCK_METHOD(void,

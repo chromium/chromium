@@ -140,7 +140,8 @@ void ClientSessionTest::CreateClientSession(
       .WillByDefault([this](protocol::ErrorCode error,
                             std::string_view error_details,
                             const SourceLocation& error_location) {
-        client_session_->OnSessionClosed(error, error_details, error_location);
+        client_session_->OnSessionClosed(error, std::string(error_details),
+                                         error_location);
       });
 
   EXPECT_CALL(mock_peer_session_factory_, Create())
