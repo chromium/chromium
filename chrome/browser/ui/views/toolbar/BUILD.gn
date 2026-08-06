@@ -398,7 +398,14 @@ if (!is_android) {
     }
 
     if (is_chromeos) {
-      deps += [ "//ash/constants" ]
+      deps += [
+        "//ash/constants",
+        "//chrome/browser/ash/ownership",
+        "//chrome/browser/ash/settings",
+        "//chromeos/ash/components/cryptohome",
+        "//chromeos/ash/components/dbus/session_manager",
+        "//components/user_manager",
+      ]
     }
   }
 }
@@ -494,7 +501,6 @@ if (toolkit_views) {
     testonly = true
 
     sources = [
-      "chrome_labs/chrome_labs_unittest.cc",
       "pinned_toolbar_actions_container_unittest.cc",
       "reload_button_unittest.cc",
       "toolbar_action_view_unittest.cc",
