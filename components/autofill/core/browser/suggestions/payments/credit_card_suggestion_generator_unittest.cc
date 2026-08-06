@@ -308,20 +308,6 @@ Matcher<Suggestion> EqualsSuggestion(const Suggestion& suggestion) {
                EqualSuggestionTabIndex(suggestion.tab_index));
 }
 
-#if !BUILDFLAG(IS_IOS)
-Matcher<Suggestion> EqualsUndoAutofillSuggestion() {
-  return EqualsSuggestion(SuggestionType::kUndo,
-#if BUILDFLAG(IS_ANDROID)
-                          base::i18n::ToUpper(l10n_util::GetStringUTF16(
-                              IDS_AUTOFILL_UNDO_MENU_ITEM)),
-#else
-                          l10n_util::GetStringUTF16(
-                              IDS_AUTOFILL_UNDO_MENU_ITEM),
-#endif
-                          Suggestion::Icon::kUndo);
-}
-#endif
-
 Matcher<Suggestion> EqualsManagePaymentsMethodsSuggestion(bool with_gpay_logo) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return EqualsSuggestion(
@@ -1268,7 +1254,7 @@ TEST_F(CreditCardSuggestionGeneratorTest,
               ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/true));
 }
 
-#if !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 TEST_F(CreditCardSuggestionGeneratorTest,
        GetVirtualCardStandaloneCvcFieldSuggestions_UndoAutofill) {
   // Set up a virtual card enrolled server card.
@@ -1309,7 +1295,10 @@ TEST_F(CreditCardSuggestionGeneratorTest,
       ElementsAre(
           EqualsSuggestion(SuggestionType::kVirtualCreditCardEntry),
           EqualsSuggestion(SuggestionType::kSeparator),
-          EqualsUndoAutofillSuggestion(),
+          EqualsSuggestion(
+              SuggestionType::kUndo,
+              l10n_util::GetStringUTF16(IDS_AUTOFILL_UNDO_MENU_ITEM),
+              Suggestion::Icon::kUndo),
           EqualsManagePaymentsMethodsSuggestion(/*with_gpay_logo=*/true)));
 }
 #endif
@@ -1624,7 +1613,7 @@ TEST_F(CreditCardSuggestionGeneratorTest, ScanCreditCardBasedOnIsFormSecure) {
       *http_form_bundle.form_structure->field(0), autofill_client()));
 }
 
-#if !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 TEST_F(CreditCardSuggestionGeneratorTest,
        FieldWasAutofilled_UndoAutofillOnCreditCardForm) {
   payments_data().AddCreditCard(test::GetCreditCard());
@@ -1645,7 +1634,10 @@ TEST_F(CreditCardSuggestionGeneratorTest,
   EXPECT_THAT(suggestions,
               ElementsAre(EqualsSuggestion(SuggestionType::kCreditCardEntry),
                           EqualsSuggestion(SuggestionType::kSeparator),
-                          EqualsUndoAutofillSuggestion(),
+                          EqualsSuggestion(SuggestionType::kUndo,
+                                           l10n_util::GetStringUTF16(
+                                               IDS_AUTOFILL_UNDO_MENU_ITEM),
+                                           Suggestion::Icon::kUndo),
                           EqualsManagePaymentsMethodsSuggestion(
                               /*with_gpay_logo=*/false)));
 }

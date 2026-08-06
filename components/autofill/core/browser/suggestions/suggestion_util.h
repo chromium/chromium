@@ -48,6 +48,9 @@ std::vector<Suggestion> PrepareLoadingStateSuggestions(
     std::vector<Suggestion> current_suggestions,
     const Suggestion& selected_suggestion);
 
+// Returns the "Undo Autofill" suggestion.
+Suggestion CreateUndoSuggestion();
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_SUGGESTION_UTIL_H_

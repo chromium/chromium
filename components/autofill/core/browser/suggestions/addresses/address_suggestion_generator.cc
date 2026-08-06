@@ -147,19 +147,6 @@ struct ProfileWithText {
   std::u16string text;
 };
 
-Suggestion CreateUndoSuggestion() {
-  std::u16string value = l10n_util::GetStringUTF16(IDS_AUTOFILL_UNDO_MENU_ITEM);
-  if constexpr (BUILDFLAG(IS_ANDROID)) {
-    value = base::i18n::ToUpper(value);
-  }
-  Suggestion suggestion(value, SuggestionType::kUndo);
-  suggestion.icon = Suggestion::Icon::kUndo;
-  // TODO(crbug.com/40266549): update "Clear Form" a11y announcement to "Undo"
-  suggestion.acceptance_a11y_announcement =
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_CLEARED_FORM);
-  return suggestion;
-}
-
 bool ShouldUseNationalFormatPhoneNumber(FieldType trigger_field_type) {
   return GroupTypeOfFieldType(trigger_field_type) == FieldTypeGroup::kPhone &&
          trigger_field_type != PHONE_HOME_WHOLE_NUMBER &&

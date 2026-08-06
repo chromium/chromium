@@ -64,19 +64,6 @@ Suggestion::LetterMonochromeIcon CreateFallbackSuggestionIcon(
       base::UTF8ToUTF16(merchant_name.substr(0, 1)));
 }
 
-Suggestion CreateUndoSuggestion() {
-  std::u16string value = l10n_util::GetStringUTF16(IDS_AUTOFILL_UNDO_MENU_ITEM);
-  if constexpr (BUILDFLAG(IS_ANDROID)) {
-    value = base::i18n::ToUpper(value);
-  }
-  Suggestion suggestion(value, SuggestionType::kUndo);
-  suggestion.icon = Suggestion::Icon::kUndo;
-  // TODO(crbug.com/40266549): update "Clear Form" a11y announcement to "Undo"
-  suggestion.acceptance_a11y_announcement =
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_CLEARED_FORM);
-  return suggestion;
-}
-
 // Set the URL for the loyalty card icon image or fallback icon to be shown in
 // the `suggestion`.
 void SetLoyaltyCardIconURL(Suggestion& suggestion,

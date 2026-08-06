@@ -199,16 +199,6 @@ Suggestion CreateManageShoppingSuggestion() {
   return suggestion;
 }
 
-// Returns a suggestion to "Undo" Autofill.
-Suggestion CreateUndoSuggestion() {
-  Suggestion suggestion(l10n_util::GetStringUTF16(IDS_AUTOFILL_UNDO_MENU_ITEM),
-                        SuggestionType::kUndo);
-  suggestion.icon = Suggestion::Icon::kUndo;
-  suggestion.acceptance_a11y_announcement =
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_CLEARED_FORM);
-  return suggestion;
-}
-
 std::vector<Suggestion> GetFooterSuggestions(
     const FormFieldData& trigger_field,
     const DenseSet<AutofillAiUiSection>& ui_sections) {

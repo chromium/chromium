@@ -11,6 +11,8 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 
@@ -74,6 +76,16 @@ std::vector<Suggestion> PrepareLoadingStateSuggestions(
     }
   }
   return current_suggestions;
+}
+
+Suggestion CreateUndoSuggestion() {
+  Suggestion suggestion(l10n_util::GetStringUTF16(IDS_AUTOFILL_UNDO_MENU_ITEM),
+                        SuggestionType::kUndo);
+  suggestion.icon = Suggestion::Icon::kUndo;
+  // TODO(crbug.com/40266549): update "Clear Form" a11y announcement to "Undo"
+  suggestion.acceptance_a11y_announcement =
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_CLEARED_FORM);
+  return suggestion;
 }
 
 }  // namespace autofill
