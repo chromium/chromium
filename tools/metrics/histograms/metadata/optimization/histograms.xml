@@ -1632,18 +1632,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="OptimizationGuide.ModelExecution.OnDeviceTextSafetyModelMetadataValidity"
-    enum="OnDeviceTextSafetyModelMetadataValidity" expires_after="2025-01-26">
-  <owner>holte@chromium.org</owner>
-  <owner>robertogden@chromium.org</owner>
-  <summary>
-    Records whether the received text safety model is valid. Recorded each time
-    an update to the text safety model has been pushed to the on device service
-    controller.
-  </summary>
-</histogram>
-
-<histogram
     name="OptimizationGuide.ModelExecution.Result.{ModelExecutionFeature}"
     enum="Boolean" expires_after="2027-04-14">
   <owner>holte@chromium.org</owner>

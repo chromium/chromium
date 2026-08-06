@@ -830,10 +830,6 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
     EXPECT_FALSE(CreateSession(SessionConfigParams{}));
 
     histogram_tester.ExpectUniqueSample(
-        "OptimizationGuide.ModelExecution."
-        "OnDeviceTextSafetyModelMetadataValidity",
-        TextSafetyModelMetadataValidity::kValid, 1);
-    histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
         "Compose",
         OnDeviceModelEligibilityReason::kSafetyConfigNotAvailableForFeature, 1);
@@ -851,10 +847,6 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
     task_environment_.RunUntilIdle();  // Wait for assets to be read from disk.
     EXPECT_TRUE(CreateSession(SessionConfigParams{}));
 
-    histogram_tester.ExpectUniqueSample(
-        "OptimizationGuide.ModelExecution."
-        "OnDeviceTextSafetyModelMetadataValidity",
-        TextSafetyModelMetadataValidity::kValid, 1);
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
         "Compose",
@@ -880,10 +872,6 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
     EXPECT_FALSE(CreateSession(SessionConfigParams{}));
 
     histogram_tester.ExpectUniqueSample(
-        "OptimizationGuide.ModelExecution."
-        "OnDeviceTextSafetyModelMetadataValidity",
-        TextSafetyModelMetadataValidity::kValid, 1);
-    histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
         "Compose",
         OnDeviceModelEligibilityReason::kLanguageDetectionModelNotAvailable, 1);
@@ -908,10 +896,6 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
 
     EXPECT_TRUE(CreateSession(SessionConfigParams{}));
 
-    histogram_tester.ExpectUniqueSample(
-        "OptimizationGuide.ModelExecution."
-        "OnDeviceTextSafetyModelMetadataValidity",
-        TextSafetyModelMetadataValidity::kValid, 1);
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
         "Compose",

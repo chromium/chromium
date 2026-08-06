@@ -17,39 +17,14 @@
 
 namespace optimization_guide {
 
-namespace {
-
-class ScopedTextSafetyModelMetadataValidityLogger {
- public:
-  ScopedTextSafetyModelMetadataValidityLogger() = default;
-  ~ScopedTextSafetyModelMetadataValidityLogger() {
-    CHECK_NE(TextSafetyModelMetadataValidity::kUnknown, validity_);
-    base::UmaHistogramEnumeration(
-        "OptimizationGuide.ModelExecution."
-        "OnDeviceTextSafetyModelMetadataValidity",
-        validity_);
-  }
-
-  void set_validity(TextSafetyModelMetadataValidity validity) {
-    validity_ = validity;
-  }
-
-  TextSafetyModelMetadataValidity validity_ =
-      TextSafetyModelMetadataValidity::kUnknown;
-};
-
-}  // namespace
-
 std::unique_ptr<SafetyModelInfo> SafetyModelInfo::Load(
     base::optional_ref<const ModelInfo> opt_model_info) {
   if (!opt_model_info.has_value()) {
     return nullptr;
   }
   const ModelInfo& model_info = *opt_model_info;
-  ScopedTextSafetyModelMetadataValidityLogger logger;
 
   if (!model_info.model_metadata) {
-    logger.set_validity(TextSafetyModelMetadataValidity::kNoMetadata);
     return nullptr;
   }
 
@@ -57,18 +32,14 @@ std::unique_ptr<SafetyModelInfo> SafetyModelInfo::Load(
       ParsedAnyMetadata<proto::TextSafetyModelMetadata>(
           *model_info.model_metadata);
   if (!model_metadata) {
-    logger.set_validity(TextSafetyModelMetadataValidity::kMetadataWrongType);
     return nullptr;
   }
-
-  logger.set_validity(TextSafetyModelMetadataValidity::kNoFeatureConfigs);
 
   base::flat_map<proto::ModelExecutionFeature,
                  proto::FeatureTextSafetyConfiguration>
       feature_configs;
   for (const auto& feature_config :
        model_metadata->feature_text_safety_configurations()) {
-    logger.set_validity(TextSafetyModelMetadataValidity::kValid);
     feature_configs[feature_config.feature()] = feature_config;
   }
 
