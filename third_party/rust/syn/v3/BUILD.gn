@@ -91,6 +91,7 @@ cargo_crate("lib") {
     "clone-impls",
     "default",
     "derive",
+    "extra-traits",
     "full",
     "parsing",
     "printing",

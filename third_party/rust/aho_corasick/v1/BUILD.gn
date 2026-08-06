@@ -58,7 +58,7 @@ cargo_crate("lib") {
   cargo_pkg_repository = "https://github.com/BurntSushi/aho-corasick"
   cargo_pkg_version = "1.1.4"
 
-  allow_unsafe = true
+  allow_unsafe = false
 
   deps = [ "//third_party/rust/memchr/v2:lib" ]
   features = [
@@ -70,7 +70,6 @@ cargo_crate("lib") {
   # //third_party/rust/chromium_crates_io/Cargo.toml to use
   # it from first-party code.
   visibility = [ "//third_party/rust/*" ]
-  testonly = true
 
   #####################################################################
   # Tweaking which GN `config`s apply to this target.
