@@ -45,11 +45,7 @@ class CORE_EXPORT PropertyHandle {
 
   unsigned GetHash() const;
 
-  bool IsCSSProperty() const {
-    return handle_type_ == kHandleCSSProperty || IsCSSCustomProperty();
-  }
   const CSSProperty& GetCSSProperty() const {
-    DCHECK(IsCSSProperty());
     return *css_property_;
   }
 
@@ -64,7 +60,6 @@ class CORE_EXPORT PropertyHandle {
   CSSPropertyName GetCSSPropertyName() const {
     if (handle_type_ == kHandleCSSCustomProperty)
       return CSSPropertyName(property_name_);
-    DCHECK(IsCSSProperty());
     return CSSPropertyName(css_property_->PropertyID());
   }
 

@@ -225,9 +225,6 @@ void InvalidatableInterpolation::EnsureValidInterpolationTypes(
 
 void InvalidatableInterpolation::SetFlagIfInheritUsed(
     CSSInterpolationEnvironment& environment) const {
-  if (!property_.IsCSSProperty()) {
-    return;
-  }
   StyleResolverState& state = environment.GetState();
   if (!state.ParentStyle()) {
     return;

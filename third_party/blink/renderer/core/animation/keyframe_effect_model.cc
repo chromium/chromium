@@ -554,12 +554,12 @@ void KeyframeEffectModelBase::EnsureKeyframeGroups() const {
 
 bool KeyframeEffectModelBase::RequiresPropertyNode() const {
   for (const auto& property : DynamicProperties()) {
-    if (!property.IsCSSProperty() ||
-        (property.GetCSSProperty().PropertyID() != CSSPropertyID::kVariable &&
-         property.GetCSSProperty().PropertyID() !=
-             CSSPropertyID::kBackgroundColor &&
-         property.GetCSSProperty().PropertyID() != CSSPropertyID::kClipPath))
+    if (property.GetCSSProperty().PropertyID() != CSSPropertyID::kVariable &&
+        property.GetCSSProperty().PropertyID() !=
+            CSSPropertyID::kBackgroundColor &&
+        property.GetCSSProperty().PropertyID() != CSSPropertyID::kClipPath) {
       return true;
+    }
   }
   return false;
 }
@@ -576,7 +576,7 @@ void KeyframeEffectModelBase::EnsureInterpolationEffectPopulated() const {
     // present, we expect the computed style to reflect an explicit
     // cross-fade.
     PropertyHandle handle = entry.key;
-    if (entry.value->IsStrictlyStatic() && handle.IsCSSProperty() &&
+    if (entry.value->IsStrictlyStatic() &&
         handle.GetCSSProperty().PropertyID() !=
             CSSPropertyID::kListStyleImage) {
       // All keyframes have the same property value.
@@ -745,11 +745,6 @@ bool KeyframeEffectModelBase::PropertySpecificKeyframeGroup::
       // TOOD(kevers): Can likely determine in RecalcOwnStyle if
       // BaseComputedStyle has changed and only recheck if the underlying style
       // has changed.
-
-      // Limit support for provisionally static properties to CSS properties.
-      if (!property.IsCSSProperty()) {
-        return false;
-      }
 
       // Update status check to be either kDynamic or kProvisionalChecked.
       const ComputedStyle* style = element->GetComputedStyle();

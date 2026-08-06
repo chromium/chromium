@@ -3392,8 +3392,9 @@ bool IsCustomPropertyHandle(const PropertyHandle& property) {
 }
 
 bool IsFontAffectingPropertyHandle(const PropertyHandle& property) {
-  if (property.IsCSSCustomProperty() || !property.IsCSSProperty())
+  if (property.IsCSSCustomProperty()) {
     return false;
+  }
   return property.GetCSSProperty().AffectsFont();
 }
 

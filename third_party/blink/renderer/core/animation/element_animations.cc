@@ -246,9 +246,6 @@ void ElementAnimations::CancelCompositedAnimationsAffectingProperties(
     }
 
     for (const auto& property : effect->Model()->DynamicProperties()) {
-      if (!property.IsCSSProperty()) {
-        continue;
-      }
       if (property_bitset.Has(property.GetCSSProperty().PropertyID())) {
         entry.key->SetCompositorPending(
             Animation::CompositorPendingReason::kPendingCancel);

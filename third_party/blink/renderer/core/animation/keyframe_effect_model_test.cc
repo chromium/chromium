@@ -195,7 +195,6 @@ void ExpectProperty(CSSPropertyID property,
                     Interpolation* interpolation_value) {
   auto* interpolation = To<InvalidatableInterpolation>(interpolation_value);
   const PropertyHandle& property_handle = interpolation->GetProperty();
-  ASSERT_TRUE(property_handle.IsCSSProperty());
   ASSERT_EQ(property, property_handle.GetCSSProperty().PropertyID());
 }
 
@@ -204,9 +203,9 @@ Interpolation* FindValue(HeapVector<Member<Interpolation>>& values,
   for (auto& value : values) {
     const auto& property =
         To<InvalidatableInterpolation>(value.Get())->GetProperty();
-    if (property.IsCSSProperty() &&
-        property.GetCSSProperty().PropertyID() == id)
+    if (property.GetCSSProperty().PropertyID() == id) {
       return value.Get();
+    }
   }
   return nullptr;
 }

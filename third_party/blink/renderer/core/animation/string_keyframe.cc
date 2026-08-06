@@ -234,9 +234,6 @@ void StringKeyframe::EnsureCssPropertyMap() const {
   HeapVector<Member<PropertyResolver>> resolvers;
   for (const auto& entry : input_properties_) {
     const PropertyHandle& property_handle = entry.key;
-    if (!property_handle.IsCSSProperty())
-      continue;
-
     if (property_handle.IsCSSCustomProperty()) {
       CSSPropertyName property_name(property_handle.CustomPropertyName());
       const CSSValue* value = entry.value->CssValue();
@@ -267,7 +264,6 @@ StringKeyframe::CreatePropertySpecificKeyframe(
     double offset) const {
   EffectModel::CompositeOperation composite =
       composite_.value_or(effect_composite);
-  DCHECK(property.IsCSSProperty());
   return MakeGarbageCollected<CSSPropertySpecificKeyframe>(
       offset, &Easing(), &CssPropertyValue(property), tree_scope_.Get(),
       composite);

@@ -123,8 +123,9 @@ bool EffectStack::AffectsProperties(const CSSBitset& bitset,
       continue;
     for (const auto& interpolation : sampled_effect->Interpolations()) {
       const PropertyHandle& property = interpolation->GetProperty();
-      if (property.IsCSSCustomProperty() || !property.IsCSSProperty())
+      if (property.IsCSSCustomProperty()) {
         continue;
+      }
       if (bitset.Has(property.GetCSSProperty().PropertyID()))
         return true;
     }

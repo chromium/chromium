@@ -64,9 +64,6 @@ TEST_F(PropertyHandleTest, Hash) {
 TEST_F(PropertyHandleTest, Accessors) {
   AtomicString name("--x");
 
-  EXPECT_TRUE(PropertyHandle(GetCSSPropertyOpacity()).IsCSSProperty());
-  EXPECT_TRUE(PropertyHandle(name).IsCSSProperty());
-
   EXPECT_FALSE(PropertyHandle(GetCSSPropertyOpacity()).IsCSSCustomProperty());
   EXPECT_TRUE(PropertyHandle(name).IsCSSCustomProperty());
 

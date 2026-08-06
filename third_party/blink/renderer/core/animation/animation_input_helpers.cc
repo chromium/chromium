@@ -102,7 +102,6 @@ scoped_refptr<TimingFunction> AnimationInputHelpers::ParseTimingFunction(
 
 String AnimationInputHelpers::PropertyHandleToKeyframeAttribute(
     PropertyHandle property) {
-  DCHECK(property.IsCSSProperty());
   if (property.IsCSSCustomProperty()) {
     return property.CustomPropertyName();
   }
