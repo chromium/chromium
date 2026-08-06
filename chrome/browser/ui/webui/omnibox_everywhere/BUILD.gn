@@ -22,6 +22,7 @@ source_set("omnibox_everywhere") {
     "//chrome/browser/resources/omnibox_everywhere:resources",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/omnibox",
+    "//chrome/browser/ui/profiles",
     "//chrome/browser/ui/webui:favicon_source",
     "//chrome/browser/ui/webui:plural_string_handler",
     "//chrome/browser/ui/webui:webui_util",

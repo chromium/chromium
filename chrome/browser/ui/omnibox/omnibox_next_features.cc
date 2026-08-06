@@ -82,6 +82,10 @@ BASE_FEATURE(kWebUIOmniboxFullPopup, DISABLED);
 BASE_FEATURE(kWebUIOmniboxFullPopupDoubleClick, ENABLED);
 // If enabled, enables OmniboxEverywhere popup triggered by shortcut.
 BASE_FEATURE(kOmniboxEverywhere, DISABLED);
+// Controls showing the profile picker menu on profile avatar click in
+// OmniboxEverywhere.
+const base::FeatureParam<bool> kOmniboxEverywhereProfilePickerParam{
+    &kOmniboxEverywhere, "ProfilePicker", false};
 // Enables the WebUI for omnibox suggestions without modifying the popup UI.
 BASE_FEATURE(kWebUIOmniboxPopupDebug, DISABLED);
 // Enables side-by-side comparison omnibox suggestions in WebUI and Views.

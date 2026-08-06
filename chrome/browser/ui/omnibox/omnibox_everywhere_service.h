@@ -27,6 +27,7 @@ class OmniboxEverywhereService : public KeyedService {
 
   void HidePopup();
   bool IsPopupVisible() const;
+  void ShowProfilePicker();
   void OpenUrl(const GURL& url,
                WindowOpenDisposition disposition,
                ui::PageTransition transition = ui::PAGE_TRANSITION_LINK);

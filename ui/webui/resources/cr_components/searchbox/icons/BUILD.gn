@@ -10,6 +10,7 @@ generate_grd("build_grdp") {
   resource_path_prefix = "cr_components/searchbox/icons"
   out_grd = "$target_gen_dir/resources.grdp"
   input_files = [
+    "account_circle.svg",
     "arrow_forward.svg",
     "bookmark_cr23.svg",
     "calculator_cr23.svg",

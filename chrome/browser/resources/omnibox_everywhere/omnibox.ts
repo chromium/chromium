@@ -8,6 +8,7 @@ import '//resources/cr_components/searchbox/searchbox_compose_button.js';
 import '//resources/cr_components/search/animated_glow.js';
 import '//resources/cr_components/composebox/composebox_file_inputs.js';
 import '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
+import './profile_icon.js';
 
 import {ContextType, GlifAnimationState, recordContextAdditionMethod, recordContextualElementClickedMetric, TabSuggestionsState} from '//resources/cr_components/composebox/common.js';
 import type {ComposeboxState, ContextualUpload, DriveUpload, TabUpload, TabUploadOrigin} from '//resources/cr_components/composebox/common.js';
@@ -95,7 +96,6 @@ export class OmniboxEverywhereOmniboxElement extends
       },
       composeButtonEnabled: {type: Boolean, reflect: true},
       ntpRealboxNextEnabled: {type: Boolean, reflect: true},
-      profileAvatarUrl_: {type: String},
       contextMenuGlifAnimationState: {
         type: String,
         reflect: true,
@@ -128,8 +128,6 @@ export class OmniboxEverywhereOmniboxElement extends
       loadTimeData.getBoolean('searchboxShowComposeEntrypoint');
   protected accessor ntpRealboxNextEnabled: boolean =
       loadTimeData.getBoolean('ntpRealboxNextEnabled');
-  protected accessor profileAvatarUrl_: string =
-      loadTimeData.getString('profileAvatarUrl');
   accessor contextMenuGlifAnimationState: GlifAnimationState =
       GlifAnimationState.STARTED;
   protected accessor inputState_: InputState|null = null;
