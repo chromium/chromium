@@ -4486,6 +4486,32 @@
             ]
         }
     ],
+    "BrokenAlternativeServiceDelays": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Initial1s_Max5m_20260804",
+                    "params": {
+                        "kInitialDelayForBrokenAlternativeServiceParam": "1s",
+                        "kMaxDelayForBrokenAlternativeServiceParam": "5m"
+                    },
+                    "enable_features": [
+                        "InitialDelayForBrokenAlternativeService",
+                        "MaxDelayForBrokenAlternativeService"
+                    ]
+                }
+            ]
+        }
+    ],
     "BrowserControlsEarlyResize": [
         {
             "platforms": [
@@ -9376,6 +9402,27 @@
                     "name": "Enabled_20260320",
                     "enable_features": [
                         "PerProfileMetrics"
+                    ]
+                }
+            ]
+        }
+    ],
+    "DisablePersistBrokenAlternativeServices": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "PersistBrokenAlternativeServices"
                     ]
                 }
             ]
