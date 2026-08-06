@@ -207,6 +207,7 @@ TEST_F(TabDragSessionTest, ListenerNotification) {
   EXPECT_EQ(dummy_window_.last_detach_tab_ids(), tab_ids);
   EXPECT_EQ(dummy_window_.last_detach_drag_offset(), gfx::Vector2d(0, 0));
   EXPECT_TRUE(dummy_detached_window_.run_window_move_loop_called());
+  EXPECT_FALSE(dummy_detached_window_.had_capture_on_move_loop());
   EXPECT_EQ(dummy_detached_window_.last_move_loop_point(), tear_point);
   EXPECT_EQ(dummy_detached_window_.last_move_loop_offset(),
             gfx::Vector2d(0, 0));
@@ -372,22 +373,20 @@ TEST_F(TabDragSessionTest, SingleTabDragImmediateWindowDrag) {
   // Set tab count to 1 to simulate single-tab window.
   dummy_window_.set_tab_count(1);
 
+  gfx::Point start_point(10, 10);
   std::vector<tabs_api::NodeId> tab_ids = {
       NodeId(NodeId::Type::kContent, "tab1")};
   TabDragSessionParams params{.source_window_id = dummy_window_.GetWindowId(),
                               .source_tab_ids = tab_ids,
-                              .start_point = gfx::Point(),
+                              .start_point = start_point,
                               .end_callback = end_callback.Get()};
   TabDragSession session(std::move(params), &injector);
 
-  EXPECT_TRUE(session.Start().has_value());
-
-  // Move mouse. This should immediately trigger window drag on the source
-  // window, call RunWindowMoveLoop (returns kSuccess), and immediately drop and
-  // end the session.
+  // Single tab in window -> Start() should immediately trigger window drag
+  // on the source window, call RunWindowMoveLoop (returns kSuccess), and
+  // immediately drop and end the session.
   EXPECT_CALL(end_callback, Run()).Times(1);
-  gfx::Point move_point(10, 10);
-  toy_adapter.SendToyEvent(TabDragInputEvent::Type::kMoved, move_point);
+  EXPECT_TRUE(session.Start().has_value());
 
   // We expect 2 events: kStarted, kDropped.
   ASSERT_EQ(listener.events().size(), 2u);
@@ -395,16 +394,75 @@ TEST_F(TabDragSessionTest, SingleTabDragImmediateWindowDrag) {
             ToyTabDragSessionListener::Event::Type::kStarted);
   EXPECT_EQ(listener.events()[1].type,
             ToyTabDragSessionListener::Event::Type::kDropped);
-  EXPECT_EQ(listener.events()[1].point, move_point);
+  EXPECT_EQ(listener.events()[1].point, start_point);
 
   // Verify that DetachToNewWindow was NOT called (we bypassed it).
   EXPECT_FALSE(dummy_window_.detach_to_new_window_called());
 
   // Verify that RunWindowMoveLoop was called on the SOURCE window
-  // (dummy_window_).
+  // (dummy_window_) and that capture was released before entering the loop.
   EXPECT_TRUE(dummy_window_.run_window_move_loop_called());
-  EXPECT_EQ(dummy_window_.last_move_loop_point(), move_point);
+  EXPECT_FALSE(dummy_window_.had_capture_on_move_loop());
+  EXPECT_EQ(dummy_window_.last_move_loop_point(), start_point);
   EXPECT_FALSE(dummy_detached_window_.run_window_move_loop_called());
+}
+
+TEST_F(TabDragSessionTest, SingleTabDragReattachesToTargetWindow) {
+  ToyTabDragSessionInputAdapter toy_adapter;
+  base::MockOnceClosure end_callback;
+  ToyTabDragSessionListener listener;
+  ToyDropTargetRegistry registry;
+  TabDragWindowRegistry window_registry;
+  ToyTabDragSessionInjector injector(toy_adapter, listener, registry,
+                                     &window_registry);
+
+  ToyTabDragWindowAdapter source_window(gfx::Rect(0, 0, 100, 100),
+                                        &window_registry);
+  source_window.set_tab_count(1);
+  registry.set_source_window(&source_window);
+
+  ToyTabDragWindowAdapter target_window(gfx::Rect(200, 0, 100, 100),
+                                        &window_registry);
+  registry.set_target_window(&target_window);
+
+  // Configure source window move loop to simulate a move to (250, 50), which
+  // is within target_window's bounds (200, 0, 100, 100).
+  source_window.set_simulated_moves({gfx::Point(250, 50)});
+
+  std::vector<tabs_api::NodeId> tab_ids = {
+      NodeId(NodeId::Type::kContent, "tab1")};
+  TabDragSessionParams params{.source_window_id = source_window.GetWindowId(),
+                              .source_tab_ids = tab_ids,
+                              .start_point = gfx::Point(),
+                              .end_callback = end_callback.Get()};
+  TabDragSession session(std::move(params), &injector);
+
+  // Single tab in window -> Start() immediately runs the move loop on
+  // source_window, which triggers simulated move to (250, 50) and reattachment.
+  EXPECT_TRUE(session.Start().has_value());
+
+  // We expect: kStarted, kTargetChanged. The session should NOT be dropped or
+  // cancelled yet.
+  ASSERT_EQ(listener.events().size(), 2u);
+  EXPECT_EQ(listener.events()[0].type,
+            ToyTabDragSessionListener::Event::Type::kStarted);
+  EXPECT_EQ(listener.events()[1].type,
+            ToyTabDragSessionListener::Event::Type::kTargetChanged);
+  EXPECT_EQ(listener.events()[1].target, registry.target_id());
+  EXPECT_EQ(listener.events()[1].point, gfx::Point(250, 50));
+
+  // Verify that the session's dragged window transitioned to the target window.
+  EXPECT_EQ(session.dragged_window(), target_window.GetWindowId());
+  EXPECT_TRUE(target_window.HasCapture());
+
+  // Drop in the target window.
+  EXPECT_CALL(end_callback, Run()).Times(1);
+  toy_adapter.SendToyEvent(TabDragInputEvent::Type::kDropped,
+                           gfx::Point(250, 50));
+  ASSERT_EQ(listener.events().size(), 3u);
+  EXPECT_EQ(listener.events()[2].type,
+            ToyTabDragSessionListener::Event::Type::kDropped);
+  EXPECT_EQ(listener.events()[2].point, gfx::Point(250, 50));
 }
 
 }  // namespace tabs_api

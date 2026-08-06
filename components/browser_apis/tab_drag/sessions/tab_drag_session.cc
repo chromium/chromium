@@ -38,15 +38,22 @@ base::expected<void, mojo_base::mojom::ErrorPtr> TabDragSession::Start() {
   auto result =
       injector_->GetInputAdapter().StartInputCapture(base::BindRepeating(
           &TabDragSession::OnInputEvent, base::Unretained(this)));
-  if (result.has_value()) {
-    TabDragWindowAdapter* window = registry()->Get(dragged_window_);
-    CHECK(window);
-    window->SetCapture();
-    injector_->GetSessionListener().OnSessionStarted(
-        dragged_tabs_, dragged_window_, start_point_in_screen_,
-        tab_original_offset_x_);
+  if (!result.has_value()) {
+    return result;
   }
-  return result;
+
+  TabDragWindowAdapter* window = registry()->Get(dragged_window_);
+  CHECK(window);
+  window->SetCapture();
+  injector_->GetSessionListener().OnSessionStarted(
+      dragged_tabs_, dragged_window_, start_point_in_screen_,
+      tab_original_offset_x_);
+
+  if (IsDraggingEntireWindow()) {
+    StartWindowDrag(dragged_window_, start_point_in_screen_);
+  }
+
+  return base::ok();
 }
 
 TabDragSession::~TabDragSession() {
@@ -68,7 +75,8 @@ void TabDragSession::EndSession() {
 
 void TabDragSession::OnDropTargetRegistered(DropTargetId target_id,
                                             TabDragWindowId window_id) {
-  if (dragged_window_ == window_id && drag_mode_ == DragMode::kDetachedWindow) {
+  if (dragged_window_ == window_id &&
+      drag_mode_ == DragMode::kRunningWindowMoveLoop) {
     injector_->GetSessionListener().OnTargetChanged(target_id,
                                                     last_mouse_screen_point_);
   }
@@ -101,7 +109,7 @@ void TabDragSession::OnInputEvent(const TabDragInputEvent& event) {
       if (drag_mode_ == DragMode::kDetaching ||
           drag_mode_ == DragMode::kAttaching ||
           drag_mode_ == DragMode::kWaitingToExitMoveLoop ||
-          drag_mode_ == DragMode::kDetachedWindow) {
+          drag_mode_ == DragMode::kRunningWindowMoveLoop) {
         break;
       }
       TabDragWindowAdapter* window = registry()->Get(dragged_window_);
@@ -117,7 +125,7 @@ void TabDragSession::OnInputEvent(const TabDragInputEvent& event) {
       EndSession();
       break;
     case TabDragInputEvent::Type::kMoved:
-      if (drag_mode_ != DragMode::kDetachedWindow) {
+      if (drag_mode_ != DragMode::kRunningWindowMoveLoop) {
         HandleMovedEvent(event.screen_point);
       }
       break;
@@ -135,7 +143,7 @@ void TabDragSession::HandleMovedEvent(const gfx::Point& screen_point) {
       // Transient state; ignore move events to prevent reentrancy during loop
       // exit.
       break;
-    case DragMode::kDetachedWindow:
+    case DragMode::kRunningWindowMoveLoop:
       HandleMoveWhileDetached(screen_point);
       break;
   }
@@ -170,23 +178,16 @@ void TabDragSession::HandleMoveWhileDetached(const gfx::Point& screen_point) {
       TabDragWindowAdapter* detached_window = registry()->Get(dragged_window_);
       CHECK(detached_window);
 
+      // Defer tab migration and target transition until the native move loop
+      // has completely returned and unwound on the callstack.
+      pending_reattachment_ = PendingReattachment{
+          .window_id = target_window_id,
+          .target_id = new_target_id,
+          .screen_point = screen_point,
+      };
       drag_mode_ = DragMode::kWaitingToExitMoveLoop;
+
       detached_window->EndWindowMoveLoop();
-      drag_mode_ = DragMode::kAttaching;
-
-      auto migrate_result =
-          detached_window->MigrateTabs(target_window_id, dragged_tabs_);
-      if (!migrate_result.has_value()) {
-        drag_mode_ = DragMode::kDetachedWindow;
-        injector_->GetSessionListener().OnSessionCancelled();
-        EndSession();
-        return;
-      }
-
-      UpdateDraggedWindow(target_window_id);
-      drag_mode_ = DragMode::kAttachedToWindow;
-      injector_->GetSessionListener().OnTargetChanged(new_target_id,
-                                                      screen_point);
       return;
     }
   }
@@ -223,10 +224,18 @@ bool TabDragSession::ShouldTearOff(const gfx::Point& screen_point) const {
 
 void TabDragSession::StartWindowDrag(TabDragWindowId window_id,
                                      const gfx::Point& screen_point) {
-  drag_mode_ = DragMode::kDetachedWindow;
+  CHECK(drag_mode_ == DragMode::kAttachedToWindow ||
+        drag_mode_ == DragMode::kDetaching);
+
+  // Transition to kRunningWindowMoveLoop before releasing capture so
+  // OnInputEvent ignores the resulting kMouseCaptureChanged event.
+  drag_mode_ = DragMode::kRunningWindowMoveLoop;
 
   TabDragWindowAdapter* window = registry()->Get(window_id);
   CHECK(window);
+
+  // Release widget capture so the OS move loop can take exclusive mouse grab.
+  window->ReleaseCapture();
 
   base::WeakPtr<TabDragSession> weak_this = weak_factory_.GetWeakPtr();
 
@@ -238,7 +247,40 @@ void TabDragSession::StartWindowDrag(TabDragWindowId window_id,
     return;
   }
 
-  if (drag_mode_ == DragMode::kDetachedWindow) {
+  if (drag_mode_ == DragMode::kWaitingToExitMoveLoop) {
+    CompleteReattachment();
+  } else {
+    CompleteWindowDrop(loop_result, screen_point);
+  }
+}
+
+void TabDragSession::CompleteReattachment() {
+  CHECK(pending_reattachment_.has_value());
+  PendingReattachment target =
+      *std::exchange(pending_reattachment_, std::nullopt);
+
+  drag_mode_ = DragMode::kAttaching;
+  TabDragWindowAdapter* detached_window = registry()->Get(dragged_window_);
+  CHECK(detached_window);
+
+  auto migrate_result =
+      detached_window->MigrateTabs(target.window_id, dragged_tabs_);
+  if (!migrate_result.has_value()) {
+    drag_mode_ = DragMode::kRunningWindowMoveLoop;
+    injector_->GetSessionListener().OnSessionCancelled();
+    EndSession();
+    return;
+  }
+
+  UpdateDraggedWindow(target.window_id);
+  drag_mode_ = DragMode::kAttachedToWindow;
+  injector_->GetSessionListener().OnTargetChanged(target.target_id,
+                                                  target.screen_point);
+}
+
+void TabDragSession::CompleteWindowDrop(DragMoveLoopResult loop_result,
+                                        const gfx::Point& screen_point) {
+  if (drag_mode_ == DragMode::kRunningWindowMoveLoop) {
     if (loop_result == DragMoveLoopResult::kSuccess) {
       injector_->GetSessionListener().OnSessionDropped(screen_point);
     } else {

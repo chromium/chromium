@@ -61,6 +61,7 @@ class ToyTabDragWindowAdapter : public TabDragWindowAdapter {
       const gfx::Vector2d& drag_offset,
       WindowMoveCallback move_callback) override {
     run_window_move_loop_called_ = true;
+    had_capture_on_move_loop_ = has_capture_;
     last_move_loop_point_ = screen_point;
     last_move_loop_offset_ = drag_offset;
 
@@ -104,6 +105,7 @@ class ToyTabDragWindowAdapter : public TabDragWindowAdapter {
   bool run_window_move_loop_called() const {
     return run_window_move_loop_called_;
   }
+  bool had_capture_on_move_loop() const { return had_capture_on_move_loop_; }
   const gfx::Point& last_move_loop_point() const {
     return last_move_loop_point_;
   }
@@ -121,6 +123,7 @@ class ToyTabDragWindowAdapter : public TabDragWindowAdapter {
   size_t tab_count_ = 2;
   gfx::Rect bounds_;
   bool has_capture_ = false;
+  bool had_capture_on_move_loop_ = false;
   TabDragWindowId id_;
   raw_ptr<TabDragWindowRegistry> registry_;
 

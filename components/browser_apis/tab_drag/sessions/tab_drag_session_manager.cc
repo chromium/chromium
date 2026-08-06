@@ -50,15 +50,15 @@ TabDragSessionManager::StartDrag(
   params.end_callback = base::BindOnce(&TabDragSessionManager::OnSessionEnded,
                                        weak_factory_.GetWeakPtr());
 
-  auto session =
+  active_session_ =
       std::make_unique<TabDragSession>(std::move(params), injector_.get());
 
-  auto start_result = session->Start();
+  auto start_result = active_session_->Start();
   if (!start_result.has_value()) {
+    active_session_.reset();
     return base::unexpected(std::move(start_result.error()));
   }
 
-  active_session_ = std::move(session);
   return std::monostate();
 }
 

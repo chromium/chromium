@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_BROWSER_APIS_TAB_DRAG_SESSIONS_TAB_DRAG_SESSION_H_
 #define COMPONENTS_BROWSER_APIS_TAB_DRAG_SESSIONS_TAB_DRAG_SESSION_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -72,11 +73,12 @@ class TabDragSession {
   enum class DragMode {
     kAttachedToWindow,
     kDetaching,
-    kAttaching,
-    kDetachedWindow,
+    kRunningWindowMoveLoop,
     kWaitingToExitMoveLoop,
+    kAttaching,
   };
   void set_drag_mode_for_testing(DragMode mode) { drag_mode_ = mode; }
+  DragMode drag_mode() const { return drag_mode_; }
 
  private:
   void OnWindowMoved(const gfx::Point& cursor_screen_point);
@@ -93,11 +95,20 @@ class TabDragSession {
   void StartWindowDrag(TabDragWindowId window_id,
                        const gfx::Point& screen_point);
   void DetachAndStartWindowDrag(const gfx::Point& screen_point);
+  void CompleteReattachment();
+  void CompleteWindowDrop(DragMoveLoopResult loop_result,
+                          const gfx::Point& screen_point);
 
   std::vector<tabs_api::NodeId> dragged_tabs_;
   const raw_ref<TabDragSessionInjector> injector_;
 
   base::OnceClosure end_callback_;
+
+  struct PendingReattachment {
+    TabDragWindowId window_id;
+    DropTargetId target_id;
+    gfx::Point screen_point;
+  };
 
   const gfx::Point start_point_in_screen_;
   gfx::Point last_mouse_screen_point_;
@@ -107,6 +118,7 @@ class TabDragSession {
   DragMode drag_mode_ = DragMode::kAttachedToWindow;
   gfx::Vector2d start_window_offset_;
   int32_t tab_original_offset_x_ = 0;
+  std::optional<PendingReattachment> pending_reattachment_;
 
   base::WeakPtrFactory<TabDragSession> weak_factory_{this};
 };

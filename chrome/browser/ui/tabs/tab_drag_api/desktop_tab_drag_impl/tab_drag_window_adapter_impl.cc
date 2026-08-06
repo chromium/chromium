@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/browser_apis/tab_drag/sessions/tab_drag_session_manager.h"
@@ -289,9 +290,13 @@ TabDragWindowAdapterImpl::MigrateTabs(
           mojo_base::mojom::Code::kInternal, "Failed to detach tab"));
     }
 
+    int add_types = AddTabTypes::ADD_NONE;
+    if (target_model->empty() || node_id == tab_ids.front()) {
+      add_types |= AddTabTypes::ADD_ACTIVE;
+    }
+
     target_model->InsertDetachedTabAt(target_model->count(),
-                                      std::move(detached_tab),
-                                      /*add_types=*/0);
+                                      std::move(detached_tab), add_types);
   }
 
   return base::ok();
