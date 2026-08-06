@@ -4,11 +4,15 @@
 
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_modal_host.h"
 
+#import <utility>
+
 #import "base/check.h"
+#import "base/feature_list.h"
 #import "base/memory/raw_ptr.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #import "components/supervised_user/core/common/features.h"
 #import "ios/chrome/browser/content_suggestions/tips/coordinator/tips_passwords_coordinator.h"
+#import "ios/chrome/browser/drive_file_picker/coordinator/root_drive_file_picker_coordinator.h"
 #import "ios/chrome/browser/file_upload_panel/coordinator/file_upload_panel_coordinator.h"
 #import "ios/chrome/browser/intelligence/actor/coordinator/actor_overlay_coordinator.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/coordinator/enhanced_calendar_coordinator.h"
@@ -18,12 +22,17 @@
 #import "ios/chrome/browser/page_info/coordinator/page_info_coordinator.h"
 #import "ios/chrome/browser/phone_number/ui_bundled/add_contacts_coordinator.h"
 #import "ios/chrome/browser/phone_number/ui_bundled/country_code_picker_coordinator.h"
+#import "ios/chrome/browser/save_to_drive/ui_bundled/save_to_drive_coordinator.h"
+#import "ios/chrome/browser/save_to_photos/ui_bundled/save_to_photos_coordinator.h"
+#import "ios/chrome/browser/search_engine_choice/coordinator/search_engine_choice_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/actor_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/add_contacts_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/country_code_picker_commands.h"
+#import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/enhanced_calendar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/file_upload_panel_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
@@ -31,10 +40,21 @@
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/public/commands/parent_access_commands.h"
+#import "ios/chrome/browser/shared/public/commands/save_image_to_photos_command.h"
+#import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
+#import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
+#import "ios/chrome/browser/shared/public/commands/search_engine_choice_commands.h"
+#import "ios/chrome/browser/shared/public/commands/synced_set_up_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tips_passwords_commands.h"
 #import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/supervised_user/coordinator/parent_access_coordinator.h"
+#import "ios/chrome/browser/synced_set_up/coordinator/synced_set_up_coordinator.h"
+#import "ios/chrome/browser/synced_set_up/coordinator/synced_set_up_coordinator_delegate.h"
+#import "ios/chrome/browser/synced_set_up/utils/utils.h"
 #import "ios/chrome/browser/unit_conversion/ui_bundled/unit_conversion_coordinator.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "ios/chrome/browser/whats_new/coordinator/whats_new_coordinator.h"
@@ -42,12 +62,19 @@
 @interface BrowserModalHost () <ActorOverlayCommands,
                                 AddContactsCommands,
                                 CountryCodePickerCommands,
+                                DriveFilePickerCommands,
                                 EnhancedCalendarCommands,
                                 FileUploadPanelCommands,
                                 LevelUpCommands,
                                 PageActionMenuCommands,
                                 PageInfoCommands,
                                 ParentAccessCommands,
+                                SaveToDriveCommands,
+                                SaveToPhotosCommands,
+                                SearchEngineChoiceCommands,
+                                SearchEngineChoiceCoordinatorDelegate,
+                                SyncedSetUpCommands,
+                                SyncedSetUpCoordinatorDelegate,
                                 TipsPasswordsCommands,
                                 TipsPasswordsCoordinatorDelegate,
                                 UnitConversionCommands,
@@ -68,6 +95,7 @@
   ActorOverlayCoordinator* _actorOverlayCoordinator;
   AddContactsCoordinator* _addContactsCoordinator;
   CountryCodePickerCoordinator* _countryCodePickerCoordinator;
+  RootDriveFilePickerCoordinator* _driveFilePickerCoordinator;
   EnhancedCalendarCoordinator* _enhancedCalendarCoordinator;
   API_AVAILABLE(ios(18.4))
   FileUploadPanelCoordinator* _fileUploadPanelCoordinator;
@@ -75,6 +103,12 @@
   PageActionMenuCoordinator* _pageActionMenuCoordinator;
   PageInfoCoordinator* _pageInfoCoordinator;
   ParentAccessCoordinator* _parentAccessCoordinator;
+  SaveToDriveCoordinator* _saveToDriveCoordinator;
+  SaveToPhotosCoordinator* _saveToPhotosCoordinator;
+  SearchEngineChoiceCoordinator* _searchEngineChoiceCoordinator;
+  ProceduralBlock _searchEngineChoiceClosedBlock;
+  SyncedSetUpCoordinator* _syncedSetUpCoordinator;
+  ProceduralBlock _runAfterSyncedSetUpDismissal;
   TipsPasswordsCoordinator* _tipsPasswordsCoordinator;
   UnitConversionCoordinator* _unitConversionCoordinator;
   WhatsNewCoordinator* _whatsNewCoordinator;
@@ -109,6 +143,7 @@
   [self hideActorOverlay];
   [self hideAddContacts];
   [self hideCountryCodePicker];
+  [self hideDriveFilePicker];
   [self hideEnhancedCalendarBottomSheet];
   if (@available(iOS 18.4, *)) {
     [self hideFileUploadPanel];
@@ -117,6 +152,10 @@
   [self hidePageInfo];
   [self dismissPageActionMenuWithCompletion:nil];
   [self hideParentAccessBottomSheet];
+  [self hideSaveToDrive];
+  [self stopSaveToPhotos];
+  [self stopSearchEngineChoiceScreen];
+  [self stopSyncedSetUpCoordinator];
   [self dismissPasswordsTip];
   [self hideUnitConversion];
   [self dismissWhatsNew];
@@ -135,18 +174,36 @@
 
 #pragma mark - Private helpers
 
+// Stops the Synced Set Up coordinator.
+- (void)stopSyncedSetUpCoordinator {
+  [_syncedSetUpCoordinator stop];
+  _syncedSetUpCoordinator.delegate = nil;
+  _syncedSetUpCoordinator = nil;
+
+  if (_runAfterSyncedSetUpDismissal) {
+    ProceduralBlock completion = [_runAfterSyncedSetUpDismissal copy];
+    _runAfterSyncedSetUpDismissal = nil;
+    completion();
+  }
+}
+
 // Starts dispatching to the various command protocols.
 - (void)startDispatching {
   NSArray<Protocol*>* protocols = @[
     @protocol(ActorOverlayCommands),
     @protocol(AddContactsCommands),
     @protocol(CountryCodePickerCommands),
+    @protocol(DriveFilePickerCommands),
     @protocol(EnhancedCalendarCommands),
     @protocol(FileUploadPanelCommands),
     @protocol(LevelUpCommands),
     @protocol(PageActionMenuCommands),
     @protocol(PageInfoCommands),
     @protocol(ParentAccessCommands),
+    @protocol(SaveToDriveCommands),
+    @protocol(SaveToPhotosCommands),
+    @protocol(SearchEngineChoiceCommands),
+    @protocol(SyncedSetUpCommands),
     @protocol(TipsPasswordsCommands),
     @protocol(UnitConversionCommands),
     @protocol(WhatsNewCommands),
@@ -203,6 +260,88 @@
 - (void)hideCountryCodePicker {
   [_countryCodePickerCoordinator stop];
   _countryCodePickerCoordinator = nil;
+}
+
+#pragma mark - DriveFilePickerCommands
+
+- (void)showDriveFilePicker {
+  if (!base::FeatureList::IsEnabled(kIOSChooseFromDrive)) {
+    return;
+  }
+  // If there is a coordinator, stop it before showing it again.
+  [self hideDriveFilePicker];
+  // Return early if the current WebState is not choosing files.
+  web::WebState* activeWebState = self.activeWebState;
+  if (!activeWebState || activeWebState->IsBeingDestroyed()) {
+    // If there is no active WebState or it is being destroyed, do nothing.
+    return;
+  }
+  ChooseFileTabHelper* tab_helper =
+      ChooseFileTabHelper::FromWebState(activeWebState);
+  if (!tab_helper || !tab_helper->IsChoosingFiles()) {
+    return;
+  }
+  if (!(base::FeatureList::IsEnabled(kIOSChooseFromDriveSignedOut) ||
+        AuthenticationServiceFactory::GetForProfile(_browser->GetProfile())
+            ->HasPrimaryIdentity())) {
+    // Drive can be accessed if either:
+    //   - The user has a primary identity, or
+    //   - The kIOSChooseFromDriveSignedOut flag is enabled.
+    // Since neither of these are true, the file picker is not presented.
+    tab_helper->SetIsPresentingFilePicker(false);
+    return;
+  }
+  // The user should not have been offered to use the drive if they are in
+  // incognito.
+  CHECK_EQ(_browser->type(), Browser::Type::kRegular);
+  _driveFilePickerCoordinator = [[RootDriveFilePickerCoordinator alloc]
+      initWithBaseViewController:_baseViewController
+                         browser:_browser
+                        webState:activeWebState
+                   forComposebox:NO];
+  [_driveFilePickerCoordinator start];
+}
+
+- (void)hideDriveFilePicker {
+  [_driveFilePickerCoordinator stop];
+  _driveFilePickerCoordinator = nil;
+}
+
+- (void)setDriveFilePickerSelectedIdentity:
+    (id<SystemIdentity>)selectedIdentity {
+  CHECK(selectedIdentity);
+  [_driveFilePickerCoordinator setSelectedIdentity:selectedIdentity];
+}
+
+- (void)showDriveFilePickerWithComposeboxDelegate:
+            (id<ComposeboxPickerPresenterDelegate>)delegate
+                               baseViewController:
+                                   (UIViewController*)baseViewController {
+  // In the context of the compose box the user should not have been offered to
+  // use the drive if they are not signed-in.
+  CHECK(AuthenticationServiceFactory::GetForProfile(_browser->GetProfile())
+            ->HasPrimaryIdentity());
+  // The user should not have been offered to use the drive if they are in
+  // incognito.
+  CHECK_EQ(_browser->type(), Browser::Type::kRegular);
+
+  if (!base::FeatureList::IsEnabled(kIOSChooseFromDrive)) {
+    return;
+  }
+  // If there is a coordinator, stop it before showing it again.
+  [self hideDriveFilePicker];
+  web::WebState* activeWebState = self.activeWebState;
+  if (!activeWebState || activeWebState->IsBeingDestroyed()) {
+    return;
+  }
+
+  _driveFilePickerCoordinator = [[RootDriveFilePickerCoordinator alloc]
+      initWithBaseViewController:baseViewController
+                         browser:_browser
+                        webState:activeWebState
+                   forComposebox:YES];
+  _driveFilePickerCoordinator.composeboxDelegate = delegate;
+  [_driveFilePickerCoordinator start];
 }
 
 #pragma mark - EnhancedCalendarCommands
@@ -332,6 +471,108 @@
 - (void)hideParentAccessBottomSheet {
   [_parentAccessCoordinator stop];
   _parentAccessCoordinator = nil;
+}
+
+#pragma mark - SaveToDriveCommands
+
+- (void)showSaveToDriveForDownload:(web::DownloadTask*)downloadTask {
+  // If the Save to Drive coordinator is not nil, stop it.
+  [self hideSaveToDrive];
+
+  _saveToDriveCoordinator = [[SaveToDriveCoordinator alloc]
+      initWithBaseViewController:_baseViewController
+                         browser:_browser
+                    downloadTask:downloadTask];
+  [_saveToDriveCoordinator start];
+}
+
+- (void)hideSaveToDrive {
+  [_saveToDriveCoordinator stop];
+  _saveToDriveCoordinator = nil;
+}
+
+#pragma mark - SaveToPhotosCommands
+
+- (void)saveImageToPhotos:(SaveImageToPhotosCommand*)command {
+  if (!command.webState) {
+    // If the web state does not exist anymore, don't do anything.
+    return;
+  }
+
+  // If the Save to Photos coordinator is not nil, stop it.
+  [self stopSaveToPhotos];
+
+  _saveToPhotosCoordinator = [[SaveToPhotosCoordinator alloc]
+      initWithBaseViewController:_baseViewController
+                         browser:_browser
+                        imageURL:command.imageURL
+                        referrer:command.referrer
+                        webState:command.webState.get()
+                         frameID:command.frameID
+                     frameOrigin:command.frameOrigin];
+  [_saveToPhotosCoordinator start];
+}
+
+- (void)stopSaveToPhotos {
+  [_saveToPhotosCoordinator stop];
+  _saveToPhotosCoordinator = nil;
+}
+
+#pragma mark - SearchEngineChoiceCommands
+
+- (void)showSearchEngineChoiceScreenWithCompletion:(ProceduralBlock)completion {
+  [self stopSearchEngineChoiceScreen];
+
+  _searchEngineChoiceClosedBlock = completion;
+  _searchEngineChoiceCoordinator = [[SearchEngineChoiceCoordinator alloc]
+      initWithBaseViewController:_baseViewController
+                         browser:_browser];
+  _searchEngineChoiceCoordinator.delegate = self;
+  [_searchEngineChoiceCoordinator start];
+}
+
+- (void)stopSearchEngineChoiceScreen {
+  [_searchEngineChoiceCoordinator stop];
+  _searchEngineChoiceCoordinator = nil;
+  _searchEngineChoiceClosedBlock = nil;
+}
+
+#pragma mark - SearchEngineChoiceCoordinatorDelegate
+
+- (void)choiceScreenWasDismissed:(SearchEngineChoiceCoordinator*)coordinator {
+  if (_searchEngineChoiceCoordinator == coordinator) {
+    if (ProceduralBlock block =
+            std::exchange(_searchEngineChoiceClosedBlock, nil)) {
+      block();
+    }
+  }
+}
+
+#pragma mark - SyncedSetUpCommands
+
+- (void)showSyncedSetUpWithDismissalCompletion:(ProceduralBlock)completion {
+  CHECK(CanShowSyncedSetUp(_browser->GetProfile()->GetPrefs()));
+
+  _runAfterSyncedSetUpDismissal = [completion copy];
+
+  if (_syncedSetUpCoordinator) {
+    // The UI is already active; the stored `completion` will run when it stops.
+    return;
+  }
+
+  _syncedSetUpCoordinator = [[SyncedSetUpCoordinator alloc]
+      initWithBaseViewController:_baseViewController
+                         browser:_browser];
+  _syncedSetUpCoordinator.delegate = self;
+  [_syncedSetUpCoordinator start];
+}
+
+#pragma mark - SyncedSetUpCoordinatorDelegate
+
+- (void)syncedSetUpCoordinatorWantsToBeDismissed:
+    (SyncedSetUpCoordinator*)coordinator {
+  CHECK_EQ(_syncedSetUpCoordinator, coordinator);
+  [self stopSyncedSetUpCoordinator];
 }
 
 #pragma mark - TipsPasswordsCommands

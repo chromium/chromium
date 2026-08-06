@@ -412,6 +412,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "browser_coordinator_unittest.mm",
+    "browser_modal_host_unittest.mm",
     "browser_view_controller_unittest.mm",
     "key_commands_provider_unittest.mm",
   ]
