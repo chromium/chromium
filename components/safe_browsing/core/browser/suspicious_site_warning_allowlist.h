@@ -13,17 +13,6 @@
 
 namespace safe_browsing {
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// LINT.IfChange(SuspiciousSiteWarningOutcome)
-enum class SuspiciousSiteWarningOutcome {
-  kUnknown = 0,
-  kBypassed = 1,
-  kAdhered = 2,
-  kDismissedBySystem = 3,
-  kMaxValue = kDismissedBySystem,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/safe_browsing/enums.xml:SuspiciousSiteWarningOutcome)
 
 // Stores local allowlist decisions for Suspicious Site Warnings (SSW).
 // When a user clicks "Mark as Safe" (or "Continue anyway") on an SSW warning,

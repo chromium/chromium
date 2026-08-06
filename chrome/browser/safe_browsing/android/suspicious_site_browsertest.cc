@@ -126,7 +126,8 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteBrowserTest, DismissalNavigateBack) {
   ASSERT_TRUE(controller);
 
   content::TestNavigationObserver observer(GetActiveWebContents(), 1);
-  controller->OnGoBackButtonClicked();
+  controller->HandleBackNavigation(
+      safe_browsing::SuspiciousSiteWarningUserInteraction::kBackToSafetyButton);
   observer.Wait();
 }
 

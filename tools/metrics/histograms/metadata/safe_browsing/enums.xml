@@ -978,7 +978,23 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="DismissedBySystem"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/safe_browsing/core/browser/suspicious_site_warning_allowlist.h:SuspiciousSiteWarningOutcome) -->
+<!-- LINT.ThenChange(//chrome/browser/safe_browsing/android/suspicious_site_controller_android.h:SuspiciousSiteWarningOutcome) -->
+
+<!-- LINT.IfChange(SuspiciousSiteWarningUserInteraction) -->
+
+<enum name="SuspiciousSiteWarningUserInteraction">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Warning dialog shown"/>
+  <int value="2" label="Mark as safe button clicked"/>
+  <int value="3" label="Back to safety button clicked"/>
+  <int value="4" label="Dismissed"/>
+  <int value="5" label="Manual navigation"/>
+  <int value="6" label="Close tab"/>
+  <int value="7" label="Learn more clicked"/>
+  <int value="8" label="System back button/gesture used"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/safe_browsing/android/suspicious_site_controller_android.h:SuspiciousSiteWarningUserInteraction) -->
 
 <!-- LINT.IfChange(SyncedEsbOutcome) -->
 

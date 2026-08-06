@@ -26,6 +26,35 @@ class WebContents;
 
 namespace safe_browsing {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(SuspiciousSiteWarningOutcome)
+enum class SuspiciousSiteWarningOutcome {
+  kUnknown = 0,
+  kBypassed = 1,
+  kAdhered = 2,
+  kDismissedBySystem = 3,
+  kMaxValue = kDismissedBySystem,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/safe_browsing/enums.xml:SuspiciousSiteWarningOutcome)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(SuspiciousSiteWarningUserInteraction)
+enum class SuspiciousSiteWarningUserInteraction {
+  kUnknown = 0,
+  kShown = 1,
+  kMarkAsSafe = 2,
+  kBackToSafetyButton = 3,
+  kDismissed = 4,
+  kManualNavigation = 5,
+  kCloseTab = 6,
+  kLearnMore = 7,
+  kSystemBack = 8,
+  kMaxValue = kSystemBack,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/safe_browsing/enums.xml:SuspiciousSiteWarningUserInteraction)
+
 class SuspiciousSiteDialogViewAndroid;
 
 // A tab helper controller responsible for displaying a suspicious site warning
@@ -39,6 +68,7 @@ class SuspiciousSiteControllerAndroid
       public AsyncCheckTracker::Observer {
  public:
   using WarningOutcome = safe_browsing::SuspiciousSiteWarningOutcome;
+  using UserInteraction = safe_browsing::SuspiciousSiteWarningUserInteraction;
 
   // Represents user interaction choices for the suspicious site warning HaTS.
   enum class UserChoice {
@@ -73,7 +103,7 @@ class SuspiciousSiteControllerAndroid
   void CloseDialog(ui::ModalDialogWrapper::DismissalCause dismissal_cause);
 
   // Button and link event handlers from the dialog UI:
-  void OnGoBackButtonClicked();
+  void HandleBackNavigation(UserInteraction interaction_type);
   void OnContinueButtonClicked();
   void OnHelpCenterLinkClicked();
 

@@ -445,7 +445,9 @@ void ChromePageInfoDelegate::OnSuspiciousSiteBackToSafety() {
   if (auto* ssc =
           safe_browsing::SuspiciousSiteControllerAndroid::FromWebContents(
               web_contents_)) {
-    ssc->OnGoBackButtonClicked();
+    ssc->HandleBackNavigation(
+        safe_browsing::SuspiciousSiteWarningUserInteraction::
+            kBackToSafetyButton);
   }
 #endif
 }

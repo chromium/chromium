@@ -3483,6 +3483,19 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.SuspiciousSiteWarning.UserInteraction"
+    enum="SuspiciousSiteWarningUserInteraction" expires_after="2027-02-01">
+  <owner>awado@google.com</owner>
+  <owner>richche@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records specific user interactions with the suspicious site warning dialog
+    (e.g., Mark as safe, Back to safety, Dismissed, Manual Navigation, or Close
+    tab). Logged when the warning dialog is shown, or when the user interacts
+    with or dismisses it.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.SuspiciousSiteWarning.VerdictReceived"
     enum="Boolean" expires_after="2027-02-01">
   <owner>awado@google.com</owner>

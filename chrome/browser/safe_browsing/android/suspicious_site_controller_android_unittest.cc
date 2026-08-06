@@ -24,6 +24,8 @@
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/test_renderer_host.h"
@@ -115,16 +117,60 @@ class SuspiciousSiteControllerAndroidTest
   scoped_refptr<SafeBrowsingService> sb_service_;
 };
 
-TEST_F(SuspiciousSiteControllerAndroidTest, OnGoBackButtonClicked) {
+TEST_F(SuspiciousSiteControllerAndroidTest, HandleBackNavigation) {
   base::HistogramTester histogram_tester;
   SuspiciousSiteControllerAndroid* controller = MakeController();
 
-  controller->OnGoBackButtonClicked();
+  controller->HandleBackNavigation(
+      SuspiciousSiteControllerAndroid::UserInteraction::kBackToSafetyButton);
 
   histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.SuspiciousSiteWarning.WarningOutcome",
       SuspiciousSiteControllerAndroid::WarningOutcome::kAdhered,
       /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.SuspiciousSiteWarning.UserInteraction",
+      SuspiciousSiteControllerAndroid::UserInteraction::kBackToSafetyButton,
+      /*expected_bucket_count=*/1);
+
+  EXPECT_FALSE(
+      SuspiciousSiteControllerAndroid::FromWebContents(web_contents()));
+}
+
+TEST_F(SuspiciousSiteControllerAndroidTest, CloseDialog_NavigateBack) {
+  NavigateAndCommit(GURL("https://safe.com"));
+  NavigateAndCommit(GURL("https://suspicious.com"));
+
+  base::HistogramTester histogram_tester;
+
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
+      ui::WindowAndroid::CreateForTesting();
+  window->get()->AddChild(web_contents()->GetNativeView());
+
+  SuspiciousSiteControllerAndroid* controller = MakeController();
+  controller->ShowDialog();
+  SetIsSuspended(controller, false);
+
+  controller->CloseDialog(
+      ui::ModalDialogWrapper::DismissalCause::NAVIGATE_BACK);
+
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.SuspiciousSiteWarning.WarningOutcome",
+      SuspiciousSiteControllerAndroid::WarningOutcome::kAdhered,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.SuspiciousSiteWarning.UserInteraction",
+      SuspiciousSiteControllerAndroid::UserInteraction::kShown,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.SuspiciousSiteWarning.UserInteraction",
+      SuspiciousSiteControllerAndroid::UserInteraction::kSystemBack,
+      /*expected_count=*/1);
+
+  EXPECT_EQ(web_contents()->GetController().GetPendingEntry()->GetURL(),
+            GURL("https://safe.com"));
+  EXPECT_FALSE(
+      SuspiciousSiteControllerAndroid::FromWebContents(web_contents()));
 }
 
 TEST_F(SuspiciousSiteControllerAndroidTest, OnContinueButtonClicked) {
@@ -136,6 +182,10 @@ TEST_F(SuspiciousSiteControllerAndroidTest, OnContinueButtonClicked) {
   histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.SuspiciousSiteWarning.WarningOutcome",
       SuspiciousSiteControllerAndroid::WarningOutcome::kBypassed,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.SuspiciousSiteWarning.UserInteraction",
+      SuspiciousSiteControllerAndroid::UserInteraction::kMarkAsSafe,
       /*expected_bucket_count=*/1);
 }
 
@@ -167,6 +217,12 @@ TEST_F(SuspiciousSiteControllerAndroidTest, CloseDialogOutside) {
       "SafeBrowsing.SuspiciousSiteWarning.WarningOutcome",
       SuspiciousSiteControllerAndroid::WarningOutcome::kBypassed,
       /*expected_bucket_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.SuspiciousSiteWarning.UserInteraction",
+      SuspiciousSiteControllerAndroid::UserInteraction::kShown, 1);
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.SuspiciousSiteWarning.UserInteraction",
+      SuspiciousSiteControllerAndroid::UserInteraction::kDismissed, 1);
 }
 
 TEST_F(SuspiciousSiteControllerAndroidTest, CloseDialogNavigateSameUrl) {
@@ -339,6 +395,7 @@ TEST_F(SuspiciousSiteControllerAndroidTest,
 }
 
 TEST_F(SuspiciousSiteControllerAndroidTest, OnHelpCenterLinkClicked) {
+  base::HistogramTester histogram_tester;
   MakeController();
   TestWebContentsDelegate delegate;
   web_contents()->SetDelegate(&delegate);
@@ -349,6 +406,11 @@ TEST_F(SuspiciousSiteControllerAndroidTest, OnHelpCenterLinkClicked) {
   EXPECT_EQ(delegate.opened_url(),
             GURL(chrome::kUnsafeSiteWarningHelpCenterURL));
   web_contents()->SetDelegate(nullptr);
+
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.SuspiciousSiteWarning.UserInteraction",
+      SuspiciousSiteControllerAndroid::UserInteraction::kLearnMore,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(SuspiciousSiteControllerAndroidTest, HatsSurveyTriggeredOnGoBack) {
@@ -371,7 +433,8 @@ TEST_F(SuspiciousSiteControllerAndroidTest, HatsSurveyTriggeredOnGoBack) {
       .Times(1);
 
   SuspiciousSiteControllerAndroid* controller = MakeController();
-  controller->OnGoBackButtonClicked();
+  controller->HandleBackNavigation(
+      SuspiciousSiteControllerAndroid::UserInteraction::kBackToSafetyButton);
 }
 
 TEST_F(SuspiciousSiteControllerAndroidTest, HatsSurveyTriggeredOnContinue) {
@@ -493,6 +556,65 @@ TEST_F(SuspiciousSiteControllerAndroidTest,
 
   controller->CloseDialog(
       ui::ModalDialogWrapper::DismissalCause::TOUCH_OUTSIDE);
+}
+
+TEST_F(SuspiciousSiteControllerAndroidTest, CloseDialog_ManualNavigation) {
+  base::HistogramTester histogram_tester;
+  NavigateAndCommit(GURL("https://suspicious.com"));
+
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
+      ui::WindowAndroid::CreateForTesting();
+  window->get()->AddChild(web_contents()->GetNativeView());
+
+  SuspiciousSiteControllerAndroid* controller = MakeController();
+  controller->ShowDialog();
+  SetIsSuspended(controller, false);
+
+  controller->CloseDialog(ui::ModalDialogWrapper::DismissalCause::NAVIGATE);
+
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.SuspiciousSiteWarning.UserInteraction",
+      SuspiciousSiteControllerAndroid::UserInteraction::kShown, 1);
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.SuspiciousSiteWarning.UserInteraction",
+      SuspiciousSiteControllerAndroid::UserInteraction::kManualNavigation, 1);
+
+  // WarningOutcome is logged on destruction of the controller.
+  web_contents()->RemoveUserData(
+      SuspiciousSiteControllerAndroid::UserDataKey());
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.SuspiciousSiteWarning.WarningOutcome",
+      SuspiciousSiteControllerAndroid::WarningOutcome::kAdhered, 1);
+}
+
+TEST_F(SuspiciousSiteControllerAndroidTest, CloseDialog_CloseTab) {
+  base::HistogramTester histogram_tester;
+  NavigateAndCommit(GURL("https://suspicious.com"));
+
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
+      ui::WindowAndroid::CreateForTesting();
+  window->get()->AddChild(web_contents()->GetNativeView());
+
+  SuspiciousSiteControllerAndroid* controller = MakeController();
+  controller->ShowDialog();
+  SetIsSuspended(controller, false);
+
+  controller->CloseDialog(
+      ui::ModalDialogWrapper::DismissalCause::WEB_CONTENTS_DESTROYED);
+
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.SuspiciousSiteWarning.UserInteraction",
+      SuspiciousSiteControllerAndroid::UserInteraction::kShown, 1);
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.SuspiciousSiteWarning.UserInteraction",
+      SuspiciousSiteControllerAndroid::UserInteraction::kCloseTab, 1);
+
+  // WarningOutcome is logged on destruction of the controller.
+  web_contents()->RemoveUserData(
+      SuspiciousSiteControllerAndroid::UserDataKey());
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.SuspiciousSiteWarning.WarningOutcome",
+      SuspiciousSiteControllerAndroid::WarningOutcome::kAdhered, 1);
 }
 
 }  // namespace safe_browsing
