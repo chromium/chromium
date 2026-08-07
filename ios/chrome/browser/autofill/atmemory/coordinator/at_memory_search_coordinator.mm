@@ -51,6 +51,7 @@
                           webState:webState];
   _mediator.fillHandler = self.fillHandler;
   _mediator.consumer = _atMemorySearchViewController;
+  _atMemorySearchViewController.mutator = _mediator;
 
   [self.baseNavigationController
       pushViewController:_atMemorySearchViewController

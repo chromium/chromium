@@ -9,6 +9,7 @@ source_set("ui") {
     "at_memory_inline_notice_view.h",
     "at_memory_inline_notice_view.mm",
     "at_memory_search_consumer.h",
+    "at_memory_search_mutator.h",
     "at_memory_search_view_controller.h",
     "at_memory_search_view_controller.mm",
   ]

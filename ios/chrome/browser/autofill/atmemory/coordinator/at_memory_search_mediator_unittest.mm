@@ -19,10 +19,6 @@
 
 using ::testing::_;
 
-@interface AtMemorySearchMediator (Testing)
-- (void)requestResultsForQuery:(NSString*)query;
-@end
-
 class AtMemorySearchMediatorTest : public PlatformTest {
  protected:
   void SetUp() override {
@@ -72,7 +68,7 @@ TEST_P(AtMemorySearchMediatorErrorTest, HandlesErrorStatus) {
 
   OCMExpect([mock_consumer_ setErrorType:GetParam().expected_error_type]);
 
-  [mediator_ requestResultsForQuery:@"test query"];
+  [mediator_ startSearchWithQuery:@"test query"];
 
   EXPECT_OCMOCK_VERIFY(mock_consumer_);
 }

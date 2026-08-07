@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-@protocol AtMemorySearchConsumer;
+#import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_mutator.h"
 
 namespace autofill {
 class AtMemoryQueryService;
@@ -18,9 +18,10 @@ class WebState;
 }
 
 @protocol AtMemoryFillCommands;
+@protocol AtMemorySearchConsumer;
 
 // Mediator for AtMemory search feature page.
-@interface AtMemorySearchMediator : NSObject
+@interface AtMemorySearchMediator : NSObject <AtMemorySearchMutator>
 
 // Handler for filling commands.
 @property(nonatomic, weak) id<AtMemoryFillCommands> fillHandler;

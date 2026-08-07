@@ -8,6 +8,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_constants.h"
+#import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_mutator.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -118,7 +119,7 @@ enum class ViewState {
 
 - (void)updateSearchResultsForSearchController:
     (UISearchController*)searchController {
-  // TODO(crbug.com/522338028): Update search cell
+  [self.mutator startSearchWithQuery:searchController.searchBar.text];
 }
 
 #pragma mark - Actions

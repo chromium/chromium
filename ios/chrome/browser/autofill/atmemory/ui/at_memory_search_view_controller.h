@@ -8,12 +8,16 @@
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_consumer.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 
+@protocol AtMemorySearchMutator;
 @protocol AtMemoryCommands;
 @protocol AtMemorySearchResultCommands;
 
 // View controller for AtMemory search.
 @interface AtMemorySearchViewController
     : ChromeTableViewController <AtMemorySearchConsumer>
+
+// Mutator for actions in the AtMemory search UI.
+@property(nonatomic, weak) id<AtMemorySearchMutator> mutator;
 
 // Handler for actions related to the AtMemory search results.
 @property(nonatomic, weak) id<AtMemorySearchResultCommands> searchResultHandler;

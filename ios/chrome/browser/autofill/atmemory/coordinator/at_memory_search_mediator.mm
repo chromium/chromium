@@ -58,6 +58,29 @@
   [_consumer updateTableViewBackgroundStyle:[self tableViewBackgroundStyle]];
 }
 
+#pragma mark - AtMemorySearchMutator
+
+- (void)startSearchWithQuery:(NSString*)query {
+  if (!_atMemoryQueryService || !_webState) {
+    return;
+  }
+
+  // Request AtMemory search results from the AtMemory query service for the
+  // given `query`.
+  __weak __typeof(self) weakSelf = self;
+  auto callback = base::BindRepeating(^(autofill::MemorySearchResults results) {
+    [weakSelf handleAtMemorySearchResults:results];
+  });
+
+  _atMemoryQueryService->Query(base::SysNSStringToUTF16(query),
+                               _webState->GetVisibleURL(),
+                               _webState->GetTitle(), callback);
+}
+
+- (void)acknowledgePrivacyNotice {
+  // TODO(crbug.com/541207744): Handle notice acknowledgment.
+}
+
 #pragma mark - Private
 
 // Handles the `results` returned by the AtMemory query service. If the results
@@ -88,24 +111,6 @@
   }
   // TODO(crbug.com/543036121): Here, an array with the results will be provided
   // to the consumer. If the array is nil, there was an error.
-}
-
-// TODO(crbug.com/540127498): This method will be updated to be used by the
-// AtMemorySearchMutator. Requests AtMemory search results from the AtMemory
-// query service for the given `query`.
-- (void)requestResultsForQuery:(NSString*)query {
-  if (!_atMemoryQueryService || !_webState) {
-    return;
-  }
-
-  __weak __typeof(self) weakSelf = self;
-  auto callback = base::BindRepeating(^(autofill::MemorySearchResults results) {
-    [weakSelf handleAtMemorySearchResults:results];
-  });
-
-  _atMemoryQueryService->Query(base::SysNSStringToUTF16(query),
-                               _webState->GetVisibleURL(),
-                               _webState->GetTitle(), callback);
 }
 
 - (AtMemoryBackgroundStyle)tableViewBackgroundStyle {
