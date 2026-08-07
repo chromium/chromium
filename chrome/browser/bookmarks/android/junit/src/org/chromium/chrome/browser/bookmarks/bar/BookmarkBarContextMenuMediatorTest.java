@@ -48,6 +48,7 @@ import org.chromium.url.JUnitTestGURLs;
 /** Unit tests for the {@link BookmarkBarContextMenuMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
+@EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
 public class BookmarkBarContextMenuMediatorTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =

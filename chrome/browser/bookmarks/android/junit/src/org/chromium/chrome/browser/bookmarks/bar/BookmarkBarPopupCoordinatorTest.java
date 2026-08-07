@@ -37,6 +37,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.widget.AnchoredPopupWindow;
@@ -131,6 +133,7 @@ public class BookmarkBarPopupCoordinatorTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
     public void testDismiss_dismissesBothPopups() {
         AnchoredPopupWindow folderPopup = mock(AnchoredPopupWindow.class);
         AnchoredPopupWindow contextMenuPopup = mock(AnchoredPopupWindow.class);
@@ -144,6 +147,7 @@ public class BookmarkBarPopupCoordinatorTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
     public void testShowContextMenuPopup_setsSelectedStateOnSubitem() {
         View rootView = new View(mActivity);
         when(mBookmarkBarView.getRootView()).thenReturn(rootView);
@@ -175,6 +179,7 @@ public class BookmarkBarPopupCoordinatorTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
     public void testShowContextMenuPopup_doesNotSetSelectedStateOnBookmarkBar() {
         View rootView = new View(mActivity);
         when(mBookmarkBarView.getRootView()).thenReturn(rootView);

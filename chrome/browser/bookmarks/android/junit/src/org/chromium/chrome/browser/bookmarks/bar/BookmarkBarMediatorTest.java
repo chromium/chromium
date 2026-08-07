@@ -550,6 +550,21 @@ public class BookmarkBarMediatorTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
+    public void testEmptySpaceRightClick_FlagDisabled() {
+        ArgumentCaptor<BookmarkBar.RightClickCallback> captor =
+                ArgumentCaptor.forClass(BookmarkBar.RightClickCallback.class);
+        verify(mBookmarkBarView).setRightClickCallback(captor.capture());
+        BookmarkBar.RightClickCallback callback = captor.getValue();
+        assertNotNull(callback);
+
+        callback.onRightClick(100f, 200f);
+
+        verify(mPopupCoordinator, never()).showContextMenuPopup(any(), any(), any(), anyBoolean());
+    }
+
+    @Test
+    @SmallTest
     @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
     public void testBookmarkItemRightClick_FlagEnabled() {
         BookmarkId bookmarkId =
@@ -578,6 +593,35 @@ public class BookmarkBarMediatorTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
+    public void testBookmarkItemRightClick_FlagDisabled() {
+        BookmarkId bookmarkId =
+                mBookmarkModel.addBookmark(
+                        mBookmarkModel.getDesktopFolderId(), 0, "Bookmark", JUnitTestGURLs.URL_1);
+        BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
+
+        mMediator.onBookmarkItemAdded(ObservationId.LOCAL, bookmarkItem, 0);
+
+        ArgumentCaptor<ListItem> listItemCaptor = ArgumentCaptor.forClass(ListItem.class);
+        verify(mItemsModel).add(eq(0), listItemCaptor.capture());
+        PropertyModel itemModel = listItemCaptor.getValue().model;
+
+        ClickWithMetaStateCallback clickCallback =
+                itemModel.get(BookmarkBarButtonProperties.CLICK_CALLBACK);
+        assertNotNull(clickCallback);
+
+        View mockView = mock(View.class);
+        RecyclerView.ViewHolder viewHolder = new RecyclerView.ViewHolder(mockView) {};
+        when(mItemsRecyclerView.findViewHolderForAdapterPosition(0)).thenReturn(viewHolder);
+
+        clickCallback.onClickWithMeta(0, MotionEvent.BUTTON_SECONDARY);
+
+        verify(mPopupCoordinator, never()).showContextMenuPopup(any(), any(), any(), anyBoolean());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
     public void testContextMenu_OpenInNewTab() {
         BookmarkId id = new BookmarkId(1, BookmarkType.NORMAL);
 
@@ -590,6 +634,7 @@ public class BookmarkBarMediatorTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
     public void testContextMenu_OpenInNewWindow() {
         BookmarkId id = new BookmarkId(1, BookmarkType.NORMAL);
 
@@ -600,6 +645,7 @@ public class BookmarkBarMediatorTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
     public void testContextMenu_OpenInIncognitoWindow() {
         BookmarkId id = new BookmarkId(1, BookmarkType.NORMAL);
 
@@ -610,6 +656,7 @@ public class BookmarkBarMediatorTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
     public void testContextMenu_OpenAll() {
         BookmarkId id1 = new BookmarkId(1, BookmarkType.NORMAL);
         BookmarkId id2 = new BookmarkId(2, BookmarkType.NORMAL);
@@ -624,6 +671,7 @@ public class BookmarkBarMediatorTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
     public void testContextMenu_OpenAllInNewWindow() {
         BookmarkId id1 = new BookmarkId(1, BookmarkType.NORMAL);
         BookmarkId id2 = new BookmarkId(2, BookmarkType.NORMAL);
@@ -636,6 +684,7 @@ public class BookmarkBarMediatorTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
     public void testContextMenu_OpenAllInIncognitoWindow() {
         BookmarkId id1 = new BookmarkId(1, BookmarkType.NORMAL);
         BookmarkId id2 = new BookmarkId(2, BookmarkType.NORMAL);
@@ -648,6 +697,7 @@ public class BookmarkBarMediatorTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
     public void testContextMenu_OpenAllInNewTabGroup_PropagatesTitle() {
         BookmarkId id1 = new BookmarkId(1, BookmarkType.NORMAL);
         BookmarkId id2 = new BookmarkId(2, BookmarkType.NORMAL);
@@ -661,6 +711,7 @@ public class BookmarkBarMediatorTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
     public void testContextMenu_EditBookmark() {
         BookmarkId id = new BookmarkId(1, BookmarkType.NORMAL);
 
@@ -671,6 +722,7 @@ public class BookmarkBarMediatorTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
     public void testContextMenu_MoveBookmark() {
         BookmarkId id = new BookmarkId(1, BookmarkType.NORMAL);
 
@@ -682,6 +734,7 @@ public class BookmarkBarMediatorTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
     public void testContextMenu_DeleteBookmark() {
         BookmarkId bookmarkId =
                 mBookmarkModel.addBookmark(
@@ -701,6 +754,7 @@ public class BookmarkBarMediatorTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
     public void testContextMenu_AddPage() {
         BookmarkId parentId = mBookmarkModel.getDesktopFolderId();
         doReturn("Test Title").when(mTab).getTitle();
@@ -722,6 +776,7 @@ public class BookmarkBarMediatorTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
     public void testContextMenu_AddFolder() {
         BookmarkId parentId = mBookmarkModel.getDesktopFolderId();
 
@@ -733,6 +788,7 @@ public class BookmarkBarMediatorTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
     public void testContextMenu_OpenBookmarksManager() {
         BookmarkId folderId = mBookmarkModel.getDesktopFolderId();
 
@@ -744,6 +800,7 @@ public class BookmarkBarMediatorTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
     public void testContextMenu_ToggleBookmarksBar() {
         ContextUtils.getAppSharedPreferences()
                 .edit()

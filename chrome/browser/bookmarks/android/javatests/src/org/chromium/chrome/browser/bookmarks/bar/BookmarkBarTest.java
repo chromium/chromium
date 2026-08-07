@@ -61,9 +61,11 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -280,6 +282,7 @@ public class BookmarkBarTest {
 
     @Test
     @MediumTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
     public void testOnBookmarkItemLongClick() throws ExecutionException {
         final String title = "Google";
         final GURL url = getTestServerUrl("/chrome/test/data/android/google.html");
@@ -294,6 +297,7 @@ public class BookmarkBarTest {
 
     @Test
     @MediumTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
     public void testOnBookmarkBarEmptySpaceLongClick() {
         onViewWaiting(withId(R.id.bookmark_bar)).perform(longClick());
 
@@ -304,6 +308,7 @@ public class BookmarkBarTest {
 
     @Test
     @MediumTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
     public void testOnBookmarkBarItemsContainerEmptySpaceLongClick() throws ExecutionException {
         // Add a single bookmark so the items container has a non-zero height.
         final String title = "Test Bookmark";
