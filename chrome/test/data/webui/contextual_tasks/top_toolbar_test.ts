@@ -402,12 +402,65 @@ suite('TopToolbarTest', () => {
       loadTimeData.overrideValues({
         enablePinButton: true,
         isAiPage: true,
+        isCobrowseEligible: true,
         pinTooltip: 'Pin side panel',
         unpinTooltip: 'Unpin side panel',
       });
       topToolbar = document.createElement('top-toolbar');
+      topToolbar.isHandshakeComplete = true;
       document.body.appendChild(topToolbar);
       await microtasksFinished();
+    });
+
+    test('hides pin button when handshake is not complete', async () => {
+      topToolbar.isHandshakeComplete = false;
+      await microtasksFinished();
+
+      const moreButton =
+          topToolbar.shadowRoot.querySelector<CrIconButtonElement>(
+              '#overflowMenuButton');
+      assertTrue(!!moreButton);
+      moreButton.click();
+      await microtasksFinished();
+
+      const menu = topToolbar.$.overflowMenu.get();
+      const pinButton =
+          menu.shadowRoot.querySelector<HTMLElement>('#pinButton');
+      assertFalse(!!pinButton);
+    });
+
+    test('hides pin button when not cobrowse eligible', async () => {
+      topToolbar.isCobrowseEligible = false;
+      await microtasksFinished();
+
+      const moreButton =
+          topToolbar.shadowRoot.querySelector<CrIconButtonElement>(
+              '#overflowMenuButton');
+      assertTrue(!!moreButton);
+      moreButton.click();
+      await microtasksFinished();
+
+      const menu = topToolbar.$.overflowMenu.get();
+      const pinButton =
+          menu.shadowRoot.querySelector<HTMLElement>('#pinButton');
+      assertFalse(!!pinButton);
+    });
+
+    test('hides pin button when not on AI page', async () => {
+      topToolbar.isAiPage = false;
+      await microtasksFinished();
+
+      const moreButton =
+          topToolbar.shadowRoot.querySelector<CrIconButtonElement>(
+              '#overflowMenuButton');
+      assertTrue(!!moreButton);
+      moreButton.click();
+      await microtasksFinished();
+
+      const menu = topToolbar.$.overflowMenu.get();
+      const pinButton =
+          menu.shadowRoot.querySelector<HTMLElement>('#pinButton');
+      assertFalse(!!pinButton);
     });
 
     test('handles pin button click', async () => {
@@ -454,6 +507,26 @@ suite('TopToolbarTest', () => {
 
       pinButton.click();
       await proxy.handler.whenCalled('unpinSidePanel');
+    });
+
+    test('resets handshake complete when leaving AI page', async () => {
+      assertTrue(topToolbar.isHandshakeComplete);
+
+      topToolbar.isAiPage = false;
+      await microtasksFinished();
+
+      assertFalse(topToolbar.isHandshakeComplete);
+      assertFalse(topToolbar.isAiPage);
+    });
+
+    test('sets handshake complete on callback', async () => {
+      topToolbar.isHandshakeComplete = false;
+      await microtasksFinished();
+
+      proxy.callbackRouterRemote.onHandshakeComplete();
+      await microtasksFinished();
+
+      assertTrue(topToolbar.isHandshakeComplete);
     });
   });
 

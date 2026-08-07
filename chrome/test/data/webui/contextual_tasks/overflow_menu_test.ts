@@ -180,8 +180,43 @@ suite('OverflowMenuTest', () => {
         webuiRoundedIconsEnabled: false,
       });
       overflowMenu = document.createElement('contextual-tasks-overflow-menu');
+      overflowMenu.isHandshakeComplete = true;
+      overflowMenu.isCobrowseEligible = true;
       document.body.appendChild(overflowMenu);
       await microtasksFinished();
+    });
+
+    test('hides pin button when handshake is not complete', async () => {
+      overflowMenu.isHandshakeComplete = false;
+      await microtasksFinished();
+
+      let pinButton =
+          overflowMenu.shadowRoot.querySelector<HTMLElement>('#pinButton');
+      assertFalse(!!pinButton);
+
+      overflowMenu.isHandshakeComplete = true;
+      await microtasksFinished();
+      pinButton =
+          overflowMenu.shadowRoot.querySelector<HTMLElement>('#pinButton');
+      assertTrue(!!pinButton);
+    });
+
+    test('hides pin button when not cobrowse eligible', async () => {
+      overflowMenu.isCobrowseEligible = false;
+      await microtasksFinished();
+
+      const pinButton =
+          overflowMenu.shadowRoot.querySelector<HTMLElement>('#pinButton');
+      assertFalse(!!pinButton);
+    });
+
+    test('hides pin button when not on AI page', async () => {
+      overflowMenu.isAiPage = false;
+      await microtasksFinished();
+
+      const pinButton =
+          overflowMenu.shadowRoot.querySelector<HTMLElement>('#pinButton');
+      assertFalse(!!pinButton);
     });
 
     test('records metrics on pin click', async () => {
