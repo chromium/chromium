@@ -78,6 +78,7 @@ version = "2.2"
 default-features = false
 features = [
     "locale",
+    "normalizer",
     "compiled_data",
 ]
 

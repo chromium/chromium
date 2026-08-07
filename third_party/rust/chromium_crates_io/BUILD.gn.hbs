@@ -192,7 +192,13 @@ cargo_crate("{{this.name}}") {
     {{/each}}
   {{/if}}
   {{#if gn_visibility.testonly}}
+  {{#if_key_present "testonly" detail.extra_kv}}
+    {{#if detail.extra_kv.testonly}}
   testonly = true
+    {{/if}}
+  {{else}}
+  testonly = true
+  {{/if_key_present}}
   {{/if}}
 
   {{#if detail.extra_kv.allow_unstable_features}}

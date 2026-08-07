@@ -86,6 +86,7 @@ cargo_crate("lib") {
     "//third_party/rust/diplomat_runtime/v0_15:lib",
     "//third_party/rust/icu_locale/v2:lib",
     "//third_party/rust/icu_locale_core/v2:lib",
+    "//third_party/rust/icu_normalizer/v2:lib",
     "//third_party/rust/icu_provider/v2:lib",
     "//third_party/rust/icu_provider_adapters/v2:lib",
     "//third_party/rust/writeable/v0_6:lib",
@@ -93,10 +94,13 @@ cargo_crate("lib") {
   features = [
     "compiled_data",
     "locale",
+    "normalizer",
   ]
 
   visibility = []
-  visibility += [ "//base/i18n:*" ]
+  visibility += [ "//base/i18n/*" ]
+
+  public_configs = [ ":icu_capi_cpp_headers" ]
 
   #####################################################################
   # Tweaking which GN `config`s apply to this target.
@@ -127,4 +131,10 @@ cargo_crate("lib") {
   executable_configs += _configs_to_add
   proc_macro_configs -= _configs_to_remove
   proc_macro_configs += _configs_to_add
+}
+
+config("icu_capi_cpp_headers") {
+  include_dirs = [
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-v2/bindings/cpp",
+  ]
 }
