@@ -23,6 +23,7 @@ import java.lang.annotation.Target;
 public class VerticalTabListProperties {
     /** State of the Vertical Tab Rail layout. */
     @IntDef({
+        RailCollapseState.UNKNOWN,
         RailCollapseState.EXPANDED,
         RailCollapseState.COLLAPSED,
         RailCollapseState.EXPANDED_FOR_HOVERING
@@ -30,6 +31,9 @@ public class VerticalTabListProperties {
     @Retention(RetentionPolicy.SOURCE)
     @Target({ElementType.TYPE_USE})
     public @interface RailCollapseState {
+        /** The rail collapse state is unknown. */
+        int UNKNOWN = -1;
+
         /** The rail is fully expanded, showing tab favicons and titles. */
         int EXPANDED = 0;
 

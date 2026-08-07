@@ -42,7 +42,6 @@ found in the LICENSE file.
             android:contentDescription="@string/accessibility_collapse_vertical_tabs"
             android:scaleType="center"
             android:padding="@dimen/vertical_tabs_header_button_padding"
-            android:layout_marginEnd="@dimen/vertical_tabs_header_button_collapsed_margin_end"
             android:visibility="visible" />
         <View
             android:id="@+id/header_spacer"
@@ -50,25 +49,31 @@ found in the LICENSE file.
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:visibility="visible" />
-        <ImageButton
-            android:id="@+id/grid_button"
-            android:layout_width="@dimen/vertical_tabs_header_button_size"
-            android:layout_height="@dimen/vertical_tabs_header_button_size"
-            android:src="@drawable/ic_grid_view_16dp"
-            android:background="@drawable/vertical_tabs_left_rounded_button_background"
-            android:contentDescription="@string/accessibility_tab_groups"
-            android:scaleType="center"
-            android:padding="@dimen/vertical_tabs_header_button_padding"
-            android:layout_marginEnd="@dimen/vertical_tabs_header_button_gap"/>
-        <ImageButton
-            android:id="@+id/tab_search_button"
-            android:layout_width="@dimen/vertical_tabs_header_button_size"
-            android:layout_height="@dimen/vertical_tabs_header_button_size"
-            android:src="@drawable/ic_manage_search_16dp"
-            android:background="@drawable/vertical_tabs_right_rounded_button_background"
-            android:contentDescription="@string/accessibility_search_loupe_tooltip_text"
-            android:scaleType="center"
-            android:padding="@dimen/vertical_tabs_header_button_padding"/>
+        <LinearLayout
+            android:id="@+id/tab_action_buttons_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <ImageButton
+                android:id="@+id/grid_button"
+                android:layout_width="@dimen/vertical_tabs_header_button_size"
+                android:layout_height="@dimen/vertical_tabs_header_button_size"
+                android:src="@drawable/ic_grid_view_16dp"
+                android:background="@drawable/vertical_tabs_left_rounded_button_background"
+                android:contentDescription="@string/accessibility_tab_groups"
+                android:scaleType="center"
+                android:padding="@dimen/vertical_tabs_header_button_padding"
+                android:layout_marginEnd="@dimen/vertical_tabs_header_button_gap"/>
+            <ImageButton
+                android:id="@+id/tab_search_button"
+                android:layout_width="@dimen/vertical_tabs_header_button_size"
+                android:layout_height="@dimen/vertical_tabs_header_button_size"
+                android:src="@drawable/ic_manage_search_16dp"
+                android:background="@drawable/vertical_tabs_right_rounded_button_background"
+                android:contentDescription="@string/accessibility_search_loupe_tooltip_text"
+                android:scaleType="center"
+                android:padding="@dimen/vertical_tabs_header_button_padding"/>
+        </LinearLayout>
     </LinearLayout>
 
     <!-- Pinned Tabs Recycler View -->

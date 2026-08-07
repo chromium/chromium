@@ -23,6 +23,7 @@ import android.view.InputDevice;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -114,6 +115,7 @@ public class VerticalTabRailLayoutUnitTest {
         assertNotNull(mRailLayout.getRecyclerView());
         assertNotNull(mRailLayout.getPinnedTabsRecyclerView());
         assertNotNull(mRailLayout.getHeaderContainer());
+        assertNotNull(mRailLayout.getTabActionButtonsContainer());
     }
 
     @Test
@@ -142,16 +144,81 @@ public class VerticalTabRailLayoutUnitTest {
 
     @Test
     @SmallTest
-    public void testSetCollapseState_ExpandedAndCollapsed() {
-        mRailLayout.setCollapseState(RailCollapseState.EXPANDED);
-        LinearLayout header = mRailLayout.getHeaderContainer();
-        assertEquals(LinearLayout.HORIZONTAL, header.getOrientation());
-        View spacer = mRailLayout.findViewById(R.id.header_spacer);
-        assertEquals(View.VISIBLE, spacer.getVisibility());
+    public void testSetCollapseState_ExpandedWideAndNarrowAndCollapsed() {
+        int minSingleRowRailWidthPx = mRailLayout.getMinSingleButtonRowWidthPxForTesting();
+        int twoRowButtonRailWidthPx = minSingleRowRailWidthPx - 1;
 
+        View gridButton = mRailLayout.findViewById(R.id.grid_button);
+        View searchButton = mRailLayout.findViewById(R.id.tab_search_button);
+        LinearLayout header = mRailLayout.getHeaderContainer();
+        View spacer = mRailLayout.findViewById(R.id.header_spacer);
+        LinearLayout tabActionContainer = mRailLayout.getTabActionButtonsContainer();
+
+        // 1. Expanded Wide (single row)
+        mRailLayout.setCollapseState(RailCollapseState.EXPANDED);
+        mRailLayout.layout(0, 0, minSingleRowRailWidthPx, 500);
+        assertEquals(LinearLayout.HORIZONTAL, header.getOrientation());
+        assertEquals(View.VISIBLE, spacer.getVisibility());
+        assertEquals(LinearLayout.HORIZONTAL, tabActionContainer.getOrientation());
+        assertEquals(
+                0.0f, ((LinearLayout.LayoutParams) gridButton.getLayoutParams()).weight, 0.01f);
+        assertEquals(
+                0.0f, ((LinearLayout.LayoutParams) searchButton.getLayoutParams()).weight, 0.01f);
+
+        // 2. Expanded Narrow (two rows, filling space)
+        mRailLayout.layout(0, 0, twoRowButtonRailWidthPx, 500);
+        assertEquals(LinearLayout.VERTICAL, header.getOrientation());
+        assertEquals(View.GONE, spacer.getVisibility());
+        assertEquals(LinearLayout.HORIZONTAL, tabActionContainer.getOrientation());
+        assertEquals(
+                1.0f, ((LinearLayout.LayoutParams) gridButton.getLayoutParams()).weight, 0.01f);
+        assertEquals(
+                1.0f, ((LinearLayout.LayoutParams) searchButton.getLayoutParams()).weight, 0.01f);
+        assertEquals(
+                ViewGroup.LayoutParams.MATCH_PARENT, tabActionContainer.getLayoutParams().width);
+
+        // 3. Explicit Collapsed State (single column / three rows)
         mRailLayout.setCollapseState(RailCollapseState.COLLAPSED);
         assertEquals(LinearLayout.VERTICAL, header.getOrientation());
         assertEquals(View.GONE, spacer.getVisibility());
+        assertEquals(LinearLayout.VERTICAL, tabActionContainer.getOrientation());
+        assertEquals(
+                0.0f, ((LinearLayout.LayoutParams) gridButton.getLayoutParams()).weight, 0.01f);
+    }
+
+    @Test
+    @SmallTest
+    public void testOnSizeChanged_SkipsUpdateWhenHeaderModeUnchanged() {
+        int minSingleRowRailWidthPx = mRailLayout.getMinSingleButtonRowWidthPxForTesting();
+        int narrowRailWidthPx = minSingleRowRailWidthPx - 1;
+        int buttonSize =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tabs_header_button_size);
+
+        View gridButton = mRailLayout.findViewById(R.id.grid_button);
+
+        // 1. Initial size in single row mode.
+        mRailLayout.setCollapseState(RailCollapseState.EXPANDED);
+        mRailLayout.layout(0, 0, minSingleRowRailWidthPx + 100, 500);
+        assertEquals(buttonSize, gridButton.getLayoutParams().width);
+
+        // 2. Mutate a layout param to a custom value to verify it is not overwritten.
+        var params = gridButton.getLayoutParams();
+        params.width = 999;
+        gridButton.setLayoutParams(params);
+
+        // 3. Size change with a different wide width (still single row).
+        mRailLayout.layout(0, 0, minSingleRowRailWidthPx + 50, 500);
+        // Action is skipped because mode hasn't changed; width remains custom value 999.
+        assertEquals(999, gridButton.getLayoutParams().width);
+
+        // 4. Size change with narrow width (transitions to two-row mode).
+        mRailLayout.layout(0, 0, narrowRailWidthPx, 500);
+        // Action is performed; width is reset to 0 with weight 1.0.
+        assertEquals(0, gridButton.getLayoutParams().width);
+        assertEquals(
+                1.0f, ((LinearLayout.LayoutParams) gridButton.getLayoutParams()).weight, 0.01f);
     }
 
     @Test
