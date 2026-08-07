@@ -847,9 +847,16 @@ void LocationBarView::Layout(PassKey) {
     }
   };
 
+  // When the AIM page action is shown as the right-most page action in the
+  // location bar, it should be positioned flush against the right edge of the
+  // location bar.
+  constexpr int kTrailingEdgePaddingForAim = 5;
   add_trailing_decoration(page_action_container_,
                           /*intra_item_padding=*/0,
-                          /*edge_padding=*/trailing_decorations_edge_padding);
+                          /*edge_padding=*/
+                          GetPageActionInfo().is_aim_last_visible_page_action
+                              ? kTrailingEdgePaddingForAim
+                              : trailing_decorations_edge_padding);
   add_trailing_decoration(ai_mode_hint_label_, /*intra_item_padding=*/0,
                           /*edge_padding=*/trailing_decorations_edge_padding);
   for (ContentSettingImageView* view :

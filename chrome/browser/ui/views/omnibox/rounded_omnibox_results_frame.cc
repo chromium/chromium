@@ -13,6 +13,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_aim_popup_webui_content.h"
@@ -300,22 +301,22 @@ gfx::Insets RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets() {
     return gfx::Insets::TLBR(6, 1, 5, 1);
   }
 #if BUILDFLAG(IS_MAC)
-  // On macOS, the popup is hosted in a separate native window. Converting
-  // sub-pixel Views layout coordinates of the location bar to integer screen
-  // coordinates for the OS window positioning introduces rounding discrepancies
-  // (up to 1px). Additionally, differences in visual border rendering thickness
-  // (1px CSS outline in WebUI vs 0.5px native retina border) require a slightly
-  // tighter fit.
+  // On macOS, the popup is hosted in a separate native window. Differences in
+  // visual border rendering thickness (1px CSS outline in WebUI vs 0.5px native
+  // retina border) require a slightly tighter horizontal fit (5px instead of
+  // 6px).
   //
-  // To avoid adding platform-specific 1px hacks or relative offsets in the
-  // shared WebUI CSS:
-  // - We set the vertical inset to 4px (1px smaller than default 5px). This
-  //   effectively offsets the widget top down by 1px, centering the 32px
-  //   WebUI searchbox inside the 34px native height.
-  // - We set the horizontal inset to 5px (1px smaller than default 6px). This
-  //   narrows the widget by 2px overall, aligning the searchbox's visual
-  //   boundaries with the native location bar's visual border.
-  return gfx::Insets::VH(4, 5);
+  // When WebUIOmniboxFullPopup is enabled:
+  // - Top inset is kept at 5px so the widget anchors flush with the bottom of
+  //   the tab line (y = LocationBar_y - 5 = 0).
+  // - Horizontal insets are 5px (1px tighter) to align visual boundaries with
+  //   the native location bar.
+  // - Bottom inset is 4px to accommodate the 32px WebUI searchbox.
+  // When disabled, we fall back to standard (5, 6) insets.
+  if (omnibox::IsWebUIOmniboxFullPopupEnabled()) {
+    return gfx::Insets::TLBR(5, 5, 4, 5);
+  }
+  return gfx::Insets::VH(5, 6);
 #else
   return gfx::Insets::VH(5, 6);
 #endif
