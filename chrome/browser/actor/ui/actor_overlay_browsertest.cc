@@ -6,6 +6,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_test_util.h"
@@ -767,8 +768,16 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayMagicCursorTest,
   EXPECT_FALSE(has_class);
 }
 
+// TODO(crbug.com/543772816): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_OverlayWebViewIsTransparentAfterNavigation \
+  DISABLED_OverlayWebViewIsTransparentAfterNavigation
+#else
+#define MAYBE_OverlayWebViewIsTransparentAfterNavigation \
+  OverlayWebViewIsTransparentAfterNavigation
+#endif
 IN_PROC_BROWSER_TEST_F(ActorOverlayTest,
-                       OverlayWebViewIsTransparentAfterNavigation) {
+                       MAYBE_OverlayWebViewIsTransparentAfterNavigation) {
   Profile* const profile = browser()->GetProfile();
   ActorUiStateManagerInterface* state_manager =
       ActorKeyedService::Get(profile)->GetActorUiStateManager();
