@@ -1,0 +1,7 @@
+monorail: {
+  component: "Build"
+}
+team_email: "build@chromium.org"
+buganizer_public: {
+  component_id: 1456832
+}

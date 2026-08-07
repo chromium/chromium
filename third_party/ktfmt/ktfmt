@@ -1,0 +1,21 @@
+#!/bin/bash
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+THIS_DIR=$(dirname "$0")
+
+if [[ -n "$JAVA_HOME" ]]; then
+  JAVA="$JAVA_HOME/bin/java"
+elif [[ $(uname) = Linux ]]; then
+  # Chromium bundles Java prebuilts only for Linux.
+  JAVA="$THIS_DIR/../jdk/current/bin/java"
+else
+  JAVA=java
+fi
+
+exec "$JAVA" \
+    -Xms512M \
+    -jar "$THIS_DIR/cipd/ktfmt.jar" \
+    --google-style \
+    "$@"

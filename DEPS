@@ -2449,6 +2449,17 @@ deps = {
       'dep_type': 'cipd',
   },
 
+  'src/third_party/ktfmt/cipd': {
+      'packages': [
+          {
+              'package': 'chromium/third_party/ktfmt',
+              'version': 'version:2@v0.64.a441f23abe',
+          },
+      ],
+      'condition': '(checkout_android or checkout_linux) and non_git_source',
+      'dep_type': 'cipd',
+  },
+
   'src/third_party/leveldatabase/src':
     Var('chromium_git') + '/external/leveldb.git' + '@' + '7ee830d02b623e8ffe0b95d59a74db1e58da04c5',
 
