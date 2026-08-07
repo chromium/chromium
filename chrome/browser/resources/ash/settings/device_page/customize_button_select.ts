@@ -198,7 +198,7 @@ export class CustomizeButtonSelectElement extends
   declare actionList: ActionChoice[];
   declare selectedValue: string;
   declare metaKey: MetaKey;
-  private isInitialized_: boolean;
+  private isInitialized_: boolean = false;
   declare private shouldShowDropdownMenu_: boolean;
   declare private label_: string;
   declare private buttonRemapping_: ButtonRemapping;

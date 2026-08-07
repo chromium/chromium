@@ -52,7 +52,7 @@ export const DeepLinkingMixin = dedupingMixin(
         // Disabling the naming convention rule since this property mirrors
         // the exact value of the Setting enum.
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        Setting: Setting;
+        declare Setting: Setting;
 
         /**
          * Set of setting IDs that could be deep linked to. Initialized as an

@@ -69,7 +69,7 @@ export class SettingsCustomizePenButtonsSubpageElement extends
 
   declare selectedTablet: GraphicsTablet;
   declare graphicsTablets: GraphicsTablet[];
-  private buttonActionList_: ActionChoice[];
+  private buttonActionList_: ActionChoice[] = [];
   private inputDeviceSettingsProvider_: InputDeviceSettingsProviderInterface =
       getInputDeviceSettingsProvider();
   private previousRoute_: Route|null = null;

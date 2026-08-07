@@ -117,13 +117,16 @@
         </template>
         <cr-icon-button class="audio-mute-button"
             id="audioOutputMuteButton"
-            iron-icon="[[getOutputIcon_(isOutputMuted_, outputVolume_)]]"
+            iron-icon="[[getOutputIcon_(
+                isOutputMuted_, outputVolume_, audioSystemProperties_
+              )]]"
             on-click="onOutputMuteButtonClicked"
             disabled="[[isOutputMutedByPolicy_(
                 audioSystemProperties_.outputMuteState
               )]]"
             aria-description="[[getOutputMuteButtonAriaLabel(
-                isOutputMuted_
+                isOutputMuted_,
+                audioSystemProperties_
               )]]"
             aria-labelledby="audioOutputVolumeLabel"
             aria-pressed="[[isOutputMuted_]]">
@@ -191,13 +194,16 @@
       </div>
       <div class="audio-options-container">
         <cr-icon-button id="audioInputGainMuteButton"
-            iron-icon="[[getInputIcon_(isInputMuted_)]]"
+            iron-icon="[[getInputIcon_(isInputMuted_, audioSystemProperties_)]]"
             on-click="onInputMuteClicked"
             class="audio-mute-button"
-            disabled="[[shouldDisableInputGainControls(isInputMuted_)]]"
+            disabled="[[shouldDisableInputGainControls(
+                isInputMuted_, audioSystemProperties_
+              )]]"
             aria-description$="[[getInputMuteButtonAriaLabel(
                 audioSystemProperties_.inputMuteState,
-                isInputMuted_
+                isInputMuted_,
+                audioSystemProperties_
               )]]"
             aria-labelledby="audioInputGainLabel"
             aria-pressed="[[isInputMuted_]]">
@@ -208,20 +214,26 @@
         </paper-tooltip>
         <cr-slider id="audioInputGainVolumeSlider" min="0" max="100"
             key-press-slider-increment="10"
-            iron-icon="[[getInputIcon_(isInputMuted_)]]"
+            iron-icon="[[getInputIcon_(isInputMuted_, audioSystemProperties_)]]"
             value="[[audioSystemProperties_.inputGainPercent]]"
             on-cr-slider-value-changed="onInputVolumeSliderChanged"
             class="audio-slider"
             aria-labelledby="audioInputTitle audioInputGainLabel"
-            disabled="[[shouldDisableInputGainControls(isInputMuted_)]]">
+            disabled="[[shouldDisableInputGainControls(
+                isInputMuted_, audioSystemProperties_
+              )]]">
         </cr-slider>
       </div>
     </div>
     <settings-toggle-button id="audioInputVoiceIsolationToggleSection"
         hidden="[[!showVoiceIsolationSubsection_]]"
         pref="{{prefs.ash.input_voice_isolation_enabled}}"
-        label="[[getVoiceIsolationToggleTitle_(audioSystemProperties_.voiceIsolationUiAppearance)]]"
-        sub-label="[[getVoiceIsolationToggleDescription_(audioSystemProperties_.voiceIsolationUiAppearance)]]"
+        label="[[getVoiceIsolationToggleTitle_(
+            audioSystemProperties_.voiceIsolationUiAppearance
+          )]]"
+        sub-label="[[getVoiceIsolationToggleDescription_(
+            audioSystemProperties_.voiceIsolationUiAppearance
+          )]]"
         learn-more-url="$i18n{voiceIsolationLearnMoreLink}"
         on-change="onVoiceIsolationRowClicked_">
     </settings-toggle-button>

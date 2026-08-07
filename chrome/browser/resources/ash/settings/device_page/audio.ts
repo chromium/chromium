@@ -32,7 +32,6 @@ import type {AudioDevice, AudioSystemProperties} from '../mojom-webui/cros_audio
 import {AudioDeviceType, AudioEffectState, AudioEffectType, AudioSystemPropertiesObserverReceiver, MuteState} from '../mojom-webui/cros_audio_config.mojom-webui.js';
 import type {VoiceIsolationUIAppearance} from '../mojom-webui/cros_audio_config.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import type {AudioAndCaptionsPageBrowserProxy} from '../os_a11y_page/audio_and_captions_page_browser_proxy.js';
 import {AudioAndCaptionsPageBrowserProxyImpl} from '../os_a11y_page/audio_and_captions_page_browser_proxy.js';
 import type {Route} from '../router.js';
 import {routes} from '../router.js';
@@ -40,7 +39,7 @@ import {routes} from '../router.js';
 import {getTemplate} from './audio.html.js';
 import type {CrosAudioConfigInterface} from './cros_audio_config.js';
 import {getCrosAudioConfig} from './cros_audio_config.js';
-import type {BatteryStatus, DevicePageBrowserProxy} from './device_page_browser_proxy.js';
+import type {BatteryStatus} from './device_page_browser_proxy.js';
 import {DevicePageBrowserProxyImpl} from './device_page_browser_proxy.js';
 import {FakeCrosAudioConfig} from './fake_cros_audio_config.js';
 
@@ -67,10 +66,6 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
 
   static get properties() {
     return {
-      crosAudioConfig_: {
-        type: Object,
-      },
-
       audioSystemProperties_: {
         type: Object,
       },
@@ -78,15 +73,18 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
       isOutputMuted_: {
         type: Boolean,
         reflectToAttribute: true,
+        value: false,
       },
 
       isInputMuted_: {
         type: Boolean,
         reflectToAttribute: true,
+        value: false,
       },
 
       showVoiceIsolationSubsection_: {
         type: Boolean,
+        value: false,
       },
       /**
        * Enum values for the
@@ -104,6 +102,7 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
 
       outputVolume_: {
         type: Number,
+        value: 0,
       },
 
       powerSoundsHidden_: {
@@ -129,10 +128,17 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
 
       isHfpMicSrEnabled: {
         type: Boolean,
+        value: false,
+      },
+
+      isHfpMicSrSupported: {
+        type: Boolean,
+        value: false,
       },
 
       showSpatialAudio: {
         type: Boolean,
+        value: false,
       },
 
       showAudioFocusEnforcement: {
@@ -157,39 +163,27 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
   declare protected isAllowAGCEnabled: boolean;
   declare protected showAllowAGC: boolean;
   declare protected isHfpMicSrEnabled: boolean;
-  protected isHfpMicSrSupported: boolean;
+  declare protected isHfpMicSrSupported: boolean;
   declare protected showSpatialAudio: boolean;
   declare protected showAudioFocusEnforcement: boolean;
 
-  private audioAndCaptionsBrowserProxy_: AudioAndCaptionsPageBrowserProxy;
-  private devicePageBrowserProxy_: DevicePageBrowserProxy;
+  private audioAndCaptionsBrowserProxy_ =
+      AudioAndCaptionsPageBrowserProxyImpl.getInstance();
+  private devicePageBrowserProxy_ = DevicePageBrowserProxyImpl.getInstance();
   declare private audioSystemProperties_: AudioSystemProperties;
-  private audioSystemPropertiesObserverReceiver_:
-      AudioSystemPropertiesObserverReceiver;
-  declare private crosAudioConfig_: CrosAudioConfigInterface;
+  private audioSystemPropertiesObserverReceiver_ =
+      new AudioSystemPropertiesObserverReceiver(this);
+  private crosAudioConfig_: CrosAudioConfigInterface = getCrosAudioConfig();
   declare private isOutputMuted_: boolean;
   declare private isInputMuted_: boolean;
   declare private showVoiceIsolationSubsection_: boolean;
   declare private isSpatialAudioEnabled_: boolean;
-  private isSpatialAudioSupported_: boolean;
+  private isSpatialAudioSupported_: boolean = false;
   declare private outputVolume_: number;
   declare private startupSoundEnabled_: boolean;
   private batteryStatus_: BatteryStatus|undefined;
   declare private powerSoundsHidden_: boolean;
   declare private voiceIsolationEffectModePrefValues_: {[key: string]: number};
-
-  constructor() {
-    super();
-    this.crosAudioConfig_ = getCrosAudioConfig();
-
-    this.audioSystemPropertiesObserverReceiver_ =
-        new AudioSystemPropertiesObserverReceiver(this);
-
-    this.audioAndCaptionsBrowserProxy_ =
-        AudioAndCaptionsPageBrowserProxyImpl.getInstance();
-
-    this.devicePageBrowserProxy_ = DevicePageBrowserProxyImpl.getInstance();
-  }
 
   override ready(): void {
     super.ready();
@@ -225,22 +219,21 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
         this.audioSystemProperties_.voiceIsolationUiAppearance.toggleType;
     this.showVoiceIsolationSubsection_ = toggleType !== AudioEffectType.kNone;
 
-    this.isAllowAGCEnabled =
-        (activeInputDevice?.forceRespectUiGainsState ===
-         AudioEffectState.kNotEnabled);
+    this.isAllowAGCEnabled = activeInputDevice !== undefined &&
+        activeInputDevice.forceRespectUiGainsState ===
+            AudioEffectState.kNotEnabled;
     this.outputVolume_ = this.audioSystemProperties_.outputVolumePercent;
-    this.isHfpMicSrEnabled =
-        (activeInputDevice?.hfpMicSrState === AudioEffectState.kEnabled);
+    this.isHfpMicSrEnabled = activeInputDevice !== undefined &&
+        activeInputDevice.hfpMicSrState === AudioEffectState.kEnabled;
     this.isHfpMicSrSupported = activeInputDevice !== undefined &&
-        activeInputDevice?.hfpMicSrState !== AudioEffectState.kNotSupported;
+        activeInputDevice.hfpMicSrState !== AudioEffectState.kNotSupported;
 
     const activeOutputDevice = this.audioSystemProperties_.outputDevices.find(
         (device: AudioDevice) => device.isActive);
     this.isSpatialAudioEnabled_ = activeOutputDevice !== undefined &&
-        activeOutputDevice?.spatialAudioState === AudioEffectState.kEnabled;
+        activeOutputDevice.spatialAudioState === AudioEffectState.kEnabled;
     this.isSpatialAudioSupported_ = activeOutputDevice !== undefined &&
-        activeOutputDevice?.spatialAudioState !==
-            AudioEffectState.kNotSupported;
+        activeOutputDevice.spatialAudioState !== AudioEffectState.kNotSupported;
     this.showSpatialAudio =
         (this.isSpatialAudioSupported_ &&
          loadTimeData.getBoolean('enableSpatialAudioToggle'));
@@ -268,9 +261,8 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
   }
 
   /** Determines if audio output is muted by policy. */
-  protected isOutputMutedByPolicy_(): boolean {
-    return this.audioSystemProperties_.outputMuteState ===
-        MuteState.kMutedByPolicy;
+  protected isOutputMutedByPolicy_(outputMuteState: MuteState): boolean {
+    return outputMuteState === MuteState.kMutedByPolicy;
   }
 
   protected onInputMuteClicked(): void {
@@ -330,24 +322,28 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
   }
 
   /** Handles updating the mic icon depending on the input mute state. */
-  protected getInputIcon_(): string {
-    return this.isInputMuted_ ? 'os-settings:mic-off' : 'cr:mic';
+  protected getInputIcon_(
+      isInputMuted: boolean,
+      _audioSystemProperties?: AudioSystemProperties): string {
+    return isInputMuted ? 'os-settings:mic-off' : 'cr:mic';
   }
 
   /**
    * Handles updating the output icon depending on the output mute state and
    * volume.
    */
-  protected getOutputIcon_(): string {
-    if (this.isOutputMuted_) {
+  protected getOutputIcon_(
+      isOutputMuted: boolean, outputVolume: number,
+      _audioSystemProperties?: AudioSystemProperties): string {
+    if (isOutputMuted) {
       return 'os-settings:volume-up-off';
     }
 
-    if (this.outputVolume_ === VOLUME_ICON_OFF_LEVEL) {
+    if (outputVolume === VOLUME_ICON_OFF_LEVEL) {
       return 'os-settings:volume-zero';
     }
 
-    if (this.outputVolume_ < VOLUME_ICON_LOUD_LEVEL) {
+    if (outputVolume < VOLUME_ICON_LOUD_LEVEL) {
       return 'os-settings:volume-down';
     }
 
@@ -358,24 +354,29 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
    * Handles the case when there are no output devices. The output section
    * should be hidden in this case.
    */
-  protected getOutputHidden_(): boolean {
-    return this.audioSystemProperties_.outputDevices.length === 0;
+  protected getOutputHidden_(devices?: AudioDevice[]): boolean {
+    return !devices || devices.length === 0;
   }
 
   /**
    * Handles the case when there are no input devices. The input section should
    * be hidden in this case.
    */
-  protected getInputHidden_(): boolean {
-    return this.audioSystemProperties_.inputDevices.length === 0;
+  protected getInputHidden_(devices?: AudioDevice[]): boolean {
+    return !devices || devices.length === 0;
   }
 
   /**
    * Returns true if input is muted by physical switch; otherwise, return false.
    */
-  protected shouldDisableInputGainControls(): boolean {
-    return this.audioSystemProperties_.inputMuteState ===
-        MuteState.kMutedExternally;
+  protected shouldDisableInputGainControls(
+      _isInputMuted: boolean,
+      audioSystemProperties?: AudioSystemProperties): boolean {
+    if (!audioSystemProperties) {
+      return false;
+    }
+
+    return audioSystemProperties.inputMuteState === MuteState.kMutedExternally;
   }
 
   /** Translates the device name if applicable. */
@@ -425,22 +426,23 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
   }
 
   /** Returns the appropriate aria-label for input mute button. */
-  protected getInputMuteButtonAriaLabel(): string {
-    if (this.audioSystemProperties_.inputMuteState ===
-        MuteState.kMutedExternally) {
+  protected getInputMuteButtonAriaLabel(
+      inputMuteState: MuteState, isInputMuted: boolean,
+      _audioSystemProperties?: AudioSystemProperties): string {
+    if (inputMuteState === MuteState.kMutedExternally) {
       return this.i18n('audioInputMuteButtonAriaLabelMutedByHardwareSwitch');
     }
 
-    return this.isInputMuted_ ?
-        this.i18n('audioInputMuteButtonAriaLabelMuted') :
-        this.i18n('audioInputMuteButtonAriaLabelNotMuted');
+    return isInputMuted ? this.i18n('audioInputMuteButtonAriaLabelMuted') :
+                          this.i18n('audioInputMuteButtonAriaLabelNotMuted');
   }
 
   /** Returns the appropriate aria-label for output mute button. */
-  protected getOutputMuteButtonAriaLabel(): string {
-    return this.isOutputMuted_ ?
-        this.i18n('audioOutputMuteButtonAriaLabelMuted') :
-        this.i18n('audioOutputMuteButtonAriaLabelNotMuted');
+  protected getOutputMuteButtonAriaLabel(
+      isOutputMuted: boolean,
+      _audioSystemProperties?: AudioSystemProperties): string {
+    return isOutputMuted ? this.i18n('audioOutputMuteButtonAriaLabelMuted') :
+                           this.i18n('audioOutputMuteButtonAriaLabelNotMuted');
   }
 
   private getVoiceIsolationToggleTitle_(voiceIsolationUIAppearance:
@@ -505,7 +507,7 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
   }
 
   private computePowerSoundsHidden_(): boolean {
-    return !this.batteryStatus_?.present;
+    return !this.batteryStatus_ || !this.batteryStatus_.present;
   }
 
   private onDeviceStartupSoundRowClicked_(): void {

@@ -58,7 +58,7 @@ export const RouteOriginMixin = dedupingMixin(
          * The route corresponding to this page.
          */
         route: Route|undefined = undefined;
-        private focusConfig_: FocusConfig;
+        declare private focusConfig_: FocusConfig;
 
         override connectedCallback(): void {
           super.connectedCallback();

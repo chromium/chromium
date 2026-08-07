@@ -104,7 +104,7 @@ export class KeyCombinationInputDialogElement extends
   declare buttonRemappingList: ButtonRemapping[];
   declare remappingIndex: number;
   declare isOpen: boolean;
-  shortcutInput: ShortcutInputElement;
+  declare shortcutInput: ShortcutInputElement;
   declare inputKeyEvent: KeyEvent|undefined;
   declare isCapturing: boolean;
   declare metaKey: MetaKey;

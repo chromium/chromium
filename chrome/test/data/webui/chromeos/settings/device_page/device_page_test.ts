@@ -865,6 +865,59 @@ suite('<settings-device-page>', () => {
           maximumValue);
     });
 
+    test(
+        'audio subpage renders before audioSystemProperties are received',
+        async () => {
+          audioPage.remove();
+
+          class AsyncFakeCrosAudioConfig extends fakeCrosAudioConfig
+                                                     .FakeCrosAudioConfig {
+            private audioObserver?:
+                fakeCrosAudioConfig.FakePropertiesObserverInterface;
+
+            override observeAudioSystemProperties(
+                observer: fakeCrosAudioConfig.FakePropertiesObserverInterface):
+                void {
+              this.audioObserver = observer;
+            }
+
+            notifyObservers(): void {
+              if (this.audioObserver) {
+                this.audioObserver.onPropertiesUpdated(
+                    fakeCrosAudioConfig.defaultFakeAudioSystemProperties);
+              }
+            }
+          }
+
+          const asyncCrosAudioConfig = new AsyncFakeCrosAudioConfig();
+          setCrosAudioConfigForTesting(asyncCrosAudioConfig);
+
+          Router.getInstance().navigateTo(routes.AUDIO);
+          const asyncAudioPage = document.createElement('settings-audio') as
+                  unknown as SettingsAudioElement &
+              HTMLElement;
+          document.body.appendChild(asyncAudioPage);
+          await flushTasks();
+
+          // Ensure the audio subpage stamped without throwing an error when
+          // audioSystemProperties_ is undefined.
+          assertTrue(!!asyncAudioPage.shadowRoot);
+          const muteButton = asyncAudioPage.shadowRoot.querySelector(
+              '#audioInputGainMuteButton');
+          assertTrue(!!muteButton);
+          const outputMuteButton =
+              asyncAudioPage.shadowRoot.querySelector('#audioOutputMuteButton');
+          assertTrue(!!outputMuteButton);
+
+          // Now notify observers and verify that the page updates cleanly.
+          asyncCrosAudioConfig.notifyObservers();
+          await flushTasks();
+          assertTrue(isVisible(asyncAudioPage.shadowRoot.querySelector(
+              '#audioOutputSubsection')));
+
+          asyncAudioPage.remove();
+        });
+
     suite('voice isolation', () => {
       let voiceIsolationToggleSection: SettingsToggleButtonElement;
 
@@ -1659,5 +1712,144 @@ suite('<settings-device-page>', () => {
     const printingSettingsCard =
         devicePage.shadowRoot!.querySelector('printing-settings-card');
     assertTrue(isVisible(printingSettingsCard));
+  });
+
+  suite('pointers subpage navigation', () => {
+    class AsyncInputDeviceSettingsProvider extends
+        FakeInputDeviceSettingsProvider {
+      private pointingStickObserver_:
+          {onPointingStickListUpdated(sticks: any): void}|null = null;
+      private touchpadObserver_: {onTouchpadListUpdated(touchpads: any): void}|
+          null = null;
+      private mouseObserver_: {onMouseListUpdated(mice: any): void}|null = null;
+
+      override observePointingStickSettings(observer: any): void {
+        this.pointingStickObserver_ = observer;
+      }
+
+      override observeTouchpadSettings(observer: any): void {
+        this.touchpadObserver_ = observer;
+      }
+
+      override observeMouseSettings(observer: any): void {
+        this.mouseObserver_ = observer;
+      }
+
+      emitPointingSticks(sticks: any): void {
+        this.pointingStickObserver_?.onPointingStickListUpdated(sticks);
+      }
+
+      emitTouchpads(touchpads: any): void {
+        this.touchpadObserver_?.onTouchpadListUpdated(touchpads);
+      }
+
+      emitMice(mice: any): void {
+        this.mouseObserver_?.onMouseListUpdated(mice);
+      }
+    }
+
+    teardown(() => {
+      const provider = new FakeInputDeviceSettingsProvider();
+      provider.setFakeMice(fakeMice);
+      provider.setFakePointingSticks(fakePointingSticks);
+      provider.setFakeTouchpads(fakeTouchpads);
+      setInputDeviceSettingsProviderForTesting(provider);
+      Router.getInstance().resetRouteForTesting();
+    });
+
+    test(
+        'pointer subpage redirects to device route when pointers are empty',
+        async () => {
+          const provider = new FakeInputDeviceSettingsProvider();
+          provider.setFakeMice([]);
+          provider.setFakePointingSticks([]);
+          provider.setFakeTouchpads([]);
+          setInputDeviceSettingsProviderForTesting(provider);
+
+          Router.getInstance().navigateTo(routes.POINTERS);
+          await init();
+
+          assertEquals(routes.DEVICE, Router.getInstance().currentRoute);
+        });
+
+    test(
+        'pointer subpage remains on pointers route when a device is connected',
+        async () => {
+          if (loadTimeData.getBoolean('enablePeripheralCustomization')) {
+            return;
+          }
+
+          const provider = new FakeInputDeviceSettingsProvider();
+          provider.setFakeMice(fakeMice);
+          provider.setFakePointingSticks([]);
+          provider.setFakeTouchpads([]);
+          setInputDeviceSettingsProviderForTesting(provider);
+
+          Router.getInstance().navigateTo(routes.POINTERS);
+          await init();
+
+          assertEquals(routes.POINTERS, Router.getInstance().currentRoute);
+        });
+
+    test(
+        'pointer subpage does not redirect prematurely when IPC calls ' +
+            'arrive out-of-order',
+        async () => {
+          if (loadTimeData.getBoolean('enablePeripheralCustomization')) {
+            return;
+          }
+
+          const provider = new AsyncInputDeviceSettingsProvider();
+          setInputDeviceSettingsProviderForTesting(provider);
+
+          Router.getInstance().navigateTo(routes.POINTERS);
+          await init();
+
+          // IPC 1: Pointing stick finishes first with an empty list.
+          provider.emitPointingSticks([]);
+          await flushTasks();
+          assertEquals(routes.POINTERS, Router.getInstance().currentRoute);
+
+          // IPC 2: Touchpad finishes next with an empty list.
+          provider.emitTouchpads([]);
+          await flushTasks();
+          assertEquals(routes.POINTERS, Router.getInstance().currentRoute);
+
+          // IPC 3: Mouse finishes last with a connected mouse.
+          provider.emitMice(fakeMice);
+          await flushTasks();
+          assertEquals(routes.POINTERS, Router.getInstance().currentRoute);
+        });
+
+    test(
+        'pointer subpage redirects to device route only after ALL async ' +
+            'IPC calls complete empty',
+        async () => {
+          if (loadTimeData.getBoolean('enablePeripheralCustomization')) {
+            return;
+          }
+
+          const provider = new AsyncInputDeviceSettingsProvider();
+          setInputDeviceSettingsProviderForTesting(provider);
+
+          Router.getInstance().navigateTo(routes.POINTERS);
+          await init();
+
+          // IPC 1: Pointing stick finishes first with an empty list.
+          provider.emitPointingSticks([]);
+          await flushTasks();
+          assertEquals(routes.POINTERS, Router.getInstance().currentRoute);
+
+          // IPC 2: Touchpad finishes next with an empty list.
+          provider.emitTouchpads([]);
+          await flushTasks();
+          assertEquals(routes.POINTERS, Router.getInstance().currentRoute);
+
+          // IPC 3: Mouse finishes last with []. Now all 3 IPCs complete empty.
+          provider.emitMice([]);
+          await flushTasks();
+
+          assertEquals(routes.DEVICE, Router.getInstance().currentRoute);
+        });
   });
 });

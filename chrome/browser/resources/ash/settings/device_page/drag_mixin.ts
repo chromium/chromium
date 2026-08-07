@@ -67,13 +67,13 @@ export const DragMixin = dedupingMixin(
           };
         }
 
-        dragEnabled: boolean;
+        declare dragEnabled: boolean;
         /**
          * The id of the element being dragged, or empty if not dragging.
          */
         dragId: string = '';
-        keyboardDragEnabled: boolean;
-        keyboardDragStepSize: number;
+        declare keyboardDragEnabled: boolean;
+        declare keyboardDragStepSize: number;
 
         /**
          * The type of the currently ongoing drag.  If a keyboard drag is
@@ -82,9 +82,9 @@ export const DragMixin = dedupingMixin(
          * onging, keyboard dragging should be ignored.
          */
         private dragType_: DragType = DragType.NONE;
-        private dragOffset_: Position;
+        private dragOffset_: Position = {x: 0, y: 0};
         private container_: HTMLElement|undefined;
-        private callback_: DragCallback|null;
+        private callback_: DragCallback|null = null;
         private dragStartLocation_: Position = {x: 0, y: 0};
         /**
          * Used to ignore unnecessary drag events.

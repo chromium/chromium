@@ -133,7 +133,7 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
   declare remappingIndex: number;
   declare actionList: ActionChoice[];
   declare metaKey: MetaKey;
-  private buttonPressObserverReceiver: ButtonPressObserverReceiver;
+  private buttonPressObserverReceiver: ButtonPressObserverReceiver|null = null;
   declare private buttonRemapping_: ButtonRemapping;
   declare private buttonRemappingName_: string;
   private inputDeviceSettingsProvider_: InputDeviceSettingsProviderInterface =
