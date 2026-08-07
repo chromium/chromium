@@ -297,7 +297,14 @@ void TabStripModel::SetFocusedGroup(
            new_selection_model.active_tab()->GetGroup() != group)) {
         tabs::TabInterface* first_in_group =
             group_model_->GetTabGroup(group.value())->GetFirstTab();
-        new_selection_model.AddTabToSelection(first_in_group);
+        if (first_in_group->IsSplit()) {
+          for (tabs::TabInterface* split_tab :
+               GetSplitData(first_in_group->GetSplit().value())->ListTabs()) {
+            new_selection_model.AddTabToSelection(split_tab);
+          }
+        } else {
+          new_selection_model.AddTabToSelection(first_in_group);
+        }
         new_selection_model.SetActiveTab(first_in_group);
       }
 

@@ -647,6 +647,32 @@ IN_PROC_BROWSER_TEST_P(TabStripControllerFocusingVisibilityBrowserTest,
   EXPECT_TRUE(unpinned_tab_view->GetVisible());
 }
 
+IN_PROC_BROWSER_TEST_P(TabStripControllerFocusingVisibilityBrowserTest,
+                       FocusGroupWithSplitViewTabs) {
+  // Tab 0 is the initial tab outside the group.
+  AppendTab();
+  AppendTab();
+
+  TabStripModel* model = browser()->tab_strip_model();
+  ASSERT_EQ(3, model->count());
+
+  // Add tabs 1 and 2 to a new group.
+  tab_groups::TabGroupId group_id = model->AddToNewGroup({1, 2});
+
+  // Create a split view with tabs 1 and 2.
+  model->ActivateTabAt(1);
+  model->AddToNewSplit({2}, split_tabs::SplitTabVisualData(),
+                       split_tabs::SplitTabCreatedSource::kTabContextMenu);
+
+  // Activate tab 0 (which is outside the group).
+  model->ActivateTabAt(0);
+  ASSERT_EQ(0, model->active_index());
+  ASSERT_TRUE(model->IsTabSelected(0));
+
+  // Focus the group.
+  model->SetFocusedGroup(group_id);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     TabStripControllerFocusingVisibilityBrowserTest,
