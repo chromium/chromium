@@ -566,8 +566,9 @@ public class TabGridDialogMediator
                             tabMovedCallback,
                             tabModel,
                             bottomSheetController,
-                            true,
-                            false);
+                            /* supportsShowNewGroup= */ true,
+                            /* destroyOnHide= */ false,
+                            /* windowAndroid= */ null);
 
             CollaborationService collaborationService =
                     CollaborationServiceFactory.getForProfile(profile);

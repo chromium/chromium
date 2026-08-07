@@ -2876,7 +2876,8 @@ public class StripLayoutHelperTest {
                         eq(mModel),
                         eq(mBottomSheetController),
                         eq(true),
-                        eq(false));
+                        eq(false),
+                        eq(mWindowAndroid));
     }
 
     /** Sets up tabModel and menu coordinator. */

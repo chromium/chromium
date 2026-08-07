@@ -458,7 +458,8 @@ public class PinnedTabStripMediator {
                             newTabModel,
                             mBottomSheetController,
                             /* supportsShowNewGroup= */ true,
-                            /* destroyOnHide= */ false);
+                            /* destroyOnHide= */ false,
+                            /* windowAndroid= */ null);
             mContextMenuCoordinator =
                     PinnedTabStripItemContextMenuCoordinator.createContextMenuCoordinator(
                             mActivity,

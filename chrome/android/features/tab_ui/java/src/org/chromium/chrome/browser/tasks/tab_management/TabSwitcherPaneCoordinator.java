@@ -1211,7 +1211,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                         tabModel,
                         mBottomSheetController,
                         /* supportsShowNewGroup= */ true,
-                        /* destroyOnHide= */ false);
+                        /* destroyOnHide= */ false,
+                        /* windowAndroid= */ null);
 
         ShowTabListEditor showTabListEditor =
                 tabId -> {

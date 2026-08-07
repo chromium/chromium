@@ -107,8 +107,9 @@ public class TabGroupMenuActionHandler {
                             /* tabMovedCallback= */ null,
                             mTabModel,
                             mBottomSheetController,
-                            true,
-                            true);
+                            /* supportsShowNewGroup= */ true,
+                            /* destroyOnHide= */ true,
+                            tab.getWindowAndroid());
             mTabGroupListBottomSheetCoordinatorSupplier.set(tabGroupListBottomSheetCoordinator);
             tabGroupListBottomSheetCoordinator.showBottomSheet(List.of(tab));
         }

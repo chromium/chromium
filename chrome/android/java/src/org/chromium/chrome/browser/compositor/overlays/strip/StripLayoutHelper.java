@@ -2638,7 +2638,8 @@ public class StripLayoutHelper
                                 mModel,
                                 mBottomSheetController,
                                 /* supportsShowNewGroup= */ true,
-                                /* destroyOnHide= */ false);
+                                /* destroyOnHide= */ false,
+                                mWindowAndroid);
             }
             mTabContextMenuCoordinator =
                     TabContextMenuCoordinator.createContextMenuCoordinator(
