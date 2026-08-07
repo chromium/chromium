@@ -3897,7 +3897,9 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
     Records the reason for early exit when the ResultToContentReady latency
-    cannot be recorded for the {WebUIType} popup.
+    cannot be recorded for the {WebUIType} popup. Metrics for the AIM popup will
+    not be recorded because it's triggered via explicit user interaction versus
+    an async autocomplete result delivery.
   </summary>
   <token key="WebUIType" variants="OmniboxPopupWebUIType"/>
 </histogram>
@@ -3909,7 +3911,9 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
     Records the latency from when the popup results are updated to the first
-    visual state change of the {WebUIType} popup on the first show.
+    visual state change of the {WebUIType} popup on the first show. Metrics for
+    the AIM popup will not be recorded because it's triggered via explicit user
+    interaction versus an async autocomplete result delivery.
   </summary>
   <token key="WebUIType" variants="OmniboxPopupWebUIType"/>
 </histogram>
@@ -3920,7 +3924,9 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
     Records the latency from when the popup results are updated to the first
-    visual state change of the {WebUIType} popup.
+    visual state change of the {WebUIType} popup. Metrics for the AIM popup will
+    not be recorded because it's triggered via explicit user interaction versus
+    an async autocomplete result delivery.
   </summary>
   <token key="WebUIType" variants="OmniboxPopupWebUIType"/>
 </histogram>
