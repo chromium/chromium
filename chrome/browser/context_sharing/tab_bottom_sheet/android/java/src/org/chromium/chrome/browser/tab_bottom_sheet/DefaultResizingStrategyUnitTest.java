@@ -43,23 +43,26 @@ public class DefaultResizingStrategyUnitTest {
     @Test
     public void testLockLifecycle_AcquiresAndUnlocksCorrectly() {
         mStrategy.onSheetOffsetChanged(
-                /* offsetPx= */ 100f, /* halfHeightPx= */ 200f, /* fullHeightPx= */ 1000f);
+                /* offsetPx= */ 100f,
+                /* peekHeightPx= */ 0f,
+                /* halfHeightPx= */ 200f,
+                /* fullHeightPx= */ 1000f);
 
         // Not resizing yet -> requestResize not called.
         verify(mMockHelper, never()).requestResize();
 
         // Start resizing, offset between half (200) and full (1000) -> lock acquired.
-        mStrategy.onSheetOffsetChanged(500f, 200f, 1000f);
+        mStrategy.onSheetOffsetChanged(500f, 0f, 200f, 1000f);
         mStrategy.onSheetResizingStatusChanged(true);
         verify(mMockHelper).requestResize();
 
         // Offset drops below half -> lock unlocked.
-        mStrategy.onSheetOffsetChanged(150f, 200f, 1000f);
+        mStrategy.onSheetOffsetChanged(150f, 0f, 200f, 1000f);
         verify(mMockLock).unlock();
 
         // Offset moves back into range -> lock acquired again and placeholder height updated.
         clearInvocations(mMockHelper);
-        mStrategy.onSheetOffsetChanged(600f, 200f, 1000f);
+        mStrategy.onSheetOffsetChanged(600f, 0f, 200f, 1000f);
         verify(mMockHelper).requestResize();
         verify(mMockHelper).updatePlaceholderHeight(600);
 
@@ -70,7 +73,7 @@ public class DefaultResizingStrategyUnitTest {
 
     @Test
     public void testDestroy_UnlocksHeldLock() {
-        mStrategy.onSheetOffsetChanged(500f, 200f, 1000f);
+        mStrategy.onSheetOffsetChanged(500f, 0f, 200f, 1000f);
         mStrategy.onSheetResizingStatusChanged(true);
         verify(mMockHelper).requestResize();
 
@@ -80,27 +83,27 @@ public class DefaultResizingStrategyUnitTest {
 
     @Test
     public void testNoLockAcquired_WhenNotResizing() {
-        mStrategy.onSheetOffsetChanged(500f, 200f, 1000f);
+        mStrategy.onSheetOffsetChanged(500f, 0f, 200f, 1000f);
         verify(mMockHelper, never()).requestResize();
     }
 
     @Test
     public void testNoLockAcquired_WhenOffsetAtOrBelowHalfHeight() {
         mStrategy.onSheetResizingStatusChanged(true);
-        mStrategy.onSheetOffsetChanged(200f, 200f, 1000f);
+        mStrategy.onSheetOffsetChanged(200f, 0f, 200f, 1000f);
         verify(mMockHelper, never()).requestResize();
 
-        mStrategy.onSheetOffsetChanged(100f, 200f, 1000f);
+        mStrategy.onSheetOffsetChanged(100f, 0f, 200f, 1000f);
         verify(mMockHelper, never()).requestResize();
     }
 
     @Test
     public void testNoLockAcquired_WhenOffsetAtOrAboveFullHeight() {
         mStrategy.onSheetResizingStatusChanged(true);
-        mStrategy.onSheetOffsetChanged(1000f, 200f, 1000f);
+        mStrategy.onSheetOffsetChanged(1000f, 0f, 200f, 1000f);
         verify(mMockHelper, never()).requestResize();
 
-        mStrategy.onSheetOffsetChanged(1200f, 200f, 1000f);
+        mStrategy.onSheetOffsetChanged(1200f, 0f, 200f, 1000f);
         verify(mMockHelper, never()).requestResize();
     }
 

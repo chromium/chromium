@@ -32,7 +32,8 @@ public class DefaultResizingStrategy implements ResizingStrategy {
     }
 
     @Override
-    public void onSheetOffsetChanged(float offsetPx, float halfHeightPx, float fullHeightPx) {
+    public void onSheetOffsetChanged(
+            float offsetPx, float peekHeightPx, float halfHeightPx, float fullHeightPx) {
         mOffsetPx = offsetPx;
         mHalfHeightPx = halfHeightPx;
         mFullHeightPx = fullHeightPx;
