@@ -4,6 +4,7 @@
 
 #include "components/skills/internal/enterprise_skills_provider.h"
 
+#include <iterator>
 #include <string_view>
 
 #include "base/barrier_closure.h"
@@ -34,6 +35,18 @@ constexpr size_t kMaxSkillDownloadSize = 100 * 1024;
 constexpr base::TimeDelta kSkillFetchTimeout = base::Seconds(5);
 constexpr int kMaxNetworkRetries = 3;
 constexpr char kDefaultEnterpriseSkillIcon[] = "💼";
+
+// Static illustration URLs hosted on Google's static CDN (gstatic.com).
+// Assigned to enterprise skills in round-robin fashion (skill_index %
+// hosted_image_count).
+constexpr std::string_view kEnterpriseSkillImages[] = {
+    "https://www.gstatic.com/chrome/skills/images/enterprise_briefcase.png",
+    "https://www.gstatic.com/chrome/skills/images/enterprise_building_blue.png",
+    "https://www.gstatic.com/chrome/skills/images/"
+    "enterprise_building_yellow.png",
+    "https://www.gstatic.com/chrome/skills/images/enterprise_folder.png",
+    "https://www.gstatic.com/chrome/skills/images/enterprise_luggage.png",
+};
 
 bool IsFieldValid(std::string_view field, size_t max_length) {
   return !field.empty() && field.length() <= max_length;
@@ -292,6 +305,13 @@ void EnterpriseSkillsProvider::OnURLLoadComplete(
 
 void EnterpriseSkillsProvider::OnAllFetchesComplete() {
   // TODO(b/533517209): Record Enterprise.Skills.Count.
+  const size_t hosted_image_count = std::size(kEnterpriseSkillImages);
+  for (size_t skill_index = 0; skill_index < pending_skills_.size();
+       ++skill_index) {
+    pending_skills_[skill_index]->image_url =
+        GURL(kEnterpriseSkillImages[skill_index % hosted_image_count]);
+  }
+
   skills_ = std::move(pending_skills_);
   pending_skills_.clear();
   NotifyObservers();

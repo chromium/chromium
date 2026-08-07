@@ -4,8 +4,10 @@
 
 #include "components/skills/internal/enterprise_skills_provider.h"
 
+#include <iterator>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
@@ -303,6 +305,9 @@ TEST_F(EnterpriseSkillsProviderFetchTest, FetchValidSkill) {
   EXPECT_EQ("Prompt content goes here.", skills[0]->prompt);
   EXPECT_FALSE(skills[0]->id.empty());
   EXPECT_EQ(skills[0]->id.length(), 36u);
+  EXPECT_EQ(
+      "https://www.gstatic.com/chrome/skills/images/enterprise_briefcase.png",
+      skills[0]->image_url.spec());
 }
 
 TEST_F(EnterpriseSkillsProviderFetchTest, ValidateResourceRequest) {
@@ -392,6 +397,53 @@ TEST_F(EnterpriseSkillsProviderFetchTest, MultipleSkills) {
   }
   EXPECT_TRUE(found_skill1);
   EXPECT_TRUE(found_skill2);
+}
+
+TEST_F(EnterpriseSkillsProviderFetchTest,
+       MultipleSkillsAssignsRoundRobinImages) {
+  std::vector<std::pair<std::string, std::string>> policy_entries;
+  std::vector<std::string> contents;
+  for (int i = 0; i < 6; ++i) {
+    std::string url =
+        "https://example.com/skill" + base::NumberToString(i) + ".yaml";
+    std::string content = "---\nname: Skill " + base::NumberToString(i) +
+                          "\ndescription: D\n---\nP";
+    std::string hash = base::HexEncode(crypto::hash::Sha256(content));
+    policy_entries.emplace_back(url, hash);
+    contents.push_back(content);
+  }
+
+  base::RunLoop run_loop;
+  auto sub = provider_->RegisterSkillsChangedCallback(run_loop.QuitClosure());
+  SetPolicyPref(policy_entries);
+
+  for (int i = 0; i < 6; ++i) {
+    test_url_loader_factory_.AddResponse(policy_entries[i].first, contents[i]);
+  }
+  run_loop.Run();
+
+  const auto& skills = provider_->GetSkills();
+  ASSERT_EQ(6u, skills.size());
+  EXPECT_EQ(
+      "https://www.gstatic.com/chrome/skills/images/enterprise_briefcase.png",
+      skills[0]->image_url.spec());
+  EXPECT_EQ(
+      "https://www.gstatic.com/chrome/skills/images/"
+      "enterprise_building_blue.png",
+      skills[1]->image_url.spec());
+  EXPECT_EQ(
+      "https://www.gstatic.com/chrome/skills/images/"
+      "enterprise_building_yellow.png",
+      skills[2]->image_url.spec());
+  EXPECT_EQ(
+      "https://www.gstatic.com/chrome/skills/images/enterprise_folder.png",
+      skills[3]->image_url.spec());
+  EXPECT_EQ(
+      "https://www.gstatic.com/chrome/skills/images/enterprise_luggage.png",
+      skills[4]->image_url.spec());
+  EXPECT_EQ(
+      "https://www.gstatic.com/chrome/skills/images/enterprise_briefcase.png",
+      skills[5]->image_url.spec());
 }
 
 TEST_F(EnterpriseSkillsProviderFetchTest,
