@@ -59,11 +59,14 @@ constexpr char kMultilingualWatermarkMessage[] = R"(
     مضحك جداً
 )";
 
-// This string checks that long lines are properly handled by multiline logic.
+// This string checks dynamic block width: short and medium lines expand block
+// width without splitting, while extremely long lines exceeding the maximum cap
+// are split up into multiple lines.
 constexpr char kLongLinesWatermarkMessage[] = R"(
-This is a very long line that should be split up into multiple lines
-This is a shorter line
-It was not split
+
+This dynamically expands the block width and stays on one line
+This is a short line
+It is not split
 This is another very long line that should be split up into multiple lines
 )";
 

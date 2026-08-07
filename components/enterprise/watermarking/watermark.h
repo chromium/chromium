@@ -31,6 +31,14 @@ struct WatermarkBlock {
   int height;
 };
 
+// Utility function to calculate the width of a watermark block based on
+// `watermark_text` and `font_size`. The width is dynamically calculated from
+// the maximum un-wrapped line text length in `watermark_text`, bounded between
+// a minimum width ratio (350.0 / 24.0 * font_size, default 350px at font size
+// 24) and a maximum cap ratio (700.0 / 24.0 * font_size, default 700px at font
+// size 24).
+int GetWatermarkBlockWidth(const std::u16string& watermark_text, int font_size);
+
 // Utility function to get height of a watermark block. The block height is
 // going to be the max required height for a single line times the number of
 // line.
