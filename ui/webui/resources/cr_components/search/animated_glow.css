@@ -95,6 +95,26 @@
   --glow-animation-delay: 150ms;
 }
 
+/*
+ * Style the host as a solid white base layer for the static energy effect
+ * to prevent dark flashing gaps when the inner glow animation runs.
+ */
+:host-context([energy-effect-enabled_]):host([entrypoint-name='Realbox']:not([energy-effect-animation-enabled])) {
+  background-color: var(--cr-composebox-background-color, var(--color-search-animated-glow-background));
+  border-radius: inherit;
+  display: block;
+  inset: 0;
+  position: absolute;
+}
+
+/*
+ * Hide the legacy outer glow when energy effect is active but animations
+ * are disabled, keeping only the inner border-width animation.
+ */
+:host-context([energy-effect-enabled_]):host([entrypoint-name='Realbox']:not([energy-effect-animation-enabled])) .gradient-outer-glow {
+  display: none;
+}
+
 .audio-animation {
   opacity: 1;
   transition: opacity 300ms ease-in-out;

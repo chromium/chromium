@@ -74,9 +74,14 @@ export class NtpComposeboxElement extends ComposeboxEmbedderMixin
         reflect: true,
         type: Boolean,
       },
+      isDark: {
+        reflect: true,
+        type: Boolean,
+      },
     };
   }
 
+  accessor isDark: boolean = false;
   private searchboxCallbackRouter_: SearchboxPageCallbackRouter;
   private pageHandler_: PageHandlerRemote;
   private searchboxHandler_: SearchboxPageHandlerRemote;

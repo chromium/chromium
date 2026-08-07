@@ -383,6 +383,7 @@ export class AppElement extends AppElementBase {
       energyEffectEnabled_: {type: Boolean, reflect: true},
       energyEffectAnimationEnabled_: {type: Boolean, reflect: true},
       isAndroid_: {type: Boolean},
+      energyEffectVariant_: {type: String, reflect: true},
     };
   }
 
@@ -503,6 +504,8 @@ export class AppElement extends AppElementBase {
       loadTimeData.getBoolean('energyEffectAnimationEnabled');
   protected accessor isAndroid_: boolean =
       loadTimeData.getBoolean('isAndroid');
+  protected accessor energyEffectVariant_: string =
+      loadTimeData.getString('energyEffectVariant');
   protected contextMenuAnimationLimitingEnabled_: boolean =
       loadTimeData.getBoolean('contextMenuAnimationLimitingEnabled');
   protected accessor searchboxCallbackRouter_: SearchboxPageCallbackRouter;

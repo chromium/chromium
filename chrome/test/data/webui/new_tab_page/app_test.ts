@@ -144,6 +144,13 @@ suite('NewTabPageAppTest', () => {
     customizeButtons = app.$.customizeButtons;
   });
 
+  async function recreateApp() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    app = document.createElement('ntp-app');
+    document.body.appendChild(app);
+    await microtasksFinished();
+  }
+
   function getCustomizeButton(): CrButtonElement {
     return $$(customizeButtons, '#customizeButton')!;
   }
@@ -2712,13 +2719,6 @@ suite('NewTabPageAppTest', () => {
       Object.assign(window, {webkitSpeechRecognition: MockSpeechRecognition});
     });
 
-    async function recreateApp() {
-      document.body.innerHTML = window.trustedTypes!.emptyHTML;
-      app = document.createElement('ntp-app');
-      document.body.appendChild(app);
-      await microtasksFinished();
-    }
-
     test(
         'renders legacy overlay when NTP searchbox (realbox) voice search ' +
             'coherence with live transcription is disabled',
@@ -3844,6 +3844,22 @@ suite('NewTabPageAppTest', () => {
             assertEquals(0, metrics.count('VoiceSearch.Action.NTP_REALBOX'));
           });
     });
+  });
+
+  suite('EnergyEffectVariant', () => {
+    ['energy-effect-original',
+     'energy-effect-darker-shadow',
+     'pre-energy-effect-with-border',
+     'energy-effect-fusebox',
+    ]
+        .forEach(
+            (variant) => test(`reflects ${variant} to attribute`, async () => {
+              loadTimeData.overrideValues({
+                energyEffectVariant: variant,
+              });
+              await recreateApp();
+              assertEquals(variant, app.getAttribute('energy-effect-variant_'));
+            }));
   });
 });
 
