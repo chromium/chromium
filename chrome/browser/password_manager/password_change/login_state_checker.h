@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/types/strong_alias.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
@@ -65,6 +66,7 @@ class LoginStateChecker : public content::WebContentsObserver {
  public:
   // Maximum amount of login state checks.
   static constexpr int kMaxLoginChecks = 5;
+  static constexpr base::TimeDelta kLoginCheckTimeout = base::Minutes(5);
   using LoginStateResultCallback =
       base::RepeatingCallback<void(LoginCheckResult)>;
 
@@ -86,6 +88,9 @@ class LoginStateChecker : public content::WebContentsObserver {
       std::unique_ptr<
           optimization_guide::proto::PasswordChangeSubmissionLoggingData>
           logging_data = nullptr) {
+    if (result == LoginCheckResult::Status::kLoggedIn) {
+      timer_.Stop();
+    }
     result_check_callback_.Run(LoginCheckResult(
         result, state_checks_count_, base::Time::Now() - creation_time_,
         std::move(logging_data)));
@@ -93,6 +98,9 @@ class LoginStateChecker : public content::WebContentsObserver {
 #endif
 
  private:
+  // Starts the timeout timer for login checks if Private Inference is enabled.
+  void StartTimeoutTimer();
+
   // To be called when the login checks should be terminated due
   // to max retries or an unexpected state.
   void TerminateLoginChecks(
@@ -135,6 +143,8 @@ class LoginStateChecker : public content::WebContentsObserver {
 
   // The number of login state checks performed.
   int state_checks_count_ = 0;
+
+  base::OneShotTimer timer_;
 
   base::WeakPtrFactory<LoginStateChecker> weak_ptr_factory_{this};
 };

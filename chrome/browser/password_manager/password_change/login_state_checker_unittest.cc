@@ -16,6 +16,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/password_change/annotated_page_content_capturer.h"
 #include "chrome/browser/password_manager/password_change/fake_annotated_page_content_capturer.h"
+#include "chrome/browser/password_manager/password_change/features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -474,4 +475,72 @@ TEST_F(LoginStateCheckerTest, UsesPrivateAiServiceType) {
       ->SimulateResponse(optimization_guide::AIPageContentResult());
   EXPECT_THAT(future.Take(),
               HasLoginCheckStatus(LoginCheckResult::Status::kLoggedIn));
+}
+
+TEST_F(LoginStateCheckerTest, LoginCheckTimesOut) {
+  base::test::TestFuture<LoginCheckResult> future;
+  std::unique_ptr<LoginStateChecker> checker =
+      CreateChecker(future.GetRepeatingCallback(),
+                    optimization_guide::ModelExecutionServiceType::kPrivateAi);
+  ASSERT_TRUE(checker->capturer());
+
+  // Fast forward time past the timeout without providing a response.
+  task_environment()->FastForwardBy(LoginStateChecker::kLoginCheckTimeout);
+
+  EXPECT_TRUE(future.IsReady());
+  LoginCheckResult result = future.Take();
+  EXPECT_EQ(result.status, LoginCheckResult::Status::kError);
+}
+
+TEST_F(LoginStateCheckerTest, LoginCheckTimesOutDuringModelExecution) {
+  base::test::TestFuture<LoginCheckResult> future;
+  // Model execution is initiated but does not respond.
+  EXPECT_CALL(*optimization_service(), ExecuteModel).Times(1);
+
+  std::unique_ptr<LoginStateChecker> checker =
+      CreateChecker(future.GetRepeatingCallback(),
+                    optimization_guide::ModelExecutionServiceType::kPrivateAi);
+  ASSERT_TRUE(checker->capturer());
+  static_cast<FakeAnnotatedPageContentCapturer*>(checker->capturer())
+      ->SimulateResponse(optimization_guide::AIPageContentResult());
+
+  // Fast forward past the timeout.
+  task_environment()->FastForwardBy(LoginStateChecker::kLoginCheckTimeout);
+
+  EXPECT_TRUE(future.IsReady());
+  LoginCheckResult result = future.Take();
+  EXPECT_EQ(result.status, LoginCheckResult::Status::kError);
+}
+
+TEST_F(LoginStateCheckerTest, TimerResetOnSuccessfulLogin) {
+  base::test::TestFuture<LoginCheckResult> future;
+  EXPECT_CALL(*optimization_service(), ExecuteModel)
+      .WillOnce(WithArg<3>(&PostResponse<ResponseType::kSuccess>));
+
+  std::unique_ptr<LoginStateChecker> checker =
+      CreateChecker(future.GetRepeatingCallback(),
+                    optimization_guide::ModelExecutionServiceType::kPrivateAi);
+  ASSERT_TRUE(checker->capturer());
+  static_cast<FakeAnnotatedPageContentCapturer*>(checker->capturer())
+      ->SimulateResponse(optimization_guide::AIPageContentResult());
+
+  EXPECT_THAT(future.Take(),
+              HasLoginCheckStatus(LoginCheckResult::Status::kLoggedIn));
+
+  // Advancing time past the timeout should NOT trigger any new callback.
+  task_environment()->FastForwardBy(LoginStateChecker::kLoginCheckTimeout);
+  EXPECT_FALSE(future.IsReady());
+}
+
+TEST_F(LoginStateCheckerTest, NoTimeoutWhenFeatureFlagDisabled) {
+  base::test::TestFuture<LoginCheckResult> future;
+  std::unique_ptr<LoginStateChecker> checker =
+      CreateChecker(future.GetRepeatingCallback());
+  ASSERT_TRUE(checker->capturer());
+
+  // Fast forward time past the timeout duration.
+  task_environment()->FastForwardBy(LoginStateChecker::kLoginCheckTimeout);
+
+  // Since flag is disabled, timer should not fire.
+  EXPECT_FALSE(future.IsReady());
 }

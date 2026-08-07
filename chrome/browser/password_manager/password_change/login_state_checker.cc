@@ -10,6 +10,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/password_change/annotated_page_content_capturer.h"
+#include "chrome/browser/password_manager/password_change/features.h"
 #include "chrome/browser/password_manager/password_change/password_change_logging_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
@@ -79,6 +80,7 @@ LoginStateChecker::LoginStateChecker(
       service_type_(service_type),
       client_(client),
       result_check_callback_(std::move(callback)) {
+  StartTimeoutTimer();
   CheckLoginState(/*ignore_attempts_limit=*/false);
 }
 
@@ -99,10 +101,21 @@ void LoginStateChecker::DidFinishNavigation(
   CheckLoginState(/*ignore_attempts_limit=*/false);
 }
 
+void LoginStateChecker::StartTimeoutTimer() {
+  if (service_type_ ==
+      optimization_guide::ModelExecutionServiceType::kPrivateAi) {
+    timer_.Start(
+        FROM_HERE, kLoginCheckTimeout,
+        base::BindOnce(&LoginStateChecker::TerminateLoginChecks,
+                       base::Unretained(this), /*logging_data=*/nullptr));
+  }
+}
+
 void LoginStateChecker::TerminateLoginChecks(
     std::unique_ptr<
         optimization_guide::proto::PasswordChangeSubmissionLoggingData>
         logging_data) {
+  timer_.Stop();
   // Reset content::WebContentsObserver.
   Observe(nullptr);
   capturer_.reset();
@@ -212,6 +225,9 @@ void LoginStateChecker::OnExecutionResponseCallback(
   }
 
   bool is_logged_in = response->is_logged_in_data().is_logged_in();
+  if (is_logged_in) {
+    timer_.Stop();
+  }
 
   LogBoolean(client_,
              SavePasswordProgressLogger::STRING_LOGIN_STATE_CHECK_RESULT,
