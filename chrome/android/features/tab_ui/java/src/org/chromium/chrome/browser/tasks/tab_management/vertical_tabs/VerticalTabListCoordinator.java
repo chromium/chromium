@@ -87,6 +87,7 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.dragdrop.DragAndDropDelegateImpl;
@@ -122,6 +123,7 @@ public class VerticalTabListCoordinator {
     private final GridLayoutManager mPinnedLayoutManager;
     private final TabModelSelector mTabModelSelector;
     private final WindowAndroid mWindowAndroid;
+    private final ActivityResultTracker mActivityResultTracker;
     private final MultiInstanceManager mMultiInstanceManager;
     private final SnackbarManager mSnackbarManager;
     private final TabModelSelectorObserver mTabModelSelectorObserver;
@@ -211,6 +213,7 @@ public class VerticalTabListCoordinator {
             Profile profile,
             VerticalTabsActionDelegate verticalTabsActionDelegate,
             WindowAndroid windowAndroid,
+            ActivityResultTracker activityResultTracker,
             MultiInstanceManager multiInstanceManager,
             SnackbarManager snackbarManager,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
@@ -226,6 +229,7 @@ public class VerticalTabListCoordinator {
         mVerticalTabsActiveSupplier = verticalTabsActiveSupplier;
         mTabModelSelector = tabModelSelector;
         mWindowAndroid = windowAndroid;
+        mActivityResultTracker = activityResultTracker;
         mMultiInstanceManager = multiInstanceManager;
         mSnackbarManager = snackbarManager;
         mShareDelegateSupplier = shareDelegateSupplier;
@@ -1224,7 +1228,7 @@ public class VerticalTabListCoordinator {
                                 // TODO(crbug.com/521982129): Implement tab reordering for a11y.
                             },
                             mSnackbarManager,
-                            /* activityResultTracker= */ null,
+                            mActivityResultTracker,
                             /* modalDialogManager= */ mWindowAndroid.getModalDialogManager(),
                             TabClosingSource.VERTICAL_TAB_STRIP,
                             mCanActivateTabLayoutToggleMenuSupplier,

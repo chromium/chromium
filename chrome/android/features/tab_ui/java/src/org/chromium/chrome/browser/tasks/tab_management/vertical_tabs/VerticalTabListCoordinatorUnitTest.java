@@ -120,6 +120,7 @@ import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -163,6 +164,7 @@ public class VerticalTabListCoordinatorUnitTest {
     @Captor private ArgumentCaptor<TabModelSelectorObserver> mSelectorObserverCaptor;
     @Mock private VerticalTabsActionDelegate mVerticalTabsActionDelegate;
     @Mock private WindowAndroid mWindowAndroid;
+    @Mock private ActivityResultTracker mActivityResultTracker;
     @Mock private MultiInstanceManager mMultiInstanceManager;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private TabStripContextMenuCoordinator mTabStripContextMenuCoordinator;
@@ -1004,6 +1006,7 @@ public class VerticalTabListCoordinatorUnitTest {
                         mProfile,
                         mVerticalTabsActionDelegate,
                         mWindowAndroid,
+                        mActivityResultTracker,
                         mMultiInstanceManager,
                         mSnackbarManager,
                         mDesktopWindowStateManager,
@@ -1834,6 +1837,7 @@ public class VerticalTabListCoordinatorUnitTest {
                         mProfile,
                         mVerticalTabsActionDelegate,
                         mWindowAndroid,
+                        mActivityResultTracker,
                         mMultiInstanceManager,
                         mSnackbarManager,
                         mDesktopWindowStateManager,
