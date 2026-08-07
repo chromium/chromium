@@ -148,6 +148,19 @@ bool MatchesTypedFilter(
     const personal_context::proto::AutofillFetchSpecification::TypedValueFilter&
         filter);
 
+// Returns whether `entry` or any of its metadata items whose type is allowed
+// by `filter.data_types()` matches `filter.typed_value_filter()` (when set) or
+// `filter.string_filter()`.
+bool MatchesFilter(
+    const MemorySearchResult& entry,
+    const personal_context::proto::AutofillFetchSpecification::Filter& filter);
+
+// Returns whether `entry` has the data type requested by `spec` and satisfies
+// all filters in `spec.filters()`.
+bool MatchesFetchSpecification(
+    const MemorySearchResult& entry,
+    const personal_context::proto::AutofillFetchSpecification& spec);
+
 }  // namespace internal
 
 }  // namespace autofill

@@ -35,6 +35,7 @@
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/personal_context/proto/context_memory_service.pb.h"
 #include "components/personal_context/proto/features/at_memory.pb.h"
+#include "components/personal_context/proto/features/common_data.pb.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -49,6 +50,7 @@ using ::base::test::RunOnceCallback;
 using ::base::test::TestFuture;
 using ::personal_context::proto::AutofillFetchSpecification;
 using ::personal_context::proto::TypedValue;
+using Filter = ::personal_context::proto::AutofillFetchSpecification::Filter;
 using TypedValueFilter =
     ::personal_context::proto::AutofillFetchSpecification::TypedValueFilter;
 using ::testing::_;
@@ -1932,6 +1934,88 @@ TEST(MatchesTypedFilterTest, Date) {
   wildcard_filter.mutable_typed_value()->mutable_date();  // year=0, month=0,
                                                           // day=0
   EXPECT_TRUE(internal::MatchesTypedFilter(match1, wildcard_filter));
+}
+
+// Tests that string filters check against allowed data_types in an entry and
+// its metadata.
+TEST(MatchesFilterTest, StringFilterAndDataTypes) {
+  MemorySearchResult entry(MemoryDataType::kPassportNumber, u"Passport Number",
+                           u"XYZ123");
+  entry.metadata_list.emplace_back(MemoryDataType::kPassportName,
+                                   u"Passport Name", u"John Doe");
+
+  Filter filter;
+  filter.mutable_string_filter()->set_value("John");
+
+  // Empty data_types matches against metadata_list item.
+  EXPECT_TRUE(internal::MatchesFilter(entry, filter));
+
+  // Restricting data_types to kPassportNumber fails because "John" is in
+  // name.
+  filter.add_data_types(
+      personal_context::proto::MEMORY_DATA_TYPE_PASSPORT_NUMBER);
+  EXPECT_FALSE(internal::MatchesFilter(entry, filter));
+
+  // Restricting to kPassportName matches.
+  filter.clear_data_types();
+  filter.add_data_types(
+      personal_context::proto::MEMORY_DATA_TYPE_PASSPORT_NAME);
+  EXPECT_TRUE(internal::MatchesFilter(entry, filter));
+}
+
+// Tests that typed filters match against typed value metadata on an entry.
+TEST(MatchesFilterTest, TypedFilter) {
+  MemorySearchResult entry(MemoryDataType::kAddressFull, u"Address",
+                           u"123 Main St");
+  EntryMetadata country_meta(MemoryDataType::kAddressCountry, u"Country",
+                             u"United States");
+  country_meta.typed_value.emplace().set_country_code("US");
+  entry.metadata_list.push_back(std::move(country_meta));
+
+  Filter filter_us;
+  filter_us.mutable_typed_value_filter()
+      ->mutable_typed_value()
+      ->set_country_code("US");
+  EXPECT_TRUE(internal::MatchesFilter(entry, filter_us));
+
+  Filter filter_ca;
+  filter_ca.mutable_typed_value_filter()
+      ->mutable_typed_value()
+      ->set_country_code("CA");
+  EXPECT_FALSE(internal::MatchesFilter(entry, filter_ca));
+}
+
+// Tests that fetch specification matches only entries of matching data_type
+// satisfying all filters.
+TEST(MatchesFetchSpecificationTest, DataTypeOfSpecAndFilters) {
+  MemorySearchResult entry(MemoryDataType::kPassportNumber, u"Passport Number",
+                           u"XYZ123");
+  entry.metadata_list.emplace_back(MemoryDataType::kPassportCountry,
+                                   u"Passport Country", u"United States");
+
+  // Does not match because PassportName is present neither as the primary type
+  // nor in the metadata.
+  personal_context::proto::AutofillFetchSpecification spec;
+  spec.set_data_type(personal_context::proto::MEMORY_DATA_TYPE_PASSPORT_NAME);
+  EXPECT_FALSE(internal::MatchesFetchSpecification(entry, spec));
+
+  // Does not match because PassportCountry is present only as secondary
+  // metadata on the entry.
+  spec.set_data_type(
+      personal_context::proto::MEMORY_DATA_TYPE_PASSPORT_COUNTRY);
+  EXPECT_FALSE(internal::MatchesFetchSpecification(entry, spec));
+
+  // Matches because PassportNumber is the primary attribute type of the entry.
+  spec.set_data_type(personal_context::proto::MEMORY_DATA_TYPE_PASSPORT_NUMBER);
+  EXPECT_TRUE(internal::MatchesFetchSpecification(entry, spec));
+
+  auto* filter1 = spec.add_filters();
+  filter1->mutable_string_filter()->set_value("United");
+  EXPECT_TRUE(internal::MatchesFetchSpecification(entry, spec));
+
+  auto* filter2 = spec.add_filters();
+  filter2->mutable_string_filter()->set_value("Canada");
+  EXPECT_FALSE(internal::MatchesFetchSpecification(entry, spec));
 }
 
 }  // namespace

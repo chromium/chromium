@@ -582,6 +582,58 @@ bool MatchesTypedFilter(const TypedValue& entry_typed_val,
   return false;
 }
 
+bool MatchesFilter(
+    const MemorySearchResult& entry,
+    const personal_context::proto::AutofillFetchSpecification::Filter& filter) {
+  const bool has_readable_typed_filter =
+      filter.has_typed_value_filter() &&
+      filter.typed_value_filter().typed_value().value_case() !=
+          TypedValue::VALUE_NOT_SET;
+
+  auto allowed_data_types =
+      DenseSet<MemoryDataType>(filter.data_types(), [](int proto_type_int) {
+        // The static cast is needed because the repeated field contains ints,
+        // not enums.
+        return ToMemoryDataType(
+            static_cast<personal_context::proto::MemoryDataType>(
+                proto_type_int));
+      });
+  allowed_data_types.erase(MemoryDataType::kUnknown);
+
+  auto matches_item = [&](MemoryDataType type, std::u16string_view value,
+                          const std::optional<TypedValue>& typed_value) {
+    // If `filter` specifies `data_types`, we restrict matching to those data
+    // types.
+    if (!allowed_data_types.empty() && !allowed_data_types.contains(type)) {
+      return false;
+    }
+    if (has_readable_typed_filter) {
+      return typed_value &&
+             MatchesTypedFilter(*typed_value, filter.typed_value_filter());
+    }
+    return MatchesStringFilter(value, filter.string_filter());
+  };
+
+  return matches_item(entry.type, entry.value, entry.typed_value) ||
+         std::ranges::any_of(
+             entry.metadata_list, [&](const EntryMetadata& meta) {
+               return matches_item(meta.type, meta.value, meta.typed_value);
+             });
+}
+
+bool MatchesFetchSpecification(
+    const MemorySearchResult& entry,
+    const personal_context::proto::AutofillFetchSpecification& spec) {
+  if (MemoryDataType target_type = ToMemoryDataType(spec.data_type());
+      target_type == MemoryDataType::kUnknown || target_type != entry.type) {
+    return false;
+  }
+
+  return std::ranges::all_of(spec.filters(), [&](const auto& filter) {
+    return MatchesFilter(entry, filter);
+  });
+}
+
 }  // namespace internal
 
 AtMemoryQueryService::AtMemoryQueryService(
