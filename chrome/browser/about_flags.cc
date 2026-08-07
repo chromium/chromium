@@ -3566,8 +3566,6 @@ constexpr char kExtensionAiDataInternalName[] =
     "enable-extension-ai-data-collection";
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-constexpr char kGemma4ForBuiltInAIInternalName[] = "gemma4-for-built-in-ai";
-
 const FeatureEntry::FeatureParam kDiscountOnShoppyPage[] = {
     {commerce::kDiscountOnShoppyPageParam, "true"}};
 
@@ -10481,8 +10479,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kClassifierAPIDescription, kOsDesktop,
      MULTI_VALUE_TYPE(kAIClassifierChoices), flag_descriptions::kAIAPIsLinks},
 
-    {kGemma4ForBuiltInAIInternalName,
-     flag_descriptions::kGemma4ForBuiltInAIName,
+    {"gemma4-for-built-in-ai", flag_descriptions::kGemma4ForBuiltInAIName,
      flag_descriptions::kGemma4ForBuiltInAIDescription, kOsDesktop,
      MULTI_VALUE_TYPE(kGemma4Choices), flag_descriptions::kAIAPIsLinks},
 
@@ -13973,15 +13970,6 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
            form_factor != ui::DEVICE_FORM_FACTOR_TABLET;
   }
 #endif  // BUILDFLAG(IS_ANDROID)
-
-  // Only show the Gemma4 flag on Canary/Dev/Unknown and unofficial builds.
-  if (std::string_view(kGemma4ForBuiltInAIInternalName) ==
-      entry.internal_name) {
-    return channel != version_info::Channel::CANARY &&
-           channel != version_info::Channel::DEV &&
-           channel != version_info::Channel::UNKNOWN &&
-           version_info::IsOfficialBuild();
-  }
 
   if (flags::IsFlagExpired(storage, entry.internal_name)) {
     return true;

@@ -25,8 +25,6 @@
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
-#include "base/version_info/channel.h"
-#include "base/version_info/version_info.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_context_bound_object_set.h"
 #include "chrome/browser/ai/ai_language_model.h"
@@ -43,7 +41,6 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/channel_info.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/on_device_ai/ai_utils.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
@@ -330,15 +327,6 @@ void Insert(LanguageSet& set, const std::vector<AILanguageCodePtr>& languages) {
 template <typename FeatureConfigProto>
 std::optional<std::string> GetExperimentalUseCaseByModelVersion(
     const FeatureConfigProto& feature_config) {
-  // Support experimental use cases on Canary/Dev/Unknown and unofficial builds.
-  version_info::Channel channel = chrome::GetChannel();
-  if (channel != version_info::Channel::CANARY &&
-      channel != version_info::Channel::DEV &&
-      channel != version_info::Channel::UNKNOWN &&
-      version_info::IsOfficialBuild()) {
-    return std::nullopt;
-  }
-
   if (base::FeatureList::IsEnabled(kAIApiFoundationalModel)) {
     std::string model_version = base::GetFieldTrialParamValueByFeature(
         kAIApiFoundationalModel, kModelVersionParam);

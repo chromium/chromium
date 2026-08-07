@@ -27,14 +27,11 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
-#include "base/version_info/channel.h"
-#include "base/version_info/version_info.h"
 #include "build/build_config.h"
 #include "chrome/browser/ai/ai_test_utils.h"
 #include "chrome/browser/ai/features.h"
 #include "chrome/browser/component_updater/optimization_guide_on_device_model_installer.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/common/channel_info.h"
 #include "components/on_device_ai/ai_utils.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/test/fake_manifest_broker.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/test/scenario_builder.h"
@@ -2541,15 +2538,6 @@ class AILanguageModelManifestTest : public AITestUtils::AITestManifestBase {
 };
 
 TEST_F(AILanguageModelManifestTest, CanCreateAndCreateWithManifestGemma4) {
-  version_info::Channel channel = chrome::GetChannel();
-  if (channel != version_info::Channel::CANARY &&
-      channel != version_info::Channel::DEV &&
-      channel != version_info::Channel::UNKNOWN &&
-      version_info::IsOfficialBuild()) {
-    GTEST_SKIP() << "Experimental use case support is limited to "
-                    "Canary/Dev/Unknown channels and unofficial builds.";
-  }
-
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       kAIApiFoundationalModel, {{"model_version", "v4"}});
@@ -2576,15 +2564,6 @@ TEST_F(AILanguageModelManifestTest, CanCreateAndCreateWithManifestGemma4) {
 }
 
 TEST_F(AILanguageModelManifestTest, CanCreateBeforeDownloadGemma4) {
-  version_info::Channel channel = chrome::GetChannel();
-  if (channel != version_info::Channel::CANARY &&
-      channel != version_info::Channel::DEV &&
-      channel != version_info::Channel::UNKNOWN &&
-      version_info::IsOfficialBuild()) {
-    GTEST_SKIP() << "Experimental use case support is limited to "
-                    "Canary/Dev/Unknown channels and unofficial builds.";
-  }
-
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       kAIApiFoundationalModel, {{"model_version", "v4"}});
