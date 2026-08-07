@@ -61,6 +61,8 @@ static_library("app") {
     "crash_switches.h",
     "crashpad.cc",
     "crashpad.h",
+    "shared_memory_user_stream_writer.cc",
+    "shared_memory_user_stream_writer.h",
   ]
 
   if (is_castos) {
@@ -80,6 +82,7 @@ static_library("app") {
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
     "//components/crash/core/common:crash_key",
+    "//components/crash/core/common:shared_memory_user_stream",
     "//content/public/common:content_descriptors",
     "//third_party/crashpad/crashpad/client",
     "//third_party/crashpad/crashpad/util",
@@ -303,11 +306,13 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = []
+  sources = [ "shared_memory_user_stream_writer_unittest.cc" ]
   deps = [
+    ":app",
     ":lib",
     "//base",
     "//base/test:test_support",
+    "//components/crash/core/common",
     "//testing/gmock",
     "//testing/gtest",
   ]

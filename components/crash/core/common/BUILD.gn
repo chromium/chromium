@@ -15,6 +15,7 @@ group("common") {
   public_deps = [
     ":crash_key",
     ":crash_key_utils",
+    ":shared_memory_user_stream",
   ]
 
   if (is_apple) {
@@ -24,6 +25,12 @@ group("common") {
   if (is_ios) {
     public_deps += [ ":reporter_running_ios" ]
   }
+}
+
+source_set("shared_memory_user_stream") {
+  sources = [ "shared_memory_user_stream.h" ]
+
+  deps = [ "//base" ]
 }
 
 use_crashpad_annotation =
