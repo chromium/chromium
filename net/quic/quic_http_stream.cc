@@ -755,6 +755,9 @@ void QuicHttpStream::PopulateLoadTimingInternalInfo(
   }
   load_timing_internal_info->resolution_details =
       quic_session()->GetResolutionDetails();
+
+  load_timing_internal_info->quic_session_establishment_reason =
+      quic_session()->quic_session_establishment_reason();
 }
 
 }  // namespace net

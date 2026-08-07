@@ -29,6 +29,24 @@ enum class SessionSource {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/enums.xml:NetworkSessionSource)
 
+// Classifies why a new QUIC session had to be created by checking if a session
+// already existed in the pool's all_sessions_ set.
+// Note: When kSessionExisted* is logged, it indicates that a session existed
+// in all_sessions_ but was excluded from active_sessions_ (most commonly
+// because it received a GOAWAY frame or is draining during IP address
+// migration). Granular breakdown of why the existing session could not be
+// reused is tracked in follow-up metrics.
+// LINT.IfChange(QuicSessionEstablishmentReason)
+enum class QuicSessionEstablishmentReason {
+  kUnknown = 0,
+  kNoSessionExisted = 1,
+  kSessionExistedButNotPreconnect = 2,
+  kSessionExistedAndWasPreconnect = 3,
+  kSessionExistedBoth = 4,
+  kMaxValue = kSessionExistedBoth,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:QuicSessionEstablishmentReason)
+
 // Structure containing internal load timing information. This is similar to
 // LoadTimingInfo, but contains extra information which shouldn't be exposed to
 // the web. We use this structure for internal measurements.
@@ -73,6 +91,11 @@ struct NET_EXPORT LoadTimingInternalInfo {
   // this request. Can be nullopt when no resolution was performed, or
   // resolution failed.
   std::optional<ResolutionDetails> resolution_details;
+
+  // The reason why the QUIC session used by this request was originally
+  // established. Populated for all requests that use a QUIC session.
+  std::optional<QuicSessionEstablishmentReason>
+      quic_session_establishment_reason;
 };
 
 }  // namespace net

@@ -114,6 +114,12 @@ class QuicSessionPoolPeer {
 
   static size_t GetNumDegradingSessions(QuicSessionPool* pool);
 
+  // Returns the session establishment reason for a given key. For testing only.
+  static QuicSessionEstablishmentReason
+  DetermineQuicSessionEstablishmentReasonForTesting(
+      QuicSessionPool* pool,
+      const QuicSessionKey& session_key);
+
   static void SetAlarmFactory(
       QuicSessionPool* pool,
       std::unique_ptr<quic::QuicAlarmFactory> alarm_factory);

@@ -37,6 +37,7 @@ QuicSessionPool::DirectJob::DirectJob(
     bool require_dns_https_alpn,
     int cert_verify_flags,
     MultiplexedSessionCreationInitiator session_creation_initiator,
+    QuicSessionEstablishmentReason quic_session_establishment_reason,
     std::optional<ConnectionManagementConfig> connection_management_config,
     const NetLogWithSource& net_log)
     : QuicSessionPool::Job::Job(
@@ -44,6 +45,7 @@ QuicSessionPool::DirectJob::DirectJob(
           std::move(key),
           std::move(client_config_handle),
           priority,
+          quic_session_establishment_reason,
           NetLogWithSource::Make(
               net_log.net_log(),
               NetLogSourceType::QUIC_SESSION_POOL_DIRECT_JOB)),
@@ -221,7 +223,8 @@ int QuicSessionPool::DirectJob::DoAttemptSession() {
       resolve_host_request_->GetResolutionDetails(),
       retry_on_alternate_network_before_handshake_, use_dns_aliases_,
       std::move(dns_aliases), /*crypto_client_config_handle=*/nullptr,
-      session_creation_initiator_, connection_management_config_);
+      session_creation_initiator_, quic_session_establishment_reason_,
+      connection_management_config_);
 
   return session_attempt_->Start(
       base::BindOnce(&DirectJob::OnSessionAttemptComplete, GetWeakPtr()));

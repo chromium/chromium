@@ -53,7 +53,9 @@ std::optional<int> QuicSessionPool::EndpointConnector::OnEndpointsUpdated() {
       params.retry_on_alternate_network_before_handshake,
       params.use_dns_aliases, std::move(params.dns_aliases),
       /*crypto_client_config_handle=*/nullptr,
-      params.session_creation_initiator, params.connection_management_config);
+      params.session_creation_initiator,
+      params.quic_session_establishment_reason,
+      params.connection_management_config);
 
   int rv = attempt_->Start(base::BindOnce(&EndpointConnector::OnAttemptComplete,
                                           weak_factory_.GetWeakPtr()));

@@ -61,12 +61,14 @@ QuicSessionPool::AsyncDnsJob::AsyncDnsJob(
     bool require_dns_https_alpn,
     int cert_verify_flags,
     MultiplexedSessionCreationInitiator session_creation_initiator,
+    QuicSessionEstablishmentReason quic_session_establishment_reason,
     std::optional<ConnectionManagementConfig> connection_management_config,
     const NetLogWithSource& net_log)
     : Job(pool,
           std::move(key),
           std::move(client_config_handle),
           priority,
+          quic_session_establishment_reason,
           NetLogWithSource::Make(
               net_log.net_log(),
               NetLogSourceType::QUIC_SESSION_POOL_ASYNC_DNS_JOB)),
@@ -213,6 +215,7 @@ QuicSessionPool::AsyncDnsJob::GetAttemptParams() const {
     params.dns_aliases = service_endpoint_request_->GetDnsAliasResults();
   }
   params.session_creation_initiator = session_creation_initiator_;
+  params.quic_session_establishment_reason = quic_session_establishment_reason_;
   params.connection_management_config = connection_management_config_;
   return params;
 }

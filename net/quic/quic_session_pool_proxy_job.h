@@ -29,6 +29,7 @@ class QuicSessionPool::ProxyJob : public QuicSessionPool::Job {
       QuicSessionAliasKey key,
       NetworkTrafficAnnotationTag proxy_annotation_tag,
       MultiplexedSessionCreationInitiator session_creation_initiator,
+      QuicSessionEstablishmentReason quic_session_establishment_reason,
       std::optional<ConnectionManagementConfig> connection_management_config,
       const HttpUserAgentSettings* http_user_agent_settings,
       std::unique_ptr<CryptoClientConfigHandle> client_config_handle,

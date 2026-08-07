@@ -458,14 +458,19 @@ void LogProbeResultToHistogram(MigrationCause cause, bool success) {
           histogram_name, base::HistogramBase::kUmaTargetedHistogramFlag));
 }
 
-void LogSessionCreationInitiatorToHistogram(
+void LogSessionMetricsToHistogram(
     MultiplexedSessionCreationInitiator session_creation,
+    QuicSessionEstablishmentReason establishment_reason,
     bool is_used) {
-  std::string histogram_name =
-      base::StrCat({"Net.QuicSession.GoogleSearch.SessionCreationInitiator",
-                    is_used ? ".Used" : ".Unused"});
+  const std::string_view suffix = is_used ? ".Used" : ".Unused";
 
-  base::UmaHistogramEnumeration(histogram_name, session_creation);
+  std::string initiator_histogram_name = base::StrCat(
+      {"Net.QuicSession.GoogleSearch.SessionCreationInitiator", suffix});
+  base::UmaHistogramEnumeration(initiator_histogram_name, session_creation);
+
+  std::string reason_histogram_name = base::StrCat(
+      {"Net.QuicSession.GoogleSearch.EstablishmentReason", suffix});
+  base::UmaHistogramEnumeration(reason_histogram_name, establishment_reason);
 }
 
 EchMode GetEchModeForHost(SSLConfigService* ssl_config_service,
@@ -1035,7 +1040,8 @@ QuicChromiumClientSession::QuicChromiumClientSession(
     bool enable_origin_frame,
     bool allow_server_preferred_address,
     MultiplexedSessionCreationInitiator session_creation_initiator,
-    const NetLogWithSource& net_log)
+    const NetLogWithSource& net_log,
+    QuicSessionEstablishmentReason quic_session_establishment_reason)
     : quic::QuicSpdyClientSessionBase(connection,
                                       /*visitor=*/nullptr,
                                       config,
@@ -1094,7 +1100,8 @@ QuicChromiumClientSession::QuicChromiumClientSession(
       ech_mode_(GetEchModeForHost(ssl_config_service, session_key_.host())),
       trust_anchor_ids_(metadata.trust_anchor_ids),
       allow_server_preferred_address_(allow_server_preferred_address),
-      session_creation_initiator_(session_creation_initiator) {
+      session_creation_initiator_(session_creation_initiator),
+      quic_session_establishment_reason_(quic_session_establishment_reason) {
   default_network_ = default_network;
   auto* socket_raw = socket.get();
   packet_readers_.push_back(std::make_unique<QuicChromiumPacketReader>(
@@ -1175,8 +1182,9 @@ QuicChromiumClientSession::~QuicChromiumClientSession() {
                           num_total_streams_);
 
   if (IsGoogleHostWithAlpnH3(session_key_.host())) {
-    LogSessionCreationInitiatorToHistogram(session_creation_initiator_,
-                                           num_total_streams_ > 0);
+    LogSessionMetricsToHistogram(session_creation_initiator_,
+                                 quic_session_establishment_reason_,
+                                 num_total_streams_ > 0);
   }
 
   if (!OneRttKeysAvailable()) {

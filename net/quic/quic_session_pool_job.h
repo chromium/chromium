@@ -6,6 +6,7 @@
 #define NET_QUIC_QUIC_SESSION_POOL_JOB_H_
 
 #include "base/memory/raw_ptr.h"
+#include "net/base/load_timing_internal_info.h"
 #include "net/base/net_error_details.h"
 #include "net/base/request_priority.h"
 #include "net/log/net_log_with_source.h"
@@ -34,6 +35,7 @@ class QuicSessionPool::Job : public QuicSessionAttempt::Delegate {
       QuicSessionAliasKey key,
       std::unique_ptr<CryptoClientConfigHandle> client_config_handle,
       RequestPriority priority,
+      QuicSessionEstablishmentReason quic_session_establishment_reason,
       const NetLogWithSource& net_log);
 
   Job(const Job&) = delete;
@@ -97,6 +99,7 @@ class QuicSessionPool::Job : public QuicSessionAttempt::Delegate {
   RequestPriority priority_;
   const NetLogWithSource net_log_;
   std::set<raw_ptr<QuicSessionRequest, SetExperimental>> requests_;
+  const QuicSessionEstablishmentReason quic_session_establishment_reason_;
 
  private:
   bool is_deleting_ = false;

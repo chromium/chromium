@@ -187,6 +187,8 @@ class QuicSessionPoolTestBase : private QuicSessionPoolFeatureInitializer,
     handles::NetworkHandle target_network = handles::kInvalidNetworkHandle;
     NetLogWithSource net_log;
     NetErrorDetails net_error_details;
+    MultiplexedSessionCreationInitiator session_creation_initiator =
+        MultiplexedSessionCreationInitiator::kUnknown;
     CompletionOnceCallback failed_on_default_network_callback;
     CompletionOnceCallback callback;
 

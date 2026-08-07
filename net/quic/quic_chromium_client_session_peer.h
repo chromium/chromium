@@ -30,6 +30,10 @@ class QuicChromiumClientSessionPeer {
   static QuicChromiumClientStream* CreateOutgoingStream(
       QuicChromiumClientSession* session);
 
+  // Used exclusively for tests.
+  static void SetNumTotalStreamsForTesting(QuicChromiumClientSession* session,
+                                           size_t num_total_streams);
+
   static bool GetSessionGoingAway(QuicChromiumClientSession* session);
 
   static MigrationCause GetCurrentMigrationCause(

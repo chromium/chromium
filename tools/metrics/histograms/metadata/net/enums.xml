@@ -3166,6 +3166,21 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="SETTING_DO_NOT_FRAGMENT"/>
 </enum>
 
+<!-- LINT.IfChange(QuicSessionEstablishmentReason) -->
+
+<enum name="QuicSessionEstablishmentReason">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="No session existed"/>
+  <int value="2"
+      label="Existed in all_sessions_ (draining/going away) no preconnect"/>
+  <int value="3"
+      label="Existed in all_sessions_ (draining/going away) preconnect"/>
+  <int value="4"
+      label="Existed in all_sessions_ (both preconnect and non-preconnect)"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/base/load_timing_internal_info.h:QuicSessionEstablishmentReason) -->
+
 <!-- LINT.IfChange(QuicSessionKeyMismatchedField) -->
 
 <enum name="QuicSessionKeyMismatchedField">

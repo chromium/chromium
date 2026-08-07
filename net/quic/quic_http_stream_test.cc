@@ -436,7 +436,8 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
         /*socket_performance_watcher=*/nullptr, ConnectionEndpointMetadata(),
         /*enable_origin_frame=*/true, /*allow_server_preferred_address=*/true,
         MultiplexedSessionCreationInitiator::kUnknown,
-        NetLogWithSource::Make(NetLogSourceType::NONE));
+        NetLogWithSource::Make(NetLogSourceType::NONE),
+        QuicSessionEstablishmentReason::kUnknown);
     session_->Initialize();
 
     // Blackhole QPACK decoder stream instead of constructing mock writes.

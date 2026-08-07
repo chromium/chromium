@@ -33,6 +33,7 @@
 #include "net/base/connection_migration_information.h"
 #include "net/base/ech_mode.h"
 #include "net/base/load_timing_info.h"
+#include "net/base/load_timing_internal_info.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_export.h"
 #include "net/base/network_handle.h"
@@ -314,6 +315,11 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     // Returns the session's connection migration mode.
     ConnectionMigrationMode connection_migration_mode() const {
       return session_->connection_migration_mode();
+    }
+
+    QuicSessionEstablishmentReason quic_session_establishment_reason() const {
+      return session_ ? session_->quic_session_establishment_reason()
+                      : QuicSessionEstablishmentReason::kUnknown;
     }
 
     // Returns true if the session's connection has sent or received any bytes.
@@ -681,7 +687,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       bool enable_origin_frame,
       bool allow_server_preferred_address,
       MultiplexedSessionCreationInitiator session_creation_initiator,
-      const NetLogWithSource& net_log);
+      const NetLogWithSource& net_log,
+      QuicSessionEstablishmentReason quic_session_establishment_reason);
 
   QuicChromiumClientSession(const QuicChromiumClientSession&) = delete;
   QuicChromiumClientSession& operator=(const QuicChromiumClientSession&) =
@@ -703,6 +710,14 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // Returns true if the connection was ever used to create a stream,
   // including cases where the stream creation failed.
   bool was_ever_used_to_create_streams() const;
+
+  QuicSessionEstablishmentReason quic_session_establishment_reason() const {
+    return quic_session_establishment_reason_;
+  }
+
+  MultiplexedSessionCreationInitiator session_creation_initiator() const {
+    return session_creation_initiator_;
+  }
 
   // Waits for the handshake to be confirmed and invokes |callback| when
   // that happens. If the handshake has already been confirmed, returns OK.
@@ -1296,6 +1311,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   const bool allow_server_preferred_address_;
 
   const MultiplexedSessionCreationInitiator session_creation_initiator_;
+
+  const QuicSessionEstablishmentReason quic_session_establishment_reason_;
 
   quic::QuicTagVector received_connection_options_;
 

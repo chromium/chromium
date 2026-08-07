@@ -172,6 +172,13 @@ size_t QuicSessionPoolPeer::GetNumDegradingSessions(QuicSessionPool* pool) {
   return pool->connectivity_monitor_.GetNumDegradingSessions();
 }
 
+QuicSessionEstablishmentReason
+QuicSessionPoolPeer::DetermineQuicSessionEstablishmentReasonForTesting(
+    QuicSessionPool* pool,
+    const QuicSessionKey& session_key) {
+  return pool->DetermineQuicSessionEstablishmentReason(session_key);
+}
+
 void QuicSessionPoolPeer::SetAlarmFactory(
     QuicSessionPool* pool,
     std::unique_ptr<quic::QuicAlarmFactory> alarm_factory) {

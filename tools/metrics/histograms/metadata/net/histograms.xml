@@ -6326,6 +6326,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.QuicSession.GoogleSearch.EstablishmentReason{Used}"
+    enum="QuicSessionEstablishmentReason" expires_after="2027-07-01">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The session establishment reason for a QUIC session to GoogleSearch. This is
+    recorded when closing the session to GoogleSearch, and when {Used}.
+  </summary>
+  <token key="Used">
+    <variant name=".Unused" summary="session was unused"/>
+    <variant name=".Used" summary="session was used"/>
+  </token>
+</histogram>
+
 <histogram name="Net.QuicSession.HandshakeConfirmedTime" units="Milliseconds"
     expires_after="2027-02-02">
   <owner>dschinazi@chromium.org</owner>

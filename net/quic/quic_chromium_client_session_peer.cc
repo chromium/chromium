@@ -44,6 +44,13 @@ QuicChromiumClientStream* QuicChromiumClientSessionPeer::CreateOutgoingStream(
 }
 
 // static
+void QuicChromiumClientSessionPeer::SetNumTotalStreamsForTesting(
+    QuicChromiumClientSession* session,
+    size_t num_total_streams) {
+  session->num_total_streams_ = num_total_streams;
+}
+
+// static
 bool QuicChromiumClientSessionPeer::GetSessionGoingAway(
     QuicChromiumClientSession* session) {
   return session->going_away_;
