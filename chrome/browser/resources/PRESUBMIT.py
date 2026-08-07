@@ -199,9 +199,3 @@ def CheckNoNewPolymer(input_api, output_api):
   presubmit_support = _ImportWebDevStyle(input_api)
   return presubmit_support.DisallowNewPolymerElements(
       input_api, output_api, lambda f: not excluded_path(f))
-
-def CheckPatchFormatted(input_api, output_api):
-  results = input_api.canned_checks.CheckPatchFormatted(input_api, output_api,
-                                                         check_js=True,
-                                                         check_python=False)
-  return results

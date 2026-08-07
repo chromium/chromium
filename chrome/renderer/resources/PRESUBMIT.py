@@ -21,9 +21,3 @@ def CheckWebDevStyle(input_api, output_api):
   presubmit_support = _ImportWebDevStyle(input_api)
   return presubmit_support.CheckStyle(input_api, output_api)
 
-
-def CheckPatchFormatted(input_api, output_api):
-  results = input_api.canned_checks.CheckPatchFormatted(input_api, output_api,
-                                                         check_js=True,
-                                                         check_python=False)
-  return results

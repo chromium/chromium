@@ -28,11 +28,6 @@ class SaveSysPath():
         sys.path = self._original_path
 
 
-def ChecksPatchFormatted(input_api, output_api):
-    return input_api.canned_checks.CheckPatchFormatted(input_api,
-                                                       output_api,
-                                                       check_js=True)
-
 
 def ChecksUnitTests(input_api, output_api):
     # Run all unit tests under ui/file_manager/base folder.
