@@ -76,6 +76,11 @@ export class ContextualEntrypointAndMenuElement extends
       disableFallbackGlifAnimation: {type: Boolean},
       recentTabId: {type: Number},
       shareTabsFlyoutOpen: {type: Boolean},
+      unboundedMenuEnabled: {
+        reflect: true,
+        type: Boolean,
+        attribute: 'unbounded-menu-enabled',
+      },
 
       // =========================================================================
       // Protected properties
@@ -104,6 +109,7 @@ export class ContextualEntrypointAndMenuElement extends
   accessor sharedTabs: TabInfo[] = [];
   accessor recentTabId: number|null = null;
   accessor shareTabsFlyoutOpen: boolean = false;
+  accessor unboundedMenuEnabled: boolean = false;
   accessor tabSuggestionsState: TabSuggestionsState =
       TabSuggestionsState.NOT_STARTED;
   menuOpenDelayMs: number = 200;

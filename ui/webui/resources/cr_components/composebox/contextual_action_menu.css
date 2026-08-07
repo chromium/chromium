@@ -20,9 +20,95 @@
       var(--color-composebox-context-entrypoint-hover-background);
 }
 
-#menu::part(dialog) {
+:host(:not([unbounded-menu-enabled])) #menu::part(dialog) {
   max-height: var(--contextual-menu-max-height, min(540px, 100vh - 16px));
   min-height: var(--contextual-menu-min-height, 144px);
+}
+
+:host(:not([unbounded-menu-enabled])) .menu-outer-wrapper {
+  display: contents;
+}
+
+:host(:not([unbounded-menu-enabled])) .main-menu-card {
+  display: contents;
+}
+
+:host(:not([unbounded-menu-enabled])) .share-tabs-flyout {
+  position: fixed;
+  position-anchor: --share-tabs-anchor;
+}
+
+:host(:not([unbounded-menu-enabled]))
+    .share-tabs-flyout[data-position='right'] {
+  left: anchor(right);
+  right: auto;
+  top: anchor(top);
+}
+
+:host(:not([unbounded-menu-enabled]))
+    .share-tabs-flyout[data-position='left'] {
+  left: auto;
+  right: anchor(left);
+  top: anchor(top);
+}
+
+:host(:not([unbounded-menu-enabled]))
+    .share-tabs-flyout[data-position='bottom'] {
+  inset-inline-start: anchor(start);
+  top: anchor(bottom);
+}
+
+:host([unbounded-menu-enabled]) #menu {
+  --cr-action-menu-overflow: visible;
+}
+
+:host([unbounded-menu-enabled]) #menu::part(dialog) {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  margin: -16px;
+  overflow: visible;
+  padding: 16px;
+  z-index: 1001;
+}
+
+:host([unbounded-menu-enabled]) .menu-outer-wrapper {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: row;
+}
+
+:host([unbounded-menu-enabled])
+    .menu-outer-wrapper[data-flyout-position='left'] {
+  flex-direction: row-reverse;
+}
+
+:host([unbounded-menu-enabled])
+    .menu-outer-wrapper[data-flyout-position='bottom'] {
+  flex-direction: column;
+}
+
+:host([unbounded-menu-enabled]) .main-menu-card {
+  background-color: var(--cr-menu-background-color);
+  border-radius: 16px;
+  box-shadow: var(--cr-elevation-3);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  max-height: var(--contextual-menu-max-height, min(540px, 100vh - 16px));
+  min-height: var(--contextual-menu-min-height, 144px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px 0;
+  width: 320px;
+}
+
+:host([unbounded-menu-enabled][context-management-enabled]) .main-menu-card {
+  width: 240px;
+}
+
+:host([unbounded-menu-enabled]) .share-tabs-flyout {
+  position: relative;
 }
 
 #menu[scrollable]::part(dialog)::-webkit-scrollbar {
@@ -110,12 +196,12 @@ composebox-favicon-group {
   margin-inline-start: auto;
 }
 
-:host([enable-multi-tab-selection_]) .dropdown-item {
+:host([enable-multi-tab-selection_]) .main-menu-card .dropdown-item {
   width: 320px;
 }
 
 :host([context-management-enabled][enable-multi-tab-selection_])
-  .dropdown-item {
+  .main-menu-card .dropdown-item {
   width: 240px;
 }
 
@@ -231,27 +317,13 @@ composebox-favicon-group {
   overflow-y: auto;
   overflow-x: hidden;
   padding: 8px 0;
-  position: fixed;
-  position-anchor: --share-tabs-anchor;
   width: 320px;
   z-index: 10;
 }
 
-.share-tabs-flyout[data-position='right'] {
-  top: anchor(top);
-  left: anchor(right);
-  right: auto;
-}
-
-.share-tabs-flyout[data-position='left'] {
-  top: anchor(top);
-  left: auto;
-  right: anchor(left);
-}
-
-.share-tabs-flyout[data-position='bottom'] {
-  top: anchor(bottom);
-  inset-inline-start: anchor(start);
+.share-tabs-flyout:not([hidden]) {
+  display: flex;
+  flex-direction: column;
 }
 
 .share-tabs-flyout::-webkit-scrollbar {

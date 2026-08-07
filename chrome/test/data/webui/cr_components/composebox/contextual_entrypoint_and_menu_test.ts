@@ -374,5 +374,21 @@ suite('ContextualEntrypointAndMenu', () => {
 
       assertTrue(!!(await hoverEventPromise));
     });
+
+    test(
+        'unboundedMenuEnabled property reflects and propagates to menu',
+        async () => {
+          entrypointAndMenu.unboundedMenuEnabled = true;
+          await microtasksFinished();
+
+          assertTrue(entrypointAndMenu.hasAttribute('unbounded-menu-enabled'));
+          assertTrue(entrypointAndMenu.$.menu.unboundedMenuEnabled);
+
+          entrypointAndMenu.unboundedMenuEnabled = false;
+          await microtasksFinished();
+
+          assertFalse(entrypointAndMenu.hasAttribute('unbounded-menu-enabled'));
+          assertFalse(entrypointAndMenu.$.menu.unboundedMenuEnabled);
+        });
   });
 });

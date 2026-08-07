@@ -41,6 +41,7 @@ export function getHtml(this: ContextualEntrypointAndMenuElement) {
         .disableAutoReposition="${this.disableAutoReposition}"
         .uploadButtonDisabled="${this.uploadButtonDisabled}"
         .shareTabsFlyoutOpen="${this.shareTabsFlyoutOpen}"
+        .unboundedMenuEnabled="${this.unboundedMenuEnabled}"
         @close="${this.onMenuClose_}">
     </cr-composebox-contextual-action-menu>
   <!--_html_template_end_-->`;
