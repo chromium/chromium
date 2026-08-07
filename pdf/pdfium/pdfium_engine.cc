@@ -3280,6 +3280,39 @@ gfx::Size PDFiumEngine::plugin_size() const {
   return gfx::Size();
 }
 
+void PDFiumEngine::ForEachPage(base::FunctionRef<void(PDFiumPage*)> callback) {
+  ForEachPageUntilTrue([&](PDFiumPage* page) {
+    callback(page);
+    return false;
+  });
+}
+
+bool PDFiumEngine::ForEachPageUntilTrue(
+    base::FunctionRef<bool(PDFiumPage*)> callback) {
+  if (pages_.empty()) {
+    return false;
+  }
+
+  // Defer page destruction during iteration to protect any active page pointers
+  // held on the stack across re-entrant callbacks.
+  base::ScopedClosureRunner deferred_page_unloader =
+      CreateScopedDeferredPageUnload();
+
+  std::vector<base::WeakPtr<PDFiumPage>> snapshot;
+  snapshot.reserve(pages_.size());
+  for (const auto& page : pages_) {
+    CHECK(page);
+    snapshot.push_back(page->GetWeakPtr());
+  }
+
+  for (const base::WeakPtr<PDFiumPage>& weak_page : snapshot) {
+    if (weak_page && callback(weak_page.get())) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void PDFiumEngine::LoadDocument() {
   // Check if the document is ready for loading. If it isn't just bail for now,
   // we will call LoadDocument() again later.
@@ -3481,6 +3514,7 @@ std::vector<gfx::Size> PDFiumEngine::LoadPageSizes(
   if (pages_.size() > new_page_count) {
     const size_t deferred_count_before = deferred_page_deletions_.size();
     for (size_t i = new_page_count; i < pages_.size(); ++i) {
+      pages_[i]->InvalidateWeakPtrs();
       if (defer_page_unload_ || !pages_[i]->Unload()) {
         deferred_page_deletions_.push_back(std::move(pages_[i]));
       }

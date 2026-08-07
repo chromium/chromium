@@ -20,6 +20,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -780,6 +781,14 @@ class PDFiumEngine : public DocumentLoader::Client,
   friend class SelectionChangeInvalidator;
 
   gfx::Size plugin_size() const;
+
+  // Iterates through all pages in the document safely. Takes a snapshot of page
+  // weak pointers to protect against re-entrant container modifications.
+  void ForEachPage(base::FunctionRef<void(PDFiumPage*)> callback);
+
+  // Same as ForEachPage(), but iterates through all pages or until `callback`
+  // returns true. Returns whether early exit occurred.
+  bool ForEachPageUntilTrue(base::FunctionRef<bool(PDFiumPage*)> callback);
 
   // We finished getting the pdf file, so load it. This will complete
   // asynchronously (due to password fetching) and may be run multiple times.

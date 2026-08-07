@@ -446,8 +446,6 @@ PDFiumPage::LinkTarget::~LinkTarget() = default;
 PDFiumPage::PDFiumPage(PDFiumEngine* engine, uint32_t i)
     : engine_(engine), index_(i) {}
 
-PDFiumPage::PDFiumPage(PDFiumPage&& that) = default;
-
 PDFiumPage::~PDFiumPage() {
   DCHECK_EQ(0, preventing_page_unload_count_);
   DCHECK_EQ(0, preventing_text_page_unload_count_);
