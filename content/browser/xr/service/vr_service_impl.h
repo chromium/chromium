@@ -141,8 +141,6 @@ class CONTENT_EXPORT VRServiceImpl : public device::mojom::VRService,
 
   bool IsRenderFrameHostVisible() const;
 
-  bool InternalSupportsSession(device::mojom::XRSessionOptions* options);
-
   void DoRequestPermissions(
       const std::vector<blink::PermissionType> request_permissions,
       base::OnceCallback<

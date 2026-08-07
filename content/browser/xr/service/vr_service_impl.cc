@@ -49,6 +49,10 @@
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
+
 namespace {
 
 device::mojom::XRRuntimeSessionOptionsPtr GetRuntimeOptions(
@@ -914,6 +918,16 @@ void VRServiceImpl::SupportsSession(
 
   TRACE_EVENT("xr", "VRServiceImpl::SupportsSession: received",
               perfetto::Flow::Global(options->trace_id));
+
+  if (!IsRenderFrameHostVisible()) {
+    bool is_supported_when_hidden = false;
+#if BUILDFLAG(IS_ANDROID)
+    is_supported_when_hidden = !base::android::device_info::is_desktop() ||
+                               base::android::device_info::is_xr();
+#endif
+    std::move(callback).Run(is_supported_when_hidden);
+    return;
+  }
 
   runtime_manager_->SupportsSession(std::move(options), std::move(callback));
 }

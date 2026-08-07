@@ -8,12 +8,17 @@
 #include <utility>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/run_until.h"
+#include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "content/browser/xr/service/vr_service_impl.h"
 #include "content/browser/xr/service/xr_runtime_manager_impl.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/test_renderer_host.h"
 #include "device/vr/public/cpp/vr_device_provider.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
@@ -23,6 +28,10 @@
 #include "device/vr/test/fake_vr_service_client.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
 
 namespace content {
 
@@ -78,6 +87,16 @@ class XRRuntimeManagerTest : public RenderViewHostTestHarness {
   device::FakeVRDeviceProvider* Provider() {
     EXPECT_NE(XRRuntimeManager::GetInstanceIfCreated(), nullptr);
     return provider_;
+  }
+
+  bool QuerySupportsSession(VRServiceImpl* service,
+                            device::mojom::XRSessionMode mode) {
+    device::mojom::XRSessionOptionsPtr options =
+        device::mojom::XRSessionOptions::New();
+    options->mode = mode;
+    base::test::TestFuture<bool> future;
+    service->SupportsSession(std::move(options), future.GetCallback());
+    return future.Get();
   }
 
   // Drops the internal XRRuntimeManagerImplRef. This is useful for testing the
@@ -142,6 +161,60 @@ TEST_F(XRRuntimeManagerTest, AddRemoveDevices) {
   EXPECT_TRUE(GetRuntimeManager()->GetRuntimeForOptions(&options));
   Provider()->RemoveDevice(device->GetId());
   EXPECT_TRUE(!GetRuntimeManager()->GetRuntimeForOptions(&options));
+}
+
+TEST_F(XRRuntimeManagerTest, SupportsSession_VisibilityGate) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kWebXrForceRuntime, "fake");
+
+  auto service = BindService();
+  EXPECT_EQ(1u, ServiceCount());
+  EXPECT_TRUE(Provider()->Initialized());
+
+  device::FakeVRDevice* device =
+      new device::FakeVRDevice(device::mojom::XRDeviceId::FAKE_DEVICE_ID);
+  Provider()->AddDevice(base::WrapUnique(device));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GetRuntimeForTest(device::mojom::XRDeviceId::FAKE_DEVICE_ID) !=
+           nullptr;
+  }));
+
+  // When the frame is visible, SupportsSession should reflect device support.
+  EXPECT_TRUE(QuerySupportsSession(service.get(),
+                                   device::mojom::XRSessionMode::kImmersiveVr));
+
+  // Simulate hiding the frame.
+  RenderViewHostTester::For(rvh())->SimulateWasHidden();
+
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, standard devices return true when hidden.
+  EXPECT_TRUE(QuerySupportsSession(service.get(),
+                                   device::mojom::XRSessionMode::kImmersiveVr));
+
+  // On Desktop Android without XR device, hidden tabs should return false.
+  base::android::device_info::set_is_desktop_for_testing(true);
+  EXPECT_FALSE(QuerySupportsSession(
+      service.get(), device::mojom::XRSessionMode::kImmersiveVr));
+
+  // On Desktop Android with XR device, hidden tabs should return true.
+  base::android::device_info::set_is_xr_for_testing();
+  EXPECT_TRUE(QuerySupportsSession(service.get(),
+                                   device::mojom::XRSessionMode::kImmersiveVr));
+
+  base::android::device_info::reset_is_desktop_for_testing();
+  base::android::device_info::reset_is_xr_for_testing();
+#else
+  // On desktop platforms (e.g. Windows/Linux), hidden tabs should return false.
+  EXPECT_FALSE(QuerySupportsSession(
+      service.get(), device::mojom::XRSessionMode::kImmersiveVr));
+#endif
+
+  // Restoring visibility should re-enable query results.
+  RenderViewHostTester::For(rvh())->SimulateWasShown();
+  EXPECT_TRUE(QuerySupportsSession(service.get(),
+                                   device::mojom::XRSessionMode::kImmersiveVr));
+
+  Provider()->RemoveDevice(device->GetId());
 }
 
 }  // namespace content
