@@ -448,6 +448,10 @@ class Profile : public content::BrowserContext {
     return 0 == accessibility_pause_level_;
   }
 
+  // Returns the LOM profile ID for this profile, generating one if it doesn't
+  // exist yet.
+  virtual uint64_t GetLomProfileId();
+
   // Returns whether the profile is new.  A profile is new if the browser has
   // not been shut down since the profile was created.
   virtual bool IsNewProfile() const = 0;

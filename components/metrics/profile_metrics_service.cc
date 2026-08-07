@@ -112,10 +112,10 @@ void ProfileMetricsService::PumaHistogramBoolean(
     private_metrics::PumaType puma_type,
     std::string_view name,
     bool sample,
-    std::optional<std::string> profile_name) const {
+    std::optional<uint64_t> profile_id) const {
   if (base::FeatureList::IsEnabled(metrics::private_metrics::kLomFeature)) {
     metrics::private_metrics::LomRecorder::Get()->RecordBoolean(
-        puma_type, name, sample, /*profile_name=*/profile_name);
+        puma_type, name, sample, profile_id);
   }
 }
 
@@ -124,10 +124,10 @@ void ProfileMetricsService::PumaHistogramExactLinear(
     std::string_view name,
     int sample,
     int exclusive_max,
-    std::optional<std::string> profile_name) const {
+    std::optional<uint64_t> profile_id) const {
   if (base::FeatureList::IsEnabled(metrics::private_metrics::kLomFeature)) {
     metrics::private_metrics::LomRecorder::Get()->RecordExactLinear(
-        puma_type, name, sample, exclusive_max, /*profile_name=*/profile_name);
+        puma_type, name, sample, exclusive_max, profile_id);
   }
 }
 

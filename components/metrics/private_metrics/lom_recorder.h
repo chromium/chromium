@@ -34,26 +34,25 @@ class COMPONENT_EXPORT(PRIVATE_METRICS_RECORDERS) LomRecorder {
   static LomRecorder* Get();
 
   // Records a boolean sample.
-  // `profile_name` is the name of the profile to associate the metric with.
-  // There is no difference in behavior between std::nullopt and an empty string
+  // `profile_id` is the ID of the profile to associate the metric with.
+  // There is no difference in behavior between std::nullopt and 0
   // (both associate the metric with the default (global) profile where profile
-  // name hash is 0).
+  // ID is 0).
   void RecordBoolean(PumaType puma_type,
                      std::string_view name,
                      bool sample,
-                     std::optional<std::string> profile_name = std::nullopt);
+                     std::optional<uint64_t> profile_id = std::nullopt);
 
   // Records an exact linear sample.
-  // `profile_name` is the name of the profile to associate the metric with.
-  // There is no difference in behavior between std::nullopt and an empty string
+  // `profile_id` is the ID of the profile to associate the metric with.
+  // There is no difference in behavior between std::nullopt and 0
   // (both associate the metric with the default (global) profile where profile
-  // name hash is 0).
-  void RecordExactLinear(
-      PumaType puma_type,
-      std::string_view name,
-      int sample,
-      int exclusive_max,
-      std::optional<std::string> profile_name = std::nullopt);
+  // ID is 0).
+  void RecordExactLinear(PumaType puma_type,
+                         std::string_view name,
+                         int sample,
+                         int exclusive_max,
+                         std::optional<uint64_t> profile_id = std::nullopt);
 
   // Clears and returns all recorded histogram events grouped by profile.
   std::vector<::private_metrics::ProfileKeyedHistogramEvent>
@@ -64,7 +63,7 @@ class COMPONENT_EXPORT(PRIVATE_METRICS_RECORDERS) LomRecorder {
                     int64_t sample,
                     int64_t min,
                     int64_t max,
-                    std::optional<std::string> profile_name);
+                    std::optional<uint64_t> profile_id);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

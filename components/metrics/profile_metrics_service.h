@@ -81,14 +81,14 @@ class ProfileMetricsService : public KeyedService {
       private_metrics::PumaType puma_type,
       std::string_view name,
       bool sample,
-      std::optional<std::string> profile_name = std::nullopt) const;
+      std::optional<uint64_t> profile_id = std::nullopt) const;
 
   void PumaHistogramExactLinear(
       private_metrics::PumaType puma_type,
       std::string_view name,
       int sample,
       int exclusive_max,
-      std::optional<std::string> profile_name = std::nullopt) const;
+      std::optional<uint64_t> profile_id = std::nullopt) const;
 
  private:
   const ProfileMetricsContext profile_metrics_context_;

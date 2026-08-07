@@ -1090,4 +1090,14 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
   EXPECT_EQ(2, entry->GetAiSubscriptionTier());
 }
 
+IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, LomProfileId) {
+  Profile* profile = browser()->GetProfile();
+  uint64_t lom_id1 = profile->GetLomProfileId();
+  EXPECT_NE(0u, lom_id1);
+
+  // Subsequent calls return the same ID.
+  uint64_t lom_id2 = profile->GetLomProfileId();
+  EXPECT_EQ(lom_id1, lom_id2);
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)

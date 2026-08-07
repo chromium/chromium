@@ -26,6 +26,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string_view>
 
 #include "base/check_op.h"
@@ -60,24 +61,29 @@ constexpr base::HistogramBase::Flags PumaTypeToHistogramFlags(
 COMPONENT_EXPORT(PRIVATE_METRICS_RECORDERS)
 void PumaHistogramBoolean(PumaType puma_type,
                           std::string_view name,
-                          bool sample);
+                          bool sample,
+                          std::optional<uint64_t> profile_id = std::nullopt);
 
 // PUMA version of base::UmaHistogramExactLinear().
 // This function should only be called on the main thread. This is checked with
 // sequence checker in `components/metrics/private_metrics/lom_recorder.h`.
 COMPONENT_EXPORT(PRIVATE_METRICS_RECORDERS)
-void PumaHistogramExactLinear(PumaType puma_type,
-                              std::string_view name,
-                              int sample,
-                              int exclusive_max);
+void PumaHistogramExactLinear(
+    PumaType puma_type,
+    std::string_view name,
+    int sample,
+    int exclusive_max,
+    std::optional<uint64_t> profile_id = std::nullopt);
 
 // PUMA version of base::UmaHistogramEnumeration().
 // This function should only be called on the main thread. This is checked with
 // sequence checker in `components/metrics/private_metrics/lom_recorder.h`.
 template <typename T>
-void PumaHistogramEnumeration(PumaType puma_type,
-                              std::string_view name,
-                              T sample) {
+void PumaHistogramEnumeration(
+    PumaType puma_type,
+    std::string_view name,
+    T sample,
+    std::optional<uint64_t> profile_id = std::nullopt) {
   static_assert(std::is_enum_v<T>, "T is not an enum.");
   // This also ensures that an enumeration that doesn't define kMaxValue fails
   // with a semi-useful error ("no member named 'kMaxValue' in ...").
@@ -87,22 +93,25 @@ void PumaHistogramEnumeration(PumaType puma_type,
   DCHECK_LE(static_cast<uintmax_t>(sample),
             static_cast<uintmax_t>(T::kMaxValue));
   return PumaHistogramExactLinear(puma_type, name, static_cast<int>(sample),
-                                  static_cast<int>(T::kMaxValue) + 1);
+                                  static_cast<int>(T::kMaxValue) + 1,
+                                  profile_id);
 }
 
 // PUMA version of base::UmaHistogramEnumeration().
 // This function should only be called on the main thread. This is checked with
 // sequence checker in `components/metrics/private_metrics/lom_recorder.h`.
 template <typename T>
-void PumaHistogramEnumeration(PumaType puma_type,
-                              std::string_view name,
-                              T sample,
-                              T enum_size) {
+void PumaHistogramEnumeration(
+    PumaType puma_type,
+    std::string_view name,
+    T sample,
+    T enum_size,
+    std::optional<uint64_t> profile_id = std::nullopt) {
   static_assert(std::is_enum_v<T>, "T is not an enum.");
   DCHECK_LE(static_cast<uintmax_t>(enum_size), static_cast<uintmax_t>(INT_MAX));
   DCHECK_LT(static_cast<uintmax_t>(sample), static_cast<uintmax_t>(enum_size));
   return PumaHistogramExactLinear(puma_type, name, static_cast<int>(sample),
-                                  static_cast<int>(enum_size));
+                                  static_cast<int>(enum_size), profile_id);
 }
 
 }  // namespace metrics::private_metrics

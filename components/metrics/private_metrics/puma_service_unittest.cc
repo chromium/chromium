@@ -235,7 +235,7 @@ TEST_P(PumaServiceRcTest, RcBuildReport_PayloadProperlyFilled) {
   EXPECT_TRUE(report->has_rc_profile());
 
   if (IsLomFeatureEnabled()) {
-    EXPECT_EQ(report->profile_keyed_histogram_events_size(), 1);
+    ASSERT_EQ(report->profile_keyed_histogram_events_size(), 1);
     const auto& profile_keyed_event = report->profile_keyed_histogram_events(0);
     EXPECT_EQ(profile_keyed_event.profile_id(), 0u);
     EXPECT_EQ(profile_keyed_event.histogram_events_size(), 1);
@@ -243,7 +243,7 @@ TEST_P(PumaServiceRcTest, RcBuildReport_PayloadProperlyFilled) {
     EXPECT_TRUE(histogram_event.has_name_hash());
     EXPECT_EQ(histogram_event.bucket_size(), 1);
   } else {
-    EXPECT_EQ(report->histogram_events_size(), 1);
+    ASSERT_EQ(report->histogram_events_size(), 1);
     auto histogram_event = report->histogram_events().at(0);
     EXPECT_TRUE(histogram_event.has_name_hash());
     EXPECT_EQ(histogram_event.bucket_size(), 1);
@@ -559,7 +559,7 @@ TEST_F(PumaServiceWithLomFeatureTest, BuildReportWithLomFeature) {
 
   auto report = puma_service_->BuildPrivateMetricRcReport();
   ASSERT_TRUE(report.has_value());
-  EXPECT_EQ(report->profile_keyed_histogram_events_size(), 1);
+  ASSERT_EQ(report->profile_keyed_histogram_events_size(), 1);
 
   const auto& profile_keyed_event = report->profile_keyed_histogram_events(0);
   EXPECT_EQ(profile_keyed_event.profile_id(), 0u);
@@ -580,28 +580,32 @@ TEST_F(PumaServiceWithLomFeatureTest, BuildReportWithLomFeature) {
 }
 
 TEST_F(PumaServiceWithLomFeatureTest, BuildReportWithLomFeatureAndProfile) {
+  constexpr uint64_t kProfileId1 = 12345u;
+  constexpr uint64_t kProfileId2 = 67890u;
+
   LomRecorder::Get()->RecordBoolean(PumaType::kRc,
                                     "PUMA.PumaServiceTestHistogram.ProfileBool",
-                                    true, "Profile1");
+                                    true, kProfileId1);
   LomRecorder::Get()->RecordBoolean(PumaType::kRc,
                                     "PUMA.PumaServiceTestHistogram.ProfileBool",
-                                    true, "Profile1");
+                                    true, kProfileId1);
   LomRecorder::Get()->RecordBoolean(PumaType::kRc,
                                     "PUMA.PumaServiceTestHistogram.ProfileBool",
-                                    false, "Profile1");
+                                    false, kProfileId1);
   LomRecorder::Get()->RecordExactLinear(
       PumaType::kRc, "PUMA.PumaServiceTestHistogram.ProfileLinear", 5, 10,
-      "Profile1");
+      kProfileId1);
   LomRecorder::Get()->RecordExactLinear(
       PumaType::kRc, "PUMA.PumaServiceTestHistogram.ProfileLinear", 7, 10,
-      "Profile1");
+      kProfileId1);
 
   auto report = puma_service_->BuildPrivateMetricRcReport();
   ASSERT_TRUE(report.has_value());
-  EXPECT_EQ(report->profile_keyed_histogram_events_size(), 1);
+  ASSERT_EQ(report->profile_keyed_histogram_events_size(), 1);
 
   const auto& profile_keyed_event = report->profile_keyed_histogram_events(0);
-  EXPECT_EQ(profile_keyed_event.profile_id(), base::HashMetricName("Profile1"));
+  const uint64_t profile_id = profile_keyed_event.profile_id();
+  EXPECT_EQ(profile_id, kProfileId1);
   EXPECT_EQ(profile_keyed_event.histogram_events_size(), 2);
 
   ExpectReportEvent(
@@ -616,6 +620,46 @@ TEST_F(PumaServiceWithLomFeatureTest, BuildReportWithLomFeatureAndProfile) {
 
   // Second build report should return nullopt as events were cleared.
   EXPECT_FALSE(puma_service_->BuildPrivateMetricRcReport().has_value());
+
+  // Record again for Profile1 to verify ID matches.
+  LomRecorder::Get()->RecordBoolean(PumaType::kRc,
+                                    "PUMA.PumaServiceTestHistogram.ProfileBool",
+                                    true, kProfileId1);
+
+  auto second_report = puma_service_->BuildPrivateMetricRcReport();
+  ASSERT_TRUE(second_report.has_value());
+  ASSERT_EQ(second_report->profile_keyed_histogram_events_size(), 1);
+  EXPECT_EQ(second_report->profile_keyed_histogram_events(0).profile_id(),
+            kProfileId1);
+
+  // Third build report should return nullopt as events were cleared.
+  EXPECT_FALSE(puma_service_->BuildPrivateMetricRcReport().has_value());
+
+  // Record for Profile2 to verify profile differentiation.
+  LomRecorder::Get()->RecordBoolean(PumaType::kRc,
+                                    "PUMA.PumaServiceTestHistogram.ProfileBool",
+                                    true, kProfileId2);
+
+  auto third_report = puma_service_->BuildPrivateMetricRcReport();
+  ASSERT_TRUE(third_report.has_value());
+  ASSERT_EQ(third_report->profile_keyed_histogram_events_size(), 1);
+
+  const uint64_t profile2_id =
+      third_report->profile_keyed_histogram_events(0).profile_id();
+  EXPECT_EQ(profile2_id, kProfileId2);
+  EXPECT_NE(profile2_id, profile_id);
+
+  // Fourth build report should return nullopt as events were cleared.
+  EXPECT_FALSE(puma_service_->BuildPrivateMetricRcReport().has_value());
+
+  // Record without a profile ID (global profile).
+  LomRecorder::Get()->RecordBoolean(
+      PumaType::kRc, "PUMA.PumaServiceTestHistogram.GlobalBool", true);
+
+  auto fourth_report = puma_service_->BuildPrivateMetricRcReport();
+  ASSERT_TRUE(fourth_report.has_value());
+  ASSERT_EQ(fourth_report->profile_keyed_histogram_events_size(), 1);
+  EXPECT_EQ(fourth_report->profile_keyed_histogram_events(0).profile_id(), 0u);
 }
 
 }  // namespace metrics::private_metrics
