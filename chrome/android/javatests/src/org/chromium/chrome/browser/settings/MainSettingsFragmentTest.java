@@ -41,7 +41,6 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.preference.Preference;
@@ -563,7 +562,8 @@ public class MainSettingsFragmentTest {
     @SmallTest
     @EnableFeatures(
             ChromeFeatureList.HOME_BUTTON_REMOVAL
-                    + ":remove_home_button_everywhere/true/set_default_to_false_on_homepage_on_desktop/false")
+                    + ":remove_home_button_everywhere/true"
+                    + "/set_default_to_false_on_homepage_on_desktop/false")
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testHomeButtonRemovalEnabled() {
         startSettings();
@@ -665,9 +665,8 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
-    public void
-            testAccountManagementRowForChildAccountWithNonDisplayableAccountEmailWithEmptyDisplayName()
-                    throws InterruptedException {
+    public void testAccountManagementRowForChildAccountWithNonDisplayableEmailWithEmptyDisplayName()
+            throws InterruptedException {
         startSettings();
 
         // Account set up.
@@ -1120,9 +1119,9 @@ public class MainSettingsFragmentTest {
     }
 
     private void testNewPreferenceLabel(
-            @NonNull Class prefFragmentClass,
-            @NonNull String prefKey,
-            @NonNull String viewCountPrefKey,
+            Class prefFragmentClass,
+            String prefKey,
+            String viewCountPrefKey,
             @StringRes int titleId) {
         // Set up.
         final var prefs = ChromeSharedPreferences.getInstance();

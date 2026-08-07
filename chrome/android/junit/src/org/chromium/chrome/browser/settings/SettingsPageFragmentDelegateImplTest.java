@@ -559,8 +559,7 @@ public class SettingsPageFragmentDelegateImplTest {
     }
 
     @Test
-    public void
-            testInitSettings_withExistingMultiColumnSettings_initializesTitleUpdaterAndSearchCoordinator() {
+    public void testInitSettings_withMultiColumn_initializesTitleUpdaterAndSearchCoordinator() {
         when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
         when(mMockSettingsHostFragment.getActiveFragment()).thenReturn(mMultiColumnSettings);
         when(mMultiColumnSettings.getView()).thenReturn(null);

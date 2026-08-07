@@ -384,22 +384,19 @@ public class MainSettings extends ChromeBaseSettingsFragment
                     () -> {
                         OneshotSupplierImpl<Profile> profileSupplier = new OneshotSupplierImpl<>();
                         profileSupplier.set(getProfile());
+                        var l = SigninAndHistorySyncActivityLauncherImpl.get();
                         mSigninCoordinator =
-                                SigninAndHistorySyncActivityLauncherImpl.get()
-                                        .createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
-                                                SupplierUtils.asNonNull(mWindowAndroidSupplier)
-                                                        .get(),
-                                                getActivity(),
-                                                mActivityResultTracker,
-                                                signInPreference,
-                                                DeviceLockActivityLauncherImpl.get(),
-                                                profileSupplier,
-                                                SupplierUtils.asNonNull(
-                                                        mBottomSheetControllerSupplier),
-                                                mModalDialogManagerSupplier.asNonNull().get(),
-                                                SupplierUtils.asNonNull(mSnackbarManagerSupplier)
-                                                        .get(),
-                                                SigninAccessPoint.SETTINGS);
+                                l.createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
+                                        SupplierUtils.asNonNull(mWindowAndroidSupplier).get(),
+                                        getActivity(),
+                                        mActivityResultTracker,
+                                        signInPreference,
+                                        DeviceLockActivityLauncherImpl.get(),
+                                        profileSupplier,
+                                        SupplierUtils.asNonNull(mBottomSheetControllerSupplier),
+                                        mModalDialogManagerSupplier.asNonNull().get(),
+                                        SupplierUtils.asNonNull(mSnackbarManagerSupplier).get(),
+                                        SigninAccessPoint.SETTINGS);
                         signinCoordinatorSupplier.set(mSigninCoordinator);
                     },
                     mWindowAndroidSupplier,
