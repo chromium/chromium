@@ -61,6 +61,12 @@ InfoBarSpec::Builder& InfoBarSpec::Builder::SetIcon(
   return *this;
 }
 
+InfoBarSpec::Builder& InfoBarSpec::Builder::SetDarkModeIcon(
+    const gfx::VectorIcon& icon) {
+  spec_.dark_mode_icon_ = &icon;
+  return *this;
+}
+
 InfoBarSpec::Builder& InfoBarSpec::Builder::SetIconId(int icon_id) {
   spec_.icon_id_ = icon_id;
   return *this;
@@ -119,6 +125,18 @@ InfoBarSpec::Builder& InfoBarSpec::Builder::AddCancelButton(
 InfoBarSpec::Builder& InfoBarSpec::Builder::SetDismissAction(
     ActionCallback callback) {
   spec_.dismiss_callback_ = std::move(callback);
+  return *this;
+}
+
+InfoBarSpec::Builder& InfoBarSpec::Builder::SetResultCallback(
+    ResultCallback callback) {
+  spec_.result_callback_ = std::move(callback);
+  return *this;
+}
+
+InfoBarSpec::Builder& InfoBarSpec::Builder::SetBrowserFilter(
+    BrowserFilter filter) {
+  spec_.browser_filter_ = std::move(filter);
   return *this;
 }
 

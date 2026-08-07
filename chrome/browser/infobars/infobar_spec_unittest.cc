@@ -4,6 +4,9 @@
 
 #include "chrome/browser/infobars/infobar_spec.h"
 
+#include <optional>
+#include <vector>
+
 #include "components/infobars/core/infobar_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,6 +34,9 @@ TEST_F(InfoBarSpecTest, BuildDefaultSpec) {
   EXPECT_TRUE(spec.cancel_button_label().empty());
   EXPECT_TRUE(spec.cancel_button_callback().is_null());
   EXPECT_TRUE(spec.dismiss_callback().is_null());
+  EXPECT_EQ(spec.dark_mode_icon(), nullptr);
+  EXPECT_TRUE(spec.result_callback().is_null());
+  EXPECT_TRUE(spec.browser_filter().is_null());
 }
 
 TEST_F(InfoBarSpecTest, BuildCustomSpec) {
@@ -91,6 +97,69 @@ TEST_F(InfoBarSpecTest, BuildCustomSpec) {
 
   spec.dismiss_callback().Run(nullptr);
   EXPECT_TRUE(dismiss_called);
+}
+
+TEST_F(InfoBarSpecTest, BuildSpecWithResultCallbackAndBrowserFilter) {
+  std::optional<InfoBarResult> reported_result;
+  auto result_cb = base::BindRepeating(
+      [](std::optional<InfoBarResult>* result, content::WebContents*,
+         InfoBarResult reported) { *result = reported; },
+      &reported_result);
+
+  bool filter_called = false;
+  auto filter_cb = base::BindRepeating(
+      [](bool* called, BrowserWindowInterface*) {
+        *called = true;
+        return false;
+      },
+      &filter_called);
+
+  InfoBarSpec spec = InfoBarSpec::Builder(InfoBarDelegate::TEST_INFOBAR)
+                         .SetResultCallback(result_cb)
+                         .SetBrowserFilter(filter_cb)
+                         .Build();
+
+  ASSERT_FALSE(spec.result_callback().is_null());
+  spec.result_callback().Run(nullptr, InfoBarResult::kAccepted);
+  EXPECT_EQ(reported_result, InfoBarResult::kAccepted);
+
+  ASSERT_FALSE(spec.browser_filter().is_null());
+  EXPECT_FALSE(spec.browser_filter().Run(nullptr));
+  EXPECT_TRUE(filter_called);
+}
+
+TEST_F(InfoBarSpecTest, BuildSpecWithTemplateAndSubstitutions) {
+  auto substitutions_cb = base::BindRepeating([](content::WebContents*) {
+    std::vector<MessageSubstitution> substitutions;
+    substitutions.emplace_back(u"link text", /*is_link=*/true,
+                               /*accessible_name=*/std::nullopt);
+    return substitutions;
+  });
+
+  bool link_clicked = false;
+  auto link_cb =
+      base::BindRepeating([](bool* clicked, content::WebContents*, size_t index,
+                             WindowOpenDisposition) { *clicked = true; },
+                          &link_clicked);
+
+  InfoBarSpec spec = InfoBarSpec::Builder(InfoBarDelegate::TEST_INFOBAR)
+                         .SetMessageTextTemplate(u"Open $1 to continue")
+                         .SetSubstitutionsCallback(substitutions_cb)
+                         .SetInlineLinkCallback(link_cb)
+                         .Build();
+
+  EXPECT_EQ(spec.message_text_template(), u"Open $1 to continue");
+  ASSERT_FALSE(spec.substitutions_callback().is_null());
+  std::vector<MessageSubstitution> substitutions =
+      spec.substitutions_callback().Run(nullptr);
+  ASSERT_EQ(substitutions.size(), 1u);
+  EXPECT_EQ(substitutions[0].text, u"link text");
+  EXPECT_TRUE(substitutions[0].is_link);
+
+  ASSERT_FALSE(spec.inline_link_callback().is_null());
+  spec.inline_link_callback().Run(nullptr, 0,
+                                  WindowOpenDisposition::CURRENT_TAB);
+  EXPECT_TRUE(link_clicked);
 }
 
 }  // namespace infobars

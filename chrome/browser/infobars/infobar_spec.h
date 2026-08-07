@@ -17,6 +17,8 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "url/gurl.h"
 
+class BrowserWindowInterface;
+
 namespace content {
 class WebContents;
 }
@@ -30,6 +32,19 @@ enum class InfoBarScope {
   kGlobal,
 };
 
+// The outcome of showing an infobar. Exactly one result is reported per
+// logical infobar.
+enum class InfoBarResult {
+  // The user pressed the OK button.
+  kAccepted,
+  // The user pressed the Cancel button.
+  kCancelled,
+  // The user closed the infobar.
+  kDismissed,
+  // The infobar went away without any user interaction.
+  kIgnored,
+};
+
 // InfoBarSpec defines an InfoBar's appearance and behavior.
 class InfoBarSpec {
  public:
@@ -39,6 +54,11 @@ class InfoBarSpec {
           content::WebContents*)>;
   using InlineLinkCallback = base::RepeatingCallback<
       void(content::WebContents*, size_t, WindowOpenDisposition)>;
+  using ResultCallback =
+      base::RepeatingCallback<void(content::WebContents*, InfoBarResult)>;
+  // Returns true if the infobar may be shown in the given browser. Only
+  // consulted for InfoBarScope::kGlobal.
+  using BrowserFilter = base::RepeatingCallback<bool(BrowserWindowInterface*)>;
 
   class Builder;
 
@@ -66,6 +86,7 @@ class InfoBarSpec {
   InfoBarDelegate::InfobarPriority priority() const { return priority_; }
   InfoBarScope scope() const { return scope_; }
   const gfx::VectorIcon* icon() const { return icon_; }
+  const gfx::VectorIcon* dark_mode_icon() const { return dark_mode_icon_; }
   int icon_id() const { return icon_id_; }
   bool expire_on_navigation() const { return expire_on_navigation_; }
   bool should_hide_in_fullscreen() const { return should_hide_in_fullscreen_; }
@@ -83,6 +104,8 @@ class InfoBarSpec {
     return cancel_button_callback_;
   }
   const ActionCallback& dismiss_callback() const { return dismiss_callback_; }
+  const ResultCallback& result_callback() const { return result_callback_; }
+  const BrowserFilter& browser_filter() const { return browser_filter_; }
 
  private:
   friend class Builder;
@@ -100,6 +123,7 @@ class InfoBarSpec {
       InfoBarDelegate::InfobarPriority::kDefault;
   InfoBarScope scope_ = InfoBarScope::kTab;
   raw_ptr<const gfx::VectorIcon> icon_ = nullptr;
+  raw_ptr<const gfx::VectorIcon> dark_mode_icon_ = nullptr;
   int icon_id_ = 0;
   bool expire_on_navigation_ = true;
   bool should_hide_in_fullscreen_ = false;
@@ -111,6 +135,8 @@ class InfoBarSpec {
   std::u16string cancel_button_label_;
   ActionCallback cancel_button_callback_;
   ActionCallback dismiss_callback_;
+  ResultCallback result_callback_;
+  BrowserFilter browser_filter_;
 };
 
 class InfoBarSpec::Builder {
@@ -127,6 +153,7 @@ class InfoBarSpec::Builder {
   Builder& SetLinkText(std::u16string link_text);
   Builder& SetLinkNavigationUrl(GURL gurl);
   Builder& SetIcon(const gfx::VectorIcon& icon);
+  Builder& SetDarkModeIcon(const gfx::VectorIcon& icon);
   Builder& SetIconId(int icon_id);
 
   Builder& SetScope(InfoBarScope scope);
@@ -141,6 +168,8 @@ class InfoBarSpec::Builder {
   Builder& AddCancelButton(const std::u16string& label,
                            InfoBarSpec::ActionCallback callback);
   Builder& SetDismissAction(InfoBarSpec::ActionCallback callback);
+  Builder& SetResultCallback(InfoBarSpec::ResultCallback callback);
+  Builder& SetBrowserFilter(InfoBarSpec::BrowserFilter filter);
 
   InfoBarSpec Build();
 
