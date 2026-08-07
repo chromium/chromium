@@ -10,7 +10,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/dictation/features.h"
 #include "chrome/browser/dictation/session_ui_delegate.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -139,10 +138,6 @@ void SessionUiImpl::UpdateAudioLevel(float audio_level) {
 }
 
 void SessionUiImpl::OnStartedStream(content::GlobalDOMNodeId target_id) {
-  if (!kShowCaretBubble.Get()) {
-    return;
-  }
-
   content::RenderFrameHost* target_rfh =
       target_id.document.AsRenderFrameHostIfValid();
   content::WebContents* web_contents =

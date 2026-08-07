@@ -38,8 +38,7 @@ TargetDetails DefaultInPageTarget(content::WebContents* web_contents) {
 base::test::ScopedFeatureList CreateEnablingFeatureList() {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{kDictation,
-        {{"use_component_extension", "false"}, {"show_caret_bubble", "true"}}},
+      {{kDictation, {{"use_component_extension", "false"}}},
        {blink::features::kPopulateDOMNodeIdInFocusedNodeDetails, {}}},
       {});
   return feature_list;
