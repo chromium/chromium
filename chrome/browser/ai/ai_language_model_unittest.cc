@@ -621,6 +621,45 @@ TEST_F(AILanguageModelTest, SamplingModeMappings) {
   // Test most-creative
   test_sampling_mode(blink::mojom::AILanguageModelSamplingMode::kMostCreative,
                      ElementsAre("UfooEM", IsPromptWithParams(100, 1.2)));
+
+  // Test custom presets configured in metadata.
+  optimization_guide::proto::OnDeviceModelExecutionFeatureConfig config =
+      CreateConfig();
+  optimization_guide::proto::PromptApiMetadata metadata;
+
+  // Fully overridden preset: predictable
+  auto* preset_predictable = metadata.add_sampling_presets();
+  preset_predictable->set_name("predictable");
+  preset_predictable->set_top_k(20);
+  preset_predictable->set_temperature(0.1f);
+
+  // Partial preset override: slightly-creative (overrides temperature only,
+  // top_k falls back to mode-specific default 72).
+  auto* preset_partial = metadata.add_sampling_presets();
+  preset_partial->set_name("slightly-creative");
+  preset_partial->set_temperature(0.5f);
+
+  *config.mutable_feature_metadata() =
+      optimization_guide::AnyWrapProto(metadata);
+
+  optimization_guide::FakeAdaptationAsset::Content content{.config = config};
+  auto custom_asset = std::make_unique<optimization_guide::FakeAdaptationAsset>(
+      std::move(content));
+  fake_broker_->UpdateModelAdaptation(*custom_asset);
+
+  // Test predictable (custom preset overrides both top_k and temperature)
+  test_sampling_mode(blink::mojom::AILanguageModelSamplingMode::kPredictable,
+                     ElementsAre("UfooEM", IsPromptWithParams(20, 0.1f)));
+
+  // Test slightly-creative (partial preset: custom temperature, default top_k
+  // fallback of 72)
+  test_sampling_mode(
+      blink::mojom::AILanguageModelSamplingMode::kSlightlyCreative,
+      ElementsAre("UfooEM", IsPromptWithParams(72, 0.5f)));
+
+  // Test balanced (unconfigured preset falls back to default C++ values)
+  test_sampling_mode(blink::mojom::AILanguageModelSamplingMode::kBalanced,
+                     ElementsAre("UfooEM", IsPromptWithParams(64, 1.0f)));
 }
 
 TEST_F(AILanguageModelTest, SamplingModeDefault) {

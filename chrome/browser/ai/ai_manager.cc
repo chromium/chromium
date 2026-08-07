@@ -54,6 +54,7 @@
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/feature_configs.pb.h"
+#include "components/optimization_guide/proto/features/prompt_api.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -690,6 +691,27 @@ uint32_t GetInputContextLimit(const OptionsPtr& options) {
   return blink::mojom::kWritingAssistanceMaxInputTokenSize;
 }
 
+std::string_view AILanguageModelSamplingModeToString(
+    blink::mojom::AILanguageModelSamplingMode sampling_mode) {
+  switch (sampling_mode) {
+    case blink::mojom::AILanguageModelSamplingMode::kMostPredictable:
+      return "most-predictable";
+    case blink::mojom::AILanguageModelSamplingMode::kPredictable:
+      return "predictable";
+    case blink::mojom::AILanguageModelSamplingMode::kSlightlyPredictable:
+      return "slightly-predictable";
+    case blink::mojom::AILanguageModelSamplingMode::kBalanced:
+      return "balanced";
+    case blink::mojom::AILanguageModelSamplingMode::kSlightlyCreative:
+      return "slightly-creative";
+    case blink::mojom::AILanguageModelSamplingMode::kCreative:
+      return "creative";
+    case blink::mojom::AILanguageModelSamplingMode::kMostCreative:
+      return "most-creative";
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 // Feature flag for enabling foundational models in the AI API, requires the
@@ -893,7 +915,7 @@ void AIManager::CreateLanguageModelInternal(
       std::move(options->sampling_params);
   auto params = on_device_model::mojom::SessionParams::New();
 
-  // TODO(crbug.com/502214118): Get values from model-specific configs.
+  // Get sampling mode params values from model metadata, or use fallbacks.
   if (options->sampling_mode.has_value()) {
     switch (options->sampling_mode.value()) {
       case blink::mojom::AILanguageModelSamplingMode::kMostPredictable:
@@ -904,9 +926,17 @@ void AIManager::CreateLanguageModelInternal(
         params->temperature = kPredictableTemperature;
         params->top_k = kPredictableTopK;
         break;
+      case blink::mojom::AILanguageModelSamplingMode::kSlightlyPredictable:
+        params->temperature = kSlightlyPredictableTemperature;
+        params->top_k = kSlightlyPredictableTopK;
+        break;
       case blink::mojom::AILanguageModelSamplingMode::kBalanced:
         params->temperature = kBalancedTemperature;
         params->top_k = kBalancedTopK;
+        break;
+      case blink::mojom::AILanguageModelSamplingMode::kSlightlyCreative:
+        params->temperature = kSlightlyCreativeTemperature;
+        params->top_k = kSlightlyCreativeTopK;
         break;
       case blink::mojom::AILanguageModelSamplingMode::kCreative:
         params->temperature = kCreativeTemperature;
@@ -916,14 +946,40 @@ void AIManager::CreateLanguageModelInternal(
         params->temperature = kMostCreativeTemperature;
         params->top_k = kMostCreativeTopK;
         break;
-      case blink::mojom::AILanguageModelSamplingMode::kSlightlyPredictable:
-        params->temperature = kSlightlyPredictableTemperature;
-        params->top_k = kSlightlyPredictableTopK;
-        break;
-      case blink::mojom::AILanguageModelSamplingMode::kSlightlyCreative:
-        params->temperature = kSlightlyCreativeTemperature;
-        params->top_k = kSlightlyCreativeTopK;
-        break;
+    }
+
+    std::string_view mode_str =
+        AILanguageModelSamplingModeToString(options->sampling_mode.value());
+    auto metadata = model_client->GetFeatureMetadata();
+    if (!metadata.has_value()) {
+      VLOG(1)
+          << "Manifest metadata missing when resolving sampling preset for: "
+          << mode_str;
+    } else {
+      auto parsed_metadata = AILanguageModel::ParseMetadata(metadata.value());
+      bool preset_found = false;
+      for (const auto& preset : parsed_metadata.sampling_presets()) {
+        if (preset.name() == mode_str) {
+          preset_found = true;
+          if (preset.has_temperature()) {
+            params->temperature = preset.temperature();
+          } else {
+            VLOG(1) << "Sampling preset '" << mode_str
+                    << "' missing temperature in manifest metadata.";
+          }
+          if (preset.has_top_k()) {
+            params->top_k = preset.top_k();
+          } else {
+            VLOG(1) << "Sampling preset '" << mode_str
+                    << "' missing top_k in manifest metadata.";
+          }
+          break;
+        }
+      }
+      if (!preset_found) {
+        VLOG(1) << "Manifest metadata missing sampling preset for: "
+                << mode_str;
+      }
     }
   } else if (sampling_params) {
     params->temperature = sampling_params->temperature;
