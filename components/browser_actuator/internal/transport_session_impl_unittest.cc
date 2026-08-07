@@ -278,5 +278,37 @@ TEST(TransportSessionImplTest, HandlerInstantiationFailed) {
       TransportSessionImpl::ProcessPayloadError::kHandlerInstantiationFailed);
 }
 
+TEST(TransportSessionImplTest, ProcessDownstreamMessageRoutesControlCommand) {
+  MockTransportChannel channel;
+  TransportHandlerFactoryRegistryImpl registry;
+  EXPECT_CALL(channel, GetHandlerFactoryRegistry())
+      .WillRepeatedly(testing::Return(&registry));
+
+  TransportSessionImpl session("test_session", channel.GetWeakPtr());
+
+  MockTransportHandlerFactory factory({PayloadType::kControl});
+  registry.RegisterFactory(&factory);
+
+  ControlCommand command;
+  command.mutable_close_session();
+  std::string serialized_command = command.SerializeAsString();
+
+  auto handler = std::make_unique<MockTransportHandler>();
+  MockTransportHandler* handler_ptr = handler.get();
+
+  EXPECT_CALL(factory, OnNewSession(&session))
+      .WillOnce(testing::Return(std::move(handler)));
+  EXPECT_CALL(*handler_ptr, OnMessage(serialized_command)).Times(1);
+
+  ActuatorDownstreamMessage message;
+  message.set_session_id("test_session");
+  message.set_sequence_number(1);
+  auto* typed = message.add_typed_payloads();
+  typed->set_payload_type(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+  typed->mutable_proto_payload()->set_value(serialized_command);
+
+  session.ProcessDownstreamMessage(message);
+}
+
 }  // namespace
 }  // namespace browser_actuator

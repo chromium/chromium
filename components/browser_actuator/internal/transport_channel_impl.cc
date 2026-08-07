@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/uuid.h"
+#include "components/browser_actuator/internal/control_transport_handler.h"
 #include "components/browser_actuator/internal/proto/transport_messages.pb.h"
 #include "components/browser_actuator/internal/transport/resume_body_connection_delegate.h"
 #include "components/browser_actuator/internal/transport/stream_connection_delegate.h"
@@ -24,6 +25,13 @@ TransportChannelImpl::TransportChannelImpl(
   session_registry_ = std::make_unique<TransportSessionRegistryImpl>(
       weak_ptr_factory_.GetWeakPtr());
   session_registry_->AddObserver(this);
+
+  control_handler_factory_ = std::make_unique<ControlTransportHandlerFactory>(
+      base::BindRepeating(&TransportChannelImpl::Disconnect,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(&TransportSessionRegistryImpl::DestroySession,
+                          session_registry_->GetWeakPtr()));
+  handler_registry_->RegisterFactory(control_handler_factory_.get());
 
   // The resume delegate carries no state: on every connection attempt it asks
   // the channel to rebuild the WatchSessionsRequest body from the current
@@ -49,8 +57,18 @@ TransportChannelImpl::~TransportChannelImpl() {
   if (session_registry_) {
     session_registry_->RemoveObserver(this);
   }
+  if (handler_registry_ && control_handler_factory_) {
+    handler_registry_->UnregisterFactory(control_handler_factory_.get());
+  }
   if (stream_client_) {
     stream_client_->RemoveObserver(this);
+  }
+}
+
+void TransportChannelImpl::Disconnect() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (stream_client_) {
+    stream_client_->Disconnect();
   }
 }
 

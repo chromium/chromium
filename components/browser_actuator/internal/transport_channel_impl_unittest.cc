@@ -305,21 +305,19 @@ TEST_F(TransportChannelImplTest, SessionDestructionMidLoop) {
   EXPECT_EQ(registry->GetSession("s1"), nullptr);
 }
 
-TEST_F(TransportChannelImplTest, RoutesControlCommandToCloseSession) {
+TEST_F(TransportChannelImplTest, ControlHandlerFactoryRegisteredByDefault) {
+  std::vector<TransportHandlerFactory*> factories =
+      channel_->GetHandlerFactoryRegistry()->GetFactories(
+          PayloadType::kControl);
+  ASSERT_EQ(factories.size(), 1u);
+  EXPECT_EQ(factories[0]->GetFactoryId(), FactoryId::kControl);
+}
+
+TEST_F(TransportChannelImplTest, ControlCommandCloseSessionDestroysSession) {
   TransportSessionRegistryImpl* registry =
       static_cast<TransportSessionRegistryImpl*>(
           channel_->GetSessionRegistry());
-  TransportSession* session = registry->GetOrCreateSession("s1");
-  ASSERT_NE(session, nullptr);
-
-  ControlTransportHandlerFactory factory(
-      base::DoNothing(),
-      base::BindRepeating(
-          [](TransportSessionRegistryImpl* r, std::string_view session_id) {
-            r->DestroySession(session_id);
-          },
-          registry));
-  channel_->GetHandlerFactoryRegistry()->RegisterFactory(&factory);
+  ASSERT_NE(registry->GetOrCreateSession("s1"), nullptr);
 
   ControlCommand command;
   command.mutable_close_session();
@@ -329,16 +327,13 @@ TEST_F(TransportChannelImplTest, RoutesControlCommandToCloseSession) {
       {{ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
         command.SerializeAsString()}}));
 
+  // The session was created, processed the CloseSession command, and was
+  // destroyed.
   EXPECT_EQ(registry->GetSession("s1"), nullptr);
 }
 
-TEST_F(TransportChannelImplTest, RoutesControlCommandToCloseChannel) {
-  ControlTransportHandlerFactory factory(
-      base::BindRepeating(
-          [](FakeMessageStreamClient* client) { client->Disconnect(); },
-          fake_client_.get()),
-      base::DoNothing());
-  channel_->GetHandlerFactoryRegistry()->RegisterFactory(&factory);
+TEST_F(TransportChannelImplTest, ControlCommandCloseChannelDisconnectsStream) {
+  EXPECT_FALSE(fake_client_->disconnected_called());
 
   ControlCommand command;
   command.mutable_close_channel();
@@ -348,6 +343,7 @@ TEST_F(TransportChannelImplTest, RoutesControlCommandToCloseChannel) {
       {{ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
         command.SerializeAsString()}}));
 
+  // The CloseChannel command triggers Disconnect on the stream client.
   EXPECT_TRUE(fake_client_->disconnected_called());
 }
 
@@ -358,7 +354,7 @@ TEST_F(TransportChannelImplTest, PassesSequenceNumberToSession) {
 
   fake_client_->Dispatch(SerializedDownstreamMessage(
       "s1", 2,
-      {{ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND, "control_data"}}));
+      {{ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED, "payload_data"}}));
 
   TransportSessionImpl* session = registry->GetSessionImpl("s1");
   ASSERT_NE(session, nullptr);

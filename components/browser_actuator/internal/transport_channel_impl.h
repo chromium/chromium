@@ -19,6 +19,7 @@
 
 namespace browser_actuator {
 
+class ControlTransportHandlerFactory;
 class StreamConnectionDelegate;
 class TransportHandlerFactoryRegistryImpl;
 class TransportSessionRegistryImpl;
@@ -81,6 +82,9 @@ class TransportChannelImpl : public TransportChannel,
   std::string BuildWatchSessionsRequestBodyForTesting();
 
  private:
+  // Closes the underlying stream connection.
+  void Disconnect();
+
   // Serializes a WatchSessionsRequest describing every session with a known
   // resume position, plus a fresh idempotency id. Handed to the resume
   // delegate as its body provider, so it runs once per connection attempt.
@@ -91,6 +95,9 @@ class TransportChannelImpl : public TransportChannel,
   // The registry holding factories that create the dynamic feature handlers.
   std::unique_ptr<TransportHandlerFactoryRegistryImpl> handler_registry_;
 
+  // Factory for control command handlers (CloseChannel, CloseSession).
+  std::unique_ptr<ControlTransportHandlerFactory> control_handler_factory_;
+
   // The registry to access and control the life cycles for sessions.
   // Declared before `stream_client_` and after `handler_registry_` to
   // coordinate the correct lifetimes and pointer management.
@@ -99,7 +106,7 @@ class TransportChannelImpl : public TransportChannel,
   // The underlying network message stream client.
   std::unique_ptr<MessageStreamClient> stream_client_;
 
-  base::WeakPtrFactory<TransportChannel> weak_ptr_factory_{this};
+  base::WeakPtrFactory<TransportChannelImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace browser_actuator
