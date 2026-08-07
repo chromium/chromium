@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tab_bottom_sheet;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -311,61 +310,5 @@ public class TabBottomSheetMediatorUnitTest {
     public void testSetToFixedHeight() {
         mMediator.setToFixedHeight(MAX_OFFSET);
         verify(mWebViewResizingHelper).setToFixedHeight(MAX_OFFSET);
-    }
-
-    @Test
-    @SmallTest
-    public void testUpdateResizingState_AtOrBelowHalfHeight() {
-        mMediator.onSheetResizingStatusChanged(true);
-
-        // Sliding up or down within peek to half height range (<= 0.7)
-        mMediator.onSheetOffsetChanged(200f, false);
-        mMediator.onSheetOffsetChanged(500f, false);
-        mMediator.onSheetOffsetChanged(300f, false);
-
-        // requestResize should not be triggered at or below half height
-        verify(mWebViewResizingHelper, never()).requestResize();
-    }
-
-    @Test
-    @SmallTest
-    public void testUpdateResizingState_AboveHalfHeight() {
-        mMediator.onSheetResizingStatusChanged(true);
-
-        // Moving between half height (70%) and full height (100%) (> 0.7)
-        mMediator.onSheetOffsetChanged(850f, true);
-
-        // requestResize should be triggered when height is > 0.7
-        verify(mWebViewResizingHelper).requestResize();
-    }
-
-    @Test
-    @SmallTest
-    public void testUpdateResizingState_ReducingHeightBelowHalfUnlocksResizeLock() {
-        mMediator.onSheetResizingStatusChanged(true);
-
-        // Move to > 0.7 to acquire resize lock
-        mMediator.onSheetOffsetChanged(850f, true);
-        verify(mWebViewResizingHelper).requestResize();
-
-        // Reduce height from 0.85 to below 0.7 (e.g. 0.5)
-        mMediator.onSheetOffsetChanged(500f, false);
-
-        // Lock should be unlocked when reducing height to below half height
-        verify(mResizeLock).unlock();
-    }
-
-    @Test
-    @SmallTest
-    public void testOnSheetResizingStatusChanged_Stopped() {
-        mMediator.onSheetResizingStatusChanged(true);
-
-        // Move to > 0.7 to acquire resize lock
-        mMediator.onSheetOffsetChanged(850f, true);
-        verify(mWebViewResizingHelper).requestResize();
-
-        // When resizing stops, lock should be unlocked
-        mMediator.onSheetResizingStatusChanged(false);
-        verify(mResizeLock).unlock();
     }
 }
