@@ -10,7 +10,7 @@
 use crate::message::MojomMessage;
 
 use super::endpoint_registry::InterfaceId;
-use super::router::MultiplexRouter;
+use super::multiplex_router::MultiplexRouter;
 
 /// This type is identical to a `MultiplexRouterHandle`, but passed into
 /// handlers so they can send responses and register new associated endpoints.

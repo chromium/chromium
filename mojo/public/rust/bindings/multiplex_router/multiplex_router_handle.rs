@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-//! This module defines the `MultiplexRouterHandle` type, which is held by
-//! `Remote`s, and `Receiver`s. It serves as the public API for
+//! This module defines the `MultiplexRouterHandle` type, which is held
+//! (indirectly) by `Remote`s and `Receiver`s. It serves as the public API for
 //! `MultiplexRouter`s. A router handle is simply a reference to the
 //! router, bundled together with that `Remote` or `Receiver`'s interface ID.
 
@@ -16,8 +16,8 @@ use system::message_pipe::MessageEndpoint;
 
 use crate::message::MojomMessage;
 
-pub(crate) use super::router::EndpointInfo;
-use super::router::{InterfaceId, MultiplexRouter};
+pub(crate) use super::multiplex_router::EndpointInfo;
+use super::multiplex_router::{InterfaceId, MultiplexRouter};
 
 /// A `MultiplexRouterHandle` is given out by a `MultiplexRouter` and can be
 /// used to send messages to that router's underlying endpoint.
