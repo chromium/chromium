@@ -973,31 +973,48 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
                                      "application/x-zip-compressed"};
   enterprise_connectors::test::EventReportValidator validator(client());
   validator.SetDoneClosure(run_loop.QuitClosure());
-  validator.ExpectSensitiveDataEventAndDangerousDeepScanningResult(
-      /*url*/ url.spec(),
-      /*tab_url*/ url.spec(),
-      /*source*/ "",
-      /*destination*/ "",
-      /*filename*/
+  chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent
+      dangerous_event;
+  dangerous_event.set_url(url.spec());
+  dangerous_event.set_tab_url(url.spec());
+  dangerous_event.set_file_name(
       connectors_machine_scope()
           ? (*download_items().begin())->GetTargetFilePath().AsUTF8Unsafe()
-          : "zipfile_two_archives.zip",
-      // sha256sum chrome/test/data/safe_browsing/download_protection/\
-      // zipfile_two_archives.zip |  tr '[:lower:]' '[:upper:]'
-      /*sha*/
-      "339C8FFDAE735C4F1846D0E6FF07FBD85CAEE6D96045AAEF5B30F3220836643C",
-      /*threat_type*/ "POTENTIALLY_UNWANTED",
-      /*trigger*/
-      enterprise_connectors::kFileDownloadDataTransferEventTrigger,
-      /*dlp_verdict*/ *dlp_result,
-      /*mimetypes*/ &zip_types,
-      /*size*/ is_obfuscated() ? 276 + kSingleChunkObfuscationOverhead : 276,
-      /*result*/
-      enterprise_connectors::EventResultToString(
-          enterprise_connectors::EventResult::WARNED),
-      /*username*/ kUserName,
-      /*profile_identifier*/ GetProfileIdentifier(),
-      /*scan_id*/ last_request().request_token());
+          : "zipfile_two_archives.zip");
+  dangerous_event.set_download_digest_sha256(
+      "339C8FFDAE735C4F1846D0E6FF07FBD85CAEE6D96045AAEF5B30F3220836643C");
+  dangerous_event.set_threat_type(
+      chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent::
+          POTENTIALLY_UNWANTED);
+  dangerous_event.set_trigger(chrome::cros::reporting::proto::FILE_DOWNLOAD);
+  dangerous_event.set_content_size(
+      is_obfuscated() ? 276 + kSingleChunkObfuscationOverhead : 276);
+  dangerous_event.set_event_result(
+      chrome::cros::reporting::proto::EventResult::EVENT_RESULT_WARNED);
+  dangerous_event.set_profile_user_name(kUserName);
+  dangerous_event.set_profile_identifier(GetProfileIdentifier());
+  dangerous_event.set_scan_id(last_request().request_token());
+
+  chrome::cros::reporting::proto::DlpSensitiveDataEvent dlp_event;
+  dlp_event.set_url(url.spec());
+  dlp_event.set_tab_url(url.spec());
+  dlp_event.set_file_name(
+      connectors_machine_scope()
+          ? (*download_items().begin())->GetTargetFilePath().AsUTF8Unsafe()
+          : "zipfile_two_archives.zip");
+  dlp_event.set_download_digest_sha_256(
+      "339C8FFDAE735C4F1846D0E6FF07FBD85CAEE6D96045AAEF5B30F3220836643C");
+  dlp_event.set_trigger(chrome::cros::reporting::proto::FILE_DOWNLOAD);
+  dlp_event.set_content_size(
+      is_obfuscated() ? 276 + kSingleChunkObfuscationOverhead : 276);
+  dlp_event.set_event_result(
+      chrome::cros::reporting::proto::EventResult::EVENT_RESULT_WARNED);
+  dlp_event.set_profile_user_name(kUserName);
+  dlp_event.set_profile_identifier(GetProfileIdentifier());
+  dlp_event.set_scan_id(last_request().request_token());
+
+  validator.ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
+      std::move(dangerous_event), std::move(dlp_event), &zip_types);
   WaitForDownloadToFinish();
 
   // The file should be blocked.

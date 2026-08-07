@@ -127,13 +127,6 @@ constexpr char kScanForDlp[] = R"(
 
 constexpr char kNoScan[] = R"({"service_provider": "google"})";
 
-const std::set<std::string>* ExeMimeTypes() {
-  static std::set<std::string> set = {"application/x-msdownload",
-                                      "application/x-ms-dos-executable",
-                                      "application/octet-stream"};
-  return &set;
-}
-
 constexpr char kScanId[] = "scan_id";
 
 std::string GetFileName(const std::string& full_path) {
@@ -145,6 +138,13 @@ std::string GetFileName(const std::string& full_path) {
 }
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+const std::set<std::string>* ExeMimeTypes() {
+  static std::set<std::string> set = {"application/x-msdownload",
+                                      "application/x-ms-dos-executable",
+                                      "application/octet-stream"};
+  return &set;
+}
+
 struct ForceSaveToCloudPrioritizationTestParams {
   std::vector<base::test::FeatureRef> enabled_features;
   std::vector<base::test::FeatureRef> disabled_features;
@@ -223,39 +223,72 @@ chrome::cros::reporting::proto::UnscannedFileEvent CreateUnscannedFileEvent(
 
 chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent
 CreateDangerousDownloadEvent(
+    const std::string& url,
+    const std::string& tab_url,
+    const std::string& source,
+    const std::string& destination,
+    const std::string& file_name,
+    const std::string& sha256,
+    chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent::
+        DangerousDownloadThreatType threat_type,
+    chrome::cros::reporting::proto::DataTransferEventTrigger trigger,
+    size_t content_size,
+    chrome::cros::reporting::proto::EventResult event_result,
+    const std::string& username,
+    const std::string& profile_identifier,
+    const std::string& scan_id,
+    bool include_referrer = true) {
+  chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent event;
+
+  event.set_url(url);
+  event.set_tab_url(tab_url);
+  event.set_source(source);
+  event.set_destination(destination);
+  event.set_download_digest_sha256(sha256);
+  event.set_content_type("application/octet-stream");
+  event.set_content_size(content_size);
+  event.set_scan_id(scan_id);
+  event.set_trigger(trigger);
+  event.set_clicked_through(false);
+
+  if (include_referrer) {
+    ::chrome::cros::reporting::proto::UrlInfo referrers;
+    referrers.set_ip("example.com");
+    referrers.set_url("https://example.com/download.exe");
+    *event.add_referrers() = referrers;
+  }
+
+  event.set_file_name(GetFileName(file_name));
+  event.set_profile_identifier(profile_identifier);
+  event.set_profile_user_name(username);
+  event.set_threat_type(threat_type);
+  event.set_event_result(event_result);
+
+  return event;
+}
+
+chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent
+CreateDangerousDownloadEvent(
     const std::string& profile_identifier,
     const std::string& user_name,
     const std::string& file_name,
     chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent::
         DangerousDownloadThreatType threat_type,
-    chrome::cros::reporting::proto::EventResult event_result) {
-  chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent event;
-
-  event.set_url("https://example.com/download.exe");
-  event.set_tab_url("https://example.com/");
-  event.set_source("");
-  event.set_destination("");
-  event.set_download_digest_sha256(
-      "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C");
-  event.set_content_type("application/octet-stream");
-  event.set_content_size(std::string("download contents").size());
-  event.set_scan_id(kScanId);
-  event.set_trigger(
-      chrome::cros::reporting::proto::DataTransferEventTrigger::FILE_DOWNLOAD);
-  event.set_clicked_through(false);
-
-  ::chrome::cros::reporting::proto::UrlInfo referrers;
-  referrers.set_ip("example.com");
-  referrers.set_url("https://example.com/download.exe");
-  *event.add_referrers() = referrers;
-
-  event.set_file_name(GetFileName(file_name));
-  event.set_profile_identifier(profile_identifier);
-  event.set_profile_user_name(user_name);
-  event.set_threat_type(threat_type);
-  event.set_event_result(event_result);
-
-  return event;
+    chrome::cros::reporting::proto::EventResult event_result,
+    bool include_referrer = true) {
+  return CreateDangerousDownloadEvent(
+      /*url=*/"https://example.com/download.exe",
+      /*tab_url=*/"https://example.com/",
+      /*source=*/"",
+      /*destination=*/"", file_name,
+      /*sha256=*/
+      "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
+      threat_type,
+      /*trigger=*/
+      chrome::cros::reporting::proto::DataTransferEventTrigger::FILE_DOWNLOAD,
+      /*content_size=*/std::string("download contents").size(), event_result,
+      user_name, profile_identifier,
+      /*scan_id=*/kScanId, include_referrer);
 }
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
@@ -295,6 +328,86 @@ CreateDlpSensitiveDataEventForForceSaveToCloud(
   event.set_destination(destination);
   event.set_profile_identifier(profile_identifier);
   event.set_profile_user_name(user_name);
+
+  return event;
+}
+
+chrome::cros::reporting::proto::DlpSensitiveDataEvent
+CreateDlpSensitiveDataEvent(
+    const std::string& url,
+    const std::string& tab_url,
+    const std::string& source,
+    const std::string& destination,
+    const std::string& file_name,
+    const std::string& sha256,
+    chrome::cros::reporting::proto::DataTransferEventTrigger trigger,
+    const enterprise_connectors::ContentAnalysisResponse::Result& dlp_result,
+    size_t content_size,
+    chrome::cros::reporting::proto::EventResult event_result,
+    const std::string& username,
+    const std::string& profile_identifier,
+    const std::string& scan_id,
+    bool include_referrer = true) {
+  chrome::cros::reporting::proto::DlpSensitiveDataEvent event;
+
+  event.set_url(url);
+  event.set_tab_url(tab_url);
+  event.set_source(source);
+  event.set_destination(destination);
+  event.set_download_digest_sha_256(sha256);
+  event.set_content_type("application/octet-stream");
+  event.set_content_size(content_size);
+  event.set_trigger(trigger);
+  event.set_clicked_through(false);
+  event.set_scan_id(scan_id);
+  event.set_event_result(event_result);
+
+  if (include_referrer) {
+    auto* referrers = event.add_referrers();
+    referrers->set_ip("example.com");
+    referrers->set_url("https://example.com/download.exe");
+  }
+
+  for (const auto& rule : dlp_result.triggered_rules()) {
+    auto* triggered_rule = event.add_triggered_rule_info();
+    int rule_id = 0;
+    if (base::StringToInt(rule.rule_id(), &rule_id)) {
+      triggered_rule->set_rule_id(rule_id);
+    }
+    triggered_rule->set_rule_name(rule.rule_name());
+
+    switch (rule.action()) {
+      case enterprise_connectors::TriggeredRule::REPORT_ONLY:
+        triggered_rule->set_action(
+            chrome::cros::reporting::proto::TriggeredRuleInfo::REPORT_ONLY);
+        break;
+      case enterprise_connectors::TriggeredRule::WARN:
+        triggered_rule->set_action(
+            chrome::cros::reporting::proto::TriggeredRuleInfo::WARN);
+        break;
+      case enterprise_connectors::TriggeredRule::BLOCK:
+        triggered_rule->set_action(
+            chrome::cros::reporting::proto::TriggeredRuleInfo::BLOCK);
+        break;
+      case enterprise_connectors::TriggeredRule::FORCE_SAVE_TO_CLOUD:
+        triggered_rule->set_action(chrome::cros::reporting::proto::
+                                       TriggeredRuleInfo::FORCE_SAVE_TO_CLOUD);
+        break;
+      case enterprise_connectors::TriggeredRule::KEEP_IN_MANAGED_CHROME:
+        triggered_rule->set_action(
+            chrome::cros::reporting::proto::TriggeredRuleInfo::
+                KEEP_IN_MANAGED_CHROME);
+        break;
+      case enterprise_connectors::TriggeredRule::ACTION_UNSPECIFIED:
+        triggered_rule->set_action(
+            chrome::cros::reporting::proto::TriggeredRuleInfo::ACTION_UNKNOWN);
+        break;
+    }
+  }
+
+  event.set_file_name(GetFileName(file_name));
+  event.set_profile_identifier(profile_identifier);
+  event.set_profile_user_name(username);
 
   return event;
 }
@@ -1203,6 +1316,7 @@ class DeepScanningReportingSourceTypeTest
 };
 
 // TODO(crbug.com/433865922): Disable this test because of flakiness.
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 TEST_P(DeepScanningReportingSourceTypeTest,
        DISABLED_ProcessesResponseCorrectly) {
   {
@@ -1254,29 +1368,52 @@ TEST_P(DeepScanningReportingSourceTypeTest,
     enterprise_connectors::test::EventReportValidator validator(client_.get());
     base::RunLoop validator_run_loop;
     validator.SetDoneClosure(validator_run_loop.QuitClosure());
-    validator.ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
-        /*url*/ "https://example.com/download.exe",
-        /*tab_url*/ "https://example.com/",
-        /*source*/ "",
-        /*destination*/ "",
-        /*filename*/ download_path_.AsUTF8Unsafe(),
-        // printf "download contents" | sha256sum |  tr '[:lower:]'
-        // '[:upper:]'
-        /*sha256*/
+
+    auto expected_dangerous_event = CreateDangerousDownloadEvent(
+        /*url=*/"https://example.com/download.exe",
+        /*tab_url=*/"https://example.com/",
+        /*source=*/"",
+        /*destination=*/"",
+        /*file_name=*/download_path_.AsUTF8Unsafe(),
+        /*sha256=*/
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
-        /*threat_type*/ "DANGEROUS",
-        /*trigger*/
-        enterprise_connectors::kFileDownloadDataTransferEventTrigger,
-        /*dlp_verdict*/ *dlp_result,
-        /*mimetypes*/ ExeMimeTypes(),
-        /*size*/ std::string("download contents").size(),
-        /*result*/
-        enterprise_connectors::EventResultToString(
-            enterprise_connectors::EventResult::WARNED),
-        /*username*/ kUserName,
-        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-        /*scan_id*/ kScanId,
-        /*content_transfer_method*/ std::nullopt);
+        /*threat_type=*/
+        chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent::
+            DANGEROUS,
+        /*trigger=*/
+        chrome::cros::reporting::proto::DataTransferEventTrigger::FILE_DOWNLOAD,
+        /*content_size=*/std::string("download contents").size(),
+        /*event_result=*/
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_WARNED,
+        /*username=*/kUserName,
+        /*profile_identifier=*/profile_->GetPath().AsUTF8Unsafe(),
+        /*scan_id=*/kScanId,
+        /*include_referrer=*/GetMetadataSourceType() ==
+            MetadataSourceType::kDownloadItem);
+
+    auto expected_dlp_event = CreateDlpSensitiveDataEvent(
+        /*url=*/"https://example.com/download.exe",
+        /*tab_url=*/"https://example.com/",
+        /*source=*/"",
+        /*destination=*/"",
+        /*file_name=*/download_path_.AsUTF8Unsafe(),
+        /*sha256=*/
+        "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
+        /*trigger=*/
+        chrome::cros::reporting::proto::DataTransferEventTrigger::FILE_DOWNLOAD,
+        /*dlp_result=*/*dlp_result,
+        /*content_size=*/std::string("download contents").size(),
+        /*event_result=*/
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_WARNED,
+        /*username=*/kUserName,
+        /*profile_identifier=*/profile_->GetPath().AsUTF8Unsafe(),
+        /*scan_id=*/kScanId,
+        /*include_referrer=*/GetMetadataSourceType() ==
+            MetadataSourceType::kDownloadItem);
+
+    validator.ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
+        std::move(expected_dangerous_event), std::move(expected_dlp_event),
+        ExeMimeTypes());
 
     request.Start();
 
@@ -1335,29 +1472,52 @@ TEST_P(DeepScanningReportingSourceTypeTest,
     enterprise_connectors::test::EventReportValidator validator(client_.get());
     base::RunLoop validator_run_loop;
     validator.SetDoneClosure(validator_run_loop.QuitClosure());
-    validator.ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
-        /*url*/ "https://example.com/download.exe",
-        /*tab_url*/ "https://example.com/",
-        /*source*/ "",
-        /*destination*/ "",
-        /*filename*/ download_path_.AsUTF8Unsafe(),
-        // printf "download contents" | sha256sum |  tr '[:lower:]'
-        // '[:upper:]'
-        /*sha256*/
+
+    auto expected_dangerous_event = CreateDangerousDownloadEvent(
+        /*url=*/"https://example.com/download.exe",
+        /*tab_url=*/"https://example.com/",
+        /*source=*/"",
+        /*destination=*/"",
+        /*file_name=*/download_path_.AsUTF8Unsafe(),
+        /*sha256=*/
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
-        /*threat_type*/ "POTENTIALLY_UNWANTED",
-        /*trigger*/
-        enterprise_connectors::kFileDownloadDataTransferEventTrigger,
-        /*dlp_verdict*/ *dlp_result,
-        /*mimetypes*/ ExeMimeTypes(),
-        /*size*/ std::string("download contents").size(),
-        /*result*/
-        enterprise_connectors::EventResultToString(
-            enterprise_connectors::EventResult::WARNED),
-        /*username*/ kUserName,
-        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-        /*scan_id*/ kScanId,
-        /*content_transfer_method*/ std::nullopt);
+        /*threat_type=*/
+        chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent::
+            POTENTIALLY_UNWANTED,
+        /*trigger=*/
+        chrome::cros::reporting::proto::DataTransferEventTrigger::FILE_DOWNLOAD,
+        /*content_size=*/std::string("download contents").size(),
+        /*event_result=*/
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_WARNED,
+        /*username=*/kUserName,
+        /*profile_identifier=*/profile_->GetPath().AsUTF8Unsafe(),
+        /*scan_id=*/kScanId,
+        /*include_referrer=*/GetMetadataSourceType() ==
+            MetadataSourceType::kDownloadItem);
+
+    auto expected_dlp_event = CreateDlpSensitiveDataEvent(
+        /*url=*/"https://example.com/download.exe",
+        /*tab_url=*/"https://example.com/",
+        /*source=*/"",
+        /*destination=*/"",
+        /*file_name=*/download_path_.AsUTF8Unsafe(),
+        /*sha256=*/
+        "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
+        /*trigger=*/
+        chrome::cros::reporting::proto::DataTransferEventTrigger::FILE_DOWNLOAD,
+        /*dlp_result=*/*dlp_result,
+        /*content_size=*/std::string("download contents").size(),
+        /*event_result=*/
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_WARNED,
+        /*username=*/kUserName,
+        /*profile_identifier=*/profile_->GetPath().AsUTF8Unsafe(),
+        /*scan_id=*/kScanId,
+        /*include_referrer=*/GetMetadataSourceType() ==
+            MetadataSourceType::kDownloadItem);
+
+    validator.ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
+        std::move(expected_dangerous_event), std::move(expected_dlp_event),
+        ExeMimeTypes());
 
     request.Start();
 
@@ -1408,27 +1568,28 @@ TEST_P(DeepScanningReportingSourceTypeTest,
     enterprise_connectors::test::EventReportValidator validator(client_.get());
     base::RunLoop validator_run_loop;
     validator.SetDoneClosure(validator_run_loop.QuitClosure());
-    validator.ExpectSensitiveDataEvent(
-        /*url*/ "https://example.com/download.exe",
-        /*tab_url*/ "https://example.com/",
-        /*source*/ "",
-        /*destination*/ "",
-        /*filename*/ download_path_.AsUTF8Unsafe(),
-        // printf "download contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
-        /*sha256*/
+
+    auto expected_dlp_event = CreateDlpSensitiveDataEvent(
+        /*url=*/"https://example.com/download.exe",
+        /*tab_url=*/"https://example.com/",
+        /*source=*/"",
+        /*destination=*/"",
+        /*file_name=*/download_path_.AsUTF8Unsafe(),
+        /*sha256=*/
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
-        /*trigger*/
-        enterprise_connectors::kFileDownloadDataTransferEventTrigger,
-        /*dlp_verdict*/ *dlp_result,
-        /*mimetypes*/ ExeMimeTypes(),
-        /*size*/ std::string("download contents").size(),
-        enterprise_connectors::EventResultToString(
-            enterprise_connectors::EventResult::BLOCKED),
-        /*username*/ kUserName,
-        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-        /*scan_id*/ kScanId,
-        /*content_transfer_method*/ std::nullopt,
-        /*user_justification*/ std::nullopt);
+        /*trigger=*/
+        chrome::cros::reporting::proto::DataTransferEventTrigger::FILE_DOWNLOAD,
+        /*dlp_result=*/*dlp_result,
+        /*content_size=*/std::string("download contents").size(),
+        /*event_result=*/
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BLOCKED,
+        /*username=*/kUserName,
+        /*profile_identifier=*/profile_->GetPath().AsUTF8Unsafe(),
+        /*scan_id=*/kScanId,
+        /*include_referrer=*/GetMetadataSourceType() ==
+            MetadataSourceType::kDownloadItem);
+
+    validator.ExpectSensitiveDataEvent(std::move(expected_dlp_event));
 
     request.Start();
 
@@ -1479,27 +1640,28 @@ TEST_P(DeepScanningReportingSourceTypeTest,
     enterprise_connectors::test::EventReportValidator validator(client_.get());
     base::RunLoop validator_run_loop;
     validator.SetDoneClosure(validator_run_loop.QuitClosure());
-    validator.ExpectSensitiveDataEvent(
-        /*url*/ "https://example.com/download.exe",
-        /*tab_url*/ "https://example.com/",
-        /*source*/ "",
-        /*destination*/ "",
-        /*filename*/ download_path_.AsUTF8Unsafe(),
-        // printf "download contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
-        /*sha256*/
+
+    auto expected_dlp_event = CreateDlpSensitiveDataEvent(
+        /*url=*/"https://example.com/download.exe",
+        /*tab_url=*/"https://example.com/",
+        /*source=*/"",
+        /*destination=*/"",
+        /*file_name=*/download_path_.AsUTF8Unsafe(),
+        /*sha256=*/
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
-        /*trigger*/
-        enterprise_connectors::kFileDownloadDataTransferEventTrigger,
-        /*dlp_verdict*/ *dlp_result,
-        /*mimetypes*/ ExeMimeTypes(),
-        /*size*/ std::string("download contents").size(),
-        enterprise_connectors::EventResultToString(
-            enterprise_connectors::EventResult::WARNED),
-        /*username*/ kUserName,
-        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-        /*scan_id*/ kScanId,
-        /*content_transfer_method*/ std::nullopt,
-        /*user_justification*/ std::nullopt);
+        /*trigger=*/
+        chrome::cros::reporting::proto::DataTransferEventTrigger::FILE_DOWNLOAD,
+        /*dlp_result=*/*dlp_result,
+        /*content_size=*/std::string("download contents").size(),
+        /*event_result=*/
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_WARNED,
+        /*username=*/kUserName,
+        /*profile_identifier=*/profile_->GetPath().AsUTF8Unsafe(),
+        /*scan_id=*/kScanId,
+        /*include_referrer=*/GetMetadataSourceType() ==
+            MetadataSourceType::kDownloadItem);
+
+    validator.ExpectSensitiveDataEvent(std::move(expected_dlp_event));
 
     request.Start();
 
@@ -1554,27 +1716,28 @@ TEST_P(DeepScanningReportingSourceTypeTest,
     enterprise_connectors::test::EventReportValidator validator(client_.get());
     base::RunLoop validator_run_loop;
     validator.SetDoneClosure(validator_run_loop.QuitClosure());
-    validator.ExpectSensitiveDataEvent(
-        /*url*/ "https://example.com/download.exe",
-        /*tab_url*/ "https://example.com/",
-        /*source*/ "",
-        /*destination*/ "",
-        /*filename*/ download_path_.AsUTF8Unsafe(),
-        // printf "download contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
-        /*sha256*/
+
+    auto expected_dlp_event = CreateDlpSensitiveDataEvent(
+        /*url=*/"https://example.com/download.exe",
+        /*tab_url=*/"https://example.com/",
+        /*source=*/"",
+        /*destination=*/"",
+        /*file_name=*/download_path_.AsUTF8Unsafe(),
+        /*sha256=*/
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
-        /*trigger*/
-        enterprise_connectors::kFileDownloadDataTransferEventTrigger,
-        /*dlp_verdict*/ *dlp_result,
-        /*mimetypes*/ ExeMimeTypes(),
-        /*size*/ std::string("download contents").size(),
-        enterprise_connectors::EventResultToString(
-            enterprise_connectors::EventResult::BLOCKED),
-        /*username*/ kUserName,
-        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-        /*scan_id*/ kScanId,
-        /*content_transfer_method*/ std::nullopt,
-        /*user_justification*/ std::nullopt);
+        /*trigger=*/
+        chrome::cros::reporting::proto::DataTransferEventTrigger::FILE_DOWNLOAD,
+        /*dlp_result=*/*dlp_result,
+        /*content_size=*/std::string("download contents").size(),
+        /*event_result=*/
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BLOCKED,
+        /*username=*/kUserName,
+        /*profile_identifier=*/profile_->GetPath().AsUTF8Unsafe(),
+        /*scan_id=*/kScanId,
+        /*include_referrer=*/GetMetadataSourceType() ==
+            MetadataSourceType::kDownloadItem);
+
+    validator.ExpectSensitiveDataEvent(std::move(expected_dlp_event));
 
     request.Start();
 
@@ -1606,9 +1769,9 @@ TEST_P(DeepScanningReportingSourceTypeTest,
     enterprise_connectors::ContentAnalysisResponse response;
     response.set_request_token(kScanId);
 
-    auto* malware_result = response.add_results();
-    malware_result->set_tag("dlp");
-    malware_result->set_status(
+    auto* dlp_result = response.add_results();
+    dlp_result->set_tag("dlp");
+    dlp_result->set_status(
         enterprise_connectors::ContentAnalysisResponse::Result::FAILURE);
 
     download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
@@ -1621,27 +1784,23 @@ TEST_P(DeepScanningReportingSourceTypeTest,
     enterprise_connectors::test::EventReportValidator validator(client_.get());
     base::RunLoop validator_run_loop;
     validator.SetDoneClosure(validator_run_loop.QuitClosure());
-    validator.ExpectUnscannedFileEvent(
-        /*url*/ "https://example.com/download.exe",
-        /*tab_url*/ "https://example.com/",
-        /*source*/ "",
-        /*destination*/ "",
-        /*filename*/ download_path_.AsUTF8Unsafe(),
-        // printf "download contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
-        /*sha256*/
+
+    auto expected_unscanned_event = CreateUnscannedFileEvent(
+        /*profile_identifier=*/profile_->GetPath().AsUTF8Unsafe(),
+        /*user_name=*/kUserName,
+        /*file_name=*/download_path_.AsUTF8Unsafe(),
+        /*sha256=*/
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
-        /*trigger*/
-        enterprise_connectors::kFileDownloadDataTransferEventTrigger,
-        /*scan_id*/ kScanId,
-        /*reason*/ "DLP_SCAN_FAILED",
-        /*mimetypes*/ ExeMimeTypes(),
-        /*size*/ std::string("download contents").size(),
-        /*result*/
-        enterprise_connectors::EventResultToString(
-            enterprise_connectors::EventResult::ALLOWED),
-        /*username*/ kUserName,
-        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-        /*content_transfer_method*/ std::nullopt);
+        /*content_type=*/"application/octet-stream",
+        /*content_size=*/std::string("download contents").size(),
+        /*reason=*/
+        chrome::cros::reporting::proto::UnscannedFileEvent::DLP_SCAN_FAILED,
+        /*event_result=*/
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_ALLOWED,
+        /*include_referrer=*/GetMetadataSourceType() ==
+            MetadataSourceType::kDownloadItem);
+
+    validator.ExpectUnscannedFileEvent(std::move(expected_unscanned_event));
 
     request.Start();
 
@@ -1688,27 +1847,23 @@ TEST_P(DeepScanningReportingSourceTypeTest,
     enterprise_connectors::test::EventReportValidator validator(client_.get());
     base::RunLoop validator_run_loop;
     validator.SetDoneClosure(validator_run_loop.QuitClosure());
-    validator.ExpectUnscannedFileEvent(
-        /*url*/ "https://example.com/download.exe",
-        /*tab_url*/ "https://example.com/",
-        /*source*/ "",
-        /*destination*/ "",
-        /*filename*/ download_path_.AsUTF8Unsafe(),
-        // printf "download contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
-        /*sha256*/
+
+    auto expected_unscanned_event = CreateUnscannedFileEvent(
+        /*profile_identifier=*/profile_->GetPath().AsUTF8Unsafe(),
+        /*user_name=*/kUserName,
+        /*file_name=*/download_path_.AsUTF8Unsafe(),
+        /*sha256=*/
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
-        /*trigger*/
-        enterprise_connectors::kFileDownloadDataTransferEventTrigger,
-        /*scan_id*/ kScanId,
-        /*reason*/ "MALWARE_SCAN_FAILED",
-        /*mimetypes*/ ExeMimeTypes(),
-        /*size*/ std::string("download contents").size(),
-        /*result*/
-        enterprise_connectors::EventResultToString(
-            enterprise_connectors::EventResult::ALLOWED),
-        /*username*/ kUserName,
-        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-        /*content_transfer_method*/ std::nullopt);
+        /*content_type=*/"application/octet-stream",
+        /*content_size=*/std::string("download contents").size(),
+        /*reason=*/
+        chrome::cros::reporting::proto::UnscannedFileEvent::MALWARE_SCAN_FAILED,
+        /*event_result=*/
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_ALLOWED,
+        /*include_referrer=*/GetMetadataSourceType() ==
+            MetadataSourceType::kDownloadItem);
+
+    validator.ExpectUnscannedFileEvent(std::move(expected_unscanned_event));
 
     request.Start();
 
@@ -1765,31 +1920,27 @@ TEST_P(DeepScanningReportingSourceTypeTest,
     enterprise_connectors::test::EventReportValidator validator(client_.get());
     base::RunLoop validator_run_loop;
     validator.SetDoneClosure(validator_run_loop.QuitClosure());
-    validator.ExpectUnscannedFileEvent(
-        /*url*/ "https://example.com/download.exe",
-        /*tab_url*/ "https://example.com/",
-        /*source*/ "",
-        /*destination*/ "",
-        /*filename*/ download_path_.AsUTF8Unsafe(),
-        // printf "download contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
-        /*sha256*/
+
+    auto expected_result =
+        GetMetadataSourceType() == MetadataSourceType::kDownloadItem
+            ? chrome::cros::reporting::proto::EventResult::EVENT_RESULT_WARNED
+            : chrome::cros::reporting::proto::EventResult::EVENT_RESULT_ALLOWED;
+
+    auto expected_unscanned_event = CreateUnscannedFileEvent(
+        /*profile_identifier=*/profile_->GetPath().AsUTF8Unsafe(),
+        /*user_name=*/kUserName,
+        /*file_name=*/download_path_.AsUTF8Unsafe(),
+        /*sha256=*/
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
-        /*trigger*/
-        enterprise_connectors::kFileDownloadDataTransferEventTrigger,
-        /*scan_id*/ kScanId,
-        /*reason*/ "MALWARE_SCAN_FAILED",
-        /*mimetypes*/ ExeMimeTypes(),
-        /*size*/ std::string("download contents").size(),
-        /*result*/
-        enterprise_connectors::EventResultToString(
-            GetMetadataSourceType() == MetadataSourceType::kDownloadItem
-                ? enterprise_connectors::EventResult::WARNED
-                : enterprise_connectors::EventResult::
-                      ALLOWED),  // for fsa item scans, the pre-scan result is
-                                 // always ALLOW
-        /*username*/ kUserName,
-        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-        /*content_transfer_reason*/ std::nullopt);
+        /*content_type=*/"application/octet-stream",
+        /*content_size=*/std::string("download contents").size(),
+        /*reason=*/
+        chrome::cros::reporting::proto::UnscannedFileEvent::MALWARE_SCAN_FAILED,
+        /*event_result=*/expected_result,
+        /*include_referrer=*/GetMetadataSourceType() ==
+            MetadataSourceType::kDownloadItem);
+
+    validator.ExpectUnscannedFileEvent(std::move(expected_unscanned_event));
 
     request.Start();
 
@@ -1800,7 +1951,6 @@ TEST_P(DeepScanningReportingSourceTypeTest,
   }
 }
 
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 TEST_F(DeepScanningReportingTest, ReportForceSaveToOneDrive) {
   base::RunLoop run_loop;
   DeepScanningRequest request(

@@ -6,6 +6,7 @@
 
 #include "base/containers/span.h"
 #include "base/run_loop.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -86,11 +87,6 @@ constexpr char16_t kUserJustification[] = u"User justification";
 scoped_refptr<base::RefCountedMemory> CreateData() {
   return base::MakeRefCounted<base::RefCountedStaticMemory>(
       base::byte_span_from_cstring(kTestData));
-}
-
-const std::set<std::string>* PrintMimeTypes() {
-  static std::set<std::string> set = {""};
-  return &set;
 }
 
 ContentAnalysisResponse::Result CreateResult(
@@ -494,24 +490,29 @@ TEST_P(PrintContentAnalysisUtilsTest,
   base::RunLoop validator_warn_run_loop;
   enterprise_connectors::test::EventReportValidator validator(client_.get());
   validator.SetDoneClosure(validator_warn_run_loop.QuitClosure());
-  validator.ExpectSensitiveDataEventWarnThenBypass(
-      /*url*/ "",
-      /*tab_url*/ "",
-      /*source*/ "",
-      /*destination*/ kPrinterName,
-      /*filename*/ "New Tab",
-      /*sha*/ "",
-      /*trigger*/
-      enterprise_connectors::kPagePrintDataTransferEventTrigger,
-      /*dlp_verdict*/
-      CreateResult(ContentAnalysisResponse::Result::TriggeredRule::WARN),
-      /*mimetype*/ PrintMimeTypes(),
-      /*size*/ std::nullopt,
-      /*username*/ kUserName,
-      /*profile_identifier*/ profile()->GetPath().AsUTF8Unsafe(),
-      /*scan_id*/ kScanId,
-      /*content_transfer_method*/ std::nullopt,
-      /*user_justifications*/ {std::nullopt, kUserJustification});
+  chrome::cros::reporting::proto::DlpSensitiveDataEvent event_bypass;
+  event_bypass.set_destination(kPrinterName);
+  event_bypass.set_file_name("New Tab");
+  event_bypass.set_trigger(chrome::cros::reporting::proto::PAGE_PRINT);
+  event_bypass.set_event_result(
+      chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BYPASSED);
+  event_bypass.set_profile_user_name(kUserName);
+  event_bypass.set_profile_identifier(profile()->GetPath().AsUTF8Unsafe());
+  event_bypass.set_scan_id(kScanId);
+  event_bypass.set_user_justification(base::UTF16ToUTF8(kUserJustification));
+
+  chrome::cros::reporting::proto::DlpSensitiveDataEvent event_warn;
+  event_warn.set_destination(kPrinterName);
+  event_warn.set_file_name("New Tab");
+  event_warn.set_trigger(chrome::cros::reporting::proto::PAGE_PRINT);
+  event_warn.set_event_result(
+      chrome::cros::reporting::proto::EventResult::EVENT_RESULT_WARNED);
+  event_warn.set_profile_user_name(kUserName);
+  event_warn.set_profile_identifier(profile()->GetPath().AsUTF8Unsafe());
+  event_warn.set_scan_id(kScanId);
+
+  validator.ExpectSensitiveDataEventWarnThenBypass(std::move(event_warn),
+                                                   std::move(event_bypass));
 
   auto data = CreateData();
   base::RunLoop run_loop;

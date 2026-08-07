@@ -55,24 +55,6 @@ class EventReportValidator : public EventReportValidatorBase {
   explicit EventReportValidator(policy::MockCloudPolicyClient* client);
   ~EventReportValidator();
 
-  void ExpectSensitiveDataEvent(
-      const std::string& expected_url,
-      const std::string& expected_tab_url,
-      const std::string& expected_source,
-      const std::string& expected_destination,
-      const std::string& expected_filename,
-      const std::string& expected_sha256,
-      const std::string& expected_trigger,
-      const ContentAnalysisResponse::Result& expected_dlp_verdict,
-      const std::set<std::string>* expected_mimetypes,
-      std::optional<int64_t> expected_content_size,
-      const std::string& expected_result,
-      const std::string& expected_profile_username,
-      const std::string& expected_profile_identifier,
-      const std::string& expected_scan_id,
-      const std::optional<std::string>& expected_content_transfer_method,
-      const std::optional<std::u16string>& expected_user_justification);
-
   void ExpectSensitiveDataEvents(
       const std::vector<chrome::cros::reporting::proto::DlpSensitiveDataEvent>
           expected_sensitive_data_events,
@@ -82,22 +64,9 @@ class EventReportValidator : public EventReportValidatorBase {
       const std::vector<std::string>& expected_scan_ids);
 
   void ExpectSensitiveDataEventWarnThenBypass(
-      const std::string& expected_url,
-      const std::string& expected_tab_url,
-      const std::string& expected_source,
-      const std::string& expected_destination,
-      const std::string& expected_filename,
-      const std::string& expected_sha256,
-      const std::string& expected_trigger,
-      const ContentAnalysisResponse::Result& expected_dlp_verdict,
-      const std::set<std::string>* expected_mimetypes,
-      std::optional<int64_t> expected_content_size,
-      const std::string& expected_profile_username,
-      const std::string& expected_profile_identifier,
-      const std::string& expected_scan_id,
-      const std::optional<std::string>& expected_content_transfer_method,
-      const std::vector<std::optional<std::u16string>>&
-          expected_user_justifications);
+      chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_warn_event,
+      chrome::cros::reporting::proto::DlpSensitiveDataEvent
+          expected_bypass_event);
 
   void ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
       chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent
@@ -106,61 +75,9 @@ class EventReportValidator : public EventReportValidatorBase {
           expected_sensitive_data_event,
       const std::set<std::string>* expected_mimetypes);
 
-  void ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
-      const std::string& expected_url,
-      const std::string& expected_tab_url,
-      const std::string& expected_source,
-      const std::string& expected_destination,
-      const std::string& expected_filename,
-      const std::string& expected_sha256,
-      const std::string& expected_threat_type,
-      const std::string& expected_trigger,
-      const ContentAnalysisResponse::Result& expected_dlp_verdict,
-      const std::set<std::string>* expected_mimetypes,
-      int64_t expected_content_size,
-      const std::string& expected_result,
-      const std::string& expected_profile_username,
-      const std::string& expected_profile_identifier,
-      const std::string& expected_scan_id,
-      const std::optional<std::string>& expected_content_transfer_method);
-
-  void ExpectSensitiveDataEventAndDangerousDeepScanningResult(
-      const std::string& expected_url,
-      const std::string& expected_tab_url,
-      const std::string& expected_source,
-      const std::string& expected_destination,
-      const std::string& expected_filename,
-      const std::string& expected_sha256,
-      const std::string& expected_threat_type,
-      const std::string& expected_trigger,
-      const ContentAnalysisResponse::Result& expected_dlp_verdict,
-      const std::set<std::string>* expected_mimetypes,
-      int64_t expected_content_size,
-      const std::string& expected_result,
-      const std::string& expected_profile_username,
-      const std::string& expected_profile_identifier,
-      const std::string& expected_scan_id);
-
   void ExpectUnscannedFileEvent(
       chrome::cros::reporting::proto::UnscannedFileEvent
           expected_unscanned_file_event);
-
-  void ExpectUnscannedFileEvent(
-      const std::string& expected_url,
-      const std::string& expected_tab_url,
-      const std::string& expected_source,
-      const std::string& expected_destination,
-      const std::string& expected_filename,
-      const std::string& expected_sha256,
-      const std::string& expected_trigger,
-      const std::string& expected_scan_id,
-      const std::string& expected_reason,
-      const std::set<std::string>* expected_mimetypes,
-      std::optional<int64_t> expected_content_size,
-      const std::string& expected_result,
-      const std::string& expected_profile_username,
-      const std::string& expected_profile_identifier,
-      const std::optional<std::string>& expected_content_transfer_method);
 
   void ExpectUnscannedFileEvents(
       chrome::cros::reporting::proto::UnscannedFileEvent
@@ -181,20 +98,6 @@ class EventReportValidator : public EventReportValidatorBase {
   void ExpectFrameUrlChain(const std::vector<std::string>& frame_urls);
 
  private:
-  void ValidateReport(const base::DictValue* report);
-  void ValidateFederatedOrigin(const base::DictValue* value);
-  void ValidateIdentities(const base::DictValue* value);
-  void ValidateMimeType(const base::DictValue* value);
-  void ValidateDlpVerdict(const base::DictValue* value,
-                          const ContentAnalysisResponse::Result& result);
-  void ValidateDlpRule(
-      const base::DictValue* value,
-      const ContentAnalysisResponse::Result::TriggeredRule& expected_rule);
-  void ValidateFilenameMappedAttributes(const base::DictValue* value);
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  void ValidateDataMaskingAttributes(const base::DictValue* event);
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-  void ValidateFrameUrlChain(const base::DictValue* value);
 
   std::string event_key_;
   std::optional<std::string> url_;

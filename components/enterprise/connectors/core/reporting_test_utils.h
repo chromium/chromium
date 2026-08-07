@@ -65,26 +65,6 @@ class EventReportValidatorBase {
   // Closure to run once all expected events are validated.
   void SetDoneClosure(base::RepeatingClosure closure);
 
- protected:
-  void ValidateField(const base::DictValue* value,
-                     const std::string& field_key,
-                     const std::optional<std::string>& expected_value);
-  void ValidateField(const base::DictValue* value,
-                     const std::string& field_key,
-                     const std::optional<std::u16string>& expected_value);
-  void ValidateField(const base::DictValue* value,
-                     const std::string& field_key,
-                     const std::optional<int>& expected_value);
-  void ValidateField(const base::DictValue* value,
-                     const std::string& field_key,
-                     int expected_value);
-  void ValidateField(const base::DictValue* value,
-                     const std::string& field_key,
-                     bool expected_value);
-  void ValidateField(const base::DictValue* value,
-                     const std::string& field_key,
-                     int64_t expected_value);
-
   raw_ptr<policy::MockCloudPolicyClient> client_;
   base::RepeatingClosure done_closure_;
 };
