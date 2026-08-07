@@ -104,7 +104,6 @@ public class SigninManagerIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/540830416")
     public void testUpdateAccountListOneAccountsRegisteredAndNoSignedInUser() {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
 
@@ -119,7 +118,6 @@ public class SigninManagerIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/540830416")
     public void testUpdateAccountListSingleAccountThenAddOne() {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
 
@@ -145,7 +143,6 @@ public class SigninManagerIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/540830416")
     public void testAccountListNotUpdatedWhenFetchFailsAndListIsEmpty() {
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         ThreadUtils.runOnUiThreadBlocking(
@@ -174,7 +171,6 @@ public class SigninManagerIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/540830416")
     public void testUpdateAccountListTwoAccountsThenRemoveSignedInOne() {
         // Add accounts.
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
@@ -202,7 +198,7 @@ public class SigninManagerIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/540830416")
+    @DisabledTest(message = "crbug.com/538021346")
     public void testUpdateAccountListTwoAccountsThenRemoveNonSignedInOne() {
         // Add accounts.
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
@@ -229,7 +225,6 @@ public class SigninManagerIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/540830416")
     public void testUpdateAccountListTwoAccountsThenRemoveAll() {
         // Add accounts.
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
@@ -258,7 +253,6 @@ public class SigninManagerIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/540830416")
     public void testUpdateAccountListTwoAccountsThenSignOut() {
         // Add accounts.
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
@@ -286,7 +280,6 @@ public class SigninManagerIntegrationTest {
     @Test
     @MediumTest
     @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/41486307")
-    @DisabledTest(message = "crbug.com/540830416")
     public void testUpdateAccountListTwoAccountsThenRemoveAllSignOut() {
         // Add accounts.
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
@@ -317,7 +310,6 @@ public class SigninManagerIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/540830416")
     public void testPrimaryAccountRemoval_signsOut() {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         SigninTestUtil.signin(TestAccounts.ACCOUNT1);
@@ -365,7 +357,6 @@ public class SigninManagerIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/540830416")
     public void testPrimaryAccountRenaming_updatesLegacyPrimaryAccountEmail() {
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
