@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_bar.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window_deleter.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
@@ -281,23 +282,8 @@ class Browser : public TabStripModelObserver,
 
   // Constructors, Creation, Showing //////////////////////////////////////////
 
-  // Creates a browser instance with the provided params. Returns an unowned
-  // pointer to the created browser.
-  // Crashes if the requested browser creation is not allowed.
-  // For example, browser creation will not be allowed for profiles that
-  // disallow browsing (like sign-in profile on Chrome OS).
-  //
-  // Unless |params->window| is specified, a new BrowserWindow will be created
-  // for the browser - the created BrowserWindow will take the ownership of the
-  // created Browser instance.
-  //
-  // If |params.window| is set, the caller is expected to take the ownership
-  // of the created Browser instance.
-  static Browser* Create(const CreateParams& params);
-
   // WARNING: Use of this is DEPRECATED and exists only to support pre-existing
-  // browser unittests. Similar to Create() above, however the created browser
-  // is owned by the caller.
+  // browser unittests.
   // TODO(crbug.com/417766643): Remove this once all use of Browser in unittests
   // has been eliminated.
   static std::unique_ptr<Browser> DeprecatedCreateOwnedForTesting(
@@ -421,6 +407,8 @@ class Browser : public TabStripModelObserver,
   friend class BrowserWebContentsDelegate;
   friend class ExclusiveAccessTest;
   friend class FullscreenControllerInteractiveTest;
+  friend BrowserWindowInterface* CreateBrowserWindow(
+      BrowserWindowCreateParams create_params);
   FRIEND_TEST_ALL_PREFIXES(AppModeTest, EnableAppModeTest);
   FRIEND_TEST_ALL_PREFIXES(BrowserCloseTest, LastIncognito);
   FRIEND_TEST_ALL_PREFIXES(BrowserCloseTest, LastRegular);
@@ -444,6 +432,20 @@ class Browser : public TabStripModelObserver,
     // Result of the tab strip not having any significant tabs.
     kEmpty
   };
+
+  // Creates a browser instance with the provided params. Returns an unowned
+  // pointer to the created browser.
+  // Crashes if the requested browser creation is not allowed.
+  // For example, browser creation will not be allowed for profiles that
+  // disallow browsing (like sign-in profile on Chrome OS).
+  //
+  // Unless |params->window| is specified, a new BrowserWindow will be created
+  // for the browser - the created BrowserWindow will take the ownership of the
+  // created Browser instance.
+  //
+  // If |params.window| is set, the caller is expected to take the ownership
+  // of the created Browser instance.
+  static Browser* Create(const CreateParams& params);
 
   explicit Browser(const CreateParams& params);
 
