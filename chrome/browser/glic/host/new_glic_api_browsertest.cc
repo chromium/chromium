@@ -62,6 +62,7 @@
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
@@ -360,6 +361,18 @@ class NewGlicApiTest : public GlicApiBrowserTest,
         can_resize ? std::string("CanResize") : std::string("CannotResize"));
   }
 #endif
+
+  int GetPopupCount() {
+    int popup_count = 0;
+    ProfileBrowserCollection::GetForProfile(GetProfile())
+        ->ForEach([&popup_count](BrowserWindowInterface* browser) {
+          if (browser->GetType() == BrowserWindowInterface::TYPE_POPUP) {
+            popup_count++;
+          }
+          return true;
+        });
+    return popup_count;
+  }
 
  private:
   logging::ScopedVmoduleSwitches scoped_vmodule_switches_;
@@ -2223,6 +2236,13 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testDialogResponseCallOrder) {
 
   EXPECT_EQ(state_when_dialog_response_received.Get(),
             actor::ActorTask::State::kWaitingOnUser);
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testPopupOpens) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  EXPECT_EQ(GetPopupCount(), 0);
+  ExecuteJsTest();
+  ASSERT_OK(RunUntilEqual([&]() { return GetPopupCount(); }, 1));
 }
 
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetContextFromFocusedTabWithIframe) {

@@ -764,13 +764,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFailedCookieSync, testCookieSyncFails) {
                                      2 /*COOKIE_SYNC_ERROR*/, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testPopupOpens) {
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents),
-                  CheckPopupCount(0));
-  ExecuteJsTest();
-  RunTestSequence(CheckPopupCount(1));
-}
-
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testInvoke) {
   RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
   auto options = mojom::InvokeOptions::New();

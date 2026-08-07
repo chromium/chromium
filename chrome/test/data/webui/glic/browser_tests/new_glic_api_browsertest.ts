@@ -77,6 +77,24 @@ class ApiTests extends ApiTestFixtureBase {
     this.host.uninterruptActorTask(task_id);
   }
 
+  async testPopupOpens() {
+    const link = document.createElement('a');
+    link.setAttribute('href', 'https://www.chromium.org');
+
+    // Attach a click listener to force opening as a popup with specific
+    // dimensions. Including features like width/height forces a new window
+    // instead of a tab.
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.open(
+          link.getAttribute('href')!, 'popup_window',
+          'width=500,height=500,scrollbars=yes,resizable=yes');
+    });
+
+    document.body.appendChild(link);
+    link.click();
+  }
+
   async testUnresponsive() {
     // Don't respond to responsiveness checks.
     this.client.checkResponsive = () => {
