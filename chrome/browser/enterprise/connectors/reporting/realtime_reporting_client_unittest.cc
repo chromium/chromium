@@ -402,32 +402,6 @@ TEST_F(RealtimeReportingClientTestBase,
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-TEST_F(RealtimeReportingClientTestBase, TestCrowdstrikeSignalsPopulated) {
-  base::DictValue event;
-  device_signals::CrowdStrikeSignals signals;
-  signals.agent_id = "agent-123";
-  signals.customer_id = "customer-123";
-  device_signals::AgentSignalsResponse agent_signals;
-  agent_signals.crowdstrike_signals = signals;
-  device_signals::SignalsAggregationResponse response;
-  response.agent_signals_response = agent_signals;
-  AddCrowdstrikeSignalsToEvent(event, response);
-  const base::ListValue& agentList = event.Find("securityAgents")->GetList();
-  ASSERT_EQ(agentList.size(), 1u);
-  const base::DictValue& signalValues =
-      agentList[0].GetDict().Find("crowdstrike")->GetDict();
-  EXPECT_EQ(signalValues.Find("agent_id")->GetString(), "agent-123");
-  EXPECT_EQ(signalValues.Find("customer_id")->GetString(), "customer-123");
-}
-
-TEST_F(RealtimeReportingClientTestBase,
-       TestCrowdstrikeSignalsNotPopulatedForEmptyResponse) {
-  base::DictValue event;
-  device_signals::SignalsAggregationResponse response;
-  response.agent_signals_response = std::nullopt;
-  AddCrowdstrikeSignalsToEvent(event, response);
-  EXPECT_EQ(event.Find("securityAgents"), nullptr);
-}
 
 TEST_F(RealtimeReportingClientOidcTest, Username) {
   RealtimeReportingClient client(profile_);
@@ -437,14 +411,14 @@ TEST_F(RealtimeReportingClientOidcTest, Username) {
 // TODO(b/342232001): Add more tests for the `RealtimeReportingClientOidcTest`
 // fixture to cover key use cases.
 
-class ProtoBasedCrowdStrikeSignalTest
+class CrowdStrikeSignalTest
     : public RealtimeReportingClientTestBase,
       public testing::WithParamInterface<Event::EventCase> {
  public:
-  ProtoBasedCrowdStrikeSignalTest() = default;
+  CrowdStrikeSignalTest() = default;
 };
 
-TEST_P(ProtoBasedCrowdStrikeSignalTest, TestCrowdstrikeSignalsPopulated) {
+TEST_P(CrowdStrikeSignalTest, TestCrowdstrikeSignalsPopulated) {
   device_signals::CrowdStrikeSignals signals;
   signals.agent_id = "agent-123";
   signals.customer_id = "customer-123";
@@ -464,7 +438,7 @@ TEST_P(ProtoBasedCrowdStrikeSignalTest, TestCrowdstrikeSignalsPopulated) {
   EXPECT_EQ(security_agent.crowdstrike().customer_id(), "customer-123");
 }
 
-TEST_P(ProtoBasedCrowdStrikeSignalTest,
+TEST_P(CrowdStrikeSignalTest,
        TestCrowdstrikeSignalsNotPopulatedForEmptyResponse) {
   device_signals::SignalsAggregationResponse response;
   auto event = GetTestEvent(GetParam());
@@ -475,7 +449,7 @@ TEST_P(ProtoBasedCrowdStrikeSignalTest,
 }
 
 INSTANTIATE_TEST_SUITE_P(,
-                         ProtoBasedCrowdStrikeSignalTest,
+                         CrowdStrikeSignalTest,
                          testing::Values(Event::kPasswordReuseEvent,
                                          Event::kPasswordChangedEvent,
                                          Event::kDangerousDownloadEvent,

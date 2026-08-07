@@ -116,15 +116,6 @@ IOSRealtimeReportingClient::GetReportingSettings() {
   return service->GetReportingSettings();
 }
 
-void IOSRealtimeReportingClient::ReportRealtimeEvent(
-    const std::string& name,
-    const ReportingSettings& settings,
-    base::DictValue event) {
-  ReportEventWithTimestampDeprecated(name, settings, std::move(event),
-                                     base::Time::Now(),
-                                     /*include_profile_user_name=*/true);
-}
-
 std::string IOSRealtimeReportingClient::GetProfileUserName() {
   if (!username_.empty()) {
     return username_;
@@ -158,33 +149,6 @@ bool IOSRealtimeReportingClient::ShouldIncludeDeviceInfo(bool per_profile) {
   return IncludeDeviceInfo(per_profile, IsProfileAffilicated(profile_));
 }
 
-void IOSRealtimeReportingClient::UploadCallbackDeprecated(
-    base::DictValue event_wrapper,
-    bool per_profile,
-    policy::CloudPolicyClient* client,
-    EnterpriseReportingEventType event_type,
-    base::TimeTicks upload_started_at,
-    policy::CloudPolicyClient::Result upload_result) {
-  // TODO(crbug.com/256553070): Do not crash if the client is unregistered.
-  CHECK(!upload_result.IsClientNotRegisteredError());
-
-  if (upload_result.IsSuccess()) {
-    base::UmaHistogramEnumeration("Enterprise.ReportingEventUploadSuccess",
-                                  event_type);
-    base::UmaHistogramCustomTimes(
-        GetSuccessfulUploadDurationUmaMetricName(event_type),
-        base::TimeTicks::Now() - upload_started_at, base::Milliseconds(1),
-        base::Minutes(5), 50);
-  } else {
-    base::UmaHistogramEnumeration("Enterprise.ReportingEventUploadFailure",
-                                  event_type);
-    base::UmaHistogramCustomTimes(
-        GetFailedUploadDurationUmaMetricName(event_type),
-        base::TimeTicks::Now() - upload_started_at, base::Milliseconds(1),
-        base::Minutes(5), 50);
-  }
-}
-
 void IOSRealtimeReportingClient::UploadCallback(
     bool per_profile,
     policy::CloudPolicyClient* client,
@@ -206,10 +170,6 @@ void IOSRealtimeReportingClient::UploadCallback(
         base::TimeTicks::Now() - upload_started_at, base::Milliseconds(1),
         base::Minutes(5), 50);
   }
-}
-
-base::DictValue IOSRealtimeReportingClient::GetContext() {
-  return ::enterprise_connectors::GetContext(profile_);
 }
 
 ::chrome::cros::reporting::proto::UploadEventsRequest

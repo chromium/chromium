@@ -34,10 +34,6 @@ namespace enterprise_connectors {
 
 namespace {
 
-constexpr char kKeyChannel[] = "channel";
-constexpr char kKeyVersion[] = "version";
-constexpr char kKeyReportId[] = "reportId";
-constexpr char kKeyPlatform[] = "platform";
 constexpr char kCrashpadPollingIntervalFlag[] = "crashpad-polling-interval";
 constexpr int kDefaultCrashpadPollingIntervalSeconds = 3600;
 
@@ -46,18 +42,6 @@ policy::ChromeBrowserCloudManagementController* GetCBCMController() {
       ->chrome_browser_cloud_management_controller();
 }
 
-base::DictValue GetBrowserCrashEventDeprecated(const std::string& channel,
-                                               const std::string& version,
-                                               const std::string& report_id,
-                                               const std::string& platform) {
-  base::DictValue event;
-  event.Set(kKeyChannel, channel);
-  event.Set(kKeyVersion, version);
-  event.Set(kKeyReportId, report_id);
-  event.Set(kKeyPlatform, platform);
-
-  return event;
-}
 
 ::chrome::cros::reporting::proto::Event GetBrowserCrashEvent(
     const std::string& channel,
@@ -199,18 +183,10 @@ void UploadToReportingServer(
   int64_t latest_creation_time = -1;
 
   for (const auto& report : reports) {
-    if (base::FeatureList::IsEnabled(
-            policy::kUploadRealtimeReportingEventsUsingProto)) {
-      reporting_client->ReportEvent(
-          GetBrowserCrashEvent(channel, version, report.id, platform,
-                               report.creation_time),
-          settings.value());
-    } else {
-      reporting_client->ReportPastEvent(
-          kBrowserCrashEvent, settings.value(),
-          GetBrowserCrashEventDeprecated(channel, version, report.id, platform),
-          base::Time::FromTimeT(report.creation_time));
-    }
+    reporting_client->ReportEvent(
+        GetBrowserCrashEvent(channel, version, report.id, platform,
+                             report.creation_time),
+        settings.value());
 
     if (report.creation_time > latest_creation_time) {
       latest_creation_time = report.creation_time;

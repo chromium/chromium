@@ -41,23 +41,6 @@ bool IsEventInReportingSettings(const std::string& event,
   return false;
 }
 
-void AddAnalysisConnectorVerdictToEvent(
-    const ContentAnalysisResponse::Result& result,
-    base::DictValue& event) {
-  base::ListValue triggered_rule_info;
-  for (const TriggeredRule& trigger : result.triggered_rules()) {
-    base::DictValue triggered_rule;
-    triggered_rule.Set(kKeyTriggeredRuleName, trigger.rule_name());
-    int rule_id_int = 0;
-    if (base::StringToInt(trigger.rule_id(), &rule_id_int)) {
-      triggered_rule.Set(kKeyTriggeredRuleId, rule_id_int);
-    }
-    triggered_rule.Set(kKeyUrlCategory, trigger.url_category());
-
-    triggered_rule_info.Append(std::move(triggered_rule));
-  }
-  event.Set(kKeyTriggeredRuleInfo, std::move(triggered_rule_info));
-}
 
 std::string MalwareRuleToThreatType(const std::string& rule_name) {
   if (rule_name == "uws") {
@@ -166,8 +149,6 @@ void ReportingEventRouter::OnLoginEvent(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          policy::kUploadRealtimeReportingEventsUsingProto)) {
     chrome::cros::reporting::proto::Event event;
     *event.mutable_login_event() =
         GetLoginEvent(url, is_federated, federated_origin, username,
@@ -176,19 +157,6 @@ void ReportingEventRouter::OnLoginEvent(
     *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
 
     reporting_client_->ReportEvent(std::move(event), settings.value());
-  } else {
-    base::DictValue event;
-    event.Set(kKeyUrl, url.spec());
-    event.Set(kKeyIsFederated, is_federated);
-    if (is_federated) {
-      event.Set(kKeyFederatedOrigin, federated_origin.Serialize());
-    }
-    event.Set(kKeyLoginUserName, MaskUsername(username));
-
-    reporting_client_->ReportEventWithTimestampDeprecated(
-        kKeyLoginEvent, std::move(settings.value()), std::move(event),
-        base::Time::Now(), /*include_profile_user_name=*/true);
-  }
 }
 
 void ReportingEventRouter::OnPasswordBreach(
@@ -206,8 +174,6 @@ void ReportingEventRouter::OnPasswordBreach(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          policy::kUploadRealtimeReportingEventsUsingProto)) {
     chrome::cros::reporting::proto::Event event;
     std::optional<chrome::cros::reporting::proto::PasswordBreachEvent>
         password_breach_event =
@@ -222,34 +188,6 @@ void ReportingEventRouter::OnPasswordBreach(
     *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
 
     reporting_client_->ReportEvent(std::move(event), settings.value());
-  } else {
-    base::ListValue identities_list;
-    for (const std::pair<GURL, std::u16string>& i : identities) {
-      if (!IsUrlMatched(matcher.get(), i.first)) {
-        continue;
-      }
-
-      base::DictValue identity;
-      identity.Set(kKeyPasswordBreachIdentitiesUrl, i.first.spec());
-      identity.Set(kKeyPasswordBreachIdentitiesUsername,
-                   MaskUsername(i.second));
-      identities_list.Append(std::move(identity));
-    }
-
-    if (identities_list.empty()) {
-      // Don't send an empty event if none of the breached identities matched a
-      // pattern in the URL filters.
-      return;
-    }
-
-    base::DictValue event;
-    event.Set(kKeyTrigger, trigger);
-    event.Set(kKeyPasswordBreachIdentities, std::move(identities_list));
-
-    reporting_client_->ReportEventWithTimestampDeprecated(
-        kKeyPasswordBreachEvent, std::move(settings.value()), std::move(event),
-        base::Time::Now(), /*include_profile_user_name=*/true);
-  }
 }
 
 void ReportingEventRouter::OnPasswordReuse(
@@ -264,8 +202,6 @@ void ReportingEventRouter::OnPasswordReuse(
 
   std::optional<ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
-  if (base::FeatureList::IsEnabled(
-          policy::kUploadRealtimeReportingEventsUsingProto)) {
     chrome::cros::reporting::proto::Event event;
     *event.mutable_password_reuse_event() = GetPasswordReuseEvent(
         url, user_name, is_phishing_url, warning_shown,
@@ -274,24 +210,6 @@ void ReportingEventRouter::OnPasswordReuse(
     *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
 
     reporting_client_->ReportEvent(std::move(event), settings.value());
-  } else {
-    base::DictValue event;
-    event.Set(kKeyUrl, url.spec());
-    event.Set(kKeyUserName, user_name);
-    event.Set(kKeyIsPhishingUrl, is_phishing_url);
-    event.Set(kKeyEventResult,
-              EventResultToString(warning_shown ? EventResult::WARNED
-                                                : EventResult::ALLOWED));
-
-    if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
-      AddReferrerChainToEvent(referrer_chain, event);
-    }
-
-    reporting_client_->ReportEventWithTimestampDeprecated(
-        kKeyPasswordReuseEvent, std::move(settings.value()), std::move(event),
-        base::Time::Now(),
-        /*include_profile_user_name=*/true);
-  }
 }
 
 void ReportingEventRouter::OnPasswordChanged(const std::string& user_name) {
@@ -301,8 +219,6 @@ void ReportingEventRouter::OnPasswordChanged(const std::string& user_name) {
 
   std::optional<ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
-  if (base::FeatureList::IsEnabled(
-          policy::kUploadRealtimeReportingEventsUsingProto)) {
     chrome::cros::reporting::proto::Event event;
     *event.mutable_password_changed_event() = GetPasswordChangedEvent(
         user_name, reporting_client_->GetProfileIdentifier(),
@@ -310,15 +226,6 @@ void ReportingEventRouter::OnPasswordChanged(const std::string& user_name) {
     *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
 
     reporting_client_->ReportEvent(std::move(event), settings.value());
-  } else {
-    base::DictValue event;
-    event.Set(kKeyUserName, user_name);
-
-    reporting_client_->ReportEventWithTimestampDeprecated(
-        kKeyPasswordChangedEvent, std::move(settings.value()), std::move(event),
-        base::Time::Now(),
-        /*include_profile_user_name=*/true);
-  }
 }
 
 void ReportingEventRouter::OnUrlFilteringInterstitial(
@@ -334,8 +241,6 @@ void ReportingEventRouter::OnUrlFilteringInterstitial(
       reporting_client_->GetReportingSettings();
   std::string active_user = reporting_client_->GetContentAreaAccountEmail(url);
 
-  if (base::FeatureList::IsEnabled(
-          policy::kUploadRealtimeReportingEventsUsingProto)) {
     chrome::cros::reporting::proto::Event event;
     *event.mutable_url_filtering_interstitial_event() =
         GetUrlFilteringInterstitialEvent(
@@ -347,30 +252,6 @@ void ReportingEventRouter::OnUrlFilteringInterstitial(
     *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
 
     reporting_client_->ReportEvent(std::move(event), settings.value());
-  } else {
-    base::DictValue event;
-    event.Set(kKeyUrl, url.spec());
-    EventResult event_result = GetEventResultFromThreatType(threat_type);
-    event.Set(kKeyClickedThrough, event_result == EventResult::BYPASSED);
-    if (!threat_type.empty()) {
-      event.Set(kKeyThreatType, threat_type);
-    }
-
-    if (!active_user.empty()) {
-      event.Set(kKeyWebAppSignedInAccount, active_user);
-    }
-    AddTriggeredRuleInfoToUrlFilteringInterstitialEvent(response, event);
-    event.Set(kKeyEventResult, EventResultToString(event_result));
-
-    if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
-      AddReferrerChainToEvent(referrer_chain, event);
-    }
-
-    reporting_client_->ReportEventWithTimestampDeprecated(
-        kKeyUrlFilteringInterstitialEvent, std::move(settings.value()),
-        std::move(event), base::Time::Now(),
-        /*include_profile_user_name=*/true);
-  }
 }
 
 void ReportingEventRouter::OnSecurityInterstitialProceeded(
@@ -384,8 +265,6 @@ void ReportingEventRouter::OnSecurityInterstitialProceeded(
 
   std::optional<ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
-  if (base::FeatureList::IsEnabled(
-          policy::kUploadRealtimeReportingEventsUsingProto)) {
     chrome::cros::reporting::proto::Event event;
     *event.mutable_interstitial_event() = GetInterstitialEvent(
         url, reason, net_error_code,
@@ -395,23 +274,6 @@ void ReportingEventRouter::OnSecurityInterstitialProceeded(
     *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
 
     reporting_client_->ReportEvent(std::move(event), settings.value());
-  } else {
-    base::DictValue event;
-    event.Set(kKeyUrl, url.spec());
-    event.Set(kKeyReason, reason);
-    event.Set(kKeyNetErrorCode, net_error_code);
-    event.Set(kKeyClickedThrough, true);
-    event.Set(kKeyEventResult, EventResultToString(EventResult::BYPASSED));
-
-    if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
-      AddReferrerChainToEvent(referrer_chain, event);
-    }
-
-    reporting_client_->ReportEventWithTimestampDeprecated(
-        kKeyInterstitialEvent, std::move(settings.value()), std::move(event),
-        base::Time::Now(),
-        /*include_profile_user_name=*/true);
-  }
 }
 
 void ReportingEventRouter::OnSecurityInterstitialShown(
@@ -429,8 +291,6 @@ void ReportingEventRouter::OnSecurityInterstitialShown(
   EventResult event_result =
       proceed_anyway_disabled ? EventResult::BLOCKED : EventResult::WARNED;
 
-  if (base::FeatureList::IsEnabled(
-          policy::kUploadRealtimeReportingEventsUsingProto)) {
     chrome::cros::reporting::proto::Event event;
     *event.mutable_interstitial_event() = GetInterstitialEvent(
         url, reason, net_error_code,
@@ -440,23 +300,6 @@ void ReportingEventRouter::OnSecurityInterstitialShown(
     *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
 
     reporting_client_->ReportEvent(std::move(event), settings.value());
-  } else {
-    base::DictValue event;
-    event.Set(kKeyUrl, url.spec());
-    event.Set(kKeyReason, reason);
-    event.Set(kKeyNetErrorCode, net_error_code);
-    event.Set(kKeyClickedThrough, false);
-    event.Set(kKeyEventResult, EventResultToString(event_result));
-
-    if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
-      AddReferrerChainToEvent(referrer_chain, event);
-    }
-
-    reporting_client_->ReportEventWithTimestampDeprecated(
-        kKeyInterstitialEvent, std::move(settings.value()), std::move(event),
-        base::Time::Now(),
-        /*include_profile_user_name=*/true);
-  }
 }
 
 void ReportingEventRouter::SendEventOnGotHash(
@@ -480,17 +323,6 @@ void ReportingEventRouter::SendEventOnGotHash(
                                  std::move(reporting_settings));
 }
 
-void ReportingEventRouter::SendEventOnGotHashDeprecated(
-    const std::string& name,
-    ReportingSettings reporting_settings,
-    base::DictValue event,
-    std::string hash) {
-  DCHECK(std::ranges::all_of(hash, base::IsHexDigit<char>));
-  event.Set(kKeyDownloadDigestSha256, hash);
-  reporting_client_->ReportEventWithTimestampDeprecated(
-      name, std::move(reporting_settings), std::move(event), base::Time::Now(),
-      /*include_profile_user_name=*/true);
-}
 
 void ReportingEventRouter::OnUnscannedFileEvent(
     const GURL& url,
@@ -522,8 +354,6 @@ void ReportingEventRouter::OnUnscannedFileEvent(
       file_name,
       reporting_client_->ShouldIncludeDeviceInfo(settings->per_profile));
 
-  if (base::FeatureList::IsEnabled(
-          policy::kUploadRealtimeReportingEventsUsingProto)) {
     chrome::cros::reporting::proto::Event event;
     *event.mutable_unscanned_file_event() = GetUnscannedFileEvent(
         url, tab_url, source, destination, final_file_name,
@@ -542,43 +372,6 @@ void ReportingEventRouter::OnUnscannedFileEvent(
     } else {
       std::move(send_event_cb).Run(download_digest_sha256);
     }
-  } else {
-    base::DictValue event;
-    event.Set(kKeyUrl, url.spec());
-    event.Set(kKeyTabUrl, tab_url.spec());
-    event.Set(kKeySource, source);
-    event.Set(kKeyDestination, destination);
-    event.Set(kKeyFileName, final_file_name);
-    event.Set(kKeyDownloadDigestSha256, download_digest_sha256);
-    event.Set(kKeyContentType, mime_type);
-    event.Set(kKeyScanId, scan_id);
-    event.Set(kKeyUnscannedReason, reason);
-    // |content_size| can be set to -1 to indicate an unknown size, in
-    // which case the field is not set.
-    if (content_size >= 0) {
-      event.Set(kKeyContentSize, base::Int64ToValue(content_size));
-    }
-    event.Set(kKeyTrigger, trigger);
-    if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
-      AddReferrerChainToEvent(referrer_chain, event);
-    }
-    event.Set(kKeyEventResult, EventResultToString(event_result));
-    event.Set(kKeyClickedThrough, event_result == EventResult::BYPASSED);
-    if (!content_transfer_method.empty()) {
-      event.Set(kKeyContentTransferMethod, content_transfer_method);
-    }
-
-    auto send_event_cb =
-        base::BindOnce(&ReportingEventRouter::SendEventOnGotHashDeprecated,
-                       weak_ptr_factory_.GetWeakPtr(), kKeyUnscannedFileEvent,
-                       std::move(settings.value()), std::move(event));
-    if (std::holds_alternative<RegisterOnGotHashCallback>(sha256_or_cb)) {
-      std::get<RegisterOnGotHashCallback>(sha256_or_cb)
-          .Run(std::move(send_event_cb));
-    } else {
-      std::move(send_event_cb).Run(download_digest_sha256);
-    }
-  }
 }
 
 void ReportingEventRouter::OnSensitiveDataEvent(
@@ -640,8 +433,6 @@ void ReportingEventRouter::OnSensitiveDataEvent(
       event.file_name,
       reporting_client_->ShouldIncludeDeviceInfo(settings->per_profile));
 
-  if (base::FeatureList::IsEnabled(
-          policy::kUploadRealtimeReportingEventsUsingProto)) {
     chrome::cros::reporting::proto::Event proto_event;
     *proto_event.mutable_sensitive_data_event() = GetDlpSensitiveDataEvent(
         event.url, event.tab_url, event.source, event.destination,
@@ -663,63 +454,6 @@ void ReportingEventRouter::OnSensitiveDataEvent(
     } else {
       std::move(send_event_cb).Run(download_digest_sha256);
     }
-  } else {
-    base::DictValue dict_event;
-    dict_event.Set(kKeyUrl, event.url.spec());
-    dict_event.Set(kKeyTabUrl, event.tab_url.spec());
-    dict_event.Set(kKeySource, event.source);
-    dict_event.Set(kKeyDestination, event.destination);
-    dict_event.Set(
-        kKeyFileName,
-        GetFileName(event.file_name, reporting_client_->ShouldIncludeDeviceInfo(
-                                         settings->per_profile)));
-    dict_event.Set(kKeyDownloadDigestSha256, download_digest_sha256);
-    dict_event.Set(kKeyContentType, event.mime_type);
-    // |content_size| can be set to -1 to indicate an unknown size, in
-    // which case the field is not set.
-    if (event.content_size >= 0) {
-      dict_event.Set(kKeyContentSize, base::Int64ToValue(event.content_size));
-    }
-    dict_event.Set(kKeyTrigger, event.trigger);
-
-    if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
-      AddReferrerChainToEvent(event.referrer_chain, dict_event);
-    }
-
-    dict_event.Set(kKeyEventResult, EventResultToString(event.event_result));
-    dict_event.Set(kKeyClickedThrough,
-                   event.event_result == EventResult::BYPASSED);
-    dict_event.Set(kKeyScanId, event.scan_id);
-
-    if (!event.content_transfer_method.empty()) {
-      dict_event.Set(kKeyContentTransferMethod, event.content_transfer_method);
-    }
-    if (!event.content_area_account_email.empty()) {
-      dict_event.Set(kKeyWebAppSignedInAccount,
-                     event.content_area_account_email);
-    }
-    if (!event.source_email.empty()) {
-      dict_event.Set(kKeySourceWebAppSignedInAccount, event.source_email);
-    }
-    if (event.user_justification.has_value()) {
-      dict_event.Set(kKeyUserJustification, event.user_justification.value());
-    }
-
-    AddFrameUrlChainToEvent(event.frame_url_chain, dict_event);
-
-    AddAnalysisConnectorVerdictToEvent(event.result, dict_event);
-
-    auto send_event_cb =
-        base::BindOnce(&ReportingEventRouter::SendEventOnGotHashDeprecated,
-                       weak_ptr_factory_.GetWeakPtr(), kKeySensitiveDataEvent,
-                       std::move(settings.value()), std::move(dict_event));
-    if (std::holds_alternative<RegisterOnGotHashCallback>(event.sha256_or_cb)) {
-      std::get<RegisterOnGotHashCallback>(event.sha256_or_cb)
-          .Run(std::move(send_event_cb));
-    } else {
-      std::move(send_event_cb).Run(download_digest_sha256);
-    }
-  }
 }
 
 void ReportingEventRouter::OnDangerousDownloadEvent(
@@ -773,8 +507,6 @@ void ReportingEventRouter::OnDangerousDownloadEvent(
       file_name,
       reporting_client_->ShouldIncludeDeviceInfo(settings->per_profile));
 
-  if (base::FeatureList::IsEnabled(
-          policy::kUploadRealtimeReportingEventsUsingProto)) {
     chrome::cros::reporting::proto::Event event;
     *event.mutable_dangerous_download_event() = GetDangerousDownloadEvent(
         url, tab_url, source, destination, final_file_name,
@@ -793,49 +525,6 @@ void ReportingEventRouter::OnDangerousDownloadEvent(
     } else {
       std::move(send_event_cb).Run(download_digest_sha256);
     }
-  } else {
-    base::DictValue event;
-    event.Set(kKeyUrl, url.spec());
-    event.Set(kKeyTabUrl, tab_url.spec());
-    event.Set(kKeySource, source);
-    event.Set(kKeyDestination, destination);
-    event.Set(kKeyFileName, final_file_name);
-    event.Set(kKeyDownloadDigestSha256, download_digest_sha256);
-    event.Set(kKeyThreatType, threat_type);
-    event.Set(kKeyContentType, mime_type);
-    // |content_size| can be set to -1 to indicate an unknown size, in
-    // which case the field is not set.
-    if (content_size >= 0) {
-      event.Set(kKeyContentSize, base::Int64ToValue(content_size));
-    }
-    event.Set(kKeyTrigger, trigger);
-    if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
-      AddReferrerChainToEvent(referrer_chain, event);
-    }
-    event.Set(kKeyEventResult, EventResultToString(event_result));
-    event.Set(kKeyClickedThrough, event_result == EventResult::BYPASSED);
-    // The scan ID can be empty when the reported dangerous download is from a
-    // Safe Browsing verdict.
-    if (!scan_id.empty()) {
-      event.Set(kKeyScanId, scan_id);
-    }
-    if (!content_transfer_method.empty()) {
-      event.Set(kKeyContentTransferMethod, content_transfer_method);
-    }
-
-    AddFrameUrlChainToEvent(frame_url_chain, event);
-
-    auto send_event_cb = base::BindOnce(
-        &ReportingEventRouter::SendEventOnGotHashDeprecated,
-        weak_ptr_factory_.GetWeakPtr(), kKeyDangerousDownloadEvent,
-        std::move(settings.value()), std::move(event));
-    if (std::holds_alternative<RegisterOnGotHashCallback>(sha256_or_cb)) {
-      std::get<RegisterOnGotHashCallback>(sha256_or_cb)
-          .Run(std::move(send_event_cb));
-    } else {
-      std::move(send_event_cb).Run(download_digest_sha256);
-    }
-  }
 }
 
 void ReportingEventRouter::OnAnalysisConnectorResult(
@@ -1038,8 +727,6 @@ void ReportingEventRouter::OnDataControlsSensitiveDataEvent(
   std::optional<ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
 
-  if (base::FeatureList::IsEnabled(
-          policy::kUploadRealtimeReportingEventsUsingProto)) {
     chrome::cros::reporting::proto::Event event;
     *event.mutable_sensitive_data_event() = GetDataControlsSensitiveDataEvent(
         url, tab_url, source, destination, mime_type, trigger,
@@ -1050,46 +737,6 @@ void ReportingEventRouter::OnDataControlsSensitiveDataEvent(
     *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
 
     reporting_client_->ReportEvent(std::move(event), settings.value());
-  } else {
-    base::DictValue event;
-    event.Set(kKeyUrl, url.spec());
-    event.Set(kKeyTabUrl, tab_url.spec());
-    event.Set(kKeySource, source);
-    event.Set(kKeyDestination, destination);
-    event.Set(kKeyContentType, mime_type);
-    // |content_size| can be set to -1 to indicate an unknown size, in
-    // which case the field is not set.
-    if (content_size >= 0) {
-      event.Set(kKeyContentSize, base::Int64ToValue(content_size));
-    }
-    event.Set(kKeyTrigger, trigger);
-    if (!content_area_account_email.empty()) {
-      event.Set(kKeyWebAppSignedInAccount, content_area_account_email);
-    }
-    if (!source_active_user_email.empty()) {
-      event.Set(kKeySourceWebAppSignedInAccount, source_active_user_email);
-    }
-    event.Set(kKeyEventResult, EventResultToString(event_result));
-
-    base::ListValue triggered_rule_info;
-    triggered_rule_info.reserve(triggered_rules.size());
-    for (const auto& [index, rule] : triggered_rules) {
-      base::DictValue triggered_rule;
-      int rule_id_int = 0;
-      if (base::StringToInt(rule.rule_id, &rule_id_int)) {
-        triggered_rule.Set(kKeyTriggeredRuleId, rule_id_int);
-      }
-      triggered_rule.Set(kKeyTriggeredRuleName, rule.rule_name);
-
-      triggered_rule_info.Append(std::move(triggered_rule));
-    }
-    event.Set(kKeyTriggeredRuleInfo, std::move(triggered_rule_info));
-
-    reporting_client_->ReportEventWithTimestampDeprecated(
-        kKeySensitiveDataEvent, std::move(settings.value()), std::move(event),
-        base::Time::Now(),
-        /*include_profile_user_name=*/true);
-  }
 }
 #endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 

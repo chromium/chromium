@@ -48,28 +48,17 @@ class IOSRealtimeReportingClient : public RealtimeReportingClientBase {
   // policy::CloudPolicyClient::Observer overrides:
   void OnClientError(policy::CloudPolicyClient* client) override;
 
-  // Report safe browsing event through real-time reporting channel, if enabled.
-  // Declared as virtual for tests.
-  virtual void ReportRealtimeEvent(const std::string& name,
-                                   const ReportingSettings& settings,
-                                   base::DictValue event);
 
  private:
   // RealtimeReportingClientBase overrides (all overrides below):
   std::string GetProfileIdentifier() override;
   std::string GetBrowserClientId() override;
   std::string GetContentAreaAccountEmail(const GURL& url) override;
-  base::DictValue GetContext() override;
+
   ::chrome::cros::reporting::proto::UploadEventsRequest
   CreateUploadEventsRequest() override;
   bool ShouldIncludeDeviceInfo(bool per_profile) override;
-  void UploadCallbackDeprecated(
-      base::DictValue event_wrapper,
-      bool per_profile,
-      policy::CloudPolicyClient* client,
-      EnterpriseReportingEventType event_type,
-      base::TimeTicks upload_started_at,
-      policy::CloudPolicyClient::Result upload_result) override;
+
   void UploadCallback(
       bool per_profile,
       policy::CloudPolicyClient* client,
