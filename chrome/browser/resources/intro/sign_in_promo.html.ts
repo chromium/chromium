@@ -41,7 +41,7 @@ export function getHtml(this: SignInPromoElement) {
 <div id="buttonRow" class="fade-in tangible-sync-style">
   <div id="buttonContainer">
     <cr-button id="declineSignInButton"
-        class="${this.getDeclineButtonClass_()}"
+        class="tonal-button"
         ?disabled="${this.areButtonsDisabled_()}"
         @click="${this.onContinueWithoutAccountClick_}">
       $i18n{declineSignInButtonTitle}

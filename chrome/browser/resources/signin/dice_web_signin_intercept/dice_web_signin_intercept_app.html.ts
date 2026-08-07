@@ -101,7 +101,7 @@ export function getHtml(this: DiceWebSigninInterceptAppElement) {
         ${this.interceptionParameters_.confirmButtonLabel}
       </cr-button>
       <cr-button id="cancelButton"
-          class="${this.getCancelButtonClass_()}"
+          class="tonal-button"
           @click="${this.onCancelClick_}"
           ?disabled="${this.acceptButtonClicked_}">
         ${this.interceptionParameters_.cancelButtonLabel}

@@ -9,7 +9,6 @@ import '/strings.m.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -47,7 +46,6 @@ export class DiceWebSigninInterceptAppElement extends
     return {
       interceptionParameters_: {type: Object},
       acceptButtonClicked_: {type: Boolean},
-      usePrimaryAndTonalButtons_: {type: Boolean},
     };
   }
 
@@ -70,8 +68,6 @@ export class DiceWebSigninInterceptAppElement extends
     primaryProfileBadgeColor: '',
   };
   protected accessor acceptButtonClicked_: boolean = false;
-  private accessor usePrimaryAndTonalButtons_: boolean =
-      loadTimeData.getBoolean('usePrimaryAndTonalButtonsForPromos');
   private diceWebSigninInterceptBrowserProxy_:
       DiceWebSigninInterceptBrowserProxy =
           DiceWebSigninInterceptBrowserProxyImpl.getInstance();
@@ -118,10 +114,6 @@ export class DiceWebSigninInterceptAppElement extends
 
   protected sanitizeInnerHtml_(text: string): TrustedHTML {
     return sanitizeInnerHtml(text);
-  }
-
-  protected getCancelButtonClass_(): string {
-    return this.usePrimaryAndTonalButtons_ ? 'tonal-button' : '';
   }
 }
 

@@ -29,7 +29,7 @@ export function getHtml(this: ProfileSwitchElement) {
     <div class="subtitle">$i18n{profileSwitchSubtitle}</div>
   </div>
   <div id="actionContainer">
-    <cr-button id="cancelButton" class="${this.getCancelButtonClass_()}"
+    <cr-button id="cancelButton" class="tonal-button"
         @click="${this.onCancelClick_}">
       $i18n{cancel}
     </cr-button>

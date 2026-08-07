@@ -76,7 +76,7 @@ export function getHtml(this: ManagedUserProfileNoticeAppRefreshElement) {
   </cr-button>
   <cr-button id="cancelButton"
       aria-label="${this.getCancelLabel_()}"
-      class="tangible-button ${this.getCancelButtonClass_()}"
+      class="tangible-button tonal-button"
       @click="${this.onCancelButtonClick_}"
       ?hidden="${!this.allowCancel_()}">
     ${this.getCancelLabel_()}

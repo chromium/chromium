@@ -840,11 +840,6 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kUndoChromeOsUseConsentLevelSignin);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-// If enabled, buttons for sign-in promos / intercepts will use consistent
-// primary - tonal button class pattern.
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kUsePrimaryAndTonalButtonsForPromos);
-
 #if BUILDFLAG(IS_ANDROID)
 // Additional gate for user policy registration and download based on user
 // accepting account management.

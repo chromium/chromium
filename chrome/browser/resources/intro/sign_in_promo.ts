@@ -62,7 +62,6 @@ export class SignInPromoElement extends SignInPromoElementBase {
       managedDeviceDisclaimer_: {type: String},
       isDeviceManaged_: {type: Boolean},
       anyButtonClicked_: {type: Boolean},
-      usePrimaryAndTonalButtons_: {type: Boolean},
     };
   }
 
@@ -95,8 +94,6 @@ export class SignInPromoElement extends SignInPromoElementBase {
   protected accessor isDeviceManaged_: boolean =
       loadTimeData.getBoolean('isDeviceManaged');
   private accessor anyButtonClicked_: boolean = false;
-  private accessor usePrimaryAndTonalButtons_: boolean =
-      loadTimeData.getBoolean('usePrimaryAndTonalButtonsForPromos');
 
   override connectedCallback() {
     super.connectedCallback();
@@ -193,10 +190,6 @@ export class SignInPromoElement extends SignInPromoElementBase {
   protected getDisclaimerVisibilityClass_() {
     return this.managedDeviceDisclaimer_.length === 0 ? 'temporarily-hidden' :
                                                         'fast-fade-in';
-  }
-
-  protected getDeclineButtonClass_(): string {
-    return this.usePrimaryAndTonalButtons_ ? 'tonal-button' : '';
   }
 }
 

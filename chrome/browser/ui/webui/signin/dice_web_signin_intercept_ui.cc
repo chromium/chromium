@@ -120,10 +120,6 @@ DiceWebSigninInterceptUI::DiceWebSigninInterceptUI(content::WebUI* web_ui)
   source->UseStringsJs();
   source->EnableReplaceI18nInJS();
 
-  source->AddBoolean("usePrimaryAndTonalButtonsForPromos",
-                     base::FeatureList::IsEnabled(
-                         switches::kUsePrimaryAndTonalButtonsForPromos));
-
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources chrome://webui-test 'self';");

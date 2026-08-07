@@ -81,7 +81,7 @@ ${html`
       ${this.proceedLabel_}
     </cr-button>
     <cr-button id="cancel-button"
-        class="${this.getCancelButtonClass_()}"
+        class="tonal-button"
         @click="${this.onCancelClick_}" ?hidden="${!this.allowCancel_()}">
       ${this.cancelLabel_}
     </cr-button>

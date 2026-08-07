@@ -5187,12 +5187,6 @@ inline constexpr char kUsePLinkInHelpDescription[] =
     "When enabled, Open-to-Content and P-links are used for Google help pages; "
     "Otherwise, the deprecated Open-to-Article is used";
 
-inline constexpr char kUsePrimaryAndTonalButtonsForPromosName[] =
-    "Use primary and tonal buttons for promos";
-inline constexpr char kUsePrimaryAndTonalButtonsForPromosDescription[] =
-    "Use consistent primary and tonal buttons for sign-in promos and "
-    "intercepts.";
-
 inline constexpr char kUserFeedbackAllowedPolicyName[] =
     "User Feedback Allowed Policy";
 inline constexpr char kUserFeedbackAllowedPolicyDescription[] =

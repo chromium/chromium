@@ -31,10 +31,8 @@ ${this.isTopRightCornerVariation_() ? html`
       class="${this.isFirstRunDesktopRevampEnabled_ ?
         'has-effects-control-button' : ''}">
     <cr-button id="declineSignInButton"
-        class="${!this.isFirstRunDesktopRevampEnabled_ ? 'tangible-button' : ''}
-               ${(this.usePrimaryAndTonalButtonsForPromos_ &&
-                  !this.isFirstRunDesktopRevampEnabled_) ? 'tonal-button' : ''}
-               ${this.isFirstRunDesktopRevampEnabled_ ? 'no-border' : ''}"
+        class="${this.isFirstRunDesktopRevampEnabled_ ?
+          'no-border' : 'tangible-button tonal-button'}"
         ?disabled="${this.shouldDisableButtons_()}"
         @click="${this.onDeclineSignInButtonClick_}">
       $i18n{declineSignInButtonTitle}
@@ -79,8 +77,7 @@ ${this.isTopRightCornerVariation_() ? html`
     <if expr="not is_win">
       ${this.isDefaultVariation_() ? html`
       <cr-button id="declineSignInButton"
-          class="tangible-button ${this.usePrimaryAndTonalButtonsForPromos_ ?
-              'tonal-button' : ''}"
+          class="tangible-button tonal-button"
           ?disabled="${this.shouldDisableButtons_()}"
           @click="${this.onDeclineSignInButtonClick_}">
         $i18n{declineSignInButtonTitle}
@@ -95,8 +92,7 @@ ${this.isTopRightCornerVariation_() ? html`
     <if expr="is_win">
       ${this.isDefaultVariation_() ? html`
       <cr-button id="declineSignInButton"
-          class="tangible-button ${this.usePrimaryAndTonalButtonsForPromos_ ?
-              'tonal-button' : ''}"
+          class="tangible-button tonal-button"
           ?disabled="${this.shouldDisableButtons_()}"
           @click="${this.onDeclineSignInButtonClick_}">
         $i18n{declineSignInButtonTitle}

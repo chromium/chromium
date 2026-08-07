@@ -238,10 +238,6 @@ void AddFlags(content::WebUIDataSource* source, Profile* profile) {
   source->AddBoolean("isModalDialog", false);
   source->AddBoolean("enforcedByPolicy", false);
 
-  source->AddBoolean("usePrimaryAndTonalButtonsForPromos",
-                     base::FeatureList::IsEnabled(
-                         switches::kUsePrimaryAndTonalButtonsForPromos));
-
   if (base::FeatureList::IsEnabled(
           switches::kDisableFirstRunAnimationsForTesting)) {
     CHECK_IS_TEST();

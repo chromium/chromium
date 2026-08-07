@@ -36,7 +36,6 @@ enum class ScreenVersion {
 struct ManagedUserProfileNoticePixelTestParam {
   PixelTestParam pixel_test_param;
   ScreenVersion screen_version = ScreenVersion::kOld;
-  bool use_primary_and_tonal_buttons = false;
 };
 
 std::string ParamToTestSuffix(
@@ -55,8 +54,7 @@ std::string ParamToTestSuffix(
       break;
   }
   return base::StrCat(
-      {info.param.pixel_test_param.test_suffix, screen_version_suffix,
-       info.param.use_primary_and_tonal_buttons ? "Tonal" : ""});
+      {info.param.pixel_test_param.test_suffix, screen_version_suffix});
 }
 
 std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
@@ -89,12 +87,8 @@ const std::vector<ManagedUserProfileNoticePixelTestParam>& GetTestParams() {
           for (ScreenVersion screen_version :
                {ScreenVersion::kOld, ScreenVersion::kRefreshed,
                 ScreenVersion::kRevamped}) {
-            for (bool use_primary_and_tonal_buttons : {false, true}) {
-              params.push_back({.pixel_test_param = window_param,
-                                .screen_version = screen_version,
-                                .use_primary_and_tonal_buttons =
-                                    use_primary_and_tonal_buttons});
-            }
+            params.push_back({.pixel_test_param = window_param,
+                              .screen_version = screen_version});
           }
         }
         return params;
@@ -165,9 +159,7 @@ class ManagedUserProfileNoticeUIWindowPixelTest
           GetParam().screen_version == ScreenVersion::kRefreshed ||
               GetParam().screen_version == ScreenVersion::kRevamped},
          {switches::kFirstRunDesktopRevamp,
-          GetParam().screen_version == ScreenVersion::kRevamped},
-         {switches::kUsePrimaryAndTonalButtonsForPromos,
-          GetParam().use_primary_and_tonal_buttons}});
+          GetParam().screen_version == ScreenVersion::kRevamped}});
   }
 
   ~ManagedUserProfileNoticeUIWindowPixelTest() override {

@@ -73,7 +73,6 @@ struct TestParam {
   SkColor4f primary_profile_color = SkColors::kBlue;
   NameFormat name_format = NameFormat::Regular;
   bool use_right_to_left_language = false;
-  bool use_primary_and_tonal_buttons_for_promos = false;
   bool enable_v2_profile_switch = false;
   std::string avatar_url;
 };
@@ -106,14 +105,6 @@ const TestParam kTestParams[] = {
         .intercepted_profile_color = SkColors::kMagenta,
     },
 
-    // Ditto, with primary and tonal buttons for promos.
-    {
-        .test_suffix = "ConsumerSimpleExplicitBrowserSigninPrimaryAndTonalButto"
-                       "nsForPromos",
-        .interception_type =
-            WebSigninInterceptor::SigninInterceptionType::kMultiUser,
-        .use_primary_and_tonal_buttons_for_promos = true,
-    },
 
     // Regular account signing in to a profile having a regular account on a
     // managed device (having policies configured locally for example).
@@ -245,18 +236,6 @@ const TestParam kTestParams[] = {
         .enable_v2_profile_switch = true,
         .avatar_url = "chrome://theme/IDR_PROFILE_AVATAR_30",
     },
-
-    // Profile switch bubble: the account used for signing in is already
-    // associated with another profile, with primary and tonal buttons for
-    // promos.
-    {
-        .test_suffix = "ProfileSwitchExplicitBrowserSigninPrimaryAndTonalButto"
-                       "nsForPromos",
-        .interception_type =
-            WebSigninInterceptor::SigninInterceptionType::kProfileSwitch,
-        .use_primary_and_tonal_buttons_for_promos = true,
-    },
-
     // Supervised user sign-in intercept bubble, no accounts in chrome.
     {
         .test_suffix = "ChromeSignInSupervisedUserIntercepted",
@@ -329,12 +308,6 @@ class DiceWebSigninInterceptionBubblePixelTest
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
-    if (GetParam().use_primary_and_tonal_buttons_for_promos) {
-      enabled_features.push_back(switches::kUsePrimaryAndTonalButtonsForPromos);
-    } else {
-      disabled_features.push_back(
-          switches::kUsePrimaryAndTonalButtonsForPromos);
-    }
 
     if (GetParam().enable_v2_profile_switch) {
       enabled_features.push_back(switches::kSigninInterceptGraphicUpdate);

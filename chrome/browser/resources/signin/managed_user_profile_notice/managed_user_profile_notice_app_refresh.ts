@@ -72,7 +72,6 @@ export class ManagedUserProfileNoticeAppRefreshElement extends
       currentState_: {type: Number},
       processingSubtitle_: {type: String},
       selectedDataHandling_: {type: String},
-      usePrimaryAndTonalButtons_: {type: Boolean},
       appMode_: {
         type: String,
         reflect: true,
@@ -112,8 +111,6 @@ export class ManagedUserProfileNoticeAppRefreshElement extends
   protected accessor processingSubtitle_: string =
       loadTimeData.getString('processingSubtitle');
   protected accessor selectedDataHandling_: BrowsingDataHandling|undefined;
-  private accessor usePrimaryAndTonalButtons_: boolean =
-      loadTimeData.getBoolean('usePrimaryAndTonalButtonsForPromos');
 
   private managedUserProfileNoticeBrowserProxy_:
       ManagedUserProfileNoticeBrowserProxy =
@@ -280,9 +277,7 @@ export class ManagedUserProfileNoticeAppRefreshElement extends
     this.selectedDataHandling_ = e.detail.value;
   }
 
-  protected getCancelButtonClass_(): string {
-    return this.usePrimaryAndTonalButtons_ ? 'tonal-button' : '';
-  }
+
 
   protected isState_(state: State): boolean {
     return this.currentState_ === state;

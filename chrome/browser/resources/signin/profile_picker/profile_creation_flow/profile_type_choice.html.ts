@@ -32,7 +32,7 @@ export function getHtml(this: ProfileTypeChoiceElement) {
   ${this.isRefreshedUi_ ? html`
     <if expr="not is_win">
       <cr-button id="notNowButton"
-          class="${this.getNotNowButtonClass_()}"
+          class="tonal-button"
           @click="${this.onNotNowClick_}"
           ?disabled="${this.profileCreationInProgress}">
         $i18n{declineSignInButtonLabel}
@@ -45,7 +45,7 @@ export function getHtml(this: ProfileTypeChoiceElement) {
     </cr-button>
     <if expr="is_win">
       <cr-button id="notNowButton"
-          class="${this.getNotNowButtonClass_()}"
+          class="tonal-button"
           @click="${this.onNotNowClick_}"
           ?disabled="${this.profileCreationInProgress}">
         $i18n{declineSignInButtonLabel}
@@ -58,7 +58,7 @@ export function getHtml(this: ProfileTypeChoiceElement) {
       $i18n{signInButtonLabel}
     </cr-button>
     <cr-button id="notNowButton"
-        class="${this.getNotNowButtonClass_()}"
+        class="tonal-button"
         @click="${this.onNotNowClick_}"
         ?disabled="${this.profileCreationInProgress}">
       $i18n{declineSignInButtonLabel}

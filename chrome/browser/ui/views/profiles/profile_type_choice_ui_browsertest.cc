@@ -26,7 +26,7 @@ namespace {
 struct ProfileTypeChoiceTestParam {
   PixelTestParam pixel_test_param;
   bool decline_signin_cta_experiment_enabled = false;
-  bool use_primary_and_tonal_buttons_for_promos = false;
+
   bool use_refreshed_ui = false;
 };
 
@@ -41,8 +41,6 @@ std::string ParamToTestSuffix(
 // Permutations of supported parameters.
 const ProfileTypeChoiceTestParam kTestParams[] = {
     {.pixel_test_param = {.test_suffix = "Regular"}},
-    {.pixel_test_param = {.test_suffix = "RegularUsePrimaryAndTonalButtons"},
-     .use_primary_and_tonal_buttons_for_promos = true},
     {.pixel_test_param = {.test_suffix = "RegularRefreshedUI"},
      .use_refreshed_ui = true},
     {.pixel_test_param = {.test_suffix = "RegularRefreshedUIDarkMode",
@@ -77,8 +75,7 @@ class ProfileTypeChoiceUIPixelTest
     scoped_feature_list_.InitWithFeatureStates(
         {{switches::kProfileCreationDeclineSigninCTAExperiment,
           GetParam().decline_signin_cta_experiment_enabled},
-         {switches::kUsePrimaryAndTonalButtonsForPromos,
-          GetParam().use_primary_and_tonal_buttons_for_promos},
+
          {switches::kFirstRunDesktopRefresh, GetParam().use_refreshed_ui}});
   }
 

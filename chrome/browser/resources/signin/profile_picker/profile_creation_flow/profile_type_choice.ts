@@ -64,7 +64,6 @@ export class ProfileTypeChoiceElement extends ProfileTypeChoiceElementBase {
        */
       managedDeviceDisclaimer_: {type: Boolean},
 
-      usePrimaryAndTonalButtons_: {type: Boolean},
 
       // Exposed to CSS as 'is-refreshed-ui_'.
       isRefreshedUi_: {
@@ -79,8 +78,6 @@ export class ProfileTypeChoiceElement extends ProfileTypeChoiceElementBase {
   accessor profileCreationInProgress: boolean = false;
   protected accessor managedDeviceDisclaimer_: boolean =
       loadTimeData.getString('managedDeviceDisclaimer').length > 0;
-  private accessor usePrimaryAndTonalButtons_: boolean =
-      loadTimeData.getBoolean('usePrimaryAndTonalButtonsForPromos');
   protected accessor isRefreshedUi_: boolean = isUseRefreshedUI();
   private manageProfilesBrowserProxy_: ManageProfilesBrowserProxy =
       ManageProfilesBrowserProxyImpl.getInstance();
@@ -127,10 +124,6 @@ export class ProfileTypeChoiceElement extends ProfileTypeChoiceElementBase {
   protected getBackButtonAriaLabel_(): string {
     return this.i18n(
         'backButtonAriaLabel', this.i18n('profileTypeChoiceTitle'));
-  }
-
-  protected getNotNowButtonClass_(): string {
-    return this.usePrimaryAndTonalButtons_ ? 'tonal-button' : '';
   }
 }
 

@@ -157,9 +157,6 @@ IntroUI::IntroUI(content::WebUI* web_ui)
   source->AddString("accountPicturePlaceholderUrl",
                     profiles::GetPlaceholderAvatarIconUrl());
   source->AddBoolean("isDeviceManaged", is_device_managed);
-  source->AddBoolean("usePrimaryAndTonalButtonsForPromos",
-                     base::FeatureList::IsEnabled(
-                         switches::kUsePrimaryAndTonalButtonsForPromos));
   source->AddBoolean("isFirstRunDesktopRevampEnabled",
                      is_first_run_desktop_revamp_enabled);
   if (base::FeatureList::IsEnabled(
