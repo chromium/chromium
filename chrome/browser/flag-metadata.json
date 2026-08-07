@@ -6386,8 +6386,8 @@
   },
   {
     "name": "ios-tips-notifications-string-alternatives",
-    "owners": [ "gayane@google.com", "bling-mony-pod@google.com" ],
-    "expiry_milestone": 155
+    "owners": ["zijingl@google.com", "bling-mony-pod@google.com"],
+    "expiry_milestone": 160
   },
   {
     "name": "ios-trusted-vault-notification",

@@ -14825,10 +14825,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled1",
-                    "params": {
-                        "TipsNotificationsAlternativeStringVersion": "1"
-                    },
+                    "name": "Enabled",
                     "enable_features": [
                         "IOSTipsNotificationsAlternativeStrings"
                     ]

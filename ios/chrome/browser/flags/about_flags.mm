@@ -1152,20 +1152,6 @@ const FeatureEntry::FeatureVariation kMobilePromoOnDesktopWave1Variations[] = {
      kMobilePromoOnDesktopPriceTrackingNotification, nullptr},
 };
 
-// Tips Notifications alternative strings.
-const FeatureEntry::FeatureParam kTipsNotificationsAlternative1[] = {
-    {kTipsNotificationsAlternativeStringVersion, "1"}};
-const FeatureEntry::FeatureParam kTipsNotificationsAlternative2[] = {
-    {kTipsNotificationsAlternativeStringVersion, "2"}};
-const FeatureEntry::FeatureParam kTipsNotificationsAlternative3[] = {
-    {kTipsNotificationsAlternativeStringVersion, "3"}};
-
-const FeatureEntry::FeatureVariation
-    kTipsNotificationsAlternativeStringVariation[] = {
-        {" - 1", kTipsNotificationsAlternative1, nullptr},
-        {" - 2", kTipsNotificationsAlternative2, nullptr},
-        {" - 3", kTipsNotificationsAlternative3, nullptr}};
-
 const FeatureEntry::FeatureParam kGeminiImageRemixToolShowFRERowParam[] = {
     {kGeminiImageRemixToolShowFRERow, "true"}};
 const FeatureEntry::FeatureParam
@@ -2283,10 +2269,7 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kIOSTipsNotificationsStringAlternativesName,
      flag_descriptions::kIOSTipsNotificationsStringAlternativesDescription,
      flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         kIOSTipsNotificationsAlternativeStrings,
-         kTipsNotificationsAlternativeStringVariation,
-         "IOSTipsNotificationsAlternativeStrings")},
+     FEATURE_VALUE_TYPE(kIOSTipsNotificationsAlternativeStrings)},
     {"variations-experimental-corpus",
      flag_descriptions::kVariationsExperimentalCorpusName,
      flag_descriptions::kVariationsExperimentalCorpusDescription,
