@@ -94,12 +94,6 @@ std::optional<PreflightRequiredReason> NeedsPreflight(
     return PreflightRequiredReason::kCorsWithForcedPreflightMode;
   }
 
-  if (!base::FeatureList::IsEnabled(features::kIgnoreCorsPreflightPolicy) &&
-      request.cors_preflight_policy ==
-          mojom::CorsPreflightPolicy::kPreventPreflight) {
-    return std::nullopt;
-  }
-
   if (!IsCorsSafelistedMethod(request.method))
     return PreflightRequiredReason::kDisallowedMethod;
 
