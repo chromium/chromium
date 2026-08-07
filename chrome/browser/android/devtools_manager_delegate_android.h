@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ANDROID_DEVTOOLS_MANAGER_DELEGATE_ANDROID_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
@@ -30,7 +31,14 @@ class DevToolsManagerDelegateAndroid : public content::DevToolsManagerDelegate {
 
  private:
   // content::DevToolsManagerDelegate implementation.
+  std::vector<base::WeakPtr<content::BrowserContext>> GetBrowserContexts()
+      override;
   content::BrowserContext* GetDefaultBrowserContext() override;
+  content::BrowserContext* GetBrowserContext(
+      const std::string& context_id) override;
+  content::BrowserContext* CreateBrowserContext() override;
+  void DisposeBrowserContext(content::BrowserContext* context,
+                             DisposeCallback callback) override;
   std::string GetTargetType(content::WebContents* web_contents) override;
   content::DevToolsAgentHost::List RemoteDebuggingTargets(
       TargetType target_type) override;

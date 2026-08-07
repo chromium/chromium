@@ -1,9 +1,5 @@
 This is a wdspec test.
-[FAIL] test_create_context
-  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
-[FAIL] test_unique_id
-  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
 [FAIL] test_storage_isolation
-  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+  AssertionError: assert 'value' == None
 Harness: the test ran to completion.
 

@@ -2354,6 +2354,9 @@ crbug.com/372097205 [ Android ] external/wpt/visual-viewport/page-and-offset-in-
 [ Webview ] external/wpt/webmidi/idlharness.https.window.html [ Failure ]
 
 # Webdriver tests timeout on Android
+crbug.com/508799457 [ Android ] external/wpt/webdriver/tests/bidi/browser/remove_user_context/user_context.py [ Failure Timeout ]
+crbug.com/508799457 [ Android ] external/wpt/webdriver/tests/bidi/browsing_context/create/user_context.py [ Failure ]
+crbug.com/508799457 [ Android ] external/wpt/webdriver/tests/bidi/script/add_preload_script/add_preload_script.py [ Failure Timeout ]
 crbug.com/395962971 [ Android ] external/wpt/webdriver/tests/bidi/browsing_context/context_created/original_opener.py [ Skip Timeout ]
 crbug.com/395962971 [ Android ] external/wpt/webdriver/tests/bidi/browsing_context/locate_nodes/invalid.py [ Skip Timeout ]
 crbug.com/395962971 [ Android ] external/wpt/webdriver/tests/bidi/browsing_context/navigate/navigate_beforeunload.py [ Skip Timeout ]

@@ -16,7 +16,7 @@
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/devtools/chrome_devtools_session_android.h"
 #include "chrome/browser/devtools/devtools_availability_checker.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/devtools/devtools_browser_context_manager.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/grit/browser_resources.h"
@@ -220,9 +220,33 @@ DevToolsManagerDelegateAndroid::DevToolsManagerDelegateAndroid() = default;
 
 DevToolsManagerDelegateAndroid::~DevToolsManagerDelegateAndroid() = default;
 
+std::vector<base::WeakPtr<content::BrowserContext>>
+DevToolsManagerDelegateAndroid::GetBrowserContexts() {
+  return DevToolsBrowserContextManager::GetInstance().GetBrowserContexts();
+}
+
 content::BrowserContext*
 DevToolsManagerDelegateAndroid::GetDefaultBrowserContext() {
-  return ProfileManager::GetActiveUserProfile()->GetOriginalProfile();
+  return DevToolsBrowserContextManager::GetInstance()
+      .GetDefaultBrowserContext();
+}
+
+content::BrowserContext* DevToolsManagerDelegateAndroid::GetBrowserContext(
+    const std::string& context_id) {
+  return DevToolsBrowserContextManager::GetInstance().GetProfileById(
+      context_id);
+}
+
+content::BrowserContext*
+DevToolsManagerDelegateAndroid::CreateBrowserContext() {
+  return DevToolsBrowserContextManager::GetInstance().CreateBrowserContext();
+}
+
+void DevToolsManagerDelegateAndroid::DisposeBrowserContext(
+    content::BrowserContext* context,
+    DisposeCallback callback) {
+  DevToolsBrowserContextManager::GetInstance().DisposeBrowserContext(
+      context, std::move(callback));
 }
 
 bool DevToolsManagerDelegateAndroid::IsCreatedByDevTools(

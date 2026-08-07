@@ -645,6 +645,62 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   EXPECT_EQ(nullptr,
             BrowserHandlerAndroid::FindBrowserWindowById(window_id.value()));
 }
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CreateListDisposeBrowserContext) {
+  AttachToBrowserTarget();
+
+  const base::DictValue* result =
+      SendCommandSync("Target.createBrowserContext");
+  ASSERT_TRUE(result);
+  const std::string* browser_context_id =
+      result->FindString("browserContextId");
+  ASSERT_TRUE(browser_context_id);
+  const std::string first_context_id = *browser_context_id;
+
+  result = SendCommandSync("Target.createBrowserContext");
+  ASSERT_TRUE(result);
+  browser_context_id = result->FindString("browserContextId");
+  ASSERT_TRUE(browser_context_id);
+  const std::string second_context_id = *browser_context_id;
+  EXPECT_NE(first_context_id, second_context_id);
+
+  result = SendCommandSync("Target.getBrowserContexts");
+  ASSERT_TRUE(result);
+  const base::ListValue* browser_context_ids =
+      result->FindList("browserContextIds");
+  ASSERT_TRUE(browser_context_ids);
+  EXPECT_TRUE(browser_context_ids->contains(first_context_id));
+  EXPECT_TRUE(browser_context_ids->contains(second_context_id));
+  const std::string* default_context_id =
+      result->FindString("defaultBrowserContextId");
+  ASSERT_TRUE(default_context_id);
+  EXPECT_NE(first_context_id, *default_context_id);
+  EXPECT_NE(second_context_id, *default_context_id);
+
+  base::DictValue params;
+  params.Set("browserContextId", first_context_id);
+  ASSERT_TRUE(
+      SendCommandSync("Target.disposeBrowserContext", std::move(params)));
+
+  result = SendCommandSync("Target.getBrowserContexts");
+  ASSERT_TRUE(result);
+  browser_context_ids = result->FindList("browserContextIds");
+  ASSERT_TRUE(browser_context_ids);
+  EXPECT_FALSE(browser_context_ids->contains(first_context_id));
+  EXPECT_TRUE(browser_context_ids->contains(second_context_id));
+
+  params = base::DictValue();
+  params.Set("browserContextId", second_context_id);
+  ASSERT_TRUE(
+      SendCommandSync("Target.disposeBrowserContext", std::move(params)));
+
+  result = SendCommandSync("Target.getBrowserContexts");
+  ASSERT_TRUE(result);
+  browser_context_ids = result->FindList("browserContextIds");
+  ASSERT_TRUE(browser_context_ids);
+  EXPECT_FALSE(browser_context_ids->contains(first_context_id));
+  EXPECT_FALSE(browser_context_ids->contains(second_context_id));
+}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,

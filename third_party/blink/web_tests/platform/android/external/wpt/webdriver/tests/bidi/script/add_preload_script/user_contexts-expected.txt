@@ -1,11 +1,11 @@
 This is a wdspec test.
 [FAIL] test_add_preload_script_to_user_context
-  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+  AssertionError: assert {'type': 'undefined'} == {'type': 'string', 'value': 'bar'}
 [FAIL] test_add_preload_script_to_default_user_context
-  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+  AssertionError: assert {'type': 'string', 'value': 'bar'} == {'type': 'undefined'}
 [FAIL] test_add_preload_script_to_multiple_user_contexts
-  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+  AssertionError: assert {'type': 'undefined'} == {'type': 'string', 'value': 'bar'}
 [FAIL] test_identical_user_contexts
-  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+  AssertionError: assert {'type': 'undefined'} == {'type': 'number', 'value': 1}
 Harness: the test ran to completion.
 
