@@ -764,64 +764,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFailedCookieSync, testCookieSyncFails) {
                                      2 /*COOKIE_SYNC_ERROR*/, 1);
 }
 
-// Connect the client, and check that the special request header is sent.
-// Tests that the response to a user confirmation dialog is correctly ordered
-// w.r.t. other Glic API calls. See b/465690937 and associated CLs for details.
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testDialogResponseCallOrder) {
-  auto* actor_service = actor::ActorKeyedService::Get(browser()->GetProfile());
-  ASSERT_TRUE(actor_service);
-
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents),
-                  CheckTabCount(1));
-
-  base::test::TestFuture<actor::TaskId> task_created;
-  base::CallbackListSubscription subscription =
-      actor_service->AddTaskStateChangedCallback(
-          base::BindLambdaForTesting([&](actor::ActorTask& task) {
-            if (task.GetState() == actor::ActorTask::State::kCreated) {
-              task_created.SetValue(task.id());
-            }
-          }));
-
-  // Client side subscribes to the observable returned from
-  // selectUserConfirmationDialogRequestHandler and it creates an actor task.
-  ExecuteJsTest();
-
-  // Wait for the task to be created. Put it in an interrupted state.
-  actor::ActorTask* task = actor_service->GetTask(task_created.Get());
-  ASSERT_TRUE(task);
-
-  // TODO(bokan): This shouldn't be necessary but the task is kCreated state
-  // from which we cannot interrupt.
-  task->SetState(actor::ActorTask::State::kReflecting);
-
-  task->Interrupt();
-  ASSERT_EQ(task->GetState(), actor::ActorTask::State::kWaitingOnUser);
-
-  // Request a user dialog to show and record the state of the task when the
-  // response from it is received.
-  base::test::TestFuture<actor::ActorTask::State>
-      state_when_dialog_response_received;
-  GetGlicInstanceImpl()
-      ->GetActorTaskManager()
-      ->GetClientSessionForTesting()
-      ->RequestToShowUserConfirmationDialog(
-          task->id(), url::Origin(), /*for_sensitive_origin=*/false,
-          base::BindLambdaForTesting(
-              [&](actor::webui::mojom::UserConfirmationDialogResponsePtr) {
-                state_when_dialog_response_received.SetValue(task->GetState());
-              }));
-
-  // The client side will respond to the dialog then uninterrupt the task.
-  // Ensure the dialog response is received before the task has been
-  // uninterrupted.
-  ContinueJsTest();
-
-  EXPECT_EQ(state_when_dialog_response_received.Get(),
-            actor::ActorTask::State::kWaitingOnUser);
-}
-
-
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testPopupOpens) {
   RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents),
                   CheckPopupCount(0));
