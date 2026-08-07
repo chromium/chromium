@@ -76,6 +76,11 @@ size_t GetMaxNumChips() {
           : kMaxActionChips);
 }
 
+bool IsScaledChipsEnabled() {
+  return base::FeatureList::IsEnabled(ntp_features::kNtpScaledActionChips) ||
+         base::FeatureList::IsEnabled(ntp_features::kNtpScaledActionChipsSmall);
+}
+
 template <typename T>
 void AssignMojoField(const T& source, T& dest) {
   dest = source;
@@ -361,7 +366,7 @@ ActionChipPtr CreateBrainstormChip() {
 std::optional<ActionChipPtr> CreateBrainstormChipIfEligible(
     std::string_view suggestion,
     const AimEligibilityService* aim_eligibility_service) {
-  if (!base::FeatureList::IsEnabled(ntp_features::kNtpScaledActionChipsSmall)) {
+  if (!IsScaledChipsEnabled()) {
     return std::nullopt;
   }
   return CreateBrainstormChip();
@@ -386,7 +391,7 @@ ActionChipPtr CreateLearnChip() {
 std::optional<ActionChipPtr> CreateLearnChipIfEligible(
     std::string_view suggestion,
     const AimEligibilityService* aim_eligibility_service) {
-  if (!base::FeatureList::IsEnabled(ntp_features::kNtpScaledActionChipsSmall)) {
+  if (!IsScaledChipsEnabled()) {
     return std::nullopt;
   }
   return CreateLearnChip();
@@ -411,7 +416,7 @@ ActionChipPtr CreateWriteChip() {
 std::optional<ActionChipPtr> CreateWriteChipIfEligible(
     std::string_view suggestion,
     const AimEligibilityService* aim_eligibility_service) {
-  if (!base::FeatureList::IsEnabled(ntp_features::kNtpScaledActionChipsSmall)) {
+  if (!IsScaledChipsEnabled()) {
     return std::nullopt;
   }
   return CreateWriteChip();
@@ -486,7 +491,13 @@ std::vector<ActionChipPtr> CreateChipsForSteadyState(
   using GeneratorFn = const base::FunctionRef<std::optional<ActionChipPtr>(
       std::string_view, const AimEligibilityService*)>;
   static const GeneratorFn kNewGenerators[] = {
+      &CreateBrainstormChipIfEligible,
+      &CreateLearnChipIfEligible,
+      &CreateWriteChipIfEligible,
       &CreateStarterChipIfEligible,
+      // TODO(crbug.com/537040757): Remove from here, only adding for test
+      // purposes until the server sends new chip types.
+      &CreateAddImageChipIfEligible,
       &CreateImageCreationChipIfEligible,
       &CreateCanvasChipIfEligible,
       &CreateDeepSearchChipIfEligible,
@@ -494,17 +505,12 @@ std::vector<ActionChipPtr> CreateChipsForSteadyState(
   static const GeneratorFn kOldGenerators[] = {
       &CreateDeepSearchChipIfEligible,
       &CreateImageCreationChipIfEligible,
-      &CreateBrainstormChipIfEligible,
-      &CreateLearnChipIfEligible,
-      &CreateWriteChipIfEligible,
-      // TODO(crbug.com/537040757): Remove from here, only adding for test
-      // purposes until the server sends new chip types.
-      &CreateAddImageChipIfEligible,
   };
 
   const base::span<GeneratorFn> generators =
       base::FeatureList::IsEnabled(ntp_features::kNtpNextCanvasChip) ||
-              base::FeatureList::IsEnabled(ntp_features::kNtpStarterChip)
+              base::FeatureList::IsEnabled(ntp_features::kNtpStarterChip) ||
+              IsScaledChipsEnabled()
           ? base::span<GeneratorFn>(kNewGenerators)
           : base::span<GeneratorFn>(kOldGenerators);
   const size_t max_num_chips = GetMaxNumChips();
@@ -604,7 +610,8 @@ void ActionChipsGeneratorImpl::GenerateActionChips(
   // loader.
   loader_.reset();
 
-  if (ntp_features::kNtpNextShowStaticTextParam.Get()) {
+  if (ntp_features::kNtpNextShowStaticTextParam.Get() ||
+      ntp_features::kNtpScaledActionChipsShowFallback.Get()) {
     std::move(callback).Run(CreateChipsForSteadyState(
         CreateTabInfo(*tab_id_generator_, tab), aim_eligibility_service_));
     return;

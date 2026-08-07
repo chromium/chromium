@@ -277,6 +277,31 @@ const ActionChipPtr& GetStaticStarterChip() {
   return *kInstance;
 }
 
+MATCHER(BrainstormChip, "") {
+  return arg && arg->suggest_template_info &&
+         arg->suggest_template_info->type_icon == IconType::kDraftSpark &&
+         arg->suggest_template_info->primary_text &&
+         arg->suggest_template_info->primary_text->text ==
+             l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_BRAINSTORM_HEADING);
+}
+
+MATCHER(LearnChip, "") {
+  return arg && arg->suggest_template_info &&
+         arg->suggest_template_info->type_icon == IconType::kDraftSpark &&
+         arg->suggest_template_info->primary_text &&
+         arg->suggest_template_info->primary_text->text ==
+             l10n_util::GetStringUTF8(
+                 IDS_NTP_ACTION_CHIP_HELP_ME_LEARN_HEADING);
+}
+
+MATCHER(WriteChip, "") {
+  return arg && arg->suggest_template_info &&
+         arg->suggest_template_info->type_icon == IconType::kDraftSpark &&
+         arg->suggest_template_info->primary_text &&
+         arg->suggest_template_info->primary_text->text ==
+             l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_WRITE_EDIT_HEADING);
+}
+
 // A container to store WebContents and its dependency.
 // The main usage is to populate TabInterface.
 class TabFixture {
@@ -425,6 +450,30 @@ TEST(ActionChipGeneratorTest,
   EXPECT_THAT(actual,
               ElementsAre(Eq(std::cref(GetStaticDeepSearchChip())),
                           Eq(std::cref(GetStaticImageGenerationChip()))));
+}
+
+TEST(ActionChipGeneratorTest, GenerateFallbackChips) {
+  EnvironmentFixture env;
+  GeneratorFixture generator_fixture;
+
+  EXPECT_CALL(generator_fixture.mock_aim_eligibility_service(),
+              IsCreateImagesEligible())
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(generator_fixture.mock_aim_eligibility_service(),
+              IsDeepSearchEligible())
+      .WillRepeatedly(Return(false));
+
+  base::test::ScopedFeatureList list;
+  list.InitWithFeaturesAndParameters(
+      {{ntp_features::kNtpScaledActionChips,
+        {{ntp_features::kNtpScaledActionChipsShowFallback.name, "true"}}}},
+      {});
+
+  base::RunLoop run_loop;
+  std::vector<ActionChipPtr> actual;
+  generator_fixture.GenerateActionChips(std::nullopt, run_loop, actual);
+  run_loop.Run();
+  EXPECT_THAT(actual, ElementsAre(BrainstormChip(), LearnChip(), WriteChip()));
 }
 
 TEST(ActionChipGeneratorTest,
@@ -1431,11 +1480,17 @@ TEST(ActionChipsGeneratorTest, SteadyStateFallbackChipsHavePreferredInventory) {
   EnvironmentFixture env;
   GeneratorFixture generator_fixture;
 
+  EXPECT_CALL(generator_fixture.mock_aim_eligibility_service(),
+              IsCreateImagesEligible())
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(generator_fixture.mock_aim_eligibility_service(),
+              IsDeepSearchEligible())
+      .WillRepeatedly(Return(false));
+
   base::test::ScopedFeatureList list;
   list.InitWithFeaturesAndParameters(
-      {{ntp_features::kNtpNextFeatures,
-        {{ntp_features::kNtpNextShowStaticTextParam.name, "true"}}},
-       {ntp_features::kNtpScaledActionChipsSmall, {}}},
+      {{ntp_features::kNtpScaledActionChips,
+        {{ntp_features::kNtpScaledActionChipsShowFallback.name, "true"}}}},
       {ntp_features::kNtpNextCanvasChip, ntp_features::kNtpStarterChip});
 
   base::RunLoop run_loop;
@@ -1443,26 +1498,25 @@ TEST(ActionChipsGeneratorTest, SteadyStateFallbackChipsHavePreferredInventory) {
   generator_fixture.GenerateActionChips(std::nullopt, run_loop, actual);
   run_loop.Run();
 
-  ASSERT_GE(actual.size(), 5u);
   // Brainstorm chip.
+  EXPECT_TRUE(actual[0]->suggestion.empty());
+  ASSERT_TRUE(actual[0]->suggest_template_info->fusebox_action);
+  EXPECT_EQ(
+      actual[0]->suggest_template_info->fusebox_action->preferred_inventory,
+      omnibox::SuggestInventory::SUGGEST_INVENTORY_BRAINSTORM);
+
+  // Help me learn chip.
+  EXPECT_TRUE(actual[1]->suggestion.empty());
+  ASSERT_TRUE(actual[1]->suggest_template_info->fusebox_action);
+  EXPECT_EQ(
+      actual[1]->suggest_template_info->fusebox_action->preferred_inventory,
+      omnibox::SuggestInventory::SUGGEST_INVENTORY_HELP_ME_LEARN);
+
+  // Write or edit chip.
   EXPECT_TRUE(actual[2]->suggestion.empty());
   ASSERT_TRUE(actual[2]->suggest_template_info->fusebox_action);
   EXPECT_EQ(
       actual[2]->suggest_template_info->fusebox_action->preferred_inventory,
-      omnibox::SuggestInventory::SUGGEST_INVENTORY_BRAINSTORM);
-
-  // Help me learn chip.
-  EXPECT_TRUE(actual[3]->suggestion.empty());
-  ASSERT_TRUE(actual[3]->suggest_template_info->fusebox_action);
-  EXPECT_EQ(
-      actual[3]->suggest_template_info->fusebox_action->preferred_inventory,
-      omnibox::SuggestInventory::SUGGEST_INVENTORY_HELP_ME_LEARN);
-
-  // Write or edit chip.
-  EXPECT_TRUE(actual[4]->suggestion.empty());
-  ASSERT_TRUE(actual[4]->suggest_template_info->fusebox_action);
-  EXPECT_EQ(
-      actual[4]->suggest_template_info->fusebox_action->preferred_inventory,
       omnibox::SuggestInventory::SUGGEST_INVENTORY_WRITE_OR_EDIT);
 }
 }  // namespace

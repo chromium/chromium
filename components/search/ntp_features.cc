@@ -203,7 +203,6 @@ BASE_FEATURE(kNtpOutlookCalendarModule,
 BASE_FEATURE(kNtpScaledActionChips, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, scaled merchandising action chips will be in a smaller format.
-// Requires #ntp-scaled-action-chips to be enabled too.
 BASE_FEATURE(kNtpScaledActionChipsSmall, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, sharepoint module will be shown.
@@ -438,6 +437,10 @@ const base::FeatureParam<int> kNtpMaxSmallChips(
 const base::FeatureParam<bool> kNtpScaledActionChipsSmallInTestMode(
     &ntp_features::kNtpScaledActionChipsSmall,
     "kNtpScaledActionChipsSmallInTestMode",
+    false);
+const base::FeatureParam<bool> kNtpScaledActionChipsShowFallback(
+    &ntp_features::kNtpScaledActionChips,
+    "kNtpScaledActionChipsShowFallback",
     false);
 
 const base::FeatureParam<int> kNtpCustomizeChromeAutoShownMaxCount(
