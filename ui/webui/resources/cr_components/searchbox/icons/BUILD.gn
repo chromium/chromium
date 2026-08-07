@@ -31,6 +31,7 @@ generate_grd("build_grdp") {
     "drive_slides.svg",
     "drive_video.svg",
     "extension_app.svg",
+    "extension_app_old.svg",
     "finance_cr23.svg",
     "history_cr23.svg",
     "incognito_cr23.svg",
@@ -47,6 +48,7 @@ generate_grd("build_grdp") {
     "sites.svg",
     "spark.svg",
     "star_active.svg",
+    "star_active_old.svg",
     "subdirectory_arrow_right.svg",
     "sunrise_cr23.svg",
     "tab_cr23.svg",
@@ -56,8 +58,9 @@ generate_grd("build_grdp") {
   ]
   if (!is_chrome_branded) {
     input_files += [
-      "mic.svg",
       "camera.svg",
+      "mic.svg",
+      "mic_old.svg",
     ]
   }
   input_files_base_dir = rebase_path(".", "//")

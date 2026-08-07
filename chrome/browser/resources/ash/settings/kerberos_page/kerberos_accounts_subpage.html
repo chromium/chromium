@@ -26,7 +26,7 @@
   }
 
   #addAccountIcon {
-    -webkit-mask-image: url(chrome://resources/images/add.svg);
+    -webkit-mask-image: url(chrome://resources/images/add_old.svg);
     background-color: currentColor;
     height: 24px;
     width: 24px;
@@ -50,6 +50,10 @@
   :host-context([dir='rtl']) .error-badge {
     left: auto;
     right: 60%;
+  }
+
+  :host-context([webui-rounded-icons]) #addAccountIcon {
+    -webkit-mask-image: url(chrome://resources/images/add.svg);
   }
 </style>
 

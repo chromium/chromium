@@ -203,7 +203,7 @@ cr-searchbox-input::part(icon) {
 }
 
 :host(:not([use-webkit-search-icons_])) #voiceSearchButton {
-  background-image: url(//resources/cr_components/searchbox/icons/mic.svg);
+  background-image: url(//resources/cr_components/searchbox/icons/mic_old.svg);
 }
 
 :host(:not([use-webkit-search-icons_])) #lensSearchButton {
@@ -211,7 +211,7 @@ cr-searchbox-input::part(icon) {
 }
 
 :host([use-webkit-search-icons_]) #voiceSearchButton {
-  -webkit-mask-image: url(//resources/cr_components/searchbox/icons/mic.svg);
+  -webkit-mask-image: url(//resources/cr_components/searchbox/icons/mic_old.svg);
 }
 
 :host([use-webkit-search-icons_]) #lensSearchButton {
@@ -332,4 +332,12 @@ cr-searchbox-dropdown::part(dropdown-content) {
 
 #composeButton:hover::part(hoverBackground) {
   opacity: 1;
+}
+
+:host-context([webui-rounded-icons]):host(:not([use-webkit-search-icons_])) #voiceSearchButton {
+  background-image: url(//resources/cr_components/searchbox/icons/mic.svg);
+}
+
+:host-context([webui-rounded-icons]):host([use-webkit-search-icons_]) #voiceSearchButton {
+  -webkit-mask-image: url(//resources/cr_components/searchbox/icons/mic.svg);
 }

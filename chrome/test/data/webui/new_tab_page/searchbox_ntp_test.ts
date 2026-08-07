@@ -264,8 +264,10 @@ suite('SearchboxTest', () => {
       const buttonsToTest = [
         {
           selector: '#voiceSearchButton',
-          iconUrl:
-              'url("chrome://resources/cr_components/searchbox/icons/mic.svg")',
+          iconUrl: `url("chrome://resources/cr_components/searchbox/icons/${
+              document.documentElement.hasAttribute('webui-rounded-icons') ?
+                  'mic.svg' :
+                  'mic_old.svg'}")`,
         },
         {
           selector: '#lensSearchButton',

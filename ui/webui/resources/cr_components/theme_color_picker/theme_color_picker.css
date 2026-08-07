@@ -24,7 +24,7 @@ cr-grid {
 }
 
 #colorPickerIcon {
-  -webkit-mask-image: url(chrome://resources/images/colorize.svg);
+  -webkit-mask-image: url(chrome://resources/images/colorize_old.svg);
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: 100%;
   background-color: var(
@@ -48,4 +48,8 @@ cr-theme-color {
       var(--cr-fallback-color-neutral-container));
   border-radius: 12px;
   padding: var(--cr-theme-color-padding);
+}
+
+:host-context([webui-rounded-icons]) #colorPickerIcon {
+  -webkit-mask-image: url(chrome://resources/images/colorize.svg);
 }

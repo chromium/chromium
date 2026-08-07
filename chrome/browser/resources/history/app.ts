@@ -229,8 +229,12 @@ export class HistoryAppElement extends HistoryAppElementBase {
       loadTimeData.getInteger('lastSelectedTab') || 0;
   protected accessor showTabs_: boolean = false;
   protected accessor showHistoryClusters_: boolean = false;
-  protected accessor tabsIcons_: string[] =
-      ['images/list.svg', 'chrome://resources/images/icon_journeys.svg'];
+  protected accessor tabsIcons_: string[] = [
+    'images/list.svg',
+    (document.documentElement.hasAttribute('webui-rounded-icons') ?
+         'chrome://resources/images/icon_journeys.svg' :
+         'chrome://resources/images/icon_journeys_old.svg'),
+  ];
   protected accessor tabsNames_: string[] = [
     loadTimeData.getString('historyListTabLabel'),
     loadTimeData.getString('historyClustersTabLabel'),

@@ -8,7 +8,7 @@
  * #css_wrapper_metadata_end */
 
 .icon-arrow-back {
-  --cr-icon-image: url(//resources/images/icon_arrow_back.svg);
+  --cr-icon-image: url(//resources/images/icon_arrow_back_old.svg);
 }
 
 .icon-arrow-dropdown {
@@ -48,7 +48,7 @@
 }
 
 .icon-edit {
-  --cr-icon-image: url(//resources/images/icon_edit.svg);
+  --cr-icon-image: url(//resources/images/icon_edit_old.svg);
 }
 
 .icon-file {
@@ -80,7 +80,7 @@
 }
 
 .icon-refresh {
-  --cr-icon-image: url(//resources/images/icon_refresh.svg);
+  --cr-icon-image: url(//resources/images/icon_refresh_old.svg);
 }
 
 .icon-search {
@@ -129,5 +129,19 @@
 @media (prefers-color-scheme: dark) {
   .cr-icon {
     background-color: var(--cr-icon-color, var(--google-grey-500));
+  }
+}
+
+:host-context([webui-rounded-icons]) {
+  .icon-refresh {
+    --cr-icon-image: url(//resources/images/icon_refresh.svg);
+  }
+
+  .icon-arrow-back {
+    --cr-icon-image: url(//resources/images/icon_arrow_back.svg);
+  }
+
+  .icon-edit {
+    --cr-icon-image: url(//resources/images/icon_edit.svg);
   }
 }

@@ -184,7 +184,7 @@ cr-searchbox-input::part(searchbox-input) {
 }
 
 :host([use-webkit-search-icons_]) #voiceSearchButton {
-  -webkit-mask-image: url(//resources/cr_components/searchbox/icons/mic.svg);
+  -webkit-mask-image: url(//resources/cr_components/searchbox/icons/mic_old.svg);
 }
 
 :host([use-webkit-search-icons_]) #lensSearchButton {
@@ -403,4 +403,8 @@ cr-composebox-contextual-entrypoint-button,
 #lensSearchButton,
 #profileIcon {
   -webkit-app-region: no-drag;
+}
+
+:host-context([webui-rounded-icons]):host([use-webkit-search-icons_]) #voiceSearchButton {
+  -webkit-mask-image: url(//resources/cr_components/searchbox/icons/mic.svg);
 }

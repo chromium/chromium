@@ -79,7 +79,7 @@
   }
 
   #addAccountIcon {
-    -webkit-mask-image: url(chrome://resources/images/add.svg);
+    -webkit-mask-image: url(chrome://resources/images/add_old.svg);
     background-color: currentColor;
     height: 24px;
     width: 24px;
@@ -122,6 +122,10 @@
     --focus-shadow-color: var(--cros-highlight-color-error);
     --hover-bg-action: var(--cros-sys-hover_on_prominent);
     --hover-shadow-action-rgb: var(--cros-color-alert-rgb);
+  }
+
+  :host-context([webui-rounded-icons]) #addAccountIcon {
+    -webkit-mask-image: url(chrome://resources/images/add.svg);
   }
 </style>
 

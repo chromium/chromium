@@ -152,7 +152,7 @@ customize-chrome-combobox {
 }
 
 #colorPickerIcon {
-  -webkit-mask-image: url(chrome://resources/images/colorize.svg);
+  -webkit-mask-image: url(chrome://resources/images/colorize_old.svg);
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: 100%;
   background-color: var(
@@ -311,4 +311,8 @@ cr-grid {
 
 .expand-carets {
   --cr-icon-image: url(icons/expand_carets.svg);
+}
+
+:host-context([webui-rounded-icons]) #colorPickerIcon {
+  -webkit-mask-image: url(chrome://resources/images/colorize.svg);
 }

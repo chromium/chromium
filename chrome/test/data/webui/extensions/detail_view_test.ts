@@ -89,7 +89,10 @@ suite('ExtensionDetailViewTest', function() {
 
     const computedStyle = getComputedStyle(closeButton);
     const iconImage = computedStyle.getPropertyValue('--cr-icon-image');
-    assertTrue(iconImage.includes('icon_arrow_back.svg'));
+    const isRounded =
+        document.documentElement.hasAttribute('webui-rounded-icons');
+    assertTrue(iconImage.includes(
+        isRounded ? 'icon_arrow_back.svg' : 'icon_arrow_back_old.svg'));
   });
 
   test('Layout', async () => {

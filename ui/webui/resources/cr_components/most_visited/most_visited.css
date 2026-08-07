@@ -74,7 +74,7 @@
 }
 
 #addShortcutIcon {
-  -webkit-mask-image: url(chrome://resources/images/add.svg);
+  -webkit-mask-image: url(chrome://resources/images/add_old.svg);
   background-color:
       var(--add-shortcut-foreground-color, var(--google-grey-900));
 }
@@ -315,4 +315,8 @@ cr-icon-button {
 
 cr-toast-manager {
   --cr-toast-white-space: normal;
+}
+
+:host-context([webui-rounded-icons]) #addShortcutIcon {
+  -webkit-mask-image: url(chrome://resources/images/add.svg);
 }

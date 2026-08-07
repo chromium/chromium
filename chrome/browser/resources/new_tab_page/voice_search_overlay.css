@@ -178,7 +178,7 @@
 }
 
 #micIcon {
-  -webkit-mask-image: url(icons/mic.svg);
+  -webkit-mask-image: url(icons/mic_old.svg);
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: 100%;
   background-color: var(--color-new-tab-page-mic-icon-color);
@@ -193,4 +193,8 @@
 
 .receiving #micIcon {
   background-color: white;
+}
+
+:host-context([webui-rounded-icons]) #micIcon {
+  -webkit-mask-image: url(icons/mic.svg);
 }

@@ -160,7 +160,7 @@ cr-composebox-submit::part(submit) {
 }
 
 #voiceSearchButton {
-  background-image: url(//resources/cr_components/searchbox/icons/mic.svg);
+  background-image: url(//resources/cr_components/searchbox/icons/mic_old.svg);
 }
 
 #lensSearchButton {
@@ -194,4 +194,8 @@ cr-composebox-tool-chip,
 #lensSearchButton,
 #profileIcon {
   -webkit-app-region: no-drag;
+}
+
+:host-context([webui-rounded-icons]) #voiceSearchButton {
+  background-image: url(//resources/cr_components/searchbox/icons/mic.svg);
 }

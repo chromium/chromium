@@ -76,7 +76,7 @@
 }
 
 #voiceSearchButton {
-  background-image: url(//resources/cr_components/searchbox/icons/mic.svg);
+  background-image: url(//resources/cr_components/searchbox/icons/mic_old.svg);
 }
 
 #lensSearchButton {
@@ -92,4 +92,8 @@
   top: 10px;
   width: 36px;
   z-index: 100;
+}
+
+:host-context([webui-rounded-icons]) #voiceSearchButton {
+  background-image: url(//resources/cr_components/searchbox/icons/mic.svg);
 }

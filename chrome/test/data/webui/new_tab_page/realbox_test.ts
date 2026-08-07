@@ -460,12 +460,16 @@ suite('NewTabPageRealboxNextTest', () => {
       colorSourceIsBaseline: false,
     });
     await microtasksFinished();
+    const expectedVoiceIcon =
+        document.documentElement.hasAttribute('webui-rounded-icons') ?
+        'mic.svg' :
+        'mic_old.svg';
 
     const buttonsToTest = [
       {
         selector: '#voiceSearchButton',
-        iconUrl:
-            'url("chrome://resources/cr_components/searchbox/icons/mic.svg")',
+        iconUrl: `url("chrome://resources/cr_components/searchbox/icons/${
+            expectedVoiceIcon}")`,
       },
       {
         selector: '#lensSearchButton',
