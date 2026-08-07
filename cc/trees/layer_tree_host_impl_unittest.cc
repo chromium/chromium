@@ -15193,6 +15193,20 @@ class ConcurrentSnapAnimationsTest : public LayerTreeHostImplTest {
     DrawFrame();
   }
 
+  void TickScrollAnimationsUntilIdle() {
+    // Tick snap animations to completion to avoid violating
+    // deferred_scroll_end_
+    // DCHECK in InputHandler::ScrollEnd.
+    AnimationHost* animation_host = GetImplAnimationHost();
+    int t = 1;
+    while (animation_host->HasImplOnlyScrollAnimatingElement()) {
+      animation_host->TickAnimations(
+          base::TimeTicks() + base::Milliseconds(t++ * 100),
+          host_impl_->GetScrollTree(), true, nullptr);
+      animation_host->UpdateAnimationState(true, nullptr);
+    }
+  }
+
   raw_ptr<LayerImpl> snapping_layer1_ = nullptr;
   raw_ptr<LayerImpl> snapping_layer2_ = nullptr;
   raw_ptr<ScrollNode> scroll_node1_ = nullptr;
@@ -15251,16 +15265,7 @@ TEST_P(ConcurrentSnapAnimationsTest, TrackAnimatingSnapTargetIds) {
   EXPECT_EQ(snap_state_map.at(container2_id_).animating_snap_target_ids_.y,
             ElementId(30));
 
-  // Tick snap animations to completion to avoid violating deferred_scroll_end_
-  // DCHECK in InputHandler::ScrollEnd.
-  AnimationHost* animation_host = GetImplAnimationHost();
-  int t = 1;
-  while (animation_host->HasImplOnlyScrollAnimatingElement()) {
-    animation_host->TickAnimations(
-        base::TimeTicks() + base::Milliseconds(t++ * 100),
-        host_impl_->GetScrollTree(), true, nullptr);
-    animation_host->UpdateAnimationState(true, nullptr);
-  }
+  TickScrollAnimationsUntilIdle();
 
   // Finish the snap animation for scroll_node1.
   handler.ScrollOffsetAnimationFinished(container1_id_);
@@ -15273,6 +15278,130 @@ TEST_P(ConcurrentSnapAnimationsTest, TrackAnimatingSnapTargetIds) {
   handler.ScrollOffsetAnimationFinished(container2_id_);
   EXPECT_FALSE(snap_state_map.contains(container1_id_));
   EXPECT_FALSE(snap_state_map.contains(container2_id_));
+}
+
+// A smooth scroll animation can finish while the gesture is still ongoing
+// (e.g. one wheel tick's smooth animation completes while the user keeps
+// scrolling). SnapAtScrollEnd triggered from ScrollOffsetAnimationFinished in
+// that situation must not clear the latched node, otherwise subsequent
+// ScrollUpdate calls early-return and scrolling stalls
+// (https://crbug.com/504284803)
+TEST_P(ConcurrentSnapAnimationsTest,
+       MidGestureScrollOffsetAnimationFinishedKeepsLatchedNode) {
+  auto& handler = GetInputHandler();
+
+  gfx::Point position(50, 50);
+  ui::ScrollInputType type = ui::ScrollInputType::kWheel;
+  base::flat_map<ElementId, InputHandler::SnapAnimationData>& snap_state_map =
+      handler.get_snap_animation_data_map_for_testing();
+
+  // Begin a wheel gesture on the snap container and perform an animated
+  // (kScrollByPixel) update, which creates an impl-only smooth scroll
+  // animation.
+  handler.ScrollBegin(BeginState(position, gfx::Vector2dF(0, 150), type).get(),
+                      type);
+  host_impl_->GetScrollTree().set_currently_scrolling_node(scroll_node1_->id);
+  ASSERT_TRUE(
+      handler
+          .ScrollUpdate(AnimatedUpdateState(position, gfx::Vector2dF(0, 150)))
+          .did_scroll);
+
+  // Let the smooth scroll animation finish. No ScrollEnd is issued: the
+  // gesture is still in progress, mimicking the user keeps scrolling.
+  TickScrollAnimationsUntilIdle();
+
+  // The smooth animation finished mid-gesture -> SnapAtScrollEnd starts a
+  // snap animation. The latched node must be preserved so further updates
+  // keep working; without the fix it was cleared here.
+  handler.ScrollOffsetAnimationFinished(container1_id_);
+  EXPECT_TRUE(snap_state_map.contains(container1_id_));
+  EXPECT_TRUE(host_impl_->GetScrollTree().CurrentlyScrollingNode());
+
+  // The user keeps scrolling: the update must still be consumed (it retargets
+  // the running snap animation). Without the fix this returned
+  // did_scroll=false.
+  EXPECT_TRUE(
+      handler
+          .ScrollUpdate(AnimatedUpdateState(position, gfx::Vector2dF(0, 100)))
+          .did_scroll);
+
+  // Clean teardown: abort the retargeted animation and end without snapping so
+  // no new snap animation is created.
+  GetImplAnimationHost()->ScrollAnimationAbort(container1_id_);
+  handler.ScrollEnd(/*should_snap=*/false, std::nullopt);
+  EXPECT_FALSE(host_impl_->GetScrollTree().CurrentlyScrollingNode());
+}
+
+// When the GSE arrives while a smooth animation is still running, the
+// scroll-end is deferred. Once that animation finishes, SnapAtScrollEnd must
+// still clear the latched node so a new gesture during the snap animation can
+// latch to a different container.
+TEST_P(ConcurrentSnapAnimationsTest,
+       DeferredGestureScrollOffsetAnimationFinishedClearsLatchedNode) {
+  auto& handler = GetInputHandler();
+
+  gfx::Point position(50, 50);
+  ui::ScrollInputType type = ui::ScrollInputType::kWheel;
+  base::flat_map<ElementId, InputHandler::SnapAnimationData>& snap_state_map =
+      handler.get_snap_animation_data_map_for_testing();
+
+  handler.ScrollBegin(BeginState(position, gfx::Vector2dF(0, 150), type).get(),
+                      type);
+  host_impl_->GetScrollTree().set_currently_scrolling_node(scroll_node1_->id);
+  ASSERT_TRUE(
+      handler
+          .ScrollUpdate(AnimatedUpdateState(position, gfx::Vector2dF(0, 150)))
+          .did_scroll);
+
+  // GSE arrives while the smooth animation is still running -> ScrollEnd
+  // defers and leaves the node latched.
+  handler.ScrollEnd(/*should_snap=*/true, std::nullopt);
+  EXPECT_TRUE(host_impl_->GetScrollTree().CurrentlyScrollingNode());
+
+  // The smooth animation finishes -> gesture has ended (scroll-end deferred),
+  // so SnapAtScrollEnd clears the latched node.
+  TickScrollAnimationsUntilIdle();
+  handler.ScrollOffsetAnimationFinished(container1_id_);
+  EXPECT_FALSE(host_impl_->GetScrollTree().CurrentlyScrollingNode());
+  EXPECT_TRUE(snap_state_map.contains(container1_id_));
+
+  // Flush the snap animation + deferred scroll-end for clean teardown.
+  TickScrollAnimationsUntilIdle();
+  handler.ScrollOffsetAnimationFinished(container1_id_);
+  EXPECT_FALSE(host_impl_->GetScrollTree().CurrentlyScrollingNode());
+  EXPECT_FALSE(snap_state_map.contains(container1_id_));
+}
+
+// The ScrollEnd path (should_snap with no running animation) must continue to
+// clear the latched node -- unchanged behavior.
+TEST_P(ConcurrentSnapAnimationsTest, GestureScrollEndSnapClearsLatchedNode) {
+  auto& handler = GetInputHandler();
+
+  gfx::Point position(50, 50);
+  ui::ScrollInputType type = ui::ScrollInputType::kWheel;
+  base::flat_map<ElementId, InputHandler::SnapAnimationData>& snap_state_map =
+      handler.get_snap_animation_data_map_for_testing();
+
+  handler.ScrollBegin(BeginState(position, gfx::Vector2dF(0, 150), type).get(),
+                      type);
+  host_impl_->GetScrollTree().set_currently_scrolling_node(scroll_node1_->id);
+  ASSERT_TRUE(
+      handler
+          .ScrollUpdate(AnimatedUpdateState(position, gfx::Vector2dF(0, 150)))
+          .did_scroll);
+
+  // Finish the smooth animation first so ScrollEnd takes the direct snap path
+  // rather than deferring.
+  TickScrollAnimationsUntilIdle();
+
+  handler.ScrollEnd(/*should_snap=*/true, std::nullopt);
+  EXPECT_FALSE(host_impl_->GetScrollTree().CurrentlyScrollingNode());
+  EXPECT_TRUE(snap_state_map.contains(container1_id_));
+
+  // Flush the snap animation + deferred scroll-end for clean teardown.
+  TickScrollAnimationsUntilIdle();
+  handler.ScrollOffsetAnimationFinished(container1_id_);
+  EXPECT_FALSE(snap_state_map.contains(container1_id_));
 }
 
 class ElasticOverscrollTest : public LayerTreeHostImplTest {

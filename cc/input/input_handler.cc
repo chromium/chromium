@@ -2542,7 +2542,18 @@ bool InputHandler::SnapAtScrollEnd(SnapReason reason) {
     // Forget the scroll container that is currently
     // latched so that any scroll gesture that occurs during the snap
     // animation will be allowed to scroll the appropriate container.
-    ClearCurrentlyScrollingNode();
+    // Only do this when the gesture has ended: triggered from ScrollEnd, or
+    // the GSE already arrived and the scroll-end is deferred. Otherwise the
+    // gesture is still in progress and clearing would stall subsequent
+    // ScrollUpdates (https://crbug.com/504284803). This happens when a smooth
+    // scroll animation finishes before the gesture's scroll-end, e.g. a wheel
+    // tick's smooth animation completes while the user keeps scrolling.
+    bool gesture_ended =
+        reason == SnapReason::kGestureScrollEnd ||
+        deferred_scroll_ends_.contains(scroll_node->element_id);
+    if (gesture_ended) {
+      ClearCurrentlyScrollingNode();
+    }
 
     EnsureSnapAnimationData(scroll_node->element_id);
     // The updated snap target will be set when the animation is completed.
