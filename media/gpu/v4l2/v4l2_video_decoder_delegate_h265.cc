@@ -295,8 +295,15 @@ V4L2VideoDecoderDelegateH265::SubmitFrameMetadata(
                   std::remove_reference_t<decltype(pps->column_width_minus1)>>,
           "column_width_minus1 arrays must be same size");
       for (int i = 0; i <= pps->num_tile_columns_minus1; ++i) {
+        if (!base::IsValueInRangeForNumericType<__u8>(
+                pps->column_width_minus1[i])) {
+          DVLOG(1) << "column_width_minus1[" << i
+                   << "]=" << pps->column_width_minus1[i]
+                   << " exceeds V4L2 UAPI __u8 range";
+          return Status::kFail;
+        }
         UNSAFE_TODO(v4l2_pps.column_width_minus1[i]) =
-            pps->column_width_minus1[i];
+            base::checked_cast<__u8>(pps->column_width_minus1[i]);
       }
 
       static_assert(
@@ -305,7 +312,15 @@ V4L2VideoDecoderDelegateH265::SubmitFrameMetadata(
                   std::remove_reference_t<decltype(pps->row_height_minus1)>>,
           "row_height_minus1 arrays must be same size");
       for (int i = 0; i <= pps->num_tile_rows_minus1; ++i) {
-        UNSAFE_TODO(v4l2_pps.row_height_minus1[i]) = pps->row_height_minus1[i];
+        if (!base::IsValueInRangeForNumericType<__u8>(
+                pps->row_height_minus1[i])) {
+          DVLOG(1) << "row_height_minus1[" << i
+                   << "]=" << pps->row_height_minus1[i]
+                   << " exceeds V4L2 UAPI __u8 range";
+          return Status::kFail;
+        }
+        UNSAFE_TODO(v4l2_pps.row_height_minus1[i]) =
+            base::checked_cast<__u8>(pps->row_height_minus1[i]);
       }
     }
   }
