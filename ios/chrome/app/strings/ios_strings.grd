@@ -5081,13 +5081,13 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
         Choose the notifications you want to receive
       </message>
 
-      <message name="IDS_IOS_NOTIFICATIONS_TIPS_ENHANCED_SAFE_BROWSING_ALT2_TITLE" desc="Text for the title of a Tips notification that encourages the user to enable Enhanced Safe Browsing">
+      <message name="IDS_IOS_NOTIFICATIONS_TIPS_ENHANCED_SAFE_BROWSING_ALT_TITLE" desc="Text for the title of a Tips notification that encourages the user to enable Enhanced Safe Browsing">
          Turn On Enhanced Safe Browsing
       </message>
       <message name="IDS_IOS_NOTIFICATIONS_TIPS_ENHANCED_SAFE_BROWSING_BODY" desc="Text for the body of a Tips notification that encourages the user to enable Enhanced Safe Browsing">
         Add an extra layer of protection against online threats.
       </message>
-      <message name="IDS_IOS_NOTIFICATIONS_TIPS_LENS_ALT1_BODY" desc="Text for the body of a Tips notification that encourages the user to search with Lens">
+      <message name="IDS_IOS_NOTIFICATIONS_TIPS_LENS_ALT_BODY" desc="Text for the body of a Tips notification that encourages the user to search with Lens">
          Now you can shop and translate with your camera. Tap to try it out.
       </message>
       <message name="IDS_IOS_NOTIFICATIONS_TIPS_LENS_BODY" desc="Text for the body of a Tips notification that encourages the user to search with Lens">
@@ -5096,19 +5096,19 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_NOTIFICATIONS_TIPS_LENS_OVERLAY_BODY" desc="Text for the body of a Tips notification that encourages the user to use the Lens Overlay feature.">
         Learn more as you browse and search what you see on any page to explore products, places and text.
       </message>
-      <message name="IDS_IOS_NOTIFICATIONS_TIPS_OMNIBOX_POSITION_ALT2_TITLE" desc="Text for the title of a Tips notification that reminds the user to set their preferred omnibox position">
+      <message name="IDS_IOS_NOTIFICATIONS_TIPS_OMNIBOX_POSITION_ALT_TITLE" desc="Text for the title of a Tips notification that reminds the user to set their preferred omnibox position">
          Choose your address bar position
       </message>
       <message name="IDS_IOS_NOTIFICATIONS_TIPS_OMNIBOX_POSITION_BODY" desc="Text for the body of a Tips notification that reminds the user to set their preferred omnibox position">
         Switch the position of your address bar for a customized experience.
       </message>
-      <message name="IDS_IOS_NOTIFICATIONS_TIPS_SIGNIN_ALT1_BODY" desc="Text for the body of a Tips notification that encourages the user to sign in to their account">
+      <message name="IDS_IOS_NOTIFICATIONS_TIPS_SIGNIN_ALT_BODY" desc="Text for the body of a Tips notification that encourages the user to sign in to their account">
          Sign in to get all your stuff like passwords, bookmarks, and more.
       </message>
       <message name="IDS_IOS_NOTIFICATIONS_TIPS_TRUSTED_VAULT_KEY_RETRIVAL_BODY" desc="TODO">
         Verify it's you to access all your passwords on this device.
       </message>
-      <message name="IDS_IOS_NOTIFICATIONS_TIPS_WHATS_NEW_ALT1_BODY" desc="Text for the body of a Tips notification that takes the user to the Whats New page">
+      <message name="IDS_IOS_NOTIFICATIONS_TIPS_WHATS_NEW_ALT_BODY" desc="Text for the body of a Tips notification that takes the user to the Whats New page">
          Family passwords, new customizations and more. Tap to learn more.
       </message>
       <message name="IDS_IOS_NOTIFICATIONS_TITLE" desc="Title for Notifications settings menu.">

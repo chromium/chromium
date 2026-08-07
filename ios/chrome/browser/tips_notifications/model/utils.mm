@@ -30,13 +30,13 @@ struct ContentIDs {
 int DockingBodyID(bool isAlternativeStringEnabled) {
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     if (isAlternativeStringEnabled) {
-      return IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_ALT1_BODY_IPAD;
+      return IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_ALT_BODY_IPAD;
     }
     return IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_BODY_IPAD;
   }
 
   if (isAlternativeStringEnabled) {
-    return IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_ALT1_BODY_IPHONE;
+    return IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_ALT_BODY_IPHONE;
   }
   return IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_BODY_IPHONE;
 }
@@ -44,9 +44,9 @@ int DockingBodyID(bool isAlternativeStringEnabled) {
 // Returns the string id of the body text for the setup list promo notification.
 int SetupListBodyAlternativeID() {
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return IDS_IOS_NOTIFICATIONS_TIPS_SETUPLIST_CONTINUATION_ALT1_BODY_IPAD;
+    return IDS_IOS_NOTIFICATIONS_TIPS_SETUPLIST_CONTINUATION_ALT_BODY_IPAD;
   }
-  return IDS_IOS_NOTIFICATIONS_TIPS_SETUPLIST_CONTINUATION_ALT1_BODY_IPHONE;
+  return IDS_IOS_NOTIFICATIONS_TIPS_SETUPLIST_CONTINUATION_ALT_BODY_IPHONE;
 }
 
 // Returns the title and the body text ids for the default browser promo
@@ -54,7 +54,7 @@ int SetupListBodyAlternativeID() {
 ContentIDs DefaultBrowserContentIDsForAlternative(
     bool isAlternativeStringEnabled) {
   if (isAlternativeStringEnabled) {
-    return {IDS_IOS_NOTIFICATIONS_TIPS_DEFAULT_BROWSER_ALT1_TITLE,
+    return {IDS_IOS_NOTIFICATIONS_TIPS_DEFAULT_BROWSER_ALT_TITLE,
             IDS_IOS_NOTIFICATIONS_TIPS_DEFAULT_BROWSER_BODY};
   }
 
@@ -67,7 +67,7 @@ ContentIDs DefaultBrowserContentIDsForAlternative(
 ContentIDs WhatsNewContentIDsForAlternative(bool isAlternativeStringEnabled) {
   if (isAlternativeStringEnabled) {
     return {IDS_IOS_NOTIFICATIONS_TIPS_WHATS_NEW_TITLE,
-            IDS_IOS_NOTIFICATIONS_TIPS_WHATS_NEW_ALT1_BODY};
+            IDS_IOS_NOTIFICATIONS_TIPS_WHATS_NEW_ALT_BODY};
   }
   return {IDS_IOS_NOTIFICATIONS_TIPS_WHATS_NEW_TITLE,
           IDS_IOS_NOTIFICATIONS_TIPS_WHATS_NEW_BODY};
@@ -77,7 +77,7 @@ ContentIDs WhatsNewContentIDsForAlternative(bool isAlternativeStringEnabled) {
 ContentIDs SignInContentIDsForAlternative(bool isAlternativeStringEnabled) {
   if (isAlternativeStringEnabled) {
     return {IDS_IOS_NOTIFICATIONS_TIPS_SIGNIN_TITLE,
-            IDS_IOS_NOTIFICATIONS_TIPS_SIGNIN_ALT1_BODY};
+            IDS_IOS_NOTIFICATIONS_TIPS_SIGNIN_ALT_BODY};
   }
   return {IDS_IOS_NOTIFICATIONS_TIPS_SIGNIN_TITLE,
           IDS_IOS_NOTIFICATIONS_TIPS_SIGNIN_BODY};
@@ -97,7 +97,7 @@ ContentIDs SetupListContentIDsForAlternative(bool isAlternativeStringEnabled) {
 // Returns the title and the body text ids for the dockingpromo notification.
 ContentIDs DockingContentIDsForAlternative(bool isAlternativeStringEnabled) {
   if (isAlternativeStringEnabled) {
-    return {IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_ALT1_TITLE,
+    return {IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_ALT_TITLE,
             DockingBodyID(isAlternativeStringEnabled)};
   }
   return {IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_TITLE,
@@ -109,7 +109,7 @@ ContentIDs DockingContentIDsForAlternative(bool isAlternativeStringEnabled) {
 ContentIDs OmniboxPositionContentIDsForAlternative(
     bool isAlternativeStringEnabled) {
   if (isAlternativeStringEnabled) {
-    return {IDS_IOS_NOTIFICATIONS_TIPS_OMNIBOX_POSITION_ALT2_TITLE,
+    return {IDS_IOS_NOTIFICATIONS_TIPS_OMNIBOX_POSITION_ALT_TITLE,
             IDS_IOS_NOTIFICATIONS_TIPS_OMNIBOX_POSITION_BODY};
   }
   return {IDS_IOS_NOTIFICATIONS_TIPS_OMNIBOX_POSITION_TITLE,
@@ -119,8 +119,8 @@ ContentIDs OmniboxPositionContentIDsForAlternative(
 // Returns the title and the body text ids for the lens promo notification.
 ContentIDs LensContentIDsForAlternative(bool isAlternativeStringEnabled) {
   if (isAlternativeStringEnabled) {
-    return {IDS_IOS_NOTIFICATIONS_TIPS_LENS_ALT1_TITLE,
-            IDS_IOS_NOTIFICATIONS_TIPS_LENS_ALT1_BODY};
+    return {IDS_IOS_NOTIFICATIONS_TIPS_LENS_ALT_TITLE,
+            IDS_IOS_NOTIFICATIONS_TIPS_LENS_ALT_BODY};
   }
   return {IDS_IOS_NOTIFICATIONS_TIPS_LENS_TITLE,
           IDS_IOS_NOTIFICATIONS_TIPS_LENS_BODY};
@@ -131,7 +131,7 @@ ContentIDs LensContentIDsForAlternative(bool isAlternativeStringEnabled) {
 ContentIDs SafeBrowsingContentIDsForAlternative(
     bool isAlternativeStringEnabled) {
   if (isAlternativeStringEnabled) {
-    return {IDS_IOS_NOTIFICATIONS_TIPS_ENHANCED_SAFE_BROWSING_ALT2_TITLE,
+    return {IDS_IOS_NOTIFICATIONS_TIPS_ENHANCED_SAFE_BROWSING_ALT_TITLE,
             IDS_IOS_NOTIFICATIONS_TIPS_ENHANCED_SAFE_BROWSING_BODY};
   }
   return {IDS_IOS_NOTIFICATIONS_TIPS_ENHANCED_SAFE_BROWSING_TITLE,
