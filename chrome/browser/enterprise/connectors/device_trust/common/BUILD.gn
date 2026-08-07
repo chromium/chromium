@@ -15,8 +15,4 @@ source_set("common") {
   ]
 
   deps = []
-
-  if (is_chromeos) {
-    deps += [ "//chromeos/ash/components/install_attributes" ]
-  }
 }

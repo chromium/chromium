@@ -72,7 +72,7 @@ void LogDeviceTrustResponse(const DeviceTrustResponse& response,
 #if BUILDFLAG(IS_CHROMEOS)
 void LogOrigin(DTOrigin origin);
 
-void LogEnrollmentStatus();
+void LogEnrollmentStatus(bool is_enterprise_managed);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace enterprise_connectors

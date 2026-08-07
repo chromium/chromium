@@ -31,6 +31,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace enterprise_connectors {
@@ -198,7 +199,7 @@ DeviceTrustNavigationThrottle::AddHeadersIfNeeded() {
 #if BUILDFLAG(IS_CHROMEOS)
     LogOrigin(GetAttestationFlowOrigin(
         navigation_handle()->GetWebContents()->GetBrowserContext()));
-    LogEnrollmentStatus();
+    LogEnrollmentStatus(ash::InstallAttributes::Get()->IsEnterpriseManaged());
 #endif  // BUILDFLAG(IS_CHROMEOS)
     LogAttestationFunnelStep(DTAttestationFunnelStep::kAttestationFlowStarted);
     navigation_handle()->SetRequestHeader(kDeviceTrustHeader,
