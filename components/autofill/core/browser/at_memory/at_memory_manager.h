@@ -133,6 +133,10 @@ class AtMemoryManager : public CreditCardAccessManager::Observer {
   // Creates the search affordance suggestion.
   static Suggestion CreateSearchAffordanceSuggestion(std::u16string query);
 
+  void set_target_field_origin(const url::Origin& origin) {
+    target_field_origin_ = origin;
+  }
+
   // Creates a source attribution suggestion ("Suggested by Gemini").
   static Suggestion CreateSourceAttributionSuggestion();
 
@@ -262,6 +266,8 @@ class AtMemoryManager : public CreditCardAccessManager::Observer {
 
   bool credit_card_fetch_in_progress_ = false;
 
+  // Origin of the target field for the active search session.
+  url::Origin target_field_origin_;
   // Factory for search queries, used to identify currently active query and
   // discard the old ones.
   base::WeakPtrFactory<AtMemoryManager> query_weak_ptr_factory_{this};

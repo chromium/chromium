@@ -67,6 +67,7 @@ class AutofillAiAccessManager {
   virtual bool FetchEntityInstance(
       EntityInstance entity,
       bool will_fill_sensitive_info,
+      const url::Origin& origin,
       OnAuthenticationCompleteCallback on_auth_complete_callback,
       OnEntityInstanceFetchedCallback on_fetched_callback);
 
@@ -88,6 +89,7 @@ class AutofillAiAccessManager {
       EntityInstance entity,
       bool should_reauth,
       bool should_fetch_from_server,
+      const url::Origin& origin,
       OnAuthenticationCompleteCallback on_auth_complete_callback,
       OnUnmaskCallback on_unmask_callback);
 

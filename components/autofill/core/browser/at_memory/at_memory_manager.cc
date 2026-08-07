@@ -386,6 +386,9 @@ void AtMemoryManager::OnPopupShown(
         form ? form->form_signature() : FormSignature(0);
     const FieldSignature field_signature =
         field ? field->GetFieldSignature() : FieldSignature(0);
+    if (field) {
+      target_field_origin_ = field->origin();
+    }
     session_state_.emplace(SessionState{
         .trigger_source = trigger_source,
         .update_callback = std::move(update_callback),
@@ -450,6 +453,7 @@ bool AtMemoryManager::OnSearchSubmitted(const std::u16string& filter) {
 void AtMemoryManager::OnPopupHidden() {
   session_state_.reset();
   CancelPendingQueries();
+  target_field_origin_ = url::Origin();
   credit_card_fetch_in_progress_ = false;
   ccam_observation_.Reset();
 }
@@ -500,6 +504,7 @@ IsAsync AtMemoryManager::FillSearchResult(
   if (session_state_) {
     metrics = std::move(session_state_->metrics_recorder);
   }
+
   switch (payload.memory_data_type) {
     case MemoryDataType::kIban: {
       IsAsync is_async(false);
@@ -1113,7 +1118,7 @@ IsAsync AtMemoryManager::FillSensitivePersonalContextData(
   query_service->AuthenticateAndFetchPiiEntity(
       owner_->client(),
       GetAuthenticationMessage(
-          owner_->client().GetLastCommittedPrimaryMainFrameOrigin()),
+          GetTargetFieldOrigin(target_field_origin_, owner_->client())),
       payload.value, payload.memory_data_type,
       GetMetadataFromSuggestion(suggestion),
       base::BindOnce(&AtMemoryManager::OnSensitivePersonalContextDataFetched,
@@ -1207,7 +1212,9 @@ IsAsync AtMemoryManager::FillSensitiveAutofillAiData(
   // TODO(crbug.com/c/536814322): Show loading dialog on Android after
   // successful authentication.
   return IsAsync(owner_->GetAutofillAiAccessManager().FetchEntityInstance(
-      *entity, /*will_fill_sensitive_info=*/true, base::DoNothing(),
+      *entity, /*will_fill_sensitive_info=*/true,
+      GetTargetFieldOrigin(target_field_origin_, owner_->client()),
+      base::DoNothing(),
       base::BindOnce(&AtMemoryManager::OnAutofillAiFetched,
                      fill_weak_ptr_factory_.GetWeakPtr(), form_id, field_id,
                      suggestion, attribute_type, std::move(metrics))));

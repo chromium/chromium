@@ -72,6 +72,11 @@ bool WillRequireServerFetch(const EntityInstance& entity,
                             const Section& section,
                             std::string_view app_locale);
 
+// Returns the origin of the field being targeted, falling back to the
+// primary main frame origin if `origin` is opaque.
+url::Origin GetTargetFieldOrigin(const url::Origin& origin,
+                                 const AutofillClient& client);
+
 // Returns the authentication message shown when reauthenticating with
 // biometrics for `origin`.
 std::u16string GetAuthenticationMessage(const url::Origin& origin);

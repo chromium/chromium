@@ -92,6 +92,7 @@ using ::testing::WithParamInterface;
 
 constexpr size_t kVisibleSuffixLength = 4;
 constexpr std::u16string_view kDots = u"\u2022\u2060\u2006\u2060";
+constexpr std::string_view kFormUrl = "https://myform.com/form.html";
 
 class MockAutofillClient : public TestAutofillClient {
  public:
@@ -153,6 +154,7 @@ class MockAutofillAiAccessManager : public AutofillAiAccessManager {
               FetchEntityInstance,
               (EntityInstance entity,
                bool will_fill_sensitive_info,
+               const url::Origin& origin,
                OnAuthenticationCompleteCallback on_auth_complete_callback,
                OnEntityInstanceFetchedCallback on_fetched_callback),
               (override));
@@ -261,7 +263,12 @@ class AtMemoryManagerTest : public Test,
   // Creates a test form, calls `AutofillManager::OnFormsSeen` with it and
   // returns a pair of the form's id and its first field's id.
   std::pair<FormGlobalId, FieldGlobalId> SeeForm() {
-    const FormData form = test::CreateTestPersonalInformationFormData();
+    FormData form = test::CreateTestPersonalInformationFormData();
+    std::vector<FormFieldData> fields = form.ExtractFields();
+    for (FormFieldData& field : fields) {
+      field.set_origin(form_origin());
+    }
+    form.set_fields(std::move(fields));
     autofill_manager().AddSeenForm(
         form, std::vector<FieldType>(form.fields().size(), UNKNOWN_TYPE));
     return {form.global_id(), form.fields()[0].global_id()};
@@ -274,6 +281,10 @@ class AtMemoryManagerTest : public Test,
   }
 
   AutofillWebDataServiceTestHelper& webdata_helper() { return webdata_helper_; }
+
+  url::Origin form_origin() const {
+    return url::Origin::Create(GURL(kFormUrl));
+  }
 
   std::pair<FormGlobalId, FieldGlobalId> SeeFormAndShowPopup(
       AutofillSuggestionTriggerSource trigger_source =
@@ -839,16 +850,18 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_AttributeSuccess) {
 
   {
     InSequence seq;
-    EXPECT_CALL(
-        *mock_ai_access_manager_ptr,
-        FetchEntityInstance(passport, /*will_fill_sensitive_info=*/true, _, _))
+    EXPECT_CALL(*mock_ai_access_manager_ptr,
+                FetchEntityInstance(passport, /*will_fill_sensitive_info=*/true,
+                                    form_origin(), _, _))
         .WillOnce([&](EntityInstance entity, bool will_fill,
+                      const url::Origin& origin,
                       AutofillAiAccessManager::OnAuthenticationCompleteCallback
                           on_auth_complete_callback,
                       AutofillAiAccessManager::OnEntityInstanceFetchedCallback
                           callback) {
+          EXPECT_EQ(origin, form_origin());
           std::move(on_auth_complete_callback)
-              .Run(/*reauth_attempted=*/false, /*with_fetch_from_server=*/true);
+              .Run(/*reauth_attempted=*/false, /*will_fetch_from_server=*/true);
           std::move(callback).Run(entity,
                                   /*reauth_attempted=*/false,
                                   /*did_fetch_from_server=*/true);
@@ -882,8 +895,6 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_AttributeSuccess) {
   EXPECT_EQ(updated_entity->use_count(), initial_use_count + 1);
 }
 
-
-
 // Tests that when filling a sensitive Personal Context entry, the
 // `AtMemoryQueryService` authenticates, fetches the unmasked value from
 // `AtMemoryQueryService`, and fills it.
@@ -911,12 +922,10 @@ TEST_F(AtMemoryManagerTest, FillSensitivePersonalContextData_Success) {
     InSequence seq;
     EXPECT_CALL(
         mock_query_service(),
-        AuthenticateAndFetchPiiEntity(
-            Ref(autofill_client()),
-            GetAuthenticationMessage(
-                autofill_client().GetLastCommittedPrimaryMainFrameOrigin()),
-            std::u16string_view(u"1234"), MemoryDataType::kPassportNumber, _,
-            _))
+        AuthenticateAndFetchPiiEntity(Ref(autofill_client()),
+                                      GetAuthenticationMessage(form_origin()),
+                                      std::u16string_view(u"1234"),
+                                      MemoryDataType::kPassportNumber, _, _))
         .WillOnce([&](const AutofillClient& client,
                       const std::u16string& auth_message,
                       std::u16string_view masked_value,
@@ -980,12 +989,10 @@ TEST_F(AtMemoryManagerTest,
     InSequence seq;
     EXPECT_CALL(
         mock_query_service(),
-        AuthenticateAndFetchPiiEntity(
-            Ref(autofill_client()),
-            GetAuthenticationMessage(
-                autofill_client().GetLastCommittedPrimaryMainFrameOrigin()),
-            std::u16string_view(u"1234"), MemoryDataType::kPassportNumber, _,
-            _))
+        AuthenticateAndFetchPiiEntity(Ref(autofill_client()),
+                                      GetAuthenticationMessage(form_origin()),
+                                      std::u16string_view(u"1234"),
+                                      MemoryDataType::kPassportNumber, _, _))
         .WillOnce([&](const AutofillClient& client,
                       const std::u16string& auth_message,
                       std::u16string_view masked_value,
@@ -1043,9 +1050,7 @@ TEST_F(AtMemoryManagerTest, FillSensitivePersonalContextData_FetchFailed) {
   EXPECT_CALL(
       mock_query_service(),
       AuthenticateAndFetchPiiEntity(
-          Ref(autofill_client()),
-          GetAuthenticationMessage(
-              autofill_client().GetLastCommittedPrimaryMainFrameOrigin()),
+          Ref(autofill_client()), GetAuthenticationMessage(form_origin()),
           std::u16string_view(u"1234"), MemoryDataType::kPassportNumber, _, _))
       .WillOnce(RunOnceCallback<5>(base::unexpected(
           AtMemoryQueryService::SpiiRetrievalFailureReason::kFetchFailed)));
@@ -1088,9 +1093,7 @@ TEST_F(AtMemoryManagerTest, FillSensitivePersonalContextData_ReauthInProgress) {
   EXPECT_CALL(
       mock_query_service(),
       AuthenticateAndFetchPiiEntity(
-          Ref(autofill_client()),
-          GetAuthenticationMessage(
-              autofill_client().GetLastCommittedPrimaryMainFrameOrigin()),
+          Ref(autofill_client()), GetAuthenticationMessage(form_origin()),
           std::u16string_view(u"1234"), MemoryDataType::kPassportNumber, _, _))
       .WillOnce(RunOnceCallback<5>(
           base::unexpected(AtMemoryQueryService::SpiiRetrievalFailureReason::
@@ -1138,14 +1141,16 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_FetchFailed) {
       .set_autofill_ai_access_manager(std::move(mock_ai_access_manager));
 
   EXPECT_CALL(*mock_ai_access_manager_ptr,
-              FetchEntityInstance(passport, true, _, _))
+              FetchEntityInstance(passport, true, form_origin(), _, _))
       .WillOnce([&](EntityInstance entity, bool will_fill,
+                    const url::Origin& origin,
                     AutofillAiAccessManager::OnAuthenticationCompleteCallback
                         on_auth_complete_callback,
                     AutofillAiAccessManager::OnEntityInstanceFetchedCallback
                         callback) {
+        EXPECT_EQ(origin, form_origin());
         std::move(on_auth_complete_callback)
-            .Run(/*reauth_attempted=*/false, /*with_fetch_from_server=*/true);
+            .Run(/*reauth_attempted=*/false, /*will_fetch_from_server=*/true);
         std::move(callback).Run(
             base::unexpected(
                 AutofillAiAccessManager::FailureReason::kFetchFailed),
@@ -2268,14 +2273,11 @@ TEST_F(AtMemoryManagerTest, RemoteSensitiveMainValue_Obfuscated) {
   manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kPreview,
                                       form_id, field_id, final_suggestions[0]);
 
-  EXPECT_CALL(
-      mock_query_service(),
-      AuthenticateAndFetchPiiEntity(
-          Ref(autofill_client()),
-          GetAuthenticationMessage(
-              autofill_client().GetLastCommittedPrimaryMainFrameOrigin()),
-          std::u16string_view(u"987654321"), MemoryDataType::kPassportNumber, _,
-          _))
+  EXPECT_CALL(mock_query_service(), AuthenticateAndFetchPiiEntity(
+                                        Ref(autofill_client()),
+                                        GetAuthenticationMessage(form_origin()),
+                                        std::u16string_view(u"987654321"),
+                                        MemoryDataType::kPassportNumber, _, _))
       .WillOnce(RunOnceCallback<5>(u"987654321"));
 
   EXPECT_CALL(autofill_manager(),
@@ -2410,14 +2412,11 @@ TEST_F(AtMemoryManagerTest, RemoteSensitiveMetadata_Obfuscated) {
                                       form_id, field_id,
                                       final_suggestions[0].children[0]);
 
-  EXPECT_CALL(
-      mock_query_service(),
-      AuthenticateAndFetchPiiEntity(
-          Ref(autofill_client()),
-          GetAuthenticationMessage(
-              autofill_client().GetLastCommittedPrimaryMainFrameOrigin()),
-          std::u16string_view(u"987654321"), MemoryDataType::kPassportNumber, _,
-          _))
+  EXPECT_CALL(mock_query_service(), AuthenticateAndFetchPiiEntity(
+                                        Ref(autofill_client()),
+                                        GetAuthenticationMessage(form_origin()),
+                                        std::u16string_view(u"987654321"),
+                                        MemoryDataType::kPassportNumber, _, _))
       .WillOnce(
           [&](const AutofillClient& client, const std::u16string& auth_message,
               std::u16string_view masked_value, MemoryDataType data_type,
@@ -2720,6 +2719,96 @@ TEST_F(AtMemoryManagerTest, OnPopupShown_SubPopup_NoCrashWhenRecorderMovedOut) {
       /*is_context_secure=*/true, update_callback_.Get(),
       ukm::kInvalidSourceId);
   EXPECT_EQ(test_api(manager()).at_memory_metrics_recorder(), nullptr);
+}
+
+// Tests that when a field is not in the cache, the target field origin
+// is used when filling sensitive data.
+TEST_F(AtMemoryManagerTest,
+       FillSensitiveData_UncachedField_UsesTargetFieldOrigin) {
+  // Form and field not added to autofill_manager() cache.
+  FormGlobalId uncached_form_id = test::MakeFormGlobalId();
+  FieldGlobalId uncached_field_id = test::MakeFieldGlobalId();
+
+  manager().set_target_field_origin(form_origin());
+  manager().OnPopupShown(
+      uncached_form_id, uncached_field_id,
+      AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
+      /*parent_suggestion_metadata=*/std::nullopt,
+      /*is_context_secure=*/true, update_callback_.Get(),
+      ukm::kInvalidSourceId);
+
+  std::vector<Suggestion> final_suggestions;
+  {
+    MemorySearchResult entry(MemoryDataType::kPassportNumber, u"Passport",
+                             u"1234");
+    entry.identifier = "personal-context-guid";
+    entry.sources = {MemoryEntrySource(MemoryEntrySourceType::kGmail)};
+    MockQueryResultsAndExpectCallback(u"query",
+                                      MemorySearchStatus::kFinalResponseSuccess,
+                                      {entry}, final_suggestions);
+  }
+  manager().OnSearchSubmitted(u"query");
+  ASSERT_FALSE(final_suggestions.empty());
+
+  const auto* payload =
+      std::get_if<Suggestion::AtMemoryPayload>(&final_suggestions[0].payload);
+  ASSERT_TRUE(payload);
+
+  EXPECT_CALL(
+      mock_query_service(),
+      AuthenticateAndFetchPiiEntity(
+          Ref(autofill_client()), GetAuthenticationMessage(form_origin()),
+          std::u16string_view(u"1234"), MemoryDataType::kPassportNumber, _, _))
+      .WillOnce(RunOnceCallback<5>(u"1234"));
+
+  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
+                                      uncached_form_id, uncached_field_id,
+                                      final_suggestions[0]);
+}
+
+// Tests that when target field origin is opaque, filling sensitive data falls
+// back to the primary main frame origin.
+TEST_F(AtMemoryManagerTest,
+       FillSensitiveData_OpaqueFieldOrigin_FallsBackToMainFrameOrigin) {
+  FormGlobalId uncached_form_id = test::MakeFormGlobalId();
+  FieldGlobalId uncached_field_id = test::MakeFieldGlobalId();
+
+  manager().OnPopupShown(
+      uncached_form_id, uncached_field_id,
+      AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
+      /*parent_suggestion_metadata=*/std::nullopt,
+      /*is_context_secure=*/true, update_callback_.Get(),
+      ukm::kInvalidSourceId);
+
+  std::vector<Suggestion> final_suggestions;
+  {
+    MemorySearchResult entry(MemoryDataType::kPassportNumber, u"Passport",
+                             u"1234");
+    entry.identifier = "personal-context-guid";
+    entry.sources = {MemoryEntrySource(MemoryEntrySourceType::kGmail)};
+    MockQueryResultsAndExpectCallback(u"query",
+                                      MemorySearchStatus::kFinalResponseSuccess,
+                                      {entry}, final_suggestions);
+  }
+  manager().OnSearchSubmitted(u"query");
+  ASSERT_FALSE(final_suggestions.empty());
+
+  const auto* payload =
+      std::get_if<Suggestion::AtMemoryPayload>(&final_suggestions[0].payload);
+  ASSERT_TRUE(payload);
+
+  EXPECT_CALL(
+      mock_query_service(),
+      AuthenticateAndFetchPiiEntity(
+          Ref(autofill_client()),
+          GetAuthenticationMessage(
+              autofill_client().GetLastCommittedPrimaryMainFrameOrigin()),
+          std::u16string_view(u"1234"), MemoryDataType::kPassportNumber, _, _))
+      .WillOnce(RunOnceCallback<5>(u"1234"));
+
+  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
+                                      uncached_form_id, uncached_field_id,
+                                      final_suggestions[0]);
 }
 
 }  // namespace

@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/filling/autofill_ai/autofill_ai_access_manager_test_api.h"
+#include "components/autofill/core/browser/filling/autofill_ai/field_filling_entity_util.h"
 #include "components/autofill/core/browser/foundations/autofill_driver_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
@@ -35,6 +36,7 @@
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace autofill {
@@ -127,6 +129,10 @@ class AutofillAiAccessManagerTest : public testing::Test {
     return manager_->GetAutofillAiAccessManager();
   }
 
+  url::Origin form_origin() const {
+    return url::Origin::Create(GURL("https://example.com"));
+  }
+
  protected:
   std::unique_ptr<device_reauth::MockDeviceAuthenticator> mock_authenticator_;
 
@@ -165,8 +171,8 @@ TEST_F(AutofillAiAccessManagerTest, NoReauthRequired_LocalEntity) {
           /*did_fetch_from_server=*/false));
 
   EXPECT_FALSE(access_manager().FetchEntityInstance(
-      passport, /*will_fill_sensitive_info=*/false, on_auth_complete.Get(),
-      on_fetched_callback.Get()));
+      passport, /*will_fill_sensitive_info=*/false, form_origin(),
+      on_auth_complete.Get(), on_fetched_callback.Get()));
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
@@ -182,7 +188,9 @@ TEST_F(AutofillAiAccessManagerTest, ReauthRequired_ReauthAccepted) {
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
   EXPECT_CALL(*mock_authenticator_, CanAuthenticateWithBiometricOrScreenLock)
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_authenticator_, AuthenticateWithMessage)
+  EXPECT_CALL(
+      *mock_authenticator_,
+      AuthenticateWithMessage(GetAuthenticationMessage(form_origin()), _))
       .WillOnce(RunOnceCallback<1>(true));
   test_api(access_manager())
       .SetDeviceAuthenticator(std::move(mock_authenticator_));
@@ -202,8 +210,8 @@ TEST_F(AutofillAiAccessManagerTest, ReauthRequired_ReauthAccepted) {
           /*did_fetch_from_server=*/false));
 
   EXPECT_TRUE(access_manager().FetchEntityInstance(
-      passport, /*will_fill_sensitive_info=*/true, on_auth_complete.Get(),
-      on_fetched_callback.Get()));
+      passport, /*will_fill_sensitive_info=*/true, form_origin(),
+      on_auth_complete.Get(), on_fetched_callback.Get()));
 }
 
 // Tests that when re-authentication is required and rejected,
@@ -216,7 +224,9 @@ TEST_F(AutofillAiAccessManagerTest, ReauthRequired_ReauthRejected) {
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
   EXPECT_CALL(*mock_authenticator_, CanAuthenticateWithBiometricOrScreenLock)
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_authenticator_, AuthenticateWithMessage)
+  EXPECT_CALL(
+      *mock_authenticator_,
+      AuthenticateWithMessage(GetAuthenticationMessage(form_origin()), _))
       .WillOnce(RunOnceCallback<1>(false));
   test_api(access_manager())
       .SetDeviceAuthenticator(std::move(mock_authenticator_));
@@ -238,8 +248,8 @@ TEST_F(AutofillAiAccessManagerTest, ReauthRequired_ReauthRejected) {
           /*did_fetch_from_server=*/false));
 
   EXPECT_TRUE(access_manager().FetchEntityInstance(
-      passport, /*will_fill_sensitive_info=*/true, on_auth_complete.Get(),
-      on_fetched_callback.Get()));
+      passport, /*will_fill_sensitive_info=*/true, form_origin(),
+      on_auth_complete.Get(), on_fetched_callback.Get()));
 }
 
 // Tests that when re-authentication is required and rejected for a
@@ -255,7 +265,9 @@ TEST_F(AutofillAiAccessManagerTest,
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
   EXPECT_CALL(*mock_authenticator_, CanAuthenticateWithBiometricOrScreenLock)
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_authenticator_, AuthenticateWithMessage)
+  EXPECT_CALL(
+      *mock_authenticator_,
+      AuthenticateWithMessage(GetAuthenticationMessage(form_origin()), _))
       .WillOnce(RunOnceCallback<1>(false));
   test_api(access_manager())
       .SetDeviceAuthenticator(std::move(mock_authenticator_));
@@ -277,7 +289,7 @@ TEST_F(AutofillAiAccessManagerTest,
 
   base::HistogramTester histogram_tester;
   EXPECT_TRUE(access_manager().FetchEntityInstance(
-      masked_passport, /*will_fill_sensitive_info=*/true,
+      masked_passport, /*will_fill_sensitive_info=*/true, form_origin(),
       on_auth_complete.Get(), on_fetched_callback.Get()));
   histogram_tester.ExpectUniqueSample(
       "Autofill.Ai.Unmask.Result.PersonalContext",
@@ -312,8 +324,8 @@ TEST_F(AutofillAiAccessManagerTest, ReauthRequired_NoAuthenticator) {
           /*did_fetch_from_server=*/false));
 
   EXPECT_TRUE(access_manager().FetchEntityInstance(
-      passport, /*will_fill_sensitive_info=*/true, on_auth_complete.Get(),
-      on_fetched_callback.Get()));
+      passport, /*will_fill_sensitive_info=*/true, form_origin(),
+      on_auth_complete.Get(), on_fetched_callback.Get()));
 }
 #endif
 
@@ -344,7 +356,7 @@ TEST_F(AutofillAiAccessManagerTest, ServerFetch_Success) {
           /*did_fetch_from_server=*/true));
 
   EXPECT_TRUE(access_manager().FetchEntityInstance(
-      masked_passport, /*will_fill_sensitive_info=*/true,
+      masked_passport, /*will_fill_sensitive_info=*/true, form_origin(),
       on_auth_complete.Get(), on_fetched_callback.Get()));
 }
 
@@ -377,7 +389,7 @@ TEST_F(AutofillAiAccessManagerTest, ServerFetch_Failure) {
           /*did_fetch_from_server=*/true));
 
   EXPECT_TRUE(access_manager().FetchEntityInstance(
-      masked_passport, /*will_fill_sensitive_info=*/true,
+      masked_passport, /*will_fill_sensitive_info=*/true, form_origin(),
       on_auth_complete.Get(), on_fetched_callback.Get()));
 }
 
@@ -396,7 +408,9 @@ TEST_F(AutofillAiAccessManagerTest, ReauthAndServerFetch_Success) {
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
   EXPECT_CALL(*mock_authenticator_, CanAuthenticateWithBiometricOrScreenLock)
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_authenticator_, AuthenticateWithMessage)
+  EXPECT_CALL(
+      *mock_authenticator_,
+      AuthenticateWithMessage(GetAuthenticationMessage(form_origin()), _))
       .WillOnce(RunOnceCallback<1>(true));
   test_api(access_manager())
       .SetDeviceAuthenticator(std::move(mock_authenticator_));
@@ -420,7 +434,7 @@ TEST_F(AutofillAiAccessManagerTest, ReauthAndServerFetch_Success) {
           /*did_fetch_from_server=*/true));
 
   EXPECT_TRUE(access_manager().FetchEntityInstance(
-      masked_passport, /*will_fill_sensitive_info=*/true,
+      masked_passport, /*will_fill_sensitive_info=*/true, form_origin(),
       on_auth_complete.Get(), on_fetched_callback.Get()));
 }
 
@@ -437,7 +451,9 @@ TEST_F(AutofillAiAccessManagerTest, ReauthAndServerFetch_ServerFetchFailure) {
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
   EXPECT_CALL(*mock_authenticator_, CanAuthenticateWithBiometricOrScreenLock)
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_authenticator_, AuthenticateWithMessage)
+  EXPECT_CALL(
+      *mock_authenticator_,
+      AuthenticateWithMessage(GetAuthenticationMessage(form_origin()), _))
       .WillOnce(RunOnceCallback<1>(true));
   test_api(access_manager())
       .SetDeviceAuthenticator(std::move(mock_authenticator_));
@@ -463,7 +479,7 @@ TEST_F(AutofillAiAccessManagerTest, ReauthAndServerFetch_ServerFetchFailure) {
           /*did_fetch_from_server=*/true));
 
   EXPECT_TRUE(access_manager().FetchEntityInstance(
-      masked_passport, /*will_fill_sensitive_info=*/true,
+      masked_passport, /*will_fill_sensitive_info=*/true, form_origin(),
       on_auth_complete.Get(), on_fetched_callback.Get()));
 }
 
@@ -493,8 +509,8 @@ TEST_F(AutofillAiAccessManagerTest, ResetCancelsPendingOperations) {
   EXPECT_CALL(on_fetched_callback, Run).Times(0);
 
   EXPECT_TRUE(access_manager().FetchEntityInstance(
-      passport, /*will_fill_sensitive_info=*/true, on_auth_complete.Get(),
-      on_fetched_callback.Get()));
+      passport, /*will_fill_sensitive_info=*/true, form_origin(),
+      on_auth_complete.Get(), on_fetched_callback.Get()));
 
   access_manager().Reset();
 }
@@ -509,7 +525,9 @@ TEST_F(AutofillAiAccessManagerTest, PersonalContextFetch_Success) {
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
   EXPECT_CALL(*mock_authenticator_, CanAuthenticateWithBiometricOrScreenLock)
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_authenticator_, AuthenticateWithMessage)
+  EXPECT_CALL(
+      *mock_authenticator_,
+      AuthenticateWithMessage(GetAuthenticationMessage(form_origin()), _))
       .WillOnce(RunOnceCallback<1>(true));
   test_api(access_manager())
       .SetDeviceAuthenticator(std::move(mock_authenticator_));
@@ -538,7 +556,7 @@ TEST_F(AutofillAiAccessManagerTest, PersonalContextFetch_Success) {
           /*did_fetch_from_server=*/true));
 
   EXPECT_TRUE(access_manager().FetchEntityInstance(
-      masked_passport, /*will_fill_sensitive_info=*/true,
+      masked_passport, /*will_fill_sensitive_info=*/true, form_origin(),
       on_auth_complete.Get(), on_fetched_callback.Get()));
 }
 
@@ -549,7 +567,9 @@ TEST_F(AutofillAiAccessManagerTest, PersonalContextFetch_Failure) {
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
   EXPECT_CALL(*mock_authenticator_, CanAuthenticateWithBiometricOrScreenLock)
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_authenticator_, AuthenticateWithMessage)
+  EXPECT_CALL(
+      *mock_authenticator_,
+      AuthenticateWithMessage(GetAuthenticationMessage(form_origin()), _))
       .WillOnce(RunOnceCallback<1>(true));
   test_api(access_manager())
       .SetDeviceAuthenticator(std::move(mock_authenticator_));
@@ -580,7 +600,7 @@ TEST_F(AutofillAiAccessManagerTest, PersonalContextFetch_Failure) {
           /*did_fetch_from_server=*/true));
 
   EXPECT_TRUE(access_manager().FetchEntityInstance(
-      masked_passport, /*will_fill_sensitive_info=*/true,
+      masked_passport, /*will_fill_sensitive_info=*/true, form_origin(),
       on_auth_complete.Get(), on_fetched_callback.Get()));
 }
 
@@ -591,7 +611,9 @@ TEST_F(AutofillAiAccessManagerTest, PersonalContextFetch_NoManager) {
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
   EXPECT_CALL(*mock_authenticator_, CanAuthenticateWithBiometricOrScreenLock)
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_authenticator_, AuthenticateWithMessage)
+  EXPECT_CALL(
+      *mock_authenticator_,
+      AuthenticateWithMessage(GetAuthenticationMessage(form_origin()), _))
       .WillOnce(RunOnceCallback<1>(true));
   test_api(access_manager())
       .SetDeviceAuthenticator(std::move(mock_authenticator_));
@@ -620,9 +642,10 @@ TEST_F(AutofillAiAccessManagerTest, PersonalContextFetch_NoManager) {
           /*did_fetch_from_server=*/true));
 
   EXPECT_TRUE(access_manager().FetchEntityInstance(
-      masked_passport, /*will_fill_sensitive_info=*/true,
+      masked_passport, /*will_fill_sensitive_info=*/true, form_origin(),
       on_auth_complete.Get(), on_fetched_callback.Get()));
 }
+
 #endif
 
 }  // namespace

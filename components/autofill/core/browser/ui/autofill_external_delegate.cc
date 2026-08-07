@@ -954,7 +954,10 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       // successful authentication.
       const bool is_async =
           manager_->GetAutofillAiAccessManager().FetchEntityInstance(
-              *entity, will_fill_sensitive_info, base::DoNothing(),
+              *entity, will_fill_sensitive_info,
+              GetTargetFieldOrigin(autofill_field->origin(),
+                                   manager_->client()),
+              base::DoNothing(),
               base::BindOnce(&OnEntityInstanceFetched,
                              manager_->GetBrowserAutofillManagerWeakPtr(),
                              GetTriggerSource(), last_query_.form_id,

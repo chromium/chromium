@@ -1244,6 +1244,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   external_delegate_->OnQuery(form, field, caret_bounds, trigger_source);
 
   if (IsAtMemoryTriggerSource(trigger_source)) {
+    GetAtMemoryManager().set_target_field_origin(field.origin());
     std::vector<Suggestion> suggestions;
     GetAtMemoryManager().MaybeAppendPersonalContextNotice(suggestions);
 

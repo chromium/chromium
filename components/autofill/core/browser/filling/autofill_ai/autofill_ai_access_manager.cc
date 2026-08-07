@@ -36,6 +36,7 @@ AutofillAiAccessManager::~AutofillAiAccessManager() = default;
 bool AutofillAiAccessManager::FetchEntityInstance(
     EntityInstance entity,
     bool will_fill_sensitive_info,
+    const url::Origin& origin,
     OnAuthenticationCompleteCallback on_auth_complete_callback,
     OnEntityInstanceFetchedCallback on_fetched_callback) {
   // Invalidate any pending operations from prior flows, ensuring that only one
@@ -68,7 +69,7 @@ bool AutofillAiAccessManager::FetchEntityInstance(
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(on_fetched_callback), should_fetch);
 
-  MaybeAuthenticate(std::move(entity), should_reauth, should_fetch,
+  MaybeAuthenticate(std::move(entity), should_reauth, should_fetch, origin,
                     std::move(on_auth_complete_callback),
                     std::move(on_unmask_callback));
   return should_fetch || should_reauth;
@@ -87,6 +88,7 @@ void AutofillAiAccessManager::MaybeAuthenticate(
     EntityInstance entity,
     bool should_reauth,
     bool should_fetch_from_server,
+    const url::Origin& origin,
     OnAuthenticationCompleteCallback on_auth_complete_callback,
     OnUnmaskCallback on_unmask_callback) {
   if (!should_reauth) {
@@ -137,8 +139,7 @@ void AutofillAiAccessManager::MaybeAuthenticate(
       std::move(entity), should_fetch_from_server,
       std::move(on_auth_complete_callback), std::move(on_unmask_callback));
 
-  Authenticate(manager_->client().GetLastCommittedPrimaryMainFrameOrigin(),
-               std::move(on_auth_complete));
+  Authenticate(origin, std::move(on_auth_complete));
 }
 
 void AutofillAiAccessManager::Authenticate(

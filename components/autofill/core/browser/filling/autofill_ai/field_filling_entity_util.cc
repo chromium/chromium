@@ -380,6 +380,12 @@ bool WillRequireServerFetch(const EntityInstance& entity,
   return is_ambient_enabled || is_wallet_enabled;
 }
 
+url::Origin GetTargetFieldOrigin(const url::Origin& origin,
+                                 const AutofillClient& client) {
+  return origin.opaque() ? client.GetLastCommittedPrimaryMainFrameOrigin()
+                         : origin;
+}
+
 std::u16string GetAuthenticationMessage(const url::Origin& origin) {
   // Android is excluded here because the system biometric prompt does not
   // support a custom message.

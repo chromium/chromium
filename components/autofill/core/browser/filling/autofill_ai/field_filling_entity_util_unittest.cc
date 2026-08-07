@@ -1082,5 +1082,21 @@ TEST_F(GetFillValueForEntityTest_Date, MonthStringAbbreviations) {
       u"Dec");
 }
 
+// Tests that `GetTargetFieldOrigin` returns the given origin if it is not
+// opaque, and falls back to the primary main frame origin when opaque.
+TEST_F(FieldFillingEntityUtilTest, GetTargetFieldOrigin) {
+  TestAutofillClient client;
+  client.set_last_committed_primary_main_frame_url(
+      GURL("https://primary-main-frame.com"));
+
+  url::Origin non_opaque_origin =
+      url::Origin::Create(GURL("https://field-origin.com"));
+  EXPECT_EQ(GetTargetFieldOrigin(non_opaque_origin, client), non_opaque_origin);
+
+  url::Origin opaque_origin;
+  EXPECT_EQ(GetTargetFieldOrigin(opaque_origin, client),
+            url::Origin::Create(GURL("https://primary-main-frame.com")));
+}
+
 }  // namespace
 }  // namespace autofill
