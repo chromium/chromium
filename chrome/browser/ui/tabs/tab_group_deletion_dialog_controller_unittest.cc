@@ -69,3 +69,19 @@ TEST_F(DeletionDialogControllerUnitTest, OnWidgetDestroyedDestroysState) {
   // Make sure the DeletionDialogController has destroyed it's state.
   EXPECT_FALSE(controller_->IsShowingDialog());
 }
+
+TEST_F(DeletionDialogControllerUnitTest, DestroyControllerBeforeDialogModel) {
+  controller_->MaybeShowDialog(
+      DeletionDialogController::DialogMetadata(
+          DeletionDialogController::DialogType::DeleteSingle),
+      base::DoNothing());
+  EXPECT_TRUE(controller_->IsShowingDialog());
+  EXPECT_TRUE(dialog_host_);
+
+  // Destroy the controller while the dialog model is still alive.
+  controller_.reset();
+
+  // Destroying the dialog model host should not crash when triggering callbacks
+  // on the destroyed controller.
+  ui::TestDialogModelHost::DestroyWithoutAction(std::move(dialog_host_));
+}
