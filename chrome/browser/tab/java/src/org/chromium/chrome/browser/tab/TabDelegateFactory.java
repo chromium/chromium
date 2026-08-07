@@ -62,4 +62,16 @@ public interface TabDelegateFactory {
      */
     @Nullable NativePage createNativePage(
             String url, @Nullable NativePage candidatePage, Tab tab, @Nullable PdfInfo pdfInfo);
+
+    /** Returns whether the tab is running in a Custom Tab environment. */
+    boolean isCustomTab();
+
+    /**
+     * Returns whether the tab is running in a Progressive Web App (PWA) environment (e.g., WebAPK
+     * or Trusted Web Activity).
+     */
+    boolean isTabInPwa();
+
+    /** Returns whether the tab is running in a standard tabbed browser environment. */
+    boolean isTabInBrowser();
 }

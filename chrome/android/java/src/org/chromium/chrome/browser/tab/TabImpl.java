@@ -65,7 +65,6 @@ import org.chromium.chrome.browser.compositor.CompositorViewHolderSupplier;
 import org.chromium.chrome.browser.content.ContentUtils;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.desktop_site.DesktopSiteUtils;
-import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.NativePageAssassin;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
@@ -1007,7 +1006,7 @@ class TabImpl implements Tab, TabInternal {
     @CalledByNative
     @Override
     public boolean loadIfNeeded(boolean forceBackingSize) {
-        if (getActivity(/* withLogs= */ true) == null) {
+        if (getActivityForLoadLogs() == null) {
             Log.e(
                     TAG,
                     "Tab couldn't be loaded because getActivity() was null. mIsArchived: %b,"
@@ -1363,17 +1362,14 @@ class TabImpl implements Tab, TabInternal {
      * WARNING: This method is deprecated. Consider other ways such as passing the dependencies to
      * the constructor, rather than accessing ChromeActivity from Tab and using getters.
      *
-     * @param withLogs Whether to log the activity state.
      * @return {@link ChromeActivity} that currently contains this {@link Tab} in its {@link
      *     TabModel}.
      */
     @Deprecated
-    @Nullable ChromeActivity getActivity(boolean withLogs) {
+    private @Nullable ChromeActivity getActivityForLoadLogs() {
         WindowAndroid windowAndroid = getWindowAndroid();
         if (windowAndroid == null) {
-            if (withLogs) {
-                Log.e(TAG, "WindowAndroid is null when requesting activity.");
-            }
+            Log.e(TAG, "WindowAndroid is null when requesting activity.");
             return null;
         }
         WeakReference<Context> contextRef = windowAndroid.getContext();
@@ -1382,44 +1378,30 @@ class TabImpl implements Tab, TabInternal {
         if (activity instanceof ChromeActivity chromeActivity) {
             return chromeActivity;
         }
-        if (withLogs) {
-            if (contextRef == null) {
-                Log.e(
-                        TAG,
-                        "Context weak reference in WindowAndroid is null when requesting"
-                                + " activity.");
-            } else if (context == null) {
-                Log.e(
-                        TAG,
-                        "Context weak reference target in WindowAndroid is null when requesting"
-                                + " activity (host Activity was destroyed / GC'd).");
-            } else if (activity == null) {
-                Log.e(
-                        TAG,
-                        "Context is not an Activity when requesting activity (e.g."
-                                + " ApplicationContext or detached tab). Context class: %s",
-                        context.getClass().getName());
-            } else {
-                Log.e(
-                        TAG,
-                        "Activity is not a ChromeActivity when requesting activity. Activity"
-                                + " class: %s",
-                        activity.getClass().getName());
-            }
+        if (contextRef == null) {
+            Log.e(
+                    TAG,
+                    "Context weak reference in WindowAndroid is null when requesting"
+                            + " activity.");
+        } else if (context == null) {
+            Log.e(
+                    TAG,
+                    "Context weak reference target in WindowAndroid is null when requesting"
+                            + " activity (host Activity was destroyed / GC'd).");
+        } else if (activity == null) {
+            Log.e(
+                    TAG,
+                    "Context is not an Activity when requesting activity (e.g."
+                            + " ApplicationContext or detached tab). Context class: %s",
+                    context.getClass().getName());
+        } else {
+            Log.e(
+                    TAG,
+                    "Activity is not a ChromeActivity when requesting activity. Activity"
+                            + " class: %s",
+                    activity.getClass().getName());
         }
         return null;
-    }
-
-    /**
-     * WARNING: This method is deprecated. Consider other ways such as passing the dependencies to
-     * the constructor, rather than accessing ChromeActivity from Tab and using getters.
-     *
-     * @return {@link ChromeActivity} that currently contains this {@link Tab} in its {@link
-     *     TabModel}.
-     */
-    @Deprecated
-    @Nullable ChromeActivity getActivity() {
-        return getActivity(/* withLogs= */ false);
     }
 
     /**
@@ -1536,7 +1518,7 @@ class TabImpl implements Tab, TabInternal {
         RevenueStats.getInstance().tabCreated(this);
 
         boolean needsInitWebContents = true;
-        boolean createWebContents = webContents == null;
+        boolean createWebContents = webContents == null && !mIsArchived;
         // Headless and archived tabs will never load and thus don't need a WebContents. The reason
         // all tabs need a WebContents is when used in C++ via BrowserWindowInterface. Since
         // headless and archived tabs are not associated with a window they can avoid initializing
@@ -2692,26 +2674,17 @@ class TabImpl implements Tab, TabInternal {
     @CalledByNative
     @Override
     public boolean isCustomTab() {
-        ChromeActivity activity = getActivity();
-        return activity != null && activity.isCustomTab();
+        return mDelegateFactory != null && mDelegateFactory.isCustomTab();
     }
 
     @Override
     public boolean isTabInPWA() {
-        // TODO(crbug.com/417720713): replace deprecated getActivity with something else.
-        ChromeActivity activity = getActivity();
-        if (activity == null) return false;
-        @ActivityType int activityType = activity.getActivityType();
-        return activityType == ActivityType.WEB_APK
-                || activityType == ActivityType.TRUSTED_WEB_ACTIVITY;
+        return mDelegateFactory != null && mDelegateFactory.isTabInPwa();
     }
 
     @Override
     public boolean isTabInBrowser() {
-        // TODO(crbug.com/417720713): replace deprecated getActivity with something else.
-        ChromeActivity activity = getActivity();
-        if (activity == null) return false;
-        return activity.getActivityType() == ActivityType.TABBED;
+        return mDelegateFactory != null && mDelegateFactory.isTabInBrowser();
     }
 
     @Override

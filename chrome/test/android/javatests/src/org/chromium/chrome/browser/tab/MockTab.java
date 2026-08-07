@@ -4,10 +4,9 @@
 
 package org.chromium.chrome.browser.tab;
 
-import androidx.annotation.Nullable;
-
 import com.google.common.collect.Lists;
 
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -29,13 +28,25 @@ public class MockTab extends TabImpl {
     private Boolean mCanGoForward;
 
     private boolean mIsCustomTab;
+    private boolean mIsTabInPwa;
+    private boolean mIsTabInBrowser;
 
     private Integer mParentId;
 
     /** Create a new Tab for testing and initializes Tab UserData objects. */
     public static MockTab createAndInitialize(int id, Profile profile) {
         MockTab tab = new MockTab(id, profile);
-        tab.initialize(null, null, null, null, null, null, false, null, false, false);
+        tab.initialize(
+                /* parent= */ null,
+                /* creationState= */ null,
+                /* loadUrlParams= */ null,
+                /* title= */ null,
+                /* webContents= */ null,
+                /* delegateFactory= */ null,
+                /* initiallyHidden= */ false,
+                /* tabState= */ null,
+                /* initializeRenderer= */ false,
+                /* isPinned= */ false);
         return tab;
     }
 
@@ -43,7 +54,17 @@ public class MockTab extends TabImpl {
     public static MockTab createAndInitialize(
             int id, Profile profile, @TabLaunchType int tabLaunchType) {
         MockTab tab = new MockTab(id, profile, tabLaunchType);
-        tab.initialize(null, null, null, null, null, null, false, null, false, false);
+        tab.initialize(
+                /* parent= */ null,
+                /* creationState= */ null,
+                /* loadUrlParams= */ null,
+                /* title= */ null,
+                /* webContents= */ null,
+                /* delegateFactory= */ null,
+                /* initiallyHidden= */ false,
+                /* tabState= */ null,
+                /* initializeRenderer= */ false,
+                /* isPinned= */ false);
         return tab;
     }
 
@@ -167,6 +188,24 @@ public class MockTab extends TabImpl {
     @Override
     public boolean isCustomTab() {
         return mIsCustomTab;
+    }
+
+    public void setIsTabInPwa(boolean isTabInPwa) {
+        mIsTabInPwa = isTabInPwa;
+    }
+
+    @Override
+    public boolean isTabInPWA() {
+        return mIsTabInPwa;
+    }
+
+    public void setIsTabInBrowser(boolean isTabInBrowser) {
+        mIsTabInBrowser = isTabInBrowser;
+    }
+
+    @Override
+    public boolean isTabInBrowser() {
+        return mIsTabInBrowser;
     }
 
     @Override

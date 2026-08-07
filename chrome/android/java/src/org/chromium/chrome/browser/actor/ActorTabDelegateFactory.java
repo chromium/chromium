@@ -49,6 +49,21 @@ class ActorTabDelegateFactory implements TabDelegateFactory {
         return null;
     }
 
+    @Override
+    public boolean isCustomTab() {
+        return false;
+    }
+
+    @Override
+    public boolean isTabInPwa() {
+        return false;
+    }
+
+    @Override
+    public boolean isTabInBrowser() {
+        return false;
+    }
+
     private static class ActorTabWebContentsDelegate extends TabWebContentsDelegateAndroid {
         @Override
         public boolean shouldResumeRequestsForCreatedWindow() {

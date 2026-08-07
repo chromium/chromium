@@ -9,7 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory;
+import org.chromium.chrome.browser.app.tabmodel.HeadlessTabDelegateFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
@@ -74,7 +74,7 @@ public class ArchivedTabCreator implements TabCreator, NeedsTabModel {
                         .setLaunchType(TabLaunchType.FROM_RESTORE)
                         .setTabResolver(mTabModel::getTabById)
                         .setInitiallyHidden(true)
-                        .setDelegateFactory(CustomTabDelegateFactory.createEmpty())
+                        .setDelegateFactory(new HeadlessTabDelegateFactory())
                         .setArchived(true)
                         .build();
         mTabModel.addTab(
@@ -93,7 +93,7 @@ public class ArchivedTabCreator implements TabCreator, NeedsTabModel {
                         .setTabResolver(mTabModel::getTabById)
                         .setInitiallyHidden(true)
                         .setTabState(state)
-                        .setDelegateFactory(CustomTabDelegateFactory.createEmpty())
+                        .setDelegateFactory(new HeadlessTabDelegateFactory())
                         .setArchived(true)
                         .build();
         mTabModel.addTab(

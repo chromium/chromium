@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
@@ -86,8 +87,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
     private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
     private final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     private final TopInsetProvider mTopInsetProvider;
-    private final OneshotSupplier<org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider>
-            mSideUiStateProviderSupplier;
+    private final OneshotSupplier<SideUiStateProvider> mSideUiStateProviderSupplier;
     private final StartupMetricsTracker mStartupMetricsTracker;
     private final @Nullable ExclusiveAccessManager mExclusiveAccessManager;
     private @Nullable NativePageFactory mNativePageFactory;
@@ -120,8 +120,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
             OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
             MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             TopInsetProvider topInsetProvider,
-            OneshotSupplier<org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider>
-                    sideUiStateProviderSupplier,
+            OneshotSupplier<SideUiStateProvider> sideUiStateProviderSupplier,
             StartupMetricsTracker startupMetricsTracker,
             @Nullable ExclusiveAccessManager exclusiveAccessManager,
             BackPressManager backPressManager,
@@ -238,5 +237,20 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
     /** Destroy and unhook objects at destruction. */
     public void destroy() {
         if (mNativePageFactory != null) mNativePageFactory.destroy();
+    }
+
+    @Override
+    public boolean isCustomTab() {
+        return false;
+    }
+
+    @Override
+    public boolean isTabInPwa() {
+        return false;
+    }
+
+    @Override
+    public boolean isTabInBrowser() {
+        return true;
     }
 }

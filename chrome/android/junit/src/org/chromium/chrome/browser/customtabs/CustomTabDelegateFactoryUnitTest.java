@@ -103,8 +103,8 @@ public class CustomTabDelegateFactoryUnitTest {
                         () -> mock(BottomSheetController.class),
                         mock(AuthTabVerifier.class),
                         mock(BrowserControlsManager.class),
-                        SupplierUtils.of(false),
-                        SupplierUtils.of(false),
+                        SupplierUtils.of(/* value= */ false),
+                        SupplierUtils.of(/* value= */ false),
                         mock(ExclusiveAccessManager.class),
                         mock(DesktopWindowStateManager.class));
     }
@@ -154,7 +154,9 @@ public class CustomTabDelegateFactoryUnitTest {
         Assert.assertEquals(
                 WebApkConstants.WEBAPK_OPAQUE_MAIN_ACTIVITY_CLASS_NAME, component.getClassName());
 
-        Assert.assertTrue(intent.getBooleanExtra(WebApkConstants.EXTRA_BRING_TO_FRONT, false));
+        Assert.assertTrue(
+                intent.getBooleanExtra(
+                        WebApkConstants.EXTRA_BRING_TO_FRONT, /* defaultValue= */ false));
         Assert.assertEquals(
                 Intent.FLAG_ACTIVITY_NEW_TASK, intent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK);
         Assert.assertEquals(
@@ -194,5 +196,46 @@ public class CustomTabDelegateFactoryUnitTest {
         Assert.assertEquals(
                 Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS,
                 intent.getFlags() & Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+    }
+
+    @Test
+    public void testEnvironmentQueriesAcrossActivityTypes() {
+        // 1. CUSTOM_TAB
+        createFactory(ActivityType.CUSTOM_TAB);
+        Assert.assertTrue("CUSTOM_TAB should return isCustomTab() = true", mFactory.isCustomTab());
+        Assert.assertFalse("CUSTOM_TAB should return isTabInPwa() = false", mFactory.isTabInPwa());
+        Assert.assertFalse(
+                "CUSTOM_TAB should return isTabInBrowser() = false", mFactory.isTabInBrowser());
+
+        // 2. AUTH_TAB
+        createFactory(ActivityType.AUTH_TAB);
+        Assert.assertTrue("AUTH_TAB should return isCustomTab() = true", mFactory.isCustomTab());
+        Assert.assertFalse("AUTH_TAB should return isTabInPwa() = false", mFactory.isTabInPwa());
+        Assert.assertFalse(
+                "AUTH_TAB should return isTabInBrowser() = false", mFactory.isTabInBrowser());
+
+        // 3. TRUSTED_WEB_ACTIVITY (TWA)
+        createFactory(ActivityType.TRUSTED_WEB_ACTIVITY);
+        Assert.assertTrue(
+                "TRUSTED_WEB_ACTIVITY should return isCustomTab() = true", mFactory.isCustomTab());
+        Assert.assertTrue(
+                "TRUSTED_WEB_ACTIVITY should return isTabInPwa() = true", mFactory.isTabInPwa());
+        Assert.assertFalse(
+                "TRUSTED_WEB_ACTIVITY should return isTabInBrowser() = false",
+                mFactory.isTabInBrowser());
+
+        // 4. WEB_APK
+        createFactory(ActivityType.WEB_APK);
+        Assert.assertFalse("WEB_APK should return isCustomTab() = false", mFactory.isCustomTab());
+        Assert.assertTrue("WEB_APK should return isTabInPwa() = true", mFactory.isTabInPwa());
+        Assert.assertFalse(
+                "WEB_APK should return isTabInBrowser() = false", mFactory.isTabInBrowser());
+
+        // 5. TABBED
+        createFactory(ActivityType.TABBED);
+        Assert.assertFalse("TABBED should return isCustomTab() = false", mFactory.isCustomTab());
+        Assert.assertFalse("TABBED should return isTabInPwa() = false", mFactory.isTabInPwa());
+        Assert.assertFalse(
+                "TABBED should return isTabInBrowser() = false", mFactory.isTabInBrowser());
     }
 }

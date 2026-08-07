@@ -388,10 +388,10 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             // startActivity().
             Intent intent = new Intent();
             intent.setComponent(
-                    new android.content.ComponentName(
+                    new ComponentName(
                             webApkPackageName,
                             WebApkConstants.WEBAPK_OPAQUE_MAIN_ACTIVITY_CLASS_NAME));
-            intent.putExtra(WebApkConstants.EXTRA_BRING_TO_FRONT, true);
+            intent.putExtra(WebApkConstants.EXTRA_BRING_TO_FRONT, /* bringToFront= */ true);
             intent.addFlags(
                     Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
             try {
@@ -740,5 +740,23 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         return isWebappOrWebApk(activityType)
                 ? ChromeContextMenuPopulator.ContextMenuMode.WEB_APP
                 : ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB;
+    }
+
+    @Override
+    public boolean isCustomTab() {
+        return mActivityType == ActivityType.CUSTOM_TAB
+                || mActivityType == ActivityType.AUTH_TAB
+                || mActivityType == ActivityType.TRUSTED_WEB_ACTIVITY;
+    }
+
+    @Override
+    public boolean isTabInPwa() {
+        return mActivityType == ActivityType.WEB_APK
+                || mActivityType == ActivityType.TRUSTED_WEB_ACTIVITY;
+    }
+
+    @Override
+    public boolean isTabInBrowser() {
+        return false;
     }
 }

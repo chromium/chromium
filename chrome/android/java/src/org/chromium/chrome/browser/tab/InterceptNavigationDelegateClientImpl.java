@@ -108,7 +108,8 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
 
     @Override
     public @Nullable Activity getActivity() {
-        return mTab.getActivity();
+        WindowAndroid window = mTab.getWindowAndroid();
+        return window != null && window.getActivity() != null ? window.getActivity().get() : null;
     }
 
     @Override
@@ -124,18 +125,23 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
     @Override
     public void closeTab() {
         if (mTab.isClosing()) return;
-        ChromeActivity activity = assumeNonNull(mTab.getActivity());
-        if (mTab.isCustomTab() && !activity.didFinishNativeInitialization()) {
-            // Test the assumption that the tab hasn't been added to a tab model yet.
-            assert activity.getTabModelSelector().getModelForTabId(mTab.getId()) == null;
-            // Tab is closing before being attached to a tab model. Delay the closing until native
-            // initialization finishes.
-            mTab.setDidCloseWhileDetached();
-        } else {
-            activity.getTabModelSelector()
-                    .tryCloseTab(
-                            TabClosureParams.closeTab(mTab).allowUndo(false).build(),
-                            /* allowDialog= */ false);
+        Activity activity = getActivity();
+        if (activity instanceof ChromeActivity chromeActivity) {
+            if (mTab.isCustomTab() && !chromeActivity.didFinishNativeInitialization()) {
+                // Test the assumption that the tab hasn't been added to a tab model yet.
+                assert chromeActivity.getTabModelSelector().getModelForTabId(mTab.getId()) == null;
+                // Tab is closing before being attached to a tab model. Delay the closing until
+                // native initialization finishes.
+                mTab.setDidCloseWhileDetached();
+            } else {
+                chromeActivity
+                        .getTabModelSelector()
+                        .tryCloseTab(
+                                TabClosureParams.closeTab(mTab)
+                                        .allowUndo(/* allowUndo= */ false)
+                                        .build(),
+                                /* allowDialog= */ false);
+            }
         }
     }
 

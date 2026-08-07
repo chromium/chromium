@@ -46,4 +46,19 @@ public class HeadlessTabDelegateFactory implements TabDelegateFactory {
             String url, @Nullable NativePage candidatePage, Tab tab, @Nullable PdfInfo pdfInfo) {
         return null;
     }
+
+    @Override
+    public boolean isCustomTab() {
+        return false;
+    }
+
+    @Override
+    public boolean isTabInPwa() {
+        return false;
+    }
+
+    @Override
+    public boolean isTabInBrowser() {
+        return true;
+    }
 }
