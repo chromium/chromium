@@ -209,7 +209,7 @@ export abstract class LineFocusMoveMode {
   }
 
   protected getCenterY(): number {
-    return (this.model_.getMaxY()) / 2;
+    return this.styleMode_.getCenterY();
   }
 
   protected notifyScrollToTop(): void {

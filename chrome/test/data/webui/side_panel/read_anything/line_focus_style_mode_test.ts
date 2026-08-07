@@ -26,6 +26,13 @@ suite('LineFocusStyleMode', () => {
       assertEquals(style, mode.getStyle());
     });
 
+    test('getCenterY does not offset by toolbar', () => {
+      model.setMinY(20);
+      model.setMaxY(100);
+
+      assertEquals(50, mode.getCenterY());
+    });
+
     test('updateFocusBounds sets top with no height', () => {
       const y = 100;
       model.setFocalPoint(y);
@@ -122,6 +129,13 @@ suite('LineFocusStyleMode', () => {
       largeMode = new LineFocusWindowStyleMode(largeStyle, model);
       smallMode = new LineFocusWindowStyleMode(smallStyle, model);
       model.setAdaptMultiLineWindow(true);
+    });
+
+    test('getCenterY offsets by toolbar', () => {
+      model.setMinY(20);
+      model.setMaxY(100);
+
+      assertEquals(60, largeMode.getCenterY());
     });
 
     test('updateFocusBounds with empty bounds does nothing', () => {
