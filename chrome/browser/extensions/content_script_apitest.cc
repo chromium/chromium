@@ -395,6 +395,35 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
                             ".length == 2"));
 }
 
+// An extension content script matching <all_urls> injects into an ordinary tab
+// but never into a privileged WebContents (see //chrome's
+// PrivilegedWebContents) at the same URL, because user scripts are not
+// delivered to the privileged renderer process.
+IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
+                       NoInjectionIntoPrivilegedWebContents) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  ASSERT_TRUE(LoadExtension(
+      test_data_dir_.AppendASCII("content_scripts/privileged_web_contents")));
+
+  const GURL url = embedded_test_server()->GetURL("/title1.html");
+
+  // Ordinary tab: the content script injects and sets the title.
+  content::WebContents* ordinary = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(ordinary, url));
+  EXPECT_EQ("INJECTED", content::EvalJs(ordinary, "document.title"));
+
+  // Privileged WebContents at the same URL: the content script is not injected,
+  // so the title is unchanged.
+  content::WebContents::CreateParams params(profile());
+  content::WebContents::PrivilegedParams privileged_params;
+  privileged_params.feature_id = 42;
+  params.privileged_params = privileged_params;
+  std::unique_ptr<content::WebContents> privileged =
+      content::WebContents::Create(params);
+  ASSERT_TRUE(content::NavigateToURL(privileged.get(), url));
+  EXPECT_NE("INJECTED", content::EvalJs(privileged.get(), "document.title"));
+}
+
 // Tests that content scripts detaching its Window during evaluation shouldn't
 // crash. Regression test for https://crbug.com/40773121.
 IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, DetachDuringEvaluation) {

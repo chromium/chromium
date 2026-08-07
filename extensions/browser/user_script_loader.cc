@@ -525,6 +525,14 @@ UserScriptLoader::SendUpdateResult UserScriptLoader::SendUpdate(
     return SendUpdateResult::kNoActionTaken;
   }
 
+  // Never deliver user scripts (content scripts) to a privileged renderer
+  // process (see //chrome's PrivilegedWebContents), so extensions cannot inject
+  // into privileged content. Privileged content always gets its own dedicated
+  // process, so this is a clean per-process decision.
+  if (process->IsPrivileged()) {
+    return SendUpdateResult::kNoActionTaken;
+  }
+
   mojom::Renderer* renderer =
       RendererStartupHelperFactory::GetForBrowserContext(browser_context())
           ->GetRenderer(process);
