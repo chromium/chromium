@@ -81,3 +81,7 @@ cr-searchbox-dropdown {
 :host([can-show-secondary-side][has-secondary-side]) cr-searchbox-dropdown {
   --cr-searchbox-secondary-side-display: block;
 }
+
+.dropdownContainer:has(omnibox-popup-contextual-entrypoint[show-context-entrypoint_]) {
+  padding-bottom: 10px;
+}

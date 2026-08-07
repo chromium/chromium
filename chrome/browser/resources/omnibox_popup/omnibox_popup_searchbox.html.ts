@@ -73,6 +73,9 @@ export function getHtml(this: OmniboxPopupSearchboxElement) {
             @match-click="${this.onMatchClick}"
             ?hidden="${!this.dropdownIsVisible}">
         </cr-searchbox-dropdown>
+        <omnibox-popup-contextual-entrypoint
+            .dropdownIsVisible="${this.dropdownIsVisible}">
+        </omnibox-popup-contextual-entrypoint>
       </div>
     </div>
   `;

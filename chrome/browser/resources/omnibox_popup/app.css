@@ -24,8 +24,7 @@
   font-size: var(--omnibox-font-size);
 }
 
-:host([has-visible-matches_]) .dropdownContainer,
-:host([show-context-entrypoint_]) .dropdownContainer {
+:host([has-visible-matches_]) .dropdownContainer {
   padding-bottom: 10px;
 }
 
