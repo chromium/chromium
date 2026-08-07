@@ -340,6 +340,7 @@ const TAG_INPUT = 'INPUT';
 const TAG_TEXTAREA = 'TEXTAREA';
 const TAG_SELECT = 'SELECT';
 const TAG_BUTTON = 'BUTTON';
+const TAG_FIELDSET = 'FIELDSET';
 const TAG_P = 'P';
 const TAG_OL = 'OL';
 const TAG_UL = 'UL';
@@ -866,6 +867,10 @@ function getFormControlType(element: HTMLElement): FormControlType|undefined {
 
   if (tagName === TAG_TEXTAREA) {
     return FormControlType.TEXT_AREA;
+  }
+
+  if (tagName === TAG_FIELDSET) {
+    return FormControlType.FIELDSET;
   }
 
   // Fallback, though we shouldn't reach here for form controls.
@@ -2694,7 +2699,8 @@ function getBasicContentForNonGenericElement(
     case TAG_INPUT:
     case TAG_TEXTAREA:
     case TAG_SELECT:
-    case TAG_BUTTON: {
+    case TAG_BUTTON:
+    case TAG_FIELDSET: {
       return {
         childrenNodes: [],
         contentAttributes: {

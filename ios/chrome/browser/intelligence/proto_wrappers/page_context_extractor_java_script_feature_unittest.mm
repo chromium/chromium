@@ -2254,6 +2254,56 @@ TEST_P(PageContextExtractorJavaScriptFeatureTest,
   EXPECT_FALSE(offscreen_interaction_info);
 }
 
+// Test fieldset extraction logic.
+TEST_P(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_FieldsetControl) {
+  const std::string html = "<html><body>"
+                           "  <fieldset name=\"test_fieldset\">"
+                           "    <input type=\"text\" name=\"test_input\" />"
+                           "  </fieldset>"
+                           "</body></html>";
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/false,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1));
+  ASSERT_TRUE(result_value.has_value());
+  EXPECT_FALSE(result_value->is_none());
+
+  const base::DictValue& dict = result_value->GetDict();
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+  const base::ListValue* root_children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(root_children);
+  ASSERT_GE(root_children->size(), 1u);
+
+  const base::DictValue& fieldset_node = (*root_children)[0].GetDict();
+  std::optional<double> fieldset_attribute_type =
+      fieldset_node.FindDoubleByDottedPath("contentAttributes.attributeType");
+  ASSERT_TRUE(fieldset_attribute_type.has_value());
+  EXPECT_EQ(*fieldset_attribute_type,
+            static_cast<double>(
+                optimization_guide::proto::CONTENT_ATTRIBUTE_FORM_CONTROL));
+
+  std::optional<double> fieldset_form_control_type =
+      fieldset_node.FindDoubleByDottedPath(
+          "contentAttributes.formControlData.formControlType");
+  ASSERT_TRUE(fieldset_form_control_type.has_value());
+  EXPECT_EQ(*fieldset_form_control_type,
+            static_cast<double>(
+                optimization_guide::proto::FORM_CONTROL_TYPE_FIELDSET));
+
+  const std::string* field_name = fieldset_node.FindStringByDottedPath(
+      "contentAttributes.formControlData.fieldName");
+  ASSERT_TRUE(field_name);
+  EXPECT_EQ(*field_name, "test_fieldset");
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          PageContextExtractorJavaScriptFeatureTest,
                          ::testing::Values(IPCExtractionMethod::kNative,
