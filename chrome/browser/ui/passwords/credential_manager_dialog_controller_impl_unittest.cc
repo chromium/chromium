@@ -213,9 +213,10 @@ TEST_F(CredentialManagerDialogControllerTest, SortsCredentials) {
 
 TEST_F(CredentialManagerDialogControllerTest, AutoSigninPromo) {
   base::HistogramTester histogram_tester;
-  StrictMock<MockPasswordPrompt> prompt;
-  EXPECT_CALL(prompt, ShowAutoSigninPrompt());
-  controller().ShowAutosigninPrompt(&prompt);
+  auto prompt = std::make_unique<StrictMock<MockPasswordPrompt>>();
+  auto* prompt_ptr = prompt.get();
+  EXPECT_CALL(*prompt_ptr, ShowAutoSigninPrompt());
+  controller().ShowAutosigninPrompt(std::move(prompt));
 
   prefs()->SetBoolean(
       password_manager::prefs::kWasAutoSignInFirstRunExperienceShown, false);
@@ -231,15 +232,16 @@ TEST_F(CredentialManagerDialogControllerTest, AutoSigninPromo) {
 
 TEST_F(CredentialManagerDialogControllerTest, AutoSigninPromoOkGotIt) {
   base::HistogramTester histogram_tester;
-  StrictMock<MockPasswordPrompt> prompt;
-  EXPECT_CALL(prompt, ShowAutoSigninPrompt());
-  controller().ShowAutosigninPrompt(&prompt);
+  auto prompt = std::make_unique<StrictMock<MockPasswordPrompt>>();
+  auto* prompt_ptr = prompt.get();
+  EXPECT_CALL(*prompt_ptr, ShowAutoSigninPrompt());
+  controller().ShowAutosigninPrompt(std::move(prompt));
 
   prefs()->SetBoolean(
       password_manager::prefs::kWasAutoSignInFirstRunExperienceShown, false);
   prefs()->SetBoolean(password_manager::prefs::kCredentialsEnableAutosignin,
                       true);
-  EXPECT_CALL(prompt, ControllerGone());
+  EXPECT_CALL(*prompt_ptr, ControllerGone());
   EXPECT_CALL(ui_controller_mock(), OnDialogHidden());
   controller().OnAutoSigninOK();
   EXPECT_FALSE(
@@ -254,15 +256,16 @@ TEST_F(CredentialManagerDialogControllerTest, AutoSigninPromoOkGotIt) {
 
 TEST_F(CredentialManagerDialogControllerTest, AutoSigninPromoTurnOff) {
   base::HistogramTester histogram_tester;
-  StrictMock<MockPasswordPrompt> prompt;
-  EXPECT_CALL(prompt, ShowAutoSigninPrompt());
-  controller().ShowAutosigninPrompt(&prompt);
+  auto prompt = std::make_unique<StrictMock<MockPasswordPrompt>>();
+  auto* prompt_ptr = prompt.get();
+  EXPECT_CALL(*prompt_ptr, ShowAutoSigninPrompt());
+  controller().ShowAutosigninPrompt(std::move(prompt));
 
   prefs()->SetBoolean(
       password_manager::prefs::kWasAutoSignInFirstRunExperienceShown, false);
   prefs()->SetBoolean(password_manager::prefs::kCredentialsEnableAutosignin,
                       true);
-  EXPECT_CALL(prompt, ControllerGone());
+  EXPECT_CALL(*prompt_ptr, ControllerGone());
   EXPECT_CALL(ui_controller_mock(), OnDialogHidden());
   controller().OnAutoSigninTurnOff();
   EXPECT_FALSE(

@@ -1321,7 +1321,8 @@ ManagePasswordsUIController::CreateAccountChooser(
   return CreateAccountChooserPromptView(controller, web_contents());
 }
 
-AutoSigninFirstRunPrompt* ManagePasswordsUIController::CreateAutoSigninPrompt(
+std::unique_ptr<AutoSigninFirstRunPrompt>
+ManagePasswordsUIController::CreateAutoSigninPrompt(
     CredentialManagerDialogController* controller) {
   return CreateAutoSigninPromptView(controller, web_contents());
 }

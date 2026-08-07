@@ -24,9 +24,6 @@ class PasswordCombinedSelectorController;
 // A platform-independent interface for the account chooser dialog.
 class AccountChooserPrompt {
  public:
-  AccountChooserPrompt(const AccountChooserPrompt&) = delete;
-  AccountChooserPrompt& operator=(const AccountChooserPrompt&) = delete;
-
   virtual ~AccountChooserPrompt() = default;
 
   // Shows the account chooser dialog.
@@ -35,16 +32,12 @@ class AccountChooserPrompt {
   // Notifies the UI element that it's controller is no longer managing the UI
   // element. The dialog should close.
   virtual void ControllerGone() = 0;
-
- protected:
-  AccountChooserPrompt() = default;
 };
 
 // A platform-independent interface for the autosignin promo.
 class AutoSigninFirstRunPrompt {
  public:
-  AutoSigninFirstRunPrompt(const AutoSigninFirstRunPrompt&) = delete;
-  AutoSigninFirstRunPrompt& operator=(const AutoSigninFirstRunPrompt&) = delete;
+  virtual ~AutoSigninFirstRunPrompt() = default;
 
   // Shows the dialog.
   virtual void ShowAutoSigninPrompt() = 0;
@@ -52,17 +45,11 @@ class AutoSigninFirstRunPrompt {
   // Notifies the UI element that it's controller is no longer managing the UI
   // element. The dialog should close.
   virtual void ControllerGone() = 0;
-
- protected:
-  AutoSigninFirstRunPrompt() = default;
-  virtual ~AutoSigninFirstRunPrompt() = default;
 };
 
 // A platform-independent interface for the credentials leaked prompt.
 class CredentialLeakPrompt {
  public:
-  CredentialLeakPrompt(const CredentialLeakPrompt&) = delete;
-  CredentialLeakPrompt& operator=(const CredentialLeakPrompt&) = delete;
   virtual ~CredentialLeakPrompt() = default;
 
   // Shows the dialog.
@@ -71,9 +58,6 @@ class CredentialLeakPrompt {
   // Returns the underlying Widget associated with the on-screen prompt. For
   // Testing Only!
   virtual views::Widget* GetWidgetForTesting() = 0;
-
- protected:
-  CredentialLeakPrompt() = default;
 };
 
 // Factory function for AccountChooserPrompt on desktop platforms.
@@ -87,7 +71,7 @@ std::unique_ptr<AccountChooserPrompt> CreatePasswordCombinedSelectorPromptView(
     content::WebContents* web_contents);
 
 // Factory function for AutoSigninFirstRunPrompt on desktop platforms.
-AutoSigninFirstRunPrompt* CreateAutoSigninPromptView(
+std::unique_ptr<AutoSigninFirstRunPrompt> CreateAutoSigninPromptView(
     CredentialManagerDialogController* controller,
     content::WebContents* web_contents);
 

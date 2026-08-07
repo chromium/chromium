@@ -4,6 +4,11 @@
 
 #include "chrome/browser/ui/views/passwords/auto_signin_first_run_dialog_view.h"
 
+#include <memory>
+#include <utility>
+
+#include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/passwords/credential_manager_dialog_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -12,7 +17,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/controls/label.h"
@@ -52,7 +56,10 @@ AutoSigninFirstRunDialogView::~AutoSigninFirstRunDialogView() = default;
 
 void AutoSigninFirstRunDialogView::ShowAutoSigninPrompt() {
   InitWindow();
-  constrained_window::ShowWebModalDialogViews(this, web_contents_.get());
+  DCHECK(!widget_);
+  SetOwnershipOfNewWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget_ = base::WrapUnique(
+      constrained_window::ShowWebModalDialogViews(this, web_contents_.get()));
 }
 
 void AutoSigninFirstRunDialogView::ControllerGone() {
@@ -73,23 +80,23 @@ void AutoSigninFirstRunDialogView::WindowClosing() {
 }
 
 void AutoSigninFirstRunDialogView::InitWindow() {
+  auto contents_view = std::make_unique<views::View>();
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kText, views::DialogContentType::kText));
-  SetLayoutManager(std::make_unique<views::FillLayout>());
+  contents_view->SetLayoutManager(std::make_unique<views::FillLayout>());
 
   auto label = std::make_unique<views::Label>(
       controller_->GetAutoSigninText(), views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_SECONDARY);
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  AddChildViewRaw(label.release());
+  contents_view->AddChildView(std::move(label));
+  SetContentsView(std::move(contents_view));
 }
 
-BEGIN_METADATA(AutoSigninFirstRunDialogView)
-END_METADATA
-
-AutoSigninFirstRunPrompt* CreateAutoSigninPromptView(
+std::unique_ptr<AutoSigninFirstRunPrompt> CreateAutoSigninPromptView(
     CredentialManagerDialogController* controller,
     content::WebContents* web_contents) {
-  return new AutoSigninFirstRunDialogView(controller, web_contents);
+  return std::make_unique<AutoSigninFirstRunDialogView>(controller,
+                                                        web_contents);
 }

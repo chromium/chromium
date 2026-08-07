@@ -179,7 +179,7 @@ class TestManagePasswordsUIController : public ManagePasswordsUIController {
               CreateAccountChooser,
               (CredentialManagerDialogController*),
               (override));
-  MOCK_METHOD(AutoSigninFirstRunPrompt*,
+  MOCK_METHOD(std::unique_ptr<AutoSigninFirstRunPrompt>,
               CreateAutoSigninPrompt,
               (CredentialManagerDialogController*),
               (override));
@@ -1111,13 +1111,15 @@ TEST_F(ManagePasswordsUIControllerTest, AutoSignin) {
 }
 
 TEST_F(ManagePasswordsUIControllerTest, AutoSigninFirstRun) {
+  auto prompt = std::make_unique<CredentialManagementDialogPromptMock>();
+  auto* prompt_ptr = prompt.get();
   EXPECT_CALL(*controller(), CreateAutoSigninPrompt(_))
-      .WillOnce(Return(&dialog_prompt()));
-  EXPECT_CALL(dialog_prompt(), ShowAutoSigninPrompt());
+      .WillOnce(Return(std::move(prompt)));
+  EXPECT_CALL(*prompt_ptr, ShowAutoSigninPrompt());
   controller()->OnPromptEnableAutoSignin();
 
   EXPECT_EQ(password_manager::ui::INACTIVE_STATE, controller()->GetState());
-  EXPECT_CALL(dialog_prompt(), ControllerGone());
+  EXPECT_CALL(*prompt_ptr, ControllerGone());
 }
 
 TEST_F(ManagePasswordsUIControllerTest, AutoSigninFirstRunAfterAutofill) {
@@ -1131,32 +1133,36 @@ TEST_F(ManagePasswordsUIControllerTest, AutoSigninFirstRunAfterAutofill) {
   EXPECT_EQ(password_manager::ui::MANAGE_STATE, controller()->GetState());
 
   // Pop up the autosignin promo. The state should stay intact.
+  auto prompt = std::make_unique<CredentialManagementDialogPromptMock>();
+  auto* prompt_ptr = prompt.get();
   EXPECT_CALL(*controller(), CreateAutoSigninPrompt(_))
-      .WillOnce(Return(&dialog_prompt()));
-  EXPECT_CALL(dialog_prompt(), ShowAutoSigninPrompt());
+      .WillOnce(Return(std::move(prompt)));
+  EXPECT_CALL(*prompt_ptr, ShowAutoSigninPrompt());
   controller()->OnPromptEnableAutoSignin();
 
   EXPECT_EQ(password_manager::ui::MANAGE_STATE, controller()->GetState());
   EXPECT_EQ(url::Origin::Create(test_form_ptr->url), controller()->GetOrigin());
   EXPECT_THAT(controller()->GetCurrentForms(),
               ElementsAre(Pointee(*test_form_ptr)));
-  EXPECT_CALL(dialog_prompt(), ControllerGone());
+  EXPECT_CALL(*prompt_ptr, ControllerGone());
 }
 
 TEST_F(ManagePasswordsUIControllerTest, AutoSigninFirstRunAfterNavigation) {
   // Pop up the autosignin promo.
+  auto prompt = std::make_unique<CredentialManagementDialogPromptMock>();
+  auto* prompt_ptr = prompt.get();
   EXPECT_CALL(*controller(), CreateAutoSigninPrompt(_))
-      .WillOnce(Return(&dialog_prompt()));
-  EXPECT_CALL(dialog_prompt(), ShowAutoSigninPrompt());
+      .WillOnce(Return(std::move(prompt)));
+  EXPECT_CALL(*prompt_ptr, ShowAutoSigninPrompt());
   controller()->OnPromptEnableAutoSignin();
 
   // The dialog should survive any navigation.
-  EXPECT_CALL(dialog_prompt(), ControllerGone()).Times(0);
+  EXPECT_CALL(*prompt_ptr, ControllerGone()).Times(0);
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              GURL(kExampleUrl));
-  ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(&dialog_prompt()));
-  EXPECT_CALL(dialog_prompt(), ControllerGone());
+  ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(prompt_ptr));
+  EXPECT_CALL(*prompt_ptr, ControllerGone());
 }
 
 TEST_F(ManagePasswordsUIControllerTest, AutofillDuringAutoSignin) {

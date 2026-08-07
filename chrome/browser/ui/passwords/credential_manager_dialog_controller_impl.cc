@@ -94,11 +94,11 @@ void CredentialManagerDialogControllerImpl::ShowAccountChooser(
 }
 
 void CredentialManagerDialogControllerImpl::ShowAutosigninPrompt(
-    AutoSigninFirstRunPrompt* dialog) {
+    std::unique_ptr<AutoSigninFirstRunPrompt> dialog) {
   DCHECK(!account_chooser_dialog_);
   DCHECK(!autosignin_dialog_);
   DCHECK(dialog);
-  autosignin_dialog_ = dialog;
+  autosignin_dialog_ = std::move(dialog);
   autosignin_dialog_->ShowAutoSigninPrompt();
 }
 
@@ -191,8 +191,15 @@ void CredentialManagerDialogControllerImpl::OnAutoSigninOK() {
       profile_->GetPrefs());
   password_manager::metrics_util::LogAutoSigninPromoUserAction(
       password_manager::metrics_util::AUTO_SIGNIN_OK_GOT_IT);
-  ResetDialog();
-  OnCloseDialog();
+  if (autosignin_dialog_) {
+    autosignin_dialog_->ControllerGone();
+    // Delete the dialog asynchronously because we are currently in a views
+    // callback. Synchronous destruction would cause a use-after-free crash
+    // when the call stack unwinds back to the views framework.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, std::move(autosignin_dialog_));
+  }
+  delegate_->OnDialogHidden();
 }
 
 void CredentialManagerDialogControllerImpl::OnAutoSigninTurnOff() {
@@ -202,11 +209,22 @@ void CredentialManagerDialogControllerImpl::OnAutoSigninTurnOff() {
       profile_->GetPrefs());
   password_manager::metrics_util::LogAutoSigninPromoUserAction(
       password_manager::metrics_util::AUTO_SIGNIN_TURN_OFF);
-  ResetDialog();
-  OnCloseDialog();
+  if (autosignin_dialog_) {
+    autosignin_dialog_->ControllerGone();
+    // Delete the dialog asynchronously because we are currently in a views
+    // callback. Synchronous destruction would cause a use-after-free crash
+    // when the call stack unwinds back to the views framework.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, std::move(autosignin_dialog_));
+  }
+  delegate_->OnDialogHidden();
 }
 
 void CredentialManagerDialogControllerImpl::OnCloseDialog() {
+  // Delete the dialogs asynchronously because we are currently in a views
+  // callback (WindowClosing). Synchronous destruction would cause a
+  // use-after-free crash when the call stack unwinds back to the views
+  // framework.
   if (account_chooser_dialog_) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
         FROM_HERE, std::move(account_chooser_dialog_));
@@ -214,7 +232,8 @@ void CredentialManagerDialogControllerImpl::OnCloseDialog() {
   if (autosignin_dialog_) {
     password_manager::metrics_util::LogAutoSigninPromoUserAction(
         password_manager::metrics_util::AUTO_SIGNIN_NO_ACTION);
-    autosignin_dialog_ = nullptr;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, std::move(autosignin_dialog_));
   }
   delegate_->OnDialogHidden();
 }
@@ -226,7 +245,7 @@ void CredentialManagerDialogControllerImpl::ResetDialog() {
   }
   if (autosignin_dialog_) {
     autosignin_dialog_->ControllerGone();
-    autosignin_dialog_ = nullptr;
+    autosignin_dialog_.reset();
   }
 }
 

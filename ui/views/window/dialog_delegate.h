@@ -32,7 +32,6 @@
 
 class AppInfoDialogViewsTest;
 class AuthenticatorRequestDialogView;
-class AutoSigninFirstRunDialogView;
 class BatchUploadDialogView;
 class BluetoothDeviceCredentialsView;
 class BluetoothDevicePairConfirmView;
@@ -713,7 +712,6 @@ class VIEWS_EXPORT DialogDelegateView : public DialogDelegate, public View {
   // See comments atop class.
   friend class ::AppInfoDialogViewsTest;
   friend class ::AuthenticatorRequestDialogView;
-  friend class ::AutoSigninFirstRunDialogView;
   friend class ::BatchUploadDialogView;
   friend class ::BluetoothDeviceCredentialsView;
   friend class ::BluetoothDevicePairConfirmView;

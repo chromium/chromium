@@ -276,8 +276,8 @@ class ManagePasswordsUIController
   virtual std::unique_ptr<AccountChooserPrompt> CreateAccountChooser(
       CredentialManagerDialogController* controller);
 
-  // Called to create the account chooser dialog. Mocked in tests.
-  virtual AutoSigninFirstRunPrompt* CreateAutoSigninPrompt(
+  // Called to create the auto sign-in prompt dialog. Mocked in tests.
+  virtual std::unique_ptr<AutoSigninFirstRunPrompt> CreateAutoSigninPrompt(
       CredentialManagerDialogController* controller);
 
   // Called to create the credentials leaked dialog.

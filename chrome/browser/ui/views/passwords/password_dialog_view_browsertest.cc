@@ -131,9 +131,10 @@ class TestManagePasswordsUIController : public ManagePasswordsUIController {
       const TestManagePasswordsUIController&) = delete;
 
   void OnDialogHidden() override;
+
   std::unique_ptr<AccountChooserPrompt> CreateAccountChooser(
       CredentialManagerDialogController* controller) override;
-  AutoSigninFirstRunPrompt* CreateAutoSigninPrompt(
+  std::unique_ptr<AutoSigninFirstRunPrompt> CreateAutoSigninPrompt(
       CredentialManagerDialogController* controller) override;
   std::unique_ptr<CredentialLeakPrompt> CreateCredentialLeakPrompt(
       CredentialLeakDialogController* controller) override;
@@ -189,21 +190,21 @@ TestManagePasswordsUIController::CreateAccountChooser(
   return chooser;
 }
 
-AutoSigninFirstRunPrompt*
+std::unique_ptr<AutoSigninFirstRunPrompt>
 TestManagePasswordsUIController::CreateAutoSigninPrompt(
     CredentialManagerDialogController* controller) {
-  current_autosignin_prompt_ =
-      ManagePasswordsUIController::CreateAutoSigninPrompt(controller);
-  return current_autosignin_prompt_;
+  auto prompt = ManagePasswordsUIController::CreateAutoSigninPrompt(controller);
+  current_autosignin_prompt_ = prompt.get();
+  return prompt;
 }
 
 std::unique_ptr<CredentialLeakPrompt>
 TestManagePasswordsUIController::CreateCredentialLeakPrompt(
     CredentialLeakDialogController* controller) {
-  auto current_credential_leak_prompt =
+  auto prompt =
       ManagePasswordsUIController::CreateCredentialLeakPrompt(controller);
-  current_credential_leak_prompt_ = current_credential_leak_prompt.get();
-  return current_credential_leak_prompt;
+  current_credential_leak_prompt_ = prompt.get();
+  return prompt;
 }
 
 std::unique_ptr<password_manager::PasswordFormManagerForUI> WrapFormInManager(
