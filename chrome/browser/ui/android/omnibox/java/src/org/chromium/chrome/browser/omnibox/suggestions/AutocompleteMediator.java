@@ -11,7 +11,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.text.TextUtils;
@@ -407,8 +406,7 @@ class AutocompleteMediator
         mDropdownViewInfoListManager.setFuseboxLayoutMode(fuseboxLayoutMode);
         if (mOmniboxSuggestionsVisualStateObserver != null) {
             mOmniboxSuggestionsVisualStateObserver.onOmniboxSuggestionsBackgroundColorChanged(
-                    OmniboxResourceProvider.getSuggestionsDropdownBackgroundColor(
-                            mContext, brandedColorScheme));
+                    mResourceProvider.getSuggestionsDropdownBackgroundColor());
         }
     }
 
@@ -987,7 +985,6 @@ class AutocompleteMediator
                     }
                 };
 
-        Resources resources = mContext.getResources();
         @StringRes int dialogMessageId = R.string.omnibox_confirm_delete;
         if (isSuggestionFromClipboard(suggestion)) {
             dialogMessageId = R.string.omnibox_confirm_delete_from_clipboard;
@@ -1000,12 +997,13 @@ class AutocompleteMediator
                         .with(ModalDialogProperties.TITLE_MAX_LINES, 1)
                         .with(
                                 ModalDialogProperties.MESSAGE_PARAGRAPH_1,
-                                resources.getString(dialogMessageId))
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources, R.string.ok)
+                                mResourceProvider.getString(dialogMessageId))
+                        .with(
+                                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                mResourceProvider.getString(R.string.ok))
                         .with(
                                 ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
-                                resources,
-                                R.string.cancel)
+                                mResourceProvider.getString(R.string.cancel))
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
                         .build();
 
@@ -1937,8 +1935,7 @@ class AutocompleteMediator
         // called the keyboard back after we hid it.
         if (mDelegate.isKeyboardActive()) {
             int suggestionHeight =
-                    mContext.getResources()
-                            .getDimensionPixelSize(R.dimen.omnibox_suggestion_content_height);
+                    mResourceProvider.getDimen(R.dimen.omnibox_suggestion_content_height);
             if (!isInInputSession()) return;
             mAutocomplete.onSuggestionDropdownHeightChanged(newHeight, suggestionHeight);
         }

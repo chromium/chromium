@@ -69,14 +69,12 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
         mSuggestionHost = uiContext.host;
         mImageSupplier = uiContext.imageSupplier;
         mDesiredFaviconWidthPx =
-                mContext.getResources()
-                        .getDimensionPixelSize(R.dimen.omnibox_suggestion_favicon_size);
+                uiContext.resourceProvider.getDimen(R.dimen.omnibox_suggestion_favicon_size);
         mDecorationImageSizePx =
-                mContext.getResources()
-                        .getDimensionPixelSize(R.dimen.omnibox_suggestion_decoration_image_size);
+                uiContext.resourceProvider.getDimen(
+                        R.dimen.omnibox_suggestion_decoration_image_size);
         mSuggestionSizePx =
-                mContext.getResources()
-                        .getDimensionPixelSize(R.dimen.omnibox_suggestion_content_height);
+                uiContext.resourceProvider.getDimen(R.dimen.omnibox_suggestion_content_height);
         mActionChipsProcessor = new ActionChipsProcessor(uiContext.host, uiContext.actionDelegate);
 
         mShouldShowRemoveButton = OmniboxCapabilities.hasPrecisionPointerExperience(mContext);
@@ -117,7 +115,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
                 match.isSearchSuggestion()
                         ? R.drawable.ic_suggestion_magnifier
                         : R.drawable.ic_globe_24dp;
-        return OmniboxDrawableState.forSmallIcon(mContext, icon, true);
+        return OmniboxDrawableState.forSmallIcon(mUiContext.resourceProvider, icon, true);
     }
 
     /**
@@ -167,8 +165,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
                         List.of(
                                 new Action(
                                         getRemoveButtonIconState(),
-                                        OmniboxResourceProvider.getString(
-                                                mContext,
+                                        mUiContext.resourceProvider.getString(
                                                 R.string.accessibility_omnibox_remove_suggestion),
                                         null,
                                         /* showOnlyOnFocus= */ true,
@@ -184,10 +181,8 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
         if (!suggestion.isRefineable()) return;
 
         String iconString =
-                OmniboxResourceProvider.getString(
-                        mContext,
-                        R.string.accessibility_omnibox_btn_refine,
-                        suggestion.getFillIntoEdit());
+                mUiContext.resourceProvider.getString(
+                        R.string.accessibility_omnibox_btn_refine, suggestion.getFillIntoEdit());
         @DrawableRes int icon = R.drawable.btn_suggestion_refine_up;
 
         Runnable action =
@@ -203,7 +198,8 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
                 model,
                 List.of(
                         new Action(
-                                OmniboxDrawableState.forSmallIcon(mContext, icon, true),
+                                OmniboxDrawableState.forSmallIcon(
+                                        mUiContext.resourceProvider, icon, true),
                                 iconString,
                                 action)));
     }
@@ -216,10 +212,9 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
         Drawable layerDrawable;
         if (mRemoveButtonDrawableState == null) {
             int sizePx =
-                    mContext.getResources()
-                            .getDimensionPixelSize(
-                                    R.dimen.omnibox_suggestion_remove_button_icon_size);
-            Drawable baseIcon = OmniboxResourceProvider.getDrawable(mContext, R.drawable.btn_close);
+                    mUiContext.resourceProvider.getDimen(
+                            R.dimen.omnibox_suggestion_remove_button_icon_size);
+            Drawable baseIcon = mUiContext.resourceProvider.getDrawable(R.drawable.btn_close);
             LayerDrawable drawable = new LayerDrawable(new Drawable[] {baseIcon});
             drawable.setLayerGravity(0, Gravity.CENTER);
             drawable.setLayerWidth(0, sizePx);
@@ -327,14 +322,18 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
             if (action.presentationMode != ActionPresentationMode.BUTTON) {
                 continue;
             }
+            boolean isIncognito = mUiContext.resourceProvider.isIncognito();
+            int iconRes =
+                    isIncognito && action.icon.incognitoButtonIconRes != 0
+                            ? action.icon.incognitoButtonIconRes
+                            : action.icon.buttonIconRes;
             setActionButtons(
                     model,
                     List.of(
                             new Action(
-                                    OmniboxDrawableState.forSmallIconWithIncognitoVariant(
-                                            mContext,
-                                            action.icon.buttonIconRes,
-                                            action.icon.incognitoButtonIconRes,
+                                    OmniboxDrawableState.forSmallIcon(
+                                            mUiContext.resourceProvider,
+                                            iconRes,
                                             action.icon.tintWithTextColor),
                                     action.accessibilityHint,
                                     null,

@@ -44,6 +44,7 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
     private final @Px int mCarouselItemViewHeight;
     private final @Px int mInitialSpacing;
     private final @Px int mElementSpacing;
+    private final OmniboxResourceProvider mResourceProvider;
 
     /**
      * @param uiContext Context object containing common UI dependencies.
@@ -52,23 +53,16 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
         super(uiContext.context);
         mSuggestionHost = uiContext.host;
         mImageSupplier = uiContext.imageSupplier;
-        mCarouselItemViewWidth =
-                mContext.getResources().getDimensionPixelSize(R.dimen.tile_view_width);
-        mCarouselItemViewHeight =
-                mContext.getResources().getDimensionPixelSize(R.dimen.tile_view_min_height);
+        mResourceProvider = uiContext.resourceProvider;
+        mCarouselItemViewWidth = mResourceProvider.getDimen(R.dimen.tile_view_width);
+        mCarouselItemViewHeight = mResourceProvider.getDimen(R.dimen.tile_view_min_height);
 
         mInitialSpacing =
-                OmniboxResourceProvider.getHeaderStartPadding(uiContext.context)
-                        - uiContext
-                                .context
-                                .getResources()
-                                .getDimensionPixelSize(R.dimen.tile_view_padding);
+                mResourceProvider.getHeaderStartPadding()
+                        - mResourceProvider.getDimen(R.dimen.tile_view_padding);
         mElementSpacing =
-                uiContext
-                        .context
-                        .getResources()
-                        .getDimensionPixelSize(
-                                R.dimen.omnibox_carousel_suggestion_minimum_item_spacing);
+                mResourceProvider.getDimen(
+                        R.dimen.omnibox_carousel_suggestion_minimum_item_spacing);
     }
 
     @Override
@@ -162,19 +156,14 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
         Drawable decoration;
 
         if (isSearch) {
-            decoration =
-                    OmniboxResourceProvider.getDrawable(
-                            mContext, R.drawable.ic_suggestion_magnifier);
+            decoration = mResourceProvider.getDrawable(R.drawable.ic_suggestion_magnifier);
             contentDescription =
-                    OmniboxResourceProvider.getString(
-                            mContext,
-                            R.string.accessibility_omnibox_most_visited_tile_search,
-                            title);
+                    mResourceProvider.getString(
+                            R.string.accessibility_omnibox_most_visited_tile_search, title);
         } else {
-            decoration = OmniboxResourceProvider.getDrawable(mContext, R.drawable.ic_globe_24dp);
+            decoration = mResourceProvider.getDrawable(R.drawable.ic_globe_24dp);
             contentDescription =
-                    OmniboxResourceProvider.getString(
-                            mContext,
+                    mResourceProvider.getString(
                             R.string.accessibility_omnibox_most_visited_tile_navigate,
                             title,
                             url.getHost());
@@ -197,9 +186,8 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
                         .with(TileViewProperties.ICON, decoration)
                         .with(
                                 TileViewProperties.SMALL_ICON_ROUNDING_RADIUS,
-                                mContext.getResources()
-                                        .getDimensionPixelSize(
-                                                R.dimen.omnibox_small_icon_rounding_radius))
+                                mResourceProvider.getDimen(
+                                        R.dimen.omnibox_small_icon_rounding_radius))
                         .build();
 
         // Fetch site favicon for MV tiles.

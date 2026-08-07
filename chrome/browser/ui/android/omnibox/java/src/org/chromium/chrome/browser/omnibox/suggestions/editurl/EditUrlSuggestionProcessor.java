@@ -105,7 +105,7 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
         if (!tab.isLoading()) {
             title = tab.getTitle();
         } else if (TextUtils.isEmpty(title)) {
-            title = mContext.getResources().getText(R.string.tab_loading_default_title).toString();
+            title = mUiContext.resourceProvider.getString(R.string.tab_loading_default_title);
         }
 
         boolean isSearch = suggestion.isSearchSuggestion();
@@ -132,9 +132,10 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
                 Arrays.asList(
                         new Action(
                                 OmniboxDrawableState.forSmallIcon(
-                                        mContext, R.drawable.ic_share_white_24dp, true),
-                                OmniboxResourceProvider.getString(
-                                        mContext,
+                                        mUiContext.resourceProvider,
+                                        R.drawable.ic_share_white_24dp,
+                                        true),
+                                mUiContext.resourceProvider.getString(
                                         isSearch
                                                 ? R.string.accessibility_omnibox_btn_share_srp
                                                 : R.string.accessibility_omnibox_btn_share_url,
@@ -144,9 +145,10 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
                                 this::onShareLink),
                         new Action(
                                 OmniboxDrawableState.forSmallIcon(
-                                        mContext, R.drawable.ic_content_copy, true),
-                                OmniboxResourceProvider.getString(
-                                        mContext,
+                                        mUiContext.resourceProvider,
+                                        R.drawable.ic_content_copy,
+                                        true),
+                                mUiContext.resourceProvider.getString(
                                         isSearch
                                                 ? R.string.accessibility_omnibox_btn_copy_srp
                                                 : R.string.accessibility_omnibox_btn_copy_url,
@@ -155,9 +157,8 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
                                 () -> onCopyLink(suggestion)),
                         new Action(
                                 OmniboxDrawableState.forSmallIcon(
-                                        mContext, R.drawable.ic_edit_24dp, true),
-                                OmniboxResourceProvider.getString(
-                                        mContext,
+                                        mUiContext.resourceProvider, R.drawable.ic_edit_24dp, true),
+                                mUiContext.resourceProvider.getString(
                                         isSearch
                                                 ? R.string.accessibility_omnibox_btn_edit_query
                                                 : R.string.accessibility_omnibox_btn_edit_url,

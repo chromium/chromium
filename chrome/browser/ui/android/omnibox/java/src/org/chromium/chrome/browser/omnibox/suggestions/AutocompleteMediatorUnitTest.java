@@ -2009,19 +2009,17 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     public void updateVisualsForState_informsVisualStateObserver() {
+        mResourceProvider.setBrandedColorScheme(BrandedColorScheme.LIGHT_BRANDED_THEME);
         mMediator.updateVisualsForState(BrandedColorScheme.LIGHT_BRANDED_THEME);
         verify(mVisualStateObserver)
                 .onOmniboxSuggestionsBackgroundColorChanged(
-                        eq(
-                                OmniboxResourceProvider.getSuggestionsDropdownBackgroundColor(
-                                        mContext, BrandedColorScheme.LIGHT_BRANDED_THEME)));
+                        eq(mResourceProvider.getSuggestionsDropdownBackgroundColor()));
 
+        mResourceProvider.setBrandedColorScheme(BrandedColorScheme.INCOGNITO);
         mMediator.updateVisualsForState(BrandedColorScheme.INCOGNITO);
         verify(mVisualStateObserver)
                 .onOmniboxSuggestionsBackgroundColorChanged(
-                        eq(
-                                OmniboxResourceProvider.getSuggestionsDropdownBackgroundColor(
-                                        mContext, BrandedColorScheme.INCOGNITO)));
+                        eq(mResourceProvider.getSuggestionsDropdownBackgroundColor()));
     }
 
     @Test

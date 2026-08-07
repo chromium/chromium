@@ -183,7 +183,7 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
 
         return icon == 0
                 ? super.getFallbackIcon(suggestion)
-                : OmniboxDrawableState.forSmallIcon(mContext, icon, allowTint);
+                : OmniboxDrawableState.forSmallIcon(mUiContext.resourceProvider, icon, allowTint);
     }
 
     @Override

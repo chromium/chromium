@@ -20,6 +20,7 @@ import android.util.TypedValue;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
+import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.Px;
@@ -147,6 +148,13 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         return mBrandedColorScheme;
     }
 
+    /**
+     * @return Whether the current color scheme is incognito.
+     */
+    public boolean isIncognito() {
+        return mBrandedColorScheme == BrandedColorScheme.INCOGNITO;
+    }
+
     // NullAway cannot recognize mLayoutSizeState == UNKONWN as factor impacting the outcome.
     // We're intentionally starting with values that are not valid to trigger creation of the
     // correct target context. One way around the problem would be to always instantiate mCache
@@ -201,6 +209,21 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
                         mContext.getResources().getConfiguration().getLocales().get(0),
                         string,
                         (Object[]) args);
+    }
+
+    /** Resolves a dimension size and caches the result. */
+    public @Px int getDimen(@DimenRes int resId) {
+        return mCache.getDimen(resId);
+    }
+
+    /** Resolves a color resource and caches the result. */
+    public @ColorInt int getColor(@ColorRes int resId) {
+        return mCache.getColor(resId);
+    }
+
+    /** Resolves a string resource and caches the result. */
+    public String getString(@StringRes int resId) {
+        return mCache.getString(resId);
     }
 
     /**

@@ -495,6 +495,21 @@ public class OmniboxResourceProviderUnitTest {
         String string = provider.getString(R.string.copy_link);
         assertEquals(mContext.getString(R.string.copy_link), string);
 
+        // Test getDimen.
+        int dimen = provider.getDimen(R.dimen.omnibox_suggestion_24dp_icon_size);
+        assertEquals(
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.omnibox_suggestion_24dp_icon_size),
+                dimen);
+
+        // Test getColor.
+        int color = provider.getColor(R.color.default_red_light);
+        assertEquals(mContext.getColor(R.color.default_red_light), color);
+
+        // Test getString with args.
+        doReturn("Hello, $1!").when(mContext).getString(9999);
+        assertEquals("Hello, world!", provider.getString(9999, "world"));
+
         // Test color resolution.
         assertEquals(
                 OmniboxResourceProvider.getUrlBarPrimaryTextColor(

@@ -136,6 +136,7 @@ public class BasicSuggestionProcessorUnitTest {
     private @Mock OmniboxActionDelegate mActionDelegate;
 
     private BasicSuggestionProcessor mProcessor;
+    private AutocompleteUIContext mUiContext;
     private AutocompleteMatch mSuggestion;
     private PropertyModel mModel;
     private AutocompleteInput mInput;
@@ -156,7 +157,7 @@ public class BasicSuggestionProcessorUnitTest {
         var context =
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
-        AutocompleteUIContext uiContext =
+        mUiContext =
                 new AutocompleteUIContext(
                         context,
                         mSuggestionHost,
@@ -167,7 +168,7 @@ public class BasicSuggestionProcessorUnitTest {
                         mShareDelegateSupplier,
                         ObservableSuppliers.createNonNull(ControlsPosition.TOP),
                         mActionDelegate);
-        mProcessor = new BasicSuggestionProcessor(uiContext);
+        mProcessor = new BasicSuggestionProcessor(mUiContext);
         mInput = new AutocompleteInput();
         OmniboxResourceProvider.disableCachesForTesting();
     }
@@ -232,15 +233,15 @@ public class BasicSuggestionProcessorUnitTest {
     private void assertSuggestionTypeAndIcon(
             @OmniboxSuggestionType int expectedType, @DrawableRes int expectedIconRes) {
         OmniboxDrawableState sds = mModel.get(BaseSuggestionViewProperties.ICON);
-        @DrawableRes int actualIconRes = shadowOf(sds.drawable).getCreatedFromResId();
+        assertNotNull(sds);
         assertEquals(
                 String.format(
                         "%s: Want Icon %s, Got %s",
                         SUGGESTION_TYPE_NAMES.get(expectedType),
                         ICON_TYPE_NAMES.get(expectedIconRes),
-                        ICON_TYPE_NAMES.get(actualIconRes)),
+                        ICON_TYPE_NAMES.get(sds.resourceIdForTesting)),
                 expectedIconRes,
-                actualIconRes);
+                sds.resourceIdForTesting);
     }
 
     @Test
@@ -390,21 +391,16 @@ public class BasicSuggestionProcessorUnitTest {
     public void refineIconShownForRefineSuggestions() {
         final String typed = "Typed content";
         createSearchSuggestion(OmniboxSuggestionType.SEARCH_SUGGEST, typed);
-        PropertyModel model = mProcessor.createModel();
-        mProcessor.populateModel(mInput, mSuggestion, model, 0);
         assertNotNull(mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS));
 
         createUrlSuggestion(OmniboxSuggestionType.HISTORY_URL, typed);
-        mProcessor.populateModel(mInput, mSuggestion, model, 0);
         assertNotNull(mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS));
 
         final List<BaseSuggestionViewProperties.Action> actions =
                 mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
         assertEquals(1, actions.size());
         final OmniboxDrawableState iconState = actions.get(0).icon;
-        assertEquals(
-                R.drawable.btn_suggestion_refine_up,
-                shadowOf(iconState.drawable).getCreatedFromResId());
+        assertEquals(R.drawable.btn_suggestion_refine_up, iconState.resourceIdForTesting);
     }
 
     @Test
@@ -501,8 +497,8 @@ public class BasicSuggestionProcessorUnitTest {
             mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
 
             OmniboxDrawableState sds = mModel.get(BaseSuggestionViewProperties.ICON);
-            @DrawableRes int actualIconRes = shadowOf(sds.drawable).getCreatedFromResId();
-            assertEquals(testCase[1], actualIconRes);
+            assertNotNull(sds);
+            assertEquals(testCase[1], sds.resourceIdForTesting);
             assertFalse(sds.allowTint);
         }
     }

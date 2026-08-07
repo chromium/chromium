@@ -90,13 +90,12 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
             model.set(BaseSuggestionViewProperties.USE_LARGE_DECORATION, shouldShowCardUi);
             if (shouldShowCardUi) {
                 int leadInSpacing =
-                        mContext.getResources()
-                                .getDimensionPixelSize(R.dimen.omnibox_simple_card_lead_in);
+                        mUiContext.resourceProvider.getDimen(R.dimen.omnibox_simple_card_lead_in);
                 model.set(BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING, leadInSpacing);
                 model.set(
                         BaseSuggestionViewProperties.TOP_PADDING,
-                        mContext.getResources()
-                                .getDimensionPixelSize(R.dimen.omnibox_simple_card_top_padding));
+                        mUiContext.resourceProvider.getDimen(
+                                R.dimen.omnibox_simple_card_top_padding));
                 model.set(AnswerSuggestionViewProperties.RIGHT_PADDING, leadInSpacing);
             }
         } else {
@@ -212,6 +211,7 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
 
         return icon == 0
                 ? super.getFallbackIcon(suggestion)
-                : OmniboxDrawableState.forLargeIcon(mContext, icon, /* allowTint= */ false);
+                : OmniboxDrawableState.forLargeIcon(
+                        mUiContext.resourceProvider, icon, /* allowTint= */ false);
     }
 }
