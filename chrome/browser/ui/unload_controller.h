@@ -9,6 +9,7 @@
 #include <set>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -141,6 +142,22 @@ class UnloadController : public WebContentsCollection::Observer,
   bool is_attempting_to_close_browser() const {
     return is_attempting_to_close_browser_;
   }
+
+  // Returns true if the browser window has completed closing and is scheduled
+  // for deletion.
+  bool is_delete_scheduled() const { return is_delete_scheduled_; }
+
+  // Called when the window closing process has been cancelled.
+  void NotifyWindowCloseCancelled(BrowserWindowInterface::ClosingStatus status);
+
+  // Called when the window closing process has been completed and the window
+  // can be safely destroyed.
+  void OnWindowCloseComplete();
+
+  base::CallbackListSubscription RegisterBrowserDidClose(
+      BrowserWindowInterface::BrowserDidCloseCallback callback);
+  base::CallbackListSubscription RegisterBrowserCloseCancelled(
+      BrowserWindowInterface::BrowserCloseCancelledCallback callback);
 
   // Called in response to a request to close `browser_`'s window. Returns
   // `BrowserWindowInterface::ClosingStatus::kPermitted` if the window can be
@@ -362,6 +379,19 @@ class UnloadController : public WebContentsCollection::Observer,
       CancelDownloadConfirmationState::kNotPrompted;
 
   WarnBeforeClosingCallback warn_before_closing_callback_;
+
+  using BrowserDidCloseCallbackList =
+      base::RepeatingCallbackList<void(BrowserWindowInterface*)>;
+  BrowserDidCloseCallbackList browser_did_close_callback_list_;
+
+  using BrowserCloseCancelledCallbackList =
+      base::RepeatingCallbackList<void(BrowserWindowInterface*,
+                                       BrowserWindowInterface::ClosingStatus)>;
+  BrowserCloseCancelledCallbackList browser_close_cancelled_callback_list_;
+
+  // If true, the Browser window has been closed and this will be deleted
+  // shortly (after a PostTask).
+  bool is_delete_scheduled_ = false;
 
   base::WeakPtrFactory<UnloadController> weak_factory_{this};
 };

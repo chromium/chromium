@@ -305,18 +305,6 @@ class Browser : public TabStripModelObserver,
   base::WeakPtr<Browser> AsWeakPtr();
   base::WeakPtr<const Browser> AsWeakPtr() const;
 
-  // OnBeforeUnload handling //////////////////////////////////////////////////
-
-  // Called when the window closing process has been cancelled.
-  void NotifyWindowCloseCancelled(BrowserWindowInterface::ClosingStatus status);
-
-  // Called when the window closing process has been completed and the window
-  // can be safely destroyed.
-  void OnWindowCloseComplete();
-
-  // In-progress download termination handling /////////////////////////////////
-
-
   // External state change handling ////////////////////////////////////////////
 
   // Called by Navigate() when a navigation has occurred in a tab in
@@ -616,21 +604,8 @@ class Browser : public TabStripModelObserver,
 
   WebContentsCollection web_contents_collection_{this};
 
-  // If true, the Browser window has been closed and this will be deleted
-  // shortly (after a PostTask).
-  bool is_delete_scheduled_ = false;
-
   // If true, the browser window was created as a tab modal pop-up.
   bool is_tab_modal_popup_ = false;
-
-  using BrowserDidCloseCallbackList =
-      base::RepeatingCallbackList<void(BrowserWindowInterface*)>;
-  BrowserDidCloseCallbackList browser_did_close_callback_list_;
-
-  using BrowserCloseCancelledCallbackList =
-      base::RepeatingCallbackList<void(BrowserWindowInterface*,
-                                       BrowserWindowInterface::ClosingStatus)>;
-  BrowserCloseCancelledCallbackList browser_close_cancelled_callback_list_;
 
   using DidActiveTabChangeCallbackList =
       base::RepeatingCallbackList<void(BrowserWindowInterface*)>;
