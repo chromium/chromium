@@ -4,6 +4,11 @@
 
 package org.chromium.chrome.browser.compositor.layouts;
 
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -50,6 +55,7 @@ public class LayoutManagerChromeUnitTest {
     private @Mock HubLayoutDependencyHolder mHubLayoutDependencyHolder;
     private @Mock ToolbarSwipeLayout mToolbarSwipeLayout;
     private @Mock Tab mTab;
+    private @Mock StaticLayout mStaticLayout;
 
     private final SettableNullableObservableSupplier<TabSwitcher> mTabSwitcherSupplier =
             ObservableSuppliers.createNullable();
@@ -121,5 +127,64 @@ public class LayoutManagerChromeUnitTest {
 
         verify(mToolbarSwipeLayout).setSwitchToTab(2, 1);
         Assert.assertEquals(mToolbarSwipeLayout, layoutManagerChrome.getActiveLayout());
+    }
+
+    @Test
+    public void testTabClosed_ActivityNotFinishing_TriggersHubLayoutCreation() {
+        LayoutManagerChrome layoutManagerChrome = createLayoutManagerChromeSpy();
+
+        layoutManagerChrome.tabClosed(1, Tab.INVALID_TAB_ID, false, false);
+
+        verify(layoutManagerChrome).showLayout(eq(LayoutType.HUB), anyBoolean());
+    }
+
+    @Test
+    public void testTabClosed_ActivityFinishing_NoHubLayoutCreation() {
+        LayoutManagerChrome layoutManagerChrome = createLayoutManagerChromeSpy();
+
+        mActivityScenarioRule.getScenario().onActivity(activity -> activity.finish());
+
+        layoutManagerChrome.tabClosed(1, Tab.INVALID_TAB_ID, false, false);
+
+        verify(layoutManagerChrome, never()).showLayout(eq(LayoutType.HUB), anyBoolean());
+    }
+
+    @Test
+    public void testTabsAllClosing_ActivityNotFinishing_TriggersHubLayoutCreation() {
+        LayoutManagerChrome layoutManagerChrome = createLayoutManagerChromeSpy();
+        layoutManagerChrome.mStaticLayout = mStaticLayout;
+        when(layoutManagerChrome.getActiveLayout()).thenReturn(mStaticLayout);
+
+        layoutManagerChrome.tabsAllClosing(false);
+
+        verify(layoutManagerChrome).showLayout(eq(LayoutType.HUB), anyBoolean());
+    }
+
+    @Test
+    public void testTabsAllClosing_ActivityFinishing_NoHubLayoutCreation() {
+        LayoutManagerChrome layoutManagerChrome = createLayoutManagerChromeSpy();
+        layoutManagerChrome.mStaticLayout = mStaticLayout;
+        when(layoutManagerChrome.getActiveLayout()).thenReturn(mStaticLayout);
+
+        mActivityScenarioRule.getScenario().onActivity(activity -> activity.finish());
+
+        layoutManagerChrome.tabsAllClosing(false);
+
+        verify(layoutManagerChrome, never()).showLayout(eq(LayoutType.HUB), anyBoolean());
+    }
+
+    private LayoutManagerChrome createLayoutManagerChromeSpy() {
+        LayoutManagerChrome layoutManagerChrome =
+                spy(
+                        new LayoutManagerChrome(
+                                mHost,
+                                mContentContainer,
+                                mTabSwitcherSupplier,
+                                mTabModelSelectorSupplier,
+                                mTabContentManagerSupplier,
+                                mToolbarThemeColorProvider,
+                                mHubLayoutDependencyHolder));
+        doNothing().when(layoutManagerChrome).showLayout(eq(LayoutType.HUB), anyBoolean());
+        return layoutManagerChrome;
     }
 }

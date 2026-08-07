@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.compositor.layouts;
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.lifetime.DestroyChecker;
 import org.chromium.base.metrics.RecordUserAction;
@@ -81,7 +83,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
 
     private final HubLayoutDependencyHolder mHubLayoutDependencyHolder;
-    private final ThumbnailChangeListener mThumbnailChangeListener = (id) -> requestUpdate();
+    private final ThumbnailChangeListener mThumbnailChangeListener = (_) -> requestUpdate();
     private final Callback<TabContentManager> mOnTabContentManager = this::onTabContentManager;
     private final DestroyChecker mDestroyChecker = new DestroyChecker();
 
@@ -306,27 +308,31 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
 
     @Override
     protected void tabClosed(int id, int nextId, boolean incognito, boolean tabRemoved) {
-        boolean showOverview = nextId == Tab.INVALID_TAB_ID;
-        boolean animate = !tabRemoved && animationsEnabled();
-        if (getActiveLayoutType() != LayoutType.HUB
-                && showOverview
-                && getNextLayoutType() != LayoutType.HUB
-                && !DeviceInfo.isXr()) {
-            showLayout(LayoutType.HUB, animate);
-        } else if (getActiveLayoutType() == LayoutType.HUB
-                && assumeNonNull(getActiveLayout()).isStartingToHide()
-                && showOverview
-                && getNextLayoutType() == LayoutType.BROWSING
-                && !DeviceInfo.isXr()) {
-            showLayout(LayoutType.HUB, animate);
+        if (!isActivityFinishingOrDestroyed()) {
+            boolean showOverview = nextId == Tab.INVALID_TAB_ID;
+            boolean animate = !tabRemoved && animationsEnabled();
+            if (getActiveLayoutType() != LayoutType.HUB
+                    && showOverview
+                    && getNextLayoutType() != LayoutType.HUB
+                    && !DeviceInfo.isXr()) {
+                showLayout(LayoutType.HUB, animate);
+            } else if (getActiveLayoutType() == LayoutType.HUB
+                    && assumeNonNull(getActiveLayout()).isStartingToHide()
+                    && showOverview
+                    && getNextLayoutType() == LayoutType.BROWSING
+                    && !DeviceInfo.isXr()) {
+                showLayout(LayoutType.HUB, animate);
+            }
         }
         super.tabClosed(id, nextId, incognito, tabRemoved);
     }
 
     @Override
     public void tabsAllClosing(boolean incognito) {
-        if (getActiveLayout() == mStaticLayout && !incognito && !DeviceInfo.isXr()) {
-            showLayout(LayoutType.HUB, /* animate= */ false);
+        if (!isActivityFinishingOrDestroyed()) {
+            if (getActiveLayout() == mStaticLayout && !incognito && !DeviceInfo.isXr()) {
+                showLayout(LayoutType.HUB, /* animate= */ false);
+            }
         }
         super.tabsAllClosing(incognito);
     }
@@ -536,6 +542,11 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
 
         mToolbarSwipeLayout.setSwitchToTab(tab.getId(), lastTabId);
         showLayout(LayoutType.TOOLBAR_SWIPE, false);
+    }
+
+    private boolean isActivityFinishingOrDestroyed() {
+        Activity activity = ContextUtils.activityFromContext(mHost.getContext());
+        return activity != null && (activity.isFinishing() || activity.isDestroyed());
     }
 
     private void onTabContentManager(TabContentManager tabContentManager) {
