@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "build/build_config.h"
@@ -59,7 +59,7 @@ bool FrameDeadlineDecider::IsPartOfOngoingFrameSequence(
   return time_since_last_frame <= timeout;
 }
 
-size_t FrameDeadlineDecider::QueryDeadline(
+FrameDeadlineDecider::QueryResult FrameDeadlineDecider::QueryDeadline(
     const PossibleDeadlines& possible_deadlines,
     base::TimeDelta vsync_interval,
     int max_allowed_buffers,
@@ -69,11 +69,13 @@ size_t FrameDeadlineDecider::QueryDeadline(
   CHECK(!possible_deadlines.deadlines.empty());
 
   if (use_platform_preferred_deadlines_) {
-    return possible_deadlines.os_preferred_index;
+    return {possible_deadlines.os_preferred_index,
+            SelectionReason::kPlatformPreferred};
   }
 
   if (IsPartOfOngoingFrameSequence(frame_time, is_handling_interaction)) {
-    return FindClosestDeadlineByPresentation(possible_deadlines);
+    return {FindClosestDeadlineByPresentation(possible_deadlines),
+            SelectionReason::kOngoingSequence};
   }
 
   int presentation_offset = 0;
@@ -135,17 +137,19 @@ size_t FrameDeadlineDecider::QueryDeadline(
   const PossibleDeadline& chrome_preferred_deadline = *it;
 
   if (chrome_preferred_deadline.present_delta > target_present_delta) {
-    return possible_deadlines.os_preferred_index;
+    return {possible_deadlines.os_preferred_index,
+            SelectionReason::kOsPreferredNoDeadlineWithinTarget};
   }
 
   if (chrome_preferred_deadline.present_delta <
       possible_deadlines.GetOSPreferredDeadline().present_delta) {
     // Fallback to os preferred deadline instead of reducing the preferred
     // deadline. We are not sure if this would actually happen in field.
-    return possible_deadlines.os_preferred_index;
+    return {possible_deadlines.os_preferred_index,
+            SelectionReason::kOsPreferredChromePreferredSooner};
   }
 
-  return chrome_preferred_index;
+  return {chrome_preferred_index, SelectionReason::kChromePreferredNewSequence};
 }
 
 size_t FrameDeadlineDecider::SelectDeadline(
@@ -158,14 +162,17 @@ size_t FrameDeadlineDecider::SelectDeadline(
   TRACE_EVENT_BEGIN("toplevel,graphics.pipeline,viz",
                     "FrameDeadlineDecider::SelectDeadline");
 
-  size_t result_index =
+  QueryResult result =
       QueryDeadline(possible_deadlines, vsync_interval, max_allowed_buffers,
                     frame_time, earliest_input_time, is_handling_interaction);
-  const auto& selected_deadline = possible_deadlines.deadlines[result_index];
+  const auto& selected_deadline =
+      possible_deadlines.deadlines[result.deadline_index];
+  UMA_HISTOGRAM_ENUMERATION("Viz.FrameDeadlineDecider.SelectionReason",
+                            result.reason);
 
   frame_sequence_state_ = FrameSequenceState{
       .present_delta = selected_deadline.present_delta,
-      .deadline_index = result_index,
+      .deadline_index = result.deadline_index,
       .last_frame_time = frame_time,
       .is_interaction_active = is_handling_interaction,
   };
@@ -181,7 +188,7 @@ size_t FrameDeadlineDecider::SelectDeadline(
         selected_deadline.SetTraceTimelineData(*timeline);
       });
 
-  return result_index;
+  return result.deadline_index;
 }
 
 void FrameDeadlineDecider::OnDisplayInvisible() {
@@ -236,8 +243,8 @@ void FrameDeadlineDecider::RecordSelectedSustainableDeadlineHistogram(
   const base::TimeDelta max_sustainable_delta =
       (max_allowed_buffers * vsync_interval) + base::Milliseconds(1);
   const bool is_sustainable = selected_present_delta <= max_sustainable_delta;
-  base::UmaHistogramBoolean(
-      "Viz.FrameDeadlineDecider.SelectedSustainableDeadline", is_sustainable);
+  UMA_HISTOGRAM_BOOLEAN("Viz.FrameDeadlineDecider.SelectedSustainableDeadline",
+                        is_sustainable);
 }
 
 }  // namespace viz
