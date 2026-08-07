@@ -258,6 +258,16 @@ class OmniboxView {
                        const bool text_is_url,
                        const AutocompleteSchemeClassifier& classifier);
 
+  // Given display text and match info, computes text that provides more context
+  // about the completion, to be provided via accessibility API.
+  //
+  // suggestion_text_prefix_length will be set to number of added labelling
+  // characters before the original editable text.
+  std::u16string ComputeFriendlySuggestionTextForAccessibility(
+      const std::u16string& display_text,
+      const AutocompleteMatch& match,
+      int& suggestion_text_prefix_length);
+
   virtual OmniboxController* controller();
   virtual const OmniboxController* controller() const;
 

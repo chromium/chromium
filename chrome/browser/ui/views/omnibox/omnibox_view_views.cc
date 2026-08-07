@@ -1083,36 +1083,8 @@ void OmniboxViewViews::ClearAccessibilityLabel() {
 void OmniboxViewViews::SetAccessibilityLabel(const std::u16string& display_text,
                                              const AutocompleteMatch& match,
                                              bool notify_text_changed) {
-  if (controller()->edit_model()->GetPopupSelection().state ==
-      OmniboxPopupSelection::LineState::FOCUSED_BUTTON_AIM) {
-    friendly_suggestion_text_ =
-        controller()->edit_model()->GetPopupAccessibilityLabelForAimButton();
-  } else if (controller()->edit_model()->GetPopupSelection().line ==
-             OmniboxPopupSelection::kNoMatch) {
-    // If nothing is selected in the popup, we are in the no-default-match edge
-    // case, and |match| is a synthetically generated match. In that case,
-    // bypass OmniboxPopupModel and get the label from our synthetic |match|.
-    friendly_suggestion_text_ = AutocompleteMatchType::ToAccessibilityLabel(
-        match, /*header_text=*/u"", display_text,
-        OmniboxPopupSelection::kNoMatch,
-        controller()->autocomplete_controller()->result().size(),
-        std::u16string(), &friendly_suggestion_text_prefix_length_);
-  } else {
-    friendly_suggestion_text_ =
-        controller()
-            ->edit_model()
-            ->GetPopupAccessibilityLabelForCurrentSelection(
-                display_text, true, &friendly_suggestion_text_prefix_length_);
-
-    // If the line immediately after the current selection is the
-    // informational IPH row, append its accessibility label at the end of
-    // this selection's accessibility label.
-    friendly_suggestion_text_ +=
-        controller()
-            ->edit_model()
-            ->MaybeGetPopupAccessibilityLabelForIPHSuggestion();
-  }
-
+  friendly_suggestion_text_ = ComputeFriendlySuggestionTextForAccessibility(
+      display_text, match, friendly_suggestion_text_prefix_length_);
   UpdateAccessibleValue();
 
 #if BUILDFLAG(IS_MAC)

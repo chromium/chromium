@@ -101,6 +101,8 @@ class WebUIReadOnlyOmnibox
                                const gfx::Range& selection,
                                bool keep_additional_text);
 
+  void ClearAccessibilityLabel();
+
   // OmniboxView:
   void Update() override;
   std::u16string GetText() const override;
@@ -120,6 +122,9 @@ class WebUIReadOnlyOmnibox
   void ApplyFocusRingToAimButton(bool focus_aim) override;
   bool AimButtonVisible() const override;
   void ApplyCaretVisibility() override;
+  void SetAccessibilityLabel(const std::u16string& display_text,
+                             const AutocompleteMatch& match,
+                             bool notify_text_changed) override;
   void OnTemporaryTextMaybeChanged(const std::u16string& display_text,
                                    const AutocompleteMatch& match,
                                    bool save_original_selection,
@@ -208,6 +213,10 @@ class WebUIReadOnlyOmnibox
 
   // An additional description for what's being displayed.
   std::u16string additional_text_;
+
+  // Accessibility info on selected suggestion entry. Empty when the user input
+  // is what's in use.
+  std::u16string friendly_accessible_label_;
 
   // Rich text formatting for `text`.
   gfx::BreakList<bool> text_strike_through_;

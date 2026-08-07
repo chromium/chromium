@@ -73,6 +73,7 @@ export class LocationBarElement extends CrLitElement implements
       placeholder: null,
       inlineAutocompletion: '',
       additionalText: '',
+      a11yFriendlySuggestionText: '',
       selection: null,
       textIsUrl: false,
       userInputInProgress: false,

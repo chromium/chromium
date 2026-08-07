@@ -50,6 +50,7 @@ suite('ReadonlyOmnibox', function() {
     placeholder: null,
     inlineAutocompletion: '',
     additionalText: '',
+    a11yFriendlySuggestionText: '',
     formattedFullUrl: '',
     selection: null,
     textIsUrl: false,

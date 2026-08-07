@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 import {sanitizeTextForPaste} from '//resources/cr_components/searchbox/utils.js';
+import {getInstance as getA11yAnnouncer} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {assertNotReachedCase} from '//resources/js/assert.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {type Range as MojomRange} from '//resources/mojo/ui/gfx/range/mojom/range.mojom-webui.js';
@@ -21,6 +23,7 @@ import {getEventDispositionFlags} from './toolbar_button.js';
 export interface ReadonlyOmniboxElement {
   $: {
     additionalText: HTMLElement,
+    announcementDistraction: HTMLElement,
     dragTemplate: HTMLElement,
     inlineAutocomplete: HTMLElement,
     textContainer: HTMLElement,
@@ -237,6 +240,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     placeholder: null,
     inlineAutocompletion: '',
     additionalText: '',
+    a11yFriendlySuggestionText: '',
     // This follows the semantics of gfx::Range, where backwards
     // direction is indicated by having `selection.start` > `selection.end`.
     selection: null,
@@ -249,6 +253,8 @@ export class ReadonlyOmniboxElement extends CrLitElement {
 
   accessor isComposing: boolean = false;
   accessor adjustedCopyResult: AdjustOmniboxTextForCopyResult|null = null;
+
+  // True if the suggestions popup is open.
   accessor isPopupOpen: boolean = false;
 
   private focusRequestHandle_: FocusRequestHandle =
@@ -424,6 +430,21 @@ export class ReadonlyOmniboxElement extends CrLitElement {
         // Make sure we make the beginning of the line visible when we're not
         // focused.
         this.$.textContainer.scrollLeft = 0;
+      }
+
+      if (hasFocus &&
+          this.omniboxViewState.a11yFriendlySuggestionText !==
+              changedProperties.get('omniboxViewState')!
+                  .a11yFriendlySuggestionText) {
+        const input = this.$.textInput;
+        // Mac VoiceOver seems to prefer announcing change to `input` to
+        // the notification; distract it from the input by changing
+        // ariaActiveDescendantElement to make it read the right thing.
+        input.ariaActiveDescendantElement = this.$.announcementDistraction;
+        this.readAnnouncement_(
+            input, this.omniboxViewState.a11yFriendlySuggestionText);
+      } else {
+        this.maybeClearAccessibilityPseudoFocus_();
       }
     }
   }
@@ -821,7 +842,6 @@ export class ReadonlyOmniboxElement extends CrLitElement {
       this.selectAllOnMouseRelease_ = false;
     }
 
-
     const inlineAutocompletion = this.omniboxViewState.inlineAutocompletion;
     if (inlineAutocompletion.length > 0 && !this.isComposing) {
       // If the current input state (its value and selection) matches its last
@@ -1024,6 +1044,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
   }
 
   private onSelectionChange_(): void {
+    this.maybeClearAccessibilityPseudoFocus_();
     if (this.mouseButtonDown_ !== 0) {
       return;
     }
@@ -1141,6 +1162,13 @@ export class ReadonlyOmniboxElement extends CrLitElement {
   isCaretAtStart(): boolean {
     const inputProper = this.$.textInput;
     return inputProper.selectionStart === 0 && inputProper.selectionEnd === 0;
+  }
+
+  isCaretAtEnd(): boolean {
+    const input = this.$.textInput;
+    const valueLength = input.value.length;
+    return input.selectionStart === valueLength &&
+        input.selectionEnd === valueLength;
   }
 
   private selectAllBackwards(): void {
@@ -1342,11 +1370,57 @@ export class ReadonlyOmniboxElement extends CrLitElement {
       return undefined;
     }
   }
+
+  protected getAriaLabel_(): string {
+    return loadTimeData.getString('locationAccName');
+  }
+
+  protected getAriaKeyShortcut_(): string {
+    // <if expr="not is_macosx">
+    return 'Ctrl+L';
+    // </if>
+
+    // <if expr="is_macosx">
+    return 'Meta+L';
+    // </if>
+  }
+
+  private maybeClearAccessibilityPseudoFocus_(): void {
+    const input = this.$.textInput;
+    // Make sure we make it clear to the screenreader that the input
+    // is what's active if we don't have a friendly announcement text for
+    // pseudo-focused suggestion, or if the caret isn't at end, suggesting
+    // user is interacting with the input.
+    if (this.omniboxViewState.a11yFriendlySuggestionText.length === 0 ||
+        !this.isCaretAtEnd()) {
+      input.ariaActiveDescendantElement = null;
+    }
+  }
+
+  private readAnnouncement_(target: HTMLElement, message: string): void {
+    // ariaNotify is unavailable on ChromeOS.
+    if (target.ariaNotify) {
+      target.ariaNotify(message, {priority: 'high'});
+    } else {
+      getA11yAnnouncer(target).announce(message);
+    }
+  }
+}
+
+interface AriaNotificationOptions {
+  priority: 'normal'|'high';
 }
 
 declare global {
   interface HTMLElementTagNameMap {
     'readonly-omnibox': ReadonlyOmniboxElement;
+  }
+
+  interface HTMLElement {
+    // The typescript description for ariaNotify is missing the options
+    // argument, so provide a two-argument overfload.
+    // See https://www.w3.org/TR/wai-aria-1.3/#ARIANotifyMixin
+    ariaNotify?(message: string, options: AriaNotificationOptions): void;
   }
 }
 

@@ -409,6 +409,7 @@ export class ToolbarAppElement extends AppElementBase {
         placeholder: null,
         inlineAutocompletion: '',
         additionalText: '',
+        a11yFriendlySuggestionText: '',
         selection: null,
         textIsUrl: false,
         userInputInProgress: false,

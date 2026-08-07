@@ -188,6 +188,10 @@ void WebUIReadOnlyOmnibox::SetTextAndSelectedRange(
   }
 }
 
+void WebUIReadOnlyOmnibox::ClearAccessibilityLabel() {
+  friendly_accessible_label_.clear();
+}
+
 std::u16string WebUIReadOnlyOmnibox::GetText() const {
   return text_;
 }
@@ -285,6 +289,19 @@ void WebUIReadOnlyOmnibox::ApplyCaretVisibility() {
   NOTIMPLEMENTED();
 }
 
+void WebUIReadOnlyOmnibox::SetAccessibilityLabel(
+    const std::u16string& display_text,
+    const AutocompleteMatch& match,
+    bool notify_text_changed) {
+  // We can ignore the prefix length, since we set the suggestion separately.
+  int ignored_suggestion_text_prefix_length;
+
+  friendly_accessible_label_ = ComputeFriendlySuggestionTextForAccessibility(
+      display_text, match, ignored_suggestion_text_prefix_length);
+
+  RequestUpdateWebUI();
+}
+
 void WebUIReadOnlyOmnibox::OnTemporaryTextMaybeChanged(
     const std::u16string& display_text,
     const AutocompleteMatch& match,
@@ -293,6 +310,8 @@ void WebUIReadOnlyOmnibox::OnTemporaryTextMaybeChanged(
   if (save_original_selection) {
     saved_selection_for_temporary_text_ = selection_;
   }
+
+  SetAccessibilityLabel(display_text, match, false);
 
   // This will call RequestUpdateWebUI(), so we don't have to.
   ResetBrowserVersion();
@@ -327,11 +346,18 @@ void WebUIReadOnlyOmnibox::OnRevertTemporaryText(
     const AutocompleteMatch& match) {
   // Just restore the selection; the model has already taken care of the text.
   selection_ = saved_selection_for_temporary_text_;
-  RequestUpdateWebUI();
+  SetAccessibilityLabel(display_text, match, true);
+  // SetAccessibilityLabel already called RequestUpdateWebUI()
 }
 
 void WebUIReadOnlyOmnibox::OnBeforePossibleChange() {
   state_before_change_ = GetState();
+
+  // User is editing or traversing the text, as opposed to moving
+  // through suggestions. Clear the accessibility label
+  // so that the screen reader reports the raw text in the field.
+  ClearAccessibilityLabel();
+  RequestUpdateWebUI();
 }
 
 bool WebUIReadOnlyOmnibox::OnAfterPossibleChange(bool allow_keyword_ui_change) {
@@ -458,6 +484,7 @@ WebUIReadOnlyOmnibox::ComputeMojoState() {
   state->inline_autocompletion = inline_autocompletion_;
   state->text_is_url = text_is_url_;
   state->additional_text = additional_text_;
+  state->a11y_friendly_suggestion_text = friendly_accessible_label_;
   state->user_input_in_progress =
       controller()->edit_model()->user_input_in_progress();
 
@@ -571,6 +598,7 @@ WebUIReadOnlyOmnibox::OnFocusChange(
       popup_closer->CloseWithReason(omnibox::PopupCloseReason::kBlur);
     }
     controller()->edit_model()->OnKillFocus();
+    ClearAccessibilityLabel();
     RequestUpdateWebUI();
   }
   return base::ok(std::monostate());

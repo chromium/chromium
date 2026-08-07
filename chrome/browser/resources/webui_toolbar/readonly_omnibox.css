@@ -193,3 +193,9 @@
       0 0 2px var(--color-textfield-background);
   white-space: nowrap;
 }
+
+/* Used for accessibility mark up only */
+#announcementDistraction {
+  position: absolute;
+  left: -10000px;
+}

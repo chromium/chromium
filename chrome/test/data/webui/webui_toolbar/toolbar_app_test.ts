@@ -142,6 +142,7 @@ function createMockNavigationState() {
       omniboxViewState: {
         textPieces: [],
         inlineAutocompletion: '',
+        a11yFriendlySuggestionText: '',
         selection: null,
         textIsUrl: false,
       },

@@ -476,6 +476,11 @@ struct OmniboxViewState {
   // Additional text to paint to the right of the URL.
   mojo_base.mojom.String16 additional_text;
 
+  // Accessibility info on the selected suggestion, including text
+  // (empty when no suggestion is relevant), and its position in the list
+  // of suggestions, along with the list's length.
+  mojo_base.mojom.String16 a11y_friendly_suggestion_text;
+
   // Selection or caret (if start == end) to set on the omnibox view, if any.
   gfx.mojom.Range? selection;
 
