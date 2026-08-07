@@ -446,10 +446,8 @@ class LocationBarView
   struct PageActionInfo {
     // Is the AIM page action the right-most visible page action?
     bool is_aim_last_visible_page_action = false;
-    // How many migrated page actions are shown?
-    size_t num_migrated_page_actions_shown = 0;
-    // How many legacy (non-migrated) page actions are shown?
-    size_t num_legacy_page_actions_shown = 0;
+    // How many page actions are shown?
+    size_t num_page_actions_shown = 0;
   };
   PageActionInfo GetPageActionInfo() const;
 

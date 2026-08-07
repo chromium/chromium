@@ -1225,70 +1225,23 @@ bool LocationBarView::ShouldHidePageActionIcons() const {
   return GetOmniboxController()->IsPopupOpen();
 }
 
-/*
- * The logic in this function is intended to inform callers about whether or not
- * the AIM page action is being shown as the right-most page action in the
- * location bar, how many migrated page actions are shown, and how many legacy
- * (non-migrated) page actions are shown.
- *
- * For context, given that there's ongoing page actions migrations work at the
- * moment, the location bar currently uses two page action containers in order
- * to render page actions as follows:
- *
- * | <migrated page actions> || <legacy page actions> |
- *
- * In particular, the migrated page actions are placed in a container that's
- * positioned to the LEFT of the container that holds legacy page actions.
- *
- * If the AIM page action has been migrated, then it will be shown as follows:
- *
- * | (AIM) (A) (B) (C) || (D) (E) (F) |
- *
- * In this case, AIM, A, B, and C are migrated page actions, while D, E, and F
- * are legacy page actions.
- *
- * On the other hand, if the AIM page action has NOT been migrated (i.e. legacy
- * state), it will shown as follows:
- *
- * | (A) (B) (C) || (AIM) (D) (E) (F) |
- *
- * Note that, in both cases, the AIM page action will, by definition, be shown
- * as the left-most page action in whichever container it's placed in.
- *
- * With all this in mind, the AIM page action will be considered as the last
- * (right-most) page action in the following scenarios:
- *
- * AIM page action is migrated: | (AIM) || |
- *
- * In other words, if the AIM page action is migrated, then it's the last page
- * action IFF it's visible in the migrated container AND the total number of
- * visible page actions (migrated + legacy) is exactly one.
- *
- * AIM page action is NOT migrated: | (A) (B) (C) || (AIM) |
- *
- * In other words, if the AIM page action is NOT migrated, then it's
- * considered the last page action IFF it's visible in the legacy container
- * AND the number of visible legacy page actions is exactly one (irrespective
- * of how many migrated page actions are visible).
- */
+// Returns information about visible page actions in the location bar.
 LocationBarView::PageActionInfo LocationBarView::GetPageActionInfo() const {
   PageActionInfo info;
 
-  // Check PageActionContainerView (migrated page actions).
-  bool migrated_aim_page_action_is_visible = false;
+  bool aim_page_action_is_visible = false;
   for (views::View* view : page_action_container_->children()) {
     if (view->GetVisible()) {
-      info.num_migrated_page_actions_shown++;
+      info.num_page_actions_shown++;
       page_actions::PageActionView* page_action_view =
           static_cast<page_actions::PageActionView*>(view);
       if (page_action_view->GetActionId() == kActionAiMode) {
-        migrated_aim_page_action_is_visible = true;
+        aim_page_action_is_visible = true;
       }
     }
   }
 
-  if (migrated_aim_page_action_is_visible &&
-      info.num_migrated_page_actions_shown == 1) {
+  if (aim_page_action_is_visible && info.num_page_actions_shown == 1) {
     info.is_aim_last_visible_page_action = true;
   }
 
