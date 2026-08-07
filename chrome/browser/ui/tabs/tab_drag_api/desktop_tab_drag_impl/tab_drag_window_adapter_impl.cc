@@ -117,6 +117,17 @@ bool TabDragWindowAdapterImpl::HasCapture() const {
   return widget && widget->HasCapture();
 }
 
+void TabDragWindowAdapterImpl::Activate() {
+  if (!browser_window_ || !browser_window_->GetWindow()) {
+    return;
+  }
+  views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
+      browser_window_->GetWindow()->GetNativeWindow());
+  if (widget) {
+    widget->Activate();
+  }
+}
+
 base::expected<tabs_api::TabDragWindowId, mojo_base::mojom::ErrorPtr>
 TabDragWindowAdapterImpl::DetachToNewWindow(
     const std::vector<tabs_api::NodeId>& tab_ids,

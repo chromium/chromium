@@ -40,6 +40,7 @@ class TabDragWindowAdapterImpl : public tabs_api::TabDragWindowAdapter,
   void SetCapture() override;
   void ReleaseCapture() override;
   bool HasCapture() const override;
+  void Activate() override;
 
   base::expected<tabs_api::TabDragWindowId, mojo_base::mojom::ErrorPtr>
   DetachToNewWindow(const std::vector<tabs_api::NodeId>& tab_ids,

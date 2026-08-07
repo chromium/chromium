@@ -451,9 +451,11 @@ TEST_F(TabDragSessionTest, SingleTabDragReattachesToTargetWindow) {
   EXPECT_EQ(listener.events()[1].target, registry.target_id());
   EXPECT_EQ(listener.events()[1].point, gfx::Point(250, 50));
 
-  // Verify that the session's dragged window transitioned to the target window.
+  // Verify that the session's dragged window transitioned to the target window
+  // and was activated.
   EXPECT_EQ(session.dragged_window(), target_window.GetWindowId());
   EXPECT_TRUE(target_window.HasCapture());
+  EXPECT_TRUE(target_window.activated());
 
   // Drop in the target window.
   EXPECT_CALL(end_callback, Run()).Times(1);
@@ -464,5 +466,4 @@ TEST_F(TabDragSessionTest, SingleTabDragReattachesToTargetWindow) {
             ToyTabDragSessionListener::Event::Type::kDropped);
   EXPECT_EQ(listener.events()[2].point, gfx::Point(250, 50));
 }
-
 }  // namespace tabs_api

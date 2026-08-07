@@ -272,6 +272,11 @@ void TabDragSession::CompleteReattachment() {
     return;
   }
 
+  TabDragWindowAdapter* target_window = registry()->Get(target.window_id);
+  if (target_window) {
+    target_window->Activate();
+  }
+
   UpdateDraggedWindow(target.window_id);
   drag_mode_ = DragMode::kAttachedToWindow;
   injector_->GetSessionListener().OnTargetChanged(target.target_id,

@@ -39,6 +39,8 @@ class ToyTabDragWindowAdapter : public TabDragWindowAdapter {
   void SetCapture() override;
   void ReleaseCapture() override;
   bool HasCapture() const override;
+  void Activate() override { activated_ = true; }
+  bool activated() const { return activated_; }
 
   // TabDragWindowAdapter overrides:
   base::expected<TabDragWindowId, mojo_base::mojom::ErrorPtr> DetachToNewWindow(
@@ -124,6 +126,7 @@ class ToyTabDragWindowAdapter : public TabDragWindowAdapter {
   gfx::Rect bounds_;
   bool has_capture_ = false;
   bool had_capture_on_move_loop_ = false;
+  bool activated_ = false;
   TabDragWindowId id_;
   raw_ptr<TabDragWindowRegistry> registry_;
 

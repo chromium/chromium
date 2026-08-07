@@ -58,6 +58,9 @@ class TabDragWindowAdapter {
   // Returns true if this window has capture.
   virtual bool HasCapture() const = 0;
 
+  // Activates and brings the browser window to the front.
+  virtual void Activate() = 0;
+
   // Detaches the given tabs from this window and inserts them into a newly
   // created window. Returns the ID of the new window.
   virtual base::expected<TabDragWindowId, mojo_base::mojom::ErrorPtr>
