@@ -21,13 +21,17 @@ public interface BackActionDelegate {
         ActionType.NAVIGATE_BACK,
         ActionType.CLOSE_TAB,
         ActionType.EXIT_APP_AND_CLOSE_TAB,
-        ActionType.EXIT_APP_ONLY
+        ActionType.EXIT_APP_ONLY,
+        ActionType.NONE
     })
     @interface ActionType {
         int NAVIGATE_BACK = 0;
         int CLOSE_TAB = 1;
         int EXIT_APP_AND_CLOSE_TAB = 2;
         int EXIT_APP_ONLY = 3;
+
+        /** No action taken; aligns trackpad and swipe gestures with desktop conventions. */
+        int NONE = 4;
     }
 
     /**
