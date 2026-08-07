@@ -343,46 +343,18 @@ std::optional<ActionChipPtr> CreateCanvasChipIfEligible(
 }
 
 ActionChipPtr CreateBrainstormChip() {
-  constexpr auto kBrainstormSuggestions = std::to_array<int>({
-      IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_1,
-      IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_2,
-      IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_3,
-      IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_4,
-      IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_5,
-      IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_6,
-      IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_7,
-      IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_8,
-      IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_9,
-      IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_10,
-      IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_11,
-      IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_12,
-      IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_13,
-      IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_14,
-      IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_15,
-      IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_16,
-      IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_17,
-      IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_18,
-      IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_19,
-      IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_20,
-      IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_21,
-      IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_22,
-      IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_23,
-      IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_24,
-      IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_25,
-      IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_26,
-      IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_27,
-      IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_28,
-  });
-  size_t index = base::RandGenerator(std::size(kBrainstormSuggestions));
-
   ActionChipPtr chip = ActionChip::New();
-  chip->suggestion = l10n_util::GetStringUTF8(kBrainstormSuggestions[index]);
+  chip->suggestion = std::string();
   chip->suggest_template_info = SuggestTemplateInfo::New();
   chip->suggest_template_info->type_icon = IconType::kDraftSpark;
   chip->suggest_template_info->primary_text =
       action_chips::mojom::FormattedString::New();
   chip->suggest_template_info->primary_text->text =
       l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_BRAINSTORM_HEADING);
+  chip->suggest_template_info->fusebox_action =
+      fusebox_action::mojom::FuseboxAction::New();
+  chip->suggest_template_info->fusebox_action->preferred_inventory =
+      omnibox::SUGGEST_INVENTORY_BRAINSTORM;
   return chip;
 }
 
@@ -396,25 +368,18 @@ std::optional<ActionChipPtr> CreateBrainstormChipIfEligible(
 }
 
 ActionChipPtr CreateLearnChip() {
-  constexpr auto kLearnSuggestions = std::to_array<int>({
-      IDS_NTP_ACTION_CHIP_HELP_ME_LEARN_PROMPT_1,
-      IDS_NTP_ACTION_CHIP_HELP_ME_LEARN_PROMPT_2,
-      IDS_NTP_ACTION_CHIP_HELP_ME_LEARN_PROMPT_3,
-      IDS_NTP_ACTION_CHIP_HELP_ME_LEARN_PROMPT_4,
-      IDS_NTP_ACTION_CHIP_HELP_ME_LEARN_PROMPT_5,
-      IDS_NTP_ACTION_CHIP_HELP_ME_LEARN_PROMPT_6,
-      IDS_NTP_ACTION_CHIP_HELP_ME_LEARN_PROMPT_7,
-  });
-  size_t index = base::RandGenerator(std::size(kLearnSuggestions));
-
   ActionChipPtr chip = ActionChip::New();
-  chip->suggestion = l10n_util::GetStringUTF8(kLearnSuggestions[index]);
+  chip->suggestion = std::string();
   chip->suggest_template_info = SuggestTemplateInfo::New();
   chip->suggest_template_info->type_icon = IconType::kDraftSpark;
   chip->suggest_template_info->primary_text =
       action_chips::mojom::FormattedString::New();
   chip->suggest_template_info->primary_text->text =
       l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_HELP_ME_LEARN_HEADING);
+  chip->suggest_template_info->fusebox_action =
+      fusebox_action::mojom::FuseboxAction::New();
+  chip->suggest_template_info->fusebox_action->preferred_inventory =
+      omnibox::SUGGEST_INVENTORY_HELP_ME_LEARN;
   return chip;
 }
 
@@ -428,26 +393,18 @@ std::optional<ActionChipPtr> CreateLearnChipIfEligible(
 }
 
 ActionChipPtr CreateWriteChip() {
-  constexpr auto kWriteSuggestions = std::to_array<int>({
-      IDS_NTP_ACTION_CHIP_WRITE_EDIT_PROMPT_1,
-      IDS_NTP_ACTION_CHIP_WRITE_EDIT_PROMPT_2,
-      IDS_NTP_ACTION_CHIP_WRITE_EDIT_PROMPT_3,
-      IDS_NTP_ACTION_CHIP_WRITE_EDIT_PROMPT_4,
-      IDS_NTP_ACTION_CHIP_WRITE_EDIT_PROMPT_5,
-      IDS_NTP_ACTION_CHIP_WRITE_EDIT_PROMPT_6,
-      IDS_NTP_ACTION_CHIP_WRITE_EDIT_PROMPT_7,
-      IDS_NTP_ACTION_CHIP_WRITE_EDIT_PROMPT_8,
-  });
-  size_t index = base::RandGenerator(std::size(kWriteSuggestions));
-
   ActionChipPtr chip = ActionChip::New();
-  chip->suggestion = l10n_util::GetStringUTF8(kWriteSuggestions[index]);
+  chip->suggestion = std::string();
   chip->suggest_template_info = SuggestTemplateInfo::New();
   chip->suggest_template_info->type_icon = IconType::kDraftSpark;
   chip->suggest_template_info->primary_text =
       action_chips::mojom::FormattedString::New();
   chip->suggest_template_info->primary_text->text =
       l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_WRITE_EDIT_HEADING);
+  chip->suggest_template_info->fusebox_action =
+      fusebox_action::mojom::FuseboxAction::New();
+  chip->suggest_template_info->fusebox_action->preferred_inventory =
+      omnibox::SUGGEST_INVENTORY_WRITE_OR_EDIT;
   return chip;
 }
 
