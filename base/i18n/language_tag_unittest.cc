@@ -18,6 +18,7 @@
 namespace base::i18n {
 namespace {
 
+using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Optional;
 using ::testing::Property;
@@ -687,6 +688,21 @@ TEST(LanguageTagTest, GetParentWithPrivateUseSubtags) {
       LanguageTag lt,
       LanguageTagConverter::GetInstance().FromString("en-US-x-test"));
   EXPECT_THAT(lt.GetParentTag(), OptionalToString("en-US"));
+}
+
+TEST(LanguageTagTest, GetLineage) {
+  ASSERT_OK_AND_ASSIGN(
+      LanguageTag lt,
+      LanguageTagConverter::GetInstance().FromString("sr-Latn-RS"));
+  EXPECT_THAT(lt.GetLineage(), ElementsAre(GetKnownLanguageTag("sr-Latn-RS"),
+                                           GetKnownLanguageTag("sr-Latn"),
+                                           GetKnownLanguageTag("sr")));
+}
+
+TEST(LanguageTagTest, GetLineageNoParents) {
+  ASSERT_OK_AND_ASSIGN(LanguageTag lt,
+                       LanguageTagConverter::GetInstance().FromString("en"));
+  EXPECT_THAT(lt.GetLineage(), ElementsAre(GetKnownLanguageTag("en")));
 }
 
 TEST(LanguageTagTest, ExtensionMutation) {

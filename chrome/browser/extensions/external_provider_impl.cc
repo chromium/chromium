@@ -351,11 +351,10 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
         extension_dict.FindList(kSupportedLocales);
     if (supported_locales) {
       std::vector<LanguageTag> browser_tags;
-      for (std::optional<LanguageTag> tag =
-               LanguageTagConverter::GetInstance().FromString(
-                   g_browser_process->GetApplicationLocale());
-           tag; tag = tag->GetParentTag()) {
-        browser_tags.push_back(*tag);
+      if (std::optional<LanguageTag> tag =
+              LanguageTagConverter::GetInstance().FromString(
+                  g_browser_process->GetApplicationLocale())) {
+        browser_tags = tag->GetLineage();
       }
 
       bool locale_supported = false;

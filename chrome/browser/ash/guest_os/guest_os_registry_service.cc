@@ -61,10 +61,22 @@ namespace guest_os {
 
 namespace {
 
+using ::base::i18n::LanguageTag;
+using ::base::i18n::LanguageTagConverter;
+
 // Returns the current locale and fallbacks for it (in this order).
 std::vector<std::string> GetFallbackLocales() {
-  std::vector<std::string> locales =
-      l10n_util::GetParentLocales(g_browser_process->GetApplicationLocale());
+  std::vector<std::string> locales;
+  std::optional<LanguageTag> base_tag =
+      LanguageTagConverter::GetInstance().FromString(
+          g_browser_process->GetApplicationLocale());
+
+  if (base_tag) {
+    for (const LanguageTag& tag : base_tag->GetLineage()) {
+      locales.push_back(tag.ToLegacyICUFormat());
+    }
+  }
+
   // We use an empty locale as fallback.
   locales.push_back(std::string());
   return locales;

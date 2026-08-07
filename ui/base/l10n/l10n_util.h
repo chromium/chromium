@@ -109,12 +109,6 @@ COMPONENT_EXPORT(UI_BASE)
 std::u16string GetDisplayNameForCountry(std::string_view country_code,
                                         std::string_view display_locale);
 
-// Produce a vector of parent locales for given locale.
-// It includes the current locale in the result.
-// sr_Cyrl_RS generates sr_Cyrl_RS, sr_Cyrl and sr.
-COMPONENT_EXPORT(UI_BASE)
-std::vector<std::string> GetParentLocales(std::string_view current_locale);
-
 //
 // Mac Note: See l10n_util_mac.h for some NSString versions and other support.
 //

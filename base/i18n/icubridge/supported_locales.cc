@@ -61,13 +61,9 @@ const base::flat_set<LanguageTag>& GetSupportedIcuLocales() {
               ShouldSkipLocale(*locale_tag)) {
             continue;
           }
-          locales.push_back(*locale_tag);
-
           // Add the parents as ICU locales as well.
-          for (std::optional<LanguageTag> parent = locale_tag->GetParentTag();
-               parent; parent = parent->GetParentTag()) {
-            locales.push_back(*parent);
-          }
+          std::vector<LanguageTag> lineage = locale_tag->GetLineage();
+          locales.insert(locales.end(), lineage.begin(), lineage.end());
         }
 
         locales.shrink_to_fit();

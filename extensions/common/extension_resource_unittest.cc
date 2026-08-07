@@ -10,6 +10,8 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -25,6 +27,9 @@
 #endif
 
 namespace extensions {
+
+using ::base::i18n::LanguageTag;
+using ::base::i18n::LanguageTagConverter;
 
 TEST(ExtensionResourceTest, CreateEmptyResource) {
   ExtensionResource resource;
@@ -184,12 +189,21 @@ TEST(ExtensionResourceTest, CreateWithAllResourcesOnDisk) {
   base::FilePath l10n_path = temp.GetPath().Append(kLocaleFolder);
   ASSERT_TRUE(base::CreateDirectory(l10n_path));
 
-  std::vector<std::string> locales = l10n_util::GetParentLocales(
-      l10n_util::GetApplicationLocale(std::string()));
+  std::vector<LanguageTag> locales;
+  std::string app_locale = l10n_util::GetApplicationLocale(std::string());
+  if (app_locale.empty()) {
+    app_locale = "en-US";
+  }
+  std::optional<LanguageTag> tag =
+      LanguageTagConverter::GetInstance().FromString(app_locale);
+  if (tag) {
+    locales = tag->GetLineage();
+  }
+
   ASSERT_FALSE(locales.empty());
-  for (const std::string& locale : locales) {
+  for (const LanguageTag& locale : locales) {
     base::FilePath make_path;
-    make_path = l10n_path.AppendASCII(locale);
+    make_path = l10n_path.AppendASCII(locale.ToLegacyICUFormat());
     ASSERT_TRUE(base::CreateDirectory(make_path));
     ASSERT_TRUE(base::WriteFile(make_path.AppendASCII(filename), data));
   }

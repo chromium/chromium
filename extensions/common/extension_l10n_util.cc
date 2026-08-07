@@ -437,10 +437,9 @@ std::vector<LanguageTag> GetAllFallbackLocales(
   }
 
   if (application_locale_tag != default_locale) {
-    for (std::optional<LanguageTag> tag = application_locale_tag; tag;
-         tag = tag->GetParentTag()) {
-      all_fallback_locales.push_back(*tag);
-    }
+    std::vector<LanguageTag> lineage = application_locale_tag.GetLineage();
+    all_fallback_locales.insert(all_fallback_locales.end(), lineage.begin(),
+                                lineage.end());
   }
   all_fallback_locales.push_back(default_locale);
   return all_fallback_locales;

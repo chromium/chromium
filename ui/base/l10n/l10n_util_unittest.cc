@@ -661,11 +661,6 @@ TEST_F(L10nUtilTest, GetDisplayNameForCountryEmptyCode) {
   EXPECT_EQ(u"", result);
 }
 
-TEST_F(L10nUtilTest, GetParentLocales) {
-  EXPECT_THAT(l10n_util::GetParentLocales("sr_Cyrl_RS"),
-              ElementsAre("sr_Cyrl_RS", "sr_Cyrl", "sr"));
-}
-
 TEST_F(L10nUtilTest, GetUserFacingUILocaleList) {
   // Convert the vector to a set for easy lookup.
   const base::flat_set<std::string> locales =

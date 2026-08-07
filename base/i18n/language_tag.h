@@ -127,6 +127,11 @@ class BASE_I18N_EXPORT LanguageTag {
   // If the language tag only consists of the base language subtag (e.g., "en"),
   // it has no parent and `std::nullopt` is returned.
   constexpr std::optional<LanguageTag> GetParentTag() const;
+  // Returns the lineage of this language tag, starting with the tag itself and
+  // traversing up the parent hierarchy.
+  // Example:
+  //  "sr-Latn-RS" -> ["sr-Latn-RS", "sr-Latn", "sr"]
+  constexpr std::vector<LanguageTag> GetLineage() const;
 
   // Retrieves the singleton and subtag(s) for an extension to a BCP47 language
   // tag.
@@ -276,6 +281,14 @@ constexpr std::optional<LanguageTag> LanguageTag::GetParentTag() const {
   }
 
   return LanguageTag(i18n_internal::GetBcp47TagPieces(*parsed));
+}
+
+constexpr std::vector<LanguageTag> LanguageTag::GetLineage() const {
+  std::vector<LanguageTag> lineage;
+  for (std::optional<LanguageTag> tag = *this; tag; tag = tag->GetParentTag()) {
+    lineage.push_back(*tag);
+  }
+  return lineage;
 }
 
 }  // namespace base::i18n
