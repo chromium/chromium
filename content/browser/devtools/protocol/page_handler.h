@@ -47,6 +47,7 @@ namespace content {
 
 class BackForwardCacheCanStoreDocumentResult;
 class DevToolsAgentHostImpl;
+class DevToolsIOContext;
 class FrameTreeNode;
 class NavigationRequest;
 class RenderFrameHostImpl;
@@ -56,6 +57,7 @@ namespace protocol {
 
 class BrowserHandler;
 class EmulationHandler;
+class MediaRecorder;
 
 class PageHandler : public DevToolsDomainHandler,
                     public Page::Backend,
@@ -63,6 +65,7 @@ class PageHandler : public DevToolsDomainHandler,
                     public download::DownloadItem::Observer {
  public:
   PageHandler(
+      DevToolsIOContext* io_context,
       EmulationHandler* emulation_handler,
       BrowserHandler* browser_handler,
       bool allow_unsafe_operations,
@@ -162,6 +165,14 @@ class PageHandler : public DevToolsDomainHandler,
                            std::optional<int> max_width,
                            std::optional<int> max_height,
                            std::optional<int> every_nth_frame) override;
+  Response StartScreenRecording(std::optional<bool> audio,
+                                std::optional<int> max_width,
+                                std::optional<int> max_height,
+                                std::optional<int> frame_rate,
+                                std::string* out_stream) override;
+  void StopScreenRecording(
+      std::unique_ptr<StopScreenRecordingCallback> callback) override;
+  void OnMediaRecorderFlushed();
   Response StopScreencast() override;
   Response ScreencastFrameAck(int session_id) override;
 
@@ -271,11 +282,13 @@ class PageHandler : public DevToolsDomainHandler,
   // and provides PageHandler with these frames via OnFrameFromVideoConsumer.
   // This is only used if Viz is enabled and if OS is not Android.
   std::unique_ptr<DevToolsVideoConsumer> video_consumer_;
+  std::unique_ptr<MediaRecorder> media_recorder_;
 
   // The last surface size used to determine if frames with new sizes need
   // to be requested. This changes due to window resizing.
   gfx::Size last_surface_size_;
 
+  raw_ptr<DevToolsIOContext> io_context_;
   raw_ptr<RenderFrameHostImpl> host_;
   raw_ptr<EmulationHandler> emulation_handler_;
   raw_ptr<BrowserHandler> browser_handler_;

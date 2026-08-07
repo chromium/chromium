@@ -1,0 +1,24 @@
+Tests Page.startScreenRecording audio options.
+
+Testing with audio: true
+{
+    id : <number>
+    result : {
+        stream : <string 0>
+    }
+    sessionId : <string>
+}
+stream handle successfully created
+stream data is mp4
+
+Testing with audio: false
+{
+    id : <number>
+    result : {
+        stream : <string 1>
+    }
+    sessionId : <string>
+}
+stream handle successfully created
+stream data is mp4
+

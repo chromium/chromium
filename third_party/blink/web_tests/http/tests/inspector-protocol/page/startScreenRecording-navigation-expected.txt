@@ -1,0 +1,21 @@
+Tests Page.startScreenRecording during navigation.
+{
+    id : <number>
+    result : {
+        stream : <string 0>
+    }
+    sessionId : <string>
+}
+Navigating to another page
+{
+    id : <number>
+    result : {
+        frameId : <string>
+        isDownload : false
+        loaderId : <string>
+    }
+    sessionId : <string>
+}
+stream handle successfully created
+stream data is mp4
+

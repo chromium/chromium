@@ -83,6 +83,7 @@
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/shell/browser/shell_download_manager_delegate.h"
 #include "content/test/content_browser_test_utils_internal.h"
+#include "media/media_buildflags.h"
 #include "net/base/features.h"
 #include "net/dns/dns_test_util.h"
 #include "net/dns/mock_host_resolver.h"
@@ -1396,6 +1397,39 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
   CaptureScreenshot(ScreenshotEncoding::PNG, false, gfx::RectF(), 0, true,
                     true);
 }
+
+#if BUILDFLAG(ENABLE_LIBAOM)
+IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest, StartStopScreenRecording) {
+  shell()->LoadURL(
+      GURL("data:text/html,<body style='background:#123456;'></body>"));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  Attach();
+
+  const base::DictValue* start_result =
+      SendCommandSync("Page.startScreenRecording");
+  ASSERT_TRUE(start_result);
+  const std::string* stream_handle_ptr = start_result->FindString("stream");
+  ASSERT_TRUE(stream_handle_ptr);
+  std::string stream_handle = *stream_handle_ptr;
+  EXPECT_FALSE(stream_handle.empty());
+
+  EXPECT_TRUE(
+      content::ExecJs(shell()->web_contents(),
+                      "document.body.style.backgroundColor = '#654321';"));
+
+  const base::DictValue* stop_result =
+      SendCommandSync("Page.stopScreenRecording");
+  ASSERT_TRUE(stop_result);
+
+  base::DictValue read_params;
+  read_params.Set("handle", stream_handle);
+  const base::DictValue* read_response =
+      SendCommandSync("IO.read", std::move(read_params));
+  ASSERT_TRUE(read_response);
+  const std::string* data = read_response->FindString("data");
+  ASSERT_TRUE(data);
+}
+#endif  // BUILDFLAG(ENABLE_LIBAOM)
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
                        NoCrashDeviceMetricsOverrideAutoResize) {

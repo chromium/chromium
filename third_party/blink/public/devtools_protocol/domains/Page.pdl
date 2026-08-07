@@ -1175,6 +1175,26 @@ domain Page
       # Send every n-th frame.
       optional integer everyNthFrame
 
+  # Starts screencast video recording.
+  experimental command startScreenRecording
+    parameters
+      optional boolean audio
+      # Maximum frame width in pixels.
+      optional integer maxWidth
+      # Maximum frame height in pixels.
+      optional integer maxHeight
+      # Maximum frame rate in frames per second.
+      optional integer frameRate
+    returns
+      # A handle of the stream that holds resulting screencast data.
+      experimental IO.StreamHandle stream
+
+  # Stops screencast video recording.
+  experimental command stopScreenRecording
+    returns
+      # A handle of the stream that holds resulting screencast data.
+      experimental IO.StreamHandle stream
+
   # Force the page stop all navigations and pending resource fetches.
   command stopLoading
 

@@ -10,7 +10,6 @@
 #include <sstream>
 #include <string>
 #include <utility>
-#include <variant>
 #include <vector>
 
 #include "base/check_op.h"
@@ -24,10 +23,12 @@
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/thread_restrictions.h"
+#include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
-#include "build/build_config.h"
 #include "components/back_forward_cache/disabled_reason_id.h"
 #include "content/browser/back_forward_cache/back_forward_cache_can_store_document_result.h"
 #include "content/browser/back_forward_cache/back_forward_cache_disable.h"
@@ -38,29 +39,27 @@
 #include "content/browser/devtools/protocol/devtools_mhtml_helper.h"
 #include "content/browser/devtools/protocol/emulation_handler.h"
 #include "content/browser/devtools/protocol/handler_helpers.h"
-#include "content/browser/devtools/protocol/page.h"
+#include "content/browser/devtools/protocol/media_recorder.h"
 #include "content/browser/manifest/manifest_manager_host.h"
-#include "content/browser/preloading/prerender/prerender_final_status.h"
+#include "content/browser/media/capture/web_contents_video_capture_device.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/download_manager.h"
 #include "content/public/browser/file_select_listener.h"
-#include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/browser/web_contents_media_capture_id.h"
 #include "content/public/common/referrer.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/common/url_constants.h"
@@ -84,7 +83,6 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/skbitmap_operations.h"
 #include "ui/snapshot/snapshot.h"
-#include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/renderer_host/compositor_impl_android.h"
@@ -499,6 +497,7 @@ struct PageHandler::PendingScreenshotRequest {
 };
 
 PageHandler::PageHandler(
+    DevToolsIOContext* io_context,
     EmulationHandler* emulation_handler,
     BrowserHandler* browser_handler,
     bool allow_unsafe_operations,
@@ -518,6 +517,7 @@ PageHandler::PageHandler(
       session_id_(0),
       frame_counter_(0),
       frames_in_flight_(0),
+      io_context_(io_context),
       host_(nullptr),
       emulation_handler_(emulation_handler),
       browser_handler_(browser_handler),
@@ -1577,6 +1577,10 @@ Response PageHandler::StartScreencast(std::optional<std::string> format,
                                       std::optional<int> max_width,
                                       std::optional<int> max_height,
                                       std::optional<int> every_nth_frame) {
+  if (screencast_encoder_ || media_recorder_) {
+    return Response::ServerError("Screencast is already active");
+  }
+
   Response response = AssureTopLevelActiveFrame();
   if (response.IsError()) {
     return response;
@@ -1622,6 +1626,71 @@ Response PageHandler::StartScreencast(std::optional<std::string> format,
   video_consumer_->StartCapture();
 
   return Response::FallThrough();
+}
+
+Response PageHandler::StartScreenRecording(std::optional<bool> audio,
+                                           std::optional<int> max_width,
+                                           std::optional<int> max_height,
+                                           std::optional<int> frame_rate,
+                                           std::string* out_stream) {
+  if (screencast_encoder_ || media_recorder_) {
+    return Response::ServerError("Screencast is already active");
+  }
+
+  Response response = AssureTopLevelActiveFrame();
+  if (response.IsError()) {
+    return response;
+  }
+  RenderWidgetHostImpl* widget_host = host_->GetRenderWidgetHost();
+  if (!widget_host) {
+    return Response::InternalError();
+  }
+
+  media_recorder_ = std::make_unique<MediaRecorder>(
+      io_context_, base::BindRepeating(&PageHandler::OnMediaRecorderFlushed,
+                                       weak_factory_.GetWeakPtr()));
+
+  bool has_audio = audio.value_or(false);
+  int fps = frame_rate.value_or(30);
+  if (fps <= 0) {
+    fps = 30;
+  }
+
+  Response result = media_recorder_->Start(
+      host_, has_audio, max_width.value_or(800), max_height.value_or(600), fps);
+  if (result.IsError()) {
+    media_recorder_.reset();
+    return result;
+  }
+
+  *out_stream = media_recorder_->GetStream();
+  return Response::Success();
+}
+
+void PageHandler::StopScreenRecording(
+    std::unique_ptr<StopScreenRecordingCallback> callback) {
+  if (!media_recorder_) {
+    if (callback) {
+      callback->sendFailure(
+          Response::ServerError("No active screen recording"));
+    }
+    return;
+  }
+
+  auto recorder = std::move(media_recorder_);
+  recorder->Stop(base::BindOnce(
+      [](std::unique_ptr<MediaRecorder> recorder,
+         std::unique_ptr<StopScreenRecordingCallback> callback,
+         std::string stream) {
+        if (callback) {
+          callback->sendSuccess(stream);
+        }
+      },
+      std::move(recorder), std::move(callback)));
+}
+
+void PageHandler::OnMediaRecorderFlushed() {
+  media_recorder_.reset();
 }
 
 Response PageHandler::StopScreencast() {

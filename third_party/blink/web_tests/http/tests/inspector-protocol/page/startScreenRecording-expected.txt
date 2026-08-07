@@ -1,0 +1,11 @@
+Tests Page.startScreenRecording.
+{
+    id : <number>
+    result : {
+        stream : <string 0>
+    }
+    sessionId : <string>
+}
+stream handle successfully created
+stream data is mp4
+

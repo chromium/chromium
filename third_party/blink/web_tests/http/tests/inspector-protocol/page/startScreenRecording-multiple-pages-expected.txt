@@ -1,0 +1,25 @@
+Tests Page.startScreenRecording on multiple pages - Page 1.
+Tests Page.startScreenRecording on multiple pages - Page 2.
+Starting recording on Page 1
+{
+    id : <number>
+    result : {
+        stream : <string 0>
+    }
+    sessionId : <string>
+}
+Starting recording on Page 2
+{
+    id : <number>
+    result : {
+        stream : <string 1>
+    }
+    sessionId : <string>
+}
+Checking stream for Page 1
+stream handle successfully created
+stream data is mp4
+Checking stream for Page 2
+stream handle successfully created
+stream data is mp4
+
