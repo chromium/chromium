@@ -28,35 +28,45 @@ def parse_args():
     subparsers = parser.add_subparsers()
 
     subparser = subparsers.add_parser(
-        'latest', help='Prints the version as $LATEST.$RUNTIME_DEPS_HASH')
+        'latest', help='Prints the version as $LATEST.$RUNTIME_DEPS_HASH'
+    )
     subparser.set_defaults(action='latest')
 
     subparser = subparsers.add_parser(
-        'checkout', help='Copies files into the workdir used by docker')
+        'checkout', help='Copies files into the workdir used by docker'
+    )
     subparser.add_argument('checkout_dir')
     subparser.add_argument('--version', help='Output from "latest"')
     subparser.set_defaults(action='checkout')
 
     subparser = subparsers.add_parser(
         'install',
-        help=('Run from workdir, inside docker container. '
-              'Builds & copies outputs into |output_prefix| directory'))
-    subparser.add_argument('output_prefix',
-                           help='The path to install the compiled package to.')
-    subparser.add_argument('deps_prefix',
-                           help='The path to a directory containing all deps.')
+        help=(
+            'Run from workdir, inside docker container. '
+            'Builds & copies outputs into |output_prefix| directory'
+        ),
+    )
+    subparser.add_argument(
+        'output_prefix', help='The path to install the compiled package to.'
+    )
+    subparser.add_argument(
+        'deps_prefix', help='The path to a directory containing all deps.'
+    )
     subparser.add_argument('--version', help='Output from "latest"')
     subparser.add_argument('--checkout-dir', help='Directory to use as CWD')
     subparser.set_defaults(action='install')
 
     subparser = subparsers.add_parser(
-        'local-test', help='Run latest / checkout / install locally')
-    subparser.add_argument('--checkout-dir',
-                           default='3pp_workdir',
-                           help='Workdir to use')
-    subparser.add_argument('--output-prefix',
-                           default='3pp_out',
-                           help='Directory for final artifacts')
+        'local-test', help='Run latest / checkout / install locally'
+    )
+    subparser.add_argument(
+        '--checkout-dir', default='3pp_workdir', help='Workdir to use'
+    )
+    subparser.add_argument(
+        '--output-prefix',
+        default='3pp_out',
+        help='Directory for final artifacts',
+    )
     subparser.set_defaults(action='local-test')
 
     args = parser.parse_args()
@@ -83,8 +93,10 @@ def parse_args():
             os.chdir(args.checkout_dir)
 
         if not os.path.exists(_CHECKOUT_SRC_ROOT_SUBDIR):
-            parser.error(f'Does not exist: {_CHECKOUT_SRC_ROOT_SUBDIR}.'
-                         f' Use --checkout-dir?')
+            parser.error(
+                f'Does not exist: {_CHECKOUT_SRC_ROOT_SUBDIR}.'
+                f' Use --checkout-dir?'
+            )
 
         # 3pp bot recipe does this, so needed only when running locally.
         os.makedirs(args.output_prefix, exist_ok=True)
@@ -128,9 +140,11 @@ def copy_runtime_deps(checkout_dir, runtime_deps):
         if os.path.isfile(src_path):
             shutil.copy(src_path, dest_path)
         else:
-            shutil.copytree(src_path,
-                            dest_path,
-                            ignore=shutil.ignore_patterns('.*', '__pycache__'))
+            shutil.copytree(
+                src_path,
+                dest_path,
+                ignore=shutil.ignore_patterns('.*', '__pycache__'),
+            )
     logging.info('Runtime deps:')
     sys.stderr.write('\n'.join(_all_files(checkout_dir)) + '\n')
 
@@ -162,7 +176,8 @@ def apply_patches(patches_dir, checkout_dir):
 def main(*, do_latest, do_install, runtime_deps, include_deps_hash=True):
     logging.basicConfig(
         level=logging.DEBUG,
-        format='%(levelname).1s %(relativeCreated)6d %(message)s')
+        format='%(levelname).1s %(relativeCreated)6d %(message)s',
+    )
     args = parse_args()
     runtime_deps = [str(_THIS_DIR)] + runtime_deps
 
@@ -171,7 +186,8 @@ def main(*, do_latest, do_install, runtime_deps, include_deps_hash=True):
         logging.warning('Will use output dir: %s', args.output_prefix)
         if os.path.exists(args.checkout_dir) and os.listdir(args.checkout_dir):
             logging.warning(
-                '*** Work dir not empty. This often causes failures. ***')
+                '*** Work dir not empty. This often causes failures. ***'
+            )
             time.sleep(4)
         # Approximates what 3pp recipe does for minimal configs.
         # https://source.chromium.org/search?q=symbol:Chromium3ppApi.execute&ss=chromium
@@ -181,8 +197,10 @@ def main(*, do_latest, do_install, runtime_deps, include_deps_hash=True):
         os.environ['_3PP_VERSION'] = version
         checkout_dir = args.checkout_dir
         run_cmd([prog, 'checkout', checkout_dir])
-        run_cmd([prog, 'install', args.output_prefix, 'UNUSED-DEPS-DIR'],
-                cwd=checkout_dir)
+        run_cmd(
+            [prog, 'install', args.output_prefix, 'UNUSED-DEPS-DIR'],
+            cwd=checkout_dir,
+        )
         logging.warning('Local test complete.')
         return
 
@@ -212,5 +230,7 @@ def main(*, do_latest, do_install, runtime_deps, include_deps_hash=True):
     do_install(args)
     prefix_len = len(args.output_prefix) + 1
     logging.info(
-        'Contents of %s: \n%s\n', args.output_prefix,
-        '\n'.join(p[prefix_len:] for p in _all_files(args.output_prefix)))
+        'Contents of %s: \n%s\n',
+        args.output_prefix,
+        '\n'.join(p[prefix_len:] for p in _all_files(args.output_prefix)),
+    )

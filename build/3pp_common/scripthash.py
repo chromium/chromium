@@ -12,13 +12,17 @@ _SRC_ROOT = pathlib.Path(__file__).resolve().parents[2]
 
 
 def _find_deps():
-    module_paths = (os.path.abspath(m.__file__) for m in sys.modules.values()
-                    if m and getattr(m, '__file__', None))
+    module_paths = (
+        os.path.abspath(m.__file__)
+        for m in sys.modules.values()
+        if m and getattr(m, '__file__', None)
+    )
     ret = set()
     for path in module_paths:
         if path.startswith(str(_SRC_ROOT)):
-            if (path.endswith('.pyc')
-                    or (path.endswith('c') and not os.path.splitext(path)[1])):
+            if path.endswith('.pyc') or (
+                path.endswith('c') and not os.path.splitext(path)[1]
+            ):
                 path = path[:-1]
             ret.add(path)
     return list(ret)

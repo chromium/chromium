@@ -16,24 +16,30 @@ def main():
     # Hide args set by wrappers so that using --help with the wrappers does not
     # show them.
     parser.add_argument('--subdir', required=True, help=argparse.SUPPRESS)
-    parser.add_argument('--cipd-package',
-                        required=True,
-                        help=argparse.SUPPRESS)
+    parser.add_argument('--cipd-package', required=True, help=argparse.SUPPRESS)
     parser.add_argument('--git-log-url', help=argparse.SUPPRESS)
-    parser.add_argument('--cipd-instance',
-                        help='Uses value from DEPS by default')
+    parser.add_argument(
+        '--cipd-instance', help='Uses value from DEPS by default'
+    )
     args = parser.parse_args()
 
     if not args.cipd_instance:
         cmd = [
-            'gclient', 'getdep', '-r', f'src/{args.subdir}:{args.cipd_package}'
+            'gclient',
+            'getdep',
+            '-r',
+            f'src/{args.subdir}:{args.cipd_package}',
         ]
-        args.cipd_instance = subprocess.check_output(cmd,
-                                                     cwd=_DIR_SOURCE_ROOT,
-                                                     text=True)
+        args.cipd_instance = subprocess.check_output(
+            cmd, cwd=_DIR_SOURCE_ROOT, text=True
+        )
 
     cmd = [
-        'cipd', 'describe', args.cipd_package, '-version', args.cipd_instance
+        'cipd',
+        'describe',
+        args.cipd_package,
+        '-version',
+        args.cipd_instance,
     ]
     print(' '.join(cmd))
     output = subprocess.check_output(cmd, text=True)

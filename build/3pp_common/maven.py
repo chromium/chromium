@@ -62,8 +62,8 @@ _POM_TEMPLATE = """\
 
 def _detect_latest(maven_url, package):
     metadata_url = '{}/{}/maven-metadata.xml'.format(
-        maven_url,
-        package.replace('.', '/').replace(':', '/'))
+        maven_url, package.replace('.', '/').replace(':', '/')
+    )
     metadata = urllib.request.urlopen(metadata_url).read().decode('utf-8')
     # Do not parse xml with the Python included parser since it is susceptible
     # to maliciously crafted xmls. Only use regular expression parsing to be
@@ -79,23 +79,28 @@ def _detect_latest(maven_url, package):
     return latest
 
 
-def _install(output_prefix,
-             deps_prefix,
-             maven_url,
-             package,
-             version,
-             jar_name=None,
-             post_process_func=None):
+def _install(
+    output_prefix,
+    deps_prefix,
+    maven_url,
+    package,
+    version,
+    jar_name=None,
+    post_process_func=None,
+):
     # Runs in a docker container.
     group_id, artifact_id = package.split(':')
     if not jar_name:
         jar_name = f'{artifact_id}.jar'
 
     pathlib.Path('pom.xml').write_text(
-        _POM_TEMPLATE.format(version=version,
-                             group_id=group_id,
-                             artifact_id=artifact_id,
-                             maven_url=maven_url))
+        _POM_TEMPLATE.format(
+            version=version,
+            group_id=group_id,
+            artifact_id=artifact_id,
+            maven_url=maven_url,
+        )
+    )
 
     # Set up JAVA_HOME for the mvn command to find the JDK.
     env = os.environ.copy()
@@ -105,9 +110,11 @@ def _install(output_prefix,
     subprocess.run(['mvn', '-v'], check=True, env=env)
 
     # Build the jar file, explicitly specify -f to reduce sources of error.
-    subprocess.run(['mvn', 'clean', 'assembly:single', '-f', 'pom.xml'],
-                   check=True,
-                   env=env)
+    subprocess.run(
+        ['mvn', 'clean', 'assembly:single', '-f', 'pom.xml'],
+        check=True,
+        env=env,
+    )
 
     src_jar_path = 'target/artifact-1-jar-with-dependencies.jar'
     dst_jar_path = os.path.join(output_prefix, jar_name)
@@ -117,12 +124,14 @@ def _install(output_prefix,
         shutil.move(src_jar_path, dst_jar_path)
 
 
-def main(*,
-         package,
-         jar_name=None,
-         maven_url='https://dl.google.com/android/maven2',
-         post_process_func=None,
-         version_override=None):
+def main(
+    *,
+    package,
+    jar_name=None,
+    maven_url='https://dl.google.com/android/maven2',
+    post_process_func=None,
+    version_override=None,
+):
     """3pp entry point for fetch.py.
 
     Args:
@@ -137,9 +146,18 @@ def main(*,
         return version_override or _detect_latest(maven_url, package)
 
     def do_install(args):
-        _install(args.output_prefix, args.deps_prefix, maven_url, package,
-                 args.version, jar_name, post_process_func)
+        _install(
+            args.output_prefix,
+            args.deps_prefix,
+            maven_url,
+            package,
+            args.version,
+            jar_name,
+            post_process_func,
+        )
 
-    common.main(do_latest=do_latest,
-                do_install=do_install,
-                runtime_deps=['//third_party/jdk/current'])
+    common.main(
+        do_latest=do_latest,
+        do_install=do_install,
+        runtime_deps=['//third_party/jdk/current'],
+    )
