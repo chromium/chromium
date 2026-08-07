@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/signin/model/avatar/resized_avatar_cache.h"
 
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "base/values.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -136,4 +137,40 @@ TEST_F(ResizedAvatarCacheTest, AddRemoveAndAddAgainIdentity) {
   avatar_from_cache =
       [resized_avatar_cache_ resizedAvatarForIdentity:identity1_];
   EXPECT_EQ(avatar_from_cache, second_avatar);
+}
+
+// Tests that an invalid/empty avatar does not crash and falls back to the
+// default avatar.
+TEST_F(ResizedAvatarCacheTest, CorruptedAvatarFallback) {
+  base::HistogramTester histogram_tester;
+
+  // Set an empty/zero-size image.
+  UIImage* empty_image = [[UIImage alloc] init];
+  fake_system_identity_manager()->UpdateSystemIdentityAvatar(
+      identity1_.gaiaId, empty_image, /*send_notification=*/false);
+
+  UIImage* avatar = [resized_avatar_cache_ resizedAvatarForIdentity:identity1_];
+  EXPECT_NE(nil, avatar);
+  CGSize expected_size =
+      GetSizeForIdentityAvatarSize(IdentityAvatarSize::TableViewIcon);
+  EXPECT_TRUE(CGSizeEqualToSize(expected_size, avatar.size));
+
+  histogram_tester.ExpectUniqueSample(
+      kGetAvatarResultHistogram,
+      IOSResizedAvatarCacheGetAvatarResult::kInvalidDimensions,
+      /*expected_bucket_count=*/1);
+
+  // Now update with a valid avatar and ensure it is picked up.
+  UIImage* valid_avatar = ui::test::uiimage_utils::UIImageWithSizeAndSolidColor(
+      expected_size, UIColor.whiteColor);
+  fake_system_identity_manager()->UpdateSystemIdentityAvatar(
+      identity1_.gaiaId, valid_avatar, /*send_notification=*/true);
+
+  UIImage* updated_avatar =
+      [resized_avatar_cache_ resizedAvatarForIdentity:identity1_];
+  EXPECT_EQ(valid_avatar, updated_avatar);
+
+  histogram_tester.ExpectBucketCount(
+      kGetAvatarResultHistogram, IOSResizedAvatarCacheGetAvatarResult::kSuccess,
+      /*expected_count=*/1);
 }

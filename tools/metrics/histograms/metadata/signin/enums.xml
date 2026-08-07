@@ -743,6 +743,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//ios/chrome/browser/signin/model/authentication_service.h:IOSProfileInitializationOutcome) -->
 
+<!-- LINT.IfChange(IOSResizedAvatarCacheGetAvatarResult) -->
+
+<enum name="IOSResizedAvatarCacheGetAvatarResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Missing (Fetch triggered)"/>
+  <int value="2" label="Invalid dimensions (Fetch triggered)"/>
+  <int value="3" label="Resize failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/signin/model/avatar/resized_avatar_cache.h:IOSResizedAvatarCacheGetAvatarResult) -->
+
 <!-- LINT.IfChange(LaunchWebAuthFlowResult) -->
 
 <enum name="LaunchWebAuthFlowResult">

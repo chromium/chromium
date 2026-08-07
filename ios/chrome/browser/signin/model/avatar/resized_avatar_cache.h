@@ -11,6 +11,22 @@
 
 @protocol SystemIdentity;
 
+extern const char kGetAvatarResultHistogram[];
+
+// Result of retrieving and preparing an avatar in ResizedAvatarCache.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(IOSResizedAvatarCacheGetAvatarResult)
+enum class IOSResizedAvatarCacheGetAvatarResult {
+  kSuccess = 0,
+  kMissing = 1,
+  kInvalidDimensions = 2,
+  kResizeFailed = 3,
+  kMaxValue = kResizeFailed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:IOSResizedAvatarCacheGetAvatarResult)
+
 // This class manages an image cache for resized avatar images.
 @interface ResizedAvatarCache : NSObject
 

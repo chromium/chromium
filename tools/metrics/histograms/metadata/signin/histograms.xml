@@ -2804,6 +2804,18 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.IOSResizedAvatarCache.GetAvatarResult"
+    enum="IOSResizedAvatarCacheGetAvatarResult" expires_after="2027-08-01">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <summary>
+    [iOS only] Records the result of retrieving an avatar from the system
+    identity manager cache and preparing it in ResizedAvatarCache (on cache
+    miss). Recorded each time an identity avatar is requested and is not already
+    present in the memory cache.
+  </summary>
+</histogram>
+
 <histogram name="Signin.ListAccountsFailure" enum="GoogleServiceAuthError"
     expires_after="never">
 <!-- expires-never: ListAccounts calls are used to monitor the accounts in the
