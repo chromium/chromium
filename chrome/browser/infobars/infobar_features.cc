@@ -54,6 +54,11 @@ BASE_FEATURE_PARAM(bool,
                    &kCentralizedInfoBarFramework,
                    false);
 
+BASE_FEATURE_PARAM(bool,
+                   kMigratedLocalTestPolicies,
+                   &kCentralizedInfoBarFramework,
+                   false);
+
 const base::FeatureParam<bool>* GetInfoBarMigrationParam(
     InfoBarDelegate::InfoBarIdentifier infobar_id) {
   switch (infobar_id) {
@@ -75,12 +80,17 @@ const base::FeatureParam<bool>* GetInfoBarMigrationParam(
       return &kMigratedObsoleteSystem;
     case InfoBarDelegate::PIN_INFOBAR_DELEGATE:
       return &kMigratedPinInfoBar;
+    case InfoBarDelegate::LOCAL_TEST_POLICIES_APPLIED_INFOBAR:
+      return &kMigratedLocalTestPolicies;
     default:
       return nullptr;
   }
 }
 
 bool IsInfoBarMigrated(InfoBarDelegate::InfoBarIdentifier infobar_id) {
+#if BUILDFLAG(IS_ANDROID)
+  return false;
+#else
   if (!base::FeatureList::IsEnabled(kCentralizedInfoBarFramework)) {
     return false;
   }
@@ -95,6 +105,7 @@ bool IsInfoBarMigrated(InfoBarDelegate::InfoBarIdentifier infobar_id) {
   }
 
   return param->Get();
+#endif
 }
 
 }  // namespace infobars

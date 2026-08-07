@@ -139,6 +139,9 @@ class ProfilePolicyConnector final : public PolicyService::Observer {
 
   std::string GetTimeToFirstPolicyLoadMetricSuffix() const;
 
+  // Updates the visibility of the local test policies infobar.
+  void UpdateLocalTestInfoBar(bool show);
+
   // Records profile affiliation-related metrics and then starts a 7 day timer
   // with itself as the callback. This ensures metrics are recorded at least
   // every 7 days if the profile remains open.

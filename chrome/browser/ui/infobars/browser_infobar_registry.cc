@@ -142,6 +142,20 @@ void RegisterInfoBars() {
     browser_infobar_manager->Register(std::move(spec));
   }
 #endif
+
+  if (IsInfoBarMigrated(InfoBarDelegate::LOCAL_TEST_POLICIES_APPLIED_INFOBAR)) {
+    auto spec = InfoBarSpec::Builder(
+                    InfoBarDelegate::LOCAL_TEST_POLICIES_APPLIED_INFOBAR)
+                    .SetMessageText(l10n_util::GetStringUTF16(
+                        IDS_LOCAL_TEST_POLICIES_ENABLED))
+                    .SetScope(InfoBarScope::kGlobal)
+                    .SetExpireOnNavigation(false)
+                    .SetShouldAnimate(false)
+                    .SetIsCloseable(false)
+                    .SetPriority(InfoBarDelegate::InfobarPriority::kLow)
+                    .Build();
+    browser_infobar_manager->Register(std::move(spec));
+  }
 }
 
 #if BUILDFLAG(CHROME_FOR_TESTING)

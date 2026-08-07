@@ -27,6 +27,10 @@
 #include "chrome/browser/browser_switcher/browser_switcher_policy_migrator.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/infobars/simple_alert_infobar_creator.h"
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/infobars/browser_infobar_manager.h"
+#endif
+#include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
@@ -809,12 +813,7 @@ void ProfilePolicyConnector::UseLocalTestPolicyProvider() {
   policy_service_->UseLocalTestPolicyProvider(local_test_policy_provider_);
   policy_service()->RefreshPolicies(base::DoNothing(),
                                     PolicyFetchReason::kTest);
-  if (!local_test_infobar_visibility_manager_->infobar_active()) {
-    RunNowOnOrPostToUIThread(
-        base::BindOnce(&internal::LocalTestInfoBarVisibilityManager::
-                           AddInfobarsForActiveLocalTestPoliciesAllTabs,
-                       local_test_infobar_visibility_manager_->GetWeakPtr()));
-  }
+  UpdateLocalTestInfoBar(/*show=*/true);
 }
 
 void ProfilePolicyConnector::RevertUseLocalTestPolicyProvider() {
@@ -824,17 +823,51 @@ void ProfilePolicyConnector::RevertUseLocalTestPolicyProvider() {
       ->ClearPolicies();
   policy_service()->RefreshPolicies(base::DoNothing(),
                                     PolicyFetchReason::kTest);
-  if (local_test_infobar_visibility_manager_->infobar_active()) {
-    RunNowOnOrPostToUIThread(
-        base::BindOnce(&internal::LocalTestInfoBarVisibilityManager::
-                           DismissInfobarsForActiveLocalTestPoliciesAllTabs,
-                       local_test_infobar_visibility_manager_->GetWeakPtr()));
-  }
+  UpdateLocalTestInfoBar(/*show=*/false);
 }
 
 bool ProfilePolicyConnector::IsUsingLocalTestPolicyProvider() const {
   return local_test_policy_provider_ &&
          local_test_policy_provider_->is_active();
+}
+
+void ProfilePolicyConnector::UpdateLocalTestInfoBar(bool show) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (infobars::IsInfoBarMigrated(
+          infobars::InfoBarDelegate::LOCAL_TEST_POLICIES_APPLIED_INFOBAR)) {
+    RunNowOnOrPostToUIThread(base::BindOnce(
+        [](bool show) {
+          if (auto* manager =
+                  infobars::BrowserInfoBarManager::From(g_browser_process)) {
+            if (show) {
+              manager->ShowGlobally(infobars::InfoBarDelegate::
+                                        LOCAL_TEST_POLICIES_APPLIED_INFOBAR);
+            } else {
+              manager->Hide(infobars::InfoBarDelegate::
+                                LOCAL_TEST_POLICIES_APPLIED_INFOBAR);
+            }
+          }
+        },
+        show));
+    return;
+  }
+#endif
+
+  if (show) {
+    if (!local_test_infobar_visibility_manager_->infobar_active()) {
+      RunNowOnOrPostToUIThread(
+          base::BindOnce(&internal::LocalTestInfoBarVisibilityManager::
+                             AddInfobarsForActiveLocalTestPoliciesAllTabs,
+                         local_test_infobar_visibility_manager_->GetWeakPtr()));
+    }
+  } else {
+    if (local_test_infobar_visibility_manager_->infobar_active()) {
+      RunNowOnOrPostToUIThread(
+          base::BindOnce(&internal::LocalTestInfoBarVisibilityManager::
+                             DismissInfobarsForActiveLocalTestPoliciesAllTabs,
+                         local_test_infobar_visibility_manager_->GetWeakPtr()));
+    }
+  }
 }
 
 void ProfilePolicyConnector::RecordAffiliationMetrics() {
