@@ -279,6 +279,11 @@ function addPeerConnectionUpdate(peerConnectionElement, update) {
       value = update.value;
     }
   }
+  if (update.type === 'ontrack') {
+    // The rtcstats format flattens the track event into
+    // [kind, id, label, ...streamIds].
+    value = [value.kind, value.id, value.label, ...value.streams];
+  }
   addRtcStatsEvent(
     update.type,
     peerConnectionElement.id,
