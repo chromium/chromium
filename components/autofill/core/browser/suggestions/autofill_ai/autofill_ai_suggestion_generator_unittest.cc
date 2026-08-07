@@ -2440,5 +2440,23 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
                   SuggestionType::kAutofillAiPrivateInferenceNotice)));
 }
 
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       PrivateInferenceNoticeNotShownWhenSeenTooRecently) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillAiUsePrivateAi);
+  client().GetPrefs()->SetTime(
+      prefs::kAutofillAiPrivateInferenceNoticeShownTimestamp,
+      base::Time::Now() - base::Minutes(10));
+
+  SetEntities({GetPassportEntityInstanceWithRandomGuid()});
+  SetForm({PASSPORT_NUMBER});
+
+  std::vector<Suggestion> suggestions =
+      CreateAutofillAiFillingSuggestions(field(0));
+  EXPECT_THAT(suggestions,
+              Not(Contains(EqualsSuggestion(
+                  SuggestionType::kAutofillAiPrivateInferenceNotice))));
+}
+
 }  // namespace
 }  // namespace autofill

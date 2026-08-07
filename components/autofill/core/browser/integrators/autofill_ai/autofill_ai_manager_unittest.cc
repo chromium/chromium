@@ -392,8 +392,6 @@ TEST_F(AutofillAiManagerTest,
   manager().OnAfterLoadedServerPredictions(autofill_manager(), {form_id});
 }
 
-
-
 // Tests that IPH should not be displayed if the user is opted into AutofillAI
 // already.
 TEST_F(AutofillAiManagerTest, ShouldNotDisplayIphWhenOptedIn) {
@@ -541,7 +539,7 @@ TEST_F(AutofillAiManagerTest,
 }
 
 // Tests that OnAutofillAiSuggestionsShown sets
-// kAutofillAiPrivateInferenceNoticeFirstShownTimestamp when
+// kAutofillAiPrivateInferenceNoticeShownTimestamp when
 // kAutofillAiPrivateInferenceNotice is in the shown suggestions.
 TEST_F(
     AutofillAiManagerTest,
@@ -550,7 +548,7 @@ TEST_F(
       test::GetFormData({.fields = {{.role = PASSPORT_NUMBER}}}));
 
   EXPECT_EQ(autofill_client().GetPrefs()->GetTime(
-                prefs::kAutofillAiPrivateInferenceNoticeFirstShownTimestamp),
+                prefs::kAutofillAiPrivateInferenceNoticeShownTimestamp),
             base::Time());
 
   manager().OnAutofillAiSuggestionsShown(
@@ -559,7 +557,7 @@ TEST_F(
       /*update_suggestions_callback=*/{});
 
   EXPECT_NE(autofill_client().GetPrefs()->GetTime(
-                prefs::kAutofillAiPrivateInferenceNoticeFirstShownTimestamp),
+                prefs::kAutofillAiPrivateInferenceNoticeShownTimestamp),
             base::Time());
 }
 

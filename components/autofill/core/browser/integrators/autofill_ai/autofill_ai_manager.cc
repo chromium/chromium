@@ -317,9 +317,8 @@ void AutofillAiManager::OnAutofillAiSuggestionsShown(
                             SuggestionType::kAutofillAiPrivateInferenceNotice,
                             &Suggestion::type)) {
     if (PrefService* const prefs = client_->GetPrefs()) {
-      prefs->SetTime(
-          prefs::kAutofillAiPrivateInferenceNoticeFirstShownTimestamp,
-          base::Time::Now());
+      prefs->SetTime(prefs::kAutofillAiPrivateInferenceNoticeShownTimestamp,
+                     base::Time::Now());
     }
   }
 }
@@ -512,7 +511,8 @@ bool AutofillAiManager::MaybeImportForm(const FormStructure& form,
     prompt_shown = true;
     AutofillClient::EntityImportPromptResultCallback prompt_result_callback =
         base::BindOnce(&AutofillAiManager::HandlePromptResult, GetWeakPtr(),
-                       form.ToFormData(), candidate_entity, ukm_source_id, prompt_type);
+                       form.ToFormData(), candidate_entity, ukm_source_id,
+                       prompt_type);
 
     std::optional<EntityInstance> old_entity;
     if (prompt_type == AutofillClient::AutofillAiImportPromptType::kUpdate) {

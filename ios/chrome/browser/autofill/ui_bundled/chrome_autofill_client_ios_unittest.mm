@@ -295,8 +295,7 @@ TEST_F(ChromeAutofillClientIOSTest, ShowAutofillAiPrivateInferenceNotice) {
 
   PrefService* prefs = profile()->GetPrefs();
   EXPECT_TRUE(
-      prefs
-          ->GetTime(prefs::kAutofillAiPrivateInferenceNoticeFirstShownTimestamp)
+      prefs->GetTime(prefs::kAutofillAiPrivateInferenceNoticeShownTimestamp)
           .is_null());
 
   client().ShowAutofillAiPrivateInferenceNotice();
@@ -308,8 +307,7 @@ TEST_F(ChromeAutofillClientIOSTest, ShowAutofillAiPrivateInferenceNotice) {
                 FORMS_AI_PRIVATE_INFERENCE_INFOBAR_DELEGATE_IOS);
 
   EXPECT_FALSE(
-      prefs
-          ->GetTime(prefs::kAutofillAiPrivateInferenceNoticeFirstShownTimestamp)
+      prefs->GetTime(prefs::kAutofillAiPrivateInferenceNoticeShownTimestamp)
           .is_null());
 
   // Calling it again should replace the existing one, so count remains 1.

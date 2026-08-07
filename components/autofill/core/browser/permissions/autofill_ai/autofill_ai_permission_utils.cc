@@ -797,7 +797,7 @@ bool GetAutofillAiOptInStatus(const PrefService* prefs,
     return prefs->GetBoolean(prefs::kAutofillAiPrivateInferenceOptInStatus) &&
            !prefs
                 ->GetTime(
-                    prefs::kAutofillAiPrivateInferenceNoticeFirstShownTimestamp)
+                    prefs::kAutofillAiPrivateInferenceNoticeShownTimestamp)
                 .is_null();
   }
 

@@ -827,20 +827,20 @@ TEST_F(AutofillAiPermissionUtilsTest, OptInStatusWithUsePrivateAi) {
   client().GetPrefs()->SetBoolean(prefs::kAutofillAiPrivateInferenceOptInStatus,
                                   true);
   // Setting only `kAutofillAiPrivateInferenceOptInStatus` is not sufficient
-  // without `kAutofillAiPrivateInferenceNoticeFirstShownTimestamp` being set.
+  // without `kAutofillAiPrivateInferenceNoticeShownTimestamp` being set.
   EXPECT_FALSE(GetAutofillAiOptInStatus(client()));
 
   client().GetPrefs()->SetTime(
-      prefs::kAutofillAiPrivateInferenceNoticeFirstShownTimestamp,
+      prefs::kAutofillAiPrivateInferenceNoticeShownTimestamp,
       base::Time::Now());
   // Both `kAutofillAiPrivateInferenceOptInStatus` is true and
-  // `kAutofillAiPrivateInferenceNoticeFirstShownTimestamp` is set.
+  // `kAutofillAiPrivateInferenceNoticeShownTimestamp` is set.
   EXPECT_TRUE(GetAutofillAiOptInStatus(client()));
 
   client().GetPrefs()->SetBoolean(prefs::kAutofillAiPrivateInferenceOptInStatus,
                                   false);
   // Setting `kAutofillAiPrivateInferenceOptInStatus` to false returns false
-  // even if `kAutofillAiPrivateInferenceNoticeFirstShownTimestamp` remains set.
+  // even if `kAutofillAiPrivateInferenceNoticeShownTimestamp` remains set.
   EXPECT_FALSE(GetAutofillAiOptInStatus(client()));
 }
 

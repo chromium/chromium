@@ -50,7 +50,7 @@ inline constexpr char kAutofillAiOptInStatus[] =
 inline constexpr char kAutofillAiPrivateInferenceNoticeAcknowledgedTimestamp[] =
     "autofill.autofill_ai.private_inference_notice_acknowledged_timestamp";
 // Timestamp when the user last saw the private inference notice UI.
-inline constexpr char kAutofillAiPrivateInferenceNoticeFirstShownTimestamp[] =
+inline constexpr char kAutofillAiPrivateInferenceNoticeShownTimestamp[] =
     "autofill.autofill_ai.private_inference_notice_shown_timestamp";
 // Boolean that is true if the user is opted-in to private inference in Autofill
 // AI.

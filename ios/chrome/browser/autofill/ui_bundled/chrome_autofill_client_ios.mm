@@ -796,7 +796,7 @@ void ChromeAutofillClientIOS::ShowAutofillAiPrivateInferenceNotice() {
   }
 
   GetPrefs()->SetTime(
-      autofill::prefs::kAutofillAiPrivateInferenceNoticeFirstShownTimestamp,
+      autofill::prefs::kAutofillAiPrivateInferenceNoticeShownTimestamp,
       base::Time::Now());
 
   auto delegate =

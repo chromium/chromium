@@ -89,7 +89,13 @@ int GetRecordTypePriority(EntityInstance::RecordType record_type) {
 // In order to avoid showing too many notices to users, we add a cool off
 // period for the private inference notice to be shown after Ambient Autofill
 // notice is shown.
-constexpr base::TimeDelta kPrivateInferenceNoticeCoolOff = base::Days(7);
+constexpr base::TimeDelta kAmbientAutofillToPrivateInferenceNoticeCoolOff =
+    base::Days(7);
+
+// In order to avoid showing the same private inference notice repeatedly (for
+// example every time the user focus a field in the form), use a cool off period
+// so that users can only see the notice with at most a certain frequency.
+constexpr base::TimeDelta kPrivateInferenceNoticeCoolOff = base::Minutes(15);
 
 // Represents all the different UI sections for autofill ai data in Chrome
 // Settings.
@@ -1031,9 +1037,23 @@ bool ShouldShowPrivateInferenceNotice(const AutofillField& trigger_field,
   const bool ambient_autofill_notice_acked_not_long_ago =
       !ambient_autofill_notice_acked.is_null() &&
       (base::Time::Now() - ambient_autofill_notice_acked) <
-          kPrivateInferenceNoticeCoolOff;
+          kAmbientAutofillToPrivateInferenceNoticeCoolOff;
 
   if (ambient_autofill_notice_acked_not_long_ago) {
+    return false;
+  }
+
+  const base::Time private_inference_notice_seen =
+      prefs ? prefs->GetTime(
+                  prefs::kAutofillAiPrivateInferenceNoticeShownTimestamp)
+            : base::Time();
+
+  const bool private_inference_notice_seen_not_long_ago =
+      !private_inference_notice_seen.is_null() &&
+      (base::Time::Now() - private_inference_notice_seen) <
+          kPrivateInferenceNoticeCoolOff;
+
+  if (private_inference_notice_seen_not_long_ago) {
     return false;
   }
 
