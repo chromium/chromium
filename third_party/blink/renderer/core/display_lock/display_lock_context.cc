@@ -264,8 +264,8 @@ void DisplayLockContext::Lock() {
   }
 
   // If there are any pending updates, we cancel them, as the fast updates
-  // can't detect a locked display.
-  // See: ../paint/README.md#Transform-update-optimization for more information
+  // can't detect a locked display. See:
+  // ../paint/README.md#Property-tree-update-optimization
   document_->View()->RemoveAllPendingUpdates();
 
   // There are two ways we can get locked:
@@ -546,8 +546,8 @@ void DisplayLockContext::NotifyForcedUpdateScopeEnded(ForcedPhase phase) {
   // Since we do perform updates in a locked display if we're in a forced
   // update scope, when ending a forced update scope in a locked display, we
   // remove all pending updates, to prevent them from being executed in a
-  // locked display.
-  // See: ../paint/README.md#Transform-update-optimization for more information
+  // locked display. See:
+  // ../paint/README.md#Property-tree-update-optimization
   if (is_locked_) {
     document_->View()->RemoveAllPendingUpdates();
   }

@@ -1363,8 +1363,7 @@ class CORE_EXPORT LocalFrameView final
   // A set of objects needing a transform property tree update. These updates
   // are deferred until the end prepaint and updating them directly, if
   // possible, avoids needing to walk the tree to update them. See:
-  // https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/core/paint/README.md#Transform-update-optimization
-  // for more on the fast path
+  // ../paint/README.md#Property-tree-update-optimization
   // TODO(yotha): unify these into one HeapHashMap.
   Member<GCedHeapHashSet<Member<LayoutObject>>> pending_transform_updates_;
   Member<GCedHeapHashSet<Member<LayoutObject>>> pending_opacity_updates_;

@@ -3986,9 +3986,8 @@ void FragmentPaintPropertyTreeBuilder::SetNeedsPaintPropertyUpdateIfNeeded() {
   // If we reach FragmentPaintPropertyTreeBuilder for an object needing a
   // pending transform update, we need to go ahead and do a regular transform
   // update so that the context (e.g.,
-  // |translation_2d_to_layout_shift_root_delta|) is updated properly.
-  // See: ../paint/README.md#Transform-update-optimization for more on
-  // optimized transform updates
+  // |translation_2d_to_layout_shift_root_delta|) is updated properly. See:
+  // README.md#Property-tree-update-optimization
   if (object_.GetFrameView()->RemovePendingTransformUpdate(object_))
     object_.GetMutableForPainting().SetOnlyThisNeedsPaintPropertyUpdate();
   if (object_.GetFrameView()->RemovePendingOpacityUpdate(object_))
