@@ -173,4 +173,16 @@ VideoDecoderHelper::Status VideoDecoderHelper::ConvertNalUnitStreamToByteStream(
   return converted ? Status::kSucceed : Status::kBitstreamConvertFailed;
 }
 
+gfx::HDRMetadata VideoDecoderHelper::GetHdrMetadata() const {
+#if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_PLATFORM_HEVC) && \
+    BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  if (h265_hvcc_) {
+    return h265_hvcc_->GetHDRMetadata();
+  }
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS) &&
+        // BUILDFLAG(ENABLE_PLATFORM_HEVC) &&
+        // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  return {};
+}
+
 }  // namespace blink

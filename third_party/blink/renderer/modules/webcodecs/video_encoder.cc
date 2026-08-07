@@ -189,16 +189,21 @@ media::EncoderStatus IsAcceleratedConfigurationSupported(
     return media::EncoderStatus::Codes::kEncoderAccelerationSupportMissing;
   }
 
-  // Hardware encoders don't currently support high bit depths or subsamplings
-  // other than 4:2:0, except for AV1 profile 1 we require 4:4:4.
+  // Hardware encoders only support subsamplings other than 4:2:0 for AV1
+  // profile 1, where we require 4:4:4. High bit depths are supported by HEVC
+  // Main10 only.
   media::VideoChromaSampling required_sampling =
       (profile == media::AV1PROFILE_PROFILE_HIGH)
           ? media::VideoChromaSampling::k444
           : media::VideoChromaSampling::k420;
 
+  const int bit_depth = options.bit_depth.value_or(8);
+  const bool bit_depth_supported =
+      bit_depth == 8 ||
+      (bit_depth == 10 && profile == media::HEVCPROFILE_MAIN10);
   if ((options.subsampling.has_value() &&
        options.subsampling.value() != required_sampling) ||
-      options.bit_depth.value_or(8) != 8) {
+      !bit_depth_supported) {
     return media::EncoderStatus::Codes::kEncoderUnsupportedConfig;
   }
 
@@ -472,7 +477,8 @@ bool VerifyCodecSupportStatic(VideoEncoderTraits::ParsedConfig* config,
       break;
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
     case media::VideoCodec::kHEVC:
-      if (config->profile != media::VideoCodecProfile::HEVCPROFILE_MAIN) {
+      if (config->profile != media::VideoCodecProfile::HEVCPROFILE_MAIN &&
+          config->profile != media::VideoCodecProfile::HEVCPROFILE_MAIN10) {
         *js_error_message = "Unsupported hevc profile.";
         return false;
       }
@@ -595,7 +601,50 @@ EncoderType GetRequiredEncoderType(media::VideoCodecProfile profile,
   return EncoderType::kHardware;
 }
 
+gfx::ColorSpace::MatrixID GetYuvMatrixForPrimaries(
+    gfx::ColorSpace::PrimaryID primaries) {
+  switch (primaries) {
+    case gfx::ColorSpace::PrimaryID::BT470M:
+      return gfx::ColorSpace::MatrixID::FCC;
+    case gfx::ColorSpace::PrimaryID::BT470BG:
+      return gfx::ColorSpace::MatrixID::BT470BG;
+    case gfx::ColorSpace::PrimaryID::SMPTE170M:
+      return gfx::ColorSpace::MatrixID::SMPTE170M;
+    case gfx::ColorSpace::PrimaryID::SMPTE240M:
+      return gfx::ColorSpace::MatrixID::SMPTE240M;
+    case gfx::ColorSpace::PrimaryID::BT2020:
+      return gfx::ColorSpace::MatrixID::BT2020_NCL;
+    default:
+      // Primaries without a corresponding YCbCr matrix, such as P3 and XYZ,
+      // use BT.709 as the conversion matrix.
+      return gfx::ColorSpace::MatrixID::BT709;
+  }
+}
+
 }  // namespace
+
+gfx::ColorSpace GetReadbackYuvColorSpace(
+    const gfx::ColorSpace& source_color_space) {
+  if (!source_color_space.IsValid()) {
+    return gfx::ColorSpace::CreateREC709();
+  }
+
+  const gfx::ColorSpace::MatrixID source_matrix =
+      source_color_space.GetMatrixID();
+  // If the source already declares a YCbCr matrix, preserve it. The readback
+  // frame is always video range.
+  if (source_matrix != gfx::ColorSpace::MatrixID::RGB &&
+      source_matrix != gfx::ColorSpace::MatrixID::GBR) {
+    return source_color_space.GetWithMatrixAndRange(
+        source_matrix, gfx::ColorSpace::RangeID::LIMITED);
+  }
+
+  // RGB/GBR are identity matrices. Select a YCbCr matrix from the primaries
+  // before RGB-to-YUV readback.
+  return source_color_space.GetWithMatrixAndRange(
+      GetYuvMatrixForPrimaries(source_color_space.GetPrimaryID()),
+      gfx::ColorSpace::RangeID::LIMITED);
+}
 
 // static
 const char* VideoEncoderTraits::GetName() {
@@ -986,6 +1035,7 @@ bool VideoEncoder::StartReadback(scoped_refptr<media::VideoFrame> frame,
       if (!result_frame)
         return result_frame;
       result_frame->set_timestamp(txt_frame->timestamp());
+      result_frame->set_hdr_metadata(txt_frame->hdr_metadata());
       result_frame->metadata().MergeMetadataFrom(txt_frame->metadata());
       result_frame->metadata().ClearTextureFrameMetadata();
       return result_frame;
@@ -994,6 +1044,8 @@ bool VideoEncoder::StartReadback(scoped_refptr<media::VideoFrame> frame,
     auto callback_chain = ConvertToBaseOnceCallback(
                               CrossThreadBindOnce(metadata_fix_lambda, frame))
                               .Then(std::move(pool_result_cb));
+    const gfx::ColorSpace readback_color_space =
+        GetReadbackYuvColorSpace(frame->ColorSpace());
 
     TRACE_EVENT_BEGIN(
         "media", "CopyRGBATextureToVideoFrame",
@@ -1001,7 +1053,7 @@ bool VideoEncoder::StartReadback(scoped_refptr<media::VideoFrame> frame,
         "timestamp", frame->timestamp());
     if (accelerated_frame_pool_->CopyRGBATextureToVideoFrame(
             frame->coded_size(), frame->shared_image(),
-            frame->acquire_sync_token(), gfx::ColorSpace::CreateREC709(),
+            frame->acquire_sync_token(), readback_color_space,
             std::move(callback_chain))) {
       return true;
     }

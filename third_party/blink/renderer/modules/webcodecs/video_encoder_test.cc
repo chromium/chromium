@@ -82,6 +82,79 @@ class VideoEncoderTest : public testing::Test {
 
 constexpr gfx::Size kEncodeSize(80, 60);
 
+TEST_F(VideoEncoderTest, GetReadbackYuvColorSpace) {
+  EXPECT_EQ(GetReadbackYuvColorSpace(gfx::ColorSpace()),
+            gfx::ColorSpace::CreateREC709());
+
+  EXPECT_EQ(GetReadbackYuvColorSpace(gfx::ColorSpace::CreateSRGB()),
+            gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
+                            gfx::ColorSpace::TransferID::SRGB,
+                            gfx::ColorSpace::MatrixID::BT709,
+                            gfx::ColorSpace::RangeID::LIMITED));
+
+  EXPECT_EQ(
+      GetReadbackYuvColorSpace(gfx::ColorSpace(
+          gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::SRGB,
+          gfx::ColorSpace::MatrixID::GBR, gfx::ColorSpace::RangeID::FULL)),
+      gfx::ColorSpace(
+          gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::SRGB,
+          gfx::ColorSpace::MatrixID::BT709, gfx::ColorSpace::RangeID::LIMITED));
+
+  EXPECT_EQ(
+      GetReadbackYuvColorSpace(gfx::ColorSpace(
+          gfx::ColorSpace::PrimaryID::BT470M,
+          gfx::ColorSpace::TransferID::GAMMA22, gfx::ColorSpace::MatrixID::RGB,
+          gfx::ColorSpace::RangeID::FULL)),
+      gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT470M,
+                      gfx::ColorSpace::TransferID::GAMMA22,
+                      gfx::ColorSpace::MatrixID::FCC,
+                      gfx::ColorSpace::RangeID::LIMITED));
+
+  EXPECT_EQ(
+      GetReadbackYuvColorSpace(gfx::ColorSpace(
+          gfx::ColorSpace::PrimaryID::BT470BG,
+          gfx::ColorSpace::TransferID::GAMMA28, gfx::ColorSpace::MatrixID::RGB,
+          gfx::ColorSpace::RangeID::FULL)),
+      gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT470BG,
+                      gfx::ColorSpace::TransferID::GAMMA28,
+                      gfx::ColorSpace::MatrixID::BT470BG,
+                      gfx::ColorSpace::RangeID::LIMITED));
+
+  EXPECT_EQ(
+      GetReadbackYuvColorSpace(gfx::ColorSpace(
+          gfx::ColorSpace::PrimaryID::SMPTE170M,
+          gfx::ColorSpace::TransferID::SMPTE170M,
+          gfx::ColorSpace::MatrixID::RGB, gfx::ColorSpace::RangeID::FULL)),
+      gfx::ColorSpace(gfx::ColorSpace::PrimaryID::SMPTE170M,
+                      gfx::ColorSpace::TransferID::SMPTE170M,
+                      gfx::ColorSpace::MatrixID::SMPTE170M,
+                      gfx::ColorSpace::RangeID::LIMITED));
+
+  EXPECT_EQ(
+      GetReadbackYuvColorSpace(gfx::ColorSpace(
+          gfx::ColorSpace::PrimaryID::SMPTE240M,
+          gfx::ColorSpace::TransferID::SMPTE240M,
+          gfx::ColorSpace::MatrixID::RGB, gfx::ColorSpace::RangeID::FULL)),
+      gfx::ColorSpace(gfx::ColorSpace::PrimaryID::SMPTE240M,
+                      gfx::ColorSpace::TransferID::SMPTE240M,
+                      gfx::ColorSpace::MatrixID::SMPTE240M,
+                      gfx::ColorSpace::RangeID::LIMITED));
+
+  EXPECT_EQ(GetReadbackYuvColorSpace(gfx::ColorSpace::CreateHDR10()),
+            gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
+                            gfx::ColorSpace::TransferID::PQ,
+                            gfx::ColorSpace::MatrixID::BT2020_NCL,
+                            gfx::ColorSpace::RangeID::LIMITED));
+
+  const gfx::ColorSpace yuv_color_space(
+      gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::BT709,
+      gfx::ColorSpace::MatrixID::SMPTE170M, gfx::ColorSpace::RangeID::FULL);
+  EXPECT_EQ(
+      GetReadbackYuvColorSpace(yuv_color_space),
+      yuv_color_space.GetWithMatrixAndRange(yuv_color_space.GetMatrixID(),
+                                            gfx::ColorSpace::RangeID::LIMITED));
+}
+
 VideoEncoderConfig* CreateConfig() {
   auto* config = MakeGarbageCollected<VideoEncoderConfig>();
   config->setCodec("vp8");

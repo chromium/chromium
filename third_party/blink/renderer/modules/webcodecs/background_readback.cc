@@ -226,6 +226,7 @@ void BackgroundReadback::OnARGBPixelsFrameReadCompleted(
   auto* ri = GetSharedGpuRasterInterface();
 
   result_frame->set_color_space(txt_frame->ColorSpace());
+  result_frame->set_hdr_metadata(txt_frame->hdr_metadata());
   result_frame->metadata().MergeMetadataFrom(txt_frame->metadata());
   result_frame->metadata().ClearTextureFrameMetadata();
   std::move(result_cb).Run(ri ? std::move(result_frame) : nullptr);

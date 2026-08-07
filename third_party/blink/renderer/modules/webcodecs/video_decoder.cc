@@ -54,6 +54,7 @@
 #include "third_party/libgav1/src/src/obu_parser.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/hdr_metadata.h"
 
 #if BUILDFLAG(ENABLE_LIBVPX)
 #include "third_party/libvpx/source/libvpx/vpx/vp8dx.h"        // nogncheck
@@ -564,6 +565,14 @@ VideoDecoder::MakeMediaVideoDecoderConfigInternal(
   if (!media_config.IsValidConfig()) {
     *js_error_message = "Unsupported config.";
     return std::nullopt;
+  }
+
+  if (decoder_specific_data.decoder_helper) {
+    const gfx::HDRMetadata hdr_metadata =
+        decoder_specific_data.decoder_helper->GetHdrMetadata();
+    if (!hdr_metadata.IsEmpty() && hdr_metadata.IsValid()) {
+      media_config.set_hdr_metadata(hdr_metadata);
+    }
   }
 
   return media_config;

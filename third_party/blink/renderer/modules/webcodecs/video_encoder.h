@@ -40,6 +40,9 @@ class VideoEncoderSupport;
 class WebGraphicsContext3DVideoFramePool;
 class BackgroundReadback;
 
+MODULES_EXPORT gfx::ColorSpace GetReadbackYuvColorSpace(
+    const gfx::ColorSpace& source_color_space);
+
 class MODULES_EXPORT VideoEncoderTraits {
  public:
   struct ParsedConfig final : public GarbageCollected<ParsedConfig> {

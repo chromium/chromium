@@ -10,6 +10,7 @@
 #include "media/base/media_types.h"
 #include "media/media_buildflags.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "ui/gfx/hdr_metadata.h"
 
 namespace media {
 
@@ -105,6 +106,10 @@ class MODULES_EXPORT VideoDecoderHelper {
   // Returns true if the configuration data suggests that hardware decoding is
   // unavailable for this type of content (e.g., interlacing).
   bool RequiresSoftwareDecoder() const { return requires_software_decoder_; }
+
+  // Returns HDR metadata parsed from the codec configuration record. Empty for
+  // codecs that do not carry HDR metadata in the configuration record.
+  gfx::HDRMetadata GetHdrMetadata() const;
 
  private:
   Status Initialize(base::span<const uint8_t> configuration_record);
