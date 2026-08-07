@@ -7,8 +7,12 @@
 #import <memory>
 
 #import "base/functional/bind.h"
+#import "base/no_destructor.h"
 #import "base/types/expected.h"
+#import "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#import "components/passage_embeddings/core/passage_embeddings_types.h"
+#import "ios/chrome/browser/intelligence/on_device_category_classifier/in_process_category_classification_service.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -18,15 +22,41 @@
 #import "testing/platform_test.h"
 #import "url/gurl.h"
 
+namespace {
+
+std::unique_ptr<KeyedService> BuildTestCategoryClassificationService(
+    ProfileIOS* profile) {
+  static base::NoDestructor<
+      optimization_guide::TestOptimizationGuideModelProvider>
+      test_model_provider;
+  return std::make_unique<InProcessCategoryClassificationService>(
+      test_model_provider.get());
+}
+
+}  // namespace
+
 class OnDeviceCategoryClassifierTabHelperTest : public PlatformTest {
  protected:
   OnDeviceCategoryClassifierTabHelperTest() = default;
 
   void SetUp() override {
     PlatformTest::SetUp();
-    profile_ = TestProfileIOS::Builder().Build();
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        InProcessCategoryClassificationService::GetFactory(),
+        base::BindRepeating(&BuildTestCategoryClassificationService));
+    profile_ = std::move(builder).Build();
     web_state_ = std::make_unique<web::FakeWebState>();
     web_state_->SetBrowserState(profile_.get());
+  }
+
+  void CallExtractPageContext(OnDeviceCategoryClassifierTabHelper* tab_helper) {
+    tab_helper->ExtractPageContext();
+  }
+
+  PageContextWrapper* GetPageContextWrapper(
+      OnDeviceCategoryClassifierTabHelper* tab_helper) {
+    return tab_helper->page_context_wrapper_;
   }
 
   void CallOnPageContextResponse(
@@ -192,4 +222,54 @@ TEST_F(OnDeviceCategoryClassifierTabHelperTest,
       OnDeviceCategoryClassifierTabHelper::FromWebState(web_state_.get());
 
   CallOnCategoriesClassified(tab_helper, ukm::SourceId(), {});
+}
+
+// Tests that ExtractPageContext uses cached embeddings when available.
+TEST_F(OnDeviceCategoryClassifierTabHelperTest,
+       ExtractPageContextWithCachedEmbeddings) {
+  const GURL url("https://example.com");
+  web_state_->SetCurrentURL(url);
+
+  InProcessCategoryClassificationService* service =
+      InProcessCategoryClassificationService::GetForProfile(profile_.get());
+  ASSERT_NE(service, nullptr);
+
+  std::vector<float> title_vec(768, 0.0f);
+  title_vec[0] = 1.0f;
+  std::vector<float> passage_vec(768, 0.0f);
+  passage_vec[1] = 1.0f;
+
+  InProcessCategoryClassificationService::CachedEmbeddings cached_embeddings{
+      .title_url_embedding =
+          passage_embeddings::Embedding(std::move(title_vec)),
+      .passage_embeddings = {passage_embeddings::Embedding(
+          std::move(passage_vec))},
+  };
+  service->SetCachedEmbeddingsForTesting(url, std::move(cached_embeddings));
+  ASSERT_TRUE(service->HasCachedEmbeddings(url));
+
+  OnDeviceCategoryClassifierTabHelper::CreateForWebState(web_state_.get());
+  auto* tab_helper =
+      OnDeviceCategoryClassifierTabHelper::FromWebState(web_state_.get());
+
+  CallExtractPageContext(tab_helper);
+  // Successfully handled via cache without allocating page_context_wrapper_.
+  EXPECT_EQ(GetPageContextWrapper(tab_helper), nil);
+}
+
+// Tests that ExtractPageContext returns early for off-the-record profile.
+TEST_F(OnDeviceCategoryClassifierTabHelperTest,
+       ExtractPageContextOffTheRecordProfile) {
+  ProfileIOS* otr_profile =
+      profile_->CreateOffTheRecordProfileWithTestingFactories();
+  auto otr_web_state = std::make_unique<web::FakeWebState>();
+  otr_web_state->SetBrowserState(otr_profile);
+  otr_web_state->SetCurrentURL(GURL("https://example.com"));
+
+  OnDeviceCategoryClassifierTabHelper::CreateForWebState(otr_web_state.get());
+  auto* tab_helper =
+      OnDeviceCategoryClassifierTabHelper::FromWebState(otr_web_state.get());
+
+  CallExtractPageContext(tab_helper);
+  EXPECT_EQ(GetPageContextWrapper(tab_helper), nil);
 }

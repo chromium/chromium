@@ -113,6 +113,29 @@ void OnDeviceCategoryClassifierTabHelper::StartExtraction() {
 }
 
 void OnDeviceCategoryClassifierTabHelper::ExtractPageContext() {
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+  if (!profile || profile->IsOffTheRecord()) {
+    return;
+  }
+
+  InProcessCategoryClassificationService* service =
+      InProcessCategoryClassificationService::GetForProfile(profile);
+  // Check the cached embeddings before extracting APC. Use the committed URL
+  // to ensure classification matches the finalized page state.
+  if (service) {
+    const GURL& url = web_state_->GetLastCommittedURL();
+    if (service->HasCachedEmbeddings(url)) {
+      ukm::SourceId source_id = ukm::GetSourceIdForWebStateDocument(web_state_);
+      auto callback = base::BindOnce(
+          &OnDeviceCategoryClassifierTabHelper::OnCategoriesClassified,
+          weak_ptr_factory_.GetWeakPtr(), source_id);
+      service->ClassifyWithCachedEmbeddings(url, source_id,
+                                            std::move(callback));
+      return;
+    }
+  }
+
   base::OnceCallback<void(PageContextWrapperCallbackResponse)> callback =
       base::BindOnce(
           &OnDeviceCategoryClassifierTabHelper::OnPageContextResponse,

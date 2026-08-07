@@ -17,7 +17,6 @@ source_set("on_device_category_classifier") {
   ]
   deps = [
     "//base",
-    "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/optimization_guide/core:features",
@@ -53,6 +52,7 @@ source_set("unit_tests") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/page_content_annotations/core",
     "//components/passage_embeddings/core",
+    "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
