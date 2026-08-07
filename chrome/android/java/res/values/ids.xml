@@ -7,15 +7,17 @@ found in the LICENSE file.
 -->
 
 <resources>
+    <!-- go/keep-sorted start -->
     <item name="background_drawable" type="id"/>
     <item name="bookmark_page" type="id"/>
+    <item name="custom_tab_bottom_bar_wrapper" type="id"/>
     <item name="foreground_drawable" type="id"/>
     <item name="fre_pager" type="id"/>
+    <item name="history_page_recycler_view" type="id"/>
     <item name="refine_view_id" type="id"/>
     <item name="tabswitcher_multiple_drawable" type="id"/>
     <item name="tabswitcher_single_drawable" type="id"/>
-    <item name="custom_tab_bottom_bar_wrapper" type="id"/>
-    <item name="history_page_recycler_view" type="id"/>
+    <!-- go/keep-sorted end -->
 
     <!-- Media playback notification -->
     <item type="id" name="media_playback_notification" />
@@ -27,243 +29,266 @@ found in the LICENSE file.
     <item type="id" name="presentation_notification" />
 
     <!-- Sync UI constants -->
-    <item type="id" name="passphrase_type_list" />
+    <!-- go/keep-sorted start -->
     <item type="id" name="history_and_tabs_toggle"/>
+    <item type="id" name="passphrase_type_list" />
+    <!-- go/keep-sorted end -->
 
     <!-- Keyboard shortcuts -->
+    <!-- go/keep-sorted start -->
     <item type="id" name="close_window" />
-    <item type="id" name="print_id" />
-    <item type="id" name="focus_url_bar" />
-    <item type="id" name="focus_and_clear_url_bar" />
-    <item type="id" name="show_menu" />
-    <item type="id" name="open_recently_closed_tab" />
-    <item type="id" name="toggle_bookmark_bar" />
-    <item type="id" name="switch_keyboard_focus_row" />
-    <item type="id" name="select_next_tab" />
-    <item type="id" name="select_previous_tab" />
-    <item type="id" name="open_tab_strip_context_menu" />
-    <item type="id" name="focus_bookmarks" />
     <item type="id" name="dev_tools" />
-    <item type="id" name="task_manager" />
     <item type="id" name="esc_key" />
     <item type="id" name="feedback_form" />
-    <item type="id" name="view_source" />
+    <item type="id" name="focus_and_clear_url_bar" />
+    <item type="id" name="focus_bookmarks" />
+    <item type="id" name="focus_url_bar" />
+    <item type="id" name="open_recently_closed_tab" />
+    <item type="id" name="open_tab_strip_context_menu" />
+    <item type="id" name="print_id" />
+    <item type="id" name="select_next_tab" />
+    <item type="id" name="select_previous_tab" />
+    <item type="id" name="show_menu" />
+    <item type="id" name="switch_keyboard_focus_row" />
     <item type="id" name="tab_search" />
     <item type="id" name="tab_search_side_ui" />
+    <item type="id" name="task_manager" />
+    <item type="id" name="toggle_bookmark_bar" />
+    <item type="id" name="view_source" />
+    <!-- go/keep-sorted end -->
 
     <!-- Editor dialog -->
     <item type="id" name="editor_dialog_done_button" />
 
     <!-- Context Menu Ids -->
     <!-- Page Group -->
-    <item type="id" name="contextmenu_save_page" />
-    <item type="id" name="contextmenu_share_page" />
-    <item type="id" name="contextmenu_print_page" />
-    <item type="id" name="contextmenu_search_tab_with_google_lens" />
+    <!-- go/keep-sorted start -->
     <item type="id" name="contextmenu_back" />
-    <item type="id" name="contextmenu_forward" />
-    <item type="id" name="contextmenu_reload" />
-    <item type="id" name="contextmenu_open_in_reading_mode" />
-    <item type="id" name="contextmenu_send_tab_to_self" />
     <item type="id" name="contextmenu_create_qr_code" />
+    <item type="id" name="contextmenu_forward" />
     <item type="id" name="contextmenu_inspect_element" />
-    <item type="id" name="contextmenu_view_page_source" />
+    <item type="id" name="contextmenu_open_in_reading_mode" />
+    <item type="id" name="contextmenu_print_page" />
+    <item type="id" name="contextmenu_reload" />
+    <item type="id" name="contextmenu_save_page" />
+    <item type="id" name="contextmenu_search_tab_with_google_lens" />
+    <item type="id" name="contextmenu_send_tab_to_self" />
+    <item type="id" name="contextmenu_share_page" />
     <item type="id" name="contextmenu_translate" />
+    <item type="id" name="contextmenu_view_page_source" />
+    <!-- go/keep-sorted end -->
 
     <!-- Custom Tab Group -->
-    <item type="id" name="contextmenu_open_in_new_chrome_tab" />
+    <!-- go/keep-sorted start -->
     <item type="id" name="contextmenu_open_in_chrome_incognito_tab" />
+    <item type="id" name="contextmenu_open_in_new_chrome_tab" />
+    <!-- go/keep-sorted end -->
 
     <!-- Link Group -->
-    <item type="id" name="contextmenu_open_in_new_tab" />
-    <item type="id" name="contextmenu_open_in_new_tab_in_group" />
+    <!-- go/keep-sorted start -->
+    <item type="id" name="contextmenu_ask_gemini" />
+    <item type="id" name="contextmenu_direct_share_link" />
+    <item type="id" name="contextmenu_open_in_ephemeral_tab" />
     <item type="id" name="contextmenu_open_in_incognito_tab" />
     <item type="id" name="contextmenu_open_in_incognito_window" />
-    <item type="id" name="contextmenu_open_in_other_window" />
+    <item type="id" name="contextmenu_open_in_new_tab" />
+    <item type="id" name="contextmenu_open_in_new_tab_in_group" />
     <item type="id" name="contextmenu_open_in_new_window" />
-    <item type="id" name="contextmenu_show_interest_in_element" />
-    <item type="id" name="contextmenu_open_in_ephemeral_tab" />
+    <item type="id" name="contextmenu_open_in_other_window" />
+    <item type="id" name="contextmenu_read_later" />
     <item type="id" name="contextmenu_save_link_as" />
     <item type="id" name="contextmenu_share_link" />
-    <item type="id" name="contextmenu_direct_share_link" />
-    <item type="id" name="contextmenu_read_later" />
-    <item type="id" name="contextmenu_ask_gemini" />
+    <item type="id" name="contextmenu_show_interest_in_element" />
+    <!-- go/keep-sorted end -->
 
     <!--Image Group -->
-    <item type="id" name="contextmenu_load_original_image" />
-    <item type="id" name="contextmenu_save_image" />
-    <item type="id" name="contextmenu_open_image" />
-    <item type="id" name="contextmenu_open_image_in_new_tab" />
-    <item type="id" name="contextmenu_open_image_in_ephemeral_tab" />
+    <!-- go/keep-sorted start -->
     <item type="id" name="contextmenu_copy_image" />
+    <item type="id" name="contextmenu_direct_share_image" />
+    <item type="id" name="contextmenu_load_original_image" />
+    <item type="id" name="contextmenu_open_image" />
+    <item type="id" name="contextmenu_open_image_in_ephemeral_tab" />
+    <item type="id" name="contextmenu_open_image_in_new_tab" />
+    <item type="id" name="contextmenu_save_image" />
     <item type="id" name="contextmenu_search_by_image" />
     <item type="id" name="contextmenu_search_image_with_google_lens" />
-    <item type="id" name="contextmenu_share_image" />
-    <item type="id" name="contextmenu_direct_share_image" />
-    <item type="id" name="contextmenu_shop_similar_products" />
-    <item type="id" name="contextmenu_shop_image_with_google_lens" />
     <item type="id" name="contextmenu_search_similar_products" />
+    <item type="id" name="contextmenu_share_image" />
+    <item type="id" name="contextmenu_shop_image_with_google_lens" />
+    <item type="id" name="contextmenu_shop_similar_products" />
+    <!-- go/keep-sorted end -->
 
     <!-- Message Group -->
-    <item type="id" name="contextmenu_call" />
-    <item type="id" name="contextmenu_send_message" />
+    <!-- go/keep-sorted start -->
     <item type="id" name="contextmenu_add_to_contacts" />
+    <item type="id" name="contextmenu_call" />
     <item type="id" name="contextmenu_copy" />
+    <item type="id" name="contextmenu_send_message" />
+    <!-- go/keep-sorted end -->
 
     <!-- Shared Highlighting Group -->
-    <item type="id" name="contextmenu_share_highlight" />
-    <item type="id" name="contextmenu_remove_highlight" />
-    <item type="id" name="contextmenu_learn_more" />
+    <!-- go/keep-sorted start -->
     <item type="id" name="contextmenu_copy_link_to_highlight" />
+    <item type="id" name="contextmenu_learn_more" />
+    <item type="id" name="contextmenu_remove_highlight" />
+    <item type="id" name="contextmenu_share_highlight" />
+    <!-- go/keep-sorted end -->
 
     <!-- Video Group -->
-    <item type="id" name="contextmenu_save_video" />
+    <!-- go/keep-sorted start -->
     <item type="id" name="contextmenu_copy_video_frame" />
     <item type="id" name="contextmenu_download_video_frame" />
     <item type="id" name="contextmenu_picture_in_picture" />
+    <item type="id" name="contextmenu_save_video" />
+    <!-- go/keep-sorted end -->
 
     <!-- Menu item IDs for FullscreenActivities -->
     <item type="id" name="contextmenu_open_in_chrome" />
 
     <!-- Tags -->
-    <item type="id" name="highlight_color" />
+    <!-- go/keep-sorted start -->
     <item type="id" name="context_menu_delegate" />
-    <item type="id" name="ntp_view_layout_change_listener_tag" />
+    <item type="id" name="highlight_color" />
     <item type="id" name="ntp_search_box_text_watcher_tag" />
+    <item type="id" name="ntp_view_layout_change_listener_tag" />
+    <!-- go/keep-sorted end -->
 
     <!-- NTP-->
-    <item type="id" name="ntp_feed_header_menu_item_manage" />
+    <!-- go/keep-sorted start -->
     <item type="id" name="ntp_feed_header_menu_item_activity" />
     <item type="id" name="ntp_feed_header_menu_item_interest" />
-    <item type="id" name="ntp_feed_header_menu_item_reactions" />
     <item type="id" name="ntp_feed_header_menu_item_learn" />
+    <item type="id" name="ntp_feed_header_menu_item_manage" />
+    <item type="id" name="ntp_feed_header_menu_item_reactions" />
     <item type="id" name="ntp_feed_header_menu_item_toggle_switch" />
+    <!-- go/keep-sorted end -->
 
     <!-- App Menu -->
-    <item type="id" name="icon_row_menu_id" />
-    <item type="id" name="submenu_header_menu_id" />
-    <item type="id" name="back_menu_id" />
-    <item type="id" name="forward_menu_id" />
-    <item type="id" name="bookmark_this_page_id" />
-    <item type="id" name="offline_page_id" />
-    <item type="id" name="info_menu_id" />
-    <item type="id" name="reload_menu_id" />
-    <item type="id" name="update_menu_id" />
-    <item type="id" name="new_tab_menu_id" />
-    <item type="id" name="new_incognito_tab_menu_id" />
-    <item type="id" name="add_to_group_menu_id" />
+    <!-- go/keep-sorted start -->
+    <item type="id" name="about_chrome_menu_id" />
+    <item type="id" name="add_tab_to_reading_list_menu_id" />
     <item type="id" name="add_to_existing_group_menu_item_id" />
-    <item type="id" name="pin_tab_menu_id" />
-    <item type="id" name="unpin_tab_menu_id" />
-    <item type="id" name="mute_site_menu_id" />
-    <item type="id" name="unmute_site_menu_id" />
-    <item type="id" name="new_window_menu_id" />
-    <item type="id" name="new_incognito_window_menu_id" />
-    <item type="id" name="move_to_other_window_menu_id" />
-    <item type="id" name="add_to_new_group_sub_menu_id" />
-    <item type="id" name="add_to_group_sub_menu_id" />
     <item type="id" name="add_to_group_incognito_sub_menu_id" />
-    <item type="id" name="move_to_new_window_sub_menu_id" />
-    <item type="id" name="move_to_other_window_sub_menu_id" />
-    <item type="id" name="manage_all_windows_menu_id" />
-    <item type="id" name="divider_line_id" />
-    <item type="id" name="open_history_menu_id" />
-    <item type="id" name="passwords_and_autofill_parent_menu_id" />
-    <item type="id" name="google_password_manager_menu_id" />
-    <item type="id" name="payment_methods_menu_id" />
-    <item type="id" name="addresses_and_more_menu_id" />
-    <item type="id" name="copy_link_menu_id" />
-    <item type="id" name="send_to_devices_menu_id" />
-    <item type="id" name="qr_code_menu_id" />
-    <item type="id" name="name_window_menu_id" />
-    <item type="id" name="history_parent_menu_id" />
-    <item type="id" name="bookmark_menu_id" />
-    <item type="id" name="bookmark_folder_menu_id" />
-    <item type="id" name="quick_delete_menu_id" />
-    <item type="id" name="quick_delete_divider_line_id" />
-    <item type="id" name="page_info_divider_line_id" />
-    <item type="id" name="homepage_menu_id" />
-    <item type="id" name="downloads_menu_id" />
-    <item type="id" name="all_bookmarks_menu_id" />
-    <item type="id" name="toggle_bookmarks_bar_menu_id" />
-    <item type="id" name="bookmarks_parent_menu_id" />
-    <item type="id" name="bookmarks_header_menu_id" />
-    <item type="id" name="reading_list_parent_menu_id" />
-    <item type="id" name="tab_groups_parent_menu_id" />
-    <item type="id" name="tab_groups_header_menu_id" />
-    <item type="id" name="create_new_tab_group_menu_id" />
-    <item type="id" name="tab_group_menu_item_id" />
-    <item type="id" name="tab_group_tab_menu_item" />
+    <item type="id" name="add_to_group_menu_id" />
+    <item type="id" name="add_to_group_sub_menu_id" />
+    <item type="id" name="add_to_new_group_sub_menu_id" />
     <item type="id" name="add_to_reading_list_menu_id" />
-    <item type="id" name="show_reading_list_menu_id" />
+    <item type="id" name="addresses_and_more_menu_id" />
+    <item type="id" name="ai_pdf_menu_id" />
+    <item type="id" name="ai_web_menu_id" />
+    <item type="id" name="all_bookmarks_menu_id" />
+    <item type="id" name="auto_dark_web_contents_check_id" />
+    <item type="id" name="auto_dark_web_contents_id" />
+    <item type="id" name="back_menu_id" />
+    <item type="id" name="bookmark_folder_menu_id" />
+    <item type="id" name="bookmark_menu_id" />
+    <item type="id" name="bookmark_this_page_id" />
     <item type="id" name="bookmark_this_page_menu_id" />
-    <item type="id" name="recent_tabs_menu_id" />
-    <item type="id" name="recent_tabs_header_menu_id" />
-    <item type="id" name="your_devices_header_menu_id" />
+    <item type="id" name="bookmarks_header_menu_id" />
+    <item type="id" name="bookmarks_parent_menu_id" />
+    <item type="id" name="close_all_incognito_tabs_menu_id" />
+    <item type="id" name="close_all_tabs_menu_id" />
+    <item type="id" name="close_other_tabs_menu_id" />
+    <item type="id" name="close_tabs_to_the_right_menu_id" />
+    <item type="id" name="copy_link_menu_id" />
+    <item type="id" name="create_new_tab_group_menu_id" />
+    <item type="id" name="default_browser_promo_menu_id" />
+    <item type="id" name="direct_share_menu_id" />
+    <item type="id" name="disable_price_tracking_menu_id" />
+    <item type="id" name="divider_line_id" />
+    <item type="id" name="download_page_id" />
+    <item type="id" name="downloads_menu_id" />
+    <item type="id" name="duplicate_tab_menu_id" />
+    <item type="id" name="enable_price_tracking_menu_id" />
+    <item type="id" name="extensions_menu_menu_id" />
+    <item type="id" name="extensions_parent_menu_id" />
+    <item type="id" name="extensions_webstore_menu_id" />
+    <item type="id" name="find_in_page_id" />
+    <item type="id" name="forward_menu_id" />
+    <item type="id" name="get_image_descriptions_id" />
+    <item type="id" name="glic_menu_id" />
+    <item type="id" name="google_password_manager_menu_id" />
+    <item type="id" name="help_id" />
+    <item type="id" name="help_parent_menu_id" />
+    <item type="id" name="history_parent_menu_id" />
+    <item type="id" name="homepage_menu_id" />
+    <item type="id" name="icon_row_menu_id" />
+    <item type="id" name="info_menu_id" />
+    <item type="id" name="lens_overlay_menu_id" />
+    <item type="id" name="listen_to_feed_id" />
+    <item type="id" name="manage_all_windows_menu_id" />
+    <item type="id" name="manage_extensions_menu_id" />
+    <item type="id" name="managed_by_divider_line_id" />
+    <item type="id" name="managed_by_menu_id" />
+    <item type="id" name="menu_item_content_filter_divider_line_id" />
+    <item type="id" name="menu_item_content_filter_help_center_id" />
+    <item type="id" name="menu_select_tabs" />
+    <item type="id" name="more_tools_menu_id" />
+    <item type="id" name="move_to_new_window_sub_menu_id" />
+    <item type="id" name="move_to_other_window_menu_id" />
+    <item type="id" name="move_to_other_window_sub_menu_id" />
+    <item type="id" name="mute_site_menu_id" />
+    <item type="id" name="name_window_menu_id" />
+    <item type="id" name="new_incognito_tab_menu_id" />
+    <item type="id" name="new_incognito_window_menu_id" />
+    <item type="id" name="new_tab_group_menu_id" />
+    <item type="id" name="new_tab_menu_id" />
+    <item type="id" name="new_tab_to_the_right_menu_id" />
+    <item type="id" name="new_window_menu_id" />
+    <item type="id" name="ntp_customization_id" />
+    <item type="id" name="offline_page_id" />
+    <item type="id" name="open_history_menu_id" />
+    <item type="id" name="open_in_app_menu_id" />
+    <item type="id" name="open_webapk_id" />
+    <item type="id" name="open_with_id" />
+    <item type="id" name="page_info_divider_line_id" />
+    <item type="id" name="page_zoom_id" />
+    <item type="id" name="paint_preview_show_id" />
+    <item type="id" name="passwords_and_autofill_parent_menu_id" />
+    <item type="id" name="payment_methods_menu_id" />
+    <item type="id" name="pin_tab_menu_id" />
+    <item type="id" name="preferences_id" />
+    <item type="id" name="qr_code_menu_id" />
+    <item type="id" name="quick_delete_divider_line_id" />
+    <item type="id" name="quick_delete_menu_id" />
+    <item type="id" name="readaloud_menu_id" />
+    <item type="id" name="reader_mode_menu_id" />
+    <item type="id" name="reader_mode_prefs_id" />
+    <item type="id" name="reading_list_parent_menu_id" />
+    <item type="id" name="recent_entry_foreign_tab_menu_item" />
+    <item type="id" name="recent_entry_group_menu_item" />
     <item type="id" name="recent_entry_menu_item" />
     <item type="id" name="recent_entry_tab_menu_item" />
     <item type="id" name="recent_entry_window_menu_item" />
     <item type="id" name="recent_entry_window_tab_menu_item" />
-    <item type="id" name="recent_entry_group_menu_item" />
-    <item type="id" name="recent_entry_foreign_tab_menu_item" />
-    <item type="id" name="extensions_parent_menu_id" />
-    <item type="id" name="extensions_menu_menu_id" />
-    <item type="id" name="manage_extensions_menu_id" />
-    <item type="id" name="extensions_webstore_menu_id" />
-    <item type="id" name="page_zoom_id" />
-    <item type="id" name="share_menu_id" />
-    <item type="id" name="direct_share_menu_id" />
-    <item type="id" name="save_and_share_parent_menu_id" />
-    <item type="id" name="download_page_id" />
-    <item type="id" name="enable_price_tracking_menu_id" />
-    <item type="id" name="disable_price_tracking_menu_id" />
-    <item type="id" name="ai_web_menu_id" />
-    <item type="id" name="ai_pdf_menu_id" />
-    <item type="id" name="find_in_page_id" />
-    <item type="id" name="lens_overlay_menu_id" />
-    <item type="id" name="translate_id" />
-    <item type="id" name="readaloud_menu_id" />
-    <item type="id" name="more_tools_menu_id" />
-    <item type="id" name="reader_mode_menu_id" />
-    <item type="id" name="open_with_id" />
-    <item type="id" name="universal_install" />
-    <item type="id" name="open_webapk_id" />
-    <item type="id" name="request_desktop_site_id" />
+    <item type="id" name="recent_tabs_header_menu_id" />
+    <item type="id" name="recent_tabs_menu_id" />
+    <item type="id" name="reload_menu_id" />
     <item type="id" name="request_desktop_site_check_id" />
-    <item type="id" name="auto_dark_web_contents_id" />
-    <item type="id" name="auto_dark_web_contents_check_id" />
-    <item type="id" name="paint_preview_show_id" />
-    <item type="id" name="get_image_descriptions_id" />
-    <item type="id" name="reader_mode_prefs_id" />
-    <item type="id" name="preferences_id" />
-    <item type="id" name="ntp_customization_id" />
-    <item type="id" name="listen_to_feed_id" />
-    <item type="id" name="help_id" />
-    <item type="id" name="help_parent_menu_id" />
-    <item type="id" name="about_chrome_menu_id" />
-    <item type="id" name="default_browser_promo_menu_id" />
-    <item type="id" name="managed_by_divider_line_id" />
-    <item type="id" name="managed_by_menu_id" />
-    <item type="id" name="new_tab_group_menu_id" />
-    <item type="id" name="close_all_tabs_menu_id" />
-    <item type="id" name="close_all_incognito_tabs_menu_id" />
-    <item type="id" name="menu_select_tabs" />
-    <item type="id" name="menu_item_content_filter_divider_line_id" />
-    <item type="id" name="menu_item_content_filter_help_center_id" />
-    <item type="id" name="duplicate_tab_menu_id" />
-    <item type="id" name="glic_menu_id" />
-    <item type="id" name="open_in_app_menu_id" />
-    <item type="id" name="close_tabs_to_the_right_menu_id" />
-    <item type="id" name="close_other_tabs_menu_id" />
-    <item type="id" name="new_tab_to_the_right_menu_id" />
-    <item type="id" name="add_tab_to_reading_list_menu_id" />
-    <item type="id" name="send_to_your_device_menu_id" />
-    <item type="id" name="toggle_tab_layout_menu_id" />
+    <item type="id" name="request_desktop_site_id" />
+    <item type="id" name="save_and_share_parent_menu_id" />
     <item type="id" name="send_feedback_about_tab_strip_menu_id" />
+    <item type="id" name="send_to_devices_menu_id" />
+    <item type="id" name="send_to_your_device_menu_id" />
+    <item type="id" name="share_menu_id" />
+    <item type="id" name="show_reading_list_menu_id" />
+    <item type="id" name="submenu_header_menu_id" />
+    <item type="id" name="tab_group_menu_item_id" />
+    <item type="id" name="tab_group_tab_menu_item" />
+    <item type="id" name="tab_groups_header_menu_id" />
+    <item type="id" name="tab_groups_parent_menu_id" />
+    <item type="id" name="toggle_bookmarks_bar_menu_id" />
+    <item type="id" name="toggle_tab_layout_menu_id" />
+    <item type="id" name="translate_id" />
+    <item type="id" name="universal_install" />
+    <item type="id" name="unmute_site_menu_id" />
+    <item type="id" name="unpin_tab_menu_id" />
+    <item type="id" name="update_menu_id" />
+    <item type="id" name="your_devices_header_menu_id" />
+    <!-- go/keep-sorted end -->
 
     <!-- Custom Tabs -->
-    <item type="id" name="view_id_tag_key" />
-    <item type="id" name="custom_tabs_toolbar_tintable" />
+    <!-- go/keep-sorted start -->
     <item type="id" name="custom_tabs_app_menu_item_id_0" />
     <item type="id" name="custom_tabs_app_menu_item_id_1" />
     <item type="id" name="custom_tabs_app_menu_item_id_2" />
@@ -271,7 +296,10 @@ found in the LICENSE file.
     <item type="id" name="custom_tabs_app_menu_item_id_4" />
     <item type="id" name="custom_tabs_app_menu_item_id_5" />
     <item type="id" name="custom_tabs_app_menu_item_id_6" />
+    <item type="id" name="custom_tabs_toolbar_tintable" />
     <item type="id" name="open_in_browser_id" />
     <item type="id" name="price_insights_menu_id" />
     <item type="id" name="toggle_caret_browsing" />
+    <item type="id" name="view_id_tag_key" />
+    <!-- go/keep-sorted end -->
 </resources>
