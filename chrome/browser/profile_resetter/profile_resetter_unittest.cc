@@ -472,6 +472,27 @@ TEST_F(ProfileResetterTest, ResetDefaultSearchEnginePartially) {
   EXPECT_EQ(urls, model->GetTemplateURLs());
 }
 
+TEST_F(ProfileResetterTest, ResetDefaultSearchEngineRemovesCustomKeywords) {
+  TemplateURLService* model =
+      TemplateURLServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(model);
+
+  {
+    TemplateURLData custom_engine_data;
+    custom_engine_data.SetShortName(u"Custom Engine");
+    custom_engine_data.SetKeyword(u"custom");
+    custom_engine_data.SetURL("https://custom.search.com?q={searchTerms}");
+    TemplateURL* custom_engine =
+        model->Add(std::make_unique<TemplateURL>(custom_engine_data));
+    ASSERT_TRUE(custom_engine);
+    EXPECT_EQ(custom_engine, model->GetTemplateURLForKeyword(u"custom"));
+  }
+
+  ResetAndWait(ProfileResetter::DEFAULT_SEARCH_ENGINE);
+
+  EXPECT_FALSE(model->GetTemplateURLForKeyword(u"custom"));
+}
+
 TEST_F(ProfileResetterTest, ResetHomepageNonOrganic) {
   PrefService* prefs = profile()->GetPrefs();
   DCHECK(prefs);

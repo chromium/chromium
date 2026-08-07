@@ -1625,6 +1625,33 @@ void TemplateURLService::RepairStarterPackEngines() {
   }
 }
 
+void TemplateURLService::RemoveUserAddedTemplateURLs() {
+  DCHECK(loaded());
+
+  Scoper scoper(this);
+
+  const TemplateURL* default_provider = GetDefaultSearchProvider();
+
+  std::vector<const TemplateURL*> to_remove;
+  for (const auto& turl : template_urls_) {
+    if (turl.get() == default_provider) {
+      continue;
+    }
+    if (turl->prepopulate_id() == 0 &&
+        turl->starter_pack_id() ==
+            template_url_starter_pack_data::StarterPackId::kNone &&
+        turl->policy_origin() == TemplateURLData::PolicyOrigin::kNoPolicy &&
+        turl->type() != TemplateURL::Type::OMNIBOX_API_EXTENSION &&
+        turl->type() != TemplateURL::Type::NORMAL_CONTROLLED_BY_EXTENSION) {
+      to_remove.push_back(turl.get());
+    }
+  }
+
+  for (const auto* turl : to_remove) {
+    Remove(turl);
+  }
+}
+
 void TemplateURLService::AddObserver(TemplateURLServiceObserver* observer) {
   model_observers_.AddObserver(observer);
 }

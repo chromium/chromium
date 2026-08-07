@@ -1097,3 +1097,22 @@ TEST_F(TemplateURLServiceWithDatabaseUnitTest,
 }
 
 #endif
+
+TEST_F(LoadedTemplateURLServiceUnitTestBase, RemoveUserAddedTemplateURLs) {
+  // Add a custom search engine.
+  TemplateURLData custom_engine_data;
+  custom_engine_data.SetShortName(u"Custom Engine");
+  custom_engine_data.SetKeyword(u"custom");
+  custom_engine_data.SetURL("https://custom.search.com?q={searchTerms}");
+  TemplateURL* custom_engine = template_url_service().Add(
+      std::make_unique<TemplateURL>(custom_engine_data));
+  ASSERT_TRUE(custom_engine);
+  EXPECT_EQ(custom_engine,
+            template_url_service().GetTemplateURLForKeyword(u"custom"));
+
+  // Call RemoveUserAddedTemplateURLs.
+  template_url_service().RemoveUserAddedTemplateURLs();
+
+  // Custom engine should be removed.
+  EXPECT_FALSE(template_url_service().GetTemplateURLForKeyword(u"custom"));
+}

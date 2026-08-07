@@ -530,6 +530,11 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // the default search engine entry.
   void RepairStarterPackEngines();
 
+  // Removes all user-added and auto-generated search engines from the model and
+  // database. Does not remove prepopulated engines, starter pack engines,
+  // policy engines, or extension-controlled engines.
+  void RemoveUserAddedTemplateURLs();
+
   // Observers used to listen for changes to the model.
   // TemplateURLService does NOT delete the observers when deleted.
   void AddObserver(TemplateURLServiceObserver* observer);
