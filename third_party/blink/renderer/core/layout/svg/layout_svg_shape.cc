@@ -69,19 +69,7 @@ bool ComputeStrokeHasRelativeLengths(const ComputedStyle& style) {
 }  // namespace
 
 LayoutSVGShape::LayoutSVGShape(SVGGeometryElement* node)
-    : LayoutSVGModelObject(node),
-      // A description (classification) of what geometric shape is represented -
-      // used for computing stroke bounds more efficiently, fast-paths for
-      // painting and determining if a shape is "empty".
-      geometry_type_(GeometryType::kEmpty),
-      // Default is false, the cached rects are empty from the beginning.
-      needs_boundaries_update_(false),
-      // Default is true, so we grab a Path object once from SVGGeometryElement.
-      needs_shape_update_(true),
-      // Default is true, so we grab a AffineTransform object once from
-      // SVGGeometryElement.
-      needs_transform_update_(true),
-      transform_uses_reference_box_(false) {}
+    : LayoutSVGModelObject(node) {}
 
 LayoutSVGShape::~LayoutSVGShape() = default;
 

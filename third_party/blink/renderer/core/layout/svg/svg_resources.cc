@@ -256,7 +256,7 @@ class SVGElementResourceClient::FilterData final
 };
 
 SVGElementResourceClient::SVGElementResourceClient(SVGElement* element)
-    : element_(element), filter_data_dirty_(false) {}
+    : element_(element) {}
 
 namespace {
 

@@ -150,10 +150,17 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
 
  private:
   SVGContentContainer content_;
-  bool needs_transform_update_ : 1;
-  bool transform_uses_reference_box_ : 1;
-  mutable bool has_non_isolated_blending_descendants_ : 1;
-  mutable bool has_non_isolated_blending_descendants_dirty_ : 1;
+  // True if the local transform of this object is not up-to-date.
+  bool needs_transform_update_ : 1 = true;
+  // The transform applied to the object depends on the reference box (i.e
+  // translate(50%, 50%) or similar).
+  bool transform_uses_reference_box_ : 1 = false;
+  // True if any descendants that are not isolated uses a non-default
+  // blend-mode (not source-over/"normal").
+  mutable bool has_non_isolated_blending_descendants_ : 1 = false;
+  // True if the above flag is not up-to-date.
+  mutable bool has_non_isolated_blending_descendants_dirty_ : 1 = false;
+  // True if this object depends on the size of the viewport.
   bool self_has_viewport_dependence_ : 1 = false;
 };
 

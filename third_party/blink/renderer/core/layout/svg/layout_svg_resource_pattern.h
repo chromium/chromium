@@ -74,7 +74,7 @@ class LayoutSVGResourcePattern final : public LayoutSVGResourcePaintServer {
   PaintRecord AsPaintRecord(const AffineTransform&,
                             PaintFlags paint_flags) const;
 
-  mutable bool should_collect_pattern_attributes_ : 1;
+  mutable bool should_collect_pattern_attributes_ = true;
   mutable PatternAttributes attributes_;
 
   const PatternAttributes& EnsureAttributes() const;

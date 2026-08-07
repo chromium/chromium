@@ -48,8 +48,6 @@ namespace blink {
 
 LayoutSVGImage::LayoutSVGImage(SVGImageElement* impl)
     : LayoutSVGModelObject(impl),
-      needs_transform_update_(true),
-      transform_uses_reference_box_(false),
       image_resource_(MakeGarbageCollected<LayoutImageResource>()) {
   image_resource_->Initialize(this);
 }

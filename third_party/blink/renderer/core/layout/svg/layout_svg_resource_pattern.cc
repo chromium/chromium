@@ -51,8 +51,7 @@ struct PatternData {
 };
 
 LayoutSVGResourcePattern::LayoutSVGResourcePattern(SVGPatternElement* node)
-    : LayoutSVGResourcePaintServer(node),
-      should_collect_pattern_attributes_(true) {}
+    : LayoutSVGResourcePaintServer(node) {}
 
 void LayoutSVGResourcePattern::Trace(Visitor* visitor) const {
   visitor->Trace(attributes_);

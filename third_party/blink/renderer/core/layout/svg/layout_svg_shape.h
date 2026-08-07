@@ -247,12 +247,22 @@ class LayoutSVGShape : public LayoutSVGModelObject {
   mutable std::unique_ptr<LayoutSVGShapeRareData> rare_data_;
   std::unique_ptr<Path> stroke_path_cache_;
 
-  GeometryType geometry_type_;
+  // A description (classification) of what geometric shape is represented -
+  // used for computing stroke bounds more efficiently, fast-paths for painting
+  // and determining if a shape is "empty".
+  GeometryType geometry_type_ = GeometryType::kEmpty;
+  // True if the geometry represented by this object depends on the size of the
+  // viewport.
   bool geometry_depends_on_viewport_ : 1 = false;
-  bool needs_boundaries_update_ : 1;
-  bool needs_shape_update_ : 1;
-  bool needs_transform_update_ : 1;
-  bool transform_uses_reference_box_ : 1;
+  // True if the bounds of this object are not up-to-date.
+  bool needs_boundaries_update_ : 1 = false;
+  // True if the associated shape data (`path_` et al) is not up-to-date.
+  bool needs_shape_update_ : 1 = true;
+  // True if `local_transform_` is not up-to-date.
+  bool needs_transform_update_ : 1 = true;
+  // The transform applied to the object depends on the reference box (i.e
+  // translate(50%, 50%) or similar).
+  bool transform_uses_reference_box_ : 1 = false;
 };
 
 template <>

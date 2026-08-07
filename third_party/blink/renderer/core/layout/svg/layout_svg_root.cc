@@ -57,12 +57,7 @@
 
 namespace blink {
 
-LayoutSVGRoot::LayoutSVGRoot(SVGElement* node)
-    : LayoutReplaced(node),
-      needs_transform_update_(true),
-      container_scale_changed_(false),
-      has_non_isolated_blending_descendants_(false),
-      has_non_isolated_blending_descendants_dirty_(false) {}
+LayoutSVGRoot::LayoutSVGRoot(SVGElement* node) : LayoutReplaced(node) {}
 
 LayoutSVGRoot::~LayoutSVGRoot() = default;
 

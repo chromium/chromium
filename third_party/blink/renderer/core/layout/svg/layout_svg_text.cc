@@ -43,10 +43,7 @@ const LayoutSVGText* FindTextRoot(const LayoutObject* start) {
 
 }  // namespace
 
-LayoutSVGText::LayoutSVGText(Element* element)
-    : LayoutSVGBlock(element),
-      needs_update_bounding_box_(true),
-      needs_text_metrics_update_(true) {
+LayoutSVGText::LayoutSVGText(Element* element) : LayoutSVGBlock(element) {
   DCHECK(IsA<SVGTextElement>(element));
 }
 

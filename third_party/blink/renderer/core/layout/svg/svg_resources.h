@@ -110,7 +110,7 @@ class SVGElementResourceClient final
 
   Member<SVGElement> element_;
   Member<FilterData> filter_data_;
-  bool filter_data_dirty_;
+  bool filter_data_dirty_ = false;
 };
 
 // Helper class for handling invalidation of resources (generally after the

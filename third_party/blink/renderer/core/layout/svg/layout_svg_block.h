@@ -73,8 +73,11 @@ class LayoutSVGBlock : public LayoutBlockFlow {
       VisualRectFlags) const final;
 
   AffineTransform local_transform_;
-  bool needs_transform_update_ : 1;
-  bool transform_uses_reference_box_ : 1;
+  // True if `local_transform_` is not up-to-date.
+  bool needs_transform_update_ : 1 = true;
+  // The transform applied to the object depends on the reference box (i.e
+  // translate(50%, 50%) or similar).
+  bool transform_uses_reference_box_ : 1 = false;
 
   bool IsSVG() const final {
     NOT_DESTROYED();

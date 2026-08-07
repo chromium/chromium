@@ -33,7 +33,7 @@
 namespace blink {
 
 LayoutSVGResourceMarker::LayoutSVGResourceMarker(SVGMarkerElement* node)
-    : LayoutSVGResourceContainer(node), is_in_layout_(false) {}
+    : LayoutSVGResourceContainer(node) {}
 
 LayoutSVGResourceMarker::~LayoutSVGResourceMarker() = default;
 

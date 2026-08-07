@@ -36,11 +36,7 @@
 namespace blink {
 
 LayoutSVGContainer::LayoutSVGContainer(SVGElement* node)
-    : LayoutSVGModelObject(node),
-      needs_transform_update_(true),
-      transform_uses_reference_box_(false),
-      has_non_isolated_blending_descendants_(false),
-      has_non_isolated_blending_descendants_dirty_(false) {}
+    : LayoutSVGModelObject(node) {}
 
 LayoutSVGContainer::~LayoutSVGContainer() = default;
 

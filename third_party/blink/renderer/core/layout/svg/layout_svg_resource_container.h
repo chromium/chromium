@@ -168,9 +168,11 @@ class LayoutSVGResourceContainer : public LayoutSVGHiddenContainer {
 
   // Track global (MarkAllClientsForInvalidation) invalidations to avoid
   // redundant crawls.
-  unsigned completed_invalidations_mask_ : 8;
+  unsigned completed_invalidations_mask_ : 8 = 0;
 
-  unsigned is_invalidating_ : 1;
+  // True if clients of this resource are currently being invalidated. Used for
+  // cycle-detection during invalidation.
+  unsigned is_invalidating_ : 1 = false;
   // 23 padding bits available
 };
 

@@ -83,9 +83,9 @@ class LayoutSVGText final : public LayoutSVGBlock {
 
   // bounding_box_* are mutable for on-demand computation in a const method.
   mutable gfx::RectF bounding_box_;
-  mutable bool needs_update_bounding_box_ : 1;
+  mutable bool needs_update_bounding_box_ : 1 = true;
 
-  bool needs_text_metrics_update_ : 1;
+  bool needs_text_metrics_update_ : 1 = true;
 };
 
 template <>

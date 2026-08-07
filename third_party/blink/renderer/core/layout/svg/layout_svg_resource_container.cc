@@ -66,9 +66,7 @@ float ObjectBoundingBoxUnitToUserUnits(const Length& length,
 }  // namespace
 
 LayoutSVGResourceContainer::LayoutSVGResourceContainer(SVGElement* node)
-    : LayoutSVGHiddenContainer(node),
-      completed_invalidations_mask_(0),
-      is_invalidating_(false) {}
+    : LayoutSVGHiddenContainer(node) {}
 
 LayoutSVGResourceContainer::~LayoutSVGResourceContainer() = default;
 
