@@ -950,6 +950,7 @@ class alignas(internal::kPartitionCachelineSize)
 #endif  // PA_CONFIG(USE_PARTITION_ROOT_ENUMERATOR)
 
   std::atomic<uint64_t> intended_leak_size_;
+  std::atomic<uint64_t> total_aligned_alloc_wasted_bytes_{0};
 
   friend class internal::ThreadCache;
   template <bool>

@@ -726,6 +726,9 @@ void MemoryDumpPartitionStatsDumper::PartitionDumpTotals(
                             memory_stats->syscall_total_time_ns / 1e6);
   allocator_dump->AddScalar("fragmentation", "percent", fragmentation);
   allocator_dump->AddScalar("wasted", MemoryAllocatorDump::kUnitsBytes, wasted);
+  allocator_dump->AddScalar("aligned_alloc_wasted_size",
+                            MemoryAllocatorDump::kUnitsBytes,
+                            memory_stats->total_aligned_alloc_wasted_bytes);
 
   if (memory_stats->has_thread_cache) {
     const auto& thread_cache_stats = memory_stats->current_thread_cache_stats;

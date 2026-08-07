@@ -650,6 +650,9 @@ chromium-metrics-reviews@google.com.
   <variant name=".Malloc.Aligned.ObjectCount"
       summary="Number of allocated objects. Only counting malloc memory
                allocated in the partition_alloc aligned partition."/>
+  <variant name=".Malloc.AlignedAlloc.WastedKiB"
+      summary="Total wasted memory in KiB due to alignment rounding in
+               PartitionAlloc aligned allocations."/>
   <variant name=".Malloc.AllocatedObjects.ObjectCount"
       summary="Number of allocated objects."/>
   <variant name=".Malloc.Allocator.ObjectCount"

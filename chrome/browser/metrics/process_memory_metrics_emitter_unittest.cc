@@ -1117,6 +1117,14 @@ TEST_F(ProcessMemoryMetricsEmitterTest, RendererAndTotalHistogramsAreRecorded) {
   SetAllocatorDumpMetric(global_dump->process_dumps[1], "canvas/hibernated",
                          "size", 12 * kMiB);
 
+  // 16 * kKib because it is reported as a kib metric in UMA.
+  SetAllocatorDumpMetric(global_dump->process_dumps[0],
+                         "malloc/partitions/allocator",
+                         "aligned_alloc_wasted_size", 16 * kKiB);
+  SetAllocatorDumpMetric(global_dump->process_dumps[1],
+                         "malloc/partitions/allocator",
+                         "aligned_alloc_wasted_size", 32 * kKiB);
+
   global_dump->aggregated_metrics->native_library_resident_kb =
       kNativeLibraryResidentMemoryFootprint;
   global_dump->aggregated_metrics->native_library_not_resident_ordered_kb =
@@ -1170,6 +1178,12 @@ TEST_F(ProcessMemoryMetricsEmitterTest, RendererAndTotalHistogramsAreRecorded) {
       1);
   histograms.ExpectBucketCount(
       "Memory.Experimental.Renderer2.Small.HibernatedCanvas.Size", 22 * kKiB,
+      1);
+  histograms.ExpectBucketCount(
+      "Memory.Experimental.Renderer2.Small.Malloc.AlignedAlloc.WastedKiB", 16,
+      1);
+  histograms.ExpectBucketCount(
+      "Memory.Experimental.Renderer2.Small.Malloc.AlignedAlloc.WastedKiB", 32,
       1);
   histograms.ExpectUniqueSample("Memory.Renderer.PrivateMemoryFootprint",
                                 kTestRendererPrivateMemoryFootprint, 2);

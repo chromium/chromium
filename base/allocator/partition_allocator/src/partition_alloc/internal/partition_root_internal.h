@@ -1607,6 +1607,14 @@ PartitionRoot::GetAdjustedSizeForAlignment(size_t alignment,
     PA_DCHECK(std::has_single_bit(raw_size));
     // Adjust back, because AllocInternalNoHooks/Alloc will adjust it again.
     adjusted_size = AdjustSizeForExtrasSubtract(raw_size);
+    // TODO(crbug.com/491627887): Remove this metric once we've confirmed the
+    // impact.
+    //
+    // Note: raw_size is always >= requested_size depending on the size
+    // of Extras.
+    size_t wasted_bytes = raw_size - requested_size;
+    total_aligned_alloc_wasted_bytes_.fetch_add(wasted_bytes,
+                                                std::memory_order_relaxed);
   }
   return adjusted_size;
 }

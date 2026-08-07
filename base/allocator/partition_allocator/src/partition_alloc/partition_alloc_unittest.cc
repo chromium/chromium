@@ -4576,6 +4576,32 @@ TEST_P(PartitionAllocWithFreeWithSizeAndAlignmentTest, AlignedAlloc) {
   }
 }
 
+TEST_P(PartitionAllocWithFreeWithSizeAndAlignmentTest,
+       AlignedAllocWastedBytesTracking) {
+  SimplePartitionStatsDumper dumper_before;
+  allocator.root()->DumpStats("test", true, false, &dumper_before);
+  uint64_t wasted_before =
+      dumper_before.stats().total_aligned_alloc_wasted_bytes;
+
+  // Use a non-power-of-two requested size (60,000) below the alignment boundary
+  // so that wasted_bytes > 0 is guaranteed regardless of extras_size (0, 8, 16,
+  // etc).
+  constexpr size_t kSize = 60000;
+  constexpr size_t kReqAlignment = 16384;
+  ASSERT_NE(allocator.root()->AdjustSizeForExtrasAdd(kSize) % kReqAlignment,
+            0u);
+  void* ptr = allocator.root()->AlignedAlloc(kReqAlignment, kSize);
+  ASSERT_TRUE(ptr);
+
+  SimplePartitionStatsDumper dumper_after;
+  allocator.root()->DumpStats("test", true, false, &dumper_after);
+  uint64_t wasted_after = dumper_after.stats().total_aligned_alloc_wasted_bytes;
+
+  EXPECT_GT(wasted_after, wasted_before);
+
+  GetParam().free_func(allocator.root(), ptr, kSize, kReqAlignment);
+}
+
 // Test that the optimized `GetSlotNumber` implementation produces valid
 // results.
 TEST_P(PartitionAllocTest, OptimizedGetSlotNumber) {
