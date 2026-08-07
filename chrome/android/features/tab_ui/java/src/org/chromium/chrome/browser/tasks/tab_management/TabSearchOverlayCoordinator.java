@@ -161,8 +161,8 @@ public class TabSearchOverlayCoordinator implements BackPressHandler {
 
         mModel = TabSearchOverlayProperties.createDefaultModel();
         mModel.set(TabSearchOverlayProperties.VISIBLE, false);
-        mModel.set(TabSearchOverlayProperties.ON_SCRIM_CLICK, (v) -> hide());
-        mModel.set(TabSearchOverlayProperties.ON_CLOSE_CLICK, (v) -> hide());
+        mModel.set(TabSearchOverlayProperties.ON_SCRIM_CLICK, (_) -> hide());
+        mModel.set(TabSearchOverlayProperties.ON_CLOSE_CLICK, (_) -> hide());
         mModel.set(TabSearchOverlayProperties.ON_HIDE_FINISHED, this::onHideFinished);
 
         mSearchBoxDataProvider = new SearchBoxDataProvider();
@@ -210,10 +210,7 @@ public class TabSearchOverlayCoordinator implements BackPressHandler {
                                         false);
         final LinearLayout panelContainer = mPanelContainer;
         View panelView = panelContainer.findViewById(R.id.tab_search_overlay_panel);
-        panelView.addOnLayoutChangeListener(
-                (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
-                    updateExclusionRects();
-                });
+        panelView.addOnLayoutChangeListener((_, _, _, _, _, _, _, _, _) -> updateExclusionRects());
         View searchActivityView = panelContainer.findViewById(R.id.search_activity_container);
 
         setupWindowFocusListener(panelContainer);
@@ -737,10 +734,6 @@ public class TabSearchOverlayCoordinator implements BackPressHandler {
     }
 
     // Testing methods.
-
-    @Nullable SearchUiCoordinator getSearchUiCoordinatorForTesting() {
-        return mSearchUiCoordinator;
-    }
 
     @Nullable LinearLayout getPanelContainerForTesting() {
         return mPanelContainer;

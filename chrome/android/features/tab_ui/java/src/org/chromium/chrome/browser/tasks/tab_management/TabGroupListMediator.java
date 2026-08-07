@@ -281,11 +281,10 @@ public class TabGroupListMediator {
         List<SavedTabGroup> sortedTabGroups =
                 sortUtil.getSortedGroupList(
                         this::shouldShowGroupByState,
-                        (a, b) -> {
-                            return Long.compare(
-                                    TabUiUtils.getGroupLastUpdatedTimestamp(b),
-                                    TabUiUtils.getGroupLastUpdatedTimestamp(a));
-                        });
+                        (SavedTabGroup a, SavedTabGroup b) ->
+                                Long.compare(
+                                        TabUiUtils.getGroupLastUpdatedTimestamp(b),
+                                        TabUiUtils.getGroupLastUpdatedTimestamp(a)));
         for (SavedTabGroup savedTabGroup : sortedTabGroups) {
             TabGroupRowMediator rowMediator =
                     new TabGroupRowMediator(

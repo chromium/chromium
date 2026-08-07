@@ -25,9 +25,11 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType.ARCHIVED_TABS_IPH_MESSAGE;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
@@ -58,11 +60,10 @@ public class ArchivedTabsIphMessageCardViewModel {
                 .with(MESSAGE_IDENTIFIER, DEFAULT_MESSAGE_IDENTIFIER)
                 .with(
                         ICON_PROVIDER,
-                        (callback) -> {
-                            callback.onResult(
-                                    AppCompatResources.getDrawable(
-                                            context, R.drawable.archived_tab_icon));
-                        })
+                        (Callback<Drawable> callback) ->
+                                callback.onResult(
+                                        AppCompatResources.getDrawable(
+                                                context, R.drawable.archived_tab_icon)))
                 .with(MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER, serviceDismissActionProvider)
                 .with(MESSAGE_SERVICE_ACTION_PROVIDER, actionProvider)
                 .with(DISMISS_BUTTON_CONTENT_DESCRIPTION, dismissButtonContextDescription)

@@ -71,10 +71,7 @@ public class PinnedTabStripItemView extends FrameLayout {
         }
 
         mFavicon.setVisibility(View.VISIBLE);
-        fetcher.fetch(
-                tabFavicon -> {
-                    setFavicon(tabFavicon, isSelected);
-                });
+        fetcher.fetch((TabFavicon tabFavicon) -> setFavicon(tabFavicon, isSelected));
     }
 
     /**

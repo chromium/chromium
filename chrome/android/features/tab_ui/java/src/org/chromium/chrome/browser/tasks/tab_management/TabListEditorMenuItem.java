@@ -211,15 +211,11 @@ public class TabListEditorMenuItem {
         mOnClickRunnable = runnable;
         if (mActionView != null) {
             // For non-peripheral clicks.
-            mActionView.setOnClickListener(v -> onClick(/* triggeringMotion= */ null));
+            mActionView.setOnClickListener(_ -> onClick(/* triggeringMotion= */ null));
             // For peripheral clicks. This will intercept the event and prevent OnClickListener
             // from being called for peripheral events.
             mActionView.setOnTouchListener(
-                    new OnPeripheralClickListener(
-                            mActionView,
-                            (triggeringMotion) -> {
-                                onClick(triggeringMotion);
-                            }));
+                    new OnPeripheralClickListener(mActionView, this::onClick));
         }
     }
 

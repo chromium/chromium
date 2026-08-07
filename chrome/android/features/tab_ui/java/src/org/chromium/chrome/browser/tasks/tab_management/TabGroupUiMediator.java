@@ -335,7 +335,7 @@ public class TabGroupUiMediator implements BackPressHandler {
                     }
                 };
 
-        mCurrentTabModelObserver = (tabModel) -> resetTabStrip();
+        mCurrentTabModelObserver = _ -> resetTabStrip();
 
         mTabGroupObserver =
                 new TabGroupObserver() {
@@ -353,7 +353,7 @@ public class TabGroupUiMediator implements BackPressHandler {
         tabModelSelector.getModel(false).addTabGroupObserver(mTabGroupObserver);
         tabModelSelector.getModel(true).addTabGroupObserver(mTabGroupObserver);
 
-        mOmniboxFocusObserver = isFocus -> resetTabStrip();
+        mOmniboxFocusObserver = _ -> resetTabStrip();
         mOmniboxFocusStateSupplier.addSyncObserverAndPostIfNonNull(mOmniboxFocusObserver);
 
         tabModelSelector.addObserverToAllModels(mTabModelObserver);
@@ -377,12 +377,11 @@ public class TabGroupUiMediator implements BackPressHandler {
         mHandleBackPressChangedSupplier = handleBackPressChangedSupplier;
         if (mTabGridDialogControllerSupplier != null) {
             mTabGridDialogControllerSupplier.onAvailable(
-                    controller -> {
-                        controller
-                                .getHandleBackPressChangedSupplier()
-                                .addSyncObserverAndPostIfNonNull(
-                                        mHandleBackPressChangedSupplier::set);
-                    });
+                    controller ->
+                            controller
+                                    .getHandleBackPressChangedSupplier()
+                                    .addSyncObserverAndPostIfNonNull(
+                                            mHandleBackPressChangedSupplier::set));
         }
     }
 
@@ -409,7 +408,7 @@ public class TabGroupUiMediator implements BackPressHandler {
 
     private void setupToolbarButtons() {
         View.OnClickListener showGroupDialogOnClickListener =
-                view -> {
+                _ -> {
                     // Don't handle taps until fully visible and done animating.
                     @Nullable DialogController controller = getTabGridDialogControllerIfExists();
                     if (controller != null && controller.getShowingOrAnimationSupplier().get()) {
@@ -428,12 +427,12 @@ public class TabGroupUiMediator implements BackPressHandler {
         mModel.set(SHOW_GROUP_DIALOG_ON_CLICK_LISTENER, showGroupDialogOnClickListener);
 
         View.OnClickListener newTabButtonOnClickListener =
-                view -> {
+                _ -> {
                     Tab currentTab = mTabModelSelector.getCurrentTab();
                     assumeNonNull(currentTab);
                     List<Tab> relatedTabs = getTabsToShowForId(currentTab.getId());
 
-                    assert relatedTabs.size() > 0;
+                    assert !relatedTabs.isEmpty();
 
                     Profile currentTabProfile = currentTab.getProfile();
                     UrlConstantResolver urlConstantResolver =

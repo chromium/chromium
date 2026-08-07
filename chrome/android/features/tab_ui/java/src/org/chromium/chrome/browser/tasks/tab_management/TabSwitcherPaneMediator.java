@@ -129,9 +129,7 @@ public class TabSwitcherPaneMediator
     private final Callback<Boolean> mOnAnimatingChanged = this::onAnimatingChanged;
     private final Callback<Boolean> mOnVisibilityChanged = this::onVisibilityChanged;
     private final Callback<Boolean> mNotifyBackPressedCallback =
-            ignored -> {
-                notifyBackPressStateChangedInternal();
-            };
+            _ -> notifyBackPressStateChangedInternal();
 
     /** Interface for getting scroll positions of tabs. */
     @FunctionalInterface
@@ -454,7 +452,7 @@ public class TabSwitcherPaneMediator
 
     public void openTabGroupDialog(int tabId) {
         List<Tab> relatedTabs = assumeNonNull(mTabModelSupplier.get()).getRelatedTabList(tabId);
-        if (relatedTabs.size() == 0) {
+        if (relatedTabs.isEmpty()) {
             relatedTabs = null;
         }
         assumeNonNull(mTabGridDialogControllerSupplier.get()).resetWithListOfTabs(relatedTabs);

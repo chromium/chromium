@@ -389,11 +389,7 @@ public abstract class TabOverflowMenuCoordinator<T>
         }
         // Set up callbacks for submenu navigation.
         mHierarchicalMenuController.setupCallbacks(
-                /* headerModelList= */ null,
-                modelList,
-                () -> {
-                    dismiss();
-                });
+                /* headerModelList= */ null, modelList, this::dismiss);
     }
 
     public void configureMenuItemsForTesting(ModelList modelList, T id) {
@@ -500,7 +496,7 @@ public abstract class TabOverflowMenuCoordinator<T>
                                             : R.string.menu_new_window)
                             .withStartIconRes(isIncognitoForced ? R.drawable.ic_domain : 0)
                             .withIsIncognito(isIncognito)
-                            .withClickListener(v -> moveToNewWindow(id))
+                            .withClickListener(_ -> moveToNewWindow(id))
                             .build());
         }
         for (InstanceInfo instanceInfo : activeInstances) {
@@ -512,7 +508,7 @@ public abstract class TabOverflowMenuCoordinator<T>
                     new ListItemBuilder()
                             .withTitle(windowDisplayName)
                             .withIsIncognito(isIncognito)
-                            .withClickListener((v) -> moveToWindow(instanceInfo, id))
+                            .withClickListener((_) -> moveToWindow(instanceInfo, id))
                             .build());
         }
         return new ListItemBuilder()
@@ -621,7 +617,7 @@ public abstract class TabOverflowMenuCoordinator<T>
                         mId,
                         mCollaborationId,
                         getMenuWidth(rectProvider.getRect().width()),
-                        (holder) -> dismissRunnable.run(),
+                        (_) -> dismissRunnable.run(),
                         mActivity,
                         /* isFlyout= */ true);
 

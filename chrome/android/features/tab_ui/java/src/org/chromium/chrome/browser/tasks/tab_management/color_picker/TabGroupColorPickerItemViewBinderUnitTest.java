@@ -70,9 +70,7 @@ public class TabGroupColorPickerItemViewBinderUnitTest {
                         TabGroupColorId.BLUE,
                         TabGroupColorPickerType.TAB_GROUP,
                         false,
-                        () -> {
-                            mModel.set(IS_SELECTED, !mModel.get(IS_SELECTED));
-                        },
+                        () -> mModel.set(IS_SELECTED, !mModel.get(IS_SELECTED)),
                         false,
                         /* itemIndex= */ 0);
 

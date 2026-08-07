@@ -9,6 +9,8 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.preference.Preference;
+
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -21,7 +23,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
-import org.chromium.chrome.browser.tab.TabArchiveSettings.Observer;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
@@ -37,13 +38,7 @@ public class TabArchiveSettingsFragment extends ChromeBaseSettingsFragment {
     static final String PREF_TAB_ARCHIVE_INCLUDE_DUPLICATE_TABS =
             "tab_archive_include_duplicate_tabs";
 
-    private final TabArchiveSettings.Observer mTabArchiveSettingsObserver =
-            new Observer() {
-                @Override
-                public void onSettingChanged() {
-                    configureSettings();
-                }
-            };
+    private final TabArchiveSettings.Observer mTabArchiveSettingsObserver = this::configureSettings;
 
     private TabArchiveSettings mArchiveSettings;
 
@@ -77,12 +72,12 @@ public class TabArchiveSettingsFragment extends ChromeBaseSettingsFragment {
     private void configureSettings() {
         // Archive time delta radio button.
         TabArchiveTimeDeltaPreference archiveTimeDeltaPreference =
-                (TabArchiveTimeDeltaPreference) findPreference(INACTIVE_TIMEDELTA_PREF);
+                findPreference(INACTIVE_TIMEDELTA_PREF);
         archiveTimeDeltaPreference.initialize(mArchiveSettings);
 
         // Auto delete switch.
         ChromeSwitchPreference enableAutoDeleteSwitch =
-                (ChromeSwitchPreference) findPreference(PREF_TAB_ARCHIVE_ALLOW_AUTODELETE);
+                findPreference(PREF_TAB_ARCHIVE_ALLOW_AUTODELETE);
         int autoDeleteTimeDeltaMonths = mArchiveSettings.getAutoDeleteTimeDeltaMonths();
         enableAutoDeleteSwitch.setSummary(
                 getResources()
@@ -95,7 +90,7 @@ public class TabArchiveSettingsFragment extends ChromeBaseSettingsFragment {
         enableAutoDeleteSwitch.setEnabled(mArchiveSettings.getArchiveEnabled());
         enableAutoDeleteSwitch.setChecked(isAutoDeleteEnabled);
         enableAutoDeleteSwitch.setOnPreferenceChangeListener(
-                (preference, newValue) -> {
+                (Preference _, Object newValue) -> {
                     boolean enabled = (boolean) newValue;
                     mArchiveSettings.setAutoDeleteEnabled(enabled);
                     RecordHistogram.recordBooleanHistogram(
@@ -105,12 +100,12 @@ public class TabArchiveSettingsFragment extends ChromeBaseSettingsFragment {
 
         // Duplicate tabs switch.
         ChromeSwitchPreference enableArchiveDuplicateTabsSwitch =
-                (ChromeSwitchPreference) findPreference(PREF_TAB_ARCHIVE_INCLUDE_DUPLICATE_TABS);
+                findPreference(PREF_TAB_ARCHIVE_INCLUDE_DUPLICATE_TABS);
         enableArchiveDuplicateTabsSwitch.setEnabled(mArchiveSettings.getArchiveEnabled());
         enableArchiveDuplicateTabsSwitch.setChecked(
                 mArchiveSettings.isArchiveDuplicateTabsEnabled());
         enableArchiveDuplicateTabsSwitch.setOnPreferenceChangeListener(
-                (preference, newValue) -> {
+                (Preference _, Object newValue) -> {
                     boolean enabled = (boolean) newValue;
                     mArchiveSettings.setArchiveDuplicateTabsEnabled(enabled);
                     RecordHistogram.recordBooleanHistogram(

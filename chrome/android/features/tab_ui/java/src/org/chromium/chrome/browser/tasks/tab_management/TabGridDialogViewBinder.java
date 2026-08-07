@@ -178,10 +178,11 @@ class TabGridDialogViewBinder {
                 if (view.getWidth() == 0 || view.getHeight() == 0) {
                     // If layout hasn't happened post the scroll index change until layout happens.
                     view.post(
-                            () -> {
-                                setScrollIndex(
-                                        model.get(BROWSER_CONTROLS_STATE_PROVIDER), view, index);
-                            });
+                            () ->
+                                    setScrollIndex(
+                                            model.get(BROWSER_CONTROLS_STATE_PROVIDER),
+                                            view,
+                                            index));
                     return;
                 }
                 setScrollIndex(

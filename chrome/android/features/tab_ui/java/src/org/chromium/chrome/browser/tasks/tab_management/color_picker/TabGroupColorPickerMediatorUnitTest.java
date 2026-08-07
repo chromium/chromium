@@ -52,9 +52,7 @@ public class TabGroupColorPickerMediatorUnitTest {
                             /* color= */ color,
                             /* colorPickerType= */ TabGroupColorPickerType.TAB_GROUP,
                             /* isIncognito= */ false,
-                            /* onClickListener= */ () -> {
-                                mMediator.setSelectedColorItem(color);
-                            },
+                            /* onClickListener= */ () -> mMediator.setSelectedColorItem(color),
                             /* isSelected= */ false,
                             /* itemIndex= */ i);
             mColorItems.add(model);

@@ -284,9 +284,8 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
             OneshotSupplier<MonotonicObservableSupplier<Boolean>> wrappedSupplier =
                     newValue.getIsScrollingSupplier();
             wrappedSupplier.onAvailable(
-                    supplier -> {
-                        supplier.addSyncObserverAndPostIfNonNull(mScrollingObserver);
-                    });
+                    (MonotonicObservableSupplier<Boolean> supplier) ->
+                            supplier.addSyncObserverAndPostIfNonNull(mScrollingObserver));
         }
     }
 
@@ -302,7 +301,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
             return;
         }
         mPriceAnnotationsPrefListener =
-                (sharedPrefs, key) -> {
+                (_, key) -> {
                     if (!PriceTrackingUtilities.TRACK_PRICES_ON_TABS.equals(key)
                             || !mIsVisibleSupplier.get()) {
                         return;

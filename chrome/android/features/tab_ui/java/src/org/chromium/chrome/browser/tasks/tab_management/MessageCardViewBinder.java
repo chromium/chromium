@@ -32,7 +32,7 @@ class MessageCardViewBinder {
             itemView.setDismissButtonContentDescription(
                     model.get(MessageCardViewProperties.DISMISS_BUTTON_CONTENT_DESCRIPTION));
             itemView.setDismissButtonOnClickListener(
-                    v -> {
+                    _ -> {
                         int type = model.get(MessageCardViewProperties.MESSAGE_TYPE);
                         MessageCardView.ActionProvider uiProvider =
                                 model.get(MessageCardViewProperties.UI_DISMISS_ACTION_PROVIDER);
@@ -75,15 +75,12 @@ class MessageCardViewBinder {
         MessageCardView.IconProvider provider = model.get(MessageCardViewProperties.ICON_PROVIDER);
 
         if (provider != null) {
-            provider.fetchIconDrawable(
-                    (drawable) -> {
-                        itemView.setIcon(drawable);
-                    });
+            provider.fetchIconDrawable(itemView::setIcon);
         }
     }
 
     static OnClickListener getConfirmationOnClickListener(PropertyModel model) {
-        return v -> {
+        return _ -> {
             MessageCardView.ActionProvider uiProvider =
                     model.get(MessageCardViewProperties.UI_ACTION_PROVIDER);
             if (uiProvider != null) uiProvider.action();

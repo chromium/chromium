@@ -8,9 +8,11 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -65,7 +67,7 @@ public class IncognitoReauthPromoViewModel {
                 .with(MessageCardViewProperties.SECONDARY_ACTION_TEXT, dismissActionText)
                 .with(
                         MessageCardViewProperties.SECONDARY_ACTION_BUTTON_CLICK_HANDLER,
-                        view -> {
+                        _ -> {
                             data.getDismissActionProvider().action();
                             RecordHistogram.recordEnumeratedHistogram(
                                     "Android.IncognitoReauth.PromoAcceptedOrDismissed",
@@ -91,11 +93,11 @@ public class IncognitoReauthPromoViewModel {
                 .with(MessageCardViewProperties.TITLE_TEXT, titleText)
                 .with(
                         MessageCardViewProperties.ICON_PROVIDER,
-                        (callback) -> {
-                            callback.onResult(
-                                    AppCompatResources.getDrawable(
-                                            context, R.drawable.ic_incognito_reauth_promo_icon));
-                        })
+                        (Callback<Drawable> callback) ->
+                                callback.onResult(
+                                        AppCompatResources.getDrawable(
+                                                context,
+                                                R.drawable.ic_incognito_reauth_promo_icon)))
                 .with(CARD_TYPE, TabListModel.CardProperties.ModelType.MESSAGE)
                 .with(CARD_ALPHA, 1f)
                 .build();

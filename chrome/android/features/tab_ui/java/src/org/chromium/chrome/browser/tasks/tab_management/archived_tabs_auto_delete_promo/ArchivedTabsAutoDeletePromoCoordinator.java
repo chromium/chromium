@@ -83,15 +83,11 @@ public class ArchivedTabsAutoDeletePromoCoordinator {
 
         mModel.set(
                 ArchivedTabsAutoDeletePromoProperties.ON_YES_BUTTON_CLICK_LISTENER,
-                (v) -> {
-                    onPromoChoice(UserChoice.YES);
-                });
+                _ -> onPromoChoice(UserChoice.YES));
 
         mModel.set(
                 ArchivedTabsAutoDeletePromoProperties.ON_NO_BUTTON_CLICK_LISTENER,
-                (v) -> {
-                    onPromoChoice(UserChoice.NO);
-                });
+                _ -> onPromoChoice(UserChoice.NO));
     }
 
     /** Cleans up resources. */

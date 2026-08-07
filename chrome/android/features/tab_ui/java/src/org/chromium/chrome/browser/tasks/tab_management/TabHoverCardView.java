@@ -146,9 +146,7 @@ public class TabHoverCardView extends FrameLayout {
         mTabModelSelector = tabModelSelector;
         mTabContentManager = tabContentManagerSupplier.get();
         mCurrentTabModelObserver =
-                (tabModel) -> {
-                    updateHoverCardColors(tabModel.isIncognitoBranded());
-                };
+                (TabModel tabModel) -> updateHoverCardColors(tabModel.isIncognitoBranded());
         mTabModelSelector
                 .getCurrentTabModelSupplier()
                 .addSyncObserverAndPostIfNonNull(mCurrentTabModelObserver);

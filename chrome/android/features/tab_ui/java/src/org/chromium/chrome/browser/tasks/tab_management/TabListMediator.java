@@ -21,6 +21,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.ComponentCallbacks;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -403,7 +404,6 @@ public class TabListMediator implements TabListNotificationHandler {
     private final @Nullable Supplier<@Nullable PriceWelcomeMessageController>
             mPriceWelcomeMessageControllerSupplier;
     private final @Nullable DataSharingTabManager mDataSharingTabManager;
-    private final @Nullable Runnable mOnTabGroupCreation;
     private final TabModelObserver mTabModelObserver;
     private final TabListLayoutDelegate mTabListLayoutDelegate;
     private final TabActionListener mTabClosedListener;
@@ -957,7 +957,6 @@ public class TabListMediator implements TabListNotificationHandler {
         mComponentId = componentId;
         mTabActionState = initialTabActionState;
         mDataSharingTabManager = dataSharingTabManager;
-        mOnTabGroupCreation = onTabGroupCreation;
         mUndoBarExplicitTrigger = undoBarExplicitTrigger;
         mSnackbarManager = snackbarManager;
         mAllowedSelectionCount = allowedSelectionCount;
@@ -1364,10 +1363,9 @@ public class TabListMediator implements TabListNotificationHandler {
                         if (shouldDisableItemAnimations) {
                             new Handler()
                                     .post(
-                                            () -> {
-                                                mRecyclerViewItemAnimationToggle
-                                                        .setDisableItemAnimations(false);
-                                            });
+                                            () ->
+                                                    mRecyclerViewItemAnimationToggle
+                                                            .setDisableItemAnimations(false));
                         }
                     }
 
@@ -1381,7 +1379,7 @@ public class TabListMediator implements TabListNotificationHandler {
 
         var tabGroupCreationDialogManager =
                 new TabGroupCreationDialogManager(
-                        activity, assumeNonNull(modalDialogManager), mOnTabGroupCreation);
+                        activity, assumeNonNull(modalDialogManager), onTabGroupCreation);
         mTabGridItemTouchHelperCallback =
                 new TabGridItemTouchHelperCallback(
                         activity,
@@ -2130,7 +2128,7 @@ public class TabListMediator implements TabListNotificationHandler {
             mTabListGroupMenuCoordinator =
                     new TabListGroupMenuCoordinator(
                             mOnMenuItemClickedCallback,
-                            () -> getCurrentTabModelChecked(),
+                            this::getCurrentTabModelChecked,
                             tabGroupSyncService,
                             collaborationService,
                             mActivity);
@@ -2668,10 +2666,10 @@ public class TabListMediator implements TabListNotificationHandler {
         }
 
         descriptionTextResolver =
-                (context) -> {
-                    return context.getString(
-                            R.string.accessibility_tabstrip_btn_close_tab, getTabTitleOrUrl(tab));
-                };
+                (Context context) ->
+                        context.getString(
+                                R.string.accessibility_tabstrip_btn_close_tab,
+                                getTabTitleOrUrl(tab));
         model.set(TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER, descriptionTextResolver);
     }
 
@@ -3249,9 +3247,7 @@ public class TabListMediator implements TabListNotificationHandler {
         assert mMode == TabListMode.BOTTOM_STRIP;
 
         Callback<PropertyModel> updateTabStripItemCallback =
-                (model) -> {
-                    model.set(TabProperties.HAS_NOTIFICATION_BUBBLE, hasUpdate);
-                };
+                (model) -> model.set(TabProperties.HAS_NOTIFICATION_BUBBLE, hasUpdate);
 
         forAllTabListItems(tabIdsToBeUpdated, updateTabStripItemCallback);
     }

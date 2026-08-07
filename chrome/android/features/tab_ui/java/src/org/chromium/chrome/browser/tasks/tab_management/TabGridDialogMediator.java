@@ -241,7 +241,6 @@ public class TabGridDialogMediator
     private final Runnable mShowColorPickerPopupRunnable;
     private final Profile mOriginalProfile;
     private final @Nullable TabGroupSyncService mTabGroupSyncService;
-    private final @Nullable DataSharingService mDataSharingService;
     private final CollaborationService mCollaborationService;
     private final @Nullable TransitiveSharedGroupObserver mTransitiveSharedGroupObserver;
     private final @Nullable MessagingBackendService mMessagingBackendService;
@@ -252,7 +251,6 @@ public class TabGridDialogMediator
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private final BottomSheetObserver mBottomSheetObserver;
 
-    private @Nullable TabGroupListBottomSheetCoordinator mTabGroupListBottomSheetCoordinator;
     private @Nullable Token mCurrentTabGroupId;
     private TabGridDialogMenuCoordinator mTabGridDialogMenuCoordinator;
     private LazyOneshotSupplier<TabListEditorController> mTabListEditorControllerSupplier;
@@ -305,10 +303,11 @@ public class TabGridDialogMediator
         mCollaborationService = CollaborationServiceFactory.getForProfile(mOriginalProfile);
         if (mTabGroupSyncService != null
                 && mCollaborationService.getServiceStatus().isAllowedToJoin()) {
-            mDataSharingService = DataSharingServiceFactory.getForProfile(mOriginalProfile);
+            @Nullable DataSharingService dataSharingService =
+                    DataSharingServiceFactory.getForProfile(mOriginalProfile);
             mTransitiveSharedGroupObserver =
                     new TransitiveSharedGroupObserver(
-                            mTabGroupSyncService, mDataSharingService, mCollaborationService);
+                            mTabGroupSyncService, dataSharingService, mCollaborationService);
             // This should be the first supplier set as the other suppliers depend on its value.
             mTransitiveSharedGroupObserver
                     .getCollaborationIdSupplier()
@@ -335,7 +334,6 @@ public class TabGridDialogMediator
                     };
             mMessagingBackendService.addPersistentMessageObserver(mPersistentMessageObserver);
         } else {
-            mDataSharingService = null;
             mTransitiveSharedGroupObserver = null;
             mMessagingBackendService = null;
             mPersistentMessageObserver = null;
@@ -482,29 +480,27 @@ public class TabGridDialogMediator
                         if (mSnackbarManager == null) return;
                         PostTask.postTask(
                                 TaskTraits.UI_DEFAULT,
-                                () -> {
-                                    mSnackbarManager.dismissSnackbars(
-                                            TabGridDialogMediator.this, tabs);
-                                });
+                                () ->
+                                        mSnackbarManager.dismissSnackbars(
+                                                TabGridDialogMediator.this, tabs));
                     }
 
                     private void dismissSingleTabSnackbar(int tabId) {
                         if (mSnackbarManager == null) return;
                         PostTask.postTask(
                                 TaskTraits.UI_DEFAULT,
-                                () -> {
-                                    mSnackbarManager.dismissSnackbars(
-                                            TabGridDialogMediator.this, tabId);
-                                });
+                                () ->
+                                        mSnackbarManager.dismissSnackbars(
+                                                TabGridDialogMediator.this, tabId));
                     }
 
                     private void dismissAllSnackbars() {
                         if (mSnackbarManager == null) return;
                         PostTask.postTask(
                                 TaskTraits.UI_DEFAULT,
-                                () -> {
-                                    mSnackbarManager.dismissSnackbars(TabGridDialogMediator.this);
-                                });
+                                () ->
+                                        mSnackbarManager.dismissSnackbars(
+                                                TabGridDialogMediator.this));
                     }
                 };
 
@@ -553,7 +549,7 @@ public class TabGridDialogMediator
 
         TabModel tabModel = mCurrentTabModelSupplier.get();
         assumeNonNull(tabModel);
-        if (profile != null && modalDialogManager != null) {
+        if (modalDialogManager != null) {
             TabGroupCreationDialogManager tabGroupCreationDialogManager =
                     new TabGroupCreationDialogManager(activity, modalDialogManager, null);
             TabGroupCreationCallback tabGroupCreationCallback =
@@ -562,7 +558,7 @@ public class TabGridDialogMediator
             // Dismiss the dialog if open. The dialog should be open when the bottom sheet is
             // visible.
             TabMovedCallback tabMovedCallback = () -> hideDialog(true);
-            mTabGroupListBottomSheetCoordinator =
+            @Nullable TabGroupListBottomSheetCoordinator tabGroupListBottomSheetCoordinator =
                     new TabGroupListBottomSheetCoordinator(
                             activity,
                             profile,
@@ -590,7 +586,7 @@ public class TabGridDialogMediator
                             tabBookmarkerSupplier,
                             profile,
                             tabModel,
-                            mTabGroupListBottomSheetCoordinator,
+                            tabGroupListBottomSheetCoordinator,
                             tabGroupCreationDialogManager,
                             shareDelegateSupplier,
                             mTabGroupSyncService,
@@ -979,7 +975,7 @@ public class TabGridDialogMediator
         mModel.set(TabGridDialogProperties.TITLE_TEXT_WATCHER, textWatcher);
 
         View.OnFocusChangeListener onFocusChangeListener =
-                (v, hasFocus) -> {
+                (View _, boolean hasFocus) -> {
                     mIsUpdatingTitle = hasFocus;
                     mModel.set(TabGridDialogProperties.IS_KEYBOARD_VISIBLE, hasFocus);
                     mModel.set(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED, hasFocus);
@@ -989,14 +985,14 @@ public class TabGridDialogMediator
     }
 
     private View.OnClickListener getCollapseButtonClickListener() {
-        return view -> {
+        return _ -> {
             hideDialog(true);
             RecordUserAction.record("TabGridDialog.Exit");
         };
     }
 
     private View.OnClickListener getAddButtonClickListener() {
-        return view -> {
+        return _ -> {
             // Get the current Tab first since hideDialog causes mCurrentTabGroupId to be null;
             List<Tab> tabsInGroup = getTabsInGroup(mCurrentTabGroupId);
             hideDialog(false);

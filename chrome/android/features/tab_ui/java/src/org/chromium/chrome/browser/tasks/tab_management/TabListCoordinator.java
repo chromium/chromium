@@ -251,7 +251,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
         if (mMode == TabListMode.GRID) {
             mAdapter.registerType(
                     UiType.TAB,
-                    parent -> {
+                    _ -> {
                         ViewGroup group =
                                 (ViewGroup)
                                         LayoutInflater.from(activity)
@@ -267,7 +267,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
             // groups, an alternative view binder and model can be implemented.
             mAdapter.registerType(
                     UiType.TAB_GROUP,
-                    parent -> {
+                    _ -> {
                         ViewGroup group =
                                 (ViewGroup)
                                         LayoutInflater.from(activity)
@@ -299,11 +299,10 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
         } else if (mMode == TabListMode.BOTTOM_STRIP) {
             mAdapter.registerType(
                     UiType.STRIP,
-                    parent -> {
-                        return (ViewGroup)
-                                LayoutInflater.from(activity)
-                                        .inflate(R.layout.tab_strip_item, parentView, false);
-                    },
+                    _ ->
+                            (ViewGroup)
+                                    LayoutInflater.from(activity)
+                                            .inflate(R.layout.tab_strip_item, parentView, false),
                     TabStripViewBinder::bind);
         } else {
             throw new IllegalArgumentException(
@@ -377,7 +376,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                         isSingleContextMode,
                         onDragStateChangedListener);
 
-        try (TraceEvent e = TraceEvent.scoped("TabListCoordinator.setupRecyclerView")) {
+        try (TraceEvent _ = TraceEvent.scoped("TabListCoordinator.setupRecyclerView")) {
             // Ignore attachToParent initially. In some activitys multiple TabListCoordinators are
             // created with the same parentView. Using attachToParent and subsequently trying to
             // locate the View with findViewById could then resolve to the wrong view. Instead use
@@ -436,8 +435,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
 
         if (mMode == TabListMode.GRID) {
             mListLayoutListener =
-                    (view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) ->
-                            updateGridCardLayout(right - left);
+                    (_, left, _, right, _, _, _, _, _) -> updateGridCardLayout(right - left);
         } else if (mMode == TabListMode.BOTTOM_STRIP) {
             assert onModelTokenChange != null;
             mTabStripSnapshotter =
@@ -562,17 +560,6 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
         mTabListItemSizeChangedObserverList.removeObserver(observer);
     }
 
-    Rect getThumbnailLocationOfCurrentTab() {
-        // TODO(crbug.com/40627995): calculate the location before the real one is ready.
-        Rect rect =
-                mRecyclerView.getRectOfCurrentThumbnail(
-                        mModelList.indexFromTabId(mMediator.selectedTabId()),
-                        mMediator.selectedTabId());
-        if (rect == null) return new Rect();
-        rect.offset(0, 0);
-        return rect;
-    }
-
     /**
      * @param tabId The tab ID to get a rect for.
      * @return a {@link Rect} for the tab's thumbnail (may be an empty rect if the tab is not
@@ -633,7 +620,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
     void initWithNative(Profile originalProfile) {
         if (mIsInitialized) return;
 
-        try (TraceEvent e = TraceEvent.scoped("TabListCoordinator.initWithNative")) {
+        try (TraceEvent _ = TraceEvent.scoped("TabListCoordinator.initWithNative")) {
             mIsInitialized = true;
 
             assert !originalProfile.isOffTheRecord() : "Expecting a non-incognito profile.";
@@ -719,7 +706,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
 
         final Size oldDefaultSize = mMediator.getDefaultGridCardSize();
         final Size newDefaultSize = new Size(cardWidthPx, cardHeightPx);
-        if (oldDefaultSize != null && newDefaultSize.equals(oldDefaultSize)) return;
+        if (newDefaultSize.equals(oldDefaultSize)) return;
 
         mMediator.setDefaultGridCardSize(newDefaultSize);
         for (int i = 0; i < mModelList.size(); i++) {
