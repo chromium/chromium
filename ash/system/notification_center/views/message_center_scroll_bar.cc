@@ -4,13 +4,10 @@
 
 #include "ash/system/notification_center/views/message_center_scroll_bar.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/controls/rounded_scroll_bar.h"
 #include "base/metrics/histogram_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/compositor/layer.h"
 #include "ui/compositor/presentation_time_recorder.h"
-#include "ui/views/controls/scrollbar/base_scroll_bar_thumb.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -46,10 +43,7 @@ BEGIN_METADATA(MessageCenterScrollBar)
 END_METADATA
 
 MessageCenterScrollBar::MessageCenterScrollBar()
-    : RoundedScrollBar(views::ScrollBar::Orientation::kVertical) {
-  GetThumb()->layer()->SetVisible(features::IsNotificationScrollBarEnabled());
-  GetThumb()->layer()->CompleteAllAnimations();
-}
+    : RoundedScrollBar(views::ScrollBar::Orientation::kVertical) {}
 
 MessageCenterScrollBar::~MessageCenterScrollBar() = default;
 
