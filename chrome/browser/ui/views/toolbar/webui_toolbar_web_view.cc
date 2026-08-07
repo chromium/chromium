@@ -28,7 +28,6 @@
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -277,7 +276,7 @@ WebUIToolbarWebView::WebUIToolbarWebView(
       performance_intervention_control_(this),
       app_menu_control_(*this),
       battery_saver_control_(this),
-      avatar_control_(this, browser->GetBrowserForMigrationOnly()),
+      avatar_control_(this),
       location_bar_(std::move(location_bar)),
       extensions_container_(this),
       back_control_(this, BackForwardButton::Direction::kBack),
