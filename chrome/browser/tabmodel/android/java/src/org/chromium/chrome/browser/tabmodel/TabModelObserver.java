@@ -23,6 +23,32 @@ import java.util.List;
  */
 @NullMarked
 public interface TabModelObserver {
+    // Tab Addition
+
+    /**
+     * Called before a tab will be added to the {@link TabModel}.
+     *
+     * @param tab The tab about to be added.
+     * @param type The type of tab launch.
+     */
+    default void willAddTab(Tab tab, @TabLaunchType int type) {}
+
+    /**
+     * Called after a tab has been added to the {@link TabModel}.
+     *
+     * @param tab The newly added tab.
+     * @param type The type of tab launch.
+     * @param creationState How the tab was created.
+     * @param markedForSelection Indicates whether the added tab will be selected.
+     */
+    default void didAddTab(
+            Tab tab,
+            @TabLaunchType int type,
+            @TabCreationState int creationState,
+            boolean markedForSelection) {}
+
+    // Tab Selection
+
     /**
      * Called when a tab is selected. This may not be called in some cases if this model is not the
      * active model. If observing the current tab in this model is desired consider using {@link
@@ -35,6 +61,45 @@ public interface TabModelObserver {
      */
     default void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {}
 
+    /** Called when the set of multi-selected tabs has changed. */
+    default void onTabsSelectionChanged() {}
+
+    // Tab Movement and Attributes
+
+    /**
+     * Called after a tab has been moved from one position in the {@link TabModel} to another.
+     *
+     * @param tab The tab which has been moved.
+     * @param newIndex The new index of the tab in the model.
+     * @param curIndex The old index of the tab in the model.
+     */
+    default void didMoveTab(Tab tab, int newIndex, int curIndex) {}
+
+    /**
+     * Called when a tab's pin state is about to change.
+     *
+     * @param tab The tab whose pin state is about to change.
+     */
+    default void willChangePinState(Tab tab) {}
+
+    /**
+     * Called when a tab's pin state has changed.
+     *
+     * @param tab The tab whose pin state has changed.
+     */
+    default void didChangePinState(Tab tab) {}
+
+    // Tab Removal
+
+    /**
+     * Called after a tab has been removed. At this point, the tab is no longer in the tab model.
+     *
+     * @param tab The tab that has been removed.
+     */
+    default void tabRemoved(Tab tab) {}
+
+    // Tab Closure
+
     /**
      * Called when a tab starts closing.
      *
@@ -43,6 +108,24 @@ public interface TabModelObserver {
      *     tab closures.
      */
     default void willCloseTab(Tab tab, boolean didCloseAlone) {}
+
+    /**
+     * Called when multiple tabs closure will happen. If "all tabs" are closed at once, @{@link
+     * TabModelObserver#willCloseAllTabs(boolean)} is invoked.
+     *
+     * @param allowUndo If undo is allowed on the tab closure.
+     * @param tabs being closed.
+     */
+    default void willCloseMultipleTabs(boolean allowUndo, List<Tab> tabs) {}
+
+    /**
+     * Called when an "all tabs" closure will happen. If multiple tabs are closed, {@link
+     * #willCloseMultipleTabs(boolean, List)} is invoked
+     */
+    default void willCloseAllTabs(boolean incognito) {}
+
+    /** Called when tabs are being closed, and none will be left in the {@link TabModel}. */
+    default void allTabsAreClosing() {}
 
     /**
      * Called after the tab has been removed from the tab model for tab closure. This is called
@@ -60,6 +143,69 @@ public interface TabModelObserver {
      * @param tab The tab that was removed.
      */
     default void didRemoveTabForClosure(Tab tab) {}
+
+    /**
+     * Called right before when tabs are pending closure, i.e. the user has just closed them, but it
+     * can still be undone.
+     *
+     * @param tabs The list of {@link Tab}s that are pending closure.
+     * @param isAllTabs Whether tabs are all the tabs.
+     * @param closingSource The tab closing source, e.g. the tablet tab strip.
+     */
+    default void onTabClosePending(
+            List<Tab> tabs, boolean isAllTabs, @TabClosingSource int closingSource) {}
+
+    /**
+     * Called before the {@code tabs} have been reinserted into the model by an undo action.
+     *
+     * @param tabs The list of {@link Tab}s that has been reopened.
+     * @param isAllTabs Whether tabs are all the tabs.
+     */
+    default void willUndoTabClosure(List<Tab> tabs, boolean isAllTabs) {}
+
+    /**
+     * Called when a tab closure is undone.
+     *
+     * @param tab The tab that has been reopened.
+     */
+    default void tabClosureUndone(Tab tab) {}
+
+    /**
+     * Called after the {@code tabs} have been reinserted into the model by an undo action, but
+     * before the restoration is fully complete. Some updates, such as setting the index, if
+     * applicable, may still be in-flight
+     *
+     * @param tabs The list of {@link Tab}s that has been reopened.
+     * @param isAllTabs Whether tabs are all the tabs.
+     */
+    default void onTabCloseUndone(List<Tab> tabs, boolean isAllTabs) {}
+
+    /**
+     * Called right before {@code tabs} closure is committed permanently and cannot be undone.
+     * This is called for both synchronous immediate closures (e.g. non-undoable, incognito)
+     * and deferred commits after the pending undo window expires.
+     *
+     * <p>TODO(crbug.com/381471263): Method in development. For non-undoable closures (allowUndo =
+     * false), this replaces initial pre-close callbacks ({@link #willCloseTab}, {@link
+     * #willCloseMultipleTabs}, {@link #willCloseAllTabs}, and {@link #allTabsAreClosing}). For
+     * finalized closures, this replaces {@link #onFinishingTabClosure}, {@link
+     * #onFinishingMultipleTabClosure}, {@link #tabClosureCommitted}, and {@link
+     * #allTabsClosureCommitted}.
+     *
+     * @param tabs The list of {@link Tab}s that are closed.
+     * @param isAllTabs Whether tabs are all the tabs.
+     */
+    default void onTabCloseCommitted(List<Tab> tabs, boolean isAllTabs) {}
+
+    /**
+     * Called when a tab closure is committed and can't be undone anymore.
+     *
+     * @param tab The tab that has been closed.
+     */
+    default void tabClosureCommitted(Tab tab) {}
+
+    /** Called when an "all tabs" closure has been committed and can't be undone anymore. */
+    default void allTabsClosureCommitted(boolean isIncognito) {}
 
     /**
      * Called right before {@code tab} will be destroyed. Called for each tab.
@@ -87,150 +233,7 @@ public interface TabModelObserver {
      */
     default void onFinishingMultipleTabClosure(List<Tab> tabs, boolean canRestore) {}
 
-    /**
-     * Called before a tab will be added to the {@link TabModel}.
-     *
-     * @param tab The tab about to be added.
-     * @param type The type of tab launch.
-     */
-    default void willAddTab(Tab tab, @TabLaunchType int type) {}
-
-    /**
-     * Called after a tab has been added to the {@link TabModel}.
-     *
-     * @param tab The newly added tab.
-     * @param type The type of tab launch.
-     * @param creationState How the tab was created.
-     * @param markedForSelection Indicates whether the added tab will be selected.
-     */
-    default void didAddTab(
-            Tab tab,
-            @TabLaunchType int type,
-            @TabCreationState int creationState,
-            boolean markedForSelection) {}
-
-    /**
-     * Called after a tab has been moved from one position in the {@link TabModel} to another.
-     *
-     * @param tab The tab which has been moved.
-     * @param newIndex The new index of the tab in the model.
-     * @param curIndex The old index of the tab in the model.
-     */
-    default void didMoveTab(Tab tab, int newIndex, int curIndex) {}
-
-    /**
-     * Called when a tab's pin state is about to change.
-     *
-     * @param tab The tab whose pin state is about to change.
-     */
-    default void willChangePinState(Tab tab) {}
-
-    /**
-     * Called when a tab's pin state has changed.
-     *
-     * @param tab The tab whose pin state has changed.
-     */
-    default void didChangePinState(Tab tab) {}
-
-    /**
-     * Called right before when tabs are pending closure, i.e. the user has just closed them, but it
-     * can still be undone.
-     *
-     * @param tabs The list of {@link Tab}s that are pending closure.
-     * @param isAllTabs Whether tabs are all the tabs.
-     * @param closingSource The tab closing source, e.g. the tablet tab strip.
-     */
-    default void onTabClosePending(
-            List<Tab> tabs, boolean isAllTabs, @TabClosingSource int closingSource) {}
-
-    /**
-     * Called when a tab closure is undone.
-     *
-     * @param tab The tab that has been reopened.
-     */
-    default void tabClosureUndone(Tab tab) {}
-
-    /**
-     * Called when a tab closure is committed and can't be undone anymore.
-     *
-     * @param tab The tab that has been closed.
-     */
-    default void tabClosureCommitted(Tab tab) {}
-
-    /**
-     * Called when an "all tabs" closure will happen. If multiple tabs are closed, {@link
-     * #willCloseMultipleTabs(boolean, List)} is invoked
-     */
-    default void willCloseAllTabs(boolean incognito) {}
-
-    /**
-     * Called when multiple tabs closure will happen. If "all tabs" are closed at once, @{@link
-     * TabModelObserver#willCloseAllTabs(boolean)} is invoked.
-     *
-     * @param allowUndo If undo is allowed on the tab closure.
-     * @param tabs being closed.
-     */
-    default void willCloseMultipleTabs(boolean allowUndo, List<Tab> tabs) {}
-
-    /** Called when an "all tabs" closure has been committed and can't be undone anymore. */
-    default void allTabsClosureCommitted(boolean isIncognito) {}
-
-    /** Called when tabs are being closed, and none will be left in the {@link TabModel}. */
-    default void allTabsAreClosing() {}
-
-    /**
-     * Called after a tab has been removed. At this point, the tab is no longer in the tab model.
-     *
-     * @param tab The tab that has been removed.
-     */
-    default void tabRemoved(Tab tab) {}
-
-    /**
-     * Called after all {@link org.chromium.chrome.browser.tab.TabState}s within {@link TabModel}
-     * are loaded from storage.
-     */
-    default void restoreCompleted() {}
-
-    //  TODO(crbug.com/381471263): The following methods are still in development and will
-    //  replace the existing tab closure events in the near future. Methods being replaced are
-    //  tabClosureUndone, allTabsClosureUndone, tabClosureCommitted, willCloseAllTabs,
-    //  willCloseMultipleTabs and allTabsClosureCommitted.
-    /**
-     * Called right before {@code tabs} will be destroyed.
-     *
-     * @param tabs The list of {@link Tab}s that will be closed.
-     * @param isAllTabs Whether tabs are all the tabs.
-     */
-    default void onTabCloseImmediate(List<Tab> tabs, boolean isAllTabs) {}
-
-    /**
-     * Called right before {@code tabs} closure is committed permanently and cannot be undone.
-     *
-     * @param tabs The list of {@link Tab}s that are closed.
-     * @param isAllTabs Whether tabs are all the tabs.
-     */
-    default void onTabCloseCommitted(List<Tab> tabs, boolean isAllTabs) {}
-
-    /**
-     * Called before the {@code tabs} have been reinserted into the model by an undo action.
-     *
-     * @param tabs The list of {@link Tab}s that has been reopened.
-     * @param isAllTabs Whether tabs are all the tabs.
-     */
-    default void willUndoTabClosure(List<Tab> tabs, boolean isAllTabs) {}
-
-    /**
-     * Called after the {@code tabs} have been reinserted into the model by an undo action, but
-     * before the restoration is fully complete. Some updates, such as setting the index, if
-     * applicable, may still be in-flight.
-     *
-     * @param tabs The list of {@link Tab}s that has been reopened.
-     * @param isAllTabs Whether tabs are all the tabs.
-     */
-    default void onTabCloseUndone(List<Tab> tabs, boolean isAllTabs) {}
-
-    /** Called when the set of multi-selected tabs has changed. */
-    default void onTabsSelectionChanged() {}
+    // Tab Group
 
     /**
      * Called after a tab group is created. Note that new code should prefer using {@link
@@ -264,6 +267,14 @@ public interface TabModelObserver {
      * @param groupId The ID of the group that was changed.
      */
     default void onTabGroupVisualsChanged(Token groupId) {}
+
+    // Misc
+
+    /**
+     * Called after all {@link org.chromium.chrome.browser.tab.TabState}s within {@link TabModel}
+     * are loaded from storage.
+     */
+    default void restoreCompleted() {}
 
     /**
      * Called when the TabModel is destroyed. Note that for the incognito tab model this may be
