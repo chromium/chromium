@@ -596,13 +596,13 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-    public void testWideIconTrue_tabSearchOverlay() {
+    public void testWideIconFalse_tabSearchOverlay() {
         doReturn(PageClassification.ANDROID_TAB_SEARCH_OVERLAY_VALUE)
                 .when(mLocationBarDataProvider)
                 .getPageClassification(/* prefetch= */ false);
 
         mMediator.beginInput(mFuseboxSessionState);
-        assertTrue(mModel.get(StatusProperties.USE_WIDE_STATUS_ICON));
+        assertFalse(mModel.get(StatusProperties.USE_WIDE_STATUS_ICON));
     }
 
     @Test

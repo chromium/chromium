@@ -421,13 +421,12 @@ public class StatusMediator
                         && UrlUtilities.isNtpUrl(url)
                         && !mLocationBarDataProvider.isIncognitoBranded();
 
+        int pageClassification =
+                mLocationBarDataProvider.getPageClassification(/* prefetch= */ false);
         mModel.set(
                 StatusProperties.USE_WIDE_STATUS_ICON,
-                mUrlHasFocus
-                        || isRegularNtpUrl
-                        || PageClassificationUtils.isHubOrTabSearch(
-                                mLocationBarDataProvider.getPageClassification(
-                                        /* prefetch= */ false)));
+                pageClassification != PageClassification.ANDROID_TAB_SEARCH_OVERLAY_VALUE
+                        && (mUrlHasFocus || isRegularNtpUrl));
     }
 
     public void setUseSmallWidget(boolean useSmallWidget) {
