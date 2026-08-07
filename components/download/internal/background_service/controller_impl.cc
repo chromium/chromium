@@ -779,7 +779,7 @@ void ControllerImpl::PollActiveDriverDownloads() {
 
   std::set<std::string> guids = driver_->GetActiveDownloads();
 
-  for (auto guid : guids) {
+  for (const auto& guid : guids) {
     if (!model_->Get(guid))
       externally_active_downloads_.insert(guid);
   }
