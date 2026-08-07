@@ -21,7 +21,7 @@ namespace extensions {
 // extension action.
 // LINT.IfChange(ActionIconSize)
 #if BUILDFLAG(IS_ANDROID)
-constexpr int kActionIconSize = extension_misc::EXTENSION_ICON_SMALLISH;
+constexpr int kActionIconSize = extension_misc::EXTENSION_ICON_MINI;
 #else
 constexpr int kActionIconSize = extension_misc::EXTENSION_ICON_BITTY;
 #endif

@@ -11,6 +11,8 @@
 #include "chrome/browser/ui/extensions/extensions_menu_view_model.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/permissions_manager.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
@@ -25,7 +27,7 @@ namespace {
 
 using base::android::ScopedJavaLocalRef;
 
-constexpr gfx::Size kActionIconSize = gfx::Size(24, 24);
+constexpr gfx::Size kActionIconSize = gfx::Size(20, 20);
 
 ScopedJavaLocalRef<jobject> ConvertToJavaBitmap(
     const ui::ImageModel& image_model) {
@@ -36,6 +38,11 @@ ScopedJavaLocalRef<jobject> ConvertToJavaBitmap(
   gfx::ImageSkia image_skia = image_model.GetImage().AsImageSkia();
 
   float icon_scale_factor = 1.0f;
+  display::Screen* screen = display::Screen::Get();
+  if (screen) {
+    icon_scale_factor = screen->GetPrimaryDisplay().device_scale_factor();
+  }
+
   const gfx::ImageSkiaRep& rep =
       image_skia.GetRepresentation(icon_scale_factor);
   const SkBitmap& bitmap = rep.GetBitmap();

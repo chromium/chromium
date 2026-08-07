@@ -73,7 +73,7 @@ bool HasValue(const std::map<int, T>& map, ExtensionAction::TabID tab_id) {
 // LINT.IfChange(ActionIconSize)
 extension_misc::ExtensionIcons ExtensionAction::ActionIconSize() {
 #if BUILDFLAG(IS_ANDROID)
-  return extension_misc::EXTENSION_ICON_SMALLISH;
+  return extension_misc::EXTENSION_ICON_MINI;
 #else
   return extension_misc::EXTENSION_ICON_BITTY;
 #endif

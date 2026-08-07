@@ -64,6 +64,7 @@ if (enable_extensions_core) {
       "//extensions/browser:extension_action_enums",
       "//extensions/common",
       "//net",
+      "//ui/display",
       "//ui/menus",
       "//url",
     ]
