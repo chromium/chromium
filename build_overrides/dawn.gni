@@ -19,5 +19,6 @@ dawn_vulkan_validation_layers_dir = "//third_party/vulkan-validation-layers/src"
 dawn_dxc_dir = "//third_party/dawn/third_party/directx-shader-compiler/src"
 dawn_dxc_gn_dir = "//third_party/dawn/third_party/directx-shader-compiler"
 dawn_dxheaders_dir = "//third_party/dawn/third_party/directx-headers/src"
+dawn_agility_sdk_dir = "//third_party/dawn/third_party/agility-sdk"
 dawn_version_file = "//gpu/webgpu/DAWN_VERSION"
 dawn_use_static_angle = use_static_angle
