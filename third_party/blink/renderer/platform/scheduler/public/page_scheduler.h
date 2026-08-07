@@ -52,9 +52,6 @@ class PLATFORM_EXPORT PageScheduler {
   virtual void SetPageFrozen(bool) = 0;
   // Handles operations required for storing the page in the back-forward cache.
   virtual void SetPageBackForwardCached(bool) = 0;
-  // Whether the main frame of this page is local or not (remote).
-  virtual bool IsMainFrameLocal() const = 0;
-  virtual void SetIsMainFrameLocal(bool) = 0;
   // Whether the main frame of this page is in BackForwardCache or not.
   virtual bool IsInBackForwardCache() const = 0;
 

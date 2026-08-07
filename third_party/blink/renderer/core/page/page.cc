@@ -438,8 +438,6 @@ void Page::SetMainFrame(Frame* main_frame) {
   // initialization or swaps between local and remote frames.
   main_frame_ = main_frame;
 
-  page_scheduler_->SetIsMainFrameLocal(main_frame->IsLocalFrame());
-
   // Now that the page has a main frame, connect it to related pages if needed.
   // However, if the main frame is a fake RemoteFrame used for a new Page to
   // host a provisional main LocalFrame, don't connect it just yet, as this Page

@@ -202,9 +202,6 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // PluginsChangedObservers.
   static void ResetPluginData();
 
-  // When this method is called, page_scheduler_->SetIsMainFrameLocal should
-  // also be called to update accordingly.
-  // TODO(npm): update the |page_scheduler_| directly in this method.
   void SetMainFrame(Frame*);
   Frame* MainFrame() const { return main_frame_.Get(); }
 

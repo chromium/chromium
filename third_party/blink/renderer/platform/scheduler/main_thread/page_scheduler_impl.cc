@@ -164,7 +164,6 @@ PageSchedulerImpl::PageSchedulerImpl(
       is_frozen_(false),
       opted_out_from_aggressive_throttling_(false),
       nested_runloop_(false),
-      is_main_frame_local_(false),
       is_cpu_time_throttled_(false),
       are_wake_ups_intensively_throttled_(false),
       had_recent_title_or_favicon_update_(false),
@@ -341,10 +340,6 @@ void PageSchedulerImpl::SetUpIPCTaskDetection() {
   }
 }
 
-bool PageSchedulerImpl::IsMainFrameLocal() const {
-  return is_main_frame_local_;
-}
-
 bool PageSchedulerImpl::IsLoading() const {
   return IsWaitingForMainFrameContentfulPaint() ||
          IsWaitingForMainFrameMeaningfulPaint();
@@ -354,10 +349,6 @@ bool PageSchedulerImpl::IsOrdinary() const {
   if (!delegate_)
     return true;
   return delegate_->IsOrdinary();
-}
-
-void PageSchedulerImpl::SetIsMainFrameLocal(bool is_local) {
-  is_main_frame_local_ = is_local;
 }
 
 void PageSchedulerImpl::RegisterFrameSchedulerImpl(

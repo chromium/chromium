@@ -67,8 +67,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   bool IsPageVisible() const override;
   void SetPageFrozen(bool) override;
   void SetPageBackForwardCached(bool) override;
-  bool IsMainFrameLocal() const override;
-  void SetIsMainFrameLocal(bool is_local) override;
   base::TimeTicks GetStoredInBackForwardCacheTimestamp() {
     return stored_in_back_forward_cache_timestamp_;
   }
@@ -233,7 +231,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   bool is_frozen_;
   bool opted_out_from_aggressive_throttling_;
   bool nested_runloop_;
-  bool is_main_frame_local_;
   bool is_cpu_time_throttled_;
   bool are_wake_ups_intensively_throttled_;
   bool had_recent_title_or_favicon_update_;
