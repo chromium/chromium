@@ -200,6 +200,15 @@ public class AccountCapabilities {
     }
 
     /**
+     * @return isSubjectToUniversalOptOut capability value.
+     */
+    public @Tribool int isSubjectToUniversalOptOut() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants
+                        .IS_SUBJECT_TO_UNIVERSAL_OPT_OUT_CAPABILITY_NAME);
+    }
+
+    /**
      * @return supportsWalletPrivatePassesInAutofill capability value.
      */
     public @Tribool int supportsWalletPrivatePassesInAutofill() {

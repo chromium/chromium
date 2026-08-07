@@ -78,6 +78,9 @@ public final class AccountCapabilitiesTest {
                 return capabilities.isSubjectToEnterpriseFeatures();
             case AccountCapabilitiesConstants.IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME:
                 return capabilities.isSubjectToParentalControls();
+            case AccountCapabilitiesConstants
+                    .IS_SUBJECT_TO_UNIVERSAL_OPT_OUT_CAPABILITY_NAME:
+                return capabilities.isSubjectToUniversalOptOut();
             case AccountCapabilitiesConstants.SUPPORTS_WALLET_PRIVATE_PASSES_IN_AUTOFILL_NAME:
                 return capabilities.supportsWalletPrivatePassesInAutofill();
                 /** keep-sorted end */
@@ -122,6 +125,8 @@ public final class AccountCapabilitiesTest {
                             AccountCapabilitiesConstants.CAN_USE_GEMINI_IN_CHROME_CAPABILITY_NAME,
                             AccountCapabilitiesConstants
                                     .IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME,
+                            AccountCapabilitiesConstants
+                                    .IS_SUBJECT_TO_UNIVERSAL_OPT_OUT_CAPABILITY_NAME,
                             AccountCapabilitiesConstants.CAN_USE_SPEAKER_LABEL_IN_RECORDER_APP,
                             AccountCapabilitiesConstants
                                     .SUPPORTS_WALLET_PRIVATE_PASSES_IN_AUTOFILL_NAME,

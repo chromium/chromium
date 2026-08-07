@@ -311,6 +311,10 @@ signin::Tribool AccountCapabilities::is_subject_to_parental_controls() const {
   return GetCapabilityByName(kIsSubjectToParentalControlsCapabilityName);
 }
 
+signin::Tribool AccountCapabilities::is_subject_to_universal_opt_out() const {
+  return GetCapabilityByName(kIsSubjectToUniversalOptOutCapabilityName);
+}
+
 #if BUILDFLAG(IS_IOS)
 signin::Tribool AccountCapabilities::must_fetch_apple_age_range_in_chrome()
     const {

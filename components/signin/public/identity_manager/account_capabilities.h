@@ -170,6 +170,9 @@ class AccountCapabilities {
   // Chrome applies parental controls to accounts with this capability.
   signin::Tribool is_subject_to_parental_controls() const;
 
+  // Whether the user is subject to Universal Opt-Out.
+  signin::Tribool is_subject_to_universal_opt_out() const;
+
 #if BUILDFLAG(IS_IOS)
   // Whether the client must fetch Apple's age range in Chrome.
   signin::Tribool must_fetch_apple_age_range_in_chrome() const;

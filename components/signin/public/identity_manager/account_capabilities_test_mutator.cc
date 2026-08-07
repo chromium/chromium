@@ -217,6 +217,12 @@ void AccountCapabilitiesTestMutator::set_is_subject_to_parental_controls(
       value;
 }
 
+void AccountCapabilitiesTestMutator::set_is_subject_to_universal_opt_out(
+    bool value) {
+  capabilities_
+      ->capabilities_map_[kIsSubjectToUniversalOptOutCapabilityName] = value;
+}
+
 #if BUILDFLAG(IS_IOS)
 void AccountCapabilitiesTestMutator::set_must_fetch_apple_age_range_in_chrome(
     bool value) {

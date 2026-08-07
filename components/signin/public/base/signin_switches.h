@@ -713,6 +713,10 @@ BASE_DECLARE_FEATURE(kReadContextualAccountCapabilities);
 
 // Enables fetching the capability of the same name on all platforms.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kReadIsSubjectToUniversalOptOutCapability);
+
+// Enables fetching the capability of the same name on all platforms.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kReadSupportsWalletPrivatePassesInAutofillCapability);
 
 #if !BUILDFLAG(IS_ANDROID)
