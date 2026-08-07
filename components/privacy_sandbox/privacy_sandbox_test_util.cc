@@ -241,12 +241,6 @@ void ApplyTestState(
                   privacy_sandbox::PrivacySandboxAttestationsMap>>(value));
       return;
     }
-    case (StateKey::kBlockFledgeJoiningForEtldplus1): {
-      SCOPED_TRACE("State Setup: Disable FLEDGE joining for eTLD+1");
-      privacy_sandbox_settings->SetFledgeJoiningAllowed(
-          GetItemValue<std::string>(value), false);
-      return;
-    }
     default:
       NOTREACHED();
   }
@@ -275,157 +269,7 @@ void CheckOutput(
     sync_preferences::TestingPrefServiceSyncable* testing_pref_service) {
   auto [output_key, output_value] = output;
   switch (output_key) {
-    case (OutputKey::kIsTopicsAllowed): {
-      SCOPED_TRACE("Check Output: IsTopicsAllowed()");
-      auto return_value = GetItemValue<bool>(output_value);
-      ASSERT_EQ(return_value, privacy_sandbox_settings->IsTopicsAllowed());
-      return;
-    }
-    case (OutputKey::kIsTopicsAllowedForContext): {
-      SCOPED_TRACE("Check Output: IsTopicsAllowedForContext()");
-      auto top_frame_origin =
-          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
-      auto topics_url = GetItemValueForKey<GURL>(InputKey::kTopicsURL, input);
-      auto return_value = GetItemValue<bool>(output_value);
-      ASSERT_EQ(return_value,
-                privacy_sandbox_settings->IsTopicsAllowedForContext(
-                    top_frame_origin, topics_url));
-      return;
-    }
-    case (OutputKey::kIsFledgeJoinAllowed): {
-      SCOPED_TRACE("Check Output: IsFledgeAllowed(kJoin)");
-      auto top_frame_origin =
-          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
-      auto fledge_auction_party_origin = GetItemValueForKey<url::Origin>(
-          InputKey::kFledgeAuctionPartyOrigin, input);
-      auto return_value = GetItemValue<bool>(output_value);
-      ASSERT_EQ(return_value,
-                privacy_sandbox_settings->IsFledgeAllowed(
-                    top_frame_origin, fledge_auction_party_origin,
-                    privacy_sandbox::InterestGroupApiOperation::kJoin));
-      return;
-    }
-    case (OutputKey::kIsFledgeLeaveAllowed): {
-      SCOPED_TRACE("Check Output: IsFledgeAllowed(kLeave)");
-      auto top_frame_origin =
-          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
-      auto fledge_auction_party_origin = GetItemValueForKey<url::Origin>(
-          InputKey::kFledgeAuctionPartyOrigin, input);
-      auto return_value = GetItemValue<bool>(output_value);
-      ASSERT_EQ(return_value,
-                privacy_sandbox_settings->IsFledgeAllowed(
-                    top_frame_origin, fledge_auction_party_origin,
-                    privacy_sandbox::InterestGroupApiOperation::kLeave));
-      return;
-    }
-    case (OutputKey::kIsFledgeUpdateAllowed): {
-      SCOPED_TRACE("Check Output: IsFledgeAllowed(kUpdate)");
-      auto top_frame_origin =
-          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
-      auto fledge_auction_party_origin = GetItemValueForKey<url::Origin>(
-          InputKey::kFledgeAuctionPartyOrigin, input);
-      auto return_value = GetItemValue<bool>(output_value);
-      ASSERT_EQ(return_value,
-                privacy_sandbox_settings->IsFledgeAllowed(
-                    top_frame_origin, fledge_auction_party_origin,
-                    privacy_sandbox::InterestGroupApiOperation::kUpdate));
-      return;
-    }
-    case (OutputKey::kIsFledgeSellAllowed): {
-      SCOPED_TRACE("Check Output: IsFledgeAllowed(kSell)");
-      auto top_frame_origin =
-          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
-      auto fledge_auction_party_origin = GetItemValueForKey<url::Origin>(
-          InputKey::kFledgeAuctionPartyOrigin, input);
-      auto return_value = GetItemValue<bool>(output_value);
-      ASSERT_EQ(return_value,
-                privacy_sandbox_settings->IsFledgeAllowed(
-                    top_frame_origin, fledge_auction_party_origin,
-                    privacy_sandbox::InterestGroupApiOperation::kSell));
-      return;
-    }
-    case (OutputKey::kIsFledgeBuyAllowed): {
-      SCOPED_TRACE("Check Output: IsFledgeAllowed(kBuy)");
-      auto top_frame_origin =
-          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
-      auto fledge_auction_party_origin = GetItemValueForKey<url::Origin>(
-          InputKey::kFledgeAuctionPartyOrigin, input);
-      auto return_value = GetItemValue<bool>(output_value);
-      ASSERT_EQ(return_value,
-                privacy_sandbox_settings->IsFledgeAllowed(
-                    top_frame_origin, fledge_auction_party_origin,
-                    privacy_sandbox::InterestGroupApiOperation::kBuy));
-      return;
-    }
-    case (OutputKey::kIsEventReportingDestinationAttestedForFledge): {
-      SCOPED_TRACE(
-          "Check Output: IsEventReportingDestinationAttestedForFledge()");
-      auto event_reporting_origin = GetItemValueForKey<url::Origin>(
-          InputKey::kEventReportingDestinationOrigin, input);
-      auto return_value = GetItemValue<bool>(output_value);
-      ASSERT_EQ(return_value,
-                privacy_sandbox_settings->IsEventReportingDestinationAttested(
-                    event_reporting_origin,
-                    privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
-                        kProtectedAudience));
-      return;
-    }
-    case (OutputKey::kIsEventReportingDestinationAttestedForFledgeMetric): {
-      SCOPED_TRACE(
-          "Check Output: "
-          "PrivacySandbox.IsPrivacySandboxReportingDestinationAttested "
-          "(FLEDGE)");
-      base::HistogramTester histogram_tester;
-      auto event_reporting_origin = GetItemValueForKey<url::Origin>(
-          InputKey::kEventReportingDestinationOrigin, input);
-      std::ignore =
-          privacy_sandbox_settings->IsEventReportingDestinationAttested(
-              event_reporting_origin,
-              privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
-                  kProtectedAudience);
-      auto histogram_value = GetItemValue<int>(output_value);
-      histogram_tester.ExpectUniqueSample(
-          "PrivacySandbox.IsPrivacySandboxReportingDestinationAttested",
-          histogram_value, 1);
-      return;
-    }
-    case (OutputKey::kIsEventReportingDestinationAttestedForSharedStorage): {
-      SCOPED_TRACE(
-          "Check Output: "
-          "IsEventReportingDestinationAttestedForSharedStorage()");
-      auto event_reporting_origin = GetItemValueForKey<url::Origin>(
-          InputKey::kEventReportingDestinationOrigin, input);
-      auto return_value = GetItemValue<bool>(output_value);
-      ASSERT_EQ(return_value,
-                privacy_sandbox_settings->IsEventReportingDestinationAttested(
-                    event_reporting_origin,
-                    privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
-                        kSharedStorage));
-      return;
-    }
-    case (OutputKey::
-              kIsEventReportingDestinationAttestedForSharedStorageMetric): {
-      SCOPED_TRACE(
-          "Check Output: "
-          "PrivacySandbox.IsPrivacySandboxReportingDestinationAttested "
-          "(SharedStorage)");
-      base::HistogramTester histogram_tester;
-      auto event_reporting_origin = GetItemValueForKey<url::Origin>(
-          InputKey::kEventReportingDestinationOrigin, input);
-      std::ignore =
-          privacy_sandbox_settings->IsEventReportingDestinationAttested(
-              event_reporting_origin,
-              privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
-                  kSharedStorage);
-      auto histogram_value = GetItemValue<int>(output_value);
-      histogram_tester.ExpectUniqueSample(
-          "PrivacySandbox.IsPrivacySandboxReportingDestinationAttested",
-          histogram_value, 1);
-      return;
-    }
-
     case (OutputKey::kIsSharedStorageAllowed): {
-      SCOPED_TRACE("Check Output: kIsSharedStorageAllowed()");
       auto top_frame_origin =
           GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
       auto accessing_origin =
@@ -454,130 +298,6 @@ void CheckOutput(
       return;
     }
 
-    case (OutputKey::kIsPrivateAggregationAllowed): {
-      SCOPED_TRACE("Check Output: IsPrivateAggregationAllowed()");
-      auto top_frame_origin =
-          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
-      auto reporting_origin = GetItemValueForKey<url::Origin>(
-          InputKey::kAdMeasurementReportingOrigin, input);
-      auto return_value = GetItemValue<bool>(output_value);
-      ASSERT_EQ(return_value,
-                privacy_sandbox_settings->IsPrivateAggregationAllowed(
-                    top_frame_origin, reporting_origin,
-                    /*out_block_is_site_setting_specific=*/nullptr));
-      return;
-    }
-
-    case (OutputKey::kIsPrivateAggregationDebugModeAllowed): {
-      SCOPED_TRACE("Check Output: IsPrivateAggregationDebugModeAllowed()");
-      auto top_frame_origin =
-          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
-      auto reporting_origin = GetItemValueForKey<url::Origin>(
-          InputKey::kAdMeasurementReportingOrigin, input);
-      auto return_value = GetItemValue<bool>(output_value);
-      ASSERT_EQ(return_value,
-                privacy_sandbox_settings->IsPrivateAggregationDebugModeAllowed(
-                    top_frame_origin, reporting_origin));
-      return;
-    }
-
-    case (OutputKey::kIsTopicsAllowedMetric): {
-      SCOPED_TRACE("Check Output: PrivacySandbox.IsTopicsAllowed");
-      base::HistogramTester histogram_tester;
-      std::ignore = privacy_sandbox_settings->IsTopicsAllowed();
-      auto histogram_value = GetItemValue<int>(output_value);
-      histogram_tester.ExpectUniqueSample("PrivacySandbox.IsTopicsAllowed",
-                                          histogram_value, 1);
-      return;
-    }
-    case (OutputKey::kIsTopicsAllowedForContextMetric): {
-      SCOPED_TRACE("Check Output: PrivacySandbox.IsTopicsAllowedForContext");
-      base::HistogramTester histogram_tester;
-      auto top_frame_origin =
-          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
-      auto topics_url = GetItemValueForKey<GURL>(InputKey::kTopicsURL, input);
-      std::ignore = privacy_sandbox_settings->IsTopicsAllowedForContext(
-          top_frame_origin, topics_url);
-      auto histogram_value = GetItemValue<int>(output_value);
-      histogram_tester.ExpectUniqueSample(
-          "PrivacySandbox.IsTopicsAllowedForContext", histogram_value, 1);
-      return;
-    }
-    case (OutputKey::kIsFledgeJoinAllowedMetric): {
-      SCOPED_TRACE("Check Output: PrivacySandbox.IsFledgeJoinAllowed");
-      base::HistogramTester histogram_tester;
-      auto top_frame_origin =
-          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
-      auto fledge_auction_party_origin = GetItemValueForKey<url::Origin>(
-          InputKey::kFledgeAuctionPartyOrigin, input);
-      std::ignore = privacy_sandbox_settings->IsFledgeAllowed(
-          top_frame_origin, fledge_auction_party_origin,
-          privacy_sandbox::InterestGroupApiOperation::kJoin);
-      auto histogram_value = GetItemValue<int>(output_value);
-      histogram_tester.ExpectUniqueSample("PrivacySandbox.IsFledgeJoinAllowed",
-                                          histogram_value, 1);
-      return;
-    }
-    case (OutputKey::kIsFledgeLeaveAllowedMetric): {
-      SCOPED_TRACE("Check Output: PrivacySandbox.IsFledgeLeaveAllowed");
-      base::HistogramTester histogram_tester;
-      auto top_frame_origin =
-          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
-      auto fledge_auction_party_origin = GetItemValueForKey<url::Origin>(
-          InputKey::kFledgeAuctionPartyOrigin, input);
-      std::ignore = privacy_sandbox_settings->IsFledgeAllowed(
-          top_frame_origin, fledge_auction_party_origin,
-          privacy_sandbox::InterestGroupApiOperation::kLeave);
-      auto histogram_value = GetItemValue<int>(output_value);
-      histogram_tester.ExpectUniqueSample("PrivacySandbox.IsFledgeLeaveAllowed",
-                                          histogram_value, 1);
-      return;
-    }
-    case (OutputKey::kIsFledgeUpdateAllowedMetric): {
-      SCOPED_TRACE("Check Output: PrivacySandbox.IsFledgeUpdateAllowed");
-      base::HistogramTester histogram_tester;
-      auto top_frame_origin =
-          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
-      auto fledge_auction_party_origin = GetItemValueForKey<url::Origin>(
-          InputKey::kFledgeAuctionPartyOrigin, input);
-      std::ignore = privacy_sandbox_settings->IsFledgeAllowed(
-          top_frame_origin, fledge_auction_party_origin,
-          privacy_sandbox::InterestGroupApiOperation::kUpdate);
-      auto histogram_value = GetItemValue<int>(output_value);
-      histogram_tester.ExpectUniqueSample(
-          "PrivacySandbox.IsFledgeUpdateAllowed", histogram_value, 1);
-      return;
-    }
-    case (OutputKey::kIsFledgeSellAllowedMetric): {
-      SCOPED_TRACE("Check Output: PrivacySandbox.IsFledgeSellAllowed");
-      base::HistogramTester histogram_tester;
-      auto top_frame_origin =
-          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
-      auto fledge_auction_party_origin = GetItemValueForKey<url::Origin>(
-          InputKey::kFledgeAuctionPartyOrigin, input);
-      std::ignore = privacy_sandbox_settings->IsFledgeAllowed(
-          top_frame_origin, fledge_auction_party_origin,
-          privacy_sandbox::InterestGroupApiOperation::kSell);
-      auto histogram_value = GetItemValue<int>(output_value);
-      histogram_tester.ExpectUniqueSample("PrivacySandbox.IsFledgeSellAllowed",
-                                          histogram_value, 1);
-      return;
-    }
-    case (OutputKey::kIsFledgeBuyAllowedMetric): {
-      SCOPED_TRACE("Check Output: PrivacySandbox.IsFledgeBuyAllowed");
-      base::HistogramTester histogram_tester;
-      auto top_frame_origin =
-          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
-      auto fledge_auction_party_origin = GetItemValueForKey<url::Origin>(
-          InputKey::kFledgeAuctionPartyOrigin, input);
-      std::ignore = privacy_sandbox_settings->IsFledgeAllowed(
-          top_frame_origin, fledge_auction_party_origin,
-          privacy_sandbox::InterestGroupApiOperation::kBuy);
-      auto histogram_value = GetItemValue<int>(output_value);
-      histogram_tester.ExpectUniqueSample("PrivacySandbox.IsFledgeBuyAllowed",
-                                          histogram_value, 1);
-      return;
-    }
     case (OutputKey::kIsSharedStorageAllowedMetric): {
       SCOPED_TRACE("Check Output: PrivacySandbox.IsSharedStorageAllowed");
       base::HistogramTester histogram_tester;
@@ -608,56 +328,6 @@ void CheckOutput(
       auto histogram_value = GetItemValue<int>(output_value);
       histogram_tester.ExpectUniqueSample(
           "PrivacySandbox.IsSharedStorageSelectURLAllowed", histogram_value, 1);
-      return;
-    }
-    case (OutputKey::kIsPrivateAggregationAllowedMetric): {
-      SCOPED_TRACE("Check Output: PrivacySandbox.IsPrivateAggregationAllowed");
-      base::HistogramTester histogram_tester;
-      auto top_frame_origin =
-          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
-      auto reporting_origin = GetItemValueForKey<url::Origin>(
-          InputKey::kAdMeasurementReportingOrigin, input);
-
-      base::test::ScopedFeatureList scoped_feature_list_{
-          metrics::dwa::kDwaFeature};
-
-      // Ensures that metrics are only counted for this call.
-      // TODO(crbug.com/403946431): Consider implementing a scoped object to
-      // improve ergonomics.
-      metrics::dwa::DwaRecorder::Get()->EnableRecording();
-      metrics::dwa::DwaRecorder::Get()->Purge();
-      ASSERT_THAT(metrics::dwa::DwaRecorder::Get()->GetEntriesForTesting(),
-                  testing::IsEmpty());
-
-      std::ignore = privacy_sandbox_settings->IsPrivateAggregationAllowed(
-          top_frame_origin, reporting_origin,
-          /*out_block_is_site_setting_specific=*/nullptr);
-      auto histogram_value = GetItemValue<int>(output_value);
-      histogram_tester.ExpectUniqueSample(
-          "PrivacySandbox.IsPrivateAggregationAllowed", histogram_value, 1);
-
-      ASSERT_THAT(metrics::dwa::DwaRecorder::Get()->GetEntriesForTesting(),
-                  testing::SizeIs(1));
-      EXPECT_THAT(
-          metrics::dwa::DwaRecorder::Get()
-              ->GetEntriesForTesting()[0]
-              ->event_hash,
-          base::HashMetricName("PrivacySandbox.IsPrivateAggregationAllowed"));
-
-      // DWA content sanitization extracts the eTLD+1 from the provided
-      // reporting origin.
-      EXPECT_THAT(
-          metrics::dwa::DwaRecorder::Get()
-              ->GetEntriesForTesting()[0]
-              ->content_hash,
-          base::HashMetricName(
-              net::registry_controlled_domains::GetDomainAndRegistry(
-                  reporting_origin.GetURL(), net::registry_controlled_domains::
-                                                 INCLUDE_PRIVATE_REGISTRIES)));
-      EXPECT_THAT(
-          metrics::dwa::DwaRecorder::Get()->GetEntriesForTesting()[0]->metrics,
-          testing::UnorderedElementsAre(
-              testing::Pair(base::HashMetricName("Status"), histogram_value)));
       return;
     }
     case (OutputKey::kPromptType): {
@@ -816,29 +486,6 @@ void CheckOutput(
       }
       return;
     }
-    case (OutputKey::kIsPrivateAggregationBlockSiteSettingSpecific): {
-      SCOPED_TRACE(
-          "Check Output: Verify out_is_block_site_specific in "
-          "IsPrivateAggregationAllowed()");
-      auto top_frame_origin =
-          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
-      auto accessing_origin =
-          GetItemValueForKey<url::Origin>(InputKey::kAccessingOrigin, input);
-      bool* actual_out_is_block_site_specific = GetItemValueForKey<bool*>(
-          InputKey::kOutPrivateAggregationBlockIsSiteSettingSpecific, input);
-      privacy_sandbox_settings->IsPrivateAggregationAllowed(
-          top_frame_origin, accessing_origin,
-          actual_out_is_block_site_specific);
-      bool* expected_out_is_block_site_specific =
-          GetItemValue<bool*>(output_value);
-      ASSERT_EQ(!!actual_out_is_block_site_specific,
-                !!expected_out_is_block_site_specific);
-      if (expected_out_is_block_site_specific) {
-        ASSERT_EQ(*actual_out_is_block_site_specific,
-                  *expected_out_is_block_site_specific);
-      }
-      return;
-    }
   }
 }
 
@@ -888,16 +535,6 @@ void RunTestCase(
     CheckOutput(inputs, output, privacy_sandbox_settings,
                 privacy_sandbox_service, testing_pref_service);
   }
-}
-
-// static
-bool PrivacySandboxSettingsTestPeer::IsAllowed(Status status) {
-  return privacy_sandbox::PrivacySandboxSettingsImpl::IsAllowed(status);
-}
-
-bool PrivacySandboxSettingsTestPeer::IsFledgeJoiningAllowed(
-    const url::Origin& top_frame_origin) const {
-  return pss_impl_->IsFledgeJoiningAllowed(top_frame_origin);
 }
 
 }  // namespace privacy_sandbox_test_util

@@ -1048,28 +1048,6 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   </summary>
 </histogram>
 
-<histogram name="PrivacySandbox.NoticeRequirement.IsVariationCountryEmpty"
-    enum="Boolean" expires_after="2026-02-01">
-  <owner>chrstne@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records whether or not the variation country is empty for profiles. This
-    histogram will be used to determine if the variation country being empty
-    leads to an increased spike of Privacy Sandbox notice APIs being disabled.
-  </summary>
-</histogram>
-
-<histogram name="PrivacySandbox.NoticeRequirement.IsVariationServiceReady"
-    enum="Boolean" expires_after="2026-02-01">
-  <owner>chrstne@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records whether or not the variation service is ready for profiles. This
-    histogram will be used to determine if the variation service not being ready
-    leads to an increased spike of Privacy Sandbox notice APIs being disabled.
-  </summary>
-</histogram>
-
 <histogram name="PrivacySandbox.ProtectedAudience.JoiningTopFrameDisplayed"
     enum="BooleanShown" expires_after="2025-01-05">
   <owner>sauski@google.com</owner>
@@ -1081,42 +1059,6 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
     determined. Recorded on a per interest group data key basis when the user
     opens the Protected Audience settings page.
   </summary>
-</histogram>
-
-<histogram name="PrivacySandbox.{ApiType}" enum="PrivacySandboxApiAllowed"
-    expires_after="never">
-<!-- expires-never: critical system health metric for monitoring -->
-
-  <owner>linnan@chromium.org</owner>
-  <owner>sauski@chromium.org</owner>
-  <summary>
-    Whether or not the {ApiType} operation was allowed by Privacy Sandbox
-    settings and why. Recorded at the time settings are checked when performing
-    the operation.
-
-    This is a critical histogram monitored by alerts. Please make sure future
-    versions of this histogram are properly set up for alerting. The attribution
-    reporting and private aggregation variants are monitored by
-    measurement-api-dev+alerts@google.com.
-  </summary>
-  <token key="ApiType">
-    <variant name="IsFledgeBuyAllowed" summary="IsFledgeBuyAllowed"/>
-    <variant name="IsFledgeJoinAllowed" summary="IsFledgeJoinAllowed"/>
-    <variant name="IsFledgeLeaveAllowed" summary="IsFledgeLeaveAllowed"/>
-    <variant name="IsFledgeReadAllowed" summary="IsFledgeReadAllowed"/>
-    <variant name="IsFledgeSellAllowed" summary="IsFledgeSellAllowed"/>
-    <variant name="IsFledgeUpdateAllowed" summary="IsFledgeUpdateAllowed"/>
-    <variant name="IsPrivacySandboxReportingDestinationAttested"
-        summary="IsPrivacySandboxReportingDestinationAttested"/>
-    <variant name="IsPrivateAggregationAllowed"
-        summary="IsPrivateAggregationAllowed"/>
-    <variant name="IsSharedStorageAllowed" summary="IsSharedStorageAllowed"/>
-    <variant name="IsSharedStorageSelectURLAllowed"
-        summary="IsSharedStorageSelectURLAllowed"/>
-    <variant name="IsTopicsAllowed" summary="IsTopicsAllowed"/>
-    <variant name="IsTopicsAllowedForContext"
-        summary="IsTopicsAllowedForContext"/>
-  </token>
 </histogram>
 
 </histograms>

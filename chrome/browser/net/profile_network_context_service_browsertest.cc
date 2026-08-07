@@ -957,7 +957,6 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextTrustTokensBrowsertest,
       /*incognito=*/browser()->GetProfile()->IsIncognitoProfile());
   privacy_sandbox_settings->SetDelegateForTesting(
       std::move(privacy_sandbox_delegate));
-  privacy_sandbox_settings->SetAllPrivacySandboxAllowedForTesting();
   auto* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
   Flush();

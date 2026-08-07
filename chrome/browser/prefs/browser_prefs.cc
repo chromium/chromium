@@ -944,6 +944,12 @@ constexpr char kObsoleteAutofillWalletImportEnabled[] =
     "autofill.wallet_import_enabled";
 constexpr char kObsoleteAutofillWalletImportEnabledMigrated[] =
     "sync.autofill_wallet_import_enabled_migrated";
+constexpr char kPrivacySandboxTopicsDataAccessibleSince[] =
+    "privacy_sandbox.topics_data_accessible_since";
+constexpr char kPrivacySandboxBlockedTopics[] =
+    "privacy_sandbox.blocked_topics";
+constexpr char kPrivacySandboxFledgeJoinBlocked[] =
+    "privacy_sandbox.fledge_join_blocked";
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Deprecated 07/2026.
@@ -1296,6 +1302,10 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 08/2026.
   registry->RegisterDictionaryPref(kPrivacySandboxNotices);
+  registry->RegisterTimePref(kPrivacySandboxTopicsDataAccessibleSince,
+                             base::Time());
+  registry->RegisterListPref(kPrivacySandboxBlockedTopics);
+  registry->RegisterDictionaryPref(kPrivacySandboxFledgeJoinBlocked);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Deprecated 07/2026.
@@ -2625,6 +2635,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 08/2026.
   profile_prefs->ClearPref(kObsoleteAutofillWalletImportEnabled);
   profile_prefs->ClearPref(kObsoleteAutofillWalletImportEnabledMigrated);
+  profile_prefs->ClearPref(kPrivacySandboxTopicsDataAccessibleSince);
+  profile_prefs->ClearPref(kPrivacySandboxBlockedTopics);
+  profile_prefs->ClearPref(kPrivacySandboxFledgeJoinBlocked);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

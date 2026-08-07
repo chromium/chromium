@@ -49,23 +49,6 @@ inline constexpr char kPrivacySandboxM1AdMeasurementEnabled[] =
 inline constexpr char kPrivacySandboxM1Restricted[] =
     "privacy_sandbox.m1.restricted";
 
-// The point in time from which history is eligible to be used when calculating
-// a user's Topics API topics.
-inline constexpr char kPrivacySandboxTopicsDataAccessibleSince[] =
-    "privacy_sandbox.topics_data_accessible_since";
-
-// List of entries representing Topics API topics which are blocked for
-// the profile. Blocked topics cannot be provided to site, or considered as
-// part of the profile's "top topics". Entries in the list are dictionaries
-// containing the CanonicalTopic and the time the setting was created.
-inline constexpr char kPrivacySandboxBlockedTopics[] =
-    "privacy_sandbox.blocked_topics";
-
-// Dictionary of entries representing top frame origins on which the profile
-// cannot be joined to an interest group. Keys are the blocked origins, and
-// values are the time the setting was applied.
-inline constexpr char kPrivacySandboxFledgeJoinBlocked[] =
-    "privacy_sandbox.fledge_join_blocked";
 
 // Boolean that indicates that the Privacy Sandbox notice was shown to the
 // profile.

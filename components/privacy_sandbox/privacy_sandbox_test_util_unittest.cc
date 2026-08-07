@@ -288,40 +288,6 @@ TEST_F(PrivacySandboxBaseTestUtilTest, VerifyAdvanceClockByStateKey) {
   EXPECT_EQ(start_time + base::Hours(1), base::Time::Now());
 }
 
-TEST_F(PrivacySandboxBaseTestUtilTest,
-       VerifyIsTopicsAllowedForContextOutputKey) {
-  GURL kTopicsURL = GURL("https://topics.com");
-
-  EXPECT_CALL(*mock_privacy_sandbox_settings(),
-              IsTopicsAllowedForContext(TopFrameOrigin(), kTopicsURL, nullptr))
-      .WillOnce(testing::Return(true));
-
-  CheckOutput({{InputKey::kTopicsURL, kTopicsURL},
-               {InputKey::kTopFrameOrigin, TopFrameOrigin()}},
-              {OutputKey::kIsTopicsAllowedForContext, true});
-}
-
-TEST_F(PrivacySandboxBaseTestUtilTest, VerifyIsTopicsAllowedOutputKey) {
-  EXPECT_CALL(*mock_privacy_sandbox_settings(), IsTopicsAllowed())
-      .WillOnce(testing::Return(true));
-  CheckOutput({}, {OutputKey::kIsTopicsAllowed, true});
-}
-
-TEST_F(PrivacySandboxBaseTestUtilTest, VerifyIsFledgeAllowedOutputKey) {
-  url::Origin kFledgeAuctionPartyOrigin =
-      url::Origin::Create(GURL("https://fledge.com"));
-
-  EXPECT_CALL(*mock_privacy_sandbox_settings(),
-              IsFledgeAllowed(TopFrameOrigin(), kFledgeAuctionPartyOrigin,
-                              privacy_sandbox::InterestGroupApiOperation::kJoin,
-                              nullptr))
-      .WillOnce(testing::Return(true));
-
-  CheckOutput({{InputKey::kFledgeAuctionPartyOrigin, kFledgeAuctionPartyOrigin},
-               {InputKey::kTopFrameOrigin, TopFrameOrigin()}},
-              {OutputKey::kIsFledgeJoinAllowed, true});
-}
-
 TEST_F(PrivacySandboxBaseTestUtilTest, VerifyIsSharedStorageAllowedOutputKey) {
   EXPECT_CALL(
       *mock_privacy_sandbox_settings(),
@@ -348,23 +314,6 @@ TEST_F(PrivacySandboxBaseTestUtilTest,
   CheckOutput({{InputKey::kAccessingOrigin, AccessingOrigin()},
                {InputKey::kTopFrameOrigin, TopFrameOrigin()}},
               {OutputKey::kIsSharedStorageSelectURLAllowed, true});
-}
-
-TEST_F(PrivacySandboxBaseTestUtilTest,
-       VerifyIsPrivateAggregationAllowedOutputKey) {
-  url::Origin kAdMeasurementReportingOrigin =
-      url::Origin::Create(GURL("https://reporting.com"));
-
-  EXPECT_CALL(*mock_privacy_sandbox_settings(),
-              IsPrivateAggregationAllowed(
-                  TopFrameOrigin(), kAdMeasurementReportingOrigin,
-                  /*out_block_is_site_setting_specific=*/nullptr))
-      .WillOnce(testing::Return(true));
-
-  CheckOutput(
-      {{InputKey::kAdMeasurementReportingOrigin, kAdMeasurementReportingOrigin},
-       {InputKey::kTopFrameOrigin, TopFrameOrigin()}},
-      {OutputKey::kIsPrivateAggregationAllowed, true});
 }
 
 TEST_F(PrivacySandboxBaseTestUtilTest,
@@ -454,28 +403,6 @@ TEST_F(PrivacySandboxBaseTestUtilTest,
                {InputKey::kOutSharedStorageSelectURLBlockIsSiteSettingSpecific,
                 &actual_out_block_is_site_setting_specific}},
               {OutputKey::kIsSharedStorageSelectURLBlockSiteSettingSpecific,
-               &expected_out_block_is_site_setting_specific});
-}
-
-TEST_F(PrivacySandboxBaseTestUtilTest,
-       VerifyIsPrivateAggregationBlockSiteSettingSpecificOutputKey) {
-  bool actual_out_block_is_site_setting_specific = true;
-  EXPECT_CALL(
-      *mock_privacy_sandbox_settings(),
-      IsPrivateAggregationAllowed(TopFrameOrigin(), AccessingOrigin(),
-                                  /*out_block_is_site_setting_specific=*/
-                                  &actual_out_block_is_site_setting_specific))
-      .WillOnce(testing::DoAll(testing::SetArgPointee<2>(false),
-                               testing::Return(true)));
-
-  // The expected value for `out_block_is_site_setting_specific` here is false
-  // because we are using a mock method that sets it to false.
-  bool expected_out_block_is_site_setting_specific = false;
-  CheckOutput({{InputKey::kAccessingOrigin, AccessingOrigin()},
-               {InputKey::kTopFrameOrigin, TopFrameOrigin()},
-               {InputKey::kOutPrivateAggregationBlockIsSiteSettingSpecific,
-                &actual_out_block_is_site_setting_specific}},
-              {OutputKey::kIsPrivateAggregationBlockSiteSettingSpecific,
                &expected_out_block_is_site_setting_specific});
 }
 

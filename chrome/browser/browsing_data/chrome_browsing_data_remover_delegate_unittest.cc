@@ -4298,55 +4298,6 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-// When most cookies are cleared, PrivacySandboxSettings should call the
-// OnTopicsDataAccessibleSinceUpdated() method of its observers.
-TEST_F(ChromeBrowsingDataRemoverDelegateTest,
-       Call_OnTopicsDataAccessibleSinceUpdated_WhenClearingMostCookies) {
-  privacy_sandbox::PrivacySandboxSettings* settings =
-      PrivacySandboxSettingsFactory::GetForProfile(GetProfile());
-  privacy_sandbox_test_util::MockPrivacySandboxObserver observer;
-  base::ScopedObservation<privacy_sandbox::PrivacySandboxSettings,
-                          privacy_sandbox::PrivacySandboxSettings::Observer>
-      obs(&observer);
-  obs.Observe(settings);
-
-  EXPECT_CALL(observer, OnTopicsDataAccessibleSinceUpdated()).Times(1);
-
-  std::unique_ptr<BrowsingDataFilterBuilder> filter_builder =
-      BrowsingDataFilterBuilder::Create(
-          BrowsingDataFilterBuilder::Mode::kPreserve);
-  filter_builder->AddRegisterableDomain("example.test");
-  ASSERT_TRUE(filter_builder->MatchesMostOriginsAndDomains());
-  BlockUntilOriginDataRemoved(base::Time::Min(), base::Time::Max(),
-                              content::BrowsingDataRemover::DATA_TYPE_COOKIES,
-                              std::move(filter_builder));
-}
-
-// If only some cookies are cleared, PrivacySandboxSettings should NOT call the
-// OnTopicsDataAccessibleSinceUpdated() method of its observers.
-TEST_F(
-    ChromeBrowsingDataRemoverDelegateTest,
-    DontCall_OnTopicsDataAccessibleSinceUpdated_WhenOnlyClearingPartitionedCookies) {
-  privacy_sandbox::PrivacySandboxSettings* settings =
-      PrivacySandboxSettingsFactory::GetForProfile(GetProfile());
-  privacy_sandbox_test_util::MockPrivacySandboxObserver observer;
-  base::ScopedObservation<privacy_sandbox::PrivacySandboxSettings,
-                          privacy_sandbox::PrivacySandboxSettings::Observer>
-      obs(&observer);
-  obs.Observe(settings);
-
-  EXPECT_CALL(observer, OnTopicsDataAccessibleSinceUpdated()).Times(0);
-
-  // Create a filter builder that deletes only partitioned cookies.
-  std::unique_ptr<BrowsingDataFilterBuilder> filter_builder =
-      BrowsingDataFilterBuilder::Create(
-          BrowsingDataFilterBuilder::Mode::kPreserve);
-  filter_builder->SetPartitionedCookiesOnly(true);
-  ASSERT_FALSE(filter_builder->MatchesMostOriginsAndDomains());
-  BlockUntilOriginDataRemoved(base::Time::Min(), base::Time::Max(),
-                              content::BrowsingDataRemover::DATA_TYPE_COOKIES,
-                              std::move(filter_builder));
-}
 
 #if !BUILDFLAG(IS_ANDROID)
 // Ensures New Tab page local storage is clear when Microsoft auth service

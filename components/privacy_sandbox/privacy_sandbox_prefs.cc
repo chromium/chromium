@@ -28,10 +28,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                 false);
   registry->RegisterBooleanPref(prefs::kPrivacySandboxM1Restricted, false);
 
-  registry->RegisterTimePref(prefs::kPrivacySandboxTopicsDataAccessibleSince,
-                             base::Time());
-  registry->RegisterListPref(prefs::kPrivacySandboxBlockedTopics);
-  registry->RegisterDictionaryPref(prefs::kPrivacySandboxFledgeJoinBlocked);
   registry->RegisterBooleanPref(prefs::kPrivacySandboxNoticeDisplayed, false);
   registry->RegisterBooleanPref(prefs::kPrivacySandboxConsentDecisionMade,
                                 false);

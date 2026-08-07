@@ -69,7 +69,6 @@
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/private_verification_tokens/private_verification_tokens_service.h"
 #include "chrome/browser/private_verification_tokens/private_verification_tokens_service_factory.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -131,7 +130,6 @@
 #include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/prefs/pref_service.h"
-#include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
@@ -653,12 +651,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     }
 
     if (filter_builder->MatchesMostOriginsAndDomains()) {
-      auto* privacy_sandbox_settings =
-          PrivacySandboxSettingsFactory::GetForProfile(profile_);
-      if (privacy_sandbox_settings) {
-        privacy_sandbox_settings->OnCookiesCleared();
-      }
-
 #if BUILDFLAG(IS_ANDROID)
       Java_PackageHash_onCookiesDeleted(base::android::AttachCurrentThread(),
                                         profile_->GetJavaObject());
@@ -783,13 +775,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
         ContentSettingsType::PERMISSION_ACTIONS_HISTORY, delete_begin,
         delete_end, website_settings_filter);
-
-    if (auto* privacy_sandbox_settings =
-            PrivacySandboxSettingsFactory::GetForProfile(profile_)) {
-      privacy_sandbox_settings->ClearFledgeJoiningAllowedSettings(delete_begin_,
-                                                                  delete_end_);
-      privacy_sandbox_settings->ClearTopicSettings(delete_begin_, delete_end_);
-    }
 
     // Cleared for both DATA_TYPE_HISTORY and DATA_TYPE_CONTENT_SETTINGS.
     host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(

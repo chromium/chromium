@@ -44,10 +44,6 @@ class PrivacySandboxSettingsTestPeer {
 
   using Status = privacy_sandbox::PrivacySandboxSettingsImpl::Status;
 
-  static bool IsAllowed(Status status);
-
-  bool IsFledgeJoiningAllowed(const url::Origin& top_frame_origin) const;
-
  private:
   raw_ptr<privacy_sandbox::PrivacySandboxSettingsImpl> pss_impl_;
 };
@@ -57,7 +53,6 @@ class MockPrivacySandboxObserver
  public:
   MockPrivacySandboxObserver();
   ~MockPrivacySandboxObserver();
-  MOCK_METHOD(void, OnTopicsDataAccessibleSinceUpdated, (), (override));
   MOCK_METHOD1(OnRelatedWebsiteSetsEnabledChanged, void(bool));
 };
 
@@ -139,22 +134,15 @@ enum class InputKey {
   kOutSharedStorageSelectURLDebugMessage = 13,
   kOutSharedStorageBlockIsSiteSettingSpecific = 14,
   kOutSharedStorageSelectURLBlockIsSiteSettingSpecific = 15,
-  kOutPrivateAggregationBlockIsSiteSettingSpecific = 16,
 };
 
 // Defines the expected output of the functions under test, when the profile is
 // setup as per defined state, and they are provided the defined inputs.
 enum class OutputKey {
-  kIsTopicsAllowed = 1,
-  kIsTopicsAllowedForContext = 2,
   kIsSharedStorageAllowed = 6,
   kIsSharedStorageSelectURLAllowed = 7,
-  kIsPrivateAggregationAllowed = 8,
-  kIsTopicsAllowedMetric = 9,
-  kIsTopicsAllowedForContextMetric = 10,
   kIsSharedStorageAllowedMetric = 14,
   kIsSharedStorageSelectURLAllowedMetric = 15,
-  kIsPrivateAggregationAllowedMetric = 16,
   // kPromptType and kM1PromptSuppressedReason are Obsolete.
   // TODO(crbug.com/474716334): Remove obsolete enums.
   kPromptType = 21,
@@ -166,26 +154,10 @@ enum class OutputKey {
   kM1FledgeEnabled = 27,
   kM1AdMeasurementEnabled = 28,
   kM1RestrictedNoticeAcknowledged = 31,
-  kIsEventReportingDestinationAttestedForFledge = 32,
-  kIsEventReportingDestinationAttestedForSharedStorage = 33,
-  kIsEventReportingDestinationAttestedForFledgeMetric = 34,
-  kIsEventReportingDestinationAttestedForSharedStorageMetric = 35,
-  kIsFledgeJoinAllowed = 36,
-  kIsFledgeLeaveAllowed = 37,
-  kIsFledgeUpdateAllowed = 38,
-  kIsFledgeSellAllowed = 39,
-  kIsFledgeBuyAllowed = 40,
-  kIsFledgeJoinAllowedMetric = 41,
-  kIsFledgeLeaveAllowedMetric = 42,
-  kIsFledgeUpdateAllowedMetric = 43,
-  kIsFledgeSellAllowedMetric = 44,
-  kIsFledgeBuyAllowedMetric = 45,
-  kIsPrivateAggregationDebugModeAllowed = 47,
   kIsSharedStorageAllowedDebugMessage = 48,
   kIsSharedStorageSelectURLAllowedDebugMessage = 49,
   kIsSharedStorageBlockSiteSettingSpecific = 50,
   kIsSharedStorageSelectURLBlockSiteSettingSpecific = 51,
-  kIsPrivateAggregationBlockSiteSettingSpecific = 52,
 };
 
 // To allow multiple input keys to map to the same value, without having to
