@@ -216,6 +216,12 @@
   <message name="IDS_SETTINGS_GLIC_KEEP_SIDEPANEL_OPEN_ON_NEW_TABS" desc="Name of the setting to keep side panel open on new tabs.">
     Keep browsing with Gemini when you open new tabs
   </message>
+  <message name="IDS_SETTINGS_GLIC_SHAKE_TRIGGER_TOGGLE" desc="Name of the shake trigger setting.">
+    Shake cursor to select from screen
+  </message>
+  <message name="IDS_SETTINGS_GLIC_SHAKE_TRIGGER_TOGGLE_SUBLABEL" desc="Sublabel describing that shaking the cursor captures a region.">
+    Quickly shake the mouse cursor back and forth to select from the screen
+  </message>
   <message name="IDS_SETTINGS_GLIC_MEDIA_UNDERSTANDING" desc="Name of the media understanding setting.">
     Media Understanding
   </message>

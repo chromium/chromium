@@ -281,6 +281,7 @@ TEST_F(GlicMetricsTest, RecordGlicProfilePreferences) {
   profile()->GetPrefs()->SetBoolean(prefs::kGlicGeolocationEnabled, true);
   profile()->GetPrefs()->SetBoolean(prefs::kGlicMicrophoneEnabled, true);
   profile()->GetPrefs()->SetBoolean(prefs::kGlicDefaultTabContextEnabled, true);
+  profile()->GetPrefs()->SetBoolean(prefs::kGlicShakeTriggerEnabled, true);
   enabling()->SetUserEnabledActuationOnWeb(true);
 
   metrics()->RecordGlicProfilePreferences();
@@ -298,6 +299,8 @@ TEST_F(GlicMetricsTest, RecordGlicProfilePreferences) {
                                         true, 1);
   histogram_tester().ExpectUniqueSample(
       "Glic.Preferences.DefaultTabContextEnabled", true, 1);
+  histogram_tester().ExpectUniqueSample("Glic.Preferences.ShakeTriggerEnabled",
+                                        true, 1);
   histogram_tester().ExpectUniqueSample("Glic.Preferences.ActuationOnWeb", true,
                                         1);
 
@@ -310,15 +313,16 @@ TEST_F(GlicMetricsTest, RecordGlicProfilePreferences) {
   profile()->GetPrefs()->SetBoolean(prefs::kGlicMicrophoneEnabled, false);
   profile()->GetPrefs()->SetBoolean(prefs::kGlicDefaultTabContextEnabled,
                                     false);
+  profile()->GetPrefs()->SetBoolean(prefs::kGlicShakeTriggerEnabled, false);
   enabling()->SetUserEnabledActuationOnWeb(false);
 
   metrics()->RecordGlicProfilePreferences();
 
   // Both true and false should be recorded once.
   histogram_tester().ExpectBucketCount("Glic.Preferences.PinnedToTabstrip",
-                                       true, 1);
+                                        true, 1);
   histogram_tester().ExpectBucketCount("Glic.Preferences.PinnedToTabstrip",
-                                       false, 1);
+                                        false, 1);
 
   histogram_tester().ExpectBucketCount("Glic.Preferences.LauncherEnabled", true,
                                        1);
@@ -344,6 +348,11 @@ TEST_F(GlicMetricsTest, RecordGlicProfilePreferences) {
       "Glic.Preferences.DefaultTabContextEnabled", true, 1);
   histogram_tester().ExpectBucketCount(
       "Glic.Preferences.DefaultTabContextEnabled", false, 1);
+
+  histogram_tester().ExpectBucketCount("Glic.Preferences.ShakeTriggerEnabled",
+                                       true, 1);
+  histogram_tester().ExpectBucketCount("Glic.Preferences.ShakeTriggerEnabled",
+                                       false, 1);
 
   histogram_tester().ExpectBucketCount("Glic.Preferences.ActuationOnWeb", true,
                                        1);

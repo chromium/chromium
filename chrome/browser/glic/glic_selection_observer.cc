@@ -22,6 +22,7 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_selection_widget.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_zero_state_suggestions_manager.h"
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -135,6 +136,14 @@ mojom::AdditionalContextPtr CreateAdditionalContext(
   return context;
 }
 
+// Minimum distance in pixels required for a mouse move step to establish or
+// change movement direction.
+constexpr float kMinShakeDistance = 10.0f;
+// Required number of direction changes to trigger region capture.
+constexpr int kRequiredDirectionChanges = 4;
+// Maximum time allowed between direction changes before the shake detector resets.
+constexpr base::TimeDelta kShakeTimeout = base::Milliseconds(1000);
+
 bool IsListenedToInputEvent(blink::WebInputEvent::Type type) {
   switch (type) {
     case blink::WebInputEvent::Type::kMouseDown:
@@ -152,6 +161,7 @@ bool IsListenedToInputEvent(blink::WebInputEvent::Type type) {
     case blink::WebInputEvent::Type::kKeyDown:
     case blink::WebInputEvent::Type::kGestureScrollBegin:
     case blink::WebInputEvent::Type::kMouseWheel:
+    case blink::WebInputEvent::Type::kMouseMove:
       return true;
     default:
       return false;
@@ -371,10 +381,18 @@ void GlicSelectionObserver::ProcessInputEvent(
   }
 
   switch (event->GetType()) {
+    case blink::WebInputEvent::Type::kMouseMove: {
+      const auto& mouse_event =
+          static_cast<const blink::WebMouseEvent&>(*event);
+      ProcessMouseMoveForShake(mouse_event);
+      break;
+    }
+
     case blink::WebInputEvent::Type::kMouseDown:
     case blink::WebInputEvent::Type::kPointerDown:
     case blink::WebInputEvent::Type::kGestureTapDown:
     case blink::WebInputEvent::Type::kTouchStart: {
+      ResetShakeDetector();
       bool is_left_click_or_touch = true;
       if (event->GetType() == blink::WebInputEvent::Type::kMouseDown ||
           event->GetType() == blink::WebInputEvent::Type::kPointerDown) {
@@ -413,6 +431,7 @@ void GlicSelectionObserver::ProcessInputEvent(
     case blink::WebInputEvent::Type::kTouchEnd:
     case blink::WebInputEvent::Type::kTouchCancel:
     case blink::WebInputEvent::Type::kGestureTapCancel:
+      ResetShakeDetector();
       // Process the selection received so far. If the final selection IPC is
       // delayed, OnTextSelectionChanged will handle it since `is_selecting_`
       // becomes false.
@@ -427,6 +446,7 @@ void GlicSelectionObserver::ProcessInputEvent(
 
     case blink::WebInputEvent::Type::kRawKeyDown:
     case blink::WebInputEvent::Type::kKeyDown: {
+      ResetShakeDetector();
       if (is_key_selection_) {
         break;
       }
@@ -465,6 +485,7 @@ void GlicSelectionObserver::ProcessInputEvent(
 
     case blink::WebInputEvent::Type::kGestureScrollBegin:
     case blink::WebInputEvent::Type::kMouseWheel:
+      ResetShakeDetector();
       DismissUI(/*keep_nudge=*/true);
       break;
 
@@ -1202,6 +1223,96 @@ void GlicSelectionObserver::OnWidgetClose() {
     base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
         FROM_HERE, std::move(widget_delegate_));
   }
+}
+
+bool GlicSelectionObserver::IsShakeTriggerEnabled() const {
+  if (!base::FeatureList::IsEnabled(features::kGlicShakeTrigger)) {
+    return false;
+  }
+  if (!web_contents()) {
+    return false;
+  }
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  if (!profile || !profile->GetPrefs()) {
+    return false;
+  }
+  return profile->GetPrefs()->GetBoolean(prefs::kGlicShakeTriggerEnabled);
+}
+
+void GlicSelectionObserver::TriggerRegionCapture() {
+  if (!IsSelectionPromptEnabled() || !IsShakeTriggerEnabled()) {
+    return;
+  }
+  if (!glic_keyed_service_) {
+    return;
+  }
+  auto* tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  if (!tab_interface) {
+    return;
+  }
+  GlicInvokeOptions options(
+      Target(*tab_interface),
+      glic::mojom::InvocationSource::kCaptureRegionHotkey);
+  options.wait_for_panel_open = true;
+  glic_keyed_service_->Invoke(std::move(options));
+}
+
+void GlicSelectionObserver::ProcessMouseMoveForShake(
+    const blink::WebMouseEvent& mouse_event) {
+  if (!IsShakeTriggerEnabled()) {
+    return;
+  }
+  if (direction_change_count_ > 0 &&
+      (base::TimeTicks::Now() - last_direction_change_time_) > kShakeTimeout) {
+    ResetShakeDetector();
+  }
+
+  gfx::PointF current_pos = mouse_event.PositionInWidget();
+
+  if (!last_shake_point_.has_value()) {
+    last_shake_point_ = current_pos;
+    return;
+  }
+
+  gfx::Vector2dF delta = current_pos - *last_shake_point_;
+  float dist = delta.Length();
+  if (dist < kMinShakeDistance) {
+    return;
+  }
+
+  gfx::Vector2dF current_dir(delta.x() / dist, delta.y() / dist);
+
+  if (!last_shake_dir_.has_value()) {
+    last_shake_dir_ = current_dir;
+    last_shake_point_ = current_pos;
+    last_direction_change_time_ = base::TimeTicks::Now();
+    return;
+  }
+
+  float dot = last_shake_dir_->x() * current_dir.x() +
+              last_shake_dir_->y() * current_dir.y();
+  if (dot < -0.5f) {
+    direction_change_count_++;
+    last_shake_dir_ = current_dir;
+    last_shake_point_ = current_pos;
+    last_direction_change_time_ = base::TimeTicks::Now();
+
+    if (direction_change_count_ >= kRequiredDirectionChanges) {
+      ResetShakeDetector();
+      TriggerRegionCapture();
+    }
+  } else {
+    last_shake_point_ = current_pos;
+  }
+}
+
+void GlicSelectionObserver::ResetShakeDetector() {
+  last_shake_point_.reset();
+  last_shake_dir_.reset();
+  direction_change_count_ = 0;
+  last_direction_change_time_ = base::TimeTicks();
 }
 
 }  // namespace glic

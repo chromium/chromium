@@ -301,6 +301,9 @@ void GlicMetrics::RecordGlicProfilePreferences() {
   base::UmaHistogramBoolean(
       "Glic.Preferences.DefaultTabContextEnabled",
       profile_prefs->GetBoolean(prefs::kGlicDefaultTabContextEnabled));
+  base::UmaHistogramBoolean(
+      "Glic.Preferences.ShakeTriggerEnabled",
+      profile_prefs->GetBoolean(prefs::kGlicShakeTriggerEnabled));
   base::UmaHistogramBoolean("Glic.Preferences.ActuationOnWeb",
                             enabling_->GetUserEnabledActuationOnWeb());
 }

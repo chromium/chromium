@@ -139,6 +139,8 @@ BASE_DECLARE_FEATURE(kGlicEnableMojoJs);
 
 BASE_DECLARE_FEATURE(kGlicNoWebview);
 
+BASE_DECLARE_FEATURE(kGlicShakeTrigger);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_FEATURES_H_

@@ -110,6 +110,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kGlicKeepSidepanelOpenOnNewTabsEnabled,
                                 true);
 
+  // Boolean pref for enabling shake trigger.
+  registry->RegisterBooleanPref(prefs::kGlicShakeTriggerEnabled, false);
+
   // Boolean pref that enables or disables experimental triggering.
   registry->RegisterBooleanPref(prefs::kGlicExperimentalTriggeringEnabled,
                                 false);

@@ -153,6 +153,9 @@ inline constexpr char kGlicShowErrorAllowed[] = "glic.show_error_allowed";
 // Bool pref for the daisy chain new tabs setting.
 inline constexpr char kGlicKeepSidepanelOpenOnNewTabsEnabled[] =
     "glic.keep_sidepanel_open_on_new_tabs_enabled";
+
+// Bool pref for enabling the shake trigger to capture region.
+inline constexpr char kGlicShakeTriggerEnabled[] = "glic.shake_trigger_enabled";
 // Integer pref that determines if Glic actuation is enabled. This is
 // controlled from the enterprise policy. Only applicable to enterprise
 // accounts.

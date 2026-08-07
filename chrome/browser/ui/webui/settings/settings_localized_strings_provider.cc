@@ -894,6 +894,9 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
        IDS_SETTINGS_GLIC_KEEP_SIDEPANEL_OPEN_ON_NEW_TABS},
       {"glicKeepSidepanelOpenOnNewTabsToggleSublabel",
        IDS_SETTINGS_GLIC_KEEP_SIDEPANEL_OPEN_ON_NEW_TABS_SUBLABEL},
+      {"glicShakeTriggerToggle", IDS_SETTINGS_GLIC_SHAKE_TRIGGER_TOGGLE},
+      {"glicShakeTriggerToggleSublabel",
+       IDS_SETTINGS_GLIC_SHAKE_TRIGGER_TOGGLE_SUBLABEL},
       {"glicLocationToggle", IDS_SETTINGS_GLIC_PERMISSIONS_LOCATION_TOGGLE},
       {"glicLocationToggleSublabel",
        IDS_SETTINGS_GLIC_PERMISSIONS_LOCATION_TOGGLE_SUBLABEL},
@@ -1162,6 +1165,9 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
   html_source->AddBoolean(
       "showGlicExperimentalTriggering",
       GlicHandler::ShouldShowExperimentalTriggeringToggle(profile));
+  html_source->AddBoolean(
+      "showGlicShakeTrigger",
+      base::FeatureList::IsEnabled(features::kGlicShakeTrigger));
 }
 
 void AddResetStrings(content::WebUIDataSource* html_source, Profile* profile) {

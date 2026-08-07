@@ -26,6 +26,8 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace content {
 class Page;
@@ -88,6 +90,14 @@ class GlicSelectionObserver
   // Virtual for testing.
   virtual void ShowSelectionAffordance(const std::u16string& selected_text,
                                        BrowserWindowInterface* bwi);
+
+  // Triggers Glic region capture when a mouse shake is detected.
+  // Virtual for testing.
+  virtual void TriggerRegionCapture();
+
+  // Returns true if mouse shake trigger is enabled by feature flag and pref.
+  // Virtual for testing.
+  virtual bool IsShakeTriggerEnabled() const;
 
   // content::WebContentsObserver:
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
@@ -185,6 +195,14 @@ class GlicSelectionObserver
   bool is_selecting_ = false;
   // True when an inline explanation is currently being fetched or displayed.
   bool is_explaining_ = false;
+
+  void ProcessMouseMoveForShake(const blink::WebMouseEvent& mouse_event);
+  void ResetShakeDetector();
+
+  std::optional<gfx::PointF> last_shake_point_;
+  std::optional<gfx::Vector2dF> last_shake_dir_;
+  int direction_change_count_ = 0;
+  base::TimeTicks last_direction_change_time_;
 
   // Private bridge implementation of
   // GlicSelectionWidgetDelegate::ActionDelegate. This is required because

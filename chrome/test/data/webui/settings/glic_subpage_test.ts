@@ -108,6 +108,7 @@ suite('GlicSubpage', function() {
       glicDisallowedByAdmin: false,
       glicSelectionFeatureEnabled: true,
       headlessCaptionsEnabled: false,
+      showGlicShakeTrigger: false,
     });
     resetRouterForTesting();
     return CrSettingsPrefs.initialized;
@@ -675,6 +676,72 @@ suite('GlicSubpage', function() {
       assertFalse(keepSidepanelOpenOnNewTabsToggle.checked);
       await verifyUserAction(
           'Glic.Settings.KeepSidepanelOpenOnNewTabs.Disabled');
+    });
+  });
+
+  suite('ShakeTriggerToggleEnabled', () => {
+    setup(async () => {
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      loadTimeData.overrideValues({
+        showGlicShakeTrigger: true,
+      });
+      await createGlicPage('⌃A', true);
+    });
+
+    test('ShakeTriggerFeatureEnabled', () => {
+      const shakeTriggerToggle =
+          $<SettingsToggleButtonElement>('shakeTriggerToggle')!;
+      assertTrue(isVisible(shakeTriggerToggle));
+    });
+
+    test('ShakeTriggerToggleEnabled', () => {
+      page.setPrefValue(PrefName.SHAKE_TRIGGER_ENABLED, true);
+
+      assertTrue(
+          $<SettingsToggleButtonElement>(
+              'shakeTriggerToggle')!.checked);
+    });
+
+    test('ShakeTriggerToggleDisabled', () => {
+      page.setPrefValue(
+          PrefName.SHAKE_TRIGGER_ENABLED, false);
+
+      assertFalse(
+          $<SettingsToggleButtonElement>(
+              'shakeTriggerToggle')!.checked);
+    });
+
+    test('ShakeTriggerToggleChanged', async () => {
+      page.setPrefValue(
+          PrefName.SHAKE_TRIGGER_ENABLED, false);
+
+      const shakeTriggerToggle =
+          $<SettingsToggleButtonElement>('shakeTriggerToggle')!;
+      assertTrue(!!shakeTriggerToggle);
+
+      shakeTriggerToggle.click();
+      assertTrue(page.getPref<boolean>(
+                         PrefName.SHAKE_TRIGGER_ENABLED)
+                     .value);
+      assertTrue(shakeTriggerToggle.checked);
+      await verifyUserAction(
+          'Glic.Settings.ShakeTrigger.Enabled');
+
+      shakeTriggerToggle.click();
+      assertFalse(page.getPref<boolean>(
+                          PrefName.SHAKE_TRIGGER_ENABLED)
+                      .value);
+      assertFalse(shakeTriggerToggle.checked);
+      await verifyUserAction(
+          'Glic.Settings.ShakeTrigger.Disabled');
+    });
+  });
+
+  suite('ShakeTriggerToggleHidden', () => {
+    test('assert toggle is hidden', () => {
+      const shakeTriggerToggle =
+          $<SettingsToggleButtonElement>('shakeTriggerToggle')!;
+      assertFalse(isVisible(shakeTriggerToggle));
     });
   });
 

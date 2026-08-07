@@ -1398,6 +1398,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kNumber;
   (*s_allowlist)[glic::prefs::kGlicKeepSidepanelOpenOnNewTabsEnabled] =
       settings_api::PrefType::kBoolean;
+  (*s_allowlist)[glic::prefs::kGlicShakeTriggerEnabled] =
+      settings_api::PrefType::kBoolean;
   (*s_allowlist)[glic::prefs::kGlicHotkeyGlobalScopeEnabled] =
       settings_api::PrefType::kBoolean;
 

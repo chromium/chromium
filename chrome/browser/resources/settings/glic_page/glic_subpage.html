@@ -189,6 +189,14 @@
           on-settings-boolean-control-change=
               "onKeepSidepanelOpenOnNewTabsToggleChange_">
       </settings-toggle-button>
+      <settings-toggle-button class="hr"
+          id="shakeTriggerToggle"
+          hidden="[[!showGlicShakeTrigger_]]"
+          pref="{{prefs.glic.shake_trigger_enabled}}"
+          label="$i18n{glicShakeTriggerToggle}"
+          sub-label="$i18n{glicShakeTriggerToggleSublabel}"
+          on-settings-boolean-control-change="onShakeTriggerToggleChange_">
+      </settings-toggle-button>
     </template>
   </div>
   <div class="section">
@@ -406,6 +414,14 @@
             on-sub-label-link-clicked="onMediaUnderstandingToggleLearnMoreClick_">
         </settings-toggle-button>
       </template>
+      <settings-toggle-button class="hr"
+          id="shakeTriggerToggle"
+          pref="{{prefs.glic.shake_trigger_enabled}}"
+          hidden="[[!showGlicShakeTrigger_]]"
+          label="$i18n{glicShakeTriggerToggle}"
+          sub-label="$i18n{glicShakeTriggerToggleSublabel}"
+          on-settings-boolean-control-change="onShakeTriggerToggleChange_">
+      </settings-toggle-button>
       <template is="dom-if" if="[[actorLoginFederatedLoginSupportEnabled_]]"
           restamp>
         <cr-link-row id="actorLoginPermissionsButton" class="hr"

@@ -473,6 +473,27 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, GlicSubpageWebActuation) {
           "runMochaSuite('GlicSubpage WebActuationSettingFeatureEnabled')");
 }
 
+class SettingsGlicShakeTriggerEnabledTest : public SettingsBrowserTest {
+ public:
+  SettingsGlicShakeTriggerEnabledTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kGlicShakeTrigger);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SettingsGlicShakeTriggerEnabledTest,
+                       GlicSubpageShakeTriggerEnabled) {
+  RunTest("settings/glic_subpage_test.js",
+          "runMochaSuite('GlicSubpage ShakeTriggerToggleEnabled')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsTest, GlicSubpageShakeTriggerHidden) {
+  RunTest("settings/glic_subpage_test.js",
+          "runMochaSuite('GlicSubpage ShakeTriggerToggleHidden')");
+}
+
 class SettingsGlicHotkeyLocalScopeEnabledTest : public SettingsBrowserTest {
  public:
   SettingsGlicHotkeyLocalScopeEnabledTest() {
