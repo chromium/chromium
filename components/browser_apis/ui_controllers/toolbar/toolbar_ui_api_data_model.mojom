@@ -400,6 +400,7 @@ enum PageActionId {
   kActionAutofillPayment,
   kActionShowPaymentsChurnedUsersBubble,
   kActionFakePageActionForDebug,
+  kActionWalletReminderNotice,
 };
 // LINT.ThenChange(//chrome/browser/ui/page_action/page_action_properties_provider.cc:kPageActionProperties,//chrome/browser/ui/page_action/action_ids.h:kActionIds)
 

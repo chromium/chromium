@@ -291,6 +291,7 @@ chromium-metrics-reviews@google.com.
   <int value="46" label="Multistep Filter"/>
   <int value="47" label="Payments Churned Users"/>
   <int value="48" label="Fake Page Action For Debug"/>
+  <int value="49" label="Wallet Reminder Notice"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/page_action/page_action_icon_type.h:PageActionIconType) -->

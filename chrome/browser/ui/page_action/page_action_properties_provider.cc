@@ -337,6 +337,14 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
                 page_actions::PageActionPriorityCategory::kUserInteraction,
         },
     },
+    {
+        kActionWalletReminderNotice,
+        {
+            .histogram_name = "WalletReminderNotice",
+            .type = PageActionIconType::kWalletReminderNotice,
+            .element_identifier = kPageActionWalletReminderNoticeElementId,
+        },
+    },
 });
 // LINT.ThenChange(//components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom:PageActionId,//chrome/browser/ui/page_action/action_ids.h:kActionIds)
 

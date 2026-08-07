@@ -499,6 +499,8 @@ actions::ActionId MojomPageActionIdToActionId(
       return kActionShowPaymentsChurnedUsersBubble;
     case MojomPageActionId::kActionFakePageActionForDebug:
       return kActionFakePageActionForDebug;
+    case MojomPageActionId::kActionWalletReminderNotice:
+      return kActionWalletReminderNotice;
   }
   NOTREACHED();
 }
@@ -575,6 +577,8 @@ MojomPageActionId ActionIdToMojomPageActionId(actions::ActionId action_id) {
       return MojomPageActionId::kActionShowPaymentsChurnedUsersBubble;
     case kActionFakePageActionForDebug:
       return MojomPageActionId::kActionFakePageActionForDebug;
+    case kActionWalletReminderNotice:
+      return MojomPageActionId::kActionWalletReminderNotice;
   }
   NOTREACHED();
 }

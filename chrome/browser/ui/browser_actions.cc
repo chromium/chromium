@@ -4490,6 +4490,22 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                   ? kCreditCardIcon
                   : kCreditCardChromeRefreshOldIcon))
           .Build());
+
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableWalletReminderNotice)) {
+    root_action_item_->AddChild(
+        actions::ActionItem::Builder(
+            base::BindRepeating(
+                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  // TODO(crbug.com/542731356): Show Wallet Reminder Notice
+                  // bubble.
+                },
+                bwi))
+            .SetActionId(kActionWalletReminderNotice)
+            .SetImage(ui::ImageModel::FromVectorIcon(kWalletIcon))
+            .Build());
+  }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 

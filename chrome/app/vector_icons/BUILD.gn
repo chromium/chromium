@@ -361,6 +361,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "view_list.icon",
     "view_list_old.icon",
     "vpn_key_filled.icon",
+    "wallet.icon",
     "warning_filled.icon",
     "web.icon",
     "web_asset.icon",

@@ -136,6 +136,7 @@ const base::flat_map<const gfx::VectorIcon*, IconInfo>& KnownIcons() {
            {"webui-toolbar:table_chart", IconType::kIconSet}},
           {{&kTrashCanRefreshOldIcon},
            {"webui-toolbar:delete", IconType::kIconSet}},
+          {{&kWalletIcon}, {"webui-toolbar:wallet", IconType::kIconSet}},
           {{&kZoomInIcon}, {"webui-toolbar:zoom_in", IconType::kIconSet}},
           {{&kZoomInOldIcon}, {"webui-toolbar:zoom_in", IconType::kIconSet}},
           {{&kZoomMinusChromeRefreshOldIcon},

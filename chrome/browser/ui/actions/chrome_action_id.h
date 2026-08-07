@@ -536,6 +536,7 @@
   E(kActionShowAiOverlayDialog) \
   E(kActionWebAuthnAmbientSignin) \
   E(kActionAutofillPayment) \
+  E(kActionWalletReminderNotice) \
 
 #define SUBMENU_ACTION_IDS                                                     \
   E(kActionMenuBookmarksSubmenu, kBookmarksMenuId)                             \
