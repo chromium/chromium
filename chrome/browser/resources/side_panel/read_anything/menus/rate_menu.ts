@@ -26,9 +26,18 @@ export interface RateMenuElement {
 
 // 3x and 4x speeds are hidden on non-ChromeOS because natural voices on
 // non-ChromeOS do not currently support 3x and 4x speeds.
-export const RATE_OPTIONS: number[] = chrome.readingMode.isChromeOsAsh ?
-    [0.5, 0.8, 1, 1.2, 1.5, 2, 3, 4] :
-    [0.5, 0.8, 1, 1.2, 1.5, 2];
+export const RATE_OPTIONS: number[] = [
+  0.5,
+  0.8,
+  1,
+  1.2,
+  1.5,
+  2,
+  // <if expr="is_chromeos">
+  3,
+  4,
+  // </if>
+];
 
 const RateMenuElementBase = WebUiListenerMixinLit(CrLitElement);
 

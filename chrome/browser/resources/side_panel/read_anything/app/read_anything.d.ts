@@ -151,9 +151,6 @@ declare namespace chrome {
     // should only be used when baseLanguageForSpeech is unavailable.
     let defaultLanguageForSpeech: string;
 
-    // If the current platform is ChromeOS Ash.
-    let isChromeOsAsh: boolean;
-
     // If distillations have been queued up.
     let requiresDistillation: boolean;
 
