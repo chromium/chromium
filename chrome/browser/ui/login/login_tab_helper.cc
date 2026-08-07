@@ -18,6 +18,20 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "url/scheme_host_port.h"
+
+namespace {
+
+// Returns true if `challenge` is consistent with a navigation to `url`. The
+// login prompt displays the navigation URL as the origin asking for
+// credentials, so a server challenge for a different origin must not be shown
+// to the user or used to populate the auth cache.
+bool ChallengeMatchesNavigation(const net::AuthChallengeInfo& challenge,
+                                const GURL& url) {
+  return challenge.is_proxy || challenge.challenger == url::SchemeHostPort(url);
+}
+
+}  // namespace
 
 LoginTabHelper::~LoginTabHelper() = default;
 
@@ -73,7 +87,10 @@ void LoginTabHelper::DidFinishNavigation(
     return;
   }
 
-  if (!navigation_handle->GetAuthChallengeInfo()) {
+  if (!navigation_handle->GetAuthChallengeInfo() ||
+      !ChallengeMatchesNavigation(
+          navigation_handle->GetAuthChallengeInfo().value(),
+          navigation_handle->GetURL())) {
     return;
   }
 
@@ -155,10 +172,14 @@ LoginTabHelper::WillProcessMainFrameUnauthorizedResponse(
     return content::NavigationThrottle::PROCEED;
   }
 
-  // Do not cancel the navigation if there is no auth challenge. We only want to
-  // cancel the navigation below to show a blank page if there is an auth
-  // challenge for which to show a login prompt.
-  if (!navigation_handle->GetAuthChallengeInfo()) {
+  // Do not cancel the navigation if there is no auth challenge, or if the
+  // challenge does not match the navigation URL. We only want to cancel the
+  // navigation below to show a blank page if there is an auth challenge for
+  // which to show a login prompt.
+  if (!navigation_handle->GetAuthChallengeInfo() ||
+      !ChallengeMatchesNavigation(
+          navigation_handle->GetAuthChallengeInfo().value(),
+          navigation_handle->GetURL())) {
     return content::NavigationThrottle::PROCEED;
   }
 

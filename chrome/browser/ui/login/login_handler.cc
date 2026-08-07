@@ -330,8 +330,8 @@ PasswordForm LoginHandler::MakeInputForPasswordManager(
     dialog_form.scheme = PasswordForm::Scheme::kOther;
   }
   dialog_form.url = auth_info.challenger.GetURL();
-  DCHECK(auth_info.is_proxy ||
-         auth_info.challenger == url::SchemeHostPort(request_url));
+  CHECK(auth_info.is_proxy ||
+        auth_info.challenger == url::SchemeHostPort(request_url));
   dialog_form.signon_realm = GetSignonRealm(dialog_form.url, auth_info);
   return dialog_form;
 }

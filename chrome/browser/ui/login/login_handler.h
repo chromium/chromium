@@ -108,6 +108,7 @@ class LoginHandler : public content::LoginDelegate {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(LoginHandlerTest, DialogStringsAndRealm);
+  FRIEND_TEST_ALL_PREFIXES(LoginHandlerTest, MakeInputForPasswordManager);
 
   // When any handler finishes, called on every other handler. |username| and
   // |password| are only valid if |supplied| is true. If |supplied| is false

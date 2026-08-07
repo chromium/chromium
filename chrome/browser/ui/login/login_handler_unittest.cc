@@ -177,3 +177,80 @@ TEST_F(LoginHandlerWithWebContentsTest, NoPendingEntryDoesNotCrash) {
       helper->WillProcessMainFrameUnauthorizedResponse(&handle);
   EXPECT_EQ(content::NavigationThrottle::CANCEL, result.action());
 }
+
+// Tests that WillProcessMainFrameUnauthorizedResponse() cancels the navigation
+// to show a login prompt when the auth challenge's challenger matches the
+// navigation URL.
+TEST_F(LoginHandlerWithWebContentsTest, MatchingChallengerCancelsForPrompt) {
+  LoginTabHelper::CreateForWebContents(web_contents());
+  LoginTabHelper* helper = LoginTabHelper::FromWebContents(web_contents());
+
+  net::AuthChallengeInfo challenge;
+  challenge.is_proxy = false;
+  challenge.challenger = url::SchemeHostPort(GURL("https://requested.test"));
+
+  content::MockNavigationHandle handle;
+  handle.set_url(GURL("https://requested.test/page"));
+  handle.SetAuthChallengeInfo(challenge);
+  handle.set_global_request_id({network::OriginatingProcessId::browser(), 1});
+
+  content::NavigationThrottle::ThrottleCheckResult result =
+      helper->WillProcessMainFrameUnauthorizedResponse(&handle);
+  EXPECT_EQ(content::NavigationThrottle::CANCEL, result.action());
+}
+
+// Tests that WillProcessMainFrameUnauthorizedResponse() does not cancel the
+// navigation to show a login prompt when the auth challenge's challenger does
+// not match the navigation URL. This can occur when a service worker responds
+// to a navigation with a 401 response that it fetched from a different origin.
+TEST_F(LoginHandlerWithWebContentsTest, MismatchedChallengerDoesNotShowPrompt) {
+  LoginTabHelper::CreateForWebContents(web_contents());
+  LoginTabHelper* helper = LoginTabHelper::FromWebContents(web_contents());
+
+  net::AuthChallengeInfo challenge;
+  challenge.is_proxy = false;
+  challenge.challenger = url::SchemeHostPort(GURL("https://other.test"));
+
+  content::MockNavigationHandle handle;
+  handle.set_url(GURL("https://requested.test/page"));
+  handle.SetAuthChallengeInfo(challenge);
+  handle.set_global_request_id({network::OriginatingProcessId::browser(), 1});
+
+  content::NavigationThrottle::ThrottleCheckResult result =
+      helper->WillProcessMainFrameUnauthorizedResponse(&handle);
+  EXPECT_EQ(content::NavigationThrottle::PROCEED, result.action());
+}
+
+// Tests that proxy authentication challenges are processed for prompts even
+// when the proxy challenger host differs from the navigation URL.
+TEST_F(LoginHandlerWithWebContentsTest, ProxyChallengerCancelsForPrompt) {
+  LoginTabHelper::CreateForWebContents(web_contents());
+  LoginTabHelper* helper = LoginTabHelper::FromWebContents(web_contents());
+
+  net::AuthChallengeInfo challenge;
+  challenge.is_proxy = true;
+  challenge.challenger = url::SchemeHostPort(GURL("http://proxy.test:8080"));
+
+  content::MockNavigationHandle handle;
+  handle.set_url(GURL("https://requested.test/page"));
+  handle.SetAuthChallengeInfo(challenge);
+  handle.set_global_request_id({network::OriginatingProcessId::browser(), 1});
+
+  content::NavigationThrottle::ThrottleCheckResult result =
+      helper->WillProcessMainFrameUnauthorizedResponse(&handle);
+  EXPECT_EQ(content::NavigationThrottle::CANCEL, result.action());
+}
+
+TEST(LoginHandlerTest, MakeInputForPasswordManager) {
+  GURL request_url("https://requested.test/page");
+  net::AuthChallengeInfo auth_info;
+  auth_info.is_proxy = false;
+  auth_info.challenger = url::SchemeHostPort(request_url);
+  auth_info.scheme = "basic";
+  auth_info.realm = "realm";
+
+  password_manager::PasswordForm form =
+      LoginHandler::MakeInputForPasswordManager(request_url, auth_info);
+  EXPECT_EQ(form.url, GURL("https://requested.test"));
+  EXPECT_EQ(form.scheme, password_manager::PasswordForm::Scheme::kBasic);
+}
