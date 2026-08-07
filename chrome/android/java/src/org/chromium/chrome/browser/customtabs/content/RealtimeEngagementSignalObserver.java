@@ -236,10 +236,13 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
                     @Override
                     public void onScrollOffsetOrExtentChanged(
                             int scrollOffsetY, int scrollExtentY) {
-                        assert tab != null;
+                        if (tab == null || tab.isDestroyed()) return;
+                        WebContents webContents = tab.getWebContents();
+                        if (webContents == null || webContents.isDestroyed()) return;
+
                         RenderCoordinates renderCoordinates =
-                                RenderCoordinates.fromWebContents(
-                                        assumeNonNull(tab.getWebContents()));
+                                RenderCoordinates.fromWebContents(webContents);
+
                         boolean validUpdateAfterScrollEnd =
                                 assumeNonNull(mScrollState)
                                         .onScrollUpdate(
@@ -309,9 +312,10 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
     }
 
     private void removeWebContentsDependencies(@Nullable WebContents webContents) {
-        if (webContents != null) {
+        WebContents targetWebContents = webContents != null ? webContents : mWebContents;
+        if (targetWebContents != null) {
             if (mGestureStateListener != null) {
-                var manager = GestureListenerManager.fromWebContents(webContents);
+                var manager = GestureListenerManager.fromWebContents(targetWebContents);
                 if (manager != null) {
                     manager.removeListener(mGestureStateListener);
                 }
