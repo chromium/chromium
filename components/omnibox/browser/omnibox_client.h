@@ -228,6 +228,13 @@ class OmniboxClient {
   virtual std::optional<lens::ContextualInputData> GetContextualInputData()
       const;
 
+  // Returns true if there is previous submitted thread context (files, tabs,
+  // etc.) in the session. Only relevant for co-browsing / composebox sessions.
+  virtual bool HasPreviousSubmittedThreadContext() const;
+
+  // Returns true if an auto-suggested tab is present or showing.
+  virtual bool HasAutoSuggestedTab() const;
+
   // Asks the `ExtensionOmniboxEventRouter` to process `match` for it.
   // Some more processing is done to separate the keyword from the
   // text if in keyword mode. `observer` is the OmniboxNavigationObserver that

@@ -970,6 +970,8 @@ void AutocompleteInput::Clear() {
   context_tab_url_ = GURL();
   previous_query_.clear();
   input_method_.reset();
+  has_previous_submitted_thread_context_ = false;
+  has_auto_suggested_tab_ = false;
 }
 
 size_t AutocompleteInput::EstimateMemoryUsage() const {

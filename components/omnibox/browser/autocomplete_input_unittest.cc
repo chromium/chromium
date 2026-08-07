@@ -614,3 +614,18 @@ TEST(AutocompleteInputTest, SuggestInventory) {
   EXPECT_EQ(omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT,
             input.suggest_inventory());
 }
+
+TEST(AutocompleteInputTest, ContextFlags) {
+  AutocompleteInput input;
+  EXPECT_FALSE(input.has_previous_submitted_thread_context());
+  EXPECT_FALSE(input.has_auto_suggested_tab());
+
+  input.set_has_previous_submitted_thread_context(true);
+  input.set_has_auto_suggested_tab(true);
+  EXPECT_TRUE(input.has_previous_submitted_thread_context());
+  EXPECT_TRUE(input.has_auto_suggested_tab());
+
+  input.Clear();
+  EXPECT_FALSE(input.has_previous_submitted_thread_context());
+  EXPECT_FALSE(input.has_auto_suggested_tab());
+}

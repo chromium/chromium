@@ -1187,6 +1187,10 @@ void SearchboxHandler::QueryAutocomplete(
   autocomplete_input.set_input_method(
       static_cast<omnibox::metrics::ChromeSearchboxStats::InputMethod>(
           input_method));
+  autocomplete_input.set_has_previous_submitted_thread_context(
+      client()->HasPreviousSubmittedThreadContext());
+  autocomplete_input.set_has_auto_suggested_tab(
+      client()->HasAutoSuggestedTab());
 
   if (base::FeatureList::IsEnabled(
           omnibox::kWebUISearchboxWithoutModelController)) {
