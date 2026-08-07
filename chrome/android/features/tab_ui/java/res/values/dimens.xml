@@ -87,10 +87,12 @@ found in the LICENSE file.
     <dimen name="tab_list_editor_share_sheet_preview_thumbnail_padding">10dp</dimen>
 
     <!-- Large form factor device strip tab hover card dimensions -->
-    <dimen name="tab_hover_card_width">264dp</dimen>
+    <dimen name="tab_hover_card_width">288dp</dimen>
     <dimen name="tab_hover_card_window_horizontal_margin">8dp</dimen>
     <dimen name="tab_hover_card_thumbnail_height">135dp</dimen>
     <dimen name="tab_hover_card_text_content_margin">12dp</dimen>
+    <dimen name="tab_hover_card_footer_row_spacing">8dp</dimen>
+    <dimen name="tab_hover_card_footer_text_end_padding">24dp</dimen>
     <dimen name="tab_hover_card_url_top_margin">4dp</dimen>
     <dimen name="tab_hover_card_corner_radius">8dp</dimen>
     <dimen name="tab_hover_card_elevation">6dp</dimen>

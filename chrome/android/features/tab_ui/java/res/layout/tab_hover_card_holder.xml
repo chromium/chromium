@@ -69,6 +69,7 @@ found in the LICENSE file.
             android:textDirection="locale"
             android:drawablePadding="8dp"
             android:gravity="center_vertical"
+            android:paddingEnd="@dimen/tab_hover_card_footer_text_end_padding"
             app:drawableWidth="16dp"
             app:drawableHeight="16dp"
             android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
@@ -88,6 +89,7 @@ found in the LICENSE file.
             app:chromeDrawableTint="@color/default_icon_color_tint_list"
             android:drawablePadding="8dp"
             android:gravity="center_vertical"
+            android:paddingEnd="@dimen/tab_hover_card_footer_text_end_padding"
             app:drawableWidth="16dp"
             app:drawableHeight="16dp"
             android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>

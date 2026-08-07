@@ -13,6 +13,7 @@ import android.text.format.Formatter;
 import android.util.AttributeSet;
 import android.util.Size;
 import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -98,6 +99,7 @@ public class TabHoverCardView extends FrameLayout {
         updateAlertStatusView(hoveredTab.getAlertState());
 
         mMemoryUsageView.setVisibility(GONE);
+        updateAlertStatusBottomMargin();
         hoveredTab.getMemoryUsageBytes(
                 bytes -> {
                     if (hoveredTab.getId() != mLastHoveredTabId || !mIsShowing) return;
@@ -108,6 +110,7 @@ public class TabHoverCardView extends FrameLayout {
                                         .getString(
                                                 R.string.tab_hover_card_memory_usage, memoryText));
                         mMemoryUsageView.setVisibility(VISIBLE);
+                        updateAlertStatusBottomMargin();
                     }
                 });
 
@@ -262,6 +265,21 @@ public class TabHoverCardView extends FrameLayout {
             }
         }
         mAlertStatusView.setVisibility(showAlert ? VISIBLE : GONE);
+        updateAlertStatusBottomMargin();
+    }
+
+    private void updateAlertStatusBottomMargin() {
+        int bottomMarginDimen =
+                (mAlertStatusView.getVisibility() == VISIBLE
+                                && mMemoryUsageView.getVisibility() == VISIBLE)
+                        ? R.dimen.tab_hover_card_footer_row_spacing
+                        : R.dimen.tab_hover_card_text_content_margin;
+        int bottomMarginPx = getContext().getResources().getDimensionPixelSize(bottomMarginDimen);
+        MarginLayoutParams layoutParams = (MarginLayoutParams) mAlertStatusView.getLayoutParams();
+        if (layoutParams != null && layoutParams.bottomMargin != bottomMarginPx) {
+            layoutParams.bottomMargin = bottomMarginPx;
+            mAlertStatusView.setLayoutParams(layoutParams);
+        }
     }
 
     private void updateThumbnail(Tab hoveredTab, float hoverCardWidthPx) {

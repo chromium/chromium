@@ -85,6 +85,8 @@ public class StripTabHoverCardPositionUnitTest {
 
         mHoverCardWidth =
                 mContext.getResources().getDimensionPixelSize(R.dimen.tab_hover_card_width);
+        // Set window width large enough to prevent window edge clamping in position tests.
+        mContext.getResources().getDisplayMetrics().widthPixels = (int) (mHoverCardWidth * 2);
 
         var originalLayoutParams = new LayoutParams((int) mHoverCardWidth, 200);
         when(mTabHoverCardView.getLayoutParams()).thenReturn(originalLayoutParams);

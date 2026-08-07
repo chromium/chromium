@@ -29,6 +29,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.util.Size;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
 
@@ -233,6 +234,42 @@ public class TabHoverCardViewUnitTest {
                 "Memory usage view should be visible.",
                 View.VISIBLE,
                 mMemoryUsageView.getVisibility());
+    }
+
+    @Test
+    public void show_AlertStatusAndMemoryUsage_BottomMargin() {
+        var url = JUnitTestGURLs.EXAMPLE_URL;
+        var title = "Tab 1";
+        when(mHoveredTab.getTitle()).thenReturn(title);
+        when(mHoveredTab.getUrl()).thenReturn(url);
+        when(mHoveredTab.getId()).thenReturn(1);
+        when(mHoveredTab.getAlertState()).thenReturn(TabAlert.GLIC_SHARING);
+
+        mTabHoverCardView.show(mHoveredTab, 10f, 20f);
+
+        int textContentMargin =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.tab_hover_card_text_content_margin);
+        int footerRowSpacing =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.tab_hover_card_footer_row_spacing);
+
+        MarginLayoutParams alertLayoutParams =
+                (MarginLayoutParams) mAlertStatusView.getLayoutParams();
+        assertEquals(
+                "Alert status bottom margin should be text content margin when memory usage is"
+                        + " gone.",
+                textContentMargin,
+                alertLayoutParams.bottomMargin);
+
+        verify(mHoveredTab).getMemoryUsageBytes(mMemoryUsageCallbackCaptor.capture());
+        mMemoryUsageCallbackCaptor.getValue().onResult(100_000_000L);
+
+        assertEquals(
+                "Alert status bottom margin should be footer row spacing when memory usage is"
+                        + " visible.",
+                footerRowSpacing,
+                alertLayoutParams.bottomMargin);
     }
 
     @Test
