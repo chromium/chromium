@@ -7,6 +7,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/cast/message_port/platform_message_port.h"
 #include "components/cast/message_port/test_message_port_receiver.h"
@@ -210,6 +211,27 @@ TEST_F(CastMessagePortImplTest, BadMessage) {
 TEST_F(CastMessagePortImplTest, CastChannelClosed) {
   sender_message_port_.reset();
   RunUntilCastChannelClosed();
+}
+
+// Tests that the client may synchronously destroy the receiver port from
+// within OnError() when the Cast Channel is closed. The on-close closure is
+// owned by the port, so destroying the port cancels it; running it afterwards
+// would mean reading it out of freed memory. Contrast with CastChannelClosed
+// above, where the client leaves the port alive and the closure does run.
+TEST_F(CastMessagePortImplTest, ClientDestroysPortOnErrorSkipsOnClose) {
+  base::RunLoop run_loop;
+  bool on_close_called = false;
+  cast_channel_closed_closure_ =
+      base::BindLambdaForTesting([&]() { on_close_called = true; });
+  error_closure_ = base::BindLambdaForTesting([&]() {
+    receiver_message_port_.reset();
+    run_loop.Quit();
+  });
+  sender_message_port_.reset();
+  run_loop.Run();
+  EXPECT_EQ(latest_error_,
+            openscreen::Error(openscreen::Error::Code::kCastV2CastSocketError));
+  EXPECT_FALSE(on_close_called);
 }
 
 // Tests the media status namespace is properly handled.
