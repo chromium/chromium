@@ -86,6 +86,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.ViewAndroidDelegate.ContainerViewObserver;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.listmenu.ListMenuSubmenuItemProperties;
 import org.chromium.ui.listmenu.MenuModelBridge;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -815,9 +816,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
         MVCListAdapter.ModelList items = getDropdownItems();
         if (mMenuModelBridge != null) {
-            for (ListItem listItem : mMenuModelBridge.getListItems()) {
-                items.add(listItem);
-            }
+            intersperseMenuItems(items, mMenuModelBridge.getListItems());
         }
 
         assumeNonNull(mContext);
@@ -826,6 +825,46 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                 getDropdownItemClickListener(mDropdownMenuDelegate);
         mDropdownMenuDelegate.show(
                 mContext, mView, items, itemClickListener, this::dismissMenu, x, y);
+    }
+
+    @VisibleForTesting
+    static void intersperseMenuItems(MVCListAdapter.ModelList items, List<ListItem> extraItems) {
+        for (ListItem extraItem : extraItems) {
+            int order = getOrder(extraItem);
+            int insertIndex = items.size();
+            // Negative order means "no ordering"; such items are simply appended.
+            if (order >= 0) {
+                // Dividers carry no ORDER and head the group that follows them,
+                // so they inherit the next ordered item's order instead of
+                // acting as an insertion barrier.
+                int dividerRunStart = -1;
+                for (int i = 0; i < items.size(); i++) {
+                    ListItem existingItem = items.get(i);
+                    if (!hasOrder(existingItem)) {
+                        if (dividerRunStart == -1) dividerRunStart = i;
+                        continue;
+                    }
+                    int existingOrder = getOrder(existingItem);
+                    if (existingOrder > order) {
+                        insertIndex = dividerRunStart != -1 ? dividerRunStart : i;
+                        break;
+                    }
+                    dividerRunStart = -1;
+                }
+            }
+            items.add(insertIndex, extraItem);
+        }
+    }
+
+    private static boolean hasOrder(ListItem item) {
+        return item.model.getAllSetProperties().contains(ListMenuItemProperties.ORDER);
+    }
+
+    private static int getOrder(ListItem item) {
+        if (hasOrder(item)) {
+            return item.model.get(ListMenuItemProperties.ORDER);
+        }
+        return Menu.CATEGORY_ALTERNATIVE;
     }
 
     // HideablePopup implementation

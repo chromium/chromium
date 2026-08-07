@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "build/build_config.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -132,5 +133,11 @@ std::optional<ui::ColorId> MenuModel::GetSelectedBackgroundColorId(
     size_t index) {
   return std::nullopt;
 }
+
+#if BUILDFLAG(IS_ANDROID)
+int MenuModel::GetDisplayOrderAt(size_t index) const {
+  return -1;
+}
+#endif
 
 }  // namespace ui

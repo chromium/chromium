@@ -67,8 +67,9 @@ void MenuModelBridge::AddExtensionItems() {
           optional_bitmap = image.GetImage().AsBitmap();
         }
         Java_MenuModelBridge_addCommand(
-            env, java_obj_, menu_model_->GetLabelAt(i), optional_bitmap,
-            menu_model_->IsEnabledAt(i), i);
+            env, java_obj_, menu_model_->GetCommandIdAt(i),
+            menu_model_->GetDisplayOrderAt(i), menu_model_->GetLabelAt(i),
+            optional_bitmap, menu_model_->IsEnabledAt(i), i);
         break;
       }
       case MenuModel::TYPE_CHECK:

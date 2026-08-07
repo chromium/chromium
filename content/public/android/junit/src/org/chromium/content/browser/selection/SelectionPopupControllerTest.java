@@ -45,6 +45,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.textclassifier.TextClassification;
 
+import androidx.test.filters.SmallTest;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -89,12 +91,14 @@ import org.chromium.content_public.browser.test.util.TestSelectionDropdownMenuDe
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.listmenu.ListMenuSubmenuItemProperties;
 import org.chromium.ui.listmenu.MenuModelBridge;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.mojom.MenuSourceType;
 import org.chromium.ui.touch_selection.SelectionEventType;
@@ -1408,5 +1412,149 @@ public class SelectionPopupControllerTest {
                         IntentUtils.getPendingIntentMutabilityFlag(false));
         RemoteAction action = new RemoteAction(actionIcon, title, "This is a menu item", intent);
         return new TextClassification.Builder().addAction(action).build();
+    }
+
+    @Test
+    @SmallTest
+    @Feature("ExtensionContextMenuItems")
+    public void testIntersperseMenuItems() {
+        ModelList items = new ModelList();
+
+        // Add standard item (order = 16, e.g. Search Google)
+        PropertyModel searchModel =
+                new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                        .with(ListMenuItemProperties.ORDER, 16)
+                        .with(TITLE, "Search Google")
+                        .build();
+        items.add(new ListItem(ListItemType.MENU_ITEM, searchModel));
+
+        // Add divider (no ORDER property)
+        PropertyModel dividerModel = new PropertyModel(new PropertyKey[] {});
+        items.add(new ListItem(ListItemType.DIVIDER, dividerModel));
+
+        // Add text processing item (order = 30)
+        PropertyModel textProcModel =
+                new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                        .with(ListMenuItemProperties.ORDER, 30)
+                        .with(TITLE, "Translate")
+                        .build();
+        items.add(new ListItem(ListItemType.MENU_ITEM, textProcModel));
+
+        // Add Print item (order = 100)
+        PropertyModel printModel =
+                new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                        .with(ListMenuItemProperties.ORDER, 100)
+                        .with(TITLE, "Print")
+                        .build();
+        SelectionPopupControllerImpl.intersperseMenuItems(
+                items, List.of(new ListItem(ListItemType.MENU_ITEM, printModel)));
+
+        // No existing item has order > 100, so Print is appended at the end.
+        assertEquals(4, items.size());
+        assertEquals("Print", items.get(3).model.get(TITLE));
+    }
+
+    @Test
+    @SmallTest
+    @Feature("ExtensionContextMenuItems")
+    public void testIntersperseMenuItems_insertsBeforeDividerOfNextGroup() {
+        ModelList items = new ModelList();
+        items.add(
+                new ListItem(
+                        ListItemType.MENU_ITEM,
+                        new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                                .with(ListMenuItemProperties.ORDER, 16)
+                                .with(TITLE, "Search Google")
+                                .build()));
+        items.add(new ListItem(ListItemType.DIVIDER, new PropertyModel(new PropertyKey[] {})));
+        items.add(
+                new ListItem(
+                        ListItemType.MENU_ITEM,
+                        new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                                .with(ListMenuItemProperties.ORDER, 262144) // CATEGORY_ALTERNATIVE
+                                .with(TITLE, "Alternative item")
+                                .build()));
+
+        PropertyModel printModel =
+                new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                        .with(ListMenuItemProperties.ORDER, 100)
+                        .with(TITLE, "Print")
+                        .build();
+        SelectionPopupControllerImpl.intersperseMenuItems(
+                items, List.of(new ListItem(ListItemType.MENU_ITEM, printModel)));
+
+        // Print (100) joins the group preceding the divider that heads the 262144 group.
+        assertEquals(4, items.size());
+        assertEquals("Print", items.get(1).model.get(TITLE));
+        assertEquals(ListItemType.DIVIDER, items.get(2).type);
+    }
+
+    @Test
+    @SmallTest
+    @Feature("ExtensionContextMenuItems")
+    public void testIntersperseMenuItems_orderZeroAndNegative() {
+        ModelList items = new ModelList();
+        items.add(
+                new ListItem(
+                        ListItemType.MENU_ITEM,
+                        new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                                .with(ListMenuItemProperties.ORDER, 16)
+                                .with(TITLE, "Search Google")
+                                .build()));
+
+        PropertyModel topModel =
+                new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                        .with(ListMenuItemProperties.ORDER, 0)
+                        .with(TITLE, "Top Item")
+                        .build();
+        PropertyModel defaultModel =
+                new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                        .with(ListMenuItemProperties.ORDER, -1)
+                        .with(TITLE, "Default Item")
+                        .build();
+        SelectionPopupControllerImpl.intersperseMenuItems(
+                items,
+                List.of(
+                        new ListItem(ListItemType.MENU_ITEM, topModel),
+                        new ListItem(ListItemType.MENU_ITEM, defaultModel)));
+
+        assertEquals(3, items.size());
+        assertEquals("Top Item", items.get(0).model.get(TITLE));
+        assertEquals("Search Google", items.get(1).model.get(TITLE));
+        assertEquals("Default Item", items.get(2).model.get(TITLE));
+    }
+
+    @Test
+    @SmallTest
+    @Feature("ExtensionContextMenuItems")
+    public void testIntersperseMenuItems_extensionAndInspectOrder() {
+        ModelList items = new ModelList();
+        items.add(
+                new ListItem(
+                        ListItemType.MENU_ITEM,
+                        new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                                .with(ListMenuItemProperties.ORDER, 262144)
+                                .with(TITLE, "Ask Gemini")
+                                .build()));
+        items.add(
+                new ListItem(
+                        ListItemType.MENU_ITEM,
+                        new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                                .with(ListMenuItemProperties.ORDER, 1000000)
+                                .with(TITLE, "Inspect")
+                                .build()));
+
+        PropertyModel extModel =
+                new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                        .with(ListMenuItemProperties.ORDER, 300000)
+                        .with(TITLE, "Extension")
+                        .build();
+        SelectionPopupControllerImpl.intersperseMenuItems(
+                items, List.of(new ListItem(ListItemType.MENU_ITEM, extModel)));
+
+        assertEquals(3, items.size());
+        assertEquals("Ask Gemini", items.get(0).model.get(TITLE));
+        assertEquals("Extension", items.get(1).model.get(TITLE));
+        assertEquals("Inspect", items.get(2).model.get(TITLE));
     }
 }

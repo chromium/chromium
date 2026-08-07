@@ -10,6 +10,7 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.START_ICON_BITMAP;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 
 import android.graphics.Bitmap;
+import android.view.Menu;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -70,6 +71,8 @@ public class MenuModelBridge {
     /**
      * Adds a context menu item which triggers a command when activated.
      *
+     * @param commandId The command id of the menu item in the C++ menu model.
+     * @param order The display order of the menu item.
      * @param label The label to display.
      * @param bitmap The icon to display (or null if there should be no icon).
      * @param isEnabled Whether the command is enabled.
@@ -78,12 +81,19 @@ public class MenuModelBridge {
     @CalledByNative
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     void addCommand(
+            final int commandId,
+            final int order,
             @JniType("std::u16string") final String label,
             @JniType("std::optional<SkBitmap>") final @Nullable Bitmap bitmap,
             final boolean isEnabled,
             final int indexForModelActivation) {
+        // Negative orders indicate no explicit ordering; default to Menu.CATEGORY_ALTERNATIVE
+        // so standard alternative items join the alternative group.
+        int effectiveOrder = order >= 0 ? order : Menu.CATEGORY_ALTERNATIVE;
         PropertyModel.Builder modelBuilder =
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                        .with(ListMenuItemProperties.MENU_ITEM_ID, commandId)
+                        .with(ListMenuItemProperties.ORDER, effectiveOrder)
                         .with(TITLE, label)
                         .with(START_ICON_BITMAP, bitmap)
                         .with(ENABLED, isEnabled)

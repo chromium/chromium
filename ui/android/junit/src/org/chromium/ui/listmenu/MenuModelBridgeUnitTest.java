@@ -7,6 +7,8 @@ package org.chromium.ui.listmenu;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import android.view.Menu;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -35,13 +37,24 @@ public class MenuModelBridgeUnitTest {
     @Test
     @SmallTest
     public void testAddCommand() {
-        mMenuModelBridge.addCommand("Test Command", null, true, 0);
+        mMenuModelBridge.addCommand(0, -1, "Test Command", null, true, 0);
         List<ListItem> items = mMenuModelBridge.getListItems();
         assertEquals(1, items.size());
         ListItem item = items.get(0);
         assertEquals(ListItemType.MENU_ITEM, item.type);
         Collection<PropertyKey> keys = item.model.getAllProperties();
         assertTrue(keys.contains(ListMenuItemProperties.TITLE));
+        assertEquals(Menu.CATEGORY_ALTERNATIVE, item.model.get(ListMenuItemProperties.ORDER));
+    }
+
+    @Test
+    @SmallTest
+    public void testAddCommand_customOrder() {
+        // 35003 == IDC_PRINT (chrome/app/chrome_command_ids.h).
+        mMenuModelBridge.addCommand(35003, 100, "Print", null, true, 0);
+        ListItem item = mMenuModelBridge.getListItems().get(0);
+        assertEquals(100, item.model.get(ListMenuItemProperties.ORDER));
+        assertEquals(35003, item.model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test
