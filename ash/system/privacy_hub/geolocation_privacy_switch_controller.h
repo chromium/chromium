@@ -57,6 +57,9 @@ class ASH_EXPORT GeolocationPrivacySwitchController : public SessionObserver {
   // is set to "Allowed". Returns false otherwise.
   bool IsGeolocationUsageAllowedForApps();
 
+  // Returns true if the controller has received the geolocation preference.
+  bool IsReady() const;
+
   // Returns the names of the apps that want to actively use geolocation (if
   // there is more than `max_count` of such apps, first max_count names are
   // returned ).

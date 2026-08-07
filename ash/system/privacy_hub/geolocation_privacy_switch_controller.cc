@@ -136,6 +136,10 @@ bool GeolocationPrivacySwitchController::IsGeolocationUsageAllowedForApps() {
   }
 }
 
+bool GeolocationPrivacySwitchController::IsReady() const {
+  return cached_access_level_.has_value();
+}
+
 std::vector<std::u16string> GeolocationPrivacySwitchController::GetActiveApps(
     size_t max_count) const {
   std::vector<std::u16string> apps;

@@ -104,6 +104,9 @@ std::unique_ptr<ContentBlockObservation> CreateObservationForBlockedContent(
 // content type if such settings page exists.
 void OpenSystemSettings(ContentType type);
 
+// Returns true if the Privacy Hub internals are fully initialized and usable.
+bool IsPrivacyHubAvailable();
+
 class ScopedUserPermissionPrefForTest {
  public:
   // The AccessLevel is equivalent to GeolocationAccess level.
