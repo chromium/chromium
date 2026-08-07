@@ -273,8 +273,8 @@ Element* FocusgroupControllerUtils::FindNearestFocusgroupAncestor(
     if (ancestor_behavior != FocusgroupBehavior::kNoBehavior) {
       switch (type) {
         case FocusgroupType::kGrid:
-          // Respect the FocusgroupGrid feature gate.
-          CHECK(RuntimeEnabledFeatures::FocusgroupGridEnabled(
+          // Respect the FocusgroupV2 feature gate.
+          CHECK(RuntimeEnabledFeatures::FocusgroupV2Enabled(
               element->GetExecutionContext()));
           // TODO(bebeaudr): Support grid focusgroups that aren't based on the
           // table layout objects.
@@ -444,7 +444,7 @@ bool FocusgroupControllerUtils::IsFocusgroupItemWithOwner(
 
 bool FocusgroupControllerUtils::IsGridFocusgroupItem(const Element* element) {
   CHECK(element);
-  CHECK(RuntimeEnabledFeatures::FocusgroupGridEnabled(
+  CHECK(RuntimeEnabledFeatures::FocusgroupV2Enabled(
       element->GetExecutionContext()));
   if (!element->IsFocusable()) {
     return false;

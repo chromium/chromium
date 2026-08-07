@@ -310,10 +310,8 @@ void ExpectSegmentDirectionalOrder(
 }  // namespace
 
 TEST_F(FocusgroupControllerTest,
-       GridNavigationDisabledWithoutFocusgroupGridFlag) {
-  // Explicitly disable FocusgroupGrid. Ensure arrow keys don't traverse a
-  // grid when the feature is disabled.
-  ScopedFocusgroupGridForTest grid_enabled{false};
+       GridNavigationDisabledWithoutFocusgroupV2Flag) {
+  ScopedFocusgroupV2ForTest v2_enabled{false};
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <table id=table focusgroup=grid>
       <tr>
@@ -605,6 +603,7 @@ TEST_F(FocusgroupControllerTest, WrapsInDirection) {
 }
 
 TEST_F(FocusgroupControllerTest, FindNearestFocusgroupAncestor) {
+  ScopedFocusgroupV2ForTest v2_enabled{true};
   GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <div>
       <button id=item1></button>
@@ -1002,6 +1001,7 @@ TEST_F(FocusgroupControllerTest, NonFocusableNestedFocusgroupNotAnItem) {
 }
 
 TEST_F(FocusgroupControllerTest, CellAtIndexInRowBehaviorOnNoCellFound) {
+  ScopedFocusgroupV2ForTest v2_enabled{true};
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <table id=table focusgroup="grid">
       <tr>
@@ -3674,7 +3674,7 @@ TEST_F(FocusgroupControllerTest, HomeEndSingleItemNoOp) {
 
 // Home/End do not trigger in grid focusgroups (only linear).
 TEST_F(FocusgroupControllerTest, HomeEndIgnoredInGridFocusgroup) {
-  ScopedFocusgroupGridForTest grid_enabled{true};
+  ScopedFocusgroupV2ForTest v2_enabled{true};
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <table focusgroup="grid">
       <tr>

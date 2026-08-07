@@ -538,4 +538,38 @@ INSTANTIATE_TYPED_TEST_SUITE_P(Protected,
                                AbstractRuntimeEnabledFeaturesTest,
                                RuntimeProtectedEnabledFeaturesTestTraits);
 
+TEST(RuntimeEnabledFeaturesTest, FocusgroupV2CanBeToggled) {
+  ScopedFocusgroupV2ForTest v2_disabled(false);
+  EXPECT_FALSE(RuntimeEnabledFeatures::FocusgroupV2Enabled());
+
+  {
+    ScopedFocusgroupV2ForTest v2_enabled(true);
+    EXPECT_TRUE(RuntimeEnabledFeatures::FocusgroupV2Enabled());
+  }
+
+  EXPECT_FALSE(RuntimeEnabledFeatures::FocusgroupV2Enabled());
+}
+
+TEST(RuntimeEnabledFeaturesTest, FocusgroupV2DependsOnFocusgroup) {
+  ScopedFocusgroupForTest focusgroup_disabled(false);
+  ScopedFocusgroupV2ForTest v2_disabled(false);
+  EXPECT_FALSE(RuntimeEnabledFeatures::FocusgroupEnabled());
+  EXPECT_FALSE(RuntimeEnabledFeatures::FocusgroupV2Enabled());
+
+  {
+    ScopedFocusgroupV2ForTest v2_enabled(true);
+    EXPECT_FALSE(RuntimeEnabledFeatures::FocusgroupV2Enabled());
+  }
+
+  {
+    ScopedFocusgroupForTest focusgroup_enabled(true);
+    ScopedFocusgroupV2ForTest v2_enabled(true);
+    EXPECT_TRUE(RuntimeEnabledFeatures::FocusgroupEnabled());
+    EXPECT_TRUE(RuntimeEnabledFeatures::FocusgroupV2Enabled());
+  }
+
+  EXPECT_FALSE(RuntimeEnabledFeatures::FocusgroupEnabled());
+  EXPECT_FALSE(RuntimeEnabledFeatures::FocusgroupV2Enabled());
+}
+
 }  // namespace blink

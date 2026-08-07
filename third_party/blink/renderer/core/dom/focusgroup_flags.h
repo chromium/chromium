@@ -29,7 +29,7 @@ enum class FocusgroupBehavior : uint8_t {
   kListbox,
   kMenu,
   kMenubar,
-  // Grid behavior gated on FocusgroupGrid runtime feature.
+  // Grid behavior gated on FocusgroupV2 runtime feature.
   kGrid,
   // Explicit opt-out (standalone, cannot be combined with any modifiers).
   kOptOut,

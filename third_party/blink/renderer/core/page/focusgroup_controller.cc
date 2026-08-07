@@ -169,7 +169,7 @@ bool FocusgroupController::HandleHomeEndKeyboardEvent(KeyboardEvent* event,
 // static
 bool FocusgroupController::Advance(Element* initial_element,
                                    FocusgroupDirection direction) {
-  if (RuntimeEnabledFeatures::FocusgroupGridEnabled(
+  if (RuntimeEnabledFeatures::FocusgroupV2Enabled(
           initial_element->GetExecutionContext())) {
     Element* grid_root = utils::FindNearestFocusgroupAncestor(
         initial_element, FocusgroupType::kGrid);

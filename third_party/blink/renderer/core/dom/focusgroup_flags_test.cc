@@ -155,7 +155,7 @@ TEST_F(FocusgroupFlagsTest, RedundantInlineBlockGeneratesWarning) {
 
 TEST_F(FocusgroupFlagsTest, InvalidAxisForGridGeneratesError) {
   ScopedFocusgroupForTest focusgroup_scope(true);
-  ScopedFocusgroupGridForTest grid_scope(true);
+  ScopedFocusgroupV2ForTest v2_scope(true);
 
   auto* element = MakeGarbageCollected<HTMLTableElement>(GetDocument());
   GetDocument().body()->appendChild(element);
@@ -172,8 +172,22 @@ TEST_F(FocusgroupFlagsTest, InvalidAxisForGridGeneratesError) {
   EXPECT_TRUE(messages[0].contains("row-wrap/col-wrap or flow modifiers"));
 }
 
+TEST_F(FocusgroupFlagsTest, GridBehaviorRequiresFocusgroupV2) {
+  ScopedFocusgroupForTest focusgroup_scope(true);
+  ScopedFocusgroupV2ForTest v2_scope(false);
+
+  auto* element = MakeGarbageCollected<HTMLTableElement>(GetDocument());
+  GetDocument().body()->appendChild(element);
+
+  FocusgroupData result = ParseFocusgroup(element, AtomicString("grid"));
+
+  EXPECT_EQ(result.behavior, FocusgroupBehavior::kNoBehavior);
+  EXPECT_EQ(result.flags, FocusgroupFlags::kNone);
+}
+
 TEST_F(FocusgroupFlagsTest, GridTokensOnLinearGenerateError) {
   ScopedFocusgroupForTest focusgroup_scope(true);
+  ScopedFocusgroupV2ForTest v2_scope(true);
 
   auto* element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
   GetDocument().body()->appendChild(element);
@@ -190,6 +204,21 @@ TEST_F(FocusgroupFlagsTest, GridTokensOnLinearGenerateError) {
   ASSERT_GE(messages.size(), 1u);
   EXPECT_TRUE(messages[0].contains("only valid for grid focusgroups"));
   EXPECT_TRUE(messages[0].contains("use 'wrap' for linear focusgroups"));
+}
+
+TEST_F(FocusgroupFlagsTest, GridTokenSupportRequiresFocusgroupV2) {
+  ScopedFocusgroupV2ForTest v2_scope(false);
+
+  EXPECT_FALSE(IsValidFocusgroupToken(AtomicString("grid")));
+  EXPECT_FALSE(IsValidFocusgroupToken(AtomicString("row-wrap")));
+  EXPECT_FALSE(IsValidFocusgroupToken(AtomicString("flow")));
+
+  {
+    ScopedFocusgroupV2ForTest v2_enabled(true);
+    EXPECT_TRUE(IsValidFocusgroupToken(AtomicString("grid")));
+    EXPECT_TRUE(IsValidFocusgroupToken(AtomicString("row-wrap")));
+    EXPECT_TRUE(IsValidFocusgroupToken(AtomicString("flow")));
+  }
 }
 
 TEST_F(FocusgroupFlagsTest, NowrapAlone) {
@@ -228,7 +257,7 @@ TEST_F(FocusgroupFlagsTest, WrapAndNowrapConflict) {
 
 TEST_F(FocusgroupFlagsTest, NowrapOnGrid) {
   ScopedFocusgroupForTest focusgroup_scope(true);
-  ScopedFocusgroupGridForTest grid_scope(true);
+  ScopedFocusgroupV2ForTest v2_scope(true);
 
   auto* element = MakeGarbageCollected<HTMLTableElement>(GetDocument());
   GetDocument().body()->appendChild(element);
@@ -388,7 +417,7 @@ TEST_F(FocusgroupFlagsTest, ListboxDefaultsBlock) {
 
 TEST_F(FocusgroupFlagsTest, ValidTokenListStringIncludesNowrap) {
   ScopedFocusgroupForTest focusgroup_scope(true);
-  ScopedFocusgroupGridForTest grid_scope(false);
+  ScopedFocusgroupV2ForTest v2_scope(false);
 
   auto* element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
   GetDocument().body()->appendChild(element);
@@ -417,7 +446,7 @@ TEST_F(FocusgroupFlagsTest, ValidTokenListStringIncludesNowrap) {
 
 TEST_F(FocusgroupFlagsTest, ValidTokenListStringIncludesGridTokens) {
   ScopedFocusgroupForTest focusgroup_scope(true);
-  ScopedFocusgroupGridForTest grid_scope(true);
+  ScopedFocusgroupV2ForTest v2_scope(true);
 
   auto* element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
   GetDocument().body()->appendChild(element);
@@ -490,7 +519,7 @@ TEST_F(FocusgroupFlagsTest, NoneAnywhereOptsOut) {
 
 TEST_F(FocusgroupFlagsTest, NoneAnywhereWithGridDisabled) {
   ScopedFocusgroupForTest focusgroup_scope(true);
-  ScopedFocusgroupGridForTest grid_scope(false);
+  ScopedFocusgroupV2ForTest v2_scope(false);
 
   auto* element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
   GetDocument().body()->appendChild(element);

@@ -3194,10 +3194,8 @@
       status: "stable",
     },
     {
-      // 2-D grid navigation functionality of focusgroup is considered out of
-      // scope for the initial implementation.
-      // crbug.com/445992558
-      name: "FocusgroupGrid",
+      // https://open-ui.org/components/focusgroup-v2.explainer/
+      name: "FocusgroupV2",
       depends_on: ["Focusgroup"],
       status: "experimental",
     },

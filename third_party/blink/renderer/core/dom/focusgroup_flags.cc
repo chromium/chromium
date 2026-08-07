@@ -94,7 +94,7 @@ inline bool IsGridOnlyFlag(FocusgroupFlags flag) {
 // Returns a string representation of all valid behavior tokens.
 String ValidBehaviorTokenListString(ExecutionContext* context) {
   const bool is_grid_enabled =
-      RuntimeEnabledFeatures::FocusgroupGridEnabled(context);
+      RuntimeEnabledFeatures::FocusgroupV2Enabled(context);
 
   std::string assembled;
   for (const auto& behavior_mapping : kBehaviorMap) {
@@ -118,7 +118,7 @@ String ValidBehaviorTokenListString(ExecutionContext* context) {
 
 String ValidTokenListString(ExecutionContext* context) {
   const bool is_grid_enabled =
-      RuntimeEnabledFeatures::FocusgroupGridEnabled(context);
+      RuntimeEnabledFeatures::FocusgroupV2Enabled(context);
 
   std::string assembled;
   for (const auto& mapping : kModifierMap) {
@@ -183,7 +183,7 @@ FocusgroupData ParseFocusgroup(const Element* element,
   ExecutionContext* context = element->GetExecutionContext();
   DCHECK(RuntimeEnabledFeatures::FocusgroupEnabled(context));
   const bool is_grid_enabled =
-      RuntimeEnabledFeatures::FocusgroupGridEnabled(context);
+      RuntimeEnabledFeatures::FocusgroupV2Enabled(context);
 
   UseCounter::Count(context, WebFeature::kFocusgroup);
 
@@ -259,9 +259,7 @@ FocusgroupData ParseFocusgroup(const Element* element,
   }
 
   if (data.behavior == FocusgroupBehavior::kGrid && !is_grid_enabled) {
-    Error(
-        "Focusgroup behavior 'grid' is not supported because the "
-        "FocusgroupGrid feature is disabled.");
+    Error("Focusgroup behavior 'grid' requires Focusgroup V2.");
     return {};
   }
 
@@ -640,7 +638,7 @@ ax::mojom::blink::Role FocusgroupItemMinimumAriaRole(
 }
 
 bool IsValidFocusgroupToken(const AtomicString& token) {
-  const bool is_grid_enabled = RuntimeEnabledFeatures::FocusgroupGridEnabled();
+  const bool is_grid_enabled = RuntimeEnabledFeatures::FocusgroupV2Enabled();
 
   // Check behavior tokens.
   for (const auto& mapping : kBehaviorMap) {

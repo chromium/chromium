@@ -922,6 +922,7 @@ TEST_F(ElementTest, ParseFocusgroupAttrWrapIgnoredInDescendantsWithoutOwnWrap) {
 }
 
 TEST_F(ElementTest, ParseFocusgroupAttrGrid) {
+  ScopedFocusgroupV2ForTest v2_enabled{true};
   Document& document = GetDocument();
   SetBodyContent(R"HTML(
     <!-- Not an error, since an author might provide the table structure in CSS. -->
