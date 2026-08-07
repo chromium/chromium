@@ -461,4 +461,49 @@ TEST_F(JingleMessageProtoConverterTest, ConvertIncomingReplySplitSender) {
   EXPECT_EQ(converted_reply.to.id(), expected_to);
 }
 
+TEST_F(JingleMessageProtoConverterTest, ConvertAttachmentsRoundTrip) {
+  JingleMessage message;
+  message.from = from_address_;
+  message.to = to_address_;
+  message.message_id = kMessageId;
+  message.sid = kSid;
+  message.SetPayload(SessionInitiate());
+
+  Attachment host_attr_attachment;
+  HostAttributesAttachment host_attributes;
+  host_attributes.attribute.push_back("Debug-Build");
+  host_attributes.attribute.push_back("HWEncoder");
+  host_attr_attachment.host_attributes = std::move(host_attributes);
+  message.attachments.push_back(std::move(host_attr_attachment));
+
+  Attachment host_config_attachment;
+  HostConfigAttachment host_config;
+  host_config.settings["Av1-Encoder-Speed"] = "11";
+  host_config_attachment.host_config = std::move(host_config);
+  message.attachments.push_back(std::move(host_config_attachment));
+
+  ftl::IqStanza stanza = message.ToFtlIqStanza();
+  ASSERT_EQ(stanza.jingle().attachments_size(), 2);
+
+  JingleMessage converted_message;
+  std::string error;
+  ASSERT_TRUE(JingleMessageFromProto(stanza, &converted_message, &error))
+      << error;
+
+  ASSERT_EQ(converted_message.attachments.size(), 2u);
+  ASSERT_TRUE(converted_message.attachments[0].host_attributes.has_value());
+  EXPECT_EQ(converted_message.attachments[0].host_attributes->attribute.size(),
+            2u);
+  EXPECT_EQ(converted_message.attachments[0].host_attributes->attribute[0],
+            "Debug-Build");
+  EXPECT_EQ(converted_message.attachments[0].host_attributes->attribute[1],
+            "HWEncoder");
+
+  ASSERT_TRUE(converted_message.attachments[1].host_config.has_value());
+  EXPECT_EQ(converted_message.attachments[1].host_config->settings.size(), 1u);
+  EXPECT_EQ(converted_message.attachments[1]
+                .host_config->settings["Av1-Encoder-Speed"],
+            "11");
+}
+
 }  // namespace remoting

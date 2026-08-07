@@ -336,6 +336,27 @@ ftl::IqStanza JingleMessageToProto(const JingleMessage& message) {
   } else {
     NOTREACHED() << "Unknown message payload.";
   }
+
+  for (const auto& attachment : message.attachments) {
+    if (attachment.host_attributes.has_value()) {
+      ftl::Attachment* proto_attachment = jingle->add_attachments();
+      ftl::HostAttributesAttachment* proto_host_attributes =
+          proto_attachment->mutable_host_attributes();
+      proto_host_attributes->mutable_attribute()->Assign(
+          attachment.host_attributes->attribute.begin(),
+          attachment.host_attributes->attribute.end());
+    } else if (attachment.host_config.has_value()) {
+      ftl::Attachment* proto_attachment = jingle->add_attachments();
+      ftl::HostConfigAttachment* proto_host_config =
+          proto_attachment->mutable_host_config();
+      proto_host_config->mutable_settings()->insert(
+          attachment.host_config->settings.begin(),
+          attachment.host_config->settings.end());
+    } else {
+      LOG(WARNING) << "Ignored unknown or empty attachment type.";
+    }
+  }
+
   return stanza;
 }
 
@@ -404,6 +425,27 @@ bool JingleMessageFromProto(const ftl::IqStanza& stanza,
   } else {
     *error = "Unknown Jingle action";
     return false;
+  }
+
+  for (const auto& proto_attachment : jingle.attachments()) {
+    Attachment attachment;
+    if (proto_attachment.has_host_attributes()) {
+      HostAttributesAttachment host_attributes;
+      host_attributes.attribute.assign(
+          proto_attachment.host_attributes().attribute().begin(),
+          proto_attachment.host_attributes().attribute().end());
+      attachment.host_attributes = std::move(host_attributes);
+    } else if (proto_attachment.has_host_config()) {
+      HostConfigAttachment host_config;
+      host_config.settings.insert(
+          proto_attachment.host_config().settings().begin(),
+          proto_attachment.host_config().settings().end());
+      attachment.host_config = std::move(host_config);
+    } else {
+      LOG(WARNING) << "Ignored unknown attachment type.";
+      continue;
+    }
+    message->attachments.push_back(std::move(attachment));
   }
 
   return true;
