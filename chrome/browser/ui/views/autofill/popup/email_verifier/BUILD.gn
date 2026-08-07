@@ -10,6 +10,7 @@ source_set("email_verifier") {
 
   public_deps = [
     "//base",
+    "//chrome/browser/ui/views/autofill/popup",
     "//components/favicon_base",
     "//net",
     "//ui/views",

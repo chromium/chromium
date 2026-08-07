@@ -3758,6 +3758,11 @@ if (!is_android) {
         "../browser/ui/wallet/walletable_pass_save_bubble_view_browsertest.cc",
         "../browser/ui/web_applications/pwa_install_page_action_browsertest.cc",
       ]
+
+      # TODO(crbug.com/353332589): Remove this dependency when the
+      # views/autofill/popup/ browser tests get modularized.
+      deps += [ "//chrome/browser/ui/views/autofill/popup" ]
+
       if (enable_dice_support || is_chromeos) {
         deps += [ "//chrome/browser/profiles/batch_upload:test_support" ]
       }
@@ -7813,6 +7818,10 @@ test("unit_tests") {
     }
     sources +=
         [ "../browser/ui/views/tabs/tab_strip_action_container_unittest.cc" ]
+
+    # TODO(crbug.com/353332589): Remove this dependency when the
+    # views/autofill/popup/ unit tests get modularized.
+    deps += [ "//chrome/browser/ui/views/autofill/popup" ]
 
     deps += [
       "//chrome/browser/ui/call_to_action",

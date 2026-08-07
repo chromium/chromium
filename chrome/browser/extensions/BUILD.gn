@@ -2828,6 +2828,10 @@ source_set("browser_tests") {
       "//chrome/test/data/controlled_frame/resources/mangle.js",
     ]
 
+    # TODO(crbug.com/353332589): Remove this dependency when
+    # custom_cursor_suppressor_browsertest.cc gets built from its own BUILD.gn.
+    deps += [ "//chrome/browser/ui/views/autofill/popup" ]
+
     if (use_brlapi) {
       deps += [ "//third_party/libbrlapi" ]
     } else {
