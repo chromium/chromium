@@ -600,6 +600,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestImageInnerText_Eligible) {
       image_ltr->GetAndroidContentDescription());
   EXPECT_EQ(std::u16string(), image_ltr->GetAndroidSupplementalDescription());
   EXPECT_EQ(std::u16string(), image_ltr->GetTextContentUTF16());
+  EXPECT_TRUE(image_ltr->IsInterestingOnAndroid());
 
   BrowserAccessibilityAndroid* image_rtl =
       static_cast<BrowserAccessibilityAndroid*>(
@@ -611,6 +612,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestImageInnerText_Eligible) {
       u"button at the top of the browser to get image descriptions.",
       image_rtl->GetAndroidSupplementalDescription());
   EXPECT_EQ(std::u16string(), image_rtl->GetTextContentUTF16());
+  EXPECT_TRUE(image_rtl->IsInterestingOnAndroid());
 }
 
 TEST_F(BrowserAccessibilityAndroidTest,
@@ -667,12 +669,16 @@ TEST_F(BrowserAccessibilityAndroidTest,
 
   EXPECT_EQ(u"Getting description...",
             image_pending->GetAndroidContentDescription());
+  EXPECT_TRUE(image_pending->IsInterestingOnAndroid());
   EXPECT_EQ(u"No description available.",
             image_empty->GetAndroidContentDescription());
+  EXPECT_TRUE(image_empty->IsInterestingOnAndroid());
   EXPECT_EQ(u"Appears to contain adult content. No description available.",
             image_adult->GetAndroidContentDescription());
+  EXPECT_TRUE(image_adult->IsInterestingOnAndroid());
   EXPECT_EQ(u"No description available.",
             image_failed->GetAndroidContentDescription());
+  EXPECT_TRUE(image_failed->IsInterestingOnAndroid());
 }
 
 TEST_F(BrowserAccessibilityAndroidTest, TestImageInnerText_Ineligible) {
@@ -786,6 +792,7 @@ TEST_F(BrowserAccessibilityAndroidTest,
   EXPECT_EQ(std::u16string(), image_succeeded->GetTextContentUTF16());
   EXPECT_EQ(std::u16string(),
             image_succeeded->GetAndroidSupplementalDescription());
+  EXPECT_TRUE(image_succeeded->IsInterestingOnAndroid());
 
   // When alt text is present, it should be mapped to contentDescription, and
   // the annotation should be mapped to supplementalDescription. Mapping to two
@@ -797,6 +804,58 @@ TEST_F(BrowserAccessibilityAndroidTest,
   EXPECT_EQ(u"test_annotation",
             image_succeeded_with_name->GetAndroidSupplementalDescription());
   EXPECT_EQ(std::u16string(), image_succeeded_with_name->GetTextContentUTF16());
+  EXPECT_TRUE(image_succeeded_with_name->IsInterestingOnAndroid());
+}
+
+TEST_F(BrowserAccessibilityAndroidTest,
+       TestUnlabeledImageIsInterestingOnAndroid) {
+  ui::AXTreeUpdate tree;
+  tree.root_id = 1;
+  tree.nodes.resize(3);
+  tree.nodes[0].id = 1;
+  tree.nodes[0].child_ids = {2, 3};
+
+  // Node 2: Unlabeled image with an AI annotation.
+  tree.nodes[1].id = 2;
+  tree.nodes[1].role = ax::mojom::Role::kImage;
+  tree.nodes[1].SetImageAnnotationStatus(
+      ax::mojom::ImageAnnotationStatus::kAnnotationSucceeded);
+  tree.nodes[1].AddStringAttribute(
+      ax::mojom::StringAttribute::kImageAnnotation,
+      "test_annotation");
+
+  // Node 3: Unlabeled image with Image Descriptions disabled, using URL
+  // fallback.
+  tree.nodes[2].id = 3;
+  tree.nodes[2].role = ax::mojom::Role::kImage;
+  tree.nodes[2].AddStringAttribute(
+      ax::mojom::StringAttribute::kUrl,
+      "https://chrome-accessibility.appspot.com/static/test_image.jpg");
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManagerAndroid::Create(
+          tree, node_id_delegate_, test_browser_accessibility_delegate_.get()));
+
+  BrowserAccessibilityManagerAndroid* android_manager =
+      ToBrowserAccessibilityManagerAndroid(manager.get());
+
+  BrowserAccessibilityAndroid* image_annotated =
+      static_cast<BrowserAccessibilityAndroid*>(
+          manager->GetBrowserAccessibilityRoot()->PlatformGetChild(0));
+  BrowserAccessibilityAndroid* image_fallback =
+      static_cast<BrowserAccessibilityAndroid*>(
+          manager->GetBrowserAccessibilityRoot()->PlatformGetChild(1));
+
+  // 1. With Image Descriptions ON:
+  android_manager->set_allow_image_descriptions_for_testing(true);
+  EXPECT_EQ(u"test_annotation",
+            image_annotated->GetAndroidContentDescription());
+  EXPECT_TRUE(image_annotated->IsInterestingOnAndroid());
+
+  // 2. With Image Descriptions OFF:
+  android_manager->set_allow_image_descriptions_for_testing(false);
+  EXPECT_EQ(u"test_image", image_fallback->GetTextContentUTF16());
+  EXPECT_TRUE(image_fallback->IsInterestingOnAndroid());
 }
 
 TEST_F(BrowserAccessibilityAndroidTest, TestCanvasInnerText_Annotation) {
