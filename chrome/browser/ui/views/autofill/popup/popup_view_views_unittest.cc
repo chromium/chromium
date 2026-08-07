@@ -382,15 +382,6 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
                             non_shift_modifier_pressed);
   }
 
-  void ResizeTestScreen(int new_width, int new_height) {
-    display::ScreenBase* test_screen =
-        static_cast<display::ScreenBase*>(display::Screen::Get());
-    display::Display primary_display = test_screen->GetPrimaryDisplay();
-    primary_display.set_bounds(gfx::Rect(0, 0, new_width, new_height));
-    primary_display.set_work_area(gfx::Rect(0, 0, new_width, new_height));
-    test_screen->display_list().UpdateDisplay(primary_display);
-  }
-
   void ResizeWebContents(const gfx::Rect& bounds) {
     web_contents_widget().SetBounds(bounds);
   }
@@ -2631,125 +2622,214 @@ TEST_F(PopupViewViewsTest,
   task_environment()->FastForwardBy(PopupViewViews::kMouseOpenSubPopupDelay);
 }
 
-// TODO(crbug.com/41496626): Rework into pixel tests and run on all available
-// platforms. The test below is a temporary solution to cover positioning
-// calculations in the popup. The exact numbers were obtained by observing
-// a local run, manually verified and hardcoded in the test with acceptable 15px
-// error, as on different machines the popup geometry/location slightly vary.
-#if BUILDFLAG(IS_LINUX)
+class PopupPositioningTest : public PopupViewViewsTest {
+ protected:
+  // The maximum overlap in pixels that the Autofill popup can be outside of the
+  // webcontents area.
+  static constexpr int kMaxOutOfWebcontentsOverlap = 20;
+  // An arbitrary but very large constant that should be larger than any of the
+  // test screens to ensure the entire area is considered for the tests.
+  static constexpr gfx::Size kMaxScreenDimensions = {5000, 5000};
+  // The maximum distance between the popup and the input element so that they
+  // are considered adjacent.
+  static constexpr int kMaxAdjacencyDistance = 15;
 
-struct PopupPositioningTestCase {
-  const gfx::Size web_contents_bounds;
-  const gfx::PointF element_position;
-  const std::vector<SuggestionType> suggestions;
-  const gfx::Rect expected_popup_bounds;
-  std::string test_name;
+  static constexpr gfx::RectF kDefaultElementRect{0, 0, 100, 25};
+  static constexpr gfx::RectF kWideElementRect{0, 0, 200, 25};
+
+  void SetElementBounds(const gfx::RectF& bounds) {
+    controller().set_element_bounds(
+        bounds + web_contents().GetContainerBounds().OffsetFromOrigin());
+  }
+
+  gfx::RectF Left(gfx::RectF rect = kDefaultElementRect) {
+    rect.set_x(0);
+    return rect;
+  }
+
+  gfx::RectF Right(gfx::RectF rect = kDefaultElementRect) {
+    rect.set_x(web_contents().GetContainerBounds().width() - rect.width());
+    return rect;
+  }
+
+  gfx::RectF CenterX(gfx::RectF rect = kDefaultElementRect, int offset = 0) {
+    rect.set_x((web_contents().GetContainerBounds().width() - rect.width()) /
+                   2.0 +
+               offset);
+    return rect;
+  }
+
+  gfx::RectF Top(gfx::RectF rect = kDefaultElementRect) {
+    rect.set_y(0);
+    return rect;
+  }
+
+  gfx::RectF Bottom(gfx::RectF rect = kDefaultElementRect, int offset = 0) {
+    rect.set_y(web_contents().GetContainerBounds().height() - rect.height() +
+               offset);
+    return rect;
+  }
+
+  gfx::RectF CenterY(gfx::RectF rect = kDefaultElementRect) {
+    rect.set_y((web_contents().GetContainerBounds().height() - rect.height()) /
+               2.0);
+    return rect;
+  }
+
+  gfx::Rect AreaBelowElement() {
+    return gfx::Rect(
+        {-kMaxOutOfWebcontentsOverlap, GetElementBounds().bottom()},
+        kMaxScreenDimensions);
+  }
+
+  gfx::Rect AreaAboveElement() {
+    return gfx::Rect(-kMaxOutOfWebcontentsOverlap, -kMaxOutOfWebcontentsOverlap,
+                     kMaxScreenDimensions.width(),
+                     GetElementBounds().y() + kMaxOutOfWebcontentsOverlap);
+  }
+
+  gfx::Rect AreaRightOfElement() {
+    return gfx::Rect({GetElementBounds().right(), -kMaxOutOfWebcontentsOverlap},
+                     kMaxScreenDimensions);
+  }
+
+  gfx::Rect AreaLeftOfElement() {
+    return gfx::Rect(-kMaxOutOfWebcontentsOverlap, -kMaxOutOfWebcontentsOverlap,
+                     GetElementBounds().x() + kMaxOutOfWebcontentsOverlap,
+                     kMaxScreenDimensions.height());
+  }
+
+  testing::Matcher<gfx::Rect> IsInside(const gfx::Rect& area) {
+    return testing::ResultOf(
+        "position inside " + area.ToString(),
+        [area](const gfx::Rect& actual) { return area.Contains(actual); },
+        testing::IsTrue());
+  }
+
+  testing::Matcher<gfx::Rect> IsAdjacent() {
+    return testing::ResultOf(
+        "distance to element at " + GetElementBounds().ToString(),
+        [this](const gfx::Rect& actual) {
+          return actual.ManhattanInternalDistance(GetElementBounds());
+        },
+        testing::AllOf(testing::Gt(0), testing::Le(kMaxAdjacencyDistance)));
+  }
+
+ private:
+  gfx::Rect GetElementBounds() {
+    return gfx::ToEnclosingRect(controller().element_bounds());
+  }
 };
 
-const std::vector<SuggestionType> kSmallPopupSuggestions(
-    2,
-    SuggestionType::kAutocompleteEntry);
-const std::vector<SuggestionType> kLargePopupSuggestions(
-    10,
-    SuggestionType::kAutocompleteEntry);
+// Tests that the popup is placed below the element when it is at the top-left
+// of the web contents.
+TEST_F(PopupPositioningTest, LargeWebContentsTopLeftElementSmallPopupBelow) {
+  ResizeWebContents({800, 500});
+  SetElementBounds(Top(Left()));
+  CreateAndShowView(
+      std::vector<SuggestionType>(2, SuggestionType::kAutocompleteEntry));
 
-const gfx::Size kSmallWebContents = {300, 300};
-const gfx::Size kBigWebContents = {1000, 1000};
-
-const PopupPositioningTestCase kPopupPositioningTestCases[]{
-    {kBigWebContents,
-     {0, 0},
-     kSmallPopupSuggestions,
-     {25, 26, 164, 138},
-     "LargeWindowTopLeftElementSmallPopup"},
-    {kBigWebContents,
-     {0, 975},
-     kSmallPopupSuggestions,
-     {25, 840, 164, 134},
-     "LargeWindowBottomLeftElementSmallPopup"},
-    {kBigWebContents,
-     {500, 500},
-     kSmallPopupSuggestions,
-     {525, 526, 164, 138},
-     "LargeWindowCenterElementSmallPopup"},
-    {kBigWebContents,
-     {900, 0},
-     kSmallPopupSuggestions,
-     {832, 26, 164, 138},
-     "LargeWindowTopRightElementSmallPopup"},
-    {kBigWebContents,
-     {900, 975},
-     kSmallPopupSuggestions,
-     {832, 840, 164, 134},
-     "LargeWindowBottomRightElementSmallPopup"},
-    {kSmallWebContents,
-     {0, 0},
-     kSmallPopupSuggestions,
-     {25, 26, 164, 138},
-     "SmallWindowTopLeftElementSmallPopup"},
-    {kSmallWebContents,
-     {0, 0},
-     kLargePopupSuggestions,
-     {100, -10, 183, 308},
-     "SmallWindowTopLeftElementLargePopup"},
-    {kSmallWebContents,
-     {0, 140},
-     kLargePopupSuggestions,
-     {100, -2, 183, 308},
-     "SmallWindowLeftElementLargePopup"},
-    {kSmallWebContents,
-     {150, 0},
-     kLargePopupSuggestions,
-     {117, 26, 179, 288},
-     "SmallWindowTopElementLargePopup"},
-    {kSmallWebContents,
-     {150, 275},
-     kLargePopupSuggestions,
-     {117, -10, 179, 284},
-     "SmallWindowBottomElementLargePopup"},
-    {kSmallWebContents,
-     {200, 275},
-     kLargePopupSuggestions,
-     {17, 6, 183, 308},
-     "SmallWindowBottomRightElementLargePopup"},
-};
-class PopupPositioningTest
-    : public PopupViewViewsTest,
-      public ::testing::WithParamInterface<PopupPositioningTestCase> {};
-
-TEST_P(PopupPositioningTest, All) {
-  ResizeTestScreen(1920, 1080);
-
-  const PopupPositioningTestCase& test_case = GetParam();
-
-  ResizeWebContents(gfx::Rect(test_case.web_contents_bounds));
-  constexpr gfx::SizeF kElementSize(100, 25);
-  controller().set_element_bounds(
-      gfx::RectF(test_case.element_position, kElementSize) +
-      web_contents().GetContainerBounds().OffsetFromOrigin());
-
-  CreateAndShowView(test_case.suggestions);
-
-  const gfx::Rect& expected = test_case.expected_popup_bounds;
-  const gfx::Rect& actual = widget().GetWindowBoundsInScreen();
-  // The exact position and size varies on different machines (e.g. because of
-  // different available fonts) and this comparison relaxation is to mitigate
-  // slightly different dimensions.
-  const int kPxError = 15;
-  EXPECT_NEAR(expected.x(), actual.x(), kPxError);
-  EXPECT_NEAR(expected.y(), actual.y(), kPxError);
-  EXPECT_NEAR(expected.width(), actual.width(), kPxError);
-  EXPECT_NEAR(expected.height(), actual.height(), kPxError);
+  EXPECT_THAT(widget().GetWindowBoundsInScreen(), IsInside(AreaBelowElement()));
+  EXPECT_THAT(widget().GetWindowBoundsInScreen(), IsAdjacent());
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    PopupPositioningTest,
-    testing::ValuesIn(kPopupPositioningTestCases),
-    [](const testing::TestParamInfo<PopupPositioningTest::ParamType>& info) {
-      return info.param.test_name;
-    });
-#endif  // BUILDFLAG(IS_LINUX)
+// Tests that the popup is placed above the element when it is at the
+// bottom-left of the web contents.
+TEST_F(PopupPositioningTest, LargeWebContentsBottomLeftElementSmallPopupAbove) {
+  ResizeWebContents({800, 500});
+  SetElementBounds(Bottom(Left()));
+  CreateAndShowView(
+      std::vector<SuggestionType>(2, SuggestionType::kAutocompleteEntry));
+
+  EXPECT_THAT(widget().GetWindowBoundsInScreen(), IsInside(AreaAboveElement()));
+  EXPECT_THAT(widget().GetWindowBoundsInScreen(), IsAdjacent());
+}
+
+// Tests that the popup is placed below the element when it is in the center of
+// a web contents where it could fit on all sides.
+TEST_F(PopupPositioningTest, LargeWebContentsCenterElementSmallPopupBelow) {
+  ResizeWebContents({800, 500});
+  SetElementBounds(CenterY(CenterX()));
+  CreateAndShowView(
+      std::vector<SuggestionType>(2, SuggestionType::kAutocompleteEntry));
+
+  EXPECT_THAT(widget().GetWindowBoundsInScreen(), IsInside(AreaBelowElement()));
+  EXPECT_THAT(widget().GetWindowBoundsInScreen(), IsAdjacent());
+}
+
+// Tests that the large popup is placed below the element when it is at the
+// top-right of the web contents.
+TEST_F(PopupPositioningTest, LargeWebContentsTopRightElementLargePopupBelow) {
+  ResizeWebContents({800, 550});
+  SetElementBounds(Top(Right()));
+  CreateAndShowView(
+      std::vector<SuggestionType>(8, SuggestionType::kAutocompleteEntry));
+
+  EXPECT_THAT(widget().GetWindowBoundsInScreen(), IsInside(AreaBelowElement()));
+  EXPECT_THAT(widget().GetWindowBoundsInScreen(), IsAdjacent());
+}
+
+// Tests that the large popup is placed above the element when it is at the
+// bottom-right of the web contents.
+TEST_F(PopupPositioningTest,
+       LargeWebContentsBottomRightElementLargePopupAbove) {
+  ResizeWebContents({800, 550});
+  SetElementBounds(Bottom(Right()));
+  CreateAndShowView(
+      std::vector<SuggestionType>(8, SuggestionType::kAutocompleteEntry));
+
+  EXPECT_THAT(widget().GetWindowBoundsInScreen(), IsInside(AreaAboveElement()));
+  EXPECT_THAT(widget().GetWindowBoundsInScreen(), IsAdjacent());
+}
+
+// Tests that a large popup is placed below the element in a small web contents.
+TEST_F(PopupPositioningTest, SmallWebContentsTopWideElementLargePopupBelow) {
+  ResizeWebContents({300, 300});
+  SetElementBounds(Top(CenterX(kWideElementRect)));
+  CreateAndShowView(
+      std::vector<SuggestionType>(10, SuggestionType::kAutocompleteEntry));
+
+  EXPECT_THAT(widget().GetWindowBoundsInScreen(), IsInside(AreaBelowElement()));
+  EXPECT_THAT(widget().GetWindowBoundsInScreen(), IsAdjacent());
+}
+
+// Tests that a large popup is placed on the right of the element when it is on
+// the left edge of a small web contents.
+TEST_F(PopupPositioningTest, SmallWebContentsLeftElementLargePopupRight) {
+  ResizeWebContents({350, 300});
+  SetElementBounds(CenterY(Left()));
+  CreateAndShowView(
+      std::vector<SuggestionType>(10, SuggestionType::kAutocompleteEntry));
+
+  EXPECT_THAT(widget().GetWindowBoundsInScreen(),
+              IsInside(AreaRightOfElement()));
+  EXPECT_THAT(widget().GetWindowBoundsInScreen(), IsAdjacent());
+}
+
+// Tests that a large popup is placed on the left of the element when it is near
+// the bottom-right of a small web contents.
+TEST_F(PopupPositioningTest, SmallWebContentsBottomRightElementLargePopupLeft) {
+  ResizeWebContents({350, 350});
+  SetElementBounds(Bottom(Right(), -50));
+  CreateAndShowView(
+      std::vector<SuggestionType>(10, SuggestionType::kAutocompleteEntry));
+
+  EXPECT_THAT(widget().GetWindowBoundsInScreen(),
+              IsInside(AreaLeftOfElement()));
+  EXPECT_THAT(widget().GetWindowBoundsInScreen(), IsAdjacent());
+}
+
+// Tests that a large popup is placed above the element when it does not fit
+// to either side or below.
+TEST_F(PopupPositioningTest, SmallWebContentsBottomElementLargePopupAbove) {
+  ResizeWebContents({300, 300});
+  SetElementBounds(Bottom(CenterX(kDefaultElementRect, 50)));
+  CreateAndShowView(
+      std::vector<SuggestionType>(10, SuggestionType::kAutocompleteEntry));
+
+  EXPECT_THAT(widget().GetWindowBoundsInScreen(), IsInside(AreaAboveElement()));
+  EXPECT_THAT(widget().GetWindowBoundsInScreen(), IsAdjacent());
+}
 
 TEST_F(PopupViewViewsTest, StandaloneCvcSuggestion_ElementId) {
   Suggestion suggestion(u"dummy_main_text", SuggestionType::kAutocompleteEntry);
