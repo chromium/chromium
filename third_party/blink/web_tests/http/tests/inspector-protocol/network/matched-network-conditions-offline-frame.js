@@ -30,17 +30,30 @@
   await session.navigate('resources/page-with-iframe.html');
   await loadPromise;
 
+  await dp.Target.setAutoAttach(
+      {autoAttach: true, waitForDebuggerOnStart: true, flatten: true});
+
+  let resolveNavigated;
   const navigated = new Promise(resolve => {
-    dp.Page.onFrameNavigated(event => {
-      const frame = event.params.frame;
-      if (frame.parentId) {
-        if (frame.url.startsWith('chrome-error://')) {
-          resolve('failed to load');
-        } else if (frame.url.includes('frames/frame.html')) {
-          resolve('loaded');
-        }
-      }
-    });
+    resolveNavigated = resolve;
+  });
+
+  const checkFrameNavigated = event => {
+    const frame = event.params.frame;
+    if (frame.url.startsWith('chrome-error://')) {
+      resolveNavigated('failed to load');
+    } else if (frame.url.includes('frames/frame.html')) {
+      resolveNavigated('loaded');
+    }
+  };
+
+  dp.Page.onFrameNavigated(checkFrameNavigated);
+
+  dp.Target.onAttachedToTarget(async event => {
+    const dp2 = session.createChild(event.params.sessionId).protocol;
+    await dp2.Page.enable();
+    dp2.Page.onFrameNavigated(checkFrameNavigated);
+    await dp2.Runtime.runIfWaitingForDebugger();
   });
 
   await session.evaluate((url) => {
