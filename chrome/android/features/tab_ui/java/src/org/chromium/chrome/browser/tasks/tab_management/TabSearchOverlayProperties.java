@@ -35,8 +35,12 @@ public class TabSearchOverlayProperties {
     public static final WritableBooleanPropertyKey VISIBLE =
             new WritableBooleanPropertyKey("visible");
 
+    /** Controls the UI/behavior of the search panel based on incognito mode. */
+    public static final WritableBooleanPropertyKey IS_INCOGNITO =
+            new WritableBooleanPropertyKey("is_incognito");
+
     public static final PropertyKey[] ALL_KEYS = {
-        EMPTY_STATE_VISIBLE, ON_CLOSE_CLICK, ON_HIDE_FINISHED, ON_SCRIM_CLICK, VISIBLE
+        EMPTY_STATE_VISIBLE, ON_CLOSE_CLICK, ON_HIDE_FINISHED, ON_SCRIM_CLICK, VISIBLE, IS_INCOGNITO
     };
 
     /** Creates a default PropertyModel with all keys. */

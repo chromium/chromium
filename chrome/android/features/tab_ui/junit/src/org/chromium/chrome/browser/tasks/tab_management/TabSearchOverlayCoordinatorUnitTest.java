@@ -26,6 +26,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
+
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.junit.After;
 import org.junit.Before;
@@ -425,6 +428,9 @@ public class TabSearchOverlayCoordinatorUnitTest {
         showOverlay();
         verifySearchUiCoordinatorInitialized();
 
+        ImageButton closeButton = mPanelContainer.findViewById(R.id.tab_search_close_button);
+        assertNotNull(closeButton);
+
         // Switch to an incognito profile.
         when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
         mProfileSupplier.set(mIncognitoProfile);
@@ -432,12 +438,31 @@ public class TabSearchOverlayCoordinatorUnitTest {
         // Verify that setColorScheme was called with true.
         verify(mSearchUiCoordinator).setColorScheme(true);
 
+        // Verify close button colors in incognito.
+        assertEquals(
+                AppCompatResources.getColorStateList(mActivity, R.color.default_icon_color_light),
+                closeButton.getImageTintList());
+        assertEquals(
+                AppCompatResources.getColorStateList(
+                        mActivity, R.color.tab_strip_close_bg_incognito_tint_list),
+                closeButton.getBackgroundTintList());
+
         // Switch back to non-incognito profile.
         when(mProfile.isOffTheRecord()).thenReturn(false);
         mProfileSupplier.set(mProfile);
 
         // Verify that setColorScheme was called with false.
         verify(mSearchUiCoordinator).setColorScheme(false);
+
+        // Verify close button colors in standard.
+        assertEquals(
+                AppCompatResources.getColorStateList(
+                        mActivity, R.color.default_icon_color_tint_list),
+                closeButton.getImageTintList());
+        assertEquals(
+                AppCompatResources.getColorStateList(
+                        mActivity, R.color.tab_strip_close_bg_tint_list),
+                closeButton.getBackgroundTintList());
     }
 
     @Test

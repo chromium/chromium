@@ -43,7 +43,7 @@ found in the LICENSE file.
                 android:src="@drawable/material_ic_close_24dp"
                 android:padding="8dp"
                 android:scaleType="fitCenter"
-                android:background="@drawable/tile_view_highlight"
+                android:background="@drawable/tab_close_button_bg_24dp"
                 android:contentDescription="@string/close" />
         </FrameLayout>
 

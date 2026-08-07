@@ -7,6 +7,9 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.view.View;
+import android.widget.ImageButton;
+
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
@@ -67,6 +70,9 @@ public class TabSearchOverlayViewBinder {
                     view.panelContainer.setVisibility(View.GONE);
                 }
             }
+        } else if (TabSearchOverlayProperties.IS_INCOGNITO == propertyKey) {
+            boolean isIncognito = model.get(TabSearchOverlayProperties.IS_INCOGNITO);
+            updateCloseButtonColor(view, isIncognito);
         }
     }
 
@@ -121,5 +127,22 @@ public class TabSearchOverlayViewBinder {
                             }
                         })
                 .start();
+    }
+
+    private static void updateCloseButtonColor(ViewHolder view, boolean isIncognito) {
+        var context = view.panel.getContext();
+        ImageButton closeButton = view.panel.findViewById(R.id.tab_search_close_button);
+
+        int iconTintRes =
+                isIncognito
+                        ? R.color.default_icon_color_light
+                        : R.color.default_icon_color_tint_list;
+        int bgTintRes =
+                isIncognito
+                        ? R.color.tab_strip_close_bg_incognito_tint_list
+                        : R.color.tab_strip_close_bg_tint_list;
+
+        closeButton.setImageTintList(AppCompatResources.getColorStateList(context, iconTintRes));
+        closeButton.setBackgroundTintList(AppCompatResources.getColorStateList(context, bgTintRes));
     }
 }

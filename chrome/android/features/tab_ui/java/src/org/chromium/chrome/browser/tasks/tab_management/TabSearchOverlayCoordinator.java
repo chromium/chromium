@@ -541,6 +541,7 @@ public class TabSearchOverlayCoordinator implements BackPressHandler {
         // If the profile supplier is null (rare), default to the non-incognito state as it is the
         // safest choice for coloring since some features still do not support incognito colors.
         boolean isIncognito = profile != null && profile.isOffTheRecord();
+        mModel.set(TabSearchOverlayProperties.IS_INCOGNITO, isIncognito);
         mSearchBoxDataProvider.initialize(mActivity, isIncognito);
         if (mSearchUiCoordinator != null) {
             mSearchUiCoordinator.setColorScheme(isIncognito);
