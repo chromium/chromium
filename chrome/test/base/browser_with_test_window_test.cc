@@ -83,10 +83,9 @@ void BrowserWithTestWindowTest::SetUp() {
 
   ash_test_helper_.emplace();
 
-  if (!user_manager::UserManager::IsInitialized()) {
-    user_manager_.Reset(std::make_unique<user_manager::FakeUserManager>(
-        g_browser_process->local_state()));
-  }
+  CHECK(!user_manager::UserManager::IsInitialized());
+  user_manager_.Reset(std::make_unique<user_manager::FakeUserManager>(
+      g_browser_process->local_state()));
   session_manager::SessionManager::Get()->OnUserManagerCreated(
       user_manager::UserManager::Get());
 

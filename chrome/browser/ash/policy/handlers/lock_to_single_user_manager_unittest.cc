@@ -14,7 +14,6 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/anomaly_detector/anomaly_detector_client.h"
@@ -38,8 +37,8 @@
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/session_manager/core/session_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/test_helper.h"
+#include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_id.h"
 
 namespace policy {
@@ -68,9 +67,11 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
         base::CommandLine::ForCurrentProcess());
     ash::AnomalyDetectorClient::InitializeFake();
     ash::CryptohomeMiscClient::InitializeFake();
-    lock_to_single_user_manager_ = std::make_unique<LockToSingleUserManager>();
+    arc::StabilityMetricsManager::Initialize(
+        TestingBrowserProcess::GetGlobal()->local_state());
 
     BrowserWithTestWindowTest::SetUp();
+    lock_to_single_user_manager_ = std::make_unique<LockToSingleUserManager>();
 
     settings_helper_.ReplaceDeviceSettingsProviderWithStub();
     arc::ArcSessionManager::SetUiEnabledForTesting(false);
@@ -80,11 +81,6 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
         std::make_unique<arc::ArcSessionRunner>(
             base::BindRepeating(arc::FakeArcSession::Create)),
         arc_dlc_installer_.get());
-
-    arc_service_manager_->set_browser_context(profile());
-    arc::StabilityMetricsManager::Initialize(
-        TestingBrowserProcess::GetGlobal()->local_state());
-    arc::ArcMetricsService::GetForBrowserContextForTesting(profile());
   }
 
   void TearDown() override {
@@ -127,30 +123,39 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
   // TODO(b/40286020): Consider migrating into BrowserWithTestWindowTest
   // in better way. Current test implementation is different from
   // what we're seeing in production.
-  void LogIn(std::string_view email, const GaiaId& gaia_id) override {}
-  void OnUserProfileCreated(const std::string& email,
-                            Profile* profile) override {}
-  void SwitchActiveUser(const std::string& email) override {}
+  void LogIn(std::string_view email, const GaiaId& gaia_id) override {
+    NOTREACHED();
+  }
+
+  std::optional<std::string> GetDefaultProfileName() override {
+    // Disable default log-in.
+    return std::nullopt;
+  }
 
   void LogInUser(bool is_affiliated) {
     base::RunLoop run_loop;
-    const AccountId account_id(AccountId::FromUserEmailGaiaId(
-        profile()->GetProfileUserName(), GaiaId("1234567890")));
-    fake_user_manager_->AddUserWithAffiliation(account_id, is_affiliated);
+
+    const AccountId account_id(
+        AccountId::FromUserEmailGaiaId("test@test", GaiaId("1234567890")));
+    user_manager()->AddGaiaUser(account_id, user_manager::UserType::kRegular);
     session_manager::SessionManager::Get()->CreateSession(
         account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id),
         /*new_user=*/false,
         /*has_active_session=*/false);
-    fake_user_manager_->LoginUser(account_id);
-    // This step should be part of LoginUser(). There's a TODO to add it there,
-    // but it breaks many tests.
-    fake_user_manager_->SwitchActiveUser(account_id);
+    user_manager::UserManager::Get()->SetUserPolicyStatus(
+        account_id,
+        /*is_managed=*/is_affiliated, /*is_affiliated=*/is_affiliated);
+
+    auto* profile = CreateProfile(account_id.GetUserEmail());
 
     ash::LoginState::Get()->SetLoggedInState(
         ash::LoginState::LOGGED_IN_ACTIVE,
         ash::LoginState::LOGGED_IN_USER_REGULAR);
 
-    arc_session_manager_->SetProfile(profile());
+    arc_service_manager_->set_browser_context(profile);
+    arc::ArcMetricsService::GetForBrowserContextForTesting(profile);
+
+    arc_session_manager_->SetProfile(profile);
     arc_session_manager_->Initialize();
 
     run_loop.RunUntilIdle();
@@ -190,10 +195,6 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
  private:
   ash::ScopedCrosSettingsTestHelper settings_helper_{
       /* create_settings_service= */ false};
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> fake_user_manager_{
-      new ash::FakeChromeUserManager()};
-  user_manager::ScopedUserManager scoped_user_manager_{
-      base::WrapUnique(fake_user_manager_.get())};
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   std::unique_ptr<arc::ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
