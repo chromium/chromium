@@ -58,6 +58,18 @@ class TestLayoutManager : public views::LayoutManagerBase {
 
       // Calculate the total height based on all child layouts.
       layout.host_size = gfx::Size(size_bounds.width().value_or(100), y);
+    } else if (axis_ == TabCollectionAnimatingLayoutManager::AnimationAxis::
+                            kHorizontalWrappingVertically) {
+      // Place children horizontally within a fixed-width parent.
+      int x = 0;
+      for (const auto& child : host_view()->children()) {
+        layout.child_layouts.emplace_back(child, child->GetVisible(),
+                                          gfx::Rect(x, 0, 20, 100));
+        x += 20;
+      }
+
+      // Calculate host size with fixed bounded width and total height.
+      layout.host_size = gfx::Size(size_bounds.width().value_or(100), 100);
     } else {
       // Place children at full height, starting from the left of the parent.
       int x = 0;
@@ -215,10 +227,6 @@ TEST_P(TabCollectionAnimatingLayoutManagerTest,
   gfx::ScopedAnimationDurationScaleMode normal_duration_mode(
       gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
-  const bool is_vertical =
-      animation_axis() ==
-      TabCollectionAnimatingLayoutManager::AnimationAxis::kVertical;
-
   // Setup the layout manager and initial child views.
   SetLayoutManager(std::make_unique<TabCollectionAnimatingLayoutManager>(
       std::make_unique<TestLayoutManager>(animation_axis()),
@@ -235,14 +243,18 @@ TEST_P(TabCollectionAnimatingLayoutManagerTest,
   // Advance time such that the initial add animation has time to complete.
   task_environment()->FastForwardBy(base::Seconds(1));
 
-  const int expected_size = 40;
+  const int expected_size =
+      animation_axis() == TabCollectionAnimatingLayoutManager::AnimationAxis::
+                              kHorizontalWrappingVertically
+          ? 100
+          : 40;
 
   // Swap tabs.
   host_view()->ReorderChildView(child2, 0);
   host_view()->InvalidateLayout();
   widget()->LayoutRootViewIfNecessary();
 
-  // Ensures preferred size remains stable at 40dips during the swap animation.
+  // Ensures preferred size remains stable during the swap animation.
   // The animation duration is typically 200ms, so we poll 20 times in 10ms
   // steps.
   for (int i = 0; i < 20; ++i) {
@@ -252,7 +264,10 @@ TEST_P(TabCollectionAnimatingLayoutManagerTest,
     ASSERT_TRUE(layout_manager()->is_animating());
 
     // Verify stability at every frame along the animation axis.
-    if (is_vertical) {
+    if (animation_axis() ==
+            TabCollectionAnimatingLayoutManager::AnimationAxis::kVertical ||
+        animation_axis() == TabCollectionAnimatingLayoutManager::AnimationAxis::
+                                kHorizontalWrappingVertically) {
       EXPECT_EQ(layout_manager()->GetPreferredSize(host_view()).height(),
                 expected_size);
     } else {
@@ -266,11 +281,19 @@ TEST_P(TabCollectionAnimatingLayoutManagerTest,
 
   // Verify final state.
   EXPECT_FALSE(layout_manager()->is_animating());
-  if (is_vertical) {
+  if (animation_axis() ==
+      TabCollectionAnimatingLayoutManager::AnimationAxis::kVertical) {
     EXPECT_EQ(layout_manager()->GetPreferredSize(host_view()).height(),
               expected_size);
     EXPECT_EQ(child2->bounds(), gfx::Rect(0, 0, 100, 20));
     EXPECT_EQ(child1->bounds(), gfx::Rect(0, 20, 100, 20));
+  } else if (animation_axis() ==
+             TabCollectionAnimatingLayoutManager::AnimationAxis::
+                 kHorizontalWrappingVertically) {
+    EXPECT_EQ(layout_manager()->GetPreferredSize(host_view()).height(),
+              expected_size);
+    EXPECT_EQ(child2->bounds(), gfx::Rect(0, 0, 20, 100));
+    EXPECT_EQ(child1->bounds(), gfx::Rect(20, 0, 20, 100));
   } else {
     EXPECT_EQ(layout_manager()->GetPreferredSize(host_view()).width(),
               expected_size);
@@ -286,17 +309,30 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Bool(),
         testing::Values(
             TabCollectionAnimatingLayoutManager::AnimationAxis::kVertical,
-            TabCollectionAnimatingLayoutManager::AnimationAxis::kHorizontal)),
+            TabCollectionAnimatingLayoutManager::AnimationAxis::kHorizontal,
+            TabCollectionAnimatingLayoutManager::AnimationAxis::
+                kHorizontalWrappingVertically)),
     [](const testing::TestParamInfo<
         TabCollectionAnimatingLayoutManagerTest::ParamType>& info) {
       const bool duration_enabled = std::get<0>(info.param);
       const auto axis = std::get<1>(info.param);
+      std::string axis_str;
+      switch (axis) {
+        case TabCollectionAnimatingLayoutManager::AnimationAxis::kVertical:
+          axis_str = "Vertical";
+          break;
+        case TabCollectionAnimatingLayoutManager::AnimationAxis::kHorizontal:
+          axis_str = "Horizontal";
+          break;
+        case TabCollectionAnimatingLayoutManager::AnimationAxis::
+            kHorizontalWrappingVertically:
+          axis_str = "HorizontalWrappingVertically";
+          break;
+      }
       return base::StrCat({
           duration_enabled ? "AnimationDurationEnabled"
                            : "AnimationDurationDisabled",
           "_",
-          axis == TabCollectionAnimatingLayoutManager::AnimationAxis::kVertical
-              ? "Vertical"
-              : "Horizontal",
+          axis_str,
       });
     });

@@ -27,7 +27,11 @@ class TabCollectionAnimatingLayoutManager
  public:
   // Controls along which axis view bounds are animated during animate-in and
   // animate-out transitions.
-  enum class AnimationAxis { kVertical, kHorizontal };
+  enum class AnimationAxis {
+    kVertical,
+    kHorizontal,
+    kHorizontalWrappingVertically,
+  };
 
   // Represents how animations should progress along the animation axis.
   enum class AnimationDirection { kStartToEnd, kEndToStart };
@@ -136,6 +140,9 @@ class TabCollectionAnimatingLayoutManager
   // Interpolates between `starting_layout_` and `target_layout_` based on
   // current `animation_` value.
   views::ProposedLayout InterpolateLayout(double value) const;
+
+  // Returns true if the animation axis is vertical or wraps vertically.
+  bool IsVerticalOrWrappingVertically() const;
 
   // Removes and destroys any views marked for deletion that are no longer
   // needed for animated effects. This is called after a new layout has been

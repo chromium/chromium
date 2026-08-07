@@ -47,7 +47,11 @@ PinnedTabContainerView::PinnedTabContainerView(
                                         TabCollectionAnimatingLayoutManager>(
           std::make_unique<views::DelegatingLayoutManager>(this),
           *this,
-          TabCollectionAnimatingLayoutManager::AnimationAxis::kHorizontal))) {
+          collection_node && collection_node->orientation() ==
+                                 TabStripOrientation::kHorizontal
+              ? TabCollectionAnimatingLayoutManager::AnimationAxis::kHorizontal
+              : TabCollectionAnimatingLayoutManager::AnimationAxis::
+                    kHorizontalWrappingVertically))) {
   collection_node->set_remove_child_from_node(base::BindRepeating(
       &TabCollectionAnimatingLayoutManager::AnimateAndDestroyChildView,
       base::Unretained(base::to_address(layout_manager_))));
