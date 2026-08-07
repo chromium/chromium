@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "base/test/gtest_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -29,6 +30,7 @@ using testing::Mock;
 
 namespace {
 
+using base::i18n::GetKnownLanguageTag;
 const char kPrefName[] = "pref.name";
 
 }  // namespace
@@ -538,4 +540,33 @@ TEST(PrefServiceTest, MAYBE_GetValueWithTypeConversion) {
   EXPECT_CHECK_DEATH(prefs.GetInt64(kTimePref));
   EXPECT_CHECK_DEATH(prefs.SetTime(kInt64Pref, base::Time::Now()));
   EXPECT_CHECK_DEATH(prefs.GetTime(kInt64Pref));
+}
+
+TEST(PrefServiceTest, RegisterSetAndClearLanguageTagPref) {
+  TestingPrefServiceSimple prefs;
+  constexpr char kLanguageTagPref[] = "language_tag_pref";
+
+  prefs.registry()->RegisterLanguageTagPref(kLanguageTagPref,
+                                            GetKnownLanguageTag("en"));
+  EXPECT_EQ(prefs.GetLanguageTag(kLanguageTagPref), GetKnownLanguageTag("en"));
+
+  prefs.SetLanguageTag(kLanguageTagPref, GetKnownLanguageTag("fr"));
+  EXPECT_EQ(prefs.GetLanguageTag(kLanguageTagPref), GetKnownLanguageTag("fr"));
+
+  prefs.ClearPref(kLanguageTagPref);
+  EXPECT_EQ(prefs.GetLanguageTag(kLanguageTagPref), GetKnownLanguageTag("en"));
+}
+
+TEST(PrefServiceTest, GetLanguageTagFallback) {
+  TestingPrefServiceSimple prefs;
+  constexpr char kIntPref[] = "int_pref";
+  constexpr char kStringPref[] = "string_pref";
+
+  // Fallback to "und" when pref path holds an unexpected value type.
+  prefs.registry()->RegisterIntegerPref(kIntPref, 42);
+  EXPECT_EQ(prefs.GetLanguageTag(kIntPref), GetKnownLanguageTag("und"));
+
+  // Fallback to "und" when pref path holds an invalid language tag string.
+  prefs.registry()->RegisterStringPref(kStringPref, "invalid---tag");
+  EXPECT_EQ(prefs.GetLanguageTag(kStringPref), GetKnownLanguageTag("und"));
 }

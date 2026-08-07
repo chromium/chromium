@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/language_tag_value_converters.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -45,6 +47,14 @@ void PrefRegistrySimple::RegisterFilePathPref(
     const base::FilePath& default_value,
     uint32_t flags) {
   RegisterPreference(path, base::Value(default_value.AsUTF8Unsafe()), flags);
+}
+
+void PrefRegistrySimple::RegisterLanguageTagPref(
+    std::string_view path,
+    const base::i18n::LanguageTag& default_value,
+    uint32_t flags) {
+  RegisterPreference(path, base::i18n::LanguageTagToValue(default_value),
+                     flags);
 }
 
 void PrefRegistrySimple::RegisterListPref(std::string_view path,

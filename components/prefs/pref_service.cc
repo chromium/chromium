@@ -16,6 +16,8 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/language_tag_value_converters.h"
 #include "base/json/values_util.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -154,6 +156,12 @@ base::FilePath PrefService::GetFilePath(std::string_view path) const {
   std::optional<base::FilePath> result = base::ValueToFilePath(value);
   DCHECK(result);
   return *result;
+}
+
+base::i18n::LanguageTag PrefService::GetLanguageTag(
+    std::string_view path) const {
+  return base::i18n::ValueToLanguageTag(GetValue(path))
+      .value_or(base::i18n::GetKnownLanguageTag("und"));
 }
 
 bool PrefService::HasPrefPath(std::string_view path) const {
@@ -400,6 +408,11 @@ void PrefService::SetList(std::string_view path, base::ListValue list) {
 void PrefService::SetFilePath(std::string_view path,
                               const base::FilePath& value) {
   SetUserPrefValue(path, base::FilePathToValue(value));
+}
+
+void PrefService::SetLanguageTag(std::string_view path,
+                                 const base::i18n::LanguageTag& value) {
+  SetUserPrefValue(path, base::i18n::LanguageTagToValue(value));
 }
 
 void PrefService::SetInt64(std::string_view path, int64_t value) {
