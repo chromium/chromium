@@ -1584,6 +1584,14 @@ public class UrlBarUnitTest {
     }
 
     @Test
+    public void onTextContextMenuItem_manageSearchEngines() {
+        Runnable callback = mock(Runnable.class);
+        mUrlBar.setManageSearchEnginesCallback(callback);
+        assertTrue(mUrlBar.onTextContextMenuItem(R.id.url_bar_manage_search_engines));
+        verify(callback).run();
+    }
+
+    @Test
     public void testClearTextSelection() {
         mUrlBar.setText("test selection");
         mUrlBar.onFocusChanged(true, 0, null);

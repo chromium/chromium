@@ -1025,13 +1025,16 @@ public class UrlBar extends AutocompleteEditText {
         }
 
         if (mManageSearchEnginesCallback != null
-                && OmniboxFeatures.sOmniboxSiteSearch.isEnabled()
                 && menu.findItem(R.id.url_bar_manage_search_engines) == null) {
+            int titleRes =
+                    OmniboxFeatures.sOmniboxSiteSearch.isEnabled()
+                            ? R.string.manage_search_engines_and_site_search
+                            : R.string.manage_search_engines;
             menu.add(
                     Menu.NONE,
                     R.id.url_bar_manage_search_engines,
                     Menu.CATEGORY_SECONDARY,
-                    getContext().getString(R.string.manage_search_engines_and_site_search));
+                    titleRes);
         }
 
         if (mContextMenuHelper != null) {

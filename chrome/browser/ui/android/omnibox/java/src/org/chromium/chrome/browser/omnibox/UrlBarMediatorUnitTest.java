@@ -37,6 +37,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
 import org.chromium.chrome.browser.search_engines.settings.SiteSearchSettings;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
@@ -501,8 +502,14 @@ public class UrlBarMediatorUnitTest {
     @Test
     @DisableFeatures(OmniboxFeatureList.OMNIBOX_SITE_SEARCH)
     public void testManageSearchEnginesCallback_featureDisabled() {
+        SettingsNavigation settingsNavigation = mock(SettingsNavigation.class);
+        SettingsNavigationFactory.setInstanceForTesting(settingsNavigation);
+
         Runnable callback = mModel.get(UrlBarProperties.MANAGE_SEARCH_ENGINES_CALLBACK);
-        assertNull(callback);
+        assertNotNull(callback);
+
+        callback.run();
+        verify(settingsNavigation).startSettings(eq(mContext), eq(SearchEngineSettings.class));
     }
 
     @Test

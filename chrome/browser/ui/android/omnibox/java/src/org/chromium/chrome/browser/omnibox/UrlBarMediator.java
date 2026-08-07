@@ -13,6 +13,7 @@ import android.view.View.OnKeyListener;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
+import androidx.fragment.app.Fragment;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -25,6 +26,7 @@ import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarTextContextMenuDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.AutocompleteText;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.UrlBarTextState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
 import org.chromium.chrome.browser.search_engines.settings.SiteSearchSettings;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -84,11 +86,9 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
         mModel.set(UrlBarProperties.RICH_TEXT_CHANGE_LISTENER, this::onRichTextChanged);
         mModel.set(UrlBarProperties.KEY_DOWN_LISTENER, keyDownListener);
         mModel.set(UrlBarProperties.SHOW_HINT_TEXT, true);
-        if (OmniboxFeatures.sOmniboxSiteSearch.isEnabled()) {
-            mModel.set(
-                    UrlBarProperties.MANAGE_SEARCH_ENGINES_CALLBACK,
-                    this::onManageSiteSearchClicked);
-        }
+        mModel.set(
+                UrlBarProperties.MANAGE_SEARCH_ENGINES_CALLBACK,
+                this::onManageSearchEnginesClicked);
         setBrandedColorScheme(BrandedColorScheme.APP_DEFAULT);
         pushTextToModel(/* originChanged= */ false);
     }
@@ -157,9 +157,12 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
         mModel.set(UrlBarProperties.SHOW_HINT_TEXT, showHintText);
     }
 
-    private void onManageSiteSearchClicked() {
-        SettingsNavigationFactory.createSettingsNavigation()
-                .startSettings(mContext, SiteSearchSettings.class);
+    private void onManageSearchEnginesClicked() {
+        Class<? extends Fragment> fragment =
+                OmniboxFeatures.sOmniboxSiteSearch.isEnabled()
+                        ? SiteSearchSettings.class
+                        : SearchEngineSettings.class;
+        SettingsNavigationFactory.createSettingsNavigation().startSettings(mContext, fragment);
     }
 
     /**

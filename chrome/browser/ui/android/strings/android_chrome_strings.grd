@@ -484,6 +484,9 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_MANAGE_SEARCH_ENGINES_AND_SITE_SEARCH" desc="Title shown in the menu item that takes the user to 'Manage search engines and site search' in Settings.">
         Manage search engines and site search
       </message>
+      <message name="IDS_MANAGE_SEARCH_ENGINES" desc="Title shown in the menu item that takes the user to 'Manage search engines' in Settings.">
+        Manage search engines
+      </message>
       <message name="IDS_ALWAYS_SHOW_AI_MODE" desc="Label for the right-click menu item that toggles whether the AI Mode button is always shown.">
         Always Show AI Mode
       </message>
