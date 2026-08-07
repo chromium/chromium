@@ -190,9 +190,11 @@ void PredictionManager::FetchModels() {
   // initialization flow since the model engine version needs to continuously be
   // updated for the fetch.
   proto::ModelInfo base_model_info;
+  // LINT.IfChange(TfliteEngineVersion)
   // There should only be one supported model engine version at a time.
   base_model_info.add_supported_model_engine_versions(
       proto::MODEL_ENGINE_VERSION_TFLITE_2_22_0);
+  // LINT.ThenChange(//components/component_updater/installer_policies/prediction_model_component_installer.cc:TfliteEngineVersion)
   // This histogram is used for integration tests. Do not remove.
   // Update this to be 10000 if/when we exceed 100 model engine versions.
   LOCAL_HISTOGRAM_COUNTS_100(

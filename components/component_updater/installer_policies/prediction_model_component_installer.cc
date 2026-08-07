@@ -106,9 +106,12 @@ class PredictionModelComponentInstallerPolicy
 
   std::string GetName() const override { return config_.component_name(); }
 
+  // LINT.IfChange(TfliteEngineVersion)
   update_client::InstallerAttributes GetInstallerAttributes() const override {
-    return update_client::InstallerAttributes();
+    return update_client::InstallerAttributes{
+        {"tflite_engine_version", "2.22.0"}};
   }
+  // LINT.ThenChange(//components/optimization_guide/core/delivery/prediction_manager.cc:TfliteEngineVersion)
 
   const optimization_guide::proto::OptimizationTarget optimization_target_;
   const optimization_guide::PredictionModelComponentConfig config_;
