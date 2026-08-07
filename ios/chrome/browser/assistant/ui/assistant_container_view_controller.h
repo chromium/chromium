@@ -60,6 +60,10 @@ enum class AssistantContainerDetent : NSInteger;
 // is invalid or height is not yet calculated.
 - (NSInteger)heightForDetent:(AssistantContainerDetent)detent;
 
+// Animates the container to a specific detent using default duration and curve.
+// If the detent is not found, acts as a no-op.
+- (void)animateToDetent:(AssistantContainerDetent)detent;
+
 // Animates the container to a specific detent.
 // If the detent is not found, acts as a no-op.
 - (void)animateToDetent:(AssistantContainerDetent)detent

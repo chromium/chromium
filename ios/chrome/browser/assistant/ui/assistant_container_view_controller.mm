@@ -279,6 +279,12 @@ inline LayoutStateAssistantPassKey PassKey() {
   return kInvalidDetentHeight;
 }
 
+- (void)animateToDetent:(AssistantContainerDetent)detent {
+  [self animateToDetent:detent
+               duration:kAssistantSheetSpringDuration
+                  curve:UIViewAnimationCurveEaseInOut];
+}
+
 - (void)animateToDetent:(AssistantContainerDetent)detentIdentifier
                duration:(NSTimeInterval)duration
                   curve:(UIViewAnimationCurve)curve {
@@ -532,9 +538,7 @@ inline LayoutStateAssistantPassKey PassKey() {
 // Completes the orientation transition by animating to the active detent.
 - (void)completeOrientationTransitionWithDetent:
     (AssistantContainerDetent)detent {
-  [self animateToDetent:detent
-               duration:kAssistantSheetSpringDuration
-                  curve:UIViewAnimationCurveEaseInOut];
+  [self animateToDetent:detent];
 }
 
 // Resumes all the previously paused scroll views.
@@ -774,9 +778,7 @@ inline LayoutStateAssistantPassKey PassKey() {
 
   AssistantContainerDetent targetDetent = currentDetents[nextIndex];
 
-  [self animateToDetent:targetDetent
-               duration:kAssistantSheetSpringDuration
-                  curve:UIViewAnimationCurveEaseInOut];
+  [self animateToDetent:targetDetent];
 }
 
 // Handles the pan gesture on the header to resize the container.
@@ -825,9 +827,7 @@ inline LayoutStateAssistantPassKey PassKey() {
     return;
   }
 
-  [self animateToDetent:detent
-               duration:kAssistantSheetSpringDuration
-                  curve:UIViewAnimationCurveEaseInOut];
+  [self animateToDetent:detent];
 }
 
 // Handles the state when the pan gesture begins.
@@ -1350,9 +1350,7 @@ inline LayoutStateAssistantPassKey PassKey() {
 
 - (void)accessibilityManagerDidRequestDetentChange:
     (AssistantContainerDetent)detent {
-  [self animateToDetent:detent
-               duration:kAssistantSheetSpringDuration
-                  curve:UIViewAnimationCurveEaseInOut];
+  [self animateToDetent:detent];
 }
 
 #pragma mark - UIResponder
@@ -1367,9 +1365,7 @@ inline LayoutStateAssistantPassKey PassKey() {
     AssistantContainerDetent currentDetent =
         _activeDetent.value_or(currentDetents.front());
     if (currentDetent != AssistantContainerDetent::kMinimized) {
-      [self animateToDetent:AssistantContainerDetent::kMinimized
-                   duration:kAssistantSheetSpringDuration
-                      curve:UIViewAnimationCurveEaseInOut];
+      [self animateToDetent:AssistantContainerDetent::kMinimized];
       return YES;
     }
   }

@@ -231,6 +231,10 @@ enum class TransitionState {
   [_containerViewController setDetents:detents];
 }
 
+- (void)animateAssistantContainerToDetent:(AssistantContainerDetent)detent {
+  [_containerViewController animateToDetent:detent];
+}
+
 - (void)animateAssistantContainerToDetent:(AssistantContainerDetent)detent
                                  duration:(NSTimeInterval)duration
                                     curve:(UIViewAnimationCurve)curve {

@@ -282,6 +282,30 @@ TEST_F(AssistantContainerViewControllerTest, AnimateToDetentValid) {
   EXPECT_OCMOCK_VERIFY(delegate_mock);
 }
 
+// Tests that animateToDetent without parameters uses default duration and
+// curve.
+TEST_F(AssistantContainerViewControllerTest, AnimateToDetentDefault) {
+  [view_controller_ setDetents:{AssistantContainerDetent::kMinimized,
+                                AssistantContainerDetent::kLarge}];
+
+  id delegate_mock = OCMProtocolMock(@protocol(AssistantContainerDelegate));
+  view_controller_.delegate = delegate_mock;
+
+  OCMExpect([delegate_mock assistantContainer:view_controller_
+       animateAlongsideTransitionToPercentage:1.0]);
+
+  OCMExpect([delegate_mock
+      assistantContainer:view_controller_
+         didChangeDetent:AssistantContainerDetent::kLarge]);
+
+  [view_controller_ animateToDetent:AssistantContainerDetent::kLarge];
+
+  EXPECT_EQ([view_controller_ absoluteMaxHeight],
+            view_controller_.heightConstraint.constant);
+
+  EXPECT_OCMOCK_VERIFY(delegate_mock);
+}
+
 // Tests that the delegate is notified of detent height updates on layout and
 // orientation changes.
 TEST_F(AssistantContainerViewControllerTest,
