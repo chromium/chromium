@@ -4,7 +4,6 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 
-#include "base/callback_list.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -20,6 +19,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_types.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_test_base.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_window_tracker.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_panel_host.h"
@@ -58,7 +58,6 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/base/url_util.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
@@ -97,254 +96,14 @@ class MockActiveTaskContextProvider : public ActiveTaskContextProvider {
   MOCK_METHOD(void, ClearAllLocalTabUnderlines, (), (override));
 };
 
-constexpr char kTestUrl[] = "https://example.com";
-constexpr char kAiPageUrl[] = "https://google.com/search?udm=50";
-constexpr char kSrpHomepage[] = "https://www.google.com/search";
-constexpr char kAimHomepage[] = "https://www.google.com/search?udm=50";
-constexpr char kAimHomepageThinking[] = "https://www.google.com/search?nem=143";
-constexpr char kSrpShopping[] = "https://www.google.com/search?udm=28&q=query";
-constexpr char kSrpUrl[] = "https://google.com/search?q=query";
-constexpr char kSignOutUrl[] = "https://accounts.google.com/Logout";
-constexpr char kSrpUrlWithLensQuery[] =
-    "https://www.google.com/search?lns_mode=un";
-
-class FakeContextualTasksEligibilityManager
-    : public ContextualTasksEligibilityManager {
- public:
-  FakeContextualTasksEligibilityManager(
-      PrefService* pref_service,
-      signin::IdentityManager* identity_manager,
-      AimEligibilityService* aim_eligibility_service)
-      : ContextualTasksEligibilityManager(pref_service,
-                                          identity_manager,
-                                          aim_eligibility_service) {
-    MaybeNotifyEligibilityChanged();
-  }
-  ~FakeContextualTasksEligibilityManager() override = default;
-
-  void SetIsEligible(bool eligible) {
-    is_eligible_ = eligible;
-    MaybeNotifyEligibilityChanged();
-  }
-
-  bool IsEligibleWithoutIdentity() const override { return is_eligible_; }
-
- protected:
-  bool CalculateEligibility() const override { return is_eligible_; }
-
- private:
-  bool is_eligible_ = true;
-};
-
-class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
- public:
-  explicit MockUiServiceForUrlIntercept(
-      Profile* profile,
-      contextual_tasks::ContextualTasksService* contextual_tasks_service,
-      AimEligibilityService* aim_eligibility_service,
-      signin::IdentityManager* identity_manager)
-      : ContextualTasksUiService(
-            profile,
-            std::make_unique<NiceMock<MockContextualTasksUiServiceDelegate>>(),
-            contextual_tasks_service,
-            identity_manager,
-            aim_eligibility_service,
-            std::make_unique<FakeContextualTasksEligibilityManager>(
-                profile->GetPrefs(),
-                identity_manager,
-                aim_eligibility_service),
-            /*cookie_synchronizer=*/nullptr) {}
-  ~MockUiServiceForUrlIntercept() override = default;
-
-  FakeContextualTasksEligibilityManager* GetFakeEligibilityManager() {
-    return static_cast<FakeContextualTasksEligibilityManager*>(
-        GetEligibilityManager());
-  }
-
-  MOCK_METHOD(void,
-              SetInitialEntryPointForTask,
-              (const base::Uuid& task_id,
-               omnibox::ChromeAimEntryPoint entry_point),
-              (override));
-  MOCK_METHOD(void,
-              OnNavigationToAiPageIntercepted,
-              (const GURL& url,
-               base::WeakPtr<tabs::TabInterface> tab,
-               bool is_to_new_tab),
-              (override));
-  MOCK_METHOD(void,
-              OnThreadLinkClicked,
-              (const GURL& url,
-               base::Uuid task_id,
-               base::WeakPtr<tabs::TabInterface> tab,
-               base::WeakPtr<BrowserWindowInterface> browser,
-               const url::Origin& initiator_origin),
-              (override));
-  MOCK_METHOD(void,
-              OnNonThreadNavigationInTab,
-              (content::OpenURLParams url_params,
-               base::WeakPtr<tabs::TabInterface> tab),
-              (override));
-  MOCK_METHOD(void,
-              OnSearchResultsNavigationInSidePanel,
-              (content::OpenURLParams url_params,
-               ContextualTasksUIInterface* web_ui_interface),
-              (override));
-  MOCK_METHOD(bool, IsUrlForPrimaryAccount, (const GURL& url), (override));
-  MOCK_METHOD(bool, IsSignedInToBrowserWithValidCredentials, (), (override));
-  MOCK_METHOD(void,
-              LoadUrlInWebContents,
-              (const GURL& url,
-               base::WeakPtr<content::WebContents> web_contents),
-              (override));
-  MOCK_METHOD(void,
-              OpenUrl,
-              (const content::OpenURLParams& url_params,
-               const blink::mojom::WindowFeatures& window_features,
-               BrowserWindowInterface* browser),
-              (override));
-
-  using ContextualTasksUiService::HandleNavigationImpl;
-  bool HandleNavigationImpl(
-      content::OpenURLParams url_params,
-      content::WebContents* source_contents,
-      tabs::TabInterface* tab,
-      bool is_from_embedded_page,
-      bool from_can_create_window,
-      bool is_same_site_or_from_ui,
-      bool is_mobile_ua,
-      const std::optional<url::Origin>& initiator_origin,
-      const std::optional<content::GlobalRenderFrameHostToken>&
-          initiator_frame_token,
-      const blink::mojom::WindowFeatures& window_features) override {
-    return ContextualTasksUiService::HandleNavigationImpl(
-        std::move(url_params), source_contents, tab, is_from_embedded_page,
-        from_can_create_window, is_same_site_or_from_ui, is_mobile_ua,
-        initiator_origin, initiator_frame_token, window_features);
-  }
-};
-
-content::OpenURLParams CreateOpenUrlParams(
-    const GURL& url,
-    bool is_renderer_initiated,
-    ui::PageTransition page_transition =
-        ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL) {
-  content::Referrer referrer;
-  return content::OpenURLParams(url, referrer,
-                                WindowOpenDisposition::CURRENT_TAB,
-                                page_transition, is_renderer_initiated);
-}
-
-// A matcher that checks that an OpenURLParams object has the specified URL.
-MATCHER_P(OpenURLParamsHasUrl, expected_url, "") {
-  return arg.url == expected_url;
-}
-
 }  // namespace
-using contextual_tasks::CreateOpenUrlParams;
 
-using contextual_tasks::kAiPageUrl;
-using contextual_tasks::kTaskQueryParam;
-using contextual_tasks::kTestUrl;
-class ContextualTasksUiServiceTest : public content::RenderViewHostTestHarness {
+class ContextualTasksUiServiceTest : public ContextualTasksUiServiceTestBase {
  public:
   explicit ContextualTasksUiServiceTest(
       base::test::TaskEnvironment::TimeSource time_source =
           base::test::TaskEnvironment::TimeSource::SYSTEM_TIME)
-      : content::RenderViewHostTestHarness(time_source) {}
-
-  void SetUp() override {
-    content::RenderViewHostTestHarness::SetUp();
-    // IdentityTestEnvironment must be created after the TaskEnvironment.
-    identity_test_env_ = std::make_unique<signin::IdentityTestEnvironment>();
-
-    profile_ = std::make_unique<TestingProfile>();
-    contextual_tasks_service_ = std::make_unique<MockContextualTasksService>();
-    aim_eligibility_service_ = std::make_unique<MockAimEligibilityService>(
-        prefs_, nullptr, nullptr, nullptr);
-
-    // By default, assume URLs have the correct URL params to be intercepted.
-    ON_CALL(*aim_eligibility_service_, HasAimUrlParams(_))
-        .WillByDefault(Return(true));
-    ON_CALL(*aim_eligibility_service_, IsCobrowseEligible())
-        .WillByDefault(Return(true));
-    ON_CALL(*aim_eligibility_service_, RegisterEligibilityChangedCallback(_))
-        .WillByDefault([](base::RepeatingClosure) {
-          return base::CallbackListSubscription();
-        });
-
-    service_for_nav_ = std::make_unique<MockUiServiceForUrlIntercept>(
-        profile_.get(), contextual_tasks_service_.get(),
-        aim_eligibility_service_.get(), identity_test_env_->identity_manager());
-
-    ON_CALL(*service_for_nav_, IsUrlForPrimaryAccount(_))
-        .WillByDefault(Return(true));
-    ON_CALL(*service_for_nav_, IsSignedInToBrowserWithValidCredentials())
-        .WillByDefault(Return(true));
-
-    // Create a real service for testing non-mocked methods like GetAccessToken.
-    // We pass the IdentityManager from the test environment.
-    real_service_ = std::make_unique<ContextualTasksUiService>(
-        profile_.get(),
-        std::make_unique<NiceMock<MockContextualTasksUiServiceDelegate>>(),
-        contextual_tasks_service_.get(), identity_test_env_->identity_manager(),
-        aim_eligibility_service_.get(),
-        std::make_unique<ContextualTasksEligibilityManager>(
-            profile_->GetPrefs(), identity_test_env_->identity_manager(),
-            aim_eligibility_service_.get()),
-        /*cookie_synchronizer=*/nullptr);
-
-    TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-        profile_.get(),
-        base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
-    TemplateURLService* template_url_service =
-        TemplateURLServiceFactory::GetForProfile(profile_.get());
-
-    // Set up default search provider.
-    TemplateURLData data;
-    data.SetShortName(u"TestEngine");
-    data.SetKeyword(u"TestEngine");
-    data.SetURL("https://www.google.com/search?q={searchTerms}");
-    TemplateURL* template_url =
-        template_url_service->Add(std::make_unique<TemplateURL>(data));
-    template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
-
-    // Ensure template url service is fully loaded before executing any test
-    // logic.
-    if (!template_url_service->loaded()) {
-      base::test::TestFuture<bool> loaded_future;
-      base::CallbackListSubscription subscription =
-          template_url_service->RegisterOnLoadedCallback(base::BindOnce(
-              [](base::test::TestFuture<bool>* future) {
-                future->SetValue(true);
-              },
-              &loaded_future));
-      template_url_service->Load();
-      ASSERT_TRUE(loaded_future.Get());
-    }
-  }
-
-  void TearDown() override {
-    real_service_ = nullptr;
-    service_for_nav_ = nullptr;
-    contextual_tasks_service_ = nullptr;
-    identity_test_env_.reset();
-    profile_ = nullptr;
-    content::RenderViewHostTestHarness::TearDown();
-  }
-
-  std::unique_ptr<content::BrowserContext> CreateBrowserContext() override {
-    return std::make_unique<TestingProfile>();
-  }
-
- protected:
-  TestingPrefServiceSimple prefs_;
-  std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
-  std::unique_ptr<MockAimEligibilityService> aim_eligibility_service_;
-  std::unique_ptr<MockUiServiceForUrlIntercept> service_for_nav_;
-  std::unique_ptr<ContextualTasksUiService> real_service_;
-  std::unique_ptr<MockContextualTasksService> contextual_tasks_service_;
+      : ContextualTasksUiServiceTestBase(time_source) {}
 };
 
 class ContextualTasksUiServiceTestWithMockTime
