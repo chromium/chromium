@@ -271,6 +271,13 @@ export function serializeNode(node, depth, placeholderMap, sortAttributes) {
   const fullLength =
       elementIndent + startTag.length + childrenHtml.length + endTag.length;
 
+  // Avoid inserting a newline and child indentation after the opening tag if
+  // the first child is a comment that suppresses leading whitespace (e.g.
+  // `<div><!--`).
+  const firstChildSuppressesWhitespace = !!node.childNodes &&
+      node.childNodes.length > 0 &&
+      node.childNodes[0].suppressLeadingWhitespace;
+
   // Closing tag on new line if opening tag didn't fit on one line, or if the
   // full element exceeds 80 characters.
   // Trim trailing whitespace and use the expected indent to avoid doubling
@@ -282,6 +289,9 @@ export function serializeNode(node, depth, placeholderMap, sortAttributes) {
     // Since the full tag doesn't fit on one line, put children on new line
     // and indent if they're not already on one.
     if (!childrenHtml.startsWith('\n') && childrenHtml.trim() !== '') {
+      if (firstChildSuppressesWhitespace) {
+        return `${startTag}${childrenHtml.trimEnd()}${endTagIndent}${endTag}`;
+      }
       const childIndentSize = nextDepth > 0 ? (nextDepth - 1) * INDENT_SIZE : 0;
       const childIndent = getIndentationPrefix(childIndentSize);
       return `${startTag}${childIndent}${childrenHtml.trim()}${endTagIndent}${

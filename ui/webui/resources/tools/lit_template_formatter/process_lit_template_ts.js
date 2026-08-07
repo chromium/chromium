@@ -53,7 +53,11 @@ export function processTemplate(filePath) {
     // If it is a template, we add +1 to include the opening backtick of the
     // template literal.
     const jsEnd = node.getStart(sourceFile) + (isTemplate ? 1 : 0);
-    const jsText = code.substring(jsStart, jsEnd);
+    let jsText = code.substring(jsStart, jsEnd);
+    if (prefix === FALSE_TEMPLATE_PREFIX && !isTemplate &&
+        /^\n\s*/.test(jsText)) {
+      jsText = jsText.replace(/^\n\s*/, ' ');
+    }
 
     map.set(tagName, {code: jsText, isTemplate});
     map.set(`/${tagName}`, {code: closeToken});

@@ -72,14 +72,34 @@ function recordMetadata(
 }
 
 /**
+ * Annotates a comment node with flags indicating whether it suppresses
+ * whitespace before or after it by being attached directly to surrounding
+ * characters without intervening whitespace.
+ * @param {Object} child The comment AST node.
+ * @param {string} rawHtml The raw HTML string before AST parsing.
+ */
+function processComment(child, rawHtml) {
+  assert.ok(
+      child.sourceCodeLocation, 'Comment node missing sourceCodeLocation');
+  const location = child.sourceCodeLocation;
+  const charBefore =
+      location.startOffset > 0 ? rawHtml[location.startOffset - 1] : '';
+  const charAfter =
+      location.endOffset < rawHtml.length ? rawHtml[location.endOffset] : '';
+  child.suppressLeadingWhitespace = charBefore !== '' && !/\s/.test(charBefore);
+  child.suppressTrailingWhitespace = charAfter !== '' && !/\s/.test(charAfter);
+}
+
+/**
  * Walks the AST tree from `node` and applies indentation and newlines
  * as needed. Updates `placeholderMap` with metadata.
  * @param {Object} node The AST node to format.
  * @param {number} depth The current nesting depth.
  * @param {Map<string, Object>} placeholderMap Map of placeholders to update
  *     in-place.
+ * @param {string} [rawHtml] Raw HTML string before preprocessing.
  */
-function format(node, depth, placeholderMap) {
+function format(node, depth, placeholderMap, rawHtml = '') {
   assert.ok(placeholderMap, 'placeholderMap must be provided to format');
   if (!node.childNodes) {
     return;
@@ -94,11 +114,22 @@ function format(node, depth, placeholderMap) {
   let isFirstElement = true;
   const newChildren = [];
   for (const child of nonEmptyChildren) {
+    const prevChild = newChildren.at(-1) || null;
+
     // Handle text/comment nodes (non-tags).
     if (child.nodeName.startsWith('#')) {
-      // Add newline and indent if needed.
-      if (child.nodeName === '#comment' && shouldInsertNewline(node, child)) {
-        ensureNewlineAndIndent(newChildren, depth);
+      if (child.nodeName === '#comment') {
+        processComment(child, rawHtml);
+
+        // If the comment does not suppress leading whitespace, insert a newline
+        // and indent it.
+        if (!child.suppressLeadingWhitespace &&
+            shouldInsertNewline(node, child)) {
+          ensureNewlineAndIndent(newChildren, depth);
+        }
+        if (child.suppressLeadingWhitespace) {
+          isFirstElement = false;
+        }
       }
 
       if (child.nodeName === '#text') {
@@ -167,16 +198,19 @@ function format(node, depth, placeholderMap) {
       }
     }
 
-    // Skip newline if it's a false branch placeholder
+    // Skip newline if it's a false branch placeholder. Also skip if the tag is
+    // directly preceded by a comment that suppresses trailing whitespace
+    // (e.g. `--><span...`).
     if (!tagName || !tagName.startsWith(FALSE_TEMPLATE_PREFIX)) {
-      if (isFirstElement || shouldInsertNewline(node, child)) {
+      if (!prevChild?.suppressTrailingWhitespace &&
+          (isFirstElement || shouldInsertNewline(node, child))) {
         ensureNewlineAndIndent(newChildren, getDepthForNode(child, depth));
       }
       isFirstElement = false;
     }
 
     const nextDepth = getChildDepthForNode(child, depth);
-    format(child, nextDepth, placeholderMap);
+    format(child, nextDepth, placeholderMap, rawHtml);
     newChildren.push(child);
   }
 
@@ -254,6 +288,6 @@ function preprocessHtml(html, placeholderMap) {
 export function prepareHtmlAst(html, placeholderMap = new Map(), depth = 0) {
   const substitutedHtml = preprocessHtml(html, placeholderMap);
   const ast = parseFragment(substitutedHtml, {sourceCodeLocationInfo: true});
-  format(ast, depth, placeholderMap);
+  format(ast, depth, placeholderMap, substitutedHtml);
   return ast;
 }

@@ -72,7 +72,11 @@ function computeColumnLimit(value, type) {
   const config = ExpressionConfig[type];
   let limit = 80 - indent + config.columnLimitAdjustment;
   if (attrName) {
-    limit = limit - attrName.length - 4;
+    // For attributes (e.g. attr="${expr}"), the line has
+    // WRAPPED_LINE_INDENT_SIZE spaces, the attribute name, '="' (2 chars), and
+    // the closing '"' (1 char). Subtract the additional characters beyond what
+    // columnLimitAdjustment (-3 for '${' and '}') already accounts for.
+    limit -= attrName.length + WRAPPED_LINE_INDENT_SIZE + 3;
   }
   return limit;
 }
@@ -104,10 +108,10 @@ export async function formatTsExpressions(
     } else if (code.startsWith('${') && code.endsWith('}')) {
       type = ExpressionType.EXPRESSION;
     } else if (code.startsWith('${')) {
-      if (code.endsWith('? html`')) {
+      if (/\?\s*html`$/.test(code)) {
         type = ExpressionType.TERNARY;
       } else {
-        assert.ok(code.endsWith('=> html`'));
+        assert.ok(/=>\s*html`$/.test(code));
         type = ExpressionType.ARROW;
       }
     }

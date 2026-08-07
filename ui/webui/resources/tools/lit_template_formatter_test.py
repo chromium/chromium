@@ -108,6 +108,13 @@ class LitTemplateFormatterTest(unittest.TestCase):
   def testWhitespaceSensitiveSiblings(self):
     self._run_test("test_whitespace_sensitive_siblings.html.ts")
 
+  def testCommentsNoWhitespace(self):
+    self._run_test("test_comments_no_whitespace.html.ts")
+
+  def testMultilineSubtemplateExpression(self):
+    self._run_test("test_multiline_subtemplate_expression.html.ts",
+                   "test_multiline_subtemplate_expression.html.ts")
+
   def testWithIfExpr(self):
     self._run_test("test_with_if_expr.html.ts", "test_with_if_expr.html.ts")
 
