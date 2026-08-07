@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
@@ -78,6 +79,14 @@ class MockActorOneTimeTokenFillingService
               ConsumeLoginContext,
               (),
               (override));
+  MOCK_METHOD(std::optional<url::Origin>,
+              GetLoginContextOrigin,
+              (),
+              (const, override));
+  MOCK_METHOD(bool,
+              GetLoginContextShouldUseStrongMatching,
+              (),
+              (const, override));
   MOCK_METHOD(
       void,
       RetrieveOtp,
@@ -117,7 +126,10 @@ class MockActorLoginFlowVerifier : public ActorLoginFlowVerifier {
               (content::FrameTreeNodeId otp_frame_id,
                const url::Origin& otp_frame_origin,
                const url::Origin& main_frame_origin,
-               const std::optional<autofill::ActorLoginContext>& context,
+               std::optional<url::Origin> context_origin,
+               bool should_use_strong_matching,
+               base::OnceCallback<std::optional<autofill::ActorLoginContext>()>
+                   consume_context_callback,
                base::OnceCallback<void(bool)> callback),
               (override));
 };
@@ -218,6 +230,12 @@ class AttemptOtpFillingToolTest : public testing::Test {
         .WillRepeatedly(Return(web_contents_));
     EXPECT_CALL(delegate_->mock_otp_service(), ValidateFormFillingContext)
         .WillRepeatedly(Return(autofill::FormFillingContextStatus::kSecure));
+    ON_CALL(delegate_->mock_otp_service(), GetLoginContextOrigin())
+        .WillByDefault(
+            Return(url::Origin::Create(GURL("https://example.com"))));
+    ON_CALL(delegate_->mock_otp_service(),
+            GetLoginContextShouldUseStrongMatching())
+        .WillByDefault(Return(false));
   }
 
   PrefService* prefs() { return profile_->GetPrefs(); }
@@ -767,7 +785,27 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_ActorLoginVerificationFailed) {
       std::make_unique<testing::NiceMock<MockActorLoginFlowVerifier>>(
           fake_affiliation_service_);
   EXPECT_CALL(*verifier, VerifyIsActorLoginFlow)
-      .WillOnce(base::test::RunOnceCallback<4>(false));
+      .WillOnce(
+          [](content::FrameTreeNodeId otp_frame_id,
+             const url::Origin& otp_frame_origin,
+             const url::Origin& main_frame_origin,
+             std::optional<url::Origin> context_origin,
+             bool should_use_strong_matching,
+             base::OnceCallback<std::optional<autofill::ActorLoginContext>()>
+                 consume_context_callback,
+             base::OnceCallback<void(bool)> callback) {
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE,
+                base::BindOnce(
+                    [](base::OnceCallback<
+                           std::optional<autofill::ActorLoginContext>()>
+                           consume_context_callback,
+                       base::OnceCallback<void(bool)> callback) {
+                      std::move(consume_context_callback).Run();
+                      std::move(callback).Run(false);
+                    },
+                    std::move(consume_context_callback), std::move(callback)));
+          });
   PageTarget target(gfx::Point(10, 10));
   AttemptOtpFillingTool tool = CreateTool(
       {target}, /*for_signin=*/true,
@@ -800,7 +838,27 @@ TEST_F(AttemptOtpFillingToolTest,
       std::make_unique<testing::NiceMock<MockActorLoginFlowVerifier>>(
           fake_affiliation_service_);
   EXPECT_CALL(*verifier, VerifyIsActorLoginFlow)
-      .WillOnce(base::test::RunOnceCallback<4>(false));
+      .WillOnce(
+          [](content::FrameTreeNodeId otp_frame_id,
+             const url::Origin& otp_frame_origin,
+             const url::Origin& main_frame_origin,
+             std::optional<url::Origin> context_origin,
+             bool should_use_strong_matching,
+             base::OnceCallback<std::optional<autofill::ActorLoginContext>()>
+                 consume_context_callback,
+             base::OnceCallback<void(bool)> callback) {
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE,
+                base::BindOnce(
+                    [](base::OnceCallback<
+                           std::optional<autofill::ActorLoginContext>()>
+                           consume_context_callback,
+                       base::OnceCallback<void(bool)> callback) {
+                      std::move(consume_context_callback).Run();
+                      std::move(callback).Run(false);
+                    },
+                    std::move(consume_context_callback), std::move(callback)));
+          });
   PageTarget target(gfx::Point(10, 10));
   AttemptOtpFillingTool tool = CreateTool(
       {target}, /*for_signin=*/true,
@@ -866,7 +924,7 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_DomNode_HappyPath) {
 }
 
 TEST_F(AttemptOtpFillingToolTest, Invoke_NoLoginContextAvailable_Approved) {
-  EXPECT_CALL(delegate().mock_otp_service(), ConsumeLoginContext())
+  EXPECT_CALL(delegate().mock_otp_service(), GetLoginContextOrigin())
       .WillOnce(Return(std::nullopt));
   EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp)
       .WillOnce(RunOnceCallback<4>("123456"));
@@ -902,7 +960,7 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_NoLoginContextAvailable_Approved) {
 }
 
 TEST_F(AttemptOtpFillingToolTest, Invoke_NoLoginContextAvailable_Declined) {
-  EXPECT_CALL(delegate().mock_otp_service(), ConsumeLoginContext())
+  EXPECT_CALL(delegate().mock_otp_service(), GetLoginContextOrigin())
       .WillOnce(Return(std::nullopt));
   EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp)
       .WillOnce(RunOnceCallback<4>("123456"));
@@ -935,7 +993,7 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_NoLoginContextAvailable_Declined) {
 
 TEST_F(AttemptOtpFillingToolTest,
        Invoke_NoLoginContextAvailable_ConfirmationError) {
-  EXPECT_CALL(delegate().mock_otp_service(), ConsumeLoginContext())
+  EXPECT_CALL(delegate().mock_otp_service(), GetLoginContextOrigin())
       .WillOnce(Return(std::nullopt));
   EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp)
       .WillOnce(RunOnceCallback<4>("123456"));
@@ -970,16 +1028,36 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_FrameLostDuringVerification) {
       std::make_unique<testing::NiceMock<MockActorLoginFlowVerifier>>(
           fake_affiliation_service_);
   EXPECT_CALL(*verifier, VerifyIsActorLoginFlow)
-      .WillOnce([this](
-                    content::FrameTreeNodeId otp_frame_id,
-                    const url::Origin& otp_frame_origin,
-                    const url::Origin& main_frame_origin,
-                    const std::optional<autofill::ActorLoginContext>& context,
-                    base::OnceCallback<void(bool)> callback) {
-        // Simulate tab/contents going away during verification.
-        EXPECT_CALL(mock_tab(), GetContents()).WillRepeatedly(Return(nullptr));
-        std::move(callback).Run(false);
-      });
+      .WillOnce(
+          [this](
+              content::FrameTreeNodeId otp_frame_id,
+              const url::Origin& otp_frame_origin,
+              const url::Origin& main_frame_origin,
+              std::optional<url::Origin> context_origin,
+              bool should_use_strong_matching,
+              base::OnceCallback<std::optional<autofill::ActorLoginContext>()>
+                  consume_context_callback,
+              base::OnceCallback<void(bool)> callback) {
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE,
+                base::BindOnce(
+                    [](base::OnceCallback<
+                           std::optional<autofill::ActorLoginContext>()>
+                           consume_context_callback,
+                       base::OnceCallback<void(bool)> callback,
+                       base::OnceClosure simulate_tab_gone) {
+                      std::move(consume_context_callback).Run();
+                      std::move(simulate_tab_gone).Run();
+                      std::move(callback).Run(false);
+                    },
+                    std::move(consume_context_callback), std::move(callback),
+                    base::BindOnce(
+                        [](tabs::MockTabInterface* mock_tab) {
+                          EXPECT_CALL(*mock_tab, GetContents())
+                              .WillRepeatedly(Return(nullptr));
+                        },
+                        &mock_tab())));
+          });
 
   // RetrieveOtp should NOT be called.
   EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp).Times(0);
@@ -1002,7 +1080,7 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_FrameLostDuringVerification) {
 
 TEST_F(AttemptOtpFillingToolTest,
        Invoke_NoLoginContextAvailable_NullConfirmationResponse) {
-  EXPECT_CALL(delegate().mock_otp_service(), ConsumeLoginContext())
+  EXPECT_CALL(delegate().mock_otp_service(), GetLoginContextOrigin())
       .WillOnce(Return(std::nullopt));
   EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp)
       .WillOnce(RunOnceCallback<4>("123456"));

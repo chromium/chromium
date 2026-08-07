@@ -50,14 +50,28 @@ class ActorLoginFlowVerifier {
       content::FrameTreeNodeId otp_frame_id,
       const url::Origin& otp_frame_origin,
       const url::Origin& main_frame_origin,
-      const std::optional<autofill::ActorLoginContext>& context,
+      std::optional<url::Origin> context_origin,
+      bool should_use_strong_matching,
+      base::OnceCallback<std::optional<autofill::ActorLoginContext>()>
+          consume_context_callback,
       base::OnceCallback<void(bool)> callback);
 
  private:
   void OnMainFrameOriginMatchEvaluated(
+      content::FrameTreeNodeId otp_frame_id,
       const url::Origin& otp_frame_origin,
       const url::Origin& context_origin,
       bool should_use_strong_matching,
+      base::OnceCallback<std::optional<autofill::ActorLoginContext>()>
+          consume_context_callback,
+      base::OnceCallback<void(bool)> callback,
+      std::optional<affiliations::MatchType> match_type);
+
+  void OnOtpFrameOriginMatchEvaluated(
+      content::FrameTreeNodeId otp_frame_id,
+      bool should_use_strong_matching,
+      base::OnceCallback<std::optional<autofill::ActorLoginContext>()>
+          consume_context_callback,
       base::OnceCallback<void(bool)> callback,
       std::optional<affiliations::MatchType> match_type);
 

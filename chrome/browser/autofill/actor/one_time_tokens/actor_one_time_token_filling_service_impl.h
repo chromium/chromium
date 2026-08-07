@@ -55,6 +55,8 @@ class ActorOneTimeTokenFillingServiceImpl
       base::span<const int> global_frame_ids) override;
   void AbortLoginTracking() override;
   std::optional<ActorLoginContext> ConsumeLoginContext() override;
+  std::optional<url::Origin> GetLoginContextOrigin() const override;
+  bool GetLoginContextShouldUseStrongMatching() const override;
   void RetrieveOtp(
       tabs::TabHandle tab_handle,
       const url::Origin& otp_frame_origin,

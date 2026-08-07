@@ -81,6 +81,13 @@ class ActorOneTimeTokenFillingService {
   // ensures that OTP tracking is only used once per actor login attempt.
   virtual std::optional<ActorLoginContext> ConsumeLoginContext() = 0;
 
+  // Returns the origin of the active login context, if any.
+  virtual std::optional<url::Origin> GetLoginContextOrigin() const = 0;
+
+  // Returns whether strong matching should be used for the active login
+  // context, or false if no active login context exists.
+  virtual bool GetLoginContextShouldUseStrongMatching() const = 0;
+
   // Asynchronously retrieves an OTP for the profile associated with the tab.
   //
   // The `callback` will be invoked with the retrieved OTP string, or an empty

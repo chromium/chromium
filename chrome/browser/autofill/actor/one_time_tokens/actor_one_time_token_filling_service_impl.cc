@@ -153,6 +153,20 @@ ActorOneTimeTokenFillingServiceImpl::ConsumeLoginContext() {
   return std::exchange(active_login_context_, std::nullopt);
 }
 
+std::optional<url::Origin>
+ActorOneTimeTokenFillingServiceImpl::GetLoginContextOrigin() const {
+  if (!active_login_context_) {
+    return std::nullopt;
+  }
+  return active_login_context_->origin;
+}
+
+bool ActorOneTimeTokenFillingServiceImpl::
+    GetLoginContextShouldUseStrongMatching() const {
+  return active_login_context_.has_value() &&
+         active_login_context_->should_use_strong_matching;
+}
+
 void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
     const tabs::TabHandle tab_handle,
     const url::Origin& otp_frame_origin,

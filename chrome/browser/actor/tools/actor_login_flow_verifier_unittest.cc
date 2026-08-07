@@ -43,6 +43,14 @@ class ActorLoginFlowVerifierTest : public testing::Test {
     return web_contents_->GetPrimaryMainFrame();
   }
 
+  base::OnceCallback<std::optional<autofill::ActorLoginContext>()>
+  MakeConsumeContextCallback(
+      std::optional<autofill::ActorLoginContext> context) {
+    return base::BindOnce(
+        [](std::optional<autofill::ActorLoginContext> ctx) { return ctx; },
+        std::move(context));
+  }
+
  protected:
   variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
@@ -59,7 +67,26 @@ TEST_F(ActorLoginFlowVerifierTest, NullContext_ReturnsFalse) {
   base::test::TestFuture<bool> future;
   verifier_->VerifyIsActorLoginFlow(
       main_rfh()->GetFrameTreeNodeId(), main_rfh()->GetLastCommittedOrigin(),
-      main_rfh()->GetLastCommittedOrigin(), std::nullopt, future.GetCallback());
+      main_rfh()->GetLastCommittedOrigin(), std::nullopt,
+      /*should_use_strong_matching=*/false,
+      MakeConsumeContextCallback(std::nullopt), future.GetCallback());
+
+  EXPECT_FALSE(future.Get());
+  histogram_tester_.ExpectBucketCount(kActorOtpVerifyIsActorLoginFlowHistogram,
+                                      VerifyIsActorLoginFlowEvent::kStart, 1);
+  histogram_tester_.ExpectBucketCount(
+      kActorOtpVerifyIsActorLoginFlowHistogram,
+      VerifyIsActorLoginFlowEvent::kNoActorLoginContext, 1);
+}
+
+TEST_F(ActorLoginFlowVerifierTest, NullContextAfterCheck_ReturnsFalse) {
+  base::test::TestFuture<bool> future;
+  verifier_->VerifyIsActorLoginFlow(
+      main_rfh()->GetFrameTreeNodeId(), main_rfh()->GetLastCommittedOrigin(),
+      main_rfh()->GetLastCommittedOrigin(),
+      main_rfh()->GetLastCommittedOrigin(),
+      /*should_use_strong_matching=*/false,
+      MakeConsumeContextCallback(std::nullopt), future.GetCallback());
 
   EXPECT_FALSE(future.Get());
   histogram_tester_.ExpectBucketCount(kActorOtpVerifyIsActorLoginFlowHistogram,
@@ -73,12 +100,15 @@ TEST_F(ActorLoginFlowVerifierTest, FrameNotInContext_ReturnsFalse) {
   autofill::ActorLoginContext context(main_rfh()->GetLastCommittedOrigin(),
                                       /*should_use_strong_matching=*/false,
                                       /*navigations_per_frame=*/{});
+  url::Origin context_origin = context.origin;
+  bool should_use_strong_matching = context.should_use_strong_matching;
 
   base::test::TestFuture<bool> future;
-  verifier_->VerifyIsActorLoginFlow(main_rfh()->GetFrameTreeNodeId(),
-                                    main_rfh()->GetLastCommittedOrigin(),
-                                    main_rfh()->GetLastCommittedOrigin(),
-                                    std::move(context), future.GetCallback());
+  verifier_->VerifyIsActorLoginFlow(
+      main_rfh()->GetFrameTreeNodeId(), main_rfh()->GetLastCommittedOrigin(),
+      main_rfh()->GetLastCommittedOrigin(), context_origin,
+      should_use_strong_matching,
+      MakeConsumeContextCallback(std::move(context)), future.GetCallback());
 
   EXPECT_FALSE(future.Get());
   histogram_tester_.ExpectBucketCount(kActorOtpVerifyIsActorLoginFlowHistogram,
@@ -93,12 +123,15 @@ TEST_F(ActorLoginFlowVerifierTest, TooManyNavigations_ReturnsFalse) {
       main_rfh()->GetLastCommittedOrigin(),
       /*should_use_strong_matching=*/false,
       /*navigations_per_frame=*/{{main_rfh()->GetFrameTreeNodeId(), 2}});
+  url::Origin context_origin = context.origin;
+  bool should_use_strong_matching = context.should_use_strong_matching;
 
   base::test::TestFuture<bool> future;
-  verifier_->VerifyIsActorLoginFlow(main_rfh()->GetFrameTreeNodeId(),
-                                    main_rfh()->GetLastCommittedOrigin(),
-                                    main_rfh()->GetLastCommittedOrigin(),
-                                    std::move(context), future.GetCallback());
+  verifier_->VerifyIsActorLoginFlow(
+      main_rfh()->GetFrameTreeNodeId(), main_rfh()->GetLastCommittedOrigin(),
+      main_rfh()->GetLastCommittedOrigin(), context_origin,
+      should_use_strong_matching,
+      MakeConsumeContextCallback(std::move(context)), future.GetCallback());
 
   EXPECT_FALSE(future.Get());
   histogram_tester_.ExpectBucketCount(kActorOtpVerifyIsActorLoginFlowHistogram,
@@ -113,12 +146,15 @@ TEST_F(ActorLoginFlowVerifierTest, SameOrigin_ReturnsTrue) {
       main_rfh()->GetLastCommittedOrigin(),
       /*should_use_strong_matching=*/false,
       /*navigations_per_frame=*/{{main_rfh()->GetFrameTreeNodeId(), 1}});
+  url::Origin context_origin = context.origin;
+  bool should_use_strong_matching = context.should_use_strong_matching;
 
   base::test::TestFuture<bool> future;
-  verifier_->VerifyIsActorLoginFlow(main_rfh()->GetFrameTreeNodeId(),
-                                    main_rfh()->GetLastCommittedOrigin(),
-                                    main_rfh()->GetLastCommittedOrigin(),
-                                    std::move(context), future.GetCallback());
+  verifier_->VerifyIsActorLoginFlow(
+      main_rfh()->GetFrameTreeNodeId(), main_rfh()->GetLastCommittedOrigin(),
+      main_rfh()->GetLastCommittedOrigin(), context_origin,
+      should_use_strong_matching,
+      MakeConsumeContextCallback(std::move(context)), future.GetCallback());
 
   EXPECT_TRUE(future.Get());
   histogram_tester_.ExpectBucketCount(kActorOtpVerifyIsActorLoginFlowHistogram,
@@ -133,13 +169,16 @@ TEST_F(ActorLoginFlowVerifierTest, OtpFrameOriginMismatch_ReturnsFalse) {
       main_rfh()->GetLastCommittedOrigin(),
       /*should_use_strong_matching=*/false,
       /*navigations_per_frame=*/{{main_rfh()->GetFrameTreeNodeId(), 1}});
+  url::Origin context_origin = context.origin;
+  bool should_use_strong_matching = context.should_use_strong_matching;
 
   base::test::TestFuture<bool> future;
   verifier_->VerifyIsActorLoginFlow(
       main_rfh()->GetFrameTreeNodeId(),
       url::Origin::Create(GURL("https://other-domain.com")),
-      main_rfh()->GetLastCommittedOrigin(), std::move(context),
-      future.GetCallback());
+      main_rfh()->GetLastCommittedOrigin(), context_origin,
+      should_use_strong_matching,
+      MakeConsumeContextCallback(std::move(context)), future.GetCallback());
 
   EXPECT_FALSE(future.Get());
   histogram_tester_.ExpectBucketCount(kActorOtpVerifyIsActorLoginFlowHistogram,
@@ -159,12 +198,15 @@ TEST_F(ActorLoginFlowVerifierTest, AffiliatedOrigin_ReturnsTrue) {
       url::Origin::Create(GURL("https://affiliated.com")),
       /*should_use_strong_matching=*/true,
       /*navigations_per_frame=*/{{main_rfh()->GetFrameTreeNodeId(), 1}});
+  url::Origin context_origin = context.origin;
+  bool should_use_strong_matching = context.should_use_strong_matching;
 
   base::test::TestFuture<bool> future;
-  verifier_->VerifyIsActorLoginFlow(main_rfh()->GetFrameTreeNodeId(),
-                                    main_rfh()->GetLastCommittedOrigin(),
-                                    main_rfh()->GetLastCommittedOrigin(),
-                                    std::move(context), future.GetCallback());
+  verifier_->VerifyIsActorLoginFlow(
+      main_rfh()->GetFrameTreeNodeId(), main_rfh()->GetLastCommittedOrigin(),
+      main_rfh()->GetLastCommittedOrigin(), context_origin,
+      should_use_strong_matching,
+      MakeConsumeContextCallback(std::move(context)), future.GetCallback());
 
   EXPECT_TRUE(future.Get());
   histogram_tester_.ExpectBucketCount(kActorOtpVerifyIsActorLoginFlowHistogram,
@@ -179,13 +221,16 @@ TEST_F(ActorLoginFlowVerifierTest, PslMatch_WeakMatchingAllowed_ReturnsTrue) {
       url::Origin::Create(GURL("https://b.example.com")),
       /*should_use_strong_matching=*/false,
       /*navigations_per_frame=*/{{main_rfh()->GetFrameTreeNodeId(), 1}});
+  url::Origin context_origin = context.origin;
+  bool should_use_strong_matching = context.should_use_strong_matching;
 
   base::test::TestFuture<bool> future;
   verifier_->VerifyIsActorLoginFlow(
       main_rfh()->GetFrameTreeNodeId(),
       url::Origin::Create(GURL("https://a.example.com")),
-      url::Origin::Create(GURL("https://b.example.com")), std::move(context),
-      future.GetCallback());
+      url::Origin::Create(GURL("https://b.example.com")), context_origin,
+      should_use_strong_matching,
+      MakeConsumeContextCallback(std::move(context)), future.GetCallback());
 
   EXPECT_TRUE(future.Get());
   histogram_tester_.ExpectBucketCount(kActorOtpVerifyIsActorLoginFlowHistogram,
@@ -201,13 +246,16 @@ TEST_F(ActorLoginFlowVerifierTest,
       url::Origin::Create(GURL("https://b.example.com")),
       /*should_use_strong_matching=*/true,
       /*navigations_per_frame=*/{{main_rfh()->GetFrameTreeNodeId(), 1}});
+  url::Origin context_origin = context.origin;
+  bool should_use_strong_matching = context.should_use_strong_matching;
 
   base::test::TestFuture<bool> future;
   verifier_->VerifyIsActorLoginFlow(
       main_rfh()->GetFrameTreeNodeId(),
       url::Origin::Create(GURL("https://a.example.com")),
-      url::Origin::Create(GURL("https://b.example.com")), std::move(context),
-      future.GetCallback());
+      url::Origin::Create(GURL("https://b.example.com")), context_origin,
+      should_use_strong_matching,
+      MakeConsumeContextCallback(std::move(context)), future.GetCallback());
 
   EXPECT_FALSE(future.Get());
   histogram_tester_.ExpectBucketCount(kActorOtpVerifyIsActorLoginFlowHistogram,
@@ -229,13 +277,16 @@ TEST_F(ActorLoginFlowVerifierTest, GroupedOrigin_ReturnsFalse) {
       main_rfh()->GetLastCommittedOrigin(),
       /*should_use_strong_matching=*/false,
       /*navigations_per_frame=*/{{main_rfh()->GetFrameTreeNodeId(), 1}});
+  url::Origin context_origin = context.origin;
+  bool should_use_strong_matching = context.should_use_strong_matching;
 
   base::test::TestFuture<bool> future;
   verifier_->VerifyIsActorLoginFlow(
       main_rfh()->GetFrameTreeNodeId(),
       url::Origin::Create(GURL("https://grouped.com")),
-      main_rfh()->GetLastCommittedOrigin(), std::move(context),
-      future.GetCallback());
+      main_rfh()->GetLastCommittedOrigin(), context_origin,
+      should_use_strong_matching,
+      MakeConsumeContextCallback(std::move(context)), future.GetCallback());
 
   EXPECT_FALSE(future.Get());
   histogram_tester_.ExpectBucketCount(kActorOtpVerifyIsActorLoginFlowHistogram,
@@ -250,13 +301,16 @@ TEST_F(ActorLoginFlowVerifierTest, MainFramePslMatch_ReturnsFalse) {
       url::Origin::Create(GURL("https://b.example.com")),
       /*should_use_strong_matching=*/false,
       /*navigations_per_frame=*/{{main_rfh()->GetFrameTreeNodeId(), 1}});
+  url::Origin context_origin = context.origin;
+  bool should_use_strong_matching = context.should_use_strong_matching;
 
   base::test::TestFuture<bool> future;
   verifier_->VerifyIsActorLoginFlow(
       main_rfh()->GetFrameTreeNodeId(),
       url::Origin::Create(GURL("https://b.example.com")),
-      url::Origin::Create(GURL("https://a.example.com")), std::move(context),
-      future.GetCallback());
+      url::Origin::Create(GURL("https://a.example.com")), context_origin,
+      should_use_strong_matching,
+      MakeConsumeContextCallback(std::move(context)), future.GetCallback());
 
   EXPECT_FALSE(future.Get());
   histogram_tester_.ExpectBucketCount(kActorOtpVerifyIsActorLoginFlowHistogram,
@@ -277,13 +331,16 @@ TEST_F(ActorLoginFlowVerifierTest, MainFrameGroupedOrigin_ReturnsFalse) {
       url::Origin::Create(GURL("https://grouped.com")),
       /*should_use_strong_matching=*/false,
       /*navigations_per_frame=*/{{main_rfh()->GetFrameTreeNodeId(), 1}});
+  url::Origin context_origin = context.origin;
+  bool should_use_strong_matching = context.should_use_strong_matching;
 
   base::test::TestFuture<bool> future;
   verifier_->VerifyIsActorLoginFlow(
       main_rfh()->GetFrameTreeNodeId(),
       url::Origin::Create(GURL("https://grouped.com")),
-      main_rfh()->GetLastCommittedOrigin(), std::move(context),
-      future.GetCallback());
+      main_rfh()->GetLastCommittedOrigin(), context_origin,
+      should_use_strong_matching,
+      MakeConsumeContextCallback(std::move(context)), future.GetCallback());
 
   EXPECT_FALSE(future.Get());
   histogram_tester_.ExpectBucketCount(kActorOtpVerifyIsActorLoginFlowHistogram,
