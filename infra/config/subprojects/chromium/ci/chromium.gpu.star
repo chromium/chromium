@@ -510,8 +510,8 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_desktop_passthrough_gtests",
-            "gpu_common_metal_passthrough_graphite_telemetry_tests",
+            "gpu_mac_debug_gtests",
+            "gpu_mac_debug_telemetry_tests",
         ],
         mixins = [
             "mac_mini_intel_gpu_stable",
@@ -565,8 +565,8 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_desktop_passthrough_gtests",
-            "gpu_common_metal_passthrough_graphite_telemetry_tests",
+            "gpu_mac_release_gtests",
+            "gpu_mac_release_telemetry_tests",
         ],
         mixins = [
             "mac_mini_intel_gpu_stable",
@@ -605,8 +605,8 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_desktop_passthrough_gtests",
-            "gpu_common_metal_passthrough_graphite_telemetry_tests",
+            "gpu_mac_debug_gtests",
+            "gpu_mac_debug_telemetry_tests",
         ],
         mixins = [
             "mac_retina_amd_gpu_stable",
@@ -655,8 +655,8 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_desktop_passthrough_gtests",
-            "gpu_common_metal_passthrough_graphite_telemetry_tests",
+            "gpu_mac_release_gtests",
+            "gpu_mac_release_telemetry_tests",
         ],
         mixins = [
             "mac_retina_amd_gpu_stable",
@@ -697,8 +697,8 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_desktop_passthrough_gtests",
-            "gpu_common_metal_passthrough_graphite_telemetry_tests",
+            "gpu_mac_release_gtests",
+            "gpu_mac_release_telemetry_tests",
         ],
         mixins = [
             "mac_arm64_apple_m2_retina_gpu_stable",

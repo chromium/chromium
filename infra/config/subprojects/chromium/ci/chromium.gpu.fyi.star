@@ -2047,8 +2047,8 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_fyi_mac_release_gtests",
-            "gpu_fyi_only_mac_release_telemetry_tests",
+            "gpu_all_mac_release_gtests",
+            "gpu_all_mac_release_telemetry_tests",
         ],
         mixins = [
             "mac_arm64_apple_m1_gpu_stable",
@@ -2120,8 +2120,8 @@ ci.thin_tester(
         # Different targets than 'Mac FYI Retina Release (AMD)' since there is
         # no tester on chromium.gpu running a subset of tests.
         targets = [
-            "gpu_fyi_mac_release_gtests",
-            "gpu_fyi_only_mac_release_telemetry_tests",
+            "gpu_all_mac_release_gtests",
+            "gpu_all_mac_release_telemetry_tests",
         ],
         mixins = [
             "limited_capacity_bot",
@@ -2161,7 +2161,7 @@ ci.thin_tester(
     targets = targets.bundle(
         targets = [
             "gpu_fyi_mac_release_gtests",
-            "gpu_fyi_only_mac_release_telemetry_tests",
+            "gpu_fyi_mac_release_telemetry_tests",
         ],
         mixins = [
             "mac_arm64_apple_m2_retina_gpu_stable",
@@ -2198,8 +2198,8 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_fyi_mac_release_gtests",
-            "gpu_fyi_only_mac_release_telemetry_tests",
+            "gpu_all_mac_release_gtests",
+            "gpu_all_mac_release_telemetry_tests",
         ],
         mixins = [
             "mac_arm64_apple_m3_retina_gpu_stable",
@@ -2236,8 +2236,8 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_fyi_mac_release_gtests",
-            "gpu_fyi_only_mac_release_telemetry_tests",
+            "gpu_all_mac_release_gtests",
+            "gpu_all_mac_release_telemetry_tests",
         ],
         mixins = [
             "mac_arm64_apple_m2_retina_gpu_stable",
@@ -2304,8 +2304,8 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_fyi_mac_release_gtests",
-            "gpu_fyi_only_mac_release_telemetry_tests",
+            "gpu_all_mac_release_gtests",
+            "gpu_all_mac_release_telemetry_tests",
         ],
         mixins = [
             "mac_mini_intel_gpu_stable",
@@ -2422,8 +2422,8 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_fyi_mac_release_gtests",
-            "gpu_fyi_only_mac_release_telemetry_tests",
+            "gpu_all_mac_release_gtests",
+            "gpu_all_mac_release_telemetry_tests",
         ],
         mixins = [
             "mac_retina_amd_gpu_stable",
@@ -2505,6 +2505,7 @@ ci.thin_tester(
     targets = targets.bundle(
         targets = [
             "gpu_fyi_mac_debug_gtests",
+            "gpu_fyi_mac_debug_telemetry_tests",
         ],
         mixins = [
             "mac_retina_amd_gpu_stable",
