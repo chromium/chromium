@@ -49,6 +49,7 @@ namespace autofill {
 namespace {
 
 using ::personal_context::proto::AtMemoryQueryResponse;
+using ::personal_context::proto::AutofillFetchSpecification;
 using ::personal_context::proto::TypedValue;
 using TypedValueFilter =
     ::personal_context::proto::AutofillFetchSpecification::TypedValueFilter;
@@ -508,17 +509,30 @@ void OnFetchPiiEntityCompleted(
   RunCallbackAsync(std::move(callback), std::move(*unmasked_value));
 }
 
+// Filters `entries` by keeping only those that match at least one specification
+// in `fetch_specifications`.
+std::vector<MemorySearchResult> FilterResults(
+    std::vector<MemorySearchResult> entries,
+    base::span<const personal_context::proto::AutofillFetchSpecification>
+        fetch_specifications) {
+  std::erase_if(entries, [&](const MemorySearchResult& entry) {
+    return !std::ranges::any_of(fetch_specifications, [&](const auto& spec) {
+      return internal::MatchesFetchSpecification(entry, spec);
+    });
+  });
+  return entries;
+}
+
 }  // namespace
 
 namespace internal {
 
 bool MatchesStringFilter(
     std::u16string_view entry_string,
-    const personal_context::proto::AutofillFetchSpecification::StringFilter&
-        filter) {
+    const AutofillFetchSpecification::StringFilter& filter) {
   if (filter.value().empty() &&
-      filter.mode() != personal_context::proto::AutofillFetchSpecification::
-                           StringFilter::STRING_FILTER_MODE_EXACT) {
+      filter.mode() !=
+          AutofillFetchSpecification::StringFilter::STRING_FILTER_MODE_EXACT) {
     return true;
   }
   std::u16string normalized_entry =
@@ -526,17 +540,14 @@ bool MatchesStringFilter(
   std::u16string normalized_filter =
       normalization::NormalizeForComparison(base::UTF8ToUTF16(filter.value()));
   switch (filter.mode()) {
-    case personal_context::proto::AutofillFetchSpecification::StringFilter::
-        STRING_FILTER_MODE_EXACT:
+    case AutofillFetchSpecification::StringFilter::STRING_FILTER_MODE_EXACT:
       return normalized_entry == normalized_filter;
-    case personal_context::proto::AutofillFetchSpecification::StringFilter::
-        STRING_FILTER_MODE_FUZZY:
+    case AutofillFetchSpecification::StringFilter::STRING_FILTER_MODE_FUZZY:
       // TODO(crbug.com/542022101): The current implementation is not fuzzy
       // mode - fuzzy mode should also handle mistyped or missed characters.
       [[fallthrough]];
-    case personal_context::proto::AutofillFetchSpecification::StringFilter::
-        STRING_FILTER_MODE_SUBSTRING:
-    case personal_context::proto::AutofillFetchSpecification::StringFilter::
+    case AutofillFetchSpecification::StringFilter::STRING_FILTER_MODE_SUBSTRING:
+    case AutofillFetchSpecification::StringFilter::
         STRING_FILTER_MODE_UNSPECIFIED:
     default:
       return normalized_entry.contains(normalized_filter);
@@ -582,9 +593,8 @@ bool MatchesTypedFilter(const TypedValue& entry_typed_val,
   return false;
 }
 
-bool MatchesFilter(
-    const MemorySearchResult& entry,
-    const personal_context::proto::AutofillFetchSpecification::Filter& filter) {
+bool MatchesFilter(const MemorySearchResult& entry,
+                   const AutofillFetchSpecification::Filter& filter) {
   const bool has_readable_typed_filter =
       filter.has_typed_value_filter() &&
       filter.typed_value_filter().typed_value().value_case() !=
@@ -621,9 +631,8 @@ bool MatchesFilter(
              });
 }
 
-bool MatchesFetchSpecification(
-    const MemorySearchResult& entry,
-    const personal_context::proto::AutofillFetchSpecification& spec) {
+bool MatchesFetchSpecification(const MemorySearchResult& entry,
+                               const AutofillFetchSpecification& spec) {
   if (MemoryDataType target_type = ToMemoryDataType(spec.data_type());
       target_type == MemoryDataType::kUnknown || target_type != entry.type) {
     return false;
@@ -778,18 +787,30 @@ void AtMemoryQueryService::OnPersonalContextRetrieved(
 
   std::vector<MemoryDataType> local_data_types;
   base::flat_set<std::u16string> filter_words;
+  std::vector<AutofillFetchSpecification> fetch_specifications;
   if (response.has_autofill_fetch_plan()) {
     const personal_context::proto::AutofillFetchPlan& plan =
         response.autofill_fetch_plan();
-    local_data_types = base::ToVector(plan.data_types(), [](int type) {
-      return ToMemoryDataType(
-          static_cast<personal_context::proto::MemoryDataType>(type));
-    });
-    local_data_types = RationalizeFetchPlanDataTypes(local_data_types);
-    filter_words = base::MakeFlatSet<std::u16string>(
-        plan.filter_keywords(), {}, [](const std::string& word) {
-          return base::i18n::FoldCase(base::UTF8ToUTF16(word));
-        });
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillAtMemoryTypedFetchPlan) &&
+        !plan.fetch_specifications().empty()) {
+      fetch_specifications = base::ToVector(plan.fetch_specifications());
+      local_data_types = base::ToVector(
+          fetch_specifications, [](const AutofillFetchSpecification& spec) {
+            return ToMemoryDataType(spec.data_type());
+          });
+      std::erase(local_data_types, MemoryDataType::kUnknown);
+    } else {
+      local_data_types = RationalizeFetchPlanDataTypes(
+          base::ToVector(plan.data_types(), [](int type) {
+            return ToMemoryDataType(
+                static_cast<personal_context::proto::MemoryDataType>(type));
+          }));
+      filter_words = base::MakeFlatSet<std::u16string>(
+          plan.filter_keywords(), {}, [](const std::string& word) {
+            return base::i18n::FoldCase(base::UTF8ToUTF16(word));
+          });
+    }
   }
 
   if (local_data_types.empty() || !data_provider_) {
@@ -807,6 +828,7 @@ void AtMemoryQueryService::OnPersonalContextRetrieved(
       base::BindOnce(&AtMemoryQueryService::OnLocalDataRetrieved,
                      query_weak_ptr_factory_.GetWeakPtr(), callback,
                      std::move(remote_results), std::move(filter_words),
+                     std::move(fetch_specifications),
                      std::move(result.server_request_id)));
 }
 
@@ -814,6 +836,7 @@ void AtMemoryQueryService::OnLocalDataRetrieved(
     base::RepeatingCallback<void(MemorySearchResults)> callback,
     std::vector<MemorySearchResult> remote_results,
     base::flat_set<std::u16string> filter_words,
+    std::vector<AutofillFetchSpecification> fetch_specifications,
     std::string server_request_id,
     std::vector<MemorySearchResult> local_results) {
   base::UmaHistogramCounts1000(
@@ -822,7 +845,9 @@ void AtMemoryQueryService::OnLocalDataRetrieved(
       local_results.size());
 
   std::vector<MemorySearchResult> filtered_local_results =
-      FilterResults(std::move(local_results), filter_words);
+      !fetch_specifications.empty()
+          ? FilterResults(std::move(local_results), fetch_specifications)
+          : FilterResults(std::move(local_results), filter_words);
   std::vector<MemorySearchResult> ranked_results =
       RankResults(std::move(filtered_local_results), std::move(remote_results));
   DeduplicateResults(ranked_results);

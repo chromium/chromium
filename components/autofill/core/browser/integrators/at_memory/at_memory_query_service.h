@@ -110,6 +110,8 @@ class AtMemoryQueryService : public KeyedService {
       base::RepeatingCallback<void(MemorySearchResults)> callback,
       std::vector<MemorySearchResult> remote_results,
       base::flat_set<std::u16string> filter_words,
+      std::vector<personal_context::proto::AutofillFetchSpecification>
+          fetch_specifications,
       std::string server_request_id,
       std::vector<MemorySearchResult> local_results);
 
