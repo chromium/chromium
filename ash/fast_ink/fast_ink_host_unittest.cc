@@ -5,7 +5,7 @@
 #include "ash/fast_ink/fast_ink_host.h"
 
 #include <memory>
-#include <tuple>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -40,59 +40,51 @@
 namespace ash {
 namespace {
 
-class FastInkHostTest
-    : public FrameSinkHostTestBase<FastInkHost>,
-      public ::testing::WithParamInterface<
-          std::tuple<std::string, bool, gfx::Rect, gfx::Rect, gfx::Rect>> {
- public:
-  FastInkHostTest()
-      : first_display_specs_(std::get<0>(GetParam())),
-        auto_update_(std::get<1>(GetParam())),
-        content_rect_(std::get<2>(GetParam())),
-        expected_quad_rect_(std::get<3>(GetParam())),
-        expected_quad_layer_rect_(std::get<4>(GetParam())) {}
-
-  FastInkHostTest(const FastInkHostTest&) = delete;
-  FastInkHostTest& operator=(const FastInkHostTest&) = delete;
-
-  ~FastInkHostTest() override = default;
-
-  // AshTestBase:
-  void SetUp() override {
-    SetDisplaySpecs(first_display_specs_);
-    FrameSinkHostTestBase<FastInkHost>::SetUp();
-  }
-
- protected:
-  std::string first_display_specs_;
-  bool auto_update_ = false;
-  gfx::Rect content_rect_;
-  gfx::Rect expected_quad_rect_;
-  gfx::Rect expected_quad_layer_rect_;
+struct FastInkHostTestParams {
+  std::string first_display_specs;
+  bool auto_update = false;
+  gfx::Rect content_rect;
+  gfx::Rect expected_quad_rect;
+  gfx::Rect expected_quad_layer_rect;
 };
 
-TEST_P(FastInkHostTest, CorrectFrameSubmittedToLayerTreeFrameSink) {
+class FastInkHostFrameSubmissionTest
+    : public FrameSinkHostTestBase<FastInkHost>,
+      public ::testing::WithParamInterface<FastInkHostTestParams> {
+ public:
+  void SetUp() override {
+    SetDisplaySpecs(GetParam().first_display_specs);
+    FrameSinkHostTestBase<FastInkHost>::SetUp();
+  }
+};
+
+TEST_P(FastInkHostFrameSubmissionTest,
+       CorrectFrameSubmittedToLayerTreeFrameSink) {
   // Request the first frame.
   OnBeginFrame();
+
+  const auto& params = GetParam();
 
   SCOPED_TRACE(base::StringPrintf(
       "Test params: first_display_specs=%s | auto_update=%s | content_rect=%s "
       "| expected_quad_rect=%s | expected_quad_layer_rect=%s",
-      first_display_specs_.c_str(), auto_update_ ? "true" : "false",
-      content_rect_.ToString().c_str(), expected_quad_rect_.ToString().c_str(),
-      expected_quad_layer_rect_.ToString().c_str()));
+      params.first_display_specs.c_str(), params.auto_update ? "true" : "false",
+      params.content_rect.ToString().c_str(),
+      params.expected_quad_rect.ToString().c_str(),
+      params.expected_quad_layer_rect.ToString().c_str()));
 
   constexpr gfx::Rect kTestTotalDamageRectInDIP = gfx::Rect(0, 0, 50, 25);
 
-  if (auto_update_) {
-    frame_sink_host()->AutoUpdateSurface(content_rect_,
+  if (params.auto_update) {
+    frame_sink_host()->AutoUpdateSurface(params.content_rect,
                                          kTestTotalDamageRectInDIP);
 
     // When host auto updates, it only submits a frame when requested by
     // LayerTreeFrameSink via a BeginFrameSource.
     OnBeginFrame();
   } else {
-    frame_sink_host()->UpdateSurface(content_rect_, kTestTotalDamageRectInDIP,
+    frame_sink_host()->UpdateSurface(params.content_rect,
+                                     kTestTotalDamageRectInDIP,
                                      /*synchronous_draw=*/true);
   }
 
@@ -110,21 +102,84 @@ TEST_P(FastInkHostTest, CorrectFrameSubmittedToLayerTreeFrameSink) {
   viz::DrawQuad* quad = quad_list.back();
   EXPECT_EQ(quad->material, viz::DrawQuad::Material::kTextureContent);
 
-  EXPECT_EQ(quad->rect, expected_quad_rect_);
-  EXPECT_EQ(quad->visible_rect, expected_quad_rect_);
+  EXPECT_EQ(quad->rect, params.expected_quad_rect);
+  EXPECT_EQ(quad->visible_rect, params.expected_quad_rect);
 
   ASSERT_EQ(render_pass_list.front()->shared_quad_state_list.size(), 1u);
   auto* shared_quad_state =
       render_pass_list.front()->shared_quad_state_list.front();
 
-  EXPECT_EQ(shared_quad_state->quad_layer_rect, expected_quad_layer_rect_);
+  EXPECT_EQ(shared_quad_state->quad_layer_rect,
+            params.expected_quad_layer_rect);
   EXPECT_EQ(shared_quad_state->visible_quad_layer_rect,
-            expected_quad_layer_rect_);
+            params.expected_quad_layer_rect);
 
-  EXPECT_EQ(frame.resource_list.back().GetIsOverlayCandidate(), auto_update_);
+  EXPECT_EQ(frame.resource_list.back().GetIsOverlayCandidate(),
+            params.auto_update);
 }
 
-TEST_P(FastInkHostTest, RecreateGpuBufferOnLosingFrameSink) {
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    FastInkHostFrameSubmissionTest,
+    testing::Values(
+        // When auto updating surface, we update the full surface, ignoring the
+        // content_rect.
+        FastInkHostTestParams{
+            .first_display_specs = "1000x500",
+            .auto_update = true,
+            .content_rect = gfx::Rect(10, 10),
+            .expected_quad_rect = gfx::Rect(0, 0, 1000, 500),
+            .expected_quad_layer_rect = gfx::Rect(0, 0, 1000, 500)},
+        FastInkHostTestParams{
+            .first_display_specs = "1000x500*2",
+            .auto_update = true,
+            .content_rect = gfx::Rect(10, 10),
+            .expected_quad_rect = gfx::Rect(0, 0, 1000, 500),
+            .expected_quad_layer_rect = gfx::Rect(0, 0, 1000, 500)},
+        FastInkHostTestParams{
+            .first_display_specs = "1000x500*2/r",
+            .auto_update = true,
+            .content_rect = gfx::Rect(10, 10),
+            .expected_quad_rect = gfx::Rect(0, 0, 1000, 500),
+            .expected_quad_layer_rect = gfx::Rect(0, 0, 500, 1000)},
+        // When auto updating is off, we update the surface enclosed by
+        // content_rect.
+        FastInkHostTestParams{
+            .first_display_specs = "1000x500",
+            .auto_update = false,
+            .content_rect = gfx::Rect(10, 10),
+            .expected_quad_rect = gfx::Rect(0, 0, 10, 10),
+            .expected_quad_layer_rect = gfx::Rect(0, 0, 1000, 500)},
+        FastInkHostTestParams{
+            .first_display_specs = "1000x500*2",
+            .auto_update = false,
+            .content_rect = gfx::Rect(10, 10),
+            .expected_quad_rect = gfx::Rect(0, 0, 20, 20),
+            .expected_quad_layer_rect = gfx::Rect(0, 0, 1000, 500)},
+        FastInkHostTestParams{
+            .first_display_specs = "1000x500*2/l",
+            .auto_update = false,
+            .content_rect = gfx::Rect(10, 15),
+            .expected_quad_rect = gfx::Rect(0, 480, 30, 20),
+            .expected_quad_layer_rect = gfx::Rect(0, 0, 500, 1000)},
+        // If content rect is partially outside of the buffer, quad rect is
+        // clipped by buffer size.
+        FastInkHostTestParams{
+            .first_display_specs = "1000x500",
+            .auto_update = false,
+            .content_rect = gfx::Rect(995, 0, 10, 10),
+            .expected_quad_rect = gfx::Rect(995, 0, 5, 10),
+            .expected_quad_layer_rect = gfx::Rect(0, 0, 1000, 500)},
+        FastInkHostTestParams{
+            .first_display_specs = "3000x2000*2.252252",
+            .auto_update = false,
+            .content_rect = gfx::Rect(0, 0, 1332, 888),
+            .expected_quad_rect = gfx::Rect(0, 0, 3000, 2000),
+            .expected_quad_layer_rect = gfx::Rect(0, 0, 3000, 2000)}));
+
+using FastInkHostTest = FrameSinkHostTestBase<FastInkHost>;
+
+TEST_F(FastInkHostTest, RecreateGpuBufferOnLosingFrameSink) {
   FastInkHostTestApi fast_ink_host_test(frame_sink_host());
 
   // Buffer is not initialized when there is no begin frame received.
@@ -154,7 +209,7 @@ TEST_P(FastInkHostTest, RecreateGpuBufferOnLosingFrameSink) {
   EXPECT_TRUE(fast_ink_host_test.client_shared_image());
 }
 
-TEST_P(FastInkHostTest, DelayPaintingUntilReceivingFirstBeginFrame) {
+TEST_F(FastInkHostTest, DelayPaintingUntilReceivingFirstBeginFrame) {
   FastInkHostTestApi fast_ink_host_test(frame_sink_host());
 
   // Buffer is not initialized when there is no begin frame received.
@@ -189,65 +244,6 @@ TEST_P(FastInkHostTest, DelayPaintingUntilReceivingFirstBeginFrame) {
   EXPECT_EQ(*reinterpret_cast<SkColor*>(mapping->GetMemoryForPlane(0).data()),
             SK_ColorGREEN);
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
-    FastInkHostTest,
-    testing::Values(
-        // When auto updating surface, we update the full surface, ignoring the
-        // content_rect.
-        std::make_tuple(
-            /*first_display_specs=*/"1000x500",
-            /*auto_update=*/true,
-            /*content_rect=*/gfx::Rect(10, 10),
-            /*expected_quad_rect=*/gfx::Rect(0, 0, 1000, 500),
-            /*expected_quad_layer_rect=*/gfx::Rect(0, 0, 1000, 500)),
-        std::make_tuple(
-            /*first_display_specs=*/"1000x500*2",
-            /*auto_update=*/true,
-            /*content_rect=*/gfx::Rect(10, 10),
-            /*expected_quad_rect=*/gfx::Rect(0, 0, 1000, 500),
-            /*expected_quad_layer_rect=*/gfx::Rect(0, 0, 1000, 500)),
-        std::make_tuple(
-            /*first_display_specs=*/"1000x500*2/r",
-            /*auto_update=*/true,
-            /*content_rect=*/gfx::Rect(10, 10),
-            /*expected_quad_rect=*/gfx::Rect(0, 0, 1000, 500),
-            /*expected_quad_layer_rect=*/gfx::Rect(0, 0, 500, 1000)),
-        // When auto updating is off, we update the surface enclosed by
-        // content_rect.
-        std::make_tuple(
-            /*first_display_specs=*/"1000x500",
-            /*auto_update=*/false,
-            /*content_rect=*/gfx::Rect(10, 10),
-            /*expected_quad_rect=*/gfx::Rect(0, 0, 10, 10),
-            /*expected_quad_layer_rect=*/gfx::Rect(0, 0, 1000, 500)),
-        std::make_tuple(
-            /*first_display_specs=*/"1000x500*2",
-            /*auto_update=*/false,
-            /*content_rect=*/gfx::Rect(10, 10),
-            /*expected_quad_rect=*/gfx::Rect(0, 0, 20, 20),
-            /*expected_quad_layer_rect=*/gfx::Rect(0, 0, 1000, 500)),
-        std::make_tuple(
-            /*first_display_specs=*/"1000x500*2/l",
-            /*auto_update=*/false,
-            /*content_rect=*/gfx::Rect(10, 15),
-            /*expected_quad_rect=*/gfx::Rect(0, 480, 30, 20),
-            /*expected_quad_layer_rect=*/gfx::Rect(0, 0, 500, 1000)),
-        // If content rect is partially outside of the buffer, quad rect is
-        // clipped by buffer size.
-        std::make_tuple(
-            /*first_display_specs=*/"1000x500",
-            /*auto_update=*/false,
-            /*content_rect=*/gfx::Rect(995, 0, 10, 10),
-            /*expected_quad_rect=*/gfx::Rect(995, 0, 5, 10),
-            /*expected_quad_layer_rect=*/gfx::Rect(0, 0, 1000, 500)),
-        std::make_tuple(
-            /*first_display_specs=*/"3000x2000*2.252252",
-            /*auto_update=*/false,
-            /*content_rect=*/gfx::Rect(0, 0, 1332, 888),
-            /*expected_quad_rect=*/gfx::Rect(0, 0, 3000, 2000),
-            /*expected_quad_layer_rect=*/gfx::Rect(0, 0, 3000, 2000))));
 
 }  // namespace
 }  // namespace ash
