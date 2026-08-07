@@ -148,7 +148,7 @@ views::ProposedLayout TabGroupViewLayout::CalculateVerticalLayout(
     group_line_bounds.set_height(height - group_line_bounds.y());
   }
   const bool show_group_line =
-      !is_focused && tab_group_view->group_line_->GetVisible();
+      !tab_group_view->IsGroupFocused() && !tab_group_view->is_collapsed();
   layouts.child_layouts.emplace_back(tab_group_view->group_line_.get(),
                                      show_group_line, group_line_bounds);
 

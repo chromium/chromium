@@ -99,6 +99,10 @@ class TabGroupView : public views::View,
                        const gfx::Rect& previous_bounds_in_screen);
   std::unique_ptr<views::View> DetachChildView(views::View* child_view);
 
+  bool is_collapsed() const { return is_collapsed_; }
+
+  void SetIsCollapsed(bool is_collapsed);
+
   void ResetCollectionNode();
   void OnDataChanged();
   void UpdateChildVisibilityForCollapseState(bool collapsed);
@@ -110,6 +114,11 @@ class TabGroupView : public views::View,
   tab_groups::TabGroupVisualData tab_group_visual_data_;
   const raw_ptr<TabGroupHeaderView> group_header_ = nullptr;
   const raw_ptr<views::View> group_line_ = nullptr;
+
+  // Tracked separately for layout purposes so child/underline visibility
+  // updates occur only when collapse/expand animations complete, rather than
+  // reacting immediately to visual data updates during animation.
+  bool is_collapsed_ = false;
 
   const raw_ref<TabCollectionAnimatingLayoutManager> layout_manager_;
 
