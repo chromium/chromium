@@ -439,13 +439,17 @@ std::unique_ptr<Scorer> Scorer::CreateScorerWithImageEmbeddingModel(
   std::unique_ptr<Scorer> scorer =
       Create(std::move(region), std::move(visual_tflite_model));
 
+  if (!scorer) {
+    return nullptr;
+  }
+
   if (image_embedding_model.IsValid()) {
-    if (scorer && !scorer->image_embedding_model_.Initialize(
-                      std::move(image_embedding_model))) {
+    if (!scorer->image_embedding_model_.Initialize(
+            std::move(image_embedding_model))) {
       RecordScorerCreationStatus(
           SCORER_FAIL_FLATBUFFER_INVALID_IMAGE_EMBEDDING_TFLITE_MODEL);
       return nullptr;
-    } else if (scorer) {
+    } else {
       if (!scorer->flatbuffer_model_->img_embedding_metadata()) {
         RecordScorerCreationStatus(SCORER_FAIL_MODEL_MISSING_FIELDS);
         return nullptr;
@@ -523,6 +527,10 @@ void Scorer::AttachImageEmbeddingModel(base::File image_embedding_model) {
     }
   }
 
+  if (!flatbuffer_model_ || !flatbuffer_model_->img_embedding_metadata()) {
+    return;
+  }
+
   SetImageEmbeddingDimensions(
       flatbuffer_model_->img_embedding_metadata()->input_width(),
       flatbuffer_model_->img_embedding_metadata()->input_height());
@@ -583,8 +591,13 @@ void Scorer::ApplyVisualTfLiteModelImageEmbedding(
   }
 }
 
+bool Scorer::HasVisualTfLiteModel() const {
+  return flatbuffer_model_ != nullptr;
+}
+
 int Scorer::tflite_model_version() const {
-  return flatbuffer_model_->tflite_metadata()->version();
+  return flatbuffer_model_ ? flatbuffer_model_->tflite_metadata()->version()
+                           : 0;
 }
 const google::protobuf::RepeatedPtrField<TfLiteModelMetadata::Threshold>&
 Scorer::tflite_thresholds() const {
@@ -604,7 +617,9 @@ void Scorer::SetImageEmbeddingDimensions(int image_embedding_input_width,
 }
 
 int Scorer::image_embedding_tflite_model_version() const {
-  return flatbuffer_model_->img_embedding_metadata()->version();
+  return (flatbuffer_model_ && flatbuffer_model_->img_embedding_metadata())
+             ? flatbuffer_model_->img_embedding_metadata()->version()
+             : 0;
 }
 
 void ScorerStorage::SetScorer(std::unique_ptr<Scorer> scorer) {

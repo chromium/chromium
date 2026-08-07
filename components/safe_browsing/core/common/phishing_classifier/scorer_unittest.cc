@@ -175,4 +175,37 @@ TEST_F(PhishingScorerTest, HasValidFlatBufferModel) {
   EXPECT_FALSE(scorer.get());
 }
 
+TEST_F(PhishingScorerTest, ImageEmbeddingModelDefensiveChecks) {
+  // Verify CreateScorerWithImageEmbeddingModel handles invalid region/null
+  // scorer gracefully.
+  std::unique_ptr<Scorer> scorer = Scorer::CreateScorerWithImageEmbeddingModel(
+      base::ReadOnlySharedMemoryRegion(), base::File(), base::File());
+  EXPECT_FALSE(scorer);
+
+  // Verify AttachImageEmbeddingModel handles null flatbuffer_model_
+  // gracefully.
+  scorer = Scorer::Create(/*classification_input_width=*/0,
+                          /*classification_input_height=*/0, base::File());
+  ASSERT_TRUE(scorer);
+  EXPECT_FALSE(scorer->HasVisualTfLiteModel());
+  EXPECT_EQ(0, scorer->image_embedding_tflite_model_version());
+
+  // This should not crash despite flatbuffer_model_ being null.
+  scorer->AttachImageEmbeddingModel(base::File());
+
+  // Verify AttachImageEmbeddingModel and image_embedding_tflite_model_version
+  // handle a valid flatbuffer_model_ that lacks img_embedding_metadata
+  // gracefully.
+  std::string flatbuffer = GetFlatBufferString();
+  base::MappedReadOnlyRegion mapped_region =
+      GetMappedReadOnlyRegionWithData(flatbuffer);
+  scorer = Scorer::Create(mapped_region.region.Duplicate(), base::File());
+  ASSERT_TRUE(scorer);
+  EXPECT_EQ(0, scorer->image_embedding_tflite_model_version());
+
+  // This should not crash despite img_embedding_metadata being null in the
+  // flatbuffer model.
+  scorer->AttachImageEmbeddingModel(base::File());
+}
+
 }  // namespace safe_browsing
