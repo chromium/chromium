@@ -55,6 +55,7 @@ import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.util.AttrUtils;
 import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
 import org.chromium.url.GURL;
@@ -171,7 +172,11 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
         mPopup.setOnItemClickListener(this);
         mPopup.setAdapter(mAdapter);
 
-        mFaviconSize = resources.getDimensionPixelSize(R.dimen.default_favicon_size);
+        if (ToolbarFeatures.isNavigationListMenuEnabled()) {
+            mFaviconSize = AttrUtils.getDimensionPixelSize(mContext, R.attr.listItemIconSize);
+        } else {
+            mFaviconSize = resources.getDimensionPixelSize(R.dimen.default_favicon_size);
+        }
     }
 
     ListPopupWindow getPopupForTesting() {
