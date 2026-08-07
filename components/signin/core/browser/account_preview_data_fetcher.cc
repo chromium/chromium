@@ -205,9 +205,8 @@ void AccountPreviewDataFetcher::Start() {
   AccountInfo account_info =
       identity_manager_->FindExtendedAccountInfoByGaiaId(gaia_id_);
   if (account_info.IsEmpty()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback_), gaia_id_, std::nullopt));
+    fetched_data_ = std::nullopt;
+    CompleteFetch();
     return;
   }
 
@@ -223,11 +222,17 @@ void AccountPreviewDataFetcher::OnAccessTokenReceived(
     AccessTokenInfo token_info) {
   token_fetcher_.reset();
   if (error.state() != GoogleServiceAuthError::NONE) {
-    std::move(callback_).Run(gaia_id_, std::nullopt);
+    fetched_data_ = std::nullopt;
+    CompleteFetch();
     return;
   }
 
   StartNetworkRequests(token_info.token);
+}
+
+void AccountPreviewDataFetcher::SetOnFetchCompletedForTesting(
+    base::OnceClosure closure) {
+  on_fetch_completed_for_testing_ = std::move(closure);
 }
 
 void AccountPreviewDataFetcher::StartNetworkRequests(
@@ -347,13 +352,25 @@ void AccountPreviewDataFetcher::OnFetchCompleted(std::vector<bool> results) {
                                 fetched_data_.has_value()
                                     ? FetchState::kCompletedWithResults
                                     : FetchState::kCompletedWithoutResults);
-  // PostTask is required here because `barrier_callback_` is owned by `this`
-  // and is triggering this callback (`OnFetchCompleted()`). If `callback_`
-  // causes `this` to be deleted, the destruction of `barrier_callback_` could
-  // result in a use-after-free.
+
+  CompleteFetch();
+}
+
+void AccountPreviewDataFetcher::CompleteFetch() {
+  // `PostTask` + `WeakPtr` prevents re-entrancy and stack-unwinding UAFs, and a
+  // subtle race where `this` is destroyed after posting but prior to execution
+  // (see crbug.com/533927599, crbug.com/542550030).
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback_), gaia_id_, std::move(fetched_data_)));
+      FROM_HERE, base::BindOnce(&AccountPreviewDataFetcher::RunCallback,
+                                weak_ptr_factory_.GetWeakPtr()));
+  if (on_fetch_completed_for_testing_) {
+    std::move(on_fetch_completed_for_testing_).Run();
+  }
+}
+
+void AccountPreviewDataFetcher::RunCallback() {
+  CHECK(callback_);
+  std::move(callback_).Run(gaia_id_, std::move(fetched_data_));
 }
 
 }  // namespace signin

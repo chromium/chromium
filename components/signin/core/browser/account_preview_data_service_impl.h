@@ -78,6 +78,7 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
 #endif
 
   bool HasActiveFetcherForTesting(const GaiaId& gaia_id) const;
+  AccountPreviewDataFetcher* GetFetcherForTesting(const GaiaId& gaia_id) const;
 
   void SetFetchCompleteCallbackForTesting(base::OnceClosure callback);
   void SetAllDataAvailableCallbackForTesting(base::OnceClosure callback);

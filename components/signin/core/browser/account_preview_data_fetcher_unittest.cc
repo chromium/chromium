@@ -189,7 +189,6 @@ TEST_F(AccountPreviewDataFetcherTest, AccessTokenFailure) {
       account_info.account_id,
       GoogleServiceAuthError::FromServiceError("Service error"));
 
-  ASSERT_TRUE(future.IsReady());
   auto [gaia_id, result_data] = future.Take();
   EXPECT_EQ(account_info.gaia, gaia_id);
   EXPECT_FALSE(result_data.has_value());

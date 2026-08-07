@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -1329,6 +1330,52 @@ TEST_F(AccountPreviewDataServiceTest,
 
   // Stored results in prefs should remain intact.
   EXPECT_TRUE(service_->GetPreferredAccountForPromo().has_value());
+}
+
+// This test verifies that there isn't a pending callback for an account
+// when the refresh token is removed. And more importantly, it doesn't crash.
+//
+// It used to crash because the final callback used to be posted to the task
+// queue outliving the fetcher (see crbug.com/533927599, crbug.com/542550030).
+TEST_F(AccountPreviewDataServiceTest, NoInFlightTaskOnAccountRemoved) {
+  const AccountInfo account_1 =
+      identity_test_env_.MakeAccountAvailable("account1@gmail.com");
+  const AccountInfo account_2 =
+      identity_test_env_.MakeAccountAvailable("account2@gmail.com");
+
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 4);
+
+  base::RunLoop account_1_fetch_run_loop;
+  service_->SetFetchCompleteCallbackForTesting(
+      account_1_fetch_run_loop.QuitClosure());
+  SimulateSuccessfulFetch(&test_url_loader_factory_);
+  account_1_fetch_run_loop.Run();
+
+  // `account_1`'s data is now cached, and no active fetcher exists for it.
+  ASSERT_TRUE(service_->GetAccountPreviewData(account_1.gaia).has_value());
+  ASSERT_FALSE(service_->HasActiveFetcherForTesting(account_1.gaia));
+
+  // `account_2` still has an active fetcher.
+  ASSERT_TRUE(service_->HasActiveFetcherForTesting(account_2.gaia));
+
+  // Schedule an account removal while the fetch for `account_2` is in flight.
+  AccountPreviewDataFetcher* fetcher =
+      service_->GetFetcherForTesting(account_2.gaia);
+  ASSERT_NE(fetcher, nullptr);
+  fetcher->SetOnFetchCompletedForTesting(base::BindLambdaForTesting([&]() {
+    identity_test_env_.RemoveRefreshTokenForAccount(account_2.account_id);
+  }));
+
+  base::RunLoop account_2_fetch_run_loop;
+  service_->SetFetchCompleteCallbackForTesting(
+      account_2_fetch_run_loop.QuitClosure());
+  MockSuccessfulFetch(&test_url_loader_factory_);
+  account_2_fetch_run_loop.Run();
+
+  // `account_2` has been removed but more importantly the test did not crash
+  // after the fetcher was destroyed.
+  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account_2.gaia));
+  EXPECT_FALSE(service_->GetAccountPreviewData(account_2.gaia).has_value());
 }
 
 }  // namespace signin

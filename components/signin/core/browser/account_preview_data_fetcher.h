@@ -80,6 +80,8 @@ class AccountPreviewDataFetcher {
   static GURL GetStatsUrlForChannel(version_info::Channel channel);
   static GURL GetPreviewsUrlForChannel(version_info::Channel channel);
 
+  void SetOnFetchCompletedForTesting(base::OnceClosure closure);
+
  private:
   void OnAccessTokenReceived(GoogleServiceAuthError error,
                              AccessTokenInfo token_info);
@@ -87,6 +89,8 @@ class AccountPreviewDataFetcher {
   void OnStatsFetchCompleted(std::optional<std::string> response_body);
   void OnPreviewsFetchCompleted(std::optional<std::string> response_body);
   void OnFetchCompleted(std::vector<bool> results);
+  void CompleteFetch();
+  void RunCallback();
 
   const GaiaId gaia_id_;
   const raw_ptr<IdentityManager> identity_manager_;
@@ -104,6 +108,8 @@ class AccountPreviewDataFetcher {
   base::RepeatingCallback<void(bool)> barrier_callback_;
 
   bool is_started_ = false;
+
+  base::OnceClosure on_fetch_completed_for_testing_;
 
   base::WeakPtrFactory<AccountPreviewDataFetcher> weak_ptr_factory_{this};
 };
