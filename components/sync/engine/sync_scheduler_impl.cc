@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -242,8 +243,8 @@ bool SyncSchedulerImpl::CanRunJobNow(RespectGlobalBackoff respect_backoff) {
   }
 
   if (!ignore_auth_credentials_ &&
-      !cycle_context_->connection_manager()->HasCachedAccessToken() &&
-      !base::FeatureList::IsEnabled(kSyncUsePropagatedAccessToken)) {
+      !base::FeatureList::IsEnabled(kSyncUsePropagatedAccessToken) &&
+      !cycle_context_->connection_manager()->HasCachedAccessToken()) {
     SDVLOG(1) << "Unable to run a job because we have no access token.";
     return false;
   }
@@ -664,8 +665,12 @@ void SyncSchedulerImpl::TrySyncCycleJobImpl(
   } else {
     // We must be in an error state. Transitioning out of each of these
     // error states should trigger a sync cycle job.
-    DCHECK(IsGlobalThrottle() || IsGlobalBackoff() ||
-           !cycle_context_->connection_manager()->HasCachedAccessToken());
+    if (!base::FeatureList::IsEnabled(kSyncUsePropagatedAccessToken)) {
+      DCHECK(IsGlobalThrottle() || IsGlobalBackoff() ||
+             !cycle_context_->connection_manager()->HasCachedAccessToken());
+    } else {
+      CHECK(IsGlobalThrottle() || IsGlobalBackoff(), base::NotFatalUntil::M155);
+    }
   }
 
   RestartWaiting();

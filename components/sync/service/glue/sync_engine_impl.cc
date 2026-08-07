@@ -200,12 +200,14 @@ void SyncEngineImpl::TriggerRefresh(const DataTypeSet& types) {
 }
 
 void SyncEngineImpl::UpdateCredentials(const SyncCredentials& credentials) {
+  CHECK(!base::FeatureList::IsEnabled(kSyncUsePropagatedAccessToken));
   sync_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SyncEngineBackend::DoUpdateCredentials,
                                 backend_, credentials));
 }
 
 void SyncEngineImpl::InvalidateCredentials() {
+  CHECK(!base::FeatureList::IsEnabled(kSyncUsePropagatedAccessToken));
   sync_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&SyncEngineBackend::DoInvalidateCredentials, backend_));

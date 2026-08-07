@@ -60,9 +60,13 @@ bool FakeSyncEngine::IsInitialized() const {
 
 void FakeSyncEngine::TriggerRefresh(const DataTypeSet& types) {}
 
-void FakeSyncEngine::UpdateCredentials(const SyncCredentials& credentials) {}
+void FakeSyncEngine::UpdateCredentials(const SyncCredentials& credentials) {
+  last_credentials_ = credentials;
+}
 
-void FakeSyncEngine::InvalidateCredentials() {}
+void FakeSyncEngine::InvalidateCredentials() {
+  last_credentials_.reset();
+}
 
 std::string FakeSyncEngine::GetCacheGuid() const {
   return "fake_engine_cache_guid";

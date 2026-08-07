@@ -19,6 +19,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/sync_invalidation.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/configure_reason.h"
@@ -271,6 +272,7 @@ void SyncManagerImpl::StartConfiguration() {
 
 void SyncManagerImpl::UpdateCredentials(const SyncCredentials& credentials) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!base::FeatureList::IsEnabled(kSyncUsePropagatedAccessToken));
   DCHECK(initialized_);
 
   cycle_context_->set_account_name(credentials.email);
@@ -287,6 +289,7 @@ void SyncManagerImpl::UpdateCredentials(const SyncCredentials& credentials) {
 
 void SyncManagerImpl::InvalidateCredentials() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!base::FeatureList::IsEnabled(kSyncUsePropagatedAccessToken));
   connection_manager_->SetAccessTokenInfo(signin::AccessTokenInfo());
 }
 

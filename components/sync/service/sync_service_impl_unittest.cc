@@ -3173,5 +3173,17 @@ TEST_F(SyncServiceImplTest, ShouldQueueTaskUntilEngineInitialized) {
   service()->RunOrQueueTaskOnEngineInitializedForTest(mock_task2.Get());
 }
 
+TEST_F(SyncServiceImplTest, AvoidCachingCredentialsInEngineWhenFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list(kSyncUsePropagatedAccessToken);
+
+  PopulatePrefsForInitialSyncFeatureSetupComplete();
+  SignInWithSyncConsent();
+  InitializeService();
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_FALSE(service()->GetAccessTokenForTest().empty());
+  EXPECT_FALSE(engine()->last_credentials().has_value());
+}
+
 }  // namespace
 }  // namespace syncer

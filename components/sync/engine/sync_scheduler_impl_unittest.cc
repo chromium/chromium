@@ -2035,11 +2035,6 @@ TEST_F(SyncSchedulerImplTest, NoCachedAccessToken) {
 TEST_F(SyncSchedulerImplTest, CanRunJobWithoutCachedAccessToken) {
   base::test::ScopedFeatureList feature_list(kSyncUsePropagatedAccessToken);
 
-  // Clear cached access token in connection manager to verify that
-  // CanRunJobNow() does not block when the feature is enabled.
-  connection()->SetAccessTokenInfo(signin::AccessTokenInfo());
-  ASSERT_FALSE(connection()->HasCachedAccessToken());
-
   testing::NiceMock<MockSyncAccessTokenFetcher> fetcher;
   EXPECT_CALL(fetcher, FetchAccessToken)
       .WillOnce(base::test::RunOnceCallback<0>(

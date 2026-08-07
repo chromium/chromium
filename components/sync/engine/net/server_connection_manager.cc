@@ -98,11 +98,10 @@ ServerConnectionManager::ServerConnectionManager()
 
 ServerConnectionManager::~ServerConnectionManager() = default;
 
-// TODO(crbug.com/539471945): do not cache the access token when
-// kSyncUsePropagatedAccessToken is enabled.
 bool ServerConnectionManager::SetAccessTokenInfo(
     const signin::AccessTokenInfo& access_token_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!base::FeatureList::IsEnabled(kSyncUsePropagatedAccessToken));
 
   cached_access_token_info_ = access_token_info;
   if (IsAccessTokenInfoValid(cached_access_token_info_)) {
@@ -120,6 +119,7 @@ bool ServerConnectionManager::SetAccessTokenInfo(
 
 bool ServerConnectionManager::HasCachedAccessToken() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!base::FeatureList::IsEnabled(kSyncUsePropagatedAccessToken));
   return !cached_access_token_info_.token.empty();
 }
 
@@ -181,6 +181,7 @@ HttpResponse ServerConnectionManager::PostBufferWithCachedAuth(
     const std::string& buffer_in,
     std::string* buffer_out) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!base::FeatureList::IsEnabled(kSyncUsePropagatedAccessToken));
   return PostBufferWithAccessToken(buffer_in, buffer_out,
                                    cached_access_token_info_);
 }
