@@ -1,4 +1,6 @@
 This is a testharness.js-based test.
+[FAIL] Clicking an auto nested inside a hint keeps the whole chain open
+  assert_equals: All popovers should be able to be open at once, index 0 (hint1) expected true but got false
 [FAIL] Auto can be nested inside hint (nothing should throw, auto demoted to hint)
   assert_equals: Error, index 2 (innerhint1) expected true but got false
 Harness: the test ran to completion.

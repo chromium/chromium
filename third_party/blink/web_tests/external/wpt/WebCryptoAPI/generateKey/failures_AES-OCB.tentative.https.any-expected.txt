@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 414 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 618 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [sign])
   assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [encrypt, sign])
@@ -135,6 +135,142 @@ Found 414 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [unwrapKey, deriveBits])
   assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [decrypt, encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [wrapKey, decrypt, encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [unwrapKey, wrapKey, decrypt, encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [unwrapKey, decrypt, encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [wrapKey, encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [unwrapKey, wrapKey, encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [unwrapKey, encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [decrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [wrapKey, decrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [unwrapKey, wrapKey, decrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [unwrapKey, decrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [wrapKey, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [unwrapKey, wrapKey, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [unwrapKey, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [decrypt, encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [wrapKey, decrypt, encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [unwrapKey, wrapKey, decrypt, encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [unwrapKey, decrypt, encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [wrapKey, encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [unwrapKey, wrapKey, encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [unwrapKey, encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [decrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [wrapKey, decrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [unwrapKey, wrapKey, decrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [unwrapKey, decrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [wrapKey, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [unwrapKey, wrapKey, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [unwrapKey, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [decrypt, encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [wrapKey, decrypt, encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [unwrapKey, wrapKey, decrypt, encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [unwrapKey, decrypt, encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [wrapKey, encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [unwrapKey, wrapKey, encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [unwrapKey, encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [decrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [wrapKey, decrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [unwrapKey, wrapKey, decrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [unwrapKey, decrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [wrapKey, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [unwrapKey, wrapKey, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [unwrapKey, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [decrypt, encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [wrapKey, decrypt, encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [unwrapKey, wrapKey, decrypt, encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [unwrapKey, decrypt, encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [wrapKey, encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [unwrapKey, wrapKey, encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [unwrapKey, encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [decrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [wrapKey, decrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [unwrapKey, wrapKey, decrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [unwrapKey, decrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [wrapKey, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [unwrapKey, wrapKey, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [unwrapKey, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey, decapsulateBits])
   assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [sign])
   assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
@@ -272,6 +408,142 @@ Found 414 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey, deriveBits])
   assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [decrypt, encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [wrapKey, decrypt, encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [unwrapKey, wrapKey, decrypt, encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [unwrapKey, decrypt, encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [wrapKey, encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [unwrapKey, wrapKey, encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [unwrapKey, encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [decrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [wrapKey, decrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [unwrapKey, wrapKey, decrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [unwrapKey, decrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [wrapKey, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [unwrapKey, wrapKey, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [unwrapKey, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [decrypt, encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [wrapKey, decrypt, encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [unwrapKey, wrapKey, decrypt, encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [unwrapKey, decrypt, encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [wrapKey, encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [unwrapKey, wrapKey, encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [unwrapKey, encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [decrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [wrapKey, decrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [unwrapKey, wrapKey, decrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [unwrapKey, decrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [wrapKey, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [unwrapKey, wrapKey, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [unwrapKey, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [decrypt, encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [wrapKey, decrypt, encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [unwrapKey, wrapKey, decrypt, encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [unwrapKey, decrypt, encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [wrapKey, encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [unwrapKey, wrapKey, encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [unwrapKey, encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [decrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [wrapKey, decrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [unwrapKey, wrapKey, decrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [unwrapKey, decrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [wrapKey, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [unwrapKey, wrapKey, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [unwrapKey, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [decrypt, encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [wrapKey, decrypt, encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [unwrapKey, wrapKey, decrypt, encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [unwrapKey, decrypt, encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [wrapKey, encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [unwrapKey, wrapKey, encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [unwrapKey, encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [decrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [wrapKey, decrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [unwrapKey, wrapKey, decrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [unwrapKey, decrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [wrapKey, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [unwrapKey, wrapKey, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [unwrapKey, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 192, name: AES-OCB}, true, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [sign])
   assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [encrypt, sign])
@@ -407,6 +679,142 @@ Found 414 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [unwrapKey, deriveBits])
   assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [decrypt, encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [wrapKey, decrypt, encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [unwrapKey, wrapKey, decrypt, encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [unwrapKey, decrypt, encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [wrapKey, encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [unwrapKey, wrapKey, encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [unwrapKey, encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [decrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [wrapKey, decrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [unwrapKey, wrapKey, decrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [unwrapKey, decrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [wrapKey, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [unwrapKey, wrapKey, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [unwrapKey, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [decrypt, encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [wrapKey, decrypt, encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [unwrapKey, wrapKey, decrypt, encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [unwrapKey, decrypt, encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [wrapKey, encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [unwrapKey, wrapKey, encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [unwrapKey, encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [decrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [wrapKey, decrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [unwrapKey, wrapKey, decrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [unwrapKey, decrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [wrapKey, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [unwrapKey, wrapKey, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [unwrapKey, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [decrypt, encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [wrapKey, decrypt, encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [unwrapKey, wrapKey, decrypt, encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [unwrapKey, decrypt, encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [wrapKey, encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [unwrapKey, wrapKey, encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [unwrapKey, encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [decrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [wrapKey, decrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [unwrapKey, wrapKey, decrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [unwrapKey, decrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [wrapKey, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [unwrapKey, wrapKey, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [unwrapKey, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [decrypt, encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [wrapKey, decrypt, encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [unwrapKey, wrapKey, decrypt, encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [unwrapKey, decrypt, encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [wrapKey, encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [unwrapKey, wrapKey, encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [unwrapKey, encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [decrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [wrapKey, decrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [unwrapKey, wrapKey, decrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [unwrapKey, decrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [wrapKey, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [unwrapKey, wrapKey, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [unwrapKey, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: AES-OCB}, true, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey, decapsulateBits])
   assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad algorithm property: generateKey({length: 64, name: AES-OCB}, false, [encrypt])
   assert_equals: Bad algorithm property not supported expected "OperationError" but got "NotSupportedError"

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] view timeline inset as string
+  assert_throws_js: function "() => {\n    new ViewTimeline({\n      subject: target,\n      inset: "1em 2em"\n    });\n  }" did not throw
+Harness: the test ran to completion.
+

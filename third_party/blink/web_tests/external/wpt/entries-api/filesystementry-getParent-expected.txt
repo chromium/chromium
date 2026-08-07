@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] getParent() on a root-level file entry returns the root directory
+  Cannot read properties of null (reading 'getParent')
+[FAIL] getParent() on the root directory returns the root itself
+  Cannot read properties of null (reading 'filesystem')
+Harness: the test ran to completion.
+

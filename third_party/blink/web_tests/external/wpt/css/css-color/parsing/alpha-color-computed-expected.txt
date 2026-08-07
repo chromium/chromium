@@ -1,0 +1,33 @@
+This is a testharness.js-based test.
+[FAIL] Property color value 'alpha(from red / 0.5)'
+  assert_equals: expected "color(srgb 1 0 0 / 0.5)" but got "rgba(255, 0, 0, 0.5)"
+[FAIL] Property color value 'alpha(from blue / 0)'
+  assert_equals: expected "color(srgb 0 0 1 / 0)" but got "rgba(0, 0, 255, 0)"
+[FAIL] Property color value 'alpha(from rebeccapurple / 1)'
+  assert_equals: expected "color(srgb 0.4 0.2 0.6)" but got "rgb(102, 51, 153)"
+[FAIL] Property color value 'alpha(from red / 50%)'
+  assert_equals: expected "color(srgb 1 0 0 / 0.5)" but got "rgba(255, 0, 0, 0.5)"
+[FAIL] Property color value 'alpha(from red / 0%)'
+  assert_equals: expected "color(srgb 1 0 0 / 0)" but got "rgba(255, 0, 0, 0)"
+[FAIL] Property color value 'alpha(from red)'
+  assert_equals: expected "color(srgb 1 0 0)" but got "rgb(255, 0, 0)"
+[FAIL] Property color value 'alpha(from rgba(255, 0, 0, 0.3))'
+  assert_equals: expected "color(srgb 1 0 0 / 0.3)" but got "rgba(255, 0, 0, 0.3)"
+[FAIL] Property color value 'alpha(from red / 2)'
+  assert_equals: expected "color(srgb 1 0 0)" but got "rgb(255, 0, 0)"
+[FAIL] Property color value 'alpha(from red / -1)'
+  assert_equals: expected "color(srgb 1 0 0 / 0)" but got "rgba(255, 0, 0, 0)"
+[FAIL] Property color value 'alpha(from rgba(255, 0, 0, 0.3) / 0.8)'
+  assert_equals: expected "color(srgb 1 0 0 / 0.8)" but got "rgba(255, 0, 0, 0.8)"
+[FAIL] Property color value 'alpha(from rgba(255, 0, 0, 0.8) / calc(alpha + 0.1))'
+  assert_equals: expected "color(srgb 1 0 0 / 0.9)" but got "rgba(255, 0, 0, 0.9)"
+[FAIL] Property color value 'alpha(from rebeccapurple / calc(alpha / 1))'
+  assert_equals: expected "color(srgb 0.4 0.2 0.6)" but got "rgb(102, 51, 153)"
+[FAIL] Property color value 'alpha(from alpha(from red / 0.5) / calc(alpha + 0.25))'
+  assert_equals: expected "color(srgb 1 0 0 / 0.75)" but got "rgba(255, 0, 0, 0.75)"
+[FAIL] Property color value 'alpha(from alpha(from rebeccapurple / 0%) / 100%)'
+  assert_equals: expected "color(srgb 0.4 0.2 0.6)" but got "rgb(102, 51, 153)"
+[FAIL] Property color value 'alpha(from rgb(from red r g b) / 0.8)'
+  assert_equals: expected "color(srgb 1 0 0 / 0.8)" but got "rgba(255, 0, 0, 0.8)"
+Harness: the test ran to completion.
+

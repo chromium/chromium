@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] rules=rows gives the cells the expected border
+  assert_equals: td: border-block-start-style expected "none" but got "solid"
+[FAIL] rules=rows gives the rows the expected border
+  assert_equals: tbody > tr: border-block-start-style expected "solid" but got "none"
+[FAIL] rules=rows applies to a row that is a direct child of the table
+  assert_equals: table > tr: border-block-start-style expected "solid" but got "none"
+[FAIL] rules=ROWS is matched ASCII case-insensitively
+  assert_equals: tbody > tr: border-block-start-style expected "solid" but got "none"
+[FAIL] rules=rows follows the writing mode: the rule is on the row's block edges
+  assert_equals: tbody > tr in vertical-rl: border-block-start-style expected "solid" but got "none"
+[FAIL] rules=cols follows the writing mode: the rule is on the cells' inline edges
+  assert_equals: td in vertical-rl: border-block-start-style expected "none" but got "solid"
+[FAIL] rules=groups follows the writing mode: the rules are on the groups' block and inline edges
+  assert_equals: tbody in vertical-rl: border-block-start-style expected "solid" but got "none"
+Harness: the test ran to completion.
+

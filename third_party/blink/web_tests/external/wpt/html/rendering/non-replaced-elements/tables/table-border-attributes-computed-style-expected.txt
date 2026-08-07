@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] adding bordercolor does not change which borders exist
+  assert_equals: table with border=1 and bordercolor: border-top-style expected "outset" but got "solid"
+[FAIL] setting rules=rows leaves the cells with no border
+  assert_equals: cell of a table with rules=rows: border-top-width expected "0px" but got "1px"
+[FAIL] setting rules=rows puts the rule on the row
+  assert_equals: row border-block-start-style expected "solid" but got "none"
+Harness: the test ran to completion.
+

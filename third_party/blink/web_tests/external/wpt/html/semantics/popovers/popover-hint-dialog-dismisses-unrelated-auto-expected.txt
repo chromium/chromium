@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] dialog.show() nested in a hint dismisses unrelated auto popovers but keeps the ancestor hint
+  assert_false: the unrelated auto must be dismissed expected false got true
+[FAIL] dialog.showModal() nested in a hint dismisses unrelated auto popovers but keeps the ancestor hint
+  assert_false: the unrelated auto must be dismissed expected false got true
+Harness: the test ran to completion.
+

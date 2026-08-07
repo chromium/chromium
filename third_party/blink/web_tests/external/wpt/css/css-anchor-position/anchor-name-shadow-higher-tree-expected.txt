@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] anchor() inside a shadow tree can reference an anchor-name defined in a higher tree
+  assert_equals: positioned element inside shadow tree should resolve anchor-name from higher tree expected 258 but got 37
+Harness: the test ran to completion.
+

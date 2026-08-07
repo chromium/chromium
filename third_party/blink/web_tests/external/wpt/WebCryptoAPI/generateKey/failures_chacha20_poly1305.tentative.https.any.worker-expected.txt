@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 140 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 276 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [sign])
   assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [encrypt, sign])
@@ -136,6 +136,142 @@ Found 140 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey, deriveBits])
   assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [decrypt, encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [wrapKey, decrypt, encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [unwrapKey, wrapKey, decrypt, encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [unwrapKey, decrypt, encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [wrapKey, encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [unwrapKey, wrapKey, encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [unwrapKey, encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [decrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [wrapKey, decrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [unwrapKey, wrapKey, decrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [unwrapKey, decrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [wrapKey, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [unwrapKey, wrapKey, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [unwrapKey, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [decrypt, encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [wrapKey, decrypt, encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [unwrapKey, wrapKey, decrypt, encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [unwrapKey, decrypt, encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [wrapKey, encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [unwrapKey, wrapKey, encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [unwrapKey, encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [decrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [wrapKey, decrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [unwrapKey, wrapKey, decrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [unwrapKey, decrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [wrapKey, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [unwrapKey, wrapKey, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [unwrapKey, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [decrypt, encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [wrapKey, decrypt, encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [unwrapKey, wrapKey, decrypt, encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [unwrapKey, decrypt, encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [wrapKey, encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [unwrapKey, wrapKey, encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [unwrapKey, encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [decrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [wrapKey, decrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [unwrapKey, wrapKey, decrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [unwrapKey, decrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [wrapKey, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [unwrapKey, wrapKey, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [unwrapKey, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [decrypt, encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [wrapKey, decrypt, encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [unwrapKey, wrapKey, decrypt, encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [unwrapKey, decrypt, encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [wrapKey, encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [unwrapKey, wrapKey, encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [unwrapKey, encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [decrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [wrapKey, decrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [unwrapKey, wrapKey, decrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [unwrapKey, decrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [wrapKey, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [unwrapKey, wrapKey, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [unwrapKey, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ChaCha20-Poly1305, true, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [sign])
   assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [encrypt, sign])
@@ -271,6 +407,142 @@ Found 140 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [unwrapKey, deriveBits])
   assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [decrypt, encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [wrapKey, decrypt, encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [unwrapKey, wrapKey, decrypt, encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [unwrapKey, decrypt, encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [wrapKey, encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [unwrapKey, wrapKey, encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [unwrapKey, encrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [decrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [wrapKey, decrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [unwrapKey, wrapKey, decrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [unwrapKey, decrypt, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [wrapKey, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [unwrapKey, wrapKey, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [unwrapKey, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [decrypt, encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [wrapKey, decrypt, encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [unwrapKey, wrapKey, decrypt, encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [unwrapKey, decrypt, encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [wrapKey, encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [unwrapKey, wrapKey, encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [unwrapKey, encrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [decrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [wrapKey, decrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [unwrapKey, wrapKey, decrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [unwrapKey, decrypt, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [wrapKey, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [unwrapKey, wrapKey, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [unwrapKey, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [decrypt, encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [wrapKey, decrypt, encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [unwrapKey, wrapKey, decrypt, encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [unwrapKey, decrypt, encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [wrapKey, encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [unwrapKey, wrapKey, encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [unwrapKey, encrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [decrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [wrapKey, decrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [unwrapKey, wrapKey, decrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [unwrapKey, decrypt, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [wrapKey, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [unwrapKey, wrapKey, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [unwrapKey, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [decrypt, encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [wrapKey, decrypt, encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [unwrapKey, wrapKey, decrypt, encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [unwrapKey, decrypt, encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [wrapKey, encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [unwrapKey, wrapKey, encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [unwrapKey, encrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [decrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [wrapKey, decrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [unwrapKey, wrapKey, decrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [unwrapKey, decrypt, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [wrapKey, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [unwrapKey, wrapKey, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [unwrapKey, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ChaCha20-Poly1305}, true, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey, decapsulateBits])
   assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Empty usages: generateKey(ChaCha20-Poly1305, false, [])
   assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"

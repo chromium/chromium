@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] Multiplying two types with different non-null percent hints throws TypeError
+  CSSMathSum is not defined
+[FAIL] Multiplying two types with same base types adds exponents
+  CSSUnitValue is not defined
+[FAIL] Multiplying two types with different base types adds exponents
+  CSSUnitValue is not defined
+[FAIL] Multiplying two types respects the sign of the exponents
+  CSSUnitValue is not defined
+[FAIL] Multiplying a type with no exponents is a no-op
+  CSSUnitValue is not defined
+[FAIL] Multiplying a type with percent hint applies the percent hint
+  CSSMathSum is not defined
+[FAIL] Multiplying two types with same percent hint applies the percent hint
+  CSSMathSum is not defined
+Harness: the test ran to completion.
+

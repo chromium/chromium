@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 520 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 760 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Bad usages: importKey(spki, Ed448, true, [encrypt])
   assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: importKey(spki, Ed448, false, [encrypt])
@@ -83,6 +83,54 @@ Found 520 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Bad usages: importKey(spki, Ed448, true, [verify, verify, deriveBits])
   assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: importKey(spki, Ed448, false, [verify, verify, deriveBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, Ed448, true, [encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, Ed448, false, [encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, Ed448, true, [verify, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, Ed448, false, [verify, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, Ed448, true, [verify, verify, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, Ed448, false, [verify, verify, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, Ed448, true, [encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, Ed448, false, [encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, Ed448, true, [verify, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, Ed448, false, [verify, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, Ed448, true, [verify, verify, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, Ed448, false, [verify, verify, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, Ed448, true, [decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, Ed448, false, [decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, Ed448, true, [verify, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, Ed448, false, [verify, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, Ed448, true, [verify, verify, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, Ed448, false, [verify, verify, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, Ed448, true, [decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, Ed448, false, [decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, Ed448, true, [verify, decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, Ed448, false, [verify, decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, Ed448, true, [verify, verify, decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, Ed448, false, [verify, verify, decapsulateBits])
   assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: importKey(pkcs8, Ed448, true, [encrypt])
   assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
@@ -168,6 +216,54 @@ Found 520 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: importKey(pkcs8, Ed448, false, [sign, sign, deriveBits])
   assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, Ed448, true, [encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, Ed448, false, [encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, Ed448, true, [sign, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, Ed448, false, [sign, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, Ed448, true, [sign, sign, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, Ed448, false, [sign, sign, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, Ed448, true, [encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, Ed448, false, [encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, Ed448, true, [sign, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, Ed448, false, [sign, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, Ed448, true, [sign, sign, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, Ed448, false, [sign, sign, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, Ed448, true, [decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, Ed448, false, [decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, Ed448, true, [sign, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, Ed448, false, [sign, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, Ed448, true, [sign, sign, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, Ed448, false, [sign, sign, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, Ed448, true, [decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, Ed448, false, [decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, Ed448, true, [sign, decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, Ed448, false, [sign, decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, Ed448, true, [sign, sign, decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, Ed448, false, [sign, sign, decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: importKey(raw, Ed448, true, [encrypt])
   assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: importKey(raw, Ed448, false, [encrypt])
@@ -251,6 +347,54 @@ Found 520 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Bad usages: importKey(raw, Ed448, true, [verify, verify, deriveBits])
   assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: importKey(raw, Ed448, false, [verify, verify, deriveBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, Ed448, true, [encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, Ed448, false, [encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, Ed448, true, [verify, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, Ed448, false, [verify, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, Ed448, true, [verify, verify, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, Ed448, false, [verify, verify, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, Ed448, true, [encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, Ed448, false, [encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, Ed448, true, [verify, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, Ed448, false, [verify, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, Ed448, true, [verify, verify, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, Ed448, false, [verify, verify, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, Ed448, true, [decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, Ed448, false, [decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, Ed448, true, [verify, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, Ed448, false, [verify, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, Ed448, true, [verify, verify, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, Ed448, false, [verify, verify, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, Ed448, true, [decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, Ed448, false, [decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, Ed448, true, [verify, decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, Ed448, false, [verify, decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, Ed448, true, [verify, verify, decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, Ed448, false, [verify, verify, decapsulateBits])
   assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: importKey(jwk(private), Ed448, true, [encrypt])
   assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
@@ -336,6 +480,54 @@ Found 520 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: importKey(jwk(private), Ed448, false, [sign, sign, deriveBits])
   assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), Ed448, true, [encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), Ed448, false, [encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), Ed448, true, [sign, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), Ed448, false, [sign, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), Ed448, true, [sign, sign, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), Ed448, false, [sign, sign, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), Ed448, true, [encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), Ed448, false, [encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), Ed448, true, [sign, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), Ed448, false, [sign, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), Ed448, true, [sign, sign, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), Ed448, false, [sign, sign, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), Ed448, true, [decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), Ed448, false, [decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), Ed448, true, [sign, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), Ed448, false, [sign, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), Ed448, true, [sign, sign, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), Ed448, false, [sign, sign, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), Ed448, true, [decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), Ed448, false, [decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), Ed448, true, [sign, decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), Ed448, false, [sign, decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), Ed448, true, [sign, sign, decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), Ed448, false, [sign, sign, decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: importKey(jwk (public) , Ed448, true, [encrypt])
   assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: importKey(jwk (public) , Ed448, false, [encrypt])
@@ -419,6 +611,54 @@ Found 520 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Bad usages: importKey(jwk (public) , Ed448, true, [verify, verify, deriveBits])
   assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: importKey(jwk (public) , Ed448, false, [verify, verify, deriveBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , Ed448, true, [encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , Ed448, false, [encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , Ed448, true, [verify, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , Ed448, false, [verify, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , Ed448, true, [verify, verify, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , Ed448, false, [verify, verify, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , Ed448, true, [encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , Ed448, false, [encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , Ed448, true, [verify, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , Ed448, false, [verify, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , Ed448, true, [verify, verify, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , Ed448, false, [verify, verify, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , Ed448, true, [decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , Ed448, false, [decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , Ed448, true, [verify, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , Ed448, false, [verify, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , Ed448, true, [verify, verify, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , Ed448, false, [verify, verify, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , Ed448, true, [decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , Ed448, false, [decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , Ed448, true, [verify, decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , Ed448, false, [verify, decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , Ed448, true, [verify, verify, decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , Ed448, false, [verify, verify, decapsulateBits])
   assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: importKey(spki, {name: Ed448}, true, [encrypt])
   assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
@@ -504,6 +744,54 @@ Found 520 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: importKey(spki, {name: Ed448}, false, [verify, verify, deriveBits])
   assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, {name: Ed448}, true, [encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, {name: Ed448}, false, [encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, {name: Ed448}, true, [verify, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, {name: Ed448}, false, [verify, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, {name: Ed448}, true, [verify, verify, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, {name: Ed448}, false, [verify, verify, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, {name: Ed448}, true, [encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, {name: Ed448}, false, [encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, {name: Ed448}, true, [verify, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, {name: Ed448}, false, [verify, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, {name: Ed448}, true, [verify, verify, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, {name: Ed448}, false, [verify, verify, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, {name: Ed448}, true, [decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, {name: Ed448}, false, [decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, {name: Ed448}, true, [verify, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, {name: Ed448}, false, [verify, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, {name: Ed448}, true, [verify, verify, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, {name: Ed448}, false, [verify, verify, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, {name: Ed448}, true, [decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, {name: Ed448}, false, [decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, {name: Ed448}, true, [verify, decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, {name: Ed448}, false, [verify, decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, {name: Ed448}, true, [verify, verify, decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(spki, {name: Ed448}, false, [verify, verify, decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: importKey(pkcs8, {name: Ed448}, true, [encrypt])
   assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: importKey(pkcs8, {name: Ed448}, false, [encrypt])
@@ -587,6 +875,54 @@ Found 520 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Bad usages: importKey(pkcs8, {name: Ed448}, true, [sign, sign, deriveBits])
   assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: importKey(pkcs8, {name: Ed448}, false, [sign, sign, deriveBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, {name: Ed448}, true, [encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, {name: Ed448}, false, [encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, {name: Ed448}, true, [sign, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, {name: Ed448}, false, [sign, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, {name: Ed448}, true, [sign, sign, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, {name: Ed448}, false, [sign, sign, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, {name: Ed448}, true, [encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, {name: Ed448}, false, [encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, {name: Ed448}, true, [sign, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, {name: Ed448}, false, [sign, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, {name: Ed448}, true, [sign, sign, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, {name: Ed448}, false, [sign, sign, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, {name: Ed448}, true, [decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, {name: Ed448}, false, [decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, {name: Ed448}, true, [sign, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, {name: Ed448}, false, [sign, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, {name: Ed448}, true, [sign, sign, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, {name: Ed448}, false, [sign, sign, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, {name: Ed448}, true, [decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, {name: Ed448}, false, [decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, {name: Ed448}, true, [sign, decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, {name: Ed448}, false, [sign, decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, {name: Ed448}, true, [sign, sign, decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(pkcs8, {name: Ed448}, false, [sign, sign, decapsulateBits])
   assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: importKey(raw, {name: Ed448}, true, [encrypt])
   assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
@@ -672,6 +1008,54 @@ Found 520 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: importKey(raw, {name: Ed448}, false, [verify, verify, deriveBits])
   assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, {name: Ed448}, true, [encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, {name: Ed448}, false, [encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, {name: Ed448}, true, [verify, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, {name: Ed448}, false, [verify, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, {name: Ed448}, true, [verify, verify, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, {name: Ed448}, false, [verify, verify, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, {name: Ed448}, true, [encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, {name: Ed448}, false, [encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, {name: Ed448}, true, [verify, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, {name: Ed448}, false, [verify, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, {name: Ed448}, true, [verify, verify, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, {name: Ed448}, false, [verify, verify, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, {name: Ed448}, true, [decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, {name: Ed448}, false, [decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, {name: Ed448}, true, [verify, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, {name: Ed448}, false, [verify, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, {name: Ed448}, true, [verify, verify, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, {name: Ed448}, false, [verify, verify, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, {name: Ed448}, true, [decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, {name: Ed448}, false, [decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, {name: Ed448}, true, [verify, decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, {name: Ed448}, false, [verify, decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, {name: Ed448}, true, [verify, verify, decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(raw, {name: Ed448}, false, [verify, verify, decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: importKey(jwk(private), {name: Ed448}, true, [encrypt])
   assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: importKey(jwk(private), {name: Ed448}, false, [encrypt])
@@ -756,6 +1140,54 @@ Found 520 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: importKey(jwk(private), {name: Ed448}, false, [sign, sign, deriveBits])
   assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), {name: Ed448}, true, [encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), {name: Ed448}, false, [encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), {name: Ed448}, true, [sign, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), {name: Ed448}, false, [sign, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), {name: Ed448}, true, [sign, sign, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), {name: Ed448}, false, [sign, sign, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), {name: Ed448}, true, [encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), {name: Ed448}, false, [encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), {name: Ed448}, true, [sign, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), {name: Ed448}, false, [sign, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), {name: Ed448}, true, [sign, sign, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), {name: Ed448}, false, [sign, sign, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), {name: Ed448}, true, [decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), {name: Ed448}, false, [decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), {name: Ed448}, true, [sign, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), {name: Ed448}, false, [sign, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), {name: Ed448}, true, [sign, sign, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), {name: Ed448}, false, [sign, sign, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), {name: Ed448}, true, [decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), {name: Ed448}, false, [decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), {name: Ed448}, true, [sign, decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), {name: Ed448}, false, [sign, decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), {name: Ed448}, true, [sign, sign, decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk(private), {name: Ed448}, false, [sign, sign, decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: importKey(jwk (public) , {name: Ed448}, true, [encrypt])
   assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: importKey(jwk (public) , {name: Ed448}, false, [encrypt])
@@ -839,6 +1271,54 @@ Found 520 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Bad usages: importKey(jwk (public) , {name: Ed448}, true, [verify, verify, deriveBits])
   assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: importKey(jwk (public) , {name: Ed448}, false, [verify, verify, deriveBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , {name: Ed448}, true, [encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , {name: Ed448}, false, [encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , {name: Ed448}, true, [verify, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , {name: Ed448}, false, [verify, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , {name: Ed448}, true, [verify, verify, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , {name: Ed448}, false, [verify, verify, encapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , {name: Ed448}, true, [encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , {name: Ed448}, false, [encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , {name: Ed448}, true, [verify, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , {name: Ed448}, false, [verify, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , {name: Ed448}, true, [verify, verify, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , {name: Ed448}, false, [verify, verify, encapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , {name: Ed448}, true, [decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , {name: Ed448}, false, [decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , {name: Ed448}, true, [verify, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , {name: Ed448}, false, [verify, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , {name: Ed448}, true, [verify, verify, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , {name: Ed448}, false, [verify, verify, decapsulateKey])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , {name: Ed448}, true, [decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , {name: Ed448}, false, [decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , {name: Ed448}, true, [verify, decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , {name: Ed448}, false, [verify, decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , {name: Ed448}, true, [verify, verify, decapsulateBits])
+  assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: importKey(jwk (public) , {name: Ed448}, false, [verify, verify, decapsulateBits])
   assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Empty usages: importKey(pkcs8, Ed448, true, [])
   assert_equals: Empty usages not supported. expected "SyntaxError" but got "NotSupportedError"

@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Negating a type with empty map returns the empty map
+  CSSMathNegate is not defined
+[FAIL] Negating a type returns the same type
+  CSSMathNegate is not defined
+Harness: the test ran to completion.
+

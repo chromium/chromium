@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] Creating a type from "number" returns {}
+  CSSUnitValue is not defined
+[FAIL] Creating a type from "percent" returns { percent: 1 }
+  CSSUnitValue is not defined
+[FAIL] Creating a type from <length> returns { length: 1 }
+  CSSUnitValue is not defined
+[FAIL] Creating a type from <angle> returns { angle: 1 }
+  CSSUnitValue is not defined
+[FAIL] Creating a type from <time> returns { time: 1 }
+  CSSUnitValue is not defined
+[FAIL] Creating a type from <frequency> returns { frequency: 1 }
+  CSSUnitValue is not defined
+[FAIL] Creating a type from <resolution> returns { resolution: 1 }
+  CSSUnitValue is not defined
+[FAIL] Creating a type from <flex> returns { flex: 1 }
+  CSSUnitValue is not defined
+Harness: the test ran to completion.
+

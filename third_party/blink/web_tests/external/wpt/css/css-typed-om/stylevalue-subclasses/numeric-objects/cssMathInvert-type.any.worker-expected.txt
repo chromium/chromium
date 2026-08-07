@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Inverting a type with empty map returns the empty map
+  CSSMathInvert is not defined
+[FAIL] Inverting a type negates all its exponents
+  CSSMathProduct is not defined
+[FAIL] Inverting an inverted type returns the original type
+  CSSUnitValue is not defined
+Harness: the test ran to completion.
+

@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] rotate="45" applies a constant 45 degree rotation
+  assert_approx_equals: angle: matrix a expected 0.7071067811865476 +/- 0.0001 but got 1
+[FAIL] rotate="-90" applies a constant -90 degree rotation
+  assert_approx_equals: angle-negative: matrix a expected 6.123233995736766e-17 +/- 0.0001 but got 1
+[FAIL] rotate="30" applies a constant 30 degree rotation to a path animation
+  assert_approx_equals: angle-path: matrix a expected 0.8660254037844387 +/- 0.0001 but got 1
+Harness: the test ran to completion.
+

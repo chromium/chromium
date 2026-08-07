@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 52 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 84 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Bad usages: generateKey(Ed448, true, [encrypt])
   assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: generateKey(Ed448, true, [sign, encrypt])
@@ -48,6 +48,38 @@ Found 52 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: generateKey(Ed448, true, [sign, verify, sign, sign, verify, deriveBits])
   assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(Ed448, true, [encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(Ed448, true, [sign, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(Ed448, true, [verify, sign, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(Ed448, true, [sign, verify, sign, sign, verify, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(Ed448, true, [encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(Ed448, true, [sign, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(Ed448, true, [verify, sign, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(Ed448, true, [sign, verify, sign, sign, verify, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(Ed448, true, [decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(Ed448, true, [sign, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(Ed448, true, [verify, sign, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(Ed448, true, [sign, verify, sign, sign, verify, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(Ed448, true, [decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(Ed448, true, [sign, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(Ed448, true, [verify, sign, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(Ed448, true, [sign, verify, sign, sign, verify, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: generateKey({name: Ed448}, true, [encrypt])
   assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: generateKey({name: Ed448}, true, [sign, encrypt])
@@ -95,6 +127,38 @@ Found 52 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Bad usages: generateKey({name: Ed448}, true, [verify, sign, deriveBits])
   assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: generateKey({name: Ed448}, true, [sign, verify, sign, sign, verify, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: Ed448}, true, [encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: Ed448}, true, [sign, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: Ed448}, true, [verify, sign, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: Ed448}, true, [sign, verify, sign, sign, verify, encapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: Ed448}, true, [encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: Ed448}, true, [sign, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: Ed448}, true, [verify, sign, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: Ed448}, true, [sign, verify, sign, sign, verify, encapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: Ed448}, true, [decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: Ed448}, true, [sign, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: Ed448}, true, [verify, sign, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: Ed448}, true, [sign, verify, sign, sign, verify, decapsulateKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: Ed448}, true, [decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: Ed448}, true, [sign, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: Ed448}, true, [verify, sign, decapsulateBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: Ed448}, true, [sign, verify, sign, sign, verify, decapsulateBits])
   assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Empty usages: generateKey(Ed448, false, [])
   assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"

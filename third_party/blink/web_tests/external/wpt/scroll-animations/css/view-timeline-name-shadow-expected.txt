@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Outer animation can not see view timeline defined by :host
+  assert_equals: expected "x" but got "y"
+[FAIL] Outer animation can not see view timeline defined by ::slotted
+  assert_equals: expected "x" but got "y"
+Harness: the test ran to completion.
+

@@ -2715,6 +2715,14 @@ crbug.com/536952792 external/wpt/html/semantics/scripting-1/the-script-element/m
 crbug.com/540322301 external/wpt/webaudio/the-audio-api/the-oscillatornode-interface/sub-sample-start.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+[ Win ] external/wpt/WebCryptoAPI/generateKey/failures_kmac.tentative.https.any.html [ Pass Timeout ]
+external/wpt/css/css-font-loading/font-face-width-descriptor-aliasing.html [ Failure ]
+external/wpt/css/css-scroll-snap/snap-after-relayout/multiple-aligned-targets/prefer-first-in-flat-tree-order.html [ Timeout ]
+external/wpt/html/semantics/forms/form-submission-0/form-submit-action.html [ Crash Timeout ]
+external/wpt/html/semantics/scripting-1/the-script-element/text-module/repeated-imports.any.html [ Failure ]
+external/wpt/html/semantics/scripting-1/the-script-element/text-module/repeated-imports.any.worker.html [ Failure ]
+external/wpt/html/semantics/scripting-1/the-script-element/text-module/repeated-imports.any.sharedworker.html [ Failure ]
+virtual/fragmented-oof-in-cb/external/wpt/css/css-multicol/crashtests/nested-multicol-spanner-reframe.html [ Timeout ]
 crbug.com/540322301 [ Win ] external/wpt/webaudio/the-audio-api/the-audiobuffersourcenode-interface/audiobuffersource-output-channel-count.html [ Pass Timeout ]
 crbug.com/538228192 external/wpt/fetch/compression-dictionary/compressed-large-resources-002.tentative.https.html [ Skip Timeout ]
 crbug.com/538228192 virtual/produce-compile-hints/external/wpt/fetch/compression-dictionary/compressed-large-resources-002.tentative.https.html [ Skip Timeout ]

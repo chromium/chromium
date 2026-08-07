@@ -1,0 +1,41 @@
+This is a testharness.js-based test.
+[FAIL] CSSUnitValue is a CSSNumericValue and a CSSStyleValue
+  CSSUnitValue is not defined
+[FAIL] Converting a CSSUnitValue to an invalid unit throws SyntaxError
+  assert_throws_dom: function "() => CSS.px(1).to('lemon')" threw object "ReferenceError: CSS is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+[FAIL] Converting a CSSNumericValue with invalid sum value throws TypeError
+  assert_throws_js: function "() => new CSSMathMax(1, CSS.px(1)).to('number')" threw object "ReferenceError: CSSMathMax is not defined" ("ReferenceError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] Converting a CSSNumericValue with sum value containing more than one value throws TypeError
+  assert_throws_js: function "() => new CSSMathProduct(CSS.px(1), CSS.s(1)).to('number')" threw object "ReferenceError: CSSMathProduct is not defined" ("ReferenceError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] Converting a CSSUnitValue to an incompatible unit throws TypeError
+  assert_throws_js: function "() => CSS.px(1).to('number')" threw object "ReferenceError: CSS is not defined" ("ReferenceError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] Converting a CSSUnitValue to its own unit returns itself
+  CSS is not defined
+[FAIL] Converting a CSSUnitValue to its canonical unit returns correct value
+  CSS is not defined
+[FAIL] Converting a CSSUnitValue to a compatible unit returns correct value
+  CSS is not defined
+[FAIL] Converting a CSSMathSum to a single unit adds the values
+  CSSMathSum is not defined
+[FAIL] Converting a CSSMathProduct to a single unit multiplies the values
+  CSSMathProduct is not defined
+[FAIL] Converting a CSSMathMin to a single unit finds the min value
+  CSSMathMin is not defined
+[FAIL] Converting a CSSMathMin to a single unit with different units throws a TypeError
+  assert_throws_js: function "() => new CSSMathMin(CSS.px(2), CSS.s(3)).to('px')" threw object "ReferenceError: CSSMathMin is not defined" ("ReferenceError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] Converting a CSSMathMax to a single unit finds the max value
+  CSSMathMax is not defined
+[FAIL] Converting a CSSMathMax to a single unit with different units throws a TypeError
+  assert_throws_js: function "() => new CSSMathMax(CSS.px(2), CSS.s(3)).to('px')" threw object "ReferenceError: CSSMathMax is not defined" ("ReferenceError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] Converting a CSSMathClamp to a single unit returns the clamped value
+  CSSMathClamp is not defined
+[FAIL] Converting a CSSMathClamp to a single unit with different units throws a TypeError
+  assert_throws_js: function "() => new CSSMathClamp(CSS.px(2), CSS.s(3), CSS.px(4)).to('px')" threw object "ReferenceError: CSSMathClamp is not defined" ("ReferenceError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] Converting a CSSMathNegate to a single unit negates its value
+  CSSMathNegate is not defined
+[FAIL] Converting a CSSMathInvert to a single unit inverts its value and units
+  CSSMathProduct is not defined
+[FAIL] Converting a complex expression to a single unit
+  CSSMathSum is not defined
+Harness: the test ran to completion.
+

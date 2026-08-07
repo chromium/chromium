@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] CSSKeywordValue.value can be updated to a CSS wide keyword
+  CSSKeywordValue is not defined
+[FAIL] CSSKeywordValue.value can be updated to a CSS keyword
+  CSSKeywordValue is not defined
+[FAIL] CSSKeywordValue.value can be updated to an unsupported CSS keyword
+  CSSKeywordValue is not defined
+[FAIL] CSSKeywordValue.value can be updated to a string containing multiple tokens
+  CSSKeywordValue is not defined
+[FAIL] CSSKeywordValue.value can be updated to a unicode string
+  CSSKeywordValue is not defined
+[FAIL] Updating CSSKeywordValue.value with an empty string throws a TypeError
+  CSSKeywordValue is not defined
+Harness: the test ran to completion.
+
