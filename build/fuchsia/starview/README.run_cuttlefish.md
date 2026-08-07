@@ -51,34 +51,15 @@ To run the emulator locally, you must first download the required system image a
      /path/to/packages/uboot/
    ```
 
-4. **Install simg2img (if not already present in PATH)**:
-   The script needs the `simg2img` tool to unsparse the Android super image.
-   On gLinux/Debian/Ubuntu, you can install it via:
-   ```bash
-   sudo apt-get install android-sdk-libsparse-utils
-   ```
-   Alternatively, you can download/place a prebuilt `simg2img` binary under the packages directory:
-   `/path/to/packages/simg2img/bin/simg2img`
-
----
-
-## How to Run
-
-To start the emulator, execute the boot script from the Chromium `src/` directory root, pointing it to the directory containing your prebuilt packages:
-
-```bash
-python3 build/fuchsia/starview/run_cuttlefish.py --packages /path/to/packages/
-```
-
 ### Useful Command Line Arguments
 
 * `--packages <dir>`: Directory containing:
   * `cuttlefish/` subdirectory: Must contain the AOSP guest image ZIP file (e.g. `cf_x86_64_blazer_starnix-img-*.zip`).
   * `uboot/` subdirectory: Must contain the `u-boot.rom` bootloader.
   * Defaults to `../../` (which resolves to the `src/` checkout root when the script is run from `src/out/<build_dir>/` on Swarming).
-* `--simg2img-path <path>`: Optional path to the `simg2img` host utility. If not specified, the script looks under `--packages/simg2img/bin/simg2img` or searches in the host `PATH`.
 * `--adb-port <port>`: The host port to map the guest ADB daemon (port `5555`) to. Defaults to `6520`.
 * `--headless`: Runs QEMU without a graphical window. It defaults to headless if no GUI desktop environment is detected on the host.
+
 
 ---
 

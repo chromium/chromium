@@ -427,6 +427,10 @@ group("gn_all") {
         }
       }
 
+      if (checkout_fuchsia) {
+        deps += [ "//build/fuchsia/starview:run_cuttlefish_test" ]
+      }
+
       if (enable_chrome_android_internal) {
         deps += [ "//clank" ]
       }

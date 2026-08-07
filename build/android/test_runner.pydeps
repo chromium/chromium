@@ -184,6 +184,7 @@ pylib/local/device/local_device_network_environment.py
 pylib/local/device/local_device_test_run.py
 pylib/local/emulator/__init__.py
 pylib/local/emulator/avd.py
+pylib/local/emulator/fuchsia_cuttlefish_emulator_environment.py
 pylib/local/emulator/ini.py
 pylib/local/emulator/local_emulator_environment.py
 pylib/local/emulator/proto/__init__.py

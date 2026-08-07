@@ -44,6 +44,7 @@ gclient_gn_args = [
   'checkout_android_prebuilts_build_tools',
   'checkout_clang_coverage_tools',
   'checkout_copybara',
+  'checkout_fuchsia',
   'checkout_glic_e2e_tests',
   'checkout_ios_webkit',
   'checkout_mutter',

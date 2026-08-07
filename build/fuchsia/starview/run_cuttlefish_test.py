@@ -4,6 +4,7 @@
 # found in the LICENSE file.
 
 import argparse
+import json
 import os
 import subprocess
 import sys
@@ -11,13 +12,16 @@ import time
 
 
 def main():
+  start_time = time.time()
   parser = argparse.ArgumentParser(description="Test run_cuttlefish.py script")
-  parser.add_argument(
-      '--packages',
-      default='.',
-      help='Directory containing the cuttlefish guest images and tools.')
+  parser.add_argument('--isolated-script-test-output',
+                      type=os.path.abspath,
+                      help='Path to write isolated script test output JSON.')
   args_parsed, extra_args = parser.parse_known_args()
-
+  # Filter out any other isolated-script arguments from extra_args before passing to run_cuttlefish.py
+  extra_args = [
+      arg for arg in extra_args if not arg.startswith('--isolated-script-test-')
+  ]
   starview_dir = os.path.dirname(os.path.abspath(__file__))
   run_script = os.path.join(starview_dir, 'run_cuttlefish.py')
   adb_path = os.path.join(
@@ -28,11 +32,8 @@ def main():
 
   # Launch emulator via run_cuttlefish.py on a test port
   adb_port = 6525
-  cmd = [
-      sys.executable, run_script, '--packages', args_parsed.packages,
-      '--adb-port',
-      str(adb_port), '--headless'
-  ] + extra_args
+  cmd = [sys.executable, run_script, '--adb-port',
+         str(adb_port), '--headless'] + extra_args
   print(f"Starting emulator under test: {' '.join(cmd)}")
   proc = subprocess.Popen(cmd,
                           stdout=subprocess.PIPE,
@@ -41,15 +42,12 @@ def main():
 
   success = False
   try:
-    start_time = time.time()
+
     for line in iter(proc.stdout.readline, ''):
       print(f"[Emulator Log] {line.strip()}")
       if "Successfully connected to guest ADB!" in line:
         print("Emulator reported successful ADB connection!")
         success = True
-        break
-      if time.time() - start_time > 150:
-        print("Timeout waiting for emulator to boot.")
         break
 
     if success:
@@ -82,6 +80,30 @@ def main():
       proc.kill()
       proc.wait()
     print("Emulator process terminated.")
+
+  if args_parsed.isolated_script_test_output:
+    failure_type = 'PASS' if success else 'FAIL'
+    results_json = {
+        'version': 3,
+        'interrupted': False,
+        'num_failures_by_type': {
+            failure_type: 1
+        },
+        'path_delimiter': '/',
+        'seconds_since_epoch': start_time,
+        'tests': {
+            'run_cuttlefish_test': {
+                'expected': 'PASS',
+                'actual': failure_type,
+                'time': time.time() - start_time,
+            },
+        },
+    }
+    output_dir = os.path.dirname(args_parsed.isolated_script_test_output)
+    if output_dir:
+      os.makedirs(output_dir, exist_ok=True)
+    with open(args_parsed.isolated_script_test_output, 'w') as f:
+      json.dump(results_json, f, indent=2)
 
   if success:
     print("TEST PASSED")

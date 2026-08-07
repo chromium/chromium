@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/fuchsia/generate_runner_scripts.gni")
 import("//build/config/python.gni")
 
 python_library("run_cuttlefish") {
@@ -12,16 +11,28 @@ python_library("run_cuttlefish") {
     "avbtool.py",
     "cvd_avb_testkey_rsa4096.pem",
     "cvd_rsa4096.avbpubkey",
+    "simg2img.py",
     "README.run_cuttlefish.md",
+
     "//third_party/android_sdk/public/platform-tools/adb",
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/",
+
+    # TODO(crbug.com/517946352): We use host_cpu directly here to avoid
+    # importing generate_runner_scripts.gni (which asserts is_fuchsia). However,
+    # this means we cannot run this on arm64 hosts without addressing the
+    # difference between test_host_cpu and host_cpu.
+    "//third_party/fuchsia-sdk/sdk/tools/${host_cpu}/",
   ]
 }
 
 python_library("run_cuttlefish_test") {
   testonly = true
   pydeps_file = "run_cuttlefish_test.pydeps"
-  deps = [ ":run_cuttlefish" ]
+  deps = [
+    ":run_cuttlefish",
+
+    # logdog_wrapper.py (used when running on Android builders) imports devil.
+    "//third_party/catapult/devil",
+  ]
   data = [
     "//.vpython3",
     "run_cuttlefish_test.py",
