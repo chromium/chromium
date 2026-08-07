@@ -15,7 +15,6 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/values.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "components/account_id/account_id.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
@@ -59,14 +58,15 @@ const char kTokenBootstrapEndPoint[] =
 ArcBackgroundAuthCodeFetcher::ArcBackgroundAuthCodeFetcher(
     PrefService* local_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    Profile* profile,
-    const CoreAccountId& account_id,
+    const AccountId& account_id,
+    signin::IdentityManager* identity_manager,
+    const CoreAccountId& core_account_id,
     bool initial_signin,
     bool is_primary_account)
     : local_state_(CHECK_DEREF(local_state)),
       url_loader_factory_(std::move(url_loader_factory)),
-      profile_(profile),
-      context_(profile_, account_id),
+      account_id_(account_id),
+      context_(identity_manager, core_account_id),
       initial_signin_(initial_signin),
       is_primary_account_(is_primary_account) {}
 
@@ -119,8 +119,7 @@ void ArcBackgroundAuthCodeFetcher::OnAccessTokenFetchComplete(
   }
 
   user_manager::KnownUser known_user(&local_state_.get());
-  const std::string device_id = known_user.GetDeviceId(
-      multi_user_util::GetAccountIdFromProfile(profile_));
+  const std::string device_id = known_user.GetDeviceId(account_id_);
   if (device_id.empty()) {
     LOG(ERROR) << "device_id is empty";
     // TODO(crbug.com/408155002): add new `OptInSilentAuthCode` and report it to

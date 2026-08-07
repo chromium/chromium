@@ -16,13 +16,14 @@
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
 #include "chrome/browser/ash/arc/auth/arc_auth_code_fetcher.h"
 #include "chrome/browser/ash/arc/auth/arc_auth_context.h"
+#include "components/account_id/account_id.h"
 
 class PrefService;
-class Profile;
 
 namespace signin {
 class AccessTokenFetcher;
 struct AccessTokenInfo;
+class IdentityManager;
 }  // namespace signin
 
 namespace network {
@@ -39,13 +40,16 @@ extern const char kTokenBootstrapEndPoint[];
 // re-created. Deleting the instance cancels inflight operation.
 class ArcBackgroundAuthCodeFetcher : public ArcAuthCodeFetcher {
  public:
-  // |account_id| is the id used by the OAuth Token Service chain.
+  // `core_account_id` is the id used by the OAuth Token Service chain.
   // `local_state` must be non-null and must outlive `this`.
+  // `identity_manager` is the one tied to the User represented by
+  // the `account_id`. It must be non-null and must outlive `this`.
   ArcBackgroundAuthCodeFetcher(
       PrefService* local_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      Profile* profile,
-      const CoreAccountId& account_id,
+      const AccountId& account_id,
+      signin::IdentityManager* identity_manager,
+      const CoreAccountId& core_account_id,
       bool initial_signin,
       bool is_primary_account);
 
@@ -75,8 +79,7 @@ class ArcBackgroundAuthCodeFetcher : public ArcAuthCodeFetcher {
 
   const raw_ref<PrefService> local_state_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  // Unowned pointer.
-  const raw_ptr<Profile> profile_;
+  const AccountId account_id_;
   ArcAuthContext context_;
   FetchCallback callback_;
 

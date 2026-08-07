@@ -35,6 +35,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/account_manager/account_manager_dialog_coordinator.h"
 #include "chrome/browser/ui/ash/account_manager/account_manager_dialog_coordinator_factory.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
@@ -810,14 +811,16 @@ void ArcAuthService::OnDataRemovalAccepted(bool accepted) {
 
 std::unique_ptr<ArcBackgroundAuthCodeFetcher>
 ArcAuthService::CreateArcBackgroundAuthCodeFetcher(
-    const CoreAccountId& account_id,
+    const CoreAccountId& core_account_id,
     bool initial_signin) {
   const AccountInfo account_info =
-      identity_manager_->FindExtendedAccountInfoByAccountId(account_id);
+      identity_manager_->FindExtendedAccountInfoByAccountId(core_account_id);
   DCHECK(!account_info.IsEmpty());
   auto fetcher = std::make_unique<ArcBackgroundAuthCodeFetcher>(
-      &local_state_.get(), url_loader_factory_, profile_, account_id,
-      initial_signin, IsPrimaryGaiaAccount(account_info.gaia));
+      &local_state_.get(), url_loader_factory_,
+      CHECK_DEREF(ash::AnnotatedAccountId::Get(profile_.get())),
+      identity_manager_.get(), core_account_id, initial_signin,
+      IsPrimaryGaiaAccount(account_info.gaia));
 
   return fetcher;
 }
