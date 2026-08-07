@@ -454,6 +454,27 @@ public class FindTest {
         Assert.assertFalse(findQueryText.hasFocus());
     }
 
+    @Test
+    @MediumTest
+    @Feature({"FindInPage"})
+    public void testFindQueryRetainsFocusOnEnter() {
+        mActivityTestRule.loadUrl(mActivityTestRule.getTestServer().getURL(FILEPATH));
+        findInPageFromMenu();
+
+        final EditText findQueryText = getFindQueryText();
+        Assert.assertTrue("FindQuery should have focus initially", findQueryText.hasFocus());
+
+        KeyUtils.singleKeyEventView(
+                InstrumentationRegistry.getInstrumentation(), findQueryText, KeyEvent.KEYCODE_T);
+
+        KeyUtils.singleKeyEventView(
+                InstrumentationRegistry.getInstrumentation(),
+                findQueryText,
+                KeyEvent.KEYCODE_ENTER);
+
+        Assert.assertTrue("FindQuery should retain focus after Enter", findQueryText.hasFocus());
+    }
+
     /** Verify "Find in page" isn't dismissed when ESCAPE is pressed w/ modifiers. */
     @Test
     @SmallTest
