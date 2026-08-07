@@ -1,0 +1,48 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/rules.gni")
+
+bundle_data_xcassets("resources") {
+  catalog = "resources/Assets.xcassets"
+  sources = [
+    "resources/Assets.xcassets/Contents.json",
+    "resources/Assets.xcassets/wallet_reminder_branding_illustration.imageset/Contents.json",
+    "resources/Assets.xcassets/wallet_reminder_branding_illustration.imageset/wallet_reminder_branding_illustration@2x.png",
+    "resources/Assets.xcassets/wallet_reminder_branding_illustration.imageset/wallet_reminder_branding_illustration@3x.png",
+    "resources/Assets.xcassets/wallet_reminder_branding_illustration.imageset/wallet_reminder_branding_illustration_dark@2x.png",
+    "resources/Assets.xcassets/wallet_reminder_branding_illustration.imageset/wallet_reminder_branding_illustration_dark@3x.png",
+  ]
+}
+
+source_set("wallet_reminder_notice") {
+  sources = [
+    "wallet_reminder_notice_consumer.h",
+    "wallet_reminder_notice_view_controller.h",
+    "wallet_reminder_notice_view_controller.mm",
+  ]
+  deps = [
+    ":resources",
+    "//base",
+    "//ios/chrome/browser/autofill/model/message",
+    "//ios/chrome/browser/autofill/ui_bundled/util",
+    "//ios/chrome/common/ui/button_stack",
+    "//ios/chrome/common/ui/confirmation_alert",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "wallet_reminder_notice_view_controller_unittest.mm" ]
+  deps = [
+    ":wallet_reminder_notice",
+    "//base",
+    "//ios/chrome/browser/autofill/model/message",
+    "//ios/chrome/common/ui/button_stack",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

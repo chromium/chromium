@@ -1,0 +1,17 @@
+include_rules = [
+  "+components/autofill/core/browser",
+  "-ios/chrome/browser/autofill/model",
+  "+ios/chrome/browser/autofill/ui_bundled/util",
+  "+ios/chrome/common/ui",
+]
+
+# TODO(crbug.com/540389638): Remove this once SaveCardMessageWithLinks is moved to
+# public/.
+specific_include_rules = {
+  "wallet_reminder_notice_view_controller.mm": [
+    "+ios/chrome/browser/autofill/model/message/save_card_message_with_links.h",
+  ],
+  "wallet_reminder_notice_view_controller_unittest.mm": [
+    "+ios/chrome/browser/autofill/model/message/save_card_message_with_links.h",
+  ],
+}

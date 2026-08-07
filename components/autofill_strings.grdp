@@ -518,6 +518,14 @@
     </message>
   </if>
 
+  <!-- Wallet Reminder Notice strings -->
+  <message name="IDS_AUTOFILL_WALLET_REMINDER_NOTICE_TITLE" desc="Title for the Wallet Reminder Notice prompt explaining that Google Wallet settings apply to info saved from Chrome.">
+    Your Google Wallet settings apply to info saved from Chrome
+  </message>
+  <message name="IDS_AUTOFILL_WALLET_REMINDER_NOTICE_CONFIRM_BUTTON_LABEL" desc="Button label to acknowledge and dismiss the Wallet Reminder Notice prompt.">
+    Got it
+  </message>
+
   <!-- Explicit save/update address prompt strings -->
   <!-- Common on all platforms (platform-specific defined later): -->
   <message name="IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL" desc="Label of the OK button in the prompt that offers the user to save a new address.">
