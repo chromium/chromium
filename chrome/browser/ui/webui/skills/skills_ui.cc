@@ -33,6 +33,7 @@
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skills_metrics.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -237,7 +238,25 @@ void SkillsUI::BindInterface(
 void SkillsUI::BindInterface(
     mojo::PendingReceiver<::skills::mojom::SkillsPageHandler> receiver) {
   CHECK(base::FeatureList::IsEnabled(features::kSkillsWebViewV2Enabled));
+
   Profile* profile = Profile::FromWebUI(web_ui());
+  bool is_internal_user = false;
+  if (auto* identity_manager = IdentityManagerFactory::GetForProfile(profile)) {
+    is_internal_user = gaia::IsGoogleInternalAccountEmail(
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+            .email);
+  }
+
+  // If delegate is null, that means a user is trying to navigate to /dialog
+  // themselves. Allow internal users to navigate directly.
+  GURL url = web_ui()->GetWebContents()->GetVisibleURL();
+  if (url.path() == "/dialog" && !delegate_ && !is_internal_user) {
+    web_ui()->GetWebContents()->GetController().LoadURL(
+        GURL(chrome::kChromeUISkillsURL), content::Referrer(),
+        ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
+    return;
+  }
+
   page_handler_v2_ = std::make_unique<skills::SkillsPageHandlerV2>(
       std::move(receiver), profile,
       IdentityManagerFactory::GetForProfile(profile),
