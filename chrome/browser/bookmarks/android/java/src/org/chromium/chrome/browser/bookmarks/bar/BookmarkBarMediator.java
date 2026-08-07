@@ -314,7 +314,7 @@ class BookmarkBarMediator
     // Private methods.
 
     private void showContextMenu(
-            ModelList menuModel, View anchorView, @Nullable Point offset, boolean isIncognito) {
+            ModelList menuModel, View anchorView, Point offset, boolean isIncognito) {
         if (!ChromeFeatureList.sBookmarksBarContextMenu.isEnabled()) {
             return;
         }
@@ -322,7 +322,7 @@ class BookmarkBarMediator
     }
 
     private void showContextMenuForListItem(
-            BookmarkItem item, @Nullable View anchorView, @Nullable Point offset) {
+            BookmarkItem item, @Nullable View anchorView, Point offset) {
         if (anchorView == null) return;
         runIfStillRelevantAfterFinishLoadingBookmarkModel(
                 (profile, model) -> {

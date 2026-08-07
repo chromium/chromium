@@ -63,7 +63,6 @@ public class BookmarkBarPopupCoordinator {
         highlightFolderAnchor(anchorView);
         mFolderPopup.show(
                 anchorView,
-                /* offset= */ null,
                 folderMenuModel,
                 isIncognito,
                 this::dismiss,
@@ -100,10 +99,7 @@ public class BookmarkBarPopupCoordinator {
      * an item within an already-open folder popup, this ensures the folder popup is not dismissed.
      */
     public void showContextMenuPopup(
-            ModelList contextMenuModel,
-            View anchorView,
-            @Nullable Point offset,
-            boolean isIncognito) {
+            ModelList contextMenuModel, View anchorView, Point offset, boolean isIncognito) {
         mIsSwitchingContextMenu = true;
         try {
             dismissContextMenuPopup();
@@ -112,7 +108,7 @@ public class BookmarkBarPopupCoordinator {
         }
 
         highlightContextMenuAnchor(anchorView);
-        mContextMenuPopup.show(
+        mContextMenuPopup.showAtOffset(
                 anchorView,
                 offset,
                 contextMenuModel,

@@ -9,9 +9,10 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
 import android.util.Pair;
 import android.view.ContextThemeWrapper;
@@ -20,16 +21,17 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.R;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
@@ -67,15 +69,90 @@ class BookmarkBarPopup {
         mBrowserControlsRectProvider = new BrowserControlsRectProvider(activity);
     }
 
+    /**
+     * Creates a 2-layer container view structure for the popup menu. The outer FrameLayout holds
+     * the 9-patch shadow drawable (popup_bg_shadow), while the inner view draws the rounded
+     * background shape (popup_bg_shape) and clips list items to its rounded corners.
+     */
+    private View createPopupContentView(View menuContentView, boolean isIncognito) {
+        FrameLayout outerContainer = new FrameLayout(mActivity);
+        outerContainer.setLayoutParams(
+                new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        Drawable shadowDrawable =
+                AppCompatResources.getDrawable(mActivity, R.drawable.popup_bg_shadow_16dp);
+        if (isIncognito && shadowDrawable != null) {
+            shadowDrawable = shadowDrawable.mutate();
+            shadowDrawable.setTint(mActivity.getColor(R.color.dialog_bg_color_dark_baseline));
+            shadowDrawable.setTintMode(PorterDuff.Mode.MULTIPLY);
+        }
+        outerContainer.setBackground(shadowDrawable);
+
+        menuContentView.setBackground(
+                AppCompatResources.getDrawable(
+                        mActivity,
+                        isIncognito
+                                ? R.drawable.menu_bg_tinted_on_dark_bg
+                                : R.drawable.popup_bg_shape_16dp));
+        menuContentView.setClipToOutline(true);
+        menuContentView.setElevation(0);
+
+        outerContainer.addView(menuContentView);
+        return outerContainer;
+    }
+
     void show(
             View anchorView,
-            @Nullable Point offset,
             ModelList menuModel,
             boolean isIncognito,
             Runnable dismissAllCallback,
-            Runnable onDismissListener,
+            @Nullable Runnable onDismissListener,
             @Nullable OnTouchListener touchListener,
             @Nullable OnTouchListener touchInterceptor) {
+        showImpl(
+                anchorView,
+                new Point(0, 0),
+                menuModel,
+                isIncognito,
+                dismissAllCallback,
+                onDismissListener,
+                touchListener,
+                touchInterceptor,
+                /* anchorToPoint= */ false);
+    }
+
+    void showAtOffset(
+            View anchorView,
+            Point offset,
+            ModelList menuModel,
+            boolean isIncognito,
+            Runnable dismissAllCallback,
+            @Nullable Runnable onDismissListener,
+            @Nullable OnTouchListener touchListener,
+            @Nullable OnTouchListener touchInterceptor) {
+        showImpl(
+                anchorView,
+                offset,
+                menuModel,
+                isIncognito,
+                dismissAllCallback,
+                onDismissListener,
+                touchListener,
+                touchInterceptor,
+                /* anchorToPoint= */ true);
+    }
+
+    private void showImpl(
+            View anchorView,
+            Point offset,
+            ModelList menuModel,
+            boolean isIncognito,
+            Runnable dismissAllCallback,
+            @Nullable Runnable onDismissListener,
+            @Nullable OnTouchListener touchListener,
+            @Nullable OnTouchListener touchInterceptor,
+            boolean anchorToPoint) {
         dismiss();
 
         Context listContext =
@@ -97,19 +174,13 @@ class BookmarkBarPopup {
         popupListMenu.setupCallbacks(
                 dismissAllCallback, ListMenuUtils.createHierarchicalMenuController(mActivity));
 
-        mContentView = popupListMenu.getContentView();
+        final View contentView =
+                createPopupContentView(popupListMenu.getContentView(), isIncognito);
+        mContentView = contentView;
         if (touchListener != null) {
-            mContentView.setOnTouchListener(touchListener);
+            contentView.setOnTouchListener(touchListener);
         }
-        ListMenuUtils.clipContentViewOutline(mContentView, R.attr.popupBgCornerRadius);
-        if (mContentView.getBackground() instanceof GradientDrawable bg) {
-            int color =
-                    isIncognito
-                            ? mActivity.getColor(R.color.dialog_bg_color_dark_baseline)
-                            : SemanticColorUtils.getMenuBgColor(mActivity);
-            bg.setColor(color);
-        }
-        setupEmptyView(mContentView);
+        setupEmptyView(contentView);
 
         Pair<Integer, Integer> heights = mControlsHeightSupplier.get();
         mBrowserControlsRectProvider.updateRectAndNotify(heights.first, heights.second);
@@ -126,13 +197,12 @@ class BookmarkBarPopup {
                             updater.setIncludePadding(true);
                             return updater;
                         });
-        if (offset != null) {
-            baseRectProvider.setInsetPx(
-                    offset.x,
-                    offset.y,
-                    anchorView.getWidth() - offset.x,
-                    anchorView.getHeight() - offset.y);
-        }
+        baseRectProvider.setInsetPx(
+                offset.x - contentView.getPaddingLeft(),
+                offset.y,
+                anchorToPoint ? anchorView.getWidth() - offset.x : 0,
+                (anchorToPoint ? anchorView.getHeight() - offset.y : 0)
+                        + contentView.getPaddingTop());
 
         RectProvider translatedRectProvider =
                 new TranslatedRectProvider(baseRectProvider, anchorView, mActivity);
@@ -142,7 +212,7 @@ class BookmarkBarPopup {
                         mActivity,
                         mActivity.getWindow().getDecorView(),
                         new ColorDrawable(Color.TRANSPARENT),
-                        popupListMenu::getContentView,
+                        () -> contentView,
                         translatedRectProvider,
                         mBrowserControlsRectProvider);
 
@@ -155,10 +225,6 @@ class BookmarkBarPopup {
         mPopupWindow.setHorizontalOverlapAnchor(true);
         mPopupWindow.setPreferredHorizontalOrientation(
                 AnchoredPopupWindow.HorizontalOrientation.LAYOUT_DIRECTION);
-        mPopupWindow.setElevation(
-                mActivity
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.bookmarks_bar_popup_elevation));
 
         mModelList = menuModel;
         mSizeObserver =
@@ -272,9 +338,18 @@ class BookmarkBarPopup {
         int marginPx = (int) Math.ceil(displayMetrics.density);
         int minTouchableSizePx = minInteractSizePx + 2 * marginPx;
 
-        int desiredWidth =
-                Math.max(Math.min(measuredDimensions[0], finalWidth), minTouchableSizePx);
-        int desiredHeight = Math.max(measuredDimensions[1], minTouchableSizePx);
+        int horizontalPadding =
+                mContentView != null
+                        ? mContentView.getPaddingLeft() + mContentView.getPaddingRight()
+                        : 0;
+        int verticalPadding =
+                mContentView != null
+                        ? mContentView.getPaddingTop() + mContentView.getPaddingBottom()
+                        : 0;
+
+        int contentWidth = popupListMenu.getMaxItemWidth() + horizontalPadding;
+        int desiredWidth = Math.max(Math.min(contentWidth, finalWidth), minTouchableSizePx);
+        int desiredHeight = Math.max(measuredDimensions[1] + verticalPadding, minTouchableSizePx);
 
         if (mBrowserControlsRectProvider.getRect() != null) {
             ListView menuList = popupListMenu.getContentView().findViewById(R.id.menu_list);

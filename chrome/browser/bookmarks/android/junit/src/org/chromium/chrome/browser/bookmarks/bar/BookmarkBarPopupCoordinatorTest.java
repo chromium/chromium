@@ -15,6 +15,7 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Pair;
@@ -156,7 +157,7 @@ public class BookmarkBarPopupCoordinatorTest {
         mCoordinator.showFolderItemsPopup(mAnchorView, new ModelList(), /* isIncognito= */ false);
 
         mCoordinator.showContextMenuPopup(
-                new ModelList(), subitemView, /* offset= */ null, /* isIncognito= */ false);
+                new ModelList(), subitemView, new Point(0, 0), /* isIncognito= */ false);
 
         verify(subitemView).setSelected(true);
 
@@ -180,7 +181,7 @@ public class BookmarkBarPopupCoordinatorTest {
         when(mBookmarkBarView.getViewTreeObserver()).thenReturn(rootView.getViewTreeObserver());
 
         mCoordinator.showContextMenuPopup(
-                new ModelList(), mBookmarkBarView, /* offset= */ null, /* isIncognito= */ false);
+                new ModelList(), mBookmarkBarView, new Point(0, 0), /* isIncognito= */ false);
 
         verify(mBookmarkBarView, never()).setSelected(true);
     }
