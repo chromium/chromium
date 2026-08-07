@@ -1,1 +1,1 @@
-AXTextField AXDescription='silly' AXTitle='silly' AXValue='baz'
+AXTextField AXDescription='silly' AXValue='baz'

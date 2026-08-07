@@ -1,6 +1,6 @@
 === Accessibility tree before go() pass 1 ===
 AXWebArea AXTitle='Material Web Text Field Events'
-++AXGroup AXDescription='Ready' AXTitle='Ready'
+++AXGroup AXDescription='Ready'
 ++++AXGroup
 ++++++AXGroup
 ++++++++AXGroup AXSubrole=AXEmptyGroup
@@ -11,14 +11,14 @@ AXWebArea AXTitle='Material Web Text Field Events'
 ++++++++++++AXGroup
 ++++++++++++++AXGroup
 ++++++++++++++++AXStaticText AXValue='Test Text Field'
-++++++++++++AXTextField AXDescription='Test Text Field' AXTitle='Test Text Field'
+++++++++++++AXTextField AXDescription='Test Text Field'
 ++++++++++AXGroup AXSubrole=AXEmptyGroup
 === End accessibility tree ===
-AXValueChanged on AXTextField AXDescription='Test Text Field' AXTitle='Test Text Field' AXValue='Hello'
+AXValueChanged on AXTextField AXDescription='Test Text Field' AXValue='Hello'
 AXValueChanged on AXWebArea AXTitle='Material Web Text Field Events'
 === Accessibility tree after go() pass 1 ===
 AXWebArea AXTitle='Material Web Text Field Events'
-++AXGroup AXDescription='Ready' AXTitle='Ready'
+++AXGroup AXDescription='Ready'
 ++++AXGroup
 ++++++AXGroup
 ++++++++AXGroup AXSubrole=AXEmptyGroup
@@ -29,13 +29,13 @@ AXWebArea AXTitle='Material Web Text Field Events'
 ++++++++++++AXGroup
 ++++++++++++++AXGroup
 ++++++++++++++++AXStaticText AXValue='Test Text Field'
-++++++++++++AXTextField AXDescription='Test Text Field' AXTitle='Test Text Field' AXValue='Hello' <<<<<< CHANGED
+++++++++++++AXTextField AXDescription='Test Text Field' AXValue='Hello' <<<<<< CHANGED
 ++++++++++AXGroup AXSubrole=AXEmptyGroup
 === End accessibility tree ===
 === Start Continuation ===
 === Accessibility tree before go() pass 2 ===
 AXWebArea AXTitle='Material Web Text Field Events'
-++AXGroup AXDescription='Ready' AXTitle='Ready'
+++AXGroup AXDescription='Ready'
 ++++AXGroup
 ++++++AXGroup
 ++++++++AXGroup AXSubrole=AXEmptyGroup
@@ -46,14 +46,14 @@ AXWebArea AXTitle='Material Web Text Field Events'
 ++++++++++++AXGroup
 ++++++++++++++AXGroup
 ++++++++++++++++AXStaticText AXValue='Test Text Field'
-++++++++++++AXTextField AXDescription='Test Text Field' AXTitle='Test Text Field' AXValue='Hello'
+++++++++++++AXTextField AXDescription='Test Text Field' AXValue='Hello'
 ++++++++++AXGroup AXSubrole=AXEmptyGroup
 === End accessibility tree ===
-AXValueChanged on AXTextField AXDescription='Test Text Field' AXTitle='Test Text Field' AXValue='Hello World'
+AXValueChanged on AXTextField AXDescription='Test Text Field' AXValue='Hello World'
 AXValueChanged on AXWebArea AXTitle='Material Web Text Field Events'
 === Accessibility tree after go() pass 2 ===
 AXWebArea AXTitle='Material Web Text Field Events'
-++AXGroup AXDescription='Ready' AXTitle='Ready'
+++AXGroup AXDescription='Ready'
 ++++AXGroup
 ++++++AXGroup
 ++++++++AXGroup AXSubrole=AXEmptyGroup
@@ -64,13 +64,13 @@ AXWebArea AXTitle='Material Web Text Field Events'
 ++++++++++++AXGroup
 ++++++++++++++AXGroup
 ++++++++++++++++AXStaticText AXValue='Test Text Field'
-++++++++++++AXTextField AXDescription='Test Text Field' AXTitle='Test Text Field' AXValue='Hello World' <<<<<< CHANGED
+++++++++++++AXTextField AXDescription='Test Text Field' AXValue='Hello World' <<<<<< CHANGED
 ++++++++++AXGroup AXSubrole=AXEmptyGroup
 === End accessibility tree ===
 === Start Continuation ===
 === Accessibility tree before go() pass 3 ===
 AXWebArea AXTitle='Material Web Text Field Events'
-++AXGroup AXDescription='Ready' AXTitle='Ready'
+++AXGroup AXDescription='Ready'
 ++++AXGroup
 ++++++AXGroup
 ++++++++AXGroup AXSubrole=AXEmptyGroup
@@ -81,14 +81,14 @@ AXWebArea AXTitle='Material Web Text Field Events'
 ++++++++++++AXGroup
 ++++++++++++++AXGroup
 ++++++++++++++++AXStaticText AXValue='Test Text Field'
-++++++++++++AXTextField AXDescription='Test Text Field' AXTitle='Test Text Field' AXValue='Hello World'
+++++++++++++AXTextField AXDescription='Test Text Field' AXValue='Hello World'
 ++++++++++AXGroup AXSubrole=AXEmptyGroup
 === End accessibility tree ===
-AXValueChanged on AXTextField AXDescription='Test Text Field' AXTitle='Test Text Field'
+AXValueChanged on AXTextField AXDescription='Test Text Field'
 AXValueChanged on AXWebArea AXTitle='Material Web Text Field Events'
 === Accessibility tree after go() pass 3 ===
 AXWebArea AXTitle='Material Web Text Field Events'
-++AXGroup AXDescription='Ready' AXTitle='Ready'
+++AXGroup AXDescription='Ready'
 ++++AXGroup
 ++++++AXGroup
 ++++++++AXGroup AXSubrole=AXEmptyGroup
@@ -99,6 +99,6 @@ AXWebArea AXTitle='Material Web Text Field Events'
 ++++++++++++AXGroup
 ++++++++++++++AXGroup
 ++++++++++++++++AXStaticText AXValue='Test Text Field'
-++++++++++++AXTextField AXDescription='Test Text Field' AXTitle='Test Text Field' <<<<<< CHANGED
+++++++++++++AXTextField AXDescription='Test Text Field' <<<<<< CHANGED
 ++++++++++AXGroup AXSubrole=AXEmptyGroup
 === End accessibility tree ===

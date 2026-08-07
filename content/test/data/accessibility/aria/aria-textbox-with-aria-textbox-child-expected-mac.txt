@@ -1,27 +1,27 @@
 AXWebArea
-++AXTextField AXDescription='not editable' AXTitle='not editable' AXValue='Foo<newline>Bar<newline>Bar<newline>Baz<newline>Baz'
+++AXTextField AXDescription='not editable' AXValue='Foo<newline>Bar<newline>Bar<newline>Baz<newline>Baz'
 ++++AXGroup
 ++++++AXStaticText AXValue='Foo'
-++++AXTextField AXDescription='nested, not editable, rich' AXTitle='nested, not editable, rich' AXValue='Bar'
+++++AXTextField AXDescription='nested, not editable, rich' AXValue='Bar'
 ++++++AXGroup
 ++++++++AXStaticText AXValue='Bar'
-++++AXTextField AXDescription='nested, not editable, plain' AXTitle='nested, not editable, plain' AXValue='Bar'
+++++AXTextField AXDescription='nested, not editable, plain' AXValue='Bar'
 ++++++AXStaticText AXValue='Bar'
-++++AXTextArea AXDescription='nested, editable, rich' AXTitle='nested, editable, rich' AXValue='Baz'
+++++AXTextArea AXDescription='nested, editable, rich' AXValue='Baz'
 ++++++AXGroup
 ++++++++AXStaticText AXValue='Baz'
-++++AXTextArea AXDescription='nested, editable, plain' AXTitle='nested, editable, plain' AXValue='Baz'
+++++AXTextArea AXDescription='nested, editable, plain' AXValue='Baz'
 ++++++AXStaticText AXValue='Baz'
-++AXTextArea AXDescription='editable' AXTitle='editable' AXValue='Foo<newline>Bar<newline>Bar<newline>Baz<newline>Baz'
+++AXTextArea AXDescription='editable' AXValue='Foo<newline>Bar<newline>Bar<newline>Baz<newline>Baz'
 ++++AXGroup
 ++++++AXStaticText AXValue='Foo'
-++++AXTextField AXDescription='nested, not editable, rich' AXTitle='nested, not editable, rich' AXValue='Bar'
+++++AXTextField AXDescription='nested, not editable, rich' AXValue='Bar'
 ++++++AXGroup
 ++++++++AXStaticText AXValue='Bar'
-++++AXTextField AXDescription='nested, not editable, plain' AXTitle='nested, not editable, plain' AXValue='Bar'
+++++AXTextField AXDescription='nested, not editable, plain' AXValue='Bar'
 ++++++AXStaticText AXValue='Bar'
-++++AXTextArea AXDescription='nested, editable, rich' AXTitle='nested, editable, rich' AXValue='Baz'
+++++AXTextArea AXDescription='nested, editable, rich' AXValue='Baz'
 ++++++AXGroup
 ++++++++AXStaticText AXValue='Baz'
-++++AXTextArea AXDescription='nested, editable, plain' AXTitle='nested, editable, plain' AXValue='Baz'
+++++AXTextArea AXDescription='nested, editable, plain' AXValue='Baz'
 ++++++AXStaticText AXValue='Baz'

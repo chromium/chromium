@@ -1,22 +1,22 @@
 AXWebArea
 ++AXOutline
 ++++AXRow AXSubrole=AXOutlineRow AXIndex=0 AXTitle='Animals' AXValue=2
-++++++AXLink AXDescription='Animals' AXTitle='Animals'
+++++++AXLink AXDescription='Animals'
 ++++++++AXStaticText AXValue='Animals'
 ++++++AXGroup AXSubrole=AXApplicationGroup
 ++++++++AXRow AXSubrole=AXOutlineRow AXIndex=1 AXTitle='Domesticated'
-++++++++++AXLink AXDescription='Domesticated' AXTitle='Domesticated'
+++++++++++AXLink AXDescription='Domesticated'
 ++++++++++++AXStaticText AXValue='Domesticated'
 ++++++++++AXGroup AXSubrole=AXApplicationGroup
 ++++++++++++AXRow AXSubrole=AXOutlineRow AXIndex=2 AXTitle='Dog' AXValue=1
-++++++++++++++AXLink AXDescription='Dog' AXTitle='Dog'
+++++++++++++++AXLink AXDescription='Dog'
 ++++++++++++++++AXStaticText AXValue='Dog'
 ++++++++++++AXRow AXSubrole=AXOutlineRow AXIndex=3 AXTitle='Cat' AXValue=0
-++++++++++++++AXLink AXDescription='Cat' AXTitle='Cat'
+++++++++++++++AXLink AXDescription='Cat'
 ++++++++++++++++AXStaticText AXValue='Cat'
 ++++++++AXRow AXSubrole=AXOutlineRow AXIndex=4 AXTitle='Wild'
-++++++++++AXLink AXDescription='Wild' AXTitle='Wild'
+++++++++++AXLink AXDescription='Wild'
 ++++++++++++AXStaticText AXValue='Wild'
 ++++AXRow AXSubrole=AXOutlineRow AXIndex=5 AXTitle='Plants'
-++++++AXLink AXDescription='Plants' AXTitle='Plants'
+++++++AXLink AXDescription='Plants'
 ++++++++AXStaticText AXValue='Plants'

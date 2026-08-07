@@ -1,11 +1,11 @@
 AXWebArea
 ++AXGroup
-++++AXLink AXDescription='unread ' AXTitle='unread '
+++++AXLink AXDescription='unread '
 ++++++AXStaticText AXValue='unread '
-++++AXLink AXDescription='read ' AXTitle='read '
+++++AXLink AXDescription='read '
 ++++++AXStaticText AXValue='read '
-++++AXLink AXDescription='read ' AXTitle='read '
+++++AXLink AXDescription='read '
 ++++++AXStaticText AXValue='read '
-++++AXLink AXDescription='read' AXTitle='read'
-++++++AXImage AXDescription='To get missing image descriptions, open the context menu.' AXTitle='To get missing image descriptions, open the context menu.'
+++++AXLink AXDescription='read'
+++++++AXImage AXDescription='To get missing image descriptions, open the context menu.'
 ++++++AXStaticText AXValue='read'

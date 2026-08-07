@@ -1,1 +1,1 @@
-AXFocusedUIElementChanged on AXGroup AXDescription='tfoot' AXTitle='tfoot'
+AXFocusedUIElementChanged on AXGroup AXDescription='tfoot'

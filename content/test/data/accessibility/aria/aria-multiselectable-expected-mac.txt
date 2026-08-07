@@ -1,10 +1,10 @@
 AXWebArea
-++AXList AXDescription='My Listbox' AXTitle='My Listbox'
+++AXList AXDescription='My Listbox'
 ++++AXStaticText AXValue='Example 1'
 ++++AXStaticText AXValue='Example 2'
 ++++AXStaticText AXValue='Example 3'
 ++++AXStaticText AXValue='Example 4'
-++AXList AXDescription='My Listbox' AXTitle='My Listbox'
+++AXList AXDescription='My Listbox'
 ++++AXStaticText AXValue='Example 1'
 ++++AXStaticText AXValue='Example 2'
 ++++AXStaticText AXValue='Example 3'

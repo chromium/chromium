@@ -31,5 +31,5 @@ AXWebArea
 ++AXGroup AXSubrole=AXTimeGroup
 ++++AXStaticText AXValue='time host'
 ++AXButton AXCustomActionNamesForTesting=['OK'] AXTitle='allowed button host'
-++AXLink AXCustomActionNamesForTesting=['OK'] AXDescription='allowed link host' AXTitle='allowed link host'
+++AXLink AXCustomActionNamesForTesting=['OK'] AXDescription='allowed link host'
 ++++AXStaticText AXValue='allowed link host'

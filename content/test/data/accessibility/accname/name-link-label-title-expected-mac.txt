@@ -1,1 +1,1 @@
-AXLink AXDescription='California' AXTitle='California'
+AXLink AXDescription='California'

@@ -1,11 +1,11 @@
 AXWebArea
-++AXGroup AXSubrole=AXLandmarkNavigation AXDescription='Breadcrumb' AXTitle='Breadcrumb'
+++AXGroup AXSubrole=AXLandmarkNavigation AXDescription='Breadcrumb'
 ++++AXList AXSubrole=AXContentList
 ++++++AXGroup
 ++++++++AXListMarker AXValue='1. '
-++++++++AXLink AXDescription='Breadcrumb Pattern' AXTitle='Breadcrumb Pattern'
+++++++++AXLink AXDescription='Breadcrumb Pattern'
 ++++++++++AXStaticText AXValue='Breadcrumb Pattern'
 ++++++AXGroup
 ++++++++AXListMarker AXValue='2. '
-++++++++AXLink AXDescription='Breadcrumb Example' AXTitle='Breadcrumb Example'
+++++++++AXLink AXDescription='Breadcrumb Example'
 ++++++++++AXStaticText AXValue='Breadcrumb Example'

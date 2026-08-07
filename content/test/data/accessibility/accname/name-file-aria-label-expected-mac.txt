@@ -1,1 +1,1 @@
-AXButton AXDescription='Labeled from attribute: No file chosen' AXTitle='Labeled from attribute: No file chosen'
+AXButton AXDescription='Labeled from attribute: No file chosen'

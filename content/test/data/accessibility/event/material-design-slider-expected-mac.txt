@@ -1,9 +1,9 @@
 === Accessibility tree before go() pass 1 ===
 AXWebArea AXTitle='Material Web Slider Events'
-++AXGroup AXDescription='Ready' AXTitle='Ready'
+++AXGroup AXDescription='Ready'
 ++++AXGroup
 ++++++AXGroup
-++++++++AXSlider AXDescription='Test Slider' AXTitle='Test Slider' AXValue=0
+++++++++AXSlider AXDescription='Test Slider' AXValue=0
 ++++++++AXGroup AXSubrole=AXEmptyGroup
 ++++++++AXGroup AXSubrole=AXEmptyGroup
 ++++++++++AXGroup AXSubrole=AXEmptyGroup
@@ -11,13 +11,13 @@ AXWebArea AXTitle='Material Web Slider Events'
 ++++++++++++++AXGroup AXSubrole=AXEmptyGroup
 ++++++++++++++++AXGroup AXSubrole=AXEmptyGroup
 === End accessibility tree ===
-AXValueChanged on AXSlider AXDescription='Test Slider' AXTitle='Test Slider' AXValue=25
+AXValueChanged on AXSlider AXDescription='Test Slider' AXValue=25
 === Accessibility tree after go() pass 1 ===
 AXWebArea AXTitle='Material Web Slider Events'
-++AXGroup AXDescription='Ready' AXTitle='Ready'
+++AXGroup AXDescription='Ready'
 ++++AXGroup
 ++++++AXGroup
-++++++++AXSlider AXDescription='Test Slider' AXTitle='Test Slider' AXValue=25 <<<<<< CHANGED
+++++++++AXSlider AXDescription='Test Slider' AXValue=25 <<<<<< CHANGED
 ++++++++AXGroup AXSubrole=AXEmptyGroup
 ++++++++AXGroup AXSubrole=AXEmptyGroup
 ++++++++++AXGroup AXSubrole=AXEmptyGroup
@@ -28,10 +28,10 @@ AXWebArea AXTitle='Material Web Slider Events'
 === Start Continuation ===
 === Accessibility tree before go() pass 2 ===
 AXWebArea AXTitle='Material Web Slider Events'
-++AXGroup AXDescription='Ready' AXTitle='Ready'
+++AXGroup AXDescription='Ready'
 ++++AXGroup
 ++++++AXGroup
-++++++++AXSlider AXDescription='Test Slider' AXTitle='Test Slider' AXValue=25
+++++++++AXSlider AXDescription='Test Slider' AXValue=25
 ++++++++AXGroup AXSubrole=AXEmptyGroup
 ++++++++AXGroup AXSubrole=AXEmptyGroup
 ++++++++++AXGroup AXSubrole=AXEmptyGroup
@@ -39,13 +39,13 @@ AXWebArea AXTitle='Material Web Slider Events'
 ++++++++++++++AXGroup AXSubrole=AXEmptyGroup
 ++++++++++++++++AXGroup AXSubrole=AXEmptyGroup
 === End accessibility tree ===
-AXValueChanged on AXSlider AXDescription='Test Slider' AXTitle='Test Slider' AXValue=75
+AXValueChanged on AXSlider AXDescription='Test Slider' AXValue=75
 === Accessibility tree after go() pass 2 ===
 AXWebArea AXTitle='Material Web Slider Events'
-++AXGroup AXDescription='Ready' AXTitle='Ready'
+++AXGroup AXDescription='Ready'
 ++++AXGroup
 ++++++AXGroup
-++++++++AXSlider AXDescription='Test Slider' AXTitle='Test Slider' AXValue=75 <<<<<< CHANGED
+++++++++AXSlider AXDescription='Test Slider' AXValue=75 <<<<<< CHANGED
 ++++++++AXGroup AXSubrole=AXEmptyGroup
 ++++++++AXGroup AXSubrole=AXEmptyGroup
 ++++++++++AXGroup AXSubrole=AXEmptyGroup
@@ -56,10 +56,10 @@ AXWebArea AXTitle='Material Web Slider Events'
 === Start Continuation ===
 === Accessibility tree before go() pass 3 ===
 AXWebArea AXTitle='Material Web Slider Events'
-++AXGroup AXDescription='Ready' AXTitle='Ready'
+++AXGroup AXDescription='Ready'
 ++++AXGroup
 ++++++AXGroup
-++++++++AXSlider AXDescription='Test Slider' AXTitle='Test Slider' AXValue=75
+++++++++AXSlider AXDescription='Test Slider' AXValue=75
 ++++++++AXGroup AXSubrole=AXEmptyGroup
 ++++++++AXGroup AXSubrole=AXEmptyGroup
 ++++++++++AXGroup AXSubrole=AXEmptyGroup
@@ -67,13 +67,13 @@ AXWebArea AXTitle='Material Web Slider Events'
 ++++++++++++++AXGroup AXSubrole=AXEmptyGroup
 ++++++++++++++++AXGroup AXSubrole=AXEmptyGroup
 === End accessibility tree ===
-AXValueChanged on AXSlider AXDescription='Test Slider' AXTitle='Test Slider' AXValue=50
+AXValueChanged on AXSlider AXDescription='Test Slider' AXValue=50
 === Accessibility tree after go() pass 3 ===
 AXWebArea AXTitle='Material Web Slider Events'
-++AXGroup AXDescription='Ready' AXTitle='Ready'
+++AXGroup AXDescription='Ready'
 ++++AXGroup
 ++++++AXGroup
-++++++++AXSlider AXDescription='Test Slider' AXTitle='Test Slider' AXValue=50 <<<<<< CHANGED
+++++++++AXSlider AXDescription='Test Slider' AXValue=50 <<<<<< CHANGED
 ++++++++AXGroup AXSubrole=AXEmptyGroup
 ++++++++AXGroup AXSubrole=AXEmptyGroup
 ++++++++++AXGroup AXSubrole=AXEmptyGroup

@@ -1,1 +1,1 @@
-AXLink AXDescription='Tag foo' AXTitle='Tag foo'
+AXLink AXDescription='Tag foo'

@@ -1,9 +1,9 @@
 AXWebArea
 ++AXGroup
-++++AXLink AXDescription='Link' AXTitle='Link'
+++++AXLink AXDescription='Link'
 ++++++AXStaticText AXValue='Link'
 ++++AXStaticText AXValue=' '
-++++AXLink AXDescription='AriaLabel' AXTitle='AriaLabel'
+++++AXLink AXDescription='AriaLabel'
 ++++++AXStaticText AXValue='Link'
 ++++AXButton AXTitle='Button'
-++++AXButton AXDescription='AriaLabel' AXTitle='AriaLabel'
+++++AXButton AXDescription='AriaLabel'

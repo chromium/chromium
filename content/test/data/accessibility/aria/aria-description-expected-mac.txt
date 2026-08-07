@@ -1,5 +1,5 @@
 AXWebArea
-++AXGroup AXSubrole=AXEmptyGroup AXDescription='description' AXTitle='description'
-++AXGroup AXSubrole=AXEmptyGroup AXDescription='both' AXTitle='both'
+++AXGroup AXSubrole=AXEmptyGroup AXDescription='description'
+++AXGroup AXSubrole=AXEmptyGroup AXDescription='both'
 ++AXGroup AXSubrole=AXUserInterfaceTooltip AXTitle='Description from describedby'
 ++++AXStaticText AXValue='Description from describedby'

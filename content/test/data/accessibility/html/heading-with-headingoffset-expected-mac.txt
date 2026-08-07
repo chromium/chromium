@@ -8,7 +8,7 @@ AXWebArea
 ++++++AXHeading AXDisclosureLevel=4 AXValue=5
 ++++++AXGroup AXSubrole=AXEmptyGroup
 ++++++++AXHeading AXDisclosureLevel=0 AXValue=1
-++++++AXGroup AXSubrole=AXApplicationDialog AXDescription='container dialog' AXTitle='container dialog'
+++++++AXGroup AXSubrole=AXApplicationDialog AXDescription='container dialog'
 ++++++++AXHeading AXDisclosureLevel=3 AXValue=4
 ++++++++AXHeading AXDisclosureLevel=0 AXValue=1
 ++AXGroup
@@ -20,7 +20,7 @@ AXWebArea
 ++++AXHeading AXDisclosureLevel=8 AXValue=9
 ++++AXGroup AXSubrole=AXEmptyGroup
 ++++++AXHeading AXDisclosureLevel=0 AXValue=1
-++++AXGroup AXSubrole=AXApplicationDialog AXDescription='container dialog' AXTitle='container dialog'
+++++AXGroup AXSubrole=AXApplicationDialog AXDescription='container dialog'
 ++++++AXHeading AXDisclosureLevel=8 AXValue=9
 ++AXGroup
 ++++AXHeading AXDisclosureLevel=0 AXValue=1
@@ -31,7 +31,7 @@ AXWebArea
 ++++AXHeading AXDisclosureLevel=5 AXValue=6
 ++++AXGroup AXSubrole=AXEmptyGroup
 ++++++AXHeading AXDisclosureLevel=0 AXValue=1
-++++AXGroup AXSubrole=AXApplicationDialog AXDescription='container dialog' AXTitle='container dialog'
+++++AXGroup AXSubrole=AXApplicationDialog AXDescription='container dialog'
 ++++++AXHeading AXDisclosureLevel=0 AXValue=1
 ++AXGroup AXSubrole=AXEmptyGroup
 ++++AXHeading AXDisclosureLevel=1 AXValue=2

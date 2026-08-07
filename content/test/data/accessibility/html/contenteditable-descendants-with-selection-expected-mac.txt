@@ -2,10 +2,10 @@ AXWebArea
 ++AXTextArea AXValue='A contenteditable with a link and an <newline><newline> and a Button.<newline>Always expose editable tables as tables.<newline>1. Editable list item.'
 ++++AXGroup
 ++++++AXStaticText AXValue='A contenteditable with a '
-++++++AXLink AXDescription='link' AXTitle='link'
+++++++AXLink AXDescription='link'
 ++++++++AXStaticText AXValue='link'
 ++++++AXStaticText AXValue=' and an '
-++++++AXImage AXDescription='Image' AXTitle='Image'
+++++++AXImage AXDescription='Image'
 ++++++AXStaticText AXValue=' and a '
 ++++++AXButton AXTitle='Button'
 ++++++AXStaticText AXValue='.'

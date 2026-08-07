@@ -1,1 +1,1 @@
-AXGroup AXDescription='Tag' AXTitle='Tag'
+AXGroup AXDescription='Tag'

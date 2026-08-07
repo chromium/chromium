@@ -1,1 +1,1 @@
-AXButton AXDescription='foo' AXTitle='foo'
+AXButton AXDescription='foo'

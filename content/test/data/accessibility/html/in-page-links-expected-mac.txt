@@ -1,20 +1,20 @@
 AXWebArea
-++AXLink AXDescription='Empty anchor' AXLinkedUIElements=[:20] AXTitle='Empty anchor'
+++AXLink AXDescription='Empty anchor' AXLinkedUIElements=[:20]
 ++++AXStaticText AXValue='Empty anchor'
 ++AXStaticText AXValue=' '
-++AXLink AXDescription='Anchor with content' AXLinkedUIElements=[:23] AXTitle='Anchor with content'
+++AXLink AXDescription='Anchor with content' AXLinkedUIElements=[:23]
 ++++AXStaticText AXValue='Anchor with content'
 ++AXStaticText AXValue=' '
-++AXLink AXDescription='Anchor with ID' AXLinkedUIElements=[:26] AXTitle='Anchor with ID'
+++AXLink AXDescription='Anchor with ID' AXLinkedUIElements=[:26]
 ++++AXStaticText AXValue='Anchor with ID'
 ++AXStaticText AXValue=' '
-++AXLink AXDescription='Empty span' AXLinkedUIElements=[:29] AXTitle='Empty span'
+++AXLink AXDescription='Empty span' AXLinkedUIElements=[:29]
 ++++AXStaticText AXValue='Empty span'
 ++AXStaticText AXValue=' '
-++AXLink AXDescription='Span with content' AXLinkedUIElements=[:32] AXTitle='Span with content'
+++AXLink AXDescription='Span with content' AXLinkedUIElements=[:32]
 ++++AXStaticText AXValue='Span with content'
 ++AXStaticText AXValue=' '
-++AXLink AXDescription='Paragraph with content' AXLinkedUIElements=[:34] AXTitle='Paragraph with content'
+++AXLink AXDescription='Paragraph with content' AXLinkedUIElements=[:34]
 ++++AXStaticText AXValue='Paragraph with content'
 ++AXGroup
 ++++AXGroup AXSubrole=AXEmptyGroup

@@ -1,11 +1,11 @@
 AXWebArea
-++AXLink AXDescription='Section one' AXTitle='Section one'
+++AXLink AXDescription='Section one'
 ++++AXStaticText AXValue='Section one'
 ++AXStaticText AXValue=' '
-++AXLink AXDescription='Section two' AXTitle='Section two'
+++AXLink AXDescription='Section two'
 ++++AXStaticText AXValue='Section two'
 ++AXStaticText AXValue=' '
-++AXLink AXARIACurrent='location' AXDescription='Section three' AXTitle='Section three'
+++AXLink AXARIACurrent='location' AXDescription='Section three'
 ++++AXStaticText AXValue='Section three'
 ++AXHeading AXTitle='Section one heading' AXValue=1
 ++++AXStaticText AXValue='Section one heading'

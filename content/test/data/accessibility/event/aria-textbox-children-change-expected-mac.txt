@@ -1,9 +1,9 @@
-AXValueChanged on AXTextArea AXDescription='role only, rich' AXTitle='role only, rich' AXValue='foo'
+AXValueChanged on AXTextArea AXDescription='role only, rich' AXValue='foo'
 AXValueChanged on AXWebArea
 === Start Continuation ===
-AXValueChanged on AXTextArea AXDescription='focusable' AXTitle='focusable' AXValue='foo'
+AXValueChanged on AXTextArea AXDescription='focusable' AXValue='foo'
 AXValueChanged on AXWebArea
 === Start Continuation ===
-AXValueChanged on AXTextArea AXDescription='editable' AXTitle='editable' AXValue='foo'
+AXValueChanged on AXTextArea AXDescription='editable' AXValue='foo'
 AXValueChanged on AXWebArea
 === Start Continuation ===

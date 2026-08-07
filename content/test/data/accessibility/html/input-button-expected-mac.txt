@@ -1,4 +1,4 @@
 AXWebArea
 ++AXGroup
 ++++AXButton AXTitle='Button'
-++++AXButton AXDescription='Name' AXHelp='Description' AXTitle='Name'
+++++AXButton AXDescription='Name' AXHelp='Description'

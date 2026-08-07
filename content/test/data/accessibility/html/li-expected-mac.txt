@@ -1,6 +1,6 @@
 AXWebArea
 ++AXList AXSubrole=AXContentList
-++++AXGroup AXDescription='Custom name' AXTitle='Custom name'
+++++AXGroup AXDescription='Custom name'
 ++++++AXListMarker AXValue='%E2%80%A2 '
 ++++++AXStaticText AXValue='Item 1'
 ++++AXGroup

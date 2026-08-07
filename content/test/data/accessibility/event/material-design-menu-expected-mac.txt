@@ -1,59 +1,59 @@
 === Accessibility tree before go() pass 1 ===
 AXWebArea AXTitle='Material Web Menu Events'
-++AXGroup AXDescription='Ready' AXTitle='Ready'
+++AXGroup AXDescription='Ready'
 ++++AXGroup
 ++++++AXGroup
 ++++++++AXGroup AXSubrole=AXEmptyGroup
-++++++++AXButton AXDescription='Open Menu' AXTitle='Open Menu'
+++++++++AXButton AXDescription='Open Menu'
 === End accessibility tree ===
-AXFocusedUIElementChanged on AXMenuItem AXDescription='Menu Item 1' AXTitle='Menu Item 1'
+AXFocusedUIElementChanged on AXMenuItem AXDescription='Menu Item 1'
 AXMenuOpened on AXGroup
 === Accessibility tree after go() pass 1 ===
 AXWebArea AXTitle='Material Web Menu Events'
-++AXGroup AXDescription='Ready' AXTitle='Ready'
+++AXGroup AXDescription='Ready'
 ++++AXGroup
 ++++++AXGroup
 ++++++++AXGroup AXSubrole=AXEmptyGroup
-++++++++AXButton AXDescription='Open Menu' AXTitle='Open Menu'
+++++++++AXButton AXDescription='Open Menu'
 ++++++AXGroup
 ++++++++AXGroup <<<<<< CHANGED
-++++++++++AXMenuItem AXDescription='Menu Item 1' AXTitle='Menu Item 1' <<<<<< CHANGED
+++++++++++AXMenuItem AXDescription='Menu Item 1' <<<<<< CHANGED
 ++++++++++++AXGroup AXSubrole=AXEmptyGroup <<<<<< CHANGED
 ++++++++++++++AXGroup AXSubrole=AXEmptyGroup <<<<<< CHANGED
-++++++++++AXMenuItem AXDescription='Menu Item 2' AXTitle='Menu Item 2' <<<<<< CHANGED
+++++++++++AXMenuItem AXDescription='Menu Item 2' <<<<<< CHANGED
 ++++++++++++AXGroup AXSubrole=AXEmptyGroup <<<<<< CHANGED
 ++++++++++++++AXGroup AXSubrole=AXEmptyGroup <<<<<< CHANGED
-++++++++++AXMenuItem AXDescription='Menu Item 3' AXTitle='Menu Item 3' <<<<<< CHANGED
+++++++++++AXMenuItem AXDescription='Menu Item 3' <<<<<< CHANGED
 ++++++++++++AXGroup AXSubrole=AXEmptyGroup <<<<<< CHANGED
 ++++++++++++++AXGroup AXSubrole=AXEmptyGroup <<<<<< CHANGED
 === End accessibility tree ===
 === Start Continuation ===
 === Accessibility tree before go() pass 2 ===
 AXWebArea AXTitle='Material Web Menu Events'
-++AXGroup AXDescription='Ready' AXTitle='Ready'
+++AXGroup AXDescription='Ready'
 ++++AXGroup
 ++++++AXGroup
 ++++++++AXGroup AXSubrole=AXEmptyGroup
-++++++++AXButton AXDescription='Open Menu' AXTitle='Open Menu'
+++++++++AXButton AXDescription='Open Menu'
 ++++++AXGroup
 ++++++++AXGroup
-++++++++++AXMenuItem AXDescription='Menu Item 1' AXTitle='Menu Item 1'
+++++++++++AXMenuItem AXDescription='Menu Item 1'
 ++++++++++++AXGroup AXSubrole=AXEmptyGroup
 ++++++++++++++AXGroup AXSubrole=AXEmptyGroup
-++++++++++AXMenuItem AXDescription='Menu Item 2' AXTitle='Menu Item 2'
+++++++++++AXMenuItem AXDescription='Menu Item 2'
 ++++++++++++AXGroup AXSubrole=AXEmptyGroup
 ++++++++++++++AXGroup AXSubrole=AXEmptyGroup
-++++++++++AXMenuItem AXDescription='Menu Item 3' AXTitle='Menu Item 3'
+++++++++++AXMenuItem AXDescription='Menu Item 3'
 ++++++++++++AXGroup AXSubrole=AXEmptyGroup
 ++++++++++++++AXGroup AXSubrole=AXEmptyGroup
 === End accessibility tree ===
-AXFocusedUIElementChanged on AXButton AXDescription='Open Menu' AXTitle='Open Menu'
+AXFocusedUIElementChanged on AXButton AXDescription='Open Menu'
 AXMenuClosed on AXWebArea AXTitle='Material Web Menu Events'
 === Accessibility tree after go() pass 2 ===
 AXWebArea AXTitle='Material Web Menu Events'
-++AXGroup AXDescription='Ready' AXTitle='Ready'
+++AXGroup AXDescription='Ready'
 ++++AXGroup
 ++++++AXGroup
 ++++++++AXGroup AXSubrole=AXEmptyGroup
-++++++++AXButton AXDescription='Open Menu' AXTitle='Open Menu'
+++++++++AXButton AXDescription='Open Menu'
 === End accessibility tree ===

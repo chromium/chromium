@@ -1,23 +1,23 @@
 AXWebArea
 ++AXGroup AXSubrole=AXEmptyGroup AXCustomActionNamesForTesting=['Target A']
 ++AXButton AXTitle='Target A'
-++AXLink AXDescription='Target B' AXTitle='Target B'
+++AXLink AXDescription='Target B'
 ++++AXStaticText AXValue='Target B'
 === Start Continuation ===
 AXWebArea AXTitle='switch-reference'
 ++AXGroup AXSubrole=AXEmptyGroup AXCustomActionNamesForTesting=['Target B']
 ++AXButton AXTitle='Target A'
-++AXLink AXDescription='Target B' AXTitle='Target B'
+++AXLink AXDescription='Target B'
 ++++AXStaticText AXValue='Target B'
 === Start Continuation ===
 AXWebArea AXTitle='remove-reference'
 ++AXGroup AXSubrole=AXEmptyGroup
 ++AXButton AXTitle='Target A'
-++AXLink AXDescription='Target B' AXTitle='Target B'
+++AXLink AXDescription='Target B'
 ++++AXStaticText AXValue='Target B'
 === Start Continuation ===
 AXWebArea AXTitle='restore-reference'
 ++AXGroup AXSubrole=AXEmptyGroup AXCustomActionNamesForTesting=['Target A']
 ++AXButton AXTitle='Target A'
-++AXLink AXDescription='Target B' AXTitle='Target B'
+++AXLink AXDescription='Target B'
 ++++AXStaticText AXValue='Target B'

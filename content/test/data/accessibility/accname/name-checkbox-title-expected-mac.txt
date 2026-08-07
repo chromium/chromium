@@ -1,1 +1,1 @@
-AXCheckBox AXDescription='foo' AXTitle='foo' AXValue=0
+AXCheckBox AXDescription='foo' AXValue=0

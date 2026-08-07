@@ -37,5 +37,5 @@ AXWebArea
 ++++AXStaticText AXValue='Manual (showing)'
 ++AXGroup AXSubrole=AXApplicationGroup
 ++++AXStaticText AXValue='Popover=hint (showing) '
-++++AXLink AXDescription='Link' AXTitle='Link'
+++++AXLink AXDescription='Link'
 ++++++AXStaticText AXValue='Link'

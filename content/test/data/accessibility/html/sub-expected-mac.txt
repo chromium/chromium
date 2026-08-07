@@ -14,7 +14,7 @@ AXWebArea
 ++++++++++++AXStaticText AXValue='3'
 ++++++AXStaticText AXValue=' '
 ++++++AXGroup AXSubrole=AXInsertStyleGroup
-++++++++AXLink AXDescription='2' AXTitle='2'
+++++++++AXLink AXDescription='2'
 ++++++++++AXGroup
 ++++++++++++AXStaticText AXValue='2'
 ++++++AXStaticText AXValue=' '

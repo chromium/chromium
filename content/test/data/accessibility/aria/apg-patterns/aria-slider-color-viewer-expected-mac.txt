@@ -1,5 +1,5 @@
 AXWebArea
-++AXGroup AXSubrole=AXApplicationGroup AXDescription='Color Viewer' AXTitle='Color Viewer'
+++AXGroup AXSubrole=AXApplicationGroup AXDescription='Color Viewer'
 ++++AXHeading AXTitle='Color Viewer' AXValue=3
 ++++++AXStaticText AXValue='Color Viewer'
 ++++AXGroup

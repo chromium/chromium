@@ -1,1 +1,1 @@
-AXComboBox AXDescription='Choose your language' AXTitle='Choose your language' AXValue='English'
+AXComboBox AXDescription='Choose your language' AXValue='English'

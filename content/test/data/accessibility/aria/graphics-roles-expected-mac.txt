@@ -1,4 +1,4 @@
 AXWebArea AXRoleDescription='HTML content'
-++AXGroup AXSubrole=AXEmptyGroup AXDescription='graphics-document' AXRoleDescription='graphics document' AXTitle='graphics-document'
-++AXGroup AXSubrole=AXEmptyGroup AXDescription='graphics-object' AXRoleDescription='graphics object' AXTitle='graphics-object'
-++AXImage AXDescription='graphics-symbol' AXRoleDescription='graphics symbol' AXTitle='graphics-symbol'
+++AXGroup AXSubrole=AXEmptyGroup AXDescription='graphics-document' AXRoleDescription='graphics document'
+++AXGroup AXSubrole=AXEmptyGroup AXDescription='graphics-object' AXRoleDescription='graphics object'
+++AXImage AXDescription='graphics-symbol' AXRoleDescription='graphics symbol'

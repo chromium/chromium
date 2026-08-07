@@ -1,7 +1,7 @@
 AXWebArea
-++AXCheckBox AXDescription='Title0' AXTitle='Title0'
+++AXCheckBox AXDescription='Title0'
 ++AXCheckBox AXHelp='Title1' AXTitle='Label1'
-++AXCheckBox AXDescription='AriaLabel2' AXHelp='Title2' AXTitle='AriaLabel2'
+++AXCheckBox AXDescription='AriaLabel2' AXHelp='Title2'
 ++AXCheckBox AXHelp='Title3' AXTitle='LabelledBy3'
 ++AXCheckBox AXCustomContent=[{label: 'description', value: 'DescribedBy4'}] AXTitle='LabelledBy4'
 ++AXCheckBox AXCustomContent=[{label: 'description', value: 'DescribedBy5'}]

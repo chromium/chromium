@@ -4,7 +4,7 @@ AXWebArea AXTitle='Action verbs'
 ++AXHeading AXTitle='Heading' AXValue=1
 ++++AXStaticText AXValue='Heading'
 ++AXButton AXTitle='Button'
-++AXLink AXDescription='Link' AXTitle='Link'
+++AXLink AXDescription='Link'
 ++++AXStaticText AXValue='Link'
 ++AXTextField
 ++AXTextField AXSubrole=AXSearchField

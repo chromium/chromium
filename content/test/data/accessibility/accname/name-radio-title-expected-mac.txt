@@ -1,1 +1,1 @@
-AXRadioButton AXDescription='foo' AXTitle='foo' AXValue=0
+AXRadioButton AXDescription='foo' AXValue=0

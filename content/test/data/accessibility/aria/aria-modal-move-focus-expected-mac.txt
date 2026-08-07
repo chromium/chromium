@@ -2,5 +2,5 @@ AXWebArea
 ++AXGroup AXSubrole=AXApplicationDialog
 ++++AXStaticText AXValue='Nonmodal'
 ++AXButton AXTitle='Outer Button'
-++AXGroup AXSubrole=AXApplicationDialog AXDescription='modal dialog' AXTitle='modal dialog'
+++AXGroup AXSubrole=AXApplicationDialog AXDescription='modal dialog'
 ++++AXButton AXTitle='Inner Button'
