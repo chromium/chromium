@@ -19,11 +19,6 @@
 
 namespace {
 
-// The amount of time after a snackbar is presented, during which it will
-// retain a11y focus so that VoiceOver is not interrupted by a modal dismissal
-// transition.
-const double kRetainA11yFocusSeconds = 2.0;
-
 // Animation constants.
 const NSTimeInterval kSnackbarAnimationDuration = 0.8;
 
@@ -95,10 +90,6 @@ const CGFloat kTextSpacing = 2.0;
 #pragma mark - Public
 
 - (void)presentAnimated:(BOOL)animated completion:(void (^)(void))completion {
-  if (UIAccessibilityIsVoiceOverRunning()) {
-    [self retainAccessibilityFocus];
-  }
-
   if (animated && !UIAccessibilityIsReduceMotionEnabled()) {
     self.alpha = 0;
     self.transform = CGAffineTransformMakeTranslation(
@@ -110,16 +101,10 @@ const CGFloat kTextSpacing = 2.0;
           self.transform = CGAffineTransformIdentity;
         }
         completion:^(BOOL finished) {
-          [self scheduleDismissal];
-          if (completion) {
-            completion();
-          }
+          [self handlePresentationCompletedWithCompletion:completion];
         }];
   } else {
-    [self scheduleDismissal];
-    if (completion) {
-      completion();
-    }
+    [self handlePresentationCompletedWithCompletion:completion];
   }
 }
 
@@ -542,34 +527,42 @@ const CGFloat kTextSpacing = 2.0;
   [self.delegate snackbarViewDidRequestDismissal:self];
 }
 
-// If another view becomes focused, the focus is forced back to the title view.
-- (void)retainAccessibilityFocus {
-  __weak UIView* weakView = _titleLabel;
-  auto retainFocus = ^(NSNotification* notification) {
-    id focusedElement = notification.userInfo[UIAccessibilityFocusedElementKey];
-    if (weakView && focusedElement != weakView) {
-      UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
-                                      weakView);
+// Handles post-presentation tasks such as accessibility announcement and
+// auto-dismissal.
+- (void)handlePresentationCompletedWithCompletion:(void (^)(void))completion {
+  if (UIAccessibilityIsVoiceOverRunning()) {
+    [self postAccessibilityAnnouncement];
+  }
+  [self scheduleDismissal];
+  if (completion) {
+    completion();
+  }
+}
+
+// Posts a high-priority accessibility announcement for the snackbar message.
+- (void)postAccessibilityAnnouncement {
+  if (!_titleLabel || !self.window) {
+    return;
+  }
+  NSString* announcement = _message.title;
+  if (_message.action) {
+    NSString* actionTitle =
+        _message.action.accessibilityLabel ?: _message.action.title;
+    if (actionTitle.length) {
+      announcement =
+          [NSString stringWithFormat:@"%@. %@", _message.title, actionTitle];
     }
-  };
-
-  // Observe accessibility focus changes.
-  id observer = [[NSNotificationCenter defaultCenter]
-      addObserverForName:UIAccessibilityElementFocusedNotification
-                  object:nil
-                   queue:nil
-              usingBlock:retainFocus];
-
-  // Post an initial notification to focus the snackbar.
-  UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
-                                  _titleLabel);
-
-  // Stop observing after `kRetainA11yFocusSeconds`.
-  dispatch_time_t time =
-      dispatch_time(DISPATCH_TIME_NOW, kRetainA11yFocusSeconds * NSEC_PER_SEC);
-  dispatch_after(time, dispatch_get_main_queue(), ^{
-    [[NSNotificationCenter defaultCenter] removeObserver:observer];
-  });
+  }
+  // Use high priority to prevent the announcement from being interrupted by
+  // subsequent UI transitions or focus changes.
+  NSAttributedString* queuedAnnouncement = [[NSAttributedString alloc]
+      initWithString:announcement
+          attributes:@{
+            UIAccessibilitySpeechAttributeAnnouncementPriority :
+                UIAccessibilityPriorityHigh
+          }];
+  UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
+                                  queuedAnnouncement);
 }
 
 // Schedules the automatic dismissal of the snackbar.
