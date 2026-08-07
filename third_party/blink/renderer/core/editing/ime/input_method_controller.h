@@ -191,8 +191,9 @@ class CORE_EXPORT InputMethodController final
   CachedTextInputInfo cached_text_input_info_;
   Member<Range> composition_range_;
   Member<EditContext> active_edit_context_;
-  bool has_composition_;
-  ui::mojom::VirtualKeyboardVisibilityRequest last_vk_visibility_request_;
+  bool has_composition_ = false;
+  ui::mojom::VirtualKeyboardVisibilityRequest last_vk_visibility_request_ =
+      ui::mojom::VirtualKeyboardVisibilityRequest::NONE;
 
   Editor& GetEditor() const;
   LocalFrame& GetFrame() const;

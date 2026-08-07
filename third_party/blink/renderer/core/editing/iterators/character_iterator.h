@@ -90,9 +90,9 @@ class CharacterIteratorAlgorithm {
  private:
   void Initialize();
 
-  wtf_size_t offset_;
-  wtf_size_t run_offset_;
-  bool at_break_;
+  wtf_size_t offset_ = 0;
+  wtf_size_t run_offset_ = 0;
+  bool at_break_ = true;
 
   TextIteratorAlgorithm<Strategy> text_iterator_;
 };

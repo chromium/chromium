@@ -133,7 +133,7 @@ class EphemeralRangeTemplate final {
   PositionTemplate<Strategy> start_position_;
   PositionTemplate<Strategy> end_position_;
 #if DCHECK_IS_ON()
-  uint64_t dom_tree_version_;
+  uint64_t dom_tree_version_ = 0;
 #endif
 };
 

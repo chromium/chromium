@@ -105,10 +105,11 @@ class VisibleSelectionTemplate {
   // Where the end click happened
   PositionTemplate<Strategy> focus_;
 
-  TextAffinity affinity_;  // the upstream/downstream affinity of the caret
+  // The upstream/downstream affinity of the caret.
+  TextAffinity affinity_ = TextAffinity::kDownstream;
 
   // these are cached, can be recalculated by validate()
-  bool anchor_is_first_ : 1;  // True if anchor is before the focus
+  bool anchor_is_first_ : 1 = true;  // True if anchor is before the focus
 };
 
 extern template class CORE_EXTERN_TEMPLATE_EXPORT

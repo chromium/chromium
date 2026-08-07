@@ -80,8 +80,8 @@ class CORE_EXPORT PlainTextRange {
   EphemeralRange CreateRangeFor(const ContainerNode& scope,
                                 const TextIteratorBehavior&) const;
 
-  const wtf_size_t start_;
-  const wtf_size_t end_;
+  const wtf_size_t start_ = kNotFound;
+  const wtf_size_t end_ = kNotFound;
 };
 
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const PlainTextRange&);

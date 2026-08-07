@@ -55,8 +55,7 @@ SurroundingText::SurroundingText(LocalFrame* frame, wtf_size_t max_length)
     : SurroundingText(ComputeRangeFromFrameSelection(frame), max_length) {}
 
 SurroundingText::SurroundingText(const EphemeralRange& range,
-                                 wtf_size_t max_length)
-    : start_offset_in_text_content_(0), end_offset_in_text_content_(0) {
+                                 wtf_size_t max_length) {
   const Position start_position = range.StartPosition();
   const Position end_position = range.EndPosition();
   const wtf_size_t half_max_length = max_length / 2;

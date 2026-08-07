@@ -214,13 +214,11 @@ TypingCommand::TypingCommand(Document& document,
     : CompositeEditCommand(document, data_transfer),
       command_type_(command_type),
       text_to_insert_(NormalizeTextForInsertion(text_to_insert)),
-      open_for_more_typing_(true),
       select_inserted_text_(options & kSelectInsertedText),
       smart_delete_(options & kSmartDelete),
       granularity_(granularity),
       composition_type_(composition_type),
-      kill_ring_(options & kKillRing),
-      opened_by_backward_delete_(false) {
+      kill_ring_(options & kKillRing) {
   UpdatePreservesTypingStyle(command_type_);
 }
 

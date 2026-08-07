@@ -28,7 +28,7 @@ class TextOffset {
 
  private:
   Text* text_ = nullptr;
-  int offset_;
+  int offset_ = 0;
 };
 
 }  // namespace blink

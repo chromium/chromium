@@ -62,8 +62,8 @@ class CORE_EXPORT SurroundingText {
 
  private:
   String text_content_;
-  wtf_size_t start_offset_in_text_content_;
-  wtf_size_t end_offset_in_text_content_;
+  wtf_size_t start_offset_in_text_content_ = 0;
+  wtf_size_t end_offset_in_text_content_ = 0;
 };
 
 }  // namespace blink

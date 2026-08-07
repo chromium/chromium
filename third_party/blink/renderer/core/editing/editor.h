@@ -253,12 +253,15 @@ class CORE_EXPORT Editor final : public GarbageCollected<Editor> {
   Member<LocalFrame> frame_;
   Member<CompositeEditCommand> last_edit_command_;
   const Member<UndoStack> undo_stack_;
-  int prevent_reveal_selection_;
-  bool should_start_new_kill_ring_sequence_;
-  bool should_style_with_css_;
+  int prevent_reveal_selection_ = 0;
+  bool should_start_new_kill_ring_sequence_ = false;
+  // This is off by default, since most editors want this behavior (this
+  // matches IE but not FF).
+  bool should_style_with_css_ = false;
   const std::unique_ptr<KillRing> kill_ring_;
   VisibleSelection mark_;
-  EditorParagraphSeparator default_paragraph_separator_;
+  EditorParagraphSeparator default_paragraph_separator_ =
+      EditorParagraphSeparator::kIsDiv;
   Member<EditingStyle> typing_style_;
   bool mark_is_directional_ = false;
   HeapHashSet<Member<ImageResourceObserver>> image_resource_observers_;

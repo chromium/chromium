@@ -171,7 +171,7 @@ class CORE_EXPORT TypingCommand final : public CompositeEditCommand {
 
   CommandType command_type_;
   String text_to_insert_;
-  bool open_for_more_typing_;
+  bool open_for_more_typing_ = true;
   const bool select_inserted_text_;
   bool smart_delete_;
   const TextGranularity granularity_;
@@ -184,7 +184,7 @@ class CORE_EXPORT TypingCommand final : public CompositeEditCommand {
   // Undoing a series of backward deletes will restore a selection around all of
   // the characters that were deleted, but only if the typing command being
   // undone was opened with a backward delete.
-  bool opened_by_backward_delete_;
+  bool opened_by_backward_delete_ = false;
 
   bool is_incremental_insertion_;
   wtf_size_t selection_start_;

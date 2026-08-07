@@ -38,7 +38,7 @@
 
 namespace blink {
 
-PlainTextRange::PlainTextRange() : start_(kNotFound), end_(kNotFound) {}
+PlainTextRange::PlainTextRange() = default;
 
 PlainTextRange::PlainTextRange(const PlainTextRange&) = default;
 

@@ -208,7 +208,7 @@ class TextIteratorAlgorithm {
   // Current position, not necessarily of the text being returned, but position
   // as we walk through the DOM tree.
   const Node* node_;
-  IterationProgress iteration_progress_;
+  IterationProgress iteration_progress_ = kHandledNone;
   FullyClippedStateStackAlgorithm<Strategy> fully_clipped_stack_;
   wtf_size_t shadow_depth_;
 

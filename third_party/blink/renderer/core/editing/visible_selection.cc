@@ -42,8 +42,7 @@
 namespace blink {
 
 template <typename Strategy>
-VisibleSelectionTemplate<Strategy>::VisibleSelectionTemplate()
-    : affinity_(TextAffinity::kDownstream), anchor_is_first_(true) {}
+VisibleSelectionTemplate<Strategy>::VisibleSelectionTemplate() = default;
 
 template <typename Strategy>
 VisibleSelectionTemplate<Strategy>::VisibleSelectionTemplate(

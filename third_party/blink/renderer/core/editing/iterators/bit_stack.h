@@ -46,7 +46,7 @@ class CORE_EXPORT BitStack {
   wtf_size_t size() const;
 
  private:
-  wtf_size_t size_;
+  wtf_size_t size_ = 0;
   Vector<uint32_t, 1> words_;
 };
 

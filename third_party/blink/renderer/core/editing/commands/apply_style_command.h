@@ -174,14 +174,15 @@ class CORE_EXPORT ApplyStyleCommand final : public CompositeEditCommand {
   Position EndPosition();
 
   const Member<EditingStyle> style_;
-  const InputEvent::InputType input_type_;
-  const PropertyLevel property_level_;
+  const InputEvent::InputType input_type_ = InputEvent::InputType::kNone;
+  const PropertyLevel property_level_ = kPropertyDefault;
   Position start_;
   Position end_;
-  bool use_ending_selection_;
-  const Member<Element> styled_inline_element_;
-  const bool remove_only_;
-  IsInlineElementToRemoveFunction const is_inline_element_to_remove_function_;
+  bool use_ending_selection_ = true;
+  const Member<Element> styled_inline_element_ = nullptr;
+  const bool remove_only_ = false;
+  IsInlineElementToRemoveFunction const is_inline_element_to_remove_function_ =
+      nullptr;
 };
 
 enum ShouldStyleAttributeBeEmpty {

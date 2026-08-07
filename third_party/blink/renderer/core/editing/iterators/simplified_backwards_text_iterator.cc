@@ -103,16 +103,7 @@ SimplifiedBackwardsTextIteratorAlgorithm<Strategy>::
     SimplifiedBackwardsTextIteratorAlgorithm(
         const EphemeralRangeTemplate<Strategy>& range,
         const TextIteratorBehavior& behavior)
-    : behavior_(behavior),
-      text_state_(behavior),
-      node_(nullptr),
-      handled_node_(false),
-      handled_children_(false),
-      start_node_(nullptr),
-      end_node_(nullptr),
-      have_passed_start_node_(false),
-      should_handle_first_letter_(false),
-      should_stop_(false) {
+    : behavior_(behavior), text_state_(behavior) {
   const Node* start_node = range.StartPosition().AnchorNode();
   if (!start_node)
     return;

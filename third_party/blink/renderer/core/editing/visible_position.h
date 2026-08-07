@@ -115,8 +115,8 @@ class VisiblePositionTemplate final {
   PositionWithAffinityTemplate<Strategy> position_with_affinity_;
 
 #if DCHECK_IS_ON()
-  uint64_t dom_tree_version_;
-  uint64_t style_version_;
+  uint64_t dom_tree_version_ = 0;
+  uint64_t style_version_ = 0;
 #endif
 };
 

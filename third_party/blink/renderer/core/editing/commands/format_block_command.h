@@ -56,7 +56,7 @@ class CORE_EXPORT FormatBlockCommand final : public ApplyBlockElementCommand {
                    VisiblePosition& out_end_of_next_of_paragraph_to_move,
                    EditingState*) override;
 
-  bool did_apply_;
+  bool did_apply_ = false;
 };
 
 }  // namespace blink

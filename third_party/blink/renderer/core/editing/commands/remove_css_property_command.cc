@@ -37,10 +37,7 @@ namespace blink {
 RemoveCssPropertyCommand::RemoveCssPropertyCommand(Document& document,
                                                    Element* element,
                                                    CSSPropertyID property)
-    : SimpleEditCommand(document),
-      element_(element),
-      property_(property),
-      important_(false) {
+    : SimpleEditCommand(document), element_(element), property_(property) {
   DCHECK(element_);
 }
 

@@ -235,19 +235,7 @@ class StyleChange {
   DISALLOW_NEW();
 
  public:
-  StyleChange()
-      : apply_bold_(false),
-        apply_italic_(false),
-        apply_underline_(false),
-        apply_line_through_(false),
-        apply_subscript_(false),
-        apply_superscript_(false),
-        bold_tag_(g_null_atom),
-        italic_tag_(g_null_atom),
-        underline_tag_(g_null_atom),
-        line_through_tag_(g_null_atom),
-        subscript_tag_(g_null_atom),
-        superscript_tag_(g_null_atom) {}
+  StyleChange() = default;
 
   StyleChange(EditingStyle*, const Position&);
 
@@ -301,24 +289,24 @@ class StyleChange {
       MutableCSSPropertyValueSet* mutable_style);
 
   String css_style_;
-  bool apply_bold_;
-  bool apply_italic_;
-  bool apply_underline_;
-  bool apply_line_through_;
-  bool apply_subscript_;
-  bool apply_superscript_;
+  bool apply_bold_ = false;
+  bool apply_italic_ = false;
+  bool apply_underline_ = false;
+  bool apply_line_through_ = false;
+  bool apply_subscript_ = false;
+  bool apply_superscript_ = false;
   String apply_font_color_;
   String apply_font_face_;
   String apply_font_size_;
 
   // Original HTML equivalent tag names to use instead of hardcoded tags.
   // Defaults are <b>, <i>, <u>, <strike>, <sub>, and <sup>.
-  QualifiedName bold_tag_;
-  QualifiedName italic_tag_;
-  QualifiedName underline_tag_;
-  QualifiedName line_through_tag_;
-  QualifiedName subscript_tag_;
-  QualifiedName superscript_tag_;
+  QualifiedName bold_tag_ = g_null_name;
+  QualifiedName italic_tag_ = g_null_name;
+  QualifiedName underline_tag_ = g_null_name;
+  QualifiedName line_through_tag_ = g_null_name;
+  QualifiedName subscript_tag_ = g_null_name;
+  QualifiedName superscript_tag_ = g_null_name;
 };
 
 // FIXME: Remove these functions or make them non-global to discourage using

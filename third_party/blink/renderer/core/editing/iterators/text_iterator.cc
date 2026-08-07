@@ -223,7 +223,6 @@ TextIteratorAlgorithm<Strategy>::TextIteratorAlgorithm(
       end_node_(EndNode<Strategy>(*end_container_, end_offset_)),
       past_end_node_(PastLastNode<Strategy>(*end_container_, end_offset_)),
       node_(StartNode<Strategy>(start_container_, start_offset_)),
-      iteration_progress_(kHandledNone),
       shadow_depth_(
           ShadowDepthOf<Strategy>(*start_container_, *end_container_)),
       behavior_(AdjustBehaviorFlags<Strategy>(behavior)),

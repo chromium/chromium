@@ -109,7 +109,7 @@ class ColdModeSpellCheckRequester
       fully_checked_root_editables_;
 
   // A test-only flag for forcing lifecycle advancing.
-  mutable bool needs_more_invocation_for_testing_;
+  mutable bool needs_more_invocation_for_testing_ = false;
 };
 }
 

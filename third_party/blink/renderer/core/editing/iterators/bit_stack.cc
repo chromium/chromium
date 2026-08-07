@@ -31,7 +31,7 @@ namespace blink {
 static const wtf_size_t kBitsInWord = sizeof(uint32_t) * 8;
 static const wtf_size_t kBitInWordMask = kBitsInWord - 1;
 
-BitStack::BitStack() : size_(0) {}
+BitStack::BitStack() = default;
 
 BitStack::~BitStack() = default;
 

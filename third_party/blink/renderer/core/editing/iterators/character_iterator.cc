@@ -37,10 +37,7 @@ CharacterIteratorAlgorithm<Strategy>::CharacterIteratorAlgorithm(
     const PositionTemplate<Strategy>& start,
     const PositionTemplate<Strategy>& end,
     const TextIteratorBehavior& behavior)
-    : offset_(0),
-      run_offset_(0),
-      at_break_(true),
-      text_iterator_(start, end, behavior) {
+    : text_iterator_(start, end, behavior) {
   Initialize();
 }
 

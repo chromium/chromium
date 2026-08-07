@@ -831,17 +831,7 @@ std::optional<wtf_size_t> TextFinder::SelectFindMatch(
 TextFinder::TextFinder(WebLocalFrameImpl& owner_frame)
     : owner_frame_(&owner_frame),
       find_task_controller_(
-          MakeGarbageCollected<FindTaskController>(owner_frame, *this)),
-      current_active_match_frame_(false),
-      active_match_index_(-1),
-      total_match_count_(-1),
-      frame_scoping_(false),
-      find_request_identifier_(-1),
-      next_invalidate_after_(0),
-      find_match_markers_version_(0),
-      should_locate_active_rect_(false),
-      scoping_in_progress_(false),
-      find_match_rects_are_valid_(false) {}
+          MakeGarbageCollected<FindTaskController>(owner_frame, *this)) {}
 
 bool TextFinder::SetMarkerActive(Range* range, bool active) {
   if (!range || range->collapsed())

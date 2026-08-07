@@ -58,7 +58,7 @@ class AbstractInlineBox {
   STACK_ALLOCATED();
 
  public:
-  AbstractInlineBox() : type_(InstanceType::kNull) {}
+  AbstractInlineBox() = default;
 
   explicit AbstractInlineBox(const InlineCursor& cursor)
       : type_(InstanceType::kNG),
@@ -145,7 +145,7 @@ class AbstractInlineBox {
   }
 
   enum class InstanceType { kNull, kNG };
-  InstanceType type_;
+  InstanceType type_ = InstanceType::kNull;
 
   // Because of |MoveToContainingLine()| isn't cheap and we avoid to call each
   // |MoveTo{Next,Previous}InlineLeaf()|, we hold containing line rooted cursor

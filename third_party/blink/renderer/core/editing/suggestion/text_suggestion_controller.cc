@@ -206,9 +206,7 @@ SuggestionInfosWithNodeAndHighlightColor ComputeSuggestionInfos(
 }  // namespace
 
 TextSuggestionController::TextSuggestionController(LocalDOMWindow& window)
-    : is_suggestion_menu_open_(false),
-      window_(&window),
-      text_suggestion_host_(&window) {}
+    : window_(&window), text_suggestion_host_(&window) {}
 
 bool TextSuggestionController::IsMenuOpen() const {
   return is_suggestion_menu_open_;

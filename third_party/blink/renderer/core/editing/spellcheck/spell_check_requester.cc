@@ -100,13 +100,11 @@ class WebTextCheckingCompletionImpl : public WebTextCheckingCompletion {
 
 }  // namespace
 
-SpellCheckRequest::SpellCheckRequest(
-    Range* checking_range,
-    const String& text,
-    int request_number,
-    bool should_force_refresh)
-    : requester_(nullptr),
-      checking_range_(checking_range),
+SpellCheckRequest::SpellCheckRequest(Range* checking_range,
+                                     const String& text,
+                                     int request_number,
+                                     bool should_force_refresh)
+    : checking_range_(checking_range),
       root_editable_element_(
           blink::RootEditableElement(*checking_range_->startContainer())),
       text_(text),

@@ -128,8 +128,8 @@ class ReplacementFragment final {
   Document* document_;
   DocumentFragment* fragment_;
   String trivial_text_;
-  bool has_interchange_newline_at_start_;
-  bool has_interchange_newline_at_end_;
+  bool has_interchange_newline_at_start_ = false;
+  bool has_interchange_newline_at_end_ = false;
 };
 
 static bool IsInterchangeHTMLBRElement(const Node* node) {
@@ -179,10 +179,7 @@ static Position PositionAvoidingPrecedingNodes(Position pos) {
 ReplacementFragment::ReplacementFragment(Document* document,
                                          DocumentFragment* fragment,
                                          const VisibleSelection& selection)
-    : document_(document),
-      fragment_(fragment),
-      has_interchange_newline_at_start_(false),
-      has_interchange_newline_at_end_(false) {
+    : document_(document), fragment_(fragment) {
   if (!document_)
     return;
   if (!fragment_ || !fragment_->HasChildren())
@@ -519,8 +516,7 @@ ReplaceSelectionCommand::ReplaceSelectionCommand(
       moving_paragraph_(options & kMovingParagraph),
       password_echo_behavior_(password_echo_behavior),
       input_type_(input_type),
-      sanitize_fragment_(options & kSanitizeFragment),
-      should_merge_end_(false) {}
+      sanitize_fragment_(options & kSanitizeFragment) {}
 
 String ReplaceSelectionCommand::TextDataForInputEvent() const {
   // As per spec https://www.w3.org/TR/input-events-1/#overview

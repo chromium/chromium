@@ -399,7 +399,7 @@ class CORE_EXPORT FrameSelection final
   const Member<LayoutSelection> layout_selection_;
   const Member<SelectionEditor> selection_editor_;
 
-  TextGranularity granularity_;
+  TextGranularity granularity_ = TextGranularity::kCharacter;
   LayoutUnit x_pos_for_vertical_arrow_navigation_;
 
   // Bidi embedding level of the caret's current fragment. Persisted across

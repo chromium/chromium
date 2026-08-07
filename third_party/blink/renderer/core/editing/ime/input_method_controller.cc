@@ -352,11 +352,7 @@ enum class InputMethodController::TypingContinuation { kContinue, kEnd };
 
 InputMethodController::InputMethodController(LocalDOMWindow& window,
                                              LocalFrame& frame)
-    : ExecutionContextLifecycleObserver(&window),
-      frame_(frame),
-      has_composition_(false),
-      last_vk_visibility_request_(
-          ui::mojom::VirtualKeyboardVisibilityRequest::NONE) {}
+    : ExecutionContextLifecycleObserver(&window), frame_(frame) {}
 
 InputMethodController::~InputMethodController() = default;
 

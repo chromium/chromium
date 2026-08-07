@@ -2099,9 +2099,7 @@ bool Editor::IsCommandEnabled(const String& command_name) const {
 }
 
 EditorCommand::EditorCommand()
-    : command_(nullptr),
-      source_(EditorCommandSource::kMenuOrKeyBinding),
-      frame_(nullptr) {}
+    : source_(EditorCommandSource::kMenuOrKeyBinding) {}
 
 EditorCommand::EditorCommand(const EditorInternalCommand* command,
                              EditorCommandSource source,

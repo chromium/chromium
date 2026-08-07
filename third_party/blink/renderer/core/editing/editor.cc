@@ -476,13 +476,7 @@ void Editor::ApplyParagraphStyleToSelection(CSSPropertyValueSet* style,
 Editor::Editor(LocalFrame& frame)
     : frame_(&frame),
       undo_stack_(MakeGarbageCollected<UndoStack>()),
-      prevent_reveal_selection_(0),
-      should_start_new_kill_ring_sequence_(false),
-      // This is off by default, since most editors want this behavior (this
-      // matches IE but not FF).
-      should_style_with_css_(false),
-      kill_ring_(std::make_unique<KillRing>()),
-      default_paragraph_separator_(EditorParagraphSeparator::kIsDiv) {}
+      kill_ring_(std::make_unique<KillRing>()) {}
 
 Editor::~Editor() = default;
 

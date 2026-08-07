@@ -51,9 +51,7 @@ void ColdModeSpellCheckRequester::Trace(Visitor* visitor) const {
 }
 
 ColdModeSpellCheckRequester::ColdModeSpellCheckRequester(LocalDOMWindow& window)
-    : window_(window),
-      last_chunk_index_(kInvalidChunkIndex),
-      needs_more_invocation_for_testing_(false) {}
+    : window_(window), last_chunk_index_(kInvalidChunkIndex) {}
 
 bool ColdModeSpellCheckRequester::FullyCheckedCurrentRootEditable() const {
   if (needs_more_invocation_for_testing_) {

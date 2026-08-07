@@ -106,28 +106,28 @@ class SimplifiedBackwardsTextIteratorAlgorithm {
 
   // Current position, not necessarily of the text being returned, but position
   // as we walk through the DOM tree.
-  const Node* node_;
+  const Node* node_ = nullptr;
   wtf_size_t offset_ = 0;
-  bool handled_node_;
-  bool handled_children_;
+  bool handled_node_ = false;
+  bool handled_children_ = false;
   FullyClippedStateStackAlgorithm<Strategy> fully_clipped_stack_;
 
   // End of the range.
-  const Node* start_node_;
+  const Node* start_node_ = nullptr;
   wtf_size_t start_offset_ = 0;
   // Start of the range.
-  const Node* end_node_;
+  const Node* end_node_ = nullptr;
   wtf_size_t end_offset_ = 0;
 
   // Whether |node_| has advanced beyond the iteration range (i.e. start_node_).
-  bool have_passed_start_node_;
+  bool have_passed_start_node_ = false;
 
   // Should handle first-letter layoutObject in the next call to handleTextNode.
-  bool should_handle_first_letter_;
+  bool should_handle_first_letter_ = false;
 
   // Used when behavior_.StopOnFormControls() is true to determine if the
   // iterator should keep advancing.
-  bool should_stop_;
+  bool should_stop_ = false;
 };
 
 extern template class CORE_EXTERN_TEMPLATE_EXPORT

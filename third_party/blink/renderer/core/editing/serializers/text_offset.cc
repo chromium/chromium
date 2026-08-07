@@ -8,7 +8,7 @@
 
 namespace blink {
 
-TextOffset::TextOffset() : offset_(0) {}
+TextOffset::TextOffset() = default;
 
 TextOffset::TextOffset(Text* text, int offset) : text_(text), offset_(offset) {}
 
