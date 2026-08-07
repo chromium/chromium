@@ -108,8 +108,10 @@ bool ParseStatsResponse(const std::string& response_body,
 // Parses the response from the previews endpoint (ProtoJSON format). Returns
 // true if the response format is as expected (or if the data is properly
 // structured but empty).
-bool ParsePreviewsResponse(const std::string& response_body,
-                           AccountPreviewData& data) {
+bool ParsePreviewsResponse(
+    const std::string& response_body,
+    AccountPreviewData& data,
+    const base::flat_set<std::string>& current_device_cache_guids) {
   std::optional<base::Value> value =
       base::JSONReader::Read(response_body, base::JSON_PARSE_RFC);
   if (!value || !value->is_dict()) {
@@ -143,9 +145,13 @@ bool ParsePreviewsResponse(const std::string& response_body,
       continue;
     }
 
+    // Filter out current device.
+    if (current_device_cache_guids.contains(*cache_guid)) {
+      continue;
+    }
+
     const std::string* sync_user_agent =
         device_info_preview->FindString("syncUserAgent");
-
     // Filter out non-Chrome devices (e.g. Google Play Services or iGSA).
     if (!device_info_preview->FindDict("chromeVersionInfo") ||
         (sync_user_agent && sync_user_agent->starts_with("iGSA"))) {
@@ -173,8 +179,6 @@ bool ParsePreviewsResponse(const std::string& response_body,
         device_info_preview->FindInt("deviceFormFactor").value_or(0);
     device.form_factor =
         static_cast<sync_pb::SyncEnums_DeviceFormFactor>(form_factor_int);
-
-    // TODO(crbug.com/532420460): filter out current device.
 
     data.devices.push_back(std::move(device));
   }
@@ -224,11 +228,13 @@ AccountPreviewDataFetcher::AccountPreviewDataFetcher(
     IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     version_info::Channel channel,
+    base::flat_set<std::string> current_device_cache_guids,
     FetchCompleteCallback callback)
     : gaia_id_(gaia_id),
       identity_manager_(identity_manager),
       url_loader_factory_(std::move(url_loader_factory)),
       channel_(channel),
+      current_device_cache_guids_(std::move(current_device_cache_guids)),
       callback_(std::move(callback)) {
   CHECK(identity_manager_);
 }
@@ -377,7 +383,8 @@ void AccountPreviewDataFetcher::OnPreviewsFetchCompleted(
                                     ? FetchState::kEntityPreviewHasResult
                                     : FetchState::kEntityPreviewEmptyResult);
   bool success = response_body.has_value() &&
-                 ParsePreviewsResponse(*response_body, *fetched_data_);
+                 ParsePreviewsResponse(*response_body, *fetched_data_,
+                                       current_device_cache_guids_);
   barrier_callback_.Run(success);
 }
 

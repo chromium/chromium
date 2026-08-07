@@ -30,6 +30,10 @@ namespace network {
 class SharedURLLoaderFactory;
 }
 
+namespace syncer {
+class SyncService;
+}
+
 namespace signin {
 
 class PersistentRepeatingTimer;
@@ -50,6 +54,7 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
 
   AccountPreviewDataServiceImpl(
       IdentityManager* identity_manager,
+      syncer::SyncService* sync_service,
       PrefService* pref_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<WaitForNetworkCallbackHelper> network_delay_helper,
@@ -117,6 +122,7 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
       std::optional<AccountPreviewPreference> preference);
 
   raw_ptr<IdentityManager> identity_manager_ = nullptr;
+  raw_ptr<syncer::SyncService> sync_service_ = nullptr;
   raw_ptr<PrefService> pref_service_ = nullptr;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<WaitForNetworkCallbackHelper> network_delay_helper_;

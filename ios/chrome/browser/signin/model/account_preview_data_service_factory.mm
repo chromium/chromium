@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/metrics/model/ios_profile_metrics_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/common/channel_info.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -39,6 +40,7 @@ AccountPreviewDataServiceFactory::AccountPreviewDataServiceFactory()
                                     TestingCreation::kNoServiceForTests) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(IOSProfileMetricsServiceFactory::GetInstance());
+  DependsOn(SyncServiceFactory::GetInstance());
 }
 
 AccountPreviewDataServiceFactory::~AccountPreviewDataServiceFactory() = default;
@@ -54,7 +56,8 @@ AccountPreviewDataServiceFactory::BuildServiceInstanceFor(
       IOSProfileMetricsServiceFactory::GetForProfile(profile);
 
   return std::make_unique<signin::AccountPreviewDataServiceImpl>(
-      IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs(),
+      IdentityManagerFactory::GetForProfile(profile),
+      SyncServiceFactory::GetForProfile(profile), profile->GetPrefs(),
       profile->GetSharedURLLoaderFactory(),
       std::make_unique<WaitForNetworkCallbackHelperIOS>(), ::GetChannel(),
       profile_metrics_service);

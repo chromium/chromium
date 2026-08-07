@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -71,6 +72,7 @@ class AccountPreviewDataFetcher {
       IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       version_info::Channel channel,
+      base::flat_set<std::string> current_device_cache_guids,
       FetchCompleteCallback callback);
   ~AccountPreviewDataFetcher();
 
@@ -96,6 +98,7 @@ class AccountPreviewDataFetcher {
   const raw_ptr<IdentityManager> identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const version_info::Channel channel_;
+  const base::flat_set<std::string> current_device_cache_guids_;
   FetchCompleteCallback callback_;
 
   std::unique_ptr<AccessTokenFetcher> token_fetcher_;

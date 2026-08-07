@@ -81,7 +81,9 @@ TEST_F(AccountPreviewDataFetcherTest, Success) {
   auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
       account_info.gaia, identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
-      version_info::Channel::UNKNOWN, future.GetCallback());
+      version_info::Channel::UNKNOWN,
+      /*current_device_cache_guids=*/base::flat_set<std::string>(),
+      future.GetCallback());
   fetcher->Start();
 
   auto [gaia_id, result_data] = future.Take();
@@ -121,7 +123,9 @@ TEST_F(AccountPreviewDataFetcherTest, SuccessWithPreviewsDisabled) {
   auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
       account_info.gaia, identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
-      version_info::Channel::UNKNOWN, future.GetCallback());
+      version_info::Channel::UNKNOWN,
+      /*current_device_cache_guids=*/base::flat_set<std::string>(),
+      future.GetCallback());
   fetcher->Start();
 
   auto [gaia_id, result_data] = future.Take();
@@ -158,7 +162,9 @@ TEST_F(AccountPreviewDataFetcherTest, SuccessEmpty) {
   auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
       account_info.gaia, identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
-      version_info::Channel::UNKNOWN, future.GetCallback());
+      version_info::Channel::UNKNOWN,
+      /*current_device_cache_guids=*/base::flat_set<std::string>(),
+      future.GetCallback());
   fetcher->Start();
 
   auto [gaia_id, result_data] = future.Take();
@@ -192,7 +198,9 @@ TEST_F(AccountPreviewDataFetcherTest, AccessTokenFailure) {
   auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
       account_info.gaia, identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
-      version_info::Channel::UNKNOWN, future.GetCallback());
+      version_info::Channel::UNKNOWN,
+      /*current_device_cache_guids=*/base::flat_set<std::string>(),
+      future.GetCallback());
   fetcher->Start();
 
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
@@ -224,7 +232,9 @@ TEST_F(AccountPreviewDataFetcherTest, StatsFailure) {
   auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
       account_info.gaia, identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
-      version_info::Channel::UNKNOWN, future.GetCallback());
+      version_info::Channel::UNKNOWN,
+      /*current_device_cache_guids=*/base::flat_set<std::string>(),
+      future.GetCallback());
   fetcher->Start();
 
   auto [gaia_id, result_data] = future.Take();
@@ -257,7 +267,9 @@ TEST_F(AccountPreviewDataFetcherTest, PreviewsFailure) {
   auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
       account_info.gaia, identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
-      version_info::Channel::UNKNOWN, future.GetCallback());
+      version_info::Channel::UNKNOWN,
+      /*current_device_cache_guids=*/base::flat_set<std::string>(),
+      future.GetCallback());
   fetcher->Start();
 
   auto [gaia_id, result_data] = future.Take();
@@ -295,7 +307,9 @@ TEST_F(AccountPreviewDataFetcherTest, StatsInvalidJson) {
   auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
       account_info.gaia, identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
-      version_info::Channel::UNKNOWN, future.GetCallback());
+      version_info::Channel::UNKNOWN,
+      /*current_device_cache_guids=*/base::flat_set<std::string>(),
+      future.GetCallback());
   fetcher->Start();
 
   auto [gaia_id, result_data] = future.Take();
@@ -329,7 +343,9 @@ TEST_F(AccountPreviewDataFetcherTest, PreviewsInvalidJson) {
   auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
       account_info.gaia, identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
-      version_info::Channel::UNKNOWN, future.GetCallback());
+      version_info::Channel::UNKNOWN,
+      /*current_device_cache_guids=*/base::flat_set<std::string>(),
+      future.GetCallback());
   fetcher->Start();
 
   auto [gaia_id, result_data] = future.Take();
@@ -361,7 +377,9 @@ TEST_F(AccountPreviewDataFetcherTest, BothRequestsFail) {
   auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
       account_info.gaia, identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
-      version_info::Channel::UNKNOWN, future.GetCallback());
+      version_info::Channel::UNKNOWN,
+      /*current_device_cache_guids=*/base::flat_set<std::string>(),
+      future.GetCallback());
   fetcher->Start();
 
   auto [gaia_id, result_data] = future.Take();
@@ -434,7 +452,9 @@ TEST_F(AccountPreviewDataFetcherTest, PreviewsInvalidCacheGuid) {
   auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
       account_info.gaia, identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
-      version_info::Channel::UNKNOWN, future.GetCallback());
+      version_info::Channel::UNKNOWN,
+      /*current_device_cache_guids=*/base::flat_set<std::string>(),
+      future.GetCallback());
   fetcher->Start();
 
   auto [gaia_id, result_data] = future.Take();
@@ -472,7 +492,9 @@ TEST_F(AccountPreviewDataFetcherTest, PreviewsInvalidFormFactorOrOsType) {
   auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
       account_info.gaia, identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
-      version_info::Channel::UNKNOWN, future.GetCallback());
+      version_info::Channel::UNKNOWN,
+      /*current_device_cache_guids=*/base::flat_set<std::string>(),
+      future.GetCallback());
   fetcher->Start();
 
   auto [gaia_id, result_data] = future.Take();
@@ -544,7 +566,9 @@ TEST_F(AccountPreviewDataFetcherTest, FiltersNonChromeDevices) {
   auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
       account_info.gaia, identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
-      version_info::Channel::UNKNOWN, future.GetCallback());
+      version_info::Channel::UNKNOWN,
+      /*current_device_cache_guids=*/base::flat_set<std::string>(),
+      future.GetCallback());
   fetcher->Start();
 
   auto [gaia_id, result_data] = future.Take();
@@ -552,6 +576,62 @@ TEST_F(AccountPreviewDataFetcherTest, FiltersNonChromeDevices) {
   ASSERT_TRUE(result_data.has_value());
   ASSERT_EQ(1U, result_data->devices.size());
   EXPECT_EQ("chrome_device", result_data->devices[0].cache_guid);
+}
+
+TEST_F(AccountPreviewDataFetcherTest, FiltersCurrentDevice) {
+  AccountInfo account_info =
+      identity_test_env_.MakeAccountAvailable("user@gmail.com");
+
+  MockSuccessfulStatsFetch(&test_url_loader_factory_, {.password_count = 5});
+
+  std::string response_json = R"({
+    "entitiesPreviews": [
+      {
+        "specificsPreview": {
+          "deviceInfoPreview": {
+            "cacheGuid": "other_device",
+            "lastUpdatedTimestamp": "123456789",
+            "osType": 1,
+            "deviceFormFactor": 1,
+            "chromeVersionInfo": {
+              "versionNumber": "126.0.0.0"
+            }
+          }
+        }
+      },
+      {
+        "specificsPreview": {
+          "deviceInfoPreview": {
+            "cacheGuid": "current_device",
+            "lastUpdatedTimestamp": "123456789",
+            "osType": 1,
+            "deviceFormFactor": 1,
+            "chromeVersionInfo": {
+              "versionNumber": "126.0.0.0"
+            }
+          }
+        }
+      }
+    ]
+  })";
+
+  test_url_loader_factory_.AddResponse(GetTestPreviewsUrl(), response_json);
+
+  base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>>
+      future;
+  auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
+      account_info.gaia, identity_test_env_.identity_manager(),
+      test_url_loader_factory_.GetSafeWeakWrapper(),
+      version_info::Channel::UNKNOWN,
+      /*current_device_cache_guids=*/
+      base::flat_set<std::string>{"current_device"}, future.GetCallback());
+  fetcher->Start();
+
+  auto [gaia_id, result_data] = future.Take();
+  EXPECT_EQ(account_info.gaia, gaia_id);
+  ASSERT_TRUE(result_data.has_value());
+  ASSERT_EQ(1U, result_data->devices.size());
+  EXPECT_EQ("other_device", result_data->devices[0].cache_guid);
 }
 
 }  // namespace signin

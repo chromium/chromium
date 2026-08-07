@@ -33,6 +33,7 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/protocol/sync_enums.pb.h"
+#include "components/sync/test/test_sync_service.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -94,7 +95,7 @@ class AccountPreviewDataServiceTest : public testing::Test {
     auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
     network_delay_helper_ = helper.get();
     service_ = std::make_unique<AccountPreviewDataServiceImpl>(
-        identity_test_env_.identity_manager(), &prefs_,
+        identity_test_env_.identity_manager(), &sync_service_, &prefs_,
         test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
         version_info::Channel::UNKNOWN, &profile_metrics_service_);
   }
@@ -111,6 +112,7 @@ class AccountPreviewDataServiceTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   TestingPrefServiceSimple prefs_;
   IdentityTestEnvironment identity_test_env_;
+  syncer::TestSyncService sync_service_;
   metrics::ProfileMetricsService profile_metrics_service_;
   raw_ptr<TestWaitForNetworkCallbackHelper> network_delay_helper_ = nullptr;
   std::unique_ptr<AccountPreviewDataServiceImpl> service_;
@@ -446,7 +448,7 @@ TEST_F(AccountPreviewDataServiceTest, PeriodicRefreshDefersUntilTokensLoaded) {
   auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
   network_delay_helper_ = helper.get();
   service_ = std::make_unique<AccountPreviewDataServiceImpl>(
-      identity_test_env_.identity_manager(), &prefs_,
+      identity_test_env_.identity_manager(), &sync_service_, &prefs_,
       test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
       version_info::Channel::UNKNOWN, &profile_metrics_service_);
 
@@ -484,7 +486,7 @@ TEST_F(AccountPreviewDataServiceTest, NoFetchOnStartupIfTimerNotExpired) {
   auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
   network_delay_helper_ = helper.get();
   service_ = std::make_unique<AccountPreviewDataServiceImpl>(
-      identity_test_env_.identity_manager(), &prefs_,
+      identity_test_env_.identity_manager(), &sync_service_, &prefs_,
       test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
       version_info::Channel::UNKNOWN, &profile_metrics_service_);
 
@@ -1121,7 +1123,7 @@ TEST_F(AccountPreviewDataServiceTest, AccountsNotMutatedSkipsFetch) {
   auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
   network_delay_helper_ = helper.get();
   service_ = std::make_unique<AccountPreviewDataServiceImpl>(
-      identity_test_env_.identity_manager(), &prefs_,
+      identity_test_env_.identity_manager(), &sync_service_, &prefs_,
       test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
       version_info::Channel::UNKNOWN, &profile_metrics_service_);
 
@@ -1159,7 +1161,7 @@ TEST_F(AccountPreviewDataServiceTest,
   auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
   network_delay_helper_ = helper.get();
   service_ = std::make_unique<AccountPreviewDataServiceImpl>(
-      identity_test_env_.identity_manager(), &prefs_,
+      identity_test_env_.identity_manager(), &sync_service_, &prefs_,
       test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
       version_info::Channel::UNKNOWN, &profile_metrics_service_);
 
@@ -1194,7 +1196,7 @@ TEST_F(AccountPreviewDataServiceTest, AccountsMutatedRemovalTriggersFetch) {
   auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
   network_delay_helper_ = helper.get();
   service_ = std::make_unique<AccountPreviewDataServiceImpl>(
-      identity_test_env_.identity_manager(), &prefs_,
+      identity_test_env_.identity_manager(), &sync_service_, &prefs_,
       test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
       version_info::Channel::UNKNOWN, &profile_metrics_service_);
 
@@ -1250,7 +1252,7 @@ TEST_F(AccountPreviewDataServiceTest, PeriodicRefreshTimingParam) {
   auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
   network_delay_helper_ = helper.get();
   service_ = std::make_unique<AccountPreviewDataServiceImpl>(
-      identity_test_env_.identity_manager(), &prefs_,
+      identity_test_env_.identity_manager(), &sync_service_, &prefs_,
       test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
       version_info::Channel::UNKNOWN, &profile_metrics_service_);
 
@@ -1284,7 +1286,7 @@ TEST_F(AccountPreviewDataServiceTest,
   auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
   network_delay_helper_ = helper.get();
   service_ = std::make_unique<AccountPreviewDataServiceImpl>(
-      identity_test_env_.identity_manager(), &prefs_,
+      identity_test_env_.identity_manager(), &sync_service_, &prefs_,
       test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
       version_info::Channel::UNKNOWN, &profile_metrics_service_);
 
@@ -1399,6 +1401,34 @@ TEST_F(AccountPreviewDataServiceTest, NoInFlightTaskOnAccountRemoved) {
   // after the fetcher was destroyed.
   EXPECT_FALSE(service_->HasActiveFetcherForTesting(account_2.gaia));
   EXPECT_FALSE(service_->GetAccountPreviewData(account_2.gaia).has_value());
+}
+
+TEST_F(AccountPreviewDataServiceTest, NullSyncService) {
+  AccountInfo account_info =
+      identity_test_env_.MakeAccountAvailable("user@gmail.com");
+
+  MockSuccessfulFetch(&test_url_loader_factory_,
+                      {.bookmark_count = 10, .password_count = 20},
+                      {{.cache_guid = "device_1"}});
+
+  auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
+  network_delay_helper_ = helper.get();
+  service_ = std::make_unique<AccountPreviewDataServiceImpl>(
+      identity_test_env_.identity_manager(), /*sync_service=*/nullptr, &prefs_,
+      test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
+      version_info::Channel::UNKNOWN, &profile_metrics_service_);
+
+  base::RunLoop all_fetches_run_loop;
+  service_->SetAllDataAvailableCallbackForTesting(
+      all_fetches_run_loop.QuitClosure());
+  all_fetches_run_loop.Run();
+
+  auto preview_data = service_->GetAccountPreviewData(account_info.gaia);
+  ASSERT_TRUE(preview_data.has_value());
+  EXPECT_EQ(10U, preview_data->counts[syncer::BOOKMARKS]);
+  EXPECT_EQ(20U, preview_data->counts[syncer::PASSWORDS]);
+  ASSERT_EQ(1U, preview_data->devices.size());
+  EXPECT_EQ("device_1", preview_data->devices[0].cache_guid);
 }
 
 }  // namespace signin

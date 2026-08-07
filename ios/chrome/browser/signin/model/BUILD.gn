@@ -18,8 +18,6 @@ source_set("model") {
     "account_fetcher_factory_ios.mm",
     "account_investigator_factory.h",
     "account_investigator_factory.mm",
-    "account_preview_data_service_factory.h",
-    "account_preview_data_service_factory.mm",
     "account_profile_mapper.h",
     "account_profile_mapper.mm",
     "account_reconcilor_factory.cc",
@@ -195,6 +193,28 @@ source_set("authentication_service_factory") {
     "//ios/chrome/browser/shared/model/profile:features",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/sync/model",
+  ]
+}
+
+source_set("account_preview_data_service_factory") {
+  sources = [
+    "account_preview_data_service_factory.h",
+    "account_preview_data_service_factory.mm",
+  ]
+  deps = [
+    ":model",
+    "//base",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/signin/core/browser",
+    "//components/signin/ios/browser",
+    "//components/signin/public/base:signin_switches",
+    "//ios/chrome/browser/metrics/model:profile_metrics_service_factory",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/common",
+    "//services/network/public/cpp",
   ]
 }
 

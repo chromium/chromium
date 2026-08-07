@@ -22,6 +22,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/service/sync_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace signin {
@@ -77,12 +78,14 @@ void RecordSuccessfulFetchingMetrics(
 
 AccountPreviewDataServiceImpl::AccountPreviewDataServiceImpl(
     IdentityManager* identity_manager,
+    syncer::SyncService* sync_service,
     PrefService* pref_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<WaitForNetworkCallbackHelper> network_delay_helper,
     version_info::Channel channel,
     const metrics::ProfileMetricsService* profile_metrics_service)
     : identity_manager_(identity_manager),
+      sync_service_(sync_service),
       pref_service_(pref_service),
       url_loader_factory_(std::move(url_loader_factory)),
       network_delay_helper_(std::move(network_delay_helper)),
@@ -357,6 +360,8 @@ void AccountPreviewDataServiceImpl::FetchAccountPreviewData(
 
   active_fetchers_[gaia_id] = std::make_unique<AccountPreviewDataFetcher>(
       gaia_id, identity_manager_, url_loader_factory_, channel_,
+      sync_service_ ? sync_service_->GetCurrentDeviceCacheGuidsForAllGaiaIds()
+                    : base::flat_set<std::string>(),
       base::BindOnce(&AccountPreviewDataServiceImpl::OnSingleFetchCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
 
