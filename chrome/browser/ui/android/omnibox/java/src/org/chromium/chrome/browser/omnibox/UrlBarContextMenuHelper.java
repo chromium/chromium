@@ -22,7 +22,9 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
 
-import java.util.Set;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /** Helper for the UrlBar context menu. */
 @NullMarked
@@ -33,19 +35,17 @@ class UrlBarContextMenuHelper {
         void onTextContextMenuItem(int id);
     }
 
-    private static final Set<Integer> ALLOWED_MENU_ITEMS =
-            Set.of(
-                    android.R.id.copy,
-                    android.R.id.paste,
-                    android.R.id.cut,
-                    android.R.id.selectAll,
-                    android.R.id.shareText,
-                    android.R.id.undo,
-                    android.R.id.redo,
-                    R.id.url_bar_delete,
-                    R.id.url_bar_paste_and_go,
-                    R.id.url_bar_always_show_ai_mode,
-                    R.id.url_bar_manage_search_engines);
+    private static final List<List<Integer>> ORDERED_MENU_GROUPS =
+            List.of(
+                    List.of(android.R.id.undo),
+                    List.of(
+                            android.R.id.cut,
+                            android.R.id.copy,
+                            android.R.id.paste,
+                            R.id.url_bar_paste_and_go,
+                            R.id.url_bar_delete),
+                    List.of(android.R.id.selectAll),
+                    List.of(R.id.url_bar_manage_search_engines, R.id.url_bar_always_show_ai_mode));
 
     public static final float INVALID_TOUCH_COORDINATE = -1f;
 
@@ -89,30 +89,40 @@ class UrlBarContextMenuHelper {
             return;
         }
 
-        mListItems.clear();
-        int currentGroupId = -1;
-        // Note: We only map ID, title and enabled state from MenuItem to ModelList.
-        // Third-party actions and other non-standard menu items are intentionally ignored.
+        Map<Integer, MenuItem> itemMap = new HashMap<>();
         for (int i = 0; i < menu.size(); i++) {
             MenuItem item = menu.getItem(i);
-            if (item.isVisible() && ALLOWED_MENU_ITEMS.contains(item.getItemId())) {
-                if (currentGroupId != -1 && currentGroupId != item.getGroupId()) {
-                    mListItems.add(BasicListMenu.buildMenuDivider(false));
-                }
-                currentGroupId = item.getGroupId();
+            if (item.isVisible()) {
+                itemMap.put(item.getItemId(), item);
+            }
+        }
 
-                int itemId = item.getItemId();
-                CharSequence title = item.getTitle();
-                ListItemBuilder builder =
-                        new ListItemBuilder()
-                                .withTitle(title != null ? title.toString() : "")
-                                .withMenuId(itemId)
-                                .withEnabled(item.isEnabled());
+        mListItems.clear();
+        boolean hasAddedAnyGroup = false;
+        for (int groupIndex = 0; groupIndex < ORDERED_MENU_GROUPS.size(); groupIndex++) {
+            List<Integer> group = ORDERED_MENU_GROUPS.get(groupIndex);
+            boolean groupHasItem = false;
+            for (int itemId : group) {
+                MenuItem item = itemMap.get(itemId);
+                if (item != null) {
+                    if (hasAddedAnyGroup && !groupHasItem) {
+                        mListItems.add(BasicListMenu.buildMenuDivider(false));
+                    }
+                    groupHasItem = true;
+                    hasAddedAnyGroup = true;
 
-                if (item.isCheckable() && item.isChecked()) {
-                    builder.withStartIconRes(R.drawable.ic_done_blue);
+                    CharSequence title = item.getTitle();
+                    ListItemBuilder builder =
+                            new ListItemBuilder()
+                                    .withTitle(title != null ? title.toString() : "")
+                                    .withMenuId(itemId)
+                                    .withEnabled(item.isEnabled());
+
+                    if (item.isCheckable() && item.isChecked()) {
+                        builder.withStartIconRes(R.drawable.ic_done_blue);
+                    }
+                    mListItems.add(builder.build());
                 }
-                mListItems.add(builder.build());
             }
         }
 

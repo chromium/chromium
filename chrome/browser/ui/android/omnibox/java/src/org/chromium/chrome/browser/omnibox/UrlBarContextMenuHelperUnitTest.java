@@ -103,12 +103,52 @@ public class UrlBarContextMenuHelperUnitTest {
     }
 
     @Test
-    public void testShowListMenu_allowsShareText() {
-        setupMockContextMenu();
-        doReturn(android.R.id.shareText).when(mCopyMenuItem).getItemId();
+    public void testShowListMenu_ordersItemsAndAddsDividers() {
+        MenuItem undoItem = org.mockito.Mockito.mock(MenuItem.class);
+        doReturn(android.R.id.undo).when(undoItem).getItemId();
+        doReturn("Undo").when(undoItem).getTitle();
+        doReturn(true).when(undoItem).isVisible();
+        doReturn(true).when(undoItem).isEnabled();
+
+        MenuItem copyItem = org.mockito.Mockito.mock(MenuItem.class);
+        doReturn(android.R.id.copy).when(copyItem).getItemId();
+        doReturn("Copy").when(copyItem).getTitle();
+        doReturn(true).when(copyItem).isVisible();
+        doReturn(true).when(copyItem).isEnabled();
+
+        MenuItem selectAllItem = org.mockito.Mockito.mock(MenuItem.class);
+        doReturn(android.R.id.selectAll).when(selectAllItem).getItemId();
+        doReturn("Select all").when(selectAllItem).getTitle();
+        doReturn(true).when(selectAllItem).isVisible();
+        doReturn(true).when(selectAllItem).isEnabled();
+
+        doReturn(3).when(mContextMenu).size();
+        doReturn(true).when(mContextMenu).hasVisibleItems();
+        doReturn(selectAllItem).when(mContextMenu).getItem(0);
+        doReturn(undoItem).when(mContextMenu).getItem(1);
+        doReturn(copyItem).when(mContextMenu).getItem(2);
 
         mHelper.showListMenu(mContextMenu);
-        assertTrue(mHelper.getModelListForTesting().size() > 0);
+
+        assertEquals(5, mHelper.getModelListForTesting().size());
+        assertEquals(
+                android.R.id.undo,
+                mHelper.getModelListForTesting()
+                        .get(0)
+                        .model
+                        .get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(
+                android.R.id.copy,
+                mHelper.getModelListForTesting()
+                        .get(2)
+                        .model
+                        .get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(
+                android.R.id.selectAll,
+                mHelper.getModelListForTesting()
+                        .get(4)
+                        .model
+                        .get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     private void setupMockContextMenu() {
