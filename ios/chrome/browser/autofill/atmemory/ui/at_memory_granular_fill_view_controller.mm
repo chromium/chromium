@@ -6,4 +6,14 @@
 
 @implementation AtMemoryGranularFillViewController
 
+#pragma mark - AtMemoryGranularFillConsumer
+
+- (void)setTitle:(NSString*)title {
+  [super setTitle:title];
+}
+
+- (void)setGranularFillItems:(NSArray<AtMemoryGranularFillItem*>*)items {
+  // TODO(crbug.com/522340351): Set the granular fill items in the table view.
+}
+
 @end

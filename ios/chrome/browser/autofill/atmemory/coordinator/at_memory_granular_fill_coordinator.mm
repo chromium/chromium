@@ -43,6 +43,7 @@
 
   _mediator = [[AtMemoryGranularFillMediator alloc] init];
   _mediator.fillHandler = self.fillHandler;
+  _mediator.consumer = _atMemoryGranularFillViewController;
 
   [self.baseNavigationController
       pushViewController:_atMemoryGranularFillViewController
