@@ -89,6 +89,8 @@ def gpu_fyi_windows_builder(*, name, **kwargs):
     kwargs.setdefault("execution_timeout", ci_constants.DEFAULT_EXECUTION_TIMEOUT)
     return gpu.ci.windows_builder(name = name, **kwargs)
 
+# TODO(crbug.com/536066698): Move this to gpu.star once multiple files are
+# using use_test_trigger_cas.
 def gpu_fyi_thin_tester_builder_spec(*args, **kwargs):
     return builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,

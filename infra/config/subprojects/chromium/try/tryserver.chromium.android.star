@@ -1493,7 +1493,7 @@ try_.builder(
     contact_team_email = "chrome-gpu-team@google.com",
 )
 
-gpu.try_.optional_tests_builder(
+gpu.try_.linux_optional_builder(
     name = "android_optional_gpu_tests_rel",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     description_html = "Runs GPU tests on Pixel 4 devices. Only automatically added to CLs that touch GPU-related files.",
@@ -1584,10 +1584,6 @@ gpu.try_.optional_tests_builder(
         os_type = targets.os_type.ANDROID,
         use_android_merge_script_by_default = False,
     ),
-    pool = "luci.chromium.gpu.try",
-    builderless = True,
-    ssd = None,
-    free_space = None,
     alerts_enabled = False,
     contact_team_email = "chrome-gpu-infra@google.com",
     cq_settings = try_.cq_settings(
@@ -1600,7 +1596,7 @@ gpu.try_.optional_tests_builder(
     max_concurrent_builds = 10,
 )
 
-gpu.try_.optional_tests_builder(
+gpu.try_.linux_optional_builder(
     name = "gpu-fyi-cq-android-arm64",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     description_html = "Runs GPU tests on Pixel 6/10 devices. Only automatically added to CLs that touch GPU-related files.",
@@ -1613,10 +1609,6 @@ gpu.try_.optional_tests_builder(
         retry_failed_shards = False,
     ),
     gn_args = "ci/GPU FYI Android arm64 Builder",
-    pool = "luci.chromium.gpu.try",
-    builderless = True,
-    ssd = None,
-    free_space = None,
     # Exclude gpu fyi builders.
     alerts_enabled = False,
     contact_team_email = "chrome-gpu-infra@google.com",

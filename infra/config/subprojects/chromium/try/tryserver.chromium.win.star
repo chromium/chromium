@@ -5,7 +5,7 @@
 
 load("@chromium-luci//branches.star", "branches")
 load("@chromium-luci//builder_config.star", "builder_config")
-load("@chromium-luci//builders.star", "builders", "os")
+load("@chromium-luci//builders.star", "os")
 load("@chromium-luci//consoles.star", "consoles")
 load("@chromium-luci//gn_args.star", "gn_args")
 load("@chromium-luci//targets.star", "targets")
@@ -534,7 +534,7 @@ try_.builder(
     contact_team_email = "chrome-webium-product-eng@google.com",
 )
 
-gpu.try_.optional_tests_builder(
+gpu.try_.win_optional_builder(
     name = "win_optional_gpu_tests_rel",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
     description_html = ("Runs GPU tests on Windows 10 machines with NVIDIA GTX 1660 and Intel UHD 630 GPUs. " +
@@ -611,17 +611,12 @@ gpu.try_.optional_tests_builder(
         browser_config = targets.browser_config.RELEASE_X64,
         os_type = targets.os_type.WINDOWS,
     ),
-    pool = "luci.chromium.gpu.try",
-    builderless = True,
-    os = os.WINDOWS_DEFAULT,
-    ssd = builders.with_expiration(True, expiration = 5 * time.minute),
-    free_space = None,
     alerts_enabled = False,
     contact_team_email = "chrome-gpu-infra@google.com",
     cq_settings = try_.cq_settings(
         location_filters = gpu.try_.optional_trybot_location_filters.WINDOWS,
     ),
-    # default is 6 in _gpu_optional_tests_builder()
+    # default is 6 for GPU optional builders.
     execution_timeout = 5 * time.hour,
     main_list_view = "try",
     # This is higher than the default of 7 for optional GPU builders
@@ -633,7 +628,7 @@ gpu.try_.optional_tests_builder(
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
 )
 
-gpu.try_.optional_tests_builder(
+gpu.try_.win_optional_builder(
     name = "gpu-fyi-cq-win-arm64",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
     description_html = "Runs GPU tests on Windows/ARM64 configs. Only automatically added to CLs that touch GPU-related files.",
@@ -645,17 +640,12 @@ gpu.try_.optional_tests_builder(
         retry_failed_shards = False,
     ),
     gn_args = "ci/GPU FYI Win arm64 Builder",
-    pool = "luci.chromium.gpu.try",
-    builderless = True,
-    os = os.WINDOWS_DEFAULT,
-    ssd = builders.with_expiration(True, expiration = 5 * time.minute),
-    free_space = None,
     alerts_enabled = False,
     contact_team_email = "chrome-gpu-infra@google.com",
     cq_settings = try_.cq_settings(
         location_filters = gpu.try_.optional_trybot_location_filters.WINDOWS,
     ),
-    # default is 6 in _gpu_optional_tests_builder()
+    # default is 6 for GPU optional builders.
     execution_timeout = 5 * time.hour,
     main_list_view = "try",
     # This is higher than the default of 7 for optional GPU builders

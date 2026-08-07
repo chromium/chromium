@@ -931,7 +931,7 @@ ios_builder(
     execution_timeout = 10 * time.hour,
 )
 
-gpu.try_.optional_tests_builder(
+gpu.try_.mac_optional_builder(
     name = "mac_optional_gpu_tests_rel",
     branch_selector = branches.selector.MAC_BRANCHES,
     description_html = ("Runs GPU tests on Mac Minis with Intel UHD 630 GPUs and Macbook Pros with AMD GPUs. " +
@@ -972,11 +972,6 @@ gpu.try_.optional_tests_builder(
         browser_config = targets.browser_config.RELEASE,
         os_type = targets.os_type.MAC,
     ),
-    pool = "luci.chromium.gpu.try",
-    builderless = True,
-    cpu = "arm64",
-    ssd = None,
-    free_space = None,
     alerts_enabled = False,
     contact_team_email = "chrome-gpu-infra@google.com",
     cq_settings = try_.cq_settings(
@@ -989,7 +984,7 @@ gpu.try_.optional_tests_builder(
     max_concurrent_builds = 7,
 )
 
-gpu.try_.optional_tests_builder(
+gpu.try_.mac_optional_builder(
     name = "gpu-fyi-cq-mac-arm64",
     branch_selector = branches.selector.MAC_BRANCHES,
     description_html = ("Runs GPU tests on M2 Macbook Pros. Only automatically added to CLs that " +
@@ -1002,11 +997,6 @@ gpu.try_.optional_tests_builder(
         retry_failed_shards = False,
     ),
     gn_args = "ci/GPU FYI Mac arm64 Builder",
-    pool = "luci.chromium.gpu.try",
-    builderless = True,
-    cpu = "arm64",
-    ssd = None,
-    free_space = None,
     alerts_enabled = False,
     contact_team_email = "chrome-gpu-infra@google.com",
     cq_settings = try_.cq_settings(

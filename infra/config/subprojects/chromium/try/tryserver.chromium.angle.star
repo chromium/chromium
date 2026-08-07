@@ -4,7 +4,6 @@
 """Definitions of builders in the tryserver.chromium.angle builder group."""
 
 load("@chromium-luci//builder_config.star", "builder_config")
-load("@chromium-luci//builders.star", "builders", "os")
 load("@chromium-luci//consoles.star", "consoles")
 load("@chromium-luci//gn_args.star", "gn_args")
 load("@chromium-luci//try.star", "try_")
@@ -15,11 +14,6 @@ load("//lib/try_constants.star", "try_constants")
 try_.defaults.set(
     executable = "recipe:angle_chromium_trybot",
     builder_group = "tryserver.chromium.angle",
-    pool = "luci.chromium.gpu.try",
-    builderless = True,
-    cores = 8,
-    os = os.LINUX_DEFAULT,
-    ssd = None,
     contact_team_email = "angle-team@google.com",
     execution_timeout = try_constants.DEFAULT_EXECUTION_TIMEOUT,
     experiments = {
@@ -36,16 +30,7 @@ consoles.list_view(
     name = "tryserver.chromium.angle",
 )
 
-def base_angle_builder(*, name, **kwargs):
-    return try_.builder(
-        name = name,
-        # For some reason, this cannot be set via try_.defaults.set(), as it
-        # complains about it being set twice.
-        free_space = None,
-        **kwargs
-    )
-
-base_angle_builder(
+gpu.try_.linux_rate_limited_builder(
     name = "android-angle-chromium-try",
     description_html = "Builds and tests ANGLE on arm64 Android using ToT ANGLE and a known good Chromium revision.",
     mirrors = [
@@ -64,7 +49,7 @@ base_angle_builder(
     contact_team_email = "angle-team@google.com",
 )
 
-base_angle_builder(
+gpu.try_.linux_rate_limited_builder(
     name = "fuchsia-angle-try",
     description_html = "Builds ANGLE on x64 Fuchsia using ToT ANGLE and a known good Chromium revision. Compile-only.",
     mirrors = [
@@ -82,7 +67,7 @@ base_angle_builder(
     ),
 )
 
-base_angle_builder(
+gpu.try_.linux_rate_limited_builder(
     name = "linux-angle-chromium-try",
     description_html = "Builds and tests ANGLE on x64 Linux using ToT ANGLE and a known good Chromium revision.",
     mirrors = [
@@ -101,15 +86,7 @@ base_angle_builder(
     ),
 )
 
-def angle_mac_builder(**kwargs):
-    return base_angle_builder(
-        cores = None,
-        os = os.MAC_ANY,
-        cpu = None,
-        **kwargs
-    )
-
-angle_mac_builder(
+gpu.try_.mac_rate_limited_builder(
     name = "mac-angle-chromium-try",
     description_html = "Builds and tests ANGLE on x64 Mac using ToT ANGLE and a known good Chromium revision.",
     mirrors = [
@@ -128,14 +105,7 @@ angle_mac_builder(
     ),
 )
 
-def angle_win_builder(**kwargs):
-    return base_angle_builder(
-        os = os.WINDOWS_ANY,
-        ssd = builders.with_expiration(True, expiration = 5 * time.minute),
-        **kwargs
-    )
-
-angle_win_builder(
+gpu.try_.win_rate_limited_builder(
     name = "win-angle-chromium-arm64-try",
     description_html = "Builds and tests ANGLE on arm64 Windows using ToT ANGLE and a known good Chromium revision.",
     mirrors = [
@@ -153,7 +123,7 @@ angle_win_builder(
     ),
 )
 
-angle_win_builder(
+gpu.try_.win_rate_limited_builder(
     name = "win-angle-chromium-x64-try",
     description_html = "Builds and tests ANGLE on x64 Windows using ToT ANGLE and a known good Chromium revision.",
     mirrors = [
@@ -172,7 +142,7 @@ angle_win_builder(
     ),
 )
 
-angle_win_builder(
+gpu.try_.win_rate_limited_builder(
     name = "win-angle-chromium-x86-try",
     description_html = "Builds and tests ANGLE on x86 Windows using ToT ANGLE and a known good Chromium revision.",
     mirrors = [
