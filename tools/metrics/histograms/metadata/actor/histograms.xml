@@ -409,7 +409,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Actor.NavigationGating.ConfirmedListSize2" units="origins"
-    expires_after="2026-02-02">
+    expires_after="2027-02-02">
   <owner>dylancutler@google.com</owner>
   <owner>johannhof@google.com</owner>
   <summary>
