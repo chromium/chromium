@@ -56,6 +56,7 @@
 #include "content/public/common/buildflags.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/url_constants.h"
 #include "ipc/constants.mojom.h"
 #include "net/base/filename_util.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -801,6 +802,24 @@ void WebContentsViewAura::PrepareDropData(
       drop_data->custom_data = std::move(maybe_custom_data.value());
     }
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // The 'fs/*' custom-data types are produced by the ChromeOS Files SWA to
+  // describe filesystem entries it transfers between its own windows. Consumers
+  // such as the Files app resolve them via privileged APIs, so only retain them
+  // when the drag source is a chrome:// WebUI page. This mirrors the source
+  // check performed by file_manager::util::ParseFileSystemSources.
+  if (!drop_data->custom_data.empty()) {
+    const ui::DataTransferEndpoint* source = data.GetSource();
+    const bool from_webui = source && source->IsUrlType() &&
+                            source->GetURL()->SchemeIs(kChromeUIScheme);
+    if (!from_webui) {
+      std::erase_if(drop_data->custom_data, [](const auto& kv) {
+        return kv.first.starts_with(u"fs/");
+      });
+    }
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void WebContentsViewAura::EndDrag(

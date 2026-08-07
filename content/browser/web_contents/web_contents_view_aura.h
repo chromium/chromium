@@ -161,6 +161,10 @@ class CONTENT_EXPORT WebContentsViewAura
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
                            Drop_DropZone_DelegateBlocks);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, StartDragging);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
+                           DragEnterFilesAppCustomTypesFromWebSource);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
+                           DragEnterFilesAppCustomTypesFromWebUISource);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, GetDropCallback_Run);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
                            DragInProgressFinishesAfterDrop);
