@@ -542,14 +542,23 @@ TEST_F(UkmConsentStateObserverMigrationTest, Migration_SignedIn_AllEnabled) {
   MockSyncService sync;
   sync.SetSignedIn(signin::ConsentLevel::kSignin);
 
+#if BUILDFLAG(IS_CHROMEOS)
+  sync.SetAppSync(true);
+#endif
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Mark apps and extensions sync as supported (registered) and enabled.
-  sync.GetUserSettings()->SetRegisteredSelectableTypes(
-      {syncer::UserSelectableType::kApps,
-       syncer::UserSelectableType::kExtensions});
-  sync.GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false, {syncer::UserSelectableType::kApps,
-                                  syncer::UserSelectableType::kExtensions});
+  syncer::UserSelectableTypeSet registered_types = {
+      syncer::UserSelectableType::kExtensions};
+  syncer::UserSelectableTypeSet selected_types = {
+      syncer::UserSelectableType::kExtensions};
+#if !BUILDFLAG(IS_CHROMEOS)
+  registered_types.Put(syncer::UserSelectableType::kApps);
+  selected_types.Put(syncer::UserSelectableType::kApps);
+#endif
+  sync.GetUserSettings()->SetRegisteredSelectableTypes(registered_types);
+  sync.GetUserSettings()->SetSelectedTypes(/*sync_everything=*/false,
+                                           selected_types);
 #endif
 
   sync_preferences::TestingPrefServiceSyncable prefs;
@@ -575,9 +584,12 @@ TEST_F(UkmConsentStateObserverMigrationTest, Migration_SignedIn_APPSDisabled) {
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Mark apps and extensions sync as supported, but only extensions enabled.
-  sync.GetUserSettings()->SetRegisteredSelectableTypes(
-      {syncer::UserSelectableType::kApps,
-       syncer::UserSelectableType::kExtensions});
+  syncer::UserSelectableTypeSet registered_types = {
+      syncer::UserSelectableType::kExtensions};
+#if !BUILDFLAG(IS_CHROMEOS)
+  registered_types.Put(syncer::UserSelectableType::kApps);
+#endif
+  sync.GetUserSettings()->SetRegisteredSelectableTypes(registered_types);
   sync.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false, {syncer::UserSelectableType::kExtensions});
 #endif
@@ -613,13 +625,22 @@ TEST_F(UkmConsentStateObserverMigrationTest, Migration_AlreadyDone) {
   MockSyncService sync;
   sync.SetSignedIn(signin::ConsentLevel::kSignin);
 
+#if BUILDFLAG(IS_CHROMEOS)
+  sync.SetAppSync(true);
+#endif
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  sync.GetUserSettings()->SetRegisteredSelectableTypes(
-      {syncer::UserSelectableType::kApps,
-       syncer::UserSelectableType::kExtensions});
-  sync.GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false, {syncer::UserSelectableType::kApps,
-                                  syncer::UserSelectableType::kExtensions});
+  syncer::UserSelectableTypeSet registered_types = {
+      syncer::UserSelectableType::kExtensions};
+  syncer::UserSelectableTypeSet selected_types = {
+      syncer::UserSelectableType::kExtensions};
+#if !BUILDFLAG(IS_CHROMEOS)
+  registered_types.Put(syncer::UserSelectableType::kApps);
+  selected_types.Put(syncer::UserSelectableType::kApps);
+#endif
+  sync.GetUserSettings()->SetRegisteredSelectableTypes(registered_types);
+  sync.GetUserSettings()->SetSelectedTypes(/*sync_everything=*/false,
+                                           selected_types);
 #endif
 
   sync_preferences::TestingPrefServiceSyncable prefs;

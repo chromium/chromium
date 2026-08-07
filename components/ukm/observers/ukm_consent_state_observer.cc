@@ -152,22 +152,31 @@ void UkmConsentStateObserver::StartObserving(syncer::SyncService* sync_service,
     // persistent preference state to avoid migrating them to a disabled state.
     // Once migrated, advanced reporting consent is completely decoupled from
     // sync preferences, meaning this is a one-time initialization.
-    bool apps_supported =
-        sync_service->GetUserSettings()->GetRegisteredSelectableTypes().Has(
-            syncer::UserSelectableType::kApps);
     bool extensions_supported =
         sync_service->GetUserSettings()->GetRegisteredSelectableTypes().Has(
             syncer::UserSelectableType::kExtensions);
-
-    bool apps_sync_enabled =
-        !apps_supported ||
-        sync_service->GetUserSettings()->GetSelectedTypes().Has(
-            syncer::UserSelectableType::kApps);
-
     bool extensions_sync_enabled =
         !extensions_supported ||
         sync_service->GetUserSettings()->GetSelectedTypes().Has(
             syncer::UserSelectableType::kExtensions);
+
+#if BUILDFLAG(IS_CHROMEOS)
+    bool apps_supported =
+        sync_service->GetUserSettings()->GetRegisteredSelectableOsTypes().Has(
+            syncer::UserSelectableOsType::kOsApps);
+    bool apps_sync_enabled =
+        !apps_supported ||
+        sync_service->GetUserSettings()->GetSelectedOsTypes().Has(
+            syncer::UserSelectableOsType::kOsApps);
+#else
+    bool apps_supported =
+        sync_service->GetUserSettings()->GetRegisteredSelectableTypes().Has(
+            syncer::UserSelectableType::kApps);
+    bool apps_sync_enabled =
+        !apps_supported ||
+        sync_service->GetUserSettings()->GetSelectedTypes().Has(
+            syncer::UserSelectableType::kApps);
+#endif
 
     advanced_reporting_enabled =
         msbb_enabled && apps_sync_enabled && extensions_sync_enabled;
