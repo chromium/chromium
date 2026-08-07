@@ -56,7 +56,10 @@ component("prefs") {
   defines = [ "COMPONENTS_PREFS_IMPLEMENTATION" ]
 
   deps = []
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//base/i18n:language_tag_no_icu",
+  ]
 
   if (is_android) {
     sources += [

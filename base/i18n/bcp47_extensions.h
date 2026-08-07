@@ -12,23 +12,23 @@
 #include <type_traits>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
-#include "base/i18n/base_i18n_export.h"
 #include "base/strings/string_util.h"
 #include "base/types/pass_key.h"
 
 namespace base::i18n {
 
-class BASE_I18N_EXPORT LanguageTag;
+class LanguageTag;
 
 // Represents a BCP47 extension subtag.
 // BCP47 extensions consist of a single-character singleton followed by one or
 // more subtags. For example, in "en-US-a-myext", "a-myext" is an extension
 // where 'a' is the singleton and "myext" is the subtag string.
 // https://www.rfc-editor.org/info/rfc5646/#section-2.2.6
-class BASE_I18N_EXPORT Extension {
+class COMPONENT_EXPORT(LANGUAGE_TAG) Extension {
  public:
   ~Extension();
 
@@ -65,7 +65,7 @@ class BASE_I18N_EXPORT Extension {
 
 // Represents the 'x-' as-in BCP47 "private use subtags"
 // (https://www.rfc-editor.org/info/rfc5646/#section-2.2.7).
-class BASE_I18N_EXPORT PrivateUseSubtags {
+class COMPONENT_EXPORT(LANGUAGE_TAG) PrivateUseSubtags {
  public:
   ~PrivateUseSubtags();
   // Parses a string into `PrivateUseSubtags`, the input may or not contain the
@@ -102,7 +102,7 @@ class BASE_I18N_EXPORT PrivateUseSubtags {
 // Unicode extensions have a specific internal structure defined by UTS #35,
 // containing keywords/types and attributes. Please see the specification for
 // more details: https://www.rfc-editor.org/info/rfc6067
-class BASE_I18N_EXPORT UnicodeExtension {
+class COMPONENT_EXPORT(LANGUAGE_TAG) UnicodeExtension {
  public:
   UnicodeExtension(const UnicodeExtension&);
 

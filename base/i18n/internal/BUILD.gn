@@ -11,7 +11,10 @@ source_set("internal") {
     "legacy_icu_converter.cc",
     "legacy_icu_converter.h",
   ]
-  defines = [ "BASE_I18N_IMPLEMENTATION" ]
+  defines = [
+    "BASE_I18N_IMPLEMENTATION",
+    "IS_LANGUAGE_TAG_IMPL",
+  ]
   public_deps = [
     ":bcp47_languages_gen",
     ":bcp47_regions_gen",

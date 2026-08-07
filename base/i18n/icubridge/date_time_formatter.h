@@ -20,7 +20,7 @@ namespace base::i18n {
 class IcuBridge;
 struct DateTimeFormatterOptions;
 
-class BASE_I18N_EXPORT LanguageTag;
+class LanguageTag;
 
 // DateTimeFormatter provides a set of helper functions for formatting dates and
 // times using ICU. It handles locale-specific formatting and provides

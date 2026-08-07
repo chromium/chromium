@@ -13,7 +13,7 @@
 
 namespace base::i18n {
 
-class BASE_I18N_EXPORT LanguageTag;
+class LanguageTag;
 
 // IcuBridge::Calendar provides calendar-related localization utilities,
 // such as getting localized week information (first weekday and weekend).

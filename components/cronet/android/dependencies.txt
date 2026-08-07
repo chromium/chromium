@@ -3,6 +3,8 @@
 //base/allocator/partition_allocator
 //base/allocator/partition_allocator/src/partition_alloc
 //base/android/linker
+//base/i18n
+//base/i18n/internal
 //base/logging
 //base/logging/rust_logger
 //base/numerics
