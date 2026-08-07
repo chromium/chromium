@@ -62,6 +62,7 @@ source_set("impl") {
     "//components/keyed_service/core",
     "//components/pref_registry",
     "//components/prefs",
+    "//components/signin/public/base",
     "//components/startup_metric_utils",
     "//net",
     "//third_party/abseil-cpp:absl",

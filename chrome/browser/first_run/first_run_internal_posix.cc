@@ -14,6 +14,7 @@
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_reporting_default_state.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -46,6 +47,10 @@ ForcedShowDialogState g_forced_show_dialog_state =
 bool ShouldShowFirstRunDialog() {
   if (g_forced_show_dialog_state != ForcedShowDialogState::kNotForced)
     return g_forced_show_dialog_state == ForcedShowDialogState::kForceShown;
+
+  if (switches::IsPreFirstRunDesktopRefreshEnabled()) {
+    return false;
+  }
 
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return false;
