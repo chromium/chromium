@@ -14,11 +14,12 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/one_time_tokens/core/common/one_time_token_switches.h"
 #include "components/one_time_tokens/core/browser/fetch_email_one_time_token_error_details.pb.h"
 #include "components/one_time_tokens/core/browser/fetch_email_one_time_token_request.pb.h"
 #include "components/one_time_tokens/core/browser/fetch_email_one_time_token_response.pb.h"
+#include "components/one_time_tokens/core/browser/one_time_token_log_sink.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
+#include "components/one_time_tokens/core/common/one_time_token_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/url_util.h"
@@ -68,7 +69,8 @@ class EmailOneTimeTokenFetcherTest : public testing::Test {
   std::unique_ptr<EmailOneTimeTokenFetcher> CreateFetcher() {
     return std::make_unique<EmailOneTimeTokenFetcher>(
         test_url_loader_factory_->GetSafeWeakWrapper(),
-        *identity_test_env_->identity_manager(), kEncryptedMessageReference);
+        *identity_test_env_->identity_manager(), kEncryptedMessageReference,
+        &log_sink_);
   }
 
   void WaitForAccessTokenRequestAndRespondWithSuccess() {
@@ -115,6 +117,7 @@ class EmailOneTimeTokenFetcherTest : public testing::Test {
   base::HistogramTester histogram_tester_;
   std::unique_ptr<network::TestURLLoaderFactory> test_url_loader_factory_;
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
+  OneTimeTokenLogSink log_sink_;
 };
 
 // Tests the happy path of the email one time token fetcher.

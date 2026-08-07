@@ -77,6 +77,8 @@ class FakeOneTimeTokenService : public one_time_tokens::OneTimeTokenService {
   FakeOneTimeTokenService() = default;
   ~FakeOneTimeTokenService() override = default;
 
+  one_time_tokens::OneTimeTokenLogSink* log_sink() override { return nullptr; }
+
   void GetRecentOneTimeTokens(
       one_time_tokens::OneTimeTokenService::Callback callback) override {}
 

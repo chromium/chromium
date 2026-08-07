@@ -5,18 +5,19 @@
 #include "components/one_time_tokens/core/browser/email_one_time_token_fetcher.h"
 
 #include <optional>
-#include <string_view>
+#include <utility>
 
 #include "base/base64url.h"
+#include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/one_time_tokens/core/browser/email_one_time_token_fetch_error_converter.h"
 #include "components/one_time_tokens/core/browser/fetch_email_one_time_token_error_details.pb.h"
 #include "components/one_time_tokens/core/browser/fetch_email_one_time_token_request.pb.h"
 #include "components/one_time_tokens/core/browser/fetch_email_one_time_token_response.pb.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
+#include "components/one_time_tokens/core/browser/one_time_token_log_sink.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/one_time_token_type.h"
-#include "base/command_line.h"
 #include "components/one_time_tokens/core/common/one_time_token_switches.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -62,27 +63,6 @@ GetFirstFoundOneTimeTokenErrorDetails(const RpcStatus& rpc_status) {
   return std::nullopt;
 }
 
-base::expected<OneTimeToken, OneTimeTokenRetrievalError>
-ExtractOneTimeTokenValueFromResponse(const std::string& response_body) {
-  FetchEmailOneTimeTokenResponse response;
-  if (!response.ParseFromString(response_body)) {
-    return base::unexpected(
-        OneTimeTokenRetrievalError::kGmailOtpBackendInvalidResponse);
-  }
-  if (!response.has_one_time_password()) {
-    return base::unexpected(
-        OneTimeTokenRetrievalError::kGmailOtpBackendInvalidResponse);
-  }
-  if (response.sender_address().empty()) {
-    return base::unexpected(
-        OneTimeTokenRetrievalError::kGmailOtpBackendInvalidResponse);
-  }
-  return base::ok(OneTimeToken(OneTimeTokenType::kGmail,
-                               response.one_time_password().one_time_password(),
-                               base::TimeTicks::Now(),
-                               response.sender_address()));
-}
-
 std::optional<FetchEmailOneTimeTokenErrorDetails> ExtractBackendErrorDetails(
     const std::string& response_body) {
   RpcStatus rpc_status;
@@ -99,10 +79,12 @@ std::optional<FetchEmailOneTimeTokenErrorDetails> ExtractBackendErrorDetails(
 EmailOneTimeTokenFetcher::EmailOneTimeTokenFetcher(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager& identity_manager,
-    std::string encrypted_message_reference)
+    std::string encrypted_message_reference,
+    OneTimeTokenLogSink* log_sink)
     : url_loader_factory_(std::move(url_loader_factory)),
       identity_manager_(identity_manager),
-      encrypted_message_reference_(std::move(encrypted_message_reference)) {}
+      encrypted_message_reference_(std::move(encrypted_message_reference)),
+      log_sink_(log_sink) {}
 
 EmailOneTimeTokenFetcher::~EmailOneTimeTokenFetcher() = default;
 
@@ -118,6 +100,7 @@ void EmailOneTimeTokenFetcher::InvokeCallbackAndDestroySelf(
 }
 
 void EmailOneTimeTokenFetcher::StartAccessTokenFetch() {
+  LOG_OTT(log_sink_) << "OAuth token fetch initiated.";
   access_token_fetcher_ =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
           signin::OAuthConsumerId::kOneTimeTokenService, &*identity_manager_,
@@ -134,7 +117,10 @@ void EmailOneTimeTokenFetcher::OnAccessTokenFetched(
   base::UmaHistogramTimes("Autofill.OneTimeTokens.Backend.Gmail.AuthLatency",
                           base::TimeTicks::Now() - auth_start_time);
   access_token_fetcher_.reset();
-  if (error.state() == GoogleServiceAuthError::NONE) {
+  bool auth_success = error.state() == GoogleServiceAuthError::NONE;
+  LOG_OTT(log_sink_) << "OAuth token fetch completed: success="
+                     << (auth_success ? "true" : "false");
+  if (auth_success) {
     StartOneTimeTokenServiceCall(std::move(info));
     return;
   }
@@ -221,6 +207,10 @@ void EmailOneTimeTokenFetcher::StartOneTimeTokenServiceCall(
              network::SimpleURLLoader::RETRY_ON_5XX);
   simple_url_loader_->SetAllowHttpErrorResults(true);
 
+  LOG_OTT(log_sink_) << "OneTimeTokenService HTTP fetch initiated: ref_length="
+                     << encrypted_message_reference_.size()
+                     << ", url=" << url.GetWithEmptyPath().spec();
+
   simple_url_loader_->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(
@@ -234,9 +224,12 @@ void EmailOneTimeTokenFetcher::OnResponseBytesFromOneTimeTokenService(
     std::optional<std::string> response_body) {
   base::UmaHistogramTimes("Autofill.OneTimeTokens.Backend.Gmail.NetworkLatency",
                           base::TimeTicks::Now() - network_request_start_time);
-
-  std::optional<int> response_code = GetHttpResponseCode();
+  std::optional<net::HttpStatusCode> response_code = GetHttpResponseCode();
   simple_url_loader_.reset();
+
+  LOG_OTT(log_sink_) << "Fetch returned: status="
+                     << (response_code ? std::to_underlying(*response_code)
+                                       : -1);
 
   // Success case.
   if (response_code == net::HTTP_OK && response_body.has_value()) {
@@ -248,6 +241,7 @@ void EmailOneTimeTokenFetcher::OnResponseBytesFromOneTimeTokenService(
 
   // Failure case: no response body.
   if (!response_body.has_value()) {
+    LOG_OTT(log_sink_) << "Fetch failed: Response body is empty";
     InvokeCallbackAndDestroySelf(base::unexpected(
         OneTimeTokenRetrievalError::kGmailOtpBackendNetworkError));
     return;
@@ -255,21 +249,53 @@ void EmailOneTimeTokenFetcher::OnResponseBytesFromOneTimeTokenService(
 
   std::optional<FetchEmailOneTimeTokenErrorDetails> error_details =
       ExtractBackendErrorDetails(*response_body);
-  if (error_details.has_value()) {
-    InvokeCallbackAndDestroySelf(base::unexpected(
-        ConvertEmailOneTimeTokenFetchErrorDetails(error_details.value())));
-  } else {
-    InvokeCallbackAndDestroySelf(base::unexpected(
-        OneTimeTokenRetrievalError::kGmailOtpBackendInvalidResponse));
-  }
+  OneTimeTokenRetrievalError final_error =
+      error_details.has_value()
+          ? ConvertEmailOneTimeTokenFetchErrorDetails(error_details.value())
+          : OneTimeTokenRetrievalError::kGmailOtpBackendInvalidResponse;
+
+  LOG_OTT(log_sink_) << "Fetch failed: "
+                     << "error=" << std::to_underlying(final_error);
+
+  InvokeCallbackAndDestroySelf(base::unexpected(final_error));
 }
 
-std::optional<int> EmailOneTimeTokenFetcher::GetHttpResponseCode() const {
+std::optional<net::HttpStatusCode>
+EmailOneTimeTokenFetcher::GetHttpResponseCode() const {
   if (const auto* info = simple_url_loader_->ResponseInfo();
       info && info->headers) {
-    return info->headers->response_code();
+    return net::TryToGetHttpStatusCode(info->headers->response_code());
   }
   return std::nullopt;
+}
+
+base::expected<OneTimeToken, OneTimeTokenRetrievalError>
+EmailOneTimeTokenFetcher::ExtractOneTimeTokenValueFromResponse(
+    const std::string& response_body) const {
+  FetchEmailOneTimeTokenResponse response;
+  if (!response.ParseFromString(response_body)) {
+    LOG_OTT(log_sink_) << "Token extraction failed: Response is not a valid "
+                          "FetchEmailOneTimeTokenResponse.";
+    return base::unexpected(
+        OneTimeTokenRetrievalError::kGmailOtpBackendInvalidResponse);
+  }
+  if (!response.has_one_time_password()) {
+    LOG_OTT(log_sink_) << "Token extraction failed: Response does not have "
+                       << "one_time_password.";
+    return base::unexpected(
+        OneTimeTokenRetrievalError::kGmailOtpBackendInvalidResponse);
+  }
+  if (response.sender_address().empty()) {
+    LOG_OTT(log_sink_) << "Token extraction failed: Response does not have "
+                       << "sender_address.";
+    return base::unexpected(
+        OneTimeTokenRetrievalError::kGmailOtpBackendInvalidResponse);
+  }
+  LOG_OTT(log_sink_) << "Token extraction succeeded.";
+  return base::ok(OneTimeToken(OneTimeTokenType::kGmail,
+                               response.one_time_password().one_time_password(),
+                               base::TimeTicks::Now(),
+                               response.sender_address()));
 }
 
 }  // namespace one_time_tokens

@@ -1965,6 +1965,7 @@ source_set("unit_tests") {
     "//components/image_fetcher/core:test_support",
     "//components/leveldb_proto",
     "//components/one_time_tokens/core/browser",
+    "//components/one_time_tokens/core/browser:test_support",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",

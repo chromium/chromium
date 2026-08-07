@@ -6,6 +6,7 @@
 #define COMPONENTS_ONE_TIME_TOKENS_CORE_BROWSER_ONE_TIME_TOKEN_SERVICE_H_
 
 #include <optional>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -27,6 +28,8 @@ enum class OneTimeTokenSource {
   kOnDeviceSms = 1,
   kGmail = 2,
 };
+
+class OneTimeTokenLogSink;
 
 // Service to subscribe to `OneTimeToken`s. One instance per profile.
 class OneTimeTokenService : public KeyedService {
@@ -68,6 +71,8 @@ class OneTimeTokenService : public KeyedService {
   virtual void RequestOneTimeToken(
       base::TimeDelta timeout,
       base::OnceCallback<void(std::optional<OneTimeToken>)> callback) = 0;
+
+  virtual OneTimeTokenLogSink* log_sink() = 0;
 };
 
 }  // namespace one_time_tokens

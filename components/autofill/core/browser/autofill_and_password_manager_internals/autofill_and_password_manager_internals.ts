@@ -696,6 +696,7 @@ function setUpScopeCheckboxes() {
     {id: 'TouchToFill'},
     {id: 'AutofillAi'},
     {id: 'AutofillActor'},
+    {id: 'OneTimeTokens'},
   ];
 
   interface ScopeCheckbox {

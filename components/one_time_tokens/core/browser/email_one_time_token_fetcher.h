@@ -8,10 +8,13 @@
 #include <optional>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/types/expected.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "net/http/http_status_code.h"
 
 namespace network {
 class SimpleURLLoader;
@@ -25,6 +28,8 @@ struct AccessTokenInfo;
 }  // namespace signin
 
 namespace one_time_tokens {
+
+class OneTimeTokenLogSink;
 
 // Header name and value for user-facing criticality.
 inline constexpr char kOneTimeTokenServiceCriticalityHeaderName[] =
@@ -41,7 +46,8 @@ class EmailOneTimeTokenFetcher {
   EmailOneTimeTokenFetcher(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager& identity_manager,
-      std::string encrypted_message_reference);
+      std::string encrypted_message_reference,
+      OneTimeTokenLogSink* log_sink = nullptr);
   ~EmailOneTimeTokenFetcher();
 
   // Starts the request to the Gmail OTP endpoint.
@@ -73,8 +79,11 @@ class EmailOneTimeTokenFetcher {
 
 
   // Helper to extract the HTTP status code from the URL loader.
-  std::optional<int> GetHttpResponseCode() const;
+  std::optional<net::HttpStatusCode> GetHttpResponseCode() const;
 
+  // Helper to parse response body into OneTimeToken or error.
+  base::expected<OneTimeToken, OneTimeTokenRetrievalError>
+  ExtractOneTimeTokenValueFromResponse(const std::string& response_body) const;
 
   // Shared URL loader factory for the network request.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
@@ -95,6 +104,9 @@ class EmailOneTimeTokenFetcher {
 
   // Retain internal copy of encrypted_message_reference.
   std::string encrypted_message_reference_;
+
+  // Owned by `OneTimeTokenServiceImpl`.
+  raw_ptr<OneTimeTokenLogSink> log_sink_ = nullptr;
 
   // A final callback for when the request completes.
   ServerResponseCallback callback_;

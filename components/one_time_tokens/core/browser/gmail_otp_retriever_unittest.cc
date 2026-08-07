@@ -85,6 +85,8 @@ class FakeOneTimeTokenService : public OneTimeTokenService {
   FakeOneTimeTokenService() = default;
   ~FakeOneTimeTokenService() override = default;
 
+  OneTimeTokenLogSink* log_sink() override { return nullptr; }
+
   void GetRecentOneTimeTokens(Callback callback) override {}
 
   std::vector<OneTimeToken> GetCachedOneTimeTokens() const override {

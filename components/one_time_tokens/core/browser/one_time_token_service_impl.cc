@@ -5,6 +5,8 @@
 #include "components/one_time_tokens/core/browser/one_time_token_service_impl.h"
 
 #include <algorithm>
+#include <utility>
+#include <vector>
 
 #include "base/containers/adapters.h"
 #include "base/containers/to_vector.h"
@@ -24,8 +26,20 @@ OneTimeTokenServiceImpl::OneTimeTokenServiceImpl(
     : sms_{.has_pending_request = false, .backend = sms_otp_backend},
       gmail_{.backend = gmail_otp_backend},
       cache_(kCacheDurationForOldTokens,
-             &OneTimeToken::on_device_arrival_time) {}
-OneTimeTokenServiceImpl::~OneTimeTokenServiceImpl() = default;
+             &OneTimeToken::on_device_arrival_time) {
+  if (gmail_.backend) {
+    gmail_.backend->SetLogSink(&log_sink_);
+  }
+}
+OneTimeTokenServiceImpl::~OneTimeTokenServiceImpl() {
+  if (gmail_.backend) {
+    gmail_.backend->SetLogSink(nullptr);
+  }
+}
+
+OneTimeTokenLogSink* OneTimeTokenServiceImpl::log_sink() {
+  return &log_sink_;
+}
 
 void OneTimeTokenServiceImpl::GetRecentOneTimeTokens(Callback callback) {
   std::vector<OneTimeToken> recent_tokens =
@@ -53,6 +67,9 @@ ExpiringSubscription OneTimeTokenServiceImpl::Subscribe(
     base::Time expiration,
     Callback callback,
     base::OnceClosure expiration_callback) {
+  LOG_OTT(&log_sink_) << "Subscription updated: source="
+                      << std::to_underlying(source)
+                      << ", expiration=" << expiration;
   switch (source) {
     case OneTimeTokenSource::kOnDeviceSms: {
       ExpiringSubscription subscription = sms_subscription_manager_.Subscribe(

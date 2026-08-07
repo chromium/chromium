@@ -32,6 +32,8 @@ class IdentityManager;
 
 namespace one_time_tokens {
 
+class OneTimeTokenLogSink;
+
 // Duration after which notifications expire and won't be processed.
 inline constexpr base::TimeDelta kNotificationExpirationDuration =
     base::Minutes(3);
@@ -52,6 +54,8 @@ class GmailOtpBackend : public KeyedService {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager& identity_manager);
 
+  virtual void SetLogSink(OneTimeTokenLogSink* log_sink) {}
+
   // Creates a subscription for new incoming OTPs.
   [[nodiscard]] virtual ExpiringSubscription Subscribe(base::Time expiration,
                                                        Callback callback) = 0;
@@ -71,6 +75,8 @@ class GmailOtpBackendImpl : public GmailOtpBackend,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager& identity_manager);
   ~GmailOtpBackendImpl() override;
+
+  void SetLogSink(OneTimeTokenLogSink* log_sink) override;
 
   ExpiringSubscription Subscribe(base::Time expiration,
                                  Callback callback) override;
@@ -99,6 +105,9 @@ class GmailOtpBackendImpl : public GmailOtpBackend,
 
   // Handles subscriptions to the `GmailOtpBackend`.
   ExpiringSubscriptionManager<CallbackSignature> subscription_manager_;
+
+  // Owned by `OneTimeTokenServiceImpl`, outlives this backend. May be null.
+  raw_ptr<OneTimeTokenLogSink> log_sink_ = nullptr;
 
   // Policy for coordinating network requests.
   std::unique_ptr<EmailOneTimeTokenFetchCoordinator> coordinator_;
