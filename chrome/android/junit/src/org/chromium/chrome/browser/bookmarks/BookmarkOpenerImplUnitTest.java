@@ -28,6 +28,7 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
@@ -44,6 +45,7 @@ public class BookmarkOpenerImplUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private BookmarkModel mBookmarkModel;
+    @Mock private MultiInstanceManager mMultiInstanceManager;
 
     private Activity mActivity;
     private BookmarkOpenerImpl mOpener;
@@ -134,7 +136,8 @@ public class BookmarkOpenerImplUnitTest {
                 new BookmarkOpenerImpl(
                         () -> mBookmarkModel,
                         mActivity,
-                        new ComponentName(mActivity, "TestActivity"));
+                        new ComponentName(mActivity, "TestActivity"),
+                        mMultiInstanceManager);
     }
 
     @Test

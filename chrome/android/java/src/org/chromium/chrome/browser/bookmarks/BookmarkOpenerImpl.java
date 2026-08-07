@@ -26,6 +26,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -43,20 +44,24 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
     private final Supplier<@Nullable BookmarkModel> mBookmarkModelSupplier;
     private final Context mContext;
     private final @Nullable ComponentName mComponentName;
+    private final @Nullable MultiInstanceManager mMultiInstanceManager;
 
     /**
      * @param bookmarkModelSupplier Supplies the bookmark model, used to query for bookmark urls and
      *     type.
      * @param context The android activity context, used to build the intent to open bookmarks.
      * @param componentName The name of the parent component, can be null on tablets.
+     * @param multiInstanceManager The multi instance manager.
      */
     public BookmarkOpenerImpl(
             Supplier<@Nullable BookmarkModel> bookmarkModelSupplier,
             Context context,
-            @Nullable ComponentName componentName) {
+            @Nullable ComponentName componentName,
+            @Nullable MultiInstanceManager multiInstanceManager) {
         mBookmarkModelSupplier = bookmarkModelSupplier;
         mContext = context;
         mComponentName = componentName;
+        mMultiInstanceManager = multiInstanceManager;
     }
 
     @Override
@@ -68,7 +73,7 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
         recordMetricsForOpenBookmarkInCurrentTab(item);
 
         Intent intent = createBasicOpenIntent(item, incognito, /* opensNewTabByDefault= */ false);
-        IntentHandler.startActivityForTrustedIntent(mContext, intent);
+        launchIntent(intent);
 
         return true;
     }
@@ -116,9 +121,22 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
         if (extras != null) {
             intent.putExtras(extras);
         }
-        IntentHandler.startActivityForTrustedIntent(mContext, intent);
+        launchIntent(intent);
 
         return true;
+    }
+
+    private void launchIntent(Intent intent) {
+        if (mMultiInstanceManager != null) {
+            int windowId = mMultiInstanceManager.getCurrentInstanceId();
+            if (windowId != MultiInstanceManager.INVALID_WINDOW_ID) {
+                intent.putExtra(IntentHandler.EXTRA_WINDOW_ID, windowId);
+                if (MultiWindowUtils.launchIntentInInstance(intent, windowId)) {
+                    return;
+                }
+            }
+        }
+        IntentHandler.startActivityForTrustedIntent(mContext, intent);
     }
 
     @Override

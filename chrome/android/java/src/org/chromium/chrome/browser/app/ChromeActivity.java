@@ -3087,7 +3087,11 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                             menuItemData.getString(
                                     AppMenuPropertiesDelegateImpl.BOOKMARK_ID_BUNDLE_KEY));
             BookmarkOpener opener =
-                    new BookmarkOpenerImpl(mBookmarkModelSupplier, this, getComponentName());
+                    new BookmarkOpenerImpl(
+                            mBookmarkModelSupplier,
+                            this,
+                            getComponentName(),
+                            /* multiInstanceManager= */ null);
             opener.openBookmarkInCurrentTab(bookmarkId, currentTab.isIncognito());
             RecordUserAction.record("MobileMenuOpenBookmark");
             return true;

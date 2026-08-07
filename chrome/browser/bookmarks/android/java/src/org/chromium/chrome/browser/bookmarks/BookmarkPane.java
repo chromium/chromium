@@ -95,7 +95,8 @@ public class BookmarkPane extends PaneBase {
                     new BookmarkOpenerImpl(
                             () -> BookmarkModel.getForProfile(originalProfile),
                             mContext,
-                            componentName);
+                            componentName,
+                            /* multiInstanceManager= */ null);
             mBookmarkUiPrefs = new BookmarkUiPrefs(ChromeSharedPreferences.getInstance());
             mBookmarkManager =
                     new BookmarkManagerCoordinator(

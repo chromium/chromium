@@ -2841,7 +2841,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (mBookmarkOpener == null) {
             mBookmarkOpener =
                     new BookmarkOpenerImpl(
-                            mBookmarkModelSupplier, mActivity, mActivity.getComponentName());
+                            mBookmarkModelSupplier,
+                            mActivity,
+                            mActivity.getComponentName(),
+                            mMultiInstanceManager);
         }
 
         if (mBookmarkBarCoordinator == null) {

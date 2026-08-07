@@ -64,7 +64,8 @@ public class BookmarkPage extends BasicNativePage {
                 new BookmarkOpenerImpl(
                         () -> BookmarkModel.getForProfile(profile),
                         /* context= */ host.getContext(),
-                        componentName);
+                        componentName,
+                        /* multiInstanceManager= */ null);
 
         mBookmarkUiPrefs = new BookmarkUiPrefs(ChromeSharedPreferences.getInstance());
         // Provide the BackPressManager to the coordinator so it can manage itself.
