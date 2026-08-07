@@ -18,6 +18,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/common/logger.h"
@@ -116,6 +117,12 @@ constexpr int kMaxRetries = 3;
 // The pref name used for storing the eligibility response proto.
 constexpr char kResponsePrefName[] =
     "aim_eligibility_service.aim_eligibility_response";
+
+constexpr char kManualOverridePrefName[] =
+    "aim_eligibility_service.aim_eligibility_manual_override";
+
+constexpr char kManualOverrideTimestampPrefName[] =
+    "aim_eligibility_service.aim_eligibility_manual_override_timestamp";
 
 // Returns a non-empty account info if the primary account exists.
 CoreAccountInfo GetPrimaryAccountInfo(
@@ -248,6 +255,8 @@ bool AimEligibilityService::GenericKillSwitchFeatureCheck(
 // static
 void AimEligibilityService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(kResponsePrefName, "");
+  registry->RegisterBooleanPref(kManualOverridePrefName, false);
+  registry->RegisterTimePref(kManualOverrideTimestampPrefName, base::Time());
   registry->RegisterIntegerPref(omnibox::kAIModeSettings,
                                 kAiModeAllowedDefault);
   registry->RegisterIntegerPref(omnibox::kThirdPartyAiChatSettings,
@@ -340,6 +349,14 @@ AimEligibilityService::AimEligibilityService(
   template_url_service_->AddObserver(this);
 
   LoadMostRecentResponse();
+
+  if (IsManualOverrideActive()) {
+    base::Time override_time =
+        pref_service_->GetTime(kManualOverrideTimestampPrefName);
+    LOG(WARNING) << "AIM eligibility manual override is active. "
+                 << "Automatic background requests are disabled. "
+                 << "It will expire on " << (override_time + base::Hours(24));
+  }
 
   bool startup_request_enabled =
       base::FeatureList::IsEnabled(omnibox::kAimServerRequestOnStartupEnabled);
@@ -700,6 +717,8 @@ AimEligibilityService::GetMostRecentResponseAuthMethod() const {
 }
 
 void AimEligibilityService::StartServerEligibilityRequestForDebugging() {
+  pref_service_->SetBoolean(kManualOverridePrefName, false);
+  pref_service_->SetTime(kManualOverrideTimestampPrefName, base::Time());
   StartServerEligibilityRequest(RequestSource::kUser, GetLocale());
 }
 
@@ -719,6 +738,8 @@ bool AimEligibilityService::SetEligibilityResponseForDebugging(
   }
   UpdateMostRecentResponse(response_proto, EligibilityResponseSource::kUser,
                            AuthenticationMethod::kNone);
+  pref_service_->SetBoolean(kManualOverridePrefName, true);
+  pref_service_->SetTime(kManualOverrideTimestampPrefName, base::Time::Now());
   return true;
 }
 
@@ -942,6 +963,20 @@ void AimEligibilityService::UpdateMostRecentResponse(
   LogEligibilityResponseChanges(old_response, response_proto);
 }
 
+bool AimEligibilityService::IsManualOverrideActive() {
+  if (!pref_service_->GetBoolean(kManualOverridePrefName)) {
+    return false;
+  }
+  base::Time override_time =
+      pref_service_->GetTime(kManualOverrideTimestampPrefName);
+  if (base::Time::Now() - override_time > base::Hours(24)) {
+    pref_service_->SetBoolean(kManualOverridePrefName, false);
+    pref_service_->SetTime(kManualOverrideTimestampPrefName, base::Time());
+    return false;
+  }
+  return true;
+}
+
 void AimEligibilityService::LoadMostRecentResponse() {
   omnibox::AimEligibilityResponse prefs_response;
   if (!GetResponseFromPrefs(&pref_service_.get(), &prefs_response)) {
@@ -1054,6 +1089,9 @@ void AimEligibilityService::ScheduleServerEligibilityRequest(
 void AimEligibilityService::StartServerEligibilityRequest(
     RequestSource request_source,
     const std::string& locale) {
+  if (IsManualOverrideActive() && request_source != RequestSource::kUser) {
+    return;
+  }
   // Cancel pending requests.
   active_loader_.reset();
 
