@@ -286,6 +286,38 @@ TEST_F(AutofillCreditCardTableViewControllerTest, TestOneCreditCardWithCvc) {
 }
 
 TEST_F(AutofillCreditCardTableViewControllerTest,
+       TestGoogleWalletNoticeFooterExists_FlagEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      autofill::features::kAutofillEnableWalletReminderNotice);
+
+  AddCreditCard("John Doe", "378282246310005", "123");
+  CreateController();
+  CheckController();
+
+  ASSERT_EQ(4, NumberOfSections());
+  EXPECT_EQ(1, NumberOfItemsInSection(3));
+  CheckSectionFooter(
+      l10n_util::GetNSString(IDS_AUTOFILL_SETTINGS_GOOGLE_WALLET_LEGAL_NOTICE),
+      3);
+}
+
+TEST_F(AutofillCreditCardTableViewControllerTest,
+       TestGoogleWalletNoticeFooterDoesNotExist_FlagDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      autofill::features::kAutofillEnableWalletReminderNotice);
+
+  AddCreditCard("John Doe", "378282246310005", "123");
+  CreateController();
+  CheckController();
+
+  ASSERT_EQ(4, NumberOfSections());
+  EXPECT_EQ(1, NumberOfItemsInSection(3));
+  EXPECT_EQ(nil, [[controller() tableViewModel] footerForSectionIndex:3]);
+}
+
+TEST_F(AutofillCreditCardTableViewControllerTest,
        TestOneCreditCardWithCvcItemDeleted) {
   // Add a credit card with a CVC.
   AddCreditCard("John Doe", "378282246310005", "123");

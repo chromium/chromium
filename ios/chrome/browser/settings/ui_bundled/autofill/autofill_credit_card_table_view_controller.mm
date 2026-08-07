@@ -13,6 +13,7 @@
 #import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
+#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/ios/browser/credit_card_util.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
@@ -53,6 +54,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
 namespace {
 
@@ -77,6 +79,7 @@ enum ItemType : NSInteger {
   ItemTypeCVCStorageButton,
   ItemTypeCVCStorageButtonSubtitle,
   ItemTypePayOverTimeButton,
+  ItemTypeGoogleWalletLegalNoticeFooter,
 };
 
 }  // namespace
@@ -265,6 +268,11 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
       [model addItem:[self itemForCreditCard:*creditCard]
           toSectionWithIdentifier:SectionIdentifierCards];
     }
+    if (base::FeatureList::IsEnabled(
+            autofill::features::kAutofillEnableWalletReminderNotice)) {
+      [model setFooter:[self googleWalletLegalMessageFooter]
+          forSectionWithIdentifier:SectionIdentifierCards];
+    }
   }
 }
 
@@ -360,6 +368,16 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
       [[TableViewTextHeaderFooterItem alloc] initWithType:ItemTypeHeader];
   header.text = l10n_util::GetNSString(IDS_AUTOFILL_PAYMENT_METHODS);
   return header;
+}
+
+- (TableViewHeaderFooterItem*)googleWalletLegalMessageFooter {
+  TableViewLinkHeaderFooterItem* footer = [[TableViewLinkHeaderFooterItem alloc]
+      initWithType:ItemTypeGoogleWalletLegalNoticeFooter];
+  footer.text =
+      l10n_util::GetNSString(IDS_AUTOFILL_SETTINGS_GOOGLE_WALLET_LEGAL_NOTICE);
+  footer.urls = @[ [[CrURL alloc]
+      initWithGURL:GURL("https://wallet.google.com/wallet/settings")] ];
+  return footer;
 }
 
 // TODO(crbug.com/40123293): Add egtest for server cards.
@@ -625,6 +643,18 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
 }
 
 #pragma mark - UITableViewDelegate
+
+- (UIView*)tableView:(UITableView*)tableView
+    viewForFooterInSection:(NSInteger)section {
+  UIView* footerView = [super tableView:tableView
+                 viewForFooterInSection:section];
+  TableViewLinkHeaderFooterView* footer =
+      base::apple::ObjCCast<TableViewLinkHeaderFooterView>(footerView);
+  if (footer) {
+    footer.delegate = self;
+  }
+  return footerView;
+}
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
