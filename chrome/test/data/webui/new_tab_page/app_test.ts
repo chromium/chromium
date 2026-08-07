@@ -2027,8 +2027,16 @@ suite('NewTabPageAppTest', () => {
           });
 
       test(
-          '+ button is bottom aligned with submit button with tab context',
+          'spacing and bottom alignment when attachments and tab context ' +
+              'are present without dropdown',
           async () => {
+            loadTimeData.overrideValues({
+              ntpRealboxNextEnabled: true,
+              contextManagementInComposeboxEnabled: true,
+              contextualMenuUsePecApi: false,
+              composeboxShowContextMenu: true,
+              tabFaviconChipsToCoinsEnabled: true,
+            });
             await recreateApp();
             await microtasksFinished();
 
@@ -2038,37 +2046,108 @@ suite('NewTabPageAppTest', () => {
             searchbox.dispatchEvent(new CustomEvent('open-composebox', {
               detail: {
                 text: 'test query',
-                files: [{
-                  tabId: 1,
-                  url: 'https://example.com',
-                  title: 'Example Tab',
-                }],
+                files: [],
               },
             }));
             await microtasksFinished();
 
             const composebox = $$(app, '#composebox') as NtpComposeboxElement;
             assertTrue(!!composebox);
+            const file = ComposeboxFile.createFromFile(
+                'test-uuid', {name: 'test.pdf', type: 'application/pdf'},
+                ContextUploadStatus.kUploadSuccessful);
+            const tabFile = ComposeboxFile.createFromTab(
+                'test-tab-uuid', 1, 'Example Tab', 'https://example.com');
+            composebox.files =
+                new Map([[file.uuid, file], [tabFile.uuid, tabFile]]);
+            composebox.contextMenuEnabled = true;
             composebox.smartTabSharingVisible = true;
             composebox.smartTabSharingActive = true;
-            await microtasksFinished();
+            composebox.requestUpdate();
+            await composebox.updateComplete;
 
-            const composeboxEntrypointMenu =
-                $$(composebox, '#contextEntrypoint');
-            assertTrue(!!composeboxEntrypointMenu);
-            const composeboxEntrypointButton =
-                $$(composeboxEntrypointMenu, '#entrypointButton');
-            assertTrue(!!composeboxEntrypointButton);
+            const fileCarousel = $$(composebox, '#carousel');
+            assertTrue(!!fileCarousel);
+            const entrypointMenu = $$(composebox, '#contextEntrypoint');
+            assertTrue(!!entrypointMenu);
+            const entrypointButton = $$(entrypointMenu, '#entrypointButton');
+            assertTrue(!!entrypointButton);
 
-            const submitElement = $$(composebox, 'cr-composebox-submit');
-            assertTrue(!!submitElement, 'Submit button should be rendered');
+            const carouselContainer = $$(composebox, '#carouselContainer');
+            assertTrue(!!carouselContainer);
+            const submitElement =
+                carouselContainer.querySelector('cr-composebox-submit')!;
+            assertTrue(!!submitElement);
             const submitIcon = $$(submitElement, '#submitContainer');
-            assertTrue(!!submitIcon, 'Submit icon should exist');
+            assertTrue(!!submitIcon);
 
             assertEquals(
-                composeboxEntrypointButton.getBoundingClientRect().bottom,
+                18,
+                entrypointButton.getBoundingClientRect().top -
+                    fileCarousel.getBoundingClientRect().bottom,
+                'Vertical distance between carousel and + button should be ' +
+                    '18px');
+            assertEquals(
+                entrypointButton.getBoundingClientRect().bottom,
                 submitIcon.getBoundingClientRect().bottom,
-                '+ button and submit button should be bottom aligned');
+                'Entrypoint button and submit button should be bottom ' +
+                    'aligned');
+          });
+
+      test(
+          'spacing and bottom alignment when only tab context is attached ' +
+              'without dropdown',
+          async () => {
+            loadTimeData.overrideValues({
+              ntpRealboxNextEnabled: true,
+              contextManagementInComposeboxEnabled: true,
+              contextualMenuUsePecApi: false,
+              composeboxShowContextMenu: true,
+              tabFaviconChipsToCoinsEnabled: true,
+            });
+            await recreateApp();
+            await microtasksFinished();
+
+            const searchbox = $$(app, '#searchbox');
+            assertTrue(!!searchbox);
+
+            searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+              detail: {
+                text: 'test query',
+                files: [],
+              },
+            }));
+            await microtasksFinished();
+
+            const composebox = $$(app, '#composebox') as NtpComposeboxElement;
+            assertTrue(!!composebox);
+            const tabFile = ComposeboxFile.createFromTab(
+                'test-tab-uuid', 1, 'Example Tab', 'https://example.com');
+            composebox.files = new Map([[tabFile.uuid, tabFile]]);
+            composebox.contextMenuEnabled = true;
+            composebox.smartTabSharingVisible = true;
+            composebox.smartTabSharingActive = true;
+            composebox.requestUpdate();
+            await composebox.updateComplete;
+
+            const entrypointMenu = $$(composebox, '#contextEntrypoint');
+            assertTrue(!!entrypointMenu);
+            const entrypointButton = $$(entrypointMenu, '#entrypointButton');
+            assertTrue(!!entrypointButton);
+
+            const carouselContainer = $$(composebox, '#carouselContainer');
+            assertTrue(!!carouselContainer);
+            const submitElement =
+                carouselContainer.querySelector('cr-composebox-submit')!;
+            assertTrue(!!submitElement);
+            const submitIcon = $$(submitElement, '#submitContainer');
+            assertTrue(!!submitIcon);
+
+            assertEquals(
+                entrypointButton.getBoundingClientRect().bottom,
+                submitIcon.getBoundingClientRect().bottom,
+                'Entrypoint button and submit button should be bottom ' +
+                    'aligned');
           });
 
       test(
