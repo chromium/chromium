@@ -121,8 +121,7 @@ constinit const FeatureParam<std::string>
               "branch-capacity-in-bytes":524288,
               "enable-quarantine":true,
               "enable-zapping":true,
-              "leak-on-destruction":false,
-              "max-quarantine-size":null
+              "leak-on-destruction":false
             }
           }
         })"};
