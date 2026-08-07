@@ -194,6 +194,7 @@ source_set("unit_tests") {
     "//chrome/browser/signin:test_support",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/omnibox",
+    "//chrome/browser/ui/views:bubble_anchor_util_views",
     "//chrome/browser/ui/views:layout_provider",
     "//chrome/test:test_support",
     "//chrome/test/views",

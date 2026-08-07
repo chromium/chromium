@@ -78,6 +78,14 @@ component("views") {
   }
 }
 
+source_set("bubble_anchor_util_views") {
+  public = [ "bubble_anchor_util_views.h" ]
+  public_deps = [
+    "//chrome/browser/ui:bubble_anchor_util",
+    "//ui/views",
+  ]
+}
+
 source_set("layout_provider") {
   sources = [
     "chrome_layout_provider.h",

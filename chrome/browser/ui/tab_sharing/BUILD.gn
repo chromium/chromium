@@ -24,6 +24,7 @@ if (!is_android) {
     deps = [
       ":tab_sharing",
       "//chrome/app:generated_resources",
+      "//chrome/browser/ui:bubble_anchor_util",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/page_info",
       "//chrome/browser/ui/views:screen_sharing_util",

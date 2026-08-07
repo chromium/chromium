@@ -110,6 +110,7 @@ if (!is_android) {
     deps = [
       ":browser_actions",
       ":browser_select_file_dialog_controller",
+      ":bubble_anchor_util",
       ":chrome_pages",
       ":ui",
       "//build:branding_buildflags",
@@ -415,6 +416,14 @@ source_set("view_ids") {
   public = [ "view_ids.h" ]
 }
 
+source_set("bubble_anchor_util") {
+  public = [ "bubble_anchor_util.h" ]
+  public_deps = [
+    "//chrome/browser/ui/browser_window",
+    "//ui/gfx",
+  ]
+}
+
 source_set("managed_ui") {
   public = [ "managed_ui.h" ]
   sources = [ "managed_ui.cc" ]
@@ -562,6 +571,7 @@ static_library("ui") {
     ":browser_element_identifiers",
     ":browser_otr_state",
     ":browser_ui_prefs",
+    ":bubble_anchor_util",
     ":incognito_allowed_url",
     ":managed_ui",
     ":recently_audible_helper",
@@ -1078,7 +1088,6 @@ static_library("ui") {
     # - c/b/ui/browser_window.h
     # - c/b/ui/browser.h
     # - c/b/ui/views/title_origin_label.h
-    # - c/b/ui/views/bubble_anchor_util_views.h
     # - c/b/ui/views/frame/browser_view.h
     "//chrome/browser/ui/views/file_system_access:impl",
   ]
@@ -3448,7 +3457,6 @@ static_library("ui") {
 
   if (toolkit_views) {
     sources += [
-      "bubble_anchor_util.h",
       "views/autofill/address_bubble_base_view.cc",
       "views/autofill/address_editor_view.cc",
       "views/autofill/address_editor_view.h",
@@ -3566,7 +3574,6 @@ static_library("ui") {
       "views/browser_commands_views.cc",
       "views/browser_dialogs_views.cc",
       "views/bubble_anchor_util_views.cc",
-      "views/bubble_anchor_util_views.h",
       "views/bubble_menu_item_factory.cc",
       "views/bubble_menu_item_factory.h",
       "views/certificate_selector.cc",
@@ -4132,6 +4139,7 @@ static_library("ui") {
       "//chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl",
       "//chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/converters",
       "//chrome/browser/ui/views",
+      "//chrome/browser/ui/views:bubble_anchor_util_views",
       "//chrome/browser/ui/views:confirm_bubble",
       "//chrome/browser/ui/views:device_chooser_content_view",
       "//chrome/browser/ui/views:layout_provider_impl",
@@ -4411,7 +4419,6 @@ static_library("ui") {
       # following headers get componentized:
       # c/b/ui/browser.h, browser_commands.h, browser_window.h
       # c/b/ui/view_ids.h
-      # c/b/ui/views/bubble_anchor_util_views.h
       # c/b/ui/views/frame/browser_view.h
       # c/b/ui/views/frame/contents_container_outline.h
       # c/b/ui/views/frame/contents_container_view.h
@@ -4462,10 +4469,9 @@ static_library("ui") {
       # TODO(crbug.com/434882143): Remove this circular dependency when the
       # following headers get componentized:
       # c/b/ui/browser_command_controller.h, browser_commands.h,
-      # browser_tabstrip.h, browser_window.h, bubble_anchor_util.h,
+      # browser_tabstrip.h, browser_window.h,
       # intent_picker_tab_helper.h, view_ids.h
       # c/b/ui/views/bookmarks/bookmark_bubble_view.h
-      # c/b/ui/views/bubble_anchor_util_views.h
       # c/b/ui/views/content_setting_bubble_contents.h
       # c/b/ui/views/frame/browser_view.h
       # c/b/ui/views/intent_picker_bubble_view.h
