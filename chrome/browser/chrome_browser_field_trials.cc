@@ -180,6 +180,31 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // Disables the enhanced pip transition and uses the default animation.
   // TODO(crbug.com/440384447): Remove when enhanced pip transition is fixed.
   feature_overrides.DisableFeature(media::kAllowEnhancedPipTransition);
+
+  // Enables Document Picture-in-Picture on desktop Android; disabled on other
+  // Android form factors until system fullscreen support is available
+  // (crbug.com/534397738).
+  feature_overrides.EnableFeature(
+      blink::features::kDocumentPictureInPictureAPI);
+
+  // Enables SVC bitrate layering for NdkVideoEncodeAccelerator on desktop
+  // Android ahead of NDK r30 rollout across the rest of Android.
+  feature_overrides.EnableFeature(
+      media::kNdkVideoEncodeAcceleratorBitrateLayering);
+
+  // Enables native SVC temporal layer retrieval for NdkVideoEncodeAccelerator
+  // on desktop Android ahead of NDK r30 rollout across the rest of Android.
+  feature_overrides.EnableFeature(media::kNdkVideoEncodeAcceleratorNativeSvc);
+
+  // Enables uninterrupted audio on headphone unplug for desktop Android; other
+  // Android form factors retain pause-on-unplug for privacy considerations.
+  feature_overrides.EnableFeature(media::kNoPauseMediaOnHeadphoneUnplug);
+
+  // Pauses media on system sleep on desktop Android as a workaround for missing
+  // lid-close/suspend detection APIs (crbug.com/505630217); not needed on other
+  // form factors.
+  feature_overrides.EnableFeature(media::kPauseMediaOnSystemSleepAndroid);
+
   // Enable by default for desktop platforms, pending a phone / foldable /
   // tablet rollout using the same flag.
   // TODO(crbug.com/442327273): Remove when rollout is complete to all form
