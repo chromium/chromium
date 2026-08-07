@@ -7902,6 +7902,102 @@ TEST_F(RequestTest, IdPClaimedSignUpTakesPrecedenceOverBrowserObservedSignIn) {
   ExpectUkmValue("HasSigninAccount", true);
 }
 
+// Test that when an account has an obsolete browser sharing permission (i.e.
+// browser has a last_used_timestamp but IdP claimed SignUp via
+// approved_clients), the permission is revoked.
+TEST_F(RequestTest, RevokeObsoleteSharingPermission) {
+  // Pretend the sharing permission has been granted for all accounts.
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderUrlFull), _))
+      .WillRepeatedly(
+          Return(std::make_optional<base::Time>(base::Time::Now())));
+
+  // Expect RevokeSharingPermission to be called for the accounts where
+  // approved_clients indicates kSignUp.
+  EXPECT_CALL(*test_permission_delegate_,
+              RevokeSharingPermission(
+                  OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                  OriginFromString(kProviderUrlFull), kAccountIdNicolas));
+  EXPECT_CALL(*test_permission_delegate_,
+              RevokeSharingPermission(
+                  OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                  OriginFromString(kProviderUrlFull), kAccountIdZach));
+  EXPECT_CALL(*test_permission_delegate_,
+              RevokeSharingPermission(
+                  OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                  OriginFromString(kProviderUrlFull), kAccountIdPeter))
+      .Times(0);
+
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.idp_info[kProviderUrlFull].accounts = kMultipleAccounts;
+
+  RunDontWaitForCallback(kDefaultRequestParameters, configuration);
+
+  ASSERT_EQ(all_accounts_for_display().size(), 3u);
+}
+
+// Test that when an IdP does not provide approved_clients (so
+// idp_claimed_login_state is std::nullopt), the sharing permission is NOT
+// revoked, even if the browser observed login state is kSignIn.
+TEST_F(RequestTest, DoNotRevokeSharingPermissionWithoutApprovedClients) {
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderUrlFull), _))
+      .WillRepeatedly(
+          Return(std::make_optional<base::Time>(base::Time::Now())));
+
+  EXPECT_CALL(*test_permission_delegate_, RevokeSharingPermission(_, _, _, _))
+      .Times(0);
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.idp_info[kProviderUrlFull].accounts = kSingleAccount;
+
+  RunDontWaitForCallback(kDefaultRequestParameters, configuration);
+
+  ASSERT_EQ(all_accounts_for_display().size(), 1u);
+  EXPECT_EQ(all_accounts_for_display()[0]->idp_claimed_login_state,
+            std::nullopt);
+  EXPECT_EQ(all_accounts_for_display()[0]->browser_trusted_login_state,
+            LoginState::kSignIn);
+}
+
+// Test that when the browser observed login state is kSignUp, the sharing
+// permission is NOT revoked, regardless of whether the IdP claimed login state
+// is kSignIn or kSignUp.
+TEST_F(RequestTest, DoNotRevokeSharingPermissionWhenBrowserObservedIsSignUp) {
+  // Pretend the sharing permission has NOT been granted for any account,
+  // so browser_observed_login_state is kSignUp.
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderUrlFull), _))
+      .WillRepeatedly(Return(std::nullopt));
+
+  EXPECT_CALL(*test_permission_delegate_, RevokeSharingPermission(_, _, _, _))
+      .Times(0);
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.idp_info[kProviderUrlFull].accounts = kMultipleAccounts;
+
+  RunDontWaitForCallback(kDefaultRequestParameters, configuration);
+
+  ASSERT_EQ(all_accounts_for_display().size(), 3u);
+  EXPECT_EQ(all_accounts_for_display()[1]->idp_claimed_login_state,
+            LoginState::kSignUp);
+  EXPECT_EQ(all_accounts_for_display()[1]->browser_trusted_login_state,
+            LoginState::kSignUp);
+  EXPECT_EQ(all_accounts_for_display()[2]->idp_claimed_login_state,
+            LoginState::kSignUp);
+  EXPECT_EQ(all_accounts_for_display()[2]->browser_trusted_login_state,
+            LoginState::kSignUp);
+}
+
 // Test that IdP claimed SignIn does not affect browser observed SignUp.
 TEST_F(RequestTest, IdPClaimedSignInDoesNotAffectBrowserObservedSignUp) {
   // Pretend the sharing permission has NOT been granted for any account.

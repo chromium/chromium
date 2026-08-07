@@ -730,12 +730,23 @@ void AccountsFetcher::ComputeLoginStates(
       LoginState browser_observed_login_state =
           account->last_used_timestamp.has_value() ? LoginState::kSignIn
                                                    : LoginState::kSignUp;
-      // At this moment we can trust login_state even though it's controlled
-      // by IdP. If it's kSignUp, it could mean that the browser's sharing
-      // permission is obsolete.
+      // At this moment we can trust idp_claimed_login_state even though it's
+      // controlled by the IdP.
       account->browser_trusted_login_state =
           account->idp_claimed_login_state.value_or(
               browser_observed_login_state);
+
+      // When the IdP and browser have conflicting login states (the IdP claims
+      // kSignUp via approved_clients while the browser observed kSignIn), the
+      // browser's sharing permission is obsolete (e.g., the user revoked access
+      // on the IdP side). Revoke it from browser storage. Note that this only
+      // applies when the IdP provides approved_clients.
+      if (account->idp_claimed_login_state == LoginState::kSignUp &&
+          browser_observed_login_state == LoginState::kSignIn) {
+        permission_delegate_->RevokeSharingPermission(
+            render_frame_host_->GetLastCommittedOrigin(), embedding_origin_,
+            idp_origin, account->id);
+      }
     }
   }
 }
