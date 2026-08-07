@@ -12,7 +12,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
-#include "chrome/browser/privacy_sandbox/profile_bucket_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -63,50 +62,6 @@ bool IsRegularProfile(profile_metrics::BrowserProfileType profile_type) {
 #else
   return true;
 #endif
-}
-
-// Emits startup histograms relating to the user's topics enabled status on
-// both client and profile level.
-void RecordTopicsEnabledHistograms(Profile* profile, bool enabled) {
-  std::optional<privacy_sandbox::ProfileEnabledState> profile_enabled_state =
-      privacy_sandbox::GetProfileEnabledState(profile, enabled);
-
-  if (profile_enabled_state) {
-    base::UmaHistogramEnumeration(
-        "Settings.PrivacySandbox.Topics.EnabledForProfile",
-        profile_enabled_state.value());
-  }
-  base::UmaHistogramBoolean("Settings.PrivacySandbox.Topics.Enabled", enabled);
-}
-
-// Emits startup histograms relating to the user's fledge enabled status on
-// both client and profile level.
-void RecordProtectedAudienceEnabledHistograms(Profile* profile, bool enabled) {
-  std::optional<privacy_sandbox::ProfileEnabledState> profile_enabled_state =
-      privacy_sandbox::GetProfileEnabledState(profile, enabled);
-
-  if (profile_enabled_state) {
-    base::UmaHistogramEnumeration(
-        "Settings.PrivacySandbox.Fledge.EnabledForProfile",
-        profile_enabled_state.value());
-  }
-  base::UmaHistogramBoolean("Settings.PrivacySandbox.Fledge.Enabled", enabled);
-}
-
-// Emits startup histograms relating to the user's AdMeasurement enabled
-// status on both client and profile level.
-void RecordAdMeasurementEnabledHistograms(Profile* profile, bool enabled) {
-  std::optional<privacy_sandbox::ProfileEnabledState> profile_enabled_state =
-      privacy_sandbox::GetProfileEnabledState(profile, enabled);
-
-  if (profile_enabled_state) {
-    base::UmaHistogramEnumeration(
-
-        "Settings.PrivacySandbox.AdMeasurement.EnabledForProfile",
-        profile_enabled_state.value());
-  }
-  base::UmaHistogramBoolean("Settings.PrivacySandbox.AdMeasurement.Enabled",
-                            enabled);
 }
 
 }  // namespace
@@ -240,18 +195,6 @@ void PrivacySandboxServiceImpl::LogPrivacySandboxState() {
   }
   RecordFirstPartySetsStateHistogram();
   RecordTrackingProtectionStateHistogram();
-
-  // Record the status of the APIs.
-  const bool topics_enabled =
-      pref_service_->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled);
-  const bool fledge_enabled =
-      pref_service_->GetBoolean(prefs::kPrivacySandboxM1FledgeEnabled);
-  const bool ad_measurement_enabled =
-      pref_service_->GetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled);
-
-  RecordTopicsEnabledHistograms(profile_, topics_enabled);
-  RecordProtectedAudienceEnabledHistograms(profile_, fledge_enabled);
-  RecordAdMeasurementEnabledHistograms(profile_, ad_measurement_enabled);
 }
 
 void PrivacySandboxServiceImpl::MaybeInitializeRelatedWebsiteSetsPref() {

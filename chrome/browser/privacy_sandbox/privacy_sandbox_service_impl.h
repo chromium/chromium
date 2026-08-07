@@ -65,9 +65,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
                            RelatedWebsiteSetsEnabledMetric);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
                            RelatedWebsiteSetsDisabledMetric);
-  FRIEND_TEST_ALL_PREFIXES(LogPrivacySandboxStateNonRegularProfilesTest, APIs);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
-                           LogPrivacySandboxState_APIs);
 
   // Contains all possible states of first party sets preference.
   // These values are persisted to logs. Entries should not be renumbered and
@@ -90,8 +87,7 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
   // Helper function to log tracking protection state.
   void RecordTrackingProtectionStateHistogram();
 
-  // Logs the state of the Privacy Sandbox APIs (Topics, Protected Audience,
-  // Ad Measurement) and cookie-related settings (FPS, Tracking Protection).
+  // Logs the state of cookie-related settings (FPS, Tracking Protection).
   // Called once per profile startup.
   void LogPrivacySandboxState();
 
