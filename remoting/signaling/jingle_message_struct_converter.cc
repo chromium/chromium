@@ -49,9 +49,8 @@ SessionDescriptionStruct::SdpType ToSdpTypeStruct(
       return SessionDescriptionStruct::SdpType::kOffer;
     case SessionDescription::Type::kAnswer:
       return SessionDescriptionStruct::SdpType::kAnswer;
-    default:
-      NOTREACHED();
   }
+  return SessionDescriptionStruct::SdpType::kUnspecified;
 }
 
 SessionDescription::Type FromSdpTypeStruct(
@@ -63,9 +62,8 @@ SessionDescription::Type FromSdpTypeStruct(
       return SessionDescription::Type::kOffer;
     case SessionDescriptionStruct::SdpType::kAnswer:
       return SessionDescription::Type::kAnswer;
-    default:
-      NOTREACHED();
   }
+  return SessionDescription::Type::kUnspecified;
 }
 
 SessionTerminateStruct::Reason ToTerminateReasonStruct(
@@ -89,9 +87,8 @@ SessionTerminateStruct::Reason ToTerminateReasonStruct(
       return SessionTerminateStruct::Reason::kIncompatibleParameters;
     case SessionTerminate::Reason::kUnknownReason:
       return SessionTerminateStruct::Reason::kUnknownReason;
-    default:
-      NOTREACHED();
   }
+  return SessionTerminateStruct::Reason::kUnknownReason;
 }
 
 SessionTerminate::Reason FromTerminateReasonStruct(
@@ -115,9 +112,8 @@ SessionTerminate::Reason FromTerminateReasonStruct(
       return SessionTerminate::Reason::kIncompatibleParameters;
     case SessionTerminateStruct::Reason::kUnknownReason:
       return SessionTerminate::Reason::kUnknownReason;
-    default:
-      NOTREACHED();
   }
+  return SessionTerminate::Reason::kUnknownReason;
 }
 
 ErrorStanzaStruct::Condition ToErrorConditionStruct(
@@ -134,9 +130,9 @@ ErrorStanzaStruct::Condition ToErrorConditionStruct(
     case JingleMessageReply::UNSUPPORTED_INFO:
       return ErrorStanzaStruct::Condition::kUnsupportedInfo;
     case JingleMessageReply::UNSPECIFIED:
-    default:
       return ErrorStanzaStruct::Condition::kUnspecified;
   }
+  return ErrorStanzaStruct::Condition::kUnspecified;
 }
 
 JingleMessageReply::ErrorType FromErrorConditionStruct(
@@ -153,9 +149,9 @@ JingleMessageReply::ErrorType FromErrorConditionStruct(
     case ErrorStanzaStruct::Condition::kUnsupportedInfo:
       return JingleMessageReply::UNSUPPORTED_INFO;
     case ErrorStanzaStruct::Condition::kUnspecified:
-    default:
       return JingleMessageReply::UNSPECIFIED;
   }
+  return JingleMessageReply::UNSPECIFIED;
 }
 
 }  // namespace

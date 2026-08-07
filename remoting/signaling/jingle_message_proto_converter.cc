@@ -32,7 +32,7 @@ ftl::AuthenticationMethod AuthMethodToProto(AuthenticationMethod method) {
     case AuthenticationMethod::CORP_SESSION_AUTHZ_SPAKE2_CURVE25519:
       return ftl::AUTHENTICATION_METHOD_CORP_SESSION_AUTHZ_SPAKE2_CURVE25519;
   }
-  NOTREACHED();
+  return ftl::AUTHENTICATION_METHOD_UNSPECIFIED;
 }
 
 AuthenticationMethod ProtoToAuthMethod(ftl::AuthenticationMethod method) {
@@ -47,9 +47,8 @@ AuthenticationMethod ProtoToAuthMethod(ftl::AuthenticationMethod method) {
       return AuthenticationMethod::CLOUD_SESSION_AUTHZ_SPAKE2_CURVE25519;
     case ftl::AUTHENTICATION_METHOD_CORP_SESSION_AUTHZ_SPAKE2_CURVE25519:
       return AuthenticationMethod::CORP_SESSION_AUTHZ_SPAKE2_CURVE25519;
-    default:
-      return AuthenticationMethod::INVALID;
   }
+  return AuthenticationMethod::INVALID;
 }
 
 void JingleAuthenticationToProto(const JingleAuthentication& auth,
@@ -110,7 +109,7 @@ ftl::SessionDescription::SdpType SdpTypeToProto(SessionDescription::Type type) {
     case SessionDescription::Type::kAnswer:
       return ftl::SessionDescription::ANSWER;
   }
-  NOTREACHED();
+  return ftl::SessionDescription::SDP_TYPE_UNSPECIFIED;
 }
 
 SessionDescription::Type ProtoToSdpType(ftl::SessionDescription::SdpType type) {
@@ -121,9 +120,8 @@ SessionDescription::Type ProtoToSdpType(ftl::SessionDescription::SdpType type) {
       return SessionDescription::Type::kOffer;
     case ftl::SessionDescription::ANSWER:
       return SessionDescription::Type::kAnswer;
-    default:
-      return SessionDescription::Type::kUnspecified;
   }
+  return SessionDescription::Type::kUnspecified;
 }
 
 void JingleTransportInfoToProto(const JingleTransportInfo& transport,
@@ -257,6 +255,7 @@ ftl::SessionTerminate::Reason JingleTerminateReasonToProto(
     case SessionTerminate::Reason::kUnknownReason:
       return ftl::SessionTerminate::UNKNOWN_REASON;
   }
+  return ftl::SessionTerminate::UNKNOWN_REASON;
 }
 
 SessionTerminate::Reason ProtoTerminateReasonToJingle(
@@ -281,6 +280,7 @@ SessionTerminate::Reason ProtoTerminateReasonToJingle(
     case ftl::SessionTerminate::UNKNOWN_REASON:
       return SessionTerminate::Reason::kUnknownReason;
   }
+  return SessionTerminate::Reason::kUnknownReason;
 }
 
 }  // namespace
@@ -462,6 +462,7 @@ ftl::IqStanza JingleMessageReplyToProto(const JingleMessageReply& reply) {
   } else {
     // Ensure we set the error case even if error_type is missing.
     ftl::ErrorStanza* error = stanza.mutable_error();
+    error->set_condition(ftl::ErrorStanza::CONDITION_UNSPECIFIED);
     if (!reply.text.empty()) {
       error->set_text(reply.text);
     }
@@ -503,6 +504,7 @@ bool JingleMessageReplyFromProto(const ftl::IqStanza& stanza,
   } else if (stanza.has_error()) {
     reply->reply_type = JingleMessageReply::REPLY_ERROR;
     const ftl::ErrorStanza& error = stanza.error();
+    reply->error_type = JingleMessageReply::UNSPECIFIED;
     switch (error.condition()) {
       case ftl::ErrorStanza::BAD_REQUEST:
         reply->error_type = JingleMessageReply::BAD_REQUEST;
@@ -520,9 +522,6 @@ bool JingleMessageReplyFromProto(const ftl::IqStanza& stanza,
         reply->error_type = JingleMessageReply::UNSUPPORTED_INFO;
         break;
       case ftl::ErrorStanza::CONDITION_UNSPECIFIED:
-        reply->error_type = JingleMessageReply::UNSPECIFIED;
-        break;
-      default:
         reply->error_type = JingleMessageReply::UNSPECIFIED;
         break;
     }

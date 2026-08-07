@@ -506,4 +506,63 @@ TEST_F(JingleMessageProtoConverterTest, ConvertAttachmentsRoundTrip) {
             "11");
 }
 
+TEST_F(JingleMessageProtoConverterTest, ConvertUnknownTerminateReason) {
+  JingleMessage message;
+  message.from = from_address_;
+  message.to = to_address_;
+  message.message_id = kMessageId;
+  message.sid = kSid;
+  SessionTerminate terminate;
+  terminate.reason = static_cast<SessionTerminate::Reason>(999);
+  message.SetPayload(std::move(terminate));
+
+  ftl::IqStanza stanza = message.ToFtlIqStanza();
+  EXPECT_EQ(stanza.jingle().session_terminate().reason(),
+            ftl::SessionTerminate::UNKNOWN_REASON);
+}
+
+TEST_F(JingleMessageProtoConverterTest, ConvertUnknownAuthMethod) {
+  JingleMessage message;
+  message.from = from_address_;
+  message.to = to_address_;
+  message.message_id = kMessageId;
+  message.sid = kSid;
+  SessionInitiate initiate;
+  JingleAuthentication auth;
+  auth.supported_methods = {static_cast<AuthenticationMethod>(999)};
+  auth.method = static_cast<AuthenticationMethod>(999);
+  initiate.authentication = auth;
+  message.SetPayload(std::move(initiate));
+
+  ftl::IqStanza stanza = message.ToFtlIqStanza();
+  EXPECT_TRUE(stanza.jingle().has_session_initiate());
+  EXPECT_TRUE(stanza.jingle().session_initiate().has_authentication());
+  EXPECT_EQ(
+      stanza.jingle().session_initiate().authentication().supported_methods(0),
+      ftl::AUTHENTICATION_METHOD_UNSPECIFIED);
+  EXPECT_EQ(stanza.jingle().session_initiate().authentication().method(),
+            ftl::AUTHENTICATION_METHOD_UNSPECIFIED);
+}
+
+TEST_F(JingleMessageProtoConverterTest, ConvertUnknownSdpType) {
+  JingleMessage message;
+  message.from = from_address_;
+  message.to = to_address_;
+  message.message_id = kMessageId;
+  message.sid = kSid;
+
+  JingleTransportInfo transport;
+  SessionDescription sdp;
+  sdp.type = static_cast<SessionDescription::Type>(999);
+  sdp.sdp = "test_sdp";
+  transport.session_description = sdp;
+  message.SetPayload(std::move(transport));
+
+  ftl::IqStanza stanza = message.ToFtlIqStanza();
+  EXPECT_TRUE(stanza.jingle().has_transport_info());
+  EXPECT_TRUE(stanza.jingle().transport_info().has_session_description());
+  EXPECT_EQ(stanza.jingle().transport_info().session_description().type(),
+            ftl::SessionDescription::SDP_TYPE_UNSPECIFIED);
+}
+
 }  // namespace remoting

@@ -192,6 +192,50 @@ TEST(JingleMessageStructConverterTest, JingleMessageReplyConversion_Error) {
   EXPECT_EQ(reply2.text, "Bad Request Details");
 }
 
+TEST(JingleMessageStructConverterTest,
+     JingleMessageReplyConversion_UnknownError) {
+  JingleMessageReply reply;
+  reply.from = SignalingAddress(kFromJid);
+  reply.to = SignalingAddress(kToJid);
+  reply.message_id = "reply_id";
+  reply.reply_type = JingleMessageReply::REPLY_ERROR;
+  reply.error_type = static_cast<JingleMessageReply::ErrorType>(999);
+  reply.text = "Unknown Error Details";
+
+  auto stanza = JingleMessageReplyToStruct(reply);
+  const auto* error_struct =
+      std::get_if<internal::ErrorStanzaStruct>(&stanza.payload);
+  ASSERT_TRUE(error_struct);
+  EXPECT_EQ(error_struct->condition,
+            internal::ErrorStanzaStruct::Condition::kUnspecified);
+  EXPECT_EQ(error_struct->text, "Unknown Error Details");
+
+  JingleMessageReply reply2;
+  ASSERT_TRUE(JingleMessageReplyFromStruct(stanza, &reply2));
+  EXPECT_EQ(reply2.reply_type, JingleMessageReply::REPLY_ERROR);
+  EXPECT_EQ(reply2.error_type, JingleMessageReply::UNSPECIFIED);
+  EXPECT_EQ(reply2.text, "Unknown Error Details");
+}
+
+TEST(JingleMessageStructConverterTest,
+     JingleMessageReplyConversion_InvalidErrorConditionStruct) {
+  internal::IqStanzaStruct stanza;
+  stanza.id = "reply_id";
+  stanza.sender.local_part = "from";
+  stanza.receiver.local_part = "to";
+  internal::ErrorStanzaStruct error_struct;
+  error_struct.condition =
+      static_cast<internal::ErrorStanzaStruct::Condition>(999);
+  error_struct.text = "Invalid Error Condition Struct";
+  stanza.payload = error_struct;
+
+  JingleMessageReply reply;
+  ASSERT_TRUE(JingleMessageReplyFromStruct(stanza, &reply));
+  EXPECT_EQ(reply.reply_type, JingleMessageReply::REPLY_ERROR);
+  EXPECT_EQ(reply.error_type, JingleMessageReply::UNSPECIFIED);
+  EXPECT_EQ(reply.text, "Invalid Error Condition Struct");
+}
+
 TEST(JingleMessageStructConverterTest, SessionInitiateConversion) {
   JingleMessage message;
   message.from = SignalingAddress(kFromJid);
@@ -360,6 +404,26 @@ TEST(JingleMessageStructConverterTest, HostAttributesAttachmentConversion) {
               testing::ElementsAre("attr1", "attr2"));
 }
 
+TEST(JingleMessageStructConverterTest, ConvertUnknownTerminateReason) {
+  internal::IqStanzaStruct stanza;
+  stanza.id = "test_id";
+  stanza.sender.local_part = "from";
+  stanza.receiver.local_part = "to";
+  internal::JingleMessageStruct jingle_struct;
+  jingle_struct.session_id = "test_sid";
+  internal::SessionTerminateStruct terminate_struct;
+  terminate_struct.reason =
+      static_cast<internal::SessionTerminateStruct::Reason>(999);
+  jingle_struct.action = terminate_struct;
+  stanza.payload = jingle_struct;
+
+  JingleMessage message;
+  std::string error;
+  ASSERT_TRUE(JingleMessageFromStruct(stanza, &message, &error));
+  ASSERT_TRUE(std::holds_alternative<SessionTerminate>(message.payload()));
+  EXPECT_EQ(std::get<SessionTerminate>(message.payload()).reason,
+            SessionTerminate::Reason::kUnknownReason);
+}
 
 }  // namespace
 }  // namespace remoting
