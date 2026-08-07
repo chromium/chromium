@@ -58,6 +58,17 @@ constexpr CGFloat kMarginTrailing = 16.0;
   return copy;
 }
 
++ (void)registerCellForTableView:(UITableView*)tableView {
+  [tableView registerClass:UITableViewCell.class
+      forCellReuseIdentifier:NSStringFromClass(self.class)];
+}
+
++ (UITableViewCell*)dequeueTableViewCell:(UITableView*)tableView {
+  UITableViewCell* cell = [tableView
+      dequeueReusableCellWithIdentifier:NSStringFromClass(self.class)];
+  return cell;
+}
+
 @end
 
 #pragma mark - AtMemoryInlineNoticeView

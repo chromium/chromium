@@ -8,6 +8,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_constants.h"
+#import "ios/chrome/browser/autofill/atmemory/ui/at_memory_inline_notice_view.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_mutator.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -48,7 +49,8 @@ enum class ViewState {
 
 }  // namespace
 
-@interface AtMemorySearchViewController () <UISearchResultsUpdating>
+@interface AtMemorySearchViewController () <UISearchResultsUpdating,
+                                            AtMemoryInlineNoticeViewDelegate>
 @end
 
 @implementation AtMemorySearchViewController {
@@ -97,6 +99,8 @@ enum class ViewState {
 }
 
 - (void)loadModel {
+  [AtMemoryInlineNoticeConfiguration registerCellForTableView:self.tableView];
+
   __weak __typeof(self) weakSelf = self;
   _dataSource = [[UITableViewDiffableDataSource alloc]
       initWithTableView:self.tableView
@@ -223,6 +227,7 @@ enum class ViewState {
                       itemIdentifier:(ItemIdentifier)itemIdentifier {
   switch (itemIdentifier) {
     case ItemIdentifier::kNoticeItem:
+      return [self noticeCellForTableView:tableView];
     case ItemIdentifier::kSearchItem:
     case ItemIdentifier::kFetchingItem:
     case ItemIdentifier::kNoDataItem:
@@ -232,6 +237,31 @@ enum class ViewState {
       break;
   }
   NOTREACHED();
+}
+
+// Returns the table view cell for the notice state.
+- (UITableViewCell*)noticeCellForTableView:(UITableView*)tableView {
+  UITableViewCell* cell =
+      [AtMemoryInlineNoticeConfiguration dequeueTableViewCell:tableView];
+  cell.selectionStyle = UITableViewCellSelectionStyleNone;
+  cell.backgroundColor = [UIColor clearColor];
+  cell.contentView.backgroundColor = [UIColor clearColor];
+
+  AtMemoryInlineNoticeConfiguration* config =
+      [[AtMemoryInlineNoticeConfiguration alloc] init];
+  config.delegate = self;
+  cell.contentConfiguration = config;
+  return cell;
+}
+
+#pragma mark - AtMemoryInlineNoticeViewDelegate
+
+- (void)inlineNoticeViewDidTapOK:(AtMemoryInlineNoticeView*)view {
+  // TODO(crbug.com/540433768): Forward to mutator to handle notice dismissal.
+}
+
+- (void)inlineNoticeViewDidTapSettings:(AtMemoryInlineNoticeView*)view {
+  // TODO(crbug.com/540433768): Forward to mutator to handle settings redirect.
 }
 
 @end

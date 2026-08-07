@@ -46,6 +46,12 @@
 // Delegate to handle actions from the notice view.
 @property(nonatomic, weak) id<AtMemoryInlineNoticeViewDelegate> delegate;
 
+// Registers the cell class with the table view.
++ (void)registerCellForTableView:(UITableView*)tableView;
+
+// Dequeues a cell from the table view.
++ (UITableViewCell*)dequeueTableViewCell:(UITableView*)tableView;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_ATMEMORY_UI_AT_MEMORY_INLINE_NOTICE_VIEW_H_
