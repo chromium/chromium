@@ -203,7 +203,7 @@ TEST_F(InlinePaintContextTest, DecorationInsetAccumulatesAcrossRun) {
     cursor.MoveTo(text);
     EXPECT_TRUE(cursor.Current());
     TextDecorationFragmentContext fragment_context;
-    fragment_context.line_cursor = cursor;
+    fragment_context.fragment_cursor = &cursor;
     TextDecorationInfo info(
         LineRelativeOffset(LayoutUnit(), LayoutUnit()),
         LayoutUnit(kFragmentWidth), style, UsedFont(*style.GetFont(), 1.0f),

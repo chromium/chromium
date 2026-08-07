@@ -49,7 +49,11 @@ struct TextDecorationFragmentContext {
  public:
   const FragmentItem* previous_fragment_on_line = nullptr;
   const FragmentItem* next_fragment_on_line = nullptr;
-  InlineCursor line_cursor;
+  // Cursor positioned at the current fragment, used to walk the decorated
+  // run when resolving `text-decoration-inset` percentages. Stored as a
+  // pointer to keep this struct cheap to copy in the per-fragment paint
+  // path; the cursor must outlive any painter holding this context.
+  const InlineCursor* fragment_cursor = nullptr;
 };
 
 CORE_EXPORT TextDecorationFragmentContext

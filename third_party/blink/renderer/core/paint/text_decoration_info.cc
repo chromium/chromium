@@ -183,7 +183,7 @@ TextDecorationFragmentContext ComputeTextDecorationFragmentContext(
   InlineCursor line_cursor = cursor;
   line_cursor.ExpandRootToContainingBlock();
   line_cursor.MoveTo(*cursor.CurrentItem());
-  fragment_context.line_cursor = line_cursor;
+  fragment_context.fragment_cursor = &cursor;
 
   InlineCursor previous_cursor = line_cursor;
   previous_cursor.MoveToPreviousInlineLeafOnLine();
@@ -261,9 +261,17 @@ TextDecorationInfo::ComputeDecoratedRunMetrics(
     wtf_size_t decoration_index) const {
   LayoutUnit size_before;
   LayoutUnit size_after;
-  if (fragment_context_.line_cursor.Current()) {
+  if (fragment_context_.fragment_cursor &&
+      fragment_context_.fragment_cursor->Current()) {
+    // Build the line cursor on demand; this only runs for decorated
+    // fragments whose insets need run metrics, keeping the per-fragment
+    // paint path free of `InlineCursor` copies.
+    InlineCursor line_cursor = *fragment_context_.fragment_cursor;
+    line_cursor.ExpandRootToContainingBlock();
+    line_cursor.MoveTo(*fragment_context_.fragment_cursor->CurrentItem());
+
     const AppliedTextDecoration& applied = *decoration.applied_text_decoration;
-    for (InlineCursor cursor = fragment_context_.line_cursor;;) {
+    for (InlineCursor cursor = line_cursor;;) {
       cursor.MoveToPreviousInlineLeaf();
       const FragmentItem* item = cursor.CurrentItem();
       if (!ContinuesDecoratedRun(item, decoration_index, applied)) {
@@ -271,7 +279,7 @@ TextDecorationInfo::ComputeDecoratedRunMetrics(
       }
       size_before += InlineSizeOfItem(*item);
     }
-    for (InlineCursor cursor = fragment_context_.line_cursor;;) {
+    for (InlineCursor cursor = line_cursor;;) {
       cursor.MoveToNextInlineLeaf();
       const FragmentItem* item = cursor.CurrentItem();
       if (!ContinuesDecoratedRun(item, decoration_index, applied)) {
@@ -283,14 +291,13 @@ TextDecorationInfo::ComputeDecoratedRunMetrics(
     // Visual-order traversal can encounter unrelated bidi content between
     // fragments of the same text node. Account for all fragments of the node
     // so wrapped insets are still accumulated in logical order.
-    const FragmentItem* current_item =
-        fragment_context_.line_cursor.CurrentItem();
+    const FragmentItem* current_item = line_cursor.CurrentItem();
     DCHECK(current_item);
     DCHECK(current_item->GetLayoutObject());
     LayoutUnit size_before_in_node;
     LayoutUnit size_after_in_node;
     bool found_current = false;
-    InlineCursor cursor = fragment_context_.line_cursor;
+    InlineCursor cursor = line_cursor;
     cursor.MoveTo(*current_item->GetLayoutObject());
     for (; cursor.Current(); cursor.MoveToNextForSameLayoutObject()) {
       const FragmentItem* item = cursor.CurrentItem();

@@ -30,7 +30,6 @@ class ShadowList;
 class Text;
 class UsedFont;
 struct LogicalRect;
-struct TextDecorationFragmentContext;
 struct TextFragmentPaintInfo;
 
 // Represents an ink-overflow rectangle. Used for:
@@ -201,17 +200,17 @@ class CORE_EXPORT InkOverflow {
 #endif
 
  private:
-  // |fragment_context| describes where the fragment sits within its decorated
-  // run so that `text-decoration-inset` trims match painting exactly. When
-  // null, conservative bounds are computed instead (insets never shrink the
-  // bounds, and expanding insets are always applied).
+  // |fragment_cursor| is used to determine where the fragment sits within its
+  // decorated run so that `text-decoration-inset` trims match painting
+  // exactly. When null, conservative bounds are computed instead (insets never
+  // shrink the bounds, and expanding insets are always applied).
   static LogicalRect ComputeAppliedDecorationOverflow(
       const ComputedStyle& style,
       const UsedFont& used_font,
       const PhysicalOffset& offset_in_container,
       const LogicalRect& ink_overflow,
       const InlinePaintContext* inline_context,
-      const TextDecorationFragmentContext* fragment_context,
+      const InlineCursor* fragment_cursor,
       const AppliedTextDecoration* decoration_override = nullptr);
 
   // For all markers but custom highlights. i.e. those with only one
