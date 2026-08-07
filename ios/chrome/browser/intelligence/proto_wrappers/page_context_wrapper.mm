@@ -52,6 +52,8 @@
 #import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/public/ui/crw_web_view_proxy.h"
+#import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/schemeful_site.h"
 #import "url/gurl.h"
@@ -246,6 +248,11 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
   // Unique pointer to the PageContext proto.
   std::unique_ptr<optimization_guide::proto::PageContext> _pageContext;
 
+  // The boxes to redact over the screenshot.
+  std::vector<CGRect> _universalBoundingBoxesForRedaction;
+
+  // Raw screenshot image before redaction masking is applied.
+  UIImage* _rawScreenshotImage;
   // The current PageContext instance's metrics logger. Only created when async
   // tasks execution is started.
   PageContextWrapperMetrics* _pageContextMetrics;
@@ -523,7 +530,7 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
       return;
     }
 
-    [strongSelf encodeImageAndSetTabScreenshot:image];
+    [strongSelf stashRawScreenshotImage:image];
     barrier.Run();
   };
 
@@ -903,6 +910,9 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
           _grafter, registrar, _config->include_same_site_only(),
           _pageContext->mutable_annotated_page_content());
     }
+    if (_rawScreenshotImage) {
+      [self applyRedactionsAndEncodeScreenshot:_rawScreenshotImage];
+    }
     response = base::ok(std::move(_pageContext));
     completionStatus = PageContextCompletionStatus::kSuccess;
   }
@@ -933,7 +943,7 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
         if (!strongSelf) {
           return;
         }
-        [strongSelf encodeImageAndSetTabScreenshot:image];
+        [strongSelf stashRawScreenshotImage:image];
         barrier.Run();
       });
 }
@@ -948,17 +958,59 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
   }
 }
 
-// Convert UIImage snapshot to PNG, and then to base64 encoded string. Set the
-// tab screenshot on the current PageContext.
-- (void)encodeImageAndSetTabScreenshot:(UIImage*)image {
-  [self stopTextHighlighting];
+// Returns YES for any RedactionDecision enums that require screenshot
+// redaction.
+// Note: In this CL, this defaults to NO. Subsequent CLs will override
+// this method to return YES for their respective redaction decision enums
+// when enabled.
+- (BOOL)shouldRedactDecisionForScreenshot:
+    (optimization_guide::proto::RedactionDecision)decision {
+  return NO;
+}
 
-  if (!image) {
-    [_pageContextMetrics
-        executionFinishedForTask:PageContextTask::kScreenshot
-            withCompletionStatus:PageContextCompletionStatus::kFailure];
-    DLOG(WARNING) << "Failed to fetch webpage screenshot.";
-    return;
+- (void)applyRedactionsAndEncodeScreenshot:(UIImage*)image {
+  if (_pageContext && _pageContext->has_annotated_page_content()) {
+    _grafter.CollectFormControlRedactionBoxesFromTree(
+        _pageContext->annotated_page_content().root_node());
+  }
+
+  // If the page has a non-standard zoomScale, we scale the extracted DOM layout
+  // coordinates by zoomScale so that they align 1:1 with the pixels in the
+  // screenshot bitmap captured from WKWebView.
+  CGFloat zoomScale = 1.0;
+  if (_webState && _webState->GetWebViewProxy() &&
+      _webState->GetWebViewProxy().scrollViewProxy) {
+    zoomScale = _webState->GetWebViewProxy().scrollViewProxy.zoomScale;
+  }
+
+  _universalBoundingBoxesForRedaction.clear();
+
+  for (const auto& entry : _grafter.universal_bounding_boxes_for_redaction()) {
+    if ([self shouldRedactDecisionForScreenshot:entry.decision]) {
+      _universalBoundingBoxesForRedaction.push_back(
+          CGRectMake(entry.visible_box.origin.x * zoomScale,
+                     entry.visible_box.origin.y * zoomScale,
+                     entry.visible_box.size.width * zoomScale,
+                     entry.visible_box.size.height * zoomScale));
+    }
+  }
+
+  if (!_universalBoundingBoxesForRedaction.empty()) {
+    UIGraphicsImageRendererFormat* format =
+        [UIGraphicsImageRendererFormat defaultFormat];
+    format.scale = image.scale;
+    format.opaque = NO;
+
+    UIGraphicsImageRenderer* renderer =
+        [[UIGraphicsImageRenderer alloc] initWithSize:image.size format:format];
+    image =
+        [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
+          [image drawAtPoint:CGPointZero];
+          [[UIColor blackColor] setFill];
+          for (const CGRect& rect : _universalBoundingBoxesForRedaction) {
+            [[UIBezierPath bezierPathWithRect:rect] fill];
+          }
+        }];
   }
 
   NSData* imageData = UIImagePNGRepresentation(image);
@@ -973,9 +1025,29 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
   NSString* base64String = [imageData base64EncodedStringWithOptions:0];
   _pageContext->set_tab_screenshot(base::SysNSStringToUTF8(base64String));
 
+  _universalBoundingBoxesForRedaction.clear();
+  _rawScreenshotImage = nil;
+
   [_pageContextMetrics
       executionFinishedForTask:PageContextTask::kScreenshot
           withCompletionStatus:PageContextCompletionStatus::kSuccess];
+}
+
+// Temporarily saves the raw screenshot image captured from the WebState so that
+// redactions can be applied and PNG encoding performed after APC extraction and
+// iframe coordinate grafting complete.
+- (void)stashRawScreenshotImage:(UIImage*)image {
+  [self stopTextHighlighting];
+
+  if (!image) {
+    [_pageContextMetrics
+        executionFinishedForTask:PageContextTask::kScreenshot
+            withCompletionStatus:PageContextCompletionStatus::kFailure];
+    DLOG(WARNING) << "Failed to fetch webpage screenshot.";
+    return;
+  }
+
+  _rawScreenshotImage = image;
 }
 
 // If it exists, convert the PDF data to base64 encoded string and set it in
@@ -1620,6 +1692,30 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
 
   std::move(_completionCallback)
       .Run(base::unexpected(PageContextWrapperError::kTimeout));
+}
+
+#pragma mark - Testing
+
+// Test-only hooks to allow synchronous unit testing of the screenshot masking
+// and redaction bounding box collection engine without requiring an
+// asynchronous WKWebView E2E snapshot round-trip.
+- (void)encodeImageAndSetTabScreenshotForTesting:(UIImage*)image {
+  [self stashRawScreenshotImage:image];
+  if (_rawScreenshotImage) {
+    [self applyRedactionsAndEncodeScreenshot:_rawScreenshotImage];
+  }
+}
+
+- (void)setBoxesToRedactForTesting:(const std::vector<CGRect>&)boxes {
+  _universalBoundingBoxesForRedaction = boxes;
+}
+
+- (const std::vector<CGRect>&)boxesToRedactForTesting {
+  return _universalBoundingBoxesForRedaction;
+}
+
+- (optimization_guide::proto::PageContext*)pageContextForTesting {
+  return _pageContext.get();
 }
 
 @end

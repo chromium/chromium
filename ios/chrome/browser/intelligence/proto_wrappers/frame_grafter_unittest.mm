@@ -338,3 +338,262 @@ TEST_F(FrameGrafterTest, UnresolvedPlaceholdersHandled) {
   ASSERT_EQ(unresolved.size(), 1u);
   EXPECT_EQ(unresolved[0], &placeholder);
 }
+
+// Test that redaction bounding boxes from root and child frames are translated
+// by the placeholder origin and collected via post-assembly tree traversal.
+TEST_F(FrameGrafterTest, TranslatesFormControlBoundingBoxesForRedaction) {
+  FrameGrafter grafter;
+  autofill::LocalFrameToken local_token = CreateLocalToken();
+  autofill::RemoteFrameToken remote_token = CreateRemoteToken();
+
+  optimization_guide::proto::ContentNode root_node;
+
+  // Root frame child node with a redaction box at (10, 20, 100, 30).
+  auto* root_control = root_node.add_children_nodes();
+  root_control->mutable_content_attributes()
+      ->mutable_form_control_data()
+      ->set_redaction_decision(
+          optimization_guide::proto::
+              REDACTION_DECISION_REDACTED_HAS_BEEN_PASSWORD);
+  auto* root_box = root_control->mutable_content_attributes()
+                       ->mutable_geometry()
+                       ->mutable_visible_bounding_box();
+  root_box->set_x(10);
+  root_box->set_y(20);
+  root_box->set_width(100);
+  root_box->set_height(30);
+
+  // Placeholder positioned at (50, 100, 400, 300).
+  auto* placeholder = root_node.add_children_nodes();
+  placeholder->mutable_content_attributes()->set_attribute_type(
+      optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+  auto* iframe_box = placeholder->mutable_content_attributes()
+                         ->mutable_geometry()
+                         ->mutable_visible_bounding_box();
+  iframe_box->set_x(50);
+  iframe_box->set_y(100);
+  iframe_box->set_width(400);
+  iframe_box->set_height(300);
+  grafter.RegisterPlaceholder(remote_token, placeholder);
+
+  // Subframe has a child node with redaction decision at local coordinates (15,
+  // 25, 80, 20).
+  FrameGrafter::FrameContent* content = grafter.DeclareContent(local_token);
+  auto* sub_control = content->content.add_children_nodes();
+  sub_control->mutable_content_attributes()
+      ->mutable_form_control_data()
+      ->set_redaction_decision(
+          optimization_guide::proto::
+              REDACTION_DECISION_REDACTED_IS_SENSITIVE_PAYMENT_FIELD);
+  auto* sub_box = sub_control->mutable_content_attributes()
+                      ->mutable_geometry()
+                      ->mutable_visible_bounding_box();
+  sub_box->set_x(15);
+  sub_box->set_y(25);
+  sub_box->set_width(80);
+  sub_box->set_height(20);
+
+  auto mapping_lookup = base::BindRepeating(
+      [](autofill::RemoteFrameToken remote, autofill::LocalFrameToken local,
+         autofill::RemoteFrameToken requested_remote)
+          -> std::optional<autofill::LocalFrameToken> {
+        if (requested_remote == remote) {
+          return local;
+        }
+        return std::nullopt;
+      },
+      remote_token, local_token);
+
+  auto placer = base::BindRepeating(
+      [](FrameGrafter::FrameContent unregistered) { FAIL(); });
+
+  grafter.ResolveUnregisteredContent(mapping_lookup, placer, base::DoNothing());
+  grafter.set_has_sensitive_fields_to_redact(true);
+  grafter.CollectFormControlRedactionBoxesFromTree(root_node);
+
+  const auto& boxes = grafter.universal_bounding_boxes_for_redaction();
+  ASSERT_EQ(boxes.size(), 2u);
+
+  // Main frame box is untouched: (10, 20, 100, 30).
+  EXPECT_TRUE(
+      CGRectEqualToRect(boxes[0].visible_box, CGRectMake(10, 20, 100, 30)));
+  EXPECT_EQ(
+      boxes[0].decision,
+      optimization_guide::proto::REDACTION_DECISION_REDACTED_HAS_BEEN_PASSWORD);
+
+  // Child frame box is shifted by placeholder (50, 100): (65, 125, 80, 20).
+  EXPECT_TRUE(
+      CGRectEqualToRect(boxes[1].visible_box, CGRectMake(65, 125, 80, 20)));
+  EXPECT_EQ(boxes[1].decision,
+            optimization_guide::proto::
+                REDACTION_DECISION_REDACTED_IS_SENSITIVE_PAYMENT_FIELD);
+}
+
+// Test that redaction bounding boxes inside multi-level nested iframes (Main ->
+// Iframe A -> Iframe B) accumulate ancestor offsets correctly.
+TEST_F(FrameGrafterTest, MultiLevelNestedIframeRedactionBoxes) {
+  FrameGrafter grafter;
+  autofill::LocalFrameToken local_token_a = CreateLocalToken();
+  autofill::RemoteFrameToken remote_token_a = CreateRemoteToken();
+  autofill::LocalFrameToken local_token_b = CreateLocalToken();
+  autofill::RemoteFrameToken remote_token_b = CreateRemoteToken();
+
+  optimization_guide::proto::ContentNode root_node;
+
+  // Iframe A placeholder at (100, 200, 500, 400).
+  auto* placeholder_a = root_node.add_children_nodes();
+  placeholder_a->mutable_content_attributes()->set_attribute_type(
+      optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+  auto* box_a = placeholder_a->mutable_content_attributes()
+                    ->mutable_geometry()
+                    ->mutable_visible_bounding_box();
+  box_a->set_x(100);
+  box_a->set_y(200);
+  box_a->set_width(500);
+  box_a->set_height(400);
+  grafter.RegisterPlaceholder(remote_token_a, placeholder_a);
+
+  // Content A contains Iframe B placeholder at local coordinates (30, 40, 200,
+  // 150).
+  FrameGrafter::FrameContent* content_a = grafter.DeclareContent(local_token_a);
+  auto* placeholder_b = content_a->content.add_children_nodes();
+  placeholder_b->mutable_content_attributes()->set_attribute_type(
+      optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+  auto* box_b = placeholder_b->mutable_content_attributes()
+                    ->mutable_geometry()
+                    ->mutable_visible_bounding_box();
+  box_b->set_x(30);
+  box_b->set_y(40);
+  box_b->set_width(200);
+  box_b->set_height(150);
+  grafter.RegisterPlaceholder(remote_token_b, placeholder_b);
+
+  // Content B contains a sensitive payment form control at local coordinates
+  // (10, 15, 60, 20).
+  FrameGrafter::FrameContent* content_b = grafter.DeclareContent(local_token_b);
+  auto* sub_control = content_b->content.add_children_nodes();
+  sub_control->mutable_content_attributes()
+      ->mutable_form_control_data()
+      ->set_redaction_decision(
+          optimization_guide::proto::
+              REDACTION_DECISION_REDACTED_IS_SENSITIVE_PAYMENT_FIELD);
+  auto* sub_box = sub_control->mutable_content_attributes()
+                      ->mutable_geometry()
+                      ->mutable_visible_bounding_box();
+  sub_box->set_x(10);
+  sub_box->set_y(15);
+  sub_box->set_width(60);
+  sub_box->set_height(20);
+
+  auto mapping_lookup = base::BindRepeating(
+      [](autofill::RemoteFrameToken rem_a, autofill::LocalFrameToken loc_a,
+         autofill::RemoteFrameToken rem_b, autofill::LocalFrameToken loc_b,
+         autofill::RemoteFrameToken requested_remote)
+          -> std::optional<autofill::LocalFrameToken> {
+        if (requested_remote == rem_a) {
+          return loc_a;
+        }
+        if (requested_remote == rem_b) {
+          return loc_b;
+        }
+        return std::nullopt;
+      },
+      remote_token_a, local_token_a, remote_token_b, local_token_b);
+
+  auto placer = base::BindRepeating(
+      [](FrameGrafter::FrameContent unregistered) { FAIL(); });
+
+  grafter.ResolveUnregisteredContent(mapping_lookup, placer, base::DoNothing());
+  grafter.set_has_sensitive_fields_to_redact(true);
+  grafter.CollectFormControlRedactionBoxesFromTree(root_node);
+
+  const auto& boxes = grafter.universal_bounding_boxes_for_redaction();
+  ASSERT_EQ(boxes.size(), 1u);
+
+  // Expected offset = (100 + 30 + 10, 200 + 40 + 15) = (140, 255).
+  EXPECT_TRUE(
+      CGRectEqualToRect(boxes[0].visible_box, CGRectMake(140, 255, 60, 20)));
+  EXPECT_EQ(boxes[0].decision,
+            optimization_guide::proto::
+                REDACTION_DECISION_REDACTED_IS_SENSITIVE_PAYMENT_FIELD);
+}
+
+// Test that if an intermediate parent iframe has no visible bounding box (e.g.
+// display: none), its child redaction boxes are skipped.
+TEST_F(FrameGrafterTest, HiddenParentIframeSkipsChildRedactions) {
+  FrameGrafter grafter;
+  autofill::LocalFrameToken local_token = CreateLocalToken();
+  autofill::RemoteFrameToken remote_token = CreateRemoteToken();
+
+  optimization_guide::proto::ContentNode root_node;
+
+  // Iframe placeholder with NO visible bounding box.
+  auto* placeholder = root_node.add_children_nodes();
+  placeholder->mutable_content_attributes()->set_attribute_type(
+      optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+  grafter.RegisterPlaceholder(remote_token, placeholder);
+
+  // Subframe has a child node with a redaction decision.
+  FrameGrafter::FrameContent* content = grafter.DeclareContent(local_token);
+  auto* sub_control = content->content.add_children_nodes();
+  sub_control->mutable_content_attributes()
+      ->mutable_form_control_data()
+      ->set_redaction_decision(
+          optimization_guide::proto::
+              REDACTION_DECISION_REDACTED_IS_SENSITIVE_PAYMENT_FIELD);
+  auto* sub_box = sub_control->mutable_content_attributes()
+                      ->mutable_geometry()
+                      ->mutable_visible_bounding_box();
+  sub_box->set_x(15);
+  sub_box->set_y(25);
+  sub_box->set_width(80);
+  sub_box->set_height(20);
+
+  auto mapping_lookup = base::BindRepeating(
+      [](autofill::RemoteFrameToken remote, autofill::LocalFrameToken local,
+         autofill::RemoteFrameToken requested_remote)
+          -> std::optional<autofill::LocalFrameToken> {
+        if (requested_remote == remote) {
+          return local;
+        }
+        return std::nullopt;
+      },
+      remote_token, local_token);
+
+  auto placer = base::BindRepeating(
+      [](FrameGrafter::FrameContent unregistered) { FAIL(); });
+
+  grafter.ResolveUnregisteredContent(mapping_lookup, placer, base::DoNothing());
+  grafter.set_has_sensitive_fields_to_redact(true);
+  grafter.CollectFormControlRedactionBoxesFromTree(root_node);
+
+  const auto& boxes = grafter.universal_bounding_boxes_for_redaction();
+  EXPECT_TRUE(boxes.empty());
+}
+
+// Test that CollectFormControlRedactionBoxesFromTree skips tree traversal when
+// has_sensitive_fields_to_redact is false.
+TEST_F(FrameGrafterTest,
+       CollectFormControlRedactionBoxesFromTree_SkipsWhenNoSensitiveFields) {
+  FrameGrafter grafter;
+  optimization_guide::proto::ContentNode root_node;
+
+  auto* root_control = root_node.add_children_nodes();
+  root_control->mutable_content_attributes()
+      ->mutable_form_control_data()
+      ->set_redaction_decision(
+          optimization_guide::proto::
+              REDACTION_DECISION_REDACTED_HAS_BEEN_PASSWORD);
+  auto* root_box = root_control->mutable_content_attributes()
+                       ->mutable_geometry()
+                       ->mutable_visible_bounding_box();
+  root_box->set_x(10);
+  root_box->set_y(20);
+  root_box->set_width(100);
+  root_box->set_height(30);
+
+  EXPECT_FALSE(grafter.has_sensitive_fields_to_redact());
+  grafter.CollectFormControlRedactionBoxesFromTree(root_node);
+
+  EXPECT_TRUE(grafter.universal_bounding_boxes_for_redaction().empty());
+}

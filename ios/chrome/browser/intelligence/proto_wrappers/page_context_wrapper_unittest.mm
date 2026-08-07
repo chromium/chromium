@@ -99,6 +99,13 @@
 
 // TODO(crbug.com/475577435): Extend test coverage for Rich Extraction.
 
+@interface PageContextWrapper (Testing)
+- (void)encodeImageAndSetTabScreenshotForTesting:(UIImage*)image;
+- (void)setBoxesToRedactForTesting:(const std::vector<CGRect>&)boxes;
+- (const std::vector<CGRect>&)boxesToRedactForTesting;
+- (optimization_guide::proto::PageContext*)pageContextForTesting;
+@end
+
 namespace {
 
 const char kMainPagePath[] = "/main.html";
@@ -7809,6 +7816,67 @@ TEST_P(PageContextWrapperTest, ExtractPageContext_SameSiteOnlyDisabled) {
 
     ASSERT_EQ(root_node.children_nodes_size(), 3);
   }
+}
+
+UIImage* CreateTestImage(CGSize size, CGFloat scale) {
+  UIGraphicsImageRendererFormat* format =
+      [UIGraphicsImageRendererFormat defaultFormat];
+  format.scale = scale;
+  UIGraphicsImageRenderer* renderer =
+      [[UIGraphicsImageRenderer alloc] initWithSize:size format:format];
+  return [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
+    [[UIColor whiteColor] setFill];
+    [context fillRect:CGRectMake(0, 0, size.width, size.height)];
+  }];
+}
+
+// Test that screenshot redaction masking handles empty bounding box lists
+// without error. Configures a wrapper with no redaction boxes, encodes a
+// synthetic test image, and verifies that a valid base64-encoded PNG screenshot
+// is produced.
+TEST_P(PageContextWrapperTest, ImageRedaction_EmptyArray) {
+  PageContextWrapper* wrapper = [[PageContextWrapper alloc]
+        initWithWebState:web_state()
+                  config:PageContextWrapperConfigBuilder().Build()
+      completionCallback:base::BindOnce(
+                             [](PageContextWrapperCallbackResponse response) {
+                             })];
+  [wrapper setBoxesToRedactForTesting:{}];
+
+  UIImage* test_image = CreateTestImage(CGSizeMake(100, 100), 2.0);
+
+  [wrapper encodeImageAndSetTabScreenshotForTesting:test_image];
+
+  EXPECT_TRUE([wrapper boxesToRedactForTesting].empty());
+
+  optimization_guide::proto::PageContext* page_context =
+      [wrapper pageContextForTesting];
+  ASSERT_TRUE(page_context->has_tab_screenshot());
+  std::string screenshot_data;
+  ASSERT_TRUE(
+      base::Base64Decode(page_context->tab_screenshot(), &screenshot_data));
+  EXPECT_GT(screenshot_data.length(), 0u);
+}
+
+// Test that redaction bounding boxes extending outside image boundaries do not
+// crash. Configures negative coordinates and boxes larger than the test image,
+// and verifies that the renderer safely clips drawing operations without error.
+TEST_P(PageContextWrapperTest, ImageRedaction_OutOfBoundsClippingSafety) {
+  PageContextWrapper* wrapper = [[PageContextWrapper alloc]
+        initWithWebState:web_state()
+                  config:PageContextWrapperConfigBuilder().Build()
+      completionCallback:base::BindOnce(
+                             [](PageContextWrapperCallbackResponse response) {
+                             })];
+
+  std::vector<CGRect> boxes = {CGRectMake(-10, -10, 50, 50),
+                               CGRectMake(80, 80, 100, 100)};
+  [wrapper setBoxesToRedactForTesting:boxes];
+
+  UIImage* test_image = CreateTestImage(CGSizeMake(50, 50), 1.0);
+
+  [wrapper encodeImageAndSetTabScreenshotForTesting:test_image];
+  EXPECT_TRUE([wrapper boxesToRedactForTesting].empty());
 }
 
 INSTANTIATE_TEST_SUITE_P(,

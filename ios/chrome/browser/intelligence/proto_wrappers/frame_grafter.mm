@@ -137,3 +137,55 @@ void FrameGrafter::ResolveUnregisteredContent(
   unregistered_content_.clear();
   placeholders_.clear();
 }
+
+namespace {
+
+void TraverseAndCollectFormControlRedactionBoxes(
+    const optimization_guide::proto::ContentNode& node,
+    CGPoint accumulated_offset,
+    std::vector<RedactionBoxEntry>& redaction_boxes) {
+  const auto& attributes = node.content_attributes();
+  const auto& geometry = attributes.geometry();
+
+  CGPoint next_offset = accumulated_offset;
+  if (attributes.has_form_control_data()) {
+    const auto& form_control = attributes.form_control_data();
+    if (form_control.redaction_decision() !=
+            optimization_guide::proto::
+                REDACTION_DECISION_NO_REDACTION_NECESSARY &&
+        geometry.has_visible_bounding_box()) {
+      const auto& box = geometry.visible_bounding_box();
+      redaction_boxes.push_back({
+          .visible_box = CGRectMake(box.x() + accumulated_offset.x,
+                                    box.y() + accumulated_offset.y, box.width(),
+                                    box.height()),
+          .decision = form_control.redaction_decision(),
+      });
+    }
+  } else if (attributes.attribute_type() ==
+             optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME) {
+    if (!geometry.has_visible_bounding_box()) {
+      return;
+    }
+    const auto& iframe_box = geometry.visible_bounding_box();
+    next_offset.x += iframe_box.x();
+    next_offset.y += iframe_box.y();
+  }
+
+  for (const auto& child_node : node.children_nodes()) {
+    TraverseAndCollectFormControlRedactionBoxes(child_node, next_offset,
+                                                redaction_boxes);
+  }
+}
+
+}  // namespace
+
+void FrameGrafter::CollectFormControlRedactionBoxesFromTree(
+    const optimization_guide::proto::ContentNode& root_node) {
+  universal_bounding_boxes_for_redaction_.clear();
+  if (!has_sensitive_fields_to_redact_) {
+    return;
+  }
+  TraverseAndCollectFormControlRedactionBoxes(
+      root_node, CGPointZero, universal_bounding_boxes_for_redaction_);
+}

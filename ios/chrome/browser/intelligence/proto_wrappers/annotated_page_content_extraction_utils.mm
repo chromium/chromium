@@ -886,7 +886,9 @@ void PopulateAPCNodeFromContentTree(
             PopulateIframeData(*iframe_data, destination_node, origin,
                                on_frame_extracted);
             grafter.RegisterPlaceholder(*remote, destination_node);
-            return;
+            // Break rather than return so that the placeholder node's geometry
+            // is populated below
+            break;
           }
         }
 
@@ -944,6 +946,13 @@ void PopulateAPCNodeFromContentTree(
       if (form_control_data) {
         PopulateFormControlData(*form_control_data, autofill_context,
                                 destination_node);
+        if (destination_node->content_attributes()
+                .form_control_data()
+                .redaction_decision() !=
+            optimization_guide::proto::
+                REDACTION_DECISION_NO_REDACTION_NECESSARY) {
+          grafter.set_has_sensitive_fields_to_redact(true);
+        }
       }
       break;
     }

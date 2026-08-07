@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_PROTO_WRAPPERS_FRAME_GRAFTER_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_PROTO_WRAPPERS_FRAME_GRAFTER_H_
 
+#import <CoreGraphics/CoreGraphics.h>
+
 #import <map>
 #import <vector>
 
@@ -12,6 +14,12 @@
 #import "base/memory/raw_ptr.h"
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
+
+// Entry for a form control bounding box and its redaction decision.
+struct RedactionBoxEntry {
+  CGRect visible_box;
+  optimization_guide::proto::RedactionDecision decision;
+};
 
 // TODO(crbug.com/458081684): Move away from all autofill dependencies once
 // the migration in ios/web is done for frame registration.
@@ -59,6 +67,35 @@ class FrameGrafter {
   // Returns the remote frame tokens for all registered placeholders.
   std::vector<autofill::RemoteFrameToken> GetRemoteFrames() const;
 
+  // Traverses the fully assembled ContentNode tree and populates
+  // universal_bounding_boxes_for_redaction_ with top-level absolute
+  // coordinates for form controls, recursively accumulating ancestor iframe
+  // offsets.
+  void CollectFormControlRedactionBoxesFromTree(
+      const optimization_guide::proto::ContentNode& root_node);
+
+  // Returns the flat registry of redaction boxes across the page, translated to
+  // top-level document coordinates.
+  const std::vector<RedactionBoxEntry>& universal_bounding_boxes_for_redaction()
+      const {
+    return universal_bounding_boxes_for_redaction_;
+  }
+
+  // Returns a mutable reference to the universal list of redaction boxes across
+  // the page in top-level document coordinates.
+  std::vector<RedactionBoxEntry>&
+  mutable_universal_bounding_boxes_for_redaction() {
+    return universal_bounding_boxes_for_redaction_;
+  }
+
+  // Whether any form control across the page requires redaction.
+  bool has_sensitive_fields_to_redact() const {
+    return has_sensitive_fields_to_redact_;
+  }
+  void set_has_sensitive_fields_to_redact(bool val) {
+    has_sensitive_fields_to_redact_ = val;
+  }
+
   // Resolves all unregistered content by using `mapping_lookup` to map
   // placeholders to their content (RemoteFrameToken => LocalFrameToken
   // mapping). The `placer` is used to complete grafting of content that doesn't
@@ -81,6 +118,10 @@ class FrameGrafter {
   std::map<autofill::RemoteFrameToken,
            raw_ptr<optimization_guide::proto::ContentNode>>
       placeholders_;
+  // Flat registry of all redaction boxes translated to top-level coordinates.
+  std::vector<RedactionBoxEntry> universal_bounding_boxes_for_redaction_;
+  // True if any form control on the page requires redaction.
+  bool has_sensitive_fields_to_redact_ = false;
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_PROTO_WRAPPERS_FRAME_GRAFTER_H_

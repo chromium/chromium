@@ -308,3 +308,62 @@ TEST_F(AnnotatedPageContentExtractionUtilsTest,
                    .iframe_data()
                    .has_redacted_frame_metadata());
 }
+
+TEST_F(AnnotatedPageContentExtractionUtilsTest,
+       IframePlaceholderPreservesGeometry) {
+  base::Value node_content = base::test::ParseJson(R"(
+    {
+      "contentAttributes": {
+        "attributeType": 5,
+        "iframeData": {
+          "remoteFrameToken": {
+            "value": "1234567890ABCDEF1234567890ABCDEF"
+          }
+        },
+        "geometry": {
+          "visibleBoundingBox": {
+            "x": 20,
+            "y": 350,
+            "width": 375,
+            "height": 500
+          }
+        }
+      }
+    }
+  )");
+
+  ASSERT_TRUE(node_content.is_dict());
+  FrameGrafter grafter;
+  optimization_guide::proto::ContentNode destination_node;
+  url::Origin origin = url::Origin::Create(GURL("https://example.com"));
+
+  PopulateAPCNodeFromContentTree(
+      node_content.GetDict(), origin, grafter,
+      /*autofill_context=*/nullptr, &destination_node,
+      base::RepeatingCallback<void(bool, const std::string&)>());
+
+  EXPECT_TRUE(destination_node.content_attributes().has_geometry());
+  EXPECT_TRUE(destination_node.content_attributes()
+                  .geometry()
+                  .has_visible_bounding_box());
+  EXPECT_EQ(destination_node.content_attributes()
+                .geometry()
+                .visible_bounding_box()
+                .x(),
+            20);
+  EXPECT_EQ(destination_node.content_attributes()
+                .geometry()
+                .visible_bounding_box()
+                .y(),
+            350);
+  EXPECT_EQ(destination_node.content_attributes()
+                .geometry()
+                .visible_bounding_box()
+                .width(),
+            375);
+  EXPECT_EQ(destination_node.content_attributes()
+                .geometry()
+                .visible_bounding_box()
+                .height(),
+            500);
+}
