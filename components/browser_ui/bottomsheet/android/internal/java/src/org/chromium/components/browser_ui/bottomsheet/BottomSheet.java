@@ -123,6 +123,30 @@ class BottomSheet extends FrameLayout
     /** The minimum distance between half and full states to allow the half state. */
     private final float mMinHalfFullDistance;
 
+    /** The bottom margin for desktop windowing mode. */
+    private final @Px int mDesktopBottomMargin;
+
+    /** The sheet width for large form factor devices. */
+    private final @Px int mLargeFormFactorWidth;
+
+    /** The gap between the sheet and the edge of the window for large form factor devices. */
+    private final @Px int mLargeFormFactorEdgeGap;
+
+    /** The container width threshold below which narrow sheet layout is used. */
+    private final @Px int mNarrowWidthThreshold;
+
+    /** The sheet width when using narrow layout. */
+    private final @Px int mNarrowWidth;
+
+    /** The default peek height of the sheet. */
+    private final @Px int mDefaultPeekHeight;
+
+    /** The shadow length surrounding the sheet. */
+    private final @Px int mShadowLength;
+
+    /** The shadow length surrounding the sheet for large form factor devices. */
+    private final @Px int mShadowLengthLarge;
+
     /** The view that contains the sheet. */
     private ViewGroup mSheetContainer;
 
@@ -310,8 +334,21 @@ class BottomSheet extends FrameLayout
     public BottomSheet(Context context, AttributeSet atts) {
         super(context, atts);
 
+        Resources res = getResources();
         mMinHalfFullDistance =
-                getResources().getDimensionPixelSize(R.dimen.bottom_sheet_min_full_half_distance);
+                res.getDimensionPixelSize(R.dimen.bottom_sheet_min_full_half_distance);
+        mDesktopBottomMargin =
+                res.getDimensionPixelSize(R.dimen.bottom_sheet_desktop_bottom_margin);
+        mLargeFormFactorWidth =
+                res.getDimensionPixelSize(R.dimen.bottom_sheet_large_form_factor_width);
+        mLargeFormFactorEdgeGap =
+                res.getDimensionPixelSize(R.dimen.bottom_sheet_large_form_factor_edge_gap);
+        mNarrowWidthThreshold =
+                res.getDimensionPixelSize(R.dimen.bottom_sheet_narrow_width_threshold);
+        mNarrowWidth = res.getDimensionPixelSize(R.dimen.bottom_sheet_narrow_width);
+        mDefaultPeekHeight = res.getDimensionPixelSize(R.dimen.bottom_sheet_peek_height);
+        mShadowLength = res.getDimensionPixelSize(R.dimen.bottom_sheet_shadow_length);
+        mShadowLengthLarge = res.getDimensionPixelSize(R.dimen.bottom_sheet_shadow_length_large);
         mSheetBgColor = getNonModalBottomSheetBgColor(context);
         mGestureDetector = new BottomSheetSwipeDetector(context, this);
         mIsTouchEnabled = true;
@@ -1068,7 +1105,7 @@ class BottomSheet extends FrameLayout
 
         int toolbarHeight;
         if (toolbarView == null) {
-            toolbarHeight = getResources().getDimensionPixelSize(R.dimen.bottom_sheet_peek_height);
+            toolbarHeight = mDefaultPeekHeight;
         } else {
             toolbarHeight = toolbarView.getHeight();
             if (toolbarHeight == 0) {
@@ -1371,9 +1408,7 @@ class BottomSheet extends FrameLayout
         if (isLargeFormFactorUiEnabled()) {
             // Clamp the height to leave an empty gap at the top of the window equal to the
             // desktop bottom margin (24dp).
-            int topGap =
-                    getResources()
-                            .getDimensionPixelSize(R.dimen.bottom_sheet_desktop_bottom_margin);
+            int topGap = mDesktopBottomMargin;
             return Math.max(0, mContainerHeight - getContainerBottomMargin() - topGap);
         }
         return mContainerHeight;
@@ -1392,23 +1427,15 @@ class BottomSheet extends FrameLayout
     public int getMaxSheetWidth() {
         if (!mAlwaysFullWidth) {
             if (isLargeFormFactorUiEnabled()) {
-                int width =
-                        getResources()
-                                .getDimensionPixelSize(
-                                        R.dimen.bottom_sheet_large_form_factor_width);
+                int width = mLargeFormFactorWidth;
                 // Clamp the sheet's width to ensure a dedicated 16dp horizontal gap from the edge
                 // of the window when it becomes constrained.
-                int edgeGap =
-                        getResources()
-                                .getDimensionPixelSize(
-                                        R.dimen.bottom_sheet_large_form_factor_edge_gap);
+                int edgeGap = mLargeFormFactorEdgeGap;
                 return Math.max(0, Math.min(width, mContainerWidth - 2 * edgeGap));
             }
-            int narrowWidthThreshold =
-                    getResources()
-                            .getDimensionPixelSize(R.dimen.bottom_sheet_narrow_width_threshold);
+            int narrowWidthThreshold = mNarrowWidthThreshold;
             if (mContainerWidth > narrowWidthThreshold) {
-                return getResources().getDimensionPixelSize(R.dimen.bottom_sheet_narrow_width);
+                return mNarrowWidth;
             }
         }
         return mContainerWidth;
@@ -1829,9 +1856,7 @@ class BottomSheet extends FrameLayout
         // Enforce the baseline visual requirements for large form factor devices: ensure the sheet
         // physically floats above the logical bottom by attaching a rigid bottom margin offset.
         if (isLargeFormFactorUiEnabled()) {
-            bottomMargin +=
-                    getResources()
-                            .getDimensionPixelSize(R.dimen.bottom_sheet_desktop_bottom_margin);
+            bottomMargin += mDesktopBottomMargin;
         }
 
         // TODO(crbug.com/521433079): Should early return if this doesn't change. Leaving for now to
@@ -1916,10 +1941,7 @@ class BottomSheet extends FrameLayout
 
         if (isLargeFormFactorUiEnabled()) {
             mShadowLayer.setBackgroundResource(R.drawable.popup_bg_shadow_16dp);
-            int size =
-                    getContext()
-                            .getResources()
-                            .getDimensionPixelSize(R.dimen.bottom_sheet_shadow_length);
+            int size = mShadowLength;
             MarginLayoutParams lp = (MarginLayoutParams) mShadowLayer.getLayoutParams();
             if (lp != null) {
                 // The shadow drawable actually holds visual pixels that extend outwards
@@ -1947,15 +1969,9 @@ class BottomSheet extends FrameLayout
             shadowLayer.setBackgroundResource(R.drawable.top_round_shadow);
             int size;
             if (spec.size == GlowSpec.ShadowSize.LONG) {
-                size =
-                        getContext()
-                                .getResources()
-                                .getDimensionPixelSize(R.dimen.bottom_sheet_shadow_length_large);
+                size = mShadowLengthLarge;
             } else {
-                size =
-                        getContext()
-                                .getResources()
-                                .getDimensionPixelSize(R.dimen.bottom_sheet_shadow_length);
+                size = mShadowLength;
             }
             if (shadowLayer instanceof ShadowLayerView) {
                 ((ShadowLayerView) shadowLayer).setShadowLength(size);
