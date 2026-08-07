@@ -308,4 +308,70 @@ suite('ToolbarActionContainerMixinTest', function() {
     assertEquals('a', element.keyedStates[0]!.key);
     assertEquals(true, element.keyedStates[0]!.animateIn);
   });
+
+  test('AnimateInResetAfterAnimation', async function() {
+    element.states = [
+      {id: 'a', name: 'Item A'},
+    ];
+    await microtasksFinished();
+
+    // Initial update doesn't animate.
+    assertFalse(element.keyedStates[0]!.animateIn === true);
+
+    // Add new item.
+    element.states = [
+      {id: 'a', name: 'Item A'},
+      {id: 'b', name: 'Item B'},
+    ];
+    await microtasksFinished();
+
+    // New item should have animateIn = true.
+    assertTrue(element.keyedStates[1]!.animateIn === true);
+
+    // Simulate animationend event.
+    const childElB = element.shadowRoot.querySelector('[data-key="b"]');
+    assertTrue(!!childElB);
+    childElB.dispatchEvent(new AnimationEvent('animationend', {
+      animationName: 'slide-in',
+      bubbles: true,
+      composed: true,
+    }));
+    await microtasksFinished();
+
+    // animateIn should be reset to false.
+    assertFalse(element.keyedStates[1]!.animateIn === true);
+  });
+
+  test('AnimateInResetAfterAnimationCancel', async function() {
+    element.states = [
+      {id: 'a', name: 'Item A'},
+    ];
+    await microtasksFinished();
+
+    // Initial update doesn't animate.
+    assertFalse(element.keyedStates[0]!.animateIn === true);
+
+    // Add new item.
+    element.states = [
+      {id: 'a', name: 'Item A'},
+      {id: 'b', name: 'Item B'},
+    ];
+    await microtasksFinished();
+
+    // New item should have animateIn = true.
+    assertTrue(element.keyedStates[1]!.animateIn === true);
+
+    // Simulate animationcancel event.
+    const childElB = element.shadowRoot.querySelector('[data-key="b"]');
+    assertTrue(!!childElB);
+    childElB.dispatchEvent(new AnimationEvent('animationcancel', {
+      animationName: 'slide-in',
+      bubbles: true,
+      composed: true,
+    }));
+    await microtasksFinished();
+
+    // animateIn should be reset to false.
+    assertFalse(element.keyedStates[1]!.animateIn === true);
+  });
 });

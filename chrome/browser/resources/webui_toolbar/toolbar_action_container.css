@@ -16,6 +16,9 @@
   --fast-out-slow-in-3-cubic-bezier: cubic-bezier(0.2, 0, 0, 1);
 }
 
+/* Transitions handle exit animations (collapsing to 0) and reversing exit
+ * animations mid-flight (expanding back to normal). They are not used for
+ * initial entry. */
 pinned-toolbar-action,
 webui-toolbar-extension,
 toolbar-divider {
@@ -27,6 +30,8 @@ toolbar-divider {
   margin-inline-end: var(--toolbar-icon-default-margin);
 }
 
+/* Animation is used only for the initial entry of brand-new elements to
+ * avoid JS coordination complexity of triggering transitions on insert. */
 pinned-toolbar-action.animate-in,
 webui-toolbar-extension.animate-in,
 toolbar-divider.animate-in {

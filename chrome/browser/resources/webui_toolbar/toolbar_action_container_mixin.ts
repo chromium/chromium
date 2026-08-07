@@ -225,14 +225,22 @@ export const ToolbarActionContainerMixin =
 
         override firstUpdated(changedProperties: PropertyValues<this>) {
           super.firstUpdated(changedProperties);
-          // Add listener to shadow root to catch bubbled transitionend and
-          // transitioncancel events.
+          // Catch bubbled transition events to remove exiting items from the
+          // DOM once their collapse transition completes.
           this.shadowRoot.addEventListener(
               'transitionend',
               e => this.onTransitionDone_(e as TransitionEvent));
           this.shadowRoot.addEventListener(
               'transitioncancel',
               e => this.onTransitionDone_(e as TransitionEvent));
+
+          // Clean up the `animateIn` state after new items finish animating
+          // so they don't re-animate on subsequent updates.
+          this.shadowRoot.addEventListener(
+              'animationend', e => this.onAnimationDone_(e as AnimationEvent));
+          this.shadowRoot.addEventListener(
+              'animationcancel',
+              e => this.onAnimationDone_(e as AnimationEvent));
 
           // When a child action initiates dragging, we mark it locally as a
           // placeholder (making it invisible to act as a visual gap) and
@@ -356,6 +364,10 @@ export const ToolbarActionContainerMixin =
           const newKeyedStates: Array<KeyedActionState<T>> =
               this.states.map(state => {
                 const key = this.getKey(state);
+                // Animate in if this is not the initial load and the item is
+                // either not in `keyedStates` or already animating. If it was
+                // already in `keyedStates` we use the transition to smoothly
+                // change to its desired width.
                 const animateIn = !isInitial &&
                     !this.keyedStates.some(
                         old => old.key === key && !old.animateIn);
@@ -386,7 +398,14 @@ export const ToolbarActionContainerMixin =
 
             // Insert them back with `exiting` set to true.
             for (const missing of missingOldStates) {
-              const exitingState = {...missing, exiting: true};
+              // Explicitly set `animateIn` to false for exiting items. This
+              // ensures the transition is used to smoothly adjust width instead
+              // of applying the animation (which starts with a snap to 0).
+              const exitingState = {
+                ...missing,
+                exiting: true,
+                animateIn: false,
+              };
               const originalIndex = oldKeyToIndex.get(missing.key)!;
               const insertIndex =
                   Math.min(originalIndex, newKeyedStates.length);
@@ -439,6 +458,30 @@ export const ToolbarActionContainerMixin =
           // Remove the finished item (automatically triggers update)
           this.keyedStates = this.keyedStates.filter(s => s.key !== key);
           this.updateVisibility_();
+        }
+
+        private onAnimationDone_(e: AnimationEvent) {
+          if (e.animationName !== 'slide-in') {
+            return;
+          }
+
+          const target = e.target as HTMLElement;
+          const key = target.dataset['key'];
+          if (!key) {
+            return;
+          }
+
+          const stateToUpdate = this.keyedStates.find(s => s.key === key);
+          if (!stateToUpdate || !stateToUpdate.animateIn) {
+            return;
+          }
+
+          this.keyedStates = this.keyedStates.map(s => {
+            if (s.key === key) {
+              return {...s, animateIn: false};
+            }
+            return s;
+          });
         }
 
         private updateVisibility_() {
