@@ -47,6 +47,7 @@ message LensImageQueryData {
   // Deprecated fields to match the Silk LensImageQueryData.
   reserved 3, 5;
 }
+
 // Metadata for context for the turn.
 message ContextTurnMetadata {
   int64 context_id = 1;
@@ -61,6 +62,7 @@ message ContextTurnMetadata {
     TabMetadata tab_metadata = 2;
   }
 }
+
 // The AIM model mode that is applied to a query.
 // Next ID: 4
 enum ModelMode {
@@ -78,7 +80,7 @@ enum ModelMode {
 // In the AIM Composebox, tools can be added to a query to enter a
 // specific mode. For example, some modes include "deep search", "create
 // images", and "canvas".
-// Next ID: 11
+// Next ID: 12
 enum ToolMode {
   TOOL_MODE_UNSPECIFIED = 0;
   TOOL_MODE_DEEP_SEARCH = 1;
@@ -91,6 +93,7 @@ enum ToolMode {
   TOOL_MODE_DISABLE_SUGGEST = 8;
   TOOL_MODE_AIM = 9;
   TOOL_MODE_AIM_GEN_PROMPT = 10;
+  TOOL_MODE_AGENT_TASK = 11;
 }
 
 // The set of data that's required to generate a response from the LLM.

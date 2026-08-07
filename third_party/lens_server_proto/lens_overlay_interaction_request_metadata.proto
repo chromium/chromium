@@ -81,5 +81,8 @@ message LensOverlayInteractionRequestMetadata {
 
   QueryMetadata query_metadata = 4;
 
+  // Whether the request will be used for AIM fulfillment.
+  bool is_aim_fulfillment_context = 5;
+
   reserved 3;
 }

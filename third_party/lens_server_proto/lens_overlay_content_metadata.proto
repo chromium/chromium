@@ -34,5 +34,5 @@ message DriveMetadata {
   string drive_id = 1;
 
   // Optional. The resource key required to access link-shared Drive files.
-  string resource_key = 2;
+  string resource_key = 2 [deprecated = true];
 }

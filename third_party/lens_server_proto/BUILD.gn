@@ -62,7 +62,11 @@ proto_library("lens_overlay_proto") {
   proto_in_dir = "."
   import_dirs = [
     "//",
+    "//components/optimization_guide/proto/features",
     "//third_party/omnibox_proto",
   ]
-  deps = [ "//third_party/omnibox_proto" ]
+  deps = [
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//third_party/omnibox_proto",
+  ]
 }

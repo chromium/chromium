@@ -29,5 +29,15 @@ message LensOverlayLensFile {
   // tabs.
   string page_url = 7;
 
+  // The uri of the annotated page content. Applies to Webpages in browser
+  // tabs.
+  string annotated_page_content_uri = 8;
+
+  // The uri of the file. Applies to remote PDFs.
+  string file_uri = 9;
+
+  // The uri of the viewport screenshot. Applies to both remote PDFs and
+  // Webpages in browser tabs.
+  string screenshot_uri = 10;
   reserved 4;
 }
