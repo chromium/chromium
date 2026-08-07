@@ -241,6 +241,7 @@ TEST(JingleMessageStructConverterTest, SessionInitiateConversion) {
   message.from = SignalingAddress(kFromJid);
   message.to = SignalingAddress(kToJid);
   message.message_id = "init_id";
+  message.sid = "init_sid";
   message.initiator = "initiator@domain.com";
 
   SessionInitiate initiate;
@@ -379,6 +380,7 @@ TEST(JingleMessageStructConverterTest, HostAttributesAttachmentConversion) {
   JingleMessage message;
   message.from = SignalingAddress(kFromJid);
   message.to = SignalingAddress(kToJid);
+  message.sid = "sid";
   Attachment attachment;
   HostAttributesAttachment host_attr;
   host_attr.attribute = {"attr1", "attr2"};
@@ -423,6 +425,27 @@ TEST(JingleMessageStructConverterTest, ConvertUnknownTerminateReason) {
   ASSERT_TRUE(std::holds_alternative<SessionTerminate>(message.payload()));
   EXPECT_EQ(std::get<SessionTerminate>(message.payload()).reason,
             SessionTerminate::Reason::kUnknownReason);
+}
+
+TEST(JingleMessageStructConverterTest, ConvertMissingHeaders) {
+  internal::IqStanzaStruct stanza;
+  stanza.id = "test_id";
+  stanza.sender.local_part = "from";
+  stanza.receiver.local_part = "to";
+  internal::JingleMessageStruct jingle_struct;
+  jingle_struct.action = internal::SessionAcceptStruct();
+  stanza.payload = jingle_struct;
+
+  JingleMessage message;
+  std::string error;
+  EXPECT_FALSE(JingleMessageFromStruct(stanza, &message, &error));
+  EXPECT_EQ(error, "sid attribute is missing");
+
+  jingle_struct.session_id = "test_sid";
+  stanza.payload = jingle_struct;
+  stanza.sender.local_part.clear();
+  EXPECT_FALSE(JingleMessageFromStruct(stanza, &message, &error));
+  EXPECT_EQ(error, "Missing signaling address");
 }
 
 }  // namespace

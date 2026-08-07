@@ -476,7 +476,18 @@ bool JingleMessageFromStruct(const IqStanzaStruct& stanza,
     return false;
   }
 
+  message->message_id = stanza.id;
+  message->from = JabberIdStructToSignalingAddress(stanza.sender);
+  message->to = JabberIdStructToSignalingAddress(stanza.receiver);
+  if (message->from.empty() || message->to.empty()) {
+    *error = "Missing signaling address";
+    return false;
+  }
   message->sid = jingle_struct->session_id;
+  if (message->sid.empty()) {
+    *error = "sid attribute is missing";
+    return false;
+  }
   for (const auto& attachment_struct : jingle_struct->attachments) {
     message->attachments.push_back(AttachmentFromStruct(attachment_struct));
   }
@@ -502,16 +513,6 @@ bool JingleMessageFromStruct(const IqStanzaStruct& stanza,
                      [](std::monostate) { NOTREACHED(); }},
       jingle_struct->action);
 
-  // Top-level overrides from struct.
-  if (!stanza.id.empty()) {
-    message->message_id = stanza.id;
-  }
-  if (!stanza.sender.local_part.empty()) {
-    message->from = JabberIdStructToSignalingAddress(stanza.sender);
-  }
-  if (!stanza.receiver.local_part.empty()) {
-    message->to = JabberIdStructToSignalingAddress(stanza.receiver);
-  }
   return true;
 }
 

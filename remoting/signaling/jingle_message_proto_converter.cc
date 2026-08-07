@@ -372,7 +372,15 @@ bool JingleMessageFromProto(const ftl::IqStanza& stanza,
   message->message_id = stanza.id();
   message->from = JabberIdToSignalingAddress(stanza.sender());
   message->to = JabberIdToSignalingAddress(stanza.receiver());
+  if (message->from.empty() || message->to.empty()) {
+    *error = "Missing signaling address";
+    return false;
+  }
   message->sid = jingle.session_id();
+  if (message->sid.empty()) {
+    *error = "sid attribute is missing";
+    return false;
+  }
 
   if (jingle.has_session_initiate()) {
     SessionInitiate initiate;

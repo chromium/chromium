@@ -565,4 +565,25 @@ TEST_F(JingleMessageProtoConverterTest, ConvertUnknownSdpType) {
             ftl::SessionDescription::SDP_TYPE_UNSPECIFIED);
 }
 
+TEST_F(JingleMessageProtoConverterTest, ConvertMissingHeaders) {
+  JingleMessage message;
+  message.from = from_address_;
+  message.to = to_address_;
+  message.message_id = kMessageId;
+  message.sid = "";
+  message.SetPayload(SessionInitiate());
+
+  ftl::IqStanza stanza = message.ToFtlIqStanza();
+
+  JingleMessage converted_message;
+  std::string error;
+  EXPECT_FALSE(JingleMessageFromProto(stanza, &converted_message, &error));
+  EXPECT_EQ(error, "sid attribute is missing");
+
+  stanza.mutable_jingle()->set_session_id(kSid);
+  stanza.clear_sender();
+  EXPECT_FALSE(JingleMessageFromProto(stanza, &converted_message, &error));
+  EXPECT_EQ(error, "Missing signaling address");
+}
+
 }  // namespace remoting

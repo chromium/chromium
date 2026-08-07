@@ -219,6 +219,7 @@ TEST_F(CorpSignalStrategyTest, SendMessage_PopulatesStructuredFields) {
     token_message.message_id = "id1";
     token_message.from = SignalingAddress(kFakeRemoteCorpId);
     token_message.to = SignalingAddress(kFakeLocalCorpId);
+    token_message.sid = "sid123";
     token_message.SetPayload(SessionInfo());
 
     internal::IqStanzaStruct iq_stanza_struct =
@@ -360,6 +361,7 @@ TEST_F(CorpSignalStrategyTest, ReceiveStanza_MissingAuthzToken) {
   jingle_message.message_id = signal_strategy_->GetNextId();
   jingle_message.from = SignalingAddress(kFakeRemoteCorpId);
   jingle_message.to = SignalingAddress(kFakeLocalCorpId);
+  jingle_message.sid = "sid123";
   jingle_message.SetPayload(SessionInfo());
 
   internal::IqStanzaStruct iq_stanza_struct =
@@ -382,6 +384,7 @@ TEST_F(CorpSignalStrategyTest, ReceiveStanza_AuthzTokenChanged) {
   JingleMessage jingle_message;
   jingle_message.from = SignalingAddress(kFakeRemoteCorpId);
   jingle_message.to = SignalingAddress(kFakeLocalCorpId);
+  jingle_message.sid = "sid123";
   jingle_message.SetPayload(SessionInfo());
 
   // First message sets the token.
@@ -414,6 +417,7 @@ TEST_F(CorpSignalStrategyTest, ReceiveStanza_AuthzTokenChanged) {
     JingleMessage outbound_message;
     outbound_message.to = SignalingAddress(kFakeRemoteCorpId);
     outbound_message.from = SignalingAddress(kFakeLocalCorpId);
+    outbound_message.sid = "sid123";
     outbound_message.SetPayload(SessionInfo());
     signal_strategy_->SendMessage(std::move(outbound_message));
   }
@@ -472,6 +476,7 @@ TEST_F(CorpSignalStrategyTest, ReceiveStanza_MultipleListeners) {
   jingle_message.message_id = "id1";
   jingle_message.from = SignalingAddress(kFakeRemoteCorpId);
   jingle_message.to = SignalingAddress(kFakeLocalCorpId);
+  jingle_message.sid = "sid123";
   jingle_message.SetPayload(SessionInfo());
 
   internal::IqStanzaStruct iq_stanza_struct =
@@ -509,6 +514,7 @@ TEST_F(CorpSignalStrategyTest, SendReply_Success) {
   jingle_message.message_id = "id1";
   jingle_message.from = SignalingAddress(kFakeRemoteCorpId);
   jingle_message.to = SignalingAddress(kFakeLocalCorpId);
+  jingle_message.sid = "sid123";
   jingle_message.SetPayload(SessionInfo());
 
   internal::IqStanzaStruct iq_stanza_struct =
