@@ -448,7 +448,7 @@ suite('ComposeboxMixinTest', () => {
       });
 
   test(
-      'setAimThreadRestoredTabs force-refreshes suggestions when tabs restored',
+      'setAimThreadRestoredTabs force-refreshes suggestions when restored tabs are set or cleared',
       async () => {
         searchboxHandler.resetResolver('getRecentTabs');
         searchboxHandler.setPromiseResolveFor('getRecentTabs', {tabs: []});
@@ -476,8 +476,9 @@ suite('ComposeboxMixinTest', () => {
         searchboxCallbackRouterRemote.setAimThreadRestoredTabs([]);
         await microtasksFinished();
 
-        // Verify: refreshTabSuggestions is NOT called when list is empty.
-        assertEquals(0, searchboxHandler.getCallCount('getRecentTabs'));
+        // Verify: refreshTabSuggestions is called even when list is empty to
+        // clear or update suggestions.
+        assertEquals(1, searchboxHandler.getCallCount('getRecentTabs'));
       });
 
   test('queryAutocomplete passes cursor position', async () => {
