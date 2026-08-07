@@ -32,13 +32,14 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 /**
  * This class provides a mechanism for accessing flags before native initialization. It uses
- * SharedPreferences to cache two Sets of feature flag names. Once they're read from disk at
+ * SharedPreferences to cache feature flags and feature params. Once they're read from disk at
  * startup, the disk caches are deleted immediately so that if a crash happens, we don't use the
  * same flag configuration on the next startup. Once startup is completed, we write new values for
  * each flag to disk by querying finch.
@@ -53,6 +54,7 @@ import java.util.Set;
 public class WebViewCachedFlags {
     private static final String CACHED_ENABLED_FLAGS_PREF = "CachedFlagsEnabled";
     private static final String CACHED_DISABLED_FLAGS_PREF = "CachedFlagsDisabled";
+    private static final String CACHED_PARAMS_PREF = "CachedParams";
     private static final String CACHED_FLAGS_EXIST_HISTOGRAM_NAME =
             "Android.WebView.CachedFlagsExist";
 
@@ -71,6 +73,8 @@ public class WebViewCachedFlags {
     private final Map<String, @DefaultState Integer> mDefaults;
     private final Set<String> mOverrideEnabled;
     private final Set<String> mOverrideDisabled;
+    private final Map<String, String> mDefaultParams;
+    private final Map<String, String> mOverrideParams;
     private volatile boolean mIsStartupComplete;
 
     /*
@@ -151,6 +155,8 @@ public class WebViewCachedFlags {
                     Map.entry(
                             AwFeatures.WEBVIEW_USE_WVLES_FOR_LAYERED_STUDY, DefaultState.DISABLED));
 
+    private static final Map<String, String> PARAM_DEFINITIONS = Map.of();
+
     /**
      * Initializes the singleton instance and reads the cached values from prefs. This method must
      * be called before get().
@@ -197,7 +203,9 @@ public class WebViewCachedFlags {
 
     private static void initInternal(SharedPreferences prefs, boolean forceDefaults) {
         synchronized (sLock) {
-            sInstance = new WebViewCachedFlags(prefs, FLAG_DEFINITIONS, forceDefaults);
+            sInstance =
+                    new WebViewCachedFlags(
+                            prefs, FLAG_DEFINITIONS, PARAM_DEFINITIONS, forceDefaults);
         }
     }
 
@@ -271,6 +279,22 @@ public class WebViewCachedFlags {
         return get().isCachedFeatureOverridden(feature);
     }
 
+    public int getCachedFeatureParamAsInt(String feature, String paramName) {
+        return Integer.parseInt(getRegisteredParamValue(feature, paramName));
+    }
+
+    public boolean getCachedFeatureParamAsBoolean(String feature, String paramName) {
+        return Boolean.parseBoolean(getRegisteredParamValue(feature, paramName));
+    }
+
+    public double getCachedFeatureParamAsDouble(String feature, String paramName) {
+        return Double.parseDouble(getRegisteredParamValue(feature, paramName));
+    }
+
+    public String getCachedFeatureParamAsString(String feature, String paramName) {
+        return getRegisteredParamValue(feature, paramName);
+    }
+
     /**
      * Writes new finch values to prefs. This method should be called from a background thread.
      *
@@ -278,6 +302,8 @@ public class WebViewCachedFlags {
      */
     public void onStartupCompleted(SharedPreferences prefs) {
         mIsStartupComplete = true;
+
+        // Process feature flags
         Set<String> newEnabledSet = new HashSet<>();
         Set<String> newDisabledSet = new HashSet<>();
         mDefaults.forEach(
@@ -291,9 +317,24 @@ public class WebViewCachedFlags {
                         }
                     }
                 });
+
+        // Process feature params
+        Set<String> newParamsSet = new HashSet<>();
+        mDefaultParams.forEach(
+                (String key, String _) -> {
+                    String[] parts = key.split(":");
+                    String valStr =
+                            AwFeatureMap.getInstance()
+                                    .getFieldTrialParamByFeature(parts[0], parts[1]);
+                    if (!valStr.isEmpty()) {
+                        newParamsSet.add(key + ":" + valStr);
+                    }
+                });
+
         prefs.edit()
                 .putStringSet(CACHED_ENABLED_FLAGS_PREF, newEnabledSet)
                 .putStringSet(CACHED_DISABLED_FLAGS_PREF, newDisabledSet)
+                .putStringSet(CACHED_PARAMS_PREF, newParamsSet)
                 .apply();
     }
 
@@ -301,24 +342,53 @@ public class WebViewCachedFlags {
     public WebViewCachedFlags(
             SharedPreferences prefs,
             Map<String, @DefaultState Integer> defaults,
+            Map<String, String> params,
             boolean forceDefaults) {
         boolean flagsExist =
                 prefs.contains(CACHED_ENABLED_FLAGS_PREF)
                         && prefs.contains(CACHED_DISABLED_FLAGS_PREF);
         RecordHistogram.recordBooleanHistogram(CACHED_FLAGS_EXIST_HISTOGRAM_NAME, flagsExist);
+
+        mDefaults = defaults;
+        mDefaultParams = params;
+
         if (forceDefaults) {
             mOverrideEnabled = Collections.emptySet();
             mOverrideDisabled = Collections.emptySet();
-            mFeaturesLoggedGeneral.clear();
-            mFeaturesLoggedEarly.clear();
+            mOverrideParams = Collections.emptyMap();
         } else {
             mOverrideEnabled =
                     prefs.getStringSet(CACHED_ENABLED_FLAGS_PREF, Collections.emptySet());
             mOverrideDisabled =
                     prefs.getStringSet(CACHED_DISABLED_FLAGS_PREF, Collections.emptySet());
+
+            mOverrideParams = new HashMap<>();
+            Set<String> cachedParams =
+                    prefs.getStringSet(CACHED_PARAMS_PREF, Collections.emptySet());
+            for (String cached : cachedParams) {
+                String[] parts = cached.split(":", 3);
+                mOverrideParams.put(toParamKey(parts[0], parts[1]), parts[2]);
+            }
         }
-        prefs.edit().remove(CACHED_ENABLED_FLAGS_PREF).remove(CACHED_DISABLED_FLAGS_PREF).apply();
-        mDefaults = defaults;
+
+        prefs.edit()
+                .remove(CACHED_ENABLED_FLAGS_PREF)
+                .remove(CACHED_DISABLED_FLAGS_PREF)
+                .remove(CACHED_PARAMS_PREF)
+                .apply();
+    }
+
+    private String getRegisteredParamValue(String feature, String paramName) {
+        String key = toParamKey(feature, paramName);
+        String override = mOverrideParams.get(key);
+        if (override != null) {
+            return override;
+        }
+        String defVal = mDefaultParams.get(key);
+        if (defVal != null) {
+            return defVal;
+        }
+        throw new IllegalArgumentException("Parameter not registered: " + key);
     }
 
     /** Helper method to be called by native to check feature values without the instance. */
@@ -356,6 +426,23 @@ public class WebViewCachedFlags {
                 | ((hash[1] & 0xFF) << 8)
                 | ((hash[2] & 0xFF) << 16)
                 | ((hash[3] & 0xFF) << 24);
+    }
+
+    private static String toParamKey(String feature, String name) {
+        // Feature and parameter names are guaranteed to not contain colons since they are
+        // derived from C++ variable names which cannot contain colons.
+        assert !feature.contains(":") : "Feature name cannot contain a colon";
+        assert !name.contains(":") : "Parameter name cannot contain a colon";
+        return feature + ":" + name;
+    }
+
+    /**
+     * Returns an immutable Map.Entry representing the given feature-parameter pair and its default.
+     */
+    @VisibleForTesting
+    public static Map.Entry<String, String> param(
+            String feature, String name, String defaultValue) {
+        return Map.entry(toParamKey(feature, name), defaultValue);
     }
 
     @NativeMethods
