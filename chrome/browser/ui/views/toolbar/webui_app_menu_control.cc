@@ -6,19 +6,17 @@
 
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/frame/app_menu_button_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
-#include "chrome/grit/branded_strings.h"
-#include "chrome/grit/generated_resources.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/interaction/element_tracker_views.h"
-#include "ui/views/view_utils.h"
 
 namespace {
 
@@ -101,7 +99,7 @@ bool WebUIAppMenuControl::IsDrawn() const {
 }
 
 bool WebUIAppMenuControl::IsMenuShowing() const {
-  return menu_runner_ && menu_runner_->IsRunning();
+  return menu_ && menu_->IsShowing();
 }
 
 views::DialogDelegate* WebUIAppMenuControl::GetDialogDelegate() {
@@ -110,8 +108,8 @@ views::DialogDelegate* WebUIAppMenuControl::GetDialogDelegate() {
 }
 
 void WebUIAppMenuControl::CloseMenu() {
-  if (menu_runner_) {
-    menu_runner_->Cancel();
+  if (menu_) {
+    menu_->CloseMenu();
   }
 }
 
@@ -149,11 +147,19 @@ void WebUIAppMenuControl::HandleContextMenu(const gfx::Rect& anchor_bounds,
     return;
   }
 
-  ToolbarView* toolbar_view =
-      BrowserView::GetBrowserViewForBrowser(delegate_->GetBrowser())->toolbar();
+  BrowserWindowInterface* browser_window = delegate_->GetBrowser();
+  BrowserView* browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser_window);
+  CHECK(browser_view);
+  ToolbarView* toolbar_view = browser_view->toolbar();
   CHECK(toolbar_view);
-  Browser* browser = toolbar_view->browser();
+  Browser* browser = browser_window->GetBrowserForMigrationOnly();
 
+  // Explicitly destroy the old menu UI before recreating the model. `AppMenu`
+  // holds a `raw_ptr` to `AppMenuModel`. If we don't reset `menu_` first,
+  // recreating `menu_model_` would temporarily leave `menu_` with a dangling
+  // pointer to the destroyed model.
+  menu_.reset();
   menu_model_ = std::make_unique<AppMenuModel>(
       toolbar_view, browser, toolbar_view->app_menu_icon_controller(),
       AppMenuModel::GetAlertItemForRunningTutorial(browser));
@@ -165,14 +171,12 @@ void WebUIAppMenuControl::HandleContextMenu(const gfx::Rect& anchor_bounds,
                  views::MenuRunner::INVOKED_FROM_KEYBOARD;
   }
 
-  menu_runner_ = std::make_unique<views::MenuRunner>(
-      menu_model_.get(), run_flags,
+  menu_ = std::make_unique<AppMenu>(
+      browser, menu_model_.get(), run_flags,
       base::BindRepeating(&WebUIAppMenuControl::UpdateOpenState,
-                          base::Unretained(this)));
+                          weak_ptr_factory_.GetWeakPtr()));
 
-  menu_runner_->RunMenuAt(delegate_->GetView()->GetWidget(), nullptr,
-                          anchor_bounds, views::MenuAnchorPosition::kTopRight,
-                          source);
+  menu_->RunMenu(delegate_->GetView()->GetWidget(), anchor_bounds, source);
   UpdateOpenState();
 }
 

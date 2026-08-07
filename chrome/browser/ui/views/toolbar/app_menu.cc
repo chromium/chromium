@@ -1134,30 +1134,32 @@ AppMenu::~AppMenu() {
   }
 }
 
-void AppMenu::RunMenu(views::MenuButtonController* host) {
+void AppMenu::RunMenu(views::MenuButtonController* host,
+                      ui::mojom::MenuSourceType source_type) {
   base::RecordAction(UserMetricsAction("ShowAppMenu"));
   UMA_HISTOGRAM_ENUMERATION("WrenchMenu.MenuAction", MENU_ACTION_MENU_OPENED,
                             LIMIT_MENU_ACTION);
 
-  menu_runner_->RunMenuAt(
-      host->button()->GetWidget(), host,
-      host->button()->GetAnchorBoundsInScreen(),
-      views::MenuAnchorPosition::kTopRight, ui::mojom::MenuSourceType::kNone,
-      /*native_view_for_gestures=*/gfx::NativeView(), /*corners=*/std::nullopt,
-      "Chrome.AppMenu.MenuHostInitToNextFramePresented");
+  menu_runner_->RunMenuAt(host->button()->GetWidget(), host,
+                          host->button()->GetAnchorBoundsInScreen(),
+                          views::MenuAnchorPosition::kTopRight, source_type,
+                          /*native_view_for_gestures=*/gfx::NativeView(),
+                          /*corners=*/std::nullopt,
+                          "Chrome.AppMenu.MenuHostInitToNextFramePresented");
 }
 
 void AppMenu::RunMenu(views::Widget* parent,
-                      const gfx::Rect& anchor_screen_bounds) {
+                      const gfx::Rect& anchor_screen_bounds,
+                      ui::mojom::MenuSourceType source_type) {
   base::RecordAction(UserMetricsAction("ShowAppMenu"));
   UMA_HISTOGRAM_ENUMERATION("WrenchMenu.MenuAction", MENU_ACTION_MENU_OPENED,
                             LIMIT_MENU_ACTION);
 
-  menu_runner_->RunMenuAt(
-      parent, nullptr, anchor_screen_bounds,
-      views::MenuAnchorPosition::kTopRight, ui::mojom::MenuSourceType::kNone,
-      /*native_view_for_gestures=*/gfx::NativeView(), /*corners=*/std::nullopt,
-      "Chrome.AppMenu.MenuHostInitToNextFramePresented");
+  menu_runner_->RunMenuAt(parent, nullptr, anchor_screen_bounds,
+                          views::MenuAnchorPosition::kTopRight, source_type,
+                          /*native_view_for_gestures=*/gfx::NativeView(),
+                          /*corners=*/std::nullopt,
+                          "Chrome.AppMenu.MenuHostInitToNextFramePresented");
 }
 
 void AppMenu::CloseMenu() {

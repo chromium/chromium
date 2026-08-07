@@ -20,7 +20,7 @@
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "ui/base/models/menu_model.h"
-#include "ui/base/mojom/menu_source_type.mojom-forward.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/views/controls/menu/menu_delegate.h"
 
 class BookmarkMenuDelegate;
@@ -48,10 +48,17 @@ class AppMenu final : public views::MenuDelegate,
   ~AppMenu() override;
 
   // Shows the menu relative to the specified controller's button.
-  void RunMenu(views::MenuButtonController* host);
+  // TODO(crbug.com/543867698): Specify a reasonable source type instead of
+  // defaulting to kNone.
+  void RunMenu(
+      views::MenuButtonController* host,
+      ui::mojom::MenuSourceType source_type = ui::mojom::MenuSourceType::kNone);
 
   // Shows the menu with an anchor in the parent widget given its bounds.
-  void RunMenu(views::Widget* parent, const gfx::Rect& anchor_screen_bounds);
+  void RunMenu(
+      views::Widget* parent,
+      const gfx::Rect& anchor_screen_bounds,
+      ui::mojom::MenuSourceType source_type = ui::mojom::MenuSourceType::kNone);
 
   // Closes the menu if it is open, otherwise does nothing.
   void CloseMenu();

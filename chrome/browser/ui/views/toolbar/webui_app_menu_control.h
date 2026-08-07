@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/views/toolbar/app_menu_control.h"
@@ -17,9 +18,9 @@
 
 namespace views {
 class AccessiblePaneView;
-class MenuRunner;
 }  // namespace views
 
+class AppMenu;
 class AppMenuButtonObserver;
 class AppMenuModel;
 class WebUIToolbarControlDelegate;
@@ -69,10 +70,11 @@ class WebUIAppMenuControl : public AppMenuControl {
   int trailing_margin_ = 0;
   // Caches the focus state of the button within the WebUI.
   bool focused_ = false;
-  std::unique_ptr<AppMenuModel> menu_model_;
-  std::unique_ptr<views::MenuRunner> menu_runner_;
-
   base::ObserverList<AppMenuButtonObserver>::Unchecked observer_list_;
+  std::unique_ptr<AppMenuModel> menu_model_;
+  std::unique_ptr<AppMenu> menu_;
+
+  base::WeakPtrFactory<WebUIAppMenuControl> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_WEBUI_APP_MENU_CONTROL_H_

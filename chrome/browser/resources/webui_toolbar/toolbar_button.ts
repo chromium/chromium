@@ -357,6 +357,9 @@ export function getClickSourceType(e: Event): MenuSourceType {
   // KeyboardEvent. Need to check e.detail instead, which is 0 for
   // KeyboardEvent. Note: Keyboard activations on `<cr-icon-button>` (Space or
   // Enter) programmatically synthesize standard `click` events with `detail` 0.
+  // TODO(crbug.com/543376027): Handle pointer events correctly. Physical
+  // pointer events can have detail === 0, which incorrectly classifies them as
+  // keyboard events.
   if (e instanceof MouseEvent && e.detail === 0) {
     return MenuSourceType.kKeyboard;
   }
