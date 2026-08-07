@@ -612,7 +612,8 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
       this.inToolMode_ =
           (this.inputState_?.activeTool ?? toolMode) !== ToolMode.kUnspecified;
 
-      this.searchboxHandler_.setActiveToolMode(toolMode as ToolMode);
+      this.searchboxHandler_.setActiveToolMode(
+          toolMode as ToolMode, /*isSetByServer=*/ true);
     }
 
     if (modelMode !== undefined && modelMode !== null) {

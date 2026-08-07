@@ -2973,7 +2973,7 @@ suite('NewTabPageAppTest', () => {
           assertEquals(1, searchboxHandler.getCallCount('setActiveToolMode'));
           assertEquals(
               ToolMode.kImageGen,
-              searchboxHandler.getArgs('setActiveToolMode')[0]);
+              searchboxHandler.getArgs('setActiveToolMode')[0][0]);
         });
     test(
         'Deep search chip click opens composebox deep search mode',
@@ -2996,7 +2996,7 @@ suite('NewTabPageAppTest', () => {
           assertEquals(1, searchboxHandler.getCallCount('setActiveToolMode'));
           assertEquals(
               ToolMode.kDeepSearch,
-              searchboxHandler.getArgs('setActiveToolMode')[0]);
+              searchboxHandler.getArgs('setActiveToolMode')[0][0]);
         });
     test('Recent tab chip click opens composebox with context', async () => {
       const actionChipsElement =

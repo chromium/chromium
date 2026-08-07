@@ -348,29 +348,32 @@ void ContextualTasksComposeboxHandler::StartPlatformVoiceRecognition() {
 }
 
 void ContextualTasksComposeboxHandler::SetActiveToolMode(
-    omnibox::ToolMode tool) {
+    omnibox::ToolMode tool,
+    bool is_set_by_server) {
   omnibox::ToolMode previous_tool =
       input_state_model_ ? input_state_model_->GetInputState().active_tool
                          : omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
 
-  ContextualSearchboxHandler::SetActiveToolMode(tool);
-
-  // Send an AIM query to notify AIM webpage (client side) of previous
-  // tool (`tool_mode`) and the newly changed tool (`new_tool_mode`).
-  // This path runs when a tool is added (or swapped), or removed.
-  // This causes side effects on AIM webpage; e.g., Canvas chip
-  // removed in Chrome -> Canvas popup is removed in AIM webpage.
-  auto request_info =
-      std::make_unique<contextual_search::ContextualSearchContextController::
-                           CreateClientToAimRequestInfo>();
-  request_info->exit_tool_info =
-      contextual_search::ContextualSearchContextController::
-          CreateClientToAimRequestInfo::ExitToolInfo{
-              .tool_mode = previous_tool,
-              .new_tool_mode = tool,
-          };
-  contextual_tasks::FinalizeAndSendAimQuery(
-      std::move(request_info), GetContextualSessionHandle(), web_ui_interface_);
+  ContextualSearchboxHandler::SetActiveToolMode(tool, is_set_by_server);
+  if (!is_set_by_server) {
+    // Send an AIM query to notify AIM webpage (client side) of previous
+    // tool (`tool_mode`) and the newly changed tool (`new_tool_mode`).
+    // This path runs when a tool is added (or swapped), or removed.
+    // This causes side effects on AIM webpage; e.g., Canvas chip
+    // removed in Chrome -> Canvas popup is removed in AIM webpage.
+    auto request_info =
+        std::make_unique<contextual_search::ContextualSearchContextController::
+                             CreateClientToAimRequestInfo>();
+    request_info->exit_tool_info =
+        contextual_search::ContextualSearchContextController::
+            CreateClientToAimRequestInfo::ExitToolInfo{
+                .tool_mode = previous_tool,
+                .new_tool_mode = tool,
+            };
+    contextual_tasks::FinalizeAndSendAimQuery(std::move(request_info),
+                                              GetContextualSessionHandle(),
+                                              web_ui_interface_);
+  }
 }
 
 void ContextualTasksComposeboxHandler::SubmitQuery(

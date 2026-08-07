@@ -109,7 +109,8 @@ class ContextualTasksExtensionHandler
                    bool meta_key,
                    bool shift_key,
                    bool is_voice_search) override;
-  void SetActiveToolMode(omnibox::ToolMode tool) override;
+  void SetActiveToolMode(omnibox::ToolMode tool,
+                         bool is_set_by_server) override;
   void SetActiveModelMode(omnibox::ModelMode model) override;
 
   // These are stubs required to implement searchbox::mojom::PageHandler

@@ -266,8 +266,8 @@ void ContextualTasksExtensionHandler::SubmitQuery(const std::string& query_text,
                                             session_handle, this);
 }
 void ContextualTasksExtensionHandler::OpenLensSearch() {}
-void ContextualTasksExtensionHandler::SetActiveToolMode(
-    omnibox::ToolMode tool) {
+void ContextualTasksExtensionHandler::SetActiveToolMode(omnibox::ToolMode tool,
+                                                        bool is_set_by_server) {
   active_tool_ = tool;
 }
 void ContextualTasksExtensionHandler::RecordToolSelectionAction(

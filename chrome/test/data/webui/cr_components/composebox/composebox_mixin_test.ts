@@ -957,7 +957,7 @@ suite('ComposeboxMixinTest', () => {
         assertEquals(1, searchboxHandler.getCallCount('setActiveToolMode'));
         assertEquals(
             ToolMode.kDeepSearch,
-            searchboxHandler.getArgs('setActiveToolMode')[0]);
+            searchboxHandler.getArgs('setActiveToolMode')[0][0]);
         assertEquals(1, searchboxHandler.getCallCount('setActiveModelMode'));
         assertEquals(
             ModelMode.kGeminiRegular,
@@ -1401,7 +1401,7 @@ suite('ComposeboxMixinTest', () => {
     assertEquals(1, searchboxHandler.getCallCount('setActiveToolMode'));
     assertEquals(
         ToolMode.kUnspecified,
-        searchboxHandler.getArgs('setActiveToolMode')[0]);
+        searchboxHandler.getArgs('setActiveToolMode')[0][0]);
 
     const metricName =
         'ContextualSearch.UserAction.InputStateDeletion.TestEmbedder';

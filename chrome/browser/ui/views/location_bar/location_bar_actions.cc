@@ -117,7 +117,8 @@ void SetOmniboxToolModeAndOpenAi(
   ContextualSearchboxHandler* const composebox_handler =
       omnibox_popup_ui ? omnibox_popup_ui->composebox_handler() : nullptr;
   if (composebox_handler) {
-    composebox_handler->SetActiveToolMode(tool_mode);
+    composebox_handler->SetActiveToolMode(tool_mode,
+                                          /*is_set_by_server=*/false);
     composebox_handler->RecordToolSelectionAction(tool_mode);
   }
   edit_model->OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu);

@@ -1473,7 +1473,8 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
       if (auto it = tool_for_command_id_.find(id);
           it != tool_for_command_id_.end()) {
         if (composebox_handler) {
-          composebox_handler->SetActiveToolMode(it->second);
+          composebox_handler->SetActiveToolMode(it->second,
+                                                /*is_set_by_server=*/false);
           composebox_handler->RecordToolSelectionAction(it->second);
         }
 
@@ -1520,7 +1521,8 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
       case IDC_OMNIBOX_CONTEXT_CREATE_IMAGES:
         if (composebox_handler) {
           composebox_handler->SetActiveToolMode(
-              omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+              omnibox::ToolMode::TOOL_MODE_IMAGE_GEN,
+              /*is_set_by_server=*/false);
           composebox_handler->RecordToolSelectionAction(
               omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
         }
@@ -1530,7 +1532,8 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
       case IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH:
         if (composebox_handler) {
           composebox_handler->SetActiveToolMode(
-              omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+              omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH,
+              /*is_set_by_server=*/false);
           composebox_handler->RecordToolSelectionAction(
               omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
         }
@@ -1540,7 +1543,7 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
       case IDC_OMNIBOX_CONTEXT_CANVAS:
         if (composebox_handler) {
           composebox_handler->SetActiveToolMode(
-              omnibox::ToolMode::TOOL_MODE_CANVAS);
+              omnibox::ToolMode::TOOL_MODE_CANVAS, /*is_set_by_server=*/false);
           composebox_handler->RecordToolSelectionAction(
               omnibox::ToolMode::TOOL_MODE_CANVAS);
         }

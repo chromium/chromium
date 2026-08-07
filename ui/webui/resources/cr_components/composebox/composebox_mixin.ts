@@ -1155,11 +1155,12 @@ export const ComposeboxEmbedderMixin =
           }
           this.handleToolModeUpdate(newToolMode);
         }
-        handleToolModeUpdate(newTool: ToolMode) {
+        handleToolModeUpdate(
+            newTool: ToolMode, isSetByServer: boolean = false) {
           // If it is canvas added/removed, browser process will notify
           // AIM webpage (client side) so it can respond to these changes.
           // Server is not notified of these changes; side effects are local.
-          this.getSearchboxHandler().setActiveToolMode(newTool);
+          this.getSearchboxHandler().setActiveToolMode(newTool, isSetByServer);
 
           this.queryAutocomplete(/* clearMatches= */ true);
           this.updateInputPlaceholder();
@@ -1866,7 +1867,8 @@ export const ComposeboxEmbedderMixin =
 
         resetToolsAndModels() {
           if (this.inputState) {
-            this.getSearchboxHandler().setActiveToolMode(ToolMode.kUnspecified);
+            this.getSearchboxHandler().setActiveToolMode(
+                ToolMode.kUnspecified, /*isSetByServer=*/ false);
             this.getSearchboxHandler().setActiveModelMode(
                 ModelMode.kUnspecified);
           }
@@ -2889,7 +2891,7 @@ export interface ComposeboxEmbedderMixinInterface extends I18nMixinLitInterface,
   isTogglingOff(tool: ToolMode): boolean;
   onToolClick(e: CustomEvent<{toolMode: ToolMode}>): void;
   handleToolClick(tool: ToolMode): void;
-  handleToolModeUpdate(newTool: ToolMode): void;
+  handleToolModeUpdate(newTool: ToolMode, isSetByServer?: boolean): void;
   onModelClick(e: CustomEvent<{model: ModelMode}>): void;
   onOpenImageUpload(): void;
   onOpenFileUpload(): void;

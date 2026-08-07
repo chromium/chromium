@@ -233,8 +233,10 @@ TEST_F(ComposeboxHandlerTest, SubmitQueryWithToolMetric) {
       omnibox::ModelMode::MODEL_MODE_UNSPECIFIED, 1);
 
   // Submitting with deep search and Gemini regular model enabled.
-  handler().SetActiveToolMode(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
-  handler().SetActiveToolMode(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  handler().SetActiveToolMode(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH,
+                              /*is_set_by_server=*/false);
+  handler().SetActiveToolMode(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH,
+                              /*is_set_by_server=*/false);
   handler().RecordToolSelectionAction(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
   handler().SetActiveModelMode(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
   handler().RecordModelSelectionAction(
@@ -253,7 +255,8 @@ TEST_F(ComposeboxHandlerTest, SubmitQueryWithToolMetric) {
       omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR, 1);
 
   // Submitting with create image and Gemini Pro model enabled.
-  handler().SetActiveToolMode(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+  handler().SetActiveToolMode(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN,
+                              /*is_set_by_server=*/false);
   handler().RecordToolSelectionAction(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
   handler().SetActiveModelMode(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
   handler().RecordModelSelectionAction(

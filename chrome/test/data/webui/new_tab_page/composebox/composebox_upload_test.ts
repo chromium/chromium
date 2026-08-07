@@ -1087,7 +1087,7 @@ suite(`NewTabPageComposeboxUploadToolModeTest`, () => {
         testProxy.searchboxHandler.getCallCount('setActiveToolMode'), 1);
     assertEquals(
         ToolMode.kImageGen,
-        testProxy.searchboxHandler.getArgs('setActiveToolMode')[0]);
+        testProxy.searchboxHandler.getArgs('setActiveToolMode')[0][0]);
     assertEquals(
         testProxy.searchboxHandler.getCallCount('recordToolSelectionAction'),
         1);

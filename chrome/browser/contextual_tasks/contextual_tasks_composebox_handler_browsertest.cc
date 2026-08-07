@@ -1464,7 +1464,8 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksComposeboxHandlerToolModeTest,
       });
   EXPECT_CALL(*mock_ui_, PostAimMessage(testing::_)).Times(1);
 
-  handler_->SetActiveToolMode(param.tool_mode);
+  // No server-added tool means `exitTool` is sent.
+  handler_->SetActiveToolMode(param.tool_mode, /*is_set_by_server=*/false);
   handler_->RecordToolSelectionAction(param.tool_mode);
 
   EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
@@ -1505,7 +1506,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
       });
   EXPECT_CALL(*mock_ui_, PostAimMessage(testing::_)).Times(1);
 
-  handler_->SetActiveToolMode(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  handler_->SetActiveToolMode(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH,
+                              /*is_set_by_server=*/false);
 
   // Clearing active tool should also send `exit_tool_info`.
   EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
@@ -1521,7 +1523,20 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
       });
   EXPECT_CALL(*mock_ui_, PostAimMessage(testing::_)).Times(1);
 
-  handler_->SetActiveToolMode(omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
+  handler_->SetActiveToolMode(omnibox::ToolMode::TOOL_MODE_UNSPECIFIED,
+                              /*is_set_by_server=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksComposeboxHandlerTest,
+    SetActiveToolMode_SetByServer_DoesNotSendExitToolMessage) {
+  // When `is_set_by_server` is true, `exit_tool_info` message should NOT be
+  // sent.
+  EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_)).Times(0);
+  EXPECT_CALL(*mock_ui_, PostAimMessage(testing::_)).Times(0);
+
+  handler_->SetActiveToolMode(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH,
+                              /*is_set_by_server=*/true);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
