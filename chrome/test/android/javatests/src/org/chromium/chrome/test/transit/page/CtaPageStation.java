@@ -5,6 +5,7 @@
 package org.chromium.chrome.test.transit.page;
 
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.CoreMatchers.allOf;
@@ -50,7 +51,14 @@ import java.util.function.Supplier;
  * the expected title, etc.
  */
 public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
+    private static final String SEARCH_PATH = "/search";
+    private static final String SEARCH_QUERY_PARAM = "q";
     public static final ViewSpec<UrlBar> URL_BAR = viewSpec(UrlBar.class, withId(R.id.url_bar));
+    public static final ViewSpec<View> TOOLBAR_MIC_BUTTON =
+            viewSpec(
+                    withId(R.id.optional_toolbar_button),
+                    withContentDescription(R.string.accessibility_toolbar_btn_mic));
+    public final OptionalViewElement<View> optionalToolbarMicButtonElement;
     public final OptionalViewElement<View> homeButtonElement;
     // TODO(crbug.com/477035792): Temporarily nullable while the toolbar is being migrated.
     public final @Nullable ViewElement<ToolbarControlContainer> toolbarElement;
@@ -97,6 +105,28 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
                 declareOptionalView(
                         allOf(withId(R.id.home_button), isDisplayed()),
                         ViewElement.unscopedOption());
+
+        // The optional toolbar mic button specifically.
+        optionalToolbarMicButtonElement = declareOptionalView(TOOLBAR_MIC_BUTTON);
+    }
+
+    /**
+     * Clicks the mic button in the toolbar, expecting to navigate to a search results page.
+     *
+     * @param query the query to expect in the search URL
+     * @return the {@link WebPageStation} representing the search results page
+     */
+    public WebPageStation clickToolbarMicToSearchPage(String query) {
+        return optionalToolbarMicButtonElement.clickTo().arriveAt(createSearchPageStation(query));
+    }
+
+    /** Returns a {@link WebPageStation} expecting a search results page for the given query. */
+    public WebPageStation createSearchPageStation(String query) {
+        return WebPageStation.newBuilder()
+                .initFrom(this)
+                // TODO(b/543914644): Create a method for verifying url args directly.
+                .withExpectedUrlSubstring(SEARCH_PATH + "?" + SEARCH_QUERY_PARAM + "=" + query)
+                .build();
     }
 
     /** Long presses the tab switcher button to open the action menu. */
