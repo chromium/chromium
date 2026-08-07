@@ -142,6 +142,9 @@ try_.builder(
         ],
     ),
     free_space = builders.free_space.high,
+    experiments = {
+        "luci.buildbucket.run_in_turboci": 100,
+    },
 )
 
 try_.builder(

@@ -162,6 +162,9 @@ try_.builder(
         ],
     ),
     contact_team_email = "chrome-fuzzing-core@google.com",
+    experiments = {
+        "luci.buildbucket.run_in_turboci": 100,
+    },
 )
 
 try_.builder(

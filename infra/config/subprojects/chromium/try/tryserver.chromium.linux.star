@@ -74,6 +74,9 @@ try_.builder(
     cq_settings = try_.cq_settings(
         on_default_cq = True,
     ),
+    experiments = {
+        "luci.buildbucket.run_in_turboci": 2,
+    },
     properties = {
         "$build/binary_size": {
             "analyze_targets": [
