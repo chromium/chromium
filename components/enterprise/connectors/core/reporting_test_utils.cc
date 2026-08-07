@@ -99,7 +99,8 @@ void SetOnSecurityEventReporting(
 
 ::chrome::cros::reporting::proto::TriggeredRuleInfo MakeTriggeredRuleInfo(
     ::chrome::cros::reporting::proto::TriggeredRuleInfo::Action action,
-    bool has_watermark) {
+    bool has_watermark,
+    bool has_screenshot_protection) {
   ::chrome::cros::reporting::proto::TriggeredRuleInfo info;
   info.set_action(action);
   info.set_rule_id(123);
@@ -107,6 +108,9 @@ void SetOnSecurityEventReporting(
   info.set_url_category("test rule category");
   if (has_watermark) {
     info.set_has_watermarking(true);
+  }
+  if (has_screenshot_protection) {
+    info.set_has_screenshot_protection(true);
   }
   return info;
 }

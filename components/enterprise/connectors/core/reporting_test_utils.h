@@ -83,7 +83,8 @@ void SetOnSecurityEventReporting(
 // Helper function to create a TriggeredRuleInfo for tests.
 ::chrome::cros::reporting::proto::TriggeredRuleInfo MakeTriggeredRuleInfo(
     ::chrome::cros::reporting::proto::TriggeredRuleInfo::Action action,
-    bool has_watermark);
+    bool has_watermark,
+    bool has_screenshot_protection = false);
 
 // Helper function to create a ReferrerChainEntry referrer for tests.
 safe_browsing::ReferrerChainEntry MakeReferrerChainEntry();

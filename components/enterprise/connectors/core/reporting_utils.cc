@@ -431,6 +431,8 @@ proto::TriggeredRuleInfo ConvertMatchedUrlNavigationRuleToTriggeredRuleInfo(
   triggered_rule_info.set_action(ActionProtoFromVerdictType(verdict_type));
   triggered_rule_info.set_has_watermarking(
       navigation_rule.has_watermark_message());
+  triggered_rule_info.set_has_screenshot_protection(
+      navigation_rule.block_screenshot());
   return triggered_rule_info;
 }
 

@@ -525,6 +525,51 @@ TEST_F(ReportingEventRouterTest,
   run_loop.Run();
 }
 
+TEST_F(ReportingEventRouterTest,
+       TestOnUrlFilteringInterstitial_ScreenshotAudit) {
+  EnableEnhancedFieldsForSecOps();
+  test::SetOnSecurityEventReporting(
+      profile_->GetPrefs(), /*enabled=*/true,
+      /*enabled_event_names=*/{kKeyUrlFilteringInterstitialEvent},
+      /*enabled_opt_in_events=*/{});
+
+  test::EventReportValidatorBase validator(client_.get());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
+  chrome::cros::reporting::proto::UrlFilteringInterstitialEvent expected_event;
+
+  expected_event.set_url("https://filteredurl.com/");
+  expected_event.set_event_result(
+      chrome::cros::reporting::proto::EVENT_RESULT_ALLOWED);
+  expected_event.set_threat_type(
+      chrome::cros::reporting::proto::UrlFilteringInterstitialEvent::
+          UNKNOWN_INTERSTITIAL_THREAT_TYPE);
+  expected_event.set_profile_user_name(profile_->GetProfileUserName());
+  expected_event.set_profile_identifier(GetProfileIdentifier());
+  *expected_event.add_triggered_rule_info() = test::MakeTriggeredRuleInfo(
+      /*action=*/TriggeredRuleInfo::ACTION_UNKNOWN, /*has_watermark=*/false,
+      /*has_screenshot_protection=*/true);
+  *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
+  expected_event.set_web_app_signed_in_account(kFakeActiveUserEmail);
+
+  validator.ExpectUrlFilteringInterstitialEvent(expected_event);
+
+  safe_browsing::RTLookupResponse response;
+  auto* threat_info = response.add_threat_info();
+  auto* matched_url_navigation_rule =
+      threat_info->mutable_matched_url_navigation_rule();
+  matched_url_navigation_rule->set_rule_id("123");
+  matched_url_navigation_rule->set_rule_name("test rule name");
+  matched_url_navigation_rule->set_matched_url_category("test rule category");
+  matched_url_navigation_rule->set_block_screenshot(true);
+  ReferrerChain referrer_chain;
+  referrer_chain.Add(test::MakeReferrerChainEntry());
+
+  reporting_event_router_->OnUrlFilteringInterstitial(
+      GURL("https://filteredurl.com"), "", response, referrer_chain);
+  run_loop.Run();
+}
+
 TEST_F(ReportingEventRouterTest, TestInterstitialShownWarned) {
   EnableEnhancedFieldsForSecOps();
   test::SetOnSecurityEventReporting(

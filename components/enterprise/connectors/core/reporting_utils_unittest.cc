@@ -195,6 +195,7 @@ TEST(ReportingUtilsTest, GetUrlFilteringInterstitialEvent) {
   matched_url_navigation_rule->set_rule_id("123");
   matched_url_navigation_rule->set_rule_name("test rule name");
   matched_url_navigation_rule->set_matched_url_category("test rule category");
+  matched_url_navigation_rule->set_block_screenshot(true);
 
   auto event = GetUrlFilteringInterstitialEvent(
       /*url=*/GURL("https://filteredurl.com"),
@@ -221,6 +222,7 @@ TEST(ReportingUtilsTest, GetUrlFilteringInterstitialEvent) {
   ASSERT_EQ(triggered_rule_info.action(),
             chrome::cros::reporting::proto::TriggeredRuleInfo::BLOCK);
   ASSERT_FALSE(triggered_rule_info.has_watermarking());
+  ASSERT_TRUE(triggered_rule_info.has_screenshot_protection());
   ASSERT_EQ(event.profile_identifier(), "identifier");
   ASSERT_EQ(event.profile_user_name(), "profile_username");
   ASSERT_EQ(event.web_app_signed_in_account(), "active_user@example.com");
