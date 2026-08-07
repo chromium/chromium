@@ -20,8 +20,10 @@
 #include "chrome/browser/context_hub/storage/context_hub_backend.h"
 #include "chrome/browser/context_hub/tab_group_store/in_memory_tab_group_store.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-features.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
 #include "components/optimization_guide/proto/features/context_hub.pb.h"
+#include "components/page_content_annotations/content/mock_page_content_services.h"
 #include "components/personal_context/core/context_memory_error.h"
 #include "components/personal_context/core/mock_personal_context_service.h"
 #include "components/personal_context/proto/features/auto_todos.pb.h"
@@ -30,6 +32,9 @@
 #include "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
 #include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #include "components/tab_groups/tab_group_color.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -59,12 +64,28 @@ class MockServiceObserver : public ContextHubService::Observer {
               (override));
 };
 
+class MockPageContentExtractionService
+    : public page_content_annotations::MockPageContentExtractionService {
+ public:
+  MockPageContentExtractionService() = default;
+  ~MockPageContentExtractionService() override = default;
+
+  MOCK_METHOD(void,
+              GetExtractedPageContentAndEligibilityForPageAsync,
+              (content::Page&,
+               page_content_annotations::PageContentExtractionService::
+                   GetExtractedPageContentAndEligibilityCallback,
+               bool),
+              (override));
+};
+
 class ContextHubServiceTest : public testing::Test {
  public:
   ContextHubServiceTest()
       : service_(&mock_personal_context_service_,
                  &mock_remote_model_executor_,
                  &fake_tab_group_sync_service_,
+                 &mock_page_content_extraction_service_,
                  std::make_unique<InMemoryMemoryBank>(),
                  std::make_unique<InMemoryTabGroupStore>(),
                  /*context_hub_backend=*/nullptr,
@@ -81,11 +102,14 @@ class ContextHubServiceTest : public testing::Test {
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::test::TaskEnvironment task_environment_{
+  content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
+  TestingProfile profile_;
   personal_context::MockPersonalContextService mock_personal_context_service_;
   optimization_guide::MockRemoteModelExecutor mock_remote_model_executor_;
   tab_groups::FakeTabGroupSyncService fake_tab_group_sync_service_;
+  MockPageContentExtractionService mock_page_content_extraction_service_;
   ContextHubService service_;
 };
 
@@ -174,12 +198,142 @@ TEST_F(ContextHubServiceTest, GenerateFirstPartyAutoTodos_ParseError) {
   EXPECT_FALSE(future.Get());
 }
 
-TEST_F(ContextHubServiceTest, GenerateTabBasedTodos) {
-  std::vector<TabData> input_tabs = {
-      {1, "Tab 1", GURL("https://example1.com")}};
+TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_NoEligibleTabs) {
+  auto web_contents =
+      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+  // Tab was active recently (< 2 hours ago), so it is not eligible.
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastActiveTime(base::Time::Now() - base::Hours(1));
+  web_contents->WasHidden();
+
+  EXPECT_CALL(mock_page_content_extraction_service_,
+              GetExtractedPageContentAndEligibilityForPageAsync(_, _, _))
+      .Times(0);
 
   base::test::TestFuture<bool> future;
-  service_.GenerateTabBasedTodos(std::move(input_tabs), future.GetCallback());
+  service_.GenerateTabBasedTodos({web_contents->GetWeakPtr()},
+                                 future.GetCallback());
+
+  EXPECT_FALSE(future.Get());
+}
+
+TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_VisibleTabNotEligible) {
+  auto web_contents =
+      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+  // Tab was active 3 hours ago, but is currently visible.
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastActiveTime(base::Time::Now() - base::Hours(3));
+  web_contents->WasShown();
+
+  EXPECT_CALL(mock_page_content_extraction_service_,
+              GetExtractedPageContentAndEligibilityForPageAsync(_, _, _))
+      .Times(0);
+
+  base::test::TestFuture<bool> future;
+  service_.GenerateTabBasedTodos({web_contents->GetWeakPtr()},
+                                 future.GetCallback());
+
+  EXPECT_FALSE(future.Get());
+}
+
+TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_EligibleTabFetchesAPC) {
+  auto web_contents =
+      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+  // Tab was active 3 hours ago (> 2 hours threshold), so APC should be fetched.
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastActiveTime(base::Time::Now() - base::Hours(3));
+  web_contents->WasHidden();
+
+  EXPECT_CALL(mock_page_content_extraction_service_,
+              GetExtractedPageContentAndEligibilityForPageAsync(
+                  testing::Ref(web_contents->GetPrimaryPage()), _, true))
+      .WillOnce(RunOnceCallback<1>(std::nullopt));
+
+  base::test::TestFuture<bool> future;
+  service_.GenerateTabBasedTodos({web_contents->GetWeakPtr()},
+                                 future.GetCallback());
+
+  EXPECT_TRUE(future.Get());
+}
+
+TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_MultipleTabsFiltering) {
+  auto web_contents1 =
+      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+  auto web_contents2 =
+      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+  auto web_contents3 =
+      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+
+  // Tab 1: Active 3 hours ago (eligible)
+  // Tab 2: Active 30 mins ago (not eligible)
+  // Tab 3: Active 5 hours ago (eligible)
+  content::WebContentsTester::For(web_contents1.get())
+      ->SetLastActiveTime(base::Time::Now() - base::Hours(3));
+  web_contents1->WasHidden();
+  content::WebContentsTester::For(web_contents2.get())
+      ->SetLastActiveTime(base::Time::Now() - base::Minutes(30));
+  web_contents2->WasHidden();
+  content::WebContentsTester::For(web_contents3.get())
+      ->SetLastActiveTime(base::Time::Now() - base::Hours(5));
+  web_contents3->WasHidden();
+
+  EXPECT_CALL(mock_page_content_extraction_service_,
+              GetExtractedPageContentAndEligibilityForPageAsync(
+                  testing::Ref(web_contents1->GetPrimaryPage()), _, true))
+      .WillOnce(RunOnceCallback<1>(std::nullopt));
+  EXPECT_CALL(mock_page_content_extraction_service_,
+              GetExtractedPageContentAndEligibilityForPageAsync(
+                  testing::Ref(web_contents2->GetPrimaryPage()), _, _))
+      .Times(0);
+  EXPECT_CALL(mock_page_content_extraction_service_,
+              GetExtractedPageContentAndEligibilityForPageAsync(
+                  testing::Ref(web_contents3->GetPrimaryPage()), _, true))
+      .WillOnce(RunOnceCallback<1>(std::nullopt));
+
+  base::test::TestFuture<bool> future;
+  service_.GenerateTabBasedTodos(
+      {web_contents1->GetWeakPtr(), web_contents2->GetWeakPtr(),
+       web_contents3->GetWeakPtr()},
+      future.GetCallback());
+
+  EXPECT_TRUE(future.Get());
+}
+
+TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_ReentrancyBlocked) {
+  auto web_contents =
+      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastActiveTime(base::Time::Now() - base::Hours(3));
+  web_contents->WasHidden();
+
+  page_content_annotations::PageContentExtractionService::
+      GetExtractedPageContentAndEligibilityCallback saved_callback;
+  EXPECT_CALL(mock_page_content_extraction_service_,
+              GetExtractedPageContentAndEligibilityForPageAsync(
+                  testing::Ref(web_contents->GetPrimaryPage()), _, true))
+      .WillOnce([&](content::Page&, auto cb, bool) {
+        saved_callback = std::move(cb);
+      });
+
+  base::test::TestFuture<bool> future1;
+  service_.GenerateTabBasedTodos({web_contents->GetWeakPtr()},
+                                 future1.GetCallback());
+
+  // Second call while first is in progress should immediately return false.
+  base::test::TestFuture<bool> future2;
+  service_.GenerateTabBasedTodos({web_contents->GetWeakPtr()},
+                                 future2.GetCallback());
+  EXPECT_FALSE(future2.Get());
+
+  std::move(saved_callback).Run(std::nullopt);
+  EXPECT_TRUE(future1.Get());
+}
+
+TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_NullWebContents) {
+  // Tab is null weak pointer.
+  base::test::TestFuture<bool> future;
+  service_.GenerateTabBasedTodos({base::WeakPtr<content::WebContents>()},
+                                 future.GetCallback());
 
   EXPECT_FALSE(future.Get());
 }
@@ -403,7 +557,8 @@ TEST_F(ContextHubServiceTest, ChatHistory_LRUEviction) {
       {{features::kMaxTabGroupChatHistoryTurns.name, "3"}});
   ContextHubService service(
       &mock_personal_context_service_, &mock_remote_model_executor_,
-      &fake_tab_group_sync_service_, std::make_unique<InMemoryMemoryBank>(),
+      &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
+      std::make_unique<InMemoryMemoryBank>(),
       std::make_unique<InMemoryTabGroupStore>(),
       /*context_hub_backend=*/nullptr,
       std::make_unique<InMemoryAutoTodosStore>());
@@ -800,7 +955,8 @@ TEST_F(ContextHubServiceTest, ConfirmAllTabGroups_Success) {
 TEST_F(ContextHubServiceTest, TabGroupStore_Null) {
   ContextHubService service_null_store(
       &mock_personal_context_service_, &mock_remote_model_executor_,
-      &fake_tab_group_sync_service_, std::make_unique<InMemoryMemoryBank>(),
+      &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
+      std::make_unique<InMemoryMemoryBank>(),
       /*tab_group_store=*/nullptr,
       /*context_hub_backend=*/nullptr,
       std::make_unique<InMemoryAutoTodosStore>());

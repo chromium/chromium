@@ -16,6 +16,12 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "auto_todos_timeout_seconds",
                    base::Seconds(30));
 
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kTabBasedTodosInactivityThreshold,
+                   &browser::context_hub::mojom::kAutoTodos,
+                   "tab_based_todos_inactivity_threshold",
+                   base::Hours(1));
+
 BASE_FEATURE_PARAM(size_t,
                    kMaxTodoFeedbackCacheSize,
                    &browser::context_hub::mojom::kAutoTodos,

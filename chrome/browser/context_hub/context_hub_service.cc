@@ -7,7 +7,9 @@
 #include <algorithm>
 #include <string>
 #include <string_view>
+#include <utility>
 
+#include "base/barrier_callback.h"
 #include "base/check_deref.h"
 #include "base/containers/adapters.h"
 #include "base/containers/flat_map.h"
@@ -30,11 +32,16 @@
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/context_hub.pb.h"
+#include "components/page_content_annotations/content/page_content_extraction_service.h"
+#include "components/page_content_annotations/core/page_content_extraction_types.h"
 #include "components/personal_context/core/personal_context_service.h"
 #include "components/personal_context/proto/features/auto_todos.pb.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/page.h"
+#include "content/public/browser/web_contents.h"
 
 namespace context_hub {
 
@@ -65,6 +72,19 @@ optimization_guide::proto::MemoryBankEntry ToMemoryBankEntryProto(
   return mb_proto;
 }
 
+using TabContextBarrierCallback = base::RepeatingCallback<void(
+    std::pair<TabData, std::optional<optimization_guide::proto::PageContext>>)>;
+
+void OnPageContentExtracted(
+    TabContextBarrierCallback barrier_callback,
+    base::WeakPtr<content::WebContents> /*web_contents*/,
+    std::optional<page_content_annotations::ExtractedPageContentResult>
+    /*extracted_result*/) {
+  // TODO(crbug.com/543605762): Extract page content and add to barrier
+  // callback to queue up for MES.
+  barrier_callback.Run(std::make_pair(TabData(), std::nullopt));
+}
+
 }  // namespace
 
 ContextHubService::ContextHubService(
@@ -72,6 +92,8 @@ ContextHubService::ContextHubService(
     optimization_guide::RemoteModelExecutor*
         optimization_guide_remote_model_executor,
     tab_groups::TabGroupSyncService* tab_group_sync_service,
+    page_content_annotations::PageContentExtractionService*
+        page_content_extraction_service,
     std::unique_ptr<MemoryBank> memory_bank,
     std::unique_ptr<TabGroupStore> tab_group_store,
     std::unique_ptr<ContextHubBackend> context_hub_backend,
@@ -80,6 +102,8 @@ ContextHubService::ContextHubService(
       optimization_guide_remote_model_executor_(
           CHECK_DEREF(optimization_guide_remote_model_executor)),
       tab_group_sync_service_(CHECK_DEREF(tab_group_sync_service)),
+      page_content_extraction_service_(
+          CHECK_DEREF(page_content_extraction_service)),
       tab_group_chat_history_cache_(
           features::kMaxTabGroupChatHistoryTurns.Get()),
       todo_feedback_cache_(features::kMaxTodoFeedbackCacheSize.Get()),
@@ -96,6 +120,9 @@ ContextHubService::ContextHubService(
 ContextHubService::~ContextHubService() {
   if (auto_todos_store_) {
     auto_todos_store_->RemoveObserver(this);
+  }
+  if (pending_tab_todos_callback_) {
+    std::move(pending_tab_todos_callback_).Run(false);
   }
 }
 
@@ -131,13 +158,83 @@ void ContextHubService::GenerateFirstPartyAutoTodos(
 }
 
 void ContextHubService::GenerateTabBasedTodos(
-    std::vector<TabData> tabs,
+    std::vector<base::WeakPtr<content::WebContents>> tabs,
     AutoTodosStore::OperationCallback callback) {
-  // TODO(crbug.com/539697847): Implement call to MES to generate tab-based
-  // todos with fetched APC.
-  if (callback) {
-    std::move(callback).Run(false);
+  if (!auto_todos_store_ || pending_tab_todos_callback_) {
+    if (callback) {
+      std::move(callback).Run(false);
+    }
+    return;
   }
+
+  std::vector<base::WeakPtr<content::WebContents>> eligible_tabs;
+  for (auto& tab : tabs) {
+    if (!tab) {
+      continue;
+    }
+    // Only consider tabs that are not actively visible.
+    if (tab->GetVisibility() == content::Visibility::VISIBLE) {
+      continue;
+    }
+    // Only consider tabs that haven't been active in the last
+    // kTabBasedTodosInactivityThreshold.
+    // TODO(crbug.com/543502228): Also include tabs that the user may have
+    // clicked but were not in the foreground for long enough to be considered
+    // used.
+    if (!tab->GetLastActiveTime().is_null() &&
+        (base::Time::Now() - tab->GetLastActiveTime()) >
+            features::kTabBasedTodosInactivityThreshold.Get()) {
+      eligible_tabs.push_back(std::move(tab));
+    }
+  }
+
+  if (eligible_tabs.empty()) {
+    if (callback) {
+      std::move(callback).Run(false);
+    }
+    return;
+  }
+
+  // Store the callback to be invoked when page context extraction and model
+  // execution are complete.
+  pending_tab_todos_callback_ = std::move(callback);
+
+  // Collects the asynchronous page content extraction results across all
+  // eligible tabs. Once all tab extractions have completed, `barrier_callback`
+  // aggregates the results and invokes `OnTabContextsFetched`.
+  TabContextBarrierCallback barrier_callback = base::BarrierCallback<std::pair<
+      TabData, std::optional<optimization_guide::proto::PageContext>>>(
+      eligible_tabs.size(),
+      base::BindOnce(&ContextHubService::OnTabContextsFetched,
+                     weak_factory_.GetWeakPtr()));
+
+  for (auto& tab : eligible_tabs) {
+    // See if the tab needs to be loaded to get its WebContents to extract the
+    // page content from.
+    tab->GetController().LoadIfNecessary();
+
+    // Get the page content from the primary page.
+    content::Page& primary_page = tab->GetPrimaryPage();
+    page_content_extraction_service_
+        ->GetExtractedPageContentAndEligibilityForPageAsync(
+            primary_page,
+            base::BindOnce(&OnPageContentExtracted, barrier_callback,
+                           std::move(tab)),
+            /*trigger_if_not_cached=*/true);
+  }
+}
+
+void ContextHubService::OnTabContextsFetched(
+    std::vector<
+        std::pair<TabData,
+                  std::optional<optimization_guide::proto::PageContext>>>
+        tab_contexts) {
+  if (!pending_tab_todos_callback_) {
+    return;
+  }
+  // TODO(crbug.com/543605762): Send tab contexts to Model Execution Service
+  // to generate tab-based todos.
+  std::move(pending_tab_todos_callback_).Run(true);
 }
 
 void ContextHubService::OnFirstPartyAutoTodosFetched(

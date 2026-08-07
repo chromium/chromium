@@ -13,8 +13,10 @@
 #include "chrome/browser/context_hub/memory_bank/memory_bank_entry.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -45,6 +47,16 @@ class ContextHubServiceFactoryTest : public testing::Test {
             base::BindRepeating([](content::BrowserContext* context)
                                     -> std::unique_ptr<KeyedService> {
               return std::make_unique<MockOptimizationGuideKeyedService>();
+            }));
+    page_content_annotations::PageContentExtractionServiceFactory::GetInstance()
+        ->SetTestingFactoryAndUse(
+            browser_context,
+            base::BindRepeating([](content::BrowserContext* context)
+                                    -> std::unique_ptr<KeyedService> {
+              return std::make_unique<
+                  page_content_annotations::PageContentExtractionService>(
+                  /*os_crypt_async=*/nullptr, context->GetPath(),
+                  /*tracker=*/nullptr);
             }));
   }
 

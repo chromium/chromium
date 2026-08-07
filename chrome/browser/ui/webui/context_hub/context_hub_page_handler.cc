@@ -324,8 +324,14 @@ void ContextHubPageHandler::GenerateTabBasedTodos(
     return;
   }
 
-  service->GenerateTabBasedTodos(
-      GetOpenTabs(tab_provider_.get(), web_contents_), std::move(callback));
+  std::vector<base::WeakPtr<content::WebContents>> tab_contents;
+  for (content::WebContents* wc : tab_provider_->GetTabs(web_contents_)) {
+    if (wc) {
+      tab_contents.push_back(wc->GetWeakPtr());
+    }
+  }
+
+  service->GenerateTabBasedTodos(std::move(tab_contents), std::move(callback));
 }
 
 void ContextHubPageHandler::GetTabs(GetTabsCallback callback) {
