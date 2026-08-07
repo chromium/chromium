@@ -519,6 +519,7 @@ BASE_FEATURE_PARAM(double, kGlassTintOpacityForLightMode, &kGlassFrame, -1.0);
 BASE_FEATURE_PARAM(double, kGlassTintOpacityForDarkMode, &kGlassFrame, -1.0);
 BASE_FEATURE_PARAM(double, kGlassExpandOnHoverOpacity, &kGlassFrame, 0.95);
 BASE_FEATURE_PARAM(double, kGlassExpandOnHoverBlurRadius, &kGlassFrame, 5.0);
+BASE_FEATURE_PARAM(bool, kGlassRoundContentCorner, &kGlassFrame, false);
 
 BASE_FEATURE(kRoundedIcons, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWebUIRoundedIcons, base::FEATURE_DISABLED_BY_DEFAULT);

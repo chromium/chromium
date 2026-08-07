@@ -529,6 +529,13 @@ BrowserViewTabbedLayoutImpl::CalculateVerticalTabStripAnimation() {
   animation.bottom_corner = *controller->GetCurrentValue(
       TabStripAnimations::kVerticalTabStrip, TabStripAnimations::kBottomCorner);
 
+  // If the bottom corner is being suppressed for performance reasons, prevent
+  // an exterior corner.
+  if (in_glass_mode() && !is_fullscreen(layout_data_->window_state) &&
+      !features::kGlassRoundContentCorner.Get()) {
+    animation.bottom_corner = std::min(0.0, animation.bottom_corner);
+  }
+
   return animation;
 }
 
@@ -1166,7 +1173,8 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
   if (in_glass_mode()) {
     gfx::RoundedCornersF content_corners;
     if (layout_data_->tab_strip_type == TabStripType::kVertical &&
-        !is_fullscreen(layout_data_->window_state)) {
+        !is_fullscreen(layout_data_->window_state) &&
+        features::kGlassRoundContentCorner.Get()) {
       // Note that this will set a lower leading corner on the multi contents
       // view even if there's a shadow box, but since the curve is effectively
       // the same this will not produce a visual bug.
