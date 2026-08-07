@@ -161,10 +161,9 @@ class FetchDataLoaderAsArrayBuffer final : public FetchDataLoader,
         return;
       if (result == BytesConsumer::Result::kOk) {
         if (!buffer.empty()) {
-          bool ok = Append(buffer);
-          if (!ok) {
-            [[maybe_unused]] auto unused = consumer_->EndRead(0);
-            consumer_->Cancel();
+          if (!Append(buffer)) {
+            std::ignore = consumer_->EndRead(0);
+            Cancel();
             client_->DidFetchDataLoadFailed();
             return;
           }
@@ -203,7 +202,7 @@ class FetchDataLoaderAsArrayBuffer final : public FetchDataLoader,
 
  private:
   // Appending empty data is not allowed. Returns false upon buffer overflow.
-  bool Append(base::span<const char> data) {
+  [[nodiscard]] bool Append(base::span<const char> data) {
     DCHECK(!data.empty());
     buffer_->Append(data);
     if (buffer_->size() >
@@ -484,7 +483,7 @@ class FetchDataLoaderAsString final : public FetchDataLoader,
         if (!buffer.empty()) {
           if (!Append(decoder_->Decode(base::as_bytes(buffer)))) {
             std::ignore = consumer_->EndRead(buffer.size());
-            consumer_->Cancel();
+            Cancel();
             client_->DidFetchDataLoadFailed();
             return;
           }
@@ -498,7 +497,7 @@ class FetchDataLoaderAsString final : public FetchDataLoader,
           NOTREACHED();
         case BytesConsumer::Result::kDone:
           if (!Append(decoder_->Flush())) {
-            consumer_->Cancel();
+            Cancel();
             client_->DidFetchDataLoadFailed();
             return;
           }
@@ -616,7 +615,7 @@ class FetchDataLoaderAsDataPipe final : public FetchDataLoader,
       OnStateChange();
   }
 
-  void OnPeerClosed(MojoResult result, const mojo::HandleSignalsState& state) {
+  void OnPeerClosed(MojoResult, const mojo::HandleSignalsState&) {
     StopInternal();
     client_->DidFetchDataLoadFailed();
   }
@@ -719,8 +718,8 @@ FetchDataLoader* FetchDataLoader::CreateLoaderAsFailure() {
 }
 
 FetchDataLoader* FetchDataLoader::CreateLoaderAsFormData(
-    const String& multipartBoundary) {
-  return MakeGarbageCollected<FetchDataLoaderAsFormData>(multipartBoundary);
+    const String& multipart_boundary) {
+  return MakeGarbageCollected<FetchDataLoaderAsFormData>(multipart_boundary);
 }
 
 FetchDataLoader* FetchDataLoader::CreateLoaderAsString(
