@@ -2410,6 +2410,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         mSideUiStateProviderSupplier.onAvailable(
                 provider -> maybeInitializeVerticalTabs(currentlySelectedProfile));
+        mSideUiStateProviderSupplier.onAvailable(
+                provider ->
+                        assumeNonNull(mHistoryNavigationCoordinator)
+                                .setSideUiStateProvider(provider));
         mSideUiStateProviderSupplier.set(mSideUiCoordinator);
         if (mTopControlsLockCoordinator != null) {
             mTopControlsLockCoordinator.setSideUiStateProvider(mSideUiCoordinator);

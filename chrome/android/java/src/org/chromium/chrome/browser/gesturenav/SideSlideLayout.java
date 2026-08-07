@@ -119,6 +119,9 @@ public class SideSlideLayout extends ViewGroup {
     // True while swiped to a distance where, if released, the navigation would be triggered.
     private boolean mWillNavigate;
 
+    private int mLeftSideUiWidth;
+    private int mRightSideUiWidth;
+
     private final AnimationListener mNavigateListener =
             new EmptyAnimationListener() {
                 @Override
@@ -267,11 +270,16 @@ public class SideSlideLayout extends ViewGroup {
                 MeasureSpec.makeMeasureSpec(mCircleWidth, MeasureSpec.EXACTLY));
     }
 
+    public void setSideUiWidths(int leftWidth, int rightWidth) {
+        mLeftSideUiWidth = leftWidth;
+        mRightSideUiWidth = rightWidth;
+    }
+
     private void initializeOffset() {
         mOriginalOffset =
                 mInitiatingEdge == BackGestureEventSwipeEdge.RIGHT
-                        ? ((View) getParent()).getWidth()
-                        : -mArrowViewWidth;
+                        ? ((View) getParent()).getWidth() - mRightSideUiWidth
+                        : mLeftSideUiWidth - mArrowViewWidth;
         mCurrentTargetOffset = mOriginalOffset;
     }
 
