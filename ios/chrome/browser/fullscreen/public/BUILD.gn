@@ -10,11 +10,26 @@ source_set("metrics") {
   deps = [ "//base" ]
 }
 
+source_set("scoped_force_fullscreen") {
+  sources = [
+    "scoped_force_fullscreen.h",
+    "scoped_force_fullscreen.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/public/commands",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
-  sources = [ "fullscreen_metrics_unittest.mm" ]
+  sources = [
+    "fullscreen_metrics_unittest.mm",
+    "scoped_force_fullscreen_unittest.mm",
+  ]
   deps = [
     ":metrics",
+    ":scoped_force_fullscreen",
     "//base/test:test_support",
     "//ios/chrome/browser/fullscreen/ui_bundled:internal",
     "//ios/chrome/browser/fullscreen/ui_bundled:ui",
@@ -22,6 +37,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen",
     "//ios/chrome/browser/web/model/web_view_proxy",
     "//ios/web/common",
