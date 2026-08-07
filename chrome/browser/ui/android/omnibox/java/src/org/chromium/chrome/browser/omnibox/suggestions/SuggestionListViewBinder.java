@@ -18,8 +18,6 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
-import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -149,7 +147,8 @@ class SuggestionListViewBinder
             // When the suggestions list is installed for the first time, it may already contain
             // elements. Be sure to capture and reflect this fact appropriately.
             updateContainerVisibility(model, view);
-        } else if (SuggestionListProperties.APPLY_MARGIN_FOR_LEFT_SIDE_BAR.equals(propertyKey)) {
+        } else if (SuggestionListProperties.APPLY_MARGIN_FOR_LEFT_SIDE_BAR.equals(propertyKey)
+                || SuggestionListProperties.LEFT_SIDE_BAR_MARGIN_PX.equals(propertyKey)) {
             updateContainerMargin(model, view);
         }
     }
@@ -214,15 +213,9 @@ class SuggestionListViewBinder
                             ViewGroup.LayoutParams.MATCH_PARENT,
                             ViewGroup.LayoutParams.WRAP_CONTENT);
         }
-        // TODO(crbug.com/521986417): Consider plumbing SideUiStateProvider to get the
-        // Vertical Tabs panel width. Using the constant works for now since the width is
-        // fixed in MVP.
         boolean applyMargin = model.get(SuggestionListProperties.APPLY_MARGIN_FOR_LEFT_SIDE_BAR);
-        int leftMargin =
-                applyMargin
-                        ? ViewUtils.dpToPx(
-                                container.getContext(), VerticalTabUtils.SIDE_UI_CONTAINER_WIDTH_DP)
-                        : 0;
+        int marginPx = model.get(SuggestionListProperties.LEFT_SIDE_BAR_MARGIN_PX);
+        int leftMargin = applyMargin ? marginPx : 0;
         if (layoutParams.leftMargin != leftMargin) {
             layoutParams.leftMargin = leftMargin;
             container.setLayoutParams(layoutParams);

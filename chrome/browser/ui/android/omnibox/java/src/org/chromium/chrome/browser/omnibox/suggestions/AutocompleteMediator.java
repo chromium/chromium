@@ -65,6 +65,10 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
+import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
+import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
@@ -130,7 +134,8 @@ class AutocompleteMediator
                 TopResumedActivityChangedObserver,
                 PauseResumeWithNativeObserver,
                 FuseboxAttachmentChangeListener,
-                SuggestionHost {
+                SuggestionHost,
+                SideUiObserver {
 
     // Delay triggering the omnibox results upon key press to allow the location bar to repaint
     // with the new characters.
@@ -219,6 +224,8 @@ class AutocompleteMediator
     // Observer watching for changes to the visual state of the omnibox suggestions.
     private @Nullable OmniboxSuggestionsVisualStateObserver mOmniboxSuggestionsVisualStateObserver;
     private final FuseboxCoordinator mFuseboxCoordinator;
+    private @Nullable SideUiStateProvider mSideUiStateProvider;
+    private int mLeftSideUiMarginPx = -1;
 
     AutocompleteMediator(
             Context context,
@@ -318,6 +325,10 @@ class AutocompleteMediator
         mDataProvider.getToolbarPositionSupplier().removeObserver(mToolbarPositionChangedCallback);
 
         mFuseboxCoordinator.getFuseboxStateSupplier().removeObserver(mOnFuseboxStateChanged);
+        if (mSideUiStateProvider != null) {
+            mSideUiStateProvider.removeObserver(this);
+            mSideUiStateProvider = null;
+        }
         mHandler.removeCallbacksAndMessages(null);
         mDropdownViewInfoListBuilder.destroy();
         mDropdownViewInfoListManager.destroy();
@@ -1846,12 +1857,34 @@ class AutocompleteMediator
                                 && VerticalTabUtils.isVerticalTabsEnabled(mContext);
                 mListPropertyModel.set(
                         SuggestionListProperties.APPLY_MARGIN_FOR_LEFT_SIDE_BAR, applyMargin);
+                if (mSideUiStateProvider != null) {
+                    onSideUiSpecsChanged(mSideUiStateProvider.getCurrentSideUiSpecs());
+                } else {
+                    setSideUiStateProvider(mUiOverrides.getSideUiStateProvider());
+                }
             }
             mListPropertyModel.set(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE, isActive);
             mIgnoreOmniboxItemSelection |= isActive;
             if (mOmniboxSuggestionsVisualStateObserver != null) {
                 mOmniboxSuggestionsVisualStateObserver.onOmniboxSessionStateChange(isActive);
             }
+        }
+    }
+
+    private void setSideUiStateProvider(@Nullable SideUiStateProvider provider) {
+        if (provider == null) return;
+
+        mSideUiStateProvider = provider;
+        provider.addObserver(this);
+        onSideUiSpecsChanged(provider.getCurrentSideUiSpecs());
+    }
+
+    @Override
+    public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs) {
+        int leftMarginPx = sideUiSpecs.getWidth(AnchorSide.LEFT);
+        if (mLeftSideUiMarginPx != leftMarginPx) {
+            mLeftSideUiMarginPx = leftMarginPx;
+            mListPropertyModel.set(SuggestionListProperties.LEFT_SIDE_BAR_MARGIN_PX, leftMarginPx);
         }
     }
 

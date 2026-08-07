@@ -110,6 +110,9 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
     /** Whether to apply standard vertical spacing to the dropdown. */
     WritableBooleanPropertyKey APPLY_VERTICAL_PADDING = new WritableBooleanPropertyKey();
 
+    /** The width of the left side bar margin in px. */
+    WritableIntPropertyKey LEFT_SIDE_BAR_MARGIN_PX = new WritableIntPropertyKey();
+
     PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 // keep-sorted start
@@ -129,6 +132,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
                 FUSEBOX_LAYOUT_MODE,
                 GESTURE_OBSERVER,
                 IS_LARGE_SCREEN,
+                LEFT_SIDE_BAR_MARGIN_PX,
                 LIST_IS_FINAL,
                 NAVIGATION_LISTENER,
                 OMNIBOX_SESSION_ACTIVE,

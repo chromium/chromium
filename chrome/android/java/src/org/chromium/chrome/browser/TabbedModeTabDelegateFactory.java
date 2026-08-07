@@ -93,6 +93,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
     private @Nullable NativePageFactory mNativePageFactory;
     private final BackPressManager mBackPressManager;
     private final RecentlyClosedEntriesManager mRecentlyClosedEntriesManager;
+    private final Supplier<Integer> mLeftSideUiWidthSupplier;
 
     public TabbedModeTabDelegateFactory(
             Activity activity,
@@ -124,7 +125,8 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
             StartupMetricsTracker startupMetricsTracker,
             @Nullable ExclusiveAccessManager exclusiveAccessManager,
             BackPressManager backPressManager,
-            RecentlyClosedEntriesManager recentlyClosedEntriesManager) {
+            RecentlyClosedEntriesManager recentlyClosedEntriesManager,
+            Supplier<Integer> leftSideUiWidthSupplier) {
         mActivity = activity;
         mAppBrowserControlsVisibilityDelegate = appBrowserControlsVisibilityDelegate;
         mShareDelegateSupplier = shareDelegateSupplier;
@@ -155,6 +157,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
         mExclusiveAccessManager = exclusiveAccessManager;
         mBackPressManager = backPressManager;
         mRecentlyClosedEntriesManager = recentlyClosedEntriesManager;
+        mLeftSideUiWidthSupplier = leftSideUiWidthSupplier;
     }
 
     @Override
@@ -193,7 +196,8 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
                         () -> mBottomSheetController),
                 mShareDelegateSupplier,
                 ChromeContextMenuPopulator.ContextMenuMode.NORMAL,
-                /* customContentActions= */ List.of());
+                /* customContentActions= */ List.of(),
+                mLeftSideUiWidthSupplier);
     }
 
     @Override

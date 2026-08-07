@@ -294,6 +294,8 @@ public class ToolbarManager
                 TintObserver,
                 MenuButtonDelegate,
                 TabObscuringHandler.Observer {
+    private final LocationBarEmbedderUiOverrides mLocationBarEmbedderUiOverrides =
+            new LocationBarEmbedderUiOverrides().setIsMainBrowserOmnibox();
     private final IncognitoStateProvider mIncognitoStateProvider;
     private final ToolbarThemeColorProvider mToolbarThemeColorProvider;
     private final @Nullable ToolbarThemeColorProvider mAdjustedToolbarThemeColorProvider;
@@ -1342,7 +1344,7 @@ public class ToolbarManager
                             tabModelSelectorSupplier,
                             topInsetProvider,
                             mToolbarLayout,
-                            new LocationBarEmbedderUiOverrides().setIsMainBrowserOmnibox(),
+                            mLocationBarEmbedderUiOverrides,
                             mActivity.findViewById(R.id.coordinator),
                             bottomWindowPaddingSupplier,
                             onLongClickListener,
@@ -1875,7 +1877,11 @@ public class ToolbarManager
      */
     public void setSideUiStateProviderSupplier(
             OneshotSupplier<SideUiStateProvider> sideUiStateProviderSupplier) {
-        sideUiStateProviderSupplier.onAvailable(this::setSideUiStateProvider);
+        sideUiStateProviderSupplier.onAvailable(
+                sideUiStateProvider -> {
+                    setSideUiStateProvider(sideUiStateProvider);
+                    mLocationBarEmbedderUiOverrides.setSideUiStateProvider(sideUiStateProvider);
+                });
     }
 
     private void setSideUiStateProvider(SideUiStateProvider sideUiStateProvider) {
