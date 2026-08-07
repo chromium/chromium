@@ -4,17 +4,19 @@
 
 #include "device/vr/openxr/android/openxr_hit_test_manager_android.h"
 
+#include <array>
 #include <vector>
 
+#include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
-#include "device/vr/openxr/android/openxr_hit_test_manager_android.h"
 #include "device/vr/openxr/android/openxr_plane_manager_android.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace {
-constexpr uint32_t kMaxHitTestResults = 2;
+constexpr size_t kMaxHitTestResults = 2;
 }  // namespace
 
 namespace device {
@@ -62,21 +64,23 @@ std::vector<mojom::XRHitResultPtr> OpenXrHitTestManagerAndroid::RequestHitTest(
   raycast_info.space = mojo_space_;
   raycast_info.time = predicted_display_time_;
 
-  XrRaycastHitResultANDROID xr_results_array[kMaxHitTestResults];
+  std::array<XrRaycastHitResultANDROID, kMaxHitTestResults> xr_results_array;
   XrRaycastHitResultsANDROID xr_hit_results = {
       XR_TYPE_RAYCAST_HIT_RESULTS_ANDROID};
-  xr_hit_results.resultsCapacityInput = kMaxHitTestResults;
-  xr_hit_results.results = xr_results_array;
+  xr_hit_results.resultsCapacityInput = xr_results_array.size();
+  xr_hit_results.results = xr_results_array.data();
 
   RETURN_VAL_IF_XR_FAILED(
       extension_helper_->ExtensionMethods().xrRaycastANDROID(
           session_, &raycast_info, &xr_hit_results),
       {});
 
-  // SAFETY: The length of xr_results_array is guaranteed by the successful call
-  // to xrRaycastAndroid to have `resultsCountOutput` elements.
-  UNSAFE_BUFFERS(auto xr_results = base::span(
-                     xr_results_array, xr_hit_results.resultsCountOutput));
+  // The successful call guarantees that `resultsCountOutput` valid results were
+  // populated by the runtime. Subspan the array to easily and safely iterate
+  // over only the valid returned results.
+  CHECK_LE(xr_hit_results.resultsCountOutput, xr_results_array.size());
+  auto xr_results =
+      base::span(xr_results_array).first(xr_hit_results.resultsCountOutput);
 
   // We receive the hit test results back in increasing distance from the item
   // that they hit, with the Y-direction matching the normal of the plane, and
