@@ -1586,6 +1586,10 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::OnLinksEnabledToggled)
       .SetMethod("onTranslationRequested",
                  &ReadAnythingAppController::OnTranslationRequested)
+      .SetMethod("requestShouldShowLineFocusNewBadge",
+                 &ReadAnythingAppController::RequestShouldShowLineFocusNewBadge)
+      .SetMethod("onLineFocusFeatureUsed",
+                 &ReadAnythingAppController::OnLineFocusFeatureUsed)
       .SetMethod("onImagesEnabledToggled",
                  &ReadAnythingAppController::OnImagesEnabledToggled)
       .SetMethod("onScroll", &ReadAnythingAppController::OnScroll)
@@ -2290,6 +2294,22 @@ bool ReadAnythingAppController::IsLineFocusEnabled() const {
   return features::IsReadAnythingLineFocusEnabled();
 }
 
+void ReadAnythingAppController::RequestShouldShowLineFocusNewBadge() {
+  page_handler_->ShouldShowLineFocusNewBadge(base::BindOnce(
+      &ReadAnythingAppController::OnShouldShowLineFocusNewBadgeResponse,
+      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ReadAnythingAppController::OnShouldShowLineFocusNewBadgeResponse(
+    bool show) {
+  ExecuteJavaScript(
+      "chrome.readingMode.onShouldShowLineFocusNewBadgeResponse(" +
+      base::ToString(show) + ")");
+}
+
+void ReadAnythingAppController::OnLineFocusFeatureUsed() {
+  page_handler_->OnLineFocusFeatureUsed();
+}
 
 bool ReadAnythingAppController::IsGoogleDocs() const {
   return model_.IsDocs();

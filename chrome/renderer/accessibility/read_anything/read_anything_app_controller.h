@@ -238,6 +238,13 @@ class ReadAnythingAppController
   int HighlightGranularity() const;
   int LastNonDisabledLineFocus() const;
   bool IsLineFocusOn() const;
+  // The following 3 functions are for handling the auto-disappearing logic
+  // for the line focus new badge.
+  // TODO(crbug.com/543113387): Remove these when the WebUI new badge supports
+  // auto-disappearing logic itself.
+  void RequestShouldShowLineFocusNewBadge();
+  void OnShouldShowLineFocusNewBadgeResponse(bool show);
+  void OnLineFocusFeatureUsed();
   bool IsHighlightOn();
   int StandardLineSpacing() const;
   int LooseLineSpacing() const;

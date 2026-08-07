@@ -7,6 +7,7 @@ import '//resources/cr_elements/cr_link_row/cr_link_row.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
+import '//resources/cr_components/help_bubble/new_badge.js';
 
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderLitElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
@@ -112,6 +113,7 @@ const MENU_ITEM_DATA: Record<SettingsOption, SettingsItem> = {
         'read-anything:line-focus-old',
     title: 'lineFocusLabel',
     itemType: SettingsItemType.MENU,
+    showBadge: false,
   },
   [SettingsOption.PINNED_TO_TOOLBAR]: {
     id: SettingsOption.PINNED_TO_TOOLBAR,
@@ -189,6 +191,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       isImmersiveMode: {type: Boolean},
       isReadAnythingPinned: {type: Boolean},
       isSpeechActive: {type: Boolean},
+      showLineFocusNewBadge: {type: Boolean},
       settingsPrefs: {type: Object},
       currentOpenId_: {
         state: true,
@@ -201,6 +204,9 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   accessor isImmersiveMode: boolean = false;
   accessor isReadAnythingPinned: boolean = false;
   accessor isSpeechActive: boolean = false;
+  // TODO(crbug.com/543113387): Remove this when the WebUI new badge supports
+  // auto-disappearing logic itself.
+  accessor showLineFocusNewBadge: boolean = false;
   accessor settingsPrefs: SettingsPrefs = DEFAULT_SETTINGS;
 
   protected accessor options_: SettingsItem[] = [];
@@ -233,7 +239,8 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     if (changedProperties.has('settingsPrefs') ||
         changedProperties.has('isImmersiveMode') ||
         changedProperties.has('isReadAnythingPinned') ||
-        changedProperties.has('isSpeechActive')) {
+        changedProperties.has('isSpeechActive') ||
+        changedProperties.has('showLineFocusNewBadge')) {
       this.initializeMenuOptions_();
     }
   }
@@ -328,6 +335,8 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
         disabled = this.isSpeechActive;
       }
 
+      const showBadge =
+          (id === SettingsOption.LINE_FOCUS) && this.showLineFocusNewBadge;
       if (id === SettingsOption.PINNED_TO_TOOLBAR) {
         checked = this.isReadAnythingPinned;
         ariaLabel = this.getPinItemLabels();
@@ -340,6 +349,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
         ariaLabel,
         checked,
         disabled,
+        showBadge,
       };
     });
 
@@ -575,6 +585,9 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   }
 
   open(anchor: HTMLElement) {
+    if (chrome.readingMode.isLineFocusEnabled) {
+      chrome.readingMode.requestShouldShowLineFocusNewBadge();
+    }
     openMenu(this.$.lazyMenu.get(), anchor);
     window.addEventListener('keydown', this.keyDownCallback_, {capture: true});
     this.interceptedEvents_.forEach(eventType => {

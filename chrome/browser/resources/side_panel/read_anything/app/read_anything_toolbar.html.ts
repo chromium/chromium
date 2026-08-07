@@ -157,6 +157,7 @@ export function getHtml(this: ReadAnythingToolbarElement) {
       .isImmersiveMode="${this.isImmersiveMode}"
       .isReadAnythingPinned="${this.isReadAnythingPinned}"
       .isSpeechActive="${this.isSpeechActive}"
+      .showLineFocusNewBadge="${this.showLineFocusNewBadge}"
       @close-submenu-requested="${this.onCloseSubmenuRequested_}"
       @close-all-menus="${this.onCloseAllMenus_}"
       @open-settings-submenu="${this.onOpenSettingsSubmenu_}"

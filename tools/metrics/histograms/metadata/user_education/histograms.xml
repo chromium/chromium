@@ -52,6 +52,9 @@ chromium-metrics-reviews@google.com.
       summary="For plus address creation; shown in the autofill popup."/>
   <variant name="PlusAddressFallbackFromContextMenu"
       summary="Plus address manual fallback entry point in the context menu."/>
+  <variant name="ReadAnythingLineFocus"
+      summary="Shown on the Line Focus menu item in Reading Mode settings
+               menu."/>
   <variant name="SendTabToSelfEnhancedDesktopUI"
       summary="Promotion for Send to Your Device in the tab and webpage
                context menus."/>

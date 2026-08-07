@@ -43,6 +43,21 @@ suite('LineFocusMenuElement', () => {
         lineFocusMenu.$.menu.menuGroups[0]!.header.shortcut);
   });
 
+  test('notifies of feature use if enabled on close', async () => {
+    let featureUsed = false;
+    chrome.readingMode.onLineFocusFeatureUsed = () => {
+      featureUsed = true;
+    };
+
+    lineFocusMenu.close();
+    assertFalse(featureUsed);
+
+    lineFocusMenu.lineFocusEnabled = true;
+    await microtasksFinished();
+    lineFocusMenu.close();
+    assertTrue(featureUsed);
+  });
+
   test('line focus style prop update changes selected items', async () => {
     const window = LineFocusStyle.MEDIUM_WINDOW;
     lineFocusMenu.lineFocusStyle = window;

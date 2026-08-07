@@ -37,6 +37,7 @@ export function getHtml(this: AppElement) {
         .lineFocusEnabled="${this.lineFocusEnabled_}"
         .lineFocusMovement="${this.lineFocusMovement_}"
         .isLineFocusShowing="${this.computeIsLineFocusShowing_()}"
+        .showLineFocusNewBadge="${this.showLineFocusNewBadge_}"
         @select-voice="${this.onSelectVoice_}"
         @voice-language-toggle="${this.onVoiceLanguageToggle_}"
         @preview-voice="${this.onPreviewVoice_}"

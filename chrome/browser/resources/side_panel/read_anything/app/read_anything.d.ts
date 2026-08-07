@@ -423,6 +423,19 @@ declare namespace chrome {
     // Called by the Read Anything app to toggle between presentation modes.
     function togglePresentation(): void;
 
+    // The following 3 functions are for handling the auto-disappearing logic
+    // for the line focus new badge.
+    // TODO(crbug.com/543113387): Remove these when the WebUI new badge supports
+    // auto-disappearing logic itself.
+    // Called to request whether to show the new badge for the line focus menu.
+    function requestShouldShowLineFocusNewBadge(): void;
+
+    // Called with the answer to the above requestShouldShowLineFocusNewBadge.
+    function onShouldShowLineFocusNewBadgeResponse(show: boolean): void;
+
+    // Called when the line focus feature is used.
+    function onLineFocusFeatureUsed(): void;
+
     // Whether the Google Docs load more button is visible.
     let isDocsLoadMoreButtonVisible: boolean;
 

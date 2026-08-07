@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/read_anything/read_anything.mojom-shared.h"
@@ -1025,6 +1026,21 @@ void ReadAnythingUntrustedPageHandler::OnLineFocusChanged(
     profile_->GetPrefs()->SetInteger(
         prefs::kAccessibilityReadAnythingLastNonDisabledLineFocus,
         static_cast<size_t>(last_non_disabled_line_focus));
+  }
+}
+
+void ReadAnythingUntrustedPageHandler::ShouldShowLineFocusNewBadge(
+    ShouldShowLineFocusNewBadgeCallback callback) {
+  bool show = features::IsReadAnythingLineFocusEnabled() &&
+              UserEducationService::MaybeShowNewBadge(
+                  profile_, features::kReadAnythingLineFocus);
+  std::move(callback).Run(show);
+}
+
+void ReadAnythingUntrustedPageHandler::OnLineFocusFeatureUsed() {
+  if (features::IsReadAnythingLineFocusEnabled()) {
+    UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
+        profile_, features::kReadAnythingLineFocus);
   }
 }
 

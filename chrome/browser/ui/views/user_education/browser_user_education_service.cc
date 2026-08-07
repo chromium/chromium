@@ -2511,6 +2511,12 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
           153, "mtatarski@google.com",
           "Show the new badge on Send to Your Devices context menu items.")));
 
+  registry.RegisterFeature(user_education::NewBadgeSpecification(
+      features::kReadAnythingLineFocus,
+      user_education::Metadata(
+          153, "kristislee@google.com",
+          "Shown on the Line Focus menu item in Reading Mode settings menu.")));
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   registry.RegisterFeature(user_education::NewBadgeSpecification(
       switches::kCrossDeviceSigninFromDesktop,

@@ -54,8 +54,16 @@
 }
 
 .menu-row .label {
+  align-items: center;
+  display: flex;
   flex: 1;
+  gap: 8px;
   font-weight: 400;
+}
+
+new-badge {
+  --color-badge-background: var(--color-sys-primary);
+  color: var(--color-sys-on-primary);
 }
 
 .menu-row .end-icon {

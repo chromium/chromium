@@ -205,6 +205,12 @@ interface UntrustedPageHandler {
   // loaded.
   GetDependencyParserModel() => (mojo_base.mojom.File? model_file);
 
+  // Called by the renderer to check if a "new" badge should be shown for line
+  // focus.
+  // TODO(crbug.com/543113387): Remove this when the WebUI new badge supports
+  // auto-disappearing logic itself.
+  ShouldShowLineFocusNewBadge() => (bool show);
+
   // Called by the renderer to get the current ReadingMode state from
   // ReadAnythingController. The response for this call comes via
   // UntrustedPage::OnGetPresentationState.
@@ -287,6 +293,11 @@ interface UntrustedPageHandler {
   // last_non_disabled_line_focus is different from current_line_focus.
   OnLineFocusChanged(read_anything.mojom.LineFocus current_line_focus,
                      read_anything.mojom.LineFocus last_non_disabled_line_focus);
+
+  // Informs the browser controller that the user used the line focus feature.
+  // TODO(crbug.com/543113387): Remove this when the WebUI new badge supports
+  // auto-disappearing logic itself.
+  OnLineFocusFeatureUsed();
 
   // Informs the browser controller whether audio for read aloud is currently
   // playing.

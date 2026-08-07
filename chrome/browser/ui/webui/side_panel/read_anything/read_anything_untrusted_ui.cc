@@ -33,6 +33,7 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/webui/resources/grit/webui_resources.h"
 #include "ui/webui/webui_util.h"
@@ -196,6 +197,7 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       {"readingModeVoiceDownloadedMessage",
        IDS_READING_MODE_VOICE_DOWNLOADED_MESSAGE},
       {"menu", IDS_MENU},
+      {"newBadgeLabel", IDS_NEW_BADGE},
       {"selected", IDS_READING_MODE_ITEM_SELECTED},
       {"allocationError", IDS_READING_MODE_LANGUAGE_MENU_NO_SPACE},
       {"allocationErrorHighQuality",

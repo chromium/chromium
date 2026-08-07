@@ -12,6 +12,7 @@
 
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/values_test_util.h"
@@ -32,6 +33,8 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/read_anything/read_anything.mojom-shared.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
@@ -42,6 +45,8 @@
 #include "components/prefs/pref_value_map.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/translate/core/browser/translate_manager.h"
+#include "components/user_education/common/new_badge/new_badge_specification.h"
+#include "components/user_education/common/user_education_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -1017,6 +1022,17 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
 
   Activate(true);
   page_.receiver_.FlushForTesting();
+}
+
+IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
+                       ShouldShowLineFocusNewBadge_RunsCallback) {
+  handler_ = CreateHandler();
+
+  base::RunLoop run_loop;
+  handler_->ShouldShowLineFocusNewBadge(
+      base::BindLambdaForTesting([&](bool show) { run_loop.Quit(); }));
+
+  run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,

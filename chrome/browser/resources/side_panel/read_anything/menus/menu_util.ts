@@ -26,6 +26,8 @@ export interface SettingsItem {
   // Needed when the aria label should be different from the title
   ariaLabel?: string;
   showSeparator?: boolean;
+  // Whether to show the "NEW" badge for this item.
+  showBadge?: boolean;
 }
 
 // Represents a single menu item in a dropown menu in the toolbar.

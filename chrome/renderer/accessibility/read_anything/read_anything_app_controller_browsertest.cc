@@ -74,6 +74,10 @@ class MockReadAnythingUntrustedPageHandler
               (GetDependencyParserModelCallback mojo_callback),
               (override));
   MOCK_METHOD(void,
+              ShouldShowLineFocusNewBadge,
+              (ShouldShowLineFocusNewBadgeCallback mojo_callback),
+              (override));
+  MOCK_METHOD(void,
               GetVoicePackInfo,
               (const std::string& language),
               (override));
@@ -135,6 +139,7 @@ class MockReadAnythingUntrustedPageHandler
               (read_anything::mojom::LineFocus current_line_focus,
                read_anything::mojom::LineFocus last_non_disabled_line_focus),
               (override));
+  MOCK_METHOD(void, OnLineFocusFeatureUsed, (), (override));
   MOCK_METHOD(void,
               OnImageDataRequested,
               (const ::ui::AXTreeID& target_tree_id, int32_t target_node_id),

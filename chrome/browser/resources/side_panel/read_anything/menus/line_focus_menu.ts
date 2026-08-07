@@ -152,6 +152,9 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
 
   close() {
     this.$.menu.close();
+    if (this.lineFocusEnabled) {
+      chrome.readingMode.onLineFocusFeatureUsed();
+    }
   }
 
   protected onLineFocusStyleChange_() {
