@@ -32,7 +32,6 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
@@ -41,7 +40,6 @@ import org.chromium.ui.base.TestActivity;
 import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link BookmarkManagerDragHelper}. */
-@Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class BookmarkManagerDragHelperTest {

@@ -21,12 +21,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.HistogramWatcher;
 
 /** Tests for the ThirdPartyCredentialManagerMetricsRecorder. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Batch(Batch.PER_CLASS)
 public class ThirdPartyCredentialManagerMetricsRecorderTest {
 
     private static class FakeCreateCredentialException extends CreateCredentialException {

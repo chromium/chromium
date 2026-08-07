@@ -26,7 +26,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -36,7 +35,6 @@ import org.chromium.url.GURL;
 
 /** Unit tests for {@link BookmarkUndoController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Batch(Batch.UNIT_TESTS)
 @Config(manifest = Config.NONE)
 public class BookmarkUndoControllerTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

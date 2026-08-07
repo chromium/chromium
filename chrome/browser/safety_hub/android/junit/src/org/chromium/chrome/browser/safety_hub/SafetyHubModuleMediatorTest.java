@@ -23,7 +23,6 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleOption;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleState;
 import org.chromium.ui.base.TestActivity;
@@ -83,7 +82,6 @@ public class SafetyHubModuleMediatorTest {
     }
 
     @RunWith(ParameterizedRobolectricTestRunner.class)
-    @Batch(Batch.UNIT_TESTS)
     public static class SafetyHubModuleMediatorParamTests {
         @Parameters
         public static Collection<Object> data() {
@@ -225,7 +223,6 @@ public class SafetyHubModuleMediatorTest {
     }
 
     @RunWith(BaseRobolectricTestRunner.class)
-    @Batch(Batch.UNIT_TESTS)
     public static class SafetyHubModuleMediatorSingleTests {
         @Test
         public void order_mixedStates() {

@@ -26,7 +26,6 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.components.browser_ui.test.BrowserUiTestFragmentActivity;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -35,7 +34,6 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 /** Tests for {@link TileViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Batch(Batch.PER_CLASS)
 public class TileViewBinderTest {
     private Activity mActivity;
     private TileView mTileView;

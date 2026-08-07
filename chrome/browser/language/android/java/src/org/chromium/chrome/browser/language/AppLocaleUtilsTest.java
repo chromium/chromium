@@ -14,7 +14,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
@@ -23,7 +22,6 @@ import java.util.List;
 
 /** Tests for the AppLocalUtils class. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Batch(Batch.UNIT_TESTS)
 // Fails on SDK 33+ because AppLocaleUtils uses system-managed locales (Android 13+).
 @Config(sdk = {BaseRobolectricTestRunner.MIN_SDK, 32})
 public class AppLocaleUtilsTest {

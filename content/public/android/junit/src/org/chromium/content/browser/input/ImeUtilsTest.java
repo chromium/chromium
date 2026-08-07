@@ -14,14 +14,12 @@ import org.junit.runners.JUnit4;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.base.test.util.Batch;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Base64;
 
 @RunWith(JUnit4.class)
-@Batch(Batch.UNIT_TESTS)
 public class ImeUtilsTest {
     @Test
     @SmallTest

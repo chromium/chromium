@@ -30,11 +30,9 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 
 /** Unit tests for {@link AutofillThirdPartyModeContentProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Batch(Batch.PER_CLASS)
 public class AutofillThirdPartyModeContentProviderTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

@@ -44,7 +44,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.MemoryPressureLevel;
 import org.chromium.base.memory.MemoryPressureMonitor;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -63,7 +62,6 @@ import org.chromium.content.browser.webcontents.WebContentsImpl;
 
 /** Tests for the {@link ScrollCaptureCallbackDelegate} */
 @RunWith(BaseRobolectricTestRunner.class)
-@Batch(Batch.UNIT_TESTS)
 public class ScrollCaptureCallbackDelegateTest {
     @Mock private Tab mTab;
     @Mock private WebContentsImpl mWebContents;

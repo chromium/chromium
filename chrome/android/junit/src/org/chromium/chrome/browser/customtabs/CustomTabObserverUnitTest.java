@@ -27,7 +27,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
@@ -39,7 +38,6 @@ import java.util.concurrent.TimeUnit;
 
 /** Tests for screenshot capture inside {@link CustomTabObserver}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Batch(Batch.UNIT_TESTS)
 @SuppressWarnings("unchecked")
 public class CustomTabObserverUnitTest {
     private static final String TEST_URL = "https://example.com/test";

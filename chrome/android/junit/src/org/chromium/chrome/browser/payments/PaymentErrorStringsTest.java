@@ -11,14 +11,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.components.payments.ErrorStrings;
 
 import java.lang.reflect.Field;
 
 /** Tests for generated {@link ErrorStrings.java}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Batch(Batch.UNIT_TESTS)
 public class PaymentErrorStringsTest {
     // Tests that error strings are generated successfully and have non-empty values.
     @Test

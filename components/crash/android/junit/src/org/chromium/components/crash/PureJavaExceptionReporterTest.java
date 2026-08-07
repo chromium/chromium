@@ -13,7 +13,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.components.minidump_uploader.CrashTestRule;
 
 import java.io.BufferedReader;
@@ -23,7 +22,6 @@ import java.io.IOException;
 
 /** Unittests for {@link PureJavaExceptionReporter}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Batch(Batch.UNIT_TESTS)
 public class PureJavaExceptionReporterTest {
     @Rule public CrashTestRule mTestRule = new CrashTestRule();
 

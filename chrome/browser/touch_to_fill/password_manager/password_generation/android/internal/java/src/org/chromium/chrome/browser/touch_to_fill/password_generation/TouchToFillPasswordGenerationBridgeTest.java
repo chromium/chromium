@@ -17,7 +17,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.content_public.browser.WebContents;
@@ -26,7 +25,6 @@ import org.chromium.ui.base.WindowAndroid;
 
 /** Tests for {@link TouchToFillPasswordGenerationBridge} */
 @RunWith(BaseRobolectricTestRunner.class)
-@Batch(Batch.PER_CLASS)
 public class TouchToFillPasswordGenerationBridgeTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

@@ -27,7 +27,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -37,7 +36,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Test relating to binding for the Safety Hub Magic Stack view. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Batch(Batch.UNIT_TESTS)
 public class SafetyHubMagicStackViewBinderTest {
     private static final String HEADER_STRING = "header";
     private static final String TITLE_STRING = "title";

@@ -17,7 +17,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
@@ -29,7 +28,6 @@ import org.chromium.ui.base.WindowAndroid;
 
 /** Tests for {@link BottomSheetFocusHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Batch(Batch.PER_CLASS)
 public class BottomSheetFocusHelperRoboelectricTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private BottomSheetFocusHelper mBottomSheetFocusHelper;

@@ -28,7 +28,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.user_education.IphCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -36,7 +35,6 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 
 /** Unit tests for {@link ToolbarIphController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Batch(Batch.UNIT_TESTS)
 @Config(manifest = Config.NONE)
 public class ToolbarIphControllerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

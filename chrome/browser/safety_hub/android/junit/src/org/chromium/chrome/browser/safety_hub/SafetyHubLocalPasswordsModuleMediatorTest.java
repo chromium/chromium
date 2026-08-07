@@ -26,7 +26,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.safety_hub.SafetyHubLocalPasswordsDataSource.ModuleType;
@@ -34,7 +33,6 @@ import org.chromium.ui.base.TestActivity;
 
 /** Robolectric tests for {@link SafetyHubLocalPasswordsModuleMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Batch(Batch.UNIT_TESTS)
 @Features.EnableFeatures({
     ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS,
     ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE

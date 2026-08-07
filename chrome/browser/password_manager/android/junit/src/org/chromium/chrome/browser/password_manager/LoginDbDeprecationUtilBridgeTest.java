@@ -17,7 +17,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.profiles.Profile;
 
 import java.io.File;
@@ -26,7 +25,6 @@ import java.io.IOException;
 /** Unit tests for the {@link LoginDbDeprecationUtilBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Batch(Batch.PER_CLASS)
 public class LoginDbDeprecationUtilBridgeTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

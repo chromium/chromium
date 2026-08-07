@@ -20,7 +20,6 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.omaha.MockRequestGenerator.DeviceType;
 
@@ -39,13 +38,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Tests for the {@link OmahaClient}.
- * Tests override the original OmahaClient's functions with the MockOmahaClient, which
- * provides a way to hook into functions to return values that would normally be provided by the
- * system, such as whether Chrome was installed through the system image.
+ * Tests for the {@link OmahaClient}. Tests override the original OmahaClient's functions with the
+ * MockOmahaClient, which provides a way to hook into functions to return values that would normally
+ * be provided by the system, such as whether Chrome was installed through the system image.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Batch(Batch.UNIT_TESTS)
 @Config(manifest = Config.NONE)
 @SuppressWarnings("UnusedMethod")
 public class OmahaBaseTest {

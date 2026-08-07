@@ -14,7 +14,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -24,7 +23,6 @@ import org.chromium.url.GURL;
 
 /** Unit tests for {@link PartnerBrowserCustomizations}. */
 @RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
 public class PartnerBrowserCustomizationsUnitTest {
     private static final String TEST_HOMEPAGE = "http://example.com/";
 

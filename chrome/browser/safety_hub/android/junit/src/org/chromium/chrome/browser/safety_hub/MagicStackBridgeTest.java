@@ -18,12 +18,10 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /** Tests for the Safety Hub Magic Stack bridge. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Batch(Batch.UNIT_TESTS)
 public class MagicStackBridgeTest {
     private static final String DESCRIPTION = "description";
 

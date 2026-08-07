@@ -24,7 +24,6 @@ import org.robolectric.shadows.ShadowSystemClock;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityLifecycleUmaTracker.ClientIdentifierType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -34,7 +33,6 @@ import java.util.concurrent.TimeUnit;
 
 /** Unit test for {@link CustomTabActivityLifecycleUmaTracker}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Batch(Batch.UNIT_TESTS)
 @Config(shadows = {ShadowSystemClock.class})
 public class CustomTabActivityLifecycleUmaTrackerUnitTest {
     private static final String PACKAGE_A = "com.example.test.package";

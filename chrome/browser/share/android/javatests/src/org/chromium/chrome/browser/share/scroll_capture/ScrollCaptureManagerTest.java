@@ -27,12 +27,10 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.tab.Tab;
 
 /** Tests for the ScreenshotBoundsManager */
 @RunWith(BaseRobolectricTestRunner.class)
-@Batch(Batch.UNIT_TESTS)
 public class ScrollCaptureManagerTest {
     @Mock private Tab mTab;
     @Mock private ScrollCaptureManagerDelegate mScrollCaptureManagerDelegateMock;

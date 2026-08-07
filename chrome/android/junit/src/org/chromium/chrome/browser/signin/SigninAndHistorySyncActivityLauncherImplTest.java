@@ -33,7 +33,6 @@ import org.robolectric.shadows.ShadowToast;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
@@ -63,7 +62,6 @@ import org.chromium.ui.widget.ToastManager;
  * <p>TODO(crbug.com/354912290): Update this test when the error UI will be implemented.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Batch(Batch.PER_CLASS)
 @DisableFeatures({SigninFeatures.FORCE_HISTORY_OPT_IN_SCREEN})
 @Config(
         manifest = Config.NONE,

@@ -22,7 +22,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtilsJni;
@@ -46,7 +45,6 @@ import org.chromium.ui.shadows.ShadowAppCompatResources;
 import org.chromium.url.GURL;
 
 /** Unit tests for {@link BookmarkSaveFlowMediator}. */
-@Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,

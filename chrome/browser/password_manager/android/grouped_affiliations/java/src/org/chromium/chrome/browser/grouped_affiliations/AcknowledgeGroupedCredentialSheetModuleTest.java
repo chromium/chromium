@@ -25,7 +25,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
@@ -36,7 +35,6 @@ import org.chromium.ui.base.WindowAndroid;
 /** Tests for {@link AcknowledgeGroupedCredentialSheetController} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Batch(Batch.PER_CLASS)
 public class AcknowledgeGroupedCredentialSheetModuleTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
     @Mock private AcknowledgeGroupedCredentialSheetBridge.Natives mBridgeJniMock;

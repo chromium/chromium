@@ -15,7 +15,6 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 
@@ -25,7 +24,6 @@ import java.util.List;
 /** JUnit tests of the class {@link QuickDeleteMetricsDelegate}. */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(BlockJUnit4RunnerDelegate.class)
-@Batch(Batch.PER_CLASS)
 public class QuickDeleteMetricsDelegateTest {
     /**
      * Class to parameterize the params for {@link

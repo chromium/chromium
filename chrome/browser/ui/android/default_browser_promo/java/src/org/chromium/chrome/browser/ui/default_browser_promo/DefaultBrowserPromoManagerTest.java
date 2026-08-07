@@ -27,7 +27,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.Nullable;
@@ -40,7 +39,6 @@ import org.chromium.ui.base.WindowAndroid.IntentCallback;
 
 /** Test whether metrics are correctly recorded by {@link DefaultBrowserPromoManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Batch(Batch.UNIT_TESTS)
 public class DefaultBrowserPromoManagerTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

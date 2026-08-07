@@ -23,7 +23,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.autofill.mojom.SubmissionSource;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.autofill.AutofillProviderUMA.AutofillManagerCreationContext;
 import org.chromium.components.autofill.AutofillProviderUMA.AutofillManagerMethod;
@@ -32,7 +31,6 @@ import org.chromium.components.autofill.AutofillProviderUMA.Provider;
 /** Tests for {@link AutofillProviderUMA} general metrics. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Batch(Batch.UNIT_TESTS)
 public class AutofillProviderUMATest {
 
     private AutofillProviderUMA mAutofillUMA;

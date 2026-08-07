@@ -24,7 +24,6 @@ import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 
@@ -32,7 +31,6 @@ import java.lang.ref.WeakReference;
 
 /** Tests for {@link AddUsernameDialogBridge} */
 @RunWith(BaseRobolectricTestRunner.class)
-@Batch(Batch.PER_CLASS)
 public class AddUsernameDialogBridgeTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 

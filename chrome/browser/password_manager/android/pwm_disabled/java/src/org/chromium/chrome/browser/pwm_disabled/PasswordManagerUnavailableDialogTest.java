@@ -25,7 +25,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -36,7 +35,6 @@ import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 /** Tests for {@link PasswordManagerUnavailableDialogCoordinator} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Batch(Batch.PER_CLASS)
 public class PasswordManagerUnavailableDialogTest {
 
     private final PasswordManagerUnavailableDialogCoordinator mCoordinator =

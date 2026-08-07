@@ -23,7 +23,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
@@ -45,7 +44,6 @@ import org.chromium.url.GURL;
  * functionality.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Batch(Batch.UNIT_TESTS)
 @Config(manifest = Config.NONE)
 public class TrustedCdnTest {
     private static final GURL PUBLISHER_URL = new GURL("https://www.publisher.com/");

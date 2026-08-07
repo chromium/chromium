@@ -22,7 +22,6 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.ui.base.TestActivity;
@@ -33,7 +32,6 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
 /** Robolectric tests for {@link QuickDeleteViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Batch(Batch.UNIT_TESTS)
 public class QuickDeleteViewBinderTest {
     private Activity mActivity;
     private View mQuickDeleteView;

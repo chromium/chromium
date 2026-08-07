@@ -38,7 +38,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
@@ -55,7 +54,6 @@ import java.util.List;
 /** Unit tests for {@link MultiColumnTitleUpdater}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(qualifiers = "sw600dp")
-@Batch(Batch.UNIT_TESTS)
 public class MultiColumnTitleUpdaterTest {
 
     /** Fake PreferenceFragment for testing. */

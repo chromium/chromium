@@ -24,7 +24,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.components.payments.PaymentAppError;
 import org.chromium.content_public.browser.WebContents;
@@ -34,7 +33,6 @@ import org.chromium.ui.base.WindowAndroid.IntentCallback;
 
 /** Tests for the Android intent-based payment app launcher. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Batch(Batch.UNIT_TESTS)
 public class WindowAndroidIntentLauncherUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

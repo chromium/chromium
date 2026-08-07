@@ -28,7 +28,6 @@ import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -36,7 +35,6 @@ import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Batch(Batch.PER_CLASS)
 public class AddUsernameDialogModuleTest {
     private AddUsernameDialogController mController;
     private final FakeModalDialogManager mModalDialogManager = new FakeModalDialogManager(0);

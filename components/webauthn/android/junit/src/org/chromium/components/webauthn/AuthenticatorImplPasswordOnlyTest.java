@@ -24,7 +24,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.blink.mojom.Authenticator;
 import org.chromium.blink.mojom.GetCredentialOptions;
 import org.chromium.blink.mojom.Mediation;
@@ -39,7 +38,6 @@ import org.chromium.url.Origin;
 /** Tests for {@link AuthenticatorImpl} with password-only requests. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Batch(Batch.UNIT_TESTS)
 @SmallTest
 public class AuthenticatorImplPasswordOnlyTest {
     private AuthenticatorImpl mAuthenticator;

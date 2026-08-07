@@ -29,7 +29,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.blink.mojom.StylusWritingGestureAction;
 import org.chromium.blink.mojom.StylusWritingGestureData;
@@ -40,7 +39,6 @@ import org.chromium.blink.mojom.StylusWritingGestureData;
  * converter to convert them into gesture data. The gesture data is then checked for accuracy.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Batch(Batch.PER_CLASS)
 @Config(sdk = VERSION_CODES.UPSIDE_DOWN_CAKE)
 public class StylusGestureConverterTest {
     private static final String GESTURE_TYPE_HISTOGRAM = "InputMethod.StylusHandwriting.Gesture";

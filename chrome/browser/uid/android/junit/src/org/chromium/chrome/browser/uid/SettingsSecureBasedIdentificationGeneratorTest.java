@@ -16,13 +16,11 @@ import org.mockito.Mockito;
 import org.mockito.Spy;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.util.HashUtil;
 
 /** Unit tests for {@link SettingsSecureBasedIdentificationGenerator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Batch(UniqueIdentificationGeneratorFactoryTest.IDENTITY_GENERATOR_BATCH_NAME)
 public class SettingsSecureBasedIdentificationGeneratorTest {
     // Tell R8 this class is spied on and shouldn't be made final.
     @Spy SettingsSecureBasedIdentificationGenerator mGenerator;

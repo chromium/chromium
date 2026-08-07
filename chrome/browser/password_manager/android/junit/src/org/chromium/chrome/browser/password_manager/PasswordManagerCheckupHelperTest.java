@@ -49,7 +49,6 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -79,7 +78,6 @@ import java.util.Set;
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowSystemClock.class})
-@Batch(Batch.PER_CLASS)
 public class PasswordManagerCheckupHelperTest {
     private static final String TEST_EMAIL_ADDRESS = "test@email.com";
     private static final String TEST_NO_EMAIL_ADDRESS = null;

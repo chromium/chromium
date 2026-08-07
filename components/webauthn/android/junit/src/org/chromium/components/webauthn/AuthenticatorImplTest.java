@@ -31,7 +31,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.blink.mojom.Authenticator;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.GetCredentialOptions;
@@ -51,7 +50,6 @@ import org.chromium.url.Origin;
 /** Tests for {@link AuthenticatorImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Batch(Batch.UNIT_TESTS)
 @SmallTest
 public class AuthenticatorImplTest {
     private AuthenticatorImpl mAuthenticator;

@@ -21,7 +21,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.components.password_manager.core.browser.proto.ListAffiliatedPasswordsResult;
 import org.chromium.components.password_manager.core.browser.proto.ListAffiliatedPasswordsResult.AffiliatedPassword;
 import org.chromium.components.password_manager.core.browser.proto.ListPasswordsResult;
@@ -33,7 +32,6 @@ import org.chromium.components.sync.protocol.PasswordSpecificsData;
 /** Tests that backend consumer bridge calls for operation callbacks reach native backend. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Batch(Batch.PER_CLASS)
 public class PasswordStoreAndroidBackendReceiverBridgeTest {
 
     private static final PasswordSpecificsData.Builder sTestProfile =

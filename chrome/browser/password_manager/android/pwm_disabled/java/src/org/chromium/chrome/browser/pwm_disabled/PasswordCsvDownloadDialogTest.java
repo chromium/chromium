@@ -36,7 +36,6 @@ import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowDialog;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.test.BrowserUiTestFragmentActivity;
 import org.chromium.ui.text.ChromeClickableSpan;
@@ -48,7 +47,6 @@ import java.util.concurrent.atomic.AtomicReference;
 /** Tests for {@link PasswordsCsvDownloadDialogController} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Batch(Batch.PER_CLASS)
 public class PasswordCsvDownloadDialogTest {
     private static final Uri SAVED_EXPORT_FILE_URI = Uri.parse("fake/test/path/file.ext");
 

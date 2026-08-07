@@ -18,7 +18,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleOption;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleState;
 import org.chromium.components.browser_ui.settings.CardPreference;
@@ -29,7 +28,6 @@ import java.util.List;
 
 /** Robolectric tests for {@link SafetyHubBrowserStateModuleMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Batch(Batch.UNIT_TESTS)
 public class SafetyHubBrowserStateModuleMediatorTest {
     static class SafetyHubModuleMediatorImpl implements SafetyHubModuleMediator {
         @ModuleState int mModuleState;

@@ -11,7 +11,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.base.test.util.Batch.UNIT_TESTS;
 import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.getBasicListMenu;
 import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM_WITH_SUBMENU;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
@@ -42,7 +41,6 @@ import org.robolectric.shadows.ShadowListView;
 
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenuSubmenuItemProperties;
 import org.chromium.ui.listmenu.ListMenuUtils;
@@ -60,7 +58,6 @@ import java.util.List;
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowAppCompatResources.class})
-@Batch(UNIT_TESTS)
 public class BrowserUiListMenuUnitTest {
 
     @Rule

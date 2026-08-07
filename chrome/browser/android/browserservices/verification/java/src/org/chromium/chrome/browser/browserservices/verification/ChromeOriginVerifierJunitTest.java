@@ -27,7 +27,6 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.content_relationship_verification.OriginVerifier;
@@ -41,7 +40,6 @@ import java.util.concurrent.CountDownLatch;
 
 /** Robolectric tests for ChromeOriginVerifier. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Batch(ChromeOriginVerifierJunitTest.TEST_BATCH_NAME)
 public class ChromeOriginVerifierJunitTest {
     public static final String TEST_BATCH_NAME = "chrome_origin_verifier";
 

@@ -18,7 +18,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -30,7 +29,6 @@ import org.chromium.components.search_engines.TemplateUrlService;
 /** Unit tests for {@link LensSupportStatusHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Batch(Batch.UNIT_TESTS)
 @DisableFeatures({ChromeFeatureList.LENS_OVERLAY_ANDROID})
 public class LensSupportStatusHelperUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
