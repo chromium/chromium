@@ -20,6 +20,8 @@
 #include "chrome/browser/glic/widget/glic_window_animator.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
@@ -63,7 +65,8 @@ GlicFloatingUi::GlicFloatingUi(Profile* profile,
     : profile_(profile),
       delegate_(delegate),
       instance_metrics_(instance_metrics),
-      source_tab_(source_tab) {
+      source_tab_(source_tab),
+      profile_keep_alive_(profile, ProfileKeepAliveOrigin::kGlicView) {
   if (!base::FeatureList::IsEnabled(features::kGlicOrphanedReattachment)) {
     if (auto* helper = GlicInstanceHelper::From(source_tab_.Get())) {
       source_tab_destruction_subscription_ =

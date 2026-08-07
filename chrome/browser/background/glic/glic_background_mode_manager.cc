@@ -21,6 +21,8 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/nuke_profile_directory_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
@@ -220,6 +222,10 @@ void GlicBackgroundModeManager::OnProfileWillBeDestroyed(Profile* profile) {
   profile_enabled_subscriptions_.erase(profile);
   profile_consent_subscriptions_.erase(profile);
 
+  if (profile_keep_alive_ && profile_keep_alive_->profile() == profile) {
+    profile_keep_alive_.reset();
+  }
+
   // If a profile is removed while in background mode, check if it must now be
   // exited.
   if (keep_alive_) {
@@ -241,6 +247,14 @@ void GlicBackgroundModeManager::EnterBackgroundMode(bool show_status_icon) {
         KeepAliveOrigin::GLIC_LAUNCHER, KeepAliveRestartOption::ENABLED);
   }
 
+  Profile* profile = GlicProfileManager::GetInstance()->GetProfileForLaunch();
+  if (!profile_keep_alive_ || profile_keep_alive_->profile() != profile) {
+    profile_keep_alive_ = profile
+                              ? std::make_unique<ScopedProfileKeepAlive>(
+                                    profile, ProfileKeepAliveOrigin::kGlicView)
+                              : nullptr;
+  }
+
   if (show_status_icon) {
     if (!status_icon_) {
       status_icon_ = GlicStatusIcon::Create(this, status_tray_);
@@ -254,6 +268,7 @@ void GlicBackgroundModeManager::EnterBackgroundMode(bool show_status_icon) {
 void GlicBackgroundModeManager::ExitBackgroundMode() {
   status_icon_.reset();
   keep_alive_.reset();
+  profile_keep_alive_.reset();
 }
 
 void GlicBackgroundModeManager::RegisterHotkeys(

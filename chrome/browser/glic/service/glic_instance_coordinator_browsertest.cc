@@ -32,11 +32,14 @@
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/service/glic_invoke_handler.h"
 #include "chrome/browser/glic/service/glic_invoke_task.h"
+#include "chrome/browser/glic/service/glic_ui_types.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_helper_metrics.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_histogram_tester.h"
 #include "chrome/browser/glic/widget/glic_floating_ui.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -48,6 +51,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/enterprise/browser/reporting/reporting_features.h"
+#include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/prefs/pref_service.h"
@@ -1885,6 +1889,28 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   ASSERT_OK(WaitForGlicOpen(instance));
   EXPECT_TRUE(instance->HasActiveEmbedder());
   EXPECT_TRUE(instance->GetBoundTabs().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       DetachedPanelAcquiresAndReleasesProfileKeepAlive) {
+  auto* profile_manager = g_browser_process->profile_manager();
+  EXPECT_FALSE(profile_manager->HasKeepAliveForTesting(
+      GetProfile(), ProfileKeepAliveOrigin::kGlicView));
+
+  // Open Glic and detach it into a floating window.
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance,
+                       OpenGlicForActiveTabAndDetach());
+  ASSERT_TRUE(instance->IsDetached());
+
+  EXPECT_TRUE(profile_manager->HasKeepAliveForTesting(
+      GetProfile(), ProfileKeepAliveOrigin::kGlicView));
+
+  // Close the detached window.
+  instance->CloseAllEmbedders();
+  ASSERT_OK(WaitForGlicClose(instance));
+
+  EXPECT_FALSE(profile_manager->HasKeepAliveForTesting(
+      GetProfile(), ProfileKeepAliveOrigin::kGlicView));
 }
 #endif
 

@@ -80,8 +80,7 @@ WebUIContentsContainer::~WebUIContentsContainer() = default;
 
 WebUIContentsContainerImpl::WebUIContentsContainerImpl(Profile* profile,
                                                        bool initially_hidden)
-    : profile_keep_alive_(profile, ProfileKeepAliveOrigin::kGlicView),
-      web_contents_(content::WebContents::Create(
+    : web_contents_(content::WebContents::Create(
           MakeCreateParams(profile, initially_hidden))),
       web_contents_ptr_(web_contents_.get()),
       profile_(profile) {

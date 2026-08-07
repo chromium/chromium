@@ -15,6 +15,7 @@
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
 #include "chrome/browser/glic/widget/browser_conditions.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
@@ -168,6 +169,7 @@ class GlicFloatingUi : public GlicUiEmbedder,
   base::CallbackListSubscription source_tab_destruction_subscription_;
 
   std::unique_ptr<BrowserAttachObservation> browser_attach_observation_;
+  ScopedProfileKeepAlive profile_keep_alive_;
 
   base::WeakPtrFactory<GlicFloatingUi> weak_ptr_factory_{this};
 };

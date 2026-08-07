@@ -22,6 +22,7 @@
 #endif
 
 class ScopedKeepAlive;
+class ScopedProfileKeepAlive;
 class StatusTray;
 
 namespace ui {
@@ -114,6 +115,7 @@ class GlicBackgroundModeManager : public GlicLauncherConfiguration::Observer,
   std::unique_ptr<GlicLauncherConfiguration> configuration_;
 
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 
   // TODO(https://crbug.com/378139555): Figure out how to not dangle this
   // pointer (and other instances of StatusTray).
