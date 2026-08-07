@@ -442,11 +442,36 @@ public class SettingsPageFragmentDelegateImpl
 
     private void createSearchCoordinator(
             MultiColumnSettings multiColumnSettings, @Nullable Bundle savedInstanceState) {
-        assert mSearchCoordinator == null;
+        // mSearchCoordinator may already be non-null if initialized during initSettings() before
+        // TitleUpdaterLifecycleCallbacks fired, or during activity recreation / theme change.
+        if (mSearchCoordinator != null) return;
+
         assert mToolbar != null;
         assert mSettingsHostFragment != null;
+
+        // containmentHelper can be null if mSettingsHostFragment is detached or not yet attached
+        // during activity recreation / theme changes.
         SettingsContainmentHelper containmentHelper = mSettingsHostFragment.getContainmentHelper();
-        assert containmentHelper != null;
+        if (containmentHelper == null) {
+            // SearchCoordinator requires containment item decorations to properly style search
+            // result highlights with rounded corners. Delay creation until SettingsHostFragment is
+            // attached and containmentHelper is available.
+            FragmentManager fragmentManager =
+                    ((FragmentActivity) mActivity).getSupportFragmentManager();
+            fragmentManager.registerFragmentLifecycleCallbacks(
+                    new FragmentManager.FragmentLifecycleCallbacks() {
+                        @Override
+                        public void onFragmentAttached(
+                                FragmentManager fm, Fragment f, Context context) {
+                            if (f == mSettingsHostFragment) {
+                                fm.unregisterFragmentLifecycleCallbacks(this);
+                                createSearchCoordinator(multiColumnSettings, savedInstanceState);
+                            }
+                        }
+                    },
+                    /* recursive= */ false);
+            return;
+        }
 
         mSearchCoordinator =
                 new SettingsSearchCoordinator(
