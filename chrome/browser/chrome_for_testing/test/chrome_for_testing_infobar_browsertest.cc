@@ -33,7 +33,16 @@ namespace {
 // //testing/buildbot/filters/win.win-rel-cft.browser_tests.filter
 class ChromeForTestingInfoBarTestBase : public InProcessBrowserTest {
  public:
-  ChromeForTestingInfoBarTestBase() = default;
+  explicit ChromeForTestingInfoBarTestBase(bool enable_migration = false) {
+    if (enable_migration) {
+      feature_list_.InitAndEnableFeatureWithParameters(
+          infobars::kCentralizedInfoBarFramework,
+          {{"MigratedChromeForTesting", "true"}});
+    } else {
+      feature_list_.InitAndDisableFeature(
+          infobars::kCentralizedInfoBarFramework);
+    }
+  }
   ~ChromeForTestingInfoBarTestBase() override = default;
 
   ChromeForTestingInfoBarTestBase(const ChromeForTestingInfoBarTestBase&) =
@@ -54,6 +63,9 @@ class ChromeForTestingInfoBarTestBase : public InProcessBrowserTest {
     return ContentInfoBarManager::FromWebContents(
         browser()->tab_strip_model()->GetWebContentsAt(tab_index));
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 class ChromeForTestingInfoBarTest : public ChromeForTestingInfoBarTestBase {
@@ -206,15 +218,9 @@ IN_PROC_BROWSER_TEST_F(ChromeForTestingInfoBarDisabledTest,
 class ChromeForTestingInfoBarMigratedTest
     : public ChromeForTestingInfoBarTestBase {
  public:
-  ChromeForTestingInfoBarMigratedTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        infobars::kCentralizedInfoBarFramework,
-        {{"MigratedChromeForTesting", "true"}});
-  }
+  ChromeForTestingInfoBarMigratedTest()
+      : ChromeForTestingInfoBarTestBase(/*enable_migration=*/true) {}
   ~ChromeForTestingInfoBarMigratedTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeForTestingInfoBarMigratedTest, InfoBarAppears) {
