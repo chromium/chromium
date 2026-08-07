@@ -112,23 +112,27 @@ bool ParseResponse(const std::vector<FacetURI>& requested_facet_uris,
     // affiliations must form an equivalence relation. Also check, if the class
     // was requested.
     bool is_class_requested = false;
+    // equivalence_class.facet()[0] establishes the class index that every
+    // other facet in this equivalence class must match.
+    std::optional<size_t> first_facet_class_index;
     for (const auto& facet : equivalence_class.facet()) {
       if (requested_facets.count(facet.id()))
         is_class_requested = true;
 
-      if (!facet_uri_to_class_index.count(facet.id()))
-        facet_uri_to_class_index[facet.id()] = result.size();
+      auto it =
+          facet_uri_to_class_index.try_emplace(facet.id(), result.size()).first;
 
-      if (facet_uri_to_class_index[facet.id()] !=
-          facet_uri_to_class_index[equivalence_class.facet()[0].id()]) {
+      if (!first_facet_class_index) {
+        first_facet_class_index = it->second;
+      }
+
+      if (it->second != first_facet_class_index) {
         return false;
       }
     }
 
     // Filter out duplicate or unrequested equivalence classes in the response.
-    if (is_class_requested &&
-        facet_uri_to_class_index[equivalence_class.facet()[0].id()] ==
-            result.size()) {
+    if (is_class_requested && first_facet_class_index == result.size()) {
       result.push_back(ParseEqClass(equivalence_class));
     }
   }

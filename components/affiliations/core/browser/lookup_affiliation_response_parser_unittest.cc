@@ -200,4 +200,90 @@ TEST(LookupAffiliationResponseParserTest, ParseValidGroupIconUrl) {
             result.groupings[0].branding_info.icon_url.spec());
 }
 
+TEST(LookupAffiliationResponseParserTest,
+     ParseMultipleEquivalenceClassesWithMultipleFacets) {
+  std::vector<FacetURI> requested_facet_uris;
+  requested_facet_uris.push_back(
+      FacetURI::FromCanonicalSpec("https://example.com"));
+  requested_facet_uris.push_back(
+      FacetURI::FromCanonicalSpec("https://other.example.com"));
+
+  affiliation_pb::LookupAffiliationByHashPrefixResponse response;
+  auto* affiliation1 = response.add_affiliations();
+  affiliation1->add_facet()->set_id("https://example.com");
+  affiliation1->add_facet()->set_id("https://example2.com");
+  affiliation1->add_facet()->set_id("https://example3.com");
+
+  auto* affiliation2 = response.add_affiliations();
+  affiliation2->add_facet()->set_id("https://other.example.com");
+  affiliation2->add_facet()->set_id("https://other2.example.com");
+
+  AffiliationFetcherInterface::ParsedFetchResponse result;
+  bool success =
+      ParseLookupAffiliationResponse(requested_facet_uris, response, &result);
+
+  EXPECT_TRUE(success);
+  ASSERT_EQ(2u, result.affiliations.size());
+  EXPECT_EQ(3u, result.affiliations[0].size());
+  EXPECT_EQ(2u, result.affiliations[1].size());
+}
+
+TEST(LookupAffiliationResponseParserTest,
+     RejectPartiallyOverlappingEquivalenceClasses) {
+  std::vector<FacetURI> requested_facet_uris;
+  requested_facet_uris.push_back(
+      FacetURI::FromCanonicalSpec("https://example.com"));
+
+  affiliation_pb::LookupAffiliationByHashPrefixResponse response;
+  auto* affiliation1 = response.add_affiliations();
+  affiliation1->add_facet()->set_id("https://example.com");
+  affiliation1->add_facet()->set_id("https://shared.example.com");
+
+  auto* affiliation2 = response.add_affiliations();
+  affiliation2->add_facet()->set_id("https://shared.example.com");
+  affiliation2->add_facet()->set_id("https://other.example.com");
+
+  AffiliationFetcherInterface::ParsedFetchResponse result;
+  bool success =
+      ParseLookupAffiliationResponse(requested_facet_uris, response, &result);
+
+  EXPECT_FALSE(success);
+}
+
+TEST(LookupAffiliationResponseParserTest, IgnoreDuplicateEquivalenceClasses) {
+  std::vector<FacetURI> requested_facet_uris = {
+      FacetURI::FromCanonicalSpec("https://example.com")};
+
+  affiliation_pb::LookupAffiliationByHashPrefixResponse response;
+  auto* affiliation1 = response.add_affiliations();
+  affiliation1->add_facet()->set_id("https://example.com");
+  affiliation1->add_facet()->set_id("https://example2.com");
+
+  // Duplicate equivalence class in the same response.
+  auto* affiliation2 = response.add_affiliations();
+  affiliation2->add_facet()->set_id("https://example.com");
+  affiliation2->add_facet()->set_id("https://example2.com");
+
+  AffiliationFetcherInterface::ParsedFetchResponse result;
+  EXPECT_TRUE(
+      ParseLookupAffiliationResponse(requested_facet_uris, response, &result));
+  EXPECT_EQ(1u, result.affiliations.size());
+}
+
+TEST(LookupAffiliationResponseParserTest, IgnoreUnrequestedEquivalenceClasses) {
+  // Nothing is requested, so the equivalence class below should be excluded
+  // and nothing should be synthesized either.
+  std::vector<FacetURI> requested_facet_uris;
+
+  affiliation_pb::LookupAffiliationByHashPrefixResponse response;
+  auto* affiliation = response.add_affiliations();
+  affiliation->add_facet()->set_id("https://unrequested.example.com");
+  affiliation->add_facet()->set_id("https://unrequested2.example.com");
+
+  AffiliationFetcherInterface::ParsedFetchResponse result;
+  EXPECT_TRUE(
+      ParseLookupAffiliationResponse(requested_facet_uris, response, &result));
+  EXPECT_TRUE(result.affiliations.empty());
+}
+
 }  // namespace affiliations
