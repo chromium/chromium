@@ -33,6 +33,7 @@ The Omnibox Java code resides under `chrome/browser/ui/android/omnibox/java/src/
 *   **View Inflation**: Prefer using `AsyncViewInflation` where possible to keep the Main Thread free and reduce startup latency.
 *   **Imports**: Use `import` statements whenever possible instead of using fully qualified class names within the code.
 *   **Reuse & Pre-research**: Research relevant existing libraries, utilities, and methods before implementing something new. Follow existing patterns in the codebase when applicable.
+*   **Resource & Type Annotations**: Always annotate integer resource IDs and typed values with appropriate AndroidX annotations (e.g., `@ColorInt`, `@ColorRes`, `@DrawableRes`, `@StringRes`, `@Px`).
 *   **Constants over Magic Numbers**: Do not create or use magic numbers directly in the code. Define and use descriptive constants instead.
 *   **Method Signatures**: Avoid creating constructors or methods that accept too many boolean parameters, as this degrades readability.
 *   **Complexity & Early Returns**: Prefer early return statements over deeply nested conditional statements. Keep the cyclomatic complexity of methods low.
@@ -41,7 +42,8 @@ The Omnibox Java code resides under `chrome/browser/ui/android/omnibox/java/src/
 
 ## Testing
 
-*   **Mocking with Annotations**: All mock objects (`@Mock`) and argument captors (`@Captor`) must be created using Mockito annotations. Manual mock creation using `Mockito.mock(...)` or `ArgumentCaptor.forClass(...)` is discouraged.
+*   **Mocking with Annotations**: Declare mock objects (`@Mock`) and argument captors (`@Captor`) as class fields using Mockito annotations. Avoid creating inline mocks in test methods using `mock(...)` or `ArgumentCaptor.forClass(...)`.
+*   **Annotation Placement**: Field-level test annotations (`@Rule`, `@Mock`, `@Spy`, `@Captor`) must precede access modifiers (e.g., `@Mock private Foo mFoo;`). `@Rule` fields must be declared `public final` (e.g., `@Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();`).
 *   **Naming Conventions**: To clearly distinguish unit tests from integration/instrumentation/render tests, unit test files must be named `*UnitTest.java` (e.g., AutocompleteMediatorUnitTest).
 *   **Test Length**: Unit tests should be kept concise.
     *   The ideal test case is **10 ± 5 lines of code**.
