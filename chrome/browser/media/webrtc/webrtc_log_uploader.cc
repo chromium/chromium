@@ -91,6 +91,7 @@ void ResizeForNextOutput(std::string* compressed_log, z_stream* stream) {
 BASE_FEATURE(kWebRTCLogUploadSuffix, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kWebRTCLogUploadCrossSiteProductName,
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kWebRtcLogUploaderExcludesGuid, base::FEATURE_ENABLED_BY_DEFAULT);
 
 std::string GetLogUploadProduct(WebRtcLogUploadSite site) {
 #if BUILDFLAG(IS_WIN)
@@ -355,8 +356,10 @@ void WebRtcLogUploader::SetupMultipart(
                                   kWebrtcLogMultipartBoundary, "", post_data);
   net::AddMultipartValueForUpload("ver", GetLogUploadVersion(),
                                   kWebrtcLogMultipartBoundary, "", post_data);
-  net::AddMultipartValueForUpload("guid", "0", kWebrtcLogMultipartBoundary, "",
-                                  post_data);
+  if (!base::FeatureList::IsEnabled(kWebRtcLogUploaderExcludesGuid)) {
+    net::AddMultipartValueForUpload("guid", "0", kWebrtcLogMultipartBoundary,
+                                    "", post_data);
+  }
   net::AddMultipartValueForUpload("type", kWebRtcLogContentType,
                                   kWebrtcLogMultipartBoundary, "", post_data);
 

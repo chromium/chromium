@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -267,8 +268,10 @@ bool WebRtcEventLogUploaderImpl::PrepareUploadData(std::string* upload_data) {
                                   std::string(), upload_data);
   net::AddMultipartValueForUpload("ver", GetLogUploadVersion(), kBoundary,
                                   std::string(), upload_data);
-  net::AddMultipartValueForUpload("guid", "0", kBoundary, std::string(),
-                                  upload_data);
+  if (!base::FeatureList::IsEnabled(kWebRtcLogUploaderExcludesGuid)) {
+    net::AddMultipartValueForUpload("guid", "0", kBoundary, std::string(),
+                                    upload_data);
+  }
   net::AddMultipartValueForUpload("type", filename, kBoundary, std::string(),
                                   upload_data);
   AddFileContents(filename, log_file_contents, "application/log", upload_data);

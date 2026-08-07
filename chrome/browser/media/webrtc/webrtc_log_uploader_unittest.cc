@@ -532,3 +532,23 @@ TEST_F(WebRtcLogUploaderTest, GetLogUploadProductValues) {
 
   EXPECT_THAT(cross_site_product, testing::HasSubstr("_cross_site_webrtc"));
 }
+
+TEST_F(WebRtcLogUploaderTest, GuidExcludedWithFeature) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kWebRtcLogUploaderExcludesGuid);
+
+  std::string post_data;
+  UploadPostData(WebRtcLogUploadSite::kSameSite, post_data);
+
+  EXPECT_TRUE(GetMultipartLineStartingWithValue(post_data, "guid").empty());
+}
+
+TEST_F(WebRtcLogUploaderTest, GuidIncludedWithoutFeature) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kWebRtcLogUploaderExcludesGuid);
+
+  std::string post_data;
+  UploadPostData(WebRtcLogUploadSite::kSameSite, post_data);
+
+  EXPECT_EQ("0", GetValueFromMultipart(post_data, "guid"));
+}

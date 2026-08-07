@@ -56,6 +56,9 @@ struct WebRtcLogUploadFailureReason {
 // when disabled: product: "Chrome_Mac", version: "121.0.6151.0-webrtc"
 BASE_DECLARE_FEATURE(kWebRTCLogUploadSuffix);
 
+// Controls whether the "guid" multipart value is excluded from uploads.
+BASE_DECLARE_FEATURE(kWebRtcLogUploaderExcludesGuid);
+
 enum class WebRtcLogUploadSite {
   kSameSite,
   kCrossSite,
