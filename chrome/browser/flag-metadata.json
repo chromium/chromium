@@ -101,6 +101,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "aim-cobrowse",
+    "owners": [ "ameurhosni@google.com", "bling-search@google.com" ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "aim-eligibility-component-extension",
     "owners": [
       "mahmadi@chromium.org",
