@@ -148,11 +148,47 @@ int QuicSessionPoolTestBase::RequestBuilder::CallRequest() {
       connection_management_config,
       std::move(failed_on_default_network_callback), std::move(callback));
 }
+
+QuicSessionPoolFeatureInitializer::QuicSessionPoolFeatureInitializer(
+    std::vector<base::test::FeatureRef> enabled_features,
+    const std::vector<base::test::FeatureRef>& disabled_features,
+    std::vector<base::test::FeatureRefAndParams> enabled_features_with_params) {
+  // A caller that lists kAsyncQuicSession itself decides its state.
+  const auto is_async_quic_session = [](const base::test::FeatureRef& ref) {
+    return &*ref == &features::kAsyncQuicSession;
+  };
+  if (!std::ranges::any_of(enabled_features, is_async_quic_session) &&
+      !std::ranges::any_of(disabled_features, is_async_quic_session) &&
+      !std::ranges::any_of(enabled_features_with_params,
+                           [](const base::test::FeatureRefAndParams& entry) {
+                             return &*entry.feature ==
+                                    &features::kAsyncQuicSession;
+                           })) {
+    enabled_features.push_back(features::kAsyncQuicSession);
+  }
+  for (const base::test::FeatureRef& feature : enabled_features) {
+    enabled_features_with_params.emplace_back(*feature,
+                                              base::FieldTrialParams());
+  }
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      enabled_features_with_params, disabled_features);
+}
+
+QuicSessionPoolFeatureInitializer::~QuicSessionPoolFeatureInitializer() =
+    default;
+
 QuicSessionPoolTestBase::QuicSessionPoolTestBase(
     quic::ParsedQuicVersion version,
     std::vector<base::test::FeatureRef> enabled_features,
-    std::vector<base::test::FeatureRef> disabled_features)
-    : host_resolver_(std::make_unique<MockHostResolver>(
+    std::vector<base::test::FeatureRef> disabled_features,
+    base::test::TaskEnvironment::TimeSource time_source,
+    std::vector<base::test::FeatureRefAndParams> enabled_features_with_params)
+    : QuicSessionPoolFeatureInitializer(
+          std::move(enabled_features),
+          disabled_features,
+          std::move(enabled_features_with_params)),
+      WithTaskEnvironment(time_source),
+      host_resolver_(std::make_unique<MockHostResolver>(
           /*default_result=*/MockHostResolverBase::RuleResolver::
               GetLocalhostResult())),
       socket_factory_(std::make_unique<MockClientSocketFactory>()),
@@ -181,15 +217,6 @@ QuicSessionPoolTestBase::QuicSessionPoolTestBase(
           &QuicSessionPoolTestBase::OnFailedOnDefaultNetwork,
           base::Unretained(this))),
       quic_params_(context_.params()) {
-  // A caller that lists kAsyncQuicSession itself decides its state.
-  const auto is_async_quic_session = [](const base::test::FeatureRef& ref) {
-    return &*ref == &features::kAsyncQuicSession;
-  };
-  if (!std::ranges::any_of(enabled_features, is_async_quic_session) &&
-      !std::ranges::any_of(disabled_features, is_async_quic_session)) {
-    enabled_features.push_back(features::kAsyncQuicSession);
-  }
-  scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   FLAGS_quic_enable_http3_grease_randomness = false;
   context_.AdvanceTime(quic::QuicTime::Delta::FromSeconds(1));
 
