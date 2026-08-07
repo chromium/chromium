@@ -15,7 +15,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tab_observation_strategy.h"
-#include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/common/actor.mojom-forward.h"
@@ -242,18 +241,6 @@ class GlicActorClientSession : public GlicActorClientSessionInterface {
           screenshot_collection_options,
       std::vector<actor::ActionResultWithLatencyInfo> action_results,
       actor::TabObservationStrategy observation_strategy);
-  void DidFinishBuildObservation(
-      PerformActionsCallback callback,
-      base::TimeTicks start_time,
-      std::vector<actor::ActionResultWithLatencyInfo> action_results,
-      actor::TaskId task_id,
-      bool skip_async_observation_information,
-      std::optional<page_content_annotations::ScreenshotOptions::
-                        ScreenshotCollectionOptions>
-          screenshot_collection_options,
-      std::unique_ptr<optimization_guide::proto::ActionsResult> result,
-      std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>
-          journal_entry);
   void OnPerformActionsComplete(
       PerformActionsCallback callback,
       base::TimeTicks start_time,
@@ -262,14 +249,8 @@ class GlicActorClientSession : public GlicActorClientSessionInterface {
           journal_entry,
       actor::TabObservationController* controller_ptr,
       std::unique_ptr<actor::ObservationResult> result);
-  void ReloadCrashedTab(tabs::TabInterface& crashed_tab,
-                        actor::TaskId task_id,
-                        base::OnceClosure callback);
   void CreateActorTabFinished(CreateActorTabCallback callback,
                               tabs::TabInterface* new_tab);
-  void ReloadObserverDone(tabs::TabHandle tab_handle,
-                          base::OnceClosure callback,
-                          actor::ObservationDelayController::Result result);
   void NotifyActorTaskStateChanged(actor::ActorTask& task);
   void StopTaskImpl(actor::TaskId task_id,
                     actor::ActorTask::StoppedReason reason);
@@ -280,21 +261,12 @@ class GlicActorClientSession : public GlicActorClientSessionInterface {
 
   mojo::Remote<mojom::ActorClient> actor_client_;
   mojo::Receiver<mojom::ActorHandler> receiver_{this};
-  std::unique_ptr<actor::ObservationDelayController> reload_observer_;
   std::vector<std::unique_ptr<actor::TabObservationController>>
       observation_controllers_;
 
   base::WeakPtr<actor::AutofillSelectionDialogEventHandler>
       autofill_selection_event_handler_;
 
-  // Only attempt to reload a crashed tab once *per task*. Crashes should be
-  // rare so if we're getting repeated crashes it's likely being triggered by
-  // actor code; retrying repeatedly will only trigger more crashes. After the
-  // second crash we prefer to proceed to observation code with a crashed tab
-  // which will be noticed there and return with a TAB_OBSERVATION_PAGE_CRASHED
-  // code.
-  bool attempted_reload_after_crash_ = false;
-  bool attempted_observation_retry_ = false;
   actor::TaskId current_task_id_;
   std::optional<base::CallbackListSubscription>
       actor_task_state_changed_subscription_;

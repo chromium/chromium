@@ -127,8 +127,6 @@ extern const base::FeatureParam<int> kActorScriptToolDelayObservationMillis;
 // interrupt-with-user-control.
 BASE_DECLARE_FEATURE(kActorFormScriptToolInterrupt);
 
-BASE_DECLARE_FEATURE(kGlicActorTabObservationController);
-
 BASE_DECLARE_FEATURE(kActorObserveScreenshotDefault);
 BASE_DECLARE_FEATURE(kActorObservePageContentDefault);
 

@@ -7,8 +7,6 @@
 #include "chrome/browser/glic/actor/glic_actor_functional_browsertest.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
-#include "chrome/browser/ui/browser.h"
-#include "components/actor/core/actor_features.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -126,18 +124,9 @@ IN_PROC_BROWSER_TEST_F(GlicActorMetricsFunctionalBrowserTestWithDisabledPolicy,
 }
 
 class GlicActorPageContextMetricsFunctionalBrowserTest
-    : public GlicActorFunctionalBrowserTestBase,
-      public testing::WithParamInterface<bool> {
+    : public GlicActorFunctionalBrowserTestBase {
  public:
-  GlicActorPageContextMetricsFunctionalBrowserTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          ::actor::kGlicActorTabObservationController);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          ::actor::kGlicActorTabObservationController);
-    }
-  }
+  GlicActorPageContextMetricsFunctionalBrowserTest() = default;
   ~GlicActorPageContextMetricsFunctionalBrowserTest() override = default;
 
   using ResultCallback =
@@ -178,10 +167,9 @@ class GlicActorPageContextMetricsFunctionalBrowserTest
 
  private:
   size_t num_fetches_ = 0;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(GlicActorPageContextMetricsFunctionalBrowserTest,
+IN_PROC_BROWSER_TEST_F(GlicActorPageContextMetricsFunctionalBrowserTest,
                        ObservationOutcomeMetrics_Success) {
   base::HistogramTester histogram_tester;
 
@@ -198,7 +186,7 @@ IN_PROC_BROWSER_TEST_P(GlicActorPageContextMetricsFunctionalBrowserTest,
       ActorObservationOutcome::kSuccess, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(GlicActorPageContextMetricsFunctionalBrowserTest,
+IN_PROC_BROWSER_TEST_F(GlicActorPageContextMetricsFunctionalBrowserTest,
                        ObservationOutcomeMetrics_SuccessAfterRetry) {
   base::HistogramTester histogram_tester;
 
@@ -220,7 +208,7 @@ IN_PROC_BROWSER_TEST_P(GlicActorPageContextMetricsFunctionalBrowserTest,
       ActorObservationOutcome::kSuccessAfterRetry, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(GlicActorPageContextMetricsFunctionalBrowserTest,
+IN_PROC_BROWSER_TEST_F(GlicActorPageContextMetricsFunctionalBrowserTest,
                        ObservationOutcomeMetrics_Failure) {
   base::HistogramTester histogram_tester;
 
@@ -238,7 +226,7 @@ IN_PROC_BROWSER_TEST_P(GlicActorPageContextMetricsFunctionalBrowserTest,
       ActorObservationOutcome::kFailureAfterRetry, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(GlicActorPageContextMetricsFunctionalBrowserTest,
+IN_PROC_BROWSER_TEST_F(GlicActorPageContextMetricsFunctionalBrowserTest,
                        TabObservationResult_Success) {
   base::HistogramTester histogram_tester;
 
@@ -255,7 +243,7 @@ IN_PROC_BROWSER_TEST_P(GlicActorPageContextMetricsFunctionalBrowserTest,
       ActorTabObservationResult::kSuccess, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(GlicActorPageContextMetricsFunctionalBrowserTest,
+IN_PROC_BROWSER_TEST_F(GlicActorPageContextMetricsFunctionalBrowserTest,
                        TabObservationResult_APCFailure) {
   base::HistogramTester histogram_tester;
 
@@ -274,29 +262,15 @@ IN_PROC_BROWSER_TEST_P(GlicActorPageContextMetricsFunctionalBrowserTest,
 
   ASSERT_EQ(num_fetches(), 2ul);
 
-  if (base::FeatureList::IsEnabled(
-          ::actor::kGlicActorTabObservationController)) {
-    // Ensure we record the final outcome (success).
-    histogram_tester.ExpectTotalCount(
-        ::actor::kActorPageContextTabObservationResult, 1);
-    histogram_tester.ExpectBucketCount(
-        ::actor::kActorPageContextTabObservationResult,
-        ActorTabObservationResult::kSuccess, 1);
-  } else {
-    // Ensure we record a failure in APC (for initial failure) and a success
-    // (for retry).
-    histogram_tester.ExpectTotalCount(
-        ::actor::kActorPageContextTabObservationResult, 2);
-    histogram_tester.ExpectBucketCount(
-        ::actor::kActorPageContextTabObservationResult,
-        ActorTabObservationResult::kApcError, 1);
-    histogram_tester.ExpectBucketCount(
-        ::actor::kActorPageContextTabObservationResult,
-        ActorTabObservationResult::kSuccess, 1);
-  }
+  // Ensure we record the final outcome (success).
+  histogram_tester.ExpectTotalCount(
+      ::actor::kActorPageContextTabObservationResult, 1);
+  histogram_tester.ExpectBucketCount(
+      ::actor::kActorPageContextTabObservationResult,
+      ActorTabObservationResult::kSuccess, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(GlicActorPageContextMetricsFunctionalBrowserTest,
+IN_PROC_BROWSER_TEST_F(GlicActorPageContextMetricsFunctionalBrowserTest,
                        TabObservationResult_RepeatedAPCFailure) {
   base::HistogramTester histogram_tester;
 
@@ -311,21 +285,13 @@ IN_PROC_BROWSER_TEST_P(GlicActorPageContextMetricsFunctionalBrowserTest,
 
   ASSERT_EQ(num_fetches(), 2ul);
 
-  if (base::FeatureList::IsEnabled(
-          ::actor::kGlicActorTabObservationController)) {
-    // The final outcome is recorded.
-    histogram_tester.ExpectUniqueSample(
-        ::actor::kActorPageContextTabObservationResult,
-        ActorTabObservationResult::kApcError, 1);
-  } else {
-    // Ensure we record two failures in APC since the retry fails as well.
-    histogram_tester.ExpectUniqueSample(
-        ::actor::kActorPageContextTabObservationResult,
-        ActorTabObservationResult::kApcError, 2);
-  }
+  // The final outcome is recorded.
+  histogram_tester.ExpectUniqueSample(
+      ::actor::kActorPageContextTabObservationResult,
+      ActorTabObservationResult::kApcError, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(GlicActorPageContextMetricsFunctionalBrowserTest,
+IN_PROC_BROWSER_TEST_F(GlicActorPageContextMetricsFunctionalBrowserTest,
                        TabObservationResult_APCAndScreenshotFailure) {
   base::HistogramTester histogram_tester;
 
@@ -342,19 +308,12 @@ IN_PROC_BROWSER_TEST_P(GlicActorPageContextMetricsFunctionalBrowserTest,
 
   // Since both APC and screenshot had failures ensure the combined bucket is
   // used.
-  if (base::FeatureList::IsEnabled(
-          ::actor::kGlicActorTabObservationController)) {
-    histogram_tester.ExpectUniqueSample(
-        ::actor::kActorPageContextTabObservationResult,
-        ActorTabObservationResult::kApcAndScreenshotNotOk, 1);
-  } else {
-    histogram_tester.ExpectUniqueSample(
-        ::actor::kActorPageContextTabObservationResult,
-        ActorTabObservationResult::kApcAndScreenshotNotOk, 2);
-  }
+  histogram_tester.ExpectUniqueSample(
+      ::actor::kActorPageContextTabObservationResult,
+      ActorTabObservationResult::kApcAndScreenshotNotOk, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(GlicActorPageContextMetricsFunctionalBrowserTest,
+IN_PROC_BROWSER_TEST_F(GlicActorPageContextMetricsFunctionalBrowserTest,
                        TabObservationResult_MultipleFailures) {
   base::HistogramTester histogram_tester;
 
@@ -374,29 +333,13 @@ IN_PROC_BROWSER_TEST_P(GlicActorPageContextMetricsFunctionalBrowserTest,
 
   ASSERT_EQ(num_fetches(), 2ul);
 
-  if (base::FeatureList::IsEnabled(
-          ::actor::kGlicActorTabObservationController)) {
-    // Ensure we record the final outcome (failure).
-    histogram_tester.ExpectTotalCount(
-        ::actor::kActorPageContextTabObservationResult, 1);
-    histogram_tester.ExpectBucketCount(
-        ::actor::kActorPageContextTabObservationResult,
-        ActorTabObservationResult::kWebContentsChanged, 1);
-  } else {
-    histogram_tester.ExpectTotalCount(
-        ::actor::kActorPageContextTabObservationResult, 2);
-    histogram_tester.ExpectBucketCount(
-        ::actor::kActorPageContextTabObservationResult,
-        ActorTabObservationResult::kApcTimeout, 1);
-    histogram_tester.ExpectBucketCount(
-        ::actor::kActorPageContextTabObservationResult,
-        ActorTabObservationResult::kWebContentsChanged, 1);
-  }
+  // Ensure we record the final outcome (failure).
+  histogram_tester.ExpectTotalCount(
+      ::actor::kActorPageContextTabObservationResult, 1);
+  histogram_tester.ExpectBucketCount(
+      ::actor::kActorPageContextTabObservationResult,
+      ActorTabObservationResult::kWebContentsChanged, 1);
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         GlicActorPageContextMetricsFunctionalBrowserTest,
-                         testing::Bool());
 
 }  // namespace
 }  // namespace glic::actor
