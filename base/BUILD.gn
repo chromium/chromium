@@ -664,8 +664,6 @@ component("base") {
     "sampling_heap_profiler/lock_free_bloom_filter.h",
     "sampling_heap_profiler/poisson_allocation_sampler.cc",
     "sampling_heap_profiler/poisson_allocation_sampler.h",
-    "sampling_heap_profiler/sampling_heap_churn_profiler.cc",
-    "sampling_heap_profiler/sampling_heap_churn_profiler.h",
     "sampling_heap_profiler/sampling_heap_profiler.cc",
     "sampling_heap_profiler/sampling_heap_profiler.h",
     "scoped_add_feature_flags.cc",
@@ -2373,8 +2371,6 @@ component("base") {
       sources -= [
         "sampling_heap_profiler/poisson_allocation_sampler.cc",
         "sampling_heap_profiler/poisson_allocation_sampler.h",
-        "sampling_heap_profiler/sampling_heap_churn_profiler.cc",
-        "sampling_heap_profiler/sampling_heap_churn_profiler.h",
         "sampling_heap_profiler/sampling_heap_profiler.cc",
         "sampling_heap_profiler/sampling_heap_profiler.h",
       ]
@@ -4654,7 +4650,6 @@ test("base_unittests") {
   if (use_allocator_shim) {
     sources += [
       "sampling_heap_profiler/poisson_allocation_sampler_unittest.cc",
-      "sampling_heap_profiler/sampling_heap_churn_profiler_unittest.cc",
       "sampling_heap_profiler/sampling_heap_profiler_unittest.cc",
 
       # TODO(crbug.com/40158212): Move partition_alloc tests into its

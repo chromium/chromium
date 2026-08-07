@@ -25,8 +25,6 @@
 
 namespace base {
 
-class SamplingHeapChurnProfiler;
-
 // The class implements sampling profiling of native memory heap.
 // It uses PoissonAllocationSampler to aggregate the heap allocations and
 // record samples.
@@ -108,8 +106,6 @@ class BASE_EXPORT SamplingHeapProfiler
   // frame is at the front of the returned span.
   span<const void*> CaptureStackTrace(span<const void*> frames);
 
-  SamplingHeapChurnProfiler& churn_profiler() { return *churn_profiler_; }
-
   static void Init();
   static SamplingHeapProfiler* Get();
 
@@ -177,8 +173,6 @@ class BASE_EXPORT SamplingHeapProfiler
 
   // Which unwinder to use.
   std::atomic<StackUnwinder> unwinder_{StackUnwinder::kDefault};
-
-  std::unique_ptr<SamplingHeapChurnProfiler> churn_profiler_;
 
   friend class NoDestructor<SamplingHeapProfiler>;
   friend class SamplingHeapProfilerTest;

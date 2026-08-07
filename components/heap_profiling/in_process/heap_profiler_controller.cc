@@ -35,7 +35,6 @@
 #include "base/sampling_heap_profiler/lock_free_address_hash_set.h"
 #include "base/sampling_heap_profiler/lock_free_bloom_filter.h"
 #include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
-#include "base/sampling_heap_profiler/sampling_heap_churn_profiler.h"
 #include "base/sampling_heap_profiler/sampling_heap_profiler.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
@@ -287,9 +286,6 @@ HeapProfilerController::~HeapProfilerController() {
 
   if (profiling_session_) {
     base::SamplingHeapProfiler::Get()->Stop(*profiling_session_);
-    if (base::FeatureList::IsEnabled(kHeapProfilerChurnReporting)) {
-      base::SamplingHeapProfiler::Get()->churn_profiler().Stop();
-    }
   }
 
   // BrowserProcessSnapshotController must be deleted on the sequence that its
@@ -329,11 +325,6 @@ bool HeapProfilerController::StartIfEnabled() {
   profiling_session_ = base::SamplingHeapProfiler::Get()->Start(
       expected_sampling_rate_,
       base::SamplingHeapProfiler::Priority::kBackground);
-  if (base::FeatureList::IsEnabled(kHeapProfilerChurnReporting)) {
-    auto& churn_profiler = base::SamplingHeapProfiler::Get()->churn_profiler();
-    churn_profiler.SetSubsamplingChance(kHeapChurnSubsamplingChance.Get());
-    churn_profiler.Start();
-  }
 
   if (process_type_ != ProcessType::kBrowser) {
     // ChildProcessSnapshotController will trigger snapshots.
@@ -432,9 +423,6 @@ void HeapProfilerController::LogMetricsWithoutSnapshotInChildProcess(
             if (!stopped->data.IsSet()) {
               // Log metrics about the snapshot, but don't upload it to UMA.
               RetrieveAndLogSnapshot(process_type, expected_sampling_interval);
-              std::ignore = base::SamplingHeapProfiler::Get()
-                                ->churn_profiler()
-                                .TakeSamples();
             }
           },
           process_type_, stopped_, expected_sampling_rate_));
@@ -575,58 +563,14 @@ void HeapProfilerController::RetrieveAndSendSnapshot(
       base::HashMetricName("process_percent");  // 0xd598e4d0a9e55408
   static const uint64_t kProcessIndexHash =
       base::HashMetricName("process_index");  // 0x28f4372e67b3f8f8
-  static const uint64_t kSamplingIntervalHash =
-      base::HashMetricName("sampling_interval");
 
   profile_builder.AddProfileMetadata(
       base::MetadataRecorder::Item(kProcessPercentHash, std::nullopt,
                                    std::nullopt, process_probability_pct));
   profile_builder.AddProfileMetadata(base::MetadataRecorder::Item(
       kProcessIndexHash, std::nullopt, std::nullopt, process_index));
-  profile_builder.AddProfileMetadata(base::MetadataRecorder::Item(
-      kSamplingIntervalHash, std::nullopt, std::nullopt,
-      expected_sampling_interval.InBytes()));
 
   profile_builder.OnProfileCompleted(base::TimeDelta(), base::TimeDelta());
-
-  std::vector<Sample> churn_samples =
-      base::SamplingHeapProfiler::Get()->churn_profiler().TakeSamples();
-  if (!churn_samples.empty()) {
-    sampling_profiler::CallStackProfileParams churn_params(
-        process_type, sampling_profiler::ProfilerThreadType::kUnknown,
-        sampling_profiler::CallStackProfileParams::Trigger::
-            kPeriodicHeapChurnCollection,
-        time_since_profiler_creation);
-    metrics::CallStackProfileBuilder churn_profile_builder(churn_params);
-
-    SampleMap merged_churn_samples = MergeSamples(churn_samples);
-    for (auto& pair : merged_churn_samples) {
-      const Sample& sample = pair.first;
-      const SampleValue& value = pair.second;
-
-      const size_t stack_size = sample.stack.size();
-      std::vector<base::Frame> frames;
-      frames.reserve(stack_size);
-      for (const void* frame : sample.stack) {
-        const uintptr_t address = reinterpret_cast<const uintptr_t>(frame);
-        const base::ModuleCache::Module* module =
-            module_cache.GetModuleForAddress(address);
-        frames.emplace_back(address, module);
-      }
-      churn_profile_builder.OnSampleCompleted(
-          std::move(frames), base::TimeTicks(), value.total, value.count);
-    }
-    churn_profile_builder.AddProfileMetadata(
-        base::MetadataRecorder::Item(kProcessPercentHash, std::nullopt,
-                                     std::nullopt, process_probability_pct));
-    churn_profile_builder.AddProfileMetadata(base::MetadataRecorder::Item(
-        kProcessIndexHash, std::nullopt, std::nullopt, process_index));
-    churn_profile_builder.AddProfileMetadata(base::MetadataRecorder::Item(
-        kSamplingIntervalHash, std::nullopt, std::nullopt,
-        expected_sampling_interval.InBytes()));
-    churn_profile_builder.OnProfileCompleted(base::TimeDelta(),
-                                             base::TimeDelta());
-  }
 }
 
 }  // namespace heap_profiling

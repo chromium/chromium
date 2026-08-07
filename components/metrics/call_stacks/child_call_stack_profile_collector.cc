@@ -65,7 +65,6 @@ void ChildCallStackProfileCollector::SetParentProfileCollector(
 }
 
 void ChildCallStackProfileCollector::Collect(base::TimeTicks start_timestamp,
-                                             mojom::ProfileType profile_type,
                                              SampledProfile profile) {
   base::AutoLock alock(lock_);
   if (task_runner_ &&
@@ -78,7 +77,7 @@ void ChildCallStackProfileCollector::Collect(base::TimeTicks start_timestamp,
         FROM_HERE, base::BindOnce(&ChildCallStackProfileCollector::Collect,
                                   // This class has lazy instance lifetime.
                                   base::Unretained(this), start_timestamp,
-                                  profile_type, std::move(profile)));
+                                  std::move(profile)));
     return;
   }
 
@@ -89,6 +88,11 @@ void ChildCallStackProfileCollector::Collect(base::TimeTicks start_timestamp,
 
   mojom::SampledProfilePtr mojo_profile = mojom::SampledProfile::New();
   mojo_profile->contents = mojo_base::ProtoWrapper(profile);
+
+  const mojom::ProfileType profile_type =
+      profile.trigger_event() == SampledProfile::PERIODIC_HEAP_COLLECTION
+          ? mojom::ProfileType::kHeap
+          : mojom::ProfileType::kCPU;
 
   if (parent_collector_) {
     parent_collector_->Collect(start_timestamp, profile_type,

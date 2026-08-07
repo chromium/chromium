@@ -15,12 +15,10 @@
 #include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/sampling_heap_profiler/lock_free_address_hash_set.h"
 #include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
-#include "base/sampling_heap_profiler/sampling_heap_churn_profiler.h"
 #include "base/threading/thread_local_storage.h"
 #include "base/trace_event/heap_profiler_allocation_context_tracker.h"  // no-presubmit-check
 #include "build/build_config.h"
@@ -144,9 +142,7 @@ SamplingHeapProfiler::Sample::Sample(const Sample&) = default;
 SamplingHeapProfiler::Sample& SamplingHeapProfiler::Sample::operator=(
     const Sample&) = default;
 
-SamplingHeapProfiler::SamplingHeapProfiler()
-    : churn_profiler_(base::WrapUnique(new SamplingHeapChurnProfiler())) {}
-
+SamplingHeapProfiler::SamplingHeapProfiler() = default;
 SamplingHeapProfiler::~SamplingHeapProfiler() {
   if (record_thread_names_.load(std::memory_order_acquire)) {
     base::ThreadIdNameManager::GetInstance()->RemoveObserver(this);
@@ -322,13 +318,7 @@ const char* SamplingHeapProfiler::RecordString(const char* string) {
 void SamplingHeapProfiler::SampleRemoved(void* address) {
   DCHECK(base::PoissonAllocationSampler::ScopedMuteThreadSamples::IsMuted());
   base::AutoLock lock(mutex_);
-  auto it = samples_.find(address);
-  if (it != samples_.end()) {
-    if (churn_profiler_->ShouldRecordAllocFree()) {
-      churn_profiler_->RecordAllocFree(std::move(it->second.sample));
-    }
-    samples_.erase(it);
-  }
+  samples_.erase(address);
 }
 
 std::vector<SamplingHeapProfiler::Sample> SamplingHeapProfiler::GetSamples(

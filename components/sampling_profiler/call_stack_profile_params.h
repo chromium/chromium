@@ -22,8 +22,7 @@ struct CallStackProfileParams {
     kThreadHung,
     kPeriodicCollection,
     kPeriodicHeapCollection,
-    kPeriodicHeapChurnCollection,
-    kLast = kPeriodicHeapChurnCollection
+    kLast = kPeriodicHeapCollection
   };
 
   // The default constructor is required for mojo and should not be used

@@ -21,4 +21,4 @@ blaze run //analysis/uma/proto_export:proto_export -- \
 
 
 Local Modifications:
-Added PERIODIC_HEAP_CHURN_COLLECTION to sampled_profile.proto locally (pending upstream export).
+Unchanged from the output of the export script.
