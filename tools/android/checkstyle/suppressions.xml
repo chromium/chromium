@@ -31,4 +31,7 @@
   <suppress checks="AbbreviationAsWord" files=".*Accessibility.*" />
   <!-- AccessibilityState needs to use AccessibilityManager to retrieve accessibility state from the OS. -->
   <suppress id="AccessibilityManagerUsage" files="AccessibilityState(.*Test)?\.java"/>
+  <!-- Omnibox UrlBar and helpers intercept standard Android ContextMenu calls to render Chrome ListMenu. -->
+  <suppress id="AndroidContextMenu"
+            files="chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/UrlBar(.*)\.java"/>
 </suppressions>
