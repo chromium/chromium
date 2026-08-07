@@ -41,6 +41,7 @@
 #include "chrome/browser/glic/host/context/glic_tab_data_observer.h"
 #include "chrome/browser/glic/host/context/glic_tab_favicon_observer.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/glic_local_storage_migration.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/host/webui_contents_container.h"
@@ -215,6 +216,7 @@ void GlicKeyedService::InitializeAfterConstruction() {
     GlicMediaIntegration::GetFor(profile_);
   }
 #endif
+  MaybeMigrateGlicLocalStorage(profile_);
 }
 
 GlicKeyedService::~GlicKeyedService() {

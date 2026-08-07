@@ -52,6 +52,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -347,6 +348,14 @@ void BindGlicWebClientHandler(
     return;
   }
   glic_ui->host()->CreateWebClient(std::move(receiver));
+}
+
+content::StoragePartitionConfig GetGlicStoragePartitionConfig(
+    content::BrowserContext* browser_context) {
+  return content::StoragePartitionConfig::Create(browser_context,
+                                                 chrome::kChromeUIGlicHost,
+                                                 /*partition_name=*/"glicpart",
+                                                 /*in_memory=*/false);
 }
 
 GURL MaybeApplyPresetGuestUrl(GURL guest_url) {

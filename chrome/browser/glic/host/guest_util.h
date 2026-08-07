@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/base/device_form_factor.h"
 #include "url/gurl.h"
@@ -38,6 +39,10 @@ url::Origin GetGuestOrigin();
 std::string GetGlicAllowedOrigins(bool is_internal_google_account = false);
 bool IsOriginAllowedGlicApi(const url::Origin& origin);
 bool IsFrameAllowedGlicApi(content::RenderFrameHost& frame_host);
+
+// Returns the StoragePartitionConfig for the Glic webview storage partition.
+content::StoragePartitionConfig GetGlicStoragePartitionConfig(
+    content::BrowserContext* browser_context);
 
 // Checks if a preset url is enabled and returns it if so. Otherwise, returns
 // `guest_url`.

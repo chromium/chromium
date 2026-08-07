@@ -177,6 +177,11 @@ inline constexpr char kGlicGeminiEnterpriseSettings[] =
 inline constexpr char kGlicPartitionNeedsCookieSync[] =
     "glic.partition_needs_cookie_sync";
 
+// Boolean pref that tracks if the Glic local storage keys have been copied from
+// the Glic partition to the main partition.
+inline constexpr char kGlicLocalStorageCopiedToMainPartition[] =
+    "glic.local_storage_copied_to_main_partition";
+
 // Boolean pref that tracks if the Glic profile was previously ineligible.
 inline constexpr char kGlicPreviouslyNotAllowed[] =
     "glic.previously_not_allowed";

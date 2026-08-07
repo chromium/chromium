@@ -134,6 +134,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kGlicUserEnabledActuationOnWeb, false);
 
   registry->RegisterBooleanPref(prefs::kGlicPartitionNeedsCookieSync, true);
+  registry->RegisterBooleanPref(prefs::kGlicLocalStorageCopiedToMainPartition,
+                                false);
   registry->RegisterBooleanPref(prefs::kGlicPreviouslyNotAllowed, false);
 
   registry->RegisterDictionaryPref(prefs::kGlicGeminiEnterpriseSettings);
