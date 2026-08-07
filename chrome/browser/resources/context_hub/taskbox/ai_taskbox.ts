@@ -8,13 +8,26 @@ import '//resources/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {browserProxyFactory} from '../context_hub.mojom-webui.js';
+import {AutoTodoGroup, browserProxyFactory} from '../context_hub.mojom-webui.js';
 import type {AutoTodoItem} from '../context_hub.mojom-webui.js';
 
 import {getCss} from './ai_taskbox.css.js';
 import {getHtml} from './ai_taskbox.html.js';
 
 const GENERAL_FEEDBACK_FORM_URL = 'https://forms.gle/sfEC2J7QBuz6zmbD7';
+
+function getTabTodoPriority(item: AutoTodoItem): number {
+  const group = item.data.thirdParty?.groupType;
+
+  // Unfinished action todos are the highest priority and should be shown first.
+  if (group === AutoTodoGroup.kUnfinishedAction) {
+    return 0;
+  }
+  if (group === AutoTodoGroup.kNudgeToClose) {
+    return 1;
+  }
+  return 2;
+}
 
 export class AiTaskboxElement extends CrLitElement {
   static get is() {
@@ -65,6 +78,10 @@ export class AiTaskboxElement extends CrLitElement {
                   (todos: AutoTodoItem[]) => {
                     this.todos = todos.filter(todo => !!todo.data.firstParty)
                                      .sort((a, b) => b.score - a.score);
+                    this.tabTodos = todos.filter(todo => !!todo.data.thirdParty)
+                                        .sort(
+                                            (a, b) => getTabTodoPriority(a) -
+                                                getTabTodoPriority(b));
                   }));
       this.fetchAutoTodos_();
     }
@@ -72,9 +89,13 @@ export class AiTaskboxElement extends CrLitElement {
 
   private async fetchAutoTodos_() {
     try {
-      const {firstPartyTodos} =
+      const {firstPartyTodos, thirdPartyTodos} =
           await browserProxyFactory.getInstance().handler.getAutoTodos();
       this.todos = firstPartyTodos.sort((a, b) => b.score - a.score) ?? null;
+      this.tabTodos =
+          thirdPartyTodos.sort(
+              (a, b) => getTabTodoPriority(a) - getTabTodoPriority(b)) ??
+          null;
     } catch (e) {
       console.error('Failed to fetch auto todos:', e);
     }

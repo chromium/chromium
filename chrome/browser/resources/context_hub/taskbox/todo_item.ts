@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons.html.js';
 
+import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {SourceReference} from '../context_hub.mojom-webui.js';
@@ -21,6 +23,17 @@ const ENTRY_LIKED = 'entry.1262687224';
 const ENTRY_TITLE = 'entry.809272442';
 const ENTRY_DESCRIPTION = 'entry.1908093752';
 const ENTRY_SCORE = 'entry.1904072234';
+
+export enum TodoItemVariant {
+  DEFAULT = 'default',
+  TAB = 'tab',
+}
+
+export interface TodoItemElement {
+  $: {
+    menu: CrActionMenuElement,
+  };
+}
 
 export class TodoItemElement extends CrLitElement {
   static get is() {
@@ -45,6 +58,7 @@ export class TodoItemElement extends CrLitElement {
       score: {type: Number},
       expanded_: {type: Boolean},
       liked: {type: Boolean},
+      variant: {type: String},
     };
   }
 
@@ -53,9 +67,10 @@ export class TodoItemElement extends CrLitElement {
   accessor description: string = '';
   accessor actionableUrl: string = '';
   accessor sourceReferences: SourceReference[] = [];
-  accessor score: number = 0;
+  accessor score: number|null = null;
   protected accessor expanded_: boolean = false;
   accessor liked: boolean|null = null;
+  accessor variant: TodoItemVariant = TodoItemVariant.DEFAULT;
 
   protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {
     this.expanded_ = e.detail.value;
@@ -92,8 +107,10 @@ export class TodoItemElement extends CrLitElement {
       [ENTRY_LIKED]: like ? 'Liked' : 'Disliked',
       [ENTRY_TITLE]: this.heading,
       [ENTRY_DESCRIPTION]: this.description,
-      [ENTRY_SCORE]: this.score.toFixed(2),
     });
+    if (this.score !== null && this.score !== undefined) {
+      params.set(ENTRY_SCORE, this.score.toFixed(2));
+    }
     window.open(`${FORM_URL}?${params.toString()}`, '_blank');
   }
 
@@ -107,11 +124,28 @@ export class TodoItemElement extends CrLitElement {
     // TODO(crbug.com/541016246): Implement dismiss click.
   }
 
+  protected onMoreClick_(e: Event) {
+    e.stopPropagation();
+    this.$.menu.showAt(e.currentTarget as HTMLElement);
+  }
+
   protected onOpenTabClick_(e: Event) {
     e.stopPropagation();
     if (this.actionableUrl) {
       window.open(this.actionableUrl, '_blank');
     }
+  }
+
+  protected onCloseTabClick_(e: Event) {
+    e.stopPropagation();
+    this.$.menu.close();
+    // TODO(crbug.com/541016246): Implement close tab click.
+  }
+
+  protected onSaveClick_(e: Event) {
+    e.stopPropagation();
+    this.$.menu.close();
+    // TODO(crbug.com/541016246): Implement save click.
   }
 
   protected getReferences() {

@@ -4,6 +4,7 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AiTaskboxElement} from './ai_taskbox.js';
+import {TodoItemVariant} from './todo_item.js';
 
 export function getHtml(this: AiTaskboxElement) {
   return html`
@@ -73,22 +74,35 @@ export function getHtml(this: AiTaskboxElement) {
                     ${
       this.tabTodos &&
       this.tabTodos.length > 0 ? this.tabTodos.map(todo => html`
-                      <!-- TODO(crbug.com/539697023): Update properties once tab-based todos are implemented. -->
                       <todo-item
                           .id="${todo.id}"
                           .heading="${todo.title}"
                           .description="${todo.description}"
-                          .actionableUrl="${
-                  todo.data.firstParty?.actionableUrl || ''}"
-                          .sourceReferences="${
-                  todo.data.firstParty?.sourceReferences || []}"
-                          .score="${todo.score}">
+                          .variant="${TodoItemVariant.TAB}">
                       </todo-item>
                     `) :
-                                 html`
+      this.hasTabGenerationError_ ? html`
                       <div class="placeholder-card">
-                        <p class="placeholder-text">No Tab-based Todos yet.</p>
+                        <p class="placeholder-text error-text">Failed to generate Tab Todos. Please try again.</p>
                       </div>
+                    ` : this.hasGeneratedTab_ ? html`
+                      <div class="placeholder-card">
+                        <p class="placeholder-text">You're all caught up! No Tab Todos found.</p>
+                      </div>
+                    ` : html`
+                      <todo-item
+                          .id="${'placeholder-tab-1'}"
+                          .heading="${'Example Tab One'}"
+                          .description="${
+              'Page hasn\'t been active in X days and contains an unfinished action'}"
+                          .variant="${TodoItemVariant.TAB}">
+                      </todo-item>
+                      <todo-item
+                          .id="${'placeholder-tab-2'}"
+                          .heading="${'Example Tab Two'}"
+                          .description="${'Page hasn\'t been active in X days'}"
+                          .variant="${TodoItemVariant.TAB}">
+                      </todo-item>
                     `}
                 </div>
             </section>

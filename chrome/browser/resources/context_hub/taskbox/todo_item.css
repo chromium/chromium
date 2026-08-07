@@ -17,9 +17,25 @@
   overflow: hidden;
 }
 
-cr-expand-button {
+cr-expand-button,
+.tab-todo-content {
   padding: 16px 20px;
-  --cr-section-min-height: unset;
+  min-height: 100px;
+  --cr-section-min-height: 100px;
+  box-sizing: border-box;
+}
+
+cr-expand-button {
+  --cr-section-vertical-padding: 0;
+  --cr-expand-button-size: 32px;
+  --cr-expand-button-icon-size: 20px;
+}
+
+cr-expand-button::part(icon) {
+  --cr-icon-button-margin-start: 2px;
+  --cr-icon-button-margin-end: 0;
+  margin-inline-start: 2px;
+  margin-inline-end: 0;
 }
 
 .todo-content {
@@ -46,12 +62,21 @@ cr-expand-button {
 .todo-info h3 {
   font-size: 16px;
   font-weight: 500;
+  line-height: 24px;
   margin: 0;
   color: var(--cr-primary-text-color);
 }
 
+.tab-todo-content .todo-info h3 {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .description {
   font-size: 14px;
+  line-height: 20px;
   color: var(--cr-secondary-text-color);
   margin: 4px 0 0 0;
   text-align: start;
@@ -60,8 +85,25 @@ cr-expand-button {
 .todo-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   flex-shrink: 0;
+}
+
+.todo-actions cr-icon-button {
+  --cr-icon-button-margin-start: 0;
+  --cr-icon-button-margin-end: 0;
+  margin-inline-start: 0;
+  margin-inline-end: 0;
+}
+
+#moreButton {
+  margin-inline-start: -6px;
+}
+
+.thumb-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
 }
 
 .expanded-content {
