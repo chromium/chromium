@@ -150,4 +150,7 @@
 // Supports -[CWVPreferences autofillSafeLifecycleEnabled].
 #define IOS_WEB_VIEW_SUPPORTS_AUTOFILL_SAFE_LIFECYCLE 1
 
+// Supports -[CWVUIDelegate webView:buildMenuWithBuilder:].
+#define CWV_SUPPORTS_BUILD_MENU_WITH_BUILDER 1
+
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_

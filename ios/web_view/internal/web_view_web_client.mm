@@ -49,6 +49,7 @@
 #import "ios/web_view/internal/web_view_message_handler_java_script_feature.h"
 #import "ios/web_view/internal/web_view_web_main_parts.h"
 #import "ios/web_view/public/cwv_navigation_delegate.h"
+#import "ios/web_view/public/cwv_ui_delegate.h"
 #import "ios/web_view/public/cwv_web_view.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/cert/cert_status_flags.h"
@@ -196,6 +197,13 @@ bool WebViewWebClient::IsInsecureFormWarningEnabled(
 }
 
 void WebViewWebClient::BuildEditMenu(web::WebState* web_state,
-                                     id<UIMenuBuilder>) const {}
+                                     id<UIMenuBuilder> builder) const {
+  CWVWebView* web_view = [CWVWebView webViewForWebState:web_state];
+  id<CWVUIDelegate> ui_delegate = web_view.UIDelegate;
+  if ([ui_delegate
+          respondsToSelector:@selector(webView:buildMenuWithBuilder:)]) {
+    [ui_delegate webView:web_view buildMenuWithBuilder:builder];
+  }
+}
 
 }  // namespace ios_web_view

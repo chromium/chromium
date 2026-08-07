@@ -99,6 +99,10 @@ CWV_EXPORT
     contextMenuWillCommitWithAnimator:
         (id<UIContextMenuInteractionCommitAnimating>)animator;
 
+// Instructs the delegate to customize the edit menu when text is selected.
+- (void)webView:(CWVWebView*)webView
+    buildMenuWithBuilder:(id<UIMenuBuilder>)builder;
+
 @end
 
 NS_ASSUME_NONNULL_END
