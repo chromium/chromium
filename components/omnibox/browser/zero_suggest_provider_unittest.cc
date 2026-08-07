@@ -2437,6 +2437,41 @@ TEST_F(ZeroSuggestProviderTest, TestComposeboxPrefetchWithSuggestInventory) {
             prefs->GetString(omnibox::kZeroSuggestCachedResultsComposebox));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ZeroSuggestProviderTest,
+       FallbackSuggestionsForSuggestInventoryOnFailure) {
+  EXPECT_CALL(*client_, IsAuthenticated())
+      .WillRepeatedly(testing::Return(true));
+
+  MockAimEligibilityService aim_service(
+      *client_->GetPrefs(), client_->GetTemplateURLService(), nullptr, nullptr);
+  EXPECT_CALL(aim_service, IsFuseboxEligible())
+      .WillRepeatedly(testing::Return(true));
+  client_->set_aim_eligibility_service(&aim_service);
+
+  AutocompleteInput input(u"", metrics::OmniboxEventProto::NTP_COMPOSEBOX,
+                          TestSchemeClassifier());
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+  input.set_suggest_inventory(
+      omnibox::SuggestInventory::SUGGEST_INVENTORY_BRAINSTORM);
+
+  GURL suggest_url = GetProviderRequestURL(input);
+  EXPECT_FALSE(suggest_url.is_empty());
+
+  test_loader_factory()->AddResponse(suggest_url.spec(), "",
+                                     net::HTTP_NOT_FOUND);
+
+  EXPECT_TRUE(base::test::RunUntil([&] { return provider_->done(); }));
+
+  // Should contain 3 fallback matches.
+  EXPECT_EQ(provider_->matches().size(), 3u);
+  for (const auto& match : provider_->matches()) {
+    EXPECT_EQ(match.type, AutocompleteMatchType::SEARCH_SUGGEST);
+    EXPECT_FALSE(match.contents.empty());
+  }
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 TEST_F(ZeroSuggestProviderTest, TestCacheStateWithSRPPrefetchDisabled) {
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
