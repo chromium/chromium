@@ -1606,7 +1606,7 @@ public class PdfCoordinator
                                 ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NO_NEGATIVE)
                         .build();
 
-        manager.showDialog(model, ModalDialogType.APP);
+        manager.showDialog(model, ModalDialogType.TAB);
     }
 
     private void showAlertDialog(View dialogView) {
