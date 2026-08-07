@@ -98,6 +98,11 @@
 - (void)dismissSaveCardBottomSheet {
 }
 
+- (void)showWalletReminderNoticeOnOriginWebState:(web::WebState*)originWebState
+                               legalMessageLines:(autofill::LegalMessageLines)
+                                                     legalMessageLines {
+}
+
 - (void)showVirtualCardEnrollmentBottomSheet:
             (std::unique_ptr<autofill::VirtualCardEnrollUiModel>)model
                               originWebState:(web::WebState*)originWebState {

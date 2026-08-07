@@ -4,6 +4,19 @@
 
 import("//build/config/ios/rules.gni")
 
+source_set("ui") {
+  sources = [
+    "wallet_reminder_notice_ui_delegate_ios.h",
+    "wallet_reminder_notice_ui_delegate_ios.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/autofill/core/browser",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/web/public",
+  ]
+}
+
 bundle_data_xcassets("resources") {
   catalog = "resources/Assets.xcassets"
   sources = [

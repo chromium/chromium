@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_AUTOFILL_COMMANDS_H_
 #define IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_AUTOFILL_COMMANDS_H_
 
+#include "components/autofill/core/browser/payments/legal_message_line.h"
+
 namespace autofill {
 struct AutofillAiErrorDialogContext;
 struct AutofillErrorDialogContext;
@@ -40,6 +42,11 @@ class WebState;
 // Commands to manage save card bottomsheet.
 - (void)showSaveCardBottomSheetOnOriginWebState:(web::WebState*)originWebState;
 - (void)dismissSaveCardBottomSheet;
+
+// Sends a command to show the Wallet Reminder Notice Bottom Sheet.
+- (void)showWalletReminderNoticeOnOriginWebState:(web::WebState*)originWebState
+                               legalMessageLines:(autofill::LegalMessageLines)
+                                                     legalMessageLines;
 
 // Sends a command to show the VCN enrollment Bottom Sheet.
 - (void)showVirtualCardEnrollmentBottomSheet:
