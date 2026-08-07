@@ -41,6 +41,9 @@
 
 namespace signin {
 
+using AccountPreviewPreference =
+    AccountPreviewDataService::AccountPreviewPreference;
+
 class AllDataAvailableWaiter {
  public:
   explicit AllDataAvailableWaiter(AccountPreviewDataServiceImpl* service)
@@ -394,8 +397,8 @@ TEST_F(AccountPreviewDataServiceTest, OnAllFetchesCompleted) {
 TEST_F(AccountPreviewDataServiceTest, GetPreferredAccountForPromo) {
   // 1. Initially empty.
   {
-    std::optional<AccountPreviewDataService::AccountPreviewPreference>
-        preference = service_->GetPreferredAccountForPromo();
+    std::optional<AccountPreviewPreference> preference =
+        service_->GetPreferredAccountForPromo();
     EXPECT_FALSE(preference.has_value());
   }
 
@@ -420,8 +423,8 @@ TEST_F(AccountPreviewDataServiceTest, GetPreferredAccountForPromo) {
   // TODO(crbug.com/530144650): When the heuristic is implemented, this test
   // should be updated to expect a non-empty preference.
   {
-    std::optional<AccountPreviewDataService::AccountPreviewPreference>
-        preference = service_->GetPreferredAccountForPromo();
+    std::optional<AccountPreviewPreference> preference =
+        service_->GetPreferredAccountForPromo();
     EXPECT_FALSE(preference.has_value());
   }
 }
@@ -812,8 +815,8 @@ TEST_F(AccountPreviewDataServiceTest,
   prefs_.SetDict(prefs::kAccountPreviewPreference, std::move(dict));
 
   // Verify that account1 is indeed preferred.
-  std::optional<AccountPreviewDataService::AccountPreviewPreference>
-      preferred_account = service_->GetPreferredAccountForPromo();
+  std::optional<AccountPreviewPreference> preferred_account =
+      service_->GetPreferredAccountForPromo();
   ASSERT_TRUE(preferred_account.has_value());
   ASSERT_EQ(preferred_account->gaia_id, account1.gaia);
 
@@ -825,8 +828,8 @@ TEST_F(AccountPreviewDataServiceTest,
   // uncached account1 and the preferred account pref remains intact.
   identity_test_env_.RemoveRefreshTokenForAccount(account2.account_id);
 
-  std::optional<AccountPreviewDataService::AccountPreviewPreference>
-      preferred_account_after = service_->GetPreferredAccountForPromo();
+  std::optional<AccountPreviewPreference> preferred_account_after =
+      service_->GetPreferredAccountForPromo();
   ASSERT_TRUE(preferred_account_after.has_value());
   EXPECT_EQ(account1.gaia, preferred_account_after->gaia_id);
 
@@ -863,8 +866,8 @@ TEST_F(AccountPreviewDataServiceTest,
 
   // Verify that the preferred account in prefs was NOT overwritten or
   // recomputed by OnAllFetchesCompleted() because the feature flag is disabled.
-  std::optional<AccountPreviewDataService::AccountPreviewPreference>
-      preference = service_->GetPreferredAccountForPromo();
+  std::optional<AccountPreviewPreference> preference =
+      service_->GetPreferredAccountForPromo();
   ASSERT_TRUE(preference.has_value());
   EXPECT_EQ(kFakeGaiaId, preference->gaia_id);
 }
@@ -881,8 +884,8 @@ TEST_F(AccountPreviewDataServiceTest, ReadPreviewPreferenceFromPrefsDataTypes) {
 
   prefs_.SetDict(prefs::kAccountPreviewPreference, std::move(dict));
 
-  std::optional<AccountPreviewDataService::AccountPreviewPreference>
-      preference = service_->GetPreferredAccountForPromo();
+  std::optional<AccountPreviewPreference> preference =
+      service_->GetPreferredAccountForPromo();
   ASSERT_TRUE(preference.has_value());
   EXPECT_EQ(GaiaId("test_gaia_id"), preference->gaia_id);
   std::vector<syncer::DataType> expected_types = {syncer::BOOKMARKS,
@@ -1448,6 +1451,118 @@ TEST_F(AccountPreviewDataServiceTest,
   EXPECT_EQ(account.gaia, preference->gaia_id);
   EXPECT_EQ(sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_TABLET,
             preference->other_device_form_factor);
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       GetPreviewPreferenceForAccountCachedData) {
+  AccountInfo account =
+      identity_test_env_.MakeAccountAvailable("user@gmail.com");
+
+  MockSuccessfulFetch(&test_url_loader_factory_);
+  base::RunLoop run_loop;
+  service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
+  run_loop.Run();
+
+  ASSERT_TRUE(service_->GetAccountPreviewData(account.gaia).has_value());
+
+  base::RunLoop fetch_run_loop;
+  std::optional<AccountPreviewPreference> fetched_preference;
+  service_->GetPreviewPreferenceForAccount(
+      account.gaia, base::BindOnce(
+                        [](base::OnceClosure quit,
+                           std::optional<AccountPreviewPreference>* result,
+                           std::optional<AccountPreviewPreference> pref) {
+                          *result = std::move(pref);
+                          std::move(quit).Run();
+                        },
+                        fetch_run_loop.QuitClosure(), &fetched_preference));
+  fetch_run_loop.Run();
+
+  EXPECT_TRUE(fetched_preference.has_value());
+  EXPECT_EQ(account.gaia, fetched_preference->gaia_id);
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       GetPreviewPreferenceForAccountTriggersFetch) {
+  AccountInfo account =
+      identity_test_env_.MakeAccountAvailable("user@gmail.com");
+
+  ASSERT_FALSE(service_->GetAccountPreviewData(account.gaia).has_value());
+
+  base::RunLoop fetch_run_loop;
+  std::optional<AccountPreviewPreference> fetched_preference;
+  service_->GetPreviewPreferenceForAccount(
+      account.gaia, base::BindOnce(
+                        [](base::OnceClosure quit,
+                           std::optional<AccountPreviewPreference>* result,
+                           std::optional<AccountPreviewPreference> pref) {
+                          *result = std::move(pref);
+                          std::move(quit).Run();
+                        },
+                        fetch_run_loop.QuitClosure(), &fetched_preference));
+
+  MockSuccessfulFetch(&test_url_loader_factory_);
+  fetch_run_loop.Run();
+
+  EXPECT_TRUE(fetched_preference.has_value());
+  EXPECT_EQ(account.gaia, fetched_preference->gaia_id);
+  EXPECT_TRUE(service_->GetAccountPreviewData(account.gaia).has_value());
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       GetPreviewPreferenceForAccountInvalidAccount) {
+  base::RunLoop fetch_run_loop;
+  std::optional<AccountPreviewPreference> fetched_preference;
+  service_->GetPreviewPreferenceForAccount(
+      GaiaId("non_existent_gaia_id"),
+      base::BindOnce(
+          [](base::OnceClosure quit,
+             std::optional<AccountPreviewPreference>* result,
+             std::optional<AccountPreviewPreference> pref) {
+            *result = std::move(pref);
+            std::move(quit).Run();
+          },
+          fetch_run_loop.QuitClosure(), &fetched_preference));
+  fetch_run_loop.Run();
+
+  EXPECT_FALSE(fetched_preference.has_value());
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       GetPreviewPreferenceForAccountDoesNotInterfereWithAllAccountsBarrier) {
+  AccountInfo account1 =
+      identity_test_env_.MakeAccountAvailable("account1@gmail.com");
+
+  // An active fetcher is created for account1 during token update.
+  EXPECT_TRUE(service_->HasActiveFetcherForTesting(account1.gaia));
+
+  // Attach a single account fetch callback to the ongoing fetch for account1.
+  base::RunLoop single_fetch_run_loop;
+  std::optional<AccountPreviewPreference> single_fetch_preference;
+  service_->GetPreviewPreferenceForAccount(
+      account1.gaia,
+      base::BindOnce(
+          [](base::OnceClosure quit,
+             std::optional<AccountPreviewPreference>* result,
+             std::optional<AccountPreviewPreference> pref) {
+            *result = std::move(pref);
+            std::move(quit).Run();
+          },
+          single_fetch_run_loop.QuitClosure(), &single_fetch_preference));
+
+  AllDataAvailableWaiter waiter(service_.get());
+
+  // Complete fetch for account1.
+  MockSuccessfulFetch(&test_url_loader_factory_);
+  single_fetch_run_loop.Run();
+  waiter.Wait();
+
+  // Both single fetch callback and batch completion barrier should run as
+  // expected.
+  EXPECT_TRUE(single_fetch_preference.has_value());
+  EXPECT_EQ(account1.gaia, single_fetch_preference->gaia_id);
+  EXPECT_TRUE(waiter.is_all_data_available());
+  EXPECT_TRUE(service_->GetAccountPreviewData(account1.gaia).has_value());
 }
 
 }  // namespace signin

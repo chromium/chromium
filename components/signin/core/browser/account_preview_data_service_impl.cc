@@ -76,6 +76,21 @@ void RecordSuccessfulFetchingMetrics(
   }
 }
 
+AccountPreviewDataService::AccountPreviewPreference
+ComputeAccountPreviewPreference(const GaiaId& gaia_id,
+                                const AccountPreviewData& data) {
+  // TODO(crbug.com/530144650): Align with the heuristic used by
+  // `AccountPreviewDataServiceImpl::ComputePreferredAccount()`.
+  AccountPreviewDataService::AccountPreviewPreference preference;
+  preference.gaia_id = gaia_id;
+  for (const auto& [data_type, count] : data.counts) {
+    if (count > 0) {
+      preference.preferred_data_types.push_back(data_type);
+    }
+  }
+  return preference;
+}
+
 }  // namespace
 
 AccountPreviewDataServiceImpl::AccountPreviewDataServiceImpl(
@@ -111,6 +126,29 @@ AccountPreviewDataServiceImpl::~AccountPreviewDataServiceImpl() = default;
 std::optional<AccountPreviewDataService::AccountPreviewPreference>
 AccountPreviewDataServiceImpl::GetPreferredAccountForPromo() const {
   return ReadPreferredAccountFromPrefs();
+}
+
+void AccountPreviewDataServiceImpl::GetPreviewPreferenceForAccount(
+    const GaiaId& gaia_id,
+    base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
+        callback) {
+  auto it = cached_data_.find(gaia_id);
+  if (it != cached_data_.end()) {
+    std::move(callback).Run(
+        ComputeAccountPreviewPreference(gaia_id, it->second));
+    return;
+  }
+
+  if (!identity_manager_ || !identity_manager_->AreRefreshTokensLoaded()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  single_pending_requests_[gaia_id].push_back(std::move(callback));
+
+  if (!active_fetchers_.contains(gaia_id)) {
+    FetchAccountPreviewData(gaia_id);
+  }
 }
 
 std::optional<AccountPreviewData>
@@ -161,10 +199,10 @@ void AccountPreviewDataServiceImpl::OnRefreshTokenRemovedForAccount(
 
   cached_data_.erase(gaia_id);
   if (active_fetchers_.contains(gaia_id)) {
+    MaybeNotifySinglePendingRequests(gaia_id);
     // `all_accounts_fetched_barrier_` relies on fetcher results, so it should
     // be called before clearing the active fetcher.
-    CHECK(all_accounts_fetched_barrier_);
-    all_accounts_fetched_barrier_.Run();
+    NotifyBatchBarrierOnFetchCompleted(gaia_id);
     active_fetchers_.erase(gaia_id);
   }
 
@@ -202,17 +240,17 @@ void AccountPreviewDataServiceImpl::SetAllDataAvailableCallbackForTesting(
 void AccountPreviewDataServiceImpl::OnSingleFetchCompleted(
     const GaiaId& gaia_id,
     std::optional<AccountPreviewData> data) {
-  bool loaded = data.has_value();
-  if (loaded) {
+  if (data.has_value()) {
     auto [it, inserted] =
         cached_data_.insert_or_assign(gaia_id, std::move(*data));
     metrics_recorder_.RecordMetrics(gaia_id, it->second);
   }
+
+  MaybeNotifySinglePendingRequests(gaia_id);
+  NotifyBatchBarrierOnFetchCompleted(gaia_id);
+
   active_fetchers_.erase(gaia_id);
   // `gaia_id` is owned by the fetcher and should not be used beyond this point.
-
-  CHECK(all_accounts_fetched_barrier_);
-  all_accounts_fetched_barrier_.Run();
 
   if (fetch_complete_callback_for_testing_) {
     std::move(fetch_complete_callback_for_testing_).Run();
@@ -340,6 +378,14 @@ void AccountPreviewDataServiceImpl::EnsureAllAccountsFetched(
   }
 
   CHECK_GT(target_fetcher_count, 0u);
+  batch_gaia_ids_.clear();
+  for (const auto& [id, fetcher] : active_fetchers_) {
+    batch_gaia_ids_.insert(id);
+  }
+  for (const auto& id : gaia_ids_to_fetch) {
+    batch_gaia_ids_.insert(id);
+  }
+
   all_accounts_fetched_barrier_ = base::BarrierClosure(
       target_fetcher_count,
       base::BindOnce(&AccountPreviewDataServiceImpl::OnAllFetchesCompleted,
@@ -433,6 +479,7 @@ void AccountPreviewDataServiceImpl::RecordAccountsUsedForLastFetch() {
 void AccountPreviewDataServiceImpl::OnAllFetchesCompleted(
     bool should_reset_periodic_timer) {
   all_accounts_fetched_barrier_.Reset();
+  batch_gaia_ids_.clear();
 
   RecordAccountsUsedForLastFetch();
 
@@ -540,11 +587,50 @@ void AccountPreviewDataServiceImpl::CreateAndStartRepeatingTimer() {
   repeating_timer_->Start();
 }
 
+void AccountPreviewDataServiceImpl::NotifyBatchBarrierOnFetchCompleted(
+    const GaiaId& gaia_id) {
+  if (batch_gaia_ids_.erase(gaia_id)) {
+    CHECK(all_accounts_fetched_barrier_);
+    all_accounts_fetched_barrier_.Run();
+  }
+}
+
+void AccountPreviewDataServiceImpl::MaybeNotifySinglePendingRequests(
+    const GaiaId& gaia_id) {
+  auto it = single_pending_requests_.find(gaia_id);
+  if (it == single_pending_requests_.end() || it->second.empty()) {
+    return;
+  }
+
+  std::optional<AccountPreviewPreference> preference;
+  auto cache_it = cached_data_.find(gaia_id);
+  if (cache_it != cached_data_.end()) {
+    preference = ComputeAccountPreviewPreference(gaia_id, cache_it->second);
+  }
+
+  auto callbacks = std::move(it->second);
+  single_pending_requests_.erase(it);
+  for (auto& cb : callbacks) {
+    std::move(cb).Run(preference);
+  }
+}
+
+void AccountPreviewDataServiceImpl::ClearAllSinglePendingRequests() {
+  for (auto& [gaia_id, callbacks] : single_pending_requests_) {
+    for (auto& cb : callbacks) {
+      std::move(cb).Run(std::nullopt);
+    }
+  }
+  single_pending_requests_.clear();
+}
+
 void AccountPreviewDataServiceImpl::ClearMemoryData() {
   cached_data_.clear();
   active_fetchers_.clear();
-  account_id_to_gaia_id_.clear();
+  ClearAllSinglePendingRequests();
   all_accounts_fetched_barrier_.Reset();
+  batch_gaia_ids_.clear();
+  account_id_to_gaia_id_.clear();
   deferred_fetch_on_loaded_tokens_callback_.Reset();
 }
 

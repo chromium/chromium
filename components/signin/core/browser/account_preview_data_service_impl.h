@@ -23,6 +23,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 class PrefService;
 
@@ -70,6 +71,10 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   // AccountPreviewDataService implementation:
   std::optional<AccountPreviewPreference> GetPreferredAccountForPromo()
       const override;
+  void GetPreviewPreferenceForAccount(
+      const GaiaId& gaia_id,
+      base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
+          callback) override;
 
   // Retrieves the cached preview data. Exposed specifically for testing.
   // Note: This may not be available if the browser restarted and no fetch has
@@ -112,6 +117,10 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   void ResetTimer();
   std::optional<AccountPreviewPreference> ComputePreferredAccount() const;
 
+  void NotifyBatchBarrierOnFetchCompleted(const GaiaId& gaia_id);
+  void MaybeNotifySinglePendingRequests(const GaiaId& gaia_id);
+  void ClearAllSinglePendingRequests();
+
   void ClearMemoryData();
   void ClearStoredResults();
   void ClearAllDataAndResults();
@@ -140,6 +149,16 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
                       std::unique_ptr<AccountPreviewDataFetcher>,
                       GaiaId::Hash>
       active_fetchers_;
+  // Used to track single account requests - originating from
+  // `GetPreviewPreferenceForAccount()`.
+  absl::flat_hash_map<GaiaId,
+                      std::vector<base::OnceCallback<void(
+                          std::optional<AccountPreviewPreference>)>>,
+                      GaiaId::Hash>
+      single_pending_requests_;
+  // Used to track batch requests - originating from any source that requires
+  // to compute the overall preferred account.
+  absl::flat_hash_set<GaiaId, GaiaId::Hash> batch_gaia_ids_;
   base::RepeatingClosure all_accounts_fetched_barrier_;
 
   // Mapping used to look up gaia_id based on account_id, used when an account
