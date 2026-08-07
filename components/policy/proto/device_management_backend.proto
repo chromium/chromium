@@ -5312,7 +5312,13 @@ message DeviceManagementRequest {
   optional GenerateChromeProfileChallengeRequest
       generate_chrome_profile_challenge_request = 44;
 
-  // Next id: 45.
+  // Request to check whether a user account is managed and optionally fetch
+  // sign-in interception policies.
+  // HTTP query parameter 'request': 'user_management_status_and_policies'
+  optional UserManagementStatusAndPoliciesRequest
+      user_management_status_and_policies_request = 45;
+
+  // Next id: 46.
 }
 
 // Response from server to device.
@@ -5483,7 +5489,59 @@ message DeviceManagementResponse {
   optional GenerateChromeProfileChallengeResponse
       generate_chrome_profile_challenge_response = 44;
 
-  // Next id: 45.
+  // Response to check user management status and policies request
+  // (`UserManagementStatusAndPoliciesRequest`).
+  optional UserManagementStatusAndPoliciesResponse
+      user_management_status_and_policies_response = 45;
+
+  // Next id: 46.
+}
+
+// Request from device to server to check if a user is managed and retrieve
+// sign-in experience policies.
+message UserManagementStatusAndPoliciesRequest {
+  // Whether to fetch sign-in experience policies for the user. Policies are
+  // fetched only if the user is managed and has management enabled.
+  optional bool should_fetch_policies = 1;
+}
+
+// Enterprise policies needed to customize the sign-in experience (such as
+// profile separation and branding).
+message SigninExperiencePolicies {
+  // Value for the `SyncDisabled` policy.
+  optional bool sync_disabled = 1;
+
+  // Value for the `ProfileSeparationSettings` policy.
+  optional int32 profile_separation_settings = 2;
+
+  // Value for the `ProfileSeparationDataMigrationSettings` policy.
+  optional int32 profile_separation_data_migration_settings = 3;
+
+  // Value for the `BrowserThemeColor` policy.
+  optional string browser_theme_color = 4;
+
+  // Value for the `EnterpriseLogoUrl` policy.
+  optional string enterprise_logo_url = 5;
+
+  // Value for the `EnterpriseCustomLabel` policy.
+  optional string enterprise_custom_label = 6;
+
+  // Value for the `ManagedAccountsSigninRestriction` policy.
+  optional string managed_accounts_signin_restrictions = 7;
+}
+
+// Response from server to device for check user management status and policies
+// request (`UserManagementStatusAndPoliciesRequest`).
+message UserManagementStatusAndPoliciesResponse {
+  // Whether the user account is managed by an enterprise/domain.
+  optional bool is_managed = 1;
+
+  // Whether Chrome management is enabled for this user.
+  optional bool is_management_enabled = 2;
+
+  // Sign-in experience policies for the user, populated when
+  // `should_fetch_policies` is true and management is enabled.
+  optional SigninExperiencePolicies signin_experience_policies = 3;
 }
 
 // Device State Information stored in the server is retrieval at
