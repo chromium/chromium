@@ -415,7 +415,6 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
   // Associate the web contents with the task and set the session handle if
   // provided.
   if (contextual_task_web_contents) {
-    AssociateWebContentsToTask(contextual_task_web_contents, task.GetTaskId());
     if (session_handle) {
       auto* helper =
           ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
@@ -423,6 +422,7 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
       helper->SetTaskSession(task.GetTaskId(), std::move(session_handle),
                              helper->TakeInputStateModel());
     }
+    AssociateWebContentsToTask(contextual_task_web_contents, task.GetTaskId());
   }
 }
 
@@ -1045,7 +1045,6 @@ void ContextualTasksUiService::InitializeTaskInSidePanel(
     const base::Uuid& task_id,
     std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
         session_handle) {
-  AssociateWebContentsToTask(web_contents, task_id);
   // Retrieve the session handle from pending session handles if it was stored
   // early to prevent race conditions where the NavigationThrottle checks
   // eligibility before the handle is associated with the WebContents.
@@ -1061,6 +1060,7 @@ void ContextualTasksUiService::InitializeTaskInSidePanel(
         ->SetTaskSession(task_id, std::move(session_handle),
                          /*input_state_model=*/nullptr);
   }
+  AssociateWebContentsToTask(web_contents, task_id);
 }
 
 void ContextualTasksUiService::OnNonThreadNavigationInTab(

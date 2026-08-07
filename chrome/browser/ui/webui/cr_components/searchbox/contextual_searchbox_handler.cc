@@ -2163,18 +2163,18 @@ void ContextualSearchboxHandler::OpenUrl(
       new_contextual_session_handle = contextual_session_service->GetSession(
           contextual_session_handle->session_id(),
           contextual_session_handle->invocation_source());
-  new_contextual_session_handle->set_submitted_context_tokens(
-      contextual_session_handle->GetSubmittedContextTokens());
-  new_contextual_session_handle->set_persisted_tabs(
-      contextual_session_handle->persisted_tabs());
-  new_contextual_session_handle->set_deselected_tabs_urls(
-      contextual_session_handle->deselected_tabs_urls());
   new_contextual_session_handle->set_smart_tab_sharing_active(
       contextual_session_handle->smart_tab_sharing_active());
   new_contextual_session_handle->set_smart_tab_sharing_toggled_since_last_turn(
       contextual_session_handle->smart_tab_sharing_toggled_since_last_turn());
   new_contextual_session_handle->set_sts_toggled_removed_contexts(
       contextual_session_handle->sts_toggled_removed_contexts());
+  new_contextual_session_handle->set_submitted_context_tokens(
+      contextual_session_handle->GetSubmittedContextTokens());
+  new_contextual_session_handle->set_persisted_tabs(
+      contextual_session_handle->persisted_tabs());
+  new_contextual_session_handle->set_deselected_tabs_urls(
+      contextual_session_handle->deselected_tabs_urls());
 
   // TODO(crbug.com/470404040): Determine what to do with the return
   // value of this call, or move this call to a different location.

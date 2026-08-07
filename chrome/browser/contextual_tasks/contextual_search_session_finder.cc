@@ -4,6 +4,7 @@
 
 #include "chrome/browser/contextual_tasks/contextual_search_session_finder.h"
 
+#include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
@@ -98,17 +99,17 @@ void UpdateContextualSearchWebContentsHelperForTask(
   if (existing_session) {
     session_handle = contextual_search_service->GetSession(
         existing_session->session_id(), existing_session->invocation_source());
-    session_handle->set_submitted_context_tokens(
-        existing_session->GetSubmittedContextTokens());
-    session_handle->set_persisted_tabs(existing_session->persisted_tabs());
-    session_handle->set_deselected_tabs_urls(
-        existing_session->deselected_tabs_urls());
     session_handle->set_smart_tab_sharing_active(
         existing_session->smart_tab_sharing_active());
     session_handle->set_smart_tab_sharing_toggled_since_last_turn(
         existing_session->smart_tab_sharing_toggled_since_last_turn());
     session_handle->set_sts_toggled_removed_contexts(
         existing_session->sts_toggled_removed_contexts());
+    session_handle->set_submitted_context_tokens(
+        existing_session->GetSubmittedContextTokens());
+    session_handle->set_persisted_tabs(existing_session->persisted_tabs());
+    session_handle->set_deselected_tabs_urls(
+        existing_session->deselected_tabs_urls());
   } else {
     session_handle = contextual_search_service->CreateSession(
         CreateQueryControllerConfigParams(),
@@ -123,6 +124,9 @@ void UpdateContextualSearchWebContentsHelperForTask(
         browser_window->GetProfile()->GetPrefs());
     helper->SetTaskSession(task_id, std::move(session_handle),
                            /*input_state_model=*/nullptr);
+    if (auto* provider = ActiveTaskContextProvider::From(browser_window)) {
+      provider->RefreshContext();
+    }
   }
 }
 
