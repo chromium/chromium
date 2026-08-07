@@ -220,11 +220,8 @@ found in the LICENSE file.
     <dimen name="bookmark_desktop_navigation_pane_width">240dp</dimen>
     <dimen name="bookmark_desktop_navigation_header_top_margin">24dp</dimen>
     <dimen name="bookmark_desktop_navigation_header_bot_margin">8dp</dimen>
-    <dimen name="bookmark_desktop_navigation_header_start_margin">32dp</dimen>
     <dimen name="bookmark_desktop_navigation_header_end_margin">16dp</dimen>
     <dimen name="bookmark_desktop_navigation_header_bottom_margin">36dp</dimen>
-    <dimen
-        name="bookmark_desktop_navigation_list_horizontal_padding">24dp</dimen>
     <dimen name="bookmark_desktop_content_padding">24dp</dimen>
 
      <!-- Improved bookmark row properties. -->

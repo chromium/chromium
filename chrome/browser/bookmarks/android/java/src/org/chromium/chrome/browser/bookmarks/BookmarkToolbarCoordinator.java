@@ -64,6 +64,13 @@ public class BookmarkToolbarCoordinator {
                                 null,
                                 isDialogUi);
         mToolbar.setNormalBackgroundColor(Color.TRANSPARENT);
+        if (BookmarkUtils.isDesktopBookmarksLayoutEnabled()) {
+            mToolbar.setTitleMarginStart(
+                    context.getResources()
+                            .getDimensionPixelSize(
+                                    R.dimen.bookmark_desktop_toolbar_title_margin_start));
+        }
+
         updateToolbarPadding(context);
 
         mToolbar.initializeSearchView(

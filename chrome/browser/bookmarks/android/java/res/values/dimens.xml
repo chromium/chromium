@@ -26,4 +26,5 @@ found in the LICENSE file.
   <dimen name="bookmark_popup_folder_view_padding">12dp</dimen>
   <dimen name="bookmark_popup_folder_icon_container_size">32dp</dimen>
   <dimen name="bookmark_popup_input_padding">16dp</dimen>
+  <dimen name="bookmark_desktop_toolbar_title_margin_start">16dp</dimen>
 </resources>

@@ -20,6 +20,7 @@ found in the LICENSE file.
         android:layout_width="@dimen/bookmark_desktop_navigation_pane_width"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:paddingHorizontal="16dp"
         android:background="@macro/bookmark_desktop_navigation_pane_bg">
 
         <!-- Header -->
@@ -27,7 +28,7 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/bookmark_desktop_navigation_header_top_margin"
-            android:layout_marginStart="@dimen/bookmark_desktop_navigation_header_start_margin"
+            android:layout_marginStart="16dp"
             android:layout_marginEnd="@dimen/bookmark_desktop_navigation_header_end_margin"
             android:layout_marginBottom="@dimen/bookmark_desktop_navigation_header_bottom_margin"
             android:gravity="center_vertical"
@@ -43,7 +44,6 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:paddingHorizontal="@dimen/bookmark_desktop_navigation_list_horizontal_padding"
             android:clipToPadding="false"
             android:overScrollMode="ifContentScrolls"/>
     </LinearLayout>
