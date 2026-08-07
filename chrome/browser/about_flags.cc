@@ -10869,7 +10869,7 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
     {"glic", flag_descriptions::kGlicName, flag_descriptions::kGlicDescription,
-     kOsDesktop, FEATURE_VALUE_TYPE(features::kGlic)},
+     kOsDesktop | kOsAndroid, FEATURE_VALUE_TYPE(features::kGlic)},
     {"glic-hotkey-local-scope", flag_descriptions::kGlicHotkeyLocalScopeName,
      flag_descriptions::kGlicHotkeyLocalScopeDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kGlicHotkeyLocalScope)},
@@ -10885,7 +10885,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kGlicZOrderChangesDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kGlicZOrderChanges)},
     {"glic-actor", flag_descriptions::kGlicActorName,
-     flag_descriptions::kGlicActorDescription, kOsDesktop,
+     flag_descriptions::kGlicActorDescription, kOsDesktop | kOsAndroid,
      ENABLE_DISABLE_VALUE_TYPE_AND_VALUE(switches::kEnableFeatures,
                                          "GlicActor,GlicActorUi",
                                          switches::kDisableFeatures,
@@ -10994,7 +10994,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"glic-default-to-last-active-conversation",
      flag_descriptions::kGlicDefaultToLastActiveConversationName,
      flag_descriptions::kGlicDefaultToLastActiveConversationDescription,
-     kOsDesktop,
+     kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(features::kGlicDefaultToLastActiveConversation)},
     {"glic-bind-pinned-unbound-tab",
      flag_descriptions::kGlicBindPinnedUnboundTabName,
