@@ -11,7 +11,7 @@ found in the LICENSE file.
     android:layout_width="@dimen/vertical_tab_pinned_item_width"
     android:layout_height="@dimen/vertical_tab_pinned_item_height"
     android:background="@drawable/vertical_tab_pinned_item_background"
-    android:layout_marginBottom="@dimen/vertical_tab_item_margin_bottom"
+    android:layout_marginBottom="@dimen/vertical_tab_pinned_item_margin_bottom"
     android:clickable="true"
     android:focusable="true">
 
@@ -47,4 +47,36 @@ found in the LICENSE file.
         android:visibility="gone"
         app:indicatorSize="@dimen/vertical_tab_item_icon_size"
         app:trackThickness="@dimen/vertical_tab_item_loading_spinner_thickness" />
+
+    <!-- Actuation Indicator (Cursor Spark). -->
+    <ImageView
+        android:id="@+id/actuation_spark"
+        android:layout_width="@dimen/vertical_tab_item_actuation_icon_size"
+        android:layout_height="@dimen/vertical_tab_item_actuation_icon_size"
+        android:layout_gravity="center"
+        android:scaleType="center"
+        android:src="@drawable/ic_arrow_selector_spark_14dp"
+        android:visibility="gone"
+        android:importantForAccessibility="no"
+        app:tint="@macro/default_icon_color_accent1" />
+
+    <!-- Actuation Spinner (Ring Overlay). -->
+    <ImageView
+        android:id="@+id/actuation_spinner"
+        android:layout_width="@dimen/vertical_tab_item_actuation_icon_size"
+        android:layout_height="@dimen/vertical_tab_item_actuation_icon_size"
+        android:layout_gravity="center"
+        android:src="@drawable/tab_indicator_spinner"
+        android:visibility="gone"
+        android:importantForAccessibility="no"
+        app:tint="@macro/default_icon_color_accent1" />
+
+    <!-- Media Indicator (e.g., speaker icon when playing audio). -->
+    <ImageView
+        android:id="@+id/media_indicator_icon"
+        android:layout_width="@dimen/vertical_tab_item_icon_size"
+        android:layout_height="@dimen/vertical_tab_item_icon_size"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:importantForAccessibility="no" />
 </FrameLayout>

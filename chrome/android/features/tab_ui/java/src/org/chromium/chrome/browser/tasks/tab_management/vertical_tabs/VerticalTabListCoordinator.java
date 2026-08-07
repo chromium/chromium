@@ -1160,7 +1160,8 @@ public class VerticalTabListCoordinator {
 
         Resources res = mContainerView.getContext().getResources();
         int itemWidth = res.getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_width);
-        int minHorizontalGap = res.getDimensionPixelSize(R.dimen.vertical_tab_item_margin_bottom);
+        int minHorizontalGap =
+                res.getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_margin_bottom);
         if (itemWidth <= 0) return DEFAULT_GRID_SPAN_COUNT;
 
         int calculatedSpans =

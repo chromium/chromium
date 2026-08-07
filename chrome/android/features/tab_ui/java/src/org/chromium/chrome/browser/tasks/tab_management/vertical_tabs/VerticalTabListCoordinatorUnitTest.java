@@ -1546,7 +1546,7 @@ public class VerticalTabListCoordinatorUnitTest {
         int itemMarginPx =
                 mActivity
                         .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_item_margin_bottom);
+                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_margin_bottom);
         int testWidthPx =
                 itemWidthPx * 2
                         + itemMarginPx
@@ -1588,7 +1588,7 @@ public class VerticalTabListCoordinatorUnitTest {
         int itemMarginPx =
                 mActivity
                         .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_item_margin_bottom);
+                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_margin_bottom);
         int testWidthPx =
                 itemWidthPx * 2
                         + itemMarginPx

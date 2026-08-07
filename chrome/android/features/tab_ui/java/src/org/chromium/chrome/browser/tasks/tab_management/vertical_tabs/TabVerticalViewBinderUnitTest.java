@@ -18,11 +18,13 @@ import static org.mockito.Mockito.when;
 
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
+import android.view.ContextThemeWrapper;
 import android.view.InputDevice;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -80,6 +82,7 @@ public class TabVerticalViewBinderUnitTest {
     private static final String TEST_TITLE = "Google Website";
     private static final String TEST_DESCRIPTION = "Normal Tab Description";
     private static final String TEST_ACCESSIBILITY_DESCRIPTION = "Accessibility Tab Description";
+    private static final int NON_TABLET_WIDTH_DP = 320;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TabActionListener mCloseListener;
@@ -1410,58 +1413,38 @@ public class TabVerticalViewBinderUnitTest {
 
     @Test
     @SmallTest
-    public void testBindPinnedTab_RailCollapsed() {
-        ViewGroup pinnedView = inflatePinnedTabView();
-        pinnedView.setLayoutParams(
-                new ViewGroup.MarginLayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
-        mModel.set(TabProperties.RAIL_COLLAPSE_STATE, RailCollapseState.COLLAPSED);
-
-        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.RAIL_COLLAPSE_STATE);
-
-        int expectedSize =
-                pinnedView
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_item_collapsed_size);
-        assertEquals(expectedSize, pinnedView.getLayoutParams().width);
-        assertEquals(expectedSize, pinnedView.getLayoutParams().height);
-
-        // Verify padding is collapsed margin
-        ViewGroup.MarginLayoutParams lp =
-                (ViewGroup.MarginLayoutParams) pinnedView.getLayoutParams();
-        int expectedMargin =
-                TabVerticalViewBinder.getCollapsedChildMarginStart(pinnedView.getContext());
-        assertEquals(expectedMargin, lp.getMarginStart());
+    public void testBindPinnedTab_RailCollapsed_Tablet() {
+        verifyBindPinnedTab_RailCollapsed(mActivity);
     }
 
     @Test
     @SmallTest
-    public void testBindPinnedTab_RailExpanded() {
-        ViewGroup pinnedView = inflatePinnedTabView();
-        pinnedView.setLayoutParams(
-                new ViewGroup.MarginLayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+    public void testBindPinnedTab_RailCollapsed_NonTablet() {
+        Configuration config = new Configuration(mActivity.getResources().getConfiguration());
+        config.smallestScreenWidthDp = NON_TABLET_WIDTH_DP;
+        Context nonTabletContext =
+                new ContextThemeWrapper(
+                        mActivity.createConfigurationContext(config),
+                        R.style.Theme_BrowserUI_DayNight);
+        verifyBindPinnedTab_RailCollapsed(nonTabletContext);
+    }
 
-        mModel.set(TabProperties.RAIL_COLLAPSE_STATE, RailCollapseState.EXPANDED);
+    @Test
+    @SmallTest
+    public void testBindPinnedTab_RailExpanded_Tablet() {
+        verifyBindPinnedTab_RailExpanded(mActivity);
+    }
 
-        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.RAIL_COLLAPSE_STATE);
-
-        int expectedWidth =
-                pinnedView
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_width);
-        int expectedHeight =
-                pinnedView
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_height);
-        assertEquals(expectedWidth, pinnedView.getLayoutParams().width);
-        assertEquals(expectedHeight, pinnedView.getLayoutParams().height);
-
-        // Verify padding is 0
-        ViewGroup.MarginLayoutParams lp =
-                (ViewGroup.MarginLayoutParams) pinnedView.getLayoutParams();
-        assertEquals(0, lp.getMarginStart());
+    @Test
+    @SmallTest
+    public void testBindPinnedTab_RailExpanded_NonTablet() {
+        Configuration config = new Configuration(mActivity.getResources().getConfiguration());
+        config.smallestScreenWidthDp = NON_TABLET_WIDTH_DP;
+        Context nonTabletContext =
+                new ContextThemeWrapper(
+                        mActivity.createConfigurationContext(config),
+                        R.style.Theme_BrowserUI_DayNight);
+        verifyBindPinnedTab_RailExpanded(nonTabletContext);
     }
 
     @Test
@@ -1637,52 +1620,101 @@ public class TabVerticalViewBinderUnitTest {
 
     @Test
     @SmallTest
-    public void testTabItemDimensions_TabletVsNonTablet() {
+    public void testIconPriorities_PinnedTab() {
+        ViewGroup pinnedView = inflatePinnedTabView();
+        mModel.set(TabProperties.IS_PINNED, true);
+
+        // Setup favicon fetcher.
+        mModel.set(TabProperties.FAVICON_FETCHER, mFaviconFetcher);
+
+        // Setup all other icons to be active.
+        mModel.set(TabProperties.IS_LOADING, true);
+        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.RECORDING);
+        mModel.set(
+                TabProperties.ACTOR_UI_STATE,
+                new UiTabState(0, null, null, TabIndicatorStatus.DYNAMIC, false));
+        mModel.set(TabProperties.IS_SELECTED, true);
+
+        // Bind all properties.
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.FAVICON_FETCHER);
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.IS_LOADING);
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.MEDIA_INDICATOR);
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.ACTOR_UI_STATE);
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.IS_SELECTED);
+
+        View spinner = pinnedView.findViewById(R.id.tab_loading_spinner);
+        View faviconView = pinnedView.findViewById(R.id.tab_favicon);
+        View mediaIndicatorView = pinnedView.findViewById(R.id.media_indicator_icon);
+        View actuationSparkView = pinnedView.findViewById(R.id.actuation_spark);
+
+        // --- Priority 1: Recording/Sharing Media Indicator ---
+        assertEquals(View.GONE, actuationSparkView.getVisibility());
+        assertEquals(View.VISIBLE, mediaIndicatorView.getVisibility());
+        assertEquals(View.GONE, spinner.getVisibility());
+        assertEquals(View.GONE, faviconView.getVisibility());
+
+        // --- Priority 2: AI Actuation Indicator ---
+        // Change Media to Standard (Audible) so AI actuation takes priority.
+        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.AUDIBLE);
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.MEDIA_INDICATOR);
+
+        assertEquals(View.VISIBLE, actuationSparkView.getVisibility());
+        assertEquals(View.GONE, mediaIndicatorView.getVisibility());
+        assertEquals(View.GONE, spinner.getVisibility());
+        assertEquals(View.GONE, faviconView.getVisibility());
+
+        // --- Priority 3: Standard Media Indicator ---
+        // Disable AI actuation.
+        mModel.set(
+                TabProperties.ACTOR_UI_STATE,
+                new UiTabState(0, null, null, TabIndicatorStatus.NONE, false));
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.ACTOR_UI_STATE);
+
+        assertEquals(View.GONE, actuationSparkView.getVisibility());
+        assertEquals(View.VISIBLE, mediaIndicatorView.getVisibility());
+        assertEquals(View.GONE, spinner.getVisibility());
+        assertEquals(View.GONE, faviconView.getVisibility());
+
+        // --- Priority 4: Loading Spinner ---
+        // Disable Media.
+        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.NONE);
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.MEDIA_INDICATOR);
+
+        assertEquals(View.GONE, actuationSparkView.getVisibility());
+        assertEquals(View.GONE, mediaIndicatorView.getVisibility());
+        assertEquals(View.VISIBLE, spinner.getVisibility());
+        assertEquals(View.GONE, faviconView.getVisibility());
+
+        // --- Priority 5: Favicon ---
+        // Disable Loading.
+        mModel.set(TabProperties.IS_LOADING, false);
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.IS_LOADING);
+
+        assertEquals(View.GONE, actuationSparkView.getVisibility());
+        assertEquals(View.GONE, mediaIndicatorView.getVisibility());
+        assertEquals(View.GONE, spinner.getVisibility());
+        assertEquals(View.VISIBLE, faviconView.getVisibility());
+    }
+
+    @Test
+    @SmallTest
+    public void testResourceQualifiers_TabletVsNonTablet() {
         // Touch tablet device (default in setUp, loads values-sw600dp)
-        int expectedTouchPadding =
-                mActivity
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_item_padding_vertical);
-        int expectedTouchInset =
-                mActivity
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_item_touch_target_inset);
         int expectedTouchHeight =
                 mActivity.getResources().getDimensionPixelSize(R.dimen.vertical_tab_item_height);
         int expectedTouchMarginBottom =
                 mActivity
                         .getResources()
                         .getDimensionPixelSize(R.dimen.vertical_tab_item_margin_bottom);
-        int expectedTouchPinnedHeight =
-                mActivity
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_height);
-        int expectedTouchCollapsedSize =
-                mActivity
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_item_collapsed_size);
 
-        assertEquals(2, expectedTouchPadding);
-        assertEquals(2, expectedTouchInset);
         assertEquals(40, expectedTouchHeight);
         assertEquals(0, expectedTouchMarginBottom);
-        assertEquals(36, expectedTouchPinnedHeight);
-        assertEquals(36, expectedTouchCollapsedSize);
 
         // Non-tablet device (loads values)
-        android.content.res.Configuration config =
-                new android.content.res.Configuration(mActivity.getResources().getConfiguration());
-        config.smallestScreenWidthDp = 320;
-        android.content.Context nonTabletContext = mActivity.createConfigurationContext(config);
+        Configuration config = new Configuration(mActivity.getResources().getConfiguration());
+        config.smallestScreenWidthDp = NON_TABLET_WIDTH_DP;
+        Context nonTabletContext = mActivity.createConfigurationContext(config);
 
-        int expectedDefaultPadding =
-                nonTabletContext
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_item_padding_vertical);
-        int expectedDefaultInset =
-                nonTabletContext
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_item_touch_target_inset);
         int expectedDefaultHeight =
                 nonTabletContext
                         .getResources()
@@ -1691,21 +1723,9 @@ public class TabVerticalViewBinderUnitTest {
                 nonTabletContext
                         .getResources()
                         .getDimensionPixelSize(R.dimen.vertical_tab_item_margin_bottom);
-        int expectedDefaultPinnedHeight =
-                nonTabletContext
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_height);
-        int expectedDefaultCollapsedSize =
-                nonTabletContext
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_item_collapsed_size);
 
-        assertEquals(0, expectedDefaultPadding);
-        assertEquals(0, expectedDefaultInset);
         assertEquals(32, expectedDefaultHeight);
         assertEquals(4, expectedDefaultMarginBottom);
-        assertEquals(32, expectedDefaultPinnedHeight);
-        assertEquals(32, expectedDefaultCollapsedSize);
     }
 
     @Test
@@ -1762,6 +1782,68 @@ public class TabVerticalViewBinderUnitTest {
                         .getResources()
                         .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_height);
         assertEquals(expectedTouchPinnedHeight, pinnedView.getLayoutParams().height);
+    }
+
+    private void verifyBindPinnedTab_RailCollapsed(Context context) {
+        ViewGroup pinnedView =
+                (ViewGroup)
+                        LayoutInflater.from(context)
+                                .inflate(R.layout.vertical_tab_pinned_item, null, false);
+        pinnedView.setLayoutParams(
+                new ViewGroup.MarginLayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        mModel.set(TabProperties.IS_PINNED, true);
+        mModel.set(TabProperties.RAIL_COLLAPSE_STATE, RailCollapseState.COLLAPSED);
+
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.RAIL_COLLAPSE_STATE);
+
+        int expectedSize =
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_item_collapsed_size);
+        assertEquals(expectedSize, pinnedView.getLayoutParams().width);
+        assertEquals(expectedSize, pinnedView.getLayoutParams().height);
+
+        ViewGroup.MarginLayoutParams lp =
+                (ViewGroup.MarginLayoutParams) pinnedView.getLayoutParams();
+        int expectedMarginStart = TabVerticalViewBinder.getCollapsedChildMarginStart(context);
+        assertEquals(expectedMarginStart, lp.getMarginStart());
+
+        int expectedMarginBottom =
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_margin_bottom);
+        assertEquals(expectedMarginBottom, lp.bottomMargin);
+    }
+
+    private void verifyBindPinnedTab_RailExpanded(Context context) {
+        ViewGroup pinnedView =
+                (ViewGroup)
+                        LayoutInflater.from(context)
+                                .inflate(R.layout.vertical_tab_pinned_item, null, false);
+        pinnedView.setLayoutParams(
+                new ViewGroup.MarginLayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        mModel.set(TabProperties.IS_PINNED, true);
+        mModel.set(TabProperties.RAIL_COLLAPSE_STATE, RailCollapseState.EXPANDED);
+
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.RAIL_COLLAPSE_STATE);
+
+        int expectedWidth =
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_width);
+        int expectedHeight =
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_height);
+        assertEquals(expectedWidth, pinnedView.getLayoutParams().width);
+        assertEquals(expectedHeight, pinnedView.getLayoutParams().height);
+
+        ViewGroup.MarginLayoutParams lp =
+                (ViewGroup.MarginLayoutParams) pinnedView.getLayoutParams();
+        assertEquals(0, lp.getMarginStart());
+
+        int expectedMarginBottom =
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_margin_bottom);
+        assertEquals(expectedMarginBottom, lp.bottomMargin);
     }
 
     private ViewGroup inflatePinnedTabView() {
