@@ -24,8 +24,10 @@ void EmailOneTimeTokenFetchCoordinator::SignalNetworkRequestNeeded(
   // Check if we are already tracking this notification in either the active
   // requests or the pending queue.
   if (active_requests_.contains(notification.encrypted_message_reference)) {
-    DLOG(WARNING) << "Duplicate notification received for an active request: "
-                  << notification.encrypted_message_reference.value();
+    LOG_OTT(delegate_->GetLogSink())
+        << "Coordinator ignoring notification: Duplicate "
+           "notification received for an active request: "
+        << notification.encrypted_message_reference.value();
     return;
   }
 
@@ -34,12 +36,18 @@ void EmailOneTimeTokenFetchCoordinator::SignalNetworkRequestNeeded(
            notification.encrypted_message_reference;
   });
   if (it != pending_queue_.end()) {
-    DLOG(WARNING) << "Duplicate notification received for a pending request: "
-                  << notification.encrypted_message_reference.value();
+    LOG_OTT(delegate_->GetLogSink())
+        << "Coordinator ignoring notification: Duplicate "
+           "notification received for a pending request: "
+        << notification.encrypted_message_reference.value();
     return;
   }
 
   pending_queue_.push_back({notification, base::TimeTicks::Now()});
+  LOG_OTT(delegate_->GetLogSink())
+      << "Notification queued in coordinator. Current queue size: "
+      << pending_queue_.size() << ", message_reference: "
+      << notification.encrypted_message_reference.value();
   base::UmaHistogramCounts100("Autofill.OneTimeTokens.Backend.Gmail.QueueSize",
                               pending_queue_.size());
   ProcessQueue();
@@ -72,6 +80,10 @@ void EmailOneTimeTokenFetchCoordinator::ProcessQueue() {
         {queued_item.notification.encrypted_message_reference,
          std::move(queued_item.notification)});
     if (inserted) {
+      LOG_OTT(delegate_->GetLogSink())
+          << "Coordinator starting network request. Active "
+             "requests count: "
+          << active_requests_.size();
       delegate_->OnCanSendNetworkRequest(it->second, queued_item.entry_time);
     }
 

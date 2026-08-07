@@ -171,11 +171,16 @@ void OneTimeTokenServiceImpl::RetrieveGmailOtpIfNeeded(base::Time expiration) {
     // We use std::max to ensure that a new subscriber with a shorter expiration
     // doesn't accidentally terminate the backend session for existing
     // subscribers who need it to stay alive longer.
-    gmail_subscription_.SetExpirationTime(
-        std::max(expiration, gmail_subscription_.GetExpirationTime()));
+    base::Time new_expiration =
+        std::max(expiration, gmail_subscription_.GetExpirationTime());
+    LOG_OTT(&log_sink_) << "Extended existing Gmail backend subscription to "
+                        << "expiration=" << new_expiration;
+    gmail_subscription_.SetExpirationTime(new_expiration);
     return;
   }
 
+  LOG_OTT(&log_sink_) << "Created new Gmail backend subscription with "
+                      << "expiration=" << expiration;
   gmail_subscription_ = gmail_.backend->Subscribe(
       expiration, base::BindRepeating(
                       &OneTimeTokenServiceImpl::OnResponseFromGmailOtpBackend,

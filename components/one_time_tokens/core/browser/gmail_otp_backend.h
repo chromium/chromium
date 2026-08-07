@@ -88,6 +88,8 @@ class GmailOtpBackendImpl : public GmailOtpBackend,
       const OneTimeTokenBackendNotification& notification,
       base::TimeTicks trigger_time) override;
 
+  OneTimeTokenLogSink* GetLogSink() const override;
+
  private:
   void ProcessCachedNotifications();
 

@@ -45,12 +45,18 @@ void GmailOtpBackendImpl::SetLogSink(OneTimeTokenLogSink* log_sink) {
   log_sink_ = log_sink;
 }
 
+OneTimeTokenLogSink* GmailOtpBackendImpl::GetLogSink() const {
+  return log_sink_;
+}
+
 ExpiringSubscription GmailOtpBackendImpl::Subscribe(base::Time expiration,
                                                     Callback callback) {
   ExpiringSubscription subscription = subscription_manager_.Subscribe(
       expiration, std::move(callback),
       /*expiration_callback=*/base::DoNothing());
   if (!url_loader_factory_) {
+    LOG_OTT(log_sink_) << "Subscription failed: SharedURLLoaderFactory is null "
+                          "(backend initialization failed)";
     base::UmaHistogramBoolean("Autofill.OneTimeTokens.Backend.Gmail.Success",
                               false);
     base::UmaHistogramEnumeration(
@@ -93,6 +99,7 @@ void GmailOtpBackendImpl::OnIncomingOneTimeTokenBackendNotification(
     return;
   }
 
+  LOG_OTT(log_sink_) << "Incoming tickle accepted into notification cache";
   ProcessCachedNotifications();
 }
 
@@ -102,7 +109,10 @@ void GmailOtpBackendImpl::ProcessCachedNotifications() {
         << "Skipping processing of cached notifications: no subscribers.";
     return;
   }
-  for (const auto& notification : notification_cache_.TakeItems()) {
+  auto items = notification_cache_.TakeItems();
+  LOG_OTT(log_sink_) << "Processing " << items.size()
+                     << " cached notification(s) for active subscribers.";
+  for (const auto& notification : items) {
     base::UmaHistogramMediumTimes(
         "Autofill.OneTimeTokens.Backend.Gmail.SubscriptionWaitLatency",
         base::TimeTicks::Now() - notification.notification_received_timeticks);
@@ -120,6 +130,8 @@ void GmailOtpBackendImpl::RetrieveGmailOtp(
     const OneTimeTokenBackendNotification& notification,
     base::TimeTicks trigger_time) {
   if (subscription_manager_.GetNumberSubscribers() == 0) {
+    LOG_OTT(log_sink_) << "Aborting Gmail OTP retrieval: all subscribers "
+                          "expired or unsubscribed.";
     coordinator_->InformOfNetworkRequestFinished(notification);
     return;
   }
@@ -128,6 +140,7 @@ void GmailOtpBackendImpl::RetrieveGmailOtp(
       active_fetchers_.try_emplace(notification.encrypted_message_reference);
   CHECK(inserted);
 
+  LOG_OTT(log_sink_) << "Starting EmailOneTimeTokenFetcher for notification.";
   it->second = std::make_unique<EmailOneTimeTokenFetcher>(
       url_loader_factory_, *identity_manager_,
       notification.encrypted_message_reference.value(), log_sink_);
@@ -159,11 +172,16 @@ void GmailOtpBackendImpl::OnResponseFromGmailOtpBackend(
   coordinator_->InformOfNetworkRequestFinished(notification);
 
   if (!reply.has_value()) {
+    LOG_OTT(log_sink_) << "Gmail OTP backend retrieval failed: error="
+                       << std::to_underlying(reply.error())
+                       << ". Notifying subscribers.";
     subscription_manager_.Notify(base::unexpected(reply.error()));
     return;
   }
 
   const OneTimeToken& token = reply.value();
+  LOG_OTT(log_sink_) << "Gmail OTP backend retrieval succeeded. Notifying "
+                        "subscribers.";
   subscription_manager_.Notify(base::ok(token));
 }
 

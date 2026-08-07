@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "components/affiliations/core/browser/domain_matching/domain_relation_checker.h"
 #include "components/affiliations/core/browser/match_type.h"
+#include "components/one_time_tokens/core/browser/one_time_token_log_sink.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service.h"
 #include "components/one_time_tokens/core/common/one_time_token_features.h"
 #include "url/origin.h"
@@ -96,6 +97,10 @@ void GmailOtpRetriever::Start() {
   // the service are also checked for relevance.
   SubscribeForOneTimeToken();
 
+  LOG_OTT(one_time_token_service_->log_sink())
+      << "GmailOtpRetriever checking " << cached_tokens.size()
+      << " cached Gmail token(s).";
+
   if (cached_tokens.empty()) {
     return;
   }
@@ -126,6 +131,9 @@ void GmailOtpRetriever::CheckSenderDomainMatchesFrameToFill(
   std::string sender_domain = ExtractEmailDomain(sender_address);
 
   CHECK(!otp_frame_origin_.opaque());
+  LOG_OTT(one_time_token_service_->log_sink())
+      << "GmailOtpRetriever checking sender domain match: sender_address="
+      << sender_address << ", sender_domain=" << sender_domain;
   domain_relation_checker_->Check(
       otp_frame_origin_.GetTupleOrPrecursorTupleIfOpaque(),
       url::SchemeHostPort(url::kHttpsScheme, std::move(sender_domain),
@@ -185,7 +193,12 @@ void GmailOtpRetriever::OnCachedTokenMatchChecked(
   // synchronously invalidated below, preventing any artificial timeout races.
   pending_sender_domain_checks_--;
 
-  if (IsMatchTypeAllowed(match_type)) {
+  bool allowed = IsMatchTypeAllowed(match_type);
+  LOG_OTT(one_time_token_service_->log_sink())
+      << "GmailOtpRetriever cached token match checked: allowed=" << allowed
+      << ", match_type=" << (match_type ? static_cast<int>(*match_type) : -1)
+      << ", is_login_flow=" << is_login_flow_;
+  if (allowed) {
     subscription_ = {};
     weak_ptr_factory_.InvalidateWeakPtrs();
     std::move(retrieve_otp_callback_)
@@ -210,11 +223,18 @@ void GmailOtpRetriever::OnOneTimeTokenReceived(
   CHECK(retrieve_otp_callback_);
 
   if (!result.has_value()) {
+    LOG_OTT(one_time_token_service_->log_sink())
+        << "GmailOtpRetriever received error from service: error="
+        << static_cast<int>(result.error());
     error_ = result.error();
     subscription_ = {};
     MaybeFail();
     return;
   }
+
+  LOG_OTT(one_time_token_service_->log_sink())
+      << "GmailOtpRetriever received token from service: sender_address="
+      << result->sender_address().value_or("");
 
   std::string sender_address = result->sender_address().value_or("");
   CheckSenderDomainMatchesFrameToFill(
@@ -235,7 +255,12 @@ void GmailOtpRetriever::OnReceivedTokenMatchChecked(
   // synchronously invalidated below, preventing any artificial timeout races.
   pending_sender_domain_checks_--;
 
-  if (IsMatchTypeAllowed(match_type)) {
+  bool allowed = IsMatchTypeAllowed(match_type);
+  LOG_OTT(one_time_token_service_->log_sink())
+      << "GmailOtpRetriever received token match checked: allowed=" << allowed
+      << ", match_type=" << (match_type ? static_cast<int>(*match_type) : -1)
+      << ", is_login_flow=" << is_login_flow_;
+  if (allowed) {
     subscription_ = {};
     weak_ptr_factory_.InvalidateWeakPtrs();
     std::move(retrieve_otp_callback_)
@@ -250,6 +275,9 @@ void GmailOtpRetriever::OnReceivedTokenMatchChecked(
 }
 
 void GmailOtpRetriever::OnOneTimeTokenTimeout() {
+  LOG_OTT(one_time_token_service_->log_sink())
+      << "GmailOtpRetriever subscription timed out waiting for matching OTP.";
+
   // The retriever will no longer be called after timeout anyway, but
   // clean up the state nonetheless to make it clearer.
   subscription_ = {};
@@ -267,6 +295,8 @@ void GmailOtpRetriever::MaybeFail() {
 
 void GmailOtpRetriever::OnOpaqueOriginDetected() {
   CHECK(retrieve_otp_callback_);
+  LOG_OTT(one_time_token_service_->log_sink())
+      << "GmailOtpRetriever failed: Opaque frame origin.";
   std::move(retrieve_otp_callback_)
       .Run(base::unexpected(OneTimeTokenRetrievalError::kGmailOtpUnknown));
 }

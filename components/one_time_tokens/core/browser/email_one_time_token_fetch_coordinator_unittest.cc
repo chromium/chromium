@@ -20,6 +20,7 @@ class MockDelegate : public EmailOneTimeTokenFetchCoordinator::Delegate {
               (const OneTimeTokenBackendNotification& notification,
                base::TimeTicks trigger_time),
               (override));
+  MOCK_METHOD(OneTimeTokenLogSink*, GetLogSink, (), (const, override));
 };
 
 class EmailOneTimeTokenFetchCoordinatorTest : public testing::Test {
