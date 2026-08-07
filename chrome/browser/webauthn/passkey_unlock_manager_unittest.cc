@@ -67,7 +67,8 @@ class PasskeyUnlockManagerTest : public testing::Test {
       GpmPinStatus gpm_pin_status,
       syncer::PassphraseType passphrase_type =
           syncer::PassphraseType::kKeystorePassphrase,
-      bool trusted_vault_key_required = false) {
+      bool trusted_vault_key_required = false,
+      syncer::DataTypeSet inactive_sync_data_types = {}) {
     test_enclave_manager_ = CreateMockEnclaveManager(
         /*is_enclave_manager_loaded=*/true,
         /*is_enclave_manager_ready=*/enclave_manager_status == kEnclaveReady,
@@ -78,6 +79,7 @@ class PasskeyUnlockManagerTest : public testing::Test {
     test_sync_service()->GetUserSettings()->SetPassphraseType(passphrase_type);
     test_sync_service()->GetUserSettings()->SetTrustedVaultKeyRequired(
         trusted_vault_key_required);
+    test_sync_service()->SetFailedDataTypes(inactive_sync_data_types);
     passkey_unlock_manager_ = std::make_unique<PasskeyUnlockManager>(
         test_enclave_manager_.get(), test_passkey_model_.get(),
         test_sync_service_.get());
@@ -516,6 +518,33 @@ TEST_F(PasskeyUnlockManagerTest,
 
   histogram_tester.ExpectTotalCount(
       "PasswordManager.TrustedVaultPasswordReadiness", 0);
+}
+
+TEST_F(PasskeyUnlockManagerTest,
+       DoesNotLogPasswordReadinessHistogramUntilPasswordsAreActive) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      password_manager::features::kRecordPasswordReadiness};
+
+  base::HistogramTester histogram_tester;
+  ConfigureProfileAndSyncService(
+      kEnclaveNotReady, kPasskeyModelReady, GpmPinStatus::kGpmPinUnset,
+      syncer::PassphraseType::kTrustedVaultPassphrase,
+      /*trusted_vault_key_required=*/false,
+      /*inactive_sync_data_types=*/{syncer::PASSWORDS});
+
+  AdvanceClock(base::Seconds(31));
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.TrustedVaultPasswordReadiness", 0);
+
+  // This makes `PASSWORDS` an active sync data type.
+  test_sync_service()->SetFailedDataTypes({});
+  test_sync_service()->FireStateChanged();
+
+  AdvanceClock(base::Seconds(31));
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.TrustedVaultPasswordReadiness",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
 }
 
 }  // namespace

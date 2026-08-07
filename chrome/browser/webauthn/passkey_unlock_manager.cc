@@ -381,8 +381,6 @@ void PasskeyUnlockManager::MaybeRecordDelayedPasswordReadinessHistogram() {
           syncer::UserSelectableType::kPasswords)) {
     return;
   }
-  // Ensure that we will not try to record the metric again.
-  password_readiness_recorded_on_startup_ = true;
   // The metric should only be recorded for users with the trusted vault
   // passphrase. For users with a different passphrase type on startup we don't
   // record this metric.
@@ -392,6 +390,18 @@ void PasskeyUnlockManager::MaybeRecordDelayedPasswordReadinessHistogram() {
       syncer::PassphraseType::kTrustedVaultPassphrase) {
     return;
   }
+  if (!user_settings->IsTrustedVaultKeyRequiredForPreferredDataTypes() &&
+      !sync_service()->GetActiveDataTypes().Has(syncer::PASSWORDS)) {
+    // When Sync starts up, it asynchronously checks whether trusted vault keys
+    // are available locally. While this check is in flight,
+    // `IsTrustedVaultKeyRequiredForPreferredDataTypes()` temporarily returns
+    // false and `syncer::PASSWORDS` is not active yet. In this case we should
+    // not publish the password readiness metric yet.
+    return;
+  }
+  // Ensure that we will not try to record the metric again.
+  password_readiness_recorded_on_startup_ = true;
+
   bool password_readiness =
       !user_settings->IsTrustedVaultKeyRequiredForPreferredDataTypes();
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
