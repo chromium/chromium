@@ -157,6 +157,10 @@ class MEDIA_EXPORT SymphoniaAudioDecoder : public AudioDecoder {
   std::optional<base::TimeDelta> first_frame_timestamp_;
 };
 
+MEDIA_EXPORT SymphoniaPacket
+ToSymphoniaPacket(const DecoderBuffer& buffer,
+                  std::optional<base::TimeDelta> first_frame_timestamp);
+
 }  // namespace media
 
 #endif  // MEDIA_FILTERS_SYMPHONIA_AUDIO_DECODER_H_
