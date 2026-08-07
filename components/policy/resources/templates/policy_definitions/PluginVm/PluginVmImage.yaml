@@ -25,6 +25,6 @@ schema:
       type: string
   type: object
 supported_on:
-- chrome_os:72-151
+- chrome_os:72-152
 tags: []
 type: dict

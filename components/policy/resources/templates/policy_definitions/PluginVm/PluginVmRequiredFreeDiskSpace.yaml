@@ -17,6 +17,6 @@ schema:
   minimum: 0
   type: integer
 supported_on:
-- chrome_os:85-151
+- chrome_os:85-152
 tags: []
 type: int

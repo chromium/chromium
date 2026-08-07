@@ -84,7 +84,7 @@ enum class OAuthConsumerId {
   kArcBackgroundAuthCodeFetcher = 55,
   kGcmAccountTracker = 56,
   kPolicyTokenForwarder = 57,
-  kPluginVmLicenseChecker = 58,  // Deprecated. Do not reuse.
+  // kPluginVmLicenseChecker = 58,  // Removed due to deprecation.
   kDrivefsAuth = 59,
   kNearbyPresenceServerClient = 60,
   kCryptAuthClient = 61,

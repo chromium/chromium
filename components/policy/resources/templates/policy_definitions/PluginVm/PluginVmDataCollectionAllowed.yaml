@@ -21,6 +21,6 @@ owners:
 schema:
   type: boolean
 supported_on:
-- chrome_os:85-151
+- chrome_os:85-152
 tags: []
 type: main

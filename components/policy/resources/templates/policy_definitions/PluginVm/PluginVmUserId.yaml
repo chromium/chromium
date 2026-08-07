@@ -13,6 +13,6 @@ schema:
   sensitiveValue: true
   type: string
 supported_on:
-- chrome_os:84-151
+- chrome_os:84-152
 tags: []
 type: string

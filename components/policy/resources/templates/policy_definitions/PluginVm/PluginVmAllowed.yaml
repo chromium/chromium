@@ -21,7 +21,7 @@ owners:
 schema:
   type: boolean
 supported_on:
-- chrome_os:72-151
+- chrome_os:72-152
 tags: []
 type: main
 generate_device_proto: False

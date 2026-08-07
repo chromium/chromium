@@ -125,9 +125,6 @@ constexpr char kKidManagementPrivilegedOAuth2Scope[] =
 // OAuth2 scope for access to Google Family Link Supervision Setup.
 constexpr char kKidsSupervisionSetupChildOAuth2Scope[] =
     "https://www.googleapis.com/auth/kids.supervision.setup.child";
-// OAuth2 scope for app license check.
-constexpr char kLicenseCheckOAuth2Scope[] =
-    "https://www.googleapis.com/auth/applicense.bytebot";
 // OAuth2 scope for manta.
 constexpr char kMantaOAuth2Scope[] =
     "https://www.googleapis.com/auth/mdi.aratea";
@@ -291,7 +288,6 @@ constexpr char kArcBackgroundAuthCodeFetcherName[] =
     "arc_background_auth_code_fetcher";
 constexpr char kGcmAccountTrackerName[] = "gcm_account_tracker";
 constexpr char kPolicyTokenForwarderName[] = "policy_token_forwarder";
-constexpr char kPluginVmLicenseCheckerName[] = "plugin_vm_license_checker";
 constexpr char kDrivefsAuthName[] = "drivefs_auth";
 constexpr char kNearbyPresenceServerClientName[] =
     "nearby_presence_server_client";
@@ -605,10 +601,6 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
           /*name=*/kPolicyTokenForwarderName,
           /*scopes=*/{GaiaConstants::kDeviceManagementServiceOAuth,
                       GaiaConstants::kGoogleUserInfoEmail});
-    case OAuthConsumerId::kPluginVmLicenseChecker:
-      return OAuthConsumer(
-          /*name=*/kPluginVmLicenseCheckerName,
-          /*scopes=*/{kLicenseCheckOAuth2Scope});
     case OAuthConsumerId::kDrivefsAuth:
       return OAuthConsumer(
           /*name=*/kDrivefsAuthName,
