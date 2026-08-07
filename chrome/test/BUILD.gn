@@ -2358,6 +2358,7 @@ if (!is_android) {
       "//chrome/browser/ui/views/new_tab_footer:browser_tests",
       "//chrome/browser/ui/views/page_action",
       "//chrome/browser/ui/views/page_info",
+      "//chrome/browser/ui/views/passwords:browser_tests",
       "//chrome/browser/ui/views/passwords:password_bubble_view_base",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/views/tabs/glic",
@@ -2838,6 +2839,12 @@ if (!is_android) {
 
     allow_circular_includes_from = []
 
+    # password_generation_popup_view_views_browsertest.cc includes
+    # ../browser/ui/views/autofill/popup/popup_pixel_test.h, which is compiled
+    # directly into this target's own sources rather than a separate one.
+    allow_circular_includes_from +=
+        [ "//chrome/browser/ui/views/passwords:browser_tests" ]
+
     if (is_win || is_chromeos) {
       deps += [ "//chrome/browser/ui/webui/signin:inline_login" ]
     }
@@ -3016,8 +3023,6 @@ if (!is_android) {
       "../browser/ui/views/infobars/confirm_infobar_custom_layout_browsertest.cc",
       "../browser/ui/views/intent_picker_bubble_view_browsertest.cc",
       "../browser/ui/views/intent_picker_dialog_browsertest.cc",
-      "../browser/ui/views/passwords/password_change/password_change_toast_browsertest.cc",
-      "../browser/ui/views/passwords/password_change/password_change_ui_browsertest.cc",
       "../browser/ui/views/profiles/avatar_toolbar_button_browsertest.cc",
       "../browser/ui/views/sharing/remote_copy_browsertest.cc",
       "../browser/ui/views/sharing/sharing_browsertest.cc",
@@ -3730,10 +3735,6 @@ if (!is_android) {
         "../browser/ui/views/hung_renderer_view_browsertest.cc",
         "../browser/ui/views/javascript_tab_modal_dialog_view_views_browsertest.cc",
         "../browser/ui/views/page_action/zoom_view_browsertest.cc",
-        "../browser/ui/views/passwords/password_bubble_browsertest.cc",
-        "../browser/ui/views/passwords/password_cross_domain_confirmation_popup_view_views_browsertest.cc",
-        "../browser/ui/views/passwords/password_dialog_view_browsertest.cc",
-        "../browser/ui/views/passwords/password_generation_popup_view_views_browsertest.cc",
         "../browser/ui/views/permissions/chip/permission_chip_browsertest.cc",
         "../browser/ui/views/permissions/chip/permission_dashboard_browsertest.cc",
         "../browser/ui/views/permissions/embedded_permission_prompt_uitest.cc",
@@ -6369,13 +6370,6 @@ test("unit_tests") {
       "../browser/ui/views/autofill/save_address_profile_view_unittest.cc",
       "../browser/ui/views/autofill/update_address_profile_view_unittest.cc",
       "../browser/ui/views/infobars/infobar_view_unittest.cc",
-      "../browser/ui/views/passwords/manage_passwords_view_unittest.cc",
-      "../browser/ui/views/passwords/move_to_account_store_bubble_view_unittest.cc",
-      "../browser/ui/views/passwords/password_change/password_change_toast_unittest.cc",
-      "../browser/ui/views/passwords/password_change/successful_password_change_view_unittest.cc",
-      "../browser/ui/views/passwords/password_save_update_view_unittest.cc",
-      "../browser/ui/views/passwords/post_save_compromised_bubble_view_unittest.cc",
-      "../browser/ui/views/passwords/shared_passwords_notification_view_unittest.cc",
       "../browser/ui/views/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_metrics_unittest.cc",
       "../browser/ui/views/tabs/dragging/test/mock_tab_drag_context.cc",
       "../browser/ui/views/tabs/dragging/test/mock_tab_drag_context.h",
@@ -6487,6 +6481,7 @@ test("unit_tests") {
       "//chrome/browser/ui/views/page_action:test_support",
       "//chrome/browser/ui/views/page_action:unit_tests",
       "//chrome/browser/ui/views/passwords:test_support",
+      "//chrome/browser/ui/views/passwords:unit_tests",
       "//chrome/browser/ui/views/passwords/password_change:successful_password_change_view",
       "//chrome/browser/ui/views/payments:unit_tests",
       "//chrome/browser/ui/views/tabs/common:unit_tests",
@@ -8643,6 +8638,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/views/location_bar",
       "//chrome/browser/ui/views/new_tab_footer",
       "//chrome/browser/ui/views/page_action",
+      "//chrome/browser/ui/views/passwords:interactive_ui_tests",
       "//chrome/browser/ui/views/passwords:password_bubble_view_base",
       "//chrome/browser/ui/views/payments:interactive_ui_tests",
       "//chrome/browser/ui/views/performance_controls",
@@ -8962,9 +8958,6 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/views/menu_view_drag_and_drop_interactive_uitest.cc",
         "../browser/ui/views/occlusion_visibility_interactive_uitest.cc",
         "../browser/ui/views/page_action/collaboration_messaging_page_action_icon_view_interactive_uitest.cc",
-        "../browser/ui/views/passwords/manage_passwords_icon_view_interactive_uitest.cc",
-        "../browser/ui/views/passwords/manage_passwords_page_action_controller_interactive_uitest.cc",
-        "../browser/ui/views/passwords/password_bubble_interactive_uitest.cc",
         "../browser/ui/views/permissions/chip/LHS_indicators_interactive_uitest.cc",
         "../browser/ui/views/permissions/chip/dashboard_kombucha_interactive_uitest.cc",
         "../browser/ui/views/permissions/chip/permission_chip_interactive_uitest.cc",

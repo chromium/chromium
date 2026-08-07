@@ -3237,15 +3237,6 @@ static_library("ui") {
     }
   }
 
-  if (is_win || is_mac || is_chromeos) {
-    sources += [
-      "views/passwords/biometric_authentication_confirmation_bubble_view.cc",
-      "views/passwords/biometric_authentication_confirmation_bubble_view.h",
-      "views/passwords/biometric_authentication_for_filling_bubble_view.cc",
-      "views/passwords/biometric_authentication_for_filling_bubble_view.h",
-    ]
-  }
-
   if (is_win || is_mac) {
     deps += [
       "//chrome/browser/ui/pdf/infobar",
@@ -3380,8 +3371,6 @@ static_library("ui") {
     sources += [
       "views/first_run_dialog.cc",  # Dialog shows only on Linux and macOS.
       "views/first_run_dialog.h",
-      "views/passwords/password_relaunch_chrome_view.cc",
-      "views/passwords/password_relaunch_chrome_view.h",
     ]
     deps += [ "//components/os_crypt/async/common" ]
   }
@@ -3764,44 +3753,6 @@ static_library("ui") {
       "views/media_picker_utils.h",
       "views/message_box_dialog.cc",
       "views/message_box_dialog.h",
-      "views/passwords/account_chooser_dialog_view.cc",
-      "views/passwords/account_chooser_dialog_view.h",
-      "views/passwords/auto_signin_first_run_dialog_view.cc",
-      "views/passwords/auto_signin_first_run_dialog_view.h",
-      "views/passwords/credential_leak_dialog_view.cc",
-      "views/passwords/credential_leak_dialog_view.h",
-      "views/passwords/credentials_item_view.cc",
-      "views/passwords/credentials_item_view.h",
-      "views/passwords/manage_passwords_details_view.cc",
-      "views/passwords/manage_passwords_details_view.h",
-      "views/passwords/manage_passwords_list_view.cc",
-      "views/passwords/manage_passwords_list_view.h",
-      "views/passwords/manage_passwords_page_action_controller.cc",
-      "views/passwords/manage_passwords_page_action_controller.h",
-      "views/passwords/manage_passwords_view.cc",
-      "views/passwords/manage_passwords_view.h",
-      "views/passwords/manage_passwords_view_ids.h",
-      "views/passwords/move_to_account_store_bubble_view.cc",
-      "views/passwords/move_to_account_store_bubble_view.h",
-      "views/passwords/password_add_username_view.cc",
-      "views/passwords/password_add_username_view.h",
-      "views/passwords/password_auto_sign_in_view.cc",
-      "views/passwords/password_auto_sign_in_view.h",
-      "views/passwords/password_bubble_view_base.cc",
-      "views/passwords/password_combined_selector_view.cc",
-      "views/passwords/password_combined_selector_view.h",
-      "views/passwords/password_cross_domain_confirmation_popup_view_views.cc",
-      "views/passwords/password_cross_domain_confirmation_popup_view_views.h",
-      "views/passwords/password_generation_popup_view_views.cc",
-      "views/passwords/password_generation_popup_view_views.h",
-      "views/passwords/password_save_update_view.cc",
-      "views/passwords/password_save_update_view.h",
-      "views/passwords/post_save_compromised_bubble_view.cc",
-      "views/passwords/post_save_compromised_bubble_view.h",
-      "views/passwords/shared_passwords_notification_view.cc",
-      "views/passwords/shared_passwords_notification_view.h",
-      "views/passwords/views_utils.cc",
-      "views/passwords/views_utils.h",
       "views/permissions/chip/multi_image_container.cc",
       "views/permissions/chip/multi_image_container.h",
       "views/permissions/chip/permission_dashboard_controller.cc",
@@ -4196,6 +4147,9 @@ static_library("ui") {
       "//chrome/browser/ui/views/page_action:impl",
       "//chrome/browser/ui/views/page_info",
       "//chrome/browser/ui/views/page_info:impl",
+      "//chrome/browser/ui/views/passwords",
+      "//chrome/browser/ui/views/passwords:impl",
+      "//chrome/browser/ui/views/passwords:password_bubble_view_base",
       "//chrome/browser/ui/views/passwords/password_change:password_change_toast",
       "//chrome/browser/ui/views/passwords/password_change:successful_password_change_view",
       "//chrome/browser/ui/views/payments",
