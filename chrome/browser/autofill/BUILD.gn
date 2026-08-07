@@ -36,6 +36,8 @@ static_library("autofill") {
     "autofill_optimization_guide_decider_factory.h",
     "autofill_policy_service_factory.cc",
     "autofill_policy_service_factory.h",
+    "entity_suppression_manager_factory.cc",
+    "entity_suppression_manager_factory.h",
     "gmail_otp_backend_factory.cc",
     "gmail_otp_backend_factory.h",
     "merchant_promo_code_manager_factory.cc",
@@ -436,6 +438,7 @@ source_set("unit_tests") {
   if (!is_android) {
     sources += [
       "autofill_ai_personal_context_access_manager_factory_unittest.cc",
+      "entity_suppression_manager_factory_unittest.cc",
       "generated_find_and_fill_with_gemini_pref_unittest.cc",
       "ui/autofill_image_fetcher_impl_unittest.cc",
     ]

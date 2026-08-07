@@ -446,6 +446,11 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "ambient_autofill_unmasked_spii_cache_ttl",
                    base::Minutes(1));
 
+// Controls whether pContext suggestion suppression in Ambient Autofill is
+// enabled.
+BASE_FEATURE(kAutofillAmbientAutofillSuppression,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, on Android desktop, the Autofill keyboard accessory will have a
 // new behavior and design.
 // TODO(crbug.com/438125774): Remove when launched.

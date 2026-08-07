@@ -174,6 +174,8 @@ BASE_DECLARE_FEATURE_PARAM(
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
                            kAutofillAmbientAutofillUnmaskedSpiiCacheTTL);
+COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillAmbientAutofillSuppression);
 
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAndroidDesktopKeyboardAccessoryRevamp);

@@ -180,6 +180,15 @@ AutofillClient::GetAutofillAiPersonalContextAccessManager() const {
       ->GetAutofillAiPersonalContextAccessManager();
 }
 
+EntitySuppressionManager* AutofillClient::GetEntitySuppressionManager() {
+  return nullptr;
+}
+
+const EntitySuppressionManager* AutofillClient::GetEntitySuppressionManager()
+    const {
+  return const_cast<AutofillClient*>(this)->GetEntitySuppressionManager();
+}
+
 AutofillAiModelCache* AutofillClient::GetAutofillAiModelCache() {
   return nullptr;
 }

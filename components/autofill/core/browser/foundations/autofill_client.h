@@ -155,6 +155,7 @@ class SingleFieldFillRouter;
 class TouchToFillAutofillDelegate;
 class ValuablesDataManager;
 class AutofillAiPersonalContextAccessManager;
+class EntitySuppressionManager;
 class VotesUploader;
 class PasswordManagerAutofillHelperDelegate;
 class WalletPassAccessManager;
@@ -465,6 +466,11 @@ class AutofillClient {
   GetAutofillAiPersonalContextAccessManager();
   const AutofillAiPersonalContextAccessManager*
   GetAutofillAiPersonalContextAccessManager() const;
+
+  // Returns the per-profile `EntitySuppressionManager` associated with the
+  // client.
+  virtual EntitySuppressionManager* GetEntitySuppressionManager();
+  const EntitySuppressionManager* GetEntitySuppressionManager() const;
 
   // Returns the per-profile `AutofillAiModelCache`. Returns `nullptr` if the
   // `kAutofillAiServerModel` is not enabled.

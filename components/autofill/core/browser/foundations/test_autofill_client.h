@@ -207,6 +207,15 @@ class TestAutofillClientTemplate : public T {
     personal_context_access_manager_ = personal_context_access_manager;
   }
 
+  EntitySuppressionManager* GetEntitySuppressionManager() override {
+    return entity_suppression_manager_;
+  }
+
+  void set_entity_suppression_manager(
+      EntitySuppressionManager* entity_suppression_manager) {
+    entity_suppression_manager_ = entity_suppression_manager;
+  }
+
   const subscription_eligibility::SubscriptionEligibilityService*
   GetSubscriptionEligibilityService() const override {
     return &subscription_eligibility_service_;
@@ -862,6 +871,7 @@ class TestAutofillClientTemplate : public T {
   raw_ptr<syncer::SyncService> test_sync_service_ = nullptr;
   raw_ptr<AutofillAiPersonalContextAccessManager>
       personal_context_access_manager_ = nullptr;
+  raw_ptr<EntitySuppressionManager> entity_suppression_manager_ = nullptr;
   raw_ptr<personal_context::PersonalContextEligibilityService>
       personal_context_eligibility_service_ = nullptr;
 #if !BUILDFLAG(IS_FUCHSIA)

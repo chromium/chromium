@@ -39,6 +39,7 @@
 #include "chrome/browser/autofill/autofill_field_classification_model_service_factory.h"
 #include "chrome/browser/autofill/autofill_optimization_guide_decider_factory.h"
 #include "chrome/browser/autofill/autofill_policy_service_factory.h"
+#include "chrome/browser/autofill/entity_suppression_manager_factory.h"
 #include "chrome/browser/autofill/one_time_token_service_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
@@ -576,6 +577,10 @@ ChromeAutofillClient::GetAutofillAiPersonalContextAccessManager() {
   }
   return AutofillAiPersonalContextAccessManagerFactory::GetForProfile(
       GetProfile());
+}
+
+EntitySuppressionManager* ChromeAutofillClient::GetEntitySuppressionManager() {
+  return EntitySuppressionManagerFactory::GetForProfile(GetProfile());
 }
 
 AutofillAiModelCache* ChromeAutofillClient::GetAutofillAiModelCache() {
