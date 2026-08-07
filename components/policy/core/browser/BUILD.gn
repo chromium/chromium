@@ -207,6 +207,7 @@ source_set("unit_tests") {
     "url_list/url_blocklist_policy_handler_unittest.cc",
     "url_list/url_scheme_list_policy_handler_unittest.cc",
     "webui/json_generation_unittest.cc",
+    "webui/policy_status_provider_unittest.cc",
     "webui/statistics_collector_unittest.cc",
   ]
   deps = [
