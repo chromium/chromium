@@ -32,7 +32,9 @@ public final class SigninUtils {
      * @return Whether or not Android accepted the Intent.
      */
     public static boolean openSettingsForAllAccounts(Activity activity) {
-        return IntentUtils.safeStartActivity(activity, new Intent(Settings.ACTION_SYNC_SETTINGS));
+        Intent intent = new Intent(Settings.ACTION_SYNC_SETTINGS);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        return IntentUtils.safeStartActivity(activity, intent);
     }
 
     /**
