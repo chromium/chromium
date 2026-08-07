@@ -2172,7 +2172,19 @@ AXNode* AXNode::ComputeFirstUnignoredChildRecursive(bool crossing) const {
 }
 
 bool AXNode::IsIgnoredChildTreeHost() const {
-  if (!IsIgnored() || !GetHostedChildTreeManager()) {
+  if (!IsIgnored()) {
+    return false;
+  }
+
+  const AXTreeManager* child_tree_manager = GetHostedChildTreeManager();
+  if (!child_tree_manager) {
+    return false;
+  }
+
+  // Only consider this a child tree host if the child tree can also point back
+  // at it. A malformed child tree, or one that is not ready, may not have the
+  // parent tree ID and would therefore not be walkable.
+  if (child_tree_manager->GetParentTreeID() != tree_->GetAXTreeID()) {
     return false;
   }
 

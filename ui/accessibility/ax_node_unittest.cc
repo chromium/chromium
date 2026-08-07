@@ -577,6 +577,29 @@ TEST_F(AXNodeIgnoredChildTreeHostTest, AHostThatBridgesToNothingStaysHidden) {
   EXPECT_EQ(After(), Before()->GetNextUnignoredSiblingCrossingTreeBoundary());
 }
 
+TEST_F(AXNodeIgnoredChildTreeHostTest, AHostWithoutAParentTreeIdStaysHidden) {
+  child_manager_.reset();
+  AXTreeUpdate orphan_update = child_update_;
+  orphan_update.tree_data.parent_tree_id = AXTreeIDUnknown();
+  child_manager_ = std::make_unique<ConnectableAXTreeManager>(
+      std::make_unique<AXTree>(orphan_update));
+
+  EXPECT_FALSE(Host()->IsIgnoredChildTreeHost());
+
+  size_t count = ParentRoot()->GetUnignoredChildCountCrossingTreeBoundary();
+  for (size_t index = 0; index < count; ++index) {
+    EXPECT_NE(nullptr,
+              ParentRoot()->GetUnignoredChildAtIndexCrossingTreeBoundary(index))
+        << "No child at index " << index << " of " << count;
+  }
+  EXPECT_EQ(nullptr,
+            ParentRoot()->GetUnignoredChildAtIndexCrossingTreeBoundary(count));
+
+  EXPECT_EQ(Before(),
+            ParentRoot()->GetFirstUnignoredChildCrossingTreeBoundary());
+  EXPECT_EQ(After(), Before()->GetNextUnignoredSiblingCrossingTreeBoundary());
+}
+
 TEST_F(AXNodeIgnoredChildTreeHostTest, TheHostedRootComesBack) {
   child_manager_.reset();
   ASSERT_EQ(2u, ParentRoot()->GetUnignoredChildCountCrossingTreeBoundary());
