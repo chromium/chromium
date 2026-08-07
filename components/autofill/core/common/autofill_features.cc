@@ -648,6 +648,11 @@ BASE_FEATURE(kAutofillEnableAutofillSettingsEnterprisePolicy,
 BASE_FEATURE(kAutofillEnableDeduplicationOnBackgroundThread,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, the height of the autofill popup is limited to show a fixed
+// maximum number of entries.
+BASE_FEATURE(kAutofillEnableEntryLimitInPopup,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables a couple of improvements to credit card expiration date handling:
 // - The autocomplete attribute values are rationalized with format strings
 //   like MM/YY from placeholders and labels in mind.

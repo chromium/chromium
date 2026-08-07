@@ -106,6 +106,11 @@ class PopupViewViews : public PopupBaseView,
   // The width of the @memory popup.
   static constexpr int kAtMemoryPopupWidth = 320;
 
+  // The maximum number of entries shown before making the popup scrollable. A
+  // decimal number means the last element will appear "cut-off" to indicate
+  // the scroll area.
+  static constexpr double kAutofillPopupMaxVisibleEntries = 5.3;
+
   // The time it takes for a selected cell to open a sub-popup if it has one.
   static constexpr base::TimeDelta kMouseOpenSubPopupDelay =
       base::Milliseconds(250);

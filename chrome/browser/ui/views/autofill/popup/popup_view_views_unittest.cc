@@ -3437,5 +3437,137 @@ TEST_F(PopupViewViewsTest, AtMemory_KeyboardArrowsNavigationBetweenPopups) {
   EXPECT_EQ(test_api(view()).GetOpenSubPopupRow(), std::nullopt);
 }
 
+// TODO(crbug.com/537269397): Remove test fixture and use `PopupViewViewsTest`
+// instead when cleaning up feature flag.
+class PopupViewViewsHeightLimitTest : public PopupViewViewsTest {
+ private:
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableEntryLimitInPopup};
+};
+
+// Ensures that the popup grows in size when adding suggestions below
+// `kAutofillPopupMaxVisibleEntries`.
+TEST_F(PopupViewViewsHeightLimitTest, DoNotLimitPopupSizeUntilLimitIsReached) {
+  int previous_height = 0;
+  for (std::vector<SuggestionType> suggestions(1,
+                                               SuggestionType::kAddressEntry);
+       suggestions.size() <=
+       std::ceil(PopupViewViews::kAutofillPopupMaxVisibleEntries);
+       suggestions.push_back(SuggestionType::kAddressEntry)) {
+    CreateAndShowView(suggestions);
+    int current_height = view().GetPreferredSize().height();
+    view().Hide();
+
+    // A user-visible change requires a difference of multiple pixels.
+    constexpr int kNoticableChangeThreshold = 10;
+    // Popup should become noticeably larger when adding entries until the limit
+    // is exceeded by at least 1.0 (more than one full entry).
+    EXPECT_GT(current_height, previous_height + kNoticableChangeThreshold)
+        << "Popup height did not increase although its entries ('"
+        << suggestions.size() << "') were below the limit of '"
+        << PopupViewViews::kAutofillPopupMaxVisibleEntries << "'";
+
+    previous_height = current_height;
+  }
+}
+
+// Ensures that the popup shrinks in size when `kAutofillPopupMaxVisibleEntries`
+// is exceeded by one full entry.
+TEST_F(PopupViewViewsHeightLimitTest, LimitPopupSizeIfMoreThanOneEntryHidden) {
+  std::vector<SuggestionType> suggestions(
+      std::ceil(PopupViewViews::kAutofillPopupMaxVisibleEntries),
+      SuggestionType::kAddressEntry);
+  CreateAndShowView(suggestions);
+  const int initial_height = view().GetPreferredSize().height();
+  view().Hide();
+
+  suggestions.resize(suggestions.size() + 1, SuggestionType::kAddressEntry);
+  CreateAndShowView(suggestions);
+  const int new_height = view().GetPreferredSize().height();
+
+  // A user-visible change requires a difference of multiple pixels.
+  constexpr int kNoticableChangeThreshold = 10;
+  // Height should reduce because the last entry was first shown without
+  // scrollbar (because less than one hidden entry) and then the limit was
+  // exceeded by an entire entry, causing the second last entry to now appear
+  // cut off.
+  EXPECT_LT(new_height, initial_height - kNoticableChangeThreshold);
+}
+
+// Tests that the limit is enforced when exceeding
+// `kAutofillPopupMaxVisibleEntries`.
+TEST_F(PopupViewViewsHeightLimitTest, LimitPopupSizeForManySuggestions) {
+  // Limit must be exceeded by at least one full entry.
+  std::vector<SuggestionType> suggestions(
+      std::ceil(PopupViewViews::kAutofillPopupMaxVisibleEntries) + 1,
+      SuggestionType::kAddressEntry);
+  CreateAndShowView(suggestions);
+  const int initial_height = view().GetPreferredSize().height();
+  view().Hide();
+
+  suggestions.resize(suggestions.size() + 1, SuggestionType::kAddressEntry);
+  CreateAndShowView(suggestions);
+  const int new_height = view().GetPreferredSize().height();
+
+  // Height should not change when exceeding the limit.
+  EXPECT_EQ(new_height, initial_height);
+}
+
+// Tests that separators are not considered entries for the limitation of
+// visible entries in the popup.
+TEST_F(PopupViewViewsHeightLimitTest, IgnoreSeparatorsInPopupSuggestionLimit) {
+  std::vector<SuggestionType> suggestions(
+      std::ceil(PopupViewViews::kAutofillPopupMaxVisibleEntries),
+      SuggestionType::kSeparator);
+  CreateAndShowView(suggestions);
+  const int initial_height = view().GetPreferredSize().height();
+  view().Hide();
+
+  suggestions.push_back(SuggestionType::kSeparator);
+  CreateAndShowView(suggestions);
+  const int new_height = view().GetPreferredSize().height();
+
+  // Height should increase, although there are more separators than the limit
+  // allows visible entries.
+  EXPECT_GT(new_height, initial_height);
+}
+
+// Tests that the last entry should be visible only partially when exceeding
+// `kAutofillPopupMaxVisibleEntries` to indicate the possibility to scroll.
+TEST_F(PopupViewViewsHeightLimitTest, CutOffLastEntryForPopupSuggestionLimit) {
+  std::vector<SuggestionType> suggestions(
+      std::floor(PopupViewViews::kAutofillPopupMaxVisibleEntries) - 1,
+      SuggestionType::kAddressEntry);
+  CreateAndShowView(suggestions);
+  const int initial_height = view().GetPreferredSize().height();
+  view().Hide();
+
+  // Increase suggestions by one, but the new entry should be fully visible
+  // since it is still below the limit.
+  suggestions.resize(suggestions.size() + 1, SuggestionType::kAddressEntry);
+  CreateAndShowView(suggestions);
+  const int first_resize_height = view().GetPreferredSize().height();
+  const int full_entry_height = first_resize_height - initial_height;
+  constexpr int kSanityCheckMinimumEntryHeight = 20;
+  ASSERT_GT(full_entry_height, kSanityCheckMinimumEntryHeight);
+
+  // Increase suggestions by two since the scrollbar will only be enabled if
+  // there is a fully hidden entry. The first added entry is now partially
+  // visible and the second added entry is fully hidden.
+  suggestions.resize(suggestions.size() + 2, SuggestionType::kAddressEntry);
+  CreateAndShowView(suggestions);
+  const int second_resize_height = view().GetPreferredSize().height();
+
+  // A user-visible change requires a difference of multiple pixels. The chosen
+  // value is less than the cut-off last entry, but large enough to be noticed.
+  constexpr int kNoticableChangeThreshold = 10;
+  // Height should increase noticeably when exceeding the limit ...
+  EXPECT_GT(second_resize_height,
+            first_resize_height + kNoticableChangeThreshold);
+  // ... but not show the full entry.
+  EXPECT_LT(second_resize_height, first_resize_height + full_entry_height -
+                                      kNoticableChangeThreshold);
+}
+
 }  // namespace
 }  // namespace autofill
