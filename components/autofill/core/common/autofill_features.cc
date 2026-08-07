@@ -658,7 +658,7 @@ BASE_FEATURE(kAutofillEnableAutofillSettingsEnterprisePolicy,
 // background thread to avoid blocking the UI thread.
 // TODO(crbug.com/496889243): Remove when launched.
 BASE_FEATURE(kAutofillEnableDeduplicationOnBackgroundThread,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, the height of the autofill popup is limited to show a fixed
 // maximum number of entries.
