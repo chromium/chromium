@@ -414,6 +414,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/intelligence/bwg/utils:prefs",
     "//ios/chrome/browser/intelligence/bwg/utils:unit_tests",
     "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/intelligence/persist_tab_context/model",
     "//ios/chrome/browser/intelligence/proto_wrappers",
     "//ios/chrome/browser/intelligence/proto_wrappers:page_context_extractor_feature",
     "//ios/chrome/browser/intelligence/zero_state_suggestions",

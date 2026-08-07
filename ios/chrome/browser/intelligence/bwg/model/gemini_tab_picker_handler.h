@@ -15,8 +15,7 @@
 
 // Callback type invoked when the tab picker selection changes.
 typedef void (^GeminiTabPickerSelectionCallback)(
-    std::set<web::WebStateID> selectedIDs,
-    std::set<web::WebStateID> cachedIDs);
+    std::set<web::WebStateID> selectedIDs);
 
 // Callback type invoked to determine which tabs to pre-select.
 typedef std::set<web::WebStateID> (^GeminiTabPickerSelectedTabsProvider)();

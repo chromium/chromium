@@ -143,8 +143,7 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   void DismissFloaty();
 
   // Called when the tab picker selection changes.
-  void OnTabPickerSelectionChanged(std::set<web::WebStateID> selected_tabs,
-                                   std::set<web::WebStateID> cached_tabs);
+  void OnTabPickerSelectionChanged(std::set<web::WebStateID> selected_tabs);
 
   // Returns the number of currently attached tabs.
   NSUInteger AttachedTabsCount() const;
@@ -217,6 +216,12 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Returns the array of page contexts for all currently attached
   // shared tabs.
   NSArray<GeminiPageContext*>* GetSharedTabs() const;
+
+  // Generates partial page contexts for `tabs_to_fetch` and triggers async
+  // full page context retrieval for them. Page contexts are inserted directly
+  // into `attached_tabs_`.
+  void UpdateAttachedTabContexts(
+      const std::vector<web::WebStateID>& tabs_to_fetch);
 
   // Starts the Gemini session (prepares context and shows overlay).
   void PresentFloaty(UIViewController* base_view_controller,
@@ -348,9 +353,19 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Handles an generated page context by updating the floaty.
   void OnPageContextGenerated(GeminiPageContext* gemini_page_context);
 
-  // Called when cached APC has been retrieved for a list of shared tabs.
-  void OnCachedAPCRetrievedForSharedTabs(
+  // Called when a request for APC for a list of tabs has completed.
+  void OnPersistTabContextLookupComplete(
       PersistTabContextBrowserAgent::PageContextMap contexts_map);
+
+  // Retrieves cached full page context for a tab and calls
+  // `OnFullPageContextAvailableForSharedTab` when successful.
+  void RetrieveCachedPageContextForTab(
+      web::WebStateID selected_tab,
+      std::unique_ptr<optimization_guide::proto::PageContext> proto_context);
+
+  // Asynchronously generates full page context for a tab and calls
+  // `OnFullPageContextAvailableForSharedTab` when successful.
+  void GenerateFullPageContextForTab(web::WebStateID selected_tab);
 
   // Called when full page context for a shared tab becomes available.
   void OnFullPageContextAvailableForSharedTab(
