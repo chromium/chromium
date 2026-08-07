@@ -2614,6 +2614,192 @@ Unknown properties are collapsed to zero. -->
 
 <!-- LINT.ThenChange(//components/live_caption/translation_dispatcher.cc:TranslationDispatcherParseResult) -->
 
+<enum name="UiaClientProcess">
+  <summary>
+    Process basenames of UIA clients connecting to or disconnecting from Chrome.
+  </summary>
+  <int value="-2118642703" label="dotnet.exe">.NET CLI host</int>
+  <int value="-2104911428" label="installer.exe"/>
+  <int value="-2000560105" label="baidupinyin.exe">Baidu Pinyin IME</int>
+  <int value="-1984512110" label="autoglm.exe"/>
+  <int value="-1981894995" label="nvda.exe">NVDA</int>
+  <int value="-1971781539" label="zt.exe">ZoomText</int>
+  <int value="-1932774260" label="feishu.exe">ByteDance Feishu</int>
+  <int value="-1868732334" label="ctfmon.exe">CTF Loader</int>
+  <int value="-1866608300" label="avastbrowser.exe">Avast Secure Browser</int>
+  <int value="-1803418664" label="remotemouse.exe">Remote Mouse</int>
+  <int value="-1740986686" label="excel.exe">Microsoft Excel</int>
+  <int value="-1732884127" label="magic.exe">Freedom Scientific MAGic</int>
+  <int value="-1731084520" label="idm.exe">Internet Download Manager</int>
+  <int value="-1656313431" label="narrator.exe">Windows Narrator</int>
+  <int value="-1604811218" label="spa.exe"/>
+  <int value="-1582301949" label="manictime.exe">ManicTime</int>
+  <int value="-1578118129" label="teamviewer_desktop.exe">TeamViewer</int>
+  <int value="-1502995850" label="doubao.exe">ByteDance Doubao</int>
+  <int value="-1416795230" label="quark.exe">Alibaba Quark browser</int>
+  <int value="-1408239264" label="snagit32.exe">
+    TechSmith Snagit capture (legacy)
+  </int>
+  <int value="-1402245793" label="snowshot.exe">Snow Shot</int>
+  <int value="-1398328717" label="magictaskbar-ui.exe">HONOR MagicTaskbar</int>
+  <int value="-1389812054" label="jsnpmon.exe">
+    Jiransoft (product unidentified)
+  </int>
+  <int value="-1377919306" label="tracker.exe"/>
+  <int value="-1357476624" label="regsvcs.exe">
+    .NET Services Installation Tool
+  </int>
+  <int value="-1269415642" label="magnify.exe">Windows Magnifier</int>
+  <int value="-1255218607" label="qmaiservice64.exe"/>
+  <int value="-1185400973" label="opera.exe">Opera and Opera GX</int>
+  <int value="-1104618680" label="clipboardmaster.exe">
+    Jumping Bytes ClipboardMaster
+  </int>
+  <int value="-1095792545" label="workpuls.exe">
+    Insightful (formerly Workpuls)
+  </int>
+  <int value="-1079706837" label="reverso.exe">Reverso</int>
+  <int value="-1068419829" label="svchost.exe">Windows Service Host</int>
+  <int value="-1062669838" label="awesun.exe">AweRay AweSun Remote Desktop</int>
+  <int value="-1037026181" label="subst.exe">Windows subst command</int>
+  <int value="-1007735973" label="grammarly.exe">Grammarly (legacy)</int>
+  <int value="-999555710" label="voiceaccess.exe">Voice Access</int>
+  <int value="-822956574" label="typeless.exe">Typeless</int>
+  <int value="-799456179" label="uiprotectedbrowser.exe">
+    Trend Micro Titanium
+  </int>
+  <int value="-764733693" label="sogousmartassistant.exe">
+    Sogou Input AI Wangzai
+  </int>
+  <int value="-670982185" label="powershell.exe">Windows PowerShell 5.1</int>
+  <int value="-667752670" label="desktime.exe">DeskTime</int>
+  <int value="-657673863" label="snova.exe">Dolphin SuperNova</int>
+  <int value="-624283976" label="python.exe">Python</int>
+  <int value="-561370058" label="uihost.exe">McAfee WebAdvisor</int>
+  <int value="-560964876" label="asusdialagent.exe">
+    ASUS Dial &amp; Control Panel
+  </int>
+  <int value="-531024670" label="msedge.exe">Microsoft Edge</int>
+  <int value="-500219036" label="globalpresenter.exe">
+    Lenovo Voice Assistant
+  </int>
+  <int value="-472748876" label="vivaldi.exe">Vivaldi</int>
+  <int value="-374590939" label="powerpnt.exe">Microsoft PowerPoint</int>
+  <int value="-287045346" label="eaio_agent.exe"/>
+  <int value="-204009444" label="dingtalk.exe">DingTalk</int>
+  <int value="-138839249" label="psr.exe">Windows Steps Recorder</int>
+  <int value="-137156912" label="attrib.exe">Windows attrib command</int>
+  <int value="-102592545" label="avastui.exe">Avast Antivirus</int>
+  <int value="-37944147" label="textinputhost.exe">Text Input Host</int>
+  <int value="-20710385" label="startmenuexperiencehost.exe">
+    Start Menu Experience Host
+  </int>
+  <int value="46599781" label="sogoucloud.exe">Sogou Pinyin cloud input</int>
+  <int value="57225726" label="qianwen.exe">Alibaba Qwen app</int>
+  <int value="58353144" label="cici.exe">ByteDance Cici</int>
+  <int value="68647119" label="dwm.exe">Desktop Window Manager</int>
+  <int value="123029657" label="comet.exe">Perplexity Comet</int>
+  <int value="161696600" label="clipdown.exe">ClipDown</int>
+  <int value="174440287" label="wps.exe">WPS Office</int>
+  <int value="272349872" label="natspeak.exe">Dragon NaturallySpeaking</int>
+  <int value="272886190" label="executor.exe"/>
+  <int value="273289631" label="omencommandcenterbackground.exe">
+    HP OMEN Gaming Hub
+  </int>
+  <int value="359265946" label="smartscreen.exe">
+    Microsoft Defender SmartScreen
+  </int>
+  <int value="432524448" label="weixin.exe">Tencent Weixin</int>
+  <int value="452333607" label="chrome.exe">Google Chrome</int>
+  <int value="459851463" label="rtkauduservice64.exe">
+    Realtek Audio Universal Service
+  </int>
+  <int value="482325164" label="fluentsearch.exe">Fluent Search</int>
+  <int value="491213080" label="qqpctray.exe">Tencent PC Manager</int>
+  <int value="509874236" label="inspect.exe">Windows SDK Inspect</int>
+  <int value="602801217" label="sihost.exe">Shell Infrastructure Host</int>
+  <int value="621100454" label="wineyes.exe">Window-Eyes</int>
+  <int value="641500889" label="zoom.exe">Zoom Workplace</int>
+  <int value="664881751" label="xlsmartutils.exe"/>
+  <int value="668962908" label="te.processhost.exe">TAEF Process Host</int>
+  <int value="721751405" label="explorer.exe">Windows File Explorer</int>
+  <int value="727268717" label="logioptionsmgr.exe">Logitech Options</int>
+  <int value="732780018" label="pxitpapp.exe"/>
+  <int value="755368142" label="winfocusmonitor.exe">
+    ControlUp for Desktops
+  </int>
+  <int value="772432034" label="deepl.exe">DeepL</int>
+  <int value="791862251" label="winappdriver.exe">
+    Windows Application Driver
+  </int>
+  <int value="800252223" label="wispr flow helper.exe">Wispr Flow Helper</int>
+  <int value="800847719" label="wermgr.exe">Windows Problem Reporting</int>
+  <int value="804314869" label="lpbint.exe">DataResolve lpagnt agent</int>
+  <int value="804916661" label="quicker.exe">Quicker</int>
+  <int value="823918155" label="memory.exe"/>
+  <int value="854398208" label="rundll32.exe">
+    Windows host process (Rundll32)
+  </int>
+  <int value="867957808" label="cyberhavensessionmonitor.exe">
+    Cyberhaven Lightbeam
+  </int>
+  <int value="979294987" label="bemyeyes.exe">Be My Eyes</int>
+  <int value="1006442042" label="magictext.exe">HONOR MagicText</int>
+  <int value="1022247735" label="osk.exe">On-Screen Keyboard</int>
+  <int value="1049954830" label="galaxy.exe"/>
+  <int value="1052318032" label="nutstore.windowshook.exe">
+    Nutstore Windows Hook
+  </int>
+  <int value="1089268748" label="temperatureindicator.exe"/>
+  <int value="1093415826" label="youdaodict.exe">Youdao Dictionary</int>
+  <int value="1143570600" label="360tray.exe">Qihoo 360 security products</int>
+  <int value="1150541663" label="prowritingaid.desktop.exe">
+    ProWritingAid Everywhere
+  </int>
+  <int value="1244711123" label="pad.automationserver.exe">
+    Power Automate automation server
+  </int>
+  <int value="1248433627" label="jfw.exe">JAWS</int>
+  <int value="1304689049" label="nvda_nouiaccess.exe">
+    NVDA without UIAccess
+  </int>
+  <int value="1314406447" label="calc.exe">Windows Calculator launcher</int>
+  <int value="1343414199" label="zero.exe"/>
+  <int value="1347269751" label="dolsrvcbar2.exe">Dolphin CBar service</int>
+  <int value="1394786065" label="pythonw.exe">Python (no console)</int>
+  <int value="1417251007" label="snagiteditor.exe">TechSmith Snagit Editor</int>
+  <int value="1458698666" label="google.exe"/>
+  <int value="1469064659" label="mspcmanager.exe">Microsoft PC Manager</int>
+  <int value="1541843396" label="sapisvr.exe">Windows Speech Recognition</int>
+  <int value="1545398617" label="pot.exe">Pot App translator</int>
+  <int value="1559241653" label="grammarly.desktop.exe">
+    Grammarly for Windows
+  </int>
+  <int value="1588985658" label="winword.exe">Microsoft Word</int>
+  <int value="1602550339" label="sa.exe"/>
+  <int value="1658786077" label="onenote.exe">OneNote (Win32 desktop)</int>
+  <int value="1712015162" label="browser.exe"/>
+  <int value="1784603500" label="lark.exe">ByteDance Lark</int>
+  <int value="1788395968" label="mspaint.exe">Microsoft Paint</int>
+  <int value="1821977218" label="timedoctor2.exe">Time Doctor</int>
+  <int value="1838143251" label="autocorrect.exe"/>
+  <int value="1842752105" label="text blaze.exe">Text Blaze</int>
+  <int value="1864328181" label="textexpander.exe">TextExpander</int>
+  <int value="1864496181" label="spotify.exe">Spotify</int>
+  <int value="1884249869" label="nortonui.exe">Norton security products</int>
+  <int value="1889756734" label="shadowbot.uiautomation.provider.exe">
+    ShadowBot RPA
+  </int>
+  <int value="1938163567" label="propresenter.exe">ProPresenter</int>
+  <int value="1946420109" label="brave.exe">Brave Browser</int>
+  <int value="1976295005" label="hal.exe">Dolphin SuperNova</int>
+  <int value="2063844378" label="ideashare.exe">Huawei IdeaShare</int>
+  <int value="2075022684" label="eoaexperiences.exe">
+    Windows text cursor indicator
+  </int>
+  <int value="2144042677" label="lzsmartrec.exe"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>
