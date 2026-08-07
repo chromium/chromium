@@ -1331,6 +1331,22 @@ suite('NewTabPageAppTest', () => {
       assertTrue(!!dialog);
       assertStyle($$(app, '#searchbox')!, 'visibility', 'hidden');
       assertTrue($$(app, '#searchbox')!.hasAttribute('inert'));
+
+      // Act: Request open again with a new state.
+      ($$(app, '#searchbox')!.dispatchEvent(new CustomEvent('open-composebox', {
+        detail: {text: 'latest', files: []},
+      })));
+      await microtasksFinished();
+
+      // Assert: The same composebox stays open and the parent passed the latest
+      // requested state to it.
+      assertEquals(
+          composebox,
+          app.shadowRoot.querySelector<NtpComposeboxElement>('#composebox'));
+      assertEquals(dialog, app.shadowRoot.querySelector('#composeboxDialog'));
+      const state = composebox.state;
+      assertTrue(!!state);
+      assertEquals('latest', state.text);
     });
 
     test('composebox state toggles inert attribute on siblings', async () => {
@@ -1433,6 +1449,49 @@ suite('NewTabPageAppTest', () => {
       assertTrue(true, 'Second ESC must trigger the close event.');
     });
 
+    test('second close request while closing is a no-op', async () => {
+      // Arrange: Open the composebox.
+      const searchbox = $$(app, '#searchbox') as NtpSearchboxElement;
+      assertTrue(!!searchbox);
+      searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+        detail: {text: '', files: []},
+      }));
+      await microtasksFinished();
+      const composebox =
+          app.shadowRoot.querySelector<NtpComposeboxElement>('#composebox');
+      assertTrue(!!composebox);
+
+      // Override setInputText to verify how it is called.
+      let setInputTextCallCount = 0;
+      let setInputTextCalledWith = '';
+      const originalSetInputText = searchbox.setInputText;
+      searchbox.setInputText = (text: string) => {
+        setInputTextCallCount++;
+        setInputTextCalledWith = text;
+        originalSetInputText.call(searchbox, text);
+      };
+
+      // Act: Dispatch two close requests back to back with different text.
+      composebox.dispatchEvent(new CustomEvent('close-composebox', {
+        detail: {composeboxText: 'kept'},
+        bubbles: true,
+        composed: true,
+      }));
+      composebox.dispatchEvent(new CustomEvent('close-composebox', {
+        detail: {composeboxText: 'clobber'},
+        bubbles: true,
+        composed: true,
+      }));
+      await microtasksFinished();
+
+      // Assert: The composebox is closed, not re-opened, and only the first
+      // close request propagated its text to the searchbox.
+      assertFalse(
+          !!app.shadowRoot.querySelector<NtpComposeboxElement>('#composebox'));
+      assertEquals(1, setInputTextCallCount);
+      assertEquals('kept', setInputTextCalledWith);
+    });
+
     test(
         'Clicking the searchbox composebox button notifies composebox handler',
         async () => {
@@ -1456,6 +1515,42 @@ suite('NewTabPageAppTest', () => {
           assertTrue(!!composebox);
           assertEquals(
               searchboxHandler.getCallCount('notifySessionStarted'), 1);
+          assertEquals(
+              1,
+              metrics.count('NewTabPage.Composebox.FromNTPLoadToSessionStart'));
+
+          // A repeated open request does not record the metric again.
+          const searchbox = $$(app, '#searchbox');
+          assertTrue(!!searchbox);
+          searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+            detail: {text: '', files: []},
+          }));
+          await microtasksFinished();
+          assertEquals(
+              1,
+              metrics.count('NewTabPage.Composebox.FromNTPLoadToSessionStart'));
+
+          // Two back to back close requests do not record it either.
+          composebox.dispatchEvent(new CustomEvent('close-composebox', {
+            detail: {composeboxText: ''},
+            bubbles: true,
+            composed: true,
+          }));
+          composebox.dispatchEvent(new CustomEvent('close-composebox', {
+            detail: {composeboxText: ''},
+            bubbles: true,
+            composed: true,
+          }));
+          await microtasksFinished();
+          assertEquals(
+              1,
+              metrics.count('NewTabPage.Composebox.FromNTPLoadToSessionStart'));
+
+          // Re-opening after close does not record it again.
+          searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+            detail: {text: '', files: []},
+          }));
+          await microtasksFinished();
           assertEquals(
               1,
               metrics.count('NewTabPage.Composebox.FromNTPLoadToSessionStart'));
