@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Word दस्तऐवज</translation>
 <translation id="1056775291175587022">नेटवर्क नाहीत</translation>
 <translation id="1056898198331236512">चेतावणी</translation>
-<translation id="1060368002126861100"><ph name="APP_NAME" /> सोबत फाइल उघडण्यासाठी, प्रथम त्या Windows फाइल फोल्डरमध्ये हलवा.</translation>
 <translation id="1062407476771304334">पुनर्स्थित करा</translation>
 <translation id="1119383441774809183">एसएमएस दाखवा</translation>
 <translation id="1119447706177454957">अंतर्गत एरर</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">नॉर्वेजियन</translation>
 <translation id="1408504635543854729">Files ॲपमध्ये डिव्हाइसचा आशय एक्सप्लोर करा. ॲडमिनिस्ट्रेटरने आशय प्रतिबंधित केला आहे आणि त्यात बदल केला जाऊ शकत नाही.</translation>
 <translation id="1412476183660741812">स्वाक्षरी केलेले वेब बंडल</translation>
-<translation id="1433628812591023318">Parallels Desktop मध्ये फाइल ड्रॉप करण्यासाठी, Windows च्या फाइलमध्ये फाइल हलवणे आवश्यक आहे.</translation>
-<translation id="1435838927755162558">Parallels Desktop सोबत फोल्डर शेअर करा</translation>
 <translation id="1439919885608649279">हातात फुले असलेली व्यक्ती</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> बाहेर काढा</translation>
 <translation id="1464781208867302907">डिव्हाइस प्राधान्यांसाठी, सेटिंग्ज वर जा.</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">फ्रेंच</translation>
 <translation id="2732288874651063549"><ph name="VM_NAME" /> शेअरिंग व्यवस्थापित करा</translation>
 <translation id="2732839045120506979">व्हिएतनामी VNI</translation>
-<translation id="2735623501230989521">Parallels Desktop ला <ph name="FOLDER_NAME" /> फोल्डरमधील फाइल ॲक्सेस करण्याची परवानगी द्या</translation>
 <translation id="2764206540577097904">तुम्ही तुमचे पूर्ण वैयक्तिक Google Workspace स्टोरेज वापरले आहे.</translation>
 <translation id="2771816809568414714">चीज</translation>
 <translation id="2783909841122647548">Debian पॅकेज इंस्टॉलना यापुढे सपोर्ट नसेल. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">भूगोल</translation>
 <translation id="3044404008258011032">हे आयटम रिस्टोअर करण्यासाठी, ते ट्रॅशच्या बाहेरील नवीन फोल्डरमध्ये ड्रॅग करा. या आयटमसाठीचे मूळ फोल्डर "<ph name="PARENT_FOLDER_NAME" />" हटवले गेले आहे.</translation>
 <translation id="3047197340186497470">चीनी दाई</translation>
-<translation id="3067790092342515856">Windows फाइल</translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">SOCKS होस्ट</translation>
 <translation id="3091469289665833668">रोमानियन</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">तपशिलांसाठी तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
 <translation id="3548125359243647069">बऱ्याच वेळा चुकीचा पिन एंटर करण्यात आला.</translation>
 <translation id="3549797760399244642">drive.google.com वर जा...</translation>
-<translation id="3553048479571901246"><ph name="APP_NAME" /> सोबत फाइल उघडण्यासाठी, प्रथम त्या Windows फाइल फोल्डरमध्ये कॉपी करा.</translation>
 <translation id="3556731189587832921">आंतरराष्ट्रीय पीसी कीबोर्डसह इंग्रजी (यूएस)</translation>
 <translation id="3557414470514932909"><ph name="FILE_NAME" /> ट्रॅश मध्ये हलवत आहे</translation>
 <translation id="3560848236447534728">अर्मेनियन फोनेटिक</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">रोमानियन</translation>
 <translation id="4508265954913339219">सक्रियन अयशस्वी</translation>
 <translation id="4509667233588080747">वर्कमॅन आंतरराष्ट्रीय कीबोर्डसह इंग्रजी (यूएस)</translation>
-<translation id="4527800702232535228">हे फोल्डर Parallels Desktop सह शेअर केलेले आहे</translation>
 <translation id="4552678318981539154">अधिक स्टोरेज खरेदी करा</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> नेटवर्क, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">Bokeh</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">ओनिगिरी</translation>
 <translation id="4784330909746505604">PowerPoint प्रेझेंटेशन</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
-<translation id="4789067489790477934">Parallels Desktop ला तुमच्या Google Drive मधील फाइल ॲक्सेस करण्याची परवानगी द्या. बदल तुमच्या इतर डिव्हाइसवर सिंक होतील.</translation>
 <translation id="4790766916287588578">InScript कीबोर्डसह हिंदी</translation>
 <translation id="4798645114741131062">लवकरच तुमच्या ChromeOS Flex डिव्हाइसचे अपडेट थांबवले जातील. ChromeOS डिव्हाइसवर अपग्रेड करण्याचा विचार करा.</translation>
 <translation id="4801956050125744859">दोन्ही ठेवा</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">व्हॉल्यूम स्लायडर</translation>
 <translation id="4881695831933465202">उघडा</translation>
 <translation id="4891091358278567964">हे आयटम रिस्टोअर करण्यासाठी, ते ट्रॅशच्या बाहेरील नवीन फोल्डरमध्ये ड्रॅग करा. या आयटमसाठीची मूळ फोल्डर ही हटवली गेली आहेत.</translation>
-<translation id="4900532980794411603">Parallels Desktop सोबत शेअर करा</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, कनेक्ट करा</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, फोन बॅटरी <ph name="BATTERY_STATUS" />%, तपशील</translation>
 <translation id="4935975195727477204">गॅझानियाचे फूल</translation>
 <translation id="4943368462779413526">फूटबॉल</translation>
-<translation id="4961158930123534723">Parallels Desktop सोबत एक फोल्डर शेअर केले</translation>
 <translation id="4965874878399872778">तुमच्या संस्थेच्या सुरक्षा धोरणांनुसार फाइल तपासत आहे…</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> रिस्टोअर केली</translation>
 <translation id="4969785127455456148">अल्बम</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">ऑपरेशनला अपेक्षेपेक्षा जास्त वेळ लागत आहे. तुम्हाला हे रद्द करायचे आहे?</translation>
 <translation id="5036141350290856713">रशियन फोनेटिक</translation>
-<translation id="5036159836254554629">Parallels Desktop शेअरिंग व्यवस्थापित करा</translation>
 <translation id="5038625366300922036">अधिक पहा...</translation>
 <translation id="5044852990838351217">आर्मेनियन</translation>
 <translation id="5045550434625856497">चुकीचा पासवर्ड</translation>
@@ -736,9 +725,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="656398493051028875">"<ph name="FILENAME" />" हटवत आहे...</translation>
 <translation id="6581162200855843583">Google ड्राइव्ह लिंक</translation>
 <translation id="6588648400954570689">फाइल सिंक सेटिंग्ज</translation>
-<translation id="6594855146910089723">हे फोल्डर Linux आणि Parallels Desktop सोबत शेअर केलेले आहे</translation>
 <translation id="6607272825297743757">फाईल माहिती</translation>
-<translation id="6609332149380188670">Parallels Desktop सोबत शेअर केलेली<ph name="NUMBER_OF_ITEMS" /> फोल्डर</translation>
 <translation id="6629518321609546825">किमान चार अंक एंटर करा</translation>
 <translation id="6643016212128521049">साफ करा</translation>
 <translation id="6650726141019353908">गुलाबी फुलपाखरू</translation>
@@ -856,7 +843,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7436921188514130341">ओहो! नाव बदलताना एक एरर आली होती.</translation>
 <translation id="7458955835361612701">अलीकडील कोणत्याही इमेज नाहीत</translation>
 <translation id="7469894403370665791">या नेटवर्कशी स्वयंचलितपणे कनेक्ट व्हा</translation>
-<translation id="7486315294984620427">Parallels Desktop मध्ये फाइल ड्रॉप करण्यासाठी, Windows च्या फाइलमध्ये फाइल कॉपी करणे आवश्यक आहे.</translation>
 <translation id="749452993132003881">हिरगाना</translation>
 <translation id="7495372004724182530">मल्याळम फोनेटिक</translation>
 <translation id="7505167922889582512">लपविलेल्या फाइल दर्शवा</translation>

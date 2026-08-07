@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Dokument Worda</translation>
 <translation id="1056775291175587022">Brak sieci</translation>
 <translation id="1056898198331236512">Ostrzeżenie</translation>
-<translation id="1060368002126861100">Aby otworzyć pliki w aplikacji <ph name="APP_NAME" />, najpierw przenieś je do folderu Pliki systemu Windows.</translation>
 <translation id="1062407476771304334">Zastąp</translation>
 <translation id="1119383441774809183">Pokaż SMS-y</translation>
 <translation id="1119447706177454957">Błąd wewnętrzny</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">Norweski</translation>
 <translation id="1408504635543854729">Przeglądaj zawartość urządzenia w aplikacji Pliki. Dostępna zawartość jest określana przez administratora i nie można jej zmienić.</translation>
 <translation id="1412476183660741812">Podpisany pakiet internetowy</translation>
-<translation id="1433628812591023318">Aby można było przeciągnąć plik do Parallels Desktop, należy go przenieść do folderu Pliki systemu Windows.</translation>
-<translation id="1435838927755162558">Udostępnij folder aplikacji Parallels Desktop</translation>
 <translation id="1439919885608649279">Osoba z kwiatami</translation>
 <translation id="1458457385801829801">Odłącz <ph name="TARGET_NAME" /></translation>
 <translation id="1464781208867302907">Aby wyświetlić ustawienia urządzenia, otwórz Ustawienia.</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">francuski</translation>
 <translation id="2732288874651063549">Zarządzaj udostępnianiem maszynie wirtualnej <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">Wietnamski VNI</translation>
-<translation id="2735623501230989521">Przyznaj aplikacji Parallels Desktop uprawnienia dostępu do plików w folderze <ph name="FOLDER_NAME" /></translation>
 <translation id="2764206540577097904">Wykorzystujesz całe swoje indywidualne miejsce na dane w Google Workspace.</translation>
 <translation id="2771816809568414714">Ser</translation>
 <translation id="2783909841122647548">Instalacje pakietów Debian nie są już obsługiwane. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">Lokalizacja</translation>
 <translation id="3044404008258011032">Aby przywrócić te elementy, przeciągnij je do nowego folderu poza koszem. Ich pierwotny folder „<ph name="PARENT_FOLDER_NAME" />” został usunięty.</translation>
 <translation id="3047197340186497470">Chiński dayi</translation>
-<translation id="3067790092342515856">Pliki systemu Windows</translation>
 <translation id="3083975830683400843">Chromebity</translation>
 <translation id="3085752524577180175">Host SOCKS</translation>
 <translation id="3091469289665833668">rumuński</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">Aby uzyskać szczegółowe informacje, skontaktuj się z administratorem.</translation>
 <translation id="3548125359243647069">Zbyt wiele razy podano nieprawidłowy kod PIN.</translation>
 <translation id="3549797760399244642">Wejdź na drive.google.com...</translation>
-<translation id="3553048479571901246">Aby otworzyć pliki w aplikacji <ph name="APP_NAME" />, najpierw skopiuj je do folderu Pliki systemu Windows.</translation>
 <translation id="3556731189587832921">Angielski (USA) z komputerową klawiaturą międzynarodową</translation>
 <translation id="3557414470514932909">Przenoszę plik <ph name="FILE_NAME" /> do kosza</translation>
 <translation id="3560848236447534728">ormiańska klawiatura fonetyczna</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">Rumuński</translation>
 <translation id="4508265954913339219">Aktywacja nie powiodła się</translation>
 <translation id="4509667233588080747">Angielski (USA) z międzynarodową klawiaturą Workman</translation>
-<translation id="4527800702232535228">Ten folder jest udostępniany Parallels Desktop</translation>
 <translation id="4552678318981539154">Kup więcej miejsca</translation>
 <translation id="4552759165874948005">Sieć <ph name="NETWORK_TYPE" />, siła sygnału <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">Boke</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">Prezentacja PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
-<translation id="4789067489790477934">Przyznaj aplikacji Parallels Desktop uprawnienia dostępu do plików na Dysku Google. Zmiany będą synchronizowane z innymi urządzeniami.</translation>
 <translation id="4790766916287588578">Hindi z klawiaturą InScript</translation>
 <translation id="4798645114741131062">Twoje urządzenie z ChromeOS Flex wkrótce przestanie otrzymywać aktualizacje. Rozważ przejście na urządzenie z ChromeOS.</translation>
 <translation id="4801956050125744859">Zachowaj obie pozycje</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">Suwak głośności</translation>
 <translation id="4881695831933465202">Otwórz</translation>
 <translation id="4891091358278567964">Aby przywrócić te elementy, przeciągnij je do nowego folderu poza koszem. Ich pierwotne foldery zostały usunięte.</translation>
-<translation id="4900532980794411603">Udostępnij aplikacji Parallels Desktop</translation>
 <translation id="4902546322522096650">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, połącz</translation>
 <translation id="4906580650526544301">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, bateria telefonu: <ph name="BATTERY_STATUS" />%, szczegóły</translation>
 <translation id="4935975195727477204">Kwiat gazanii</translation>
 <translation id="4943368462779413526">Piłka futbolowa</translation>
-<translation id="4961158930123534723">Udostępniono 1 folder aplikacji Parallels Desktop</translation>
 <translation id="4965874878399872778">Sprawdzam zgodność plików z zasadami bezpieczeństwa obowiązującymi w Twojej organizacji…</translation>
 <translation id="496656650103537022">Plik <ph name="FILE_NAME" /> został przywrócony</translation>
 <translation id="4969785127455456148">Album</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Operacja trwa dłużej niż powinna. Chcesz ją przerwać?</translation>
 <translation id="5036141350290856713">rosyjska klawiatura fonetyczna</translation>
-<translation id="5036159836254554629">Zarządzaj udostępnianiem aplikacji Parallels Desktop</translation>
 <translation id="5038625366300922036">Zobacz więcej...</translation>
 <translation id="5044852990838351217">Ormiański</translation>
 <translation id="5045550434625856497">Nieprawidłowe hasło</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">Usuwam „<ph name="FILENAME" />”...</translation>
 <translation id="6581162200855843583">Link Dysku Google</translation>
 <translation id="6588648400954570689">Ustawienia synchronizacji plików</translation>
-<translation id="6594855146910089723">Ten folder jest udostępniany systemowi Linux i Parallels Desktop</translation>
 <translation id="6607272825297743757">Informacje o pliku</translation>
-<translation id="6609332149380188670">Udostępniono foldery (<ph name="NUMBER_OF_ITEMS" />) aplikacji Parallels Desktop</translation>
 <translation id="6629518321609546825">Wpisz co najmniej 4 cyfry</translation>
 <translation id="6643016212128521049">Wyczyść</translation>
 <translation id="6650726141019353908">Różowy motyl</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">Kurza twarz! Podczas zmiany nazwy wystąpił błąd.</translation>
 <translation id="7458955835361612701">Brak nowych obrazów</translation>
 <translation id="7469894403370665791">Automatycznie łącz się z tą siecią</translation>
-<translation id="7486315294984620427">Aby można było przeciągnąć plik do Parallels Desktop, należy go skopiować do folderu Pliki systemu Windows.</translation>
 <translation id="749452993132003881">hiragana</translation>
 <translation id="7495372004724182530">Malajalam (znaki fonetyczne)</translation>
 <translation id="7505167922889582512">Pokaż ukryte pliki</translation>

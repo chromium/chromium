@@ -297,6 +297,7 @@
 <translation id="2233735624724508540">ਕੋਈ ਸਮਾਂ-ਸੀਮਾ ਚੁਣੋ ਅਤੇ ਫਿਰ 'ਡਾਟਾ ਮਿਟਾਓ' 'ਤੇ ਟੈਪ ਕਰੋ</translation>
 <translation id="2234031676056123135">ਆਪਣੇ ਸ਼ਾਰਟਕੱਟਾਂ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="2234827758954819389">ਪਰਦੇਦਾਰੀ ਗਾਈਡ</translation>
+<translation id="2236949375853147973">ਮੇਰੀ ਸਰਗਰਮੀ</translation>
 <translation id="2238038374973843156">ਗਰੁੱਪ ਨੂੰ ਕਿਸੇ ਹੋਰ ਵਿੰਡੋ ਵਿੱਚ ਲਿਜਾਓ</translation>
 <translation id="2247789808226901522">ਕਾਰਡ ਦੀ ਮਿਆਦ ਸਮਾਪਤ ਹੋ ਗਈ ਹੈ</translation>
 <translation id="2251809247798634662">ਨਵੀਂ ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋ</translation>
@@ -574,6 +575,7 @@
 <translation id="3385749568468586663">Gemini ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="3387650086002190359">ਫ਼ਾਈਲ ਸਿਸਟਮ ਗੜਬੜੀਆਂ ਦੇ ਕਾਰਨ <ph name="FILE_NAME" /> ਡਾਊਨਲੋਡ ਅਸਫ਼ਲ ਰਿਹਾ।</translation>
 <translation id="3391311825344469964">ਤੁਸੀਂ Chrome ਦੇ ਵਿੰਡੋ ਪ੍ਰਬੰਧਕ ਵਿੱਚ ਆਪਣੀਆਂ ਵਿੰਡੋਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰ ਸਕਦੇ ਹੋ</translation>
+<translation id="3410151451624226773">Google Password Manager ਵਿੱਚ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="3417835166382867856">ਖੋਜ ਟੈਬਾਂ</translation>
 <translation id="3430670036890315772">ਤੁਹਾਡੇ ਪ੍ਰੋਫਾਈਲ ਲਾਕ ਨੂੰ ਬੰਦ ਕਰਨ ਨਾਲ ਤੁਹਾਡੀ ਰੱਖਿਅਤ ਕੀਤੀ ਜਾਣਕਾਰੀ ਹਟ ਜਾਵੇਗੀ</translation>
 <translation id="3435575784518354875">ਆਪਣੇ ਪਾਸਵਰਡਾਂ ਤੱਕ ਪਹੁੰਚ ਰੱਖਣ ਲਈ, ਹੁਣੇ ਉਨ੍ਹਾਂ ਨੂੰ ਨਿਰਯਾਤ ਕਰੋ, Google Play ਸੇਵਾਵਾਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ ਅਤੇ ਫਿਰ ਵਾਪਸ ਆਪਣੇ Google Password Manager ਵਿੱਚ ਉਨ੍ਹਾਂ ਨੂੰ ਆਯਾਤ ਕਰੋ। <ph name="BEGIN_LINK" />ਪੂਰੀਆਂ ਹਿਦਾਇਤਾਂ ਦੇਖੋ<ph name="END_LINK" />।</translation>
@@ -942,6 +944,7 @@
 <translation id="4877678010818027629">ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ ਦਾਖਲ ਹੋਵੋ</translation>
 <translation id="4878404682131129617">ਪ੍ਰੌਕਸੀ ਸਰਵਰ ਰਾਹੀਂ ਕੋਈ ਟਨਲ ਸਥਾਪਤ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="4880127995492972015">ਅਨੁਵਾਦ ਕਰੋ…</translation>
+<translation id="4880827082731008257">ਖੋਜ ਇਤਿਹਾਸ</translation>
 <translation id="4881695831933465202">ਖੋਲ੍ਹੋ</translation>
 <translation id="488187801263602086">ਫ਼ਾਈਲ ਦਾ ਨਾਮ ਬਦਲੋ</translation>
 <translation id="4885273946141277891">Chrome ਦੇ ਕਈ ਅਸਮਰਥਿਤ ਵਰਜਨ</translation>
@@ -991,6 +994,7 @@
 <translation id="509429900233858213">ਇੱਕ ਗੜਬੜ ਹੋਈ</translation>
 <translation id="5096775069898886423">ਸੁਰੱਖਿਅਤ ਕਨੈਕਸ਼ਨਾਂ ਦਾ ਸਮਰਥਨ ਨਾ ਕਰਨ ਵਾਲੀਆਂ ਸਾਈਟਾਂ ਲਈ, ਸਾਈਟ 'ਤੇ ਜਾਣ ਤੋਂ ਪਹਿਲਾਂ ਚਿਤਾਵਨੀ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="510275257476243843">1 ਘੰਟਾ ਬਾਕੀ</translation>
+<translation id="5105442806410269908">ਹੋਰ Google ਡਾਟੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="5114895953710637392">ਐਪ ਫਿਲਟਰ ਸ਼ੀਟ ਬੰਦ ਹੈ।</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> ਵੱਲ</translation>
 <translation id="5116239826668864748">ਸੁਨੇਹੇ, ਦਸਤਾਵੇਜ਼ ਅਤੇ ਹੋਰ ਐਪਾਂ ਵਿੱਚ ਲਿੰਕ 'ਤੇ ਟੈਪ ਕਰ ਕੇ ਤੁਸੀਂ ਕਿਸੇ ਵੇਲੇ ਵੀ Chrome ਵਰਤ ਸਕਦੇ ਹੋ</translation>
@@ -1041,6 +1045,7 @@
 <translation id="5316947901395241499">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰਨ ਦੀ ਸੁਵਿਧਾ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ</translation>
 <translation id="5317780077021120954">ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="5319359161174645648">Google, Chrome ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ</translation>
+<translation id="5323501626199324454">ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="5326246328175179736">ਤੁਸੀਂ ਇਸ ਖਾਤੇ ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਸਾਈਨ-ਇਨ ਨਹੀਂ ਕਰ ਸਕਦੇ</translation>
 <translation id="5327248766486351172">ਨਾਮ</translation>
 <translation id="5328542107300944283"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ਨਾਲ ਵਰਤੋ</translation>
@@ -1325,6 +1330,7 @@
 <translation id="6461962085415701688">ਫ਼ਾਈਲ ਨੂੰ ਖੋਲ੍ਹਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ</translation>
 <translation id="6464977750820128603">ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਸਾਈਟਾਂ ਨੂੰ ਦੇਖ ਸਕਦੇ ਹੋ ਜਿਨ੍ਹਾਂ 'ਤੇ ਤੁਸੀਂ Chrome ਵਿੱਚ ਜਾਂਦੇ ਹੋ ਅਤੇ ਉਨ੍ਹਾਂ ਲਈ ਟਾਈਮਰ ਸੈੱਟ ਕਰ ਸਕਦੇ ਹੋ।\n\nGoogle ਉਨ੍ਹਾਂ ਸਾਈਟਾਂ ਬਾਰੇ ਜਾਣਕਾਰੀ ਪ੍ਰਾਪਤ ਕਰਦਾ ਹੈ ਜਿਨ੍ਹਾਂ ਲਈ ਤੁਸੀਂ ਟਾਈਮਰ ਸੈੱਟ ਕੀਤਾ ਹੁੰਦਾ ਹੈ ਅਤੇ ਨਾਲ ਹੀ ਇਹ ਜਾਣਕਾਰੀ ਵੀ ਪ੍ਰਾਪਤ ਕਰਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਸਾਈਟਾਂ ਨੂੰ ਕਿੰਨੀ ਦੇਰ ਤੱਕ ਦੇਖਦੇ ਰਹੇ ਹੋ। ਇਹ ਜਾਣਕਾਰੀ ਡਿਜੀਟਲ ਜੀਵਨਸ਼ੈਲੀ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਵਰਤੀ ਜਾਂਦੀ ਹੈ।</translation>
 <translation id="6468703991511753953">ਪਤਾ ਬਾਰ ਇਸ ਵੇਲੇ ਹੇਠਾਂ ਹੈ</translation>
+<translation id="6469702164109431067">ਪਾਸਵਰਡ ਅਤੇ ਪਾਸਕੀਆਂ</translation>
 <translation id="6470181189905173055"><ph name="APP_LABEL" /> ਦੀ ਵਰਤੋਂ ਕਰਨ ਵੇਲੇ ਤੁਹਾਡੇ ਵੱਲੋਂ Chrome ਵਿੱਚ ਖੋਲ੍ਹੇ ਗਏ ਪੰਨੇ ਇੱਥੇ ਦਿਸਣਗੇ।</translation>
 <translation id="6473086018775716761">ਸਾਂਝਾਕਰਨ ਵਿਕਲਪਾਂ ਦੀ ਸੂਚੀ ਅੱਧੀ ਸਕ੍ਰੀਨ 'ਤੇ ਖੁੱਲ੍ਹੀ ਹੋਈ ਹੈ।</translation>
 <translation id="6475951671322991020">ਵੀਡੀਓ ਡਾਊਨਲੋਡ ਕਰੋ</translation>

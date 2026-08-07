@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Word പ്രമാണം</translation>
 <translation id="1056775291175587022">നെറ്റ്‌വർക്കില്ല</translation>
 <translation id="1056898198331236512">മുന്നറിയിപ്പ്</translation>
-<translation id="1060368002126861100"><ph name="APP_NAME" /> ഉപയോഗിച്ച് ഫയലുകൾ തുറക്കാൻ, ആദ്യം അവയെ Windows ഫയലുകൾ എന്ന ഫോൾഡറിലേക്ക് മാറ്റുക.</translation>
 <translation id="1062407476771304334">മാറ്റിസ്ഥാപിക്കുക</translation>
 <translation id="1119383441774809183">ടെക്സ്റ്റ് മെസേജുകൾ കാണിക്കുക</translation>
 <translation id="1119447706177454957">ആന്തരിക പിശക്</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">നോർവീജിയൻ</translation>
 <translation id="1408504635543854729">Files ആപ്പിലെ ഉപകരണ ഉള്ളടക്കം അടുത്തറിയുക. ഒരു അഡ്‌മിൻ, ഉള്ളടക്കം നിയന്ത്രിതമാക്കിയതിനാൽ അതിൽ മാറ്റം വരുത്താനാകില്ല.</translation>
 <translation id="1412476183660741812">സൈൻ ചെയ്ത വെബ് ബണ്ടിൽ</translation>
-<translation id="1433628812591023318">Parallels Desktop-ലേക്ക് ഫയലുകൾ ചേർക്കാൻ അവയെ Windows ഫയലുകൾ എന്ന ഫോൾഡറിലേക്ക് നീക്കണം.</translation>
-<translation id="1435838927755162558">Parallels Desktop ഉപയോഗിച്ച് ഫോൾഡർ പങ്കിടുക</translation>
 <translation id="1439919885608649279">പൂക്കൾ പിടിച്ചിരിക്കുന്ന വ്യക്തി</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> ഒഴിവാക്കുക</translation>
 <translation id="1464781208867302907">ഉപകരണ മുൻഗണനകൾക്ക്, ക്രമീകരണത്തിലേക്ക് പോവുക.</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">ഫ്രഞ്ച്</translation>
 <translation id="2732288874651063549"><ph name="VM_NAME" /> എന്നയാളുമായുള്ള പങ്കിടൽ മാനേജ് ചെയ്യുക</translation>
 <translation id="2732839045120506979">വിയറ്റ്നാമീസ് VNI</translation>
-<translation id="2735623501230989521"><ph name="FOLDER_NAME" /> ഫോൾഡറിലെ ഫയലുകൾ ആക്‌സസ് ചെയ്യാൻ Parallels Desktop-ന് അനുമതി നൽകുക</translation>
 <translation id="2764206540577097904">നിങ്ങളുടെ വ്യക്തിഗത Google Workspace സ്റ്റോറേജ് മുഴുവൻ ഉപയോഗിച്ചു.</translation>
 <translation id="2771816809568414714">ചീസ്</translation>
 <translation id="2783909841122647548">Debian പാക്കേജ് ഇൻസ്റ്റാളുകൾക്ക് ഇനി പിന്തുണയില്ല. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">ഭൂമിശാസ്‌ത്രം</translation>
 <translation id="3044404008258011032">ഈ ഇനങ്ങൾ പുനഃസ്ഥാപിക്കാൻ, ട്രാഷിന് പുറത്തുള്ള ഒരു പുതിയ ഫോൾഡറിലേക്ക് അവ വലിച്ചിടുക. ഈ ഇനങ്ങളുടെ ഒറിജിനൽ ഫോൾഡറായ "<ph name="PARENT_FOLDER_NAME" />" ഇല്ലാതാക്കി.</translation>
 <translation id="3047197340186497470">ചൈനീസ് ദായി</translation>
-<translation id="3067790092342515856">Windows ഫയലുകൾ</translation>
 <translation id="3083975830683400843">Chromebit-കൾ</translation>
 <translation id="3085752524577180175">SOCKS ഹോസ്റ്റ്</translation>
 <translation id="3091469289665833668">റുമാനിയന്‍</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">വിശദാംശങ്ങൾക്ക് നിങ്ങളുടെ അഡ്‌മിനെ ബന്ധപ്പെടുക.</translation>
 <translation id="3548125359243647069">തെറ്റായ പിൻ നിരവധി തവണ നൽകി.</translation>
 <translation id="3549797760399244642">drive.google.com-ലേക്ക് പോകുക...</translation>
-<translation id="3553048479571901246"><ph name="APP_NAME" /> ഉപയോഗിച്ച് ഫയലുകൾ തുറക്കാൻ, ആദ്യം അവയെ Windows ഫയലുകൾ എന്ന ഫോൾഡറിലേക്ക് പകർത്തുക.</translation>
 <translation id="3556731189587832921">അന്താരാഷ്ട്ര PC കീബോർഡ് ഉള്ള ഇംഗ്ലീഷ് (യുഎസ്)</translation>
 <translation id="3557414470514932909"><ph name="FILE_NAME" /> ട്രാഷിലേക്ക് നീക്കുന്നു</translation>
 <translation id="3560848236447534728">അർമേനിയൻ ഫൊണറ്റിക്</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">റുമാനിയൻ</translation>
 <translation id="4508265954913339219">സജീവമാക്കല്‍ പരാജയപ്പെട്ടു</translation>
 <translation id="4509667233588080747">Workman അന്താരാഷ്ട്ര കീബോർഡ് ഉള്ള ഇംഗ്ലീഷ് (യുഎസ്)</translation>
-<translation id="4527800702232535228">Parallels Desktop-മായി ഈ ഫോൾഡർ പങ്കിട്ടു</translation>
 <translation id="4552678318981539154">കൂടുതൽ സംഭരണം വാങ്ങുക</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> നെറ്റ്‍വർക്ക്, സിഗ്‍നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">ബൊക്കെ</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">ഒണിഗിരി</translation>
 <translation id="4784330909746505604">PowerPoint അവതരണം</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
-<translation id="4789067489790477934">നിങ്ങളുടെ Google Drive-ലെ ഫയലുകൾ ആക്‌സസ് ചെയ്യാൻ Parallels Desktop-ന് അനുമതി നൽകുക. മാറ്റങ്ങൾ, നിങ്ങളുടെ മറ്റ് ഉപകരണങ്ങളിലേക്ക് സമന്വയിപ്പിക്കും.</translation>
 <translation id="4790766916287588578">InScript കീബോർഡുള്ള ഹിന്ദി</translation>
 <translation id="4798645114741131062">നിങ്ങളുടെ ChromeOS Flex ഉപകരണത്തിന് അപ്ഡേറ്റുകൾ ലഭിക്കുന്നത് ഉടൻ അവസാനിക്കും. ChromeOS ഉപകരണത്തിലേക്ക് അപ്‌ഗ്രേഡ് ചെയ്യുന്നത് പരിഗണിക്കുക.</translation>
 <translation id="4801956050125744859">രണ്ടും സൂക്ഷിക്കുക</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">വോളിയം സ്ലൈഡർ</translation>
 <translation id="4881695831933465202">തുറക്കുക</translation>
 <translation id="4891091358278567964">ഈ ഇനങ്ങൾ പുനഃസ്ഥാപിക്കാൻ, ട്രാഷിന് പുറത്തുള്ള ഒരു പുതിയ ഫോൾഡറിലേക്ക് അവ വലിച്ചിടുക. ഈ ഇനങ്ങളുടെ ഒറിജിനൽ ഫോൾഡറുകൾ ഇല്ലാതാക്കി.</translation>
-<translation id="4900532980794411603">Parallels Desktop ഉപയോഗിച്ച് പങ്കിടുക</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" /> നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />%, കണക്‌റ്റ് ചെയ്യുക</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" /> നെറ്റ്‌വർക്ക്, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />%, ഫോൺ ബാറ്ററി <ph name="BATTERY_STATUS" />%, വിശദാംശങ്ങൾ</translation>
 <translation id="4935975195727477204">ഗസാനിയ പുഷ്‌പം</translation>
 <translation id="4943368462779413526">ഫുട്‌ബോള്‍</translation>
-<translation id="4961158930123534723">Parallels Desktop ഉപയോഗിച്ച് ഒരു ഫോൾഡർ പങ്കിട്ടു</translation>
 <translation id="4965874878399872778">നിങ്ങളുടെ ഓർഗനൈസേഷന്റെ സുരക്ഷാ നയങ്ങൾ പാലിക്കുന്നുണ്ടോ എന്നറിയാൻ ഫയലുകൾ പരിശോധിക്കുന്നു...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> പുനഃസ്ഥാപിച്ചു</translation>
 <translation id="4969785127455456148">ആല്‍‌ബം</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">പ്രവർത്തനത്തിന് പ്രതീക്ഷിച്ചതിലും സമയമെടുക്കുന്നു. നിങ്ങൾക്കിത് അവസാനിപ്പിക്കണോ?</translation>
 <translation id="5036141350290856713">റഷ്യൻ ഫൊണറ്റിക്</translation>
-<translation id="5036159836254554629">Parallels Desktop പങ്കിടൽ മാനേജ് ചെയ്യുക</translation>
 <translation id="5038625366300922036">കൂടുതൽ കാണുക...</translation>
 <translation id="5044852990838351217">അർമേനിയൻ</translation>
 <translation id="5045550434625856497">പാസ്‍വേഡ് തെറ്റാണ്</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">"<ph name="FILENAME" />" ഇല്ലാതാക്കുന്നു...</translation>
 <translation id="6581162200855843583">Google ഡ്രൈവ് ലിങ്ക്</translation>
 <translation id="6588648400954570689">ഫയൽ സമന്വയിപ്പിക്കൽ ക്രമീകരണം</translation>
-<translation id="6594855146910089723">Linux-മായും Parallels Desktop-മായും ഈ ഫോൾഡർ പങ്കിട്ടു</translation>
 <translation id="6607272825297743757">ഫയൽ വിവരം</translation>
-<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> ഫോൾഡറുകൾ Parallels Desktop ഉപയോഗിച്ച് പങ്കിട്ടു</translation>
 <translation id="6629518321609546825">കുറഞ്ഞത് 4 നമ്പറുകൾ നൽകുക</translation>
 <translation id="6643016212128521049">മായ്‌ക്കുക</translation>
 <translation id="6650726141019353908">പിങ്ക് ചിത്രശലഭം</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">ക്ഷമിക്കണം! പേരുമാറ്റുന്നതിനിടെ ഒരു പിശകുണ്ടായി.</translation>
 <translation id="7458955835361612701">അടുത്തിടെയുള്ള ചിത്രങ്ങളൊന്നുമില്ല</translation>
 <translation id="7469894403370665791">ഈ നെറ്റ്‍വര്‍ക്കിലേക്ക് സ്വയമേവ ബന്ധിപ്പിക്കുന്നു</translation>
-<translation id="7486315294984620427">Parallels Desktop-ലേക്ക് ഫയലുകൾ ചേർക്കാൻ അവയെ Windows ഫയലുകൾ എന്ന ഫോൾഡറിലേക്ക് പകർത്തണം.</translation>
 <translation id="749452993132003881">ഹിരാഗാന</translation>
 <translation id="7495372004724182530">മലയാള ഉച്ചാരണശബ്‌ദം</translation>
 <translation id="7505167922889582512">ഒളിപ്പിച്ചിരിക്കുന്ന ഫയലുകൾ കാണിക്കുക</translation>

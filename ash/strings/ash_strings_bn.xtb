@@ -35,7 +35,6 @@
 <translation id="1088231044944504242">আপনার <ph name="CATEGORY" />, ফাইল, অ্যাপ এবং আরও অনেক কিছু সার্চ করুন। আপনার অ্যাপগুলি নেভিগেট করতে তীরচিহ্ন কী ব্যবহার করুন।</translation>
 <translation id="1093645050124056515">ctrl + alt + নিম্নমুখী তীরচিহ্ন</translation>
 <translation id="1094756674036064790">ব্লুটুথ বন্ধ করবেন?</translation>
-<translation id="109647177154844434">Parallels Desktop আনইনস্টল করলে আপনার Windows ইমেজও মুছে যাবে। এর মধ্যে এটির অ্যাপ্লিকেশন, সেটিংস ও ডেটাও পরে। আপনি কি সত্যিই চালিয়ে যেতে চান?</translation>
 <translation id="1104084341931202936">অ্যাক্সেসেবিলিটি সেটিংস দেখান</translation>
 <translation id="1104621072296271835">আপনার ডিভাইসগুলি একসাথে আরও ভাল কাজ করে</translation>
 <translation id="1107300737351978027">বারবার ব্যবহার করা সংখ্যা থাকলে চলবে না</translation>
@@ -82,7 +81,6 @@
 <translation id="1210557957257435379">স্ক্রিন রেকর্ডিং</translation>
 <translation id="121097972571826261">শব্দ অনুসারে এগিয়ে যান</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store অ্যাপ</translation>
-<translation id="1223484782328004593"><ph name="APP_NAME" /> লঞ্চ করতে লাইসেন্স প্রয়োজন</translation>
 <translation id="1225748608451425081">কোনও পরিচিত সমস্যার কারণে আপনার Chromebook লক হয়ে গেছে। আপনি এতক্ষণ পর আবার সাইন-ইন করতে পারবেন: <ph name="TIME_LEFT" />।</translation>
 <translation id="1229194443904279055">বেছে নেওয়ার কাজটি থামান</translation>
 <translation id="1235458158152011030">পরিচিত নেটওয়ার্কগুলি</translation>
@@ -93,7 +91,6 @@
 <translation id="1244265436519979884">বর্তমানে Linux ফিরিয়ে আনার কাজ চলছে</translation>
 <translation id="1245476784081715330">অসাধারণ!</translation>
 <translation id="124678866338384709">বর্তমান ট্যাব বন্ধ করুন</translation>
-<translation id="1246863218384630739"><ph name="VM_NAME" /> ইনস্টল করা যায়নি: <ph name="HTTP_ERROR" /> সমস্যার কোড সহ একটি ছবির URL দেখাচ্ছে। অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
 <translation id="1246890715821376239">কাজ করে না এমন অ্যাপ</translation>
 <translation id="1247372569136754018">মাইক্রোফোন (অভ্যন্তরীণ)</translation>
 <translation id="1247519845643687288">সাম্প্রতিক অ্যাপ</translation>
@@ -107,7 +104,6 @@
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> চার্জ করা হচ্ছে</translation>
 <translation id="1275718070701477396">নির্বাচিত</translation>
 <translation id="1276975447697633661">ফাইল বেছে নিন, তারপর <ph name="KEY" /> প্রেস করুন</translation>
-<translation id="1276994519141842946"><ph name="APP_NAME" /> আনইনস্টল করা যায়নি</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1283126956823499975">এই ডিভাইস সেট-আপ করার সময় কিছু সমস্যা হয়েছে</translation>
 <translation id="1285992161347843613">ফোনের লোকেশন খুঁজে পাওয়ার সুবিধা</translation>
@@ -170,7 +166,6 @@
 <translation id="1421166164855200062">সাজেস্ট করা গ্রুপ</translation>
 <translation id="1426410128494586442">হ্যাঁ</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> ব্লক করা আছে</translation>
-<translation id="142765311413773645"><ph name="APP_NAME" />-এর লাইসেন্সের মেয়াদ শেষ হয়ে গেছে</translation>
 <translation id="1430915738399379752">প্রিন্ট</translation>
 <translation id="1435537621343861112">ডিকটেশন শুরু করা যায়নি। মাইক বন্ধ আছে।</translation>
 <translation id="1445031758921122223">ফেস কন্ট্রোল সংক্রান্ত ফাইল ডাউনলোড করা হয়েছে</translation>
@@ -193,12 +188,10 @@
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">ডিকটেশনের সহায়তায়, আপনার ভয়েস ব্যবহার করে টাইপ করতে পারবেন। আপনি কোনও টেক্সট ফিল্ডে থাকার সময় 'ডিকটেশন কী' প্রেস করুন অথবা স্ক্রিনের একেবারে নিচে থাকা 'মাইক্রোফোন' আইকন বেছে নিন। আপনার ডিকটেশনের ভাষা <ph name="LANGUAGE" /> ভাষায় সেট করা হয়েছে। প্রসেস করার জন্য স্পিচ, Google-এ পাঠানো হয়। যেকোনও সময় আপনি 'সেটিংস &gt; অ্যাক্সেসিবিলিটি' থেকে ডিকটেশনের ভাষা পরিবর্তন করতে পারবেন।</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" />-কে <ph name="SECOND_ITEM_TITLE" /> দিয়ে পাল্টানো হয়েছে</translation>
-<translation id="1494429729245089920">ভার্চুয়াল মেশিন "<ph name="VM_NAME" />" আগে থেকেই আছে, তবে সঠিক <ph name="APP_NAME" /> ভার্চুয়াল মেশিন বলে মনে হচ্ছে না। আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
 <translation id="1500926532737552529">সমস্ত পরামর্শ দেখুন</translation>
 <translation id="1501946871587957338">অডিও সোর্স পরিবর্তন করতে চান?</translation>
 <translation id="1505542291183484463">নিচের দিকে সাইজ ছোট বড় করার উইন্ডো টাইল করুন</translation>
 <translation id="1510238584712386396">লঞ্চার</translation>
-<translation id="1515163294334130951">লঞ্চ করুন</translation>
 <translation id="1519090060276706457">উইন্ডোগুলি ফিরিয়ে আনার জন্য প্রত্যাশিত সময়ের চেয়ে বেশি সময় লাগছে</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003">ব্যাটারি <ph name="BATTERY_PERCENTAGE" />% | সম্পূর্ণ চার্জ হতে <ph name="TIME" /> বাকি আছে</translation>
@@ -222,7 +215,6 @@
 <translation id="1574691582236909946">বাম প্রান্তের হ্যান্ডেল বেছে নেওয়া হয়েছে, সরাতে তীরচিহ্ন 'কী' ব্যবহার করুন</translation>
 <translation id="1576623706766186887">ম্যাগনিফায়ার চালু থাকাকালীন ছোট করুন</translation>
 <translation id="1578558981922970608">জোর করে বন্ধ করুন</translation>
-<translation id="1580772913177567930">আপনার অ্যাডমিনের সাথে যোগাযোগ করুন</translation>
 <translation id="1582946770779745370">গেম ড্যাশবোর্ড উপলভ্য। যেকোনও সময়ে খুলতে <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape, তারপর <ph name="LAUNCHER_KEY_NAME" /> + g প্রেস করুন</translation>
 <translation id="1586324912145647027">১ থেকে ৮ নম্বর ডেস্কে যান</translation>
 <translation id="158838227375272121">Google Classroom ওয়েবসাইট</translation>
@@ -443,7 +435,6 @@
 <translation id="2322065293366551060"><ph name="CATEGORY" /> , সার্চ ফলাফল সংক্রান্ত বিভাগ</translation>
 <translation id="2322173485024759474">অক্ষর অনুযায়ী পেছনে যান</translation>
 <translation id="2326112202058075478">আরও ইমোজি দেখুন</translation>
-<translation id="2328561734797404498"><ph name="APP_NAME" /> চালু করার আগে আপনার ডিভাইস রিস্টার্ট করতে হবে।</translation>
 <translation id="2335091074961603075">আপনার Chromebook অথবা ব্লুটুথ ডিভাইস, ব্লুটুথের পুরনো কোনও ভার্সন ব্যবহার করছে। আরও ভাল অডিও কোয়ালিটির জন্য ইন্টার্নাল মাইক্রোফোন ব্যবহার করুন।</translation>
 <translation id="2336214675195760012">{NUM_DAYS,plural, =1{<ph name="MANAGER" />-এ কাজ করার জন্য, আপনাকে আজই ওয়াই-ফাই নেটওয়ার্কে কানেক্ট করে আপডেট ডাউনলোড করতে হবে। অথবা, মিটারড কানেকশন ব্যবহার করেও ডাউনলোড করতে পারবেন (এর জন্য চার্জ দিতে হতে পারে)।}one{<ph name="MANAGER" />-এ কাজ করার জন্য, আপনাকে, নির্ধারিত সময়সীমা শেষ হওয়ার আগেই, ওয়াই-ফাই নেটওয়ার্কে কানেক্ট করে আপডেট ডাউনলোড করতে হবে। অথবা, মিটারড কানেকশন ব্যবহার করেও ডাউনলোড করতে পারবেন (এর জন্য চার্জ দিতে হতে পারে)।}other{<ph name="MANAGER" />-এ কাজ করার জন্য, আপনাকে, নির্ধারিত সময়সীমা শেষ হওয়ার আগেই, ওয়াই-ফাই নেটওয়ার্কে কানেক্ট করে আপডেট ডাউনলোড করতে হবে। অথবা, মিটারড কানেকশন ব্যবহার করেও ডাউনলোড করতে পারবেন (এর জন্য চার্জ দিতে হতে পারে)।}}</translation>
 <translation id="2336258397628212480"><ph name="PRINTER_NAME" /> থেকে <ph name="APP_NAME" />-এর মাধ্যমে ১টি পৃষ্ঠা প্রিন্ট করা হচ্ছে</translation>
@@ -471,7 +462,6 @@
 <translation id="2386292613071805067">পৃষ্ঠাতে থাকা সবকিছুই বেছে নিন</translation>
 <translation id="2389423187722941333">Gemini টগল করুন</translation>
 <translation id="2390347491606624519">প্রক্সি সার্ভারে কানেক্ট করা যাচ্ছে না, আবার সাইন-ইন করুন</translation>
-<translation id="2393136602862631930">আপনার Chromebook-এ <ph name="APP_NAME" /> সেট-আপ করুন</translation>
 <translation id="2397416548179033562">Chrome মেনু দেখান</translation>
 <translation id="240006516586367791">মিডিয়া কন্ট্রোল</translation>
 <translation id="2400664245143453337">খুব তাড়াতাড়ি আপডেট করা দরকার</translation>
@@ -504,7 +494,6 @@
 <translation id="2473177541599297363">রেজোলিউশন কনফার্ম করুন</translation>
 <translation id="2475783092753560388"><ph name="SEARCH_RESULT_TEXT" /> যোগ করুন</translation>
 <translation id="2475982808118771221">একটি ত্রুটি ঘটেছে</translation>
-<translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> আনইনস্টল করার জন্য Windows বন্ধ করুন।</translation>
 <translation id="2478076885740497414">অ্যাপ্লিকেশান ইনস্টল করুন</translation>
 <translation id="2479148705183875116">সেটিংসে যান</translation>
 <translation id="2484513351006226581">কীবোর্ড লে-আউট পরিবর্তন করতে <ph name="KEYBOARD_SHORTCUT" /> টিপুন।</translation>
@@ -544,7 +533,6 @@
 <translation id="2573588302192866788"><ph name="NAME" />-এ কানেক্ট করা যায়নি</translation>
 <translation id="2575685495496069081">একাধিক সাইন-ইন বিকল্প বন্ধ করা হয়েছে</translation>
 <translation id="2579264398927991698">ফার্মওয়্যার আপডেট</translation>
-<translation id="2586561813241011046"><ph name="APP_NAME" /> ইনস্টল করা যায়নি। আবার চেষ্টা করুন অথবা আপনার অ্যাডমিনের সাথে যোগাযোগ করুন। সমস্যার কোড: <ph name="ERROR_CODE" />।</translation>
 <translation id="2586657967955657006">ক্লিপবোর্ড</translation>
 <translation id="2596078834055697711">উইন্ডো স্ক্রিনশট নিন</translation>
 <translation id="2598725286293895280">কাজ করে না এমন অ্যাপ ডেস্কে রয়েছে</translation>
@@ -566,7 +554,6 @@
 <translation id="2653659639078652383">জমা দিন</translation>
 <translation id="2658778018866295321">ক্লিক করে ড্র্যাগ করুন</translation>
 <translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> এবং <ph name="UNAVAILABLE_APPS_TWO" /> অ্যাপ দুটি এই ডিভাইসে উপলভ্য নেই।</translation>
-<translation id="2669241540496514785"><ph name="APP_NAME" /> খোলা যায়নি</translation>
 <translation id="2670350619068134931">কমানো হয়েছে এমন অ্যানিমেশন</translation>
 <translation id="2672142220933875349">খারাপ crx ফাইল, প্যাকমুক্ত করতে ব্যর্থ হয়েছে৷</translation>
 <translation id="2673968385134502798">গেম</translation>
@@ -839,14 +826,12 @@
 <translation id="3444385531800624797">ফলাফল লোড করা হচ্ছে</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> মিনিট</translation>
 <translation id="3445925074670675829">USB-C ডিভাইস</translation>
-<translation id="3446274660183028131">Windows ইনস্টল করতে Parallels Desktop চালু করুন।</translation>
 <translation id="3449393517661170867">ট্যাবযুক্ত মোডে নতুন উইন্ডো</translation>
 <translation id="3450157232394774192">নিষ্ক্রিয় স্থিতির ওকুপেন্সির শতকরা হার</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" />-এর প্রয়োজন অনুযায়ী, আপনাকে এখনই ওয়াই-ফাই নেটওয়ার্কে কানেক্ট করতে হবে এবং একটি আপডেট ডাউনলোড করতে হবে।</translation>
 <translation id="3454555520521576458">পরিবর্তনযোগ্য আকার</translation>
 <translation id="3455468639467374593">টেমপ্লেট, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204"><ph name="DEVICE_NAME" />-এর হটস্পটের সাথে ১টি ডিভাইস কানেক্ট করা আছে</translation>
-<translation id="3458451003193188688">নেটওয়ার্ক সমস্যার কারণে ভার্চুয়াল মেশিন ইনস্টল করা যায়নি। আবার চেষ্টা করুন অথবা আপনার অ্যাডমিনের সাথে যোগাযোগ করুন। সমস্যার কোড: <ph name="ERROR_CODE" />।</translation>
 <translation id="346243998268439747">জুম লেভেল রিসেট করুন</translation>
 <translation id="3465223694362104965">আপনি শেষবার সাইন-ইন করার পরে আরেকটি কীবোর্ড এই ডিভাইসে কানেক্ট করা হয়েছে। এটি ব্যবহার করার আগে কীবোর্ডটিকে আপনি নিরাপদ বলে মনে করেন কিনা তা দেখে নিন।</translation>
 <translation id="3465356146291925647">আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে</translation>
@@ -865,7 +850,6 @@
 <translation id="3513798432020909783">অ্যাকাউন্টটি <ph name="MANAGER_EMAIL" /> ম্যানেজ করছেন</translation>
 <translation id="3516000762115478502">উপরের দিকে সাইজ ছোট বড় করার উইন্ডো টাইল করুন</translation>
 <translation id="3517037892157925473">টাস্ক শেষবার আপডেট করা হয়েছে: <ph name="TIME" />, <ph name="DATE" />।</translation>
-<translation id="3522088408596898827">ডিস্কে জায়গা খুবই কম আছে। ডিস্কে জায়গা খালি করে আবার চেষ্টা করুন।</translation>
 <translation id="352245152354538528">{0,plural, =1{১ মিনিটের মধ্যে ডিভাইস আপডেট করুন}one{# মিনিটের মধ্যে ডিভাইস আপডেট করুন}other{# মিনিটের মধ্যে ডিভাইস আপডেট করুন}}</translation>
 <translation id="3522979239100719575">উপলভ্য প্রোফাইল খুঁজে দেখা হচ্ছে। এর জন্য কয়েক মিনিট সময় লাগতে পারে।</translation>
 <translation id="3526440770046466733">নতুন ট্যাবে লিঙ্ক খুলুন এবং বর্তমান ট্যাবে কাজ চালিয়ে যান</translation>
@@ -1019,7 +1003,6 @@
 <translation id="3886872229787704059">আজ খোলা হয়েছে</translation>
 <translation id="3892148308691398805">টেক্সট কপি করুন</translation>
 <translation id="3893630138897523026">ChromeVox (কথ্য প্রতিবার্তা)</translation>
-<translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3898464793473355515">ঘড়ির কাঁটার অভিমুখে ৯০ ডিগ্রি ঘোরান</translation>
 <translation id="3900355044994618856">আপনার সেশনটি <ph name="SESSION_TIME_REMAINING" /> এ শেষ হবে</translation>
 <translation id="3901991538546252627"><ph name="NAME" />-এ সংযোগ করা হচ্ছে</translation>
@@ -1117,7 +1100,6 @@
 <translation id="4181841719683918333">ভাষাসমূহ</translation>
 <translation id="4185671786623711291">চালু থাকা উইন্ডো ডানদিকের ডেস্কে সরান</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> - <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> সার্চ করুন</translation>
-<translation id="4187424053537113647"><ph name="APP_NAME" /> সেট-আপ করা হচ্ছে...</translation>
 <translation id="4189826113259617332">আপনার বর্তমান উইন্ডোতে খোলা সমস্ত পৃষ্ঠা বুকমার্ক হিসেবে একটি নতুন ফোল্ডারে সেভ করুন</translation>
 <translation id="4190143678693626113">আপনার Chromebook থেকে ফোনের টেক্সটের চটপট উত্তর দিয়ে সময় বাঁচান</translation>
 <translation id="4190780880566297084">আপনার ফোনের সাম্প্রতিক ফটো, মিডিয়া ও অ্যাপ দেখা সংক্রান্ত সেট-আপের পদ্ধতি বাতিল করুন</translation>
@@ -1129,7 +1111,6 @@
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> উপলভ্য নেই।</translation>
 <translation id="4201051445878709314">পূর্ববর্তী মাস দেখান</translation>
 <translation id="4209973997261364186">ওয়াই-ফাই চালু করা আছে</translation>
-<translation id="4210048056321123003">ভার্চুয়াল মেশিন ডাউনলোড করা হচ্ছে</translation>
 <translation id="4212246570487010370">ব্রাউজ করা চালিয়ে যান</translation>
 <translation id="4212472694152630271">যাচাইকরণের জন্য পিন ব্যবহার করুন</translation>
 <translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, টগল করার বোতাম, <ph name="STATE" /></translation>
@@ -1148,7 +1129,6 @@
 <translation id="4250229828105606438">স্ক্রিনশট</translation>
 <translation id="425364040945105958">কোনও সিম নেই</translation>
 <translation id="425573743389990240">ওয়াটে ব্যাটারি ডিসচার্জের হার (ঋণাত্মক মানের অর্থ হল ব্যাটারি চার্জ হচ্ছে)</translation>
-<translation id="4259388776256904261">এর জন্য কিছু সময় লাগতে পারে</translation>
 <translation id="4264977415328155183">, আড়াল করা হয়েছে</translation>
 <translation id="4265259722091164182">টাইটেল কেস</translation>
 <translation id="4269883910223712419">এই ডিভাইসের প্রশাসক এগুলি করতে পারেন:</translation>
@@ -1235,7 +1215,6 @@
 ১টি ডিভাইস কানেক্ট করা হয়েছে।</translation>
 <translation id="4477892968187500306">Google যাচাই করেনি এমন অ্যাপও এই ডিভাইসে থাকে পারে।</translation>
 <translation id="4479639480957787382">ইথারনেট</translation>
-<translation id="4479877282574735775">ভার্চুয়াল মেশিন কনফিগার করা হচ্ছে। এর জন্য কয়েক মিনিট সময় লাগতে পারে।</translation>
 <translation id="4485506555414638855">আপনার ফোনের সাম্প্রতিক ফটো, মিডিয়া ও বিজ্ঞপ্তি দেখা সংক্রান্ত সেট-আপের পদ্ধতি বাতিল করুন</translation>
 <translation id="4491109536499578614">ছবি</translation>
 <translation id="4493468155686877504">সাজেস্ট করা হয়েছে (<ph name="INSTALL_SIZE" />)</translation>
@@ -1384,7 +1363,6 @@
 <translation id="4917385247580444890">জোরালো</translation>
 <translation id="4918086044614829423">স্বীকার</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> এখন আপনার ক্যামেরা ব্যবহার করছে</translation>
-<translation id="492363500327720082"><ph name="APP_NAME" /> আনইনস্টল করা হচ্ছে...</translation>
 <translation id="492453977506755176">'ক্যাপচার মোড' কী</translation>
 <translation id="4925542575807923399">এই অ্যাকাউন্টের অ্যাডমিনিস্ট্রেটর অ্যাকাউন্টটিকে একাধিক সাইন-ইন সেশনের প্রথম সাইন-ইন করে থাকা অ্যাকাউন্ট হিসেবে রাখতে চায়৷</translation>
 <translation id="493076006037866439">স্ক্রিন জুম-আউট করুন</translation>
@@ -1622,7 +1600,6 @@
 <translation id="5578188167649348993">মেমরি</translation>
 <translation id="5580000943347215299">লাইব্রেরি</translation>
 <translation id="5581972110672966454">ডোমেনে ডিভাইসটি যোগ করা যাচ্ছে না। আবার চেষ্টা করুন অথবা আপনার ডিভাইসের মালিক বা অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন। সমস্যার কোড: <ph name="ERROR_CODE" /></translation>
-<translation id="5585898376467608182">আপনার ডিভাইসে স্টোরেজের জায়গা কমে এসেছে। <ph name="APP_NAME" /> ব্যবহার করার জন্য, অন্তত <ph name="MINIMUM_SPACE" /> খালি জায়গা থাকা দরকার। খালি জায়গা আরও বাড়াতে, ডিভাইস থেকে ফাইল মুছে দিন।</translation>
 <translation id="5586388332127302891">ডক করা ম্যাগনিফায়ার চালু করা আছে। এটি টগল করে বন্ধ করতে আবার <ph name="ACCELERATOR" /> প্রেস করুন।</translation>
 <translation id="5587506661873751671"><ph name="DOWNLOAD_PERCENT" />% ডাউনলোড করা হচ্ছে</translation>
 <translation id="5590609058453685222">'মিউট নাজ' চালু আছে। মিউট করা অবস্থায় আপনি কথা বললে, আপনাকে বিজ্ঞপ্তি দেখানো হবে।</translation>
@@ -1689,7 +1666,6 @@
 <translation id="5767730327234918501">আপনার অ্যাডমিনিস্ট্রেটর হটস্পট বন্ধ করে দিয়েছেন।</translation>
 <translation id="5769373120130404283">গোপনীয়তা স্ক্রিন</translation>
 <translation id="5770004650349728202">বাছুন-ও-শুনুন ফিচার চালু করুন</translation>
-<translation id="5772114492540073460"><ph name="PARALLELS_NAME" /> আপনার Chromebook-এ Windows® অ্যাপ চালাতে দেয়। ইনস্টল করার জন্য <ph name="MINIMUM_SPACE" /> খালি রাখতে সাজেস্ট করা হচ্ছে।</translation>
 <translation id="5773950591113557721">এটি ক্যামেরা ও মাইক্রোফোন ব্যবহার করার অনুমতির মাধ্যমে <ph name="APP_NAME" /> এবং সব অ্যাপ ও ওয়েবসাইট অ্যাক্সেস করার অনুমতি দেয়</translation>
 <translation id="5774295353725270860">ফাইল অ্যাপ খুলুন</translation>
 <translation id="5775936059231769503">হটস্পট টগল করুন। হটস্পট বন্ধ করা আছে।</translation>
@@ -1737,8 +1713,6 @@
 <translation id="589817443623831496">পয়েন্ট স্ক্যানিং</translation>
 <translation id="5901494423252125310">প্রিন্টারের ঢাকনা খোলা আছে</translation>
 <translation id="5901630391730855834">হলুদ</translation>
-<translation id="5904614460720589786">কনফিগার করার সময় সমস্যা হওয়ার জন্য <ph name="APP_NAME" /> সেট-আপ করা যায়নি। আপনার অ্যাডমিনের সাথে যোগাযোগ করুন। সমস্যার কোড: <ph name="ERROR_CODE" />।</translation>
-<translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> এখন অফলাইন</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">নতুন বিজ্ঞপ্তি, মোট <ph name="NOTIFICATION_COUNT" />টি</translation>
 <translation id="5916664084637901428">চালু</translation>
@@ -1811,7 +1785,6 @@
         <ph name="DOMAIN" />-এ কাজ করার জন্য, আপনাকে স্মার্ট কার্ড ইনসার্ট করে রাখতে হবে।}other{আপনি # সেকেন্ডে অটোমেটিক সাইন-আউট হয়ে যাবেন।
         <ph name="DOMAIN" />-এ কাজ করার জন্য, আপনাকে স্মার্ট কার্ড ইনসার্ট করে রাখতে হবে।}}</translation>
 <translation id="6071576563962215370">সিস্টেমটি ডিভাইস ইনস্টলেশন-টাইম অ্যাট্রিবিউট লক স্থাপন করতে পারেনি।</translation>
-<translation id="6072442788591997866">এই ডিভাইসে <ph name="APP_NAME" /> ব্যবহার করা যাবে না। আপনার অ্যাডমিনের সাথে যোগাযোগ করুন। সমস্যার কোড: <ph name="ERROR_CODE" />।</translation>
 <translation id="6073451960410192870">রেকর্ডিং বন্ধ করুন</translation>
 <translation id="6074087755403037157">বিটা চ্যানেল</translation>
 <translation id="6075098173600599596">ক্যাপিটালাইজেশন পরিবর্তন করুন</translation>
@@ -1918,7 +1891,6 @@
 <translation id="6380143666419481200">স্বীকার ও চালিয়ে যান</translation>
 <translation id="6381109794406942707">ডিভাইস আনলক করতে, আপনার পিন এন্টার করুন।</translation>
 <translation id="6381305031890976705">{0,plural, =1{এক ঘণ্টার মধ্যে ডিভাইস আগের ভার্সনে আপডেট করুন}one{# ঘণ্টার মধ্যে ডিভাইস আগের ভার্সনে আপডেট করুন}other{# ঘণ্টার মধ্যে ডিভাইস আগের ভার্সনে আপডেট করুন}}</translation>
-<translation id="6385149369087767061">ইন্টারনেটে কানেক্ট করে আবার চেষ্টা করুন</translation>
 <translation id="638716340450135524">ক্যামেরার অ্যাক্সেস চালু করুন</translation>
 <translation id="6406458002328242616">টাইমার এডিট করুন। <ph name="FOCUS_DURATION" />।</translation>
 <translation id="6406704438230478924">altgr</translation>
@@ -1936,7 +1908,6 @@
 <translation id="6426905245930183644">তৈরি করা হচ্ছে...</translation>
 <translation id="6430225033895752525">ফোকাস মোড সংক্রান্ত সেটিংস দেখুন</translation>
 <translation id="6431865393913628856">স্ক্রিন রেকর্ড</translation>
-<translation id="6434325376267409267"><ph name="APP_NAME" /> ইনস্টল করার আগে আপনার ডিভাইস আপডেট করতে হবে।</translation>
 <translation id="643593192654616063">মোট <ph name="STORAGE_TOTAL_SIZE" /> স্টোরেজের মধ্যে <ph name="STORAGE_IN_USE_SIZE" /> ব্যবহার করা হচ্ছে</translation>
 <translation id="6445915701151710649">CPU</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" />টি ইভেন্ট</translation>
@@ -2215,7 +2186,6 @@
 <translation id="7258828758145722155">গতকাল এডিট করা হয়েছে</translation>
 <translation id="726276584504105859">বিভক্ত স্ক্রিন ব্যবহার করতে এখানে টেনে আনুন</translation>
 <translation id="7264788308526527464"><ph name="FOCUS_DURATION_DELTA" /> কমান</translation>
-<translation id="7267044199012331848">ভার্চুয়াল মেশিন ইনস্টল করা যায়নি। আবার চেষ্টা করুন অথবা আপনার অ্যাডমিনের সাথে যোগাযোগ করুন। সমস্যার কোড: <ph name="ERROR_CODE" />।</translation>
 <translation id="7267875682732693301">আপনার আঙুলের ছাপের বিভিন্ন অংশ যোগ করার জন্য বারবার আঙুল তুলে আবার টাচ করতে থাকুন</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
 <translation id="7285232777292757180">স্ক্রিনশট নিতে, 'দ্রুত সেটিংস' ফিচারের মধ্যে 'স্ক্রিন ক্যাপচার' বিকল্প ব্যবহার করুন</translation>
@@ -2264,9 +2234,7 @@
 <translation id="7406854842098869085"><ph name="MODIFIER_1" /> বোতাম প্রেস করে ধরে রাখুন, যে উইন্ডোয় যেতে চাইছেন সেখানে না যাওয়া পর্যন্ত <ph name="KEY" /> ট্যাপ করে রাখুন, তারপরে ছেড়ে দিন</translation>
 <translation id="740790383907119240">অ্যাপ শর্টকাট</translation>
 <translation id="7413851974711031813">বন্ধ করতে এস্কেপ (Esc) বোতাম প্রেস করুন</translation>
-<translation id="7415454883318062233">সেট-আপ করা হয়ে গেছে</translation>
 <translation id="7416471219712049036">বর্তমান পৃষ্ঠা সেভ করুন</translation>
-<translation id="7423807071740419372"><ph name="APP_NAME" /> চালু করতে অনুমতি দিতে হবে</translation>
 <translation id="742594950370306541">ক্যামেরা ব্যবহার করা হচ্ছে।</translation>
 <translation id="743058460480092004">ক্যামেরা এবং মাইক্রোফোন ব্যবহার করা হচ্ছে।</translation>
 <translation id="7433708794692032816">আপনার <ph name="DEVICE_TYPE" /> ব্যবহার করা চালিয়ে যেতে স্মার্ট কার্ড প্রবেশ করান</translation>
@@ -2277,7 +2245,6 @@
 <translation id="7459485586006128091">ইন্টার্নাল সমস্যার কারণে, হটস্পট বন্ধ করা হয়েছে। কয়েক মিনিটের মধ্যে আবার কানেক্ট করার চেষ্টা করুন।</translation>
 <translation id="7461924472993315131">পিন</translation>
 <translation id="746216226901520237">পরের বার, আপনার ফোন <ph name="DEVICE_TYPE" /> আনলক করবে। সেটিংসে গিয়ে Smart Lock বন্ধ করতে পারবেন।</translation>
-<translation id="7465635034594602553">কিছু সমস্যা হয়েছে। কয়েক মিনিট অপেক্ষা করে আবার <ph name="APP_NAME" /> চালু করুন।</translation>
 <translation id="7466449121337984263">সেন্সরটি স্পর্শ করুন</translation>
 <translation id="7477793887173910789">আপনার মিউজিক, ভিডিও ও আরও অনেক কিছু নিয়ন্ত্রণ করুন</translation>
 <translation id="7478485216301680444">Kiosk অ্যাপ্লিকেশান ইনস্টল করা যাবে না৷</translation>
@@ -2431,7 +2398,6 @@
 <translation id="7850320739366109486">বিরক্ত করবে না</translation>
 <translation id="7851039877802112575">পপ-আপ এবং ডায়ালগে ফোকাস সরান</translation>
 <translation id="7851768487828137624">ক্যানারি</translation>
-<translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7862292329216937261">গেস্ট হিসেবে ডিভাইসটি ব্যবহার করতে, সাইন-আউট করার পরে আপনাকে স্ক্রিনের নিচ থেকে 'গেস্ট হিসেবে ব্রাউজ করুন' বিকল্প বেছে নিতে হবে।</translation>
 <translation id="7866482334467279021">চালু</translation>
 <translation id="7870790288828963061">এর থেকে আরও নতুন ভার্সনের কোনও কিয়স্ক অ্যাপ্লিকেশন পাওয়া যায়নি৷ USB স্টিক সরান৷</translation>
@@ -2768,7 +2734,6 @@
 <translation id="8815390544836110344">স্ক্রিনশট শর্টকাট, Ctrl + Shift + 'ওভারভিউ মোড' কী-তে প্রেস করুন</translation>
 <translation id="881757059229893486">'ইনপুট পদ্ধতি' সেটিংস</translation>
 <translation id="8819728065740986820">'অ্যাডাপ্টিভ চার্জিং' ফিচারটি চালু আছে</translation>
-<translation id="8821268776955756404">এবার <ph name="APP_NAME" /> ব্যবহার করতে পারবেন।</translation>
 <translation id="882204272221080310">নিরাপত্তা আরও সুরক্ষার জন্য ফার্মওয়্যার আপডেট করুন।</translation>
 <translation id="8822104519413696986">এটি একটি টাচ করে খেলার গেম</translation>
 <translation id="8825863694328519386">ফিরে যেতে আপনার স্ক্রিনের বাম প্রান্ত থেকে সোয়াইপ করুন</translation>
@@ -2802,7 +2767,6 @@
 <translation id="8905919797434099235">(কোনও টাইটেল নেই)</translation>
 <translation id="890616557918890486">সোর্স পরিবর্তন করুন</translation>
 <translation id="8909138438987180327">ব্যাটারিতে <ph name="PERCENTAGE" /> শতাংশ চার্জ আছে।</translation>
-<translation id="8909298138148012791"><ph name="APP_NAME" /> আনইনস্টল করা হয়েছে</translation>
 <translation id="8916866375277139011"><ph name="GROUP_NAME" />-এ আইটেম লুকান</translation>
 <translation id="8921369299636221117">কনসিয়ার্জ পরিষেবা উপলভ্য নেই।</translation>
 <translation id="8921554779039049422">H+</translation>
@@ -2875,7 +2839,6 @@
 <translation id="9126339866969410112">শেষ অ্যাকশনটি আগের অবস্থায় ফেরান</translation>
 <translation id="9126642911267312373">ব্লুটুথ উপলভ্য নেই</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{১ মিনিটের মধ্যে}one{# মিনিটের মধ্যে}other{# মিনিটের মধ্যে}}</translation>
-<translation id="9128317794749765148">সেট-আপ করা যায়নি</translation>
 <translation id="9129245940793250979">পিছনের বোতাম</translation>
 <translation id="9133335900048457298">সুরক্ষিত কন্টেন্ট রেকর্ড করা যাবে না</translation>
 <translation id="9139720510312328767">পরের অক্ষর মুছে দিন</translation>

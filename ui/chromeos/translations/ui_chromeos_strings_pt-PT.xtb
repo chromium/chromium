@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Documento do Word</translation>
 <translation id="1056775291175587022">Nenhuma rede</translation>
 <translation id="1056898198331236512">Aviso</translation>
-<translation id="1060368002126861100">Para abrir ficheiros com a app <ph name="APP_NAME" />, mova-os primeiro para a pasta de ficheiros do Windows.</translation>
 <translation id="1062407476771304334">Substituir</translation>
 <translation id="1119383441774809183">Mostrar mensagens de texto</translation>
 <translation id="1119447706177454957">Erro interno</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">Norueguês</translation>
 <translation id="1408504635543854729">Explore o conteúdo do dispositivo na aplicação Ficheiros. O conteúdo é restringido por um gestor e não é possível modificá-lo.</translation>
 <translation id="1412476183660741812">Pacote Web assinado</translation>
-<translation id="1433628812591023318">Para largar ficheiros no Parallels Desktop, o ficheiro tem de ser movido para os ficheiros do Windows.</translation>
-<translation id="1435838927755162558">Partilhe a pasta com o Parallels Desktop</translation>
 <translation id="1439919885608649279">Pessoa com flores</translation>
 <translation id="1458457385801829801">Desmontar <ph name="TARGET_NAME" /></translation>
 <translation id="1464781208867302907">Para ver as preferências do dispositivo, aceda às Definições.</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">Francês</translation>
 <translation id="2732288874651063549">Gerir partilha de <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">VNI vietnamita</translation>
-<translation id="2735623501230989521">Conceda autorização ao Parallels Desktop para aceder a ficheiros na pasta <ph name="FOLDER_NAME" />.</translation>
 <translation id="2764206540577097904">Usou todo o seu armazenamento individual do Google Workspace.</translation>
 <translation id="2771816809568414714">Queijo</translation>
 <translation id="2783909841122647548">As instalações de pacotes do Debian já não são compatíveis. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">Geografia</translation>
 <translation id="3044404008258011032">Para restaurar estes itens, arraste-os para uma nova pasta fora do lixo. A pasta original "<ph name="PARENT_FOLDER_NAME" />" para estes itens foi eliminada.</translation>
 <translation id="3047197340186497470">Dayi chinês</translation>
-<translation id="3067790092342515856">Ficheiros do Windows</translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">Anfitrião SOCKS</translation>
 <translation id="3091469289665833668">Romeno</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">Contacte o administrador para saber os detalhes.</translation>
 <translation id="3548125359243647069">Foi introduzido um PIN incorreto demasiadas vezes.</translation>
 <translation id="3549797760399244642">Aceder a drive.google.com...</translation>
-<translation id="3553048479571901246">Para abrir ficheiros com a app <ph name="APP_NAME" />, copie-os primeiro para a pasta de ficheiros do Windows.</translation>
 <translation id="3556731189587832921">Inglês (EUA) com teclado de PC internacional</translation>
 <translation id="3557414470514932909">A mover <ph name="FILE_NAME" /> para o lixo</translation>
 <translation id="3560848236447534728">Fonético arménio</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">Romeno</translation>
 <translation id="4508265954913339219">A activação falhou</translation>
 <translation id="4509667233588080747">Inglês (EUA) com teclado Workman internacional</translation>
-<translation id="4527800702232535228">Esta pasta é partilhada com o Parallels Desktop.</translation>
 <translation id="4552678318981539154">Comprar mais armazenamento</translation>
 <translation id="4552759165874948005">Rede <ph name="NETWORK_TYPE" />, intensidade do sinal <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">Bokeh</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">Apresentação do PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
-<translation id="4789067489790477934">Conceda autorização ao Parallels Desktop para aceder a ficheiros no seu Google Drive. As alterações serão sincronizadas com os seus outros dispositivos.</translation>
 <translation id="4790766916287588578">Hindi com teclado InScript</translation>
 <translation id="4798645114741131062">O seu dispositivo com ChromeOS Flex vai deixar de receber atualizações em breve. Pondere mudar para um dispositivo com ChromeOS.</translation>
 <translation id="4801956050125744859">Manter ambas</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">Controlo de deslize do volume</translation>
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="4891091358278567964">Para restaurar estes itens, arraste-os para uma nova pasta fora do lixo. As pastas originais destes itens foram eliminadas.</translation>
-<translation id="4900532980794411603">Partilhar com o Parallels Desktop</translation>
 <translation id="4902546322522096650">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />%, ligar</translation>
 <translation id="4906580650526544301">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />%, bateria do telemóvel: <ph name="BATTERY_STATUS" />%, detalhes</translation>
 <translation id="4935975195727477204">Flor</translation>
 <translation id="4943368462779413526">Bola de futebol</translation>
-<translation id="4961158930123534723">1 pasta partilhada com o Parallels Desktop.</translation>
 <translation id="4965874878399872778">A verificar os ficheiros relativamente às políticas de segurança da sua organização…</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> restaurado</translation>
 <translation id="4969785127455456148">Álbum</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Uma operação está a demorar mais do que o previsto. Quer interrompê-la?</translation>
 <translation id="5036141350290856713">Fonético russo</translation>
-<translation id="5036159836254554629">Gerir a partilha do Parallels Desktop</translation>
 <translation id="5038625366300922036">Veja mais…</translation>
 <translation id="5044852990838351217">Arménio</translation>
 <translation id="5045550434625856497">Palavra-passe incorrecta</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">A eliminar "<ph name="FILENAME" />"...</translation>
 <translation id="6581162200855843583">Link do Google Drive</translation>
 <translation id="6588648400954570689">Definições de sincronização de ficheiros</translation>
-<translation id="6594855146910089723">Esta pasta é partilhada com o Linux e o Parallels Desktop.</translation>
 <translation id="6607272825297743757">Informações do ficheiro</translation>
-<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> pastas partilhadas com o Parallels Desktop.</translation>
 <translation id="6629518321609546825">Introduza, pelo menos, 4 números</translation>
 <translation id="6643016212128521049">Limpar</translation>
 <translation id="6650726141019353908">Borboleta cor-de-rosa</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">Ah, bolas! Ocorreu um erro durante a mudança de nome.</translation>
 <translation id="7458955835361612701">Sem imagens recentes</translation>
 <translation id="7469894403370665791">Ligar automaticamente a esta rede</translation>
-<translation id="7486315294984620427">Para largar ficheiros no Parallels Desktop, o ficheiro tem de ser copiado para os ficheiros do Windows.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Fonética malaiala</translation>
 <translation id="7505167922889582512">Mostrar ficheiros ocultos</translation>

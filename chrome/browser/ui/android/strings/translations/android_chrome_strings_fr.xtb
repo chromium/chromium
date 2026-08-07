@@ -297,6 +297,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2233735624724508540">Choisissez une période, puis appuyez sur "Supprimer les données"</translation>
 <translation id="2234031676056123135">Personnalisez vos raccourcis</translation>
 <translation id="2234827758954819389">Guide sur la confidentialité</translation>
+<translation id="2236949375853147973">Mon activité</translation>
 <translation id="2238038374973843156">Déplacer groupe vers autre fenêtre</translation>
 <translation id="2247789808226901522">Carte expirée</translation>
 <translation id="2251809247798634662">Fenêtre navigation privée</translation>
@@ -574,6 +575,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3385749568468586663">Gemini n'est pas disponible en mode navigation privée</translation>
 <translation id="3387650086002190359">Échec du téléchargement du fichier "<ph name="FILE_NAME" />" en raison d'erreurs liées au système de fichiers.</translation>
 <translation id="3391311825344469964">Vous pouvez gérer vos fenêtres dans le gestionnaire de fenêtres de Chrome</translation>
+<translation id="3410151451624226773">Gérer dans le Gestionnaire de mots de passe de Google</translation>
 <translation id="3417835166382867856">Rechercher dans les onglets</translation>
 <translation id="3430670036890315772">Si vous désactivez le verrouillage du profil, vos informations enregistrées seront supprimées</translation>
 <translation id="3435575784518354875">Pour conserver l'accès à vos mots de passe, exportez-les maintenant, mettez à jour les services Google Play, puis importez les mots de passe à nouveau dans le Gestionnaire de mots de passe de Google. <ph name="BEGIN_LINK" />Voir les instructions détaillées<ph name="END_LINK" /></translation>
@@ -942,6 +944,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4877678010818027629">Entrer en mode navigation privée</translation>
 <translation id="4878404682131129617">Échec de l'établissement d'un tunnel via un serveur proxy</translation>
 <translation id="4880127995492972015">Traduire…</translation>
+<translation id="4880827082731008257">Rechercher dans l'historique</translation>
 <translation id="4881695831933465202">Ouvrir</translation>
 <translation id="488187801263602086">Renommer le fichier</translation>
 <translation id="4885273946141277891">Le nombre d'instances de Chrome n'est pas compatible.</translation>
@@ -991,6 +994,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="509429900233858213">Une erreur s'est produite.</translation>
 <translation id="5096775069898886423">Recevoir un avertissement avant d'accéder aux sites qui ne prennent pas en charge les connexions sécurisées</translation>
 <translation id="510275257476243843">1 heure restante</translation>
+<translation id="5105442806410269908">Gérer d'autres données Google</translation>
 <translation id="5114895953710637392">La feuille de filtrage des applis est fermée.</translation>
 <translation id="5115811374190515607">vers <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Vous pouvez utiliser Chrome chaque fois que vous appuyez sur des liens dans des messages, des documents et d'autres applis</translation>
@@ -1041,6 +1045,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="5316947901395241499">Votre administrateur a désactivé l'enregistrement des mots de passe</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5319359161174645648">Google recommande Chrome</translation>
+<translation id="5323501626199324454">Gérer dans votre compte Google</translation>
 <translation id="5326246328175179736">Impossible de se connecter avec ce compte</translation>
 <translation id="5327248766486351172">Nom</translation>
 <translation id="5328542107300944283">Utiliser avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1325,6 +1330,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6461962085415701688">Impossible d'ouvrir le fichier</translation>
 <translation id="6464977750820128603">Vous pouvez voir les sites que vous avez consultés dans Chrome et définir des minuteurs pour ceux-ci.\n\nGoogle obtient des informations sur les sites pour lesquels vous définissez des minuteurs et peut déterminer le temps que vous passez sur ces derniers. Ces informations sont utilisées pour améliorer Bien-être numérique.</translation>
 <translation id="6468703991511753953">Barre d'adresse actuellement en bas</translation>
+<translation id="6469702164109431067">Mots de passe et clés d'accès</translation>
 <translation id="6470181189905173055">Les pages que vous avez ouvertes dans Chrome tout en utilisant <ph name="APP_LABEL" /> seront affichées ici.</translation>
 <translation id="6473086018775716761">Liste des options de partage ouverte à mi-hauteur.</translation>
 <translation id="6475951671322991020">Télécharger la vidéo</translation>

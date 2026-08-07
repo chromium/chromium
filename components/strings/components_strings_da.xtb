@@ -592,6 +592,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2027465737841872819">Plast</translation>
 <translation id="2027707238798802149">Kortet er ikke tilgængeligt</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Tjekke din proxy og din firewall<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">Denne forekomst af Chrome kører med manuelt angivne kommandoer til demofunktion. Bemærk! Kommandoer til demofunktion kan til enhver tid ændres og understøttes ikke.</translation>
 <translation id="2033900728810589426">Genvejen kan ikke være den samme som søgeordet til standardsøgemaskinen, som er defineret af <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Gem alligevel</translation>
 <translation id="2036514476578229158">Du har anmodet om at besøge dette website. Dine forældre kan besvare anmodningen i Family Link.</translation>
@@ -4565,7 +4566,6 @@ Yderligere oplysninger:
 <translation id="8932102934695377596">Dit ur er bagud</translation>
 <translation id="893332455753468063">Tilføj navn</translation>
 <translation id="8938242527120341116">Indholdsfiltrene på din enhed har blokeret <ph name="BLOCKED_URL" /></translation>
-<translation id="8942355029279167844">Din administrator har givet <ph name="APP_NAME" /> tilladelse til at indsamle diagnostikdata med henblik på at forbedre brugeroplevelsen i produktet. Du kan få flere oplysninger på <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Limegrøn</translation>
 <translation id="8949410982325929394">Tone</translation>
 <translation id="8949493680961858543">A1x4</translation>

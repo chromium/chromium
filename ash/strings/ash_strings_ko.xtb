@@ -35,7 +35,6 @@
 <translation id="1088231044944504242"><ph name="CATEGORY" />, 파일, 앱 등을 검색합니다. 앱을 탐색하려면 화살표 키를 사용하세요.</translation>
 <translation id="1093645050124056515">Ctrl + Alt + 아래쪽 화살표</translation>
 <translation id="1094756674036064790">블루투스를 사용 중지하시겠습니까?</translation>
-<translation id="109647177154844434">Parallels Desktop을 제거하면 Windows 이미지가 삭제됩니다. 여기에는 애플리케이션, 설정, 데이터가 포함됩니다. 계속하시겠습니까?</translation>
 <translation id="1104084341931202936">접근성 설정 표시</translation>
 <translation id="1104621072296271835">기기가 연결되면 더욱 원활하게 작동합니다</translation>
 <translation id="1107300737351978027">반복되는 숫자를 포함할 수 없습니다.</translation>
@@ -82,7 +81,6 @@
 <translation id="1210557957257435379">화면 녹화</translation>
 <translation id="121097972571826261">한 단어 앞으로 이동</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play 스토어 앱</translation>
-<translation id="1223484782328004593"><ph name="APP_NAME" /> 라이선스 필요</translation>
 <translation id="1225748608451425081">알려진 문제로 인해 Chromebook이 잠겼습니다. <ph name="TIME_LEFT" /> 후에 다시 로그인할 수 있습니다.</translation>
 <translation id="1229194443904279055">선택 중지</translation>
 <translation id="1235458158152011030">알려진 네트워크</translation>
@@ -93,7 +91,6 @@
 <translation id="1244265436519979884">현재 Linux 복원이 진행 중입니다.</translation>
 <translation id="1245476784081715330">아주 좋습니다.</translation>
 <translation id="124678866338384709">현재 탭 닫기</translation>
-<translation id="1246863218384630739"><ph name="VM_NAME" /> VM을 설치할 수 없습니다. 이미지 URL이 <ph name="HTTP_ERROR" /> 오류 코드를 반환했습니다. 관리자에게 문의해 주세요.</translation>
 <translation id="1246890715821376239">지원되지 않는 앱</translation>
 <translation id="1247372569136754018">마이크(내부)</translation>
 <translation id="1247519845643687288">최근 앱</translation>
@@ -107,7 +104,6 @@
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> 전원 공급 중</translation>
 <translation id="1275718070701477396">선택됨</translation>
 <translation id="1276975447697633661">파일을 선택한 후 <ph name="KEY" /> 키 누르기</translation>
-<translation id="1276994519141842946"><ph name="APP_NAME" /> 앱을 제거할 수 없음</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" />(<ph name="ANNOTATION" />)</translation>
 <translation id="1283126956823499975">기기를 설정하는 중에 문제가 발생했습니다</translation>
 <translation id="1285992161347843613">휴대전화 찾기</translation>
@@ -170,7 +166,6 @@
 <translation id="1421166164855200062">추천 그룹</translation>
 <translation id="1426410128494586442">예</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> 앱이 차단됨</translation>
-<translation id="142765311413773645"><ph name="APP_NAME" /> 라이선스 만료됨</translation>
 <translation id="1430915738399379752">인쇄</translation>
 <translation id="1435537621343861112">음성기록을 시작할 수 없습니다. 마이크가 꺼져 있습니다.</translation>
 <translation id="1445031758921122223">얼굴 인식 파일 다운로드됨</translation>
@@ -193,12 +188,10 @@
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" />(HDMI/DP)</translation>
 <translation id="1486307154719069822">음성기록을 사용하면 음성으로 입력할 수 있습니다. 텍스트 입력란에서 음성기록 키를 누르거나 화면 하단의 마이크 아이콘을 선택합니다. 음성기록 언어가 <ph name="LANGUAGE" />로 설정되어 있습니다. 처리를 위해 음성이 Google로 전송됩니다 언제든지 설정 &gt; 접근성에서 음성기록 언어를 변경할 수 있습니다.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> 항목과 <ph name="SECOND_ITEM_TITLE" /> 항목의 위치를 서로 바꿈</translation>
-<translation id="1494429729245089920">가상 머신 '<ph name="VM_NAME" />'이(가) 존재하지만 유효한 <ph name="APP_NAME" /> 가상 머신이 아닌 것 같습니다. 관리자에게 문의해 주세요.</translation>
 <translation id="1500926532737552529">모든 추천 표시</translation>
 <translation id="1501946871587957338">오디오 소스를 전환할까요?</translation>
 <translation id="1505542291183484463">아래쪽으로 창 크기 조절</translation>
 <translation id="1510238584712386396">런처</translation>
-<translation id="1515163294334130951">실행</translation>
 <translation id="1519090060276706457">창 복원이 예상보다 오래 걸림</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003">배터리 <ph name="BATTERY_PERCENTAGE" />% | 충전 완료까지 <ph name="TIME" /> 남음</translation>
@@ -222,7 +215,6 @@
 <translation id="1574691582236909946">선택된 왼쪽 가장자리 핸들, 화살표 키를 사용하여 이동</translation>
 <translation id="1576623706766186887">돋보기 사용 설정 시 축소</translation>
 <translation id="1578558981922970608">강제 종료</translation>
-<translation id="1580772913177567930">관리자에게 문의</translation>
 <translation id="1582946770779745370">게임 대시보드를 사용할 수 있습니다. 언제든지 <ph name="LAUNCHER_KEY_NAME" /> + Shift + Esc를 누른 후 <ph name="LAUNCHER_KEY_NAME" /> + g를 눌러 열 수 있습니다.</translation>
 <translation id="1586324912145647027">데스크 1에서 8로 이동</translation>
 <translation id="158838227375272121">Google 클래스룸 웹사이트</translation>
@@ -443,7 +435,6 @@
 <translation id="2322065293366551060"><ph name="CATEGORY" />, 검색결과 카테고리</translation>
 <translation id="2322173485024759474">한 글자 뒤로 이동</translation>
 <translation id="2326112202058075478">그림 이모티콘 더보기</translation>
-<translation id="2328561734797404498"><ph name="APP_NAME" /> 앱을 사용하려면 기기를 다시 시작해 주세요.</translation>
 <translation id="2335091074961603075">Chromebook 또는 블루투스 기기에서 이전 버전의 블루투스를 사용하고 있습니다. 더 나은 오디오 품질을 위해 내장 마이크를 사용하세요.</translation>
 <translation id="2336214675195760012">{NUM_DAYS,plural, =1{<ph name="MANAGER" />에서 오늘 Wi-Fi에 연결하거나 데이터 종량제 연결(요금이 부과될 수 있음)을 통해 업데이트를 다운로드할 것을 요청합니다.}other{<ph name="MANAGER" />에서 기한 전에 Wi-Fi나 데이터 종량제 연결(요금이 부과될 수 있음)을 통해 업데이트를 다운로드할 것을 요청합니다.}}</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" />에서 <ph name="PRINTER_NAME" /> 프린터로 1페이지를 인쇄하는 중입니다.</translation>
@@ -471,7 +462,6 @@
 <translation id="2386292613071805067">페이지의 모든 항목 선택</translation>
 <translation id="2389423187722941333">Gemini 전환</translation>
 <translation id="2390347491606624519">프록시에 연결할 수 없음: 다시 로그인해 주세요</translation>
-<translation id="2393136602862631930">Chromebook에 <ph name="APP_NAME" /> 설정</translation>
 <translation id="2397416548179033562">Chrome 메뉴 표시</translation>
 <translation id="240006516586367791">미디어 컨트롤</translation>
 <translation id="2400664245143453337">즉시 업데이트 필요</translation>
@@ -504,7 +494,6 @@
 <translation id="2473177541599297363">해상도 확인</translation>
 <translation id="2475783092753560388"><ph name="SEARCH_RESULT_TEXT" /> 삽입</translation>
 <translation id="2475982808118771221">오류가 발생했습니다.</translation>
-<translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" />을 제거하려면 Windows를 종료하세요.</translation>
 <translation id="2478076885740497414">앱 설치</translation>
 <translation id="2479148705183875116">설정으로 이동</translation>
 <translation id="2484513351006226581">키보드 레이아웃을 전환하려면 <ph name="KEYBOARD_SHORTCUT" />을(를) 누르세요.</translation>
@@ -544,7 +533,6 @@
 <translation id="2573588302192866788"><ph name="NAME" />에 연결할 수 없음</translation>
 <translation id="2575685495496069081">멀티 로그인이 사용 중지됨</translation>
 <translation id="2579264398927991698">펌웨어 업데이트</translation>
-<translation id="2586561813241011046"><ph name="APP_NAME" /> 앱을 설치할 수 없습니다. 다시 시도하거나 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="2586657967955657006">클립보드</translation>
 <translation id="2596078834055697711">창 스크린샷 찍기</translation>
 <translation id="2598725286293895280">데스크에 지원되지 않는 앱 있음</translation>
@@ -566,7 +554,6 @@
 <translation id="2653659639078652383">제출</translation>
 <translation id="2658778018866295321">클릭하여 드래그</translation>
 <translation id="2665788051462227163">이 기기에 <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> 앱이 없습니다.</translation>
-<translation id="2669241540496514785"><ph name="APP_NAME" /> 앱을 열 수 없음</translation>
 <translation id="2670350619068134931">애니메이션 감소</translation>
 <translation id="2672142220933875349">잘못된 crx 파일입니다. 압축을 해제하지 못했습니다.</translation>
 <translation id="2673968385134502798">게임</translation>
@@ -839,14 +826,12 @@
 <translation id="3444385531800624797">결과 로드 중</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" />분</translation>
 <translation id="3445925074670675829">USB-C 기기</translation>
-<translation id="3446274660183028131">Windows를 설치하려면 Parallels Desktop을 실행하세요.</translation>
 <translation id="3449393517661170867">새 탭 창</translation>
 <translation id="3450157232394774192">유휴 상태 점유율</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" />에서 지금 Wi-Fi에 연결하여 업데이트를 다운로드할 것을 요청합니다.</translation>
 <translation id="3454555520521576458">크기 조정 가능</translation>
 <translation id="3455468639467374593">템플릿, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">기기 1개가 <ph name="DEVICE_NAME" /> 핫스팟에 연결되어 있습니다.</translation>
-<translation id="3458451003193188688">네트워크 오류로 인해 가상 머신을 설치할 수 없습니다. 다시 시도하거나 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="346243998268439747">확대/축소 수준 재설정</translation>
 <translation id="3465223694362104965">마지막으로 로그인한 이후로 다른 키보드가 이 기기에 연결되었습니다. 사용하기 전에 이 키보드를 신뢰하는지 확인하세요.</translation>
 <translation id="3465356146291925647">관리자가 관리함</translation>
@@ -865,7 +850,6 @@
 <translation id="3513798432020909783">계정 관리자: <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3516000762115478502">위쪽으로 창 크기 조절</translation>
 <translation id="3517037892157925473">할 일 목록 최종 업데이트: <ph name="TIME" />, <ph name="DATE" /></translation>
-<translation id="3522088408596898827">디스크 저장 공간이 매우 부족합니다. 여유 공간을 확보한 후 다시 시도해 보세요.</translation>
 <translation id="352245152354538528">{0,plural, =1{1분 이내에 기기 업데이트}other{#분 이내에 기기 업데이트}}</translation>
 <translation id="3522979239100719575">사용 가능한 프로필을 찾는 중입니다. 몇 분 정도 소요될 수 있습니다</translation>
 <translation id="3526440770046466733">새 탭에서 링크 열기 및 현재 탭 유지</translation>
@@ -1019,7 +1003,6 @@
 <translation id="3886872229787704059">오늘 열림</translation>
 <translation id="3892148308691398805">텍스트 복사</translation>
 <translation id="3893630138897523026">ChromeVox(음성 피드백)</translation>
-<translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3898464793473355515">화면을 시계 방향으로 90도 회전</translation>
 <translation id="3900355044994618856"><ph name="SESSION_TIME_REMAINING" /> 후 세션 종료</translation>
 <translation id="3901991538546252627"><ph name="NAME" />에 연결 중</translation>
@@ -1116,7 +1099,6 @@
 <translation id="4181841719683918333">언어</translation>
 <translation id="4185671786623711291">활성 창을 오른쪽 데스크로 이동합니다.</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" />: <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> 검색</translation>
-<translation id="4187424053537113647"><ph name="APP_NAME" /> 설정 중…</translation>
 <translation id="4189826113259617332">현재 창에서 열린 모든 페이지를 북마크로 새 폴더에 저장</translation>
 <translation id="4190143678693626113">Chromebook에서 휴대전화 문자 메시지에 빠르게 답장하여 시간을 절약하세요.</translation>
 <translation id="4190780880566297084">휴대전화의 최근 사진, 미디어, 앱 보기 설정 닫기</translation>
@@ -1128,7 +1110,6 @@
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" />를 사용할 수 없습니다.</translation>
 <translation id="4201051445878709314">이전 달 표시</translation>
 <translation id="4209973997261364186">Wi-Fi가 사용 설정됨</translation>
-<translation id="4210048056321123003">가상 머신 다운로드 중</translation>
 <translation id="4212246570487010370">계속 탐색</translation>
 <translation id="4212472694152630271">PIN으로 전환</translation>
 <translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, 전환 버튼, <ph name="STATE" /></translation>
@@ -1147,7 +1128,6 @@
 <translation id="4250229828105606438">스크린샷</translation>
 <translation id="425364040945105958">SIM 없음</translation>
 <translation id="425573743389990240">배터리 방전율(와트, 음수 값은 배터리가 충전 중임을 나타냄)</translation>
-<translation id="4259388776256904261">잠시만 기다려 주세요.</translation>
 <translation id="4264977415328155183">접힘</translation>
 <translation id="4265259722091164182">단어 첫 글자 대문자</translation>
 <translation id="4269883910223712419">이 기기의 관리자는 다음과 같은 작업을 할 수 있습니다.</translation>
@@ -1234,7 +1214,6 @@
 기기 1대가 연결되었습니다.</translation>
 <translation id="4477892968187500306">이 기기에는 Google에서 확인하지 않은 앱이 설치되어 있을 수 있습니다.</translation>
 <translation id="4479639480957787382">이더넷</translation>
-<translation id="4479877282574735775">가상 머신을 구성하고 있습니다. 몇 분 정도 소요될 수 있습니다.</translation>
 <translation id="4485506555414638855">휴대전화의 최근 사진, 미디어, 알림, 앱 보기 설정 닫기</translation>
 <translation id="4491109536499578614">이미지</translation>
 <translation id="4493468155686877504">권장 크기(<ph name="INSTALL_SIZE" />)</translation>
@@ -1383,7 +1362,6 @@
 <translation id="4917385247580444890">강함</translation>
 <translation id="4918086044614829423">수락</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" />에서 카메라를 사용 중입니다.</translation>
-<translation id="492363500327720082"><ph name="APP_NAME" /> 제거 중…</translation>
 <translation id="492453977506755176">캡처 모드 키</translation>
 <translation id="4925542575807923399">이 계정이 멀티 로그인 세션에서 처음으로 로그인하는 계정이 되도록 계정 관리자가 요청합니다.</translation>
 <translation id="493076006037866439">화면 축소</translation>
@@ -1621,7 +1599,6 @@
 <translation id="5578188167649348993">메모리</translation>
 <translation id="5580000943347215299">라이브러리</translation>
 <translation id="5581972110672966454">기기가 도메인에 가입하지 못했습니다. 다시 시도하거나 기기 소유자 또는 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
-<translation id="5585898376467608182">기기의 저장용량이 부족합니다. <ph name="APP_NAME" />을 사용하려면 <ph name="MINIMUM_SPACE" /> 이상의 여유 공간이 필요합니다. 여유 공간을 늘리려면 기기에서 파일을 삭제하세요.</translation>
 <translation id="5586388332127302891">고정 돋보기가 사용 설정되었습니다. 사용 중지하려면 <ph name="ACCELERATOR" /> 키를 다시 누르세요.</translation>
 <translation id="5587506661873751671">다운로드 중 <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="5590609058453685222">음소거 알림을 사용 중입니다. 음소거 상태에서 말하면 알림을 받습니다.</translation>
@@ -1688,7 +1665,6 @@
 <translation id="5767730327234918501">관리자가 핫스팟을 사용 중지했습니다.</translation>
 <translation id="5769373120130404283">개인 정보 보호 화면</translation>
 <translation id="5770004650349728202">텍스트 읽어주기 사용 설정</translation>
-<translation id="5772114492540073460"><ph name="PARALLELS_NAME" /> 프로그램을 사용하면 Chromebook에서 Windows® 앱을 실행할 수 있습니다. 설치하려면 <ph name="MINIMUM_SPACE" />의 여유 공간이 권장됩니다.</translation>
 <translation id="5773950591113557721"><ph name="APP_NAME" /> 등 카메라 및 마이크 권한이 있는 모든 앱과 웹사이트에 액세스 권한이 부여됩니다.</translation>
 <translation id="5774295353725270860">파일 앱 열기</translation>
 <translation id="5775936059231769503">핫스팟을 전환합니다. 핫스팟이 꺼져 있습니다.</translation>
@@ -1736,8 +1712,6 @@
 <translation id="589817443623831496">지점 스캔</translation>
 <translation id="5901494423252125310">프린터 덮개 열림</translation>
 <translation id="5901630391730855834">노란색</translation>
-<translation id="5904614460720589786">구성 문제로 인해 <ph name="APP_NAME" /> 앱을 설정할 수 없습니다. 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
-<translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> 기기가 오프라인 상태임</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" />(<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">새 알림, 총 <ph name="NOTIFICATION_COUNT" />개</translation>
 <translation id="5916664084637901428">사용</translation>
@@ -1809,7 +1783,6 @@
         <ph name="DOMAIN" />에서 스마트 카드를 삽입한 상태로 둘 것을 요청합니다.}other{#초 후에 자동으로 로그아웃됩니다.
         <ph name="DOMAIN" />에서 스마트 카드를 삽입한 상태로 둘 것을 요청합니다.}}</translation>
 <translation id="6071576563962215370">시스템에서 기기 설치 시간 속성 잠금을 설정하지 못했습니다.</translation>
-<translation id="6072442788591997866">이 기기에서는 <ph name="APP_NAME" /> 앱이 허용되지 않습니다. 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="6073451960410192870">녹화 중지</translation>
 <translation id="6074087755403037157">베타 채널</translation>
 <translation id="6075098173600599596">대문자 사용 변경</translation>
@@ -1916,7 +1889,6 @@
 <translation id="6380143666419481200">동의 및 계속</translation>
 <translation id="6381109794406942707">기기의 잠금을 해제하려면 PIN을 입력하세요.</translation>
 <translation id="6381305031890976705">{0,plural, =1{1시간 이내에 기기를 이전 버전으로 업데이트하세요}other{#시간 이내에 기기를 이전 버전으로 업데이트하세요}}</translation>
-<translation id="6385149369087767061">인터넷에 연결한 후 다시 시도해 주세요</translation>
 <translation id="638716340450135524">카메라 액세스 권한 부여</translation>
 <translation id="6406458002328242616">타이머를 수정합니다. <ph name="FOCUS_DURATION" />.</translation>
 <translation id="6406704438230478924">altgr</translation>
@@ -1934,7 +1906,6 @@
 <translation id="6426905245930183644">생성 중...</translation>
 <translation id="6430225033895752525">집중 모드 설정 표시</translation>
 <translation id="6431865393913628856">화면 녹화</translation>
-<translation id="6434325376267409267"><ph name="APP_NAME" /> 앱을 사용하려면 기기를 업데이트해야 합니다.</translation>
 <translation id="643593192654616063">총 <ph name="STORAGE_TOTAL_SIZE" /> 저장용량 중 <ph name="STORAGE_IN_USE_SIZE" /> 사용 중</translation>
 <translation id="6445915701151710649">CPU</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, 일정 <ph name="NUMBER" />개</translation>
@@ -2212,7 +2183,6 @@
 <translation id="7258828758145722155">어제 수정됨</translation>
 <translation id="726276584504105859">화면 분할을 사용하려면 여기를 드래그하세요.</translation>
 <translation id="7264788308526527464"><ph name="FOCUS_DURATION_DELTA" /> 줄이기</translation>
-<translation id="7267044199012331848">가상 머신을 설치할 수 없습니다. 다시 시도하거나 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="7267875682732693301">손가락을 뗀 후 다시 터치하여 지문의 다른 부분을 추가하세요.</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + 백스페이스</translation>
 <translation id="7285232777292757180">빠른 설정의 화면 캡처 도구를 사용하여 스크린샷 찍기</translation>
@@ -2261,9 +2231,7 @@
 <translation id="7406854842098869085"><ph name="MODIFIER_1" />를 길게 누르고 열려는 창으로 이동할 때까지 <ph name="KEY" />을 탭한 후 놓습니다.</translation>
 <translation id="740790383907119240">앱 바로가기</translation>
 <translation id="7413851974711031813">Esc 키를 눌러 닫기</translation>
-<translation id="7415454883318062233">설정 완료</translation>
 <translation id="7416471219712049036">현재 페이지 저장</translation>
-<translation id="7423807071740419372"><ph name="APP_NAME" />에 실행 권한 필요</translation>
 <translation id="742594950370306541">카메라가 사용 중입니다.</translation>
 <translation id="743058460480092004">카메라와 마이크가 사용 중입니다.</translation>
 <translation id="7433708794692032816"><ph name="DEVICE_TYPE" /> 기기를 계속 사용하려면 스마트 카드 삽입</translation>
@@ -2274,7 +2242,6 @@
 <translation id="7459485586006128091">내부 오류로 인해 핫스팟이 사용 중지되었습니다. 몇 분 후에 다시 연결해 보세요.</translation>
 <translation id="7461924472993315131">고정</translation>
 <translation id="746216226901520237">다음번에는 휴대전화를 통해 <ph name="DEVICE_TYPE" />이 잠금 해제됩니다. 설정에서 Smart Lock을 사용 중지할 수 있습니다.</translation>
-<translation id="7465635034594602553">문제가 발생했습니다. 잠시 후 <ph name="APP_NAME" /> 앱을 다시 실행해 주세요.</translation>
 <translation id="7466449121337984263">센서를 터치하세요.</translation>
 <translation id="7477793887173910789">음악, 동영상 등의 항목 제어하기</translation>
 <translation id="7478485216301680444">키오스크 애플리케이션을 설치할 수 없습니다.</translation>
@@ -2428,7 +2395,6 @@
 <translation id="7850320739366109486">알림 일시중지</translation>
 <translation id="7851039877802112575">포커스를 팝업 및 대화상자로 이동</translation>
 <translation id="7851768487828137624">카나리아 </translation>
-<translation id="7858328180167661092"><ph name="APP_NAME" />(Windows)</translation>
 <translation id="7862292329216937261">게스트로 기기를 사용하려면 로그아웃한 다음 화면 하단에서 게스트로 로그인을 선택해야 합니다.</translation>
 <translation id="7866482334467279021">사용</translation>
 <translation id="7870790288828963061">새로운 버전의 Kiosk 앱을 찾을 수 없습니다. 업데이트할 대상이 없습니다. USB 메모리를 제거하세요.</translation>
@@ -2765,7 +2731,6 @@
 <translation id="8815390544836110344">스크린샷 바로가기, Ctrl + Shift + 전체보기 모드 키 누르기</translation>
 <translation id="881757059229893486">입력 방법 설정</translation>
 <translation id="8819728065740986820">자동 조절 충전 사용 설정됨</translation>
-<translation id="8821268776955756404"><ph name="APP_NAME" /> 앱을 사용할 수 있습니다.</translation>
 <translation id="882204272221080310">펌웨어를 업데이트하여 보안 강화</translation>
 <translation id="8822104519413696986">이 게임은 터치 게임입니다</translation>
 <translation id="8825863694328519386">돌아가려면 왼쪽에서 스와이프하세요.</translation>
@@ -2799,7 +2764,6 @@
 <translation id="8905919797434099235">(제목 없음)</translation>
 <translation id="890616557918890486">소스 변경</translation>
 <translation id="8909138438987180327">남은 배터리는 <ph name="PERCENTAGE" />%입니다.</translation>
-<translation id="8909298138148012791"><ph name="APP_NAME" /> 앱이 제거됨</translation>
 <translation id="8916866375277139011"><ph name="GROUP_NAME" />의 항목 숨기기</translation>
 <translation id="8921369299636221117">컨시어지 서비스를 사용할 수 없습니다.</translation>
 <translation id="8921554779039049422">H+</translation>
@@ -2872,7 +2836,6 @@
 <translation id="9126339866969410112">마지막 작업 실행취소</translation>
 <translation id="9126642911267312373">블루투스를 사용할 수 없음</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{1분 후}other{#분 후}}</translation>
-<translation id="9128317794749765148">설정을 완료할 수 없음</translation>
 <translation id="9129245940793250979">후면 버튼</translation>
 <translation id="9133335900048457298">보호된 콘텐츠는 녹화할 수 없음</translation>
 <translation id="9139720510312328767">다음 문자 삭제</translation>

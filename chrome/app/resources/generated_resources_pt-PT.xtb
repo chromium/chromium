@@ -2055,6 +2055,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2598710988533271874">Novo Chrome disponível</translation>
 <translation id="2599048253926156421">Nome de utilizador copiado para a área de transferência</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Foi desativada 1 extensão não segura}other{Foram desativadas {NUM_SITES} extensões não seguras}}</translation>
+<translation id="2603121359676416582">Para esta página</translation>
 <translation id="2604129989323098489">Geralmente, os sites pedem informações sobre os seus ecrãs para que possam abrir e posicionar janelas de forma inteligente, como apresentar documentos ou conteúdo em ecrã inteiro lado a lado</translation>
 <translation id="2604255671529671813">Erro de ligação à rede</translation>
 <translation id="2604805099836652105">Formulário da morada de <ph name="ADDRESS_LABEL" /> preenchido.</translation>
@@ -2970,6 +2971,7 @@ Quer pará-lo?</translation>
 <translation id="3285329711156774325">Pesquise competências</translation>
 <translation id="3285500645985761267">Permitir que os sites relacionados vejam a sua atividade no grupo</translation>
 <translation id="328571385944182268">Quer guardar as suas palavras-passe?</translation>
+<translation id="3285969135399641759">Adquira uma nova competência</translation>
 <translation id="3289668031376215426">Maiúsculas automáticas</translation>
 <translation id="3289856944988573801">Para verificar se existem atualizações, utilize Ethernet ou Wi-Fi.</translation>
 <translation id="3290249595466894471">Envia também um pequeno exemplo de páginas, transferências, atividade de extensões e informações do sistema para ajudar a detetar novas ameaças</translation>
@@ -6377,6 +6379,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5939719276406088041">Não é possível criar o atalho.</translation>
 <translation id="5939723110967488589">Escolher os botões que são apresentados na barra de ferramentas</translation>
 <translation id="594048410531370124">Tecla não reconhecida. Prima qualquer tecla para <ph name="RESPONSE" />.</translation>
+<translation id="5940614040566393493">Receba conselhos</translation>
 <translation id="5941711191222866238">Minimizar</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{1 palavra-passe está guardada apenas neste dispositivo. Para usá-la nos seus outros dispositivos, guarde-a na sua Conta Google.}other{{PASSWORD_COUNT} palavras-passe estão guardadas apenas neste dispositivo. Para usá-los nos seus outros dispositivos, guarde-os na sua Conta Google.}}</translation>
 <translation id="594221546068848596">Pesquisar página com o <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -10683,7 +10686,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="983192555821071799">Fechar todos os separadores</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" />: gravação da câmara e do microfone</translation>
 <translation id="984705303330760860">Adicione idiomas com verificação ortográfica</translation>
-<translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Geral</translation>
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> quer receber informações do seu dispositivo móvel</translation>
 <translation id="988320949174893488">Interrupção ocasional</translation>

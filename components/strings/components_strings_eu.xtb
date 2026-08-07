@@ -25,6 +25,7 @@
 <translation id="1039767473048604223"><ph name="DEVICE_NAME" /> <ph name="MODEL" /></translation>
 <translation id="1041998700806130099">Lan-orriko mezua</translation>
 <translation id="1044897699341250361">Zer esan nahi du horrek?</translation>
+<translation id="1049837829250301306">Ezin izan da itsatsi edukia, erakundearen gidalerroak direla eta</translation>
 <translation id="1050038467049342496">Itxi beste aplikazio batzuk</translation>
 <translation id="1050765387089990494">Idatzi gonbidapen bat baztertzeko erantzun labur eta adeitsu bat</translation>
 <translation id="1055184225775184556">&amp;Desegin gehitzea</translation>
@@ -2071,6 +2072,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="4569155249847375786">Egiaztatuta</translation>
 <translation id="4570008401337135432">Testuaren lerrokatzea</translation>
 <translation id="457875822857220463">Entrega</translation>
+<translation id="4579084373690089522">Zure erakundearen gidalerroen arabera, baliteke eduki honek kontuzko informazioa izatea</translation>
 <translation id="4582595824823167856">Jaso testu-mezu bat</translation>
 <translation id="4584094413232466841">Chrome-ren betetze automatikotik kendu nahi duzu informazio hori?</translation>
 <translation id="4586607503179159908">Egiaztatu da ordainketa-metodoa</translation>
@@ -2219,6 +2221,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="4831993743164297314">Imagesetter gailuetarako papera</translation>
 <translation id="4832388034239846146">Fitxa taldeak partekatzeko, eguneratu Chrome</translation>
 <translation id="483241715238664915">Aktibatu abisuak</translation>
+<translation id="4833567658337394628">Ez da gomendatzen itsastea</translation>
 <translation id="4840250757394056958">Ikusi Chrome-ko historia</translation>
 <translation id="4842365697443353018">Geroago ordaintzeko aukera erabiltzeko, garbitu inprimakia</translation>
 <translation id="484462545196658690">Automatikoa</translation>
@@ -4555,7 +4558,6 @@ Xehetasun gehiago:
 <translation id="8932102934695377596">Erlojua atzeratuta duzu</translation>
 <translation id="893332455753468063">Gehitu izena</translation>
 <translation id="8938242527120341116">Gailuaren eduki-iragazkiek <ph name="BLOCKED_URL" /> blokeatu dute</translation>
-<translation id="8942355029279167844">Administratzaileak diagnostiko-datuak biltzeko baimena eman dio <ph name="APP_NAME" /> aplikazioari, produktuaren esperientzia hobetzeko helburuarekin. Informazio gehiago lortzeko, joan <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> helbidera.</translation>
 <translation id="8943282376843390568">Lima</translation>
 <translation id="8949410982325929394">Tonua</translation>
 <translation id="8949493680961858543">A1x4</translation>

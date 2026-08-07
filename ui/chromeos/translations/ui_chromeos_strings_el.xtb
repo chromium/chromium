@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Έγγραφο του Word</translation>
 <translation id="1056775291175587022">Κανένα δίκτυο</translation>
 <translation id="1056898198331236512">Προειδοποίηση</translation>
-<translation id="1060368002126861100">Για να ανοίξετε αρχεία με την εφαρμογή <ph name="APP_NAME" />, αρχικά, μετακινήστε τα στον φάκελο Αρχεία Windows.</translation>
 <translation id="1062407476771304334">Αντικατάσταση</translation>
 <translation id="1119383441774809183">Εμφάνιση μηνυμάτων κειμένου</translation>
 <translation id="1119447706177454957">Εσωτερικό σφάλμα</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">Νορβηγικά</translation>
 <translation id="1408504635543854729">Εξερευνήστε το περιεχόμενο της συσκευής στην εφαρμογή "Αρχεία". Το περιεχόμενο περιορίζεται από κάποιον διαχειριστή και δεν είναι δυνατή η τροποποίησή του.</translation>
 <translation id="1412476183660741812">Υπογεγραμμένο πακέτο ιστού</translation>
-<translation id="1433628812591023318">Για να αποθέσετε αρχεία στο Parallels Desktop, το αρχείο θα πρέπει να μετακινηθεί στα αρχεία των Windows.</translation>
-<translation id="1435838927755162558">Κοινή χρήση φακέλου με το Parallels Desktop</translation>
 <translation id="1439919885608649279">Άτομο με λουλούδια</translation>
 <translation id="1458457385801829801">Αποσύνδεση <ph name="TARGET_NAME" /></translation>
 <translation id="1464781208867302907">Για τις προτιμήσεις συσκευής, μεταβείτε στις Ρυθμίσεις.</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">Γαλλικά</translation>
 <translation id="2732288874651063549">Διαχείριση κοινής χρήσης με το <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">Βιετναμικά VNI</translation>
-<translation id="2735623501230989521">Δώστε άδεια στο Parallels Desktop για πρόσβαση σε αρχεία στον φάκελο <ph name="FOLDER_NAME" />.</translation>
 <translation id="2764206540577097904">Χρησιμοποιήσατε ολόκληρο τον προσωπικό αποθηκευτικό χώρο σας στο Google Workspace.</translation>
 <translation id="2771816809568414714">Τυρί</translation>
 <translation id="2783909841122647548">Οι εγκαταστάσεις πακέτων Debian δεν υποστηρίζονται πλέον. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">Γεωγραφία</translation>
 <translation id="3044404008258011032">Για να επαναφέρετε αυτά τα στοιχεία, σύρετέ τα σε έναν νέο φάκελο εκτός του κάδου. Ο αρχικός φάκελος "<ph name="PARENT_FOLDER_NAME" />" αυτών των στοιχείων έχει διαγραφεί.</translation>
 <translation id="3047197340186497470">Κινεζικά Dayi</translation>
-<translation id="3067790092342515856">Αρχεία Windows</translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">Κεντρικός υπολογιστής SOCKS</translation>
 <translation id="3091469289665833668">Ρουμανικά</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">Επικοινωνήστε με τον διαχειριστή για λεπτομέρειες.</translation>
 <translation id="3548125359243647069">Έγινε εισαγωγή εσφαλμένου PIN πάρα πολλές φορές.</translation>
 <translation id="3549797760399244642">Μετάβαση στη διεύθυνση drive.google.com…</translation>
-<translation id="3553048479571901246">Για να ανοίξετε αρχεία με την εφαρμογή <ph name="APP_NAME" />, αρχικά, αντιγράψτε τα στον φάκελο Αρχεία Windows.</translation>
 <translation id="3556731189587832921">Αγγλικά (ΗΠΑ) με Διεθνές πληκτρολόγιο υπολογιστή</translation>
 <translation id="3557414470514932909">Μετακίνηση <ph name="FILE_NAME" /> στον κάδο</translation>
 <translation id="3560848236447534728">Φωνητικό Αρμενικών</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">Ρουμανικά</translation>
 <translation id="4508265954913339219">Η ενεργοποίηση απέτυχε</translation>
 <translation id="4509667233588080747">Αγγλικά (ΗΠΑ) με πληκτρολόγιο Workman International</translation>
-<translation id="4527800702232535228">Αυτός ο φάκελος χρησιμοποιείται από κοινού με το Parallels Desktop.</translation>
 <translation id="4552678318981539154">Αγοράστε περισσότερο αποθηκευτικό χώρο</translation>
 <translation id="4552759165874948005">Δίκτυο <ph name="NETWORK_TYPE" />, ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">Εφέ Bokeh</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">Ονιγκίρι</translation>
 <translation id="4784330909746505604">Παρουσίαση PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
-<translation id="4789067489790477934">Παραχωρήστε στο Parallels Desktop άδεια πρόσβασης σε αρχεία στο Google Drive. Οι αλλαγές θα συγχρονιστούν με τις άλλες συσκευές σας.</translation>
 <translation id="4790766916287588578">Χίντι με πληκτρολόγιο InScript</translation>
 <translation id="4798645114741131062">Η συσκευή ChromeOS Flex θα σταματήσει να λαμβάνει ενημερώσεις σύντομα. Εξετάστε το ενδεχόμενο αναβάθμισης σε συσκευή ChromeOS.</translation>
 <translation id="4801956050125744859">Διατήρηση και των δύο</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">Ρυθμιστικό έντασης ήχου</translation>
 <translation id="4881695831933465202">Άνοιγμα</translation>
 <translation id="4891091358278567964">Για να επαναφέρετε αυτά τα στοιχεία, σύρετέ τα σε έναν νέο φάκελο εκτός του κάδου. Οι αρχικοί φάκελοι αυτών των στοιχείων έχουν διαγραφεί.</translation>
-<translation id="4900532980794411603">Κοινή χρήση με το Parallels Desktop</translation>
 <translation id="4902546322522096650">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Σύνδεση</translation>
 <translation id="4906580650526544301">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Μπαταρία τηλεφώνου <ph name="BATTERY_STATUS" />%, Λεπτομέρειες</translation>
 <translation id="4935975195727477204">Φυτό γκαζάνια</translation>
 <translation id="4943368462779413526">Αμερικάνικο ποδόσφαιρο</translation>
-<translation id="4961158930123534723">Μοιραστήκατε έναν φάκελο με το Parallels Desktop.</translation>
 <translation id="4965874878399872778">Έλεγχος αρχείων ως προς τις πολιτικές ασφαλείας του οργανισμού σας…</translation>
 <translation id="496656650103537022">Έγινε επαναφορά του αρχείου <ph name="FILE_NAME" /></translation>
 <translation id="4969785127455456148">Λεύκωμα</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Μια λειτουργία διαρκεί περισσότερο από το αναμενόμενο. Θέλετε να τη ματαιώσετε;</translation>
 <translation id="5036141350290856713">Φωνητικό Ρωσικών</translation>
-<translation id="5036159836254554629">Διαχειριστείτε την κοινή χρήση με το Parallels Desktop</translation>
 <translation id="5038625366300922036">Δείτε περισσότερα…</translation>
 <translation id="5044852990838351217">Αρμενικά</translation>
 <translation id="5045550434625856497">Λανθασμένος κωδικός πρόσβασης</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">Διαγραφή αρχείου "<ph name="FILENAME" />"…</translation>
 <translation id="6581162200855843583">Σύνδεσμος του Google Drive</translation>
 <translation id="6588648400954570689">Ρυθμίσεις συγχρονισμού αρχείων</translation>
-<translation id="6594855146910089723">Αυτός ο φάκελος χρησιμοποιείται από κοινού με το Linux και το Parallels Desktop.</translation>
 <translation id="6607272825297743757">Πληροφορίες αρχείου</translation>
-<translation id="6609332149380188670">Μοιραστήκατε <ph name="NUMBER_OF_ITEMS" /> φακέλους με το Parallels Desktop.</translation>
 <translation id="6629518321609546825">Εισαγάγετε τουλάχιστον 4 αριθμούς</translation>
 <translation id="6643016212128521049">Διαγραφή</translation>
 <translation id="6650726141019353908">Ροζ πεταλούδα</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">Δυστυχώς, παρουσιάστηκε σφάλμα κατά τη μετονομασία.</translation>
 <translation id="7458955835361612701">Δεν υπάρχουν πρόσφατες εικόνες</translation>
 <translation id="7469894403370665791">Αυτόματη σύνδεση σε αυτό το δίκτυο</translation>
-<translation id="7486315294984620427">Για να αποθέσετε αρχεία στο Parallels Desktop, το αρχείο θα πρέπει να αντιγραφεί στα αρχεία των Windows.</translation>
 <translation id="749452993132003881">Χιραγκάνα</translation>
 <translation id="7495372004724182530">Φωνητική εισαγωγή Μαλαγιαλαμικών</translation>
 <translation id="7505167922889582512">Εμφάνιση κρυφών αρχείων</translation>

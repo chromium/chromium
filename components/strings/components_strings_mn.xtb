@@ -4437,6 +4437,7 @@
 <translation id="8708134712139312373">Bluetooth төхөөрөмжүүдэд холбогдохыг хүсэх боломжтой</translation>
 <translation id="8710842507289500830">Фонтын загвар</translation>
 <translation id="8712637175834984815">Ойлголоо</translation>
+<translation id="8715198179991802709">Chrome таны зочлохоор оролдож байсан вебсайтыг дөнгөж сая дарцагласан. Энэ 1 минутын судалгааг бөглөж бидэнд эдгээр сануулгыг сайжруулахад тусална уу.</translation>
 <translation id="8718314106902482036">Төлбөрийг гүйцээгээгүй байна</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, хайлтын зөвлөмж</translation>
 <translation id="8719528812645237045">Дээд буланд олон нүх цоолох</translation>
@@ -4564,7 +4565,6 @@
 <translation id="8932102934695377596">Таны цаг хоцорч байна</translation>
 <translation id="893332455753468063">Нэр нэмэх</translation>
 <translation id="8938242527120341116">Таны төхөөрөмжийн контентын шүүлтүүр <ph name="BLOCKED_URL" />-г блоклосон</translation>
-<translation id="8942355029279167844">Таны администратор бүтээгдэхүүний туршлагыг сайжруулахын тулд <ph name="APP_NAME" />-д оношилгооны өгөгдлийг цуглуулахыг зөвшөөрсөн байна. Нэмэлт мэдээлэл авахын тулд <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />-г харна уу.</translation>
 <translation id="8943282376843390568">Нимбэгний ногоон</translation>
 <translation id="8949410982325929394">Өнгө аяс</translation>
 <translation id="8949493680961858543">A1x4</translation>

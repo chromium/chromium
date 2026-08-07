@@ -296,6 +296,7 @@
 <translation id="2233735624724508540">בוחרים מסגרת זמן ואז לוחצים על "מחיקת הנתונים"</translation>
 <translation id="2234031676056123135">התאמה אישית של קיצורי הדרך</translation>
 <translation id="2234827758954819389">המדריך בנושא פרטיות</translation>
+<translation id="2236949375853147973">הפעילות שלי</translation>
 <translation id="2238038374973843156">העברת קבוצת הכרטיסיות לחלון אחר</translation>
 <translation id="2247789808226901522">תוקף הכרטיס פג</translation>
 <translation id="2251809247798634662">חלון חדש לגלישה בסתר</translation>
@@ -573,6 +574,7 @@
 <translation id="3385749568468586663">‏‫Gemini לא זמין במצב פרטי</translation>
 <translation id="3387650086002190359">הורדת <ph name="FILE_NAME" /> נכשלה עקב שגיאות במערכת הקבצים.</translation>
 <translation id="3391311825344469964">‏אפשר לנהל את החלונות במנהל החלונות של Chrome</translation>
+<translation id="3410151451624226773">‏ניהול במנהל הסיסמאות של Google</translation>
 <translation id="3417835166382867856">חיפוש כרטיסיות</translation>
 <translation id="3430670036890315772">השבתה של נעילת הפרופיל תגרום להסרת המידע השמור</translation>
 <translation id="3435575784518354875">‏כדי לשמור על הגישה לסיסמאות, צריך לייצא אותן עכשיו, לעדכן את Google Play Services ואז לייבא אותן חזרה למנהל הסיסמאות של Google. <ph name="BEGIN_LINK" />לצפייה בהוראות המלאות<ph name="END_LINK" />.</translation>
@@ -941,6 +943,7 @@
 <translation id="4877678010818027629">מעבר למצב אנונימי</translation>
 <translation id="4878404682131129617">‏יצירת מנהרה בעזרת שרת proxy נכשלה</translation>
 <translation id="4880127995492972015">תרגום…</translation>
+<translation id="4880827082731008257">חיפוש בהיסטוריה</translation>
 <translation id="4881695831933465202">פתיחה</translation>
 <translation id="488187801263602086">שינוי שם של קובץ</translation>
 <translation id="4885273946141277891">‏מספר בלתי נתמך של מופעי Chrome.</translation>
@@ -990,6 +993,7 @@
 <translation id="509429900233858213">אירעה שגיאה.</translation>
 <translation id="5096775069898886423">מקבלים אזהרה לפני שמבקרים באתרים שלא תומכים בחיבורים מאובטחים</translation>
 <translation id="510275257476243843">נותרה שעה אחת</translation>
+<translation id="5105442806410269908">‏ניהול נתונים אחרים בחשבון Google</translation>
 <translation id="5114895953710637392">גיליון הסינון לפי אפליקציות סגור.</translation>
 <translation id="5115811374190515607">אל <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">‏אפשר להשתמש ב-Chrome בכל פעם שלוחצים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
@@ -1040,6 +1044,7 @@
 <translation id="5316947901395241499">האפשרות לשמור סיסמאות הושבתה על ידי האדמין</translation>
 <translation id="5317780077021120954">שמירה</translation>
 <translation id="5319359161174645648">‏Google ממליצה על Chrome</translation>
+<translation id="5323501626199324454">‏לניהול בחשבון שלך ב-Google</translation>
 <translation id="5326246328175179736">אי אפשר להיכנס באמצעות החשבון הזה</translation>
 <translation id="5327248766486351172">שם</translation>
 <translation id="5328542107300944283">שימוש עם <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1322,6 +1327,7 @@
 <translation id="6461962085415701688">לא ניתן לפתוח את הקובץ</translation>
 <translation id="6464977750820128603">‏אפשר לראות אתרים שמבקרים בהם ב-Chrome ולהגדיר טיימרים בשבילם.\n\n‏Google מקבלת מידע על האתרים שמוגדרים בשבילם טיימרים ומשך השהייה שלך באתרים האלה. המידע עוזר לשפר את 'שימוש חכם בדיגיטל'.</translation>
 <translation id="6468703991511753953">סרגל הכתובות נמצא כרגע בחלק התחתון</translation>
+<translation id="6469702164109431067">סיסמאות ומפתחות גישה</translation>
 <translation id="6470181189905173055">‏הדפים שפתחת ב-Chrome בזמן השימוש ב-<ph name="APP_LABEL" /> יופיעו כאן.</translation>
 <translation id="6473086018775716761">רשימת אפשרויות השיתוף נפתחה בחצי הגובה.</translation>
 <translation id="6475951671322991020">הורדת סרטון</translation>

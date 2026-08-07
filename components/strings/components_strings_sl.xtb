@@ -592,6 +592,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2027465737841872819">Plastic</translation>
 <translation id="2027707238798802149">Kartica ni na voljo</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />preveriti strežnik proxy in požarni zid<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">Ta primerek Chroma se izvaja z ročno nastavljenimi zastavicami ukazne vrstice. Upoštevajte, da se lahko zastavice ukazne vrstice kadar koli spremenijo in niso podprte.</translation>
 <translation id="2033900728810589426">Bližnjica ne sme biti enaka ključni besedi privzetega ponudnika iskanja, ki jo določa <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Vseeno shrani</translation>
 <translation id="2036514476578229158">Prosil(-a) si za dovoljenje za obisk tega spletnega mesta. Starši lahko odgovorijo v storitvi Family Link.</translation>
@@ -4107,7 +4108,7 @@ Dodatne podrobnosti:
 <translation id="8079591184016291275">Ime dogodka</translation>
 <translation id="8079976827192572403">Nevarno spletno mesto</translation>
 <translation id="8086971161893892807">Osnutek</translation>
-<translation id="8087558780672230449">Nalaganje <ph name="APP_ORIGIN" /> za obdelavo plačila v <ph name="MERCHANT_ORIGIN" />.</translation>
+<translation id="8087558780672230449">Nalaganje <ph name="APP_ORIGIN" /> za obdelavo plačila na <ph name="MERCHANT_ORIGIN" />.</translation>
 <translation id="8088680233425245692">Članka si ni bilo mogoče ogledati.</translation>
 <translation id="808894953321890993">Sprememba gesla</translation>
 <translation id="8091372947890762290">Čakanje na aktivacijo v strežniku</translation>
@@ -4564,7 +4565,6 @@ Dodatne podrobnosti:
 <translation id="8932102934695377596">Ura zaostaja</translation>
 <translation id="893332455753468063">Dodajanje imena</translation>
 <translation id="8938242527120341116">Filtri vsebine v napravi so blokirali <ph name="BLOCKED_URL" /></translation>
-<translation id="8942355029279167844">Skrbnik je omogočil aplikaciji <ph name="APP_NAME" />, da zbira diagnostične podatke zaradi izboljšanja uporabnosti izdelka. Več informacij je na voljo na <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Rumenozelena</translation>
 <translation id="8949410982325929394">Ton</translation>
 <translation id="8949493680961858543">A1x4</translation>

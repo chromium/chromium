@@ -297,6 +297,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2233735624724508540">Zgjidh një periudhë kohore dhe më pas trokit te "Fshi të dhënat"</translation>
 <translation id="2234031676056123135">Personalizo shkurtoret e tua</translation>
 <translation id="2234827758954819389">Udhëzuesi i privatësisë</translation>
+<translation id="2236949375853147973">Aktiviteti im</translation>
 <translation id="2238038374973843156">Zhvendose grupin në një dritare tjetër</translation>
 <translation id="2247789808226901522">Karta ka skaduar</translation>
 <translation id="2251809247798634662">Dritare e re "e fshehtë"</translation>
@@ -574,6 +575,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3385749568468586663">Gemini nuk ofrohet në modalitetin "I fshehtë"</translation>
 <translation id="3387650086002190359">Shkarkimi i <ph name="FILE_NAME" /> dështoi për shkak të gabimeve të sistemit të skedarëve.</translation>
 <translation id="3391311825344469964">Mund t'i menaxhosh dritaret e tua te "Menaxheri i dritareve" i Chrome</translation>
+<translation id="3410151451624226773">Menaxho te "Menaxheri i fjalëkalimeve i Google"</translation>
 <translation id="3417835166382867856">Kërko skedat</translation>
 <translation id="3430670036890315772">Çaktivizimi i kyçjes së profilit do të heqë informacionet e tua të ruajtura</translation>
 <translation id="3435575784518354875">Për të mbajtur qasjen te fjalëkalimet e tua, eksportoji ato tani, përditëso shërbimet e Google Play dhe më pas importoji fjalëkalimet sërish te "Menaxheri i fjalëkalimeve i Google". <ph name="BEGIN_LINK" />Shiko udhëzimet e plota<ph name="END_LINK" />.</translation>
@@ -942,6 +944,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4877678010818027629">Hyr në modalitetin "e fshehtë"</translation>
 <translation id="4878404682131129617">Dështoi krijimi i një tuneli përmes serverit përfaqësues</translation>
 <translation id="4880127995492972015">Përkthe…</translation>
+<translation id="4880827082731008257">Historiku i kërkimeve</translation>
 <translation id="4881695831933465202">Hap</translation>
 <translation id="488187801263602086">Riemërto skedarin</translation>
 <translation id="4885273946141277891">Numër i pambështetur i versioneve të Chrome.</translation>
@@ -991,6 +994,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="509429900233858213">Ndodhi një gabim.</translation>
 <translation id="5096775069898886423">Për sajtet që nuk i mbështesin lidhjet e sigurta, merr paralajmërime para se të vizitosh sajtin</translation>
 <translation id="510275257476243843">1 orë e mbetur</translation>
+<translation id="5105442806410269908">Menaxho të dhënat e tjera të Google</translation>
 <translation id="5114895953710637392">Fleta e filtrit të aplikacioneve është mbyllur.</translation>
 <translation id="5115811374190515607">te <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Mund të përdorësh Chrome sa herë që troket te lidhjet në mesazhe, dokumente dhe aplikacione të tjera.</translation>
@@ -1041,6 +1045,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="5316947901395241499">Ruajtja e fjalëkalimeve është çaktivizuar nga administratori yt</translation>
 <translation id="5317780077021120954">Ruaj</translation>
 <translation id="5319359161174645648">Google rekomandon Chrome</translation>
+<translation id="5323501626199324454">Menaxhoje në "Llogarinë tënde të Google"</translation>
 <translation id="5326246328175179736">Nuk mund të identifikohesh duke përdorur këtë llogari</translation>
 <translation id="5327248766486351172">Emri</translation>
 <translation id="5328542107300944283">Përdor me <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1325,6 +1330,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="6461962085415701688">Skedari nuk mund të hapet</translation>
 <translation id="6464977750820128603">Mund të shikosh sajtet që viziton në Chrome dhe të caktosh kohëmatës për to.\n\nGoogle merr informacion rreth sajteve për të cilat cakton kohëmatës dhe për sa kohë i viziton ato. Ky informacion përdoret për të përmirësuar "Mirëqenien dixhitale".</translation>
 <translation id="6468703991511753953">Shiriti i adresave aktualisht në fund</translation>
+<translation id="6469702164109431067">Fjalëkalimet dhe çelësat e kalimit</translation>
 <translation id="6470181189905173055">Faqet që ke hapur në Chrome gjatë përdorimit të <ph name="APP_LABEL" /> do të shfaqen këtu.</translation>
 <translation id="6473086018775716761">Listë e opsioneve të ndarjes e hapur në gjysmën e lartësisë.</translation>
 <translation id="6475951671322991020">Shkarko videon</translation>

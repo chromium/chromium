@@ -594,6 +594,7 @@
 <translation id="2027465737841872819">ប្លាស្ទិក</translation>
 <translation id="2027707238798802149">មិនអាចប្រើ​កាត​បានទេ</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />សូមពិនិត្យប្រូកស៊ី និង firewall<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">វគ្គ Chrome នេះ​កំពុង​ដំណើរការ​ដោយប្រើ​ទង់​ឃ្លាបញ្ជា​ដែលបាន​កំណត់​ដោយផ្ទាល់ដៃ។ សូមចំណាំថា ទង់ឃ្លាបញ្ជាអាចផ្លាស់ប្ដូរនៅពេលណាក៏បាន និងមិនអាចប្រើបានទេ។</translation>
 <translation id="2033900728810589426">ផ្លូវកាត់មិនអាចដូចគ្នានឹងពាក្យគន្លឹះ​ក្រុមហ៊ុនផ្ដល់សេវា​ស្វែងរក​លំនាំដើមដែលកំណត់ដោយ <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />៖ <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">មិនអីទេ រក្សាទុក​ចុះ</translation>
 <translation id="2036514476578229158">អ្នក​បានស្នើសុំ​ចូលទៅកាន់​គេហទំព័រ​នេះ។ មាតាបិតា​របស់អ្នក​អាច​ឆ្លើយតប​នៅក្នុង Family Link។</translation>
@@ -4569,7 +4570,6 @@
 <translation id="8932102934695377596">ម៉ោងរបស់អ្នកដើរយឺត</translation>
 <translation id="893332455753468063">បញ្ចូល​ឈ្មោះ</translation>
 <translation id="8938242527120341116">តម្រង​ខ្លឹមសារ​របស់​ឧបករណ៍​អ្នក​បាន​ទប់ស្កាត់ <ph name="BLOCKED_URL" /></translation>
-<translation id="8942355029279167844">អ្នកគ្រប់គ្រង​របស់អ្នកបាន​អនុញ្ញាតឱ្យ <ph name="APP_NAME" /> ប្រមូលទិន្នន័យ​វិភាគ ដើម្បីកែលម្អបទពិសោធន៍ប្រើប្រាស់​ផលិតផល។ សូមមើល <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> ដើម្បីទទួលបាន​ព័ត៌មានបន្ថែម។</translation>
 <translation id="8943282376843390568">លឿងខ្ចី</translation>
 <translation id="8949410982325929394">សម្ដីសំដៅ</translation>
 <translation id="8949493680961858543">A1x4</translation>

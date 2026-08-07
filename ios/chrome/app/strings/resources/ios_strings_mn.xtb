@@ -454,6 +454,7 @@
 <translation id="2422174748424038845">Хэрэв та бүлгийг устгавал хүн бүр “<ph name="GROUP_NAME" />" табын бүлэгт хандах эрхээ тэр даруй алдах бөгөөд тус бүлгийг бүх төхөөрөмжөөс устгана.</translation>
 <translation id="2424805048070062787">Энэ табтай үргэлжлүүлэх</translation>
 <translation id="2426805022920575512">Өөр бүртгэл сонгох</translation>
+<translation id="2428543302546523788">Унших горимыг асаахад холбооснуудыг харуулна</translation>
 <translation id="243275146591958220">Таталтыг цуцлах</translation>
 <translation id="2434405374328098816">Та <ph name="WEBSITE" />-д аль хэдийн "<ph name="USERNAME" />"-н нууц үгийг хадгалсан</translation>
 <translation id="2434918313224755415">Та Нууцлалтай горимд үзэхийн тулд зүүн тийш гүйлгэх боломжтой.</translation>
@@ -468,6 +469,7 @@
 <translation id="2470654816840674524">Би Chrome дахь Gemini-р юу хийх боломжтой вэ?</translation>
 <translation id="2473876017985765807">Та <ph name="WEBSITE" />-н нууц үгийг аль хэдийн хадгалсан</translation>
 <translation id="247430852844518481">Та дараа энэ хуудсанд дахин зочлохын тулд сануулагч тохируулах боломжтой</translation>
+<translation id="2476554421818031422">Та сайжруулсан автоматаар бөглөлтийг сайжруулахад тусалж байна</translation>
 <translation id="2479148705183875116">Тохиргоо руу очих</translation>
 <translation id="2482878487686419369">Мэдэгдэл</translation>
 <translation id="2484459871750294497">Би энэ онцлогийг хэрхэн идэвхжүүлэх вэ?</translation>
@@ -2068,6 +2070,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="78146569776629510">Татаж авсан файл</translation>
 <translation id="7815852444315004084">Одоохондоо нуух</translation>
 <translation id="7825973332242257878">Табын бүлгүүд</translation>
+<translation id="7828344837949522075">Зөвлөмж харуулах уу?</translation>
 <translation id="7839994177130598711">Танай гэр бүлийн гишүүд одоо Google Password Manager-г ашиглан <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />-д нэвтрэх үедээ таны хэрэглэгчийн нэр болон нууц үгийг ашиглах боломжтой.</translation>
 <translation id="7841180087127694526">Хуулсан текстийг хайх</translation>
 <translation id="7841418003178675048">Шинэ табын хуудсан дээрээ ямар карт харахаа сонгоно уу.</translation>

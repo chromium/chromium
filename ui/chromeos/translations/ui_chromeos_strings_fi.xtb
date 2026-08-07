@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Word-asiakirja</translation>
 <translation id="1056775291175587022">Ei verkkoja</translation>
 <translation id="1056898198331236512">Varoitus</translation>
-<translation id="1060368002126861100">Jos haluat avata tiedoston sovelluksella <ph name="APP_NAME" />, siirrä se ensin Windowsin tiedostot ‑kansioon.</translation>
 <translation id="1062407476771304334">Korvaa</translation>
 <translation id="1119383441774809183">Näytä tekstiviestit</translation>
 <translation id="1119447706177454957">Sisäinen virhe</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">norja</translation>
 <translation id="1408504635543854729">Tutustu laitteen sisältöön Tiedostot-sovelluksen kautta. Ylläpitäjä on rajoittanut sisältöä eikä sitä voi muokata.</translation>
 <translation id="1412476183660741812">Allekirjoitettu verkkopaketti</translation>
-<translation id="1433628812591023318">Jotta voit pudottaa tiedostoja Parallels Desktopiin, tiedosto on siirrettävä Windows-tiedostoihin.</translation>
-<translation id="1435838927755162558">Jaa kansio Parallels Desktopille</translation>
 <translation id="1439919885608649279">Henkilö ja kukkia</translation>
 <translation id="1458457385801829801">Poista <ph name="TARGET_NAME" /></translation>
 <translation id="1464781208867302907">Katso laitevalinnat asetuksista.</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">ranska</translation>
 <translation id="2732288874651063549">Ylläpidä jakamista: <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">vietnam (VNI)</translation>
-<translation id="2735623501230989521">Myönnä Parallels Desktopille pääsy kansiossa <ph name="FOLDER_NAME" /> oleviin tiedostoihin</translation>
 <translation id="2764206540577097904">Olet käyttänyt oman Google Workspace ‐tallennustilasi kokonaan.</translation>
 <translation id="2771816809568414714">Juusto</translation>
 <translation id="2783909841122647548">Debian-pakettien asennusta ei enää tueta. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">Sijainti</translation>
 <translation id="3044404008258011032">Voit palauttaa kohteet vetämällä ne uuteen kansioon roskakorin ulkopuolelle. Näiden kohteiden alkuperäinen kansio "<ph name="PARENT_FOLDER_NAME" />" on poistettu.</translation>
 <translation id="3047197340186497470">kiina (dayi)</translation>
-<translation id="3067790092342515856">Windows-tiedostot</translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">SOCKS-isäntä</translation>
 <translation id="3091469289665833668">romania</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">Pyydä lisätietoa järjestelmänvalvojalta.</translation>
 <translation id="3548125359243647069">Väärä PIN-koodi on syötetty liian monta kertaa.</translation>
 <translation id="3549797760399244642">Siirry osoitteeseen drive.google.com...</translation>
-<translation id="3553048479571901246">Jos haluat avata tiedoston sovelluksella <ph name="APP_NAME" />, kopioi se ensin Windowsin tiedostot ‑kansioon.</translation>
 <translation id="3556731189587832921">englanti (Yhdysvallat), kansainvälinen PC-näppäimistö</translation>
 <translation id="3557414470514932909"><ph name="FILE_NAME" /> siirretään roskakoriin</translation>
 <translation id="3560848236447534728">armenia, foneettinen</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">romania</translation>
 <translation id="4508265954913339219">Aktivointi epäonnistui</translation>
 <translation id="4509667233588080747">englanti (Yhdysvallat), Workman International ‑näppäimistö</translation>
-<translation id="4527800702232535228">Tämä kansio on jaettu Parallels Desktopille</translation>
 <translation id="4552678318981539154">Osta lisää tallennustilaa</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> verkko, signaalin vahvuus <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4559767610552730302">Bokeh</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">PowerPoint-esitys</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> kt</translation>
-<translation id="4789067489790477934">Myönnä Parallels Desktopille pääsy Google Driveesi tallennetuille tiedostoille. Muutokset synkronoidaan muille laitteillesi.</translation>
 <translation id="4790766916287588578">hindi, InScript-näppäimistö</translation>
 <translation id="4798645114741131062">ChromeOS Flex ‐laite ei pian enää saa päivityksiä. Harkitse ChromeOS-laitteeseen päivittämistä.</translation>
 <translation id="4801956050125744859">Pidä molemmat</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">Äänenvoimakkuuden liukusäädin</translation>
 <translation id="4881695831933465202">Avaa</translation>
 <translation id="4891091358278567964">Voit palauttaa kohteet vetämällä ne uuteen kansioon roskakorin ulkopuolelle. Näiden kohteiden alkuperäiset kansiot on poistettu.</translation>
-<translation id="4900532980794411603">Jaa Parallels Desktopille</translation>
 <translation id="4902546322522096650">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" /> %, yhdistä</translation>
 <translation id="4906580650526544301">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, signaalin voimakkuus <ph name="SIGNAL_STRENGTH" /> %, puhelimen akku <ph name="BATTERY_STATUS" /> %, lisätietoja</translation>
 <translation id="4935975195727477204">Kukka</translation>
 <translation id="4943368462779413526">Jalkapallo</translation>
-<translation id="4961158930123534723">1 kansio jaettu Parallels Desktopille</translation>
 <translation id="4965874878399872778">Tarkistetaan, ovatko tiedostot organisaatiosi tietosuojakäytäntöjen mukaisia…</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> palautettu</translation>
 <translation id="4969785127455456148">Albumi</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Toiminto kestää odotettua kauemmin. Haluatko keskeyttää sen?</translation>
 <translation id="5036141350290856713">venäjä, foneettinen</translation>
-<translation id="5036159836254554629">Määritä Parallels Desktop ‑jakaminen</translation>
 <translation id="5038625366300922036">Lisätietoja…</translation>
 <translation id="5044852990838351217">armenia</translation>
 <translation id="5045550434625856497">Väärä salasana</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">Poistetaan tiedostoa <ph name="FILENAME" />…</translation>
 <translation id="6581162200855843583">Google Drive -linkki</translation>
 <translation id="6588648400954570689">Tiedostojen synkronointiasetukset</translation>
-<translation id="6594855146910089723">Tämä kansio on jaettu Linuxille ja Parallels Desktopille</translation>
 <translation id="6607272825297743757">Tiedoston tiedot</translation>
-<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> kansiota jaettu Parallels Desktopille</translation>
 <translation id="6629518321609546825">Lisää ainakin 4 numeroa</translation>
 <translation id="6643016212128521049">Tyhjennä</translation>
 <translation id="6650726141019353908">Vaaleanpunainen perhonen</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">Harmin paikka! Uudelleennimeämisen aikana tapahtui virhe.</translation>
 <translation id="7458955835361612701">Ei viimeaikaisia kuvia</translation>
 <translation id="7469894403370665791">Yhdistä automaattisesti tähän verkkoon</translation>
-<translation id="7486315294984620427">Jotta voit pudottaa tiedostoja Parallels Desktopiin, tiedosto on kopioitava Windows-tiedostoihin.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">foneettinen malajalam</translation>
 <translation id="7505167922889582512">Näytä piilotetut tiedostot</translation>

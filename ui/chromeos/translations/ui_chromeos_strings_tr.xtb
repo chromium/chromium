@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Word belgesi</translation>
 <translation id="1056775291175587022">Ağ yok</translation>
 <translation id="1056898198331236512">Uyarı</translation>
-<translation id="1060368002126861100">Dosyaları <ph name="APP_NAME" /> ile açmak için önce dosyaları Windows dosyaları klasörüne taşıyın.</translation>
 <translation id="1062407476771304334">Değiştir</translation>
 <translation id="1119383441774809183">Kısa mesajları göster</translation>
 <translation id="1119447706177454957">Dahili hata</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">Norveççe</translation>
 <translation id="1408504635543854729">Cihazın içeriğini Dosyalar uygulamasında keşfedin. İçerik, bir yönetici tarafından kısıtlanmış ve üzerinde değişiklik yapılamaz.</translation>
 <translation id="1412476183660741812">İmzalı Web Paketi</translation>
-<translation id="1433628812591023318">Dosyaları Parallels Desktop'a bırakabilmek için Windows dosyalarına taşımak gerekir.</translation>
-<translation id="1435838927755162558">Parallels Desktop ile klasör paylaşın</translation>
 <translation id="1439919885608649279">Çiçek tutan bir kişi</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> dosya sistemini çıkarma</translation>
 <translation id="1464781208867302907">Cihaz tercihleri için Ayarlar'a gidin.</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">Fransızca</translation>
 <translation id="2732288874651063549"><ph name="VM_NAME" /> paylaşımını yönet</translation>
 <translation id="2732839045120506979">Vietnamca VNI</translation>
-<translation id="2735623501230989521">Parallels Desktop'a <ph name="FOLDER_NAME" /> klasöründeki dosyalara erişim izni verin</translation>
 <translation id="2764206540577097904">Google Workspace bireysel depolama alanınızın tamamını kullandınız.</translation>
 <translation id="2771816809568414714">Peynir</translation>
 <translation id="2783909841122647548">Debian paket yüklemeleri artık desteklenmiyor. <ph name="BEGIN_LINK" />Daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">Coğrafya</translation>
 <translation id="3044404008258011032">Bu öğeleri geri yüklemek için çöp kutusu dışındaki yeni bir klasöre sürükleyin. Bu öğelerin bulunduğu orijinal klasör ("<ph name="PARENT_FOLDER_NAME" />") silindi.</translation>
 <translation id="3047197340186497470">Çince Dayi</translation>
-<translation id="3067790092342515856">Windows dosyaları</translation>
 <translation id="3083975830683400843">Chromebit'ler</translation>
 <translation id="3085752524577180175">SOCKS Ana Makinesi</translation>
 <translation id="3091469289665833668">Rumence</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">Ayrıntılar için yöneticinizle görüşün.</translation>
 <translation id="3548125359243647069">Çok sayıda yanlış PIN girildi.</translation>
 <translation id="3549797760399244642">drive.google.com'a git...</translation>
-<translation id="3553048479571901246">Dosyaları <ph name="APP_NAME" /> ile açmak için önce dosyaları Windows dosyaları klasörüne kopyalayın.</translation>
 <translation id="3556731189587832921">Uluslararası PC klavye ile İngilizce (ABD)</translation>
 <translation id="3557414470514932909"><ph name="FILE_NAME" />, çöp kutusuna taşınıyor</translation>
 <translation id="3560848236447534728">Ermenice Fonetik</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">Romence</translation>
 <translation id="4508265954913339219">Etkinleştirme başarısız oldu</translation>
 <translation id="4509667233588080747">Workman Uluslararası klavye ile İngilizce (ABD)</translation>
-<translation id="4527800702232535228">Bu klasör Parallels Desktop ile paylaşılıyor</translation>
 <translation id="4552678318981539154">Daha fazla depolama alanı satın alın</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> adlı ağ, %<ph name="SIGNAL_STRENGTH" /> sinyal gücü</translation>
 <translation id="4559767610552730302">Bokeh</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">PowerPoint sunusu</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
-<translation id="4789067489790477934">Parallels Desktop'a Google Drive'ınızdaki dosyalara erişim izni verin. Değişiklikler, diğer cihazlarınızla senkronize edilecektir.</translation>
 <translation id="4790766916287588578">Hintçe, Alfabetik klavye</translation>
 <translation id="4798645114741131062">ChromeOS Flex cihazınız yakında güncelleme almayı durduracak. ChromeOS cihaza geçme seçeneğini değerlendirebilirsiniz.</translation>
 <translation id="4801956050125744859">Her ikisini de sakla</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">Ses kaydırma çubuğu</translation>
 <translation id="4881695831933465202">Aç</translation>
 <translation id="4891091358278567964">Bu öğeleri geri yüklemek için çöp kutusu dışındaki yeni bir klasöre sürükleyin. Bu öğelerin bulunduğu orijinal klasörler silindi.</translation>
-<translation id="4900532980794411603">Parallels Desktop ile paylaş</translation>
 <translation id="4902546322522096650">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, %<ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Bağlan</translation>
 <translation id="4906580650526544301">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, %<ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, %<ph name="BATTERY_STATUS" /> Telefon Pili, Ayrıntılar</translation>
 <translation id="4935975195727477204">Gazania Çiçeği</translation>
 <translation id="4943368462779413526">Futbol</translation>
-<translation id="4961158930123534723">1 klasör Parallels Desktop ile paylaşıldı</translation>
 <translation id="4965874878399872778">Dosyaların, kuruluşunuzun güvenlik politikalarıyla uyumlu olup olmadığı kontrol ediliyor...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> geri yüklendi</translation>
 <translation id="4969785127455456148">Albüm</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Bir işlem, beklenenden daha uzun sürüyor. İşlemi iptal etmek istiyor musunuz?</translation>
 <translation id="5036141350290856713">Rusça fonetik</translation>
-<translation id="5036159836254554629">Parallels Desktop paylaşımını yönet</translation>
 <translation id="5038625366300922036">Daha fazlasını görüntüle...</translation>
 <translation id="5044852990838351217">Ermenice</translation>
 <translation id="5045550434625856497">Hatalı parola</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">"<ph name="FILENAME" />" siliniyor...</translation>
 <translation id="6581162200855843583">Google Drive bağlantısı</translation>
 <translation id="6588648400954570689">Dosya senkronizasyon ayarları</translation>
-<translation id="6594855146910089723">Bu klasör, Linux ve Parallels Desktop ile paylaşılıyor</translation>
 <translation id="6607272825297743757">Dosya bilgileri</translation>
-<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> klasör Parallels Desktop ile paylaşıldı</translation>
 <translation id="6629518321609546825">En az 4 rakam girin</translation>
 <translation id="6643016212128521049">Temizle</translation>
 <translation id="6650726141019353908">Pembe kelebek</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">Hay aksi! Yeniden adlandırma sırasında bir hata oluştu.</translation>
 <translation id="7458955835361612701">Yakın tarihli resim yok</translation>
 <translation id="7469894403370665791">Bu ağa otomatik olarak bağlan</translation>
-<translation id="7486315294984620427">Dosyaları Parallels Desktop'a bırakabilmek için Windows dosyalarına kopyalamak gerekir.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam dili Fonetik</translation>
 <translation id="7505167922889582512">Gizli dosyaları göster</translation>

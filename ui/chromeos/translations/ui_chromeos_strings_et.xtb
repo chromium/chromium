@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Wordi dokument</translation>
 <translation id="1056775291175587022">Võrke ei ole</translation>
 <translation id="1056898198331236512">Hoiatus</translation>
-<translation id="1060368002126861100">Failide avamiseks rakendusega <ph name="APP_NAME" /> teisaldage need esmalt Windowsi failide kausta.</translation>
 <translation id="1062407476771304334">Asenda</translation>
 <translation id="1119383441774809183">Kuva tekstisõnumid</translation>
 <translation id="1119447706177454957">Sisemine viga</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">norra</translation>
 <translation id="1408504635543854729">Avastage seadme sisu rakenduses Failid. Sisu piirab administraator ja seda ei saa muuta.</translation>
 <translation id="1412476183660741812">Allkirjastatud Web Bundle</translation>
-<translation id="1433628812591023318">Failide pukseerimiseks Parallels Desktopile peab fail olema teisaldatud Windowsi failide hulka.</translation>
-<translation id="1435838927755162558">Kausta jagamine üksusega Parallels Desktop</translation>
 <translation id="1439919885608649279">Lilledega inimene</translation>
 <translation id="1458457385801829801">Väljuta <ph name="TARGET_NAME" /></translation>
 <translation id="1464781208867302907">Seadme eelistused on saadaval jaotises Seaded.</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">prantsuse</translation>
 <translation id="2732288874651063549">Halda jagamist VM-iga <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">vietnami, VNI</translation>
-<translation id="2735623501230989521">Andke üksusele Parallels Desktop luba pääseda juurde kaustas <ph name="FOLDER_NAME" /> olevatele failidele</translation>
 <translation id="2764206540577097904">Olete kasutanud ära kogu oma individuaalse Google Workspace'i salvestusruumi.</translation>
 <translation id="2771816809568414714">Juust</translation>
 <translation id="2783909841122647548">Debiani paketi installimisi enam ei toetata. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">Geograafia</translation>
 <translation id="3044404008258011032">Nende üksuste taastamiseks lohistage need uude kausta, prügikastist välja. Nende üksuste algne kaust „<ph name="PARENT_FOLDER_NAME" />“ on kustutatud.</translation>
 <translation id="3047197340186497470">hiina, dayi</translation>
-<translation id="3067790092342515856">Windowsi failid</translation>
 <translation id="3083975830683400843">Chromebitid</translation>
 <translation id="3085752524577180175">SOCKS-host</translation>
 <translation id="3091469289665833668">rumeenia</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">Üksikasjade nägemiseks võtke ühendust administraatoriga.</translation>
 <translation id="3548125359243647069">Vale PIN-kood sisestati liiga mitu korda.</translation>
 <translation id="3549797760399244642">Ava sait drive.google.com ...</translation>
-<translation id="3553048479571901246">Failide avamiseks rakendusega <ph name="APP_NAME" /> kopeerige need esmalt Windowsi failide kausta.</translation>
 <translation id="3556731189587832921">inglise (USA), rahvusvahelise arvutiklaviatuuriga</translation>
 <translation id="3557414470514932909">Faili <ph name="FILE_NAME" /> teisaldatakse prügikasti</translation>
 <translation id="3560848236447534728">armeenia foneetiline</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">rumeenia</translation>
 <translation id="4508265954913339219">Aktiveerimine nurjus</translation>
 <translation id="4509667233588080747">inglise (USA), Workmani rahvusvaheline klaviatuuriga</translation>
-<translation id="4527800702232535228">Seda kausta jagatakse Parallels Desktopiga</translation>
 <translation id="4552678318981539154">Ostke rohkem salvestusruumi</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" />-võrk, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">Bokeh-efekt</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">PowerPointi esitlus</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> kB</translation>
-<translation id="4789067489790477934">Andke üksusele Parallels Desktop luba pääseda juurde Google Drive'is olevatele failidele. Muudatused sünkroonitakse muude seadmetega.</translation>
 <translation id="4790766916287588578">Hindi, InScript-klaviatuuriga</translation>
 <translation id="4798645114741131062">Teie ChromeOS Flexi seade ei saa peagi enam värskendusi. Kaaluge üleminekut ChromeOS-i seadmele.</translation>
 <translation id="4801956050125744859">Säilita mõlemad</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">Helitugevuse liugur</translation>
 <translation id="4881695831933465202">Ava</translation>
 <translation id="4891091358278567964">Nende üksuste taastamiseks lohistage need uude kausta, prügikastist välja. Nende üksuste algsed kaustad on kustutatud.</translation>
-<translation id="4900532980794411603">Jagamine üksusega Parallels Desktop</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />, ühenda</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%, telefoni aku: <ph name="BATTERY_STATUS" />%, üksikasjad</translation>
 <translation id="4935975195727477204">Karikakar</translation>
 <translation id="4943368462779413526">Jalgpall</translation>
-<translation id="4961158930123534723">Üksusega Parallels Desktop jagatakse 1 kausta</translation>
 <translation id="4965874878399872778">Kontrollime, kas failid vastavad teie organisatsiooni turbereeglitele ...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> on taastatud</translation>
 <translation id="4969785127455456148">Album</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Toiming võtab oodatust kauem aega. Kas soovite selle katkestada?</translation>
 <translation id="5036141350290856713">vene foneetiline</translation>
-<translation id="5036159836254554629">Üksusega Parallels Desktop jagamise haldamine</translation>
 <translation id="5038625366300922036">Vaadake rohkem ...</translation>
 <translation id="5044852990838351217">armeenia</translation>
 <translation id="5045550434625856497">Vale salasõna</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">Faili „<ph name="FILENAME" />” kustutamine ...</translation>
 <translation id="6581162200855843583">Google Drive'i link</translation>
 <translation id="6588648400954570689">Failide sünkroonimise seaded</translation>
-<translation id="6594855146910089723">Seda kausta jagatakse Linuxi ja Parallels Desktopiga</translation>
 <translation id="6607272825297743757">Faili teave</translation>
-<translation id="6609332149380188670">Üksusega Parallels Desktop jagatakse <ph name="NUMBER_OF_ITEMS" /> kausta</translation>
 <translation id="6629518321609546825">Sisestage vähemalt neli numbrit</translation>
 <translation id="6643016212128521049">Tühjenda</translation>
 <translation id="6650726141019353908">Roosa liblikas</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">Ups, ebaõnn! Ümbernimetamisel ilmnes viga.</translation>
 <translation id="7458955835361612701">Hiljutisi pilte pole</translation>
 <translation id="7469894403370665791">Võta automaatselt selle võrguga ühendust</translation>
-<translation id="7486315294984620427">Failide pukseerimiseks Parallels Desktopile peab fail olema kopeeritud Windowsi failide hulka.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">malajalami, foneetiline</translation>
 <translation id="7505167922889582512">Kuva peidetud failid</translation>

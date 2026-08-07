@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Dokumento ng Word</translation>
 <translation id="1056775291175587022">Walang network</translation>
 <translation id="1056898198331236512">Babala</translation>
-<translation id="1060368002126861100">Para makapagbukas ng mga file gamit ang <ph name="APP_NAME" />, ilipat muna ang mga ito sa folder ng mga Windows file.</translation>
 <translation id="1062407476771304334">Palitan</translation>
 <translation id="1119383441774809183">Ipakita ang mga text message</translation>
 <translation id="1119447706177454957">Panloob na error</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">Norwegian</translation>
 <translation id="1408504635543854729">I-explore ang content ng device sa Files app. Pinaghihigpitan ng isang admin ang content at hindi maaaring baguhin.</translation>
 <translation id="1412476183660741812">Signed Web Bundle</translation>
-<translation id="1433628812591023318">Para makapag-drop ng mga file sa Parallels Desktop, dapat ilipat ang file sa mga Windows file.</translation>
-<translation id="1435838927755162558">Ibahagi ang folder sa Parallels Desktop</translation>
 <translation id="1439919885608649279">Taong may mga bulaklak</translation>
 <translation id="1458457385801829801">I-eject ang <ph name="TARGET_NAME" /></translation>
 <translation id="1464781208867302907">Para sa mga kagustuhan sa device, pumunta sa Mga Setting.</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">French</translation>
 <translation id="2732288874651063549">Pamahalaan ang pag-share sa <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">Vietnamese VNI</translation>
-<translation id="2735623501230989521">Bigyan ng pahintulot ang Parallels Desktop na ma-access ang mga file sa folder na <ph name="FOLDER_NAME" /></translation>
 <translation id="2764206540577097904">Nagamit mo na ang lahat ng iyong indibidwal na storage sa Google Workspace.</translation>
 <translation id="2771816809568414714">Keso</translation>
 <translation id="2783909841122647548">Hindi na sinusuportahan ang mga pag-install ng Debian package. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">Heograpiya</translation>
 <translation id="3044404008258011032">Para i-restore ang mga item na ito, i-drag ang mga ito sa bagong folder sa labas ng trash. Na-delete na ang orihinal na folder na "<ph name="PARENT_FOLDER_NAME" />" para sa mga item na ito.</translation>
 <translation id="3047197340186497470">Chinese Dayi</translation>
-<translation id="3067790092342515856">Mga Windows file</translation>
 <translation id="3083975830683400843">Mga Chromebit</translation>
 <translation id="3085752524577180175">SOCKS Host</translation>
 <translation id="3091469289665833668">Romanian</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">Makipag-ugnayan sa iyong administrator para sa mga detalye.</translation>
 <translation id="3548125359243647069">Napakaraming beses nang naglagay ng maling PIN.</translation>
 <translation id="3549797760399244642">Pumunta sa drive.google.com...</translation>
-<translation id="3553048479571901246">Para makapagbukas ng mga file gamit ang <ph name="APP_NAME" />, kopyahin muna ang mga ito sa folder ng mga Windows file.</translation>
 <translation id="3556731189587832921">English (US) na may International PC keyboard</translation>
 <translation id="3557414470514932909">Inililipat ang <ph name="FILE_NAME" /> sa trash</translation>
 <translation id="3560848236447534728">Armenian Phonetic</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">Romanian</translation>
 <translation id="4508265954913339219">Nabigo ang pag-activate</translation>
 <translation id="4509667233588080747">English (US) na may Workman International keyboard</translation>
-<translation id="4527800702232535228">Nakabahagi ang folder sa Parallels Desktop</translation>
 <translation id="4552678318981539154">Bumili ng higit pang storage</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> network, lakas ng signal na <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">Bokeh</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">Presentation ng PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
-<translation id="4789067489790477934">Bigyan ng pahintulot ang Parallels Desktop na ma-access ang mga file sa iyong Google Drive. Masi-sync sa iba mo pang device ang mga pagbabago.</translation>
 <translation id="4790766916287588578">Hindi na may InScript keyboard</translation>
 <translation id="4798645114741131062">Malapit nang huminto sa pagtanggap ng mga update ang iyong ChromeOS Flex device. Pag-isipang mag-upgrade sa isang ChromeOS device.</translation>
 <translation id="4801956050125744859">Panatilihin pareho</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">Slider ng volume</translation>
 <translation id="4881695831933465202">Buksan</translation>
 <translation id="4891091358278567964">Para i-restore ang mga item na ito, i-drag ang mga ito sa bagong folder sa labas ng trash. Na-delete na ang mga orihinal na folder para sa mga item na ito.</translation>
-<translation id="4900532980794411603">Ibahagi sa Parallels Desktop</translation>
 <translation id="4902546322522096650">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Kumonekta</translation>
 <translation id="4906580650526544301">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Baterya ng Telepono <ph name="BATTERY_STATUS" />%, Mga Detalye</translation>
 <translation id="4935975195727477204">Bulaklak</translation>
 <translation id="4943368462779413526">Football</translation>
-<translation id="4961158930123534723">1 folder ang ibinahagi sa Parallels Desktop</translation>
 <translation id="4965874878399872778">Sinusuri ang mga file para sa mga patakaran sa seguridad ng iyong organisasyon...</translation>
 <translation id="496656650103537022">Naibalik ang <ph name="FILE_NAME" /></translation>
 <translation id="4969785127455456148">Album</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Mas matagal kaysa sa inaasahan ang isang pagpapatakbo. Gusto mo ba itong i-abort?</translation>
 <translation id="5036141350290856713">Russian phonetic</translation>
-<translation id="5036159836254554629">Pamahalaan ang pagbabahagi sa Parallels Desktop</translation>
 <translation id="5038625366300922036">Tingnan ang higit pa...</translation>
 <translation id="5044852990838351217">Armenian</translation>
 <translation id="5045550434625856497">Hindi wastong password</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">Tinatanggal ang "<ph name="FILENAME" />"...</translation>
 <translation id="6581162200855843583">link ng Google Drive</translation>
 <translation id="6588648400954570689">Mga setting ng pag-sync ng file</translation>
-<translation id="6594855146910089723">Nakabahagi sa Linux at Parallels Desktop ang folder na ito</translation>
 <translation id="6607272825297743757">Impormasyon ng file</translation>
-<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> (na) folder ang ibinahagi sa Parallels Desktop</translation>
 <translation id="6629518321609546825">Maglagay ng kahit 4 na numero lang</translation>
 <translation id="6643016212128521049">I-clear</translation>
 <translation id="6650726141019353908">Pink na paru-paro</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">Naku! Nagka-error habang pinapalitan ang pangalan.</translation>
 <translation id="7458955835361612701">Walang kamakailang larawan</translation>
 <translation id="7469894403370665791">Awtomatikong kumonekta sa network na ito</translation>
-<translation id="7486315294984620427">Para makapag-drop ng mga file sa Parallels Desktop, dapat kopyahin ang file sa mga Windows file.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam Phonetic</translation>
 <translation id="7505167922889582512">Magpakita ng mga natatagong file</translation>

@@ -592,6 +592,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2027465737841872819">Plástico</translation>
 <translation id="2027707238798802149">A tarxeta non está dispoñible</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Comprobar o proxy e o firewall<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">Esta instancia de Chrome estase executando con funcións experimentais de liña de comandos que se definiron manualmente. Ten en conta que poden cambiar en calquera momento e non contan con asistencia.</translation>
 <translation id="2033900728810589426">O atallo non pode ser igual que a palabra clave do provedor de busca predeterminado definida por <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Gardar de todas formas</translation>
 <translation id="2036514476578229158">Pediches permiso para visitar este sitio. Os teus pais poden responder en Family Link.</translation>
@@ -4563,7 +4564,6 @@ Detalles adicionais:
 <translation id="8932102934695377596">O reloxo está atrasado</translation>
 <translation id="893332455753468063">Engade un nome</translation>
 <translation id="8938242527120341116">Os filtros de contido do teu dispositivo bloquearon <ph name="BLOCKED_URL" /></translation>
-<translation id="8942355029279167844">O teu administrador permitiu que a aplicación <ph name="APP_NAME" /> recompile datos de diagnóstico para mellorar a experiencia do produto. Consulta <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> para obter máis información.</translation>
 <translation id="8943282376843390568">Verde lima</translation>
 <translation id="8949410982325929394">Ton</translation>
 <translation id="8949493680961858543">A1x4</translation>

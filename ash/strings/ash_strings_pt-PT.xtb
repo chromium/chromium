@@ -35,7 +35,6 @@
 <translation id="1088231044944504242">Pesquise na categoria <ph name="CATEGORY" />, ficheiros, apps e muito mais. Use as teclas de seta para navegar nas suas apps.</translation>
 <translation id="1093645050124056515">ctrl + alt + seta para baixo</translation>
 <translation id="1094756674036064790">Desativar o Bluetooth?</translation>
-<translation id="109647177154844434">A desinstalação do Parallels Desktop irá eliminar a sua imagem do Windows. Isto inclui as respetivas apps, definições e dados. Tem a certeza de que quer continuar?</translation>
 <translation id="1104084341931202936">Mostrar definições de acessibilidade</translation>
 <translation id="1104621072296271835">Os seus dispositivos funcionam ainda melhor juntos</translation>
 <translation id="1107300737351978027">Não pode conter dígitos repetidos</translation>
@@ -82,7 +81,6 @@
 <translation id="1210557957257435379">gravação de ecrã</translation>
 <translation id="121097972571826261">Avançar por palavra</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, aplicação da Play Store</translation>
-<translation id="1223484782328004593">A app <ph name="APP_NAME" /> requer uma licença</translation>
 <translation id="1225748608451425081">O seu Chromebook está bloqueado devido a um problema conhecido. Poderá iniciar sessão dentro de <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Parar seleção</translation>
 <translation id="1235458158152011030">Redes conhecidas</translation>
@@ -93,7 +91,6 @@
 <translation id="1244265436519979884">Neste momento, está a decorrer o restauro do Linux.</translation>
 <translation id="1245476784081715330">Excelente!</translation>
 <translation id="124678866338384709">Fechar o separador atual</translation>
-<translation id="1246863218384630739">Não foi possível instalar o <ph name="VM_NAME" />: o URL da imagem devolveu um código de erro <ph name="HTTP_ERROR" />. Contacte o seu administrador.</translation>
 <translation id="1246890715821376239">Apps não suportadas</translation>
 <translation id="1247372569136754018">Microfone (interno)</translation>
 <translation id="1247519845643687288">Apps recentes</translation>
@@ -107,7 +104,6 @@
 <translation id="1275285675049378717">A carregar <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">Opção selecionada</translation>
 <translation id="1276975447697633661">Selecione o ficheiro e, em seguida, prima <ph name="KEY" /></translation>
-<translation id="1276994519141842946">Não foi possível instalar a app <ph name="APP_NAME" />.</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1283126956823499975">Algo correu mal com a configuração do dispositivo</translation>
 <translation id="1285992161347843613">Localizar telemóvel</translation>
@@ -170,7 +166,6 @@
 <translation id="1421166164855200062">Grupo sugerido</translation>
 <translation id="1426410128494586442">Sim</translation>
 <translation id="142655739075382478">A app <ph name="APP_NAME" /> está bloqueada</translation>
-<translation id="142765311413773645">A licença da app <ph name="APP_NAME" /> expirou</translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1435537621343861112">Não é possível iniciar o ditado. O microfone está desligado.</translation>
 <translation id="1445031758921122223">Ficheiros de controlo facial transferidos</translation>
@@ -193,12 +188,10 @@
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">Com o ditado, pode escrever através da voz. Prima a tecla de ditado ou selecione o ícone de microfone na parte inferior do ecrã quando estiver num campo de texto. O idioma do ditado está definido como <ph name="LANGUAGE" />. A voz é enviada para a Google para processamento. Pode alterar o idioma do ditado em qualquer altura em Definições &gt; Acessibilidade.</translation>
 <translation id="1487931858675166540">Houve uma troca de <ph name="FIRST_ITEM_TITLE" /> por <ph name="SECOND_ITEM_TITLE" />.</translation>
-<translation id="1494429729245089920">A máquina virtual "<ph name="VM_NAME" />" existe, mas não parece ser uma máquina virtual <ph name="APP_NAME" /> válida. Contacte o seu administrador.</translation>
 <translation id="1500926532737552529">Mostrar todas as sugestões</translation>
 <translation id="1501946871587957338">Mudar de origem de áudio?</translation>
 <translation id="1505542291183484463">Janela de redimensionamento em mosaico para baixo</translation>
 <translation id="1510238584712386396">Iniciador</translation>
-<translation id="1515163294334130951">Iniciar</translation>
 <translation id="1519090060276706457">A restauração de janelas está a demorar mais do que o esperado</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003">Bateria: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> até ficar completa</translation>
@@ -222,7 +215,6 @@
 <translation id="1574691582236909946">Indicador da extremidade esquerda selecionado, use as teclas de seta para o mover</translation>
 <translation id="1576623706766186887">Diminuir o zoom quando a lupa estiver ativada</translation>
 <translation id="1578558981922970608">Forçar fecho</translation>
-<translation id="1580772913177567930">Contacte o administrador</translation>
 <translation id="1582946770779745370">Painel de jogo disponível. Prima <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape e, em seguida, <ph name="LAUNCHER_KEY_NAME" /> + g em qualquer altura para abrir</translation>
 <translation id="1586324912145647027">Aceda ao espaço de trabalho de 1 a 8</translation>
 <translation id="158838227375272121">Website do Google Classroom</translation>
@@ -443,7 +435,6 @@
 <translation id="2322065293366551060"><ph name="CATEGORY" />, categoria de resultados da pesquisa</translation>
 <translation id="2322173485024759474">Recuar por letra</translation>
 <translation id="2326112202058075478">Mostrar mais emojis</translation>
-<translation id="2328561734797404498">Reinicie o dispositivo para utilizar a app <ph name="APP_NAME" />.</translation>
 <translation id="2335091074961603075">O Chromebook ou o dispositivo Bluetooth está a usar uma versão mais antiga do Bluetooth. Use o microfone interno para uma melhor qualidade de áudio.</translation>
 <translation id="2336214675195760012">{NUM_DAYS,plural, =1{O domínio <ph name="MANAGER" /> requer que estabeleça ligação a uma rede Wi-Fi hoje para transferir uma atualização. Em alternativa, transfira a partir de uma ligação com acesso limitado (podem aplicar-se custos).}other{O domínio <ph name="MANAGER" /> requer que estabeleça ligação a uma rede Wi-Fi e transfira uma atualização antes do prazo. Em alternativa, transfira a partir de uma ligação com acesso limitado (podem aplicar-se custos).}}</translation>
 <translation id="2336258397628212480">A app <ph name="APP_NAME" /> está a imprimir 1 página na impressora <ph name="PRINTER_NAME" /></translation>
@@ -471,7 +462,6 @@
 <translation id="2386292613071805067">Selecionar tudo na página</translation>
 <translation id="2389423187722941333">Ativar/desativar Gemini</translation>
 <translation id="2390347491606624519">Não é possível estabelecer ligação ao proxy, inicie sessão novamente</translation>
-<translation id="2393136602862631930">Configure o <ph name="APP_NAME" /> no Chromebook</translation>
 <translation id="2397416548179033562">Mostrar menu do Chrome</translation>
 <translation id="240006516586367791">Controlos de multimédia</translation>
 <translation id="2400664245143453337">É necessária uma atualização imediata</translation>
@@ -504,7 +494,6 @@
 <translation id="2473177541599297363">Confirme a resolução</translation>
 <translation id="2475783092753560388">Inserir <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="2475982808118771221">Ocorreu um erro</translation>
-<translation id="2476974672882258506">Encerre o Windows para desinstalar o <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2478076885740497414">Instalar aplicação</translation>
 <translation id="2479148705183875116">Aceder às Definições</translation>
 <translation id="2484513351006226581">Prima <ph name="KEYBOARD_SHORTCUT" /> para mudar o esquema do teclado.</translation>
@@ -544,7 +533,6 @@
 <translation id="2573588302192866788">Não foi possível ligar ao dispositivo <ph name="NAME" /></translation>
 <translation id="2575685495496069081">O início de sessão integrado foi desativado</translation>
 <translation id="2579264398927991698">Atualizações do firmware</translation>
-<translation id="2586561813241011046">Não foi possível instalar a app <ph name="APP_NAME" />. Tente novamente ou contacte o administrador. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">Área de transferência</translation>
 <translation id="2596078834055697711">Criar uma captura de ecrã da janela</translation>
 <translation id="2598725286293895280">Apps não suportadas no espaço de trabalho</translation>
@@ -566,7 +554,6 @@
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2658778018866295321">Clique e arraste</translation>
 <translation id="2665788051462227163">A app <ph name="UNAVAILABLE_APPS_ONE" /> e a app <ph name="UNAVAILABLE_APPS_TWO" /> não se encontram neste dispositivo.</translation>
-<translation id="2669241540496514785">Não foi possível abrir a app <ph name="APP_NAME" /></translation>
 <translation id="2670350619068134931">Animações reduzidas</translation>
 <translation id="2672142220933875349">Ficheiro crx em mau estado. Falha ao descompactar.</translation>
 <translation id="2673968385134502798">Jogos</translation>
@@ -839,14 +826,12 @@ Caso contrário, o touchpad incorporado é reativado dentro de <ph name="TIMEOUT
 <translation id="3444385531800624797">A carregar os resultados</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Dispositivo USB-C</translation>
-<translation id="3446274660183028131">Inicie o Parallels Desktop para instalar o Windows.</translation>
 <translation id="3449393517661170867">Nova janela com separadores</translation>
 <translation id="3450157232394774192">Percentagem de ocupação no estado inativo</translation>
 <translation id="3450180775417907283">O domínio <ph name="MANAGER" /> requer que estabeleça ligação a uma rede Wi-Fi agora e transfira uma atualização.</translation>
 <translation id="3454555520521576458">Redimensionável</translation>
 <translation id="3455468639467374593">Modelo, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">1 dispositivo ligado à zona Wi-Fi do dispositivo <ph name="DEVICE_NAME" /></translation>
-<translation id="3458451003193188688">Não foi possível instalar a máquina virtual devido a um erro de rede. Tente novamente ou contacte o administrador. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="346243998268439747">Repor o nível de zoom</translation>
 <translation id="3465223694362104965">Foi ligado outro teclado a este dispositivo desde o seu último acesso. Certifique-se de que confia neste teclado antes de o utilizar.</translation>
 <translation id="3465356146291925647">Gerida pelo administrador</translation>
@@ -865,7 +850,6 @@ Caso contrário, o touchpad incorporado é reativado dentro de <ph name="TIMEOUT
 <translation id="3513798432020909783">Conta gerida por <ph name="MANAGER_EMAIL" />.</translation>
 <translation id="3516000762115478502">Janela de redimensionamento em mosaico para cima</translation>
 <translation id="3517037892157925473">Última atualização das tarefas: <ph name="TIME" />, <ph name="DATE" />.</translation>
-<translation id="3522088408596898827">O espaço em disco é criticamente baixo. Liberte espaço no disco e tente novamente.</translation>
 <translation id="352245152354538528">{0,plural, =1{Atualize o dispositivo dentro de 1 minuto}other{Atualize o dispositivo dentro de # minutos}}</translation>
 <translation id="3522979239100719575">A procurar perfis disponíveis. Esta ação pode demorar alguns minutos.</translation>
 <translation id="3526440770046466733">Abrir o link num novo separador e permanecer no separador atual</translation>
@@ -1019,7 +1003,6 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="3886872229787704059">Aberto hoje</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
 <translation id="3893630138897523026">ChromeVox (respostas faladas)</translation>
-<translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3898464793473355515">Rodar o ecrã 90 graus no sentido dos ponteiros do relógio</translation>
 <translation id="3900355044994618856">A sessão termina dentro de <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">A ligar a <ph name="NAME" /></translation>
@@ -1116,7 +1099,6 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="4185671786623711291">Mover janela ativa para o espaço de trabalho à direita</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> – Pesquisa <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
-<translation id="4187424053537113647">A configurar a app <ph name="APP_NAME" />…</translation>
 <translation id="4189826113259617332">Guardar todas as páginas abertas na janela atual como marcadores numa nova pasta</translation>
 <translation id="4190143678693626113">Poupe tempo ao responder rapidamente às mensagens de texto do seu telemóvel a partir do seu Chromebook</translation>
 <translation id="4190780880566297084">Ignorar configuração da visualização das fotos, dos conteúdos multimédia e das apps recentes do telemóvel</translation>
@@ -1128,7 +1110,6 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4201033867194214117">A funcionalidade <ph name="FEATURE_NAME" /> não está disponível.</translation>
 <translation id="4201051445878709314">Mostrar mês anterior</translation>
 <translation id="4209973997261364186">O Wi-Fi está ativado</translation>
-<translation id="4210048056321123003">A transferir a máquina virtual…</translation>
 <translation id="4212246570487010370">Continue a navegar</translation>
 <translation id="4212472694152630271">Mudar para PIN</translation>
 <translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, botão ativar/desativar, <ph name="STATE" /></translation>
@@ -1147,7 +1128,6 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4250229828105606438">Captura de ecrã</translation>
 <translation id="425364040945105958">Sem cartão SIM</translation>
 <translation id="425573743389990240">Taxa de descarga da bateria em Watts (Um valor negativo significa que a bateria está em carregamento)</translation>
-<translation id="4259388776256904261">Esta ação poderá demorar algum tempo.</translation>
 <translation id="4264977415328155183">, reduzido</translation>
 <translation id="4265259722091164182">Iniciar Cada Palavra com Maiúscula</translation>
 <translation id="4269883910223712419">O administrador deste dispositivo pode:</translation>
@@ -1234,7 +1214,6 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 1 dispositivo ligado.</translation>
 <translation id="4477892968187500306">Este dispositivo pode conter aplicações que não foram validadas pela Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
-<translation id="4479877282574735775">A configurar a máquina virtual… Esta ação pode demorar alguns minutos.</translation>
 <translation id="4485506555414638855">Ignorar configuração da visualização das fotos, dos conteúdos multimédia, das notificações e das apps recentes do telemóvel</translation>
 <translation id="4491109536499578614">Imagem</translation>
 <translation id="4493468155686877504">Recomendado (<ph name="INSTALL_SIZE" />)</translation>
@@ -1383,7 +1362,6 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4918086044614829423">Aceitar</translation>
 <translation id="4919841137949306064">A app <ph name="APP_NAME" /> está a usar a câmara neste momento</translation>
-<translation id="492363500327720082">A desinstalar a app <ph name="APP_NAME" />…</translation>
 <translation id="492453977506755176">Tecla do modo de captura</translation>
 <translation id="4925542575807923399">O gestor para esta conta requer que esta conta seja a primeira conta com sessão iniciada num início de sessão integrado.</translation>
 <translation id="493076006037866439">Diminuir o zoom do ecrã</translation>
@@ -1621,7 +1599,6 @@ Nenhum dispositivo ligado.</translation>
 <translation id="5578188167649348993">memória</translation>
 <translation id="5580000943347215299">Biblioteca</translation>
 <translation id="5581972110672966454">Não é possível associar o dispositivo ao domínio. Tente novamente ou contacte o proprietário ou o gestor do dispositivo. Código de erro: <ph name="ERROR_CODE" />.</translation>
-<translation id="5585898376467608182">O seu dispositivo está a ficar com pouco espaço de armazenamento. É necessário um espaço livre de, pelo menos, <ph name="MINIMUM_SPACE" /> para utilizar o <ph name="APP_NAME" />. Para aumentar o espaço livre, elimine ficheiros do dispositivo.</translation>
 <translation id="5586388332127302891">Lupa ancorada ativada. Prima <ph name="ACCELERATOR" /> novamente para desativar a opção.</translation>
 <translation id="5587506661873751671">A transferir – <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="5590609058453685222">O Alerta de som desativado está ativado. Vai receber uma notificação se falar enquanto estiver com o som desativado.</translation>
@@ -1688,7 +1665,6 @@ Nenhum dispositivo ligado.</translation>
 <translation id="5767730327234918501">O administrador desativou a zona Wi-Fi.</translation>
 <translation id="5769373120130404283">Ecrã de privacidade</translation>
 <translation id="5770004650349728202">Ativar a funcionalidade Selecionar para falar</translation>
-<translation id="5772114492540073460">O <ph name="PARALLELS_NAME" /> permite-lhe executar apps Windows® no Chromebook. Recomenda-se, pelo menos, <ph name="MINIMUM_SPACE" /> de espaço livre para a instalação.</translation>
 <translation id="5773950591113557721">Isto permite o acesso para a app <ph name="APP_NAME" /> e todas as apps e Websites com as autorizações da câmara e do microfone</translation>
 <translation id="5774295353725270860">Aplicação Abrir Ficheiros</translation>
 <translation id="5775936059231769503">Ative/desative a zona Wi-Fi. A zona Wi-Fi está desativada.</translation>
@@ -1736,8 +1712,6 @@ Nenhum dispositivo ligado.</translation>
 <translation id="589817443623831496">Análise de pontos</translation>
 <translation id="5901494423252125310">Porta da impressora aberta</translation>
 <translation id="5901630391730855834">Amarelo</translation>
-<translation id="5904614460720589786">Não foi possível configurar a app <ph name="APP_NAME" /> devido a um problema na configuração. Contacte o seu administrador. Código de erro: <ph name="ERROR_CODE" />.</translation>
-<translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> está offline.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">Nova notificação, <ph name="NOTIFICATION_COUNT" /> no total</translation>
 <translation id="5916664084637901428">Ativado</translation>
@@ -1809,7 +1783,6 @@ Nenhum dispositivo ligado.</translation>
         O domínio <ph name="DOMAIN" /> requer que mantenha o seu cartão inteligente inserido.}other{A sua sessão será terminada automaticamente dentro de # segundos.
         O domínio <ph name="DOMAIN" /> requer que mantenha o seu cartão inteligente inserido.}}</translation>
 <translation id="6071576563962215370">O sistema não conseguiu estabelecer o bloqueio dos atributos de tempo de instalação do dispositivo.</translation>
-<translation id="6072442788591997866">A app <ph name="APP_NAME" /> não é permitida neste dispositivo. Contacte o seu administrador. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="6073451960410192870">Parar gravação</translation>
 <translation id="6074087755403037157">Canal beta</translation>
 <translation id="6075098173600599596">Alterar utilização de letras maiúsculas</translation>
@@ -1916,7 +1889,6 @@ Nenhum dispositivo ligado.</translation>
 <translation id="6380143666419481200">Aceitar e continuar</translation>
 <translation id="6381109794406942707">Para desbloquear este dispositivo, introduza o seu PIN.</translation>
 <translation id="6381305031890976705">{0,plural, =1{Atualize o dispositivo para a versão anterior dentro de 1 hora}other{Atualize o dispositivo para a versão anterior dentro de # horas}}</translation>
-<translation id="6385149369087767061">Estabeleça ligação à Internet e tente novamente.</translation>
 <translation id="638716340450135524">Ativar acesso à câmara</translation>
 <translation id="6406458002328242616">Edite o temporizador. <ph name="FOCUS_DURATION" />.</translation>
 <translation id="6406704438230478924">altgr</translation>
@@ -1934,7 +1906,6 @@ Nenhum dispositivo ligado.</translation>
 <translation id="6426905245930183644">A criar…</translation>
 <translation id="6430225033895752525">Mostrar as definições do Modo sem distrações</translation>
 <translation id="6431865393913628856">Gravação de ecrã</translation>
-<translation id="6434325376267409267">O seu dispositivo tem de ser atualizado antes de poder utilizar a app <ph name="APP_NAME" />.</translation>
 <translation id="643593192654616063">A usar <ph name="STORAGE_IN_USE_SIZE" /> de armazenamento, de um total de <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6445915701151710649">cpu</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> evento</translation>
@@ -2212,7 +2183,6 @@ Nova instalação</translation>
 <translation id="7258828758145722155">Editado ontem</translation>
 <translation id="726276584504105859">Arraste para aqui para utilizar o ecrã dividido</translation>
 <translation id="7264788308526527464">Reduzir <ph name="FOCUS_DURATION_DELTA" /></translation>
-<translation id="7267044199012331848">Não foi possível instalar a máquina virtual. Tente novamente ou contacte o administrador. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">Vá levantando o dedo para adicionar as diferentes partes da sua impressão digital.</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + retrocesso</translation>
 <translation id="7285232777292757180">Use a ferramenta de captura de ecrã nas Definições rápidas para fazer capturas de ecrã</translation>
@@ -2261,9 +2231,7 @@ Nova instalação</translation>
 <translation id="7406854842098869085">Prima sem soltar <ph name="MODIFIER_1" /> e, em seguida, toque em <ph name="KEY" /> até alcançar a janela que quer abrir. Em seguida, solte</translation>
 <translation id="740790383907119240">Atalhos de apps</translation>
 <translation id="7413851974711031813">Prima Escape para fechar.</translation>
-<translation id="7415454883318062233">Configuração concluída</translation>
 <translation id="7416471219712049036">Guardar a página atual</translation>
-<translation id="7423807071740419372">A app <ph name="APP_NAME" /> necessita de autorização para ser executada</translation>
 <translation id="742594950370306541">A câmara está a ser utilizada.</translation>
 <translation id="743058460480092004">A câmara e o microfone estão a ser utilizados.</translation>
 <translation id="7433708794692032816">Insira o cartão inteligente para continuar a utilizar o dispositivo <ph name="DEVICE_TYPE" /></translation>
@@ -2274,7 +2242,6 @@ Nova instalação</translation>
 <translation id="7459485586006128091">Devido a um erro interno, a zona Wi-Fi foi desativada. Tente ligar novamente dentro de alguns minutos.</translation>
 <translation id="7461924472993315131">Fixar</translation>
 <translation id="746216226901520237">Da próxima vez, o telemóvel irá desbloquear o <ph name="DEVICE_TYPE" />. Pode desativar o Smart Lock nas Definições.</translation>
-<translation id="7465635034594602553">Ocorreu um erro. Aguarde alguns minutos e execute app <ph name="APP_NAME" /> novamente.</translation>
 <translation id="7466449121337984263">Toque no sensor.</translation>
 <translation id="7477793887173910789">Controle a sua música, vídeos e muito mais.</translation>
 <translation id="7478485216301680444">Não foi possível instalar a app de quiosque.</translation>
@@ -2428,7 +2395,6 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="7850320739366109486">Não incomodar</translation>
 <translation id="7851039877802112575">Mover o foco para pop-ups e caixas de diálogo</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7862292329216937261">Para usar o dispositivo como convidado, tem de terminar sessão e, de seguida, selecionar Navegar como convidado na parte inferior do ecrã.</translation>
 <translation id="7866482334467279021">ativado</translation>
 <translation id="7870790288828963061">Nenhuma aplicação do Quiosque encontrada com uma versão mais recente. Nada a atualizar. Remova a pen USB.</translation>
@@ -2765,7 +2731,6 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8815390544836110344">Prima o atalho de captura de ecrã, Ctrl mais Shift e a tecla do modo Vista geral</translation>
 <translation id="881757059229893486">Definições dos métodos de introdução</translation>
 <translation id="8819728065740986820">O carregamento adaptável está ativado</translation>
-<translation id="8821268776955756404">A app <ph name="APP_NAME" /> está pronta para ser utilizada.</translation>
 <translation id="882204272221080310">Atualize o firmware para maior segurança.</translation>
 <translation id="8822104519413696986">Este é um jogo tátil</translation>
 <translation id="8825863694328519386">Deslize rapidamente a partir da esquerda para retroceder.</translation>
@@ -2799,7 +2764,6 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8905919797434099235">(Sem título)</translation>
 <translation id="890616557918890486">Alterar origem</translation>
 <translation id="8909138438987180327">A bateria está a <ph name="PERCENTAGE" /> por cento.</translation>
-<translation id="8909298138148012791">A app <ph name="APP_NAME" /> foi desinstalada.</translation>
 <translation id="8916866375277139011">Ocultar itens no <ph name="GROUP_NAME" /></translation>
 <translation id="8921369299636221117">O serviço de assistente não está disponível.</translation>
 <translation id="8921554779039049422">H+</translation>
@@ -2872,7 +2836,6 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="9126339866969410112">Anular a última ação</translation>
 <translation id="9126642911267312373">Bluetooth indisponível</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{Dentro de 1 min}other{Dentro de # min}}</translation>
-<translation id="9128317794749765148">Não foi possível concluir a configuração</translation>
 <translation id="9129245940793250979">Botão traseiro</translation>
 <translation id="9133335900048457298">Não é possível gravar conteúdo protegido</translation>
 <translation id="9139720510312328767">Eliminar a letra seguinte</translation>

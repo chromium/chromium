@@ -1458,6 +1458,24 @@ Hinweis: Wenn interne URLs von „chrome://*“ und „chrome-untrusted://*“ b
 <translation id="1962273523772270623">Speichern von WebRTC-Ereignisprotokollen aus Google-Diensten zulassen</translation>
 <translation id="1962864958436828230">Mindestgrößenbeschränkung zur Zwischenablagenbeschränkung für die Verhinderung von Datenlecks festlegen</translation>
 <translation id="1963986268950915756">Installation von Web-Apps durch Nutzer über den Browser aktivieren</translation>
+<translation id="1964128875283181035">Liste der URL-Muster. Netzwerkanfragen von Websites, die durch übereinstimmende Ursprünge bereitgestellt werden, unterliegen keinen <ph name="LOCAL_NETWORK_ACCESS" />-Prüfungen.
+
+Bei Ursprüngen, die durch die hier angegebenen Muster nicht abgedeckt sind, kommt die persönliche Konfiguration des Nutzers zum Einsatz.
+
+Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://chromeenterprise.google/policies/url-patterns/.
+
+Informationen zu Einschränkungen für <ph name="LOCAL_NETWORK_ACCESS" /> findest du unter https://wicg.github.io/local-network-access/.
+
+Es gibt mehrere Richtlinien, in denen Ursprünge aufgeführt sind, die sich auf Anfragen an lokale Geräte und lokale Netzwerkendpunkte auswirken. Wenn ein Ursprung mit mehr als einer der folgenden Richtlinien übereinstimmt, haben die Richtlinien in der folgenden Reihenfolge Vorrang:
+
+  – LocalNetworkBlockedForUrls
+  – LocalNetworkAllowedForUrls
+  – LoopbackNetworkBlockedForUrls
+  – LoopbackNetworkAllowedForUrls
+  – LocalNetworkAccessBlockedForUrls
+  – LocalNetworkAccessAllowedForUrls
+  – DeviceLocalNetworkAccessBlockedForUrls
+  – DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="1964191545419036999">Galerie (wird seit Version 117 unterstützt)</translation>
 <translation id="1964634611280150550">Inkognitomodus deaktiviert</translation>
 <translation id="1964985353230379667">Legt die vorgeschlagene <ph name="KRB5_CONFIG" />-Konfiguration für die neuen, manuell erstellten Tickets fest.
@@ -2046,6 +2064,7 @@ Für diese Richtlinie ist eine <ph name="CHROME_ENTERPRISE_PREMIUM_NAME" />-Lize
 <translation id="230713790688681130">Inscript-Layout für Hindi aktivieren</translation>
 <translation id="2307496301287881990">Status von Display und Grafikkarte melden</translation>
 <translation id="2308084581803907194">Hohe Komplexität</translation>
+<translation id="2308557460534055666">Konfigurationsrichtlinie für den Chrome Enterprise Connector „<ph name="ON_DATA_COPIED_ENTERPRISE_CONNECTOR" />“</translation>
 <translation id="2308899582897965249">Stummes Drucken deaktivieren</translation>
 <translation id="2309284543927494965">Updates blockieren</translation>
 <translation id="2309341709647905294">Keine Daten zu Peripheriegeräten melden, die an das Gerät angeschlossen sind</translation>
@@ -3020,6 +3039,23 @@ Die Komplexitätsstufen basieren auf den Android-Messwerten für die Passwortqua
 
 In der Hilfe findest du detaillierte Erklärungen dazu, was die einzelnen Stufen für PINs und Passwörter bedeuten.</translation>
 <translation id="2926813071464307947">Renderer-App-Container-Sandbox deaktivieren</translation>
+<translation id="2928782459146756987">Liste der Einstellungen für <ph name="PRODUCT_NAME" /> Enterprise Connectors-Dienste für den Enterprise Connector „<ph name="ON_DATA_COPIED_ENTERPRISE_CONNECTOR" />“. Dieser wird ausgelöst, wenn Daten aus <ph name="PRODUCT_NAME" /> in die Zwischenablage kopiert werden.
+
+Mit den Feldern „<ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />“ und „<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" />“ wird festgelegt, ob der Connector Daten zur Analyse senden soll, wenn sie von einer bestimmten Seite kopiert werden, und welche Tags für die Analyseanfrage verwendet werden sollen. Ein Tag, das einem „enable“-Muster entspricht, wird der Anfrage hinzugefügt, wenn die Seiten-URL mit einem für das jeweilige Tag passenden Muster übereinstimmt – jedoch nur, wenn kein „disable“-Muster mit demselben Tag mit der Seiten-URL übereinstimmt. Die Analyse wird durchgeführt, wenn die Anfrage mindestens ein Tag enthält.
+
+Mit dem Feld „<ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" />“ wird festgelegt, für welchen Analyseanbieter die Einstellungen gelten.
+
+Wenn das Feld „<ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" />“ auf 1 gesetzt ist, wartet <ph name="PRODUCT_NAME" /> auf eine Antwort des Analyseanbieters, bevor der Zwischenablage des Betriebssystems Zugriff auf die Daten gewährt wird. Wenn es auf einen anderen Ganzzahlwert gesetzt ist, gewährt <ph name="PRODUCT_NAME" /> der Zwischenablage des Betriebssystems sofort Zugriff auf die Daten.
+
+Falls das Feld „<ph name="ENTERPRISE_CONNECTOR_DEFAULT_ACTION_FIELD" />“ auf „block“ gesetzt ist, gewährt <ph name="PRODUCT_NAME" /> der Zwischenablage des Betriebssystems keinen Zugriff auf die Daten, wenn bei der Kommunikation mit dem Analysedienst ein Fehler auftritt. Wenn es auf einen anderen Wert gesetzt ist, gewährt <ph name="PRODUCT_NAME" /> der Zwischenablage des Betriebssystems Zugriff auf die Daten.
+
+Das Feld „<ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" />“ gibt die für einen Scan erforderliche Mindestgröße (in Byte) für aus <ph name="PRODUCT_NAME" /> kopierte Daten an. Wenn der Wert nicht festgelegt ist, gilt der Standardwert von 100 Byte.
+
+Mit dem Feld „<ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" />“ wird festgelegt, für welche Tags der Connector vom Nutzer eine Begründung für das Umgehen eines Scans anfordern soll, die zu einer Genehmigung für die Umgehung führt. Wenn das Feld nicht festgelegt ist, wird angenommen, dass keine Begründung erforderlich ist.
+
+Im Feld „<ph name="ENTERPRISE_CONNECTOR_VERIFICATION_FIELD" />“ können Administratoren plattformspezifische Überprüfungsanforderungen konfigurieren.
+
+Für diese Richtlinie sind zusätzliche Einrichtungen nötig. Weitere Informationen dazu findest du unter https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting.</translation>
 <translation id="2930792103747180259">Deaktiviert: Hintergrundabrufe durch Service Workers sind ohne Einschränkungen zulässig.</translation>
 <translation id="2931888116345994552">Mit der Richtlinie werden Komponentenupdates für alle Komponenten in <ph name="PRODUCT_NAME" /> aktiviert, sofern sie nicht festgelegt oder auf „Aktiviert“ gesetzt ist.
 
@@ -4171,6 +4207,7 @@ Verbindungen, die diese Prüfung nicht bestehen, schlagen mit dem Fehler ERR_SSL
           </translation>
 <translation id="3677660004554019617">VC‑Hintergrund basierend auf generativer KI nicht zulassen</translation>
 <translation id="3678069907945250643">Google Fotos den Zugriff über die Personalisierungs-App erlauben</translation>
+<translation id="3682200407044593844">Zuordnungen von IP-Adressbereichen auf dem Gerät überschreiben</translation>
 <translation id="3685979383016152590">Durch die Richtlinie wird angegeben, welche Zugriffsrichtlinie für die Massenkonfiguration von Druckern verwendet wird. Dadurch wird festgelegt, welche Drucker von <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> für Nutzer verfügbar sind.
 
       * <ph name="PRINTERS_BLOCKLIST" /> (Wert 0) verwendet <ph name="PRINTERS_BULK_BLOCKLIST" />, um den Zugriff auf die angegebenen Drucker einzuschränken
@@ -4573,6 +4610,23 @@ Auf Desktop-Plattformen kann das Herunterladen von Modellen auch deaktiviert wer
       Ist die Richtlinie aktiviert, werden Nutzer aufgefordert, immer dann ein Clientzertifikat auszuwählen, wenn die Richtlinie für die automatische Auswahl zu mehreren Zertifikaten passt.
       Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, dürfen Nutzer nur dann aufgefordert werden, wenn kein Zertifikat zur automatischen Auswahl passt.</translation>
 <translation id="3947897854999940598">Geben Sie die URI-Vorlage des gewünschten DoH-Resolvers (DNS-over-HTTPS) mit Identitätsinformationen an</translation>
+<translation id="394949637082417941">Damit können bestimmte interne Adressbereiche auf dem gesamten Gerät als „öffentlich“ behandelt und somit nicht <ph name="LOCAL_NETWORK_ACCESS" />-Prüfungen unterzogen werden. Umgekehrt kann dies verwendet werden, um bestimmte öffentliche Adressbereiche, die möglicherweise intern verwendet werden, als „lokal“ zu behandeln, sodass sie durch <ph name="LOCAL_NETWORK_ACCESS" />-Prüfungen geschützt sind.
+
+Überschreibungen des IP-Adressbereichs haben zwei Formen:
+
+[cidr]=[public|local|loopback]
+
+Dabei ist [cidr] ein IP-Adressbereich in CIDR-Notation (siehe Abschnitt 3.1 von https://tools.ietf.org/html/rfc4632 für IPv4 und Abschnitt 2.3 von https://tools.ietf.org/html/rfc4291 für IPv6). IPv6-Adressen müssen im URL-sicheren Format (in Klammern) angegeben werden. CIDR-Überschreibungen gelten für alle Ports.
+
+oder
+
+[ip-address]:[port]=[public|local|loopback]
+
+Weitere Informationen zu <ph name="LOCAL_NETWORK_ACCESS" /> findest du unter https://wicg.github.io/local-network-access/ und https://developer.chrome.com/blog/local-network-access.
+
+Überschreibungen über die Richtlinie „LocalNetworkAccessIpAddressSpaceOverrides“ haben Vorrang vor Überschreibungen, die durch diese Richtlinie festgelegt werden.
+
+Überschreibungen über die Befehlszeilenoption „--ip-address-space-overrides“ haben Vorrang vor Überschreibungen, die durch Richtlinien festgelegt werden.</translation>
 <translation id="3949642828552641632"><ph name="CLOUD_UPLOAD_NAME" />-Ablauf für <ph name="GOOGLE_DRIVE_NAME" /> und <ph name="GOOGLE_WORKSPACE_NAME" /> zulassen</translation>
 <translation id="3950110092991281616">Aktiviert die passive Authentifizierung nur für reguläre Sitzungen.</translation>
 <translation id="3950239119790560549">Zeitbeschränkungen aktualisieren</translation>
@@ -5013,6 +5067,24 @@ Falsch formatierte Domains werden ignoriert.</translation>
 <translation id="4238777612788632629">Schnell neu starten, wenn veraltet</translation>
 <translation id="4239720644496144453">Der Cache wird nicht für Android-Apps verwendet. Wenn mehrere Nutzer die gleiche Android-App installieren, wird sie für jeden Nutzer neu heruntergeladen.</translation>
 <translation id="4239949495354048254">Datei-Uploads in Gemini in Chrome zulassen.</translation>
+<translation id="424049794524032498">Liste der URL-Muster. Netzwerkanfragen von Websites, die durch übereinstimmende Ursprünge bereitgestellt werden, können in allen Sitzungen auf dem Gerät keine <ph name="LOCAL_NETWORK_ACCESS" />-Anfragen senden.
+
+Bei Ursprüngen, die durch die hier angegebenen Muster nicht abgedeckt sind, kommt die Sitzungs- oder Profilkonfiguration zum Einsatz.
+
+Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://chromeenterprise.google/policies/url-patterns/.
+
+Informationen zu Einschränkungen für <ph name="LOCAL_NETWORK_ACCESS" /> findest du unter https://wicg.github.io/local-network-access/.
+
+Es gibt mehrere Richtlinien, in denen Ursprünge aufgeführt sind, die sich auf Anfragen an lokale Geräte und lokale Netzwerkendpunkte auswirken. Wenn ein Ursprung mit mehr als einer der folgenden Richtlinien übereinstimmt, haben die Richtlinien in der folgenden Reihenfolge Vorrang:
+
+  – LocalNetworkBlockedForUrls
+  – LocalNetworkAllowedForUrls
+  – LoopbackNetworkBlockedForUrls
+  – LoopbackNetworkAllowedForUrls
+  – LocalNetworkAccessBlockedForUrls
+  – LocalNetworkAccessAllowedForUrls
+  – DeviceLocalNetworkAccessBlockedForUrls
+  – DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="4242583077375244471">Wenn diese Richtlinie aktiviert ist, verifiziert <ph name="PRODUCT_NAME" /> Serverzertifikate mithilfe der integrierten Zertifikatsprüfung und des Chrome Root Store als vertrauenswürdiger Quelle.
 
 Ist die Richtlinie deaktiviert, verwendet <ph name="PRODUCT_NAME" /> die Systemzertifikatsprüfung und die Root-Zertifikate des Systems.
@@ -6966,6 +7038,23 @@ Wenn die in der Richtlinie <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" /> ange
 
       Der Wert der Richtlinie ist in Tagen anzugeben.</translation>
 <translation id="5457065417344056871">Gastmodus im Browser aktivieren</translation>
+<translation id="5457999916455787365">Damit können bestimmte interne Adressbereiche als „öffentlich“ behandelt und somit nicht <ph name="LOCAL_NETWORK_ACCES" />-Prüfungen unterzogen werden. Umgekehrt kann dies verwendet werden, um bestimmte öffentliche Adressbereiche, die möglicherweise intern verwendet werden, als „lokal“ zu behandeln, sodass sie durch <ph name="LOCAL_NETWORK_ACCESS" />-Prüfungen geschützt sind.
+
+Überschreibungen des IP-Adressbereichs haben zwei Formen:
+
+[cidr]=[public|local|loopback]
+
+Dabei ist [cidr] ein IP-Adressbereich in CIDR-Notation (siehe Abschnitt 3.1 von https://tools.ietf.org/html/rfc4632 für IPv4 und Abschnitt 2.3 von https://tools.ietf.org/html/rfc4291 für IPv6). IPv6-Adressen müssen im URL-sicheren Format (in Klammern) angegeben werden. CIDR-Überschreibungen gelten für alle Ports.
+
+oder
+
+[ip-address]:[port]=[public|local|loopback]
+
+Weitere Informationen zu <ph name="LOCAL_NETWORK_ACCESS" /> findest du unter https://wicg.github.io/local-network-access/ und https://developer.chrome.com/blog/local-network-access.
+
+Überschreibungen über diese Richtlinie haben Vorrang vor Überschreibungen, die durch „DeviceLocalNetworkAccessIpAddressSpaceOverrides“ festgelegt werden.
+
+Überschreibungen über die Befehlszeilenoption „--ip-address-space-overrides“ haben Vorrang vor Überschreibungen, die durch Richtlinien festgelegt werden.</translation>
 <translation id="545817252640069915">Anmeldungsabfangen aktivieren</translation>
 <translation id="5460797984317417682">Vollbild-Warnungen aktivieren</translation>
 <translation id="5462898272514237681">Zugriff von <ph name="PRODUCT_OS_NAME" /> auf Standortdienste von Google steuern</translation>
@@ -7051,6 +7140,22 @@ Wenn die Richtlinie <ph name="NTPCARDSVISIBLE" /> deaktiviert ist, wird die Shar
 <translation id="5519619299971727565">Nutzungsberichte für Linux-Apps deaktivieren</translation>
 <translation id="5521035900165046997">Melden der Bluetooth-Informationen auf Geräten aktivieren</translation>
 <translation id="5521875416764302911">Verhindern, dass sich Nutzer in <ph name="PRODUCT_NAME" /> anmelden</translation>
+<translation id="5523077138980091816">Liste der URL-Muster. An lokale Netzwerkendpunkte gerichtete Netzwerkanfragen von Websites, die durch übereinstimmende Ursprünge bereitgestellt werden, unterliegen keinen <ph name="LOCAL_NETWORK_ACCESS" />-Prüfungen.
+
+Bei Ursprüngen, die durch die hier angegebenen Muster nicht abgedeckt sind, kommt die persönliche Konfiguration des Nutzers zum Einsatz.
+
+Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://chromeenterprise.google/policies/url-patterns/.
+
+Informationen zu Einschränkungen für <ph name="LOCAL_NETWORK_ACCESS" /> findest du unter https://wicg.github.io/local-network-access/.
+
+Es gibt mehrere Richtlinien, die Ursprünge auflisten, die sich auf Anfragen an lokale Netzwerkendpunkte auswirken. Wenn ein Ursprung mit mehr als einer der folgenden Richtlinien übereinstimmt, haben die Richtlinien in der folgenden Reihenfolge Vorrang:
+
+  – LocalNetworkBlockedForUrls
+  – LocalNetworkAllowedForUrls
+  – LocalNetworkAccessBlockedForUrls
+  – LocalNetworkAccessAllowedForUrls
+  – DeviceLocalNetworkAccessBlockedForUrls
+  – DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="552607466422196365">„<ph name="DBSC_FEATURE_NAME" />“ deaktivieren.</translation>
 <translation id="5526184558582921522">Anfragen an den Quirks Server und potenzielle Downloads von Hardware-spezifischen Konfigurationsdateien zulassen</translation>
 <translation id="5526701598901867718">Alle (nicht sicher)</translation>
@@ -7866,6 +7971,24 @@ Ist die Richtlinie auf „false“ gesetzt, wird keine Namensnennung für die Er
 Wenn der Wert auf „true“ gesetzt oder nicht konfiguriert ist, können sie die Teilnehmerliste von Google Classroom verwenden.
 
 Ist er auf „false“ gesetzt, können sie nicht auf die Funktion zugreifen.</translation>
+<translation id="606337187257433827">Liste der URL-Muster. Netzwerkanfragen von Websites, die durch übereinstimmende Ursprünge bereitgestellt werden, können keine <ph name="LOCAL_NETWORK_ACCESS" />-Anfragen senden.
+
+Bei Ursprüngen, die durch die hier angegebenen Muster nicht abgedeckt sind, kommt die persönliche Konfiguration des Nutzers zum Einsatz.
+
+Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://chromeenterprise.google/policies/url-patterns/.
+
+Informationen zu Einschränkungen für <ph name="LOCAL_NETWORK_ACCESS" /> findest du unter https://wicg.github.io/local-network-access/.
+
+Es gibt mehrere Richtlinien, in denen Ursprünge aufgeführt sind, die sich auf Anfragen an lokale Geräte und lokale Netzwerkendpunkte auswirken. Wenn ein Ursprung mit mehr als einer der folgenden Richtlinien übereinstimmt, haben die Richtlinien in der folgenden Reihenfolge Vorrang:
+
+  – LocalNetworkBlockedForUrls
+  – LocalNetworkAllowedForUrls
+  – LoopbackNetworkBlockedForUrls
+  – LoopbackNetworkAllowedForUrls
+  – LocalNetworkAccessBlockedForUrls
+  – LocalNetworkAccessAllowedForUrls
+  – DeviceLocalNetworkAccessBlockedForUrls
+  – DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="6066761914755798079">Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />" aktiviert ist, gibt "<ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" />" die URL der Suchmaschine für Suchvorschläge an. Die URL sollte den String <ph name="SEARCH_TERM_MARKER" /> enthalten, der während des Suchvorgangs durch die Suchbegriffe des Nutzers ersetzt wird.
 
       Du kannst die Such-URL von Google so angeben: <ph name="GOOGLE_SUGGEST_SEARCH_URL" />.</translation>
@@ -8294,6 +8417,22 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 
       Hinweis: Sofern konfiguriert, überschreibt „<ph name="DEVICE_LOGIN_SCREEN_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />“ diese Richtlinie.</translation>
 <translation id="6315039134652691025">Nutzer können vorhandene Browserdaten nicht in ihr verwaltetes Profil importieren</translation>
+<translation id="6316247387848694915">Liste der URL-Muster. An lokale Netzwerkendpunkte gerichtete Netzwerkanfragen von Websites, die durch übereinstimmende Ursprünge bereitgestellt werden, können keine <ph name="LOCAL_NETWORK_ACCESS" />-Anfragen senden.
+
+Bei Ursprüngen, die durch die hier angegebenen Muster nicht abgedeckt sind, kommt die persönliche Konfiguration des Nutzers zum Einsatz.
+
+Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://chromeenterprise.google/policies/url-patterns/.
+
+Informationen zu Einschränkungen für <ph name="LOCAL_NETWORK_ACCESS" /> findest du unter https://wicg.github.io/local-network-access/.
+
+Es gibt mehrere Richtlinien, die Ursprünge auflisten, die sich auf Anfragen an lokale Netzwerkendpunkte auswirken. Wenn ein Ursprung mit mehr als einer der folgenden Richtlinien übereinstimmt, haben die Richtlinien in der folgenden Reihenfolge Vorrang:
+
+  – LocalNetworkBlockedForUrls
+  – LocalNetworkAllowedForUrls
+  – LocalNetworkAccessBlockedForUrls
+  – LocalNetworkAccessAllowedForUrls
+  – DeviceLocalNetworkAccessBlockedForUrls
+  – DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="6316678265585263617"><ph name="PRODUCT_NAME" /> kann entscheiden, welche Option verwendet werden soll</translation>
 <translation id="6316885783540658874">Diese Richtlinie legt fest, ob die <ph name="AES_KL_NAME" />-Implementierung für die Verschlüsselung des Nutzerdatenspeichers für das Zuhause eines Nutzers unter Chrome OS mit <ph name="DM_CRYPT" /> aktiviert ist, wenn diese unterstützt wird.
 
@@ -9485,6 +9624,7 @@ Wenn diese Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtli
 <translation id="7030205756530739128">Wenn „<ph name="DEVICE_BATTERY_CHARGE_MODE_NAME" />“ auf „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />“ gesetzt ist, passt die Einstellung „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" />“ basierend auf dem Prozentsatz des Akkustands an, wann der Ladevorgang startet. Der Wert muss mindestens fünf Prozentpunkte unter „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />“ liegen.
 
       Wenn die Richtlinie nicht konfiguriert ist, wird der Standardakkulademodus verwendet.</translation>
+<translation id="7030213287413687536">Websites erlauben, Netzwerkanfragen an lokale Geräte und lokale Netzwerkendpunkte auf dem Gerät zu senden</translation>
 <translation id="7030407698292813622">DNS-Abfragen für zusätzliche DNS-Eintragstypen erlauben</translation>
 <translation id="7030632236140191991">Liste der Einstellungen für Chrome Enterprise Connectors-Dienste für den Enterprise Connector „<ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" />“. Dieser wird ausgelöst, wenn Daten aus der Zwischenablage oder durch Drag and Drop von Webinhalten in Chrome eingegeben werden.
 
@@ -10671,6 +10811,22 @@ Hinweis: Diese Richtlinie gilt nur für Plattformen, die Erweiterungen unterstü
       Die Richtlinie „<ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" />“ hat Vorrang vor dieser Richtlinie und kann den Inkognitomodus für bestimmte URLs wieder aktivieren. Wenn der Inkognitomodus durch diese Richtlinie deaktiviert wird, während eine Zulassungsliste angegeben ist, ist der Inkognitomodus nur für URLs verfügbar, die mit der Zulassungsliste übereinstimmen. Alle anderen Seiten werden blockiert.
 
       Hinweis: Wenn die Richtlinie unter iOS während einer Sitzung geändert wird, gilt sie erst beim Neustart.</translation>
+<translation id="7753487237310360952">Liste der URL-Muster. Netzwerkanfragen von Websites, die durch übereinstimmende Ursprünge bereitgestellt werden, unterliegen in allen Sitzungen auf dem Gerät keinen <ph name="LOCAL_NETWORK_ACCESS" />-Prüfungen.
+
+Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://chromeenterprise.google/policies/url-patterns/.
+
+Informationen zu Einschränkungen für <ph name="LOCAL_NETWORK_ACCESS" /> findest du unter https://wicg.github.io/local-network-access/.
+
+Es gibt mehrere Richtlinien, in denen Ursprünge aufgeführt sind, die sich auf Anfragen an lokale Geräte und lokale Netzwerkendpunkte auswirken. Wenn ein Ursprung mit mehr als einer der folgenden Richtlinien übereinstimmt, haben die Richtlinien in der folgenden Reihenfolge Vorrang:
+
+  – LocalNetworkBlockedForUrls
+  – LocalNetworkAllowedForUrls
+  – LoopbackNetworkBlockedForUrls
+  – LoopbackNetworkAllowedForUrls
+  – LocalNetworkAccessBlockedForUrls
+  – LocalNetworkAccessAllowedForUrls
+  – DeviceLocalNetworkAccessBlockedForUrls
+  – DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="7753678409577376761">Eintrittspunkt für experimentelle Browserfunktionen auf Symbolleiste aktivieren</translation>
 <translation id="7754704193130578113">Vor dem Download von Dateien nach dem Speicherort fragen</translation>
 <translation id="7754893969683595513">Wenn die Richtlinie konfiguriert ist, wird der Zeitraum in Millisekunden angegeben, in dem Nutzerrichtlinieninformationen vom Geräteverwaltungsdienst abgefragt werden. Gültige Werte für diese Richtlinie liegen im Bereich zwischen 1.800.000 (30 Minuten) und 86.400.000 (1 Tag). Alle Werte, die nicht in diesem Bereich liegen, werden auf den jeweiligen Grenzwert gesetzt.
@@ -12418,6 +12574,7 @@ Mit dieser Richtlinie wird nur <ph name="ARC_VM" /> auf <ph name="PRODUCT_OS_FLE
       Wenn diese Richtlinie auf "false" gesetzt oder nicht konfiguriert ist, wird der
       Status von Display und Grafikkarte nicht gemeldet. Ist die Richtlinie auf "true" gesetzt, wird der
       Status von Display und Grafikkarte gemeldet.</translation>
+<translation id="8912595396523313912">Websites daran hindern, Netzwerkanfragen an lokale Geräte und lokale Netzwerkendpunkte auf dem Gerät zu senden</translation>
 <translation id="891435090623616439">Als JSON-String codiert, weitere Informationen unter <ph name="COMPLEX_POLICIES_URL" /></translation>
 <translation id="8916106787085606382">„window.name“ nicht löschen, wenn websiteübergreifende Seitenaufrufe auf oberster Ebene stattfinden und einen Wechsel von „BrowsingContextGroup“ herbeiführen.</translation>
 <translation id="8917070657147922192">Nutzern erlauben, installierte CA-Zertifikate zu verwalten.</translation>

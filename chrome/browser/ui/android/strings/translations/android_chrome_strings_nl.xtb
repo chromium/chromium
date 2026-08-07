@@ -297,6 +297,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2233735624724508540">Kies een periode en tik op Gegevens verwijderen</translation>
 <translation id="2234031676056123135">Je snelkoppelingen aanpassen</translation>
 <translation id="2234827758954819389">Privacygids</translation>
+<translation id="2236949375853147973">Mijn activiteit</translation>
 <translation id="2238038374973843156">Groep verplaatsen naar ander venster</translation>
 <translation id="2247789808226901522">Kaart verlopen</translation>
 <translation id="2251809247798634662">Nieuw incognitovenster</translation>
@@ -574,6 +575,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="3385749568468586663">Gemini is niet beschikbaar in de incognitomodus</translation>
 <translation id="3387650086002190359">Downloaden van <ph name="FILE_NAME" /> is mislukt door fouten in het bestandssysteem.</translation>
 <translation id="3391311825344469964">Je kunt je vensters beheren in Vensterbeheer van Chrome</translation>
+<translation id="3410151451624226773">Beheren in Google Wachtwoordmanager</translation>
 <translation id="3417835166382867856">Tabbladen zoeken</translation>
 <translation id="3430670036890315772">Als je de profielvergrendeling uitzet, worden je opgeslagen gegevens verwijderd</translation>
 <translation id="3435575784518354875">Als je toegang wilt houden tot je wachtwoorden, exporteer je ze nu, update je Google Play-services en importeer je ze terug naar Google Wachtwoordmanager. <ph name="BEGIN_LINK" />Bekijk de volledige instructies<ph name="END_LINK" />.</translation>
@@ -942,6 +944,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="4877678010818027629">Incognitomodus starten</translation>
 <translation id="4878404682131129617">Kan geen tunnel tot stand brengen via de proxyserver</translation>
 <translation id="4880127995492972015">Vertalen…</translation>
+<translation id="4880827082731008257">Zoek in de geschiedenis</translation>
 <translation id="4881695831933465202">Openen</translation>
 <translation id="488187801263602086">Naam van bestand wijzigen</translation>
 <translation id="4885273946141277891">Niet-ondersteund aantal Chrome-instanties.</translation>
@@ -991,6 +994,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="509429900233858213">Er is een fout opgetreden.</translation>
 <translation id="5096775069898886423">Krijg een waarschuwing voordat je een site bezoekt die geen beveiligde verbindingen ondersteunt</translation>
 <translation id="510275257476243843">1 uur resterend</translation>
+<translation id="5105442806410269908">Andere Google-gegevens beheren</translation>
 <translation id="5114895953710637392">Blad voor app-filter is gesloten.</translation>
 <translation id="5115811374190515607">naar <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Je kunt Chrome gebruiken als je op links in berichten, documenten en andere apps tikt</translation>
@@ -1041,6 +1045,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5316947901395241499">Wachtwoord opslaan is uitgezet door je beheerder</translation>
 <translation id="5317780077021120954">Opslaan</translation>
 <translation id="5319359161174645648">Google beveelt Chrome aan</translation>
+<translation id="5323501626199324454">Beheren in je Google-account</translation>
 <translation id="5326246328175179736">Je kunt niet inloggen met dit account</translation>
 <translation id="5327248766486351172">Naam</translation>
 <translation id="5328542107300944283">Gebruiken met <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1325,6 +1330,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6461962085415701688">Kan bestand niet openen</translation>
 <translation id="6464977750820128603">Je kunt sites bekijken die je in Chrome bezoekt en timers hiervoor instellen.\n\nGoogle ontvangt informatie over de sites waarvoor je timers instelt en hoelang je ze bezoekt. Deze informatie wordt gebruikt om Digitaal welzijn te verbeteren.</translation>
 <translation id="6468703991511753953">Adresbalk staat op dit moment onderaan</translation>
+<translation id="6469702164109431067">Wachtwoorden en toegangssleutels</translation>
 <translation id="6470181189905173055">Hier komen de pagina's te staan die je in Chrome hebt geopend terwijl je <ph name="APP_LABEL" /> gebruikt.</translation>
 <translation id="6473086018775716761">Lijst met deelopties is geopend op halve hoogte.</translation>
 <translation id="6475951671322991020">Video downloaden</translation>
@@ -1531,6 +1537,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="7182520625618447753">Zet de adresbalk boven- of onderaan voor een aangepaste browsefunctionaliteit</translation>
 <translation id="7183517696921903380">Blad voor app-filter is geopend.</translation>
 <translation id="7186568385131859684">Bepaal hoe de browsegeschiedenis wordt gebruikt met je andere gegevens in Google-services</translation>
+<translation id="7189516830800112767">{NUM_TABS,plural, =1{Druk nogmaals op ^W om het vastgezette tabblad te sluiten}other{Druk nogmaals op ^W om de vastgezette tabbladen te sluiten}}</translation>
 <translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" /> blokkeren?</translation>
 <translation id="7191430249889272776">Tabblad op de achtergrond geopend.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Wijzig het nu}other{Wijzig deze nu}}</translation>

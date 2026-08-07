@@ -25,6 +25,7 @@
 <translation id="1039767473048604223"><ph name="DEVICE_NAME" /> <ph name="MODEL" /></translation>
 <translation id="1041998700806130099">Auftragsblattnachricht</translation>
 <translation id="1044897699341250361">Was das bedeutet</translation>
+<translation id="1049837829250301306">Inhalte konnten aufgrund der Richtlinien deiner Organisation nicht eingefügt werden</translation>
 <translation id="1050038467049342496">Andere Apps schließen</translation>
 <translation id="1050765387089990494">Verfasse eine kurze, höfliche Antwort, in der du eine Einladung ablehnst</translation>
 <translation id="1055184225775184556">&amp;Hinzufügen rückgängig machen</translation>
@@ -591,6 +592,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2027465737841872819">Kunststoff</translation>
 <translation id="2027707238798802149">Karte nicht verfügbar</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Proxy und Firewall prüfen<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">Diese Chrome-Instanz wird mit manuell festgelegten Befehlszeilen-Flags ausgeführt. Beachte, dass sich Befehlszeilen-Flags jederzeit ändern können und nicht unterstützt werden.</translation>
 <translation id="2033900728810589426">Das Kürzel darf nicht mit dem in „<ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />“ festgelegten Suchbegriff des Standardsuchanbieters identisch sein: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Trotzdem speichern</translation>
 <translation id="2036514476578229158">Du möchtest diese Website besuchen. Deine Eltern können deine Anfrage in Family Link prüfen.</translation>
@@ -2073,6 +2075,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4569155249847375786">Bestätigt</translation>
 <translation id="4570008401337135432">Textausrichtung</translation>
 <translation id="457875822857220463">Lieferung</translation>
+<translation id="4579084373690089522">Aufgrund der Richtlinien deiner Organisation kann dieser Inhalt vertrauliche Informationen enthalten</translation>
 <translation id="4582595824823167856">SMS erhalten</translation>
 <translation id="4584094413232466841">Diese Informationen aus Chrome Autofill entfernen?</translation>
 <translation id="4586607503179159908">Zahlungsmethode bestätigt</translation>
@@ -2221,6 +2224,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4831993743164297314">Bildsetzpapier</translation>
 <translation id="4832388034239846146">Aktualisiere Chrome, um Tabgruppen zu teilen</translation>
 <translation id="483241715238664915">Warnmeldungen aktivieren</translation>
+<translation id="4833567658337394628">Einfügen nicht empfohlen</translation>
 <translation id="4840250757394056958">Chrome-Verlauf ansehen</translation>
 <translation id="4842365697443353018">Formular löschen, um die Option „Später bezahlen“ zu verwenden</translation>
 <translation id="484462545196658690">Auto</translation>
@@ -4560,7 +4564,6 @@ Weitere Details:
 <translation id="8932102934695377596">Deine Uhr geht nach</translation>
 <translation id="893332455753468063">Namen hinzufügen</translation>
 <translation id="8938242527120341116">Die Inhaltsfilter deines Geräts haben <ph name="BLOCKED_URL" /> blockiert</translation>
-<translation id="8942355029279167844">Dein Administrator hat der App "<ph name="APP_NAME" />" erlaubt, Diagnosedaten zu erheben, um die Produktqualität zu verbessern. Weitere Informationen erhältst du unter <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Limone</translation>
 <translation id="8949410982325929394">Ton</translation>
 <translation id="8949493680961858543">A1x4</translation>

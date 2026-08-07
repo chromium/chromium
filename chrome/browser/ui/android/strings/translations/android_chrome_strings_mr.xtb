@@ -297,6 +297,7 @@
 <translation id="2233735624724508540">कालावधी निवडा आणि त्यानंतर डेटा हटवा यावर टॅप करा</translation>
 <translation id="2234031676056123135">तुमचे शॉर्टकट कस्टमाइझ करा</translation>
 <translation id="2234827758954819389">गोपनीयता मार्गदर्शक</translation>
+<translation id="2236949375853147973">माझी अ‍ॅक्टिव्हिटी</translation>
 <translation id="2238038374973843156">गट दुसऱ्या विंडोवर हलवा</translation>
 <translation id="2247789808226901522">कार्ड एक्स्पायर झाले आहे</translation>
 <translation id="2251809247798634662">नवीन गुप्त विंडो</translation>
@@ -574,6 +575,7 @@
 <translation id="3385749568468586663">Gemini हे गुप्त मोडमध्ये उपलब्ध नाही</translation>
 <translation id="3387650086002190359">फाइल सिस्टीम एररमुळे <ph name="FILE_NAME" /> डाउनलोड करता आले नाही.</translation>
 <translation id="3391311825344469964">तुम्ही Chrome च्या विंडो व्यवस्थापक मध्ये तुमच्या विंडो व्यवस्थापित करू शकता</translation>
+<translation id="3410151451624226773">Google Password Manager मध्ये व्यवस्थापित करा</translation>
 <translation id="3417835166382867856">टॅब शोधा</translation>
 <translation id="3430670036890315772">तुमचे प्रोफाइल लॉक बंद केल्याने तुमची सेव्ह केलेली माहिती काढून टाकली जाईल</translation>
 <translation id="3435575784518354875">तुमच्या पासवर्डचा ॲक्सेस कायम ठेवण्यासाठी, ते आता एक्सपोर्ट करा, Google Play सेवा अपडेट करा आणि नंतर ते Google Password Manager मध्ये पुन्हा इंपोर्ट करा. <ph name="BEGIN_LINK" />सर्व सूचना पहा<ph name="END_LINK" />.</translation>
@@ -942,6 +944,7 @@
 <translation id="4877678010818027629">गुप्त मोडमध्ये प्रवेश करा</translation>
 <translation id="4878404682131129617">प्रॉक्सी सर्व्हर मार्फत टनेल स्थापन करणे अयशस्वी झाले</translation>
 <translation id="4880127995492972015">भाषांतर करा…</translation>
+<translation id="4880827082731008257">शोध इतिहास</translation>
 <translation id="4881695831933465202">उघडा</translation>
 <translation id="488187801263602086">फाइलला पुन्हा नाव द्या</translation>
 <translation id="4885273946141277891">Chrome उदाहरणांची असमर्थित संख्या.</translation>
@@ -991,6 +994,7 @@
 <translation id="509429900233858213">एक एरर आली आहे.</translation>
 <translation id="5096775069898886423">सुरक्षित कनेक्शनला सपोर्ट न करणाऱ्या साइटसाठी, साइटला भेट देण्यापूर्वी चेतावणी मिळवा</translation>
 <translation id="510275257476243843">1 तास शिल्लक</translation>
+<translation id="5105442806410269908">इतर Google डेटा व्यवस्थापित करा</translation>
 <translation id="5114895953710637392">अ‍ॅप फिल्टर शीट बंद केली आहे.</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> वर</translation>
 <translation id="5116239826668864748">तुम्ही मेसेज, दस्तऐवज आणि इतर अ‍ॅप्समधील लिंकवर टॅप केल्यावर कधीही Chrome वापरू शकता</translation>
@@ -1041,6 +1045,7 @@
 <translation id="5316947901395241499">तुमच्या अ‍ॅडमिनिस्ट्रेटरने पासवर्ड सेव्ह करणे बंद केले आहे</translation>
 <translation id="5317780077021120954">सेव्ह करा</translation>
 <translation id="5319359161174645648">Google Chrome ची शिफारस करते</translation>
+<translation id="5323501626199324454">तुमच्या Google खाते मध्ये व्यवस्थापित करा</translation>
 <translation id="5326246328175179736">तुम्ही हे खाते वापरून साइन इन करू शकत नाही</translation>
 <translation id="5327248766486351172">नाव</translation>
 <translation id="5328542107300944283"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />यासह वापरा</translation>
@@ -1325,6 +1330,7 @@
 <translation id="6461962085415701688">फाइल उघडू शकत नाही</translation>
 <translation id="6464977750820128603">तुम्ही Chrome मध्ये भेट दिलेल्या साइट पाहू शकता आणि त्यांच्यासाठी टायमर सेट करू शकता.\n\nGoogle ला तुम्ही ज्या साइटसाठी टायमर सेट केला आणि त्यांना किती वेळ भेट दिली याबद्दलची माहिती मिळते. ही माहिती Digital wellbeing चांगले करण्यास वापरली जाते.</translation>
 <translation id="6468703991511753953">अ‍ॅड्रेस बार सध्या तळाशी आहे</translation>
+<translation id="6469702164109431067">पासवर्ड आणि पासकी</translation>
 <translation id="6470181189905173055"><ph name="APP_LABEL" /> वापरताना तुम्ही Chrome मध्ये उघडलेली पेज इथे दिसतील.</translation>
 <translation id="6473086018775716761">अर्ध्या उंचीवर उघडलेल्या शेअरिंग पर्यायांची सूची.</translation>
 <translation id="6475951671322991020">व्हिडिओ डाउनलोड करा</translation>
@@ -1531,6 +1537,7 @@
 <translation id="7182520625618447753">कस्टमाइझ केलेल्या ब्राउझिंग अनुभवासाठी तुमच्या अ‍ॅड्रेस बारची स्थिती सर्वत वरती किंवा तळाशी स्विच करा</translation>
 <translation id="7183517696921903380">अ‍ॅप फिल्टर शीट उघडली आहे.</translation>
 <translation id="7186568385131859684">Google सेवांवर तुमच्या इतर डेटासह ब्राउझिंग इतिहास कसा वापरला जातो ते नियंत्रित करा</translation>
+<translation id="7189516830800112767">{NUM_TABS,plural, =1{पिन केलेला टॅब बंद करण्यासाठी ^W पुन्हा प्रेस करा}other{पिन केलेले टॅब बंद करण्यासाठी ^W पुन्हा प्रेस करा}}</translation>
 <translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" /> यांना ब्लॉक करायचे आहे का?</translation>
 <translation id="7191430249889272776">पार्श्वभूमीवर उघडा असलेला टॅब.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{तुम्ही आता तो बदलला पाहिजे}other{तुम्ही आता ते बदलले पाहिजेत}}</translation>

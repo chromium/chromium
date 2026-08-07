@@ -35,7 +35,6 @@
 <translation id="1088231044944504242">Søk i <ph name="CATEGORY" />, filer, apper med mer. Bruk piltastene til å navigere i appene dine.</translation>
 <translation id="1093645050124056515">ctrl + alt + nedoverpil</translation>
 <translation id="1094756674036064790">Vil du slå av Bluetooth?</translation>
-<translation id="109647177154844434">Hvis du avinstallerer Parallels Desktop, blir Windows-avbildningen slettet. Dette inkluderer programmene, innstillingene og dataene i den. Er du sikker på at du vil fortsette?</translation>
 <translation id="1104084341931202936">Vis innstillinger for tilgjengelighet</translation>
 <translation id="1104621072296271835">Enhetene fungerer enda bedre sammen</translation>
 <translation id="1107300737351978027">Kan ikke inneholde gjentatte sifre</translation>
@@ -82,7 +81,6 @@
 <translation id="1210557957257435379">skjermopptak</translation>
 <translation id="121097972571826261">Ett ord frem</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" /> – Play Butikk-app</translation>
-<translation id="1223484782328004593"><ph name="APP_NAME" /> krever en lisens</translation>
 <translation id="1225748608451425081">Chromebooken er låst på grunn av en kjent feil. Du kan logge på om <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Slutt å merke</translation>
 <translation id="1235458158152011030">Kjente nettverk:</translation>
@@ -93,7 +91,6 @@
 <translation id="1244265436519979884">Linux-gjenoppretting pågår</translation>
 <translation id="1245476784081715330">Bra jobbet!</translation>
 <translation id="124678866338384709">Lukk den aktive fanen</translation>
-<translation id="1246863218384630739">Kunne ikke installere <ph name="VM_NAME" />: Nettadressen til bildet returnerte feilkoden <ph name="HTTP_ERROR" />. Kontakt administratoren din.</translation>
 <translation id="1246890715821376239">Apper som ikke støttes</translation>
 <translation id="1247372569136754018">Mikrofon (intern)</translation>
 <translation id="1247519845643687288">Nylige apper</translation>
@@ -107,7 +104,6 @@
 <translation id="1275285675049378717">Gir strøm til <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">Valgt</translation>
 <translation id="1276975447697633661">Velg en fil og trykk på <ph name="KEY" /></translation>
-<translation id="1276994519141842946">Kunne ikke avinstallere <ph name="APP_NAME" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1283126956823499975">Noe gikk galt under konfigureringen av enheten</translation>
 <translation id="1285992161347843613">Finn telefonen</translation>
@@ -170,7 +166,6 @@
 <translation id="1421166164855200062">Foreslått gruppe</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> er blokkert</translation>
-<translation id="142765311413773645">Lisensen for <ph name="APP_NAME" /> er utløpt</translation>
 <translation id="1430915738399379752">Skriv ut</translation>
 <translation id="1435537621343861112">Kan ikke starte diktering. Mikrofonen din er av.</translation>
 <translation id="1445031758921122223">Filer for ansiktskontroll er lastet ned</translation>
@@ -193,12 +188,10 @@
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">Med diktering kan du skrive med stemmen. Trykk på dikteringstasten, eller velg mikrofonikonet nederst på skjermen når du er i et tekstfelt. Dikteringsspråket er satt til <ph name="LANGUAGE" />. Det som blir sagt, sendes til Google for behandling. Du kan bytte dikteringsspråk når som helst i Innstillinger &gt; Tilgjengelighet.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> har byttet plass med <ph name="SECOND_ITEM_TITLE" /></translation>
-<translation id="1494429729245089920">Den virtuelle maskinen «<ph name="VM_NAME" />» finnes, men ser ikke ut til å være en gyldig <ph name="APP_NAME" />-virtuell maskin. Kontakt administratoren din.</translation>
 <translation id="1500926532737552529">Vis alle forslag</translation>
 <translation id="1501946871587957338">Vil du bytte lydkilde?</translation>
 <translation id="1505542291183484463">Endre vindusstørrelse feltvis nedover</translation>
 <translation id="1510238584712386396">Appoversikt</translation>
-<translation id="1515163294334130951">Start</translation>
 <translation id="1519090060276706457">Det tar lengre tid enn forventet å gjenopprette vinduer</translation>
 <translation id="1521655867290435174">Google Regneark</translation>
 <translation id="1523032696246003">Batteri <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> til batteriet er fullt</translation>
@@ -222,7 +215,6 @@
 <translation id="1574691582236909946">Du har valgt håndtaket på venstre kant – bruk piltastene for å flytte det</translation>
 <translation id="1576623706766186887">Zoom ut når forstørreren er på</translation>
 <translation id="1578558981922970608">Tving avslutning</translation>
-<translation id="1580772913177567930">Kontakt administratoren din</translation>
 <translation id="1582946770779745370">Spilloversikt er tilgjengelig. Trykk på <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape og deretter på <ph name="LAUNCHER_KEY_NAME" /> + G for å åpne den når som helst</translation>
 <translation id="1586324912145647027">Gå til skrivebord 1 til 8</translation>
 <translation id="158838227375272121">Google Classroom-nettstedet</translation>
@@ -443,7 +435,6 @@
 <translation id="2322065293366551060"><ph name="CATEGORY" /> – kategori for søkeresultat</translation>
 <translation id="2322173485024759474">Én bokstav tilbake</translation>
 <translation id="2326112202058075478">Vis flere emojier</translation>
-<translation id="2328561734797404498">Start enheten på nytt for å bruke <ph name="APP_NAME" />.</translation>
 <translation id="2335091074961603075">Chromebooken eller Bluetooth-enheten bruker en eldre versjon av Bluetooth. Bruk den interne mikrofonen for å få bedre lydkvalitet.</translation>
 <translation id="2336214675195760012">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> krever at du kobler til wifi i dag og laster ned en oppdatering. Eller last ned via en tilkobling med datamåling (kostnader kan påløpe).}other{<ph name="MANAGER" /> krever at du kobler til wifi og laster ned en oppdatering før tidsfristen. Eller last ned via en tilkobling med datamåling (kostnader kan påløpe).}}</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" /> skriver ut 1 side på <ph name="PRINTER_NAME" /></translation>
@@ -471,7 +462,6 @@
 <translation id="2386292613071805067">Merk alt på siden</translation>
 <translation id="2389423187722941333">Slå av/på Gemini</translation>
 <translation id="2390347491606624519">Kan ikke koble til proxy-tjeneren – logg på på nytt</translation>
-<translation id="2393136602862631930">Konfigurer <ph name="APP_NAME" /> på Chromebooken din</translation>
 <translation id="2397416548179033562">Vis Chrome-menyen</translation>
 <translation id="240006516586367791">Mediekontroller</translation>
 <translation id="2400664245143453337">Umiddelbar oppdatering kreves</translation>
@@ -504,7 +494,6 @@
 <translation id="2473177541599297363">Bekreft oppløsningen</translation>
 <translation id="2475783092753560388">Sett inn <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="2475982808118771221">Det oppsto en feil</translation>
-<translation id="2476974672882258506">Slå av Windows for å avinstallere <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2478076885740497414">Installér appen</translation>
 <translation id="2479148705183875116">Gå til Innstillinger</translation>
 <translation id="2484513351006226581">Trykk på <ph name="KEYBOARD_SHORTCUT" /> for å bytte tastaturoppsett.</translation>
@@ -544,7 +533,6 @@
 <translation id="2573588302192866788">Kunne ikke koble til <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Multipålogging er slått av</translation>
 <translation id="2579264398927991698">Fastvareoppdateringer</translation>
-<translation id="2586561813241011046">Kunne ikke installere <ph name="APP_NAME" />. Prøv på nytt, eller kontakt administratoren din. Feilkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">Utklippstavle</translation>
 <translation id="2596078834055697711">Ta et skjermbilde av vinduet</translation>
 <translation id="2598725286293895280">Skrivebordet inneholder apper som ikke støttes</translation>
@@ -566,7 +554,6 @@
 <translation id="2653659639078652383">Send inn</translation>
 <translation id="2658778018866295321">Klikk og dra</translation>
 <translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> og <ph name="UNAVAILABLE_APPS_TWO" /> er ikke på denne enheten.</translation>
-<translation id="2669241540496514785">Kunne ikke åpne <ph name="APP_NAME" /></translation>
 <translation id="2670350619068134931">Reduserte animasjoner</translation>
 <translation id="2672142220933875349">Skadet crx-fil. Kunne ikke pakke den ut.</translation>
 <translation id="2673968385134502798">Spill</translation>
@@ -839,14 +826,12 @@ Ellers blir den innebygde styreflaten slått på igjen om <ph name="TIMEOUT_SECO
 <translation id="3444385531800624797">Resultatene lastes inn</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">USB-C-enhet</translation>
-<translation id="3446274660183028131">Start Parallels Desktop for å installere Windows.</translation>
 <translation id="3449393517661170867">Nytt vindu med faner</translation>
 <translation id="3450157232394774192">Utnyttelsesgrad for hviletilstand</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> krever at du kobler til wifi nå og laster ned en oppdatering.</translation>
 <translation id="3454555520521576458">Størrelsen kan endres</translation>
 <translation id="3455468639467374593">Mal, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">1 enhet er koblet til wifi-sonen på <ph name="DEVICE_NAME" /></translation>
-<translation id="3458451003193188688">Kunne ikke installere den virtuelle maskinen på grunn av en nettverksfeil. Prøv på nytt, eller kontakt administratoren din. Feilkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="346243998268439747">Tilbakestill zoomnivået</translation>
 <translation id="3465223694362104965">Et annet tastatur er koblet til denne enheten siden du sist logget på. Sørg for at du stoler på dette tastaturet før du bruker det.</translation>
 <translation id="3465356146291925647">Administreres av administratoren din</translation>
@@ -865,7 +850,6 @@ Ellers blir den innebygde styreflaten slått på igjen om <ph name="TIMEOUT_SECO
 <translation id="3513798432020909783">Kontoen er administrert av <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3516000762115478502">Endre vindusstørrelse feltvis oppover</translation>
 <translation id="3517037892157925473">Gjøremålene ble sist oppdatert <ph name="TIME" />, <ph name="DATE" />.</translation>
-<translation id="3522088408596898827">Det er kritisk lite diskplass. Frigjør diskplass, og prøv igjen.</translation>
 <translation id="352245152354538528">{0,plural, =1{Oppdater enheten innen 1 minutt}other{Oppdater enheten innen # minutter}}</translation>
 <translation id="3522979239100719575">Ser etter tilgjengelige profiler. Dette kan ta noen minutter.</translation>
 <translation id="3526440770046466733">Åpne link i en ny fane, og bli værende på den gjeldende fanen</translation>
@@ -1019,7 +1003,6 @@ Koble enheten til strøm.</translation>
 <translation id="3886872229787704059">Åpnet i dag</translation>
 <translation id="3892148308691398805">Kopier teksten</translation>
 <translation id="3893630138897523026">ChromeVox (muntlig tilbakemelding)</translation>
-<translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3898464793473355515">Roter skjermen 90 grader med klokken</translation>
 <translation id="3900355044994618856">Økten din avsluttes om <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Kobler til <ph name="NAME" /></translation>
@@ -1116,7 +1099,6 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4181841719683918333">Språk</translation>
 <translation id="4185671786623711291">Flytt det aktive vinduet til skrivebordet til høyre</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> – <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> Søk</translation>
-<translation id="4187424053537113647">Konfigurerer <ph name="APP_NAME" /> …</translation>
 <translation id="4189826113259617332">Lagre alle åpne sider i det aktive vinduet som bokmerker i en ny mappe</translation>
 <translation id="4190143678693626113">Spar tid ved å svare raskt på tekstmeldinger på telefonen via Chromebooken din</translation>
 <translation id="4190780880566297084">Lukk konfigurering av visning av nylige bilder, medier og apper fra telefonen din</translation>
@@ -1128,7 +1110,6 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> er ikke tilgjengelig.</translation>
 <translation id="4201051445878709314">Se forrige måned</translation>
 <translation id="4209973997261364186">Wifi er slått på</translation>
-<translation id="4210048056321123003">Laster ned den virtuelle maskinen</translation>
 <translation id="4212246570487010370">Fortsett å surfe</translation>
 <translation id="4212472694152630271">Bytt til PIN-kode</translation>
 <translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, av/på-knapp, <ph name="STATE" /></translation>
@@ -1147,7 +1128,6 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4250229828105606438">Skjermbilde</translation>
 <translation id="425364040945105958">Uten SIM-kort</translation>
 <translation id="425573743389990240">Batteriets utladningshastighet i watt (negativ verdi indikerer at batteriet lades)</translation>
-<translation id="4259388776256904261">Dette kan ta en stund</translation>
 <translation id="4264977415328155183">, skjules</translation>
 <translation id="4265259722091164182">Store og små bokstaver som i titler</translation>
 <translation id="4269883910223712419">Administratoren av denne enheten kan</translation>
@@ -1234,7 +1214,6 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 1 enhet er tilkoblet.</translation>
 <translation id="4477892968187500306">Denne enheten kan ha apper som ikke er verifisert av Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
-<translation id="4479877282574735775">Konfigurerer den virtuelle maskinen. Dette kan ta noen minutter.</translation>
 <translation id="4485506555414638855">Lukk konfigurering av visning av nylige bilder, medier, varsler og apper fra telefonen din</translation>
 <translation id="4491109536499578614">Bilde</translation>
 <translation id="4493468155686877504">Anbefalt (<ph name="INSTALL_SIZE" />)</translation>
@@ -1383,7 +1362,6 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4917385247580444890">Sterkt</translation>
 <translation id="4918086044614829423">Godta</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> bruker kameraet ditt for øyeblikket</translation>
-<translation id="492363500327720082">Avinstallerer <ph name="APP_NAME" /> …</translation>
 <translation id="492453977506755176">Opptaksmodus-tasten</translation>
 <translation id="4925542575807923399">Administratoren for denne kontoen krever at denne kontoen er den første påloggingskontoen i en multipåloggingsøkt.</translation>
 <translation id="493076006037866439">Zoom ut på skjermen</translation>
@@ -1621,7 +1599,6 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="5578188167649348993">minne</translation>
 <translation id="5580000943347215299">Bibliotek</translation>
 <translation id="5581972110672966454">Kan ikke knytte enheten til domenet. Prøv på nytt, eller kontakt eieren eller administratoren av enheten. Feilkode: <ph name="ERROR_CODE" />.</translation>
-<translation id="5585898376467608182">Det er lite lagringsplass på enheten. Det kreves minst <ph name="MINIMUM_SPACE" /> ledig plass for å bruke <ph name="APP_NAME" />. For å få mer ledig plass, slett filer fra enheten.</translation>
 <translation id="5586388332127302891">Den dokkede lupen er slått på. Trykk på <ph name="ACCELERATOR" /> igjen for å slå den av.</translation>
 <translation id="5587506661873751671">Laster ned <ph name="DOWNLOAD_PERCENT" /> %</translation>
 <translation id="5590609058453685222">Varsel om avslått mikrofon er på. Du blir varslet hvis du snakker mens mikrofonen er avslått.</translation>
@@ -1688,7 +1665,6 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="5767730327234918501">Administratoren din har slått av wifi-sonen.</translation>
 <translation id="5769373120130404283">Personvernskjerm</translation>
 <translation id="5770004650349728202">Slå på tekstopplesing</translation>
-<translation id="5772114492540073460">Med <ph name="PARALLELS_NAME" /> kan du kjøre Windows®-apper på Chromebook. <ph name="MINIMUM_SPACE" /> ledig plass anbefales for installasjonen.</translation>
 <translation id="5773950591113557721">Dette gir tilgang til <ph name="APP_NAME" /> og alle apper og nettsteder som har kamera- og mikrofontillatelsen</translation>
 <translation id="5774295353725270860">Åpne Filer-appen</translation>
 <translation id="5775936059231769503">Slå av/på wifi-sonen. Wifi-sonen er av.</translation>
@@ -1736,8 +1712,6 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="589817443623831496">Punktskanning</translation>
 <translation id="5901494423252125310">Skriverdekselet er åpent</translation>
 <translation id="5901630391730855834">Gul</translation>
-<translation id="5904614460720589786">Kunne ikke konfigurere <ph name="APP_NAME" /> på grunn av et konfigurasjonsproblem. Kontakt administratoren din. Feilkode: <ph name="ERROR_CODE" />.</translation>
-<translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> er uten nett</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">Nytt varsel, <ph name="NOTIFICATION_COUNT" /> totalt</translation>
 <translation id="5916664084637901428">På</translation>
@@ -1809,7 +1783,6 @@ Ingen enheter er tilkoblet.</translation>
         <ph name="DOMAIN" /> krever at smartkortet blir stående i.}other{Du blir logget av automatisk om # sekunder.
         <ph name="DOMAIN" /> krever at smartkortet blir stående i.}}</translation>
 <translation id="6071576563962215370">Systemet kunne ikke opprette enhetens attributtlås under installasjonen.</translation>
-<translation id="6072442788591997866"><ph name="APP_NAME" /> er ikke tillatt på denne enheten. Kontakt administratoren din. Feilkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="6073451960410192870">Stopp opptaket</translation>
 <translation id="6074087755403037157">Betakanal</translation>
 <translation id="6075098173600599596">Endre bruken av små og store bokstaver</translation>
@@ -1916,7 +1889,6 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="6380143666419481200">Godta og fortsett</translation>
 <translation id="6381109794406942707">For å låse opp enheten, skriv inn PIN-koden.</translation>
 <translation id="6381305031890976705">{0,plural, =1{Oppdater enheten til en tidligere versjon innen en time}other{Oppdater enheten til en tidligere versjon innen # timer}}</translation>
-<translation id="6385149369087767061">Koble til internett og prøv på nytt</translation>
 <translation id="638716340450135524">Slå på kameratilgang</translation>
 <translation id="6406458002328242616">Endre nedtellingen. <ph name="FOCUS_DURATION" />.</translation>
 <translation id="6406704438230478924">alt gr</translation>
@@ -1934,7 +1906,6 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="6426905245930183644">Oppretter ...</translation>
 <translation id="6430225033895752525">Vis innstillinger for fokus</translation>
 <translation id="6431865393913628856">Skjermopptak</translation>
-<translation id="6434325376267409267">Enheten må oppdateres før du kan bruke <ph name="APP_NAME" />.</translation>
 <translation id="643593192654616063">Lagringsplass: <ph name="STORAGE_IN_USE_SIZE" /> er i bruk av totalt <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6445915701151710649">prosessor</translation>
 <translation id="6447111710783417522"><ph name="DATE" /> – <ph name="NUMBER" /> hendelse</translation>
@@ -2212,7 +2183,6 @@ Nylig installert</translation>
 <translation id="7258828758145722155">Redigert i går</translation>
 <translation id="726276584504105859">Dra hit for å bruke delt skjerm</translation>
 <translation id="7264788308526527464">Reduser med <ph name="FOCUS_DURATION_DELTA" /></translation>
-<translation id="7267044199012331848">Kunne ikke installere den virtuelle maskinen. Prøv på nytt, eller kontakt administratoren din. Feilkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">Løft fingeren gjentatte ganger for å legge til de forskjellige delene av fingeravtrykket ditt</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + tilbaketast</translation>
 <translation id="7285232777292757180">Bruk skjermdumpverktøyet i hurtiginnstillingene for å ta skjermbilder</translation>
@@ -2261,9 +2231,7 @@ Nylig installert</translation>
 <translation id="7406854842098869085">Trykk på og hold inne <ph name="MODIFIER_1" />, trykk på <ph name="KEY" /> til du kommer til vinduet du vil åpne, og slipp tastene</translation>
 <translation id="740790383907119240">Snarveier for apper</translation>
 <translation id="7413851974711031813">Trykk på Escape-tasten for å lukke</translation>
-<translation id="7415454883318062233">Konfigureringen er fullført</translation>
 <translation id="7416471219712049036">Lagre gjeldende side</translation>
-<translation id="7423807071740419372"><ph name="APP_NAME" /> trenger tillatelse til å kjøre</translation>
 <translation id="742594950370306541">Kameraet er i bruk.</translation>
 <translation id="743058460480092004">Kameraet og mikrofonen er i bruk.</translation>
 <translation id="7433708794692032816">Sett inn smartkortet for å fortsette å bruke <ph name="DEVICE_TYPE" /></translation>
@@ -2274,7 +2242,6 @@ Nylig installert</translation>
 <translation id="7459485586006128091">Wifi-sonen er slått av på grunn av en intern feil. Prøv å koble til på nytt om noen minutter.</translation>
 <translation id="7461924472993315131">Fest</translation>
 <translation id="746216226901520237">Neste gang låser telefonen opp <ph name="DEVICE_TYPE" />-enheten din. Du kan slå av Smart Lock i innstillingene.</translation>
-<translation id="7465635034594602553">Noe gikk galt. Vent noen minutter, og kjør <ph name="APP_NAME" /> på nytt.</translation>
 <translation id="7466449121337984263">Trykk på sensoren</translation>
 <translation id="7477793887173910789">Styr musikk, video og mer</translation>
 <translation id="7478485216301680444">Kiosk-appen kunne ikke installeres.</translation>
@@ -2428,7 +2395,6 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="7850320739366109486">Ikke forstyrr</translation>
 <translation id="7851039877802112575">Flytt fokus til forgrunnsvinduer og dialogbokser</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7862292329216937261">For å bruke enheten som gjest må du logge av og velge Surf som gjest nederst på skjermen.</translation>
 <translation id="7866482334467279021">på</translation>
 <translation id="7870790288828963061">Fant ingen Kiosk-apper med nyere versjon. Ingenting å oppdatere. Ta ut USB-pinnen.</translation>
@@ -2765,7 +2731,6 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8815390544836110344">Trykk på snarveien for skjermbilde, Ctrl + Shift + Oversiktsmodus-tasten</translation>
 <translation id="881757059229893486">Innstillinger for inndatametoder</translation>
 <translation id="8819728065740986820">Tilpasset lading er på</translation>
-<translation id="8821268776955756404"><ph name="APP_NAME" /> er klar til bruk.</translation>
 <translation id="882204272221080310">Oppdater fastvaren for å øke sikkerheten.</translation>
 <translation id="8822104519413696986">Dette er et berøringsspill</translation>
 <translation id="8825863694328519386">Sveip fra venstre for å gå tilbake</translation>
@@ -2799,7 +2764,6 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8905919797434099235">(Uten tittel)</translation>
 <translation id="890616557918890486">Endre kilde</translation>
 <translation id="8909138438987180327">Batteriet er <ph name="PERCENTAGE" /> % fullt.</translation>
-<translation id="8909298138148012791"><ph name="APP_NAME" /> er avinstallert</translation>
 <translation id="8916866375277139011">Skjul elementer i <ph name="GROUP_NAME" /></translation>
 <translation id="8921369299636221117">Concierge-tjenesten er ikke tilgjengelig.</translation>
 <translation id="8921554779039049422">H+</translation>
@@ -2872,7 +2836,6 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="9126339866969410112">Angre siste handling</translation>
 <translation id="9126642911267312373">Bluetooth er utilgjengelig</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{Om 1 min}other{Om # min}}</translation>
-<translation id="9128317794749765148">Kunne ikke fullføre konfigureringen</translation>
 <translation id="9129245940793250979">Bakre knapp</translation>
 <translation id="9133335900048457298">Kan ikke ta opp beskyttet innhold</translation>
 <translation id="9139720510312328767">Slett neste bokstav</translation>

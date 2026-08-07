@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Word દસ્તાવેજ</translation>
 <translation id="1056775291175587022">કોઈ નેટવર્ક નથી</translation>
 <translation id="1056898198331236512">ચેતવણી</translation>
-<translation id="1060368002126861100"><ph name="APP_NAME" /> વડે ફાઇલો ખોલવા માટે, પહેલા તેમને Windowsના ફાઇલો ફોલ્ડરમાં ખસેડો.</translation>
 <translation id="1062407476771304334">બદલો</translation>
 <translation id="1119383441774809183">ટેક્સ્ટ મેસેજ બતાવો</translation>
 <translation id="1119447706177454957">આંતરિક ભૂલ</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">નૉર્વેજીયન</translation>
 <translation id="1408504635543854729">Files ઍપમાં ડિવાઇસના કન્ટેન્ટમાં નવું શોધો. કન્ટેન્ટ ઍડમિન દ્વારા પ્રતિબંધિત છે અને બદલી શકાતું નથી.</translation>
 <translation id="1412476183660741812">સહી કરેલું વેબ બંડલ</translation>
-<translation id="1433628812591023318">ફાઇલોને Parallels Desktopમાં મૂકવા માટે, ફાઇલને Windows ફાઇલોમાં ખસેડવી આવશ્યક છે.</translation>
-<translation id="1435838927755162558">Parallels ડેસ્કટૉપ સાથે ફોલ્ડર શેર કરો</translation>
 <translation id="1439919885608649279">ફૂલો લઈને ઉભેલી વ્યક્તિ</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" />ને બહાર કાઢો</translation>
 <translation id="1464781208867302907">ડિવાઇસની પસંદગીઓ માટે, સેટિંગ પર જાઓ.</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">ફ્રેન્ચ</translation>
 <translation id="2732288874651063549"><ph name="VM_NAME" /> શેરિંગ મેનેજ કરો</translation>
 <translation id="2732839045120506979">વિયેતનામીઝ VNI</translation>
-<translation id="2735623501230989521">Parallels ડેસ્કટૉપને <ph name="FOLDER_NAME" /> ફોલ્ડરમાંની ફાઇલોને ઍક્સેસ કરવાની પરવાનગી આપો</translation>
 <translation id="2764206540577097904">તમે તમારા Google Workspaceના વ્યક્તિગત સ્ટોરેજનો પૂરો ઉપયોગ કરી લીધો છે.</translation>
 <translation id="2771816809568414714">ચીઝ</translation>
 <translation id="2783909841122647548">Debian પૅકેજ ઇન્સ્ટૉલ કરવાની સુવિધા હવે સપોર્ટેડ નથી. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">સ્થાન માહિતી</translation>
 <translation id="3044404008258011032">આ આઇટમને રિસ્ટોર કરવા માટે, તેમને ટ્રેશની બહાર કોઈ નવા ફોલ્ડર પર ખેંચો. આ આઇટમ માટેનું ઑરિજિનલ ફોલ્ડર "<ph name="PARENT_FOLDER_NAME" />" ડિલીટ કરવામાં આવ્યું છે.</translation>
 <translation id="3047197340186497470">ચાઇનીઝ ડાયી</translation>
-<translation id="3067790092342515856">Windows ફાઇલો</translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">SOCKS હોસ્ટ</translation>
 <translation id="3091469289665833668">રોમાનિયન</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">વિગતો માટે તમારા ઍડમિનિસ્ટ્રેટરનો સંપર્ક કરો.</translation>
 <translation id="3548125359243647069">ઘણી બધી વખત કોઈ ખોટો પિન દાખલ કરવામાં આવ્યો છે.</translation>
 <translation id="3549797760399244642">drive.google.com પર જાઓ...</translation>
-<translation id="3553048479571901246"><ph name="APP_NAME" /> વડે ફાઇલો ખોલવા માટે, પહેલા તેમને Windowsના ફાઇલ ફોલ્ડરમાં કૉપિ કરો.</translation>
 <translation id="3556731189587832921">અંગ્રેજી (યુએસ), આંતરરાષ્ટ્રીય PC કીબોર્ડ સાથે</translation>
 <translation id="3557414470514932909"><ph name="FILE_NAME" /> ટ્રેશમાં ખસેડી રહ્યાં છીએ</translation>
 <translation id="3560848236447534728">આર્મેનિયન ફોનેટિક</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">રોમાનિયન</translation>
 <translation id="4508265954913339219">સક્રિયતા નિષ્ફળ</translation>
 <translation id="4509667233588080747">અંગ્રેજી (યુએસ), વર્કમેન આંતરરાષ્ટ્રીય કીબોર્ડ સાથે</translation>
-<translation id="4527800702232535228">Parallels Desktop સાથે આ ફોલ્ડર શેર કરવામાં આવ્યું છે</translation>
 <translation id="4552678318981539154">વધુ સ્ટોરેજ ખરીદો</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> નેટવર્ક, સિગ્નલની પ્રબળતા <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">બૉકે</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">ઓનિગિરી - ભાતની એક જાપાની વાનગી</translation>
 <translation id="4784330909746505604">PowerPoint પ્રસ્તુતિ</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
-<translation id="4789067489790477934">Parallels ડેસ્કટૉપને તમારી Google Driveમાંની ફાઇલોને ઍક્સેસ કરવાની પરવાનગી આપો. ફેરફારો તમારા બીજા ડિવાઇસ સાથે સિંક થશે.</translation>
 <translation id="4790766916287588578">હિન્દી, ઇનસ્ક્રિપ્ટ કીબોર્ડ સાથે</translation>
 <translation id="4798645114741131062">તમારું ChromeOS Flex ડિવાઇસ ટૂંક સમયમાં અપડેટ મેળવવાનું બંધ કરશે. ChromeOS ડિવાઇસ પર અપગ્રેડ કરવાનું વિચારો.</translation>
 <translation id="4801956050125744859">બંનેને રાખો</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">વોલ્યુમ સ્લાઇડર</translation>
 <translation id="4881695831933465202">ખોલો</translation>
 <translation id="4891091358278567964">આ આઇટમને રિસ્ટોર કરવા માટે, તેમને ટ્રેશની બહાર કોઈ નવા ફોલ્ડર પર ખેંચો. આ આઇટમ માટેના ઑરિજિનલ ફોલ્ડર ડિલીટ કરવામાં આવ્યા છે.</translation>
-<translation id="4900532980794411603">Parallels ડેસ્કટૉપ સાથે શેર કરો</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />%, કનેક્ટ કરો</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_INDEX" />માંથી <ph name="NETWORK_COUNT" /> નેટવર્ક, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />%, ફોનની બૅટરી <ph name="BATTERY_STATUS" />%, વિગતો</translation>
 <translation id="4935975195727477204">સૂર્યમુખીનું ફૂલ</translation>
 <translation id="4943368462779413526">ફૂટબૉલ</translation>
-<translation id="4961158930123534723">Parallels ડેસ્કટૉપ સાથે 1 ફોલ્ડર શેર થયું</translation>
 <translation id="4965874878399872778">તમારી સંસ્થાની સુરક્ષા પૉલિસીઓના પાલન સામે ફાઇલો ચેક કરી રહ્યાં છીએ...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> રિસ્ટોર કરી</translation>
 <translation id="4969785127455456148">આલ્બમ</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">ઑપરેશનમાં અપેક્ષિત કરતાં વધુ સમય લાગી રહ્યો છે. શું તમે તેને નિરસ્ત કરવા માગો છો?</translation>
 <translation id="5036141350290856713">રશિયન ફોનેટિક</translation>
-<translation id="5036159836254554629">Parallels ડેસ્કટૉપ સાથે શેર કરવાને મેનેજ કરો</translation>
 <translation id="5038625366300922036">વધુ જુઓ...</translation>
 <translation id="5044852990838351217">આર્મેનિયન</translation>
 <translation id="5045550434625856497">ખોટો પાસવર્ડ</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">"<ph name="FILENAME" />" કાઢી નાખી રહ્યું છે...</translation>
 <translation id="6581162200855843583">Google ડ્રાઇવ લિંક</translation>
 <translation id="6588648400954570689">ફાઇલ સિંક કરવા માટેના સેટિંગ</translation>
-<translation id="6594855146910089723">Linux અને Parallels Desktop સાથે આ ફોલ્ડર શેર કરવામાં આવ્યું છે</translation>
 <translation id="6607272825297743757">ફાઇલ માહિતી</translation>
-<translation id="6609332149380188670">Parallels ડેસ્કટૉપ સાથે <ph name="NUMBER_OF_ITEMS" /> ફોલ્ડર શેર થયા</translation>
 <translation id="6629518321609546825">ઓછામાં ઓછા 4 અંક દાખલ કરો</translation>
 <translation id="6643016212128521049">સાફ કરો</translation>
 <translation id="6650726141019353908">ગુલાબી પતંગિયું</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">અરેરે! નામ બદલતી વખતે એક ભૂલ આવી હતી.</translation>
 <translation id="7458955835361612701">તાજેતરની કોઈ છબી નથી</translation>
 <translation id="7469894403370665791">આ નેટવર્કમાં ઑટોમૅટિક રીતે કનેક્ટ કરો</translation>
-<translation id="7486315294984620427">ફાઇલોને Parallels Desktopમાં મૂકવા માટે, ફાઇલને Windows ફાઇલોમાં ખસેડવી આવશ્યક છે.</translation>
 <translation id="749452993132003881">હિરગાન</translation>
 <translation id="7495372004724182530">મલયાલમ ફોનેટિક</translation>
 <translation id="7505167922889582512">છુપાવેલી ફાઇલો દર્શાવો</translation>

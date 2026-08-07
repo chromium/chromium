@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Word 문서</translation>
 <translation id="1056775291175587022">네트워크 없음</translation>
 <translation id="1056898198331236512">경고</translation>
-<translation id="1060368002126861100"><ph name="APP_NAME" /> 앱으로 파일을 열려면 먼저 파일을 Windows 파일 폴더로 옮기세요.</translation>
 <translation id="1062407476771304334">바꾸기</translation>
 <translation id="1119383441774809183">문자 메시지 표시</translation>
 <translation id="1119447706177454957">내부 오류</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">노르웨이어</translation>
 <translation id="1408504635543854729">파일 앱에서 기기의 콘텐츠를 탐색합니다. 콘텐츠는 관리자에 의해 제한되며 수정할 수 없습니다.</translation>
 <translation id="1412476183660741812">서명된 웹 번들</translation>
-<translation id="1433628812591023318">Parallels Desktop에 파일을 드롭하려면 파일을 Windows 파일 폴더로 이동해야 합니다.</translation>
-<translation id="1435838927755162558">Parallels Desktop과 폴더 공유</translation>
 <translation id="1439919885608649279">꽃에 둘러싸인 사람</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> 꺼내기</translation>
 <translation id="1464781208867302907">기기 환경설정을 보려면 설정으로 이동하세요.</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">프랑스어</translation>
 <translation id="2732288874651063549"><ph name="VM_NAME" /> 공유 관리</translation>
 <translation id="2732839045120506979">베트남어(VNI)</translation>
-<translation id="2735623501230989521">Parallels Desktop이 <ph name="FOLDER_NAME" /> 폴더의 파일에 액세스하도록 허용합니다.</translation>
 <translation id="2764206540577097904">개인 Google Workspace 저장용량을 모두 사용했습니다.</translation>
 <translation id="2771816809568414714">치즈</translation>
 <translation id="2783909841122647548">Debian 패키지 설치는 더 이상 지원되지 않습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">위치</translation>
 <translation id="3044404008258011032">항목을 복원하려면 휴지통 외부의 새 폴더로 드래그하세요. 이 항목의 원래 폴더인 "<ph name="PARENT_FOLDER_NAME" />"이(가) 삭제되었습니다</translation>
 <translation id="3047197340186497470">중국어(대이수입법)</translation>
-<translation id="3067790092342515856">Windows 파일</translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">SOCKS 호스트</translation>
 <translation id="3091469289665833668">루마니아어</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">자세한 내용은 관리자에게 문의하세요.</translation>
 <translation id="3548125359243647069">잘못된 PIN을 너무 여러 번 입력했습니다</translation>
 <translation id="3549797760399244642">drive.google.com 사이트로 이동...</translation>
-<translation id="3553048479571901246"><ph name="APP_NAME" /> 앱으로 파일을 열려면 먼저 파일을 Windows 파일 폴더에 복사하세요.</translation>
 <translation id="3556731189587832921">영어(미국, 국제 PC 키보드)</translation>
 <translation id="3557414470514932909"><ph name="FILE_NAME" /> 파일을 휴지통으로 이동하는 중</translation>
 <translation id="3560848236447534728">아르메니아어 표음식</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">루마니아어</translation>
 <translation id="4508265954913339219">활성화 실패</translation>
 <translation id="4509667233588080747">영어(미국, 워크맨 국제 키보드)</translation>
-<translation id="4527800702232535228">Parallels Desktop과 공유된 폴더</translation>
 <translation id="4552678318981539154">추가 저장용량 구입</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> 네트워크, 신호 강도 <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">흐리게 처리</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">오니기리</translation>
 <translation id="4784330909746505604">PowerPoint 프레젠테이션</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" />KB</translation>
-<translation id="4789067489790477934">Parallels Desktop이 Google Drive의 파일에 액세스하도록 허용합니다. 변경사항은 다른 기기에 동기화됩니다.</translation>
 <translation id="4790766916287588578">힌디어(인스크립트 키보드)</translation>
 <translation id="4798645114741131062">ChromeOS Flex 기기에서 곧 업데이트 수신이 중지됩니다. ChromeOS 기기로 업그레이드해 보세요.</translation>
 <translation id="4801956050125744859">모두 보관</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">볼륨 슬라이더</translation>
 <translation id="4881695831933465202">열기</translation>
 <translation id="4891091358278567964">항목을 복원하려면 휴지통 외부의 새 폴더로 드래그하세요. 이 항목의 원래 폴더가 삭제되었습니다.</translation>
-<translation id="4900532980794411603">Parallels Desktop과 공유</translation>
 <translation id="4902546322522096650">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 연결</translation>
 <translation id="4906580650526544301">네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 휴대전화 배터리 <ph name="BATTERY_STATUS" />%, 세부정보</translation>
 <translation id="4935975195727477204">꽃</translation>
 <translation id="4943368462779413526">풋볼</translation>
-<translation id="4961158930123534723">폴더 1개가 Parallels Desktop과 공유되었습니다.</translation>
 <translation id="4965874878399872778">파일이 조직의 보안 정책을 준수하는지 확인하는 중…</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> 복원됨</translation>
 <translation id="4969785127455456148">앨범</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">작업 시간이 예상보다 지연되고 있습니다. 중단하시겠습니까?</translation>
 <translation id="5036141350290856713">러시아어 표음식</translation>
-<translation id="5036159836254554629">Parallels Desktop 공유 관리</translation>
 <translation id="5038625366300922036">더보기...</translation>
 <translation id="5044852990838351217">아르메니아어</translation>
 <translation id="5045550434625856497">비밀번호가 잘못되었습니다.</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">'<ph name="FILENAME" />' 삭제 중...</translation>
 <translation id="6581162200855843583">Google Drive 링크</translation>
 <translation id="6588648400954570689">파일 동기화 설정</translation>
-<translation id="6594855146910089723">Linux 및 Parallels Desktop과 공유된 폴더</translation>
 <translation id="6607272825297743757">파일 정보</translation>
-<translation id="6609332149380188670">폴더 <ph name="NUMBER_OF_ITEMS" />개가 Parallels Desktop과 공유됨</translation>
 <translation id="6629518321609546825">4개 이상의 숫자를 입력하세요.</translation>
 <translation id="6643016212128521049">삭제</translation>
 <translation id="6650726141019353908">분홍 나비</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">이름 변경 중에 오류가 발생했습니다.</translation>
 <translation id="7458955835361612701">최근 이미지 없음</translation>
 <translation id="7469894403370665791">네트워크에 자동 연결</translation>
-<translation id="7486315294984620427">Parallels Desktop에 파일을 드롭하려면 파일을 Windows 파일 폴더로 복사해야 합니다.</translation>
 <translation id="749452993132003881">히라가나</translation>
 <translation id="7495372004724182530">말라얄람어(표음)</translation>
 <translation id="7505167922889582512">숨긴 파일 표시</translation>

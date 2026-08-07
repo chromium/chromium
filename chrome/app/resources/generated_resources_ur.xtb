@@ -2055,6 +2055,7 @@
 <translation id="2598710988533271874">‏نیا Chrome دستیاب ہے</translation>
 <translation id="2599048253926156421">صارف کا نام کلپ بورڈ پر کاپی ہو گیا</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{‫1 غیر محفوظ ایکسٹینشن کو آف کر دیا گیا}other{‫{NUM_SITES} غیر محفوظ ایکسٹینشنز کو آف کر دیا گیا}}</translation>
+<translation id="2603121359676416582">اس صفحہ کے لیے</translation>
 <translation id="2604129989323098489">سائٹس عام طور پر آپ کے ڈسپلیز کے بارے میں معلومات طلب کرتی ہیں تاکہ وہ ونڈوز کو اچھے طریقے سے کھول سکیں اور رکھ سکیں، جیسے دستاویزات یا پوری اسکرین مواد کو ساتھ ساتھ دکھانا</translation>
 <translation id="2604255671529671813">نیٹ ورک کنکشن میں خرابی</translation>
 <translation id="2604805099836652105"><ph name="ADDRESS_LABEL" /> پتے کا فارم پر کیا گیا۔</translation>
@@ -2967,6 +2968,7 @@
 <translation id="3285329711156774325">مہارتیں تلاش کریں</translation>
 <translation id="3285500645985761267">متعلقہ سائٹس کو گروپ میں آپ کی سرگرمی دیکھنے کی اجازت دیں</translation>
 <translation id="328571385944182268">آپ کے پاس ورڈز محفوظ کریں؟</translation>
+<translation id="3285969135399641759">نئی مہارتیں سیکھیں</translation>
 <translation id="3289668031376215426">خود بڑے حروف میں لکھنا</translation>
 <translation id="3289856944988573801">‏اپ ڈیٹس چیک کرنے کیلئے، براہ کرم ایتھرنیٹ یا Wi-Fi کا استعمال کریں۔</translation>
 <translation id="3290249595466894471">نئے خطرات کا پتہ لگانے میں مدد کے لیے صفحات، ڈاؤن لوڈز، ایکسٹینشن کی سرگرمی اور سسٹم کی معلومات کا چھوٹا سا نمونہ بھی بھیجتا ہے</translation>
@@ -6370,6 +6372,7 @@
 <translation id="5939719276406088041">شارٹ کٹ تخلیق نہیں کیا جا سکتا</translation>
 <translation id="5939723110967488589">منتخب کریں کہ ٹول بار میں کون سے بٹنز دکھائی دے</translation>
 <translation id="594048410531370124">غیر شناخت کردہ کلید۔ <ph name="RESPONSE" /> کے لیے کوئی بھی کلید دبائیں۔</translation>
+<translation id="5940614040566393493">مشورہ حاصل کریں</translation>
 <translation id="5941711191222866238">چھوٹا کریں</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{‏‫1 پاس ورڈ صرف اس آلے پر محفوظ ہے۔ اپنے دیگر آلات پر اس کا استعمال کرنے کیلئے، اسے اپنے Google اکاؤنٹ میں محفوظ کریں۔}other{‏‫{PASSWORD_COUNT} پاس ورڈز صرف اس آلے پر محفوظ ہیں۔ اپنے دیگر آلات پر ان کا استعمال کرنے کیلئے، انہیں اپنے Google اکاؤنٹ میں محفوظ کریں۔}}</translation>
 <translation id="594221546068848596"><ph name="VISUAL_SEARCH_PROVIDER" /> کی مدد سے صفحہ تلاش کریں</translation>
@@ -10675,7 +10678,6 @@
 <translation id="983192555821071799">سبھی ٹیبز بند کریں</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - کیمرا اور مائیکروفون سے ریکارڈنگ کی جا رہی ہے</translation>
 <translation id="984705303330760860">املے کی جانچ کے لیے زبانیں شامل کریں</translation>
-<translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">عمومی</translation>
 <translation id="987574372967138078">‫<ph name="WEBSITE_ORIGIN" /> آپ کے موبائل آلہ سے معلومات حاصل کرنا چاہتا ہے</translation>
 <translation id="988320949174893488">کبھی کبھار رکتی ہے</translation>

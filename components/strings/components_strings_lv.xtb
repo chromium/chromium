@@ -592,6 +592,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2027465737841872819">Plastmasa</translation>
 <translation id="2027707238798802149">Karte nav pieejama</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Pārbaudiet starpniekserveri un ugunsmūri<ph name="END_LINK" />.</translation>
+<translation id="2033550997390154638">Šī Chrome instance darbojas ar manuāli iestatītām komandrindas atzīmēm. Ņemiet vērā, ka komandrindas atzīmes jebkurā laikā var tikt mainītas un netiek atbalstītas.</translation>
 <translation id="2033900728810589426">Saīsne nedrīkst būt tāda pati kā noklusējuma meklētājprogrammas atslēgvārds, kas definēts politikā <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Tik un tā saglabāt</translation>
 <translation id="2036514476578229158">Jūs lūdzāt atļauju apmeklēt šo vietni. Jūsu vecāki var atbildēt lietotnē Family Link.</translation>
@@ -4563,7 +4564,6 @@ Papildu informācija:
 <translation id="8932102934695377596">Norādītais laiks ir pārāk tālu pagātnē</translation>
 <translation id="893332455753468063">Vārda pievienošana</translation>
 <translation id="8938242527120341116">Jūsu ierīces satura filtri bloķēja šādu vietni: <ph name="BLOCKED_URL" /></translation>
-<translation id="8942355029279167844">Jūsu administrators atļāva lietotnei <ph name="APP_NAME" /> vākt diagnostikas datus, lai uzlabotu produkta lietošanas iespējas. Plašāku informāciju skatiet vietnē <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Laima zaļa</translation>
 <translation id="8949410982325929394">Tonis</translation>
 <translation id="8949493680961858543">A1x4</translation>

@@ -297,6 +297,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="2233735624724508540">Pumili ng timeframe at pagkatapos ay i-tap ang I-delete ang data</translation>
 <translation id="2234031676056123135">I-customize ang mga shortcut mo</translation>
 <translation id="2234827758954819389">Gabay sa Privacy</translation>
+<translation id="2236949375853147973">Aking Aktibidad</translation>
 <translation id="2238038374973843156">Ilipat ang grupo sa ibang window</translation>
 <translation id="2247789808226901522">Nag-expire na ang card</translation>
 <translation id="2251809247798634662">Bagong Incognito window</translation>
@@ -574,6 +575,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="3385749568468586663">Hindi available ang Gemini sa Incognito mode</translation>
 <translation id="3387650086002190359">Hindi na-download ang <ph name="FILE_NAME" /> dahil sa mga error sa file system.</translation>
 <translation id="3391311825344469964">Puwede mong pamahalaan ang iyong mga window sa Window Manager ng Chrome</translation>
+<translation id="3410151451624226773">Pamahalaan sa Google Password Manager</translation>
 <translation id="3417835166382867856">Maghanap sa mga tab</translation>
 <translation id="3430670036890315772">Kapag in-off ang iyong lock ng profile, maaalis ang naka-save na impormasyon mo</translation>
 <translation id="3435575784518354875">Para mapanatili ang access sa iyong mga password, i-export na ngayon ang mga ito, i-update ang Mga Serbisyo ng Google Play, at pagkatapos ay i-import ulit ang mga ito sa Google Password Manager. <ph name="BEGIN_LINK" />Tingnan ang mga kumpletong tagubilin<ph name="END_LINK" />.</translation>
@@ -942,6 +944,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="4877678010818027629">Pumasok sa Incognito mode</translation>
 <translation id="4878404682131129617">Hindi nakagawa ng tunnel sa pamamagitan ng proxy server</translation>
 <translation id="4880127995492972015">Isalin…</translation>
+<translation id="4880827082731008257">History ng paghahanap</translation>
 <translation id="4881695831933465202">Buksan</translation>
 <translation id="488187801263602086">Palitan ang pangalan ng file</translation>
 <translation id="4885273946141277891">Hindi sinusuportahang bilang ng mga instance ng Chrome.</translation>
@@ -991,6 +994,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="509429900233858213">May naganap na error.</translation>
 <translation id="5096775069898886423">Para sa mga site na hindi sinusuportahan ang mga secure na koneksyon, mabigyan ng babala bago bisitahin ang site</translation>
 <translation id="510275257476243843">1 oras na lang ang natitira</translation>
+<translation id="5105442806410269908">Pamahalaan ang iba pang data sa Google</translation>
 <translation id="5114895953710637392">Nakasara ang sheet para sa filter ng app.</translation>
 <translation id="5115811374190515607">sa <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Magagamit mo ang Chrome sa tuwing magta-tap ka ng mga link sa mga mensahe, dokumento, at iba pang app</translation>
@@ -1041,6 +1045,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5316947901395241499">In-off ng iyong administrator ang pag-save ng password</translation>
 <translation id="5317780077021120954">I-save</translation>
 <translation id="5319359161174645648">Inirerekomenda ng Google ang Chrome</translation>
+<translation id="5323501626199324454">Pamahalaan sa iyong Google Account</translation>
 <translation id="5326246328175179736">Hindi ka makakapag-sign in gamit ang account na ito</translation>
 <translation id="5327248766486351172">Pangalan</translation>
 <translation id="5328542107300944283">Gamitin sa pamamagitan ng <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1325,6 +1330,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6461962085415701688">Hindi mabuksan ang file</translation>
 <translation id="6464977750820128603">Puwede mong makita ang mga site na binibisita mo sa Chrome at puwede kang magtakda ng mga timer para sa mga ito.\n\nKumukuha ng impormasyon ang Google tungkol sa mga site kung saan ka nagtakda ng mga timer at inaalam nito kung gaano mo katagal binisita ang mga ito. Ginagamit ang impormasyong ito para pahusayin ang Digital Wellness.</translation>
 <translation id="6468703991511753953">Kasalukuyang nasa ibaba ang address bar</translation>
+<translation id="6469702164109431067">Mga password at passkey</translation>
 <translation id="6470181189905173055">Lalabas dito ang mga binuksan mong page sa Chrome habang ginagamit ang <ph name="APP_LABEL" />.</translation>
 <translation id="6473086018775716761">Nakabukas nang kalahati ang taas ang listahan ng mga opsyon sa pagbabahagi.</translation>
 <translation id="6475951671322991020">I-download ang video</translation>

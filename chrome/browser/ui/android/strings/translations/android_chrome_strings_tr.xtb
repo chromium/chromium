@@ -297,6 +297,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="2233735624724508540">Bir zaman aralığı seçip Verileri sil'e dokunun.</translation>
 <translation id="2234031676056123135">Kısayollarınızı özelleştirin</translation>
 <translation id="2234827758954819389">Gizlilik Kılavuzu</translation>
+<translation id="2236949375853147973">Etkinliğim</translation>
 <translation id="2238038374973843156">Grubu başka bir pencereye taşı</translation>
 <translation id="2247789808226901522">Kartın geçerlilik süresi doldu</translation>
 <translation id="2251809247798634662">Yeni Gizli pencere</translation>
@@ -574,6 +575,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="3385749568468586663">Gemini, Gizli modda kullanılamaz</translation>
 <translation id="3387650086002190359">Dosya sistemi hataları nedeniyle <ph name="FILE_NAME" /> dosyası indirilemedi.</translation>
 <translation id="3391311825344469964">Chrome'un pencere yöneticisinde pencerelerinizi yönetebilirsiniz</translation>
+<translation id="3410151451624226773">Google Şifre Yöneticisi'nde yönetin</translation>
 <translation id="3417835166382867856">Sekme ara</translation>
 <translation id="3430670036890315772">Profil kilidinizi devre dışı bıraktığınızda kayıtlı bilgileriniz kaldırılır</translation>
 <translation id="3435575784518354875">Şifrelerinize erişmeye devam etmek için hemen dışa aktarın, Google Play Hizmetleri'ni güncelleyin ve ardından Google Şifre Yöneticisi'ne geri aktarın. <ph name="BEGIN_LINK" />Talimatların tamamına göz atın<ph name="END_LINK" />.</translation>
@@ -942,6 +944,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="4877678010818027629">Gizli moda geç</translation>
 <translation id="4878404682131129617">Proxy sunucu üzerinden tünel oluşturulamadı</translation>
 <translation id="4880127995492972015">Çevir...</translation>
+<translation id="4880827082731008257">Arama geçmişi</translation>
 <translation id="4881695831933465202">Aç</translation>
 <translation id="488187801263602086">Dosyayı yeniden adlandırın</translation>
 <translation id="4885273946141277891">Desteklenmeyen sayıda Chrome örneği var.</translation>
@@ -991,6 +994,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="509429900233858213">Bir hata oluştu.</translation>
 <translation id="5096775069898886423">Güvenli bağlantıları desteklemeyen siteleri ziyaret etmeden önce uyarı alın</translation>
 <translation id="510275257476243843">1 saat kaldı</translation>
+<translation id="5105442806410269908">Diğer Google verilerini yönetin</translation>
 <translation id="5114895953710637392">Uygulama filtreleme sayfası kapatıldı.</translation>
 <translation id="5115811374190515607">Hedef: <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Mesajlardaki, belgelerdeki ve diğer uygulamalardaki bağlantıları tıkladığınızda Chrome'u kullanabilirsiniz.</translation>
@@ -1041,6 +1045,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="5316947901395241499">Şifre kaydetme özelliği yöneticiniz tarafından kapatıldı</translation>
 <translation id="5317780077021120954">Kaydet</translation>
 <translation id="5319359161174645648">Google, Chrome'u önerir</translation>
+<translation id="5323501626199324454">Google Hesabınızda yönetin</translation>
 <translation id="5326246328175179736">Bu hesabı kullanarak oturum açamazsınız</translation>
 <translation id="5327248766486351172">Ad</translation>
 <translation id="5328542107300944283"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ile kullanın</translation>
@@ -1325,6 +1330,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="6461962085415701688">Dosya açılamıyor</translation>
 <translation id="6464977750820128603">Chrome'da ziyaret ettiğiniz siteleri görebilir ve bunlar için zamanlayıcı ayarlayabilirsiniz.\n\nGoogle, hangi siteler için zamanlayıcı ayarladığınız ve bu siteleri ne kadar süre boyunca ziyaret ettiğiniz konusunda bilgi alır. Bu bilgi, Dijital Denge'yi daha iyi hale getirmek için kullanılır.</translation>
 <translation id="6468703991511753953">Adres çubuğu şu anda altta</translation>
+<translation id="6469702164109431067">Şifreler ve geçiş anahtarları</translation>
 <translation id="6470181189905173055"><ph name="APP_LABEL" /> uygulamasını kullanırken Chrome'da açtığınız sayfalar burada gösterilir.</translation>
 <translation id="6473086018775716761">Paylaşım seçenekleri listesi, ekranın yarısına kadar açıldı.</translation>
 <translation id="6475951671322991020">Videoyu indir</translation>

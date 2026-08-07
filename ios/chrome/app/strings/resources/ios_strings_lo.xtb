@@ -454,6 +454,7 @@
 <translation id="2422174748424038845">ຫາກທ່ານລຶບກຸ່ມນີ້, ທຸກຄົນຈະສູນເສຍສິດເຂົ້າເຖິງກຸ່ມແຖບ “<ph name="GROUP_NAME" />" ທັນທີ ແລະ ມັນຈະຖືກລຶບຈາກອຸປະກອນທັງໝົດ.</translation>
 <translation id="2424805048070062787">ສືບຕໍ່ໃຊ້ແຖບນີ້</translation>
 <translation id="2426805022920575512">ເລືອກບັນຊີອື່ນ</translation>
+<translation id="2428543302546523788">ສະແດງລິ້ງເມື່ອໂໝດການອ່ານເປີດຢູ່</translation>
 <translation id="243275146591958220">ຍົກເລີກການດາວໂຫຼດ</translation>
 <translation id="2434405374328098816">ທ່ານມີລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ສຳລັບ "<ph name="USERNAME" />" ຢູ່ <ph name="WEBSITE" /> ຢູ່ກ່ອນແລ້ວ</translation>
 <translation id="2434918313224755415">ທ່ານສາມາດເລື່ອນໄປທາງຊ້າຍເພື່ອທ່ອງເວັບໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນໄດ້.</translation>
@@ -468,6 +469,7 @@
 <translation id="2470654816840674524">ຂ້ອຍສາມາດໃຊ້ Gemini ໃນ Chrome ເຮັດຫຍັງໄດ້ແດ່?</translation>
 <translation id="2473876017985765807">ທ່ານມີລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ສຳລັບ <ph name="WEBSITE" /> ຢູ່ກ່ອນແລ້ວ</translation>
 <translation id="247430852844518481">ທ່ານສາມາດຕັ້ງການແຈ້ງເຕືອນເພື່ອເຂົ້າເບິ່ງໜ້ານີ້ຄືນໃໝ່ໃນພາຍຫຼັງໄດ້</translation>
+<translation id="2476554421818031422">ທ່ານກຳລັງຊ່ວຍປັບປຸງການຕື່ມຂໍ້ມູນອັດຕະໂນມັດທີ່ປັບປຸງໃຫ້ດີຂຶ້ນ</translation>
 <translation id="2479148705183875116">ໄປທີ່ການຕັ້ງຄ່າ</translation>
 <translation id="2482878487686419369">ການແຈ້ງເຕືອນ</translation>
 <translation id="2484459871750294497">ຂ້ອຍຈະເປີດການນຳໃຊ້ຄຸນສົມບັດນີ້ແນວໃດ?</translation>
@@ -2068,6 +2070,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="78146569776629510">ດາວໂຫຼດ</translation>
 <translation id="7815852444315004084">ເຊື່ອງໄວ້ກ່ອນ</translation>
 <translation id="7825973332242257878">ກຸ່ມແຖບ</translation>
+<translation id="7828344837949522075">ສະແດງການແນະນຳ</translation>
 <translation id="7839994177130598711">ຕອນນີ້ສະມາຊິກຄອບຄົວຂອງທ່ານສາມາດໃຊ້ຊື່ຜູ້ໃຊ້ ແລະ ລະຫັດຜ່ານຂອງທ່ານໃນເວລາທີ່ເຂົາເຈົ້າໃຊ້ຕົວຈັດການລະຫັດຜ່ານ Google ເພື່ອເຂົ້າສູ່ລະບົບ <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> ໄດ້ແລ້ວ.</translation>
 <translation id="7841180087127694526">ຊອກຫາຂໍ້ຄວາມທີ່ສຳເນົາ</translation>
 <translation id="7841418003178675048">ເລືອກວ່າທ່ານເຫັນບັດໃດຢູ່ໜ້າແຖບໃໝ່ຂອງທ່ານ.</translation>

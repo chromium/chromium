@@ -297,6 +297,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2233735624724508540">Izberite časovno obdobje in se dotaknite »Izbriši podatke«</translation>
 <translation id="2234031676056123135">Prilagajanje bližnjic</translation>
 <translation id="2234827758954819389">Vodnik po zasebnosti</translation>
+<translation id="2236949375853147973">Moja dejavnost</translation>
 <translation id="2238038374973843156">Premik skupine v drugo okno</translation>
 <translation id="2247789808226901522">Kartica je potekla</translation>
 <translation id="2251809247798634662">Novo okno brez beleženja zgodovine</translation>
@@ -574,6 +575,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3385749568468586663">Gemini ni na voljo v anonimnem načinu</translation>
 <translation id="3387650086002190359">Prenos datoteke <ph name="FILE_NAME" /> ni uspel zaradi napak v datotečnem sistemu.</translation>
 <translation id="3391311825344469964">Okna lahko upravljate v Chromovem upravitelju oken</translation>
+<translation id="3410151451624226773">Upravljanje v Googlovem upravitelju gesel</translation>
 <translation id="3417835166382867856">Iskanje zavihkov</translation>
 <translation id="3430670036890315772">Če izklopite zaklepanje profila, se shranjeni podatki odstranijo</translation>
 <translation id="3435575784518354875">Če želite ohraniti dostop do gesel, jih izvozite, posodobite Storitve Google Play in nato gesla znova uvozite v Googlovega upravitelja gesel. <ph name="BEGIN_LINK" />Oglejte si celotna navodila<ph name="END_LINK" />.</translation>
@@ -942,6 +944,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="4877678010818027629">Vklop anonimnega načina</translation>
 <translation id="4878404682131129617">Vzpostavljanje tunela prek strežnika proxy ni uspelo</translation>
 <translation id="4880127995492972015">Prevedi …</translation>
+<translation id="4880827082731008257">Zgodovina iskanja</translation>
 <translation id="4881695831933465202">Odpri</translation>
 <translation id="488187801263602086">Preimenovanje datoteke</translation>
 <translation id="4885273946141277891">To število primerkov Chroma ni podprto.</translation>
@@ -991,6 +994,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="509429900233858213">Napaka.</translation>
 <translation id="5096775069898886423">Prejmite opozorilo pred obiskom spletnih mest, ki ne podpirajo varnih povezav</translation>
 <translation id="510275257476243843">Še 1 h</translation>
+<translation id="5105442806410269908">Upravljanje drugih Googlovih podatkov</translation>
 <translation id="5114895953710637392">List filtra za aplikacije je zaprt.</translation>
 <translation id="5115811374190515607">za <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Chrome lahko uporabljate, kadar koli se dotaknete povezav v sporočilih, dokumentih in drugih aplikacijah</translation>
@@ -1041,6 +1045,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5316947901395241499">Skrbnik je izklopil shranjevanje gesel</translation>
 <translation id="5317780077021120954">Shrani</translation>
 <translation id="5319359161174645648">Google priporoča Chrome</translation>
+<translation id="5323501626199324454">Upravljanje v računu Google</translation>
 <translation id="5326246328175179736">S tem računom se ni mogoče prijaviti</translation>
 <translation id="5327248766486351172">Ime</translation>
 <translation id="5328542107300944283">Uporabi z računom <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1325,6 +1330,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6461962085415701688">Datoteke ni mogoče odpreti</translation>
 <translation id="6464977750820128603">Ogledate si lahko spletna mesta, ki jih obiščete v Chromu, in zanje nastavite merilnike časa.\n\nGoogle dobi podatke o spletnih mestih, za katere nastavite merilnike časa, in o tem, kako dolgo traja vaš obisk teh mest. Te podatke uporabljamo za izboljšanje Digitalne dobrobiti.</translation>
 <translation id="6468703991511753953">Naslovna vrstica je trenutno na dnu</translation>
+<translation id="6469702164109431067">Gesla in ključi za dostop</translation>
 <translation id="6470181189905173055">Strani, ki ste jih odprli v Chromu, ko ste uporabljali aplikacijo <ph name="APP_LABEL" />, bodo prikazane tukaj.</translation>
 <translation id="6473086018775716761">Seznam možnosti deljenja z drugimi je odprt pri polovični višini.</translation>
 <translation id="6475951671322991020">Prenos videoposnetka</translation>

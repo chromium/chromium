@@ -297,6 +297,7 @@
 <translation id="2233735624724508540">টাইমফ্রেম বেছে নিন এবং তারপর 'ডেটা মুছে দিন' বিকল্পে ট্যাপ করুন</translation>
 <translation id="2234031676056123135">আপনার শর্টকাট কাস্টমাইজ করুন</translation>
 <translation id="2234827758954819389">গোপনীয়তা সংক্রান্ত গাইড</translation>
+<translation id="2236949375853147973">আমার অ্যাক্টিভিটি</translation>
 <translation id="2238038374973843156">অন্য উইন্ডোতে গ্রুপ সরান</translation>
 <translation id="2247789808226901522">কার্ডের মেয়াদ শেষ হয়ে গেছে</translation>
 <translation id="2251809247798634662">নতুন ছদ্মবেশী উইন্ডো</translation>
@@ -574,6 +575,7 @@
 <translation id="3385749568468586663">ছদ্মবেশী মোডে Gemini উপলভ্য নেই</translation>
 <translation id="3387650086002190359">ফাইল সিস্টেম ত্রুটির কারণে <ph name="FILE_NAME" /> ডাউনলোড করা যায়নি।</translation>
 <translation id="3391311825344469964">আপনি Chrome-এর উইন্ডো ম্যানেজার থেকে আপনার উইন্ডো ম্যানেজ করতে পারবেন</translation>
+<translation id="3410151451624226773">Google Password Manager-এ ম্যানেজ করুন</translation>
 <translation id="3417835166382867856">ট্যাব সার্চ করুন</translation>
 <translation id="3430670036890315772">প্রোফাইল লক বন্ধ করে দিলে সেভ করা তথ্য মুছে যাবে</translation>
 <translation id="3435575784518354875">আপনার পাসওয়ার্ডে অ্যাক্সেস বজায় রাখতে, সেগুলি এখন এক্সপোর্ট, Google Play পরিষেবা আপডেট করুন এবং সেগুলি Google Password Manager-এ আবার ইমপোর্ট করুন। <ph name="BEGIN_LINK" />সম্পূর্ণ নির্দেশাবলী দেখুন<ph name="END_LINK" />।</translation>
@@ -942,6 +944,7 @@
 <translation id="4877678010818027629">ছদ্মবেশী মোড চালু করুন</translation>
 <translation id="4878404682131129617">প্রক্সি সার্ভারের মাধ্যমে টানেল তৈরি করা যায়নি</translation>
 <translation id="4880127995492972015">অনুবাদ করুন…</translation>
+<translation id="4880827082731008257">সার্চের ইতিহাস</translation>
 <translation id="4881695831933465202">খুলুন</translation>
 <translation id="488187801263602086">ফাইলটির আবার নাম দিন</translation>
 <translation id="4885273946141277891">অসমর্থিত সংখ্যার Chrome দৃষ্টান্তগুলি</translation>
@@ -991,6 +994,7 @@
 <translation id="509429900233858213">একটি ত্রুটি ঘটেছে৷</translation>
 <translation id="5096775069898886423">যেসব সাইটে সুরক্ষিত কানেকশনের সুবিধা কাজ করে না, সেই সব সাইট দেখার আগে সতর্কতা পান</translation>
 <translation id="510275257476243843">১ ঘণ্টা বাকি আছে</translation>
+<translation id="5105442806410269908">অন্য Google ডেটা ম্যানেজ করুন</translation>
 <translation id="5114895953710637392">অ্যাপ ফিল্টার শিট বন্ধ করা হয়েছে।</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" />-এ</translation>
 <translation id="5116239826668864748">আপনি মেসেজ, ডকুমেন্ট এবং অন্যান্য অ্যাপে থাকা বিভিন্ন লিঙ্কে ট্যাপ যেকোনও সময় Chrome ব্যবহার করতে পারবেন</translation>
@@ -1041,6 +1045,7 @@
 <translation id="5316947901395241499">আপনার অ্যাডমিনিস্ট্রেটর পাসওয়ার্ড সেভ করার সুবিধা বন্ধ করে দিয়েছে</translation>
 <translation id="5317780077021120954">সেভ করুন</translation>
 <translation id="5319359161174645648">Google Chrome ব্যবহার করার সুপারিশ করে</translation>
+<translation id="5323501626199324454">আপনার Google অ্যাকাউন্ট থেকে ম্যানেজ করুন</translation>
 <translation id="5326246328175179736">এই অ্যাকাউন্ট ব্যবহার করে আপনি সাইন-ইন করতে পারবেন না</translation>
 <translation id="5327248766486351172">নাম</translation>
 <translation id="5328542107300944283"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> দিয়ে ব্যবহার করুন</translation>
@@ -1325,6 +1330,7 @@
 <translation id="6461962085415701688">ফাইল খোলা যাচ্ছে না</translation>
 <translation id="6464977750820128603">Chrome-এ দেখা সাইটগুলি আপনি দেখতে পাবেন এবং সাইটগুলিতে টাইমার সেট করতে পারবেন।\n\nযে সমস্ত সাইটে টাইমার সেট করেছেন বা কত সময় ধরে সাইটটি দেখেছেন তার সমস্ত তথ্য Google-এর কাছে যায়। ডিজিটাল ওয়েলবিং-কে আরও উন্নত করতে এই তথ্য ব্যবহার করা হয়।</translation>
 <translation id="6468703991511753953">অ্যাড্রেস বার বর্তমানে একবারে নিচে রয়েছে</translation>
+<translation id="6469702164109431067">পাসওয়ার্ড এবং পাসকি</translation>
 <translation id="6470181189905173055"><ph name="APP_LABEL" /> ব্যবহার করে Chrome-এ আপনার খোলা পৃষ্ঠা এখানে দেখা যাবে।</translation>
 <translation id="6473086018775716761">শেয়ার করার বিকল্পের তালিকা স্ক্রিনের অর্ধেক জুড়ে খুলেছে।</translation>
 <translation id="6475951671322991020">ভিডিও ডাউনলোড করুন</translation>

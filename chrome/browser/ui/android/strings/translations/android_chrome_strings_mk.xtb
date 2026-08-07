@@ -297,6 +297,7 @@
 <translation id="2233735624724508540">Изберете временска рамка, па допрете „Избриши ги податоците“</translation>
 <translation id="2234031676056123135">Приспособете ги кратенките</translation>
 <translation id="2234827758954819389">Водич за приватност</translation>
+<translation id="2236949375853147973">Моја активност</translation>
 <translation id="2238038374973843156">Премести ја групата</translation>
 <translation id="2247789808226901522">Картичката е истечена</translation>
 <translation id="2251809247798634662">Нов прозорец „Инкогнито“</translation>
@@ -574,6 +575,7 @@
 <translation id="3385749568468586663">Gemini не е достапен во режимот „Инкогнито“</translation>
 <translation id="3387650086002190359">Преземањето на <ph name="FILE_NAME" /> не успеа поради грешки на системот со датотеки.</translation>
 <translation id="3391311825344469964">Со вашите прозорци може да управувате во „Управувачот со прозорци“ на Chrome</translation>
+<translation id="3410151451624226773">Управувајте во Google Password Manager</translation>
 <translation id="3417835166382867856">Пребарајте ги картичките</translation>
 <translation id="3430670036890315772">Ако го исклучите „Заклучувањето на профилот“, ќе се отстранат вашите зачувани податоци</translation>
 <translation id="3435575784518354875">За да го задржите пристапот до лозинките, извезете ги сега, ажурирајте ја „Услуги на Google Play“, па увезете ги повторно во Google Password Manager. <ph name="BEGIN_LINK" />Погледнете ги целосните инструкции<ph name="END_LINK" />.</translation>
@@ -942,6 +944,7 @@
 <translation id="4877678010818027629">Влезете во режим „Инкогнито“</translation>
 <translation id="4878404682131129617">Воспоставувањето тунел преку прокси-сервер не успеа</translation>
 <translation id="4880127995492972015">Преведи…</translation>
+<translation id="4880827082731008257">Историја на пребарување</translation>
 <translation id="4881695831933465202">Отвори</translation>
 <translation id="488187801263602086">Преименување датотеката</translation>
 <translation id="4885273946141277891">Неподдржан број примероци на Chrome.</translation>
@@ -991,6 +994,7 @@
 <translation id="509429900233858213">Настана грешка.</translation>
 <translation id="5096775069898886423">За сајтовите што не поддржуваат безбедни врски, добијте предупредување пред да го отворите сајтот</translation>
 <translation id="510275257476243843">Остана 1 час</translation>
+<translation id="5105442806410269908">Управувајте со другите податоци на Google</translation>
 <translation id="5114895953710637392">Листот за филтрирање според апликација е затворен.</translation>
 <translation id="5115811374190515607">до <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Chrome може да го користите секогаш кога ќе допрете линкови во пораките, документите и другите апликации</translation>
@@ -1041,6 +1045,7 @@
 <translation id="5316947901395241499">Администраторот го исклучил зачувувањето лозинки</translation>
 <translation id="5317780077021120954">Зачувај</translation>
 <translation id="5319359161174645648">Google го препорачува Chrome</translation>
+<translation id="5323501626199324454">Управувајте во вашата сметка на Google</translation>
 <translation id="5326246328175179736">Не може да се најавите со сметкава</translation>
 <translation id="5327248766486351172">Име</translation>
 <translation id="5328542107300944283">Користете со <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1325,6 +1330,7 @@
 <translation id="6461962085415701688">Не може да се отвори датотеката</translation>
 <translation id="6464977750820128603">Може да ги гледате сајтовите што ги посетувате во Chrome и да поставувате тајмери за нив.\n\nGoogle добива информации за тоа на кои сајтови поставувате тајмери и колку време поминувате на нив. Овие информации се користат за подобрување на „Дигиталната благосостојба“.</translation>
 <translation id="6468703991511753953">Во моментов, лентата за адреса е најдолу</translation>
+<translation id="6469702164109431067">Лозинки и криптографски клучеви</translation>
 <translation id="6470181189905173055">Страниците што сте ги отвориле во Chrome при користењето <ph name="APP_LABEL" /> ќе се појават тука.</translation>
 <translation id="6473086018775716761">Список со опции за споделување отворен на половина екран.</translation>
 <translation id="6475951671322991020">Преземи видео</translation>

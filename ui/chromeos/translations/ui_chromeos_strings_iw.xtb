@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">‏מסמך Word</translation>
 <translation id="1056775291175587022">אין רשתות</translation>
 <translation id="1056898198331236512">אזהרה</translation>
-<translation id="1060368002126861100">‏כדי שניתן יהיה לפתוח קבצים באמצעות <ph name="APP_NAME" />, צריך להעתיק אותם לתיקיית קובצי Windows.</translation>
 <translation id="1062407476771304334">החלפה</translation>
 <translation id="1119383441774809183">הצגת הודעות טקסט</translation>
 <translation id="1119447706177454957">שגיאה פנימית</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">נורווגית</translation>
 <translation id="1408504635543854729">ניתן לעיין בתוכן של המכשיר באמצעות האפליקציה 'קבצים'. התוכן מוגבל על-ידי מנהל מערכת, ואי אפשר לשנות אותו.</translation>
 <translation id="1412476183660741812">Signed Web Bundle</translation>
-<translation id="1433628812591023318">‏כדי לשחרר קובץ ב-Parallels Desktop, צריך להעביר אותו לקובצי Windows.</translation>
-<translation id="1435838927755162558">‏שיתוף תיקייה באמצעות Parallels Desktop</translation>
 <translation id="1439919885608649279">אדם עם פרחים</translation>
 <translation id="1458457385801829801">הוצאה של <ph name="TARGET_NAME" /></translation>
 <translation id="1464781208867302907">דרך ההגדרות אפשר לגשת להעדפות המכשיר.</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">צרפתית</translation>
 <translation id="2732288874651063549">ניהול השיתוף עם <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">‏וייטנאמית VNI</translation>
-<translation id="2735623501230989521">‏מתן הרשאת גישה ל-Parallels Desktop לקבצים בתיקייה <ph name="FOLDER_NAME" /></translation>
 <translation id="2764206540577097904">‏השתמשת בכל נפח האחסון לשימוש פרטי שלך ב-Google Workspace.</translation>
 <translation id="2771816809568414714">גבינה</translation>
 <translation id="2783909841122647548">‏הופסקה התמיכה בהתקנה של חבילות Debian. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">גיאוגרפיה</translation>
 <translation id="3044404008258011032">כדי לשחזר את הפריטים האלה, גוררים אותם לתיקייה חדשה מחוץ לאשפה. התיקייה המקורית '<ph name="PARENT_FOLDER_NAME" />' של הפריטים האלה נמחקה.</translation>
 <translation id="3047197340186497470">‏סינית Dayi</translation>
-<translation id="3067790092342515856">‏קובצי Windows</translation>
 <translation id="3083975830683400843">‏מכשירי Chromebit</translation>
 <translation id="3085752524577180175">‏מארח SOCKS</translation>
 <translation id="3091469289665833668">רומנית</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">לפרטים נוספים, יש לפנות לאדמין.</translation>
 <translation id="3548125359243647069">הוזן קוד אימות שגוי יותר מדי פעמים.</translation>
 <translation id="3549797760399244642">‏מעבר אל drive.google.com...</translation>
-<translation id="3553048479571901246">‏כדי שניתן יהיה לפתוח קבצים באמצעות <ph name="APP_NAME" />, צריך להעתיק אותם לתיקיית קובצי Windows.</translation>
 <translation id="3556731189587832921">‏מקלדת Workman בינלאומית באנגלית (ארה"ב) ל-PC</translation>
 <translation id="3557414470514932909">הקובץ <ph name="FILE_NAME" /> מועבר לאשפה</translation>
 <translation id="3560848236447534728">ארמנית פונטית</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">רומנית</translation>
 <translation id="4508265954913339219">ההפעלה נכשלה</translation>
 <translation id="4509667233588080747">‏מקלדת Workman בינלאומית באנגלית (ארה"ב)</translation>
-<translation id="4527800702232535228">‏התיקייה הזו משותפת עם Parallels Desktop</translation>
 <translation id="4552678318981539154">לרכישת עוד נפח אחסון</translation>
 <translation id="4552759165874948005">‏רשת <ph name="NETWORK_TYPE" />, עוצמת אות ‎<ph name="SIGNAL_STRENGTH" />%‎</translation>
 <translation id="4559767610552730302">טשטוש</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">אוניגירי</translation>
 <translation id="4784330909746505604">‏מצגת PowerPoint</translation>
 <translation id="4788401404269709922">‎<ph name="NUMBER_OF_KB" />KB</translation>
-<translation id="4789067489790477934">‏מתן הרשאת גישה ל-Parallels Desktop לקבצים ב-Google Drive. השינויים יסתנכרנו עם המכשירים האחרים שלך.</translation>
 <translation id="4790766916287588578">‏הינדי עם מקלדת InScript</translation>
 <translation id="4798645114741131062">‏בקרוב מכשיר ה-ChromeOS Flex שלך יפסיק לקבל עדכונים. רוצה לשדרג למכשיר ChromeOS?</translation>
 <translation id="4801956050125744859">שמירת שתיהן</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">מחוון עוצמת קול</translation>
 <translation id="4881695831933465202">פתיחה</translation>
 <translation id="4891091358278567964">כדי לשחזר את הפריטים האלה, גוררים אותם לתיקייה חדשה מחוץ לאשפה. התיקיות המקוריות של הפריטים האלה נמחקו.</translation>
-<translation id="4900532980794411603">‏שיתוף עם Parallels Desktop</translation>
 <translation id="4902546322522096650">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="SECURITY_STATUS" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, התחברות</translation>
 <translation id="4906580650526544301">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="PHONE_NAME" />,‏ <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, עוצמת האות: %<ph name="SIGNAL_STRENGTH" />‎, סוללת הטלפון: %<ph name="BATTERY_STATUS" />, פרטים</translation>
 <translation id="4935975195727477204">פרח גזניה</translation>
 <translation id="4943368462779413526">פוטבול</translation>
-<translation id="4961158930123534723">‏תיקייה אחת שותפה עם Parallels Desktop</translation>
 <translation id="4965874878399872778">המערכת בודקת אם הקבצים עומדים בדרישות של מדיניות האבטחה של הארגון שלך…</translation>
 <translation id="496656650103537022">הקובץ <ph name="FILE_NAME" /> שוחזר</translation>
 <translation id="4969785127455456148">אלבום</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">פעולה מסוימת נמשכת זמן רב מהצפוי. האם ברצונך לבטל אותה?</translation>
 <translation id="5036141350290856713">רוסית פונטית</translation>
-<translation id="5036159836254554629">‏ניהול השיתוף של Parallels Desktop</translation>
 <translation id="5038625366300922036">פרטים נוספים...</translation>
 <translation id="5044852990838351217">ארמנית</translation>
 <translation id="5045550434625856497">סיסמה שגויה</translation>
@@ -737,9 +726,7 @@
 <translation id="656398493051028875">מחיקת "<ph name="FILENAME" />" מתבצעת...</translation>
 <translation id="6581162200855843583">‏קישור ל-Google Drive</translation>
 <translation id="6588648400954570689">הגדרות של סנכרון קבצים</translation>
-<translation id="6594855146910089723">‏התיקייה הזו משותפת עם Linux ועם Parallels Desktop</translation>
 <translation id="6607272825297743757">פרטי הקובץ</translation>
-<translation id="6609332149380188670">‏<ph name="NUMBER_OF_ITEMS" /> תיקיות שותפו עם Parallels Desktop</translation>
 <translation id="6629518321609546825">יש להזין 4 מספרים לפחות</translation>
 <translation id="6643016212128521049">ניקוי</translation>
 <translation id="6650726141019353908">פרפר ורוד</translation>
@@ -857,7 +844,6 @@
 <translation id="7436921188514130341">אופס! אירעה שגיאה במהלך שינוי השם.</translation>
 <translation id="7458955835361612701">אין תמונות מהזמן האחרון</translation>
 <translation id="7469894403370665791">התחברות באופן אוטומטי לרשת זו.</translation>
-<translation id="7486315294984620427">‏כדי לשחרר קובץ ב-Parallels Desktop, צריך להעתיק אותו לקובצי Windows.</translation>
 <translation id="749452993132003881">היראגאנה</translation>
 <translation id="7495372004724182530">מליאלאם פונטית</translation>
 <translation id="7505167922889582512">הצגת קבצים מוסתרים</translation>

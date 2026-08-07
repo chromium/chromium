@@ -297,6 +297,7 @@
 <translation id="2233735624724508540">సమయ వ్యవధిని ఎంచుకుని, ఆపై 'డేటాను తొలగించండి' అనే ఆప్షన్‌ను ట్యాప్ చేయండి</translation>
 <translation id="2234031676056123135">షార్ట్‌కట్స్‌ను అనుకూలంగా ఉంచండి</translation>
 <translation id="2234827758954819389">గోప్యతా గైడ్</translation>
+<translation id="2236949375853147973">నా యాక్టివిటీ</translation>
 <translation id="2238038374973843156">మరో విండోకు గ్రూప్ జరపండి</translation>
 <translation id="2247789808226901522">కార్డ్ గడువు ముగిసింది</translation>
 <translation id="2251809247798634662">కొత్త అజ్ఞాత విండో</translation>
@@ -574,6 +575,7 @@
 <translation id="3385749568468586663">Gemini, అజ్ఞాత మోడ్‌లో అందుబాటులో లేదు</translation>
 <translation id="3387650086002190359">ఫైల్ సిస్టమ్ లోపాల కారణంగా <ph name="FILE_NAME" /> డౌన్‌లోడ్ విఫలమైంది.</translation>
 <translation id="3391311825344469964">మీరు Chrome విండో మేనేజర్‌లో మీ విండోలను మేనేజ్ చేయవచ్చు</translation>
+<translation id="3410151451624226773">Google Password Managerలో మేనేజ్ చేయండి</translation>
 <translation id="3417835166382867856">ట్యాబ్‌లలో సెర్చ్ చేయండి</translation>
 <translation id="3430670036890315772">మీ ప్రొఫైల్ లాక్‌ను ఆఫ్ చేస్తే, సేవ్ చేసిన మీ సమాచారం తీసివేయబడుతుంది</translation>
 <translation id="3435575784518354875">మీ పాస్‌వర్డ్‌లకు యాక్సెస్‌ను కొనసాగించడానికి, వాటిని ఇప్పుడే ఎగుమతి చేయండి, Google Play సర్వీసులను అప్‌డేట్ చేయండి, ఆపై వాటిని తిరిగి Google Password Managerకు దిగుమతి చేయండి. <ph name="BEGIN_LINK" />పూర్తి సూచనలను చూడండి<ph name="END_LINK" />.</translation>
@@ -942,6 +944,7 @@
 <translation id="4877678010818027629">అజ్ఞాత మోడ్‌లోకి ఎంటర్ అవ్వండి</translation>
 <translation id="4878404682131129617">ప్రాక్సీ సర్వర్ ద్వారా ఒక సొరంగంను ఏర్పాటు చేయడం విఫలమైంది</translation>
 <translation id="4880127995492972015">అనువదించు…</translation>
+<translation id="4880827082731008257">హిస్టరీలో సెర్చ్ చేయండి</translation>
 <translation id="4881695831933465202">తెరువు</translation>
 <translation id="488187801263602086">ఫైల్ పేరు మార్చండి</translation>
 <translation id="4885273946141277891">మద్దతు లేనన్ని సార్లు Chromeను ప్రారంభించడానికి ప్రయత్నించారు.</translation>
@@ -991,6 +994,7 @@
 <translation id="509429900233858213">ఒక ఎర్రర్ ఏర్పడింది.</translation>
 <translation id="5096775069898886423">సురక్షితమైన కనెక్షన్‌లను సపోర్ట్ చేయని సైట్‌ల విషయంలో, సైట్‌ను సందర్శించే ముందే హెచ్చరికను పొందండి</translation>
 <translation id="510275257476243843">1 గంట మిగిలి ఉంది</translation>
+<translation id="5105442806410269908">ఇతర Google డేటాను మేనేజ్ చేయండి</translation>
 <translation id="5114895953710637392">యాప్ ఫిల్టర్ షీట్ మూసివేయబడింది.</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" />కు</translation>
 <translation id="5116239826668864748">మెసేజ్‌లు, డాక్యుమెంట్‌లు, ఇతర యాప్‌లలో మీరు లింక్‌లను ట్యాప్ చేసేటప్పుడు ఎప్పుడైనా Chromeను ఉపయోగించవచ్చు</translation>
@@ -1041,6 +1045,7 @@
 <translation id="5316947901395241499">మీ అడ్మినిస్ట్రేటర్, పాస్‌వర్డ్‌ను సేవ్ చేసే ఫీచర్‌ను ఆఫ్ చేశారు</translation>
 <translation id="5317780077021120954">సేవ్ చేయండి</translation>
 <translation id="5319359161174645648">Chromeను Google సిఫార్సు చేస్తోంది</translation>
+<translation id="5323501626199324454">మీ Google ఖాతాలో మేనేజ్ చేయండి</translation>
 <translation id="5326246328175179736">మీరు ఈ ఖాతాను ఉపయోగించి సైన్ ఇన్ చేయడం సాధ్యం కాదు</translation>
 <translation id="5327248766486351172">పేరు</translation>
 <translation id="5328542107300944283"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> వెబ్‌సైట్‌తో ఉపయోగించండి</translation>
@@ -1323,6 +1328,7 @@
 <translation id="6461962085415701688">ఫైల్‌ను తెరవడం సాధ్యపడదు</translation>
 <translation id="6464977750820128603">Chromeలో మీరు ఏయే సైట్‌లను సందర్శించారో చూడవచ్చు, వాటికి టైమర్‌లను సెట్ చేయవచ్చు.\n\nమీరు టైమర్‌లను సెట్ చేసిన సైట్‌ల సమాచారం, మీరు ఎంతసేపు వాటిని సందర్శించారనే వివరాలు Googleకు అందించబడతాయి. డిజిటల్ సంక్షేమాన్ని మరింత మెరుగుపరచడానికి ఈ సమాచారం ఉపయోగించబడుతుంది.</translation>
 <translation id="6468703991511753953">అడ్రస్ బార్ ప్రస్తుతం కింద ఉంది</translation>
+<translation id="6469702164109431067">పాస్‌వర్డ్‌లు, పాస్-కీలు</translation>
 <translation id="6470181189905173055"><ph name="APP_LABEL" />‌ను ఉపయోగించేటప్పుడు మీరు Chromeలో తెరిచిన పేజీలు, ఇక్కడ చూపబడతాయి.</translation>
 <translation id="6473086018775716761">షేరింగ్ ఆప్షన్‌ల లిస్ట్ స్క్రీన్ పూర్తిగా తెరవబడింది.</translation>
 <translation id="6475951671322991020">వీడియోను డౌన్‌లోడ్ చేయి</translation>

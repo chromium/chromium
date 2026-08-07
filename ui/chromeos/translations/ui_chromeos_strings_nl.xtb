@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Word-document</translation>
 <translation id="1056775291175587022">Geen netwerken</translation>
 <translation id="1056898198331236512">Waarschuwing</translation>
-<translation id="1060368002126861100">Als je bestanden wilt openen met <ph name="APP_NAME" />, verplaats je ze eerst naar de bestandsmap van Windows.</translation>
 <translation id="1062407476771304334">Vervangen</translation>
 <translation id="1119383441774809183">Tekstberichten tonen</translation>
 <translation id="1119447706177454957">Interne fout</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">Noors</translation>
 <translation id="1408504635543854729">Verken de content op het apparaat in de app Bestanden. De content wordt beperkt door een beheerder en kan niet worden aangepast.</translation>
 <translation id="1412476183660741812">Ondertekende webbundel</translation>
-<translation id="1433628812591023318">Als je bestanden wilt neerzetten in Parallels Desktop, moet het bestand worden verplaatst naar de map met Windows-bestanden.</translation>
-<translation id="1435838927755162558">Map delen met Parallels Desktop</translation>
 <translation id="1439919885608649279">Persoon met bloemen</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> verwijderen</translation>
 <translation id="1464781208867302907">Ga naar Instellingen voor apparaatvoorkeuren</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">Frans</translation>
 <translation id="2732288874651063549">Delen met <ph name="VM_NAME" /> beheren</translation>
 <translation id="2732839045120506979">Vietnamees (VNI)</translation>
-<translation id="2735623501230989521">Parallels Desktop toegang geven tot bestanden in de map <ph name="FOLDER_NAME" /></translation>
 <translation id="2764206540577097904">Je persoonlijke Google Workspace-opslag is helemaal vol.</translation>
 <translation id="2771816809568414714">Kaas</translation>
 <translation id="2783909841122647548">Installaties van Debian-pakketten worden niet meer ondersteund. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">Geografie</translation>
 <translation id="3044404008258011032">Als je deze items wilt herstellen, sleep je ze naar een nieuwe map buiten de prullenbak. De oorspronkelijke map <ph name="PARENT_FOLDER_NAME" /> voor deze items is verwijderd.</translation>
 <translation id="3047197340186497470">Chinees (Dayi)</translation>
-<translation id="3067790092342515856">Windows-bestanden</translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">SOCKS-host</translation>
 <translation id="3091469289665833668">Roemeens</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">Neem contact op met je beheerder voor meer informatie.</translation>
 <translation id="3548125359243647069">Je hebt te vaak een verkeerde pincode opgegeven.</translation>
 <translation id="3549797760399244642">Ga naar drive.google.com...</translation>
-<translation id="3553048479571901246">Als je bestanden wilt openen met <ph name="APP_NAME" />, kopieer je ze eerst naar de bestandsmap van Windows.</translation>
 <translation id="3556731189587832921">Engels (VS) met internationaal pc-toetsenbord</translation>
 <translation id="3557414470514932909"><ph name="FILE_NAME" /> naar de prullenbak verplaatsen</translation>
 <translation id="3560848236447534728">Armeens fonetisch</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">Roemeens</translation>
 <translation id="4508265954913339219">Activering mislukt</translation>
 <translation id="4509667233588080747">Engels (VS) met Workman International-toetsenbord</translation>
-<translation id="4527800702232535228">Deze map is gedeeld met Parallels Desktop</translation>
 <translation id="4552678318981539154">Meer opslagruimte kopen</translation>
 <translation id="4552759165874948005">Netwerk: <ph name="NETWORK_TYPE" />, signaalsterkte: <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">Bokeh</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">PowerPoint-presentatie</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
-<translation id="4789067489790477934">Parallels Desktop toegang geven tot bestanden in je Google Drive. Wijzigingen worden gesynchroniseerd met je andere apparaten.</translation>
 <translation id="4790766916287588578">Hindi met InScript-toetsenbord</translation>
 <translation id="4798645114741131062">Je ChromeOS Flex-apparaat krijgt binnenkort geen updates meer. Overweeg te upgraden naar een ChromeOS-apparaat.</translation>
 <translation id="4801956050125744859">Beide behouden</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">Volumeregelaar</translation>
 <translation id="4881695831933465202">Openen</translation>
 <translation id="4891091358278567964">Als je deze items wilt herstellen, sleep je ze naar een nieuwe map buiten de prullenbak. De oorspronkelijke mappen voor deze items zijn verwijderd.</translation>
-<translation id="4900532980794411603">Delen met Parallels Desktop</translation>
 <translation id="4902546322522096650">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, verbinden</translation>
 <translation id="4906580650526544301">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, telefoonbatterij <ph name="BATTERY_STATUS" />%, details</translation>
 <translation id="4935975195727477204">Bloem</translation>
 <translation id="4943368462779413526">Amerikaanse voetbal</translation>
-<translation id="4961158930123534723">1 map gedeeld met Parallels Desktop</translation>
 <translation id="4965874878399872778">Bestanden checken op basis van het beveiligingsbeleid van je organisatie…</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> hersteld</translation>
 <translation id="4969785127455456148">Album</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Een bewerking duurt langer dan verwacht. Wil je deze afbreken?</translation>
 <translation id="5036141350290856713">Russisch fonetisch</translation>
-<translation id="5036159836254554629">Delen met Parallels Desktop beheren</translation>
 <translation id="5038625366300922036">Meer bekijken…</translation>
 <translation id="5044852990838351217">Armeens</translation>
 <translation id="5045550434625856497">Onjuist wachtwoord</translation>
@@ -737,9 +726,7 @@
 <translation id="656398493051028875"><ph name="FILENAME" /> verwijderen...</translation>
 <translation id="6581162200855843583">Google Drive-link</translation>
 <translation id="6588648400954570689">Instellingen voor bestandssynchronisatie</translation>
-<translation id="6594855146910089723">Deze map wordt gedeeld met Linux en Parallels Desktop</translation>
 <translation id="6607272825297743757">Bestandsinformatie</translation>
-<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> mappen gedeeld met Parallels Desktop</translation>
 <translation id="6629518321609546825">Geef minimaal 4 cijfers op</translation>
 <translation id="6643016212128521049">Wissen</translation>
 <translation id="6650726141019353908">Roze vlinder</translation>
@@ -857,7 +844,6 @@
 <translation id="7436921188514130341">Oeps! Er is iets misgegaan bij het veranderen van de naam.</translation>
 <translation id="7458955835361612701">Geen recente afbeeldingen</translation>
 <translation id="7469894403370665791">Automatisch verbinding maken met dit netwerk</translation>
-<translation id="7486315294984620427">Als je bestanden wilt neerzetten in Parallels Desktop, moet het bestand worden gekopieerd naar de map met Windows-bestanden.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam (fonetisch)</translation>
 <translation id="7505167922889582512">Verborgen bestanden bekijken</translation>

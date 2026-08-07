@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">‏سند Word </translation>
 <translation id="1056775291175587022">شبکه‌ای وجود ندارد</translation>
 <translation id="1056898198331236512">اخطار</translation>
-<translation id="1060368002126861100">‏برای باز کردن فایل‌ها با <ph name="APP_NAME" />، ابتدا آن‌ها را به پوشه فایل‌های Windows منتقل کنید.</translation>
 <translation id="1062407476771304334">جایگزین کردن</translation>
 <translation id="1119383441774809183">نمایش پیامک‌ها</translation>
 <translation id="1119447706177454957">خطای داخلی</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">نروژی</translation>
 <translation id="1408504635543854729">‏محتوای دستگاه را در برنامه Files کاوش کنید. محتوا توسط سرپرست محدود شده است و قابل ویرایش نیست.</translation>
 <translation id="1412476183660741812">بسته وب امضاشده</translation>
-<translation id="1433628812591023318">‏برای رها کردن فایل‌ها در Parallels Desktop، فایل موردنظر باید به فایل‌های Windows منتقل شود.</translation>
-<translation id="1435838927755162558">‏هم‌رسانی پوشه با Parallels Desktop</translation>
 <translation id="1439919885608649279">شخصی میان گل‌ها</translation>
 <translation id="1458457385801829801">برداشتن <ph name="TARGET_NAME" /></translation>
 <translation id="1464781208867302907">برای اولویت‌های دستگاه، به «تنظیمات» بروید</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">فرانسوی</translation>
 <translation id="2732288874651063549">مدیریت هم‌رسانی با <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">‏ویتنامی (VNI)</translation>
-<translation id="2735623501230989521">‏به Parallels Desktop اجازه دهید به فایل‌های پوشه <ph name="FOLDER_NAME" /> دسترسی داشته باشد</translation>
 <translation id="2764206540577097904">‏از کل فضای ذخیره‌سازی شخصی Google Workspace استفاده کرده‌اید.</translation>
 <translation id="2771816809568414714">پنیر</translation>
 <translation id="2783909841122647548">‏نصب بسته‌های Debian دیگر پشتیبانی نمی‌شود. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">جغرافیا</translation>
 <translation id="3044404008258011032">برای بازیابی این موارد، آن‌ها را به پوشه جدیدی خارج از «حذف‌شده‌ها» بکشید. پوشه اصلی «<ph name="PARENT_FOLDER_NAME" />» مربوط به این موارد حذف شده است.</translation>
 <translation id="3047197340186497470">چینی (دایی)</translation>
-<translation id="3067790092342515856">‏فایل‌های Windows</translation>
 <translation id="3083975830683400843">‏دستگاه‌های Chromebit</translation>
 <translation id="3085752524577180175">‏میزبان SOCKS</translation>
 <translation id="3091469289665833668">رومانیایی</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">برای دریافت جزئیات با سرپرست خود تماس بگیرید.</translation>
 <translation id="3548125359243647069">پین نادرست دفعات زیادی وارد شده است.</translation>
 <translation id="3549797760399244642">‏رفتن به drive.google.com…</translation>
-<translation id="3553048479571901246">‏برای باز کردن فایل‌ها با <ph name="APP_NAME" />، ابتدا آن‌ها را در پوشه فایل‌های Windows کپی کنید.</translation>
 <translation id="3556731189587832921">انگلیسی (امریکایی) با صفحه‌کلید بین‌المللی رایانه</translation>
 <translation id="3557414470514932909">درحال انتقال <ph name="FILE_NAME" /> به «حذف‌شده‌ها»</translation>
 <translation id="3560848236447534728">آوایی ارمنی</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">رومانیایی</translation>
 <translation id="4508265954913339219">فعالسازی انجام نشد</translation>
 <translation id="4509667233588080747">‏انگلیسی (امریکایی) با صفحه‌کلید بین‌المللی Workman</translation>
-<translation id="4527800702232535228">‏این پوشه با Parallels Desktop هم‌رسانی می‌شود</translation>
 <translation id="4552678318981539154">خرید فضای ذخیره بیشتر</translation>
 <translation id="4552759165874948005">شبکه <ph name="NETWORK_TYPE" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" /> درصد</translation>
 <translation id="4559767610552730302">بوکه</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">اونیگیری</translation>
 <translation id="4784330909746505604">‏ارائه PowerPoint </translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> کیلوبایت</translation>
-<translation id="4789067489790477934">‏به Parallels Desktop اجازه دهید به فایل‌های Google Drive شما دسترسی داشته باشد. تغییرات در دیگر دستگاه‌هایتان همگام‌سازی خواهد شد.</translation>
 <translation id="4790766916287588578">هندی با صفحه‌کلید هندی</translation>
 <translation id="4798645114741131062">‏دستگاه ChromeOS Flex شما به‌زودی دیگر به‌روزرسانی دریافت نخواهد کرد. توصیه می‌شود به دستگاه ChromeOS ارتقا دهید.</translation>
 <translation id="4801956050125744859">حفظ هر دو</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">اسلایدر میزان صدا</translation>
 <translation id="4881695831933465202">باز کردن</translation>
 <translation id="4891091358278567964">برای بازیابی این موارد، آن‌ها را به پوشه جدیدی خارج از «حذف‌شده‌ها» بکشید. پوشه‌های اصلی مربوط به این موارد حذف شده است.</translation>
-<translation id="4900532980794411603">‏هم‌رسانی با Parallels Desktop</translation>
 <translation id="4902546322522096650">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="SECURITY_STATUS" />, قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، اتصال</translation>
 <translation id="4906580650526544301">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="PHONE_NAME" />، <ph name="PROVIDER_NAME" />، <ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، باتری تلفن <ph name="BATTERY_STATUS" />٪، جزئیات</translation>
 <translation id="4935975195727477204">گل میخک</translation>
 <translation id="4943368462779413526">فوتبال</translation>
-<translation id="4961158930123534723">‏۱ پوشه با Parallels Desktop هم‌رسانی شد</translation>
 <translation id="4965874878399872778">درحال بررسی فایل‌ها مطابق با خط‌مشی‌های امنیتی سازمان شما…</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> بازیابی شد</translation>
 <translation id="4969785127455456148">آلبوم</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">اقدام بیشتر از انتظار طول می‌کشد. می‌خواهید از این کار صرف‌نظر کنید؟</translation>
 <translation id="5036141350290856713">آوایی روسی</translation>
-<translation id="5036159836254554629">‏مدیریت هم‌رسانی Parallels Desktop</translation>
 <translation id="5038625366300922036">بیشتر دیدن…</translation>
 <translation id="5044852990838351217">ارمنی</translation>
 <translation id="5045550434625856497">گذرواژه نادرست</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">در حال حذف «<ph name="FILENAME" />»...</translation>
 <translation id="6581162200855843583">‏پیوند Google Drive</translation>
 <translation id="6588648400954570689">تنظیمات همگام‌سازی فایل</translation>
-<translation id="6594855146910089723">‏این پوشه با Linux و Parallels Desktop هم‌رسانی می‌شود</translation>
 <translation id="6607272825297743757">اطلاعات فایل</translation>
-<translation id="6609332149380188670">‏<ph name="NUMBER_OF_ITEMS" /> پوشه با Parallels Desktop هم‌رسانی شد</translation>
 <translation id="6629518321609546825">حداقل ۴ عدد وارد کنید</translation>
 <translation id="6643016212128521049">پاک کردن</translation>
 <translation id="6650726141019353908">پروانه صورتی</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">اوه، نه! درحین تغییر نام خطایی رخ داد.</translation>
 <translation id="7458955835361612701">هیچ تصویری در موارد اخیر وجود ندارد</translation>
 <translation id="7469894403370665791">اتصال به این شبکه به صورت خودکار</translation>
-<translation id="7486315294984620427">‏برای رها کردن فایل‌ها در Parallels Desktop، فایل موردنظر باید در فایل‌های Windows کپی شود.</translation>
 <translation id="749452993132003881">هیراگانا</translation>
 <translation id="7495372004724182530">مالایالم (آوایی)</translation>
 <translation id="7505167922889582512">نمایش فایل‌های پنهان</translation>

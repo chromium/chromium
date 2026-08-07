@@ -592,6 +592,7 @@
 <translation id="2027465737841872819">प्लास्टिक</translation>
 <translation id="2027707238798802149">कार्ड उपलब्ध छैन</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />प्रोक्सी र फायरवाललाई जाँच गर्नुहोस्<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">Chrome को यो इन्स्ट्यान्स म्यानुअल रूपमा सेट गरिएका कमान्ड लाइन फ्ल्यागहरूका साथ रन भइरहेको छ। कमान्ड लाइन फ्ल्यागहरू जुनसुकै बेला परिवर्तन हुन सक्छन् र यिनलाई प्राविधिक सहायता प्राप्त हुँदैन भन्ने कुरा ख्याल गर्नुहोस्।</translation>
 <translation id="2033900728810589426">यो सर्टकट र <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> ले परिभाषित गरिएको खोज प्रदायकको डिफल्ट किवर्ड एउटै हुनु हुँदैन: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">जे भए पनि सेभ गर्नुहोस्</translation>
 <translation id="2036514476578229158">तपाईंले यो साइटमा जाने अनुमति माग्नुभएको छ। तपाईंका अभिभावकहरू Family Link मार्फत अनुमति दिन वा नदिन सक्छन्।</translation>
@@ -4561,7 +4562,6 @@
 <translation id="8932102934695377596">तपाईंको घडी ढिला छ</translation>
 <translation id="893332455753468063">नाम थप्नुहोस्</translation>
 <translation id="8938242527120341116">तपाईंको डिभाइसका सामग्रीसम्बन्धी फिल्टरहरूले <ph name="BLOCKED_URL" /> ब्लक गरेका छन्</translation>
-<translation id="8942355029279167844">तपाईंका एड्मिनले <ph name="APP_NAME" /> एप सुधार्ने प्रयोजनका लागि यो एपलाई निदानसम्बन्धी डेटा सङ्कलन गर्ने अनुमति दिनुभएको छ। थप जानकारीका लागि <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> मा जानुहोस्।</translation>
 <translation id="8943282376843390568">हल्का पहेँलो</translation>
 <translation id="8949410982325929394">टोन</translation>
 <translation id="8949493680961858543">A1x4</translation>

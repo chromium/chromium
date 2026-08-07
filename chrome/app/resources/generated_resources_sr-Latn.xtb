@@ -2054,6 +2054,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2598710988533271874">Dostupan je novi Chrome</translation>
 <translation id="2599048253926156421">Korisničko ime je kopirano u privremenu memoriju</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Isključen je 1 nebezbedan dodatak}one{Isključen je {NUM_SITES} nebezbedan dodatak}few{Isključena su {NUM_SITES} nebezbedna dodatka}other{Isključeno je {NUM_SITES} nebezbednih dodataka}}</translation>
+<translation id="2603121359676416582">Za ovu stranicu</translation>
 <translation id="2604129989323098489">Sajtovi obično traže informacije o ekranima kako bi mogli da inteligentno otvaraju i postavljaju prozore, na primer, da prikazuju dokumente ili sadržaj preko celog ekrana jedno do drugog</translation>
 <translation id="2604255671529671813">Greška mrežne veze</translation>
 <translation id="2604805099836652105">Obrazac za adresu <ph name="ADDRESS_LABEL" /> je popunjen.</translation>
@@ -2968,6 +2969,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3285329711156774325">Pretražite veštine</translation>
 <translation id="3285500645985761267">Dozvolite srodnim sajtovima da vide vaše aktivnosti u grupi</translation>
 <translation id="328571385944182268">Želite li da sačuvate lozinke?</translation>
+<translation id="3285969135399641759">Naučite novu veštinu</translation>
 <translation id="3289668031376215426">Automatsko pisanje velikih početnih slova</translation>
 <translation id="3289856944988573801">Da biste potražili ažuriranja, koristite eternet ili WiFi.</translation>
 <translation id="3290249595466894471">Šalje i mali uzorak stranica, preuzimanja, aktivnosti dodataka i informacija sistema da bi se otkrile nove pretnje</translation>
@@ -6373,6 +6375,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5939719276406088041">Pravljenje prečice nije uspelo</translation>
 <translation id="5939723110967488589">Odaberite dugmad koja će se prikazivati na traci s alatkama</translation>
 <translation id="594048410531370124">Taster nije prepoznat. Pritisnite bilo koji taster da biste <ph name="RESPONSE" />.</translation>
+<translation id="5940614040566393493">Zatražite savet</translation>
 <translation id="5941711191222866238">Umanji</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{1 lozinka je sačuvana samo na ovom uređaju. Da biste je koristili na drugim uređajima, sačuvajte je na Google nalogu.}one{{PASSWORD_COUNT} lozinka je sačuvana samo na ovom uređaju. Da biste ih koristili na drugim uređajima, sačuvajte ih na Google nalogu.}few{{PASSWORD_COUNT} lozinke su sačuvane samo na ovom uređaju. Da biste ih koristili na drugim uređajima, sačuvajte ih na Google nalogu.}other{{PASSWORD_COUNT} lozinki je sačuvano samo na ovom uređaju. Da biste ih koristili na drugim uređajima, sačuvajte ih na Google nalogu.}}</translation>
 <translation id="594221546068848596">Pretraži stranicu pomoću usluge <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -10683,7 +10686,6 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="983192555821071799">Zatvori sve kartice</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – Kamera i mikrofon snimaju</translation>
 <translation id="984705303330760860">Dodajte jezike za proveru pravopisa</translation>
-<translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Opšte</translation>
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> želi da preuzima informacije sa mobilnog uređaja</translation>
 <translation id="988320949174893488">Povremeno se koči</translation>

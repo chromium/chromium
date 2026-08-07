@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Dokumen Word</translation>
 <translation id="1056775291175587022">Jaringan nihil</translation>
 <translation id="1056898198331236512">Peringatan</translation>
-<translation id="1060368002126861100">Untuk membuka file dengan <ph name="APP_NAME" />, pindahkan ke folder file Windows terlebih dulu.</translation>
 <translation id="1062407476771304334">Ganti</translation>
 <translation id="1119383441774809183">Tampilkan pesan teks</translation>
 <translation id="1119447706177454957">Kesalahan internal</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">Norwegia</translation>
 <translation id="1408504635543854729">Jelajahi konten perangkat di aplikasi File. Konten dibatasi oleh admin dan tidak dapat diubah.</translation>
 <translation id="1412476183660741812">Paket Web Bertanda Tangan</translation>
-<translation id="1433628812591023318">Untuk melepaskan file di Parallels Desktop, file harus dipindahkan ke file Windows.</translation>
-<translation id="1435838927755162558">Bagikan folder ke Parallels Desktop</translation>
 <translation id="1439919885608649279">Orang dengan bunga</translation>
 <translation id="1458457385801829801">Keluarkan <ph name="TARGET_NAME" /></translation>
 <translation id="1464781208867302907">Untuk preferensi perangkat, buka Setelan.</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">Prancis</translation>
 <translation id="2732288874651063549">Kelola berbagi dengan <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">VNI Vietnam</translation>
-<translation id="2735623501230989521">Beri Parallels Desktop izin untuk mengakses file di folder <ph name="FOLDER_NAME" /></translation>
 <translation id="2764206540577097904">Anda telah menggunakan seluruh penyimpanan Google Workspace individual.</translation>
 <translation id="2771816809568414714">Keju</translation>
 <translation id="2783909841122647548">Penginstalan paket Debian tidak lagi didukung. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">Geografi</translation>
 <translation id="3044404008258011032">Untuk memulihkan item ini, tarik ke folder baru di luar sampah. Folder asli "<ph name="PARENT_FOLDER_NAME" />" untuk item ini telah dihapus.</translation>
 <translation id="3047197340186497470">Dayi China</translation>
-<translation id="3067790092342515856">File Windows</translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">Host SOCKS</translation>
 <translation id="3091469289665833668">Rumania</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">Hubungi administrator Anda untuk mengetahui detailnya.</translation>
 <translation id="3548125359243647069">Terlalu sering memasukkan PIN yang salah.</translation>
 <translation id="3549797760399244642">Buka drive.google.com...</translation>
-<translation id="3553048479571901246">Untuk membuka file dengan <ph name="APP_NAME" />, salin ke folder file Windows terlebih dulu.</translation>
 <translation id="3556731189587832921">Inggris (AS) dengan keyboard International PC</translation>
 <translation id="3557414470514932909">Memindahkan <ph name="FILE_NAME" /> ke sampah</translation>
 <translation id="3560848236447534728">Fonetik Armenia</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">Rumania</translation>
 <translation id="4508265954913339219">Aktivasi gagal</translation>
 <translation id="4509667233588080747">Inggris (AS) dengan keyboard Workman International</translation>
-<translation id="4527800702232535228">Folder ini dibagikan ke Parallels Desktop</translation>
 <translation id="4552678318981539154">Beli penyimpanan lagi</translation>
 <translation id="4552759165874948005">Jaringan <ph name="NETWORK_TYPE" /> kekuatan sinyal <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">Efek Bokeh</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">Presentasi PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
-<translation id="4789067489790477934">Beri Parallels Desktop izin untuk mengakses file di Google Drive Anda. Perubahan akan disinkronkan ke perangkat lainnya.</translation>
 <translation id="4790766916287588578">Hindi dengan keyboard InScript</translation>
 <translation id="4798645114741131062">Perangkat ChromeOS Flex Anda akan segera berhenti menerima update. Sebaiknya upgrade ke perangkat ChromeOS.</translation>
 <translation id="4801956050125744859">Simpan keduanya</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">Pengatur volume</translation>
 <translation id="4881695831933465202">Buka</translation>
 <translation id="4891091358278567964">Untuk memulihkan item ini, tarik ke folder baru di luar sampah. Folder asli untuk item ini telah dihapus.</translation>
-<translation id="4900532980794411603">Bagikan ke Parallels Desktop</translation>
 <translation id="4902546322522096650">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Sambungkan</translation>
 <translation id="4906580650526544301">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Baterai Ponsel <ph name="BATTERY_STATUS" />%, Detail</translation>
 <translation id="4935975195727477204">Bunga Gazania</translation>
 <translation id="4943368462779413526">Sepak bola</translation>
-<translation id="4961158930123534723">1 folder dibagikan ke Parallels Desktop</translation>
 <translation id="4965874878399872778">Memeriksa file berdasarkan kebijakan keamanan organisasi Anda...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> dipulihkan</translation>
 <translation id="4969785127455456148">Album</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Operasi berlangsung lebih lama dari biasanya. Ingin membatalkannya?</translation>
 <translation id="5036141350290856713">Fonetik Rusia</translation>
-<translation id="5036159836254554629">Kelola berbagi Parallels Desktop</translation>
 <translation id="5038625366300922036">Lihat lebih banyak...</translation>
 <translation id="5044852990838351217">Armenia</translation>
 <translation id="5045550434625856497">Sandi salah</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">Menghapus "<ph name="FILENAME" />"...</translation>
 <translation id="6581162200855843583">Tautan Google Drive</translation>
 <translation id="6588648400954570689">Setelan sinkronisasi file</translation>
-<translation id="6594855146910089723">Folder ini dibagikan ke Linux dan Parallels Desktop</translation>
 <translation id="6607272825297743757">Info file</translation>
-<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> folder dibagikan ke Parallels Desktop</translation>
 <translation id="6629518321609546825">Masukkan minimal 4 angka</translation>
 <translation id="6643016212128521049">Hapus</translation>
 <translation id="6650726141019353908">Kupu-kupu merah muda</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">Maaf. Terjadi error saat mengganti nama.</translation>
 <translation id="7458955835361612701">Tidak ada gambar terbaru</translation>
 <translation id="7469894403370665791">Otomatis hubungkan ke jaringan ini</translation>
-<translation id="7486315294984620427">Untuk melepaskan file di Parallels Desktop, file harus disalin ke file Windows.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Fonetik Malayalam</translation>
 <translation id="7505167922889582512">Tampilkan file tersembunyi</translation>

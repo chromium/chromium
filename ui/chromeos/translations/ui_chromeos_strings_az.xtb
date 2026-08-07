@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Word sənədi</translation>
 <translation id="1056775291175587022">Şəbəkə yoxdur</translation>
 <translation id="1056898198331236512">Xəbərdarlıq</translation>
-<translation id="1060368002126861100">Faylları <ph name="APP_NAME" /> ilə açmaq üçün əvvəlcə onları Windows fayllar qovluğuna köçürün.</translation>
 <translation id="1062407476771304334">Əvəz edin</translation>
 <translation id="1119383441774809183">Mətn mesajlarını göstərin</translation>
 <translation id="1119447706177454957">Daxili xəta</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">Norveç</translation>
 <translation id="1408504635543854729">Fayllar tətbiqində cihazın kontentini kəşf edin. Kontent admin tərəfindən məhdudlaşdırıldığı üçün dəyişdirilə bilməz.</translation>
 <translation id="1412476183660741812">İmzalanmış veb-paketi</translation>
-<translation id="1433628812591023318">Paralellər Masaüstünə faylları əlavə etmək üçün fayl Windows fayllarına köçürülməlidir.</translation>
-<translation id="1435838927755162558">Qovluğu Parallels Desktop ilə paylaşın</translation>
 <translation id="1439919885608649279">Əlində gül olan adam</translation>
 <translation id="1458457385801829801">Çıxarın: <ph name="TARGET_NAME" /></translation>
 <translation id="1464781208867302907">Cihaz seçimləri üçün ayarlara daxil olun.</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">Fransız dili</translation>
 <translation id="2732288874651063549"><ph name="VM_NAME" /> paylaşımını idarə edin</translation>
 <translation id="2732839045120506979">Vyetnam dili (VNI)</translation>
-<translation id="2735623501230989521">Parallels Desktop'a <ph name="FOLDER_NAME" /> qovluğundakı fayllara giriş icazəsi verin</translation>
 <translation id="2764206540577097904">Bütün fərdi Google Workspace yaddaşınızdan istifadə etmisiniz.</translation>
 <translation id="2771816809568414714">Pendir</translation>
 <translation id="2783909841122647548">Debian paket quraşdırmaları artıq dəstəklənmir. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">Coğrafiya</translation>
 <translation id="3044404008258011032">Bu elementləri bərpa etmək üçün zibil qutusunun xaricində yeni bir qovluğa sürüşdürün. Bu elementlər üçün "<ph name="PARENT_FOLDER_NAME" />" orijinal qovluğu silinib.</translation>
 <translation id="3047197340186497470">Çin dili (Dayi)</translation>
-<translation id="3067790092342515856">Windows faylları</translation>
 <translation id="3083975830683400843">Chromebit cihazları</translation>
 <translation id="3085752524577180175">SOCKS Hostu</translation>
 <translation id="3091469289665833668">Rumın dili</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">Detallar üçün administrator ilə əlaqə saxlayın.</translation>
 <translation id="3548125359243647069">Yanlış PIN kod dəfələrlə daxil edilib.</translation>
 <translation id="3549797760399244642">drive.google.com saytına keçin...</translation>
-<translation id="3553048479571901246">Faylları <ph name="APP_NAME" /> ilə açmaq üçün əvvəlcə onları Windows fayllar qovluğuna kopyalayın.</translation>
 <translation id="3556731189587832921">Beynəlxalq kompüter klaviaturası ilə İngilis dili (ABŞ)</translation>
 <translation id="3557414470514932909"><ph name="FILE_NAME" /> zibil qutusuna köçürülür</translation>
 <translation id="3560848236447534728">Erməni dilinin fonetikası</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">Rumın</translation>
 <translation id="4508265954913339219">Aktivləşdirilmə uğursuz oldu</translation>
 <translation id="4509667233588080747">Beynəlxalq Workman klaviaturası ilə İngilis dili (ABŞ)</translation>
-<translation id="4527800702232535228">Bu qovluq Parallels Desktop ilə paylaşılır</translation>
 <translation id="4552678318981539154">Əlavə yaddaş ehtiyatı alın</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> şəbəkəsi, siqnal gücü <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">Bokeh</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">Oniqiri</translation>
 <translation id="4784330909746505604">PowerPoint təqdimatı</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
-<translation id="4789067489790477934">Parallels Desktop'a Google Diskinizdəki fayllara giriş icazəsi verin. Dəyişikliklər digər cihazlara sinxronizasiya ediləcək.</translation>
 <translation id="4790766916287588578">InScript klaviaturası ilə Hind dili</translation>
 <translation id="4798645114741131062">ChromeOS Flex cihazınız tezliklə güncəllənmələr qəbul etməyi dayandıracaq. ChromeOS cihazına təkmilləşdirməyi nəzərdən keçirin.</translation>
 <translation id="4801956050125744859">İkisini də saxlayın</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">Səs slayderi</translation>
 <translation id="4881695831933465202">Açın</translation>
 <translation id="4891091358278567964">Bu elementləri bərpa etmək üçün zibil qutusunun xaricində yeni bir qovluğa sürüşdürün. Bu elementlər üçün orijinal qovluqlar silinib.</translation>
-<translation id="4900532980794411603">Parallels Desktop ilə paylaşın</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Qoşulun</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Telefonun Batareyası <ph name="BATTERY_STATUS" />%, Detallar</translation>
 <translation id="4935975195727477204">Gazania Flower</translation>
 <translation id="4943368462779413526">Futbol</translation>
-<translation id="4961158930123534723">1 qovluq Parallels Desktop ilə paylaşılır</translation>
 <translation id="4965874878399872778">Fayllar təşkilatın təhlükəsizlik siyasətlərinə əsasən yoxlanır...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> bərpa edildi</translation>
 <translation id="4969785127455456148">Albom</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Əməliyyat gözlənildiyindən daha çox vaxt aparır. Dayandırmaq istəyirsiniz?</translation>
 <translation id="5036141350290856713">Rus dilinin fonetikası</translation>
-<translation id="5036159836254554629">Parallels Desktop paylaşmasını idarə edin</translation>
 <translation id="5038625366300922036">Digərini görün...</translation>
 <translation id="5044852990838351217">Erməni</translation>
 <translation id="5045550434625856497">Yanlış parol</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">"<ph name="FILENAME" />" silinir...</translation>
 <translation id="6581162200855843583">Google Disk linki</translation>
 <translation id="6588648400954570689">Fayl sinxronlaşdırma ayarları</translation>
-<translation id="6594855146910089723">Bu qovluq Linux və Parallels Desktop ilə paylaşılır</translation>
 <translation id="6607272825297743757">Fayl məlumatı</translation>
-<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> qovluq Parallels Desktop ilə paylaşılır</translation>
 <translation id="6629518321609546825">Ən azı 4 rəqəm daxil edin</translation>
 <translation id="6643016212128521049">Silin</translation>
 <translation id="6650726141019353908">Çəhrayı kəpənək</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">Yenidən adlandırarkən xəta baş verdi.</translation>
 <translation id="7458955835361612701">Son şəkillər yoxdur</translation>
 <translation id="7469894403370665791">Bu şəbəkəyə avtomatik olaraq qoşulun</translation>
-<translation id="7486315294984620427">Paralellər Masaüstünə faylları əlavə etmək üçün fayl Windows fayllarına kopyalanmalıdır.</translation>
 <translation id="749452993132003881">Hiraqana</translation>
 <translation id="7495372004724182530">Malayalam Fonetikası</translation>
 <translation id="7505167922889582512">Gizlədilmiş faylları göstərin</translation>

@@ -297,6 +297,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2233735624724508540">Valige ajavahemik ja puudutage valikut Kustuta andmed.</translation>
 <translation id="2234031676056123135">Otseteede kohandamine</translation>
 <translation id="2234827758954819389">Privaatsusjuhend</translation>
+<translation id="2236949375853147973">Minu tegevused</translation>
 <translation id="2238038374973843156">Grupp teise aknasse</translation>
 <translation id="2247789808226901522">Kaart on aegunud</translation>
 <translation id="2251809247798634662">Uus inkognito aken</translation>
@@ -574,6 +575,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="3385749568468586663">Gemini pole inkognito režiimis saadaval.</translation>
 <translation id="3387650086002190359">Faili <ph name="FILE_NAME" /> allalaadimine ebaõnnestus failisüsteemi vigade tõttu.</translation>
 <translation id="3391311825344469964">Saate oma aknaid hallata Chrome'i aknahalduris.</translation>
+<translation id="3410151451624226773">Hallake Google'i paroolihalduris</translation>
 <translation id="3417835166382867856">Otsige vahelehtedelt</translation>
 <translation id="3430670036890315772">Profiililuku väljalülitamine eemaldab teie salvestatud teabe</translation>
 <translation id="3435575784518354875">Paroolide kasutamise jätkamiseks eksportige need, värskendage Google Play teenused ja importige need uuesti Google'i paroolihaldurisse. <ph name="BEGIN_LINK" />Lugege juhiseid<ph name="END_LINK" />.</translation>
@@ -942,6 +944,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="4877678010818027629">Sisenemine inkognito režiimi</translation>
 <translation id="4878404682131129617">Puhverserveri kaudu tunneli loomine ebaõnnestus</translation>
 <translation id="4880127995492972015">Tõlgi …</translation>
+<translation id="4880827082731008257">Otsi ajaloost</translation>
 <translation id="4881695831933465202">Ava</translation>
 <translation id="488187801263602086">Faili ümbernimetamine</translation>
 <translation id="4885273946141277891">Toetamata arv Chrome'i eksemplare.</translation>
@@ -991,6 +994,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="509429900233858213">Tekkis viga.</translation>
 <translation id="5096775069898886423">Teid hoiatatakse enne külastamist saitide eest, mis ei toeta turvalisi ühendusi</translation>
 <translation id="510275257476243843">Jäänud on 1 tund</translation>
+<translation id="5105442806410269908">Hallake Google'i muid andmeid</translation>
 <translation id="5114895953710637392">Rakenduse alusel filtreerimise leht on suletud.</translation>
 <translation id="5115811374190515607">teenusesse <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Saate kasutada Chrome'i iga kord, kui puudutate linke sõnumites, dokumentides ja muudes rakendustes</translation>
@@ -1041,6 +1045,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="5316947901395241499">Administraator on paroolide salvestamise välja lülitanud</translation>
 <translation id="5317780077021120954">Salvesta</translation>
 <translation id="5319359161174645648">Google soovitab Chrome'i</translation>
+<translation id="5323501626199324454">Hallake oma Google'i kontol</translation>
 <translation id="5326246328175179736">Selle kontoga ei saa sisse logida</translation>
 <translation id="5327248766486351172">Nimi</translation>
 <translation id="5328542107300944283">Kasutage pakkujaga <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1325,6 +1330,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6461962085415701688">Faili ei saa avada</translation>
 <translation id="6464977750820128603">Näete saite, mida Chrome'is külastate, ja saate nendele taimereid määrata.\n\nGoogle saab teavet saitide kohta, millele taimereid määrate, ja näeb, kui kaua neid külastate. Selle teabe abil muudetakse teenus Digitaalne heaolu paremaks.</translation>
 <translation id="6468703991511753953">Aadressiriba hetkel all</translation>
+<translation id="6469702164109431067">Paroolid ja pääsuvõtmed</translation>
 <translation id="6470181189905173055">Lehed, mille Chrome'is rakenduse <ph name="APP_LABEL" /> kasutamise ajal avasite, kuvatakse siin.</translation>
 <translation id="6473086018775716761">Jagamisvalikute loend on avatud poolele kõrgusele.</translation>
 <translation id="6475951671322991020">Laadi video alla</translation>

@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Word құжаты</translation>
 <translation id="1056775291175587022">Желі табылмады</translation>
 <translation id="1056898198331236512">Ескерту</translation>
-<translation id="1060368002126861100">Файлдарды <ph name="APP_NAME" /> қолданбасымен ашу үшін оларды алдымен Windows файлдар қалтасына жылжытыңыз.</translation>
 <translation id="1062407476771304334">Ауыстыру</translation>
 <translation id="1119383441774809183">Мәтіндік хабарларды көрсету</translation>
 <translation id="1119447706177454957">Ішкі қате</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">Норвег тілі</translation>
 <translation id="1408504635543854729">Файлдар қолданбасында құрылғының контентін қарап шығыңыз. Контентке әкімші шектеу қойған және оны өзгертуге болмайды.</translation>
 <translation id="1412476183660741812">Қол қойылған веб-пакет</translation>
-<translation id="1433628812591023318">Файлдарды Parallels Desktop-қа апару үшін "Windows файлдары" қалтасына орналастыру керек.</translation>
-<translation id="1435838927755162558">Қалтаны Parallels Desktop арқылы бөлісу</translation>
 <translation id="1439919885608649279">Гүл ұстаған адам</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> шығарылсын</translation>
 <translation id="1464781208867302907">"Параметрлер" бөліміне өтіп, құрылғыда қалаған параметрді таңдай аласыз.</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">Француз</translation>
 <translation id="2732288874651063549"><ph name="VM_NAME" /> құрылғысын бөлісуді басқару</translation>
 <translation id="2732839045120506979">Вьетнам (VNI)</translation>
-<translation id="2735623501230989521">Parallels Desktop үшін <ph name="FOLDER_NAME" /> қалтасындағы файлдарды пайдалануға рұқсат берілсін.</translation>
 <translation id="2764206540577097904">Жеке Google Workspace жадын толық пайдаландыңыз.</translation>
 <translation id="2771816809568414714">Ірімшік</translation>
 <translation id="2783909841122647548">Debian пакетін орнатуға бұдан былай қолдау көрсетілмейді. <ph name="BEGIN_LINK" />Толық ақпарат<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">География</translation>
 <translation id="3044404008258011032">Бұл элементтерді қалпына келтіру үшін оларды себеттен жаңа қалтаға сүйреңіз. Элементтерге арналған "<ph name="PARENT_FOLDER_NAME" />" деп аталатын бастапқы қалта жойылған.</translation>
 <translation id="3047197340186497470">Қытай (даи)</translation>
-<translation id="3067790092342515856">Windows файлдары</translation>
 <translation id="3083975830683400843">Chromebit құрылғылары</translation>
 <translation id="3085752524577180175">SOCKS хосты</translation>
 <translation id="3091469289665833668">Румын</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">Мәліметтер алу үшін әкімшіге хабарласыңыз.</translation>
 <translation id="3548125359243647069">PIN коды бірнеше рет қате енгізілді.</translation>
 <translation id="3549797760399244642">drive.google.com бетіне өту…</translation>
-<translation id="3553048479571901246">Файлдарды <ph name="APP_NAME" /> қолданбасымен ашу үшін оларды алдымен Windows файлдар қалтасына көшіріңіз.</translation>
 <translation id="3556731189587832921">Ағылшын (АҚШ), халықаралық дербес компьютер пернетақтасымен</translation>
 <translation id="3557414470514932909"><ph name="FILE_NAME" /> файлы себетке жіберілуде…</translation>
 <translation id="3560848236447534728">Армян (фонетикалық)</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">Румын</translation>
 <translation id="4508265954913339219">Белсендіру сәтсіз аяқталды</translation>
 <translation id="4509667233588080747">Ағылшын (АҚШ), Workman халықаралық пернетақтасымен</translation>
-<translation id="4527800702232535228">Бұл қалта Parallels Desktop-пен бөлісіледі.</translation>
 <translation id="4552678318981539154">Көбірек сақтау орнын сатып алу</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> желісі, сигнал деңгейі: <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">Боке</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">Онигири</translation>
 <translation id="4784330909746505604">PowerPoint презентациясы</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> КБ</translation>
-<translation id="4789067489790477934">Parallels Desktop үшін Google Drive дискісіндегі файлдарды пайдалануға рұқсат берілсін. Өзгертулер барлық құрылғыда болады.</translation>
 <translation id="4790766916287588578">Хинди (InScript пернетақтасымен)</translation>
 <translation id="4798645114741131062">ChromeOS Flex құрылғыңыз жақында жаңа нұсқаларды алуды тоқтатады. ChromeOS құрылғысына ауысқаныңыз жөн.</translation>
 <translation id="4801956050125744859">Екеуін де сақтау</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">Дыбыс деңгейі ысырмасы</translation>
 <translation id="4881695831933465202">Ашу</translation>
 <translation id="4891091358278567964">Бұл элементтерді қалпына келтіру үшін оларды себеттен жаңа қалтаға сүйреңіз. Элементтерге арналған бастапқы қалталар жойылған.</translation>
-<translation id="4900532980794411603">Parallels Desktop арқылы бөлісу</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, қосылу</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, сигнал күші <ph name="SIGNAL_STRENGTH" />%, телефон батареясы: <ph name="BATTERY_STATUS" />%, мәліметтер</translation>
 <translation id="4935975195727477204">Түймедақ гүлі</translation>
 <translation id="4943368462779413526">Футбол</translation>
-<translation id="4961158930123534723">Parallels Desktop арқылы 1 қалта бөлісіледі.</translation>
 <translation id="4965874878399872778">Файлдардың ұйымның қауіпсіздік саясаттарына сәйкестігі тексеріліп жатыр…</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> қалпына келтірілді</translation>
 <translation id="4969785127455456148">Альбом</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Операция күтілгеннен көбірек уақыт алады. Оны доғаруды қалайсыз ба?</translation>
 <translation id="5036141350290856713">Орыс (фонетикалық)</translation>
-<translation id="5036159836254554629">Parallels Desktop арқылы бөлісуді басқару</translation>
 <translation id="5038625366300922036">Толық ақпарат…</translation>
 <translation id="5044852990838351217">Армян</translation>
 <translation id="5045550434625856497">Құпия сөз дұрыс емес</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">"<ph name="FILENAME" />" жойылуда…</translation>
 <translation id="6581162200855843583">Google Drive сілтемесі</translation>
 <translation id="6588648400954570689">Файлды синхрондау параметрлері</translation>
-<translation id="6594855146910089723">Бұл қалта Linux-пен және Parallels Desktop-пен бөлісіледі.</translation>
 <translation id="6607272825297743757">Файл ақпараты</translation>
-<translation id="6609332149380188670">Parallels Desktop арқылы <ph name="NUMBER_OF_ITEMS" /> қалта бөлісілді.</translation>
 <translation id="6629518321609546825">Кемінде 4 сан енгізіңіз.</translation>
 <translation id="6643016212128521049">Тазалау</translation>
 <translation id="6650726141019353908">Қызғылт көбелек</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">Қап! Атын өзгерту кезінде қате пайда болды.</translation>
 <translation id="7458955835361612701">Жаңа кескіндер жоқ</translation>
 <translation id="7469894403370665791">Бұл желіге автоматты түрде қосылу</translation>
-<translation id="7486315294984620427">Файлдарды Parallels Desktop-қа апару үшін "Windows файлдары" қалтасына көшіру керек.</translation>
 <translation id="749452993132003881">Хирагана</translation>
 <translation id="7495372004724182530">Малаялам (фонетикалық)</translation>
 <translation id="7505167922889582512">Жасырын файлдарды көрсету</translation>

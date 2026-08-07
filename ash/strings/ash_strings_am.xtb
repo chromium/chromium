@@ -35,7 +35,6 @@
 <translation id="1088231044944504242">የእርስዎን <ph name="CATEGORY" />፣ ፋይሎች፣ መተግበሪያዎች እና ሌሎችን ይፈልጉ። የእርስዎን መተግበሪያዎች ለማሰስ የቀስት ቁልፎችን ይጠቀሙ።</translation>
 <translation id="1093645050124056515">ctrl + alt + የታች ቀስት</translation>
 <translation id="1094756674036064790">ብሉቱዝ ይጥፋ?</translation>
-<translation id="109647177154844434">Parallels ዴስክቶፕን ማራገፍ የWindows ምስልዎን ይሰርዘዋል። ይህ መተግበሪያዎቹን፣ ቅንብሮቹን እና ውሂቡን ያካትታል። እርግጠኛ ነዎት መቀጠል ይፈልጋሉ?</translation>
 <translation id="1104084341931202936">የተደራሽነት ቅንብሮችን አሳይ</translation>
 <translation id="1104621072296271835">የእርስዎ መሣሪያዎች እንዲያውም የተሻለ ይሠራሉ</translation>
 <translation id="1107300737351978027">ተደጋጋሚ አሃዞችን መያዝ አይችልም</translation>
@@ -82,7 +81,6 @@
 <translation id="1210557957257435379">የማያ ገፅ ቀረጻ</translation>
 <translation id="121097972571826261">በየቃሉ ወደፊት</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />፣ የPlay መደብር መተግበሪያ</translation>
-<translation id="1223484782328004593"><ph name="APP_NAME" /> ፈቃድ ያስፈልገዋል</translation>
 <translation id="1225748608451425081">የእርስዎ Chromebook በአንድ የታወቀ ችግር ምክንያት ተቆልፏል። ከሚከተለው ያህል ጊዜ በኋላ ወደ መለያ መግባት ይችላሉ፦ <ph name="TIME_LEFT" />።</translation>
 <translation id="1229194443904279055">መምረጥ ያቁሙ</translation>
 <translation id="1235458158152011030">የታወቁ አውታረ መረቦች</translation>
@@ -93,7 +91,6 @@
 <translation id="1244265436519979884">Linux ወደነበረበት መመለስ አሁን በሂደት ላይ ነው</translation>
 <translation id="1245476784081715330">ጥሩ ሠርተዋል!</translation>
 <translation id="124678866338384709">የአሁኑን ትር ዝጋ</translation>
-<translation id="1246863218384630739"><ph name="VM_NAME" />ን መጫን አልተቻለም፦ የምስል ዩአርኤል የ<ph name="HTTP_ERROR" /> የስህተት ኮድን መልሷል። እባክዎ አስተዳዳሪዎን ያነጋግሩ።</translation>
 <translation id="1246890715821376239">የማይደገፉ መተግበሪያዎች</translation>
 <translation id="1247372569136754018">ማይክሮፎን (ውስጣዊ)</translation>
 <translation id="1247519845643687288">የቅርብ ጊዜ መተግበሪያዎች</translation>
@@ -107,7 +104,6 @@
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" />ን በማጎላበት ላይ</translation>
 <translation id="1275718070701477396">የተመረጡ</translation>
 <translation id="1276975447697633661">ፋይሉን ይምረጡ፣ በመቀጠል <ph name="KEY" /> ይጫኑ</translation>
-<translation id="1276994519141842946"><ph name="APP_NAME" />ን ማራገፍ አልተቻለም</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1283126956823499975">መሣሪያውን በማዘጋጀት ላይ የሆነ ስህተት ተከስቷል</translation>
 <translation id="1285992161347843613">ስልኩን ያግኙ</translation>
@@ -170,7 +166,6 @@
 <translation id="1421166164855200062">የተጠቆመ ቡድን</translation>
 <translation id="1426410128494586442">አዎ</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> ታግዷል</translation>
-<translation id="142765311413773645">የ<ph name="APP_NAME" /> ፈቃድ ጊዜው አልፎበታል</translation>
 <translation id="1430915738399379752">አትም</translation>
 <translation id="1435537621343861112">በቃል ማስጻፍ መጀመር አልተቻለም። ማይክሮፎንዎ ጠፍቷል።</translation>
 <translation id="1445031758921122223">የመልክ መቆጣጠሪያ ፋይሎች ወርደዋል</translation>
@@ -193,12 +188,10 @@
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">በቃል ማስጻፊያ ድምፅዎን በመጠቀም መተየብ ይችላሉ። በቃል ማስጻፍ ቁልፉን ይጫኑ ወይም በጽሁፍ መስክ ላይ ሳይሆኑ ከማያ ገፁ ታች የማይክሮፎን አዶን ይምረጡ። የእርስዎ በቃል ማስጻፍ ቋንቋ ወደ <ph name="LANGUAGE" /> ተቀናብሯል። ንግግር ለመሰናዳት ወደ Google ተልኳል። በቃል ማስጻፍ ቋንቋን በማንኛውም ጊዜ ቅንብሮች &gt; ተደራሽነት ውስጥ መለወጥ ይችላሉ።</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> ከ<ph name="SECOND_ITEM_TITLE" /> ጋር ተቀያይሯል</translation>
-<translation id="1494429729245089920">ምናባዊ ማሽን «<ph name="VM_NAME" />» ይገኛል ግን ትክክለኛ የ<ph name="APP_NAME" /> ምናባዊ ማሽን አይመስልም። እባክዎ አስተዳዳሪዎን ያነጋግሩ።</translation>
 <translation id="1500926532737552529">ሁሉንም የአስተያየት ጥቆማዎች አሳይ</translation>
 <translation id="1501946871587957338">የኦዲዮ ምንጭ ይቀየር?</translation>
 <translation id="1505542291183484463">የባለጡብ መስኮት መጠንን ወደ ታች ቀይር</translation>
 <translation id="1510238584712386396">ማስጀመሪያ</translation>
-<translation id="1515163294334130951">አስጀምር</translation>
 <translation id="1519090060276706457">መስኮቶችን ወደነበሩበት መመለስ ከተጠበቀው ጊዜ በላይ ጊዜ እየወሰደ ነው</translation>
 <translation id="1521655867290435174">Google ሉሆች</translation>
 <translation id="1523032696246003">ባትሪ <ph name="BATTERY_PERCENTAGE" />% | እስከሚሞላ ድረስ <ph name="TIME" /></translation>
@@ -222,7 +215,6 @@
 <translation id="1574691582236909946">የተመረጠ የግራ ጠርዝ መያዣ፣ ለማንቀሳቀስ የቀስት ቋልፎችን ይጠቀሙ</translation>
 <translation id="1576623706766186887">ማጉያ ሲበራ አሳንሥ</translation>
 <translation id="1578558981922970608">በግድ ዝጋ</translation>
-<translation id="1580772913177567930">የእርስዎን አስተዳዳሪ ያነጋግሩ</translation>
 <translation id="1582946770779745370">የጨዋታ ዳሽቦርድ ይገኛል። በማንኛውም ጊዜ ለመክፈት <ph name="LAUNCHER_KEY_NAME" /> + ቀያይር + ዝለልን ይጫኑ፣ ከዚያ <ph name="LAUNCHER_KEY_NAME" /> + g ይጫኑ</translation>
 <translation id="1586324912145647027">ወደ ዴስክ 1 እስከ 8 ይሂዱ</translation>
 <translation id="158838227375272121">Google የትምህርት ክፍል ድር ጣቢያ</translation>
@@ -443,7 +435,6 @@
 <translation id="2322065293366551060"><ph name="CATEGORY" />፣ የፍለጋ ውጤት ምድብ</translation>
 <translation id="2322173485024759474">በደብዳቤ ይመለሱ</translation>
 <translation id="2326112202058075478">ተጨማሪ ስሜት ገላጭ ምስሎች አሳይ</translation>
-<translation id="2328561734797404498"><ph name="APP_NAME" />ን ለመጠቀም እባክዎ የእርስዎን መሣሪያ ዳግም ያስነሱት።</translation>
 <translation id="2335091074961603075">የእርስዎ Chromebook ወይም የብሉቱዝ መሣሪያ የድሮ የሆነ የብሉቱዝ ስሪት እየተጠቀመ ነው። ለተሻለ የኦዲዮ ጥራት ውስጣዊ ማይክሮፎን ይጠቀሙ።</translation>
 <translation id="2336214675195760012">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> ዝማኔን ለማውረድ ዛሬ ከWi-Fi ጋር እንዲገናኙ ይጠይቃል። ወይም ደግሞ ከሚለካ ግንኙነት ያውርዱ (ክፍያዎች ሊከፈልባቸው ይችላል)።}one{<ph name="MANAGER" /> ቀነ ገደቡ ከመድረሱ በፊት ከWi-Fi ጋር እንዲገናኙ እና ዝማኔን እንዲያወርዱ ይጠይቃል። ወይም ደግሞ ከሚለካ ግንኙነት ያውርዱ (ክፍያዎች ሊከፈልባቸው ይችላል)።}other{<ph name="MANAGER" /> ቀነ ገደቡ ከመድረሱ በፊት ከWi-Fi ጋር እንዲገናኙ እና ዝማኔን እንዲያወርዱ ይጠይቃል። ወይም ደግሞ ከሚለካ ግንኙነት ያውርዱ (ክፍያዎች ሊከፈልባቸው ይችላል)።}}</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" /> 1 ገጽ ወደ <ph name="PRINTER_NAME" /> በማተም ላይ ነው</translation>
@@ -471,7 +462,6 @@
 <translation id="2386292613071805067">በገጹ ላይ ሁሉንም ይምረጡ</translation>
 <translation id="2389423187722941333">Geminiን ይቀያይሩ</translation>
 <translation id="2390347491606624519">ከተኪ ጋር መገናኘት አልተቻለም፣ እባክዎ እንደገና ይግቡ</translation>
-<translation id="2393136602862631930">በእርስዎ Chromebook ላይ <ph name="APP_NAME" />ን ያቀናብሩ</translation>
 <translation id="2397416548179033562">የChrome ምናሌ አሳይ</translation>
 <translation id="240006516586367791">የሚዲያ መቆጣጠሪያዎች</translation>
 <translation id="2400664245143453337">አስቸኳይ ዝማኔ ያስፈልጋል</translation>
@@ -504,7 +494,6 @@
 <translation id="2473177541599297363">ጥራትን ያረጋግጡ</translation>
 <translation id="2475783092753560388"><ph name="SEARCH_RESULT_TEXT" /> ያስገቡ</translation>
 <translation id="2475982808118771221">ስህተት ተከስቷል</translation>
-<translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> ለማራገፍ መስኮቶቹን ይዝጉ።</translation>
 <translation id="2478076885740497414">መተግበሪያ ይጫኑ</translation>
 <translation id="2479148705183875116">ወደ ቅንብሮች ሂድ</translation>
 <translation id="2484513351006226581">የቁልፍ ሰሌዳ አቀማመጥን ለመቀየር <ph name="KEYBOARD_SHORTCUT" />ን ይጫኑ</translation>
@@ -544,7 +533,6 @@
 <translation id="2573588302192866788">ወደ <ph name="NAME" /> መናኘት አልተቻለም</translation>
 <translation id="2575685495496069081">በበርካታ መለያ መግባት ነቅቷል</translation>
 <translation id="2579264398927991698">የፊርምዌር ዝማኔዎች</translation>
-<translation id="2586561813241011046"><ph name="APP_NAME" />ን መጫን አልተቻለም። እባክዎ እንደገና ይሞክሩ፣ ወይም የእርስዎን አስተዳዳሪ ያነጋግሩ። የስሕተት ኮድ፦ <ph name="ERROR_CODE" />።</translation>
 <translation id="2586657967955657006">የቅንጥብ ሰሌዳ</translation>
 <translation id="2596078834055697711">የመስኮት ቅጽበታዊ ገፅ እይታን ያንሱ</translation>
 <translation id="2598725286293895280">በዴስክ ውስጥ የማይደገፉ መተግበሪያዎች</translation>
@@ -566,7 +554,6 @@
 <translation id="2653659639078652383">አስገባ</translation>
 <translation id="2658778018866295321">ጠቅ ያድርጉ እና ይጎትቱ</translation>
 <translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> እና <ph name="UNAVAILABLE_APPS_TWO" /> በዚህ መሣሪያ ላይ የሉም።</translation>
-<translation id="2669241540496514785"><ph name="APP_NAME" />ን መክፈት አልተቻለም</translation>
 <translation id="2670350619068134931">የተቀነሱ እነማዎች</translation>
 <translation id="2672142220933875349">መጥፎ የcrx ፋይል፣ ጥቅል መክፈት አልተሳካም።</translation>
 <translation id="2673968385134502798">ጨዋታዎች</translation>
@@ -839,14 +826,12 @@
 <translation id="3444385531800624797">ውጤቶችን በመጫን ላይ</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> ደቂቃዎች</translation>
 <translation id="3445925074670675829">USB-C መሣሪያ</translation>
-<translation id="3446274660183028131">Windowsን ለመጫን እባክዎ Parallels ዴስክቶፕን ያስጀምሩ።</translation>
 <translation id="3449393517661170867">አዲስ የትር መስኮት</translation>
 <translation id="3450157232394774192">የስራ-ፈት ሁኔታ ያዥነት መቶኛ</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> አሁን ከWi-Fi ጋር እንዲገናኙ እና አንድ ዝማኔ እንዲያወርዱ ይፈልግብዎታል።</translation>
 <translation id="3454555520521576458">መጠኑ ሊቀየር የሚችል</translation>
 <translation id="3455468639467374593">ቅንብር ደንብ፣ <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">1 መሣሪያ ከ<ph name="DEVICE_NAME" /> መገናኛ ነጥብ ጋር ተገናኝቷል</translation>
-<translation id="3458451003193188688">በአውታረ መረብ ስህተት ምክንያት ምናባዊ ማሽኑን መጫን አልተቻለም። እባክዎ እንደገና ይሞክሩ፣ ወይም የእርስዎን አስተዳዳሪ ያነጋግሩ። የስህተት ኮድ፦ <ph name="ERROR_CODE" />።</translation>
 <translation id="346243998268439747">የማጉላት ደረጃን ዳግም ያስጀምሩ</translation>
 <translation id="3465223694362104965">ባለፈው በመለያ ከገቡ ወዲህ ወደዚህ መሣሪያ ሌላ የቁልፍ ሰሌዳ ተገናኝቷል። ከመጠቀምዎ በፊት ይህን የቁልፍ ሰሌዳ እንደሚያምኑት ያረጋግጡ።</translation>
 <translation id="3465356146291925647">በእርስዎ አስተዳዳሪ የሚተዳደር</translation>
@@ -865,7 +850,6 @@
 <translation id="3513798432020909783">መለያው በ<ph name="MANAGER_EMAIL" /> ነው የሚቀናበረው</translation>
 <translation id="3516000762115478502">የባለጡብ መስኮት መጠንን ወደ ላይ ቀይር</translation>
 <translation id="3517037892157925473">መጨረሻ የተዘመኑት ተግባራት፡- <ph name="TIME" />፣ <ph name="DATE" />።</translation>
-<translation id="3522088408596898827">የዲስክ ቦታ በጣም ዝቅተኛ ነው። የዲስክ ቦታ ያስለቅቁ እና እንደገና ይሞክሩ።</translation>
 <translation id="352245152354538528">{0,plural, =1{በ1 ደቂቃ ውስጥ መሣሪያን ያዘምኑ}one{በ# ደቂቃዎች ውስጥ መሣሪያን ያዘምኑ}other{በ# ደቂቃዎች ውስጥ መሣሪያን ያዘምኑ}}</translation>
 <translation id="3522979239100719575">የሚገኙ መገለጫዎችን በመፈለግ ላይ። ይህ ጥቂት ደቂቃዎችን ሊወስድ ይችላል።</translation>
 <translation id="3526440770046466733">አገናኝን በአዲስ ትር ውስጥ ይክፈቱ እና በአሁኑ ትር ውስጥ ይቆዩ</translation>
@@ -1019,7 +1003,6 @@
 <translation id="3886872229787704059">ዛሬ የተከፈተ</translation>
 <translation id="3892148308691398805">ጽሁፍ ቅዳ</translation>
 <translation id="3893630138897523026">ChromeVox (የሚነገር ግብረመልስ)</translation>
-<translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3898464793473355515">ማያገ ጽን 90 ዲግሪ በሰዓት አቅጣጫ አሽከርክር</translation>
 <translation id="3900355044994618856">የእርስዎ ክፍለ ጊዜ በ<ph name="SESSION_TIME_REMAINING" /> ውስጥ ያበቃል</translation>
 <translation id="3901991538546252627">ከ<ph name="NAME" /> ጋር በመገናኘት ላይ</translation>
@@ -1117,7 +1100,6 @@
 <translation id="4181841719683918333">ቋንቋዎች</translation>
 <translation id="4185671786623711291">ገቢር መስኮትን በቀኝ በኩል ወደ ዴስክ ውሰድ</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> - <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> ፍለጋ</translation>
-<translation id="4187424053537113647"><ph name="APP_NAME" /> በማቀናበር ላይ…</translation>
 <translation id="4189826113259617332">ሁሉንም የተከፈቱ ገጾች በአሁኑ መስኮት ውስጥ በአዲስ አቃፊ ውስጥ እንደ ዕልባቶች ያስቀምጧቸው</translation>
 <translation id="4190143678693626113">ለስልክዎ ጽሁፎች ከChromebook በፍጥነት መልስ በመስጠት ጊዜ ይቆጥቡ።</translation>
 <translation id="4190780880566297084">የስልክዎን የቅርብ ጊዜ ፎቶዎች፣ ሚዲያ እና መተግበሪያዎች ዕይታ ማዋቀርን ያሰናብቱ</translation>
@@ -1129,7 +1111,6 @@
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> አይገኝም።</translation>
 <translation id="4201051445878709314">ቀዳሚውን ወር አሳይ</translation>
 <translation id="4209973997261364186">Wi-Fi በርቷል</translation>
-<translation id="4210048056321123003">ምናባዊውን ማሽን በማውረድ ላይ</translation>
 <translation id="4212246570487010370">ማሰሱን ይቀጥሉ</translation>
 <translation id="4212472694152630271">ወደ ፒን ቀይር</translation>
 <translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />፣ <ph name="EFFECT_NAME" />፣ የቀያይር አዝራር፣ <ph name="STATE" /></translation>
@@ -1148,7 +1129,6 @@
 <translation id="4250229828105606438">ቅጽበታዊ ገፅ ዕይታ</translation>
 <translation id="425364040945105958">ምንም ሲም የለም</translation>
 <translation id="425573743389990240">የባትሪ ትፋት ፍጥነት በዋት (አሉታዊ እሴት ማለት ባትሪ እየሞላ ነው)</translation>
-<translation id="4259388776256904261">ይህ ትንሽ ጊዜ ሊወስድ ይችላል</translation>
 <translation id="4264977415328155183">፣ ተሰብስቧል</translation>
 <translation id="4265259722091164182">የርዕስ አቢይ ሆሄ</translation>
 <translation id="4269883910223712419">የዚህ መሣሪያ የሚከተሉትን የማድረግ ችሎታ አለው፦</translation>
@@ -1235,7 +1215,6 @@
 1 መሣሪያ ተገናኝቷል።</translation>
 <translation id="4477892968187500306">ይህ መሣሪያ በGoogle ያልተረጋገጡ መተግበሪያዎችን ሊይዝ ይችላል።</translation>
 <translation id="4479639480957787382">ኢተርኔት</translation>
-<translation id="4479877282574735775">ምናባዊውን ማሽን በማዋቀር ላይ። ይሄ ጥቂት ደቂቃዎችን ሊወስደ ይችላል።</translation>
 <translation id="4485506555414638855">የስልክዎን የቅርብ ጊዜ ፎቶዎች፣ ሚዲያ፣ ማሳወቂያዎች እና መተግበሪያዎች ዕይታ ማዋቀርን ያሰናብቱ</translation>
 <translation id="4491109536499578614">ምስል</translation>
 <translation id="4493468155686877504">የተመከሩ (<ph name="INSTALL_SIZE" />)</translation>
@@ -1384,7 +1363,6 @@
 <translation id="4917385247580444890">ጠንካራ</translation>
 <translation id="4918086044614829423">ይቀበሉ</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> አሁን ላይ ካሜራዎን እየተጠቀመ ነው</translation>
-<translation id="492363500327720082"><ph name="APP_NAME" />ን በማራገፍ ላይ...</translation>
 <translation id="492453977506755176">የማንሳት ሁነታ ቁልፍ</translation>
 <translation id="4925542575807923399">የዚህ መለያ አስተዳዳሪ በአንድ ባለብዙ መለያ መግቢያ ክፍለ-ጊዜ ላይ ይህ መለያ መጀምሪያ እንዲገባ ይፈልጋል።</translation>
 <translation id="493076006037866439">ከማያ ገፅ ላይ አሳንስ</translation>
@@ -1622,7 +1600,6 @@
 <translation id="5578188167649348993">ማህደረ ትውስታ</translation>
 <translation id="5580000943347215299">ቤተ-መጽሐፍት</translation>
 <translation id="5581972110672966454">መሣሪያውን ወደ ጎራው መቀላቀል አይቻልም። እባክዎ እንደገና ይሞክሩ ወይም የእርስዎን መሣሪያ ባለቤት ወይም አስተዳዳሪ ያነጋግሩ። የስህተት ኮድ፦ <ph name="ERROR_CODE" />።</translation>
-<translation id="5585898376467608182">የእርስዎ መሣሪያ ማከማቻው ዝቅተኛ ነው። <ph name="APP_NAME" />ን ለመጠቀም ቢያንስ <ph name="MINIMUM_SPACE" /> ባዶ ቦታ ያስፈልጋል። ባዶ ቦታን ለመጨመር ከመሣሪያው ፋይሎችን ይሰርዙ።</translation>
 <translation id="5586388332127302891">የተተከለ ማጉያ ነቅቷል። በመቀያየሪያው ለመጥፋት <ph name="ACCELERATOR" /> የሚለውን በድጋሚ ይጫኑ።</translation>
 <translation id="5587506661873751671">በማውረድ ላይ <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="5590609058453685222">ድምጸ-ከል ማስታወቂያ በርቷል። ድምፀ-ከል ሆነው ሳለ ካወሩ ማሳወቂያ ይደርስዎታል።</translation>
@@ -1689,7 +1666,6 @@
 <translation id="5767730327234918501">አስተዳዳሪዎ መገናኛ ነጥብን አጥፍተዋል።</translation>
 <translation id="5769373120130404283">የግላዊነት ማያ ገፅ</translation>
 <translation id="5770004650349728202">ለመናገር ምረጥ የሚለውን አብራ</translation>
-<translation id="5772114492540073460"><ph name="PARALLELS_NAME" /> በእርስዎ Chromebook ላይ የWindows® መተግበሪያዎችን እንዲያሄዱ ያስችልዎታል። ለመጫን <ph name="MINIMUM_SPACE" /> ነፃ ቦታ ይመከራል።</translation>
 <translation id="5773950591113557721">ይህ ለ<ph name="APP_NAME" /> እና የካሜራ እና የማይክሮፎን ፈቃዶች ላሏቸው ለሁሉም መተግበሪያዎች እና ድር ጣቢያዎች መዳረሻ ይፈቅዳል</translation>
 <translation id="5774295353725270860">የፋይሎች መተግበሪያን ክፈት</translation>
 <translation id="5775936059231769503">መገናኛ ነጥብ ይቀያይሩ። መገናኛ ነጥብ ጠፍቷል።</translation>
@@ -1737,8 +1713,6 @@
 <translation id="589817443623831496">ነጥብ መቃኘት</translation>
 <translation id="5901494423252125310">የማተሚያ በር ክፍት ነው</translation>
 <translation id="5901630391730855834">ቢጫ</translation>
-<translation id="5904614460720589786">በውቅረት ችግር ምክንያት <ph name="APP_NAME" />ን ማቀናበር አልተቻለም። እባክዎ አስተዳዳሪዎን ያነጋግሩ። የስሕተት ኮድ፦ <ph name="ERROR_CODE" />።</translation>
-<translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> ከመስመር ውጭ ነው</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">አዲስ ማሳወቂያ፣ በአጠቃላይ <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">በርቷል</translation>
@@ -1811,7 +1785,6 @@
         <ph name="DOMAIN" /> የእርስዎን ዘመናዊ ካርድ እንደገባ እንዲያቆዩ ይጠይቃል።}other{በ# ሰከንዶች ውስጥ በራስ-ሰር ዘግተው እንዲወጡ ይደረጋሉ።
         <ph name="DOMAIN" /> የእርስዎን ዘመናዊ ካርድ እንደገባ እንዲያቆዩ ይጠይቃል።}}</translation>
 <translation id="6071576563962215370">ሥርዓቱ የመሣሪያ ጭነት-ጊዜ ዓይነታዎች ቁልፉን መመሥረት አልተሳካለትም።</translation>
-<translation id="6072442788591997866"><ph name="APP_NAME" /> በዚህ መሣሪያ ላይ አይፈቀድም። የእርስዎን አስተዳዳሪ ያነጋግሩ። የስሕተት ኮድ፦ <ph name="ERROR_CODE" />።</translation>
 <translation id="6073451960410192870">መቅረጽ አቁም</translation>
 <translation id="6074087755403037157">የቅድመ-ይሁንታ ሰርጥ</translation>
 <translation id="6075098173600599596">አቢይ ሆሄ ማድረግን ለውጥ</translation>
@@ -1918,7 +1891,6 @@
 <translation id="6380143666419481200">ይቀበሉ እና ይቀጥሉ</translation>
 <translation id="6381109794406942707">መሣሪያውን ለመክፈት የእርስዎን ፒን ያስገቡ።</translation>
 <translation id="6381305031890976705">{0,plural, =1{በአንድ ሰዓት ውስጥ መሣሪያዎን ወደ ቀዳሚው ስሪት ያዘምኑ}one{በ# ሰዓት ውስጥ መሣሪያዎቹን ወደ ቀዳሚው ስሪት ያዘምኑ}other{በ# ሰዓታት ውስጥ መሣሪያውን ወደ ቀዳሚው ስሪት ያዘምኑ}}</translation>
-<translation id="6385149369087767061">ከበይነመረቡ ጋር ይገናኙና እንደገና ይሞክሩ</translation>
 <translation id="638716340450135524">የካሜራ መዳረሻን አብራ</translation>
 <translation id="6406458002328242616">የሰዓት ቆጣሪን አርትዕ። <ph name="FOCUS_DURATION" />።</translation>
 <translation id="6406704438230478924">altgr</translation>
@@ -1936,7 +1908,6 @@
 <translation id="6426905245930183644">በመፍጠር ላይ...</translation>
 <translation id="6430225033895752525">የትኩረት ቅንብሮችን አሳይ</translation>
 <translation id="6431865393913628856">የማያ ገፅ ቀረጻ</translation>
-<translation id="6434325376267409267">እርስዎ <ph name="APP_NAME" />ን መጠቀም ከመቻልዎ በፊት የእርስዎ መሣሪያ መዘመን አለበት።</translation>
 <translation id="643593192654616063">ከ<ph name="STORAGE_TOTAL_SIZE" /> አጠቃላይ <ph name="STORAGE_IN_USE_SIZE" /> ማከማቻ ጥቅም ላይ ውሏል</translation>
 <translation id="6445915701151710649">ሲፒዩ</translation>
 <translation id="6447111710783417522"><ph name="DATE" />፣ <ph name="NUMBER" /> ክስተት</translation>
@@ -2215,7 +2186,6 @@
 <translation id="7258828758145722155">ትላንትና አርትዖት ተደርጎበታል</translation>
 <translation id="726276584504105859">የተከፈለ ማያ ገጽን ለመጠቀም ወደዚህ ይጎትቱ</translation>
 <translation id="7264788308526527464">ቀንስ <ph name="FOCUS_DURATION_DELTA" /></translation>
-<translation id="7267044199012331848">ምናባዊ ማሽኑን መጫን አልተቻለም። እባክዎ እንደገና ይሞክሩ፣ ወይም የእርስዎን አስተዳዳሪ ያነጋግሩ። የስሕተት ኮድ፦ <ph name="ERROR_CODE" />።</translation>
 <translation id="7267875682732693301">የተለያዩ የጣት አሻራዎን ክፍሎች ለማከል ጣትዎን ማንሳትቱና ማስቀመጥዎን ይቀጥሉ</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + የኋሊት መደምሰሻ</translation>
 <translation id="7285232777292757180">ቅጽበታዊ ገጽ እይታዎችን ለማንሳት የማያ ገጽ ቀረጻ መሳሪያውን በፈጣን ቅንብሮች ውስጥ ይጠቀሙ</translation>
@@ -2264,9 +2234,7 @@
 <translation id="7406854842098869085"><ph name="MODIFIER_1" />ን ተጭነው ይያዙ፣ መክፈት የሚፈልጉትን መስኮት እስከሚያገኙ ድረስ <ph name="KEY" /> ላይ መታ ያድርጉ፣ ከዚያ ይልቀቁ</translation>
 <translation id="740790383907119240">የመተግበሪያ አቋራጮች</translation>
 <translation id="7413851974711031813">ለመዝጋት ዝለልን ይጫኑ</translation>
-<translation id="7415454883318062233">ማዋቀር ተጠናቅቋል</translation>
 <translation id="7416471219712049036">የአሁኑን ገፅ ያስቀምጡ</translation>
-<translation id="7423807071740419372"><ph name="APP_NAME" /> ለማሄድ ፈቃድ ያስፈልገዋል</translation>
 <translation id="742594950370306541">ካሜራ ሥራ ላይ ነው።</translation>
 <translation id="743058460480092004">ካሜራና ማይክራፎን ሥራ ላይ ናቸው።</translation>
 <translation id="7433708794692032816">የእርስዎን <ph name="DEVICE_TYPE" /> እየተጠቀሙ ለመቀጠል ዘመናዊ ካርድ ያስገቡ</translation>
@@ -2277,7 +2245,6 @@
 <translation id="7459485586006128091">በውስጣዊ ስህተት ምክንያት መገናኛ ነጥብ ጠፍቷል። ከጥቂት ደቂቃዎች በኋላ እንደገና ለማገናኘት ይሞክሩ።</translation>
 <translation id="7461924472993315131">ሰካ</translation>
 <translation id="746216226901520237">በሚቀጥለው ጊዜ ስልክዎ የእርስዎን <ph name="DEVICE_TYPE" /> ይከፍታል። በቅንብሮች ውስጥ Smart Lock ማጥፋት ይችላሉ።</translation>
-<translation id="7465635034594602553">የሆነ ችግር ተፈጥሯል። እባክዎ ትንሽ ደቂቃዎች ይጠብቁና እንደገና <ph name="APP_NAME" />ን ያሂዱ።</translation>
 <translation id="7466449121337984263">እባክዎ ዳሳሹን ይንኩ</translation>
 <translation id="7477793887173910789">የእርስዎን ሙዚቃ፣ ቪዲዮዎች እና ተጨማሪ ነገሮች ይቆጣጠሩ</translation>
 <translation id="7478485216301680444">የኪዮስክ መተግበሪያ ሊጫን አልቻለም።</translation>
@@ -2431,7 +2398,6 @@
 <translation id="7850320739366109486">አትረብሽ</translation>
 <translation id="7851039877802112575">ትኩረቱን ወደ ብቅ-ባዮች እና መገናኛዎች ይውሰዱ</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7862292329216937261">መሣሪያውን እንደ እንግዳ ለመጠቀም ዘግተው መውጣት እና ከዚያም በማያ ገጹ ታች ላይ እንደ እንግዳ አስስ የሚለውን መምረጥ ያስፈልግዎታል።</translation>
 <translation id="7866482334467279021">በርቷል</translation>
 <translation id="7870790288828963061">ምንም አዲስ ስሪት ያላቸው የKiosk መተግበሪያዎች አልተገኙም። ምንም የሚዘምን ነገር የለም። እባክዎ የዩ.ኤስ.ቢ. ስቲኩን ያስወግዱ።</translation>
@@ -2768,7 +2734,6 @@
 <translation id="8815390544836110344">የቅጽበታዊ ገጽ እይታ አቋራጭ፣ Ctrl ሲደመር Shift እና አጠቃላይ እይታ ሁነታ ቁልፍን ይጫኑ</translation>
 <translation id="881757059229893486">የግቤት ስልት ቅንብሮች</translation>
 <translation id="8819728065740986820">ተለማማጅ የኃይል መሙያ በርቷል</translation>
-<translation id="8821268776955756404"><ph name="APP_NAME" /> ሥራ ላይ ለመዋል ዝግጁ ነው።</translation>
 <translation id="882204272221080310">ለተጨማሪ ደህንነት ጽኑ ትዕዛዝን ያዘምኑ።</translation>
 <translation id="8822104519413696986">ይህ የንክኪ ጨዋታ ነው</translation>
 <translation id="8825863694328519386">ለመመለስ ከግራ ጀምረው ይጥረጉ</translation>
@@ -2803,7 +2768,6 @@
 <translation id="8905919797434099235">(ርዕስ የለም)</translation>
 <translation id="890616557918890486">ምንጭ ይለውጡ</translation>
 <translation id="8909138438987180327">ባትሪ <ph name="PERCENTAGE" /> መቶኛ ላይ።</translation>
-<translation id="8909298138148012791"><ph name="APP_NAME" /> ተራግፏል</translation>
 <translation id="8916866375277139011"><ph name="GROUP_NAME" /> ውስጥ ያሉ ንጥሎችን ደብቅ</translation>
 <translation id="8921369299636221117">የእንግዳዎች ረዳት አይገኝም።</translation>
 <translation id="8921554779039049422">ኤች+</translation>
@@ -2876,7 +2840,6 @@
 <translation id="9126339866969410112">የመጨረሻውን ድርጊት ይቀልብሱ</translation>
 <translation id="9126642911267312373">ብሉቱዝ አይገኝም</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{በ1 ደቂቃ ውስጥ}one{በ# ደቂቃ ውስጥ}other{በ# ደቂቃዎች ውስጥ}}</translation>
-<translation id="9128317794749765148">ቅንብርን ማጠናቀቅ አልተቻለም</translation>
 <translation id="9129245940793250979">የኋላ አዝራር</translation>
 <translation id="9133335900048457298">የተጠበቀ ይዘት መቅረጽ አልተቻለም</translation>
 <translation id="9139720510312328767">ቀጣዩን ፊደል ይሰርዙ</translation>

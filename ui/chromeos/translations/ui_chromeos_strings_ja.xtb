@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Word ドキュメント</translation>
 <translation id="1056775291175587022">なし</translation>
 <translation id="1056898198331236512">警告</translation>
-<translation id="1060368002126861100"><ph name="APP_NAME" /> でファイルを開くには、まず [Windows ファイル] フォルダにファイルを移動してください。</translation>
 <translation id="1062407476771304334">置換</translation>
 <translation id="1119383441774809183">テキスト メッセージを表示</translation>
 <translation id="1119447706177454957">内部エラー</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">ノルウェー語</translation>
 <translation id="1408504635543854729">ファイルアプリでデバイスの内容を確認できます。ただし管理者が制限を設定しているため、デバイスの内容を変更することはできません。</translation>
 <translation id="1412476183660741812">署名付きウェブバンドル</translation>
-<translation id="1433628812591023318">Parallels Desktop にファイルをドロップするには [Windows ファイル] にファイルを移動する必要があります。</translation>
-<translation id="1435838927755162558">Parallels Desktop とのフォルダ共有</translation>
 <translation id="1439919885608649279">花を持っている人</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> を取り外す</translation>
 <translation id="1464781208867302907">デバイス設定を行うには、[設定] に移動してください。</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">フランス語</translation>
 <translation id="2732288874651063549"><ph name="VM_NAME" /> との共有を管理</translation>
 <translation id="2732839045120506979">ベトナム語（VNI）</translation>
-<translation id="2735623501230989521">Parallels Desktop に <ph name="FOLDER_NAME" /> フォルダのファイルへのアクセスを許可します</translation>
 <translation id="2764206540577097904">個人用の Google Workspace ストレージの空き容量がなくなりました。</translation>
 <translation id="2771816809568414714">チーズ</translation>
 <translation id="2783909841122647548">Debian パッケージのインストールはサポートされなくなりました。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">位置情報</translation>
 <translation id="3044404008258011032">これらのアイテムを復元するには、ゴミ箱から新しいフォルダにドラッグしてください。アイテムの元のフォルダ「<ph name="PARENT_FOLDER_NAME" />」は削除されています。</translation>
 <translation id="3047197340186497470">中国語（大易）</translation>
-<translation id="3067790092342515856">Windows ファイル</translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">SOCKS ホスト</translation>
 <translation id="3091469289665833668">ルーマニア語</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">詳細については、管理者にお問い合わせください。</translation>
 <translation id="3548125359243647069">間違った PIN が繰り返し入力されました。</translation>
 <translation id="3549797760399244642">drive.google.com にアクセスします...</translation>
-<translation id="3553048479571901246"><ph name="APP_NAME" /> でファイルを開くには、まず [Windows ファイル] フォルダにファイルをコピーしてください。</translation>
 <translation id="3556731189587832921">英語（アメリカ）（インターナショナル PC）キーボード</translation>
 <translation id="3557414470514932909"><ph name="FILE_NAME" /> をゴミ箱に移動しています</translation>
 <translation id="3560848236447534728">アルメニア語（表音）</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">ルーマニア語</translation>
 <translation id="4508265954913339219">起動に失敗しました</translation>
 <translation id="4509667233588080747">英語（アメリカ）（Workman インターナショナル）キーボード</translation>
-<translation id="4527800702232535228">このフォルダは Parallels Desktop と共有されています</translation>
 <translation id="4552678318981539154">追加ストレージを購入</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> ネットワーク、信号強度 <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">ピンぼけ</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">おにぎり</translation>
 <translation id="4784330909746505604">PowerPoint プレゼンテーション</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
-<translation id="4789067489790477934">Parallels Desktop に Google ドライブのファイルへのアクセスを許可します。変更が加えられた場合は他のデバイスに同期されます。</translation>
 <translation id="4790766916287588578">ヒンディー語（字母）キーボード</translation>
 <translation id="4798645114741131062">お使いの ChromeOS Flex デバイスは、まもなく更新の受信を停止します。ChromeOS デバイスへのアップグレードをご検討ください。</translation>
 <translation id="4801956050125744859">両方を保持</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">音量スライダー</translation>
 <translation id="4881695831933465202">開く</translation>
 <translation id="4891091358278567964">これらのアイテムを復元するには、ゴミ箱から新しいフォルダにドラッグしてください。アイテムの元のフォルダは削除されています。</translation>
-<translation id="4900532980794411603">Parallels Desktop と共有</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="SECURITY_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、接続</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="PHONE_NAME" />、<ph name="PROVIDER_NAME" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、電池残量 <ph name="BATTERY_STATUS" />%、詳細</translation>
 <translation id="4935975195727477204">花</translation>
 <translation id="4943368462779413526">フットボール</translation>
-<translation id="4961158930123534723">1 個のフォルダが Parallels Desktop と共有されています</translation>
 <translation id="4965874878399872778">組織のセキュリティ ポリシーに沿ってファイルをチェックしています...</translation>
 <translation id="496656650103537022">「<ph name="FILE_NAME" />」を復元しました</translation>
 <translation id="4969785127455456148">アルバム</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">操作に予想より時間がかかっています。中止しますか？</translation>
 <translation id="5036141350290856713">ロシア語（表音）</translation>
-<translation id="5036159836254554629">Parallels Desktop との共有を管理</translation>
 <translation id="5038625366300922036">もっと見る...</translation>
 <translation id="5044852990838351217">アルメニア語</translation>
 <translation id="5045550434625856497">パスワードが正しくありません</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">「<ph name="FILENAME" />」を削除しています...</translation>
 <translation id="6581162200855843583">Google ドライブ リンク</translation>
 <translation id="6588648400954570689">ファイルの同期設定</translation>
-<translation id="6594855146910089723">このフォルダは Linux および Parallels Desktop と共有されています</translation>
 <translation id="6607272825297743757">ファイル情報</translation>
-<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> 個のフォルダが Parallels Desktop と共有されています</translation>
 <translation id="6629518321609546825">4 桁以上の数字を入力してください</translation>
 <translation id="6643016212128521049">削除</translation>
 <translation id="6650726141019353908">ピンクの蝶</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">名前の変更中にエラーが発生しました。</translation>
 <translation id="7458955835361612701">最近使用した画像はありません</translation>
 <translation id="7469894403370665791">このネットワークに自動接続する</translation>
-<translation id="7486315294984620427">Parallels Desktop にファイルをドロップするには、[Windows ファイル] にファイルをコピーする必要があります。</translation>
 <translation id="749452993132003881">ひらがな</translation>
 <translation id="7495372004724182530">マラヤーラム語（表音）</translation>
 <translation id="7505167922889582512">非表示のファイルを表示</translation>

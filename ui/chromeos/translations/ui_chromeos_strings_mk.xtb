@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Документ во Word</translation>
 <translation id="1056775291175587022">Нема мрежи</translation>
 <translation id="1056898198331236512">Предупредување</translation>
-<translation id="1060368002126861100">За да отворате датотеки со <ph name="APP_NAME" />, прво преместете ги во папката со датотеки на Windows.</translation>
 <translation id="1062407476771304334">Замени</translation>
 <translation id="1119383441774809183">Прикажи ги текстуалните пораки</translation>
 <translation id="1119447706177454957">Внатрешна грешка</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">норвешки</translation>
 <translation id="1408504635543854729">Истражувајте ја содржината на уредот во апликацијата Датотеки. Администраторот ја ограничил содржината и таа не може да се менува.</translation>
 <translation id="1412476183660741812">Потпишан веб-пакет</translation>
-<translation id="1433628812591023318">За да пуштите датотеки во Parallels Desktop, датотеката мора да се премести во датотеките на Windows.</translation>
-<translation id="1435838927755162558">Споделете папка со Parallels Desktop</translation>
 <translation id="1439919885608649279">Човек со цвеќиња</translation>
 <translation id="1458457385801829801">Отстранете <ph name="TARGET_NAME" /></translation>
 <translation id="1464781208867302907">За поставки за уредот, одете во „Поставки“.</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">француска</translation>
 <translation id="2732288874651063549">Управувајте со споделувањето со <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">виетнамски VNI</translation>
-<translation id="2735623501230989521">Дајте ѝ дозвола на Parallels Desktop да пристапува до датотеките во папката „<ph name="FOLDER_NAME" />“</translation>
 <translation id="2764206540577097904">Го искористивте целиот ваш индивидуален капацитет на Google Workspace.</translation>
 <translation id="2771816809568414714">Сирење</translation>
 <translation id="2783909841122647548">Инсталирањата пакети Debian веќе не се поддржани. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">Географија</translation>
 <translation id="3044404008258011032">За да ги вратите ставкиве, повлечете ги во нова папка надвор од корпата. Оригиналната папка „<ph name="PARENT_FOLDER_NAME" />“ за ставкава е избришана.</translation>
 <translation id="3047197340186497470">кинески даји</translation>
-<translation id="3067790092342515856">Датотеки на Windows</translation>
 <translation id="3083975830683400843">Уреди Chromebit</translation>
 <translation id="3085752524577180175">Хост на SOCKS</translation>
 <translation id="3091469289665833668">романска</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">За детали, контактирајте со администраторот.</translation>
 <translation id="3548125359243647069">Внесовте погрешен PIN премногу пати.</translation>
 <translation id="3549797760399244642">Одете на drive.google.com...</translation>
-<translation id="3553048479571901246">За да отворате датотеки со <ph name="APP_NAME" />, прво копирајте ги во папката со датотеки на Windows.</translation>
 <translation id="3556731189587832921">англиски (САД) со меѓународна компјутерска тастатура</translation>
 <translation id="3557414470514932909">Се преместува <ph name="FILE_NAME" /> во корпата</translation>
 <translation id="3560848236447534728">ерменска фонетска</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">романски</translation>
 <translation id="4508265954913339219">Активирањето не успеа</translation>
 <translation id="4509667233588080747">англиски (САД) со меѓународна тастатура Workman</translation>
-<translation id="4527800702232535228">Папкава е споделена со Parallels Desktop</translation>
 <translation id="4552678318981539154">Купете поголем простор за складирање</translation>
 <translation id="4552759165874948005">Мрежа со <ph name="NETWORK_TYPE" />, јачина на сигнал <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4559767610552730302">Боке</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">Онигири</translation>
 <translation id="4784330909746505604">PowerPoint-презентација</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
-<translation id="4789067489790477934">Дајте ѝ дозвола на Parallels Desktop да пристапува до датотеките во вашиот Google Drive. Промените ќе се синхронизираат со другите уреди.</translation>
 <translation id="4790766916287588578">Хинди со тастатура InScript</translation>
 <translation id="4798645114741131062">Вашиот уред со ChromeOS Flex наскоро ќе престане да прима ажурирања. Размислете да надградите на уред со ChromeOS.</translation>
 <translation id="4801956050125744859">Задржи ги двете</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">Лизгач за јачина на звук</translation>
 <translation id="4881695831933465202">Отвори</translation>
 <translation id="4891091358278567964">За да ги вратите ставкиве, повлечете ги во нова папка надвор од корпата. Оригиналните папки за ставкиве се избришани.</translation>
-<translation id="4900532980794411603">Сподели со Parallels Desktop</translation>
 <translation id="4902546322522096650">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, поврзи</translation>
 <translation id="4906580650526544301">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, батерија на телефонот: <ph name="BATTERY_STATUS" /> %, детали</translation>
 <translation id="4935975195727477204">Цвет од газанија</translation>
 <translation id="4943368462779413526">Фудбал</translation>
-<translation id="4961158930123534723">1 папка е споделена со Parallels Desktop</translation>
 <translation id="4965874878399872778">Датотеките се проверуваат согласно со безбедносните правила на вашата организација…</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> вратени</translation>
 <translation id="4969785127455456148">Албум</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Операцијата трае подолго од очекуваното. Дали сакате да ја прекинете?</translation>
 <translation id="5036141350290856713">руска фонетска</translation>
-<translation id="5036159836254554629">Управувајте со споделувањето со Parallels Desktop</translation>
 <translation id="5038625366300922036">Види повеќе...</translation>
 <translation id="5044852990838351217">ерменски</translation>
 <translation id="5045550434625856497">Погрешна лозинка</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">Се брише „<ph name="FILENAME" />“...</translation>
 <translation id="6581162200855843583">Врска на Google Диск</translation>
 <translation id="6588648400954570689">Поставки за синхронизација на датотеки</translation>
-<translation id="6594855146910089723">Папкава е споделена со Linux и Parallels Desktop</translation>
 <translation id="6607272825297743757">Информации за датотека</translation>
-<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> папки се споделени со Parallels Desktop</translation>
 <translation id="6629518321609546825">Внесете барем четири бројки</translation>
 <translation id="6643016212128521049">Исчисти</translation>
 <translation id="6650726141019353908">Розова пеперутка</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">Да му се сневиди! Настана грешка за време на форматирањето.</translation>
 <translation id="7458955835361612701">Нема неодамнешни слики</translation>
 <translation id="7469894403370665791">Автоматски поврзи се на мрежава</translation>
-<translation id="7486315294984620427">За да пуштите датотеки во Parallels Desktop, датотеката мора да се копира во датотеките на Windows.</translation>
 <translation id="749452993132003881">хирагана</translation>
 <translation id="7495372004724182530">фонетски малајалски</translation>
 <translation id="7505167922889582512">Прикажи скриени датотеки</translation>

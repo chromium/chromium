@@ -35,7 +35,6 @@
 <translation id="1088231044944504242">חיפוש ב<ph name="CATEGORY" />, בקבצים, באפליקציות ועוד. אפשר להשתמש במקשי החיצים כדי לנווט בין האפליקציות.</translation>
 <translation id="1093645050124056515">‏Ctrl +‏ Alt + חץ למטה</translation>
 <translation id="1094756674036064790">‏להשבית את Bluetooth?</translation>
-<translation id="109647177154844434">‏הסרת ההתקנה של Parallels Desktop תמחק את קובץ האימג' של Windows. המחיקה כוללת את כל האפליקציות, ההגדרות והנתונים. להמשיך?</translation>
 <translation id="1104084341931202936">צפייה בהגדרות הנגישות</translation>
 <translation id="1104621072296271835">ביחד, המכשירים שלך יוכלו לעבוד עוד יותר טוב</translation>
 <translation id="1107300737351978027">הקוד לא יכול לכלול ספרות שחוזרות על עצמן</translation>
@@ -82,7 +81,6 @@
 <translation id="1210557957257435379">הקלטת מסך</translation>
 <translation id="121097972571826261">מילה אחת קדימה</translation>
 <translation id="1218444235442067213">‏<ph name="APP_NAME" />, אפליקציה מחנות Play</translation>
-<translation id="1223484782328004593">נדרש רישיון כדי להשתמש ב-<ph name="APP_NAME" /></translation>
 <translation id="1225748608451425081">‏ה-Chromebook שלך נעול עקב בעיה ידועה. ניתן יהיה להיכנס בעוד: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">סיום הבחירה</translation>
 <translation id="1235458158152011030">רשתות מוכרות</translation>
@@ -93,7 +91,6 @@
 <translation id="1244265436519979884">‏מתבצע כעת שחזור של Linux</translation>
 <translation id="1245476784081715330">עבודה טובה!</translation>
 <translation id="124678866338384709">סגירת הכרטיסייה הנוכחית</translation>
-<translation id="1246863218384630739">‏לא ניתן היה להתקין את <ph name="VM_NAME" />: כתובת ה-URL של התמונה החזירה קוד שגיאה <ph name="HTTP_ERROR" />. יש לפנות למנהל המערכת.</translation>
 <translation id="1246890715821376239">אפליקציות שאינן נתמכות</translation>
 <translation id="1247372569136754018">מיקרופון (פנימי)</translation>
 <translation id="1247519845643687288">אפליקציות שהיו בשימוש לאחרונה</translation>
@@ -107,7 +104,6 @@
 <translation id="1275285675049378717">מספק חשמל ל-<ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">נבחר</translation>
 <translation id="1276975447697633661">בחירת הקובץ והקשה על <ph name="KEY" /></translation>
-<translation id="1276994519141842946">לא ניתן היה להסיר את <ph name="APP_NAME" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" />‏ (<ph name="ANNOTATION" />)</translation>
 <translation id="1283126956823499975">משהו השתבש בהגדרת המכשיר</translation>
 <translation id="1285992161347843613">איתור טלפון</translation>
@@ -170,7 +166,6 @@
 <translation id="1421166164855200062">קבוצה מוצעת</translation>
 <translation id="1426410128494586442">כן</translation>
 <translation id="142655739075382478">האפליקציה <ph name="APP_NAME" /> חסומה</translation>
-<translation id="142765311413773645">פג תוקף הרישיון של <ph name="APP_NAME" /></translation>
 <translation id="1430915738399379752">הדפסה</translation>
 <translation id="1435537621343861112">לא ניתן להתחיל את ההכתבה. המיקרופון כבוי.</translation>
 <translation id="1445031758921122223">הורדת הקבצים של שליטה באמצעות תנועות הפנים הסתיימה</translation>
@@ -193,12 +188,10 @@
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">‏עם הכתבה, אפשר להקליד באמצעות הקול. מקישים על מקש ההכתבה או בוחרים בסמל המיקרופון שבתחתית המסך כשנמצאים בשדה טקסט. שפת ההכתבה שהוגדרה היא <ph name="LANGUAGE" />. הדיבור נשלח אל Google לעיבוד. אפשר לשנות את שפת ההכתבה בכל שלב בהגדרות &gt; נגישות.</translation>
 <translation id="1487931858675166540">הפריט <ph name="SECOND_ITEM_TITLE" /> החליף את <ph name="FIRST_ITEM_TITLE" /></translation>
-<translation id="1494429729245089920">המכונה הווירטואלית '<ph name="VM_NAME" />' קיימת, אבל נראה שהיא לא מכונה וירטואלית תקינה מסוג <ph name="APP_NAME" />. צריך לפנות לאדמין.</translation>
 <translation id="1500926532737552529">הצגת כל ההצעות</translation>
 <translation id="1501946871587957338">להחליף את מקור האודיו?</translation>
 <translation id="1505542291183484463">Tiled resize window downward</translation>
 <translation id="1510238584712386396">מרכז האפליקציות</translation>
-<translation id="1515163294334130951">הפעלה</translation>
 <translation id="1519090060276706457">שחזור החלונות נמשך יותר זמן מהצפוי</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003">סוללה: %<ph name="BATTERY_PERCENTAGE" /> | הזמן שנותר לטעינה מלאה: <ph name="TIME" /></translation>
@@ -222,7 +215,6 @@
 <translation id="1574691582236909946">נקודת האחיזה שנבחרה בקצה השמאלי העליון. אפשר להשתמש במקשי החיצים כדי להזיז אותה</translation>
 <translation id="1576623706766186887">הקטנת התצוגה כשמפעילים את הזכוכית המגדלת</translation>
 <translation id="1578558981922970608">אילוץ סגירה</translation>
-<translation id="1580772913177567930">יש ליצור קשר עם מנהל המערכת</translation>
 <translation id="1582946770779745370">‏מרכז בקרת המשחקים זמין. כדי לפתוח אותו, מקישים בכל שלב על <ph name="LAUNCHER_KEY_NAME" /> + Shift‏ + Escape ואז על <ph name="LAUNCHER_KEY_NAME" /> + g</translation>
 <translation id="1586324912145647027">מעבר לשולחנות העבודה הווירטואליים 1 עד 8</translation>
 <translation id="158838227375272121">‏אתר Google Classroom</translation>
@@ -443,7 +435,6 @@
 <translation id="2322065293366551060"><ph name="CATEGORY" /> , קטגוריה של תוצאות חיפוש</translation>
 <translation id="2322173485024759474">אות אחת אחורה</translation>
 <translation id="2326112202058075478">הצגת סמלי אמוג'י נוספים</translation>
-<translation id="2328561734797404498">יש להפעיל מחדש את המכשיר כדי להשתמש ב-<ph name="APP_NAME" />.</translation>
 <translation id="2335091074961603075">‏ב-Chromebook או במכשיר ה-Bluetooth שלך יש גרסה ישנה יותר של Bluetooth. לשיפור איכות האודיו, צריך להשתמש במיקרופון הפנימי.</translation>
 <translation id="2336214675195760012">{NUM_DAYS,plural, =1{‏לפי דרישת <ph name="MANAGER" />, צריך להתחבר היום לרשת Wi-Fi כדי להוריד עדכון. אפשר להוריד אותו גם דרך חיבור עם חיוב לפי צריכת נתונים (יכולים לחול חיובים).}one{‏לפי דרישת <ph name="MANAGER" />, צריך להתחבר ל-Wi-Fi ולהוריד עדכון לפני המועד האחרון. אפשר להוריד אותו גם דרך חיבור עם חיוב לפי צריכת נתונים (יכולים לחול חיובים).}two{‏לפי דרישת <ph name="MANAGER" />, צריך להתחבר ל-Wi-Fi ולהוריד עדכון לפני המועד האחרון. אפשר להוריד אותו גם דרך חיבור עם חיוב לפי צריכת נתונים (יכולים לחול חיובים).}other{‏לפי דרישת <ph name="MANAGER" />, צריך להתחבר ל-Wi-Fi ולהוריד עדכון לפני המועד האחרון. אפשר להוריד אותו גם דרך חיבור עם חיוב לפי צריכת נתונים (יכולים לחול חיובים).}}</translation>
 <translation id="2336258397628212480">דף אחד מודפס על ידי <ph name="APP_NAME" /> במדפסת <ph name="PRINTER_NAME" /></translation>
@@ -471,7 +462,6 @@
 <translation id="2386292613071805067">בחירת כל תוכן הדף</translation>
 <translation id="2389423187722941333">‏הפעלה או השבתה של Gemini</translation>
 <translation id="2390347491606624519">‏לא ניתן להתחבר לשרת proxy, יש להיכנס שוב</translation>
-<translation id="2393136602862631930">‏הגדרת האפליקציה <ph name="APP_NAME" /> ב-Chromebook</translation>
 <translation id="2397416548179033562">‏הצגת תפריט Chrome</translation>
 <translation id="240006516586367791">פקדי מדיה</translation>
 <translation id="2400664245143453337">דרוש עדכון מידי</translation>
@@ -504,7 +494,6 @@
 <translation id="2473177541599297363">אישור הרזולוציה</translation>
 <translation id="2475783092753560388">הוספה של <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="2475982808118771221">אירעה שגיאה</translation>
-<translation id="2476974672882258506">‏יש לכבות את Windows כדי להסיר את <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2478076885740497414">התקנת האפליקציה</translation>
 <translation id="2479148705183875116">למעבר אל ההגדרות</translation>
 <translation id="2484513351006226581">צריך להקיש על <ph name="KEYBOARD_SHORTCUT" /> כדי להחליף פריסת מקלדת.</translation>
@@ -544,7 +533,6 @@
 <translation id="2573588302192866788">לא ניתן היה לחבר את <ph name="NAME" /></translation>
 <translation id="2575685495496069081">הכניסה עם מספר חשבונות הושבתה</translation>
 <translation id="2579264398927991698">עדכוני קושחה</translation>
-<translation id="2586561813241011046">לא הצלחנו להתקין את האפליקציה <ph name="APP_NAME" />. אפשר לנסות שוב או ליצור קשר עם מנהל המערכת. קוד שגיאה: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">לוח</translation>
 <translation id="2596078834055697711">צילום מסך של חלון</translation>
 <translation id="2598725286293895280">בשולחן העבודה יש אפליקציות שלא נתמכות</translation>
@@ -566,7 +554,6 @@
 <translation id="2653659639078652383">שליחה</translation>
 <translation id="2658778018866295321">לחיצה וגרירה</translation>
 <translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> וגם <ph name="UNAVAILABLE_APPS_TWO" /> לא נמצאות במכשיר הזה.</translation>
-<translation id="2669241540496514785">אי אפשר לפתוח את <ph name="APP_NAME" /></translation>
 <translation id="2670350619068134931">אנימציות מצומצמות</translation>
 <translation id="2672142220933875349">‏קובץ crx פגום, פירוק האריזה נכשל.</translation>
 <translation id="2673968385134502798">משחקים</translation>
@@ -839,14 +826,12 @@
 <translation id="3444385531800624797">התוצאות נטענות</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> דק'</translation>
 <translation id="3445925074670675829">‏מכשיר עם יציאת USB-C</translation>
-<translation id="3446274660183028131">‏יש להפעיל את Parallels Desktop כדי להתקין את Windows.</translation>
 <translation id="3449393517661170867">חלון מרובה כרטיסיות חדש</translation>
 <translation id="3450157232394774192">אחוז תפוסה במצב לא פעיל</translation>
 <translation id="3450180775417907283">‏כדי להיכנס אל <ph name="MANAGER" />, מתחברים עכשיו לרשת Wi-Fi ומורידים עדכון.</translation>
 <translation id="3454555520521576458">יכולת קביעת גודל</translation>
 <translation id="3455468639467374593">תבנית, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">‏מכשיר אחד מחובר לנקודה לשיתוף אינטרנט (Hotspot) של <ph name="DEVICE_NAME" /></translation>
-<translation id="3458451003193188688">עקב שגיאת רשת, לא ניתן להתקין את המכונה הווירטואלית. אפשר לנסות שוב או ליצור קשר עם מנהל המערכת. קוד שגיאה: <ph name="ERROR_CODE" />.</translation>
 <translation id="346243998268439747">איפוס המרחק מהתצוגה</translation>
 <translation id="3465223694362104965">מקלדת אחרת חוברה למכשיר לאחר הכניסה האחרונה שלך. חשוב לוודא שזו מקלדת מהימנה לפני שמשתמשים בה.</translation>
 <translation id="3465356146291925647">הרשת מנוהלת על ידי מנהל המערכת שלך</translation>
@@ -865,7 +850,6 @@
 <translation id="3513798432020909783">החשבון מנוהל על-ידי <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3516000762115478502">Tiled resize window upward</translation>
 <translation id="3517037892157925473">העדכון האחרון של המשימות: <ph name="TIME" />,‏ <ph name="DATE" />.</translation>
-<translation id="3522088408596898827">נפח האחסון כמעט נגמר. יש לפנות מקום ולנסות שוב.</translation>
 <translation id="352245152354538528">{0,plural, =1{עליך לעדכן את המכשיר בתוך דקה אחת}one{עליך לעדכן את המכשיר בתוך # דקות}two{עליך לעדכן את המכשיר בתוך # דקות}other{עליך לעדכן את המכשיר בתוך # דקות}}</translation>
 <translation id="3522979239100719575">מתבצע חיפוש של פרופילים זמינים. הפעולה עשויה להימשך מספר דקות.</translation>
 <translation id="3526440770046466733">פתיחת הקישור בכרטיסייה חדשה והמשך הגלישה בכרטיסייה הנוכחית</translation>
@@ -1019,7 +1003,6 @@
 <translation id="3886872229787704059">נפתח היום</translation>
 <translation id="3892148308691398805">העתקת הטקסט</translation>
 <translation id="3893630138897523026">‏ChromeVox (משוב קולי)</translation>
-<translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3898464793473355515">סיבוב המסך ב-90 מעלות בכיוון השעון</translation>
 <translation id="3900355044994618856">הסשן יסתיים בעוד <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">מתבצעת התחברות אל: <ph name="NAME" /></translation>
@@ -1118,7 +1101,6 @@
 <translation id="4181841719683918333">שפות</translation>
 <translation id="4185671786623711291">העברת החלון הפעיל לשולחן העבודה הווירטואלי שבצד ימין</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> – חיפוש <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
-<translation id="4187424053537113647">ההגדרה של <ph name="APP_NAME" /> מתבצעת…</translation>
 <translation id="4189826113259617332">שמירת כל הדפים הפתוחים בחלון הנוכחי, בתור סימניות בתיקייה חדשה</translation>
 <translation id="4190143678693626113">‏כדי לחסוך זמן, אפשר להשיב במהירות ב-Chromebook להודעות הטקסט שבטלפון</translation>
 <translation id="4190780880566297084">ביטול ההגדרה של הצגת התמונות, המדיה והאפליקציות שבטלפון מהזמן האחרון</translation>
@@ -1130,7 +1112,6 @@
 <translation id="4201033867194214117">התכונה <ph name="FEATURE_NAME" /> לא זמינה.</translation>
 <translation id="4201051445878709314">הצגת חודש קודם</translation>
 <translation id="4209973997261364186">‏Wi-Fi פועל</translation>
-<translation id="4210048056321123003">מתבצעת הורדה של המכונה הווירטואלית</translation>
 <translation id="4212246570487010370">המשך הגלישה</translation>
 <translation id="4212472694152630271">מעבר לקוד אימות</translation>
 <translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, מתג, <ph name="STATE" /></translation>
@@ -1149,7 +1130,6 @@
 <translation id="4250229828105606438">צילום מסך</translation>
 <translation id="425364040945105958">‏אין כרטיס SIM</translation>
 <translation id="425573743389990240">שיעור פריקת סוללה בוואט (המשמעות של ערך שלילי היא שהסוללה בטעינה)</translation>
-<translation id="4259388776256904261">הפעולה עשויה להימשך זמן מה</translation>
 <translation id="4264977415328155183">, מכווצת</translation>
 <translation id="4265259722091164182">אות רישית בתחילת כל מילה</translation>
 <translation id="4269883910223712419">מנהל המכשיר הזה יכול:</translation>
@@ -1236,7 +1216,6 @@
 מכשיר אחד מחובר.</translation>
 <translation id="4477892968187500306">‏המכשיר הזה עשוי להכיל אפליקציות שלא אומתו על-ידי Google.</translation>
 <translation id="4479639480957787382">אתרנט</translation>
-<translation id="4479877282574735775">המערכת מגדירה את המכונה הווירטואלית. הפעולה עשויה להימשך כמה דקות.</translation>
 <translation id="4485506555414638855">ביטול ההגדרה של הצגת התמונות, המדיה, ההתראות והאפליקציות שבטלפון מהזמן האחרון</translation>
 <translation id="4491109536499578614">תמונה</translation>
 <translation id="4493468155686877504">מומלץ (<ph name="INSTALL_SIZE" />)</translation>
@@ -1385,7 +1364,6 @@
 <translation id="4917385247580444890">חזק</translation>
 <translation id="4918086044614829423">אישור</translation>
 <translation id="4919841137949306064">המצלמה בשימוש כרגע על ידי <ph name="APP_NAME" /></translation>
-<translation id="492363500327720082">ההסרה של <ph name="APP_NAME" /> מתבצעת…</translation>
 <translation id="492453977506755176">מקש של מצב צילום</translation>
 <translation id="4925542575807923399">מנהל המערכת עבור החשבון הזה דורש שהחשבון הזה יהיה הראשון שיבצעו עבורו כניסה בעת כניסה עם מספר חשבונות</translation>
 <translation id="493076006037866439">הקטנת התצוגה במסך</translation>
@@ -1623,7 +1601,6 @@
 <translation id="5578188167649348993">זיכרון</translation>
 <translation id="5580000943347215299">ספרייה</translation>
 <translation id="5581972110672966454">לא ניתן לצרף את המכשיר אל הדומיין. יש לנסות שוב, או לפנות לבעלים או למנהל של המכשיר. קוד שגיאה: <ph name="ERROR_CODE" />.</translation>
-<translation id="5585898376467608182">אין מספיק שטח אחסון במכשיר. כדי להשתמש באפליקציה <ph name="APP_NAME" />, נדרש שטח אחסון פנוי של <ph name="MINIMUM_SPACE" />. כדי לפנות שטח אחסון, יש למחוק קבצים מהמכשיר.</translation>
 <translation id="5586388332127302891">התכונה 'זכוכית מגדלת במצב מעוגן' מופעלת. אפשר להקיש שוב על <ph name="ACCELERATOR" /> כדי להשבית אותה.</translation>
 <translation id="5587506661873751671">ההורדה מתבצעת <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="5590609058453685222">התזכורת שהמיקרופון מושתק פועלת. תתקבל הודעה במקרים של דיבור כשההשתקה פועלת.</translation>
@@ -1690,7 +1667,6 @@
 <translation id="5767730327234918501">‏האדמין שלך השבית את הנקודה לשיתוף אינטרנט (Hotspot).</translation>
 <translation id="5769373120130404283">מסך פרטיות</translation>
 <translation id="5770004650349728202">הפעלת התכונה 'הקראה'</translation>
-<translation id="5772114492540073460">‏<ph name="PARALLELS_NAME" /> מאפשר להפעיל אפליקציות של Windows®‎ ב-Chromebook. לפני התקנת התוכנה מומלץ לוודא שיש שטח אחסון פנוי בגודל <ph name="MINIMUM_SPACE" />.</translation>
 <translation id="5773950591113557721">כך ניתן לגשת אל <ph name="APP_NAME" /> ולכל האפליקציות והאתרים שיש להם הרשאות גישה למצלמה ולמיקרופון</translation>
 <translation id="5774295353725270860">‏פתיחת היישום Files</translation>
 <translation id="5775936059231769503">‏החלפת המצב של הנקודה לשיתוף אינטרנט (Hotspot). הנקודה לשיתוף אינטרנט מושבתת.</translation>
@@ -1738,8 +1714,6 @@
 <translation id="589817443623831496">סריקת נקודות</translation>
 <translation id="5901494423252125310">דלת המדפסת פתוחה</translation>
 <translation id="5901630391730855834">צהוב</translation>
-<translation id="5904614460720589786">לא ניתן להתקין את האפליקציה <ph name="APP_NAME" /> עקב בעיה בהגדרות. יש לפנות למנהל המערכת. קוד שגיאה: <ph name="ERROR_CODE" />.</translation>
-<translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> אופליין</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">התראה חדשה, <ph name="NOTIFICATION_COUNT" /> סה"כ</translation>
 <translation id="5916664084637901428">פועל</translation>
@@ -1813,7 +1787,6 @@
         כדי לעבוד עם הדומיין <ph name="DOMAIN" />, צריך להשאיר את הכרטיס החכם בפנים.}other{בעוד # שניות תתבצע יציאה אוטומטית מהחשבון שלך.
         כדי לעבוד עם הדומיין <ph name="DOMAIN" />, צריך להשאיר את הכרטיס החכם בפנים.}}</translation>
 <translation id="6071576563962215370">המערכת לא הצליחה ליצור את נעילת המאפיינים של המכשיר בזמן ההתקנה.</translation>
-<translation id="6072442788591997866">אסור להשתמש באפליקציה <ph name="APP_NAME" /> במכשיר הזה. יש לפנות אל מנהל המערכת. קוד שגיאה: <ph name="ERROR_CODE" />.</translation>
 <translation id="6073451960410192870">הפסקת צילום הסרטון</translation>
 <translation id="6074087755403037157">ערוץ בטא</translation>
 <translation id="6075098173600599596">שינוי אותיות רישיות</translation>
@@ -1920,7 +1893,6 @@
 <translation id="6380143666419481200">בסדר, מקובל עליי</translation>
 <translation id="6381109794406942707">כדי לבטל את הנעילה של המכשיר, יש להזין את קוד האימות.</translation>
 <translation id="6381305031890976705">{0,plural, =1{עליך לעדכן את המכשיר לגרסה הקודמת בתוך שעה}one{עליך לעדכן את המכשיר לגרסה הקודמת בתוך # שעות}two{עליך לעדכן את המכשיר לגרסה הקודמת בתוך שעתיים (#)}other{עליך לעדכן את המכשיר לגרסה הקודמת בתוך # שעות}}</translation>
-<translation id="6385149369087767061">יש להתחבר לאינטרנט ולנסות שוב</translation>
 <translation id="638716340450135524">הפעלת הגישה למצלמה</translation>
 <translation id="6406458002328242616">עריכת הטיימר. <ph name="FOCUS_DURATION" />.</translation>
 <translation id="6406704438230478924">altgr</translation>
@@ -1938,7 +1910,6 @@
 <translation id="6426905245930183644">בתהליך יצירה…</translation>
 <translation id="6430225033895752525">הצגת ההגדרות של מצב הריכוז</translation>
 <translation id="6431865393913628856">הקלטת המסך</translation>
-<translation id="6434325376267409267">יש לעדכן את המכשיר כדי שאפשר יהיה להשתמש ב-<ph name="APP_NAME" />.</translation>
 <translation id="643593192654616063">נפח אחסון של <ph name="STORAGE_IN_USE_SIZE" /> בשימוש מתוך <ph name="STORAGE_TOTAL_SIZE" /> סה"כ</translation>
 <translation id="6445915701151710649">‏המעבד (CPU)</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, אירוע (<ph name="NUMBER" />)</translation>
@@ -2216,7 +2187,6 @@
 <translation id="7258828758145722155">נערך אתמול</translation>
 <translation id="726276584504105859">לשימוש במסך מפוצל יש לגרור לכאן</translation>
 <translation id="7264788308526527464">הפחתה ב-<ph name="FOCUS_DURATION_DELTA" /></translation>
-<translation id="7267044199012331848">לא ניתן להתקין את המכונה הווירטואלית. אפשר לנסות שוב או ליצור קשר עם מנהל המערכת. קוד שגיאה: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">יש להרים את האצבע ולגעת בחיישן עם חלקים שונים של האצבע כדי להוסיף טביעת אצבע מלאה</translation>
 <translation id="7278787617901301220">‏<ph name="LAUNCHER_KEY_NAME" /> + מקש Backspace</translation>
 <translation id="7285232777292757180">ניתן להשתמש בכלי לצילום המסך שבהגדרות המהירות כדי ליצור צילומי מסך</translation>
@@ -2265,9 +2235,7 @@
 <translation id="7406854842098869085">לחיצה ארוכה על <ph name="MODIFIER_1" />, לחיצה על <ph name="KEY" /> עד שמגיעים לחלון שרוצים לפתוח, ושחרור</translation>
 <translation id="740790383907119240">קיצורי דרך של אפליקציות</translation>
 <translation id="7413851974711031813">‏יש להקיש על "Esc" לסגירה</translation>
-<translation id="7415454883318062233">ההגדרה הושלמה</translation>
 <translation id="7416471219712049036">שמירת הדף הנוכחי</translation>
-<translation id="7423807071740419372">האפליקציה <ph name="APP_NAME" /> זקוקה להרשאה כדי לפעול</translation>
 <translation id="742594950370306541">המצלמה נמצאת בשימוש.</translation>
 <translation id="743058460480092004">המצלמה והמיקרופון נמצאים בשימוש.</translation>
 <translation id="7433708794692032816">יש להכניס את הכרטיס החכם כדי להמשיך להשתמש ב-<ph name="DEVICE_TYPE" /> שלך</translation>
@@ -2278,7 +2246,6 @@
 <translation id="7459485586006128091">הנקודה לשיתוף האינטרנט הושבתה עקב שגיאה פנימית. אפשר לנסות להתחבר מחדש בעוד כמה דקות.</translation>
 <translation id="7461924472993315131">הצמדה</translation>
 <translation id="746216226901520237">‏בפעם הבאה, הטלפון יבטל את הנעילה של <ph name="DEVICE_TYPE" />. אפשר להשבית את Smart Lock דרך ההגדרות.</translation>
-<translation id="7465635034594602553">משהו השתבש. יש להמתין כמה דקות ולהפעיל את <ph name="APP_NAME" /> מחדש.</translation>
 <translation id="7466449121337984263">יש לגעת בחיישן</translation>
 <translation id="7477793887173910789">שליטה במוזיקה, בסרטונים ועוד</translation>
 <translation id="7478485216301680444">לא ניתן היה להתקין אפליקציית "קיוסק".</translation>
@@ -2434,7 +2401,6 @@
 <translation id="7850320739366109486">נא לא להפריע</translation>
 <translation id="7851039877802112575">הזזת המיקוד לתיבות דו-שיח ולחלונות קופצים</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7862292329216937261">כדי להשתמש במכשיר כאורח, צריך לצאת מהחשבון ואז לבחור באפשרות 'גלישה כאורח' בתחתית המסך.</translation>
 <translation id="7866482334467279021">פועלת</translation>
 <translation id="7870790288828963061">לא נמצאו אפליקציות קיוסק בגרסה חדשה יותר. אין צורך בעדכון. אפשר להוציא את הדיסק און קי.</translation>
@@ -2771,7 +2737,6 @@
 <translation id="8815390544836110344">‏מקישים על קיצור הדרך לצילום המסך, Ctrl ו-Shift והמקש 'מצב סקירה כללית'</translation>
 <translation id="881757059229893486">הגדרות של שיטת הקלט</translation>
 <translation id="8819728065740986820">הטעינה הדינמית מופעלת</translation>
-<translation id="8821268776955756404">האפליקציה <ph name="APP_NAME" /> מוכנה לשימוש.</translation>
 <translation id="882204272221080310">כדאי לעדכן את הקושחה כדי להגביר את האבטחה.</translation>
 <translation id="8822104519413696986">זה משחק למסך מגע</translation>
 <translation id="8825863694328519386">יש להחליק מצד ימין כדי לחזור אחורה</translation>
@@ -2805,7 +2770,6 @@
 <translation id="8905919797434099235">(ללא שם)</translation>
 <translation id="890616557918890486">שינוי המקור</translation>
 <translation id="8909138438987180327">שיעור הטעינה של הסוללה הוא <ph name="PERCENTAGE" /> אחוזים.</translation>
-<translation id="8909298138148012791">האפליקציה <ph name="APP_NAME" /> הוסרה.</translation>
 <translation id="8916866375277139011">הסתרת הפריטים ב<ph name="GROUP_NAME" /></translation>
 <translation id="8921369299636221117">‏שירות Concierge לא זמין.</translation>
 <translation id="8921554779039049422">+H</translation>
@@ -2878,7 +2842,6 @@
 <translation id="9126339866969410112">ביטול הפעולה האחרונה</translation>
 <translation id="9126642911267312373">‏‫Bluetooth לא זמין</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{בעוד דקה}one{בעוד # דקות}two{בעוד # דקות}other{בעוד # דקות}}</translation>
-<translation id="9128317794749765148">לא ניתן היה להשלים את ההגדרה</translation>
 <translation id="9129245940793250979">הכפתור האחורי</translation>
 <translation id="9133335900048457298">לא ניתן להקליט תוכן מוגן</translation>
 <translation id="9139720510312328767">מחיקת האות הבאה</translation>

@@ -297,6 +297,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2233735624724508540">Alege un interval de timp, apoi atinge Șterge datele</translation>
 <translation id="2234031676056123135">Personalizează comenzile rapide</translation>
 <translation id="2234827758954819389">Ghid privind confidențialitatea</translation>
+<translation id="2236949375853147973">Activitatea mea</translation>
 <translation id="2238038374973843156">Mută grupul în altă fereastră</translation>
 <translation id="2247789808226901522">Cardul a expirat</translation>
 <translation id="2251809247798634662">Fereastră incognito nouă</translation>
@@ -574,6 +575,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="3385749568468586663">Gemini nu este disponibil în modul incognito</translation>
 <translation id="3387650086002190359">Descărcarea fișierului <ph name="FILE_NAME" /> nu a reușit din cauza unor erori privind sistemul de fișiere.</translation>
 <translation id="3391311825344469964">Poți gestiona ferestrele în Managerul de ferestre din Chrome</translation>
+<translation id="3410151451624226773">Gestionează în Managerul de parole Google</translation>
 <translation id="3417835166382867856">Caută file</translation>
 <translation id="3430670036890315772">Dacă dezactivezi blocarea profilului, informațiile tale salvate vor fi șterse</translation>
 <translation id="3435575784518354875">Pentru a păstra accesul la parole, exportă-le acum, actualizează serviciile Google Play și apoi importă-le înapoi în Managerul de parole Google. <ph name="BEGIN_LINK" />Consultă instrucțiunile complete<ph name="END_LINK" />.</translation>
@@ -942,6 +944,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="4877678010818027629">Intră în modul incognito</translation>
 <translation id="4878404682131129617">Nu s-a putut stabili un tunel prin serverul proxy</translation>
 <translation id="4880127995492972015">Tradu…</translation>
+<translation id="4880827082731008257">Caută în istoric</translation>
 <translation id="4881695831933465202">Deschide</translation>
 <translation id="488187801263602086">Redenumește fișierul</translation>
 <translation id="4885273946141277891">Număr de instanțe Chrome neacceptat.</translation>
@@ -991,6 +994,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="509429900233858213">A apărut o eroare.</translation>
 <translation id="5096775069898886423">Pentru site-urile care nu acceptă conexiuni securizate, primești un avertisment înainte să le accesezi</translation>
 <translation id="510275257476243843">1 oră rămasă</translation>
+<translation id="5105442806410269908">Gestionează alte date Google</translation>
 <translation id="5114895953710637392">Foaia de filtrare după aplicație este închisă.</translation>
 <translation id="5115811374190515607">în <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Acum poți folosi Chrome oricând atingi linkuri în mesaje, documente și alte aplicații</translation>
@@ -1041,6 +1045,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="5316947901395241499">Salvarea parolelor a fost dezactivată de administrator</translation>
 <translation id="5317780077021120954">Salvează</translation>
 <translation id="5319359161174645648">Google recomandă Chrome</translation>
+<translation id="5323501626199324454">Gestionează în Contul Google</translation>
 <translation id="5326246328175179736">Nu te poți conecta folosind acest cont</translation>
 <translation id="5327248766486351172">Nume</translation>
 <translation id="5328542107300944283">Folosește cu <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1325,6 +1330,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6461962085415701688">Fișierul nu poate fi deschis</translation>
 <translation id="6464977750820128603">Poți vedea site-urile pe care le vizitezi în Chrome și să setezi temporizatoare pentru ele.\n\nGoogle obține informații cu privire la site-urile pentru care setezi temporizatoare și la durata de accesare. Aceste informații sunt folosite pentru a îmbunătăți Bunăstarea digitală.</translation>
 <translation id="6468703991511753953">Bara de adrese este în partea de jos</translation>
+<translation id="6469702164109431067">Parole și chei de acces</translation>
 <translation id="6470181189905173055">Paginile pe care le-ai deschis în Chrome în timp ce ai folosit <ph name="APP_LABEL" /> vor apărea aici.</translation>
 <translation id="6473086018775716761">Lista cu opțiuni de permitere a accesului deschisă la jumătate din înălțime.</translation>
 <translation id="6475951671322991020">Descarcă videoclipul</translation>

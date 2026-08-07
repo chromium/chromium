@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Word დოკუმენტი</translation>
 <translation id="1056775291175587022">ქსელები არ არის</translation>
 <translation id="1056898198331236512">გაფრთხილება</translation>
-<translation id="1060368002126861100">ფაილების <ph name="APP_NAME" />-ით გასახსნელად, პირველ რიგში, გადაიტანეთ ისინი Windows-ის ფაილების საქაღალდეში.</translation>
 <translation id="1062407476771304334">შეცვლა</translation>
 <translation id="1119383441774809183">ტექსტური შეტყობინებების ჩვენება</translation>
 <translation id="1119447706177454957">შიდა შეცდომა</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">ნორვეგიული</translation>
 <translation id="1408504635543854729">დაათვალიერეთ მოწყობილობის კონტენტი ფაილების აპში. კონტენტზე წვდომა შეზღუდულია ადმინისტრატორის მიერ და მისი შეცვლა ვერ მოხერხდება.</translation>
 <translation id="1412476183660741812">Signed Web Bundle</translation>
-<translation id="1433628812591023318">Parallels Desktop-ში ფაილის ჩავლებით გადასატანად ის უნდა გადაიტანოთ Windows ფაილებში.</translation>
-<translation id="1435838927755162558">საქაღალდის გაზიარება Parallels Desktop-თან</translation>
 <translation id="1439919885608649279">პიროვნება ყვავილებით</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" />-ის ამოღება</translation>
 <translation id="1464781208867302907">მოწყობილობის უპირატესი პარამეტრებისთვის გადადით პარამეტრებზე.</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">ფრანგული</translation>
 <translation id="2732288874651063549"><ph name="VM_NAME" />-თან გაზიარების მართვა</translation>
 <translation id="2732839045120506979">ვიეტნამური VNI</translation>
-<translation id="2735623501230989521">მიეცით Parallels Desktop-ს „<ph name="FOLDER_NAME" />“-ში არსებულ ფაილებზე წვდომის ნებართვა</translation>
 <translation id="2764206540577097904">თქვენ გამოყენებული გაქვთ თქვენი მთელი Google Workspace მეხსიერება.</translation>
 <translation id="2771816809568414714">ყველი</translation>
 <translation id="2783909841122647548">Debian პაკეტის ინსტალაცია აღარ არის მხარდაჭერილი. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">გეოგრაფია</translation>
 <translation id="3044404008258011032">ამ ერთეულების აღსადგენად ჩავლებით გადაიტანეთ ისინი ახალ საქაღალდეში წაშლილებს მიღმა. ამ ერთეულების თავდაპირველი საქაღალდე „<ph name="PARENT_FOLDER_NAME" />“ წაიშალა.</translation>
 <translation id="3047197340186497470">ჩინური Dayi</translation>
-<translation id="3067790092342515856">Windows ფაილები</translation>
 <translation id="3083975830683400843">Chromebit-ები</translation>
 <translation id="3085752524577180175">SOCKS ჰოსტი</translation>
 <translation id="3091469289665833668">რუმინული</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">დეტალური ინფორმაციისთვის დაუკავშირდით თქვენს ადმინისტრატორს.</translation>
 <translation id="3548125359243647069">არასწორი PIN-კოდი ზედმეტად ბევრჯერ შეიყვანეთ.</translation>
 <translation id="3549797760399244642">drive.google.com-ზე გადასვლა…</translation>
-<translation id="3553048479571901246">ფაილების <ph name="APP_NAME" />-ით გასახსნელად, პირველ რიგში, დააკოპირეთ ისინი Windows-ის ფაილების საქაღალდეში.</translation>
 <translation id="3556731189587832921">ინგლისური (აშშ) საერთაშორისო PC კლავიატურით</translation>
 <translation id="3557414470514932909">მიმდინარეობს <ph name="FILE_NAME" />-ის გადატანა წაშლილებში</translation>
 <translation id="3560848236447534728">სომხური ფონეტიკური</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">რუმინული</translation>
 <translation id="4508265954913339219">აქტივაცია ვერ მოხერხდა</translation>
 <translation id="4509667233588080747">ინგლისური (აშშ) Workman საერთაშორისო კლავიატურით</translation>
-<translation id="4527800702232535228">ეს საქაღალდე გაზიარებულია Parallels Desktop-თან</translation>
 <translation id="4552678318981539154">მეტი მეხსიერების ყიდვა</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> ქსელი, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">ბოკე</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">ონიგირი</translation>
 <translation id="4784330909746505604">PowerPoint პრეზენტაცია</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> კბაიტი</translation>
-<translation id="4789067489790477934">მიეცით Parallels Desktop-ს თქვენს Google Drive-ში არსებულ ფაილებზე წვდომის ნებართვა. ცვლილებები სინქრონიზებული იქნება თქვენს სხვა მოწყობილობებთან.</translation>
 <translation id="4790766916287588578">ჰინდი InScript კლავიატურით</translation>
 <translation id="4798645114741131062">თქვენი ChromeOS Flex მოწყობილობა მალე შეწყვეტს განახლებების მიღებას. განიხილეთ ChromeOS მოწყობილობაზე გადასვლა.</translation>
 <translation id="4801956050125744859">ორივე შენარჩუნდეს</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">ხმის სლაიდერი</translation>
 <translation id="4881695831933465202">გახსნა</translation>
 <translation id="4891091358278567964">ამ ერთეულების აღსადგენად ჩავლებით გადაიტანეთ ისინი ახალ საქაღალდეში წაშლილებს მიღმა. ამ ერთეულების თავდაპირველი საქაღალდეები წაიშალა.</translation>
-<translation id="4900532980794411603">Parallels Desktop-თან გაზიარება</translation>
 <translation id="4902546322522096650">ქსელი <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, დაკავშირება</translation>
 <translation id="4906580650526544301">ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, ტელეფონის ბატარეა: <ph name="BATTERY_STATUS" />%, დეტალები</translation>
 <translation id="4935975195727477204">ყვავილი</translation>
 <translation id="4943368462779413526">ამერიკული ფეხბურთის ბურთი</translation>
-<translation id="4961158930123534723">Parallels Desktop-თან გაზიარებულია 1 საქაღალდე</translation>
 <translation id="4965874878399872778">მიმდინარეობს ფაილების თქვენი ორგანიზაციის უსაფრთხოების წესებთან შესაბამისობის შემოწმება...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> აღდგენილია</translation>
 <translation id="4969785127455456148">ალბომი</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">ოპერაციას მოსალოდნელზე მეტი დრო სჭირდება. გსურთ შეწყვიტოთ?</translation>
 <translation id="5036141350290856713">რუსული ფონეტიკური</translation>
-<translation id="5036159836254554629">Parallels Desktop-თან გაზიარების მართვა</translation>
 <translation id="5038625366300922036">იხილეთ მეტი…</translation>
 <translation id="5044852990838351217">სომხური</translation>
 <translation id="5045550434625856497">არასწორი პაროლი</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">„<ph name="FILENAME" />“-ის წაშლა…</translation>
 <translation id="6581162200855843583">Google Drive-ის ბმული</translation>
 <translation id="6588648400954570689">ფაილების სინქრონიზაციის პარამეტრები</translation>
-<translation id="6594855146910089723">ეს საქაღალდე გაზიარებულია Linux-სა და Parallels Desktop-თან</translation>
 <translation id="6607272825297743757">ფაილის ინფორმაცია</translation>
-<translation id="6609332149380188670">Parallels Desktop-თან გაზიარებულია <ph name="NUMBER_OF_ITEMS" /> საქაღალდე</translation>
 <translation id="6629518321609546825">შეიყვანეთ მინიმუმ 4 ციფრი</translation>
 <translation id="6643016212128521049">გასუფთავება</translation>
 <translation id="6650726141019353908">ვარდისფერი პეპელა</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">სამწუხაროდ, გადარქმევა ვერ მოხერხდა შეცდომის გამო.</translation>
 <translation id="7458955835361612701">ბოლოდროინდელი სურათები არ არის</translation>
 <translation id="7469894403370665791">ამ ქსელთან ავტომატური დაკავშირება</translation>
-<translation id="7486315294984620427">Parallels Desktop-ში ფაილის ჩავლებით გადასატანად ის უნდა დააკოპიროთ Windows ფაილებში.</translation>
 <translation id="749452993132003881">ჰირაგანა</translation>
 <translation id="7495372004724182530">მალაიალამური ფონეტიკური</translation>
 <translation id="7505167922889582512">დამალული ფაილების ჩვენება</translation>

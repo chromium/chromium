@@ -591,6 +591,7 @@
 <translation id="2027465737841872819">ಪ್ಲಾಸ್ಟಿಕ್</translation>
 <translation id="2027707238798802149">ಕಾರ್ಡ್ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />ಪ್ರಾಕ್ಸಿ ಮತ್ತು ಫೈರ್‌ವಾಲ್ ಅನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">Chrome ನ ಈ ಆವೃತ್ತಿಯು ಮ್ಯಾನುವಲ್ ಆಗಿ ಸೆಟ್ ಮಾಡಲಾದ ಕಮಾಂಡ್ ಲೈನ್ ಫ್ಲ್ಯಾಗ್‌ಗಳೊಂದಿಗೆ ರನ್ ಆಗುತ್ತಿದೆ. ಕಮಾಂಡ್ ಲೈನ್ ಫ್ಲ್ಯಾಗ್‌ಗಳು ಯಾವುದೇ ಸಮಯದಲ್ಲಿ ಬದಲಾಗಬಹುದು ಮತ್ತು ಅವುಗಳಿಗೆ ಬೆಂಬಲವಿರುವುದಿಲ್ಲ ಎಂಬುದನ್ನು ಗಮನಿಸಿ.</translation>
 <translation id="2033900728810589426">ಶಾರ್ಟ್‌ಕಟ್ <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> ದಿಂದ ವ್ಯಾಖ್ಯಾನಿಸಲಾದ ಡೀಫಾಲ್ಟ್ ಹುಡುಕಾಟ ಪೂರೈಕೆದಾರರ ಕೀವರ್ಡ್‌ನಂತೆಯೇ ಇರುವಂತಿಲ್ಲ:<ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">ಹೇಗಾದರೂ ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="2036514476578229158">ಈ ಸೈಟ್‌ಗೆ ಭೇಟಿ ನೀಡಲು ನೀವು ಅನುಮತಿಯನ್ನು ವಿನಂತಿಸಿದ್ದೀರಿ. ನಿಮ್ಮ ಪೋಷಕರು Family Link ನಲ್ಲಿ ಪ್ರತ್ಯುತ್ತರ ನೀಡಬಹುದು.</translation>
@@ -4560,7 +4561,6 @@
 <translation id="8932102934695377596">ನಿಮ್ಮ ಗಡಿಯಾರ ಹಿಂದೆ ಇದೆ</translation>
 <translation id="893332455753468063">ಹೆಸರು ಸೇರಿಸಿ</translation>
 <translation id="8938242527120341116">ನಿಮ್ಮ ಸಾಧನದ ವಿಷಯ ಫಿಲ್ಟರ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ <ph name="BLOCKED_URL" /></translation>
-<translation id="8942355029279167844">ಉತ್ಪನ್ನದ ಅನುಭವವನ್ನು ಸುಧಾರಿಸುವುದಕ್ಕೆ ಡಯಾಗ್ನಾಸ್ಟಿಕ್ಸ್ ಡೇಟಾವನ್ನು ಸಂಗ್ರಹಿಸಲು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು <ph name="APP_NAME" /> ಗೆ ಅನುಮತಿಸಿದ್ದಾರೆ. ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ, <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> ಗೆ ಭೇಟಿ ನೀಡಿ.</translation>
 <translation id="8943282376843390568">ನಿಂಬೆ ಹಳದಿ</translation>
 <translation id="8949410982325929394">ಟೋನ್</translation>
 <translation id="8949493680961858543">A1x4</translation>

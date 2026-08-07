@@ -35,7 +35,6 @@
 <translation id="1088231044944504242">നിങ്ങളുടെ <ph name="CATEGORY" />, ഫയലുകൾ, ആപ്പുകൾ എന്നിവയും മറ്റും തിരയൂ. നിങ്ങളുടെ ആപ്പുകളിലേക്ക് പോകാൻ അമ്പടയാള കീകൾ ഉപയോഗിക്കുക.</translation>
 <translation id="1093645050124056515">ctrl + alt + താഴേക്കുള്ള അമ്പടയാളം</translation>
 <translation id="1094756674036064790">Bluetooth ഓഫാക്കണോ?</translation>
-<translation id="109647177154844434">Parallels Desktop അൺഇൻസ്‌റ്റാൾ ചെയ്യുന്നത്, നിങ്ങളുടെ Windows ചിത്രം ഇല്ലാതാക്കും. ഇതിന്റെ ആപ്പുകളും ക്രമീകരണവും ഡാറ്റയും ഇതിൽ ഉൾപ്പെടുന്നു. തുടരണമെന്ന് തീർച്ചയാണോ?</translation>
 <translation id="1104084341931202936">പ്രവേശനക്ഷമത ക്രമീകരണം കാണിക്കുക</translation>
 <translation id="1104621072296271835">നിങ്ങളുടെ ഉപകരണങ്ങൾ 'ഒരുമിച്ചും' നന്നായി പ്രവർത്തിക്കും</translation>
 <translation id="1107300737351978027">ആവർത്തിക്കുന്ന അക്കങ്ങൾ ഉണ്ടാകരുത്</translation>
@@ -82,7 +81,6 @@
 <translation id="1210557957257435379">സ്ക്രീൻ റെക്കോർഡിംഗ്</translation>
 <translation id="121097972571826261">ഒരു വാക്ക് മുന്നിലേക്ക് പോവുക</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store ആപ്പ്</translation>
-<translation id="1223484782328004593"><ph name="APP_NAME" />-ന് ലൈസൻസ് ആവശ്യമാണ്</translation>
 <translation id="1225748608451425081">അറിയപ്പെടുന്ന ഒരു പ്രശ്‌നം കാരണം നിങ്ങളുടെ Chromebook ലോക്ക് ചെയ്‌തിരിക്കുന്നു. ഇനിപ്പറയുന്ന സമയത്തിന് ശേഷം നിങ്ങൾക്ക് സൈൻ ഇൻ ചെയ്യാനാകും: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">തിരഞ്ഞെടുക്കുന്നത് നിർത്തുക</translation>
 <translation id="1235458158152011030">അറിയാവുന്ന നെറ്റ്‌വർക്കുകൾ</translation>
@@ -93,7 +91,6 @@
 <translation id="1244265436519979884">Linux പുനഃസ്ഥാപിക്കൽ നിലവിൽ പുരോഗതിയിലാണ്</translation>
 <translation id="1245476784081715330">കൊള്ളാം!</translation>
 <translation id="124678866338384709">നിലവിലെ ടാബ് അടയ്‌ക്കുക</translation>
-<translation id="1246863218384630739"><ph name="VM_NAME" /> ഇൻസ്‍റ്റാൾ ചെയ്യാനായില്ല: ചിത്ര URL ഒരു പിശക് കോഡ് <ph name="HTTP_ERROR" /> നൽകി. നിങ്ങളുടെ അഡ്മിനെ ബന്ധപ്പെടുക.</translation>
 <translation id="1246890715821376239">പിന്തുണയില്ലാത്ത ആപ്പുകൾ</translation>
 <translation id="1247372569136754018">മൈക്രോഫോൺ (ഇന്റേണൽ)</translation>
 <translation id="1247519845643687288">അടുത്തിടെ ലോഞ്ച് ചെയ്ത ആപ്പുകൾ</translation>
@@ -107,7 +104,6 @@
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> ചാർജ് ചെയ്യുന്നു</translation>
 <translation id="1275718070701477396">തിരഞ്ഞെടുത്തു</translation>
 <translation id="1276975447697633661">ഫയൽ തിരഞ്ഞെടുക്കുക, തുടർന്ന് <ph name="KEY" /> അമർത്തുക</translation>
-<translation id="1276994519141842946"><ph name="APP_NAME" /> അൺഇൻസ്‌റ്റാൾ ചെയ്യാനായില്ല.</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1283126956823499975">ഉപകരണം സജ്ജീകരിക്കുന്നതിൽ എന്തോ പിശകുണ്ടായി</translation>
 <translation id="1285992161347843613">ഫോൺ കണ്ടെത്തൽ</translation>
@@ -170,7 +166,6 @@
 <translation id="1421166164855200062">നിർദ്ദേശിച്ച ഗ്രൂപ്പ്</translation>
 <translation id="1426410128494586442">അതെ</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> ബ്ലോക്ക് ചെയ്‌തിരിക്കുന്നു</translation>
-<translation id="142765311413773645"><ph name="APP_NAME" /> ലൈസൻസ് കാലഹരണപ്പെട്ടു</translation>
 <translation id="1430915738399379752">പ്രിന്റ് ചെയ്യുക</translation>
 <translation id="1435537621343861112">കേട്ടെഴുത്ത് ആരംഭിക്കാനാകുന്നില്ല. നിങ്ങളുടെ മൈക്ക് ഓഫാണ്.</translation>
 <translation id="1445031758921122223">ഫെയ്സ് കൺട്രോൾ ഫയലുകൾ ഡൗൺലോഡ് ചെയ്‌തു</translation>
@@ -193,12 +188,10 @@
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">കേട്ടെഴുത്ത് ഉപയോഗിച്ച്, നിങ്ങളുടെ ശബ്‌ദം കേട്ട് ടൈപ്പ് ചെയ്യാം. ടെക്‌സ്റ്റ് ഫീൽഡിൽ ആയിരിക്കുമ്പോൾ കേട്ടെഴുത്ത് കീ അമർത്തുകയോ സ്ക്രീനിന്റെ താഴെയുള്ള മൈക്രോഫോൺ ഐക്കൺ തിരഞ്ഞെടുക്കുകയോ ചെയ്യുക. നിങ്ങളുടെ കേട്ടെഴുത്ത് ഭാഷ <ph name="LANGUAGE" /> ആയി സജ്ജീകരിച്ചു. സംഭാഷണം പ്രോസസ് ചെയ്യുന്നതിന് Google-ന് അയച്ചു. ക്രമീകരണം &gt; ഉപയോഗസഹായി എന്നതിൽ നിങ്ങൾക്ക് ഏതുസമയത്തും കേട്ടെഴുത്ത് ഭാഷ മാറ്റാം.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" />, <ph name="SECOND_ITEM_TITLE" />-മായി സ്വാപ്പ് ചെയ്‌തു</translation>
-<translation id="1494429729245089920">"<ph name="VM_NAME" />" എന്ന വെർച്വൽ മെഷീൻ നിലവിലുണ്ട്, എന്നാൽ സാധുതയുള്ള <ph name="APP_NAME" /> വെർച്വൽ മെഷീനാണെന്ന് തോന്നുന്നില്ല. നിങ്ങളുടെ അഡ്‌മിനെ ബന്ധപ്പെടുക.</translation>
 <translation id="1500926532737552529">എല്ലാ നിർദ്ദേശങ്ങളും കാണിക്കുക</translation>
 <translation id="1501946871587957338">ഓഡിയോ ഉറവിടം മാറണോ?</translation>
 <translation id="1505542291183484463">ടൈൽ ചെയ്ത, വലുപ്പം‌ മാറ്റിയ വിൻഡോ താഴേക്ക് നീക്കുക</translation>
 <translation id="1510238584712386396">ലോഞ്ചർ</translation>
-<translation id="1515163294334130951">ലോഞ്ച് ചെയ്യുക</translation>
 <translation id="1519090060276706457">വിൻഡോകൾ പുനഃസ്ഥാപിക്കുന്നതിന് പ്രതീക്ഷിച്ചതിലും കൂടുതൽ സമയമെടുക്കുന്നു</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003"><ph name="BATTERY_PERCENTAGE" />% ബാറ്ററി | ഫുൾ ആവാൻ <ph name="TIME" /> എടുക്കും</translation>
@@ -222,7 +215,6 @@
 <translation id="1574691582236909946">ഇടത്തെ അരികിലുള്ള ഹാൻഡിൽ തിരഞ്ഞെടുത്തു, നീക്കാൻ അമ്പടയാള കീകൾ ഉപയോഗിക്കുക</translation>
 <translation id="1576623706766186887">മാഗ്നിഫയർ ഓണായിരിക്കുമ്പോൾ സൂം ഔട്ട് ചെയ്യുക</translation>
 <translation id="1578558981922970608">നിർബന്ധിതമായി അടയ്ക്കൽ</translation>
-<translation id="1580772913177567930">നിങ്ങളുടെ അഡ്‌മിനെ ബന്ധപ്പെടുക</translation>
 <translation id="1582946770779745370">ഗെയിം ഡാഷ്ബോർഡ് ലഭ്യമാണ്. തുറക്കാൻ എപ്പോൾ വേണമെങ്കിലും <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape, തുടർന്ന് <ph name="LAUNCHER_KEY_NAME" /> + g അമർത്തുക</translation>
 <translation id="1586324912145647027">1 മുതൽ 8 വരെയുള്ള ഡെസ്ക്കുകളിലേക്ക് പോകുക</translation>
 <translation id="158838227375272121">Google Classroom വെബ്‌സൈറ്റ്</translation>
@@ -443,7 +435,6 @@
 <translation id="2322065293366551060"><ph name="CATEGORY" /> , തിരയൽ ഫലത്തിന്റെ വിഭാഗം</translation>
 <translation id="2322173485024759474">ഒരക്ഷരം പിന്നിലേക്ക് പോവുക</translation>
 <translation id="2326112202058075478">കൂടുതൽ ഇമോജികൾ കാണിക്കുക</translation>
-<translation id="2328561734797404498"><ph name="APP_NAME" /> ഉപയോഗിക്കാൻ നിങ്ങളുടെ ഉപകരണം റീസ്റ്റാർട്ട് ചെയ്യുക.</translation>
 <translation id="2335091074961603075">Bluetooth-ന്റെ പഴയ പതിപ്പാണ് നിങ്ങളുടെ Chromebook അല്ലെങ്കിൽ Bluetooth ഉപകരണം ഉപയോഗിക്കുന്നത്. മികച്ച ഓഡിയോ നിലവാരത്തിനായി ഇന്റേണൽ മൈക്രോഫോൺ ഉപയോഗിക്കൂ.</translation>
 <translation id="2336214675195760012">{NUM_DAYS,plural, =1{ഇന്ന് തന്നെ വൈഫൈയിൽ കണക്റ്റ് ചെയ്‌ത് അപ്ഡേറ്റ് ഡൗൺലോഡ് ചെയ്യാൻ <ph name="MANAGER" /> നിങ്ങളോട് ആവശ്യപ്പെടുന്നു. അല്ലെങ്കിൽ, മീറ്റർ ചെയ്‌ത കണക്ഷനിൽ നിന്ന് ഡൗൺലോഡ് ചെയ്യുക (നിരക്കുകൾ ബാധകമായേക്കാം).}other{സമയപരിധി അവസാനിക്കുന്നതിന് മുമ്പ് വൈഫൈയിലേക്ക് കണക്റ്റ് ചെയ്‌ത് അപ്ഡേറ്റ് ഡൗൺലോഡ് ചെയ്യാൻ <ph name="MANAGER" /> നിങ്ങളോട് ആവശ്യപ്പെടുന്നു. അല്ലെങ്കിൽ, മീറ്റർ ചെയ്‌ത കണക്ഷനിൽ നിന്ന് ഡൗൺലോഡ് ചെയ്യുക (നിരക്കുകൾ ബാധകമായേക്കാം).}}</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" /> എന്നത് ഒരു പേജ് പ്രിന്റ് ചെയ്യാൻ <ph name="PRINTER_NAME" /> എന്നതിലേക്ക് അയയ്ക്കുന്നു</translation>
@@ -471,7 +462,6 @@
 <translation id="2386292613071805067">പേജിലെ എല്ലാം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="2389423187722941333">Gemini ടോഗിൾ ചെയ്യുക</translation>
 <translation id="2390347491606624519">പ്രോക്‌സിയിലേക്ക് കണക്‌റ്റ് ചെയ്യാനാകുന്നില്ല, വീണ്ടും സെെൻ ഇൻ ചെയ്യുക</translation>
-<translation id="2393136602862631930">നിങ്ങളുടെ Chromebook-ൽ <ph name="APP_NAME" /> സജ്ജീകരിക്കുക</translation>
 <translation id="2397416548179033562">Chrome മെനു കാണിക്കുക</translation>
 <translation id="240006516586367791">മീഡിയാ നിയന്ത്രണങ്ങൾ</translation>
 <translation id="2400664245143453337">ഉടൻ അപ്ഡേറ്റ് ആവശ്യമാണ്</translation>
@@ -504,7 +494,6 @@
 <translation id="2473177541599297363">റെസല്യൂഷൻ സ്ഥിരീകരിക്കുക</translation>
 <translation id="2475783092753560388"><ph name="SEARCH_RESULT_TEXT" /> ചേർക്കുക</translation>
 <translation id="2475982808118771221">ഒരു പിശക് സംഭവിച്ചു</translation>
-<translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> അൺഇൻസ്റ്റാൾ ചെയ്യാൻ Windows ഷട്ട് ഡൗൺ ചെയ്യുക.</translation>
 <translation id="2478076885740497414">ആപ്പ് ഇൻസ്‌റ്റാൾ ചെയ്യുക</translation>
 <translation id="2479148705183875116">ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
 <translation id="2484513351006226581">കീബോര്‍‌ഡ് ലേഔട്ട് മാറാൻ <ph name="KEYBOARD_SHORTCUT" /> അമർത്തുക.</translation>
@@ -544,7 +533,6 @@
 <translation id="2573588302192866788"><ph name="NAME" /> കണക്റ്റ് ചെയ്യാനായില്ല</translation>
 <translation id="2575685495496069081">ഒന്നിലധികം സൈൻ ഇൻ പ്രവർത്തനരഹിതമാക്കിയിരിക്കുന്നു</translation>
 <translation id="2579264398927991698">ഫേംവെയർ അപ്ഡേറ്റുകൾ</translation>
-<translation id="2586561813241011046"><ph name="APP_NAME" /> ഇൻസ്‌റ്റാൾ ചെയ്യാനായില്ല. വീണ്ടും ശ്രമിക്കുക അല്ലെങ്കിൽ നിങ്ങളുടെ അഡ്‍മിനെ ബന്ധപ്പെടുക. പിശക് കോഡ്: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">ക്ലിപ്പ്ബോർഡ്</translation>
 <translation id="2596078834055697711">വിൻഡോ സ്ക്രീൻഷോട്ട് എടുക്കുക</translation>
 <translation id="2598725286293895280">ഡെസ്‌കിൽ പിന്തുണയില്ലാത്ത ആപ്പുകളുണ്ട്</translation>
@@ -566,7 +554,6 @@
 <translation id="2653659639078652383">സമര്‍പ്പിക്കുക</translation>
 <translation id="2658778018866295321">ക്ലിക്ക് ചെയ്‌ത് വലിച്ചിടുക</translation>
 <translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> എന്നിവ ഈ ഉപകരണത്തിൽ ലഭ്യമല്ല.</translation>
-<translation id="2669241540496514785"><ph name="APP_NAME" /> തുറക്കാനായില്ല</translation>
 <translation id="2670350619068134931">കുറച്ച ആനിമേഷനുകൾ</translation>
 <translation id="2672142220933875349">crx ഫയൽ മോശമാണ്, അൺപാക്കുചെയ്യൽ പരാജയപ്പെട്ടു.</translation>
 <translation id="2673968385134502798">ഗെയിമുകൾ</translation>
@@ -839,14 +826,12 @@
 <translation id="3444385531800624797">ഫലങ്ങൾ ലോഡ് ചെയ്യുന്നു</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> മി.</translation>
 <translation id="3445925074670675829">USB-C ഉപകരണം</translation>
-<translation id="3446274660183028131">Windows ഇൻസ്‌റ്റാൾ ചെയ്യാൻ Parallels Desktop ലോഞ്ച് ചെയ്യുക.</translation>
 <translation id="3449393517661170867">ടാബ് ചെയ്‌ത പുതിയ വിന്‍ഡോ</translation>
 <translation id="3450157232394774192">നിഷ്ക്രിയ നില ഒക്യുപ്പൻസി ശതമാനം</translation>
 <translation id="3450180775417907283">നിങ്ങൾ ഇപ്പോൾ വൈഫൈയിൽ കണക്റ്റ് ചെയ്‌ത് അപ്‌ഡേറ്റ് ഡൗൺലോഡ് ചെയ്യാൻ <ph name="MANAGER" /> ആവശ്യപ്പെടുന്നു.</translation>
 <translation id="3454555520521576458">വലുപ്പം മാറ്റാവുന്നത്</translation>
 <translation id="3455468639467374593">ടെംപ്ലേറ്റ്, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">ഒരു ഉപകരണം <ph name="DEVICE_NAME" /> ഹോട്ട്‌സ്‌പോട്ടിലേക്ക് കണക്റ്റ് ചെയ്തിരിക്കുന്നു</translation>
-<translation id="3458451003193188688">നെറ്റ്‌വർക്ക് പിശക് കാരണം വെർച്വൽ മെഷീൻ ഇൻസ്‍റ്റാൾ ചെയ്യാനായില്ല. വീണ്ടും ശ്രമിക്കുക അല്ലെങ്കിൽ നിങ്ങളുടെ അഡ്‍മിനെ ബന്ധപ്പെടുക. പിശക് കോഡ്: <ph name="ERROR_CODE" />.</translation>
 <translation id="346243998268439747">സൂം നില റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="3465223694362104965">നിങ്ങൾ അവസാനമായി സൈൻ ഇൻ ചെയ്‌തതിന് ശേഷം ഈ ഉപകരണത്തിലേക്ക് മറ്റൊരു കീബോഡ് കണക്‌റ്റ് ചെയ്‌തിരിക്കുന്നു. ഉപയോഗിക്കുന്നതിന് മുമ്പായി, വിശ്വസിക്കാനാവുന്ന കീബോഡാണ് ഇതെന്ന് ഉറപ്പ് വരുത്തുക.</translation>
 <translation id="3465356146291925647">നിങ്ങളുടെ അഡ്‌മിൻ മാനേജ് ചെയ്യുന്നത്</translation>
@@ -865,7 +850,6 @@
 <translation id="3513798432020909783">അക്കൗണ്ട് മാനേജ് ചെയ്യുന്നത് <ph name="MANAGER_EMAIL" /> ആണ്</translation>
 <translation id="3516000762115478502">ടൈൽ ചെയ്ത, വലുപ്പം‌ മാറ്റിയ വിൻഡോ മുകളിലേക്ക് നീക്കുക</translation>
 <translation id="3517037892157925473">ടാസ്‌കുകൾ അവസാനം അപ്ഡേറ്റ് ചെയ്‌തത്: <ph name="TIME" />, <ph name="DATE" />.</translation>
-<translation id="3522088408596898827">ഡിസ്‌ക് ഇടം വളരെ കുറവാണ്. ഡിസ്‌കിൽ ഇടമുണ്ടാക്കി വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="352245152354538528">{0,plural, =1{ഒരു മിനിറ്റിനുള്ളിൽ ഉപകരണം അപ്‌ഡേറ്റ് ചെയ്യുക}other{# മിനിറ്റിനുള്ളിൽ ഉപകരണം അപ്‌ഡേറ്റ് ചെയ്യുക}}</translation>
 <translation id="3522979239100719575">ലഭ്യമായ പ്രൊഫൈലുകൾ തിരയുന്നു. ഇതിന് കുറച്ച് സമയമെടുത്തേക്കാം.</translation>
 <translation id="3526440770046466733">പുതിയ ടാബിൽ ലിങ്ക് തുറന്ന് നിലവിലെ ടാബിൽ തുടരുക</translation>
@@ -1019,7 +1003,6 @@
 <translation id="3886872229787704059">ഇന്ന് തുറന്നത്</translation>
 <translation id="3892148308691398805">ടെക്‌സ്‌റ്റ് പകർത്തുക</translation>
 <translation id="3893630138897523026">ChromeVox (സ്‌പോക്കൺ ഫീഡ്‌ബാക്ക്)</translation>
-<translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3898464793473355515">സ്ക്രീൻ ഘടികാരദിശയിൽ 90 ഡിഗ്രി തിരിക്കുക</translation>
 <translation id="3900355044994618856"><ph name="SESSION_TIME_REMAINING" />-ൽ നിങ്ങളുടെ സെഷൻ അവസാനിക്കുന്നു</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> എന്നതിലേക്ക് കണക്റ്റുചെയ്യുന്നു</translation>
@@ -1116,7 +1099,6 @@
 <translation id="4181841719683918333">ഭാഷകൾ‌</translation>
 <translation id="4185671786623711291">സജീവ വിൻഡോ വലതുവശത്തെ ഡെസ്‌ക്കിലേക്ക് നീക്കുക</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> - <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> തിരയൽ</translation>
-<translation id="4187424053537113647"><ph name="APP_NAME" /> സജ്ജീകരിക്കുന്നു...</translation>
 <translation id="4189826113259617332">നിലവിലെ വിൻഡോയിൽ തുറന്നിരിക്കുന്ന എല്ലാ പേജുകളും ബുക്കുമാർക്കുകളായി ഒരു പുതിയ ഫോൾഡറിൽ സംരക്ഷിക്കുക</translation>
 <translation id="4190143678693626113">നിങ്ങളുടെ ഫോണിലെ ടെക്‌സ്റ്റുകൾക്ക് Chromebook-ൽ നിന്ന് അതിവേഗം മറുപടി നൽകി സമയം ലാഭിക്കൂ</translation>
 <translation id="4190780880566297084">നിങ്ങളുടെ ഫോണിലെ പുതിയ ഫോട്ടോകളും മീഡിയയും ആപ്പുകളും കാണുന്നത് സജ്ജീകരിക്കുന്നത് ഡിസ്‌മിസ് ചെയ്യുക</translation>
@@ -1128,7 +1110,6 @@
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> ലഭ്യമല്ല.</translation>
 <translation id="4201051445878709314">മുമ്പത്തെ മാസം കാണിക്കുക</translation>
 <translation id="4209973997261364186">വൈഫൈ ഓണാക്കി</translation>
-<translation id="4210048056321123003">വെർച്വൽ മെഷീൻ ഡൗൺലോഡ് ചെയ്യുന്നു</translation>
 <translation id="4212246570487010370">ബ്രൗസിംഗ് തുടരുക</translation>
 <translation id="4212472694152630271">പിൻ നമ്പറിലേക്ക് മാറുക</translation>
 <translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, ടോഗിൾ ബട്ടൺ, <ph name="STATE" /></translation>
@@ -1147,7 +1128,6 @@
 <translation id="4250229828105606438">സ്‌ക്രീൻഷോട്ട്</translation>
 <translation id="425364040945105958">സിം ഇല്ല</translation>
 <translation id="425573743389990240">ബാറ്ററി ഡിസ്‌ചാർജ്ജ് നിരക്ക് വാട്‌സിൽ (നെഗറ്റീവ് മൂല്യം അർത്ഥമാക്കുന്നത് ബാറ്ററി ചാർജ്ജുചെയ്യുന്നു എന്നാണ്)</translation>
-<translation id="4259388776256904261">ഇതിന് കുറച്ച് സമയമെടുത്തേക്കാം</translation>
 <translation id="4264977415328155183">, ചുരുക്കി</translation>
 <translation id="4265259722091164182">ടൈറ്റിൽ കെയ്‌സ്</translation>
 <translation id="4269883910223712419">ഈ ഉപകരണത്തിന്റെ അഡ്‌മിന് ഇനിപ്പറയുന്ന കാര്യങ്ങൾ ചെയ്യാൻ കഴിയും:</translation>
@@ -1234,7 +1214,6 @@
 ഒരു ഉപകരണം കണക്‌റ്റ് ചെയ്‌തിരിക്കുന്നു.</translation>
 <translation id="4477892968187500306">Google പരിശോധിച്ചുറപ്പിച്ചിട്ടില്ലാത്ത ആപ്പുകൾ ഈ ഉപകരണത്തിൽ അടങ്ങിയിരിക്കാം.</translation>
 <translation id="4479639480957787382">എതെര്‍‌നെറ്റ്</translation>
-<translation id="4479877282574735775">വെർച്വൽ മെഷീൻ കോണ്‍ഫിഗര്‍ ചെയ്യുന്നു. ഇതിന് കുറച്ച് സമയമെടുത്തേക്കാം.</translation>
 <translation id="4485506555414638855">നിങ്ങളുടെ ഫോണിലെ പുതിയ ഫോട്ടോകളും മീഡിയയും അറിയിപ്പുകളും ആപ്പുകളും കാണുന്നത് സജ്ജീകരിക്കുന്നത് ഡിസ്‌മിസ് ചെയ്യുക</translation>
 <translation id="4491109536499578614">ചിത്രം</translation>
 <translation id="4493468155686877504">(<ph name="INSTALL_SIZE" />) ശുപാർശ ചെയ്യുന്നു</translation>
@@ -1383,7 +1362,6 @@
 <translation id="4917385247580444890">ശക്തം</translation>
 <translation id="4918086044614829423">സ്വീകരിക്കുക</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> നിലവിൽ നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കുന്നു</translation>
-<translation id="492363500327720082"><ph name="APP_NAME" /> അണ്‍‌ഇന്‍സ്‌റ്റാള്‍ ചെയ്യുന്നു...</translation>
 <translation id="492453977506755176">ക്യാപ്‌ചർ മോഡ് കീ</translation>
 <translation id="4925542575807923399">ഈ അക്കൗണ്ട് ഒന്നിലധികം സൈൻ ഇൻ സെഷനിൽ സൈൻ ഇൻ ചെയ്‌തിരിക്കുന്ന ആദ്യ അക്കൗണ്ട് ആയിരിക്കാൻ ഈ അക്കൗണ്ടിനായുള്ള അഡ്‌മിനിസ്‌ട്രേറ്റർ ആവശ്യപ്പെടുന്നു.</translation>
 <translation id="493076006037866439">സ്ക്രീൻ സൂം ഔട്ട് ചെയ്യുക</translation>
@@ -1621,7 +1599,6 @@
 <translation id="5578188167649348993">മെമ്മറി</translation>
 <translation id="5580000943347215299">ലൈബ്രറി</translation>
 <translation id="5581972110672966454">ഉപകരണത്തെ ഡൊമെയ്‌നുമായി ബന്ധിപ്പിക്കാനാകുന്നില്ല. വീണ്ടും ശ്രമിക്കുക അല്ലെങ്കിൽ നിങ്ങളുടെ ഉപകരണത്തിന്റെ ഉടമയെയോ അഡ്‍മിനെയോ ബന്ധപ്പെടുക. പിശക് കോഡ്: <ph name="ERROR_CODE" />.</translation>
-<translation id="5585898376467608182">നിങ്ങളുടെ ഉപകരണത്തിൽ സ്‌റ്റോറേജ് സ്‌പെയ്‌സ് കുറവാണ്. <ph name="APP_NAME" /> ഇൻസ്‌റ്റാൾ ചെയ്യാൻ കുറഞ്ഞത് <ph name="MINIMUM_SPACE" /> ഇടമെങ്കിലും ആവശ്യമാണ്. ഇടം സൃഷ്ടിക്കാൻ, ഉപകരണത്തിൽ നിന്ന് ഫയലുകൾ ഇല്ലാതാക്കുക.</translation>
 <translation id="5586388332127302891">ഡോക്ക് ചെയ്‌ത മാഗ്നിഫയർ പ്രവർത്തനക്ഷമമാക്കി. ഇത് ഓഫാക്കാൻ വീണ്ടും <ph name="ACCELERATOR" /> അമർത്തുക.</translation>
 <translation id="5587506661873751671"><ph name="DOWNLOAD_PERCENT" />% ഡൗൺലോഡ് ചെയ്യുന്നു</translation>
 <translation id="5590609058453685222">മ്യൂട്ട് നഡ്‌ജ് ഓണാണ്. മ്യൂട്ട് ചെയ്തിരിക്കുമ്പോൾ സംസാരിക്കുകയാണെങ്കിൽ, നിങ്ങൾക്ക് അറിയിപ്പ് ലഭിക്കും.</translation>
@@ -1688,7 +1665,6 @@
 <translation id="5767730327234918501">നിങ്ങളുടെ അഡ്‌മിൻ, ഹോട്ട്സ്പോട്ട് ഓഫാക്കി.</translation>
 <translation id="5769373120130404283">സ്വകാര്യതാ സ്‌ക്രീൻ</translation>
 <translation id="5770004650349728202">'വായിച്ചുകേൾക്കാൻ തിരഞ്ഞെടുക്കുക' ഓണാക്കുക</translation>
-<translation id="5772114492540073460">നിങ്ങളുടെ Chromebook-ൽ Windows® ആപ്പുകൾ റൺ ചെയ്യാൻ <ph name="PARALLELS_NAME" /> നിങ്ങളെ അനുവദിക്കുന്നു. ഇൻസ്‌റ്റലേഷന് <ph name="MINIMUM_SPACE" /> ഇടം ശുപാർശ ചെയ്യുന്നു.</translation>
 <translation id="5773950591113557721"><ph name="APP_NAME" /> എന്നതിനും, ക്യാമറ മൈക്രോഫോൺ എന്നിവ ആക്‌സസ് ചെയ്യാൻ അനുമതിയുള്ള എല്ലാ ആപ്പുകൾക്കും വെബ്സൈറ്റുകൾക്കും ഇത് ആക്‌സസ് അനുവദിക്കുന്നു</translation>
 <translation id="5774295353725270860">ഓപ്പൺ ഫയലുകൾ ആപ്പ്</translation>
 <translation id="5775936059231769503">ഹോട്ട്സ്പോട്ട് ടോഗിൾ ചെയ്യുക. ഹോട്ട്സ്പോട്ട് ഓഫാണ്.</translation>
@@ -1736,8 +1712,6 @@
 <translation id="589817443623831496">പോയിന്റ് സ്കാൻ ചെയ്യൽ</translation>
 <translation id="5901494423252125310">പ്രിന്ററിന്റെ ഡോർ തുറന്നിരിക്കുന്നു</translation>
 <translation id="5901630391730855834">മഞ്ഞ</translation>
-<translation id="5904614460720589786">കോൺഫിഗർ ചെയ്യലിലെ പ്രശ്‍നം കാരണം <ph name="APP_NAME" /> സജ്ജീകരിക്കാനായില്ല. നിങ്ങളുടെ അഡ്‌മിനെ ബന്ധപ്പെടുക. പിശക് കോഡ്: <ph name="ERROR_CODE" />.</translation>
-<translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> ഓഫ്‌ലൈൻ ആണ്</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">പുതിയ അറിയിപ്പ്, ആകെ <ph name="NOTIFICATION_COUNT" /> എണ്ണം</translation>
 <translation id="5916664084637901428">ഓൺ ചെയ്യുക</translation>
@@ -1809,7 +1783,6 @@
         <ph name="DOMAIN" /> എന്നതിൽ തുടരുന്നതിന് നിങ്ങളുടെ സ്‌മാർട്ട് കാർഡ് ഇൻസേർട്ട് ചെയ്ത നിലയിൽ തുടരേണ്ടതുണ്ട്.}other{# സെക്കൻഡിൽ നിങ്ങൾ സ്വയമേവ സൈൻ ഔട്ട് ആകും.
         <ph name="DOMAIN" /> എന്നതിൽ തുടരുന്നതിന് നിങ്ങളുടെ സ്‌മാർട്ട് കാർഡ് ഇൻസേർട്ട് ചെയ്ത നിലയിൽ തുടരേണ്ടതുണ്ട്.}}</translation>
 <translation id="6071576563962215370">സിസ്‌റ്റത്തിന് ഉപകരണ ഇൻസ്‌റ്റലേഷൻ ആട്രിബ്യൂട്ട് ലോക്ക് സ്ഥാപിക്കാനായില്ല.</translation>
-<translation id="6072442788591997866"><ph name="APP_NAME" />-ന് ഈ ഉപകരണത്തിൽ അനുമതിയില്ല. നിങ്ങളുടെ അഡ്‌മിനെ ബന്ധപ്പെടുക. പിശക് കോഡ്: <ph name="ERROR_CODE" />.</translation>
 <translation id="6073451960410192870">റെക്കോർഡിംഗ് നിർത്തുക</translation>
 <translation id="6074087755403037157">ബീറ്റ ചാനൽ</translation>
 <translation id="6075098173600599596">വലിയക്ഷരമാക്കൽ മാറ്റുക</translation>
@@ -1916,7 +1889,6 @@
 <translation id="6380143666419481200">അംഗീകരിച്ച് തുടരുക</translation>
 <translation id="6381109794406942707">ഉപകരണം അൺലോക്ക് ചെയ്യാൻ, നിങ്ങളുടെ പിൻ നൽകുക.</translation>
 <translation id="6381305031890976705">{0,plural, =1{ഉപകരണം ഒരു മണിക്കൂറിനുള്ളിൽ മുമ്പത്തെ പതിപ്പിലേക്ക് അപ്ഡേറ്റ് ചെയ്യുക}other{ഉപകരണം # മണിക്കൂറിനുള്ളിൽ മുമ്പത്തെ പതിപ്പിലേക്ക് അപ്ഡേറ്റ് ചെയ്യുക}}</translation>
-<translation id="6385149369087767061">ഇന്റർനെറ്റിലേക്ക് കണക്‌റ്റ് ചെയ്‌ത് വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="638716340450135524">ക്യാമറ ആക്‌സസ് ഓണാക്കുക</translation>
 <translation id="6406458002328242616">ടൈമർ എഡിറ്റ് ചെയ്യുക. <ph name="FOCUS_DURATION" />.</translation>
 <translation id="6406704438230478924">altgr</translation>
@@ -1934,7 +1906,6 @@
 <translation id="6426905245930183644">സൃഷ്ടിക്കുന്നു...</translation>
 <translation id="6430225033895752525">ഫോക്കസ് ക്രമീകരണം കാണിക്കുക</translation>
 <translation id="6431865393913628856">സ്‌ക്രീൻ റെക്കോർഡ്</translation>
-<translation id="6434325376267409267"><ph name="APP_NAME" /> ഉപയോഗിക്കുന്നതിന് മുമ്പ് നിങ്ങളുടെ ഉപകരണം അപ്‌ഡേറ്റ് ചെയ്യേണ്ടതുണ്ട്.</translation>
 <translation id="643593192654616063">ആകെയുള്ള <ph name="STORAGE_TOTAL_SIZE" /> സ്റ്റോറേജിൽ <ph name="STORAGE_IN_USE_SIZE" /> ഉപയോഗിക്കുന്നു</translation>
 <translation id="6445915701151710649">CPU</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> ഇവന്റ്</translation>
@@ -2213,7 +2184,6 @@
 <translation id="7258828758145722155">ഇന്നലെ എഡിറ്റ് ചെയ്‌തത്</translation>
 <translation id="726276584504105859">സ്പ്ലിറ്റ് സ്ക്രീൻ ഉപയോഗിക്കുന്നതിന് ഇവിടെ വലിച്ചിടുക</translation>
 <translation id="7264788308526527464"><ph name="FOCUS_DURATION_DELTA" /> കുറയ്ക്കുക</translation>
-<translation id="7267044199012331848">വെർച്വൽ മെഷീൻ ഇൻസ്‍റ്റാൾ ചെയ്യാനായില്ല. വീണ്ടും ശ്രമിക്കുക അല്ലെങ്കിൽ നിങ്ങളുടെ അഡ്‍മിനെ ബന്ധപ്പെടുക. പിശക് കോഡ്: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">നിങ്ങളുടെ ഫിംഗർപ്രിന്റിന്റെ വ്യത്യസ്ത ഭാഗങ്ങൾ ചേർക്കുന്നതിന് നിങ്ങളുടെ വിരൽ ഉയർത്തിക്കൊണ്ടിരിക്കുക</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
 <translation id="7285232777292757180">സ്ക്രീൻഷോട്ടുകൾ എടുക്കാൻ ദ്രുത ക്രമീകരണത്തിൽ സ്ക്രീൻ ക്യാപ്ചർ ചെയ്യൽ ടൂൾ ഉപയോഗിക്കുക</translation>
@@ -2262,9 +2232,7 @@
 <translation id="7406854842098869085">നിങ്ങൾ തുറക്കാൻ ആഗ്രഹിക്കുന്ന വിൻഡോയിലേക്ക് എത്തുന്നത് വരെ <ph name="MODIFIER_1" /> അമർത്തിപ്പിടിച്ച്, <ph name="KEY" /> ടാപ്പ് ചെയ്യുക, തുടർന്ന് റിലീസ് ചെയ്യുക</translation>
 <translation id="740790383907119240">ആപ്പ് കുറുക്കുവഴികൾ</translation>
 <translation id="7413851974711031813">അടയ്ക്കാൻ escape അമർത്തുക</translation>
-<translation id="7415454883318062233">സജ്ജീകരണം പൂർത്തിയായി</translation>
 <translation id="7416471219712049036">നിലവിലെ പേജ് സംരക്ഷിക്കുക</translation>
-<translation id="7423807071740419372"><ph name="APP_NAME" />-ന് പ്രവർത്തിക്കാൻ നിങ്ങളുടെ അനുമതി ആവശ്യമുണ്ട്</translation>
 <translation id="742594950370306541">ക്യാമറ ഉപയോഗത്തിലാണ്.</translation>
 <translation id="743058460480092004">ക്യാമറയും മൈക്രോഫോണും ഉപയോഗത്തിലാണ്.</translation>
 <translation id="7433708794692032816">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> ഉപയോഗിക്കുന്നത് തുടരാൻ സ്‌മാർട്ട് കാർഡ് ഇൻസേർട്ട് ചെയ്യുക</translation>
@@ -2275,7 +2243,6 @@
 <translation id="7459485586006128091">ആന്തരിക പിശകിനെ തുടർന്ന്, ഹോട്ട്‌സ്പോട്ട് ഓഫാക്കി. അൽപ്പ സമയത്തിന് ശേഷം വീണ്ടും കണക്റ്റ് ചെയ്യാൻ ശ്രമിക്കുക.</translation>
 <translation id="7461924472993315131">പിൻ ചെയ്യുക</translation>
 <translation id="746216226901520237">അടുത്ത തവണ നിങ്ങളുടെ ഫോൺ <ph name="DEVICE_TYPE" /> അൺലോക്ക് ചെയ്യും. Smart Lock ക്രമീകരണത്തിൽ ഓഫാക്കാം.</translation>
-<translation id="7465635034594602553">എന്തോ കുഴപ്പമുണ്ടായി. അൽപ്പസമയം കാത്തിരുന്ന ശേഷം, <ph name="APP_NAME" /> വീണ്ടും റൺ ചെയ്യുക.</translation>
 <translation id="7466449121337984263">സെൻസറിൽ സ്‌പർശിക്കുക</translation>
 <translation id="7477793887173910789">നിങ്ങളുടെ സംഗീതവും വീഡിയോകളും മറ്റും നിയന്ത്രിക്കുക</translation>
 <translation id="7478485216301680444">കിയോസ്‌ക് ആപ്പ് ഇൻസ്റ്റാൾ ചെയ്യാനായില്ല.</translation>
@@ -2429,7 +2396,6 @@
 <translation id="7850320739366109486">ശല്യം ചെയ്യരുത്</translation>
 <translation id="7851039877802112575">പോപ്പ് അപ്പുകളിലേക്കും ഡയലോഗുകളിലേക്കും ഫോക്കസ് നീക്കുക</translation>
 <translation id="7851768487828137624">കാനറി</translation>
-<translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7862292329216937261">അതിഥിയായി ഉപകരണം ഉപയോഗിക്കാൻ, സൈൻ ഔട്ട് ചെയ്‌ത ശേഷം സ്‌ക്രീനിന്റെ ഏറ്റവും താഴെ നിന്ന് 'അതിഥിയായി ബ്രൗസ് ചെയ്യുക' തിരഞ്ഞെടുക്കേണ്ടതുണ്ട്.</translation>
 <translation id="7866482334467279021">ഓണാണ്</translation>
 <translation id="7870790288828963061">ഏറ്റവും പുതിയ പതിപ്പിലുള്ള കിയോസ്‌ക് ആപ്പുകളൊന്നും കണ്ടെത്തിയില്ല. USB സ്‌റ്റിക്ക് നീക്കംചെയ്യുക.</translation>
@@ -2766,7 +2732,6 @@
 <translation id="8815390544836110344">Ctrl പ്ലസ് Shift പ്ലസ് ഓവർവ്യൂ മോഡ് കീ എന്ന, സ്ക്രീന്‍ഷോട്ടെടുക്കാനുള്ള കുറുക്കുവഴി അമർത്തുക</translation>
 <translation id="881757059229893486">ഇൻപുട്ട് രീതികളുടെ ക്രമീകരണം</translation>
 <translation id="8819728065740986820">അഡാപ്റ്റീവ് ചാർജിംഗ് ഓണാണ്</translation>
-<translation id="8821268776955756404"><ph name="APP_NAME" /> ഉപയോഗത്തിന് തയ്യാറാണ്.</translation>
 <translation id="882204272221080310">അധിക സുരക്ഷയ്ക്കായി ഫേംവെയര്‍ അപ്‌ഡേറ്റ് ചെയ്യുക.</translation>
 <translation id="8822104519413696986">ഇതൊരു ടച്ച് ഗെയിമാണ്</translation>
 <translation id="8825863694328519386">തിരികെ പോകാൻ ഇടതുഭാഗത്ത് നിന്ന് സ്വൈപ്പ് ചെയ്യുക</translation>
@@ -2800,7 +2765,6 @@
 <translation id="8905919797434099235">(പേരില്ല)</translation>
 <translation id="890616557918890486">ഉറവിടം മാറ്റുക</translation>
 <translation id="8909138438987180327">ബാറ്ററി <ph name="PERCENTAGE" /> ശതമാനം ഉണ്ട്..</translation>
-<translation id="8909298138148012791"><ph name="APP_NAME" /> അണ്‍ഇൻസ്‌റ്റാൾ ചെയ്‌തു</translation>
 <translation id="8916866375277139011"><ph name="GROUP_NAME" /> എന്നതിൽ ഇനങ്ങൾ മറയ്‌ക്കുക</translation>
 <translation id="8921369299636221117">പരിചാരക സേവനം ലഭ്യമല്ല.</translation>
 <translation id="8921554779039049422">H+</translation>
@@ -2873,7 +2837,6 @@
 <translation id="9126339866969410112">അവസാന പ്രവർത്തനം പഴയപടിയാക്കുക</translation>
 <translation id="9126642911267312373">Bluetooth ലഭ്യമല്ല</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{1 മിനിറ്റിനുള്ളിൽ}other{# മിനിറ്റിനുള്ളിൽ}}</translation>
-<translation id="9128317794749765148">സജ്ജീകരണം പൂർത്തിയാക്കാനായില്ല</translation>
 <translation id="9129245940793250979">പിൻഭാഗത്തെ ബട്ടൺ</translation>
 <translation id="9133335900048457298">പരിരക്ഷിത ഉള്ളടക്കം റെക്കോർഡ് ചെയ്യാനാകില്ല</translation>
 <translation id="9139720510312328767">അടുത്ത അക്ഷരം ഇല്ലാതാക്കുക</translation>

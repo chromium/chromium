@@ -297,6 +297,7 @@
 <translation id="2233735624724508540">Выберите период и нажмите "Удалить данные".</translation>
 <translation id="2234031676056123135">Настройте ярлыки</translation>
 <translation id="2234827758954819389">Руководство по конфиденциальности</translation>
+<translation id="2236949375853147973">Мои действия</translation>
 <translation id="2238038374973843156">Переместить группу в другое окно</translation>
 <translation id="2247789808226901522">Срок действия карты истек</translation>
 <translation id="2251809247798634662">Новое окно в режиме инкогнито</translation>
@@ -574,6 +575,7 @@
 <translation id="3385749568468586663">Gemini недоступен в режиме инкогнито.</translation>
 <translation id="3387650086002190359">Не удалось скачать файл <ph name="FILE_NAME" /> из-за ошибок файловой системы.</translation>
 <translation id="3391311825344469964">Попробуйте менеджер окон Chrome</translation>
+<translation id="3410151451624226773">Изменить в Google Менеджере паролей</translation>
 <translation id="3417835166382867856">Поиск по вкладкам</translation>
 <translation id="3430670036890315772">Если вы отключите блокировку профиля, вся сохраненная вами информация будет удалена.</translation>
 <translation id="3435575784518354875">Экспортируйте пароли, обновите сервисы Google Play и импортируйте пароли обратно в Google Менеджер паролей. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
@@ -942,6 +944,7 @@
 <translation id="4877678010818027629">Включить режим инкогнито</translation>
 <translation id="4878404682131129617">Не удалось создать туннель через прокси-сервер.</translation>
 <translation id="4880127995492972015">Перевести…</translation>
+<translation id="4880827082731008257">История поиска</translation>
 <translation id="4881695831933465202">Открыть</translation>
 <translation id="488187801263602086">Необходимо переименовать файл</translation>
 <translation id="4885273946141277891">Конфликт версий Chrome</translation>
@@ -991,6 +994,7 @@
 <translation id="509429900233858213">Произошла ошибка.</translation>
 <translation id="5096775069898886423">Если сайт не поддерживает защищенное подключение, предупреждать об этом ещё до перехода на него</translation>
 <translation id="510275257476243843">Остался 1 час</translation>
+<translation id="5105442806410269908">Изменить другие данные в аккаунте Google</translation>
 <translation id="5114895953710637392">Окно фильтрации по приложению закрыто.</translation>
 <translation id="5115811374190515607">в <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">При переходе по ссылкам в сообщениях, документах и других приложениях будет открываться Chrome.</translation>
@@ -1041,6 +1045,7 @@
 <translation id="5316947901395241499">Администратор запретил сохранять пароли.</translation>
 <translation id="5317780077021120954">Сохранить</translation>
 <translation id="5319359161174645648">Google рекомендует браузер Chrome</translation>
+<translation id="5323501626199324454">Изменить в настройках аккаунта Google</translation>
 <translation id="5326246328175179736">Невозможно войти с этим аккаунтом</translation>
 <translation id="5327248766486351172">Имя</translation>
 <translation id="5328542107300944283">Войдите на сайт с аккаунтом <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1325,6 +1330,7 @@
 <translation id="6461962085415701688">Не удалось открыть файл</translation>
 <translation id="6464977750820128603">Вы сможете просматривать список сайтов, посещенных в Chrome, и устанавливать для них таймеры.\n\nВ Google будут отправляться сведения о сайтах, для которых настроены таймеры, и времени их посещения. Мы собираем эти данные, чтобы улучшать сервис "Цифровое благополучие".</translation>
 <translation id="6468703991511753953">Адресная строка расположена снизу</translation>
+<translation id="6469702164109431067">Пароли и ключи доступа</translation>
 <translation id="6470181189905173055">Здесь будут показываться страницы, которые вы открывали в Chrome, когда использовали приложение "<ph name="APP_LABEL" />".</translation>
 <translation id="6473086018775716761">Список способов отправки развернут на половину экрана.</translation>
 <translation id="6475951671322991020">Скачать видео</translation>

@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">เอกสาร Word</translation>
 <translation id="1056775291175587022">ไม่พบเครือข่าย</translation>
 <translation id="1056898198331236512">คำเตือน</translation>
-<translation id="1060368002126861100">หากต้องการเปิดไฟล์ด้วย <ph name="APP_NAME" /> ให้ย้ายไปที่โฟลเดอร์ไฟล์ของ Windows ก่อน</translation>
 <translation id="1062407476771304334">แทนที่</translation>
 <translation id="1119383441774809183">แสดงข้อความ</translation>
 <translation id="1119447706177454957">ข้อผิดพลาดภายใน</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">นอร์เวย์</translation>
 <translation id="1408504635543854729">สำรวจเนื้อหาของอุปกรณ์ในแอป Files เนื้อหาถูกผู้ดูแลระบบจำกัดไว้และไม่สามารถแก้ไขได้</translation>
 <translation id="1412476183660741812">Signed Web Bundle</translation>
-<translation id="1433628812591023318">ต้องย้ายไฟล์ดังกล่าวไปยังไฟล์ Windows เพื่อวางใน Parallels Desktop</translation>
-<translation id="1435838927755162558">แชร์โฟลเดอร์กับ Parallels Desktop</translation>
 <translation id="1439919885608649279">คนกับดอกไม้</translation>
 <translation id="1458457385801829801">ยกเลิกการต่อเชื่อม <ph name="TARGET_NAME" /></translation>
 <translation id="1464781208867302907">ไปที่การตั้งค่าเพื่อตั้งค่ากำหนดของอุปกรณ์</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">ฝรั่งเศส</translation>
 <translation id="2732288874651063549">จัดการการแชร์กับ <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">เวียดนาม (VNI)</translation>
-<translation id="2735623501230989521">ให้สิทธิ์ Parallels Desktop เข้าถึงไฟล์ในโฟลเดอร์ "<ph name="FOLDER_NAME" />"</translation>
 <translation id="2764206540577097904">คุณใช้พื้นที่เก็บข้อมูลส่วนบุคคลใน Google Workspace หมดแล้ว</translation>
 <translation id="2771816809568414714">ชีส</translation>
 <translation id="2783909841122647548">ระบบไม่รองรับการติดตั้งแพ็กเกจ Debian อีกต่อไป <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">ภูมิศาสตร์</translation>
 <translation id="3044404008258011032">หากต้องการกู้คืนรายการเหล่านี้ ให้ลากไปที่โฟลเดอร์ใหม่นอกถังขยะ ระบบลบโฟลเดอร์ "<ph name="PARENT_FOLDER_NAME" />" เดิมของรายการเหล่านี้แล้ว</translation>
 <translation id="3047197340186497470">จีน (Dayi)</translation>
-<translation id="3067790092342515856">ไฟล์ Windows</translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">โฮสต์ SOCKS</translation>
 <translation id="3091469289665833668">โรมาเนีย</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">โปรดติดต่อผู้ดูแลระบบเพื่อขอรายละเอียด</translation>
 <translation id="3548125359243647069">ป้อน PIN ไม่ถูกต้องหลายครั้งเกินไป</translation>
 <translation id="3549797760399244642">ไปยัง drive.google.com...</translation>
-<translation id="3553048479571901246">หากต้องการเปิดไฟล์ด้วย <ph name="APP_NAME" /> ให้คัดลอกไปที่โฟลเดอร์ไฟล์ของ Windows ก่อน</translation>
 <translation id="3556731189587832921">อังกฤษ (สหรัฐฯ) ด้วยแป้นพิมพ์พีซีแบบสากล</translation>
 <translation id="3557414470514932909">กำลังย้าย <ph name="FILE_NAME" /> ไปที่ถังขยะ</translation>
 <translation id="3560848236447534728">การออกเสียงภาษาอาร์เมเนีย</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">โรมาเนีย</translation>
 <translation id="4508265954913339219">การเปิดใช้งานล้มเหลว</translation>
 <translation id="4509667233588080747">อังกฤษ (สหรัฐฯ) ด้วยแป้นพิมพ์ Workman แบบสากล</translation>
-<translation id="4527800702232535228">โฟลเดอร์นี้แชร์อยู่กับ Parallels Desktop</translation>
 <translation id="4552678318981539154">ซื้อพื้นที่เก็บข้อมูลเพิ่ม</translation>
 <translation id="4552759165874948005">เครือข่าย <ph name="NETWORK_TYPE" /> ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">ชัดตื้น</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">ข้าวปั้น</translation>
 <translation id="4784330909746505604">งานนำเสนอ PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
-<translation id="4789067489790477934">ให้สิทธิ์ Parallels Desktop เข้าถึงไฟล์ใน Google ไดรฟ์ การเปลี่ยนแปลงจะซิงค์กับอุปกรณ์อื่นๆ ของคุณ</translation>
 <translation id="4790766916287588578">ภาษาฮินดีด้วยแป้นพิมพ์ InScript</translation>
 <translation id="4798645114741131062">อุปกรณ์ ChromeOS Flex ของคุณจะหยุดรับการอัปเดตในเร็วๆ นี้ คุณควรอัปเกรดเป็นอุปกรณ์ ChromeOS</translation>
 <translation id="4801956050125744859">เก็บไว้ทั้งสองเวอร์ชัน</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">แถบเลื่อนระดับเสียง</translation>
 <translation id="4881695831933465202">เปิด</translation>
 <translation id="4891091358278567964">หากต้องการกู้คืนรายการเหล่านี้ ให้ลากไปที่โฟลเดอร์ใหม่นอกถังขยะ ระบบลบโฟลเดอร์เดิมของรายการเหล่านี้แล้ว</translation>
-<translation id="4900532980794411603">แชร์กับ Parallels Desktop</translation>
 <translation id="4902546322522096650">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, เชื่อมต่อ</translation>
 <translation id="4906580650526544301">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, แบตเตอรี่โทรศัพท์ <ph name="BATTERY_STATUS" />%, รายละเอียด</translation>
 <translation id="4935975195727477204">ดอกทานตะวัน</translation>
 <translation id="4943368462779413526">ฟุตบอล</translation>
-<translation id="4961158930123534723">แชร์กับ Parallels Desktop แล้ว 1 โฟลเดอร์</translation>
 <translation id="4965874878399872778">กำลังตรวจสอบไฟล์เหล่านี้กับนโยบายความปลอดภัยขององค์กร...</translation>
 <translation id="496656650103537022">กู้คืน <ph name="FILE_NAME" /> แล้ว</translation>
 <translation id="4969785127455456148">อัลบั้ม</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">การดำเนินการใช้เวลานานกว่าที่คาดไว้ คุณต้องการล้มเลิกไหม</translation>
 <translation id="5036141350290856713">การออกเสียงภาษารัสเซีย</translation>
-<translation id="5036159836254554629">จัดการการแชร์ Parallels Desktop</translation>
 <translation id="5038625366300922036">ดูเพิ่มเติม...</translation>
 <translation id="5044852990838351217">อาร์เมเนีย</translation>
 <translation id="5045550434625856497">รหัสผ่านไม่ถูกต้อง</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">กำลังลบ "<ph name="FILENAME" />"...</translation>
 <translation id="6581162200855843583">ลิงก์ Google ไดรฟ์</translation>
 <translation id="6588648400954570689">การตั้งค่าการซิงค์ไฟล์</translation>
-<translation id="6594855146910089723">โฟลเดอร์นี้แชร์อยู่กับ Linux และ Parallels Desktop</translation>
 <translation id="6607272825297743757">ข้อมูลไฟล์</translation>
-<translation id="6609332149380188670">แชร์กับ Parallels Desktop แล้ว <ph name="NUMBER_OF_ITEMS" /> โฟลเดอร์</translation>
 <translation id="6629518321609546825">ป้อนตัวเลขอย่างน้อย 4 ตัว</translation>
 <translation id="6643016212128521049">ล้าง</translation>
 <translation id="6650726141019353908">ผีเสื้อสีชมพู</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">แย่จัง! เกิดข้อผิดพลาดในระหว่างการตั้งชื่อ</translation>
 <translation id="7458955835361612701">ไม่มีรูปภาพล่าสุด</translation>
 <translation id="7469894403370665791">เชื่อมต่อกับเครือข่ายนี้อัตโนมัติ</translation>
-<translation id="7486315294984620427">ต้องคัดลอกไฟล์ดังกล่าวไปยังไฟล์ Windows เพื่อวางใน Parallels Desktop</translation>
 <translation id="749452993132003881">ฮิระงะนะ</translation>
 <translation id="7495372004724182530">มาลายาลัม (ตามการออกเสียง)</translation>
 <translation id="7505167922889582512">แสดงไฟล์ที่ซ่อนไว้</translation>

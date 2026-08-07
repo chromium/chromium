@@ -35,7 +35,6 @@
 <translation id="1088231044944504242">Search your <ph name="CATEGORY" />, files, apps and more. Use the arrow keys to navigate your apps.</translation>
 <translation id="1093645050124056515">ctrl + alt + down arrow</translation>
 <translation id="1094756674036064790">Turn off Bluetooth?</translation>
-<translation id="109647177154844434">Uninstalling Parallels Desktop will delete your Windows image. This includes its applications, settings and data. Are you sure that you wish to continue?</translation>
 <translation id="1104084341931202936">Show accessibility settings</translation>
 <translation id="1104621072296271835">Your devices work even better together</translation>
 <translation id="1107300737351978027">Can't contain repeating digits</translation>
@@ -82,7 +81,6 @@
 <translation id="1210557957257435379">screen recording</translation>
 <translation id="121097972571826261">Forward by word</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store app</translation>
-<translation id="1223484782328004593"><ph name="APP_NAME" /> requires a licence</translation>
 <translation id="1225748608451425081">Your Chromebook is locked due to a known issue. You will be able to sign in after: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Stop selecting</translation>
 <translation id="1235458158152011030">Known networks</translation>
@@ -93,7 +91,6 @@
 <translation id="1244265436519979884">Linux restore currently in progress</translation>
 <translation id="1245476784081715330">Great work!</translation>
 <translation id="124678866338384709">Close current tab</translation>
-<translation id="1246863218384630739">Couldn't install <ph name="VM_NAME" />: Image URL returned a <ph name="HTTP_ERROR" /> error code. Please contact your administrator.</translation>
 <translation id="1246890715821376239">Unsupported apps</translation>
 <translation id="1247372569136754018">Microphone (internal)</translation>
 <translation id="1247519845643687288">Recent apps</translation>
@@ -107,7 +104,6 @@
 <translation id="1275285675049378717">Powering <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">Selected</translation>
 <translation id="1276975447697633661">Select the file, then press <ph name="KEY" /></translation>
-<translation id="1276994519141842946">Couldn't uninstall <ph name="APP_NAME" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1283126956823499975">Something went wrong with setting up the device</translation>
 <translation id="1285992161347843613">Locate phone</translation>
@@ -170,7 +166,6 @@
 <translation id="1421166164855200062">Suggested group</translation>
 <translation id="1426410128494586442">Yes</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> is blocked</translation>
-<translation id="142765311413773645"><ph name="APP_NAME" /> licence has expired</translation>
 <translation id="1430915738399379752">Print</translation>
 <translation id="1435537621343861112">Can't start dictation. Your mic is off.</translation>
 <translation id="1445031758921122223">Face control files downloaded</translation>
@@ -193,12 +188,10 @@
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">With dictation, you can type using your voice. Press the dictation key or select the microphone icon at the bottom of the screen when you’re on a text field. Your dictation language is set to <ph name="LANGUAGE" />. Speech is sent to Google for processing. You can change the dictation language at any time in Settings &gt; Accessibility.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> swapped with <ph name="SECOND_ITEM_TITLE" /></translation>
-<translation id="1494429729245089920">Virtual machine '<ph name="VM_NAME" />' exists, but does not appear to be a valid <ph name="APP_NAME" /> virtual machine. Please contact your administrator.</translation>
 <translation id="1500926532737552529">Show all suggestions</translation>
 <translation id="1501946871587957338">Switch audio source?</translation>
 <translation id="1505542291183484463">Tiled resize window downwards</translation>
 <translation id="1510238584712386396">Launcher</translation>
-<translation id="1515163294334130951">Launch</translation>
 <translation id="1519090060276706457">Restoring windows is taking longer than expected</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003">Battery <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> until full</translation>
@@ -222,7 +215,6 @@
 <translation id="1574691582236909946">Selected left-edge handle, use arrow keys to move</translation>
 <translation id="1576623706766186887">Zoom out when magnifier is on</translation>
 <translation id="1578558981922970608">Force close</translation>
-<translation id="1580772913177567930">Contact your administrator</translation>
 <translation id="1582946770779745370">Game Dashboard available. Press <ph name="LAUNCHER_KEY_NAME" /> + shift + Escape, then <ph name="LAUNCHER_KEY_NAME" /> + g at any time to open</translation>
 <translation id="1586324912145647027">Go to desk 1 to 8</translation>
 <translation id="158838227375272121">Google Classroom website</translation>
@@ -443,7 +435,6 @@
 <translation id="2322065293366551060"><ph name="CATEGORY" /> , search result category</translation>
 <translation id="2322173485024759474">Back by letter</translation>
 <translation id="2326112202058075478">Show more emojis</translation>
-<translation id="2328561734797404498">Please restart your device to use <ph name="APP_NAME" />.</translation>
 <translation id="2335091074961603075">Your Chromebook or Bluetooth device is using an older version of Bluetooth. Use the internal microphone for better audio quality.</translation>
 <translation id="2336214675195760012">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requires you to connect to Wi-Fi today to download an update. Or, download from a metered connection (charges may apply).}other{<ph name="MANAGER" /> requires you to connect to Wi-Fi and download an update before the deadline. Or, download from a metered connection (charges may apply).}}</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" /> is printing one page to <ph name="PRINTER_NAME" /></translation>
@@ -471,7 +462,6 @@
 <translation id="2386292613071805067">Select everything on page</translation>
 <translation id="2389423187722941333">Toggle Gemini</translation>
 <translation id="2390347491606624519">Can’t connect to proxy; please sign in again</translation>
-<translation id="2393136602862631930">Set up <ph name="APP_NAME" /> on your Chromebook</translation>
 <translation id="2397416548179033562">Show Chrome menu</translation>
 <translation id="240006516586367791">Media controls</translation>
 <translation id="2400664245143453337">Immediate update required</translation>
@@ -504,7 +494,6 @@
 <translation id="2473177541599297363">Confirm resolution</translation>
 <translation id="2475783092753560388">Insert <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="2475982808118771221">An error occurred</translation>
-<translation id="2476974672882258506">Shut down Windows to uninstall <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2478076885740497414">Install app</translation>
 <translation id="2479148705183875116">Go to Settings</translation>
 <translation id="2484513351006226581">Hit <ph name="KEYBOARD_SHORTCUT" /> to switch keyboard layout.</translation>
@@ -544,7 +533,6 @@
 <translation id="2573588302192866788">Couldn't connect <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Multiple sign-in has been disabled</translation>
 <translation id="2579264398927991698">Firmware updates</translation>
-<translation id="2586561813241011046">Couldn't install <ph name="APP_NAME" />. Please try again, or contact your administrator. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">Clipboard</translation>
 <translation id="2596078834055697711">Take window screenshot</translation>
 <translation id="2598725286293895280">Unsupported apps in desk</translation>
@@ -566,7 +554,6 @@
 <translation id="2653659639078652383">Submit</translation>
 <translation id="2658778018866295321">Click and drag</translation>
 <translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> and <ph name="UNAVAILABLE_APPS_TWO" /> aren't on this device.</translation>
-<translation id="2669241540496514785">Couldn't open <ph name="APP_NAME" /></translation>
 <translation id="2670350619068134931">Reduced animations</translation>
 <translation id="2672142220933875349">Bad crx file, unpacking failed.</translation>
 <translation id="2673968385134502798">Games</translation>
@@ -839,14 +826,12 @@ Otherwise, the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS
 <translation id="3444385531800624797">Results loading</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">USB-C device</translation>
-<translation id="3446274660183028131">Please launch Parallels Desktop to install Windows.</translation>
 <translation id="3449393517661170867">New tabbed window</translation>
 <translation id="3450157232394774192">Idle State Occupancy Percentage</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> requires you to connect to Wi-Fi now and download an update.</translation>
 <translation id="3454555520521576458">Resizable</translation>
 <translation id="3455468639467374593">Template, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">1 device connected to <ph name="DEVICE_NAME" /> hotspot</translation>
-<translation id="3458451003193188688">Couldn't install the virtual machine because of a network error. Please try again, or contact your administrator. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="346243998268439747">Reset zoom level</translation>
 <translation id="3465223694362104965">Another keyboard has connected to this device since you last signed in. Make sure that you trust this keyboard before you use it.</translation>
 <translation id="3465356146291925647">Managed by your administrator</translation>
@@ -865,7 +850,6 @@ Otherwise, the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS
 <translation id="3513798432020909783">Account managed by <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3516000762115478502">Tiled resize window upwards</translation>
 <translation id="3517037892157925473">Tasks last updated: <ph name="TIME" />, <ph name="DATE" />.</translation>
-<translation id="3522088408596898827">Disk space is critically low. Free up disk space and try again.</translation>
 <translation id="352245152354538528">{0,plural, =1{Update device within 1 minute}other{Update device within # minutes}}</translation>
 <translation id="3522979239100719575">Looking for available profiles. This may take a few minutes.</translation>
 <translation id="3526440770046466733">Open link in new tab and stay in current tab</translation>
@@ -1019,7 +1003,6 @@ Connect your device to power.</translation>
 <translation id="3886872229787704059">Opened today</translation>
 <translation id="3892148308691398805">Copy text</translation>
 <translation id="3893630138897523026">ChromeVox (spoken feedback)</translation>
-<translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3898464793473355515">Rotate screen 90 degrees clockwise</translation>
 <translation id="3900355044994618856">Your session will end in <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Connecting to <ph name="NAME" /></translation>
@@ -1116,7 +1099,6 @@ Some features are limited to increase battery life.</translation>
 <translation id="4181841719683918333">Languages</translation>
 <translation id="4185671786623711291">Move active window to desk on right</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> – <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> Search</translation>
-<translation id="4187424053537113647">Setting up <ph name="APP_NAME" />…</translation>
 <translation id="4189826113259617332">Save all open pages in current window as bookmarks in a new folder</translation>
 <translation id="4190143678693626113">Save time by quickly replying to your phone's texts from your Chromebook</translation>
 <translation id="4190780880566297084">Dismiss setting up viewing your phone's recent photos, media and apps</translation>
@@ -1128,7 +1110,6 @@ Some features are limited to increase battery life.</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> is not available.</translation>
 <translation id="4201051445878709314">Show previous month</translation>
 <translation id="4209973997261364186">Wi-Fi is turned on</translation>
-<translation id="4210048056321123003">Downloading the virtual machine</translation>
 <translation id="4212246570487010370">Continue browsing</translation>
 <translation id="4212472694152630271">Switch to PIN</translation>
 <translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, toggle button, <ph name="STATE" /></translation>
@@ -1147,7 +1128,6 @@ Some features are limited to increase battery life.</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="425364040945105958">No SIM</translation>
 <translation id="425573743389990240">Battery Discharge Rate in Watts (Negative value means battery is charging)</translation>
-<translation id="4259388776256904261">This may take a while</translation>
 <translation id="4264977415328155183">, collapsed</translation>
 <translation id="4265259722091164182">Title case</translation>
 <translation id="4269883910223712419">The admin of this device has the ability to:</translation>
@@ -1234,7 +1214,6 @@ Some features are limited to increase battery life.</translation>
 One device connected.</translation>
 <translation id="4477892968187500306">This device may contain apps that haven't been verified by Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
-<translation id="4479877282574735775">Configuring the virtual machine. This may take a few minutes.</translation>
 <translation id="4485506555414638855">Dismiss setting up viewing your phone's recent photos, media, notifications and apps</translation>
 <translation id="4491109536499578614">Image</translation>
 <translation id="4493468155686877504">Recommended (<ph name="INSTALL_SIZE" />)</translation>
@@ -1383,7 +1362,6 @@ One device connected.</translation>
 <translation id="4917385247580444890">Strong</translation>
 <translation id="4918086044614829423">Accept</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> is currently using your camera</translation>
-<translation id="492363500327720082">Uninstalling <ph name="APP_NAME" />…</translation>
 <translation id="492453977506755176">Capture mode key</translation>
 <translation id="4925542575807923399">The administrator for this account requires this account to be the first signed-in account in a multiple sign-in session.</translation>
 <translation id="493076006037866439">Zoom out of screen</translation>
@@ -1621,7 +1599,6 @@ No devices connected.</translation>
 <translation id="5578188167649348993">memory</translation>
 <translation id="5580000943347215299">Library</translation>
 <translation id="5581972110672966454">Can't join the device to the domain. Please try again or contact your device owner or administrator. Error code: <ph name="ERROR_CODE" />.</translation>
-<translation id="5585898376467608182">Your device is low on storage. At least <ph name="MINIMUM_SPACE" /> of free space is required to use <ph name="APP_NAME" />. To increase free space, delete files from the device.</translation>
 <translation id="5586388332127302891">Docked magnifier enabled. Press <ph name="ACCELERATOR" /> again to toggle it off.</translation>
 <translation id="5587506661873751671">Downloading <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="5590609058453685222">Mute nudge is on. You'll get notified if you talk while muted.</translation>
@@ -1688,7 +1665,6 @@ No devices connected.</translation>
 <translation id="5767730327234918501">Your administrator has turned off hotspot.</translation>
 <translation id="5769373120130404283">Privacy screen</translation>
 <translation id="5770004650349728202">Turn on Select to Speak</translation>
-<translation id="5772114492540073460"><ph name="PARALLELS_NAME" /> allows you to run Windows® apps on your Chromebook. <ph name="MINIMUM_SPACE" /> of free space is recommended for installation.</translation>
 <translation id="5773950591113557721">This allows access for <ph name="APP_NAME" /> and all apps and websites with the camera and microphone permissions</translation>
 <translation id="5774295353725270860">Open Files app</translation>
 <translation id="5775936059231769503">Toggle hotspot. Hotspot is off.</translation>
@@ -1736,8 +1712,6 @@ No devices connected.</translation>
 <translation id="589817443623831496">Point scanning</translation>
 <translation id="5901494423252125310">Printer door open</translation>
 <translation id="5901630391730855834">Yellow</translation>
-<translation id="5904614460720589786">Couldn't set up <ph name="APP_NAME" /> because of a configuration problem. Please contact your administrator. Error code: <ph name="ERROR_CODE" />.</translation>
-<translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> is offline</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">New notification, <ph name="NOTIFICATION_COUNT" /> total</translation>
 <translation id="5916664084637901428">On</translation>
@@ -1809,7 +1783,6 @@ No devices connected.</translation>
         <ph name="DOMAIN" /> requires you to keep your smart card inserted.}other{You will be automatically signed out in # seconds.
         <ph name="DOMAIN" /> requires you to keep your smart card inserted.}}</translation>
 <translation id="6071576563962215370">The system failed to establish the device installation-time attributes lock.</translation>
-<translation id="6072442788591997866"><ph name="APP_NAME" /> isn't allowed on this device. Contact your administrator. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="6073451960410192870">Stop recording</translation>
 <translation id="6074087755403037157">Beta channel</translation>
 <translation id="6075098173600599596">Change capitalisation</translation>
@@ -1916,7 +1889,6 @@ No devices connected.</translation>
 <translation id="6380143666419481200">Accept and continue</translation>
 <translation id="6381109794406942707">To unlock the device, enter your PIN.</translation>
 <translation id="6381305031890976705">{0,plural, =1{Update device to previous version within an hour}other{Update device to previous version within # hours}}</translation>
-<translation id="6385149369087767061">Connect to the Internet and try again</translation>
 <translation id="638716340450135524">Turn on camera access</translation>
 <translation id="6406458002328242616">Edit timer. <ph name="FOCUS_DURATION" />.</translation>
 <translation id="6406704438230478924">altgr</translation>
@@ -1934,7 +1906,6 @@ No devices connected.</translation>
 <translation id="6426905245930183644">Creating…</translation>
 <translation id="6430225033895752525">Show Focus settings</translation>
 <translation id="6431865393913628856">Screen record</translation>
-<translation id="6434325376267409267">Your device needs to be updated before you can use <ph name="APP_NAME" />.</translation>
 <translation id="643593192654616063">Storage <ph name="STORAGE_IN_USE_SIZE" /> in use out of <ph name="STORAGE_TOTAL_SIZE" /> total</translation>
 <translation id="6445915701151710649">cpu</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> event</translation>
@@ -2212,7 +2183,6 @@ New install</translation>
 <translation id="7258828758145722155">Edited yesterday</translation>
 <translation id="726276584504105859">Drag here to use split screen</translation>
 <translation id="7264788308526527464">Reduce <ph name="FOCUS_DURATION_DELTA" /></translation>
-<translation id="7267044199012331848">Couldn't install the virtual machine. Please try again, or contact your administrator. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">Keep lifting your finger to add the different parts of your fingerprint</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
 <translation id="7285232777292757180">Use the screen capture tool in Quick Settings to take screenshots</translation>
@@ -2261,9 +2231,7 @@ New install</translation>
 <translation id="7406854842098869085">Press and hold <ph name="MODIFIER_1" />, tap <ph name="KEY" /> until you get to the window you want to open, then release</translation>
 <translation id="740790383907119240">App Shortcuts</translation>
 <translation id="7413851974711031813">Press escape to close</translation>
-<translation id="7415454883318062233">Setup complete</translation>
 <translation id="7416471219712049036">Save current page</translation>
-<translation id="7423807071740419372"><ph name="APP_NAME" /> needs permission to run</translation>
 <translation id="742594950370306541">Camera is in use.</translation>
 <translation id="743058460480092004">Camera and microphone are in use.</translation>
 <translation id="7433708794692032816">Insert smart card to keep using your <ph name="DEVICE_TYPE" /></translation>
@@ -2274,7 +2242,6 @@ New install</translation>
 <translation id="7459485586006128091">Due to an internal error, hotspot has been turned off. Try reconnecting in a few minutes.</translation>
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746216226901520237">Next time, your phone will unlock your <ph name="DEVICE_TYPE" />. You can turn off Smart Lock in Settings.</translation>
-<translation id="7465635034594602553">Something went wrong. Please wait a few minutes and run <ph name="APP_NAME" /> again.</translation>
 <translation id="7466449121337984263">Please touch the sensor</translation>
 <translation id="7477793887173910789">Control your music, videos and more</translation>
 <translation id="7478485216301680444">Kiosk application could not be installed.</translation>
@@ -2428,7 +2395,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7850320739366109486">Do not disturb</translation>
 <translation id="7851039877802112575">Move focus to pop-ups and dialogues</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7862292329216937261">To use the device as a guest, you'll need to sign out and then select Browse as guest at the bottom of the screen.</translation>
 <translation id="7866482334467279021">on</translation>
 <translation id="7870790288828963061">No Kiosk apps with newer version found. Nothing to update. Please remove the USB stick.</translation>
@@ -2765,7 +2731,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8815390544836110344">Press the screenshot shortcut, Ctrl plus Shift plus Overview mode key</translation>
 <translation id="881757059229893486">Input methods settings</translation>
 <translation id="8819728065740986820">Adaptive charging is on</translation>
-<translation id="8821268776955756404"><ph name="APP_NAME" /> is ready to use.</translation>
 <translation id="882204272221080310">Update firmware for added security.</translation>
 <translation id="8822104519413696986">This is a touch game</translation>
 <translation id="8825863694328519386">Swipe from the left to go back</translation>
@@ -2799,7 +2764,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8905919797434099235">(No title)</translation>
 <translation id="890616557918890486">Change source</translation>
 <translation id="8909138438987180327">Battery at <ph name="PERCENTAGE" /> per cent.</translation>
-<translation id="8909298138148012791"><ph name="APP_NAME" /> has been uninstalled</translation>
 <translation id="8916866375277139011">Hide items in <ph name="GROUP_NAME" /></translation>
 <translation id="8921369299636221117">Concierge service is unavailable.</translation>
 <translation id="8921554779039049422">H+</translation>
@@ -2872,7 +2836,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="9126339866969410112">Undo last action</translation>
 <translation id="9126642911267312373">Bluetooth unavailable</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{In 1 min}other{In # mins}}</translation>
-<translation id="9128317794749765148">Setup couldn't complete</translation>
 <translation id="9129245940793250979">Rear button</translation>
 <translation id="9133335900048457298">Can't record protected content</translation>
 <translation id="9139720510312328767">Delete next letter</translation>

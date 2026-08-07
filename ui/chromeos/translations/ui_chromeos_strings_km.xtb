@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">ឯកសារ Word</translation>
 <translation id="1056775291175587022">មិនមានបណ្ដាញទេ</translation>
 <translation id="1056898198331236512">ការព្រមាន</translation>
-<translation id="1060368002126861100">ដើម្បីបើកឯកសារដោយប្រើ <ph name="APP_NAME" /> សូមផ្លាស់ទីឯកសារទាំងនោះទៅក្នុងថតឯកសារ Windows ជាមុនសិន។</translation>
 <translation id="1062407476771304334">ជំនួស</translation>
 <translation id="1119383441774809183">បង្ហាញ​សារជាអក្សរ</translation>
 <translation id="1119447706177454957">កំហុសឆ្គងខាងក្នុង</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">ភាសា​ន័រវែស</translation>
 <translation id="1408504635543854729">រុករក​មាតិកា​របស់​ឧបករណ៍​នៅក្នុង​កម្មវិធី​ឯកសារ។ មាតិកា​នេះត្រូវ​បាន​រឹតបន្តឹង​ដោយ​អ្នក​គ្រប់គ្រង និង​មិនអាច​កែសម្រួល​បាន​ឡើយ។</translation>
 <translation id="1412476183660741812">កញ្ចប់វេបដែលមាន​ហត្ថលេខា</translation>
-<translation id="1433628812591023318">ត្រូវតែផ្លាស់ទី​ឯកសារ​ទៅថតឯកសារ​របស់ Windows សិន ទើបអាចទម្លាក់​ឯកសារនោះ​ទៅក្នុង Parallels Desktop បាន។</translation>
-<translation id="1435838927755162558">ចែករំលែក​ថត​ជាមួយ Parallels Desktop</translation>
 <translation id="1439919885608649279">មនុស្ស​កាន់ផ្កា</translation>
 <translation id="1458457385801829801">ដក <ph name="TARGET_NAME" /> ចេញ</translation>
 <translation id="1464781208867302907">សម្រាប់​ចំណូលចិត្ត​ឧបករណ៍ សូម​ចូលទៅកាន់​ការកំណត់។</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">បារាំង</translation>
 <translation id="2732288874651063549">គ្រប់គ្រង​ការចែករំលែក​ជាមួយ <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">ភាសាវៀតណាម VNI</translation>
-<translation id="2735623501230989521">ផ្ដល់ការអនុញ្ញាតឱ្យ Parallels Desktop ចូលប្រើឯកសារ​នៅក្នុងថត <ph name="FOLDER_NAME" /></translation>
 <translation id="2764206540577097904">អ្នកបានប្រើទំហំផ្ទុក Google Workspace បុគ្គលរបស់អ្នកអស់ហើយ។</translation>
 <translation id="2771816809568414714">ឈីស</translation>
 <translation id="2783909841122647548">លែងអាច​ដំឡើង​កញ្ចប់ Debian បាន​ទៀតហើយ។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">ភូមិសាស្ដ្រ</translation>
 <translation id="3044404008258011032">ដើម្បី​ស្ដារ​ធាតុ​ទាំងនេះ សូម​អូស​ធាតុ​ទៅ​ថត​ថ្មី​នៅក្រៅ​ធុង​សំរាម។ ថត​ដើម "<ph name="PARENT_FOLDER_NAME" />" សម្រាប់​ធាតុ​ទាំងនេះ​ត្រូវ​បាន​លុប។</translation>
 <translation id="3047197340186497470">ភាសាចិនដាយី</translation>
-<translation id="3067790092342515856">ឯកសារ Windows</translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">ម៉ាស៊ីន SOCKS</translation>
 <translation id="3091469289665833668">រូម៉ានី</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">ទាក់ទងទៅ​អ្នកគ្រប់គ្រង​របស់អ្នក ដើម្បី​ទទួលបាន​ព័ត៌មាន​លម្អិត។</translation>
 <translation id="3548125359243647069">បានបញ្ចូលកូដ PIN មិនត្រឹមត្រូវច្រើនដងពេក។</translation>
 <translation id="3549797760399244642">ទៅកាន់ drive.google.com...</translation>
-<translation id="3553048479571901246">ដើម្បីបើកឯកសារដោយប្រើ <ph name="APP_NAME" /> សូមចម្លងឯកសារទាំងនោះទៅក្នុងថតឯកសារ Windows ជាមុនសិន។</translation>
 <translation id="3556731189587832921">ភាសា​អង់គ្លេស (សហរដ្ឋអាមេរិក) ដែលប្រើក្ដារចុច​កុំព្យូទ័រ​អន្តរជាតិ</translation>
 <translation id="3557414470514932909">កំពុងផ្លាស់ទី <ph name="FILE_NAME" /> ទៅក្នុង​ធុងសំរាម</translation>
 <translation id="3560848236447534728">សូរសព្ទអាមេនី</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">ភាសា​រូម៉ានី</translation>
 <translation id="4508265954913339219">ការធ្វើសកម្មភាពបានបរាជ័យ</translation>
 <translation id="4509667233588080747">ភាសា​អង់គ្លេស (សហរដ្ឋអាមេរិក) ដែលប្រើ​ក្ដារចុចអន្តរជាតិ Workman</translation>
-<translation id="4527800702232535228">ថតនេះត្រូវបាន​ចែករំលែកជាមួយ Parallels Desktop</translation>
 <translation id="4552678318981539154">ទិន្នន័យចន្លោះផ្ទុ</translation>
 <translation id="4552759165874948005">បណ្ដាញ <ph name="NETWORK_TYPE" />, កម្លាំង​រលកសញ្ញា <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">Bokeh</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">អូនីហ្គីរិ</translation>
 <translation id="4784330909746505604">បទបង្ហាញ PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
-<translation id="4789067489790477934">ផ្ដល់ការអនុញ្ញាតឱ្យ Parallels Desktop ចូលប្រើ​ឯកសារ​នៅក្នុង Google ថាស​របស់អ្នក។ ការផ្លាស់ប្ដូរនឹង​ធ្វើសមកាលកម្ម​ទៅឧបករណ៍​ផ្សេងទៀត​របស់អ្នក។</translation>
 <translation id="4790766916287588578">ភាសា​ហិណ្ឌីដែលប្រើក្ដារចុច InScript</translation>
 <translation id="4798645114741131062">ឧបករណ៍ ChromeOS Flex របស់អ្នក​នឹងលែង​ទទួលបាន​កំណែថ្មី​ក្នុងពេល​ឆាប់ៗនេះ។ សូម​ពិចារណា​ប្ដូរទៅប្រើ​ឧបករណ៍ ChromeOS។</translation>
 <translation id="4801956050125744859">រក្សាទាំងពីរ</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">របាររំកិលកម្រិតសំឡេង</translation>
 <translation id="4881695831933465202">បើក</translation>
 <translation id="4891091358278567964">ដើម្បី​ស្ដារ​ធាតុ​ទាំងនេះ សូម​អូស​ធាតុ​ទៅ​ថត​ថ្មី​នៅក្រៅ​ធុង​សំរាម។ ថត​ដើម​សម្រាប់​ធាតុ​ទាំងនេះ​ត្រូវ​បាន​លុប។</translation>
-<translation id="4900532980794411603">ចែករំលែក​ជាមួយ Parallels Desktop</translation>
 <translation id="4902546322522096650">បណ្ដាញ <ph name="NETWORK_INDEX" /> នៃ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, កម្លាំងរលកសញ្ញា <ph name="SIGNAL_STRENGTH" />%, ភ្ជាប់</translation>
 <translation id="4906580650526544301">បណ្ដាញ <ph name="NETWORK_INDEX" /> នៃ <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, កម្លាំងរលកសញ្ញា <ph name="SIGNAL_STRENGTH" />%, ថ្មទូរសព្ទ <ph name="BATTERY_STATUS" />%, ព័ត៌មានលម្អិត</translation>
 <translation id="4935975195727477204">ផ្កា Gazania</translation>
 <translation id="4943368462779413526">បាល់ទាត់</translation>
-<translation id="4961158930123534723">បានចែករំលែក​ថត 1 ជាមួយ Parallels Desktop</translation>
 <translation id="4965874878399872778">កំពុងពិនិត្យមើលឯកសារដោយផ្អែកលើគោលការណ៍សុវត្ថិភាពនៃស្ថាប័នរបស់អ្នក...</translation>
 <translation id="496656650103537022">បាន​ស្ដារ​ <ph name="FILE_NAME" /></translation>
 <translation id="4969785127455456148">អាល់ប៊ុម</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">ប្រតិបត្តិចំណាយពេលយូរជាងការរំពឹងទុក។ តើអ្នកចង់បោះបង់វាទេ?</translation>
 <translation id="5036141350290856713">សូរសព្ទរុស្សី</translation>
-<translation id="5036159836254554629">គ្រប់គ្រង​ការចែករំលែក Parallels Desktop</translation>
 <translation id="5038625366300922036">មើលបន្ថែមទៀត...</translation>
 <translation id="5044852990838351217">ភាសាអាមេនី</translation>
 <translation id="5045550434625856497">ពាក្យសម្ងាត់មិនត្រឹមត្រូវ</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">កំពុងលុប "<ph name="FILENAME" />"...</translation>
 <translation id="6581162200855843583">តំណ Google Drive</translation>
 <translation id="6588648400954570689">ការកំណត់ការធ្វើសម​កាល​កម្មឯកសារ</translation>
-<translation id="6594855146910089723">ថតនេះត្រូវបាន​ចែករំលែកជាមួយ Linux និង Parallels Desktop</translation>
 <translation id="6607272825297743757">ព័ត៌មានឯកសារ</translation>
-<translation id="6609332149380188670">បានចែករំលែក​ថត <ph name="NUMBER_OF_ITEMS" /> ជាមួយ Parallels Desktop</translation>
 <translation id="6629518321609546825">បញ្ចូលលេខយ៉ាងហោចណាស់ 4 ខ្ទង់</translation>
 <translation id="6643016212128521049">ជម្រះ</translation>
 <translation id="6650726141019353908">មេអំបៅ​ពណ៌​ផ្កាឈូក</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">អូ! មាន​បញ្ហា​ពេល​កំពុង​ប្តូរឈ្មោះ។</translation>
 <translation id="7458955835361612701">គ្មាន​រូបភាព​ថ្មីៗទេ</translation>
 <translation id="7469894403370665791">ភ្ជាប់ទៅបណ្តាញនេះដោយស្វ័យប្រវត្តិ</translation>
-<translation id="7486315294984620427">ត្រូវតែចម្លង​ឯកសារ​ទៅថតឯកសារ​របស់ Windows សិន ទើបអាចទម្លាក់​ឯកសារនោះ​ទៅក្នុង Parallels Desktop បាន។</translation>
 <translation id="749452993132003881">ហ៊ីរ៉ាហ្កាណា</translation>
 <translation id="7495372004724182530">សូរសព្ទជា​ភាសា​ម៉ាឡាយ៉ាឡាម</translation>
 <translation id="7505167922889582512">បង្ហាញឯកសារដែលត្រូវបានលាក់</translation>

@@ -35,7 +35,6 @@
 <translation id="1088231044944504242">ស្វែងរក <ph name="CATEGORY" /> ឯកសារ កម្មវិធី និងអ្វីៗជាច្រើនទៀត។ សូមប្រើគ្រាប់ចុចព្រួញ ដើម្បីរុករកកម្មវិធីរបស់អ្នក។</translation>
 <translation id="1093645050124056515">ctrl + alt + ព្រួញចុះក្រោម</translation>
 <translation id="1094756674036064790">បិទប៊្លូធូសឬ?</translation>
-<translation id="109647177154844434">ការលុប Parallels Desktop នឹងលុបរូបភាព Windows របស់អ្នក។ ការលុបនេះរួមទាំងកម្មវិធី ការកំណត់ និងទិន្នន័យ​របស់វាផងដែរ។ តើអ្នក​ប្រាកដថា​ចង់បន្ត​ដែរទេ?</translation>
 <translation id="1104084341931202936">បង្ហាញ​ការកំណត់​ភាពងាយស្រួល</translation>
 <translation id="1104621072296271835">ឧបករណ៍​របស់អ្នក​ដំណើរការ​កាន់តែល្អ​ពេលប្រើ​រួមគ្នា</translation>
 <translation id="1107300737351978027">មិនអាចមាន​លេខស្ទួន​បានទេ</translation>
@@ -82,7 +81,6 @@
 <translation id="1210557957257435379">ការថតវីដេអូអេក្រង់</translation>
 <translation id="121097972571826261">ទៅមុខមួយពាក្យ</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, កម្មវិធី​នៅលើ Play Store</translation>
-<translation id="1223484782328004593"><ph name="APP_NAME" /> តម្រូវឱ្យមាន​អាជ្ញាបណ្ណ</translation>
 <translation id="1225748608451425081">Chromebook របស់អ្នក​ជាប់សោ ដោយសារបញ្ហាដែលស្គាល់។ អ្នកនឹងអាចចូលគណនី បន្ទាប់ពីរយៈពេល៖ <ph name="TIME_LEFT" /> ទៀត។</translation>
 <translation id="1229194443904279055">ឈប់​ជ្រើសរើស</translation>
 <translation id="1235458158152011030">បណ្តាញដែលស្គាល់</translation>
@@ -93,7 +91,6 @@
 <translation id="1244265436519979884">បច្ចុប្បន្ននេះ ការស្ដារ Linux កំពុង​ដំណើរការ</translation>
 <translation id="1245476784081715330">ធ្វើ​បាន​ល្អ​ណាស់!</translation>
 <translation id="124678866338384709">បិទផ្ទាំងបច្ចុប្បន្ន</translation>
-<translation id="1246863218384630739">មិនអាច​ដំឡើង <ph name="VM_NAME" />៖ URL រូបភាព​បានបង្ហាញ​លេខកូដបញ្ហា <ph name="HTTP_ERROR" />។ សូមទាក់ទង​អ្នកគ្រប់គ្រង​របស់អ្នក។</translation>
 <translation id="1246890715821376239">កម្មវិធីដែលមិនអាចប្រើបាន</translation>
 <translation id="1247372569136754018">មីក្រូហ្វូន (ខាងក្នុង)</translation>
 <translation id="1247519845643687288">កម្មវិធី​ថ្មីៗ</translation>
@@ -107,7 +104,6 @@
 <translation id="1275285675049378717">កំពុង​សាកថ្ម <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">បានជ្រើសរើស</translation>
 <translation id="1276975447697633661">ជ្រើសរើស​ឯកសារ រួចចុច <ph name="KEY" /></translation>
-<translation id="1276994519141842946">មិនអាច​លុប <ph name="APP_NAME" /> បានទេ</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1283126956823499975">មានអ្វីមួយ​ខុសប្រក្រតីពាក់ព័ន្ធនឹងការរៀបចំឧបករណ៍</translation>
 <translation id="1285992161347843613">កំណត់ទីតាំង​ទូរសព្ទ</translation>
@@ -170,7 +166,6 @@
 <translation id="1421166164855200062">ក្រុម​ដែលបាន​ណែនាំ</translation>
 <translation id="1426410128494586442">បាទ/ចាស</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> ត្រូវបាន​ទប់ស្កាត់</translation>
-<translation id="142765311413773645">អាជ្ញាបណ្ណ <ph name="APP_NAME" /> បានផុតកំណត់​ហើយ</translation>
 <translation id="1430915738399379752">បោះពុម្ព</translation>
 <translation id="1435537621343861112">មិនអាច​ចាប់ផ្ដើម​ការសរសេរ​តាមអាន​បានទេ។ មីក្រូហ្វូន​របស់អ្នក​ត្រូវបាន​បិទ។</translation>
 <translation id="1445031758921122223">បានទាញយកឯកសារនៃការគ្រប់គ្រងមុខ</translation>
@@ -193,12 +188,10 @@
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">តាមរយៈ​ការសរសេរ​តាមអាន អ្នកអាច​វាយបញ្ចូល​ដោយប្រើ​សំឡេង​របស់អ្នក។ ចុចគ្រាប់ចុច​សរសេរ​តាមអាន ឬ​ជ្រើសរើស​រូបមីក្រូហ្វូន​នៅផ្នែកខាងក្រោមនៃ​អេក្រង់ នៅពេល​ដែលអ្នក​ស្ថិតនៅ​កន្លែងបញ្ចូល​អក្សរ។ ភាសា​សរសេរ​តាមអាន​របស់អ្នក​ត្រូវបាន​កំណត់ទៅជា​ភាសា<ph name="LANGUAGE" />។ ការនិយាយ​ត្រូវបានផ្ញើទៅ Google ដើម្បី​ដំណើរការ។ អ្នកអាចប្ដូរ​ភាសា​សរសេរ​តាមអាន​នៅពេលណាក៏បាន​នៅក្នុង​ការកំណត់ &gt; ភាពងាយស្រួល។</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> បានប្ដូរ​ជាមួយ <ph name="SECOND_ITEM_TITLE" /></translation>
-<translation id="1494429729245089920">មាន​ម៉ាស៊ីន​និម្មិត​ "<ph name="VM_NAME" />" ប៉ុន្តែ​វាហាក់ដូច​ជាមិន​មែន​​ជា​​ម៉ាស៊ីន​និម្មិត​ <ph name="APP_NAME" /> ដែល​ត្រឹមត្រូវ​ទេ។ សូមទាក់ទងទៅ​អ្នកគ្រប់គ្រង​របស់អ្នក។</translation>
 <translation id="1500926532737552529">បង្ហាញ​ការ​ណែនាំ​ទាំងអស់</translation>
 <translation id="1501946871587957338">ប្ដូរ​ប្រភព​សំឡេង​ឬ?</translation>
 <translation id="1505542291183484463">ប្ដូរ​ទំហំវិនដូជាប្រអប់ចុះក្រោម</translation>
 <translation id="1510238584712386396">ឡាន់ឆ័រ</translation>
-<translation id="1515163294334130951">បើកដំណើរការ</translation>
 <translation id="1519090060276706457">ការស្ដារ​វិនដូ​កំពុង​ចំណាយពេល​យូរជាង​ការរំពឹងទុក</translation>
 <translation id="1521655867290435174">Google បញ្ជី</translation>
 <translation id="1523032696246003">ថ្ម <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" />ទៀត​ទើបពេញ</translation>
@@ -222,7 +215,6 @@
 <translation id="1574691582236909946">បាន​ជ្រើសរើស​ដងគែម​ខាងឆ្វេង ប្រើ​គ្រាប់ចុចព្រួញ​ដើម្បី​ផ្លាស់ទី</translation>
 <translation id="1576623706766186887">បង្រួម​នៅ​ពេល​កែវពង្រីក​ត្រូវ​បានបើក</translation>
 <translation id="1578558981922970608">បង្ខំ​ឱ្យ​បិទ</translation>
-<translation id="1580772913177567930">ទាក់ទង​អ្នកគ្រប់គ្រង​របស់អ្នក</translation>
 <translation id="1582946770779745370">អាចប្រើ​ផ្ទាំងគ្រប់គ្រង​ហ្គេម​បាន។ ចុច <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape បន្ទាប់មក <ph name="LAUNCHER_KEY_NAME" /> + g នៅពេលណា​ក៏បាន ដើម្បីបើក</translation>
 <translation id="1586324912145647027">ចូល​ទៅកាន់​តុទី 1 នៃ 8</translation>
 <translation id="158838227375272121">គេហទំព័រ Google ថ្នាក់រៀន</translation>
@@ -443,7 +435,6 @@
 <translation id="2322065293366551060"><ph name="CATEGORY" /> , ប្រភេទលទ្ធផលស្វែងរក</translation>
 <translation id="2322173485024759474">ថយក្រោយ​មួយតួអក្សរ</translation>
 <translation id="2326112202058075478">បង្ហាញរូប​អារម្មណ៍ច្រើនទៀត</translation>
-<translation id="2328561734797404498">សូម​ចាប់ផ្តើម​ឧបករណ៍​របស់អ្នក​ឡើងវិញ ដើម្បី​ប្រើ <ph name="APP_NAME" />។</translation>
 <translation id="2335091074961603075">Chromebook ឬឧបករណ៍​ប៊្លូធូស​របស់អ្នក​កំពុងប្រើ​ប៊្លូធូស​កំណែ​ចាស់។ សូមប្រើ​មីក្រូហ្វូន​ខាងក្នុង ដើម្បីទទួលបាន​គុណភាព​សំឡេង​កាន់តែប្រសើរ។</translation>
 <translation id="2336214675195760012">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> តម្រូវឱ្យអ្នក​ភ្ជាប់ Wi-Fi នៅថ្ងៃនេះ ដើម្បីទាញយកកំណែថ្មី។ ឬទាញយកតាមរយៈការ​តភ្ជាប់អ៊ីនធឺណិតផ្អែកតាមទិន្នន័យដែលប្រើ (អាចមានការគិតថ្លៃ)។}other{<ph name="MANAGER" /> តម្រូវឱ្យអ្នកភ្ជាប់ Wi-Fi និងទាញយកកំណែថ្មី មុនថ្ងៃផុតកំណត់។ ឬទាញយកតាមរយៈការ​តភ្ជាប់អ៊ីនធឺណិតផ្អែកតាមទិន្នន័យដែលប្រើ (អាចមានការគិតថ្លៃ)។}}</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" /> កំពុង​បោះពុម្ព 1 ទំព័រ​ទៅ <ph name="PRINTER_NAME" /></translation>
@@ -471,7 +462,6 @@
 <translation id="2386292613071805067">ជ្រើសរើស​អ្វីគ្រប់យ៉ាង​នៅ​លើ​ទំព័រ</translation>
 <translation id="2389423187722941333">បិទ/បើក Gemini</translation>
 <translation id="2390347491606624519">មិនអាចភ្ជាប់ទៅប្រូកស៊ីបានទេ សូមចូលម្ដងទៀត</translation>
-<translation id="2393136602862631930">រៀបចំ <ph name="APP_NAME" /> នៅលើ Chromebook របស់អ្នក</translation>
 <translation id="2397416548179033562">បង្ហាញម៉ឺនុយ Chrome</translation>
 <translation id="240006516586367791">ការគ្រប់គ្រង​មេឌៀ</translation>
 <translation id="2400664245143453337">តម្រូវឱ្យមាន​ការដំឡើង​កំណែភ្លាមៗ</translation>
@@ -504,7 +494,6 @@
 <translation id="2473177541599297363">បញ្ជាក់​កម្រិតច្បាស់</translation>
 <translation id="2475783092753560388">បញ្ចូល <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="2475982808118771221">កំហុសឆ្គងមួយបានកើតឡើង</translation>
-<translation id="2476974672882258506">បិទ Windows ដើម្បីលុប <ph name="PARALLELS_DESKTOP" />។</translation>
 <translation id="2478076885740497414">តំឡើងកម្មវិធី</translation>
 <translation id="2479148705183875116">ចូលទៅកាន់ការកំណត់</translation>
 <translation id="2484513351006226581">ចុច <ph name="KEYBOARD_SHORTCUT" /> ដើម្បី​ប្តូរប្លង់​ក្តារ​ចុច។</translation>
@@ -544,7 +533,6 @@
 <translation id="2573588302192866788">មិន​អាចភ្ជាប់ <ph name="NAME" /> បានទេ</translation>
 <translation id="2575685495496069081">ការចូល​គណនី​ច្រើន​ត្រូវបាន​បិទ</translation>
 <translation id="2579264398927991698">ការដំឡើងកំណែ​កម្មវិធីបង្កប់</translation>
-<translation id="2586561813241011046">មិនអាចដំឡើង <ph name="APP_NAME" /> បានទេ។ សូម​ព្យាយាម​ម្ដងទៀត ឬ​ទាក់ទង​អ្នកគ្រប់គ្រង​របស់អ្នក​។ លេខ​កូដ​បញ្ហា៖ <ph name="ERROR_CODE" />។</translation>
 <translation id="2586657967955657006">អង្គ​ចងចាំ</translation>
 <translation id="2596078834055697711">ថត​រូបថត​អេក្រង់​វិនដូ</translation>
 <translation id="2598725286293895280">កម្មវិធី​ដែល​មិន​អាច​ប្រើ​នៅក្នុង​តុ</translation>
@@ -566,7 +554,6 @@
 <translation id="2653659639078652383">ដាក់ស្នើ</translation>
 <translation id="2658778018866295321">ចុចហើយអូស</translation>
 <translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> និង <ph name="UNAVAILABLE_APPS_TWO" /> មិនមាន​នៅលើ​ឧបករណ៍នេះ​ទេ។</translation>
-<translation id="2669241540496514785">មិនអាចបើក <ph name="APP_NAME" /> បានទេ</translation>
 <translation id="2670350619068134931">រូបមានចលនា​ដែលបានកាត់បន្ថយ</translation>
 <translation id="2672142220933875349">ឯកសារ crx មិនល្អ ការពន្លាបានបរាជ័យ។</translation>
 <translation id="2673968385134502798">ហ្គេម</translation>
@@ -839,14 +826,12 @@
 <translation id="3444385531800624797">កំពុងផ្ទុក​លទ្ធផល</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> នាទី</translation>
 <translation id="3445925074670675829">ឧបករណ៍ USB-C</translation>
-<translation id="3446274660183028131">សូមចាប់ផ្ដើម Parallels Desktop ដើម្បីដំឡើង Windows។</translation>
 <translation id="3449393517661170867">វិនដូថ្មី​ដែលចែកជា​ផ្ទាំង</translation>
 <translation id="3450157232394774192">អត្រាប្រើប្រាស់ស្ថានភាពទុកចោល</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> តម្រូវឱ្យអ្នក​ភ្ជាប់ Wi-Fi ឥឡូវនេះ ដើម្បីទាញយកកំណែថ្មី​។</translation>
 <translation id="3454555520521576458">អាចប្ដូរទំហំបាន</translation>
 <translation id="3455468639467374593">ទម្រង់គំរូ, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">ឧបករណ៍ 1 ត្រូវបាន​ភ្ជាប់​ទៅ​ហតស្ប៉ត​របស់ <ph name="DEVICE_NAME" /></translation>
-<translation id="3458451003193188688">មិនអាច​ដំឡើង​ម៉ាស៊ីន​និម្មិត​បានទេ ដោយសារ​មាន​បញ្ហា​បណ្ដាញ​។ សូម​ព្យាយាម​ម្ដងទៀត ឬ​ទាក់ទង​អ្នកគ្រប់គ្រង​របស់អ្នក​។ លេខ​កូដ​បញ្ហា៖ <ph name="ERROR_CODE" />។</translation>
 <translation id="346243998268439747">កំណត់​កម្រិត​ពង្រីកបង្រួមឡើងវិញ</translation>
 <translation id="3465223694362104965">ចាប់តាំងពី​អ្នកបានចូល​លើកចុងក្រោយ ក្ដារចុច​ផ្សេងទៀត​បានភ្ជាប់ទៅ​ឧបករណ៍នេះ។ សូមប្រាកដថា អ្នកជឿទុកចិត្ត​ក្ដារចុចនេះ មុនពេលដែល​អ្នកប្រើវា។</translation>
 <translation id="3465356146291925647">គ្រប់គ្រង​ដោយ​អ្នកគ្រប់គ្រង​របស់អ្នក</translation>
@@ -865,7 +850,6 @@
 <translation id="3513798432020909783">គណនី​ស្ថិត​ក្រោមការគ្រប់គ្រង​របស់ <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3516000762115478502">ប្ដូរ​ទំហំវិនដូជាប្រអប់ឡើងលើ</translation>
 <translation id="3517037892157925473">បានធ្វើបច្ចុប្បន្នភាព​កិច្ចការ​ចុងក្រោយ៖ <ph name="TIME" /> <ph name="DATE" />។</translation>
-<translation id="3522088408596898827">ទំហំផ្ទុកក្នុងថាស​នៅសល់តិចណាស់។ សូមបង្កើន​ទំហំផ្ទុកក្នុងថាស រួចព្យាយាមម្ដងទៀត។</translation>
 <translation id="352245152354538528">{0,plural, =1{ដំឡើងកំណែ​ឧបករណ៍​ក្នុងរយៈពេល 1 នាទី​}other{ដំឡើងកំណែ​ឧបករណ៍​ក្នុងរយៈពេល # នាទី​}}</translation>
 <translation id="3522979239100719575">កំពុងរកមើល​កម្រងព័ត៌មាន​ដែលអាចប្រើបាន។ សកម្មភាពនេះ​អាចចំណាយ​ពេលពីរបីនាទី។</translation>
 <translation id="3526440770046466733">បើក​តំណ​នៅ​ក្នុង​ផ្ទាំង​ថ្មី រួច​បន្ត​នៅ​ក្នុង​ផ្ទាំង​បច្ចុប្បន្ន</translation>
@@ -1019,7 +1003,6 @@
 <translation id="3886872229787704059">បានបើក​នៅថ្ងៃនេះ</translation>
 <translation id="3892148308691398805">ចម្លង​អត្ថបទ</translation>
 <translation id="3893630138897523026">ChromeVox (មតិនិយាយ)</translation>
-<translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3898464793473355515">បង្វិល​អេក្រង់ 90 ដឺក្រេ​ស្របទ្រនិចនាឡិកា</translation>
 <translation id="3900355044994618856">សម័យ​របស់អ្នក​នឹង​បញ្ចប់​ក្នុង​រយៈពេល <ph name="SESSION_TIME_REMAINING" /> ទៀត</translation>
 <translation id="3901991538546252627">កំពុងភ្ជាប់ទៅ <ph name="NAME" /></translation>
@@ -1116,7 +1099,6 @@
 <translation id="4181841719683918333">ភាសា</translation>
 <translation id="4185671786623711291">ផ្លាស់ទី​វិនដូ​ដែល​កំពុង​ដំណើរការ​​ទៅ​​តុ​នៅ​ខាងស្ដាំ</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> - ស្វែងរក​នៅ​លើ <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
-<translation id="4187424053537113647">កំពុងរៀបចំ <ph name="APP_NAME" />...</translation>
 <translation id="4189826113259617332">រក្សាទុក​គ្រប់ទំព័រដែល​បើក​ក្នុង​វិនដូ​បច្ចុប្បន្ន​​ជា​ចំណាំ​នៅក្នុង​ថត​ថ្មី</translation>
 <translation id="4190143678693626113">ចំណេញពេល​ដោយឆ្លើយតប​សារជាអក្សរ​របស់ទូរសព្ទអ្នក​យ៉ាងរហ័ស​ពី Chromebook របស់អ្នក</translation>
 <translation id="4190780880566297084">ច្រានចោល​ការរៀបចំ​ការមើល​រូបថត មេឌៀ និង​កម្មវិធី​ថ្មីៗ​លើ​ទូរសព្ទ​របស់​អ្នក</translation>
@@ -1128,7 +1110,6 @@
 <translation id="4201033867194214117">មិនអាច​ប្រើ <ph name="FEATURE_NAME" /> បានទេ។</translation>
 <translation id="4201051445878709314">បង្ហាញខែមុន</translation>
 <translation id="4209973997261364186">Wi-Fi ត្រូវបានបើក</translation>
-<translation id="4210048056321123003">កំពុង​ទាញយក​ម៉ាស៊ីន​និម្មិត</translation>
 <translation id="4212246570487010370">ការអានបន្ត</translation>
 <translation id="4212472694152630271">ប្ដូរទៅកូដ PIN</translation>
 <translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, ប៊ូតុងបិទ/បើក, <ph name="STATE" /></translation>
@@ -1147,7 +1128,6 @@
 <translation id="4250229828105606438">ថតអេក្រង់</translation>
 <translation id="425364040945105958">មិនមានស៊ីមទេ</translation>
 <translation id="425573743389990240">កម្រិតទាញយកថាមពលជាវ៉ាត់ (តម្លៃអវិជ្ជមាន មានន័យថ្មកំពុងសាក)</translation>
-<translation id="4259388776256904261">អាចចំណាយពេលបន្តិច</translation>
 <translation id="4264977415328155183">, បានបង្រួម</translation>
 <translation id="4265259722091164182">អក្សរធំ​ដើមពាក្យ</translation>
 <translation id="4269883910223712419">អ្នកគ្រប់គ្រ​ងឧបករណ៍​នេះ​មានលទ្ធភាព​៖</translation>
@@ -1234,7 +1214,6 @@
 បានភ្ជាប់ឧបករណ៍ 1 គ្រឿង។</translation>
 <translation id="4477892968187500306">ឧបករណ៍នេះ​អាចមាន​កម្មវិធី​ដែល​មិនត្រូវបាន​ផ្ទៀងផ្ទាត់​ដោយ Google។</translation>
 <translation id="4479639480957787382">ខ្សែអ៊ីនធឺណិត</translation>
-<translation id="4479877282574735775">កំពុងកំណត់រចនាសម្ព័ន្ធ​ម៉ាស៊ីននិម្មិត។ ការកំណត់រចនាសម្ព័ន្ធនេះ​អាចនឹងចំណាយពេល​ពីរបីនាទី។</translation>
 <translation id="4485506555414638855">ច្រានចោល​ការរៀបចំ​ការមើល​រូបថត មេឌៀ ការជូនដំណឹង និង​កម្មវិធី​ថ្មីៗ​លើ​ទូរសព្ទ​របស់​អ្នក</translation>
 <translation id="4491109536499578614">រូបភាព</translation>
 <translation id="4493468155686877504">បានណែនាំ (<ph name="INSTALL_SIZE" />)</translation>
@@ -1383,7 +1362,6 @@
 <translation id="4917385247580444890">ខ្លាំង</translation>
 <translation id="4918086044614829423">ទទួល</translation>
 <translation id="4919841137949306064">បច្ចុប្បន្ន <ph name="APP_NAME" /> កំពុងប្រើ​កាមេរ៉ា​របស់អ្នក</translation>
-<translation id="492363500327720082">កំពុងលុប <ph name="APP_NAME" />...</translation>
 <translation id="492453977506755176">គ្រាប់ចុចមុខងារថត</translation>
 <translation id="4925542575807923399">អ្នកគ្រប់គ្រងគណនីនេះតម្រូវឲ្យគណនីនេះជាគណនីចូលមុននៅក្នុងវេនចូលច្រើនគណនី។</translation>
 <translation id="493076006037866439">បង្រួម​អេក្រង់</translation>
@@ -1621,7 +1599,6 @@
 <translation id="5578188167649348993">អង្គចងចាំ</translation>
 <translation id="5580000943347215299">បណ្ណាល័យ</translation>
 <translation id="5581972110672966454">មិនអាចភ្ជាប់ឧបករណ៍ជាមួយដែនបានទេ។ សូម​ព្យាយាម​ម្ដងទៀត ឬ​ទាក់ទង​អ្នកគ្រប់គ្រង ឬម្ចាស់ឧបករណ៍របស់អ្នក។ លេខ​កូដ​បញ្ហា៖ <ph name="ERROR_CODE" />។</translation>
-<translation id="5585898376467608182">ឧបករណ៍​របស់អ្នក​ជិតអស់​ទំហំផ្ទុក​ហើយ។ តម្រូវឱ្យមាន​ទំហំផ្ទុកទំនេរ​យ៉ាងហោច​ណាស់ <ph name="MINIMUM_SPACE" /> ដើម្បីប្រើ <ph name="APP_NAME" />។ ដើម្បី​បង្កើន​ទំហំផ្ទុកទំនេរ សូមលុប​ឯកសារចេញពី​ឧបករណ៍។</translation>
 <translation id="5586388332127302891">បានបើក​កែវ​ពង្រីក​ដាក់ពីលើ។ ចុច <ph name="ACCELERATOR" /> ម្ដងទៀត ដើម្បីបិទ​មុខងារនេះ។</translation>
 <translation id="5587506661873751671">កំពុងទាញយក <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="5590609058453685222">ការរំលឹកប្រាប់ថាបិទសំឡេង​ត្រូវ​បានបើក។ អ្នកនឹង​ទទួលបាន​ការជូនដំណឹង ប្រសិនបើ​អ្នកនិយាយ នៅពេល​បិទសំឡេង។</translation>
@@ -1688,7 +1665,6 @@
 <translation id="5767730327234918501">អ្នកគ្រប់គ្រង​របស់អ្នក​បានបិទ​ហតស្ប៉ត។</translation>
 <translation id="5769373120130404283">អេក្រង់​ឯកជនភាព</translation>
 <translation id="5770004650349728202">បើកមុខងារជ្រើសរើសដើម្បីអាន</translation>
-<translation id="5772114492540073460"><ph name="PARALLELS_NAME" /> អនុញ្ញាតឱ្យអ្នក​ដំណើរការ​កម្មវិធី Windows® នៅលើ Chromebook របស់អ្នក។ ណែនាំឱ្យមានទំហំផ្ទុកទំនេរ <ph name="MINIMUM_SPACE" /> សម្រាប់ការដំឡើង។</translation>
 <translation id="5773950591113557721">ការ​ធ្វើបែបនេះ​ផ្ដល់​សិទ្ធិចូលប្រើប្រាស់​ដល់ <ph name="APP_NAME" /> ព្រម​ទាំង​គ្រប់​កម្មវិធី និង​គេហទំព័រ​ដែលមាន​កា​រអនុញ្ញាត​ឱ្យ​ចូល​ប្រើ​កាមេរ៉ា និង​មីក្រូហ្វូន</translation>
 <translation id="5774295353725270860">បើកកម្មវិធីឯកសារ</translation>
 <translation id="5775936059231769503">បិទ/បើក​ហតស្ប៉ត។ ហតស្ប៉ត​ត្រូវបានបិទ។</translation>
@@ -1736,8 +1712,6 @@
 <translation id="589817443623831496">ការស្កេនលក្ខណៈចំណុច</translation>
 <translation id="5901494423252125310">គម្របម៉ាស៊ីនបោះពុម្ពបើក</translation>
 <translation id="5901630391730855834">លឿង</translation>
-<translation id="5904614460720589786">មិនអាចរៀបចំ <ph name="APP_NAME" /> បានទេ ដោយសារ​មានបញ្ហា​ក្នុងការកំណត់រចនាសម្ព័ន្ធ។ សូមទាក់ទង​អ្នកគ្រប់គ្រង​របស់អ្នក។ លេខ​កូដ​បញ្ហា៖ <ph name="ERROR_CODE" />។</translation>
-<translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> គ្មានអ៊ីនធឺណិតទេ</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">ការជូនដំណឹង​ថ្មី, សរុប <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">បើក</translation>
@@ -1809,7 +1783,6 @@
         <ph name="DOMAIN" /> តម្រូវឱ្យ​អ្នក​បន្តដោត​កាតឆ្លាតវៃ​របស់អ្នក។}other{អ្នក​នឹងត្រូវបាន​នាំចេញ​ដោយស្វ័យប្រវត្តិ​ក្នុងរយៈពេល # វិនាទី។
         <ph name="DOMAIN" /> តម្រូវឱ្យ​អ្នក​បន្តដោត​កាតឆ្លាតវៃ​របស់អ្នក។}}</translation>
 <translation id="6071576563962215370">ប្រព័ន្ធមិនអាច​បង្កើត​ការចាក់សោលក្ខណៈសម្រាប់រយៈពេលដំឡើងឧបករណ៍​បាន​ទេ។</translation>
-<translation id="6072442788591997866">មិនអនុញ្ញាត​ឱ្យប្រើ <ph name="APP_NAME" /> នៅលើ​ឧបករណ៍នេះទេ។ សូមទាក់ទង​អ្នកគ្រប់គ្រង​របស់អ្នក។ លេខ​កូដ​បញ្ហា៖ <ph name="ERROR_CODE" />។</translation>
 <translation id="6073451960410192870">បញ្ឈប់ការថត</translation>
 <translation id="6074087755403037157">បណ្ដាញបេតា</translation>
 <translation id="6075098173600599596">ប្ដូរ​អក្សរ​តូចធំ</translation>
@@ -1916,7 +1889,6 @@
 <translation id="6380143666419481200">ទទួល និងបន្ត</translation>
 <translation id="6381109794406942707">ដើម្បីដោះសោឧបករណ៍នេះ សូមបញ្ចូលកូដ PIN របស់អ្នក។</translation>
 <translation id="6381305031890976705">{0,plural, =1{ប្ដូរកំណែ​ឧបករណ៍​ទៅកំណែមុន​ក្នុងរយៈពេល​មួយម៉ោង}other{ប្ដូរកំណែ​ឧបករណ៍​ទៅកំណែមុន​ក្នុងរយៈពេល # ម៉ោង}}</translation>
-<translation id="6385149369087767061">សូមភ្ជាប់​អ៊ីនធឺណិត រួច​ព្យាយាម​ម្តងទៀត</translation>
 <translation id="638716340450135524">បើក​ការ​ចូលប្រើប្រាស់​កាមេរ៉ា</translation>
 <translation id="6406458002328242616">កែមុខងារ​កំណត់​ម៉ោង។ <ph name="FOCUS_DURATION" />។</translation>
 <translation id="6406704438230478924">altgr</translation>
@@ -1934,7 +1906,6 @@
 <translation id="6426905245930183644">កំពុងបង្កើត...</translation>
 <translation id="6430225033895752525">បង្ហាញការ​កំណត់មុខងារផ្ដោតអារម្មណ៍</translation>
 <translation id="6431865393913628856">ការថតវីដេអូ​អេក្រង់</translation>
-<translation id="6434325376267409267">ចាំបាច់ត្រូវ​ដំឡើងកំណែ​ឧបករណ៍​របស់អ្នក​ជាមុនសិន ទើបអ្នក​អាចប្រើ <ph name="APP_NAME" /> បាន។</translation>
 <translation id="643593192654616063">កំពុង​ប្រើប្រាស់​ទំហំផ្ទុក <ph name="STORAGE_IN_USE_SIZE" /> នៃទំហំផ្ទុក​សរុប <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6445915701151710649">cpu</translation>
 <translation id="6447111710783417522">ថ្ងៃទី <ph name="DATE" />, ព្រឹត្តិការណ៍ <ph name="NUMBER" /></translation>
@@ -2211,7 +2182,6 @@
 <translation id="7258828758145722155">បានកែ​កាលពីម្សិលមិញ</translation>
 <translation id="726276584504105859">អូសនៅទីនេះដើម្បីប្រើអេក្រង់បំបែក</translation>
 <translation id="7264788308526527464">បន្ថយ <ph name="FOCUS_DURATION_DELTA" /></translation>
-<translation id="7267044199012331848">មិនអាច​ដំឡើង​ម៉ាស៊ីន​និម្មិត​បានទេ​។ សូម​ព្យាយាម​ម្ដងទៀត ឬ​ទាក់ទង​អ្នកគ្រប់គ្រង​របស់អ្នក​។ លេខ​កូដ​បញ្ហា៖ <ph name="ERROR_CODE" />។</translation>
 <translation id="7267875682732693301">បន្តលើកម្រាមដៃឡើង ដើម្បីបញ្ចូលផ្នែកផ្សេងទៀតនៃស្នាមម្រាមដៃរបស់អ្នក</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
 <translation id="7285232777292757180">ប្រើ​ឧបករណ៍​ថត​អេក្រង់​នៅក្នុង​ការកំណត់​រហ័ស ដើម្បីថត​រូបអេក្រង់</translation>
@@ -2260,9 +2230,7 @@
 <translation id="7406854842098869085">ចុច <ph name="MODIFIER_1" /> ឱ្យជាប់, ចុច <ph name="KEY" /> រហូត​ទាល់តែ​អ្នកទៅ​ដល់​វិនដូ​ដែលអ្នក​ចង់​បើក រួចលែងដៃ</translation>
 <translation id="740790383907119240">ផ្លូវកាត់​កម្មវិធី</translation>
 <translation id="7413851974711031813">ចុច "escape" ដើម្បីបិទ</translation>
-<translation id="7415454883318062233">ការ​រៀបចំ​បាន​បញ្ចប់</translation>
 <translation id="7416471219712049036">រក្សា​ទុក​ទំព័រ​បច្ចុប្បន្ន</translation>
-<translation id="7423807071740419372"><ph name="APP_NAME" /> ត្រូវការ​ការអនុញ្ញាត ដើម្បី​ដំណើរការ</translation>
 <translation id="742594950370306541">កាមេរ៉ាស្ថិតនៅក្នុងការប្រើ។</translation>
 <translation id="743058460480092004">កាមេរ៉ា និងម៉ៃក្រូហ្វូនស្ថិតក្នុងការប្រើ។</translation>
 <translation id="7433708794692032816">ដោត​កាត​ឆ្លាតវៃ ដើម្បី​បន្តប្រើ <ph name="DEVICE_TYPE" /> របស់អ្នក</translation>
@@ -2273,7 +2241,6 @@
 <translation id="7459485586006128091">ដោយសារ​មាន​បញ្ហា​ខាង​ក្នុង ហតស្ប៉ត​ត្រូវ​បានបិទ។ សូម​សាកល្បង​ភ្ជាប់​ឡើងវិញ​ក្នុង​ពេល​បន្តិចទៀត។</translation>
 <translation id="7461924472993315131">លេខសម្គាល់</translation>
 <translation id="746216226901520237">លើកក្រោយ ទូរសព្ទរបស់អ្នក​នឹងដោះសោ <ph name="DEVICE_TYPE" /> របស់អ្នក។ អ្នក​អាច​បិទ Smart Lock នៅក្នុង​ការកំណត់។</translation>
-<translation id="7465635034594602553">មានអ្វីមួយខុសប្រក្រតី។ សូមរង់ចាំ​មួយភ្លែត រួច​ដំណើរការ <ph name="APP_NAME" /> ម្ដងទៀត។</translation>
 <translation id="7466449121337984263">សូមប៉ះ​ឧបករណ៍​ចាប់សញ្ញា</translation>
 <translation id="7477793887173910789">គ្រប់គ្រងតន្ត្រី វីដេអូរបស់អ្នក និងអ្វីៗជាច្រើនទៀត</translation>
 <translation id="7478485216301680444">កម្មវិធីបញ្ជរមិនអាចត្រូវបានតំឡើងទេ។</translation>
@@ -2427,7 +2394,6 @@
 <translation id="7850320739366109486">កុំរំខាន</translation>
 <translation id="7851039877802112575">ផ្លាស់ទី​ការ​ផ្ដោត​ទៅ​ផ្ទាំង​លោតឡើង និងប្រអប់</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7862292329216937261">ដើម្បីប្រើប្រាស់​ឧបករណ៍​ក្នុងនាម​ជា​ភ្ញៀវ អ្នក​ត្រូវ​ចេញពី​គណនី រួច​ជ្រើសរើស "រុករក​ក្នុងនាម​ជា​ភ្ញៀវ" នៅ​ផ្នែក​ខាងក្រោម​នៃ​អេក្រង់។</translation>
 <translation id="7866482334467279021">បើក</translation>
 <translation id="7870790288828963061">គ្មានកំណែកម្មវិធីបញ្ជរថ្មីបានរកឃើញទេ។ គ្មានអ្វីដើម្បីធ្វើបច្ចុប្បន្នភាពទេ។ សូមយកបន្ទះ USB ចេញ។</translation>
@@ -2764,7 +2730,6 @@
 <translation id="8815390544836110344">ចុចផ្លូវកាត់​ថតរូបអេក្រង់ Ctrl បូក Shift បូកគ្រាប់ចុចមុខងារទិដ្ឋភាពរួម</translation>
 <translation id="881757059229893486">ការកំណត់​វិធីសាស្ត្របញ្ចូល</translation>
 <translation id="8819728065740986820">ការសាកថ្ម​ដែលមាន​ភាពបត់បែន​ត្រូវបានបើក</translation>
-<translation id="8821268776955756404">អាចប្រើ <ph name="APP_NAME" /> បានហើយ។</translation>
 <translation id="882204272221080310">ដំឡើង​ជំនាន់​កម្មវិធី​បង្កប់ ដើម្បី​ទទួលបាន​សុវត្ថិភាព​បន្ថែម។</translation>
 <translation id="8822104519413696986">នេះគឺជា​ហ្គេមចុចបញ្ជា</translation>
 <translation id="8825863694328519386">អូសពីឆ្វេងដើម្បីថយក្រោយ</translation>
@@ -2798,7 +2763,6 @@
 <translation id="8905919797434099235">(គ្មានចំណងជើង)</translation>
 <translation id="890616557918890486">ប្ដូរប្រភព</translation>
 <translation id="8909138438987180327">ថ្ម​មានកម្រិត <ph name="PERCENTAGE" /> ភាគរយ។</translation>
-<translation id="8909298138148012791">បានលុប <ph name="APP_NAME" /> ហើយ</translation>
 <translation id="8916866375277139011">លាក់​ធាតុ​នៅក្នុង <ph name="GROUP_NAME" /></translation>
 <translation id="8921369299636221117">មិនមាន​សេវា​គេហបាល​ទេ។</translation>
 <translation id="8921554779039049422">H+</translation>
@@ -2871,7 +2835,6 @@
 <translation id="9126339866969410112">ត្រឡប់​សកម្មភាព​ចុង​ក្រោយវិញ</translation>
 <translation id="9126642911267312373">មិនអាចប្រើ​ប៊្លូធូស​បានទេ</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{ក្នុង​រយៈពេល 1 នាទី​ទៀត}other{ក្នុង​រយៈពេល # នាទី​ទៀត}}</translation>
-<translation id="9128317794749765148">មិនអាចបញ្ចប់ការរៀបចំ​​បានទេ</translation>
 <translation id="9129245940793250979">ប៊ូតុងខាងក្រោយ</translation>
 <translation id="9133335900048457298">មិនអាចថតខ្លឹមសារដែលមានការការពារបានទេ</translation>
 <translation id="9139720510312328767">លុប​អក្សរ​បន្ទាប់</translation>

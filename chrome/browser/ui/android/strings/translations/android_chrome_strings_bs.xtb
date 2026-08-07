@@ -297,6 +297,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="2233735624724508540">Odaberite vremenski okvir, a zatim dodirnite Izbriši podatke</translation>
 <translation id="2234031676056123135">Prilagodite prečice</translation>
 <translation id="2234827758954819389">Vodič za privatnost</translation>
+<translation id="2236949375853147973">Moja aktivnost</translation>
 <translation id="2238038374973843156">Premjesti grupu u drugi prozor</translation>
 <translation id="2247789808226901522">Kartica je istekla</translation>
 <translation id="2251809247798634662">Novi anonimni prozor</translation>
@@ -574,6 +575,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="3385749568468586663">Gemini nije dostupan u anonimnom načinu rada</translation>
 <translation id="3387650086002190359">Preuzimanje fajla <ph name="FILE_NAME" /> nije uspjelo zbog sistemskih grešaka.</translation>
 <translation id="3391311825344469964">Prozorima možete upravljati u Chromeovom Upravitelju prozora</translation>
+<translation id="3410151451624226773">Upravljajte na Google upravitelju lozinki</translation>
 <translation id="3417835166382867856">Pretraživanje kartica</translation>
 <translation id="3430670036890315772">Isključenjem zaključavanja profila će se ukloniti sačuvane informacije</translation>
 <translation id="3435575784518354875">Da zadržite pristup lozinkama, izvezite ih sada, ažurirajte Google Play usluge, a zatim ponovo uvezite lozinke na Google upravitelj lozinki. <ph name="BEGIN_LINK" />Pogledajte sva uputstva<ph name="END_LINK" />.</translation>
@@ -942,6 +944,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="4877678010818027629">Uđite u anonimni način rada</translation>
 <translation id="4878404682131129617">Uspostavljanje tunela putem proksi servera nije uspjelo</translation>
 <translation id="4880127995492972015">Prevedi…</translation>
+<translation id="4880827082731008257">Historija pretraživanja</translation>
 <translation id="4881695831933465202">Otvori</translation>
 <translation id="488187801263602086">Promjena naziva fajla</translation>
 <translation id="4885273946141277891">Nepodržani broj Chrome instanci.</translation>
@@ -991,6 +994,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="509429900233858213">Došlo je do greške.</translation>
 <translation id="5096775069898886423">Primite upozorenje prije nego što posjetite web lokacije koje ne podržavaju sigurne veze</translation>
 <translation id="510275257476243843">Još 1 sat</translation>
+<translation id="5105442806410269908">Upravljajte drugim Google podacima</translation>
 <translation id="5114895953710637392">Tabela filtera aplikacija je zatvorena.</translation>
 <translation id="5115811374190515607">u: <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Sada možete koristiti Chrome svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama</translation>
@@ -1041,6 +1045,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="5316947901395241499">Pohranjivanje lozinki je isključio administrator</translation>
 <translation id="5317780077021120954">Sačuvaj</translation>
 <translation id="5319359161174645648">Google preporučuje Chrome</translation>
+<translation id="5323501626199324454">Upravljajte na Google računu</translation>
 <translation id="5326246328175179736">Ne možete se prijaviti koristeći ovaj račun</translation>
 <translation id="5327248766486351172">Ime</translation>
 <translation id="5328542107300944283">Koristite putem <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1325,6 +1330,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6461962085415701688">Nije moguće otvoriti fajl</translation>
 <translation id="6464977750820128603">Možete vidjeti web lokacije koje posjećujete putem Chromea i za njih postaviti tajmere.\n\nGoogle će primati informacije o web lokacijama za koje postavite tajmere i o vremenu koje provedete na njima. Te informacije se koriste za poboljšanje Digitalnog blagostanja.</translation>
 <translation id="6468703991511753953">Traka za adresu je trenutno na dnu</translation>
+<translation id="6469702164109431067">Lozinke i pristupni ključevi</translation>
 <translation id="6470181189905173055">Ovdje će se prikazivati stranice koje ste otvorili u Chromeu prilikom korištenja aplikacije <ph name="APP_LABEL" />.</translation>
 <translation id="6473086018775716761">Lista opcija dijeljenja otvorenih na pola visine.</translation>
 <translation id="6475951671322991020">Preuzmi videozapis</translation>
@@ -1432,7 +1438,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6858893072923394368">Dodaj stranicu…</translation>
 <translation id="6864459304226931083">Preuzmi sliku</translation>
 <translation id="686490460830618322">Tabela filtera aplikacija</translation>
-<translation id="6865313869410766144">Podaci za automatsko popunjavanje obrasca</translation>
+<translation id="6865313869410766144">Podaci za automatsko popunjavanje obrazaca</translation>
 <translation id="6867400383614725881">Nova anonimna kartica</translation>
 <translation id="686899695320434745">Adrese nisu šifrirane pomoću vašeg pristupnog izraza. Ovo vam omogućava da ih koristite na drugim Googleovim uslugama.</translation>
 <translation id="6870625088374152862">Prijavljeni ste kao <ph name="USER_EMAIL_ADDRESS" /></translation>

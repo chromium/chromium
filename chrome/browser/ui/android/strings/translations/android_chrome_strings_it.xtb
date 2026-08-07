@@ -297,6 +297,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2233735624724508540">Scegli un periodo di tempo, quindi tocca Elimina dati</translation>
 <translation id="2234031676056123135">Personalizza le scorciatoie</translation>
 <translation id="2234827758954819389">Guida alla privacy</translation>
+<translation id="2236949375853147973">Le mie attività</translation>
 <translation id="2238038374973843156">Sposta gruppo in un'altra finestra</translation>
 <translation id="2247789808226901522">Carta scaduta</translation>
 <translation id="2251809247798634662">Nuova finestra Incognito</translation>
@@ -574,6 +575,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3385749568468586663">Gemini non è disponibile in modalità Incognito</translation>
 <translation id="3387650086002190359">Download di <ph name="FILE_NAME" /> non riuscito a causa di errori del file system.</translation>
 <translation id="3391311825344469964">Puoi gestire le finestre in Gestione finestre di Chrome</translation>
+<translation id="3410151451624226773">Gestisci in Gestore delle password di Google</translation>
 <translation id="3417835166382867856">Cerca tra le schede</translation>
 <translation id="3430670036890315772">Se disattivi il blocco del profilo, le informazioni salvate verranno rimosse</translation>
 <translation id="3435575784518354875">Per continuare ad accedere alle tue password, esportale ora, aggiorna Google Play Services e poi importale in Gestore delle password di Google. <ph name="BEGIN_LINK" />Visualizza le istruzioni complete<ph name="END_LINK" />.</translation>
@@ -942,6 +944,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4877678010818027629">Accedi alla modalità Incognito</translation>
 <translation id="4878404682131129617">Creazione di un tunnel tramite server proxy non riuscita</translation>
 <translation id="4880127995492972015">Traduci…</translation>
+<translation id="4880827082731008257">Cronologia delle ricerche</translation>
 <translation id="4881695831933465202">Apri</translation>
 <translation id="488187801263602086">Rinomina file</translation>
 <translation id="4885273946141277891">Numero di istanze di Chrome non supportato.</translation>
@@ -991,6 +994,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="509429900233858213">Si è verificato un errore.</translation>
 <translation id="5096775069898886423">Ricevi un avviso prima di visitare i siti che non supportano le connessioni sicure</translation>
 <translation id="510275257476243843">1 ora rimanente</translation>
+<translation id="5105442806410269908">Gestisci altri dati di Google</translation>
 <translation id="5114895953710637392">Il foglio di filtro delle app è chiuso.</translation>
 <translation id="5115811374190515607">in <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Puoi usare Chrome ogni volta che tocchi link in messaggi, documenti e altre app</translation>
@@ -1041,6 +1045,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5316947901395241499">Il salvataggio delle password è stato disattivato dall'amministratore</translation>
 <translation id="5317780077021120954">Salva</translation>
 <translation id="5319359161174645648">Google consiglia Chrome</translation>
+<translation id="5323501626199324454">Gestisci nel tuo Account Google</translation>
 <translation id="5326246328175179736">Non puoi accedere con questo account</translation>
 <translation id="5327248766486351172">Nome</translation>
 <translation id="5328542107300944283">Utilizza con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1325,6 +1330,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6461962085415701688">Impossibile aprire il file.</translation>
 <translation id="6464977750820128603">Puoi vedere i siti che visiti in Chrome e impostare dei timer per ciascuno di essi.\n\nGoogle riceve informazioni sui siti per i quali imposti dei timer e sul tempo che trascorri a visitarli. Queste informazioni sono utilizzate al fine di migliorare Benessere digitale.</translation>
 <translation id="6468703991511753953">Al momento la barra degli indirizzi è in basso</translation>
+<translation id="6469702164109431067">Password e passkey</translation>
 <translation id="6470181189905173055">Le pagine che hai aperto in Chrome mentre usavi <ph name="APP_LABEL" /> verranno visualizzate qui.</translation>
 <translation id="6473086018775716761">Elenco di opzioni di condivisione aperto nella parte inferiore dello schermo.</translation>
 <translation id="6475951671322991020">Scarica video</translation>

@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Word dokumentua</translation>
 <translation id="1056775291175587022">Sarerik ez</translation>
 <translation id="1056898198331236512">Abisua</translation>
-<translation id="1060368002126861100">Fitxategiak <ph name="APP_NAME" /> aplikazioarekin irekitzeko, lehenik eraman itzazu Windows-eko fitxategien karpetara.</translation>
 <translation id="1062407476771304334">Ordeztu</translation>
 <translation id="1119383441774809183">Erakutsi testu-mezuak</translation>
 <translation id="1119447706177454957">Barneko errorea</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">Norvegiarra</translation>
 <translation id="1408504635543854729">Arakatu gailuko eduki guztia Fitxategiak aplikazioan. Edukiaren inguruko aukerak murriztuta daude: administratzaileak bakarrik egin ditzake aldaketak.</translation>
 <translation id="1412476183660741812">Sinatutako web-sorta</translation>
-<translation id="1433628812591023318">Fitxategiak Parallels Desktop-en jaregin ahal izateko, Windows-eko fitxategien karpetara eraman behar dira lehendabizi.</translation>
-<translation id="1435838927755162558">Partekatu karpeta Parallels Desktop aplikazioarekin</translation>
 <translation id="1439919885608649279">Pertsona bat loreekin</translation>
 <translation id="1458457385801829801">Kanporatu <ph name="TARGET_NAME" /></translation>
 <translation id="1464781208867302907">Gailuaren hobespenak ikusteko, joan Ezarpenak atalera.</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">Frantsesa</translation>
 <translation id="2732288874651063549">Kudeatu <ph name="VM_NAME" /> makina birtualarekin partekatzen dituzun elementuak</translation>
 <translation id="2732839045120506979">Vietnamdarra (VNI)</translation>
-<translation id="2735623501230989521">Eman <ph name="FOLDER_NAME" /> karpetako fitxategiak erabiltzeko baimena Parallels Desktop-i</translation>
 <translation id="2764206540577097904">Google Workspace-ko banako biltegi osoa erabili duzu.</translation>
 <translation id="2771816809568414714">Gazta</translation>
 <translation id="2783909841122647548">Jada ez da onartzen Debian paketeak instalatzea. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">Geografia</translation>
 <translation id="3044404008258011032">Elementuak leheneratzeko, arrasta itzazu zaborrontzitik kanpoko beste karpeta batera. Elementu horien jatorrizko karpeta (<ph name="PARENT_FOLDER_NAME" />) ezabatu egin da.</translation>
 <translation id="3047197340186497470">Txinatarra (dayi)</translation>
-<translation id="3067790092342515856">Windows-en fitxategiak</translation>
 <translation id="3083975830683400843">Chromebit-ak</translation>
 <translation id="3085752524577180175">SOCKS ostalaria</translation>
 <translation id="3091469289665833668">Errumaniarra</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">Xehetasunak jasotzeko, jarri administratzailearekin harremanetan.</translation>
 <translation id="3548125359243647069">PINa gehiegitan idatzi da oker.</translation>
 <translation id="3549797760399244642">Joan drive.google.com webgunera…</translation>
-<translation id="3553048479571901246">Fitxategiak <ph name="APP_NAME" /> aplikazioarekin irekitzeko, lehenik kopia itzazu Windows-eko fitxategien karpetan.</translation>
 <translation id="3556731189587832921">Ingelesa (AEB), nazioarteko teklatuarekin (ordenagailurako)</translation>
 <translation id="3557414470514932909"><ph name="FILE_NAME" /> zaborrontzira eramaten</translation>
 <translation id="3560848236447534728">Armeniar fonetikoa</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">Errumaniarra</translation>
 <translation id="4508265954913339219">Ezin izan da aktibatu</translation>
 <translation id="4509667233588080747">Ingelesa (AEB), nazioarteko Workman teklatuarekin</translation>
-<translation id="4527800702232535228">Parallels Desktop aplikazioarekin partekatuta dago karpeta hau</translation>
 <translation id="4552678318981539154">Erosi memoria gehiago</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> sarea. Seinalearen indarra: % <ph name="SIGNAL_STRENGTH" />.</translation>
 <translation id="4559767610552730302">Bokeh efektua</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">Onigiria</translation>
 <translation id="4784330909746505604">PowerPoint aurkezpena</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> kB</translation>
-<translation id="4789067489790477934">Eman Google Drive-ko fitxategiak erabiltzeko baimena Parallels Desktop-i. Aldaketak beste gailuekin sinkronizatuko dira.</translation>
 <translation id="4790766916287588578">Hindia, InScript teklatuarekin</translation>
 <translation id="4798645114741131062">Laster, ChromeOS Flex-eko gailuak eguneratzeak jasotzeari utziko dio. ChromeOS-eko gailu batera aldatzea gomendatzen dizugu.</translation>
 <translation id="4801956050125744859">Mantendu biak</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">Bolumen-graduatzailea</translation>
 <translation id="4881695831933465202">Ireki</translation>
 <translation id="4891091358278567964">Elementuak leheneratzeko, arrasta itzazu zaborrontzitik kanpoko beste karpeta batera. Elementu horien jatorrizko karpetak ezabatu egin dira.</translation>
-<translation id="4900532980794411603">Partekatu Parallels Desktop aplikazioarekin</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" /> (<ph name="SECURITY_STATUS" />). Seinalearen indarra % <ph name="SIGNAL_STRENGTH" />. Konektatu.</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea, <ph name="PHONE_NAME" />. <ph name="PROVIDER_NAME" />. <ph name="CONNECTION_STATUS" />. Seinalearen indarra: % <ph name="SIGNAL_STRENGTH" />. Telefonoaren bateria: % <ph name="BATTERY_STATUS" />. Xehetasunak.</translation>
 <translation id="4935975195727477204">Lorea</translation>
 <translation id="4943368462779413526">Futboleko baloia</translation>
-<translation id="4961158930123534723">Karpeta bat partekatu da Parallels Desktop aplikazioarekin</translation>
 <translation id="4965874878399872778">Fitxategiak zure erakundeko segurtasun-gidalerroekin egiaztatzen…</translation>
 <translation id="496656650103537022">Leheneratu da <ph name="FILE_NAME" /></translation>
 <translation id="4969785127455456148">Albuma</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Eragiketa bat uste baino gehiago luzatzen ari da. Bertan behera utzi nahi duzu?</translation>
 <translation id="5036141350290856713">Errusiar fonetikoa</translation>
-<translation id="5036159836254554629">Kudeatu Parallels Desktop aplikazioarekin partekatu nahi duzun edukia</translation>
 <translation id="5038625366300922036">Ikusi gehiago…</translation>
 <translation id="5044852990838351217">Armeniarra</translation>
 <translation id="5045550434625856497">Pasahitz okerra</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">"<ph name="FILENAME" />" ezabatzen…</translation>
 <translation id="6581162200855843583">Google Drive esteka</translation>
 <translation id="6588648400954570689">Fitxategiak sinkronizatzeko ezarpenak</translation>
-<translation id="6594855146910089723">Linux eta Parallels Desktop aplikazioarekin partekatuta dago karpeta hau</translation>
 <translation id="6607272825297743757">Fitxategiari buruzko informazioa</translation>
-<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> karpeta partekatu dira Parallels Desktop aplikazioarekin</translation>
 <translation id="6629518321609546825">Idatzi lau zenbaki gutxienez</translation>
 <translation id="6643016212128521049">Garbitu</translation>
 <translation id="6650726141019353908">Tximeleta arrosa</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">Errore bat gertatu da izena aldatzean.</translation>
 <translation id="7458955835361612701">Ez dago azkenaldiko irudirik</translation>
 <translation id="7469894403370665791">Konektatu automatikoki sare honetara</translation>
-<translation id="7486315294984620427">Fitxategiak Parallels Desktop-en jaregin ahal izateko, Windows-eko fitxategien karpetan kopiatu behar dira lehendabizi.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malabartar fonetikoa</translation>
 <translation id="7505167922889582512">Erakutsi ezkutatutako fitxategiak</translation>

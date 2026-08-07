@@ -2068,6 +2068,7 @@
 <translation id="2598710988533271874">Chrome चे नवीन अपडेट उपलब्ध आहे</translation>
 <translation id="2599048253926156421">वापरकर्ता नाव क्लिपबोर्डवर कॉपी केले</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{सुरक्षित नसलेले १ एक्स्टेंशन बंद केले आहे}other{सुरक्षित नसलेली {NUM_SITES} एक्स्टेंशन बंद केली आहेत}}</translation>
+<translation id="2603121359676416582">या पेजसाठी</translation>
 <translation id="2604129989323098489">साइट सामान्यतः तुमच्या डिस्प्लेबद्दल माहिती विचारतात, जेणेकरून त्या दस्तऐवज किंवा फुल-स्क्रीन आशय बाजूबाजूला दाखवण्यासारखे बुद्धिमानपणे विंडो उघडू आणि ठेवू शकतात</translation>
 <translation id="2604255671529671813">नेटवर्क कनेक्शन एरर</translation>
 <translation id="2604805099836652105"><ph name="ADDRESS_LABEL" /> पत्त्याचा फॉर्म भरला आहे.</translation>
@@ -2982,6 +2983,7 @@
 <translation id="3285329711156774325">कौशल्ये शोधा</translation>
 <translation id="3285500645985761267">संबंधित साइटना गटामधील तुमच्या अ‍ॅक्टिव्हिटी पाहण्याची अनुमती द्या</translation>
 <translation id="328571385944182268">तुमचे पासवर्ड सेव्ह करायचे आहेत का?</translation>
+<translation id="3285969135399641759">नवीन कौशल्य शिका</translation>
 <translation id="3289668031376215426">ऑटो-कॅपिटलायझेशन</translation>
 <translation id="3289856944988573801">अपडेट तपासण्यासाठी, कृपया इथरनेट किंवा वाय-फाय वापरा.</translation>
 <translation id="3290249595466894471">तसेच नवीन धोके शोधण्यात मदत करण्यासाठी पेज, डाउनलोड, एक्स्टेंशन अ‍ॅक्टिव्हिटी आणि सिस्टीम माहिती यांचे लहान नमुने पाठवते</translation>
@@ -6386,6 +6388,7 @@
 <translation id="5939719276406088041">शॉर्टकट तयार करू शकत नाही</translation>
 <translation id="5939723110967488589">टूलबारमध्ये दिसणारी बटणे निवडा</translation>
 <translation id="594048410531370124">अपरिचित की. <ph name="RESPONSE" /> साठी कोणतीही की प्रेस करा.</translation>
+<translation id="5940614040566393493">सल्ला मिळवा</translation>
 <translation id="5941711191222866238">कमी करा</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{१ पासवर्ड फक्त या डिव्हाइसवर सेव्ह केला आहे. इतर डिव्हाइसवर वापरण्यासाठी, तो तुमच्या Google खाते मध्ये सेव्ह करा.}other{{PASSWORD_COUNT} पासवर्ड फक्त या डिव्हाइसवर सेव्ह केले आहेत. इतर डिव्हाइसवर वापरण्यासाठी, ते तुमच्या Google खाते मध्ये सेव्ह करा.}}</translation>
 <translation id="594221546068848596"><ph name="VISUAL_SEARCH_PROVIDER" /> वापरून पेज शोधा</translation>
@@ -10694,7 +10697,6 @@ I feel - विटांची इमारत</translation>
 <translation id="983192555821071799">सर्व टॅब बंद करा</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - कॅमेरा आणि मायक्रोफोन रेकॉर्डिंग</translation>
 <translation id="984705303330760860">स्पेल चेकसाठी भाषा जोडा</translation>
-<translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">सामान्य</translation>
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> ला तुमच्या मोबाइल डिव्हाइसवरून माहिती मिळवायची आहे</translation>
 <translation id="988320949174893488">अधूनमधून थांबतो</translation>

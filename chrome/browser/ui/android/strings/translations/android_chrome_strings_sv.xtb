@@ -297,6 +297,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2233735624724508540">Välj en tidsperiod och tryck sedan på Radera data</translation>
 <translation id="2234031676056123135">Anpassa dina genvägar</translation>
 <translation id="2234827758954819389">Integritetsguide</translation>
+<translation id="2236949375853147973">Min aktivitet</translation>
 <translation id="2238038374973843156">Flytta gruppen till ett annat fönster</translation>
 <translation id="2247789808226901522">Kortet har gått ut</translation>
 <translation id="2251809247798634662">Nytt inkognitofönster</translation>
@@ -574,6 +575,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3385749568468586663">Gemini är inte tillgänglig i inkognitoläget</translation>
 <translation id="3387650086002190359">Det gick inte att ladda ned <ph name="FILE_NAME" /> på grund av filsystemfel.</translation>
 <translation id="3391311825344469964">Du kan hantera dina fönster i Chromes fönsterhanterare</translation>
+<translation id="3410151451624226773">Hantera i Google Lösenordshantering</translation>
 <translation id="3417835166382867856">Sök bland flikar</translation>
 <translation id="3430670036890315772">Om du inaktiverar profillåset tas dina sparade uppgifter bort</translation>
 <translation id="3435575784518354875">Om du vill behålla åtkomsten till dina lösenord kan du exportera dem nu, uppdatera Google Play-tjänster och sedan importera dem till Google Lösenordshantering. <ph name="BEGIN_LINK" />Se fullständiga instruktioner<ph name="END_LINK" />.</translation>
@@ -943,6 +945,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4877678010818027629">Starta inkognitoläget</translation>
 <translation id="4878404682131129617">Det gick inte att upprätta en tunnel via proxyserver</translation>
 <translation id="4880127995492972015">Översätt …</translation>
+<translation id="4880827082731008257">Sökhistorik</translation>
 <translation id="4881695831933465202">Öppna</translation>
 <translation id="488187801263602086">Byt namn på fil</translation>
 <translation id="4885273946141277891">Fler Chrome-förekomster än det finns stöd för.</translation>
@@ -992,6 +995,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="509429900233858213">Det har uppstått ett fel.</translation>
 <translation id="5096775069898886423">Om webbplatsen inte har stöd för säkra anslutningar får du en varning innan du besöker webbplatsen</translation>
 <translation id="510275257476243843">1 timme kvar</translation>
+<translation id="5105442806410269908">Hantera annan Google-data</translation>
 <translation id="5114895953710637392">Arbetsbladet för appfilter har stängts.</translation>
 <translation id="5115811374190515607">i <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Du kan använda Chrome varje gång du trycker på länkar i meddelanden, dokument och andra appar</translation>
@@ -1042,6 +1046,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5316947901395241499">Funktionen för att spara lösenord har inaktiverats av administratören</translation>
 <translation id="5317780077021120954">Spara</translation>
 <translation id="5319359161174645648">Google rekommenderar Chrome</translation>
+<translation id="5323501626199324454">Hantera i ditt Google-konto</translation>
 <translation id="5326246328175179736">Du kan inte logga in med det här kontot</translation>
 <translation id="5327248766486351172">Namn</translation>
 <translation id="5328542107300944283">Använd med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1326,6 +1331,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6461962085415701688">Det går inte att öppna filen</translation>
 <translation id="6464977750820128603">Du kan se vilka webbplatser du besökt i Chrome och ställa in en timer för dem.\n\nGoogle får information om vilka webbplatser du har ställt in en timer för och hur länge du har stannat på dem. Informationen används för att förbättra Digitalt välmående.</translation>
 <translation id="6468703991511753953">Adressfältet är för närvarande längst ned</translation>
+<translation id="6469702164109431067">Lösenord och nycklar</translation>
 <translation id="6470181189905173055">Sidorna som du har öppnat i Chrome medan du har använt <ph name="APP_LABEL" /> visas här.</translation>
 <translation id="6473086018775716761">Lista över delningsalternativ har öppnats över halva skärmen.</translation>
 <translation id="6475951671322991020">Ladda ned video</translation>

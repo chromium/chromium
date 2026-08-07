@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Word-Dokument</translation>
 <translation id="1056775291175587022">Keine Netzw.</translation>
 <translation id="1056898198331236512">Warnung</translation>
-<translation id="1060368002126861100">Wenn du Dateien mit der App „<ph name="APP_NAME" />“ öffnen möchtest, verschiebe sie zuerst in den Ordner mit Windows-Dateien.</translation>
 <translation id="1062407476771304334">Ersetzen</translation>
 <translation id="1119383441774809183">Nachrichten einblenden</translation>
 <translation id="1119447706177454957">Interner Fehler</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">Norwegisch</translation>
 <translation id="1408504635543854729">Du kannst die Inhalte in der App „Dateien“ ansehen. Die Inhalte wurden vom Administrator schreibgeschützt und können nicht bearbeitet werden.</translation>
 <translation id="1412476183660741812">Signed Web Bundle</translation>
-<translation id="1433628812591023318">Um Dateien in Parallels Desktop per Drag and Drop abzulegen, muss die Datei in „Windows-Dateien“ verschoben werden.</translation>
-<translation id="1435838927755162558">Ordner für Parallels Desktop freigeben</translation>
 <translation id="1439919885608649279">Person mit Blumen</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> trennen</translation>
 <translation id="1464781208867302907">Die Geräteeinstellungen findest du in den Einstellungen.</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">Französisch</translation>
 <translation id="2732288874651063549"><ph name="VM_NAME" />-Freigaben verwalten</translation>
 <translation id="2732839045120506979">Vietnamesisch (VNI)</translation>
-<translation id="2735623501230989521">Parallels Desktop erlauben, Dateien im Ordner „<ph name="FOLDER_NAME" />“ zu ändern</translation>
 <translation id="2764206540577097904">Dein gesamter individueller Google Workspace-Speicher ist belegt.</translation>
 <translation id="2771816809568414714">Käse</translation>
 <translation id="2783909841122647548">Die Installation von Debian-Paketen wird nicht mehr unterstützt. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">Längen- und Breitengrad</translation>
 <translation id="3044404008258011032">Wenn du diese Elemente wiederherstellen möchtest, ziehe sie in einen neuen Ordner außerhalb des Papierkorbs. Der ursprüngliche Ordner „<ph name="PARENT_FOLDER_NAME" />“ für dieses Element wurde gelöscht.</translation>
 <translation id="3047197340186497470">Chinesisch (Dayi)</translation>
-<translation id="3067790092342515856">Windows-Dateien</translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">SOCKS-Host</translation>
 <translation id="3091469289665833668">Rumänisch</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">Wende dich für weitere Informationen an deinen Administrator.</translation>
 <translation id="3548125359243647069">Es wurde zu oft die falsche PIN eingegeben.</translation>
 <translation id="3549797760399244642">Zu drive.google.com wechseln...</translation>
-<translation id="3553048479571901246">Wenn du Dateien mit der App „<ph name="APP_NAME" />“ öffnen möchtest, kopiere sie zuerst in den Ordner mit Windows-Dateien.</translation>
 <translation id="3556731189587832921">Englisch (USA) mit internationaler PC-Tastatur</translation>
 <translation id="3557414470514932909">„<ph name="FILE_NAME" />“ wird in den Papierkorb verschoben</translation>
 <translation id="3560848236447534728">Armenisch – phonetisch</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">Rumänisch</translation>
 <translation id="4508265954913339219">Aktivierung fehlgeschlagen</translation>
 <translation id="4509667233588080747">Englisch (USA) mit internationaler Workman-Tastatur</translation>
-<translation id="4527800702232535228">Dieser Ordner ist für Parallels Desktop freigegeben</translation>
 <translation id="4552678318981539154">Mehr Speicherplatz erwerben</translation>
 <translation id="4552759165874948005">Netzwerk: <ph name="NETWORK_TYPE" />, Signalstärke: <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4559767610552730302">Bokeh</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">PowerPoint-Präsentation</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
-<translation id="4789067489790477934">Parallels Desktop erlauben, auf Dateien in Google Drive zuzugreifen. Änderungen werden mit deinen anderen Geräten synchronisiert.</translation>
 <translation id="4790766916287588578">Hindi mit InScript-Tastatur</translation>
 <translation id="4798645114741131062">Dein ChromeOS Flex-Gerät erhält bald keine Updates mehr. Erwäge ein Upgrade auf ein ChromeOS-Gerät.</translation>
 <translation id="4801956050125744859">Beide behalten</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">Schieberegler für die Lautstärke</translation>
 <translation id="4881695831933465202">Öffnen</translation>
 <translation id="4891091358278567964">Wenn du diese Elemente wiederherstellen möchtest, ziehe sie in einen neuen Ordner außerhalb des Papierkorbs. Die ursprünglichen Ordner für diese Elemente wurden gelöscht.</translation>
-<translation id="4900532980794411603">Für Parallels Desktop freigeben</translation>
 <translation id="4902546322522096650">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, Verbinden</translation>
 <translation id="4906580650526544301">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, Smartphone-Akku bei <ph name="BATTERY_STATUS" /> %, Details</translation>
 <translation id="4935975195727477204">Mittagsgoldblume</translation>
 <translation id="4943368462779413526">American Football</translation>
-<translation id="4961158930123534723">1 Ordner für Parallels Desktop freigegeben</translation>
 <translation id="4965874878399872778">Diese Dateien werden auf die Einhaltung der Sicherheitsrichtlinien deiner Organisation geprüft…</translation>
 <translation id="496656650103537022">„<ph name="FILE_NAME" />“ wiederhergestellt</translation>
 <translation id="4969785127455456148">Album</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Ein Vorgang dauert länger als erwartet. Möchtest du ihn abbrechen?</translation>
 <translation id="5036141350290856713">Russisch – phonetisch</translation>
-<translation id="5036159836254554629">Freigabe für Parallels Desktop verwalten</translation>
 <translation id="5038625366300922036">Mehr...</translation>
 <translation id="5044852990838351217">Armenisch</translation>
 <translation id="5045550434625856497">Falsches Passwort</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">"<ph name="FILENAME" />" wird gelöscht...</translation>
 <translation id="6581162200855843583">Google Drive-Link</translation>
 <translation id="6588648400954570689">Einstellungen für die Dateisynchronisierung</translation>
-<translation id="6594855146910089723">Dieser Ordner ist für Linux und Parallels Desktop freigegeben</translation>
 <translation id="6607272825297743757">Dateiinformationen</translation>
-<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> Ordner für Parallels Desktop freigegeben</translation>
 <translation id="6629518321609546825">Gib mindestens 4 Ziffern ein</translation>
 <translation id="6643016212128521049">Löschen</translation>
 <translation id="6650726141019353908">Rosa Schmetterling</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">Oh nein! Beim Umbenennen ist ein Fehler aufgetreten.</translation>
 <translation id="7458955835361612701">Keine zuletzt angesehenen Bilder</translation>
 <translation id="7469894403370665791">Verbindung zu diesem Netzwerk automatisch herstellen</translation>
-<translation id="7486315294984620427">Um Dateien in Parallels Desktop per Drag and Drop abzulegen, muss die Datei in „Windows-Dateien“ kopiert werden.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam (phonetisch)</translation>
 <translation id="7505167922889582512">Versteckte Dateien anzeigen</translation>

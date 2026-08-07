@@ -591,6 +591,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2027465737841872819">Plàstic</translation>
 <translation id="2027707238798802149">Targeta no disponible</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Comproveu el servidor intermediari i el tallafoc<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">Aquesta instància de Chrome s'està executant amb marques de línia d'ordres definides manualment. Tingues en compte que les marques de línia d'ordres poden canviar en qualsevol moment i no tenen assistència tècnica.</translation>
 <translation id="2033900728810589426">La drecera no pot ser igual que la paraula clau del proveïdor de cerca predeterminat definida per <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Desa igualment</translation>
 <translation id="2036514476578229158">Has demanat visitar aquest lloc web. Els teus pares poden respondre a Family Link.</translation>
@@ -4561,7 +4562,6 @@ Detalls addicionals:
 <translation id="8932102934695377596">El rellotge està endarrerit</translation>
 <translation id="893332455753468063">Afegeix un nom</translation>
 <translation id="8938242527120341116">Els filtres de contingut del teu dispositiu han bloquejat <ph name="BLOCKED_URL" /></translation>
-<translation id="8942355029279167844">L'administrador ha permès que <ph name="APP_NAME" /> reculli dades de diagnòstic per millorar l'experiència amb el producte. Consulta <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> per obtenir més informació.</translation>
 <translation id="8943282376843390568">Verd llima</translation>
 <translation id="8949410982325929394">To</translation>
 <translation id="8949493680961858543">A1x4</translation>

@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Document Word</translation>
 <translation id="1056775291175587022">Nicio rețea</translation>
 <translation id="1056898198331236512">Avertisment</translation>
-<translation id="1060368002126861100">Pentru a deschide fișiere cu <ph name="APP_NAME" />, mai întâi mută-le în dosarul cu fișiere Windows.</translation>
 <translation id="1062407476771304334">Înlocuiți</translation>
 <translation id="1119383441774809183">Afișează mesaje text</translation>
 <translation id="1119447706177454957">Eroare internă</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">Norvegiană</translation>
 <translation id="1408504635543854729">Explorează conținutul dispozitivului în aplicația Fișiere. Conținutul este restricționat de un administrator și nu poate fi modificat.</translation>
 <translation id="1412476183660741812">Web bundle semnat</translation>
-<translation id="1433628812591023318">Pentru a plasa fișiere în Parallels Desktop, trebuie să le muți în dosarul cu fișiere Windows.</translation>
-<translation id="1435838927755162558">Permite accesul Parallels Desktop la dosar</translation>
 <translation id="1439919885608649279">Persoană cu flori</translation>
 <translation id="1458457385801829801">Exclude participantul <ph name="TARGET_NAME" /></translation>
 <translation id="1464781208867302907">Pentru preferințe privind dispozitivul, accesează Setările.</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">Franceză</translation>
 <translation id="2732288874651063549">Gestionează permiterea accesului pentru <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">Vietnameză VNI</translation>
-<translation id="2735623501230989521">Acordă Parallels Desktop permisiunea de a accesa fișiere din dosarul <ph name="FOLDER_NAME" /></translation>
 <translation id="2764206540577097904">Ai folosit tot spațiul de stocare individual din Google Workspace.</translation>
 <translation id="2771816809568414714">Brânză</translation>
 <translation id="2783909841122647548">Instalările de pachete Debian nu mai sunt acceptate. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">Geografie</translation>
 <translation id="3044404008258011032">Pentru a restabili elementele, trage-le într-un dosar nou în afara coșului de gunoi. Dosarul inițial <ph name="PARENT_FOLDER_NAME" /> pentru aceste elemente a fost șters.</translation>
 <translation id="3047197340186497470">Chineză Dayi</translation>
-<translation id="3067790092342515856">Fișiere Windows</translation>
 <translation id="3083975830683400843">Dispozitivele Chromebit</translation>
 <translation id="3085752524577180175">Gazdă SOCKS</translation>
 <translation id="3091469289665833668">Română</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">Contactează administratorul pentru detalii.</translation>
 <translation id="3548125359243647069">Codul PIN a fost introdus greșit de prea multe ori.</translation>
 <translation id="3549797760399244642">Accesați drive.google.com...</translation>
-<translation id="3553048479571901246">Pentru a deschide fișiere cu <ph name="APP_NAME" />, mai întâi copiază-le în dosarul cu fișiere Windows.</translation>
 <translation id="3556731189587832921">Engleză (S.U.A.) cu tastatură internațională pentru PC</translation>
 <translation id="3557414470514932909">Se mută <ph name="FILE_NAME" /> în coșul de gunoi</translation>
 <translation id="3560848236447534728">Armeană fonetică</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">Română</translation>
 <translation id="4508265954913339219">Activarea nu a reușit</translation>
 <translation id="4509667233588080747">Engleză (S.U.A.) cu tastatură Workman internațională</translation>
-<translation id="4527800702232535228">Parallels Desktop are acces la acest dosar</translation>
 <translation id="4552678318981539154">Cumpărați mai mult spațiu de stocare</translation>
 <translation id="4552759165874948005">Rețea <ph name="NETWORK_TYPE" />, puterea semnalului <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4559767610552730302">Bokeh</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">Prezentare PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
-<translation id="4789067489790477934">Acordă Parallels Desktop permisiunea de a accesa fișiere din Google Drive. Modificările se vor sincroniza cu celelalte dispozitive care îți aparțin.</translation>
 <translation id="4790766916287588578">Tastatură hindi InScript</translation>
 <translation id="4798645114741131062">În curând, dispozitivul ChromeOS Flex nu va mai primi actualizări. Îți recomandăm să faci upgrade la un dispozitiv ChromeOS.</translation>
 <translation id="4801956050125744859">Păstrați-le pe amândouă</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">Glisor de volum</translation>
 <translation id="4881695831933465202">Deschide</translation>
 <translation id="4891091358278567964">Pentru a restabili elementele, trage-le într-un dosar nou în afara coșului de gunoi. Dosarele inițiale pentru aceste elemente au fost șterse.</translation>
-<translation id="4900532980794411603">Permite accesul Parallels Desktop</translation>
 <translation id="4902546322522096650">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, conectează-te</translation>
 <translation id="4906580650526544301">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, bateria telefonului: <ph name="BATTERY_STATUS" /> %, detalii</translation>
 <translation id="4935975195727477204">Floare</translation>
 <translation id="4943368462779413526">Minge de fotbal</translation>
-<translation id="4961158930123534723">Un dosar cu acces permis pentru Parallels Desktop</translation>
 <translation id="4965874878399872778">Se verifică fișierele în conformitate cu politicile de securitate ale organizației...</translation>
 <translation id="496656650103537022">S-a restabilit <ph name="FILE_NAME" /></translation>
 <translation id="4969785127455456148">Album</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">O operațiune durează mai mult decât ar trebui. Dorești să o anulezi?</translation>
 <translation id="5036141350290856713">Rusă fonetică</translation>
-<translation id="5036159836254554629">Gestionează permiterea accesului Parallels Desktop</translation>
 <translation id="5038625366300922036">Mai multe detalii...</translation>
 <translation id="5044852990838351217">Armeană</translation>
 <translation id="5045550434625856497">Parolă incorectă</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">Se șterge „<ph name="FILENAME" />”...</translation>
 <translation id="6581162200855843583">Link Disc Google</translation>
 <translation id="6588648400954570689">Setări pentru sincronizarea fișierelor</translation>
-<translation id="6594855146910089723">Linux și Parallels Desktop au acces la acest dosar</translation>
 <translation id="6607272825297743757">Informațiile fișierului</translation>
-<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> dosare cu acces permis pentru Parallels Desktop</translation>
 <translation id="6629518321609546825">Introdu minimum patru cifre</translation>
 <translation id="6643016212128521049">Șterge</translation>
 <translation id="6650726141019353908">Fluture roz</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">Of, nu mai merge! A apărut o eroare la redenumire.</translation>
 <translation id="7458955835361612701">Nicio imagine recentă</translation>
 <translation id="7469894403370665791">Conectează-te automat la această rețea</translation>
-<translation id="7486315294984620427">Pentru a plasa fișiere în Parallels Desktop, trebuie să le copiezi în dosarul cu fișiere Windows.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam fonetică</translation>
 <translation id="7505167922889582512">Afișează fișierele ascunse</translation>

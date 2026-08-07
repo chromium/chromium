@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Word-skjal</translation>
 <translation id="1056775291175587022">Engin net</translation>
 <translation id="1056898198331236512">Viðvörun</translation>
-<translation id="1060368002126861100">Til að opna skrár með <ph name="APP_NAME" /> skaltu fyrst afrita þær í skráamöppu Windows.</translation>
 <translation id="1062407476771304334">Skipta út</translation>
 <translation id="1119383441774809183">Sýna textaskilaboð</translation>
 <translation id="1119447706177454957">Innri villa</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">Norska</translation>
 <translation id="1408504635543854729">Skoða efni tækisins í skráaforritinu. Kerfisstjóri hefur takmarkað aðgang að innihaldinu og ekki er hægt að breyta því.</translation>
 <translation id="1412476183660741812">Undirritaður vefpakki</translation>
-<translation id="1433628812591023318">Svo hægt sé að sleppa skrám í Parallels Desktop verður að færa þær yfir í Windows-skrár.</translation>
-<translation id="1435838927755162558">Deila möppu með Parallels Desktop</translation>
 <translation id="1439919885608649279">Einstaklingur með blóm</translation>
 <translation id="1458457385801829801">Fjarlægja <ph name="TARGET_NAME" /></translation>
 <translation id="1464781208867302907">Farðu í stillingarnar til að velja kjörstillingar tækis.</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">Franskt</translation>
 <translation id="2732288874651063549">Stjórna deilingu með <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">Víetnamska VNI</translation>
-<translation id="2735623501230989521">Veita Parallels Desktop aðgang að skrám í möppunni <ph name="FOLDER_NAME" /></translation>
 <translation id="2764206540577097904">Þú hefur fyllt Google Workspace einstaklingsgeymsluna þína.</translation>
 <translation id="2771816809568414714">Ostur</translation>
 <translation id="2783909841122647548">Uppsetning Debian-pakka er ekki studd lengur. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">Landafræði</translation>
 <translation id="3044404008258011032">Til að endurheimta atriðin skaltu draga þau úr ruslinu yfir í nýja möppu. Upprunalegu möppunni „<ph name="PARENT_FOLDER_NAME" />“ fyrir atriðin hefur verið eytt.</translation>
 <translation id="3047197340186497470">Kínverska Dayi</translation>
-<translation id="3067790092342515856">Windows-skrár</translation>
 <translation id="3083975830683400843">Chromebit tæki</translation>
 <translation id="3085752524577180175">SOCKS-hýsill</translation>
 <translation id="3091469289665833668">Rúmenskt</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">Hafðu samband við kerfisstjóra til að fá frekari upplýsingar.</translation>
 <translation id="3548125359243647069">Rangt PIN-númer var slegið inn of oft.</translation>
 <translation id="3549797760399244642">Fara á drive.google.com...</translation>
-<translation id="3553048479571901246">Til að opna skrár með <ph name="APP_NAME" /> skaltu fyrst afrita þær í skráamöppu Windows.</translation>
 <translation id="3556731189587832921">Enska (bandarísk) með alþjóðlegu tölvulyklaborði</translation>
 <translation id="3557414470514932909">Flytur <ph name="FILE_NAME" /> í ruslið</translation>
 <translation id="3560848236447534728">Armensk hljóðritunarlyklaborð</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">Rúmenska</translation>
 <translation id="4508265954913339219">Virkjun mistókst</translation>
 <translation id="4509667233588080747">Enska (bandarísk) með alþjóðlegu Workman-lyklaborði</translation>
-<translation id="4527800702232535228">Þessari möppu er deilt með Parallels Desktop</translation>
 <translation id="4552678318981539154">Kaupa meira geymslurými</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> net, <ph name="SIGNAL_STRENGTH" />% sendistyrkur</translation>
 <translation id="4559767610552730302">Gláka</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">PowerPoint-kynning</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
-<translation id="4789067489790477934">Veita Parallels Desktop aðgang að skránum þínum á Google Drive. Breytingar samstillast við önnur tæki.</translation>
 <translation id="4790766916287588578">Hindí með InScript-lyklaborði</translation>
 <translation id="4798645114741131062">ChromeOS Flex-tækið þitt mun hætta að fá sendar uppfærslur fljótlega. Nú væri ráð að uppfæra í ChromeOS-tæki.</translation>
 <translation id="4801956050125744859">Halda báðum</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">Sleði fyrir hljóð</translation>
 <translation id="4881695831933465202">Opna</translation>
 <translation id="4891091358278567964">Til að endurheimta atriðin skaltu draga þau úr ruslinu yfir í nýja möppu. Upprunalegum möppum fyrir atriðin hefur verið eytt.</translation>
-<translation id="4900532980794411603">Deila með Parallels Desktop</translation>
 <translation id="4902546322522096650">Net <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="SIGNAL_STRENGTH" />% sendistyrkur, tengjast</translation>
 <translation id="4906580650526544301">Netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, sendistyrkur <ph name="SIGNAL_STRENGTH" />% rafhlaða síma <ph name="BATTERY_STATUS" />%, upplýsingar</translation>
 <translation id="4935975195727477204">Blóm</translation>
 <translation id="4943368462779413526">Amerískur fótbolti</translation>
-<translation id="4961158930123534723">1 möppu deilt með Parallels Desktop</translation>
 <translation id="4965874878399872778">Athugar hvort skrár brjóti gegn öryggisreglum fyrirtækisins þíns...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> endurheimt</translation>
 <translation id="4969785127455456148">Plata</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Aðgerð tekur lengri tíma en áætlað var. Viltu hætta við hana?</translation>
 <translation id="5036141350290856713">Rússneskt hljóðritunarlyklaborð</translation>
-<translation id="5036159836254554629">Stjórna deilingu Parallels Desktop</translation>
 <translation id="5038625366300922036">Sjá meira...</translation>
 <translation id="5044852990838351217">Armenska</translation>
 <translation id="5045550434625856497">Rangt aðgangsorð</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">Eyðir „<ph name="FILENAME" />“...</translation>
 <translation id="6581162200855843583">Google Drive tengill</translation>
 <translation id="6588648400954570689">Stillingar skráasamstillingar</translation>
-<translation id="6594855146910089723">Þessari möppu er deilt með Linux og Parallels Desktop</translation>
 <translation id="6607272825297743757">Skráarupplýsingar</translation>
-<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> möppum deilt með Parallels Desktop</translation>
 <translation id="6629518321609546825">Sláðu inn a.m.k. 4 stafi</translation>
 <translation id="6643016212128521049">Hreinsa</translation>
 <translation id="6650726141019353908">Bleikt fiðrildi</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">Úbbs! Villa kom upp við að breyta heiti.</translation>
 <translation id="7458955835361612701">Engar nýlegar myndir</translation>
 <translation id="7469894403370665791">Tengjast þessu neti sjálfkrafa</translation>
-<translation id="7486315294984620427">Svo hægt sé að sleppa skrám í Parallels Desktop verða þær að vera afritaðar í Windows-skrár.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam hljóðritun</translation>
 <translation id="7505167922889582512">Sýna faldar skrár</translation>

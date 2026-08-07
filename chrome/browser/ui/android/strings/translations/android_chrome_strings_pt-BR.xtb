@@ -297,6 +297,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2233735624724508540">Escolha um período e toque em Excluir Dados</translation>
 <translation id="2234031676056123135">Personalize seus atalhos</translation>
 <translation id="2234827758954819389">Guia de privacidade</translation>
+<translation id="2236949375853147973">Minha atividade</translation>
 <translation id="2238038374973843156">Mover as guias para outra janela</translation>
 <translation id="2247789808226901522">Cartão vencido</translation>
 <translation id="2251809247798634662">Nova janela anônima</translation>
@@ -574,6 +575,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3385749568468586663">O Gemini não está disponível no modo de navegação anônima</translation>
 <translation id="3387650086002190359">Falha no download de <ph name="FILE_NAME" /> devido a erros do sistema de arquivos.</translation>
 <translation id="3391311825344469964">Você pode gerenciar suas janelas no Gerenciador de janelas do Chrome</translation>
+<translation id="3410151451624226773">Use o Gerenciador de Senhas do Google</translation>
 <translation id="3417835166382867856">Pesquisar guias</translation>
 <translation id="3430670036890315772">Se o bloqueio de perfil for desativado, as informações salvas serão removidas</translation>
 <translation id="3435575784518354875">Para manter o acesso às suas senhas, exporte-as agora, atualize o Google Play Services e importe-as de volta ao Gerenciador de senhas do Google. <ph name="BEGIN_LINK" />Ver instruções completas<ph name="END_LINK" />.</translation>
@@ -943,6 +945,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4877678010818027629">Entrar no modo de navegação anônima</translation>
 <translation id="4878404682131129617">Falha ao estabelecer encapsulamento via servidor proxy</translation>
 <translation id="4880127995492972015">Traduzir…</translation>
+<translation id="4880827082731008257">Histórico de pesquisa</translation>
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="488187801263602086">Renomear arquivo</translation>
 <translation id="4885273946141277891">Número de instâncias do Google Chrome não suportado.</translation>
@@ -992,6 +995,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="509429900233858213">Ocorreu um erro.</translation>
 <translation id="5096775069898886423">Receba um aviso antes de acessar sites que não têm suporte a conexões seguras</translation>
 <translation id="510275257476243843">Uma hora restante</translation>
+<translation id="5105442806410269908">Gerencie outros dados do Google</translation>
 <translation id="5114895953710637392">A página de filtro de apps está fechada.</translation>
 <translation id="5115811374190515607">para <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Você pode usar o Chrome sempre que toca em links em mensagens, documentos e outros apps</translation>
@@ -1042,6 +1046,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5316947901395241499">O salvamento de senhas foi desativado pelo administrador</translation>
 <translation id="5317780077021120954">Salvar</translation>
 <translation id="5319359161174645648">O Google recomenda o Chrome</translation>
+<translation id="5323501626199324454">Gerencie na sua Conta do Google</translation>
 <translation id="5326246328175179736">Não é possível fazer login com esta conta</translation>
 <translation id="5327248766486351172">Nome</translation>
 <translation id="5328542107300944283">Usar com <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1326,6 +1331,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6461962085415701688">Não é possível abrir o arquivo</translation>
 <translation id="6464977750820128603">Você pode ver os sites que visita no Chrome e definir timers para eles.\n\nO Google recebe informações sobre os sites para os quais você definiu timers e sobre o tempo que você passa neles. Essas informações são usadas para melhorar o Bem-estar digital.</translation>
 <translation id="6468703991511753953">A barra de endereço está na parte de baixo da tela</translation>
+<translation id="6469702164109431067">Senhas e chaves de acesso</translation>
 <translation id="6470181189905173055">As páginas que você abriu no Chrome usando o app <ph name="APP_LABEL" /> vão aparecer aqui.</translation>
 <translation id="6473086018775716761">Lista de opções de compartilhamento aberta na metade da altura.</translation>
 <translation id="6475951671322991020">Baixar o vídeo</translation>

@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Dokumen Word</translation>
 <translation id="1056775291175587022">0 rangkaian</translation>
 <translation id="1056898198331236512">Amaran</translation>
-<translation id="1060368002126861100">Untuk membuka fail dengan <ph name="APP_NAME" />, alihkan fail itu ke folder fail Windows dahulu.</translation>
 <translation id="1062407476771304334">Gantikan</translation>
 <translation id="1119383441774809183">Tunjukkan mesej teks</translation>
 <translation id="1119447706177454957">Ralat dalaman</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">Norway</translation>
 <translation id="1408504635543854729">Teroka kandungan peranti dalam apl Fail. Kandungan dihadkan oleh pentadbir dan tidak boleh diubah suai.</translation>
 <translation id="1412476183660741812">Himpunan Web yang Ditandatangani</translation>
-<translation id="1433628812591023318">Untuk melepaskan fail dalam Parallels Desktop, fail itu mesti dialihkan ke fail Windows.</translation>
-<translation id="1435838927755162558">Kongsi folder dengan Parallels Desktop</translation>
 <translation id="1439919885608649279">Orang dengan bunga</translation>
 <translation id="1458457385801829801">Usir <ph name="TARGET_NAME" /></translation>
 <translation id="1464781208867302907">Untuk pilihan peranti, pergi ke Tetapan.</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">Perancis</translation>
 <translation id="2732288874651063549">Urus perkongsian <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">VNI Vietnam</translation>
-<translation id="2735623501230989521">Beri Parallels Desktop kebenaran untuk mengakses fail dalam folder <ph name="FOLDER_NAME" /></translation>
 <translation id="2764206540577097904">Anda telah menggunakan semua storan Google Workspace individu anda.</translation>
 <translation id="2771816809568414714">Keju</translation>
 <translation id="2783909841122647548">Pemasangan pakej Debian tidak disokong lagi. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">Geografi</translation>
 <translation id="3044404008258011032">Untuk memulihkan item ini, seret item ke folder baharu di luar sampah. Folder asal "<ph name="PARENT_FOLDER_NAME" />" untuk item ini telah dipadamkan.</translation>
 <translation id="3047197340186497470">Dayi Cina</translation>
-<translation id="3067790092342515856">Fail Windows</translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">Hos SOCKS</translation>
 <translation id="3091469289665833668">Romania</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">Hubungi pentadbir anda untuk mendapatkan butiran.</translation>
 <translation id="3548125359243647069">PIN yang salah telah dimasukkan terlalu banyak kali.</translation>
 <translation id="3549797760399244642">Pergi ke drive.google.com...</translation>
-<translation id="3553048479571901246">Untuk membuka fail dengan <ph name="APP_NAME" />, salin fail itu ke folder fail Windows dahulu.</translation>
 <translation id="3556731189587832921">Inggeris (AS) dengan papan kekunci PC Antarabangsa</translation>
 <translation id="3557414470514932909">Mengalihkan <ph name="FILE_NAME" /> ke folder sampah</translation>
 <translation id="3560848236447534728">Fonetik Armenia</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">Romania</translation>
 <translation id="4508265954913339219">Pengaktifan gagal</translation>
 <translation id="4509667233588080747">Inggeris (AS) dengan papan kekunci Antarabangsa Workman</translation>
-<translation id="4527800702232535228">Folder ini dikongsi dengan Parallels Desktop</translation>
 <translation id="4552678318981539154">Beli lagi storan</translation>
 <translation id="4552759165874948005">Rangkaian <ph name="NETWORK_TYPE" />, kekuatan isyarat <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">Bokeh</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">Persembahan PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
-<translation id="4789067489790477934">Beri Parallels Desktop kebenaran untuk mengakses fail dalam Google Drive anda. Perubahan akan disegerakkan ke peranti anda yang lain.</translation>
 <translation id="4790766916287588578">Bahasa Hindi dengan papan kekunci InScript</translation>
 <translation id="4798645114741131062">Peranti ChromeOS Flex anda akan berhenti menerima kemaskinian tidak lama lagi. Pertimbangkan untuk membuat peningkatan kepada peranti ChromeOS.</translation>
 <translation id="4801956050125744859">Simpan kedua-duanya</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">Peluncur kelantangan</translation>
 <translation id="4881695831933465202">Buka</translation>
 <translation id="4891091358278567964">Untuk memulihkan item ini, seret item ke folder baharu di luar sampah. Folder asal untuk item ini telah dipadamkan.</translation>
-<translation id="4900532980794411603">Kongsi dengan Parallels Desktop</translation>
 <translation id="4902546322522096650">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />%, Sambung</translation>
 <translation id="4906580650526544301">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />%, Bateri Telefon <ph name="BATTERY_STATUS" />%, Butiran</translation>
 <translation id="4935975195727477204">Bunga Gazania</translation>
 <translation id="4943368462779413526">Bola Sepak</translation>
-<translation id="4961158930123534723">1 folder dikongsi dengan Parallels Desktop</translation>
 <translation id="4965874878399872778">Menyemak fail berdasarkan dasar keselamatan organisasi anda...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> dipulihkan</translation>
 <translation id="4969785127455456148">Album</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Operasi mengambil masa lebih lama daripada yang dijangkakan. Adakah anda ingin menghenti paksanya?</translation>
 <translation id="5036141350290856713">Fonetik Rusia</translation>
-<translation id="5036159836254554629">Urus perkongsian Parallels Desktop</translation>
 <translation id="5038625366300922036">Lihat lagi...</translation>
 <translation id="5044852990838351217">Armenia</translation>
 <translation id="5045550434625856497">Kata laluan tidak sah</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">Memadamkan "<ph name="FILENAME" />"...</translation>
 <translation id="6581162200855843583">Pautan Google Drive</translation>
 <translation id="6588648400954570689">Tetapan penyegerakan fail</translation>
-<translation id="6594855146910089723">Folder ini dikongsi dengan Linux dan Parallels Desktop</translation>
 <translation id="6607272825297743757">Maklumat fail</translation>
-<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> folder dikongsi dengan Parallels Desktop</translation>
 <translation id="6629518321609546825">Masukkan sekurang-kurangnya 4 nombor</translation>
 <translation id="6643016212128521049">Kosongkan</translation>
 <translation id="6650726141019353908">Rama-rama merah jambu</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">Oh, Tidak! Ralat berlaku semasa penamaan semula.</translation>
 <translation id="7458955835361612701">Tiada imej baru-baru ini</translation>
 <translation id="7469894403370665791">Menyambung ke rangkaian ini secara automatik</translation>
-<translation id="7486315294984620427">Untuk melepaskan fail dalam Parallels Desktop, fail itu mesti disalin ke fail Windows.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Fonetik Malayalam</translation>
 <translation id="7505167922889582512">Tunjukkan fail tersembunyi</translation>

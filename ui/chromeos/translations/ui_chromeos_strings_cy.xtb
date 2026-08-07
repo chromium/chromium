@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Dogfen Word</translation>
 <translation id="1056775291175587022">Dim rhwydweithiau</translation>
 <translation id="1056898198331236512">Rhybudd</translation>
-<translation id="1060368002126861100">Er mwyn agor ffeiliau gyda <ph name="APP_NAME" />, symudwch nhw yn gyntaf i'r ffolder ffeiliau Windows.</translation>
 <translation id="1062407476771304334">Disodli</translation>
 <translation id="1119383441774809183">Dangos negeseuon testun</translation>
 <translation id="1119447706177454957">Gwall mewnol</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">Norwyeg</translation>
 <translation id="1408504635543854729">Gallwch archwilio cynnwys y ddyfais yn yr ap Files. Mae'r cynnwys wedi'i gyfyngu gan weinyddwr ac ni ellir ei addasu.</translation>
 <translation id="1412476183660741812">Bwndel Gwe wedi'i Lofnodi</translation>
-<translation id="1433628812591023318">I ollwng ffeiliau yn Parallels Desktop, rhaid symud y ffeil i ffeiliau Windows.</translation>
-<translation id="1435838927755162558">Rhannu'r ffolder gyda Parallels Desktop</translation>
 <translation id="1439919885608649279">Person â blodau</translation>
 <translation id="1458457385801829801">Dadlwytho <ph name="TARGET_NAME" /></translation>
 <translation id="1464781208867302907">I weld dewisiadau'r ddyfais, ewch i'r Gosodiadau.</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">Ffrangeg</translation>
 <translation id="2732288874651063549">Rheoli rhannu <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">VNI Fietnameg</translation>
-<translation id="2735623501230989521">Rhoi caniatâd i Parallels Desktop gael mynediad at ffeiliau yn y ffolder <ph name="FOLDER_NAME" /></translation>
 <translation id="2764206540577097904">Rydych wedi defnyddio'ch holl storfa Google Workspace unigol.</translation>
 <translation id="2771816809568414714">Caws</translation>
 <translation id="2783909841122647548">Nid yw gosodiadau pecyn Debian yn cael eu cefnogi mwyach. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">Daearyddiaeth</translation>
 <translation id="3044404008258011032">I adfer yr eitemau hyn, llusgwch nhw i ffolder newydd y tu allan i'r bin sbwriel. Mae'r ffolder gwreiddiol "<ph name="PARENT_FOLDER_NAME" />" ar gyfer yr eitemau hyn wedi'i ddileu.</translation>
 <translation id="3047197340186497470">Dayi Tseinëeg</translation>
-<translation id="3067790092342515856">Ffeiliau Windows</translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">Gwesteiwr SOCKS</translation>
 <translation id="3091469289665833668">Rwmaneg</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">Cysylltwch â'ch gweinyddwr am fanylion.</translation>
 <translation id="3548125359243647069">Rhoddwyd y PIN anghywir gormod o weithiau.</translation>
 <translation id="3549797760399244642">Ewch i drive.google.com...</translation>
-<translation id="3553048479571901246">Er mwyn agor ffeiliau gyda <ph name="APP_NAME" />, copïwch nhw yn gyntaf i'r ffolder ffeiliau Windows.</translation>
 <translation id="3556731189587832921">Saesneg (UDA) gyda bysellfwrdd PC Rhyngwladol</translation>
 <translation id="3557414470514932909">Wrthi'n symud <ph name="FILE_NAME" /> i'r bin sbwriel</translation>
 <translation id="3560848236447534728">Seinegol Armeneg</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">Rwmaneg</translation>
 <translation id="4508265954913339219">Wedi methu â gweithredu</translation>
 <translation id="4509667233588080747">Saesneg (UDA) gyda bysellfwrdd Gweithiwr Rhyngwladol</translation>
-<translation id="4527800702232535228">Rhennir y ffolder hon â Parallels Desktop</translation>
 <translation id="4552678318981539154">Prynu rhagor o le storio</translation>
 <translation id="4552759165874948005">Rhwydwaith <ph name="NETWORK_TYPE" />, cryfder signal <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">Bokeh</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">Cyflwyniad PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
-<translation id="4789067489790477934">Rhoi caniatâd i Parallels Desktop gael mynediad at eich ffeiliau yn eich Google Drive. Bydd newidiadau yn cysoni â'ch dyfeisiau eraill.</translation>
 <translation id="4790766916287588578">Hindi gyda bysellfwrdd InScript</translation>
 <translation id="4798645114741131062">Bydd eich dyfais ChromeOS Flex yn stopio derbyn diweddariadau yn fuan. Ystyriwch uwchraddio i ddyfais ChromeOS.</translation>
 <translation id="4801956050125744859">Cadw'r ddau</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">Llithrydd sain</translation>
 <translation id="4881695831933465202">Agor</translation>
 <translation id="4891091358278567964">I adfer yr eitemau hyn, llusgwch nhw i ffolder newydd y tu allan i'r bin sbwriel. Mae'r ffolderi gwreiddiol ar gyfer yr eitemau hyn wedi'u dileu.</translation>
-<translation id="4900532980794411603">Rhannu gyda Parallels Desktop</translation>
 <translation id="4902546322522096650">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Cryfder Signal <ph name="SIGNAL_STRENGTH" />%, Cysylltu</translation>
 <translation id="4906580650526544301">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Cryfder Signal <ph name="SIGNAL_STRENGTH" />%, Batri'r Ffôn <ph name="BATTERY_STATUS" />%, Manylion</translation>
 <translation id="4935975195727477204">Blodyn Gasania</translation>
 <translation id="4943368462779413526">Pêl-droed</translation>
-<translation id="4961158930123534723">Rhennir 1 ffolder â Parallels Desktop</translation>
 <translation id="4965874878399872778">Wrthi'n gwirio ffeiliau yn erbyn polisïau diogelwch eich sefydliad...</translation>
 <translation id="496656650103537022">Adferwyd <ph name="FILE_NAME" /></translation>
 <translation id="4969785127455456148">Albwm</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Mae gweithred yn cymryd mwy o amser na'r disgwyl. Ydych chi am ei therfynu?</translation>
 <translation id="5036141350290856713">Seinegol Rwseg</translation>
-<translation id="5036159836254554629">Rheoli rhannu Parallels Desktop</translation>
 <translation id="5038625366300922036">Gweld rhagor...</translation>
 <translation id="5044852990838351217">Armeneg</translation>
 <translation id="5045550434625856497">Cyfrinair anghywir</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">Wrthi'n dileu "<ph name="FILENAME" />"...</translation>
 <translation id="6581162200855843583">Dolen Google Drive</translation>
 <translation id="6588648400954570689">Gosodiadau cysoni ffeiliau</translation>
-<translation id="6594855146910089723">Mae'r ffolder hwn yn cael ei rhannu gyda Linux a Parallels Desktop</translation>
 <translation id="6607272825297743757">Gwybodaeth am y ffeil</translation>
-<translation id="6609332149380188670">Mae <ph name="NUMBER_OF_ITEMS" /> ffolder wedi'u rhannu â Parallels Desktop</translation>
 <translation id="6629518321609546825">Rhowch o leiaf 4 rhif</translation>
 <translation id="6643016212128521049">Clirio</translation>
 <translation id="6650726141019353908">Pili pala pinc</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">Damo! Bu gwall wrth ailenwi.</translation>
 <translation id="7458955835361612701">Dim lluniau diweddar</translation>
 <translation id="7469894403370665791">Cysylltu'n awtomatig â'r rhwydwaith hwn</translation>
-<translation id="7486315294984620427">I ollwng ffeiliau yn Parallels Desktop, rhaid copïo'r ffeil i ffeiliau Windows.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Seinegol Malayalam</translation>
 <translation id="7505167922889582512">Dangos ffeiliau sydd wedi'u cuddio</translation>

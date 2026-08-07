@@ -1750,6 +1750,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2353168619378866466">Open group</translation>
 <translation id="2353297238722298836">Camera and microphone allowed</translation>
+<translation id="2353682139907904963">Pin new extensions to toolbar</translation>
 <translation id="2353910600995338714">Export successful</translation>
 <translation id="2355477091455974894">Energy saver options</translation>
 <translation id="2355604387869345912">Turn on Instant Tethering</translation>
@@ -3292,6 +3293,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3525606571546393707">Try opening the file from another folder, or choose 'Open in basic editor' to use limited view and editing options.</translation>
 <translation id="3526034519184079374">Can't read or change site's data</translation>
 <translation id="3527085408025491307">Folder</translation>
+<translation id="3527473647192919613">New Isolated Window</translation>
 <translation id="3528498924003805721">Shortcut targets</translation>
 <translation id="3529851166527095708">Addresses and more</translation>
 <translation id="3530919970074558307">Unfocus group</translation>
@@ -5799,6 +5801,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5463348003600590648">Disable suggestions</translation>
 <translation id="5463625433003343978">Finding devices…</translation>
 <translation id="5463856536939868464">Menu containing hidden bookmarks</translation>
+<translation id="5465214111614807935">New &amp;Isolated Window</translation>
 <translation id="5466374726908360271">Paste and search for '<ph name="SEARCH_TERMS" />'</translation>
 <translation id="5466721587278161554">Your tab groups are saved in the bookmarks bar, app menu and get updated across all your signed-in devices if sync is turned on</translation>
 <translation id="5467207440419968613">Blocked <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
@@ -6931,6 +6934,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6379228010899751161">Verify that it's you to make sure that you can always use the passwords in your account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6379827283296619736">No, continue to work in this profile</translation>
 <translation id="6380618366311601172">Gemini won't be able to complete tasks that require signing in on <ph name="DOMAIN" />.</translation>
+<translation id="6383321659284013430">New &amp;Isolated Window</translation>
 <translation id="6383382161803538830">Reading mode isn’t available on this page</translation>
 <translation id="638418309848716977">Supported links</translation>
 <translation id="6384275966486438344">Change your search settings to: <ph name="SEARCH_HOST" /></translation>
@@ -10690,7 +10694,6 @@ This can include information about installed software, files, your browser, the 
 <translation id="983192555821071799">Close all tabs</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – Camera and microphone recording</translation>
 <translation id="984705303330760860">Add spell check languages</translation>
-<translation id="987068745968718743">Parallels desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">General</translation>
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> wants to get info from your mobile device</translation>
 <translation id="988320949174893488">Occasional stutter</translation>

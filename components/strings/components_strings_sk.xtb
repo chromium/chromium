@@ -592,6 +592,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2027465737841872819">Plast</translation>
 <translation id="2027707238798802149">Karta nie je k dispozícii</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Skontrolovať proxy server a bránu firewall<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">Táto inštancia Chromu je spustená s manuálne nastavenými parametrami spustenia. Upozorňujeme, že parametre spustenia sa môžu kedykoľvek zmeniť a nie sú podporované.</translation>
 <translation id="2033900728810589426">Skratka nemôže byť rovnaká ako predvolené kľúčové slovo poskytovateľa vyhľadávania definované v dokumente <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Napriek tomu uložiť</translation>
 <translation id="2036514476578229158">Požiadal(a) si o návštevu tohto webu. Tvoji rodičia môžu odpovedať v aplikácii Family Link.</translation>
@@ -4560,7 +4561,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="8932102934695377596">Vaše hodiny idú pozadu</translation>
 <translation id="893332455753468063">Pridanie mena</translation>
 <translation id="8938242527120341116">Filtre obsahu v zariadení zablokovali adresu <ph name="BLOCKED_URL" /></translation>
-<translation id="8942355029279167844">Váš správca povolil aplikácii <ph name="APP_NAME" /> zhromažďovať diagnostické údaje na zlepšenie prostredia služby. Viac sa dozviete na <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Limetková</translation>
 <translation id="8949410982325929394">Tón</translation>
 <translation id="8949493680961858543">A1×4</translation>

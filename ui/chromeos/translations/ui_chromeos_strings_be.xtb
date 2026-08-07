@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Дакумент Word</translation>
 <translation id="1056775291175587022">Няма сетак</translation>
 <translation id="1056898198331236512">Папярэджанне</translation>
-<translation id="1060368002126861100">Каб адкрываць файлы ў праграме "<ph name="APP_NAME" />", спачатку перамясціце іх у папку файлаў Windows.</translation>
 <translation id="1062407476771304334">Замяніць</translation>
 <translation id="1119383441774809183">Паказваць тэкставыя паведамленні</translation>
 <translation id="1119447706177454957">Унутраная памылка</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">Нарвежская</translation>
 <translation id="1408504635543854729">Глядзець змесціва прылады ў праграме "Файлы". Змесціва нельга мадыфікаваць: дазволы на яго абмежаваны адміністратарам.</translation>
 <translation id="1412476183660741812">Падпісаны вэб-пакет</translation>
-<translation id="1433628812591023318">Каб перацягнуць файл у Parallels Desktop, яго неабходна перамясціць у папку "Файлы Windows".</translation>
-<translation id="1435838927755162558">Абагульванне папкі з Parallels Desktop</translation>
 <translation id="1439919885608649279">Чалавек з кветкамі</translation>
 <translation id="1458457385801829801">Выняць <ph name="TARGET_NAME" /></translation>
 <translation id="1464781208867302907">Каб адкрыць параметры прылады, перайдзіце ў Налады.</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">Французская</translation>
 <translation id="2732288874651063549">Кіраваць абагульваннем з <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">В’етнамская (раскладка VNI)</translation>
-<translation id="2735623501230989521">Даць Parallels Desktop доступ да файлаў у папцы "<ph name="FOLDER_NAME" />"</translation>
 <translation id="2764206540577097904">Вы выкарысталі ўвесь даступны вам аб’ём індывідуальнага сховішча Google Workspace.</translation>
 <translation id="2771816809568414714">Сыр</translation>
 <translation id="2783909841122647548">Усталяванне пакетаў Debian больш не падтрымліваецца. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">Геаграфія</translation>
 <translation id="3044404008258011032">Каб аднавіць гэтыя элементы, перацягніце іх са сметніцы ў новую папку. Папка "<ph name="PARENT_FOLDER_NAME" />", у якім гэтыя элементы знаходзіліся раней, была выдалена.</translation>
 <translation id="3047197340186497470">Кітайская (метад уводу Dayi)</translation>
-<translation id="3067790092342515856">Файлы Windows</translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">Хост SOCKS</translation>
 <translation id="3091469289665833668">Румынская</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">За падрабязнай інфармацыяй звяртайцеся да адміністратара.</translation>
 <translation id="3548125359243647069">Занадта шмат разоў быў уведзены няправільны PIN-код.</translation>
 <translation id="3549797760399244642">Перайсці на drive.google.com...</translation>
-<translation id="3553048479571901246">Каб адкрываць файлы ў праграме "<ph name="APP_NAME" />", спачатку скапіруйце іх у папку файлаў Windows.</translation>
 <translation id="3556731189587832921">Англійская (ЗША) з міжнароднай клавіятурай для ПК</translation>
 <translation id="3557414470514932909">Файл "<ph name="FILE_NAME" />" перамяшчаецца ў сметніцу</translation>
 <translation id="3560848236447534728">Армянская фанетычная</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">Румынская</translation>
 <translation id="4508265954913339219">Не ўдалося актываваць</translation>
 <translation id="4509667233588080747">Англійская (ЗША) з міжнароднай раскладкай Workman</translation>
-<translation id="4527800702232535228">Гэта папка абагулена з Parallels Desktop</translation>
 <translation id="4552678318981539154">Купіце больш месца ў сховішчы</translation>
 <translation id="4552759165874948005">Тып сеткі – <ph name="NETWORK_TYPE" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">Эфект баке</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">Рысавы шарык</translation>
 <translation id="4784330909746505604">Прэзентацыя PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> КБ</translation>
-<translation id="4789067489790477934">Даць Parallels Desktop доступ да файлаў на Google Дыску. Змены будуць сінхранізавацца з іншымі прыладамі.</translation>
 <translation id="4790766916287588578">Хіндзі (з раскладкай InScript)</translation>
 <translation id="4798645114741131062">Ваша прылада з ChromeOS Flex неўзабаве перастане атрымліваць абнаўленні. Магчыма, варта перайсці на прыладу з ChromeOS.</translation>
 <translation id="4801956050125744859">Пакінуць абодва</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">Рэгулятар гучнасці</translation>
 <translation id="4881695831933465202">Адкрыць</translation>
 <translation id="4891091358278567964">Каб аднавіць гэтыя элементы, перацягніце іх са сметніцы ў новую папку. Папкі, у якіх гэтыя элементы знаходзіліся раней, былі выдалены.</translation>
-<translation id="4900532980794411603">Абагуліць з Parallels Desktop</translation>
 <translation id="4902546322522096650">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падключыцца</translation>
 <translation id="4906580650526544301">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, зарад акумулятара тэлефона – <ph name="BATTERY_STATUS" />%, падрабязныя звесткі</translation>
 <translation id="4935975195727477204">Кветка гацаніі</translation>
 <translation id="4943368462779413526">Мяч для амерыканскага футбола</translation>
-<translation id="4961158930123534723">1 папка абагулена з Parallels Desktop</translation>
 <translation id="4965874878399872778">Файлы правяраюцца на адпаведнасць правілам бяспекі, прынятым у вашай арганізацыі...</translation>
 <translation id="496656650103537022">Файл "<ph name="FILE_NAME" />" адноўлены</translation>
 <translation id="4969785127455456148">Альбом</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Аперацыя займае больш часу, чым звычайна. Спыніць яе?</translation>
 <translation id="5036141350290856713">Руская фанетычная</translation>
-<translation id="5036159836254554629">Кіраваць абагульваннем з Parallels Desktop</translation>
 <translation id="5038625366300922036">Яшчэ...</translation>
 <translation id="5044852990838351217">Армянская</translation>
 <translation id="5045550434625856497">Няправільны пароль</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">Ідзе выдаленне файла "<ph name="FILENAME" />"...</translation>
 <translation id="6581162200855843583">Спасылка на Google Дыск</translation>
 <translation id="6588648400954570689">Налады сінхранізацыі файлаў</translation>
-<translation id="6594855146910089723">Гэта папка абагулена з Linux і Parallels Desktop</translation>
 <translation id="6607272825297743757">Інфармацыя пра файл</translation>
-<translation id="6609332149380188670">Абагулена папак з Parallels Desktop: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="6629518321609546825">Увядзіце як мінімум 4 лічбы</translation>
 <translation id="6643016212128521049">Ачысціць</translation>
 <translation id="6650726141019353908">Ружовы матылёк</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">На жаль, падчас перайменавання адбылася памылка.</translation>
 <translation id="7458955835361612701">Няма нядаўніх відарысаў</translation>
 <translation id="7469894403370665791">Падключацца да гэтай сеткі аўтаматычна</translation>
-<translation id="7486315294984620427">Каб перацягнуць файл у Parallels Desktop, яго неабходна скапіраваць у папку "Файлы Windows".</translation>
 <translation id="749452993132003881">Хірагана</translation>
 <translation id="7495372004724182530">Малаялам (фанетычная раскладка)</translation>
 <translation id="7505167922889582512">Паказаць схаваныя файлы</translation>

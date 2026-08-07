@@ -592,6 +592,7 @@
 <translation id="2027465737841872819">პლასტმასა</translation>
 <translation id="2027707238798802149">ბარათი მიუწვდომელია</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />პროქსისა და ქსელის დაცვის შემოწმება<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">Chrome-ის ეს ეგზემპლარი გაშვებულია ბრძანებათა სტრიქონის ხელით დაყენებული ალმებით. გაითვალისწინეთ, რომ ბრძანებათა სტრიქონის ალმები შეიძლება ნებისმიერ დროს შეიცვალოს და ისინი არ არის მხარდაჭერილი.</translation>
 <translation id="2033900728810589426">მალსახმობი არ უნდა იყოს ძიების პროვაიდერის იმ ნაგულისხმევი საკვანძო სიტყვის იდენტური, რომელსაც <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> განსაზღვრავს: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">მაინც შენახვა</translation>
 <translation id="2036514476578229158">თქვენ მოითხოვეთ ამ საიტის მონახულება. თქვენს მშობლებს გამოხმაურება შეუძლია Family Link-იდან.</translation>
@@ -4563,7 +4564,6 @@
 <translation id="8932102934695377596">თქვენი საათი უკანაა</translation>
 <translation id="893332455753468063">დაამატეთ სახელი</translation>
 <translation id="8938242527120341116">თქვენი მოწყობილობის კონტენტის ფილტრებმა დაბლოკა <ph name="BLOCKED_URL" /></translation>
-<translation id="8942355029279167844">თქვენმა ადმინისტრატორმა <ph name="APP_NAME" />-ს ნება დართო, შეაგროვოს დიაგნოსტიკური მონაცემები, პროდუქტით სარგებლობის გასაუმჯობესებლად. დამატებითი ინფორმაციისთვის იხილეთ <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">ლაიმისფერი</translation>
 <translation id="8949410982325929394">ტონი</translation>
 <translation id="8949493680961858543">A1x4</translation>

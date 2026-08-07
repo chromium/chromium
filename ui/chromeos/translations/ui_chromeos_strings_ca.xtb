@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Document de Word</translation>
 <translation id="1056775291175587022">Cap xarxa</translation>
 <translation id="1056898198331236512">Advertiment</translation>
-<translation id="1060368002126861100">Per obrir fitxers amb <ph name="APP_NAME" />, primer mou-los a la carpeta de fitxers de Windows.</translation>
 <translation id="1062407476771304334">Substitueix</translation>
 <translation id="1119383441774809183">Mostra els missatges de text</translation>
 <translation id="1119447706177454957">Error intern</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">Noruec</translation>
 <translation id="1408504635543854729">Explora el contingut del dispositiu a l'aplicació Fitxers. L'administrador ha restringit el contingut i no es pot modificar.</translation>
 <translation id="1412476183660741812">Paquet web signat</translation>
-<translation id="1433628812591023318">Per deixar anar fitxers a Parallels Desktop, s'han de moure a Fitxers de Windows.</translation>
-<translation id="1435838927755162558">Comparteix la carpeta amb Parallels Desktop</translation>
 <translation id="1439919885608649279">Persona amb flors</translation>
 <translation id="1458457385801829801">Expulsa <ph name="TARGET_NAME" /></translation>
 <translation id="1464781208867302907">Per accedir a les preferències del dispositiu, ves a Configuració.</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">Francès</translation>
 <translation id="2732288874651063549">Administra l'ús compartit de <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">Vietnamita (VNI)</translation>
-<translation id="2735623501230989521">Dona permís a Parallels Desktop per accedir als fitxers de la carpeta <ph name="FOLDER_NAME" /></translation>
 <translation id="2764206540577097904">Has fet servir tot el teu emmagatzematge individual de Google Workspace.</translation>
 <translation id="2771816809568414714">Formatge</translation>
 <translation id="2783909841122647548">Ja no s'admeten les instal·lacions de paquets de Debian. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">Geografia</translation>
 <translation id="3044404008258011032">Per restaurar aquests elements, arrossega'ls a una carpeta nova fora de la paperera. La carpeta original "<ph name="PARENT_FOLDER_NAME" />" d'aquest element s'ha suprimit.</translation>
 <translation id="3047197340186497470">Xinès (dayi)</translation>
-<translation id="3067790092342515856">Fitxers de Windows</translation>
 <translation id="3083975830683400843">dispositius Chromebit</translation>
 <translation id="3085752524577180175">Amfitrió SOCKS</translation>
 <translation id="3091469289665833668">Romanès</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">Contacta amb l'administrador per obtenir detalls.</translation>
 <translation id="3548125359243647069">S'ha introduït un PIN incorrecte massa vegades.</translation>
 <translation id="3549797760399244642">Ves a drive.google.com...</translation>
-<translation id="3553048479571901246">Per obrir fitxers amb <ph name="APP_NAME" />, primer copia'ls a la carpeta de fitxers de Windows.</translation>
 <translation id="3556731189587832921">Anglès (EUA) amb teclat internacional (PC)</translation>
 <translation id="3557414470514932909">S'està movent <ph name="FILE_NAME" /> a la paperera</translation>
 <translation id="3560848236447534728">Fonètic armeni</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">Romanès</translation>
 <translation id="4508265954913339219">Hi ha hagut un error en l'activació.</translation>
 <translation id="4509667233588080747">Anglès (EUA) amb teclat Workman internacional</translation>
-<translation id="4527800702232535228">Aquesta carpeta es comparteix amb Parallels Desktop</translation>
 <translation id="4552678318981539154">Compra més emmagatzematge</translation>
 <translation id="4552759165874948005">Xarxa <ph name="NETWORK_TYPE" /> (intensitat del senyal: <ph name="SIGNAL_STRENGTH" /> per cent)</translation>
 <translation id="4559767610552730302">Bokeh</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">Presentació de PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> kB</translation>
-<translation id="4789067489790477934">Dona permís a Parallels Desktop per accedir als fitxers que hi ha al teu Google Drive. Els canvis se sincronitzaran amb els altres dispositius que tinguis.</translation>
 <translation id="4790766916287588578">Hindi amb teclat InScript</translation>
 <translation id="4798645114741131062">El teu dispositiu ChromeOS Flex aviat deixarà de rebre actualitzacions. Et recomanem que facis l'actualització a un dispositiu ChromeOS.</translation>
 <translation id="4801956050125744859">Mantén-les totes dues</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">Control lliscant de volum</translation>
 <translation id="4881695831933465202">Obre</translation>
 <translation id="4891091358278567964">Per restaurar aquests elements, arrossega'ls a una carpeta nova fora de la paperera. Les carpetes originals d'aquests elements s'han suprimit.</translation>
-<translation id="4900532980794411603">Comparteix amb Parallels Desktop</translation>
 <translation id="4902546322522096650">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal, connecta</translation>
 <translation id="4906580650526544301">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal, <ph name="BATTERY_STATUS" />% de bateria al telèfon, detalls</translation>
 <translation id="4935975195727477204">Flor de gazània</translation>
 <translation id="4943368462779413526">Pilota de futbol americà</translation>
-<translation id="4961158930123534723">S'ha compartit 1 carpeta amb Parallels Desktop</translation>
 <translation id="4965874878399872778">S'està comprovant que els fitxers compleixin les polítiques de seguretat de la teva organització...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> s'ha restaurat</translation>
 <translation id="4969785127455456148">Àlbum</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Una operació està tardant més del que estava previst. Voleu cancel·lar-la?</translation>
 <translation id="5036141350290856713">Fonètic rus</translation>
-<translation id="5036159836254554629">Gestiona la compartició amb Parallels Desktop</translation>
 <translation id="5038625366300922036">Mostra'n més...</translation>
 <translation id="5044852990838351217">Armeni</translation>
 <translation id="5045550434625856497">Contrasenya incorrecta</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">S'està suprimint "<ph name="FILENAME" />"...</translation>
 <translation id="6581162200855843583">Enllaç de Google Drive</translation>
 <translation id="6588648400954570689">Configuració de la sincronització de fitxers</translation>
-<translation id="6594855146910089723">Aquesta carpeta es comparteix amb Linux i Parallels Desktop</translation>
 <translation id="6607272825297743757">Informació del fitxer</translation>
-<translation id="6609332149380188670">S'han compartit <ph name="NUMBER_OF_ITEMS" /> carpetes amb Parallels Desktop</translation>
 <translation id="6629518321609546825">Escriu 4 nombres com a mínim</translation>
 <translation id="6643016212128521049">Esborra</translation>
 <translation id="6650726141019353908">Papallona rosa</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">S'ha produït un error durant el canvi de nom.</translation>
 <translation id="7458955835361612701">No hi ha cap imatge recent</translation>
 <translation id="7469894403370665791">Connecta automàticament a aquesta xarxa</translation>
-<translation id="7486315294984620427">Per deixar anar fitxers a Parallels Desktop, s'han de copiar a Fitxers de Windows.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malaiàlam fonètic</translation>
 <translation id="7505167922889582512">Mostra els fitxers amagats</translation>

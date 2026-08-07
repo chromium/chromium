@@ -4436,6 +4436,7 @@
 <translation id="8708134712139312373">ສາມາດຂໍເຊື່ອມຕໍ່ຫາອຸປະກອນ Bluetooth</translation>
 <translation id="8710842507289500830">ຮູບແບບຟອນ</translation>
 <translation id="8712637175834984815">ເຂົ້າໃຈແລ້ວ</translation>
+<translation id="8715198179991802709">Chrome ຫາກໍປັກທຸງເວັບໄຊທີ່ທ່ານພະຍາຍາມເຂົ້າເບິ່ງ. ຊ່ວຍພວກເຮົາປັບປຸງຄຳເຕືອນເຫຼົ່ານີ້ໂດຍການຕອບແບບສຳຫຼວດ 1 ນາທີ.</translation>
 <translation id="8718314106902482036">ການຈ່າຍເງິນບໍ່ສຳເລັດ</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, ການແນະນຳການຊອກຫາ</translation>
 <translation id="8719528812645237045">ເຈາະຮູຢູ່ເທິງສຸດຫຼາຍຮູ</translation>
@@ -4563,7 +4564,6 @@
 <translation id="8932102934695377596">ໂມງ​ຂອງ​ທ່ານ​ຊ້າ</translation>
 <translation id="893332455753468063">ເພີ່ມຊື່</translation>
 <translation id="8938242527120341116">ຕົວກັ່ນຕອງເນື້ອຫາໃນອຸປະກອນຂອງທ່ານໄດ້ບລັອກ <ph name="BLOCKED_URL" /></translation>
-<translation id="8942355029279167844">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ອະນຸຍາດໃຫ້ <ph name="APP_NAME" /> ເກັບເອົາຂໍ້ມູນການວິເຄາະບັນຫາເພື່ອປັບປຸງປະສົບການຜະລິດຕະພັນແລ້ວ. ເບິ່ງ <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> ສຳລັບຂໍ້ມູນເພີ່ມເຕີມ.</translation>
 <translation id="8943282376843390568">ສີຂຽວໝາກນາວ</translation>
 <translation id="8949410982325929394">ລະດັບສຽງ</translation>
 <translation id="8949493680961858543">A1x4</translation>

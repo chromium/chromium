@@ -297,6 +297,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="2233735624724508540">Muddatni tanlab, keyin “Maʼlumotlarni oʻchirish” ustiga bosing</translation>
 <translation id="2234031676056123135">Tezkor tugmalarni moslang</translation>
 <translation id="2234827758954819389">Maxfiylik qoʻllanmasi</translation>
+<translation id="2236949375853147973">Harakatlarim</translation>
 <translation id="2238038374973843156">Guruhni boshqa oynaga olish</translation>
 <translation id="2247789808226901522">Karta muddati oʻtgan</translation>
 <translation id="2251809247798634662">Yangi inkognito oynasi</translation>
@@ -574,6 +575,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="3385749568468586663">Gemini Inkognito rejimida ishlamaydi</translation>
 <translation id="3387650086002190359">Fayllar tizimi xatoliklari tufayli “<ph name="FILE_NAME" />” fayli yuklab olinmadi.</translation>
 <translation id="3391311825344469964">Oynalarni Chrome oynalar menejeri orqali boshqarishingiz mumkin</translation>
+<translation id="3410151451624226773">Google Parollar menejeri orqali boshqarish</translation>
 <translation id="3417835166382867856">Varaqlar ichidan qidirish</translation>
 <translation id="3430670036890315772">Profilingiz qulfi faolsizlantirilsa, saqlangan maʼlumotlaringiz olib tashlanadi</translation>
 <translation id="3435575784518354875">Parollardan foydalanishda davom etish uchun ularni hoziroq eksport qilib, Googel Play xizmatlarini yangilang va Google Parollar meneriga qayta import qiling. <ph name="BEGIN_LINK" />Toʻliq koʻrsatmalar<ph name="END_LINK" />.</translation>
@@ -942,6 +944,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="4877678010818027629">Inkognito rejimiga kirish</translation>
 <translation id="4878404682131129617">Proksi-server orqali tunel yaratib bo‘lmadi</translation>
 <translation id="4880127995492972015">Tarjima qilish…</translation>
+<translation id="4880827082731008257">Qidiruv tarixi</translation>
 <translation id="4881695831933465202">Ochish</translation>
 <translation id="488187801263602086">Faylni qayta nomlash</translation>
 <translation id="4885273946141277891">Bir nechta Chrome versiyalari birdaniga ishlamaydi.</translation>
@@ -991,6 +994,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="509429900233858213">Xatolik yuz berdi.</translation>
 <translation id="5096775069898886423">Xavfsiz ulanishlarda ishlamaydigan saytlarga kirishdan avval ogohlantirish</translation>
 <translation id="510275257476243843">1 soat qoldi</translation>
+<translation id="5105442806410269908">Boshqa Google maʼlumotlarini boshqarish</translation>
 <translation id="5114895953710637392">Ilova asosida filtrlash oynasi yopildi.</translation>
 <translation id="5115811374190515607">Qayerga: <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Chromium brauzerini har doim xabarlar, hujjatlar va boshqa ilovalardagi havolalar ustiga bosib ishga tushirishingiz mumkin</translation>
@@ -1041,6 +1045,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="5316947901395241499">Parol saqlashni administrator taqiqlagan</translation>
 <translation id="5317780077021120954">Saqlash</translation>
 <translation id="5319359161174645648">Google Chrome brauzerini  tavsiya qiladi</translation>
+<translation id="5323501626199324454">Google hisobingizda boshqaring</translation>
 <translation id="5326246328175179736">Bu hisobdan kirish imkonsiz</translation>
 <translation id="5327248766486351172">Nomi</translation>
 <translation id="5328542107300944283"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bilan ishlatish</translation>
@@ -1325,6 +1330,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6461962085415701688">Fayl ochilmadi</translation>
 <translation id="6464977750820128603">Chromeda ochilgan saytlarni koʻrish va ular uchun taymerlar sozlash mumkin.\n\nGooglega faqat taymer sozlangan saytlar va ular qancha vaqt ochilganligi haqidagi axborot yuboriladi. Bu axborot Raqamli qulaylikni yaxshilashga yordam beradi.</translation>
 <translation id="6468703991511753953">Manzillar qatori pastda joylashgan</translation>
+<translation id="6469702164109431067">Parollar va kodlar</translation>
 <translation id="6470181189905173055"><ph name="APP_LABEL" /> orqali Chromeda ochilgan sahifalar shu yerda chiqadi.</translation>
 <translation id="6473086018775716761">Ruxsat parametrlari roʻyxati yarim hajmda ochildi.</translation>
 <translation id="6475951671322991020">Videoni yuklab olish</translation>
@@ -1531,6 +1537,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="7182520625618447753">Brauzerdan moslangan tarzda foydalanish uchun manzil qatori joylashuvini tepa yoki pastga almashtiring</translation>
 <translation id="7183517696921903380">Ilova asosida filtrlash oynasi ochildi.</translation>
 <translation id="7186568385131859684">Brauzer tarixi va boshqa maʼlumotlaringiz Google xizmatlarida qanday ishlatilishini boshqaring</translation>
+<translation id="7189516830800112767">{NUM_TABS,plural, =1{Qadalgan varaqni yopish uchun yana ^W tugmalarini bosing}other{Qadalgan varaqlarni yopish uchun yana ^W tugmalarini bosing}}</translation>
 <translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" /> bloklansinmi?</translation>
 <translation id="7191430249889272776">Ichki oyna orqa fonda ochildi.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Buni hoziroq oʻzgartiring}other{Bularni hoziroq oʻzgartiring}}</translation>

@@ -725,6 +725,7 @@
 <translation id="340669334496430859">Last modified</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 Oct 2023</translation>
+<translation id="3419787211763835342">Help improve enhanced autofill</translation>
 <translation id="3426715535827854458">Hide Hide Toolbar</translation>
 <translation id="3435738964857648380">Security</translation>
 <translation id="3441673211568148613">Keep your browsing private</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">Phone</translation>
 <translation id="4380677808580146413">Select</translation>
 <translation id="4389019817280890563">Tap to change language.</translation>
+<translation id="4390649422783033958">Signed in as <ph name="USER_NAME" />. <ph name="USER_EMAIL" />, Google membership. Open account menu.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{After 1 day}other{After {COUNT} days}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 tab}other{# tabs}}</translation>
 <translation id="4404790787924017676">Get price drop alerts for products that you track</translation>
@@ -1365,6 +1367,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5559567453458728487">Convert measurement units found on the web</translation>
 <translation id="5560088892362098740">Expiry Date</translation>
 <translation id="556042886152191864">Button</translation>
+<translation id="5563910365456880646">since completing 'Use a photo to search with Google Lens'</translation>
 <translation id="5565871407246142825">Credit cards</translation>
 <translation id="5567439033041178034">LEARN MORE</translation>
 <translation id="5578795271662203820">Search <ph name="SEARCH_ENGINE" /> for this image</translation>
@@ -1815,6 +1818,7 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="6930162026494574854">Reset Translate settings</translation>
 <translation id="6930799952781667037">Tap to change to this language.</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
+<translation id="6937083164784433305">{count,plural, =1{You used 1 photo to search}other{You used # photos to search}}</translation>
 <translation id="693761253105515415">Set a passcode</translation>
 <translation id="6945221475159498467">Select</translation>
 <translation id="6946722113367118030">Thinking</translation>
@@ -2020,6 +2024,7 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="7662316065255305764">Site information</translation>
 <translation id="7665369617277396874">Add account</translation>
 <translation id="7666861622396822790">You can manage this in <ph name="BEGIN_LINK" />Content Settings<ph name="END_LINK" />.</translation>
+<translation id="7669448795744969014">Signed in as <ph name="USER_EMAIL" />, Google membership. Open account menu.</translation>
 <translation id="7669493687462784703">Continue downloading a configuration profile from <ph name="WEBSITE" />?</translation>
 <translation id="7673346542062368520">You can swipe left to browse in Incognito.</translation>
 <translation id="7679915578945954324">Site addresses copied</translation>

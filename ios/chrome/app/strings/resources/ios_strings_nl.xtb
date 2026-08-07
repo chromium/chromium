@@ -454,6 +454,7 @@
 <translation id="2422174748424038845">Als je de groep verwijdert, raakt iedereen meteen de toegang tot de tabbladgroep <ph name="GROUP_NAME" /> kwijt en wordt deze verwijderd van alle apparaten.</translation>
 <translation id="2424805048070062787">Doorgaan met dit tabblad</translation>
 <translation id="2426805022920575512">Een ander account kiezen</translation>
+<translation id="2428543302546523788">Toon links wanneer de leesmodus aanstaat</translation>
 <translation id="243275146591958220">Download annuleren</translation>
 <translation id="2434405374328098816">Je hebt al een wachtwoord voor <ph name="USERNAME" /> opgeslagen op <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Je kunt naar links scrollen om in de incognitomodus te browsen.</translation>
@@ -468,6 +469,7 @@
 <translation id="2470654816840674524">Wat kan ik doen met Gemini in Chrome?</translation>
 <translation id="2473876017985765807">Je hebt al een wachtwoord opgeslagen voor <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Je kunt een herinnering instellen om deze pagina later opnieuw te bezoeken</translation>
+<translation id="2476554421818031422">Je helpt ons verbeterd automatisch invullen te verbeteren</translation>
 <translation id="2479148705183875116">Naar Instellingen</translation>
 <translation id="2482878487686419369">Meldingen</translation>
 <translation id="2484459871750294497">Hoe zet ik deze functie aan?</translation>
@@ -2068,6 +2070,7 @@ Wissel naar <ph name="OTHER_EMAIL" /> om door te gaan vanaf je computer. Je krij
 <translation id="78146569776629510">Downloads</translation>
 <translation id="7815852444315004084">Voorlopig verbergen</translation>
 <translation id="7825973332242257878">Tabbladgroepen</translation>
+<translation id="7828344837949522075">Suggestie tonen</translation>
 <translation id="7839994177130598711">Je gezinsleden kunnen nu je gebruikersnaam en wachtwoord gebruiken als ze Google Wachtwoordmanager gebruiken om in te loggen bij <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7841180087127694526">Zoeken naar gekopieerde tekst</translation>
 <translation id="7841418003178675048">Kies welke kaarten op de pagina Nieuw tabblad staan.</translation>

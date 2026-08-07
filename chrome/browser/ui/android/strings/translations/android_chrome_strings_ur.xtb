@@ -297,6 +297,7 @@
 <translation id="2233735624724508540">وقت کی حد کا انتخاب کریں اور پھر ڈیٹا حذف کریں پر تھپتھپائیں</translation>
 <translation id="2234031676056123135">اپنے شارٹ کٹس کو حسب ضرورت بنائیں</translation>
 <translation id="2234827758954819389">رازداری کی گائیڈ</translation>
+<translation id="2236949375853147973">میری سرگرمی</translation>
 <translation id="2238038374973843156">گروپ کو دوسری ونڈو میں منتقل کریں</translation>
 <translation id="2247789808226901522">کارڈ کی میعاد ختم ہو گئی ہے</translation>
 <translation id="2251809247798634662">نئی پوشیدگی ونڈو</translation>
@@ -574,6 +575,7 @@
 <translation id="3385749568468586663">‏‫Gemini پوشیدگی وضع میں دستیاب نہیں ہے</translation>
 <translation id="3387650086002190359">سسٹم کی خرابیوں کی وجہ سے <ph name="FILE_NAME" /> کو ڈاؤن لوڈ کرنا ناکام ہوگیا۔</translation>
 <translation id="3391311825344469964">‏آپ Chrome کے ونڈو مینیجر میں اپنی ونڈوز کا نظم کر سکتے ہیں</translation>
+<translation id="3410151451624226773">‏‫Google پاس ورڈ مینیجر میں نظم کریں</translation>
 <translation id="3417835166382867856">ٹیبز تلاش کریں</translation>
 <translation id="3430670036890315772">آپ کے پروفائل لاک کو آف کرنے سے آپ کی محفوظ کردہ معلومات ہٹ جائے گی</translation>
 <translation id="3435575784518354875">‏اپنے پاس ورڈز تک رسائی کو برقرار رکھنے کے لیے، انہیں ابھی برآمد کریں، Google Play سروسز کو اپ ڈیٹ کریں اور پھر انہیں واپس Google پاس ورڈ مینیجر میں درآمد کریں۔ <ph name="BEGIN_LINK" />مکمل ہدایات دیکھیں<ph name="END_LINK" />۔</translation>
@@ -942,6 +944,7 @@
 <translation id="4877678010818027629">پوشیدگی وضع میں داخل ہوں</translation>
 <translation id="4878404682131129617">پراکسی سرور کے ذریعہ سرنگ بنانا ناکام ہو گیا</translation>
 <translation id="4880127995492972015">ترجمہ کریں…</translation>
+<translation id="4880827082731008257">تلاش کی سرگزشت</translation>
 <translation id="4881695831933465202">کھولیں</translation>
 <translation id="488187801263602086">فائل کا نام تبدیل کریں</translation>
 <translation id="4885273946141277891">‏Chrome وقوعات کی غیر تعاون یافتہ تعداد۔</translation>
@@ -991,6 +994,7 @@
 <translation id="509429900233858213">ایک خرابی پیش آگئی۔</translation>
 <translation id="5096775069898886423">محفوظ کنکشنز کا تعاون کرنے والی سائٹس کیلئے، سائٹ ملاحظہ کرنے سے پہلے وارننگ حاصل کریں</translation>
 <translation id="510275257476243843">1 گھنٹہ باقی</translation>
+<translation id="5105442806410269908">‏دیگر Google ڈیٹا نظم کریں</translation>
 <translation id="5114895953710637392">ایپ فلٹر شیٹ بند ہے۔</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> تک</translation>
 <translation id="5116239826668864748">‏آپ جب بھی پیغامات، دستاویزات اور دیگر ایپس میں لنکس کو تھپتھپائیں تو آپ Chrome استعمال کر سکتے ہیں</translation>
@@ -1041,6 +1045,7 @@
 <translation id="5316947901395241499">آپ کے منتظم نے پاس ورڈ محفوظ کرنے کی سہولت کو آف کر دیا ہے</translation>
 <translation id="5317780077021120954">محفوظ کریں</translation>
 <translation id="5319359161174645648">‏Google Chrome کی تجویز کرتا ہے</translation>
+<translation id="5323501626199324454">‏اپنے Google اکاؤنٹ میں نظم کریں</translation>
 <translation id="5326246328175179736">آپ اس اکاؤنٹ کا استعمال کر کے سائن ان نہیں کر سکتے</translation>
 <translation id="5327248766486351172">نام</translation>
 <translation id="5328542107300944283"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> کے ساتھ استعمال کریں</translation>
@@ -1325,6 +1330,7 @@
 <translation id="6461962085415701688">فائل نہیں کھل سکتی</translation>
 <translation id="6464977750820128603">‏آپ Chrome میں اپنی ملاحظہ کردہ سائٹس کو دیکھ اور ان کے لیے ٹائمرز سیٹ کر سکتے ہیں۔\n\nجن سائٹس کے لیے آپ ٹائمرز سیٹ کرتے ہیں اور جتنی دیر تک آپ ان سائٹس کو ملاحظہ کرتے ہیں اس کے بارے میں Google معلومات حاصل کرتا ہے۔ ڈیجیٹل فلاح و بہبود کو بہتر بنانے کے لیے اس معلومات کا استعمال کیا جاتا ہے۔</translation>
 <translation id="6468703991511753953">ایڈریس بار فی الحال نیچے ہے</translation>
+<translation id="6469702164109431067">پاس ورڈز اور پاس کیز</translation>
 <translation id="6470181189905173055">‏<ph name="APP_LABEL" /> کا استعمال کر کے آپ نے Chrome میں جو صفحات کھولے ہیں وہ یہاں نظر آئیں گے۔</translation>
 <translation id="6473086018775716761">اشتراک کرنے کے اختیارات کی فہرست نصف اونچائی پر کھلی ہوئی ہے۔</translation>
 <translation id="6475951671322991020">ویڈیو ڈاؤن لوڈ کریں</translation>
@@ -1531,6 +1537,7 @@
 <translation id="7182520625618447753">حسب ضرورت براؤزنگ کے تجربے کے لیے اپنے ایڈریس بار کی پوزیشن کو اوپر یا نیچے سوئچ کریں</translation>
 <translation id="7183517696921903380">ایپ فلٹر شیٹ کھل گئی ہے۔</translation>
 <translation id="7186568385131859684">‏کنٹرول کریں کہ براؤزنگ کی سرگزشت آپ کے دوسرے ڈیٹا کے ساتھ Google سروسز پر کیسے استعمال کی جائے</translation>
+<translation id="7189516830800112767">{NUM_TABS,plural, =1{‏پن کردہ ٹیب کو بند کرنے کے لیے دوبارہ ‎^W دبائیں}other{‏پن کردہ ٹیب کو بند کرنے کے لیے دوبارہ ‎^W دبائیں}}</translation>
 <translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" /> کو بلاک کریں؟</translation>
 <translation id="7191430249889272776">ٹیب پس منظر میں کھلا ہے۔</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{آپ کو اب اسے تبدیل کرنا چاہیے}other{آپ کو اب انہیں تبدیل کرنا چاہیے}}</translation>

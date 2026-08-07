@@ -592,6 +592,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2027465737841872819">Plast</translation>
 <translation id="2027707238798802149">Kaart ei ole saadaval</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Kontrollige puhverserverit ja tulemüüri<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">See Chrome'i eksemplar töötab käsitsi määratud käsurealippudega. Pange tähele, et käsurealipud võivad igal ajal muutuda ja neid ei toetata.</translation>
 <translation id="2033900728810589426">Otsetee ei tohi olla sama, mis vaikeotsingupakkuja märksõna, mille on määranud <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Salvesta ikkagi</translation>
 <translation id="2036514476578229158">Küsisid selle saidi külastamiseks luba. Sinu vanemad saavad Family Linkis vastata.</translation>
@@ -4564,7 +4565,6 @@ Lisateave:
 <translation id="8932102934695377596">Teie kell on taga</translation>
 <translation id="893332455753468063">Nime lisamine</translation>
 <translation id="8938242527120341116">Teie seadme sisufiltrid blokeerisid <ph name="BLOCKED_URL" /></translation>
-<translation id="8942355029279167844">Teie administraator on lubanud rakendusel <ph name="APP_NAME" /> diagnostikaandmeid koguda, et toote kasutuskogemust täiustada. Lisateavet vaadake saidilt <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Laimiroheline</translation>
 <translation id="8949410982325929394">Toon</translation>
 <translation id="8949493680961858543">A1 × 4</translation>

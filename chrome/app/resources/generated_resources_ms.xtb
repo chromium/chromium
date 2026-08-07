@@ -2068,6 +2068,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2598710988533271874">Chrome baharu tersedia</translation>
 <translation id="2599048253926156421">Nama pengguna disalin kepada papan keratan</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Matikan 1 sambungan tidak selamat}other{Matikan {NUM_SITES} sambungan tidak selamat}}</translation>
+<translation id="2603121359676416582">Untuk halaman ini</translation>
 <translation id="2604129989323098489">Laman biasanya meminta maklumat tentang paparan anda supaya laman itu boleh membuka dan meletakkan tetingkap dengan bijak, seperti menunjukkan dokumen atau kandungan skrin penuh bersebelahan</translation>
 <translation id="2604255671529671813">Ralat sambungan rangkaian</translation>
 <translation id="2604805099836652105">Borang alamat <ph name="ADDRESS_LABEL" /> diisi.</translation>
@@ -2982,6 +2983,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3285329711156774325">Cari kemahiran</translation>
 <translation id="3285500645985761267">Benarkan laman berkaitan melihat aktiviti anda dalam kumpulan</translation>
 <translation id="328571385944182268">Simpan kata laluan anda?</translation>
+<translation id="3285969135399641759">Pelajari kemahiran baharu</translation>
 <translation id="3289668031376215426">Autohuruf besar</translation>
 <translation id="3289856944988573801">Untuk menyemak kemas kini, sila gunakan Ethernet atau Wi-Fi.</translation>
 <translation id="3290249595466894471">Turut menghantar sedikit sampel halaman, muat turun, aktiviti sambungan dan maklumat sistem untuk membantu penemuan ancaman baharu</translation>
@@ -6388,6 +6390,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5939719276406088041">Tidak dapat membuat pintasan</translation>
 <translation id="5939723110967488589">Pilih butang yang ditunjukkan pada bar alat</translation>
 <translation id="594048410531370124">Kekunci tidak dikenali. Tekan sebarang kekunci untuk <ph name="RESPONSE" />.</translation>
+<translation id="5940614040566393493">Dapatkan nasihat</translation>
 <translation id="5941711191222866238">Minimumkan</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{1 kata laluan disimpan pada peranti ini sahaja. Untuk menggunakan kata laluan ini pada peranti anda yang lain, simpan kata laluan dalam Google Account anda.}other{{PASSWORD_COUNT} kata laluan disimpan pada peranti ini sahaja. Untuk menggunakan kata laluan ini pada peranti anda yang lain, simpan kata laluan dalam Google Account anda.}}</translation>
 <translation id="594221546068848596">Cari halaman dengan <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -10695,7 +10698,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="983192555821071799">Tutup semua tab</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - Rakaman kamera dan mikrofon</translation>
 <translation id="984705303330760860">Tambah bahasa semak ejaan</translation>
-<translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Umum</translation>
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> mahu mendapatkan maklumat daripada peranti mudah alih anda</translation>
 <translation id="988320949174893488">Tersentak-sentak Sekali-sekala</translation>

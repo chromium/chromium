@@ -1736,6 +1736,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2353168619378866466">Ireki taldea</translation>
 <translation id="2353297238722298836">Kamera eta mikrofonoa erabil daitezke</translation>
+<translation id="2353682139907904963">Ainguratu luzapen berriak tresna-barran</translation>
 <translation id="2353910600995338714">Esportatu dira</translation>
 <translation id="2355477091455974894">Energia-aurreztailearen aukerak</translation>
 <translation id="2355604387869345912">Aktibatu konexioa bizkor partekatzeko eginbidea</translation>
@@ -3276,6 +3277,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3525606571546393707">Ireki fitxategia beste karpeta batetik, edo aukeratu "Ireki oinarrizko editorean" ikusteko eta editatzeko aukera mugatuak erabiltzeko.</translation>
 <translation id="3526034519184079374">Ezin dira irakurri edo aldatu webguneko datuak</translation>
 <translation id="3527085408025491307">Karpeta</translation>
+<translation id="3527473647192919613">Leiho isolatu berria</translation>
 <translation id="3528498924003805721">Lasterbideen jomugak</translation>
 <translation id="3529851166527095708">Helbideak eta beste</translation>
 <translation id="3530919970074558307">Kendu fokua taldeari</translation>
@@ -5781,6 +5783,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5463348003600590648">Desgaitu iradokizunak</translation>
 <translation id="5463625433003343978">Gailuak bilatzen…</translation>
 <translation id="5463856536939868464">Ezkutuko laster-markak dauzkan menua</translation>
+<translation id="5465214111614807935">&amp;Leiho isolatu berria</translation>
 <translation id="5466374726908360271">It&amp;satsi eta bilatu "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="5466721587278161554">Fitxa taldeak laster-marken barran eta aplikazioen menuan gordetzen dira, eta zure kontuan saioa hasita daukaten gailu guztietan eguneratzen dira sinkronizazioa aktibatuta badago</translation>
 <translation id="5467207440419968613">Blokeatutako <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
@@ -6910,6 +6913,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="6379228010899751161">Pasahitzak zure kontuan (<ph name="ACCOUNT_EMAIL" />) beti erabil ditzakezula ziurtatzeko, egiaztatu zeu zarela</translation>
 <translation id="6379827283296619736">Ez, jarraitu lan egiten profil honetan</translation>
 <translation id="6380618366311601172">Gemini-k ezingo du osatu <ph name="DOMAIN" /> domeinuan saioa hastea eskatzen duen zereginik.</translation>
+<translation id="6383321659284013430">&amp;Leiho isolatu berria</translation>
 <translation id="6383382161803538830">Irakurtzeko modua ez dago erabilgarri orri honetan</translation>
 <translation id="638418309848716977">Onartzen diren estekak</translation>
 <translation id="6384275966486438344">Bilaketa-ezarpen hau ezarri: <ph name="SEARCH_HOST" />.</translation>
@@ -10667,7 +10671,6 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari, sistema e
 <translation id="983192555821071799">Itxi fitxa guztiak</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" />: kamera eta mikrofonoa grabatzen</translation>
 <translation id="984705303330760860">Gehitu hizkuntzak ortografia-zuzentzailean</translation>
-<translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Orokorra</translation>
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> webguneak gailu mugikorretik informazioa lortu nahi du</translation>
 <translation id="988320949174893488">Noizbehinka moztu egiten da</translation>

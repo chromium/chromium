@@ -297,6 +297,7 @@
 <translation id="2233735624724508540">Выберыце перыяд часу і націсніце "Выдаліць даныя".</translation>
 <translation id="2234031676056123135">Наладзьце ярлыкі</translation>
 <translation id="2234827758954819389">Дапаможнік па прыватнасці</translation>
+<translation id="2236949375853147973">Мае дзеянні</translation>
 <translation id="2238038374973843156">Перамясціць групу ўкладак у іншае акно</translation>
 <translation id="2247789808226901522">Тэрмін дзеяння карткі скончыўся</translation>
 <translation id="2251809247798634662">Новае акно ў рэжыме інкогніта</translation>
@@ -574,6 +575,7 @@
 <translation id="3385749568468586663">Сэрвіс Gemini недаступны ў рэжыме інкогніта</translation>
 <translation id="3387650086002190359">Не ўдалося спампаваць файл "<ph name="FILE_NAME" />" з-за памылак файлавай сістэмы.</translation>
 <translation id="3391311825344469964">Вы можаце кіраваць вокнамі ў Менеджары вокнаў у Chrome</translation>
+<translation id="3410151451624226773">Кіраваць у Менеджары пароляў Google</translation>
 <translation id="3417835166382867856">Пошук укладак</translation>
 <translation id="3430670036890315772">Калі вы выключыце блакіроўку профілю, уся захаваная вамі інфармацыя будзе выдалена</translation>
 <translation id="3435575784518354875">Каб захаваць доступ да пароляў, экспартуйце іх, абнавіце сэрвісы Google Play і потым імпартуйце паролі назад у Менеджар пароляў Google. <ph name="BEGIN_LINK" />Глядзець поўныя інструкцыі<ph name="END_LINK" />.</translation>
@@ -942,6 +944,7 @@
 <translation id="4877678010818027629">Увайсці ў рэжым інкогніта</translation>
 <translation id="4878404682131129617">Не ўдалося стварыць тунэль праз проксі-сервер</translation>
 <translation id="4880127995492972015">Перакласці…</translation>
+<translation id="4880827082731008257">Гісторыя пошуку</translation>
 <translation id="4881695831933465202">Адкрыць</translation>
 <translation id="488187801263602086">Перайменаваць файл</translation>
 <translation id="4885273946141277891">Недапушчальная колькасць версій Chrome.</translation>
@@ -991,6 +994,7 @@
 <translation id="509429900233858213">Адбылася памылка.</translation>
 <translation id="5096775069898886423">Атрымліваць папярэджанне, перш чым наведваць сайт, які не падтрымлівае бяспечнае падключэнне</translation>
 <translation id="510275257476243843">Засталася 1 гадзіна</translation>
+<translation id="5105442806410269908">Кіраваць іншымі данымі Google</translation>
 <translation id="5114895953710637392">Аркуш фільтрацыі па праграме закрыты.</translation>
 <translation id="5115811374190515607">куды: <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Вы можаце выкарыстоўваць Chrome кожны раз, калі націскаеце на спасылкі ў паведамленнях, дакументах або іншых праграмах</translation>
@@ -1041,6 +1045,7 @@
 <translation id="5316947901395241499">Адміністратар адключыў магчымасць захоўваць паролі</translation>
 <translation id="5317780077021120954">Захаваць</translation>
 <translation id="5319359161174645648">Google рэкамендуе браўзер Chrome</translation>
+<translation id="5323501626199324454">Кіраваць ва Уліковым запісе Google</translation>
 <translation id="5326246328175179736">Вы не можаце ўвайсці праз гэты ўліковы запіс</translation>
 <translation id="5327248766486351172">Імя</translation>
 <translation id="5328542107300944283">Выкарыстоўвайце праз <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1325,6 +1330,7 @@
 <translation id="6461962085415701688">Не ўдалося адкрыць файл</translation>
 <translation id="6464977750820128603">Вы можаце бачыць сайты, якія наведвалі ў Chrome, і задаваць для іх таймеры.\n\nGoogle атрымлівае інфармацыю пра сайты, для якіх вы задалі таймеры, і працягласць іх наведвання. Гэта інфармацыя выкарыстоўваецца для паляпшэння якасці лічбавага камфорту.</translation>
 <translation id="6468703991511753953">Адрасны радок знаходзіцца ў ніжняй частцы экрана</translation>
+<translation id="6469702164109431067">Паролі і ключы доступу</translation>
 <translation id="6470181189905173055">Старонкі, якія вы адкрывалі ў Chrome, выкарыстоўваючы праграму "<ph name="APP_LABEL" />", з’явяцца тут.</translation>
 <translation id="6473086018775716761">Спіс варыянтаў абагульвання разгорнуты на палову экрана.</translation>
 <translation id="6475951671322991020">Спампаваць відэа</translation>

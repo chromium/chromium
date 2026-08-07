@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Документ Word</translation>
 <translation id="1056775291175587022">Нет сетей</translation>
 <translation id="1056898198331236512">Внимание</translation>
-<translation id="1060368002126861100">Чтобы открыть файлы с помощью приложения "<ph name="APP_NAME" />", переместите их в папку "Файлы Windows".</translation>
 <translation id="1062407476771304334">Заменить</translation>
 <translation id="1119383441774809183">Показывать текстовые сообщения</translation>
 <translation id="1119447706177454957">Внутренняя ошибка</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">Норвежский</translation>
 <translation id="1408504635543854729">Чтобы просмотреть контент, хранящийся на устройстве, перейдите в приложение "Файлы". Администратор запретил изменять этот контент.</translation>
 <translation id="1412476183660741812">Подписанный веб-пакет</translation>
-<translation id="1433628812591023318">Чтобы загрузить файлы в Parallels Desktop, переместите их в папку "Файлы Windows".</translation>
-<translation id="1435838927755162558">Предоставление Parallels Desktop доступа к папке</translation>
 <translation id="1439919885608649279">Человек с цветами</translation>
 <translation id="1458457385801829801">Извлечь <ph name="TARGET_NAME" /></translation>
 <translation id="1464781208867302907">Чтобы изменить параметры устройства, откройте приложение "Настройки".</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">Французская</translation>
 <translation id="2732288874651063549">Настройки доступа для <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">Вьетнамский, раскладка VNI</translation>
-<translation id="2735623501230989521">Parallels Desktop сможет получать доступ к файлам в папке "<ph name="FOLDER_NAME" />".</translation>
 <translation id="2764206540577097904">Закончилось место в хранилище вашего личного аккаунта Google Workplace.</translation>
 <translation id="2771816809568414714">Сыр</translation>
 <translation id="2783909841122647548">Установка пакетов Debian больше не поддерживается. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">Место съемки</translation>
 <translation id="3044404008258011032">Чтобы восстановить эти объекты, перетащите их из корзины в новую папку. Папка "<ph name="PARENT_FOLDER_NAME" />", в которой они находились ранее, была удалена.</translation>
 <translation id="3047197340186497470">Китайский, даи</translation>
-<translation id="3067790092342515856">Файлы Windows</translation>
 <translation id="3083975830683400843">Устройства Chromebit</translation>
 <translation id="3085752524577180175">SOCKS-прокси</translation>
 <translation id="3091469289665833668">Румынская</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">За подробной информацией обратитесь к администратору.</translation>
 <translation id="3548125359243647069">PIN-код был введен неверно слишком много раз.</translation>
 <translation id="3549797760399244642">Перейти на drive.google.com…</translation>
-<translation id="3553048479571901246">Чтобы открыть файлы с помощью приложения "<ph name="APP_NAME" />", скопируйте их в папку "Файлы Windows".</translation>
 <translation id="3556731189587832921">Английский (США), международная раскладка (ПК)</translation>
 <translation id="3557414470514932909">Перемещение объекта "<ph name="FILE_NAME" />" в корзину…</translation>
 <translation id="3560848236447534728">Армянская (фонетическая)</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">Румынский</translation>
 <translation id="4508265954913339219">Активация завершилась со сбоем</translation>
 <translation id="4509667233588080747">Английский (США), международная раскладка Workman</translation>
-<translation id="4527800702232535228">Доступ к этой папке предоставлен Parallels Desktop.</translation>
 <translation id="4552678318981539154">Приобретите дополнительное пространство</translation>
 <translation id="4552759165874948005">Сеть <ph name="NETWORK_TYPE" />, уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4559767610552730302">Боке</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">Онигири</translation>
 <translation id="4784330909746505604">Презентация PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> КБ</translation>
-<translation id="4789067489790477934">Parallels Desktop сможет получать доступ к файлам на Google Диске. Изменения вступят в силу на всех ваших устройствах.</translation>
 <translation id="4790766916287588578">Хинди, раскладка InScript</translation>
 <translation id="4798645114741131062">Устройство с ChromeOS Flex скоро перестанет получать обновления. Рекомендуем перейти на устройство с ChromeOS.</translation>
 <translation id="4801956050125744859">Оставить обе версии</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">Ползунок громкости</translation>
 <translation id="4881695831933465202">Открыть</translation>
 <translation id="4891091358278567964">Чтобы восстановить эти объекты, перетащите их из корзины в новую папку. Папки, в которых эти объекты находились ранее, были удалены.</translation>
-<translation id="4900532980794411603">Предоставить доступ Parallels Desktop</translation>
 <translation id="4902546322522096650">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", статус защиты – "<ph name="SECURITY_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, подключение</translation>
 <translation id="4906580650526544301">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="PHONE_NAME" />", оператор – <ph name="PROVIDER_NAME" />, статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, заряд батареи – <ph name="BATTERY_STATUS" /> %, подробная информация</translation>
 <translation id="4935975195727477204">Гацания</translation>
 <translation id="4943368462779413526">Футбол</translation>
-<translation id="4961158930123534723">Parallels Desktop предоставлен доступ к 1 папке.</translation>
 <translation id="4965874878399872778">Проверка файлов на соответствие правилам безопасности вашей организации…</translation>
 <translation id="496656650103537022">Файл <ph name="FILE_NAME" /> восстановлен</translation>
 <translation id="4969785127455456148">Альбом</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Операция займет больше времени, чем ожидалось. Прервать?</translation>
 <translation id="5036141350290856713">Русская (фонетическая)</translation>
-<translation id="5036159836254554629">Управлять доступом для Parallels Desktop</translation>
 <translation id="5038625366300922036">Ещё...</translation>
 <translation id="5044852990838351217">Армянский</translation>
 <translation id="5045550434625856497">Неправильный пароль</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">Удаление файла "<ph name="FILENAME" />"…</translation>
 <translation id="6581162200855843583">Ссылка на Google Диск</translation>
 <translation id="6588648400954570689">Настройки синхронизации файлов</translation>
-<translation id="6594855146910089723">Доступ к этой папке предоставлен Linux и Parallels Desktop.</translation>
 <translation id="6607272825297743757">Информация о файле</translation>
-<translation id="6609332149380188670">Parallels Desktop предоставлен доступ к нескольким папкам (<ph name="NUMBER_OF_ITEMS" />).</translation>
 <translation id="6629518321609546825">Введите не менее четырех цифр.</translation>
 <translation id="6643016212128521049">Удалить</translation>
 <translation id="6650726141019353908">Розовая бабочка</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">При изменении названия произошла ошибка.</translation>
 <translation id="7458955835361612701">Нет недавних изображений.</translation>
 <translation id="7469894403370665791">Автоматически подключаться к этой сети</translation>
-<translation id="7486315294984620427">Чтобы загрузить файлы в Parallels Desktop, скопируйте их в папку "Файлы Windows".</translation>
 <translation id="749452993132003881">Хирагана</translation>
 <translation id="7495372004724182530">Малаялам, фонетический</translation>
 <translation id="7505167922889582512">Показывать скрытые файлы</translation>

@@ -454,6 +454,7 @@
 <translation id="2422174748424038845">अगर आपने इसे मिटा दिया, तो सभी लोगों के लिए “<ph name="GROUP_NAME" />" टैब ग्रुप का ऐक्सेस तुरंत हटा दिया जाएगा. साथ ही, इसे सभी डिवाइसों से मिटा दिया जाएगा.</translation>
 <translation id="2424805048070062787">इस टैब के साथ जारी रखें</translation>
 <translation id="2426805022920575512">दूसरा खाता चुनें</translation>
+<translation id="2428543302546523788">रीडिंग मोड चालू होने पर लिंक दिखाएं</translation>
 <translation id="243275146591958220">डाउनलोड रद्द करें</translation>
 <translation id="2434405374328098816">आपने <ph name="WEBSITE" /> पर, "<ph name="USERNAME" />" का पासवर्ड पहले ही सेव कर दिया है</translation>
 <translation id="2434918313224755415">गुप्त मोड में ब्राउज़ करने के लिए, बाईं ओर स्क्रोल करें.</translation>
@@ -468,6 +469,7 @@
 <translation id="2470654816840674524">Chrome में Gemini की मदद से क्या-क्या काम किए जा सकते हैं?</translation>
 <translation id="2473876017985765807">आपने <ph name="WEBSITE" /> पर, पासवर्ड पहले ही सेव कर दिया है</translation>
 <translation id="247430852844518481">इस पेज पर बाद में वापस आने के लिए, रिमाइंडर सेट किया जा सकता है</translation>
+<translation id="2476554421818031422">इससे बेहतर ऑटोफ़िल की सुविधा को और बेहतर बनाने में मदद मिलती है</translation>
 <translation id="2479148705183875116">सेटिंग पर जाएं</translation>
 <translation id="2482878487686419369">सूचनाएं</translation>
 <translation id="2484459871750294497">मैं इस सुविधा को चालू कैसे करूं?</translation>
@@ -2068,6 +2070,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="78146569776629510">डाउनलोड</translation>
 <translation id="7815852444315004084">अभी के लिए छिपाएं</translation>
 <translation id="7825973332242257878">टैब ग्रुप</translation>
+<translation id="7828344837949522075">सुझाव दिखाएं</translation>
 <translation id="7839994177130598711">आपके परिवार के सदस्यों के पास अब Google Password Manager की मदद से, आपके उपयोगकर्ता नाम और पासवर्ड का इस्तेमाल करके <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> में साइन इन करने की सुविधा है.</translation>
 <translation id="7841180087127694526">कॉपी किया गया टेक्स्ट खोजें</translation>
 <translation id="7841418003178675048">चुनें कि टैब के नए पेज पर आपको कौनसे कार्ड देखने हैं.</translation>

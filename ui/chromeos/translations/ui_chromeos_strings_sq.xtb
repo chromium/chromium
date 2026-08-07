@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Dokument Word</translation>
 <translation id="1056775291175587022">Nuk ka rrjete</translation>
 <translation id="1056898198331236512">Paralajmërim</translation>
-<translation id="1060368002126861100">Për të hapur skedarët me <ph name="APP_NAME" />, në fillim zhvendosi në dosjen e skedarëve të Windows.</translation>
 <translation id="1062407476771304334">Zëvendëso</translation>
 <translation id="1119383441774809183">Shfaq mesazhet me tekst</translation>
 <translation id="1119447706177454957">Gabim i brendshëm</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">Norvegjisht</translation>
 <translation id="1408504635543854729">Eksploro përmbajtjen e pajisjes në aplikacionin "Skedarët". Përmbajtja është e kufizuar nga një administrator dhe nuk mund të modifikohet.</translation>
 <translation id="1412476183660741812">Paketa e nënshkruar e uebit</translation>
-<translation id="1433628812591023318">Për t'i lëshuar skedarët në Parallels Desktop, skedari duhet të zhvendoset te dosja e skedarëve të Windows.</translation>
-<translation id="1435838927755162558">Ndaje dosjen me Parallels Desktop</translation>
 <translation id="1439919885608649279">Person me lule</translation>
 <translation id="1458457385801829801">Nxirr <ph name="TARGET_NAME" /></translation>
 <translation id="1464781208867302907">Për preferencat e pajisjes, shko te "Cilësimet".</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">Frënge</translation>
 <translation id="2732288874651063549">Menaxho ndarjen me <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">Vietnamisht VNI</translation>
-<translation id="2735623501230989521">Jepi leje Parallels Desktop që të qaset në skedarët në dosjen <ph name="FOLDER_NAME" /></translation>
 <translation id="2764206540577097904">E ke përdorur të gjithë hapësirën tënde ruajtëse individuale të Google Workspace.</translation>
 <translation id="2771816809568414714">Djathë</translation>
 <translation id="2783909841122647548">Instalimet e paketave Debian nuk mbështeten më. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">Gjeografia</translation>
 <translation id="3044404008258011032">Për t'i restauruar këta artikuj, zvarriti ata te një dosje e re jashtë koshit. Dosja origjinale "<ph name="PARENT_FOLDER_NAME" />" për këta artikuj është fshirë.</translation>
 <translation id="3047197340186497470">Kinezisht Dayi</translation>
-<translation id="3067790092342515856">Skedarët e Windows</translation>
 <translation id="3083975830683400843">Pajisjet Chromebit</translation>
 <translation id="3085752524577180175">Strehuesi i protokollit SOCKS</translation>
 <translation id="3091469289665833668">Rumune</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">Kontakto me administratorin tënd për detaje.</translation>
 <translation id="3548125359243647069">Është futur shumë herë një kod PIN i gabuar.</translation>
 <translation id="3549797760399244642">Shko te drive.google.com...</translation>
-<translation id="3553048479571901246">Për të hapur skedarët me <ph name="APP_NAME" />, në fillim kopjoji në dosjen e skedarëve të Windows.</translation>
 <translation id="3556731189587832921">Anglisht (SHBA) me tastierën ndërkombëtare për PC</translation>
 <translation id="3557414470514932909"><ph name="FILE_NAME" /> po zhvendoset te koshi</translation>
 <translation id="3560848236447534728">Fonetike armene</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">Rumanisht</translation>
 <translation id="4508265954913339219">Aktivizimi dështoi</translation>
 <translation id="4509667233588080747">Anglisht (SHBA) me tastierën Workman International</translation>
-<translation id="4527800702232535228">Kjo dosje është ndarë me Parallels Desktop</translation>
 <translation id="4552678318981539154">Bli më shumë hapësirë ruajtëse</translation>
 <translation id="4552759165874948005">Rrjeti <ph name="NETWORK_TYPE" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">Efekti i turbullimit</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">Prezantim në PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
-<translation id="4789067489790477934">Jepi leje Parallels Desktop që të qaset në skedarët në "Diskun tënd të Google". Ndryshimet do të sinkronizohen në pajisjet e tua të tjera.</translation>
 <translation id="4790766916287588578">Hindisht me tastierë InScript</translation>
 <translation id="4798645114741131062">Pajisja jote me ChromeOS Flex do të ndalojë së marri përditësime së shpejti. Merr parasysh të kalosh në një pajisje me ChromeOS.</translation>
 <translation id="4801956050125744859">Mbaji të dyja</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">Rrëshqitësi i volumit</translation>
 <translation id="4881695831933465202">Hap</translation>
 <translation id="4891091358278567964">Për t'i restauruar këta artikuj, zvarriti ata te një dosje e re jashtë koshit. Dosjet origjinale për këta artikuj janë fshirë.</translation>
-<translation id="4900532980794411603">Ndaj me Parallels Desktop</translation>
 <translation id="4902546322522096650">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, lidhu</translation>
 <translation id="4906580650526544301">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, bateria e telefonit <ph name="BATTERY_STATUS" />%, detaje</translation>
 <translation id="4935975195727477204">Lule Gazania</translation>
 <translation id="4943368462779413526">Futboll</translation>
-<translation id="4961158930123534723">1 dosje e ndarë me Parallels Desktop</translation>
 <translation id="4965874878399872778">Skedarët po kontrollohen me politikat e sigurisë së organizatës sate...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> u restaurua</translation>
 <translation id="4969785127455456148">Albumi</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Një operacion po zgjat më shumë nga sa pritej. Dëshiron që ta braktisësh?</translation>
 <translation id="5036141350290856713">Fonetike ruse</translation>
-<translation id="5036159836254554629">Menaxho ndarjen e Parallels Desktop</translation>
 <translation id="5038625366300922036">Shiko më shumë...</translation>
 <translation id="5044852990838351217">Armenisht</translation>
 <translation id="5045550434625856497">Fjalëkalim i gabuar</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">Po fshin "<ph name="FILENAME" />"...</translation>
 <translation id="6581162200855843583">Lidhja e "Diskut të Google"</translation>
 <translation id="6588648400954570689">Cilësimet e sinkronizimit të skedarëve</translation>
-<translation id="6594855146910089723">Kjo dosje është ndarë me Linux dhe Parallels Desktop</translation>
 <translation id="6607272825297743757">Informacioni i skedarit</translation>
-<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> dosje të ndara me Parallels Desktop</translation>
 <translation id="6629518321609546825">Fut të paktën 4 numra</translation>
 <translation id="6643016212128521049">Pastro</translation>
 <translation id="6650726141019353908">Flutur rozë</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">Mos! Pati një gabim gjatë riemërtimit.</translation>
 <translation id="7458955835361612701">Nuk ka imazhe të fundit</translation>
 <translation id="7469894403370665791">Lidhu automatikisht me këtë rrjet</translation>
-<translation id="7486315294984620427">Për t'i lëshuar skedarët në Parallels Desktop, skedari duhet të kopjohet te dosja e skedarëve të Windows.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malajalamisht fonetike</translation>
 <translation id="7505167922889582512">Shfaq skedarët e fshehur</translation>

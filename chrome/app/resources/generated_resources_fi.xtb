@@ -2067,6 +2067,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2598710988533271874">Uusi Chrome saatavilla</translation>
 <translation id="2599048253926156421">Käyttäjätunnus kopioitu leikepöydälle</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{1 vaarallinen laajennus laitettu pois päältä}other{{NUM_SITES} vaarallista laajennusta laitettu pois päältä}}</translation>
+<translation id="2603121359676416582">Tälle sivulle</translation>
 <translation id="2604129989323098489">Sivustot pyytävät yleensä tietoa näytöistäsi, jotta ne voivat avata ja sijoittaa ikkunoita älykkäästi, esimerkiksi näyttää dokumentteja tai koko näytön sisältöä vierekkäin</translation>
 <translation id="2604255671529671813">Verkkoyhteysvirhe</translation>
 <translation id="2604805099836652105"><ph name="ADDRESS_LABEL" /> osoitelomake täytetty.</translation>
@@ -2981,6 +2982,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3285329711156774325">Hae taitoja</translation>
 <translation id="3285500645985761267">Salli toisiinsa liittyvien sivustojen nähdä toimintasi ryhmässä</translation>
 <translation id="328571385944182268">Tallennetaanko salasanat?</translation>
+<translation id="3285969135399641759">Opi uusi taito</translation>
 <translation id="3289668031376215426">Automaattiset isot kirjaimet</translation>
 <translation id="3289856944988573801">Tarkista päivitykset Ethernetin tai Wi-Fin kautta.</translation>
 <translation id="3290249595466894471">Lähettää myös pienen näytteen sivuista, latauksista, laajennustoiminnasta ja järjestelmätiedoista auttaakseen löytämään uusia uhkia</translation>
@@ -6384,6 +6386,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="5939719276406088041">Pikakuvaketta ei voi luoda</translation>
 <translation id="5939723110967488589">Valitse yläpalkissa näkyvät painikkeet</translation>
 <translation id="594048410531370124">Tuntematon näppäin. <ph name="RESPONSE" /> painamalla mitä tahansa näppäintä.</translation>
+<translation id="5940614040566393493">Pyydä apua</translation>
 <translation id="5941711191222866238">Pienennä</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{1 salasana tallennetaan vain tälle laitteelle. Jos haluat käyttää sitä muilla laitteilla, tallenna se Google-tilillesi.}other{{PASSWORD_COUNT} salasanaa tallennetaan vain tälle laitteelle. Jos haluat käyttää niitä muilla laitteilla, tallenna ne Google-tilillesi.}}</translation>
 <translation id="594221546068848596">Hae sivua tällä: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -10690,7 +10693,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="983192555821071799">Sulje kaikki välilehdet</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – kameran ja mikrofonin tallennus</translation>
 <translation id="984705303330760860">Lisää oikeinkirjoituksen tarkistuksen kieliä</translation>
-<translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Yleistä</translation>
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> haluaa saada tietoja mobiililaitteeltasi</translation>
 <translation id="988320949174893488">Nykii välillä</translation>

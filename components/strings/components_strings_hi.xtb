@@ -4439,6 +4439,7 @@
 <translation id="8708134712139312373">साइट, ब्लूटूथ डिवाइसों से कनेक्ट करने की अनुमति मांग सकती है</translation>
 <translation id="8710842507289500830">फ़ॉन्ट स्टाइल</translation>
 <translation id="8712637175834984815">समझ लिया</translation>
+<translation id="8715198179991802709">Chrome ने अभी उस वेबसाइट को फ़्लैग किया है जिस पर विज़िट करने की कोशिश की जा रही थी. एक मिनट के इस सर्वे में हिस्सा लें और इन चेतावनियों को और बेहतर बनाने में हमारी मदद करें.</translation>
 <translation id="8718314106902482036">भुगतान पूरा नहीं हुआ</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, खोज सुझाव</translation>
 <translation id="8719528812645237045">सबसे ऊपर एक से ज़्यादा पंच</translation>
@@ -4566,7 +4567,6 @@
 <translation id="8932102934695377596">आपकी घड़ी पीछे है</translation>
 <translation id="893332455753468063">नाम जोड़ें</translation>
 <translation id="8938242527120341116">आपके डिवाइस के कॉन्टेंट फ़िल्टर ने <ph name="BLOCKED_URL" /> को ब्लॉक किया है</translation>
-<translation id="8942355029279167844">आपके एडमिन ने प्रॉडक्ट को बेहतर बनाने के लिए, गड़बड़ी की जानकारी वाला डेटा इकट्ठा करने की अनुमति <ph name="APP_NAME" /> को दी है. ज़्यादा जानकारी के लिए, <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> देखें.</translation>
 <translation id="8943282376843390568">नींबू पीला</translation>
 <translation id="8949410982325929394">टोन</translation>
 <translation id="8949493680961858543">A1x4</translation>

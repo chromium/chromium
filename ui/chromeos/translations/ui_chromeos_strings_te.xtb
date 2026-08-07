@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Word డాక్యుమెంట్‌</translation>
 <translation id="1056775291175587022">నెట్‌వ. లేవు</translation>
 <translation id="1056898198331236512">హెచ్చరిక</translation>
-<translation id="1060368002126861100"><ph name="APP_NAME" />తో ఫైళ్లను తెరవడానికి ముందుగా వాటిని Windows ఫైళ్ల ఫోల్డర్‌కు తరలించండి.</translation>
 <translation id="1062407476771304334">భర్తీ చేయి</translation>
 <translation id="1119383441774809183">టెక్స్ట్ మెసేజ్‌లను చూడండి</translation>
 <translation id="1119447706177454957">అంతర్గత ఎర్రర్</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">నార్వేజియన్</translation>
 <translation id="1408504635543854729">ఫైల్స్ యాప్‌లో పరికర కంటెంట్‌ను విశ్లేషించండి. కంటెంట్‌ను నిర్వాహకులు పరిమితం చేశారు మరియు దాన్ని ఎడిట్ చేయడం సాధ్యపడదు.</translation>
 <translation id="1412476183660741812">సైన్ చేసిన వెబ్ బండిల్</translation>
-<translation id="1433628812591023318">Parallels Desktopలో ఫైళ్లను డ్రాప్ చేయడానికి, ఫైల్ తప్పనిసరిగా Windows ఫైళ్లకు తరలించాల్సి ఉంటుంది.</translation>
-<translation id="1435838927755162558">Parallels Desktopతో ఫోల్డర్‌ను షేర్ చేయండి</translation>
 <translation id="1439919885608649279">పూలను పట్టుకున్న వ్యక్తి</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" />‌ను తొలగించండి</translation>
 <translation id="1464781208867302907">పరికర ప్రాధాన్యతల కోసం, సెట్టింగ్‌లకు వెళ్లండి.</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">ఫ్రెంచ్</translation>
 <translation id="2732288874651063549"><ph name="VM_NAME" />‌తో షేర్ చేసిన వాటిని మేనేజ్ చేయండి</translation>
 <translation id="2732839045120506979">వియత్నామీస్ VNI</translation>
-<translation id="2735623501230989521"><ph name="FOLDER_NAME" /> ఫోల్డర్‌లోని ఫైల్స్‌ను యాక్సెస్ చేయడానికి Parallels Desktopకు అనుమతిని ఇవ్వండి</translation>
 <translation id="2764206540577097904">మీరు మీ వ్యక్తిగత Google Workspace స్టోరేజ్ మొత్తాన్ని ఉపయోగించారు.</translation>
 <translation id="2771816809568414714">జున్ను</translation>
 <translation id="2783909841122647548">Debian ప్యాకేజీ ఇన్‌స్టాల్స్‌కు ఇకపై సపోర్ట్ ఉండదు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">భూగోళ శాస్త్రం</translation>
 <translation id="3044404008258011032">ఈ ఐటెమ్‌లను రీస్టోర్ చేయడానికి, వాటిని ట్రాష్ వెలుపల ఉన్న కొత్త ఫోల్డర్‌కు లాగండి. ఈ ఐటెమ్‌లకు సంబంధించిన ఒరిజినల్ ఫోల్డర్ "<ph name="PARENT_FOLDER_NAME" />" తొలగించబడింది.</translation>
 <translation id="3047197340186497470">చైనీస్ డేయి</translation>
-<translation id="3067790092342515856">Windows ఫైళ్లు</translation>
 <translation id="3083975830683400843">Chromebitలు</translation>
 <translation id="3085752524577180175">SOCKS హోస్ట్</translation>
 <translation id="3091469289665833668">రొమేనియన్</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">వివరాల కోసం మీ అడ్మినిస్ట్రేటర్‌ను సంప్రదించండి.</translation>
 <translation id="3548125359243647069">చాలా ఎక్కువ సార్లు తప్పు PIN ఎంటర్ చేయబడింది.</translation>
 <translation id="3549797760399244642">drive.google.comకు వెళ్లండి...</translation>
-<translation id="3553048479571901246"><ph name="APP_NAME" />తో ఫైళ్లను తెరవడానికి ముందుగా వాటిని Windows ఫైళ్ల ఫోల్డర్‌కు కాపీ చేయండి.</translation>
 <translation id="3556731189587832921">అంతర్జాతీయ PC కీబోర్డ్‌తో ఇంగ్లీష్ (US)</translation>
 <translation id="3557414470514932909"><ph name="FILE_NAME" /> ట్రాష్‌కు తరలించబడుతోంది</translation>
 <translation id="3560848236447534728">ఆర్మేనియన్ ఫోనెటిక్</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">రొమేనియన్</translation>
 <translation id="4508265954913339219">సక్రియం  చేయడం విఫలమైంది</translation>
 <translation id="4509667233588080747">Workman అంతర్జాతీయ కీబోర్డ్‌తో ఇంగ్లీష్ (US)</translation>
-<translation id="4527800702232535228">ఈ ఫోల్డర్ Parallels Desktopతో షేర్ చేయబడింది</translation>
 <translation id="4552678318981539154">మరింత నిల్వను కొనుగోలు చేయండి</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> నెట్‌వర్క్, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">బొకే</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">ఒనిగిరి</translation>
 <translation id="4784330909746505604">PowerPoint ప్రెజెంటేషన్</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
-<translation id="4789067489790477934">Google Driveలోని ఫైల్స్‌ను యాక్సెస్ చేయడానికి Parallels Desktopకు అనుమతిని ఇవ్వండి. మార్పులు మీ ఇతర పరికరాలలో కూడా సింక్ చేయబడతాయి.</translation>
 <translation id="4790766916287588578">ఇన్‌స్క్రిప్ట్ కీబోర్డ్‌తో హిందీ</translation>
 <translation id="4798645114741131062">మీ ChromeOS Flex డివైజ్ త్వరలో అప్‌డేట్‌లను అందుకోవడం ఆపివేస్తుంది. ChromeOS డివైజ్‌కు అప్‌గ్రేడ్ చేయడాన్ని పరిశీలించండి.</translation>
 <translation id="4801956050125744859">రెండింటినీ ఉంచు</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">వాల్యూమ్ స్లయిడర్</translation>
 <translation id="4881695831933465202">తెరువు</translation>
 <translation id="4891091358278567964">ఈ ఐటెమ్‌లను రీస్టోర్ చేయడానికి, వాటిని ట్రాష్ వెలుపల ఉన్న కొత్త ఫోల్డర్‌కు లాగండి. ఈ ఐటెమ్‌లకు సంబంధించిన ఒరిజినల్ ఫోల్డర్‌లు తొలగించబడ్డాయి.</translation>
-<translation id="4900532980794411603">Parallels Desktopతో షేర్ చేయండి</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, కనెక్ట్ చేయండి</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, ఫోన్ బ్యాటరీ <ph name="BATTERY_STATUS" />%, వివరాలు</translation>
 <translation id="4935975195727477204">గజేనియా పుష్పం</translation>
 <translation id="4943368462779413526">ఫుట్‌బాల్</translation>
-<translation id="4961158930123534723">Parallels Desktopతో 1 ఫోల్డర్ షేర్ చేయబడింది</translation>
 <translation id="4965874878399872778">మీ సంస్థకు చెందిన సెక్యూరిటీ పాలసీలకు అనుగుణంగా ఫైల్స్‌ ఉన్నాయా, లేదా అన్నది చెక్ చేస్తోంది...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> రీస్టోర్ చేయబడింది</translation>
 <translation id="4969785127455456148">ఆల్బమ్</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">ఈ చర్య పూర్తి చేయడానికి అనుకున్నదాని కంటే ఎక్కువ సమయం పడుతోంది. మీరు దీనిని రద్దు చేయాలనుకుంటున్నారా?</translation>
 <translation id="5036141350290856713">రష్యన్ ఫోనెటిక్</translation>
-<translation id="5036159836254554629">Parallels Desktop షేరింగ్‌ను మేనేజ్ చేయండి</translation>
 <translation id="5038625366300922036">మరింత చూడండి...</translation>
 <translation id="5044852990838351217">అర్మేనియన్</translation>
 <translation id="5045550434625856497">సరికాని పాస్‌వర్డ్</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">"<ph name="FILENAME" />"ని తొలగిస్తోంది...</translation>
 <translation id="6581162200855843583">Google Drive లింక్</translation>
 <translation id="6588648400954570689">ఫైల్ సింక్ సెట్టింగ్‌లు</translation>
-<translation id="6594855146910089723">ఈ ఫోల్డర్ Linux ఇంకా Parallels Desktopతో షేర్ చేయబడింది</translation>
 <translation id="6607272825297743757">ఫైల్ సమాచారం</translation>
-<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> ఫోల్డర్‌లు Parallels Desktopతో చేర్చబడ్డాయి</translation>
 <translation id="6629518321609546825">కనీసం 4 నంబర్‌లను ఎంటర్ చేయండి</translation>
 <translation id="6643016212128521049">క్లియర్ చేయండి</translation>
 <translation id="6650726141019353908">గులాబి రంగు సీతాకోకచిలుక</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">అయ్యో! పేరు మారుస్తున్నప్పుడు ఎర్రర్ ఏర్పడింది.</translation>
 <translation id="7458955835361612701">ఇటీవలి ఇమేజ్‌లు ఏవీ లేవు</translation>
 <translation id="7469894403370665791">ఆటోమేటిక్‌గా ఈ నెట్‌వర్క్‌కు కనెక్ట్ చేయి</translation>
-<translation id="7486315294984620427">Parallels Desktopలో ఫైళ్లను డ్రాప్ చేయడానికి, ఫైల్ తప్పనిసరిగా Windows ఫైళ్లకు కాపీ చేయబడి ఉండాలి.</translation>
 <translation id="749452993132003881">హిరగానా</translation>
 <translation id="7495372004724182530">మలయాళం ఫొనెటిక్</translation>
 <translation id="7505167922889582512">దాచిన ఫైళ్లను చూపు</translation>

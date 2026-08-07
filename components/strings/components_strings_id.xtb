@@ -593,6 +593,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2027465737841872819">Plastik</translation>
 <translation id="2027707238798802149">Kartu tidak tersedia</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Memeriksa proxy dan firewall<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">Instance Chrome ini sedang berjalan dengan tanda command line yang disetel secara manual. Perhatikan bahwa tanda command line dapat berubah sewaktu-waktu dan tidak didukung.</translation>
 <translation id="2033900728810589426">Pintasan tidak boleh sama dengan kata kunci penyedia penelusuran default yang ditentukan oleh <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Simpan saja</translation>
 <translation id="2036514476578229158">Kamu meminta untuk membuka situs ini. Orang tuamu bisa membalas di Family Link.</translation>
@@ -4560,7 +4561,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="8932102934695377596">Setelan waktu Anda terlalu lambat</translation>
 <translation id="893332455753468063">Tambahkan Nama</translation>
 <translation id="8938242527120341116">Filter konten perangkat Anda memblokir <ph name="BLOCKED_URL" /></translation>
-<translation id="8942355029279167844">Administrator Anda telah mengizinkan <ph name="APP_NAME" /> untuk mengumpulkan data diagnostik guna menyempurnakan pengalaman produk. Buka <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> untuk informasi selengkapnya.</translation>
 <translation id="8943282376843390568">Hijau limau</translation>
 <translation id="8949410982325929394">Suasana</translation>
 <translation id="8949493680961858543">A1x4</translation>

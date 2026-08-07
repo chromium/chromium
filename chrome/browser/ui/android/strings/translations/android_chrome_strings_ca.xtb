@@ -296,6 +296,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2233735624724508540">Tria un període de temps i, a continuació, toca Suprimeix les dades</translation>
 <translation id="2234031676056123135">Personalitza les dreceres</translation>
 <translation id="2234827758954819389">Guia de privadesa</translation>
+<translation id="2236949375853147973">La meva activitat</translation>
 <translation id="2238038374973843156">Mou a una altra finestra</translation>
 <translation id="2247789808226901522">Targeta caducada</translation>
 <translation id="2251809247798634662">Finestra d'incògnit nova</translation>
@@ -573,6 +574,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3385749568468586663">Gemini no està disponible en el mode d'incògnit</translation>
 <translation id="3387650086002190359">No s'ha pogut baixar <ph name="FILE_NAME" /> a causa d'errors amb el sistema de fitxers.</translation>
 <translation id="3391311825344469964">Pots gestionar les finestres al gestor de finestres de Chrome</translation>
+<translation id="3410151451624226773">Gestiona al gestor de contrasenyes de Google</translation>
 <translation id="3417835166382867856">Cerca pestanyes</translation>
 <translation id="3430670036890315772">En desactivar el bloqueig de perfil, se suprimirà la informació desada</translation>
 <translation id="3435575784518354875">Per mantenir l'accés a les contrasenyes, exporta-les ara, actualitza Serveis de Google Play i, a continuació, importa-les al gestor de contrasenyes de Google. <ph name="BEGIN_LINK" />Mostra les instruccions completes<ph name="END_LINK" />.</translation>
@@ -941,6 +943,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4877678010818027629">Entra al mode d'incògnit</translation>
 <translation id="4878404682131129617">Hi ha hagut un error en establir un túnel mitjançant el servidor intermediari</translation>
 <translation id="4880127995492972015">Tradueix…</translation>
+<translation id="4880827082731008257">Cerca a l'historial</translation>
 <translation id="4881695831933465202">Obre</translation>
 <translation id="488187801263602086">Canvia el nom del fitxer</translation>
 <translation id="4885273946141277891">No s'admet aquest nombre d'instàncies de Chrome.</translation>
@@ -990,6 +993,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="509429900233858213">S'ha produït un error.</translation>
 <translation id="5096775069898886423">Per als llocs web que no admeten connexions segures, reps un advertiment abans de visitar-los.</translation>
 <translation id="510275257476243843">Queda 1 hora</translation>
+<translation id="5105442806410269908">Gestiona altres dades de Google</translation>
 <translation id="5114895953710637392">El full de filtratge per aplicació està tancat.</translation>
 <translation id="5115811374190515607">a <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Pots utilitzar Chrome cada vegada que toquis enllaços en missatges, documents i altres aplicacions</translation>
@@ -1040,6 +1044,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="5316947901395241499">L'administrador ha desactivat l'opció de desar contrasenyes</translation>
 <translation id="5317780077021120954">Desa</translation>
 <translation id="5319359161174645648">Google recomana Chrome</translation>
+<translation id="5323501626199324454">Gestiona al meu Compte de Google</translation>
 <translation id="5326246328175179736">No pots iniciar la sessió amb aquest compte</translation>
 <translation id="5327248766486351172">Nom</translation>
 <translation id="5328542107300944283">Utilitza amb <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1322,6 +1327,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6461962085415701688">El fitxer no es pot obrir</translation>
 <translation id="6464977750820128603">Pots veure els llocs web que visites a Chrome i establir-hi temporitzadors.\n\nGoogle obté informació sobre els llocs web en què estableixes temporitzadors i sobre el temps que hi passes. Aquesta informació s'utilitza per millorar Benestar digital.</translation>
 <translation id="6468703991511753953">Actualment la barra d'adreces és a la part inferior</translation>
+<translation id="6469702164109431067">Contrasenyes i claus d'accés</translation>
 <translation id="6470181189905173055">Les pàgines que hagis obert a Chrome mentre utilitzaves <ph name="APP_LABEL" /> es mostraran aquí.</translation>
 <translation id="6473086018775716761">La llista d'opcions de compartició s'ha obert a mitja alçada.</translation>
 <translation id="6475951671322991020">Baixa el vídeo</translation>

@@ -592,6 +592,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2027465737841872819">Plastig</translation>
 <translation id="2027707238798802149">Nid yw'r cerdyn ar gael.</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Wrthi'n gwirio'r dirprwy weinydd a'r wal dân<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">Mae'r enghraifft hon o Chrome yn rhedeg gyda fflagiau llinell orchymyn wedi'u gosod yn bwrpasol. Sylwer y gall fflagiau llinell orchymyn newid unrhyw bryd ac nad ydynt yn cael eu cefnogi.</translation>
 <translation id="2033900728810589426">Ni all llwybr byr fod yr un fath â'r allweddair darparwr chwilio diofyn a ddiffinnir gan <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Cadw beth bynnag</translation>
 <translation id="2036514476578229158">Gofynnaist i ymweld â'r wefan hon. Gall dy rieni ateb yn Family Link.</translation>
@@ -4563,7 +4564,6 @@ Manylion ychwanegol:
 <translation id="8932102934695377596">Mae eich cloc yn araf</translation>
 <translation id="893332455753468063">Ychwanegu Enw</translation>
 <translation id="8938242527120341116">Mae hidlyddion cynnwys eich dyfais wedi rhwystro <ph name="BLOCKED_URL" /></translation>
-<translation id="8942355029279167844">Mae eich gweinyddwr wedi caniatáu i <ph name="APP_NAME" /> gasglu data diagnosteg i wella profiad y cynnyrch. Gweler <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> am ragor o wybodaeth.</translation>
 <translation id="8943282376843390568">Melynwyrdd</translation>
 <translation id="8949410982325929394">Tôn</translation>
 <translation id="8949493680961858543">A1x4</translation>

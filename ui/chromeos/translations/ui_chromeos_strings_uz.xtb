@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Word hujjati</translation>
 <translation id="1056775291175587022">Tarmoq topilmadi</translation>
 <translation id="1056898198331236512">Ogohlantirish</translation>
-<translation id="1060368002126861100">Fayllarni <ph name="APP_NAME" /> ilovasidan ochishdan avval ularni Windows fayllari jildiga oling.</translation>
 <translation id="1062407476771304334">Almashtirish</translation>
 <translation id="1119383441774809183">Matnli xabarlarni chiqarish</translation>
 <translation id="1119447706177454957">Ichki xatolik</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">Norveg</translation>
 <translation id="1408504635543854729">Qurilmadagi kontentni ko‘rish uchun Fayllar ilovasidan foydalaning. Administrator bu kontentni o‘zgartirishga ruxsat bermagan.</translation>
 <translation id="1412476183660741812">Imzolangan Web Bundle</translation>
-<translation id="1433628812591023318">Windows tizmiga nusxalanishi kerak fayllarni Parallels Desktop oynasiga tashlang.</translation>
-<translation id="1435838927755162558">Jildni Parallels Desktopga ulashish</translation>
 <translation id="1439919885608649279">Gullari bor odam</translation>
 <translation id="1458457385801829801">Chiqarib olish: <ph name="TARGET_NAME" /></translation>
 <translation id="1464781208867302907">Qurilma parametrlari Sozlamalar orqali boshqariladi.</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">Fransuz</translation>
 <translation id="2732288874651063549"><ph name="VM_NAME" />ga ulashuvni boshqarish</translation>
 <translation id="2732839045120506979">Vyetnam (VNI)</translation>
-<translation id="2735623501230989521">Parallels Desktopga <ph name="FOLDER_NAME" /> jildidagi fayllarni ochishga ruxsat berish</translation>
 <translation id="2764206540577097904">Shaxsiy Google Workplace hisobingiz uchun xotirada joy tugab qoldi.</translation>
 <translation id="2771816809568414714">Pishloq</translation>
 <translation id="2783909841122647548">Debian paketlarini oʻrnatish endi dastaklanmaydi. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">Geografiya</translation>
 <translation id="3044404008258011032">Bu elementlarni tiklash uchun ularni chiqitdon tashqarisidagi yangi jildga sudrang. Bu elementlarning asl jildi (<ph name="PARENT_FOLDER_NAME" />) oʻchib ketgan.</translation>
 <translation id="3047197340186497470">Xitoy (Dayi)</translation>
-<translation id="3067790092342515856">Windows fayllari</translation>
 <translation id="3083975830683400843">Chromebit qurilmalari</translation>
 <translation id="3085752524577180175">SOCKS hosti</translation>
 <translation id="3091469289665833668">Rumin</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">Tafsilotlar uchun administratorga murojaat qiling.</translation>
 <translation id="3548125359243647069">PIN kod juda koʻp marta xato kiritildi.</translation>
 <translation id="3549797760399244642">drive.google.com manziliga o‘tish...</translation>
-<translation id="3553048479571901246">Fayllarni <ph name="APP_NAME" /> ilovasidan ochishdan avval ularni Windows fayllari jildiga nusxalang.</translation>
 <translation id="3556731189587832921">Ingliz (AQSH) va kompyuter uchun xalqaro klaviatura</translation>
 <translation id="3557414470514932909"><ph name="FILE_NAME" /> chiqitdonga tashlanmoqda</translation>
 <translation id="3560848236447534728">Arman (Fonetik)</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">Rumin</translation>
 <translation id="4508265954913339219">Faollashtirib bo‘lmadi</translation>
 <translation id="4509667233588080747">Ingliz (AQSH) va Workman (xalqaro) klaviaturasi</translation>
-<translation id="4527800702232535228">Bu jild Parallels Desktopga ulashilgan</translation>
 <translation id="4552678318981539154">Ko‘proq joy sotib olish</translation>
 <translation id="4552759165874948005">Tarmoq: <ph name="NETWORK_TYPE" />, signal darajasi: <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">Boke</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">PowerPoint taqdimoti</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
-<translation id="4789067489790477934">Parallels Desktopga Google Drive omboringizdagi fayllarni ochishga ruxsat bering. Oʻzgarishlar boshqa qurilmalaringizga sinxronlanadi.</translation>
 <translation id="4790766916287588578">Hindi va InScript klaviaturasi</translation>
 <translation id="4798645114741131062">ChromeOS Flex qurilmangiz tez orada yangilanishlarni olishni toʻxtatadi. ChromeOS qurilmasiga yangilashni oʻylab koʻring.</translation>
 <translation id="4801956050125744859">Ikkala versiya qolsin</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">Tovush balandligi slayderi</translation>
 <translation id="4881695831933465202">Ochish</translation>
 <translation id="4891091358278567964">Bu elementlarni tiklash uchun ularni chiqitdon tashqarisidagi yangi jildga sudrang. Bu elementlarning asl jildi oʻchib ketgan.</translation>
-<translation id="4900532980794411603">Parallels Desktopga ulashish</translation>
 <translation id="4902546322522096650">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Nomi: <ph name="NETWORK_NAME" />, Himoya: <ph name="SECURITY_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />%, Ulanish</translation>
 <translation id="4906580650526544301">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Telefon nomi: <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, Ulanish: <ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />%, Telefon quvvati: <ph name="BATTERY_STATUS" />%, Batafsil</translation>
 <translation id="4935975195727477204">Gatsaniya guli</translation>
 <translation id="4943368462779413526">Futbol</translation>
-<translation id="4961158930123534723">1 ta jild Parallels Desktopga ulashilgan</translation>
 <translation id="4965874878399872778">Fayllarning tashkilot xavfsizlik siyosatiga muvofiqligi tekshirilmoqda...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> tiklandi</translation>
 <translation id="4969785127455456148">Albom</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Jarayon kutilgandan ko‘ra ko‘proq vaqt olishi mumkin. To‘xtatilsinmi?</translation>
 <translation id="5036141350290856713">Rus (fonetik)</translation>
-<translation id="5036159836254554629">Parallels Desktop ulashuvlarini boshqarish</translation>
 <translation id="5038625366300922036">Batafsil...</translation>
 <translation id="5044852990838351217">Arman</translation>
 <translation id="5045550434625856497">Parol noto‘g‘ri</translation>
@@ -736,9 +725,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="656398493051028875">“<ph name="FILENAME" />” fayli o‘chirilmoqda...</translation>
 <translation id="6581162200855843583">Google Disk havolasi</translation>
 <translation id="6588648400954570689">Fayl sinxronlash sozlamalari</translation>
-<translation id="6594855146910089723">Bu jild Linux va Parallels Desktopga ulashilgan</translation>
 <translation id="6607272825297743757">Fayl haqida</translation>
-<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> ta jild Parallels Desktopga ulashilgan</translation>
 <translation id="6629518321609546825">Kamida 4 ta raqam kiriting</translation>
 <translation id="6643016212128521049">Tozalash</translation>
 <translation id="6650726141019353908">Pushti kapalak</translation>
@@ -856,7 +843,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="7436921188514130341">Ana xolos! Nomni o‘zgartirishda xatolik yuz berdi.</translation>
 <translation id="7458955835361612701">Oxirgi rasmlar yoʻq</translation>
 <translation id="7469894403370665791">Bu tarmoqqa avtomatik ravishda ulanish</translation>
-<translation id="7486315294984620427">Windowsga nusxalanishi kerak fayllarni Parallels Desktop oynasiga tashlang.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam, fonetik</translation>
 <translation id="7505167922889582512">Yashirin fayllarni ko‘rsatish</translation>

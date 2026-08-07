@@ -297,6 +297,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2233735624724508540">Válasszon időtartományt, majd koppintson az Adatok törlése lehetőségre.</translation>
 <translation id="2234031676056123135">Parancsikonok személyre szabása</translation>
 <translation id="2234827758954819389">Adatvédelmi útmutató</translation>
+<translation id="2236949375853147973">Saját tevékenységek</translation>
 <translation id="2238038374973843156">Csoport másik ablakba</translation>
 <translation id="2247789808226901522">A kártya lejárt</translation>
 <translation id="2251809247798634662">Új Inkognitóablak</translation>
@@ -574,6 +575,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="3385749568468586663">A Gemini nem áll rendelkezésre inkognitó módban</translation>
 <translation id="3387650086002190359">A következő fájl letöltése a fájlrendszer hibái miatt nem sikerült: <ph name="FILE_NAME" />.</translation>
 <translation id="3391311825344469964">A Chrome Ablakkezelőjében kezelheti az ablakokat</translation>
+<translation id="3410151451624226773">Kezelés a Google Jelszókezelőben</translation>
 <translation id="3417835166382867856">Lapok keresése</translation>
 <translation id="3430670036890315772">A profilzárolás kikapcsolásával törlődnek a mentett adatai</translation>
 <translation id="3435575784518354875">Ha továbbra is hozzá szeretne férni jelszavaihoz, exportálja őket haladéktalanul, majd frissítse a Google Play-szolgáltatásokat, és importálja őket vissza a Google Jelszókezelőbe. <ph name="BEGIN_LINK" />Részletes utasítások<ph name="END_LINK" />.</translation>
@@ -942,6 +944,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4877678010818027629">Belépés inkognitó módba</translation>
 <translation id="4878404682131129617">Nem sikerült a proxyszerveren keresztüli alagút kialakítása</translation>
 <translation id="4880127995492972015">Fordítás…</translation>
+<translation id="4880827082731008257">Keresés az előzmények között</translation>
 <translation id="4881695831933465202">Megnyitás</translation>
 <translation id="488187801263602086">Fájl átnevezése</translation>
 <translation id="4885273946141277891">Ilyen sok Chrome-példány nem futhat egyszerre.</translation>
@@ -991,6 +994,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="509429900233858213">Hiba történt.</translation>
 <translation id="5096775069898886423">A biztonságos kapcsolatokat nem támogató webhelyek esetében még a webhely felkeresése előtt figyelmeztetést kap</translation>
 <translation id="510275257476243843">1 óra van hátra</translation>
+<translation id="5105442806410269908">Egyéb Google-adatok kezelése</translation>
 <translation id="5114895953710637392">Az alkalmazásszűrő lap be van zárva.</translation>
 <translation id="5115811374190515607">ide: <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Bármikor használhatja a Chrome-ot, amikor üzenetekben, dokumentumokban és más alkalmazásokban linkekre kattint</translation>
@@ -1041,6 +1045,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5316947901395241499">A rendszergazda kikapcsolta a jelszavak mentését</translation>
 <translation id="5317780077021120954">Mentés</translation>
 <translation id="5319359161174645648">A Google a Chrome-ot ajánlja</translation>
+<translation id="5323501626199324454">Kezelés a Google-fiókban</translation>
 <translation id="5326246328175179736">Ezzel a fiókkal nem tud bejelentkezni</translation>
 <translation id="5327248766486351172">Név</translation>
 <translation id="5328542107300944283">Használat a következővel: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1325,6 +1330,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6461962085415701688">A fájlt nem lehet megnyitni</translation>
 <translation id="6464977750820128603">Megnézheti a Chrome böngészővel felkeresett webhelyeket, és beállíthat hozzájuk időzítéseket.\n\nAz időzítéssel ellátott webhelyek adatait és a látogatás hosszát megkapja a Google. Ezek az adatok a digitális jóllét funkció továbbfejlesztésére szolgálnak.</translation>
 <translation id="6468703991511753953">A címsáv jelenleg alul van</translation>
+<translation id="6469702164109431067">Jelszavak és azonosítókulcsok</translation>
 <translation id="6470181189905173055">Itt jelennek majd meg a(z) <ph name="APP_LABEL" /> használata közben a Chrome-ban megnyitott oldalai.</translation>
 <translation id="6473086018775716761">A megosztási lehetőségek listája félmagasságban van megnyitva.</translation>
 <translation id="6475951671322991020">Videó letöltése</translation>

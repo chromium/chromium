@@ -593,6 +593,7 @@
 <translation id="2027465737841872819">প্লাস্টিক</translation>
 <translation id="2027707238798802149">কার্ড উপলভ্য নয়</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />প্রক্সি এবং ফায়ারওয়াল পরীক্ষা করে দেখুন<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">Chrome-এর এই ইনস্ট্যান্সটি ম্যানুয়ালি সেট করা কমান্ড লাইন ফ্ল্যাগ-সহ রান করছে। মনে রাখবেন, কমান্ড লাইন ফ্ল্যাগ যেকোনও সময় পরিবর্তিত হতে পারে এবং এগুলির জন্য কোনও সহায়তা প্রদান করা হয় না।</translation>
 <translation id="2033900728810589426">শর্টকার্ট, <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> দ্বারা সংজ্ঞায়িত সার্চ পরিষেবা প্রদানকারীর কীওয়ার্ডের মতো এক হতে পারে না: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">যাই হোক সেভ করুন</translation>
 <translation id="2036514476578229158">তুমি এই সাইট দেখার অনুমতি চেয়েছ। আপনার অভিভাবক Family Link-এ উত্তর দিতে পারেন।</translation>
@@ -4564,7 +4565,6 @@
 <translation id="8932102934695377596">আপনার ঘড়ির সময় পিছিয়ে রয়েছে</translation>
 <translation id="893332455753468063">নাম যোগ করুন</translation>
 <translation id="8938242527120341116">আপনার ডিভাইসের কন্টেন্ট ফিল্টার <ph name="BLOCKED_URL" />-কে ব্লক করেছে</translation>
-<translation id="8942355029279167844">আপনার অ্যাডমিন প্রোডাক্ট ব্যবহারের অভিজ্ঞতাকে আরও উন্নত করার লক্ষ্যে <ph name="APP_NAME" />-কে ডায়াগনস্টিক ডেটা সংগ্রহ করার অনুমতি দিয়েছে। আরও তথ্যের জন্য, <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> লিঙ্কে গিয়ে দেখুন।</translation>
 <translation id="8943282376843390568">লাইম</translation>
 <translation id="8949410982325929394">টোন</translation>
 <translation id="8949493680961858543">A1x4</translation>

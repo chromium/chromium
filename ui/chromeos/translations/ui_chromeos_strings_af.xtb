@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Word-dokument</translation>
 <translation id="1056775291175587022">Geen netwerke nie</translation>
 <translation id="1056898198331236512">Waarskuwing</translation>
-<translation id="1060368002126861100">Om lêers met <ph name="APP_NAME" /> oop te maak, moet jy hulle eers na die Windows-lêersvouer toe skuif.</translation>
 <translation id="1062407476771304334">Vervang</translation>
 <translation id="1119383441774809183">Wys teksboodskappe</translation>
 <translation id="1119447706177454957">Interne fout</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">Noors</translation>
 <translation id="1408504635543854729">Verken die toestel se inhoud in die Lêers-app. Die inhoud word deur 'n administrateur beperk en kan nie gewysig word nie.</translation>
 <translation id="1412476183660741812">Ondertekende webbondel</translation>
-<translation id="1433628812591023318">Die lêer moet na Windows-lêers geskuif word om in Parallels Desktop gelos te word.</translation>
-<translation id="1435838927755162558">Deel vouer met Parallels Desktop</translation>
 <translation id="1439919885608649279">Persoon met blomme</translation>
 <translation id="1458457385801829801">Maak <ph name="TARGET_NAME" /> los</translation>
 <translation id="1464781208867302907">Gaan na Instellings toe vir toestelvoorkeure</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">Frans</translation>
 <translation id="2732288874651063549">Bestuur <ph name="VM_NAME" />-deling</translation>
 <translation id="2732839045120506979">Viëtnamees-VNI</translation>
-<translation id="2735623501230989521">Gee Parallels Desktop toegang tot lêers in die <ph name="FOLDER_NAME" />-vouer</translation>
 <translation id="2764206540577097904">Jy het al jou individuele Google Workspace-berging gebruik.</translation>
 <translation id="2771816809568414714">Kaas</translation>
 <translation id="2783909841122647548">Debian-pakketinstallasies word nie meer gesteun nie. <ph name="BEGIN_LINK" />Meer inligting<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">Geografie</translation>
 <translation id="3044404008258011032">Sleep hierdie items na ’n nuwe vouer buite asblik om hulle terug te stel. Die oorspronklike vouers "<ph name="PARENT_FOLDER_NAME" />" vir hierdie item is uitgevee.</translation>
 <translation id="3047197340186497470">Chinees-Dayi</translation>
-<translation id="3067790092342515856">Windows-lêers</translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">SOCKS-gasheer</translation>
 <translation id="3091469289665833668">Roemeens</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">Kontak jou admin vir besonderhede.</translation>
 <translation id="3548125359243647069">’n Verkeerde PIN is te veel kere ingevoer.</translation>
 <translation id="3549797760399244642">Gaan na drive.google.com …</translation>
-<translation id="3553048479571901246">Om lêers met <ph name="APP_NAME" /> oop te maak, moet jy hulle eers na die Windows-lêersvouer toe kopieer.</translation>
 <translation id="3556731189587832921">Engels (VSA) met internasionale rekenaarsleutelbord</translation>
 <translation id="3557414470514932909">Skuif tans <ph name="FILE_NAME" /> na die asblik</translation>
 <translation id="3560848236447534728">Armeens Foneties</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">Roemeens</translation>
 <translation id="4508265954913339219">Kon nie aktiveer nie</translation>
 <translation id="4509667233588080747">Engels (VSA) met Workman- internasionale sleutelbord</translation>
-<translation id="4527800702232535228">Hierdie vouer is met Parallels Desktop gedeel</translation>
 <translation id="4552678318981539154">Koop meer berging</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" />-netwerk, seinsterkte <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">Bokeh</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">PowerPoint-aanbieding</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
-<translation id="4789067489790477934">Gee Parallels Desktop toegang tot lêers in jou Google Drive. Veranderinge sal met jou ander toestelle gesinkroniseer word.</translation>
 <translation id="4790766916287588578">Hindi met InScript-sleutelbord</translation>
 <translation id="4798645114741131062">Jou ChromeOS Flex-toestel sal binnekort ophou om opdaterings te ontvang. Oorweeg dit om na ’n ChromeOS-toestel op te gradeer.</translation>
 <translation id="4801956050125744859">Hou albei</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">Volumeglyer</translation>
 <translation id="4881695831933465202">Maak oop</translation>
 <translation id="4891091358278567964">Sleep hierdie items na ’n nuwe vouer buite asblik om hulle terug te stel. Die oorspronklike vouers vir hierdie items is uitgevee.</translation>
-<translation id="4900532980794411603">Deel met Parallels Desktop</translation>
 <translation id="4902546322522096650">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" />%, koppel</translation>
 <translation id="4906580650526544301">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" />%, foonbattery <ph name="BATTERY_STATUS" />%, besonderhede</translation>
 <translation id="4935975195727477204">Botterblom</translation>
 <translation id="4943368462779413526">Voetbal</translation>
-<translation id="4961158930123534723">1 vouer is met Parallels Desktop gedeel</translation>
 <translation id="4965874878399872778">Kontroleer tans lêers teen jou organisasie se sekuriteitsbeleide …</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> teruggestel</translation>
 <translation id="4969785127455456148">Album</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">'n Handeling vat langer as verwag. Wil jy dit staak?</translation>
 <translation id="5036141350290856713">Russies foneties</translation>
-<translation id="5036159836254554629">Bestuur Parallels Desktop-deling</translation>
 <translation id="5038625366300922036">Sien nog …</translation>
 <translation id="5044852990838351217">Armeens</translation>
 <translation id="5045550434625856497">Verkeerde wagwoord</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">Vee tans "<ph name="FILENAME" />" uit …</translation>
 <translation id="6581162200855843583">Google Drive-skakel</translation>
 <translation id="6588648400954570689">Lêersinkroniseringinstellings</translation>
-<translation id="6594855146910089723">Hierdie vouer is met Linux en Parallels Desktop gedeel</translation>
 <translation id="6607272825297743757">Lêerinligting</translation>
-<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> vouers is met Parallels Desktop gedeel</translation>
 <translation id="6629518321609546825">Voer minstens 4 syfers in</translation>
 <translation id="6643016212128521049">Vee uit</translation>
 <translation id="6650726141019353908">Pienk skoenlapper</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">Ai tog! Kon nie hernoem nie.</translation>
 <translation id="7458955835361612701">Geen onlangse prente nie</translation>
 <translation id="7469894403370665791">Koppel outomaties aan hierdie netwerk</translation>
-<translation id="7486315294984620427">Die lêer moet na Windows-lêers gekopieer word om in Parallels Desktop gelos te word.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malabaars-foneties</translation>
 <translation id="7505167922889582512">Wys versteekte lêers</translation>

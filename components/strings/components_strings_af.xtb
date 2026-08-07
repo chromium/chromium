@@ -592,6 +592,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2027465737841872819">Plastiek</translation>
 <translation id="2027707238798802149">Kaart is nie beskikbaar nie</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Die instaanbediener en brandmuur nagaan<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">Hierdie geval van Chrome loop met opdraglynvlae wat handmatig gestel is. Let daarop dat opdraglynvlae enige tyd kan verander en nie gesteun word nie.</translation>
 <translation id="2033900728810589426">Kortpad kan nie dieselfde wees as die versteksoekverskaffer-sleutelwoord wat deur <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> gedefinieer is nie: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Stoor in elk geval</translation>
 <translation id="2036514476578229158">Jy het gevra om hierdie werf te besoek. Jou ouers kan in Family Link antwoord.</translation>
@@ -4563,7 +4564,6 @@ Bykomende besonderhede:
 <translation id="8932102934695377596">Jou horlosie is agter</translation>
 <translation id="893332455753468063">Voeg naam by</translation>
 <translation id="8938242527120341116">Jou toestel se inhoudfilters het <ph name="BLOCKED_URL" /> geblokkeer</translation>
-<translation id="8942355029279167844">Jou administrateur het <ph name="APP_NAME" /> toegelaat om diagnostiese data in te samel om die produkervaring beter te maak. Sien <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> vir meer inligting.</translation>
 <translation id="8943282376843390568">Lemmetjiegroen</translation>
 <translation id="8949410982325929394">Toon</translation>
 <translation id="8949493680961858543">A1x4</translation>

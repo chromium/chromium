@@ -297,6 +297,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2233735624724508540">Escolha um período e, de seguida, toque em Eliminar dados</translation>
 <translation id="2234031676056123135">Personalize os atalhos</translation>
 <translation id="2234827758954819389">Guia de privacidade</translation>
+<translation id="2236949375853147973">A minha atividade</translation>
 <translation id="2238038374973843156">Mover grupo p/ outra janela</translation>
 <translation id="2247789808226901522">Cartão expirado</translation>
 <translation id="2251809247798634662">Nova janela de navegação anónima</translation>
@@ -574,6 +575,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="3385749568468586663">O Gemini não está disponível no modo de navegação anónima</translation>
 <translation id="3387650086002190359">A transferência de <ph name="FILE_NAME" /> falhou devido a erros do sistema de ficheiros.</translation>
 <translation id="3391311825344469964">Pode gerir as suas janelas no Gestor de janelas do Chrome</translation>
+<translation id="3410151451624226773">Faça a gestão no Gestor de Palavras-passe da Google</translation>
 <translation id="3417835166382867856">Pesquisar separadores</translation>
 <translation id="3430670036890315772">Desativar o bloqueio do perfil remove as suas informações guardadas</translation>
 <translation id="3435575784518354875">Para manter o acesso às suas palavras-passe, exporte-as agora, atualize os Serviços do Google Play e, de seguida, importe-as novamente para o Gestor de Palavras-passe da Google. <ph name="BEGIN_LINK" />Veja as instruções completas<ph name="END_LINK" />.</translation>
@@ -942,6 +944,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="4877678010818027629">Entre no Modo de navegação anónima</translation>
 <translation id="4878404682131129617">Falha ao estabelecer um túnel através do servidor proxy.</translation>
 <translation id="4880127995492972015">Traduzir…</translation>
+<translation id="4880827082731008257">Pesquisar histórico</translation>
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="488187801263602086">Mudar o nome do ficheiro</translation>
 <translation id="4885273946141277891">Número não suportado de instâncias do Chrome.</translation>
@@ -991,6 +994,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="509429900233858213">Ocorreu um erro.</translation>
 <translation id="5096775069898886423">Relativamente aos sites que não suportam ligações seguras, receba um aviso antes de visitar o site</translation>
 <translation id="510275257476243843">Falta 1 hora</translation>
+<translation id="5105442806410269908">Gerir outros dados da Google</translation>
 <translation id="5114895953710637392">A página para filtrar por app está fechada.</translation>
 <translation id="5115811374190515607">para <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Pode usar o Chrome sempre que tocar em links de mensagens, documentos e outras apps</translation>
@@ -1041,6 +1045,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="5316947901395241499">O seu administrador desativou a gravação de palavras-passe</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5319359161174645648">A Google recomenda o Chrome</translation>
+<translation id="5323501626199324454">Faça a gestão na sua Conta Google</translation>
 <translation id="5326246328175179736">Não pode iniciar sessão com esta conta</translation>
 <translation id="5327248766486351172">Nome</translation>
 <translation id="5328542107300944283">Use com <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1325,6 +1330,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6461962085415701688">Não é possível abrir o ficheiro</translation>
 <translation id="6464977750820128603">Pode ver os sites que visita no Chrome e definir temporizadores para os mesmos.\n\nA Google obtém informações sobre os sites para os quais define temporizadores e durante quanto tempo os visita. Estas informações são utilizadas para melhorar o Bem-estar digital.</translation>
 <translation id="6468703991511753953">A barra de endereço está atualmente na parte inferior</translation>
+<translation id="6469702164109431067">Palavras-passe e chaves de acesso</translation>
 <translation id="6470181189905173055">As páginas que abriu no Chrome enquanto usava <ph name="APP_LABEL" /> são apresentadas aqui.</translation>
 <translation id="6473086018775716761">Lista de opções de partilha aberta a meia altura.</translation>
 <translation id="6475951671322991020">Transferir vídeo</translation>
@@ -1531,6 +1537,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="7182520625618447753">Mude a posição da barra de endereço para a parte superior ou inferior para ter uma experiência de navegação personalizada</translation>
 <translation id="7183517696921903380">A página para filtrar por app está aberta.</translation>
 <translation id="7186568385131859684">Controle a forma como o histórico de navegação é usado com os seus outros dados nos serviços Google</translation>
+<translation id="7189516830800112767">{NUM_TABS,plural, =1{Prima ^W novamente para fechar o separador fixo}other{Prima ^W novamente para fechar os separadores fixos}}</translation>
 <translation id="7190921792980745354">Quer bloquear <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191430249889272776">Separador aberto em segundo plano.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Deve alterá-la agora}other{Deve alterá-las agora}}</translation>

@@ -592,6 +592,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2027465737841872819">Plastika</translation>
 <translation id="2027707238798802149">Kartica nije dostupna</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Provjeriti proksi server i firewall<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">Ova instanca Chromea izvodi se s ručno postavljenim oznakama naredbenog retka. Napominjemo da se oznake naredbenog retka mogu promijeniti u bilo kojem trenutku i nisu podržane.</translation>
 <translation id="2033900728810589426">Prečica ne može biti ista kao zadana ključna riječ pružaoca usluge pretraživanja koja je definirana pravilima <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Ipak sačuvaj</translation>
 <translation id="2036514476578229158">Pitao/la si da posjetiš ovu web lokaciju. Roditelji mogu odgovoriti u Family Linku.</translation>
@@ -4564,7 +4565,6 @@ Dodatni detalji:
 <translation id="8932102934695377596">Vaš sat kasni</translation>
 <translation id="893332455753468063">Dodaj ime</translation>
 <translation id="8938242527120341116">Filteri sadržaja na uređaju su blokirali <ph name="BLOCKED_URL" /></translation>
-<translation id="8942355029279167844">Vaš administrator je dozvolio aplikaciji <ph name="APP_NAME" /> da prikuplja dijagnostičke podatke radi poboljšanja iskustva s proizvodom. Pogledajte <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> za više informacija.</translation>
 <translation id="8943282376843390568">Limeta zelena</translation>
 <translation id="8949410982325929394">Ton</translation>
 <translation id="8949493680961858543">A1x4</translation>

@@ -592,6 +592,7 @@
 <translation id="2027465737841872819">Plastik</translation>
 <translation id="2027707238798802149">Kart əlçatan deyil</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Proksi və güvənlik divarı yoxlanılır<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">Chrome-un bu nüsxəsi manual olaraq təyin edilmiş əmr sətri parametrləri ilə işləyir. Nəzərə alın ki, əmr sətri parametrləri istənilən vaxt dəyişə bilər və dəstəklənmir.</translation>
 <translation id="2033900728810589426">Qısayol <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> tərəfindən müəyyən edilmiş axtarış provayderi defolt açar sözü eyni ola bilməz: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">İstənilən halda yadda saxlayın</translation>
 <translation id="2036514476578229158">Bu saytı ziyarət etməyi istəmisiniz. Valideynləriniz Family Link'də cavab verə bilər.</translation>
@@ -4559,7 +4560,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="8932102934695377596">Saatınız geridədir</translation>
 <translation id="893332455753468063">Ad əlavə edin</translation>
 <translation id="8938242527120341116">Cihazınızın kontent filtrləri bloklanıb <ph name="BLOCKED_URL" /></translation>
-<translation id="8942355029279167844">Admininiz <ph name="APP_NAME" /> tətbiqinə məhsul üzrə təcrübəni yaxşılaşdırmaq üçün diaqnostik datanı toplamaq icazəsi verib. Ətraflı məlumat üçün <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> ünvanına baxın.</translation>
 <translation id="8943282376843390568">Yaşıl Limon</translation>
 <translation id="8949410982325929394">Ton</translation>
 <translation id="8949493680961858543">A1x4</translation>

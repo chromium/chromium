@@ -592,6 +592,7 @@
 <translation id="2027465737841872819">پلاسٹک</translation>
 <translation id="2027707238798802149">کارڈ دستیاب نہیں ہے</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />پراکسی اور فائروال چیک کیا جا رہا ہے<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">‏‫Chrome کا یہ نمونہ دستی طور پر سیٹ کردہ کمانڈ لائن پرچموں کے ساتھ چل رہا ہے۔ نوٹ کریں کہ کمانڈ لائن پرچم کسی بھی وقت تبدیل ہو سکتے ہیں اور تعاون یافتہ نہیں ہیں۔</translation>
 <translation id="2033900728810589426">شارٹ کٹ ڈیفالٹ تلاش فراہم کنندہ کلیدی لفظ جیسا نہیں ہو سکتا جس کی وضاحت <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> کے ذریعے کی گئی ہے: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">بہرحال محفوظ کریں</translation>
 <translation id="2036514476578229158">‏آپ نے یہ سائٹ ملاحظہ کرنے کی اجازت مانگی ہے۔ آپ کے والدین Family Link میں جواب دے سکتے ہیں۔</translation>
@@ -4438,6 +4439,7 @@
 <translation id="8708134712139312373">سائٹ بلوٹوتھ آلات سے منسلک ہونے کیلئے پوچھ سکتی ہے</translation>
 <translation id="8710842507289500830">فونٹ کا طرز</translation>
 <translation id="8712637175834984815">سمجھ آ گئی</translation>
+<translation id="8715198179991802709">‏‫Chrome نے ابھی ایک ایسی ویب سائٹ پر جھنڈا لگایا ہے جسے آپ ملاحظہ کرنے کی کوشش کر رہے تھے۔ ‫1 منٹ کا سروے کر کے ان وارننگز کو بہتر بنانے میں ہماری مدد کریں۔</translation>
 <translation id="8718314106902482036">ادائيگی مکمل نہیں ہوئی</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />، <ph name="DESCRIPTION" />، تلاش کی تجویز</translation>
 <translation id="8719528812645237045">اوپر متعدد سوراخ</translation>
@@ -4565,7 +4567,6 @@
 <translation id="8932102934695377596">آپ کی گھڑی پیچھے ہے</translation>
 <translation id="893332455753468063">نام شامل کریں</translation>
 <translation id="8938242527120341116">آپ کے آلے کے مواد کے فلٹرز بلاک ہیں <ph name="BLOCKED_URL" /></translation>
-<translation id="8942355029279167844">‏آپ کے منتظم نے <ph name="APP_NAME" /> کو پروڈکٹ کے تجربے کو بہتر بنانے کے لیے ڈائیگناسٹکس ڈیٹا جمع کرنے کی اجازت دے دی ہے۔ مزید معلومات کے لیے <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> دیکھیں۔</translation>
 <translation id="8943282376843390568">لائم</translation>
 <translation id="8949410982325929394">ٹون</translation>
 <translation id="8949493680961858543">A1x4</translation>

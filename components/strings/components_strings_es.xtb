@@ -592,6 +592,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2027465737841872819">Plástico</translation>
 <translation id="2027707238798802149">Tarjeta no disponible</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Comprobar el proxy y el cortafuegos<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">Esta instancia de Chrome se está ejecutando con marcas de línea de comandos definidas manualmente. Ten en cuenta que las marcas de línea de comandos pueden cambiar en cualquier momento y no reciben asistencia técnica.</translation>
 <translation id="2033900728810589426">El acceso directo no puede ser el mismo que la palabra clave del proveedor de búsqueda predeterminado definida por <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Guardar de todos modos</translation>
 <translation id="2036514476578229158">Has solicitado visitar este sitio. Tus padres pueden responder en Family Link.</translation>
@@ -4564,7 +4565,6 @@ Más información:
 <translation id="8932102934695377596">Tu reloj está atrasado</translation>
 <translation id="893332455753468063">Añade un nombre</translation>
 <translation id="8938242527120341116">Los filtros de contenido de tu dispositivo han bloqueado <ph name="BLOCKED_URL" /></translation>
-<translation id="8942355029279167844">Tu administrador ha permitido a <ph name="APP_NAME" /> recoger datos de diagnóstico para mejorar la experiencia de los usuarios con el producto. Visita <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> para consultar más información.</translation>
 <translation id="8943282376843390568">Lima</translation>
 <translation id="8949410982325929394">Tono</translation>
 <translation id="8949493680961858543">A1x4</translation>

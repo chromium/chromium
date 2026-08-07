@@ -593,6 +593,7 @@
 <translation id="2027465737841872819">ပလတ်စတစ်</translation>
 <translation id="2027707238798802149">ကတ်ကို မရနိုင်ပါ</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />ပရော်စီနှင့် firewall ကိုစစ်ဆေးနေသည်<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">ဤ Chrome ဖြစ်ရပ်သည် ကိုယ်တိုင်သတ်မှတ်ထားသော ကွန်မန်းလိုင်း စမ်းသပ်အစီအစဉ်များဖြင့် လုပ်ဆောင်နေသည်။ ကွန်မန်းလိုင်း စမ်းသပ်အစီအစဉ်များသည် အချိန်မရွေး ပြောင်းနိုင်ပြီး ၎င်းတို့ကို ပံ့ပိုးမထားကြောင်း သတိပြုပါ။</translation>
 <translation id="2033900728810589426">ဖြတ်လမ်းလင့်ခ်သည် <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> က သတ်မှတ်ထားသော မူရင်းရှာဖွေမှုပံ့ပိုးသူ အဓိကစကားလုံးနှင့် တူညီ၍မရပါ- <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">မည်သို့ပင်ဖြစ်စေ သိမ်းရန်</translation>
 <translation id="2036514476578229158">ဤဝဘ်ဆိုက်သို့ ဝင်ကြည့်ရန် သင်တောင်းဆိုထားသည်။ Family Link တွင် သင့်မိဘက စာပြန်နိုင်သည်။</translation>
@@ -4565,7 +4566,6 @@
 <translation id="8932102934695377596">သင်၏ နာရီ နောက်ကျနေ</translation>
 <translation id="893332455753468063">အမည် ထည့်သွင်းခြင်း</translation>
 <translation id="8938242527120341116">သင့်စက်၏ အကြောင်းအရာဖီလ်တာများက <ph name="BLOCKED_URL" /> ကို ပိတ်လိုက်သည်</translation>
-<translation id="8942355029279167844">သင်၏ စီမံခန့်ခွဲသူသည် ထုတ်ကုန်အသုံးပြုမှု ပိုမိုကောင်းမွန်စေရန်အတွက် အမှားရှာပြင်ခြင်းဒေတာများကို စုဆောင်းရန် <ph name="APP_NAME" /> ကို ခွင့်ပြုထားသည်။ နောက်ထပ်အချက်အလက်များအတွက် <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> တွင် ကြည့်ပါ။</translation>
 <translation id="8943282376843390568">သံပုရာ</translation>
 <translation id="8949410982325929394">သံစဉ်</translation>
 <translation id="8949493680961858543">A1x4</translation>

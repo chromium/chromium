@@ -592,6 +592,7 @@
 <translation id="2027465737841872819">플라스틱</translation>
 <translation id="2027707238798802149">카드를 사용할 수 없음</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />프록시 및 방화벽 확인<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">이 Chrome 인스턴스는 수동으로 설정된 명령줄 플래그를 사용하여 실행 중입니다. 명령줄 플래그는 언제든지 변경될 수 있으며, 지원되지 않습니다.</translation>
 <translation id="2033900728810589426">바로가기는 <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />에서 정의한 기본 검색 공급자 키워드와 같을 수 없습니다. <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">무시하고 저장</translation>
 <translation id="2036514476578229158">이 사이트의 방문을 요청했습니다. 부모님은 Family Link에서 답장을 보낼 수 있습니다.</translation>
@@ -4563,7 +4564,6 @@
 <translation id="8932102934695377596">시간이 너무 먼 과거로 설정되어 있습니다.</translation>
 <translation id="893332455753468063">이름 추가</translation>
 <translation id="8938242527120341116">기기의 콘텐츠 필터로 인해 <ph name="BLOCKED_URL" /> 사이트가 차단되었습니다.</translation>
-<translation id="8942355029279167844">관리자가 <ph name="APP_NAME" /> 앱에서 제품 환경 개선을 위한 진단 데이터를 수집하도록 허용했습니다. 자세한 내용은 <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />를 참고하세요.</translation>
 <translation id="8943282376843390568">라임색</translation>
 <translation id="8949410982325929394">말투</translation>
 <translation id="8949493680961858543">A1x4</translation>

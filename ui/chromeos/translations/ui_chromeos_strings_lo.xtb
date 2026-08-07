@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">ເອ​ກະ​ສານ Word</translation>
 <translation id="1056775291175587022">ບໍ່ມີເຄືອຂ່າຍ</translation>
 <translation id="1056898198331236512">ຄໍາເຕືອນ</translation>
-<translation id="1060368002126861100">ເພື່ອເປີດໄຟລ໌ດ້ວຍ <ph name="APP_NAME" />, ກະລຸນາຍ້າຍພວກມັນໄປໃສ່ໂຟນເດີໄຟລ໌ຂອງ Windows ກ່ອນ.</translation>
 <translation id="1062407476771304334">​ປ່ຽນ​ແທນ​</translation>
 <translation id="1119383441774809183">ສະແດງຂໍ້ຄວາມ</translation>
 <translation id="1119447706177454957">ຜິດພາດພາຍໃນ</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">ພາສານໍເວກຽນ</translation>
 <translation id="1408504635543854729">ສຳຫຼວດເບິ່ງເນື້ອຫາຂອງອຸປະກອນໃນແອັບໄຟລ໌. ເນື້ອຫາຖືກຈຳກັດໂດຍຜູ້ເບິ່ງແຍງລະບົບ ແລະ ບໍ່ສາມາດປ່ຽນແປງໄດ້.</translation>
 <translation id="1412476183660741812">Signed Web Bundle</translation>
-<translation id="1433628812591023318">ເພື່ອວາງໄຟລ໌ໃນ Parallels Desktop, ໄຟລ໌ນັ້ນຈະຕ້ອງຖືກຍ້າຍໄປໃສ່ໄຟລ໌ Windows ກ່ອນ.</translation>
-<translation id="1435838927755162558">ແບ່ງປັນໂຟນເດີກັບ Parallels Desktop</translation>
 <translation id="1439919885608649279">ຄົນຖືດອກໄມ້</translation>
 <translation id="1458457385801829801">ຖອດ <ph name="TARGET_NAME" /> ອອກ</translation>
 <translation id="1464781208867302907">ສຳລັບການຕັ້ງຄ່າອຸປະກອນ, ໄປທີ່ການຕັ້ງຄ່າ.</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">ຝຣັ່ງ</translation>
 <translation id="2732288874651063549">ຈັດການການແບ່ງປັນ <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">ພາສາຫວຽດນາມ (VNI)</translation>
-<translation id="2735623501230989521">ອະນຸຍາດໃຫ້ Parallels Desktop ເຂົ້າເຖິງໄຟລ໌ໃນໂຟນເດີ <ph name="FOLDER_NAME" /></translation>
 <translation id="2764206540577097904">ທ່ານໃຊ້ບ່ອນຈັດເກັບຂໍ້ມູນ Google Workspace ສ່ວນບຸກຄົນຂອງທ່ານໝົດແລ້ວ.</translation>
 <translation id="2771816809568414714">ເນີຍແຂງ</translation>
 <translation id="2783909841122647548">ລະບົບບໍ່ຮອງຮັບການຕິດຕັ້ງແພັກເກດ Debian ອີກຕໍ່ໄປ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">ພູມສາດ</translation>
 <translation id="3044404008258011032">ເພື່ອກູ້ຄືນລາຍການເຫຼົ່ານີ້, ກະລຸນາລາກພວກມັນໄປໃສ່ໂຟນເດີໃໝ່ທີ່ຢູ່ນອກຖັງຂີ້ເຫຍື້ອ. ໂຟນເດີເດີມ "<ph name="PARENT_FOLDER_NAME" />" ສຳລັບລາຍການເຫຼົ່ານີ້ຖືກລຶບແລ້ວ.</translation>
 <translation id="3047197340186497470">ພາສາຈີນ (Dayi)</translation>
-<translation id="3067790092342515856">ໄຟລ໌ Windows</translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">ແມ່ຂ່າຍ SOCKS</translation>
 <translation id="3091469289665833668">ໂຣມານຽນ</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານສຳລັບລາຍລະອຽດ.</translation>
 <translation id="3548125359243647069">ລະບຸ PIN ບໍ່ຖືກຕ້ອງຫຼາຍເທື່ອເກີນໄປແລ້ວ.</translation>
 <translation id="3549797760399244642">ໄປທີ່ drive.google.com...</translation>
-<translation id="3553048479571901246">ເພື່ອເປີດໄຟລ໌ດ້ວຍ <ph name="APP_NAME" />, ກະລຸນາສຳເນົາພວກມັນໄປໃສ່ໂຟນເດີໄຟລ໌ຂອງ Windows ກ່ອນ.</translation>
 <translation id="3556731189587832921">ພາສາອັງກິດ (ສະຫະລັດ) ທີ່ໃຊ້ແປ້ນພິມຄອມພິວເຕີສາກົນ</translation>
 <translation id="3557414470514932909">ກຳລັງຍ້າຍ <ph name="FILE_NAME" /> ໄປໃສ່ຖັງຂີ້ເຫຍື້ອ</translation>
 <translation id="3560848236447534728">ການອອກສຽງພາສາອາເມນຽນ</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">ໂຣມານຽນ</translation>
 <translation id="4508265954913339219">ການເປີດໃຊ້ງານບໍ່ສໍາເລັດ</translation>
 <translation id="4509667233588080747">ພາສາອັງກິດ (ສະຫະລັດ) ທີ່ໃຊ້ແປ້ນພິມ Workman ສາກົນ</translation>
-<translation id="4527800702232535228">ມີການແບ່ງປັນໂຟນເດີນີ້ກັບ Parallels Desktop</translation>
 <translation id="4552678318981539154">ຊື້​ບ່ອນເກັບຂໍ້ມູນເພີ່ມເຕີມ</translation>
 <translation id="4552759165874948005">ເຄືອຂ່າຍ <ph name="NETWORK_TYPE" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">ຮູບໜ້າແຈ້ງຫຼັງມົວ</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">ໂອະນິງິຣິ</translation>
 <translation id="4784330909746505604">ການ​ນໍາ​ສະ​ເຫນີ PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
-<translation id="4789067489790477934">ອະນຸຍາດໃຫ້ Parallels Desktop ເຂົ້າເຖິງໄຟລ໌ໃນ Google Drive ຂອງທ່ານ. ການປ່ຽນແປງຈະຊິ້ງຂໍ້ມູນກັບອຸປະກອນອື່ນຂອງທ່ານ.</translation>
 <translation id="4790766916287588578">ພາສາຮິນດີ້ທີ່ໃຊ້ແປ້ນພິມ InScript</translation>
 <translation id="4798645114741131062">ອຸປະກອນ ChromeOS Flex ຂອງທ່ານຈະຢຸດຮັບການອັບເດດໃນໄວໆນີ້. ທ່ານຄວນອັບເກຣດເປັນອຸປະກອນ ChromeOS.</translation>
 <translation id="4801956050125744859">ຮັກສາ​ທັງ​ສອງ</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">​ແຖບ​ເລື່ອນປັບ​ລະດັບ​ສຽງ</translation>
 <translation id="4881695831933465202">ເປີດ</translation>
 <translation id="4891091358278567964">ເພື່ອກູ້ຄືນລາຍການເຫຼົ່ານີ້, ກະລຸນາລາກພວກມັນໄປໃສ່ໂຟນເດີໃໝ່ທີ່ຢູ່ນອກຖັງຂີ້ເຫຍື້ອ. ໂຟນເດີເດີມສຳລັບລາຍການເຫຼົ່ານີ້ຖືກລຶບແລ້ວ.</translation>
-<translation id="4900532980794411603">ແບ່ງປັນກັບ Parallels Desktop</translation>
 <translation id="4902546322522096650">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />%, ເຊື່ອມຕໍ່</translation>
 <translation id="4906580650526544301">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ສັນຍານຄວາມແຮງ <ph name="SIGNAL_STRENGTH" />%, ແບັດເຕີຣີໂທລະສັບ <ph name="BATTERY_STATUS" />%, ລາຍລະອຽດ</translation>
 <translation id="4935975195727477204">ດອກ​ກາ​ຊາ​ເນຍ</translation>
 <translation id="4943368462779413526">ບານເຕະ</translation>
-<translation id="4961158930123534723">ແບ່ງປັນ 1 ໂຟນເດີກັບ Parallels Desktop ແລ້ວ</translation>
 <translation id="4965874878399872778">ກຳລັງກວດສອບໄຟລ໌ກັບນະໂຍບາຍຄວາມປອດໄພຂອງອົງການຂອງທ່ານ...</translation>
 <translation id="496656650103537022">ກູ້ຄືນ <ph name="FILE_NAME" /> ແລ້ວ</translation>
 <translation id="4969785127455456148">ອະ​ລະ​ບໍ້າ</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">ການດໍາເນີນການໃຊ້ເວລາດົນກ່ວາທີ່ຄາດໄວ້. ທ່ານຕ້ອງການຍົກເລີກມັນບໍ?</translation>
 <translation id="5036141350290856713">ການອອກສຽງພາສາຣັສຊຽນ</translation>
-<translation id="5036159836254554629">ຈັດການການແບ່ງປັນ Parallels Desktop</translation>
 <translation id="5038625366300922036">ເບິ່ງ​ເພີ່ມ​ເຕີມ...</translation>
 <translation id="5044852990838351217">ພາສາອາເມນຽນ</translation>
 <translation id="5045550434625856497">ລະ​ຫັດ​ຜ່ານ​ບໍ່​ຖືກ​ຕ້ອງ​</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">ກໍາລັງລຶບ "<ph name="FILENAME" />"...</translation>
 <translation id="6581162200855843583">ລິ້ງ Google Drive</translation>
 <translation id="6588648400954570689">ການຕັ້ງຄ່າການຊິ້ງໄຟລ໌</translation>
-<translation id="6594855146910089723">ມີການແບ່ງປັນໂຟນເດີນີ້ກັບ Linux ແລະ Parallels Desktop</translation>
 <translation id="6607272825297743757">ຂໍ້​ມູນໄຟລ໌</translation>
-<translation id="6609332149380188670">ແບ່ງປັນ <ph name="NUMBER_OF_ITEMS" /> ໄຟລ໌ກັບ Parallels Desktop ແລ້ວ</translation>
 <translation id="6629518321609546825">ລະບຸຢ່າງໜ້ອຍ 4 ຕົວເລກ</translation>
 <translation id="6643016212128521049">ລຶບ</translation>
 <translation id="6650726141019353908">ແມງກະເບື້ອສີບົວ</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">ໂອ໋ຍ, ໂຊກຮ້າຍແທ້! ເກີດຄວາມຜິດພາດຂຶ້ນໃນເວລາປ່ຽນຊື່.</translation>
 <translation id="7458955835361612701">ບໍ່ມີຮູບຫຼ້າສຸດ</translation>
 <translation id="7469894403370665791">ເຊື່ອມຕໍ່ກັບເຄືອຂ່າຍນີ້ອັດຕະໂນມັດ</translation>
-<translation id="7486315294984620427">ເພື່ອວາງໄຟລ໌ໃນ Parallels Desktop, ໄຟລ໌ນັ້ນຈະຕ້ອງຖືກສຳເນົາໄປໃສ່ໄຟລ໌ Windows ກ່ອນ.</translation>
 <translation id="749452993132003881">ຮິຣະງະນະ</translation>
 <translation id="7495372004724182530">ການອອກສຽງພາສາມາລາຢາລຳ</translation>
 <translation id="7505167922889582512">ສະ​ແດງ​ໄຟ​ລ໌​ທີ່​ເຊື່ອງ​ໄວ້</translation>

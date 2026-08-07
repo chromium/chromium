@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Wordov dokument</translation>
 <translation id="1056775291175587022">Ni omrežij</translation>
 <translation id="1056898198331236512">Opozorilo</translation>
-<translation id="1060368002126861100">Če želite datoteke odpreti z aplikacijo <ph name="APP_NAME" />, jih najprej premaknite v mapo z datotekami sistema Windows.</translation>
 <translation id="1062407476771304334">Zamenjaj</translation>
 <translation id="1119383441774809183">Prikaži sporočila SMS</translation>
 <translation id="1119447706177454957">Notranja napaka</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">norveščina</translation>
 <translation id="1408504635543854729">Vsebino naprave raziščite z aplikacijo Datoteke. Vsebina je omejena glede na skrbnika in je ni mogoče spreminjati.</translation>
 <translation id="1412476183660741812">Podpisani spletni paket</translation>
-<translation id="1433628812591023318">Če želite spustiti datoteke v program Parallels Desktop, morate datoteko premakniti med datoteke sistema Windows.</translation>
-<translation id="1435838927755162558">Deljenje mape s programom Parallels Desktop</translation>
 <translation id="1439919885608649279">Oseba z rožami</translation>
 <translation id="1458457385801829801">Izvrzi <ph name="TARGET_NAME" /></translation>
 <translation id="1464781208867302907">Za nastavitve naprave odprite nastavitve.</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">francoščina</translation>
 <translation id="2732288874651063549">Uredite deljenje z: <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">vietnamščina (tipkovnica VNI)</translation>
-<translation id="2735623501230989521">Programu Parallels Desktop dovolite dostop do datotek v mapi <ph name="FOLDER_NAME" />.</translation>
 <translation id="2764206540577097904">Porabili ste ves posamezen prostor za shranjevanje za Google Workspace.</translation>
 <translation id="2771816809568414714">Sir</translation>
 <translation id="2783909841122647548">Namestitve paketov Debian niso več podprte. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">Geografija</translation>
 <translation id="3044404008258011032">Če želite obnoviti te elemente, jih povlecite v novo mapo zunaj smetnjaka. Prvotna mapa »<ph name="PARENT_FOLDER_NAME" />« za te elemente je bila izbrisana.</translation>
 <translation id="3047197340186497470">kitajščina (način vnosa daji)</translation>
-<translation id="3067790092342515856">Datoteka sistema Windows</translation>
 <translation id="3083975830683400843">Naprave Chromebit</translation>
 <translation id="3085752524577180175">Gostitelj SOCKS</translation>
 <translation id="3091469289665833668">romunščina</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">Za podrobnosti se obrnite na skrbnika.</translation>
 <translation id="3548125359243647069">Prevečkrat ste vnesli napačno kodo PIN.</translation>
 <translation id="3549797760399244642">Pojdite na drive.google.com ...</translation>
-<translation id="3553048479571901246">Če želite datoteke odpreti z aplikacijo <ph name="APP_NAME" />, jih najprej kopirajte v mapo z datotekami sistema Windows.</translation>
 <translation id="3556731189587832921">angleščina (ZDA) z mednarodno računalniško tipkovnico</translation>
 <translation id="3557414470514932909">Premikanje datoteke <ph name="FILE_NAME" /> v smetnjak</translation>
 <translation id="3560848236447534728">armenščina (fonetična)</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">romunščina</translation>
 <translation id="4508265954913339219">Aktiviranje ni uspelo</translation>
 <translation id="4509667233588080747">angleščina (ZDA) z mednarodno tipkovnico Workman</translation>
-<translation id="4527800702232535228">Ta mapa je deljena s programom Parallels Desktop.</translation>
 <translation id="4552678318981539154">Nakup dodatnega prostora za shranjevanje ...</translation>
 <translation id="4552759165874948005">Omrežje <ph name="NETWORK_TYPE" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4559767610552730302">Boke</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">PowerPointova predstavitev</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
-<translation id="4789067489790477934">Programu Parallels Desktop dovolite dostop do datotek v Googlu Drive. Spremembe bodo sinhronizirane z drugimi napravami.</translation>
 <translation id="4790766916287588578">hindijščina s tipkovnico InScript</translation>
 <translation id="4798645114741131062">Naprava ChromeOS Flex bo kmalu prenehala prejemati posodobitve. Razmislite o nadgradnji na napravo ChromeOS.</translation>
 <translation id="4801956050125744859">Obdrži obe</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">Drsnik za glasnost</translation>
 <translation id="4881695831933465202">Odpri</translation>
 <translation id="4891091358278567964">Če želite obnoviti te elemente, jih povlecite v novo mapo zunaj smetnjaka. Prvotne mape za te elemente so bile izbrisane.</translation>
-<translation id="4900532980794411603">Deljenje s programom Parallels Desktop</translation>
 <translation id="4902546322522096650">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, vzpostavitev povezave</translation>
 <translation id="4906580650526544301">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, stanje baterije telefona je <ph name="BATTERY_STATUS" /> %, podrobnosti</translation>
 <translation id="4935975195727477204">Roža</translation>
 <translation id="4943368462779413526">Žoga</translation>
-<translation id="4961158930123534723">1 mapa je deljena s programom Parallels Desktop</translation>
 <translation id="4965874878399872778">Preverjamo, ali so datoteke v skladu z varnostnimi pravilniki organizacije …</translation>
 <translation id="496656650103537022">Datoteka <ph name="FILE_NAME" /> je obnovljena.</translation>
 <translation id="4969785127455456148">Album</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Eden od postopkov traja dlje, kot je pričakovano. Ali ga želite opustiti?</translation>
 <translation id="5036141350290856713">ruščina (fonetična)</translation>
-<translation id="5036159836254554629">Upravljanje deljenja v programu Parallels Desktop</translation>
 <translation id="5038625366300922036">Več ...</translation>
 <translation id="5044852990838351217">armenščina</translation>
 <translation id="5045550434625856497">Nepravilno geslo</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">Brisanje datoteke »<ph name="FILENAME" />« ...</translation>
 <translation id="6581162200855843583">Povezava Google Drive</translation>
 <translation id="6588648400954570689">Nastavitve sinhronizacije datotek</translation>
-<translation id="6594855146910089723">Ta mapa je deljena z Linuxom in programom Parallels Desktop</translation>
 <translation id="6607272825297743757">Podatki o datoteki</translation>
-<translation id="6609332149380188670">Št. map, deljenih s programom Parallels Desktop: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="6629518321609546825">Vnesite vsaj 4 številke.</translation>
 <translation id="6643016212128521049">Izbriši</translation>
 <translation id="6650726141019353908">Rožnat metulj</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">Ti šment! Napaka med preimenovanjem.</translation>
 <translation id="7458955835361612701">Ni nedavnih slik</translation>
 <translation id="7469894403370665791">Samodejno vzpostavi povezavo s tem omrežjem</translation>
-<translation id="7486315294984620427">Če želite spustiti datoteke v program Parallels Desktop, morate datoteko kopirati med datoteke sistema Windows.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">malajalščina (fonetična)</translation>
 <translation id="7505167922889582512">Prikaz skritih datotek</translation>

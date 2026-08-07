@@ -592,6 +592,7 @@
 <translation id="2027465737841872819">ප්ලාස්ටික්</translation>
 <translation id="2027707238798802149">කාඩ්පත නොමැත</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />ප්‍රොක්සි සහ සුරැකුම් පවුර පරීක්ෂා කරමින්<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">Chrome හි මෙම අවස්ථාව විධාන රේඛා සලකුණු හස්තීයව සකසා ධාවනය වේ. විධාන රේඛා සලකුණු ඕනෑම වේලාවක වෙනස් විය හැකි අතර සහාය නොදක්වන බව සලකන්න.</translation>
 <translation id="2033900728810589426">කෙටිමඟ <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> මගින් අර්ථ දක්වා ඇති පෙරනිමි සෙවීම් සැපයුම්කරුගේ මූල පදයට සමාන විය නොහැක: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">කෙසේ වෙතත් සුරකින්න</translation>
 <translation id="2036514476578229158">ඔබ මෙම අඩවියට පිවිසීමට විමසා ඇත. ඔබේ මාපියන්ට Family Link තුළ පිළිතුරු දිය හැක.</translation>
@@ -4563,7 +4564,6 @@
 <translation id="8932102934695377596">ඔබගේ ඔරලෝසුව ඇත්තේ පිටුපසින් ය</translation>
 <translation id="893332455753468063">නම එක් කරන්න</translation>
 <translation id="8938242527120341116">ඔබේ උපාංගයේ අන්තර්ගත පෙරහන් අවහිර කර ඇත <ph name="BLOCKED_URL" /></translation>
-<translation id="8942355029279167844">ඔබගේ පරිපාලක <ph name="APP_NAME" /> හට නිෂ්පාදන අත්දැකීම වැඩිදියුණු කිරීම සඳහා දෝෂ නිර්ණ දත්ත රැස් කිරීමට ඉඩ දී ඇත. වැඩි විස්තර සඳහා <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> බලන්න.</translation>
 <translation id="8943282376843390568">දෙහි</translation>
 <translation id="8949410982325929394">නාදය</translation>
 <translation id="8949493680961858543">A1x4</translation>

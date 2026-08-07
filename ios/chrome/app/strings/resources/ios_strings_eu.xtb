@@ -725,6 +725,7 @@
 <translation id="340669334496430859">Azken aldatze-data</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">2023ko urriaren 25a</translation>
+<translation id="3419787211763835342">Lagundu betetze automatiko hobetua hobetzen</translation>
 <translation id="3426715535827854458">Ezkutatu tresna-barra ezkutatzeko aukera</translation>
 <translation id="3435738964857648380">Segurtasuna</translation>
 <translation id="3441673211568148613">Mantendu arakatzea pribatu</translation>
@@ -1008,6 +1009,7 @@
 <translation id="4378154925671717803">Telefonoa</translation>
 <translation id="4380677808580146413">Hautatu</translation>
 <translation id="4389019817280890563">Sakatu hau hizkuntza aldatzeko.</translation>
+<translation id="4390649422783033958"><ph name="USER_NAME" /> gisa hasi duzu saioa. <ph name="USER_EMAIL" />, Google-ko kidetza. Ireki kontuaren menua.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{1 egun igaro ondoren}other{{COUNT} egun igaro ondoren}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 fitxa}other{# fitxa}}</translation>
 <translation id="4404790787924017676">Jaso alertak jarraitzen diezun produktuen prezioak jaisten direnean</translation>
@@ -1365,6 +1367,7 @@
 <translation id="5559567453458728487">Bihurtu sarean aurkitutako neurketa-unitateak</translation>
 <translation id="5560088892362098740">Iraungitze-data</translation>
 <translation id="556042886152191864">Botoia</translation>
+<translation id="5563910365456880646">"Erabili argazki bat Google Lens bidez bilatzeko" osatu zenuenetik</translation>
 <translation id="5565871407246142825">Kreditu-txartelak</translation>
 <translation id="5567439033041178034">LORTU INFORMAZIO GEHIAGO</translation>
 <translation id="5578795271662203820">Bilatu irudia <ph name="SEARCH_ENGINE" /> bilatzailean</translation>
@@ -1815,6 +1818,7 @@ Ordenagailuan jarraitzeko, aldatu <ph name="OTHER_EMAIL" /> helbide elektronikor
 <translation id="6930162026494574854">Berrezarri itzulpen-ezarpenak</translation>
 <translation id="6930799952781667037">Sakatu hau hizkuntza honetara aldatzeko.</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
+<translation id="6937083164784433305">{count,plural, =1{Argazki bat erabili duzu bilatzeko}other{# argazki erabili dituzu bilatzeko}}</translation>
 <translation id="693761253105515415">Ezarri pasakode bat</translation>
 <translation id="6945221475159498467">Hautatu</translation>
 <translation id="6946722113367118030">Pentsatzen</translation>
@@ -2020,6 +2024,7 @@ Ordenagailuan jarraitzeko, aldatu <ph name="OTHER_EMAIL" /> helbide elektronikor
 <translation id="7662316065255305764">Webgunearen informazioa</translation>
 <translation id="7665369617277396874">Gehitu kontu bat</translation>
 <translation id="7666861622396822790">Aukera hori kudeatzeko, joan <ph name="BEGIN_LINK" />edukiaren ezarpenetara<ph name="END_LINK" />.</translation>
+<translation id="7669448795744969014"><ph name="USER_EMAIL" /> gisa hasi duzu saioa. Google-ko kidetza bat duzu. Ireki kontuaren menua.</translation>
 <translation id="7669493687462784703"><ph name="WEBSITE" /> webgunetik konfigurazio-profil bat deskargatzen jarraitu nahi duzu?</translation>
 <translation id="7673346542062368520">Ezkutuko moduan arakatzeko, pasatu hatza ezkerrera.</translation>
 <translation id="7679915578945954324">Kopiatu dira webguneen helbideak</translation>

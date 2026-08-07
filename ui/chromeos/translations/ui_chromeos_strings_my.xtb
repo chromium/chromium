@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Word စာတမ်း</translation>
 <translation id="1056775291175587022">ကွန်ရက် မရှိပါ</translation>
 <translation id="1056898198331236512">သတိပေးချက်</translation>
-<translation id="1060368002126861100"><ph name="APP_NAME" /> ဖြင့် ဖိုင်များဖွင့်ရန် ၎င်းတို့ကို ဝင်းဒိုး ဖိုင်တွဲသို့ ဦးစွာရွှေ့ပါ။</translation>
 <translation id="1062407476771304334">အစားထိုးရန်</translation>
 <translation id="1119383441774809183">မိုဘိုင်းမက်ဆေ့ဂျ်များ ပြပါ</translation>
 <translation id="1119447706177454957">အတွင်းပိုင်း အမှား။</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">နော်ဝေး</translation>
 <translation id="1408504635543854729">စက်ပစ္စည်း၏ အကြောင်းအရာများကို Files အက်ပ်ထဲတွင် ရှာပါ။ အကြောင်းအရာကို စီမံခန့်ခွဲသူက ပိတ်ပင်ထားသောကြောင့် မွမ်းမံပြင်ဆင်၍မရပါ။</translation>
 <translation id="1412476183660741812">လက်မှတ်ထိုးထားသော Web Bundle</translation>
-<translation id="1433628812591023318">Parallels Desktop တွင် ဖိုင်များဆွဲချရန် ဖိုင်ကို Windows ဖိုင်များသို့ ရွှေ့ရပါမည်။</translation>
-<translation id="1435838927755162558">ဖိုင်တွဲကို Parallels Desktop အား မျှဝေခြင်း</translation>
 <translation id="1439919885608649279">ပန်းများနှင့်လူ</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> ထုတ်ရန်</translation>
 <translation id="1464781208867302907">ကိရိယာ သတ်မှတ်ချက်များအတွက် 'ဆက်တင်များ' သို့သွားပါ။</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">ပြင်သစ်</translation>
 <translation id="2732288874651063549"><ph name="VM_NAME" /> မျှဝေမှုကို စီမံရန်</translation>
 <translation id="2732839045120506979">ဗီယက်နမ် VNI</translation>
-<translation id="2735623501230989521"><ph name="FOLDER_NAME" /> ဖိုင်တွဲရှိ ဖိုင်များကို Parallels Desktop အား အသုံးပြုခွင့်ပေးမည်</translation>
 <translation id="2764206540577097904">သင်၏တစ်ဦးချင်း Google Workspace သိုလှောင်ခန်းအားလုံးကို သုံးပြီးပါပြီ။</translation>
 <translation id="2771816809568414714">ဒိန်ခဲ</translation>
 <translation id="2783909841122647548">Debian ပက်ကေ့ဂျ် ထည့်သွင်းမှုများကို မပံ့ပိုးတော့ပါ။ <ph name="BEGIN_LINK" />ပိုလေ့လာရန်<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">ပထဝီ</translation>
 <translation id="3044404008258011032">ဤဖိုင်များကို ပြန်ယူရန် အမှိုက်ပုံးပြင်ပရှိ ဖိုင်တွဲအသစ်ထဲသို့ ဖိဆွဲပါ။ ဤဖိုင်များ၏ မူရင်းဖိုင်တွဲ “<ph name="PARENT_FOLDER_NAME" />” ကို ဖျက်လိုက်သည်။</translation>
 <translation id="3047197340186497470">တရုတ် တာ့ရီ</translation>
-<translation id="3067790092342515856">Windows ဖိုင်များ</translation>
 <translation id="3083975830683400843">Chromebit များ</translation>
 <translation id="3085752524577180175">SOCKS လက်ခံဝန်ဆောင်ပေးသည့်ပရောက်စီ</translation>
 <translation id="3091469289665833668">ရိုမေးနီးယား</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">အသေးစိတ်အတွက် သင့်စီမံခန့်ခွဲသူကို ဆက်သွယ်ပါ။</translation>
 <translation id="3548125359243647069">ပင်နံပါတ်အမှားကို အကြိမ်များစွာ ထည့်ထားသည်။</translation>
 <translation id="3549797760399244642">drive.google.com သို့သွားရန်...</translation>
-<translation id="3553048479571901246"><ph name="APP_NAME" /> ဖြင့် ဖိုင်များဖွင့်ရန် ၎င်းတို့ကို ဝင်းဒိုး ဖိုင်တွဲသို့ ဦးစွာမိတ္တူကူးပါ။</translation>
 <translation id="3556731189587832921">နိုင်ငံတကာ PC ကီးဘုတ်ဖြင့် အင်္ဂလိပ် (ယူအက်စ်)</translation>
 <translation id="3557414470514932909"><ph name="FILE_NAME" /> ကို အမှိုက်ပုံးသို့ ရွှေ့နေသည်</translation>
 <translation id="3560848236447534728">အာမေးနီးယား အသံထွက်</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">ရိုမေနီယား</translation>
 <translation id="4508265954913339219">ဖွင့်သုံးမှု မအောင်မြင်</translation>
 <translation id="4509667233588080747">Workman နိုင်ငံတကာကီးဘုတ်ဖြင့် အင်္ဂလိပ် (ယူအက်စ်)</translation>
-<translation id="4527800702232535228">ဤဖိုင်တွဲကို Parallels Desktop အား မျှဝေထားသည်</translation>
 <translation id="4552678318981539154">နောက်ထပ် သိုလှောင်ခြင်း ဝယ်မည်</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> ကွန်ရက်၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">Bokeh</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">အိုနီဂီရိ ထမင်းဆုပ်</translation>
 <translation id="4784330909746505604">PowerPoint တင်ဆက်ပြသခြင်း</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
-<translation id="4789067489790477934">သင်၏ Google Drive ရှိ ဖိုင်များကို Parallels Desktop အား အသုံးပြုခွင့်ပေးမည်။ ပြောင်းလဲမှုများကို သင်၏အခြားစက်များနှင့် စင့်ခ်လုပ်သွားပါမည်။</translation>
 <translation id="4790766916287588578">InScript ကီးဘုတ်ဖြင့် ဟိန္ဒီ</translation>
 <translation id="4798645114741131062">သင့် ChromeOS Flex စက်သည် မကြာမီ အပ်ဒိတ်များ ရရှိတော့မည်မဟုတ်ပါ။ ChromeOS စက်ပစ္စည်းသို့ အဆင့်မြှင့်ရန် စဉ်းစားပါ။</translation>
 <translation id="4801956050125744859">နှစ်ခုစလုံးကို ထားရှိရန်</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">အတိုးအကျယ် ဆလိုက်ဒါး</translation>
 <translation id="4881695831933465202">ဖွင့်</translation>
 <translation id="4891091358278567964">ဤဖိုင်များကို ပြန်ယူရန် အမှိုက်ပုံးပြင်ပရှိ ဖိုင်တွဲအသစ်ထဲသို့ ဖိဆွဲပါ။ ဤဖိုင်များ၏ မူရင်းဖိုင်တွဲများကို ဖျက်လိုက်သည်။</translation>
-<translation id="4900532980794411603">Parallels Desktop အား မျှဝေရန်</translation>
 <translation id="4902546322522096650">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="SECURITY_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ ချိတ်ဆက်ရန်</translation>
 <translation id="4906580650526544301">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="PHONE_NAME" />၊ <ph name="PROVIDER_NAME" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ ဖုန်းဘက်ထရီ <ph name="BATTERY_STATUS" />%၊ အသေးစိတ်</translation>
 <translation id="4935975195727477204">ဂါဇာနီယာပန်း</translation>
 <translation id="4943368462779413526">ဘောလုံး</translation>
-<translation id="4961158930123534723">ဖိုင်တွဲ 1 ခုကို Parallels Desktop အား မျှဝေထားသည်</translation>
 <translation id="4965874878399872778">ဖိုင်များကို သင့်အဖွဲ့အစည်း၏ လုံခြုံရေးမူဝါဒများဖြင့် စစ်ဆေးနေသည်...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> ပြန်ယူပြီးပြီ</translation>
 <translation id="4969785127455456148">အယ်လ်ဘမ်</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">လုပ်ကိုင်မှု  တစ်ခုသည် မျှော်လင့်ခဲ့တာထက် ပိုကြာနေသည်။ သင်သည် အဲဒါကို ဖျက်သိမ်းချင်ပါသလား?</translation>
 <translation id="5036141350290856713">ရုရှား အသံထွက်</translation>
-<translation id="5036159836254554629">Parallels Desktop မျှဝေခြင်းကို စီမံရန်</translation>
 <translation id="5038625366300922036">ပိုကြည့်ရန်...</translation>
 <translation id="5044852990838351217">အာမေးနီးယား</translation>
 <translation id="5045550434625856497">စကားဝှက် မမှန်ပါ</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">ဖျက်နေ "<ph name="FILENAME" />"...</translation>
 <translation id="6581162200855843583">Google ဒရိုက်ဗ် လင့်</translation>
 <translation id="6588648400954570689">ဖိုင်စင့်ခ်လုပ်ခြင်း ဆက်တင်များ</translation>
-<translation id="6594855146910089723">ဤဖိုင်တွဲကို Linux နှင့် Parallels Desktop တို့အား မျှဝေထားသည်</translation>
 <translation id="6607272825297743757">ဖိုင်အချက်အလက်</translation>
-<translation id="6609332149380188670">ဖိုင်တွဲ <ph name="NUMBER_OF_ITEMS" /> ခုကို Parallels Desktop အား မျှဝေထားသည်</translation>
 <translation id="6629518321609546825">အနည်းဆုံး ဂဏန်း ၄ လုံး ထည့်ပါ</translation>
 <translation id="6643016212128521049">ရှင်းရန်</translation>
 <translation id="6650726141019353908">ပန်းရောင်လိပ်ပြာ</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">စိတ်မကောင်းပါ။ အမည်ပြောင်းနေစဉ် မှားယွင်းမှုတစ်ခု ဖြစ်ပေါ်ခဲ့သည်။</translation>
 <translation id="7458955835361612701">လတ်တလောပုံများ မရှိပါ</translation>
 <translation id="7469894403370665791">ဒီကွန်ရက်သို့ အလိုအလျောက် ချိတ်ဆက်ရန်</translation>
-<translation id="7486315294984620427">Parallels Desktop တွင် ဖိုင်များဆွဲချရန် ဖိုင်ကို Windows ဖိုင်များသို့ မိတ္တူကူးရပါမည်။</translation>
 <translation id="749452993132003881">ဟိရဂန</translation>
 <translation id="7495372004724182530">မလေယာလမ် အသံထွက်</translation>
 <translation id="7505167922889582512">ဖျောက်ထားသော ဖိုင်များ ပြရန်</translation>

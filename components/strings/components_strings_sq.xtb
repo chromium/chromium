@@ -592,6 +592,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2027465737841872819">Plastikë</translation>
 <translation id="2027707238798802149">Karta nuk ofrohet</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Të kontrollosh përfaqësuesin dhe murin mbrojtës<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">Ky shembull i Chrome po ekzekutohet me flamujt e rreshtit të komandës të caktuar manualisht. Ki parasysh se flamujt e rreshtit së komandës mund të ndryshojnë në çdo kohë dhe nuk mbështeten.</translation>
 <translation id="2033900728810589426">Shkurtorja nuk mund të jetë e njëjtë me fjalën kyçe të ofruesit të parazgjedhur të kërkimit të përcaktuar nga <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Ruaje gjithsesi</translation>
 <translation id="2036514476578229158">Ti kërkove që të vizitoje këtë sajt. Prindërit e tu mund të përgjigjen në Family Link.</translation>
@@ -4562,7 +4563,6 @@ Detaje shtesë:
 <translation id="8932102934695377596">Ora ka mbetur prapa</translation>
 <translation id="893332455753468063">Shto emër</translation>
 <translation id="8938242527120341116">Filtrat e përmbajtjes të pajisjes sate bllokuan <ph name="BLOCKED_URL" /></translation>
-<translation id="8942355029279167844">Administratori yt ka lejuar që <ph name="APP_NAME" /> të grumbullojë të dhënat e diagnostikimit për të përmirësuar përvojën e produktit. Shiko <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> për më shumë informacion.</translation>
 <translation id="8943282376843390568">Ngjyrë limoni jeshil</translation>
 <translation id="8949410982325929394">Toni</translation>
 <translation id="8949493680961858543">A1x4</translation>

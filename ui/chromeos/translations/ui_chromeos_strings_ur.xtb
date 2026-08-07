@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">‏Word دستاویز</translation>
 <translation id="1056775291175587022">نیٹ ورک نہیں</translation>
 <translation id="1056898198331236512">وارننگ</translation>
-<translation id="1060368002126861100"><ph name="APP_NAME" /> کے ساتھ فائلز کو کھولنے کیلئے، پہلے انہیں ونڈوز فائلز فولڈر میں منتقل کریں۔</translation>
 <translation id="1062407476771304334">بدلیں</translation>
 <translation id="1119383441774809183">ٹیکسٹ پیغامات دکھائیں</translation>
 <translation id="1119447706177454957">داخلی خرابی</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">نارويجين</translation>
 <translation id="1408504635543854729">فائلز ایپ میں آلہ کا مواد دریافت کریں۔ منتظم نے مواد کو محدود کر دیا ہے اور اس میں ترمیم نہیں کی جا سکتی ہے۔</translation>
 <translation id="1412476183660741812">سائن کردہ ویب بنڈل</translation>
-<translation id="1433628812591023318">‏فائلز کو Parallels Desktop میں ڈراپ کرنے کے لیے، فائل کو Windows کی فائلز میں منتقل کرنا ضروری ہے۔</translation>
-<translation id="1435838927755162558">‏Parallels ڈیسک ٹاپ کے ساتھ فولڈر کا اشتراک کریں</translation>
 <translation id="1439919885608649279">پھول لیے ہوئے شخص</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> خارج کریں</translation>
 <translation id="1464781208867302907">آلہ کی ترجیحات کے لیے، ترتیبات میں جائیں۔</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">فرانسيسی</translation>
 <translation id="2732288874651063549"><ph name="VM_NAME" /> کے اشتراک کا نظم کریں</translation>
 <translation id="2732839045120506979">‏ویتنامی VNI</translation>
-<translation id="2735623501230989521">‏Parallels ڈیسک ٹاپ کو<ph name="FOLDER_NAME" /> فولڈر میں فائلز تک رسائی کے لیے اجازت دیں</translation>
 <translation id="2764206540577097904">‏آپ نے اپنی تمام انفرادی Google Workspace اسٹوریج استعمال کر لی ہے۔</translation>
 <translation id="2771816809568414714">پنیر</translation>
 <translation id="2783909841122647548">‏‫Debian پیکیج انسٹالز اب تعاون یافتہ نہیں ہیں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">جغرافیہ</translation>
 <translation id="3044404008258011032">ان آئٹمز کو بحال کرنے کے لیے، انہیں کوڑے دان سے باہر ایک نئے فولڈر میں گھسیٹیں۔ ان آئٹمز کے اصل فولڈر "<ph name="PARENT_FOLDER_NAME" />" کو حذف کر دیا گیا ہے۔</translation>
 <translation id="3047197340186497470">‏چینی Dayi</translation>
-<translation id="3067790092342515856">ونڈوز کی فائلز</translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">‏SOCKS میزبان</translation>
 <translation id="3091469289665833668">رومانیائی</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">تفصیلات کے لیے اپنے منتظم سے رابطہ کریں۔</translation>
 <translation id="3548125359243647069">‏ایک غلط PIN کئی مرتبہ درج کیا گیا۔</translation>
 <translation id="3549797760399244642">‏drive.google.com پر جائیں…</translation>
-<translation id="3553048479571901246"><ph name="APP_NAME" /> کے ساتھ فائلز کو کھولنے کیلئے، پہلے انہیں ونڈوز فائلز فولڈر میں کاپی کریں۔</translation>
 <translation id="3556731189587832921">‏بین الاقوامی PC کی بورڈ کے ساتھ انگریزی (امریکہ)</translation>
 <translation id="3557414470514932909"><ph name="FILE_NAME" /> کو کوڑے دان میں منتقل کیا جا رہا ہے</translation>
 <translation id="3560848236447534728">آرمینیائی فونیٹک</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">رومانیائی</translation>
 <translation id="4508265954913339219">فعالیت ناکام ہو گئی</translation>
 <translation id="4509667233588080747">‏Workman بین الاقوامی کی بورڈ کے ساتھ انگریزی (امریکہ)</translation>
-<translation id="4527800702232535228">‏یہ فولڈر Parallels Desktop کے ساتھ اشتراک کردہ ہے</translation>
 <translation id="4552678318981539154">مزید اسٹوریج خریدیں</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> نیٹ ورک، سگنل کی مظبوطی <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">بوکیہ</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">اونیگیری</translation>
 <translation id="4784330909746505604">‏PowerPoint پیشکش</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
-<translation id="4789067489790477934">‏Parallels ڈیسک ٹاپ کو اپنے Google Drive میں فائلز تک رسائی کی اجازت دیں۔ آپ کے دیگر آلات پر تبدیلیوں کی مطابقت پذیری کی جائے گی۔</translation>
 <translation id="4790766916287588578">‏InScript کی بورڈ کے ساتھ ہندی</translation>
 <translation id="4798645114741131062">‏آپ کا ChromeOS Flex آلہ جلد ہی اپ ڈیٹس وصول کرنا بند کر دے گا۔ ‫ChromeOS آلے پر اپ گریڈ کرنے پر غور کریں۔</translation>
 <translation id="4801956050125744859">دونوں کو برقرار رکھیں</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">والیوم سلائیڈر</translation>
 <translation id="4881695831933465202">کھولیں</translation>
 <translation id="4891091358278567964">ان آئٹمز کو بحال کرنے کے لیے، انہیں کوڑے دان سے باہر ایک نئے فولڈر میں گھسیٹیں۔ ان آئٹمز کے اصل فولڈرز کو حذف کر دیا گیا ہے۔</translation>
-<translation id="4900532980794411603">‏Parallels ڈیسک ٹاپ کے ساتھ اشتراک کریں</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" /> میں سے نیٹ ورک <ph name="NETWORK_INDEX" />، <ph name="NETWORK_NAME" />، <ph name="SECURITY_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />%، منسلک کریں</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" /> میں سے نیٹ ورک <ph name="NETWORK_INDEX" />، <ph name="PHONE_NAME" />، <ph name="PROVIDER_NAME" />، <ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی %<ph name="SIGNAL_STRENGTH" />، فون کی بیٹری %<ph name="BATTERY_STATUS" />، تفصیلات</translation>
 <translation id="4935975195727477204">گزانیہ پھول</translation>
 <translation id="4943368462779413526">فٹبال</translation>
-<translation id="4961158930123534723">‏Parallels ڈیسک ٹاپ کے ساتھ اشتراک کردہ 1 فولڈر</translation>
 <translation id="4965874878399872778">یہ دیکھنے کے لیے چیک کیا جا رہا ہے کہ آیا فائلز آپ کی تنظیم کی سیکیورٹی پالیسیوں کی تعمیل کرتی ہیں...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> بحال ہوگئے</translation>
 <translation id="4969785127455456148">البم</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">ایک کارروائی میں توقع سے زیادہ وقت لگ رہا ہے۔ کیا آپ اسے منسوخ کرنا چاہتے ہیں؟</translation>
 <translation id="5036141350290856713">روسی فونیٹک</translation>
-<translation id="5036159836254554629">‏Parallels ڈیسک ٹاپ کے اشتراک کا نظم کریں</translation>
 <translation id="5038625366300922036">مزید دیکھیں…</translation>
 <translation id="5044852990838351217">ارمینی</translation>
 <translation id="5045550434625856497">غلط پاس ورڈ</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">"<ph name="FILENAME" />" کو حذف کیا جا رہا ہے…</translation>
 <translation id="6581162200855843583">‏Google Drive لنک</translation>
 <translation id="6588648400954570689">فائل کو مطابقت پذیر بنانے کی ترتیبات</translation>
-<translation id="6594855146910089723">‏یہ فولڈر Linux اورParallels Desktop کے ساتھ اشتراک کردہ ہے</translation>
 <translation id="6607272825297743757">فائل کی معلومات</translation>
-<translation id="6609332149380188670">‏Parallels ڈیسک ٹاپ کے ساتھ اشتراک کردہ <ph name="NUMBER_OF_ITEMS" /> فولڈرز</translation>
 <translation id="6629518321609546825">کم از کم 4 نمبرز درج کریں</translation>
 <translation id="6643016212128521049">صاف کریں</translation>
 <translation id="6650726141019353908">گلابی تتلی</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">افوہ! نام کی تبدیلی کے دوران ایک خرابی تھی۔</translation>
 <translation id="7458955835361612701">حالیہ کوئی تصویر نہیں ہے</translation>
 <translation id="7469894403370665791">اس نیٹ ورک سے خودکار طور پر منسلک ہوں</translation>
-<translation id="7486315294984620427">‏فائلز کو Parallels Desktop میں ڈراپ کرنے کے لیے، فائل کو Windows کی فائلز میں کاپی کرنا ضروری ہے۔</translation>
 <translation id="749452993132003881">ہیراگنا</translation>
 <translation id="7495372004724182530">ملیالم فونیٹک</translation>
 <translation id="7505167922889582512">پوشیدہ فائلیں دکھائیں</translation>

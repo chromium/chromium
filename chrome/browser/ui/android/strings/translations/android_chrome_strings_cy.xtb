@@ -297,6 +297,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2233735624724508540">Dewiswch ffrâm amser ac yna tapiwch Dileu data</translation>
 <translation id="2234031676056123135">Addasu eich llwybrau byr</translation>
 <translation id="2234827758954819389">Canllaw Preifatrwydd</translation>
+<translation id="2236949375853147973">Fy Ngweithgarwch</translation>
 <translation id="2238038374973843156">Symud grŵp i ffenestr arall</translation>
 <translation id="2247789808226901522">Mae'r cerdyn wedi darfod</translation>
 <translation id="2251809247798634662">Ffenestr Anhysbys newydd</translation>
@@ -575,6 +576,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="3385749568468586663">Nid yw Gemini ar gael yn y Modd anhysbys</translation>
 <translation id="3387650086002190359">Methwyd â lawrlwytho <ph name="FILE_NAME" /> oherwydd gwallau system.</translation>
 <translation id="3391311825344469964">Gallwch reoli'ch ffenestri yn Rheolwr Ffenestri Chrome</translation>
+<translation id="3410151451624226773">Rheoli yn Rheolwr Cyfrineiriau Google</translation>
 <translation id="3417835166382867856">Chwilio tabiau</translation>
 <translation id="3430670036890315772">Bydd diffodd eich clo proffil yn tynnu eich gwybodaeth sydd wedi'i chadw</translation>
 <translation id="3435575784518354875">Er mwyn cadw mynediad at eich cyfrineiriau, allforiwch nhw nawr, diweddarwch Google Play Services, ac yna eu mewnforio yn ôl i Reolwr Cyfrineiriau Google. <ph name="BEGIN_LINK" />Gweld y cyfarwyddiadau llawn<ph name="END_LINK" />.</translation>
@@ -943,6 +945,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="4877678010818027629">Dechrau'r modd Anhysbys</translation>
 <translation id="4878404682131129617">Wedi methu â sefydlu twnnel drwy weinydd dirprwyol</translation>
 <translation id="4880127995492972015">Cyfieithu…</translation>
+<translation id="4880827082731008257">Hanes chwilio</translation>
 <translation id="4881695831933465202">Agor</translation>
 <translation id="488187801263602086">Ailenwi ffeil</translation>
 <translation id="4885273946141277891">Nifer o achosion Chrome na chefnogir.</translation>
@@ -992,6 +995,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="509429900233858213">Bu gwall.</translation>
 <translation id="5096775069898886423">Ar gyfer gwefannau nad ydynt yn cefnogi cysylltiadau diogel, cewch eich rhybuddio cyn ymweld â'r wefan</translation>
 <translation id="510275257476243843">1 awr ar ôl</translation>
+<translation id="5105442806410269908">Rheoli data Google eraill</translation>
 <translation id="5114895953710637392">Mae taflen hidlo ap ar gau.</translation>
 <translation id="5115811374190515607">i <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Gallwch ddefnyddio Chrome unrhyw bryd y byddwch yn tapio dolenni mewn negeseuon, dogfennau ac apiau eraill</translation>
@@ -1042,6 +1046,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="5316947901395241499">Mae cadw cyfrineiriau wedi'i ddiffodd gan eich gweinyddwr</translation>
 <translation id="5317780077021120954">Cadw</translation>
 <translation id="5319359161174645648">Mae Google yn argymell Chrome</translation>
+<translation id="5323501626199324454">Rheoli yn eich Cyfrif Google</translation>
 <translation id="5326246328175179736">Ni allwch fewngofnodi gan ddefnyddio'r cyfrif hwn</translation>
 <translation id="5327248766486351172">Enw</translation>
 <translation id="5328542107300944283">Defnyddio gyda <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1326,6 +1331,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="6461962085415701688">Methu ag agor y ffeil</translation>
 <translation id="6464977750820128603">Gallwch weld gwefannau rydych yn ymweld â nhw yn Chrome a gosod amseryddion ar eu cyfer.\n\nMae Google yn derbyn gwybodaeth am y gwefannau rydych yn gosod amseryddion ar eu cyfer ac am faint o amser rydych yn ymweld â nhw. Caiff y wybodaeth hon ei defnyddio i wella Digital Wellbeing.</translation>
 <translation id="6468703991511753953">Bar cyfeiriad ar y gwaelod ar hyn o bryd</translation>
+<translation id="6469702164109431067">Cyfrineiriau a chodau pas</translation>
 <translation id="6470181189905173055">Bydd y tudalennau rydych chi wedi'u hagor yn Chrome wrth ddefnyddio <ph name="APP_LABEL" /> yn ymddangos yma.</translation>
 <translation id="6473086018775716761">Agorodd rhestr o ddewisiadau rhannu ar uchder llawn.</translation>
 <translation id="6475951671322991020">Lawrlwytho'r fideo</translation>

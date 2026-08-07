@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Документ в Word</translation>
 <translation id="1056775291175587022">Няма мрежи</translation>
 <translation id="1056898198331236512">Предупреждение</translation>
-<translation id="1060368002126861100">За да отваряте файлове с(ъс) <ph name="APP_NAME" />, първо ги преместете в папката с файлове на Windows.</translation>
 <translation id="1062407476771304334">Замяна</translation>
 <translation id="1119383441774809183">Показване на текстовите съобщения</translation>
 <translation id="1119447706177454957">Вътрешна грешка</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">Норвежки</translation>
 <translation id="1408504635543854729">Разгледайте съдържанието на устройството в приложението Файлове. Съдържанието е ограничено от администратор и не може да се променя.</translation>
 <translation id="1412476183660741812">Подписан уеб пакет</translation>
-<translation id="1433628812591023318">За да хванете и преместите файлове в Parallels Desktop, те трябва да бъдат преместени в папката с файлове на Windows.</translation>
-<translation id="1435838927755162558">Споделяне на папката с Parallels Desktop</translation>
 <translation id="1439919885608649279">Човек с цветя</translation>
 <translation id="1458457385801829801">Деактивиране на <ph name="TARGET_NAME" /></translation>
 <translation id="1464781208867302907">За предпочитания за устройството отворете „Настройки“</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">френски</translation>
 <translation id="2732288874651063549">Управление на споделянето с(ъс) <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">Виетнамски (VNI)</translation>
-<translation id="2735623501230989521">Даване на Parallels Desktop на достъп до файловете в папката „<ph name="FOLDER_NAME" />“</translation>
 <translation id="2764206540577097904">Използвахте цялото си индивидуално хранилище в Google Workspace.</translation>
 <translation id="2771816809568414714">Сирене</translation>
 <translation id="2783909841122647548">Вече не се поддържат инсталирания на пакети за Debian. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">Географско положение</translation>
 <translation id="3044404008258011032">За да възстановите тези елементи, преместете ги с плъзгане в нова папка извън кошчето. Първоначалната им папка „<ph name="PARENT_FOLDER_NAME" />“ е изтрита.</translation>
 <translation id="3047197340186497470">Китайски (даи)</translation>
-<translation id="3067790092342515856">Файлове на Windows</translation>
 <translation id="3083975830683400843">Устройствата Chromebit</translation>
 <translation id="3085752524577180175">SOCKS хост</translation>
 <translation id="3091469289665833668">румънски</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">За подробности се свържете с администратора си.</translation>
 <translation id="3548125359243647069">Въведохте грешен ПИН код твърде много пъти.</translation>
 <translation id="3549797760399244642">Към drive.google.com...</translation>
-<translation id="3553048479571901246">За да отваряте файлове с(ъс) <ph name="APP_NAME" />, първо ги копирайте в папката с файлове на Windows.</translation>
 <translation id="3556731189587832921">Английски (САЩ) с международна клавиатура (PC)</translation>
 <translation id="3557414470514932909">„<ph name="FILE_NAME" />“ се премества в кошчето</translation>
 <translation id="3560848236447534728">арменска фонетична клавиатура</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">Румънски</translation>
 <translation id="4508265954913339219">Активирането не бе успешно</translation>
 <translation id="4509667233588080747">Английски (САЩ) с международна клавиатура (Уъркман)</translation>
-<translation id="4527800702232535228">Тази папка е споделена с Parallels Desktop</translation>
 <translation id="4552678318981539154">Купуване на още хранилище</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> мрежа, сила на сигнала <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">Боке</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">Онигири</translation>
 <translation id="4784330909746505604">Презентация в PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> КБ</translation>
-<translation id="4789067489790477934">Даване на Parallels Desktop на достъп до файловете в профила ви в Google Диск. Промените ще се синхронизират с другите ви устройства.</translation>
 <translation id="4790766916287588578">Хинди с клавиатура InScript</translation>
 <translation id="4798645114741131062">Скоро устройството ви с ChromeOS Flex ще спре да получава актуализации. Препоръчваме да надстроите до устройство с ChromeOS.</translation>
 <translation id="4801956050125744859">Запазванe на двете версии</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">Плъзгач за силата на звука</translation>
 <translation id="4881695831933465202">Отваряне</translation>
 <translation id="4891091358278567964">За да възстановите тези елементи, преместете ги с плъзгане в нова папка извън кошчето. Първоначалните им папки са изтрити.</translation>
-<translation id="4900532980794411603">Споделяне с Parallels Desktop</translation>
 <translation id="4902546322522096650">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, свързване</translation>
 <translation id="4906580650526544301">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, батерия на телефона <ph name="BATTERY_STATUS" />%, подробности</translation>
 <translation id="4935975195727477204">Газания</translation>
 <translation id="4943368462779413526">Футболна топка</translation>
-<translation id="4961158930123534723">1 папка е споделена с Parallels Desktop</translation>
 <translation id="4965874878399872778">Файловете се проверяват за съответствие с правилата за сигурност на организацията ви...</translation>
 <translation id="496656650103537022">Възстановихте „<ph name="FILE_NAME" />“</translation>
 <translation id="4969785127455456148">Албум</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Операция отнема повече време от очакваното. Искате ли да я прекратите?</translation>
 <translation id="5036141350290856713">руска фонетична клавиатура</translation>
-<translation id="5036159836254554629">Управление на споделянето с Parallels Desktop</translation>
 <translation id="5038625366300922036">Вижте още...</translation>
 <translation id="5044852990838351217">Арменски</translation>
 <translation id="5045550434625856497">Грешна парола</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">„<ph name="FILENAME" />“ се изтрива...</translation>
 <translation id="6581162200855843583">Връзка към Google Диск</translation>
 <translation id="6588648400954570689">Настройки за синхронизирането на файлове</translation>
-<translation id="6594855146910089723">Тази папка е споделена с Linux и Parallels Desktop</translation>
 <translation id="6607272825297743757">Информация за файла</translation>
-<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> папки са споделени с Parallels Desktop</translation>
 <translation id="6629518321609546825">Въведете поне 4 цифри</translation>
 <translation id="6643016212128521049">Изчистване</translation>
 <translation id="6650726141019353908">Розова пеперуда</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">Ужас! При преименуването възникна грешка.</translation>
 <translation id="7458955835361612701">Няма скорошни изображения</translation>
 <translation id="7469894403370665791">Автоматично свързване с тази мрежа</translation>
-<translation id="7486315294984620427">За да хванете и преместите файлове в Parallels Desktop, те трябва да бъдат копирани в папката с файлове на Windows.</translation>
 <translation id="749452993132003881">хирагана</translation>
 <translation id="7495372004724182530">Малаялам (фонетична клавиатура)</translation>
 <translation id="7505167922889582512">Показване на скритите файлове</translation>

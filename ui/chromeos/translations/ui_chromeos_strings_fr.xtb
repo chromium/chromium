@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Document Word</translation>
 <translation id="1056775291175587022">Aucun réseau</translation>
 <translation id="1056898198331236512">Avertissement</translation>
-<translation id="1060368002126861100">Pour ouvrir des fichiers avec <ph name="APP_NAME" />, déplacez-les d'abord vers le dossier "Fichiers Windows".</translation>
 <translation id="1062407476771304334">Remplacer</translation>
 <translation id="1119383441774809183">Afficher les messages</translation>
 <translation id="1119447706177454957">Erreur interne.</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">Norvégien</translation>
 <translation id="1408504635543854729">Explorez le contenu de l'appareil dans l'application Fichiers. L'accès à ce contenu étant limité par un administrateur, vous ne pouvez pas le modifier.</translation>
 <translation id="1412476183660741812">Bundle Web signé</translation>
-<translation id="1433628812591023318">Pour déposer des fichiers dans Parallels Desktop, vous devez déplacer le fichier dans le dossier "Fichiers Windows".</translation>
-<translation id="1435838927755162558">Partager le dossier avec Parallels Desktop</translation>
 <translation id="1439919885608649279">Personne avec des fleurs</translation>
 <translation id="1458457385801829801">Éjecter <ph name="TARGET_NAME" /></translation>
 <translation id="1464781208867302907">Pour ouvrir les préférences de l'appareil, accédez aux paramètres.</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">Français</translation>
 <translation id="2732288874651063549">Gérer le partage avec <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">Vietnamien (VNI)</translation>
-<translation id="2735623501230989521">Autorisez Parallels Desktop à accéder aux fichiers du dossier "<ph name="FOLDER_NAME" />"</translation>
 <translation id="2764206540577097904">Vous avez utilisé la totalité de votre espace de stockage individuel Google Workspace.</translation>
 <translation id="2771816809568414714">Fromage</translation>
 <translation id="2783909841122647548">Les installations de packages Debian ne sont plus prises en charge. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">Géographie</translation>
 <translation id="3044404008258011032">Pour restaurer ces éléments, faites-les glisser dans un nouveau dossier hors de la corbeille. Le dossier d'origine de ces éléments, "<ph name="PARENT_FOLDER_NAME" />", a été supprimé.</translation>
 <translation id="3047197340186497470">Chinois (Dayi)</translation>
-<translation id="3067790092342515856">Fichiers Windows</translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">Hôte SOCKS</translation>
 <translation id="3091469289665833668">Roumain</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">Pour en savoir plus, contactez votre administrateur.</translation>
 <translation id="3548125359243647069">Vous avez saisi un code PIN erroné trop de fois.</translation>
 <translation id="3549797760399244642">Accéder à drive.google.com…</translation>
-<translation id="3553048479571901246">Pour ouvrir des fichiers avec <ph name="APP_NAME" />, copiez-les d'abord dans le dossier "Fichiers Windows".</translation>
 <translation id="3556731189587832921">Anglais (États-Unis) avec clavier international (PC)</translation>
 <translation id="3557414470514932909">Déplacement de <ph name="FILE_NAME" /> vers la corbeille…</translation>
 <translation id="3560848236447534728">Arménien phonétique</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">Roumain</translation>
 <translation id="4508265954913339219">Échec de l'activation</translation>
 <translation id="4509667233588080747">Anglais (États-Unis) avec clavier Workman International</translation>
-<translation id="4527800702232535228">Ce dossier est partagé avec Parallels Desktop</translation>
 <translation id="4552678318981539154">Acheter de l'espace de stockage supplémentaire</translation>
 <translation id="4552759165874948005">Réseau <ph name="NETWORK_TYPE" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4559767610552730302">Bokeh</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">Présentation PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> Ko</translation>
-<translation id="4789067489790477934">Autorisez Parallels Desktop à accéder aux fichiers dans votre espace Google Drive. Les modifications apportées seront synchronisées avec vos autres appareils.</translation>
 <translation id="4790766916287588578">Hindi avec clavier InScript</translation>
 <translation id="4798645114741131062">Votre appareil ChromeOS Flex ne recevra bientôt plus de mises à jour. Envisagez de passer à un appareil ChromeOS.</translation>
 <translation id="4801956050125744859">Garder les deux</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">Curseur de volume</translation>
 <translation id="4881695831933465202">Ouvrir</translation>
 <translation id="4891091358278567964">Pour restaurer ces éléments, faites-les glisser dans un nouveau dossier hors de la corbeille. Les dossiers d'origine de ces éléments ont été supprimés.</translation>
-<translation id="4900532980794411603">Partager avec Parallels Desktop</translation>
 <translation id="4902546322522096650">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, connexion</translation>
 <translation id="4906580650526544301">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, batterie du téléphone à <ph name="BATTERY_STATUS" /> %, détails</translation>
 <translation id="4935975195727477204">Fleur de gazania</translation>
 <translation id="4943368462779413526">Football américain</translation>
-<translation id="4961158930123534723">1 dossier partagé avec Parallels Desktop</translation>
 <translation id="4965874878399872778">Vérification des fichiers par rapport aux règles de sécurité de votre organisation...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> a été restauré</translation>
 <translation id="4969785127455456148">Album</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Une opération dure plus longtemps que prévu. Voulez-vous l'annuler ?</translation>
 <translation id="5036141350290856713">Russe phonétique</translation>
-<translation id="5036159836254554629">Gérer le partage avec Parallels Desktop</translation>
 <translation id="5038625366300922036">Plus…</translation>
 <translation id="5044852990838351217">Arménien</translation>
 <translation id="5045550434625856497">Mot de passe incorrect</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">Suppression de "<ph name="FILENAME" />" en cours...</translation>
 <translation id="6581162200855843583">Lien Google Drive</translation>
 <translation id="6588648400954570689">Paramètres de synchronisation des fichiers</translation>
-<translation id="6594855146910089723">Ce dossier est partagé avec Linux et Parallels Desktop</translation>
 <translation id="6607272825297743757">Informations sur le fichier</translation>
-<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> dossiers partagés avec Parallels Desktop</translation>
 <translation id="6629518321609546825">Saisissez au moins 4 chiffres</translation>
 <translation id="6643016212128521049">Effacer</translation>
 <translation id="6650726141019353908">Papillon rose</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">Aïe, aïe, aïe ! Une erreur s'est produite lors du changement du nom.</translation>
 <translation id="7458955835361612701">Aucune image récente</translation>
 <translation id="7469894403370665791">Se connecter automatiquement à ce réseau</translation>
-<translation id="7486315294984620427">Pour déposer des fichiers dans Parallels Desktop, vous devez copier le fichier dans le dossier "Fichiers Windows".</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam (phonétique)</translation>
 <translation id="7505167922889582512">Afficher les fichiers masqués</translation>

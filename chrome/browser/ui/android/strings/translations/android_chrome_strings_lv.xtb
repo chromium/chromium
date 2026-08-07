@@ -297,6 +297,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="2233735624724508540">Izvēlieties laika periodu un pēc tam pieskarieties vienumam Dzēst datus.</translation>
 <translation id="2234031676056123135">Saīšņu pielāgošana</translation>
 <translation id="2234827758954819389">Konfidencialitātes ceļvedis</translation>
+<translation id="2236949375853147973">Manas darbības</translation>
 <translation id="2238038374973843156">Pārvietot grupu uz citu logu</translation>
 <translation id="2247789808226901522">Beidzies kartes derīguma termiņš</translation>
 <translation id="2251809247798634662">Jauns inkognito režīma logs</translation>
@@ -574,6 +575,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="3385749568468586663">Gemini nav pieejams inkognito režīmā.</translation>
 <translation id="3387650086002190359">Neizdevās lejupielādēt failu <ph name="FILE_NAME" />, jo radās failu sistēmas kļūdas.</translation>
 <translation id="3391311825344469964">Varat pārvaldīt savus logus Chrome logu pārvaldniekā.</translation>
+<translation id="3410151451624226773">Pārvaldiet Google paroļu pārvaldniekā.</translation>
 <translation id="3417835166382867856">Meklēt cilnēs</translation>
 <translation id="3430670036890315772">Izslēdzot profila bloķēšanu, tiks noņemta jūsu saglabātā informācija.</translation>
 <translation id="3435575784518354875">Lai saglabātu piekļuvi savām parolēm, eksportējiet tās tūlīt, atjauniniet Google Play pakalpojumus un pēc tam atkal importējiet paroles Google paroļu pārvaldniekā. <ph name="BEGIN_LINK" />Skatiet visus norādījumus<ph name="END_LINK" />.</translation>
@@ -942,6 +944,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="4877678010818027629">Atvērt inkognito režīmā</translation>
 <translation id="4878404682131129617">Neizdevās iestatīt porta pārsūtīšanu, izmantojot starpniekserveri.</translation>
 <translation id="4880127995492972015">Tulkot</translation>
+<translation id="4880827082731008257">Meklēšanas vēsture</translation>
 <translation id="4881695831933465202">Atvērt</translation>
 <translation id="488187801263602086">Faila pārdēvēšana</translation>
 <translation id="4885273946141277891">Neatbalstīts Chrome instanču skaits</translation>
@@ -991,6 +994,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="509429900233858213">Radās kļūda.</translation>
 <translation id="5096775069898886423">Ja vietne neatbalsta drošus savienojumus, saņemsiet brīdinājumu pirms vietnes apmeklēšanas.</translation>
 <translation id="510275257476243843">Atlikusi 1 h</translation>
+<translation id="5105442806410269908">Pārvaldiet citus Google datus</translation>
 <translation id="5114895953710637392">Lietotņu filtra lapa ir aizvērta.</translation>
 <translation id="5115811374190515607">uz: <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Varat izmantot Chrome ikreiz, kad pieskaraties saitēm ziņojumos, dokumentos un citās lietotnēs.</translation>
@@ -1041,6 +1045,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="5316947901395241499">Jūsu administrators ir izslēdzis paroļu saglabāšanu.</translation>
 <translation id="5317780077021120954">Saglabāt</translation>
 <translation id="5319359161174645648">Google iesaka pārlūku Chrome</translation>
+<translation id="5323501626199324454">Pārvaldīt Google kontā</translation>
 <translation id="5326246328175179736">Nevarat pierakstīties, izmantojot šo kontu.</translation>
 <translation id="5327248766486351172">Nosaukums</translation>
 <translation id="5328542107300944283">Izmantošana ar kontu <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1325,6 +1330,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6461962085415701688">Nevar atvērt failu.</translation>
 <translation id="6464977750820128603">Varat skatīt pārlūkā Chrome apmeklētās vietnes un iestatīt tām taimerus.\n\nGoogle saņem informāciju par vietnēm, kurām iestatāt taimerus, kā arī šo vietņu apmeklēšanas ilgumu. Šī informācija tiek izmantota, lai uzlabotu Digitālo labjutību.</translation>
 <translation id="6468703991511753953">Adreses josla pašlaik atrodas apakšdaļā</translation>
+<translation id="6469702164109431067">Paroles un piekļuves atslēgas</translation>
 <translation id="6470181189905173055">Šeit tiks parādītas lapas, kuras atvērāt pārlūkā Chrome, izmantojot pakalpojumu <ph name="APP_LABEL" />.</translation>
 <translation id="6473086018775716761">Kopīgošanas opciju saraksts ir atvērts pusekrāna augstumā.</translation>
 <translation id="6475951671322991020">Lejupielādēt videoklipu</translation>

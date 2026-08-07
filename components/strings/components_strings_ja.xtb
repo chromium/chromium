@@ -592,6 +592,7 @@
 <translation id="2027465737841872819">プラスチック</translation>
 <translation id="2027707238798802149">使用できないカード</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />プロキシとファイアウォールを確認する<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">この Chrome インスタンスは、手動で設定されたコマンドライン フラグを使用して実行されています。コマンドライン フラグは随時変更される可能性があり、サポート対象外であることに注意してください。</translation>
 <translation id="2033900728810589426"><ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> で定義されたデフォルトの検索プロバイダのキーワードと同じショートカットを指定することはできません: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">このまま保存</translation>
 <translation id="2036514476578229158">このサイトを開いてもよいかの問い合わせを送信しました。保護者の方は、ファミリー リンクで返信できます。</translation>
@@ -4565,7 +4566,6 @@
 <translation id="8932102934695377596">時計が遅れています</translation>
 <translation id="893332455753468063">名前の追加</translation>
 <translation id="8938242527120341116">デバイスのコンテンツ フィルタにより <ph name="BLOCKED_URL" /> がブロックされました</translation>
-<translation id="8942355029279167844">管理者は、<ph name="APP_NAME" /> がサービス改善のために診断データを収集することを許可しています。詳しくは、<ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> をご覧ください。</translation>
 <translation id="8943282376843390568">ライム</translation>
 <translation id="8949410982325929394">トーン</translation>
 <translation id="8949493680961858543">A1x4</translation>

@@ -2055,6 +2055,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2598710988533271874">Nieuwe versie van Chrome beschikbaar</translation>
 <translation id="2599048253926156421">Gebruikersnaam gekopieerd naar klembord</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{1 onveilige extensie uitgezet}other{{NUM_SITES} onveilige extensies uitgezet}}</translation>
+<translation id="2603121359676416582">Voor deze pagina</translation>
 <translation id="2604129989323098489">Sites vragen meestal om informatie over je schermen, zodat ze vensters op een intelligente manier kunnen openen en plaatsen, zoals documenten of content op volledig scherm naast elkaar laten zien.</translation>
 <translation id="2604255671529671813">Fout bij netwerkverbinding</translation>
 <translation id="2604805099836652105">Adresformulier voor <ph name="ADDRESS_LABEL" /> ingevuld.</translation>
@@ -2967,6 +2968,7 @@ Je kunt instellingen op deze kaart altijd beheren of meer opties bekijken in het
 <translation id="3285329711156774325">Vaardigheden doorzoeken</translation>
 <translation id="3285500645985761267">Toestaan dat gerelateerde sites je activiteit in de groep zien</translation>
 <translation id="328571385944182268">Je wachtwoorden opslaan?</translation>
+<translation id="3285969135399641759">Een nieuwe vaardigheid leren</translation>
 <translation id="3289668031376215426">Automatisch hoofdlettergebruik</translation>
 <translation id="3289856944988573801">Gebruik ethernet of wifi om op updates te controleren.</translation>
 <translation id="3290249595466894471">Stuurt ook een klein gedeelte pagina's, downloads, extensie-activiteit en systeeminformatie om nieuwe dreigingen te kunnen vinden</translation>
@@ -6368,6 +6370,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5939719276406088041">Kan snelkoppeling niet maken</translation>
 <translation id="5939723110967488589">Kies welke knoppen worden getoond op de werkbalk</translation>
 <translation id="594048410531370124">Toets niet herkend. Druk op een willekeurige toets om <ph name="RESPONSE" />.</translation>
+<translation id="5940614040566393493">Advies krijgen</translation>
 <translation id="5941711191222866238">Minimaliseren</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{1 wachtwoord wordt alleen op dit apparaat opgeslagen. Als je het wilt gebruiken op je andere apparaten, sla je het op in je Google-account.}other{{PASSWORD_COUNT} wachtwoorden worden alleen op dit apparaat opgeslagen. Als je ze wilt gebruiken op je andere apparaten, sla je ze op in je Google-account.}}</translation>
 <translation id="594221546068848596">Pagina zoeken met <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -10673,7 +10676,6 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="983192555821071799">Alle tabbladen sluiten</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" />: camera- en microfoonopname</translation>
 <translation id="984705303330760860">Talen voor spellingcontrole toevoegen</translation>
-<translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Algemeen</translation>
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> wil informatie van je mobiele apparaat opvragen</translation>
 <translation id="988320949174893488">Hapert soms</translation>

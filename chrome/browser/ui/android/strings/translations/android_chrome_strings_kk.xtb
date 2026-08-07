@@ -297,6 +297,7 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="2233735624724508540">Уақыт аралығын таңдап, "Деректерді жою" түймесін түртіңіз.</translation>
 <translation id="2234031676056123135">Жылдам пәрмендерді реттеу</translation>
 <translation id="2234827758954819389">Құпиялық нұсқаулығы</translation>
+<translation id="2236949375853147973">Әрекеттерім</translation>
 <translation id="2238038374973843156">Басқа терезеге тасымалдау</translation>
 <translation id="2247789808226901522">Картаның мерзімі аяқталды</translation>
 <translation id="2251809247798634662">Жаңа инкогнито терезесі</translation>
@@ -574,6 +575,7 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="3385749568468586663">Gemini инкогнито режимінде қолжетімді емес.</translation>
 <translation id="3387650086002190359">Файл жүйесіндегі қателер себебінен <ph name="FILE_NAME" /> жүктелмеді.</translation>
 <translation id="3391311825344469964">Терезелерді Chrome-ның терезе менеджерінен реттеуге болады</translation>
+<translation id="3410151451624226773">Google Password Manager-де басқару</translation>
 <translation id="3417835166382867856">Қойындыларды іздеу</translation>
 <translation id="3430670036890315772">Профиль құлпын өшірсеңіз, сақталған ақпаратыңыз өшеді.</translation>
 <translation id="3435575784518354875">Құпия сөздерді пайдалану рұқсатын сақтау үшін оларды қазір экспорттап, Google Play қызметтерін жаңартыңыз. Содан кейін оларды Google Password Manager-ге қайта импорттаңыз. <ph name="BEGIN_LINK" />Толық нұсқауларды қараңыз<ph name="END_LINK" />.</translation>
@@ -942,6 +944,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="4877678010818027629">Инкогнито режиміне өту</translation>
 <translation id="4878404682131129617">Прокси-сервер арқылы байланыс орнатылмады</translation>
 <translation id="4880127995492972015">Аудару...</translation>
+<translation id="4880827082731008257">Тарихтан іздеу</translation>
 <translation id="4881695831933465202">Ашу</translation>
 <translation id="488187801263602086">Файлдың атын өзгерту</translation>
 <translation id="4885273946141277891">Chrome нұсқаларының қайшылығы орын алды.</translation>
@@ -991,6 +994,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="509429900233858213">Қате орын алды.</translation>
 <translation id="5096775069898886423">Қауіпсіз байланыстарға қолдау көрсетпейтін сайттарға кірер алдында ескертеді.</translation>
 <translation id="510275257476243843">1 сағат қалды</translation>
+<translation id="5105442806410269908">Басқа Google деректерін басқару</translation>
 <translation id="5114895953710637392">Қолданба бойынша іріктеу парағы жабылды.</translation>
 <translation id="5115811374190515607">жаңа орны: <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Хабарлардағы, құжаттардағы және басқа қолданбалардағы сілтемелерді түртіп, Chrome браузерін кез келген уақытта пайдалана аласыз.</translation>
@@ -1041,6 +1045,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="5316947901395241499">Құпия сөздерді сақтау функциясын әкімші өшірген.</translation>
 <translation id="5317780077021120954">Сақтау</translation>
 <translation id="5319359161174645648">Google қызметі Chrome браузерін ұсынады</translation>
+<translation id="5323501626199324454">Google аккаунтында басқару</translation>
 <translation id="5326246328175179736">Бұл аккаунтқа кіре алмайсыз.</translation>
 <translation id="5327248766486351172">Аты</translation>
 <translation id="5328542107300944283"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> аккаунтымен пайдалану</translation>
@@ -1325,6 +1330,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="6461962085415701688">Файл ашылмайды</translation>
 <translation id="6464977750820128603">Chrome браузерінде ашқан сайттарды көріп, оларға таймер орната аласыз.\n\nGoogle таймер орнатылған сайттар және болған уақытыңыз туралы ақпарат алады. Бұл ақпарат Digital Wellbeing функциясын жақсартуға пайдаланылады.</translation>
 <translation id="6468703991511753953">Мекенжай жолағы қазір төменге бекітілген.</translation>
+<translation id="6469702164109431067">Құпия сөздер мен кіру кілттері</translation>
 <translation id="6470181189905173055"><ph name="APP_LABEL" /> қолданбасын пайдаланған кезде Chrome-нан ашылатын беттер осы жерде көрсетіледі.</translation>
 <translation id="6473086018775716761">Бөлісу опцияларының тізімі экранның жартысына жайылды.</translation>
 <translation id="6475951671322991020">Бейнені жүктеу</translation>

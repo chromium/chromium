@@ -592,6 +592,7 @@
 <translation id="2027465737841872819">প্লাষ্টিক</translation>
 <translation id="2027707238798802149">কাৰ্ড উপলব্ধ নহয়</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />প্ৰক্সি আৰু ফায়াৰৱাল পৰীক্ষা কৰি থকা হৈছে<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">Chromeৰ এই উদাহৰণটো মেনুৱেলী ছেট কৰা কামাণ্ড লাইন ফ্লেগৰ সৈতে চলি আছে। মন কৰিব যে কামাণ্ড লাইন ফ্লেগ যিকোনো সময়তে সলনি হ’ব পাৰে আৰু সেইসমূহ সমৰ্থিত নহয়।</translation>
 <translation id="2033900728810589426">শ্বৰ্টকাটটো <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />এ সংজ্ঞাবদ্ধ কৰা ডিফ'ল্ট সন্ধান প্ৰদানকাৰীৰ কীৱৰ্ডটোৰ সৈতে একেই হ'ব নোৱাৰে: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">তথাপি ছেভ কৰক</translation>
 <translation id="2036514476578229158">আপোনাক এই ছাইটটোলৈ যাবলৈ কোৱা হৈছে। আপোনাৰ অভিভাৱকে Family Linkত প্ৰত্যুত্তৰ দিব পাৰে।</translation>
@@ -4558,7 +4559,6 @@
 <translation id="8932102934695377596">আপোনাৰ ঘড়ীৰ সময় পিছপৰি আছে</translation>
 <translation id="893332455753468063">নাম যোগ কৰক</translation>
 <translation id="8938242527120341116">আপোনাৰ ডিভাইচৰ সমলৰ ফিল্টাৰসমূহে <ph name="BLOCKED_URL" /> অৱৰোধ কৰিছে</translation>
-<translation id="8942355029279167844">প্ৰ’ডাক্ট ব্যৱহাৰৰ অভিজ্ঞতা উন্নত কৰিবলৈ আপোনাৰ প্ৰশাসকে <ph name="APP_NAME" />ক ডায়েগন’ষ্টিক্সৰ ডেটা সংগ্ৰহ কৰিবলৈ দিছে। অধিক তথ্যৰ বাবে <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> চাওক।</translation>
 <translation id="8943282376843390568">নেমুৰঙী</translation>
 <translation id="8949410982325929394">ট’ন</translation>
 <translation id="8949493680961858543">A1x4</translation>

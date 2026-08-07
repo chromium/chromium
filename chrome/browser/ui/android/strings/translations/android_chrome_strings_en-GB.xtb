@@ -85,6 +85,7 @@
 <translation id="1310482092992808703">Group tabs</translation>
 <translation id="1318262688555255786">Share link to web page <ph name="PAGE_TITLE" />. Source: <ph name="PAGE_URL" /></translation>
 <translation id="1327257854815634930">Navigation history is opened</translation>
+<translation id="1330043879670259913">To secure your work on Chrome, your organisation will be able to view or manage certain information when you're signed in to Chrome. Learn more</translation>
 <translation id="1331212799747679585">Chrome can’t update. More options</translation>
 <translation id="1332501820983677155">Google Chrome feature shortcuts</translation>
 <translation id="1333491156693005331">Checked recently</translation>
@@ -296,6 +297,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2233735624724508540">Choose a time frame and then tap Delete data</translation>
 <translation id="2234031676056123135">Customise your shortcuts</translation>
 <translation id="2234827758954819389">Privacy guide</translation>
+<translation id="2236949375853147973">My Activity</translation>
 <translation id="2238038374973843156">Move group to new window</translation>
 <translation id="2247789808226901522">Card expired</translation>
 <translation id="2251809247798634662">New Incognito window</translation>
@@ -573,6 +575,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3385749568468586663">Gemini isn't available in Incognito mode</translation>
 <translation id="3387650086002190359"><ph name="FILE_NAME" /> download failed due to file system errors.</translation>
 <translation id="3391311825344469964">You can manage your windows in Chrome's Window Manager</translation>
+<translation id="3410151451624226773">Manage in Google Password Manager</translation>
 <translation id="3417835166382867856">Search tabs</translation>
 <translation id="3430670036890315772">Turning off your profile lock will remove your saved info</translation>
 <translation id="3435575784518354875">To keep access to your passwords, export them now, update Google Play services and then import them back to Google Password Manager. <ph name="BEGIN_LINK" />See full instructions<ph name="END_LINK" />.</translation>
@@ -941,6 +944,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4877678010818027629">Enter Incognito mode</translation>
 <translation id="4878404682131129617">Establishing a tunnel via proxy server failed</translation>
 <translation id="4880127995492972015">Translate…</translation>
+<translation id="4880827082731008257">Search history</translation>
 <translation id="4881695831933465202">Open</translation>
 <translation id="488187801263602086">Rename file</translation>
 <translation id="4885273946141277891">Unsupported number of Chrome instances.</translation>
@@ -990,6 +994,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="509429900233858213">An error occurred.</translation>
 <translation id="5096775069898886423">For sites that don't support secure connections, get warned before visiting the site</translation>
 <translation id="510275257476243843">1 hour left</translation>
+<translation id="5105442806410269908">Manage other Google data</translation>
 <translation id="5114895953710637392">App filter sheet is closed.</translation>
 <translation id="5115811374190515607">to <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">You can use Chrome any time that you tap links in messages, documents and other apps</translation>
@@ -1040,6 +1045,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5316947901395241499">Password saving has been turned off by your administrator</translation>
 <translation id="5317780077021120954">Save</translation>
 <translation id="5319359161174645648">Google recommends Chrome</translation>
+<translation id="5323501626199324454">Manage in your Google Account</translation>
 <translation id="5326246328175179736">You can't sign in using this account</translation>
 <translation id="5327248766486351172">Name</translation>
 <translation id="5328542107300944283">Use with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1166,6 +1172,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5869522115854928033">Saved passwords</translation>
 <translation id="5870416898561279542">Duplicate tabs and groups or those unused for <ph name="DAYS_INACTIVE" /> days are moved here<ph name="AUTODELETE_SECTION" />. You can change this at any time in <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5885378508678660271">Notifications <ph name="SEPARATOR" /> Chrome removed these permissions because this site is dangerous</translation>
+<translation id="5896944002928653773">Enterprise signals disclaimer bottom sheet is closed</translation>
 <translation id="5899667542927581604">No passkeys sheet was closed</translation>
 <translation id="5907542076239273525">Bookmark saved to <ph name="FOLDER_NAME" /></translation>
 <translation id="5911301511366365629"><ph name="TAB_TITLE" />, selected audible Incognito tab</translation>
@@ -1256,6 +1263,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6251449557817521191">View your Chrome history here</translation>
 <translation id="6254139308321626268">You're viewing a PDF file</translation>
 <translation id="6255809143828972562">With tools from Chrome, you can browse safely and stay in control</translation>
+<translation id="6259107733340311168">Enterprise signals disclaimer bottom sheet opened at full height</translation>
 <translation id="6260260490042862943">Site controls</translation>
 <translation id="6264376385120300461">Download anyway</translation>
 <translation id="6264485186158353794">Back to safety</translation>
@@ -1322,6 +1330,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6461962085415701688">Can’t open file</translation>
 <translation id="6464977750820128603">You can see sites that you visit in Chrome and set timers for them.\n\nGoogle gets info about the sites for which you set timers and how long you visit them. This info is used to make Digital Wellbeing better.</translation>
 <translation id="6468703991511753953">Address bar currently on bottom</translation>
+<translation id="6469702164109431067">Passwords and passkeys</translation>
 <translation id="6470181189905173055">The pages that you've opened in Chrome while using <ph name="APP_LABEL" /> will show up here.</translation>
 <translation id="6473086018775716761">List of sharing options opened at half height.</translation>
 <translation id="6475951671322991020">Download video</translation>

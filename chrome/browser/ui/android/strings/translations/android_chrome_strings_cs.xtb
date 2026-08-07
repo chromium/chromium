@@ -297,6 +297,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2233735624724508540">Vyberte časové období a pak klepněte na Vymazat data</translation>
 <translation id="2234031676056123135">Přizpůsobte si zkratky</translation>
 <translation id="2234827758954819389">Průvodce ochranou soukromí</translation>
+<translation id="2236949375853147973">Moje aktivita</translation>
 <translation id="2238038374973843156">Přesunout skupinu do nového okna</translation>
 <translation id="2247789808226901522">Platnost karty vypršela</translation>
 <translation id="2251809247798634662">Nové anonymní okno</translation>
@@ -574,6 +575,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3385749568468586663">V anonymním režimu není Gemini k dispozici</translation>
 <translation id="3387650086002190359">Stažení souboru <ph name="FILE_NAME" /> se nezdařilo z důvodu chyb systému souborů.</translation>
 <translation id="3391311825344469964">Okna můžete spravovat ve Správci oken Chromu</translation>
+<translation id="3410151451624226773">Spravovat ve Správci hesel Google</translation>
 <translation id="3417835166382867856">Hledat karty</translation>
 <translation id="3430670036890315772">Vypnutím zámku profilu odstraníte uložené informace</translation>
 <translation id="3435575784518354875">Pokud chcete zachovat přístup ke svým heslům, exportujte je, aktualizujte Služby Google Play a poté je importujte zpět do Správce hesel Google. <ph name="BEGIN_LINK" />Zobrazit úplné pokyny<ph name="END_LINK" /></translation>
@@ -942,6 +944,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="4877678010818027629">Přejít do anonymního režimu</translation>
 <translation id="4878404682131129617">Vytvoření tunelu prostřednictvím proxy serveru se nezdařilo</translation>
 <translation id="4880127995492972015">Přeložit…</translation>
+<translation id="4880827082731008257">Hledat v historii</translation>
 <translation id="4881695831933465202">Otevřít</translation>
 <translation id="488187801263602086">Přejmenovat soubor</translation>
 <translation id="4885273946141277891">Nepodporovaný počet instancí Chromu.</translation>
@@ -991,6 +994,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="509429900233858213">Došlo k chybě.</translation>
 <translation id="5096775069898886423">Před návštěvou webů, které nepodporují zabezpečená připojení, zobrazit upozornění</translation>
 <translation id="510275257476243843">Zbývá: 1 h</translation>
+<translation id="5105442806410269908">Spravovat další data na Googlu</translation>
 <translation id="5114895953710637392">Panel filtrování podle aplikace je zavřený.</translation>
 <translation id="5115811374190515607">do: <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Chrome můžete použít pokaždé, když klepnete na odkazy ve zprávách, dokumentech a ostatních aplikacích</translation>
@@ -1041,6 +1045,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="5316947901395241499">Administrátor ukládání hesel vypnul</translation>
 <translation id="5317780077021120954">Uložit</translation>
 <translation id="5319359161174645648">Google doporučuje prohlížeč Chrome</translation>
+<translation id="5323501626199324454">Spravovat v účtu Google</translation>
 <translation id="5326246328175179736">Pomocí tohoto účtu se přihlásit nemůžete</translation>
 <translation id="5327248766486351172">Jméno</translation>
 <translation id="5328542107300944283">Použít na webu <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1325,6 +1330,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6461962085415701688">Soubor nelze otevřít</translation>
 <translation id="6464977750820128603">Můžete se podívat, které stránky v Chromu navštěvujete, a nastavit pro ně časovače.\n\nGoogle obdrží informace o webech, pro které nastavíte časovače, a o tom, jak dlouho jste na nich byli. Tyto informace slouží ke zlepšování digitální rovnováhy.</translation>
 <translation id="6468703991511753953">Adresní řádek je aktuálně dole</translation>
+<translation id="6469702164109431067">Hesla a přístupové klíče</translation>
 <translation id="6470181189905173055">Zde se zobrazí stránky, které jste otevřeli v Chromu při používání aplikace <ph name="APP_LABEL" />.</translation>
 <translation id="6473086018775716761">Seznam možností sdílení otevřený na poloviční výšku.</translation>
 <translation id="6475951671322991020">Stáhnout video</translation>

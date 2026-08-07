@@ -297,6 +297,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2233735624724508540">Velg en tidsramme, og trykk på Slett data</translation>
 <translation id="2234031676056123135">Tilpass snarveiene dine</translation>
 <translation id="2234827758954819389">Personvernveiledning</translation>
+<translation id="2236949375853147973">Min aktivitet</translation>
 <translation id="2238038374973843156">Flytt gruppe til nytt vindu</translation>
 <translation id="2247789808226901522">Kortet er utløpt</translation>
 <translation id="2251809247798634662">Nytt inkognitovindu</translation>
@@ -574,6 +575,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3385749568468586663">Gemini er ikke tilgjengelig i inkognitomodus</translation>
 <translation id="3387650086002190359">Nedlastingen av <ph name="FILE_NAME" /> ble avbrutt på grunn av filsystemfeil.</translation>
 <translation id="3391311825344469964">Du kan administrere vinduene dine i Window Manager for Chrome</translation>
+<translation id="3410151451624226773">Administrer i Google Passordlagring</translation>
 <translation id="3417835166382867856">Søk i faner</translation>
 <translation id="3430670036890315772">Hvis du slår av profillåsen, fjernes den lagrede informasjonen din</translation>
 <translation id="3435575784518354875">For å beholde tilgangen til passordene dine, eksporter dem nå, oppdater Google Play-tjenester, og importer dem til Google Passordlagring igjen. <ph name="BEGIN_LINK" />Se fullstendige instruksjoner.<ph name="END_LINK" /></translation>
@@ -942,6 +944,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="4877678010818027629">Slå på Inkognitomodus</translation>
 <translation id="4878404682131129617">Kunne ikke opprette tunnel via proxy-tjener.</translation>
 <translation id="4880127995492972015">Oversett</translation>
+<translation id="4880827082731008257">Søk i loggen</translation>
 <translation id="4881695831933465202">Åpne</translation>
 <translation id="488187801263602086">Endre navnet på filen</translation>
 <translation id="4885273946141277891">For mange Chrome-forekomster.</translation>
@@ -991,6 +994,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="509429900233858213">Det oppsto en feil.</translation>
 <translation id="5096775069898886423">Du blir advart før du besøker nettsteder som ikke støtter sikre tilkoblinger</translation>
 <translation id="510275257476243843">1 time igjen</translation>
+<translation id="5105442806410269908">Administrer andre Google-data</translation>
 <translation id="5114895953710637392">Arket for appfiltrering er lukket.</translation>
 <translation id="5115811374190515607">til <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Du kan bruke Chrome hver gang du trykker på linker i meldinger, dokumenter og andre apper</translation>
@@ -1041,6 +1045,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="5316947901395241499">Administratoren din har slått av lagring av passord</translation>
 <translation id="5317780077021120954">Lagre</translation>
 <translation id="5319359161174645648">Google anbefaler Chrome</translation>
+<translation id="5323501626199324454">Administrer i Google-kontoen din</translation>
 <translation id="5326246328175179736">Du kan ikke logge på med denne kontoen</translation>
 <translation id="5327248766486351172">Navn</translation>
 <translation id="5328542107300944283">Bruk med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1325,6 +1330,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6461962085415701688">Kan ikke åpne filen</translation>
 <translation id="6464977750820128603">Du kan se nettstedene du besøker i Chrome, og angi tidtakere for dem.\n\nGoogle får informasjon om nettstedene du angir tidtakere for, og hvor lenge du besøker dem. Denne informasjonen brukes til å gjøre Digital balanse bedre.</translation>
 <translation id="6468703991511753953">Adressefeltet er nederst</translation>
+<translation id="6469702164109431067">Passord og passnøkler</translation>
 <translation id="6470181189905173055">Sidene du har åpnet i Chrome mens du har brukt <ph name="APP_LABEL" />, vises her.</translation>
 <translation id="6473086018775716761">Listen over delingsalternativer er åpnet i halv høyde.</translation>
 <translation id="6475951671322991020">Last ned videoen</translation>

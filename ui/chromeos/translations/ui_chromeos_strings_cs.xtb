@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Dokument aplikace Word</translation>
 <translation id="1056775291175587022">Žádné sítě</translation>
 <translation id="1056898198331236512">Upozornění</translation>
-<translation id="1060368002126861100">Pokud soubory chcete otevřít pomocí aplikace <ph name="APP_NAME" />, nejdříve je přesuňte do složky souborů Windows.</translation>
 <translation id="1062407476771304334">Nahradit</translation>
 <translation id="1119383441774809183">Zobrazit textové zprávy</translation>
 <translation id="1119447706177454957">Interní chyba</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">norština</translation>
 <translation id="1408504635543854729">Prozkoumejte obsah zařízení v aplikaci Soubory. Přístup k obsahu je administrátorem omezen a nelze jej upravovat.</translation>
 <translation id="1412476183660741812">Podepsaný webový balíček</translation>
-<translation id="1433628812591023318">Pokud chcete soubor přetáhnout do nástroje Parallels Desktop, musíte ho přesunout mezi soubory systému Windows.</translation>
-<translation id="1435838927755162558">Sdílení složky s nástrojem Parallels Desktop</translation>
 <translation id="1439919885608649279">Člověk s květinami</translation>
 <translation id="1458457385801829801">Odpojit <ph name="TARGET_NAME" /></translation>
 <translation id="1464781208867302907">Předvolby zařízení naleznete v Nastavení.</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">Francouzská klávesnice</translation>
 <translation id="2732288874651063549">Spravovat sdílení s nástrojem <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">vietnamština VNI</translation>
-<translation id="2735623501230989521">Udělujete nástroji Parallels Desktop oprávnění k přístupu k souborům ve složce <ph name="FOLDER_NAME" /></translation>
 <translation id="2764206540577097904">Zaplnili jste celé své úložiště Google Workspace.</translation>
 <translation id="2771816809568414714">Sýr</translation>
 <translation id="2783909841122647548">Instalace balíčků Debian už nejsou podporovány. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">Geografická poloha</translation>
 <translation id="3044404008258011032">Pokud tyto položky chcete obnovit, přetáhněte je do nové složky mimo koš. Původní složka „<ph name="PARENT_FOLDER_NAME" />“ této položky byla smazána.</translation>
 <translation id="3047197340186497470">čínština (Dayi)</translation>
-<translation id="3067790092342515856">Soubory Windows</translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">Hostitel protokolu SOCKS</translation>
 <translation id="3091469289665833668">Rumunská klávesnice</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">Podrobnosti vám sdělí váš administrátor.</translation>
 <translation id="3548125359243647069">Příliš mnohokrát jste zadali nesprávný PIN.</translation>
 <translation id="3549797760399244642">Přejít na stránky drive.google.com...</translation>
-<translation id="3553048479571901246">Pokud soubory chcete otevřít pomocí aplikace <ph name="APP_NAME" />, nejdříve je zkopírujte do složky souborů Windows.</translation>
 <translation id="3556731189587832921">angličtina (USA) s mezinárodní (PC) klávesnicí</translation>
 <translation id="3557414470514932909">Přesouvání souboru <ph name="FILE_NAME" /> do koše</translation>
 <translation id="3560848236447534728">Arménská fonetická klávesnice</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">rumunština</translation>
 <translation id="4508265954913339219">Aktivace se nezdařila</translation>
 <translation id="4509667233588080747">angličtina (USA) s klávesnicí Workman International</translation>
-<translation id="4527800702232535228">Tato složka je sdílena s nástrojem Parallels Desktop</translation>
 <translation id="4552678318981539154">Koupit větší úložiště</translation>
 <translation id="4552759165874948005">Síť: <ph name="NETWORK_TYPE" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4559767610552730302">Rozostření</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">Rýže onigiri</translation>
 <translation id="4784330909746505604">Prezentace aplikace PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> kB</translation>
-<translation id="4789067489790477934">Udělujete nástroji Parallels Desktop oprávnění k přístupu k souborům na Disku Google. Změny se synchronizují do vašich ostatních zařízení.</translation>
 <translation id="4790766916287588578">hindština s klávesnicí InScript</translation>
 <translation id="4798645114741131062">Vaše zařízení ChromeOS Flex brzy přestane dostávat aktualizace. Zvažte upgrade na zařízení s ChromeOS.</translation>
 <translation id="4801956050125744859">Ponechat obojí</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">Posuvník hlasitosti</translation>
 <translation id="4881695831933465202">Otevřít</translation>
 <translation id="4891091358278567964">Pokud tyto položky chcete obnovit, přetáhněte je do nové složky mimo koš. Původní složky těchto položek byly smazány.</translation>
-<translation id="4900532980794411603">Sdílet s nástrojem Parallels Desktop</translation>
 <translation id="4902546322522096650">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %, připojit</translation>
 <translation id="4906580650526544301">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />síla signálu: <ph name="SIGNAL_STRENGTH" /> %, baterie telefonu: <ph name="BATTERY_STATUS" /> %, podrobnosti</translation>
 <translation id="4935975195727477204">Květina gazánie</translation>
 <translation id="4943368462779413526">Americký fotbal</translation>
-<translation id="4961158930123534723">1 soubor sdílen s nástrojem Parallels Desktop</translation>
 <translation id="4965874878399872778">Kontroluje se, zda soubory odpovídají bezpečnostním zásadám vaší organizace…</translation>
 <translation id="496656650103537022">Soubor <ph name="FILE_NAME" /> byl obnoven</translation>
 <translation id="4969785127455456148">Album</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Operace trvá neočekávaně dlouho. Chcete ji zrušit?</translation>
 <translation id="5036141350290856713">Ruská fonetická klávesnice</translation>
-<translation id="5036159836254554629">Spravovat sdílení s nástrojem Parallels Desktop</translation>
 <translation id="5038625366300922036">Zobrazit více...</translation>
 <translation id="5044852990838351217">arménština</translation>
 <translation id="5045550434625856497">Nesprávné heslo</translation>
@@ -735,9 +724,7 @@
 <translation id="656398493051028875">Mazání souboru <ph name="FILENAME" />...</translation>
 <translation id="6581162200855843583">Odkaz na Disk Google</translation>
 <translation id="6588648400954570689">Nastavení synchronizace souborů</translation>
-<translation id="6594855146910089723">Tato složka je sdílena se systémem Linux a nástrojem Parallels Desktop</translation>
 <translation id="6607272825297743757">Informace o souboru</translation>
-<translation id="6609332149380188670">Složky sdílené s nástrojem Parallels Desktop: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="6629518321609546825">Zadejte alespoň čtyři číslice</translation>
 <translation id="6643016212128521049">Vymazat</translation>
 <translation id="6650726141019353908">Růžový motýl</translation>
@@ -855,7 +842,6 @@
 <translation id="7436921188514130341">Aj, chyba! Při přejmenovávání došlo k chybě.</translation>
 <translation id="7458955835361612701">Žádné nedávné obrázky</translation>
 <translation id="7469894403370665791">Automaticky připojit k této síti</translation>
-<translation id="7486315294984620427">Pokud chcete soubor přetáhnout do nástroje Parallels Desktop, musíte ho zkopírovat mezi soubory systému Windows.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">malajálamština (fonetická)</translation>
 <translation id="7505167922889582512">Zobrazit skryté soubory</translation>

@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">ਸ਼ਬਦ ਦਸਤਾਵੇਜ਼</translation>
 <translation id="1056775291175587022">ਕੋਈ ਨੈੱਟਵਰਕ ਨਹੀਂ</translation>
 <translation id="1056898198331236512">ਚਿਤਾਵਨੀ</translation>
-<translation id="1060368002126861100"><ph name="APP_NAME" /> ਨਾਲ ਫ਼ਾਈਲਾਂ ਖੋਲ੍ਹਣ ਲਈ, ਪਹਿਲਾਂ ਉਹਨਾਂ ਨੂੰ Windows ਫ਼ਾਈਲਾਂ ਦੇ ਫੋਲਡਰ ਵਿੱਚ ਲਿਜਾਓ।</translation>
 <translation id="1062407476771304334">ਬਦਲੋ</translation>
 <translation id="1119383441774809183">ਲਿਖਤ ਸੁਨੇਹੇ ਦਿਖਾਓ</translation>
 <translation id="1119447706177454957">ਅੰਦਰੂਨੀ ਗੜਬੜ</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">ਨਾਰਵੇਜੀਆਈ</translation>
 <translation id="1408504635543854729">Files ਐਪ ਵਿੱਚ ਮੌਜੂਦ ਡੀਵਾਈਸ ਦੀ ਸਮੱਗਰੀ ਦੀ ਪੜਚੋਲ ਕਰੋ। ਸਮੱਗਰੀ ਇੱਕ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਪ੍ਰਤਿਬੰਧਿਤ ਕੀਤੀ ਗਈ ਹੈ ਅਤੇ ਸੋਧੀ ਨਹੀਂ ਜਾ ਸਕਦੀ।</translation>
 <translation id="1412476183660741812">ਹਸਤਾਖਰ ਕੀਤਾ ਵੈੱਬ ਬੰਡਲ</translation>
-<translation id="1433628812591023318">Parallels Desktop ਵਿੱਚ ਫ਼ਾਈਲਾਂ ਨੂੰ ਪਾਉਣ ਲਈ, ਫ਼ਾਈਲ ਦਾ Windows ਫ਼ਾਈਲਾਂ 'ਤੇ ਲਿਜਾਉਣਾ ਲਾਜ਼ਮੀ ਹੈ।</translation>
-<translation id="1435838927755162558">Parallels Desktop ਨਾਲ ਫੋਲਡਰ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="1439919885608649279">ਫੁੱਲਾਂ ਨਾਲ ਵਿਅਕਤੀ</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> ਨੂੰ ਬਾਹਰ ਕੱਢੋ</translation>
 <translation id="1464781208867302907">ਡੀਵਾਈਸ ਤਰਜੀਹਾਂ ਲਈ, ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ।</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">ਫ਼ਰਾਂਸੀਸੀ</translation>
 <translation id="2732288874651063549"><ph name="VM_NAME" /> ਸਾਂਝਾਕਰਨ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="2732839045120506979">ਵੀਅਤਨਾਮੀ VNI</translation>
-<translation id="2735623501230989521">Parallels Desktop ਨੂੰ <ph name="FOLDER_NAME" /> ਫੋਲਡਰ ਵਿਚਲੀਆਂ ਫ਼ਾਈਲਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ</translation>
 <translation id="2764206540577097904">ਤੁਸੀਂ ਆਪਣੀ ਸਾਰੀ ਵਿਅਕਤੀਗਤ Google Workspace ਸਟੋਰੇਜ ਵਰਤ ਲਈ ਹੈ।</translation>
 <translation id="2771816809568414714">ਪਨੀਰ</translation>
 <translation id="2783909841122647548">Debian ਪੈਕੇਜ ਸਥਾਪਨਾਵਾਂ ਹੁਣ ਸਮਰਥਿਤ ਨਹੀਂ ਹਨ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">ਭੂਗੋਲ</translation>
 <translation id="3044404008258011032">ਇਨ੍ਹਾਂ ਆਈਟਮਾਂ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰਨ ਲਈ, ਇਨ੍ਹਾਂ ਨੂੰ ਰੱਦੀ ਤੋਂ ਬਾਹਰ ਕਿਸੇ ਨਵੇਂ ਫੋਲਡਰ ਵਿੱਚ ਘਸੀਟੋ। ਇਨ੍ਹਾਂ ਆਈਟਮਾਂ ਦੇ ਮੂਲ ਫੋਲਡਰ "<ph name="PARENT_FOLDER_NAME" />" ਨੂੰ ਮਿਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="3047197340186497470">ਚੀਨੀ ਡਾਯੀ</translation>
-<translation id="3067790092342515856">Windows ਫ਼ਾਈਲਾਂ</translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">SOCKS ਹੋਸਟ</translation>
 <translation id="3091469289665833668">ਰੋਮਾਨੀਆਈ</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">ਵੇਰਵਿਆਂ ਲਈ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="3548125359243647069">ਗਲਤ ਪਿੰਨ ਬਹੁਤ ਵਾਰ ਦਾਖਲ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="3549797760399244642">drive.google.com ਤੇ ਜਾਓ...</translation>
-<translation id="3553048479571901246"><ph name="APP_NAME" /> ਨਾਲ ਫ਼ਾਈਲਾਂ ਖੋਲ੍ਹਣ ਲਈ, ਪਹਿਲਾਂ ਉਹਨਾਂ ਨੂੰ Windows ਫ਼ਾਈਲਾਂ ਦੇ ਫੋਲਡਰ ਵਿੱਚ ਕਾਪੀ ਕਰੋ।</translation>
 <translation id="3556731189587832921">ਅੰਤਰਰਾਸ਼ਟਰੀ PC ਕੀ-ਬੋਰਡ ਦੇ ਨਾਲ ਅੰਗਰੇਜ਼ੀ (ਯੂ.ਐੱਸ.)</translation>
 <translation id="3557414470514932909"><ph name="FILE_NAME" /> ਨੂੰ ਰੱਦੀ ਵਿੱਚ ਲਿਜਾਇਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="3560848236447534728">ਆਰਮੇਨੀਆਈ ਧੁਨੀਆਤਮਿਕ</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">ਰੋਮਾਨੀਆਈ</translation>
 <translation id="4508265954913339219">ਐਕਟੀਵੇਸ਼ਨ ਅਸਫ਼ਲ</translation>
 <translation id="4509667233588080747">ਵਰਕਮੈਨ ਅੰਤਰਰਾਸ਼ਟਰੀ ਕੀ-ਬੋਰਡ ਦੇ ਨਾਲ ਅੰਗਰੇਜ਼ੀ (ਯੂ.ਐੱਸ.)</translation>
-<translation id="4527800702232535228">ਇਹ ਫੋਲਡਰ Parallels Desktop ਨਾਲ ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="4552678318981539154">ਹੋਰ ਸਟੋਰੇਜ ਖਰੀਦੋ</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> ਨੈੱਟਵਰਕ, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">ਬੋਕੇਹ</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">ਓਨੀਗਿਰੀ</translation>
 <translation id="4784330909746505604">PowerPoint ਪ੍ਰਸਤੁਤੀ</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
-<translation id="4789067489790477934">Parallels Desktop ਨੂੰ ਆਪਣੀ Google Drive ਵਿਚਲੀਆਂ ਫ਼ਾਈਲਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ। ਤਬਦੀਲੀਆਂ ਦਾ ਤੁਹਾਡੇ ਹੋਰ ਡੀਵਾਈਸਾਂ ਨਾਲ ਸਿੰਕ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="4790766916287588578">ਇਨਸਕ੍ਰਿਪਟ ਕੀ-ਬੋਰਡ ਦੇ ਨਾਲ ਹਿੰਦੀ</translation>
 <translation id="4798645114741131062">ਤੁਹਾਡੇ ChromeOS Flex ਡੀਵਾਈਸ ਨੂੰ ਜਲਦ ਹੀ ਅੱਪਡੇਟ ਪ੍ਰਾਪਤ ਹੋਣੇ ਬੰਦ ਹੋ ਜਾਣਗੇ। ChromeOS ਡੀਵਾਈਸ 'ਤੇ ਅੱਪਗ੍ਰੇਡ ਕਰਨ ਬਾਰੇ ਵਿਚਾਰ ਕਰੋ।</translation>
 <translation id="4801956050125744859">ਦੋਵੇਂ ਰੱਖੋ</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">ਵੌਲਿਊਮ ਸਲਾਈਡਰ</translation>
 <translation id="4881695831933465202">ਖੋਲ੍ਹੋ</translation>
 <translation id="4891091358278567964">ਇਨ੍ਹਾਂ ਆਈਟਮਾਂ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰਨ ਲਈ, ਇਨ੍ਹਾਂ ਨੂੰ ਰੱਦੀ ਤੋਂ ਬਾਹਰ ਕਿਸੇ ਨਵੇਂ ਫੋਲਡਰ ਵਿੱਚ ਘਸੀਟੋ। ਇਨ੍ਹਾਂ ਆਈਟਮਾਂ ਦੇ ਮੂਲ ਫੋਲਡਰਾਂ ਨੂੰ ਮਿਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ।</translation>
-<translation id="4900532980794411603">Parallels Desktop ਨਾਲ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="4902546322522096650">ਨੈੱਟਵਰਕ <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />%, ਕਨੈਕਟ</translation>
 <translation id="4906580650526544301">ਨੈੱਟਵਰਕ <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />%, ਫ਼ੋਨ ਦੀ ਬੈਟਰੀ <ph name="BATTERY_STATUS" />%, ਵੇਰਵੇ</translation>
 <translation id="4935975195727477204">ਗੈਨਜ਼ਾਨੀਆ ਫਲਾਵਰ</translation>
 <translation id="4943368462779413526">ਫੁੱਟਬਾਲ</translation>
-<translation id="4961158930123534723">1 ਫੋਲਡਰ Parallels Desktop ਨਾਲ ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4965874878399872778">ਤੁਹਾਡੀ ਸੰਸਥਾ ਦੀਆਂ ਸੁਰੱਖਿਆ ਨੀਤੀਆਂ ਮੁਤਾਬਕ ਫ਼ਾਈਲਾਂ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4969785127455456148">ਐਲਬਮ</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">ਇੱਕ ਓਪਰੇਸ਼ਨ ਅਨੁਮਾਨਿਤ ਤੋਂ ਵੱਧ ਸਮਾਂ ਲੈ ਰਿਹਾ ਹੈ। ਕੀ ਤੁਸੀਂ ਇਸਨੂੰ ਰੋਕਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="5036141350290856713">ਰੂਸੀ ਧੁਨੀਆਤਮਿਕ</translation>
-<translation id="5036159836254554629">Parallels Desktop ਸਾਂਝਾਕਰਨ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="5038625366300922036">ਹੋਰ ਦੇਖੋ...</translation>
 <translation id="5044852990838351217">ਅਰਮੀਨੀਆਈ</translation>
 <translation id="5045550434625856497">ਗਲਤ ਪਾਸਵਰਡ</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">"<ph name="FILENAME" />" ਨੂੰ ਮਿਟਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="6581162200855843583">Google Drive ਲਿੰਕ</translation>
 <translation id="6588648400954570689">ਫ਼ਾਈਲ ਸਿੰਕ ਸੈਟਿੰਗਾਂ</translation>
-<translation id="6594855146910089723">ਇਹ ਫੋਲਡਰ Linux ਅਤੇ Parallels Desktop ਨਾਲ ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="6607272825297743757">ਫ਼ਾਈਲ ਜਾਣਕਾਰੀ</translation>
-<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> ਫੋਲਡਰ Parallels Desktop ਨਾਲ ਸਾਂਝੇ ਕੀਤੇ ਗਏ</translation>
 <translation id="6629518321609546825">ਘੱਟੋ ਘੱਟ 4 ਨੰਬਰ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="6643016212128521049">ਹਟਾਓ</translation>
 <translation id="6650726141019353908">ਗੁਲਾਬੀ ਤਿਤਲੀ</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">ਓਹੋ! ਨਾਮ ਬਦਲਣ ਦੌਰਾਨ ਗੜਬੜ ਹੋ ਗਈ।</translation>
 <translation id="7458955835361612701">ਕੋਈ ਹਾਲੀਆ ਚਿੱਤਰ ਨਹੀਂ</translation>
 <translation id="7469894403370665791">ਇਸ ਨੈੱਟਵਰਕ ਨਾਲ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਕਨੈਕਟ ਕਰੋ</translation>
-<translation id="7486315294984620427">Parallels Desktop ਵਿੱਚ ਫ਼ਾਈਲਾਂ ਨੂੰ ਪਾਉਣ ਲਈ, ਫ਼ਾਈਲ ਦਾ Windows ਫ਼ਾਈਲਾਂ 'ਤੇ ਕਾਪੀ ਕਰਨਾ ਲਾਜ਼ਮੀ ਹੈ।</translation>
 <translation id="749452993132003881">ਹਿਰਾਗਾਨਾ</translation>
 <translation id="7495372004724182530">ਮਲਿਆਲਮ ਧੁਨੀਆਤਮਿਕ</translation>
 <translation id="7505167922889582512">ਲੁਕਾਈਆਂ ਫਾਈਲਾਂ ਦਿਖਾਓ</translation>

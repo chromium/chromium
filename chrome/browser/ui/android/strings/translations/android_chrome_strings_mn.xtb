@@ -297,6 +297,7 @@
 <translation id="2233735624724508540">Хугацаа сонгоод, Өгөгдөл устгах дээр товшино уу</translation>
 <translation id="2234031676056123135">Товчлолуудаа өөрчлөх</translation>
 <translation id="2234827758954819389">Нууцлалын хөтөч</translation>
+<translation id="2236949375853147973">Миний үйл ажиллагаа</translation>
 <translation id="2238038374973843156">Бүлгийг өөр цонх руу зөөх</translation>
 <translation id="2247789808226901522">Картын хугацаа дууссан</translation>
 <translation id="2251809247798634662">Шинэ Нууцлалтай цонх</translation>
@@ -574,6 +575,7 @@
 <translation id="3385749568468586663">Gemini-г Нууцлалын горимд ашиглах боломжгүй</translation>
 <translation id="3387650086002190359">Файлын системийн алдаанаас шалтгаалан <ph name="FILE_NAME" />-г татаж чадсангүй.</translation>
 <translation id="3391311825344469964">Та цонхнуудаа Chrome-н Цонхны менежерт удирдах боломжтой</translation>
+<translation id="3410151451624226773">Google Нууц үгний менежерт удирдах</translation>
 <translation id="3417835166382867856">Табуудыг хайх</translation>
 <translation id="3430670036890315772">Профайлынхаа түгжээг унтраах нь таны хадгалсан мэдээллийг хасна</translation>
 <translation id="3435575784518354875">Нууц үгэндээ хандах эрхээ хадгалахын тулд одоо нууц үгээ экспортолж, Google Play үйлчилгээг шинэчилж, дараа нь буцааж Google Нууц үгний менежер лүү импортолно уу. <ph name="BEGIN_LINK" />Бүтэн зааварчилгааг харна уу<ph name="END_LINK" />.</translation>
@@ -942,6 +944,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="4877678010818027629">Нууцлалтай горимд нэвтрэх</translation>
 <translation id="4878404682131129617">Прокси серверээр туннель үүсгэж чадсангүй</translation>
 <translation id="4880127995492972015">Орчуулах…</translation>
+<translation id="4880827082731008257">Түүхийг хайх</translation>
 <translation id="4881695831933465202">Нээх</translation>
 <translation id="488187801263602086">Файлын нэрийг өөрчлөх</translation>
 <translation id="4885273946141277891">Chrome-ийн хэд хэдэн дэмжигдээгүй тохиолдол</translation>
@@ -991,6 +994,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="509429900233858213">Алдаа гарлаа.</translation>
 <translation id="5096775069898886423">Аюулгүй холболтыг дэмждэггүй сайтуудын хувьд тэдгээрт зочлохоос өмнө сануулга аваарай</translation>
 <translation id="510275257476243843">1 цаг үлдсэн</translation>
+<translation id="5105442806410269908">Google-н бусад өгөгдлийг удирдах</translation>
 <translation id="5114895953710637392">Аппын шүүлтүүрийн хүснэгтийг хаасан.</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> хаягт</translation>
 <translation id="5116239826668864748">Та мессеж, баримт бичиг болон бусад апп дахь холбоосыг товших бүрдээ Chrome-г ашиглах боломжтой</translation>
@@ -1041,6 +1045,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5316947901395241499">Нууц үг хадгалахыг танай администратор унтраасан</translation>
 <translation id="5317780077021120954">Хадгалах</translation>
 <translation id="5319359161174645648">Google нь Chrome-г санал болгож байна</translation>
+<translation id="5323501626199324454">Google Бүртгэл дээрээсээ удирдах</translation>
 <translation id="5326246328175179736">Та энэ бүртгэлийг ашиглан нэвтрэх боломжгүй</translation>
 <translation id="5327248766486351172">Нэр</translation>
 <translation id="5328542107300944283"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-р ашиглах</translation>
@@ -1325,6 +1330,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6461962085415701688">Файлыг нээх боломжгүй байна</translation>
 <translation id="6464977750820128603">Та Chrome-д зочилдог сайтуудаа харах болон тэдгээрт цаг хэмжигч тохируулах боломжтой.\n\nGoogle таны цаг хэмжигч тохируулсан сайтууд болон тэдгээрт хэр удаан зочилдог талаарх мэдээллийг авдаг. Энэ мэдээллийг Дижитал хэрэглээг сайжруулах зорилгоор ашигладаг.</translation>
 <translation id="6468703991511753953">Хаяг оруулах хэсэг одоогоор доод талд байна</translation>
+<translation id="6469702164109431067">Нууц үг болон passkey</translation>
 <translation id="6470181189905173055">Таны <ph name="APP_LABEL" />-г ашиглаж байхдаа Chrome-д нээсэн хуудаснуудыг энд харуулна.</translation>
 <translation id="6473086018775716761">Тал хэмжээтэйгээр нээсэн хуваалцах сонголтын жагсаалт.</translation>
 <translation id="6475951671322991020">Видео татах</translation>
@@ -1531,6 +1537,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7182520625618447753">Тусгайлан өөрчилсөн үзэх хэрэглээнд зориулж хаяг оруулах хэсгийнхээ байрлалыг дээш, доош сэлгээрэй</translation>
 <translation id="7183517696921903380">Аппын шүүлтүүрийн хүснэгтийг нээсэн.</translation>
 <translation id="7186568385131859684">Хөтчийн түүхийг Google-н үйлчилгээнүүдийн бусад өгөгдөлд хэрхэн ашиглахыг удирдах</translation>
+<translation id="7189516830800112767">{NUM_TABS,plural, =1{Бэхэлсэн табыг хаахын тулд ^W дээр дахин дарна уу}other{Бэхэлсэн табуудыг хаахын тулд ^W дээр дахин дарна уу}}</translation>
 <translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" />-г блоклох уу?</translation>
 <translation id="7191430249889272776">Арын дэвсгэр дээр нээсэн цонх.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Та үүнийг одоо өөрчлөх хэрэгтэй}other{Та эдгээрийг одоо өөрчлөх хэрэгтэй}}</translation>

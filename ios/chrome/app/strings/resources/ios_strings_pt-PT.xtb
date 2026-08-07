@@ -454,6 +454,7 @@
 <translation id="2422174748424038845">Se o eliminar, todas as pessoas vão perder imediatamente o acesso ao grupo de separadores "<ph name="GROUP_NAME" />" e este vai ser eliminado de todos os dispositivos.</translation>
 <translation id="2424805048070062787">Continue com este separador</translation>
 <translation id="2426805022920575512">Selecionar outra conta</translation>
+<translation id="2428543302546523788">Veja os links quando o modo de leitura estiver ativado</translation>
 <translation id="243275146591958220">Cancelar transferência</translation>
 <translation id="2434405374328098816">Já guardou uma palavra-passe para "<ph name="USERNAME" />" em <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Pode deslocar a página para a esquerda para usar a Navegação anónima.</translation>
@@ -468,6 +469,7 @@
 <translation id="2470654816840674524">O que posso fazer com o Gemini no Chrome?</translation>
 <translation id="2473876017985765807">Já guardou uma palavra-passe para <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Pode definir um lembrete para consultar esta página mais tarde</translation>
+<translation id="2476554421818031422">Está a ajudar a melhorar o preenchimento automático melhorado</translation>
 <translation id="2479148705183875116">Aceder às Definições</translation>
 <translation id="2482878487686419369">Notificações</translation>
 <translation id="2484459871750294497">Como posso ativar esta funcionalidade?</translation>
@@ -2068,6 +2070,7 @@ Para continuar a partir do computador, mude para <ph name="OTHER_EMAIL" />. Tem 
 <translation id="78146569776629510">Transferências</translation>
 <translation id="7815852444315004084">Ocultar para já</translation>
 <translation id="7825973332242257878">Grupos de separadores</translation>
+<translation id="7828344837949522075">Mostrar sugestão</translation>
 <translation id="7839994177130598711">Os membros da família já podem usar o seu nome de utilizador e palavra-passe quando usarem o Gestor de Palavras-passe da Google para iniciarem sessão em <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7841180087127694526">Pesquisar texto copiado</translation>
 <translation id="7841418003178675048">Escolha os cartões que vê na página Novo separador.</translation>

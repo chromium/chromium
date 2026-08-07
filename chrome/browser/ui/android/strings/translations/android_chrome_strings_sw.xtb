@@ -297,6 +297,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="2233735624724508540">Chagua kipindi kisha uguse Futa data</translation>
 <translation id="2234031676056123135">Badilisha njia za mkato upendavyo</translation>
 <translation id="2234827758954819389">Mwongozo wa Faragha</translation>
+<translation id="2236949375853147973">Shughuli Zangu</translation>
 <translation id="2238038374973843156">Hamishia kikundi kwenye dirisha lingine</translation>
 <translation id="2247789808226901522">Kadi imekwisha muda wake</translation>
 <translation id="2251809247798634662">Dirisha fiche jipya</translation>
@@ -574,6 +575,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="3385749568468586663">Huwezi kutumia Gemini Faraghani</translation>
 <translation id="3387650086002190359">Kipakuliwa cha <ph name="FILE_NAME" /> hakijafaulu kwa sababu ya hitilafu za mfumo wa faili.</translation>
 <translation id="3391311825344469964">Unaweza kudhibiti madirisha yako kwenye Kidhibiti cha Madirisha cha Chrome</translation>
+<translation id="3410151451624226773">Dhibiti kwenye Kidhibiti cha Manenosiri cha Google</translation>
 <translation id="3417835166382867856">Tafuta vichupo</translation>
 <translation id="3430670036890315772">Hatua ya kuzima kipengele cha kufuli lako la wasifu itaondoa taarifa ulizohifadhi</translation>
 <translation id="3435575784518354875">Ili uendelee kufikia manenosiri yako, yahamishe sasa, sasisha Huduma za Google Play kisha uyapakie tena kwenye kidhibiti cha manenosiri unachopendelea. <ph name="BEGIN_LINK" />Angalia maagizo kamili<ph name="END_LINK" />.</translation>
@@ -942,6 +944,7 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="4877678010818027629">Ingia katika hali fiche</translation>
 <translation id="4878404682131129617">Imeshindwa kuanzisha mkondo kupitia seva mbadala</translation>
 <translation id="4880127995492972015">Tafsiri…</translation>
+<translation id="4880827082731008257">Tafuta katika historia</translation>
 <translation id="4881695831933465202">Fungua</translation>
 <translation id="488187801263602086">Badilisha jina la faili</translation>
 <translation id="4885273946141277891">Idadi ya matukio ya Chrome isiyoweza kutumika.</translation>
@@ -991,6 +994,7 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="509429900233858213">Hitilafu fulani imetokea.</translation>
 <translation id="5096775069898886423">Kwa tovuti ambazo hazitumii miunganisho salama, pata tahadhari kabla hujatembelea tovuti</translation>
 <translation id="510275257476243843">Imesalia saa 1</translation>
+<translation id="5105442806410269908">Dhibiti Data nyingine ya Google</translation>
 <translation id="5114895953710637392">Laha ya kichujio cha programu imefungwa.</translation>
 <translation id="5115811374190515607">kwenye <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Unaweza kutumia Chrome wakati wowote unapogusa viungo kwenye ujumbe, hati na programu zingine</translation>
@@ -1041,6 +1045,7 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="5316947901395241499">Msimamizi wako amezima kipengee cha kuhifadhi nenosiri</translation>
 <translation id="5317780077021120954">Hifadhi</translation>
 <translation id="5319359161174645648">Google inapendekeza utumie Chrome</translation>
+<translation id="5323501626199324454">Dhibiti katika Akaunti yako ya Google</translation>
 <translation id="5326246328175179736">Huwezi kuingia kwa kutumia akaunti hii</translation>
 <translation id="5327248766486351172">Jina</translation>
 <translation id="5328542107300944283">Tumia <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1325,6 +1330,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="6461962085415701688">Imeshindwa kufungua faili</translation>
 <translation id="6464977750820128603">Unaweza kuona tovuti ambazo ulitembelea katika Chrome na kuziwekea vipima muda.\n\nGoogle inapata maelezo kuhusu tovuti ulizowekea vipima muda na muda unaozitembelea. Tunatumia maelezo haya kuboresha mpango wa Nidhamu Dijitali.</translation>
 <translation id="6468703991511753953">Kwa sasa, Sehemu ya anwani inapatikana katika upande wa chini</translation>
+<translation id="6469702164109431067">Manenosiri na funguo za siri</translation>
 <translation id="6470181189905173055">Kurasa ulizofungua kwenye Chrome huku ukitumia <ph name="APP_LABEL" /> zitaonyeshwa hapa.</translation>
 <translation id="6473086018775716761">Orodha ya chaguo za kushiriki imefunguliwa kwenye nusu ya skrini.</translation>
 <translation id="6475951671322991020">Pakua video</translation>

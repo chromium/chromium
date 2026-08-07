@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Word-dokument</translation>
 <translation id="1056775291175587022">Ingen nettverk</translation>
 <translation id="1056898198331236512">Advarsel</translation>
-<translation id="1060368002126861100">For å åpne filer med <ph name="APP_NAME" />, flytt dem til mappen for Windows-filer først.</translation>
 <translation id="1062407476771304334">Erstatt</translation>
 <translation id="1119383441774809183">Vis tekstmeldinger</translation>
 <translation id="1119447706177454957">Intern feil</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">Norsk</translation>
 <translation id="1408504635543854729">Utforsk innholdet på enheten med Filer-appen. En administrator har gjort innholdet tilgangsbegrenset, så det kan ikke endres.</translation>
 <translation id="1412476183660741812">Signert nettpakke</translation>
-<translation id="1433628812591023318">For å slippe filer i Parallels Desktop må du flytte filen til Windows-filene.</translation>
-<translation id="1435838927755162558">Del mappen med Parallels Desktop</translation>
 <translation id="1439919885608649279">Person med blomster</translation>
 <translation id="1458457385801829801">Avmonter <ph name="TARGET_NAME" /></translation>
 <translation id="1464781208867302907">For enhetspreferanser, gå til Innstillinger.</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">Fransk</translation>
 <translation id="2732288874651063549">Administrer <ph name="VM_NAME" />-deling</translation>
 <translation id="2732839045120506979">Vietnamesisk VNI</translation>
-<translation id="2735623501230989521">Gi Parallels Desktop tilgang til filer i mappen <ph name="FOLDER_NAME" /></translation>
 <translation id="2764206540577097904">Du har brukt opp den individuelle Google Workspace-lagringsplassen din.</translation>
 <translation id="2771816809568414714">Ost</translation>
 <translation id="2783909841122647548">Installering av Debian-pakker støttes ikke lenger. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">Geografi</translation>
 <translation id="3044404008258011032">For å gjenopprette disse elementene, dra dem til en ny mappe utenfor papirkurven. Den opprinnelige mappen «<ph name="PARENT_FOLDER_NAME" />» for dette elementet er slettet.</translation>
 <translation id="3047197340186497470">Kinesisk dayi</translation>
-<translation id="3067790092342515856">Windows-filer</translation>
 <translation id="3083975830683400843">Chromebit-enheter</translation>
 <translation id="3085752524577180175">SOCKS-vert</translation>
 <translation id="3091469289665833668">Rumensk</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">Kontakt administratoren din for å få mer informasjon.</translation>
 <translation id="3548125359243647069">Feil PIN-kode ble tastet inn for mange ganger.</translation>
 <translation id="3549797760399244642">Gå til drive.google.com</translation>
-<translation id="3553048479571901246">For å åpne filer med <ph name="APP_NAME" />, kopiér dem til mappen for Windows-filer først.</translation>
 <translation id="3556731189587832921">Engelsk (USA) med internasjonalt datamaskintastatur</translation>
 <translation id="3557414470514932909">Legger <ph name="FILE_NAME" /> i papirkurven</translation>
 <translation id="3560848236447534728">Armensk fonetisk</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">Rumensk</translation>
 <translation id="4508265954913339219">Aktiveringen mislyktes</translation>
 <translation id="4509667233588080747">Engelsk (USA) med internasjonalt Workman-tastatur</translation>
-<translation id="4527800702232535228">Denne mappen deles med Parallels Desktop</translation>
 <translation id="4552678318981539154">Kjøp mer lagringsplass</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" />-nettverk – signalstyrke <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4559767610552730302">Bokeh</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">PowerPoint-presentasjon</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> kB</translation>
-<translation id="4789067489790477934">Gi Parallels Desktop tilgang til filer i Google Disk. Endringer synkroniseres med de andre enhetene dine.</translation>
 <translation id="4790766916287588578">Hindi med InScript-tastatur</translation>
 <translation id="4798645114741131062">ChromeOS Flex-enheten din slutter snart å motta oppdateringer. Vurder å oppgradere til en ChromeOS-enhet.</translation>
 <translation id="4801956050125744859">Behold begge</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">Volumbryter</translation>
 <translation id="4881695831933465202">Åpne</translation>
 <translation id="4891091358278567964">For å gjenopprette disse elementene, dra dem til en ny mappe utenfor papirkurven. De opprinnelige mappene for disse elementene er slettet.</translation>
-<translation id="4900532980794411603">Del med Parallels Desktop</translation>
 <translation id="4902546322522096650">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="SECURITY_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – koble til</translation>
 <translation id="4906580650526544301">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="PHONE_NAME" /> – <ph name="PROVIDER_NAME" /> – <ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – telefonbatterinivå <ph name="BATTERY_STATUS" /> % – detaljer</translation>
 <translation id="4935975195727477204">Gazania-blomst</translation>
 <translation id="4943368462779413526">Fotball</translation>
-<translation id="4961158930123534723">1 mappe er delt med Parallels Desktop</translation>
 <translation id="4965874878399872778">Sjekker filene opp mot organisasjonens sikkerhetsregler …</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> er gjenopprettet</translation>
 <translation id="4969785127455456148">Album</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">En handling tar lengre tid enn vanlig. Vil du avbryte den?</translation>
 <translation id="5036141350290856713">Russisk fonetisk</translation>
-<translation id="5036159836254554629">Administrer Parallels Desktop-deling</translation>
 <translation id="5038625366300922036">Se flere</translation>
 <translation id="5044852990838351217">Armensk</translation>
 <translation id="5045550434625856497">Feil passord</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">Sletter «<ph name="FILENAME" />» ...</translation>
 <translation id="6581162200855843583">Google Disk-link</translation>
 <translation id="6588648400954570689">Innstillinger for filsynkronisering</translation>
-<translation id="6594855146910089723">Denne mappen deles med Linux og Parallels Desktop</translation>
 <translation id="6607272825297743757">Filinformasjon</translation>
-<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> mapper er delt med Parallels Desktop</translation>
 <translation id="6629518321609546825">Skriv inn de fire siste tallene</translation>
 <translation id="6643016212128521049">Tøm</translation>
 <translation id="6650726141019353908">Rosa sommerfugl</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">Æsj! Det oppsto en feil under navneendringen.</translation>
 <translation id="7458955835361612701">Ingen nylige bilder</translation>
 <translation id="7469894403370665791">Koble til dette nettverket automatisk</translation>
-<translation id="7486315294984620427">For å slippe filer i Parallels Desktop må du kopiere filen til Windows-filene.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam, fonetisk</translation>
 <translation id="7505167922889582512">Vis skjulte filer</translation>

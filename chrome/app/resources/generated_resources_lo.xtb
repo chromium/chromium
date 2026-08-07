@@ -2067,6 +2067,7 @@
 <translation id="2598710988533271874">ມີ Chrome ໃໝ່ພ້ອມໃຫ້ບໍລິການ</translation>
 <translation id="2599048253926156421">ສຳເນົາຊື່ຜູ້ໃຊ້ໄປໃສ່ຄລິບບອດແລ້ວ</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{ປິດສ່ວນຂະຫຍາຍທີ່ບໍ່ປອດໄພ 1 ລາຍການແລ້ວ}other{ປິດສ່ວນຂະຫຍາຍທີ່ບໍ່ປອດໄພ {NUM_SITES} ລາຍການແລ້ວ}}</translation>
+<translation id="2603121359676416582">ສຳລັບໜ້ານີ້</translation>
 <translation id="2604129989323098489">ປົກກະຕິເວັບໄຊຈະຖາມຂໍ້ມູນກ່ຽວກັບການສະແດງຜົນຂອງທ່ານເພື່ອໃຫ້ພວກມັນສາມາດເປີດ ແລະ ວາງໜ້າຈໍຕ່າງໆໄດ້ຢ່າງຊານສະຫຼາດ, ເຊັ່ນ: ການສະແດງເອກະສານ ຫຼື ເນື້ອຫາແບບເຕັມຈໍຂ້າງກັນ</translation>
 <translation id="2604255671529671813">ການເຊື່ອມຕໍ່ເຄືອຂ່າຍຜິດພາດ</translation>
 <translation id="2604805099836652105">ຕື່ມແບບຟອມທີ່ຢູ່ <ph name="ADDRESS_LABEL" /> ແລ້ວ.</translation>
@@ -2981,6 +2982,7 @@
 <translation id="3285329711156774325">ຊອກຫາທັກສະ</translation>
 <translation id="3285500645985761267">ອະນຸຍາດເວັບໄຊທີ່ກ່ຽວຂ້ອງໃຫ້ສາມາດເຫັນການເຄື່ອນໄຫວຂອງທ່ານໃນກຸ່ມໄດ້</translation>
 <translation id="328571385944182268">ບັນທຶກລະຫັດຜ່ານຂອງທ່ານໄວ້ບໍ?</translation>
+<translation id="3285969135399641759">ຮຽນຮູ້ທັກສະໃໝ່</translation>
 <translation id="3289668031376215426">ເຮັດຕົວພິມໃຫຍ່ອັດຕະໂນມັດ</translation>
 <translation id="3289856944988573801">ເພື່ອກວດເບິ່ງການອັບເດດ, ກະລຸນາໃຊ້ອີເທີເນັດ ຫຼື Wi-Fi.</translation>
 <translation id="3290249595466894471">ນອກຈາກນັ້ນ, ຍັງສົ່ງຕົວຢ່າງບາງສ່ວນຂອງໜ້າ, ການດາວໂຫຼດ, ການເຄື່ອນໄຫວສ່ວນຂະຫຍາຍ ແລະ ຂໍ້ມູນລະບົບເພື່ອຊ່ວຍຄົ້ນພົບໄພຄຸກຄາມໃໝ່ໆນຳ.</translation>
@@ -6386,6 +6388,7 @@
 <translation id="5939719276406088041">ບໍ່ສາມາດສ້າງທາງລັດໄດ້</translation>
 <translation id="5939723110967488589">ເລືອກປຸ່ມທີ່ຈະສະແດງໃນແຖບເຄື່ອງມື</translation>
 <translation id="594048410531370124">ປຸ່ມທີ່ບໍ່ຮູ້ຈັກ. ກົດປຸ່ມໃດກໍໄດ້ເພື່ອ <ph name="RESPONSE" />.</translation>
+<translation id="5940614040566393493">ຮັບຄຳແນະນຳ</translation>
 <translation id="5941711191222866238">ຫຍໍ້ລົງ</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{ລະບົບຈະບັນທຶກລະຫັດຜ່ານ 1 ລາຍການໄວ້ໃນອຸປະກອນນີ້ເທົ່ານັ້ນ. ເພື່ອໃຊ້ມັນຢູ່ອຸປະກອນອື່ນຂອງທ່ານ, ໃຫ້ບັນທຶກມັນໄວ້ໃນບັນຊີ Google ຂອງທ່ານ.}other{ລະຫັດຜ່ານ {PASSWORD_COUNT} ລາຍການຈະຖືກບັນທຶກໄວ້ໃນອຸປະກອນນີ້ເທົ່ານັ້ນ. ເພື່ອໃຊ້ພວກມັນຢູ່ອຸປະກອນເຄື່ອງອື່ນຂອງທ່ານ, ໃຫ້ ບັນທຶກພວກມັນໄວ້ໃນບັນຊີ Google ຂອງທ່ານ.}}</translation>
 <translation id="594221546068848596">ຊອກຫາໜ້າດ້ວຍ <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -10690,7 +10693,6 @@
 <translation id="983192555821071799">ປິດ​ທຸກແຖບ</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - ການບັນທຶກກ້ອງຖ່າຍຮູບ ແລະ ໄມໂຄຣໂຟນ</translation>
 <translation id="984705303330760860">ເພີ່ມພາສາການກວດຄຳຜິດ</translation>
-<translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">ທົ່ວໄປ</translation>
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> ຕ້ອງການຮັບຂໍ້ມູນຈາກອຸປະກອນມືຖືຂອງທ່ານ</translation>
 <translation id="988320949174893488">ກະຕຸກເປັນບາງເທື່ອ</translation>

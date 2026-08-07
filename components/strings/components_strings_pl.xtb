@@ -592,6 +592,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2027465737841872819">Plastik</translation>
 <translation id="2027707238798802149">Karta jest niedostępna</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Sprawdź serwer proxy i zaporę sieciową<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">Ta instancja Chrome działa z ręcznie ustawionymi flagami wiersza poleceń. Pamiętaj, że flagi wiersza poleceń są nieobsługiwane i mogą ulec zmianie w każdej chwili.</translation>
 <translation id="2033900728810589426">Skrót nie może być taki sam jak słowo kluczowe domyślnego dostawcy wyszukiwania zdefiniowane przez zasadę <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Zapisz mimo to</translation>
 <translation id="2036514476578229158">Prosisz o zgodę na odwiedzenie tej strony. Twoi rodzice mogą odpowiedzieć w Family Link.</translation>
@@ -4564,7 +4565,6 @@ Dodatkowe informacje:
 <translation id="8932102934695377596">Twój zegar się spóźnia</translation>
 <translation id="893332455753468063">Dodaj imię i nazwisko lub nazwę firmy</translation>
 <translation id="8938242527120341116">Filtry treści na Twoim urządzeniu zablokowały witrynę <ph name="BLOCKED_URL" /></translation>
-<translation id="8942355029279167844">Administrator zezwolił aplikacji <ph name="APP_NAME" /> na zbieranie danych diagnostycznych, z których korzystamy, by ulepszać działanie usługi. Więcej informacji znajdziesz na <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Limonkowy</translation>
 <translation id="8949410982325929394">Ton</translation>
 <translation id="8949493680961858543">A1x4</translation>

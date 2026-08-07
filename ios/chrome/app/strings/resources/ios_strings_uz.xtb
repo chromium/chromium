@@ -454,6 +454,7 @@
 <translation id="2422174748424038845">Agar tark etsangiz, “<ph name="GROUP_NAME" />” varaqlar guruhiga boshqa kira olmaysiz hamda u barcha qurilmalardan oʻchirib tashlanadi.</translation>
 <translation id="2424805048070062787">Shu varaqda davom etish</translation>
 <translation id="2426805022920575512">Boshqa hisobni tanlang</translation>
+<translation id="2428543302546523788">Oʻqish rejimi yoniqligida havolalarni chiqarish</translation>
 <translation id="243275146591958220">Yuklab olishni bekor qilish</translation>
 <translation id="2434405374328098816"><ph name="WEBSITE" /> saytidagi <ph name="USERNAME" /> paroli allaqachon saqlangan</translation>
 <translation id="2434918313224755415">Inkognito rejimiga oʻtish uchun chapga aylantiring.</translation>
@@ -468,6 +469,7 @@
 <translation id="2470654816840674524">Chrome ichidagi Gemini bilan nimalar qilish mumkin?</translation>
 <translation id="2473876017985765807"><ph name="WEBSITE" /> uchun parol allaqachon saqlangan</translation>
 <translation id="247430852844518481">Bu sahifaga keyinroq qayta kirish haqida eslatma belgilash mumkin</translation>
+<translation id="2476554421818031422">Yaxshilangan avtomatik kiritish sifatini oshirishga hissa qoʻshyapsiz</translation>
 <translation id="2479148705183875116">Sozlamalarni ochish</translation>
 <translation id="2482878487686419369">Bildirishnomalar</translation>
 <translation id="2484459871750294497">Bu funksiyani qanday yoqaman?</translation>
@@ -2068,6 +2070,7 @@ Kompyuterda davom etish uchun <ph name="OTHER_EMAIL" /> hisobiga almashtiring. B
 <translation id="78146569776629510">Yuklanmalar</translation>
 <translation id="7815852444315004084">Hozircha berkitish</translation>
 <translation id="7825973332242257878">Varaqlar guruhi</translation>
+<translation id="7828344837949522075">Taklifni chiqarish</translation>
 <translation id="7839994177130598711">Endi oilangiz aʼzolari <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> saytiga kirishda Google Parollar menejeri orqali login va parolingizdan foydalanishi mumkin.</translation>
 <translation id="7841180087127694526">Nusxalangan matnni qidirish</translation>
 <translation id="7841418003178675048">Yangi varaq sahifasida chiqadigan bildirgilarni tanlang.</translation>

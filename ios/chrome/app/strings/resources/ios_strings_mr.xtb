@@ -454,6 +454,7 @@
 <translation id="2422174748424038845">तुम्ही तो हटवल्यास, सर्वजण लगेच "<ph name="GROUP_NAME" />" या टॅब गटाचा अ‍ॅक्सेस गमवतील आणि तो सर्व डिव्हाइसवरून हटवला जाईल.</translation>
 <translation id="2424805048070062787">या टॅबवर पुढे सुरू ठेवा</translation>
 <translation id="2426805022920575512">दुसरे खाते निवडा</translation>
+<translation id="2428543302546523788">वाचन मोड सुरू असताना लिंक दाखवा</translation>
 <translation id="243275146591958220">डाउनलोड रद्द करा</translation>
 <translation id="2434405374328098816">तुम्ही <ph name="WEBSITE" /> वर "<ph name="USERNAME" />" चा पासवर्ड आधीच सेव्ह केला आहे</translation>
 <translation id="2434918313224755415">तुम्ही गुप्त मोड मध्ये ब्राउझ करण्यासाठी डावीकडे स्क्रोल करू शकता.</translation>
@@ -468,6 +469,7 @@
 <translation id="2470654816840674524">मी Chrome मधील Gemini वापरून काय करू शकेन?</translation>
 <translation id="2473876017985765807">तुम्ही <ph name="WEBSITE" /> साठी आधीच पासवर्ड सेव्ह केला आहे</translation>
 <translation id="247430852844518481">तुम्ही या पेजला नंतर पुन्हा भेट देण्यासाठी रिमाइंडर सेट करू शकता</translation>
+<translation id="2476554421818031422">तुम्ही वर्धित ऑटोफिलमध्ये सुधारणा करण्यात मदत करत आहात</translation>
 <translation id="2479148705183875116">सेटिंग्ज वर जा</translation>
 <translation id="2482878487686419369">सूचना</translation>
 <translation id="2484459871750294497">मी हे वैशिष्ट्य कसे सुरू करू?</translation>
@@ -2069,6 +2071,7 @@
 <translation id="78146569776629510">डाउनलोड</translation>
 <translation id="7815852444315004084">सध्या लपवा</translation>
 <translation id="7825973332242257878">टॅब गट</translation>
+<translation id="7828344837949522075">सूचना दाखवा</translation>
 <translation id="7839994177130598711">तुमचे कुटुंब सदस्य हे <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> मध्ये साइन इन करण्यासाठी Google Password Manager वापरतात, तेव्हा ते आता तुमचे वापरकर्ता नाव आणि पासवर्ड वापरू शकतात.</translation>
 <translation id="7841180087127694526">कॉपी केलेला मजकूर शोधा</translation>
 <translation id="7841418003178675048">तुम्हाला तुमच्या नवीन टॅब पेजवर कोणती कार्ड दिसतात ते निवडा.</translation>

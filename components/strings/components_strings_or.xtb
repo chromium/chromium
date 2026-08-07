@@ -592,6 +592,7 @@
 <translation id="2027465737841872819">ପ୍ଲାଷ୍ଟିକ</translation>
 <translation id="2027707238798802149">କାର୍ଡ ବର୍ତ୍ତମାନ ନାହିଁ</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />ପ୍ରକ୍ସି ଓ ଫାୟର୍‍ୱାଲ୍‍କୁ ଯାଞ୍ଚ କରାଯାଉଛି<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">Chromeର ଏହି ଇନଷ୍ଟାନ୍ସ ମାନୁଆଲୀ ସେଟ କରାଯାଇଥିବା କମାଣ୍ଡ ଲାଇନ ଫ୍ଲାଗ ସହ ଚାଲୁଛି। କମାଣ୍ଡ ଲାଇନ ଫ୍ଲାଗଗୁଡ଼ିକ ଯେ କୌଣସି ସମୟରେ ପରିବର୍ତ୍ତନ ହୋଇପାରେ ଏବଂ ସେଗୁଡ଼ିକ ସପୋର୍ଟ କରୁନାହିଁ ବୋଲି ଧ୍ୟାନ ଦିଅନ୍ତୁ।</translation>
 <translation id="2033900728810589426"><ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> ଦ୍ୱାରା ପରିଭାଷିତ ହୋଇଥିବା ଡିଫଲ୍ଟ ସର୍ଚ୍ଚ ପ୍ରଦାନକାରୀ କୀୱାର୍ଡ ସହିତ ସର୍ଟକଟ ସମାନ ହୋଇପାରିବ ନାହିଁ: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">ଯେ କୌଣସି ମତେ ସେଭ କରନ୍ତୁ</translation>
 <translation id="2036514476578229158">ତୁମେ ଏହି ସାଇଟକୁ ଭିଜିଟ କରିବା ପାଇଁ ପଚାରିଛ। ତୁମର ବାପାମା Family Linkରେ ପ୍ରତ୍ୟୁତ୍ତର ଦେଇପାରିବେ।</translation>
@@ -4559,7 +4560,6 @@
 <translation id="8932102934695377596">ଆପଣଙ୍କର ଘଣ୍ଟାର ସମୟ ପଛରେ ଅଛି</translation>
 <translation id="893332455753468063">ନାମ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="8938242527120341116">ଆପଣଙ୍କର ଡିଭାଇସାର ବିଷୟବସ୍ତୁ ଫିଲ୍ଟରଗୁଡ଼ିକୁ <ph name="BLOCKED_URL" /> ଦ୍ଵାରା ବ୍ଲକ କରାଯାଇଛି</translation>
-<translation id="8942355029279167844">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର <ph name="APP_NAME" />କୁ ପ୍ରଡକ୍ଟ ବ୍ୟବହାରର ଅନୁଭୂତିକୁ ଉନ୍ନତ କରିବା ପାଇଁ ଡାଏଗ୍ନୋଷ୍ଟିକ୍ସ ଡାଟା ସଂଗ୍ରହ କରିବାକୁ ଅନୁମତି ଦେଇଛନ୍ତି। ଅଧିକ ସୂଚନା ପାଇଁ <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> ଦେଖନ୍ତୁ।</translation>
 <translation id="8943282376843390568">ଲାଇମ୍‌</translation>
 <translation id="8949410982325929394">ଟୋନ</translation>
 <translation id="8949493680961858543">A1x4</translation>

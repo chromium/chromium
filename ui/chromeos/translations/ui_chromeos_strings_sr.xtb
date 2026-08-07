@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Word документ</translation>
 <translation id="1056775291175587022">Нема мрежа</translation>
 <translation id="1056898198331236512">Упозорење</translation>
-<translation id="1060368002126861100">Да бисте отварали датотеке помоћу апликације <ph name="APP_NAME" />, прво их преместите у фолдер са Windows датотекама.</translation>
 <translation id="1062407476771304334">Замени</translation>
 <translation id="1119383441774809183">Прикажи текстуалне поруке</translation>
 <translation id="1119447706177454957">Интерна грешка</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">норвешки</translation>
 <translation id="1408504635543854729">Истражите садржај уређаја у апликацији Датотеке. Администратор ограничава садржај и садржај не може да се мења.</translation>
 <translation id="1412476183660741812">Пријављени веб-скуп</translation>
-<translation id="1433628812591023318">Да бисте отпустили фајлове на Parallels Desktop, морате да их преместите у Windows фајлове.</translation>
-<translation id="1435838927755162558">Делите фолдер са Parallels Desktop-ом</translation>
 <translation id="1439919885608649279">Особа са цвећем</translation>
 <translation id="1458457385801829801">Избаци <ph name="TARGET_NAME" /></translation>
 <translation id="1464781208867302907">Да бисте пронашли подешавања уређаја, идите у Подешавања.</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">француски</translation>
 <translation id="2732288874651063549">Управљајте дељењем са услугом <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">вијетнамски VNI</translation>
-<translation id="2735623501230989521">Дозволите да Parallels Desktop приступа фајловима у фолдеру <ph name="FOLDER_NAME" /></translation>
 <translation id="2764206540577097904">Искористили сте сав појединачни Google Workspace меморијски простор.</translation>
 <translation id="2771816809568414714">Сир</translation>
 <translation id="2783909841122647548">Инсталирање Debian пакета више није подржано. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">Географија</translation>
 <translation id="3044404008258011032">Да бисте вратили ове ставке, превуците их у нов фолдер изван отпада. Првобитни фолдер <ph name="PARENT_FOLDER_NAME" /> за ову ставку је избрисан.</translation>
 <translation id="3047197340186497470">кинески даји</translation>
-<translation id="3067790092342515856">Windows датотеке</translation>
 <translation id="3083975830683400843">Chromebit-ови</translation>
 <translation id="3085752524577180175">SOCKS хост</translation>
 <translation id="3091469289665833668">румунски</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">Обратите се администратору за детаље.</translation>
 <translation id="3548125359243647069">Превише пута сте унели погрешан PIN.</translation>
 <translation id="3549797760399244642">Иди на drive.google.com...</translation>
-<translation id="3553048479571901246">Да бисте отварали датотеке помоћу апликације <ph name="APP_NAME" />, прво их копирајте у фолдер са Windows датотекама.</translation>
 <translation id="3556731189587832921">енглески (САД) са интернационалном тастатуром за рачунар</translation>
 <translation id="3557414470514932909">Фајл <ph name="FILE_NAME" /> се премешта у отпад</translation>
 <translation id="3560848236447534728">јерменска фонетска</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">румунски</translation>
 <translation id="4508265954913339219">Активација није успела</translation>
 <translation id="4509667233588080747">енглески (САД) са тастатуром Workman International</translation>
-<translation id="4527800702232535228">Овај фолдер се дели помоћу Parallels Desktop-а</translation>
 <translation id="4552678318981539154">Купи још меморијског простора</translation>
 <translation id="4552759165874948005">Мрежа <ph name="NETWORK_TYPE" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">Бокех</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">Онигири</translation>
 <translation id="4784330909746505604">PowerPoint презентација</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
-<translation id="4789067489790477934">Дозволите да Parallels Desktop приступа фајловима на Google диску. Промене ће се синхронизовати са другим уређајима.</translation>
 <translation id="4790766916287588578">хинди са индијском тастатуром</translation>
 <translation id="4798645114741131062">ChromeOS Flex уређај ускоро ће престати да добија ажурирања. Размислите о надоградњи на ChromeOS уређај.</translation>
 <translation id="4801956050125744859">Задржи обе</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">Клизач за јачину звука</translation>
 <translation id="4881695831933465202">Отвори</translation>
 <translation id="4891091358278567964">Да бисте вратили ове ставке, превуците их у нов фолдер изван отпада. Првобитни фолдери за ове ставке су избрисани.</translation>
-<translation id="4900532980794411603">Дели са Parallels Desktop-ом</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />%, повежи</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />%, батерија телефона <ph name="BATTERY_STATUS" />%, детаљи</translation>
 <translation id="4935975195727477204">Цвет газаније</translation>
 <translation id="4943368462779413526">Фудбалска лопта</translation>
-<translation id="4961158930123534723">1 фолдер се дели са Parallels Desktop-ом</translation>
 <translation id="4965874878399872778">Проверава се да ли су фајлови у складу са безбедносним смерницама организације…</translation>
 <translation id="496656650103537022">Враћен је фајл <ph name="FILE_NAME" /></translation>
 <translation id="4969785127455456148">Албум</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Радња траје дуже од очекиваног. Желите ли да је прекинете?</translation>
 <translation id="5036141350290856713">руска фонетска</translation>
-<translation id="5036159836254554629">Управљајте дељењем помоћу Parallels Desktop-а</translation>
 <translation id="5038625366300922036">Прикажи више...</translation>
 <translation id="5044852990838351217">јерменски</translation>
 <translation id="5045550434625856497">Неисправна лозинка</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">Брисање „<ph name="FILENAME" />“...</translation>
 <translation id="6581162200855843583">Веза Google диска</translation>
 <translation id="6588648400954570689">Подешавања синхронизације фајлова</translation>
-<translation id="6594855146910089723">Овај фолдер се дели помоћу Linux-а и Parallels Desktop-а</translation>
 <translation id="6607272825297743757">Информације о датотеци</translation>
-<translation id="6609332149380188670">Директоријуми (<ph name="NUMBER_OF_ITEMS" />) се деле са Parallels Desktop-ом</translation>
 <translation id="6629518321609546825">Унесите бар 4 броја</translation>
 <translation id="6643016212128521049">Обриши</translation>
 <translation id="6650726141019353908">Ружичасти лептир</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">О, не! Дошло је до грешке током промене назива.</translation>
 <translation id="7458955835361612701">Нема недавних слика</translation>
 <translation id="7469894403370665791">Аутоматски се повезуј са овом мрежом</translation>
-<translation id="7486315294984620427">Да бисте отпустили фајлове на Parallels Desktop, морате да их копирате у Windows фајлове.</translation>
 <translation id="749452993132003881">хирагана</translation>
 <translation id="7495372004724182530">фонетски малајалам</translation>
 <translation id="7505167922889582512">Прикажи скривене датотеке</translation>

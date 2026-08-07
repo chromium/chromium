@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Word ಡಾಕ್ಯುಮೆಂಟ್</translation>
 <translation id="1056775291175587022">ನೆಟ್ವರ್ಕ್ ಇಲ್ಲ</translation>
 <translation id="1056898198331236512">ಎಚ್ಚರಿಕೆ</translation>
-<translation id="1060368002126861100"><ph name="APP_NAME" /> ಬಳಸಿಕೊಂಡು ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯಲು, ಅವುಗಳನ್ನು ಮೊದಲು Windows ಫೈಲ್‌ಗಳ ಫೋಲ್ಡರ್‌ಗೆ ಸರಿಸಿ.</translation>
 <translation id="1062407476771304334">ಸ್ಥಾನಾಂತರಿಸು</translation>
 <translation id="1119383441774809183">ಪಠ್ಯ ಸಂದೇಶಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="1119447706177454957">ಆಂತರಿಕ ದೋಷ</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">ನಾರ್ವೆಜಿಯನ್</translation>
 <translation id="1408504635543854729">ಫೈಲ್‌ಗಳ ಅಪ್ಲಿಕೇಶನ್‌ನಲ್ಲಿ ಸಾಧನದ ವಿಷಯವನ್ನು ಅನ್ವೇಷಿಸಿ. ನಿರ್ವಾಹಕರಿಂದ ವಿಷಯವನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ ಮತ್ತು ಮಾರ್ಪಡಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
 <translation id="1412476183660741812">ಸಹಿ ಮಾಡಲಾದ ವೆಬ್ ಬಂಡಲ್</translation>
-<translation id="1433628812591023318">‌Parallels Desktop ನಲ್ಲಿ ಫೈಲ್‌ಗಳನ್ನು ಡ್ರಾಪ್ ಮಾಡಲು, ಫೈಲ್ ಅನ್ನು Windows ಫೈಲ್‌ಗಳಿಗೆ ಸರಿಸಬೇಕು.</translation>
-<translation id="1435838927755162558">Parallels Desktop ಮೂಲಕ ಫೋಲ್ಡರ್ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="1439919885608649279">ಹೂವುಗಳನ್ನು ಹಿಡಿದುಕೊಂಡಿರುವ ವ್ಯಕ್ತಿ</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> ಎಜೆಕ್ಟ್</translation>
 <translation id="1464781208867302907">ಸಾಧನದ ಪ್ರಾಶಸ್ತ್ಯಗಳಿಗಾಗಿ, ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ.</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">ಫ್ರೆಂಚ್</translation>
 <translation id="2732288874651063549"><ph name="VM_NAME" /> ಹಂಚಿಕೊಳ್ಳುವಿಕೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="2732839045120506979">ವಿಯೆಟ್ನಾಮೀಸ್ VNI</translation>
-<translation id="2735623501230989521"><ph name="FOLDER_NAME" /> ಫೋಲ್ಡರ್‌ನಲ್ಲಿರುವ ಫೈಲ್‌ಗಳಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು, Parallels Desktop ಗೆ ಅನುಮತಿಸಿ</translation>
 <translation id="2764206540577097904">ನಿಮ್ಮ ಎಲ್ಲಾ ವ್ಯಕ್ತಿಗತ Google Workspace ಸಂಗ್ರಹಣೆಯನ್ನು ನೀವು ಬಳಸಿದ್ದೀರಿ.</translation>
 <translation id="2771816809568414714">ಚೀಸ್</translation>
 <translation id="2783909841122647548">Debian ಪ್ಯಾಕೇಜ್ ಇನ್‌ಸ್ಟಾಲ್‌ಗಳು ಇನ್ನು ಮುಂದೆ ಬೆಂಬಲಿತವಾಗಿರುವುದಿಲ್ಲ. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">ಭೂಗೋಳಶಾಸ್ತ್ರ</translation>
 <translation id="3044404008258011032">ಈ ಐಟಂಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಲು, ಅದನ್ನು ಅನುಪಯುಕ್ತದ ಹೊರಗಿನ ಹೊಸ ಫೋಲ್ಡರ್‌ಗೆ ಡ್ರ್ಯಾಗ್ ಮಾಡಿ. ಈ ಐಟಂಗಳಿಗಾಗಿ ಮೂಲ ಫೋಲ್ಡರ್ "<ph name="PARENT_FOLDER_NAME" />" ಅನ್ನು ಅಳಿಸಲಾಗಿದೆ.</translation>
 <translation id="3047197340186497470">ಚೈನೀಸ್ ದಾಯಿ</translation>
-<translation id="3067790092342515856">Windows ಫೈಲ್‌ಗಳು</translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">SOCKS ಹೋಸ್ಟ್</translation>
 <translation id="3091469289665833668">ರೊಮೇನಿಯನ್</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">ವಿವರಗಳಿಗಾಗಿ ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="3548125359243647069">ತಪ್ಪಾದ ಪಿನ್ ಅನ್ನು ಹಲವಾರು ಬಾರಿ ನಮೂದಿಸಿಲಾಗಿದೆ.</translation>
 <translation id="3549797760399244642">drive.google.com ಗೆ ಹೋಗಿ...</translation>
-<translation id="3553048479571901246"><ph name="APP_NAME" /> ಬಳಸಿಕೊಂಡು ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯಲು, ಅವುಗಳನ್ನು ಮೊದಲು Windows ಫೈಲ್‌ಗಳ ಫೋಲ್ಡರ್‌ಗೆ ಕಾಪಿ ಮಾಡಿ.</translation>
 <translation id="3556731189587832921">ಇಂಟರ್‌ನ್ಯಾಶನಲ್ PC ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ ಇಂಗ್ಲಿಷ್ (ಯುಎಸ್)</translation>
 <translation id="3557414470514932909"><ph name="FILE_NAME" /> ಅನ್ನು ಟ್ರ್ಯಾಶ್‌ಗೆ ಸರಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3560848236447534728">ಅರ್ಮೇನಿಯನ್ ಫೊನೆಟಿಕ್</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">ರೊಮೇನಿಯನ್</translation>
 <translation id="4508265954913339219">ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆ ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="4509667233588080747">ವರ್ಕ್‌ಮ್ಯಾನ್ ಇಂಟರ್‌ನ್ಯಾಶನಲ್ ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ ಇಂಗ್ಲಿಷ್ (ಯುಎಸ್)</translation>
-<translation id="4527800702232535228">ಈ ಫೋಲ್ಡರ್ ಅನ್ನು Parallels Desktop ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
 <translation id="4552678318981539154">ಇನ್ನಷ್ಟು ಸಂಗ್ರಹಣೆಯನ್ನು ಖರೀದಿಸಿ</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> ನೆಟ್‌ವರ್ಕ್, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">ಬೊಕೆ</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">ಒನಿಗಿರಿ</translation>
 <translation id="4784330909746505604">PowerPoint ಪ್ರದರ್ಶನ</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
-<translation id="4789067489790477934">ನಿಮ್ಮ Google Drive ನಲ್ಲಿರುವ ಫೈಲ್‌ಗಳಗೆ ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು, Parallels Desktop ಗೆ ಅನುಮತಿ ನೀಡಿ. ಈ ಬದಲಾವಣೆಗಳು, ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳೊಂದಿಗೆ ಸಿಂಕ್ ಆಗುತ್ತವೆ.</translation>
 <translation id="4790766916287588578">ಹಿಂದಿ ಭಾಷೆಯ ಇನ್‌ಸ್ಕ್ರಿಪ್ಟ್ ಕೀಬೋರ್ಡ್</translation>
 <translation id="4798645114741131062">ನಿಮ್ಮ ChromeOS Flex ಸಾಧನವು ಶೀಘ್ರದಲ್ಲೇ ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಸ್ವೀಕರಿಸುವುದನ್ನು ನಿಲ್ಲಿಸುತ್ತದೆ. ChromeOS ಸಾಧನಕ್ಕೆ ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡುವುದನ್ನು ಪರಿಗಣಿಸಿ.</translation>
 <translation id="4801956050125744859">ಎರಡನ್ನೂ ಇರಿಸಿಕೊಳ್ಳಿ</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">ಧ್ವನಿಮಟ್ಟ ಸ್ಲೈಡರ್</translation>
 <translation id="4881695831933465202">ತೆರೆ</translation>
 <translation id="4891091358278567964">ಈ ಐಟಂಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಲು, ಅದನ್ನು ಅನುಪಯುಕ್ತದ ಹೊರಗಿನ ಹೊಸ ಫೋಲ್ಡರ್‌ಗೆ ಡ್ರ್ಯಾಗ್ ಮಾಡಿ. ಈ ಐಟಂಗಳಿಗಾಗಿ ಮೂಲ ಫೋಲ್ಡರ್‌ಗಳನ್ನು ಅಳಿಸಲಾಗಿದೆ.</translation>
-<translation id="4900532980794411603">Parallels Desktop ಮೂಲಕ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ಕನೆಕ್ಟ್</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ಫೋನ್ ಬ್ಯಾಟರಿ <ph name="BATTERY_STATUS" />%, ವಿವರಗಳು</translation>
 <translation id="4935975195727477204">ಗಜಾನಿಯಾ ಹೂ</translation>
 <translation id="4943368462779413526">ಫುಟ್‌ಬಾಲ್</translation>
-<translation id="4961158930123534723">Parallels Desktop ಮೂಲಕ 1 ಫೋಲ್ಡರ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
 <translation id="4965874878399872778">ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಭದ್ರತಾ ನೀತಿಗಳಿಗೆ ಸಂಬಂಧಿಸಿದಂತೆ ಫೈಲ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> ಮರುಸ್ಥಾಪಿಸಲಾಗಿದೆ</translation>
 <translation id="4969785127455456148">ಆಲ್ಬಮ್</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">ಕಾರ್ಯಾಚರಣೆಯು ನಿರೀಕ್ಷಿಸಿದ್ದಕ್ಕಿಂತ ಹೆಚ್ಚಿನ ಕಾಲವನ್ನು ತೆಗೆದುಕೊಳ್ಳುತ್ತಿದೆ. ನೀವು ಅದನ್ನು ಸ್ಥಗಿತಗೊಳಿಸಲು ಬಯಸುವಿರಾ?</translation>
 <translation id="5036141350290856713">ರಷ್ಯನ್ ಫೋನೆಟಿಕ್</translation>
-<translation id="5036159836254554629">Parallels Desktop ಹಂಚಿಕೊಳ್ಳುವಿಕೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="5038625366300922036">ಇನ್ನಷ್ಟು ನೋಡಿ...</translation>
 <translation id="5044852990838351217">ಅರ್ಮೇನಿಯನ್</translation>
 <translation id="5045550434625856497">ತಪ್ಪು ಪಾಸ್‌ವರ್ಡ್</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">"<ph name="FILENAME" />" ಅಳಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="6581162200855843583">Google ಡ್ರೈವ್ ಲಿಂಕ್</translation>
 <translation id="6588648400954570689">ಫೈಲ್ ಸಿಂಕ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
-<translation id="6594855146910089723">ಈ ಫೋಲ್ಡರ್ ಅನ್ನು Linux ಮತ್ತು Parallels Desktop ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
 <translation id="6607272825297743757">ಫೈಲ್ ಮಾಹಿತಿ</translation>
-<translation id="6609332149380188670">Parallels Desktop ಮೂಲಕ <ph name="NUMBER_OF_ITEMS" /> ಫೋಲ್ಡರ್‌ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
 <translation id="6629518321609546825">ಕನಿಷ್ಠ 4 ಸಂಖ್ಯೆಗಳನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="6643016212128521049">ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="6650726141019353908">ಗುಲಾಬಿ ಬಣ್ಣದ ಚಿಟ್ಟೆ</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">ಓಹ್, ಹೋಯ್ತು! ಮರುಹೆಸರಿಸುವ ಸಂದರ್ಭದಲ್ಲಿ ದೋಷ ಕಂಡುಬಂದಿದೆ.</translation>
 <translation id="7458955835361612701">ಯಾವುದೇ ಇತ್ತೀಚಿನ ಚಿತ್ರಗಳಿಲ್ಲ</translation>
 <translation id="7469894403370665791">ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಈ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸಂಪರ್ಕಿಸಿ</translation>
-<translation id="7486315294984620427">‌Parallels Desktop ನಲ್ಲಿ ಫೈಲ್‌ಗಳನ್ನು ಡ್ರಾಪ್ ಮಾಡಲು, ಫೈಲ್ ಅನ್ನು Windows ಫೈಲ್‌ಗಳಿಗೆ ನಕಲಿಸಬೇಕು.</translation>
 <translation id="749452993132003881">ಹಿರಾಗನ</translation>
 <translation id="7495372004724182530">ಮಲಯಾಳಂ ಫೋನೆಟಿಕ್</translation>
 <translation id="7505167922889582512">ಮರೆಮಾಡಿದ ಫೈಲ್‌ಗಳನ್ನು ತೋರಿಸು</translation>

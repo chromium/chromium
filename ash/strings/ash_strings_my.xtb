@@ -35,7 +35,6 @@
 <translation id="1088231044944504242">သင့် <ph name="CATEGORY" />၊ ဖိုင်၊ အက်ပ်နှင့် အခြားအရာများကို ရှာပါ။ သင့်အက်ပ်များသို့ သွားရန် မြားခလုတ်များကို သုံးပါ။</translation>
 <translation id="1093645050124056515">Ctrl + Alt + အောက်ညွှန်မြား</translation>
 <translation id="1094756674036064790">ဘလူးတုသ် ပိတ်မလား။</translation>
-<translation id="109647177154844434">Parallels Desktop ဖယ်ရှားခြင်းက သင့် Windows ကွန်ပျူတာစနစ်မိတ္တူကို ဖျက်လိုက်ပါမည်။ ၎င်း၏အပလီကေးရှင်း၊ ဆက်တင်နှင့် ဒေတာများ ပါဝင်သည်။ ရှေ့ဆက်လိုသည်မှာ သေချာသလား။</translation>
 <translation id="1104084341931202936">အများသုံးနိုင်မှု ဆက်တင်များကို ပြရန်</translation>
 <translation id="1104621072296271835">သင်၏စက်ပစ္စည်းများကို အတူတကွအသုံးပြုလျှင် ပိုမိုကောင်းမွန်ပါသည်</translation>
 <translation id="1107300737351978027">ထပ်နေသောဂဏန်းများ မပါဝင်ရပါ</translation>
@@ -82,7 +81,6 @@
 <translation id="1210557957257435379">ဖန်သားပြင်ရိုက်ကူးခြင်း</translation>
 <translation id="121097972571826261">စာလုံးအလိုက် ရှေ့သို့သွားရန်</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />၊ Play Store အက်ပ်</translation>
-<translation id="1223484782328004593"><ph name="APP_NAME" /> က လိုင်စင်လိုအပ်သည်</translation>
 <translation id="1225748608451425081">သိထားသည့် ပြဿနာတစ်ခုကြောင့် သင့် Chromebook လော့ခ်ကျသွားသည်။ <ph name="TIME_LEFT" /> နောက်ပိုင်းတွင် လက်မှတ်ထိုးဝင်နိုင်ပါမည်။</translation>
 <translation id="1229194443904279055">ရွေးချယ်ခြင်းကို ရပ်ရန်</translation>
 <translation id="1235458158152011030">သိထားသည့် ကွန်ရက်များ</translation>
@@ -93,7 +91,6 @@
 <translation id="1244265436519979884">Linux ပြန်ယူခြင်းကို လောလောဆယ် လုပ်ဆောင်နေသည်</translation>
 <translation id="1245476784081715330">တော်ပါပေသည်။</translation>
 <translation id="124678866338384709">လက်ရှိတဘ်ကို ပိတ်ရန်</translation>
-<translation id="1246863218384630739"><ph name="VM_NAME" /> ထည့်သွင်း၍ မရပါ- ကွန်ပျူတာစနစ်မိတ္တူ URL က <ph name="HTTP_ERROR" /> အမှားကုဒ် ပြန်ပို့သည်။ သင့်စီမံခန့်ခွဲသူထံ ဆက်သွယ်ပါ။</translation>
 <translation id="1246890715821376239">ထောက်ပံ့ပေးမထားသော အက်ပ်များ</translation>
 <translation id="1247372569136754018">မိုက်ခရိုဖုန်း (စက်တွင်း)</translation>
 <translation id="1247519845643687288">မကြာသေးမီက အက်ပ်များ</translation>
@@ -107,7 +104,6 @@
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> ကို အားသွင်းနေသည်</translation>
 <translation id="1275718070701477396">ရွေးထား</translation>
 <translation id="1276975447697633661">ဖိုင်ကို ရွေးပြီး <ph name="KEY" /> ကို နှိပ်ပါ</translation>
-<translation id="1276994519141842946"><ph name="APP_NAME" /> ကို ဖယ်ရှား၍မရပါ</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1283126956823499975">စက်ပစ္စည်း စနစ်ထည့်သွင်းမှုတွင် တစ်ခုခု မှားသွားသည်</translation>
 <translation id="1285992161347843613">ဖုန်းရှာခြင်း</translation>
@@ -170,7 +166,6 @@
 <translation id="1421166164855200062">အကြံပြုထားသည့်အုပ်စု</translation>
 <translation id="1426410128494586442">Yes</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> ကို ပိတ်ထားသည်</translation>
-<translation id="142765311413773645"><ph name="APP_NAME" /> လိုင်စင် သက်တမ်းကုန်သွားပါပြီ</translation>
 <translation id="1430915738399379752">ပရင့်</translation>
 <translation id="1435537621343861112">နှုတ်တိုက်ချပေးမှု စတင်၍မရပါ။ မိုက် ပိတ်ထားသည်။</translation>
 <translation id="1445031758921122223">မျက်နှာထိန်းချုပ်မှု ဖိုင်များကို ဒေါင်းလုဒ်လုပ်ပြီးပြီ</translation>
@@ -193,12 +188,10 @@
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">နှုတ်တိုက်ချပေးခြင်းသုံး၍ သင့်အသံဖြင့် စာရိုက်နိုင်သည်။ စာသားအကွက်တွင် ရှိနေစဉ် ဖန်သားပြင်အောက်ခြေရှိ နှုတ်တိုက်ချပေးခြင်းကီးကို နှိပ်ပါ (သို့) မိုက်ခရိုဖုန်းသင်္ကေတကို ရွေးပါ။ သင်၏နှုတ်တိုက်ချပေးခြင်း ဘာသာစကားကို <ph name="LANGUAGE" /> အဖြစ် သတ်မှတ်ထားသည်။ စကားသံကို စီမံလုပ်ဆောင်ရန် Google သို့ ပို့ထားသည်။ နှုတ်တိုက်ချပေးခြင်း ဘာသာစကားကို ဆက်တင်များ &gt; အများသုံးနိုင်မှုတွင် အချိန်မရွေး ပြောင်းနိုင်သည်။</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> ကို <ph name="SECOND_ITEM_TITLE" /> ဖြင့် လှဲလှယ်ထားသည်</translation>
-<translation id="1494429729245089920">ပကတိအသွင်စက် “<ph name="VM_NAME" />” ရှိနေသော်လည်း မှန်ကန်သော <ph name="APP_NAME" /> ပကတိအသွင်စက် ဟုတ်ပုံမရပါ။ သင့်စီမံခန့်ခွဲသူထံ ဆက်သွယ်ပါ။</translation>
 <translation id="1500926532737552529">အကြံပြုချက်အားလုံး ပြရန်</translation>
 <translation id="1501946871587957338">အသံရင်းမြစ်ကို ပြောင်းမလား။</translation>
 <translation id="1505542291183484463">လေးထောင့်ကွက်ဝင်းဒိုး၏ အောက်ဘက်တွင် အရွယ်ပြင်ရန်</translation>
 <translation id="1510238584712386396">Launcher</translation>
-<translation id="1515163294334130951">စဖွင့်တင်ရန်</translation>
 <translation id="1519090060276706457">ဝင်းဒိုးများ ပြန်ယူခြင်းသည် မျှော်မှန်းထားသည်ထက် ပိုကြာနေသည်</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003">ဘက်ထရီ <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> အကြာတွင် အားပြည့်မည်</translation>
@@ -222,7 +215,6 @@
 <translation id="1574691582236909946">ရွေးထားသည့် ဘယ်အစွန်းဖိဆွဲအထိန်း၊ ရွှေ့ရန် မြားခလုတ်များ သုံးပါ</translation>
 <translation id="1576623706766186887">မှန်ဘီလူးဖွင့်ထားပါက ဇူးမ်ဖြုတ်ရန်</translation>
 <translation id="1578558981922970608">မဖြစ်မနေ ပိတ်ရန်</translation>
-<translation id="1580772913177567930">သင်၏စီမံခန့်ခွဲသူကို ဆက်သွယ်ပါ</translation>
 <translation id="1582946770779745370">‘ဂိမ်း ဒက်ရှ်ဘုတ်’ ရနိုင်သည်။ ဖွင့်ရန်အတွက် <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape ကိုနှိပ်ပြီးနောက် <ph name="LAUNCHER_KEY_NAME" /> + g ကို အချိန်မရွေးနှိပ်ပါ</translation>
 <translation id="1586324912145647027">မျက်နှာပြင်နေရာ ၁ မှ ၈ သို့သွားနိုင်သည်</translation>
 <translation id="158838227375272121">Google Classroom ဝဘ်ဆိုက်</translation>
@@ -443,7 +435,6 @@
 <translation id="2322065293366551060"><ph name="CATEGORY" /> ၊ ရှာဖွေမှုရလဒ် အမျိုးအစား</translation>
 <translation id="2322173485024759474">အက္ခရာအလိုက် နောက်ပြန်သွားရန်</translation>
 <translation id="2326112202058075478">အီမိုဂျီများ ပိုပြပါ</translation>
-<translation id="2328561734797404498"><ph name="APP_NAME" /> အသုံးပြုရန် သင့်စက်ကို ပြန်စတင်ပါ။</translation>
 <translation id="2335091074961603075">သင့် Chromebook (သို့) ဘလူးတုသ်သုံးစက်သည် ဘလူးတုသ် ဗားရှင်းဟောင်းကို သုံးနေသည်။ အသံအရည်အသွေး ပိုကောင်းရန် စက်တွင်းပါ မိုက်ခရိုဖုန်းကို သုံးပါ။</translation>
 <translation id="2336214675195760012">{NUM_DAYS,plural, =1{Wi-Fi နှင့် ယနေ့ချိတ်ဆက်ပြီး အပ်ဒိတ်ကို ဒေါင်းလုဒ်လုပ်ရန် <ph name="MANAGER" /> က သတ်မှတ်ထားသည်။ သို့မဟုတ် အခပေးဒေတာ ချိတ်ဆက်မှုမှ ဒေါင်းလုဒ်လုပ်ပါ (ဒေတာသုံးစွဲခ ကျသင့်နိုင်သည်)။}other{နောက်ဆုံးသတ်မှတ်ရက် မတိုင်မီ Wi-Fi နှင့် ချိတ်ဆက်ပြီး အပ်ဒိတ်ကို ဒေါင်းလုဒ်လုပ်ရန် <ph name="MANAGER" /> က သတ်မှတ်ထားသည်။ သို့မဟုတ် အခပေးဒေတာ ချိတ်ဆက်မှုမှ ဒေါင်းလုဒ်လုပ်ပါ (ဒေတာသုံးစွဲခ ကျသင့်နိုင်သည်)။}}</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" /> သည် <ph name="PRINTER_NAME" /> တွင် စာမျက်နှာ ၁ မျက်နှာကို ပုံနှိပ်ထုတ်ယူနေသည်</translation>
@@ -471,7 +462,6 @@
 <translation id="2386292613071805067">စာမျက်နှာပေါ်ရှိ အရာအားလုံးကို ရွေးရန်</translation>
 <translation id="2389423187722941333">Gemini ဖွင့်ရန်</translation>
 <translation id="2390347491606624519">ပရောက်စီနှင့် ချိတ်ဆက်၍မရပါ၊ ထပ်ပြီး လက်မှတ်ထိုးဝင်ပါ</translation>
-<translation id="2393136602862631930">သင်၏ Chromebook တွင် <ph name="APP_NAME" /> စနစ်ထည့်သွင်းခြင်း</translation>
 <translation id="2397416548179033562">Chrome မီနူးကို ပြရန်</translation>
 <translation id="240006516586367791">မီဒီယာ ထိန်းချုပ်မှုများ</translation>
 <translation id="2400664245143453337">ချက်ချင်း အပ်ဒိတ်လုပ်ရန် လိုအပ်သည်</translation>
@@ -504,7 +494,6 @@
 <translation id="2473177541599297363">ပုံရိပ်ပြတ်သားကိန်း အတည်ပြုခြင်း</translation>
 <translation id="2475783092753560388"><ph name="SEARCH_RESULT_TEXT" /> ထည့်ရန်</translation>
 <translation id="2475982808118771221">အမှားတစ်ခု ဖြစ်ခဲ့သည်။</translation>
-<translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> ကို ဖယ်ရှားရန် Windows ကို ပိတ်ပါ။</translation>
 <translation id="2478076885740497414">အက်ပ် ထည့်သွင်းရန်</translation>
 <translation id="2479148705183875116">'ဆက်တင်များ' သို့ သွားရန်</translation>
 <translation id="2484513351006226581">ကီးဘုတ်လက်ကွက် ပြောင်းရန် <ph name="KEYBOARD_SHORTCUT" /> ကို နှိပ်ပါ။</translation>
@@ -544,7 +533,6 @@
 <translation id="2573588302192866788"><ph name="NAME" /> နှင့် ချိတ်ဆက်၍ မရပါ</translation>
 <translation id="2575685495496069081">အကောင့်များစွာ လက်မှတ်ထိုးဝင်ခြင်းကို ပိတ်ထားသည်</translation>
 <translation id="2579264398927991698">ဖာမ်းဝဲ အပ်ဒိတ်များ</translation>
-<translation id="2586561813241011046"><ph name="APP_NAME" /> ကို ထည့်သွင်း၍ မရပါ။ ထပ်စမ်းကြည့်ပါ သို့မဟုတ် သင့်စီမံခန့်ခွဲသူထံ ဆက်သွယ်ပါ။ အမှားကုဒ်- <ph name="ERROR_CODE" />။</translation>
 <translation id="2586657967955657006">ကလစ်ဘုတ်</translation>
 <translation id="2596078834055697711">ဝင်းဒိုး မျက်နှာပြင်ပုံ ရိုက်ရန်</translation>
 <translation id="2598725286293895280">မျက်နှာပြင်ရှိ ပံ့ပိုးမထားသော အက်ပ်များ</translation>
@@ -566,7 +554,6 @@
 <translation id="2653659639078652383">ပေးပို့ရန်</translation>
 <translation id="2658778018866295321">နှိပ်ပြီး ဖိဆွဲပါ</translation>
 <translation id="2665788051462227163">ဤစက်တွင် <ph name="UNAVAILABLE_APPS_ONE" /> နှင့်<ph name="UNAVAILABLE_APPS_TWO" /> မရှိပါ။</translation>
-<translation id="2669241540496514785"><ph name="APP_NAME" /> ကို ဖွင့်၍မရပါ</translation>
 <translation id="2670350619068134931">လျှော့ချထားသော လှုပ်ရှားသက်ဝင်ပုံ</translation>
 <translation id="2672142220933875349">ဆိုးရွားသော crx ဖိုင်၊ ရှင်းလင်းခြင်း မအောင်မြင်ပါ။</translation>
 <translation id="2673968385134502798">ဂိမ်းများ</translation>
@@ -839,14 +826,12 @@
 <translation id="3444385531800624797">ရလဒ်များ ဖွင့်နေသည်</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> မိနစ်</translation>
 <translation id="3445925074670675829">USB-C ကိရိယာ</translation>
-<translation id="3446274660183028131">Windows ထည့်သွင်းရန် Parallels Desktop ကို ဖွင့်ပါ။</translation>
 <translation id="3449393517661170867">တဘ်ဝင်းဒိုး အသစ်</translation>
 <translation id="3450157232394774192">မလှုပ်မရှား နေထိုင်မှု ရာခိုင်နှုန်း</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> က Wi-Fi သို့ ယခုချိတ်ဆက်ပြီး အပ်ဒိတ်ကို ဒေါင်းလုဒ်လုပ်စေလိုသည်။</translation>
 <translation id="3454555520521576458">အရွယ်အစားပြင်နိုင်သည်</translation>
 <translation id="3455468639467374593">ပုံစံ၊ <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204"><ph name="DEVICE_NAME" /> ဟော့စပေါ့သို့ စက် ၁ ခု ချိတ်ဆက်ထားသည်</translation>
-<translation id="3458451003193188688">ကွန်ရက်အမှားအယွင်းကြောင့် ပကတိအသွင်စက်ကို ထည့်သွင်း၍မရပါ။ ထပ်စမ်းကြည့်ပါ သို့မဟုတ် သင့်စီမံခန့်ခွဲသူထံ ဆက်သွယ်ပါ။ အမှားကုဒ်- <ph name="ERROR_CODE" />။</translation>
 <translation id="346243998268439747">ဇူးမ်အဆင့်ကို ပြန်ညှိရန်</translation>
 <translation id="3465223694362104965">သင်နောက်ဆုံးအကြိမ် လက်မှတ်ထိုးဝင်သည့်အချိန်မှစ၍ အခြားကီးဘုတ်တစ်ခုကို ဤစက်ပစ္စည်းသို့ ချိတ်ဆက်ထားပါသည်။ ကီးဘုတ်ကို အသုံးမပြုမီ သင်ယုံကြည်မှုရှိမရှိ သေချာစစ်ဆေးပါ။</translation>
 <translation id="3465356146291925647">သင့် 'ကြီးကြပ်သူ' က စီမံထားသည်</translation>
@@ -865,7 +850,6 @@
 <translation id="3513798432020909783">အကောင့်ကို <ph name="MANAGER_EMAIL" /> က စီမံပါသည်</translation>
 <translation id="3516000762115478502">လေးထောင့်ကွက်ဝင်းဒိုး၏ အပေါ်ဘက်တွင် အရွယ်ပြင်ရန်</translation>
 <translation id="3517037892157925473">လုပ်ဆောင်စရာများကို နောက်ဆုံးအပ်ဒိတ်လုပ်ထားချိန်- <ph name="TIME" />၊ <ph name="DATE" />။</translation>
-<translation id="3522088408596898827">ဒစ်ခ်နေရာ အလွန်နည်းနေပါပြီ။ ဒစ်ခ်နေရာလွတ် ပြုလုပ်ပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="352245152354538528">{0,plural, =1{စက်ကို ၁ မိနစ်အတွင်း အပ်ဒိတ်လုပ်ပါ}other{စက်ကို # မိနစ်အတွင်း အပ်ဒိတ်လုပ်ပါ}}</translation>
 <translation id="3522979239100719575">ရနိုင်သောပရိုဖိုင်များ ရှာနေသည်။ မိနစ်အနည်းငယ် ကြာနိုင်ပါသည်။</translation>
 <translation id="3526440770046466733">လင့်ခ်ကို တဘ်အသစ်တွင် ဖွင့်ပြီး လက်ရှိတဘ်တွင် နေရန်</translation>
@@ -1019,7 +1003,6 @@
 <translation id="3886872229787704059">ယနေ့ ဖွင့်ထားသည်</translation>
 <translation id="3892148308691398805">စာသား မိတ္တူကူးရန်</translation>
 <translation id="3893630138897523026">ChromeVox (နှုတ်ပြော အကြံပြုချက်)</translation>
-<translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3898464793473355515">ဖန်သားပြင်ကို နာရီလက်တံအတိုင်း ၉၀ ဒီဂရီ လှည့်ရန်</translation>
 <translation id="3900355044994618856">သင်၏ စက်ရှင်သည် <ph name="SESSION_TIME_REMAINING" /> တွင် ပြီးဆုံးပါမည်</translation>
 <translation id="3901991538546252627"><ph name="NAME" />သို့ ချိတ်ဆက်​ေနေ</translation>
@@ -1116,7 +1099,6 @@
 <translation id="4181841719683918333">ဘာသာစကားများ</translation>
 <translation id="4185671786623711291">ဖွင့်ထားသည့်ဝင်းဒိုးကို ညာဘက်မျက်နှာပြင်သို့ ရွှေ့ရန်</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> - <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> Search</translation>
-<translation id="4187424053537113647"><ph name="APP_NAME" /> ကို စနစ်ထည့်သွင်းနေသည်...</translation>
 <translation id="4189826113259617332">လက်ရှိဝင်းဒိုးအတွင်းတွင် ဖွင့်ထားသော ဝဘ်စာမျက်နှာများအားလုံးကို ဝဘ်လိပ်စာများအဖြစ် ဖိုင်တွဲအသစ်တွင် သိမ်းရန်</translation>
 <translation id="4190143678693626113">သင့် Chromebook မှနေ၍ သင့်ဖုန်း၏ စာတိုများကို အမြန်စာပြန်ခြင်းဖြင့် အချိန်ကုန်သက်သာနိုင်သည်</translation>
 <translation id="4190780880566297084">သင့်ဖုန်းရှိ မကြာသေးမီက ဓာတ်ပုံ၊ မီဒီယာနှင့် အက်ပ်များ ကြည့်ရှုမှုအတွက် စနစ်ထည့်သွင်းခြင်းကို ပယ်ရန်</translation>
@@ -1128,7 +1110,6 @@
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> မရနိုင်ပါ။</translation>
 <translation id="4201051445878709314">ယခင် လကို ပြရန်</translation>
 <translation id="4209973997261364186">Wi-Fi ဖွင့်ထားသည်</translation>
-<translation id="4210048056321123003">ပကတိအသွင် စက်စနစ်ကို ဒေါင်းလုဒ်လုပ်နေသည်</translation>
 <translation id="4212246570487010370">ဆက်တိုက် ရှာကြည့်ခြင်း</translation>
 <translation id="4212472694152630271">ပင်နံပါတ်သို့ပြောင်းရန်</translation>
 <translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />၊ <ph name="EFFECT_NAME" />၊ ဖွင့်ပိတ် ခလုတ်၊ <ph name="STATE" /></translation>
@@ -1147,7 +1128,6 @@
 <translation id="4250229828105606438">မျက်နှာပြင် လျှပ်တပြက်ပုံ</translation>
 <translation id="425364040945105958">ဆင်းမ်ကတ် မရှိပါ။</translation>
 <translation id="425573743389990240">ဘတ်ထရီအားလျော့မှု ဝပ်နှုန်း (အနုတ်တန်ဖိုးဆိုလိုရင်းမှာ အားသွင်းနေခြင်းဖြစ်သည်)</translation>
-<translation id="4259388776256904261">အချိန်အနည်းငယ် ကြာနိုင်သည်</translation>
 <translation id="4264977415328155183">၊ လျှော့ပြထားသည်</translation>
 <translation id="4265259722091164182">ခေါင်းစဉ်ပုံစံ</translation>
 <translation id="4269883910223712419">ဤစက်ပစ္စည်း၏ စီမံခန့်ခွဲသူသည် အောက်ပါတို့ကို လုပ်နိုင်သည်−</translation>
@@ -1234,7 +1214,6 @@
 စက် ၁ ခု ချိတ်ဆက်ထားသည်။</translation>
 <translation id="4477892968187500306">ဤစက်တွင် Google က အတည်ပြုမထားသော အက်ပ်များ ပါဝင်နိုင်သည်။</translation>
 <translation id="4479639480957787382">အီတာနက်</translation>
-<translation id="4479877282574735775">ပကတိအသွင် စက်စနစ်ကို စီစဉ်သတ်မှတ်နေသည်။ မိနစ်အနည်းငယ် ကြာနိုင်ပါသည်။</translation>
 <translation id="4485506555414638855">သင့်ဖုန်းရှိ မကြာသေးမီက ဓာတ်ပုံ၊ မီဒီယာ၊ အကြောင်းကြားချက်နှင့် အက်ပ်များ ကြည့်ရှုမှုအတွက် စနစ်ထည့်သွင်းခြင်းကို ပယ်ရန်</translation>
 <translation id="4491109536499578614">ပုံ</translation>
 <translation id="4493468155686877504">အကြံပြုထားသည် (<ph name="INSTALL_SIZE" />)</translation>
@@ -1383,7 +1362,6 @@
 <translation id="4917385247580444890">အားကောင်းသည်</translation>
 <translation id="4918086044614829423">လက်ခံရန်</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> က သင့်ကင်မရာကို လက်ရှိသုံးနေသည်</translation>
-<translation id="492363500327720082"><ph name="APP_NAME" /> ကို ဖယ်ရှားနေသည်...</translation>
 <translation id="492453977506755176">ပုံဖမ်းယူမှုမုဒ် ကီး</translation>
 <translation id="4925542575807923399">ဤအကောင့်၏ ကြီးကြပ်သူသည် ဤအကောင့်အား အကြိမ်ကြိမ် လက်မှတ်ထိုးရမည့် အစီအစဉ် ထဲက ပထမဦးဆုံး လက်မှတ်ထိုး ဝင်သည့် အကောင့် အဖြစ်လိုအပ်သည်။</translation>
 <translation id="493076006037866439">ဖန်သားပြင် ဇူးမ်ဖြုတ်ရန်</translation>
@@ -1621,7 +1599,6 @@
 <translation id="5578188167649348993">မှတ်ဉာဏ်</translation>
 <translation id="5580000943347215299">ဒစ်ဂျစ်တိုက်</translation>
 <translation id="5581972110672966454">စက်ကို ဒိုမိန်းသို့ ချိတ်ဆက်၍မရပါ။ ထပ်စမ်းကြည့်ပါ သို့မဟုတ် သင့်စက်ပိုင်ရှင် သို့မဟုတ် စီမံခန့်ခွဲသူထံ ဆက်သွယ်ပါ။ အမှားကုဒ် - <ph name="ERROR_CODE" />။</translation>
-<translation id="5585898376467608182">သင့်စက်တွင် သိုလှောင်ခန်း နည်းနေသည်။ <ph name="APP_NAME" /> အသုံးပြုရန် အနည်းဆုံး နေရာလွတ် <ph name="MINIMUM_SPACE" /> ရှိရန် လိုအပ်သည်။ နေရာလွတ်ပိုရရန် စက်မှ ဖိုင်များကို ဖျက်ပါ။</translation>
 <translation id="5586388332127302891">‘နေရာချထားသည့် မှန်ဘီလူး’ ဖွင့်ထားသည်။ ၎င်းကိုပိတ်ရန် <ph name="ACCELERATOR" /> ကို ထပ်နှိပ်ပါ။</translation>
 <translation id="5587506661873751671"><ph name="DOWNLOAD_PERCENT" />% ကို ဒေါင်းလုဒ်လုပ်နေသည်</translation>
 <translation id="5590609058453685222">အသံပိတ်ထားကြောင်း သတိပေးနှိုးဆော်ချက် ဖွင့်ထားသည်။ အသံပိတ်ထားစဉ် စကားပြောဆိုပါက သင့်ကိုအကြောင်းကြားပါမည်။</translation>
@@ -1688,7 +1665,6 @@
 <translation id="5767730327234918501">သင့်စီမံခန့်ခွဲသူက ဟော့စပေါ့ ပိတ်လိုက်သည်။</translation>
 <translation id="5769373120130404283">အချက်အလက်လုံခြုံမှု ဖန်သားပြင်</translation>
 <translation id="5770004650349728202">'စကားပြောရွေးခြင်း' ဖွင့်ရန်</translation>
-<translation id="5772114492540073460"><ph name="PARALLELS_NAME" /> က သင့် Chromebook တွင် Windows® အက်ပ်များကို လုပ်ဆောင်ခွင့်ပြုသည်။ ထည့်သွင်းရန်အတွက် နေရာလွတ် <ph name="MINIMUM_SPACE" /> ရှိရန် အကြံပြုပါသည်။</translation>
 <translation id="5773950591113557721">၎င်းက ကင်မရာနှင့် မိုက်ခရိုဖုန်း ခွင့်ပြုချက်များပါသည့် <ph name="APP_NAME" />၊ အက်ပ်နှင့် ဝဘ်ဆိုက်အားလုံးကို သုံးခွင့်ပေးသည်</translation>
 <translation id="5774295353725270860">ဖိုင်များ အက်ပ်ကို ဖွင့်ရန်</translation>
 <translation id="5775936059231769503">ဟော့စပေါ့ ဖွင့်/ပိတ်လုပ်သည်။ ဟော့စပေါ့ ပိတ်လိုက်သည်။</translation>
@@ -1736,8 +1712,6 @@
 <translation id="589817443623831496">အတိအကျ ရှာဖွေခြင်း</translation>
 <translation id="5901494423252125310">ပရင်တာတံခါး ပွင့်နေခြင်း</translation>
 <translation id="5901630391730855834">အၐါရောင်</translation>
-<translation id="5904614460720589786">စီစဉ်သတ်မှတ်မှု ပြဿနာကြောင့် <ph name="APP_NAME" /> ကို စနစ်ထည့်သွင်း၍မရပါ။ သင့်စီမံခန့်ခွဲသူထံ ဆက်သွယ်ပါ။ အမှားကုဒ်- <ph name="ERROR_CODE" />။</translation>
-<translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> က အော့ဖ်လိုင်းဖြစ်နေသည်</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">အကြောင်းကြားချက်အသစ်၊ စုစုပေါင်း <ph name="NOTIFICATION_COUNT" /> ခု</translation>
 <translation id="5916664084637901428">ဖွင့်ရန်</translation>
@@ -1809,7 +1783,6 @@
         သင့်စမတ်ကတ်ကို ထည့်သွင်းထားရန် <ph name="DOMAIN" /> က သတ်မှတ်ထားသည်။}other{# စက္ကန့်အကြာတွင် သင်အလိုအလျောက် ထွက်သွားပါမည်။
         သင့်စမတ်ကတ်ကို ထည့်သွင်းထားရန် <ph name="DOMAIN" /> က သတ်မှတ်ထားသည်။}}</translation>
 <translation id="6071576563962215370">စနစ်သည် စက်ပစ္စည်းထည့်သွင်းမှုအချိန် ရည်ညွှန်းချက်လော့ခ်ကို သတ်မှတ်၍မရပါ။</translation>
-<translation id="6072442788591997866"><ph name="APP_NAME" /> ကို ဤစက်ပေါ်တွင် ခွင့်ပြုမထားပါ။ သင့်စီမံခန့်ခွဲသူထံ ဆက်သွယ်ပါ။ အမှားကုဒ်- <ph name="ERROR_CODE" />။</translation>
 <translation id="6073451960410192870">ကူးယူမှု ရပ်ရန်</translation>
 <translation id="6074087755403037157">စမ်းသပ်ချန်နယ်</translation>
 <translation id="6075098173600599596">စာလုံးအကြီးအသေး ပြောင်းရန်</translation>
@@ -1916,7 +1889,6 @@
 <translation id="6380143666419481200">လက်ခံပြီး ဆက်လုပ်ရန်</translation>
 <translation id="6381109794406942707">ဤစက်ကိုဖွင့်ရန် သင့်ပင်နံပါတ် ထည့်ပါ။</translation>
 <translation id="6381305031890976705">{0,plural, =1{စက်ကို ယခင်ဗားရှင်းသို့ တစ်နာရီအတွင်း အပ်ဒိတ်လုပ်ပါ}other{စက်ကို ယခင်ဗားရှင်းသို့ # နာရီအတွင်း အပ်ဒိတ်လုပ်ပါ}}</translation>
-<translation id="6385149369087767061">အင်တာနက်ချိတ်ပြီး ထပ်စမ်းကြည့်ပါ</translation>
 <translation id="638716340450135524">ကင်မရာသုံးခွင့် ဖွင့်ရန်</translation>
 <translation id="6406458002328242616">တိုင်မာကို ပြင်ပါ။ <ph name="FOCUS_DURATION" />။</translation>
 <translation id="6406704438230478924">altgr</translation>
@@ -1934,7 +1906,6 @@
 <translation id="6426905245930183644">ပြုလုပ်နေသည်…</translation>
 <translation id="6430225033895752525">အထူးပြသမှု ဆက်တင်များကို ပြပါ</translation>
 <translation id="6431865393913628856">ဖန်သားပြင် ရိုက်ကူးရန်</translation>
-<translation id="6434325376267409267"><ph name="APP_NAME" /> အသုံးမပြုမီ သင့်စက်ကို အပ်ဒိတ်လုပ်ရန် လိုအပ်သည်။</translation>
 <translation id="643593192654616063">သိုလှောင်ခန်း စုစုပေါင်း <ph name="STORAGE_TOTAL_SIZE" /> အနက်မှ <ph name="STORAGE_IN_USE_SIZE" /> သုံးထားသည်</translation>
 <translation id="6445915701151710649">CPU</translation>
 <translation id="6447111710783417522"><ph name="DATE" />၊ အစီအစဉ် <ph name="NUMBER" /> ခု</translation>
@@ -2212,7 +2183,6 @@
 <translation id="7258828758145722155">မနေ့က ပြင်ဆင်ထားသည်</translation>
 <translation id="726276584504105859">မျက်နှာပြင် ခွဲခြမ်းပြသခြင်းကို အသုံးပြုရန် ဤနေရာသို့ ဖိဆွဲပါ</translation>
 <translation id="7264788308526527464"><ph name="FOCUS_DURATION_DELTA" /> လျှော့ရန်</translation>
-<translation id="7267044199012331848">ပကတိအသွင်စက်ကို ထည့်သွင်း၍မရပါ။ ထပ်စမ်းကြည့်ပါ သို့မဟုတ် သင့်စီမံခန့်ခွဲသူထံ ဆက်သွယ်ပါ။ အမှားကုဒ်- <ph name="ERROR_CODE" />။</translation>
 <translation id="7267875682732693301">လက်ဗွေ၏ အစိတ်အပိုင်းအမျိုးမျိုးကို ထည့်ရန်အတွက် သင့်လက်ချောင်းကို အကြိမ်ကြိမ်ပြန်ကြွပါ</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + နောက်ပြန်ခလုတ်</translation>
 <translation id="7285232777292757180">ဖန်သားပြင်ဓာတ်ပုံရိုက်ရန်အတွက် အမြန်ဆက်တင်များရှိ ဖန်သားပြင် ပုံဖမ်းသည့်တူးလ်ကို သုံးရန်</translation>
@@ -2261,9 +2231,7 @@
 <translation id="7406854842098869085"><ph name="MODIFIER_1" /> နှိပ်ထားပြီး သင်ဖွင့်လိုသည့် ဝင်းဒိုးရောက်သည်အထိ <ph name="KEY" /> ကို တို့ပါ။ ထို့နောက် လွှတ်လိုက်ပါ</translation>
 <translation id="740790383907119240">အက်ပ်ဖြတ်လမ်းလင့်ခ်များ</translation>
 <translation id="7413851974711031813">ပိတ်ရန် escape ကို နှိပ်ပါ</translation>
-<translation id="7415454883318062233">စနစ်ထည့်သွင်းခြင်း ပြီးပါပြီ</translation>
 <translation id="7416471219712049036">လက်ရှိစာမျက်နှာ သိမ်းရန်</translation>
-<translation id="7423807071740419372"><ph name="APP_NAME" /> ကိုဖွင့်ရန် ခွင့်ပြုချက် လိုအပ်သည်</translation>
 <translation id="742594950370306541">ကင်မရာကို အသုံးပြုနေသည်။</translation>
 <translation id="743058460480092004">ကင်မရာ နှင့် မိုက်ခရိုဖုန်းကို အသုံးပြုနေသည်။</translation>
 <translation id="7433708794692032816">သင်၏ <ph name="DEVICE_TYPE" /> ကို ဆက်သုံးရန် စမတ်ကတ် ထည့်သွင်းပါ</translation>
@@ -2274,7 +2242,6 @@
 <translation id="7459485586006128091">အတွင်းပိုင်း အမှားကြောင့် ဟော့စပေါ့ကို ပိတ်လိုက်သည်။ ခဏအကြာတွင် ပြန်ချိတ်ဆက်ကြည့်ပါ။</translation>
 <translation id="7461924472993315131">ပင်နံပါတ်</translation>
 <translation id="746216226901520237">နောက်တစ်ကြိမ်တွင် သင့်ဖုန်းက သင်၏ <ph name="DEVICE_TYPE" /> ကို လော့ခ်ဖွင့်ပါမည်။ Smart Lock ကို 'ဆက်တင်များ' ထဲတွင် ပိတ်နိုင်သည်။</translation>
-<translation id="7465635034594602553">တစ်ခုခုမှားသွားသည်။ မိနစ်အနည်းငယ်စောင့်ပြီး <ph name="APP_NAME" /> ကို ထပ်ဖွင့်ကြည့်ပါ။</translation>
 <translation id="7466449121337984263">အာရုံခံကိရိယာကို ထိပါ</translation>
 <translation id="7477793887173910789">သင့်သီချင်း၊ ဗီဒီယိုနှင့် အခြားအရာများ ထိန်းချုပ်ရန်</translation>
 <translation id="7478485216301680444">Kiosk အပလီကေးရှင်းကို မတပ်ဆင်နိုင်ခဲ့ပါ။</translation>
@@ -2428,7 +2395,6 @@
 <translation id="7850320739366109486">မနှောင့်ယှက်ရ</translation>
 <translation id="7851039877802112575">ပေါ့အပ်နှင့် ဒိုင်ယာလော့များသို့ ရွှေ့ပြရန်</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7862292329216937261">စက်ကို ဧည့်သည်အဖြစ်သုံးရန်အတွက် အကောင့်ထွက်ရမည်ဖြစ်ပြီး ဖန်သားပြင်အောက်ခြေရှိ ‘ဧည့်သည်အဖြစ် ကြည့်ရန်’ ကို ရွေးပါ။</translation>
 <translation id="7866482334467279021">ဖွင့်</translation>
 <translation id="7870790288828963061">ပိုသစ်သည့် ဗားရှင်းဖြင့် Kiosk အက်ပ် တစ်ခုကိုမှ မတွေ့ခဲ့ပါ။ ကျေးဇူးပြုပြီး USB အချောင်းကို ဖယ်ရှားလိုက်ပါ။</translation>
@@ -2765,7 +2731,6 @@
 <translation id="8815390544836110344">ဖန်သားပြင်ပုံ ဖြတ်လမ်းလင့်ခ်၊ Ctrl အပေါင်း Shift အပေါင်း အနှစ်ချုပ်မုဒ်ခလုတ်</translation>
 <translation id="881757059229893486">လက်ကွက် ဆက်တင်များ</translation>
 <translation id="8819728065740986820">အလိုက်သင့်အားသွင်းခြင်းကို ဖွင့်ထားသည်</translation>
-<translation id="8821268776955756404"><ph name="APP_NAME" /> ကို သုံးရန် အသင့်ဖြစ်ပြီ။</translation>
 <translation id="882204272221080310">လုံခြုံရေးပိုမိုကောင်းမွန်စေရန် firmware ကို အပ်ဒိတ်လုပ်ပါ</translation>
 <translation id="8822104519413696986">ဤဂိမ်းသည် တို့ထိဂိမ်းဖြစ်သည်</translation>
 <translation id="8825863694328519386">နောက်သို့ပြန်သွားရန် ဘယ်ဘက်မှ ပွတ်ဆွဲပါ</translation>
@@ -2800,7 +2765,6 @@
 <translation id="8905919797434099235">(ခေါင်းစဉ်မဲ့)</translation>
 <translation id="890616557918890486">အရင်းအမြစ် ပြောင်းရန်</translation>
 <translation id="8909138438987180327">ဘက်ထရီ <ph name="PERCENTAGE" /> ရာခိုင်နှုန်း ရှိပါသည်။</translation>
-<translation id="8909298138148012791"><ph name="APP_NAME" /> ကို ဖယ်ရှားပြီးပြီ</translation>
 <translation id="8916866375277139011"><ph name="GROUP_NAME" /> တွင် အရာများဖျောက်ပါ</translation>
 <translation id="8921369299636221117">ဧည့်ကြိုဝန်ဆောင်မှု မရနိုင်ပါ။</translation>
 <translation id="8921554779039049422">H+</translation>
@@ -2873,7 +2837,6 @@
 <translation id="9126339866969410112">နောက်ဆုံးလုပ်ဆောင်ချက်ကို နောက်ပြန်ရန်</translation>
 <translation id="9126642911267312373">ဘလူးတုသ် မရနိုင်ပါ</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{၁ မိနစ်အကြာတွင်}other{# မိနစ်အကြာတွင်}}</translation>
-<translation id="9128317794749765148">စနစ်ထည့်သွင်းမှုကို အပြီးသတ်၍မရပါ</translation>
 <translation id="9129245940793250979">နောက်ခလုတ်</translation>
 <translation id="9133335900048457298">ကာကွယ်ထားသော အကြောင်းအရာကို ရိုက်ကူး၍မရပါ</translation>
 <translation id="9139720510312328767">လာမည့်စာလုံးကို ဖျက်ရန်</translation>

@@ -35,7 +35,6 @@
 <translation id="1088231044944504242">Որոնեք ձեր <ph name="CATEGORY" />ում, ֆայլերում, հավելվածներում և այլն։ Մի հավելվածից մյուսին անցնելու համար օգտագործեք սլաքաստեղները։</translation>
 <translation id="1093645050124056515">ctrl + alt + ներքև սլաք</translation>
 <translation id="1094756674036064790">Անջատե՞լ Bluetooth-ը</translation>
-<translation id="109647177154844434">Parallels Desktop-ը ապատեղադրելու դեպքում ձեր Windows-ի պատկերը, այդ թվում՝ դրա հավելվածները, կարգավորումները և տվյալները կջնջվեն։ Շարունակե՞լ։</translation>
 <translation id="1104084341931202936">Ցուցադրել հատուկ գործառույթների կարգավորումները</translation>
 <translation id="1104621072296271835">Միասին ձեր սարքերն ավելի լավ կաշխատեն</translation>
 <translation id="1107300737351978027">Չի կարող կրկնվող թվեր պարունակել</translation>
@@ -82,7 +81,6 @@
 <translation id="1210557957257435379">էկրանի տեսագրում</translation>
 <translation id="121097972571826261">Մեկ բառով առաջ</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Խանութի հավելված</translation>
-<translation id="1223484782328004593"><ph name="APP_NAME" /> հավելվածին հավաստագիր է անհրաժեշտ</translation>
 <translation id="1225748608451425081">Ձեր Chromebook-ը կողպվել է խնդրի պատճառով։ Դուք կկարողանաք մուտք գործել <ph name="TIME_LEFT" />ից։</translation>
 <translation id="1229194443904279055">Դադարեցնել տեքստի ընտրությունը</translation>
 <translation id="1235458158152011030">Պահված ցանցեր</translation>
@@ -93,7 +91,6 @@
 <translation id="1244265436519979884">Լինուքսի վերականգնումն ընթացքի մեջ է</translation>
 <translation id="1245476784081715330">Կեցցե՛ք։</translation>
 <translation id="124678866338384709">Փակել ընթացիկ ներդիրը</translation>
-<translation id="1246863218384630739">Չհաջողվեց տեղադրել «<ph name="VM_NAME" />» վիրտուալ մեքենան․ պատկերի URL-ը վերադարձրել է <ph name="HTTP_ERROR" /> սխալի կոդը։ Դիմեք ձեր ադմինիստրատորին։</translation>
 <translation id="1246890715821376239">Չաջակցվող հավելվածներ</translation>
 <translation id="1247372569136754018">Խոսափող (ներքին)</translation>
 <translation id="1247519845643687288">Վերջին հավելվածներ</translation>
@@ -107,7 +104,6 @@
 <translation id="1275285675049378717">Լիցքավորում է <ph name="POWER_SOURCE" /> սարքը</translation>
 <translation id="1275718070701477396">Ընտրված</translation>
 <translation id="1276975447697633661">Ընտրեք ֆայլը, ապա սեղմեք <ph name="KEY" /></translation>
-<translation id="1276994519141842946">Չհաջողվեց հեռացնել <ph name="APP_NAME" /> հավելվածը</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1283126956823499975">Սարքը կարգավորելիս սխալ առաջացավ</translation>
 <translation id="1285992161347843613">Տեղորոշել հեռախոսը</translation>
@@ -170,7 +166,6 @@
 <translation id="1421166164855200062">Առաջարկվող խումբ</translation>
 <translation id="1426410128494586442">Այո</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> հավելվածն արգելափակված է</translation>
-<translation id="142765311413773645"><ph name="APP_NAME" /> հավելվածի հավաստագրի գործողության ժամկետը սպառվել է</translation>
 <translation id="1430915738399379752">Տպում</translation>
 <translation id="1435537621343861112">Հնարավոր չէ սկսել թելադրումը։ Խոսափողն անջատված է։</translation>
 <translation id="1445031758921122223">Դեմքի հետագծման ֆայլերը ներբեռնվեցին</translation>
@@ -193,12 +188,10 @@
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">Թելադրման օգնությամբ դուք կարող եք տեքստ մուտքագրել ձեր ձայնի միջոցով։ Սեղմեք թելադրման ստեղնը կամ ընտրեք խոսափողի պատկերակը էկրանի ներքևում, երբ տեքստի մուտքագրման դաշտում լինեք։ Թելադրման համար սահմանված է <ph name="LANGUAGE" /> լեզուն։ Խոսքի ձայնագրությունը մշակման համար ուղարկվում է Google-ին։ Ցանկացած ժամանակ կարող եք փոխել թելադրման լեզուն՝ անցնելով Կարգավորումներ &gt; Հատուկ գործառույթներ։</translation>
 <translation id="1487931858675166540">«<ph name="FIRST_ITEM_TITLE" />» և «<ph name="SECOND_ITEM_TITLE" />» տարրերը տեղերով փոխվեցին</translation>
-<translation id="1494429729245089920">«<ph name="VM_NAME" />» վիրտուալ մեքենան գոյություն ունի, սակայն դրա տեսակը չի աջակցվում (պետք է լինի <ph name="APP_NAME" />)։ Դիմեք ձեր ադմինիստրատորին։</translation>
 <translation id="1500926532737552529">Ցույց տալ բոլոր առաջարկները</translation>
 <translation id="1501946871587957338">Փոխե՞լ աուդիո աղբյուրը</translation>
 <translation id="1505542291183484463">Սալիկապատված չափափոխման պատուհանը դեպի ներքև</translation>
 <translation id="1510238584712386396">Գործարկիչ</translation>
-<translation id="1515163294334130951">Գործարկել</translation>
 <translation id="1519090060276706457">Պատուհանների վերականգնումը սովորականից երկար է տևում</translation>
 <translation id="1521655867290435174">Google Աղյուսակներ</translation>
 <translation id="1523032696246003">Մարտկոցի լիցքը՝ <ph name="BATTERY_PERCENTAGE" />% | Լրիվ լիցքավորմանը մնացել է <ph name="TIME" /></translation>
@@ -222,7 +215,6 @@
 <translation id="1574691582236909946">Ընտրված է ձախ եզրի բռնիչը, տեղաշարժելու համար օգտագործեք սլաքների ստեղները</translation>
 <translation id="1576623706766186887">Փոքրացնել, երբ խոշորացույցը միացված է</translation>
 <translation id="1578558981922970608">Ստիպողաբար փակել</translation>
-<translation id="1580772913177567930">Դիմեք ձեր ադմինիստրատորին</translation>
 <translation id="1582946770779745370">Խաղային վահանակը հասանելի է։ Բացելու համար ցանկացած պահի սեղմեք <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape, հետո՝ <ph name="LAUNCHER_KEY_NAME" /> + g</translation>
 <translation id="1586324912145647027">Անցնել 1–8 աշխատասեղաններին</translation>
 <translation id="158838227375272121">Google Classroom-ի կայք</translation>
@@ -443,7 +435,6 @@
 <translation id="2322065293366551060">Որոնման արդյունքների կատեգորիա՝ <ph name="CATEGORY" /></translation>
 <translation id="2322173485024759474">Մեկ տառով հետ</translation>
 <translation id="2326112202058075478">Ցուցադրել այլ էմոջիներ</translation>
-<translation id="2328561734797404498"><ph name="APP_NAME" /> հավելվածն օգտագործելու համար վերագործարկեք ձեր սարքը։</translation>
 <translation id="2335091074961603075">Ձեր Chromebook-ը կամ Bluetooth սարքն օգտագործում է Bluetooth-ի ավելի հին տարբերակ։ Օգտագործեք ներքին խոսափողը, որպեսզի ձայնի որակն ավելի լավը լինի։</translation>
 <translation id="2336214675195760012">{NUM_DAYS,plural, =1{Տիրույթի (<ph name="MANAGER" />) կանոնների համաձայն՝ դուք պետք է այսօր միանաք Wi-Fi-ին և ներբեռնեք թարմացումը կամ օգտվեք վճարովի կապից (կարող է գումար գանձվել)։}one{Տիրույթի (<ph name="MANAGER" />) կանոնների համաձայն՝ դուք պետք է մինչև վերջնաժամկետը միանաք Wi-Fi-ին և ներբեռնեք թարմացումը կամ օգտվեք վճարովի կապից (կարող է գումար գանձվել)։}other{Տիրույթի (<ph name="MANAGER" />) կանոնների համաձայն՝ դուք պետք է մինչև վերջնաժամկետը միանաք Wi-Fi-ին և ներբեռնեք թարմացումը կամ օգտվեք վճարովի կապից (կարող է գումար գանձվել)։}}</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" /> հավելվածը 1 էջ է տպում <ph name="PRINTER_NAME" /> տպիչում</translation>
@@ -471,7 +462,6 @@
 <translation id="2386292613071805067">Ընտրել էջի ամբողջ բովանդակությունը</translation>
 <translation id="2389423187722941333">Միացնել/անջատել Gemini-ը</translation>
 <translation id="2390347491606624519">Չհաջողվեց միանալ պրոքսի սերվերին։ Նորից մուտք գործեք։</translation>
-<translation id="2393136602862631930">Տեղադրեք <ph name="APP_NAME" /> հավելվածը ձեր Chromebook սարքում</translation>
 <translation id="2397416548179033562">Ցույց տալ Chrome-ի ընտրացանկը</translation>
 <translation id="240006516586367791">Մեդիա կարգավորումներ</translation>
 <translation id="2400664245143453337">Անհապաղ թարմացրեք օպերացիոն համակարգը</translation>
@@ -504,7 +494,6 @@
 <translation id="2473177541599297363">Լուծաչափի հաստատում</translation>
 <translation id="2475783092753560388">Զետեղել «<ph name="SEARCH_RESULT_TEXT" />» որոնման արդյունքը</translation>
 <translation id="2475982808118771221">Սխալ առաջացավ</translation>
-<translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" />-ն ապատեղադրելու համար ավարտեք Windows-ի հետ աշխատանքը։</translation>
 <translation id="2478076885740497414">Տեղադրել հավելվածը</translation>
 <translation id="2479148705183875116">Անցնել կարգավորումներ</translation>
 <translation id="2484513351006226581">Ստեղնաշարի դասավորությունը փոխելու համար սեղմեք <ph name="KEYBOARD_SHORTCUT" />։</translation>
@@ -544,7 +533,6 @@
 <translation id="2573588302192866788">Չհաջողվեց զուգակցել <ph name="NAME" /> սարքը</translation>
 <translation id="2575685495496069081">Բազմակի մուտքն անջատվել է</translation>
 <translation id="2579264398927991698">Ներկառուցված ծրագրի թարմացումներ</translation>
-<translation id="2586561813241011046">Չհաջողվեց տեղադրել <ph name="APP_NAME" /> հավելվածը։ Փորձեք նորից կամ դիմեք ձեր ադմինիստրատորին։ Սխալի կոդը՝ <ph name="ERROR_CODE" />։</translation>
 <translation id="2586657967955657006">Սեղմատախտակ</translation>
 <translation id="2596078834055697711">Ստանալ պատուհանի պատկեր</translation>
 <translation id="2598725286293895280">Չաջակցվող հավելվածներ աշխատասեղանում</translation>
@@ -566,7 +554,6 @@
 <translation id="2653659639078652383">Ուղարկել</translation>
 <translation id="2658778018866295321">Սեղմել և քաշել</translation>
 <translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> և <ph name="UNAVAILABLE_APPS_TWO" /> հավելվածները տեղադրված չեն այս սարքում։</translation>
-<translation id="2669241540496514785">Չհաջողվեց բացել <ph name="APP_NAME" /> հավելվածը</translation>
 <translation id="2670350619068134931">Պակասեցված շարժանկարներ</translation>
 <translation id="2672142220933875349">Սխալ CRX ֆայլ: Ապափաթեթավորումը ձախողվեց:</translation>
 <translation id="2673968385134502798">Խաղեր</translation>
@@ -839,14 +826,12 @@
 <translation id="3444385531800624797">Արդյունքները բեռնվում են</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> րոպե</translation>
 <translation id="3445925074670675829">USB-C սարք</translation>
-<translation id="3446274660183028131">Windows-ը տեղադրելու համար գործարկեք Parallels Desktop-ը։</translation>
 <translation id="3449393517661170867">Նոր ներդիրով պատուհան</translation>
 <translation id="3450157232394774192">Անգործուն վիճակի տևողությունը տոկոսներով</translation>
 <translation id="3450180775417907283">Տիրույթի (<ph name="MANAGER" />) կանոնների համաձայն՝ այժմ անհրաժեշտ է միանալ Wi-Fi-ին և ներբեռնել թարմացումը։</translation>
 <translation id="3454555520521576458">Փոփոխելի</translation>
 <translation id="3455468639467374593">Ձևանմուշ, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">1 սարք միացած է <ph name="DEVICE_NAME" />-ի թեժ կետին</translation>
-<translation id="3458451003193188688">Ցանցային սխալի պատճառով չհաջողվեց տեղադրել վիրտուալ մեքենան։ Փորձեք նորից կամ դիմեք ձեր ադմինիստրատորին։ Սխալի կոդը՝ <ph name="ERROR_CODE" />։</translation>
 <translation id="346243998268439747">Վերականգնել սկզբնական մասշտաբը</translation>
 <translation id="3465223694362104965">Ձեր վերջին մուտքից հետո այս սարքին մեկ այլ ստեղնաշար է միացվել: Նախքան այդ ստեղնաշարն օգտագործելը համոզվեք, որ այն անվտանգ է:</translation>
 <translation id="3465356146291925647">Կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
@@ -865,7 +850,6 @@
 <translation id="3513798432020909783">Հաշվի կառավարիչ՝ <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3516000762115478502">Սալիկապատված չափափոխման պատուհանը դեպի վեր</translation>
 <translation id="3517037892157925473">Առաջադրանքները վերջին անգամ թարմացվել են՝ <ph name="DATE" />, <ph name="TIME" />։</translation>
-<translation id="3522088408596898827">Սկավառակում տարածքը շատ քիչ է։ Տարածք ազատեք և նորից փորձեք։</translation>
 <translation id="352245152354538528">{0,plural, =1{Թարմացրեք սարքը 1 րոպեի ընթացքում}one{Թարմացրեք սարքը # րոպեի ընթացքում}other{Թարմացրեք սարքը # րոպեի ընթացքում}}</translation>
 <translation id="3522979239100719575">Հասանելի պրոֆիլների որոնում։ Դա կարող է մի քանի րոպե տևել։</translation>
 <translation id="3526440770046466733">Բացել հղումը նոր ներդիրում և մնալ ընթացիկ ներդիրում</translation>
@@ -1019,7 +1003,6 @@
 <translation id="3886872229787704059">Այսօր բացել եք</translation>
 <translation id="3892148308691398805">Պատճենել տեքստը</translation>
 <translation id="3893630138897523026">ChromeVox (ձայնային ուղեկցում)</translation>
-<translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3898464793473355515">Պտտել էկրանը 90 աստիճան ժամացույցի սլաքի ուղղությամբ</translation>
 <translation id="3900355044994618856">Ձեր աշխատաշրջանը կավարտվի <ph name="SESSION_TIME_REMAINING" />-ից</translation>
 <translation id="3901991538546252627">Միացում <ph name="NAME" />-ին</translation>
@@ -1117,7 +1100,6 @@
 <translation id="4181841719683918333">Լեզուներ</translation>
 <translation id="4185671786623711291">Ակտիվ պատուհանը տեղափոխել աջ աշխատասեղան</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> – <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> Որոնում</translation>
-<translation id="4187424053537113647"><ph name="APP_NAME" /> հավելվածը կարգավորվում է…</translation>
 <translation id="4189826113259617332">Պահել ընթացիկ պատուհանում բացված բոլոր էջերը որպես էջանիշներ՝ նոր պանակում</translation>
 <translation id="4190143678693626113">Խնայեք ձեր ժամանակը՝ արագ պատասխանելով հեռախոսի SMS-ներին ձեր Chromebook-ից</translation>
 <translation id="4190780880566297084">Բաց թողնել հեռախոսի վերջին լուսանկարների, մեդիաֆայլերի և հավելվածների դիտման կարգավորումը</translation>
@@ -1129,7 +1111,6 @@
 <translation id="4201033867194214117">«<ph name="FEATURE_NAME" />» գործառույթը հասանելի չէ։</translation>
 <translation id="4201051445878709314">Ցուցադրել նախորդ ամիսը</translation>
 <translation id="4209973997261364186">Wi-Fi-ը միացված է</translation>
-<translation id="4210048056321123003">Վիրտուալ մեքենայի ներբեռնում</translation>
 <translation id="4212246570487010370">Շարունակել դիտարկումը</translation>
 <translation id="4212472694152630271">Անցնել PIN կոդով նույնականացմանը</translation>
 <translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, փոխանջատիչ կոճակ, <ph name="STATE" /></translation>
@@ -1148,7 +1129,6 @@
 <translation id="4250229828105606438">Սքրինշոթ</translation>
 <translation id="425364040945105958">SIM քարտ չկա</translation>
 <translation id="425573743389990240">Մարտկոցի լիցքաթափման արագությունը վատտերով (բացասական արժեքը նշանակում է, որ մարտկոցը լիցքավորվում է)</translation>
-<translation id="4259388776256904261">Կարող է որոշ ժամանակ պահանջվել</translation>
 <translation id="4264977415328155183">, ծալված է</translation>
 <translation id="4265259722091164182">Անվանման Տառաշար</translation>
 <translation id="4269883910223712419">Այս սարքի ադմինիստրատորը կարող է՝</translation>
@@ -1235,7 +1215,6 @@
 Միացած է 1 սարք։</translation>
 <translation id="4477892968187500306">Այս սարքում կարող են լինել հավելվածներ, որոնք չեն ստուգվել Google-ի կողմից։</translation>
 <translation id="4479639480957787382">Ethernet</translation>
-<translation id="4479877282574735775">Վիրտուալ մեքենան կարգավորվում է: Սա կարող է մի քանի րոպե տևել։</translation>
 <translation id="4485506555414638855">Բաց թողնել հեռախոսի վերջին լուսանկարների, մեդիաֆայլերի, ծանուցումների և հավելվածների դիտման կարգավորումը</translation>
 <translation id="4491109536499578614">Պատկեր</translation>
 <translation id="4493468155686877504">Առաջարկվող չափը (<ph name="INSTALL_SIZE" />)</translation>
@@ -1384,7 +1363,6 @@
 <translation id="4917385247580444890">Ուժեղ</translation>
 <translation id="4918086044614829423">Ընդունել</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> հավելվածը ներկայումս օգտագործում է ձեր տեսախցիկը</translation>
-<translation id="492363500327720082"><ph name="APP_NAME" /> հավելվածը հեռացվում է…</translation>
 <translation id="492453977506755176">Տեսագրման ռեժիմի ստեղն</translation>
 <translation id="4925542575807923399">Այս հաշվի ադմինիստրատորը պահանջում է, որ այս հաշիվը լինի առաջին մուտքգործած հաշիվը բազմակի մուտքի աշխատաշրջանում:</translation>
 <translation id="493076006037866439">Փոքրացնել էկրանի մասշտաբը</translation>
@@ -1622,7 +1600,6 @@
 <translation id="5578188167649348993">հիշողություն</translation>
 <translation id="5580000943347215299">Դարան</translation>
 <translation id="5581972110672966454">Չհաջողվեց միացնել սարքը տիրույթին։ Փորձեք նորից կամ կապվեք սարքի սեփականատիրոջ կամ ադմինիստրատորի հետ։ Սխալի կոդը՝ <ph name="ERROR_CODE" />։</translation>
-<translation id="5585898376467608182">Սարքի հիշողությունը սպառվում է։ <ph name="APP_NAME" /> հավելվածն օգտագործելու համար անհրաժեշտ է նվազագույնը <ph name="MINIMUM_SPACE" /> տարածք։ Տարածք ազատելու համար սարքի հիշողությունից ֆայլեր ջնջեք։</translation>
 <translation id="5586388332127302891">Ամրացված խոշորացույցը միացված է։ Նորից սեղմեք <ph name="ACCELERATOR" />՝ այն անջատելու համար։</translation>
 <translation id="5587506661873751671">Ներբեռնում (<ph name="DOWNLOAD_PERCENT" />%)</translation>
 <translation id="5590609058453685222">Խոսափողի հիշեցումը միացված է։ Դուք ծանուցում կստանաք, եթե խոսեք ձայնն անջատված ժամանակ։</translation>
@@ -1689,7 +1666,6 @@
 <translation id="5767730327234918501">Ձեր ադմինիստրատորն անջատել է թեժ կետը։</translation>
 <translation id="5769373120130404283">Գաղտնիության էկրան</translation>
 <translation id="5770004650349728202">Միացնել «Ընտրեք և լսեք» գործառույթը</translation>
-<translation id="5772114492540073460"><ph name="PARALLELS_NAME" />-ը թույլ է տալիս Chromebook-ում աշխատեցնել Windows®-ի հավելվածները։ Տեղադրման համար անհրաժեշտ է առնվազն <ph name="MINIMUM_SPACE" /> ազատ տարածք։</translation>
 <translation id="5773950591113557721">Սա օգտագործման թույլտվություն է տրամադրում <ph name="APP_NAME" /> հավելվածին և բոլոր այն հավելվածներին ու կայքերին, որոնք ունեն խոսափողի և տեսախցիկի օգտագործման թույլտվություն</translation>
 <translation id="5774295353725270860">Բացել «Ֆայլեր» ծրագիրը</translation>
 <translation id="5775936059231769503">Միացնել/անջատել թեժ կետը։ Թեժ կետն անջատված է։</translation>
@@ -1737,8 +1713,6 @@
 <translation id="589817443623831496">Կետերի որոնում</translation>
 <translation id="5901494423252125310">Տպիչի դռնակը բաց է</translation>
 <translation id="5901630391730855834">Դեղին</translation>
-<translation id="5904614460720589786">Կազմաձևման խնդրի պատճառով չհաջողվեց կարգավորել <ph name="APP_NAME" /> հավելվածը։ Դիմեք ձեր ադմինիստրատորին։ Սխալի կոդը՝ <ph name="ERROR_CODE" />։</translation>
-<translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> սարքը միացած չէ ինտերնետին</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">Նոր ծանուցում, ընդհանուր՝ <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">Միացնել</translation>
@@ -1811,7 +1785,6 @@
         Համաձայն <ph name="DOMAIN" /> տիրույթի կանոնների՝ խելացի քարտը պետք է տեղադրված լինի։}other{Դուք # վայրկյանից ավտոմատ դուրս կգաք համակարգից։
         Համաձայն <ph name="DOMAIN" /> տիրույթի կանոնների՝ խելացի քարտը պետք է տեղադրված լինի։}}</translation>
 <translation id="6071576563962215370">Համակարգին չհաջողվեց կողպել սարքի հատկանիշները տեղադրման ժամանակ:</translation>
-<translation id="6072442788591997866"><ph name="APP_NAME" /> հավելվածը թույլատրված չէ այս սարքում։ Դիմեք ձեր ադմինիստրատորին։ Սխալի կոդը՝ <ph name="ERROR_CODE" />։</translation>
 <translation id="6073451960410192870">Դադարեցնել տեսագրումը</translation>
 <translation id="6074087755403037157">Բետա կապուղի</translation>
 <translation id="6075098173600599596">Փոխել գլխատառացումը</translation>
@@ -1918,7 +1891,6 @@
 <translation id="6380143666419481200">Ընդունել և շարունակել</translation>
 <translation id="6381109794406942707">Սարքն ապակողպելու համար մուտքագրեք ձեր PIN կոդը։</translation>
 <translation id="6381305031890976705">{0,plural, =1{Վերադարձեք սարքի օպերացիոն համակարգի նախորդ տարբերակին մեկ ժամվա ընթացքում}one{Վերադարձեք սարքի օպերացիոն համակարգի նախորդ տարբերակին # ժամվա ընթացքում}other{Վերադարձեք սարքի օպերացիոն համակարգի նախորդ տարբերակին # ժամվա ընթացքում}}</translation>
-<translation id="6385149369087767061">Միացեք համացանցին և նորից փորձեք</translation>
 <translation id="638716340450135524">Միացնել տեսախցիկի օգտագործման թույլտվությունը</translation>
 <translation id="6406458002328242616">Փոփոխել ժամաչափը։ <ph name="FOCUS_DURATION" />։</translation>
 <translation id="6406704438230478924">altgr</translation>
@@ -1936,7 +1908,6 @@
 <translation id="6426905245930183644">Ստեղծում…</translation>
 <translation id="6430225033895752525">Ցույց տալ Առանց շեղումների ռեժիմի կարգավորումները</translation>
 <translation id="6431865393913628856">Էկրանի տեսագրում</translation>
-<translation id="6434325376267409267"><ph name="APP_NAME" /> հավելվածն օգտագործելու համար թարմացրեք ձեր սարքը։</translation>
 <translation id="643593192654616063"><ph name="STORAGE_TOTAL_SIZE" /> ընդհանուր տարածքից օգտագործվում է <ph name="STORAGE_IN_USE_SIZE" />-ը</translation>
 <translation id="6445915701151710649">պրոցեսոր</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> միջոցառում</translation>
@@ -2214,7 +2185,6 @@
 <translation id="7258828758145722155">Երեկ փոփոխել եք</translation>
 <translation id="726276584504105859">Քաշեք այստեղ՝ էկրանի տրոհումն օգտագործելու համար</translation>
 <translation id="7264788308526527464">Նվազեցնել <ph name="FOCUS_DURATION_DELTA" /></translation>
-<translation id="7267044199012331848">Չհաջողվեց տեղադրել վիրտուալ մեքենան։ Փորձեք նորից կամ դիմեք ձեր ադմինիստրատորին։ Սխալի կոդը՝ <ph name="ERROR_CODE" />։</translation>
 <translation id="7267875682732693301">Փոքր-ինչ տեղաշարժեք մատը՝ մատնահետքի տարբեր հատվածներ ավելացնելու համար</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
 <translation id="7285232777292757180">Սքրինշոթներ անելու համար օգտագործեք էկրանի տեսագրման գործիքը արագ կարգավորումներում։</translation>
@@ -2263,9 +2233,7 @@
 <translation id="7406854842098869085">Սեղմեք և պահեք <ph name="MODIFIER_1" /> ստեղնը, այնուհետև հպեք <ph name="KEY" /> ստեղնին, մինչև անհրաժեշտ պատուհանը չբացվի, ապա բաց թողեք</translation>
 <translation id="740790383907119240">Հավելվածների դյուրանցումներ</translation>
 <translation id="7413851974711031813">Փակելու համար սեղմեք Escape</translation>
-<translation id="7415454883318062233">Կարգավորումն ավարտվեց</translation>
 <translation id="7416471219712049036">Պահել ընթացիկ էջը</translation>
-<translation id="7423807071740419372"><ph name="APP_NAME" /> հավելվածն աշխատեցնելու համար թույլտվություն է անհրաժեշտ</translation>
 <translation id="742594950370306541">Տեսախցիկն օգտագործվում է:</translation>
 <translation id="743058460480092004">Տեսախցիկն ու խոսափողը օգտագործվում են:</translation>
 <translation id="7433708794692032816">Տեղադրեք խելացի քարտը, որպեսզի շարունակեք օգտվել <ph name="DEVICE_TYPE" /> սարքից</translation>
@@ -2276,7 +2244,6 @@
 <translation id="7459485586006128091">Ներքին սխալի պատճառով թեժ կետն անջատվել է։ Փորձեք նորից միանալ մի քանի րոպեից։</translation>
 <translation id="7461924472993315131">Ամրացնել</translation>
 <translation id="746216226901520237">Smart Lock-ը միացնելու համար մուտքագրեք ձեր գաղտնաբառը։ Դրանից հետո ձեր հեռախոսով կարող եք ապակողպել <ph name="DEVICE_TYPE" /> սարքը։ Smart Lock-ը կարող եք անջատել կարգավորումներում։</translation>
-<translation id="7465635034594602553">Սխալ առաջացավ։ Սպասեք մի քանի րոպե և նորից գործարկեք <ph name="APP_NAME" /> հավելվածը։</translation>
 <translation id="7466449121337984263">Մատը դրեք տվիչին</translation>
 <translation id="7477793887173910789">Վերահսկեք երաժշտությունը, տեսանյութերը և այլն</translation>
 <translation id="7478485216301680444">Հնարավոր չէ տեղադրել kiosk հավելվածը:</translation>
@@ -2430,7 +2397,6 @@
 <translation id="7850320739366109486">Չանհանգստացնել</translation>
 <translation id="7851039877802112575">Անցնել ելնող և երկխոսության պատուհաններին</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7862292329216937261">Սարքը որպես հյուր օգտագործելու համար մուտք գործեք հաշիվ, այնուհետև էկրանի ներքևում ընտրեք «Մտնել հյուրի ռեժիմ»</translation>
 <translation id="7866482334467279021">միացված է</translation>
 <translation id="7870790288828963061">Kiosk հավելվածների ավելի նոր տարբերակներ չեն գտնվել: Թարմացում չի պահանջվում: Հեռացրեք USB հիշողությունը:</translation>
@@ -2767,7 +2733,6 @@
 <translation id="8815390544836110344">Սեղմեք սքրինշոթի դյուրանցումը՝ Ctrl + Shift + Համատեսքի ռեժիմի ստեղն</translation>
 <translation id="881757059229893486">Ներածման մեթոդների կարգավորումներ</translation>
 <translation id="8819728065740986820">Հարմարվող լիցքավորումը միացված է</translation>
-<translation id="8821268776955756404"><ph name="APP_NAME" /> հավելվածը պատրաստ է օգտագործման</translation>
 <translation id="882204272221080310">Թարմացնել ներկառուցված ծրագիրը լրացուցիչ անվտանգության համար</translation>
 <translation id="8822104519413696986">Սա սենսորային կառավարմամբ խաղ է</translation>
 <translation id="8825863694328519386">Սահեցրեք մատը ձախից՝ հետ գնալու համար</translation>
@@ -2801,7 +2766,6 @@
 <translation id="8905919797434099235">(Անանուն)</translation>
 <translation id="890616557918890486">Փոխել աղբյուրը</translation>
 <translation id="8909138438987180327">Մարտկոցի լիցքը՝ <ph name="PERCENTAGE" />%</translation>
-<translation id="8909298138148012791"><ph name="APP_NAME" /> հավելվածը հեռացվեց</translation>
 <translation id="8916866375277139011">Թաքցնել տարրերը <ph name="GROUP_NAME" /> խմբում</translation>
 <translation id="8921369299636221117">Կոնսիերժ ծառայությունը հասանելի չէ։</translation>
 <translation id="8921554779039049422">H+</translation>
@@ -2874,7 +2838,6 @@
 <translation id="9126339866969410112">Հետարկել վերջին գործողությունը</translation>
 <translation id="9126642911267312373">Bluetooth-ը հասանելի չէ</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{1 րոպեից}one{# րոպեից}other{# րոպեից}}</translation>
-<translation id="9128317794749765148">Կարգավորումը չհաջողվեց ավարտել</translation>
 <translation id="9129245940793250979">Հետևի կոճակ</translation>
 <translation id="9133335900048457298">Հնարավոր չէ տեսագրել պաշտպանված բովանդակությունը</translation>
 <translation id="9139720510312328767">Ջնջել հաջորդ տառը</translation>

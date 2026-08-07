@@ -2060,6 +2060,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2598710988533271874">Yangi Chrome chiqdi</translation>
 <translation id="2599048253926156421">Foydalanuvchi nomi vaqtincha xotiraga nusxalandi</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{1 ta xavfli kengaytma faolsizlantirildi.}other{{NUM_SITES} ta xavfli kengaytma faolsizlantirildi.}}</translation>
+<translation id="2603121359676416582">Shu sahifa uchun</translation>
 <translation id="2604129989323098489">Saytlar odatda hujjatlar yoki butun ekranli kontentni yonma-yon chiqarish kabi oynalarni oqilona ochishi va joylashtirishi uchun displeylaringiz haqida axborot soʻraydi</translation>
 <translation id="2604255671529671813">Tarmoqqa ulanishda xato</translation>
 <translation id="2604805099836652105"><ph name="ADDRESS_LABEL" /> manzili shaklga kiritildi.</translation>
@@ -2972,6 +2973,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3285329711156774325">Koʻnikmalarni qidirish</translation>
 <translation id="3285500645985761267">Aloqador saytlarga guruhdagi faoliyatni koʻrishga ruxsat berish</translation>
 <translation id="328571385944182268">Parollaringiz saqlansinmi?</translation>
+<translation id="3285969135399641759">Yangi malaka oʻrganing</translation>
 <translation id="3289668031376215426">Avtomatik bosh harf</translation>
 <translation id="3289856944988573801">Mavjud yangilanishlarni tekshirish uchun Ethernet yoki Wi-Fi orqali ulaning.</translation>
 <translation id="3290249595466894471">Sahifa, yuklanma, kengaytma harakati va tizim axboroti parchalarini ham yangi tahdidlarni aniqlashga yordam berishi uchun yuboradi</translation>
@@ -6377,6 +6379,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="5939719276406088041">Yorliq yaratilmadi</translation>
 <translation id="5939723110967488589">Asboblar panelida chiqadigan tugmalarni tanlang</translation>
 <translation id="594048410531370124">Notanish tugma. <ph name="RESPONSE" /> uchun istalgan tugmani bosing.</translation>
+<translation id="5940614040566393493">Maslahat oling</translation>
 <translation id="5941711191222866238">Yig‘ish</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{1 ta parol faqat shu qurilmaga saqlangan. Boshqa qurilmalarda foydalanish uchun uni Google hisobingizda saqlang.}other{{PASSWORD_COUNT} ta parol faqat bu qurilmaga saqlanadi. Boshqa qurilmalarda foydalanish uchun ularni Google hisobingizda saqlang.}}</translation>
 <translation id="594221546068848596">Sahifadan <ph name="VISUAL_SEARCH_PROVIDER" /> orqali qidirish</translation>
@@ -10682,7 +10685,6 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer, qurilmadagi operatsion ti
 <translation id="983192555821071799">Barcha varaqlarni yopish</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – Kamera va mikrofon yozib olmoqda</translation>
 <translation id="984705303330760860">Imlosi tekshiriladigan tillarni kiritish</translation>
-<translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Umumiy</translation>
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> mobil qurilmangizdan axborot olmoqchi</translation>
 <translation id="988320949174893488">Tasodifiy toʻxtalishlar bilan</translation>

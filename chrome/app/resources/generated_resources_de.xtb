@@ -1737,6 +1737,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2353168619378866466">Gruppe öffnen</translation>
 <translation id="2353297238722298836">Kamera- und Mikrofonnutzung zulässig</translation>
+<translation id="2353682139907904963">Neue Erweiterungen an die Symbolleiste anpinnen</translation>
 <translation id="2353910600995338714">Export erfolgreich</translation>
 <translation id="2355477091455974894">Energiesparoptionen</translation>
 <translation id="2355604387869345912">Instant Tethering einschalten</translation>
@@ -3277,6 +3278,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3525606571546393707">Versuche, die Datei von einem anderen Ordner aus zu öffnen, oder wähle „Im Basiseditor öffnen“ aus, um die Datei mit eingeschränkten Ansichts- und Bearbeitungsoptionen zu öffnen.</translation>
 <translation id="3526034519184079374">Daten der Website können nicht gelesen oder geändert werden</translation>
 <translation id="3527085408025491307">Ordner</translation>
+<translation id="3527473647192919613">Neues isoliertes Fenster</translation>
 <translation id="3528498924003805721">Verknüpfungsziele</translation>
 <translation id="3529851166527095708">&amp;Adressen und mehr</translation>
 <translation id="3530919970074558307">Fokus auf Gruppe aufheben</translation>
@@ -5782,6 +5784,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5463348003600590648">Vorschläge deaktivieren</translation>
 <translation id="5463625433003343978">Geräte werden gesucht…</translation>
 <translation id="5463856536939868464">Menü enthält ausgeblendete Lesezeichen</translation>
+<translation id="5465214111614807935">Neues &amp;isoliertes Fenster</translation>
 <translation id="5466374726908360271">Ei&amp;nfügen und nach "<ph name="SEARCH_TERMS" />" suchen</translation>
 <translation id="5466721587278161554">Deine Tabgruppen werden in der Lesezeichenleiste und im App‑Menü gespeichert und auf allen deinen angemeldeten Geräten aktualisiert, wenn die Synchronisierung aktiviert ist</translation>
 <translation id="5467207440419968613"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> blockiert</translation>
@@ -6911,6 +6914,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6379228010899751161">Bestätige deine Identität, um die Passwörter in deinem Konto <ph name="ACCOUNT_EMAIL" /> jederzeit zu verwenden</translation>
 <translation id="6379827283296619736">Nein, dieses Profil für die Arbeit verwenden</translation>
 <translation id="6380618366311601172">Gemini kann dann keine Aufgaben ausführen, für die eine Anmeldung bei <ph name="DOMAIN" /> erforderlich ist.</translation>
+<translation id="6383321659284013430">Neues &amp;isoliertes Fenster</translation>
 <translation id="6383382161803538830">Lesemodus auf dieser Seite nicht verfügbar</translation>
 <translation id="638418309848716977">Unterstützte Links</translation>
 <translation id="6384275966486438344">Sucheinstellungen in <ph name="SEARCH_HOST" /> ändern</translation>
@@ -10670,7 +10674,6 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="983192555821071799">Alle Tabs schließen</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – Kamera und Mikrofon zeichnen auf</translation>
 <translation id="984705303330760860">Sprachen für die Rechtschreibprüfung hinzufügen</translation>
-<translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Allgemein</translation>
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> möchte Informationen von deinem Mobilgerät abrufen</translation>
 <translation id="988320949174893488">Gelegentliches Stocken</translation>

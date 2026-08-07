@@ -592,6 +592,7 @@
 <translation id="2027465737841872819">Πλαστικό</translation>
 <translation id="2027707238798802149">Η κάρτα δεν είναι διαθέσιμη</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Ελέγξτε το διακομιστή μεσολάβησης και το τείχος προστασίας<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">Αυτή η παρουσία του Chrome εκτελείται με επισημάνσεις γραμμής εντολών που έχουν οριστεί με μη αυτόματο τρόπο. Λάβετε υπόψη ότι οι επισημάνσεις γραμμής εντολών ενδέχεται να αλλάξουν ανά πάσα στιγμή και δεν υποστηρίζονται.</translation>
 <translation id="2033900728810589426">Η συντόμευση δεν μπορεί να είναι ίδια με την προεπιλεγμένη λέξη-κλειδί του παρόχου αναζήτησης που ορίζεται από την πολιτική <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Αποθήκευση ούτως ή άλλως</translation>
 <translation id="2036514476578229158">Ζήτησες να επισκεφτείς αυτόν τον ιστότοπο. Οι γονείς σου μπορούν να απαντήσουν σε αυτό το αίτημα στο Family Link.</translation>
@@ -4567,7 +4568,6 @@
 <translation id="8932102934695377596">Το ρολόι σας πάει πίσω</translation>
 <translation id="893332455753468063">Προσθήκη ονόματος</translation>
 <translation id="8938242527120341116">Τα φίλτρα περιεχομένου της συσκευής σας απέκλεισαν τη διεύθυνση <ph name="BLOCKED_URL" /></translation>
-<translation id="8942355029279167844">Ο διαχειριστής επέτρεψε στην εφαρμογή <ph name="APP_NAME" /> να συλλέγει διαγνωστικά στοιχεία για τη βελτίωση της εμπειρίας του προϊόντος. Ανατρέξτε στη διεύθυνση <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> για περισσότερες πληροφορίες.</translation>
 <translation id="8943282376843390568">Λάιμ</translation>
 <translation id="8949410982325929394">Τόνος</translation>
 <translation id="8949493680961858543">A1x4</translation>

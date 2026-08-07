@@ -35,7 +35,6 @@
 <translation id="1088231044944504242">તમારી <ph name="CATEGORY" />, ફાઇલો, ઍપ અને બીજું ઘણું શોધો. તમારી ઍપમાં નૅવિગેટ કરવા માટે એરો કીનો ઉપયોગ કરો.</translation>
 <translation id="1093645050124056515">ctrl + alt + નીચેની ઍરો કી</translation>
 <translation id="1094756674036064790">શું બ્લૂટૂથ બંધ કરીએ?</translation>
-<translation id="109647177154844434">Parallelsનું ડેસ્કટૉપ અનઇન્સ્ટૉલ કરવાથી તમારી Windowsની છબી ડિલીટ થઈ જશે. આમાં તેની ઍપ્લિકેશનો, સેટિંગ અને ડેટાનો સમાવેશ થાય છે. શું તમે ખરેખર આગળ વધવા માગો છો?</translation>
 <translation id="1104084341931202936">ઍક્સેસિબિલિટી સેટિંગ બતાવો</translation>
 <translation id="1104621072296271835">તમારા ઉપકરણો એક સાથે હોય ત્યારે વધુ કાર્યક્ષમ હોય છે</translation>
 <translation id="1107300737351978027">રિપીટ થતા અંકો શામેલ હોઈ શકતા નથી</translation>
@@ -82,7 +81,6 @@
 <translation id="1210557957257435379">સ્ક્રીન રેકોર્ડિંગ</translation>
 <translation id="121097972571826261">એક શબ્દ આગળ જાઓ</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store ઍપ</translation>
-<translation id="1223484782328004593"><ph name="APP_NAME" />ને લાઇસન્સની જરૂર છે</translation>
 <translation id="1225748608451425081">એક જાણીતી સમસ્યાને કારણે તમારું Chromebook લૉક થઈ ગયું છે. અહીં જણાવેલા સમય પછી તમે સાઇન ઇન કરી શકશો: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">પસંદ કરવાનું બંધ કરો</translation>
 <translation id="1235458158152011030">જાણીતા નેટવર્ક્સ</translation>
@@ -93,7 +91,6 @@
 <translation id="1244265436519979884">હાલમાં Linuxને પહેલાંના જેવું કરવાની પ્રક્રિયા ચાલુ છે</translation>
 <translation id="1245476784081715330">ખૂબ સરસ કામ!</translation>
 <translation id="124678866338384709">વર્તમાન ટૅબ બંધ કરો</translation>
-<translation id="1246863218384630739"><ph name="VM_NAME" /> ઇન્સ્ટૉલ કરી શક્યાં નહીં: છબીના URL દ્વારા ભૂલનો કોડ <ph name="HTTP_ERROR" /> પરત આપવામાં આવ્યો છે. કૃપા કરીને તમારા વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
 <translation id="1246890715821376239">સપોર્ટ ન કરવામાં આવતી ઍપ</translation>
 <translation id="1247372569136754018">માઇક્રોફોન (આંતરિક)</translation>
 <translation id="1247519845643687288">તાજેતરની ઍપ</translation>
@@ -107,7 +104,6 @@
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" />ને પાવર સપ્લાય આપી રહ્યું છે</translation>
 <translation id="1275718070701477396">પસંદ કરેલ</translation>
 <translation id="1276975447697633661">ફાઇલ પસંદ કરો, પછી <ph name="KEY" /> દબાવો</translation>
-<translation id="1276994519141842946"><ph name="APP_NAME" />ને અનઇન્સ્ટૉલ કરી શક્યાં નહીં</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1283126956823499975">ડિવાઇસનું સેટઅપ કરવામાં કંઈક ખોટું થયું</translation>
 <translation id="1285992161347843613">ફોન શોધો</translation>
@@ -170,7 +166,6 @@
 <translation id="1421166164855200062">સૂચવેલું ગ્રૂપ</translation>
 <translation id="1426410128494586442">હા</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> બ્લૉક કરેલી છે</translation>
-<translation id="142765311413773645"><ph name="APP_NAME" />ની સમયસીમા સમાપ્ત થઈ ગઈ છે</translation>
 <translation id="1430915738399379752">પ્રિન્ટ</translation>
 <translation id="1435537621343861112">ડિક્ટેશન શરુ કરી શકતા નથી. તમારું માઇક બંધ છે.</translation>
 <translation id="1445031758921122223">ચહેરાથી નિયંત્રિત કરવાની સુવિધાની ફાઇલો ડાઉનલોડ કરી</translation>
@@ -193,12 +188,10 @@
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">ડિક્ટેશનની સુવિધા વડે, તમે તમારા વૉઇસનો ઉપયોગ કરીને ટાઇપ કરી શકો છો. તમે જ્યારે ટેક્સ્ટ ફીલ્ડમાં હો ત્યારે ડિક્ટેશન કી દબાવો અથવા સ્ક્રીનની સૌથી નીચે દેખાતું માઇક્રોફોનનું આઇકન પસંદ કરો. ડિક્ટેશનની તમારી ભાષા <ph name="LANGUAGE" /> પર સેટ કરવામાં આવી. સ્પીચ Googleને પ્રક્રિયા માટે મોકલવામાં આવે છે. તમે કોઈપણ સમયે સેટિંગ &gt; ઍક્સેસિબિલિટીમાં જઈને ડિક્ટેશનની ભાષા બદલી શકો છો.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> અને <ph name="SECOND_ITEM_TITLE" />ની ફેરબદલ કરવામાં આવી</translation>
-<translation id="1494429729245089920">વર્ચ્યુઅલ મશીન "<ph name="VM_NAME" />" અસ્તિત્વમાં છે, પણ એવું નથી લાગતું કે તે કોઈ માન્ય <ph name="APP_NAME" /> વર્ચ્યુઅલ મશીન છે. કૃપા કરીને તમારા વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
 <translation id="1500926532737552529">બધા સૂચનો બતાવો</translation>
 <translation id="1501946871587957338">ઑડિયો સૉર્સ સ્વિચ કરીએ?</translation>
 <translation id="1505542291183484463">windowના કદમાં વધઘટ કરીને નીચેની તરફ ટાઇલ કરી</translation>
 <translation id="1510238584712386396">લૉન્ચર</translation>
-<translation id="1515163294334130951">શરૂ કરો</translation>
 <translation id="1519090060276706457">વિન્ડો રિસ્ટોર કરવામાં અપેક્ષા કરતાં વધુ સમય લાગી રહ્યો છે</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003">બૅટરી <ph name="BATTERY_PERCENTAGE" />% | પૂર્ણ ચાર્જ થવા માટે <ph name="TIME" /> બાકી</translation>
@@ -222,7 +215,6 @@
 <translation id="1574691582236909946">ડાબી બાજુની કિનારીનું હૅન્ડલ પસંદ કર્યું, ખસેડવા માટે ઍરો કીનો ઉપયોગ કરો</translation>
 <translation id="1576623706766186887">મેગ્નિફાયર ચાલુ હોય, ત્યારે નાનું કરો</translation>
 <translation id="1578558981922970608">ફરજિયાત બંધ</translation>
-<translation id="1580772913177567930">તમારા વ્યવસ્થાપકનો સંપર્ક કરો</translation>
 <translation id="1582946770779745370">ગેમ ડૅશબોર્ડ ઉપલબ્ધ છે. કોઈપણ સમયે ખોલવા માટે, <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape, પછી <ph name="LAUNCHER_KEY_NAME" /> + g દબાવો</translation>
 <translation id="1586324912145647027">ડેસ્ક 1 થી 8 પર જાઓ</translation>
 <translation id="158838227375272121">Google Classroomની વેબસાઇટ</translation>
@@ -443,7 +435,6 @@
 <translation id="2322065293366551060"><ph name="CATEGORY" /> , શોધ પરિણામની કૅટેગરી</translation>
 <translation id="2322173485024759474">એક અક્ષર પાછળ જાઓ</translation>
 <translation id="2326112202058075478">વધુ ઇમોજી બતાવો</translation>
-<translation id="2328561734797404498"><ph name="APP_NAME" />નો ઉપયોગ કરવા માટે કૃપા કરીને તમારું ડિવાઇસ ફરી શરૂ કરો.</translation>
 <translation id="2335091074961603075">તમારી Chromebook કે બ્લૂટૂથ ડિવાઇસ દ્વારા બ્લૂટૂથના કોઈ જૂના વર્ઝનનો ઉપયોગ કરવામાં આવી રહ્યો છે. બહેતર ઓડિયો ક્વૉલિટી માટે, આંતરિક માઇક્રોફોનનો ઉપયોગ કરો.</translation>
 <translation id="2336214675195760012">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> માટે જરૂરી છે કે તમે અપડેટ ડાઉનલોડ કરવા માટે આજે વાઇ-ફાઇ સાથે કનેક્ટ કરો. અથવા મીટર્ડ કનેક્શન પરથી ડાઉનલોડ કરો (શુલ્ક લાગુ થઈ શકે છે).}one{<ph name="MANAGER" /> માટે જરૂરી છે કે તમે સમયસીમા સમાપ્ત થાય તે પહેલાં વાઇ-ફાઇ સાથે કનેક્ટ કરો અને અપડેટ ડાઉનલોડ કરો. અથવા મીટર્ડ કનેક્શન પરથી ડાઉનલોડ કરો (શુલ્ક લાગુ થઈ શકે છે).}other{<ph name="MANAGER" /> માટે જરૂરી છે કે તમે સમયસીમા સમાપ્ત થાય તે પહેલાં વાઇ-ફાઇ સાથે કનેક્ટ કરો અને અપડેટ ડાઉનલોડ કરો. અથવા મીટર્ડ કનેક્શન પરથી ડાઉનલોડ કરો (શુલ્ક લાગુ થઈ શકે છે).}}</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" />, <ph name="PRINTER_NAME" /> પર 1 પેજ પ્રિન્ટ કરી રહી છે</translation>
@@ -471,7 +462,6 @@
 <translation id="2386292613071805067">પેજ પરનું બધું પસંદ કરો</translation>
 <translation id="2389423187722941333">Gemini ટૉગલ કરો</translation>
 <translation id="2390347491606624519">પ્રૉક્સીથી કનેક્ટ કરી શકાતું નથી, કૃપા કરીને ફરીથી સાઇન ઇન કરો</translation>
-<translation id="2393136602862631930">તમારી Chromebook પર <ph name="APP_NAME" /> સેટ અપ કરો</translation>
 <translation id="2397416548179033562">Chrome મેનૂ દર્શાવો</translation>
 <translation id="240006516586367791">મીડિયા નિયંત્રણો</translation>
 <translation id="2400664245143453337">તાત્કાલિક અપડેટ આવશ્યક છે</translation>
@@ -504,7 +494,6 @@
 <translation id="2473177541599297363">રિઝોલ્યુશન કન્ફર્મ કરો</translation>
 <translation id="2475783092753560388"><ph name="SEARCH_RESULT_TEXT" /> શામેલ કરો</translation>
 <translation id="2475982808118771221">કોઈ ભૂલ આવી છે</translation>
-<translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" />ને અનઇન્સ્ટૉલ કરવા માટે Windows શટ ડાઉન કરો.</translation>
 <translation id="2478076885740497414">ઍપ્લિકેશન ઇન્સ્ટોલ કરો</translation>
 <translation id="2479148705183875116">સેટિંગ પર જાઓ</translation>
 <translation id="2484513351006226581">કીબોર્ડ લેઆઉટ સ્વિચ કરવા માટે <ph name="KEYBOARD_SHORTCUT" />ને દબાવો.</translation>
@@ -544,7 +533,6 @@
 <translation id="2573588302192866788"><ph name="NAME" /> કનેક્ટ કરી શકાયું નથી</translation>
 <translation id="2575685495496069081">એકથી વધુ સાઇન ઇનને બંધ કરવામાં આવેલ છે</translation>
 <translation id="2579264398927991698">ફર્મવેયરની અપડેટ</translation>
-<translation id="2586561813241011046"><ph name="APP_NAME" />ને ઇન્સ્ટૉલ કરી શક્યાં નહીં. કૃપા કરીને ફરી પ્રયાસ કરો અથવા તમારા વ્યવસ્થાપકનો સંપર્ક કરો. ભૂલનો કોડ: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">ક્લિપબોર્ડ</translation>
 <translation id="2596078834055697711">વિંડો સ્ક્રીનશૉટ લો</translation>
 <translation id="2598725286293895280">ડેસ્કમાં અનસપોર્ટેડ ઍપ</translation>
@@ -566,7 +554,6 @@
 <translation id="2653659639078652383">સબમિટ કરો</translation>
 <translation id="2658778018866295321">ક્લિક કરો અને ખેંચો</translation>
 <translation id="2665788051462227163">આ ડિવાઇસ પર <ph name="UNAVAILABLE_APPS_ONE" /> અને <ph name="UNAVAILABLE_APPS_TWO" /> ઉપલબ્ધ નથી.</translation>
-<translation id="2669241540496514785"><ph name="APP_NAME" /> ખોલી શક્યાં નહીં</translation>
 <translation id="2670350619068134931">ઘટાડેલા ઍનિમેશન</translation>
 <translation id="2672142220933875349">ખોટી crx ફાઇલ, અનપૅક કરવું નિષ્ફળ થયું.</translation>
 <translation id="2673968385134502798">ગેમ</translation>
@@ -839,14 +826,12 @@
 <translation id="3444385531800624797">પરિમાણો લોડ થઈ રહ્યાં છે</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> મિનિટ</translation>
 <translation id="3445925074670675829">USB-C ઉપકરણ</translation>
-<translation id="3446274660183028131">Windows ઇન્સ્ટૉલ કરવા માટે કૃપા કરીને Parallels ડેસ્કટૉપ લૉન્ચ કરો.</translation>
 <translation id="3449393517661170867">નવી ટૅબવાળી વિંડો</translation>
 <translation id="3450157232394774192">નિષ્ક્રિય સ્થિતિ અક્યુપન્સિ ટકા</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> માટે જરૂરી છે કે તમે હમણાં વાઇ-ફાઇથી કનેક્ટ થાઓ અને અપડેટ ડાઉનલોડ કરો.</translation>
 <translation id="3454555520521576458">કદમાં ફેરફાર કરી શકાય એવી ઍપ</translation>
 <translation id="3455468639467374593">નમૂનો, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">1 ડિવાઇસ <ph name="DEVICE_NAME" /> હૉટસ્પૉટ સાથે કનેક્ટેડ છે</translation>
-<translation id="3458451003193188688">નેટવર્ક ભૂલના કારણે વર્ચ્યુઅલ મશીન ઇન્સ્ટૉલ કરી શક્યાં નહીં. કૃપા કરીને ફરી પ્રયાસ કરો અથવા તમારા વ્યવસ્થાપકનો સંપર્ક કરો. ભૂલનો કોડ: <ph name="ERROR_CODE" />.</translation>
 <translation id="346243998268439747">ઝૂમ લેવલ રીસેટ કરો</translation>
 <translation id="3465223694362104965">તમે છેલ્લે સાઇન ઇન કર્યું તે પછી આ ડિવાઇસ સાથે બીજું કીબોર્ડ કનેક્ટ કરવામાં આવ્યું છે. તમે આ કીબોર્ડનો ઉપયોગ કરો તે પહેલાં ખાતરી કરો કે તમને તેના પર વિશ્વાસ છે.</translation>
 <translation id="3465356146291925647">તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે</translation>
@@ -865,7 +850,6 @@
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> દ્વારા મેનેજ કરાતું એકાઉન્ટ</translation>
 <translation id="3516000762115478502">windowના કદમાં વધઘટ કરીને ઉપર તરફ ટાઇલ કરી</translation>
 <translation id="3517037892157925473">છેલ્લે કાર્યો અપડેટ કર્યાનો સમય: <ph name="TIME" />, <ph name="DATE" />.</translation>
-<translation id="3522088408596898827">ડિસ્કમાં સ્પેસ અત્યંત ઓછી છે. ડિસ્કમાં સ્પેસ ખાલી કરો અને ફરીથી પ્રયાસ કરો.</translation>
 <translation id="352245152354538528">{0,plural, =1{1 મિનિટની અંદર ડિવાઇસ અપડેટ કરો}one{# મિનિટની અંદર ડિવાઇસ અપડેટ કરો}other{# મિનિટની અંદર ડિવાઇસ અપડેટ કરો}}</translation>
 <translation id="3522979239100719575">ઉપલબ્ધ પ્રોફાઇલ શોધી રહ્યાં છીએ. આમાં થોડો સમય લાગી શકે છે.</translation>
 <translation id="3526440770046466733">લિંકને નવા ટૅબમાં ખોલો અને વર્તમાન ટૅબમાં રહો</translation>
@@ -1019,7 +1003,6 @@
 <translation id="3886872229787704059">આજે ખોલેલી</translation>
 <translation id="3892148308691398805">ટેક્સ્ટ કૉપિ કરો</translation>
 <translation id="3893630138897523026">ChromeVox (બોલાયેલો પ્રતિસાદ)</translation>
-<translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3898464793473355515">સ્ક્રીનને ઘડિયાળની દિશામાં 90 ડિગ્રી ફેરવો</translation>
 <translation id="3900355044994618856">તમારું સત્ર <ph name="SESSION_TIME_REMAINING" />માં સમાપ્ત થશે</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> થી કનેક્ટ કરી રહ્યું છે</translation>
@@ -1117,7 +1100,6 @@
 <translation id="4181841719683918333">ભાષાઓ</translation>
 <translation id="4185671786623711291">સક્રિય વિન્ડોને જમણી બાજુએ ડેસ્ક પર ખસેડો</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> - <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> શોધ</translation>
-<translation id="4187424053537113647"><ph name="APP_NAME" />ને સેટઅપ કરી રહ્યાં છીએ...</translation>
 <translation id="4189826113259617332">વર્તમાન વિન્ડોમાંના બધા ખુલ્લા પેજને બુકમાર્ક તરીકે નવા ફોલ્ડરમાં સાચવો</translation>
 <translation id="4190143678693626113">તમારા ફોન પર આવેલા ટેક્સ્ટ મેસેજનો જવાબ તમારી Chromebook પરથી ઝડપથી આપીને સમય બચાવો</translation>
 <translation id="4190780880566297084">તમારા ફોનના તાજેતરના ફોટા, મીડિયા અને ઍપ જોવાની સુવિધાનું સેટઅપ કરવાની પ્રક્રિયા છોડી દો</translation>
@@ -1129,7 +1111,6 @@
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> ઉપલબ્ધ નથી.</translation>
 <translation id="4201051445878709314">પાછળનો મહિનો બતાવો</translation>
 <translation id="4209973997261364186">વાઇ-ફાઇ ચાલુ છે</translation>
-<translation id="4210048056321123003">વર્ચ્યુઅલ મશીન ડાઉનલોડ કરી રહ્યાં છીએ</translation>
 <translation id="4212246570487010370">બ્રાઉઝ કરવાનું ચાલુ રાખો</translation>
 <translation id="4212472694152630271">પિન પર સ્વિચ કરો</translation>
 <translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, ટૉગલ બટન, <ph name="STATE" /></translation>
@@ -1148,7 +1129,6 @@
 <translation id="4250229828105606438">સ્ક્રીનશૉટ</translation>
 <translation id="425364040945105958">કોઈ સિમ કાર્ડ નથી</translation>
 <translation id="425573743389990240">બેટરી ડિસ્ચાર્જ દર વોટ્સમાં (ઋણ મૂલ્યનો અર્થ છે બેટરી ચાર્જ થઈ રહી છે)</translation>
-<translation id="4259388776256904261">આમાં થોડો સમય લાગી શકે છે</translation>
 <translation id="4264977415328155183">, નાની કરેલી</translation>
 <translation id="4265259722091164182">શીર્ષકનો કેસ</translation>
 <translation id="4269883910223712419">આ ઉપકરણના વ્યવસ્થાપકની ક્ષમતા:</translation>
@@ -1235,7 +1215,6 @@
 1 ડિવાઇસ કનેક્ટ કર્યું.</translation>
 <translation id="4477892968187500306">આ ડિવાઇસમાં એવી ઍપ હોય શકે કે જેની Google દ્વારા ચકાસણી કરવામાં આવી છે.</translation>
 <translation id="4479639480957787382">ઇથરનેટ</translation>
-<translation id="4479877282574735775">વર્ચ્યુઅલ મશીનની ગોઠવણી કરી રહ્યાં છીએ. આમાં થોડો સમય લાગી શકે છે.</translation>
 <translation id="4485506555414638855">તમારા ફોનના તાજેતરના ફોટા, મીડિયા, નોટિફિકેશન અને ઍપ જોવાની સુવિધાનું સેટઅપ કરવાની પ્રક્રિયા છોડી દો</translation>
 <translation id="4491109536499578614">છબી</translation>
 <translation id="4493468155686877504">સુઝાવ આપેલું (<ph name="INSTALL_SIZE" />)</translation>
@@ -1384,7 +1363,6 @@
 <translation id="4917385247580444890">સશક્ત</translation>
 <translation id="4918086044614829423">સ્વીકારો</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> હાલમાં તમારા કૅમેરાનો ઉપયોગ કરી રહી છે</translation>
-<translation id="492363500327720082"><ph name="APP_NAME" />ને અનઇન્સ્ટૉલ કરી રહ્યાં છીએ...</translation>
 <translation id="492453977506755176">કૅપ્ચર મોડવાળી કી</translation>
 <translation id="4925542575807923399">આ એકાઉન્ટના એડમિન માટે જરૂરી છે કે આ એકાઉન્ટ એકથી વધુ સાઇન ઇન સત્રમાં પ્રથમ સાઇન ઇન કરેલ એકાઉન્ટ હોય.</translation>
 <translation id="493076006037866439">સ્ક્રીનને નાની કરો</translation>
@@ -1622,7 +1600,6 @@
 <translation id="5578188167649348993">મેમરી</translation>
 <translation id="5580000943347215299">લાઇબ્રેરી</translation>
 <translation id="5581972110672966454">ડોમેન સાથે ડિવાઇસને જોડી શકાતું નથી. કૃપા કરીને ફરીથી પ્રયાસ કરો અથવા તમારા ડિવાઇસના માલિક અથવા વ્યવસ્થાપકનો સંપર્ક કરો. ભૂલનો કોડ: <ph name="ERROR_CODE" />.</translation>
-<translation id="5585898376467608182">તમારા ડિવાઇસમાં સ્ટોરેજ સ્પેસ ઓછી છે. <ph name="APP_NAME" />નો ઉપયોગ કરવા માટે ઓછામાં ઓછી <ph name="MINIMUM_SPACE" /> સ્પેસ ખાલી હોવી જરૂરી છે. ખાલી સ્પેસ વધારવા માટે, ડિવાઇસમાંથી ફાઇલો ડિલીટ કરો.</translation>
 <translation id="5586388332127302891">ડૉક કરેલા મૅગ્નિફાયરની સુવિધા ચાલુ કરી. તેને ટૉગલ કરીને બંધ કરવા માટે, ફરીથી <ph name="ACCELERATOR" /> દબાવો.</translation>
 <translation id="5587506661873751671">ડાઉનલોડ થઈ રહ્યું છે: <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="5590609058453685222">મ્યૂટ સંકેત ચાલુ છે. મ્યૂટ કરેલું હોય ત્યારે જો તમે વાત કરો તો તમને સૂચિત કરવામાં આવશે.</translation>
@@ -1689,7 +1666,6 @@
 <translation id="5767730327234918501">તમારા ઍડમિનિસ્ટ્રેટરે હૉટસ્પૉટ બંધ કરી દીધું છે.</translation>
 <translation id="5769373120130404283">પ્રાઇવસી સ્ક્રીન</translation>
 <translation id="5770004650349728202">સાંભળવા માટે પસંદ કરો સુવિધા ચાલુ કરો</translation>
-<translation id="5772114492540073460"><ph name="PARALLELS_NAME" /> તમને તમારી Chromebook પર Windows® ઍપ ચલાવવાની મંજૂરી આપે છે. ઇન્સ્ટૉલેશન માટે ઓછામાં ઓછી <ph name="MINIMUM_SPACE" /> ખાલી સ્પેસની ભલામણ કરવામાં આવે છે.</translation>
 <translation id="5773950591113557721">આમ કરવાથી કૅમેરા અને માઇક્રોફોનની પરવાનગીઓ ધરાવતી <ph name="APP_NAME" /> અને બધી ઍપ તથા વેબસાઇટ માટે, ઍક્સેસની મંજૂરી આપવામાં આવે છે</translation>
 <translation id="5774295353725270860">Files ઍપ ખોલો</translation>
 <translation id="5775936059231769503">હૉટસ્પૉટ ટૉગલ કરો. હૉટસ્પૉટ બંધ છે.</translation>
@@ -1737,8 +1713,6 @@
 <translation id="589817443623831496">પૉઇન્ટ સ્કૅનિંગ</translation>
 <translation id="5901494423252125310">પ્રિન્ટરનું ઢાંકણ ખૂલ્લું છે</translation>
 <translation id="5901630391730855834">પીળો</translation>
-<translation id="5904614460720589786">ગોઠવણીમાં સમસ્યાને લીધે <ph name="APP_NAME" />ને સેટઅપ કરી શક્યાં નહીં. કૃપા કરીને તમારા વ્યવસ્થાપકનો સંપર્ક કરો. ભૂલનો કોડ: <ph name="ERROR_CODE" />.</translation>
-<translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> ઑફલાઇન છે</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">નવા નોટિફિકેશન, કુલ <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">ચાલુ</translation>
@@ -1811,7 +1785,6 @@
         <ph name="DOMAIN" /> માટે જરૂરી છે કે તમે તમારું સ્માર્ટ કાર્ડ દાખલ કરેલું રાખો.}other{તમે ઑટોમૅટિક રીતે # સેકન્ડમાં સાઇન આઉટ થશો.
         <ph name="DOMAIN" /> માટે જરૂરી છે કે તમે તમારું સ્માર્ટ કાર્ડ દાખલ કરેલું રાખો.}}</translation>
 <translation id="6071576563962215370">સિસ્ટમ ડિવાઇસ ઇન્સ્ટૉલેશન-સમય એટ્રિબ્યુશનનું લૉક સ્થાપિત કરવામાં નિષ્ફળ ગયું.</translation>
-<translation id="6072442788591997866"><ph name="APP_NAME" />ને આ ડિવાઇસ પર મંજૂરી નથી. તમારા વ્યવસ્થાપકનો સંપર્ક કરો. ભૂલનો કોડ: <ph name="ERROR_CODE" />.</translation>
 <translation id="6073451960410192870">રેકોર્ડિંગ બંધ કરો</translation>
 <translation id="6074087755403037157">બીટા ચૅનલ</translation>
 <translation id="6075098173600599596">કૅપિટલાઇઝેશન બદલો</translation>
@@ -1918,7 +1891,6 @@
 <translation id="6380143666419481200">સ્વીકારો અને ચાલુ રાખો</translation>
 <translation id="6381109794406942707">ડિવાઇસને અનલૉક કરવા માટે. તમારો પિન દાખલ કરો.</translation>
 <translation id="6381305031890976705">{0,plural, =1{એક કલાકની અંદર પાછલા વર્ઝન પર ડિવાઇસ અપડેટ કરો}one{# કલાકની અંદર પાછલા વર્ઝન પર ડિવાઇસ અપડેટ કરો}other{# કલાકની અંદર પાછલા વર્ઝન પર ડિવાઇસ અપડેટ કરો}}</translation>
-<translation id="6385149369087767061">ઇન્ટરનેટથી કનેક્ટ કરો અને ફરી પ્રયાસ કરો</translation>
 <translation id="638716340450135524">કૅમેરાનો ઍક્સેસ ચાલુ કરો</translation>
 <translation id="6406458002328242616">ટાઇમરમાં ફેરફાર કરો. <ph name="FOCUS_DURATION" />.</translation>
 <translation id="6406704438230478924">altgr</translation>
@@ -1936,7 +1908,6 @@
 <translation id="6426905245930183644">બનાવી રહ્યાં છીએ...</translation>
 <translation id="6430225033895752525">ફોકસના સેટિંગ બતાવો</translation>
 <translation id="6431865393913628856">સ્ક્રીન રેકૉર્ડ કરો</translation>
-<translation id="6434325376267409267">તમે <ph name="APP_NAME" />નો ઉપયોગ કરો તે પહેલાં તમારા ડિવાઇસને અપડેટ કરવાની જરૂર છે.</translation>
 <translation id="643593192654616063">કુલ <ph name="STORAGE_TOTAL_SIZE" />માંથી <ph name="STORAGE_IN_USE_SIZE" /> સ્ટોરેજનો ઉપયોગ થઈ રહ્યો છે</translation>
 <translation id="6445915701151710649">CPU</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> ઇવેન્ટ</translation>
@@ -2214,7 +2185,6 @@
 <translation id="7258828758145722155">ગઈકાલે ફેરફાર કરવામાં આવ્યો હતો</translation>
 <translation id="726276584504105859">વિભાજિત સ્ક્રીનનો ઉપયોગ કરવા માટે અહીં ખેંચો</translation>
 <translation id="7264788308526527464"><ph name="FOCUS_DURATION_DELTA" /> ઘટાડો</translation>
-<translation id="7267044199012331848">વર્ચ્યુઅલ મશીન ઇન્સ્ટૉલ કરી શક્યાં નહીં. કૃપા કરીને ફરી પ્રયાસ કરો અથવા તમારા વ્યવસ્થાપકનો સંપર્ક કરો. ભૂલનો કોડ: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">તમારી ફિંગરપ્રિન્ટના વિવિધ ભાગ ઉમેરવા માટે તમારી આંગળી ઉપાડતા રહો</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
 <translation id="7285232777292757180">સ્ક્રીનશૉટ લેવા માટે, ઝડપી સેટિંગમાં જઈને સ્ક્રીન કૅપ્ચરનો ઉપયોગ કરો</translation>
@@ -2263,9 +2233,7 @@
 <translation id="7406854842098869085"><ph name="MODIFIER_1" />ને દબાવી રાખો, તમે જે વિંડોને ખોલવા માગો છો તે ખુલી જાય ત્યાં સુધી <ph name="KEY" />ને ટૅપ કરો, પછી રિલીઝ કરો</translation>
 <translation id="740790383907119240">ઍપ શૉર્ટકટ</translation>
 <translation id="7413851974711031813">બંધ કરવા માટે Escape કી દબાવો</translation>
-<translation id="7415454883318062233">સેટઅપ પૂર્ણ થયું</translation>
 <translation id="7416471219712049036">વર્તમાન પેજ સાચવો</translation>
-<translation id="7423807071740419372"><ph name="APP_NAME" />ને ચલાવવા માટે પરવાનગીની જરૂર છે</translation>
 <translation id="742594950370306541">કૅમેરા ઉપયોગમાં છે.</translation>
 <translation id="743058460480092004">કૅમેરા અને માઇક્રોફોન ઉપયોગમાં છે.</translation>
 <translation id="7433708794692032816">તમારા <ph name="DEVICE_TYPE" />નો ઉપયોગ ચાલુ રાખવા માટે સ્માર્ટ કાર્ડ દાખલ કરો</translation>
@@ -2276,7 +2244,6 @@
 <translation id="7459485586006128091">આંતરિક ભૂલને કારણે હૉટસ્પૉટની સુવિધા બંધ કરવામાં આવી છે. થોડા સમયમાં ફરીથી કનેક્ટ કરવાનો પ્રયાસ કરો.</translation>
 <translation id="7461924472993315131">પિન કરો</translation>
 <translation id="746216226901520237">આગલી વખતે, તમારો ફોન તમારા <ph name="DEVICE_TYPE" />ને અનલૉક કરશે. તમે સેટિંગમાં Smart Lock બંધ કરી શકો છો.</translation>
-<translation id="7465635034594602553">કંઈક ખોટું થયું. કૃપા કરીને થોડી વાર રાહ જુઓ અને <ph name="APP_NAME" /> ફરીથી ચલાવો.</translation>
 <translation id="7466449121337984263">કૃપા કરીને સેન્સરને સ્પર્શ કરો</translation>
 <translation id="7477793887173910789">તમારું મ્યુઝિક, વીડિયો અને બીજું ઘણું નિયંત્રિત કરો</translation>
 <translation id="7478485216301680444">કિઓસ્ક ઍપ્લિકેશન ઇન્સ્ટોલ કરી શકાઈ નથી.</translation>
@@ -2430,7 +2397,6 @@
 <translation id="7850320739366109486">ખલેલ પાડશો નહીં</translation>
 <translation id="7851039877802112575">ફોકસને પૉપ-અપ અને સંવાદો પર ખસેડો</translation>
 <translation id="7851768487828137624">કૅનેરી</translation>
-<translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7862292329216937261">અતિથિ તરીકે ડિવાઇસનો ઉપયોગ કરવા માટે, પહેલા તમારે સાઇન આઉટ કરવું જરૂરી છે અને ત્યાર પછી સ્ક્રીનની સૌથી નીચે દેખાતા 'અતિથિ તરીકે બ્રાઉઝ કરો' પસંદ કરો.</translation>
 <translation id="7866482334467279021">ચાલુ</translation>
 <translation id="7870790288828963061">નવા વર્ઝન સાથેની કોઈ કિઓસ્ક ઍપ્લિકેશન મળી નથી. અપડેટ કરવા માટે કંઈ નથી. કૃપા કરીને USB સ્ટીક દૂર કરો.</translation>
@@ -2767,7 +2733,6 @@
 <translation id="8815390544836110344">સ્ક્રીનશૉટનો શૉર્ટકટ, Ctrl વત્તા shift વત્તા ઓવરવ્યૂ મોડ કીને દબાવો</translation>
 <translation id="881757059229893486">ઇનપુટ પદ્ધતિના સેટિંગ</translation>
 <translation id="8819728065740986820">અડૅપ્ટિવ ચાર્જિંગ ચાલુ છે</translation>
-<translation id="8821268776955756404"><ph name="APP_NAME" /> ઉપયોગ કરવા માટે તૈયાર છે.</translation>
 <translation id="882204272221080310">વધારાની સુરક્ષા માટે ફર્મવેયર અપડેટ કરો.</translation>
 <translation id="8822104519413696986">આ ટચ ગેમ છે</translation>
 <translation id="8825863694328519386">પાછળ જવા ડાબેથી સ્વાઇપ કરો</translation>
@@ -2801,7 +2766,6 @@
 <translation id="8905919797434099235">(કોઈ શીર્ષક નથી)</translation>
 <translation id="890616557918890486">સ્રોત બદલો</translation>
 <translation id="8909138438987180327">બૅટરી <ph name="PERCENTAGE" /> ટકા પર છે.</translation>
-<translation id="8909298138148012791"><ph name="APP_NAME" />ને અનઇન્સ્ટૉલ કરવામાં આવી છે</translation>
 <translation id="8916866375277139011"><ph name="GROUP_NAME" />માંની આઇટમ છુપાવો</translation>
 <translation id="8921369299636221117">Concierge સેવા ઉપલબ્ધ નથી.</translation>
 <translation id="8921554779039049422">H+</translation>
@@ -2874,7 +2838,6 @@
 <translation id="9126339866969410112">ક્રિયામાં કરેલો છેલ્લો ફેરફાર રદ કરો</translation>
 <translation id="9126642911267312373">બ્લૂટૂથ ઉપલબ્ધ નથી</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{1 મિનિટમાં}one{# મિનિટમાં}other{# મિનિટમાં}}</translation>
-<translation id="9128317794749765148">સેટઅપ પૂર્ણ ન થઈ શક્યું</translation>
 <translation id="9129245940793250979">પાછળનું બટન</translation>
 <translation id="9133335900048457298">સંરક્ષિત કન્ટેન્ટ રેકોર્ડ કરી શકાતું નથી</translation>
 <translation id="9139720510312328767">આગલો અક્ષર ડિલીટ કરો</translation>

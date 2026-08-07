@@ -297,6 +297,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="2233735624724508540">Pasirinkite laikotarpį, tada palieskite „Ištrinti duomenis“</translation>
 <translation id="2234031676056123135">Tinkinkite sparčiuosius klavišus</translation>
 <translation id="2234827758954819389">Privatumo vadovas</translation>
+<translation id="2236949375853147973">Mano veikla</translation>
 <translation id="2238038374973843156">Perkelti grupę į kitą langą</translation>
 <translation id="2247789808226901522">Kortelės galiojimo laikas baigėsi</translation>
 <translation id="2251809247798634662">Naujas inkognito langas</translation>
@@ -574,6 +575,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="3385749568468586663">„Gemini“ nepasiekiamas inkognito režimu</translation>
 <translation id="3387650086002190359">Nepavyko atsisiųsti „<ph name="FILE_NAME" />“ dėl failų sistemos klaidų.</translation>
 <translation id="3391311825344469964">Langus galite tvarkyti „Chrome“ langų tvarkytuvėje</translation>
+<translation id="3410151451624226773">Tvarkyti „Google“ slaptažodžių tvarkyklėje</translation>
 <translation id="3417835166382867856">Ieškoti skirtukų</translation>
 <translation id="3430670036890315772">Išjungus profilio užraktą bus pašalinta išsaugota informacija</translation>
 <translation id="3435575784518354875">Jei norite išsaugoti prieigą prie slaptažodžių, juos eksportuokite dabar, atnaujinkite „Google Play“ paslaugas ir tada importuokite juos atgal į „Google“ slaptažodžių tvarkyklę. <ph name="BEGIN_LINK" />Žr. išsamias instrukcijas<ph name="END_LINK" />.</translation>
@@ -942,6 +944,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="4877678010818027629">Įjungti inkognito režimą</translation>
 <translation id="4878404682131129617">Nepavyko užmegzti tunelinio ryšio per tarpinį serverį</translation>
 <translation id="4880127995492972015">Versti…</translation>
+<translation id="4880827082731008257">Ieškoti istorijoje</translation>
 <translation id="4881695831933465202">Atidaryti</translation>
 <translation id="488187801263602086">Failo pervardijimas</translation>
 <translation id="4885273946141277891">Nepalaikomas „Chrome“ atvejų skaičius.</translation>
@@ -991,6 +994,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="509429900233858213">Įvyko klaida.</translation>
 <translation id="5096775069898886423">Jei svetainė nepalaiko saugių ryšių, esate įspėjami prieš apsilankydami svetainėje</translation>
 <translation id="510275257476243843">Liko 1 val.</translation>
+<translation id="5105442806410269908">Tvarkykite kitus „Google“ duomenis</translation>
 <translation id="5114895953710637392">Programos filtro lapas uždarytas.</translation>
 <translation id="5115811374190515607">į <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Galite naudoti „Chrome“ bet kada palietę nuorodas pranešimuose, dokumentuose ir kitose programose</translation>
@@ -1041,6 +1045,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="5316947901395241499">Administratorius išjungė slaptažodžių išsaugojimo funkciją</translation>
 <translation id="5317780077021120954">Išsaugoti</translation>
 <translation id="5319359161174645648">„Google“ rekomenduoja „Chrome“</translation>
+<translation id="5323501626199324454">Tvarkykite savo „Google“ paskyroje</translation>
 <translation id="5326246328175179736">Negalite prisijungti naudodami šią paskyrą</translation>
 <translation id="5327248766486351172">Pavadinimas</translation>
 <translation id="5328542107300944283">Naudokite su <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1325,6 +1330,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6461962085415701688">Nepavyksta atidaryti failo</translation>
 <translation id="6464977750820128603">Galite peržiūrėti svetaines, kuriose lankotės naudodami „Chrome“, ir nustatyti jų laikmačius.\n\n„Google“ gauna informaciją apie svetaines, kurių laikmačius nustatote, ir apie apsilankymų jose trukmę. Ši informacija naudojama norint patobulinti Skaitmeninės gerovės funkcijas.</translation>
 <translation id="6468703991511753953">Adreso juosta šiuo metu yra apačioje</translation>
+<translation id="6469702164109431067">Slaptažodžiai ir „passkey“</translation>
 <translation id="6470181189905173055">Čia bus rodomi puslapiai, kuriuos atidarėte „Chrome“ naudodami „<ph name="APP_LABEL" />“.</translation>
 <translation id="6473086018775716761">Bendrinimo parinkčių sąrašas atidarytas iki pusės ekrano aukščio.</translation>
 <translation id="6475951671322991020">Atsisiųsti vaizdo įrašą</translation>

@@ -297,6 +297,7 @@ Ngumuntu onomushwana wakho wokungena kuphela ongafunda idatha yakho ebetheliwe. 
 <translation id="2233735624724508540">Khetha isikhathi bese uthepha okuthi Sula idatha</translation>
 <translation id="2234031676056123135">Qamba izinqamuleli zakho</translation>
 <translation id="2234827758954819389">Umhlahlandlela Wobumfihlo</translation>
+<translation id="2236949375853147973">Umsebenzi Wami</translation>
 <translation id="2238038374973843156">Hambisa iqembu kwelinye iwindi</translation>
 <translation id="2247789808226901522">Ikhadi liphelelwe yisikhathi</translation>
 <translation id="2251809247798634662">Iwindi le-incognito elisha</translation>
@@ -574,6 +575,7 @@ Ngumuntu onomushwana wakho wokungena kuphela ongafunda idatha yakho ebetheliwe. 
 <translation id="3385749568468586663">IGemini ayitholakali kumodi ye-Incognito</translation>
 <translation id="3387650086002190359">Ukulandwa kwe-<ph name="FILE_NAME" /> kuhlulekile ngenxa yamaphutha esistimu yefayela.</translation>
 <translation id="3391311825344469964">Ungalawula amawindi akho Kumphathi Wewindi weChrome</translation>
+<translation id="3410151451624226773">Lawula Kumphathi Wephasiwedi YeGoogle</translation>
 <translation id="3417835166382867856">Amathebhu wokusesha</translation>
 <translation id="3430670036890315772">Ukuvala ukukhiya kwephrofayela yakho kuzosusa ulwazi lwakho olulondoloziwe</translation>
 <translation id="3435575784518354875">Ukuze ugcine ukufinyelela kumaphasiwedi wakho, wakhiphe manje, buyekeza Amasevisi weGoogle Play, bese uyawangenisa futhi Kumphathi Wephasiwedi YeGoogle. <ph name="BEGIN_LINK" />Bona imiyalelo egcwele<ph name="END_LINK" />.</translation>
@@ -942,6 +944,7 @@ I-akhawunti yakho ye-Google ingaba namanye amafomu omlando okuphequlula afana no
 <translation id="4877678010818027629">Ngena kumodi ye-incognito</translation>
 <translation id="4878404682131129617">Ukusungula ithaneli ngeseva elibamba kuhlulekile</translation>
 <translation id="4880127995492972015">Humusha…</translation>
+<translation id="4880827082731008257">Umlando wosesho</translation>
 <translation id="4881695831933465202">Vula</translation>
 <translation id="488187801263602086">Qamba kabusha ifayela</translation>
 <translation id="4885273946141277891">Inombolo yezikhathi ezingasekelwe ye-Chrome.</translation>
@@ -991,6 +994,7 @@ I-akhawunti yakho ye-Google ingaba namanye amafomu omlando okuphequlula afana no
 <translation id="509429900233858213">Kuvele iphutha.</translation>
 <translation id="5096775069898886423">Emasayithini angakusekeli ukuxhuma okuvikelekile, xwayiswa ngaphambi kokuvakashela isayithi</translation>
 <translation id="510275257476243843">1 ihora elisele</translation>
+<translation id="5105442806410269908">Lawula enye idatha yeGoogle</translation>
 <translation id="5114895953710637392">Ishidi lesihlungi se-app livaliwe.</translation>
 <translation id="5115811374190515607">ku-<ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Ungasebenzisa iChrome noma nini uma uthepha amalinki emilayezo, amadokhumenti, namanye ama-app.</translation>
@@ -1041,6 +1045,7 @@ I-akhawunti yakho ye-Google ingaba namanye amafomu omlando okuphequlula afana no
 <translation id="5316947901395241499">Ukulondolozwa kwephasiwedi kuvalwe ngumlawuli wakho</translation>
 <translation id="5317780077021120954">Londoloza</translation>
 <translation id="5319359161174645648">I-Google incoma i-Chrome</translation>
+<translation id="5323501626199324454">Lawula kuGoogle Account yakho</translation>
 <translation id="5326246328175179736">Awukwazi ukungena ngemvume usebenzisa le akhawunti</translation>
 <translation id="5327248766486351172">Igama</translation>
 <translation id="5328542107300944283">Sebenzisa nge-<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1325,6 +1330,7 @@ Isibonelo, amanye amawebhusayithi angaphendula lesi sicelo ngokukubonisa izikhan
 <translation id="6461962085415701688">Ayikwazanga ukuvula ifayela</translation>
 <translation id="6464977750820128603">Ungabona amasayithi owavakashelayo ku-Chrome uphinde usethe izibali zesikhathi zawo.\n\nI-Google ithola ulwazi olumayelana namasayithi owasethela izibali sikhathi nokuthi uwavakashela izikhathi ezinde kangakanani. Lolu lwazi lusetshenziselwa ukwenza i-Digital Wellbeing ibe ngcono.</translation>
 <translation id="6468703991511753953">Okwamanje ibha yekheli ingezansi</translation>
+<translation id="6469702164109431067">Amaphasiwedi kanye nokhiye bokudlula</translation>
 <translation id="6470181189905173055">Amakhasi owavule ku-Chrome ngenkathi usebenzisa okuthi <ph name="APP_LABEL" /> azovela lapha.</translation>
 <translation id="6473086018775716761">Uhlu lwezinketho zokwabelana luvulwe ukuphakama okuhhafu.</translation>
 <translation id="6475951671322991020">Landa ividiyo</translation>

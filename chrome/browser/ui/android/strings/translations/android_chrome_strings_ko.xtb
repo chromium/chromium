@@ -297,6 +297,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2233735624724508540">기간을 선택한 후 데이터 삭제를 탭합니다.</translation>
 <translation id="2234031676056123135">단축키 맞춤설정</translation>
 <translation id="2234827758954819389">개인 정보 보호 가이드</translation>
+<translation id="2236949375853147973">내 활동</translation>
 <translation id="2238038374973843156">그룹을 다른 창으로 이동</translation>
 <translation id="2247789808226901522">카드가 만료됨</translation>
 <translation id="2251809247798634662">새 시크릿 창</translation>
@@ -574,6 +575,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3385749568468586663">Gemini는 시크릿 모드에서 사용할 수 없습니다.</translation>
 <translation id="3387650086002190359">파일 시스템에 오류가 발생하여 <ph name="FILE_NAME" />을(를) 다운로드할 수 없습니다.</translation>
 <translation id="3391311825344469964">Chrome의 창 관리자에서 창을 관리할 수 있습니다</translation>
+<translation id="3410151451624226773">Google 비밀번호 관리자에서 관리</translation>
 <translation id="3417835166382867856">탭 검색</translation>
 <translation id="3430670036890315772">프로필 잠금을 사용 중지하면 저장된 정보가 삭제됩니다.</translation>
 <translation id="3435575784518354875">비밀번호에 대한 액세스를 유지하려면 지금 비밀번호를 내보내고 Google Play 서비스를 업데이트한 후 Google 비밀번호 관리자로 다시 가져오세요. <ph name="BEGIN_LINK" />전체 안내 보기<ph name="END_LINK" /></translation>
@@ -942,6 +944,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4877678010818027629">시크릿 모드 시작</translation>
 <translation id="4878404682131129617">프록시 서버를 통한 터널 설정에 실패했습니다</translation>
 <translation id="4880127995492972015">번역...</translation>
+<translation id="4880827082731008257">검색 기록</translation>
 <translation id="4881695831933465202">열기</translation>
 <translation id="488187801263602086">파일 이름 변경</translation>
 <translation id="4885273946141277891">지원되지 않는 Chrome 인스턴스 수입니다.</translation>
@@ -991,6 +994,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="509429900233858213">오류가 발생했습니다.</translation>
 <translation id="5096775069898886423">보안 연결을 지원하지 않는 사이트의 경우, 사이트를 방문하기 전에 경고를 표시합니다.</translation>
 <translation id="510275257476243843">1시간 남음</translation>
+<translation id="5105442806410269908">기타 Google 데이터 관리</translation>
 <translation id="5114895953710637392">앱 필터 시트가 닫혔습니다.</translation>
 <translation id="5115811374190515607">이동 위치: <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">메시지, 문서, 다른 앱에서 링크를 탭하여 언제든지 Chrome을 사용할 수 있습니다.</translation>
@@ -1041,6 +1045,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5316947901395241499">관리자가 비밀번호 저장을 사용 중지했습니다</translation>
 <translation id="5317780077021120954">저장</translation>
 <translation id="5319359161174645648">Google에서 추천하는 Chrome</translation>
+<translation id="5323501626199324454">Google 계정에서 관리</translation>
 <translation id="5326246328175179736">이 계정으로는 로그인할 수 없습니다.</translation>
 <translation id="5327248766486351172">이름</translation>
 <translation id="5328542107300944283"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 계정으로 사용</translation>
@@ -1325,6 +1330,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6461962085415701688">파일을 열 수 없습니다</translation>
 <translation id="6464977750820128603">Chrome에서 내가 방문한 사이트를 보고 사이트에 타이머를 설정할 수 있습니다.\n\nGoogle에서는 타이머가 설정된 사이트와 사이트 방문 시간 정보를 수집합니다. 이 정보는 디지털 웰빙을 개선하는 데 사용됩니다.</translation>
 <translation id="6468703991511753953">현재 주소 표시줄이 하단에 있음</translation>
+<translation id="6469702164109431067">비밀번호 및 패스키</translation>
 <translation id="6470181189905173055"><ph name="APP_LABEL" /> 사용 중에 Chrome에서 연 페이지가 여기에 표시됩니다.</translation>
 <translation id="6473086018775716761">공유 옵션 목록이 절반 높이로 열렸습니다.</translation>
 <translation id="6475951671322991020">동영상 다운로드</translation>

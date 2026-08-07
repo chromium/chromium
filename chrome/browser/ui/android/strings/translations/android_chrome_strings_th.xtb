@@ -297,6 +297,7 @@
 <translation id="2233735624724508540">เลือกกรอบเวลา แล้วแตะลบข้อมูล</translation>
 <translation id="2234031676056123135">ปรับแต่งทางลัด</translation>
 <translation id="2234827758954819389">คู่มือความเป็นส่วนตัว</translation>
+<translation id="2236949375853147973">กิจกรรมของฉัน</translation>
 <translation id="2238038374973843156">ย้ายกลุ่มไปยังหน้าต่างอื่น</translation>
 <translation id="2247789808226901522">บัตรหมดอายุ</translation>
 <translation id="2251809247798634662">หน้าต่างใหม่ที่ไม่ระบุตัวตน</translation>
@@ -574,6 +575,7 @@
 <translation id="3385749568468586663">Gemini ไม่พร้อมใช้งานในโหมดไม่ระบุตัวตน</translation>
 <translation id="3387650086002190359">การดาวน์โหลด <ph name="FILE_NAME" /> ล้มเหลวเพราะเกิดข้อผิดพลาดกับระบบไฟล์</translation>
 <translation id="3391311825344469964">คุณจัดการหน้าต่างได้ในตัวจัดการหน้าต่างของ Chrome</translation>
+<translation id="3410151451624226773">จัดการในเครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="3417835166382867856">ค้นหาแท็บ</translation>
 <translation id="3430670036890315772">การปิดการล็อกโปรไฟล์จะนําข้อมูลที่บันทึกไว้ออก</translation>
 <translation id="3435575784518354875">หากต้องการเข้าถึงรหัสผ่านต่อไป ให้ส่งออกรหัสผ่านตอนนี้ อัปเดตบริการ Google Play แล้วนำเข้ากลับไปยังเครื่องมือจัดการรหัสผ่านบน Google <ph name="BEGIN_LINK" />ดูวิธีการโดยละเอียด<ph name="END_LINK" /></translation>
@@ -942,6 +944,7 @@
 <translation id="4877678010818027629">เข้าสู่โหมดไม่ระบุตัวตน</translation>
 <translation id="4878404682131129617">สร้างช่องทางผ่านพร็อกซีเซิร์ฟเวอร์ไม่ได้</translation>
 <translation id="4880127995492972015">แปลภาษา…</translation>
+<translation id="4880827082731008257">ประวัติการค้นหา</translation>
 <translation id="4881695831933465202">เปิด</translation>
 <translation id="488187801263602086">เปลี่ยนชื่อไฟล์</translation>
 <translation id="4885273946141277891">อินสแตนซ์ของ Chrome เกินจำนวนที่สนับสนุน</translation>
@@ -991,6 +994,7 @@
 <translation id="509429900233858213">มีข้อผิดพลาดเกิดขึ้น</translation>
 <translation id="5096775069898886423">สำหรับเว็บไซต์ที่ไม่รองรับการเชื่อมต่อที่ปลอดภัย โปรดรับคำเตือนก่อนเข้าชมเว็บไซต์</translation>
 <translation id="510275257476243843">เหลือ 1 ชั่วโมง</translation>
+<translation id="5105442806410269908">จัดการข้อมูลอื่นๆ ใน Google</translation>
 <translation id="5114895953710637392">ชีตตัวกรองแอปปิดอยู่</translation>
 <translation id="5115811374190515607">ไปยัง<ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">คุณจะใช้ Chrome ได้ทุกครั้งที่แตะลิงก์ในข้อความ เอกสาร และแอปอื่นๆ</translation>
@@ -1041,6 +1045,7 @@
 <translation id="5316947901395241499">ผู้ดูแลระบบของคุณปิดการบันทึกรหัสผ่าน</translation>
 <translation id="5317780077021120954">บันทึก</translation>
 <translation id="5319359161174645648">Google ขอแนะนำ Chrome</translation>
+<translation id="5323501626199324454">จัดการในบัญชี Google</translation>
 <translation id="5326246328175179736">คุณลงชื่อเข้าใช้ด้วยบัญชีนี้ไม่ได้</translation>
 <translation id="5327248766486351172">ชื่อ</translation>
 <translation id="5328542107300944283">ใช้ด้วย <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1325,6 +1330,7 @@
 <translation id="6461962085415701688">เปิดไฟล์ไม่ได้</translation>
 <translation id="6464977750820128603">คุณดูเว็บไซต์ที่เข้าชมใน Chrome และตั้งตัวจับเวลาการใช้เว็บไซต์เหล่านั้นได้\n\nGoogle จะได้รับข้อมูลเกี่ยวกับเว็บไซต์ที่คุณตั้งตัวจับเวลาไว้และระยะเวลาที่คุณเข้าชมเว็บไซต์เหล่านั้น เราจะใช้ข้อมูลนี้เพื่อปรับปรุงไลฟ์สไตล์ดิจิทัลให้ดียิ่งขึ้น</translation>
 <translation id="6468703991511753953">ปัจจุบันแถบที่อยู่อยู่ด้านล่าง</translation>
+<translation id="6469702164109431067">รหัสผ่านและพาสคีย์</translation>
 <translation id="6470181189905173055">หน้าเว็บที่คุณเปิดใน Chrome ระหว่างใช้ <ph name="APP_LABEL" /> จะปรากฏขึ้นที่นี่</translation>
 <translation id="6473086018775716761">เปิดรายการตัวเลือกการแชร์ที่ระดับความสูงครึ่งหนึ่งของหน้าจอ</translation>
 <translation id="6475951671322991020">ดาวน์โหลดวิดีโอ</translation>

@@ -297,6 +297,7 @@
 <translation id="2233735624724508540">የጊዜ ገደብ ይምረጡ እና ከዚያ ውሂብን ሰርዝ ላይ መታ ያድርጉ</translation>
 <translation id="2234031676056123135">የእርስዎን አቋራጮች ያብጁ</translation>
 <translation id="2234827758954819389">የግላዊነት መመሪያ</translation>
+<translation id="2236949375853147973">የእኔ እንቅስቃሴ</translation>
 <translation id="2238038374973843156">ስብስብን ወደ ሌላ መስኮት አንቀሳቅስ</translation>
 <translation id="2247789808226901522">ካርዱ ጊዜው አልፎበታል</translation>
 <translation id="2251809247798634662">አዲስ ማንነትን የማያሳውቅ መስኮት</translation>
@@ -574,6 +575,7 @@
 <translation id="3385749568468586663">Gemini ማንነት የማያሳውቅ ሁነታ ውስጥ አይገኝም</translation>
 <translation id="3387650086002190359">በስርዓተ-ፋይል ስህተቶች ምክንያት <ph name="FILE_NAME" />ን ማውረድ አልተሳካም።</translation>
 <translation id="3391311825344469964">መስኮቶችዎን በChrome የመስኮት አስተዳዳሪ ውስጥ ማስተዳደር ይችላሉ</translation>
+<translation id="3410151451624226773">Google የይለፍ ቃል አስተዳዳሪ ውስጥ ያስተዳድሩ</translation>
 <translation id="3417835166382867856">ትሮችን ይፈልጉ</translation>
 <translation id="3430670036890315772">የመገለጫ መቆለፊያዎን ማጥፋት የተቀመጠ መረጃዎን ያስወግዳል</translation>
 <translation id="3435575784518354875">የይለፍ ቃላትዎን መዳረሻ ለማቆየት አሁን ወደ ውጪ ይላኳቸው፣Google  Play አገልግሎቶችን ያዘምኑ ከዚያም ወደ Google የይለፍ ቃል አስተዳዳሪ ያስመጧቸው። <ph name="BEGIN_LINK" />ሙሉ መመሪያዎችን አሳይ<ph name="END_LINK" />።</translation>
@@ -942,6 +944,7 @@
 <translation id="4877678010818027629">ማንነት የማያሳውቅ ሁነታ ውስጥ ይግቡ</translation>
 <translation id="4878404682131129617">በተኪ አገልጋይ በኩል ዋሻን መመስረት አልተሳካም</translation>
 <translation id="4880127995492972015">ተርጉም…</translation>
+<translation id="4880827082731008257">የፍለጋ ታሪክ</translation>
 <translation id="4881695831933465202">ክፍት የሚሆንባቸው</translation>
 <translation id="488187801263602086">ፋይልን ዳግም ይሰይሙ</translation>
 <translation id="4885273946141277891">የማይደገፍ የChrome አብነቶች ብዛት።</translation>
@@ -991,6 +994,7 @@
 <translation id="509429900233858213">ስህተት አጋጥሟል።</translation>
 <translation id="5096775069898886423">የተመሰጠሩ ግንኙነቶችን ለማይደግፉ ጣቢያዎች ጣቢያውን ከመጎብኘትዎ በፊት ማስጠንቀቂያ ያግኙ</translation>
 <translation id="510275257476243843">1 ሰዓት ይቀራል</translation>
+<translation id="5105442806410269908">ሌላ የGoogle ውሂብን ያስተዳድሩ</translation>
 <translation id="5114895953710637392">የመተግበሪያ ማጣሪያ ሉህ ተዘግቷል።</translation>
 <translation id="5115811374190515607">ወደ <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">አገናኞችን በመልዕክቶች፣ በሰነዶች እና በሌሎች መተግበሪያዎች ውስጥ መታ በሚያደርጉበት በማንኛውም ጊዜ Chrome መጠቀም ይችላሉ</translation>
@@ -1041,6 +1045,7 @@
 <translation id="5316947901395241499">የይለፍ ቃል ማስቀመጥ በእርስዎ አስተዳዳሪ ጠፍቷል</translation>
 <translation id="5317780077021120954">አስቀምጥ</translation>
 <translation id="5319359161174645648">Google Chromeን ይመክራል</translation>
+<translation id="5323501626199324454">በእርስዎ የGoogle መለያ ውስጥ ያስተዳድሩ</translation>
 <translation id="5326246328175179736">ይህን መለያ በመጠቀም መግባት አይችሉም</translation>
 <translation id="5327248766486351172">ስም</translation>
 <translation id="5328542107300944283">በ<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> አማካኝነት ይጠቀሙ</translation>
@@ -1325,6 +1330,7 @@
 <translation id="6461962085415701688">ፋይሉን መክፈት አይቻልም</translation>
 <translation id="6464977750820128603">በChrome ውስጥ የሚጎበኟቸውን ጣቢያዎች መመልከት እና ለእነሱ ሰዓት ቆጣሪዎችን ማቀናበር ይችላሉ።\n\nGoogle ሰዓት ቆጣሪዎች ስለሚያቀናብሩላቸው ጣቢያዎች እና ለምን ያህል ርዝመት እንደሚጎበኟቸው መረጃ ያገኛል። ይህ መረጃ ዲጂታል ብቁ መሆን የተሻለ ለማድረግ ሥራ ላይ ይውላል።</translation>
 <translation id="6468703991511753953">አድራሻ አሞሌ በአሁኑ ጊዜ ከታች ይገኛል</translation>
+<translation id="6469702164109431067">የይለፍ ቃሎች እና የይለፍ ቁልፎች</translation>
 <translation id="6470181189905173055"><ph name="APP_LABEL" />ን እየተጠቀሙ ሳለ በChrome ውስጥ የከፈቷቸው ገፆች እዚህ ይታያሉ።</translation>
 <translation id="6473086018775716761">በግማሽ ቁመታቸው ላይ የተከፈቱ የማጋሪያ አማራጮች ዝርዝር።</translation>
 <translation id="6475951671322991020">ቪድዮ አውርድ</translation>

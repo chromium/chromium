@@ -4440,6 +4440,7 @@ Lisätietoja:
 <translation id="8708134712139312373">Saa pyytää lupaa yhdistää Bluetooth-laitteisiin</translation>
 <translation id="8710842507289500830">Fonttityyli</translation>
 <translation id="8712637175834984815">Ymmärretty</translation>
+<translation id="8715198179991802709">Chrome on juuri tehnyt ilmoituksen sivustosta, jolle yritit siirtyä. Auta meitä parantamaan näitä varoituksia vastaamalla minuutin mittaiseen kyselyyn.</translation>
 <translation id="8718314106902482036">Maksua ei suoritettu loppuun</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, hakuehdotus</translation>
 <translation id="8719528812645237045">Useita reikiä yläreunassa</translation>
@@ -4567,7 +4568,6 @@ Lisätietoja:
 <translation id="8932102934695377596">Kellosi jätättää</translation>
 <translation id="893332455753468063">Lisää nimi</translation>
 <translation id="8938242527120341116">Laitteen sisältösuodattimet estivät osoitteen <ph name="BLOCKED_URL" /></translation>
-<translation id="8942355029279167844"><ph name="APP_NAME" /> kerää järjestelmänvalvojan luvalla diagnostiikkadataa tuotteen käyttökokemuksen parantamiseksi. Katso lisätietoja osoitteesta <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Lime</translation>
 <translation id="8949410982325929394">Taajuus</translation>
 <translation id="8949493680961858543">A1 x 4</translation>

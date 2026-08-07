@@ -25,6 +25,7 @@
 <translation id="1039767473048604223"><ph name="DEVICE_NAME" /> <ph name="MODEL" /></translation>
 <translation id="1041998700806130099">Job sheet message</translation>
 <translation id="1044897699341250361">What this means</translation>
+<translation id="1049837829250301306">Content couldn't be pasted due to your organisation's policies</translation>
 <translation id="1050038467049342496">Close other apps</translation>
 <translation id="1050765387089990494">Draft a brief, polite response declining an invitation</translation>
 <translation id="1055184225775184556">&amp;Undo add</translation>
@@ -591,6 +592,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2027465737841872819">Plastic</translation>
 <translation id="2027707238798802149">Card not available</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Checking the proxy and the firewall<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">This instance of Chrome is running with command line flags manually set. Note that command line flags may change at any time and are not supported.</translation>
 <translation id="2033900728810589426">Shortcut can't be the same as the default search provider keyword defined by <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Save anyway</translation>
 <translation id="2036514476578229158">You asked to visit this site. Your parents can reply in Family Link.</translation>
@@ -2075,6 +2077,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4569155249847375786">Verified</translation>
 <translation id="4570008401337135432">Text alignment</translation>
 <translation id="457875822857220463">Delivery</translation>
+<translation id="4579084373690089522">Based on your organisation's policies, this content may contain sensitive information</translation>
 <translation id="4582595824823167856">Get a text message</translation>
 <translation id="4584094413232466841">Remove this info from Chrome autofill?</translation>
 <translation id="4586607503179159908">Payment method verified</translation>
@@ -2223,6 +2226,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4831993743164297314">Image setter paper</translation>
 <translation id="4832388034239846146">To share tab groups, update Chrome</translation>
 <translation id="483241715238664915">Turn on warnings</translation>
+<translation id="4833567658337394628">Pasting not recommended</translation>
 <translation id="4840250757394056958">View your Chrome history</translation>
 <translation id="4842365697443353018">Clear form to use pay later</translation>
 <translation id="484462545196658690">Auto</translation>
@@ -4561,7 +4565,6 @@ Additional details:
 <translation id="8932102934695377596">Your clock is behind</translation>
 <translation id="893332455753468063">Add name</translation>
 <translation id="8938242527120341116">Your device's content filters blocked <ph name="BLOCKED_URL" /></translation>
-<translation id="8942355029279167844">Your administrator has allowed <ph name="APP_NAME" /> to collect diagnostics data to improve the product experience. See <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> for more information.</translation>
 <translation id="8943282376843390568">Lime</translation>
 <translation id="8949410982325929394">Tone</translation>
 <translation id="8949493680961858543">A1 x 4</translation>

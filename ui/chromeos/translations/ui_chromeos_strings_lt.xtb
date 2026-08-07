@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Rašyklės dokumentas</translation>
 <translation id="1056775291175587022">Nėra tinklų</translation>
 <translation id="1056898198331236512">Įspėjimas</translation>
-<translation id="1060368002126861100">Jei norite atidaryti failus naudodami programą „<ph name="APP_NAME" />“, pirmiausia perkelkite juos į „Windows“ failų aplanką.</translation>
 <translation id="1062407476771304334">Pakeisti</translation>
 <translation id="1119383441774809183">Rodyti teksto pranešimus</translation>
 <translation id="1119447706177454957">Vidinė klaida</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">Norvegų k.</translation>
 <translation id="1408504635543854729">Naršykite įrenginio turinį programoje „Failai“. Turinį riboja administratorius, todėl jo negalima keisti.</translation>
 <translation id="1412476183660741812">Pasirašyta žiniatinklio grupė</translation>
-<translation id="1433628812591023318">Kad galėtumėte nuvilkti failus į „Parallels Desktop“, jie turi būti perkelti į „Windows“ failų aplanką.</translation>
-<translation id="1435838927755162558">Bendrinkite aplanką su „Parallels Desktop“</translation>
 <translation id="1439919885608649279">Žmogus su gėlėmis</translation>
 <translation id="1458457385801829801">Pašalinti <ph name="TARGET_NAME" /></translation>
 <translation id="1464781208867302907">Įrenginio nuostatas rasite skiltyje „Nustatymai“.</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">Prancūzų</translation>
 <translation id="2732288874651063549">Tvarkyti „<ph name="VM_NAME" />“ bendrinimą</translation>
 <translation id="2732839045120506979">Vietnamiečių k. VNI</translation>
-<translation id="2735623501230989521">Suteikite „Parallels Desktop“ leidimą pasiekti failus aplanke „<ph name="FOLDER_NAME" />“</translation>
 <translation id="2764206540577097904">Išnaudojote visą asmeninę „Google Workspace“ saugyklą.</translation>
 <translation id="2771816809568414714">Sūris</translation>
 <translation id="2783909841122647548">„Debian“ paketų diegimas nebepalaikomas. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">Geografija</translation>
 <translation id="3044404008258011032">Norėdami atkurti šiuos elementus, nuvilkite juos į naują aplanką, esantį už šiukšliadėžės ribų. Pradinis šių elementų aplankas „<ph name="PARENT_FOLDER_NAME" />“ buvo ištrintas.</translation>
 <translation id="3047197340186497470">Kinų k. „Dayi“</translation>
-<translation id="3067790092342515856">„Windows“ failai</translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">SOCKS priegloba</translation>
 <translation id="3091469289665833668">Rumunų</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">Jei reikia išsamios informacijos, susisiekite su administratoriumi.</translation>
 <translation id="3548125359243647069">Per daug kartų įvestas netinkamas PIN kodas.</translation>
 <translation id="3549797760399244642">Eiti į drive.google.com...</translation>
-<translation id="3553048479571901246">Jei norite atidaryti failus naudodami programą „<ph name="APP_NAME" />“, pirmiausia nukopijuokite juos į „Windows“ failų aplanką.</translation>
 <translation id="3556731189587832921">Anglų k. (JAV) su tarptautine AK klaviatūra</translation>
 <translation id="3557414470514932909">Failas „<ph name="FILE_NAME" />“ perkeliamas į šiukšliadėžę</translation>
 <translation id="3560848236447534728">Fonetinė armėnų</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">Rumunų k.</translation>
 <translation id="4508265954913339219">Nepavyko suaktyvinti</translation>
 <translation id="4509667233588080747">Anglų k. (JAV) su „Workman“ tarptautine klaviatūra</translation>
-<translation id="4527800702232535228">Šis aplankas bendrinamas su „Parallels Desktop“</translation>
 <translation id="4552678318981539154">Įsigyti daugiau atminties</translation>
 <translation id="4552759165874948005">Tinklas: <ph name="NETWORK_TYPE" />, signalo stipris <ph name="SIGNAL_STRENGTH" /> proc.</translation>
 <translation id="4559767610552730302">„Bokeh“ efektas</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">Onigiris</translation>
 <translation id="4784330909746505604">„PowerPoint“ pristatymas</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
-<translation id="4789067489790477934">Suteikite „Parallels Desktop“ leidimą pasiekti failus „Google“ diske. Pakeitimai bus sinchronizuoti su kitais jūsų įrenginiais.</translation>
 <translation id="4790766916287588578">Hindi k. su „InScript“ klaviatūra</translation>
 <translation id="4798645114741131062">„ChromeOS Flex“ įrenginys netrukus nebegaus naujinių. Apsvarstykite galimybę naujovinti į „ChromeOS“ įrenginį.</translation>
 <translation id="4801956050125744859">Palikti abu</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">Garsumo šliaužiklis</translation>
 <translation id="4881695831933465202">Atidaryti</translation>
 <translation id="4891091358278567964">Norėdami atkurti šiuos elementus, nuvilkite juos į naują aplanką, esantį už šiukšliadėžės ribų. Pradiniai šių elementų aplankai buvo ištrinti.</translation>
-<translation id="4900532980794411603">Bendrinti su „Parallels Desktop“</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, <ph name="SECURITY_STATUS" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> %, prisijungti</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="PHONE_NAME" />“, „<ph name="PROVIDER_NAME" />“, <ph name="CONNECTION_STATUS" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> %, telefono akumuliatorius <ph name="BATTERY_STATUS" /> %, išsami informacija</translation>
 <translation id="4935975195727477204">Gėlė</translation>
 <translation id="4943368462779413526">Futbolas</translation>
-<translation id="4961158930123534723">Vienas aplankas bendrinamas su „Parallels Desktop“</translation>
 <translation id="4965874878399872778">Tikrinami failai pagal organizacijos saugos politiką...</translation>
 <translation id="496656650103537022">„<ph name="FILE_NAME" />“ atkurtas</translation>
 <translation id="4969785127455456148">Albumas</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Operacija trunka ilgiau nei tikėtasi. Ar norite ją nutraukti?</translation>
 <translation id="5036141350290856713">Fonetinė rusų</translation>
-<translation id="5036159836254554629">Tvarkyti „Parallels Desktop“ bendrinimą</translation>
 <translation id="5038625366300922036">Žr. daugiau...</translation>
 <translation id="5044852990838351217">Armėnų k.</translation>
 <translation id="5045550434625856497">Neteisingas slaptažodis</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">Ištrinamas failas „<ph name="FILENAME" />“...</translation>
 <translation id="6581162200855843583">„Google“ disko nuoroda</translation>
 <translation id="6588648400954570689">Failų sinchronizavimo nustatymai</translation>
-<translation id="6594855146910089723">Šis aplankas bendrinamas su „Linux“ ir „Parallels Desktop“</translation>
 <translation id="6607272825297743757">Failo informacija</translation>
-<translation id="6609332149380188670">Su „Parallels Desktop“ bendrinamų aplankų: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="6629518321609546825">Įveskite bent keturis skaičius</translation>
 <translation id="6643016212128521049">Išvalyti</translation>
 <translation id="6650726141019353908">Rožinis drugelis</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">Oi, pervardijant įvyko klaida.</translation>
 <translation id="7458955835361612701">Nėra naujausių vaizdų</translation>
 <translation id="7469894403370665791">Automatiškai prisijungti prie šio tinklo</translation>
-<translation id="7486315294984620427">Kad galėtumėte nuvilkti failus į „Parallels Desktop“, jie turi būti nukopijuoti į „Windows“ failų aplanką.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malajalių k. fonetinė</translation>
 <translation id="7505167922889582512">Rodyti paslėptus failus</translation>

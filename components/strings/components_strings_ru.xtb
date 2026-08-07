@@ -592,6 +592,7 @@
 <translation id="2027465737841872819">Пластик</translation>
 <translation id="2027707238798802149">Карта недоступна</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Проверьте настройки прокси-сервера и брандмауэра<ph name="END_LINK" />.</translation>
+<translation id="2033550997390154638">Этот экземпляр Chrome запущен с параметрами командной строки, заданными вручную. Обратите внимание, что такие параметры не поддерживаются и могут измениться в любой момент.</translation>
 <translation id="2033900728810589426">Быстрая команда не должна совпадать с ключевым словом поисковой системы по умолчанию, заданным в правиле <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" />.</translation>
 <translation id="2034971124472263449">Все равно сохранить</translation>
 <translation id="2036514476578229158">Чтобы смотреть этот сайт, нужно получить разрешение родителей через Family Link.</translation>
@@ -4563,7 +4564,6 @@
 <translation id="8932102934695377596">Часы отстают</translation>
 <translation id="893332455753468063">Добавьте имя</translation>
 <translation id="8938242527120341116">Фильтры контента на устройстве заблокировали сайт <ph name="BLOCKED_URL" />.</translation>
-<translation id="8942355029279167844">Ваш администратор разрешил приложению "<ph name="APP_NAME" />" собирать диагностические данные для улучшения продукта. Более подробные сведения приведены на странице <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Лаймовый</translation>
 <translation id="8949410982325929394">Тон</translation>
 <translation id="8949493680961858543">A1x4</translation>

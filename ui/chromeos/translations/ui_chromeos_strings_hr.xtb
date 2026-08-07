@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Wordov dokument</translation>
 <translation id="1056775291175587022">Nema mreža</translation>
 <translation id="1056898198331236512">Upozorenje</translation>
-<translation id="1060368002126861100">Da biste otvarali datoteke pomoću aplikacije <ph name="APP_NAME" />, najprije ih premjestite u mapu datoteka u Windowsima.</translation>
 <translation id="1062407476771304334">Zamijeni</translation>
 <translation id="1119383441774809183">Prikaži tekstne poruke</translation>
 <translation id="1119447706177454957">Interna pogreška</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">norveški</translation>
 <translation id="1408504635543854729">Istražite sadržaj ovog uređaja u aplikaciji Datoteke. Administrator nameće ograničenja za sadržaj, pa se sadržaj ne može mijenjati.</translation>
 <translation id="1412476183660741812">Potpisani Web Bundle</translation>
-<translation id="1433628812591023318">Da biste ispustili datoteke na Parallels Desktop, morate ih premjestiti u Windows datoteke.</translation>
-<translation id="1435838927755162558">Dijeljenje mape s Parallels Desktopom</translation>
 <translation id="1439919885608649279">Osoba s cvijećem</translation>
 <translation id="1458457385801829801">Izbaci <ph name="TARGET_NAME" /></translation>
 <translation id="1464781208867302907">Za postavke uređaja otvorite Postavke.</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">francuska</translation>
 <translation id="2732288874651063549">Upravljanje dijeljenjem VM-a <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">vijetnamski VNI</translation>
-<translation id="2735623501230989521">Dajte Parallels Desktopu dopuštenje za pristup datotekama u mapi <ph name="FOLDER_NAME" /></translation>
 <translation id="2764206540577097904">Iskoristili ste svu svoju privatnu pohranu na Google Workspaceu.</translation>
 <translation id="2771816809568414714">Sir</translation>
 <translation id="2783909841122647548">Instalacije Debian paketa više nisu podržane. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">Geografija</translation>
 <translation id="3044404008258011032">Da biste vratili te stavke, povucite ih u novu mapu izvan otpada. Izbrisana je izvorna mapa <ph name="PARENT_FOLDER_NAME" /> za tu stavku.</translation>
 <translation id="3047197340186497470">kineski dayi</translation>
-<translation id="3067790092342515856">Windows datoteke</translation>
 <translation id="3083975830683400843">Chromebitovi</translation>
 <translation id="3085752524577180175">SOCKS host</translation>
 <translation id="3091469289665833668">rumunjska</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">Pojedinosti možete saznati od administratora.</translation>
 <translation id="3548125359243647069">Unijeli ste netočan PIN previše puta.</translation>
 <translation id="3549797760399244642">Idite na drive.google.com...</translation>
-<translation id="3553048479571901246">Da biste otvarali datoteke pomoću aplikacije <ph name="APP_NAME" />, najprije ih kopirajte u mapu datoteka u Windowsima.</translation>
 <translation id="3556731189587832921">engleski (US) s međunarodnom tipkovnicom za PC</translation>
 <translation id="3557414470514932909">Premještanje datoteke <ph name="FILE_NAME" /> u otpad</translation>
 <translation id="3560848236447534728">armenska (fonetska)</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">rumunjski</translation>
 <translation id="4508265954913339219">Aktivacija nije uspjela</translation>
 <translation id="4509667233588080747">engleski (SAD) s međunarodnom Workman tipkovnicom</translation>
-<translation id="4527800702232535228">Ova se mapa dijeli s Parallels Desktopom</translation>
 <translation id="4552678318981539154">Kupite još prostora za pohranu</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> mreža, jačina signala <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">Bokeh</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">PowerPointova prezentacija</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
-<translation id="4789067489790477934">Dajte Parallels Desktopu dopuštenje za pristup datotekama na Google disku. Promjene će se sinkronizirati na vaše ostale uređaje.</translation>
 <translation id="4790766916287588578">hindski s tipkovnicom InScript</translation>
 <translation id="4798645114741131062">Vaš ChromeOS Flex uređaj uskoro će prestati primati ažuriranja. Razmislite o nadogradnji na ChromeOS uređaj.</translation>
 <translation id="4801956050125744859">Zadrži oba</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">Klizač za glasnoću</translation>
 <translation id="4881695831933465202">Otvori</translation>
 <translation id="4891091358278567964">Da biste vratili te stavke, povucite ih u novu mapu izvan otpada. Izbrisane su izvorne mape za te stavke.</translation>
-<translation id="4900532980794411603">Dijeli s Parallels Desktopom</translation>
 <translation id="4902546322522096650">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, povežite</translation>
 <translation id="4906580650526544301">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, telefonska baterija <ph name="BATTERY_STATUS" />%, pojedinosti</translation>
 <translation id="4935975195727477204">Cvijet gazanije</translation>
 <translation id="4943368462779413526">Američki nogomet</translation>
-<translation id="4961158930123534723">S Parallels Desktopom dijeli se jedna mapa</translation>
 <translation id="4965874878399872778">Provjeravamo jesu li datoteke u skladu sa sigurnosnim pravilima vaše organizacije...</translation>
 <translation id="496656650103537022">Vraćeno: <ph name="FILE_NAME" /></translation>
 <translation id="4969785127455456148">Album</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Jedan proces traje dulje nego što je to uobičajeno. Želite li ga prekinuti?</translation>
 <translation id="5036141350290856713">ruska (fonetska)</translation>
-<translation id="5036159836254554629">Upravljajte dijeljenjem s Parallels Desktopom</translation>
 <translation id="5038625366300922036">Pogledajte više...</translation>
 <translation id="5044852990838351217">armenski</translation>
 <translation id="5045550434625856497">Pogrešna zaporka</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">Brisanje datoteke "<ph name="FILENAME" />"...</translation>
 <translation id="6581162200855843583">Veza na Google disk</translation>
 <translation id="6588648400954570689">Postavke sinkronizacije datoteke</translation>
-<translation id="6594855146910089723">Mapa se dijeli s Linuxom i Parallels Desktopom</translation>
 <translation id="6607272825297743757">Informacije o datoteci</translation>
-<translation id="6609332149380188670">S Parallels Desktopom dijeli se sljedeći broj mapa: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="6629518321609546825">Unesite najmanje četiri broja</translation>
 <translation id="6643016212128521049">Izbriši</translation>
 <translation id="6650726141019353908">Ružičasti leptir</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">O, ne! Došlo je do pogreške prilikom preimenovanja.</translation>
 <translation id="7458955835361612701">Nema nedavnih slika</translation>
 <translation id="7469894403370665791">Automatski se povežite s tom mrežom</translation>
-<translation id="7486315294984620427">Da biste ispustili datoteke na Parallels Desktop, morate ih kopirati u Windows datoteke.</translation>
 <translation id="749452993132003881">hiragana</translation>
 <translation id="7495372004724182530">malajalamski, fonetski</translation>
 <translation id="7505167922889582512">Prikaži skrivene datoteke</translation>

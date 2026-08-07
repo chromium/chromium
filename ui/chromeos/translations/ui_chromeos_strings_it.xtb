@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Documento di Word</translation>
 <translation id="1056775291175587022">Nessuna rete</translation>
 <translation id="1056898198331236512">Avviso</translation>
-<translation id="1060368002126861100">Per aprire file con l'app <ph name="APP_NAME" />, devi prima spostarli nella cartella File di Windows.</translation>
 <translation id="1062407476771304334">Sostituisci</translation>
 <translation id="1119383441774809183">Mostra messaggi</translation>
 <translation id="1119447706177454957">Errore interno</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">Norvegese</translation>
 <translation id="1408504635543854729">Esplora i contenuti del dispositivo nell'app File. I contenuti sono limitati da un amministratore e non possono essere modificati.</translation>
 <translation id="1412476183660741812">Signed Web Bundle</translation>
-<translation id="1433628812591023318">Per trascinare file in Parallels Desktop, devi prima spostarli in File di Windows.</translation>
-<translation id="1435838927755162558">Condividi cartella con Parallels Desktop</translation>
 <translation id="1439919885608649279">Persona con fiori</translation>
 <translation id="1458457385801829801">Espelli <ph name="TARGET_NAME" /></translation>
 <translation id="1464781208867302907">Per le preferenze del dispositivo, vai alle Impostazioni.</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">Francese</translation>
 <translation id="2732288874651063549">Gestisci la condivisione con <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">Vietnamita VNI</translation>
-<translation id="2735623501230989521">Concedi a Parallels Desktop l'autorizzazione per accedere ai file nella cartella <ph name="FOLDER_NAME" /></translation>
 <translation id="2764206540577097904">Hai esaurito il tuo spazio di archiviazione Google Workspace individuale.</translation>
 <translation id="2771816809568414714">Formaggio</translation>
 <translation id="2783909841122647548">Le installazioni di pacchetti Debian non sono più supportate. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">Regione</translation>
 <translation id="3044404008258011032">Per ripristinare questi elementi, trascinali in una nuova cartella fuori dal cestino. La cartella originale "<ph name="PARENT_FOLDER_NAME" />" di questi elementi è stata eliminata.</translation>
 <translation id="3047197340186497470">Cinese Dayi</translation>
-<translation id="3067790092342515856">File di Windows</translation>
 <translation id="3083975830683400843">I Chromebit</translation>
 <translation id="3085752524577180175">Host SOCKS</translation>
 <translation id="3091469289665833668">Rumeno</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">Per informazioni al riguardo, contatta il tuo amministratore.</translation>
 <translation id="3548125359243647069">Hai inserito troppe volte un PIN non corretto.</translation>
 <translation id="3549797760399244642">Vai all'indirizzo drive.google.com...</translation>
-<translation id="3553048479571901246">Per aprire file con l'app <ph name="APP_NAME" />, devi prima copiarli nella cartella File di Windows.</translation>
 <translation id="3556731189587832921">Inglese (USA) con tastiera PC internazionale</translation>
 <translation id="3557414470514932909">Spostamento del file <ph name="FILE_NAME" /> nel cestino in corso…</translation>
 <translation id="3560848236447534728">Armeno (fonetico)</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">Rumeno</translation>
 <translation id="4508265954913339219">Attivazione non riuscita</translation>
 <translation id="4509667233588080747">Inglese (USA) con tastiera Workman internazionale</translation>
-<translation id="4527800702232535228">Questa cartella è condivisa con Parallels Desktop</translation>
 <translation id="4552678318981539154">Acquista più spazio di archiviazione</translation>
 <translation id="4552759165874948005">Rete <ph name="NETWORK_TYPE" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">Bokeh</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">Presentazione PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> kB</translation>
-<translation id="4789067489790477934">Concedi a Parallels Desktop l'autorizzazione per accedere ai file nel tuo account Google Drive. Le modifiche verranno sincronizzate con i tuoi altri dispositivi.</translation>
 <translation id="4790766916287588578">Hindi con tastiera InScript</translation>
 <translation id="4798645114741131062">Il tuo dispositivo ChromeOS Flex smetterà di ricevere aggiornamenti a breve. Valuta la possibilità di fare l'upgrade a un dispositivo ChromeOS.</translation>
 <translation id="4801956050125744859">Conserva entrambe</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">Dispositivo volume</translation>
 <translation id="4881695831933465202">Apri</translation>
 <translation id="4891091358278567964">Per ripristinare questi elementi, trascinali in una nuova cartella fuori dal cestino. Le cartelle originali di questi elementi sono state eliminate.</translation>
-<translation id="4900532980794411603">Condividi con Parallels Desktop</translation>
 <translation id="4902546322522096650">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, connetti</translation>
 <translation id="4906580650526544301">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, batteria del telefono <ph name="BATTERY_STATUS" />%, dettagli</translation>
 <translation id="4935975195727477204">Gazania</translation>
 <translation id="4943368462779413526">Calcio</translation>
-<translation id="4961158930123534723">1 cartella condivisa con Parallels Desktop</translation>
 <translation id="4965874878399872778">Controllo della conformità dei file alle policy di sicurezza della tua organizzazione in corso…</translation>
 <translation id="496656650103537022">File <ph name="FILE_NAME" /> ripristinato</translation>
 <translation id="4969785127455456148">Album</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Un'operazione richiede più tempo del previsto. Vuoi interromperla?</translation>
 <translation id="5036141350290856713">Russo (fonetico)</translation>
-<translation id="5036159836254554629">Gestisci condivisione con Parallels Desktop</translation>
 <translation id="5038625366300922036">Visualizza altre...</translation>
 <translation id="5044852990838351217">Armeno</translation>
 <translation id="5045550434625856497">Password non corretta</translation>
@@ -735,9 +724,7 @@
 <translation id="656398493051028875">Eliminazione di "<ph name="FILENAME" />"...</translation>
 <translation id="6581162200855843583">Link Google Drive</translation>
 <translation id="6588648400954570689">Impostazioni di sincronizzazione dei file</translation>
-<translation id="6594855146910089723">Questa cartella è condivisa con Linux e Parallels Desktop</translation>
 <translation id="6607272825297743757">Info sul file</translation>
-<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> cartelle condivise con Parallels Desktop</translation>
 <translation id="6629518321609546825">Inserisci almeno 4 cifre</translation>
 <translation id="6643016212128521049">Cancella</translation>
 <translation id="6650726141019353908">Farfalla rosa</translation>
@@ -855,7 +842,6 @@
 <translation id="7436921188514130341">Uffa! Si è verificato un errore durante la ridenominazione.</translation>
 <translation id="7458955835361612701">Nessuna immagine recente</translation>
 <translation id="7469894403370665791">Collegati automaticamente a questa rete</translation>
-<translation id="7486315294984620427">Per trascinare file in Parallels Desktop, devi prima copiarli in File di Windows.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam fonetica</translation>
 <translation id="7505167922889582512">Mostra file nascosti</translation>

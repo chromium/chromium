@@ -297,6 +297,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2233735624724508540">Veldu tímabil og ýttu síðan á „Eyða gögnum“</translation>
 <translation id="2234031676056123135">Sérsníddu flýtileiðirnar þínar</translation>
 <translation id="2234827758954819389">Leiðbeiningar um persónuvernd</translation>
+<translation id="2236949375853147973">Mín virkni</translation>
 <translation id="2238038374973843156">Færa hóp í annan glugga</translation>
 <translation id="2247789808226901522">Kortið er útrunnið</translation>
 <translation id="2251809247798634662">Nýr huliðsgluggi</translation>
@@ -574,6 +575,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="3385749568468586663">Gemini er ekki í boði í huliðsstillingu</translation>
 <translation id="3387650086002190359">Niðurhal á <ph name="FILE_NAME" /> mistókst vegna villu í skráakerfi.</translation>
 <translation id="3391311825344469964">Þú getur stjórnað gluggunum þínum í gluggastjórnun Chrome</translation>
+<translation id="3410151451624226773">Stjórna í Google-aðgangsorðastjórnun</translation>
 <translation id="3417835166382867856">Leita í flipum</translation>
 <translation id="3430670036890315772">Ef slökkt er á prófíllásnum veða vistaðar upplýsingar fjarlægðar</translation>
 <translation id="3435575784518354875">Til að tryggja að þú hafir aðgang að aðgangsorðunum þínum skaltu flytja þau út núna, uppfæra þjónustu Google Play og flytja þau síðan aftur inn í Google-aðgangsorðastjórnun. <ph name="BEGIN_LINK" />Sjá ítarlegar leiðbeiningar<ph name="END_LINK" />.</translation>
@@ -942,6 +944,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="4877678010818027629">Kveikja á huliðsstillingu</translation>
 <translation id="4878404682131129617">Ekki tókst að koma á göngum um staðgengilsþjón</translation>
 <translation id="4880127995492972015">Þýða…</translation>
+<translation id="4880827082731008257">Leitarferill</translation>
 <translation id="4881695831933465202">Opna</translation>
 <translation id="488187801263602086">Endurnefna skrá</translation>
 <translation id="4885273946141277891">Óstuddur fjöldi Chrome tilvika.</translation>
@@ -991,6 +994,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="509429900233858213">Villa kom upp.</translation>
 <translation id="5096775069898886423">Fáðu viðvörun áður en þú opnar síðu sem styður ekki örugga tengingu</translation>
 <translation id="510275257476243843">Ein klst. eftir</translation>
+<translation id="5105442806410269908">Stjórna öðrum Google-gögnum</translation>
 <translation id="5114895953710637392">Síublað forrita er lokað.</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Þú getur notað Chrome til að opna tengla úr skilaboðum, skjölum og öðrum forritum hvenær sem er</translation>
@@ -1041,6 +1045,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="5316947901395241499">Stjórnandinn þinn hefur slökkt á vistun á aðgangsorðum</translation>
 <translation id="5317780077021120954">Vista</translation>
 <translation id="5319359161174645648">Google mælir með Chrome</translation>
+<translation id="5323501626199324454">Stjórna á Google-reikningnum þínum</translation>
 <translation id="5326246328175179736">Þú getur ekki skráð þig inn með þessum reikningi</translation>
 <translation id="5327248766486351172">Heiti</translation>
 <translation id="5328542107300944283">Notaðu þetta með <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1325,6 +1330,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6461962085415701688">Ekki hægt að opna skrá</translation>
 <translation id="6464977750820128603">Þú sérð vefsvæðin sem þú opnar í Chrome og velur teljara fyrir þau.\n\nGoogle fær upplýsingar um þau vefsvæði sem þú velur teljara fyrir og hversu lengi þú ert á þeim. Þessar upplýsingar eru notaðar til að bæta virkni stafrænnar vellíðunar.</translation>
 <translation id="6468703991511753953">Veffangastika er neðst eins og stendur</translation>
+<translation id="6469702164109431067">Aðgangsorð og aðgangslyklar</translation>
 <translation id="6470181189905173055">Síðurnar sem þú opnaðir í Chrome á meðan þú varst að nota <ph name="APP_LABEL" /> birtast hér.</translation>
 <translation id="6473086018775716761">Listi yfir deilingarkosti á hálfum skjánum.</translation>
 <translation id="6475951671322991020">Sækja myndskeið</translation>

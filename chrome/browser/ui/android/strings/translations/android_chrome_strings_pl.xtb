@@ -297,6 +297,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło wielowyrazow
 <translation id="2233735624724508540">Wybierz przedział czasu, a następnie kliknij Usuń dane</translation>
 <translation id="2234031676056123135">Dostosuj skróty</translation>
 <translation id="2234827758954819389">Przewodnik po prywatności</translation>
+<translation id="2236949375853147973">Moja aktywność</translation>
 <translation id="2238038374973843156">Przenieś grupę do innego okna</translation>
 <translation id="2247789808226901522">Karta utraciła ważność</translation>
 <translation id="2251809247798634662">Nowe okno incognito</translation>
@@ -574,6 +575,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło wielowyrazow
 <translation id="3385749568468586663">Gemini jest niedostępny w trybie incognito</translation>
 <translation id="3387650086002190359">Nie udało się pobrać pliku <ph name="FILE_NAME" /> z powodu błędów systemu plików.</translation>
 <translation id="3391311825344469964">Oknami możesz zarządzać w Menedżerze okien w Chrome</translation>
+<translation id="3410151451624226773">Zarządzaj w Menedżerze haseł Google</translation>
 <translation id="3417835166382867856">Wyszukaj karty</translation>
 <translation id="3430670036890315772">Jeśli wyłączysz blokadę profilu, zostaną usunięte zapisane informacje</translation>
 <translation id="3435575784518354875">Aby zachować dostęp do haseł, wyeksportuj je teraz, zaktualizuj Usługi Google Play, a potem zaimportuj je z powrotem do Menedżera haseł Google. <ph name="BEGIN_LINK" />Zobacz pełne instrukcje<ph name="END_LINK" /></translation>
@@ -942,6 +944,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="4877678010818027629">Włącz tryb incognito</translation>
 <translation id="4878404682131129617">Nie udało się utworzyć tunelu przez serwer proxy</translation>
 <translation id="4880127995492972015">Przetłumacz…</translation>
+<translation id="4880827082731008257">Historia wyszukiwania</translation>
 <translation id="4881695831933465202">Otwórz</translation>
 <translation id="488187801263602086">Zmień nazwę pliku</translation>
 <translation id="4885273946141277891">Nieobsługiwana liczba wystąpień Chrome.</translation>
@@ -991,6 +994,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="509429900233858213">Wystąpił błąd.</translation>
 <translation id="5096775069898886423">Wyświetlaj ostrzeżenia przed odwiedzeniem witryn, które nie obsługują bezpiecznych połączeń</translation>
 <translation id="510275257476243843">Pozostała godzina</translation>
+<translation id="5105442806410269908">Zarządzaj innymi danymi Google</translation>
 <translation id="5114895953710637392">Arkusz filtra aplikacji jest zamknięty.</translation>
 <translation id="5115811374190515607">do: <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Teraz możesz używać Chrome za każdym razem, gdy klikniesz link w wiadomościach, dokumentach i w innych aplikacjach</translation>
@@ -1041,6 +1045,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="5316947901395241499">Zapisywanie haseł zostało wyłączone przez administratora</translation>
 <translation id="5317780077021120954">Zapisz</translation>
 <translation id="5319359161174645648">Google zaleca Chrome</translation>
+<translation id="5323501626199324454">Zarządzaj na koncie Google</translation>
 <translation id="5326246328175179736">Nie możesz się zalogować za pomocą tego konta</translation>
 <translation id="5327248766486351172">Nazwa</translation>
 <translation id="5328542107300944283">Użyj konta <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1325,6 +1330,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6461962085415701688">Nie można otworzyć pliku</translation>
 <translation id="6464977750820128603">Możesz wyświetlić strony otwierane w Chrome i ustawić dla nich liczniki czasu.\n\nGoogle otrzymuje informacje o stronach, dla których masz ustawione liczniki czasu, i o tym, jak długo je przeglądasz. Używamy tych informacji do udoskonalania Cyfrowej równowagi.</translation>
 <translation id="6468703991511753953">Pasek adresu jest obecnie na dole</translation>
+<translation id="6469702164109431067">Hasła i klucze dostępu</translation>
 <translation id="6470181189905173055">Tutaj będą widoczne strony, które otwierasz w Chrome podczas korzystania z <ph name="APP_LABEL" />.</translation>
 <translation id="6473086018775716761">Lista opcji udostępniania jest otwarta na połowę wysokości.</translation>
 <translation id="6475951671322991020">Pobierz film</translation>

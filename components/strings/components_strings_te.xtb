@@ -587,6 +587,7 @@
 <translation id="2027465737841872819">ప్లాస్టిక్</translation>
 <translation id="2027707238798802149">కార్డ్ అందుబాటులో లేదు</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />ప్రాక్సీని, ఫైర్‌వాల్‌ను చెక్ చేయడం<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">Chromeకు సంబంధించిన ఈ ఇన్‌స్టెన్స్, మాన్యువల్‌గా సెట్ చేసిన కమాండ్ లైన్ ఫ్లాగ్‌లతో రన్ అవుతోంది. కమాండ్ లైన్ ఫ్లాగ్‌లు ఎప్పుడైనా మారవచ్చని, వాటికి సపోర్ట్ లేదని గమనించండి.</translation>
 <translation id="2033900728810589426">షార్ట్‌కట్ అనేది <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> ద్వారా నిర్వచించబడిన ఆటోమేటిక్ సెర్చ్ ప్రొవైడర్ కీవర్డ్ లాగా ఉండకూడదు: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">ఏదేమైనా సేవ్ చేయండి</translation>
 <translation id="2036514476578229158">మీరు ఈ సైట్‌ను సందర్శించడానికి అనుమతి కోరారు. మీ తల్లిదండ్రులు Family Linkలో రిప్లయి ఇవ్వవచ్చు.</translation>
@@ -4559,7 +4560,6 @@
 <translation id="8932102934695377596">మీ గడియారం సమయం గతంలో ఉంది</translation>
 <translation id="893332455753468063">పేరుని జోడించండి</translation>
 <translation id="8938242527120341116">మీ డివైజ్ కంటెంట్ ఫిల్టర్‌లు, <ph name="BLOCKED_URL" />‌ను బ్లాక్ చేశాయి</translation>
-<translation id="8942355029279167844">ప్రోడక్ట్ అనుభవాన్ని మెరుగుపరచడం కోసం, <ph name="APP_NAME" />కు సమస్య విశ్లేషణ డేటాను సేకరించడానికి మీ అడ్మినిస్ట్రేట‌ర్ అనుమతిచ్చారు. మరింత సమాచారం కోసం <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />ను చూడండి.</translation>
 <translation id="8943282376843390568">నిమ్మపండు రంగు</translation>
 <translation id="8949410982325929394">టోన్</translation>
 <translation id="8949493680961858543">A1x4</translation>

@@ -592,6 +592,7 @@
 <translation id="2027465737841872819">Пластык</translation>
 <translation id="2027707238798802149">Картка недаступная</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Праверыць проксі-сервер і брандмаўэр.<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">Гэты сеанс Chrome запушчаны з параметрамі каманднага радка, зададзенымі ўручную. Звярніце ўвагу, што параметры каманднага радка не падтрымліваюцца, таксама яны могуць змяніцца ў любы час.</translation>
 <translation id="2033900728810589426">Хуткая каманда "<ph name="SHORTCUT_NAME" />" не павінна супадаць з ключавым словам стандартнай пошукавай сістэмы, якое вызначана палітыкай <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /></translation>
 <translation id="2034971124472263449">Усё роўна захаваць</translation>
 <translation id="2036514476578229158">Запыт на наведванне гэтага сайта адпраўлены. Твае бацькі змогуць адказаць на яго ў Family Link.</translation>
@@ -4563,7 +4564,6 @@
 <translation id="8932102934695377596">Ваш гадзіннік спазняецца</translation>
 <translation id="893332455753468063">Дадаць імя</translation>
 <translation id="8938242527120341116">Фільтры змесціва на прыладзе заблакіравалі адрас <ph name="BLOCKED_URL" /></translation>
-<translation id="8942355029279167844">Адміністратар дазволіў праграме "<ph name="APP_NAME" />" збіраць даныя дыягностыкі дзеля ўдасканалення работы прадукту. Дадатковая інфармацыя – па спасылцы <ph name="BEGIN_LINK" /> https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Лайм</translation>
 <translation id="8949410982325929394">Тон</translation>
 <translation id="8949493680961858543">A1x4</translation>

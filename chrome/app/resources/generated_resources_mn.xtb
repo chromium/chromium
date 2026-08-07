@@ -2067,6 +2067,7 @@
 <translation id="2598710988533271874">Шинэ Chrome боломжтой</translation>
 <translation id="2599048253926156421">Хэрэглэгчийн нэрийг түр санах ойд хуулсан</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Аюултай 1 өргөтгөлийг унтраасан}other{Аюултай {NUM_SITES} өргөтгөлийг унтраасан}}</translation>
+<translation id="2603121359676416582">Энэ хуудасны хувьд</translation>
 <translation id="2604129989323098489">Сайтууд ихэвчлэн таны дэлгэцийн талаарх мэдээллийг хүсдэг бөгөөд ингэснээр тэд документ эсвэл бүтэн дэлгэцийн контентыг зэрэгцүүлэн харуулах зэргээр цонхыг нээж, ухаалгаар байрлуулах боломжтой</translation>
 <translation id="2604255671529671813">Сүлжээний холболтын алдаа</translation>
 <translation id="2604805099836652105"><ph name="ADDRESS_LABEL" /> хаягийн маягтыг бөглөсөн.</translation>
@@ -2981,6 +2982,7 @@
 <translation id="3285329711156774325">Ур чадваруудаас хайх</translation>
 <translation id="3285500645985761267">Холбоотой сайтуудад таны бүлэг дэх үйл ажиллагааг харахыг зөвшөөрнө үү</translation>
 <translation id="328571385944182268">Таны нууц үгийг хадгалах уу?</translation>
+<translation id="3285969135399641759">Шинэ ур чадварт суралцах</translation>
 <translation id="3289668031376215426">Автоматаар томруулах</translation>
 <translation id="3289856944988573801">Шинэчлэлтийг шалгахын тулд Ethernet эсвэл Wi-Fi-аа ашиглана уу.</translation>
 <translation id="3290249595466894471">Шинэ аюул заналыг олж илрүүлэхэд туслахын тулд хуудас, татаж авсан файл, өргөтгөлийн үйл ажиллагаа болон системийн мэдээллийн багахан хэсгийг мөн илгээнэ.</translation>
@@ -6386,6 +6388,7 @@
 <translation id="5939719276406088041">Товчлол үүсгэх боломжгүй</translation>
 <translation id="5939723110967488589">Самбарт ямар товч харуулахыг сонгох</translation>
 <translation id="594048410531370124">Товчлуурыг танихгүй байна. <ph name="RESPONSE" />-н тулд дурын товчлуурыг дарна уу.</translation>
+<translation id="5940614040566393493">Зөвлөгөө авах</translation>
 <translation id="5941711191222866238">Багасгах</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{1 нууц үгийг зөвхөн энэ төхөөрөмжид хадгалсан. Үүнийг бусад төхөөрөмж дээрээ ашиглахын тулд Google Бүртгэлдээ хадгална уу.}other{{PASSWORD_COUNT} нууц үгийг зөвхөн энэ төхөөрөмжид хадгалсан. Эдгээрийг бусад төхөөрөмж дээрээ ашиглахын тулд Google Бүртгэлдээ хадгална уу.}}</translation>
 <translation id="594221546068848596"><ph name="VISUAL_SEARCH_PROVIDER" />-р хуудас хайх</translation>
@@ -10688,7 +10691,6 @@
 <translation id="983192555821071799">Бүх табыг хаах</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - Камер болон микрофоны бичлэг</translation>
 <translation id="984705303330760860">Зөв бичгийн алдаа шалгах хэлнүүдийг нэмэх</translation>
-<translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Ерөнхий</translation>
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> таны хөдөлгөөнт төхөөрөмжөөс мэдээлэл авахыг хүсэж байна</translation>
 <translation id="988320949174893488">Хааяа тохиолддог гацалт</translation>

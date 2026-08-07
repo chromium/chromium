@@ -592,6 +592,7 @@
 <translation id="2027465737841872819">പ്ലാസ്റ്റിക്</translation>
 <translation id="2027707238798802149">കാർഡ് ലഭ്യമല്ല</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />പ്രോക്‌സിയും ഫയർവാളും പരിശോധിക്കുന്നു<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">നേരിട്ട് സജ്ജീകരിച്ച കമാൻഡ് ലൈൻ ഫ്ലാഗുകൾ ഉപയോഗിച്ചാണ് Chrome-ന്റെ ഈ ഇൻസ്റ്റൻസ് റൺ ചെയ്യുന്നത്. കമാൻഡ് ലൈൻ ഫ്ലാഗുകൾ ഏതുസമയത്തും മാറിയേക്കാമെന്നതും അവയ്ക്ക് പിന്തുണയില്ലെന്നതും ശ്രദ്ധിക്കുക.</translation>
 <translation id="2033900728810589426">കുറുക്കുവഴിയും <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> നിർവചിച്ചിരിക്കുന്ന തിരയൽ ദാതാവിന്റെ ഡിഫോൾട്ട് കീവേഡും സമാനമാകരുത്: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">എന്തായാലും സംരക്ഷിക്കുക</translation>
 <translation id="2036514476578229158">നിങ്ങൾ ഈ സൈറ്റ് സന്ദർശിക്കാൻ ആവശ്യപ്പെട്ടു. നിങ്ങളുടെ രക്ഷിതാക്കൾക്ക് Family Link-ൽ മറുപടി നൽകാം.</translation>
@@ -4561,7 +4562,6 @@
 <translation id="8932102934695377596">നിങ്ങളുടെ ക്ലോക്ക് വളരെ പിന്നിലാണ്</translation>
 <translation id="893332455753468063">പേര് ചേർക്കുക</translation>
 <translation id="8938242527120341116">നിങ്ങളുടെ ഉപകരണത്തിന്റെ ഉള്ളടക്ക ഫിൽട്ടറുകൾ <ph name="BLOCKED_URL" /> എന്ന വ്യക്തിയെ ബ്ലോക്ക് ചെയ്തു</translation>
-<translation id="8942355029279167844">ഉൽപ്പന്ന അനുഭവം മെച്ചപ്പെടുത്തുന്നതിന്, പ്രശ്‍നനിർണ്ണയ ഡാറ്റ ശേഖരിക്കാൻ നിങ്ങളുടെ അഡ്‌മിൻ <ph name="APP_NAME" /> ആപ്പിനെ അനുവദിച്ചു. കൂടുതൽ വിവരങ്ങൾക്ക്, <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> കാണുക.</translation>
 <translation id="8943282376843390568">ചെറുനാരങ്ങയുടെ നിറം</translation>
 <translation id="8949410982325929394">ടോൺ</translation>
 <translation id="8949493680961858543">A1x4</translation>

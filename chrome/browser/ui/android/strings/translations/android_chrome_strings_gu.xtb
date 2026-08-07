@@ -297,6 +297,7 @@
 <translation id="2233735624724508540">સમયમર્યાદા પસંદ કરો અને પછી 'ડેટા ડિલીટ કરો' પર ટૅપ કરો</translation>
 <translation id="2234031676056123135">તમારા શૉર્ટકટ કસ્ટમાઇઝ કરો</translation>
 <translation id="2234827758954819389">પ્રાઇવસી સંબંધિત માર્ગદર્શિકા</translation>
+<translation id="2236949375853147973">મારી ઍક્ટિવિટી</translation>
 <translation id="2238038374973843156">ગ્રૂપને અન્ય વિન્ડોમાં ખસેડો</translation>
 <translation id="2247789808226901522">કાર્ડની સમયસીમા સમાપ્ત થઈ ગઈ છે</translation>
 <translation id="2251809247798634662">નવી છુપી વિંડો</translation>
@@ -574,6 +575,7 @@
 <translation id="3385749568468586663">Gemini છૂપા મોડમાં ઉપલબ્ધ નથી</translation>
 <translation id="3387650086002190359">ફાઇલ સિસ્ટમ ભૂલોના કારણે <ph name="FILE_NAME" /> ડાઉનલોડ નિષ્ફળ થયું.</translation>
 <translation id="3391311825344469964">તમે Chromeના વિન્ડો મેનેજરમાં તમારી વિન્ડો મેનેજ કરી શકો છો</translation>
+<translation id="3410151451624226773">Google Password Managerમાં જઈને મેનેજ કરો</translation>
 <translation id="3417835166382867856">ટૅબ શોધો</translation>
 <translation id="3430670036890315772">તમારું પ્રોફાઇલ લૉક બંધ કરવાથી તમારી સાચવેલી માહિતી કાઢી નાખવામાં આવશે</translation>
 <translation id="3435575784518354875">તમારા પાસવર્ડનો ઍક્સેસ જાળવી રાખવા માટે, તેની હમણાં નિકાસ કરો, Google Play સેવાઓ અપડેટ કરો અને પછી તેમને પાછા Google Password Managerમાં આયાત કરો. <ph name="BEGIN_LINK" />સંપૂર્ણ સૂચના જુઓ<ph name="END_LINK" />.</translation>
@@ -942,6 +944,7 @@
 <translation id="4877678010818027629">છૂપો મોડમાં દાખલ થાઓ</translation>
 <translation id="4878404682131129617">પ્રૉક્સી સર્વર મારફતે એક ટનલને સ્થાપિત કરવું નિષ્ફળ થયું</translation>
 <translation id="4880127995492972015">અનુવાદ કરો…</translation>
+<translation id="4880827082731008257">શોધ ઇતિહાસ</translation>
 <translation id="4881695831933465202">ખોલો</translation>
 <translation id="488187801263602086">ફાઇલનું નામ બદલો</translation>
 <translation id="4885273946141277891">અસમર્થિત સંખ્યામાં Chrome આવૃત્તિઓ.</translation>
@@ -991,6 +994,7 @@
 <translation id="509429900233858213">કોઈ ભૂલ આવી છે.</translation>
 <translation id="5096775069898886423">સુરક્ષિત કનેક્શનને સપોર્ટ કરતી ન હોય તેવી સાઇટ માટે, સાઇટની મુલાકાત લેતા પહેલાં ચેતવણી મેળવો</translation>
 <translation id="510275257476243843">1 કલાક બાકી</translation>
+<translation id="5105442806410269908">અન્ય Google ડેટા મેનેજ કરો</translation>
 <translation id="5114895953710637392">ઍપ ફિલ્ટર શીટ બંધ છે.</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> પર</translation>
 <translation id="5116239826668864748">તમે મેસેજ, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર કોઈપણ સમયે ટૅપ કરીને Chromeનો ઉપયોગ કરી શકશો</translation>
@@ -1041,6 +1045,7 @@
 <translation id="5316947901395241499">તમારા ઍડમિનિસ્ટ્રેટર દ્વારા પાસવર્ડ સાચવવાની સુવિધા બંધ કરવામાં આવી છે</translation>
 <translation id="5317780077021120954">સાચવો</translation>
 <translation id="5319359161174645648">Google Chromeની ભલામણ કરે છે</translation>
+<translation id="5323501626199324454">તમારા Google એકાઉન્ટમાં જઈને મેનેજ કરો</translation>
 <translation id="5326246328175179736">તમે આ એકાઉન્ટનો ઉપયોગ કરીને સાઇન ઇન કરી શકશો નહીં</translation>
 <translation id="5327248766486351172">નામ</translation>
 <translation id="5328542107300944283"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> સાથે ઉપયોગ કરો</translation>
@@ -1325,6 +1330,7 @@
 <translation id="6461962085415701688">ફાઇલ ખોલી શકતાં નથી</translation>
 <translation id="6464977750820128603">તમે Chromeમાં મુલાકાત લીધેલી સાઇટ જોઈ શકશો અને તેના માટે ટાઇમર પણ સેટ કરી શકશો.\n\nતમે જે સાઇટ માટે ટાઇમર સેટ કરો છો અને કેટલા સમય માટે તેની મુલાકાત લો છો, તે માહિતી Google મેળવે છે. આ માહિતી ડિજિટલ લાઇફસ્ટાઇલને બહેતર બનાવવા માટે ઉપયોગમાં લેવામાં આવે છે.</translation>
 <translation id="6468703991511753953">હાલમાં ઍડ્રેસ બાર સૌથી નીચે છે</translation>
+<translation id="6469702164109431067">પાસવર્ડ અને પાસકી</translation>
 <translation id="6470181189905173055"><ph name="APP_LABEL" />નો ઉપયોગ કરતી વખતે તમે Chromeમાં ખોલેલાં પેજ અહીં દેખાશે.</translation>
 <translation id="6473086018775716761">શેરિંગના વિકલ્પોની સૂચિ અડધી ઊંચાઈએ ખોલી છે.</translation>
 <translation id="6475951671322991020">વીડિયો ડાઉનલોડ કરો</translation>

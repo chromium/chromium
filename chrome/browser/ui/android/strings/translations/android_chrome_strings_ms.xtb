@@ -297,6 +297,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="2233735624724508540">Pilih tempoh masa, kemudian ketik Padamkan data</translation>
 <translation id="2234031676056123135">Sesuaikan pintasan anda</translation>
 <translation id="2234827758954819389">Panduan Privasi</translation>
+<translation id="2236949375853147973">Aktiviti Saya</translation>
 <translation id="2238038374973843156">Alihkan kumpulan kepada tetingkap lain</translation>
 <translation id="2247789808226901522">Kad tamat tempoh</translation>
 <translation id="2251809247798634662">Tetingkap Inkognito baharu</translation>
@@ -574,6 +575,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="3385749568468586663">Gemini tidak tersedia dalam Mod inkognito</translation>
 <translation id="3387650086002190359">Muat turun <ph name="FILE_NAME" /> gagal disebabkan oleh ralat sistem fail.</translation>
 <translation id="3391311825344469964">Anda boleh mengurus tetingkap anda dalam Pengurus Tetingkap Chrome</translation>
+<translation id="3410151451624226773">Urus dalam Google Password Manager</translation>
 <translation id="3417835166382867856">Cari tab</translation>
 <translation id="3430670036890315772">Tindakan mematikan kunci profil anda akan mengalih keluar maklumat anda yang disimpan</translation>
 <translation id="3435575784518354875">Untuk mengekalkan akses kepada kata laluan anda, eksport kata laluan tersebut sekarang, kemas kinikan Perkhidmatan Google Play, kemudian import semula kata laluan tersebut pada Google Password Manager. <ph name="BEGIN_LINK" />Lihat arahan penuh<ph name="END_LINK" />.</translation>
@@ -942,6 +944,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="4877678010818027629">Masuk ke mod Inkognito</translation>
 <translation id="4878404682131129617">Gagal mewujudkan terowong melalui pelayan proksi</translation>
 <translation id="4880127995492972015">Terjemah…</translation>
+<translation id="4880827082731008257">Sejarah carian</translation>
 <translation id="4881695831933465202">Buka</translation>
 <translation id="488187801263602086">Namakan semula fail</translation>
 <translation id="4885273946141277891">Bilangan kejadian Chrome tidak disokong.</translation>
@@ -991,6 +994,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="509429900233858213">Ralat telah berlaku.</translation>
 <translation id="5096775069898886423">Untuk laman yang tidak menyokong sambungan selamat, dapatkan amaran sebelum melawat laman tersebut</translation>
 <translation id="510275257476243843">1 jam lagi</translation>
+<translation id="5105442806410269908">Urus data Google lain</translation>
 <translation id="5114895953710637392">Helaian penapis apl ditutup.</translation>
 <translation id="5115811374190515607">ke <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Anda boleh menggunakan Chrome pada bila-bila masa anda mengetik pautan dalam mesej, dokumen dan apl lain</translation>
@@ -1041,6 +1045,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="5316947901395241499">Penyimpanan kata laluan dimatikan oleh pentadbir anda</translation>
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5319359161174645648">Google mengesyorkan Chrome</translation>
+<translation id="5323501626199324454">Urus dalam Google Account anda</translation>
 <translation id="5326246328175179736">Anda tidak dapat log masuk menggunakan akaun ini</translation>
 <translation id="5327248766486351172">Nama</translation>
 <translation id="5328542107300944283">Gunakan dengan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1325,6 +1330,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="6461962085415701688">Tidak dapat membuka fail</translation>
 <translation id="6464977750820128603">Anda dapat melihat tapak yang anda lawati dalam Chrome dan menetapkan pemasa untuk tapak tersebut.\n\nGoogle menerima maklumat tentang tapak yang pemasanya telah anda tetapkan dan tempoh anda berada di tapak itu. Maklumat ini digunakan untuk menambah baik Kesejahteraan Digital.</translation>
 <translation id="6468703991511753953">Bar alamat terletak pada bahagian bawah</translation>
+<translation id="6469702164109431067">Kata laluan dan kunci laluan</translation>
 <translation id="6470181189905173055">Halaman yang telah anda buka dalam Chrome semasa menggunakan <ph name="APP_LABEL" /> akan dipaparkan di sini.</translation>
 <translation id="6473086018775716761">Senarai pilihan perkongsian dibuka pada ketinggian separuh.</translation>
 <translation id="6475951671322991020">Muat turun video</translation>
@@ -1531,6 +1537,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="7182520625618447753">Tukar kedudukan bar alamat anda kepada bahagian atas atau bahagian bawah untuk pengalaman penyemakan imbas tersuai</translation>
 <translation id="7183517696921903380">Helaian penapis apl dibuka.</translation>
 <translation id="7186568385131859684">Kawal cara sejarah penyemakan imbas digunakan dengan data anda yang lain merentas perkhidmatan Google</translation>
+<translation id="7189516830800112767">{NUM_TABS,plural, =1{Tekan ^W sekali lagi untuk menutup tab tersemat}other{Tekan ^W sekali lagi untuk menutup tab tersemat}}</translation>
 <translation id="7190921792980745354">Sekat <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191430249889272776">Tab dibuka di latar belakang.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Anda perlu menukar kata laluan ini sekarang}other{Anda perlu menukar kata laluan ini sekarang}}</translation>

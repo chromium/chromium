@@ -592,6 +592,7 @@
 <translation id="2027465737841872819">ਪਲਾਸਟਿਕ</translation>
 <translation id="2027707238798802149">ਕਾਰਡ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />ਪ੍ਰੌਕਸੀ ਅਤੇ ਫ਼ਾਇਰਵਾਲ ਦੀ ਜਾਂਚ ਕਰੋ<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">Chrome ਦੀ ਇਹ ਕਿਰਿਆ ਹੱਥੀਂ ਸੈੱਟ ਕੀਤੇ ਕਮਾਂਡ ਲਾਈਨ ਫਲੈਗਾਂ ਨਾਲ ਚੱਲ ਰਹੀ ਹੈ। ਨੋਟ ਕਰੋ ਕਿ ਕਮਾਂਡ ਲਾਈਨ ਫਲੈਗ ਕਿਸੇ ਵੀ ਵੇਲੇ ਬਦਲ ਸਕਦੇ ਹਨ ਅਤੇ ਸਮਰਥਿਤ ਨਹੀਂ ਹਨ।</translation>
 <translation id="2033900728810589426">ਸ਼ਾਰਟਕੱਟ ਅਤੇ <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> ਵੱਲੋਂ ਪਰਿਭਾਸ਼ਿਤ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਖੋਜ ਪ੍ਰਦਾਨਕ ਪ੍ਰਮੁੱਖ-ਸ਼ਬਦ ਇੱਕੋ ਜਿਹੇ ਨਹੀਂ ਹੋ ਸਕਦੇ: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">ਫਿਰ ਵੀ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="2036514476578229158">ਤੁਸੀਂ ਇਸ ਸਾਈਟ 'ਤੇ ਜਾਣ ਲਈ ਕਿਹਾ ਹੈ। ਤੁਹਾਡੇ ਮਾਂ-ਪਿਓ Family Link ਵਿੱਚ ਜਵਾਬ ਦੇ ਸਕਦੇ ਹਨ।</translation>
@@ -4559,7 +4560,6 @@
 <translation id="8932102934695377596">ਤੁਹਾਡੀ ਘੜੀ ਪਿੱਛੇ ਹੈ</translation>
 <translation id="893332455753468063">ਨਾਮ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="8938242527120341116">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦੇ ਸਮੱਗਰੀ ਫਿਲਟਰਾਂ ਨੇ <ph name="BLOCKED_URL" /> ਨੂੰ ਬਲਾਕ ਕੀਤਾ</translation>
-<translation id="8942355029279167844">ਉਤਪਾਦ ਅਨੁਭਵ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ <ph name="APP_NAME" /> ਨੂੰ ਤਸ਼ਖੀਸੀ ਡਾਟਾ ਇਕੱਤਰ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦੇ ਦਿੱਤੀ ਹੈ। ਹੋਰ ਜਾਣਕਾਰੀ ਲਈ <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> ਨੂੰ ਦੇਖੋ।</translation>
 <translation id="8943282376843390568">ਪੀਲਾ-ਹਰਾ</translation>
 <translation id="8949410982325929394">ਟੋਨ</translation>
 <translation id="8949493680961858543">A1x4</translation>

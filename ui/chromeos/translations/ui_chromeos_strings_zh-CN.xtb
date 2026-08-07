@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Word 文档</translation>
 <translation id="1056775291175587022">没有网络</translation>
 <translation id="1056898198331236512">警告</translation>
-<translation id="1060368002126861100">如需使用 <ph name="APP_NAME" /> 打开文件，请先将文件移至“Windows 文件”文件夹。</translation>
 <translation id="1062407476771304334">替换</translation>
 <translation id="1119383441774809183">显示短信</translation>
 <translation id="1119447706177454957">内部错误</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">挪威语</translation>
 <translation id="1408504635543854729">在“文件”应用中浏览此设备上的内容。相关内容受到管理员的限制，无法修改。</translation>
 <translation id="1412476183660741812">经过签名的 Web 软件包</translation>
-<translation id="1433628812591023318">若要将某个文件拖放到 Parallels Desktop，必须先将此文件移至“Windows 文件”文件夹。</translation>
-<translation id="1435838927755162558">与 Parallels Desktop 共享文件夹</translation>
 <translation id="1439919885608649279">一个人捧着鲜花</translation>
 <translation id="1458457385801829801">卸载 <ph name="TARGET_NAME" /></translation>
 <translation id="1464781208867302907">若想指定设备偏好设置，请转到“设置”页面。</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">法语</translation>
 <translation id="2732288874651063549">管理 <ph name="VM_NAME" /> 共享</translation>
 <translation id="2732839045120506979">越南语 VNI</translation>
-<translation id="2735623501230989521">授权 Parallels Desktop 访问“<ph name="FOLDER_NAME" />”文件夹中的文件</translation>
 <translation id="2764206540577097904">您的 Google Workspace 个人存储空间已用尽。</translation>
 <translation id="2771816809568414714">奶酪</translation>
 <translation id="2783909841122647548">不再支持安装 Debian 软件包。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">地理位置</translation>
 <translation id="3044404008258011032">若要恢复这些内容，请将其拖至回收站以外的新文件夹。这些内容的原始文件夹“<ph name="PARENT_FOLDER_NAME" />”已被删除。</translation>
 <translation id="3047197340186497470">中文大易</translation>
-<translation id="3067790092342515856">Windows 文件</translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">SOCKS 主机</translation>
 <translation id="3091469289665833668">罗马尼亚语</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">如需了解详情，请联系您的管理员。</translation>
 <translation id="3548125359243647069">您输错 PIN 码的次数过多。</translation>
 <translation id="3549797760399244642">转到 drive.google.com...</translation>
-<translation id="3553048479571901246">如需使用 <ph name="APP_NAME" /> 打开文件，请先将文件复制到“Windows 文件”文件夹。</translation>
 <translation id="3556731189587832921">英语（美国）国际 PC 键盘</translation>
 <translation id="3557414470514932909">正在将“<ph name="FILE_NAME" />”移至回收站</translation>
 <translation id="3560848236447534728">亚美尼亚语（拼音）</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">罗马尼亚语</translation>
 <translation id="4508265954913339219">激活失败</translation>
 <translation id="4509667233588080747">英语（美国）Workman 国际键盘</translation>
-<translation id="4527800702232535228">已与 Parallels Desktop 共享此文件夹</translation>
 <translation id="4552678318981539154">购买更多存储空间</translation>
 <translation id="4552759165874948005">“<ph name="NETWORK_TYPE" />”类型的网络，信号强度为 <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">焦外成像</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">饭团</translation>
 <translation id="4784330909746505604">PowerPoint 演示文稿</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
-<translation id="4789067489790477934">授权 Parallels Desktop 访问您 Google 云端硬盘中的文件。相关更改会同步到您的其他设备。</translation>
 <translation id="4790766916287588578">印地语 InScript 键盘</translation>
 <translation id="4798645114741131062">您的 ChromeOS Flex 设备即将停止接收更新。请考虑升级到 ChromeOS 设备。</translation>
 <translation id="4801956050125744859">保留两种版本</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">音量滑块</translation>
 <translation id="4881695831933465202">打开</translation>
 <translation id="4891091358278567964">若要恢复这些内容，请将其拖至回收站以外的新文件夹。这些内容的原始文件夹已被删除。</translation>
-<translation id="4900532980794411603">与 Parallels Desktop 共享</translation>
 <translation id="4902546322522096650">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="SECURITY_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，连接</translation>
 <translation id="4906580650526544301">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="PHONE_NAME" />，<ph name="PROVIDER_NAME" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，剩余电量为 <ph name="BATTERY_STATUS" />%，详细信息</translation>
 <translation id="4935975195727477204">杂色菊</translation>
 <translation id="4943368462779413526">美式足球</translation>
-<translation id="4961158930123534723">已与 Parallels Desktop 共享 1 个文件夹</translation>
 <translation id="4965874878399872778">正在检查文件是否符合您的组织安全政策…</translation>
 <translation id="496656650103537022">“<ph name="FILE_NAME" />”已恢复</translation>
 <translation id="4969785127455456148">专辑</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">某项操作所用的时间超出预期。要取消该操作吗？</translation>
 <translation id="5036141350290856713">俄语（拼音）</translation>
-<translation id="5036159836254554629">管理与 Parallels Desktop 的共享</translation>
 <translation id="5038625366300922036">查看更多…</translation>
 <translation id="5044852990838351217">亚美尼亚语</translation>
 <translation id="5045550434625856497">密码不正确</translation>
@@ -731,9 +720,7 @@
 <translation id="656398493051028875">正在删除“<ph name="FILENAME" />”…</translation>
 <translation id="6581162200855843583">Google 云端硬盘链接</translation>
 <translation id="6588648400954570689">文件同步设置</translation>
-<translation id="6594855146910089723">已与 Linux 和 Parallels Desktop 共享此文件夹</translation>
 <translation id="6607272825297743757">文件信息</translation>
-<translation id="6609332149380188670">已与 Parallels Desktop 共享 <ph name="NUMBER_OF_ITEMS" /> 个文件夹</translation>
 <translation id="6629518321609546825">请输入至少 4 位数字</translation>
 <translation id="6643016212128521049">清除</translation>
 <translation id="6650726141019353908">粉蝴蝶</translation>
@@ -851,7 +838,6 @@
 <translation id="7436921188514130341">糟糕！重命名过程中出错了。</translation>
 <translation id="7458955835361612701">没有任何近期图片</translation>
 <translation id="7469894403370665791">自动连接到该网络</translation>
-<translation id="7486315294984620427">若要将某个文件拖放到 Parallels Desktop，必须先将此文件复制到“Windows 文件”文件夹。</translation>
 <translation id="749452993132003881">平假名</translation>
 <translation id="7495372004724182530">马拉雅拉姆语注音</translation>
 <translation id="7505167922889582512">显示隐藏文件</translation>

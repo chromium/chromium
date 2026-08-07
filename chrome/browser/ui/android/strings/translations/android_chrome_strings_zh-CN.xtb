@@ -297,6 +297,7 @@
 <translation id="2233735624724508540">选择时间范围，然后点按“删除数据”</translation>
 <translation id="2234031676056123135">自定义快捷方式</translation>
 <translation id="2234827758954819389">隐私保护指南</translation>
+<translation id="2236949375853147973">我的活动记录</translation>
 <translation id="2238038374973843156">将分组移至另一个窗口</translation>
 <translation id="2247789808226901522">银行卡已过期</translation>
 <translation id="2251809247798634662">打开新的无痕式窗口</translation>
@@ -574,6 +575,7 @@
 <translation id="3385749568468586663">Gemini 在无痕模式下无法使用</translation>
 <translation id="3387650086002190359">未能成功下载 <ph name="FILE_NAME" />，因为文件系统出现了错误。</translation>
 <translation id="3391311825344469964">您可以在 Chrome 的窗口管理器中管理窗口</translation>
+<translation id="3410151451624226773">在 Google 密码管理工具中管理</translation>
 <translation id="3417835166382867856">搜索标签页</translation>
 <translation id="3430670036890315772">关闭个人资料锁定功能将移除您已保存的信息</translation>
 <translation id="3435575784518354875">如需继续使用您的密码，请立即将其导出，更新 Google Play 服务，然后将其重新导入 Google 密码管理工具。<ph name="BEGIN_LINK" />查看完整说明<ph name="END_LINK" />。</translation>
@@ -942,6 +944,7 @@
 <translation id="4877678010818027629">进入无痕模式</translation>
 <translation id="4878404682131129617">未能成功通过代理服务器建立隧道</translation>
 <translation id="4880127995492972015">翻译…</translation>
+<translation id="4880827082731008257">搜索记录</translation>
 <translation id="4881695831933465202">打开</translation>
 <translation id="488187801263602086">重命名文件</translation>
 <translation id="4885273946141277891">Chrome 实例数量已超出上限。</translation>
@@ -991,6 +994,7 @@
 <translation id="509429900233858213">出现错误。</translation>
 <translation id="5096775069898886423">在您访问不支持安全连接的网站前，系统会发出警告</translation>
 <translation id="510275257476243843">还剩 1 小时</translation>
+<translation id="5105442806410269908">管理其他 Google 数据</translation>
 <translation id="5114895953710637392">应用过滤器工作表已关闭。</translation>
 <translation id="5115811374190515607">已移至<ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">当您点按消息、文档和其他应用中的链接时，可以随时使用 Chrome 打开链接</translation>
@@ -1041,6 +1045,7 @@
 <translation id="5316947901395241499">您的管理员已关闭密码保存功能</translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5319359161174645648">Google 推荐使用 Chrome</translation>
+<translation id="5323501626199324454">在 Google 账号中管理</translation>
 <translation id="5326246328175179736">您无法使用此账号登录</translation>
 <translation id="5327248766486351172">名称</translation>
 <translation id="5328542107300944283">通过 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 账号使用</translation>
@@ -1325,6 +1330,7 @@
 <translation id="6461962085415701688">无法打开文件</translation>
 <translation id="6464977750820128603">您可以查看自己在 Chrome 中访问的网站并为这些网站设置计时器。\n\nGoogle 会获取这些设有计时器的网站的相关信息以及您对这些网站的访问时长。这些信息会被用于改进“数字健康”应用。</translation>
 <translation id="6468703991511753953">地址栏目前位于底部</translation>
+<translation id="6469702164109431067">密码和通行密钥</translation>
 <translation id="6470181189905173055">您使用“<ph name="APP_LABEL" />”在 Chrome 中打开的网页将显示在此处。</translation>
 <translation id="6473086018775716761">分享选项列表已半屏打开。</translation>
 <translation id="6475951671322991020">下载视频</translation>

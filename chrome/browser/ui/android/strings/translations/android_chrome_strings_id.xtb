@@ -297,6 +297,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2233735624724508540">Pilih rentang waktu, lalu ketuk Hapus data</translation>
 <translation id="2234031676056123135">Sesuaikan pintasan Anda</translation>
 <translation id="2234827758954819389">Panduan Privasi</translation>
+<translation id="2236949375853147973">Aktivitas Saya</translation>
 <translation id="2238038374973843156">Pindah grup ke jendela lain</translation>
 <translation id="2247789808226901522">Kartu sudah tidak berlaku</translation>
 <translation id="2251809247798634662">Jendela Samaran baru</translation>
@@ -574,6 +575,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="3385749568468586663">Gemini tidak tersedia dalam mode Samaran</translation>
 <translation id="3387650086002190359">Download <ph name="FILE_NAME" /> gagal karena kesalahan sistem file.</translation>
 <translation id="3391311825344469964">Anda dapat mengelola jendela di Pengelola Jendela Chrome</translation>
+<translation id="3410151451624226773">Kelola di Pengelola Sandi Google</translation>
 <translation id="3417835166382867856">Telusuri tab</translation>
 <translation id="3430670036890315772">Menonaktifkan kunci profil akan menghapus info yang Anda simpan</translation>
 <translation id="3435575784518354875">Untuk mempertahankan akses ke sandi Anda, ekspor sandi sekarang, update Layanan Google Play, lalu impor sandi tersebut kembali ke Pengelola Sandi Google. <ph name="BEGIN_LINK" />Lihat petunjuk lengkap<ph name="END_LINK" />.</translation>
@@ -942,6 +944,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="4877678010818027629">Masuk mode Samaran</translation>
 <translation id="4878404682131129617">Gagal membentuk saluran melalui server proxy</translation>
 <translation id="4880127995492972015">Terjemahkan…</translation>
+<translation id="4880827082731008257">Telusuri histori</translation>
 <translation id="4881695831933465202">Buka</translation>
 <translation id="488187801263602086">Ganti nama file</translation>
 <translation id="4885273946141277891">Jumlah kemunculan Chrome tidak didukung.</translation>
@@ -991,6 +994,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="509429900233858213">Terjadi error.</translation>
 <translation id="5096775069898886423">Untuk situs yang tidak mendukung koneksi aman, Anda akan mendapatkan peringatan sebelum mengunjungi situs</translation>
 <translation id="510275257476243843">1 jam lagi</translation>
+<translation id="5105442806410269908">Kelola data Google lainnya</translation>
 <translation id="5114895953710637392">Sheet filter aplikasi ditutup.</translation>
 <translation id="5115811374190515607">ke <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Anda dapat menggunakan Chrome kapan saja dengan mengetuk link di pesan, dokumen, dan aplikasi lainnya</translation>
@@ -1041,6 +1045,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="5316947901395241499">Penyimpanan sandi dinonaktifkan oleh administrator Anda</translation>
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5319359161174645648">Google merekomendasikan Chrome</translation>
+<translation id="5323501626199324454">Kelola di Akun Google Anda</translation>
 <translation id="5326246328175179736">Anda tidak dapat login menggunakan akun ini</translation>
 <translation id="5327248766486351172">Nama</translation>
 <translation id="5328542107300944283">Gunakan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1325,6 +1330,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6461962085415701688">Tidak dapat membuka file</translation>
 <translation id="6464977750820128603">Anda dapat melihat situs yang Anda kunjungi di Chrome dan menetapkan timer untuk situs tersebut.\n\nGoogle mendapatkan info tentang situs yang Anda tetapkan timer-nya dan durasi Anda mengunjunginya. Info ini digunakan untuk membuat Kesehatan Digital jadi lebih baik.</translation>
 <translation id="6468703991511753953">Kolom URL saat ini berada di bawah</translation>
+<translation id="6469702164109431067">Sandi dan kunci sandi</translation>
 <translation id="6470181189905173055">Halaman yang telah Anda buka di Chrome saat menggunakan <ph name="APP_LABEL" /> akan muncul di sini.</translation>
 <translation id="6473086018775716761">Daftar opsi berbagi terbuka setengah.</translation>
 <translation id="6475951671322991020">Download video</translation>

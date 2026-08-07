@@ -592,6 +592,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2027465737841872819">Plast</translation>
 <translation id="2027707238798802149">Kortet er ikke tilgjengelig</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Sjekk proxy-tjeneren og brannmuren<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">Denne forekomsten av Chrome kjører med kommandolinjeflagg som er angitt manuelt. Merk at kommandolinjeflagg kan endres når som helst, og at de ikke støttes.</translation>
 <translation id="2033900728810589426">Snarveien kan ikke være lik søkeordet for standardsøkeleverandøren som er definert av <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Lagre likevel</translation>
 <translation id="2036514476578229158">Du ba om å få besøke dette nettstedet. Foreldrene dine kan svare i Family Link.</translation>
@@ -4563,7 +4564,6 @@ Mer informasjon:
 <translation id="8932102934695377596">Klokken går for sent</translation>
 <translation id="893332455753468063">Legg til navn</translation>
 <translation id="8938242527120341116">Innholdsfiltrene på enheten blokkerte <ph name="BLOCKED_URL" /></translation>
-<translation id="8942355029279167844">Administratoren din har gitt <ph name="APP_NAME" /> tillatelse til å samle inn diagnostikkdata for å gi deg en bedre produktopplevelse. Se <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> for mer informasjon.</translation>
 <translation id="8943282376843390568">Limegrønn</translation>
 <translation id="8949410982325929394">Tone</translation>
 <translation id="8949493680961858543">A1x4</translation>

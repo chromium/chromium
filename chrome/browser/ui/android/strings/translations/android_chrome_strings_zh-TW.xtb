@@ -297,6 +297,7 @@
 <translation id="2233735624724508540">選擇時間範圍，然後輕觸「刪除資料」</translation>
 <translation id="2234031676056123135">自訂捷徑</translation>
 <translation id="2234827758954819389">隱私權指南</translation>
+<translation id="2236949375853147973">我的活動</translation>
 <translation id="2238038374973843156">將群組移到其他視窗</translation>
 <translation id="2247789808226901522">信用卡已過期</translation>
 <translation id="2251809247798634662">新增無痕視窗</translation>
@@ -574,6 +575,7 @@
 <translation id="3385749568468586663">Gemini 無法在無痕模式下使用</translation>
 <translation id="3387650086002190359">檔案系統發生錯誤，因此無法下載 <ph name="FILE_NAME" />。</translation>
 <translation id="3391311825344469964">如要控管視窗，可以使用 Chrome 的視窗管理工具</translation>
+<translation id="3410151451624226773">在 Google 密碼管理工具中控管</translation>
 <translation id="3417835166382867856">搜尋分頁</translation>
 <translation id="3430670036890315772">如果關閉設定檔鎖定功能，系統將移除已儲存的資訊</translation>
 <translation id="3435575784518354875">如要繼續存取密碼，請立即匯出密碼、更新 Google Play 服務，再將密碼匯入回 Google 密碼管理工具。<ph name="BEGIN_LINK" />查看完整操作說明<ph name="END_LINK" />。</translation>
@@ -942,6 +944,7 @@
 <translation id="4877678010818027629">進入無痕模式</translation>
 <translation id="4878404682131129617">無法透過 Proxy 伺服器建立通道</translation>
 <translation id="4880127995492972015">翻譯...</translation>
+<translation id="4880827082731008257">搜尋記錄</translation>
 <translation id="4881695831933465202">開啟</translation>
 <translation id="488187801263602086">重新命名檔案</translation>
 <translation id="4885273946141277891">Chrome 實例的數量已超出上限。</translation>
@@ -991,6 +994,7 @@
 <translation id="509429900233858213">發生錯誤。</translation>
 <translation id="5096775069898886423">如果網站不支援安全連線，系統會在造訪前發出警告</translation>
 <translation id="510275257476243843">還剩 1 小時</translation>
+<translation id="5105442806410269908">管理其他 Google 資料</translation>
 <translation id="5114895953710637392">應用程式篩選功能表已關閉。</translation>
 <translation id="5115811374190515607">移至<ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">你隨時可以輕觸訊息、文件或其他應用程式中的連結，使用 Chrome 開啟</translation>
@@ -1041,6 +1045,7 @@
 <translation id="5316947901395241499">系統管理員已關閉密碼儲存功能</translation>
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5319359161174645648">Google 推薦使用 Chrome</translation>
+<translation id="5323501626199324454">在 Google 帳戶中管理</translation>
 <translation id="5326246328175179736">無法使用此帳戶登入</translation>
 <translation id="5327248766486351172">名稱</translation>
 <translation id="5328542107300944283">使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 的帳戶操作</translation>
@@ -1325,6 +1330,7 @@
 <translation id="6461962085415701688">無法開啟檔案</translation>
 <translation id="6464977750820128603">你可以查看自己透過 Chrome 造訪的網站，並對這些網站設定計時器。\n\nGoogle 會收到這些設有計時器的網站相關資訊以及你的造訪時間長度。這些資訊可協助我們改善數位健康。</translation>
 <translation id="6468703991511753953">網址列目前位於底部</translation>
+<translation id="6469702164109431067">密碼和密碼金鑰</translation>
 <translation id="6470181189905173055">使用 <ph name="APP_LABEL" /> 時，在 Chrome 中開啟的網頁會顯示在這裡。</translation>
 <translation id="6473086018775716761">分享選項清單已開啟，顯示在畫面下半部。</translation>
 <translation id="6475951671322991020">下載影片</translation>

@@ -7,7 +7,6 @@
 <translation id="1049926623896334335">Word দস্তাবেজ</translation>
 <translation id="1056775291175587022">নেটৱৰ্ক নাই</translation>
 <translation id="1056898198331236512">সতর্কবার্তা</translation>
-<translation id="1060368002126861100"><ph name="APP_NAME" />ৰ জৰিয়তে ফাইলসমূহ খুলিবলৈ প্ৰথমে সেইসমূহ Windowsৰ ফাইলসমূহৰ ফ’ল্ডাৰটোলৈ স্থানান্তৰ কৰক।</translation>
 <translation id="1062407476771304334">সাল সলনি কৰক</translation>
 <translation id="1119383441774809183">পাঠ বাৰ্তাসমূহ দেখুৱাওক</translation>
 <translation id="1119447706177454957">আভ্যন্তৰীণ আসোঁৱাহ</translation>
@@ -57,8 +56,6 @@
 <translation id="1404323374378969387">ন’ৰৱেজিয়ান</translation>
 <translation id="1408504635543854729">Files এপত ডিভাইচৰ সমল অন্বেষণ কৰক। প্ৰশাসকে সমল সীমাবদ্ধ কৰাৰ বাবে সংশোধন কৰিব নোৱাৰি।</translation>
 <translation id="1412476183660741812">স্বাক্ষৰিত ৱেব বাণ্ডল</translation>
-<translation id="1433628812591023318">Parallels Desktopত ফাইল ৰাখিবলৈ, ফাইলটো Windows ফাইললৈ নিবই লাগিব।</translation>
-<translation id="1435838927755162558">Parallels Desktopৰ জৰিয়তে ফ’ল্ডাৰটো শ্বেয়াৰ কৰক</translation>
 <translation id="1439919885608649279">ফুলৰ সৈতে ব্যক্তিৰ ছবি</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" />ক বাহিৰ কৰক</translation>
 <translation id="1464781208867302907">ডিভাইচৰ অগ্ৰাধিকাৰসমূহৰ বাবে ছেটিংসমূহলৈ যাওক।</translation>
@@ -234,7 +231,6 @@
 <translation id="2728450421877450246">ফৰাচী</translation>
 <translation id="2732288874651063549"><ph name="VM_NAME" /> শ্বেয়াৰ কৰাৰ সুবিধা পৰিচালনা কৰক</translation>
 <translation id="2732839045120506979">ভিয়েটনামিজ VNI</translation>
-<translation id="2735623501230989521">Parallels Desktopক <ph name="FOLDER_NAME" /> ফ’ল্ডাৰটোত থকা ফাইল এক্সেছ কৰিবলৈ অনুমতি দিয়ক</translation>
 <translation id="2764206540577097904">আপুনি নিজৰ Google Workspaceৰ আটাইবোৰ ষ্ট'ৰেজ ব্যৱহাৰ কৰিছে।</translation>
 <translation id="2771816809568414714">চ্চীজ</translation>
 <translation id="2783909841122647548">Debian পেকেজ ইনষ্টল কৰাটো আৰু সমৰ্থিত নহয়। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
@@ -267,7 +263,6 @@
 <translation id="303198083543495566">ভূগোল</translation>
 <translation id="3044404008258011032">এই বস্তুবোৰ পুনঃস্থাপন কৰিবলৈ সেইবোৰ ট্ৰেশ্বৰ বাহিৰত এটা নতুন ফ’ল্ডাৰলৈ টানি আনি এৰক। এই বস্তুবোৰৰ মূল ফ’ল্ডাৰ "<ph name="PARENT_FOLDER_NAME" />"টো মচা হৈছে।</translation>
 <translation id="3047197340186497470">চীনা ডে’য়ি</translation>
-<translation id="3067790092342515856">Windows ফাইলসমূহ</translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">SOCKS হ’ষ্ট</translation>
 <translation id="3091469289665833668">ৰোমানিয়ান</translation>
@@ -329,7 +324,6 @@
 <translation id="3529424493985988200">সবিশেষৰ বাবে আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="3548125359243647069">বহুবাৰ ভুল পিন দিয়া হৈছে।</translation>
 <translation id="3549797760399244642">drive.google.comলৈ যাওক...</translation>
-<translation id="3553048479571901246"><ph name="APP_NAME" />ৰ জৰিয়তে ফাইলসমূহ খুলিবলৈ প্ৰথমে সেইসমূহ Windowsৰ ফাইলসমূহৰ ফ’ল্ডাৰটোলৈ প্ৰতিলিপি কৰক।</translation>
 <translation id="3556731189587832921">আন্তঃৰাষ্ট্ৰীয় PC কীব’ৰ্ডৰ সৈতে ইংৰাজী (যুক্তৰাষ্ট্ৰ)</translation>
 <translation id="3557414470514932909"><ph name="FILE_NAME" />ক ট্ৰেশ্বলৈ নি থকা হৈছে</translation>
 <translation id="3560848236447534728">আৰমেনিয়ান ফ’নেটিক</translation>
@@ -450,7 +444,6 @@
 <translation id="4477002475007461989">ৰোমানিয়ান</translation>
 <translation id="4508265954913339219">সক্ৰিয় কৰিব পৰা নগ'ল</translation>
 <translation id="4509667233588080747">Workman আন্তঃৰাষ্ট্ৰীয় কীব’ৰ্ডৰ সৈতে ইংৰাজী (যুক্তৰাষ্ট্ৰ)</translation>
-<translation id="4527800702232535228">এই ফ’ল্ডাৰটো Parallels Desktopৰ সৈতে শ্বেয়াৰ কৰা হৈছে</translation>
 <translation id="4552678318981539154">অধিক ষ্ট’ৰেজ কিনক</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> নেটৱৰ্ক, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">ব’কে’</translation>
@@ -484,7 +477,6 @@
 <translation id="4779136857077979611">অনিগিৰি</translation>
 <translation id="4784330909746505604">PowerPoint উপস্থাপন</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> কেবি</translation>
-<translation id="4789067489790477934">Parallels Desktopক আপোনাৰ Google Driveত থকা ফাইল এক্সেছ কৰিবলৈ অনুমতি দিয়ক। সালসলনিসমূহ আপোনাৰ অন্য ডিভাইচৰ সৈতে ছিংক হ’ব।</translation>
 <translation id="4790766916287588578">InScript কীব’ৰ্ডৰ সৈতে হিন্দী</translation>
 <translation id="4798645114741131062">আপোনাৰ ChromeOS Flex ডিভাইচটোৱে সোনকালেই আপডে’ট লাভ কৰা বন্ধ কৰিব। এটা ChromeOS ডিভাইচলৈ আপগ্ৰে’ড কৰাৰ কথা বিবেচনা কৰক।</translation>
 <translation id="4801956050125744859">দুয়োটাই ৰাখক</translation>
@@ -504,12 +496,10 @@
 <translation id="4880214202172289027">ভলিউম শ্লাইডাৰ</translation>
 <translation id="4881695831933465202">খোলক</translation>
 <translation id="4891091358278567964">এই বস্তুবোৰ পুনঃস্থাপন কৰিবলৈ সেইবোৰ ট্ৰেশ্বৰ বাহিৰত এটা নতুন ফ’ল্ডাৰলৈ টানি আনি এৰক। এই বস্তুবোৰৰ মূল ফ’ল্ডাৰসমূহ মচা হৈছে।</translation>
-<translation id="4900532980794411603">Parallels Desktopৰ জৰিয়তে শ্বেয়াৰ কৰক</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" />টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, সংযোগ কৰক</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" /> টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, ফ’নৰ বেটাৰী <ph name="BATTERY_STATUS" />%, সবিশেষ</translation>
 <translation id="4935975195727477204">গাজানীয়া ফুল</translation>
 <translation id="4943368462779413526">ফুটবল</translation>
-<translation id="4961158930123534723">Parallels Desktopৰ জৰিয়তে ১ টা ফ’ল্ডাৰ শ্বেয়াৰ কৰা হৈছে</translation>
 <translation id="4965874878399872778">আপোনাৰ প্ৰতিষ্ঠানৰ সুৰক্ষা নীতিসমূহৰ বিপৰীতে ফাইলসমূহ পৰীক্ষা কৰি থকা হৈছে...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> পুনঃস্থাপন কৰা হৈছে</translation>
 <translation id="4969785127455456148">এলবাম</translation>
@@ -524,7 +514,6 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">এই কার্যৰ বাবে প্ৰত্যাশা কৰাত কৈ অধিক সময়ৰ প্ৰয়োজন হৈছে। আপুনি কার্য বন্ধ কৰিব খোজে নেকি?</translation>
 <translation id="5036141350290856713">ৰাছিয়ান ফ'নেটিক</translation>
-<translation id="5036159836254554629">Parallels Desktopৰ শ্বেয়াৰ কৰাৰ সুবিধাটো পৰিচালনা কৰক</translation>
 <translation id="5038625366300922036">অধিক চাওক...</translation>
 <translation id="5044852990838351217">আৰ্মেনিয়ান</translation>
 <translation id="5045550434625856497">ভুল পাছৱৰ্ড</translation>
@@ -736,9 +725,7 @@
 <translation id="656398493051028875">"<ph name="FILENAME" />" মচি থকা হৈছে...</translation>
 <translation id="6581162200855843583">Google Driveৰ লিংক</translation>
 <translation id="6588648400954570689">ফাইল ছিংক সম্পৰ্কীয় ছেটিং</translation>
-<translation id="6594855146910089723">এই ফ’ল্ডাৰটো Linux আৰু Parallels Desktopৰ সৈতে শ্বেয়াৰ কৰা হৈছে</translation>
 <translation id="6607272825297743757">ফাইলৰ তথ্য</translation>
-<translation id="6609332149380188670">Parallels Desktopৰ জৰিয়তে <ph name="NUMBER_OF_ITEMS" /> টা ফ’ল্ডাৰ শ্বেয়াৰ কৰা হৈছে</translation>
 <translation id="6629518321609546825">অতি কমেও ৪ টা সংখ্যা দিয়ক</translation>
 <translation id="6643016212128521049">মচক</translation>
 <translation id="6650726141019353908">গুলপীয়া পখিলা</translation>
@@ -856,7 +843,6 @@
 <translation id="7436921188514130341">আমি দুঃখিত! পূৰ্বৰ নাম সলাই নতুন নাম দি থাকোঁতে কিবা আসোঁৱাহ হ'ল।</translation>
 <translation id="7458955835361612701">কোনো শেহতীয়া প্ৰতিচ্ছবি নাই</translation>
 <translation id="7469894403370665791">এই নেটৱেৰ্কটোত স্বয়ংক্ৰিয়ভাৱে সংযোগ কৰক</translation>
-<translation id="7486315294984620427">Parallels Desktopত ফাইল টানি আনি এৰিবলৈ, ফাইলটো Windows ফাইললৈ প্ৰতিলিপি কৰিবই লাগিব।</translation>
 <translation id="749452993132003881">হিৰাগনা</translation>
 <translation id="7495372004724182530">মালায়ালম ফ’নেটিক</translation>
 <translation id="7505167922889582512">লুকুৱাই থোৱা ফাইলসমূহ দেখুৱাওক</translation>

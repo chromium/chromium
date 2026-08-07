@@ -592,6 +592,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2027465737841872819">Plast</translation>
 <translation id="2027707238798802149">Kortet är inte tillgängligt</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />kontrollera proxyn och brandväggen<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">Den här instansen av Chrome körs med manuellt inställda kommandoradsflaggor. Observera att kommandoradsflaggor kan ändras när som helst och stöds inte.</translation>
 <translation id="2033900728810589426">Genvägen kan inte vara densamma som standardsökordet hos sökleverantören som definieras av <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Spara ändå</translation>
 <translation id="2036514476578229158">Du har bett att få besöka den här webbplatsen. Dina föräldrar kan svara via Family Link.</translation>
@@ -4565,7 +4566,6 @@ Mer information:
 <translation id="8932102934695377596">Klockan går efter</translation>
 <translation id="893332455753468063">Lägg till namn</translation>
 <translation id="8938242527120341116">Enhetens innehållsfilter blockerade <ph name="BLOCKED_URL" /></translation>
-<translation id="8942355029279167844">Administratören har tillåtit <ph name="APP_NAME" /> att samla in diagnostikdata i syfte att förbättra produktupplevelsen. Du hittar mer information på <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Limegrön</translation>
 <translation id="8949410982325929394">Ton</translation>
 <translation id="8949493680961858543">A1 x 4</translation>

@@ -592,6 +592,7 @@
 <translation id="2027465737841872819">Пластик</translation>
 <translation id="2027707238798802149">Карта қолжетімді емес</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Прокси және брандмауэр конфигурациясын тексеріп көріңіз<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">Chrome-ның бұл данасы қолмен орнатылған пәрмен жолы жалаушаларымен орындалып жатыр. Пәрмен жолының жалаушалары кез келген уақытта өзгеруі мүмкін екенін және оларға қолдау көрсетілмейтінін ескеріңіз.</translation>
 <translation id="2033900728810589426">Жылдам пәрмен <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> анықтаған әдепкі іздеу провайдері кілтсөзімен бірдей болмауы керек: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Сонда да сақтау</translation>
 <translation id="2036514476578229158">Осы сайтқа кіруді сұрадыңыз. Ата-аналарыңыз Family Link-те жауап бере алады.</translation>
@@ -4562,7 +4563,6 @@
 <translation id="8932102934695377596">Сағатыңыз артта қалған</translation>
 <translation id="893332455753468063">Ат қосу</translation>
 <translation id="8938242527120341116">Құрылғының контент сүзгілері <ph name="BLOCKED_URL" /> мекенжайын блоктады.</translation>
-<translation id="8942355029279167844">Әкімші <ph name="APP_NAME" /> қолданбасына өнімді пайдалануды жақсарту үшін диагностикалық деректерді жинауға рұқсат етті. Толығырақ ақпарат алу үшін <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> бетін қараңыз.</translation>
 <translation id="8943282376843390568">Сарғылт жасыл</translation>
 <translation id="8949410982325929394">Сарын</translation>
 <translation id="8949493680961858543">A1x4</translation>

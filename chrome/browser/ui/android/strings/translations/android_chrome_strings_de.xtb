@@ -85,6 +85,7 @@
 <translation id="1310482092992808703">Tabs gruppieren</translation>
 <translation id="1318262688555255786">Link zur Webseite „<ph name="PAGE_TITLE" />“ teilen. Quelle: <ph name="PAGE_URL" /></translation>
 <translation id="1327257854815634930">Der Navigationsverlauf ist geöffnet</translation>
+<translation id="1330043879670259913">Zum Schutz deiner Arbeit in Chrome kann deine Organisation bestimmte Informationen ansehen oder verwalten, wenn du in Chrome angemeldet bist. Weitere Informationen</translation>
 <translation id="1331212799747679585">Chrome kann nicht aktualisiert werden. Weitere Optionen</translation>
 <translation id="1332501820983677155">Tastenkombinationen für Google Chrome-Funktionen</translation>
 <translation id="1333491156693005331">Vor Kurzem geprüft</translation>
@@ -296,6 +297,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2233735624724508540">Wähle einen Zeitraum aus und tippe dann auf „Daten löschen“</translation>
 <translation id="2234031676056123135">Verknüpfungen anpassen</translation>
 <translation id="2234827758954819389">Datenschutz-Leitfaden</translation>
+<translation id="2236949375853147973">Meine Aktivitäten</translation>
 <translation id="2238038374973843156">Gruppe in ein anderes Fenster verschieben</translation>
 <translation id="2247789808226901522">Karte abgelaufen</translation>
 <translation id="2251809247798634662">Neues Inkognitofenster</translation>
@@ -573,6 +575,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3385749568468586663">Gemini ist im Inkognitomodus nicht verfügbar</translation>
 <translation id="3387650086002190359"><ph name="FILE_NAME" /> konnte aufgrund von Dateisystemfehlern nicht heruntergeladen werden.</translation>
 <translation id="3391311825344469964">Du kannst deine Fenster im Fenstermanager von Chrome verwalten</translation>
+<translation id="3410151451624226773">Im Google Passwortmanager verwalten</translation>
 <translation id="3417835166382867856">Tabs suchen</translation>
 <translation id="3430670036890315772">Wenn du die Profilsperre deaktivierst, werden deine gespeicherten Informationen entfernt</translation>
 <translation id="3435575784518354875">Wenn du weiterhin auf deine Passwörter zugreifen möchtest, exportiere sie jetzt, aktualisiere die Google Play-Dienste und importiere sie dann wieder in den Google Passwortmanager. <ph name="BEGIN_LINK" />Vollständige Anleitung<ph name="END_LINK" /></translation>
@@ -941,6 +944,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4877678010818027629">Inkognitomodus aktivieren</translation>
 <translation id="4878404682131129617">Tunnelerstellung via Proxyserver ist fehlgeschlagen</translation>
 <translation id="4880127995492972015">Übersetzen…</translation>
+<translation id="4880827082731008257">Suchverlauf</translation>
 <translation id="4881695831933465202">Öffnen</translation>
 <translation id="488187801263602086">Datei umbenennen</translation>
 <translation id="4885273946141277891">Nicht unterstützte Anzahl von Chrome-Instanzen</translation>
@@ -990,6 +994,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="509429900233858213">Ein Fehler ist aufgetreten.</translation>
 <translation id="5096775069898886423">Du wirst gewarnt, wenn du eine Website aufrufen möchtest, die keine sicheren Verbindungen unterstützt</translation>
 <translation id="510275257476243843">1 Stunde übrig</translation>
+<translation id="5105442806410269908">Andere Google-Daten verwalten</translation>
 <translation id="5114895953710637392">Die App-Filtertabelle ist geschlossen.</translation>
 <translation id="5115811374190515607">zu <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Du kannst Chrome jederzeit nutzen, wenn du in Nachrichten, Dokumenten und anderen Apps auf Links tippst.</translation>
@@ -1040,6 +1045,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="5316947901395241499">Das Speichern von Passwörtern wurde von deinem Administrator deaktiviert</translation>
 <translation id="5317780077021120954">Speichern</translation>
 <translation id="5319359161174645648">Google empfiehlt Chrome</translation>
+<translation id="5323501626199324454">Im Google-Konto verwalten</translation>
 <translation id="5326246328175179736">Mit diesem Konto kannst du dich nicht anmelden</translation>
 <translation id="5327248766486351172">Name</translation>
 <translation id="5328542107300944283">Mit <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> verwenden</translation>
@@ -1166,6 +1172,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="5869522115854928033">Gespeicherte Passwörter</translation>
 <translation id="5870416898561279542">Doppelte Tabs und Tabgruppen oder solche, die <ph name="DAYS_INACTIVE" /> Tage lang nicht verwendet wurden, werden hierher verschoben<ph name="AUTODELETE_SECTION" />. Du kannst diese Einstellung jederzeit in den <ph name="DECLUTTER_SETTINGS_TITLE" /> ändern.</translation>
 <translation id="5885378508678660271">Benachrichtigungen <ph name="SEPARATOR" /> Chrome hat diese Berechtigungen entfernt, weil diese Website gefährlich ist</translation>
+<translation id="5896944002928653773">Ansicht mit Haftungsausschluss für Unternehmenssignale am unteren Rand ist geschlossen</translation>
 <translation id="5899667542927581604">Die Ansicht „Keine Passkeys“ wurde geschlossen</translation>
 <translation id="5907542076239273525">Lesezeichen in „<ph name="FOLDER_NAME" />“ gespeichert</translation>
 <translation id="5911301511366365629"><ph name="TAB_TITLE" />, ausgewählter Inkognitotab mit Audio</translation>
@@ -1256,6 +1263,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6251449557817521191">Hier kannst du dir den Chrome-Verlauf ansehen</translation>
 <translation id="6254139308321626268">Du siehst gerade eine PDF‑Datei</translation>
 <translation id="6255809143828972562">Die Tools von Chrome helfen dir, sicher zu surfen und deine Daten zu schützen</translation>
+<translation id="6259107733340311168">Ansicht mit Haftungsausschluss für Unternehmenssignale am unteren Rand ist vollständig geöffnet</translation>
 <translation id="6260260490042862943">Website-Einstellungen</translation>
 <translation id="6264376385120300461">Trotzdem herunterladen</translation>
 <translation id="6264485186158353794">Zurück zu sicherer Website</translation>
@@ -1322,6 +1330,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6461962085415701688">Datei kann nicht geöffnet werden</translation>
 <translation id="6464977750820128603">Du siehst in Chrome besuchte Websites und kannst Timer einstellen.\n\nGoogle erhält Informationen zu den Websites, für die du Timer einstellst, sowie zur Dauer des Besuchs. Anhand dieser Informationen wird Digital Wellbeing optimiert.</translation>
 <translation id="6468703991511753953">Adressleiste derzeit unten</translation>
+<translation id="6469702164109431067">Passwörter und Passkeys</translation>
 <translation id="6470181189905173055">Hier werden die Seiten angezeigt, die du in Chrome während der Verwendung von <ph name="APP_LABEL" /> geöffnet hast.</translation>
 <translation id="6473086018775716761">Die Liste der Freigabeoptionen ist halb geöffnet.</translation>
 <translation id="6475951671322991020">Video herunterladen</translation>

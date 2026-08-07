@@ -297,6 +297,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2233735624724508540">Vælg en tidsramme, og tryk derefter på Slet data</translation>
 <translation id="2234031676056123135">Tilpas dine genveje</translation>
 <translation id="2234827758954819389">Privatlivsguide</translation>
+<translation id="2236949375853147973">Min aktivitet</translation>
 <translation id="2238038374973843156">Flyt gruppe til det nye vindue</translation>
 <translation id="2247789808226901522">Kortet er udløbet</translation>
 <translation id="2251809247798634662">Nyt inkognitovindue</translation>
@@ -574,6 +575,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3385749568468586663">Gemini er ikke tilgængelig i inkognitotilstand</translation>
 <translation id="3387650086002190359">Download af <ph name="FILE_NAME" /> mislykkedes på grund af fejl i filsystemet.</translation>
 <translation id="3391311825344469964">Du kan administrere dine vinduer i Chromes vinduesadministrator</translation>
+<translation id="3410151451624226773">Administrer i Google Adgangskodeadministrator</translation>
 <translation id="3417835166382867856">Søg i faner</translation>
 <translation id="3430670036890315772">Hvis du deaktiverer din profillås, fjernes dine gemte oplysninger</translation>
 <translation id="3435575784518354875">Hvis du fortsat vil have adgang til dine adgangskoder, skal du eksportere dem nu, opdatere Google Play-tjenester og derefter importere dem til Google Adgangskodeadministrator igen. <ph name="BEGIN_LINK" />Se hele vejledningen<ph name="END_LINK" />.</translation>
@@ -942,6 +944,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4877678010818027629">Slå inkognitotilstand til</translation>
 <translation id="4878404682131129617">Der kunne ikke etableres en tunnel via proxyserver</translation>
 <translation id="4880127995492972015">Oversæt…</translation>
+<translation id="4880827082731008257">Søg i historikken</translation>
 <translation id="4881695831933465202">Åbn</translation>
 <translation id="488187801263602086">Omdøb fil</translation>
 <translation id="4885273946141277891">Der er flere forekomster af Chrome, end der understøttes.</translation>
@@ -991,6 +994,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="509429900233858213">Der opstod en fejl.</translation>
 <translation id="5096775069898886423">Bliv advaret, før du besøger et website, som ikke understøtter sikre forbindelser</translation>
 <translation id="510275257476243843">1 time tilbage</translation>
+<translation id="5105442806410269908">Administrer andre Google-data</translation>
 <translation id="5114895953710637392">Oversigten over filtrering efter app er lukket.</translation>
 <translation id="5115811374190515607">til <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Du kan nu bruge Chrome, hver gang du trykker på links i meddelelser, dokumenter og andre apps.</translation>
@@ -1041,6 +1045,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="5316947901395241499">Din administrator har deaktiveret lagring af adgangskoder</translation>
 <translation id="5317780077021120954">Gem</translation>
 <translation id="5319359161174645648">Google anbefaler Chrome</translation>
+<translation id="5323501626199324454">Administrer på din Google-konto</translation>
 <translation id="5326246328175179736">Du kan ikke logge ind med denne konto</translation>
 <translation id="5327248766486351172">Navn</translation>
 <translation id="5328542107300944283">Brug via <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1325,6 +1330,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6461962085415701688">Filen kan ikke åbnes</translation>
 <translation id="6464977750820128603">Du kan se websites, du har besøgt i Chrome, og indstille timere for dem.\n\nGoogle får oplysninger om de websites, du indstiller timere for, og hvor længe du er på dem. Disse oplysninger bruges til at forbedre Digital balance.</translation>
 <translation id="6468703991511753953">Adresselinjen vises i øjeblikket nederst</translation>
+<translation id="6469702164109431067">Adgangskoder og adgangsnøgler</translation>
 <translation id="6470181189905173055">De sider, du åbnede i Chrome, mens du brugte <ph name="APP_LABEL" />, vises her.</translation>
 <translation id="6473086018775716761">Listen over delingsindstillinger er åbnet i halv højde.</translation>
 <translation id="6475951671322991020">Download video</translation>
