@@ -1559,7 +1559,7 @@ public class UrlBar extends AutocompleteEditText {
         // CAUTION: Avoid returning `null` from this method.
         // IMF lifecycle is different from android focus. IMF keeps an InputConnection alive
         // even after the View it is connected to loses focus.
-        // Returning `null` from here will force IMF to bind a "Dummy" input connection
+        // Returning `null` from here will force IMF to bind a no-op input connection
         // (see https://crbug.com/512199013), which may result in users in select locales
         // be unable to work with locale-appropriate keyboards.
 

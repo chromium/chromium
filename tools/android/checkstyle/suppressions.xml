@@ -34,4 +34,7 @@
   <!-- Omnibox UrlBar and helpers intercept standard Android ContextMenu calls to render Chrome ListMenu. -->
   <suppress id="AndroidContextMenu"
             files="chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/UrlBar(.*)\.java"/>
+  <!-- UrlBarUnitTest sets text size to simulate specific font metrics. -->
+  <suppress id="SetTextColorAndSetTextSizeCheck"
+            files="chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/UrlBarUnitTest\.java"/>
 </suppressions>
