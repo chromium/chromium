@@ -11,6 +11,7 @@
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/fakes/fake_web_state_delegate.h"
 #import "ios/web/public/test/fakes/fake_web_state_observer.h"
+#import "ios/web/public/test/fakes/fake_web_state_policy_decider.h"
 #import "ios/web/public/web_client.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest_mac.h"
@@ -101,6 +102,18 @@ TEST_F(ContentWebStateTest, SetHasOpener) {
   ASSERT_FALSE(content_web_state()->HasOpener());
   content_web_state()->SetHasOpener(true);
   EXPECT_TRUE(content_web_state()->HasOpener());
+}
+
+// Tests that a WebStatePolicyDecider is detached (web_state() becomes null)
+// when the ContentWebState it's attached to is destroyed.
+TEST_F(ContentWebStateTest, PolicyDecider) {
+  auto policy_decider =
+      std::make_unique<FakeWebStatePolicyDecider>(content_web_state());
+  EXPECT_EQ(content_web_state(), policy_decider->web_state());
+
+  content_web_state_.reset();
+
+  EXPECT_FALSE(policy_decider->web_state());
 }
 
 // Tests that GetCreationTime()/GetLastActiveTime() start out equal, and that
