@@ -439,7 +439,7 @@ class LocationBarMediator
         mOmniboxChipManager = omniboxChipManager;
         mHintTextUpdater =
                 new HintTextUpdater(
-                        mContext,
+                        mResourceProvider,
                         mLocationBarDataProvider,
                         mEmbedderUiOverrides,
                         mSearchEngineServiceSupplier,

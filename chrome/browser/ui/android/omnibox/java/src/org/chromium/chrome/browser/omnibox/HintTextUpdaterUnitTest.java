@@ -38,7 +38,9 @@ import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBrid
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.contextual_search.InputState;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -53,7 +55,7 @@ import org.chromium.url.GURL;
 
 /** Unit tests for {@link HintTextUpdater}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class HintTextUpdaterTest {
+public class HintTextUpdaterUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private LocationBarDataProvider mLocationBarDataProvider;
@@ -92,6 +94,7 @@ public class HintTextUpdaterTest {
 
     private HintTextUpdater mUpdater;
     private SearchEngineNameObserver mSearchEngineNameObserver;
+    private OmniboxResourceProvider mResourceProvider;
 
     @Before
     public void setUp() {
@@ -120,9 +123,12 @@ public class HintTextUpdaterTest {
         mProfileSupplier.set(mProfile);
         TrackerFactory.setTrackerForTests(mTracker);
 
+        var context = ApplicationProvider.getApplicationContext();
+        context.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mResourceProvider = new OmniboxResourceProvider(context, BrandedColorScheme.APP_DEFAULT);
         mUpdater =
                 new HintTextUpdater(
-                        ApplicationProvider.getApplicationContext(),
+                        mResourceProvider,
                         mLocationBarDataProvider,
                         mEmbedderUiOverrides,
                         mSearchEngineServiceSupplier,

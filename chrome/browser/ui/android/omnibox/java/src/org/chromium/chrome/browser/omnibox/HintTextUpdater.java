@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox;
 
-import android.content.Context;
 import android.text.TextUtils;
 
 import org.chromium.base.Callback;
@@ -38,7 +37,7 @@ import org.chromium.url.GURL;
  */
 @NullMarked
 public class HintTextUpdater implements LocationBarDataProvider.Observer {
-    private final Context mContext;
+    private final OmniboxResourceProvider mResourceProvider;
     private final LocationBarDataProvider mLocationBarDataProvider;
     private final LocationBarEmbedderUiOverrides mEmbedderUiOverrides;
     private final Callback<String> mUpdateHintTextCallback;
@@ -66,14 +65,14 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
     private boolean mAimHintShownThisSession;
 
     public HintTextUpdater(
-            Context context,
+            OmniboxResourceProvider resourceProvider,
             LocationBarDataProvider locationBarDataProvider,
             LocationBarEmbedderUiOverrides embedderUiOverrides,
             MonotonicObservableSupplier<SearchEngineService> searchEngineServiceSupplier,
             FuseboxCoordinator fuseboxCoordinator,
             MonotonicObservableSupplier<Profile> profileSupplier,
             Callback<String> updateHintTextCallback) {
-        mContext = context;
+        mResourceProvider = resourceProvider;
         mLocationBarDataProvider = locationBarDataProvider;
         mEmbedderUiOverrides = embedderUiOverrides;
         mSearchEngineServiceSupplier = searchEngineServiceSupplier;
@@ -176,10 +175,9 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
         if (useAimActivationOrEmptyHint()) {
             if (triggerOrAlreadyShowingActivationHint()) {
                 mUpdateHintTextCallback.onResult(
-                        OmniboxResourceProvider.getString(
-                                mContext,
+                        mResourceProvider.getString(
                                 R.string.ai_mode_omnibox_placeholder,
-                                mContext.getString(R.string.ai_mode_entrypoint_label)));
+                                mResourceProvider.getString(R.string.ai_mode_entrypoint_label)));
             } else {
                 mUpdateHintTextCallback.onResult("");
             }
@@ -208,7 +206,7 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
         assert mSearchEngineService != null;
         String searchEngineName = mSearchEngineService.getSearchEngineName();
         if (TextUtils.isEmpty(searchEngineName)) {
-            return OmniboxResourceProvider.getString(mContext, R.string.omnibox_empty_hint);
+            return mResourceProvider.getString(R.string.omnibox_empty_hint);
         }
 
         if (OmniboxFeatures.sShowModelPicker.getValue()
@@ -221,15 +219,11 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
 
         switch (requestType) {
             case AutocompleteRequestType.AI_MODE:
-                return OmniboxResourceProvider.getString(
-                        mContext,
-                        R.string.omnibox_ai_mode_scope_placeholder_text,
-                        searchEngineName);
+                return mResourceProvider.getString(
+                        R.string.omnibox_ai_mode_scope_placeholder_text, searchEngineName);
             case AutocompleteRequestType.IMAGE_GENERATION:
-                return OmniboxResourceProvider.getString(
-                        mContext,
-                        R.string.omnibox_empty_hint_for_image_generation,
-                        searchEngineName);
+                return mResourceProvider.getString(
+                        R.string.omnibox_empty_hint_for_image_generation, searchEngineName);
         }
         return mSearchEngineService.getOmniboxHintString();
     }
