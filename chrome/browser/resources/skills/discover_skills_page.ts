@@ -20,7 +20,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './discover_skills_page.css.js';
 import {getHtml} from './discover_skills_page.html.js';
 import type {Skill, TopicInfo} from './skill.mojom-webui.js';
-import {SkillsDialogType} from './skill.mojom-webui.js';
+import {SkillsDialogType, SkillSource} from './skill.mojom-webui.js';
 import {SkillsManagementAction, SkillsManagementPage} from './skill_metrics.mojom-webui.js';
 import type {BrowseSkillsInitialState} from './skills.mojom-webui.js';
 import {SkillsPageBrowserProxy} from './skills_page_browser_proxy.js';
@@ -99,6 +99,15 @@ export class DiscoverSkillsPageElement extends CrLitElement {
     this.proxy_.handler.recordSkillsManagementAction(
         SkillsManagementPage.kBrowseSkills,
         SkillsManagementAction.kClickedAddSkill);
+
+    // Enterprise skills are fully defined and downloaded on policy update and
+    // do not require a separate prompt download request or verification via
+    // maybeSaveSkill(). Open the save dialog immediately.
+    if (savedSkill.source === SkillSource.kEnterprise) {
+      this.proxy_.handler.openSkillsDialog(SkillsDialogType.kAdd, savedSkill);
+      return;
+    }
+
     this.is1PSkillSaving_ = true;
     this.proxy_.handler.maybeSave1PSkill(savedSkill.id).then(({success}) => {
       if (success) {
@@ -157,6 +166,8 @@ export class DiscoverSkillsPageElement extends CrLitElement {
         return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
             'skills:ink-pen' :
             'skills:write-old';
+      case 'From your organization':
+        return 'cr:domain';
       default:
         return 'cr:add';
     }

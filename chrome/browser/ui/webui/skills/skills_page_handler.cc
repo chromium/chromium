@@ -230,6 +230,8 @@ void SkillsPageHandler::Request1PSkills() {
   }
 }
 
+// TODO(b/543404064): Rename to `GetInitialDiscoverySkills()` to reflect that
+// this returns discovery and enterprise provided skills, not just 1P skills.
 void SkillsPageHandler::GetInitial1PSkills(
     GetInitial1PSkillsCallback callback) {
   auto scoped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
@@ -240,10 +242,20 @@ void SkillsPageHandler::GetInitial1PSkills(
     std::move(scoped_callback).Run(mojom::BrowseSkillsInitialState::New());
     return;
   }
-  auto state = mojom::BrowseSkillsInitialState::New();
-  state->topics_info_list = service->Get1PTopicsInfo();
-  state->skill_map = Translate1PSkills(service->Get1PSkills());
-  std::move(scoped_callback).Run(std::move(state));
+  std::move(scoped_callback)
+      .Run(GetDiscoverySkills(service->Get1PTopicsInfo(),
+                              service->Get1PSkills()));
+}
+
+void SkillsPageHandler::OnProvidedSkillsChanged(
+    skills::SkillsProvider* provider) {
+  auto* service =
+      SkillsServiceFactory::GetForProfile(base::to_address(profile_));
+  if (!service) {
+    return;
+  }
+  page_->Update1PSkills(
+      GetDiscoverySkills(service->Get1PTopicsInfo(), service->Get1PSkills()));
 }
 
 void SkillsPageHandler::OnDiscoverySkillsUpdated(
@@ -268,10 +280,9 @@ void SkillsPageHandler::OnDiscoverySkillsUpdated(
 
   // If the data exists that means we have an updated list of skills.
   if (first_party_skill_data) {
-    auto state = mojom::BrowseSkillsInitialState::New();
-    state->topics_info_list = first_party_skill_data->topics_info_list;
-    state->skill_map = Translate1PSkills(first_party_skill_data->skills_list);
-    page_->Update1PSkills(std::move(state));
+    page_->Update1PSkills(
+        GetDiscoverySkills(first_party_skill_data->topics_info_list,
+                           first_party_skill_data->skills_list));
   }
 }
 
@@ -297,6 +308,39 @@ void SkillsPageHandler::RecordSkillsManagementAction(
     skills::mojom::SkillsManagementPage page,
     skills::mojom::SkillsManagementAction action) {
   skills::RecordSkillsManagementAction(page, action);
+}
+
+mojom::BrowseSkillsInitialStatePtr SkillsPageHandler::GetDiscoverySkills(
+    const std::vector<skills::proto::TopicInfo>& topics_info_list,
+    const skills::SkillProtoList& skills_list) {
+  auto state = mojom::BrowseSkillsInitialState::New();
+  state->topics_info_list = topics_info_list;
+  state->skill_map = Translate1PSkills(skills_list);
+  AppendProvidedSkills(state.get());
+  return state;
+}
+
+void SkillsPageHandler::AppendProvidedSkills(
+    mojom::BrowseSkillsInitialState* state) {
+  auto* service =
+      SkillsServiceFactory::GetForProfile(base::to_address(profile_));
+  if (!service) {
+    return;
+  }
+
+  std::vector<skills::Skill> enterprise_skills;
+  for (const auto& [id, skill] : service->GetProvidedSkills()) {
+    enterprise_skills.push_back(*skill);
+  }
+
+  if (!enterprise_skills.empty()) {
+    std::sort(enterprise_skills.begin(), enterprise_skills.end(),
+              [](const skills::Skill& a, const skills::Skill& b) {
+                return a.name < b.name;
+              });
+    // TODO(b/540008460): Create a shared constant.
+    state->skill_map["From your organization"] = std::move(enterprise_skills);
+  }
 }
 
 void SkillsPageHandler::OnSkillsEnabledPrefChanged() {
