@@ -193,9 +193,17 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         return LayoutSize.PHONE;
     }
 
-    /** As {@link #getDrawable(Context, int)} but uses the instance context and cache. */
-    public Drawable getDrawable(@DrawableRes int res) {
-        return mCache.getDrawable(res);
+    /**
+     * Resolves a drawable resource using the instance context and cache, automatically casting the
+     * result to the target {@link Drawable} subtype.
+     *
+     * @param <T> Target {@link Drawable} subtype to cast to.
+     * @param res Drawable resource ID to retrieve.
+     * @return Resolved {@link Drawable} cast to the target type {@code T}.
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends Drawable> T getDrawable(@DrawableRes int res) {
+        return (T) mCache.getDrawable(res);
     }
 
     /**
@@ -702,20 +710,25 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
     }
 
     /**
-     * As {@link androidx.appcompat.content.res.AppCompatResources#getDrawable(Context, int)} but
-     * potentially augmented with caching. If caching is enabled, there is a single, unbounded cache
-     * of ConstantState shared by all contexts.
+     * Resolves a drawable resource and caches its constant state for reuse across all contexts,
+     * automatically casting the result to the target {@link Drawable} subtype.
+     *
+     * @param <T> Target {@link Drawable} subtype to cast to.
+     * @param context Current context used to resolve the drawable resource.
+     * @param res Drawable resource ID to retrieve and cache.
+     * @return Resolved {@link Drawable} cast to the target type {@code T}.
      */
-    public static Drawable getDrawable(Context context, @DrawableRes int res) {
+    @SuppressWarnings("unchecked")
+    public static <T extends Drawable> T getDrawable(Context context, @DrawableRes int res) {
         ThreadUtils.assertOnUiThread();
         ConstantState constantState = sDrawableCache.get(res, null);
         if (constantState != null) {
-            return constantState.newDrawable(context.getResources());
+            return (T) constantState.newDrawable(context.getResources());
         }
 
         Drawable drawable = AppCompatResources.getDrawable(context, res);
         sDrawableCache.put(res, drawable.getConstantState());
-        return drawable;
+        return (T) drawable;
     }
 
     /**

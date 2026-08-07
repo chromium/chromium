@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
@@ -25,7 +23,6 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
-import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -126,11 +123,9 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
         mMicButtonWidth = locationBarIconWidth;
         mLensButtonWidth = locationBarIconWidth;
         mFocusedPopupDrawable =
-                (LayerDrawable)
-                        assumeNonNull(
-                                context.getDrawable(
-                                        R.drawable
-                                                .modern_toolbar_tablet_text_box_background_focused_popup));
+                OmniboxResourceProvider.getDrawable(
+                        context,
+                        R.drawable.modern_toolbar_tablet_text_box_background_focused_popup);
         mFocusedPopupDrawable.mutate();
         mOuterRect =
                 (GradientDrawable)
@@ -155,11 +150,8 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
                 resources.getDimensionPixelSize(R.dimen.location_bar_desktop_popover_margin_end);
 
         mHoverDrawable =
-                (LayerDrawable)
-                        assumeNonNull(
-                                AppCompatResources.getDrawable(
-                                        getContext(),
-                                        R.drawable.modern_toolbar_text_box_background_highlight));
+                OmniboxResourceProvider.getDrawable(
+                        getContext(), R.drawable.modern_toolbar_text_box_background_highlight);
         mHoverDrawable.mutate();
 
         @Px float strokeWidth = resources.getDimension(R.dimen.fusebox_glif_stroke_width);
