@@ -706,17 +706,15 @@ void DeclarativePerformanceObserverStore::ClearDataWithFilter(
   }
 
   // 1. Filter and remove from in-memory policy cache immediately:
-  auto removed = std::ranges::remove_if(
-      cached_policies_, [&](const auto& entry) {
-        if (filter.Run(entry.first)) {
-          if (!loaded_) {
-            modified_during_load_.erase(entry.first);
-          }
-          return true;
-        }
-        return false;
-      });
-  cached_policies_.erase(removed.begin(), removed.end());
+  absl::erase_if(cached_policies_, [&](const auto& entry) {
+    if (filter.Run(entry.first)) {
+      if (!loaded_) {
+        modified_during_load_.erase(entry.first);
+      }
+      return true;
+    }
+    return false;
+  });
 
   // 2. Post to DB sequence to perform the actual database deletions:
   db_task_runner_->PostTaskAndReply(

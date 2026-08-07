@@ -9,7 +9,6 @@
 #include <optional>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -19,6 +18,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "url/origin.h"
 
 namespace base {
@@ -114,7 +114,7 @@ class CONTENT_EXPORT DeclarativePerformanceObserverStore {
   scoped_refptr<Backend> backend_;
 
   // UI-thread In-Memory Policy Cache for instant 0ns lookups:
-  base::flat_map<url::Origin, base::Time> cached_policies_;
+  absl::flat_hash_map<url::Origin, base::Time> cached_policies_;
 
   // True if the initial database loading has completed.
   bool loaded_ = false;
