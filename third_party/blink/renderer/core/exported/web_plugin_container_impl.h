@@ -224,6 +224,13 @@ class CORE_EXPORT WebPluginContainerImpl final
 
   void HandleLockMouseResult(mojom::blink::PointerLockResult result);
 
+  // Forwards the combined render-throttling state to |web_plugin_|. The
+  // effective display-locked bit is the OR of the containing frame's own
+  // display-lock (pushed via UpdateRenderThrottlingStatus) and any display lock
+  // on the plugin element or one of its same-document ancestors (recomputed in
+  // UpdateAllLifecyclePhases).
+  void SendThrottlingStatus();
+
   void SynthesizeMouseEventIfPossible(TouchEvent&);
 
   void FocusPlugin();
@@ -241,6 +248,16 @@ class CORE_EXPORT WebPluginContainerImpl final
   cc::Layer* layer_ = nullptr;
   TouchEventRequestType touch_event_request_type_ = kTouchEventRequestTypeNone;
   bool wants_wheel_events_ = false;
+
+  // Cached render-throttling state. The first three values are updated when
+  // LocalFrameView propagates its throttling state through
+  // UpdateRenderThrottlingStatus(). |element_display_locked_| is recomputed
+  // during lifecycle updates. Keeping the display-lock sources separate
+  // prevents either update path from overwriting the other.
+  bool is_throttled_ = false;
+  bool subtree_throttled_ = false;
+  bool frame_display_locked_ = false;
+  bool element_display_locked_ = false;
 };
 
 template <>

@@ -45,6 +45,7 @@
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "third_party/blink/public/web/web_print_params.h"
+#include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
@@ -210,6 +211,34 @@ class TestPluginWithEditableText : public FakeWebPlugin {
   bool paste_called_;
 };
 
+class RenderThrottlingTestPlugin : public FakeWebPlugin {
+ public:
+  explicit RenderThrottlingTestPlugin(const WebPluginParams& params)
+      : FakeWebPlugin(params) {}
+
+  void UpdateRenderThrottlingStatus(bool is_throttled,
+                                    bool subtree_throttled,
+                                    bool display_locked) override {
+    is_throttled_ = is_throttled;
+    subtree_throttled_ = subtree_throttled;
+    display_locked_ = display_locked;
+    ++update_count_;
+  }
+
+  bool IsThrottled() const { return is_throttled_; }
+  bool SubtreeThrottled() const { return subtree_throttled_; }
+  bool DisplayLocked() const { return display_locked_; }
+  int UpdateCount() const { return update_count_; }
+
+ private:
+  ~RenderThrottlingTestPlugin() override = default;
+
+  bool is_throttled_ = false;
+  bool subtree_throttled_ = false;
+  bool display_locked_ = false;
+  int update_count_ = 0;
+};
+
 class TestPluginWebFrameClient : public frame_test_helpers::TestWebFrameClient {
   WebLocalFrame* CreateChildFrame(
       mojom::blink::TreeScopeType scope,
@@ -319,6 +348,101 @@ void ExecuteContextMenuCommand(WebViewImpl* web_view,
 }
 
 }  // namespace
+
+TEST_F(WebPluginContainerTest, DisplayLockUpdatesRenderThrottlingStatus) {
+  RegisterMockedURL("plugin_display_lock.html");
+  CustomPluginWebFrameClient<RenderThrottlingTestPlugin>
+      plugin_web_frame_client;
+  frame_test_helpers::WebViewHelper web_view_helper;
+  WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
+      base_url_ + "plugin_display_lock.html", &plugin_web_frame_client);
+  EnablePlugins(web_view, gfx::Size(300, 300));
+
+  WebElement plugin_element =
+      web_view->MainFrameImpl()->GetDocument().GetElementById("plugin");
+  auto* plugin = static_cast<RenderThrottlingTestPlugin*>(
+      To<WebPluginContainerImpl>(plugin_element.PluginContainer())->Plugin());
+
+  EXPECT_FALSE(plugin->IsThrottled());
+  EXPECT_FALSE(plugin->SubtreeThrottled());
+  EXPECT_FALSE(plugin->DisplayLocked());
+  EXPECT_EQ(0, plugin->UpdateCount());
+
+  plugin_element.SetAttribute("style", "content-visibility: hidden");
+  UpdateAllLifecyclePhases(web_view);
+  EXPECT_FALSE(plugin->IsThrottled());
+  EXPECT_FALSE(plugin->SubtreeThrottled());
+  EXPECT_TRUE(plugin->DisplayLocked());
+  EXPECT_EQ(1, plugin->UpdateCount());
+
+  plugin_element.SetAttribute("style", "content-visibility: visible");
+  UpdateAllLifecyclePhases(web_view);
+  EXPECT_FALSE(plugin->DisplayLocked());
+  EXPECT_EQ(2, plugin->UpdateCount());
+
+  WebElement container =
+      web_view->MainFrameImpl()->GetDocument().GetElementById("container");
+  container.SetAttribute("style", "content-visibility: hidden");
+  UpdateAllLifecyclePhases(web_view);
+  EXPECT_TRUE(plugin->DisplayLocked());
+  EXPECT_EQ(3, plugin->UpdateCount());
+
+  container.SetAttribute("style", "content-visibility: visible");
+  UpdateAllLifecyclePhases(web_view);
+  EXPECT_FALSE(plugin->DisplayLocked());
+  EXPECT_EQ(4, plugin->UpdateCount());
+}
+
+TEST_F(WebPluginContainerTest,
+       ContentVisibilityAutoUpdatesRenderThrottlingStatus) {
+  RegisterMockedURL("plugin_scroll.html");
+  CustomPluginWebFrameClient<RenderThrottlingTestPlugin>
+      plugin_web_frame_client;
+  frame_test_helpers::WebViewHelper web_view_helper;
+  WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
+      base_url_ + "plugin_scroll.html", &plugin_web_frame_client);
+  EnablePlugins(web_view, gfx::Size(300, 300));
+
+  WebElement plugin_element =
+      web_view->MainFrameImpl()->GetDocument().GetElementById(
+          "scrolled-plugin");
+  auto* plugin = static_cast<RenderThrottlingTestPlugin*>(
+      To<WebPluginContainerImpl>(plugin_element.PluginContainer())->Plugin());
+
+  plugin_element.SetAttribute(
+      "style", "content-visibility: auto; position: absolute; top: 10000px");
+  UpdateAllLifecyclePhases(web_view);
+  // The first lifecycle registers the display-lock IntersectionObserver after
+  // laying out the newly auto-hidden element. Process its pending work before
+  // a second lifecycle computes and delivers the initial observation.
+  RunPendingTasks();
+  UpdateAllLifecyclePhases(web_view);
+  EXPECT_TRUE(plugin->DisplayLocked());
+  EXPECT_EQ(1, plugin->UpdateCount());
+
+  auto update_after_viewport_change = [&]() {
+    // After the initial observation, the display-lock IntersectionObserver
+    // queues its notification for the start of the next lifecycle. The first
+    // update computes the intersection, and the second applies the resulting
+    // lock change. Running pending tasks between them models the frame that
+    // Blink schedules for the deferred notification.
+    UpdateAllLifecyclePhases(web_view);
+    RunPendingTasks();
+    UpdateAllLifecyclePhases(web_view);
+  };
+
+  web_view->MainFrameImpl()->ExecuteScript(WebScriptSource(
+      "document.getElementById('scrolled-plugin').scrollIntoView()"));
+  update_after_viewport_change();
+  EXPECT_FALSE(plugin->DisplayLocked());
+  EXPECT_EQ(2, plugin->UpdateCount());
+
+  web_view->MainFrameImpl()->ExecuteScript(
+      WebScriptSource("window.scrollTo(0, 0)"));
+  update_after_viewport_change();
+  EXPECT_TRUE(plugin->DisplayLocked());
+  EXPECT_EQ(3, plugin->UpdateCount());
+}
 
 TEST_F(WebPluginContainerTest, WindowToLocalPointTest) {
   RegisterMockedURL("plugin_container.html");

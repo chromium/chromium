@@ -1394,4 +1394,101 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, ThrottlingPropagation) {
   EXPECT_TRUE(connector->IsDisplayLockedForTesting());
 }
 
+// Setting content-visibility:hidden directly on the <embed> element display-
+// locks the element in its own document. This lock is not reflected in the
+// containing frame's throttling bits, so it exercises the element-level
+// display-lock path in WebPluginContainerImpl.
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
+                       DisplayLockThrottlingViaContentVisibility) {
+  auto child_contents = SetupHarnessAndChild();
+  AttachChildToEmbedWithId(child_contents.get(), "my_embed");
+
+  auto* connector = child_contents->GetSurfaceEmbedConnector();
+  ASSERT_NE(nullptr, connector);
+
+  // Wait for initial visual properties to propagate to the child.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return connector->GetLocalFrameSizeInPixelsForTesting() ==
+           gfx::Size(150, 150);
+  }));
+
+  EXPECT_FALSE(connector->IsDisplayLockedForTesting());
+
+  // Display-lock the embed element itself.
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      "document.getElementById('my_embed').style.contentVisibility = "
+      "'hidden';"));
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return connector->IsDisplayLockedForTesting(); }));
+
+  // Unlock and confirm the display-lock status clears.
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      "document.getElementById('my_embed').style.contentVisibility = "
+      "'visible';"));
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !connector->IsDisplayLockedForTesting(); }));
+}
+
+// Display-locking the parent embed in the root document propagates display-lock
+// throttling to both the parent (directly, via the element-level path) and the
+// child (via the frame-level bit pushed down from the parent frame).
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
+                       MultilevelDisplayLockThrottlingViaContentVisibility) {
+  NavigateToAttachHarness();
+
+  // Setup Parent (P) WebContents.
+  auto parent_contents = CreateChildWebContents();
+  NavigateChildToUrl(parent_contents.get(), kAttachHarnessUrl);
+  AttachChildToEmbedWithId(parent_contents.get(), "parent_embed");
+
+  // Setup Child (C) WebContents and attach it to P.
+  auto child_contents = CreateChildWebContents();
+  NavigateChildToUrl(child_contents.get(), kRedBoxUrl);
+
+  guest_contents::GuestContentsHandle* child_guest_handle =
+      guest_contents::GuestContentsHandle::CreateForWebContents(
+          child_contents.get());
+  ASSERT_NE(child_guest_handle, nullptr);
+  std::string attach_child_script = "createEmbed('" +
+                                    child_guest_handle->id().ToString() +
+                                    "', 'child_embed');";
+  size_t expected_attachments = GetAttachedHostCount() + 1;
+  ASSERT_TRUE(content::ExecJs(parent_contents.get(), attach_child_script));
+  ASSERT_TRUE(WaitForHostAttachment(expected_attachments));
+
+  auto* parent_connector = parent_contents->GetSurfaceEmbedConnector();
+  auto* child_connector = child_contents->GetSurfaceEmbedConnector();
+  ASSERT_NE(nullptr, parent_connector);
+  ASSERT_NE(nullptr, child_connector);
+
+  EXPECT_FALSE(parent_connector->IsDisplayLockedForTesting());
+  EXPECT_FALSE(child_connector->IsDisplayLockedForTesting());
+
+  // Display-lock the parent embed in the root document.
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      "document.getElementById('parent_embed').style.contentVisibility = "
+      "'hidden';"));
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return parent_connector->IsDisplayLockedForTesting(); }));
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return child_connector->IsDisplayLockedForTesting(); }));
+
+  // Unlock and confirm both connectors clear.
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      "document.getElementById('parent_embed').style.contentVisibility = "
+      "'visible';"));
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !parent_connector->IsDisplayLockedForTesting(); }));
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !child_connector->IsDisplayLockedForTesting(); }));
+}
+
 }  // namespace surface_embed

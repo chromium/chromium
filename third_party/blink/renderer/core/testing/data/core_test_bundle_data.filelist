@@ -355,6 +355,7 @@ testing/data/plugin.html
 testing/data/plugin_clip_scroll.html
 testing/data/plugin_container.html
 testing/data/plugin_containing_page.html
+testing/data/plugin_display_lock.html
 testing/data/plugin_fixed_position_scroll.html
 testing/data/plugin_hidden_before_scroll.html
 testing/data/plugin_scroll.html

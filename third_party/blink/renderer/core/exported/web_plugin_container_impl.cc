@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
 #include "third_party/blink/renderer/core/clipboard/data_transfer.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/events/drag_event.h"
@@ -162,15 +163,39 @@ void WebPluginContainerImpl::UpdateAllLifecyclePhases() {
     return;
 
   web_plugin_->UpdateAllLifecyclePhases(DocumentUpdateReason::kPlugin);
+
+  // A display lock on the plugin element itself or one of its same-document
+  // ancestors (e.g. content-visibility:hidden) is not reflected in the frame's
+  // throttling bits, so recompute it every lifecycle and forward on change.
+  const bool element_display_locked =
+      DisplayLockUtilities::LockedInclusiveAncestorPreventingPaint(*element_) !=
+      nullptr;
+  if (element_display_locked != element_display_locked_) {
+    element_display_locked_ = element_display_locked;
+    SendThrottlingStatus();
+  }
 }
 
 void WebPluginContainerImpl::UpdateRenderThrottlingStatus(
     bool is_throttled,
     bool subtree_throttled,
     bool display_locked) {
+  if (is_throttled == is_throttled_ &&
+      subtree_throttled == subtree_throttled_ &&
+      display_locked == frame_display_locked_) {
+    return;
+  }
+  is_throttled_ = is_throttled;
+  subtree_throttled_ = subtree_throttled;
+  frame_display_locked_ = display_locked;
+  SendThrottlingStatus();
+}
+
+void WebPluginContainerImpl::SendThrottlingStatus() {
   if (web_plugin_) {
-    web_plugin_->UpdateRenderThrottlingStatus(is_throttled, subtree_throttled,
-                                              display_locked);
+    web_plugin_->UpdateRenderThrottlingStatus(
+        is_throttled_, subtree_throttled_,
+        frame_display_locked_ || element_display_locked_);
   }
 }
 
