@@ -669,6 +669,20 @@ class SearchForTestsByNameTest(TestCase):
     called_args = self.mock_run_command.call_args[0][0]
     self.assertIn('(\\bFooTest\\b)', called_args)
 
+  def test_parameterized_test_syntax(self):
+    test_file = 'FooTest.cc'
+    self.fs.create_file(test_file,
+                        contents='IN_PROC_BROWSER_TEST_P(FooTest, Bar) {}')
+
+    self.mock_run_command.return_value = test_file
+
+    files, filter = file_finder.SearchForTestsByName(['FooTest.Bar'],
+                                                     quiet=True,
+                                                     remote_search=False)
+
+    self.assertEqual([test_file], files)
+    self.assertEqual('FooTest.Bar:FooTest.Bar/*:*/FooTest.Bar/*', filter)
+
 
 # Tests execution of multiple test targets to ensure correct flag isolation.
 class RunTestTargetsTest(TestCase):

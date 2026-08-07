@@ -185,7 +185,7 @@ def SearchForTestsByName(terms: list[str], quiet: bool,
     if '.' not in term:
       return '*' + term + '*'
     # Otherwise run any parameterized tests with this prefix.
-    return f'{term}:{term}/*'
+    return f'{term}:{term}/*:*/{term}/*'
 
   pattern: str = '|'.join(f'({GetPatternForTerm(t)})' for t in terms)
 
