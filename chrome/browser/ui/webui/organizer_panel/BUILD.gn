@@ -11,8 +11,11 @@ source_set("organizer_panel") {
   public_deps = [ "//content/public/browser" ]
 
   deps = [
+    "//chrome/app:generated_resources",
     "//chrome/browser/resources/organizer_panel:resources",
     "//chrome/common",
+    "//components/strings:components_strings",
+    "//ui/base",
     "//ui/webui",
   ]
 }

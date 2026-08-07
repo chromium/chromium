@@ -42,7 +42,8 @@ export function getHtml(this: CrToolbarSearchFieldElement) {
   ${this.hasSearchText ? html`
     <cr-icon-button id="clearSearch" iron-icon="cr:cancel-filled"
         title="${this.clearLabel}" @click="${this.onClearSearchClick_}"
-        ?disabled="${this.disabled}"></cr-icon-button>` : ''}
+        ?disabled="${this.disabled}"></cr-icon-button>` :
+    html`<slot name="suffixElement"></slot>`}
 </div>`;
   // clang-format on
 }

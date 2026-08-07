@@ -7,6 +7,13 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
-* {
-  background-color: transparent;
+#searchField {
+  --cr-toolbar-search-field-background: var(--color-toolbar);
+  margin: 8px 12px;
+  width: auto;
+}
+
+#shortcut {
+  color: var(--cr-secondary-text-color);
+  margin-inline-end: 12px;
 }
