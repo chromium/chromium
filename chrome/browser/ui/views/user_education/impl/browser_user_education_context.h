@@ -7,14 +7,16 @@
 
 #include <map>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/user_education_context.h"
 #include "components/user_education/common/user_education_storage_service.h"
 #include "ui/base/interaction/safe_castable.h"
 
+class BrowserView;
 class BrowserUserEducationInterfaceImpl;
 
 // Specialization for UserEducationContext that is tied to a Browser window.

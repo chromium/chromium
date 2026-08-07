@@ -184,7 +184,6 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/browser/sync",
     "//chrome/browser/tab_group_sync:factories",
-    "//chrome/browser/ui/views/user_education",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/visited_url_ranking",
     "//chrome/test:test_support",
@@ -220,6 +219,7 @@ source_set("unit_tests") {
     ]
     deps += [
       "//chrome/browser/ui/tabs:test_support",
+      "//chrome/browser/ui/views/user_education",
       "//chrome/browser/user_education",
     ]
   }
@@ -284,6 +284,7 @@ if (!is_android) {
       "//chrome/browser/ui",
       "//chrome/browser/ui/side_panel",
       "//chrome/browser/ui/side_panel:side_panel_views_dependent",
+      "//chrome/browser/ui/views/user_education",
       "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
       "//chrome/browser/user_education",
       "//chrome/test:test_support",

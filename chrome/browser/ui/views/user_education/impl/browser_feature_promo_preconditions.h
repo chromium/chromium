@@ -12,7 +12,6 @@
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/impl/typed_data_collection.h"
@@ -22,6 +21,10 @@
 #include "ui/views/event_monitor.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
+
+class Browser;
+class BrowserView;
+class BrowserWindowInterface;
 
 DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kWindowActivePrecondition);
 DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(

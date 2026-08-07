@@ -2,6 +2,58 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ui.gni")
+
+assert(toolkit_views)
+
 source_set("user_education") {
-  sources = [ "browser_user_education_service.h" ]
+  public = [
+    "browser_user_education_service.h",
+    "impl/browser_feature_promo_controller.h",
+    "impl/browser_feature_promo_preconditions.h",
+    "impl/browser_user_education_context.h",
+    "impl/browser_user_education_interface_impl.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/user_education",
+    "//chrome/browser/user_education",
+    "//components/user_education/common",
+  ]
+  allow_circular_includes_from = [ "//chrome/browser/user_education" ]
+  deps = [
+    "//ui/base",
+    "//ui/views",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "impl/browser_feature_promo_controller.cc",
+    "impl/browser_feature_promo_preconditions.cc",
+    "impl/browser_user_education_context.cc",
+    "impl/browser_user_education_interface_impl.cc",
+  ]
+  public_deps = [ ":user_education" ]
+  deps = [
+    "//chrome/browser/actor",
+    "//chrome/browser/profiles",
+    "//chrome/browser/search_engine_choice",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/exclusive_access",
+    "//chrome/browser/ui/location_bar",
+    "//chrome/browser/ui/omnibox",
+    "//chrome/browser/ui/tabs:tabs_public",
+    "//chrome/browser/ui/views/toolbar",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chrome/browser/user_education",
+    "//components/feature_engagement/public",
+    "//components/user_education/views",
+    "//components/user_education/webui",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/views",
+  ]
 }
