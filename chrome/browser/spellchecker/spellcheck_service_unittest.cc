@@ -9,10 +9,14 @@
 #include <ostream>
 
 #include "base/command_line.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/process/kill.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/supports_user_data.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
@@ -23,9 +27,13 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/spellcheck/browser/pref_names.h"
 #include "components/spellcheck/browser/spellcheck_platform.h"
+#include "components/spellcheck/common/spellcheck.mojom.h"
 #include "components/spellcheck/common/spellcheck_features.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/mock_render_process_host.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 struct TestCase {
@@ -171,6 +179,93 @@ TEST_P(SpellcheckServiceUnitTest, GetDictionaries) {
   SpellcheckService::GetDictionaries(browser_context(), &dictionaries);
 
   EXPECT_EQ(GetParam().expected_dictionaries, dictionaries);
+}
+
+// Observes the SpellChecker interface for a single renderer. A unit test has no
+// real renderers, so the MockRenderProcessHost below is the only host
+// InitForAllRenderers() can find, which makes an Initialize() call
+// unambiguously attributable to it.
+class SpellcheckServiceRendererInitUnitTest
+    : public SpellcheckServiceUnitTestBase,
+      public spellcheck::mojom::SpellChecker {
+ public:
+  SpellcheckServiceRendererInitUnitTest() = default;
+
+  SpellcheckServiceRendererInitUnitTest(
+      const SpellcheckServiceRendererInitUnitTest&) = delete;
+  SpellcheckServiceRendererInitUnitTest& operator=(
+      const SpellcheckServiceRendererInitUnitTest&) = delete;
+
+ protected:
+  void SetUp() override {
+    SpellcheckServiceUnitTestBase::SetUp();
+    SpellcheckService::OverrideBinderForTesting(base::BindRepeating(
+        &SpellcheckServiceRendererInitUnitTest::Bind, base::Unretained(this)));
+    renderer_ = std::make_unique<content::MockRenderProcessHost>(&profile_);
+    renderer_->Init();
+  }
+
+  void TearDown() override {
+    receivers_.Clear();
+    renderer_.reset();
+    SpellcheckService::OverrideBinderForTesting(base::NullCallback());
+  }
+
+  content::MockRenderProcessHost* renderer() { return renderer_.get(); }
+
+  // Waits until at least `count` Initialize() calls have arrived. Returns
+  // false on timeout.
+  [[nodiscard]] bool WaitForInitializeCount(int count) {
+    return base::test::RunUntil(
+        [this, count]() { return initialize_count_ >= count; });
+  }
+
+ private:
+  void Bind(mojo::PendingReceiver<spellcheck::mojom::SpellChecker> receiver) {
+    // A ReceiverSet, not a single Receiver: InitForAllRenderers() may reach
+    // several hosts, and rebinding a single Receiver would close the earlier
+    // pipe before its Initialize() call was delivered, silently losing it.
+    receivers_.Add(this, std::move(receiver));
+  }
+
+  // spellcheck::mojom::SpellChecker:
+  void Initialize(
+      std::vector<spellcheck::mojom::SpellCheckBDictLanguagePtr> dictionaries,
+      const std::vector<std::string>& custom_words,
+      bool enable) override {
+    ++initialize_count_;
+  }
+  void CustomDictionaryChanged(
+      const std::vector<std::string>& words_added,
+      const std::vector<std::string>& words_removed) override {}
+
+  std::unique_ptr<content::MockRenderProcessHost> renderer_;
+  mojo::ReceiverSet<spellcheck::mojom::SpellChecker> receivers_;
+  int initialize_count_ = 0;
+
+#if BUILDFLAG(IS_WIN)
+  // This test assumes the Hunspell code path.
+  spellcheck::ScopedDisableBrowserSpellCheckerForTesting
+      disable_browser_spell_checker_;
+#endif  // BUILDFLAG(IS_WIN)
+};
+
+// A renderer that has been initialized but whose process is still launching has
+// no process handle yet. It must still be initialized, because
+// InitForAllRenderers() is the only path that delivers spellcheck state to a
+// renderer that was contacted before its dictionaries were ready.
+TEST_F(SpellcheckServiceRendererInitUnitTest, ReachesStillLaunchingRenderer) {
+  // Reproduce the window between RenderProcessHostImpl::Init() and
+  // OnProcessLaunched().
+  renderer()->SimulateProcessStillLaunchingForTesting(true);
+  ASSERT_FALSE(renderer()->GetProcess().Handle());
+  ASSERT_TRUE(renderer()->IsInitializedAndNotDead());
+
+  // Flipping the pref runs InitForAllRenderers().
+  prefs()->SetBoolean(spellcheck::prefs::kSpellCheckEnable, false);
+
+  EXPECT_TRUE(WaitForInitializeCount(1))
+      << "a still-launching renderer was never initialized";
 }
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)

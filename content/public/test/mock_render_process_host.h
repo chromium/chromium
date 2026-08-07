@@ -304,6 +304,13 @@ class MockRenderProcessHost : public RenderProcessHost {
     is_for_top_chrome_web_ui_ = is_for_top_chrome_web_ui;
   }
 
+  // Makes GetProcess() report an invalid Process, as RenderProcessHostImpl
+  // does between Init() and OnProcessLaunched(). Lets tests cover the window
+  // in which a host is initialized but its renderer has not launched yet.
+  void SimulateProcessStillLaunchingForTesting(bool still_launching) {
+    process_still_launching_ = still_launching;
+  }
+
   void SetProcessLaunchedTime(base::TimeTicks time) {
     process_launched_time_ = time;
   }
@@ -349,6 +356,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   bool is_for_top_chrome_web_ui_ = false;
   bool has_immersive_xr_session_ = false;
   bool is_ready_ = false;
+  bool process_still_launching_ = false;
   base::TimeTicks process_launched_time_;
   int pending_view_count_;
   int worker_ref_count_;

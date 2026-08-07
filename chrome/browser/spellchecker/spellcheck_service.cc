@@ -840,8 +840,14 @@ void SpellcheckService::InitForAllRenderers() {
   for (auto it = content::RenderProcessHost::AllHostsIterator(); !it.IsAtEnd();
        it.Advance()) {
     content::RenderProcessHost* process = it.GetCurrentValue();
-    if (process && process->GetProcess().Handle())
+    // Do not test GetProcess().Handle() here: a renderer that has been
+    // initialized but whose process is still launching has no handle yet, and
+    // skipping it drops the notification for good. Its mojo channel already
+    // exists, so messages queue up and are delivered once the process is up.
+    // This matches OnCustomDictionaryChanged() below.
+    if (process && process->IsInitializedAndNotDead()) {
       InitForRenderer(process);
+    }
   }
 }
 
