@@ -44,6 +44,7 @@
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "base/system/sys_info.h"
+#include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -133,12 +134,13 @@ bool RevokeAccess(const base::FilePath& path,
 
 // Get a dedicated SequencedTaskRunner for CDM directory operations to prevent
 // race conditions when multiple frames or profiles request CDMs concurrently.
+base::LazyThreadPoolSequencedTaskRunner g_cdm_data_task_runner =
+    LAZY_THREAD_POOL_SEQUENCED_TASK_RUNNER_INITIALIZER(
+        base::TaskTraits({base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+                          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
+
 scoped_refptr<base::SequencedTaskRunner> GetCdmDataTaskRunner() {
-  static base::NoDestructor<scoped_refptr<base::SequencedTaskRunner>>
-      task_runner(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
-  return *task_runner;
+  return g_cdm_data_task_runner.Get();
 }
 
 bool CreateCdmStorePathRootAndGrantAccessIfNeeded(
