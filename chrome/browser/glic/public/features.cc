@@ -233,8 +233,6 @@ const base::FeatureParam<bool> kGlicTabGroupsUseFullTabEmbedder{
 BASE_FEATURE(kGlicSparkSettingsAccessibleLabels,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGlicOptInDialogLinkA11yFix, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kGlicOptInDialogA11yFix, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicStructuredYieldMetadata, base::FEATURE_DISABLED_BY_DEFAULT);
 // Whether to allow Mojo in the glic guest frame.

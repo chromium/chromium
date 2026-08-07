@@ -127,7 +127,6 @@ BASE_DECLARE_FEATURE(kGlicHotkeyLocalScope);
 
 BASE_DECLARE_FEATURE(kGlicPasteEligibilityCheck);
 BASE_DECLARE_FEATURE(kGlicWebPasteEligibilityCheck);
-BASE_DECLARE_FEATURE(kGlicOptInDialogLinkA11yFix);
 
 BASE_DECLARE_FEATURE(kGlicTabGroups);
 extern const base::FeatureParam<bool> kGlicTabGroupsUseFullTabEmbedder;

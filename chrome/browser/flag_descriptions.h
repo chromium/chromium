@@ -1767,13 +1767,6 @@ inline constexpr char kGlicGeminiEnterpriseConsentEnabledName[] =
 inline constexpr char kGlicGeminiEnterpriseConsentEnabledDescription[] =
     "Enables the user consent toggle in Chrome settings for the Gemini "
     "Enterprise integration.";
-
-inline constexpr char kGlicOptInDialogLinkA11yFixName[] =
-    "Glic Opt-in Dialog Link accessibility context fix";
-inline constexpr char kGlicOptInDialogLinkA11yFixDescription[] =
-    "Ensures that screen reader users hear proper context for links in the "
-    "Glic opt-in dialog.";
-
 inline constexpr char kGlicDisableActorSafetyChecksName[] =
     "Glic disable actor safety checks";
 inline constexpr char kGlicDisableActorSafetyChecksDescription[] =

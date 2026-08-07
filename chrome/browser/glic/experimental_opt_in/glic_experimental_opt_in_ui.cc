@@ -9,7 +9,6 @@
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_metrics.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_page_handler.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_util.h"
-#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -130,9 +129,6 @@ GlicExperimentalOptInUI::GlicExperimentalOptInUI(content::WebUI* web_ui)
       "glicDevEnabled",
       base::CommandLine::ForCurrentProcess()->HasSwitch(::switches::kGlicDev));
   source->AddBoolean(
-      "glicOptInDialogLinkA11yFixEnabled",
-      base::FeatureList::IsEnabled(features::kGlicOptInDialogLinkA11yFix));
-  source->AddBoolean(
       "glicOptInDialogA11yFixEnabled",
       base::FeatureList::IsEnabled(features::kGlicOptInDialogA11yFix));
 
@@ -144,12 +140,6 @@ GlicExperimentalOptInUI::GlicExperimentalOptInUI(content::WebUI* web_ui)
       {"errorNoticeHeader", IDS_GLIC_ERROR_NOTICE_HEADER},
       {"experimentalOptInErrorNoticeMessage", IDS_GLIC_ERROR_NOTICE},
       {"tryAgainButtonLabel", IDS_GLIC_ERROR_NOTICE_ACTION_BUTTON},
-      {"safelyLinkLabel",
-       IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_SAFELY_ARIA_LABEL},
-      {"unexpectedResultsLinkLabel",
-       IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_UNEXPECTED_RESULTS_ARIA_LABEL},
-      {"reviewRisksLinkLabel",
-       IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_CONSIDER_REVIEW_RISKS_LINK_LABEL_SPARK},
   };
   source->AddLocalizedStrings(kStrings);
   source->AddLocalizedString(

@@ -9447,7 +9447,6 @@ from previous Chrome versions.
   <int value="-1612418793"
       label="ExperimentalAccessibilitySwitchAccessSetupGuide:enabled"/>
   <int value="-1612253158" label="HardwareSecureDecryptionExperiment:enabled"/>
-  <int value="-1612045044" label="GlicOptInDialogLinkA11yFix:enabled"/>
   <int value="-1611828357" label="FocusModeYTM:enabled"/>
   <int value="-1611758030" label="AndroidWebContentsDarkMode:disabled"/>
   <int value="-1611614160" label="HiddenNetworkMigration:disabled"/>
@@ -17872,7 +17871,6 @@ from previous Chrome versions.
   <int value="1045152062" label="SecurePaymentConfirmationBrowser:enabled"/>
   <int value="1045179357" label="NtpRealboxLensSearch:disabled"/>
   <int value="1045199610" label="AlignPdfDefaultPrintSettingsWithHTML:enabled"/>
-  <int value="1045923302" label="GlicOptInDialogLinkA11yFix:disabled"/>
   <int value="1046157767" label="Glic:disabled"/>
   <int value="1046878091" label="PasswordForceSaving:enabled"/>
   <int value="1046981538" label="OfflinePagesShowAlternateDinoPage:disabled"/>

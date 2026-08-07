@@ -37,7 +37,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -57,7 +56,6 @@
 #include "net/dns/mock_host_resolver.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "ui/base/base_window.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_tracker.h"
@@ -1229,77 +1227,6 @@ IN_PROC_BROWSER_TEST_F(
   // Window B should now be active!
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser(),
             window_b);
-}
-
-IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, VerifyA11yLabelsInDialog) {
-  service()->enabling().SetCompletedFre(glic::prefs::FreStatus::kIncomplete);
-  views::Widget* widget = ShowDialogAndWait();
-  ASSERT_TRUE(widget);
-
-  content::WebContents* guest_contents = WaitForGuestContents();
-  ASSERT_TRUE(guest_contents);
-
-  // The links are created dynamically after 100ms in page.html.
-  // We wait for the links to be created and have their aria-labels set by our
-  // injected script.
-  bool labels_correct = base::test::RunUntil([this, guest_contents]() {
-    // Check "safely" link label
-    auto safely_element = EvalJs(
-        guest_contents, "!!document.querySelector('a[href*=\"use-policy\"]')");
-    if (!safely_element.is_ok() || safely_element != true) {
-      return false;
-    }
-    auto safely_label = EvalJs(guest_contents,
-                               "document.querySelector('a[href*=\"use-policy\"]"
-                               "').getAttribute('aria-label')");
-    if (!safely_label.is_ok() ||
-        safely_label !=
-            l10n_util::GetStringUTF8(
-                IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_SAFELY_ARIA_LABEL)) {
-      return false;
-    }
-
-    // Check "unexpected results" link label
-    auto unexpected_element =
-        EvalJs(guest_contents,
-               "!!document.querySelector('a[href*=\"unexpected_results\"]')");
-    if (!unexpected_element.is_ok() || unexpected_element != true) {
-      return false;
-    }
-    auto unexpected_label =
-        EvalJs(guest_contents,
-               "document.querySelector('a[href*=\"unexpected_results\"]')."
-               "getAttribute('aria-label')");
-    if (!unexpected_label.is_ok() ||
-        unexpected_label !=
-            l10n_util::GetStringUTF8(
-                IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_UNEXPECTED_RESULTS_ARIA_LABEL)) {
-      return false;
-    }
-
-    // Check "Review the risks" link label
-    auto risks_element =
-        EvalJs(guest_contents,
-               "!!document.querySelector('a[href*=\"gemini_spark_safety\"]')");
-    if (!risks_element.is_ok() || risks_element != true) {
-      return false;
-    }
-    auto risks_label = EvalJs(guest_contents,
-                              "document.querySelector('a[href*=\"gemini_spark_"
-                              "safety\"]').getAttribute('aria-label')");
-    if (!risks_label.is_ok() ||
-        risks_label !=
-            l10n_util::GetStringUTF8(
-                IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_CONSIDER_REVIEW_RISKS_LINK_LABEL_SPARK)) {
-      return false;
-    }
-
-    return true;
-  });
-
-  EXPECT_TRUE(labels_correct);
-
-  service()->opt_in_controller().CloseDialog(false);
 }
 
 }  // namespace glic
