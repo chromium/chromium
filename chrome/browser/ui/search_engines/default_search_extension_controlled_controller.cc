@@ -147,10 +147,18 @@ bool DefaultSearchExtensionControlledController::
     return false;
   }
 
+  // 7) Don't show if the extension set the same search engine the user was
+  // already using. Nothing was actually overridden, so there is nothing to
+  // confirm. See https://crbug.com/540532980.
+  if (settings_overridden_params::ExtensionSearchOverrideMatchesExistingEngine(
+          base::to_address(profile_))) {
+    return false;
+  }
+
   // TODO(crbug.com/463712739): Remove this check to show the Dialog for all
   // extensions.
   //
-  // 7) Don't show for "simple override" extensions.
+  // 8) Don't show for "simple override" extensions.
   if (simple_overrides::IsSimpleOverrideExtension(*extension)) {
     return ExtensionSettingsOverriddenDialog::
         ShouldShowForSimpleOverrideExtension(*profile_, *extension);
@@ -163,21 +171,24 @@ bool DefaultSearchExtensionControlledController::
 void DefaultSearchExtensionControlledController::ShowConfirmationDialog(
     content::WebContents& web_contents,
     ConfirmationCallback callback) {
-  confirmation_callback_ = std::move(callback);
   SetDialogCurrentlyShowing(weak_factory_.GetWeakPtr());
 
   settings_overridden_params::GetSearchOverriddenParamsThenRun(
       &web_contents,
       base::BindOnce(
           &DefaultSearchExtensionControlledController::OnParamsLoaded,
-          weak_factory_.GetWeakPtr()));
+          weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void DefaultSearchExtensionControlledController::OnParamsLoaded(
+    ConfirmationCallback callback,
     std::unique_ptr<ExtensionSettingsOverriddenDialog::Params> params) {
+  confirmation_callback_ = std::move(callback);
   if (!params) {
-    DialogResolved(SettingsOverriddenDialogController::DialogResult::
-                       kDialogClosedWithoutUserAction);
+    // Confirmation turned out to be unnecessary, or the extension state
+    // changed while the parameters were loading. No dialog was shown. See
+    // https://crbug.com/540532980.
+    DialogResolved(std::nullopt);
     return;
   }
 
@@ -185,6 +196,7 @@ void DefaultSearchExtensionControlledController::OnParamsLoaded(
       std::move(*params), *profile_);
   CHECK(dialog->ShouldShow());
 
+  // A dialog is being shown, so every outcome from here on is a user decision.
   dialog->SetDialogResultCallback(base::BindOnce(
       &DefaultSearchExtensionControlledController::DialogResolved,
       weak_factory_.GetWeakPtr()));
@@ -198,7 +210,8 @@ void DefaultSearchExtensionControlledController::OnParamsLoaded(
 }
 
 void DefaultSearchExtensionControlledController::DialogResolved(
-    SettingsOverriddenDialogController::DialogResult dialog_result) {
+    std::optional<SettingsOverriddenDialogController::DialogResult>
+        dialog_result) {
   if (GetDialogCurrentlyShowing().get() == this) {
     SetDialogCurrentlyShowing(nullptr);
   }

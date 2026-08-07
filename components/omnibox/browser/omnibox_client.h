@@ -68,6 +68,13 @@ class OmniboxClient {
 
     // Don't search at all.
     kCancel,
+
+    // No dialog was ever shown. Confirmation turned out to be unnecessary.
+    // The pending navigation must proceed as originally requested. This is
+    // distinct from kCancel: the user made no choice because they were never
+    // asked. Conflating the two silently drops the navigation
+    // (See https://crbug.com/540532980).
+    kNoDialogShown,
   };
 
   OmniboxClient() = default;

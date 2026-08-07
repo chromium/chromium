@@ -220,6 +220,11 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
                            QueryAutocomplete_SetsLensInputs);
   FRIEND_TEST_ALL_PREFIXES(ContextualSearchboxHandlerTest,
                            QueryAutocomplete_SetsLensInputs_InToolModes);
+  FRIEND_TEST_ALL_PREFIXES(WebuiOmniboxHandlerTest,
+                           OpenMatchResumesNavigationWhenNoDialogShown);
+  FRIEND_TEST_ALL_PREFIXES(WebuiOmniboxHandlerTest,
+                           OpenMatchDropsNavigationWhenDialogCancelled);
+
   SearchboxHandler(
       mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
       mojo::PendingRemote<searchbox::mojom::Page> pending_page,

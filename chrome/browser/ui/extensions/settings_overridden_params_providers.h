@@ -34,6 +34,17 @@ std::optional<ExtensionSettingsOverriddenDialog::Params> GetNtpOverriddenParams(
     Profile* profile);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+// Returns true if the extension controlling the default search engine set the
+// *same* engine the user was already using, in which case nothing was actually
+// overridden and there is nothing to confirm. This happens when a user selects
+// a search engine and then installs an extension that provides the same one.
+//
+// This is synchronous and must stay that way: callers use it to decide whether
+// a navigation needs to be held for confirmation, and that decision has to be
+// complete before the navigation is abandoned. See
+// https://crbug.com/540532980 for what happens when it is not.
+bool ExtensionSearchOverrideMatchesExistingEngine(Profile* profile);
+
 // Retrieves the params for displaying the dialog indicating that the default
 // search engine has been overridden, if there is a controlling extension, and
 // asynchronously passes them to the supplied callback. Otherwise, the callback

@@ -62,6 +62,7 @@
 #include "content/public/test/test_web_ui.h"
 #include "content/public/test/test_web_ui_data_source.h"
 #include "content/public/test/web_contents_tester.h"
+#include "extensions/common/extension_features.h"
 #include "lens_searchbox_handler.h"
 #include "realbox_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1096,6 +1097,67 @@ TEST_F(WebuiOmniboxHandlerTest, OpenLensSearch) {
   EXPECT_CALL(*mock_client_ptr, OpenLensOverlay(true)).Times(1);
 
   handler_->OpenLensSearch();
+}
+
+TEST_F(WebuiOmniboxHandlerTest, OpenMatchResumesNavigationWhenNoDialogShown) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      extensions_features::kSearchEngineExplicitChoiceDialog);
+  auto* client = static_cast<TestOmniboxClient*>(omnibox_controller_->client());
+  AutocompleteMatch match(nullptr, 500, false,
+                          AutocompleteMatchType::SEARCH_SUGGEST);
+  match.destination_url = GURL("https://www.example.com/?q=foo");
+  match.keyword = u"example";
+  EXPECT_CALL(*client, ShowConfirmationDialogIfDefaultSearchExtensionControlled(
+                           match.destination_url, testing::_))
+      .WillOnce([](const GURL&,
+                   base::OnceCallback<void(
+                       OmniboxClient::ExtensionControlledDialogResult)> cb) {
+        // No dialog is shown; report that rather than a user decision.
+        std::move(cb).Run(
+            OmniboxClient::ExtensionControlledDialogResult::kNoDialogShown);
+        return true;
+      })
+      .WillRepeatedly(testing::Return(false));
+
+  // The withheld navigation must still happen.
+  EXPECT_CALL(*client, OnAutocompleteAccept(match.destination_url, testing::_,
+                                            testing::_, testing::_, testing::_,
+                                            testing::_, testing::_, testing::_,
+                                            testing::_, testing::_, testing::_))
+      .Times(1);
+  handler_->OpenMatch(OmniboxPopupSelection(0), match,
+                      WindowOpenDisposition::CURRENT_TAB,
+                      base::TimeTicks::Now());
+}
+
+TEST_F(WebuiOmniboxHandlerTest, OpenMatchDropsNavigationWhenDialogCancelled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      extensions_features::kSearchEngineExplicitChoiceDialog);
+  auto* client = static_cast<TestOmniboxClient*>(omnibox_controller_->client());
+  AutocompleteMatch match(nullptr, 500, false,
+                          AutocompleteMatchType::SEARCH_SUGGEST);
+  match.destination_url = GURL("https://www.example.com/?q=foo");
+  match.keyword = u"example";
+  EXPECT_CALL(*client, ShowConfirmationDialogIfDefaultSearchExtensionControlled(
+                           match.destination_url, testing::_))
+      .WillOnce([](const GURL&,
+                   base::OnceCallback<void(
+                       OmniboxClient::ExtensionControlledDialogResult)> cb) {
+        std::move(cb).Run(
+            OmniboxClient::ExtensionControlledDialogResult::kCancel);
+        return true;
+      });
+  EXPECT_CALL(*client, OnAutocompleteAccept(testing::_, testing::_, testing::_,
+                                            testing::_, testing::_, testing::_,
+                                            testing::_, testing::_, testing::_,
+                                            testing::_, testing::_))
+      .Times(0);
+
+  handler_->OpenMatch(OmniboxPopupSelection(0), match,
+                      WindowOpenDisposition::CURRENT_TAB,
+                      base::TimeTicks::Now());
 }
 
 #endif

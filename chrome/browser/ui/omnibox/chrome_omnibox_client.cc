@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -16,6 +17,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -151,17 +153,67 @@ LensSearchController* GetLensSearchController(
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS) && (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
+// Guards a withheld navigation against a continuation that is never invoked.
+//
+// OpenMatch() abandons a pending navigation while the extension-DSE
+// confirmation is resolved, and relies on a callback to resume it. That
+// callback crosses an asynchronous boundary that includes a network image
+// fetch gated by a BarrierClosure with no timeout, so "the callback is simply
+// never run" is a reachable state, not a hypothetical one. If it happens, the
+// user clicks a suggestion and nothing occurs, forever, with no feedback.
+//
+// Holding the continuation here makes the safe outcome the default: if this
+// object is destroyed without Run() having been called, the navigation is
+// resumed as if no dialog had been shown. Only an explicit user decision can
+// suppress it. See https://crbug.com/540532980.
+class PendingNavigationGuard {
+ public:
+  using Callback =
+      base::OnceCallback<void(OmniboxClient::ExtensionControlledDialogResult)>;
+
+  explicit PendingNavigationGuard(Callback callback)
+      : callback_(std::move(callback)) {}
+
+  PendingNavigationGuard(const PendingNavigationGuard&) = delete;
+  PendingNavigationGuard& operator=(const PendingNavigationGuard&) = delete;
+
+  ~PendingNavigationGuard() {
+    if (callback_) {
+      std::move(callback_).Run(
+          OmniboxClient::ExtensionControlledDialogResult::kNoDialogShown);
+    }
+  }
+
+  void Run(OmniboxClient::ExtensionControlledDialogResult result) {
+    if (callback_) {
+      std::move(callback_).Run(result);
+    }
+  }
+
+ private:
+  Callback callback_;
+};
+
 ExtensionControlledDialogResult SettingDialogResultToExtensionDialogResult(
-    SettingsOverriddenDialogController::DialogResult result) {
+    std::optional<SettingsOverriddenDialogController::DialogResult> result) {
   using DialogResult = SettingsOverriddenDialogController::DialogResult;
-  switch (result) {
+  // No dialog was shown, so the user was never asked. Resume the navigation.
+  if (!result.has_value()) {
+    return ExtensionControlledDialogResult::kNoDialogShown;
+  }
+  // Enumerate every case explicitly: a `default:` here is what allowed
+  // "no dialog was shown" to masquerade as "the user cancelled", silently
+  // dropping the navigation (http://crbug.com/540532980).
+  switch (*result) {
     case DialogResult::kKeepNewSettings:
       return ExtensionControlledDialogResult::kAccept;
     case DialogResult::kChangeSettingsBack:
       return ExtensionControlledDialogResult::kReject;
-    default:
+    case DialogResult::kDialogDismissed:
+    case DialogResult::kDialogClosedWithoutUserAction:
       return ExtensionControlledDialogResult::kCancel;
   }
+  NOTREACHED();
 }
 #endif
 
@@ -278,16 +330,21 @@ bool ChromeOmniboxClient::
     return false;
   }
 
+  auto guarded_callback = base::BindOnce(
+      &PendingNavigationGuard::Run,
+      std::make_unique<PendingNavigationGuard>(std::move(callback)));
+
   controller->ShowConfirmationDialog(
       *web_contents,
       base::BindOnce(
           [](base::OnceCallback<void(ExtensionControlledDialogResult)>
                  client_callback,
-             SettingsOverriddenDialogController::DialogResult result) {
+             std::optional<SettingsOverriddenDialogController::DialogResult>
+                 result) {
             std::move(client_callback)
                 .Run(SettingDialogResultToExtensionDialogResult(result));
           },
-          std::move(callback)));
+          std::move(guarded_callback)));
 
   return true;
 #else

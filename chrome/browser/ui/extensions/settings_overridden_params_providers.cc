@@ -477,6 +477,43 @@ std::optional<ExtensionSettingsOverriddenDialog::Params> GetNtpOverriddenParams(
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+bool ExtensionSearchOverrideMatchesExistingEngine(Profile* profile) {
+  if (!profile) {
+    return false;
+  }
+
+  if (!extensions::GetExtensionOverridingSearchEngine(profile)) {
+    return false;
+  }
+
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile);
+  CHECK(template_url_service);
+  if (!template_url_service->IsExtensionControlledDefaultSearch()) {
+    return false;
+  }
+
+  const TemplateURL* default_search =
+      template_url_service->GetDefaultSearchProvider();
+  if (!default_search) {
+    return false;
+  }
+
+  const GURL search_url(default_search->url());
+  if (!search_url.is_valid()) {
+    return false;
+  }
+
+  // NOTE: Normally, we wouldn't want to use direct equality comparison of
+  // GURL::GetOrigin() because of edge cases like inner URLs with filesystem,
+  // etc. This is okay here, because if the origins don't match we fall through
+  // to showing the dialog. That's likely good if any extension is doing
+  // something as crazy as using filesystem: URLs as a search engine.
+  const SecondarySearchInfo secondary_search = GetSecondarySearchInfo(profile);
+  return !secondary_search.origin.is_empty() &&
+         secondary_search.origin == search_url.DeprecatedGetOriginAsURL();
+}
+
 void GetSearchOverriddenParamsThenRun(
     content::WebContents* web_contents,
     base::OnceCallback<
@@ -519,20 +556,15 @@ void GetSearchOverriddenParamsThenRun(
   GURL search_url(default_search->url());
   DCHECK(search_url.is_valid()) << default_search->url();
 
-  // Check whether the secondary search is the same search the extension set.
-  // This can happen if the user set a search engine, and then installed an
-  // extension that set the same one.
-  SecondarySearchInfo secondary_search = GetSecondarySearchInfo(profile);
-  // NOTE: Normally, we wouldn't want to use direct equality comparison of
-  // GURL::GetOrigin() because of edge cases like inner URLs with filesystem,
-  // etc. This okay here, because if the origins don't match, we'll show the
-  // dialog to the user. That's likely good if any extension is doing something
-  // as crazy as using filesystem: URLs as a search engine.
-  if (!secondary_search.origin.is_empty() &&
-      secondary_search.origin == search_url.DeprecatedGetOriginAsURL()) {
+  // Nothing was actually overridden; there is nothing to confirm. Callers check
+  // this synchronously before withholding a navigation; re-check here in case
+  // extension state changed in between.
+  if (ExtensionSearchOverrideMatchesExistingEngine(profile)) {
     std::move(done_callback).Run(nullptr);
     return;
   }
+
+  SecondarySearchInfo secondary_search = GetSecondarySearchInfo(profile);
 
   constexpr char kGenericDialogHistogramName[] =
       "Extensions.SettingsOverridden.GenericSearchOverriddenDialogResult";

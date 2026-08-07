@@ -2634,7 +2634,13 @@ void OmniboxEditModel::OnDefaultSearchExtensionDialogDone(
   //
   // When `proceed` is kCancel, the dialog was closed without making a choice,
   // and we don't do a search.
-  if (proceed == OmniboxClient::ExtensionControlledDialogResult::kAccept) {
+  //
+  // kNoDialogShown means the confirmation turned out to be unnecessary and the
+  // user was never asked anything. The navigation we withheld must proceed
+  // exactly as originally requested.
+  if (proceed == OmniboxClient::ExtensionControlledDialogResult::kAccept ||
+      proceed ==
+          OmniboxClient::ExtensionControlledDialogResult::kNoDialogShown) {
     OpenMatch(selection, match, disposition, alternate_nav_url, pasted_text,
               match_selection_timestamp);
   } else if (proceed ==

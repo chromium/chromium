@@ -57,6 +57,7 @@
 #include "components/omnibox/browser/contextual_search_provider.h"
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/browser/omnibox_metrics_constants.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/searchbox_utils.h"
@@ -1701,7 +1702,9 @@ void SearchboxHandler::OnDefaultSearchExtensionDialogDone(
     base::TimeTicks match_selection_timestamp,
     OmniboxClient::ExtensionControlledDialogResult dialog_result) {
   if (dialog_result ==
-      OmniboxClient::ExtensionControlledDialogResult::kAccept) {
+          OmniboxClient::ExtensionControlledDialogResult::kAccept ||
+      dialog_result ==
+          OmniboxClient::ExtensionControlledDialogResult::kNoDialogShown) {
     OpenMatch(selection, match, disposition, match_selection_timestamp);
   } else if (dialog_result ==
              OmniboxClient::ExtensionControlledDialogResult::kReject) {

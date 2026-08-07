@@ -105,6 +105,11 @@ class TestOmniboxClient final : public testing::NiceMock<OmniboxClient> {
               (),
               (const, override));
   MOCK_METHOD(GURL, GetContextualTasksInnerFrameURL, (), (const, override));
+  MOCK_METHOD(bool,
+              ShowConfirmationDialogIfDefaultSearchExtensionControlled,
+              (const GURL&,
+               base::OnceCallback<void(ExtensionControlledDialogResult)>),
+              (override));
 
   base::WeakPtr<OmniboxClient> AsWeakPtr() override;
 

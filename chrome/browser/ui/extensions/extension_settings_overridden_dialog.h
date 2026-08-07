@@ -107,7 +107,8 @@ class ExtensionSettingsOverriddenDialog
   void HandleDialogResult(DialogResult result) override;
 
   // Sets a callback to be invoked when the dialog result is handled.
-  using DialogResultCallback = base::OnceCallback<void(DialogResult result)>;
+  using DialogResultCallback =
+      base::OnceCallback<void(std::optional<DialogResult> result)>;
   void SetDialogResultCallback(DialogResultCallback callback);
 
   // Potentially triggers a HaTS survey, for the trigger value supplied in
