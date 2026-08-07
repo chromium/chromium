@@ -879,9 +879,7 @@ PDFiumEngine::~PDFiumEngine() {
   edited_pages_unload_preventers_.clear();
 #endif
 
-  for (auto& page : pages_) {
-    page->Unload();
-  }
+  ForEachPage([](PDFiumPage* page) { page->Unload(); });
 
   if (doc()) {
     FORM_DoDocumentAAction(form(), FPDFDOC_AACTION_WC);
@@ -1342,20 +1340,21 @@ void PDFiumEngine::FinishLoadingDocument() {
 
   FX_DOWNLOADHINTS& download_hints = document_->download_hints();
   bool need_update = false;
-  for (size_t i = 0; i < pages_.size(); ++i) {
-    if (pages_[i]->available()) {
-      continue;
+  ForEachPage([&](PDFiumPage* page) {
+    if (page->available()) {
+      return;
     }
 
-    pages_[i]->MarkAvailable();
+    page->MarkAvailable();
+    uint32_t page_index = page->index();
     // We still need to call IsPageAvail() even if the whole document is
     // already downloaded.
-    FPDFAvail_IsPageAvail(fpdf_availability(), i, &download_hints);
+    FPDFAvail_IsPageAvail(fpdf_availability(), page_index, &download_hints);
     need_update = true;
-    if (IsPageVisible(i)) {
-      client_->Invalidate(GetPageScreenRect(i));
+    if (IsPageVisible(page_index)) {
+      client_->Invalidate(GetPageScreenRect(page_index));
     }
-  }
+  });
 
   // Transition `document_loaded_` to true after finishing any calls to
   // FPDFAvail_IsPageAvail(), since we no longer need to defer calls to this
@@ -1701,20 +1700,20 @@ bool PDFiumEngine::IsPDFDocTagged() const {
   return FPDFCatalog_IsTagged(doc());
 }
 
-std::unique_ptr<AccessibilityStructureElement> PDFiumEngine::GetStructureTree()
-    const {
+std::unique_ptr<AccessibilityStructureElement>
+PDFiumEngine::GetStructureTree() {
   auto structure_tree_root = std::make_unique<AccessibilityStructureElement>();
   structure_tree_root->type = PdfTagType::kDocument;
   structure_tree_root->children.reserve(pages_.size());
   structure_tree_root->language = GetDocumentLanguage(doc());
 
-  for (const std::unique_ptr<PDFiumPage>& page : pages_) {
+  ForEachPage([&](PDFiumPage* page) {
     auto page_structure = page->GetStructureTree();
     if (page_structure) {
       page_structure->parent = structure_tree_root.get();
     }
     structure_tree_root->children.push_back(std::move(page_structure));
-  }
+  });
   return structure_tree_root;
 }
 
@@ -2927,11 +2926,11 @@ void PDFiumEngine::SelectAll() {
   SelectionChangeInvalidator selection_invalidator(this);
 
   selection_.clear();
-  for (const auto& page : pages_) {
+  ForEachPage([&](PDFiumPage* page) {
     if (page->GetCharCount()) {
-      selection_.push_back(PDFiumRange::AllTextOnPage(page.get()));
+      selection_.push_back(PDFiumRange::AllTextOnPage(page));
     }
-  }
+  });
 
   if (caret_ && IsSelecting()) {
     caret_->SetVisible(false);
@@ -3219,17 +3218,18 @@ std::optional<gfx::Size> PDFiumEngine::GetUniformPageSizePoints() {
     return std::nullopt;
   }
 
-  gfx::Size page_size = GetPageSize(0);
-  for (size_t i = 1; i < pages_.size(); ++i) {
-    if (page_size != GetPageSize(i)) {
-      return std::nullopt;
-    }
+  gfx::Size uniform_page_size = GetPageSize(0);
+  const bool has_mismatch = ForEachPageUntilTrue([&](PDFiumPage* page) {
+    return GetPageSize(page->index()) != uniform_page_size;
+  });
+  if (has_mismatch) {
+    return std::nullopt;
   }
 
-  // Convert `page_size` back to points.
+  // Convert `uniform_page_size` back to points.
   return gfx::Size(
-      ConvertUnit(page_size.width(), kPixelsPerInch, kPointsPerInch),
-      ConvertUnit(page_size.height(), kPixelsPerInch, kPointsPerInch));
+      ConvertUnit(uniform_page_size.width(), kPixelsPerInch, kPointsPerInch),
+      ConvertUnit(uniform_page_size.height(), kPixelsPerInch, kPointsPerInch));
 }
 
 void PDFiumEngine::AppendBlankPages(size_t num_pages) {
@@ -3675,7 +3675,8 @@ void PDFiumEngine::CalculateVisiblePages() {
 
   visible_pages_.clear();
   gfx::Rect visible_rect(plugin_size());
-  for (size_t i = 0; i < pages_.size(); ++i) {
+  ForEachPage([&](PDFiumPage* page) {
+    uint32_t i = page->index();
     // Check an entire PageScreenRect, since we might need to repaint side
     // borders and shadows even if the page itself is not visible.
     // For example, when user use pdf with different page sizes and zoomed in
@@ -3689,10 +3690,10 @@ void PDFiumEngine::CalculateVisiblePages() {
       if (defer_page_unload_) {
         deferred_page_unloads_.push_back(i);
       } else {
-        pages_[i]->Unload();
+        page->Unload();
       }
     }
-  }
+  });
 
   // Any pending highlighting of form fields will be invalid since these are in
   // screen coordinates.
@@ -5204,14 +5205,13 @@ void PDFiumEngine::MaybeUnloadPage(int page_index) {
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
-bool PDFiumEngine::HasMeaningfulText() const {
+bool PDFiumEngine::HasMeaningfulText() {
   if (!document_loaded_) {
     return false;
   }
 
   size_t total_char_count = 0;
-
-  for (const auto& page : pages_) {
+  const bool has_meaningful_text = ForEachPageUntilTrue([&](PDFiumPage* page) {
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     // PDFium determines the character count, but pages requiring Searchify
     // are bypassed via `page->IsPageSearchified()`. Since Searchify only
@@ -5226,9 +5226,10 @@ bool PDFiumEngine::HasMeaningfulText() const {
         return true;
       }
     }
-  }
+    return false;
+  });
 
-  return false;
+  return has_meaningful_text;
 }
 
 bool PDFiumEngine::HasJavaScript() const {
@@ -5625,7 +5626,7 @@ void PDFiumEngine::DiscardStroke(int page_index, InkStrokeId id) {
 }
 
 PDFiumEngine::InkIdentifiers PDFiumEngine::ScanForInkAnnotations(
-    base::TimeDelta timeout) const {
+    base::TimeDelta timeout) {
   base::TimeTicks start_time = base::TimeTicks::Now();
 
   InkIdentifiers result = {
@@ -5633,9 +5634,9 @@ PDFiumEngine::InkIdentifiers PDFiumEngine::ScanForInkAnnotations(
       .v2_ink_path = PDFLoadedWithV2InkAnnotations::kUnknown,
   };
 
-  for (const auto& page : pages_) {
+  const bool stopped_early = ForEachPageUntilTrue([&](PDFiumPage* page) {
     if (base::TimeTicks::Now() - start_time >= timeout) {
-      return result;
+      return true;
     }
 
     bool page_already_loaded = !!page->page();
@@ -5657,10 +5658,13 @@ PDFiumEngine::InkIdentifiers PDFiumEngine::ScanForInkAnnotations(
       page->Unload();
     }
 
-    if (result.ink_text_annotations == PDFLoadedWithInkTextAnnotations::kTrue &&
-        result.v2_ink_path == PDFLoadedWithV2InkAnnotations::kTrue) {
-      return result;
-    }
+    return result.ink_text_annotations ==
+               PDFLoadedWithInkTextAnnotations::kTrue &&
+           result.v2_ink_path == PDFLoadedWithV2InkAnnotations::kTrue;
+  });
+
+  if (stopped_early) {
+    return result;
   }
 
   if (result.ink_text_annotations ==
@@ -5712,19 +5716,17 @@ PDFiumEngine::LoadV2InkPathsForPage(int page_index) {
 
 DocumentInkTextBoxesMap PDFiumEngine::LoadTextAnnotationsFromPdf() {
   DocumentInkTextBoxesMap document_textboxes;
-  for (size_t i = 0; i < pages_.size(); ++i) {
-    base::ScopedClosureRunner unload_preventer =
-        CreateScopedDeferredPageUnload();
-    PDFiumPage* page = pages_[i].get();
+  ForEachPage([&](PDFiumPage* page) {
     std::vector<ReadInkTextResult> page_results =
         ReadInkTextAnnotationsFromPage(page->GetPage());
     if (page_results.empty()) {
-      continue;
+      return;
     }
 
     std::vector<InkTextBox> page_textboxes;
     page_textboxes.reserve(page_results.size());
 
+    uint32_t i = page->index();
     for (auto& result : page_results) {
       InkLoadedTextId loaded_text_id(next_ink_loaded_text_id_++);
       result.textbox.ink_loaded_text_id = loaded_text_id;
@@ -5745,7 +5747,7 @@ DocumentInkTextBoxesMap PDFiumEngine::LoadTextAnnotationsFromPdf() {
     }
 
     document_textboxes[i] = std::move(page_textboxes);
-  }
+  });
 
   return document_textboxes;
 }

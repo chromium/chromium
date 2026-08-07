@@ -101,7 +101,7 @@ class TestPDFiumEngine : public PDFiumEngine {
 
   MOCK_METHOD(bool, IsPDFDocTagged, (), (const override));
 
-  MOCK_METHOD(bool, HasMeaningfulText, (), (const override));
+  MOCK_METHOD(bool, HasMeaningfulText, (), (override));
 
   MOCK_METHOD(bool, HasJavaScript, (), (const override));
 
@@ -153,7 +153,7 @@ class TestPDFiumEngine : public PDFiumEngine {
   MOCK_METHOD(InkIdentifiers,
               ScanForInkAnnotations,
               (base::TimeDelta),
-              (const override));
+              (override));
 
   MOCK_METHOD((std::map<InkModeledShapeId, ink::PartitionedMesh>),
               LoadV2InkPathsForPage,

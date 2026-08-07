@@ -390,7 +390,7 @@ class PDFiumEngine : public DocumentLoader::Client,
   // exceeds a threshold. This method should be called after making sure the
   // document is loaded to ensure the pages are available for checking;
   // otherwise, it may return false if pages are not yet available.
-  virtual bool HasMeaningfulText() const;
+  virtual bool HasMeaningfulText();
 
   // Returns true if the PDF contains JavaScript actions. This method should be
   // called after the document is loaded; otherwise, it returns false if the
@@ -404,7 +404,7 @@ class PDFiumEngine : public DocumentLoader::Client,
 
   // Returns a copy of the structure tree which describes the logical
   // organization of the PDF, if present.
-  std::unique_ptr<AccessibilityStructureElement> GetStructureTree() const;
+  std::unique_ptr<AccessibilityStructureElement> GetStructureTree();
 
   virtual uint32_t GetLoadedByteSize();
 
@@ -479,7 +479,7 @@ class PDFiumEngine : public DocumentLoader::Client,
   // Scans the document to detect the presence of Ink annotations (Ink text
   // annotations and "V2" Ink paths) within `timeout`. Virtual to support
   // testing.
-  virtual InkIdentifiers ScanForInkAnnotations(base::TimeDelta timeout) const;
+  virtual InkIdentifiers ScanForInkAnnotations(base::TimeDelta timeout);
 
   // Loads "V2" Ink paths from a page in the PDF identified by `page_index`. The
   // `page_index` must be in bounds.
