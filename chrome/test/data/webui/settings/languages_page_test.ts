@@ -9,15 +9,15 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {CrCheckboxElement, LanguageHelper, SettingsAddLanguagesDialogElement, SettingsLanguagesPageElement} from 'chrome://settings/lazy_load.js';
 import {LanguagesBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import type {CrActionMenuElement, CrButtonElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, loadTimeData, convertLanguageCodeForTranslate} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData, convertLanguageCodeForTranslate, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertGE, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 
 import type {FakeLanguageSettingsPrivate} from './fake_language_settings_private.js';
 import {getFakeLanguagePrefs} from './fake_language_settings_private.js';
 import {TestLanguagesBrowserProxy} from './test_languages_browser_proxy.js';
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
 // clang-format on
 
@@ -50,11 +50,14 @@ suite('LanguagesPage', function() {
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    const settingsPrefs = document.createElement('settings-prefs');
-    const settingsPrivate = new FakeSettingsPrivate(getFakeLanguagePrefs());
-    settingsPrefs.initialize(settingsPrivate);
-    document.body.appendChild(settingsPrefs);
+    const prefsBrowserProxy = new TestPrefsBrowserProxy(getFakeLanguagePrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    await PrefService.getInstance().whenInitialized();
 
+    const settingsPrefs = document.createElement('settings-prefs');
+    settingsPrefs.initialize(prefsBrowserProxy.fakeApi);
+    document.body.appendChild(settingsPrefs);
     await CrSettingsPrefs.initialized;
     // Set up test browser proxy.
     browserProxy = new TestLanguagesBrowserProxy();
@@ -66,8 +69,6 @@ suite('LanguagesPage', function() {
     languageSettingsPrivate.setSettingsPrefs(settingsPrefs);
 
     const settingsLanguages = document.createElement('settings-languages');
-    settingsLanguages.prefs = settingsPrefs.prefs!;
-    fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
     document.body.appendChild(settingsLanguages);
     languageHelper = settingsLanguages;
 

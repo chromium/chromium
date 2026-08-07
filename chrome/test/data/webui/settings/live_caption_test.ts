@@ -9,7 +9,6 @@ import type {SettingsAddLanguagesDialogElement, SettingsLiveCaptionElement} from
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, loadTimeData, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertStringContains, assertStringExcludes, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {getFakeLanguagePrefs} from './fake_language_settings_private.js';
@@ -77,8 +76,6 @@ suite('LiveCaptionSection', function() {
     await CrSettingsPrefs.initialized;
 
     const settingsLanguages = document.createElement('settings-languages');
-    settingsLanguages.prefs = settingsPrefs.prefs!;
-    fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
     document.body.appendChild(settingsLanguages);
 
     // Set up test browser proxy.

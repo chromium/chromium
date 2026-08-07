@@ -108,6 +108,20 @@ export class PrefService {
     return this.setPrefValue(prefKey, dict);
   }
 
+  /**
+   * @param prefKey The key of the PrefObject to be updated. Must be of
+   *     PrefType.LIST otherwise an assertion error will be thrown.
+   * @param value The value to append to the list pref if not already present.
+   */
+  async appendPrefListItem<T>(prefKey: string, value: T): Promise<boolean> {
+    const pref = this.getPref<T[]>(prefKey);
+    assert(pref.type === chrome.settingsPrivate.PrefType.LIST);
+    if (pref.value.includes(value)) {
+      return Promise.resolve(true);
+    }
+    return this.setPrefValue(prefKey, [...pref.value, value]);
+  }
+
   getPref<T>(key: string): Readonly<PrefObject<T>> {
     assert(
         this.isInitialized_,

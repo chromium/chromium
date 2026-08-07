@@ -19,7 +19,6 @@ import type {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, loadTimeData, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
-import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {getFakeLanguagePrefs} from './fake_language_settings_private.js';
@@ -145,8 +144,6 @@ suite('A11yPage', () => {
 
     // Set up languages helper.
     const settingsLanguages = document.createElement('settings-languages');
-    settingsLanguages.prefs = settingsPrefs.prefs!;
-    fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
     document.body.appendChild(settingsLanguages);
     await settingsLanguages.whenReady();
 

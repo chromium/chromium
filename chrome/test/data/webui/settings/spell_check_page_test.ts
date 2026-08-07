@@ -6,7 +6,7 @@
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {LanguageHelper, SettingsSpellCheckPageElement} from 'chrome://settings/lazy_load.js';
 import {LanguagesBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 // <if expr="not is_macosx">
 import type {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {loadTimeData} from 'chrome://settings/settings.js';
@@ -23,12 +23,12 @@ import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import type {FakeChromeEvent} from 'chrome://webui-test/fake_chrome_event.js';
 // </if>
 
-import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 
 import type {FakeLanguageSettingsPrivate} from './fake_language_settings_private.js';
 import {getFakeLanguagePrefs} from './fake_language_settings_private.js';
 import {TestLanguagesBrowserProxy} from './test_languages_browser_proxy.js';
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
 // clang-format on
 
@@ -43,9 +43,13 @@ suite('SpellCheck', function() {
   });
 
   setup(async function() {
+    const prefsBrowserProxy = new TestPrefsBrowserProxy(getFakeLanguagePrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    await PrefService.getInstance().whenInitialized();
+
     const settingsPrefs = document.createElement('settings-prefs');
-    const settingsPrivate = new FakeSettingsPrivate(getFakeLanguagePrefs());
-    settingsPrefs.initialize(settingsPrivate);
+    settingsPrefs.initialize(prefsBrowserProxy.fakeApi);
     document.body.appendChild(settingsPrefs);
     await CrSettingsPrefs.initialized;
 
@@ -59,8 +63,6 @@ suite('SpellCheck', function() {
     languageSettingsPrivate.setSettingsPrefs(settingsPrefs);
 
     const settingsLanguages = document.createElement('settings-languages');
-    settingsLanguages.prefs = settingsPrefs.prefs!;
-    fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
     document.body.appendChild(settingsLanguages);
     languageHelper = settingsLanguages;
 

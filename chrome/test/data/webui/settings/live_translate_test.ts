@@ -9,7 +9,6 @@ import type {SettingsLiveTranslateElement} from 'chrome://settings/lazy_load.js'
 import {CaptionsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, loadTimeData, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 
 import {getFakeLanguagePrefs} from './fake_language_settings_private.js';
 import {TestCaptionsBrowserProxy} from './test_captions_browser_proxy.js';
@@ -59,8 +58,6 @@ suite('LiveTranslateSection', function() {
     await CrSettingsPrefs.initialized;
 
     const settingsLanguages = document.createElement('settings-languages');
-    settingsLanguages.prefs = settingsPrefs.prefs!;
-    fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
     document.body.appendChild(settingsLanguages);
 
     // Set up test browser proxy.

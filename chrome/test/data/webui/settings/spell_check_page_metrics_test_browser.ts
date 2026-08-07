@@ -5,15 +5,15 @@
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {LanguageSettingsMetricsProxy, LanguageSettingsPageImpressionType, SettingsSpellCheckPageElement} from 'chrome://settings/lazy_load.js';
 import {LanguagesBrowserProxyImpl, LanguageSettingsActionType, LanguageSettingsMetricsProxyImpl} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import type {FakeLanguageSettingsPrivate} from './fake_language_settings_private.js';
 import {getFakeLanguagePrefs} from './fake_language_settings_private.js';
 import {TestLanguagesBrowserProxy} from './test_languages_browser_proxy.js';
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
 /**
  * A test version of LanguageSettingsMetricsProxy.
@@ -44,9 +44,13 @@ suite('SpellCheckPageMetricsBrowser', function() {
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const prefsBrowserProxy = new TestPrefsBrowserProxy(getFakeLanguagePrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    await PrefService.getInstance().whenInitialized();
+
     const settingsPrefs = document.createElement('settings-prefs');
-    const settingsPrivate = new FakeSettingsPrivate(getFakeLanguagePrefs());
-    settingsPrefs.initialize(settingsPrivate);
+    settingsPrefs.initialize(prefsBrowserProxy.fakeApi);
     document.body.appendChild(settingsPrefs);
 
     await CrSettingsPrefs.initialized;
@@ -64,15 +68,13 @@ suite('SpellCheckPageMetricsBrowser', function() {
         .setSettingsPrefs(settingsPrefs);
 
     const settingsLanguages = document.createElement('settings-languages');
-    settingsLanguages.prefs = settingsPrefs.prefs!;
-    fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
     document.body.appendChild(settingsLanguages);
 
     spellCheckPage = document.createElement('settings-spell-check-page');
 
     // Prefs would normally be data-bound to settings-languages-page.
-    spellCheckPage.prefs = settingsLanguages.prefs;
-    fakeDataBind(settingsLanguages, spellCheckPage, 'prefs');
+    spellCheckPage.prefs = settingsPrefs.prefs!;
+    fakeDataBind(settingsPrefs, spellCheckPage, 'prefs');
 
     spellCheckPage.languages = settingsLanguages.languages;
     fakeDataBind(settingsLanguages, spellCheckPage, 'languages');
