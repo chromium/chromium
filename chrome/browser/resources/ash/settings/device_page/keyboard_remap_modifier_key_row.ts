@@ -16,7 +16,6 @@ import 'chrome://resources/ash/common/shortcut_input_ui/icons.html.js';
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -227,12 +226,10 @@ export class KeyboardRemapModifierKeyRowElement extends
         },
       ];
 
-      if (loadTimeData.getBoolean('enableModifierSplit')) {
-        keyMapTargets.push({
-          value: ModifierKey.kQuickInsert,
-          name: this.i18n('perDeviceKeyboardKeyQuickInsert'),
-        });
-      }
+      keyMapTargets.push({
+        value: ModifierKey.kQuickInsert,
+        name: this.i18n('perDeviceKeyboardKeyQuickInsert'),
+      });
 
       if (this.hasFunctionKey) {
         keyMapTargets.push({
