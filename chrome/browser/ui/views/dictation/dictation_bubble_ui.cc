@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/dictation/dictation_bubble_ui.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/dictation/waveform_view.h"
@@ -206,7 +207,16 @@ DictationBubbleUi::DictationBubbleUi(
   set_close_on_deactivate(false);
   SetContentsView(std::make_unique<DictationToastView>(
       std::move(close_callback), std::move(toggle_active_stream_callback)));
+
+  // Make this not activatable during creation, so that it does not steal focus
+  // from the page.
   SetCanActivate(false);
+  // After creation, we need to make this activatable again. Otherwise, we would
+  // discard mouse activation messages from Windows and the buttons in this
+  // bubble wouldn't be clickable. See https://crbug.com/542199776
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&DictationBubbleUi::SetCanActivate,
+                                weak_ptr_factory_.GetWeakPtr(), true));
 
   // TODO(crbug.com/509983464): Update this to call an undeprecated factory
   // function when this bug is fixed.

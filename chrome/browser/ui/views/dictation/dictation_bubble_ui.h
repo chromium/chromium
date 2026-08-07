@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_DICTATION_DICTATION_BUBBLE_UI_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/dictation/ui_state.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/animation/linear_animation.h"
@@ -44,6 +45,7 @@ class DictationBubbleUi : public views::BubbleDialogDelegate {
  private:
   std::unique_ptr<views::Widget> widget_;
   UiState state_ = UiState::kInactive;
+  base::WeakPtrFactory<DictationBubbleUi> weak_ptr_factory_{this};
 };
 
 }  // namespace dictation
