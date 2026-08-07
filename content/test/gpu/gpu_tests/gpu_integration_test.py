@@ -1396,6 +1396,7 @@ class GpuIntegrationTest(
         'arm-mali-g78',  # android-pixel-6
         'nvidia-nvidia-tegra',  # android-shield-android-tv
         'imagination-technologies-0x71061212',  # android-pixel-10
+        'samsung-electronics-co.-ltd.-0x2600200',  # android-sm-s926b
         'vmware,',  # VMs
         'vmware,-0x1050',  # ChromeOS VMs
         'mesa/x.org',  # ChromeOS VMs

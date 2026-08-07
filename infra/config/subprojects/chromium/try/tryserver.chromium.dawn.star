@@ -438,8 +438,6 @@ dawn_android_builder(
 )
 
 dawn_android_builder(
-    # This is not part of "android-dawn-arm64-rel" at the moment since there is
-    # not sufficient S24 capacity for that.
     name = "android-dawn-arm64-s24-rel",
     description_html = "Runs ToT Dawn tests on Samsung S24 devices",
     mirrors = [
@@ -447,6 +445,7 @@ dawn_android_builder(
         "ci/Dawn Android arm64 Release (Samsung S24)",
     ],
     gn_args = "ci/Dawn Android arm64 Builder",
+    execution_timeout = 6 * time.hour,
     max_concurrent_builds = 1,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],

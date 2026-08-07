@@ -3468,6 +3468,39 @@ targets.bundle(
     ],
 )
 
+targets.bundle(
+    name = "gpu_dawn_galaxy_s24_gtests",
+    targets = [
+        "dawn_end2end_tests",
+    ],
+    per_test_modifications = {
+        "dawn_end2end_tests": targets.mixin(
+            android_swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
+    name = "gpu_dawn_galaxy_s24_telemetry_tests",
+    targets = [
+        "webgpu_cts_tests",
+    ],
+    per_test_modifications = {
+        "webgpu_cts_tests": [
+            targets.mixin(
+                android_swarming = targets.swarming(
+                    shards = 36,
+                ),
+            ),
+            "gpu_integration_test_common_args",
+            "webgpu_telemetry_cts",
+            "linux_vulkan",
+        ],
+    },
+)
+
 # GPU gtests that test only Dawn
 targets.bundle(
     name = "gpu_dawn_gtests",

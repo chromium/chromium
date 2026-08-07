@@ -1099,21 +1099,16 @@ ci.thin_tester(
         run_tests_serially = True,
     ),
     targets = targets.bundle(
-        # TODO(crbug.com/333424893): Enable tests.
         targets = [
-            "gpu_noop_sleep_telemetry_test",
+            "gpu_dawn_galaxy_s24_gtests",
+            "gpu_dawn_galaxy_s24_telemetry_tests",
         ],
         mixins = [
             "has_native_resultdb_integration",
             "gpu_samsung_s24_stable",
             "limited_capacity_bot",
+            "no_tombstones",
         ],
-        per_test_modifications = {
-            "noop_sleep_tests": targets.mixin(
-                # TODO(crbug.com/333424893): Enable tests.
-                experiment_percentage = 100,
-            ),
-        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.ANDROID_CHROMIUM,
@@ -1124,6 +1119,7 @@ ci.thin_tester(
         category = "ToT|Android",
         short_name = "s24",
     ),
+    execution_timeout = 6 * time.hour,
 )
 
 ci.thin_tester(
