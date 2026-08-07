@@ -62,6 +62,27 @@ constexpr base::TimeDelta kSigningQuotaInterval = base::Minutes(9);
 
 constexpr base::TimeDelta kProactiveRefreshThreshold = base::Seconds(120);
 
+// Returns the timestamp when the session will next reach the proactive refresh
+// threshold (or `base::Time::Max()` for session cookies), or `std::nullopt` if
+// the session already needs a refresh.
+std::optional<base::Time> GetFutureRefreshTime(base::TimeDelta lifetime) {
+  if (lifetime <= kProactiveRefreshThreshold) {
+    return std::nullopt;
+  }
+  return lifetime.is_max()
+             ? base::Time::Max()
+             : base::Time::Now() + (lifetime - kProactiveRefreshThreshold);
+}
+
+// Computes when the session will next reach the proactive refresh threshold.
+// Returns `base::Time::Max()` for missing or session cookies because their
+// expiration cannot be proactively tracked.
+base::Time ComputeEarliestNextRefreshTime(base::TimeDelta lifetime) {
+  return lifetime.is_zero()
+             ? base::Time::Max()
+             : GetFutureRefreshTime(lifetime).value_or(base::Time::Now());
+}
+
 bool SessionMatchesFilter(
     const SchemefulSite& site,
     const Session& session,
@@ -272,27 +293,17 @@ void SessionServiceImpl::OnGetCookiesForPrewarm(
       continue;
     }
 
-    if (base::TimeDelta lifetime = session->MinimumBoundCookieLifetime(cookies);
-        (lifetime - kProactiveRefreshThreshold).is_positive()) {
-      base::TimeDelta remaining_until_refresh =
-          lifetime - kProactiveRefreshThreshold;
-      base::Time earliest_next_refresh_time =
-          lifetime.is_max() ? base::Time::Max()
-                            : base::Time::Now() + remaining_until_refresh;
+    if (std::optional<base::Time> refresh_time = GetFutureRefreshTime(
+            session->MinimumBoundCookieLifetime(cookies))) {
       barrier.Run({.result = RefreshResult::kInScopeRefreshNotYetNeeded,
-                   .earliest_next_refresh_time = earliest_next_refresh_time});
+                   .earliest_next_refresh_time = *refresh_time});
       continue;
     }
 
     // Refresh needed (either missing cookie or expiring cookie below
     // threshold).
-    auto on_refresh_done = base::BindOnce(
-        [](base::RepeatingCallback<void(PrewarmResult)> barrier,
-           RefreshResult result) { barrier.Run({.result = result}); },
-        barrier);
-
     auto [it, inserted] = proactive_requests_.try_emplace(session_key);
-    it->second.completion_callbacks.push_back(std::move(on_refresh_done));
+    it->second.completion_callbacks.push_back(barrier);
     if (inserted && !deferred_requests_.contains(session_key)) {
       url::Origin origin = url::Origin::Create(url);
       StartSessionRefresh(
@@ -306,6 +317,55 @@ void SessionServiceImpl::OnGetCookiesForPrewarm(
                   unexportable_keys::BackgroundTaskPriority::kBestEffort,
           });
     }
+  }
+}
+
+void SessionServiceImpl::CompleteProactiveRefresh(
+    const SessionKey& session_key,
+    RefreshResult result,
+    std::vector<base::OnceCallback<void(PrewarmResult)>> callbacks) {
+  if (callbacks.empty()) {
+    return;
+  }
+
+  Session* session = GetSession(session_key);
+  if (result == RefreshResult::kRefreshed && session &&
+      context_->cookie_store()) {
+    context_->cookie_store()->GetCookieListWithOptionsAsync(
+        session->refresh_url(), CookieOptions::MakeAllInclusive(),
+        CookiePartitionKeyCollection(),
+        base::BindOnce(&SessionServiceImpl::OnGetCookiesAfterProactiveRefresh,
+                       weak_factory_.GetWeakPtr(), session_key,
+                       std::move(callbacks), result));
+    return;
+  }
+
+  PrewarmResult prewarm_result{
+      .result = (!session && result == RefreshResult::kRefreshed)
+                    ? RefreshResult::kFatalError
+                    : result};
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(prewarm_result);
+  }
+}
+
+void SessionServiceImpl::OnGetCookiesAfterProactiveRefresh(
+    const SessionKey& session_key,
+    std::vector<base::OnceCallback<void(PrewarmResult)>> callbacks,
+    RefreshResult refresh_result,
+    const CookieAccessResultList& cookies,
+    const CookieAccessResultList& excluded_cookies) {
+  Session* session = GetSession(session_key);
+  PrewarmResult result =
+      session
+          ? PrewarmResult{.result = refresh_result,
+                          .earliest_next_refresh_time =
+                              ComputeEarliestNextRefreshTime(
+                                  session->MinimumBoundCookieLifetime(cookies))}
+          : PrewarmResult{.result = RefreshResult::kFatalError};
+
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(result);
   }
 }
 
@@ -762,9 +822,8 @@ void SessionServiceImpl::UnblockWaitingRequests(
     has_proactive_request = true;
     base::UmaHistogramTimes("Net.DeviceBoundSessions.ProactiveRefreshDuration",
                             node.mapped().timer.Elapsed());
-    for (auto& callback : node.mapped().completion_callbacks) {
-      std::move(callback).Run(result);
-    }
+    CompleteProactiveRefresh(session_key, result,
+                             std::move(node.mapped().completion_callbacks));
   }
 
   auto it = deferred_requests_.find(session_key);

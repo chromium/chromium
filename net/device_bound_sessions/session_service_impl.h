@@ -167,10 +167,17 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
     kProactive,
   };
 
+  // The refresh outcome and earliest next refresh time for a single session
+  // evaluated during `PrewarmSessionsForUrl`.
+  struct PrewarmResult {
+    RefreshResult result = RefreshResult::kRefreshed;
+    base::Time earliest_next_refresh_time = base::Time::Max();
+  };
+
   // State tracking an in-flight proactive refresh for a session, including
   // callbacks waiting for it to finish and a timer for metrics.
   struct ProactiveRefresh {
-    std::vector<base::OnceCallback<void(RefreshResult)>> completion_callbacks;
+    std::vector<base::OnceCallback<void(PrewarmResult)>> completion_callbacks;
     base::ElapsedTimer timer;
   };
 
@@ -184,13 +191,6 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
         unexportable_keys::BackgroundTaskPriority::kBestEffort;
     SessionService::OnAccessCallback access_callback;
     net::NetLogWithSource net_log;
-  };
-
-  // The refresh outcome and earliest next refresh time for a single session
-  // evaluated during `PrewarmSessionsForUrl`.
-  struct PrewarmResult {
-    RefreshResult result = RefreshResult::kRefreshed;
-    base::Time earliest_next_refresh_time = base::Time::Max();
   };
 
   // The key is the site (eTLD+1) of the session's origin and the
@@ -377,6 +377,24 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
                               PrewarmCallback callback,
                               const CookieAccessResultList& cookies,
                               const CookieAccessResultList& excluded_cookies);
+
+  // Completes in-flight proactive refresh requests for `session_key`. If the
+  // refresh succeeded, fetches cookies to determine
+  // `earliest_next_refresh_time` before invoking `callbacks`.
+  void CompleteProactiveRefresh(
+      const SessionKey& session_key,
+      RefreshResult result,
+      std::vector<base::OnceCallback<void(PrewarmResult)>> callbacks);
+
+  // Continuation of `UnblockWaitingRequests` for proactive refresh requests
+  // after retrieving cookies from the cookie store. Computes
+  // `earliest_next_refresh_time` and invokes waiting callbacks.
+  void OnGetCookiesAfterProactiveRefresh(
+      const SessionKey& session_key,
+      std::vector<base::OnceCallback<void(PrewarmResult)>> callbacks,
+      RefreshResult refresh_result,
+      const CookieAccessResultList& cookies,
+      const CookieAccessResultList& excluded_cookies);
 
   // Barrier callback invoked once all sessions matching a prewarm request have
   // completed their evaluation and any needed proactive refreshes.
