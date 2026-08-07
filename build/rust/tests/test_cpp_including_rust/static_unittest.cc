@@ -20,6 +20,10 @@
 #endif
 #endif
 
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#include "partition_alloc/partition_alloc_constants.h"  // nogncheck
+#endif
+
 TEST(RustStaticTest, CppCallingIntoRust_BasicFFI) {
   EXPECT_EQ(7, add_two_ints_via_rust(3, 4));
 }
@@ -57,7 +61,7 @@ TEST(RustStaticTest, RustLargeAllocationFailure) {
   // PA will crash when an allocation fails rather than return null, but Rust
   // can be trusted to handle failure without introducing null derefs so this
   // should fail gracefully.
-  size_t max_size = partition_alloc::internal::MaxDirectMapped();
+  size_t max_size = partition_alloc::MaxAllocationSize();
   EXPECT_FALSE(allocate_huge_via_rust(max_size + 1u, 4u));
 
   // Same as above but with an alignment larger than PartitionAlloc's default
