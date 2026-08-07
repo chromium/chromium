@@ -9,7 +9,6 @@
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -91,14 +90,7 @@ enum class ViewState {
       kAtMemoryCloseButtonAccessibilityIdentifier;
   self.navigationItem.rightBarButtonItem = cancelButton;
 
-  self.title =
-      (self.traitCollection.horizontalSizeClass ==
-           UIUserInterfaceSizeClassCompact ||
-       self.traitCollection.verticalSizeClass ==
-           UIUserInterfaceSizeClassCompact)
-          ? l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_FIND_AND_FILL_TITLE)
-          : l10n_util::GetNSString(
-                IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_SWITCH_TITLE);
+  self.title = l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_FIND_AND_FILL_TITLE);
 
   [self loadModel];
 }
