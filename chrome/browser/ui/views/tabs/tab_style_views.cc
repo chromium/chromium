@@ -736,8 +736,10 @@ float TabStyleViewsImpl::GetHoverOpacity() const {
 }
 
 int TabStyleViewsImpl::GetStrokeThickness() const {
-  if (delegate_->GetGroup().has_value() && !delegate_->IsInFocusedGroup() &&
-      delegate_->IsActive()) {
+  std::optional<tab_groups::TabGroupId> group = delegate_->GetGroup();
+  const bool is_group_focused =
+      group.has_value() && delegate_->IsGroupFocused();
+  if (group.has_value() && !is_group_focused && delegate_->IsActive()) {
     return TabGroupUnderline::kStrokeThickness;
   }
 

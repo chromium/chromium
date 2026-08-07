@@ -177,7 +177,7 @@ class TabStyleViewDelegateImpl : public TabStyleViewDelegate {
   std::optional<SkColor> GetGroupColor() const override {
     return tab_->GetGroupColor();
   }
-  bool IsInFocusedGroup() const override {
+  bool IsGroupFocused() const override {
     const std::optional<tab_groups::TabGroupId> group = tab_->group();
     return group.has_value() && tab_->controller()->GetFocusedGroup() == group;
   }

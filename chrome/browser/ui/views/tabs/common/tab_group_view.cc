@@ -254,15 +254,6 @@ void TabGroupView::OnDataChanged() {
         color, gfx::RoundedCornersF(0, kGroupLineCornerRadius,
                                     kGroupLineCornerRadius, 0)));
   }
-
-  InvalidateLayout();
-}
-
-void TabGroupView::SetIsCollapsed(bool is_collapsed) {
-  if (is_collapsed_ == is_collapsed) {
-    return;
-  }
-  is_collapsed_ = is_collapsed;
   InvalidateLayout();
 }
 
@@ -271,7 +262,7 @@ void TabGroupView::UpdateChildVisibilityForCollapseState(bool collapsed) {
   if (!collection_node_) {
     return;
   }
-  SetIsCollapsed(collapsed);
+  group_line_->SetVisible(!collapsed && !IsGroupFocused());
   for (auto* child : collection_node_->GetDirectChildren()) {
     child->SetVisible(!collapsed);
   }
