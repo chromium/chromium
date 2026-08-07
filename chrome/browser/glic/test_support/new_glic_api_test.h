@@ -23,6 +23,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/dns/mock_host_resolver.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -204,6 +205,13 @@ class GlicApiBrowserTestMixin : public T {
     Base::SetGlicPagePath("/glic/browser_tests/test.html");
     Base::AddMockGlicQueryParam("testsrc", js_source_path);
 
+    Base::embedded_test_server()->RegisterRequestHandler(
+        base::BindRepeating(&GlicApiBrowserTestMixin::SorryHtmlRequestHandler,
+                            base::Unretained(this)));
+    Base::embedded_test_server()->RegisterRequestHandler(
+        base::BindRepeating(&GlicApiBrowserTestMixin::FakeRpcRequestHandler,
+                            base::Unretained(this)));
+
     Base::embedded_test_server()->RegisterRequestMonitor(base::BindRepeating(
         &GlicApiBrowserTestMixin::OnEmbeddedTestServerHttpRequest,
         base::Unretained(this)));
@@ -247,6 +255,7 @@ class GlicApiBrowserTestMixin : public T {
 
   void SetUpOnMainThread() override {
     Base::SetUpOnMainThread();
+    Base::host_resolver()->AddRule("b.com", "127.0.0.1");
 #if !BUILDFLAG(IS_ANDROID)
     // Makes active browser selection deterministic for tests.
     GlicFocusedBrowserManagerImpl::SetTestingModeForTesting(true);
@@ -396,10 +405,43 @@ class GlicApiBrowserTestMixin : public T {
 
   const std::optional<base::Value>& step_data() const { return step_data_; }
 
+  // Fake handler that returns a "Sorry!" page.
+  std::unique_ptr<net::test_server::HttpResponse> SorryHtmlRequestHandler(
+      const net::test_server::HttpRequest& request) {
+    if (request.method != net::test_server::METHOD_GET ||
+        request.relative_url != "/glic/browser_tests/sorry.html") {
+      return nullptr;
+    }
+    auto result = std::make_unique<net::test_server::BasicHttpResponse>();
+    result->set_code(net::HttpStatusCode::HTTP_OK);
+    result->set_content_type("text/html");
+    result->set_content("Sorry!");
+    return result;
+  }
+
+  // Fake RPC endpoint that sometimes produces a CORS response.
+  // It does not respond to allow preflights, though.
+  std::unique_ptr<net::test_server::HttpResponse> FakeRpcRequestHandler(
+      const net::test_server::HttpRequest& request) {
+    if (request.method != net::test_server::METHOD_GET ||
+        !base::StartsWith(request.relative_url, "/fake-rpc")) {
+      return nullptr;
+    }
+    auto result = std::make_unique<net::test_server::BasicHttpResponse>();
+    result->set_code(net::HttpStatusCode::HTTP_OK);
+    result->set_content_type("application/json");
+    result->set_content("{\"status\": \"ok\"}");
+    if (request.relative_url.find("/cors") != std::string::npos) {
+      result->AddCustomHeader("Access-Control-Allow-Origin", "*");
+    }
+    return result;
+  }
+
  private:
   void OnEmbeddedTestServerHttpRequest(
       const net::test_server::HttpRequest& request) {
     VLOG(1) << "EmbeddedTestServerHttpRequest: " << request.relative_url;
+    embedded_test_server_requests_.push_back(request);
   }
   void ProcessTestResult(content::GlobalRenderFrameHostId frame_id,
                          const ExecuteTestOptions& options,
@@ -592,6 +634,9 @@ class GlicApiBrowserTestMixin : public T {
   base::test::ScopedFeatureList features_;
   std::set<content::GlobalRenderFrameHostId> next_step_required_;
   std::optional<base::Value> step_data_;
+
+ protected:
+  std::vector<net::test_server::HttpRequest> embedded_test_server_requests_;
 };
 
 using GlicApiBrowserTest = GlicApiBrowserTestMixin<GlicBrowserTest>;

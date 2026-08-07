@@ -765,45 +765,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFailedCookieSync, testCookieSyncFails) {
 }
 
 // Connect the client, and check that the special request header is sent.
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testRequestHeader) {
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
-  const GURL cross_origin_rpc_url =
-      embedded_test_server()->GetURL("b.com", "/fake-rpc/cors");
-  ExecuteJsTest({.params = base::Value(base::DictValue().Set(
-                     "rpcUrls", base::ListValue()
-                                    .Append("/fake-rpc")
-                                    .Append(cross_origin_rpc_url.spec())))});
-
-  auto request_header_matcher = testing::AllOf(
-      Contains(Pair("x-glic", "1")),
-      Contains(
-          Pair("x-glic-chrome-channel",
-               testing::AnyOf("unknown", "canary", "dev", "beta", "stable"))),
-      Contains(
-          Pair("x-glic-chrome-version", version_info::GetVersionNumber())));
-
-  auto find_request = [&](std::string_view path) {
-    const auto it = std::ranges::find_if(
-        embedded_test_server_requests_, [&](const auto& request) {
-          return request.GetURL().GetPath() == path &&
-                 request.method == net::test_server::METHOD_GET;
-        });
-    return it == embedded_test_server_requests_.end() ? nullptr : &(*it);
-  };
-
-  auto* main_request = find_request(GetGuestURL().GetPath());
-  ASSERT_TRUE(main_request);
-  EXPECT_THAT(main_request->headers, request_header_matcher);
-
-  auto* rpc_request = find_request("/fake-rpc");
-  ASSERT_TRUE(rpc_request);
-  EXPECT_THAT(rpc_request->headers, request_header_matcher);
-
-  auto* cross_origin_rpc_request = find_request("/fake-rpc/cors");
-  ASSERT_TRUE(cross_origin_rpc_request);
-  EXPECT_THAT(cross_origin_rpc_request->headers, request_header_matcher);
-}
-
 // Tests that the response to a user confirmation dialog is correctly ordered
 // w.r.t. other Glic API calls. See b/465690937 and associated CLs for details.
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testDialogResponseCallOrder) {

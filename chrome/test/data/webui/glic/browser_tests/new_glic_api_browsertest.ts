@@ -34,6 +34,11 @@ class ApiTests extends ApiTestFixtureBase {
     }
   }
 
+  async testRequestHeader() {
+    const rpcUrls: string[] = this.testParams.rpcUrls;
+    await Promise.all(rpcUrls.map(url => fetch(url)));
+  }
+
   async testUnresponsive() {
     // Don't respond to responsiveness checks.
     this.client.checkResponsive = () => {

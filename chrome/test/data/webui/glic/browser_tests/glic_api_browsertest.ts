@@ -81,11 +81,6 @@ class ApiTests extends ApiTestFixtureBase {
         panelOpenData.invocationSource, InvocationSource.TOP_CHROME_BUTTON);
   }
 
-  async testRequestHeader() {
-    const rpcUrls: string[] = this.testParams.rpcUrls;
-    await Promise.all(rpcUrls.map(url => fetch(url)));
-  }
-
   async testDialogResponseCallOrder() {
     assertDefined(this.host.uninterruptActorTask);
     assertDefined(this.host.createTask);

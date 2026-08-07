@@ -83,6 +83,7 @@
 #include "components/skills/public/skills_service.h"
 #include "components/subscription_eligibility/subscription_eligibility_prefs.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/version_info/version_info.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
@@ -93,6 +94,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/origin.h"
 
@@ -2127,6 +2129,47 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetUserProfileInfo) {
   // Confirm that this response-receiving request gets latency metrics recorded.
   histogram_tester.ExpectTotalCount(
       "Glic.Api.RequestHostLatency.GetUserProfileInfo", 1);
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testRequestHeader) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  const GURL cross_origin_rpc_url =
+      embedded_test_server()->GetURL("b.com", "/fake-rpc/cors");
+  base::ListValue rpc_urls;
+  rpc_urls.Append("/fake-rpc");
+  rpc_urls.Append(cross_origin_rpc_url.spec());
+  ExecuteJsTest({.params = base::Value(
+                     base::DictValue().Set("rpcUrls", std::move(rpc_urls)))});
+
+  auto request_header_matcher = testing::AllOf(
+      testing::Contains(testing::Pair(testing::StrCaseEq("x-glic"), "1")),
+      testing::Contains(testing::Pair(
+          testing::StrCaseEq("x-glic-chrome-channel"),
+          testing::AnyOf("unknown", "canary", "dev", "beta", "stable"))),
+      testing::Contains(
+          testing::Pair(testing::StrCaseEq("x-glic-chrome-version"),
+                        version_info::GetVersionNumber())));
+
+  auto find_request = [&](std::string_view path) {
+    const auto it = std::ranges::find_if(
+        embedded_test_server_requests_, [&](const auto& request) {
+          return request.GetURL().GetPath() == path &&
+                 request.method == net::test_server::METHOD_GET;
+        });
+    return it == embedded_test_server_requests_.end() ? nullptr : &(*it);
+  };
+
+  auto* main_request = find_request(GetGuestURL().GetPath());
+  ASSERT_TRUE(main_request);
+  EXPECT_THAT(main_request->headers, request_header_matcher);
+
+  auto* rpc_request = find_request("/fake-rpc");
+  ASSERT_TRUE(rpc_request);
+  EXPECT_THAT(rpc_request->headers, request_header_matcher);
+
+  auto* cross_origin_rpc_request = find_request("/fake-rpc/cors");
+  ASSERT_TRUE(cross_origin_rpc_request);
+  EXPECT_THAT(cross_origin_rpc_request->headers, request_header_matcher);
 }
 
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetContextFromFocusedTabWithIframe) {
