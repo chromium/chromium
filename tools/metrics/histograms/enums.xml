@@ -9797,6 +9797,7 @@ from previous Chrome versions.
   <int value="-1502515694" label="ProfilePickerTextVariations:disabled"/>
   <int value="-1501764956" label="AccessibilitySnapshotStressTests:enabled"/>
   <int value="-1501658124" label="IsolatedWebAppAutomaticUpdates:enabled"/>
+  <int value="-1501593786" label="GlicCaaGuestError:enabled"/>
   <int value="-1500811568" label="MuteNotificationSnoozeAction:disabled"/>
   <int value="-1500810366" label="DataControlsDragEnforcement:enabled"/>
   <int value="-1500005130" label="AIMSuppressVerbatimMatch:disabled"/>
@@ -14455,6 +14456,7 @@ from previous Chrome versions.
   <int value="-41263570" label="OmniboxToolbelt:enabled"/>
   <int value="-41254374" label="WebRtcMetronomeTaskQueue:enabled"/>
   <int value="-40935502" label="ContextualSuggestionsSlimPeekUI:enabled"/>
+  <int value="-39994593" label="GlicCaaGuestError:disabled"/>
   <int value="-38819793" label="PCCTMinimumHeight:disabled"/>
   <int value="-38525285" label="AccessibilityManifestV3SelectToSpeak:enabled"/>
   <int value="-38147034"

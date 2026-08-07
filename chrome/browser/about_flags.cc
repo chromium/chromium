@@ -11037,6 +11037,10 @@ const FeatureEntry kFeatureEntries[] = {
                                     kGlicGuestUrlPresetTypes,
                                     "GlicGuestUrlPresets")},
 
+    {"glic-caa-guest-error", flag_descriptions::kGlicCaaGuestErrorName,
+     flag_descriptions::kGlicCaaGuestErrorDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kGlicCaaGuestError)},
+
     // Glic enterprise settings
     {"glic-gemini-enterprise-settings-override",
      flag_descriptions::kGlicGeminiEnterpriseSettingsOverrideName,

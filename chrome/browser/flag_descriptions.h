@@ -1753,6 +1753,11 @@ inline constexpr char kGlicGuestUrlPresetsName[] = "Glic guest URL presets";
 inline constexpr char kGlicGuestUrlPresetsDescription[] =
     "Overrides the Bluebird environment URL used for Glic with user-configured "
     "values. Intended for manual testing only.";
+
+inline constexpr char kGlicCaaGuestErrorName[] = "Glic CAA Guest Error";
+inline constexpr char kGlicCaaGuestErrorDescription[] =
+    "Enables the Glic CAA Guest Error UI when there are authentication issues.";
+
 inline constexpr char kGlicGeminiEnterpriseSettingsOverrideName[] =
     "Glic Gemini Enterprise Settings Override";
 inline constexpr char kGlicGeminiEnterpriseSettingsOverrideDescription[] =
