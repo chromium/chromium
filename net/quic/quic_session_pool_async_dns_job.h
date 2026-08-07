@@ -40,6 +40,11 @@ namespace net {
 // EndpointConnector, which reads the job's current results through
 // GetUsableEndpoints() and GetAttemptParams() and reports back through
 // OnSessionCreationDecided() and OnConnectorComplete().
+//
+// The job acts on partial resolver results once the endpoints are crypto
+// ready. Once a connection attempt has started based on a partial result,
+// subsequent DNS updates or errors are ignored; the job's success or failure
+// depends solely on the in-flight attempt.
 class QuicSessionPool::AsyncDnsJob
     : public QuicSessionPool::Job,
       public HostResolver::ServiceEndpointRequest::Delegate {
@@ -145,6 +150,26 @@ class QuicSessionPool::AsyncDnsJob
   int DoResolveHost();
   int DoResolveHostComplete(int rv);
 
+  // Tries IP pooling and then hands the current results to the connector.
+  // Returns the job result when the job settled, ERR_IO_PENDING when an
+  // attempt is in flight, or std::nullopt when nothing is usable yet.
+  std::optional<int> ProcessServiceEndpointResults();
+
+  // Fires the requests' one-shot host resolution signal. Called at most
+  // once.
+  void NotifyRequestsOfHostResolution(int rv);
+
+  // Runs the completion callback when the job settles.
+  void CompleteJob(int rv);
+
+  // Delivers the host resolution signal and completes the job if it settled.
+  void NotifyAndCompleteJob(int rv);
+
+  // Sets the DNS resolution end time if not already set. Only the first call
+  // takes effect. The end time reflects how long the job was blocked on DNS,
+  // matching the meaning of TcpConnectJob's domain_lookup_end.
+  void MaybeSetDnsResolutionEndTime();
+
   // Returns whether the client should be SVCB-optional when connecting to
   // `endpoints`.
   bool IsSvcbOptional(base::span<const ServiceEndpoint> endpoints) const;
@@ -158,7 +183,17 @@ class QuicSessionPool::AsyncDnsJob
   const MultiplexedSessionCreationInitiator session_creation_initiator_;
   const std::optional<ConnectionManagementConfig> connection_management_config_;
 
-  bool host_resolution_finished_ = false;
+  // Set when the resolver reported its final result.
+  bool resolution_finished_ = false;
+  // Set when the one-shot host resolution signal fired. This can happen
+  // before the resolver finishes.
+  bool host_resolution_notified_ = false;
+  // Set when the connector started an attempt. Later resolver results are
+  // ignored once set.
+  bool attempt_started_ = false;
+  // Cleared after the first IP pooling check that saw endpoints. Later
+  // checks do not record negative metric entries.
+  bool log_negative_ip_pool_result_ = true;
   std::unique_ptr<HostResolver::ServiceEndpointRequest>
       service_endpoint_request_;
   // Usable endpoints derived from the current resolver results. Reset on
@@ -166,6 +201,8 @@ class QuicSessionPool::AsyncDnsJob
   // call.
   mutable std::optional<std::vector<UsableEndpoint>> usable_endpoints_;
   base::TimeTicks dns_resolution_start_time_;
+  // Stamped once, when the job first stops waiting on DNS. Not moved when
+  // the resolver finishes later.
   base::TimeTicks dns_resolution_end_time_;
   std::unique_ptr<EndpointConnector> connector_;
   CompletionOnceCallback callback_;

@@ -855,15 +855,16 @@ QuicSessionPool::HasMatchingIpSessionForServiceEndpoint(
     const QuicSessionAliasKey& session_alias_key,
     const ServiceEndpoint& service_endpoint,
     const std::set<std::string>& dns_aliases,
-    bool use_dns_aliases) {
+    bool use_dns_aliases,
+    bool log_negative_result) {
   if (QuicChromiumClientSession* session = HasMatchingIpSession(
           session_alias_key, service_endpoint.ipv6_endpoints, dns_aliases,
-          use_dns_aliases)) {
+          use_dns_aliases, log_negative_result)) {
     return session;
   }
   return HasMatchingIpSession(session_alias_key,
                               service_endpoint.ipv4_endpoints, dns_aliases,
-                              use_dns_aliases);
+                              use_dns_aliases, log_negative_result);
 }
 
 int QuicSessionPool::RequestSession(
@@ -1694,7 +1695,8 @@ QuicChromiumClientSession* QuicSessionPool::HasMatchingIpSession(
     const QuicSessionAliasKey& key,
     const std::vector<IPEndPoint>& ip_endpoints,
     const std::set<std::string>& aliases,
-    bool use_dns_aliases) {
+    bool use_dns_aliases,
+    bool log_negative_result) {
   const quic::QuicServerId& server_id(key.server_id());
 
   // There could be an existing session when HappyEyeballsV3 is enabled because
@@ -1756,6 +1758,9 @@ QuicChromiumClientSession* QuicSessionPool::HasMatchingIpSession(
                                      session, key.destination());
       return session;
     }
+  }
+  if (!log_negative_result) {
+    return nullptr;
   }
   if (can_pool) {
     LogFindMatchingIpSessionResult(net_log_, CAN_POOL_BUT_DIFFERENT_IP,

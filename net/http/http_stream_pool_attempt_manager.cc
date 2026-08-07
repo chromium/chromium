@@ -1257,7 +1257,9 @@ QuicChromiumClientSession* HttpStreamPool::AttemptManager::
     QuicChromiumClientSession* quic_session =
         quic_session_pool()->HasMatchingIpSessionForServiceEndpoint(
             quic_session_alias_key(), endpoint,
-            service_endpoint_request_->GetDnsAliasResults(), true);
+            service_endpoint_request_->GetDnsAliasResults(),
+            /*use_dns_aliases=*/true,
+            /*log_negative_result=*/true);
     if (quic_session) {
       return quic_session;
     }

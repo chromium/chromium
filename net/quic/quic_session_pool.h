@@ -353,12 +353,14 @@ class NET_EXPORT_PRIVATE QuicSessionPool
       const url::SchemeHostPort& destination) const;
 
   // Returns a session when an existing session can be used for `destination`
-  // that is resolved with `service_endpoint`.
+  // that is resolved with `service_endpoint`. When `log_negative_result` is
+  // false, a miss is not recorded in metrics.
   QuicChromiumClientSession* HasMatchingIpSessionForServiceEndpoint(
       const QuicSessionAliasKey& session_alias_key,
       const ServiceEndpoint& service_endpoint,
       const std::set<std::string>& dns_aliases,
-      bool use_dns_aliases);
+      bool use_dns_aliases,
+      bool log_negative_result);
 
   // Requests a QuicChromiumClientSession to |host_port_pair|, a handle for
   // which will be owned by |request|.
@@ -601,7 +603,8 @@ class NET_EXPORT_PRIVATE QuicSessionPool
       const QuicSessionAliasKey& key,
       const std::vector<IPEndPoint>& ip_endpoints,
       const std::set<std::string>& aliases,
-      bool use_dns_aliases);
+      bool use_dns_aliases,
+      bool log_negative_result = true);
   // Returns true if IP matching can be waived when trying to send requests to
   // |destination| on |session|.
   bool CanWaiveIpMatching(const url::SchemeHostPort& destination,

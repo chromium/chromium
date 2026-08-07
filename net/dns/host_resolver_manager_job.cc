@@ -846,6 +846,7 @@ void HostResolverManager::Job::StartDnsTask(
     secure_dns_attempted_ = true;
   }
   if (base::FeatureList::IsEnabled(features::kEnableIntermediateDnsResults) ||
+      base::FeatureList::IsEnabled(features::kAsyncDnsQuicJob) ||
       resolver_->IsHappyEyeballsV3Enabled()) {
     dns_task_results_manager_ = std::make_unique<DnsTaskResultsManager>(
         this, key_.host, key_.query_types, net_log_);
