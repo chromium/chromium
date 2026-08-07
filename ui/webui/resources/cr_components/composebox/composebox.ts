@@ -26,7 +26,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteResult, FileAttachment, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SearchContext, TabAttachment, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
-import {ComposeboxFile, getLoadTimeBoolean, GlifAnimationState, mapMojoSourceToOrigin, mapUploadErrorToProcessFilesError, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordUserAction, TabUploadOrigin} from './common.js';
+import {ComposeboxFile, GlifAnimationState, mapMojoSourceToOrigin, mapUploadErrorToProcessFilesError, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordUserAction, TabUploadOrigin} from './common.js';
 import type {TabUpload} from './common.js';
 import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
@@ -231,14 +231,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
                                           ContextualEntrypointAndMenuElement>(
                '#contextEntrypoint') ||
         null;
-  }
-
-  // TODO(crbug.com/497887993): Temporary override to maintain NTP compatibility
-  // when `useNtpComposeboxFork` is disabled. Remove once `ComposeboxElement`
-  // is deleted.
-  override get keepMenuOpenOnTabSelect(): boolean {
-    return this.composeboxSource === 'NewTabPage' &&
-        getLoadTimeBoolean('keepMenuOpenOnTabSelectForRealbox', false);
   }
 
   override getLensButtonElement(): HTMLElement|null {

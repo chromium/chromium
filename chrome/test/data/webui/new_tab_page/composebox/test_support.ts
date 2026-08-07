@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ComposeboxElement, ComposeboxProxyImpl, NtpComposeboxElement} from 'chrome://new-tab-page/lazy_load.js';
+import {ComposeboxProxyImpl, NtpComposeboxElement} from 'chrome://new-tab-page/lazy_load.js';
+import type {ComposeboxElement} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
 
@@ -137,9 +138,7 @@ setupComposeboxTest<T extends ComposeboxUnionElement = ComposeboxElement>():
 export function
 createComposeboxElement<T extends ComposeboxUnionElement = ComposeboxElement>(
     testProxy: ComposeboxTestElement<T>, properties: Partial<T> = {}) {
-  const useForked = loadTimeData.getBoolean('useNtpComposeboxFork');
-  testProxy.element = (useForked ? new NtpComposeboxElement() :
-                                   new ComposeboxElement()) as unknown as T;
+  testProxy.element = new NtpComposeboxElement() as unknown as T;
   Object.assign(testProxy.element, {
     usePecApi: loadTimeData.getBoolean('contextualMenuUsePecApi'),
     smartTabSharingVisible:

@@ -45,8 +45,6 @@ extern const base::FeatureParam<bool> kShowContextMenuHeaders;
 extern const base::FeatureParam<bool> kShowSmartCompose;
 // Whether to exit AI mode when the user clicks outside the composebox.
 extern const base::FeatureParam<bool> kCloseComposeboxByClickOutside;
-// Whether to use ntp-composebox instead of cr-composebox.
-extern const base::FeatureParam<bool> kUseNtpComposeboxFork;
 
 bool IsNtpComposeboxEnabled(Profile* profile);
 

@@ -769,9 +769,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
   source->AddBoolean("enableThreadsRail", base::FeatureList::IsEnabled(
                                               ntp_features::kNtpThreadsRail));
 
-  source->AddBoolean("useNtpComposeboxFork",
-                     ntp_composebox::kUseNtpComposeboxFork.Get());
-
   // Action Chips LoadTimeData
   const auto* aim_eligibility_service =
       AimEligibilityServiceFactory::GetForProfile(profile);
