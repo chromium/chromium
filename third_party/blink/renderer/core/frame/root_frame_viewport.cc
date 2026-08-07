@@ -174,7 +174,7 @@ LayoutBox* RootFrameViewport::GetLayoutBox() const {
 gfx::QuadF RootFrameViewport::LocalToVisibleContentQuad(
     const gfx::QuadF& quad,
     const LayoutObject* local_object,
-    unsigned flags) const {
+    MapCoordinatesFlags flags) const {
   if (!layout_viewport_)
     return quad;
   gfx::QuadF viewport_quad =

@@ -836,8 +836,8 @@ int HTMLImageElement::x() const {
   if (!r)
     return 0;
 
-  PhysicalOffset abs_pos =
-      r->LocalToAbsolutePoint(PhysicalOffset(), kIgnoreTransforms);
+  PhysicalOffset abs_pos = r->LocalToAbsolutePoint(
+      PhysicalOffset(), {MapCoordinatesMode::kIgnoreTransforms});
   return abs_pos.left.ToInt();
 }
 
@@ -848,8 +848,8 @@ int HTMLImageElement::y() const {
   if (!r)
     return 0;
 
-  PhysicalOffset abs_pos =
-      r->LocalToAbsolutePoint(PhysicalOffset(), kIgnoreTransforms);
+  PhysicalOffset abs_pos = r->LocalToAbsolutePoint(
+      PhysicalOffset(), {MapCoordinatesMode::kIgnoreTransforms});
   return abs_pos.top.ToInt();
 }
 

@@ -435,8 +435,8 @@ void CanvasRenderingContext2D::ScrollPathIntoViewInternal(const Path& path) {
   PhysicalRect path_rect = PhysicalRect::EnclosingRect(bounding_rect);
   PhysicalRect canvas_rect = layout_box->PhysicalContentBoxRect();
   // TODO(fserb): Is this kIgnoreTransforms correct?
-  canvas_rect.Move(
-      layout_box->LocalToAbsolutePoint(PhysicalOffset(), kIgnoreTransforms));
+  canvas_rect.Move(layout_box->LocalToAbsolutePoint(
+      PhysicalOffset(), {MapCoordinatesMode::kIgnoreTransforms}));
   path_rect.SetX(
       (canvas_rect.X() + path_rect.X() * canvas_rect.Width() / width));
   path_rect.SetY(

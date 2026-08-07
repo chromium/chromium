@@ -1088,9 +1088,10 @@ int ScrollableArea::HorizontalScrollbarHeight(
   return 0;
 }
 
-gfx::QuadF ScrollableArea::LocalToVisibleContentQuad(const gfx::QuadF& quad,
-                                                     const LayoutObject*,
-                                                     unsigned) const {
+gfx::QuadF ScrollableArea::LocalToVisibleContentQuad(
+    const gfx::QuadF& quad,
+    const LayoutObject*,
+    MapCoordinatesFlags) const {
   return quad - GetScrollOffset();
 }
 

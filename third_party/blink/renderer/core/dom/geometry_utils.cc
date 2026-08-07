@@ -56,7 +56,7 @@ gfx::Vector2dF BoxTopLeftOffset(LayoutObject* layout_object,
   }
 
   Vector<gfx::QuadF> local_quads;
-  layout_object->QuadsInAncestor(local_quads, box_model, 0,
+  layout_object->QuadsInAncestor(local_quads, box_model, {},
                                  ToBoxQuadType(box_type));
   if (local_quads.empty()) {
     return gfx::Vector2dF();
@@ -480,7 +480,7 @@ HeapVector<Member<DOMQuad>> GetBoxQuads(LayoutObject* layout_object,
                                gfx::PointF(size.width(), size.height()),
                                gfx::PointF(0, size.height())));
   } else {
-    layout_object->QuadsInAncestor(quads, local_ancestor, 0,
+    layout_object->QuadsInAncestor(quads, local_ancestor, {},
                                    ToBoxQuadType(box_type));
   }
   for (const gfx::QuadF& quad : quads) {

@@ -2220,7 +2220,8 @@ void PaintLayer::ExpandRectForSelfPaintingDescendants(
     }
 
     PhysicalOffset delta = child_layer->GetLayoutObject().LocalToAncestorPoint(
-        PhysicalOffset(), &GetLayoutObject(), kIgnoreTransforms);
+        PhysicalOffset(), &GetLayoutObject(),
+        {MapCoordinatesMode::kIgnoreTransforms});
     added_rect.Move(delta);
 
     result.Unite(added_rect);

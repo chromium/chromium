@@ -304,7 +304,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   // The content box converted to absolute coords (taking transforms into
   // account).
-  gfx::QuadF AbsoluteContentQuad(MapCoordinatesFlags = 0) const;
+  gfx::QuadF AbsoluteContentQuad(MapCoordinatesFlags = {}) const;
 
   // The enclosing rectangle of the background with given opacity requirement.
   PhysicalRect PhysicalBackgroundRect(BackgroundRectType) const;

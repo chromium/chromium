@@ -1125,7 +1125,7 @@ static LayoutUnit LineDirectionPointForBlockDirectionNavigationOf(
     caret_point = caret_rect.rect.MinXMinYCorner();
   }
   caret_point = caret_rect.layout_object->LocalToAbsolutePoint(
-      caret_point, kIgnoreTransforms);
+      caret_point, {MapCoordinatesMode::kIgnoreTransforms});
   return caret_rect.layout_object->IsHorizontalWritingMode() ? caret_point.left
                                                              : caret_point.top;
 }

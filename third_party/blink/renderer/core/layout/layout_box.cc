@@ -2169,7 +2169,8 @@ ResourcePriority LayoutBox::ComputeResourcePriority() const {
   // TODO(japhet): Is this IgnoreTransforms correct? Would it be better to use
   // the visual rect (which has ancestor clips and transforms applied)? Should
   // we map to the top-level viewport instead of the current (sub) frame?
-  object_bounds.Move(LocalToAbsolutePoint(PhysicalOffset(), kIgnoreTransforms));
+  object_bounds.Move(LocalToAbsolutePoint(
+      PhysicalOffset(), {MapCoordinatesMode::kIgnoreTransforms}));
 
   // The object bounds might be empty right now, so intersects will fail since
   // it doesn't deal with empty rects. Use PhysicalRect::Contains in that case.

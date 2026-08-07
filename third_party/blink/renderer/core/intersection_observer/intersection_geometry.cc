@@ -196,7 +196,7 @@ gfx::Transform ObjectToViewTransform(const LayoutObject& object) {
 
   // Fall back to MapLocalToAncestor.
   TransformState transform_state(TransformState::kApplyTransformDirection);
-  object.MapLocalToAncestor(nullptr, transform_state, 0);
+  object.MapLocalToAncestor(nullptr, transform_state, {});
   return transform_state.AccumulatedTransform();
 }
 
@@ -606,7 +606,8 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
           TransformState::kUnapplyInverseTransformDirection);
       target->View()->MapAncestorToLocal(
           nullptr, implicit_root_to_target_document_transform,
-          kTraverseDocumentBoundaries | kApplyRemoteMainFrameTransform);
+          {MapCoordinatesMode::kTraverseDocumentBoundaries,
+           MapCoordinatesMode::kApplyRemoteMainFrameTransform});
       gfx::Transform matrix =
           implicit_root_to_target_document_transform.AccumulatedTransform()
               .InverseOrIdentity();
@@ -859,7 +860,8 @@ bool IntersectionGeometry::ApplyClip(const LayoutObject* target,
         clip_rect = ToPixelSnappedRect(
             local_root_frame->ContentLayoutObject()->LocalToAncestorRect(
                 PhysicalRect(clip_rect), nullptr,
-                kTraverseDocumentBoundaries | kApplyRemoteMainFrameTransform));
+                {MapCoordinatesMode::kTraverseDocumentBoundaries,
+                 MapCoordinatesMode::kApplyRemoteMainFrameTransform}));
         intersection_rect = unclipped_intersection_rect;
         does_intersect &=
             intersection_rect.InclusiveIntersect(gfx::RectF(clip_rect));

@@ -4540,8 +4540,8 @@ void GetLineBounds(Vector<gfx::QuadF>& line_quads, Node* editor_node) {
     if (!node.GetLayoutObject() || !node.GetLayoutObject()->IsText()) {
       continue;
     }
-    node.GetLayoutObject()->AbsoluteQuads(line_quads,
-                                          kApplyRemoteMainFrameTransform);
+    node.GetLayoutObject()->AbsoluteQuads(
+        line_quads, {MapCoordinatesMode::kApplyRemoteMainFrameTransform});
   }
 }
 

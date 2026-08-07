@@ -105,7 +105,7 @@ body { margin:0; padding: 0; }
 
   Vector<gfx::QuadF> quads;
   auto* object = GetLayoutObjectByElementId("t");
-  object->AbsoluteQuads(quads, 0);
+  object->AbsoluteQuads(quads);
   EXPECT_EQ(1u, quads.size());
   gfx::RectF bounding = quads.back().BoundingBox();
   EXPECT_EQ(7.0f, bounding.x());

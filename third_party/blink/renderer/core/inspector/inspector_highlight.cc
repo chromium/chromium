@@ -164,7 +164,7 @@ class ShapePathBuilder : public HighlightPathBuilder {
     // TODO(pfeldman): Is this kIgnoreTransforms correct?
     gfx::PointF viewport_point(view_->FrameToViewport(
         ToRoundedPoint(layout_object_->LocalToAbsolutePoint(
-            layout_object_point, kIgnoreTransforms))));
+            layout_object_point, {MapCoordinatesMode::kIgnoreTransforms}))));
     viewport_point.Scale(scale_);
     return viewport_point;
   }

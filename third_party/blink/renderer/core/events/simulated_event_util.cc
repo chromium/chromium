@@ -56,7 +56,7 @@ void PopulateMouseEventInitCoordinates(
     LayoutObject* layout_object = element->GetLayoutObject();
     PhysicalOffset center = layout_box->PhysicalBorderBoxRect().Center();
     PhysicalOffset root_frame_center = layout_object->LocalToAncestorPoint(
-        center, nullptr, MapCoordinatesMode::kTraverseDocumentBoundaries);
+        center, nullptr, {MapCoordinatesMode::kTraverseDocumentBoundaries});
     PhysicalOffset frame_center =
         dom_window->GetFrame()->View()->ConvertFromRootFrame(root_frame_center);
     gfx::Point frame_center_point = ToRoundedPoint(frame_center);

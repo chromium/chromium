@@ -241,8 +241,9 @@ String ConvertNodeTextToUtf8(const AtomicString& node_text) {
 
 // Coordinate mapping flags
 // - Viewport mapping: positions relative to the window/viewport origin.
-constexpr MapCoordinatesFlags kMapToViewportFlags =
-    kTraverseDocumentBoundaries | kApplyRemoteViewportTransform;
+constexpr MapCoordinatesFlags kMapToViewportFlags = {
+    MapCoordinatesMode::kTraverseDocumentBoundaries,
+    MapCoordinatesMode::kApplyRemoteViewportTransform};
 constexpr VisualRectFlags kVisualRectFlags = {
     VisualRectFlag::kUseGeometryMapper,
     VisualRectFlag::kApplyRemoteViewportTransform,

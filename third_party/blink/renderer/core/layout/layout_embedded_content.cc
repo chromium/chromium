@@ -439,7 +439,7 @@ void LayoutEmbeddedContent::UpdateGeometry(
   TransformState transform_state(TransformState::kApplyTransformDirection,
                                  gfx::PointF(),
                                  gfx::QuadF(gfx::RectF(replaced_rect)));
-  MapLocalToAncestor(nullptr, transform_state, 0);
+  MapLocalToAncestor(nullptr, transform_state, {});
   transform_state.Flatten();
   PhysicalOffset absolute_location =
       PhysicalOffset::FromPointFRound(transform_state.LastPlanarPoint());

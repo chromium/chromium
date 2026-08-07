@@ -126,8 +126,8 @@ void DisplayAdElementMonitor::DidFinishLifecycleUpdate(
   gfx::Rect rect_to_report;
   if (LayoutObject* r = element_->GetLayoutObject()) {
     // Get the element's bounding box relative to the main frame's viewport.
-    gfx::Rect rect_in_viewport =
-        r->AbsoluteBoundingBoxRect(kTraverseDocumentBoundaries);
+    gfx::Rect rect_in_viewport = r->AbsoluteBoundingBoxRect(
+        {MapCoordinatesMode::kTraverseDocumentBoundaries});
 
     // Exclude ads that are invisible or too small (e.g. tracking pixels).
     if (rect_in_viewport.width() > 1 && rect_in_viewport.height() > 1) {

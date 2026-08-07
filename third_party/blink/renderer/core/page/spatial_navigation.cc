@@ -862,7 +862,8 @@ PhysicalRect SearchOriginFragment(const PhysicalRect& visible_part,
   // entire bounding rect which is a union of all fragments) as search origin.
   Vector<gfx::QuadF> fragments;
   fragmented.AbsoluteQuads(
-      fragments, kTraverseDocumentBoundaries | kApplyRemoteMainFrameTransform);
+      fragments, {MapCoordinatesMode::kTraverseDocumentBoundaries,
+                  MapCoordinatesMode::kApplyRemoteMainFrameTransform});
   switch (direction) {
     case SpatialNavigationDirection::kLeft:
     case SpatialNavigationDirection::kDown:

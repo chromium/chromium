@@ -183,7 +183,7 @@ class AnnotationAgentImplTest : public SimTest {
         GetDocument().View()->GetPage()->GetVisualViewport();
     gfx::Rect rect_in_visual_viewport = viewport.RootFrameToViewport(
         node.GetLayoutObject()->AbsoluteBoundingBoxRect(
-            kTraverseDocumentBoundaries));
+            {MapCoordinatesMode::kTraverseDocumentBoundaries}));
     gfx::Rect viewport_rect(viewport.Size());
 
     bool is_contained = viewport_rect.Contains(rect_in_visual_viewport);
@@ -202,7 +202,7 @@ class AnnotationAgentImplTest : public SimTest {
         GetDocument().View()->GetPage()->GetVisualViewport();
     gfx::Rect rect_in_visual_viewport = viewport.RootFrameToViewport(
         node.GetLayoutObject()->AbsoluteBoundingBoxRect(
-            kTraverseDocumentBoundaries));
+            {MapCoordinatesMode::kTraverseDocumentBoundaries}));
     gfx::Rect viewport_rect(viewport.Size());
 
     bool is_contained = viewport_rect.Contains(rect_in_visual_viewport);

@@ -1525,8 +1525,9 @@ gfx::RectF GetReferenceBox(const LayoutBox* box, CoordBox coord_box) {
 gfx::PointF GetOffsetFromContainingBlock(const LayoutBox* box) {
   if (box) {
     if (const LayoutBlock* containing_block = box->ContainingBlock()) {
-      gfx::PointF offset = box->LocalToAncestorPoint(
-          gfx::PointF(), containing_block, kIgnoreTransforms);
+      gfx::PointF offset =
+          box->LocalToAncestorPoint(gfx::PointF(), containing_block,
+                                    {MapCoordinatesMode::kIgnoreTransforms});
       return offset;
     }
   }

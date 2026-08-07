@@ -1510,10 +1510,11 @@ TEST_F(LayoutObjectTest, LocalToAncestoRectIgnoreAncestorScroll) {
   PhysicalRect rect(0, 0, 100, 100);
 
   EXPECT_EQ(PhysicalRect(0, 2000, 100, 100),
-            target->LocalToAncestorRect(rect, ancestor, kIgnoreScrollOffset));
+            target->LocalToAncestorRect(
+                rect, ancestor, {MapCoordinatesMode::kIgnoreScrollOffset}));
 
   EXPECT_EQ(PhysicalRect(0, 1900, 100, 100),
-            target->LocalToAncestorRect(rect, ancestor, 0));
+            target->LocalToAncestorRect(rect, ancestor));
 }
 
 TEST_F(LayoutObjectTest, LocalToAncestoRectViewIgnoreAncestorScroll) {
@@ -1532,10 +1533,11 @@ TEST_F(LayoutObjectTest, LocalToAncestoRectViewIgnoreAncestorScroll) {
   PhysicalRect rect(0, 0, 100, 100);
 
   EXPECT_EQ(PhysicalRect(0, 2000, 100, 100),
-            target->LocalToAncestorRect(rect, nullptr, kIgnoreScrollOffset));
+            target->LocalToAncestorRect(
+                rect, nullptr, {MapCoordinatesMode::kIgnoreScrollOffset}));
 
   EXPECT_EQ(PhysicalRect(0, 1900, 100, 100),
-            target->LocalToAncestorRect(rect, nullptr, 0));
+            target->LocalToAncestorRect(rect, nullptr));
 }
 
 TEST_F(LayoutObjectTest,
@@ -1565,10 +1567,11 @@ TEST_F(LayoutObjectTest,
   PhysicalRect rect(0, 0, 100, 100);
 
   EXPECT_EQ(PhysicalRect(0, 2000, 100, 100),
-            target->LocalToAncestorRect(rect, ancestor, kIgnoreScrollOffset));
+            target->LocalToAncestorRect(
+                rect, ancestor, {MapCoordinatesMode::kIgnoreScrollOffset}));
 
   EXPECT_EQ(PhysicalRect(0, 1800, 100, 100),
-            target->LocalToAncestorRect(rect, ancestor, 0));
+            target->LocalToAncestorRect(rect, ancestor));
 }
 
 TEST_F(LayoutObjectTest,
@@ -1595,10 +1598,11 @@ TEST_F(LayoutObjectTest,
   PhysicalRect rect(0, 0, 100, 100);
 
   EXPECT_EQ(PhysicalRect(0, 2000, 100, 100),
-            target->LocalToAncestorRect(rect, nullptr, kIgnoreScrollOffset));
+            target->LocalToAncestorRect(
+                rect, nullptr, {MapCoordinatesMode::kIgnoreScrollOffset}));
 
   EXPECT_EQ(PhysicalRect(0, 1800, 100, 100),
-            target->LocalToAncestorRect(rect, nullptr, 0));
+            target->LocalToAncestorRect(rect, nullptr));
 }
 
 // crbug.com/1246619
@@ -1868,12 +1872,12 @@ TEST_F(LayoutObjectTest, ScrollOffsetMapping) {
 
   // Test with scroll offsets excluded:
   offset = gfx::PointF();
-  offset = inner->LocalToAncestorPoint(offset, /*ancestor=*/nullptr,
-                                       kIgnoreScrollOffset);
+  offset = inner->LocalToAncestorPoint(
+      offset, /*ancestor=*/nullptr, {MapCoordinatesMode::kIgnoreScrollOffset});
   EXPECT_EQ(offset, gfx::PointF(58, 58));
   // And back again:
-  offset = inner->AncestorToLocalPoint(/*ancestor=*/nullptr, offset,
-                                       kIgnoreScrollOffset);
+  offset = inner->AncestorToLocalPoint(
+      /*ancestor=*/nullptr, offset, {MapCoordinatesMode::kIgnoreScrollOffset});
   EXPECT_EQ(offset, gfx::PointF());
 }
 
@@ -1929,7 +1933,8 @@ TEST_F(LayoutObjectTest, QuadsInAncestor_Block) {
 
   // Relative to #scroller, ignoring scroll offset:
   quads = Vector<gfx::QuadF>();
-  target->QuadsInAncestor(quads, scroller, kIgnoreScrollOffset);
+  target->QuadsInAncestor(quads, scroller,
+                          {MapCoordinatesMode::kIgnoreScrollOffset});
   ASSERT_EQ(quads.size(), 4u);
   EXPECT_EQ(quads[0].BoundingBox(), gfx::RectF(110, 390, 50, 30));
   EXPECT_EQ(quads[1].BoundingBox(), gfx::RectF(160, 370, 50, 50));
@@ -1984,7 +1989,8 @@ TEST_F(LayoutObjectTest, QuadsInAncestor_Inline) {
 
   // Relative to #scroller, ignoring scroll offset:
   quads = Vector<gfx::QuadF>();
-  target->QuadsInAncestor(quads, scroller, kIgnoreScrollOffset);
+  target->QuadsInAncestor(quads, scroller,
+                          {MapCoordinatesMode::kIgnoreScrollOffset});
   ASSERT_EQ(quads.size(), 3u);
   EXPECT_EQ(quads[0].BoundingBox(), gfx::RectF(210, 240, 60, 20));
   EXPECT_EQ(quads[1].BoundingBox(), gfx::RectF(110, 260, 180, 20));

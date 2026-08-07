@@ -5051,9 +5051,11 @@ bool LocalFrameView::MapToVisualRectInRemoteRootFrame(
   }
   if (result) {
     if (LayoutView* layout_view = GetLayoutView()) {
-      auto flags = kTraverseDocumentBoundaries | kApplyRemoteMainFrameTransform;
+      MapCoordinatesFlags flags = {
+          MapCoordinatesMode::kTraverseDocumentBoundaries,
+          MapCoordinatesMode::kApplyRemoteMainFrameTransform};
       if (apply_viewport_transform) {
-        flags |= kApplyRemoteViewportTransform;
+        flags.Put(MapCoordinatesMode::kApplyRemoteViewportTransform);
       }
       rect = layout_view->LocalToAncestorRect(rect, nullptr, flags);
     }

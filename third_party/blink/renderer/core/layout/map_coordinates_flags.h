@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MAP_COORDINATES_FLAGS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MAP_COORDINATES_FLAGS_H_
 
+#include "base/containers/enum_set.h"
+
 namespace blink {
 
 // Coordinate space overview (for cross-frame/OOPIF correctness):
@@ -27,10 +29,10 @@ namespace blink {
 //
 // Recommended combinations (common intents):
 // - Map to main document (scroll-invariant):
-//     kTraverseDocumentBoundaries | kApplyRemoteMainFrameTransform |
-//     kIgnoreScrollOriginAndOffset
+//     {kTraverseDocumentBoundaries, kApplyRemoteMainFrameTransform,
+//      kIgnoreScrollOriginAndOffset}
 // - Map to main viewport (scroll-dependent):
-//     kTraverseDocumentBoundaries | kApplyRemoteViewportTransform
+//     {kTraverseDocumentBoundaries, kApplyRemoteViewportTransform}
 // - Ignore a container's scroll entirely while mapping within a single
 //   document:
 //     kIgnoreScrollOriginAndOffset (or kIgnoreScrollOffset for offset only)
@@ -41,28 +43,29 @@ namespace blink {
 // - Remote viewport mapping can be stale if the iframe is offscreen; see note
 //   on kApplyRemoteViewportTransform below.
 //
-enum MapCoordinatesMode {
+enum class MapCoordinatesMode {
+  kMinValue,
   // Only needed in some special cases to intentionally ignore transforms.
-  kIgnoreTransforms = 1 << 2,
+  kIgnoreTransforms = kMinValue,
 
-  kTraverseDocumentBoundaries = 1 << 3,
+  kTraverseDocumentBoundaries,
 
   // Ignore offset adjustments caused by position:sticky calculations when
   // walking the chain.
-  kIgnoreStickyOffset = 1 << 4,
+  kIgnoreStickyOffset,
 
   // Ignore the dynamic scroll offset from the container (i.e., the amount
   // scrolled). The static ScrollOrigin (which can be non-zero in some writing
   // modes/directions) is still applied. This yields scroll-invariant mapping
   // while preserving writing-mode anchoring.
-  kIgnoreScrollOffset = 1 << 5,
+  kIgnoreScrollOffset,
 
   // Ignore both the static ScrollOrigin and the dynamic scroll offset. This
   // produces a canonical top-left content origin regardless of writing mode or
   // scroll state.
   // (In default horizontal-tb LTR, ScrollOrigin is (0,0), so this is
   // equivalent to kIgnoreScrollOffset.)
-  kIgnoreScrollOriginAndOffset = 1 << 6,
+  kIgnoreScrollOriginAndOffset,
 
   // If the local root frame has a remote frame parent (i.e., this frame is
   // embedded via an out-of-process iframe), apply the transformation from the
@@ -70,7 +73,7 @@ enum MapCoordinatesMode {
   // different-process, not a different machine). The resulting coordinates are
   // relative to the main frame document (content origin), i.e., (0, 0) maps to
   // where the main frame's content starts.
-  kApplyRemoteMainFrameTransform = 1 << 7,
+  kApplyRemoteMainFrameTransform,
 
   // If the local root frame has a remote frame parent, apply the transformation
   // from the local root frame to the remote main frame's viewport (again,
@@ -81,9 +84,11 @@ enum MapCoordinatesMode {
   // NOTE: This is guaranteed to provide a correct value only if the iframe is
   // onscreen. This is because we don't sync scroll updates from the main
   // frame's root scroller. See kSkipUnnecessaryRemoteFrameGeometryPropagation.
-  kApplyRemoteViewportTransform = 1 << 8,
+  kApplyRemoteViewportTransform,
+  kMaxValue = kApplyRemoteViewportTransform,
 };
-typedef unsigned MapCoordinatesFlags;
+
+using MapCoordinatesFlags = base::EnumSet<MapCoordinatesMode>;
 
 }  // namespace blink
 

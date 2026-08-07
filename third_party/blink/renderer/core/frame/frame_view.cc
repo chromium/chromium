@@ -179,7 +179,7 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
         TransformState::kUnapplyInverseTransformDirection);
     // First transform to box coordinates of the iframe element...
     owner_layout_object->MapAncestorToLocal(
-        nullptr, parent_frame_to_iframe_content_transform, 0);
+        nullptr, parent_frame_to_iframe_content_transform, {});
     // ... then apply content_box_offset to translate to the coordinate of the
     // child frame.
     parent_frame_to_iframe_content_transform.Move(
@@ -255,7 +255,8 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
     if (owner_layout_object) {
       owner_layout_object->MapAncestorToLocal(
           nullptr, child_frame_to_root_frame,
-          kTraverseDocumentBoundaries | kApplyRemoteMainFrameTransform);
+          {MapCoordinatesMode::kTraverseDocumentBoundaries,
+           MapCoordinatesMode::kApplyRemoteMainFrameTransform});
       child_frame_to_root_frame.Move(
           owner_layout_object->PhysicalContentBoxRect().offset);
     }

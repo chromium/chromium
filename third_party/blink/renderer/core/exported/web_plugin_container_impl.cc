@@ -1149,7 +1149,8 @@ void WebPluginContainerImpl::ComputeClipRectsForPlugin(
   window_rect = DeprecatedFrameRect();
   PhysicalRect layout_window_rect =
       element_->GetDocument().View()->GetLayoutView()->LocalToAbsoluteRect(
-          PhysicalRect(window_rect), kTraverseDocumentBoundaries);
+          PhysicalRect(window_rect),
+          {MapCoordinatesMode::kTraverseDocumentBoundaries});
 
   window_rect = ToPixelSnappedRect(layout_window_rect);
 
@@ -1158,12 +1159,14 @@ void WebPluginContainerImpl::ComputeClipRectsForPlugin(
       PhysicalOffset(), PhysicalSize(root_view->GetFrameView()->Size())));
 
   unclipped_int_local_rect = ToEnclosingRect(box->AbsoluteToLocalRect(
-      unclipped_root_frame_rect, kTraverseDocumentBoundaries));
+      unclipped_root_frame_rect,
+      {MapCoordinatesMode::kTraverseDocumentBoundaries}));
   // As a performance optimization, map the clipped rect separately if is
   // different than the unclipped rect.
   if (clipped_root_frame_rect != unclipped_root_frame_rect) {
     clipped_local_rect = ToEnclosingRect(box->AbsoluteToLocalRect(
-        clipped_root_frame_rect, kTraverseDocumentBoundaries));
+        clipped_root_frame_rect,
+        {MapCoordinatesMode::kTraverseDocumentBoundaries}));
   } else {
     clipped_local_rect = unclipped_int_local_rect;
   }

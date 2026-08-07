@@ -106,8 +106,8 @@ std::optional<double> ScrollMarkerChooser::GetScrollTargetPosition(
   // details
   const MapCoordinatesFlags flag =
       (RuntimeEnabledFeatures::CSSPositionStickyStaticScrollPositionEnabled())
-          ? kIgnoreStickyOffset
-          : 0;
+          ? MapCoordinatesFlags{MapCoordinatesMode::kIgnoreStickyOffset}
+          : MapCoordinatesFlags{};
   PhysicalRect rect_to_scroll = scroller_box_->AbsoluteToLocalRect(
       bounding_box_object->AbsoluteBoundingBoxRectForScrollIntoView(), flag);
   rect_to_scroll.Expand(scroll_margin);

@@ -421,7 +421,7 @@ HitTestResult EventHandler::HitTestResultAtLocation(
             PhysicalRect main_frame_rect =
                 frame_view->GetLayoutView()->LocalToAncestorRect(
                     local_rect, main_view->GetLayoutView(),
-                    kTraverseDocumentBoundaries);
+                    {MapCoordinatesMode::kTraverseDocumentBoundaries});
             adjusted_location = HitTestLocation(main_frame_rect);
           } else {
             // Don't apply ancestor transforms to bounding box
@@ -709,7 +709,8 @@ std::optional<ui::Cursor> EventHandler::SelectCursor(
             frame_->ContentLayoutObject()->LocalToAncestorPoint(
                 location.Point(),
                 nullptr,  // no ancestor maps all the way up the hierarchy
-                kTraverseDocumentBoundaries | kApplyRemoteMainFrameTransform);
+                {MapCoordinatesMode::kTraverseDocumentBoundaries,
+                 MapCoordinatesMode::kApplyRemoteMainFrameTransform});
 
         // Check the cursor rect with device and accessibility scaling applied.
         const float scale_factor =

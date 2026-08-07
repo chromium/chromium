@@ -1971,7 +1971,7 @@ const LayoutBoxModelObject* LayoutObject::FindFirstStickyContainer(
 gfx::RectF LayoutObject::AbsoluteBoundingBoxRectF(
     MapCoordinatesFlags flags) const {
   NOT_DESTROYED();
-  DCHECK(!(flags & kIgnoreTransforms));
+  DCHECK(!flags.Has(MapCoordinatesMode::kIgnoreTransforms));
   Vector<gfx::QuadF> quads;
   AbsoluteQuads(quads, flags);
 
@@ -1988,7 +1988,7 @@ gfx::RectF LayoutObject::AbsoluteBoundingBoxRectF(
 gfx::Rect LayoutObject::AbsoluteBoundingBoxRect(
     MapCoordinatesFlags flags) const {
   NOT_DESTROYED();
-  DCHECK(!(flags & kIgnoreTransforms));
+  DCHECK(!flags.Has(MapCoordinatesMode::kIgnoreTransforms));
   Vector<gfx::QuadF> quads;
   AbsoluteQuads(quads, flags);
 
@@ -2034,8 +2034,8 @@ PhysicalRect LayoutObject::AbsoluteBoundingBoxRectForScrollIntoView() const {
 
   const MapCoordinatesFlags flag =
       (RuntimeEnabledFeatures::CSSPositionStickyStaticScrollPositionEnabled())
-          ? kIgnoreStickyOffset
-          : 0;
+          ? MapCoordinatesFlags{MapCoordinatesMode::kIgnoreStickyOffset}
+          : MapCoordinatesFlags{};
 
   if (const auto* scroll_marker =
           DynamicTo<ScrollMarkerPseudoElement>(GetNode())) {
@@ -3614,7 +3614,7 @@ void LayoutObject::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
 
   // Text objects just copy their parent's computed style, so we need to ignore
   // them.
-  bool use_transforms = !(mode & kIgnoreTransforms);
+  bool use_transforms = !mode.Has(MapCoordinatesMode::kIgnoreTransforms);
 
   const bool container_preserves_3d = container->StyleRef().Preserves3D();
   // Just because container and this have preserve-3d doesn't mean all
@@ -3665,7 +3665,7 @@ void LayoutObject::MapAncestorToLocal(const LayoutBoxModelObject* ancestor,
     container->MapAncestorToLocal(ancestor, transform_state, mode);
 
   PhysicalOffset container_offset = OffsetFromContainer(container, mode);
-  bool use_transforms = !(mode & kIgnoreTransforms);
+  bool use_transforms = !mode.Has(MapCoordinatesMode::kIgnoreTransforms);
 
   // Just because container and this have preserve-3d doesn't mean all
   // the DOM elements between them do.  (We know they don't have a
@@ -3796,7 +3796,7 @@ gfx::Transform LayoutObject::LocalToAncestorTransform(
     const LayoutBoxModelObject* ancestor,
     MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
-  DCHECK(!(mode & kIgnoreTransforms));
+  DCHECK(!mode.Has(MapCoordinatesMode::kIgnoreTransforms));
   TransformState transform_state(TransformState::kApplyTransformDirection);
   MapLocalToAncestor(ancestor, transform_state, mode);
   return transform_state.AccumulatedTransform();
@@ -3826,12 +3826,12 @@ PhysicalOffset LayoutObject::OffsetFromScrollableContainer(
   if (IsFixedPositioned() && container->IsLayoutView())
     return PhysicalOffset();
 
-  if (mode & kIgnoreScrollOriginAndOffset) {
+  if (mode.Has(MapCoordinatesMode::kIgnoreScrollOriginAndOffset)) {
     return PhysicalOffset();
   }
 
   const auto* box = To<LayoutBox>(container);
-  if (!(mode & kIgnoreScrollOffset)) {
+  if (!mode.Has(MapCoordinatesMode::kIgnoreScrollOffset)) {
     return -box->ScrolledContentOffset();
   }
 
@@ -3847,7 +3847,7 @@ PhysicalOffset LayoutObject::OffsetFromOverscrollContainer(
   // If either container is not a shifting overscroll area container or we need
   // to ignore scroll offsets, then we can early out.
   if (container->InternalOverscrollArea() != EInternalOverscrollArea::kAuto ||
-      (mode & kIgnoreScrollOffset)) {
+      mode.Has(MapCoordinatesMode::kIgnoreScrollOffset)) {
     return PhysicalOffset();
   }
 

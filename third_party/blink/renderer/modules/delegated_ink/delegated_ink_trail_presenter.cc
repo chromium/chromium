@@ -80,7 +80,8 @@ void DelegatedInkTrailPresenter::updateInkTrailStartPoint(
   // zoom factor. Convert to absolute point so that a point from the root frame
   // is obtained in the case of an iframe.
   gfx::PointF point = evt->AbsoluteLocation();
-  point = layout_view->LocalToAbsolutePoint(point, kTraverseDocumentBoundaries);
+  point = layout_view->LocalToAbsolutePoint(
+      point, {MapCoordinatesMode::kTraverseDocumentBoundaries});
   // Convert to visual viewport space so that page scale factor is taken into
   // consideration.
   const VisualViewport& visual_viewport =
@@ -94,14 +95,15 @@ void DelegatedInkTrailPresenter::updateInkTrailStartPoint(
   // viewport accounts for the full window. Convert everything to root frame
   // coordinates in order to make sure offsets aren't lost along the way.
   PhysicalRect border_box_rect_absolute = layout_box->LocalToAbsoluteRect(
-      layout_box->PhysicalBorderBoxRect(), kTraverseDocumentBoundaries);
+      layout_box->PhysicalBorderBoxRect(),
+      {MapCoordinatesMode::kTraverseDocumentBoundaries});
 
   while (layout_view->GetFrame()->OwnerLayoutObject()) {
     PhysicalRect frame_visual_viewport_absolute =
         layout_view->LocalToAbsoluteRect(
             PhysicalRect(layout_view->GetScrollableArea()->VisibleContentRect(
                 kExcludeScrollbars)),
-            kTraverseDocumentBoundaries);
+            {MapCoordinatesMode::kTraverseDocumentBoundaries});
     border_box_rect_absolute.Intersect(frame_visual_viewport_absolute);
 
     layout_view = layout_view->GetFrame()->OwnerLayoutObject()->View();

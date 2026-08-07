@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_result.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
+#include "third_party/blink/renderer/core/layout/map_coordinates_flags.h"
 #include "third_party/blink/renderer/core/loader/history_item.h"
 #include "third_party/blink/renderer/core/scroll/scroll_promise_resolver.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
@@ -503,7 +504,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   // considered to be in the coordinate space of the overflow rect.
   virtual gfx::QuadF LocalToVisibleContentQuad(const gfx::QuadF&,
                                                const LayoutObject*,
-                                               unsigned = 0) const;
+                                               MapCoordinatesFlags = {}) const;
 
   virtual bool IsPaintLayerScrollableArea() const { return false; }
   virtual bool IsRootFrameViewport() const { return false; }

@@ -582,9 +582,11 @@ StickyConstraintsData LayoutBoxModelObject::ComputeStickyPositionConstraints(
   const PhysicalOffset scroll_container_border_offset =
       scroll_container->BorderOutsets().Offset();
 
-  MapCoordinatesFlags flags = kIgnoreTransforms | kIgnoreScrollOffset |
-                              kIgnoreStickyOffset |
-                              kIgnoreScrollOriginAndOffset;
+  MapCoordinatesFlags flags = {
+      MapCoordinatesMode::kIgnoreTransforms,
+      MapCoordinatesMode::kIgnoreScrollOffset,
+      MapCoordinatesMode::kIgnoreStickyOffset,
+      MapCoordinatesMode::kIgnoreScrollOriginAndOffset};
 
   // Compute the sticky-container rect.
   PhysicalRect scroll_container_relative_containing_block_rect;
@@ -773,7 +775,8 @@ PhysicalOffset LayoutBoxModelObject::OffsetFromContainerInternal(
     MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
   PhysicalOffset offset;
-  if (IsStickyPositioned() && !(mode & kIgnoreStickyOffset)) {
+  if (IsStickyPositioned() &&
+      !mode.Has(MapCoordinatesMode::kIgnoreStickyOffset)) {
     offset += StickyPositionOffset();
   }
   return offset + LayoutObject::OffsetFromContainerInternal(container, mode);

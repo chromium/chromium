@@ -118,7 +118,7 @@ class CORE_EXPORT RootFrameViewport final
   LayoutBox* GetLayoutBox() const override;
   gfx::QuadF LocalToVisibleContentQuad(const gfx::QuadF&,
                                        const LayoutObject*,
-                                       unsigned = 0) const final;
+                                       MapCoordinatesFlags = {}) const final;
   scoped_refptr<base::SingleThreadTaskRunner> GetTimerTaskRunner() const final;
   ScrollbarTheme& GetPageScrollbarTheme() const override;
 

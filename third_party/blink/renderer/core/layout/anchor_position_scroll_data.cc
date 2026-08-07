@@ -155,9 +155,10 @@ AnchorPositionScrollData::ComputeAdjustmentContainersData(
       return PhysicalOffset();
     }
     PhysicalOffset transformed_origin = container->LocalToAncestorPoint(
-        PhysicalOffset(), bounding_container, kIgnoreScrollOffset);
+        PhysicalOffset(), bounding_container,
+        {MapCoordinatesMode::kIgnoreScrollOffset});
     PhysicalOffset transformed_offset = container->LocalToAncestorPoint(
-        offset, bounding_container, kIgnoreScrollOffset);
+        offset, bounding_container, {MapCoordinatesMode::kIgnoreScrollOffset});
     return transformed_offset - transformed_origin;
   };
 

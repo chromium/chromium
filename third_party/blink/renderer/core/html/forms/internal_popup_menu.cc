@@ -796,7 +796,8 @@ void InternalPopupMenu::SetMenuListOptionsBoundsInAXTree(
             owner_element_->GetDocument().GetLayoutView()) {
       popup_origin = ToRoundedPoint(layout_view->AbsoluteToLocalPoint(
           gfx::PointF(popup_origin),
-          kTraverseDocumentBoundaries | kApplyRemoteViewportTransform));
+          {MapCoordinatesMode::kTraverseDocumentBoundaries,
+           MapCoordinatesMode::kApplyRemoteViewportTransform}));
       popup_origin = layout_view->GetFrameView()->FrameToDocument(popup_origin);
     }
   } else {

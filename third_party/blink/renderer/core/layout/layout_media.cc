@@ -142,11 +142,11 @@ LayoutUnit LayoutMedia::ComputePanelWidth(
   // The bottom left corner of the video.
   const gfx::PointF bottom_left_point(
       LocalToAbsolutePoint(gfx::PointF(media_rect.X(), media_rect.Bottom()),
-                           kTraverseDocumentBoundaries));
+                           {MapCoordinatesMode::kTraverseDocumentBoundaries}));
   // The bottom right corner of the video.
   const gfx::PointF bottom_right_point(
       LocalToAbsolutePoint(gfx::PointF(media_rect.Right(), media_rect.Bottom()),
-                           kTraverseDocumentBoundaries));
+                           {MapCoordinatesMode::kTraverseDocumentBoundaries}));
 
   const bool bottom_left_corner_visible = bottom_left_point.x() < visible_width;
   const bool bottom_right_corner_visible =

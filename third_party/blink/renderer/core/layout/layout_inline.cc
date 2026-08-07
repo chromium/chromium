@@ -879,7 +879,7 @@ void LayoutInline::AddOutlineRectsInternal(
 gfx::RectF LayoutInline::LocalBoundingBoxRectF() const {
   NOT_DESTROYED();
   Vector<gfx::QuadF> quads;
-  QuadsForSelfInternal(quads, /*ancestor=*/nullptr, 0, false);
+  QuadsForSelfInternal(quads, /*ancestor=*/nullptr, {}, false);
 
   wtf_size_t n = quads.size();
   if (n == 0) {
@@ -925,8 +925,8 @@ void LayoutInline::AddDraggableRegions(Vector<DraggableRegionValue>& regions) {
 
   // TODO(crbug.com/966048): The kIgnoreTransforms seems incorrect. We probably
   // want to map visual rect (with clips applied).
-  region.bounds.offset +=
-      container->LocalToAbsolutePoint(PhysicalOffset(), kIgnoreTransforms);
+  region.bounds.offset += container->LocalToAbsolutePoint(
+      PhysicalOffset(), {MapCoordinatesMode::kIgnoreTransforms});
   regions.push_back(region);
 }
 

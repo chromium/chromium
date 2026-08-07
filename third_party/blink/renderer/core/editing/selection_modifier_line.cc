@@ -117,7 +117,7 @@ class AbstractLineBox {
     const LayoutBlockFlow& containing_block = GetBlock();
     // TODO(yosin): Is kIgnoreTransforms correct here?
     PhysicalOffset absolute_block_point = containing_block.LocalToAbsolutePoint(
-        PhysicalOffset(), kIgnoreTransforms);
+        PhysicalOffset(), {MapCoordinatesMode::kIgnoreTransforms});
     if (containing_block.IsScrollContainer())
       absolute_block_point -= containing_block.ScrolledContentOffset();
 

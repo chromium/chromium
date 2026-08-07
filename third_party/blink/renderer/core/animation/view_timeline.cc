@@ -522,8 +522,9 @@ std::optional<gfx::PointF> ViewTimeline::SubjectPosition(
   if (!subject_layout_object || !scroll_container) {
     return std::nullopt;
   }
-  MapCoordinatesFlags flags =
-      kIgnoreScrollOffset | kIgnoreStickyOffset | kIgnoreTransforms;
+  MapCoordinatesFlags flags = {MapCoordinatesMode::kIgnoreScrollOffset,
+                               MapCoordinatesMode::kIgnoreStickyOffset,
+                               MapCoordinatesMode::kIgnoreTransforms};
   gfx::PointF subject_pos = subject_layout_object->LocalToAncestorPoint(
       gfx::PointF(), scroll_container, flags);
 
