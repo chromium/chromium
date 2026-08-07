@@ -21,6 +21,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_dump_provider.h"
+#include "build/build_config.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/db_status.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
@@ -38,6 +39,16 @@ class StorageKey;
 namespace storage {
 class StorageAreaImpl;
 class StorageServiceImpl;
+
+// Limits on the cache size and number of areas in memory, over which the areas
+// are purged.
+#if BUILDFLAG(IS_ANDROID)
+inline constexpr unsigned kMaxLocalStorageAreaCount = 10;
+inline constexpr size_t kMaxLocalStorageCacheSize = 2 * 1024 * 1024;
+#else
+inline constexpr unsigned kMaxLocalStorageAreaCount = 50;
+inline constexpr size_t kMaxLocalStorageCacheSize = 20 * 1024 * 1024;
+#endif
 
 // The Local Storage implementation. An instance of this class exists for each
 // profile directory (within the user data directory) that is using Local
@@ -105,6 +116,7 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
 
  private:
   friend class DOMStorageBrowserTest;
+  friend class LocalStorageImplTest;
 
   class StorageAreaHolder;
 

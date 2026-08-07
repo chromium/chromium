@@ -38,16 +38,6 @@
 namespace storage {
 namespace {
 
-// Limits on the cache size and number of areas in memory, over which the areas
-// are purged.
-#if BUILDFLAG(IS_ANDROID)
-const unsigned kMaxLocalStorageAreaCount = 10;
-const size_t kMaxLocalStorageCacheSize = 2 * 1024 * 1024;
-#else
-const unsigned kMaxLocalStorageAreaCount = 50;
-const size_t kMaxLocalStorageCacheSize = 20 * 1024 * 1024;
-#endif
-
 void IgnoreStatus(base::OnceClosure callback, DbStatus status) {
   std::move(callback).Run();
 }

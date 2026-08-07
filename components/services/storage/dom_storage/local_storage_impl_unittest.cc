@@ -9,6 +9,7 @@
 #include <string_view>
 #include <tuple>
 
+#include "base/base_switches.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -17,6 +18,7 @@
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -24,6 +26,7 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -59,6 +62,11 @@ std::vector<uint8_t> StdStringToUint8Vector(const std::string& s) {
 
 std::string Uint8VectorToStdString(const std::vector<uint8_t>& v) {
   return std::string(v.begin(), v.end());
+}
+
+blink::StorageKey StorageKeyForExampleHost(size_t index) {
+  return blink::StorageKey::CreateFromStringForTesting(
+      base::StringPrintf("http://example%zu.com", index));
 }
 
 void GetStorageUsageCallback(
@@ -194,6 +202,22 @@ class LocalStorageImplTestBase : public testing::Test {
     base::RunLoop loop;
     context()->SetDatabaseOpenCallbackForTesting(loop.QuitClosure());
     loop.Run();
+  }
+
+  void BindStorageAreaAndPutKeyValue(const blink::StorageKey& storage_key,
+                                     const std::vector<uint8_t>& key,
+                                     const std::vector<uint8_t>& value) {
+    mojo::Remote<blink::mojom::StorageArea> area;
+    context()->BindStorageArea(storage_key, area.BindNewPipeAndPassReceiver());
+    base::test::TestFuture<bool> success_future;
+    area->Put(key, value, std::nullopt, test::MakeStorageAreaSource(),
+              success_future.GetCallback());
+    EXPECT_TRUE(success_future.Take());
+  }
+
+  void BindStorageArea(const blink::StorageKey& storage_key) {
+    mojo::Remote<blink::mojom::StorageArea> area;
+    context()->BindStorageArea(storage_key, area.BindNewPipeAndPassReceiver());
   }
 
   // Adds or updates a key/value pair in the map for `storage_key`.
@@ -435,6 +459,14 @@ class LocalStorageImplTest
                              : DomStorageDatabase::GetLevelDbPath(
                                    StorageType::kLocalStorage, storage_path());
   }
+
+  // Returns the number of storage areas that currently have no active bindings.
+  size_t GetUnusedAreaCount() {
+    size_t total_cache_size = 0;
+    size_t unused_area_count = 0;
+    context()->GetStatistics(&total_cache_size, &unused_area_count);
+    return unused_area_count;
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -613,19 +645,8 @@ TEST_P(LocalStorageImplTest, StorageKeysAreIndependent) {
   auto key2 = StdStringToUint8Vector("key");
   auto value = StdStringToUint8Vector("value");
 
-  mojo::Remote<blink::mojom::StorageArea> area;
-  context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
-
-  area->Put(key1, value, std::nullopt, test::MakeStorageAreaSource(),
-            base::DoNothing());
-  area.reset();
-
-  context()->BindStorageArea(storage_key2, area.BindNewPipeAndPassReceiver());
-  base::test::TestFuture<bool> success_future;
-  area->Put(key2, value, std::nullopt, test::MakeStorageAreaSource(),
-            success_future.GetCallback());
-  EXPECT_TRUE(success_future.Take());
-  area.reset();
+  BindStorageAreaAndPutKeyValue(storage_key1, key1, value);
+  BindStorageAreaAndPutKeyValue(storage_key2, key2, value);
 
   ASSERT_NO_FATAL_FAILURE(
       ExpectMapEquals(storage_key1, /*expected_entries=*/{{key1, value}}));
@@ -684,15 +705,8 @@ TEST_P(LocalStorageImplTest, OpeningWrappersPurgesInactiveWrappers) {
   const blink::StorageKey storage_key(
       blink::StorageKey::CreateFromStringForTesting("http://foobar.com"));
 
-  // Write some data to the DB.
-  mojo::Remote<blink::mojom::StorageArea> area;
-  context()->BindStorageArea(storage_key, area.BindNewPipeAndPassReceiver());
-  base::test::TestFuture<bool> success_future;
-  area->Put(key, value, std::nullopt, test::MakeStorageAreaSource(),
-            success_future.GetCallback());
-  EXPECT_TRUE(success_future.Take());
-
-  area.reset();
+  // Write some data to the DB and drop the binding so the holder is unused.
+  BindStorageAreaAndPutKeyValue(storage_key, key, value);
 
   // The database must contain the map's key/value pair and the usage metadata.
   ASSERT_NO_FATAL_FAILURE(
@@ -704,16 +718,159 @@ TEST_P(LocalStorageImplTest, OpeningWrappersPurgesInactiveWrappers) {
   ASSERT_NO_FATAL_FAILURE(ClearDatabase());
 
   // Now open many new areas (for different StorageKeys) to trigger clean up.
-  for (int i = 1; i <= 100; ++i) {
-    context()->BindStorageArea(
-        blink::StorageKey::CreateFromStringForTesting(
-            base::StringPrintf("http://example.com:%d", i)),
-        area.BindNewPipeAndPassReceiver());
-    area.reset();
+  for (size_t i = 1; i <= 100; ++i) {
+    BindStorageArea(StorageKeyForExampleHost(i));
   }
 
   // And make sure caches were actually cleared.
   EXPECT_TRUE(base::test::RunUntil([&]() { return !DoTestGet(key); }));
+}
+
+TEST_P(LocalStorageImplTest,
+       PurgeUnusedAreasKeepsInactiveWrappersAtCountLimit) {
+  // Low-end devices always purge inactive holders, ignoring the cache limits.
+  if (base::SysInfo::IsLowEndDevice()) {
+    GTEST_SKIP() << "Skipping test on low-end devices.";
+  }
+
+  auto key = StdStringToUint8Vector("key");
+  auto value = StdStringToUint8Vector("value");
+  const blink::StorageKey storage_key(
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com"));
+
+  BindStorageAreaAndPutKeyValue(storage_key, key, value);
+  StorageAreaImpl* storage_area =
+      context()->GetStorageAreaForTesting(storage_key);
+  ASSERT_NE(storage_area, nullptr);
+
+  // Fill the holder map exactly to the count limit.
+  for (size_t i = 1; i < kMaxLocalStorageAreaCount; ++i) {
+    BindStorageArea(StorageKeyForExampleHost(i));
+  }
+
+  // Wait until the dropped bindings are observed via `OnNoBindings()`.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return GetUnusedAreaCount() == kMaxLocalStorageAreaCount; }));
+
+  // At exactly the count limit the purge is a no-op, so
+  // `PurgeUnusedAreasIfNeeded()` keeps every holder even though they are all
+  // inactive.
+  context()->PurgeUnusedAreasIfNeeded();
+
+  // The original holder should still be present.
+  EXPECT_EQ(storage_area, context()->GetStorageAreaForTesting(storage_key));
+  EXPECT_EQ(GetUnusedAreaCount(), kMaxLocalStorageAreaCount);
+}
+
+TEST_P(LocalStorageImplTest,
+       PurgeUnusedAreasPurgesInactiveWrappersOnLowEndDevice) {
+  base::test::ScopedCommandLine scoped_command_line;
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableLowEndDeviceMode);
+  ASSERT_TRUE(base::SysInfo::IsLowEndDevice());
+
+  const blink::StorageKey storage_key(
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com"));
+  BindStorageAreaAndPutKeyValue(storage_key, StdStringToUint8Vector("k"),
+                                StdStringToUint8Vector("v"));
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return GetUnusedAreaCount() == 1u; }));
+
+  context()->PurgeUnusedAreasIfNeeded();
+  EXPECT_EQ(GetUnusedAreaCount(), 0u);
+}
+
+TEST_P(LocalStorageImplTest,
+       PurgeUnusedAreasPurgesInactiveWrappersAboveCountLimit) {
+  auto key = StdStringToUint8Vector("key");
+  auto value = StdStringToUint8Vector("value");
+  const blink::StorageKey storage_key(
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com"));
+
+  BindStorageAreaAndPutKeyValue(storage_key, key, value);
+  ASSERT_NE(context()->GetStorageAreaForTesting(storage_key), nullptr);
+
+  // Bind one holder past the count limit to push the map over the threshold.
+  for (size_t i = 1; i <= kMaxLocalStorageAreaCount; ++i) {
+    BindStorageArea(StorageKeyForExampleHost(i));
+  }
+
+  // Dropped bindings go inactive asynchronously, so pump until every holder is
+  // observed as unused.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return GetUnusedAreaCount() == kMaxLocalStorageAreaCount + 1; }));
+
+  // Over the count limit the purge erases every inactive holder.
+  context()->PurgeUnusedAreasIfNeeded();
+  EXPECT_EQ(GetUnusedAreaCount(), 0u);
+}
+
+TEST_P(LocalStorageImplTest,
+       PurgeUnusedAreasPurgesInactiveWrappersAboveCacheLimit) {
+  // The cached size counts each map entry's key length on every platform, but
+  // only caches values on some (e.g. not on Android, which keeps keys only).
+  // Use large keys so the cache limit is exceeded regardless of caching mode.
+  const size_t key_size = kMaxLocalStorageCacheSize / 2;
+  std::vector<uint8_t> key(key_size, 'x');
+  auto value = StdStringToUint8Vector("value");
+
+  // Binding a new area runs `PurgeUnusedAreasIfNeeded()` internally, which
+  // would erase already-inactive holders once the cache limit is exceeded. Keep
+  // every binding alive while filling the map so those holders stay active and
+  // survive until the explicit purge below.
+  std::vector<mojo::Remote<blink::mojom::StorageArea>> areas;
+  for (size_t i = 0; i < 3; ++i) {
+    mojo::Remote<blink::mojom::StorageArea>& area = areas.emplace_back();
+    context()->BindStorageArea(StorageKeyForExampleHost(i),
+                               area.BindNewPipeAndPassReceiver());
+    base::test::TestFuture<bool> success_future;
+    area->Put(key, value, std::nullopt, test::MakeStorageAreaSource(),
+              success_future.GetCallback());
+    EXPECT_TRUE(success_future.Take());
+  }
+
+  // Drop all bindings so every holder becomes inactive.
+  areas.clear();
+
+  // Dropped bindings go inactive asynchronously, so pump until every holder is
+  // observed as unused.
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return GetUnusedAreaCount() == 3u; }));
+  // Over the cache limit the purge erases every inactive holder.
+  context()->PurgeUnusedAreasIfNeeded();
+  EXPECT_EQ(GetUnusedAreaCount(), 0u);
+}
+
+TEST_P(LocalStorageImplTest, PurgeUnusedAreasKeepsActiveWrapper) {
+  auto key = StdStringToUint8Vector("key");
+  auto value = StdStringToUint8Vector("value");
+  const blink::StorageKey storage_key(
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com"));
+
+  // Write a value, then re-open the area so its holder has an active binding.
+  BindStorageAreaAndPutKeyValue(storage_key, key, value);
+  mojo::Remote<blink::mojom::StorageArea> area;
+  context()->BindStorageArea(storage_key, area.BindNewPipeAndPassReceiver());
+
+  StorageAreaImpl* storage_area =
+      context()->GetStorageAreaForTesting(storage_key);
+  ASSERT_NE(storage_area, nullptr);
+
+  // Bind and drop enough additional holders to push the map past the count
+  // limit, so the purge has inactive holders to erase.
+  for (size_t i = 1; i <= kMaxLocalStorageAreaCount; ++i) {
+    BindStorageArea(StorageKeyForExampleHost(i));
+  }
+
+  // Dropped bindings go inactive asynchronously, so pump until every unused
+  // holder is observed. The actively bound holder is never counted here.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return GetUnusedAreaCount() == kMaxLocalStorageAreaCount; }));
+
+  // Purging removes every inactive holder but keeps the actively bound one.
+  context()->PurgeUnusedAreasIfNeeded();
+  EXPECT_EQ(GetUnusedAreaCount(), 0u);
+  EXPECT_EQ(storage_area, context()->GetStorageAreaForTesting(storage_key));
 }
 
 TEST_P(LocalStorageImplTest, ValidVersion) {
@@ -773,12 +930,7 @@ TEST_P(LocalStorageImplTest, GetStorageUsage_Data) {
             base::DoNothing());
   area.reset();
 
-  context()->BindStorageArea(storage_key2, area.BindNewPipeAndPassReceiver());
-  base::test::TestFuture<bool> success_future;
-  area->Put(key2, value, std::nullopt, test::MakeStorageAreaSource(),
-            success_future.GetCallback());
-  EXPECT_TRUE(success_future.Take());
-  area.reset();
+  BindStorageAreaAndPutKeyValue(storage_key2, key2, value);
 
   // Make sure all data gets committed to disk.
   ASSERT_NO_FATAL_FAILURE(ExpectMapEquals(
@@ -824,8 +976,7 @@ TEST_P(LocalStorageImplTest, CheckAccessMetaData) {
   mojo::Remote<blink::mojom::StorageArea> area;
 
   // storage_key1 has no content in its area.
-  context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
-  area.reset();
+  BindStorageArea(storage_key1);
 
   // storage_key2 has content in its area.
   context()->BindStorageArea(storage_key2, area.BindNewPipeAndPassReceiver());
@@ -834,13 +985,8 @@ TEST_P(LocalStorageImplTest, CheckAccessMetaData) {
   area.reset();
 
   // storage_key3 has content in its area but is purged on shutdown.
-  context()->BindStorageArea(storage_key3, area.BindNewPipeAndPassReceiver());
-  base::test::TestFuture<bool> success_future;
-  area->Put(StdStringToUint8Vector("key"), StdStringToUint8Vector("value"),
-            std::nullopt, test::MakeStorageAreaSource(),
-            success_future.GetCallback());
-  EXPECT_TRUE(success_future.Take());
-  area.reset();
+  BindStorageAreaAndPutKeyValue(storage_key3, StdStringToUint8Vector("key"),
+                                StdStringToUint8Vector("value"));
   std::vector<mojom::StoragePolicyUpdatePtr> updates;
   updates.emplace_back(mojom::StoragePolicyUpdate::New(
       storage_key3.origin(), /*purge_on_shutdown=*/true));
@@ -1025,19 +1171,8 @@ TEST_P(LocalStorageImplTest, DeleteStorageWithoutConnection) {
   auto key = StdStringToUint8Vector("key");
   auto value = StdStringToUint8Vector("value");
 
-  mojo::Remote<blink::mojom::StorageArea> area;
-  context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
-
-  area->Put(key, value, std::nullopt, test::MakeStorageAreaSource(),
-            base::DoNothing());
-  area.reset();
-
-  context()->BindStorageArea(storage_key2, area.BindNewPipeAndPassReceiver());
-  base::test::TestFuture<bool> success_future;
-  area->Put(key, value, std::nullopt, test::MakeStorageAreaSource(),
-            success_future.GetCallback());
-  EXPECT_TRUE(success_future.Take());
-  area.reset();
+  BindStorageAreaAndPutKeyValue(storage_key1, key, value);
+  BindStorageAreaAndPutKeyValue(storage_key2, key, value);
 
   // Make sure all data gets committed to disk.
   ASSERT_NO_FATAL_FAILURE(
@@ -1072,19 +1207,8 @@ TEST_P(LocalStorageImplTest, DeleteStorageNotifiesWrapper) {
   auto key = StdStringToUint8Vector("key");
   auto value = StdStringToUint8Vector("value");
 
-  mojo::Remote<blink::mojom::StorageArea> area;
-  context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
-
-  area->Put(key, value, std::nullopt, test::MakeStorageAreaSource(),
-            base::DoNothing());
-  area.reset();
-
-  context()->BindStorageArea(storage_key2, area.BindNewPipeAndPassReceiver());
-  base::test::TestFuture<bool> success_future;
-  area->Put(key, value, std::nullopt, test::MakeStorageAreaSource(),
-            success_future.GetCallback());
-  EXPECT_TRUE(success_future.Take());
-  area.reset();
+  BindStorageAreaAndPutKeyValue(storage_key1, key, value);
+  BindStorageAreaAndPutKeyValue(storage_key2, key, value);
 
   // Make sure all data gets committed to disk.
   ASSERT_NO_FATAL_FAILURE(
@@ -1096,6 +1220,7 @@ TEST_P(LocalStorageImplTest, DeleteStorageNotifiesWrapper) {
   ASSERT_NO_FATAL_FAILURE(ExpectUsageMetadataExists(storage_key1));
   ASSERT_NO_FATAL_FAILURE(ExpectUsageMetadataExists(storage_key2));
 
+  mojo::Remote<blink::mojom::StorageArea> area;
   TestStorageAreaObserver observer;
   context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
   area->AddObserver(observer.Bind());
@@ -1130,19 +1255,8 @@ TEST_P(LocalStorageImplTest, DeleteStorageWithPendingWrites) {
   auto key = StdStringToUint8Vector("key");
   auto value = StdStringToUint8Vector("value");
 
-  mojo::Remote<blink::mojom::StorageArea> area;
-  context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
-
-  area->Put(key, value, std::nullopt, test::MakeStorageAreaSource(),
-            base::DoNothing());
-  area.reset();
-
-  context()->BindStorageArea(storage_key2, area.BindNewPipeAndPassReceiver());
-  base::test::TestFuture<bool> success_future;
-  area->Put(key, value, std::nullopt, test::MakeStorageAreaSource(),
-            success_future.GetCallback());
-  EXPECT_TRUE(success_future.Take());
-  area.reset();
+  BindStorageAreaAndPutKeyValue(storage_key1, key, value);
+  BindStorageAreaAndPutKeyValue(storage_key2, key, value);
 
   // Make sure all data gets committed to disk.
   ASSERT_NO_FATAL_FAILURE(
@@ -1154,9 +1268,11 @@ TEST_P(LocalStorageImplTest, DeleteStorageWithPendingWrites) {
   ASSERT_NO_FATAL_FAILURE(ExpectUsageMetadataExists(storage_key1));
   ASSERT_NO_FATAL_FAILURE(ExpectUsageMetadataExists(storage_key2));
 
+  mojo::Remote<blink::mojom::StorageArea> area;
   TestStorageAreaObserver observer;
   context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
   area->AddObserver(observer.Bind());
+  base::test::TestFuture<bool> success_future;
   area->Put(StdStringToUint8Vector("key2"), value, std::nullopt,
             test::MakeStorageAreaSource(), success_future.GetCallback());
   EXPECT_TRUE(success_future.Take());
@@ -1217,13 +1333,7 @@ TEST_P(LocalStorageImplTest, ShutdownClearsData) {
             base::DoNothing());
   area.reset();
 
-  context()->BindStorageArea(storage_key1_third_party,
-                             area.BindNewPipeAndPassReceiver());
-  base::test::TestFuture<bool> success_future;
-  area->Put(key1, value, std::nullopt, test::MakeStorageAreaSource(),
-            success_future.GetCallback());
-  EXPECT_TRUE(success_future.Take());
-  area.reset();
+  BindStorageAreaAndPutKeyValue(storage_key1_third_party, key1, value);
 
   // Make sure data gets committed to disk.
   ASSERT_NO_FATAL_FAILURE(ExpectMapEquals(
